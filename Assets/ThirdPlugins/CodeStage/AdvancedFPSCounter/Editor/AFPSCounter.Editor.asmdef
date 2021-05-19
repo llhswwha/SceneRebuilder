@@ -1,0 +1,10 @@
+{
+    "name": "AFPSCounter.Editor",
+    "references": [
+        "AFPSCounter.Runtime"
+    ],
+    "includePlatforms": [
+        "Editor"
+    ],
+    "excludePlatforms": []
+}

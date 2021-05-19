@@ -1,0 +1,13 @@
+fileFormatVersion: 2
+guid: 06d8aba3a1f85c64f9131822e701bfbc
+MonoImporter:
+  externalObjects: {}
+  serializedVersion: 2
+  defaultReferences:
+  - _billboardsMaterial: {fileID: 2100000, guid: 000d4a80549a36648890ffa9aae08eae,
+      type: 2}
+  executionOrder: 0
+  icon: {instanceID: 0}
+  userData: 
+  assetBundleName: 
+  assetBundleVariant: 

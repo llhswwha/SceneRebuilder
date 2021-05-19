@@ -1,0 +1,35 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 90d8588b9b4d4e344b3c6c8da8806a1c, type: 3}
+  m_Name: GPUInstancerShaderBindings
+  m_EditorClassIdentifier: 
+  shaderInstances:
+  - name: GPUInstancer/AsteroidHaze
+    instancedShader: {fileID: 4800000, guid: a1fe6b00539636f49bae5f911c8ccc55, type: 3}
+    modifiedDate: 04/20/2021 19:53:24.966
+    isOriginalInstanced: 1
+    extensionCode: 
+  - name: HDRP/Lit
+    instancedShader: {fileID: 4800000, guid: 527b1bd125b1dcb458061309fe415fd4, type: 3}
+    modifiedDate: 04/20/2021 19:54:18.872
+    isOriginalInstanced: 0
+    extensionCode: 
+  - name: GPUInstancer/ColorVariationShader_GPUI_SG
+    instancedShader: {fileID: -6465566751694194690, guid: cda94a161105fc448be4bf5fae45232b, type: 3}
+    modifiedDate: 04/20/2021 20:14:05.373
+    isOriginalInstanced: 1
+    extensionCode: 
+  - name: Shader Graphs/GPUIUVVariationGraph
+    instancedShader: {fileID: -6465566751694194690, guid: 13567c7704562ff4188beb583474bbb9, type: 3}
+    modifiedDate: 04/20/2021 20:20:55.773
+    isOriginalInstanced: 1
+    extensionCode: 

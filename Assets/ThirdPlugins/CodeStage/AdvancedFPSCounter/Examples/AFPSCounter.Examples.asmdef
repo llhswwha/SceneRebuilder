@@ -1,0 +1,8 @@
+{
+    "name": "AFPSCounter.Examples",
+    "references": [
+        "AFPSCounter.Runtime"
+    ],
+    "includePlatforms": [],
+    "excludePlatforms": []
+}
