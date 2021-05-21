@@ -77,31 +77,31 @@ public struct MeshDistanceJob : IJob
 
   public void Execute()
   {
-    DateTime start = DateTime.Now;
+    //DateTime start = DateTime.Now;
 
-    Vector3[] vertices2World=GetWorldVertexes(vertices2,Matrix2);
+    // Vector3[] vertices2World=GetWorldVertexes(vertices2.ToArray(),Matrix2);
 
-    Distance=DistanceUtil.GetDistance(vertices1.ToArray(),vertices2World);
+    // Distance=DistanceUtil.GetDistance(vertices1.ToArray(),vertices2World);
 
-    MeshDistanceJobHelper.SetResult(RId,Id,Distance);
+    // MeshDistanceJobHelper.SetResult(RId,Id,Distance);
 
-    Debug.Log(string.Format("MeshDistanceJob[{0}][{1}] Distance:{2}",Id,RId,Distance));
+    // Debug.Log(string.Format("MeshDistanceJob[{0}][{1}] Distance:{2}",Id,RId,Distance));
   }
 
 
- public static Vector3[] GetWorldVertexes(NativeArray<Vector3> vs, Matrix4x4 matrix){
-        var vCount=vs.Length;
-        Vector3[] points1 = new Vector3[vCount];
-        // var vs=mesh1.vertices;
-        for (int i = 0; i < vCount; i++)
-        {
-            Vector3 p1 = vs[i];
-            Vector3 p11 = matrix.MultiplyPoint3x4(p1);
-            //points1.Add(p11);
-            points1[i]=p11;
-        }
-        return points1;
-    }
+//  public static Vector3[] GetWorldVertexes(Vector3[] vs, Matrix4x4 matrix){
+//         var vCount=vs.Length;
+//         Vector3[] points1 = new Vector3[vCount];
+//         // var vs=mesh1.vertices;
+//         for (int i = 0; i < vCount; i++)
+//         {
+//             Vector3 p1 = vs[i];
+//             Vector3 p11 = matrix.MultiplyPoint3x4(p1);
+//             //points1.Add(p11);
+//             points1[i]=p11;
+//         }
+//         return points1;
+//     }
 
 //   public void Init
 

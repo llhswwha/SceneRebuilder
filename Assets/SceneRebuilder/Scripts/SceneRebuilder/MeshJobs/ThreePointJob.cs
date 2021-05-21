@@ -86,11 +86,11 @@ namespace MeshJobs
 
         private void AddDict(ThreePointJobResult r)
         {
-            if (r == null)
-            {
-                Debug.LogError("AddDict r==null");
-                return;
-            }
+            // if (r == null)
+            // {
+            //     Debug.LogError("AddDict r==null");
+            //     return;
+            // }
             int goId = r.gId;
             if (go2Result.ContainsKey(goId))
             {
@@ -409,7 +409,7 @@ namespace MeshJobs
         }
     }
 
-    public class ThreePointJobResult
+    public struct ThreePointJobResult
     {
         public bool IsNull;
         public int id;
@@ -614,7 +614,7 @@ namespace MeshJobs
     {
         public static JobList<ThreePointJob> CreateThreePointJobs(MeshFilter[] meshFilters, int size)
         {
-            DateTime start = DateTime.Now;
+            //DateTime start = DateTime.Now;
             int count = meshFilters.Length;
             JobList<ThreePointJob> handles = new JobList<ThreePointJob>("ThreePointJob", size);
 
@@ -638,7 +638,7 @@ namespace MeshJobs
                 handles.Add(job1);
             }
             ProgressBarHelper.ClearProgressBar();
-            Debug.Log($"CreateThreePointJobs Time:{(DateTime.Now - start).TotalMilliseconds}ms");
+            //Debug.Log($"CreateThreePointJobs Time:{(DateTime.Now - start).TotalMilliseconds}ms");
             return handles;
         }
 
@@ -655,7 +655,7 @@ namespace MeshJobs
 
         public static void NewThreePointJobs(MeshFilter[] meshFilters, int size)
         {
-            DateTime start = DateTime.Now;
+            //DateTime start = DateTime.Now;
             Debug.Log("NewThreePointJobs:" + meshFilters.Length);
             JobList<ThreePointJob> jobList = CreateThreePointJobs(meshFilters, size);
             //handles.CompleteAll();
@@ -683,7 +683,7 @@ namespace MeshJobs
             //         Debug.Log($"[{i}] Job id:{job.id},count:{ThreePointJob.InvokeCount},minDis:{job.minDis},maxDis:{job.maxDis},center:{job.center},center2:{job.center2}");
             //    }
 
-            Debug.Log($">>NewThreePointJobs Count:{jobList.Length},Time:{(DateTime.Now - start).TotalMilliseconds}ms");//15/35
+            //Debug.Log($">>NewThreePointJobs Count:{jobList.Length},Time:{(DateTime.Now - start).TotalMilliseconds}ms");//15/35
         }
     }
 
@@ -703,7 +703,7 @@ namespace MeshJobs
 
         //public NativeArray<ThreePointJobResult> results;
 
-        public static int InvokeCount;
+        //public static int InvokeCount;
 
         public Vector3 center;
 
@@ -729,7 +729,8 @@ namespace MeshJobs
 
         public void Execute()
         {
-            DateTime start = DateTime.Now;
+#if UNITY_EDITOR
+            //DateTime start = DateTime.Now;
 
             // Mesh mesh=ManagedObjectWorld.Instance.Get(MeshRef);
             // Vector3[] vertices=mesh.vertices;//UnityException: get_canAccess can only be called from the main thread.
@@ -792,7 +793,7 @@ namespace MeshJobs
                 }
             }
 
-            InvokeCount++;
+            //InvokeCount++;
 
             // Debug.LogWarning(string.Format("GetVertexCenterInfo[{9}] vertexCount:{0},time:{1}ms,center:{2},maxP:{3},minP:{4},maxDis:{5},minDis:{6},{7},{8};",
             //     this.vertexCount,(DateTime.Now-start).TotalMilliseconds,this.center,maxP,minP,this.maxDis,this.minDis,this.maxPList.Length,this.minPList.Length,InvokeCount));
@@ -813,23 +814,12 @@ namespace MeshJobs
 
             //ThreePointJobResultList.Instance.Add(Result);//不能加
 
-            // 保存结果，后续使用
-            ThreePointJobResult result = GetResult();
-            result.time = (DateTime.Now - start).TotalMilliseconds;
-            ThreePointJobResultList.Instance.SetResult(result, id, goId);
-        }
+            // // 保存结果，后续使用
+            // ThreePointJobResult result = GetResult();
 
-
-        // public void PrintResult()
-        // {
-        //     Result.Print();
-        // }
-
-        public ThreePointJobResult GetResult()
-        {
             ThreePointJobResult result = new ThreePointJobResult();
             result.id = this.id;
-            result.count = InvokeCount;
+            //result.count = InvokeCount;
             result.vertexCount = this.vertexCount;
             result.center = this.center;
 
@@ -840,8 +830,36 @@ namespace MeshJobs
             result.minPList = this.minPList.ToArray();
             result.minPCount = this.minPCount;
             result.minDis = this.minDis;
-            return result;
+
+
+            //result.time = (DateTime.Now - start).TotalMilliseconds;
+            ThreePointJobResultList.Instance.SetResult(result, id, goId);
+#endif
         }
+
+
+        // public void PrintResult()
+        // {
+        //     Result.Print();
+        // }
+
+        // public ThreePointJobResult GetResult()
+        // {
+        //     ThreePointJobResult result = new ThreePointJobResult();
+        //     result.id = this.id;
+        //     //result.count = InvokeCount;
+        //     result.vertexCount = this.vertexCount;
+        //     result.center = this.center;
+
+        //     result.maxPList = this.maxPList.ToArray();
+        //     result.maxPCount = this.maxPCount;
+        //     result.maxDis = this.maxDis;
+
+        //     result.minPList = this.minPList.ToArray();
+        //     result.minPCount = this.minPCount;
+        //     result.minDis = this.minDis;
+        //     return result;
+        // }
 
         //private ManagedObjectRef<Mesh> MeshRef;
 

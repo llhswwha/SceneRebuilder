@@ -104,20 +104,20 @@ public class AcRTDistanceJobResult
 
         public void Execute()
         {
-            DateTime tmpT = DateTime.Now;
+            //DateTime tmpT = DateTime.Now;
             var rt = AcRigidTransform.GetRTMatrixS(tpFrom, tpTo);//核心，静态函数的
-            totalTime1 += (DateTime.Now - tmpT).TotalMilliseconds;
+            //totalTime1 += (DateTime.Now - tmpT).TotalMilliseconds;
 
-            tmpT = DateTime.Now;
+            //tmpT = DateTime.Now;
             if (AcRTAlignJobHelper.vsDictWorld.ContainsKey(vsFromId) == false)
             {
                 Debug.LogError("AcRTAlignJob.vsDict.ContainsKey(vsFromId) == false:"+ vsFromId);
                 return;
             }
             var vsNew = rt.ApplyPoints(AcRTAlignJobHelper.vsDictWorld[vsFromId]);
-            totalTime2 += (DateTime.Now - tmpT).TotalMilliseconds;
+            //totalTime2 += (DateTime.Now - tmpT).TotalMilliseconds;
 
-            tmpT = DateTime.Now;
+            //tmpT = DateTime.Now;
             if (AcRTAlignJobHelper.vsDictWorld.ContainsKey(vsToId) == false)
             {
                 Debug.LogError("AcRTAlignJob.vsDict.ContainsKey(vsToId) == false:" + vsToId);
@@ -125,7 +125,7 @@ public class AcRTDistanceJobResult
             }
             var dis = DistanceUtil.GetDistance(AcRTAlignJobHelper.vsDictWorld[vsToId], vsNew, false);
             //var dis = 0;
-            totalTime3 += (DateTime.Now - tmpT).TotalMilliseconds;
+            //totalTime3 += (DateTime.Now - tmpT).TotalMilliseconds;
 
             AcRTDistanceJobHelper.SetResult(RId, Id, dis, rt);
         }

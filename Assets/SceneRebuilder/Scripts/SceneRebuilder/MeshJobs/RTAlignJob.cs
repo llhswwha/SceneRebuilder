@@ -29,7 +29,7 @@ namespace MeshJobs
     public void Execute()
   {
       
-      DateTime start = DateTime.Now;
+      //DateTime start = DateTime.Now;
 
       Vector3[] vertices2World=GetWorldVertexes(vertices2);
 

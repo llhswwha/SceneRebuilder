@@ -58,7 +58,7 @@ public struct AcRTAlignJobEx : IJob
         public void Execute()
         {
             //Debug.Log(string.Format("AcRTAlignJobEx[{0}]",Id));
-            DateTime start = DateTime.Now;
+            //DateTime start = DateTime.Now;
 
             int count = 0;
 

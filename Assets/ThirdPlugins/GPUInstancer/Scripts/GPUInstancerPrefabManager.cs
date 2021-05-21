@@ -151,6 +151,7 @@ namespace GPUInstancer
         }
 #endif
 
+        [ContextMenu("ClearPrefabList")]
         public void ClearPrefabList()
         {
             prefabList.Clear();
