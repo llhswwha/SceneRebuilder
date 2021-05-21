@@ -238,6 +238,7 @@ namespace GPUInstancer
 
         public override void DrawLayerMaskFields()
         {
+            if(prop_enableMROnManagerDisable==null)return;
             base.DrawLayerMaskFields();
             EditorGUI.BeginDisabledGroup(Application.isPlaying);
             EditorGUILayout.PropertyField(prop_enableMROnManagerDisable, GPUInstancerEditorConstants.Contents.enableMROnManagerDisable);

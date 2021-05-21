@@ -103,8 +103,11 @@ namespace GPUInstancer
 //                        prefabInstance.SetRenderersEnabled(true, layerMask);
 //                    }
 //                }
-
-                _registeredPrefabsRuntimeData.ClearInstancingData(true, layerMask, playModeState);
+                bool isSetRenderersEnabled=true;
+#if UNITY_EDITOR && UNITY_2017_2_OR_NEWER
+                isSetRenderersEnabled= (playModeState != PlayModeStateChange.EnteredEditMode && playModeState != PlayModeStateChange.ExitingPlayMode);
+#endif
+                _registeredPrefabsRuntimeData.ClearInstancingData(true, layerMask, isSetRenderersEnabled);
             }
 
             if (_variationDataList != null)
@@ -147,6 +150,12 @@ namespace GPUInstancer
             registeredPrefabs.RemovePrototypeList(prototypeList);
         }
 #endif
+
+        public void ClearPrefabList()
+        {
+            prefabList.Clear();
+            prototypeList.Clear();
+        }
         public override void InitializeRuntimeDataAndBuffers(bool forceNew = true)
         {
             base.InitializeRuntimeDataAndBuffers(forceNew);
@@ -901,9 +910,15 @@ namespace GPUInstancer
                 AddRegisteredPrefab(prefabInstance);
         }
 
+        [ContextMenu("ShowTestInfo")]
+        public void ShowTestInfo()
+        {
+            Debug.LogError($"RegisterPrefabInstanceList prefabList:{prefabList.Count()},prototypeList: {prototypeList.Count}");
+        }
+
         public virtual void RegisterPrefabInstanceList(IEnumerable<GPUInstancerPrefab> prefabInstanceList)
         {
-            Debug.LogError($"RegisterPrefabInstanceList prefabInstanceList:{prefabInstanceList.Count()},prototypeList: {prototypeList.Count}");
+            Debug.LogError($"RegisterPrefabInstanceList prefabInstanceList:{prefabInstanceList.Count()}, prefabList:{prefabList.Count()}, prototypeList: {prototypeList.Count}");
 
             if (_registeredPrefabsRuntimeData == null)
                 _registeredPrefabsRuntimeData = new GPUInstancerPrototypeDict(prototypeList);
@@ -1116,6 +1131,11 @@ namespace GPUInstancer
                 return null;
             }
 
+           return AddPrefab(prototypeGameObject,attachScript);
+        }
+
+        public GPUInstancerPrefabPrototype AddPrefab(GameObject prototypeGameObject, bool attachScript = true)
+        {
             if (prefabList == null)
                 prefabList = new List<GameObject>();
             GPUInstancerPrefabPrototype prefabPrototype = GPUInstancerUtility.GeneratePrefabPrototype(prototypeGameObject, false, attachScript);
@@ -1126,8 +1146,45 @@ namespace GPUInstancer
             if (prefabPrototype.minCullingDistance < minCullingDistance)
                 prefabPrototype.minCullingDistance = minCullingDistance;
 
+            Debug.LogError("AddPrefab:"+prefabPrototype);
             return prefabPrototype;
         }
+
+    [ContextMenu("InitPrefabs")]
+    public void InitPrefabs(List<GameObject> list)
+    {
+        #if UNITY_EDITOR
+        ClearPrefabList();
+        for (int i = 0; i < list.Count; i++)
+        {
+            float progress = (float)i / list.Count;
+            float percents = progress * 100;
+
+            if (EditorUtility.DisplayCancelableProgressBar("CreatePrefabs", $"{i}/{list.Count} {percents}% of 100%", progress))
+            {
+                break;
+            }
+            GameObject item = list[i];
+            GPUInstancerPrefab prefab = item.GetComponent<GPUInstancerPrefab>();
+            if (prefab == null)
+            {
+                prefab=GPUInstancerUtility.AddComponentToPrefab<GPUInstancerPrefab>(item);
+            }
+
+            AddPrefab(item);
+
+            // prefabManager.prefabList.Add(item);
+            // var prototype=GPUInstancerUtility.GeneratePrefabPrototype(item, false);
+            // Debug.Log($"1 item:{item},prototype:{prototype},count:{prefabManager.prototypeList.Count}");
+            // prefabManager.prototypeList.Add(prototype);
+            // Debug.Log($"2 item:{item},prototype:{prototype},count:{prefabManager.prototypeList.Count}");
+
+            //generator.asteroidObjects.Add(prefab);
+        }
+
+        EditorUtility.ClearProgressBar();
+        #endif
+    }
 
         public virtual void AddInstancesToPrefabPrototypeAtRuntime(GPUInstancerPrefabPrototype prefabPrototype, IEnumerable<GameObject> instances)
         {
@@ -1387,6 +1444,23 @@ namespace GPUInstancer
         }
 
         public void AddPrototypeList(List<GPUInstancerPrototype> prototypeList)
+        {
+            this.Clear();
+            foreach (GPUInstancerPrefabPrototype pp in prototypeList)
+                this.Add(new RegisteredPrefabsData(pp));
+        }
+
+        public void RemovePrototypeList(GPUInstancerPrototypeList prototypeList)
+        {
+            this.RemoveAll(rpd => !prototypeList.Contains(rpd.prefabPrototype));
+            foreach (GPUInstancerPrefabPrototype prototype in prototypeList)
+            {
+                if (!this.Exists(rpd => rpd.prefabPrototype == prototype))
+                    this.Add(new RegisteredPrefabsData(prototype));
+            }
+        }
+
+        public void AddPrototypeList(GPUInstancerPrototypeList prototypeList)
         {
             this.Clear();
             foreach (GPUInstancerPrefabPrototype pp in prototypeList)

@@ -98,6 +98,7 @@ namespace GPUInstancer
                 lodIndex = (instanceLODs.Count - 5) * 4 + 1;
 
             float lodSize = (screenRelativeTransitionHeight / (prototype != null && prototype.lodBiasAdjustment > 0 ? prototype.lodBiasAdjustment : 1)) / lodBiasApplied;
+            
             lodSizes[lodIndex] = lodSize;
 
             if (GPUInstancerUtility.matrixHandlingType != GPUIMatrixHandlingType.Default)
@@ -123,6 +124,13 @@ namespace GPUInstancer
                     lodSizes[lodIndex + 2] = cfSize;
                 }
             }
+
+            string lodStr="";
+            foreach(var lod in lodSizes){
+                lodStr=lod+",";
+            }
+
+            //Debug.LogError($"AddLod index:{lodIndex},\tlodSize:{lodSize},\theight:{screenRelativeTransitionHeight},\tlodStr:{lodStr}");
         }
 
         /// <summary>
@@ -253,6 +261,7 @@ namespace GPUInstancer
         /// <returns></returns>
         public virtual bool GenerateLODsFromLODGroup(GPUInstancerPrototype prototype)
         {
+            //Debug.LogError("GenerateLODsFromLODGroup:"+prototype);
             LODGroup lodGroup = prototype.prefabObject.GetComponent<LODGroup>();
 
             if (instanceLODs == null)
@@ -260,13 +269,16 @@ namespace GPUInstancer
             else
                 instanceLODs.Clear();
 
-            for (int lod = 0; lod < lodGroup.GetLODs().Length; lod++)
+            var lods=lodGroup.GetLODs();
+
+            Debug.LogError("GenerateLODsFromLODGroup:"+prototype+"|"+lods.Length);
+            for (int lod = 0; lod < lods.Length; lod++)
             {
                 bool hasBillboardRenderer = false;
                 List<Renderer> lodRenderers = new List<Renderer>();
-                if (lodGroup.GetLODs()[lod].renderers != null)
+                if (lods[lod].renderers != null)
                 {
-                    foreach (Renderer renderer in lodGroup.GetLODs()[lod].renderers)
+                    foreach (Renderer renderer in lods[lod].renderers)
                     {
                         if (renderer != null && renderer is MeshRenderer && renderer.GetComponent<MeshFilter>() != null)
                         {
@@ -288,7 +300,7 @@ namespace GPUInstancer
                     continue;
                 }
 
-                AddLod(lodGroup.GetLODs()[lod].screenRelativeTransitionHeight);
+                AddLod(lods[lod].screenRelativeTransitionHeight);
 
                 for (int r = 0; r < lodRenderers.Count; r++)
                 {

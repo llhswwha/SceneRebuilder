@@ -23,6 +23,19 @@ namespace GPUInstancer
         protected bool _isMatrixSet;
         protected Matrix4x4 _localToWorldMatrix;
 
+        [ContextMenu("ShowInfo")]
+        public void ShowInfo()
+        {
+            Debug.LogError("GPUInstancerPrefab.prefabPrototype isNull:"+(prefabPrototype==null));
+        }
+
+        [ContextMenu("GeneratePrototype")]
+        public void GeneratePrototype()
+        {
+            prefabPrototype=GPUInstancerUtility.GeneratePrefabPrototype(this.gameObject,true);
+             ShowInfo();
+        }
+
         public virtual void AddVariation<T>(string bufferName, T value)
         {
             if (variationDataList == null)

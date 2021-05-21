@@ -65,6 +65,7 @@ namespace GPUInstancer
             if (_manager.selectedPrototypeList == null)
                 _manager.selectedPrototypeList = new List<GPUInstancerPrototype>();
 
+            if(prototypeList==null) return;
             foreach (GPUInstancerPrototype prototype in prototypeList)
             {
                 bool isContains = _manager.selectedPrototypeList.Contains(prototype);
@@ -149,6 +150,15 @@ namespace GPUInstancer
 
         public override void DrawFloatingOriginFields()
         {
+            // if(GPUInstancerEditorConstants==null){
+            //     return;
+            // }
+            // if(GPUInstancerEditorConstants.Contents==null){
+            //     return;
+            // }
+            if(prop_useFloatingOriginHandler==null){
+                return;
+            }
             EditorGUILayout.PropertyField(prop_useFloatingOriginHandler, GPUInstancerEditorConstants.Contents.useFloatingOriginHandler);
             if (_manager is GPUInstancerTerrainManager)
             {
@@ -175,6 +185,7 @@ namespace GPUInstancer
 
         public override void DrawLayerMaskFields()
         {
+            if(prop_disableLightProbes==null)return;
             EditorGUILayout.PropertyField(prop_disableLightProbes, GPUInstancerEditorConstants.Contents.disableLightProbes);
             DrawHelpText(GPUInstancerEditorConstants.HELPTEXT_disableLightProbes);
             EditorGUI.BeginDisabledGroup(Application.isPlaying);

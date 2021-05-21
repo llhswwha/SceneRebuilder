@@ -10,6 +10,8 @@ Assets/Models
 Assets/Art
 SceneRebuilder Scripts backup
 Logs/
+Assets/Models/Instances/Prefabs/
+Assets/ThirdPlugins/GPUInstancer/PrototypeData/Prefab/
 
 # Visual Studio cache directory
 .vs/

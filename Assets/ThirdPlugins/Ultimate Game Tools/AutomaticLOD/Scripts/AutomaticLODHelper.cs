@@ -16,7 +16,7 @@ public static class AutomaticLODHelper
         return 1.0f - Mathf.Pow(fCoverage, 1.0f / COVERAGEPOWER);
     }
 
-    public static void CreateDefaultLODS(int nLevels, AutomaticLOD root, bool bRecurseIntoChildren)
+    public static void CreateDefaultLODS(int nLevels, AutomaticLOD root, bool bRecurseIntoChildren, float[] lodVertexPercents)
     {
         List<AutomaticLOD.LODLevelData> listLODLevels = new List<AutomaticLOD.LODLevelData>();
 
@@ -25,6 +25,11 @@ public static class AutomaticLODHelper
             AutomaticLOD.LODLevelData data = new AutomaticLOD.LODLevelData();
 
             float oneminust = (float)(nLevels - i) / (float)nLevels;
+            if(lodVertexPercents!=null){
+                oneminust=lodVertexPercents[i];
+            }
+
+            // Debug.LogError($"CreateDefaultLODS [{i}] oneminust:{oneminust}");
 
             data.m_fScreenCoverage = AutomaticLODHelper.SliderToScreenCoverage(1.0f - oneminust);
             data.m_fMaxCameraDistance = i == 0 ? 0.0f : i * 100.0f;
@@ -41,7 +46,8 @@ public static class AutomaticLODHelper
 
     public static bool SaveMeshAssetsRecursive(GameObject root, GameObject gameObject, string strFile, bool bRecurseIntoChildren, bool bAssetAlreadyCreated, ref int nProgressElementsCounter)
     {
-        Debug.LogError($"SaveMeshAssetsRecursive root:{root},gameObject:{gameObject},strFile:{strFile},{bRecurseIntoChildren},{bAssetAlreadyCreated},{nProgressElementsCounter}");
+#if UNITY_EDITOR
+        // Debug.LogError($"SaveMeshAssetsRecursive root:{root},gameObject:{gameObject},strFile:{strFile},{bRecurseIntoChildren},{bAssetAlreadyCreated},{nProgressElementsCounter}");
         if (gameObject == null || Simplifier.Cancelled)
         {
             return bAssetAlreadyCreated;
@@ -95,7 +101,7 @@ public static class AutomaticLODHelper
                 bAssetAlreadyCreated = SaveMeshAssetsRecursive(root, gameObject.transform.GetChild(nChild).gameObject, strFile, bRecurseIntoChildren, bAssetAlreadyCreated, ref nProgressElementsCounter);
             }
         }
-
+#endif
         return bAssetAlreadyCreated;
     }
 
@@ -109,10 +115,10 @@ public static class AutomaticLODHelper
             s_strLastMessage = strMessage;
             s_nLastProgress = nPercent;
 
-            if (ProgressBarHelper.DisplayCancelableProgressBar(strTitle, strMessage, fT))
-            {
-                Simplifier.Cancelled = true;
-            }
+            //if (ProgressBarHelper.DisplayCancelableProgressBar(strTitle, strMessage, fT))
+            // {
+            //     Simplifier.Cancelled = true;
+            // }
         }
     }
 
@@ -120,27 +126,51 @@ public static class AutomaticLODHelper
     static string s_strLastTitle = "";
     static string s_strLastMessage = "";
 
-    public static void CreateLOD(GameObject go, Material[] mats)
+    private static void SetDefaultLOD(int nLevels)
     {
-        AutomaticLOD aLOD = go.GetComponent<AutomaticLOD>();
-        if (aLOD == null)
-        {
-            aLOD = go.AddComponent<AutomaticLOD>();
+        if(nLevels==1){
+            AutomaticLOD.DefaultLevelCount=AutomaticLOD.LevelsToGenerate._1;
         }
-        bool bRecurseIntoChildren = true;
-        AutomaticLODHelper.CreateDefaultLODS(4, aLOD, bRecurseIntoChildren);
-        aLOD.ComputeLODData(bRecurseIntoChildren, Progress);
-        aLOD.ComputeAllLODMeshes(bRecurseIntoChildren, Progress);
-        string meshPath = "Assets/Models/Instances/Prefabs/" + go.name+go.GetInstanceID() + ".asset";
-        int nCounter = 0;
-        bool bAssetAlreadyCreated = System.IO.File.Exists(meshPath);
-        Debug.LogError($"bAssetAlreadyCreated��{bAssetAlreadyCreated}");
-        if (bAssetAlreadyCreated == true)
-        {
-            System.IO.File.Delete(meshPath);
-            bAssetAlreadyCreated = System.IO.File.Exists(meshPath);
+        else if(nLevels==2){
+            AutomaticLOD.DefaultLevelCount=AutomaticLOD.LevelsToGenerate._2;
         }
-        AutomaticLODHelper.SaveMeshAssetsRecursive(go, go, meshPath, true, bAssetAlreadyCreated, ref nCounter);
+        else if(nLevels==3){
+            AutomaticLOD.DefaultLevelCount=AutomaticLOD.LevelsToGenerate._3;
+        }
+        else if(nLevels==4){
+            AutomaticLOD.DefaultLevelCount=AutomaticLOD.LevelsToGenerate._4;
+        }
+        else if(nLevels==5){
+            AutomaticLOD.DefaultLevelCount=AutomaticLOD.LevelsToGenerate._5;
+        }
+        else if(nLevels==6){
+            AutomaticLOD.DefaultLevelCount=AutomaticLOD.LevelsToGenerate._6;
+        }
+        else{
+            AutomaticLOD.DefaultLevelCount=AutomaticLOD.LevelsToGenerate._3;
+        }
+    }
+
+    private static void ClearLODAndChildren(GameObject go)
+    {
+        LODGroup lODGroup=go.GetComponent<LODGroup>();
+        if(lODGroup!=null){
+            GameObject.DestroyImmediate(lODGroup);
+        }
+
+        List<Transform> children=new List<Transform>();
+        for(int i=0;i<go.transform.childCount;i++)
+        {
+            var child=go.transform.GetChild(i);
+            children.Add(child);
+        }
+        foreach(var child in children){
+            GameObject.DestroyImmediate(child.gameObject);
+        }
+    }
+
+    private static void SetMaterials(GameObject go, Material[] mats)
+    {
         if(mats!=null&& mats.Length > go.transform.childCount)
         {
             for (int i = 0; i < go.transform.childCount; i++)
@@ -150,10 +180,74 @@ public static class AutomaticLODHelper
 
                 mr.material = mats[i];
             }
-
             MeshRenderer mr0 = go.GetComponent<MeshRenderer>();
             mr0.material = mats[0];
         }
+    }
 
+    public static void CreateLOD(GameObject go, Material[] mats,float[] lvs,float[] lodVertexPercents,bool isDestroy=true)
+    {
+        if(lvs==null)
+        {
+            SetMaterials(go,mats);
+            return;
+        }
+        int nLevels=0;
+        if(lvs!=null)
+        {
+            nLevels=lvs.Length;
+            AutomaticLOD.defaultLODValues=lvs;
+            SetDefaultLOD(nLevels);
+        }
+        //要放到最前面
+
+        AutomaticLOD aLOD = go.GetComponent<AutomaticLOD>();
+        if(aLOD){
+            GameObject.DestroyImmediate(aLOD);
+        }
+        if (aLOD == null)
+        {
+            aLOD = go.AddComponent<AutomaticLOD>();
+        }
+
+        ClearLODAndChildren(go);
+
+        bool bRecurseIntoChildren = true;
+        AutomaticLODHelper.CreateDefaultLODS(nLevels, aLOD, bRecurseIntoChildren,lodVertexPercents);
+        aLOD.ComputeLODData(bRecurseIntoChildren, Progress);
+        aLOD.ComputeAllLODMeshes(bRecurseIntoChildren, Progress);
+        string meshPath = "Assets/Models/Instances/Prefabs/" + go.name+go.GetInstanceID() + ".asset";
+        int nCounter = 0;
+        bool bAssetAlreadyCreated = System.IO.File.Exists(meshPath);
+        //Debug.LogError($"bAssetAlreadyCreated:{bAssetAlreadyCreated}");
+        if (bAssetAlreadyCreated == true)
+        {
+            System.IO.File.Delete(meshPath);
+            bAssetAlreadyCreated = System.IO.File.Exists(meshPath);
+        }
+        AutomaticLODHelper.SaveMeshAssetsRecursive(go, go, meshPath, true, bAssetAlreadyCreated, ref nCounter);
+
+        // if(mats!=null&& mats.Length > go.transform.childCount)
+        // {
+        //     for (int i = 0; i < go.transform.childCount; i++)
+        //     {
+        //         var child = go.transform.GetChild(i);
+        //         MeshRenderer mr = child.GetComponent<MeshRenderer>();
+
+        //         mr.material = mats[i];
+        //     }
+        //     MeshRenderer mr0 = go.GetComponent<MeshRenderer>();
+        //     mr0.material = mats[0];
+        // }
+        SetMaterials(go,mats);
+
+        if(isDestroy){
+            GameObject.DestroyImmediate(aLOD);
+
+            Simplifier simplifier=go.GetComponent<Simplifier>();
+            if(simplifier){
+                GameObject.DestroyImmediate(simplifier);
+            }
+        }
     }
 }

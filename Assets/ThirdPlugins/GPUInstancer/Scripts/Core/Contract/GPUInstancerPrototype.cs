@@ -24,7 +24,7 @@ namespace GPUInstancer
 
         // Culling
         public float minDistance = 0;
-        public float maxDistance = 500;
+        public float maxDistance = 10000;//cww:原来的500太小了
         public bool isFrustumCulling = true;
         public bool isOcclusionCulling = true;
         public float frustumOffset = 0.2f;
@@ -102,12 +102,101 @@ namespace GPUInstancer
         VeryHigh = 3
     }
 
+    [Serializable]
+    public class GPUInstancerPrototypeList//:List<GPUInstancerPrototype>
+    {
+        public List<GPUInstancerPrototype> List=new List<GPUInstancerPrototype>();
+
+        public GPUInstancerPrototype this[int index] 
+        {
+            get{
+                return List[index];
+            }   
+            set
+            {
+                List[index]=value;
+            }
+        }
+
+        public void Add(GPUInstancerPrototype item)
+        {
+            //Debug.LogError("GPUInstancerPrototypeList.Add:"+item);
+            List.Add(item);
+        }
+
+        public void Remove(GPUInstancerPrototype item)
+        {
+            Debug.LogError("GPUInstancerPrototypeList.Add:"+item);
+            List.Remove(item);
+        }
+
+        public int IndexOf(GPUInstancerPrototype item){
+            return List.IndexOf(item);
+        }
+
+        public int Count{
+            get{
+                return List.Count;
+            }
+        }
+
+        public void RemoveAll(Predicate<GPUInstancerPrototype> match)
+        {
+            int count1=this.Count;
+            
+            List.RemoveAll(match);
+            //Debug.LogError("GPUInstancerPrototypeList.RemoveAll:"+count1+">"+this.Count);
+        }
+
+        public void Clear()
+        {
+            Debug.LogError("GPUInstancerPrototypeList.Clear");
+            List.Clear();
+        }
+
+        public bool Contains(GPUInstancerPrototype item){
+            return List.Contains(item);
+        }
+
+        public List<GPUInstancerPrototype> ToList()
+        {
+            return List;
+        }
+
+        public IEnumerator<GPUInstancerPrototype> GetEnumerator(){
+            return List.GetEnumerator();
+        }
+
+        public bool All(Func<GPUInstancerPrototype, bool> predicate)
+        {
+            return List.All(predicate);
+            //public static bool All<TSource>(this IEnumerable<TSource> source, Func<TSource, bool> predicate);
+        }
+
+        public bool Exists(Predicate<GPUInstancerPrototype> match)
+        {
+            return List.Exists(match);
+        }
+    }
+
     public class GPUInstancerPrototypeDict: Dictionary<GPUInstancerPrototype, List<GPUInstancerPrefab>>
     {
         public GPUInstancerPrototypeDict()
         {
         }
         public GPUInstancerPrototypeDict(List<GPUInstancerPrototype> prototypeList)
+        {
+            Debug.LogError($"GPUInstancerPrototypeDict prototypeList: {prototypeList.Count}");
+
+            if (this.Keys.Count != prototypeList.Count)
+            {
+                foreach (GPUInstancerPrototype prototype in prototypeList)
+                    if (!this.ContainsKey(prototype))
+                        this.Add(prototype, new List<GPUInstancerPrefab>());
+            }
+        }
+
+        public GPUInstancerPrototypeDict(GPUInstancerPrototypeList prototypeList)
         {
             Debug.LogError($"GPUInstancerPrototypeDict prototypeList: {prototypeList.Count}");
 
@@ -129,23 +218,27 @@ namespace GPUInstancer
 
         public void RegisterInstanceList(IEnumerable<GPUInstancerPrefab> prefabInstanceList)
         {
-            Debug.LogError("RegisterInstanceList Dict Count: " + this.Count);
+            Debug.LogError("GPUInstancerPrototypeDict.RegisterInstanceList Dict Count: " + this.Count+"|"+this.Keys.Count);
+            foreach(var key in this.Keys)
+            {
+                Debug.LogError("GPUInstancerPrototypeDict.key:"+key);
+            }
 
             foreach (GPUInstancerPrefab prefabInstance in prefabInstanceList)
             {
                 if (prefabInstance == null)
                 {
-                    Debug.LogError("prefabInstance == null");
+                    Debug.LogWarning("prefabInstance == null");
                     continue;
                 }
                 if (prefabInstance.prefabPrototype == null)
                 {
-                    Debug.LogError("prefabInstance.prefabPrototype == null");
+                    Debug.LogWarning("prefabInstance.prefabPrototype == null");
                     continue;
                 }
                 if(this.ContainsKey(prefabInstance.prefabPrototype)==false)
                 {
-                    Debug.LogError("GPUInstancerPrototypeDict.ContainsKey(prefabInstance.prefabPrototype)==false："+ prefabInstance.prefabPrototype);
+                    Debug.LogWarning("GPUInstancerPrototypeDict.ContainsKey(prefabInstance.prefabPrototype)==false："+ prefabInstance.prefabPrototype);
                 }
                 else
                 {
@@ -156,6 +249,18 @@ namespace GPUInstancer
         }
 
         public void AddPrototypeList(List<GPUInstancerPrototype> prototypeList)
+        {
+            if (this.Count != prototypeList.Count)
+            {
+                foreach (GPUInstancerPrototype p in prototypeList)
+                {
+                    if (!this.ContainsKey(p))
+                        this.Add(p, new List<GPUInstancerPrefab>());
+                }
+            }
+        }
+
+        public void AddPrototypeList(GPUInstancerPrototypeList prototypeList)
         {
             if (this.Count != prototypeList.Count)
             {
@@ -226,7 +331,7 @@ namespace GPUInstancer
             runtimeData.UpdateTransform(prefabInstanceList);
         }
 
-        public void ClearInstancingData(bool enabled, int layerMask, UnityEditor.PlayModeStateChange playModeState)
+        public void ClearInstancingData(bool enabled, int layerMask, bool isSetRenderersEnabled)
         {
             foreach (GPUInstancerPrefabPrototype p in this.Keys)
             {
@@ -236,12 +341,8 @@ namespace GPUInstancer
                 {
                     if (!prefabInstance)
                         continue;
-#if UNITY_EDITOR && UNITY_2017_2_OR_NEWER
-                    if (playModeState != UnityEditor.PlayModeStateChange.EnteredEditMode && playModeState != UnityEditor.PlayModeStateChange.ExitingPlayMode)
-#endif
-                    //SetRenderersEnabled(prefabInstance, true);
-
-                    prefabInstance.SetRenderersEnabled(enabled, layerMask);
+                    if (isSetRenderersEnabled)
+                        prefabInstance.SetRenderersEnabled(enabled, layerMask);
                 }
             }
         }

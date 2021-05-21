@@ -872,7 +872,7 @@ namespace GPUInstancer
             _triggerEvent = true;
         }
 
-        private static IEnumerator SetInstanceDataForDetailCells(GPUInstancerSpatialPartitioningData<GPUInstancerCell> spData, List<GPUInstancerPrototype> prototypeList,
+        private static IEnumerator SetInstanceDataForDetailCells(GPUInstancerSpatialPartitioningData<GPUInstancerCell> spData, GPUInstancerPrototypeList prototypeList,
             int detailMapSize, int heightMapSize, int detailResolution, int heightmapResolution, Vector3 terrainSize, ComputeBuffer counterBuffer, int[] counterData,
             GPUInstancerTerrainSettings terrainSettings, Action callback)
         {

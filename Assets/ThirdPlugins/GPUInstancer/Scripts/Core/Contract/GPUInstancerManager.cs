@@ -11,7 +11,24 @@ namespace GPUInstancer
 {
     public abstract class GPUInstancerManager : MonoBehaviour
     {
-        public List<GPUInstancerPrototype> prototypeList;
+        //public List<GPUInstancerPrototype> prototypeList;
+
+        // public GPUInstancerPrototypeList _prototypeList;
+
+        // // private List<GPUInstancerPrototype> _prototypeList;
+
+        // public GPUInstancerPrototypeList prototypeList
+        // {
+        //     get{
+        //         return _prototypeList;
+        //     }
+        //     set{
+        //         _prototypeList=value;
+        //         Debug.LogError("GPUInstancerManager.prototypeList set :"+value+"|"+value.Count);
+        //     }
+        // }
+
+        public GPUInstancerPrototypeList prototypeList;
 
         public bool autoSelectCamera = true;
         public GPUInstancerCameraData cameraData = new GPUInstancerCameraData(null);
@@ -197,6 +214,8 @@ namespace GPUInstancer
 
         public virtual void OnEnable()
         {
+            //Debug.LogError("OnEnable prototypeList:"+(prototypeList == null));
+
 #if UNITY_EDITOR
             if (gpuiSimulator == null)
                 gpuiSimulator = new GPUInstancerEditorSimulator(this);
@@ -345,7 +364,7 @@ namespace GPUInstancer
             ClearInstancingData();
 
             if (forceNew || prototypeList == null)
-                prototypeList = new List<GPUInstancerPrototype>();
+                prototypeList = new GPUInstancerPrototypeList();
             else
                 prototypeList.RemoveAll(p => p == null);
 
@@ -414,6 +433,8 @@ namespace GPUInstancer
 #endif
         public virtual void InitializeRuntimeDataAndBuffers(bool forceNew = true)
         {
+            //Debug.LogError("InitializeRuntimeDataAndBuffers1 prototypeList:"+(prototypeList == null));
+            ////Debug.LogError("InitializeRuntimeDataAndBuffers1 prototypeList:"+prototypeList+"|null:"+prototypeList == null);
             GPUInstancerUtility.SetPlatformDependentVariables();
             if (forceNew || !isInitialized)
             {
@@ -433,8 +454,10 @@ namespace GPUInstancer
 
                 runtimeDataDictList.InitData();
 
+                ////Debug.LogError("InitializeRuntimeDataAndBuffers2 prototypeList:"+prototypeList+"|null:"+prototypeList == null);
+                //Debug.LogError("InitializeRuntimeDataAndBuffers2 prototypeList:"+(prototypeList == null));
                 if (prototypeList == null)
-                    prototypeList = new List<GPUInstancerPrototype>();
+                    prototypeList = new GPUInstancerPrototypeList();
             }
         }
 

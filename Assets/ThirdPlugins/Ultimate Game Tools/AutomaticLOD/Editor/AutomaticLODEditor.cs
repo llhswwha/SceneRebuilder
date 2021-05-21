@@ -672,7 +672,7 @@ public class AutomaticLODEditor : Editor
 
                 try
                 {
-                    AutomaticLODHelper.CreateDefaultLODS(PropertyLevelsToGenerate.enumValueIndex + 1, automaticLOD, PropertyGenerateIncludeChildren.boolValue);
+                    AutomaticLODHelper.CreateDefaultLODS(PropertyLevelsToGenerate.enumValueIndex + 1, automaticLOD, PropertyGenerateIncludeChildren.boolValue,null);
 
                     automaticLOD.ComputeLODData(true, AutomaticLODHelper.Progress);
 

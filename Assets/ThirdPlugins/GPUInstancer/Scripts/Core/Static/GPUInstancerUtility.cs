@@ -34,6 +34,7 @@ namespace GPUInstancer
 
         public static void InitializeGPUBuffer<T>(T runtimeData) where T : GPUInstancerRuntimeData
         {
+            Debug.LogError("InitializeGPUBuffer:"+runtimeData+"|"+runtimeData.instanceLODs.Count);
             if (runtimeData == null || runtimeData.bufferSize == 0)
                 return;
 
@@ -75,31 +76,41 @@ namespace GPUInstancer
                 // Initialize indirect renderer buffer
 
                 int totalSubMeshCount = 0;
-                for (int i = 0; i < runtimeData.instanceLODs.Count; i++)
+                var lods=runtimeData.instanceLODs;
+                string lodLogs="";
+                for (int i = 0; i < lods.Count; i++)
                 {
-                    for (int j = 0; j < runtimeData.instanceLODs[i].renderers.Count; j++)
+                    var renders=lods[i].renderers;
+                    for (int j = 0; j < renders.Count; j++)
                     {
-                        totalSubMeshCount += runtimeData.instanceLODs[i].renderers[j].mesh.subMeshCount;
+                        var render=renders[j];
+                        lodLogs+=render.mesh+",";
+                        totalSubMeshCount += render.mesh.subMeshCount;
                     }
+                    lodLogs+="; ";
                 }
+
+                Debug.LogError($"totalSubMeshCount:{totalSubMeshCount},lodLogs:{lodLogs}");
 
                 // Initialize indirect renderer buffer. First LOD's each renderer's all submeshes will be followed by second LOD's each renderer's submeshes and so on.
                 runtimeData.args = new uint[5 * totalSubMeshCount];
                 int argsLastIndex = 0;
 
                 // Setup LOD Data:
-                for (int lod = 0; lod < runtimeData.instanceLODs.Count; lod++)
+                for (int lod = 0; lod < lods.Count; lod++)
                 {
+                    var renders=lods[lod].renderers;
                     // setup LOD renderers:
-                    for (int r = 0; r < runtimeData.instanceLODs[lod].renderers.Count; r++)
+                    for (int r = 0; r < renders.Count; r++)
                     {
-                        runtimeData.instanceLODs[lod].renderers[r].argsBufferOffset = argsLastIndex;
+                        var render=renders[r];
+                        render.argsBufferOffset = argsLastIndex;
                         // Setup the indirect renderer buffer:
-                        for (int j = 0; j < runtimeData.instanceLODs[lod].renderers[r].mesh.subMeshCount; j++)
+                        for (int j = 0; j < render.mesh.subMeshCount; j++)
                         {
-                            runtimeData.args[argsLastIndex++] = runtimeData.instanceLODs[lod].renderers[r].mesh.GetIndexCount(j); // index count per instance
+                            runtimeData.args[argsLastIndex++] = render.mesh.GetIndexCount(j); // index count per instance
                             runtimeData.args[argsLastIndex++] = 0;// (uint)runtimeData.bufferSize;
-                            runtimeData.args[argsLastIndex++] = runtimeData.instanceLODs[lod].renderers[r].mesh.GetIndexStart(j); // start index location
+                            runtimeData.args[argsLastIndex++] = render.mesh.GetIndexStart(j); // start index location
                             runtimeData.args[argsLastIndex++] = 0; // base vertex location
                             runtimeData.args[argsLastIndex++] = 0; // start instance location
                         }
@@ -134,6 +145,7 @@ namespace GPUInstancer
         #region Set Append Buffers Platform Dependent
         public static void SetAppendBuffers<T>(T runtimeData) where T : GPUInstancerRuntimeData
         {
+             Debug.LogError($"SetAppendBuffers matrixHandlingType:{matrixHandlingType}");
             switch (matrixHandlingType)
             {
                 case GPUIMatrixHandlingType.MatrixAppend:
@@ -571,10 +583,14 @@ namespace GPUInstancer
                 Mathf.CeilToInt(runtimeData.instanceCount / GPUInstancerConstants.COMPUTE_SHADER_THREAD_COUNT), 1, 1);
         }
 
+        public static bool isFirst=true;
+
         public static void GPUIDrawMeshInstancedIndirect<T>(List<T> runtimeDataList, Bounds instancingBounds, GPUInstancerCameraData cameraData, int layerMask = ~0,
             bool lightProbeDisabled = false)
             where T : GPUInstancerRuntimeData
         {
+            
+            //return;
             if (runtimeDataList == null)
                 return;
 
@@ -592,6 +608,10 @@ namespace GPUInstancer
                 int submeshIndex = 0;
                 for (int lod = 0; lod < runtimeData.instanceLODs.Count; lod++)
                 {
+                    // if(lod==0)continue;
+                    // if(lod==1)continue;
+                    // if(lod==2)continue;
+                    // if(lod==3)continue;
                     rdLOD = runtimeData.instanceLODs[lod];
                     bool isLODShadowCasting = runtimeData.IsLODShadowCasting(lod);
                     for (int r = 0; r < rdLOD.renderers.Count; r++)
@@ -603,6 +623,7 @@ namespace GPUInstancer
                         for (int m = 0; m < rdRenderer.materials.Count; m++)
                         {
                             rdMaterial = rdRenderer.materials[m];
+                            if(isFirst)Debug.LogError($"DrawMeshInstancedIndirect lod:{lod},mesh:{rdRenderer.mesh},material:{rdMaterial},offset:{offset}");
 
                             submeshIndex = Math.Min(m, rdRenderer.mesh.subMeshCount - 1);
                             offset = (rdRenderer.argsBufferOffset + 5 * submeshIndex) * GPUInstancerConstants.STRIDE_SIZE_INT;
@@ -638,6 +659,7 @@ namespace GPUInstancer
                     }
                 }
             }
+            isFirst=false;
         }
 
         public static void DispatchBufferToTexture<T>(List<T> runtimeDataList, ComputeShader bufferToTextureComputeShader, int bufferToTextureComputeKernelID) where T : GPUInstancerRuntimeData
@@ -794,7 +816,7 @@ namespace GPUInstancer
         /// </summary>
         /// <param name="detailPrototypes">Unity Terrain Detail prototypes</param>
         /// <returns></returns>
-        public static void SetDetailInstancePrototypes(GameObject gameObject, List<GPUInstancerPrototype> detailInstancePrototypes, DetailPrototype[] detailPrototypes,
+        public static void SetDetailInstancePrototypes(GameObject gameObject, GPUInstancerPrototypeList detailInstancePrototypes, DetailPrototype[] detailPrototypes,
             int quadCount, GPUInstancerTerrainSettings terrainSettings, bool forceNew)
         {
             if (forceNew)
@@ -807,10 +829,10 @@ namespace GPUInstancer
 
                 AddDetailInstancePrototypeFromTerrainPrototype(gameObject, detailInstancePrototypes, detailPrototypes[i], i, quadCount, terrainSettings);
             }
-            RemoveUnusedAssets(terrainSettings, detailInstancePrototypes, typeof(GPUInstancerDetailPrototype));
+            RemoveUnusedAssets(terrainSettings, detailInstancePrototypes.List, typeof(GPUInstancerDetailPrototype));
         }
 
-        public static void AddDetailInstancePrototypeFromTerrainPrototype(GameObject gameObject, List<GPUInstancerPrototype> detailInstancePrototypes, DetailPrototype terrainDetailPrototype,
+        public static void AddDetailInstancePrototypeFromTerrainPrototype(GameObject gameObject, GPUInstancerPrototypeList detailInstancePrototypes, DetailPrototype terrainDetailPrototype,
             int detailIndex, int quadCount, GPUInstancerTerrainSettings terrainSettings, GameObject replacementPrefab = null)
         {
 #if UNITY_EDITOR
@@ -970,7 +992,7 @@ namespace GPUInstancer
 #endif
         }
 
-        public static void AddDetailInstanceRuntimeDataToList(List<GPUInstancerRuntimeData> runtimeDataList, List<GPUInstancerPrototype> detailPrototypes,
+        public static void AddDetailInstanceRuntimeDataToList(List<GPUInstancerRuntimeData> runtimeDataList, GPUInstancerPrototypeList detailPrototypes,
             GPUInstancerTerrainSettings terrainSettings, int detailLayer)
         {
             for (int i = 0; i < detailPrototypes.Count; i++)
@@ -1228,7 +1250,7 @@ namespace GPUInstancer
 
         #region Create Prefab Prototypes
 
-        public static void SetPrefabInstancePrototypes(GameObject gameObject, List<GPUInstancerPrototype> prototypeList, List<GameObject> prefabList, bool forceNew)
+        public static void SetPrefabInstancePrototypes(GameObject gameObject, GPUInstancerPrototypeList prototypeList, List<GameObject> prefabList, bool forceNew)
         {
             if (prefabList == null)
                 return;
@@ -1384,13 +1406,14 @@ namespace GPUInstancer
             }
 #endif
 #endif
+            //Debug.LogError("GeneratePrefabPrototype:"+prototype);
             return prototype;
         }
 
         #endregion
 
         #region Create Tree Prototypes
-        public static void SetTreeInstancePrototypes(GameObject gameObject, List<GPUInstancerPrototype> treeIntancePrototypes, TreePrototype[] treePrototypes,
+        public static void SetTreeInstancePrototypes(GameObject gameObject, GPUInstancerPrototypeList treeIntancePrototypes, TreePrototype[] treePrototypes,
             GPUInstancerTerrainSettings terrainSettings, bool forceNew)
         {
             if (forceNew)
@@ -1407,10 +1430,10 @@ namespace GPUInstancer
                 EditorUtility.SetDirty(gameObject);
 #endif
             }
-            RemoveUnusedAssets(terrainSettings, treeIntancePrototypes, typeof(GPUInstancerTreePrototype));
+            RemoveUnusedAssets(terrainSettings, treeIntancePrototypes.List, typeof(GPUInstancerTreePrototype));
         }
 
-        public static void AddTreeInstancePrototypeFromTerrainPrototype(GameObject gameObject, List<GPUInstancerPrototype> treeInstancePrototypes, TreePrototype terrainTreePrototype,
+        public static void AddTreeInstancePrototypeFromTerrainPrototype(GameObject gameObject, GPUInstancerPrototypeList treeInstancePrototypes, TreePrototype terrainTreePrototype,
             int treeIndex, GPUInstancerTerrainSettings terrainSettings)
         {
 #if UNITY_EDITOR
@@ -1448,7 +1471,7 @@ namespace GPUInstancer
             GenerateInstancedShadersForGameObject(treePrototype);
         }
 
-        public static void AddTreeInstanceRuntimeDataToList(List<GPUInstancerRuntimeData> runtimeDataList, List<GPUInstancerPrototype> treePrototypes,
+        public static void AddTreeInstanceRuntimeDataToList(List<GPUInstancerRuntimeData> runtimeDataList, GPUInstancerPrototypeList treePrototypes,
             GPUInstancerTerrainSettings terrainSettings)
         {
             for (int i = 0; i < treePrototypes.Count; i++)

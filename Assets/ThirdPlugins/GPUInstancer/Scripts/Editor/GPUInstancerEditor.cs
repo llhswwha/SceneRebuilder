@@ -41,7 +41,7 @@ namespace GPUInstancer
 
         protected GUIContent[] prototypeContents = null;
 
-        protected List<GPUInstancerPrototype> prototypeList;
+        protected GPUInstancerPrototypeList prototypeList;
         protected Dictionary<GPUInstancerPrototype, bool> prototypeSelection;
 
         protected string wikiHash;
@@ -259,7 +259,7 @@ namespace GPUInstancer
 
         }
 
-        public void DrawCullingSettings(List<GPUInstancerPrototype> protoypeList)
+        public void DrawCullingSettings(GPUInstancerPrototypeList protoypeList)
         {
             EditorGUILayout.PropertyField(prop_isManagerFrustumCulling, GPUInstancerEditorConstants.Contents.useManagerFrustumCulling);
             DrawHelpText(GPUInstancerEditorConstants.HELPTEXT_managerFrustumCulling);

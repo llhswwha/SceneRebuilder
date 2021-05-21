@@ -1112,11 +1112,11 @@ public class AutomaticLOD : MonoBehaviour
                 }
             }
 
-            Debug.LogError("automaticLOD.m_listLODLevels£º" + automaticLOD.m_listLODLevels.Count);
+            Debug.LogError("automaticLOD.m_listLODLevelsï¿½ï¿½" + automaticLOD.m_listLODLevels.Count);
             for (int i = 0; i < automaticLOD.m_listLODLevels.Count; i++)
             {
                 var data = automaticLOD.m_listLODLevels[i];
-                //Debug.LogError("data£º" + data);
+                //Debug.LogError("dataï¿½ï¿½" + data);
                 data.m_mesh = null;
             }
 
@@ -1361,6 +1361,8 @@ public class AutomaticLOD : MonoBehaviour
                     CheckForAdditionalLODSetup(root, automaticLOD, automaticLOD.m_listLODLevels[nLevel], nLevel);
 
                     int nVertexCount = Mathf.RoundToInt(fAmount * automaticLOD.m_meshSimplifier.GetOriginalMeshUniqueVertexCount());
+
+                    Debug.LogError($"ComputeLODMeshRecursive fAmount:{fAmount},nVertexCount:{nVertexCount},OriginalMeshUniqueVertexCount:{automaticLOD.m_meshSimplifier.GetOriginalMeshUniqueVertexCount()}");
 
                     if (nVertexCount < automaticLOD.m_meshSimplifier.GetOriginalMeshUniqueVertexCount())
                     {
@@ -1939,6 +1941,8 @@ public class AutomaticLOD : MonoBehaviour
         }
     }
 
+    public static float[] defaultLODValues=new float[] { 0.6f, 0.2f, 0.07f, 0.01f };
+
     public void SetupLODGroup()
     {
         Debug.LogError("SetupLODGroup");
@@ -1957,22 +1961,27 @@ public class AutomaticLOD : MonoBehaviour
                     rootAutomaticLOD.m_LODGroup = rootAutomaticLOD.gameObject.AddComponent<LODGroup>();
                 }
             }
+            string lodStr="";
+            foreach(var v in defaultLODValues)
+            {
+                lodStr+=v+"; ";
+            }
 
             //lods = rootAutomaticLOD.m_LODGroup.GetLODs();
-            lods = LODGroupInfo.CreateLODs(new float[] { 0.6f, 0.2f, 0.07f, 0.01f });
+            lods = LODGroupInfo.CreateLODs(defaultLODValues);
 
-
+            Debug.LogError("lods:" + lods.Length+"|"+lodStr);
 
             List<List<Renderer>> renderers = new List<List<Renderer>>();
 
             int levels = rootAutomaticLOD.GetNumberOfLevelsToGenerate();
-            Debug.LogError("levels£º" + levels);
+            Debug.LogError("levels:" + levels+"|"+DefaultLevelCount);
             for (int i = 0; i < levels; ++i)
             {
                 renderers.Add(new List<Renderer>());
             }
 
-            Debug.LogError("renderers£º" + renderers.Count);
+            Debug.LogError("renderers:" + renderers.Count);
 
             SetupLODGroupRecursive(rootAutomaticLOD, rootAutomaticLOD.gameObject, ref renderers);
 

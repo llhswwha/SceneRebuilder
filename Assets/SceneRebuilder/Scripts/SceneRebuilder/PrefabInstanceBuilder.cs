@@ -7,6 +7,7 @@ using MeshJobs;
 using UnityEditor;
 #endif
 using UnityEngine;
+using GPUInstancer;
 
 public class PrefabInstanceBuilder : MonoBehaviour
 {
@@ -37,6 +38,11 @@ public class PrefabInstanceBuilder : MonoBehaviour
     public List<GameObject> PrefabList=new List<GameObject>();
 
     public List<PrefabInfo> PrefabInfoList=new List<PrefabInfo>();
+
+    public List<PrefabInfo> PrefabInfoList1=new List<PrefabInfo>();
+    public List<PrefabInfo> PrefabInfoList2=new List<PrefabInfo>();
+    public List<PrefabInfo> PrefabInfoList3=new List<PrefabInfo>();
+     public List<PrefabInfo> PrefabInfoList4=new List<PrefabInfo>();
 
     public GameObject CurrentPrefab=null;
 
@@ -298,11 +304,13 @@ UnpackPrefab();
 
     private void UpackPrefab_One(GameObject go)
     {
+#if UNITY_EDITOR
         GameObject root = PrefabUtility.GetOutermostPrefabInstanceRoot(go);
         if (root != null)
         {
             PrefabUtility.UnpackPrefabInstance(root, PrefabUnpackMode.Completely, InteractionMode.UserAction);
         }
+#endif
     }
 
     [ContextMenu("UnpackPrefab")]
@@ -646,8 +654,42 @@ UnpackPrefab();
         CleanNodes();
         Debug.Log("AcRTAlignJobsEx");
         var meshFilters = GetMeshFilters();
-         PrefabInfoList.Clear();
-        PrefabInfoList = MeshJobHelper.NewAcRTAlignJobsEx(meshFilters, JobSize);
+        SetPrefabInfoList(MeshJobHelper.NewAcRTAlignJobsEx(meshFilters, JobSize));
+    }
+
+     [ContextMenu("SortPrefabInfoList")]
+
+    public void SortPrefabInfoList()
+    {
+        SetPrefabInfoList(PrefabInfoList);
+    }
+
+    public void SetPrefabInfoList(List<PrefabInfo> list){
+        //PrefabInfoList.Clear();
+        PrefabInfoList = list;
+
+        PrefabInfoList1.Clear();
+        PrefabInfoList2.Clear();
+        PrefabInfoList3.Clear();
+        PrefabInfoList4.Clear();
+        for(int i=0;i<list.Count;i++)
+        {
+            if(list[i].InstanceCount==0)
+            {
+                PrefabInfoList1.Add(list[i]);
+            }
+            else if(list[i].InstanceCount<5)
+            {
+                PrefabInfoList2.Add(list[i]);
+            }
+            // else if(list[i].InstanceCount<10)
+            // {
+            //     PrefabInfoList3.Add(list[i]);
+            // }
+            else{
+                PrefabInfoList3.Add(list[i]);
+            }
+        }
     }
 
     public bool IsTryAngles=true;
@@ -834,17 +876,25 @@ break;
     void Progress(string strTitle, string strMessage, float fT)
     {
         int nPercent = Mathf.RoundToInt(fT * 100.0f);
-
+#if UNITY_EDITOR
         if (EditorUtility.DisplayCancelableProgressBar(strTitle, strMessage, fT))
         {
             UltimateGameTools.MeshSimplifier.Simplifier.Cancelled = true;
         }
+#endif
     }
 
     public Material[] LODMaterials ;
 
-    private void CreateInstancesInner(bool userLOD,int maxInstanceCount)
+    private void CreateInstancesInner(bool userLOD,bool userGPUPrefab,int maxInstanceCount,float[] lvs,float[] lodVertexPercents)
     {
+        GPUInstancerPrefabManager prefabManager = GameObject.FindObjectOfType<GPUInstancerPrefabManager>();
+        //prefabManager.InitPrefabs(PrefabList);
+        if(prefabManager)
+            prefabManager.ClearPrefabList();
+
+        Debug.LogError($"CreateInstancesInner userLOD:{userLOD},userGPUPrefab:{userGPUPrefab}");
+
         if (maxInstanceCount == 0)
         {
             maxInstanceCount = int.MaxValue;
@@ -852,24 +902,57 @@ break;
 #if UNITY_EDITOR
         DateTime start = DateTime.Now;
         int totalCount = 0;
-        for (int i = 0; i < PrefabInfoList.Count; i++)
+
+        //List<PrefabInfo> lodPrefabInfoList
+        var list=PrefabInfoList3;
+
+        for (int i = 0; i < list.Count; i++)
         {
-            var info = PrefabInfoList[i];
+            var info = list[i];
             totalCount += info.InstanceCount;
         }
 
         int currentCount = 0;
         bool isBreak = false;
-        for (int i = 0; i < PrefabInfoList.Count; i++)
+        for (int i = 0; i < list.Count; i++)
         {
-            var info = PrefabInfoList[i];
+            var info = list[i];
             var insList = info.GetInstances();
 
             GameObject go = info.Prefab;
             string path = "Assets/Models/Instances/Prefabs/" + go.name + go.GetInstanceID() + ".prefab";
 
             if(userLOD)
-                AutomaticLODHelper.CreateLOD(go, LODMaterials);
+            {
+                //new float[] { 0.6f, 0.2f, 0.07f, 0.01f }
+
+                if(info.VertexCount<=150)
+                {
+                    lvs=null;
+                    lodVertexPercents=null;
+                }
+                else if(info.VertexCount<=300)
+                {
+                    lvs=new float[] { 0.4f, 0.02f };
+                    lodVertexPercents=new float[] { 1f,0.7f };
+                }
+                else{
+                    // lvs=new float[] { 0.6f, 0.2f, 0.01f };
+                    // lodVertexPercents=new float[] { 1f,0.7f,0.2f };
+                }
+
+                // lvs=null;
+                // lodVertexPercents=null;
+
+                AutomaticLODHelper.CreateLOD(go, LODMaterials, lvs,lodVertexPercents);
+            }
+
+            if(userGPUPrefab && prefabManager){
+                GPUInstancerPrefab gpuPrefab=go.AddComponent<GPUInstancerPrefab>();
+                prefabManager.AddPrefab(go);
+
+                Debug.LogError("CreateInstancesInner.gpuPrefab:"+gpuPrefab.prefabPrototype);
+            }
 
             GameObject prefabAsset = PrefabUtility.SaveAsPrefabAssetAndConnect(go, path, InteractionMode.UserAction);
 
@@ -878,12 +961,14 @@ break;
             //var prefab2 = AssetDatabase.LoadAssetAtPath(path, typeof(GameObject));
             //Debug.Log("prefab2:" + prefab2);
 
-            Debug.LogError($"insList:{insList.Count}");
+            //Debug.LogError($"insList:{insList.Count}");
+
             List<GameObject> tmp = new List<GameObject>();
             for (int j = 0; j < insList.Count; j++)
             {
                 tmp.Add(insList[j]);
             }
+
             //Debug.Log("insList:" + insList.Count);
             for (int j = 0; j < tmp.Count&& j< maxInstanceCount; j++)
             {
@@ -927,7 +1012,7 @@ break;
 #endif
     }
 
-    private void CreatePrefabInner(bool userLOD, int maxInstanceCount)
+    private void CreatePrefabInner(bool userLOD, int maxInstanceCount,float[] lvs,float[] lodVertexPercents)
     {
         if (maxInstanceCount == 0)
         {
@@ -943,8 +1028,9 @@ break;
             GameObject go = info.Prefab;
             string path = "Assets/Models/Instances/Prefabs/" + go.name+go.GetInstanceID() + ".prefab";
 
+           
             if (userLOD)
-                AutomaticLODHelper.CreateLOD(go, LODMaterials);
+                AutomaticLODHelper.CreateLOD(go, LODMaterials, lvs,lodVertexPercents);
 
             GameObject prefabAsset = PrefabUtility.SaveAsPrefabAssetAndConnect(go, path, InteractionMode.UserAction);
 
@@ -964,27 +1050,58 @@ break;
 #endif
     }
 
+    public float[] LODLevels=new float[] { 0.6f, 0.2f, 0.07f, 0.01f };
+
     [ContextMenu("CreatePrefabs")]
     private void CreatePrefabs()
     {
-        CreatePrefabInner(true, 0);
+        CreatePrefabInner(true, 0,LODLevels,null);
     }
 
     [ContextMenu("CreateInstances")]
     private void CreateInstances()
     {
-        CreateInstancesInner(false,0);
+        CreateInstancesInner(false,true,0,LODLevels,null);
     }
 
     [ContextMenu("CreateInstances(LOD)")]
     private void CreateInstances_LOD()
     {
-        CreateInstancesInner(true,0);
+        CreateInstancesInner(true,true,0,LODLevels,null);
     }
 
-    [ContextMenu("CreateInstances(LOD_10)")]
-    private void CreateInstances_LOD_10()
+    [ContextMenu("CreateInstances(LOD5)")]
+    private void CreateInstances_LOD5()
     {
-        CreateInstancesInner(true, 10);
+        CreateInstancesInner(true,true,0,new float[] { 0.7f, 0.4f, 0.2f, 0.07f, 0.01f },null);
     }
+
+    [ContextMenu("CreateInstances(LOD4)")]
+    private void CreateInstances_LOD4()
+    {
+        CreateInstancesInner(true,true,0,new float[] { 0.6f, 0.2f, 0.07f, 0.01f },new float[] { 1f,0.6f,0.3f,0.1f });
+    }
+
+    [ContextMenu("CreateInstances(LOD3)")]
+    private void CreateInstances_LOD3()
+    {
+        CreateInstancesInner(true,true,0,new float[] { 0.6f, 0.2f, 0.01f },new float[] { 1f,0.7f,0.2f });
+    }
+
+    [ContextMenu("ShowPrefabInfo")]
+    private void ShowPrefabInfo()
+    {
+        PrefabInfoList.Sort((a,b)=>{
+            return a.VertexCount.CompareTo(b.VertexCount);
+        });
+        foreach(var info in PrefabInfoList){
+            Debug.LogError("VertexCount:"+info.VertexCount);
+        }
+    }
+
+    // [ContextMenu("CreateInstances(LOD_10)")]
+    // private void CreateInstances_LOD_10()
+    // {
+    //     CreateInstancesInner(true, 10);
+    // }
 }
