@@ -15,41 +15,49 @@ public class GPUInstanceTest : MonoBehaviour
     public void InitPrefabs()
     {
         prefabManager = GameObject.FindObjectOfType<GPUInstancerPrefabManager>();
+
         prefabManager.InitPrefabs(PrefabList);
 
-        // //generator = GameObject.FindObjectOfType<AstroidGenerator>();
-        // //generator.asteroidObjects.Clear();
-        // prefabManager.ClearPrefabList();
-        // for (int i = 0; i < PrefabList.Count; i++)
-        // {
-        //     float progress = (float)i / PrefabList.Count;
-        //     float percents = progress * 100;
+        //generator = GameObject.FindObjectOfType<AstroidGenerator>();
+        //generator.asteroidObjects.Clear();
 
-        //     if (ProgressBarHelper.DisplayCancelableProgressBar("CreatePrefabs", $"{i}/{PrefabList.Count} {percents}% of 100%", progress))
-        //     {
-        //         break;
-        //     }
-        //     GameObject item = PrefabList[i];
-        //     GPUInstancerPrefab prefab = item.GetComponent<GPUInstancerPrefab>();
-        //     if (prefab == null)
-        //     {
-        //         prefab=GPUInstancerUtility.AddComponentToPrefab<GPUInstancerPrefab>(item);
-        //     }
+        //prefabManager.ClearPrefabList();
+        //for (int i = 0; i < PrefabList.Count; i++)
+        //{
+        //    float progress = (float)i / PrefabList.Count;
+        //    float percents = progress * 100;
 
-        //     //prefabManager.prototypeList.Add(prefab);
+        //    if (ProgressBarHelper.DisplayCancelableProgressBar("CreatePrefabs", $"{i}/{PrefabList.Count} {percents}% of 100%", progress))
+        //    {
+        //        break;
+        //    }
+        //    GameObject item = PrefabList[i];
+        //    GPUInstancerPrefab prefab = item.GetComponent<GPUInstancerPrefab>();
+        //    if (prefab == null)
+        //    {
+        //        prefab = GPUInstancerUtility.AddComponentToPrefab<GPUInstancerPrefab>(item);
+        //    }
 
-        //     prefabManager.DefineGameObjectAsPrefabPrototype(item);
+        //    //prefabManager.prototypeList.Add(prefab);
 
-        //     // prefabManager.prefabList.Add(item);
-        //     // var prototype=GPUInstancerUtility.GeneratePrefabPrototype(item, false);
-        //     // Debug.Log($"1 item:{item},prototype:{prototype},count:{prefabManager.prototypeList.Count}");
-        //     // prefabManager.prototypeList.Add(prototype);
-        //     // Debug.Log($"2 item:{item},prototype:{prototype},count:{prefabManager.prototypeList.Count}");
+        //    //prefabManager.AddPrefabGO(item);
 
-        //     //generator.asteroidObjects.Add(prefab);
-        // }
+        //    if (!prefabManager.prefabList.Contains(item))
+        //    {
+        //        prefabManager.prefabList.Add(item);
+        //        prefabManager.GeneratePrototypes();
+        //    }
 
-        // ProgressBarHelper.ClearProgressBar();
+        //    // prefabManager.prefabList.Add(item);
+        //    // var prototype=GPUInstancerUtility.GeneratePrefabPrototype(item, false);
+        //    // Debug.Log($"1 item:{item},prototype:{prototype},count:{prefabManager.prototypeList.Count}");
+        //    // prefabManager.prototypeList.Add(prototype);
+        //    // Debug.Log($"2 item:{item},prototype:{prototype},count:{prefabManager.prototypeList.Count}");
+
+        //    //generator.asteroidObjects.Add(prefab);
+        //}
+
+        //ProgressBarHelper.ClearProgressBar();
     }
 
     [ContextMenu("GetPrefabsInScene")]
@@ -85,5 +93,17 @@ public class GPUInstanceTest : MonoBehaviour
         prefabManager = GameObject.FindObjectOfType<GPUInstancerPrefabManager>();
 
         Debug.Log($"count:{prefabManager.prototypeList.Count}");
+    }
+
+    [ContextMenu("DisableManager")]
+    public void DisableManager()
+    {
+        this.gameObject.SetActive(false);
+    }
+
+    [ContextMenu("EnableManager")]
+    public void EnableManager()
+    {
+        this.gameObject.SetActive(true);
     }
 }

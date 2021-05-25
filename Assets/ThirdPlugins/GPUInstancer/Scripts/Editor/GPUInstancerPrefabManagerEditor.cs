@@ -508,13 +508,17 @@ namespace GPUInstancer
                 Color defaultColor = GPUInstancerEditorConstants.Styles.label.normal.textColor;
                 foreach (RegisteredPrefabsData rpd in _prefabManager.registeredPrefabs)
                 {
-                    int count = rpd.prefabPrototype.isTransformsSerialized ? rpd.prefabPrototype.serializedTransformDataCount : rpd.registeredPrefabs.Count;
+                    var prototype = rpd.prefabPrototype;
+                    int count = prototype.isTransformsSerialized ? prototype.serializedTransformDataCount : rpd.registeredPrefabs.Count;
                     if (count > 0 && count < 10)
                         GPUInstancerEditorConstants.Styles.label.normal.textColor = Color.red;
                     else
                         GPUInstancerEditorConstants.Styles.label.normal.textColor = defaultColor;
-                    prototypeSelection[rpd.prefabPrototype] = EditorGUILayout.ToggleLeft(rpd.prefabPrototype.ToString() + " Instance Count: " +
-                        count, prototypeSelection[rpd.prefabPrototype], GPUInstancerEditorConstants.Styles.label);
+                    if (prototypeSelection.ContainsKey(prototype))
+                    {
+                        prototypeSelection[prototype] = EditorGUILayout.ToggleLeft(prototype.ToString() + " Instance Count: " +
+                            count, prototypeSelection[prototype], GPUInstancerEditorConstants.Styles.label);
+                    }
                 }
 
                 GPUInstancerEditorConstants.Styles.label.normal.textColor = defaultColor;

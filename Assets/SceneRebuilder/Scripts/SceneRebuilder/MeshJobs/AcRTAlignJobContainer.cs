@@ -80,7 +80,8 @@ public class AcRTAlignJobContainer
             //Debug.LogError("GetAlignJobs mfList:"+mfList.Count);
 
             MeshFilter mfFrom = mfList[0];
-            GameObject prefab = mfFrom.gameObject;
+            if (mfFrom == null) continue;
+            //GameObject prefab = mfFrom.gameObject;
             //progressCount++;//一个作为预设
             PrefabInfo prefabInfo = new PrefabInfo(mfFrom);
             prefabInfoList.Add(prefabInfo);
@@ -302,8 +303,10 @@ public class AcRTAlignJobContainer
                     GameObject newGo = MeshHelper.CopyGO(pref.PrefabInfo.Prefab);
                     newGo.name = arg.mfTo.name + "_New";
                     pref.AddInstance(newGo);
+                    
+                    disResult.rt.ApplyMatrix(newGo.transform, arg.mfTo.transform); //变换模型
+
                     GameObject.DestroyImmediate(arg.mfTo.gameObject);
-                    disResult.rt.ApplyMatrix(newGo.transform); //变换模型
                 }
                 else
                 {
@@ -338,8 +341,10 @@ public class AcRTAlignJobContainer
                 newGo.name = arg.mfTo.name + "_New";
                 pref.AddInstance(newGo);
                 AcRTAlignJobHelper.RemoveDict(MeshHelper.GetInstanceID(arg.mfTo));//模型都删除了，把缓存的顶点数据也删除
+                
+                disResult.rt.ApplyMatrix(newGo.transform, arg.mfTo.transform); //变换模型
+
                 GameObject.DestroyImmediate(arg.mfTo.gameObject);
-                disResult.rt.ApplyMatrix(newGo.transform); //变换模型
             }
             else
             {
@@ -361,9 +366,11 @@ public class AcRTAlignJobContainer
     public static bool IsCheckResult=false;
 
     public static bool IsSetParent=false;
-    
+    int errorCount = 0;
+
     public void DoAlignJobResult()
     {
+        
         for (int k = 0; k < jobIds.Count; k++)
         {
             int id = jobIds[k];
@@ -385,23 +392,30 @@ public class AcRTAlignJobContainer
                     pref.AddInstance(newGo);
                     AcRTAlignJobHelper.RemoveDict(MeshHelper.GetInstanceID(arg.mfTo));
                     
-                    result.ApplyMatrix(newGo.transform); //变换模型
+                    result.ApplyMatrix(newGo.transform, arg.mfTo.transform); //变换模型
 
                     if(IsCheckResult){
                        var disNew=MeshHelper.GetVertexDistanceEx(newGo.transform,arg.mfTo.transform,"测试结果",false);
                         if(disNew>DistanceSetting.zeroDis)
                         {
-                            Debug.LogError("对齐成功 有错误:"+disNew);
+                            errorCount++;
+                            RTResult rT = result as RTResult;
+                            if (rT != null)
+                            {
+                                Debug.LogError($"对齐成功 有错误[{errorCount}] zero:{DistanceSetting.zeroDis:F5},dis:{disNew},Mode:{rT.Mode},from:{arg.mfFrom.name},to:{arg.mfTo} " + $" Trans:{rT.Translation.Vector3ToString()},Matrix:\n{rT.TransformationMatrix}");
+                                //Debug.LogError($"Mode:{rT.Mode},Trans:{rT.Translation.Vector3ToString()},Matrix:\n{rT.TransformationMatrix}");
+                            }
+                            else
+                            {
+                                Debug.LogError($"对齐成功 有错误[{errorCount}] zero:{DistanceSetting.zeroDis:F5},dis:{disNew},from:{arg.mfFrom.name},to:{arg.mfTo} rT==null" );
+                            }
                         }
-                        RTResult rT=result as RTResult;
-                        // if(rT!=null){
-                        //     Debug.LogError($"Mode:{rT.Mode},Trans:{rT.Translation.Vector3ToString()},Matrix:\n{rT.TransformationMatrix}");
-                        // }
-                        // Debug.Log($"对齐成功 Type：{result.GetType()}，距离:{result.Distance},disNew:{disNew},{arg.mfFrom.name} -> {arg.mfTo.name}");
+                        else
+                        {
+                            //GameObject.DestroyImmediate(arg.mfTo.gameObject);//测试用，留下有问题的
+                            //GameObject.DestroyImmediate(newGo);//测试用，留下有问题的
+                        }
                     }
-
-                    //Debug.Log($"对齐成功 距离:{result.Distance},disNew:{disNew},{arg.mfFrom.name} -> {arg.mfTo.name}");
-
                     GameObject.DestroyImmediate(arg.mfTo.gameObject);
                 }
                 else if (result.Distance < DistanceSetting.ICPMinDis)
@@ -416,6 +430,8 @@ public class AcRTAlignJobContainer
                 }
                 else 
                 {
+                    //GameObject.DestroyImmediate(arg.mfTo.gameObject);//测试用，留下有问题的
+
                     pref.RemoveMeshFilter(arg.mfFrom);
                     //newTargets.Add(arg.mfTo);
 
@@ -481,6 +497,7 @@ public class AcRTAlignJobContainer
         DateTime start = DateTime.Now;
         this.ResetLoopInfo();
 
+        errorCount = 0;
         for (int kk = 0; kk < mfCount; kk++)
         {
             loopStartTime = DateTime.Now;

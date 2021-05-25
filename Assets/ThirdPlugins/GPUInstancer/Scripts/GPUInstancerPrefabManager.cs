@@ -1132,10 +1132,10 @@ namespace GPUInstancer
                 return null;
             }
 
-           return AddPrefab(prototypeGameObject,attachScript);
+           return DefineGameObjectAsPrefabPrototype(prototypeGameObject,attachScript);
         }
 
-        public GPUInstancerPrefabPrototype AddPrefab(GameObject prototypeGameObject, bool attachScript = true)
+        public GPUInstancerPrefabPrototype DefineGameObjectAsPrefabPrototype(GameObject prototypeGameObject, bool attachScript = true)
         {
             if (prefabList == null)
                 prefabList = new List<GameObject>();
@@ -1147,8 +1147,17 @@ namespace GPUInstancer
             if (prefabPrototype.minCullingDistance < minCullingDistance)
                 prefabPrototype.minCullingDistance = minCullingDistance;
 
-            Debug.LogError("AddPrefab:"+prefabPrototype);
+            //Debug.LogError("AddPrefab:"+prefabPrototype);
             return prefabPrototype;
+        }
+
+        public void AddPrefabObject(GameObject obj)
+        {
+            if (!this.prefabList.Contains(obj))
+            {
+                this.prefabList.Add(obj);
+                this.GeneratePrototypes();
+            }
         }
 
     [ContextMenu("InitPrefabs")]
@@ -1172,16 +1181,22 @@ namespace GPUInstancer
                 prefab=GPUInstancerUtility.AddComponentToPrefab<GPUInstancerPrefab>(item);
             }
 
-            AddPrefab(item);
+           AddPrefabObject(item);
 
-            // prefabManager.prefabList.Add(item);
-            // var prototype=GPUInstancerUtility.GeneratePrefabPrototype(item, false);
-            // Debug.Log($"1 item:{item},prototype:{prototype},count:{prefabManager.prototypeList.Count}");
-            // prefabManager.prototypeList.Add(prototype);
-            // Debug.Log($"2 item:{item},prototype:{prototype},count:{prefabManager.prototypeList.Count}");
+           //if (!this.prefabList.Contains(item))
+           //{
+           //    this.prefabList.Add(item);
+           //    this.GeneratePrototypes();
+           //}
 
-            //generator.asteroidObjects.Add(prefab);
-        }
+                // prefabManager.prefabList.Add(item);
+                // var prototype=GPUInstancerUtility.GeneratePrefabPrototype(item, false);
+                // Debug.Log($"1 item:{item},prototype:{prototype},count:{prefabManager.prototypeList.Count}");
+                // prefabManager.prototypeList.Add(prototype);
+                // Debug.Log($"2 item:{item},prototype:{prototype},count:{prefabManager.prototypeList.Count}");
+
+                //generator.asteroidObjects.Add(prefab);
+            }
 
         EditorUtility.ClearProgressBar();
         #endif

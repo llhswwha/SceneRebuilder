@@ -34,7 +34,7 @@ namespace GPUInstancer
 
         public static void InitializeGPUBuffer<T>(T runtimeData) where T : GPUInstancerRuntimeData
         {
-            Debug.LogError("InitializeGPUBuffer:"+runtimeData+"|"+runtimeData.instanceLODs.Count);
+            //Debug.LogError("InitializeGPUBuffer:"+runtimeData+"|"+runtimeData.instanceLODs.Count);
             if (runtimeData == null || runtimeData.bufferSize == 0)
                 return;
 
@@ -90,7 +90,7 @@ namespace GPUInstancer
                     lodLogs+="; ";
                 }
 
-                Debug.LogError($"totalSubMeshCount:{totalSubMeshCount},lodLogs:{lodLogs}");
+                //Debug.LogError($"totalSubMeshCount:{totalSubMeshCount},lodLogs:{lodLogs}");
 
                 // Initialize indirect renderer buffer. First LOD's each renderer's all submeshes will be followed by second LOD's each renderer's submeshes and so on.
                 runtimeData.args = new uint[5 * totalSubMeshCount];
@@ -145,7 +145,7 @@ namespace GPUInstancer
         #region Set Append Buffers Platform Dependent
         public static void SetAppendBuffers<T>(T runtimeData) where T : GPUInstancerRuntimeData
         {
-             Debug.LogError($"SetAppendBuffers matrixHandlingType:{matrixHandlingType}");
+             //Debug.LogError($"SetAppendBuffers matrixHandlingType:{matrixHandlingType}");
             switch (matrixHandlingType)
             {
                 case GPUIMatrixHandlingType.MatrixAppend:
@@ -623,7 +623,8 @@ namespace GPUInstancer
                         for (int m = 0; m < rdRenderer.materials.Count; m++)
                         {
                             rdMaterial = rdRenderer.materials[m];
-                            if(isFirst)Debug.LogError($"DrawMeshInstancedIndirect lod:{lod},mesh:{rdRenderer.mesh},material:{rdMaterial},offset:{offset}");
+
+                            //if(isFirst)Debug.LogError($"DrawMeshInstancedIndirect lod:{lod},mesh:{rdRenderer.mesh},material:{rdMaterial},offset:{offset}");
 
                             submeshIndex = Math.Min(m, rdRenderer.mesh.subMeshCount - 1);
                             offset = (rdRenderer.argsBufferOffset + 5 * submeshIndex) * GPUInstancerConstants.STRIDE_SIZE_INT;

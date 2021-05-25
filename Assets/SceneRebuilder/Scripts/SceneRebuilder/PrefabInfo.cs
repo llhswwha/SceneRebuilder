@@ -23,7 +23,7 @@ public class PrefabInfo:IComparable<PrefabInfo>
 
     public MeshFilter MeshFilter;
 
-    public List<GameObject> Instances=new List<GameObject>();
+    private List<GameObject> Instances=new List<GameObject>();
 
     public List<GameObject> GetInstances()
     {
@@ -60,4 +60,33 @@ public class PrefabInfo:IComparable<PrefabInfo>
   {
     return other.InstanceCount.CompareTo(this.InstanceCount);
   }
+}
+
+[Serializable]
+public static class PrefabInfoListHelper
+{
+    public static int GetInstanceCount(this List<PrefabInfo> list)
+    {
+        int count = 0;
+        for(int i=0;i< list.Count;i++)
+        {
+            count += list[i].InstanceCount+1;
+        }
+        return count;
+    }
+
+    public static int RemoveInstances(this List<PrefabInfo> list)
+    {
+        int count = 0;
+        for (int i = 0; i < list.Count; i++)
+        {
+            var insList = list[i].GetInstances();
+            for (int j=0;j< insList.Count; j++)
+            {
+                GameObject.DestroyImmediate(insList[j]);
+            }
+            GameObject.DestroyImmediate(list[i].Prefab);
+        }
+        return count;
+    }
 }

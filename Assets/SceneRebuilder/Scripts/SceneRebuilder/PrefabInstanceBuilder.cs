@@ -8,6 +8,7 @@ using UnityEditor;
 #endif
 using UnityEngine;
 using GPUInstancer;
+using System.IO;
 
 public class PrefabInstanceBuilder : MonoBehaviour
 {
@@ -39,10 +40,10 @@ public class PrefabInstanceBuilder : MonoBehaviour
 
     public List<PrefabInfo> PrefabInfoList=new List<PrefabInfo>();
 
-    public List<PrefabInfo> PrefabInfoList1=new List<PrefabInfo>();
-    public List<PrefabInfo> PrefabInfoList2=new List<PrefabInfo>();
-    public List<PrefabInfo> PrefabInfoList3=new List<PrefabInfo>();
-     public List<PrefabInfo> PrefabInfoList4=new List<PrefabInfo>();
+    public List<PrefabInfo> PrefabInfoList1 =new List<PrefabInfo>();
+    public List<PrefabInfo> PrefabInfoList2 =new List<PrefabInfo>();
+    public List<PrefabInfo> PrefabInfoList3 =new List<PrefabInfo>();
+     public List<PrefabInfo> PrefabInfoList4 =new List<PrefabInfo>();
 
     public GameObject CurrentPrefab=null;
 
@@ -664,6 +665,16 @@ UnpackPrefab();
         SetPrefabInfoList(PrefabInfoList);
     }
 
+    [ContextMenu("RemoveInstances")]
+
+    public void RemoveInstances()
+    {
+        PrefabInfoList1.RemoveInstances();
+        PrefabInfoList2.RemoveInstances();
+        PrefabInfoList3.RemoveInstances();
+        //PrefabInfoList4.RemoveInstances();
+    }
+
     public void SetPrefabInfoList(List<PrefabInfo> list){
         //PrefabInfoList.Clear();
         PrefabInfoList = list;
@@ -682,14 +693,17 @@ UnpackPrefab();
             {
                 PrefabInfoList2.Add(list[i]);
             }
-            // else if(list[i].InstanceCount<10)
-            // {
-            //     PrefabInfoList3.Add(list[i]);
-            // }
-            else{
+            else if (list[i].InstanceCount < 10)
+            {
                 PrefabInfoList3.Add(list[i]);
             }
+            else
+            {
+                PrefabInfoList4.Add(list[i]);
+            }
         }
+
+        Debug.LogError($"SetPrefabInfoList list1:{PrefabInfoList1.GetInstanceCount()},list2:{PrefabInfoList2.GetInstanceCount()},list3:{PrefabInfoList3.GetInstanceCount()},list4:{PrefabInfoList4.GetInstanceCount()},");
     }
 
     public bool IsTryAngles=true;
@@ -889,6 +903,11 @@ break;
     private void CreateInstancesInner(bool userLOD,bool userGPUPrefab,int maxInstanceCount,float[] lvs,float[] lodVertexPercents)
     {
         GPUInstancerPrefabManager prefabManager = GameObject.FindObjectOfType<GPUInstancerPrefabManager>();
+        if (prefabManager == null)
+        {
+            prefabManager = this.gameObject.AddComponent<GPUInstancerPrefabManager>();
+        }
+
         //prefabManager.InitPrefabs(PrefabList);
         if(prefabManager)
             prefabManager.ClearPrefabList();
@@ -904,7 +923,9 @@ break;
         int totalCount = 0;
 
         //List<PrefabInfo> lodPrefabInfoList
-        var list=PrefabInfoList3;
+        List<PrefabInfo> list = new List<PrefabInfo>();
+        //list.AddRange(PrefabInfoList3);
+        list.AddRange(PrefabInfoList4);
 
         for (int i = 0; i < list.Count; i++)
         {
@@ -917,12 +938,32 @@ break;
         for (int i = 0; i < list.Count; i++)
         {
             var info = list[i];
-            var insList = info.GetInstances();
 
+           
             GameObject go = info.Prefab;
             string path = "Assets/Models/Instances/Prefabs/" + go.name + go.GetInstanceID() + ".prefab";
+            string path2 = Application.dataPath + "/Models/Instances/Prefabs/" + go.name + go.GetInstanceID() + ".prefab";
+            //path2 = path2.Replace("/", "\\");
+            bool fileExists = File.Exists(path2);
+            if (fileExists)
+            {
+                currentCount += info.InstanceCount;
+                GameObject obj2 = AssetDatabase.LoadAssetAtPath<GameObject>(path);
+                if (userGPUPrefab && prefabManager)
+                {
+                    GPUInstancerPrefab gpuPrefab = go.GetComponent<GPUInstancerPrefab>();
+                    if (gpuPrefab == null)
+                    {
+                        gpuPrefab = go.AddComponent<GPUInstancerPrefab>();
+                    }
 
-            if(userLOD)
+                    prefabManager.AddPrefabObject(obj2);
+
+                    //Debug.LogError("CreateInstancesInner.gpuPrefab:" + gpuPrefab.prefabPrototype);
+                }
+                continue;
+            }
+            if (userLOD)
             {
                 //new float[] { 0.6f, 0.2f, 0.07f, 0.01f }
 
@@ -947,14 +988,17 @@ break;
                 AutomaticLODHelper.CreateLOD(go, LODMaterials, lvs,lodVertexPercents);
             }
 
-            if(userGPUPrefab && prefabManager){
-                GPUInstancerPrefab gpuPrefab=go.AddComponent<GPUInstancerPrefab>();
-                prefabManager.AddPrefab(go);
-
-                Debug.LogError("CreateInstancesInner.gpuPrefab:"+gpuPrefab.prefabPrototype);
+            if (userGPUPrefab && prefabManager)
+            {
+                GPUInstancerPrefab gpuPrefab = go.AddComponent<GPUInstancerPrefab>();
             }
 
             GameObject prefabAsset = PrefabUtility.SaveAsPrefabAssetAndConnect(go, path, InteractionMode.UserAction);
+
+            if (userGPUPrefab && prefabManager)
+            {
+                prefabManager.AddPrefabObject(prefabAsset);
+            }
 
 
             //Debug.Log("prefab:" + prefab);
@@ -963,6 +1007,7 @@ break;
 
             //Debug.LogError($"insList:{insList.Count}");
 
+            var insList = info.GetInstances();
             List<GameObject> tmp = new List<GameObject>();
             for (int j = 0; j < insList.Count; j++)
             {
@@ -982,6 +1027,13 @@ break;
                     //ProgressBarHelper.ClearProgressBar();
                     break;
                 }
+
+                //if (ProgressBarHelper.DisplayCancelableProgressBar("CreatePrefabs111", "12123123", progress))
+                //{
+                //    isBreak = true;
+                //    //ProgressBarHelper.ClearProgressBar();
+                //    break;
+                //}
                 var instance = tmp[j];
                 if (instance == null) continue;
                 var t1 = instance.transform;
@@ -1008,7 +1060,7 @@ break;
             }
         }
         ProgressBarHelper.ClearProgressBar();
-        Debug.LogWarning($"CreatePrefabs Count:{totalCount},Time:{(DateTime.Now - start).TotalMilliseconds}ms");
+        Debug.LogWarning($"CreateInstancesInner Count:{totalCount},Time:{(DateTime.Now - start).TotalMilliseconds}ms");
 #endif
     }
 
@@ -1097,6 +1149,14 @@ break;
         foreach(var info in PrefabInfoList){
             Debug.LogError("VertexCount:"+info.VertexCount);
         }
+    }
+
+    [ContextMenu("OneKey_Align_Remove_Instance")]
+    public void OneKey_Align_Remove_Instance()
+    {
+        AcRTAlignJobsEx();
+        RemoveInstances();
+        CreateInstances();
     }
 
     // [ContextMenu("CreateInstances(LOD_10)")]

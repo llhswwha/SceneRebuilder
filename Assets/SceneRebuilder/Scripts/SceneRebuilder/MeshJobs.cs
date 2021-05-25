@@ -530,7 +530,7 @@ namespace MeshJobs
             {
 
                 //可以改成这里创建模型，并变换，原来的模型不动。
-                result.ApplyMatrix(mfFrom.transform); //变换模型
+                result.ApplyMatrix(mfFrom.transform, mfTo.transform); //变换模型
 
                 if (result.Distance < 0.001)
                 {
@@ -663,8 +663,10 @@ namespace MeshJobs
                             GameObject newGo = MeshHelper.CopyGO(pref.PrefabInfo.Prefab);
                             newGo.name = arg.mfTo.name + "_New";
                             pref.AddInstance(newGo);
+                            
+                            result.ApplyMatrix(newGo.transform, arg.mfTo.transform); //变换模型
+
                             GameObject.DestroyImmediate(arg.mfTo.gameObject);
-                            result.ApplyMatrix(newGo.transform); //变换模型
                         }
                         else
                         {
@@ -828,8 +830,10 @@ namespace MeshJobs
                             GameObject newGo = MeshHelper.CopyGO(prefab);
                             newGo.name = arg.mfTo.name + "_New";
                             prefabInfo.Add(newGo);
+                            
+                            result.ApplyMatrix(newGo.transform, arg.mfTo.transform); //变换模型
+
                             GameObject.DestroyImmediate(arg.mfTo.gameObject);
-                            result.ApplyMatrix(newGo.transform); //变换模型
                         }
                         else
                         {

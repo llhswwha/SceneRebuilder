@@ -627,7 +627,7 @@ public class AcRigidTransform : MonoBehaviour {
                     //acRigidTransform.ApplyTransform(t1);
                     
                     //AcRigidTransform.ApplyMatrix(matrix,tFrom);
-                    rt.ApplyMatrix(tFrom);
+                    rt.ApplyMatrix(tFrom, tTo);
                     var gos=MeshHelper.ShowVertexes(vsNew,0.005f,tFrom);//0.1,0.005
                     isFound=true;
                     return;
@@ -638,7 +638,7 @@ public class AcRigidTransform : MonoBehaviour {
 
         if(isFound==false){
             var vsNew=minRT.ApplyPoints(vsFrom);
-            minRT.ApplyMatrix(tFrom);
+            minRT.ApplyMatrix(tFrom, tTo);
             var gos=MeshHelper.ShowVertexes(vsNew,0.005f,tFrom);//0.1,0.005
         }
 

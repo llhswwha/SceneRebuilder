@@ -66,22 +66,32 @@ public class MeshComparer : MonoBehaviour
         Debug.LogWarning($"InitMeshNodeInfo Time:{(DateTime.Now-start).TotalMilliseconds}ms");
     }
 
-    public void CreateNewScaleGo(GameObject goNew,Vector3 scale)
+    public bool CreateNewScaleGo(GameObject goNew,Vector3 scale)
     {
         var goNew1 = MeshHelper.CopyGO(goNew);
         goNew1.name+="_"+scale.Vector3ToString();
         goNew1.transform.SetParent(goNew.transform.parent);
         goNew1.transform.localScale=scale;
         var dis2=MeshHelper.GetVertexDistanceEx(goNew1.transform,goTo.transform);
-        if(dis2<0.2f){
-            Debug.LogError($"dis2:{dis2},scale:{scale.Vector3ToString()}");
-            goNew1.name+="_Zero"+dis2;
+        if (dis2 < 0.01f)
+        {
+            Debug.LogError($"\tCreateNewScaleGo1 dis2:{dis2},scale:{scale.Vector3ToString()}");
+            goNew1.name += "_Zero_" + dis2;
+            return true;
+        }
+        if (dis2<0.2f){
+            Debug.LogError($"\tCreateNewScaleGo2 dis2:{dis2},scale:{scale.Vector3ToString()}");
+            goNew1.name+="_Zero2_"+dis2;
+            return false;
         }
         else if(dis2<0.5f){
-            Debug.LogWarning($"dis2:{dis2},scale:{scale.Vector3ToString()}");
+            Debug.LogWarning($"\tCreateNewScaleGo3 dis2:{dis2},scale:{scale.Vector3ToString()}");
+            GameObject.DestroyImmediate(goNew1);
+            return false;
         }
         else{
             GameObject.DestroyImmediate(goNew1);
+            return false;
         }
     }
 
@@ -164,23 +174,36 @@ public class MeshComparer : MonoBehaviour
                     }
                     else if(dis<0.5f){
                         Debug.LogWarning(log);
-                        goNew.name+="_"+angle;
+                        goNew.name+="_"+angle+"_"+ dis;
+
+                        //旋转之后的比例
 
                         // var goNew1 = MeshHelper.CopyGO(goNew);
                         // goNew1.transform.SetParent(goNew.transform);
                         // goNew1.transform.localScale=new Vector3(scale1.x*scaleNew.x,scale1.y*scaleNew.y,scale1.z*scaleNew.z);
                         // var dis2=MeshHelper.GetVertexDistanceEx(goNew1.transform,goTo.transform);
                         // Debug.LogWarning($"dis2:{dis2}");
-                        Vector3 scaleNN=new Vector3(scale1.x*scaleNew.x,scale1.y*scaleNew.y,scale1.z*scaleNew.z);
-                        CreateNewScaleGo(goNew,new Vector3(scaleNN.x,scaleNN.y,scaleNN.z));
-                        CreateNewScaleGo(goNew,new Vector3(scaleNN.y,scaleNN.x,scaleNN.z));
-                        CreateNewScaleGo(goNew,new Vector3(scaleNN.z,scaleNN.y,scaleNN.x));
-                        CreateNewScaleGo(goNew,new Vector3(scaleNN.z,scaleNN.x,scaleNN.y));
-                        CreateNewScaleGo(goNew,new Vector3(scaleNN.x,scaleNN.z,scaleNN.y));
-                        CreateNewScaleGo(goNew,new Vector3(scaleNN.y,scaleNN.z,scaleNN.x));//6种情况
+
+                        Vector3 scaleNN = new Vector3(scale1.x * scaleNew.x, scale1.y * scaleNew.y, scale1.z * scaleNew.z);
+                        var r1  = CreateNewScaleGo(goNew, new Vector3(scaleNN.x, scaleNN.y, scaleNN.z));
+                        var r2 = CreateNewScaleGo(goNew, new Vector3(scaleNN.y, scaleNN.x, scaleNN.z));
+                        var r3 = CreateNewScaleGo(goNew, new Vector3(scaleNN.z, scaleNN.y, scaleNN.x));
+                        var r4 = CreateNewScaleGo(goNew, new Vector3(scaleNN.z, scaleNN.x, scaleNN.y));
+                        var r5 = CreateNewScaleGo(goNew, new Vector3(scaleNN.x, scaleNN.z, scaleNN.y));
+                        var r6 = CreateNewScaleGo(goNew, new Vector3(scaleNN.y, scaleNN.z, scaleNN.x));//6种情况
+
+                        if (r1 == true || r2 == true || r3 == true || r4 == true || r5 == true || r6 == true)
+                        {
+                            GameObject.DestroyImmediate(goNew);
+                        }
+
+                        if(r1==false&&r2==false && r3 == false && r4 == false && r5 == false && r6 == false)
+                        {
+                            GameObject.DestroyImmediate(goNew);
+                        }
                     }
                     else{
-                        Debug.Log(log);
+                        //Debug.Log(log);
                         GameObject.DestroyImmediate(goNew);
                     }
                     
@@ -189,43 +212,92 @@ public class MeshComparer : MonoBehaviour
         }
     }
 
-    [ContextMenu("TryMatrixAngle")]
-    public void TryMatrixAngle()
+    [ContextMenu("TryMatrixAngle0_0_0")]
+    public void TryMatrixAngle0_0_0()
+    {
+        TryMatrixAngle(new Vector3(0, 0, 0));
+    }
+
+    [ContextMenu("TryMatrixAngle90_0_0")]
+    public void TryMatrixAngle90_0_0()
+    {
+        TryMatrixAngle(new Vector3(90, 0, 0));
+    }
+
+    [ContextMenu("TryMatrixAngle180_0_0")]
+    public void TryMatrixAngle180_0_0()
+    {
+        TryMatrixAngle(new Vector3(180, 0, 0));
+    }
+
+    [ContextMenu("TryMatrixAngle0_90_0")]
+    public void TryMatrixAngle0_90_0()
+    {
+        TryMatrixAngle(new Vector3(0, 90, 0));
+    }
+
+    [ContextMenu("TryMatrixAngle0_0_90")]
+    public void TryMatrixAngle0_0_90()
+    {
+        TryMatrixAngle(new Vector3(0, 0, 90));
+    }
+
+    public void TryMatrixAngle(Vector3 angle)
     {
 
 
-        var mfFrom=goFrom.GetComponent<MeshFilter>();
+        var mfFrom = goFrom.GetComponent<MeshFilter>();
         //var vsFrom=MeshHelper.GetWorldVertexes(mfFrom);
 
-        var vsFrom=mfFrom.sharedMesh.vertices;
-        var vsFromWorld=MeshHelper.GetWorldVertexes(vsFrom,mfFrom.transform);
+        var vsFrom = mfFrom.sharedMesh.vertices;
+        var vsFromWorld = MeshHelper.GetWorldVertexes(vsFrom, mfFrom.transform);
 
-        GameObject gameObject=new GameObject("TryAngle");
-        MeshHelper.ShowVertexes(vsFromWorld,0.01f,gameObject.transform);
+        GameObject gameObject = new GameObject("TryAngle");
+        MeshHelper.ShowVertexes(vsFromWorld, pScale, gameObject.transform);
 
-        Matrix4x4 localMatrix=mfFrom.transform.localToWorldMatrix;
+        Matrix4x4 localMatrix = mfFrom.transform.localToWorldMatrix;
+        Debug.LogError("localMatrix:\n" + localMatrix);
 
-        Vector3 trans=goTo.transform.position-goFrom.transform.position;
-        Vector3 angle=new Vector3(90,0,0);
-        Quaternion R=Quaternion.Euler(angle);
-        Matrix4x4 matrix=Matrix4x4.TRS(Vector3.zero,Quaternion.Euler(angle),Vector3.one);
+        Vector3 trans = goTo.transform.position - goFrom.transform.position;
+        Debug.LogError("trans:\n" + trans);
 
-        List<Vector3> newVs=new List<Vector3>();
-        List<Vector3> newVs2=new List<Vector3>();
-        for(int i=0;i<vsFrom.Length;i++){
+        //Vector3 angle = new Vector3(90, 0, 0);
+        Quaternion R = Quaternion.Euler(angle);
+        Matrix4x4 matrix = Matrix4x4.TRS(Vector3.zero, Quaternion.Euler(angle), Vector3.one);
+
+        List<Vector3> newVs = new List<Vector3>();
+        List<Vector3> newVs2 = new List<Vector3>();
+        List<Vector3> newVs3 = new List<Vector3>();
+
+        Matrix4x4 matrix4World = localMatrix * matrix;
+
+        for (int i = 0; i < vsFrom.Length; i++)
+        {
             //Vector3 vN=matrix.MultiplyPoint(vsFrom[i]);
-            Vector3 vN=matrix.MultiplyPoint3x4(vsFrom[i]);
-            Vector3 v2N=localMatrix.MultiplyPoint3x4(vN)+trans;
+            Vector3 vN = matrix.MultiplyPoint3x4(vsFrom[i]);
+            Vector3 v2N = localMatrix.MultiplyPoint3x4(vN) + trans;
             newVs.Add(vN);
             newVs2.Add(v2N);
+
+            Vector3 v3N = matrix4World.MultiplyPoint3x4(vsFrom[i]) + trans;
+            newVs3.Add(v3N);
         }
 
         var goNew = MeshHelper.CopyGO(goFrom);
-        var mfNew=goNew.GetComponent<MeshFilter>();
-        mfNew.mesh.vertices=newVs.ToArray();
+        var mfNew = goNew.GetComponent<MeshFilter>();
+        //mfNew.mesh.vertices=newVs.ToArray();
 
-        GameObject gameObject2=new GameObject("TryAngle"+angle);
-        MeshHelper.ShowVertexes(newVs2.ToArray(),0.01f,gameObject2.transform);
+        RTResult rt = new RTResult();
+        rt.Mode = AlignMode.Rotate;
+        rt.Translation = trans;
+        rt.TransformationMatrix = matrix4World;
+        rt.ApplyMatrix(goNew.transform,null);
+
+        GameObject gameObject2 = new GameObject("TryAngle1" + angle);
+        MeshHelper.ShowVertexes(newVs2.ToArray(), pScale, gameObject2.transform);
+
+        GameObject gameObject3 = new GameObject("TryAngle2" + angle);
+        MeshHelper.ShowVertexes(newVs3.ToArray(), pScale, gameObject3.transform);
     }
 
     public Vector3[] ApplyMatrix(Vector3[] vs1,Matrix4x4 matrix4World,Vector3 trans)
@@ -694,7 +766,7 @@ public class MeshComparer : MonoBehaviour
             
         }
 
-        rList.ApplyMatrix(goOld.transform);
+        rList.ApplyMatrix(goOld.transform, goTo.transform);
 
         ProgressBarHelper.ClearProgressBar();
         Debug.Log($"TestICP2 End Time:{(DateTime.Now-start).TotalMilliseconds}ms");

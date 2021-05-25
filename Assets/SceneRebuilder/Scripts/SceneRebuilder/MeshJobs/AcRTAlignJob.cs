@@ -314,7 +314,7 @@ namespace MeshJobs
                 //Debug.LogWarning($"dis2:{dis2},matrix4World:\n{matrix4World2}");
                 //return true;
                 RTResult result=new RTResult();
-                result.Mode=2;
+                result.Mode= AlignMode.Scale;
                 result.Distance=dis2;
                 result.IsZero=true;
                 result.TransformationMatrix=matrix4World2;
@@ -415,9 +415,9 @@ namespace MeshJobs
 
                             var dis=DistanceUtil.GetDistance(newVs2,vsToW);
                             if(dis==0){
-                                //Debug.LogWarning($"angle[{aCount}]:{angle},Distance:{dis},Id:{Id},trans:{trans}");
+                                //Debug.LogWarning($"angle[{aCount}]:{angle},Distance:{dis},Id:{Id},trans:{trans}\nmatrix:\n{matrix}\nlocalMatrix:\n{localMatrix}\nmatrix4World:\n{matrix4World}");
                                 RTResult result=new RTResult();
-                                result.Mode=1;
+                                result.Mode= AlignMode.Rotate;
                                 result.Distance=dis;
                                 result.IsZero=true;
                                 result.TransformationMatrix=matrix4World;
@@ -565,6 +565,7 @@ namespace MeshJobs
                     var vsFromStart=minVS;
                     string log="";
 
+                    //int equalCount = 0;
                      for(int i=0;i<DistanceSetting.ICPMaxCount;i++)
                     {
                         //DateTime start1=DateTime.Now;

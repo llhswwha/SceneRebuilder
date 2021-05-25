@@ -12,8 +12,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 25e83c12ea754689a476d23cac7e5ad7, type: 3}
   m_Name: ARISphere_Prototype_-155622
   m_EditorClassIdentifier: 
-  prefabObject: {fileID: 1560813634144258, guid: 4d9aafbd662280443ab99e2868c04317,
-    type: 3}
+  prefabObject: {fileID: 1560813634144258, guid: 4d9aafbd662280443ab99e2868c04317, type: 3}
   isShadowCasting: 1
   useCustomShadowDistance: 0
   shadowDistance: 0

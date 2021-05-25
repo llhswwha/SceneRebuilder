@@ -10,28 +10,33 @@ public interface IRTResult
 {
     int id {get;set;}
     float Distance {get;set;}
-    void ApplyMatrix(Transform t);
+    void ApplyMatrix(Transform tFrom,Transform tTo);
 }
 
 public class RTResultList:List<RTResult>,IRTResult
 {
     public int id {get;set;}
     public float Distance {get;set;}
-    public void ApplyMatrix(Transform t)
+    public void ApplyMatrix(Transform tFrom, Transform tTo)
     {
         for(int i=0;i<this.Count;i++)
         {
             //Debug.LogError($"RTResultList.ApplyMatrix[{t.name}][{i}]");
             var r=this[i];
-            r.ApplyMatrix(t);
+            r.ApplyMatrix(tFrom, tTo);
         }
     }
+}
+
+public enum AlignMode
+{
+    RT,Rotate,Scale
 }
 
 [Serializable]
 public class RTResult:IRTResult
 {
-    public int Mode=0;//0:原本的，1:新的角度旋转,2:比例调整
+    public AlignMode Mode =0;//0:原本的，1:新的角度旋转,2:比例调整
     public int id {get;set;}
     public UnityEngine.Matrix4x4 TransformationMatrix;
     public UnityEngine.Vector3 Translation;
@@ -120,32 +125,57 @@ public class RTResult:IRTResult
         return vs3;
     }
 
-    public void ApplyMatrix(Transform t)
+    public void ApplyMatrix(Transform tFrom, Transform tTo)
     {
-        // if(SubResults!=null)
-        // {
-        //     Debug.LogError("ApplyMatrix SubResults:"+SubResults.Count);
-        //     for(int i=0;i<SubResults.Count;i++)
-        //     {
-        //         var r=SubResults[i];
-        //         r.ApplyMatrix(t);
-        //     }
-        // }
-        var pos=t.position;
-        var qt=t.rotation;
 
-        if(Mode==0){
-            t.position = TransformationMatrix.MultiplyPoint(pos);
-            t.rotation = Quaternion.LookRotation(TransformationMatrix.GetColumn(2), TransformationMatrix.GetColumn(1))* qt;
+        //Debug.LogError($"ApplyMatrix Mode:{Mode},");
+        var pos=tFrom.position;
+        var qt=tFrom.rotation;
+
+        if (Mode == AlignMode.RT)
+        {
+            tFrom.position = TransformationMatrix.MultiplyPoint(pos);
+            tFrom.rotation = Quaternion.LookRotation(TransformationMatrix.GetColumn(2), TransformationMatrix.GetColumn(1)) * qt;
         }
-        else if(Mode==1){
-            t.position = pos+Translation;
-            t.rotation = Quaternion.LookRotation(TransformationMatrix.GetColumn(1), TransformationMatrix.GetColumn(2))* qt;
+        else if (Mode == AlignMode.Rotate)
+        {
+            tFrom.position = pos + Translation;
+            tFrom.rotation = Quaternion.LookRotation(TransformationMatrix.GetColumn(1), TransformationMatrix.GetColumn(2)) * qt;//测试钢架时这个是正确的
+            //t.rotation = Quaternion.LookRotation(TransformationMatrix.GetColumn(2), TransformationMatrix.GetColumn(1)) * qt;//测试teaports时这个是正确的
+
+            //var disNew = MeshHelper.GetVertexDistanceEx(tFrom, tTo, "测试结果", false);
+            //RTResult rT = this as RTResult;
+            //if (rT != null)
+            //{
+            //    Debug.LogError($"ApplyMatrix01 zero:{DistanceSetting.zeroDis:F5},dis:{disNew},\tMode:{rT.Mode},\tfrom:{tFrom.name},to:{tTo.name} rT==null");
+            //}
+            //else
+            //{
+            //    Debug.LogError($"ApplyMatrix02 zero:{DistanceSetting.zeroDis:F5},dis:{disNew},\tfrom:{tFrom.name},to:{tTo.name} rT==null");
+            //}
+            //if (tTo!=null)
+            //{
+                
+            //    if (disNew > DistanceSetting.zeroDis)
+            //    {
+                    
+            //        if (rT != null)
+            //        {
+            //            Debug.LogError($"ApplyMatrix1 对齐成功 有错误 zero:{DistanceSetting.zeroDis:F5},dis:{disNew},Mode:{rT.Mode},from:{tFrom.name},to:{tTo.name} " + $" Trans:{rT.Translation.Vector3ToString()},Matrix:\n{rT.TransformationMatrix}");
+            //            //Debug.LogError($"Mode:{rT.Mode},Trans:{rT.Translation.Vector3ToString()},Matrix:\n{rT.TransformationMatrix}");
+            //        }
+            //        else
+            //        {
+            //            Debug.LogError($"ApplyMatrix2 对齐成功 有错误 zero:{DistanceSetting.zeroDis:F5},dis:{disNew},from:{tFrom.name},to:{tTo.name} rT==null");
+            //        }
+            //    }
+            //}
         }
-        else if(Mode==2){
-            t.position = pos+Translation;
-            t.rotation = Quaternion.LookRotation(TransformationMatrix.GetColumn(1), TransformationMatrix.GetColumn(2))* qt;
-            t.localScale=Scale;
+        else if (Mode == AlignMode.Scale)
+        {
+            tFrom.position = pos + Translation;
+            tFrom.rotation = Quaternion.LookRotation(TransformationMatrix.GetColumn(1), TransformationMatrix.GetColumn(2)) * qt;
+            tFrom.localScale = Scale;
         }
     }
 
