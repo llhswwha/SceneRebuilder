@@ -83,12 +83,17 @@ namespace AdvancedCullingSystem.StaticCullingCore
             _commands = new NativeList<RaycastCommand>(Allocator.TempJob);
             for (int i = 0; i < directions.Length; i++)
             {
-                // _commands.Add(new RaycastCommand(transform.position, 
-                //     transform.TransformDirection(directions[i]), 
-                //     layerMask : _dataContainer.layerMask));
+                if(StaticCullingMaster.IsUseMask)
+                {
+_commands.Add(new RaycastCommand(transform.position,transform.TransformDirection(directions[i]),layerMask : _dataContainer.layerMask));
 
-                _commands.Add(new RaycastCommand(transform.position, 
-                    transform.TransformDirection(directions[i])));
+                }
+                else
+                {
+_commands.Add(new RaycastCommand(transform.position,transform.TransformDirection(directions[i])));
+                }
+                
+                
             }
         }
 
@@ -208,11 +213,25 @@ namespace AdvancedCullingSystem.StaticCullingCore
                     continue;
                 int startIndex = pointers[i].x;
                 int endIndex = pointers[i].y;
+
+
+
                 for (int c = startIndex; c < endIndex; c++)
-                    commands.Add(
-                        //new RaycastCommand(origin, points[c] - origin, layerMask : layerMask)
+                {
+                    if(StaticCullingMaster.IsUseMask)
+                    {
+                         commands.Add(
+                        new RaycastCommand(origin, points[c] - origin, layerMask : layerMask)
+                        );
+                    }
+                    else
+                    {
+                         commands.Add(
                         new RaycastCommand(origin, points[c] - origin)
                         );
+                    }
+                }
+                   
             }
         }
     }

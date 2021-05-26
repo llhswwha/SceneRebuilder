@@ -460,7 +460,7 @@ namespace AdvancedCullingSystem.StaticCullingCore
 
             GUILayout.FlexibleSpace();
 
-            //StaticCullingMaster.
+            
             if (GUILayout.Button("Bake", GUILayout.Height(30), GUILayout.Width(60))) Bake();
 
             GUILayout.Space(10);

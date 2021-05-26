@@ -45,9 +45,10 @@ namespace AdvancedCullingSystem.StaticCullingCore
             testData.OptimizeCount = list1.Count - list2.Count;
             testData.TotalVisible = totalVisibleCount;
             testData.VisibleLeaf = nodeCount;
-            testData.AvgVisible = totalVisibleCount / nodeCount;
+            if(nodeCount!=0)
+                testData.AvgVisible = totalVisibleCount / nodeCount;
             testData.OptimizeTree = true;
-            Debug.Log($"OptimizeTree depth={depth1},count={list1.Count}-{list2.Count}={list1.Count-list2.Count},visibleCount={totalVisibleCount}/{nodeCount}={totalVisibleCount/ nodeCount}");//cww_add
+            Debug.Log($"OptimizeTree depth={depth1},count={list1.Count}-{list2.Count}={list1.Count-list2.Count},visibleCount={totalVisibleCount}/{nodeCount}={testData.AvgVisible}");//cww_add
             //depth:11,list1:2159,list2:325
         }
 

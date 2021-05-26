@@ -369,6 +369,7 @@ namespace AdvancedCullingSystem.StaticCullingCore
 
         private void InstantiateColliders()
         {
+            Debug.LogError("InstantiateColliders:"+_renderers.Length);
             _disabledColliders = new List<Collider>();
 
             _disabledColliders = Object.FindObjectsOfType<Collider>()
@@ -379,30 +380,39 @@ namespace AdvancedCullingSystem.StaticCullingCore
 
 
             _renderersColliders = new MeshCollider[_renderers.Length];
+
+
+
             for(int i = 0; i < _renderersColliders.Length; i++)
             {
                 float progress = i * 1f / _renderersColliders.Length;
                 ProgressBarHelper.DisplayProgressBar("Start...InstantiateColliders", $"{i} of {_renderersColliders.Length}", progress);
 
-                // GameObject go = new GameObject("Mesh Collider");
+                if(IsUseMask)
+                {
+                GameObject go = new GameObject("Mesh Collider");
 
-                // go.transform.parent = _renderers[i].transform;
+                go.transform.parent = _renderers[i].transform;
 
-                // go.transform.localPosition = Vector3.zero;
-                // go.transform.localRotation = Quaternion.identity;
-                // go.transform.localScale = Vector3.one;
+                go.transform.localPosition = Vector3.zero;
+                go.transform.localRotation = Quaternion.identity;
+                go.transform.localScale = Vector3.one;
 
-                // go.layer = _cullingSetting.layer;
+                go.layer = _cullingSetting.layer;
 
-                // MeshCollider col = go.AddComponent<MeshCollider>();
+                MeshCollider col = go.AddComponent<MeshCollider>();
 
-                 MeshCollider col=_renderers[i].gameObject.GetComponent<MeshCollider>();
-                 if(col==null){
-                     col=_renderers[i].gameObject.AddComponent<MeshCollider>();
-                 }
-                col.sharedMesh = _renderers[i].GetComponent<MeshFilter>().sharedMesh;
+                 col.sharedMesh = _renderers[i].GetComponent<MeshFilter>().sharedMesh;
 
                 _renderersColliders[i] = col;
+                }
+                else{
+                  MeshCollider col=_renderers[i].gameObject.GetComponent<MeshCollider>();
+                  if(col==null){
+                     col=_renderers[i].gameObject.AddComponent<MeshCollider>();
+                  _renderersColliders[i] = col;
+                 }
+                }
             }
 
             for (int i = 0; i < _occluders.Length; i++)
@@ -410,6 +420,8 @@ namespace AdvancedCullingSystem.StaticCullingCore
                 _occluders[i].gameObject.layer = _cullingSetting.layer;
                 _occluders[i].enabled = true;
             }
+
+            Debug.LogError("InstantiateColliders:"+_renderers.Length+"|"+_disabledColliders);
         }
 
         private void InstantiateCasters()
@@ -631,17 +643,23 @@ namespace AdvancedCullingSystem.StaticCullingCore
             staticCulling.cullingMaster = this;
         }
 
+        public const bool IsUseMask=true;
+
         private void Clear()
         {
             if (_disabledColliders != null)
                 _disabledColliders.ForEach(col => col.enabled = true);
 
-            // if (_renderersColliders != null)
-            // {
-            //     for (int i = 0; i < _renderersColliders.Length; i++)
-            //         if (_renderersColliders[i] != null)
-            //             Object.DestroyImmediate(_renderersColliders[i].gameObject);
-            // }
+            if(IsUseMask)
+            {
+                if (_renderersColliders != null)
+                {
+                    for (int i = 0; i < _renderersColliders.Length; i++)
+                        if (_renderersColliders[i] != null)
+                            Object.DestroyImmediate(_renderersColliders[i].gameObject);
+                }
+            }
+
 
             if (_casters != null)
             {

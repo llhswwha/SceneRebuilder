@@ -147,6 +147,7 @@ namespace AdvancedCullingSystem.Core
             int processed = 0;
             while (processed < casters.Count)
             {
+                //Debug.Log("processed:"+processed);
                 float progress = (float)System.Math.Round((float)processed / casters.Count, 2);
                 float percents = progress * 100;
 

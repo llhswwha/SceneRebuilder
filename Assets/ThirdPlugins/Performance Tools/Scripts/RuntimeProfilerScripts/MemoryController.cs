@@ -66,6 +66,7 @@ public class MemoryController : MonoBehaviour
                 //Mesh mesh = meshFilter.mesh;//�ᴴ��Teapot005 Instance
 
                 Mesh mesh = meshFilter.sharedMesh;//�ᴴ��Teapot005 Instance
+                if(mesh==null)continue;
                 //if(!meshList.Contains(mesh))
                 {
                     meshList.Add(mesh);

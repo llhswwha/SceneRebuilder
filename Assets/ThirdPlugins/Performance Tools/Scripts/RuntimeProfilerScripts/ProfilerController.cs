@@ -111,50 +111,52 @@ public class ProfilerController : MonoBehaviour
         StartCoroutine(UpdateInfo());
     }
 
+    public bool MainThread=false;
+    public bool BatchesCount=false;
+    public bool SetPassCallsCount=false;
+
     private void InitProfilers()
     {
         statDict = GetAvailableProfilerStats.EnumerateProfilerStats();
         
-        AddProfiler("Main Thread", ProfilerCategory.Render, ProfilerMarkerDataUnit.TimeNanoseconds);
+        if(MainThread)AddProfiler("Main Thread", ProfilerCategory.Render, ProfilerMarkerDataUnit.TimeNanoseconds);
 
-        if (IsOnlyFPS == false)
-        {
-            AddProfiler("Render Thread", ProfilerCategory.Internal, ProfilerMarkerDataUnit.TimeNanoseconds);
-            AddProfiler("Gfx.WaitForGfxCommandsFromMainThread", ProfilerCategory.Internal, ProfilerMarkerDataUnit.TimeNanoseconds);
+        // AddProfiler("Render Thread", ProfilerCategory.Internal, ProfilerMarkerDataUnit.TimeNanoseconds);
+        // AddProfiler("Gfx.WaitForGfxCommandsFromMainThread", ProfilerCategory.Internal, ProfilerMarkerDataUnit.TimeNanoseconds);
 
-            AddProfiler("Camera.Render", ProfilerCategory.Render, ProfilerMarkerDataUnit.TimeNanoseconds);
-            AddProfiler("RenderLoop.Draw", ProfilerCategory.Render, ProfilerMarkerDataUnit.TimeNanoseconds);
+        // AddProfiler("Camera.Render", ProfilerCategory.Render, ProfilerMarkerDataUnit.TimeNanoseconds);
+        // AddProfiler("RenderLoop.Draw", ProfilerCategory.Render, ProfilerMarkerDataUnit.TimeNanoseconds);
 
-            AddProfiler("Physics.Raycast", ProfilerCategory.Physics, ProfilerMarkerDataUnit.TimeNanoseconds);
-            AddProfiler("Physics.RaycastAll", ProfilerCategory.Physics, ProfilerMarkerDataUnit.TimeNanoseconds);
-            AddProfiler("Physics2D.Raycast", ProfilerCategory.Physics, ProfilerMarkerDataUnit.TimeNanoseconds);
+        // AddProfiler("Physics.Raycast", ProfilerCategory.Physics, ProfilerMarkerDataUnit.TimeNanoseconds);
+        // AddProfiler("Physics.RaycastAll", ProfilerCategory.Physics, ProfilerMarkerDataUnit.TimeNanoseconds);
+        // AddProfiler("Physics2D.Raycast", ProfilerCategory.Physics, ProfilerMarkerDataUnit.TimeNanoseconds);
 
-            AddMemoryProfiler("System Used Memory");
-            AddMemoryProfiler("Total Reserved Memory");
-            AddMemoryProfiler("Total Used Memory");
-            AddMemoryProfiler("GC Reserved Memory");
-            AddMemoryProfiler("GC Used Memory");
-            AddMemoryProfiler("Gfx Used Memory");
-            AddProfiler("Texture Count", ProfilerCategory.Memory, ProfilerMarkerDataUnit.Count);
-            AddMemoryProfiler("Texture Memory");
-            AddProfiler("Material Count", ProfilerCategory.Memory, ProfilerMarkerDataUnit.Count);
-            AddMemoryProfiler("Material Memory");
-            AddProfiler("Mesh Count", ProfilerCategory.Memory, ProfilerMarkerDataUnit.Count);
-            AddMemoryProfiler("Mesh Memory");
-            AddMemoryProfiler("Profiler Used Memory");
-            AddProfiler("Game Object Count", ProfilerCategory.Memory, ProfilerMarkerDataUnit.Count);
-            AddProfiler("Object Count", ProfilerCategory.Memory, ProfilerMarkerDataUnit.Count);
-            AddProfiler("Asset Count", ProfilerCategory.Memory, ProfilerMarkerDataUnit.Count);
-            AddProfiler("Scene Object Count", ProfilerCategory.Memory, ProfilerMarkerDataUnit.Count);
+        // AddMemoryProfiler("System Used Memory");
+        // AddMemoryProfiler("Total Reserved Memory");
+        // AddMemoryProfiler("Total Used Memory");
+        // AddMemoryProfiler("GC Reserved Memory");
+        // AddMemoryProfiler("GC Used Memory");
+        // AddMemoryProfiler("Gfx Used Memory");
+        // AddProfiler("Texture Count", ProfilerCategory.Memory, ProfilerMarkerDataUnit.Count);
+        // AddMemoryProfiler("Texture Memory");
+        // AddProfiler("Material Count", ProfilerCategory.Memory, ProfilerMarkerDataUnit.Count);
+        // AddMemoryProfiler("Material Memory");
+        // AddProfiler("Mesh Count", ProfilerCategory.Memory, ProfilerMarkerDataUnit.Count);
+        // AddMemoryProfiler("Mesh Memory");
+        // AddMemoryProfiler("Profiler Used Memory");
+        // AddProfiler("Game Object Count", ProfilerCategory.Memory, ProfilerMarkerDataUnit.Count);
+        // AddProfiler("Object Count", ProfilerCategory.Memory, ProfilerMarkerDataUnit.Count);
+        // AddProfiler("Asset Count", ProfilerCategory.Memory, ProfilerMarkerDataUnit.Count);
+        // AddProfiler("Scene Object Count", ProfilerCategory.Memory, ProfilerMarkerDataUnit.Count);
 
-            AddProfiler("Draw Calls Count", ProfilerCategory.Render, ProfilerMarkerDataUnit.Count);
-            AddProfiler("Batches Count", ProfilerCategory.Render, ProfilerMarkerDataUnit.Count);
-            AddProfiler("SetPass Calls Count", ProfilerCategory.Render, ProfilerMarkerDataUnit.Count);
-            AddProfiler("Triangles Count", ProfilerCategory.Render, ProfilerMarkerDataUnit.Count);
-            AddProfiler("Vertices Count", ProfilerCategory.Render, ProfilerMarkerDataUnit.Count);
-            AddProfiler("Used Buffers Count", ProfilerCategory.Render, ProfilerMarkerDataUnit.Count);
-            AddProfiler("Used Buffers Bytes", ProfilerCategory.Render, ProfilerMarkerDataUnit.Bytes);
-        }
+        // AddProfiler("Draw Calls Count", ProfilerCategory.Render, ProfilerMarkerDataUnit.Count);
+        if(BatchesCount)AddProfiler("Batches Count", ProfilerCategory.Render, ProfilerMarkerDataUnit.Count);
+        if(SetPassCallsCount)AddProfiler("SetPass Calls Count", ProfilerCategory.Render, ProfilerMarkerDataUnit.Count);
+        // AddProfiler("Triangles Count", ProfilerCategory.Render, ProfilerMarkerDataUnit.Count);
+        // AddProfiler("Vertices Count", ProfilerCategory.Render, ProfilerMarkerDataUnit.Count);
+        // AddProfiler("Used Buffers Count", ProfilerCategory.Render, ProfilerMarkerDataUnit.Count);
+        // AddProfiler("Used Buffers Bytes", ProfilerCategory.Render, ProfilerMarkerDataUnit.Bytes);
+
     }
 
     void OnDisable()
@@ -188,8 +190,6 @@ public class ProfilerController : MonoBehaviour
     //    UpdateStatsText();
     //}
 
-    public bool IsOnlyFPS = false;
-
     private void UpdateStatsText()
     {
         var sb = new StringBuilder(500);
@@ -205,7 +205,7 @@ public class ProfilerController : MonoBehaviour
                 //sb.AppendLine($"{info.Name}: {t * (1e-6f):F2} ms");
                 sb.AppendLine($"{info.Name}: {fps:F2}FPS ({t:F2} ms)");
             }
-            else if(IsOnlyFPS==false)
+            else
             {
                 if (info.Unit == ProfilerMarkerDataUnit.Bytes)
                     sb.AppendLine($"{info.Name}: {recorder.LastValue / (1024f * 1024f):F2} MB");

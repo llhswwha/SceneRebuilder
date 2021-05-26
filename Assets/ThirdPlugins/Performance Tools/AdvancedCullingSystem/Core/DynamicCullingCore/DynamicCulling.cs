@@ -176,27 +176,8 @@ namespace AdvancedCullingSystem.DynamicCullingCore
         public double UpdateTimeTotal;
 
         public double UpdateTime1;
-        
+
         public double UpdateTime2;
-
-        
-        public double RaycastTime = 0;
-
-        public double UpdateTime11;
-
-        public double UpdateTime12;
-
-        public double UpdateTime13;
-
-        public double UpdateTime14;
-
-        public double UpdateTime21;
-
-        public double UpdateTime22;
-
-        public double UpdateTime23;
-
-        public double UpdateTime24;
 
         [ContextMenu("UpdateInfo1")]
         public void UpdateInfo1()
@@ -212,8 +193,6 @@ namespace AdvancedCullingSystem.DynamicCullingCore
                 }
                 _hittedObjects.Clear();//清理
 
-
-                DateTime time1 = DateTime.Now;
                 _handles.Clear();
                 for (int i = 0; i < _cameras.Count; i++)
                 {
@@ -232,10 +211,7 @@ namespace AdvancedCullingSystem.DynamicCullingCore
                     _dirsOffsetIndex = 0;
 
                 JobHandle.CompleteAll(_handles);//完成射线检测
-                UpdateTime11 = (DateTime.Now - time1).TotalMilliseconds;
 
-
-                DateTime time2 = DateTime.Now;
                 _handles.Clear();
                 for (int i = 0; i < _cameras.Count; i++)
                     _handles.Add(RaycastCommand.ScheduleBatch(_rayCommands[i], _hitResults[i], 1, default));
@@ -244,8 +220,6 @@ namespace AdvancedCullingSystem.DynamicCullingCore
                     timers = _timers,
                     deltaTime = Time.deltaTime
                 }.Schedule());
-
-                UpdateTime12 = (DateTime.Now - time2).TotalMilliseconds;
             }
             catch (System.Exception ex)
             {
@@ -291,7 +265,7 @@ namespace AdvancedCullingSystem.DynamicCullingCore
 
         public bool IsSetVisible = true;
 
-        public int visibleObjLength=0;
+        public double RaycastTime = 0;
 
         [ContextMenu("UpdateInfo2")]
         public void UpdateInfo2()
@@ -307,13 +281,13 @@ namespace AdvancedCullingSystem.DynamicCullingCore
 
                 RaycastTime = (DateTime.Now - start).TotalMilliseconds;
 
-                // ShowAndHideRenderers();
-
-
-                visibleObjLength=_visibleObjects.Length;
-
-
-                DateTime start3 = DateTime.Now;
+                CollectHitObjects();//收集碰撞检测的结果：从_hitResults将碰撞物体放到_hittedObjects
+                new ComputeResultsJob()
+                {
+                    visibleObjects = _visibleObjects,
+                    hittedObjects = _hittedObjects,
+                    timers = _timers
+                }.Schedule().Complete();
                 int c = 0;
                 while (c < _visibleObjects.Length)//根据碰撞检测和时间，显示或者隐藏物体
                 {
@@ -326,28 +300,19 @@ namespace AdvancedCullingSystem.DynamicCullingCore
                                 RendererHelper.HideRenderer(_indexToRenderer[id]);
                             _visibleObjects.RemoveAtSwapBack(c);
                             _timers.RemoveAtSwapBack(c);
-                            // if (!HideRenders.Contains(id))
-                                 HideRenders.Add(id);
+
+                            if (!HideRenders.Contains(id))
+                                HideRenders.Add(id);
                         }
                         else
                         {
                             visibleRenderers.Add(_indexToRenderer[id]);
                             if (IsSetVisible)
                                 RendererHelper.ShowRenderer(_indexToRenderer[id]);
-                            // if (!ShowRenders.Contains(id))
-                                 ShowRenders.Add(id);
                             c++;
+                            if (!ShowRenders.Contains(id))
+                                ShowRenders.Add(id);
                         }
-
-                        // if (_timers[c] > _objectsLifetime)
-                        // {
-                        //     HideRenderer(c);
-                        // }
-                        // else
-                        // {
-                        //     ShowRenderer(c);
-                        //     c++;
-                        // }
                     }
                     catch (MissingReferenceException)
                     {
@@ -355,25 +320,9 @@ namespace AdvancedCullingSystem.DynamicCullingCore
                         c++;
                     }
                 }
-                UpdateTime22 = (DateTime.Now - start3).TotalMilliseconds;
-
-                DateTime start2 = DateTime.Now;
-                CollectHitObjects();//收集碰撞检测的结果：从_hitResults将碰撞物体放到_hittedObjects
-                new ComputeResultsJob()
-                {
-                    visibleObjects = _visibleObjects,
-                    hittedObjects = _hittedObjects,
-                    timers = _timers
-                }.Schedule().Complete();
-                UpdateTime21 = (DateTime.Now - start2).TotalMilliseconds;
-
-                
-
-                DateTime start4 = DateTime.Now;
                 OnRemoveRenderersFromList();
                 if (_onUpdateJobsPerFrame)
                     OnUpdateJobsPerFrame();
-                    UpdateTime23 = (DateTime.Now - start4).TotalMilliseconds;
             }
             catch (System.Exception ex)
             {
@@ -957,10 +906,16 @@ namespace AdvancedCullingSystem.DynamicCullingCore
 
             // float3 end = position + direction * 100;
             // Debug.DrawLine(position, end, Color.red,0.1f);//测试
-
-            //RaycastCommand command = new RaycastCommand(position, direction, layerMask : mask);
-            RaycastCommand command = new RaycastCommand(position, direction);
-            rayCommands[index] = command;
+            if(StaticCullingMaster.IsUseMask)
+            {
+                RaycastCommand command = new RaycastCommand(position, direction, layerMask : mask);
+                rayCommands[index] = command;
+            }
+            else
+            {
+                RaycastCommand command = new RaycastCommand(position, direction);
+                rayCommands[index] = command;
+            }
         }
     }
 

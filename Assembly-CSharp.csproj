@@ -225,6 +225,7 @@
     <Compile Include="Assets\ThirdPlugins\Ultimate Game Tools\MeshSimplify\Data\Scripts\SimplifyMeshPreview.cs" />
     <Compile Include="Assets\SceneRebuilder\Scripts\SceneRebuilder\TransformNode.cs" />
     <Compile Include="Assets\SceneRebuilder\Scripts\SceneInfo\ModelLevelScript.cs" />
+    <Compile Include="Assets\SceneRebuilder\Scripts\LODTest\LODGenerate.cs" />
     <Compile Include="Assets\ThirdPlugins\Performance Tools\RevitTool\Scripts\Data\NodeInfoAsset.cs" />
     <Compile Include="Assets\TutorialInfo\Scripts\Readme.cs" />
     <Compile Include="Assets\ThirdPlugins\Performance Tools\AdvancedCullingSystem\Core\StaticCullingCore\Data\Base\Point.cs" />
@@ -262,7 +263,16 @@
     <Compile Include="Assets\SceneRebuilder\Scripts\SceneRebuilder\RigidTransformUtils\RigidTransform-master\AcRigidTransformHelper.cs" />
     <Compile Include="Assets\ThirdPlugins\Performance Tools\RevitTool\ECS\Test\Scripts\LevelUpSystem.cs" />
     <Compile Include="Assets\ThirdPlugins\Performance Tools\RevitTool\Scripts\Data\DataTest.cs" />
-    <Compile Include="Assets\SceneRebuilder\Scripts\LODTest\LODGenerate.cs" />
+    <Compile Include="Assets\ThirdPlugins\Performance Tools\Scripts\ComponentHelper.cs" />
+    <Compile Include="Assets\ThirdPlugins\MeshCombine\MeshSelection.cs" />
+    <Compile Include="Assets\ThirdPlugins\MeshCombine\MeshCombiner.cs" />
+    <Compile Include="Assets\ThirdPlugins\MeshCombine\CombineInstanceInfo.cs" />
+    <Compile Include="Assets\ThirdPlugins\MeshCombine\CombineMesh.cs" />
+    <Compile Include="Assets\ThirdPlugins\MeshCombine\CombinedMesh.cs" />
+    <Compile Include="Assets\ThirdPlugins\MeshCombine\MeshCombinerSetting.cs" />
+    <Compile Include="Assets\ThirdPlugins\MeshCombine\CombinedMeshInfo.cs" />
+    <Compile Include="Assets\ThirdPlugins\MeshCombine\ExampleClass.cs" />
+    <Compile Include="Assets\ThirdPlugins\MeshCombine\MeshFilterInfo.cs" />
   </ItemGroup>
   <ItemGroup>
      <None Include="Assets\SceneRebuilder\Scripts\SceneRebuilder\RigidTransformUtils\RigidTransform-master\Plugins\Accord.Math.dll" />

@@ -79,6 +79,7 @@
     <Compile Include="Assets\ThirdPlugins\Performance Tools\AdvancedCullingSystem\Core\StaticCullingCore\Editor\StaticCullingEditorWindow.cs" />
     <Compile Include="Assets\ThirdPlugins\Performance Tools\RevitTool\Scripts\Editor\MeshCompareWindow.cs" />
     <Compile Include="Assets\ThirdPlugins\Ultimate Game Tools\AutomaticLOD\Editor\AutomaticLODEditor.cs" />
+    <Compile Include="Assets\ThirdPlugins\MeshCombine\Editor\MyTool.cs" />
   </ItemGroup>
   <ItemGroup>
     <Reference Include="UnityEngine">

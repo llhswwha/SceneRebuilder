@@ -1,4 +1,5 @@
 ﻿using AdvancedCullingSystem.DynamicCullingCore;
+//using Base.Common;
 using System;
 using System.Collections.Generic;
 using System.IO;
@@ -12,6 +13,7 @@ namespace AdvancedCullingSystem.StaticCullingCore
     {
         public static void Clear()
         {
+            //111
             foreach (var culling in FindObjectsOfType<StaticCulling>())
                 DestroyImmediate(culling.gameObject);
 
@@ -880,44 +882,44 @@ namespace AdvancedCullingSystem.StaticCullingCore
         [ContextMenu("SaveData")]
         public void SaveData()
         {
-            // DateTime start = DateTime.Now;
-            // BinaryTreeDataList treelist = ScriptableObject.CreateInstance<BinaryTreeDataList>();
-            // for (int i = 0; i < _trees.Length; i++)
-            // {
-            //     BinaryTree tree = _trees[i];
-            //     var data=tree.GetData();
-            //     treelist.Add(data);
-            // }
-            // //SaveAsset(treelist, "Assets/Performance Tools/AdvancedCullingSystem/Resources/", FileName);
-            // Debug.LogError("StaticCulling.SaveData:" + (DateTime.Now - start).ToString());
+            //DateTime start = DateTime.Now;
+            //BinaryTreeDataList treelist = ScriptableObject.CreateInstance<BinaryTreeDataList>();
+            //for (int i = 0; i < _trees.Length; i++)
+            //{
+            //    BinaryTree tree = _trees[i];
+            //    var data=tree.GetData();
+            //    treelist.Add(data);
+            //}
+            ////SaveAsset(treelist, "Assets/Performance Tools/AdvancedCullingSystem/Resources/", FileName);
+            //Debug.LogError("StaticCulling.SaveData:" + (DateTime.Now - start).ToString());
 
-            // allTreeData.Clear();
-            // allTreeData.Add(treelist);
+            //allTreeData.Clear();
+            //allTreeData.Add(treelist);
 
-            // //GameObject go = new GameObject(FileName);
-            // //BinaryTreeDataComponent component=go.AddComponent<BinaryTreeDataComponent>();
-            // //component.Data = treelist;
+            ////GameObject go = new GameObject(FileName);
+            ////BinaryTreeDataComponent component=go.AddComponent<BinaryTreeDataComponent>();
+            ////component.Data = treelist;
 
-            // ProgressBarHelper.DisplayProgressBar("SaveData","Compress",0);
-            // BinaryTreeDataListXml xml = new BinaryTreeDataListXml();
-            // xml.Trees = treelist.Trees;
-            // xml.Compress();
-            // Debug.LogError("StaticCulling.Compress :" + (DateTime.Now - start).ToString());
+            //ProgressBarHelper.DisplayProgressBar("SaveData","Compress",0);
+            //BinaryTreeDataListXml xml = new BinaryTreeDataListXml();
+            //xml.Trees = treelist.Trees;
+            //xml.Compress();
+            //Debug.LogError("StaticCulling.Compress :" + (DateTime.Now - start).ToString());
 
-            // ProgressBarHelper.DisplayProgressBar("SaveData","SaveXml",0);
-            // SerializeHelper.Save(xml, $"E:\\{FileName}.xml");
-            // Debug.LogError("StaticCulling.SaveXml :" + (DateTime.Now - start).ToString());
+            //ProgressBarHelper.DisplayProgressBar("SaveData","SaveXml",0);
+            //SerializeHelper.Save(xml, $"E:\\{FileName}.xml");
+            //Debug.LogError("StaticCulling.SaveXml :" + (DateTime.Now - start).ToString());
 
-            // byte[] bytes = SerializeHelper.GetBytes(xml);
+            //byte[] bytes = SerializeHelper.GetBytes(xml);
             
-            // string file = $"E:\\{FileName}";
-            // Debug.Log("bytes:" + bytes.Length+"|"+ file);
-            // ProgressBarHelper.DisplayProgressBar("SaveData","WriteAllBytes",0);
-            // File.WriteAllBytes(file, bytes);
+            //string file = $"E:\\{FileName}";
+            //Debug.Log("bytes:" + bytes.Length+"|"+ file);
+            //ProgressBarHelper.DisplayProgressBar("SaveData","WriteAllBytes",0);
+            //File.WriteAllBytes(file, bytes);
 
 
-            // Debug.LogError("StaticCulling.WriteAllBytes:" + (DateTime.Now - start).ToString());
-            // ProgressBarHelper.ClearProgressBar();
+            //Debug.LogError("StaticCulling.WriteAllBytes:" + (DateTime.Now - start).ToString());
+            //ProgressBarHelper.ClearProgressBar();
         }
 
         public static void SaveAsset<T>(T asset, string path, string name) where T : ScriptableObject
@@ -933,39 +935,39 @@ namespace AdvancedCullingSystem.StaticCullingCore
         public void LoadData()
         {
             
-            // string file = $"E:\\{FileName}.xml";
-            // Debug.Log("LoadData:"+ file);
-            // BinaryTreeDataListXml treelist = SerializeHelper.LoadFromFile<BinaryTreeDataListXml>(file);
-            // if(treelist.IsCompressed)
-            //     treelist.Decompress();
-            // //BinaryTreeDataList treelist = Resources.Load<BinaryTreeDataList>(FileName);
-            // if (treelist == null)
-            // {
-            //     Debug.LogError("StaticCulling.LoadData Data == null:" + FileName + ".asset");
-            //     return;
-            // }
+            //string file = $"E:\\{FileName}.xml";
+            //Debug.Log("LoadData:"+ file);
+            //BinaryTreeDataListXml treelist = SerializeHelper.LoadFromFile<BinaryTreeDataListXml>(file);
+            //if(treelist.IsCompressed)
+            //    treelist.Decompress();
+            ////BinaryTreeDataList treelist = Resources.Load<BinaryTreeDataList>(FileName);
+            //if (treelist == null)
+            //{
+            //    Debug.LogError("StaticCulling.LoadData Data == null:" + FileName + ".asset");
+            //    return;
+            //}
 
-            // if (_trees != null)
-            // {
-            //     foreach (var item in _trees)
-            //     {
-            //         if (item == null) continue;
-            //         GameObject.DestroyImmediate(item.gameObject);
-            //     }
-            // }
+            //if (_trees != null)
+            //{
+            //    foreach (var item in _trees)
+            //    {
+            //        if (item == null) continue;
+            //        GameObject.DestroyImmediate(item.gameObject);
+            //    }
+            //}
 
-            // _trees = new BinaryTree[treelist.Trees.Count];
+            //_trees = new BinaryTree[treelist.Trees.Count];
 
-            // for (int i = 0; i < treelist.Trees.Count; i++)
-            // {
-            //     BinaryTreeData item = (BinaryTreeData)treelist.Trees[i];
-            //     GameObject treeGo = new GameObject("BinaryTree"+(i+1));
-            //     treeGo.transform.SetParent(this.transform);
-            //     BinaryTree tree=treeGo.AddComponent<BinaryTree>();
-            //     tree.Data = item;
-            //     tree.CreateTree();
-            //     _trees[i] = tree;
-            // }
+            //for (int i = 0; i < treelist.Trees.Count; i++)
+            //{
+            //    BinaryTreeData item = (BinaryTreeData)treelist.Trees[i];
+            //    GameObject treeGo = new GameObject("BinaryTree"+(i+1));
+            //    treeGo.transform.SetParent(this.transform);
+            //    BinaryTree tree=treeGo.AddComponent<BinaryTree>();
+            //    tree.Data = item;
+            //    tree.CreateTree();
+            //    _trees[i] = tree;
+            //}
         }
 
         [ContextMenu("CombineAllTree")]
