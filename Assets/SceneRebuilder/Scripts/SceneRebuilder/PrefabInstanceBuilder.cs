@@ -1154,9 +1154,11 @@ break;
     [ContextMenu("OneKey_Align_Remove_Instance")]
     public void OneKey_Align_Remove_Instance()
     {
+        DateTime start = DateTime.Now;
         AcRTAlignJobsEx();
         RemoveInstances();
         CreateInstances();
+        Debug.LogWarning($"OneKey_Align_Remove_Instance Time:{(DateTime.Now - start).TotalMilliseconds}ms");
     }
 
     // [ContextMenu("CreateInstances(LOD_10)")]
