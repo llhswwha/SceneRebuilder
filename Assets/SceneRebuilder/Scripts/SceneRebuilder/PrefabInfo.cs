@@ -49,11 +49,17 @@ public class PrefabInfo:IComparable<PrefabInfo>
 
     public Vector3 Size=Vector3.zero;
 
-    public int InstanceCount=0;
+    public int InstanceCount
+    {
+        get
+        {
+            return Instances.Count;
+        }
+    }
 
     public void Add(GameObject instance){
         Instances.Add(instance);
-        InstanceCount++;
+        //InstanceCount++;
     }
 
   public int CompareTo(PrefabInfo other)

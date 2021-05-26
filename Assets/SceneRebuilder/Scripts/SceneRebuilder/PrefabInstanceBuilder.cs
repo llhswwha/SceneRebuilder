@@ -44,6 +44,7 @@ public class PrefabInstanceBuilder : MonoBehaviour
     public List<PrefabInfo> PrefabInfoList2 =new List<PrefabInfo>();
     public List<PrefabInfo> PrefabInfoList3 =new List<PrefabInfo>();
      public List<PrefabInfo> PrefabInfoList4 =new List<PrefabInfo>();
+    public List<PrefabInfo> PrefabInfoList5 = new List<PrefabInfo>();
 
     public GameObject CurrentPrefab=null;
 
@@ -683,7 +684,8 @@ UnpackPrefab();
         PrefabInfoList2.Clear();
         PrefabInfoList3.Clear();
         PrefabInfoList4.Clear();
-        for(int i=0;i<list.Count;i++)
+        PrefabInfoList5.Clear();
+        for (int i=0;i<list.Count;i++)
         {
             if(list[i].InstanceCount==0)
             {
@@ -697,13 +699,17 @@ UnpackPrefab();
             {
                 PrefabInfoList3.Add(list[i]);
             }
-            else
+            else if (list[i].InstanceCount < 50)
             {
                 PrefabInfoList4.Add(list[i]);
             }
+            else
+            {
+                PrefabInfoList5.Add(list[i]);
+            }
         }
 
-        Debug.LogError($"SetPrefabInfoList list1:{PrefabInfoList1.GetInstanceCount()},list2:{PrefabInfoList2.GetInstanceCount()},list3:{PrefabInfoList3.GetInstanceCount()},list4:{PrefabInfoList4.GetInstanceCount()},");
+        Debug.LogError($"SetPrefabInfoList all:{PrefabInfoList.Count}={PrefabInfoList.GetInstanceCount()}\t list1:{PrefabInfoList1.Count}={PrefabInfoList1.GetInstanceCount()}\t list2:{PrefabInfoList2.Count}={PrefabInfoList2.GetInstanceCount()}\t list3:{PrefabInfoList3.Count}={PrefabInfoList3.GetInstanceCount()}\t list4:{PrefabInfoList4.Count}={PrefabInfoList4.GetInstanceCount()}\t list5:{PrefabInfoList5.Count}={PrefabInfoList5.GetInstanceCount()},");
     }
 
     public bool IsTryAngles=true;
@@ -925,7 +931,9 @@ break;
         //List<PrefabInfo> lodPrefabInfoList
         List<PrefabInfo> list = new List<PrefabInfo>();
         //list.AddRange(PrefabInfoList3);
+
         list.AddRange(PrefabInfoList4);
+        list.AddRange(PrefabInfoList5);
 
         for (int i = 0; i < list.Count; i++)
         {
@@ -1060,7 +1068,7 @@ break;
             }
         }
         ProgressBarHelper.ClearProgressBar();
-        Debug.LogWarning($"CreateInstancesInner Count:{totalCount},Time:{(DateTime.Now - start).TotalMilliseconds}ms");
+        Debug.LogWarning($"CreateInstancesInner Count:{totalCount},Time:{(DateTime.Now - start).ToString()}ms");
 #endif
     }
 
@@ -1158,7 +1166,7 @@ break;
         AcRTAlignJobsEx();
         RemoveInstances();
         CreateInstances();
-        Debug.LogWarning($"OneKey_Align_Remove_Instance Time:{(DateTime.Now - start).TotalMilliseconds}ms");
+        Debug.LogWarning($"OneKey_Align_Remove_Instance Time:{(DateTime.Now - start).ToString()}ms");
     }
 
     // [ContextMenu("CreateInstances(LOD_10)")]
