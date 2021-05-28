@@ -320,7 +320,7 @@ public static class MeshCombineHelper
         }
 
         goNew.transform.SetParent(go.transform.parent);
-        Debug.LogError(string.Format("CombineMaterials 用时:{0},Mat数量:{1},Mesh数量:{2}",(DateTime.Now-start),mat2Filters.Count,count));
+        Debug.Log(string.Format("CombineMaterials 用时:{0},Mat数量:{1},Mesh数量:{2}",(DateTime.Now-start),mat2Filters.Count,count));
         return goNew;
     }
 

@@ -249,7 +249,6 @@ public class AreaTreeNode : MonoBehaviour
                 else{
                     AreaTreeHelper.render2NodeDict.Add(render,this);
                 }
-                
             }
             if(newRenderers!=null)
                 foreach(var render in this.newRenderers){

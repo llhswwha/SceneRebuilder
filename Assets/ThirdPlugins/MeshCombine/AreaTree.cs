@@ -302,6 +302,9 @@ public class AreaTree : MonoBehaviour
 
         GameObject cube=AreaTreeHelper.CreateBoundsCube(bounds,$"RootNode",null);
         AreaTreeNode node=cube.AddComponent<AreaTreeNode>();
+        if(RootNode!=null){
+            GameObject.DestroyImmediate(RootNode);
+        }
         this.RootNode=node;
         this.TreeNodes.Add(node);
 
@@ -377,9 +380,26 @@ public class AreaTree : MonoBehaviour
         Debug.LogError($"CreateDictionary render2NodeDict:{AreaTreeHelper.render2NodeDict.Count},\t{(DateTime.Now-start).ToString()}");
     }
 
+    [ContextMenu("OneKey")]
+    public void OneKey()
+    {
+         DateTime start=DateTime.Now;
+
+        ShowRenderers();
+        AddColliders();
+        CreateCells_Tree();
+        CombineMesh();
+        CreateDictionary();
+        Debug.LogError($"OneKey {(DateTime.Now-start).ToString()}");
+    }
+
     void Start()
     {
-        CreateDictionary();
+        // if(AreaTreeHelper.render2NodeDict.Count==0)
+        // {
+        //     CreateDictionary();
+        // }
+        
     }
 
     public Vector3 LeafCellSize;
