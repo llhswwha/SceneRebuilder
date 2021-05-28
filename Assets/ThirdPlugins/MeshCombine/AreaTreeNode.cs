@@ -152,7 +152,7 @@ public class AreaTreeNode : MonoBehaviour
         Bounds bounds=this.Bounds;
         var bs=bounds.size;
         
-        Debug.LogError("CreateSubNodes size:"+bounds.size);
+        //Debug.LogError("CreateSubNodes size:"+bounds.size);
 
         Vector3 cellCount=new Vector3(1,1,2);
 

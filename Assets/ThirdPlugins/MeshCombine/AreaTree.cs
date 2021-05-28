@@ -33,6 +33,25 @@ public class AreaTree : MonoBehaviour
         AreaTreeHelper.CreateBoundsCube(bounds,"TargetBound",transform);
     }
 
+    [ContextMenu("CreateSubBoundes")]
+    public void CreateSubBoundes()
+    {
+        List<Transform> children = new List<Transform>();
+        for (int i = 0; i < this.transform.childCount; i++)
+        {
+            children.Add(this.transform.GetChild(i));
+        }
+        foreach (var child in children)
+        {
+            //var child = this.transform.GetChild(i);
+
+            Bounds bounds = ColliderHelper.CaculateBounds(child.gameObject);
+            Debug.LogError("bounds:" + bounds);
+
+            AreaTreeHelper.CreateBoundsCube(bounds, "TargetBound", transform);
+        }
+    }
+
     [ContextMenu("ClearChildren")]
     public void ClearChildren()
     {
