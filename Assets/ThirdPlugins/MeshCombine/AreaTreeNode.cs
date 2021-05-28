@@ -146,28 +146,51 @@ public class AreaTreeNode : MonoBehaviour
         GameObject.DestroyImmediate(renderersRoot);
     }
 
-    public List<AreaTreeNode> CreateSubNodes(int level,int maxLevel,int index,AreaTree tree){
+    public List<AreaTreeNode> CreateSubNodes(int level,int maxLevel,int index,AreaTree tree,int maxRenderCount){
+
+        //Bounds bounds=ColliderHelper.CaculateBounds(this.Renderers);
+        Bounds bounds=this.Bounds;
+        var bs=bounds.size;
+        
+        Debug.LogError("CreateSubNodes size:"+bounds.size);
 
         Vector3 cellCount=new Vector3(1,1,2);
-        if(level%3==0){
-            cellCount=new Vector3(1,1,2);
-        }
-        else if(level%3==1){
-            cellCount=new Vector3(1,2,1);
-        }
-        else if(level%3==2){
+
+        // if(level%3==0){
+        //     cellCount=new Vector3(1,1,2);
+        // }
+        // else if(level%3==1){
+        //     cellCount=new Vector3(1,2,1);
+        // }
+        // else if(level%3==2){
+        //     cellCount=new Vector3(2,1,1);
+        // }
+
+        if(bs.x>=bs.y&&bs.x>=bs.z){
             cellCount=new Vector3(2,1,1);
         }
+        else if(bs.y>=bs.x&&bs.y>=bs.z){
+            cellCount=new Vector3(1,2,1);
+        }
+        else if(bs.z>=bs.x&&bs.z>=bs.y){
+            cellCount=new Vector3(1,1,2);
+        }
+        
         if(level>=maxLevel){
-            return null;
+            if(maxRenderCount>0){
+                if(this.Renderers.Count<maxRenderCount){
+                    return null;
+                }
+            }
+            else{
+                return null;
+            }
         }
         var allCount=cellCount.x*cellCount.y*cellCount.z;
         //DateTime start=DateTime.Now;
         this.ClearChildren();
 
-        //Bounds bounds=ColliderHelper.CaculateBounds(this.Renderers);
 
-        Bounds bounds=this.Bounds;
 
         // Debug.LogError("bounds:"+bounds);
         // Debug.LogError("cellCount:"+cellCount);
@@ -179,9 +202,11 @@ public class AreaTreeNode : MonoBehaviour
         // Debug.LogError("size:"+size);
         List<Bounds> cellBoundsList=new List<Bounds>();
         List<AreaTreeNode> nodes=new List<AreaTreeNode>();
+        int id=0;
         for(int i=0;i<cellCount.x;i++){
             for(int j=0;j<cellCount.y;j++){
                 for(int k=0;k<cellCount.z;k++){
+                    id++;
                     var offset=new Vector3(i*xSize,j*ySize,k*zSize);
                     var center=min+offset+size/2;
                     Bounds cellBounds=new Bounds();
@@ -189,7 +214,7 @@ public class AreaTreeNode : MonoBehaviour
                     cellBounds.size=size;
                     cellBoundsList.Add(cellBounds);
 
-                    GameObject cube=AreaTreeHelper.CreateBoundsCube(cellBounds,$"cell[{i},{j},{k}][{index}]",transform);
+                    GameObject cube=AreaTreeHelper.CreateBoundsCube(cellBounds,$"Node_{id}",transform);
                     AreaTreeNode node=cube.AddComponent<AreaTreeNode>();
                     nodes.Add(node);
                     node.Bounds=cellBounds;
@@ -218,7 +243,10 @@ public class AreaTreeNode : MonoBehaviour
         for (int i = 0; i < nodes.Count; i++)
         {
             AreaTreeNode node = nodes[i];
-            node.CreateSubNodes(level+1,maxLevel,i,tree);
+            // if(node.Renderers.Count<maxRenderCount){
+            //     continue;
+            // }
+            node.CreateSubNodes(level+1,maxLevel,i,tree,maxRenderCount);
         }
 
         // int visibleCellCount=0;
@@ -254,6 +282,28 @@ public class AreaTreeNode : MonoBehaviour
                 foreach(var render in this.newRenderers){
                     AreaTreeHelper.render2NodeDict.Add(render,this);
                 }
+        }
+    }
+
+    [ContextMenu("ShowNodes")]
+    public void ShowNodes()
+    {
+        this.gameObject.SetActive(true);
+        foreach(AreaTreeNode node in Nodes)
+        {
+            if(node==null)continue;
+            node.ShowNodes();
+        }
+    }
+
+    [ContextMenu("HideNodes")]
+    public void HideNodes()
+    {
+        this.gameObject.SetActive(false);
+        foreach(AreaTreeNode node in Nodes)
+        {
+            if(node==null)continue;
+            node.ShowNodes();
         }
     }
 }
