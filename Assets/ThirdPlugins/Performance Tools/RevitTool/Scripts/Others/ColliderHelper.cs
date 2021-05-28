@@ -293,7 +293,7 @@ public static class ColliderHelper  {
     /// </summary>
     /// <param name="renders"></param>
     /// <returns></returns>
-    public static Bounds CaculateBounds(Renderer[] renders)
+    public static Bounds CaculateBounds(IEnumerable<Renderer> renders)
     {
         Vector3 center = Vector3.zero;
         int count = 0;

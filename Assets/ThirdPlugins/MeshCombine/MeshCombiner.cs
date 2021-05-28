@@ -7,7 +7,12 @@ using System;
 //[RequireComponent(typeof(MeshRenderer),typeof(MeshFilter))]
 public class MeshCombiner : MonoBehaviour
 {
-    public int CombineMode=0;//0:sourceRoot合并为一个模型，1:sourceRoot的子物体分别合并为一个模型
+    public enum MeshCombineMode
+    {
+        All,//sourceRoot合并为一个模型
+        Self,//sourceRoot的子物体分别合并为一个模型
+    }
+    public MeshCombineMode CombineMode;//0:sourceRoot合并为一个模型，1:sourceRoot的子物体分别合并为一个模型
 
     public GameObject sourceRoot;
 
@@ -30,18 +35,24 @@ public class MeshCombiner : MonoBehaviour
     // Start is called before the first frame update
     void Start()
     {
+
+        GetSetting();
+
+        if(Auto)
+        {
+            CombineByMaterial();
+        }
+    }
+
+    public MeshCombinerSetting GetSetting()
+    {
         if(Setting==null){
             Setting=MeshCombinerSetting.Instance;
         }
         if(Setting==null){
             Setting=this.gameObject.AddComponent<MeshCombinerSetting>();
         }
-
-
-        if(Auto)
-        {
-            CombineByMaterial();
-        }
+        return Setting;
     }
 
     // public  CombinedMesh combinedMesh;
@@ -59,12 +70,14 @@ public class MeshCombiner : MonoBehaviour
 
     private void CombineEx(int mode)
     {
+        GetSetting();
+
         Debug.LogError("Start CombineEx mode:"+mode+"|"+gameObject);
         resultList=new List<GameObject>();
         string sourceName="";
-        if((sourceList.Count==0 || CombineMode == 0)&&sourceRoot!=null){
+        if((sourceList.Count==0 || CombineMode == MeshCombineMode.All)&&sourceRoot!=null){
             sourceList=new List<GameObject>();
-            if(CombineMode==0){
+            if(CombineMode==MeshCombineMode.All){
                 sourceList.Add(sourceRoot);
                 sourceName+=sourceRoot.name;
             }

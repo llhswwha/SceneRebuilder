@@ -139,19 +139,19 @@ public class CombinedMesh{
         }
         meshes=new List<MeshPartInfo>();
 
-        Debug.Log(string.Format("DoCombine allList.Count:",allList.Count));
+        //Debug.Log(string.Format("DoCombine allList.Count:",allList.Count));
         for(int i=0;i<allList.Count;i++)
         {
-            Debug.LogWarning(string.Format("DoCombine {0} ({1}/{2})",allList[i].mesh,i+1,allList.Count));
+            //Debug.LogWarning(string.Format("DoCombine {0} ({1}/{2})",allList[i].mesh,i+1,allList.Count));
             var newMesh=InnerDoCombine(allList[i],i);
             meshes.Add(newMesh);
         }
 
         DateTime start=DateTime.Now;
-        Debug.LogWarning(
-            string.Format("CombinedMesh 用时:{1}ms,Mesh数量:{1} 子模型数:{2},VertexCount:{3},Mat:{4}"
-            ,(DateTime.Now-start).TotalMilliseconds,count,allList.Count,VertexCount,mat)
-            );
+        // Debug.LogWarning(
+        //     string.Format("CombinedMesh 用时:{1}ms,Mesh数量:{1} 子模型数:{2},VertexCount:{3},Mat:{4}"
+        //     ,(DateTime.Now-start).TotalMilliseconds,count,allList.Count,VertexCount,mat)
+        //     );
     }
 
     public IEnumerator DoCombine_Coroutine(bool logTime,int waitCount){
@@ -304,7 +304,7 @@ public static class MeshCombineHelper
         DateTime start=DateTime.Now;
         GameObject goNew=new GameObject();
         goNew.name=go.name+"_Combined";
-        goNew.transform.SetParent(go.transform.parent);
+        
         //int count=0;
         Dictionary<Material,List<MeshFilter>> mat2Filters=GetMatFilters(go,out count);
         foreach(var item in mat2Filters)
@@ -318,6 +318,8 @@ public static class MeshCombineHelper
             matGo.name=material.name;
             matGo.transform.SetParent(goNew.transform);
         }
+
+        goNew.transform.SetParent(go.transform.parent);
         Debug.LogError(string.Format("CombineMaterials 用时:{0},Mat数量:{1},Mesh数量:{2}",(DateTime.Now-start),mat2Filters.Count,count));
         return goNew;
     }
@@ -365,7 +367,7 @@ public static class MeshCombineHelper
             MeshFilter filter=renderer.GetComponent<MeshFilter>();
             list.Add(filter);
         }
-        Debug.LogError(string.Format("GetMatFilters 用时:{0},Mat数量:{1},Mesh数量:{2}",(DateTime.Now-start),mat2Filters.Count,count));
+        //Debug.LogError(string.Format("GetMatFilters 用时:{0},Mat数量:{1},Mesh数量:{2}",(DateTime.Now-start),mat2Filters.Count,count));
         return mat2Filters;
     }
 
@@ -379,7 +381,7 @@ public static class MeshCombineHelper
         target.name=source.name+"_Combined";
         goNew.transform.SetParent(target.transform);
         GameObject.DestroyImmediate(goNew);
-        Debug.LogError(string.Format("CombinedMesh 用时:{0}ms,数量:{1}",(DateTime.Now-start).TotalMilliseconds,count));
+        //Debug.LogError(string.Format("CombinedMesh 用时:{0}ms,数量:{1}",(DateTime.Now-start).TotalMilliseconds,count));
         return target;
     }
 
@@ -393,7 +395,7 @@ public static class MeshCombineHelper
         target.name=source.name+"_Combined";
         goNew.transform.SetParent(target.transform);
         GameObject.DestroyImmediate(goNew);
-        Debug.LogError(string.Format("CombinedMesh 用时:{0}ms,数量:{1}",(DateTime.Now-start).TotalMilliseconds,count));
+        //Debug.LogError(string.Format("CombinedMesh 用时:{0}ms,数量:{1}",(DateTime.Now-start).TotalMilliseconds,count));
         if(isDestroy)
         {
             GameObject.Destroy(source);

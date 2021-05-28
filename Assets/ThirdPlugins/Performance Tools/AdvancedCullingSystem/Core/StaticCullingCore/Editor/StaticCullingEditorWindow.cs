@@ -362,6 +362,11 @@ namespace AdvancedCullingSystem.StaticCullingCore
 
                             for (int i = 0; i < _areasTransforms.Count; i++)
                             {
+                                if(_areasTransforms[i]==null){
+                                    _areasTransforms.RemoveAt(i);
+                                    i--;
+                                    continue;
+                                }
                                 EditorGUILayout.BeginHorizontal();
 
                                     EditorGUILayout.ObjectField(_areasTransforms[i], typeof(Transform), false);
@@ -826,7 +831,14 @@ namespace AdvancedCullingSystem.StaticCullingCore
             else if (_areasPlacing == AreasPlacing.Placing_By_User && _areasTransforms.Count > 0)
             {
                 for (int i = 0; i < _areasTransforms.Count; i++)
+                {
+                    if(_areasTransforms[i]==null){
+                        _areasTransforms.RemoveAt(i);
+                        i--;
+                        continue;
+                    }
                     _areasBounds.Add(new Bounds(_areasTransforms[i].position, _areasTransforms[i].lossyScale));//获取手动指定区域的范围
+                }
             }
         }
 
