@@ -27,29 +27,43 @@ public class AreaTree : MonoBehaviour
     [ContextMenu("CreateBoundes")]
     public void CreateBoundes()
     {
-        Bounds bounds=ColliderHelper.CaculateBounds(Target);
-        Debug.LogError("bounds:"+bounds);
+        DateTime start = DateTime.Now;
+        Renderer[] renders = Target.GetComponentsInChildren<Renderer>();
+        Bounds bounds=ColliderHelper.CaculateBounds(renders);
+        AreaTreeHelper.CreateBoundsCube(bounds, Target.name+"_TargetBound",transform);
 
-        AreaTreeHelper.CreateBoundsCube(bounds,"TargetBound",transform);
+        Debug.LogError($"target:{Target.name},renders:{renders.Length},bounds:{bounds}");
+        Debug.LogError($"CreateBoundes \t{(DateTime.Now - start).ToString()}");
     }
 
     [ContextMenu("CreateSubBoundes")]
     public void CreateSubBoundes()
     {
+        ClearChildren();
+
+        DateTime start = DateTime.Now;
         List<Transform> children = new List<Transform>();
-        for (int i = 0; i < this.transform.childCount; i++)
+        for (int i = 0; i < Target.transform.childCount; i++)
         {
-            children.Add(this.transform.GetChild(i));
+            children.Add(Target.transform.GetChild(i));
         }
-        foreach (var child in children)
+        Bounds boundsAll = new Bounds();
+        for (int i = 0; i < children.Count; i++)
         {
+            Transform child = children[i];
             //var child = this.transform.GetChild(i);
+            Renderer[] renders = child.GetComponentsInChildren<Renderer>();
+            Bounds bounds = ColliderHelper.CaculateBounds(renders);
+            AreaTreeHelper.CreateBoundsCube(bounds, child.name+"_TargetBound", transform);
 
-            Bounds bounds = ColliderHelper.CaculateBounds(child.gameObject);
-            Debug.LogError("bounds:" + bounds);
+            
+            boundsAll.Encapsulate(bounds);
 
-            AreaTreeHelper.CreateBoundsCube(bounds, "TargetBound", transform);
+            Debug.LogError($"[{i}] target:{child.name},renders:{renders.Length},bounds:{bounds},boundsAll:{boundsAll}");
         }
+        Debug.LogError($"CreateSubBoundes \t{(DateTime.Now - start).ToString()}");
+
+        AreaTreeHelper.CreateBoundsCube(boundsAll, Target.name + "_TargetBoundAll", transform);
     }
 
     [ContextMenu("ClearChildren")]
@@ -76,7 +90,7 @@ public class AreaTree : MonoBehaviour
             if(node==null)continue;
             if(node.Nodes.Count>0)continue;
             //node.CombineMesh();
-            renderCount+=node.Renderers.Count;
+            renderCount += node.RendererCount;
         }
 
         Debug.LogError($"CheckRenderers renderCount:{renderCount},\t{(DateTime.Now-start).ToString()}");
@@ -92,7 +106,7 @@ public class AreaTree : MonoBehaviour
             if(node==null)continue;
             if(node.Nodes.Count>0)continue;
             node.CombineMesh();
-            renderCount+=node.Renderers.Count;
+            renderCount += node.RendererCount;
         }
 
         int newRenderCount=0;
@@ -157,6 +171,7 @@ public class AreaTree : MonoBehaviour
 
         this.TreeNodes.Clear();
 
+        LevelDepth = 0;
         GameObject rootCube=AreaTreeHelper.CreateBoundsCube(bounds,$"RootNode",null);
         AreaTreeNode node=rootCube.AddComponent<AreaTreeNode>();
         if(RootNode!=null){
@@ -168,7 +183,7 @@ public class AreaTree : MonoBehaviour
         node.Bounds=bounds;
         node.Renderers=renderers.ToList();
         
-        node.CreateSubNodes(0,MaxLevel,0,this,MaxRenderCount);
+        node.CreateSubNodes(0,MinLevel,MaxLevel,0,this,MaxRenderCount);
 
         var allCount=this.TreeNodes.Count;
         
@@ -277,6 +292,8 @@ public class AreaTree : MonoBehaviour
 
     public Vector3 LeafCellSize;
 
+    public int LevelDepth = 0;
+
     private int ClearNodes()
     {
         TreeLeafs.Clear();
@@ -289,7 +306,7 @@ public class AreaTree : MonoBehaviour
             if(tn==null)continue;
             if(tn.gameObject==null)continue;
 
-            int renderCount=tn.Renderers.Count;
+            int renderCount = tn.RendererCount;
             if(renderCount==0){
                 GameObject.DestroyImmediate(tn.gameObject);
             }
@@ -319,6 +336,8 @@ public class AreaTree : MonoBehaviour
     }
 
     public int MaxLevel=2;
+
+    public int MinLevel = 2;
 
     public int MaxRenderCount=50;
 

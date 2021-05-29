@@ -87,7 +87,7 @@ public class AreaTreeManager : MonoBehaviour
         int cellCount=0;
         foreach(AreaTreeNode node in TreeNodes)
         {
-            if(node.Renderers.Count==0){
+            if(node.RendererCount==0){
                 GameObject.DestroyImmediate(node.gameObject);
             }
             else{
@@ -173,7 +173,7 @@ public class AreaTreeManager : MonoBehaviour
         int cellCount=0;
         foreach(AreaTreeNode node in TreeNodes)
         {
-            if(node.Renderers.Count==0){
+            if(node.RendererCount==0){
                 GameObject.DestroyImmediate(node.gameObject);
             }
             else{
@@ -192,7 +192,7 @@ public class AreaTreeManager : MonoBehaviour
    public void CreateOne()
    {
        DateTime start=DateTime.Now;
-
+        ClearCount();
        ClearTrees();
        CreateTree(Target);
        Debug.LogError($"CreateOne \t{(DateTime.Now-start).ToString()}");
@@ -204,7 +204,8 @@ public class AreaTreeManager : MonoBehaviour
 
        GameObject treeGo=new GameObject(go.name+"_Tree");
        AreaTree areaTree=treeGo.AddComponent<AreaTree>();
-       areaTree.MaxLevel=MaxLevel;
+       areaTree.MinLevel= MinLevel;
+       areaTree.MaxLevel = MaxLevel;
        areaTree.MaxRenderCount=MaxRenderCount;
        areaTree.Target=go;
        if(isCombine){
@@ -213,15 +214,41 @@ public class AreaTreeManager : MonoBehaviour
        else{
            areaTree.GenerateTree();
        }
-       
-       Trees.Add(areaTree);
+
+        LeafCount += areaTree.TreeLeafs.Count;
+        AvgCount += areaTree.AvgCellRendererCount;
+        if(areaTree.MaxCellRendererCount> MaxCount)
+            MaxCount = areaTree.MaxCellRendererCount;
+        if (areaTree.LevelDepth > Depth)
+            Depth = areaTree.LevelDepth;
+
+        Trees.Add(areaTree);
    }
 
-    public int MaxLevel=3;//3,6,9
+    public void ClearCount()
+    {
+        LeafCount = 0;
+        AvgCount = 0;
+        MaxCount = 0;
+        Depth = 0;
+    }
+
+
+    public int MinLevel = 3;//3,6,9
+
+    public int MaxLevel = 15;//3,6,9
 
     public int MaxRenderCount=50;
 
     public bool isCombine=false;
+
+    public int LeafCount;
+
+    public int AvgCount;
+
+    public int MaxCount;
+
+    public int Depth = 0;
 
    public void ClearTrees()
    {
@@ -244,6 +271,9 @@ public class AreaTreeManager : MonoBehaviour
            var child=Target.transform.GetChild(i);
            CreateTree(child.gameObject);
        }
+
+        AvgCount /= Target.transform.childCount;
+        
        Debug.LogError($"CreateOne \t{(DateTime.Now-start).ToString()}");
    }
 }

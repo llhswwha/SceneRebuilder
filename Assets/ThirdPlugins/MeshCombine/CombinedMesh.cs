@@ -250,6 +250,7 @@ public class CombinedMesh{
         else{
             for(int i=0;i<meshes.Count;i++){
                 var info=meshes[i];
+                if (info == null) continue;
                 GameObject subObj=new GameObject();
                 subObj.name=info.mesh.name;
                 subObj.transform.SetParent(target.transform);

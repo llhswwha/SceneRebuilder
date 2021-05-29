@@ -293,27 +293,69 @@ public static class ColliderHelper  {
     /// </summary>
     /// <param name="renders"></param>
     /// <returns></returns>
+    //public static Bounds CaculateBounds(IEnumerable<Renderer> renders)
+    //{
+    //    Vector3 center = Vector3.zero;
+    //    int count = 0;
+    //    foreach (Renderer child in renders)
+    //    {
+    //        if (!child.enabled) continue;
+    //        center += child.bounds.center;
+    //        count++;
+    //    }
+
+    //    if (count > 0)
+    //    {
+    //        center /= count;
+    //    }
+    //    Bounds bounds = new Bounds(center, Vector3.zero);
+
+    //    foreach (Renderer child in renders)
+    //    {
+    //        if (!child.enabled) continue;
+
+    //        Bounds childBound = child.bounds;
+    //        if (childBound.size.x>100000)
+    //        {
+    //            Debug.LogError("1 bounds.size.x>100000:"+child.name+"|"+ childBound + "|"+ child.transform.parent.name);
+    //            //break;
+    //            continue;
+    //        }
+
+    //        bounds.Encapsulate(childBound);
+
+    //        if (bounds.size.x > 100000)
+    //        {
+    //            Debug.LogError("2 bounds.size.x>100000:" + child.name + "|" + childBound + "|" + child.transform.parent.name);
+    //            break;
+    //        }
+    //    }
+    //    return bounds;
+    //}
+
     public static Bounds CaculateBounds(IEnumerable<Renderer> renders)
     {
-        Vector3 center = Vector3.zero;
-        int count = 0;
+        Vector3 min = new Vector3(float.MaxValue, float.MaxValue, float.MaxValue);
+        Vector3 max = new Vector3(0, 0, 0);
         foreach (Renderer child in renders)
         {
             if (!child.enabled) continue;
-            center += child.bounds.center;
-            count++;
-        }
+            var pos = child.transform.position;
+            if (pos.x > 5000 || pos.y > 5000 || pos.z > 5000)//异常数据
+            {
+                Debug.LogError("pos.x > 5000 || pos.y > 5000 || pos.z > 5000:"+child.name);
+                continue;
+            }
 
-        if (count > 0)
-        {
-            center /= count;
+            Bounds childBound = child.bounds;
+
+            min = Vector3.Min(min, childBound.min);
+            max = Vector3.Max(max, childBound.max);
         }
+        Vector3 center = (min + max) / 2;
         Bounds bounds = new Bounds(center, Vector3.zero);
-        foreach (Renderer child in renders)
-        {
-            if (!child.enabled) continue;
-            bounds.Encapsulate(child.bounds);
-        }
+        bounds.size = max - min;
+        Debug.LogError($"CaculateBounds min:{min};max:{max},size:{bounds.size},bounds:{bounds}");
         return bounds;
     }
 }

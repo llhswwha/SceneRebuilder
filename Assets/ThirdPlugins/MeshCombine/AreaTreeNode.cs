@@ -9,6 +9,14 @@ public class AreaTreeNode : MonoBehaviour
 
     public List<MeshRenderer> Renderers=new List<MeshRenderer>();
 
+    public int RendererCount
+    {
+        get
+        {
+            return Renderers.Count;
+        }
+    }
+
     public MeshRenderer[] newRenderers;
 
     public List<AreaTreeNode> Nodes=new List<AreaTreeNode>();
@@ -146,7 +154,9 @@ public class AreaTreeNode : MonoBehaviour
         GameObject.DestroyImmediate(renderersRoot);
     }
 
-    public List<AreaTreeNode> CreateSubNodes(int level,int maxLevel,int index,AreaTree tree,int maxRenderCount){
+    public bool IsLeaf = false;
+
+    public List<AreaTreeNode> CreateSubNodes(int level,int minLevel,int maxLevel,int index,AreaTree tree,int maxRenderCount){
 
         //Bounds bounds=ColliderHelper.CaculateBounds(this.Renderers);
         Bounds bounds=this.Bounds;
@@ -175,14 +185,26 @@ public class AreaTreeNode : MonoBehaviour
         else if(bs.z>=bs.x&&bs.z>=bs.y){
             cellCount=new Vector3(1,1,2);
         }
+
+        if (level > maxLevel)
+        {
+            IsLeaf = true;
+            return null;
+        }
         
-        if(level>=maxLevel){
+        if(level>=minLevel){
             if(maxRenderCount>0){
                 if(this.Renderers.Count<maxRenderCount){
+                    IsLeaf = true;
+                    if (level > tree.LevelDepth)
+                    {
+                        tree.LevelDepth = level;
+                    }
                     return null;
                 }
             }
             else{
+                IsLeaf = true;
                 return null;
             }
         }
@@ -227,8 +249,7 @@ public class AreaTreeNode : MonoBehaviour
         }
 
         var renderers=this.Renderers;
-        int count=0;
-        foreach(var render in renderers)
+         foreach(var render in renderers)
         {
             var pos=render.transform.position;
             foreach(AreaTreeNode node in nodes)
@@ -240,13 +261,16 @@ public class AreaTreeNode : MonoBehaviour
             }
         }
 
+        //RendererCount = renderers.Count;
+        //renderers.Clear();
+
         for (int i = 0; i < nodes.Count; i++)
         {
             AreaTreeNode node = nodes[i];
             // if(node.Renderers.Count<maxRenderCount){
             //     continue;
             // }
-            node.CreateSubNodes(level+1,maxLevel,i,tree,maxRenderCount);
+            node.CreateSubNodes(level+1,minLevel,maxLevel,i,tree,maxRenderCount);
         }
 
         // int visibleCellCount=0;
