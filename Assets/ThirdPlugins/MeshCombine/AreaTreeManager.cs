@@ -276,4 +276,44 @@ public class AreaTreeManager : MonoBehaviour
         
        Debug.LogError($"CreateOne \t{(DateTime.Now-start).ToString()}");
    }
+
+    public void ToReanderers()
+    {
+        foreach(var tree in Trees)
+        {
+            tree.SwitchToRenderers();
+        }
+    }
+
+    public void ToCombined()
+    {
+        foreach(var tree in Trees)
+        {
+            tree.SwitchToCombined();
+        }
+    }
+
+    public void CreateDictionary()
+    {
+        foreach(var tree in Trees)
+        {
+            tree.CreateDictionary();
+        }
+    }
+
+    public void HideLeafNodes()
+    {
+        foreach(var tree in Trees)
+        {
+            tree.HideLeafNodes();
+        }
+    }
+
+    public void ShowLeafNodes()
+    {
+        foreach(var tree in Trees)
+        {
+            tree.ShowLeafNodes();
+        }
+    }
 }
