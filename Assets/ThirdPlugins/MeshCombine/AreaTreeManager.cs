@@ -198,7 +198,8 @@ public class AreaTreeManager : MonoBehaviour
        Debug.LogError($"CreateOne \t{(DateTime.Now-start).ToString()}");
    }
 
-   public void CreateTree(GameObject go)
+    List<Material> matList = new List<Material>();
+    public void CreateTree(GameObject go)
    {
        AreaTreeHelper.CubePrefab=this.CubePrefab;
 
@@ -223,14 +224,32 @@ public class AreaTreeManager : MonoBehaviour
             Depth = areaTree.LevelDepth;
 
         Trees.Add(areaTree);
+
+        RendererCount += areaTree.RootNode.RendererCount;
+
+        
+        foreach(var render in areaTree.RootNode.Renderers)
+        {
+            if(!matList.Contains(render.sharedMaterial))
+            {
+                matList.Add(render.sharedMaterial);
+            }
+        }
+        MatCount = matList.Count;
+
+        CombinedCount += areaTree.CombinedCount;
    }
 
     public void ClearCount()
     {
+        matList.Clear();
         LeafCount = 0;
         AvgCount = 0;
         MaxCount = 0;
         Depth = 0;
+        RendererCount = 0;
+        MatCount = 0;
+        CombinedCount = 0;
     }
 
 
@@ -242,6 +261,12 @@ public class AreaTreeManager : MonoBehaviour
 
     public bool isCombine=false;
 
+    public int RendererCount = 0;
+
+    public int CombinedCount = 0;
+
+    public int MatCount = 0;
+
     public int LeafCount;
 
     public int AvgCount;
@@ -250,7 +275,8 @@ public class AreaTreeManager : MonoBehaviour
 
     public int Depth = 0;
 
-   public void ClearTrees()
+    [ContextMenu("ClearTrees")]
+    public void ClearTrees()
    {
        foreach(var tree in Trees)
        {
@@ -277,6 +303,7 @@ public class AreaTreeManager : MonoBehaviour
        Debug.LogError($"CreateOne \t{(DateTime.Now-start).ToString()}");
    }
 
+    [ContextMenu("ToReanderers")]
     public void ToReanderers()
     {
         foreach(var tree in Trees)
@@ -285,6 +312,7 @@ public class AreaTreeManager : MonoBehaviour
         }
     }
 
+    [ContextMenu("ToCombined")]
     public void ToCombined()
     {
         foreach(var tree in Trees)
@@ -293,6 +321,7 @@ public class AreaTreeManager : MonoBehaviour
         }
     }
 
+    [ContextMenu("CreateDictionary")]
     public void CreateDictionary()
     {
         foreach(var tree in Trees)
@@ -301,6 +330,7 @@ public class AreaTreeManager : MonoBehaviour
         }
     }
 
+    [ContextMenu("HideLeafNodes")]
     public void HideLeafNodes()
     {
         foreach(var tree in Trees)
@@ -309,6 +339,7 @@ public class AreaTreeManager : MonoBehaviour
         }
     }
 
+    [ContextMenu("ShowLeafNodes")]
     public void ShowLeafNodes()
     {
         foreach(var tree in Trees)

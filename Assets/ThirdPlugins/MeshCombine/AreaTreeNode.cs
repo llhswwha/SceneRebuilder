@@ -318,6 +318,11 @@ public class AreaTreeNode : MonoBehaviour
             if(node==null)continue;
             node.ShowNodes();
         }
+
+        foreach (var render in Renderers)
+        {
+            render.gameObject.SetActive(true);
+        }
     }
 
     [ContextMenu("HideNodes")]
@@ -328,6 +333,11 @@ public class AreaTreeNode : MonoBehaviour
         {
             if(node==null)continue;
             node.ShowNodes();
+        }
+
+        foreach(var render in Renderers)
+        {
+            render.gameObject.SetActive(false);
         }
     }
 }

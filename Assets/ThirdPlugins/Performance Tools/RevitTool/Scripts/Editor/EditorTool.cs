@@ -688,6 +688,41 @@ public class EditorTool : MonoBehaviour
         Debug.Log($"SetChangeModelSelection {(DateTime.Now-start).ToString()}");
     }
 
+    [MenuItem("EditorTool/Models/GPUI")]
+    private static void SetModelGPUI()
+    {
+        var start=DateTime.Now;
+        Object[] selectedAssets = Selection.GetFiltered(typeof(Object), SelectionMode.Assets);
+        print("selectedAssets:"+ selectedAssets.Length+"|"+ selectedAssets);
+
+        for (int i = 0; i < selectedAssets.Length; i++)
+        {
+            var assetObj=selectedAssets[i];
+            float progress=(float)i/selectedAssets.Length;
+            float percent=progress*100;
+            if(EditorUtility.DisplayCancelableProgressBar("SetChangeModelSelection",$"{i}/{selectedAssets.Length} {percent}% of 100%",progress))
+            {
+
+                break;
+            }
+
+            string sPath = AssetDatabase.GetAssetPath(assetObj);
+            ModelImporter importer = (ModelImporter)ModelImporter.GetAtPath(sPath);
+
+            Debug.Log($"[{i}] {assetObj} \t{sPath} \t{importer} \t{importer.isReadable} \t{importer.materialLocation}");
+
+            if (importer.isReadable==false || importer.materialLocation== ModelImporterMaterialLocation.InPrefab)
+            {
+                importer.isReadable = true;
+                //importer.
+                importer.materialLocation = ModelImporterMaterialLocation.External;
+                AssetDatabase.ImportAsset(sPath);  //这句不加，面板上数字会变，但是实际大小不会变
+            }
+        }
+        EditorUtility.ClearProgressBar();
+        Debug.Log($"SetChangeModelSelection {(DateTime.Now-start).ToString()}");
+    }
+
     private static string currentModelSceneName = "XXXX";
 
     /// <summary>

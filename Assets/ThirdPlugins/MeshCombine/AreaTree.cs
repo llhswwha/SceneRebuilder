@@ -118,8 +118,12 @@ public class AreaTree : MonoBehaviour
             }
         }
 
+        CombinedCount = newRenderCount;
+
         Debug.LogError($"CombineMesh renderCount:{renderCount}->{newRenderCount},\t{(DateTime.Now-start).ToString()}");
     }
+
+    public int CombinedCount = 0;
 
     [ContextMenu("SwitchToCombined")]
     public void SwitchToCombined()
@@ -213,7 +217,7 @@ public class AreaTree : MonoBehaviour
             t.gameObject.SetActive(true);
         }
 
-        var renderers=GameObject.FindObjectsOfType<MeshRenderer>();
+        var renderers= Target.GetComponentsInChildren<MeshRenderer>();
         //var renderers=Target.GetComponentsInChildren<MeshRenderer>();
         foreach(var render in renderers){
             render.enabled=true;
