@@ -15,26 +15,31 @@ public class AreaTreeManagerUI : MonoBehaviour
 
     public void ToReanderers()
     {
+        Debug.Log("AreaTreeManagerUI.ToReanderers");
         Manager.ToReanderers();
     }
 
     public void ToCombined()
     {
+        Debug.Log("AreaTreeManagerUI.ToCombined");
         Manager.ToCombined();
     }
 
     public void CreateDictionary()
     {
+        Debug.Log("AreaTreeManagerUI.CreateDictionary");
         Manager.CreateDictionary();
     }
 
     public void HideLeafNodes()
     {
+        Debug.Log("AreaTreeManagerUI.HideLeafNodes");
         Manager.HideLeafNodes();
     }
 
     public void ShowLeafNodes()
     {
+        Debug.Log("AreaTreeManagerUI.ShowLeafNodes");
         Manager.ShowLeafNodes();
     }
 }

@@ -105,7 +105,7 @@ public class AreaTree : MonoBehaviour
         {
             if(node==null)continue;
             if(node.Nodes.Count>0)continue;
-            node.CombineMesh();
+            node.CombineMesh(this.IsCopy);
             renderCount += node.RendererCount;
         }
 
@@ -153,6 +153,22 @@ public class AreaTree : MonoBehaviour
         Debug.LogError($"SwitchToRenderers \t{(DateTime.Now-start).ToString()}");
     }
 
+    public MeshRenderer[] TreeRenderers;
+
+    public MeshRenderer[] GetTreeRendererers()
+    {
+        if(TreeRenderers!=null&&TreeRenderers.Length>0){
+            return TreeRenderers;
+        }
+        else if(Target!=null){
+            var renderers=Target.GetComponentsInChildren<MeshRenderer>();
+            return renderers;
+        }
+        else{
+            return TreeRenderers;
+        }
+    }
+
     [ContextMenu("CreateCells_Tree")]
     public void CreateCells_Tree()
     {
@@ -162,14 +178,14 @@ public class AreaTree : MonoBehaviour
         DateTime start=DateTime.Now;
         ClearChildren();
 
-
-        var renderers=Target.GetComponentsInChildren<MeshRenderer>();
+        MeshRenderer[] renderers=GetTreeRendererers();
+        
         Debug.LogError("renderers:"+renderers.Length);
         foreach(var render in renderers){
             render.enabled=true;
         }
 
-        Bounds bounds=ColliderHelper.CaculateBounds(Target);
+        Bounds bounds=ColliderHelper.CaculateBounds(renderers);
         Debug.LogError("size:"+bounds.size);
         Debug.LogError("size2:"+bounds.size/2);
 
@@ -178,9 +194,7 @@ public class AreaTree : MonoBehaviour
         LevelDepth = 0;
         GameObject rootCube=AreaTreeHelper.CreateBoundsCube(bounds,$"RootNode",null);
         AreaTreeNode node=rootCube.AddComponent<AreaTreeNode>();
-        if(RootNode!=null){
-            GameObject.DestroyImmediate(RootNode);
-        }
+        DestoryNodes();
         this.RootNode=node;
         this.TreeNodes.Add(node);
 
@@ -212,25 +226,44 @@ public class AreaTree : MonoBehaviour
     {
         DateTime start=DateTime.Now;
 
-        var ts=AreaTreeHelper.GetAllTransforms(Target.transform);
-        foreach(var t in ts){
-            t.gameObject.SetActive(true);
+        if(TreeRenderers!=null&&TreeRenderers.Length>0){
+            foreach(var render in TreeRenderers){
+                render.enabled=true;
+                render.gameObject.SetActive(true);
+            }
+            Debug.LogError($"ShowRenderers renderers:{TreeRenderers.Length},\t{(DateTime.Now-start).ToString()}");
+        }
+        else if(Target!=null){
+            var ts=AreaTreeHelper.GetAllTransforms(Target.transform);
+            foreach(var t in ts){
+                t.gameObject.SetActive(true);
+            }
+            var renderers= Target.GetComponentsInChildren<MeshRenderer>();
+            //var renderers=Target.GetComponentsInChildren<MeshRenderer>();
+            foreach(var render in renderers){
+                render.enabled=true;
+                render.gameObject.SetActive(true);
+            }
+            Debug.LogError($"ShowRenderers renderers:{renderers.Length},\t{(DateTime.Now-start).ToString()}");
+        }
+        else{
+
+            foreach(var render in TreeRenderers){
+                render.enabled=true;
+                render.gameObject.SetActive(true);
+            }
+            Debug.LogError($"ShowRenderers renderers:{TreeRenderers.Length},\t{(DateTime.Now-start).ToString()}");
         }
 
-        var renderers= Target.GetComponentsInChildren<MeshRenderer>();
-        //var renderers=Target.GetComponentsInChildren<MeshRenderer>();
-        foreach(var render in renderers){
-            render.enabled=true;
-            render.gameObject.SetActive(true);
-        }
-        Debug.LogError($"ShowRenderers renderers:{renderers.Length},\t{(DateTime.Now-start).ToString()}");
+
+        
     }
 
     [ContextMenu("AddColliders")]
     public void AddColliders()
     {
         DateTime start=DateTime.Now;
-        var renderers=Target.GetComponentsInChildren<MeshRenderer>();
+        var renderers=GetTreeRendererers();
         foreach(var render in renderers){
             MeshCollider collider=render.gameObject.GetComponent<MeshCollider>();
             if(collider==null){
@@ -243,6 +276,7 @@ public class AreaTree : MonoBehaviour
     [ContextMenu("CreateDictionary")]
     public void CreateDictionary()
     {
+        Debug.LogError($"CreateDictionary Start");
         DateTime start=DateTime.Now;
         AreaTreeHelper.render2NodeDict.Clear();
         foreach(AreaTreeNode tn in TreeNodes)
@@ -256,7 +290,7 @@ public class AreaTree : MonoBehaviour
             // }
             tn.CreateDictionary();
         }
-        Debug.LogError($"CreateDictionary render2NodeDict:{AreaTreeHelper.render2NodeDict.Count},\t{(DateTime.Now-start).ToString()}");
+        Debug.LogError($"CreateDictionary End render2NodeDict:{AreaTreeHelper.render2NodeDict.Count},\t{(DateTime.Now-start).ToString()}");
     }
 
     [ContextMenu("GenerateMesh")]
@@ -345,6 +379,8 @@ public class AreaTree : MonoBehaviour
 
     public int MaxRenderCount=50;
 
+    public bool IsCopy=false;
+
     [ContextMenu("ShowNodes")]
     public void ShowNodes()
     {
@@ -381,6 +417,26 @@ public class AreaTree : MonoBehaviour
             node.HideNodes();
         }
         Debug.LogError($"HideLeafNodes {(DateTime.Now-start).ToString()}");
+    }
+
+    [ContextMenu("DestoryNodes")]
+    public void DestoryNodes()
+    {
+        if(IsCopy){
+            if(RootNode!=null)
+                GameObject.DestroyImmediate(RootNode.gameObject);
+        }
+        else{
+            foreach(var node in TreeLeafs){
+                foreach(var render in node.Renderers)
+                {
+                    render.enabled=true;
+                    render.transform.SetParent(Target.transform);
+                }
+            }
+            if(RootNode!=null)
+                GameObject.DestroyImmediate(RootNode.gameObject);
+        }
     }
 }
 

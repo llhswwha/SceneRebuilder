@@ -24,32 +24,34 @@ public class AreaTreeNode : MonoBehaviour
     public void AddRenderer(MeshRenderer renderer){
         Renderers.Add(renderer);
     }
+    
 
     public GameObject renderersRoot;
 
     [ContextMenu("CopyRenderers")]
-    public void CopyRenderers()
+    public void CopyRenderers(bool isCopy)
     {
         //newRenderers.Clear();
         renderersRoot=new GameObject(this.name+"_Renderers");
         //renderersRoot.transform.SetParent(this.transform);
-
         foreach(var render in Renderers){
             //render.enabled=false;
-            GameObject copy=MeshHelper.CopyGO(render.gameObject);
+            GameObject go=render.gameObject;
+            if(isCopy)
+            {
+                go=MeshHelper.CopyGO(go);
+                go.SetActive(false);
+            }
             // MeshCollider collider=copy.GetComponent<MeshCollider>();
             // if(collider){
             //     GameObject.DestroyImmediate(collider);
             // }
-            copy.SetActive(true);
-            copy.transform.SetParent(renderersRoot.transform);
-
-            render.gameObject.SetActive(false);
+            go.SetActive(true);
+            go.transform.SetParent(renderersRoot.transform);
         }
 
-        newRenderers=renderersRoot.GetComponentsInChildren<MeshRenderer>();
-
-
+        if(isCopy)
+            newRenderers=renderersRoot.GetComponentsInChildren<MeshRenderer>();
     }
 
     [ContextMenu("DestroySelfRenderer")]
@@ -75,7 +77,7 @@ public class AreaTreeNode : MonoBehaviour
     public GameObject combindResult;
 
     [ContextMenu("CombineMesh")]
-    public void CombineMesh()
+    public void CombineMesh(bool isCopy)
     {
 
         if(renderersRoot){
@@ -84,7 +86,7 @@ public class AreaTreeNode : MonoBehaviour
 
         DestroySelfRenderer();
 
-        CopyRenderers();
+        CopyRenderers(isCopy);
 
         CombineInner();
 
@@ -304,7 +306,13 @@ public class AreaTreeNode : MonoBehaviour
             }
             if(newRenderers!=null)
                 foreach(var render in this.newRenderers){
-                    AreaTreeHelper.render2NodeDict.Add(render,this);
+                    if(AreaTreeHelper.render2NodeDict.ContainsKey(render))
+                    {
+                        //Debug.LogError($"模型重复在不同的Node里:{AreaTreeHelper.render2NodeDict[render]},{this}");
+                    }
+                    else{
+                        AreaTreeHelper.render2NodeDict.Add(render,this);
+                    }
                 }
         }
     }

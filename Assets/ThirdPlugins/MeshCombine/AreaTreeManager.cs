@@ -33,6 +33,9 @@ public class AreaTreeManager : MonoBehaviour
     }
 
    public GameObject Target=null;
+
+   public PrefabInstanceBuilder PrefabInstanceBuilder;
+
    [ContextMenu("CreateCells_Count")]
     public void CreateCells_Count()
     {
@@ -201,14 +204,24 @@ public class AreaTreeManager : MonoBehaviour
     List<Material> matList = new List<Material>();
     public void CreateTree(GameObject go)
    {
+        string treeName="NewAreaTree"+"_Tree";
+        if(go!=null){
+            treeName=go.name+"_Tree";
+        }
        AreaTreeHelper.CubePrefab=this.CubePrefab;
 
-       GameObject treeGo=new GameObject(go.name+"_Tree");
+       GameObject treeGo=new GameObject(treeName);
        AreaTree areaTree=treeGo.AddComponent<AreaTree>();
        areaTree.MinLevel= MinLevel;
        areaTree.MaxLevel = MaxLevel;
        areaTree.MaxRenderCount=MaxRenderCount;
-       areaTree.Target=go;
+       areaTree.IsCopy=this.IsCopy;
+
+        areaTree.Target=go;
+        if(PrefabInstanceBuilder!=null){
+            areaTree.TreeRenderers=PrefabInstanceBuilder.GetCombinedRenderers().ToArray();
+        }
+
        if(isCombine){
            areaTree.GenerateMesh();
        }
@@ -261,6 +274,8 @@ public class AreaTreeManager : MonoBehaviour
 
     public bool isCombine=false;
 
+    public bool IsCopy=true;
+
     public int RendererCount = 0;
 
     public int CombinedCount = 0;
@@ -278,6 +293,7 @@ public class AreaTreeManager : MonoBehaviour
     [ContextMenu("ClearTrees")]
     public void ClearTrees()
    {
+       AreaTreeHelper.render2NodeDict.Clear();
        foreach(var tree in Trees)
        {
            if(tree==null)continue;
@@ -324,8 +340,10 @@ public class AreaTreeManager : MonoBehaviour
     [ContextMenu("CreateDictionary")]
     public void CreateDictionary()
     {
+        Debug.Log("AreaTreeManager.CreateDictionary:"+Trees.Count);
         foreach(var tree in Trees)
         {
+            Debug.Log("tree:"+tree);
             tree.CreateDictionary();
         }
     }

@@ -49,10 +49,13 @@ public class PrefabInfo:IComparable<PrefabInfo>
 
     public Vector3 Size=Vector3.zero;
 
+    public int _InstanceCount;
+
     public int InstanceCount
     {
         get
         {
+            _InstanceCount=Instances.Count;
             return Instances.Count;
         }
     }
@@ -81,6 +84,21 @@ public static class PrefabInfoListHelper
         return count;
     }
 
+    public static List<MeshRenderer> GetRenderers(this List<PrefabInfo> list)
+    {
+        List<MeshRenderer> renderers = new List<MeshRenderer>();
+        for (int i = 0; i < list.Count; i++)
+        {
+            renderers.Add(list[i].Prefab.GetComponent<MeshRenderer>());
+            var insList = list[i].GetInstances();
+            for (int j=0;j< insList.Count; j++)
+            {
+                renderers.Add(insList[j].GetComponent<MeshRenderer>());
+            }
+        }
+        return renderers;
+    }
+
     public static int RemoveInstances(this List<PrefabInfo> list)
     {
         int count = 0;
@@ -95,4 +113,6 @@ public static class PrefabInfoListHelper
         }
         return count;
     }
+
+
 }

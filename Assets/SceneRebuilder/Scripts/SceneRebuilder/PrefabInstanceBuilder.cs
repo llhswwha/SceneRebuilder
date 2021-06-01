@@ -46,6 +46,8 @@ public class PrefabInstanceBuilder : MonoBehaviour
      public List<PrefabInfo> PrefabInfoList4 =new List<PrefabInfo>();
     public List<PrefabInfo> PrefabInfoList5 = new List<PrefabInfo>();
 
+    public List<PrefabInfo> PrefabInfoList6 = new List<PrefabInfo>();
+
     public GameObject CurrentPrefab=null;
 
     public int TryRotateAngleCount=20;
@@ -332,6 +334,28 @@ UnpackPrefab();
             UpackPrefab_One(child.gameObject);
         }
 #endif
+
+        ShowRenderers();
+    }
+
+    [ContextMenu("ShowRenderers")]
+    public void ShowRenderers()
+    {
+        DateTime start=DateTime.Now;
+
+        TargetRoots.gameObject.SetActive(true);
+        var ts=AreaTreeHelper.GetAllTransforms(TargetRoots.transform);
+        foreach(var t in ts){
+            t.gameObject.SetActive(true);
+        }
+
+        var renderers=GameObject.FindObjectsOfType<MeshRenderer>();
+        //var renderers=Target.GetComponentsInChildren<MeshRenderer>();
+        foreach(var render in renderers){
+            render.enabled=true;
+            render.gameObject.SetActive(true);
+        }
+        Debug.LogError($"ShowRenderers renderers:{renderers.Length},\t{(DateTime.Now-start).ToString()}");
     }
 
     public int maxLoopCount=0;
@@ -685,6 +709,7 @@ UnpackPrefab();
         PrefabInfoList3.Clear();
         PrefabInfoList4.Clear();
         PrefabInfoList5.Clear();
+        PrefabInfoList6.Clear();
         for (int i=0;i<list.Count;i++)
         {
             if(list[i].InstanceCount==0)
@@ -703,13 +728,17 @@ UnpackPrefab();
             {
                 PrefabInfoList4.Add(list[i]);
             }
-            else
+            else if (list[i].InstanceCount < 100)
             {
                 PrefabInfoList5.Add(list[i]);
             }
+            else
+            {
+                PrefabInfoList6.Add(list[i]);
+            }
         }
 
-        Debug.LogError($"SetPrefabInfoList all:{PrefabInfoList.Count}={PrefabInfoList.GetInstanceCount()}\t list1:{PrefabInfoList1.Count}={PrefabInfoList1.GetInstanceCount()}\t list2:{PrefabInfoList2.Count}={PrefabInfoList2.GetInstanceCount()}\t list3:{PrefabInfoList3.Count}={PrefabInfoList3.GetInstanceCount()}\t list4:{PrefabInfoList4.Count}={PrefabInfoList4.GetInstanceCount()}\t list5:{PrefabInfoList5.Count}={PrefabInfoList5.GetInstanceCount()},");
+        Debug.LogError($"SetPrefabInfoList all:{PrefabInfoList.Count}={PrefabInfoList.GetInstanceCount()}\t list1:{PrefabInfoList1.Count}={PrefabInfoList1.GetInstanceCount()}\t list2:{PrefabInfoList2.Count}={PrefabInfoList2.GetInstanceCount()}\t list3:{PrefabInfoList3.Count}={PrefabInfoList3.GetInstanceCount()}\t list4:{PrefabInfoList4.Count}={PrefabInfoList4.GetInstanceCount()}\t list5:{PrefabInfoList5.Count}={PrefabInfoList5.GetInstanceCount()} \tlist6:{PrefabInfoList6.Count}={PrefabInfoList6.GetInstanceCount()},");
     }
 
     public bool IsTryAngles=true;
@@ -906,6 +935,16 @@ break;
 
     public Material[] LODMaterials ;
 
+    public List<MeshRenderer> GetCombinedRenderers()
+    {
+        List<MeshRenderer> list = new List<MeshRenderer>();
+        list.AddRange(PrefabInfoList1.GetRenderers());
+        list.AddRange(PrefabInfoList2.GetRenderers());
+        list.AddRange(PrefabInfoList3.GetRenderers());
+        list.AddRange(PrefabInfoList4.GetRenderers());
+        return list;
+    }
+
     private void CreateInstancesInner(bool userLOD,bool userGPUPrefab,int maxInstanceCount,float[] lvs,float[] lodVertexPercents)
     {
         GPUInstancerPrefabManager prefabManager = GameObject.FindObjectOfType<GPUInstancerPrefabManager>();
@@ -932,8 +971,9 @@ break;
         List<PrefabInfo> list = new List<PrefabInfo>();
         //list.AddRange(PrefabInfoList3);
 
-        list.AddRange(PrefabInfoList4);
+        //list.AddRange(PrefabInfoList4);
         list.AddRange(PrefabInfoList5);
+        list.AddRange(PrefabInfoList6);
 
         for (int i = 0; i < list.Count; i++)
         {
@@ -1130,23 +1170,23 @@ break;
         CreateInstancesInner(true,true,0,LODLevels,null);
     }
 
-    [ContextMenu("CreateInstances(LOD5)")]
-    private void CreateInstances_LOD5()
-    {
-        CreateInstancesInner(true,true,0,new float[] { 0.7f, 0.4f, 0.2f, 0.07f, 0.01f },null);
-    }
+    // [ContextMenu("CreateInstances(LOD5)")]
+    // private void CreateInstances_LOD5()
+    // {
+    //     CreateInstancesInner(true,true,0,new float[] { 0.7f, 0.4f, 0.2f, 0.07f, 0.01f },null);
+    // }
 
-    [ContextMenu("CreateInstances(LOD4)")]
-    private void CreateInstances_LOD4()
-    {
-        CreateInstancesInner(true,true,0,new float[] { 0.6f, 0.2f, 0.07f, 0.01f },new float[] { 1f,0.6f,0.3f,0.1f });
-    }
+    // [ContextMenu("CreateInstances(LOD4)")]
+    // private void CreateInstances_LOD4()
+    // {
+    //     CreateInstancesInner(true,true,0,new float[] { 0.6f, 0.2f, 0.07f, 0.01f },new float[] { 1f,0.6f,0.3f,0.1f });
+    // }
 
-    [ContextMenu("CreateInstances(LOD3)")]
-    private void CreateInstances_LOD3()
-    {
-        CreateInstancesInner(true,true,0,new float[] { 0.6f, 0.2f, 0.01f },new float[] { 1f,0.7f,0.2f });
-    }
+    // [ContextMenu("CreateInstances(LOD3)")]
+    // private void CreateInstances_LOD3()
+    // {
+    //     CreateInstancesInner(true,true,0,new float[] { 0.6f, 0.2f, 0.01f },new float[] { 1f,0.7f,0.2f });
+    // }
 
     [ContextMenu("ShowPrefabInfo")]
     private void ShowPrefabInfo()
