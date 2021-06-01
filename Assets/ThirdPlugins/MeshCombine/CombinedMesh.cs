@@ -264,8 +264,12 @@ public class CombinedMesh{
         target.transform.position=source.transform.position;//坐标一致,不设置的话，就是按照新的target的坐标来
         target.transform.localRotation=source.transform.localRotation;//坐标一致,不设置的话，就是按照新的target的坐标来
         target.transform.localScale=source.transform.localScale;//坐标一致,不设置的话，就是按照新的target的坐标来
-        CombinedMeshInfo meshInfo=target.AddComponent<CombinedMeshInfo>();
-        meshInfo.combinedMesh=this;
+
+        if(MeshCombineHelper.AddScripted)
+        {
+            var meshInfo = target.AddComponent<CombinedMeshInfo>();
+            meshInfo.combinedMesh = this;
+        }
 
         name=target.name;
         NewGo=target;
@@ -277,6 +281,8 @@ public class CombinedMesh{
 
 public static class MeshCombineHelper
 {
+
+    public static bool AddScripted = false;
 
     public static GameObject SimpleCombine(GameObject source,GameObject target){
         
@@ -353,22 +359,105 @@ public static class MeshCombineHelper
         Debug.LogError(string.Format("CombineMaterials 用时:{0},Mat数量:{1},Mesh数量:{2}",(DateTime.Now-start),mat2Filters.Count,count));
         yield return goNew;
     }
-   
-    public static Dictionary<Material,List<MeshFilter>> GetMatFilters(GameObject go,out int count){
-        DateTime start=DateTime.Now;
-        Dictionary<Material,List<MeshFilter>> mat2Filters=new Dictionary<Material, List<MeshFilter>>();
-        MeshRenderer[] renderers=go.GetComponentsInChildren<MeshRenderer>();
-        count=renderers.Length;
-        for(int i=0;i<renderers.Length;i++){
-            MeshRenderer renderer=renderers[i];
-            if(!mat2Filters.ContainsKey(renderer.sharedMaterial)){
-                mat2Filters.Add(renderer.sharedMaterial,new List<MeshFilter>());
+
+    public class MatInfo
+    {
+        public Material Mat;
+
+        public string Key = "";
+
+        public MatInfo(Material mat)
+        {
+            this.Mat = mat;
+
+            Key = GetMatKey(mat);
+        }
+
+        public static string GetMatKey(Material mat)
+        {
+            return $"{mat.GetColor("_BaseColor")},{mat.GetFloat("_Metallic")},{mat.GetFloat("_Smoothness")},{mat.GetTexture("_BaseColorMap")},{mat.GetTexture("_NormalMap")}";
+        }
+
+        public List<MeshFilter> MeshFilters = new List<MeshFilter>();
+
+        public void AddList(List<MeshFilter> list)
+        {
+            MeshFilters.AddRange(list);
+        }
+    }
+
+    //public static void SetMaterials(GameObject go)
+    //{
+    //    int count = 0;
+    //    var mats = MeshCombineHelper.GetMatFilters(go, out count);
+    //    SetMaterials(mats);
+    //}
+
+    public static void SetMaterials(Dictionary<Material, List<MeshFilter>> mats)
+    {
+        //int count = 0;
+        //var mats = MeshCombineHelper.GetMatFilters(go, out count);
+        foreach (var mat in mats.Keys)
+        {
+            var list = mats[mat];
+            foreach (var item in list)
+            {
+                MeshRenderer renderer = item.GetComponent<MeshRenderer>();
+                renderer.sharedMaterial = mat;
             }
-            List<MeshFilter> list=mat2Filters[renderer.sharedMaterial];
-            MeshFilter filter=renderer.GetComponent<MeshFilter>();
+        }
+    }
+
+    public static Dictionary<Material, List<MeshFilter>> GetMatFiltersInner(GameObject go, out int count)
+    {
+        DateTime start = DateTime.Now;
+        Dictionary<Material, List<MeshFilter>> mat2Filters = new Dictionary<Material, List<MeshFilter>>();
+        MeshRenderer[] renderers = go.GetComponentsInChildren<MeshRenderer>();
+        count = renderers.Length;
+        for (int i = 0; i < renderers.Length; i++)
+        {
+            MeshRenderer renderer = renderers[i];
+            if (!mat2Filters.ContainsKey(renderer.sharedMaterial))
+            {
+                mat2Filters.Add(renderer.sharedMaterial, new List<MeshFilter>());
+            }
+            List<MeshFilter> list = mat2Filters[renderer.sharedMaterial];
+            MeshFilter filter = renderer.GetComponent<MeshFilter>();
             list.Add(filter);
         }
-        //Debug.LogError(string.Format("GetMatFilters 用时:{0},Mat数量:{1},Mesh数量:{2}",(DateTime.Now-start),mat2Filters.Count,count));
+
+        Dictionary<string, MatInfo> infos = new Dictionary<string, MatInfo>();
+        foreach (var mat in mat2Filters.Keys)
+        {
+            var list = mat2Filters[mat];
+            MatInfo info = new MatInfo(mat);
+            if (infos.ContainsKey(info.Key))
+            {
+                var item = infos[info.Key];
+                item.AddList(list);
+            }
+            else
+            {
+                infos.Add(info.Key, info);
+                info.AddList(list);
+            }
+        }
+
+        Dictionary<Material, List<MeshFilter>> mat2Filters2 = new Dictionary<Material, List<MeshFilter>>();
+        foreach (var info in infos.Values)
+        {
+            mat2Filters2.Add(info.Mat, info.MeshFilters);
+        }
+        return mat2Filters2;
+    }
+
+    public static Dictionary<Material, List<MeshFilter>> GetMatFilters(GameObject go,out int count,bool isSetMaterial=false){
+        Dictionary<Material, List<MeshFilter>> mat2Filters = GetMatFiltersInner(go, out count);
+        if (isSetMaterial)
+        {
+            SetMaterials(mat2Filters);
+            mat2Filters = GetMatFiltersInner(go, out count);
+        }
         return mat2Filters;
     }
 

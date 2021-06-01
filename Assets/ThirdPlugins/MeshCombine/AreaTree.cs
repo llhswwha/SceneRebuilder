@@ -199,7 +199,7 @@ public class AreaTree : MonoBehaviour
         this.TreeNodes.Add(node);
 
         node.Bounds=bounds;
-        node.Renderers=renderers.ToList();
+        node.AddRenderers(renderers.ToList());
         
         node.CreateSubNodes(0,MinLevel,MaxLevel,0,this,MaxRenderCount);
 
@@ -224,39 +224,54 @@ public class AreaTree : MonoBehaviour
     [ContextMenu("ShowRenderers")]
     public void ShowRenderers()
     {
-        DateTime start=DateTime.Now;
+        SetRenderersVisible(true);
+    }
 
-        if(TreeRenderers!=null&&TreeRenderers.Length>0){
-            foreach(var render in TreeRenderers){
-                render.enabled=true;
-                render.gameObject.SetActive(true);
+    [ContextMenu("HideRenderers")]
+    public void HideRenderers()
+    {
+        SetRenderersVisible(false);
+    }
+
+    public void SetRenderersVisible(bool isVisible)
+    {
+        DateTime start = DateTime.Now;
+
+        if (TreeRenderers != null && TreeRenderers.Length > 0)
+        {
+            foreach (var render in TreeRenderers)
+            {
+                render.enabled = isVisible;
+                render.gameObject.SetActive(isVisible);
             }
-            Debug.LogError($"ShowRenderers renderers:{TreeRenderers.Length},\t{(DateTime.Now-start).ToString()}");
+            Debug.LogError($"ShowRenderers renderers:{TreeRenderers.Length},\t{(DateTime.Now - start).ToString()}");
         }
-        else if(Target!=null){
-            var ts=AreaTreeHelper.GetAllTransforms(Target.transform);
-            foreach(var t in ts){
+        else if (Target != null)
+        {
+            var ts = AreaTreeHelper.GetAllTransforms(Target.transform);
+            foreach (var t in ts)
+            {
                 t.gameObject.SetActive(true);
             }
-            var renderers= Target.GetComponentsInChildren<MeshRenderer>();
+            var renderers = Target.GetComponentsInChildren<MeshRenderer>();
             //var renderers=Target.GetComponentsInChildren<MeshRenderer>();
-            foreach(var render in renderers){
-                render.enabled=true;
-                render.gameObject.SetActive(true);
+            foreach (var render in renderers)
+            {
+                render.enabled = isVisible;
+                render.gameObject.SetActive(isVisible);
             }
-            Debug.LogError($"ShowRenderers renderers:{renderers.Length},\t{(DateTime.Now-start).ToString()}");
+            Debug.LogError($"ShowRenderers renderers:{renderers.Length},\t{(DateTime.Now - start).ToString()}");
         }
-        else{
+        else
+        {
 
-            foreach(var render in TreeRenderers){
-                render.enabled=true;
-                render.gameObject.SetActive(true);
+            foreach (var render in TreeRenderers)
+            {
+                render.enabled = isVisible;
+                render.gameObject.SetActive(isVisible);
             }
-            Debug.LogError($"ShowRenderers renderers:{TreeRenderers.Length},\t{(DateTime.Now-start).ToString()}");
+            Debug.LogError($"ShowRenderers renderers:{TreeRenderers.Length},\t{(DateTime.Now - start).ToString()}");
         }
-
-
-        
     }
 
     [ContextMenu("AddColliders")]
@@ -428,7 +443,8 @@ public class AreaTree : MonoBehaviour
         }
         else{
             foreach(var node in TreeLeafs){
-                foreach(var render in node.Renderers)
+                var renders = node.GetRenderers();
+                foreach (var render in renders)
                 {
                     render.enabled=true;
                     render.transform.SetParent(Target.transform);
@@ -437,6 +453,126 @@ public class AreaTree : MonoBehaviour
             if(RootNode!=null)
                 GameObject.DestroyImmediate(RootNode.gameObject);
         }
+    }
+
+    [ContextMenu("GetMaterials")]
+    public void GetMaterials()
+    {
+        DateTime start = DateTime.Now;
+
+        ShowRenderers();
+
+        List<string> matKeys = new List<string>();
+        List<Material> mats = new List<Material>();
+        var renders = Target.GetComponentsInChildren<MeshRenderer>();
+        foreach (var render in renders)
+        {
+            if (!mats.Contains(render.sharedMaterial))
+            {
+                mats.Add(render.sharedMaterial);
+            }
+        }
+
+        //foreach(var mat in mats)
+        //{
+        //    MeshCombineHelper.MatInfo matInfo = new MeshCombineHelper.MatInfo(mat);
+        //    matKeys.Add(matInfo.Key);
+        //}
+
+        //matKeys.Sort();
+        //string txt = "";
+        //foreach(var key in matKeys)
+        //{
+        //    txt += key + "\n";
+        //}
+
+        //List<string> matKeys2 = new List<string>();
+        //Dictionary<string, MeshCombineHelper.MatInfo> infos = new Dictionary<string, MeshCombineHelper.MatInfo>();
+        //foreach (var mat in mats)
+        //{
+        //    //var list = mat2Filters[mat];
+        //    MeshCombineHelper.MatInfo info = new MeshCombineHelper.MatInfo(mat);
+        //    if (infos.ContainsKey(info.Key))
+        //    {
+        //        var item = infos[info.Key];
+        //        //item.AddList(list);
+        //    }
+        //    else
+        //    {
+        //        infos.Add(info.Key, info);
+        //        //info.AddList(list);
+
+        //        matKeys2.Add(info.Key);
+        //    }
+        //}
+
+        //matKeys2.Sort();
+        //string txt2 = "";
+        //foreach (var key in matKeys2)
+        //{
+        //    txt2 += key + "\n";
+        //}
+
+        int count = 0;
+        var matsEx = MeshCombineHelper.GetMatFilters(Target, out count,false);
+        //foreach(var mat in mats.Keys)
+        //{
+        //    var list = mats[mat];
+        //    foreach(var item in list)
+        //    {
+        //        MeshRenderer renderer = item.GetComponent<MeshRenderer>();
+        //        renderer.sharedMaterial = mat;
+        //    }
+        //}
+
+        //MeshCombineHelper.SetMaterials(Target);
+
+        Debug.LogError($"GetMaterials {(DateTime.Now - start).ToString()},mats1:{mats.Count},mats2:{matsEx.Count},count:{count}");
+    }
+
+
+    [ContextMenu("SetMaterials")]
+    public void SetMaterials()
+    {
+        DateTime start = DateTime.Now;
+
+        ShowRenderers();
+
+        int count = 0;
+        var mats = MeshCombineHelper.GetMatFilters(Target, out count,true);
+
+        //MeshCombineHelper.SetMaterials(Target);
+
+        Debug.LogError($"SetMaterials {(DateTime.Now - start).ToString()},mats:{mats.Count},count:{count}");
+    }
+
+    [ContextMenu("ShowModelInfo")]
+    private void ShowModelInfo()
+    {
+        int renderCount = 0;
+        var renderers = GameObject.FindObjectsOfType<MeshRenderer>();
+        int vertextCount = 0;
+        List<Material> mats = new List<Material>();
+        foreach (var render in renderers)
+        {
+            if (render.enabled == false) continue;
+            if (!mats.Contains(render.sharedMaterial))
+            {
+                mats.Add(render.sharedMaterial);
+            }
+            MeshFilter meshFilter = render.GetComponent<MeshFilter>();
+            vertextCount += meshFilter.sharedMesh.vertexCount;
+            renderCount++;
+        }
+        int w = vertextCount / 10000;
+
+        //ModelInfoText.text = $"renders:{renderCount}(+{renderCount - lastRenderCount}),mats:{mats.Count}(+{mats.Count - lastMatCount}) \nvertext:{w}w(+{w - lastVertextCount})";
+
+        //lastRenderCount = renderCount;
+        //lastVertextCount = w;
+        //lastMatCount = mats.Count;
+
+        Debug.LogError($"ShowModelInfo renders:{renderCount},mats:{mats.Count},vertext:{w}w");
     }
 }
 

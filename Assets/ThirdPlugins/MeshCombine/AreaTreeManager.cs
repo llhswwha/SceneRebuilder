@@ -181,7 +181,7 @@ public class AreaTreeManager : MonoBehaviour
             }
             else{
                 cellCount++;
-                node.name+="_"+node.Renderers.Count;
+                node.name += "_" + node.RendererCount;
             }
         }
 
@@ -240,8 +240,8 @@ public class AreaTreeManager : MonoBehaviour
 
         RendererCount += areaTree.RootNode.RendererCount;
 
-        
-        foreach(var render in areaTree.RootNode.Renderers)
+        var renders = areaTree.RootNode.GetRenderers();
+        foreach (var render in renders)
         {
             if(!matList.Contains(render.sharedMaterial))
             {
@@ -364,5 +364,61 @@ public class AreaTreeManager : MonoBehaviour
         {
             tree.ShowLeafNodes();
         }
+    }
+
+    [ContextMenu("ShowRenderers")]
+    public void ShowRenderers()
+    {
+        foreach (var tree in Trees)
+        {
+            tree.ShowRenderers();
+        }
+    }
+
+    [ContextMenu("HideRenderers")]
+    public void HideRenderers()
+    {
+        foreach (var tree in Trees)
+        {
+            tree.HideRenderers();
+        }
+    }
+
+    [ContextMenu("GetMaterials")]
+    public void GetMaterials()
+    {
+        DateTime start = DateTime.Now;
+
+        ShowRenderers();
+
+        List<string> matKeys = new List<string>();
+        List<Material> mats = new List<Material>();
+        var renders = Target.GetComponentsInChildren<MeshRenderer>();
+        foreach (var render in renders)
+        {
+            if (!mats.Contains(render.sharedMaterial))
+            {
+                mats.Add(render.sharedMaterial);
+            }
+        }
+        int count = 0;
+        var matsEx = MeshCombineHelper.GetMatFilters(Target, out count, false);
+        Debug.LogError($"GetMaterials {(DateTime.Now - start).ToString()},mats1:{mats.Count},mats2:{matsEx.Count},count:{count}");
+    }
+
+
+    [ContextMenu("SetMaterials")]
+    public void SetMaterials()
+    {
+        DateTime start = DateTime.Now;
+
+        ShowRenderers();
+
+        int count = 0;
+        var mats = MeshCombineHelper.GetMatFilters(Target, out count, true);
+
+        //MeshCombineHelper.SetMaterials(Target);
+
+        Debug.LogError($"SetMaterials {(DateTime.Now - start).ToString()},mats:{mats.Count},count:{count}");
     }
 }

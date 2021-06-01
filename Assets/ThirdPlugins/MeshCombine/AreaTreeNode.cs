@@ -7,7 +7,7 @@ public class AreaTreeNode : MonoBehaviour
 {
     public Bounds Bounds;
 
-    public List<MeshRenderer> Renderers=new List<MeshRenderer>();
+    private List<MeshRenderer> Renderers=new List<MeshRenderer>();
 
     public int RendererCount
     {
@@ -17,41 +17,72 @@ public class AreaTreeNode : MonoBehaviour
         }
     }
 
-    public MeshRenderer[] newRenderers;
+    public List<MeshRenderer> GetRenderers()
+    {
+        return Renderers;
+    }
+
+    private List<MeshRenderer> newRenderers = new List<MeshRenderer>();
 
     public List<AreaTreeNode> Nodes=new List<AreaTreeNode>();
 
     public void AddRenderer(MeshRenderer renderer){
         Renderers.Add(renderer);
     }
-    
+
+    public void AddRenderers(List<MeshRenderer> renderers)
+    {
+        Renderers.AddRange(renderers);
+    }
+
 
     public GameObject renderersRoot;
 
     [ContextMenu("CopyRenderers")]
     public void CopyRenderers(bool isCopy)
     {
+        newRenderers.Clear();
         //newRenderers.Clear();
-        renderersRoot=new GameObject(this.name+"_Renderers");
+        renderersRoot =new GameObject(this.name+"_Renderers");
         //renderersRoot.transform.SetParent(this.transform);
         foreach(var render in Renderers){
             //render.enabled=false;
             GameObject go=render.gameObject;
             if(isCopy)
             {
-                go=MeshHelper.CopyGO(go);
                 go.SetActive(false);
+                go =MeshHelper.CopyGO(go);
+                go.SetActive(true);
+
+                var renderNew = go.GetComponent<MeshRenderer>();
+                newRenderers.Add(renderNew);
             }
+            else
+            {
+                newRenderers.Add(render);
+            }
+
+            //newRenderers.Add
+
+            //go.SetActive(false);
             // MeshCollider collider=copy.GetComponent<MeshCollider>();
             // if(collider){
             //     GameObject.DestroyImmediate(collider);
             // }
-            go.SetActive(true);
+
             go.transform.SetParent(renderersRoot.transform);
         }
 
-        if(isCopy)
-            newRenderers=renderersRoot.GetComponentsInChildren<MeshRenderer>();
+        //if(isCopy)
+        //    newRenderers=renderersRoot.GetComponentsInChildren<MeshRenderer>();
+    }
+
+    public void HideRenders()
+    {
+        foreach (var r in newRenderers)
+        {
+            r.enabled = false;
+        }
     }
 
     [ContextMenu("DestroySelfRenderer")]
@@ -91,6 +122,8 @@ public class AreaTreeNode : MonoBehaviour
         CombineInner();
 
         renderersRoot.transform.SetParent(this.transform);
+
+        HideRenders();
     }
 
     private void CombineInner()
@@ -120,7 +153,7 @@ public class AreaTreeNode : MonoBehaviour
         if(renderersRoot==null){
             return;
         }
-        newRenderers=renderersRoot.GetComponentsInChildren<MeshRenderer>();
+        //newRenderers=renderersRoot.GetComponentsInChildren<MeshRenderer>();
         foreach(var r in newRenderers){
             r.enabled=!isCombined;
         }
