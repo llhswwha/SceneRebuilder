@@ -7,7 +7,17 @@ public class AreaTreeNode : MonoBehaviour
 {
     public Bounds Bounds;
 
+    public GameObject renderersRoot;
+
+    public GameObject combindResult;
+
+    public bool IsLeaf = false;
+
     private List<MeshRenderer> Renderers=new List<MeshRenderer>();
+
+    private List<MeshRenderer> newRenderers = new List<MeshRenderer>();
+
+    public List<AreaTreeNode> Nodes = new List<AreaTreeNode>();
 
     public int RendererCount
     {
@@ -22,10 +32,6 @@ public class AreaTreeNode : MonoBehaviour
         return Renderers;
     }
 
-    private List<MeshRenderer> newRenderers = new List<MeshRenderer>();
-
-    public List<AreaTreeNode> Nodes=new List<AreaTreeNode>();
-
     public void AddRenderer(MeshRenderer renderer){
         Renderers.Add(renderer);
     }
@@ -34,9 +40,6 @@ public class AreaTreeNode : MonoBehaviour
     {
         Renderers.AddRange(renderers);
     }
-
-
-    public GameObject renderersRoot;
 
     [ContextMenu("CopyRenderers")]
     public void CopyRenderers(bool isCopy)
@@ -104,8 +107,6 @@ public class AreaTreeNode : MonoBehaviour
         }
         return count;
     }
-
-    public GameObject combindResult;
 
     [ContextMenu("CombineMesh")]
     public void CombineMesh(bool isCopy)
@@ -189,10 +190,11 @@ public class AreaTreeNode : MonoBehaviour
         GameObject.DestroyImmediate(renderersRoot);
     }
 
-    public bool IsLeaf = false;
 
+    private AreaTree tree;
     public List<AreaTreeNode> CreateSubNodes(int level,int minLevel,int maxLevel,int index,AreaTree tree,int maxRenderCount){
 
+        this.tree = tree;
         //Bounds bounds=ColliderHelper.CaculateBounds(this.Renderers);
         Bounds bounds=this.Bounds;
         var bs=bounds.size;
@@ -380,6 +382,44 @@ public class AreaTreeNode : MonoBehaviour
         foreach(var render in Renderers)
         {
             render.gameObject.SetActive(false);
+        }
+    }
+
+    Mesh meshAsset = null;
+
+    [ContextMenu("SaveMeshes")]
+    public void SaveMeshes(string dir)
+    {
+        if (meshAsset != null) return;
+
+        MeshFilter[] meshFilters = combindResult.GetComponentsInChildren<MeshFilter>();
+        for (int i = 0; i < meshFilters.Length; i++)
+        {
+            MeshFilter meshFilter = meshFilters[i];
+            if(UnityEditor.AssetDatabase.Contains(meshFilter.sharedMesh))
+            {
+                return;
+            }
+        }
+
+        meshAsset = new Mesh();
+        //string assetName = tree.Target.name+"_"+gameObject.name + gameObject.GetInstanceID();
+        string assetName = gameObject.name + gameObject.GetInstanceID();
+
+        string meshPath = dir+"/" + assetName + ".asset";
+        AutomaticLODHelper.SaveAsset(meshAsset, meshPath, false);
+        
+        for (int i = 0; i < meshFilters.Length; i++)
+        {
+            MeshFilter meshFilter = meshFilters[i];
+            Debug.LogError("meshFilter.sharedMesh :"+ meshFilter.sharedMesh);
+            if (meshFilter.sharedMesh == null)
+            {
+                Debug.LogError("meshFilter.sharedMesh == null");
+                continue;
+            }
+            Mesh mesh = meshFilter.sharedMesh;
+            AutomaticLODHelper.SaveAsset(mesh, meshPath, true );
         }
     }
 }

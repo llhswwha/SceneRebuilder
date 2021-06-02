@@ -44,21 +44,21 @@ public static class AutomaticLODHelper
         root.SetLODLevels(listLODLevels, AutomaticLOD.EvalMode.ScreenCoverage, 1000.0f, bRecurseIntoChildren);
     }
 
-    public static bool SaveMesh(Mesh mesh,string strFile,bool bAssetAlreadyCreated)
+    public static bool SaveAsset(Object assetObj,string strFile,bool bAssetAlreadyCreated)
     {
-        if (bAssetAlreadyCreated == false && UnityEditor.AssetDatabase.Contains(mesh) == false)
+        if (bAssetAlreadyCreated == false && UnityEditor.AssetDatabase.Contains(assetObj) == false)
         {
             Debug.LogError($"CreateAsset:{strFile}");
-            UnityEditor.AssetDatabase.CreateAsset(mesh, strFile);
+            UnityEditor.AssetDatabase.CreateAsset(assetObj, strFile);
             bAssetAlreadyCreated = true;
         }
         else
         {
-            if (UnityEditor.AssetDatabase.Contains(mesh) == false)
+            if (UnityEditor.AssetDatabase.Contains(assetObj) == false)
             {
                 Debug.LogError($"AddObjectToAsset:{strFile}");
-                UnityEditor.AssetDatabase.AddObjectToAsset(mesh, strFile);
-                UnityEditor.AssetDatabase.ImportAsset(UnityEditor.AssetDatabase.GetAssetPath(mesh));
+                UnityEditor.AssetDatabase.AddObjectToAsset(assetObj, strFile);
+                UnityEditor.AssetDatabase.ImportAsset(UnityEditor.AssetDatabase.GetAssetPath(assetObj));
             }
         }
         return bAssetAlreadyCreated;
@@ -111,7 +111,7 @@ public static class AutomaticLODHelper
                     //    }
                     //}
 
-                    bAssetAlreadyCreated = SaveMesh(mesh, strFile, bAssetAlreadyCreated);
+                    bAssetAlreadyCreated = SaveAsset(mesh, strFile, bAssetAlreadyCreated);
 
                     nProgressElementsCounter++;
                 }

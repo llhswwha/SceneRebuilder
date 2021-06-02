@@ -1433,6 +1433,9 @@ MonoBehaviour:
   - {fileID: 0}
   - {fileID: 0}
   - {fileID: 0}
+  CombinedCount: 0
+  TreeRenderers: []
+  CellCount: 0
   AvgCellRendererCount: 202
   MaxCellRendererCount: 1654
   MinCellRendererCount: 3
@@ -1441,6 +1444,7 @@ MonoBehaviour:
   MaxLevel: 9
   MinLevel: 2
   MaxRenderCount: 50
+  IsCopy: 0
 --- !u!114 &1210907614275931427
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -1458,14 +1462,21 @@ MonoBehaviour:
   Count: {x: 10, y: 10, z: 10}
   TreeNodes: []
   Target: {fileID: 0}
+  PrefabInstanceBuilder: {fileID: 0}
   CubePrefab: {fileID: 5167878986544178000, guid: 4b69ac42827e3e949a40fe0a6add838a, type: 3}
   Trees:
   - {fileID: 0}
-  MinLevel: 10
-  MaxLevel: 15
+  MinLevel: 6
+  MaxLevel: 20
   MaxRenderCount: 0
   isCombine: 1
-  LeafCount: 532
-  AvgCount: 25
-  MaxCount: 382
-  Depth: 0
+  IsCopy: 1
+  VertexCount: 15
+  RendererCount: 2000
+  CombinedCount: 116
+  MatCount: 6
+  LeafCount: 41
+  CellCount: 91
+  AvgCount: 21
+  MaxCount: 127
+  Depth: 6

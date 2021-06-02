@@ -577,6 +577,52 @@ public class AreaTree : MonoBehaviour
 
         Debug.LogError($"ShowModelInfo renders:{renderCount},mats:{mats.Count},vertext:{w}w");
     }
+
+    [ContextMenu("SaveMeshes")]
+    public void SaveMeshes(string dir)
+    {
+        DateTime start = DateTime.Now;
+
+        for (int i = 0; i < TreeLeafs.Count; i++)
+        {
+            var leafNode = TreeLeafs[i];
+            if (leafNode == null) continue;
+            float progress = (float)i / TreeLeafs.Count;
+            float percents = progress * 100;
+            if (ProgressBarHelper.DisplayCancelableProgressBar("SaveMeshes", $"{i}/{TreeLeafs.Count} {percents}% of 100%", progress))
+            {
+                break;
+            }
+            leafNode.SaveMeshes(dir);
+        }
+        ProgressBarHelper.ClearProgressBar();
+
+        Debug.LogError($"SaveMeshes {(DateTime.Now - start).ToString()}");
+    }
+
+    [ContextMenu("SaveTree")]
+    public void SaveTree()
+    {
+        DateTime start = DateTime.Now;
+
+        //string guid = UnityEditor.AssetDatabase.CreateFolder("Assets", "My Folder");
+        //Debug.LogError("guid:" + guid);
+        //string newFolderPath = UnityEditor.AssetDatabase.GUIDToAssetPath(guid);
+        //Debug.LogError("newFolderPath:" + newFolderPath);
+
+        string parentDir = "Assets/Models/Instances/Trees";
+        string guid2 = UnityEditor.AssetDatabase.CreateFolder(parentDir, Target.name+"_"+ Target.GetInstanceID());
+        Debug.LogError("guid2:" + guid2);
+        string newFolderPath2 = UnityEditor.AssetDatabase.GUIDToAssetPath(guid2);
+        Debug.LogError("newFolderPath2:" + newFolderPath2);
+
+        SaveMeshes(newFolderPath2);
+
+        string prefabPath = parentDir+"/" + this.gameObject.name +"_"+ this.gameObject.GetInstanceID()+ ".prefab";
+        GameObject obj=UnityEditor.PrefabUtility.SaveAsPrefabAssetAndConnect(this.gameObject, prefabPath,UnityEditor.InteractionMode.UserAction);
+
+        Debug.LogError($"SaveTree {(DateTime.Now - start).ToString()}");
+    }
 }
 
 public static class AreaTreeHelper

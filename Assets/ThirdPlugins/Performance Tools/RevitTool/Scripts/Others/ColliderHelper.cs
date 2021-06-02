@@ -336,7 +336,7 @@ public static class ColliderHelper  {
     public static Bounds CaculateBounds(IEnumerable<Renderer> renders)
     {
         Vector3 min = new Vector3(float.MaxValue, float.MaxValue, float.MaxValue);
-        Vector3 max = new Vector3(0, 0, 0);
+        Vector3 max = new Vector3(float.MinValue, float.MinValue, float.MinValue);
         foreach (Renderer child in renders)
         {
             if (!child.enabled) continue;
