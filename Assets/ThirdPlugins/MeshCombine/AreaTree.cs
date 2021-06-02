@@ -206,12 +206,15 @@ public class AreaTree : MonoBehaviour
         var allCount=this.TreeNodes.Count;
         
         int cellCount=ClearNodes();
-        AvgCellRendererCount=(int)(renderers.Length/cellCount);
+        CellCount = cellCount;
+        AvgCellRendererCount =(int)(renderers.Length/cellCount);
 
         rootCube.transform.SetParent(this.transform);
 
         Debug.LogError($"CreateCells_Tree cellCount:{cellCount}/{allCount},\tavg:{AvgCellRendererCount},\t{(DateTime.Now-start).ToString()}");
     }
+
+    public int CellCount = 0;
 
     public int AvgCellRendererCount=0;
 
