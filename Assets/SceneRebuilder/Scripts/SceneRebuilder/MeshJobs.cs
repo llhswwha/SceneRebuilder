@@ -714,11 +714,69 @@ namespace MeshJobs
             return prefabInfoList;
         }
 
+        public static Dictionary<Transform, Transform> GetParentDict(MeshFilter[] meshFilters)
+        {
+            Dictionary<Transform, Transform> parentDict = new Dictionary<Transform, Transform>();
+            foreach (var meshFilter in meshFilters)
+            {
+                parentDict.Add(meshFilter.transform, meshFilter.transform.parent);
+            }
+            return parentDict;
+        }
+
+        public static void RestoreParent(Dictionary<Transform, Transform> parentDict)
+        {
+            List<Transform> parents = new List<Transform>();
+
+            Dictionary<Transform, List<Transform>> parentChildren = new Dictionary<Transform, List<Transform>>();
+
+            foreach (var child in parentDict.Keys)
+            {
+                if (child == null) continue;
+                var parent = parentDict[child];
+                if(!parentChildren.ContainsKey(parent))
+                {
+                    parentChildren.Add(parent, new List<Transform>());
+                }
+                var children = parentChildren[parent];
+                children.Add(child);
+            }
+
+            foreach (var p in parentChildren.Keys)
+            {
+                var center = Vector3.zero;
+                var list = parentChildren[p];
+                for (int i=0;i< list.Count; i++)
+                {
+                    center += list[i].position;
+                }
+                center /= list.Count;
+
+                p.position = center;
+
+                Debug.LogError("center:" + center);
+            }
+            
+            Debug.LogError("RestoreParent parentDict:" + parentDict.Count);
+            foreach (var child in parentDict.Keys)
+            {
+                if (child == null) continue;
+                var parent = parentDict[child];
+                child.SetParent(parent);
+
+                if (!parents.Contains(parent))
+                {
+                    parents.Add(parent);
+                }
+            }
+        }
+
         public static List<PrefabInfo> NewAcRTAlignJobsEx(MeshFilter[] meshFilters, int size)
         {
             DateTime start = DateTime.Now;
             Debug.Log("NewAcRTAlignJobsEx:"+meshFilters.Length);
 
+            var parentDict = GetParentDict(meshFilters);
             //1.设置父
             SetParentZero(meshFilters);
 
@@ -726,7 +784,10 @@ namespace MeshJobs
             NewThreePointJobs(meshFilters, size);
             
             AcRTAlignJobContainer jobContainer=new AcRTAlignJobContainer(meshFilters, size);
+            jobContainer.parentDict = parentDict;
             var preafbs=jobContainer.GetPrefabs();
+
+            RestoreParent(parentDict);
 
             Debug.Log($"NewAcRTAlignJobsEx meshFilters:{meshFilters.Length},Time:{(DateTime.Now - start).TotalMilliseconds:F1}ms");
             return preafbs;

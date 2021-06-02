@@ -44,6 +44,26 @@ public static class AutomaticLODHelper
         root.SetLODLevels(listLODLevels, AutomaticLOD.EvalMode.ScreenCoverage, 1000.0f, bRecurseIntoChildren);
     }
 
+    public static bool SaveMesh(Mesh mesh,string strFile,bool bAssetAlreadyCreated)
+    {
+        if (bAssetAlreadyCreated == false && UnityEditor.AssetDatabase.Contains(mesh) == false)
+        {
+            Debug.LogError($"CreateAsset:{strFile}");
+            UnityEditor.AssetDatabase.CreateAsset(mesh, strFile);
+            bAssetAlreadyCreated = true;
+        }
+        else
+        {
+            if (UnityEditor.AssetDatabase.Contains(mesh) == false)
+            {
+                Debug.LogError($"AddObjectToAsset:{strFile}");
+                UnityEditor.AssetDatabase.AddObjectToAsset(mesh, strFile);
+                UnityEditor.AssetDatabase.ImportAsset(UnityEditor.AssetDatabase.GetAssetPath(mesh));
+            }
+        }
+        return bAssetAlreadyCreated;
+    }
+
     public static bool SaveMeshAssetsRecursive(GameObject root, GameObject gameObject, string strFile, bool bRecurseIntoChildren, bool bAssetAlreadyCreated, ref int nProgressElementsCounter)
     {
 #if UNITY_EDITOR
@@ -63,7 +83,9 @@ public static class AutomaticLODHelper
             Debug.LogError($"automaticLOD.m_listLODLevels.Count:{automaticLOD.m_listLODLevels.Count}");
             for (int nLOD = 0; nLOD < automaticLOD.m_listLODLevels.Count; nLOD++)
             {
-                if (automaticLOD.m_listLODLevels[nLOD].m_mesh != null && AutomaticLOD.HasValidMeshData(automaticLOD.gameObject))
+                var LODLevel = automaticLOD.m_listLODLevels[nLOD];
+                var mesh = LODLevel.m_mesh;
+                if (mesh != null && AutomaticLOD.HasValidMeshData(automaticLOD.gameObject))
                 {
                     float fT = (float)nProgressElementsCounter / (float)nTotalProgressElements;
                     Progress("Saving meshes to asset file", automaticLOD.name + " LOD " + nLOD, fT);
@@ -73,21 +95,23 @@ public static class AutomaticLODHelper
                         return bAssetAlreadyCreated;
                     }
 
-                    if (bAssetAlreadyCreated == false && UnityEditor.AssetDatabase.Contains(automaticLOD.m_listLODLevels[nLOD].m_mesh) == false)
-                    {
-                        Debug.LogError($"CreateAsset:{strFile}");
-                        UnityEditor.AssetDatabase.CreateAsset(automaticLOD.m_listLODLevels[nLOD].m_mesh, strFile);
-                        bAssetAlreadyCreated = true;
-                    }
-                    else
-                    {
-                        if (UnityEditor.AssetDatabase.Contains(automaticLOD.m_listLODLevels[nLOD].m_mesh) == false)
-                        {
-                            Debug.LogError($"AddObjectToAsset:{strFile}");
-                            UnityEditor.AssetDatabase.AddObjectToAsset(automaticLOD.m_listLODLevels[nLOD].m_mesh, strFile);
-                            UnityEditor.AssetDatabase.ImportAsset(UnityEditor.AssetDatabase.GetAssetPath(automaticLOD.m_listLODLevels[nLOD].m_mesh));
-                        }
-                    }
+                    //if (bAssetAlreadyCreated == false && UnityEditor.AssetDatabase.Contains(mesh) == false)
+                    //{
+                    //    Debug.LogError($"CreateAsset:{strFile}");
+                    //    UnityEditor.AssetDatabase.CreateAsset(mesh, strFile);
+                    //    bAssetAlreadyCreated = true;
+                    //}
+                    //else
+                    //{
+                    //    if (UnityEditor.AssetDatabase.Contains(mesh) == false)
+                    //    {
+                    //        Debug.LogError($"AddObjectToAsset:{strFile}");
+                    //        UnityEditor.AssetDatabase.AddObjectToAsset(mesh, strFile);
+                    //        UnityEditor.AssetDatabase.ImportAsset(UnityEditor.AssetDatabase.GetAssetPath(mesh));
+                    //    }
+                    //}
+
+                    bAssetAlreadyCreated = SaveMesh(mesh, strFile, bAssetAlreadyCreated);
 
                     nProgressElementsCounter++;
                 }

@@ -21,6 +21,9 @@ public class AcRTAlignJobContainer
     string jobCountDetails = "";
     string loopTimes="";
     MeshFilterListDict mfld;
+
+    public Dictionary<Transform, Transform> parentDict = new Dictionary<Transform, Transform>();
+
     public AcRTAlignJobContainer(MeshFilter[] meshFilters,int size)
     {
         this.meshFilters=meshFilters;
@@ -388,6 +391,13 @@ public class AcRTAlignJobContainer
                     pref.RemoveMeshFilter(arg.mfTo);
 
                     GameObject newGo = MeshHelper.CopyGO(pref.PrefabInfo.Prefab);
+
+                    if(parentDict.ContainsKey(arg.mfTo.transform))
+                    {
+                        Transform oldTransformParent = parentDict[arg.mfTo.transform];
+                        parentDict.Add(newGo.transform, oldTransformParent);
+                    }
+
                     newGo.name = arg.mfTo.name + "_New";
                     pref.AddInstance(newGo);
                     AcRTAlignJobHelper.RemoveDict(MeshHelper.GetInstanceID(arg.mfTo));

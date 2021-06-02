@@ -572,9 +572,19 @@ UnpackPrefab();
         var mfs=GameObject.FindObjectsOfType<MeshFilter>();
         foreach(var mf in mfs){
             if(mf==null)continue;
-            if(list==null||!list.Contains(mf)){
-                GameObject.DestroyImmediate(mf.gameObject);
+            if (mf.gameObject == null) continue;
+            try
+            {
+                if (list == null || !list.Contains(mf))
+                {
+                    GameObject.DestroyImmediate(mf.gameObject);
+                }
             }
+            catch (Exception ex)
+            {
+                Debug.LogError("ClearMeshFilters Exception:" + mf.name+"|"+ex.ToString());
+            }
+
         }
     }
 
@@ -863,6 +873,8 @@ break;
         }
     }
 
+
+
     [ContextMenu("GetVertexCenterInfos")]
     private void GetVertexCenterInfos()
     {
@@ -882,6 +894,8 @@ break;
         if(max==0){
             max=int.MaxValue;
         }
+
+        //parentDict.Clear();
         for (int i = 0; i < TargetCount && i<max; i++)
         {
             
@@ -904,6 +918,8 @@ break;
             {
                 //mf.gameObject.transform.SetParent(null);//需要设置，不然会有误差
                 MeshHelper.SetParentZero(mf.gameObject);//放到一个原点空物体底下也可以
+
+                //parentDict.Add(mf.transform, mf.transform.parent);
             }
 
             MeshNode node1=mf.gameObject.GetComponent<MeshNode>();
@@ -1204,9 +1220,19 @@ break;
     {
         DateTime start = DateTime.Now;
         AcRTAlignJobsEx();
-        RemoveInstances();
+        //RemoveInstances();
         CreateInstances();
         Debug.LogWarning($"OneKey_Align_Remove_Instance Time:{(DateTime.Now - start).ToString()}ms");
+    }
+
+    [ContextMenu("OneKey_Align_Remove_Instance(LOD)")]
+    public void OneKey_Align_Remove_Instance_LOD()
+    {
+        DateTime start = DateTime.Now;
+        AcRTAlignJobsEx();
+        //RemoveInstances();
+        CreateInstances_LOD();
+        Debug.LogWarning($"OneKey_Align_Remove_Instance_LOD Time:{(DateTime.Now - start).ToString()}ms");
     }
 
     // [ContextMenu("CreateInstances(LOD_10)")]

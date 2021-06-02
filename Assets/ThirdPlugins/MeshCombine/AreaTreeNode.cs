@@ -221,6 +221,11 @@ public class AreaTreeNode : MonoBehaviour
             cellCount=new Vector3(1,1,2);
         }
 
+        if (level > tree.LevelDepth)
+        {
+            tree.LevelDepth = level;
+        }
+
         if (level > maxLevel)
         {
             IsLeaf = true;
@@ -231,10 +236,6 @@ public class AreaTreeNode : MonoBehaviour
             if(maxRenderCount>0){
                 if(this.Renderers.Count<maxRenderCount){
                     IsLeaf = true;
-                    if (level > tree.LevelDepth)
-                    {
-                        tree.LevelDepth = level;
-                    }
                     return null;
                 }
             }
