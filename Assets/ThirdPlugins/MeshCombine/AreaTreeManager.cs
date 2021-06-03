@@ -233,6 +233,10 @@ public class AreaTreeManager : MonoBehaviour
         {
             areaTree.TreeRenderers = PrefabInstanceBuilder.GetCombinedRenderers().ToArray();
         }
+        else
+        {
+            areaTree.TreeRenderers = null;
+        }
 
         if (isCombine)
         {
@@ -263,11 +267,11 @@ public class AreaTreeManager : MonoBehaviour
 
         //RendererCount += areaTree.RootNode.RendererCount;
 
-        var renders = areaTree.RootNode.GetRenderers();
+        var renders = areaTree.GetTreeRendererers();
         int vertexCount = 0;
         if (renders != null)
         {
-            RendererCount += renders.Count;
+            RendererCount += renders.Length;
             foreach (var render in renders)
             {
                 if (!matList.Contains(render.sharedMaterial))
@@ -275,7 +279,10 @@ public class AreaTreeManager : MonoBehaviour
                     matList.Add(render.sharedMaterial);
                 }
                 MeshFilter meshFilter = render.GetComponent<MeshFilter>();
-                vertexCount += meshFilter.sharedMesh.vertexCount;
+                if (meshFilter != null)
+                {
+                    vertexCount += meshFilter.sharedMesh.vertexCount;
+                }
             }
         }
 

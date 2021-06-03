@@ -7,7 +7,27 @@ using System.Linq;
 public class AreaTree : MonoBehaviour
 {
    public GameObject Target=null;
-    
+
+    public GameObject TargetCopy = null;
+
+    public bool IsFirst = true;
+    public GameObject GetTarget()
+    {
+        if (IsCopy && IsFirst)
+        {
+            IsFirst = false;
+            Target.SetActive(false);
+            TargetCopy = MeshHelper.CopyGO(Target);
+            TargetCopy.SetActive(true);
+        }
+
+        if (!IsCopy)
+        {
+            TargetCopy = Target;
+        }
+        return TargetCopy;
+    }
+
     public AreaTreeNode RootNode;
 
     public List<AreaTreeNode> TreeNodes=new List<AreaTreeNode>();
@@ -24,15 +44,17 @@ public class AreaTree : MonoBehaviour
     //     }
     // }
 
+
     [ContextMenu("CreateBoundes")]
     public void CreateBoundes()
     {
+        var target = GetTarget();
         DateTime start = DateTime.Now;
-        Renderer[] renders = Target.GetComponentsInChildren<Renderer>();
+        Renderer[] renders = target.GetComponentsInChildren<Renderer>();
         Bounds bounds=ColliderHelper.CaculateBounds(renders);
-        AreaTreeHelper.CreateBoundsCube(bounds, Target.name+"_TargetBound",transform);
+        AreaTreeHelper.CreateBoundsCube(bounds, target.name+"_TargetBound",transform);
 
-        Debug.LogError($"target:{Target.name},renders:{renders.Length},bounds:{bounds}");
+        Debug.LogError($"target:{target.name},renders:{renders.Length},bounds:{bounds}");
         Debug.LogError($"CreateBoundes \t{(DateTime.Now - start).ToString()}");
     }
 
@@ -42,10 +64,11 @@ public class AreaTree : MonoBehaviour
         ClearChildren();
 
         DateTime start = DateTime.Now;
+        var target = GetTarget();
         List<Transform> children = new List<Transform>();
-        for (int i = 0; i < Target.transform.childCount; i++)
+        for (int i = 0; i < target.transform.childCount; i++)
         {
-            children.Add(Target.transform.GetChild(i));
+            children.Add(target.transform.GetChild(i));
         }
         Bounds boundsAll = new Bounds();
         for (int i = 0; i < children.Count; i++)
@@ -63,7 +86,7 @@ public class AreaTree : MonoBehaviour
         }
         Debug.LogError($"CreateSubBoundes \t{(DateTime.Now - start).ToString()}");
 
-        AreaTreeHelper.CreateBoundsCube(boundsAll, Target.name + "_TargetBoundAll", transform);
+        AreaTreeHelper.CreateBoundsCube(boundsAll, target.name + "_TargetBoundAll", transform);
     }
 
     [ContextMenu("ClearChildren")]
@@ -105,7 +128,7 @@ public class AreaTree : MonoBehaviour
         {
             if(node==null)continue;
             if(node.Nodes.Count>0)continue;
-            node.CombineMesh(this.IsCopy);
+            node.CombineMesh();
             renderCount += node.RendererCount;
         }
 
@@ -157,11 +180,12 @@ public class AreaTree : MonoBehaviour
 
     public MeshRenderer[] GetTreeRendererers()
     {
+        var target = GetTarget();
         if(TreeRenderers!=null&&TreeRenderers.Length>0){
             return TreeRenderers;
         }
-        else if(Target!=null){
-            var renderers=Target.GetComponentsInChildren<MeshRenderer>();
+        else if(target != null){
+            var renderers= target.GetComponentsInChildren<MeshRenderer>();
             return renderers;
         }
         else{
@@ -234,6 +258,9 @@ public class AreaTree : MonoBehaviour
     {
         DateTime start = DateTime.Now;
 
+        var target = GetTarget();
+
+
         if (TreeRenderers != null && TreeRenderers.Length > 0)
         {
             foreach (var render in TreeRenderers)
@@ -243,20 +270,20 @@ public class AreaTree : MonoBehaviour
             }
             Debug.LogError($"ShowRenderers renderers:{TreeRenderers.Length},\t{(DateTime.Now - start).ToString()}");
         }
-        else if (Target != null)
+        else if (target != null)
         {
-            var ts = AreaTreeHelper.GetAllTransforms(Target.transform);
+            var ts = AreaTreeHelper.GetAllTransforms(target.transform);
             foreach (var t in ts)
             {
                 t.gameObject.SetActive(true);
             }
-            var renderers = Target.GetComponentsInChildren<MeshRenderer>();
-            //var renderers=Target.GetComponentsInChildren<MeshRenderer>();
+            var renderers = target.GetComponentsInChildren<MeshRenderer>();
             foreach (var render in renderers)
             {
                 render.enabled = isVisible;
                 render.gameObject.SetActive(isVisible);
             }
+            TreeRenderers = renderers;
             Debug.LogError($"ShowRenderers renderers:{renderers.Length},\t{(DateTime.Now - start).ToString()}");
         }
         else
@@ -324,8 +351,9 @@ public class AreaTree : MonoBehaviour
         CreateDictionary();
         foreach (var item in TreeNodes)
         {
-            if(!item.IsLeaf){
-                item.Renderers=null;
+            if (!item.IsLeaf)
+            {
+                item.Renderers = null;
             }
         }
         Debug.LogError($"GenerateMesh {(DateTime.Now-start).ToString()}");
@@ -383,12 +411,34 @@ public class AreaTree : MonoBehaviour
                 tn.DestroySelfRenderer();
             }
             else{
-                if(renderCount> nodeStatics.MaxCellRendererCount){
-                    nodeStatics.MaxCellRendererCount =renderCount;
+
+                if (renderCount > nodeStatics.MaxCellRendererCount || nodeStatics.MaxCellRendererCount == 0)
+                {
+                    //Debug.Log($"MaxCellRendererCount:{renderCount},node:{tn.name}");
+                    nodeStatics.MaxCellRendererCount = renderCount;
                 }
-                if(renderCount< nodeStatics.MinCellRendererCount){
-                    nodeStatics.MinCellRendererCount =renderCount;
+                if (renderCount < nodeStatics.MinCellRendererCount || nodeStatics.MinCellRendererCount == 0)
+                {
+                    nodeStatics.MinCellRendererCount = renderCount;
                 }
+
+                var vertexCount = tn.VertexCount;
+                if ( ( vertexCount<nodeSetting.MaxVertexCount && vertexCount > nodeStatics.MaxNodeVertexCount) || nodeStatics.MaxNodeVertexCount == 0)
+                {
+                    Debug.Log($"MaxNodeVertexCount1:{vertexCount},node:{tn.name}");
+                    nodeStatics.MaxNodeVertexCount = vertexCount;
+                }
+
+                if (vertexCount > nodeStatics.MaxNodeVertexCount2 || nodeStatics.MaxNodeVertexCount2 == 0)
+                {
+                    Debug.Log($"MaxNodeVertexCount2:{vertexCount},node:{tn.name}");
+                    nodeStatics.MaxNodeVertexCount2 = vertexCount;
+                }
+                if (vertexCount < nodeStatics.MinNodeVertexCount || nodeStatics.MinNodeVertexCount == 0)
+                {
+                    nodeStatics.MinNodeVertexCount = vertexCount;
+                }
+
                 TreeLeafs.Add(tn);
                 if(LeafCellSize==Vector3.zero)
                     LeafCellSize=tn.Bounds.size;
@@ -444,6 +494,7 @@ public class AreaTree : MonoBehaviour
     [ContextMenu("DestoryNodes")]
     public void DestoryNodes()
     {
+        var target = GetTarget();
         if(IsCopy){
             if(RootNode!=null)
                 GameObject.DestroyImmediate(RootNode.gameObject);
@@ -454,7 +505,7 @@ public class AreaTree : MonoBehaviour
                 foreach (var render in renders)
                 {
                     render.enabled=true;
-                    render.transform.SetParent(Target.transform);
+                    render.transform.SetParent(target.transform);
                 }
             }
             if(RootNode!=null)
@@ -471,7 +522,8 @@ public class AreaTree : MonoBehaviour
 
         List<string> matKeys = new List<string>();
         List<Material> mats = new List<Material>();
-        var renders = Target.GetComponentsInChildren<MeshRenderer>();
+        var target = GetTarget();
+        var renders = target.GetComponentsInChildren<MeshRenderer>();
         foreach (var render in renders)
         {
             if (!mats.Contains(render.sharedMaterial))
@@ -521,7 +573,7 @@ public class AreaTree : MonoBehaviour
         //}
 
         int count = 0;
-        var matsEx = MeshCombineHelper.GetMatFilters(Target, out count,false);
+        var matsEx = MeshCombineHelper.GetMatFilters(target, out count,false);
         //foreach(var mat in mats.Keys)
         //{
         //    var list = mats[mat];
@@ -531,8 +583,6 @@ public class AreaTree : MonoBehaviour
         //        renderer.sharedMaterial = mat;
         //    }
         //}
-
-        //MeshCombineHelper.SetMaterials(Target);
 
         Debug.LogError($"GetMaterials {(DateTime.Now - start).ToString()},mats1:{mats.Count},mats2:{matsEx.Count},count:{count}");
     }
@@ -545,10 +595,9 @@ public class AreaTree : MonoBehaviour
 
         ShowRenderers();
 
+        var target = GetTarget();
         int count = 0;
-        var mats = MeshCombineHelper.GetMatFilters(Target, out count,true);
-
-        //MeshCombineHelper.SetMaterials(Target);
+        var mats = MeshCombineHelper.GetMatFilters(target, out count,true);
 
         Debug.LogError($"SetMaterials {(DateTime.Now - start).ToString()},mats:{mats.Count},count:{count}");
     }
@@ -629,7 +678,8 @@ public class AreaTree : MonoBehaviour
         //Debug.LogError("newFolderPath:" + newFolderPath);
 
         string parentDir = "Assets/Models/Instances/Trees";
-        string treeName=Target.name+"_"+ Target.GetInstanceID();
+        var target = GetTarget();
+        string treeName= target.name+"_"+ target.GetInstanceID();
         string treePath = UnityEditor.AssetDatabase.GUIDToAssetPath( UnityEditor.AssetDatabase.CreateFolder(parentDir, treeName));
         Debug.LogError("treePath:" + treePath);
          string meshPath = UnityEditor.AssetDatabase.GUIDToAssetPath( UnityEditor.AssetDatabase.CreateFolder(treePath, "Meshes"));
@@ -651,11 +701,15 @@ public class AreaTree : MonoBehaviour
 [Serializable]
 public class AreaTreeNodeSetting
 {
-    public int MaxLevel = 2;
+    public int MinLevel = 10;
 
-    public int MinLevel = 2;
+    public int MaxLevel = 20;
 
-    public int MaxRenderCount = 50;
+    public int MaxRenderCount = 1000;
+
+    public int MinRenderCount = 100;
+
+    public int MaxVertexCount = 100;
 }
 
 [Serializable]
@@ -671,6 +725,10 @@ public class AreaTreeNodeStatics
 
     public int MaxNodeVertexCount = 0;
 
+    public int MaxNodeVertexCount2 = 0;
+
+    public int MinNodeVertexCount = 0;
+
     public int LevelDepth = 0;
 
     public void Clear()
@@ -681,13 +739,22 @@ public class AreaTreeNodeStatics
         MinCellRendererCount = 0;
         MaxNodeVertexCount = 0;
         LevelDepth = 0;
+        MaxNodeVertexCount2 = 0;
     }
 
     public void SetInfo(AreaTreeNodeStatics other)
     {
         this.AvgCellRendererCount += other.AvgCellRendererCount;
-        if (other.MaxCellRendererCount > this.MaxCellRendererCount)
+        if (other.MaxCellRendererCount > this.MaxCellRendererCount || this.MaxCellRendererCount == 0)
             this.MaxCellRendererCount = other.MaxCellRendererCount;
+        if (other.MinCellRendererCount < this.MinCellRendererCount || this.MinCellRendererCount==0)
+            this.MinCellRendererCount = other.MinCellRendererCount;
+        if (other.MaxNodeVertexCount > this.MaxNodeVertexCount || this.MaxNodeVertexCount == 0)
+            this.MaxNodeVertexCount = other.MaxNodeVertexCount;
+        if (other.MaxNodeVertexCount2 > this.MaxNodeVertexCount2 || this.MaxNodeVertexCount2 == 0)
+            this.MaxNodeVertexCount2 = other.MaxNodeVertexCount2;
+        if (other.MinNodeVertexCount < this.MinNodeVertexCount || this.MinNodeVertexCount == 0)
+            this.MinNodeVertexCount = other.MinNodeVertexCount;
         if (other.LevelDepth > this.LevelDepth)
             this.LevelDepth = other.LevelDepth;
     }

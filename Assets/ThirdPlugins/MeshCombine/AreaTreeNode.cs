@@ -37,7 +37,7 @@ public class AreaTreeNode : MonoBehaviour
         foreach(var renderer in Renderers)
         {
             MeshFilter meshFilter = renderer.GetComponent<MeshFilter>();
-            count += meshFilter.mesh.vertexCount;
+            count += meshFilter.sharedMesh.vertexCount;
         }
         VertexCount = count / 10000;
         return VertexCount;
@@ -58,7 +58,7 @@ public class AreaTreeNode : MonoBehaviour
     }
 
     [ContextMenu("CopyRenderers")]
-    public void CopyRenderers(bool isCopy)
+    public void CopyRenderers()
     {
         newRenderers.Clear();
         //newRenderers.Clear();
@@ -67,19 +67,21 @@ public class AreaTreeNode : MonoBehaviour
         foreach(var render in Renderers){
             //render.enabled=false;
             GameObject go=render.gameObject;
-            if(isCopy)
-            {
-                go.SetActive(false);
-                go =MeshHelper.CopyGO(go);
-                go.SetActive(true);
+            //if(isCopy)
+            //{
+            //    //go.SetActive(false);
+            //    go =MeshHelper.CopyGO(go);
+            //    //go.SetActive(true);
 
-                var renderNew = go.GetComponent<MeshRenderer>();
-                newRenderers.Add(renderNew);
-            }
-            else
-            {
-                newRenderers.Add(render);
-            }
+            //    var renderNew = go.GetComponent<MeshRenderer>();
+            //    newRenderers.Add(renderNew);
+            //}
+            //else
+            //{
+            //    newRenderers.Add(render);
+            //}
+
+            newRenderers.Add(render);
 
             //newRenderers.Add
 
@@ -146,7 +148,7 @@ public class AreaTreeNode : MonoBehaviour
     }
 
     [ContextMenu("CombineMesh")]
-    public void CombineMesh(bool isCopy)
+    public void CombineMesh()
     {
 
         if(renderersRoot){
@@ -155,7 +157,7 @@ public class AreaTreeNode : MonoBehaviour
 
         DestroySelfRenderer();
 
-        CopyRenderers(isCopy);
+        CopyRenderers();
 
         CombineInner();
 
@@ -241,9 +243,10 @@ public class AreaTreeNode : MonoBehaviour
 
         this.tree = tree;
 
-        int minLevel = tree.nodeSetting.MinLevel;
-        int maxLevel = tree.nodeSetting.MaxLevel;
-        int maxRenderCount= tree.nodeSetting.MaxRenderCount;
+        var nodeSetting = tree.nodeSetting;
+        int minLevel = nodeSetting.MinLevel;
+        int maxLevel = nodeSetting.MaxLevel;
+        //int maxRenderCount= nodeSetting.MaxRenderCount;
 
         //Bounds bounds=ColliderHelper.CaculateBounds(this.Renderers);
         Bounds bounds=this.Bounds;
@@ -281,18 +284,55 @@ public class AreaTreeNode : MonoBehaviour
         if (level > maxLevel)
         {
             IsLeaf = true;
+            Debug.Log($"LeafNode0 level:{level}");
             return null;
         }
-        
-        if(level>=minLevel){
-            if(maxRenderCount>0){
-                if(this.Renderers.Count<maxRenderCount){
-                    IsLeaf = true;
-                    return null;
+
+        if (this.Renderers.Count <= nodeSetting.MinRenderCount)
+        {
+            IsLeaf = true;
+            Debug.Log($"LeafNode1 level:{level}");
+            return null;
+        }
+
+        if (level>=minLevel){
+            Debug.Log($"[{this.name}]nodeSetting.MaxRenderCount:{nodeSetting.MaxRenderCount}");
+            if(nodeSetting.MaxRenderCount > 0){
+                if(this.Renderers.Count< nodeSetting.MaxRenderCount)
+                {
+                    //IsLeaf = true;
+                    //Debug.Log($"LeafNode2 level:{level}");
+                    //return null;
+
+                    if (this.VertexCount < nodeSetting.MaxVertexCount)
+                    {
+                        IsLeaf = true;
+                        Debug.Log($"LeafNode3 level:{level}");
+                        return null;
+                    }
+                    else
+                    {
+                        //继续创建子物体
+                    }
+                }
+                else
+                {
+                    
+                    //if (this.VertexCount < nodeSetting.MaxVertexCount)
+                    //{
+                    //    IsLeaf = true;
+                    //    Debug.Log($"LeafNode3 level:{level}");
+                    //    return null;
+                    //}
+                    //else
+                    //{
+                    //    //继续创建子物体
+                    //}
                 }
             }
             else{
                 IsLeaf = true;
+                Debug.Log($"LeafNode4 level:{level}");
                 return null;
             }
         }
@@ -361,6 +401,16 @@ public class AreaTreeNode : MonoBehaviour
             
             node.name += "_" + node.RendererCount+"_"+ node.GetVertexCount()+"w";
             node.CreateSubNodes(level+1,i,tree);
+
+            //if (node.VertexCount > tree.nodeStatics.MaxNodeVertexCount || tree.nodeStatics.MaxNodeVertexCount == 0)
+            //{
+            //    tree.nodeStatics.MaxNodeVertexCount = node.VertexCount;
+            //}
+
+            //if (node.VertexCount < tree.nodeStatics.MinNodeVertexCount || tree.nodeStatics.MinNodeVertexCount==0)
+            //{
+            //    tree.nodeStatics.MinNodeVertexCount = node.VertexCount;
+            //}
         }
 
         // int visibleCellCount=0;
