@@ -465,6 +465,7 @@ public class AreaTreeNode : MonoBehaviour
     [ContextMenu("SaveMeshes")]
     public void SaveMeshes(string dir)
     {
+#if UNITY_EDITOR
         if (meshAsset != null) return;
 
         MeshFilter[] meshFilters = combindResult.GetComponentsInChildren<MeshFilter>();
@@ -496,5 +497,6 @@ public class AreaTreeNode : MonoBehaviour
             Mesh mesh = meshFilter.sharedMesh;
             AutomaticLODHelper.SaveAsset(mesh, meshPath, true );
         }
+#endif
     }
 }
