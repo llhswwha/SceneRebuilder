@@ -9,11 +9,13 @@ public class AreaTreeNode : MonoBehaviour
 
     public GameObject renderersRoot;
 
+    public GameObject collidersRoot;
+
     public GameObject combindResult;
 
     public bool IsLeaf = false;
 
-    private List<MeshRenderer> Renderers=new List<MeshRenderer>();
+    public List<MeshRenderer> Renderers=new List<MeshRenderer>();
 
     private List<MeshRenderer> newRenderers = new List<MeshRenderer>();
 
@@ -78,12 +80,33 @@ public class AreaTreeNode : MonoBehaviour
 
         //if(isCopy)
         //    newRenderers=renderersRoot.GetComponentsInChildren<MeshRenderer>();
+
+        //CreateColliders();
+    }
+
+    private void CreateColliders()
+    {
+        collidersRoot=MeshHelper.CopyGO(renderersRoot);
+        collidersRoot.name=this.name+"_Colliders";
+        var renderers=collidersRoot.GetComponentsInChildren<Renderer>();
+        foreach(var renderer in renderers)
+        {
+            GameObject.DestroyImmediate(renderer);
+        }
+        collidersRoot.transform.SetParent(this.transform);
+
+        var colliders=renderersRoot.GetComponentsInChildren<Collider>();
+        foreach(var collider in colliders)
+        {
+            GameObject.DestroyImmediate(collider);
+        }
     }
 
     public void HideRenders()
     {
         foreach (var r in newRenderers)
         {
+            if(r==null)continue;
             r.enabled = false;
         }
     }
@@ -133,7 +156,15 @@ public class AreaTreeNode : MonoBehaviour
             GameObject.DestroyImmediate(combindResult);
         }
         combindResult=MeshCombineHelper.CombineEx(this.renderersRoot,1);
+        combindResult.name=this.name+"_Combined";
         combindResult.transform.SetParent(this.transform);
+
+        var meshFilters=combindResult.GetComponentsInChildren<MeshFilter>();
+        foreach (var mf in meshFilters)
+        {
+            mf.gameObject.AddComponent<MeshCollider>();
+        }
+        this.renderersRoot.SetActive(false);
     }
 
     [ContextMenu("UpdateCombined")]
@@ -330,8 +361,10 @@ public class AreaTreeNode : MonoBehaviour
 
     public void CreateDictionary()
     {
-        if(this.Nodes.Count==0){
-            foreach(var render in this.Renderers){
+        if(this.Nodes.Count==0)
+        {
+            foreach(var render in this.Renderers)
+            {
                 if(AreaTreeHelper.render2NodeDict.ContainsKey(render))
                 {
                     Debug.LogError($"模型重复在不同的Node里:{AreaTreeHelper.render2NodeDict[render]},{this}");
@@ -340,17 +373,38 @@ public class AreaTreeNode : MonoBehaviour
                     AreaTreeHelper.render2NodeDict.Add(render,this);
                 }
             }
-            if(newRenderers!=null)
-                foreach(var render in this.newRenderers){
-                    if(AreaTreeHelper.render2NodeDict.ContainsKey(render))
-                    {
-                        //Debug.LogError($"模型重复在不同的Node里:{AreaTreeHelper.render2NodeDict[render]},{this}");
-                    }
-                    else{
-                        AreaTreeHelper.render2NodeDict.Add(render,this);
-                    }
-                }
         }
+
+        if(newRenderers!=null)
+        {
+            foreach(var render in this.newRenderers)
+            {
+                if(AreaTreeHelper.render2NodeDict.ContainsKey(render))
+                {
+                    //Debug.LogError($"模型重复在不同的Node里:{AreaTreeHelper.render2NodeDict[render]},{this}");
+                }
+                else{
+                    AreaTreeHelper.render2NodeDict.Add(render,this);
+                }
+            }
+        }
+
+        if(combindResult!=null)
+        {
+            var renderers=combindResult.GetComponentsInChildren<MeshRenderer>();
+            foreach (var render in renderers)
+            {
+                //renderer.gameObject.AddComponent<MeshCollider>();
+                if(AreaTreeHelper.render2NodeDict.ContainsKey(render))
+                {
+                    //Debug.LogError($"模型重复在不同的Node里:{AreaTreeHelper.render2NodeDict[render]},{this}");
+                }
+                else{
+                    AreaTreeHelper.render2NodeDict.Add(render,this);
+                }
+            }
+        }
+
     }
 
     [ContextMenu("ShowNodes")]

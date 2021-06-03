@@ -258,10 +258,11 @@ public class AreaTreeManager : MonoBehaviour
         if (areaTree.LevelDepth > Depth)
             Depth = areaTree.LevelDepth;
 
-        RendererCount += areaTree.RootNode.RendererCount;
+        //RendererCount += areaTree.RootNode.RendererCount;
 
         var renders = areaTree.RootNode.GetRenderers();
         int vertexCount = 0;
+        RendererCount+=renders.Count;
         foreach (var render in renders)
         {
             if (!matList.Contains(render.sharedMaterial))

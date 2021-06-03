@@ -321,6 +321,12 @@ public class AreaTree : MonoBehaviour
         CreateCells_Tree();
         CombineMesh();
         CreateDictionary();
+        foreach (var item in TreeNodes)
+        {
+            if(!item.IsLeaf){
+                item.Renderers=null;
+            }
+        }
         Debug.LogError($"GenerateMesh {(DateTime.Now-start).ToString()}");
     }
 
@@ -344,6 +350,7 @@ public class AreaTree : MonoBehaviour
         //     CreateDictionary();
         // }
         
+        CreateDictionary();
     }
 
     public Vector3 LeafCellSize;
@@ -593,12 +600,23 @@ public class AreaTree : MonoBehaviour
             {
                 break;
             }
-            leafNode.SaveMeshes(dir);
+            leafNode.SaveMeshes(dir+"/Meshes/");
+
+            string prefabPath1 = dir+"/Nodes/" + leafNode.name+ "_Combined.prefab";
+            var nodeCombined=UnityEditor.PrefabUtility.SaveAsPrefabAssetAndConnect(leafNode.combindResult, prefabPath1,UnityEditor.InteractionMode.UserAction);
+            // GameObject.DestroyImmediate(leafNode.combindResult);
+            // leafNode.combindResult=nodeCombined;
+
+            string prefabPath2 = dir+"/Nodes/" + leafNode.name+ "_Renderers.prefab";
+            var nodeRenderers=UnityEditor.PrefabUtility.SaveAsPrefabAssetAndConnect(leafNode.renderersRoot, prefabPath2,UnityEditor.InteractionMode.UserAction);
+            GameObject.DestroyImmediate(leafNode.renderersRoot);
+            leafNode.renderersRoot=nodeRenderers;
         }
         ProgressBarHelper.ClearProgressBar();
 
         Debug.LogError($"SaveMeshes {(DateTime.Now - start).ToString()}");
     }
+
 
     [ContextMenu("SaveTree")]
     public void SaveTree()
@@ -611,14 +629,17 @@ public class AreaTree : MonoBehaviour
         //Debug.LogError("newFolderPath:" + newFolderPath);
 
         string parentDir = "Assets/Models/Instances/Trees";
-        string guid2 = UnityEditor.AssetDatabase.CreateFolder(parentDir, Target.name+"_"+ Target.GetInstanceID());
-        Debug.LogError("guid2:" + guid2);
-        string newFolderPath2 = UnityEditor.AssetDatabase.GUIDToAssetPath(guid2);
-        Debug.LogError("newFolderPath2:" + newFolderPath2);
+        string treeName=Target.name+"_"+ Target.GetInstanceID();
+        string treePath = UnityEditor.AssetDatabase.GUIDToAssetPath( UnityEditor.AssetDatabase.CreateFolder(parentDir, treeName));
+        Debug.LogError("treePath:" + treePath);
+         string meshPath = UnityEditor.AssetDatabase.GUIDToAssetPath( UnityEditor.AssetDatabase.CreateFolder(treePath, "Meshes"));
+        Debug.LogError("meshPath:" + meshPath);
+        string nodePath = UnityEditor.AssetDatabase.GUIDToAssetPath( UnityEditor.AssetDatabase.CreateFolder(treePath, "Nodes"));
+        Debug.LogError("nodePath:" + nodePath);
 
-        SaveMeshes(newFolderPath2);
+        SaveMeshes(treePath);
 
-        string prefabPath = parentDir+"/" + this.gameObject.name +"_"+ this.gameObject.GetInstanceID()+ ".prefab";
+        string prefabPath = treePath+"/" + treeName+ ".prefab";
         GameObject obj=UnityEditor.PrefabUtility.SaveAsPrefabAssetAndConnect(this.gameObject, prefabPath,UnityEditor.InteractionMode.UserAction);
 
         Debug.LogError($"SaveTree {(DateTime.Now - start).ToString()}");
