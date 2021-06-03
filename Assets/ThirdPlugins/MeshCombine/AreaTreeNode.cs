@@ -29,6 +29,20 @@ public class AreaTreeNode : MonoBehaviour
         }
     }
 
+    public int VertexCount = 0;
+
+    public int GetVertexCount()
+    {
+        int count = 0;
+        foreach(var renderer in Renderers)
+        {
+            MeshFilter meshFilter = renderer.GetComponent<MeshFilter>();
+            count += meshFilter.mesh.vertexCount;
+        }
+        VertexCount = count / 10000;
+        return VertexCount;
+    }
+
     public List<MeshRenderer> GetRenderers()
     {
         return Renderers;
@@ -223,9 +237,14 @@ public class AreaTreeNode : MonoBehaviour
 
 
     private AreaTree tree;
-    public List<AreaTreeNode> CreateSubNodes(int level,int minLevel,int maxLevel,int index,AreaTree tree,int maxRenderCount){
+    public List<AreaTreeNode> CreateSubNodes(int level,int index,AreaTree tree){
 
         this.tree = tree;
+
+        int minLevel = tree.nodeSetting.MinLevel;
+        int maxLevel = tree.nodeSetting.MaxLevel;
+        int maxRenderCount= tree.nodeSetting.MaxRenderCount;
+
         //Bounds bounds=ColliderHelper.CaculateBounds(this.Renderers);
         Bounds bounds=this.Bounds;
         var bs=bounds.size;
@@ -254,9 +273,9 @@ public class AreaTreeNode : MonoBehaviour
             cellCount=new Vector3(1,1,2);
         }
 
-        if (level > tree.LevelDepth)
+        if (level > tree.nodeStatics.LevelDepth)
         {
-            tree.LevelDepth = level;
+            tree.nodeStatics.LevelDepth = level;
         }
 
         if (level > maxLevel)
@@ -305,7 +324,7 @@ public class AreaTreeNode : MonoBehaviour
                     cellBounds.size=size;
                     cellBoundsList.Add(cellBounds);
 
-                    GameObject cube=AreaTreeHelper.CreateBoundsCube(cellBounds,$"Node_{id}",transform);
+                    GameObject cube=AreaTreeHelper.CreateBoundsCube(cellBounds,$"Node_{level}_{id}",transform);
                     AreaTreeNode node=cube.AddComponent<AreaTreeNode>();
                     nodes.Add(node);
                     node.Bounds=cellBounds;
@@ -339,7 +358,9 @@ public class AreaTreeNode : MonoBehaviour
             // if(node.Renderers.Count<maxRenderCount){
             //     continue;
             // }
-            node.CreateSubNodes(level+1,minLevel,maxLevel,i,tree,maxRenderCount);
+            
+            node.name += "_" + node.RendererCount+"_"+ node.GetVertexCount()+"w";
+            node.CreateSubNodes(level+1,i,tree);
         }
 
         // int visibleCellCount=0;

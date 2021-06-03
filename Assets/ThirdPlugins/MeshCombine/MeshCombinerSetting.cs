@@ -23,17 +23,25 @@ public class MeshCombinerSetting : MonoBehaviour
     void Awake(){
         Instance=this;
 
-        if(NoLimit){
-            indexFormat=UnityEngine.Rendering.IndexFormat.UInt32;
-            MaxVertex=int.MaxValue;
+        SetSetting();
+    }
+
+    public void SetSetting()
+    {
+        if (NoLimit)
+        {
+            indexFormat = UnityEngine.Rendering.IndexFormat.UInt32;
+            MaxVertex = int.MaxValue;
         }
-        else{
-            if(MaxVertex>65535){
-                indexFormat=UnityEngine.Rendering.IndexFormat.UInt32;
+        else
+        {
+            if (MaxVertex > 65535)
+            {
+                indexFormat = UnityEngine.Rendering.IndexFormat.UInt32;
             }
         }
-        CombinedMesh.indexFormat=indexFormat;
-        CombinedMesh.MaxVertex=MaxVertex;
+        CombinedMesh.indexFormat = indexFormat;
+        CombinedMesh.MaxVertex = MaxVertex;
     }
 
     public void WriteLog(string log){

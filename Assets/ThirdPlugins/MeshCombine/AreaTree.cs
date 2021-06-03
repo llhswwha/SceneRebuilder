@@ -191,7 +191,7 @@ public class AreaTree : MonoBehaviour
 
         this.TreeNodes.Clear();
 
-        LevelDepth = 0;
+        nodeStatics.LevelDepth = 0;
         GameObject rootCube=AreaTreeHelper.CreateBoundsCube(bounds,$"RootNode",null);
         AreaTreeNode node=rootCube.AddComponent<AreaTreeNode>();
         DestoryNodes();
@@ -201,26 +201,20 @@ public class AreaTree : MonoBehaviour
         node.Bounds=bounds;
         node.AddRenderers(renderers.ToList());
         
-        node.CreateSubNodes(0,MinLevel,MaxLevel,0,this,MaxRenderCount);
+        node.CreateSubNodes(0,0,this);
 
         var allCount=this.TreeNodes.Count;
         
         int cellCount=ClearNodes();
-        CellCount = cellCount;
-        AvgCellRendererCount =(int)(renderers.Length/cellCount);
+        nodeStatics.CellCount = cellCount;
+        nodeStatics.AvgCellRendererCount =(int)(renderers.Length/cellCount);
 
         rootCube.transform.SetParent(this.transform);
 
-        Debug.LogError($"CreateCells_Tree cellCount:{cellCount}/{allCount},\tavg:{AvgCellRendererCount},\t{(DateTime.Now-start).ToString()}");
+        Debug.LogError($"CreateCells_Tree cellCount:{cellCount}/{allCount},\tavg:{nodeStatics.AvgCellRendererCount},\t{(DateTime.Now-start).ToString()}");
     }
 
-    public int CellCount = 0;
 
-    public int AvgCellRendererCount=0;
-
-    public int MaxCellRendererCount=0;
-
-    public int MinCellRendererCount=0;
 
 
 
@@ -267,13 +261,20 @@ public class AreaTree : MonoBehaviour
         }
         else
         {
-
-            foreach (var render in TreeRenderers)
+            if (TreeRenderers != null)
             {
-                render.enabled = isVisible;
-                render.gameObject.SetActive(isVisible);
+                foreach (var render in TreeRenderers)
+                {
+                    if (render) continue;
+                    render.enabled = isVisible;
+                    render.gameObject.SetActive(isVisible);
+                }
+                Debug.LogError($"ShowRenderers renderers:{TreeRenderers.Length},\t{(DateTime.Now - start).ToString()}");
             }
-            Debug.LogError($"ShowRenderers renderers:{TreeRenderers.Length},\t{(DateTime.Now - start).ToString()}");
+            else
+            {
+                Debug.LogError($"ShowRenderers renderers:0,\t{(DateTime.Now - start).ToString()}");
+            }
         }
     }
 
@@ -355,15 +356,13 @@ public class AreaTree : MonoBehaviour
 
     public Vector3 LeafCellSize;
 
-    public int LevelDepth = 0;
-
     private int ClearNodes()
     {
         TreeLeafs.Clear();
         int cellCount=0;
         LeafCellSize=Vector3.zero;
-        MaxCellRendererCount=int.MinValue;
-        MinCellRendererCount=int.MaxValue;
+        nodeStatics.MaxCellRendererCount=int.MinValue;
+        nodeStatics.MinCellRendererCount =int.MaxValue;
         foreach(AreaTreeNode tn in TreeNodes)
         {
             if(tn==null)continue;
@@ -375,7 +374,7 @@ public class AreaTree : MonoBehaviour
             }
             else{
                 cellCount++;
-                tn.name+="_"+renderCount;
+                //tn.name+="_"+renderCount;
             }
 
             if(tn==null)continue;
@@ -384,11 +383,11 @@ public class AreaTree : MonoBehaviour
                 tn.DestroySelfRenderer();
             }
             else{
-                if(renderCount>MaxCellRendererCount){
-                    MaxCellRendererCount=renderCount;
+                if(renderCount> nodeStatics.MaxCellRendererCount){
+                    nodeStatics.MaxCellRendererCount =renderCount;
                 }
-                if(renderCount<MinCellRendererCount){
-                    MinCellRendererCount=renderCount;
+                if(renderCount< nodeStatics.MinCellRendererCount){
+                    nodeStatics.MinCellRendererCount =renderCount;
                 }
                 TreeLeafs.Add(tn);
                 if(LeafCellSize==Vector3.zero)
@@ -398,11 +397,9 @@ public class AreaTree : MonoBehaviour
         return cellCount;
     }
 
-    public int MaxLevel=2;
+    public AreaTreeNodeSetting nodeSetting = new AreaTreeNodeSetting();
 
-    public int MinLevel = 2;
-
-    public int MaxRenderCount=50;
+    public AreaTreeNodeStatics nodeStatics = new AreaTreeNodeStatics();
 
     public bool IsCopy=false;
 
@@ -643,6 +640,51 @@ public class AreaTree : MonoBehaviour
         GameObject obj=UnityEditor.PrefabUtility.SaveAsPrefabAssetAndConnect(this.gameObject, prefabPath,UnityEditor.InteractionMode.UserAction);
 
         Debug.LogError($"SaveTree {(DateTime.Now - start).ToString()}");
+    }
+}
+
+[Serializable]
+public class AreaTreeNodeSetting
+{
+    public int MaxLevel = 2;
+
+    public int MinLevel = 2;
+
+    public int MaxRenderCount = 50;
+}
+
+[Serializable]
+public class AreaTreeNodeStatics
+{
+    public int CellCount = 0;
+
+    public int AvgCellRendererCount = 0;
+
+    public int MaxCellRendererCount = 0;
+
+    public int MinCellRendererCount = 0;
+
+    public int MaxNodeVertexCount = 0;
+
+    public int LevelDepth = 0;
+
+    public void Clear()
+    {
+        CellCount = 0;
+        AvgCellRendererCount = 0;
+        MaxCellRendererCount = 0;
+        MinCellRendererCount = 0;
+        MaxNodeVertexCount = 0;
+        LevelDepth = 0;
+    }
+
+    public void SetInfo(AreaTreeNodeStatics other)
+    {
+        this.AvgCellRendererCount += other.AvgCellRendererCount;
+        if (other.MaxCellRendererCount > this.MaxCellRendererCount)
+            this.MaxCellRendererCount = other.MaxCellRendererCount;
+        if (other.LevelDepth > this.LevelDepth)
+            this.LevelDepth = other.LevelDepth;
     }
 }
 

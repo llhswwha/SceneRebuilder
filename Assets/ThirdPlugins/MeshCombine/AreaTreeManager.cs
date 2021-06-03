@@ -225,9 +225,7 @@ public class AreaTreeManager : MonoBehaviour
 
         GameObject treeGo = new GameObject(treeName);
         AreaTree areaTree = treeGo.AddComponent<AreaTree>();
-        areaTree.MinLevel = MinLevel;
-        areaTree.MaxLevel = MaxLevel;
-        areaTree.MaxRenderCount = MaxRenderCount;
+        areaTree.nodeSetting = this.nodeSetting;
         areaTree.IsCopy = this.IsCopy;
 
         areaTree.Target = go;
@@ -238,6 +236,10 @@ public class AreaTreeManager : MonoBehaviour
 
         if (isCombine)
         {
+            if(combinerSetting)
+            {
+                combinerSetting.SetSetting();
+            }
             areaTree.GenerateMesh();
         }
         else
@@ -252,55 +254,67 @@ public class AreaTreeManager : MonoBehaviour
     private void ShowModelInfo(AreaTree areaTree)
     {
         LeafCount += areaTree.TreeLeafs.Count;
-        AvgCount += areaTree.AvgCellRendererCount;
-        if (areaTree.MaxCellRendererCount > MaxCount)
-            MaxCount = areaTree.MaxCellRendererCount;
-        if (areaTree.LevelDepth > Depth)
-            Depth = areaTree.LevelDepth;
+        //nodeStatics.AvgCellRendererCount += areaTree.nodeStatics.AvgCellRendererCount;
+        //if (areaTree.nodeStatics.MaxCellRendererCount > nodeStatics.MaxCellRendererCount)
+        //    nodeStatics.MaxCellRendererCount = areaTree.nodeStatics.MaxCellRendererCount;
+        //if (areaTree.nodeStatics.LevelDepth > nodeStatics.Depth)
+        //    nodeStatics.Depth = areaTree.nodeStatics.LevelDepth;
+        nodeStatics.SetInfo(areaTree.nodeStatics);
 
         //RendererCount += areaTree.RootNode.RendererCount;
 
         var renders = areaTree.RootNode.GetRenderers();
         int vertexCount = 0;
-        RendererCount+=renders.Count;
-        foreach (var render in renders)
+        if (renders != null)
         {
-            if (!matList.Contains(render.sharedMaterial))
+            RendererCount += renders.Count;
+            foreach (var render in renders)
             {
-                matList.Add(render.sharedMaterial);
+                if (!matList.Contains(render.sharedMaterial))
+                {
+                    matList.Add(render.sharedMaterial);
+                }
+                MeshFilter meshFilter = render.GetComponent<MeshFilter>();
+                vertexCount += meshFilter.sharedMesh.vertexCount;
             }
-            MeshFilter meshFilter = render.GetComponent<MeshFilter>();
-            vertexCount += meshFilter.sharedMesh.vertexCount;
         }
+
         VertexCount += vertexCount/10000;
         MatCount = matList.Count;
 
         CombinedCount += areaTree.CombinedCount;
-        CellCount += areaTree.CellCount;
+        nodeStatics.CellCount += areaTree.nodeStatics.CellCount;
     }
 
     public void ClearCount()
     {
         matList.Clear();
         LeafCount = 0;
-        AvgCount = 0;
-        MaxCount = 0;
-        Depth = 0;
+        //AvgCount = 0;
+        //MaxCount = 0;
+        //Depth = 0;
+        nodeStatics.Clear();
         VertexCount = 0;
         RendererCount = 0;
         MatCount = 0;
         CombinedCount = 0;
-        CellCount = 0;
+        //nodeStatics.CellCount = 0;
     }
 
 
-    public int MinLevel = 3;//3,6,9
+    //public int MinLevel = 3;//3,6,9
 
-    public int MaxLevel = 15;//3,6,9
+    //public int MaxLevel = 15;//3,6,9
 
-    public int MaxRenderCount = 50;
+    //public int MaxRenderCount = 50;
+
+    public AreaTreeNodeSetting nodeSetting;
+
+    public AreaTreeNodeStatics nodeStatics;
 
     public bool isCombine = false;
+
+    public MeshCombinerSetting combinerSetting;
 
     public bool IsCopy = true;
 
@@ -314,13 +328,13 @@ public class AreaTreeManager : MonoBehaviour
 
     public int LeafCount;
 
-    public int CellCount = 0;
+    //public int CellCount = 0;
 
-    public int AvgCount;
+    //public int AvgCount;
 
-    public int MaxCount;
+    //public int MaxCount;
 
-    public int Depth = 0;
+    //public int Depth = 0;
 
     [ContextMenu("ClearTrees")]
     public void ClearTrees()
@@ -346,7 +360,8 @@ public class AreaTreeManager : MonoBehaviour
             CreateTree(child.gameObject);
         }
 
-        AvgCount /= Target.transform.childCount;
+        //AvgCount /= Target.transform.childCount;
+        nodeStatics.AvgCellRendererCount /= Target.transform.childCount;
 
         Debug.LogError($"CreateOne \t{(DateTime.Now - start).ToString()}");
     }
