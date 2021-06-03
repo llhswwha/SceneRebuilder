@@ -588,6 +588,7 @@ public class AreaTree : MonoBehaviour
     [ContextMenu("SaveMeshes")]
     public void SaveMeshes(string dir)
     {
+#if UNITY_EDITOR
         DateTime start = DateTime.Now;
 
         for (int i = 0; i < TreeLeafs.Count; i++)
@@ -615,12 +616,14 @@ public class AreaTree : MonoBehaviour
         ProgressBarHelper.ClearProgressBar();
 
         Debug.LogError($"SaveMeshes {(DateTime.Now - start).ToString()}");
+#endif
     }
 
 
     [ContextMenu("SaveTree")]
     public void SaveTree()
     {
+#if UNITY_EDITOR
         DateTime start = DateTime.Now;
 
         //string guid = UnityEditor.AssetDatabase.CreateFolder("Assets", "My Folder");
@@ -643,7 +646,9 @@ public class AreaTree : MonoBehaviour
         GameObject obj=UnityEditor.PrefabUtility.SaveAsPrefabAssetAndConnect(this.gameObject, prefabPath,UnityEditor.InteractionMode.UserAction);
 
         Debug.LogError($"SaveTree {(DateTime.Now - start).ToString()}");
+#endif
     }
+    
 }
 
 public static class AreaTreeHelper

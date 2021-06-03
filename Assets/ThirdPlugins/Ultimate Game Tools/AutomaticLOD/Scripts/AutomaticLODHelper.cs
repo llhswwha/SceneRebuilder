@@ -46,6 +46,7 @@ public static class AutomaticLODHelper
 
     public static bool SaveAsset(Object assetObj,string strFile,bool bAssetAlreadyCreated)
     {
+#if UNITY_EDITOR
         if (bAssetAlreadyCreated == false && UnityEditor.AssetDatabase.Contains(assetObj) == false)
         {
             Debug.LogError($"CreateAsset:{strFile}");
@@ -61,6 +62,7 @@ public static class AutomaticLODHelper
                 UnityEditor.AssetDatabase.ImportAsset(UnityEditor.AssetDatabase.GetAssetPath(assetObj));
             }
         }
+#endif
         return bAssetAlreadyCreated;
     }
 
