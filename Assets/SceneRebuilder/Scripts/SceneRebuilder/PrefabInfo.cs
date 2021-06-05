@@ -90,8 +90,20 @@ public static class PrefabInfoListHelper
         List<MeshRenderer> renderers = new List<MeshRenderer>();
         for (int i = 0; i < list.Count; i++)
         {
-            renderers.Add(list[i].Prefab.GetComponent<MeshRenderer>());
-            var insList = list[i].GetInstances();
+            var prefabInfo=list[i];
+            if(prefabInfo==null)
+            {
+                Debug.LogError($"[{i}] prefabInfo==null");
+                continue;
+            }
+            if(prefabInfo.Prefab==null)
+            {
+                Debug.LogError($"[{i}] prefabInfo.Prefab==null {prefabInfo}");
+                continue;
+            }
+            var prefabRenderer=prefabInfo.Prefab.GetComponent<MeshRenderer>();
+            renderers.Add(prefabRenderer);
+            var insList = prefabInfo.GetInstances();
             if(insList==null)continue;
             for (int j=0;j< insList.Count; j++)
             {
