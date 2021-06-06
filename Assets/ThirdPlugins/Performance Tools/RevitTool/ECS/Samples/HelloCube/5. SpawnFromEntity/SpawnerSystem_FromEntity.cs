@@ -1,4 +1,5 @@
-﻿using Unity.Burst;
+﻿#if UNITY_ECS
+using Unity.Burst;
 using Unity.Collections;
 using Unity.Entities;
 using Unity.Jobs;
@@ -64,3 +65,4 @@ public class SpawnerSystem_FromEntity : SystemBase
         //m_EntityCommandBufferSystem.AddJobHandleForProducer(Dependency);
     }
 }
+#endif

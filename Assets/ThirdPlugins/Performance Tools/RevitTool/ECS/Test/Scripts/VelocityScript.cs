@@ -1,4 +1,5 @@
-﻿using System.Collections;
+﻿#if UNITY_ECS
+using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 using Unity.Entities;
@@ -46,3 +47,4 @@ class ApplyVelocitySystem : JobComponentSystem
         }).Schedule(inputDeps);
     }
 }
+#endif

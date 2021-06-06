@@ -1,4 +1,5 @@
-﻿using Unity.Entities;
+﻿#if UNITY_ECS
+using Unity.Entities;
 using Unity.Jobs;
 using UnityEngine;
 
@@ -18,3 +19,4 @@ public class PlayerInputSystem : JobComponentSystem
 		return default;
 	}
 }
+#endif

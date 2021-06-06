@@ -1,4 +1,5 @@
-﻿using Unity.Entities;
+﻿#if UNITY_ECS
+using Unity.Entities;
 using Unity.Jobs;
 using Unity.Mathematics;
 using Unity.Physics;
@@ -22,3 +23,4 @@ public class IncreaseVelocityOverTimeSystem : JobComponentSystem
 		return default;
 	}
 }
+#endif

@@ -1,4 +1,5 @@
-﻿using System.Collections;
+﻿#if UNITY_ECS
+using System.Collections;
 using Unity.Entities;
 using Unity.Mathematics;
 using Unity.Physics;
@@ -100,4 +101,4 @@ public class GameManager : MonoBehaviour
 		manager.AddComponentData(ball, velocity);
 	}
 }
-
+#endif

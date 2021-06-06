@@ -1,4 +1,5 @@
-﻿using System.Collections.Generic;
+﻿#if UNITY_ECS
+using System.Collections.Generic;
 using Unity.Entities;
 using UnityEngine;
 
@@ -32,3 +33,4 @@ public class SpawnerAuthoring_FromEntity : MonoBehaviour, IDeclareReferencedPref
         dstManager.AddComponentData(entity, spawnerData);
     }
 }
+#endif

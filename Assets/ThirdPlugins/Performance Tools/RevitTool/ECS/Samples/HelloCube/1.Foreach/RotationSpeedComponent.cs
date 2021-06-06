@@ -1,4 +1,5 @@
-﻿using System.Collections;
+﻿#if UNITY_ECS
+using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 using Unity.Entities;
@@ -8,3 +9,4 @@ public struct RotationSpeedComponent : IComponentData
 {
     public float RadiansPerSecond;
 }
+#endif

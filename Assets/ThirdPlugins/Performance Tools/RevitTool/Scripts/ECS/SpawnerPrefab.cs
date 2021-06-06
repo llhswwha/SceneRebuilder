@@ -1,4 +1,5 @@
-﻿using System.Collections;
+﻿#if UNITY_ECS
+using System.Collections;
 using System.Collections.Generic;
 using Unity.Collections;
 using Unity.Entities;
@@ -12,3 +13,4 @@ public struct SpawnerPrefab : IComponentData
     //public NativeArray<quaternion> Angles;
     //public NativeArray<float3> Scales;
 }
+#endif

@@ -1,4 +1,5 @@
-﻿using Unity.Entities;
+﻿#if UNITY_ECS
+using Unity.Entities;
 using Unity.Transforms;
 using Unity.Collections;
 using Unity.Mathematics;
@@ -37,3 +38,4 @@ public class BallGoalCheckSystem : JobComponentSystem
 		return default;
 	}
 }
+#endif

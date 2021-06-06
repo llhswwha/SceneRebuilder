@@ -1,3 +1,4 @@
+#if UNITY_ECS
 using Unity.Entities;
 
 // ReSharper disable once InconsistentNaming
@@ -7,3 +8,4 @@ public struct Spawner_FromEntity : IComponentData
     public int CountY;
     public Entity Prefab;
 }
+#endif

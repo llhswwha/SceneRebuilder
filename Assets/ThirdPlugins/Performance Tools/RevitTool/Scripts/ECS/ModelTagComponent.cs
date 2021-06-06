@@ -1,4 +1,5 @@
-﻿using System.Collections;
+﻿#if UNITY_ECS
+using System.Collections;
 using System.Collections.Generic;
 using Unity.Entities;
 using UnityEngine;
@@ -8,3 +9,4 @@ public struct ModelTagComponent : IComponentData
 {
     
 }
+#endif

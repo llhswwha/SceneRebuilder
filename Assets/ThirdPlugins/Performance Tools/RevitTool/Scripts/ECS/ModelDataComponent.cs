@@ -1,4 +1,5 @@
-﻿using System.Collections;
+﻿#if UNITY_ECS
+using System.Collections;
 using System.Collections.Generic;
 using Unity.Collections;
 using Unity.Entities;
@@ -15,3 +16,4 @@ public struct ModelDataComponent : IComponentData
     //     return string.Format("Id:{0},Name:{1}", Id, Name);
     // }
 }
+#endif

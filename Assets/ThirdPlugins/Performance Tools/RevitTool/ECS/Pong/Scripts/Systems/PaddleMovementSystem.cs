@@ -1,4 +1,5 @@
-﻿using Unity.Entities;
+﻿#if UNITY_ECS
+using Unity.Entities;
 using Unity.Jobs;
 using Unity.Mathematics;
 using Unity.Transforms;
@@ -19,3 +20,4 @@ public class PaddleMovementSystem : JobComponentSystem
 		return default;
 	}
 }
+#endif
