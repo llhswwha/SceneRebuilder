@@ -6,7 +6,9 @@ using System.Collections;
 using System.Collections.Generic;
 using System.IO;
 using System.Text;
+#if UNITY_ECS
 using Unity.Entities;
+#endif
 // using Unity.Entities;
 // using Unity.Entities.UniversalDelegates;
 using UnityEngine;
@@ -584,13 +586,14 @@ public class SceneRebuilder : MonoBehaviour
             root = null;
         }
 
- 
-        foreach(SpawnerPrefabScript s in spawnerList)
+#if UNITY_ECS
+        foreach (SpawnerPrefabScript s in spawnerList)
         {
             s.Clear();
             GameObject.Destroy(s);
         }
         spawnerList.Clear();
+
 
         if (ModelType==1)
         {
@@ -601,6 +604,7 @@ public class SceneRebuilder : MonoBehaviour
                 entityManager.DestroyEntity(item);
             }
         }
+#endif
 
         resourcePrefabs.Clear();
 
@@ -651,7 +655,9 @@ public class SceneRebuilder : MonoBehaviour
 
     public Vector3 CopyOffset = new Vector3(-100, 0, 0);
 
+#if UNITY_ECS
     private List<SpawnerPrefabScript> spawnerList = new List<SpawnerPrefabScript>();
+#endif
 
     public GameObject centerObject;
 
@@ -920,11 +926,13 @@ public class SceneRebuilder : MonoBehaviour
 
     private void CreateEntitiesByBuilding(ModelBuildingInfo buildingInfo, bool byMesh)
     {
+#if UNITY_ECS
         foreach (var item in spawnerList)
         {
             GameObject.Destroy(item);
         }
         spawnerList.Clear();
+#endif
 
 
         //int count = 0;
@@ -1125,12 +1133,13 @@ public class SceneRebuilder : MonoBehaviour
 
     private void CreateEntitiesByTypeList(NodeTypeInfoList tl,bool byMesh)
     {
+#if UNITY_ECS
         foreach (var item in spawnerList)
         {
             GameObject.Destroy(item);
         }
         spawnerList.Clear();
-
+#endif
 
         int count = 0;
         for (int i = startTypeId; i < tl.Count; i++)
@@ -1150,14 +1159,17 @@ public class SceneRebuilder : MonoBehaviour
         GameObject prefab = GetPrefabInstance(typeInfo);
         if (prefab != null)
         {
+#if UNITY_ECS
             SpawnerPrefabScript spawner = gameObject.AddComponent<SpawnerPrefabScript>();
             spawner.MaxCount = ModelMaxCount;
+
             spawnerList.Add(spawner);
+
             spawner.Prefab = prefab;
             spawner.nodes = typeInfo.nodes;
             spawner.AutoCreate = true;
             spawner.CreateByEntityMesh = byMesh;
-
+#endif
             count += typeInfo.nodes.Count;
             if (ModelMaxCount > 0 && count > ModelMaxCount)
             {
@@ -1283,8 +1295,10 @@ public class SceneRebuilder : MonoBehaviour
                 newObj.name = child.nodeName;
                 child.SetTransform(newObj);
                 newObj.transform.SetParent(typeObject.transform);
+#if UNITY_ECS
                 if (isConvert)
                     newObj.AddComponent<ConvertToEntity>();
+#endif
 
                 c++;
             }

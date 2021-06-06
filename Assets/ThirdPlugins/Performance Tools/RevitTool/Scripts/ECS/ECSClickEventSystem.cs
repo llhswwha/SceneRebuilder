@@ -1,5 +1,6 @@
 ﻿using System.Collections;
 using System.Collections.Generic;
+#if UNITY_ECS
 using Unity.Entities;
 using Unity.Physics;
 using Unity.Physics.Systems;
@@ -93,3 +94,4 @@ public class ECSClickEventSystem : MonoBehaviour
 
     public Color SelectedColor = Color.green;
 }
+#endif

@@ -1,6 +1,7 @@
 ﻿using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
+#if UNITY_ECS
 using Unity.Jobs;
 using Unity.Entities;
 using Unity.Transforms;
@@ -48,3 +49,4 @@ public class Testing : MonoBehaviour
         
     }
 }
+#endif

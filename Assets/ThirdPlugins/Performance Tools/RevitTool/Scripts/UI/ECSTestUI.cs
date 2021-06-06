@@ -1,6 +1,7 @@
 ﻿using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
+#if UNITY_ECS
 using Unity.Entities;
 using UnityEngine.UI;
 using Unity.Mathematics;
@@ -74,3 +75,4 @@ public class ECSTestUI : MonoBehaviour
 }
 
 
+#endif
