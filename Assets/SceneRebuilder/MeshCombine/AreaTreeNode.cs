@@ -53,7 +53,15 @@ public class AreaTreeNode : MonoBehaviour
     }
 
     public void AddRenderer(MeshRenderer renderer){
-        Renderers.Add(renderer);
+        if (!Renderers.Contains(renderer))
+        {
+            Renderers.Add(renderer);
+        }
+        else
+        {
+            Debug.LogError("AddRenderer Renderers.Contains(renderer):"+renderer);
+        }
+        
     }
 
     public void AddRenderers(List<MeshRenderer> renderers)
@@ -61,9 +69,19 @@ public class AreaTreeNode : MonoBehaviour
         Renderers.AddRange(renderers);
     }
 
+    //public static bool TestDebug = true;
+
+    //private bool IsCopyed = false;
+
     [ContextMenu("CopyRenderers")]
     public void CopyRenderers()
     {
+        //if (IsCopyed)
+        //{
+        //    Debug.LogError("TestDebug IsCopyed==true");
+        //    return;
+        //}
+        //IsCopyed = true;
         newRenderers.Clear();
         RendererParents.Clear();
         colliders.Clear();
@@ -75,9 +93,28 @@ public class AreaTreeNode : MonoBehaviour
         //renderersRoot.transform.SetParent(this.transform);
         foreach(var render in Renderers){
             GameObject go=render.gameObject;
+            //TransformParent tp = go.GetComponent<TransformParent>();
+            //if(tp!=null)
+            //{
+            //    if (TestDebug)
+            //    {
+            //        TestDebug = false;
+            //        Debug.LogError("TestDebug tp!=null");
+            //    }
+                
+            //}
+            //else
+            //{
+            //    tp= go.AddComponent<TransformParent>();
+            //}
+            //tp.Parent = go.transform.parent;
+
             newRenderers.Add(render);
-            RendererParents.Add(go.transform.parent);
-            go.transform.SetParent(renderersRoot.transform);
+            if(go.transform.parent!= renderersRoot.transform)
+            {
+                RendererParents.Add(go.transform.parent);
+                go.transform.SetParent(renderersRoot.transform);
+            }
 
             MeshCollider collider = go.GetComponent<MeshCollider>();
             if(collider)
@@ -149,9 +186,9 @@ public class AreaTreeNode : MonoBehaviour
 
         HideRenders();
 
-        RecoverParent();
+        renderersRoot.transform.SetParent(this.transform);
 
-        CopyRenderers();
+        RecoverParent();
     }
 
     private void RecoverParent()
@@ -480,7 +517,7 @@ public class AreaTreeNode : MonoBehaviour
                 }
             }
         }
-        Debug.Log("CreateDictionary 1:"+AreaTreeHelper.render2NodeDict.Count);
+        //Debug.Log("CreateDictionary 1:"+AreaTreeHelper.render2NodeDict.Count);
 
         //CopyRenders
         if(newRenderers!=null)
@@ -489,14 +526,14 @@ public class AreaTreeNode : MonoBehaviour
         }
 
         //CombinedRenders
-        Debug.Log("CreateDictionary 2:"+AreaTreeHelper.render2NodeDict.Count);
+        //Debug.Log("CreateDictionary 2:"+AreaTreeHelper.render2NodeDict.Count);
         if(combindResult!=null)
         {
             var renderers=combindResult.GetComponentsInChildren<MeshRenderer>();
             AreaTreeHelper.AddNodeDictItem_Renderers(renderers, this);
             AreaTreeHelper.AddNodeDictItem_Combined(renderers, this);
         }
-        Debug.Log("CreateDictionary 3:"+AreaTreeHelper.render2NodeDict.Count);
+        //Debug.Log("CreateDictionary 3:"+AreaTreeHelper.render2NodeDict.Count);
 
         Debug.Log("CreateDictionary End:"+AreaTreeHelper.render2NodeDict.Count);
     }
