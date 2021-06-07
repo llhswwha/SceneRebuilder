@@ -700,14 +700,22 @@ UnpackPrefab();
         SetPrefabInfoList(PrefabInfoList);
     }
 
-    [ContextMenu("RemoveInstances")]
+    [ContextMenu("RemoveInstances1")]
 
-    public void RemoveInstances()
+    public void RemoveInstances1()
     {
         PrefabInfoList1.RemoveInstances();
         PrefabInfoList2.RemoveInstances();
         PrefabInfoList3.RemoveInstances();
         //PrefabInfoList4.RemoveInstances();
+    }
+
+        [ContextMenu("RemoveInstances2")]
+
+    public void RemoveInstances2()
+    {
+        PrefabInfoList5.RemoveInstances();
+        PrefabInfoList6.RemoveInstances();
     }
 
     public void SetPrefabInfoList(List<PrefabInfo> list){
