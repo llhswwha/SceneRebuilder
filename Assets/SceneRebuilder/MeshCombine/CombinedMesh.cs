@@ -311,9 +311,9 @@ public static class MeshCombineHelper
         DateTime start=DateTime.Now;
         GameObject goNew=new GameObject();
         goNew.name=go.name+"_Combined";
-        
+        MeshRenderer[] renderers = go.GetComponentsInChildren<MeshRenderer>();
         //int count=0;
-        Dictionary<Material,List<MeshFilter>> mat2Filters=GetMatFilters(go,out count);
+        Dictionary<Material,List<MeshFilter>> mat2Filters=GetMatFilters(renderers, out count);
         foreach(var item in mat2Filters)
         {
             Material material=item.Key;
@@ -337,7 +337,8 @@ public static class MeshCombineHelper
         goNew.name=go.name+"_Combined";
         goNew.transform.SetParent(go.transform.parent);
         int count=0;
-        Dictionary<Material,List<MeshFilter>> mat2Filters=GetMatFilters(go,out count);
+        MeshRenderer[] renderers = go.GetComponentsInChildren<MeshRenderer>();
+        Dictionary<Material,List<MeshFilter>> mat2Filters=GetMatFilters(renderers, out count);
         yield return null;
         int i=0;
         foreach(var item in mat2Filters)
@@ -408,11 +409,11 @@ public static class MeshCombineHelper
         }
     }
 
-    public static Dictionary<Material, List<MeshFilter>> GetMatFiltersInner(GameObject go, out int count)
+    public static Dictionary<Material, List<MeshFilter>> GetMatFiltersInner(MeshRenderer[] renderers, out int count)
     {
         DateTime start = DateTime.Now;
         Dictionary<Material, List<MeshFilter>> mat2Filters = new Dictionary<Material, List<MeshFilter>>();
-        MeshRenderer[] renderers = go.GetComponentsInChildren<MeshRenderer>();
+        //MeshRenderer[] renderers = go.GetComponentsInChildren<MeshRenderer>();
         count = renderers.Length;
         for (int i = 0; i < renderers.Length; i++)
         {
@@ -451,12 +452,24 @@ public static class MeshCombineHelper
         return mat2Filters2;
     }
 
-    public static Dictionary<Material, List<MeshFilter>> GetMatFilters(GameObject go,out int count,bool isSetMaterial=false){
-        Dictionary<Material, List<MeshFilter>> mat2Filters = GetMatFiltersInner(go, out count);
+    public static Dictionary<Material, List<MeshFilter>> GetMatFilters(GameObject go, out int count, bool isSetMaterial = false)
+    {
+        MeshRenderer[] renderers = go.GetComponentsInChildren<MeshRenderer>();
+        Dictionary<Material, List<MeshFilter>> mat2Filters = GetMatFiltersInner(renderers, out count);
         if (isSetMaterial)
         {
             SetMaterials(mat2Filters);
-            mat2Filters = GetMatFiltersInner(go, out count);
+            mat2Filters = GetMatFiltersInner(renderers, out count);
+        }
+        return mat2Filters;
+    }
+
+    public static Dictionary<Material, List<MeshFilter>> GetMatFilters(MeshRenderer[] renderers, out int count,bool isSetMaterial=false){
+        Dictionary<Material, List<MeshFilter>> mat2Filters = GetMatFiltersInner(renderers, out count);
+        if (isSetMaterial)
+        {
+            SetMaterials(mat2Filters);
+            mat2Filters = GetMatFiltersInner(renderers, out count);
         }
         return mat2Filters;
     }

@@ -12,6 +12,7 @@ GameObject:
   - component: {fileID: 4683765426289389626}
   - component: {fileID: 1210907614275931427}
   - component: {fileID: 109460000}
+  - component: {fileID: 1095493816}
   m_Layer: 0
   m_Name: AreaTreeManager
   m_TagString: Untagged
@@ -98,22 +99,22 @@ MonoBehaviour:
     MinRenderCount: 50
     MaxVertexCount: 100
   nodeStatics:
-    CellCount: 216
-    AvgCellRendererCount: 47
-    MaxCellRendererCount: 912
+    CellCount: 76
+    AvgCellRendererCount: 13
+    MaxCellRendererCount: 49
     MinCellRendererCount: 1
-    MaxNodeVertexCount: 97
-    MaxNodeVertexCount2: 379
-    MinNodeVertexCount: 4
-    LevelDepth: 21
+    MaxNodeVertexCount: 0
+    MaxNodeVertexCount2: 0
+    MinNodeVertexCount: 0
+    LevelDepth: 8
   isCombine: 1
   combinerSetting: {fileID: 109460000}
   IsCopy: 1
-  VertexCount: 3160
-  RendererCount: 10366
-  CombinedCount: 305
-  MatCount: 21
-  LeafCount: 92
+  VertexCount: 7
+  RendererCount: 1000
+  CombinedCount: 74
+  MatCount: 6
+  LeafCount: 36
 --- !u!114 &109460000
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -133,3 +134,20 @@ MonoBehaviour:
   IsDestroySource: 0
   IsCoroutine: 0
   WaitCount: 10000
+--- !u!114 &1095493816
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 4683765426289389627}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: c0872ef2e0c590c488fbb6c0e73b413f, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  camera: {fileID: 0}
+  lastNode: {fileID: 0}
+  lastRenderer: {fileID: 0}
+  lastRendererMat: {fileID: 0}
+  selectedMat: {fileID: 2100000, guid: b74f0d92a8c6c6045834edd3067bd1e5, type: 2}

@@ -771,6 +771,46 @@ public static class AreaTreeHelper
     
     public static Dictionary<MeshRenderer,AreaTreeNode> render2NodeDict=new Dictionary<MeshRenderer, AreaTreeNode>();
 
+    public static Dictionary<MeshRenderer, AreaTreeNode> combined2NodeDict = new Dictionary<MeshRenderer, AreaTreeNode>();
+
+    public static void ClearDict()
+    {
+        render2NodeDict.Clear();
+        combined2NodeDict.Clear();
+    }
+
+    public static void AddNodeDictItem_Renderers(IEnumerable<MeshRenderer> renderers,AreaTreeNode node)
+    {
+        foreach (var render in renderers)
+        {
+            //renderer.gameObject.AddComponent<MeshCollider>();
+            if (AreaTreeHelper.render2NodeDict.ContainsKey(render))
+            {
+                //Debug.LogError($"模型重复在不同的Node里:{AreaTreeHelper.render2NodeDict[render]},{this}");
+            }
+            else
+            {
+                AreaTreeHelper.render2NodeDict.Add(render, node);
+            }
+        }
+    }
+
+    public static void AddNodeDictItem_Combined(IEnumerable<MeshRenderer> renderers, AreaTreeNode node)
+    {
+        foreach (var render in renderers)
+        {
+            //renderer.gameObject.AddComponent<MeshCollider>();
+            if (AreaTreeHelper.combined2NodeDict.ContainsKey(render))
+            {
+                //Debug.LogError($"模型重复在不同的Node里:{AreaTreeHelper.render2NodeDict[render]},{this}");
+            }
+            else
+            {
+                AreaTreeHelper.combined2NodeDict.Add(render, node);
+            }
+        }
+    }
+
     public static GameObject CubePrefab;
     public static GameObject CreateBoundsCube(Bounds bounds,string n,Transform parent)
     {
