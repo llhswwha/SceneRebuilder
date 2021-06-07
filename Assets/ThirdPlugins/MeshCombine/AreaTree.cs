@@ -319,12 +319,18 @@ public class AreaTree : MonoBehaviour
         Debug.LogError($"AddColliders renderers:{renderers.Length},\t{(DateTime.Now-start).ToString()}");
     }
 
+    [ContextMenu("ClearDictionary")]
+    public void ClearDictionary()
+    {
+        AreaTreeHelper.render2NodeDict.Clear();
+    }
+
     [ContextMenu("CreateDictionary")]
     public void CreateDictionary()
     {
         Debug.LogError($"CreateDictionary Start");
         DateTime start=DateTime.Now;
-        AreaTreeHelper.render2NodeDict.Clear();
+        ClearDictionary();
         foreach(AreaTreeNode tn in TreeNodes)
         {
             if(tn==null)continue;

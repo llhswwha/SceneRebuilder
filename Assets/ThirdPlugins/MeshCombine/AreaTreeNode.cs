@@ -207,6 +207,7 @@ public class AreaTreeNode : MonoBehaviour
         }
 
         combindResult.SetActive(isCombined);
+        renderersRoot.SetActive(!isCombined);
     }
 
     [ContextMenu("SwitchToCombined")]
@@ -430,21 +431,40 @@ public class AreaTreeNode : MonoBehaviour
         return nodes;
     }
 
+    [ContextMenu("ClearDictionary")]
+    public void ClearDictionary()
+    {
+        Debug.Log("ClearDictionary Start:"+AreaTreeHelper.render2NodeDict.Count);
+        AreaTreeHelper.render2NodeDict.Clear();
+        Debug.Log("ClearDictionary End:"+AreaTreeHelper.render2NodeDict.Count);
+    }
+
+    [ContextMenu("CreateDictionary")]
     public void CreateDictionary()
     {
+        Debug.Log("CreateDictionary Start:"+AreaTreeHelper.render2NodeDict.Count);
         if(this.Nodes.Count==0)
         {
             foreach(var render in this.Renderers)
             {
                 if(AreaTreeHelper.render2NodeDict.ContainsKey(render))
                 {
-                    Debug.LogError($"模型重复在不同的Node里:{AreaTreeHelper.render2NodeDict[render]},{this}");
+                    var node=AreaTreeHelper.render2NodeDict[render];
+                    if(node==this)
+                    {
+
+                    }
+                    else{
+                        AreaTreeHelper.render2NodeDict[render]=this;
+                        Debug.LogError($"模型重复在不同的Node里:{AreaTreeHelper.render2NodeDict[render]},{this}");
+                    }
                 }
                 else{
                     AreaTreeHelper.render2NodeDict.Add(render,this);
                 }
             }
         }
+        Debug.Log("CreateDictionary 1:"+AreaTreeHelper.render2NodeDict.Count);
 
         if(newRenderers!=null)
         {
@@ -460,6 +480,7 @@ public class AreaTreeNode : MonoBehaviour
             }
         }
 
+        Debug.Log("CreateDictionary 2:"+AreaTreeHelper.render2NodeDict.Count);
         if(combindResult!=null)
         {
             var renderers=combindResult.GetComponentsInChildren<MeshRenderer>();
@@ -475,7 +496,9 @@ public class AreaTreeNode : MonoBehaviour
                 }
             }
         }
+        Debug.Log("CreateDictionary 3:"+AreaTreeHelper.render2NodeDict.Count);
 
+        Debug.Log("CreateDictionary End:"+AreaTreeHelper.render2NodeDict.Count);
     }
 
     [ContextMenu("ShowNodes")]
