@@ -203,23 +203,13 @@ public class AreaTreeManager : MonoBehaviour
 
     public List<AreaTree> Trees = new List<AreaTree>();
 
-    [ContextMenu("CreateOne")]
-    public void CreateOne()
-    {
-        DateTime start = DateTime.Now;
-        ClearCount();
-        ClearTrees();
-        CreateTree(Target);
-        Debug.LogError($"CreateOne \t{(DateTime.Now - start).ToString()}");
-    }
-
     List<Material> matList = new List<Material>();
-    public void CreateTree(GameObject go)
+    public AreaTree CreateTree(GameObject go, bool isC,string suffix, MeshRenderer[] renderers)
     {
-        string treeName = "NewAreaTree" + "_Tree";
+        string treeName = "NewAreaTree" + suffix;
         if (go != null)
         {
-            treeName = go.name + "_Tree";
+            treeName = go.name + suffix;
         }
         AreaTreeHelper.CubePrefab = this.CubePrefab;
 
@@ -229,16 +219,9 @@ public class AreaTreeManager : MonoBehaviour
         areaTree.IsCopy = this.IsCopy;
 
         areaTree.Target = go;
-        if (PrefabInstanceBuilder != null)
-        {
-            areaTree.TreeRenderers = PrefabInstanceBuilder.GetCombinedRenderers().ToArray();
-        }
-        else
-        {
-            areaTree.TreeRenderers = null;
-        }
+        areaTree.TreeRenderers = renderers;
 
-        if (isCombine)
+        if (isC)
         {
             if(combinerSetting)
             {
@@ -253,6 +236,7 @@ public class AreaTreeManager : MonoBehaviour
         Trees.Add(areaTree);
 
         ShowModelInfo(areaTree);
+        return areaTree;
     }
 
     private void ShowModelInfo(AreaTree areaTree)
@@ -355,8 +339,66 @@ public class AreaTreeManager : MonoBehaviour
         Trees.Clear();
     }
 
-    [ContextMenu("CreateChildren")]
-    public void CreateChildren()
+     [ContextMenu("CreateHiddenOne")]
+    public void CreateHiddenOne()
+    {
+        DateTime start = DateTime.Now;
+        ClearCount();
+        ClearTrees();
+
+        // MeshRenderer[] combinedRenderers=null;
+        // if (PrefabInstanceBuilder != null)
+        // {
+        //     combinedRenderers = PrefabInstanceBuilder.GetCombinedRenderers().ToArray();
+        // }
+        // CreateTree(Target,isCombine,"_CombineTree",combinedRenderers);//合并模型的树
+
+        MeshRenderer[] hiddenRenderers=null;
+        if (PrefabInstanceBuilder != null)
+        {
+            hiddenRenderers = PrefabInstanceBuilder.GetHiddenRenderers().ToArray();
+
+            Target=PrefabInstanceBuilder.GetTarget();
+        }
+
+        CreateTree(Target,false,"_HiddenTree",hiddenRenderers);//动态显示模型的树
+        
+        Debug.LogError($"CreateHiddenOne \t{(DateTime.Now - start).ToString()}");
+    }
+
+    //public AreaTreeNodeShowManager TreeNodeShowManager;
+
+    [ContextMenu("CreateCombinedOne")]
+    public void CreateCombinedOne()
+    {
+        IsCopy=false;
+
+        DateTime start = DateTime.Now;
+        ClearCount();
+        ClearTrees();
+
+        MeshRenderer[] combinedRenderers=null;
+        if (PrefabInstanceBuilder != null)
+        {
+            combinedRenderers = PrefabInstanceBuilder.GetCombinedRenderers().ToArray();
+        }
+        var tree1=CreateTree(Target,isCombine,"_CombineTree",combinedRenderers);//合并模型的树
+
+        MeshRenderer[] hiddenRenderers=null;
+        if (PrefabInstanceBuilder != null)
+        {
+            hiddenRenderers = PrefabInstanceBuilder.GetHiddenRenderers().ToArray();
+        }
+        var tree2=CreateTree(Target,false,"_HiddenTree",hiddenRenderers);//动态显示模型的树
+        tree2.DestroyNodeRender();
+
+        //TreeNodeShowManager.HiddenTrees.Add(tree2);
+        
+        Debug.LogError($"CreateCombinedOne \t{(DateTime.Now - start).ToString()}");
+    }
+
+    [ContextMenu("CreateCombinedChildren")]
+    public void CreateCombinedChildren()
     {
         DateTime start = DateTime.Now;
         ClearTrees();
@@ -364,7 +406,7 @@ public class AreaTreeManager : MonoBehaviour
         for (int i = 0; i < Target.transform.childCount; i++)
         {
             var child = Target.transform.GetChild(i);
-            CreateTree(child.gameObject);
+            CreateTree(child.gameObject,isCombine,"_CombineTree",null);
         }
 
         //AvgCount /= Target.transform.childCount;

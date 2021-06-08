@@ -17,6 +17,7 @@ public class PrefabInstanceBuilder : MonoBehaviour
     public RotateMode mode;
 
     public GameObject TargetRoots;
+    public GameObject TargetRootsCopy;
 
     public int TargetCount=0;
 
@@ -37,6 +38,8 @@ public class PrefabInstanceBuilder : MonoBehaviour
     public List<MeshNode> TargetNodeList=new List<MeshNode>();
 
     public List<GameObject> PrefabList=new List<GameObject>();
+
+    public int[] InsCountList=new int[]{1,5,10,50,100};
 
     public List<PrefabInfo> PrefabInfoList=new List<PrefabInfo>();
 
@@ -475,42 +478,42 @@ UnpackPrefab();
     }
 
     public int CurrentTestId=0;
-
-    [ContextMenu("TestOne1")]
-    public void TestOne1()
-    {
-        GetVertexCenterInfos();
-
-        CurrentPrefab=TargetList[0];//第一个作为预设
-        List<GameObject> newModels=ReplaceToPrefab_Test(CurrentPrefab,TargetList,CurrentTestId);
-        CurrentTestId++;
-    }
-
-    #if UNITY_EDITOR
-
-    public PrefabComparer prefabComparer;
-    [ContextMenu("TestOne2")]
-    public void TestOne2()
-    {
-        GetVertexCenterInfos();
-        prefabComparer = this.gameObject.GetComponent<PrefabComparer>();
-        prefabComparer.Prefab = TargetList[0];
-        prefabComparer.Target = TargetList[1];
-        prefabComparer.ReplaceToPrefab();
-    }
-    #endif
-
+    
     public MeshComparer meshComparer;
 
-    [ContextMenu("TestOne3")]
-    public void TestOne3()
-    {
-        GetVertexCenterInfos();
-        meshComparer = this.gameObject.GetComponent<MeshComparer>();
-        meshComparer.goFrom = MeshHelper.CopyGO(TargetList[0]);
-        meshComparer.goTo = TargetList[1];
-        meshComparer.AlignModels();
-    }
+    // [ContextMenu("TestOne1")]
+    // public void TestOne1()
+    // {
+    //     GetVertexCenterInfos();
+
+    //     CurrentPrefab=TargetList[0];//第一个作为预设
+    //     List<GameObject> newModels=ReplaceToPrefab_Test(CurrentPrefab,TargetList,CurrentTestId);
+    //     CurrentTestId++;
+    // }
+
+    // #if UNITY_EDITOR
+
+    // public PrefabComparer prefabComparer;
+    // [ContextMenu("TestOne2")]
+    // public void TestOne2()
+    // {
+    //     GetVertexCenterInfos();
+    //     prefabComparer = this.gameObject.GetComponent<PrefabComparer>();
+    //     prefabComparer.Prefab = TargetList[0];
+    //     prefabComparer.Target = TargetList[1];
+    //     prefabComparer.ReplaceToPrefab();
+    // }
+    // #endif
+
+    // [ContextMenu("TestOne3")]
+    // public void TestOne3()
+    // {
+    //     GetVertexCenterInfos();
+    //     meshComparer = this.gameObject.GetComponent<MeshComparer>();
+    //     meshComparer.goFrom = MeshHelper.CopyGO(TargetList[0]);
+    //     meshComparer.goTo = TargetList[1];
+    //     meshComparer.AlignModels();
+    // }
 
     public List<GameObject> ReplaceToPrefab_Test(GameObject prefabGo,List<GameObject> models,int i)
     {
@@ -588,6 +591,15 @@ UnpackPrefab();
         }
     }
 
+    public GameObject GetTarget()
+    {
+        if(TargetRootsCopy)
+        {
+            return TargetRootsCopy;
+        }
+        return TargetRoots;
+    }
+
     private MeshFilter[] GetMeshFilters()
     {
         
@@ -597,11 +609,16 @@ UnpackPrefab();
             
             if(IsCopyTargetRoot)
             {
+                if(TargetRootsCopy!=null){
+                    GameObject.DestroyImmediate(TargetRootsCopy);
+                }
+
                 TargetRoots.SetActive(false);
                 GameObject copy=MeshHelper.CopyGO(TargetRoots);
                 copy.SetActive(true);
                 meshFilters=copy.GetComponentsInChildren<MeshFilter>();
                 ClearMeshFilters(meshFilters.ToList());
+                TargetRootsCopy=copy;
             }
             else{
                 meshFilters=TargetRoots.GetComponentsInChildren<MeshFilter>();
@@ -707,15 +724,53 @@ UnpackPrefab();
         PrefabInfoList1.RemoveInstances();
         PrefabInfoList2.RemoveInstances();
         PrefabInfoList3.RemoveInstances();
-        //PrefabInfoList4.RemoveInstances();
+        PrefabInfoList4.RemoveInstances();
     }
 
-        [ContextMenu("RemoveInstances2")]
+    [ContextMenu("RemoveInstances2")]
 
     public void RemoveInstances2()
     {
         PrefabInfoList5.RemoveInstances();
         PrefabInfoList6.RemoveInstances();
+    }
+
+    [ContextMenu("HideInstances1")]
+
+    public void HideInstances1()
+    {
+        PrefabInfoList1.HideInstances();
+        PrefabInfoList2.HideInstances();
+        PrefabInfoList3.HideInstances();
+        PrefabInfoList4.RemoveInstances();
+    }
+
+    [ContextMenu("HideInstances2")]
+
+    public void HideInstances2()
+    {
+        //PrefabInfoList4.RemoveInstances();
+        PrefabInfoList5.HideInstances();
+        PrefabInfoList6.HideInstances();
+    }
+
+    [ContextMenu("ShowInstances1")]
+
+    public void ShowInstances1()
+    {
+        PrefabInfoList1.ShowInstances();
+        PrefabInfoList2.ShowInstances();
+        PrefabInfoList3.ShowInstances();
+        PrefabInfoList4.ShowInstances();
+    }
+
+    [ContextMenu("ShowInstances2")]
+
+    public void ShowInstances2()
+    {
+        //PrefabInfoList4.RemoveInstances();
+        PrefabInfoList5.ShowInstances();
+        PrefabInfoList6.ShowInstances();
     }
 
     public void SetPrefabInfoList(List<PrefabInfo> list){
@@ -730,23 +785,23 @@ UnpackPrefab();
         PrefabInfoList6.Clear();
         for (int i=0;i<list.Count;i++)
         {
-            if(list[i].InstanceCount==0)
+            if(list[i].InstanceCount<InsCountList[0])//1
             {
                 PrefabInfoList1.Add(list[i]);
             }
-            else if(list[i].InstanceCount<5)
+            else if(list[i].InstanceCount<InsCountList[1])//5
             {
                 PrefabInfoList2.Add(list[i]);
             }
-            else if (list[i].InstanceCount < 10)
+            else if (list[i].InstanceCount < InsCountList[2])//10
             {
                 PrefabInfoList3.Add(list[i]);
             }
-            else if (list[i].InstanceCount < 50)
+            else if (list[i].InstanceCount < InsCountList[3])//50
             {
                 PrefabInfoList4.Add(list[i]);
             }
-            else if (list[i].InstanceCount < 100)
+            else if (list[i].InstanceCount < InsCountList[4])//100
             {
                 PrefabInfoList5.Add(list[i]);
             }
@@ -966,6 +1021,14 @@ break;
         list.AddRange(PrefabInfoList2.GetRenderers());
         list.AddRange(PrefabInfoList3.GetRenderers());
         list.AddRange(PrefabInfoList4.GetRenderers());
+        return list;
+    }
+
+    public List<MeshRenderer> GetHiddenRenderers()
+    {
+        List<MeshRenderer> list = new List<MeshRenderer>();
+        list.AddRange(PrefabInfoList5.GetRenderers());
+        list.AddRange(PrefabInfoList6.GetRenderers());
         return list;
     }
 

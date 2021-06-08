@@ -16,9 +16,11 @@ public class AreaTree : MonoBehaviour
         if (IsCopy && IsFirst)
         {
             IsFirst = false;
+            Debug.Log("GetTarget Target1:"+Target);
             Target.SetActive(false);
             TargetCopy = MeshHelper.CopyGO(Target);
             TargetCopy.SetActive(true);
+            Debug.Log("GetTarget Target2:"+TargetCopy);
         }
 
         if (!IsCopy)
@@ -119,9 +121,12 @@ public class AreaTree : MonoBehaviour
         Debug.LogError($"CheckRenderers renderCount:{renderCount},\t{(DateTime.Now-start).ToString()}");
     }
 
+    public bool IsCombined=false;
+
     [ContextMenu("CombineMesh")]
     public void CombineMesh()
     {   
+        IsCombined=true;
         DateTime start=DateTime.Now;
         int renderCount=0;
         foreach(AreaTreeNode node in TreeNodes)
@@ -206,6 +211,7 @@ public class AreaTree : MonoBehaviour
         
         Debug.LogError("renderers:"+renderers.Length);
         foreach(var render in renderers){
+            if(render==null)continue;
             render.enabled=true;
         }
 
@@ -231,7 +237,14 @@ public class AreaTree : MonoBehaviour
         
         int cellCount=ClearNodes();
         nodeStatics.CellCount = cellCount;
-        nodeStatics.AvgCellRendererCount =(int)(renderers.Length/cellCount);
+        if(cellCount!=0)
+        {
+            nodeStatics.AvgCellRendererCount =(int)(renderers.Length/cellCount);
+        }
+        else{
+            nodeStatics.AvgCellRendererCount =0;
+        }
+        
 
         rootCube.transform.SetParent(this.transform);
 
@@ -311,6 +324,7 @@ public class AreaTree : MonoBehaviour
         DateTime start=DateTime.Now;
         var renderers=GetTreeRendererers();
         foreach(var render in renderers){
+            if(render==null)continue;
             MeshCollider collider=render.gameObject.GetComponent<MeshCollider>();
             if(collider==null){
                 collider=render.gameObject.AddComponent<MeshCollider>();
@@ -350,7 +364,7 @@ public class AreaTree : MonoBehaviour
     {
          DateTime start=DateTime.Now;
 
-        ShowRenderers();
+        //ShowRenderers();
         AddColliders();
         CreateCells_Tree();
         CombineMesh();
@@ -370,7 +384,7 @@ public class AreaTree : MonoBehaviour
     {
          DateTime start=DateTime.Now;
 
-        ShowRenderers();
+        //ShowRenderers();
         AddColliders();
         CreateCells_Tree();
         // CombineMesh();
@@ -389,6 +403,15 @@ public class AreaTree : MonoBehaviour
     }
 
     public Vector3 LeafCellSize;
+
+    [ContextMenu("DestroyNodeRender")]
+    public void DestroyNodeRender()
+    {
+        foreach(AreaTreeNode tn in TreeNodes)
+        {
+            tn.DestroySelfRenderer();
+        }
+    }
 
     private int ClearNodes()
     {
@@ -431,13 +454,13 @@ public class AreaTree : MonoBehaviour
                 var vertexCount = tn.VertexCount;
                 if ( ( vertexCount<nodeSetting.MaxVertexCount && vertexCount > nodeStatics.MaxNodeVertexCount) || nodeStatics.MaxNodeVertexCount == 0)
                 {
-                    Debug.Log($"MaxNodeVertexCount1:{vertexCount},node:{tn.name}");
+                    // Debug.Log($"MaxNodeVertexCount1:{vertexCount},node:{tn.name}");
                     nodeStatics.MaxNodeVertexCount = vertexCount;
                 }
 
                 if (vertexCount > nodeStatics.MaxNodeVertexCount2 || nodeStatics.MaxNodeVertexCount2 == 0)
                 {
-                    Debug.Log($"MaxNodeVertexCount2:{vertexCount},node:{tn.name}");
+                    // Debug.Log($"MaxNodeVertexCount2:{vertexCount},node:{tn.name}");
                     nodeStatics.MaxNodeVertexCount2 = vertexCount;
                 }
                 if (vertexCount < nodeStatics.MinNodeVertexCount || nodeStatics.MinNodeVertexCount == 0)
@@ -519,12 +542,28 @@ public class AreaTree : MonoBehaviour
         }
     }
 
+    [ContextMenu("MoveRenderers")]
+    public void MoveRenderers()
+    {
+         foreach(var node in TreeLeafs){
+               node.MoveRenderers();
+        }
+    }
+
+    [ContextMenu("RecoverParent")]
+    public void RecoverParent()
+    {
+         foreach(var node in TreeLeafs){
+               node.RecoverParent();
+        }
+    }
+
     [ContextMenu("GetMaterials")]
     public void GetMaterials()
     {
         DateTime start = DateTime.Now;
 
-        ShowRenderers();
+        //ShowRenderers();
 
         List<string> matKeys = new List<string>();
         List<Material> mats = new List<Material>();
@@ -599,7 +638,7 @@ public class AreaTree : MonoBehaviour
     {
         DateTime start = DateTime.Now;
 
-        ShowRenderers();
+        //ShowRenderers();
 
         var target = GetTarget();
         int count = 0;
@@ -702,138 +741,4 @@ public class AreaTree : MonoBehaviour
 #endif
     }
     
-}
-
-[Serializable]
-public class AreaTreeNodeSetting
-{
-    public int MinLevel = 10;
-
-    public int MaxLevel = 20;
-
-    public int MaxRenderCount = 1000;
-
-    public int MinRenderCount = 100;
-
-    public int MaxVertexCount = 100;
-}
-
-[Serializable]
-public class AreaTreeNodeStatics
-{
-    public int CellCount = 0;
-
-    public int AvgCellRendererCount = 0;
-
-    public int MaxCellRendererCount = 0;
-
-    public int MinCellRendererCount = 0;
-
-    public int MaxNodeVertexCount = 0;
-
-    public int MaxNodeVertexCount2 = 0;
-
-    public int MinNodeVertexCount = 0;
-
-    public int LevelDepth = 0;
-
-    public void Clear()
-    {
-        CellCount = 0;
-        AvgCellRendererCount = 0;
-        MaxCellRendererCount = 0;
-        MinCellRendererCount = 0;
-        MaxNodeVertexCount = 0;
-        LevelDepth = 0;
-        MaxNodeVertexCount2 = 0;
-    }
-
-    public void SetInfo(AreaTreeNodeStatics other)
-    {
-        this.AvgCellRendererCount += other.AvgCellRendererCount;
-        if (other.MaxCellRendererCount > this.MaxCellRendererCount || this.MaxCellRendererCount == 0)
-            this.MaxCellRendererCount = other.MaxCellRendererCount;
-        if (other.MinCellRendererCount < this.MinCellRendererCount || this.MinCellRendererCount==0)
-            this.MinCellRendererCount = other.MinCellRendererCount;
-        if (other.MaxNodeVertexCount > this.MaxNodeVertexCount || this.MaxNodeVertexCount == 0)
-            this.MaxNodeVertexCount = other.MaxNodeVertexCount;
-        if (other.MaxNodeVertexCount2 > this.MaxNodeVertexCount2 || this.MaxNodeVertexCount2 == 0)
-            this.MaxNodeVertexCount2 = other.MaxNodeVertexCount2;
-        if (other.MinNodeVertexCount < this.MinNodeVertexCount || this.MinNodeVertexCount == 0)
-            this.MinNodeVertexCount = other.MinNodeVertexCount;
-        if (other.LevelDepth > this.LevelDepth)
-            this.LevelDepth = other.LevelDepth;
-    }
-}
-
-public static class AreaTreeHelper
-{
-    
-    public static Dictionary<MeshRenderer,AreaTreeNode> render2NodeDict=new Dictionary<MeshRenderer, AreaTreeNode>();
-
-    public static Dictionary<MeshRenderer, AreaTreeNode> combined2NodeDict = new Dictionary<MeshRenderer, AreaTreeNode>();
-
-    public static void ClearDict()
-    {
-        render2NodeDict.Clear();
-        combined2NodeDict.Clear();
-    }
-
-    public static void AddNodeDictItem_Renderers(IEnumerable<MeshRenderer> renderers,AreaTreeNode node)
-    {
-        foreach (var render in renderers)
-        {
-            //renderer.gameObject.AddComponent<MeshCollider>();
-            if (AreaTreeHelper.render2NodeDict.ContainsKey(render))
-            {
-                //Debug.LogError($"模型重复在不同的Node里:{AreaTreeHelper.render2NodeDict[render]},{this}");
-            }
-            else
-            {
-                AreaTreeHelper.render2NodeDict.Add(render, node);
-            }
-        }
-    }
-
-    public static void AddNodeDictItem_Combined(IEnumerable<MeshRenderer> renderers, AreaTreeNode node)
-    {
-        foreach (var render in renderers)
-        {
-            //renderer.gameObject.AddComponent<MeshCollider>();
-            if (AreaTreeHelper.combined2NodeDict.ContainsKey(render))
-            {
-                //Debug.LogError($"模型重复在不同的Node里:{AreaTreeHelper.render2NodeDict[render]},{this}");
-            }
-            else
-            {
-                AreaTreeHelper.combined2NodeDict.Add(render, node);
-            }
-        }
-    }
-
-    public static GameObject CubePrefab;
-    public static GameObject CreateBoundsCube(Bounds bounds,string n,Transform parent)
-    {
-        if(CubePrefab==null){
-            CubePrefab=GameObject.CreatePrimitive(PrimitiveType.Cube);
-        }
-        GameObject cube=GameObject.Instantiate(CubePrefab);
-        cube.name=n;
-        cube.transform.position=bounds.center;
-        cube.transform.localScale=bounds.size;
-        cube.transform.SetParent(parent);
-        return cube;
-    }
-
-    public static List<Transform> GetAllTransforms(this Transform transform)
-    {
-        List<Transform> result = new List<Transform>();
-        for (int i = 0; i < transform.childCount; i++)
-        {
-            Transform child = transform.GetChild(i);
-            result.Add(child);
-            result.AddRange(GetAllTransforms(child));
-        }
-        return result;
-    }
 }

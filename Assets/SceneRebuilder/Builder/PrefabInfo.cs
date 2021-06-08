@@ -128,5 +128,26 @@ public static class PrefabInfoListHelper
         return count;
     }
 
+    public static void HideInstances(this List<PrefabInfo> list)
+    {
+        SetInstancesVisible(list,false);
+    }
 
+    public static void ShowInstances(this List<PrefabInfo> list)
+    {
+        SetInstancesVisible(list,true);
+    }
+
+    public static void SetInstancesVisible(this List<PrefabInfo> list,bool isVisible)
+    {
+        for (int i = 0; i < list.Count; i++)
+        {
+            var insList = list[i].GetInstances();
+            for (int j=0;j< insList.Count; j++)
+            {
+                insList[j].SetActive(isVisible);
+            }
+            list[i].Prefab.SetActive(isVisible);
+        }
+    }
 }

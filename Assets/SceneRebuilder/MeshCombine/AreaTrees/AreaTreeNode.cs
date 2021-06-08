@@ -92,6 +92,7 @@ public class AreaTreeNode : MonoBehaviour
 
         //renderersRoot.transform.SetParent(this.transform);
         foreach(var render in Renderers){
+            if(render==null)continue;
             GameObject go=render.gameObject;
             //TransformParent tp = go.GetComponent<TransformParent>();
             //if(tp!=null)
@@ -123,6 +124,28 @@ public class AreaTreeNode : MonoBehaviour
         }
     }
 
+    [ContextMenu("MoveRenderers")]
+    public void MoveRenderers()
+    {
+        newRenderers.Clear();
+        RendererParents.Clear();
+
+        //newRenderers.Clear();
+        if(renderersRoot==null)
+            renderersRoot =new GameObject(this.name+"_Renderers");
+        foreach(var render in Renderers){
+            GameObject go=render.gameObject;
+            newRenderers.Add(render);
+            if(go.transform.parent!= renderersRoot.transform)
+            {
+                RendererParents.Add(go.transform.parent);
+                go.transform.SetParent(renderersRoot.transform);
+            }
+        }
+
+        renderersRoot.transform.SetParent(this.transform);
+    }
+
     private void CreateColliders()
     {
         collidersRoot=MeshHelper.CopyGO(renderersRoot);
@@ -141,12 +164,29 @@ public class AreaTreeNode : MonoBehaviour
         }
     }
 
+    public float DistanceToCamera=0;
+
+    public bool IsRendererVisible=true;
+
+    [ContextMenu("HideRenders")]
     public void HideRenders()
     {
-        foreach (var r in newRenderers)
+        IsRendererVisible=false;
+        foreach (var r in Renderers)
         {
             if(r==null)continue;
             r.enabled = false;
+        }
+    }
+
+     [ContextMenu("ShowRenders")]
+    public void ShowRenders()
+    {
+        IsRendererVisible=true;
+        foreach (var r in Renderers)
+        {
+            if(r==null)continue;
+            r.enabled = true;
         }
     }
 
@@ -191,11 +231,12 @@ public class AreaTreeNode : MonoBehaviour
         RecoverParent();
     }
 
-    private void RecoverParent()
+    public void RecoverParent()
     {
         for (int i = 0; i < Renderers.Count; i++)
         {
             MeshRenderer render = Renderers[i];
+            if(render==null)continue;
             Transform parent = RendererParents[i];
             render.transform.SetParent(parent);
         }
@@ -224,15 +265,20 @@ public class AreaTreeNode : MonoBehaviour
          DateTime start=DateTime.Now;
         renderersRoot.transform.SetParent(null);
 
-        CopyRenderers();
+        // CopyRenderers();
 
-        CombineInner();
+        // CombineInner();
 
-        HideRenders();
+        // HideRenders();
+
+        // CreateDictionary();
+
+        // renderersRoot.transform.SetParent(this.transform);
+
+        CombineMesh();
 
         CreateDictionary();
-
-        renderersRoot.transform.SetParent(this.transform);
+        
         Debug.LogError($"UpdateCombined renderCount:{Renderers.Count},\t{(DateTime.Now-start).ToString()}");
     }
 
@@ -337,19 +383,19 @@ public class AreaTreeNode : MonoBehaviour
         if (level > maxLevel)
         {
             IsLeaf = true;
-            Debug.Log($"LeafNode0 level:{level}");
+            // Debug.Log($"LeafNode0 level:{level}");
             return null;
         }
 
         if (this.Renderers.Count <= nodeSetting.MinRenderCount)
         {
             IsLeaf = true;
-            Debug.Log($"LeafNode1 level:{level}");
+            // Debug.Log($"LeafNode1 level:{level}");
             return null;
         }
 
         if (level>=minLevel){
-            Debug.Log($"[{this.name}]nodeSetting.MaxRenderCount:{nodeSetting.MaxRenderCount}");
+            // Debug.Log($"[{this.name}]nodeSetting.MaxRenderCount:{nodeSetting.MaxRenderCount}");
             if(nodeSetting.MaxRenderCount > 0){
                 if(this.Renderers.Count< nodeSetting.MaxRenderCount)
                 {
@@ -360,7 +406,7 @@ public class AreaTreeNode : MonoBehaviour
                     if (this.VertexCount < nodeSetting.MaxVertexCount)
                     {
                         IsLeaf = true;
-                        Debug.Log($"LeafNode3 level:{level}");
+                        // Debug.Log($"LeafNode3 level:{level}");
                         return null;
                     }
                     else
@@ -385,7 +431,7 @@ public class AreaTreeNode : MonoBehaviour
             }
             else{
                 IsLeaf = true;
-                Debug.Log($"LeafNode4 level:{level}");
+                // Debug.Log($"LeafNode4 level:{level}");
                 return null;
             }
         }
