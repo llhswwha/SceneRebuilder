@@ -639,6 +639,24 @@ UnpackPrefab();
         // return list;
     }
 
+    private MeshRenderer[] GetMeshRenderers()
+    {
+        MeshRenderer[] meshRenderers=null;
+        if(TargetRoots){
+            if(IsCopyTargetRoot){
+                meshRenderers=TargetRootsCopy.GetComponentsInChildren<MeshRenderer>();
+            }
+            else{
+                meshRenderers=TargetRoots.GetComponentsInChildren<MeshRenderer>();
+            }
+            
+        }
+        else{
+            meshRenderers=GameObject.FindObjectsOfType<MeshRenderer>();
+        }
+        return meshRenderers;
+    }
+
     public int JobSize=40000;
 
     public bool SetParentNull=true;
@@ -822,6 +840,8 @@ UnpackPrefab();
 
     public bool IsSetParent=false;
 
+    public int MaxVertexCount=2400;
+
     private void SetAcRTAlignJobSetting()
     {
          AcRTAlignJob.IsTryAngles=this.IsTryAngles;
@@ -829,6 +849,8 @@ UnpackPrefab();
          AcRTAlignJobContainer.IsCheckResult=this.IsCheckResult;
 
          AcRTAlignJobContainer.IsSetParent=this.IsSetParent;
+
+         AcRTAlignJobContainer.MaxVertexCount=this.MaxVertexCount;
     }
 
     public List<GameObject> TestList=new List<GameObject>();
@@ -937,6 +959,31 @@ break;
     }
 
 
+[ContextMenu("GetVertexCountInfo")]
+    private void GetVertexCountInfo()
+    {
+        DateTime start=DateTime.Now;
+        var meshFilters=GetMeshFilters();
+        float minCount=float.MaxValue;
+        float maxCount=0;
+        float sumCount=0;
+        float avgCount=0;
+        foreach(MeshFilter mf in meshFilters)
+        {
+            var count=mf.sharedMesh.vertexCount;
+            sumCount+=count;
+            if(count>maxCount){
+                maxCount=count;
+            }
+            if(count<minCount){
+                minCount=count;
+            }
+        }
+        avgCount=sumCount/(float)meshFilters.Length;
+
+        Debug.LogWarning($"GetVertexCountInfo maxCount:{maxCount},minCount:{minCount},avgCount:{avgCount},Renderers:{meshFilters.Length},Time:{(DateTime.Now-start).TotalMilliseconds}ms");
+    }
+
 
     [ContextMenu("GetVertexCenterInfos")]
     private void GetVertexCenterInfos()
@@ -1014,21 +1061,44 @@ break;
 
     public Material[] LODMaterials ;
 
+    [ContextMenu("GetCombinedRenderers")]
     public List<MeshRenderer> GetCombinedRenderers()
     {
+        var list2=GetHiddenRenderers();
+
         List<MeshRenderer> list = new List<MeshRenderer>();
-        list.AddRange(PrefabInfoList1.GetRenderers());
-        list.AddRange(PrefabInfoList2.GetRenderers());
-        list.AddRange(PrefabInfoList3.GetRenderers());
-        list.AddRange(PrefabInfoList4.GetRenderers());
-        return list;
+        // list.AddRange(PrefabInfoList1.GetRenderers());
+        // list.AddRange(PrefabInfoList2.GetRenderers());
+        // list.AddRange(PrefabInfoList3.GetRenderers());
+        // list.AddRange(PrefabInfoList4.GetRenderers());
+
+        var renderers=GetMeshRenderers();
+        Debug.LogError("renderers "+renderers.Length);
+        list.AddRange(renderers);
+        
+        List<MeshRenderer> list3 = new List<MeshRenderer>();
+        foreach(var r in list)
+        {
+            if(list2.Contains(r))
+            {
+
+            }
+            else{
+                list3.Add(r);
+            }
+        }
+
+        Debug.LogError("GetCombinedRenderers "+list3.Count);
+        return list3;
     }
 
+    [ContextMenu("GetHiddenRenderers")]
     public List<MeshRenderer> GetHiddenRenderers()
     {
         List<MeshRenderer> list = new List<MeshRenderer>();
         list.AddRange(PrefabInfoList5.GetRenderers());
         list.AddRange(PrefabInfoList6.GetRenderers());
+        Debug.LogError("GetHiddenRenderers "+list.Count);
         return list;
     }
 

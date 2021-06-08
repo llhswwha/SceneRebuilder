@@ -121,12 +121,12 @@ public class AreaTree : MonoBehaviour
         Debug.LogError($"CheckRenderers renderCount:{renderCount},\t{(DateTime.Now-start).ToString()}");
     }
 
-    public bool IsCombined=false;
+    public bool IsHidden=false;
 
     [ContextMenu("CombineMesh")]
     public void CombineMesh()
     {   
-        IsCombined=true;
+        //IsCombined=true;
         DateTime start=DateTime.Now;
         int renderCount=0;
         foreach(AreaTreeNode node in TreeNodes)

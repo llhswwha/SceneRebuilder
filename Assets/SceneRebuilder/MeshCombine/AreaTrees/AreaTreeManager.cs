@@ -377,20 +377,21 @@ public class AreaTreeManager : MonoBehaviour
         ClearCount();
         ClearTrees();
 
-        MeshRenderer[] combinedRenderers=null;
-        if (PrefabInstanceBuilder != null)
-        {
-            combinedRenderers = PrefabInstanceBuilder.GetCombinedRenderers().ToArray();
-        }
-        var tree1=CreateTree(Target,isCombine,"_CombineTree",combinedRenderers);//合并模型的树
-
         MeshRenderer[] hiddenRenderers=null;
         if (PrefabInstanceBuilder != null)
         {
             hiddenRenderers = PrefabInstanceBuilder.GetHiddenRenderers().ToArray();
         }
-        var tree2=CreateTree(Target,false,"_HiddenTree",hiddenRenderers);//动态显示模型的树
+        var tree2=CreateTree(Target,isCombine,"_HiddenTree",hiddenRenderers);//动态显示模型的树
         tree2.DestroyNodeRender();
+        tree2.HideRenderers();
+
+        MeshRenderer[] combinedRenderers=null;
+        if (PrefabInstanceBuilder != null)
+        {
+            combinedRenderers = PrefabInstanceBuilder.GetCombinedRenderers().ToArray();
+        }
+        var tree1=CreateTree(Target,isCombine,"_ShownTree",combinedRenderers);//合并模型的树
 
         //TreeNodeShowManager.HiddenTrees.Add(tree2);
         

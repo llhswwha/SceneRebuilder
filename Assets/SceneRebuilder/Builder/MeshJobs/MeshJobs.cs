@@ -754,10 +754,10 @@ namespace MeshJobs
 
                 p.position = center;
 
-                Debug.LogError("center:" + center);
+                //Debug.LogError("center:" + center);
             }
             
-            Debug.LogError("RestoreParent parentDict:" + parentDict.Count);
+            //Debug.LogError("RestoreParent parentDict:" + parentDict.Count);
             foreach (var child in parentDict.Keys)
             {
                 if (child == null) continue;

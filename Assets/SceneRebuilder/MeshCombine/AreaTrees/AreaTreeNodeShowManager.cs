@@ -30,8 +30,7 @@ public class AreaTreeNodeShowManager : MonoBehaviour
         var ts=GameObject.FindObjectsOfType<AreaTree>();
         foreach(AreaTree t in ts)
         {
-            if(t.IsCombined)continue;
-            if(!HiddenTrees.Contains(t))
+            if(t.IsHidden && !HiddenTrees.Contains(t))
             {
                 HiddenTrees.Add(t);
             }
@@ -125,12 +124,14 @@ public class AreaTreeNodeShowManager : MonoBehaviour
         AvgDistance=sum/count;
         foreach(var node in HiddenNodes)
         {
-            node.HideRenders();
+            //node.HideRenders();
+            node.HideNodes();
             HiddenRenderCount+=node.RendererCount;
         }
         foreach(var node in ShownNodes)
         {
-            node.ShowRenders();
+            //node.ShowRenders();
+            node.ShowNodes();
             ShownRenderCount+=node.RendererCount;
         }
 

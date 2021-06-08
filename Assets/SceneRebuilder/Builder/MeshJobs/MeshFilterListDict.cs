@@ -70,6 +70,11 @@ public class MeshFilterListDict
             var mf=meshFilters[i];
             var vCount = mf.sharedMesh.vertexCount;
 
+            // if(vCount>AcRTAlignJobContainer.MaxVertexCount)//排除点数特别多的，不然会卡住
+            // {
+            //     continue;
+            // }
+
             MeshRenderer renderer=mf.GetComponent<MeshRenderer>();
             Color color=renderer.sharedMaterial.color;
             //var matId=renderer.sharedMaterial.GetInstanceID();

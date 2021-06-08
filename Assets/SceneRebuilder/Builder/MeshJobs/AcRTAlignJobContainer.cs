@@ -26,6 +26,23 @@ public class AcRTAlignJobContainer
 
     public AcRTAlignJobContainer(MeshFilter[] meshFilters,int size)
     {
+        if(AcRTAlignJobContainer.MaxVertexCount>0)
+        {
+            List<MeshFilter> mfs=new List<MeshFilter>();
+            foreach(var mf in meshFilters)
+            {
+                if(mf.sharedMesh.vertexCount>AcRTAlignJobContainer.MaxVertexCount)//排除点数特别多的，不然会卡住
+                {
+                    continue;
+                }
+                else{
+                    mfs.Add(mf);
+                }
+            }
+
+            meshFilters=mfs.ToArray();
+        }
+
         this.meshFilters=meshFilters;
         this.jobSize=size;
         this.mfCount = meshFilters.Length;
@@ -81,9 +98,17 @@ public class AcRTAlignJobContainer
             MeshFilterList item = mfsList[i1];
             var mfList = item.GetList();
             //Debug.LogError("GetAlignJobs mfList:"+mfList.Count);
-
             MeshFilter mfFrom = mfList[0];
             if (mfFrom == null) continue;
+
+            
+            // if(item.vertexCount>MaxVertexCount)//排除点数特别多的，不然会卡住
+            // {
+            //     mfsList.RemoveAt(i1);
+            //     i1--;
+            //     continue;
+            // }
+
             //GameObject prefab = mfFrom.gameObject;
             //progressCount++;//一个作为预设
             PrefabInfo prefabInfo = new PrefabInfo(mfFrom);
@@ -96,12 +121,14 @@ public class AcRTAlignJobContainer
                     MeshFilter mfTo = mfList[i];
                     //Debug.LogError("GetAlignJobs mfTo:"+mfTo);
                     if (mfTo == null) continue;
+
                     if(mfTo.sharedMesh==mfFrom.sharedMesh){//已经处理过的相同的模型
                         prefabInfo.Add(mfTo.gameObject);
                         item.Remove(mfTo);
                         //i--;
                         continue;
                     }
+
                     //int jobId = AcRTAlignJobResult.GetId();
                     var job = AcRTAlignJobHelper.NewJob(mfFrom, mfTo, jobId);
                     jobList.Add(job);
@@ -369,6 +396,9 @@ public class AcRTAlignJobContainer
     public static bool IsCheckResult=false;
 
     public static bool IsSetParent=false;
+
+    public static int MaxVertexCount=2400;
+
     int errorCount = 0;
 
     public void DoAlignJobResult()
@@ -554,8 +584,7 @@ public class AcRTAlignJobContainer
         var usedTime=DateTime.Now - start;
         Debug.Log($"AcRTAlignJobContainer.GetJobs Target:{targetCount},Prefab:{prefabInfoList.Count},Job:{totalJobCount}({jobCountDetails}),Loop:{loopCount},Time:{usedTime.TotalSeconds:F2}s({loopTimes})");
         string testLogItem=$"{targetCount}\t{prefabInfoList.Count}\t{totalJobCount}\t{loopCount}\t{usedTime.TotalSeconds:F1}\t{usedTime.ToString()}\t{AcRTAlignJob.totalFoundCount}\t{AcRTAlignJob.totalNoFoundCount}\t{AcRTAlignJob.totalFoundTime:F0}\t{AcRTAlignJob.totalNoFoundTime:F0}\t{AcRTAlignJob.AngleCount}\t{AcRTAlignJob.ScaleCount}\t{AcRTAlignJob.RTCount}\t{AcRTAlignJob.ICPCount}";
-        Debug.LogError(testLogItem+$"\t{totalTime1:F0},{totalTime2:F0},{totalTime3:F0}({AcRTAlignJob.totalTime1:F0}={AcRigidTransform.totalTime1:F0}+{AcRigidTransform.totalTime2:F0},{AcRTAlignJob.totalTime2:F0},{AcRTAlignJob.totalTime3:F0}),{totalTime4:F0}");
-        //65	2377	25	3632.2	ms(14.0,84.0,3496.3,17.0)
+
         Debug.Log($"FoundCount:{AcRTAlignJob.totalFoundCount},NoFoundCount:{AcRTAlignJob.totalNoFoundCount},FoundTime:{AcRTAlignJob.totalFoundTime:F0},NoFoundTime:{AcRTAlignJob.totalNoFoundTime:F0}");
         Debug.Log($"{prefabInfoList.Count}\t{totalJobCount}\t{loopCount}\t{usedTime.TotalSeconds:F1}\t{AcRTAlignJob.totalFoundCount}\t{AcRTAlignJob.totalNoFoundCount}\t{AcRTAlignJob.totalFoundTime:F0}\t{AcRTAlignJob.totalNoFoundTime:F0}");
         Debug.LogWarning($"{AcRTAlignJobHelper.vsDictWorld.Count},{AcRTAlignJobHelper.tpDict.Count}");
@@ -566,6 +595,9 @@ public class AcRTAlignJobContainer
         prefabInfoList.Sort();
 
         ReportLog=testLogItem;
+
+        Debug.LogError(testLogItem+$"\t{totalTime1:F0},{totalTime2:F0},{totalTime3:F0}({AcRTAlignJob.totalTime1:F0}={AcRigidTransform.totalTime1:F0}+{AcRigidTransform.totalTime2:F0},{AcRTAlignJob.totalTime2:F0},{AcRTAlignJob.totalTime3:F0}),{totalTime4:F0}");
+        //65	2377	25	3632.2	ms(14.0,84.0,3496.3,17.0)
         return prefabInfoList;
     }
 
