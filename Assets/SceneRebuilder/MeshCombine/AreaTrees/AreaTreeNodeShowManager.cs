@@ -101,7 +101,6 @@ public class AreaTreeNodeShowManager : MonoBehaviour
                 {
                     nodeDis1=dis;
                 }
-
             }
             if(nodeDis1<ShowNodeDistance)
             {
@@ -121,7 +120,12 @@ public class AreaTreeNodeShowManager : MonoBehaviour
             }
             sum+=nodeDis1;
         }
+        
+
         AvgDistance=sum/count;
+
+        UpdateTime1=(DateTime.Now-start).TotalMilliseconds;
+        start=DateTime.Now;
         foreach(var node in HiddenNodes)
         {
             //node.HideRenders();
@@ -135,10 +139,10 @@ public class AreaTreeNodeShowManager : MonoBehaviour
             ShownRenderCount+=node.RendererCount;
         }
 
-        TimeSpan usedTime=DateTime.Now-start;
-        UpdateTime=usedTime.TotalMilliseconds;
+        UpdateTime2=(DateTime.Now-start).TotalMilliseconds;
         //Debug.Log($"AreaTreeNodeShowManager Update usedTime:{usedTime.TotalMilliseconds}ms");
     }
 
-    public double UpdateTime=0;
+    public double UpdateTime1=0;
+    public double UpdateTime2=0;
 }

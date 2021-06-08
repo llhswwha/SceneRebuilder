@@ -383,7 +383,7 @@ public class AreaTreeManager : MonoBehaviour
             hiddenRenderers = PrefabInstanceBuilder.GetHiddenRenderers().ToArray();
         }
         var tree2=CreateTree(Target,isCombine,"_HiddenTree",hiddenRenderers);//动态显示模型的树
-        tree2.DestroyNodeRender();
+        tree2.IsHidden=true;
         tree2.HideRenderers();
 
         MeshRenderer[] combinedRenderers=null;
@@ -394,7 +394,7 @@ public class AreaTreeManager : MonoBehaviour
         var tree1=CreateTree(Target,isCombine,"_ShownTree",combinedRenderers);//合并模型的树
 
         //TreeNodeShowManager.HiddenTrees.Add(tree2);
-        
+        tree2.DestroyNodeRender();
         Debug.LogError($"CreateCombinedOne \t{(DateTime.Now - start).ToString()}");
     }
 

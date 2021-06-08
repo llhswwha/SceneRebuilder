@@ -278,7 +278,7 @@ public class AreaTreeNode : MonoBehaviour
         CombineMesh();
 
         CreateDictionary();
-        
+
         Debug.LogError($"UpdateCombined renderCount:{Renderers.Count},\t{(DateTime.Now-start).ToString()}");
     }
 
@@ -540,7 +540,7 @@ public class AreaTreeNode : MonoBehaviour
     [ContextMenu("CreateDictionary")]
     public void CreateDictionary()
     {
-        Debug.Log("CreateDictionary Start:"+AreaTreeHelper.render2NodeDict.Count);
+        //Debug.Log("CreateDictionary Start:"+AreaTreeHelper.render2NodeDict.Count);
         if(this.Nodes.Count==0)
         {
             //Renders
@@ -581,12 +581,14 @@ public class AreaTreeNode : MonoBehaviour
         }
         //Debug.Log("CreateDictionary 3:"+AreaTreeHelper.render2NodeDict.Count);
 
-        Debug.Log("CreateDictionary End:"+AreaTreeHelper.render2NodeDict.Count);
+        //Debug.Log("CreateDictionary End:"+AreaTreeHelper.render2NodeDict.Count);
     }
 
     [ContextMenu("ShowNodes")]
     public void ShowNodes()
     {
+        if(IsNodeVisible==true)return;
+        IsNodeVisible=true;
         this.gameObject.SetActive(true);
         foreach(AreaTreeNode node in Nodes)
         {
@@ -600,9 +602,13 @@ public class AreaTreeNode : MonoBehaviour
         }
     }
 
+    public bool IsNodeVisible=true;
+
     [ContextMenu("HideNodes")]
     public void HideNodes()
     {
+        if(IsNodeVisible==false)return;
+        IsNodeVisible=false;
         this.gameObject.SetActive(false);
         foreach(AreaTreeNode node in Nodes)
         {

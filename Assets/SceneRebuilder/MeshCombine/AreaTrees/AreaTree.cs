@@ -409,6 +409,7 @@ public class AreaTree : MonoBehaviour
     {
         foreach(AreaTreeNode tn in TreeNodes)
         {
+            if(tn==null)continue;
             tn.DestroySelfRenderer();
         }
     }

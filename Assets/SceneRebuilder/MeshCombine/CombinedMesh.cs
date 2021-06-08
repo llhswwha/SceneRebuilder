@@ -311,7 +311,7 @@ public static class MeshCombineHelper
         DateTime start=DateTime.Now;
         GameObject goNew=new GameObject();
         goNew.name=go.name+"_Combined";
-        MeshRenderer[] renderers = go.GetComponentsInChildren<MeshRenderer>();
+        MeshRenderer[] renderers = go.GetComponentsInChildren<MeshRenderer>(true);
         //int count=0;
         Dictionary<Material,List<MeshFilter>> mat2Filters=GetMatFilters(renderers, out count);
         foreach(var item in mat2Filters)
