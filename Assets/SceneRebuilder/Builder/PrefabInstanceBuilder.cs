@@ -968,6 +968,7 @@ break;
         float maxCount=0;
         float sumCount=0;
         float avgCount=0;
+        List<int> countList = new List<int>();
         foreach(MeshFilter mf in meshFilters)
         {
             var count=mf.sharedMesh.vertexCount;
@@ -978,10 +979,19 @@ break;
             if(count<minCount){
                 minCount=count;
             }
+            if(!countList.Contains(count))
+                countList.Add(count);
         }
-        avgCount=sumCount/(float)meshFilters.Length;
+        countList.Sort();
+        countList.Reverse();
+        string countStr = "";
+        for(int i=0;i<500&&i<countList.Count;i++)
+        {
+            countStr += countList[i] + "; ";
+        }
+        avgCount =sumCount/(float)meshFilters.Length;
 
-        Debug.LogWarning($"GetVertexCountInfo maxCount:{maxCount},minCount:{minCount},avgCount:{avgCount},Renderers:{meshFilters.Length},Time:{(DateTime.Now-start).TotalMilliseconds}ms");
+        Debug.LogWarning($"GetVertexCountInfo maxCount:{maxCount},minCount:{minCount},avgCount:{avgCount},Renderers:{meshFilters.Length},Time:{(DateTime.Now-start).TotalMilliseconds}ms\ncountStr:{countStr}");
     }
 
 
