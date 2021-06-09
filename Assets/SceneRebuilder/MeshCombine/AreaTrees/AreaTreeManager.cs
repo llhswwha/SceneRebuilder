@@ -201,10 +201,10 @@ public class AreaTreeManager : MonoBehaviour
         //bound.Contains()
     }
 
-    public List<AreaTree> Trees = new List<AreaTree>();
+    public List<ModelAreaTree> Trees = new List<ModelAreaTree>();
 
     List<Material> matList = new List<Material>();
-    public AreaTree CreateTree(GameObject go, bool isC,string suffix, MeshRenderer[] renderers)
+    public ModelAreaTree CreateTree(GameObject go, bool isC,string suffix, MeshRenderer[] renderers)
     {
         string treeName = "NewAreaTree" + suffix;
         if (go != null)
@@ -214,7 +214,7 @@ public class AreaTreeManager : MonoBehaviour
         AreaTreeHelper.CubePrefab = this.CubePrefab;
 
         GameObject treeGo = new GameObject(treeName);
-        AreaTree areaTree = treeGo.AddComponent<AreaTree>();
+        ModelAreaTree areaTree = treeGo.AddComponent<ModelAreaTree>();
         areaTree.nodeSetting = this.nodeSetting;
         areaTree.IsCopy = this.IsCopy;
 
@@ -239,7 +239,7 @@ public class AreaTreeManager : MonoBehaviour
         return areaTree;
     }
 
-    private void ShowModelInfo(AreaTree areaTree)
+    private void ShowModelInfo(ModelAreaTree areaTree)
     {
         LeafCount += areaTree.TreeLeafs.Count;
         //nodeStatics.AvgCellRendererCount += areaTree.nodeStatics.AvgCellRendererCount;

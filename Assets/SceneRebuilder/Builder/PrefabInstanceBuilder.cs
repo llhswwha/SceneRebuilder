@@ -978,12 +978,18 @@ break;
     {
         List<MeshRenderer> bigModels=new List<MeshRenderer>();
         List<MeshRenderer> smallModels=new List<MeshRenderer>();
+        if(JobSetting==null){
+            JobSetting=this.GetComponent<AcRTAlignJobSetting>();
+        }
         GetBigSmallRenderers(bigModels,smallModels,JobSetting.MaxModelLength);
     }
 
     // [ContextMenu("GetBigSmallRenderers")]
     public void GetBigSmallRenderers(List<MeshRenderer> bigModels,List<MeshRenderer> smallModels)
     {
+        if(JobSetting==null){
+            JobSetting=this.GetComponent<AcRTAlignJobSetting>();
+        }
         GetBigSmallRenderers(bigModels,smallModels,JobSetting.MaxModelLength);
     }
 

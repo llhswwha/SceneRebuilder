@@ -7,7 +7,7 @@ using System.Linq;
 public class AreaTreeNodeShowManager : MonoBehaviour
 {
     public List<Camera> cameras=new List<Camera>();
-    public List<AreaTree> HiddenTrees=new List<AreaTree>();
+    public List<ModelAreaTree> HiddenTrees=new List<ModelAreaTree>();
 
     public List<AreaTreeNode> TreeLeafNodes=new List<AreaTreeNode>();
 
@@ -27,8 +27,8 @@ public class AreaTreeNodeShowManager : MonoBehaviour
      [ContextMenu("InitTrees")]
     private void InitTrees()
     {
-        var ts=GameObject.FindObjectsOfType<AreaTree>();
-        foreach(AreaTree t in ts)
+        var ts=GameObject.FindObjectsOfType<ModelAreaTree>();
+        foreach(ModelAreaTree t in ts)
         {
             if(t.IsHidden && !HiddenTrees.Contains(t))
             {

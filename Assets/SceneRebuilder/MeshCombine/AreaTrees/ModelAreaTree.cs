@@ -4,7 +4,7 @@ using UnityEngine;
 using System;
 using System.Linq;
 
-public class AreaTree : MonoBehaviour
+public class ModelAreaTree : MonoBehaviour
 {
    public GameObject Target=null;
 

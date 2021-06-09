@@ -341,8 +341,8 @@ public class AreaTreeNode : MonoBehaviour
     }
 
 
-    private AreaTree tree;
-    public List<AreaTreeNode> CreateSubNodes(int level,int index,AreaTree tree){
+    private ModelAreaTree tree;
+    public List<AreaTreeNode> CreateSubNodes(int level,int index,ModelAreaTree tree){
 
         this.tree = tree;
 
