@@ -626,12 +626,12 @@ UnpackPrefab();
                 GameObject copy=MeshHelper.CopyGO(TargetRoots);
                 copy.SetActive(true);
                 meshFilters=copy.GetComponentsInChildren<MeshFilter>();
-                ClearMeshFilters(meshFilters.ToList());
+                //ClearMeshFilters(meshFilters.ToList());
                 TargetRootsCopy=copy;
             }
             else{
                 meshFilters=TargetRoots.GetComponentsInChildren<MeshFilter>();
-                ClearMeshFilters(meshFilters.ToList());
+                //ClearMeshFilters(meshFilters.ToList());
             }
             
             
@@ -981,7 +981,8 @@ break;
         if(JobSetting==null){
             JobSetting=this.GetComponent<AcRTAlignJobSetting>();
         }
-        GetBigSmallRenderers(bigModels,smallModels,JobSetting.MaxModelLength);
+        var meshFilters=GetMeshFilters();
+        GetBigSmallRenderers(meshFilters,bigModels,smallModels,JobSetting.MaxModelLength);
     }
 
     // [ContextMenu("GetBigSmallRenderers")]
@@ -990,14 +991,15 @@ break;
         if(JobSetting==null){
             JobSetting=this.GetComponent<AcRTAlignJobSetting>();
         }
-        GetBigSmallRenderers(bigModels,smallModels,JobSetting.MaxModelLength);
+        var meshFilters=GetMeshFilters();
+        GetBigSmallRenderers(meshFilters,bigModels,smallModels,JobSetting.MaxModelLength);
     }
 
     // [ContextMenu("GetBigSmallRenderers")]
-    public void GetBigSmallRenderers(List<MeshRenderer> bigModels,List<MeshRenderer> smallModels,float maxLength)
+    public static void GetBigSmallRenderers(MeshFilter[] meshFilters,List<MeshRenderer> bigModels,List<MeshRenderer> smallModels,float maxLength)
     {
         DateTime start=DateTime.Now;
-        var meshFilters=GetMeshFilters();
+        //var meshFilters=GetMeshFilters();
         // float minCount=float.MaxValue;
         // float maxCount=0;
         // float sumCount=0;

@@ -35,7 +35,7 @@ public class AreaTreeManager : MonoBehaviour
 
     public GameObject Target = null;
 
-    public PrefabInstanceBuilder PrefabInstanceBuilder;
+    public PrefabInstanceBuilder prefabInstanceBuilder;
 
     [ContextMenu("CreateCells_Count")]
     public void CreateCells_Count()
@@ -319,6 +319,8 @@ public class AreaTreeManager : MonoBehaviour
 
     public int LeafCount;
 
+    //public float MaxModelLength=0.6f;
+
     //public int CellCount = 0;
 
     //public int AvgCount;
@@ -347,18 +349,18 @@ public class AreaTreeManager : MonoBehaviour
         ClearTrees();
 
         // MeshRenderer[] combinedRenderers=null;
-        // if (PrefabInstanceBuilder != null)
+        // if (prefabInstanceBuilder != null)
         // {
-        //     combinedRenderers = PrefabInstanceBuilder.GetCombinedRenderers().ToArray();
+        //     combinedRenderers = prefabInstanceBuilder.GetCombinedRenderers().ToArray();
         // }
         // CreateTree(Target,isCombine,"_CombineTree",combinedRenderers);//合并模型的树
 
         MeshRenderer[] hiddenRenderers=null;
-        if (PrefabInstanceBuilder != null)
+        if (prefabInstanceBuilder != null)
         {
-            hiddenRenderers = PrefabInstanceBuilder.GetHiddenRenderers().ToArray();
+            hiddenRenderers = prefabInstanceBuilder.GetHiddenRenderers().ToArray();
 
-            Target=PrefabInstanceBuilder.GetTarget();
+            Target=prefabInstanceBuilder.GetTarget();
         }
 
         CreateTree(Target,false,"_HiddenTree",hiddenRenderers);//动态显示模型的树
@@ -379,7 +381,7 @@ public class AreaTreeManager : MonoBehaviour
 
         List<MeshRenderer> bigModels=new List<MeshRenderer>();
         List<MeshRenderer> smallModels=new List<MeshRenderer>();
-        PrefabInstanceBuilder.GetBigSmallRenderers(bigModels,smallModels);
+        prefabInstanceBuilder.GetBigSmallRenderers(bigModels,smallModels);
 
 
         var tree2=CreateTree(Target,isCombine,"_SamllTree",smallModels.ToArray());//动态显示模型的树
@@ -403,24 +405,43 @@ public class AreaTreeManager : MonoBehaviour
         ClearTrees();
 
         MeshRenderer[] hiddenRenderers=null;
-        if (PrefabInstanceBuilder != null)
+        if (prefabInstanceBuilder != null)
         {
-            hiddenRenderers = PrefabInstanceBuilder.GetHiddenRenderers().ToArray();
+            hiddenRenderers = prefabInstanceBuilder.GetHiddenRenderers().ToArray();
         }
         var tree2=CreateTree(Target,isCombine,"_HiddenTree",hiddenRenderers);//动态显示模型的树
         tree2.IsHidden=true;
         tree2.HideRenderers();
 
         MeshRenderer[] combinedRenderers=null;
-        if (PrefabInstanceBuilder != null)
+        if (prefabInstanceBuilder != null)
         {
-            combinedRenderers = PrefabInstanceBuilder.GetCombinedRenderers().ToArray();
+            combinedRenderers = prefabInstanceBuilder.GetCombinedRenderers().ToArray();
         }
         var tree1=CreateTree(Target,isCombine,"_ShownTree",combinedRenderers);//合并模型的树
 
         //TreeNodeShowManager.HiddenTrees.Add(tree2);
         tree2.DestroyNodeRender();
         Debug.LogError($"CreateCombinedOne \t{(DateTime.Now - start).ToString()}");
+    }
+
+    [ContextMenu("CreateOne")]
+    public void CreateOne()
+    {
+        IsCopy=false;
+
+        DateTime start = DateTime.Now;
+        ClearCount();
+        ClearTrees();
+
+        MeshRenderer[] combinedRenderers=null;
+        if (prefabInstanceBuilder != null)
+        {
+            combinedRenderers = prefabInstanceBuilder.GetCombinedRenderers().ToArray();
+        }
+        var tree1=CreateTree(Target,isCombine,"_Tree",combinedRenderers);//合并模型的树
+
+        Debug.LogError($"CreateOne \t{(DateTime.Now - start).ToString()}");
     }
 
     [ContextMenu("CreateCombinedChildren")]

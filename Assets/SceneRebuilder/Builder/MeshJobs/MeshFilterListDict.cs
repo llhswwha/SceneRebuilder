@@ -76,8 +76,20 @@ public class MeshFilterListDict
             // }
 
             MeshRenderer renderer=mf.GetComponent<MeshRenderer>();
-            Color color=renderer.sharedMaterial.color;
-            //var matId=renderer.sharedMaterial.GetInstanceID();
+            
+            Color color = Color.black;
+            try
+            {
+                if (renderer.sharedMaterial != null)
+                {
+                    if(renderer.sharedMaterial.HasProperty("_Color"))
+                        color = renderer.sharedMaterial.color;
+                }
+            }
+            catch (System.Exception ex)
+            {
+                Debug.LogError($"MeshFilterListDict render:{renderer},mat:{renderer.sharedMaterial},matName:{renderer.sharedMaterial.name},ex:{ex.ToString()}");
+            }
             var matId=color.ToString();
 
             string key=vCount+"_"+matId;
