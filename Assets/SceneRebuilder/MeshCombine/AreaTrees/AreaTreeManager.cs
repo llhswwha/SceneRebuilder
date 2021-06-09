@@ -386,9 +386,24 @@ public class AreaTreeManager : MonoBehaviour
 
         var tree2=CreateTree(Target,isCombine,"_SamllTree",smallModels.ToArray());//动态显示模型的树
         tree2.IsHidden=true;
-        tree2.HideRenderers();
+        if (isCombine)
+        {
+            tree2.HideRenderers();
+        }
+        else
+        {
+            tree2.MoveRenderers();
+        }
 
         var tree1=CreateTree(Target,isCombine,"_BigTree",bigModels.ToArray());//合并模型的树
+        if (isCombine)
+        {
+            tree1.HideRenderers();
+        }
+        else
+        {
+            tree1.MoveRenderers();
+        }
 
         //TreeNodeShowManager.HiddenTrees.Add(tree2);
         tree2.DestroyNodeRender();

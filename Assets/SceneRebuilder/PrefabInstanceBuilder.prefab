@@ -73,6 +73,7 @@ GameObject:
   m_Component:
   - component: {fileID: 4998335353989864117}
   - component: {fileID: 1531636293301519671}
+  - component: {fileID: 7432471790510818645}
   m_Layer: 0
   m_Name: PrefabInstanceBuilder
   m_TagString: Untagged
@@ -17811,10 +17812,7 @@ MonoBehaviour:
   meshComparer: {fileID: 0}
   JobSize: 40000
   SetParentNull: 1
-  IsTryAngles: 1
-  IsTryAngles_Scale: 1
-  IsCheckResult: 0
-  IsSetParent: 0
+  JobSetting: {fileID: 7432471790510818645}
   TestList: []
   acRigidTransform: {fileID: 0}
   LODMaterials:
@@ -17829,3 +17827,21 @@ MonoBehaviour:
   - 0.2
   - 0.07
   - 0.01
+--- !u!114 &7432471790510818645
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 2077698398223865096}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 6638cfc770e513c42a2591dec393be5c, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  IsTryAngles: 1
+  IsTryAngles_Scale: 1
+  IsCheckResult: 1
+  IsSetParent: 0
+  MaxVertexCount: 2400
+  MaxModelLength: 0.8
