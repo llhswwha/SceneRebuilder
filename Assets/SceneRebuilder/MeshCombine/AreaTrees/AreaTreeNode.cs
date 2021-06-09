@@ -134,6 +134,10 @@ public class AreaTreeNode : MonoBehaviour
         if(renderersRoot==null)
             renderersRoot =new GameObject(this.name+"_Renderers");
         foreach(var render in Renderers){
+            if(render==null){
+                Debug.LogError("render==null:"+this);
+                continue;
+            }
             GameObject go=render.gameObject;
             newRenderers.Add(render);
             if(go.transform.parent!= renderersRoot.transform)
