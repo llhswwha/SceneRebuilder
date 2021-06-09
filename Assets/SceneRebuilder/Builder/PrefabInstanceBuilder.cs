@@ -133,6 +133,15 @@ public class PrefabInstanceBuilder : MonoBehaviour
         }
     }
 
+    [ContextMenu("ShowPrefabListCount")]
+    public void ShowPrefabListCount()
+    {
+        DateTime start=DateTime.Now;
+        Debug.Log($"all:{PrefabInfoList.Count}={PrefabInfoList.GetInstanceCount()}\t list1:{PrefabInfoList1.Count}={PrefabInfoList1.GetInstanceCount()}\t list2:{PrefabInfoList2.Count}={PrefabInfoList2.GetInstanceCount()}\t list3:{PrefabInfoList3.Count}={PrefabInfoList3.GetInstanceCount()}\t list4:{PrefabInfoList4.Count}={PrefabInfoList4.GetInstanceCount()}\t list5:{PrefabInfoList5.Count}={PrefabInfoList5.GetInstanceCount()} \tlist6:{PrefabInfoList6.Count}={PrefabInfoList6.GetInstanceCount()},");
+        Debug.Log($"ShowPrefabListCount Time:{(DateTime.Now-start).ToString()}");
+    }
+
+
     [ContextMenu("ShowPrefabCount")]
     public void ShowPrefabCount()
     {
@@ -832,25 +841,31 @@ UnpackPrefab();
         Debug.LogError($"SetPrefabInfoList all:{PrefabInfoList.Count}={PrefabInfoList.GetInstanceCount()}\t list1:{PrefabInfoList1.Count}={PrefabInfoList1.GetInstanceCount()}\t list2:{PrefabInfoList2.Count}={PrefabInfoList2.GetInstanceCount()}\t list3:{PrefabInfoList3.Count}={PrefabInfoList3.GetInstanceCount()}\t list4:{PrefabInfoList4.Count}={PrefabInfoList4.GetInstanceCount()}\t list5:{PrefabInfoList5.Count}={PrefabInfoList5.GetInstanceCount()} \tlist6:{PrefabInfoList6.Count}={PrefabInfoList6.GetInstanceCount()},");
     }
 
-    public bool IsTryAngles=true;
+    // public bool IsTryAngles=true;
 
-    public bool IsTryAngles_Scale=true;
+    // public bool IsTryAngles_Scale=true;
 
-    public bool IsCheckResult=false;
+    // public bool IsCheckResult=false;
 
-    public bool IsSetParent=false;
+    // public bool IsSetParent=false;
 
-    public int MaxVertexCount=2400;
+    // public int MaxVertexCount=2400;
+
+    public AcRTAlignJobSetting JobSetting;
 
     private void SetAcRTAlignJobSetting()
     {
-         AcRTAlignJob.IsTryAngles=this.IsTryAngles;
-         AcRTAlignJob.IsTryAngles_Scale=this.IsTryAngles_Scale;
-         AcRTAlignJobContainer.IsCheckResult=this.IsCheckResult;
+        //  AcRTAlignJob.IsTryAngles=this.IsTryAngles;
+        //  AcRTAlignJob.IsTryAngles_Scale=this.IsTryAngles_Scale;
+        //  AcRTAlignJobContainer.IsCheckResult=this.IsCheckResult;
 
-         AcRTAlignJobContainer.IsSetParent=this.IsSetParent;
+        //  AcRTAlignJobContainer.IsSetParent=this.IsSetParent;
 
-         AcRTAlignJobContainer.MaxVertexCount=this.MaxVertexCount;
+        //  AcRTAlignJobContainer.MaxVertexCount=this.MaxVertexCount;
+        if(JobSetting==null){
+            JobSetting=this.GetComponent<AcRTAlignJobSetting>();
+        }
+        JobSetting.SetAcRTAlignJobSetting();
     }
 
     public List<GameObject> TestList=new List<GameObject>();
@@ -958,8 +973,179 @@ break;
         }
     }
 
+    [ContextMenu("TestGetBigSmallRenderers")]
+    private void TestGetBigSmallRenderers()
+    {
+        List<MeshRenderer> bigModels=new List<MeshRenderer>();
+        List<MeshRenderer> smallModels=new List<MeshRenderer>();
+        GetBigSmallRenderers(bigModels,smallModels,JobSetting.MaxModelLength);
+    }
 
-[ContextMenu("GetVertexCountInfo")]
+    // [ContextMenu("GetBigSmallRenderers")]
+    public void GetBigSmallRenderers(List<MeshRenderer> bigModels,List<MeshRenderer> smallModels)
+    {
+        GetBigSmallRenderers(bigModels,smallModels,JobSetting.MaxModelLength);
+    }
+
+    // [ContextMenu("GetBigSmallRenderers")]
+    public void GetBigSmallRenderers(List<MeshRenderer> bigModels,List<MeshRenderer> smallModels,float maxLength)
+    {
+        DateTime start=DateTime.Now;
+        var meshFilters=GetMeshFilters();
+        // float minCount=float.MaxValue;
+        // float maxCount=0;
+        // float sumCount=0;
+        // float avgCount=0;
+        // List<string> sizeList = new List<string>();
+        List<float> lengthList = new List<float>();
+        // List<MeshRenderer> bigModels=new List<MeshRenderer>();
+        // List<MeshRenderer> smallModels=new List<MeshRenderer>();
+        //foreach(MeshFilter mf in meshFilters)
+        for(int i=0;i<meshFilters.Length;i++)
+        {
+            MeshFilter mf=meshFilters[i];
+
+            float progress = (float)i / meshFilters.Length;
+            float percents = progress * 100;
+            
+            if(ProgressBarHelper.DisplayCancelableProgressBar("GetBigSmallRenderers", $"{i}/{meshFilters.Length} {percents}% of 100%", progress))
+            {
+                //ProgressBarHelper.ClearProgressBar();
+                break;
+            } 
+
+            Bounds bounds = mf.sharedMesh.bounds;
+            Vector3 size=bounds.size;
+            // string strSize=$"({size.x},{size.y},{size.z})";
+            float length=size.x;
+            if(size.y>length){
+                length=size.y;
+            }
+            if(size.z>length){
+                length=size.z;
+            }
+
+            if(!lengthList.Contains(length))
+            {
+                lengthList.Add(length);
+            }
+
+            // if(!sizeList.Contains(strSize))
+            // {
+            //     sizeList.Add(strSize);
+            // }
+
+            MeshRenderer mr=mf.GetComponent<MeshRenderer>();
+            if(length<maxLength)
+            {
+                smallModels.Add(mr);
+            }
+            else{
+                bigModels.Add(mr);
+            }
+        }
+
+        ProgressBarHelper.ClearProgressBar();
+
+        Debug.LogWarning($"GetBigSmallRenderers bigModels:{bigModels.Count},smallModels:{smallModels.Count},Renderers:{meshFilters.Length},Time:{(DateTime.Now-start).TotalMilliseconds}ms");
+    }
+
+    // public float MaxModelLength=1.2f;
+
+    [ContextMenu("GetMeshSizeInfo")]
+    private void GetMeshSizeInfo()
+    {
+        DateTime start=DateTime.Now;
+        var meshFilters=GetMeshFilters();
+        // float minCount=float.MaxValue;
+        // float maxCount=0;
+        // float sumCount=0;
+        // float avgCount=0;
+        List<string> sizeList = new List<string>();
+        List<float> lengthList = new List<float>();
+        List<MeshFilter> bigModels=new List<MeshFilter>();
+        List<MeshFilter> smallModels=new List<MeshFilter>();
+        for(int i=0;i<meshFilters.Length;i++)
+        {
+            MeshFilter mf=meshFilters[i];
+
+            float progress = (float)i / meshFilters.Length;
+            float percents = progress * 100;
+            if(ProgressBarHelper.DisplayCancelableProgressBar("GetMeshSizeInfo", $"{i}/{meshFilters.Length} {percents}% of 100%", progress))
+            {
+                //ProgressBarHelper.ClearProgressBar();
+                break;
+            } 
+
+            Bounds bounds = mf.sharedMesh.bounds;
+            Vector3 size=bounds.size;
+            string strSize=$"({size.x},{size.y},{size.z})";
+            float length=size.x;
+            if(size.y>length){
+                length=size.y;
+            }
+            if(size.z>length){
+                length=size.z;
+            }
+
+            // if(!sizeList.Contains(size))
+            // {
+            //     sizeList.Add(size);
+            // }
+
+            if(!lengthList.Contains(length))
+            {
+                lengthList.Add(length);
+            }
+
+            if(!sizeList.Contains(strSize))
+            {
+                sizeList.Add(strSize);
+            }
+
+            // var count=mf.sharedMesh.vertexCount;
+            // sumCount+=count;
+            // if(count>maxCount){
+            //     maxCount=count;
+            // }
+            // if(count<minCount){
+            //     minCount=count;
+            // }
+
+            if(length<JobSetting.MaxModelLength)
+            {
+                smallModels.Add(mf);
+            }
+            else{
+                bigModels.Add(mf);
+            }
+        }
+
+
+
+        sizeList.Sort();
+        sizeList.Reverse();
+
+        string sizeStr = "";
+        for(int i=0;i<500&&i<sizeList.Count;i++)
+        {
+            sizeStr += sizeList[i] + "; ";
+        }
+
+        lengthList.Sort();
+        lengthList.Reverse();
+        string lengthStr="";
+        for(int i=0;i<500&&i<lengthList.Count;i++)
+        {
+            lengthStr += lengthList[i] + "; ";
+        }
+
+        ProgressBarHelper.ClearProgressBar();
+
+        Debug.LogWarning($"GetMeshSizeInfo bigModels:{bigModels.Count},smallModels:{smallModels.Count},Renderers:{meshFilters.Length},Time:{(DateTime.Now-start).TotalMilliseconds}ms\n lengthStr: {lengthStr} \n sizeStr :{sizeStr}");
+    }
+
+    [ContextMenu("GetVertexCountInfo")]
     private void GetVertexCountInfo()
     {
         DateTime start=DateTime.Now;

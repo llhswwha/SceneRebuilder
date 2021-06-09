@@ -368,8 +368,33 @@ public class AreaTreeManager : MonoBehaviour
 
     //public AreaTreeNodeShowManager TreeNodeShowManager;
 
-    [ContextMenu("CreateCombinedOne")]
-    public void CreateCombinedOne()
+    [ContextMenu("CreateOne_BigSmall")]
+    public void CreateOne_BigSmall()
+    {
+        IsCopy=false;
+
+        DateTime start = DateTime.Now;
+        ClearCount();
+        ClearTrees();
+
+        List<MeshRenderer> bigModels=new List<MeshRenderer>();
+        List<MeshRenderer> smallModels=new List<MeshRenderer>();
+        PrefabInstanceBuilder.GetBigSmallRenderers(bigModels,smallModels);
+
+
+        var tree2=CreateTree(Target,isCombine,"_SamllTree",smallModels.ToArray());//动态显示模型的树
+        tree2.IsHidden=true;
+        tree2.HideRenderers();
+
+        var tree1=CreateTree(Target,isCombine,"_BigTree",bigModels.ToArray());//合并模型的树
+
+        //TreeNodeShowManager.HiddenTrees.Add(tree2);
+        tree2.DestroyNodeRender();
+        Debug.LogError($"CreateOne_BigSmall \t{(DateTime.Now - start).ToString()}");
+    }
+
+    [ContextMenu("CreateOne_HiddenShown")]
+    public void CreateOne_HiddenShown()
     {
         IsCopy=false;
 
