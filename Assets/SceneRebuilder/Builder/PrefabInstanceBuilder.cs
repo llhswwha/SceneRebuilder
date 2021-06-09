@@ -12,9 +12,9 @@ using System.IO;
 
 public class PrefabInstanceBuilder : MonoBehaviour
 {
-    public DebugStep step;
+    public AlignDebugStep step;
 
-    public RotateMode mode;
+    public AlignRotateMode mode;
 
     public GameObject TargetRoots;
     public GameObject TargetRootsCopy;

@@ -9,9 +9,9 @@ using UnityEditor;
 #endif
 public class MeshComparer : MonoBehaviour
 {
-    public DebugStep step;
+    public AlignDebugStep step;
 
-    public RotateMode mode;
+    public AlignRotateMode mode;
 
     public float zeroValue=0.00001f;//0.0004f
 

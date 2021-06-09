@@ -777,7 +777,7 @@ public static class MeshHelper
         var meshData1=node1.meshData;
         var meshData2=node2.meshData;
         
-        bool isTest=step!=DebugStep.None;
+        bool isTest=step!=AlignDebugStep.None;
         int tryCount=0;
         bool IsFoundZero=false;
         for(int l=0;l<ids1.Count;l++)
@@ -899,7 +899,7 @@ public static class MeshHelper
         var short22= Math.Abs(node1.ShortLineDistance - node2.ShortLineDistance);
         var rate22 = Math.Abs(node1.LongShortRate - node2.LongShortRate);
         if(showLog)Debug.Log($"node1-node2 angle:{angle22},long:{long22},short:{short22},rate:{rate22} |");
-        if (step == DebugStep.Start)
+        if (step == AlignDebugStep.Start)
         {
             Debug.LogError("DebugTest Step:" + step);
             return null;//测试点0，什么都不干
@@ -909,7 +909,7 @@ public static class MeshHelper
         Transform parentOld=node2.transform.parent;
         GameObject tempCenter=node2.CreateTempGo(meshData1.maxPId + "_" + meshData1.minPId + "__" + meshData2.maxPId + "_" + meshData2.minPId);
 
-        if (step == DebugStep.TempGO)
+        if (step == AlignDebugStep.TempGO)
         {
             Debug.LogError("DebugTest Step:" + step);
             return null;//测试点1
@@ -919,7 +919,7 @@ public static class MeshHelper
         Vector3 offset = node1.GetCenterP() - tempCenter.transform.position;
         tempCenter.transform.position += offset;//动作1，移动
 
-        if (step == DebugStep.Offset)
+        if (step == AlignDebugStep.Offset)
         {
             Debug.Log($"offset:({offset.x},{offset.y},{offset.z})");
             Debug.LogError("DebugTest Step:" + step);
@@ -937,7 +937,7 @@ public static class MeshHelper
         Vector3 normal22 = node2.GetLongShortNormalNew();
         if(showLog)Debug.Log($"[After RotateNormal]normal12:({normal12.x},{normal12.y},{normal12.z}) |"+$"normal22:({normal22.x},{normal22.y},{normal22.z}) |"+$"normalAngle:{Vector3.Angle(normal12,normal22)}");
 
-        if (step == DebugStep.Normal)
+        if (step == AlignDebugStep.Normal)
         {
             Debug.LogError("DebugTest Step:" + step);
             return null;//测试点3
@@ -951,27 +951,27 @@ public static class MeshHelper
 
         //return true;
 
-        if(mode==RotateMode.ShortQuat)
+        if(mode==AlignRotateMode.ShortQuat)
         {
             //4.旋转tempCenter，对齐两条短轴
             Quaternion qua2 = Quaternion.FromToRotation(node2.GetShortLineNew(), node1.GetShortLineNew());//两条短轴之间的角度变化
             tempCenter.transform.rotation = qua2 * tempCenter.transform.rotation;//旋转tempCenter，对齐两条短轴
         }
-        if (mode == RotateMode.LongQuat)
+        if (mode == AlignRotateMode.LongQuat)
         {
             //4.旋转tempCenter，对齐两条短轴
             Quaternion qua2 = Quaternion.FromToRotation(node2.GetLongLineNew(), node1.GetLongLineNew());//两条短轴之间的角度变化
             tempCenter.transform.rotation = qua2 * tempCenter.transform.rotation;//旋转tempCenter，对齐两条短轴
         }
-        if (mode == RotateMode.ShortAngle)
+        if (mode == AlignRotateMode.ShortAngle)
         {
             tempCenter.transform.Rotate(tempCenter.transform.up, -angle1);
         }
-        if (mode == RotateMode.LongAngle)
+        if (mode == AlignRotateMode.LongAngle)
         {
             tempCenter.transform.Rotate(tempCenter.transform.up, -angle2);
         }
-        if (mode == RotateMode.AvgAngle)
+        if (mode == AlignRotateMode.AvgAngle)
         {
             tempCenter.transform.Rotate(tempCenter.transform.up, -avgAngle);
         }
@@ -990,7 +990,7 @@ public static class MeshHelper
         var dis2 = GetVertexDistanceEx(node1.transform, node2.transform);
         if(showLog)Debug.Log($"After ShortLine angle1:{angle1} | LongLine angle2:{angle2} | dis:{dis2}");
         
-        if (step == DebugStep.Rotate)
+        if (step == AlignDebugStep.Rotate)
         {
             Debug.LogError("DebugTest Step:" + step);
             return null;//测试点4
@@ -1010,7 +1010,7 @@ public static class MeshHelper
         result.minP = node2.meshData.GetMinP();
         result.maxP = node2.meshData.GetMaxP();
 
-        if(step==DebugStep.None){ //不是测试
+        if(step==AlignDebugStep.None){ //不是测试
             node2.transform.SetParent(parentOld);
             GameObject.DestroyImmediate(tempCenter);
 
@@ -1060,7 +1060,7 @@ public static class MeshHelper
             result.IsRelativeZero=true;
         }
 
-        if (step == DebugStep.Finish)
+        if (step == AlignDebugStep.Finish)
         {
             Debug.LogError("DebugTest Step:" + step);
             return result;//测试点4
@@ -1248,9 +1248,9 @@ public static class MeshHelper
         return t2;
     }
 
-    public static DebugStep step;
+    public static AlignDebugStep step;
 
-    public static RotateMode mode;
+    public static AlignRotateMode mode;
 
     public static void PrintVector3(this Vector3 v,string n)
     {
@@ -1572,7 +1572,7 @@ public static class DistanceUtil
 
 }
 
-public enum DebugStep
+public enum AlignDebugStep
 {
     None,
     Start,
@@ -1583,7 +1583,7 @@ public enum DebugStep
     Finish
 }
 
-public enum RotateMode
+public enum AlignRotateMode
 {
     ShortQuat,LongQuat,ShortAngle,LongAngle,AvgAngle
 }
