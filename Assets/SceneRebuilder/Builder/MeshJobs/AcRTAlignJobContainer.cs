@@ -501,6 +501,8 @@ public class AcRTAlignJobContainer
 
     private int lastPrafabCount = 0;
 
+    private int lastProgressCount = 0;
+
     private bool ShowProgressAndLog()
     {
         bool r=false;
@@ -510,8 +512,14 @@ public class AcRTAlignJobContainer
         }
         int mfCount = mfld.GetMeshFilterCount();
         int progressCount = targetCount - mfCount;
+        if(lastProgressCount== progressCount)
+        {
+            Debug.LogError("出错退出");
+            r = true;//结束
+        }
+        lastProgressCount = progressCount;
         float progress1 = (float)progressCount / targetCount;
-        if (ProgressBarHelper.DisplayCancelableProgressBar("CompleteAllPage", $"NewMeshAlignJobs:{progressCount}/{targetCount} {progress1 * 100:F2}% of 100% ", progress1))
+        if (ProgressBarHelper.DisplayCancelableProgressBar("CompleteAllPage", $"AcRTAlignJobContainer:{progressCount}/{targetCount} {progress1 * 100:F2}% of 100% ", progress1))
         {
             //isCancel = true;//取消处理
             r= true;
@@ -581,6 +589,7 @@ public class AcRTAlignJobContainer
         }
 
         ProgressBarHelper.ClearProgressBar();
+
         var usedTime=DateTime.Now - start;
         Debug.Log($"AcRTAlignJobContainer.GetJobs Target:{targetCount},Prefab:{prefabInfoList.Count},Job:{totalJobCount}({jobCountDetails}),Loop:{loopCount},Time:{usedTime.TotalSeconds:F2}s({loopTimes})");
         string testLogItem=$"{targetCount}\t{prefabInfoList.Count}\t{totalJobCount}\t{loopCount}\t{usedTime.TotalSeconds:F1}\t{usedTime.ToString()}\t{AcRTAlignJob.totalFoundCount}\t{AcRTAlignJob.totalNoFoundCount}\t{AcRTAlignJob.totalFoundTime:F0}\t{AcRTAlignJob.totalNoFoundTime:F0}\t{AcRTAlignJob.AngleCount}\t{AcRTAlignJob.ScaleCount}\t{AcRTAlignJob.RTCount}\t{AcRTAlignJob.ICPCount}";

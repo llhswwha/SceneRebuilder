@@ -128,7 +128,7 @@ namespace MeshJobs
                     }
 
                     float progress1 = (float)progressCount / targetCount;
-                    if (ProgressBarHelper.DisplayCancelableProgressBar("CompleteAllPage", $"NewMeshAlignJobs:{progressCount}/{targetCount} {progress1 * 100:F2}% of 100% ", progress1))
+                    if (ProgressBarHelper.DisplayCancelableProgressBar("MeshJobHelper", $"NewMeshAlignJobs:{progressCount}/{targetCount} {progress1 * 100:F2}% of 100% ", progress1))
                     {
                         isCancel = true;//取消处理
                         break;
@@ -139,7 +139,7 @@ namespace MeshJobs
                     break;
                 }
                 float progress = (float)progressCount / targetCount;
-                if (ProgressBarHelper.DisplayCancelableProgressBar("CompleteAllPage", $"NewMeshAlignJobs:{progressCount}/{targetCount} {progress * 100:F2}% of 100%", progress))
+                if (ProgressBarHelper.DisplayCancelableProgressBar("MeshJobHelper", $"NewMeshAlignJobs:{progressCount}/{targetCount} {progress * 100:F2}% of 100%", progress))
                 {
                     break;
                 }
@@ -219,7 +219,7 @@ namespace MeshJobs
                     }
 
                     float progress1 = (float)progressCount / targetCount;
-                    if (ProgressBarHelper.DisplayCancelableProgressBar("CompleteAllPage", $"NewMeshAlignJobs:{progressCount}/{targetCount} {progress1 * 100:F2}% of 100% ", progress1))
+                    if (ProgressBarHelper.DisplayCancelableProgressBar("MeshJobHelper", $"NewRTAlignJobs:{progressCount}/{targetCount} {progress1 * 100:F2}% of 100% ", progress1))
                     {
                         isCancel = true;//取消处理
                         break;
@@ -230,7 +230,7 @@ namespace MeshJobs
                     break;
                 }
                 float progress = (float)progressCount / targetCount;
-                if (ProgressBarHelper.DisplayCancelableProgressBar("CompleteAllPage", $"NewMeshAlignJobs:{progressCount}/{targetCount} {progress * 100:F2}% of 100%", progress))
+                if (ProgressBarHelper.DisplayCancelableProgressBar("MeshJobHelper", $"NewRTAlignJobs:{progressCount}/{targetCount} {progress * 100:F2}% of 100%", progress))
                 {
                     break;
                 }
@@ -243,7 +243,7 @@ namespace MeshJobs
 
             ProgressBarHelper.ClearProgressBar();
 
-            Debug.Log($"NewMeshAlignJobs Count:{targetCount},Time:{(DateTime.Now - start).ToString()}");
+            Debug.Log($"NewRTAlignJobs Count:{targetCount},Time:{(DateTime.Now - start).ToString()}");
 
             MeshAlignJobContainer.PrintTime();
             return prefabInfoList;
