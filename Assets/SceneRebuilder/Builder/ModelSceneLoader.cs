@@ -4,7 +4,7 @@ using UnityEngine;
 using UnityEngine.SceneManagement;
 using UnityEngine.UI;
 
-public class SceneLoader : MonoBehaviour
+public class ModelSceneLoader : MonoBehaviour
 {
     public string nextSceneName;
 
@@ -49,7 +49,7 @@ public class SceneLoader : MonoBehaviour
 
             //if (progressValue >= 0.9)
             //{
-            //    progress.text = "°´ÈÎÒâ¼ü¼ÌÐø";
+            //    progress.text = "ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½";
             //    if (Input.anyKeyDown)
             //    {
             //        async.allowSceneActivation = true;
@@ -125,7 +125,7 @@ public class SceneLoader : MonoBehaviour
 
             //if (progressValue >= 0.9)
             //{
-            //    progress.text = "°´ÈÎÒâ¼ü¼ÌÐø";
+            //    progress.text = "ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½";
             //    if (Input.anyKeyDown)
             //    {
             //        async.allowSceneActivation = true;
