@@ -1012,6 +1012,8 @@ break;
         for(int i=0;i<meshFilters.Length;i++)
         {
             MeshFilter mf=meshFilters[i];
+            if (mf == null) continue;
+            if (mf.sharedMesh == null) continue;
 
             float progress = (float)i / meshFilters.Length;
             float percents = progress * 100;
