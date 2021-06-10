@@ -655,6 +655,20 @@ UnpackPrefab();
         // }
         // return meshFilters;
 
+        if(TargetRoots){
+            //meshFilters=TargetRoots.GetComponentsInChildren<MeshFilter>();
+            if(IsCopyTargetRoot && TargetRootsCopy==null)
+            {
+                // if(TargetRootsCopy!=null){
+                //     GameObject.DestroyImmediate(TargetRootsCopy);
+                // }
+                TargetRoots.SetActive(false);
+                GameObject copy=MeshHelper.CopyGO(TargetRoots);
+                copy.SetActive(true);
+                TargetRootsCopy=copy;
+            }
+        }
+
         MeshFilter[] meshFilters=null;
         if(TargetRootsCopy){
             meshFilters=TargetRootsCopy.GetComponentsInChildren<MeshFilter>(true);      

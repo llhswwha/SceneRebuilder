@@ -121,6 +121,10 @@ PrefabInstance:
   m_Modification:
     m_TransformParent: {fileID: 2637694156548252797}
     m_Modifications:
+    - target: {fileID: 1743307828116152111, guid: b0c0abf5387dcad479c072866a126f56, type: 3}
+      propertyPath: ShowNodeDistance
+      value: 15
+      objectReference: {fileID: 0}
     - target: {fileID: 3036720948841578097, guid: b0c0abf5387dcad479c072866a126f56, type: 3}
       propertyPath: m_Name
       value: AreaTreeManager
@@ -175,23 +179,23 @@ PrefabInstance:
       objectReference: {fileID: 0}
     - target: {fileID: 8929099040280789865, guid: b0c0abf5387dcad479c072866a126f56, type: 3}
       propertyPath: MatCount
-      value: 21
+      value: 6
       objectReference: {fileID: 0}
     - target: {fileID: 8929099040280789865, guid: b0c0abf5387dcad479c072866a126f56, type: 3}
       propertyPath: LeafCount
-      value: 97
+      value: 69
       objectReference: {fileID: 0}
     - target: {fileID: 8929099040280789865, guid: b0c0abf5387dcad479c072866a126f56, type: 3}
       propertyPath: VertexCount
-      value: 3159
+      value: 15
       objectReference: {fileID: 0}
     - target: {fileID: 8929099040280789865, guid: b0c0abf5387dcad479c072866a126f56, type: 3}
       propertyPath: CombinedCount
-      value: 292
+      value: 144
       objectReference: {fileID: 0}
     - target: {fileID: 8929099040280789865, guid: b0c0abf5387dcad479c072866a126f56, type: 3}
       propertyPath: RendererCount
-      value: 10366
+      value: 2000
       objectReference: {fileID: 0}
     - target: {fileID: 8929099040280789865, guid: b0c0abf5387dcad479c072866a126f56, type: 3}
       propertyPath: Trees.Array.size
@@ -199,7 +203,7 @@ PrefabInstance:
       objectReference: {fileID: 0}
     - target: {fileID: 8929099040280789865, guid: b0c0abf5387dcad479c072866a126f56, type: 3}
       propertyPath: nodeStatics.CellCount
-      value: 228
+      value: 136
       objectReference: {fileID: 0}
     - target: {fileID: 8929099040280789865, guid: b0c0abf5387dcad479c072866a126f56, type: 3}
       propertyPath: prefabInstanceBuilder
@@ -207,31 +211,31 @@ PrefabInstance:
       objectReference: {fileID: 2867031154083381803}
     - target: {fileID: 8929099040280789865, guid: b0c0abf5387dcad479c072866a126f56, type: 3}
       propertyPath: nodeStatics.LevelDepth
-      value: 21
+      value: 7
       objectReference: {fileID: 0}
     - target: {fileID: 8929099040280789865, guid: b0c0abf5387dcad479c072866a126f56, type: 3}
       propertyPath: nodeStatics.MaxNodeVertexCount
-      value: 94
+      value: 0
       objectReference: {fileID: 0}
     - target: {fileID: 8929099040280789865, guid: b0c0abf5387dcad479c072866a126f56, type: 3}
       propertyPath: nodeStatics.MinNodeVertexCount
-      value: 3
+      value: 0
       objectReference: {fileID: 0}
     - target: {fileID: 8929099040280789865, guid: b0c0abf5387dcad479c072866a126f56, type: 3}
       propertyPath: nodeStatics.MaxNodeVertexCount2
-      value: 393
+      value: 0
       objectReference: {fileID: 0}
     - target: {fileID: 8929099040280789865, guid: b0c0abf5387dcad479c072866a126f56, type: 3}
       propertyPath: nodeStatics.AvgCellRendererCount
-      value: 78
+      value: 34
       objectReference: {fileID: 0}
     - target: {fileID: 8929099040280789865, guid: b0c0abf5387dcad479c072866a126f56, type: 3}
       propertyPath: nodeStatics.MaxCellRendererCount
-      value: 700
+      value: 50
       objectReference: {fileID: 0}
     - target: {fileID: 8929099040280789865, guid: b0c0abf5387dcad479c072866a126f56, type: 3}
       propertyPath: nodeStatics.MinCellRendererCount
-      value: 1
+      value: 6
       objectReference: {fileID: 0}
     m_RemovedComponents: []
   m_SourcePrefab: {fileID: 100100000, guid: b0c0abf5387dcad479c072866a126f56, type: 3}

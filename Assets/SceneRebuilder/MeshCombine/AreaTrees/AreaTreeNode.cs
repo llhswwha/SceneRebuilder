@@ -298,14 +298,15 @@ public class AreaTreeNode : MonoBehaviour
         for (int i = 0; i < Renderers.Count; i++)
         {
             MeshRenderer r = Renderers[i];
+            r.gameObject.SetActive(!isCombined);
             r.enabled=!isCombined;
-            var collider = colliders[i];
-            if (collider)
-            {
-                collider.enabled = !isCombined;
-            }
-            //MeshCollider collider = r.GetComponent<MeshCollider>();
-            //collider.enabled = false;
+            // var collider = colliders[i];
+            // if (collider)
+            // {
+            //     collider.enabled = !isCombined;
+            // }
+            MeshCollider collider = r.GetComponent<MeshCollider>();
+            collider.enabled = !isCombined;
         }
 
         combindResult.SetActive(isCombined);

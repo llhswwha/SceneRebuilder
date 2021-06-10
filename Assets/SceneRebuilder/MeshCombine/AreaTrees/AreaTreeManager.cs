@@ -220,6 +220,7 @@ public class AreaTreeManager : MonoBehaviour
 
         areaTree.Target = go;
         areaTree.TreeRenderers = renderers;
+        areaTree.ShowRenderers();
 
         if (isC)
         {
@@ -233,6 +234,7 @@ public class AreaTreeManager : MonoBehaviour
         {
             areaTree.GenerateTree();
         }
+
 
         areaTree.GetVertexCount();
 
