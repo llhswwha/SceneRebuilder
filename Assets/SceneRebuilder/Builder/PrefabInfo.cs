@@ -107,7 +107,10 @@ public static class PrefabInfoListHelper
             if(insList==null)continue;
             for (int j=0;j< insList.Count; j++)
             {
-                renderers.Add(insList[j].GetComponent<MeshRenderer>());
+                if(insList[j]==null)continue;
+                MeshRenderer renderer=insList[j].GetComponent<MeshRenderer>();
+                if(renderer==null)continue;
+                renderers.Add(renderer);
             }
         }
         return renderers;

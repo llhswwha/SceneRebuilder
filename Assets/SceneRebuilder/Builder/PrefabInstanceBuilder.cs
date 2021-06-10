@@ -651,14 +651,11 @@ UnpackPrefab();
     private MeshRenderer[] GetMeshRenderers()
     {
         MeshRenderer[] meshRenderers=null;
-        if(TargetRoots){
-            if(IsCopyTargetRoot){
-                meshRenderers=TargetRootsCopy.GetComponentsInChildren<MeshRenderer>();
-            }
-            else{
-                meshRenderers=TargetRoots.GetComponentsInChildren<MeshRenderer>();
-            }
-            
+        if(TargetRootsCopy){
+            meshRenderers=TargetRootsCopy.GetComponentsInChildren<MeshRenderer>(true);      
+        }
+        else if(TargetRoots){
+            meshRenderers=TargetRoots.GetComponentsInChildren<MeshRenderer>(true);
         }
         else{
             meshRenderers=GameObject.FindObjectsOfType<MeshRenderer>();
