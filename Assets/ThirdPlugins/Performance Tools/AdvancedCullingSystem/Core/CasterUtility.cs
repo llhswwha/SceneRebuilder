@@ -286,7 +286,11 @@ namespace AdvancedCullingSystem.Core
                 max.z = Mathf.Max(rendererBounds.max.z, max.z);
             }
 
-            return new Bounds((min + max) / 2, max - min);
+            Bounds bounds= new Bounds((min + max) / 2, max - min);
+
+            //bounds.Expand(new Vector3(2,2,2));
+
+            return bounds;
         }
 
         /// <summary>

@@ -688,7 +688,11 @@ namespace AdvancedCullingSystem.StaticCullingCore
             GameObject newGo=new GameObject(name);
             if(_cameras.Count==1)
             {
-                newGo.transform.position=_cameras[0].transform.position;
+                // newGo.transform.position=_cameras[0].transform.position;
+                var bounds=CasterUtility.CalculateBoundingBox(_objects);
+                //bounds.Expand(new Vector3(3,3,3));
+                newGo.transform.position=bounds.center;
+                newGo.transform.localScale=bounds.size*3;
             }
             _areasTransforms.Add(newGo.transform);
         }
@@ -826,7 +830,11 @@ namespace AdvancedCullingSystem.StaticCullingCore
             _areasBounds.Clear();
 
             if (_areasPlacing == AreasPlacing.Around_Static && _objects.Count > 0)
-                _areasBounds.Add(CasterUtility.CalculateBoundingBox(_objects));//获取所有静态物体的包围盒
+            {
+                var bounds=CasterUtility.CalculateBoundingBox(_objects);
+
+                _areasBounds.Add(bounds);//获取所有静态物体的包围盒
+            }
 
             else if (_areasPlacing == AreasPlacing.Placing_By_User && _areasTransforms.Count > 0)
             {

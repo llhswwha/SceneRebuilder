@@ -34,9 +34,9 @@ namespace AdvancedCullingSystem.DynamicCullingCore
 
         private Dictionary<int, MeshRenderer> _indexToRenderer = new Dictionary<int, MeshRenderer>();
 
-        private List<int> HideRenders = new List<int>();
+        private Dictionary<int,int> HideRenders = new Dictionary<int,int>();
 
-        private List<int> ShowRenders = new List<int>();//这两个是否要改成Dictionary？
+        private Dictionary<int,int> ShowRenders = new Dictionary<int,int>();//这两个是否要改成Dictionary？
 
         public int SelectedCount
         {
@@ -114,6 +114,15 @@ namespace AdvancedCullingSystem.DynamicCullingCore
 
         public StaticCulling staticCulling;
 
+        [ContextMenu("SetLayer")]
+        public void SetLayer()
+        {
+            foreach(var renderer in _startRenderers)
+            {
+                renderer.gameObject.layer=_layer;
+            }
+        }
+
         private void Awake()
         {
             Instance = this;
@@ -121,7 +130,8 @@ namespace AdvancedCullingSystem.DynamicCullingCore
             _rayDirs= Core.CasterUtility.CreateRayDirsArray(_jobsPerFrame, UnitSize, FieldOfView); //创建射线方向，基于Halton序列
 
              _layer = ACSInfo.CullingLayer;
-            _mask = ACSInfo.CullingMask;
+            //_mask = ACSInfo.CullingMask;
+            _mask = -1;
 
             _visibleObjects = new NativeList<int>(Allocator.Persistent);
             _hittedObjects = new NativeList<int>(Allocator.Persistent);
@@ -173,11 +183,17 @@ namespace AdvancedCullingSystem.DynamicCullingCore
 
         private DateTime startUpdateTime;
 
+        public double UpdateInfo1Time;
+        public double UpdateInfo2Time;
+
+        public double RaycastTime = 0;
+        public double ResultTime1 = 0;
+        public double ResultTime2 = 0;
+        public double SetVisibleTime = 0;
+
+        public double UpdateTimeTotal2;
+
         public double UpdateTimeTotal;
-
-        public double UpdateTime1;
-
-        public double UpdateTime2;
 
         [ContextMenu("UpdateInfo1")]
         public void UpdateInfo1()
@@ -227,11 +243,12 @@ namespace AdvancedCullingSystem.DynamicCullingCore
                 Disable();
             }
 
-            UpdateTime1 = (DateTime.Now - startUpdateTime).TotalMilliseconds;
+            UpdateInfo1Time = (DateTime.Now - startUpdateTime).TotalMilliseconds;
         }
 
         private void CollectHitObjects()
         {
+            DateTime start = DateTime.Now;
             int c1 = 0;
             int c2 = 0;
             for (int i = 0; i < _hitResults.Count; i++)
@@ -248,24 +265,114 @@ namespace AdvancedCullingSystem.DynamicCullingCore
 
                     if (collider != null && !_occludeColliders.Contains(collider))
                     {
-                        int objId = _colliderToIndex[collider];
-                        if(!_hittedObjects.Contains(objId))
+                        if(_colliderToIndex.ContainsKey(collider))
                         {
-                            _hittedObjects.Add(objId);
-                            c2++;
+                            int objId = _colliderToIndex[collider];
+                            if(!_hittedObjects.Contains(objId))
+                            {
+                                _hittedObjects.Add(objId);
+                                c2++;
+                            }
                         }
-                        
+                        else{
+                            MeshRenderer render=collider.GetComponent<MeshRenderer>();
+                            if(render==null)
+                            {
+                                Debug.LogError($"render==null renderer:{render} collider:{collider}");
+                                continue;
+                            }
+                            int objId=render.GetInstanceID();
+                            _colliderToIndex.Add(collider,objId);
+
+                            if(!_indexToRenderer.ContainsKey(objId))
+                            {
+                                Debug.LogError($"_indexToRenderer.Add(objId,render) id:{objId} renderer:{render} collider:{collider}");
+                                _indexToRenderer.Add(objId,render);
+                            }
+
+                            if(!_hittedObjects.Contains(objId))
+                            {
+                                _hittedObjects.Add(objId);
+                                c2++;
+                            }
+                        }
                     }
                 }
             }
             //Debug.LogError("CollectHitObjects:"+c2+"/"+ c1);
+            ResultTime1=(DateTime.Now - start).TotalMilliseconds;
         }
 
-        public List<Renderer> visibleRenderers = new List<Renderer>();
+        private List<Renderer> visibleRenderers = new List<Renderer>();
 
         public bool IsSetVisible = true;
 
-        public double RaycastTime = 0;
+        public int VisibleObjectCount=0;
+
+        private void SetObjectsVisible()
+        {
+            DateTime start = DateTime.Now;
+
+            visibleRenderers.Clear();
+
+            HideRenders.Clear();
+            ShowRenders.Clear();
+            int c = 0;
+
+            VisibleObjectCount=_visibleObjects.Length;
+
+            while (c < _visibleObjects.Length)//根据碰撞检测和时间，显示或者隐藏物体
+            {
+                int id = _visibleObjects[c];
+                try
+                {
+                    var renderer=_indexToRenderer[id];
+                    if (_timers[c] > _objectsLifetime)
+                    {
+                        // if(IsSetVisible)
+                            RendererHelper.HideRenderer(renderer);//隐藏物体
+
+                        _visibleObjects.RemoveAtSwapBack(c);
+                        // _timers.RemoveAtSwapBack(c);
+
+                        // if (!HideRenders.ContainsKey(id))
+                        //     HideRenders.Add(id,id);
+                    }
+                    else
+                    {
+                        //visibleRenderers.Add(renderer);
+
+                        //if (IsSetVisible)
+                            RendererHelper.ShowRenderer(renderer);
+
+                        c++;
+
+                        // if (!ShowRenders.ContainsKey(id))
+                        //     ShowRenders.Add(id,id);
+                    }
+                }
+                catch (MissingReferenceException)
+                {
+                    _renderersForRemoveIDs.Add(id);
+                    c++;
+                }
+
+                //c++;
+            }
+            SetVisibleTime=(DateTime.Now - start).TotalMilliseconds;
+        }
+
+        private void DoResultJob()
+        {
+            DateTime start = DateTime.Now;
+            new ComputeResultsJob()
+            {
+                visibleObjects = _visibleObjects,
+                hittedObjects = _hittedObjects,
+                timers = _timers
+            }.Schedule().Complete();
+            ResultTime2=(DateTime.Now - start).TotalMilliseconds;
+        }
 
         [ContextMenu("UpdateInfo2")]
         public void UpdateInfo2()
@@ -273,53 +380,15 @@ namespace AdvancedCullingSystem.DynamicCullingCore
             DateTime start = DateTime.Now;
             try
             {
-                visibleRenderers.Clear();
-                HideRenders.Clear();
-                ShowRenders.Clear();
-
                 JobHandle.CompleteAll(_handles);//完成UpdateTimersJob和RaycastCommand？ 5000用时5ms
 
                 RaycastTime = (DateTime.Now - start).TotalMilliseconds;
 
                 CollectHitObjects();//收集碰撞检测的结果：从_hitResults将碰撞物体放到_hittedObjects
-                new ComputeResultsJob()
-                {
-                    visibleObjects = _visibleObjects,
-                    hittedObjects = _hittedObjects,
-                    timers = _timers
-                }.Schedule().Complete();
-                int c = 0;
-                while (c < _visibleObjects.Length)//根据碰撞检测和时间，显示或者隐藏物体
-                {
-                    int id = _visibleObjects[c];
-                    try
-                    {
-                        if (_timers[c] > _objectsLifetime)
-                        {
-                            if(IsSetVisible)
-                                RendererHelper.HideRenderer(_indexToRenderer[id]);
-                            _visibleObjects.RemoveAtSwapBack(c);
-                            _timers.RemoveAtSwapBack(c);
+                DoResultJob();
+                
+                SetObjectsVisible();
 
-                            if (!HideRenders.Contains(id))
-                                HideRenders.Add(id);
-                        }
-                        else
-                        {
-                            visibleRenderers.Add(_indexToRenderer[id]);
-                            if (IsSetVisible)
-                                RendererHelper.ShowRenderer(_indexToRenderer[id]);
-                            c++;
-                            if (!ShowRenders.Contains(id))
-                                ShowRenders.Add(id);
-                        }
-                    }
-                    catch (MissingReferenceException)
-                    {
-                        _renderersForRemoveIDs.Add(id);
-                        c++;
-                    }
-                }
                 OnRemoveRenderersFromList();
                 if (_onUpdateJobsPerFrame)
                     OnUpdateJobsPerFrame();
@@ -332,8 +401,9 @@ namespace AdvancedCullingSystem.DynamicCullingCore
 
             VisibleCount = ShowRenders.Count;
             HideCount = HideRenders.Count;
+            UpdateTimeTotal2=RaycastTime+ResultTime1+ResultTime2+SetVisibleTime;
             UpdateTimeTotal = (DateTime.Now - startUpdateTime).TotalMilliseconds;
-            UpdateTime2= (DateTime.Now - start).TotalMilliseconds;
+            UpdateInfo2Time= (DateTime.Now - start).TotalMilliseconds;
         }
 
         public bool EnableUpdateInfo = true;
