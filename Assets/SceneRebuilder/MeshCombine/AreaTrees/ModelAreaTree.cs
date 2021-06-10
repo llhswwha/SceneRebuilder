@@ -209,15 +209,15 @@ public class ModelAreaTree : MonoBehaviour
 
         MeshRenderer[] renderers=GetTreeRendererers();
         
-        Debug.LogError("renderers:"+renderers.Length);
+        Debug.LogError("CreateCells_Tree renderers:"+renderers.Length);
         foreach(var render in renderers){
             if(render==null)continue;
             render.enabled=true;
         }
 
         Bounds bounds=ColliderHelper.CaculateBounds(renderers);
-        Debug.LogError("size:"+bounds.size);
-        Debug.LogError("size2:"+bounds.size/2);
+        // Debug.LogError("size:"+bounds.size);
+        // Debug.LogError("size2:"+bounds.size/2);
 
         this.TreeNodes.Clear();
 

@@ -355,14 +355,28 @@ UnpackPrefab();
     {
         DateTime start=DateTime.Now;
 
-        TargetRoots.gameObject.SetActive(true);
-        var ts=AreaTreeHelper.GetAllTransforms(TargetRoots.transform);
-        foreach(var t in ts){
-            t.gameObject.SetActive(true);
+        if(TargetRoots)
+        {
+            TargetRoots.gameObject.SetActive(true);
+            var ts=AreaTreeHelper.GetAllTransforms(TargetRoots.transform);
+            foreach(var t in ts){
+                t.gameObject.SetActive(true);
+            }
         }
 
-        var renderers=GameObject.FindObjectsOfType<MeshRenderer>();
+        else if(TargetRootsCopy)
+        {
+            TargetRootsCopy.gameObject.SetActive(true);
+            var ts=AreaTreeHelper.GetAllTransforms(TargetRootsCopy.transform);
+            foreach(var t in ts){
+                t.gameObject.SetActive(true);
+            }
+        }
+        
+
+        //var renderers=GameObject.FindObjectsOfType<MeshRenderer>();
         //var renderers=Target.GetComponentsInChildren<MeshRenderer>();
+        var renderers=this.GetMeshRenderers();
         foreach(var render in renderers){
             render.enabled=true;
             render.gameObject.SetActive(true);
@@ -612,40 +626,46 @@ UnpackPrefab();
     private MeshFilter[] GetMeshFilters()
     {
         
-        MeshFilter[] meshFilters=null;
-        if(TargetRoots){
-            //meshFilters=TargetRoots.GetComponentsInChildren<MeshFilter>();
+        // MeshFilter[] meshFilters=null;
+        // if(TargetRoots){
+        //     //meshFilters=TargetRoots.GetComponentsInChildren<MeshFilter>();
             
-            if(IsCopyTargetRoot)
-            {
-                if(TargetRootsCopy!=null){
-                    GameObject.DestroyImmediate(TargetRootsCopy);
-                }
+        //     if(IsCopyTargetRoot)
+        //     {
+        //         if(TargetRootsCopy!=null){
+        //             GameObject.DestroyImmediate(TargetRootsCopy);
+        //         }
 
-                TargetRoots.SetActive(false);
-                GameObject copy=MeshHelper.CopyGO(TargetRoots);
-                copy.SetActive(true);
-                meshFilters=copy.GetComponentsInChildren<MeshFilter>();
-                //ClearMeshFilters(meshFilters.ToList());
-                TargetRootsCopy=copy;
-            }
-            else{
-                meshFilters=TargetRoots.GetComponentsInChildren<MeshFilter>();
-                //ClearMeshFilters(meshFilters.ToList());
-            }
+        //         TargetRoots.SetActive(false);
+        //         GameObject copy=MeshHelper.CopyGO(TargetRoots);
+        //         copy.SetActive(true);
+        //         meshFilters=copy.GetComponentsInChildren<MeshFilter>(true);
+        //         //ClearMeshFilters(meshFilters.ToList());
+        //         TargetRootsCopy=copy;
+        //     }
+        //     else{
+        //         meshFilters=TargetRoots.GetComponentsInChildren<MeshFilter>(true);
+        //         //ClearMeshFilters(meshFilters.ToList());
+        //     }
             
             
+        // }
+        // else{
+        //     meshFilters=GameObject.FindObjectsOfType<MeshFilter>();
+        // }
+        // return meshFilters;
+
+        MeshFilter[] meshFilters=null;
+        if(TargetRootsCopy){
+            meshFilters=TargetRootsCopy.GetComponentsInChildren<MeshFilter>(true);      
+        }
+        else if(TargetRoots){
+            meshFilters=TargetRoots.GetComponentsInChildren<MeshFilter>(true);
         }
         else{
             meshFilters=GameObject.FindObjectsOfType<MeshFilter>();
         }
         return meshFilters;
-        //List<MeshFilter> list=new List<MeshFilter>();
-        // list.AddRange(meshFilters);
-        // list.Sort((a,b)=>{
-        //     return a.name.CompareTo(b.name);
-        // });
-        // return list;
     }
 
     private MeshRenderer[] GetMeshRenderers()
@@ -722,7 +742,7 @@ UnpackPrefab();
         PrefabInfoList = MeshJobHelper.NewAcRTAlignJobs(meshFilters,JobSize);
     }
 
-    [ContextMenu("AcRTAlignJobsEx")]
+    [ContextMenu("* AcRTAlignJobsEx")]
     private void AcRTAlignJobsEx()
     {
         SetAcRTAlignJobSetting();
