@@ -1,3 +1,4 @@
+using System;
 using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
@@ -19,6 +20,7 @@ public class ModelSceneLoader : MonoBehaviour
 
     public void ClickStartLoad()
     {
+        Debug.Log("ClickStartLoad");
         int index = DropdownSceneList.value;
         nextSceneName = sceneList[index];
         StartCoroutine("LoadScene");
@@ -26,9 +28,30 @@ public class ModelSceneLoader : MonoBehaviour
 
     public void ClickStartUnload()
     {
+        Debug.Log("ClickStartUnload");
         int index = DropdownSceneList.value;
         nextSceneName = sceneList[index];
         StartCoroutine("UnLoadScene");
+    }
+
+    public void ClickLoadAll()
+    {
+        Debug.Log("ClickLoadAll");
+        StartCoroutine("LoadAllScene");
+    }
+
+    public int MaxCount = 2;
+
+    IEnumerator LoadAllScene()
+    {
+        for(int i=0;i< DropdownSceneList.options.Count && i< MaxCount; i++)
+        {
+            DropdownSceneList.value = i;
+            nextSceneName = sceneList[i];
+            yield return LoadScene();
+            yield return new WaitForSeconds(0.1f);
+        }
+        yield return null;
     }
 
     IEnumerator UnLoadScene()
@@ -93,6 +116,8 @@ public class ModelSceneLoader : MonoBehaviour
         lastRenderCount = renderCount;
         lastVertextCount = w;
         lastMatCount = mats.Count;
+
+        AreaTreeNodeShowManager.Instance.Init();
     }
 
     AsyncOperation async;
@@ -109,6 +134,7 @@ public class ModelSceneLoader : MonoBehaviour
 
     IEnumerator LoadScene()
     {
+        DateTime start = DateTime.Now;
         Debug.Log("LoadScene:"+ nextSceneName);
 
         async = SceneManager.LoadSceneAsync(nextSceneName, LoadSceneMode.Additive);
@@ -134,6 +160,7 @@ public class ModelSceneLoader : MonoBehaviour
             yield return null;
         }
         ShowModelInfo();
+        Debug.Log($"LoadScene[{nextSceneName}] time:{(DateTime.Now - start).TotalMilliseconds}ms");
         yield return null;
     }
 }

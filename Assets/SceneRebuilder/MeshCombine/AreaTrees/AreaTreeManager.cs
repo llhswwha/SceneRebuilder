@@ -233,6 +233,9 @@ public class AreaTreeManager : MonoBehaviour
         {
             areaTree.GenerateTree();
         }
+
+        areaTree.GetVertexCount();
+
         Trees.Add(areaTree);
 
         ShowModelInfo(areaTree);

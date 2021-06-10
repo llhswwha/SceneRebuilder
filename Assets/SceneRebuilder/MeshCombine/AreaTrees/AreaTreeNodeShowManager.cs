@@ -6,6 +6,8 @@ using System.Linq;
 
 public class AreaTreeNodeShowManager : MonoBehaviour
 {
+    public static AreaTreeNodeShowManager Instance;
+
     public List<Camera> cameras=new List<Camera>();
     public List<ModelAreaTree> HiddenTrees=new List<ModelAreaTree>();
 
@@ -17,9 +19,19 @@ public class AreaTreeNodeShowManager : MonoBehaviour
 
     public float ShowNodeDistance=5;
 
+    private void Awake()
+    {
+        Instance = this;
+    }
+
     void Start()
     {
         InitCameras();
+        Init();
+    }
+
+    public void Init()
+    {
         InitTrees();
         GetLeafNodes();
     }

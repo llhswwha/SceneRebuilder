@@ -559,6 +559,23 @@ public class ModelAreaTree : MonoBehaviour
         }
     }
 
+    public int VertexCount;
+
+    [ContextMenu("GetVertexCount")]
+    public void GetVertexCount()
+    {
+        DateTime start = DateTime.Now;
+        VertexCount = 0;
+        var renderers = GetTreeRendererers();
+        foreach(var render in renderers)
+        {
+            MeshFilter mf = render.GetComponent<MeshFilter>();
+            VertexCount += mf.sharedMesh.vertexCount;
+        }
+        VertexCount = VertexCount / 10000;
+        Debug.Log($"GetVertexCount VertexCount:{VertexCount} time:{(DateTime.Now - start).TotalMilliseconds}ms");
+    }
+
     [ContextMenu("GetMaterials")]
     public void GetMaterials()
     {

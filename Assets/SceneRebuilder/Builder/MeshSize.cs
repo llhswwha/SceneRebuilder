@@ -9,6 +9,8 @@ public class MeshSize : MonoBehaviour
 
     public Vector3 size;
 
+    public Vector3 scale;
+
     public float Length=0;
 
     [ContextMenu("GetSize")]
@@ -17,13 +19,16 @@ public class MeshSize : MonoBehaviour
         meshFiter=this.gameObject.GetComponent<MeshFilter>();
         bounds=meshFiter.sharedMesh.bounds;
         size=bounds.size;
-
-        Length=size.x;
-        if(Length < size.y){
-            Length=size.y;
+        scale = this.transform.lossyScale;
+        scale = new Vector3(Mathf.Abs(scale.x), Mathf.Abs(scale.y), Mathf.Abs(scale.y));
+        Length = size.x * scale.x;
+        if (size.y * scale.y > Length)
+        {
+            Length = size.y * scale.y;
         }
-        if(Length < size.z){
-            Length=size.z;
+        if (size.z * scale.z > Length)
+        {
+            Length = size.z * scale.y;
         }
     }
 }

@@ -1023,14 +1023,16 @@ break;
             } 
 
             Bounds bounds = mf.sharedMesh.bounds;
+            Vector3 scale = mf.transform.lossyScale;
+            scale = new Vector3(Mathf.Abs(scale.x), Mathf.Abs(scale.y), Mathf.Abs(scale.y));
             Vector3 size=bounds.size;
             // string strSize=$"({size.x},{size.y},{size.z})";
-            float length=size.x;
-            if(size.y>length){
-                length=size.y;
+            float length=size.x*scale.x;
+            if(size.y*scale.y>length){
+                length=size.y * scale.y;
             }
-            if(size.z>length){
-                length=size.z;
+            if(size.z * scale.z > length){
+                length=size.z * scale.y;
             }
 
             if(!lengthList.Contains(length))
