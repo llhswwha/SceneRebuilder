@@ -44,13 +44,15 @@ public class ModelSceneLoader : MonoBehaviour
 
     IEnumerator LoadAllScene()
     {
-        for(int i=0;i< DropdownSceneList.options.Count && i< MaxCount; i++)
+        DateTime start = DateTime.Now;
+        for (int i=0;i< DropdownSceneList.options.Count && i< MaxCount; i++)
         {
             DropdownSceneList.value = i;
             nextSceneName = sceneList[i];
             yield return LoadScene();
             yield return new WaitForSeconds(0.1f);
         }
+        Debug.LogError($"LoadAllScene time:{(DateTime.Now - start).ToString()}");
         yield return null;
     }
 
@@ -106,6 +108,8 @@ public class ModelSceneLoader : MonoBehaviour
                 mats.Add(render.sharedMaterial);
             }
             MeshFilter meshFilter = render.GetComponent<MeshFilter>();
+            if (meshFilter == null) continue;
+            if (meshFilter.sharedMesh == null) continue;
             vertextCount+=meshFilter.sharedMesh.vertexCount;
             renderCount++;
         }
@@ -160,7 +164,7 @@ public class ModelSceneLoader : MonoBehaviour
             yield return null;
         }
         ShowModelInfo();
-        Debug.Log($"LoadScene[{nextSceneName}] time:{(DateTime.Now - start).TotalMilliseconds}ms");
+        Debug.Log($"LoadScene[{nextSceneName}] time:{(DateTime.Now - start).ToString()}");
         yield return null;
     }
 }
