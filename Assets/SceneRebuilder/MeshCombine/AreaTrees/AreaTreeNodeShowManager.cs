@@ -11,7 +11,11 @@ public class AreaTreeNodeShowManager : MonoBehaviour
     public List<Camera> cameras=new List<Camera>();
     public List<ModelAreaTree> HiddenTrees=new List<ModelAreaTree>();
 
-    public List<AreaTreeNode> TreeLeafNodes=new List<AreaTreeNode>();
+    public List<ModelAreaTree> ShownTrees=new List<ModelAreaTree>();
+
+    public List<AreaTreeNode> HiddenLeafNodes=new List<AreaTreeNode>();
+
+    public List<AreaTreeNode> ShownLeafNodes=new List<AreaTreeNode>();
 
     public List<AreaTreeNode> ShownNodes=new List<AreaTreeNode>();
 
@@ -46,6 +50,10 @@ public class AreaTreeNodeShowManager : MonoBehaviour
             {
                 HiddenTrees.Add(t);
             }
+            else if(t.IsHidden==false && !ShownTrees.Contains(t))
+            {
+                ShownTrees.Add(t);
+            }
         }
     }
 
@@ -65,7 +73,7 @@ public class AreaTreeNodeShowManager : MonoBehaviour
     [ContextMenu("GetLeafNodes")]
     public void GetLeafNodes()
     {
-        TreeLeafNodes.Clear();
+        HiddenLeafNodes.Clear();
 
         foreach(var tree in HiddenTrees)
         {
@@ -73,9 +81,19 @@ public class AreaTreeNodeShowManager : MonoBehaviour
             var leafs=tree.TreeLeafs;
             foreach(var node in leafs){
                 if(node==null)continue;
-                TreeLeafNodes.Add(node);
+                HiddenLeafNodes.Add(node);
             }
-            
+        }
+
+        ShownLeafNodes.Clear();
+        foreach(var tree in ShownTrees)
+        {
+            if(tree==null)continue;
+            var leafs=tree.TreeLeafs;
+            foreach(var node in leafs){
+                if(node==null)continue;
+                ShownLeafNodes.Add(node);
+            }
         }
     }
 
@@ -99,8 +117,8 @@ public class AreaTreeNodeShowManager : MonoBehaviour
         ShownRenderCount=0;
         HiddenRenderCount=0;
         float sum=0;
-        int count=TreeLeafNodes.Count;
-        foreach(var node in TreeLeafNodes)
+        int count=HiddenLeafNodes.Count;
+        foreach(var node in HiddenLeafNodes)
         {
             var nodePos=node.transform.position;
             float nodeDis1=float.MaxValue;
