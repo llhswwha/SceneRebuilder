@@ -38,7 +38,7 @@ public static class StaticCullingTestReporter
 
 public class StaticCullingTestData
 {
-    //    ÐòºÅ Area´óÐ¡  CellSize JobsCount   DirectionCount FastBake    OptimizeTree Time    CastersCount TreeNodeCount   OptimizeCount TotalVisible    VisibleLeaf AvgVisible  Depth
+    //    ï¿½ï¿½ï¿½ Areaï¿½ï¿½Ð¡  CellSize JobsCount   DirectionCount FastBake    OptimizeTree Time    CastersCount TreeNodeCount   OptimizeCount TotalVisible    VisibleLeaf AvgVisible  Depth
     //1	(333.7,289.3,560.8)	10	20	2000	TRUE TRUE		142.6s	60900	112349	54	7657422	56175	136	17
     public Vector3 areaSize;
     public int ObjectsCount;
@@ -73,6 +73,11 @@ public class StaticCullingTestData
 
     public override string ToString()
     {
-        return $"{areaSize}\t{ObjectsCount}\t{CellSize}\t{JobsPerObject}\t{DirectionCount}\t{FastBake}\t{OptimizeTree}\t\t{Time}\t{CastersCount}\t{TreeNodeCount}\t{OptimizeCount}\t{TotalVisible}\t{VisibleLeaf}\t{AvgVisible}\t{TreeDepth}\t{RayPointsCount}\t{RayPointsCountAll}\t{AvgRayPointsCount}";
+        // string line1= "{areaSize}\t{ObjectsCount}\t{CellSize}\t{JobsPerObject}\t{DirectionCount}\t{FastBake}\t{OptimizeTree}\t\t{Time}\t{CastersCount}\t{TreeNodeCount}\t{OptimizeCount}\t{TotalVisible}\t{VisibleLeaf}\t{AvgVisible}\t{TreeDepth}\t{RayPointsCount}\t{RayPointsCountAll}\t{AvgRayPointsCount}";
+        // string line2= $"{areaSize}\t{ObjectsCount}\t{CellSize}\t{JobsPerObject}\t{DirectionCount}\t{FastBake}\t{OptimizeTree}\t\t{Time}\t{CastersCount}\t{TreeNodeCount}\t{OptimizeCount}\t{TotalVisible}\t{VisibleLeaf}\t{AvgVisible}\t{TreeDepth}\t{RayPointsCount}\t{RayPointsCountAll}\t{AvgRayPointsCount}";
+        // return line1+"\n"+line2;
+
+        string line3= $"areaSize:{areaSize}\tObjectsCount:{ObjectsCount}\tCellSize:{CellSize}\tJobsPerObject:{JobsPerObject}\tDirectionCount:{DirectionCount}\tFastBake:{FastBake}\tOptimizeTree:{OptimizeTree}\nTime:{Time}\tCastersCount:{CastersCount}\tTreeNodeCount:{TreeNodeCount}\tOptimizeCount:{OptimizeCount}\tTotalVisible:{TotalVisible}\tVisibleLeaf:{VisibleLeaf}\tAvgVisible:{AvgVisible}\tTreeDepth:{TreeDepth}\t{RayPointsCount}\tRayPointsCountAll:{RayPointsCountAll}\tAvgRayPointsCount:{AvgRayPointsCount}";
+        return line3;
     }
 }

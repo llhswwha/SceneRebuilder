@@ -390,6 +390,9 @@ public class AreaTreeManager : MonoBehaviour
 
         List<MeshRenderer> bigModels=new List<MeshRenderer>();
         List<MeshRenderer> smallModels=new List<MeshRenderer>();
+        if(prefabInstanceBuilder.TargetRoots==null){
+            prefabInstanceBuilder.TargetRoots=this.Target;
+        }
         prefabInstanceBuilder.GetBigSmallRenderers(bigModels,smallModels);
 
 
