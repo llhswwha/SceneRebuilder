@@ -309,56 +309,134 @@ namespace AdvancedCullingSystem.DynamicCullingCore
 
         public int VisibleObjectCount=0;
 
+        public bool IsFirst=true; 
+
+        public int ToHideCount=0;
+        public int ToShowCount=0;
+
         private void SetObjectsVisible()
         {
             DateTime start = DateTime.Now;
 
             visibleRenderers.Clear();
 
-            HideRenders.Clear();
-            ShowRenders.Clear();
+            // HideRenders.Clear();
+            // ShowRenders.Clear();
             int c = 0;
 
-            VisibleObjectCount=_visibleObjects.Length;
-
-            while (c < _visibleObjects.Length)//根据碰撞检测和时间，显示或者隐藏物体
+            
+            //if(ShowRenders.Contains)
+            if(IsFirst)
             {
-                int id = _visibleObjects[c];
-                try
+                VisibleObjectCount=_visibleObjects.Length;
+                //IsFirst=false;
+                while (c < _visibleObjects.Length)//根据碰撞检测和时间，显示或者隐藏物体
                 {
-                    var renderer=_indexToRenderer[id];
-                    if (_timers[c] > _objectsLifetime)
+                    int id = _visibleObjects[c];
+                    try
                     {
-                        // if(IsSetVisible)
-                            RendererHelper.HideRenderer(renderer);//隐藏物体
+                        var renderer=_indexToRenderer[id];
+                        if (_timers[c] > _objectsLifetime)
+                        {
+                            if(IsSetVisible)
+                                RendererHelper.HideRenderer(renderer);//隐藏物体
 
-                        _visibleObjects.RemoveAtSwapBack(c);
-                        // _timers.RemoveAtSwapBack(c);
+                            _visibleObjects.RemoveAtSwapBack(c);
+                            _timers.RemoveAtSwapBack(c);
 
-                        // if (!HideRenders.ContainsKey(id))
-                        //     HideRenders.Add(id,id);
+                            if (!HideRenders.ContainsKey(id))
+                                HideRenders.Add(id,id);
+                        }
+                        else
+                        {
+                            //visibleRenderers.Add(renderer);
+
+                            if (IsSetVisible)
+                                RendererHelper.ShowRenderer(renderer);
+
+                            c++;
+
+                            if (!ShowRenders.ContainsKey(id))
+                                ShowRenders.Add(id,id);
+                        }
                     }
-                    else
+                    catch (MissingReferenceException)
                     {
-                        //visibleRenderers.Add(renderer);
-
-                        //if (IsSetVisible)
-                            RendererHelper.ShowRenderer(renderer);
-
+                        _renderersForRemoveIDs.Add(id);
                         c++;
-
-                        // if (!ShowRenders.ContainsKey(id))
-                        //     ShowRenders.Add(id,id);
                     }
+
+                    //c++;
                 }
-                catch (MissingReferenceException)
+            }
+            else{
+                List<int> toHideList=new List<int>();
+                List<int> toShowList=new List<int>();
+                while (c < _visibleObjects.Length)//根据碰撞检测和时间，显示或者隐藏物体
                 {
-                    _renderersForRemoveIDs.Add(id);
+                    int id = _visibleObjects[c];
+                    try
+                    {
+                        // var renderer=_indexToRenderer[id];
+                        if (_timers[c] > _objectsLifetime) //隐藏
+                        {
+                            // if(IsSetVisible)
+                            //     RendererHelper.HideRenderer(renderer);//隐藏物体
+
+                            // _visibleObjects.RemoveAtSwapBack(c);
+                            // _timers.RemoveAtSwapBack(c);
+
+                            // if (!HideRenders.ContainsKey(id))
+                            //     HideRenders.Add(id,id);
+
+                            if(!HideRenders.ContainsKey(id)){
+                                HideRenders.Add(id,id);
+                                ShowRenders.Remove(id);
+                                toHideList.Add(id);
+                            }
+                        }
+                        else
+                        {
+                            //visibleRenderers.Add(renderer);
+
+                            // if (IsSetVisible)
+                            //     RendererHelper.ShowRenderer(renderer);
+
+                            // c++;
+
+                            // if (!ShowRenders.ContainsKey(id))
+                            //     ShowRenders.Add(id,id);
+
+                            if(!ShowRenders.ContainsKey(id)){
+                                ShowRenders.Add(id,id);
+                                HideRenders.Remove(id);
+                                toShowList.Add(id);
+                            }
+                        }
+                    }
+                    catch (MissingReferenceException)
+                    {
+                        // _renderersForRemoveIDs.Add(id);
+                        // c++;
+                    }
+
                     c++;
                 }
 
-                //c++;
+                foreach(var id  in ShowRenders.Keys)
+                {
+                    var renderer=_indexToRenderer[id];
+                    RendererHelper.ShowRenderer(renderer);//隐藏物体
+                }
+                foreach(var id  in HideRenders.Keys)
+                {
+                    var renderer=_indexToRenderer[id];
+                    RendererHelper.HideRenderer(renderer);//隐藏物体
+                }
+                ToHideCount=toHideList.Count;
+                ToShowCount=toShowList.Count;
             }
+            
             SetVisibleTime=(DateTime.Now - start).TotalMilliseconds;
         }
 
@@ -995,25 +1073,25 @@ namespace AdvancedCullingSystem.DynamicCullingCore
         public NativeList<int> visibleObjects;
 
         [ReadOnly]
-        public NativeList<int> hittedObjects;
+        public NativeList<int> hittedObjects;//碰撞检测的结果，只读
 
         [WriteOnly]
-        public NativeList<float> timers;
+        public NativeList<float> timers;//只写
 
         public void Execute()
         {
             for (int i = 0; i < hittedObjects.Length; i++)
             {
-                int id = hittedObjects[i];
+                int id = hittedObjects[i];//renderer InstancerID
                 int index = visibleObjects.IndexOf(id);
 
-                if (index < 0)
+                if (index < 0)//新的,增加
                 {
                     visibleObjects.Add(id);
                     timers.Add(0);
                 }
                 else
-                    timers[index] = 0;
+                    timers[index] = 0; //刷新时间
             }
         }
     }

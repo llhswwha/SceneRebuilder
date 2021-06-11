@@ -26,6 +26,8 @@ ShaderVariantCollection:
   - first: {fileID: 4800000, guid: 527b1bd125b1dcb458061309fe415fd4, type: 3}
     second:
       variants:
+      - keywords: _NORMALMAP_TANGENT_SPACE
+        passType: 0
       - keywords: _DISABLE_SSR_TRANSPARENT _NORMALMAP_TANGENT_SPACE
         passType: 0
       - keywords: _DISABLE_SSR_TRANSPARENT _NORMALMAP _NORMALMAP_TANGENT_SPACE

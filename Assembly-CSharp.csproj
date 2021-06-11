@@ -36,226 +36,294 @@
     <ImplicitlyExpandDesignTimeFacades>false</ImplicitlyExpandDesignTimeFacades>
   </PropertyGroup>
   <ItemGroup>
-     <Compile Include="Assets\SceneRebuilder\Scripts\SceneRebuilder\MeshJobs\AcRTAlignJobEx.cs" />
-     <Compile Include="Assets\ThirdPlugins\Performance Tools\RevitTool\Scripts\ECS\SpawnerPrefabAuthoring.cs" />
-     <Compile Include="Assets\ThirdPlugins\Performance Tools\RevitTool\Scripts\UI\ModelTypeItemUI.cs" />
-     <Compile Include="Assets\ThirdPlugins\Performance Tools\RevitTool\Scripts\SceneRebuilder.cs" />
-     <Compile Include="Assets\ThirdPlugins\Performance Tools\RevitTool\ECS\Test\Scripts\Mover.cs" />
+     <Compile Include="Assets\SceneRebuilder\OBB\MathGeoLib\LCG.cs" />
+     <Compile Include="Assets\SceneRebuilder\MeshDebugger\Scripts\MeshInfo.cs" />
+     <Compile Include="Assets\SceneRebuilder\ECS\ECS_Spawner\SpawnerPrefabSystem.cs" />
+     <Compile Include="Assets\SceneRebuilder\Builder\MeshJobs\AcRTAlignJobEx.cs" />
+     <Compile Include="Assets\SceneRebuilder\ECS\ECS_Spawner\SpawnerPrefabAuthoring.cs" />
+     <Compile Include="Assets\SceneRebuilder\RevitInfo\ElementGroup.cs" />
+     <Compile Include="Assets\UnityCommon\Infos\TagInfo.cs" />
+     <Compile Include="Assets\SceneRebuilder\SceneInfo\NodeTypeInfoLlist.cs" />
+     <Compile Include="Assets\SceneRebuilder\ModelScanner\Scripts\ModelSelection.cs" />
+     <Compile Include="Assets\SceneRebuilder\RevitTool\Scripts\UI\ModelTypeItemUI.cs" />
+     <Compile Include="Assets\ThirdPlugins\Ultimate Game Tools\AutomaticLOD\Scripts\AutomaticLOD.cs" />
+     <Compile Include="Assets\UnityCommon\Consts\Layers.cs" />
+     <Compile Include="Assets\ThirdPlugins\Performance Tools\AdvancedCullingSystem\Core\StaticCullingCore\Data\Base\Vector2Info.cs" />
+     <Compile Include="Assets\SceneRebuilder\Builder\ModelSceneLoader.cs" />
+     <Compile Include="Assets\SceneRebuilder\ModelScanner\Scripts\ModelScanner.cs" />
+     <Compile Include="Assets\SceneRebuilder\ECS\Samples\HelloCube\1.Foreach\RotationSpeedComponent.cs" />
+     <Compile Include="Assets\SceneRebuilder\RevitTool\Scripts\SceneRebuilder.cs" />
+     <Compile Include="Assets\SceneRebuilder\ECS\Test\Scripts\Mover.cs" />
+     <Compile Include="Assets\SceneRebuilder\MeshCombine\MaterialKey.cs" />
+     <Compile Include="Assets\SceneRebuilder\RigidTransformUtils\RigidTransform-master\AcRTPoints.cs" />
+     <Compile Include="Assets\UnityCommon\TimeCounter.cs" />
+     <Compile Include="Assets\ThirdPlugins\Performance Tools\SuperLevelOptimizer\Scripts\SLO_SourceMark.cs" />
      <Compile Include="Assets\ThirdPlugins\Performance Tools\AdvancedRenderSystem\Core\Scripts\Billboards\Billboard.cs" />
+     <Compile Include="Assets\UnityCommon\Utils\NameObject.cs" />
+     <Compile Include="Assets\SceneRebuilder\ModelScanner\Scripts\GetScanePoints.cs" />
      <Compile Include="Assets\ThirdPlugins\Ultimate Game Tools\AutomaticLOD\Data\Environment\Water\Water\Scripts\Displace.cs" />
+     <Compile Include="Assets\UnityCommon\Helpers\SerializeHelper.cs" />
+     <Compile Include="Assets\SceneRebuilder\MeshCombine\CombinedMesh.cs" />
      <Compile Include="Assets\SceneRebuilder\MeshDebugger\MeshDebuggerProxyUI.cs" />
+     <Compile Include="Assets\UnityCommon\Helpers\ColliderHelper.cs" />
+     <Compile Include="Assets\UnityCommon\Materials\TransparentMaterialManager.cs" />
      <Compile Include="Assets\ThirdPlugins\Performance Tools\AdvancedCullingSystem\Test\StaticCullingTestReporter.cs" />
-     <Compile Include="Assets\SceneRebuilder\Scripts\SceneRebuilder\MeshRotateBuffer.cs" />
+     <Compile Include="Assets\SceneRebuilder\RevitTool\Scripts\Tools\QuaternionRotation.cs" />
+     <Compile Include="Assets\SceneRebuilder\RevitTool\Scripts\CameraModeManager.cs" />
+     <Compile Include="Assets\SceneRebuilder\Builder\MeshRotateBuffer.cs" />
      <Compile Include="Assets\ThirdPlugins\Performance Tools\SuperLevelOptimizer\Scripts\SuperLevelOptimizer.cs" />
-     <Compile Include="Assets\SceneRebuilder\Scripts\SceneRebuilder\AlignResultComponent.cs" />
+     <Compile Include="Assets\SceneRebuilder\Builder\AlignResultComponent.cs" />
      <Compile Include="Assets\ThirdPlugins\Performance Tools\AdvancedRenderSystem\Example\Scripts\ApplicationClose.cs" />
-     <Compile Include="Assets\SceneRebuilder\Scripts\RevitInfo\ElementGroupType.cs" />
-     <Compile Include="Assets\SceneRebuilder\Scripts\SceneRebuilder\LODSetting.cs" />
+     <Compile Include="Assets\UnityCommon\Utils\GameObjectMaterial.cs" />
+     <Compile Include="Assets\SceneRebuilder\RevitInfo\ElementGroupType.cs" />
+     <Compile Include="Assets\SceneRebuilder\RigidTransformUtils\RigidTransform-master\RTResult.cs" />
+     <Compile Include="Assets\ThirdPlugins\Ultimate Game Tools\AutomaticLOD\Data\Environment\Water\Water\Scripts\PlanarReflection.cs" />
+     <Compile Include="Assets\SceneRebuilder\Builder\MeshJobs\MeshFilterList.cs" />
+     <Compile Include="Assets\SceneRebuilder\LODS\LODSetting.cs" />
+     <Compile Include="Assets\UnityCommon\Extensions\ObjectExtension.cs" />
      <Compile Include="Assets\ThirdPlugins\Performance Tools\AdvancedCullingSystem\Example\Scripts\CullingSettingsController.cs" />
+     <Compile Include="Assets\SceneRebuilder\RevitTool\Scripts\UI\MeshTestUI.cs" />
+     <Compile Include="Assets\HDRPAsset\Scripts\PlayerMovement.cs" />
+     <Compile Include="Assets\UnityCommon\ThreadBehaviours\AsyncTaskManager.cs" />
+     <Compile Include="Assets\ThirdPlugins\Performance Tools\AdvancedCullingSystem\Example\Scripts\Joystick.cs" />
      <Compile Include="Assets\ThirdPlugins\Performance Tools\AdvancedRenderSystem\Core\Scripts\ARSInfo.cs" />
+     <Compile Include="Assets\SceneRebuilder\MeshCombine\CombineInstanceInfo.cs" />
      <Compile Include="Assets\ThirdPlugins\Performance Tools\AdvancedRenderSystem\Example\Scripts\Joystick.cs" />
+     <Compile Include="Assets\ThirdPlugins\Performance Tools\AdvancedCullingSystem\Example\Scripts\FrustumCullingVisualization.cs" />
      <Compile Include="Assets\ThirdPlugins\Performance Tools\AdvancedRenderSystem\Core\Scripts\TexturesManager.cs" />
-     <Compile Include="Assets\SceneRebuilder\Scripts\SceneRebuilder\MeshComparer.cs" />
-     <Compile Include="Assets\SceneRebuilder\Scripts\SceneRebuilder\TransformRotate.cs" />
-     <Compile Include="Assets\SceneRebuilder\Scripts\RevitInfo\ElementInfoList.cs" />
-     <Compile Include="Assets\SceneRebuilder\Scripts\SceneInfo\ModelBuildingInfo.cs" />
-     <Compile Include="Assets\SceneRebuilder\Scripts\SceneRebuilder\RotateTest.cs" />
-     <Compile Include="Assets\SceneRebuilder\Scripts\SceneRebuilder\MeshJobs\ManagedObjectWorld.cs" />
-     <Compile Include="Assets\SceneRebuilder\Scripts\SceneRebuilder\MeshJobs\AcRTAlignJob.cs" />
-     <Compile Include="Assets\SceneRebuilder\Scripts\GPUInstancerTest\GPUInstanceTest.cs" />
-     <Compile Include="Assets\ThirdPlugins\Performance Tools\Scripts\RuntimeProfilerScripts\MemoryController.cs" />
+     <Compile Include="Assets\SceneRebuilder\OBB\MathGeoLib\Line3.cs" />
+     <Compile Include="Assets\SceneRebuilder\Builder\MeshComparer.cs" />
+     <Compile Include="Assets\SceneRebuilder\RevitTool\Scripts\Tools\CheckRotation.cs" />
+     <Compile Include="Assets\SceneRebuilder\Builder\Transforms\TransformRotate.cs" />
+     <Compile Include="Assets\SceneRebuilder\RevitInfo\ElementInfoList.cs" />
+     <Compile Include="Assets\SceneRebuilder\MeshCombine\MeshCombiner.cs" />
+     <Compile Include="Assets\SceneRebuilder\SceneInfo\ModelBuildingInfo.cs" />
+     <Compile Include="Assets\SceneRebuilder\Builder\RotateTest.cs" />
+     <Compile Include="Assets\SceneRebuilder\RevitTool\Scripts\UI\ECSTestUI.cs" />
+     <Compile Include="Assets\SceneRebuilder\Builder\MeshJobs\ManagedObjectWorld.cs" />
+     <Compile Include="Assets\SceneRebuilder\Builder\MeshJobs\AcRTAlignJob.cs" />
+     <Compile Include="Assets\SceneRebuilder\MeshCombine\MeshCombinerSetting.cs" />
+     <Compile Include="Assets\SceneRebuilder\Others\GPUInstancerTest\GPUInstanceTest.cs" />
+     <Compile Include="Assets\SceneRebuilder\Builder\AcRTAlignJobSetting.cs" />
+     <Compile Include="Assets\UnityCommon\Utils\AssetBundleHelper.cs" />
+     <Compile Include="Assets\SceneRebuilder\Others\Scripts\RuntimeProfilerScripts\MemoryController.cs" />
+     <Compile Include="Assets\SceneRebuilder\ECS\ECS_Spawner\ECSClickEventSystem.cs" />
+     <Compile Include="Assets\ThirdPlugins\Performance Tools\AdvancedCullingSystem\Core\StaticCullingCore\BinaryTreeNode.cs" />
+     <Compile Include="Assets\ThirdPlugins\Ultimate Game Tools\AutomaticLOD\Data\Scripts\LODSampleLODScene.cs" />
+     <Compile Include="Assets\UnityCommon\Consts\Names.cs" />
      <Compile Include="Assets\ThirdPlugins\Ultimate Game Tools\MeshSimplify\Scripts\RuntimeMeshSimplifier.cs" />
-     <Compile Include="Assets\Scripts\SimpleCameraController.cs" />
-     <Compile Include="Assets\SceneRebuilder\Scripts\SceneInfo\ModelCategory.cs" />
-     <Compile Include="Assets\SceneRebuilder\Scripts\SceneRebuilder\MeshHelper.cs" />
-     <Compile Include="Assets\ThirdPlugins\Performance Tools\RevitTool\Scripts\Data\DataA.cs" />
-     <Compile Include="Assets\SceneRebuilder\Scripts\SceneRebuilder\MeshJobs\AcRTAlignJobHelper.cs" />
-     <Compile Include="Assets\ThirdPlugins\Performance Tools\RevitTool\ECS\Pong\Scripts\Data Components\PaddleMovementData.cs" />
-     <Compile Include="Assets\ThirdPlugins\Performance Tools\RevitTool\ECS\Samples\HelloCube\5. SpawnFromEntity\SpawnerSystem_FromEntity.cs" />
+     <Compile Include="Assets\UnityCommon\ThreadBehaviours\ThreadBehaviourBase.cs" />
+     <Compile Include="Assets\SceneRebuilder\MeshCombine\AreaTrees\ModelAreaTree.cs" />
+     <Compile Include="Assets\SceneRebuilder\MeshCombine\AreaTrees\AreaTreeNodeSetting.cs" />
+     <Compile Include="Assets\HDRPAsset\Scripts\SimpleCameraController.cs" />
+     <Compile Include="Assets\SceneRebuilder\SceneInfo\ModelCategory.cs" />
+     <Compile Include="Assets\UnityCommon\ThreadBehaviours\ThreadManager.cs" />
+     <Compile Include="Assets\SceneRebuilder\Builder\MeshHelper.cs" />
+     <Compile Include="Assets\SceneRebuilder\RevitTool\Scripts\Data\DataA.cs" />
+     <Compile Include="Assets\SceneRebuilder\MeshCombine\AreaTrees\AreaTreeNodeShowManager.cs" />
+     <Compile Include="Assets\SceneRebuilder\Builder\MeshJobs\AcRTAlignJobHelper.cs" />
+     <Compile Include="Assets\SceneRebuilder\ECS\Pong\Scripts\Data Components\PaddleMovementData.cs" />
+     <Compile Include="Assets\ThirdPlugins\Performance Tools\AdvancedCullingSystem\Core\StaticCullingCore\Data\Base\Entity.cs" />
+     <Compile Include="Assets\SceneRebuilder\ECS\MyTest\LOD\PrefabPawn.cs" />
+     <Compile Include="Assets\SceneRebuilder\ECS\Samples\HelloCube\5. SpawnFromEntity\SpawnerSystem_FromEntity.cs" />
+     <Compile Include="Assets\UnityCommon\Consts\UnityType.cs" />
+     <Compile Include="Assets\UnityCommon\Helpers\TagLayerHelper.cs" />
+     <Compile Include="Assets\UnityCommon\Models\ModelIndex.cs" />
+     <Compile Include="Assets\ThirdPlugins\Ultimate Game Tools\AutomaticLOD\Data\Environment\Water\Water\Scripts\GerstnerDisplace.cs" />
+     <Compile Include="Assets\SceneRebuilder\LODS\LODInfo.cs" />
      <Compile Include="Assets\SceneRebuilder\OBB\Scripts\OBBCollider.cs" />
      <Compile Include="Assets\SceneRebuilder\OBB\MathGeoLib\Ray.cs" />
-     <Compile Include="Assets\SceneRebuilder\Scripts\SceneRebuilder\RigidTransformUtils\RigidTransform-master\AcRigidTransform.cs" />
+     <Compile Include="Assets\SceneRebuilder\Builder\ProgressBarHelper.cs" />
+     <Compile Include="Assets\SceneRebuilder\RigidTransformUtils\RigidTransform-master\AcRigidTransform.cs" />
      <Compile Include="Assets\ThirdPlugins\Ultimate Game Tools\AutomaticLOD\Data\Scripts\LODSceneSelection.cs" />
-     <Compile Include="Assets\SceneRebuilder\Scripts\SceneInfo\Point3Info.cs" />
+     <Compile Include="Assets\UnityCommon\Singleton.cs" />
+     <Compile Include="Assets\SceneRebuilder\ModelScanner\Scripts\SmallModelController.cs" />
+     <Compile Include="Assets\SceneRebuilder\ECS\ECS_Spawner\ModelTagComponent.cs" />
+     <Compile Include="Assets\SceneRebuilder\RigidTransformUtils\Scripts\QuaternionExtensions.cs" />
+     <Compile Include="Assets\UnityCommon\Utils\StardardShaderSet.cs" />
+     <Compile Include="Assets\UnityCommon\Utils\ScreenHelper.cs" />
+     <Compile Include="Assets\UnityCommon\Models\ModelPool.cs" />
+     <Compile Include="Assets\SceneRebuilder\SceneInfo\Point3Info.cs" />
+     <Compile Include="Assets\UnityCommon\Materials\TransparentMaterialList.cs" />
      <Compile Include="Assets\ThirdPlugins\Performance Tools\AdvancedCullingSystem\Core\DynamicCullingCore\DynamicCulling.cs" />
+     <Compile Include="Assets\SceneRebuilder\ECS\Pong\Scripts\Data Components\BallTag.cs" />
+     <Compile Include="Assets\UnityCommon\Utils\GameObjectList.cs" />
      <Compile Include="Assets\ThirdPlugins\Performance Tools\AdvancedCullingSystem\Core\StaticCullingCore\BinaryTreeUtil.cs" />
-     <Compile Include="Assets\SceneRebuilder\Scripts\SceneRebuilder\PrefabInstanceBuilder.cs" />
+     <Compile Include="Assets\SceneRebuilder\RevitInfo\LocationInfo.cs" />
+     <Compile Include="Assets\UnityCommon\ThreadBehaviours\ThreadBehaviourBool.cs" />
+     <Compile Include="Assets\SceneRebuilder\Builder\MeshJobs\MathematicsDistance.cs" />
+     <Compile Include="Assets\SceneRebuilder\Builder\MeshSize.cs" />
+     <Compile Include="Assets\SceneRebuilder\Builder\PrefabInstanceBuilder.cs" />
      <Compile Include="Assets\SceneRebuilder\OBB\MathGeoLib\OrientedBoundingBoxExtensions.cs" />
-     <Compile Include="Assets\SceneRebuilder\Scripts\SceneRebuilder\RigidTransformUtils\Scripts\TransformExtensions.cs" />
+     <Compile Include="Assets\SceneRebuilder\SceneInfo\TransformInfo.cs" />
+     <Compile Include="Assets\UnityCommon\Log.cs" />
+     <Compile Include="Assets\SceneRebuilder\RigidTransformUtils\Scripts\TransformExtensions.cs" />
+     <Compile Include="Assets\SceneRebuilder\RigidTransformUtils\Scripts\Vector3Extensions.cs" />
      <Compile Include="Assets\ThirdPlugins\Performance Tools\AdvancedRenderSystem\Core\Scripts\Billboards\BillboardOfGroup.cs" />
-     <Compile Include="Assets\SceneRebuilder\Scripts\SceneRebuilder\MeshJobs\MeshAlignJobContainer.cs" />
+     <Compile Include="Assets\ThirdPlugins\Ultimate Game Tools\MeshSimplify\Scripts\MeshUniqueVertices.cs" />
+     <Compile Include="Assets\SceneRebuilder\Builder\MeshJobs\MeshAlignJob.cs" />
+     <Compile Include="Assets\SceneRebuilder\ModelScanner\Scripts\ModelManagerSettings.cs" />
+     <Compile Include="Assets\SceneRebuilder\Builder\MeshJobs\MeshAlignJobContainer.cs" />
      <Compile Include="Assets\ThirdPlugins\Performance Tools\AdvancedRenderSystem\Core\Scripts\Jobs.cs" />
+     <Compile Include="Assets\SceneRebuilder\ModelScanner\Scripts\ModelScannerDebugUI.cs" />
      <Compile Include="Assets\SceneRebuilder\OBB\Scripts\UpdateBoxColliderHelp.cs" />
+     <Compile Include="Assets\SceneRebuilder\MeshCombine\AreaTrees\AreaTreeHelper.cs" />
+     <Compile Include="Assets\SceneRebuilder\Builder\MeshJobs\MeshFilterListDict.cs" />
      <Compile Include="Assets\ThirdPlugins\Performance Tools\AdvancedCullingSystem\Core\LayersHelper.cs" />
      <Compile Include="Assets\ThirdPlugins\Performance Tools\AdvancedCullingSystem\Core\ACSInfo.cs" />
      <Compile Include="Assets\ThirdPlugins\Performance Tools\AdvancedCullingSystem\Test\StaticCullingManager.cs" />
-     <Compile Include="Assets\SceneRebuilder\Scripts\SceneRebuilder\MeshJobs\AcRTAlignDistanceJob.cs" />
-     <Compile Include="Assets\SceneRebuilder\Scripts\SceneRebuilder\RTTEst.cs" />
+     <Compile Include="Assets\UnityCommon\Infos\TransformPosition.cs" />
+     <Compile Include="Assets\ThirdPlugins\Ultimate Game Tools\MeshSimplify\Scripts\MeshSimplify.cs" />
+     <Compile Include="Assets\SceneRebuilder\Builder\MeshJobs\AcRTAlignDistanceJob.cs" />
+     <Compile Include="Assets\SceneRebuilder\Builder\MeshJobs\JobList.cs" />
+     <Compile Include="Assets\SceneRebuilder\ModelScanner\Scripts\SubModelController.cs" />
+     <Compile Include="Assets\SceneRebuilder\Builder\RTTEst.cs" />
      <Compile Include="Assets\ThirdPlugins\Performance Tools\AdvancedCullingSystem\Core\ChunkMark.cs" />
      <Compile Include="Assets\ThirdPlugins\Performance Tools\AdvancedCullingSystem\Test\StaticCullingManagerUI.cs" />
-     <Compile Include="Assets\ThirdPlugins\Performance Tools\RevitTool\ECS\Pong\Scripts\Data Components\SpeedIncreaseOverTimeData.cs" />
-     <Compile Include="Assets\ThirdPlugins\Performance Tools\RevitTool\ECS\Test\Scripts\VelocityScript.cs" />
+     <Compile Include="Assets\SceneRebuilder\ECS\Test\Scripts\VelocityScript.cs" />
+     <Compile Include="Assets\SceneRebuilder\ECS\Pong\Scripts\Data Components\SpeedIncreaseOverTimeData.cs" />
+     <Compile Include="Assets\UnityCommon\Properties\AssemblyInfo.cs" />
      <Compile Include="Assets\ThirdPlugins\Performance Tools\AdvancedCullingSystem\Core\StaticCullingCore\Data\BinaryTreeNodeData.cs" />
      <Compile Include="Assets\ThirdPlugins\Performance Tools\AdvancedCullingSystem\Core\RendererHelper.cs" />
-     <Compile Include="Assets\SceneRebuilder\Scripts\SceneRebuilder\MeshReplace.cs" />
-     <Compile Include="Assets\ThirdPlugins\Performance Tools\RevitTool\ECS\Test\Scripts\MoveSystem.cs" />
-     <Compile Include="Assets\SceneRebuilder\Scripts\NodeHighlightSystem.cs" />
-     <Compile Include="Assets\ThirdPlugins\Performance Tools\Scripts\RuntimeProfilerScripts\FileManager.cs" />
+     <Compile Include="Assets\SceneRebuilder\ECS\Test\Scripts\MoveSystem.cs" />
+     <Compile Include="Assets\SceneRebuilder\Builder\MeshReplace.cs" />
+     <Compile Include="Assets\SceneRebuilder\ModelScanner\Scripts\ModelSubScanner.cs" />
+     <Compile Include="Assets\SceneRebuilder\Others\NodeHighlightSystem.cs" />
+     <Compile Include="Assets\SceneRebuilder\Builder\MeshJobs\ThreePointJob.cs" />
+     <Compile Include="Assets\ThirdPlugins\Performance Tools\AdvancedCullingSystem\Core\BaseCulling.cs" />
+     <Compile Include="Assets\SceneRebuilder\Others\Scripts\RuntimeProfilerScripts\FileManager.cs" />
+     <Compile Include="Assets\SceneRebuilder\OBB\MathGeoLib\Matrix3X4.cs" />
+     <Compile Include="Assets\ThirdPlugins\Performance Tools\AdvancedCullingSystem\Core\StaticCullingCore\BinaryTreeDataComponent.cs" />
      <Compile Include="Assets\ThirdPlugins\Performance Tools\AdvancedCullingSystem\Core\ProgressBarHelper.cs" />
-     <Compile Include="Assets\SceneRebuilder\Scripts\SceneInfo\NodeInfo.cs" />
+     <Compile Include="Assets\SceneRebuilder\OBB\MathGeoLib\Vector3.cs" />
+     <Compile Include="Assets\ThirdPlugins\Performance Tools\AdvancedRenderSystem\Core\Scripts\AdvancedRenderSystem.cs" />
+     <Compile Include="Assets\SceneRebuilder\ECS\Pong\Scripts\GameManager.cs" />
+     <Compile Include="Assets\ThirdPlugins\Performance Tools\AdvancedCullingSystem\Example\Scripts\CameraController.cs" />
+     <Compile Include="Assets\SceneRebuilder\Builder\MeshJobs\MeshJobs.cs" />
+     <Compile Include="Assets\SceneRebuilder\SceneInfo\NodeInfo.cs" />
      <Compile Include="Assets\ThirdPlugins\Performance Tools\AdvancedRenderSystem\Example\Scripts\DesktopCameraController.cs" />
-     <Compile Include="Assets\SceneRebuilder\Scripts\SceneRebuilder\MeshJobs\MeshDistanceJob.cs" />
-     <Compile Include="Assets\ThirdPlugins\Performance Tools\RevitTool\ECS\Pong\Scripts\Systems\BallGoalCheckSystem.cs" />
-     <Compile Include="Assets\ThirdPlugins\Performance Tools\RevitTool\ECS\Test\Scripts\NoECSTesting.cs" />
-     <Compile Include="Assets\ThirdPlugins\Performance Tools\Scripts\RuntimeProfilerScripts\GetAvailableProfilerStats.cs" />
-     <Compile Include="Assets\SceneRebuilder\Scripts\SceneRebuilder\MeshPrefab.cs" />
+     <Compile Include="Assets\ThirdPlugins\Performance Tools\AdvancedRenderSystem\Example\Scripts\MobileCameraController.cs" />
+     <Compile Include="Assets\SceneRebuilder\Builder\MeshJobs\MeshDistanceJob.cs" />
+     <Compile Include="Assets\SceneRebuilder\Builder\PrefabInfo.cs" />
+     <Compile Include="Assets\SceneRebuilder\SceneInfo\ModelBuildingScript.cs" />
+     <Compile Include="Assets\SceneRebuilder\ECS\Pong\Scripts\Systems\BallGoalCheckSystem.cs" />
+     <Compile Include="Assets\SceneRebuilder\ECS\Test\Scripts\NoECSTesting.cs" />
+     <Compile Include="Assets\SceneRebuilder\Others\Scripts\RuntimeProfilerScripts\GetAvailableProfilerStats.cs" />
+     <Compile Include="Assets\SceneRebuilder\RevitInfo\ElementInfo.cs" />
+     <Compile Include="Assets\ThirdPlugins\Ultimate Game Tools\MeshSimplify\Data\Scripts\SimplifyMeshPreview.cs" />
+     <Compile Include="Assets\SceneRebuilder\Builder\MeshPrefab.cs" />
+     <Compile Include="Assets\SceneRebuilder\Builder\Transforms\TransformNode.cs" />
+     <Compile Include="Assets\SceneRebuilder\SceneInfo\ModelLevelScript.cs" />
+     <Compile Include="Assets\SceneRebuilder\LODS\LODGenerate.cs" />
+     <Compile Include="Assets\SceneRebuilder\RevitTool\Scripts\Data\NodeInfoAsset.cs" />
+     <Compile Include="Assets\UnityCommon\Helpers\ShaderHelper.cs" />
      <Compile Include="Assets\ThirdPlugins\Ultimate Game Tools\MeshSimplify\Scripts\Simplifier.cs" />
-     <Compile Include="Assets\SceneRebuilder\Scripts\RevitInfo\Log.cs" />
-     <Compile Include="Assets\ThirdPlugins\Performance Tools\RevitTool\Scripts\ECS\MyStopConvertToEntity.cs" />
-     <Compile Include="Assets\ThirdPlugins\Performance Tools\RevitTool\ECS\Pong\Scripts\Systems\IncreaseVelocityOverTimeSystem.cs" />
-     <Compile Include="Assets\SceneRebuilder\Scripts\SceneRebuilder\MeshNode.cs" />
-     <Compile Include="Assets\SceneRebuilder\Scripts\SceneRebuilder\MeshData.cs" />
+     <Compile Include="Assets\UnityCommon\Extensions\ObjectSize.cs" />
+     <Compile Include="Assets\UnityCommon\Utils\UIFinder.cs" />
+     <Compile Include="Assets\HDRPAsset\TutorialInfo\Scripts\Readme.cs" />
+     <Compile Include="Assets\UnityCommon\Helpers\ComponentHelper.cs" />
+     <Compile Include="Assets\SceneRebuilder\MeshCombine\AreaTrees\AreaTreeNodeStatics.cs" />
+     <Compile Include="Assets\ThirdPlugins\Performance Tools\AdvancedCullingSystem\Core\StaticCullingCore\Data\Base\Point.cs" />
+     <Compile Include="Assets\SceneRebuilder\RevitInfo\Log.cs" />
+     <Compile Include="Assets\SceneRebuilder\ECS\ECS_Spawner\MyStopConvertToEntity.cs" />
+     <Compile Include="Assets\SceneRebuilder\ECS\Samples\HelloCube\5. SpawnFromEntity\Spawner_FromEntity.cs" />
+     <Compile Include="Assets\SceneRebuilder\LODS\LODGroupInfo.cs" />
+     <Compile Include="Assets\SceneRebuilder\ECS\ECS_Spawner\ModelDataComponent.cs" />
+     <Compile Include="Assets\SceneRebuilder\ECS\Pong\Scripts\Systems\IncreaseVelocityOverTimeSystem.cs" />
+     <Compile Include="Assets\ThirdPlugins\Performance Tools\AdvancedCullingSystem\Core\StaticCullingCore\Data\Base\Bound.cs" />
+     <Compile Include="Assets\SceneRebuilder\Builder\MeshNode.cs" />
+     <Compile Include="Assets\SceneRebuilder\MeshCombine\TransformParent.cs" />
+     <Compile Include="Assets\SceneRebuilder\MeshCombine\CombinedMeshInfo.cs" />
+     <Compile Include="Assets\SceneRebuilder\OBB\MathGeoLib\Plane.cs" />
+     <Compile Include="Assets\SceneRebuilder\RevitInfo\XYZInfo.cs" />
+     <Compile Include="Assets\SceneRebuilder\ModelScanner\Scripts\ModelManager.cs" />
+     <Compile Include="Assets\SceneRebuilder\ModelScanner\Scripts\Classes\DistanceInfo.cs" />
+     <Compile Include="Assets\SceneRebuilder\Builder\MeshData.cs" />
+     <Compile Include="Assets\SceneRebuilder\ECS\Pong\Scripts\Systems\PaddleMovementSystem.cs" />
      <Compile Include="Assets\ThirdPlugins\Ultimate Game Tools\AutomaticLOD\Data\Environment\Water\Water\Scripts\WaterTile.cs" />
-     <Compile Include="Assets\SceneRebuilder\Scripts\SceneInfo\NodeTypeInfo.cs" />
-     <Compile Include="Assets\Scripts\LookWithMouse.cs" />
+     <Compile Include="Assets\UnityCommon\ThreadBehaviours\LoomT.cs" />
+     <Compile Include="Assets\SceneRebuilder\SceneInfo\NodeTypeInfo.cs" />
+     <Compile Include="Assets\UnityCommon\ThreadBehaviours\ThreadBehaviour.cs" />
+     <Compile Include="Assets\HDRPAsset\Scripts\LookWithMouse.cs" />
+     <Compile Include="Assets\UnityCommon\ThreadBehaviours\ThreadBehaviourObject.cs" />
      <Compile Include="Assets\ThirdPlugins\Ultimate Game Tools\AutomaticLOD\Data\Environment\Water\Water\Scripts\SpecularLighting.cs" />
      <Compile Include="Assets\ThirdPlugins\Performance Tools\AdvancedCullingSystem\Core\StaticCullingCore\StaticCullingMaster.cs" />
+     <Compile Include="Assets\UnityCommon\Materials\Material2Material.cs" />
+     <Compile Include="Assets\SceneRebuilder\SceneInfo\ModelLevelInfo.cs" />
+     <Compile Include="Assets\UnityCommon\Helpers\CameraHelper.cs" />
+     <Compile Include="Assets\SceneRebuilder\RevitTool\Scripts\SpawnerPrefabScript.cs" />
      <Compile Include="Assets\ThirdPlugins\Performance Tools\AdvancedCullingSystem\Core\StaticCullingCore\Data\BinaryTreeDataList.cs" />
+     <Compile Include="Assets\SceneRebuilder\MeshCombine\CombineMesh.cs" />
+     <Compile Include="Assets\ThirdPlugins\Performance Tools\AdvancedRenderSystem\Example\Scripts\FPSCounter.cs" />
      <Compile Include="Assets\ThirdPlugins\Performance Tools\AdvancedCullingSystem\Core\StaticCullingCore\BinaryTree.cs" />
+     <Compile Include="Assets\SceneRebuilder\Others\MaterialController.cs" />
      <Compile Include="Assets\ThirdPlugins\Ultimate Game Tools\AutomaticLOD\Data\Environment\Water\Water\Scripts\WaterBase.cs" />
+     <Compile Include="Assets\SceneRebuilder\Builder\MeshJobs\RTAlignJob.cs" />
+     <Compile Include="Assets\SceneRebuilder\MeshCombine\AreaTrees\AreaTreeManagerUI.cs" />
      <Compile Include="Assets\ThirdPlugins\Performance Tools\AdvancedCullingSystem\Core\StaticCullingCore\CullingSetting.cs" />
      <Compile Include="Assets\ThirdPlugins\Ultimate Game Tools\AutomaticLOD\Data\Environment\Water\Water\Scripts\MeshContainer.cs" />
      <Compile Include="Assets\ThirdPlugins\Performance Tools\AdvancedRenderSystem\Core\Scripts\Billboards\BaseBillboard.cs" />
-     <Compile Include="Assets\SceneRebuilder\Scripts\SceneInfo\ModelBuildingsScript.cs" />
-     <Compile Include="Assets\ThirdPlugins\Performance Tools\RevitTool\ECS\Pong\Scripts\Data Components\PaddleInputData.cs" />
-     <Compile Include="Assets\SceneRebuilder\Scripts\RevitInfo\ElementGroupListAsset.cs" />
-     <Compile Include="Assets\ThirdPlugins\Performance Tools\RevitTool\ECS\Samples\HelloCube\1.Foreach\RotationEntitySystem.cs" />
-     <Compile Include="Assets\ThirdPlugins\Performance Tools\Scripts\RuntimeProfilerScripts\ProfilerController.cs" />
-     <Compile Include="Assets\SceneRebuilder\Scripts\SceneRebuilder\MeshType.cs" />
+     <Compile Include="Assets\SceneRebuilder\OBB\MathGeoLib\OrientedBoundingBox.cs" />
+     <Compile Include="Assets\SceneRebuilder\SceneInfo\ModelBuildingsScript.cs" />
+     <Compile Include="Assets\SceneRebuilder\ECS\Pong\Scripts\Data Components\PaddleInputData.cs" />
+     <Compile Include="Assets\UnityCommon\Utils\AssetbundleParams.cs" />
+     <Compile Include="Assets\ThirdPlugins\Performance Tools\SuperLevelOptimizer\Scripts\SLO_CombinedMark.cs" />
+     <Compile Include="Assets\UnityCommon\Utils\ObjectDictionary.cs" />
+     <Compile Include="Assets\SceneRebuilder\MeshCombine\MeshFilterInfo.cs" />
+     <Compile Include="Assets\SceneRebuilder\RevitInfo\ElementGroupListAsset.cs" />
+     <Compile Include="Assets\ThirdPlugins\Performance Tools\AdvancedCullingSystem\Core\StaticCullingCore\Data\Base\V3.cs" />
+     <Compile Include="Assets\SceneRebuilder\ECS\ECS_Spawner\SpawnerPrefab.cs" />
+     <Compile Include="Assets\ThirdPlugins\Performance Tools\AdvancedCullingSystem\Core\StaticCullingCore\StaticCulling.cs" />
+     <Compile Include="Assets\SceneRebuilder\ECS\Samples\HelloCube\1.Foreach\RotationEntitySystem.cs" />
+     <Compile Include="Assets\SceneRebuilder\ECS\Test\Scripts\Testing.cs" />
+     <Compile Include="Assets\SceneRebuilder\MeshCombine\ExampleClass.cs" />
+     <Compile Include="Assets\SceneRebuilder\ModelScanner\Scripts\ModelDisInfo.cs" />
+     <Compile Include="Assets\SceneRebuilder\SceneInfo\CategoryInfoList.cs" />
+     <Compile Include="Assets\SceneRebuilder\Others\Scripts\RuntimeProfilerScripts\ProfilerController.cs" />
+     <Compile Include="Assets\UnityCommon\Consts\Tags.cs" />
+     <Compile Include="Assets\UnityCommon\ThreadBehaviours\ThreadInfo.cs" />
+     <Compile Include="Assets\SceneRebuilder\Builder\MeshType.cs" />
+     <Compile Include="Assets\UnityCommon\Infos\GameObjectInfo.cs" />
      <Compile Include="Assets\SceneRebuilder\OBB\Scripts\OBBRect.cs" />
      <Compile Include="Assets\ThirdPlugins\Ultimate Game Tools\AutomaticLOD\Data\Scripts\LODPreview.cs" />
-     <Compile Include="Assets\SceneRebuilder\Scripts\SceneRebuilder\MeshRotate.cs" />
+     <Compile Include="Assets\ThirdPlugins\Performance Tools\AdvancedCullingSystem\Core\CasterUtility.cs" />
+     <Compile Include="Assets\ThirdPlugins\Performance Tools\AdvancedRenderSystem\Core\Scripts\Helpers.cs" />
+     <Compile Include="Assets\SceneRebuilder\RigidTransformUtils\Scripts\RigidTransform.cs" />
+     <Compile Include="Assets\SceneRebuilder\Builder\MeshRotate.cs" />
      <Compile Include="Assets\ThirdPlugins\Performance Tools\AdvancedCullingSystem\Core\StaticCullingCore\Data\BinaryTreeData.cs" />
+     <Compile Include="Assets\SceneRebuilder\SceneInfo\NodeInfoScript.cs" />
      <Compile Include="Assets\ThirdPlugins\Performance Tools\AdvancedCullingSystem\Example\Scripts\SpawnController.cs" />
+     <Compile Include="Assets\UnityCommon\Infos\GameObjectSizeInfo.cs" />
+     <Compile Include="Assets\SceneRebuilder\MeshCombine\MeshSelection.cs" />
      <Compile Include="Assets\ThirdPlugins\Performance Tools\AdvancedRenderSystem\Core\Scripts\Billboards\BillboardData.cs" />
-     <Compile Include="Assets\SceneRebuilder\Scripts\SceneRebuilder\RigidTransformUtils\Scripts\RigidTransformTest.cs" />
+     <Compile Include="Assets\ThirdPlugins\Performance Tools\AdvancedCullingSystem\Core\StaticCullingCore\Caster.cs" />
+     <Compile Include="Assets\UnityCommon\FileHelper.cs" />
+     <Compile Include="Assets\SceneRebuilder\SceneInfo\ModelCategoryScript.cs" />
+     <Compile Include="Assets\SceneRebuilder\ECS\Pong\Scripts\Systems\PlayerInputSystem.cs" />
+     <Compile Include="Assets\SceneRebuilder\Builder\PrefabComparer.cs" />
+     <Compile Include="Assets\SceneRebuilder\MeshCombine\AreaTrees\AreaTreeManager.cs" />
+     <Compile Include="Assets\SceneRebuilder\RevitInfo\ElementGroupList.cs" />
+     <Compile Include="Assets\ThirdPlugins\Performance Tools\AdvancedCullingSystem\Test\ColliderCreater.cs" />
+     <Compile Include="Assets\SceneRebuilder\ModelScanner\Scripts\Classes\ModelLevelSettingInfo.cs" />
+     <Compile Include="Assets\SceneRebuilder\ModelScanner\Scripts\Classes\RendererInfo.cs" />
+     <Compile Include="Assets\ThirdPlugins\Ultimate Game Tools\AutomaticLOD\Data\Environment\Water\Water\Scripts\Water.cs" />
+     <Compile Include="Assets\SceneRebuilder\MeshCombine\AreaTrees\AreaTreeNode.cs" />
+     <Compile Include="Assets\SceneRebuilder\RigidTransformUtils\Scripts\RigidTransformTest.cs" />
+     <Compile Include="Assets\SceneRebuilder\ModelScanner\Scripts\ModelPivotTool.cs" />
      <Compile Include="Assets\ThirdPlugins\Performance Tools\SuperLevelOptimizer\Scripts\SLO_AtlasMark.cs" />
-     <Compile Include="Assets\ThirdPlugins\Performance Tools\RevitTool\ECS\Samples\HelloCube\5. SpawnFromEntity\SpawnerAuthoring_FromEntity.cs" />
-     <Compile Include="Assets\SceneRebuilder\Scripts\SceneInfo\ModelTypeInfo.cs" />
-     <Compile Include="Assets\SceneRebuilder\Scripts\SceneRebuilder\MeshJobs\AcRTAlignJobContainer.cs" />
+     <Compile Include="Assets\SceneRebuilder\ECS\Samples\HelloCube\5. SpawnFromEntity\SpawnerAuthoring_FromEntity.cs" />
+     <Compile Include="Assets\SceneRebuilder\SceneInfo\ModelTypeInfo.cs" />
+     <Compile Include="Assets\SceneRebuilder\RigidTransformUtils\RigidTransform-master\AcRigidTransformHelper.cs" />
+     <Compile Include="Assets\SceneRebuilder\ECS\Test\Scripts\LevelUpSystem.cs" />
+     <Compile Include="Assets\SceneRebuilder\RevitTool\Scripts\Data\DataTest.cs" />
+     <Compile Include="Assets\UnityCommon\Helpers\TransparentHelper.cs" />
+     <Compile Include="Assets\SceneRebuilder\Builder\MeshJobs\AcRTAlignJobContainer.cs" />
      <Compile Include="Assets\ThirdPlugins\Ultimate Game Tools\AutomaticLOD\Scripts\AutomaticLODHelper.cs" />
      <Compile Include="Assets\SceneRebuilder\OBB\MathGeoLib\Line.cs" />
      <Compile Include="Assets\ThirdPlugins\Performance Tools\AdvancedCullingSystem\Example\Scripts\FPSCounter.cs" />
-     <Compile Include="Assets\SceneRebuilder\Scripts\SceneRebuilder\TransformData.cs" />
-     <Compile Include="Assets\SceneRebuilder\OBB\MathGeoLib\LCG.cs" />
-     <Compile Include="Assets\SceneRebuilder\MeshDebugger\Scripts\MeshInfo.cs" />
-     <Compile Include="Assets\ThirdPlugins\Performance Tools\RevitTool\Scripts\ECS\SpawnerPrefabSystem.cs" />
-     <Compile Include="Assets\SceneRebuilder\Scripts\RevitInfo\ElementGroup.cs" />
-     <Compile Include="Assets\SceneRebuilder\Scripts\SceneInfo\NodeTypeInfoLlist.cs" />
-     <Compile Include="Assets\ThirdPlugins\Ultimate Game Tools\AutomaticLOD\Scripts\AutomaticLOD.cs" />
-     <Compile Include="Assets\ThirdPlugins\Performance Tools\AdvancedCullingSystem\Core\StaticCullingCore\Data\Base\Vector2Info.cs" />
-     <Compile Include="Assets\ThirdPlugins\Performance Tools\RevitTool\ECS\Samples\HelloCube\1.Foreach\RotationSpeedComponent.cs" />
-     <Compile Include="Assets\SceneRebuilder\Scripts\SceneRebuilder\RigidTransformUtils\RigidTransform-master\AcRTPoints.cs" />
-     <Compile Include="Assets\ThirdPlugins\Performance Tools\SuperLevelOptimizer\Scripts\SLO_SourceMark.cs" />
-     <Compile Include="Assets\ThirdPlugins\Performance Tools\RevitTool\Scripts\Tools\QuaternionRotation.cs" />
-     <Compile Include="Assets\ThirdPlugins\Performance Tools\RevitTool\Scripts\CameraModeManager.cs" />
-     <Compile Include="Assets\SceneRebuilder\Scripts\SceneRebuilder\RigidTransformUtils\RigidTransform-master\RTResult.cs" />
-     <Compile Include="Assets\ThirdPlugins\Ultimate Game Tools\AutomaticLOD\Data\Environment\Water\Water\Scripts\PlanarReflection.cs" />
-     <Compile Include="Assets\SceneRebuilder\Scripts\SceneRebuilder\MeshJobs\MeshFilterList.cs" />
-     <Compile Include="Assets\ThirdPlugins\Performance Tools\RevitTool\Scripts\UI\MeshTestUI.cs" />
-     <Compile Include="Assets\Scripts\PlayerMovement.cs" />
-     <Compile Include="Assets\ThirdPlugins\Performance Tools\AdvancedCullingSystem\Example\Scripts\Joystick.cs" />
-     <Compile Include="Assets\ThirdPlugins\Performance Tools\AdvancedCullingSystem\Example\Scripts\FrustumCullingVisualization.cs" />
-     <Compile Include="Assets\SceneRebuilder\OBB\MathGeoLib\Line3.cs" />
-     <Compile Include="Assets\ThirdPlugins\Performance Tools\RevitTool\Scripts\Tools\CheckRotation.cs" />
-     <Compile Include="Assets\ThirdPlugins\Performance Tools\RevitTool\Scripts\UI\ECSTestUI.cs" />
-     <Compile Include="Assets\ThirdPlugins\Performance Tools\RevitTool\Scripts\ECS\ECSClickEventSystem.cs" />
-     <Compile Include="Assets\ThirdPlugins\Performance Tools\AdvancedCullingSystem\Core\StaticCullingCore\BinaryTreeNode.cs" />
-     <Compile Include="Assets\ThirdPlugins\Ultimate Game Tools\AutomaticLOD\Data\Scripts\LODSampleLODScene.cs" />
-     <Compile Include="Assets\ThirdPlugins\Performance Tools\AdvancedCullingSystem\Core\StaticCullingCore\Data\Base\Entity.cs" />
-     <Compile Include="Assets\ThirdPlugins\Performance Tools\RevitTool\ECS\MyTest\LOD\PrefabPawn.cs" />
-     <Compile Include="Assets\ThirdPlugins\Ultimate Game Tools\AutomaticLOD\Data\Environment\Water\Water\Scripts\GerstnerDisplace.cs" />
-     <Compile Include="Assets\SceneRebuilder\Scripts\SceneRebuilder\LODInfo.cs" />
-     <Compile Include="Assets\SceneRebuilder\Scripts\SceneRebuilder\ProgressBarHelper.cs" />
-     <Compile Include="Assets\ThirdPlugins\Performance Tools\RevitTool\Scripts\ECS\ModelTagComponent.cs" />
-     <Compile Include="Assets\SceneRebuilder\Scripts\SceneRebuilder\RigidTransformUtils\Scripts\QuaternionExtensions.cs" />
-     <Compile Include="Assets\ThirdPlugins\Performance Tools\RevitTool\ECS\Pong\Scripts\Data Components\BallTag.cs" />
-     <Compile Include="Assets\SceneRebuilder\Scripts\RevitInfo\LocationInfo.cs" />
-     <Compile Include="Assets\SceneRebuilder\Scripts\SceneRebuilder\MeshJobs\MathematicsDistance.cs" />
-     <Compile Include="Assets\SceneRebuilder\Scripts\SceneInfo\TransformInfo.cs" />
-     <Compile Include="Assets\SceneRebuilder\Scripts\SceneRebuilder\RigidTransformUtils\Scripts\Vector3Extensions.cs" />
-     <Compile Include="Assets\ThirdPlugins\Ultimate Game Tools\MeshSimplify\Scripts\MeshUniqueVertices.cs" />
-     <Compile Include="Assets\SceneRebuilder\Scripts\SceneRebuilder\MeshJobs\MeshAlignJob.cs" />
-     <Compile Include="Assets\SceneRebuilder\Scripts\SceneRebuilder\MeshJobs\MeshFilterListDict.cs" />
-     <Compile Include="Assets\ThirdPlugins\Ultimate Game Tools\MeshSimplify\Scripts\MeshSimplify.cs" />
-     <Compile Include="Assets\SceneRebuilder\Scripts\SceneRebuilder\MeshJobs\JobList.cs" />
-     <Compile Include="Assets\SceneRebuilder\Scripts\SceneRebuilder\MeshJobs\ThreePointJob.cs" />
-     <Compile Include="Assets\ThirdPlugins\Performance Tools\AdvancedCullingSystem\Core\BaseCulling.cs" />
-     <Compile Include="Assets\SceneRebuilder\OBB\MathGeoLib\Matrix3X4.cs" />
-     <Compile Include="Assets\ThirdPlugins\Performance Tools\AdvancedCullingSystem\Core\StaticCullingCore\BinaryTreeDataComponent.cs" />
-     <Compile Include="Assets\SceneRebuilder\OBB\MathGeoLib\Vector3.cs" />
-     <Compile Include="Assets\ThirdPlugins\Performance Tools\AdvancedRenderSystem\Core\Scripts\AdvancedRenderSystem.cs" />
-     <Compile Include="Assets\ThirdPlugins\Performance Tools\RevitTool\ECS\Pong\Scripts\GameManager.cs" />
-     <Compile Include="Assets\ThirdPlugins\Performance Tools\AdvancedCullingSystem\Example\Scripts\CameraController.cs" />
-     <Compile Include="Assets\SceneRebuilder\Scripts\SceneRebuilder\MeshJobs.cs" />
-     <Compile Include="Assets\ThirdPlugins\Performance Tools\AdvancedRenderSystem\Example\Scripts\MobileCameraController.cs" />
-     <Compile Include="Assets\SceneRebuilder\Scripts\SceneRebuilder\PrefabInfo.cs" />
-     <Compile Include="Assets\SceneRebuilder\Scripts\SceneInfo\ModelBuildingScript.cs" />
-     <Compile Include="Assets\SceneRebuilder\Scripts\RevitInfo\ElementInfo.cs" />
-     <Compile Include="Assets\ThirdPlugins\Ultimate Game Tools\MeshSimplify\Data\Scripts\SimplifyMeshPreview.cs" />
-     <Compile Include="Assets\SceneRebuilder\Scripts\SceneRebuilder\TransformNode.cs" />
-     <Compile Include="Assets\SceneRebuilder\Scripts\SceneInfo\ModelLevelScript.cs" />
-     <Compile Include="Assets\ThirdPlugins\Performance Tools\RevitTool\Scripts\Data\NodeInfoAsset.cs" />
-     <Compile Include="Assets\TutorialInfo\Scripts\Readme.cs" />
-     <Compile Include="Assets\ThirdPlugins\Performance Tools\AdvancedCullingSystem\Core\StaticCullingCore\Data\Base\Point.cs" />
-     <Compile Include="Assets\ThirdPlugins\Performance Tools\RevitTool\ECS\Samples\HelloCube\5. SpawnFromEntity\Spawner_FromEntity.cs" />
-     <Compile Include="Assets\SceneRebuilder\Scripts\SceneRebuilder\LODGroupInfo.cs" />
-     <Compile Include="Assets\ThirdPlugins\Performance Tools\RevitTool\Scripts\ECS\ModelDataComponent.cs" />
-     <Compile Include="Assets\ThirdPlugins\Performance Tools\RevitTool\Scripts\Others\ColliderHelper.cs" />
-     <Compile Include="Assets\ThirdPlugins\Performance Tools\AdvancedCullingSystem\Core\StaticCullingCore\Data\Base\Bound.cs" />
-     <Compile Include="Assets\SceneRebuilder\OBB\MathGeoLib\Plane.cs" />
-     <Compile Include="Assets\SceneRebuilder\Scripts\RevitInfo\XYZInfo.cs" />
-     <Compile Include="Assets\ThirdPlugins\Performance Tools\RevitTool\ECS\Pong\Scripts\Systems\PaddleMovementSystem.cs" />
-     <Compile Include="Assets\SceneRebuilder\Scripts\SceneInfo\ModelLevelInfo.cs" />
-     <Compile Include="Assets\ThirdPlugins\Performance Tools\RevitTool\Scripts\SpawnerPrefabScript.cs" />
-     <Compile Include="Assets\ThirdPlugins\Performance Tools\AdvancedRenderSystem\Example\Scripts\FPSCounter.cs" />
-     <Compile Include="Assets\SceneRebuilder\Scripts\MaterialController.cs" />
-     <Compile Include="Assets\SceneRebuilder\Scripts\SceneRebuilder\MeshJobs\RTAlignJob.cs" />
-     <Compile Include="Assets\SceneRebuilder\OBB\MathGeoLib\OrientedBoundingBox.cs" />
-     <Compile Include="Assets\ThirdPlugins\Performance Tools\SuperLevelOptimizer\Scripts\SLO_CombinedMark.cs" />
-     <Compile Include="Assets\ThirdPlugins\Performance Tools\AdvancedCullingSystem\Core\StaticCullingCore\Data\Base\V3.cs" />
-     <Compile Include="Assets\ThirdPlugins\Performance Tools\RevitTool\Scripts\ECS\SpawnerPrefab.cs" />
-     <Compile Include="Assets\ThirdPlugins\Performance Tools\AdvancedCullingSystem\Core\StaticCullingCore\StaticCulling.cs" />
-     <Compile Include="Assets\ThirdPlugins\Performance Tools\RevitTool\ECS\Test\Scripts\Testing.cs" />
-     <Compile Include="Assets\SceneRebuilder\Scripts\SceneInfo\CategoryInfoList.cs" />
-     <Compile Include="Assets\ThirdPlugins\Performance Tools\AdvancedCullingSystem\Core\CasterUtility.cs" />
-     <Compile Include="Assets\ThirdPlugins\Performance Tools\AdvancedRenderSystem\Core\Scripts\Helpers.cs" />
-     <Compile Include="Assets\SceneRebuilder\Scripts\SceneRebuilder\RigidTransformUtils\Scripts\RigidTransform.cs" />
-     <Compile Include="Assets\SceneRebuilder\Scripts\SceneInfo\NodeInfoScript.cs" />
-     <Compile Include="Assets\ThirdPlugins\Performance Tools\AdvancedCullingSystem\Core\StaticCullingCore\Caster.cs" />
-     <Compile Include="Assets\SceneRebuilder\Scripts\SceneInfo\ModelCategoryScript.cs" />
-     <Compile Include="Assets\ThirdPlugins\Performance Tools\RevitTool\ECS\Pong\Scripts\Systems\PlayerInputSystem.cs" />
-     <Compile Include="Assets\SceneRebuilder\Scripts\SceneRebuilder\PrefabComparer.cs" />
-     <Compile Include="Assets\SceneRebuilder\Scripts\RevitInfo\ElementGroupList.cs" />
-     <Compile Include="Assets\ThirdPlugins\Performance Tools\AdvancedCullingSystem\Test\ColliderCreater.cs" />
-     <Compile Include="Assets\ThirdPlugins\Ultimate Game Tools\AutomaticLOD\Data\Environment\Water\Water\Scripts\Water.cs" />
-     <Compile Include="Assets\SceneRebuilder\Scripts\SceneRebuilder\RigidTransformUtils\RigidTransform-master\AcRigidTransformHelper.cs" />
-     <Compile Include="Assets\ThirdPlugins\Performance Tools\RevitTool\ECS\Test\Scripts\LevelUpSystem.cs" />
-     <Compile Include="Assets\ThirdPlugins\Performance Tools\RevitTool\Scripts\Data\DataTest.cs" />
-     <Compile Include="Assets\SceneRebuilder\Scripts\LODTest\LODGenerate.cs" />
-     <Compile Include="Assets\ThirdPlugins\MeshCombine\CombinedMeshInfo.cs" />
-     <Compile Include="Assets\ThirdPlugins\MeshCombine\MeshSelection.cs" />
-     <Compile Include="Assets\ThirdPlugins\MeshCombine\MeshCombiner.cs" />
-     <Compile Include="Assets\ThirdPlugins\MeshCombine\CombineInstanceInfo.cs" />
-     <Compile Include="Assets\ThirdPlugins\Performance Tools\Scripts\ComponentHelper.cs" />
-     <Compile Include="Assets\ThirdPlugins\MeshCombine\CombineMesh.cs" />
-     <Compile Include="Assets\ThirdPlugins\MeshCombine\CombinedMesh.cs" />
-     <Compile Include="Assets\ThirdPlugins\MeshCombine\MeshCombinerSetting.cs" />
-     <Compile Include="Assets\ThirdPlugins\MeshCombine\MeshFilterInfo.cs" />
-     <Compile Include="Assets\ThirdPlugins\MeshCombine\ExampleClass.cs" />
-     <Compile Include="Assets\ThirdPlugins\MeshCombine\AreaTree.cs" />
-     <Compile Include="Assets\ThirdPlugins\MeshCombine\AreaTreeNode.cs" />
-     <None Include="Assets\ThirdPlugins\CodeStage\AdvancedFPSCounter\Changelog.txt" />
+     <Compile Include="Assets\UnityCommon\Utils\MonoSingletonBase.cs" />
+     <Compile Include="Assets\SceneRebuilder\Builder\Transforms\TransformData.cs" />
+     <None Include="Assets\ThirdPlugins\AdvancedFPSCounter\Changelog.txt" />
      <None Include="Assets\SceneRebuilder\MeshDebugger\Shaders\DebugColor.shader" />
      <None Include="Assets\SceneRebuilder\MeshDebugger\Shaders\InternalQuadColorful.shader" />
      <None Include="Assets\ThirdPlugins\Ultimate Game Tools\MeshSimplify\Data\Shaders\StandardSpecularTwoSided.shader" />
@@ -263,7 +331,7 @@
      <None Include="Assets\ThirdPlugins\Ultimate Game Tools\AutomaticLOD\!Readme.txt" />
      <None Include="Assets\SceneRebuilder\MeshDebugger\Readme.txt" />
      <None Include="Assets\ThirdPlugins\Ultimate Game Tools\AutomaticLOD\Data\Environment\Water\Water4\Shaders\WaterInclude.cginc" />
-     <None Include="Assets\ThirdPlugins\CodeStage\AdvancedFPSCounter\API.txt" />
+     <None Include="Assets\ThirdPlugins\AdvancedFPSCounter\API.txt" />
      <None Include="Assets\ThirdPlugins\Performance Tools\AdvancedRenderSystem\Documentation\Readme.txt" />
      <None Include="Assets\ThirdPlugins\Performance Tools\AdvancedRenderSystem\Core\Shader\ARSShader.shader" />
      <None Include="Assets\ThirdPlugins\Ultimate Game Tools\MeshSimplify\!Readme.txt" />
@@ -502,31 +570,31 @@
         <HintPath>D:/GitHub/SceneRebuilder/Library/PackageCache/com.unity.collections@0.15.0-preview.21/Unity.Collections.LowLevel.ILSupport/Unity.Collections.LowLevel.ILSupport.dll</HintPath>
     </Reference>
     <Reference Include="Accord">
-        <HintPath>D:/GitHub/SceneRebuilder/Assets/SceneRebuilder/Scripts/SceneRebuilder/RigidTransformUtils/RigidTransform-master/Plugins/Accord.dll</HintPath>
+        <HintPath>D:/GitHub/SceneRebuilder/Assets/SceneRebuilder/RigidTransformUtils/RigidTransform-master/Plugins/Accord.dll</HintPath>
     </Reference>
     <Reference Include="Unity.Burst.Unsafe">
         <HintPath>D:/GitHub/SceneRebuilder/Library/PackageCache/com.unity.burst@1.4.7/Unity.Burst.Unsafe.dll</HintPath>
     </Reference>
     <Reference Include="Accord.Statistics">
-        <HintPath>D:/GitHub/SceneRebuilder/Assets/SceneRebuilder/Scripts/SceneRebuilder/RigidTransformUtils/RigidTransform-master/Plugins/Accord.Statistics.dll</HintPath>
+        <HintPath>D:/GitHub/SceneRebuilder/Assets/SceneRebuilder/RigidTransformUtils/RigidTransform-master/Plugins/Accord.Statistics.dll</HintPath>
     </Reference>
     <Reference Include="Accord.MachineLearning">
-        <HintPath>D:/GitHub/SceneRebuilder/Assets/SceneRebuilder/Scripts/SceneRebuilder/RigidTransformUtils/RigidTransform-master/Plugins/Accord.MachineLearning.dll</HintPath>
+        <HintPath>D:/GitHub/SceneRebuilder/Assets/SceneRebuilder/RigidTransformUtils/RigidTransform-master/Plugins/Accord.MachineLearning.dll</HintPath>
     </Reference>
     <Reference Include="Accord.Math">
-        <HintPath>D:/GitHub/SceneRebuilder/Assets/SceneRebuilder/Scripts/SceneRebuilder/RigidTransformUtils/RigidTransform-master/Plugins/Accord.Math.dll</HintPath>
+        <HintPath>D:/GitHub/SceneRebuilder/Assets/SceneRebuilder/RigidTransformUtils/RigidTransform-master/Plugins/Accord.Math.dll</HintPath>
     </Reference>
     <Reference Include="LitJSON">
-        <HintPath>D:/GitHub/SceneRebuilder/Assets/ThirdPlugins/Performance Tools/RevitTool/Plugins/LitJSON.dll</HintPath>
+        <HintPath>D:/GitHub/SceneRebuilder/Assets/SceneRebuilder/RevitTool/Plugins/LitJSON.dll</HintPath>
     </Reference>
     <Reference Include="Accord.Math.Core">
-        <HintPath>D:/GitHub/SceneRebuilder/Assets/SceneRebuilder/Scripts/SceneRebuilder/RigidTransformUtils/RigidTransform-master/Plugins/Accord.Math.Core.dll</HintPath>
+        <HintPath>D:/GitHub/SceneRebuilder/Assets/SceneRebuilder/RigidTransformUtils/RigidTransform-master/Plugins/Accord.Math.Core.dll</HintPath>
     </Reference>
     <Reference Include="Newtonsoft.Json">
         <HintPath>D:/GitHub/SceneRebuilder/Library/PackageCache/com.unity.nuget.newtonsoft-json@2.0.0-preview/Runtime/Newtonsoft.Json.dll</HintPath>
     </Reference>
     <Reference Include="Accord.Imaging">
-        <HintPath>D:/GitHub/SceneRebuilder/Assets/SceneRebuilder/Scripts/SceneRebuilder/RigidTransformUtils/RigidTransform-master/Plugins/Accord.Imaging.dll</HintPath>
+        <HintPath>D:/GitHub/SceneRebuilder/Assets/SceneRebuilder/RigidTransformUtils/RigidTransform-master/Plugins/Accord.Imaging.dll</HintPath>
     </Reference>
     <Reference Include="mscorlib">
         <HintPath>C:/Program Files/Unity/Editor/Data/MonoBleedingEdge/lib/mono/4.7.1-api/mscorlib.dll</HintPath>
@@ -873,92 +941,14 @@
     <Reference Include="System.Xml.XPath.XDocument">
         <HintPath>C:/Program Files/Unity/Editor/Data/MonoBleedingEdge/lib/mono/4.7.1-api/Facades/System.Xml.XPath.XDocument.dll</HintPath>
     </Reference>
-    <Reference Include="Unity.Transforms.Hybrid">
-        <HintPath>D:/GitHub/SceneRebuilder/Library/ScriptAssemblies/Unity.Transforms.Hybrid.dll</HintPath>
-    </Reference>
-    <Reference Include="Unity.Properties">
-        <HintPath>D:/GitHub/SceneRebuilder/Library/ScriptAssemblies/Unity.Properties.dll</HintPath>
-    </Reference>
-    <Reference Include="Unity.Serialization">
-        <HintPath>D:/GitHub/SceneRebuilder/Library/ScriptAssemblies/Unity.Serialization.dll</HintPath>
+    <Reference Include="Unity.VisualEffectGraph.Editor">
+        <HintPath>D:/GitHub/SceneRebuilder/Library/ScriptAssemblies/Unity.VisualEffectGraph.Editor.dll</HintPath>
     </Reference>
     <Reference Include="Unity.VSCode.Editor">
         <HintPath>D:/GitHub/SceneRebuilder/Library/ScriptAssemblies/Unity.VSCode.Editor.dll</HintPath>
     </Reference>
-    <Reference Include="UnityEditor.CacheServer">
-        <HintPath>D:/GitHub/SceneRebuilder/Library/ScriptAssemblies/UnityEditor.CacheServer.dll</HintPath>
-    </Reference>
     <Reference Include="Unity.TextMeshPro.Editor">
         <HintPath>D:/GitHub/SceneRebuilder/Library/ScriptAssemblies/Unity.TextMeshPro.Editor.dll</HintPath>
-    </Reference>
-    <Reference Include="Unity.Searcher.Editor">
-        <HintPath>D:/GitHub/SceneRebuilder/Library/ScriptAssemblies/Unity.Searcher.Editor.dll</HintPath>
-    </Reference>
-    <Reference Include="Unity.Rendering.Hybrid.Editor">
-        <HintPath>D:/GitHub/SceneRebuilder/Library/ScriptAssemblies/Unity.Rendering.Hybrid.Editor.dll</HintPath>
-    </Reference>
-    <Reference Include="UnityEditor.UI">
-        <HintPath>D:/GitHub/SceneRebuilder/Library/ScriptAssemblies/UnityEditor.UI.dll</HintPath>
-    </Reference>
-    <Reference Include="Unity.Rider.Editor">
-        <HintPath>D:/GitHub/SceneRebuilder/Library/ScriptAssemblies/Unity.Rider.Editor.dll</HintPath>
-    </Reference>
-    <Reference Include="Unity.RenderPipelines.Core.ShaderLibrary">
-        <HintPath>D:/GitHub/SceneRebuilder/Library/ScriptAssemblies/Unity.RenderPipelines.Core.ShaderLibrary.dll</HintPath>
-    </Reference>
-    <Reference Include="UnityEngine.UI">
-        <HintPath>D:/GitHub/SceneRebuilder/Library/ScriptAssemblies/UnityEngine.UI.dll</HintPath>
-    </Reference>
-    <Reference Include="Unity.Entities.Hybrid.EndToEnd.Tests">
-        <HintPath>D:/GitHub/SceneRebuilder/Library/ScriptAssemblies/Unity.Entities.Hybrid.EndToEnd.Tests.dll</HintPath>
-    </Reference>
-    <Reference Include="Unity.Properties.UI.Editor">
-        <HintPath>D:/GitHub/SceneRebuilder/Library/ScriptAssemblies/Unity.Properties.UI.Editor.dll</HintPath>
-    </Reference>
-    <Reference Include="Cinemachine">
-        <HintPath>D:/GitHub/SceneRebuilder/Library/ScriptAssemblies/Cinemachine.dll</HintPath>
-    </Reference>
-    <Reference Include="com.unity.cinemachine.editor">
-        <HintPath>D:/GitHub/SceneRebuilder/Library/ScriptAssemblies/com.unity.cinemachine.editor.dll</HintPath>
-    </Reference>
-    <Reference Include="Unity.ShaderGraph.Editor">
-        <HintPath>D:/GitHub/SceneRebuilder/Library/ScriptAssemblies/Unity.ShaderGraph.Editor.dll</HintPath>
-    </Reference>
-    <Reference Include="Unity.Scenes">
-        <HintPath>D:/GitHub/SceneRebuilder/Library/ScriptAssemblies/Unity.Scenes.dll</HintPath>
-    </Reference>
-    <Reference Include="Unity.Mathematics.Extensions">
-        <HintPath>D:/GitHub/SceneRebuilder/Library/ScriptAssemblies/Unity.Mathematics.Extensions.dll</HintPath>
-    </Reference>
-    <Reference Include="Unity.Mathematics.Editor">
-        <HintPath>D:/GitHub/SceneRebuilder/Library/ScriptAssemblies/Unity.Mathematics.Editor.dll</HintPath>
-    </Reference>
-    <Reference Include="Unity.Transforms">
-        <HintPath>D:/GitHub/SceneRebuilder/Library/ScriptAssemblies/Unity.Transforms.dll</HintPath>
-    </Reference>
-    <Reference Include="Unity.RenderPipelines.HighDefinition.Config.Runtime">
-        <HintPath>D:/GitHub/SceneRebuilder/Library/ScriptAssemblies/Unity.RenderPipelines.HighDefinition.Config.Runtime.dll</HintPath>
-    </Reference>
-    <Reference Include="Unity.Collections">
-        <HintPath>D:/GitHub/SceneRebuilder/Library/ScriptAssemblies/Unity.Collections.dll</HintPath>
-    </Reference>
-    <Reference Include="Unity.Physics">
-        <HintPath>D:/GitHub/SceneRebuilder/Library/ScriptAssemblies/Unity.Physics.dll</HintPath>
-    </Reference>
-    <Reference Include="Unity.Scenes.Editor">
-        <HintPath>D:/GitHub/SceneRebuilder/Library/ScriptAssemblies/Unity.Scenes.Editor.dll</HintPath>
-    </Reference>
-    <Reference Include="Unity.VisualEffectGraph.Editor">
-        <HintPath>D:/GitHub/SceneRebuilder/Library/ScriptAssemblies/Unity.VisualEffectGraph.Editor.dll</HintPath>
-    </Reference>
-    <Reference Include="Unity.Mathematics.Extensions.Hybrid">
-        <HintPath>D:/GitHub/SceneRebuilder/Library/ScriptAssemblies/Unity.Mathematics.Extensions.Hybrid.dll</HintPath>
-    </Reference>
-    <Reference Include="Unity.Entities.Editor">
-        <HintPath>D:/GitHub/SceneRebuilder/Library/ScriptAssemblies/Unity.Entities.Editor.dll</HintPath>
-    </Reference>
-    <Reference Include="Unity.Entities.BuildUtils">
-        <HintPath>D:/GitHub/SceneRebuilder/Library/ScriptAssemblies/Unity.Entities.BuildUtils.dll</HintPath>
     </Reference>
     <Reference Include="Unity.VisualStudio.Editor">
         <HintPath>D:/GitHub/SceneRebuilder/Library/ScriptAssemblies/Unity.VisualStudio.Editor.dll</HintPath>
@@ -972,14 +962,14 @@
     <Reference Include="Unity.TextMeshPro">
         <HintPath>D:/GitHub/SceneRebuilder/Library/ScriptAssemblies/Unity.TextMeshPro.dll</HintPath>
     </Reference>
-    <Reference Include="Unity.Physics.Hybrid">
-        <HintPath>D:/GitHub/SceneRebuilder/Library/ScriptAssemblies/Unity.Physics.Hybrid.dll</HintPath>
-    </Reference>
     <Reference Include="Unity.Burst.Editor">
         <HintPath>D:/GitHub/SceneRebuilder/Library/ScriptAssemblies/Unity.Burst.Editor.dll</HintPath>
     </Reference>
     <Reference Include="Unity.RenderPipelines.HighDefinition.Runtime">
         <HintPath>D:/GitHub/SceneRebuilder/Library/ScriptAssemblies/Unity.RenderPipelines.HighDefinition.Runtime.dll</HintPath>
+    </Reference>
+    <Reference Include="Unity.Searcher.Editor">
+        <HintPath>D:/GitHub/SceneRebuilder/Library/ScriptAssemblies/Unity.Searcher.Editor.dll</HintPath>
     </Reference>
     <Reference Include="Unity.RenderPipelines.Core.Runtime">
         <HintPath>D:/GitHub/SceneRebuilder/Library/ScriptAssemblies/Unity.RenderPipelines.Core.Runtime.dll</HintPath>
@@ -987,50 +977,53 @@
     <Reference Include="Unity.RenderPipelines.HighDefinition.Editor">
         <HintPath>D:/GitHub/SceneRebuilder/Library/ScriptAssemblies/Unity.RenderPipelines.HighDefinition.Editor.dll</HintPath>
     </Reference>
-    <Reference Include="Unity.Entities">
-        <HintPath>D:/GitHub/SceneRebuilder/Library/ScriptAssemblies/Unity.Entities.dll</HintPath>
+    <Reference Include="UnityEditor.UI">
+        <HintPath>D:/GitHub/SceneRebuilder/Library/ScriptAssemblies/UnityEditor.UI.dll</HintPath>
     </Reference>
-    <Reference Include="Unity.Entities.Hybrid">
-        <HintPath>D:/GitHub/SceneRebuilder/Library/ScriptAssemblies/Unity.Entities.Hybrid.dll</HintPath>
+    <Reference Include="Unity.Rider.Editor">
+        <HintPath>D:/GitHub/SceneRebuilder/Library/ScriptAssemblies/Unity.Rider.Editor.dll</HintPath>
+    </Reference>
+    <Reference Include="Unity.RenderPipelines.Core.ShaderLibrary">
+        <HintPath>D:/GitHub/SceneRebuilder/Library/ScriptAssemblies/Unity.RenderPipelines.Core.ShaderLibrary.dll</HintPath>
     </Reference>
     <Reference Include="Unity.Jobs.Editor">
         <HintPath>D:/GitHub/SceneRebuilder/Library/ScriptAssemblies/Unity.Jobs.Editor.dll</HintPath>
     </Reference>
-    <Reference Include="Unity.Physics.Editor">
-        <HintPath>D:/GitHub/SceneRebuilder/Library/ScriptAssemblies/Unity.Physics.Editor.dll</HintPath>
+    <Reference Include="UnityEngine.UI">
+        <HintPath>D:/GitHub/SceneRebuilder/Library/ScriptAssemblies/UnityEngine.UI.dll</HintPath>
     </Reference>
     <Reference Include="Unity.Mathematics">
         <HintPath>D:/GitHub/SceneRebuilder/Library/ScriptAssemblies/Unity.Mathematics.dll</HintPath>
     </Reference>
+    <Reference Include="Unity.ShaderGraph.Editor">
+        <HintPath>D:/GitHub/SceneRebuilder/Library/ScriptAssemblies/Unity.ShaderGraph.Editor.dll</HintPath>
+    </Reference>
+    <Reference Include="Cinemachine">
+        <HintPath>D:/GitHub/SceneRebuilder/Library/ScriptAssemblies/Cinemachine.dll</HintPath>
+    </Reference>
     <Reference Include="Unity.Burst">
         <HintPath>D:/GitHub/SceneRebuilder/Library/ScriptAssemblies/Unity.Burst.dll</HintPath>
+    </Reference>
+    <Reference Include="com.unity.cinemachine.editor">
+        <HintPath>D:/GitHub/SceneRebuilder/Library/ScriptAssemblies/com.unity.cinemachine.editor.dll</HintPath>
     </Reference>
     <Reference Include="Unity.Jobs">
         <HintPath>D:/GitHub/SceneRebuilder/Library/ScriptAssemblies/Unity.Jobs.dll</HintPath>
     </Reference>
-    <Reference Include="Unity.Deformations">
-        <HintPath>D:/GitHub/SceneRebuilder/Library/ScriptAssemblies/Unity.Deformations.dll</HintPath>
-    </Reference>
     <Reference Include="Unity.Timeline.Editor">
         <HintPath>D:/GitHub/SceneRebuilder/Library/ScriptAssemblies/Unity.Timeline.Editor.dll</HintPath>
-    </Reference>
-    <Reference Include="Unity.Properties.UI">
-        <HintPath>D:/GitHub/SceneRebuilder/Library/ScriptAssemblies/Unity.Properties.UI.dll</HintPath>
     </Reference>
     <Reference Include="Unity.RenderPipelines.ShaderGraph.ShaderGraphLibrary">
         <HintPath>D:/GitHub/SceneRebuilder/Library/ScriptAssemblies/Unity.RenderPipelines.ShaderGraph.ShaderGraphLibrary.dll</HintPath>
     </Reference>
-    <Reference Include="Unity.ScriptableBuildPipeline">
-        <HintPath>D:/GitHub/SceneRebuilder/Library/ScriptAssemblies/Unity.ScriptableBuildPipeline.dll</HintPath>
+    <Reference Include="Unity.Mathematics.Editor">
+        <HintPath>D:/GitHub/SceneRebuilder/Library/ScriptAssemblies/Unity.Mathematics.Editor.dll</HintPath>
     </Reference>
-    <Reference Include="Unity.Serialization.Editor">
-        <HintPath>D:/GitHub/SceneRebuilder/Library/ScriptAssemblies/Unity.Serialization.Editor.dll</HintPath>
+    <Reference Include="Unity.RenderPipelines.HighDefinition.Config.Runtime">
+        <HintPath>D:/GitHub/SceneRebuilder/Library/ScriptAssemblies/Unity.RenderPipelines.HighDefinition.Config.Runtime.dll</HintPath>
     </Reference>
-    <Reference Include="Unity.ScriptableBuildPipeline.Editor">
-        <HintPath>D:/GitHub/SceneRebuilder/Library/ScriptAssemblies/Unity.ScriptableBuildPipeline.Editor.dll</HintPath>
-    </Reference>
-    <Reference Include="Unity.Rendering.Hybrid">
-        <HintPath>D:/GitHub/SceneRebuilder/Library/ScriptAssemblies/Unity.Rendering.Hybrid.dll</HintPath>
+    <Reference Include="Unity.Collections">
+        <HintPath>D:/GitHub/SceneRebuilder/Library/ScriptAssemblies/Unity.Collections.dll</HintPath>
     </Reference>
     <Reference Include="Unity.RenderPipelines.Core.Editor">
         <HintPath>D:/GitHub/SceneRebuilder/Library/ScriptAssemblies/Unity.RenderPipelines.Core.Editor.dll</HintPath>
@@ -1045,6 +1038,10 @@
       <Project>{29a16ac9-3840-5824-1893-8ad1af25eb52}</Project>
       <Name>AFPSCounter.Examples</Name>
     </ProjectReference>
+    <ProjectReference Include="AFPSCounter.Runtime.csproj">
+      <Project>{b610b7ef-6548-c448-d56f-e763c743344b}</Project>
+      <Name>AFPSCounter.Runtime</Name>
+    </ProjectReference>
     <ProjectReference Include="GPUInstancer.csproj">
       <Project>{a877ee75-7f51-7268-847f-72829ac27079}</Project>
       <Name>GPUInstancer</Name>
@@ -1052,10 +1049,6 @@
     <ProjectReference Include="GPUInstancer.Editor.csproj">
       <Project>{990cf414-abca-c431-b2a7-179c8696bc43}</Project>
       <Name>GPUInstancer.Editor</Name>
-    </ProjectReference>
-    <ProjectReference Include="AFPSCounter.Runtime.csproj">
-      <Project>{b610b7ef-6548-c448-d56f-e763c743344b}</Project>
-      <Name>AFPSCounter.Runtime</Name>
     </ProjectReference>
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />

@@ -27,6 +27,7 @@ public static class RendererHelper
            Debug.LogError("ShowRenderer render == null");
            return;
         }
+        if(render.enabled==true)return;
         render.enabled = true;
 
         // if (IsTest)
@@ -42,7 +43,7 @@ public static class RendererHelper
         //    render.enabled = true;
         // }
 
-        //render.shadowCastingMode = UnityEngine.Rendering.ShadowCastingMode.On;//ÏÔÊ¾ÎïÌå
+        //render.shadowCastingMode = UnityEngine.Rendering.ShadowCastingMode.On;//ï¿½ï¿½Ê¾ï¿½ï¿½ï¿½ï¿½
     }
 
     public static void HideRenderer(this Renderer render)
@@ -52,7 +53,7 @@ public static class RendererHelper
            Debug.LogError("HideRenderer render == null");
            return;
         }
-
+        if(render.enabled==false)return;
         render.enabled = false;//
 
         // if (IsTest)
@@ -69,10 +70,10 @@ public static class RendererHelper
         // }
 
 
-        //render.shadowCastingMode = UnityEngine.Rendering.ShadowCastingMode.ShadowsOnly;//Òş²ØÎïÌå,ÁôÏÂÒõÓ°
-        //3.3w¸öÓĞÒõÓ°µÄÎïÌå
-        //shadowCastingMode£º50ms,20FPS£¬Set Pass 70
-        //enabled£º100FPS£¬Set Pass 78
+        //render.shadowCastingMode = UnityEngine.Rendering.ShadowCastingMode.ShadowsOnly;//ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½,ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½Ó°
+        //3.3wï¿½ï¿½ï¿½ï¿½ï¿½ï¿½Ó°ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½
+        //shadowCastingModeï¿½ï¿½50ms,20FPSï¿½ï¿½Set Pass 70
+        //enabledï¿½ï¿½100FPSï¿½ï¿½Set Pass 78
     }
 
     public static Dictionary<Renderer, string> Renderer2Id = new Dictionary<Renderer, string>();
