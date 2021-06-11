@@ -278,7 +278,7 @@ namespace AdvancedCullingSystem.DynamicCullingCore
                             MeshRenderer render=collider.GetComponent<MeshRenderer>();
                             if(render==null)
                             {
-                                Debug.LogError($"render==null renderer:{render} collider:{collider}");
+                                Debug.LogError($"[DynamicCulling.CollectHitObjects] ==null renderer:{render} collider:{collider}");
                                 continue;
                             }
                             int objId=render.GetInstanceID();
@@ -286,7 +286,7 @@ namespace AdvancedCullingSystem.DynamicCullingCore
 
                             if(!_indexToRenderer.ContainsKey(objId))
                             {
-                                Debug.LogError($"_indexToRenderer.Add(objId,render) id:{objId} renderer:{render} collider:{collider}");
+                                Debug.LogError($"[DynamicCulling.CollectHitObjects] _indexToRenderer.Add(objId,render) id:{objId} renderer:{render} collider:{collider}");
                                 _indexToRenderer.Add(objId,render);
                             }
 

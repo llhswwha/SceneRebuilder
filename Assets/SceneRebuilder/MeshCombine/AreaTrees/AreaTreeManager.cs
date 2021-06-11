@@ -6,6 +6,10 @@ using System.Linq;
 
 public class AreaTreeManager : MonoBehaviour
 {
+    void OnStart()
+    {
+        CreateDictionary();
+    }
     public enum AreaTreeMode
     {
         Size, Count
@@ -503,6 +507,7 @@ public class AreaTreeManager : MonoBehaviour
     [ContextMenu("CreateDictionary")]
     public void CreateDictionary()
     {
+        AreaTreeHelper.render2NodeDict.Clear();
         Debug.Log("AreaTreeManager.CreateDictionary:" + Trees.Count);
         foreach (var tree in Trees)
         {

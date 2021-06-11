@@ -344,7 +344,7 @@ public class ModelAreaTree : MonoBehaviour
     {
         //Debug.LogError($"CreateDictionary Start");
         DateTime start=DateTime.Now;
-        ClearDictionary();
+        //ClearDictionary();
         foreach(AreaTreeNode tn in TreeNodes)
         {
             if(tn==null)continue;
@@ -356,7 +356,7 @@ public class ModelAreaTree : MonoBehaviour
             // }
             tn.CreateDictionary();
         }
-        Debug.LogError($"CreateDictionary render2NodeDict:{AreaTreeHelper.render2NodeDict.Count},\t{(DateTime.Now-start).ToString()}");
+        Debug.LogError($"CreateDictionary tree:{this.name},render2NodeDict:{AreaTreeHelper.render2NodeDict.Count},\t{(DateTime.Now-start).ToString()}");
     }
 
     [ContextMenu("GenerateMesh")]

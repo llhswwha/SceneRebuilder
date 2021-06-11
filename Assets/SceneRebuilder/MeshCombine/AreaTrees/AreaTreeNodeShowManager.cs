@@ -107,6 +107,7 @@ public class AreaTreeNodeShowManager : MonoBehaviour
             float nodeDis2=float.MaxValue;
             foreach(var cam in cameras)
             {
+                if(cam==null)continue;
                 var camPos=cam.transform.position;
                 var dis=Vector3.Distance(camPos,nodePos);
                 if(dis<nodeDis1)
