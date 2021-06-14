@@ -249,7 +249,9 @@ public class PrefabInstanceBuilder : MonoBehaviour
     [ContextMenu("GetTargetCount")]
     public void GetTargetCount()
     {
+        var target=GetTarget();
         TargetCount=GetMeshFilters().Length;
+        Debug.Log("TargetCount:"+TargetCount);
     }
 
     
@@ -354,6 +356,11 @@ UnpackPrefab();
     public void ShowRenderers()
     {
         DateTime start=DateTime.Now;
+
+        if(TargetRoots==null&&TargetRootsCopy==null)
+        {
+            GetTarget();
+        }
 
         if(TargetRoots)
         {
@@ -616,6 +623,13 @@ UnpackPrefab();
 
     public GameObject GetTarget()
     {
+        if(TargetRoots==null&& TargetRootsCopy==null)
+        {
+            var modelRoot=GameObject.FindObjectOfType<ModelRoot>();
+            if(modelRoot){
+                TargetRoots=modelRoot.gameObject;
+            }
+        }
         if(TargetRootsCopy)
         {
             return TargetRootsCopy;
@@ -654,6 +668,10 @@ UnpackPrefab();
         //     meshFilters=GameObject.FindObjectsOfType<MeshFilter>();
         // }
         // return meshFilters;
+        if(TargetRoots==null&&TargetRootsCopy==null)
+        {
+            GetTarget();
+        }
 
         if(TargetRoots){
             //meshFilters=TargetRoots.GetComponentsInChildren<MeshFilter>();
@@ -1188,40 +1206,41 @@ break;
         Debug.LogWarning($"GetMeshSizeInfo bigModels:{bigModels.Count},smallModels:{smallModels.Count},Renderers:{meshFilters.Length},Time:{(DateTime.Now-start).TotalMilliseconds}ms\n lengthStr: {lengthStr} \n sizeStr :{sizeStr}");
     }
 
-    [ContextMenu("GetVertexCountInfo")]
-    private void GetVertexCountInfo()
-    {
-        DateTime start=DateTime.Now;
-        var meshFilters=GetMeshFilters();
-        float minCount=float.MaxValue;
-        float maxCount=0;
-        float sumCount=0;
-        float avgCount=0;
-        List<int> countList = new List<int>();
-        foreach(MeshFilter mf in meshFilters)
-        {
-            var count=mf.sharedMesh.vertexCount;
-            sumCount+=count;
-            if(count>maxCount){
-                maxCount=count;
-            }
-            if(count<minCount){
-                minCount=count;
-            }
-            if(!countList.Contains(count))
-                countList.Add(count);
-        }
-        countList.Sort();
-        countList.Reverse();
-        string countStr = "";
-        for(int i=0;i<500&&i<countList.Count;i++)
-        {
-            countStr += countList[i] + "; ";
-        }
-        avgCount =sumCount/(float)meshFilters.Length;
+    // [ContextMenu("GetVertexCountInfo")]
+    // private void GetVertexCountInfo()
+    // {
+    //     ShowRenderers();
+    //     DateTime start=DateTime.Now;
+    //     var meshFilters=GetMeshFilters();
+    //     float minCount=float.MaxValue;
+    //     float maxCount=0;
+    //     float sumCount=0;
+    //     float avgCount=0;
+    //     List<int> countList = new List<int>();
+    //     foreach(MeshFilter mf in meshFilters)
+    //     {
+    //         var count=mf.sharedMesh.vertexCount;
+    //         sumCount+=count;
+    //         if(count>maxCount){
+    //             maxCount=count;
+    //         }
+    //         if(count<minCount){
+    //             minCount=count;
+    //         }
+    //         if(!countList.Contains(count))
+    //             countList.Add(count);
+    //     }
+    //     countList.Sort();
+    //     countList.Reverse();
+    //     string countStr = "";
+    //     for(int i=0;i<500&&i<countList.Count;i++)
+    //     {
+    //         countStr += countList[i] + "; ";
+    //     }
+    //     avgCount =sumCount/(float)meshFilters.Length;
 
-        Debug.LogWarning($"GetVertexCountInfo maxCount:{maxCount},minCount:{minCount},avgCount:{avgCount},Renderers:{meshFilters.Length},Time:{(DateTime.Now-start).TotalMilliseconds}ms\ncountStr:{countStr}");
-    }
+    //     Debug.LogWarning($"GetVertexCountInfo maxCount:{maxCount},minCount:{minCount},avgCount:{avgCount},Renderers:{meshFilters.Length},Time:{(DateTime.Now-start).TotalMilliseconds}ms\ncountStr:{countStr}");
+    // }
 
 
     [ContextMenu("GetVertexCenterInfos")]
