@@ -589,6 +589,11 @@ public class AreaTreeNode : MonoBehaviour
         //Debug.Log("CreateDictionary End:"+AreaTreeHelper.render2NodeDict.Count);
     }
 
+    public MeshRenderer[] GetCombinedRenderers()
+    {
+        return combindResult.GetComponentsInChildren<MeshRenderer>();
+    }
+
     [ContextMenu("ShowNodes")]
     public void ShowNodes()
     {

@@ -559,6 +559,17 @@ public class ModelAreaTree : MonoBehaviour
         }
     }
 
+    [ContextMenu("RecoverParent")]
+    public List<MeshRenderer> GetCombinedRenderers()
+    {
+        List<MeshRenderer> renderers=new List<MeshRenderer>();
+         foreach(var node in TreeLeafs){
+               renderers.AddRange(node.GetCombinedRenderers());
+        }
+        Debug.Log("GetCombinedRenderers:"+renderers);
+        return renderers;
+    }
+
     public int VertexCount;
 
     [ContextMenu("GetVertexCount")]
@@ -682,6 +693,7 @@ public class ModelAreaTree : MonoBehaviour
             MeshFilter meshFilter = render.GetComponent<MeshFilter>();
             vertextCount += meshFilter.sharedMesh.vertexCount;
             renderCount++;
+            // Debug.Log("render:"+render.name+"|"+render.transform.parent);
         }
         int w = vertextCount / 10000;
 

@@ -39,6 +39,22 @@ public class AreaTreeManager : MonoBehaviour
 
     public GameObject Target = null;
 
+    [ContextMenu("GetTarget")]
+    public GameObject GetTarget()
+    {
+        if(Target==null){
+            var modelRoot=GameObject.FindObjectOfType<ModelRoot>();
+            if(modelRoot){
+                Target=modelRoot.gameObject;
+            }
+        }
+
+        if(prefabInstanceBuilder && prefabInstanceBuilder.TargetRoots==null){
+            prefabInstanceBuilder.TargetRoots=Target;
+        }
+        return Target;
+    }
+
     public PrefabInstanceBuilder prefabInstanceBuilder;
 
     [ContextMenu("CreateCells_Count")]
@@ -49,8 +65,8 @@ public class AreaTreeManager : MonoBehaviour
         var allCount = Count.x * Count.y * Count.z;
         DateTime start = DateTime.Now;
         ClearChildren();
-
-        Bounds bounds = ColliderHelper.CaculateBounds(Target);
+        var target=GetTarget();
+        Bounds bounds = ColliderHelper.CaculateBounds(target);
         Debug.LogError("bounds:" + bounds);
         Debug.LogError("Count:" + Count);
         var min = bounds.min;
@@ -82,7 +98,7 @@ public class AreaTreeManager : MonoBehaviour
             }
         }
 
-        var renderers = Target.GetComponentsInChildren<MeshRenderer>();
+        var renderers = target.GetComponentsInChildren<MeshRenderer>();
         int count = 0;
         foreach (var render in renderers)
         {
@@ -122,15 +138,15 @@ public class AreaTreeManager : MonoBehaviour
         AreaTreeHelper.CubePrefab = this.CubePrefab;
         DateTime start = DateTime.Now;
         ClearChildren();
-
-        var renderers = Target.GetComponentsInChildren<MeshRenderer>();
+        var target=GetTarget();
+        var renderers = target.GetComponentsInChildren<MeshRenderer>();
         Debug.LogError("renderers:" + renderers.Length);
         foreach (var render in renderers)
         {
             render.enabled = true;
         }
 
-        Bounds bounds = ColliderHelper.CaculateBounds(Target);
+        Bounds bounds = ColliderHelper.CaculateBounds(target);
         Debug.LogError("bounds:" + bounds);
         Debug.LogError("Count:" + Count);
 
@@ -372,7 +388,7 @@ public class AreaTreeManager : MonoBehaviour
             Target=prefabInstanceBuilder.GetTarget();
         }
 
-        CreateTree(Target,false,"_HiddenTree",hiddenRenderers);//动态显示模型的树
+        CreateTree(GetTarget(),false,"_HiddenTree",hiddenRenderers);//动态显示模型的树
         
         Debug.LogError($"CreateHiddenOne \t{(DateTime.Now - start).ToString()}");
     }
@@ -390,13 +406,12 @@ public class AreaTreeManager : MonoBehaviour
 
         List<MeshRenderer> bigModels=new List<MeshRenderer>();
         List<MeshRenderer> smallModels=new List<MeshRenderer>();
-        if(prefabInstanceBuilder.TargetRoots==null){
-            prefabInstanceBuilder.TargetRoots=this.Target;
-        }
+        var target=GetTarget();
+
         prefabInstanceBuilder.GetBigSmallRenderers(bigModels,smallModels);
 
 
-        var tree2=CreateTree(Target,isCombine,"_SamllTree",smallModels.ToArray());//动态显示模型的树
+        var tree2=CreateTree(target,isCombine,"_SamllTree",smallModels.ToArray());//动态显示模型的树
         tree2.IsHidden=true;
         if (isCombine)
         {
@@ -407,7 +422,7 @@ public class AreaTreeManager : MonoBehaviour
             tree2.MoveRenderers();
         }
 
-        var tree1=CreateTree(Target,isCombine,"_BigTree",bigModels.ToArray());//合并模型的树
+        var tree1=CreateTree(target,isCombine,"_BigTree",bigModels.ToArray());//合并模型的树
         if (isCombine)
         {
             tree1.HideRenderers();
@@ -430,13 +445,13 @@ public class AreaTreeManager : MonoBehaviour
         DateTime start = DateTime.Now;
         ClearCount();
         ClearTrees();
-
+        var target=GetTarget();
         MeshRenderer[] hiddenRenderers=null;
         if (prefabInstanceBuilder != null)
         {
             hiddenRenderers = prefabInstanceBuilder.GetHiddenRenderers().ToArray();
         }
-        var tree2=CreateTree(Target,isCombine,"_HiddenTree",hiddenRenderers);//动态显示模型的树
+        var tree2=CreateTree(target,isCombine,"_HiddenTree",hiddenRenderers);//动态显示模型的树
         tree2.IsHidden=true;
         tree2.HideRenderers();
 
@@ -445,7 +460,7 @@ public class AreaTreeManager : MonoBehaviour
         {
             combinedRenderers = prefabInstanceBuilder.GetCombinedRenderers().ToArray();
         }
-        var tree1=CreateTree(Target,isCombine,"_ShownTree",combinedRenderers);//合并模型的树
+        var tree1=CreateTree(target,isCombine,"_ShownTree",combinedRenderers);//合并模型的树
 
         //TreeNodeShowManager.HiddenTrees.Add(tree2);
         tree2.DestroyNodeRender();
@@ -460,13 +475,13 @@ public class AreaTreeManager : MonoBehaviour
         DateTime start = DateTime.Now;
         ClearCount();
         ClearTrees();
-
+        var target=GetTarget();
         MeshRenderer[] combinedRenderers=null;
         if (prefabInstanceBuilder != null)
         {
             combinedRenderers = prefabInstanceBuilder.GetCombinedRenderers().ToArray();
         }
-        var tree1=CreateTree(Target,isCombine,"_Tree",combinedRenderers);//合并模型的树
+        var tree1=CreateTree(target,isCombine,"_Tree",combinedRenderers);//合并模型的树
 
         Debug.LogError($"CreateOne \t{(DateTime.Now - start).ToString()}");
     }
@@ -476,15 +491,15 @@ public class AreaTreeManager : MonoBehaviour
     {
         DateTime start = DateTime.Now;
         ClearTrees();
-
-        for (int i = 0; i < Target.transform.childCount; i++)
+        var target=GetTarget();
+        for (int i = 0; i < target.transform.childCount; i++)
         {
-            var child = Target.transform.GetChild(i);
+            var child = target.transform.GetChild(i);
             CreateTree(child.gameObject,isCombine,"_CombineTree",null);
         }
 
         //AvgCount /= Target.transform.childCount;
-        nodeStatics.AvgCellRendererCount /= Target.transform.childCount;
+        nodeStatics.AvgCellRendererCount /= target.transform.childCount;
 
         Debug.LogError($"CreateOne \t{(DateTime.Now - start).ToString()}");
     }
@@ -561,10 +576,10 @@ public class AreaTreeManager : MonoBehaviour
         DateTime start = DateTime.Now;
 
         ShowRenderers();
-
+        var target=GetTarget();
         List<string> matKeys = new List<string>();
         List<Material> mats = new List<Material>();
-        var renders = Target.GetComponentsInChildren<MeshRenderer>();
+        var renders = target.GetComponentsInChildren<MeshRenderer>();
         foreach (var render in renders)
         {
             if (!mats.Contains(render.sharedMaterial))
@@ -573,7 +588,7 @@ public class AreaTreeManager : MonoBehaviour
             }
         }
         int count = 0;
-        var matsEx = MeshCombineHelper.GetMatFilters(Target, out count, false);
+        var matsEx = MeshCombineHelper.GetMatFilters(target, out count, false);
         Debug.LogError($"GetMaterials {(DateTime.Now - start).ToString()},mats1:{mats.Count},mats2:{matsEx.Count},count:{count}");
     }
 
@@ -582,13 +597,13 @@ public class AreaTreeManager : MonoBehaviour
     public void SetMaterials()
     {
         DateTime start = DateTime.Now;
-
+        var target=GetTarget();
         ShowRenderers();
 
         int count = 0;
-        var mats = MeshCombineHelper.GetMatFilters(Target, out count, true);
+        var mats = MeshCombineHelper.GetMatFilters(target, out count, true);
 
-        //MeshCombineHelper.SetMaterials(Target);
+        //MeshCombineHelper.SetMaterials(target);
 
         Debug.LogError($"SetMaterials {(DateTime.Now - start).ToString()},mats:{mats.Count},count:{count}");
     }
