@@ -30,9 +30,54 @@ Transform:
   - {fileID: 8634927953519353257}
   - {fileID: 5321856934883981226}
   - {fileID: 7205637575558067864}
+  - {fileID: 9066341639894223243}
   m_Father: {fileID: 0}
   m_RootOrder: 0
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
+--- !u!1 &7118363438018568764
+GameObject:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  serializedVersion: 6
+  m_Component:
+  - component: {fileID: 9066341639894223243}
+  - component: {fileID: 3806584230192859348}
+  m_Layer: 0
+  m_Name: SceneModelInfo
+  m_TagString: Untagged
+  m_Icon: {fileID: 0}
+  m_NavMeshLayer: 0
+  m_StaticEditorFlags: 0
+  m_IsActive: 1
+--- !u!4 &9066341639894223243
+Transform:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 7118363438018568764}
+  m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
+  m_LocalPosition: {x: 0, y: 0, z: 0}
+  m_LocalScale: {x: 1, y: 1, z: 1}
+  m_Children: []
+  m_Father: {fileID: 2637694156548252797}
+  m_RootOrder: 3
+  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
+--- !u!114 &3806584230192859348
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 7118363438018568764}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 9c5f93a9ea93c904e8fae52f3ef64779, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  MaxVertexCount: 1500
 --- !u!1001 &3641383211697375004
 PrefabInstance:
   m_ObjectHideFlags: 0
@@ -123,7 +168,7 @@ PrefabInstance:
     m_Modifications:
     - target: {fileID: 1743307828116152111, guid: b0c0abf5387dcad479c072866a126f56, type: 3}
       propertyPath: ShowNodeDistance
-      value: 15
+      value: 30
       objectReference: {fileID: 0}
     - target: {fileID: 3036720948841578097, guid: b0c0abf5387dcad479c072866a126f56, type: 3}
       propertyPath: m_Name
@@ -179,23 +224,23 @@ PrefabInstance:
       objectReference: {fileID: 0}
     - target: {fileID: 8929099040280789865, guid: b0c0abf5387dcad479c072866a126f56, type: 3}
       propertyPath: MatCount
-      value: 6
+      value: 4
       objectReference: {fileID: 0}
     - target: {fileID: 8929099040280789865, guid: b0c0abf5387dcad479c072866a126f56, type: 3}
       propertyPath: LeafCount
-      value: 69
+      value: 186
       objectReference: {fileID: 0}
     - target: {fileID: 8929099040280789865, guid: b0c0abf5387dcad479c072866a126f56, type: 3}
       propertyPath: VertexCount
-      value: 15
+      value: 3108
       objectReference: {fileID: 0}
     - target: {fileID: 8929099040280789865, guid: b0c0abf5387dcad479c072866a126f56, type: 3}
       propertyPath: CombinedCount
-      value: 144
+      value: 512
       objectReference: {fileID: 0}
     - target: {fileID: 8929099040280789865, guid: b0c0abf5387dcad479c072866a126f56, type: 3}
       propertyPath: RendererCount
-      value: 2000
+      value: 49303
       objectReference: {fileID: 0}
     - target: {fileID: 8929099040280789865, guid: b0c0abf5387dcad479c072866a126f56, type: 3}
       propertyPath: Trees.Array.size
@@ -203,7 +248,7 @@ PrefabInstance:
       objectReference: {fileID: 0}
     - target: {fileID: 8929099040280789865, guid: b0c0abf5387dcad479c072866a126f56, type: 3}
       propertyPath: nodeStatics.CellCount
-      value: 136
+      value: 400
       objectReference: {fileID: 0}
     - target: {fileID: 8929099040280789865, guid: b0c0abf5387dcad479c072866a126f56, type: 3}
       propertyPath: prefabInstanceBuilder
@@ -211,31 +256,31 @@ PrefabInstance:
       objectReference: {fileID: 2867031154083381803}
     - target: {fileID: 8929099040280789865, guid: b0c0abf5387dcad479c072866a126f56, type: 3}
       propertyPath: nodeStatics.LevelDepth
-      value: 7
+      value: 13
       objectReference: {fileID: 0}
     - target: {fileID: 8929099040280789865, guid: b0c0abf5387dcad479c072866a126f56, type: 3}
       propertyPath: nodeStatics.MaxNodeVertexCount
-      value: 0
+      value: 70
       objectReference: {fileID: 0}
     - target: {fileID: 8929099040280789865, guid: b0c0abf5387dcad479c072866a126f56, type: 3}
       propertyPath: nodeStatics.MinNodeVertexCount
-      value: 0
+      value: 2
       objectReference: {fileID: 0}
     - target: {fileID: 8929099040280789865, guid: b0c0abf5387dcad479c072866a126f56, type: 3}
       propertyPath: nodeStatics.MaxNodeVertexCount2
-      value: 0
+      value: 70
       objectReference: {fileID: 0}
     - target: {fileID: 8929099040280789865, guid: b0c0abf5387dcad479c072866a126f56, type: 3}
       propertyPath: nodeStatics.AvgCellRendererCount
-      value: 34
+      value: 236
       objectReference: {fileID: 0}
     - target: {fileID: 8929099040280789865, guid: b0c0abf5387dcad479c072866a126f56, type: 3}
       propertyPath: nodeStatics.MaxCellRendererCount
-      value: 50
+      value: 996
       objectReference: {fileID: 0}
     - target: {fileID: 8929099040280789865, guid: b0c0abf5387dcad479c072866a126f56, type: 3}
       propertyPath: nodeStatics.MinCellRendererCount
-      value: 6
+      value: 1
       objectReference: {fileID: 0}
     m_RemovedComponents: []
   m_SourcePrefab: {fileID: 100100000, guid: b0c0abf5387dcad479c072866a126f56, type: 3}

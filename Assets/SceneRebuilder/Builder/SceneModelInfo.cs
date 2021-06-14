@@ -22,6 +22,7 @@ public class SceneModelInfo : MonoBehaviour
     [ContextMenu("HideSmallModels")]
     public void HideSmallModels()
     {
+        Debug.Log("HideSmallModels");
         List<MeshFilter> Bigs=new List<MeshFilter>();
         List<MeshFilter> Smalls=new List<MeshFilter>();
         GetVertexBigSmall(Bigs,Smalls);
@@ -35,6 +36,7 @@ public class SceneModelInfo : MonoBehaviour
     [ContextMenu("HideBigModels")]
     public void HideBigModels()
     {
+        Debug.Log("HideBigModels");
         List<MeshFilter> Bigs=new List<MeshFilter>();
         List<MeshFilter> Smalls=new List<MeshFilter>();
         GetVertexBigSmall(Bigs,Smalls);
@@ -77,9 +79,12 @@ public class SceneModelInfo : MonoBehaviour
                 sumSmallVertex+=count;
             }
         }
-        Debug.LogWarning($"GetVertexBigSmall Renderers:{meshFilters.Length},Bigs:{Bigs.Count},Smalls:{Smalls.Count},Time:{(DateTime.Now-start).TotalMilliseconds}ms");
-        Debug.LogWarning($"sumCount:{sumCount/10000}w,sumBigCount:{sumBigVertex/10000}w,sumSmallCount:{sumSmallVertex/10000}w,");
+        info=$"Count:{meshFilters.Length},Big:{Bigs.Count},Small:{Smalls.Count},Time:{(DateTime.Now-start).TotalMilliseconds}ms";
+        info+=$"\nsum:{sumCount/10000}w,sumBig:{sumBigVertex/10000}w,sumSmall:{sumSmallVertex/10000}w";
+        Debug.LogWarning(info);
     }
+
+    public string info="";
 
     private MeshFilter[] GetMeshFilters()
     {
