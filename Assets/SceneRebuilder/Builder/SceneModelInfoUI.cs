@@ -22,7 +22,7 @@ public class SceneModelInfoUI : MonoBehaviour
     public void GetInfo()
     {
         sceneModelInfo.MaxVertexCount=int.Parse(InputMaxVertexCount.text);
-        sceneModelInfo.TestGetVertexBigSmall();
+        sceneModelInfo.GetVertexBigSmall();
         textResult.text=sceneModelInfo.info;
     }
     

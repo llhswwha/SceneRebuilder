@@ -1565,7 +1565,7 @@ break;
 #endif
     }
 
-    public float[] LODLevels=new float[] { 0.6f, 0.2f, 0.07f, 0.01f };
+    public float[] LODLevels = new float[] { 0.6f, 0.2f, 0.07f, 0.01f };
 
     [ContextMenu("CreatePrefabs")]
     private void CreatePrefabs()

@@ -276,12 +276,15 @@ public class ModelAreaTree : MonoBehaviour
 
         if (TreeRenderers != null && TreeRenderers.Length > 0)
         {
+            int count = 0;
             foreach (var render in TreeRenderers)
             {
+                if (render == null) continue;
                 render.enabled = isVisible;
                 render.gameObject.SetActive(isVisible);
+                count++;
             }
-            Debug.LogError($"ShowRenderers renderers:{TreeRenderers.Length},\t{(DateTime.Now - start).ToString()}");
+            Debug.LogError($"ShowRenderers renderers:{count},\t{(DateTime.Now - start).ToString()}");
         }
         else if (target != null)
         {
@@ -421,7 +424,8 @@ public class ModelAreaTree : MonoBehaviour
         LeafCellSize=Vector3.zero;
         nodeStatics.MaxCellRendererCount=int.MinValue;
         nodeStatics.MinCellRendererCount =int.MaxValue;
-        foreach(AreaTreeNode tn in TreeNodes)
+        //foreach(AreaTreeNode tn in TreeNodes)
+        foreach (AreaTreeNode tn in TreeNodes)
         {
             if(tn==null)continue;
             if(tn.gameObject==null)continue;

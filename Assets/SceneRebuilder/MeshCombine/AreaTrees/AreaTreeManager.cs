@@ -509,6 +509,7 @@ public class AreaTreeManager : MonoBehaviour
     {
         foreach (var tree in Trees)
         {
+            if (tree == null) continue;
             tree.SwitchToRenderers();
         }
     }
@@ -518,6 +519,7 @@ public class AreaTreeManager : MonoBehaviour
     {
         foreach (var tree in Trees)
         {
+            if (tree == null) continue;
             tree.SwitchToCombined();
         }
     }
@@ -529,6 +531,7 @@ public class AreaTreeManager : MonoBehaviour
         Debug.Log("AreaTreeManager.CreateDictionary:" + Trees.Count);
         foreach (var tree in Trees)
         {
+            if (tree == null) continue;
             Debug.Log("tree:" + tree);
             tree.CreateDictionary();
         }
@@ -539,6 +542,7 @@ public class AreaTreeManager : MonoBehaviour
     {
         foreach (var tree in Trees)
         {
+            if (tree == null) continue;
             tree.HideLeafNodes();
         }
     }
@@ -548,6 +552,7 @@ public class AreaTreeManager : MonoBehaviour
     {
         foreach (var tree in Trees)
         {
+            if (tree == null) continue;
             tree.ShowLeafNodes();
         }
     }
@@ -555,10 +560,14 @@ public class AreaTreeManager : MonoBehaviour
     [ContextMenu("ShowRenderers")]
     public void ShowRenderers()
     {
+        int count = 0;
         foreach (var tree in Trees)
         {
+            if (tree == null) continue;
             tree.ShowRenderers();
+            count++;
         }
+        Debug.Log("ShowRenderers:"+ count);
     }
 
     [ContextMenu("HideRenderers")]
@@ -566,6 +575,7 @@ public class AreaTreeManager : MonoBehaviour
     {
         foreach (var tree in Trees)
         {
+            if (tree == null) continue;
             tree.HideRenderers();
         }
     }

@@ -211,7 +211,7 @@ public static class AutomaticLODHelper
         }
     }
 
-    public static void CreateLOD(GameObject go, Material[] mats,float[] lvs,float[] lodVertexPercents,bool isDestroy=true)
+    public static void CreateLOD(GameObject go, Material[] mats,float[] lvs,float[] lodVertexPercents,bool isDestroy=true,bool isSaveAsset=true)
     {
         if(lvs==null)
         {
@@ -242,16 +242,21 @@ public static class AutomaticLODHelper
         AutomaticLODHelper.CreateDefaultLODS(nLevels, aLOD, bRecurseIntoChildren,lodVertexPercents);
         aLOD.ComputeLODData(bRecurseIntoChildren, Progress);
         aLOD.ComputeAllLODMeshes(bRecurseIntoChildren, Progress);
-        string meshPath = "Assets/Models/Instances/Prefabs/" + go.name+go.GetInstanceID() + ".asset";
-        int nCounter = 0;
-        bool bAssetAlreadyCreated = System.IO.File.Exists(meshPath);
-        //Debug.LogError($"bAssetAlreadyCreated:{bAssetAlreadyCreated}");
-        if (bAssetAlreadyCreated == true)
+
+        if (isSaveAsset)
         {
-            System.IO.File.Delete(meshPath);
-            bAssetAlreadyCreated = System.IO.File.Exists(meshPath);
+            string meshPath = "Assets/Models/Instances/Prefabs/" + go.name + go.GetInstanceID() + ".asset";
+            int nCounter = 0;
+
+            bool bAssetAlreadyCreated = System.IO.File.Exists(meshPath);
+            //Debug.LogError($"bAssetAlreadyCreated:{bAssetAlreadyCreated}");
+            if (bAssetAlreadyCreated == true)
+            {
+                System.IO.File.Delete(meshPath);
+                bAssetAlreadyCreated = System.IO.File.Exists(meshPath);
+            }
+            AutomaticLODHelper.SaveMeshAssetsRecursive(go, go, meshPath, true, bAssetAlreadyCreated, ref nCounter);
         }
-        AutomaticLODHelper.SaveMeshAssetsRecursive(go, go, meshPath, true, bAssetAlreadyCreated, ref nCounter);
 
         // if(mats!=null&& mats.Length > go.transform.childCount)
         // {
