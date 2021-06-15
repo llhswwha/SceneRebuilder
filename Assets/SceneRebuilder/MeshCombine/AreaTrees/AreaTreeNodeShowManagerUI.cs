@@ -55,6 +55,12 @@ public class AreaTreeNodeShowManagerUI : MonoBehaviour
         return $"renders:{renderCount},mats:{mats.Count},vertext:{w}w";
     }
 
+    private void Start()
+    {
+        if (areaTreeNodeShowManager == null)
+            areaTreeNodeShowManager = GameObject.FindObjectOfType<AreaTreeNodeShowManager>();
+    }
+
     // Update is called once per frame
     void Update()
     {
