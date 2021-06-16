@@ -1,3 +1,4 @@
+using System;
 using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
@@ -31,16 +32,119 @@ public class BuildingModelManager : MonoBehaviour
         AllVertextCount = 0;
     }
 
-    [ContextMenu("Init")]
-    public void Init()
+    [ContextMenu("InitBuildings")]
+    public void InitBuildings()
     {
+        DateTime start = DateTime.Now;
         Buildings.AddRange(GameObject.FindObjectsOfType<BuildingModelInfo>());
+        for (int i = 0; i < Buildings.Count; i++)
+        {
+            float progress = (float)i / Buildings.Count;
+            float percents = progress * 100;
 
+            if (ProgressBarHelper.DisplayCancelableProgressBar("InitBuildings", $"{i}/{Buildings.Count} {percents}% of 100%", progress))
+            {
+                //ProgressBarHelper.ClearProgressBar();
+                break;
+            }
+            Buildings[i].InitInOut();
+        }
+        ProgressBarHelper.ClearProgressBar();
+
+        GetCountInfo();
+
+        SortByOut0();
+        Debug.LogWarning($"InitBuildings Buildings:{Buildings.Count},Time:{(DateTime.Now - start).TotalMilliseconds}ms");
+    }
+
+    [ContextMenu("SortByOut0")]
+    public void SortByOut0()
+    {
         Buildings.Sort((a, b) =>
         {
             return b.Out0VertextCount.CompareTo(a.Out0VertextCount);
         });
+    }
 
+    [ContextMenu("SortByOut1")]
+    public void SortByOut1()
+    {
+        Buildings.Sort((a, b) =>
+        {
+            return b.Out1VertextCount.CompareTo(a.Out1VertextCount);
+        });
+    }
+
+    [ContextMenu("SortByIn")]
+    public void SortByIn()
+    {
+        Buildings.Sort((a, b) =>
+        {
+            return b.InVertextCount.CompareTo(a.InVertextCount);
+        });
+    }
+
+    [ContextMenu("CreateTrees")]
+    public void CreateTrees()
+    {
+        DateTime start = DateTime.Now;
+        List<ModelAreaTree> allTrees = new List<ModelAreaTree>();
+        for (int i = 0; i < Buildings.Count; i++)
+        {
+            BuildingModelInfo b = Buildings[i];
+            var trees = b.CreateTreesInner();
+            allTrees.AddRange(trees);
+
+            float progress = (float)i / Buildings.Count;
+            float percents = progress * 100;
+
+            if (ProgressBarHelper.DisplayCancelableProgressBar("CreateTrees", $"{i}/{Buildings.Count} {percents}% of 100%", progress))
+            {
+                //ProgressBarHelper.ClearProgressBar();
+                break;
+            }
+        }
+
+        AreaTreeManager treeManager = GameObject.FindObjectOfType<AreaTreeManager>();
+        if (treeManager)
+            treeManager.AddTrees(allTrees.ToArray());
+
+        ProgressBarHelper.ClearProgressBar();
+        Debug.LogWarning($"CreateTrees Buildings:{Buildings.Count},Time:{(DateTime.Now - start).TotalMilliseconds}ms");
+    }
+
+    [ContextMenu("ShowAll")]
+    public void ShowAll()
+    {
+        foreach (var b in Buildings)
+        {
+            b.ShowAll();
+        }
+    }
+
+    [ContextMenu("HideDetail")]
+    public void HideDetail()
+    {
+        foreach (var b in Buildings)
+        {
+            b.HideDetail();
+        }
+    }
+
+    [ContextMenu("* GetInfos")]
+    public void GetInfos()
+    {
+        Buildings.Clear();
+
+        Buildings.AddRange(GameObject.FindObjectsOfType<BuildingModelInfo>());
+
+        SortByOut0();
+
+        GetCountInfo();
+    }
+
+    private void GetCountInfo()
+    {
         ClearCount();
         foreach (var b in Buildings)
         {

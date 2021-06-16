@@ -1,8 +1,7 @@
-using System.Collections;
-using System.Collections.Generic;
-using UnityEngine;
 using System;
+using System.Collections.Generic;
 using System.Linq;
+using UnityEngine;
 
 public class AreaTreeManager : MonoBehaviour
 {
@@ -260,11 +259,11 @@ public class AreaTreeManager : MonoBehaviour
 
         Trees.Add(areaTree);
 
-        ShowModelInfo(areaTree);
+        ShowTreeInfo(areaTree);
         return areaTree;
     }
 
-    private void ShowModelInfo(ModelAreaTree areaTree)
+    private void ShowTreeInfo(ModelAreaTree areaTree)
     {
         LeafCount += areaTree.TreeLeafs.Count;
         //nodeStatics.AvgCellRendererCount += areaTree.nodeStatics.AvgCellRendererCount;
@@ -354,14 +353,29 @@ public class AreaTreeManager : MonoBehaviour
 
     //public int Depth = 0;
 
+    [ContextMenu("ClearTreesEx")]
+    public void ClearTreesEx()
+    {
+        Trees = GameObject.FindObjectsOfType<ModelAreaTree>(true).ToList();
+        ClearTrees();
+    }
+
     [ContextMenu("ClearTrees")]
     public void ClearTrees()
     {
         AreaTreeHelper.render2NodeDict.Clear();
         foreach (var tree in Trees)
         {
-            if (tree == null) continue;
-            GameObject.DestroyImmediate(tree.gameObject);
+            try
+            {
+                if (tree == null) continue;
+                GameObject.DestroyImmediate(tree.gameObject);
+            }
+            catch (Exception ex)
+            {
+                Debug.LogError(ex.ToString());
+            }
+            
         }
         Trees.Clear();
     }
@@ -393,6 +407,19 @@ public class AreaTreeManager : MonoBehaviour
         Debug.LogError($"CreateHiddenOne \t{(DateTime.Now - start).ToString()}");
     }
 
+    public void AddTrees(ModelAreaTree[] trees)
+    {
+        ClearCount();
+        ClearTrees();
+
+        foreach(var tree in trees)
+        {
+            if (tree == null) continue;
+            ShowTreeInfo(tree);
+            Trees.Add(tree);
+        }
+    }
+
     //public AreaTreeNodeShowManager TreeNodeShowManager;
 
     [ContextMenu("CreateOne_BigSmall")]
@@ -401,6 +428,7 @@ public class AreaTreeManager : MonoBehaviour
         IsCopy=false;
 
         DateTime start = DateTime.Now;
+
         ClearCount();
         ClearTrees();
 

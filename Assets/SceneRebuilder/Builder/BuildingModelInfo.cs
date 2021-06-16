@@ -21,7 +21,75 @@ public class BuildingModelInfo : MonoBehaviour
     public int AllRendererCount = 0;
     public float AllVertextCount = 0;
 
-    [ContextMenu("InitInOut")]
+    [ContextMenu("ShowRenderers")]
+    public void ShowRenderers()
+    {
+        var renderers = this.GetComponentsInChildren<Renderer>(true) ;
+        foreach(var render in renderers)
+        {
+            render.enabled = true;
+        }
+    }
+
+    [ContextMenu("ShowAll")]
+    public void ShowAll()
+    {
+        if (InPart)
+        {
+            InPart.SetActive(true);
+        }
+        if (OutPart0)
+        {
+            OutPart0.SetActive(true);
+        }
+        if (OutPart1)
+        {
+            OutPart1.SetActive(true);
+        }
+    }
+
+    [ContextMenu("CreateTrees")]
+    public ModelAreaTree[] CreateTreesInner()
+    {
+        ModelAreaTree[] trees = new ModelAreaTree[3];
+        var tree1 = CreateTree(InPart, "InTree");
+        trees[0] = tree1;
+        var tree2 = CreateTree(OutPart0, "OutTree0");
+        trees[1] = tree2;
+        var tree3 = CreateTree(OutPart1, "OutTree1");
+        trees[2] = tree3;
+        return trees;
+    }
+
+    [ContextMenu("CreateTrees")]
+    public void CreateTrees()
+    {
+        var trees = CreateTreesInner();
+
+        AreaTreeManager treeManager = GameObject.FindObjectOfType<AreaTreeManager>();
+        if (treeManager)
+            treeManager.AddTrees(trees);
+    }
+
+    private ModelAreaTree CreateTree(GameObject target,string treeName)
+    {
+        if (target == null) return null;
+        AreaTreeManager treeManager = GameObject.FindObjectOfType<AreaTreeManager>();
+        if(treeManager)
+            AreaTreeHelper.CubePrefab = treeManager.CubePrefab;
+
+        GameObject treeGo1 = new GameObject(treeName);
+        treeGo1.transform.SetParent(this.transform);
+        ModelAreaTree tree1 = treeGo1.AddComponent<ModelAreaTree>();
+        tree1.Target = target;
+        //tree1.GenerateTree();//没有合并
+        tree1.GenerateMesh();//合并
+        //treeGo1.SetActive(target.activeInHierarchy);//该隐藏的继续隐藏
+        tree1.IsHidden = !target.activeInHierarchy;//动态隐藏
+        return tree1;
+    }
+
+    [ContextMenu("* InitInOut")]
     public void InitInOut()
     {
         List<Transform> children = new List<Transform>();

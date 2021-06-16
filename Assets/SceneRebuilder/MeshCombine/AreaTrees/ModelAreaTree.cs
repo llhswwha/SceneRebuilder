@@ -63,7 +63,7 @@ public class ModelAreaTree : MonoBehaviour
     [ContextMenu("CreateSubBoundes")]
     public void CreateSubBoundes()
     {
-        ClearChildren();
+        //ClearChildren();
 
         DateTime start = DateTime.Now;
         var target = GetTarget();
@@ -91,7 +91,7 @@ public class ModelAreaTree : MonoBehaviour
         AreaTreeHelper.CreateBoundsCube(boundsAll, target.name + "_TargetBoundAll", transform);
     }
 
-    [ContextMenu("ClearChildren")]
+    [ContextMenu("2.1. ClearChildren")]
     public void ClearChildren()
     {
         List<Transform> children=new List<Transform>();
@@ -198,14 +198,14 @@ public class ModelAreaTree : MonoBehaviour
         }
     }
 
-    [ContextMenu("CreateCells_Tree")]
+    [ContextMenu("2.CreateCells_Tree")]
     public void CreateCells_Tree()
     {
         
 
         //var allCount=Count.x*Count.y*Count.z;
         DateTime start=DateTime.Now;
-        ClearChildren();
+        //ClearChildren();
 
         MeshRenderer[] renderers=GetTreeRendererers();
         
@@ -321,7 +321,7 @@ public class ModelAreaTree : MonoBehaviour
         }
     }
 
-    [ContextMenu("AddColliders")]
+    [ContextMenu("1.AddColliders")]
     public void AddColliders()
     {
         DateTime start=DateTime.Now;
@@ -362,7 +362,7 @@ public class ModelAreaTree : MonoBehaviour
         Debug.LogError($"CreateDictionary tree:{this.name},render2NodeDict:{AreaTreeHelper.render2NodeDict.Count},\t{(DateTime.Now-start).ToString()}");
     }
 
-    [ContextMenu("GenerateMesh")]
+    [ContextMenu("* GenerateMesh")]
     public void GenerateMesh()
     {
          DateTime start=DateTime.Now;
@@ -382,7 +382,7 @@ public class ModelAreaTree : MonoBehaviour
         Debug.LogError($"GenerateMesh {(DateTime.Now-start).ToString()}");
     }
 
-    [ContextMenu("GenerateTree")]
+    [ContextMenu("* GenerateTree")]
     public void GenerateTree()
     {
          DateTime start=DateTime.Now;
