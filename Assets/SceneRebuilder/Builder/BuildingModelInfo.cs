@@ -46,6 +46,7 @@ public class BuildingModelInfo : MonoBehaviour
     [ContextMenu("* InitInOut")]
     public void InitInOut()
     {
+        UpackPrefab_One(this.gameObject);
         List<Transform> children = new List<Transform>();
         for (int i = 0; i < transform.childCount; i++)
         {
