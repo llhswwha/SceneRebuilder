@@ -245,7 +245,10 @@ public class ModelAreaTree : MonoBehaviour
             nodeStatics.AvgCellRendererCount =0;
         }
         
-
+        if(rootCube==null){
+            Debug.LogError("rootCube==null:"+this.name);
+            return;
+        }
         rootCube.transform.SetParent(this.transform);
 
         Debug.LogError($"CreateCells_Tree cellCount:{cellCount}/{allCount},\tavg:{nodeStatics.AvgCellRendererCount},\t{(DateTime.Now-start).ToString()}");
