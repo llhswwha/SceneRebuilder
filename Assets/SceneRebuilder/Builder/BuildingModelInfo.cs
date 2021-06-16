@@ -2,7 +2,9 @@ using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 using System.Linq;
-
+#if UNITY_EDITOR
+using UnityEditor;
+#endif
 public class BuildingModelInfo : MonoBehaviour
 {
     public GameObject InPart;
@@ -20,6 +22,74 @@ public class BuildingModelInfo : MonoBehaviour
 
     public int AllRendererCount = 0;
     public float AllVertextCount = 0;
+
+    //[ContextMenu("* CreateTrees")]
+    public ModelAreaTree[] CreateTreesInner()
+    {
+        var oldTrees = this.GetComponentsInChildren<ModelAreaTree>(true);
+        foreach (var oldT in oldTrees)
+        {
+            GameObject.DestroyImmediate(oldT.gameObject);
+        }
+
+        UpackPrefab_One(this.gameObject);
+        ModelAreaTree[] trees = new ModelAreaTree[3];
+        var tree1 = CreateTree(InPart, "InTree");
+        trees[0] = tree1;
+        var tree2 = CreateTree(OutPart0, "OutTree0");
+        trees[1] = tree2;
+        var tree3 = CreateTree(OutPart1, "OutTree1");
+        trees[2] = tree3;
+        return trees;
+    }
+
+    [ContextMenu("* InitInOut")]
+    public void InitInOut()
+    {
+        List<Transform> children = new List<Transform>();
+        for (int i = 0; i < transform.childCount; i++)
+        {
+            var child = transform.GetChild(i);
+            if (child.name == "In")
+            {
+                InPart = child.gameObject;
+            }
+            if (child.name == "Out0" || child.name == "Out")
+            {
+                OutPart0 = child.gameObject;
+            }
+            if (child.name == "Out1")
+            {
+                OutPart1 = child.gameObject;
+            }
+            children.Add(child);
+        }
+
+        if (OutPart1 == null && OutPart0 == null && InPart == null)
+        {
+            GameObject outRoot = InitPart("Out0");
+            foreach (var child in children)
+            {
+                child.SetParent(outRoot.transform);
+            }
+        }
+
+        GetInOutVertextCount();
+
+        HideDetail();
+
+        //var manager=GameObject.FindObjectOfType<>
+    }
+
+    [ContextMenu("* CreateTrees")]
+    public void CreateTrees()
+    {
+        var trees = CreateTreesInner();
+
+        AreaTreeManager treeManager = GameObject.FindObjectOfType<AreaTreeManager>();
+        if (treeManager)
+            treeManager.AddTrees(trees);
+    }
 
     [ContextMenu("ShowRenderers")]
     public void ShowRenderers()
@@ -48,28 +118,20 @@ public class BuildingModelInfo : MonoBehaviour
         }
     }
 
-    [ContextMenu("CreateTrees")]
-    public ModelAreaTree[] CreateTreesInner()
+    
+
+    public static void UpackPrefab_One(GameObject go)
     {
-        ModelAreaTree[] trees = new ModelAreaTree[3];
-        var tree1 = CreateTree(InPart, "InTree");
-        trees[0] = tree1;
-        var tree2 = CreateTree(OutPart0, "OutTree0");
-        trees[1] = tree2;
-        var tree3 = CreateTree(OutPart1, "OutTree1");
-        trees[2] = tree3;
-        return trees;
+#if UNITY_EDITOR
+        GameObject root = PrefabUtility.GetOutermostPrefabInstanceRoot(go);
+        if (root != null)
+        {
+            PrefabUtility.UnpackPrefabInstance(root, PrefabUnpackMode.Completely, InteractionMode.UserAction);
+        }
+#endif
     }
 
-    [ContextMenu("CreateTrees")]
-    public void CreateTrees()
-    {
-        var trees = CreateTreesInner();
-
-        AreaTreeManager treeManager = GameObject.FindObjectOfType<AreaTreeManager>();
-        if (treeManager)
-            treeManager.AddTrees(trees);
-    }
+ 
 
     private ModelAreaTree CreateTree(GameObject target,string treeName)
     {
@@ -79,53 +141,37 @@ public class BuildingModelInfo : MonoBehaviour
             AreaTreeHelper.CubePrefab = treeManager.CubePrefab;
 
         GameObject treeGo1 = new GameObject(treeName);
+        treeGo1.transform.position = target.transform.position;
         treeGo1.transform.SetParent(this.transform);
         ModelAreaTree tree1 = treeGo1.AddComponent<ModelAreaTree>();
         tree1.Target = target;
-        //tree1.GenerateTree();//没有合并
-        tree1.GenerateMesh();//合并
+        if (treeManager)
+        {
+            tree1.nodeSetting = treeManager.nodeSetting;
+        }
+            //tree1.GenerateTree();//没有合并
+            tree1.GenerateMesh();//合并
         //treeGo1.SetActive(target.activeInHierarchy);//该隐藏的继续隐藏
         tree1.IsHidden = !target.activeInHierarchy;//动态隐藏
         return tree1;
     }
 
-    [ContextMenu("* InitInOut")]
-    public void InitInOut()
+    
+
+    public GameObject InitPart(string n)
     {
-        List<Transform> children = new List<Transform>();
-        for(int i=0;i<transform.childCount;i++)
-        {
-            var child = transform.GetChild(i);
-            if(child.name=="In")
-            {
-                InPart = child.gameObject;
-            }
-            if (child.name == "Out0"|| child.name == "Out")
-            {
-                OutPart0 = child.gameObject;
-            }
-            if (child.name == "Out1")
-            {
-                OutPart1 = child.gameObject;
-            }
-            children.Add(child);
-        }
+        GameObject outRoot = new GameObject(n);
+        outRoot.transform.position = this.transform.position;
+        outRoot.transform.SetParent(this.transform);
+        return outRoot;
+    }
 
-        if(OutPart1==null&& OutPart0==null&& InPart==null)
-        {
-            GameObject outRoot = new GameObject("Out0");
-            outRoot.transform.position = this.transform.position;
-            foreach(var child in children)
-            {
-                child.SetParent(outRoot.transform);
-            }
-            OutPart0 = outRoot;
-            outRoot.transform.SetParent(this.transform);
-        }
-
-        GetInOutVertextCount();
-
-        HideDetail();
+    public GameObject InitSubPart(string n,Transform p)
+    {
+        GameObject outRoot = new GameObject(n);
+        outRoot.transform.position = p.position;
+        outRoot.transform.SetParent(p);
+        return outRoot;
     }
 
     private void GetInOutVertextCount()
@@ -137,6 +183,24 @@ public class BuildingModelInfo : MonoBehaviour
         AllRendererCount = InRendererCount + Out0RendererCount + Out1RendererCount;
     }
 
+    class VertexCountInfo
+    {
+        public string name;
+
+        public float count;
+
+        public VertexCountInfo(float c,string n)
+        {
+            count = c;
+            name = n;
+        }
+
+        public override string ToString()
+        {
+            return $"{count:F1}    {name}";
+        }
+    }
+
     private float GetChildrenVertextCount(GameObject go, out int renderCount, bool showLog)
     {
         renderCount = 0;
@@ -145,6 +209,7 @@ public class BuildingModelInfo : MonoBehaviour
             return 0;
         }
         float count = 0;
+        List<VertexCountInfo> logs = new List<VertexCountInfo>();
         for (int i = 0; i < go.transform.childCount; i++)
         {
             var child = go.transform.GetChild(i);
@@ -152,8 +217,19 @@ public class BuildingModelInfo : MonoBehaviour
             float childVertexCount = GetVertextCount(child.gameObject, out childRendererCount, showLog);
             count += childVertexCount;
             renderCount += childRendererCount;
-            if(childVertexCount>1)
-                Debug.LogError($"GetChildrenVertextCount[{i}]    {childVertexCount:F3}    {go.name}->{child.name}");
+
+            if (childVertexCount > 1)
+            {
+                //logs.Add($"{childVertexCount:F1}    {go.name}->{child.name}");
+                logs.Add(new VertexCountInfo(childVertexCount, $"{go.name}->{child.name}"));
+                //Debug.LogError($"GetChildrenVertextCount[{i}]    {childVertexCount:F3}    {go.name}->{child.name}");
+            }
+        }
+        logs.Sort((a,b)=>a.count.CompareTo(b.count));
+
+        for (int i = 0; i < logs.Count; i++)
+        {
+            Debug.LogError($"GetChildrenVertextCount[{i}]    {logs[i]}");
         }
         return count;
     }

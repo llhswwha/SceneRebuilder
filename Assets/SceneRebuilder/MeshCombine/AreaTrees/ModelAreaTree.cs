@@ -56,8 +56,8 @@ public class ModelAreaTree : MonoBehaviour
         Bounds bounds=ColliderHelper.CaculateBounds(renders);
         AreaTreeHelper.CreateBoundsCube(bounds, target.name+"_TargetBound",transform);
 
-        Debug.LogError($"target:{target.name},renders:{renders.Length},bounds:{bounds}");
-        Debug.LogError($"CreateBoundes \t{(DateTime.Now - start).ToString()}");
+        Debug.LogWarning($"target:{target.name},renders:{renders.Length},bounds:{bounds}");
+        Debug.LogWarning($"CreateBoundes \t{(DateTime.Now - start).ToString()}");
     }
 
     [ContextMenu("CreateSubBoundes")]
@@ -84,9 +84,9 @@ public class ModelAreaTree : MonoBehaviour
             
             boundsAll.Encapsulate(bounds);
 
-            Debug.LogError($"[{i}] target:{child.name},renders:{renders.Length},bounds:{bounds},boundsAll:{boundsAll}");
+            Debug.LogWarning($"[{i}] target:{child.name},renders:{renders.Length},bounds:{bounds},boundsAll:{boundsAll}");
         }
-        Debug.LogError($"CreateSubBoundes \t{(DateTime.Now - start).ToString()}");
+        Debug.LogWarning($"CreateSubBoundes \t{(DateTime.Now - start).ToString()}");
 
         AreaTreeHelper.CreateBoundsCube(boundsAll, target.name + "_TargetBoundAll", transform);
     }
@@ -118,7 +118,7 @@ public class ModelAreaTree : MonoBehaviour
             renderCount += node.RendererCount;
         }
 
-        Debug.LogError($"CheckRenderers renderCount:{renderCount},\t{(DateTime.Now-start).ToString()}");
+        Debug.LogWarning($"CheckRenderers renderCount:{renderCount},\t{(DateTime.Now-start).ToString()}");
     }
 
     public bool IsHidden=false;
@@ -138,6 +138,11 @@ public class ModelAreaTree : MonoBehaviour
         }
 
         int newRenderCount=0;
+        if(this.RootNode==null)
+        {
+            Debug.LogError("CombineMesh this.RootNode==null£¡£¡:"+this.name);
+            return;
+        }
         var renderersNew=this.RootNode.GetComponentsInChildren<MeshRenderer>();
         foreach(var render in renderersNew){
             if(render.enabled==true)
@@ -148,7 +153,7 @@ public class ModelAreaTree : MonoBehaviour
 
         CombinedCount = newRenderCount;
 
-        Debug.LogError($"CombineMesh renderCount:{renderCount}->{newRenderCount},\t{(DateTime.Now-start).ToString()}");
+        Debug.LogWarning($"CombineMesh renderCount:{renderCount}->{newRenderCount},\t{(DateTime.Now-start).ToString()}");
     }
 
     public int CombinedCount = 0;
@@ -164,7 +169,7 @@ public class ModelAreaTree : MonoBehaviour
             node.SwitchToCombined();
         }
 
-        Debug.LogError($"SwitchToCombined \t{(DateTime.Now-start).ToString()}");
+        Debug.LogWarning($"SwitchToCombined \t{(DateTime.Now-start).ToString()}");
     }
 
     [ContextMenu("SwitchToRenderers")]
@@ -178,7 +183,7 @@ public class ModelAreaTree : MonoBehaviour
             node.SwitchToRenderers();
         }
 
-        Debug.LogError($"SwitchToRenderers \t{(DateTime.Now-start).ToString()}");
+        Debug.LogWarning($"SwitchToRenderers \t{(DateTime.Now-start).ToString()}");
     }
 
     public MeshRenderer[] TreeRenderers;
@@ -209,7 +214,7 @@ public class ModelAreaTree : MonoBehaviour
 
         MeshRenderer[] renderers=GetTreeRendererers();
         
-        Debug.LogError("CreateCells_Tree renderers:"+renderers.Length);
+        Debug.Log("CreateCells_Tree renderers:"+renderers.Length);
         foreach(var render in renderers){
             if(render==null)continue;
             render.enabled=true;
@@ -251,7 +256,7 @@ public class ModelAreaTree : MonoBehaviour
         }
         rootCube.transform.SetParent(this.transform);
 
-        Debug.LogError($"CreateCells_Tree cellCount:{cellCount}/{allCount},\tavg:{nodeStatics.AvgCellRendererCount},\t{(DateTime.Now-start).ToString()}");
+        Debug.LogWarning($"CreateCells_Tree cellCount:{cellCount}/{allCount},\tavg:{nodeStatics.AvgCellRendererCount},\t{(DateTime.Now-start).ToString()}");
     }
 
 
@@ -336,7 +341,7 @@ public class ModelAreaTree : MonoBehaviour
                 collider=render.gameObject.AddComponent<MeshCollider>();
             }
         }
-        Debug.LogError($"AddColliders renderers:{renderers.Length},\t{(DateTime.Now-start).ToString()}");
+        Debug.LogWarning($"AddColliders renderers:{renderers.Length},\t{(DateTime.Now-start).ToString()}");
     }
 
     [ContextMenu("ClearDictionary")]
@@ -362,7 +367,7 @@ public class ModelAreaTree : MonoBehaviour
             // }
             tn.CreateDictionary();
         }
-        Debug.LogError($"CreateDictionary tree:{this.name},render2NodeDict:{AreaTreeHelper.render2NodeDict.Count},\t{(DateTime.Now-start).ToString()}");
+        Debug.LogWarning($"CreateDictionary tree:{this.name},render2NodeDict:{AreaTreeHelper.render2NodeDict.Count},\t{(DateTime.Now-start).ToString()}");
     }
 
     [ContextMenu("* GenerateMesh")]
@@ -382,7 +387,7 @@ public class ModelAreaTree : MonoBehaviour
                 item.Renderers = null;
             }
         }
-        Debug.LogError($"GenerateMesh {(DateTime.Now-start).ToString()}");
+        Debug.LogWarning($"GenerateMesh {(DateTime.Now-start).ToString()}");
     }
 
     [ContextMenu("* GenerateTree")]
@@ -395,7 +400,7 @@ public class ModelAreaTree : MonoBehaviour
         CreateCells_Tree();
         // CombineMesh();
         // CreateDictionary();
-        Debug.LogError($"GenerateTree {(DateTime.Now-start).ToString()}");
+        Debug.LogWarning($"GenerateTree {(DateTime.Now-start).ToString()}");
     }
 
     void Start()

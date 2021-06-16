@@ -10,12 +10,24 @@ public class BuildingModelTool : MonoBehaviour
 
     public List<GameObject> OutGos = new List<GameObject>();
 
+    [ContextMenu("ShowRenderers")]
+    public void ShowRenderers()
+    {
+        var renderers = this.GetComponentsInChildren<Renderer>(true);
+        foreach (var render in renderers)
+        {
+            render.enabled = true;
+        }
+    }
+
     public Bounds GetBounds(Vector3 scale)
     {
+        ShowRenderers();
+
         List<Renderer> renderers = new List<Renderer>();
         foreach(var go in BoundsGos)
         {
-            renderers.AddRange(go.GetComponentsInChildren<Renderer>());
+            renderers.AddRange(go.GetComponentsInChildren<Renderer>(true));
         }
         Bounds bounds = ColliderHelper.CaculateBounds(renderers);
         var size = bounds.size;
@@ -49,7 +61,54 @@ public class BuildingModelTool : MonoBehaviour
 
     public Transform InRoot = null;
 
-    [ContextMenu("FindGosInBounds95")]
+    [ContextMenu("* SetDoorSetting")]
+    public void SetDoorSetting()
+    {
+        BoundsGos.Clear();
+        OutRoots.Clear();
+
+        BuildingModelInfo info = this.GetComponent<BuildingModelInfo>();
+        for(int i=0;i<info.OutPart0.transform.childCount;i++)
+        {
+            var child = info.OutPart0.transform.GetChild(i);
+            if(child.name.Contains("Window"))
+            {
+
+            }
+            if (child.name.Contains("Wall"))
+            {
+                BoundsGos.Add(child.gameObject);
+            }
+            if (child.name.Contains("Door"))
+            {
+                OutRoots.Add(child.gameObject);
+            }
+        }
+        if (info.InPart == null)
+        {
+            info.InPart = info.InitPart("In");
+            
+        }
+
+        for(int i=0;i<info.InPart.transform.childCount;i++)
+        {
+            var child = info.InPart.transform.GetChild(i);
+            if(child.name=="Doors")
+            {
+                InRoot = child;
+                break;
+            }
+        }
+
+        if(InRoot==null)
+        {
+            GameObject doors = info.InitSubPart("Doors", info.InPart.transform);
+            InRoot = doors.transform;
+        }
+
+    }
+
+    [ContextMenu("* FindGosInBounds95")]
     public void FindGosInBounds95()
     {
         Bounds bounds = GetBounds(new Vector3(0.95f, 1f, 0.95f));

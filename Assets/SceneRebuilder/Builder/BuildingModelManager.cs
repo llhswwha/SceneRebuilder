@@ -5,7 +5,12 @@ using UnityEngine;
 
 public class BuildingModelManager : MonoBehaviour
 {
+    public int selectCount = 5;
+    public List<BuildingModelInfo> SelectedBuildings = new List<BuildingModelInfo>();
+
     public List<BuildingModelInfo> Buildings = new List<BuildingModelInfo>();
+
+    public List<float> BuildingsOut0Vertex = new List<float>();
 
     public float InVertextCount = 0;
     public float Out0VertextCount = 0;
@@ -32,10 +37,11 @@ public class BuildingModelManager : MonoBehaviour
         AllVertextCount = 0;
     }
 
-    [ContextMenu("InitBuildings")]
+    [ContextMenu("* InitBuildings")]
     public void InitBuildings()
     {
         DateTime start = DateTime.Now;
+        Buildings.Clear();
         Buildings.AddRange(GameObject.FindObjectsOfType<BuildingModelInfo>());
         for (int i = 0; i < Buildings.Count; i++)
         {
@@ -54,51 +60,38 @@ public class BuildingModelManager : MonoBehaviour
         GetCountInfo();
 
         SortByOut0();
+
         Debug.LogWarning($"InitBuildings Buildings:{Buildings.Count},Time:{(DateTime.Now - start).TotalMilliseconds}ms");
     }
 
-    [ContextMenu("SortByOut0")]
-    public void SortByOut0()
+
+    [ContextMenu("* CombineAll")]
+    public void CombineAll()
     {
-        Buildings.Sort((a, b) =>
-        {
-            return b.Out0VertextCount.CompareTo(a.Out0VertextCount);
-        });
+        CombinedBuildings(Buildings);
     }
 
-    [ContextMenu("SortByOut1")]
-    public void SortByOut1()
+    [ContextMenu("* CombineSelection")]
+    public void CombineSelection()
     {
-        Buildings.Sort((a, b) =>
-        {
-            return b.Out1VertextCount.CompareTo(a.Out1VertextCount);
-        });
+        CombinedBuildings(SelectedBuildings);
     }
 
-    [ContextMenu("SortByIn")]
-    public void SortByIn()
-    {
-        Buildings.Sort((a, b) =>
-        {
-            return b.InVertextCount.CompareTo(a.InVertextCount);
-        });
-    }
-
-    [ContextMenu("CreateTrees")]
-    public void CreateTrees()
+    public void CombinedBuildings(List<BuildingModelInfo> buildings)
     {
         DateTime start = DateTime.Now;
         List<ModelAreaTree> allTrees = new List<ModelAreaTree>();
-        for (int i = 0; i < Buildings.Count; i++)
+        for (int i = 0; i < buildings.Count; i++)
         {
-            BuildingModelInfo b = Buildings[i];
+            BuildingModelInfo b = buildings[i];
+            if (b == null) continue;
             var trees = b.CreateTreesInner();
             allTrees.AddRange(trees);
 
-            float progress = (float)i / Buildings.Count;
+            float progress = (float)i / buildings.Count;
             float percents = progress * 100;
 
-            if (ProgressBarHelper.DisplayCancelableProgressBar("CreateTrees", $"{i}/{Buildings.Count} {percents}% of 100%", progress))
+            if (ProgressBarHelper.DisplayCancelableProgressBar("CreateTrees", $"{i}/{buildings.Count} {percents}% of 100%", progress))
             {
                 //ProgressBarHelper.ClearProgressBar();
                 break;
@@ -113,23 +106,6 @@ public class BuildingModelManager : MonoBehaviour
         Debug.LogWarning($"CreateTrees Buildings:{Buildings.Count},Time:{(DateTime.Now - start).TotalMilliseconds}ms");
     }
 
-    [ContextMenu("ShowAll")]
-    public void ShowAll()
-    {
-        foreach (var b in Buildings)
-        {
-            b.ShowAll();
-        }
-    }
-
-    [ContextMenu("HideDetail")]
-    public void HideDetail()
-    {
-        foreach (var b in Buildings)
-        {
-            b.HideDetail();
-        }
-    }
 
     [ContextMenu("* GetInfos")]
     public void GetInfos()
@@ -161,9 +137,93 @@ public class BuildingModelManager : MonoBehaviour
         }
     }
 
+    [ContextMenu("SelectFirst")]
+    public void SelectFirst()
+    {
+        SelectFirstN(selectCount);
+    }
+
+    [ContextMenu("SelectLast")]
+    public void SelectLast()
+    {
+        SelectLastN(selectCount);
+    }
+
+    public void SelectFirstN(int n)
+    {
+        SelectedBuildings.Clear();
+        for (int i = 0; i < Buildings.Count && i < n; i++)
+        {
+            BuildingModelInfo b = Buildings[i];
+            SelectedBuildings.Add(b);
+        }
+    }
+
+    public void SelectLastN(int n)
+    {
+        SelectedBuildings.Clear();
+        for (int i = 0; i < Buildings.Count && i < n; i++)
+        {
+            BuildingModelInfo b = Buildings[Buildings.Count - 1 - i];
+            SelectedBuildings.Add(b);
+        }
+    }
+
+   
+
+    [ContextMenu("ShowAll")]
+    public void ShowAll()
+    {
+        foreach (var b in Buildings)
+        {
+            b.ShowAll();
+        }
+    }
+
+    [ContextMenu("HideDetail")]
+    public void HideDetail()
+    {
+        foreach (var b in Buildings)
+        {
+            b.HideDetail();
+        }
+    }
+
     [ContextMenu("CreatePrefabs")]
     public void CreatePrefabs()
     {
 
+    }
+
+    [ContextMenu("SortByOut0")]
+    public void SortByOut0()
+    {
+        Buildings.Sort((a, b) =>
+        {
+            return b.Out0VertextCount.CompareTo(a.Out0VertextCount);
+        });
+        BuildingsOut0Vertex.Clear();
+        foreach(var b in Buildings)
+        {
+            BuildingsOut0Vertex.Add(b.Out0VertextCount);
+        }
+    }
+
+    [ContextMenu("SortByOut1")]
+    public void SortByOut1()
+    {
+        Buildings.Sort((a, b) =>
+        {
+            return b.Out1VertextCount.CompareTo(a.Out1VertextCount);
+        });
+    }
+
+    [ContextMenu("SortByIn")]
+    public void SortByIn()
+    {
+        Buildings.Sort((a, b) =>
+        {
+            return b.InVertextCount.CompareTo(a.InVertextCount);
+        });
     }
 }

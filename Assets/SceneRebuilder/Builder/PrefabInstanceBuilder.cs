@@ -320,7 +320,7 @@ UnpackPrefab();
         Debug.LogWarning($"CreateTestModel Count:{TargetCount},Time:{(DateTime.Now-start).ToString()}");
     }
 
-    private void UpackPrefab_One(GameObject go)
+    public static void UpackPrefab_One(GameObject go)
     {
 #if UNITY_EDITOR
         GameObject root = PrefabUtility.GetOutermostPrefabInstanceRoot(go);
