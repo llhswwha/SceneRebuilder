@@ -423,7 +423,7 @@ public class AreaTreeManager : MonoBehaviour
     //public AreaTreeNodeShowManager TreeNodeShowManager;
 
     [ContextMenu("CreateOne_BigSmall")]
-    public void CreateOne_BigSmall()
+    public void CreateOne_BigSmall(Transform parent)
     {
         IsCopy=false;
 
@@ -449,6 +449,7 @@ public class AreaTreeManager : MonoBehaviour
         {
             tree2.MoveRenderers();
         }
+        tree2.transform.SetParent(parent);
 
         var tree1=CreateTree(target,isCombine,"_BigTree",bigModels.ToArray());//合并模型的树
         if (isCombine)
@@ -459,6 +460,7 @@ public class AreaTreeManager : MonoBehaviour
         {
             tree1.MoveRenderers();
         }
+        tree1.transform.SetParent(parent);
 
         //TreeNodeShowManager.HiddenTrees.Add(tree2);
         tree2.DestroyNodeRender();

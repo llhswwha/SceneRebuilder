@@ -42,7 +42,7 @@ public class BuildingModelManager : MonoBehaviour
     {
         DateTime start = DateTime.Now;
         Buildings.Clear();
-        Buildings.AddRange(GameObject.FindObjectsOfType<BuildingModelInfo>());
+        Buildings.AddRange(GameObject.FindObjectsOfType<BuildingModelInfo>(true));
         for (int i = 0; i < Buildings.Count; i++)
         {
             float progress = (float)i / Buildings.Count;
@@ -112,7 +112,7 @@ public class BuildingModelManager : MonoBehaviour
     {
         Buildings.Clear();
 
-        Buildings.AddRange(GameObject.FindObjectsOfType<BuildingModelInfo>());
+        Buildings.AddRange(GameObject.FindObjectsOfType<BuildingModelInfo>(true));
 
         SortByOut0();
 

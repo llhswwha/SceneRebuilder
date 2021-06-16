@@ -85,11 +85,32 @@ public class BuildingModelInfo : MonoBehaviour
     [ContextMenu("* CreateTrees")]
     public void CreateTrees()
     {
-        var trees = CreateTreesInner();
+        if(this.OutPart1==null&&this.InPart==null)
+        {
+            CreateTrees_BigSmall();
+        }
+        else
+        {
+            var trees = CreateTreesInner();
+
+            AreaTreeManager treeManager = GameObject.FindObjectOfType<AreaTreeManager>();
+            if (treeManager)
+                treeManager.AddTrees(trees);
+        }
+        
+    }
+
+    [ContextMenu("* CreateTrees_BigSmall")]
+    public void CreateTrees_BigSmall()
+    {
+        //var trees = CreateTreesInner();
 
         AreaTreeManager treeManager = GameObject.FindObjectOfType<AreaTreeManager>();
         if (treeManager)
-            treeManager.AddTrees(trees);
+        {
+            treeManager.Target = this.OutPart0;
+            treeManager.CreateOne_BigSmall();
+        }
     }
 
     [ContextMenu("ShowRenderers")]
