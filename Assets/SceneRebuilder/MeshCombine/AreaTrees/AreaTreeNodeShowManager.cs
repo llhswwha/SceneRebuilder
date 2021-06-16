@@ -21,10 +21,14 @@ public class AreaTreeNodeShowManager : MonoBehaviour
 
     public List<AreaTreeNode> HiddenNodes=new List<AreaTreeNode>();
 
-    public float ShowNodeDistance=5;
+    public float ShowNodeDistance=25;
 
     private void Awake()
     {
+        if (Instance != null)
+        {
+            GameObject.Destroy(Instance);
+        }
         Instance = this;
     }
 
@@ -105,6 +109,8 @@ public class AreaTreeNodeShowManager : MonoBehaviour
 
     public int HiddenRenderCount=0;
 
+    public bool IsDisToBounds = false;
+
     public void Update()
     {
         DateTime start=DateTime.Now;
@@ -120,6 +126,7 @@ public class AreaTreeNodeShowManager : MonoBehaviour
         int count=HiddenLeafNodes.Count;
         foreach(var node in HiddenLeafNodes)
         {
+            var bounds = node.Bounds;
             var nodePos=node.transform.position;
             float nodeDis1=float.MaxValue;
             float nodeDis2=float.MaxValue;
@@ -127,10 +134,20 @@ public class AreaTreeNodeShowManager : MonoBehaviour
             {
                 if(cam==null)continue;
                 var camPos=cam.transform.position;
-                var dis=Vector3.Distance(camPos,nodePos);
-                if(dis<nodeDis1)
+
+                float dis = 0;
+                if(IsDisToBounds)
                 {
-                    nodeDis1=dis;
+                    dis = bounds.SqrDistance(camPos);
+                }
+                else
+                {
+                    //dis = Vector3.SqrMagnitude(camPos - nodePos);
+                    dis = Vector3.Distance(camPos,nodePos);
+                }
+                if (dis < nodeDis1)
+                {
+                    nodeDis1 = dis;
                 }
             }
             if(nodeDis1<ShowNodeDistance)

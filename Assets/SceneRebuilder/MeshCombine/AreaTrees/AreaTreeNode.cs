@@ -17,6 +17,8 @@ public class AreaTreeNode : MonoBehaviour
 
     public List<MeshRenderer> Renderers=new List<MeshRenderer>();
 
+    public MeshRenderer[] CombinedRenderers;
+
     private List<Transform> RendererParents = new List<Transform>();
 
     private List<MeshRenderer> newRenderers = new List<MeshRenderer>();
@@ -254,6 +256,8 @@ public class AreaTreeNode : MonoBehaviour
         combindResult=MeshCombineHelper.CombineEx(this.renderersRoot,1);
         combindResult.name=this.name+"_Combined";
         combindResult.transform.SetParent(this.transform);
+
+        CombinedRenderers= combindResult.GetComponentsInChildren<MeshRenderer>();
 
         var meshFilters=combindResult.GetComponentsInChildren<MeshFilter>();
         foreach (var mf in meshFilters)
@@ -598,6 +602,7 @@ public class AreaTreeNode : MonoBehaviour
     public void ShowNodes()
     {
         if(IsNodeVisible==true)return;
+        Debug.Log("ShowNodes:"+this.name);
         IsNodeVisible=true;
         this.gameObject.SetActive(true);
         foreach(AreaTreeNode node in Nodes)
@@ -606,7 +611,7 @@ public class AreaTreeNode : MonoBehaviour
             node.ShowNodes();
         }
 
-        foreach (var render in Renderers)
+        foreach (var render in CombinedRenderers)
         {
             render.gameObject.SetActive(true);
         }
@@ -618,7 +623,8 @@ public class AreaTreeNode : MonoBehaviour
     public void HideNodes()
     {
         if(IsNodeVisible==false)return;
-        IsNodeVisible=false;
+        Debug.Log("HideNodes:" + this.name);
+        IsNodeVisible =false;
         this.gameObject.SetActive(false);
         foreach(AreaTreeNode node in Nodes)
         {
@@ -626,7 +632,7 @@ public class AreaTreeNode : MonoBehaviour
             node.ShowNodes();
         }
 
-        foreach(var render in Renderers)
+        foreach(var render in CombinedRenderers)
         {
             render.gameObject.SetActive(false);
         }
