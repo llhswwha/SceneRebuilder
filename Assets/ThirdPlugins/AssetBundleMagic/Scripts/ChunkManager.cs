@@ -240,21 +240,21 @@ namespace Jacovone.AssetBundleMagic
                             var sName = sceneName;
                             sceneProgress[sName] = progress;
 
-                            Log.Info("setProgress start");
+                            Debug.Log("setProgress start");
                         },
                         delegate (int chunkIndex) {
-                            Log.Info("CheckDistances finished !");
+                            Debug.Log("CheckDistances finished !");
                             var sName = chunks[chunkIndex].sceneName;
                             sceneLoadOperation = SceneManager.LoadSceneAsync(sName, LoadSceneMode.Additive);
                             //currentProgress = new AssetBundleMagic.LoadSceneProgress(sceneLoadOperation);
                             sceneProgress[sName] = new AssetBundleMagic.LoadSceneProgress(sceneLoadOperation); ;
                             sceneLoadOperation.completed += (op) =>
                             {
-                                Log.Info("sceneLoadOperation.completed");
+                                Debug.Log("sceneLoadOperation.completed");
                                 //currentProgress = null;
                                 sceneProgress.Remove(sName);
                                 isBusy = false;
-                                Log.Info(chunks[chunkIndex].onLoad);
+                                Debug.Log(chunks[chunkIndex].onLoad);
                                 chunks[chunkIndex].onLoad.Invoke();
                             };
                             //SceneManager.LoadScene(chunks[chunkIndex].sceneName, LoadSceneMode.Additive);
@@ -306,7 +306,7 @@ namespace Jacovone.AssetBundleMagic
                                                                    loadSceneFinished();
                                                                }
 
-                                                               Log.Info("sceneLoadOperation.completed");
+                                                               Debug.Log("sceneLoadOperation.completed");
                                                                sceneProgress.Remove(sceneName);
 
                                                                if(sceneProgress.Count==0)//多个加载
