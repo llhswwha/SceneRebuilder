@@ -1,0 +1,482 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!29 &1
+OcclusionCullingSettings:
+  m_ObjectHideFlags: 0
+  serializedVersion: 2
+  m_OcclusionBakeSettings:
+    smallestOccluder: 5
+    smallestHole: 0.25
+    backfaceThreshold: 100
+  m_SceneGUID: 00000000000000000000000000000000
+  m_OcclusionCullingData: {fileID: 0}
+--- !u!104 &2
+RenderSettings:
+  m_ObjectHideFlags: 0
+  serializedVersion: 8
+  m_Fog: 0
+  m_FogColor: {r: 0.5, g: 0.5, b: 0.5, a: 1}
+  m_FogMode: 3
+  m_FogDensity: 0.01
+  m_LinearFogStart: 0
+  m_LinearFogEnd: 300
+  m_AmbientSkyColor: {r: 0.212, g: 0.227, b: 0.259, a: 1}
+  m_AmbientEquatorColor: {r: 0.114, g: 0.125, b: 0.133, a: 1}
+  m_AmbientGroundColor: {r: 0.047, g: 0.043, b: 0.035, a: 1}
+  m_AmbientIntensity: 1
+  m_AmbientMode: 0
+  m_SubtractiveShadowColor: {r: 0.42, g: 0.478, b: 0.627, a: 1}
+  m_SkyboxMaterial: {fileID: 10304, guid: 0000000000000000f000000000000000, type: 0}
+  m_HaloStrength: 0.5
+  m_FlareStrength: 1
+  m_FlareFadeSpeed: 3
+  m_HaloTexture: {fileID: 0}
+  m_SpotCookie: {fileID: 10001, guid: 0000000000000000e000000000000000, type: 0}
+  m_DefaultReflectionMode: 0
+  m_DefaultReflectionResolution: 128
+  m_ReflectionBounces: 1
+  m_ReflectionIntensity: 1
+  m_CustomReflection: {fileID: 0}
+  m_Sun: {fileID: 0}
+  m_IndirectSpecularColor: {r: 0.37311953, g: 0.38074014, b: 0.3587274, a: 1}
+--- !u!157 &3
+LightmapSettings:
+  m_ObjectHideFlags: 0
+  serializedVersion: 11
+  m_GIWorkflowMode: 0
+  m_GISettings:
+    serializedVersion: 2
+    m_BounceScale: 1
+    m_IndirectOutputScale: 1
+    m_AlbedoBoost: 1
+    m_TemporalCoherenceThreshold: 1
+    m_EnvironmentLightingMode: 0
+    m_EnableBakedLightmaps: 1
+    m_EnableRealtimeLightmaps: 1
+  m_LightmapEditorSettings:
+    serializedVersion: 9
+    m_Resolution: 2
+    m_BakeResolution: 40
+    m_TextureWidth: 1024
+    m_TextureHeight: 1024
+    m_AO: 0
+    m_AOMaxDistance: 1
+    m_CompAOExponent: 1
+    m_CompAOExponentDirect: 0
+    m_Padding: 2
+    m_LightmapParameters: {fileID: 0}
+    m_LightmapsBakeMode: 1
+    m_TextureCompression: 1
+    m_FinalGather: 0
+    m_FinalGatherFiltering: 1
+    m_FinalGatherRayCount: 256
+    m_ReflectionCompression: 2
+    m_MixedBakeMode: 2
+    m_BakeBackend: 0
+    m_PVRSampling: 1
+    m_PVRDirectSampleCount: 32
+    m_PVRSampleCount: 500
+    m_PVRBounces: 2
+    m_PVRFilterTypeDirect: 0
+    m_PVRFilterTypeIndirect: 0
+    m_PVRFilterTypeAO: 0
+    m_PVRFilteringMode: 1
+    m_PVRCulling: 1
+    m_PVRFilteringGaussRadiusDirect: 1
+    m_PVRFilteringGaussRadiusIndirect: 5
+    m_PVRFilteringGaussRadiusAO: 2
+    m_PVRFilteringAtrousPositionSigmaDirect: 0.5
+    m_PVRFilteringAtrousPositionSigmaIndirect: 2
+    m_PVRFilteringAtrousPositionSigmaAO: 1
+    m_ShowResolutionOverlay: 1
+  m_LightingDataAsset: {fileID: 0}
+  m_UseShadowmask: 1
+--- !u!196 &4
+NavMeshSettings:
+  serializedVersion: 2
+  m_ObjectHideFlags: 0
+  m_BuildSettings:
+    serializedVersion: 2
+    agentTypeID: 0
+    agentRadius: 0.5
+    agentHeight: 2
+    agentSlope: 45
+    agentClimb: 0.4
+    ledgeDropHeight: 0
+    maxJumpAcrossDistance: 0
+    minRegionArea: 2
+    manualCellSize: 0
+    cellSize: 0.16666667
+    manualTileSize: 0
+    tileSize: 256
+    accuratePlacement: 0
+    debug:
+      m_Flags: 0
+  m_NavMeshData: {fileID: 0}
+--- !u!1 &260115180
+GameObject:
+  m_ObjectHideFlags: 0
+  m_PrefabParentObject: {fileID: 1754315305601678, guid: b4eb08e41ed7e5c488af110f9efaf7fb,
+    type: 2}
+  m_PrefabInternal: {fileID: 0}
+  serializedVersion: 5
+  m_Component:
+  - component: {fileID: 260115184}
+  - component: {fileID: 260115182}
+  - component: {fileID: 260115185}
+  m_Layer: 0
+  m_Name: J1_F1_Devices
+  m_TagString: Untagged
+  m_Icon: {fileID: 0}
+  m_NavMeshLayer: 0
+  m_StaticEditorFlags: 0
+  m_IsActive: 1
+--- !u!114 &260115182
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_PrefabParentObject: {fileID: 0}
+  m_PrefabInternal: {fileID: 0}
+  m_GameObject: {fileID: 260115180}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: c550f553ddd21c5428c8756f9913edde, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  Vertexs: 3845836
+--- !u!4 &260115184
+Transform:
+  m_ObjectHideFlags: 0
+  m_PrefabParentObject: {fileID: 4156587791355296, guid: b4eb08e41ed7e5c488af110f9efaf7fb,
+    type: 2}
+  m_PrefabInternal: {fileID: 0}
+  m_GameObject: {fileID: 260115180}
+  m_LocalRotation: {x: 0.00000008146034, y: -0, z: -0, w: 1}
+  m_LocalPosition: {x: 57.4104, y: -0.51346445, z: -11.776913}
+  m_LocalScale: {x: 1, y: 1, z: 1}
+  m_Children:
+  - {fileID: 359817280}
+  - {fileID: 966903559}
+  m_Father: {fileID: 0}
+  m_RootOrder: 0
+  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
+--- !u!114 &260115185
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_PrefabParentObject: {fileID: 0}
+  m_PrefabInternal: {fileID: 0}
+  m_GameObject: {fileID: 260115180}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: cbdab4fb62461914eb6284f36b68e934, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  ChunkManager: {fileID: 0}
+  Prefix: J1Devices/
+  AutoLoad: 1
+  modelList:
+  - assetName: J1_75.prefab
+    bundleName: J1_F1_8
+    parentName: Devices1
+  - assetName: J1_8.prefab
+    bundleName: J1_F1_8
+    parentName: Devices2
+  - assetName: J1_3.prefab
+    bundleName: J1_F1_3
+    parentName: Devices2
+  - assetName: J1_80.prefab
+    bundleName: J1_F1_3
+    parentName: Devices1
+  - assetName: J1_32.prefab
+    bundleName: J1_F1_32
+    parentName: Devices2
+  - assetName: J1_51.prefab
+    bundleName: J1_F1_32
+    parentName: Devices1
+  - assetName: J1_6.prefab
+    bundleName: J1_F1_6
+    parentName: Devices2
+  - assetName: J1_77.prefab
+    bundleName: J1_F1_6
+    parentName: Devices1
+  - assetName: J1_82.prefab
+    bundleName: J1_F1_1
+    parentName: Devices1
+  - assetName: J1_1.prefab
+    bundleName: J1_F1_1
+    parentName: Devices2
+  - assetName: J1_76.prefab
+    bundleName: J1_F1_7
+    parentName: Devices1
+  - assetName: J1_7.prefab
+    bundleName: J1_F1_7
+    parentName: Devices2
+  - assetName: J1_39.prefab
+    bundleName: J1_F1_39
+    parentName: Devices2
+  - assetName: J1_44.prefab
+    bundleName: J1_F1_39
+    parentName: Devices1
+  - assetName: J1_73.prefab
+    bundleName: J1_F1_10
+    parentName: Devices1
+  - assetName: J1_10.prefab
+    bundleName: J1_F1_10
+    parentName: Devices2
+  - assetName: J1_27.prefab
+    bundleName: J1_F1_27
+    parentName: Devices2
+  - assetName: J1_56.prefab
+    bundleName: J1_F1_27
+    parentName: Devices1
+  - assetName: J1_61.prefab
+    bundleName: J1_F1_22
+    parentName: Devices1
+  - assetName: J1_22.prefab
+    bundleName: J1_F1_22
+    parentName: Devices2
+  - assetName: J1_63.prefab
+    bundleName: J1_F1_20
+    parentName: Devices1
+  - assetName: J1_20.prefab
+    bundleName: J1_F1_20
+    parentName: Devices2
+  - assetName: J1_11.prefab
+    bundleName: J1_F1_11
+    parentName: Devices2
+  - assetName: J1_72.prefab
+    bundleName: J1_F1_11
+    parentName: Devices1
+  - assetName: J1_9.prefab
+    bundleName: J1_F1_9
+    parentName: Devices2
+  - assetName: J1_74.prefab
+    bundleName: J1_F1_9
+    parentName: Devices1
+  - assetName: J1_4.prefab
+    bundleName: J1_F1_4
+    parentName: Devices2
+  - assetName: J1_79.prefab
+    bundleName: J1_F1_4
+    parentName: Devices1
+  - assetName: J1_33.prefab
+    bundleName: J1_F1_33
+    parentName: Devices2
+  - assetName: J1_50.prefab
+    bundleName: J1_F1_33
+    parentName: Devices1
+  - assetName: J1_21.prefab
+    bundleName: J1_F1_21
+    parentName: Devices2
+  - assetName: J1_62.prefab
+    bundleName: J1_F1_21
+    parentName: Devices1
+  - assetName: J1_66.prefab
+    bundleName: J1_F1_17
+    parentName: Devices1
+  - assetName: J1_17.prefab
+    bundleName: J1_F1_17
+    parentName: Devices2
+  - assetName: J1_67.prefab
+    bundleName: J1_F1_16
+    parentName: Devices1
+  - assetName: J1_16.prefab
+    bundleName: J1_F1_16
+    parentName: Devices2
+  - assetName: J1_38.prefab
+    bundleName: J1_F1_38
+    parentName: Devices2
+  - assetName: J1_45.prefab
+    bundleName: J1_F1_38
+    parentName: Devices1
+  - assetName: J1_24.prefab
+    bundleName: J1_F1_24
+    parentName: Devices2
+  - assetName: J1_59.prefab
+    bundleName: J1_F1_24
+    parentName: Devices1
+  - assetName: J1_19.prefab
+    bundleName: J1_F1_19
+    parentName: Devices2
+  - assetName: J1_64.prefab
+    bundleName: J1_F1_19
+    parentName: Devices1
+  - assetName: J1_48.prefab
+    bundleName: J1_F1_35
+    parentName: Devices1
+  - assetName: J1_35.prefab
+    bundleName: J1_F1_35
+    parentName: Devices2
+  - assetName: J1_37.prefab
+    bundleName: J1_F1_37
+    parentName: Devices2
+  - assetName: J1_46.prefab
+    bundleName: J1_F1_37
+    parentName: Devices1
+  - assetName: J1_26.prefab
+    bundleName: J1_F1_26
+    parentName: Devices2
+  - assetName: J1_57.prefab
+    bundleName: J1_F1_26
+    parentName: Devices1
+  - assetName: J1_29.prefab
+    bundleName: J1_F1_29
+    parentName: Devices2
+  - assetName: J1_54.prefab
+    bundleName: J1_F1_29
+    parentName: Devices1
+  - assetName: J1_69.prefab
+    bundleName: J1_F1_14
+    parentName: Devices1
+  - assetName: J1_14.prefab
+    bundleName: J1_F1_14
+    parentName: Devices2
+  - assetName: J1_65.prefab
+    bundleName: J1_F1_18
+    parentName: Devices1
+  - assetName: J1_18.prefab
+    bundleName: J1_F1_18
+    parentName: Devices2
+  - assetName: J1_53.prefab
+    bundleName: J1_F1_30
+    parentName: Devices1
+  - assetName: J1_30.prefab
+    bundleName: J1_F1_30
+    parentName: Devices2
+  - assetName: J1_58.prefab
+    bundleName: J1_F1_25
+    parentName: Devices1
+  - assetName: J1_25.prefab
+    bundleName: J1_F1_25
+    parentName: Devices2
+  - assetName: J1_71.prefab
+    bundleName: J1_F1_12
+    parentName: Devices1
+  - assetName: J1_12.prefab
+    bundleName: J1_F1_12
+    parentName: Devices2
+  - assetName: J1_28.prefab
+    bundleName: J1_F1_28
+    parentName: Devices2
+  - assetName: J1_55.prefab
+    bundleName: J1_F1_28
+    parentName: Devices1
+  - assetName: J1_49.prefab
+    bundleName: J1_F1_34
+    parentName: Devices1
+  - assetName: J1_34.prefab
+    bundleName: J1_F1_34
+    parentName: Devices2
+  - assetName: J1_36.prefab
+    bundleName: J1_F1_36
+    parentName: Devices2
+  - assetName: J1_47.prefab
+    bundleName: J1_F1_36
+    parentName: Devices1
+  - assetName: J1_43.prefab
+    bundleName: J1_F1_40
+    parentName: Devices1
+  - assetName: J1_40.prefab
+    bundleName: J1_F1_40
+    parentName: Devices2
+  - assetName: J1_31.prefab
+    bundleName: J1_F1_31
+    parentName: Devices2
+  - assetName: J1_52.prefab
+    bundleName: J1_F1_31
+    parentName: Devices1
+  - assetName: J1_2.prefab
+    bundleName: J1_F1_2
+    parentName: Devices2
+  - assetName: J1_81.prefab
+    bundleName: J1_F1_2
+    parentName: Devices1
+  - assetName: J1_42.prefab
+    bundleName: J1_F1_41
+    parentName: Devices1
+  - assetName: J1_41.prefab
+    bundleName: J1_F1_41
+    parentName: Devices2
+  - assetName: J1_60.prefab
+    bundleName: J1_F1_23
+    parentName: Devices1
+  - assetName: J1_23.prefab
+    bundleName: J1_F1_23
+    parentName: Devices2
+  - assetName: J1_5.prefab
+    bundleName: J1_F1_5
+    parentName: Devices2
+  - assetName: J1_78.prefab
+    bundleName: J1_F1_5
+    parentName: Devices1
+  - assetName: J1_70.prefab
+    bundleName: J1_F1_13
+    parentName: Devices1
+  - assetName: J1_13.prefab
+    bundleName: J1_F1_13
+    parentName: Devices2
+  - assetName: J1_15.prefab
+    bundleName: J1_F1_15
+    parentName: Devices2
+  - assetName: J1_68.prefab
+    bundleName: J1_F1_15
+    parentName: Devices1
+--- !u!1 &359817279
+GameObject:
+  m_ObjectHideFlags: 0
+  m_PrefabParentObject: {fileID: 1702686533241266, guid: b4eb08e41ed7e5c488af110f9efaf7fb,
+    type: 2}
+  m_PrefabInternal: {fileID: 0}
+  serializedVersion: 5
+  m_Component:
+  - component: {fileID: 359817280}
+  m_Layer: 0
+  m_Name: Devices1
+  m_TagString: Untagged
+  m_Icon: {fileID: 0}
+  m_NavMeshLayer: 0
+  m_StaticEditorFlags: 0
+  m_IsActive: 1
+--- !u!4 &359817280
+Transform:
+  m_ObjectHideFlags: 0
+  m_PrefabParentObject: {fileID: 4409767849853748, guid: b4eb08e41ed7e5c488af110f9efaf7fb,
+    type: 2}
+  m_PrefabInternal: {fileID: 0}
+  m_GameObject: {fileID: 359817279}
+  m_LocalRotation: {x: -0, y: -0, z: -0, w: 1}
+  m_LocalPosition: {x: -14.363565, y: 2.5918221, z: 63.310642}
+  m_LocalScale: {x: 1, y: 1, z: 1}
+  m_Children: []
+  m_Father: {fileID: 260115184}
+  m_RootOrder: 0
+  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
+--- !u!1 &966903558
+GameObject:
+  m_ObjectHideFlags: 0
+  m_PrefabParentObject: {fileID: 1384520404044088, guid: b4eb08e41ed7e5c488af110f9efaf7fb,
+    type: 2}
+  m_PrefabInternal: {fileID: 0}
+  serializedVersion: 5
+  m_Component:
+  - component: {fileID: 966903559}
+  m_Layer: 0
+  m_Name: Devices2
+  m_TagString: Untagged
+  m_Icon: {fileID: 0}
+  m_NavMeshLayer: 0
+  m_StaticEditorFlags: 0
+  m_IsActive: 1
+--- !u!4 &966903559
+Transform:
+  m_ObjectHideFlags: 0
+  m_PrefabParentObject: {fileID: 4802751242091532, guid: b4eb08e41ed7e5c488af110f9efaf7fb,
+    type: 2}
+  m_PrefabInternal: {fileID: 0}
+  m_GameObject: {fileID: 966903558}
+  m_LocalRotation: {x: -0, y: -0, z: -0, w: 1}
+  m_LocalPosition: {x: -14.36839, y: 2.5918221, z: 18.254837}
+  m_LocalScale: {x: 1, y: 1, z: 1}
+  m_Children: []
+  m_Father: {fileID: 260115184}
+  m_RootOrder: 1
+  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}

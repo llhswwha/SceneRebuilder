@@ -282,6 +282,8 @@ public class AreaTreeManager : MonoBehaviour
             RendererCount += renders.Length;
             foreach (var render in renders)
             {
+                if (render == null) continue;
+                if (render.sharedMaterial == null) continue;
                 if (!matList.Contains(render.sharedMaterial))
                 {
                     matList.Add(render.sharedMaterial);
@@ -352,6 +354,17 @@ public class AreaTreeManager : MonoBehaviour
     //public int MaxCount;
 
     //public int Depth = 0;
+
+    [ContextMenu("GetTreeInfos")]
+    public void GetTreeInfos()
+    {
+        ClearCount();
+        Trees = GameObject.FindObjectsOfType<ModelAreaTree>(true).ToList();
+        foreach(var tree in Trees)
+        {
+            ShowTreeInfo(tree);
+        }
+    }
 
     [ContextMenu("ClearTreesEx")]
     public void ClearTreesEx()

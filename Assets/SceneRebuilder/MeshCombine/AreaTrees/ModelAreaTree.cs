@@ -190,17 +190,21 @@ public class ModelAreaTree : MonoBehaviour
 
     public MeshRenderer[] GetTreeRendererers()
     {
+        List<MeshRenderer> results = new List<MeshRenderer>();
+
+        MeshRenderer[] renders = null;
         var target = GetTarget();
         if(TreeRenderers!=null&&TreeRenderers.Length>0){
-            return TreeRenderers;
+            renders= TreeRenderers;
         }
         else if(target != null){
-            var renderers= target.GetComponentsInChildren<MeshRenderer>();
-            return renderers;
+            renders = target.GetComponentsInChildren<MeshRenderer>();
         }
         else{
-            return TreeRenderers;
+            renders= TreeRenderers;
         }
+        results = renders.ToList().FindAll(i => i != null);
+        return results.ToArray();
     }
 
     [ContextMenu("2.CreateCells_Tree")]

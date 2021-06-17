@@ -344,6 +344,7 @@ public static class ColliderHelper  {
         int count = 0;
         foreach (Renderer child in renders)
         {
+            if (child == null) continue;
             if (!child.enabled) continue;
             center += child.bounds.center;
             count++;
