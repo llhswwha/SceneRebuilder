@@ -33,14 +33,22 @@ public class BuildingModelInfo : MonoBehaviour
         }
 
         UpackPrefab_One(this.gameObject);
-        ModelAreaTree[] trees = new ModelAreaTree[3];
-        var tree1 = CreateTree(InPart, "InTree");
-        trees[0] = tree1;
-        var tree2 = CreateTree(OutPart0, "OutTree0");
-        trees[1] = tree2;
-        var tree3 = CreateTree(OutPart1, "OutTree1");
-        trees[2] = tree3;
-        return trees;
+
+        if (this.OutPart1 == null && this.InPart == null)
+        {
+            return CreateTrees_BigSmall();
+        }
+        else
+        {
+            ModelAreaTree[] trees = new ModelAreaTree[3];
+            var tree1 = CreateTree(InPart, "InTree");
+            trees[0] = tree1;
+            var tree2 = CreateTree(OutPart0, "OutTree0");
+            trees[1] = tree2;
+            var tree3 = CreateTree(OutPart1, "OutTree1");
+            trees[2] = tree3;
+            return trees;
+        }
     }
 
     [ContextMenu("* InitInOut")]
@@ -85,23 +93,15 @@ public class BuildingModelInfo : MonoBehaviour
     [ContextMenu("* CreateTrees")]
     public void CreateTrees()
     {
-        if(this.OutPart1==null&&this.InPart==null)
-        {
-            CreateTrees_BigSmall();
-        }
-        else
-        {
-            var trees = CreateTreesInner();
+        var trees = CreateTreesInner();
 
-            AreaTreeManager treeManager = GameObject.FindObjectOfType<AreaTreeManager>();
-            if (treeManager)
-                treeManager.AddTrees(trees);
-        }
-        
+        AreaTreeManager treeManager = GameObject.FindObjectOfType<AreaTreeManager>();
+        if (treeManager)
+            treeManager.AddTrees(trees);
     }
 
     [ContextMenu("* CreateTrees_BigSmall2")]
-    public void CreateTrees_BigSmall()
+    public ModelAreaTree[] CreateTrees_BigSmall()
     {
         //var trees = CreateTreesInner();
         Debug.Log("CreateTrees_BigSmall");
@@ -109,11 +109,12 @@ public class BuildingModelInfo : MonoBehaviour
         if (treeManager)
         {
             treeManager.Target = this.OutPart0;
-            treeManager.CreateOne_BigSmall(this.transform, this.OutPart0);
+            return treeManager.CreateOne_BigSmall(this.transform, this.OutPart0);
         }
         else
         {
             Debug.LogError("treeManager==null");
+            return null;
         }
     }
 

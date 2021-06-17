@@ -430,7 +430,7 @@ public class AreaTreeManager : MonoBehaviour
         //public AreaTreeNodeShowManager TreeNodeShowManager;
 
     //[ContextMenu("CreateOne_BigSmall")]
-    public void CreateOne_BigSmall(Transform parent,GameObject target)
+    public ModelAreaTree[] CreateOne_BigSmall(Transform parent,GameObject target)
     {
         IsCopy=false;
 
@@ -471,7 +471,10 @@ public class AreaTreeManager : MonoBehaviour
 
         //TreeNodeShowManager.HiddenTrees.Add(tree2);
         tree2.DestroyNodeRender();
+
+        ModelAreaTree[] trees = new ModelAreaTree[2] {tree1,tree2 };
         Debug.LogError($"CreateOne_BigSmall \t{(DateTime.Now - start).ToString()}");
+        return trees;
     }
 
     [ContextMenu("CreateOne_HiddenShown")]

@@ -86,7 +86,10 @@ public class BuildingModelManager : MonoBehaviour
             BuildingModelInfo b = buildings[i];
             if (b == null) continue;
             var trees = b.CreateTreesInner();
-            allTrees.AddRange(trees);
+            if(trees!=null)
+            {
+                allTrees.AddRange(trees);
+            }
 
             float progress = (float)i / buildings.Count;
             float percents = progress * 100;
