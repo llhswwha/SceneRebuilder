@@ -252,6 +252,11 @@ public class BuildingModelManager : MonoBehaviour
 #endif
     }
 
+    private string GetScenePath(string sceneName)
+    {
+        return Application.dataPath + "/Modules/AssetLoad/AssetScenes/AutoCreate/" + sceneName + ".unity";
+    }
+
     [ContextMenu("CreateScenes")]
     public void CreateScenes()
     {
