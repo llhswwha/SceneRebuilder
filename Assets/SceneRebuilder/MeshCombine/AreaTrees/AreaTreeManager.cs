@@ -420,10 +420,17 @@ public class AreaTreeManager : MonoBehaviour
         }
     }
 
-    //public AreaTreeNodeShowManager TreeNodeShowManager;
+    [ContextMenu("* TestCreateOne_BigSmall")]
+    public void TestCreateOne_BigSmall()
+    {
+        var target = GetTarget();
+        CreateOne_BigSmall(null, target);
+    }
 
-    [ContextMenu("CreateOne_BigSmall")]
-    public void CreateOne_BigSmall(Transform parent)
+        //public AreaTreeNodeShowManager TreeNodeShowManager;
+
+    //[ContextMenu("CreateOne_BigSmall")]
+    public void CreateOne_BigSmall(Transform parent,GameObject target)
     {
         IsCopy=false;
 
@@ -434,7 +441,7 @@ public class AreaTreeManager : MonoBehaviour
 
         List<MeshRenderer> bigModels=new List<MeshRenderer>();
         List<MeshRenderer> smallModels=new List<MeshRenderer>();
-        var target=GetTarget();
+        
 
         prefabInstanceBuilder.GetBigSmallRenderers(bigModels,smallModels);
 

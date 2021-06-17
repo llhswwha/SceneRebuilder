@@ -180,6 +180,15 @@ public class BuildingModelManager : MonoBehaviour
         }
     }
 
+    [ContextMenu("ShowRenderers")]
+    public void ShowRenderers()
+    {
+        foreach (var b in Buildings)
+        {
+            b.ShowRenderers();
+        }
+    }
+
     [ContextMenu("HideDetail")]
     public void HideDetail()
     {
