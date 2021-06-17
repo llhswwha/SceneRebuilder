@@ -125,10 +125,6 @@ public class BuildingModelInfo : MonoBehaviour
     public void CreateTreesEx()
     {
         AreaTreeManager treeManager = GameObject.FindObjectOfType<AreaTreeManager>();
-        if (treeManager)
-        {
-            treeManager.Clear();
-        }
         var trees = CreateTreesInnerEx();
         if (treeManager)
         {
@@ -140,10 +136,6 @@ public class BuildingModelInfo : MonoBehaviour
     public void CreateTrees()
     {
         AreaTreeManager treeManager = GameObject.FindObjectOfType<AreaTreeManager>();
-        if (treeManager)
-        {
-            treeManager.Clear();
-        }
         var trees = CreateTreesInner();
         if (treeManager)
         {
@@ -155,10 +147,6 @@ public class BuildingModelInfo : MonoBehaviour
     public void CreateTrees_BigSmall()
     {
         AreaTreeManager treeManager = GameObject.FindObjectOfType<AreaTreeManager>();
-        if (treeManager)
-        {
-           treeManager.Clear();
-        }
         CreateTrees_BigSmall_Core();
     }
 
@@ -169,7 +157,6 @@ public class BuildingModelInfo : MonoBehaviour
         AreaTreeManager treeManager = GameObject.FindObjectOfType<AreaTreeManager>();
         if (treeManager)
         {
-            //treeManager.Clear();
             treeManager.Target = this.OutPart0;
             var trees= treeManager.CreateOne_BigSmall_Core(this.transform, this.OutPart0);
             foreach(var tree in trees)
