@@ -213,6 +213,11 @@ public class BuildingModelInfo : MonoBehaviour
 #endif
     }
 
+    public void Unpack()
+    {
+        UpackPrefab_One(this.gameObject);
+    }
+
  
 
     private ModelAreaTree CreateTree(GameObject target,string treeName)

@@ -207,10 +207,20 @@ public class BuildingModelManager : MonoBehaviour
         }
     }
 
+    [ContextMenu("Unpack")]
+    public void Unpack()
+    {
+        foreach (var b in Buildings)
+        {
+            b.Unpack();
+        }
+    }
+
     [ContextMenu("CreatePrefabs")]
     public void CreatePrefabs()
     {
 #if UNITY_EDITOR
+        Unpack();
         DateTime start = DateTime.Now;
         AreaTreeManager treeManager = GameObject.FindObjectOfType<AreaTreeManager>();
         if (treeManager != null) treeManager.Clear();
@@ -220,7 +230,8 @@ public class BuildingModelManager : MonoBehaviour
             BuildingModelInfo b = Buildings[i];
             if (b == null) continue;
             GameObject go = b.gameObject;
-            string path = "Assets/Models/Instances/Buildings/" + go.name + go.GetInstanceID() + ".prefab";
+            //string path = "Assets/Models/Instances/Buildings/" + go.name +"_"+ go.GetInstanceID() + ".prefab";
+            string path = "Assets/Models/Instances/Buildings/" + go.name + ".prefab";
             GameObject prefabAsset = PrefabUtility.SaveAsPrefabAssetAndConnect(go, path, InteractionMode.UserAction);
 
             float progress = (float)i / Buildings.Count;
