@@ -29,6 +29,8 @@ public class AreaTreeNodeShowManagerUI : MonoBehaviour
         ModelInfo.text=ShowModelInfo();
     }
 
+    //private MeshRenderer[] allRenderers = null;
+
     [ContextMenu("ShowModelInfo")]
     private string ShowModelInfo()
     {
@@ -48,7 +50,7 @@ public class AreaTreeNodeShowManagerUI : MonoBehaviour
             if (meshFilter.sharedMesh == null) continue;
             vertextCount += meshFilter.sharedMesh.vertexCount;
             renderCount++;
-            Debug.Log("render:"+render.name+"|"+render.transform.parent);
+            //Debug.Log("render:"+render.name+"|"+render.transform.parent);
         }
         int w = vertextCount / 10000;
 
@@ -70,14 +72,16 @@ public class AreaTreeNodeShowManagerUI : MonoBehaviour
 
     public int ShowNodeCount = 0;
 
+    public Toggle ToggleAutoUpdate;
+
     // Update is called once per frame
     void Update()
     {
         int count1= areaTreeNodeShowManager.ShownNodes.Count;
-        if (ShowNodeCount != count1)
-        {
-            ClickUpdateInfo();
-        }
+        //if (ShowNodeCount != count1)
+        //{
+        //    ClickUpdateInfo();
+        //}
         ShowNodeCount = count1;
         ShowHideInfo.text=string.Format("ShowNode:{0},HideNode:{1},StaticNode:{2}", ShowNodeCount, areaTreeNodeShowManager.HiddenNodes.Count,areaTreeNodeShowManager.ShownLeafNodes.Count);
     }
