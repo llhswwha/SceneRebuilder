@@ -2,7 +2,12 @@ using System;
 using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
+using UnityEngine.SceneManagement;
 
+#if UNITY_EDITOR
+using UnityEditor;
+using UnityEditor.SceneManagement;
+#endif
 public class BuildingModelManager : MonoBehaviour
 {
     public int selectCount = 5;
@@ -205,7 +210,79 @@ public class BuildingModelManager : MonoBehaviour
     [ContextMenu("CreatePrefabs")]
     public void CreatePrefabs()
     {
+#if UNITY_EDITOR
+        DateTime start = DateTime.Now;
+        AreaTreeManager treeManager = GameObject.FindObjectOfType<AreaTreeManager>();
+        if (treeManager != null) treeManager.Clear();
+        List<ModelAreaTree> allTrees = new List<ModelAreaTree>();
+        for (int i = 0; i < Buildings.Count; i++)
+        {
+            BuildingModelInfo b = Buildings[i];
+            if (b == null) continue;
+            GameObject go = b.gameObject;
+            string path = "Assets/Models/Instances/Buildings/" + go.name + go.GetInstanceID() + ".prefab";
+            GameObject prefabAsset = PrefabUtility.SaveAsPrefabAssetAndConnect(go, path, InteractionMode.UserAction);
 
+            float progress = (float)i / Buildings.Count;
+            float percents = progress * 100;
+
+            if (ProgressBarHelper.DisplayCancelableProgressBar("CreatePrefabs", $"{i}/{Buildings.Count} {percents}% of 100%", progress))
+            {
+                //ProgressBarHelper.ClearProgressBar();
+                break;
+            }
+        }
+
+
+        if (treeManager) treeManager.AddTrees(allTrees.ToArray());
+
+        ProgressBarHelper.ClearProgressBar();
+        Debug.LogWarning($"CreatePrefabs Buildings:{Buildings.Count},Time:{(DateTime.Now - start).TotalMilliseconds}ms");
+#endif
+    }
+
+    [ContextMenu("CreateScenes")]
+    public void CreateScenes()
+    {
+#if UNITY_EDITOR
+
+        Scene scene = EditorSceneManager.NewScene(NewSceneSetup.EmptyScene, NewSceneMode.Additive);
+        var rootObjs = scene.GetRootGameObjects();
+        Debug.Log("rootObjs:"+ rootObjs.Length);
+
+        //DateTime start = DateTime.Now;
+        //AreaTreeManager treeManager = GameObject.FindObjectOfType<AreaTreeManager>();
+        //if (treeManager != null) treeManager.Clear();
+        //List<ModelAreaTree> allTrees = new List<ModelAreaTree>();
+        //for (int i = 0; i < Buildings.Count; i++)
+        //{
+        //    BuildingModelInfo b = Buildings[i];
+        //    if (b == null) continue;
+        //    GameObject go = b.gameObject;
+
+        //    Scene scene=SceneManager.CreateScene(go.name);
+        //    var rootObjs=scene.GetRootGameObjects();
+
+
+        //    string path = "Assets/Models/Instances/Buildings/" + go.name + go.GetInstanceID() + ".prefab";
+        //    GameObject prefabAsset = PrefabUtility.SaveAsPrefabAssetAndConnect(go, path, InteractionMode.UserAction);
+
+        //    float progress = (float)i / Buildings.Count;
+        //    float percents = progress * 100;
+
+        //    if (ProgressBarHelper.DisplayCancelableProgressBar("CreatePrefabs", $"{i}/{Buildings.Count} {percents}% of 100%", progress))
+        //    {
+        //        //ProgressBarHelper.ClearProgressBar();
+        //        break;
+        //    }
+        //}
+
+
+        //if (treeManager) treeManager.AddTrees(allTrees.ToArray());
+
+        //ProgressBarHelper.ClearProgressBar();
+        //Debug.LogWarning($"CreatePrefabs Buildings:{Buildings.Count},Time:{(DateTime.Now - start).TotalMilliseconds}ms");
+#endif
     }
 
     [ContextMenu("SortByOut0")]
