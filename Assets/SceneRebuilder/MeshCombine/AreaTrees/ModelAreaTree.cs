@@ -292,7 +292,7 @@ public class ModelAreaTree : MonoBehaviour
                 render.gameObject.SetActive(isVisible);
                 count++;
             }
-            Debug.LogError($"ShowRenderers renderers:{count},\t{(DateTime.Now - start).ToString()}");
+            Debug.Log($"ShowRenderers1 renderers:{count},\t{(DateTime.Now - start).ToString()}");
         }
         else if (target != null)
         {
@@ -308,7 +308,7 @@ public class ModelAreaTree : MonoBehaviour
                 render.gameObject.SetActive(isVisible);
             }
             TreeRenderers = renderers;
-            Debug.LogError($"ShowRenderers renderers:{renderers.Length},\t{(DateTime.Now - start).ToString()}");
+            Debug.Log($"ShowRenderers2 renderers:{renderers.Length},\t{(DateTime.Now - start).ToString()}");
         }
         else
         {
@@ -320,11 +320,11 @@ public class ModelAreaTree : MonoBehaviour
                     render.enabled = isVisible;
                     render.gameObject.SetActive(isVisible);
                 }
-                Debug.LogError($"ShowRenderers renderers:{TreeRenderers.Length},\t{(DateTime.Now - start).ToString()}");
+                Debug.Log($"ShowRenderers3 renderers:{TreeRenderers.Length},\t{(DateTime.Now - start).ToString()}");
             }
             else
             {
-                Debug.LogError($"ShowRenderers renderers:0,\t{(DateTime.Now - start).ToString()}");
+                Debug.Log($"ShowRenderers4 renderers:0,\t{(DateTime.Now - start).ToString()}");
             }
         }
     }

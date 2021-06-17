@@ -23,32 +23,53 @@ public class BuildingModelInfo : MonoBehaviour
     public int AllRendererCount = 0;
     public float AllVertextCount = 0;
 
-    //[ContextMenu("* CreateTrees")]
-    public ModelAreaTree[] CreateTreesInner()
+    private void ClearTrees()
     {
         var oldTrees = this.GetComponentsInChildren<ModelAreaTree>(true);
         foreach (var oldT in oldTrees)
         {
             GameObject.DestroyImmediate(oldT.gameObject);
         }
+    }
+
+    //[ContextMenu("* CreateTrees")]
+    public ModelAreaTree[] CreateTreesInner()
+    {
+        ClearTrees();
 
         UpackPrefab_One(this.gameObject);
 
+        ShowRenderers();
+        return CreateTreesCore();
+    }
+
+    public ModelAreaTree[] CreateTreesInnerEx()
+    {
+        ClearTrees();
+
+        UpackPrefab_One(this.gameObject);
+
+        ShowRenderers();
         if (this.OutPart1 == null && this.InPart == null)
         {
-            return CreateTrees_BigSmall();
+            return CreateTrees_BigSmall_Core();
         }
         else
         {
-            ModelAreaTree[] trees = new ModelAreaTree[3];
-            var tree1 = CreateTree(InPart, "InTree");
-            trees[0] = tree1;
-            var tree2 = CreateTree(OutPart0, "OutTree0");
-            trees[1] = tree2;
-            var tree3 = CreateTree(OutPart1, "OutTree1");
-            trees[2] = tree3;
-            return trees;
+            return CreateTreesCore();
         }
+    }
+
+    public ModelAreaTree[] CreateTreesCore()
+    {
+        ModelAreaTree[] trees = new ModelAreaTree[3];
+        var tree1 = CreateTree(InPart, "InTree");
+        trees[0] = tree1;
+        var tree2 = CreateTree(OutPart0, "OutTree0");
+        trees[1] = tree2;
+        var tree3 = CreateTree(OutPart1, "OutTree1");
+        trees[2] = tree3;
+        return trees;
     }
 
     [ContextMenu("* InitInOut")]
@@ -77,9 +98,19 @@ public class BuildingModelInfo : MonoBehaviour
         if (OutPart1 == null && OutPart0 == null && InPart == null)
         {
             GameObject outRoot = InitPart("Out0");
+            OutPart0 = outRoot;
             foreach (var child in children)
             {
                 child.SetParent(outRoot.transform);
+            }
+        }
+
+        if (OutPart1 == null && OutPart0 != null && InPart == null && OutPart0.transform.childCount==0)
+        {
+            foreach (var child in children)
+            {
+                if (child.gameObject == OutPart0) continue;
+                child.SetParent(OutPart0.transform);
             }
         }
 
@@ -90,26 +121,62 @@ public class BuildingModelInfo : MonoBehaviour
         //var manager=GameObject.FindObjectOfType<>
     }
 
+    [ContextMenu("* CreateTreesEx")]
+    public void CreateTreesEx()
+    {
+        AreaTreeManager treeManager = GameObject.FindObjectOfType<AreaTreeManager>();
+        if (treeManager)
+        {
+            treeManager.Clear();
+        }
+        var trees = CreateTreesInnerEx();
+        if (treeManager)
+        {
+            treeManager.AddTrees(trees);
+        }
+    }
+
     [ContextMenu("* CreateTrees")]
     public void CreateTrees()
     {
-        var trees = CreateTreesInner();
-
         AreaTreeManager treeManager = GameObject.FindObjectOfType<AreaTreeManager>();
         if (treeManager)
+        {
+            treeManager.Clear();
+        }
+        var trees = CreateTreesInner();
+        if (treeManager)
+        {
             treeManager.AddTrees(trees);
+        }
     }
 
     [ContextMenu("* CreateTrees_BigSmall2")]
-    public ModelAreaTree[] CreateTrees_BigSmall()
+    public void CreateTrees_BigSmall()
+    {
+        AreaTreeManager treeManager = GameObject.FindObjectOfType<AreaTreeManager>();
+        if (treeManager)
+        {
+           treeManager.Clear();
+        }
+        CreateTrees_BigSmall_Core();
+    }
+
+    public ModelAreaTree[] CreateTrees_BigSmall_Core()
     {
         //var trees = CreateTreesInner();
         Debug.Log("CreateTrees_BigSmall");
         AreaTreeManager treeManager = GameObject.FindObjectOfType<AreaTreeManager>();
         if (treeManager)
         {
+            //treeManager.Clear();
             treeManager.Target = this.OutPart0;
-            return treeManager.CreateOne_BigSmall(this.transform, this.OutPart0);
+            var trees= treeManager.CreateOne_BigSmall_Core(this.transform, this.OutPart0);
+            foreach(var tree in trees)
+            {
+                tree.name = this.name + "_" + tree.name;
+            }
+            return trees;
         }
         else
         {
@@ -168,7 +235,7 @@ public class BuildingModelInfo : MonoBehaviour
         if(treeManager)
             AreaTreeHelper.CubePrefab = treeManager.CubePrefab;
 
-        GameObject treeGo1 = new GameObject(treeName);
+        GameObject treeGo1 = new GameObject(this.name+"_"+treeName);
         treeGo1.transform.position = target.transform.position;
         treeGo1.transform.SetParent(this.transform);
         ModelAreaTree tree1 = treeGo1.AddComponent<ModelAreaTree>();

@@ -407,16 +407,25 @@ public class AreaTreeManager : MonoBehaviour
         Debug.LogError($"CreateHiddenOne \t{(DateTime.Now - start).ToString()}");
     }
 
-    public void AddTrees(ModelAreaTree[] trees)
+    public void Clear()
     {
         ClearCount();
         ClearTrees();
+    }
+
+    public void AddTrees(ModelAreaTree[] trees)
+    {
+        Debug.Log("AddTrees:"+trees.Length);
 
         foreach(var tree in trees)
         {
             if (tree == null) continue;
-            ShowTreeInfo(tree);
-            Trees.Add(tree);
+            if(!Trees.Contains(tree))
+            {
+                ShowTreeInfo(tree);
+                Trees.Add(tree);
+            }
+            
         }
     }
 
@@ -427,27 +436,24 @@ public class AreaTreeManager : MonoBehaviour
         CreateOne_BigSmall(null, target);
     }
 
-        //public AreaTreeNodeShowManager TreeNodeShowManager;
+    //public AreaTreeNodeShowManager TreeNodeShowManager;
 
-    //[ContextMenu("CreateOne_BigSmall")]
-    public ModelAreaTree[] CreateOne_BigSmall(Transform parent,GameObject target)
+    public ModelAreaTree[] CreateOne_BigSmall_Core(Transform parent, GameObject target)
     {
-        IsCopy=false;
+        IsCopy = false;
 
         DateTime start = DateTime.Now;
 
-        ClearCount();
-        ClearTrees();
+        List<MeshRenderer> bigModels = new List<MeshRenderer>();
+        List<MeshRenderer> smallModels = new List<MeshRenderer>();
 
-        List<MeshRenderer> bigModels=new List<MeshRenderer>();
-        List<MeshRenderer> smallModels=new List<MeshRenderer>();
-        
-
-        prefabInstanceBuilder.GetBigSmallRenderers(bigModels,smallModels);
+        prefabInstanceBuilder.IsCopyTargetRoot = this.IsCopy;
+        prefabInstanceBuilder.TargetRoots = target;
+        prefabInstanceBuilder.GetBigSmallRenderers(bigModels, smallModels);
 
 
-        var tree2=CreateTree(target,isCombine,"_SamllTree",smallModels.ToArray());//动态显示模型的树
-        tree2.IsHidden=true;
+        var tree2 = CreateTree(target, isCombine, "_SamllTree", smallModels.ToArray());//动态显示模型的树
+        tree2.IsHidden = true;
         if (isCombine)
         {
             tree2.HideRenderers();
@@ -458,7 +464,7 @@ public class AreaTreeManager : MonoBehaviour
         }
         tree2.transform.SetParent(parent);
 
-        var tree1=CreateTree(target,isCombine,"_BigTree",bigModels.ToArray());//合并模型的树
+        var tree1 = CreateTree(target, isCombine, "_BigTree", bigModels.ToArray());//合并模型的树
         if (isCombine)
         {
             tree1.HideRenderers();
@@ -472,7 +478,17 @@ public class AreaTreeManager : MonoBehaviour
         //TreeNodeShowManager.HiddenTrees.Add(tree2);
         tree2.DestroyNodeRender();
 
-        ModelAreaTree[] trees = new ModelAreaTree[2] {tree1,tree2 };
+        ModelAreaTree[] trees = new ModelAreaTree[2] { tree1, tree2 };
+        Debug.LogError($"CreateOne_BigSmall_Core \t{(DateTime.Now - start).ToString()}");
+        return trees;
+    }
+
+    //[ContextMenu("CreateOne_BigSmall")]
+    private ModelAreaTree[] CreateOne_BigSmall(Transform parent,GameObject target)
+    {
+        DateTime start = DateTime.Now;
+        Clear();
+        var trees=CreateOne_BigSmall_Core(parent, target);
         Debug.LogError($"CreateOne_BigSmall \t{(DateTime.Now - start).ToString()}");
         return trees;
     }

@@ -80,12 +80,14 @@ public class BuildingModelManager : MonoBehaviour
     public void CombinedBuildings(List<BuildingModelInfo> buildings)
     {
         DateTime start = DateTime.Now;
+        AreaTreeManager treeManager = GameObject.FindObjectOfType<AreaTreeManager>();
+        if (treeManager != null) treeManager.Clear();
         List<ModelAreaTree> allTrees = new List<ModelAreaTree>();
         for (int i = 0; i < buildings.Count; i++)
         {
             BuildingModelInfo b = buildings[i];
             if (b == null) continue;
-            var trees = b.CreateTreesInner();
+            var trees = b.CreateTreesInnerEx();
             if(trees!=null)
             {
                 allTrees.AddRange(trees);
@@ -101,9 +103,8 @@ public class BuildingModelManager : MonoBehaviour
             }
         }
 
-        AreaTreeManager treeManager = GameObject.FindObjectOfType<AreaTreeManager>();
-        if (treeManager)
-            treeManager.AddTrees(allTrees.ToArray());
+        
+        if (treeManager)treeManager.AddTrees(allTrees.ToArray());
 
         ProgressBarHelper.ClearProgressBar();
         Debug.LogWarning($"CreateTrees Buildings:{Buildings.Count},Time:{(DateTime.Now - start).TotalMilliseconds}ms");

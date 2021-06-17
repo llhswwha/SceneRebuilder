@@ -695,7 +695,7 @@ UnpackPrefab();
             meshFilters=TargetRoots.GetComponentsInChildren<MeshFilter>(true);
         }
         else{
-            meshFilters=GameObject.FindObjectsOfType<MeshFilter>();
+            meshFilters=GameObject.FindObjectsOfType<MeshFilter>(true);
         }
         return meshFilters;
     }
