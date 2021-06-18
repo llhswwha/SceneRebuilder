@@ -15,7 +15,8 @@ using UnityEngine;
 using UnityEngine.Events;
 using UnityEngine.SceneManagement;
 
-public static class EditorHelper  {
+public static class EditorHelper
+{
 
 
 
@@ -31,15 +32,106 @@ public static class EditorHelper  {
         }
     }
 
-    public static Scene CreateScene(GameObject obj, string scenePath)
+    private static void MoveGosToScene(Scene scene, params GameObject[] objs)
     {
+        foreach(var obj in objs)
+        {
+            if (obj == null) continue;
+            obj.transform.parent = null;
+            SceneManager.MoveGameObjectToScene(obj, scene);
+        }
+    }
+
+    public static Scene CreateScene(string scenePath, params GameObject[] objs)
+    {
+        Scene activeScene = EditorSceneManager.GetActiveScene();
         Scene scene = EditorSceneManager.NewScene(NewSceneSetup.EmptyScene, NewSceneMode.Additive);
-        //scene.title
-        Debug.Log("scenePath:" + scenePath);
-        obj.transform.parent = null;
-        SceneManager.MoveGameObjectToScene(obj, scene);
+        EditorSceneManager.SetActiveScene(activeScene);
+
+        MoveGosToScene(scene, objs);
+
         bool result = EditorSceneManager.SaveScene(scene, scenePath);
+        Debug.Log("SaveSceneResult1:" + result);
+        AssetDatabase.Refresh();
         return scene;
+    }
+
+    public static Scene CreateScene(string scenePath,bool isOveride, params GameObject[] objs)
+    {
+        
+        Debug.Log($"objs:{objs.Length},scenePath:{scenePath}");
+       
+        bool isExist = File.Exists(scenePath);
+        Debug.Log("isExist:" + isExist);
+
+        //var asset = AssetDatabase.LoadMainAssetAtPath(scenePath);
+        //Debug.Log("asset:" + asset);
+
+        if (isExist == false)//场景不存在
+        {
+            return CreateScene(scenePath, objs);
+        }
+        else
+        {
+            if (isOveride)//重新覆盖
+            {
+                Scene scene = EditorSceneManager.GetSceneByPath(scenePath);
+                Debug.Log("scene IsValid:" + scene.IsValid());
+                if (scene.IsValid() == true)//打开
+                {
+                    //scene = EditorSceneManager.NewScene(NewSceneSetup.EmptyScene, NewSceneMode.Additive);
+                    //MoveGosToScene(scene, objs);
+
+                    bool r1=EditorSceneManager.CloseScene(scene, true);//关闭场景，不关闭无法覆盖
+                    Debug.Log("r1:" + r1);
+                    //AssetDatabase.Refresh();
+                    //System.Threading.Thread.Sleep(1000);
+
+                    //Scene activeScene = EditorSceneManager.GetActiveScene();
+                    //scene = EditorSceneManager.NewScene(NewSceneSetup.EmptyScene, NewSceneMode.Additive);
+                    //EditorSceneManager.SetActiveScene(activeScene);
+
+                    //MoveGosToScene(scene, objs);
+
+                    //bool result2 = EditorSceneManager.SaveScene(scene, scenePath);//覆盖掉
+                    //Debug.Log("SaveSceneResult2:" + result2);
+                    //AssetDatabase.Refresh();
+                }
+                //else
+                //{
+                //    Scene activeScene = EditorSceneManager.GetActiveScene();
+                //    scene = EditorSceneManager.NewScene(NewSceneSetup.EmptyScene, NewSceneMode.Additive);
+                //    EditorSceneManager.SetActiveScene(activeScene);
+
+                //    MoveGosToScene(scene, objs);
+
+                //    bool result2 = EditorSceneManager.SaveScene(scene, scenePath);//覆盖掉
+                //    Debug.Log("SaveSceneResult2:" + result2);
+                //    AssetDatabase.Refresh();
+                //}
+                return CreateScene(scenePath, objs);
+            }
+            else
+            {
+                Scene scene = EditorSceneManager.GetSceneByPath(scenePath);
+                if (scene.IsValid() == false)//没有打开
+                {
+                    scene = EditorSceneManager.OpenScene(scenePath, OpenSceneMode.Additive);//打开
+                }
+                //Scene scene = EditorSceneManager.OpenScene(scenePath, OpenSceneMode.Additive);
+                MoveGosToScene(scene, objs);
+
+                bool result2 = EditorSceneManager.SaveScene(scene, scenePath);
+                Debug.Log("SaveSceneResult3:" + result2);
+                AssetDatabase.Refresh();
+
+                return scene;
+            }
+            
+
+            
+        }
+        
     }
 
     public static void SelectObject(GameObject obj)
@@ -87,7 +179,7 @@ public static class EditorHelper  {
         }
         else
         {
-            string dirPath = path.Substring(0, id+1);
+            string dirPath = path.Substring(0, id + 1);
             return dirPath;
         }
     }
@@ -108,7 +200,7 @@ public static class EditorHelper  {
         var path = EditorHelper.GetMeshPath(obj);//Assets/Models/SiHuiFactory/J1_Devices/主厂房设备8/主厂房设备8.FBX
         if (string.IsNullOrEmpty(path))
         {
-            Debug.LogError("string.IsNullOrEmpty(path):"+obj);
+            Debug.LogError("string.IsNullOrEmpty(path):" + obj);
             return path;
         }
         var newPath = path;
@@ -125,7 +217,7 @@ public static class EditorHelper  {
         }
         catch (System.Exception ex)
         {
-            Debug.LogError("path:"+path+"\n"+ex);
+            Debug.LogError("path:" + path + "\n" + ex);
         }
         return newPath;
     }
@@ -287,6 +379,47 @@ public static class EditorHelper  {
         }
     }
     #endregion
-}
+
+    public static void CreateDir(string rootDir, string newDir)
+    {
+#if UNITY_EDITOR
+        try
+        {
+            //string rootDir = RootDir;
+            //string newDir = SceneDir;
+
+            string parentDir = $"Assets/{rootDir}";
+            if (string.IsNullOrEmpty(rootDir))
+            {
+                parentDir = "Assets";
+            }
+
+            Debug.Log("parentDir:" + parentDir);
+            string dirPath = $"{parentDir}/{newDir}";
+            Debug.Log("dirPath:" + dirPath);
+            //UnityEditor.AssetDatabase
+            string fullPath = $"{Application.dataPath}/{parentDir}/{newDir}";
+            Debug.Log("fullPath:" + fullPath);
+
+            bool isValidFolder = UnityEditor.AssetDatabase.IsValidFolder(dirPath);
+            Debug.Log("isValidFolder:" + isValidFolder);
+
+            if (isValidFolder == false)
+            {
+                //string parentDir = "Assets/Models/Instances/Trees";
+                string guid = UnityEditor.AssetDatabase.CreateFolder(parentDir, newDir);
+                Debug.Log("guid:" + guid);
+                string path = UnityEditor.AssetDatabase.GUIDToAssetPath(guid);
+                Debug.Log("path:" + path);
+                AssetDatabase.Refresh();
+            }
+        }
+        catch (System.Exception ex)
+        {
+            Debug.LogError(ex.ToString());
+        }
+#endif
+    }
 
 #endif
+}

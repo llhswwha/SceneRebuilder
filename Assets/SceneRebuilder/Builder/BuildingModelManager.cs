@@ -292,7 +292,7 @@ public class BuildingModelManager : MonoBehaviour
             GameObject go = b.gameObject;
 
             var path = GetScenePath(go.name);
-            Scene scene = EditorHelper.CreateScene(go, path);
+            Scene scene = EditorHelper.CreateScene(path,true,go);
             scenes.Add(go.name);
 
             float progress = (float)i / buildings.Count;
