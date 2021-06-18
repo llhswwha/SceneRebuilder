@@ -194,7 +194,7 @@ public class ModelAreaTree : MonoBehaviour
 
         MeshRenderer[] renders = null;
         var target = GetTarget();
-        if(TreeRenderers!=null&&TreeRenderers.Length>0){
+        if(TreeRenderers!=null){
             renders= TreeRenderers;
         }
         else if(target != null){
@@ -260,7 +260,9 @@ public class ModelAreaTree : MonoBehaviour
         }
         rootCube.transform.SetParent(this.transform);
 
-        Debug.LogWarning($"CreateCells_Tree cellCount:{cellCount}/{allCount},\tavg:{nodeStatics.AvgCellRendererCount},\t{(DateTime.Now-start).ToString()}");
+        this.GetVertexCount();
+
+        Debug.LogWarning($"CreateCells_Tree cellCount:{cellCount}/{allCount},\tavg:{nodeStatics.AvgCellRendererCount},\t{(DateTime.Now-start).TotalMilliseconds:F1}ms");
     }
 
 
@@ -371,7 +373,7 @@ public class ModelAreaTree : MonoBehaviour
             // }
             tn.CreateDictionary();
         }
-        Debug.LogWarning($"CreateDictionary tree:{this.name},render2NodeDict:{AreaTreeHelper.render2NodeDict.Count},\t{(DateTime.Now-start).ToString()}");
+        Debug.LogWarning($"CreateDictionary tree:{this.name},render2NodeDict:{AreaTreeHelper.render2NodeDict.Count},\t{(DateTime.Now-start).TotalMilliseconds:F1}ms");
     }
 
     [ContextMenu("* GenerateMesh")]
@@ -468,7 +470,7 @@ public class ModelAreaTree : MonoBehaviour
                     nodeStatics.MinCellRendererCount = renderCount;
                 }
 
-                var vertexCount = tn.VertexCount;
+                float vertexCount = tn.VertexCount;
                 if ( ( vertexCount<nodeSetting.MaxVertexCount && vertexCount > nodeStatics.MaxNodeVertexCount) || nodeStatics.MaxNodeVertexCount == 0)
                 {
                     // Debug.Log($"MaxNodeVertexCount1:{vertexCount},node:{tn.name}");

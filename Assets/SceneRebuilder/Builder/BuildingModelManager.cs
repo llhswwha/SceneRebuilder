@@ -13,9 +13,15 @@ public class BuildingModelManager : MonoBehaviour
     public int selectCount = 5;
     public List<BuildingModelInfo> SelectedBuildings = new List<BuildingModelInfo>();
 
+    public bool IsOut0BigSmall = false;
+
     public List<BuildingModelInfo> Buildings = new List<BuildingModelInfo>();
 
     public List<float> BuildingsOut0Vertex = new List<float>();
+
+    public List<BuildingModelInfo> Buildings10 = new List<BuildingModelInfo>();
+
+    public List<float> BuildingsOut0Vertex10 = new List<float>();
 
     public float InVertextCount = 0;
     public float Out0VertextCount = 0;
@@ -92,7 +98,9 @@ public class BuildingModelManager : MonoBehaviour
         {
             BuildingModelInfo b = buildings[i];
             if (b == null) continue;
-            var trees = b.CreateTreesInnerEx();
+
+            var trees = b.CreateTreesInnerEx(IsOut0BigSmall);
+
             if(trees!=null)
             {
                 allTrees.AddRange(trees);
@@ -108,11 +116,15 @@ public class BuildingModelManager : MonoBehaviour
             }
         }
 
-        
-        if (treeManager)treeManager.AddTrees(allTrees.ToArray());
+
+        if (treeManager)
+        {
+            treeManager.AddTrees(allTrees.ToArray());
+            treeManager.GetTreeInfos();
+        }
 
         ProgressBarHelper.ClearProgressBar();
-        Debug.LogWarning($"CreateTrees Buildings:{Buildings.Count},Time:{(DateTime.Now - start).TotalMilliseconds}ms");
+        Debug.LogWarning($"CreateTrees Buildings:{Buildings.Count},Trees:{allTrees.Count},Time:{(DateTime.Now - start).ToString()}");
     }
 
 
@@ -254,51 +266,63 @@ public class BuildingModelManager : MonoBehaviour
 
     private string GetScenePath(string sceneName)
     {
-        return Application.dataPath + "/Modules/AssetLoad/AssetScenes/AutoCreate/" + sceneName + ".unity";
+        return Application.dataPath + "/Models/Instances/Buildings/" + sceneName + ".unity";
     }
 
-    [ContextMenu("CreateScenes")]
-    public void CreateScenes()
+    public List<string> scenes = new List<string>();
+
+    //[ContextMenu("CreateScenes")]
+    public void CreateScenesInner(List<BuildingModelInfo> buildings)
     {
 #if UNITY_EDITOR
 
-        Scene scene = EditorSceneManager.NewScene(NewSceneSetup.EmptyScene, NewSceneMode.Additive);
-        var rootObjs = scene.GetRootGameObjects();
-        Debug.Log("rootObjs:"+ rootObjs.Length);
+        //Scene scene = EditorSceneManager.NewScene(NewSceneSetup.EmptyScene, NewSceneMode.Additive);
+        //var rootObjs = scene.GetRootGameObjects();
+        //Debug.Log("rootObjs:"+ rootObjs.Length);
 
-        //DateTime start = DateTime.Now;
-        //AreaTreeManager treeManager = GameObject.FindObjectOfType<AreaTreeManager>();
-        //if (treeManager != null) treeManager.Clear();
-        //List<ModelAreaTree> allTrees = new List<ModelAreaTree>();
-        //for (int i = 0; i < Buildings.Count; i++)
-        //{
-        //    BuildingModelInfo b = Buildings[i];
-        //    if (b == null) continue;
-        //    GameObject go = b.gameObject;
+        DateTime start = DateTime.Now;
+        AreaTreeManager treeManager = GameObject.FindObjectOfType<AreaTreeManager>();
+        if (treeManager != null) treeManager.Clear();
+        List<ModelAreaTree> allTrees = new List<ModelAreaTree>();
+        scenes.Clear();
+        for (int i = 0; i < buildings.Count; i++)
+        {
+            BuildingModelInfo b = buildings[i];
+            if (b == null) continue;
+            GameObject go = b.gameObject;
 
-        //    Scene scene=SceneManager.CreateScene(go.name);
-        //    var rootObjs=scene.GetRootGameObjects();
+            var path = GetScenePath(go.name);
+            Scene scene = EditorHelper.CreateScene(go, path);
+            scenes.Add(go.name);
 
+            float progress = (float)i / buildings.Count;
+            float percents = progress * 100;
 
-        //    string path = "Assets/Models/Instances/Buildings/" + go.name + go.GetInstanceID() + ".prefab";
-        //    GameObject prefabAsset = PrefabUtility.SaveAsPrefabAssetAndConnect(go, path, InteractionMode.UserAction);
-
-        //    float progress = (float)i / Buildings.Count;
-        //    float percents = progress * 100;
-
-        //    if (ProgressBarHelper.DisplayCancelableProgressBar("CreatePrefabs", $"{i}/{Buildings.Count} {percents}% of 100%", progress))
-        //    {
-        //        //ProgressBarHelper.ClearProgressBar();
-        //        break;
-        //    }
-        //}
+            if (ProgressBarHelper.DisplayCancelableProgressBar("CreatePrefabs", $"{i}/{buildings.Count} {percents}% of 100%", progress))
+            {
+                //ProgressBarHelper.ClearProgressBar();
+                break;
+            }
+        }
 
 
-        //if (treeManager) treeManager.AddTrees(allTrees.ToArray());
+        if (treeManager) treeManager.AddTrees(allTrees.ToArray());
 
-        //ProgressBarHelper.ClearProgressBar();
-        //Debug.LogWarning($"CreatePrefabs Buildings:{Buildings.Count},Time:{(DateTime.Now - start).TotalMilliseconds}ms");
+        ProgressBarHelper.ClearProgressBar();
+        Debug.LogWarning($"CreatePrefabs Buildings:{Buildings.Count},Time:{(DateTime.Now - start).TotalMilliseconds}ms");
 #endif
+    }
+
+    [ContextMenu("CreateScenes_All")]
+    public void CreateScenes_All()
+    {
+        CreateScenesInner(Buildings);
+    }
+
+    [ContextMenu("CreateScenes_Selection")]
+    public void CreateScenes_Selection()
+    {
+        CreateScenesInner(SelectedBuildings);
     }
 
     [ContextMenu("SortByOut0")]
@@ -309,10 +333,21 @@ public class BuildingModelManager : MonoBehaviour
             return b.Out0VertextCount.CompareTo(a.Out0VertextCount);
         });
         BuildingsOut0Vertex.Clear();
-        foreach(var b in Buildings)
+        Buildings10.Clear();
+        BuildingsOut0Vertex10.Clear();
+
+        for (int i = 0; i < Buildings.Count; i++)
         {
+            BuildingModelInfo b = Buildings[i];
             BuildingsOut0Vertex.Add(b.Out0VertextCount);
+            if (i < 10)
+            {
+                Buildings10.Add(b);
+                BuildingsOut0Vertex10.Add(b.Out0VertextCount);
+            }
         }
+
+
     }
 
     [ContextMenu("SortByOut1")]

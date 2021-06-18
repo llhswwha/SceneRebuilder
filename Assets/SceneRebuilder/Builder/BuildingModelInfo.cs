@@ -43,7 +43,7 @@ public class BuildingModelInfo : MonoBehaviour
         return CreateTreesCore();
     }
 
-    public ModelAreaTree[] CreateTreesInnerEx()
+    public ModelAreaTree[] CreateTreesInnerEx(bool isOut0BS)
     {
         ClearTrees();
 
@@ -56,8 +56,25 @@ public class BuildingModelInfo : MonoBehaviour
         }
         else
         {
-            return CreateTreesCore();
+            if (isOut0BS == false)
+            {
+                return CreateTreesCore();
+            }
+            else
+            {
+                return CreateTreesCoreBS();
+            }
         }
+    }
+
+    public ModelAreaTree[] CreateTreesInnerBS()
+    {
+        ClearTrees();
+
+        UpackPrefab_One(this.gameObject);
+
+        ShowRenderers();
+        return CreateTreesCoreBS();
     }
 
     public ModelAreaTree[] CreateTreesCore()
@@ -67,6 +84,22 @@ public class BuildingModelInfo : MonoBehaviour
         trees[0] = tree1;
         var tree2 = CreateTree(OutPart0, "OutTree0");
         trees[1] = tree2;
+        var tree3 = CreateTree(OutPart1, "OutTree1");
+        trees[2] = tree3;
+        return trees;
+    }
+
+    public ModelAreaTree[] CreateTreesCoreBS()
+    {
+        ModelAreaTree[] trees = new ModelAreaTree[3];
+        var tree1 = CreateTree(InPart, "InTree");
+        trees[0] = tree1;
+
+        //var tree2 = CreateTree(OutPart0, "OutTree0");
+        //trees[1] = tree2;
+
+        CreateTrees_BigSmall_Core();
+
         var tree3 = CreateTree(OutPart1, "OutTree1");
         trees[2] = tree3;
         return trees;
@@ -121,11 +154,23 @@ public class BuildingModelInfo : MonoBehaviour
         //var manager=GameObject.FindObjectOfType<>
     }
 
+
     [ContextMenu("* CreateTreesEx")]
     public void CreateTreesEx()
     {
         AreaTreeManager treeManager = GameObject.FindObjectOfType<AreaTreeManager>();
-        var trees = CreateTreesInnerEx();
+        var trees = CreateTreesInnerEx(false);
+        if (treeManager)
+        {
+            treeManager.AddTrees(trees);
+        }
+    }
+
+    [ContextMenu("* CreateTreesBSEx")]
+    public void CreateTreesBSEx()
+    {
+        AreaTreeManager treeManager = GameObject.FindObjectOfType<AreaTreeManager>();
+        var trees = CreateTreesInnerEx(true);
         if (treeManager)
         {
             treeManager.AddTrees(trees);
@@ -143,8 +188,8 @@ public class BuildingModelInfo : MonoBehaviour
         }
     }
 
-    [ContextMenu("* CreateTrees_BigSmall2")]
-    public void CreateTrees_BigSmall()
+    [ContextMenu("* CreateTreesBS")]
+    public void CreateTrees_BS()
     {
         AreaTreeManager treeManager = GameObject.FindObjectOfType<AreaTreeManager>();
         CreateTrees_BigSmall_Core();
@@ -161,6 +206,7 @@ public class BuildingModelInfo : MonoBehaviour
             var trees= treeManager.CreateOne_BigSmall_Core(this.transform, this.OutPart0);
             foreach(var tree in trees)
             {
+                if (tree == null) continue;
                 tree.name = this.name + "_" + tree.name;
             }
             return trees;

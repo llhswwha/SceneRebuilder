@@ -10,8 +10,10 @@ public class AreaTreeNodeShowManager : MonoBehaviour
 
     public List<Camera> cameras=new List<Camera>();
     public List<ModelAreaTree> HiddenTrees=new List<ModelAreaTree>();
+    public List<float> HiddenTreesVertex = new List<float>();
 
     public List<ModelAreaTree> ShownTrees=new List<ModelAreaTree>();
+    public List<float> ShownTreesVertex = new List<float>();
 
     public List<AreaTreeNode> HiddenLeafNodes=new List<AreaTreeNode>();
 
@@ -20,6 +22,10 @@ public class AreaTreeNodeShowManager : MonoBehaviour
     public List<AreaTreeNode> ShownNodes=new List<AreaTreeNode>();
 
     public List<AreaTreeNode> HiddenNodes=new List<AreaTreeNode>();
+
+    public float HiddenTreesVertexCount = 0;
+
+    public float ShownTreesVertexCount = 0;
 
     public float ShowNodeDistance=25;
 
@@ -47,17 +53,37 @@ public class AreaTreeNodeShowManager : MonoBehaviour
      [ContextMenu("InitTrees")]
     private void InitTrees()
     {
+        HiddenTrees.Clear();
+        ShownTrees.Clear();
+        HiddenTreesVertex.Clear();
+        ShownTreesVertex.Clear();
+        HiddenTreesVertexCount = 0;
+        ShownTreesVertexCount = 0;
+
         var ts=GameObject.FindObjectsOfType<ModelAreaTree>();
         foreach(ModelAreaTree t in ts)
         {
             if(t.IsHidden && !HiddenTrees.Contains(t))
             {
                 HiddenTrees.Add(t);
+                HiddenTreesVertexCount += t.VertexCount;
             }
             else if(t.IsHidden==false && !ShownTrees.Contains(t))
             {
                 ShownTrees.Add(t);
+                ShownTreesVertexCount += t.VertexCount;
             }
+        }
+
+        HiddenTrees.Sort((a, b) => b.VertexCount.CompareTo(a.VertexCount));
+        foreach(var t in HiddenTrees)
+        {
+            HiddenTreesVertex.Add(t.VertexCount);
+        }
+        ShownTrees.Sort((a, b) => b.VertexCount.CompareTo(a.VertexCount));
+        foreach (var t in ShownTrees)
+        {
+            ShownTreesVertex.Add(t.VertexCount);
         }
     }
 

@@ -1108,7 +1108,7 @@ break;
 
         ProgressBarHelper.ClearProgressBar();
 
-        Debug.LogWarning($"GetBigSmallRenderers bigModels:{bigModels.Count},smallModels:{smallModels.Count},Renderers:{meshFilters.Length},Time:{(DateTime.Now-start).TotalMilliseconds}ms");
+        Debug.LogWarning($"GetBigSmallRenderers maxLength:{maxLength},bigModels:{bigModels.Count},smallModels:{smallModels.Count},Renderers:{meshFilters.Length},Time:{(DateTime.Now-start).TotalMilliseconds:F1}ms");
     }
 
     // public float MaxModelLength=1.2f;

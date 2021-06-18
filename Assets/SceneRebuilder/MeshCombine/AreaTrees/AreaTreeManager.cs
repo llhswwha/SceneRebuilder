@@ -225,11 +225,19 @@ public class AreaTreeManager : MonoBehaviour
     List<Material> matList = new List<Material>();
     public ModelAreaTree CreateTree(GameObject go, bool isC,string suffix, MeshRenderer[] renderers)
     {
+        
         string treeName = "NewAreaTree" + suffix;
         if (go != null)
         {
             treeName = go.name + suffix;
         }
+        //Debug.LogError($"CreateTree name:{treeName},renderers:{renderers.Length} ");
+        if (renderers.Length == 0)
+        {
+            Debug.LogError($"CreateTree name:{treeName},renderers.Length == 0 ");
+            return null;
+        }
+
         AreaTreeHelper.CubePrefab = this.CubePrefab;
 
         GameObject treeGo = new GameObject(treeName);
@@ -255,7 +263,7 @@ public class AreaTreeManager : MonoBehaviour
         }
 
 
-        areaTree.GetVertexCount();
+        //areaTree.GetVertexCount();
 
         Trees.Add(areaTree);
 
@@ -465,34 +473,45 @@ public class AreaTreeManager : MonoBehaviour
         prefabInstanceBuilder.GetBigSmallRenderers(bigModels, smallModels);
 
 
-        var tree2 = CreateTree(target, isCombine, "_SamllTree", smallModels.ToArray());//动态显示模型的树
-        tree2.IsHidden = true;
-        if (isCombine)
+        ModelAreaTree tree2 = null;
+        if (smallModels.Count>0)
         {
-            tree2.HideRenderers();
-        }
-        else
-        {
-            tree2.MoveRenderers();
-        }
-        tree2.transform.SetParent(parent);
+            tree2 = CreateTree(target, isCombine, "_SamllTree", smallModels.ToArray());//动态显示模型的树
+            tree2.IsHidden = true;
+            if (isCombine)
+            {
+                tree2.HideRenderers();
+            }
+            else
+            {
+                tree2.MoveRenderers();
+            }
+            tree2.transform.SetParent(parent);
 
-        var tree1 = CreateTree(target, isCombine, "_BigTree", bigModels.ToArray());//合并模型的树
-        if (isCombine)
-        {
-            tree1.HideRenderers();
+            tree2.DestroyNodeRender();
         }
-        else
+
+        ModelAreaTree tree1 = null;
+        if (bigModels.Count>0)
         {
-            tree1.MoveRenderers();
+            tree1 = CreateTree(target, isCombine, "_BigTree", bigModels.ToArray());//合并模型的树
+            if (isCombine)
+            {
+                tree1.HideRenderers();
+            }
+            else
+            {
+                tree1.MoveRenderers();
+            }
+            tree1.transform.SetParent(parent);
         }
-        tree1.transform.SetParent(parent);
+
 
         //TreeNodeShowManager.HiddenTrees.Add(tree2);
-        tree2.DestroyNodeRender();
+        
 
         ModelAreaTree[] trees = new ModelAreaTree[2] { tree1, tree2 };
-        Debug.LogError($"CreateOne_BigSmall_Core \t{(DateTime.Now - start).ToString()}");
+        Debug.LogError($"CreateOne_BigSmall_Core \t{(DateTime.Now - start).TotalMilliseconds:F1}ms");
         return trees;
     }
 

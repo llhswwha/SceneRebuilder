@@ -17,7 +17,15 @@ public class MeshSize : MonoBehaviour
     public void GetSize()
     {
         meshFiter=this.gameObject.GetComponent<MeshFilter>();
-        bounds=meshFiter.sharedMesh.bounds;
+        if (meshFiter == null)
+        {
+            bounds = ColliderHelper.CaculateBounds(this.gameObject);
+        }
+        else
+        {
+            bounds = meshFiter.sharedMesh.bounds;
+        }
+        
         size=bounds.size;
         scale = this.transform.lossyScale;
         scale = new Vector3(Mathf.Abs(scale.x), Mathf.Abs(scale.y), Mathf.Abs(scale.y));

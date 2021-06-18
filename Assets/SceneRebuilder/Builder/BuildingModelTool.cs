@@ -61,6 +61,13 @@ public class BuildingModelTool : MonoBehaviour
 
     public Transform InRoot = null;
 
+    [ContextMenu("* FindDoorsInBounds95")]
+    public void FindDoorsInBounds95()
+    {
+        SetDoorSetting();
+        FindGosInBounds95();
+    }
+
     [ContextMenu("* SetDoorSetting")]
     public void SetDoorSetting()
     {
@@ -106,6 +113,8 @@ public class BuildingModelTool : MonoBehaviour
             InRoot = doors.transform;
         }
 
+        info.InitInOut();
+
     }
 
     [ContextMenu("* FindGosInBounds95")]
@@ -143,6 +152,9 @@ public class BuildingModelTool : MonoBehaviour
                 outList.Add(go);
             }
         }
+
+        BuildingModelInfo info = this.GetComponent<BuildingModelInfo>();
+        info.InitInOut();
 
         Debug.Log($"FindGosInBounds95:in:{inList.Count},out:{outList.Count},gos:{gos.Count}");
     }

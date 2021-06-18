@@ -35,9 +35,9 @@ public class AreaTreeNode : MonoBehaviour
         }
     }
 
-    public int VertexCount = 0;
+    public float VertexCount = 0;
 
-    public int GetVertexCount()
+    public float GetVertexCount()
     {
         int count = 0;
         foreach(var renderer in Renderers)
@@ -45,7 +45,7 @@ public class AreaTreeNode : MonoBehaviour
             MeshFilter meshFilter = renderer.GetComponent<MeshFilter>();
             count += meshFilter.sharedMesh.vertexCount;
         }
-        VertexCount = count / 10000;
+        VertexCount = count / 10000.0f;
         return VertexCount;
     }
 
@@ -507,7 +507,7 @@ public class AreaTreeNode : MonoBehaviour
             //     continue;
             // }
             
-            node.name += "_" + node.RendererCount+"_"+ node.GetVertexCount()+"w";
+            node.name += $"_{node.RendererCount}_{node.GetVertexCount():F0}w";
             node.CreateSubNodes(level+1,i,tree);
 
             //if (node.VertexCount > tree.nodeStatics.MaxNodeVertexCount || tree.nodeStatics.MaxNodeVertexCount == 0)
@@ -564,7 +564,7 @@ public class AreaTreeNode : MonoBehaviour
                     }
                     else{
                         AreaTreeHelper.render2NodeDict[render]=this;
-                        Debug.LogError($"模型重复在不同的Node里:{AreaTreeHelper.render2NodeDict[render]},{this}");
+                        Debug.LogWarning($"模型重复在不同的Node里:{AreaTreeHelper.render2NodeDict[render]},{this}");
                     }
                 }
                 else{

@@ -15,11 +15,11 @@ public class AreaTreeNodeStatics
 
     public int MinCellRendererCount = 0;
 
-    public int MaxNodeVertexCount = 0;
+    public float MaxNodeVertexCount = 0;
 
-    public int MaxNodeVertexCount2 = 0;
+    public float MaxNodeVertexCount2 = 0;
 
-    public int MinNodeVertexCount = 0;
+    public float MinNodeVertexCount = 0;
 
     public int LevelDepth = 0;
 
