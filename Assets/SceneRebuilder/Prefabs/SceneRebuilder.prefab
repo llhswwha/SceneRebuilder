@@ -1,5 +1,60 @@
 %YAML 1.1
 %TAG !u! tag:unity3d.com,2011:
+--- !u!1 &1023875256
+GameObject:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  serializedVersion: 6
+  m_Component:
+  - component: {fileID: 1023875257}
+  - component: {fileID: 1023875258}
+  m_Layer: 0
+  m_Name: SubSceneManager
+  m_TagString: Untagged
+  m_Icon: {fileID: 0}
+  m_NavMeshLayer: 0
+  m_StaticEditorFlags: 0
+  m_IsActive: 1
+--- !u!4 &1023875257
+Transform:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1023875256}
+  m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
+  m_LocalPosition: {x: 0, y: 0, z: 0}
+  m_LocalScale: {x: 1, y: 1, z: 1}
+  m_Children: []
+  m_Father: {fileID: 2637694156548252797}
+  m_RootOrder: 5
+  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
+--- !u!114 &1023875258
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1023875256}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 2f4678350ddf71a4281abf88cebe7d3c, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  RootDir: SubScenes2
+  SceneDir: MinHangBuildings3
+  SceneName: "38_\u96E8\u6C34\u6CF5\u7AD9"
+  IsOverride: 1
+  gos:
+  - {fileID: 0}
+  root: {fileID: 0}
+  Count: 5
+  newScene:
+    m_Handle: -3919272
+  ScenePath: "E:/Workspace/GitHub/SceneRebuilder/Assets/SubScenes/MinHangBuildings2/38_\u96E8\u6C34\u6CF5\u7AD9.unity"
+  subScene: {fileID: 0}
 --- !u!1 &605034796274721774
 GameObject:
   m_ObjectHideFlags: 0
@@ -45,6 +100,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   selectCount: 5
   SelectedBuildings: []
+  IsOut0BigSmall: 1
   Buildings:
   - {fileID: 0}
   - {fileID: 0}
@@ -140,6 +196,7 @@ Transform:
   - {fileID: 7205637575558067864}
   - {fileID: 9066341639894223243}
   - {fileID: 1769498514045477464}
+  - {fileID: 1023875257}
   m_Father: {fileID: 0}
   m_RootOrder: 0
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
@@ -267,7 +324,7 @@ PrefabInstance:
       objectReference: {fileID: 0}
     - target: {fileID: 7432471790510818645, guid: e4ad3238a7ac94046b448ba4bea4f76f, type: 3}
       propertyPath: MaxModelLength
-      value: 0.4
+      value: 0.5
       objectReference: {fileID: 0}
     m_RemovedComponents: []
   m_SourcePrefab: {fileID: 100100000, guid: e4ad3238a7ac94046b448ba4bea4f76f, type: 3}
@@ -480,23 +537,23 @@ PrefabInstance:
       objectReference: {fileID: 0}
     - target: {fileID: 8929099040280789865, guid: b0c0abf5387dcad479c072866a126f56, type: 3}
       propertyPath: LeafCount
-      value: 92
+      value: 182
       objectReference: {fileID: 0}
     - target: {fileID: 8929099040280789865, guid: b0c0abf5387dcad479c072866a126f56, type: 3}
       propertyPath: VertexCount
-      value: 512
+      value: 826
       objectReference: {fileID: 0}
     - target: {fileID: 8929099040280789865, guid: b0c0abf5387dcad479c072866a126f56, type: 3}
       propertyPath: CombinedCount
-      value: 204
+      value: 311
       objectReference: {fileID: 0}
     - target: {fileID: 8929099040280789865, guid: b0c0abf5387dcad479c072866a126f56, type: 3}
       propertyPath: RendererCount
-      value: 2668
+      value: 5508
       objectReference: {fileID: 0}
     - target: {fileID: 8929099040280789865, guid: b0c0abf5387dcad479c072866a126f56, type: 3}
       propertyPath: Trees.Array.size
-      value: 25
+      value: 29
       objectReference: {fileID: 0}
     - target: {fileID: 8929099040280789865, guid: b0c0abf5387dcad479c072866a126f56, type: 3}
       propertyPath: Trees.Array.data[24]
@@ -504,7 +561,7 @@ PrefabInstance:
       objectReference: {fileID: 6043944385326037433}
     - target: {fileID: 8929099040280789865, guid: b0c0abf5387dcad479c072866a126f56, type: 3}
       propertyPath: nodeStatics.CellCount
-      value: 165
+      value: 347
       objectReference: {fileID: 0}
     - target: {fileID: 8929099040280789865, guid: b0c0abf5387dcad479c072866a126f56, type: 3}
       propertyPath: prefabInstanceBuilder
@@ -520,7 +577,7 @@ PrefabInstance:
       objectReference: {fileID: 0}
     - target: {fileID: 8929099040280789865, guid: b0c0abf5387dcad479c072866a126f56, type: 3}
       propertyPath: nodeStatics.MinNodeVertexCount
-      value: 0
+      value: 0.0048
       objectReference: {fileID: 0}
     - target: {fileID: 8929099040280789865, guid: b0c0abf5387dcad479c072866a126f56, type: 3}
       propertyPath: nodeStatics.MaxNodeVertexCount2
@@ -528,7 +585,7 @@ PrefabInstance:
       objectReference: {fileID: 0}
     - target: {fileID: 8929099040280789865, guid: b0c0abf5387dcad479c072866a126f56, type: 3}
       propertyPath: nodeStatics.AvgCellRendererCount
-      value: 449
+      value: 517
       objectReference: {fileID: 0}
     - target: {fileID: 8929099040280789865, guid: b0c0abf5387dcad479c072866a126f56, type: 3}
       propertyPath: nodeStatics.MaxCellRendererCount
@@ -536,7 +593,7 @@ PrefabInstance:
       objectReference: {fileID: 0}
     - target: {fileID: 8929099040280789865, guid: b0c0abf5387dcad479c072866a126f56, type: 3}
       propertyPath: nodeStatics.MinCellRendererCount
-      value: 0
+      value: 1
       objectReference: {fileID: 0}
     m_RemovedComponents: []
   m_SourcePrefab: {fileID: 100100000, guid: b0c0abf5387dcad479c072866a126f56, type: 3}

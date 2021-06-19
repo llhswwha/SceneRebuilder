@@ -405,7 +405,7 @@ public class BuildingModelInfo : MonoBehaviour
 
     private void Awake()
     {
-        InitInOut();
+        //InitInOut();
     }
 
     [ContextMenu("FindInGos")]
@@ -449,15 +449,11 @@ public class BuildingModelInfo : MonoBehaviour
             OutPart1.SetActive(true);
     }
 
-    [ContextMenu("CombinedInOut")]
-    public void CombinedInOut()
+    [ContextMenu("SaveScenes")]
+    public void SaveScenes(string path, bool isOverride)
     {
-        //var inCombined=
+
     }
 
-    [ContextMenu("CombinedInOut_Tree")]
-    public void CombinedInOut_Tree()
-    {
-        //var inCombined=
-    }
+
 }

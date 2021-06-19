@@ -623,7 +623,7 @@ public class AreaTreeNode : MonoBehaviour
     public void HideNodes()
     {
         if(IsNodeVisible==false)return;
-        Debug.Log("HideNodes:" + this.name);
+        //Debug.Log("HideNodes:" + this.name);
         IsNodeVisible =false;
         this.gameObject.SetActive(false);
         foreach(AreaTreeNode node in Nodes)

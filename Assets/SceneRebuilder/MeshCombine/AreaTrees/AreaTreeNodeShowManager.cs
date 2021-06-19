@@ -200,13 +200,15 @@ public class AreaTreeNodeShowManager : MonoBehaviour
 
         UpdateTime1=(DateTime.Now-start).TotalMilliseconds;
         start=DateTime.Now;
-        foreach(var node in HiddenNodes)
+        //Debug.Log("HideNodes:" + HiddenNodes.Count);
+        foreach (var node in HiddenNodes)
         {
             //node.HideRenders();
             node.HideNodes();
             HiddenRenderCount+=node.RendererCount;
         }
-        foreach(var node in ShownNodes)
+        //Debug.Log("ShownNodes:" + ShownNodes.Count);
+        foreach (var node in ShownNodes)
         {
             //node.ShowRenders();
             node.ShowNodes();

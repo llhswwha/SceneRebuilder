@@ -1,5 +1,6 @@
 ﻿//using Base.Common;
 using Jacovone.AssetBundleMagic;
+//using System;
 using System.Collections;
 using System.Collections.Generic;
 using System.IO;
@@ -27,9 +28,140 @@ public static class EditorHelper
         Scene[] allScenes = SceneManager.GetAllScenes();
         for (int i = 1; i < allScenes.Length; i++)
         {
+            float progress = (float)i / allScenes.Length;
+            float percents = progress * 100;
+
+            if (ProgressBarHelper.DisplayCancelableProgressBar("ClearOtherScenes", $"{i}/{allScenes.Length} {percents}% of 100%", progress))
+            {
+                //ProgressBarHelper.ClearProgressBar();
+                break;
+            }
             Scene scene = allScenes[i];
             EditorSceneManager.CloseScene(scene, true);
         }
+
+        ProgressBarHelper.ClearProgressBar();
+    }
+
+    //public static IEnumerator LoadScenesAsync(List<string> sceneList, System.Action<float> progressChanged, System.Action<Scene> finished, bool isAutoUnload = false)
+    //{
+    //    System.DateTime start = System.DateTime.Now;
+    //    for (int i = 0; i < sceneList.Count; i++)
+    //    {
+    //        var sceneName = sceneList[i];
+    //        yield return LoadSceneAsync(sceneName,);
+    //        yield return new WaitForSeconds(0.1f);
+    //    }
+    //    Debug.LogError($"LoadAllScene time:{(DateTime.Now - start).ToString()}");
+    //    yield return null;
+    //}
+
+    public static IEnumerator LoadSceneAsync(string sName, System.Action<float> progressChanged, System.Action<Scene> finished,bool isAutoUnload=false)
+    {
+        System.DateTime start = System.DateTime.Now;
+        //Debug.Log("LoadSceneAsync:" + sName);
+        AsyncOperation async = SceneManager.LoadSceneAsync(sName, LoadSceneMode.Additive);
+        //async.allowSceneActivation = false;
+        while (!async.isDone)
+        {
+            if (progressChanged != null)
+            {
+                progressChanged(async.progress);
+            }
+            yield return null;
+        }
+
+        Scene scene = SceneManager.GetSceneByName(sName);
+        //var objs = scene.GetRootGameObjects();
+        if (finished != null)
+        {
+            finished(scene);
+        }
+
+        Debug.Log($"LoadSceneAsync[{sName}] time:{(System.DateTime.Now - start).ToString()}");
+
+        if (isAutoUnload)
+        {
+            yield return UnLoadSceneAsync(sName, null, null);
+        }
+        else
+        {
+            yield return null;
+        }
+    }
+
+    public static IEnumerator UnLoadSceneAsync(string sName, System.Action<float> progressChanged, System.Action finished)
+    {
+        System.DateTime start = System.DateTime.Now;
+        //Debug.Log("UnLoadSceneAsync:" + sName);
+        Scene scene = SceneManager.GetSceneByName(sName);
+        if(scene.IsValid())
+        {
+            AsyncOperation async = SceneManager.UnloadSceneAsync(sName, UnloadSceneOptions.UnloadAllEmbeddedSceneObjects);
+            //async.allowSceneActivation = false;
+            while (async!=null && !async.isDone)
+            {
+                if (progressChanged != null)
+                {
+                    progressChanged(async.progress);
+                }
+                yield return null;
+            }
+        }
+
+        //Scene scene = SceneManager.GetSceneByName(sName);
+        //var objs = scene.GetRootGameObjects();
+        if (finished != null)
+        {
+            finished();
+        }
+        Debug.Log($"UnLoadSceneAsync[{sName}] time:{(System.DateTime.Now - start).ToString()}");
+        yield return null;
+    }
+
+    public static GameObject[] LoadScene(string sceneName, Transform parent)
+    {
+        SceneManager.LoadScene(sceneName, LoadSceneMode.Additive);
+        return GetSceneObjects(sceneName, parent); ;
+    }
+
+    public static GameObject[] GetSceneObjects(string sceneName, Transform parent)
+    {
+        Scene scene = SceneManager.GetSceneByName(sceneName);
+        
+        
+        var objs = scene.GetRootGameObjects();
+        Debug.Log($"LoadScene scene:{sceneName},isLoaded:{scene.isLoaded},isValid:{scene.IsValid()},objs:{objs.Length}");
+        if (parent)
+        {
+            foreach (var obj in objs)
+            {
+                obj.transform.SetParent(parent);
+            }
+            //EditorSceneManager.CloseScene(scene, true);
+        }
+        return objs;
+    }
+
+    public static GameObject[] EditorLoadScene(Scene scene,string path,Transform parent)
+    {
+        string scenePath = EditorHelper.GetScenePath(path);
+        Debug.Log($"LoadScene scene:{scene.IsValid()},path:{path}\nscenePath:{scenePath}");
+        if (scene.IsValid() == false)//没有打开场景 > 打开
+        {
+            scene = EditorSceneManager.OpenScene(scenePath, OpenSceneMode.Additive);
+        }
+        var objs = scene.GetRootGameObjects();
+        if (parent)
+        {
+            
+            foreach (var obj in objs)
+            {
+                obj.transform.SetParent(parent);
+            }
+            EditorSceneManager.CloseScene(scene, true);
+        }
+        return objs;
     }
 
     private static void MoveGosToScene(Scene scene, params GameObject[] objs)
@@ -56,10 +188,37 @@ public static class EditorHelper
         return scene;
     }
 
-    public static Scene CreateScene(string scenePath,bool isOveride, params GameObject[] objs)
+
+    public static string GetScenePath(string path)
     {
-        
-        Debug.Log($"objs:{objs.Length},scenePath:{scenePath}");
+        string scenePath = path;
+        if (path.Contains(":"))//绝对路径
+        {
+
+        }
+        else //相对路径
+        {
+            scenePath = $"{Application.dataPath}/{path}";
+        }
+        return scenePath;
+    }
+
+    public static Scene CreateScene(string path,bool isOveride, params GameObject[] objs)
+    {
+        string scenePath = GetScenePath(path);
+        Debug.Log($"objs:{objs.Length},\tpath:{path},\nscenePath:{scenePath}");
+
+        FileInfo file = new FileInfo(scenePath);
+        Debug.Log($"file:{file.FullName},\ndir:{file.Directory.FullName}\t{file.Directory.Exists}");
+        if (file.Directory.Exists == false)
+        {
+            var path1 = file.FullName;
+            var relativeDirPath = PathToRelative(path1);
+            var relativeDirPath2 = relativeDirPath.Replace("\\", "/");
+            Debug.Log($"relativeDirPath:{relativeDirPath}\nrelativeDirPath2:{relativeDirPath2}");
+            
+            makeParentDirExist(relativeDirPath2);//创建文件夹
+        }
        
         bool isExist = File.Exists(scenePath);
         Debug.Log("isExist:" + isExist);
@@ -79,36 +238,9 @@ public static class EditorHelper
                 Debug.Log("scene IsValid:" + scene.IsValid());
                 if (scene.IsValid() == true)//打开
                 {
-                    //scene = EditorSceneManager.NewScene(NewSceneSetup.EmptyScene, NewSceneMode.Additive);
-                    //MoveGosToScene(scene, objs);
-
                     bool r1=EditorSceneManager.CloseScene(scene, true);//关闭场景，不关闭无法覆盖
                     Debug.Log("r1:" + r1);
-                    //AssetDatabase.Refresh();
-                    //System.Threading.Thread.Sleep(1000);
-
-                    //Scene activeScene = EditorSceneManager.GetActiveScene();
-                    //scene = EditorSceneManager.NewScene(NewSceneSetup.EmptyScene, NewSceneMode.Additive);
-                    //EditorSceneManager.SetActiveScene(activeScene);
-
-                    //MoveGosToScene(scene, objs);
-
-                    //bool result2 = EditorSceneManager.SaveScene(scene, scenePath);//覆盖掉
-                    //Debug.Log("SaveSceneResult2:" + result2);
-                    //AssetDatabase.Refresh();
                 }
-                //else
-                //{
-                //    Scene activeScene = EditorSceneManager.GetActiveScene();
-                //    scene = EditorSceneManager.NewScene(NewSceneSetup.EmptyScene, NewSceneMode.Additive);
-                //    EditorSceneManager.SetActiveScene(activeScene);
-
-                //    MoveGosToScene(scene, objs);
-
-                //    bool result2 = EditorSceneManager.SaveScene(scene, scenePath);//覆盖掉
-                //    Debug.Log("SaveSceneResult2:" + result2);
-                //    AssetDatabase.Refresh();
-                //}
                 return CreateScene(scenePath, objs);
             }
             else
@@ -118,20 +250,13 @@ public static class EditorHelper
                 {
                     scene = EditorSceneManager.OpenScene(scenePath, OpenSceneMode.Additive);//打开
                 }
-                //Scene scene = EditorSceneManager.OpenScene(scenePath, OpenSceneMode.Additive);
                 MoveGosToScene(scene, objs);
-
                 bool result2 = EditorSceneManager.SaveScene(scene, scenePath);
                 Debug.Log("SaveSceneResult3:" + result2);
                 AssetDatabase.Refresh();
-
                 return scene;
-            }
-            
-
-            
-        }
-        
+            } 
+        } 
     }
 
     public static void SelectObject(GameObject obj)
@@ -237,21 +362,24 @@ public static class EditorHelper
         }
     }
 
-    public static string PathToRelative(string path, GameObject obj)
+    public static string PathToRelative(string path, GameObject obj=null)
     {
         if (path.StartsWith("Assets"))//已经是相对路径
         {
             return path;
         }
-        if (path.Length >= Application.dataPath.Length + 1)
+        if(path.Contains(":") && path.Length >= Application.dataPath.Length + 1)
+        //if ()
         {
             string relativePath = "Assets\\" + path.Substring(Application.dataPath.Length + 1);//这里必须加上Assets\\
             return relativePath;
         }
         else
         {
-            Debug.LogError("PathToRelative:" + path + "," + obj);
-            return path;
+            //Debug.LogError("PathToRelative:" + path + "," + obj);
+            string relativePath = "Assets\\" + path;//这里必须加上Assets\\
+            return relativePath;
+            //return path;
         }
     }
 
@@ -365,8 +493,18 @@ public static class EditorHelper
 
     public static void makeParentDirExist(string path)
     {
+        if(string.IsNullOrEmpty(path))
+        {
+            Debug.LogError($"makeParentDirExist pDir == path");
+            return;
+        }
         string pDir = getParentPath(path);
-
+        Debug.Log($"makeParentDirExist path:{path}\npDir:{pDir}");
+        if (pDir == path)
+        {
+            Debug.LogError($"makeParentDirExist pDir == path");
+            return;
+        }
         if (!AssetDatabase.IsValidFolder(pDir))
         {
             makeParentDirExist(pDir);

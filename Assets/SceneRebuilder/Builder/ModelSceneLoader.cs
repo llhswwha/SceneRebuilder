@@ -152,15 +152,6 @@ public class ModelSceneLoader : MonoBehaviour
 
             slider.value = progressValue;
             progress.text = (int)(slider.value * 100) + " %";
-
-            //if (progressValue >= 0.9)
-            //{
-            //    progress.text = "�����������";
-            //    if (Input.anyKeyDown)
-            //    {
-            //        async.allowSceneActivation = true;
-            //    }
-            //}
             yield return null;
         }
         ShowModelInfo();

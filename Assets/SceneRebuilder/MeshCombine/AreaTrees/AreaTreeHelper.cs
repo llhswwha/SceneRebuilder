@@ -53,8 +53,10 @@ public static class AreaTreeHelper
     {
         if(CubePrefab==null){
             CubePrefab=GameObject.CreatePrimitive(PrimitiveType.Cube);
+            CubePrefab.SetActive(false);
         }
         GameObject cube=GameObject.Instantiate(CubePrefab);
+        cube.SetActive(true);
         cube.name=n;
         cube.transform.position=bounds.center;
         cube.transform.localScale=bounds.size;
