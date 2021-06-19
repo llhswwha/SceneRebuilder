@@ -198,6 +198,20 @@ public static class EditorHelper
         return scene;
     }
 
+    public static Scene CreateScene(GameObject objs,string scenePath)
+    {
+        Scene activeScene = EditorSceneManager.GetActiveScene();
+        Scene scene = EditorSceneManager.NewScene(NewSceneSetup.EmptyScene, NewSceneMode.Additive);
+        EditorSceneManager.SetActiveScene(activeScene);
+
+        MoveGosToScene(scene, objs);
+
+        bool result = EditorSceneManager.SaveScene(scene, scenePath);
+        Debug.Log("SaveSceneResult1:" + result);
+        AssetDatabase.Refresh();
+        return scene;
+    }
+
 
     public static string GetScenePath(string path)
     {
