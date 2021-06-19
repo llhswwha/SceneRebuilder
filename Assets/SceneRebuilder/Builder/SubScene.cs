@@ -18,6 +18,8 @@ public class SubScene : MonoBehaviour
 
     public int rendererCount;
 
+    public float vertexCount = 0;
+
     public Scene scene;
 
     public string scenePath;
@@ -55,7 +57,7 @@ public class SubScene : MonoBehaviour
     {
         if (IsAutoLoad)
         {
-            LoadSceneAsync();
+            LoadSceneAsync(null);
         }
     }
 
@@ -130,18 +132,22 @@ public class SubScene : MonoBehaviour
         gos = EditorHelper.LoadScene(GetSceneName(), IsSetParent ? this.transform : null).ToList();
         IsLoaded = true;
     }
-    [ContextMenu("TestLoadSceneAsync")]
-    public void TestLoadSceneAsync()
-    {
-        LoadSceneAsync();
-        LoadSceneAsync();
-    }
+    //[ContextMenu("TestLoadSceneAsync")]
+    //public void TestLoadSceneAsync()
+    //{
+    //    LoadSceneAsync();
+    //    LoadSceneAsync();
+    //}
 
-    public IEnumerator LoadSceneAsyncCoroutine()
+    public IEnumerator LoadSceneAsyncCoroutine(Action<bool> callback)
     {
         if (IsLoading || IsLoaded)
         {
             Debug.LogWarning("IsLoading || IsLoaded :" + GetSceneName());
+            if (callback != null)
+            {
+                callback(false);
+            }
             yield return null;
         }
         else
@@ -158,12 +164,23 @@ public class SubScene : MonoBehaviour
                     GetSceneObjects();
                 IsLoaded = true;
                 IsLoading = false;
+
+                if (callback != null)
+                {
+                    callback(true);
+                }
             }, IsSetParent);
         }
     }
 
-    [ContextMenu("LoadSceneAsync")]
-    public void LoadSceneAsync()
+    [ContextMenu("TestLoadSceneAsync")]
+    public void TestLoadSceneAsync()
+    {
+        StartCoroutine(LoadSceneAsyncCoroutine(null));
+    }
+
+    //[ContextMenu("LoadSceneAsync")]
+    public void LoadSceneAsync(Action<bool> callback)
     {
 
 
@@ -180,7 +197,7 @@ public class SubScene : MonoBehaviour
         //}, IsSetParent)
         //);
 
-        StartCoroutine(LoadSceneAsyncCoroutine());
+        StartCoroutine(LoadSceneAsyncCoroutine(callback));
     }
     [ContextMenu("TestUnLoadSceneAsync")]
     public void TestUnLoadSceneAsync()
@@ -305,5 +322,21 @@ public class SubScene : MonoBehaviour
 
         bounds = ColliderHelper.CaculateBounds(renderers);
         //ShowBounds();
+
+        vertexCount = GetVertexCount(renderers);
+    }
+
+    public float GetVertexCount(MeshRenderer[] renderers)
+    {
+        int count = 0;
+        foreach (var renderer in renderers)
+        {
+            MeshFilter meshFilter = renderer.GetComponent<MeshFilter>();
+            if (meshFilter == null) continue;
+            if (meshFilter.sharedMesh == null) continue;
+            count += meshFilter.sharedMesh.vertexCount;
+        }
+        float vertexCount = count / 10000.0f;
+        return vertexCount;
     }
 }

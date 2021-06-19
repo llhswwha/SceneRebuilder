@@ -1,6 +1,7 @@
 using System;
 using System.Collections;
 using System.Collections.Generic;
+using System.Linq;
 #if UNITY_EDITOR
 using UnityEditor;
 using UnityEditor.SceneManagement;
@@ -30,21 +31,67 @@ public class SubSceneManager : MonoBehaviour
 
     public bool IsOneCoroutine = true;
 
+    public event Action<float> ProgressChanged;
+
+    protected void OnProgressChanged(float progress)
+    {
+        this.loadProgress = progress;
+        if (ProgressChanged != null)
+        {
+            ProgressChanged(progress);
+        }
+    }
+
+    public event Action AllLoaded;
+
+    protected void OnAllLoaded()
+    {
+        if (AllLoaded != null)
+        {
+            AllLoaded();
+        }
+        OnProgressChanged(1);
+    }
+
+    public void LoadScenesEx()
+    {
+        if (IsOneCoroutine)
+        {
+            LoadScenesAsyncEx();
+        }
+        else
+        {
+            LoadScenesAsync();
+        }
+    }
+
     void Start()
     {
         if (IsAutoLoad)
         {
-            if (IsOneCoroutine)
-            {
-                LoadScenesAsyncEx();
-            }
-            else
-            {
-                LoadScenesAsync();
-            }
+            LoadScenesEx();
         }
     }
 
+    [ContextMenu("GetSceneInfos")]
+    public void GetSceneInfos()
+    {
+        Debug.Log("GetSceneInfos");
+        subScenes = GameObject.FindObjectsOfType<SubScene>(true);
+        foreach (var item in subScenes)
+        {
+            item.Init();
+        }
+        SortScenes();
+    }
+
+    [ContextMenu("SortScenes")]
+    private void SortScenes()
+    {
+        var list = GameObject.FindObjectsOfType<SubScene>(true).ToList();
+        list.Sort((a, b) => b.vertexCount.CompareTo(a.vertexCount));
+        subScenes = list.ToArray();
+    }
 
 
     [ContextMenu("SetSetting")]
@@ -79,10 +126,24 @@ public class SubSceneManager : MonoBehaviour
     [ContextMenu("LoadScenesAsync")]
     public void LoadScenesAsync()
     {
+        DateTime start = DateTime.Now;
+        OnProgressChanged(0);
         subScenes = GameObject.FindObjectsOfType<SubScene>(true);
-        foreach (var item in subScenes)
+        int count = 0;
+        for (int i = 0; i < subScenes.Length; i++)
         {
-            item.LoadSceneAsync();//多个协程，乱序
+            SubScene item = subScenes[i];
+            item.LoadSceneAsync(b=>
+            {
+                count++;
+                var progress = (count + 0.0f) / subScenes.Length;
+                OnProgressChanged(progress);
+                if(count== subScenes.Length)
+                {
+                    OnAllLoaded();
+                    WriteLog($"LoadScenesAsync  count:{subScenes.Length},\t time:{(DateTime.Now - start).ToString()}");
+                }
+            });//多个协程，乱序
         }
     }
 
@@ -96,18 +157,21 @@ public class SubSceneManager : MonoBehaviour
 
     IEnumerator LoadAllScenesCoroutine()
     {
-        loadProgress = 0;
+        //loadProgress = 0;
+        OnProgressChanged(0);
         DateTime start = DateTime.Now;
         subScenes = GameObject.FindObjectsOfType<SubScene>(true);
         for (int i = 0; i < subScenes.Length; i++)
         {
             var subScene = subScenes[i];
-            loadProgress = (i+0.0f) / subScenes.Length;
+            var progress = (i+0.0f) / subScenes.Length;
+            OnProgressChanged(progress);
             Debug.Log($"loadProgress:{loadProgress},scene:{subScene.GetSceneName()}");
             
-            yield return subScene.LoadSceneAsyncCoroutine();
+            yield return subScene.LoadSceneAsyncCoroutine(null);
         }
-        Debug.LogError($"LoadAllScenes  count:{subScenes.Length},\t time:{(DateTime.Now - start).ToString()}");
+        WriteLog($"LoadScenesAsyncEx  count:{subScenes.Length},\t time:{(DateTime.Now - start).ToString()}");
+        OnAllLoaded();
         yield return null;
     }
 
@@ -118,6 +182,22 @@ public class SubSceneManager : MonoBehaviour
         foreach (var item in subScenes)
         {
             item.DestoryChildren();
+        }
+    }
+
+    [ContextMenu("ShowBounds")]
+    public void ShowBounds()
+    {
+        AreaTreeManager areaTreeManager = GameObject.FindObjectOfType<AreaTreeManager>();
+        if (areaTreeManager)
+        {
+            AreaTreeHelper.CubePrefab = areaTreeManager.CubePrefab;
+        }
+
+        subScenes = GameObject.FindObjectsOfType<SubScene>(true);
+        foreach (var item in subScenes)
+        {
+            item.ShowBounds();
         }
     }
 
@@ -166,7 +246,15 @@ public class SubSceneManager : MonoBehaviour
 
         ProgressBarHelper.ClearProgressBar();
 
-        Debug.LogError($"EditorLoadScenes count:{subScenes.Length},\t time:{(DateTime.Now - start).ToString()}");
+        WriteLog($"EditorLoadScenes count:{subScenes.Length},\t time:{(DateTime.Now - start).ToString()}");
+    }
+
+    public string Log = "";
+
+    private void WriteLog(string log)
+    {
+        Log = log;
+        Debug.LogError(Log);
     }
 
     [ContextMenu("EditorSaveScenes")]
@@ -191,7 +279,7 @@ public class SubSceneManager : MonoBehaviour
 
         ClearOtherScenes();
 
-        Debug.LogError($"EditorSaveScenes count:{subScenes.Length},\t time:{(DateTime.Now - start).ToString()}");
+        WriteLog($"EditorSaveScenes count:{subScenes.Length},\t time:{(DateTime.Now - start).ToString()}");
     }
 
     [ContextMenu("SetBuildings")]
@@ -307,7 +395,7 @@ public class SubSceneManager : MonoBehaviour
         SetBuildings();
         SetSetting();
 
-        Debug.LogError($"EditorSaveScenes count:{buildings.Length},\t time:{(DateTime.Now - start).ToString()}");
+        WriteLog($"EditorSaveScenes count:{buildings.Length},\t time:{(DateTime.Now - start).ToString()}");
     }
 
     private SubScene CreateSubScene(GameObject go)
