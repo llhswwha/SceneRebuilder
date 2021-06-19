@@ -24,6 +24,35 @@ public class SubScene : MonoBehaviour
 
     public string scenePath;
 
+    public event Action<float> ProgressChanged;
+
+    protected void OnProgressChanged(float progress)
+    {
+        this.loadProgress = progress;
+        if (ProgressChanged != null)
+        {
+            ProgressChanged(progress);
+        }
+    }
+
+    public event Action AllLoaded;
+
+    protected void OnAllLoaded()
+    {
+
+        OnProgressChanged(1);
+
+        if (AllLoaded != null)
+        {
+            AllLoaded();
+        }
+    }
+
+    internal string GetSceneInfo()
+    {
+        return $"r:{rendererCount}\tv:{vertexCount:F1}w\t[{GetSceneName()}] ";
+    }
+
     public string GetRalativePath()
     {
         //string rPath = scenePath;
@@ -152,11 +181,13 @@ public class SubScene : MonoBehaviour
         }
         else
         {
+            DateTime start = DateTime.Now;
+
             IsLoading = true;
-            loadProgress = 0;
+            OnProgressChanged(0);
             yield return EditorHelper.LoadSceneAsync(GetSceneName(), progress =>
             {
-                loadProgress = progress;
+                OnProgressChanged(progress);
                 Debug.Log("progress:" + progress);
             }, s =>
             {
@@ -169,8 +200,21 @@ public class SubScene : MonoBehaviour
                 {
                     callback(true);
                 }
+
+
+                //WriteLog($"Load name:{GetSceneName()},time:{(DateTime.Now - start).ToString()},progress:{loadProgress}");
+                WriteLog($"Load {GetSceneName()} : {(DateTime.Now - start).ToString()}");
+                AllLoaded();
             }, IsSetParent);
         }
+    }
+
+    public string Log = "";
+
+    private void WriteLog(string log)
+    {
+        Log = log;
+        Debug.LogError(Log);
     }
 
     [ContextMenu("TestLoadSceneAsync")]

@@ -46,11 +46,13 @@ public class SubSceneManager : MonoBehaviour
 
     protected void OnAllLoaded()
     {
+        OnProgressChanged(1);
+
         if (AllLoaded != null)
         {
             AllLoaded();
         }
-        OnProgressChanged(1);
+
     }
 
     public void LoadScenesEx()

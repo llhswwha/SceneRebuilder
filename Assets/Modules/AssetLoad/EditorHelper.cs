@@ -71,6 +71,11 @@ public static class EditorHelper
             yield return null;
         }
 
+        if (progressChanged != null)
+        {
+            progressChanged(async.progress);
+        }
+
         Scene scene = SceneManager.GetSceneByName(sName);
         //var objs = scene.GetRootGameObjects();
         if (finished != null)
@@ -106,6 +111,11 @@ public static class EditorHelper
                     progressChanged(async.progress);
                 }
                 yield return null;
+            }
+
+            if (progressChanged != null)
+            {
+                progressChanged(async.progress);
             }
         }
 
