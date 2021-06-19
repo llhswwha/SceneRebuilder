@@ -2,6 +2,7 @@ using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 using System.Linq;
+using System;
 #if UNITY_EDITOR
 using UnityEditor;
 #endif
@@ -109,6 +110,18 @@ public class BuildingModelInfo : MonoBehaviour
     public void InitInOut()
     {
         UpackPrefab_One(this.gameObject);
+
+        GetInOutParts();
+
+        GetInOutVertextCount();
+
+        HideDetail();
+
+        //var manager=GameObject.FindObjectOfType<>
+    }
+
+    private void GetInOutParts()
+    {
         List<Transform> children = new List<Transform>();
         for (int i = 0; i < transform.childCount; i++)
         {
@@ -138,7 +151,7 @@ public class BuildingModelInfo : MonoBehaviour
             }
         }
 
-        if (OutPart1 == null && OutPart0 != null && InPart == null && OutPart0.transform.childCount==0)
+        if (OutPart1 == null && OutPart0 != null && InPart == null && OutPart0.transform.childCount == 0)
         {
             foreach (var child in children)
             {
@@ -146,12 +159,6 @@ public class BuildingModelInfo : MonoBehaviour
                 child.SetParent(OutPart0.transform);
             }
         }
-
-        GetInOutVertextCount();
-
-        HideDetail();
-
-        //var manager=GameObject.FindObjectOfType<>
     }
 
 
@@ -403,6 +410,8 @@ public class BuildingModelInfo : MonoBehaviour
         return count;
     }
 
+ 
+
     private void Awake()
     {
         //InitInOut();
@@ -449,11 +458,74 @@ public class BuildingModelInfo : MonoBehaviour
             OutPart1.SetActive(true);
     }
 
-    [ContextMenu("SaveScenes")]
-    public void SaveScenes(string path, bool isOverride)
-    {
 
+    internal void SaveScenes(string dir, bool isOverride)
+    {
+        InitInOut();
+
+        var trees = this.GetComponentsInChildren<ModelAreaTree>();
+
+        if (InPart)
+        {
+            List<GameObject> gos = new List<GameObject>();
+            gos.Add(InPart);
+            foreach (var tree in trees)
+            {
+                if (tree.Target == InPart)
+                {
+                    gos.Add(tree.gameObject);
+                }
+            }
+
+            SubScene ss = gameObject.AddComponent<SubScene>();
+            ss.gos = gos;
+            ss.Init();
+            string path = $"{dir}{this.name}_In.unity";
+            ss.SaveScene(path, isOverride);
+            ss.ShowBounds();
+        }
+
+        if (OutPart0)
+        {
+            List<GameObject> gos = new List<GameObject>();
+            gos.Add(OutPart0);
+            foreach (var tree in trees)
+            {
+                if (tree.Target == OutPart0)
+                {
+                    gos.Add(tree.gameObject);
+                }
+            }
+
+            SubScene ss = gameObject.AddComponent<SubScene>();
+            ss.gos = gos;
+            ss.Init();
+            string path = $"{dir}{this.name}_Out0.unity";
+            ss.SaveScene(path, isOverride);
+            ss.ShowBounds();
+        }
     }
 
+    public List<GameObject> GetInGos()
+    {
+        InitInOut();
+
+        var trees = this.GetComponentsInChildren<ModelAreaTree>();
+
+        List<GameObject> gos = new List<GameObject>();
+        if (InPart != null)
+        {
+            gos.Add(InPart);
+
+            foreach(var tree in trees)
+            {
+                if(tree.Target==InPart)
+                {
+                    gos.Add(tree.gameObject);
+                }
+            }
+        }
+        return gos;
+    }
 
 }

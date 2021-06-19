@@ -115,6 +115,25 @@ public class SubSceneManager : MonoBehaviour
         return $"{RootDir}/{SceneDir}/{sceneName}.unity";
     }
 
+    private string GetSceneDir()
+    {
+        //return Application.dataPath + "/Models/Instances/Buildings/" + sceneName + ".unity";
+        //return Application.dataPath + SaveDir + sceneName + ".unity";
+        //return $"{Application.dataPath}/{RootDir}/{SceneDir}/{sceneName}.unity";
+        return $"{RootDir}/{SceneDir}/";
+    }
+
+    [ContextMenu("RemoveSubScenes")]
+    public void RemoveSubScenes()
+    {
+        subScenes = GameObject.FindObjectsOfType<SubScene>(true);
+        foreach (var item in subScenes)
+        {
+            //item.LoadScene();
+            GameObject.DestroyImmediate(item);
+        }
+    }
+
     [ContextMenu("LoadScenes")]
     public void LoadScenes()
     {
@@ -387,10 +406,10 @@ public class SubSceneManager : MonoBehaviour
                 break;
             }
 
+            string dir = GetSceneDir();
+            item.SaveScenes(dir, IsOverride);
 
-            //item.SaveScenes(path, IsOverride);
-
-            CreateSubScene(item.gameObject);
+            //CreateSubScene(item.gameObject);
         }
         ProgressBarHelper.ClearProgressBar();
 

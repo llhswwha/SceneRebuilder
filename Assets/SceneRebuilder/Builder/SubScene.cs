@@ -345,8 +345,17 @@ public class SubScene : MonoBehaviour
         var children = GetChildrenGos();
         scene=EditorHelper.CreateScene(path, isOverride, children.ToArray());
         scenePath = path;
-#endif
+
     }
+
+    public void SaveScene(string path, bool isOverride)
+    {
+        scene = EditorHelper.CreateScene(path, isOverride, gos.ToArray());
+        scenePath = path;
+        GetSceneName();
+    }
+
+#endif
 
     public List<GameObject> GetChildrenGos()
     {
