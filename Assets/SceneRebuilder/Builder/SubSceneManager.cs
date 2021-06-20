@@ -60,6 +60,13 @@ public class SubSceneManager : MonoBehaviour
 
     }
 
+    [ContextMenu("AutoLoadScenes")]
+    public void AutoLoadScenes()
+    {
+        var outScenes = GetSubScenes(SubSceneType.Out0);
+        LoadScenesEx(outScenes);
+    }
+
     [ContextMenu("LoadScenesEx")]
     public void LoadScenesEx()
     {
@@ -276,6 +283,54 @@ public class SubSceneManager : MonoBehaviour
     {
         subScenes = GetSubScenes();
         UnLoadScenesAsync(subScenes);
+    }
+
+    public static SubScene_Base[] ToBaseScene<T>(T[] ss) where T : SubScene_Base
+    {
+        List<SubScene_Base> scenes = new List<SubScene_Base>();
+        foreach (var s in ss)
+        {
+            scenes.Add(s);
+        }
+        return scenes.ToArray();
+    }
+
+    public static SubScene_Base[] GetSubScenes(SubSceneType sceneType)
+    {
+        SubScene_Base[] result = null;
+        if (sceneType == SubSceneType.In)
+        {
+            var scenes = GameObject.FindObjectsOfType<SubScene_In>();
+            result= ToBaseScene(scenes);
+        }
+        else if (sceneType == SubSceneType.Out0)
+        {
+            var scenes = GameObject.FindObjectsOfType<SubScene_Out0>();
+            result = ToBaseScene(scenes);
+        }
+        else if (sceneType == SubSceneType.Out1)
+        {
+            var scenes = GameObject.FindObjectsOfType<SubScene_Out1>();
+            result = ToBaseScene(scenes);
+        }
+        else if (sceneType == SubSceneType.Part)
+        {
+            var scenes = GameObject.FindObjectsOfType<SubScene_Part>();
+            result = ToBaseScene(scenes);
+        }
+        else if (sceneType == SubSceneType.Single)
+        {
+            var scenes = GameObject.FindObjectsOfType<SubScene_Single>();
+            result = ToBaseScene(scenes);
+        }
+        else //È«²¿
+        {
+            var scenes = GameObject.FindObjectsOfType<SubScene_Base>();
+            result = ToBaseScene(scenes);
+        }
+
+        //txtResult.text = $"type:{sceneType},count:{result.Length}";
+        return result;
     }
 
     /// <summary>
@@ -557,17 +612,17 @@ public class SubSceneManager : MonoBehaviour
 #endif
     }
 
-    [ContextMenu("LoadAllScenes")]
-    public void LoadAllScenes()
-    {
-        if (root)
-        {
-            SubScene_Single ss = root.AddComponent<SubScene_Single>();
-            ss.Init();
-            string path = GetScenePath(root.name);
-            ss.SaveChildrenToScene(path, IsOverride);
-        }
-    }
+    //[ContextMenu("LoadAllScenes")]
+    //public void LoadAllScenes()
+    //{
+    //    if (root)
+    //    {
+    //        SubScene_Single ss = root.AddComponent<SubScene_Single>();
+    //        ss.Init();
+    //        string path = GetScenePath(root.name);
+    //        ss.SaveChildrenToScene(path, IsOverride);
+    //    }
+    //}
 
     [ContextMenu("ClearOtherScenes")]
     public void ClearOtherScenes()

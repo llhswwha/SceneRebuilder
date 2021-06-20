@@ -42,7 +42,6 @@ public class SubSceneManagerUI : MonoBehaviour
     private void SubSceneManager_AllLoaded()
     {
         txtResult.text = subSceneManager.Log;
-        ClickGetScenes();
     }
 
     private void SubSceneManager_ProgressChanged(float obj)
@@ -56,36 +55,8 @@ public class SubSceneManagerUI : MonoBehaviour
 
     public void ClickGetScenes()
     {
-        if (sceneType== SubSceneType.In)
-        {
-            var scenes = GameObject.FindObjectsOfType<SubScene_In>().ToList();
-            ShowSceneList(scenes);
-        }
-        else if (sceneType == SubSceneType.Out0)
-        {
-            var scenes = GameObject.FindObjectsOfType<SubScene_Out0>().ToList();
-            ShowSceneList(scenes);
-        }
-        else if (sceneType == SubSceneType.Out1)
-        {
-            var scenes = GameObject.FindObjectsOfType<SubScene_Out1>().ToList();
-            ShowSceneList(scenes);
-        }
-        else if (sceneType == SubSceneType.Part)
-        {
-            var scenes = GameObject.FindObjectsOfType<SubScene_Part>().ToList();
-            ShowSceneList(scenes);
-        }
-        else if (sceneType == SubSceneType.Single)
-        {
-            var scenes = GameObject.FindObjectsOfType<SubScene_Single>().ToList();
-            ShowSceneList(scenes);
-        }
-        else
-        {
-            var scenes = GameObject.FindObjectsOfType<SubScene_Base>().ToList();
-            ShowSceneList(scenes);
-        }
+        var scenes = SubSceneManager.GetSubScenes(sceneType);
+        ShowSceneList(scenes.ToList());
 
         txtResult.text = $"type:{sceneType},count:{subScenes.Count}";
     }

@@ -50,6 +50,10 @@ public class SubSceneUI : MonoBehaviour
         scene = subScene;
         scene.ProgressChanged += Scene_ProgressChanged;
         scene.AllLoaded += Scene_AllLoaded;
+
+        toggleIsLoaded.isOn = scene.IsLoaded;
+        txtLog.text = scene.Log;
+        sliderProgresss.value = scene.loadProgress;
     }
 
     private void OnDestroy()

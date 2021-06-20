@@ -228,7 +228,7 @@ public class SubScene_Base : MonoBehaviour
 
                 //WriteLog($"Load name:{GetSceneName()},time:{(DateTime.Now - start).ToString()},progress:{loadProgress}");
                 WriteLog($"Load {GetSceneName()} : {(DateTime.Now - start).ToString()}");
-                AllLoaded();
+                OnAllLoaded();
             }, IsSetParent);
         }
     }
