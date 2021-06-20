@@ -121,7 +121,7 @@ public class SubScene_Base : MonoBehaviour
         boundsGo = AreaTreeHelper.CreateBoundsCube(bounds, BoundsName, transform);
     }
 
-    internal void DestroyBoundsBox()
+    public virtual void DestroyBoundsBox()
     {
         if (boundsGo)
         {
@@ -302,10 +302,7 @@ public class SubScene_Base : MonoBehaviour
     [ContextMenu("GetSceneObjects")]
     public void GetSceneObjects()
     {
-        if (boundsGo)
-        {
-            GameObject.DestroyImmediate(boundsGo);
-        }
+        DestroyBoundsBox();
 
         gos = EditorHelper.GetSceneObjects(GetSceneName(), this.transform).ToList();
     }
@@ -438,4 +435,9 @@ public class SubScene_Base : MonoBehaviour
         float vertexCount = count / 10000.0f;
         return vertexCount;
     }
+}
+
+public enum SubSceneType
+{
+    Single,In,Out0,Out1
 }

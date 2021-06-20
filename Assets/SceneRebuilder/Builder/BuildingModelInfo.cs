@@ -466,7 +466,7 @@ public class BuildingModelInfo : MonoBehaviour
         }
     }
 
-    private void DestroyOldBounds()
+    public void DestroyOldBounds()
     {
         var components = this.GetComponentsInChildren<BoundsBox>();//In Out0 Out1
         foreach (var c in components)
@@ -580,7 +580,7 @@ public class BuildingModelInfo : MonoBehaviour
 
 
 
-#endif
+
 
 
     internal void EditorCreatePartScenes(string dir, bool isOverride)
@@ -637,6 +637,8 @@ public class BuildingModelInfo : MonoBehaviour
         }
         return null;
     }
+
+#endif
 
     public List<GameObject> GetInGos()
     {

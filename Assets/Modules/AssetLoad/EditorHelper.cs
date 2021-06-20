@@ -12,13 +12,15 @@ using System.Xml.Serialization;
 using UnityEditor;
 using UnityEditor.Events;
 using UnityEditor.SceneManagement;
+#endif
+
 using UnityEngine;
 using UnityEngine.Events;
 using UnityEngine.SceneManagement;
 
 public static class EditorHelper
 {
-
+#if UNITY_EDITOR
 
 
     public static void ClearOtherScenes()
@@ -42,6 +44,332 @@ public static class EditorHelper
 
         ProgressBarHelper.ClearProgressBar();
     }
+
+    public static GameObject[] EditorLoadScene(Scene scene, string path, Transform parent)
+    {
+        string scenePath = EditorHelper.GetScenePath(path);
+        Debug.Log($"LoadScene scene:{scene.IsValid()},path:{path}\nscenePath:{scenePath}");
+        if (scene.IsValid() == false)//没有打开场景 > 打开
+        {
+            scene = EditorSceneManager.OpenScene(scenePath, OpenSceneMode.Additive);
+        }
+        var objs = scene.GetRootGameObjects();
+        if (parent)
+        {
+
+            foreach (var obj in objs)
+            {
+                obj.transform.SetParent(parent);
+            }
+            EditorSceneManager.CloseScene(scene, true);
+        }
+        return objs;
+    }
+
+    public static Scene CreateScene(string scenePath, params GameObject[] objs)
+    {
+        Scene activeScene = EditorSceneManager.GetActiveScene();
+        Scene scene = EditorSceneManager.NewScene(NewSceneSetup.EmptyScene, NewSceneMode.Additive);
+        EditorSceneManager.SetActiveScene(activeScene);
+
+        MoveGosToScene(scene, objs);
+
+        bool result = EditorSceneManager.SaveScene(scene, scenePath);
+        Debug.Log("SaveSceneResult1:" + result);
+        AssetDatabase.Refresh();
+        return scene;
+    }
+
+    public static Scene CreateScene(GameObject objs, string scenePath)
+    {
+        Scene activeScene = EditorSceneManager.GetActiveScene();
+        Scene scene = EditorSceneManager.NewScene(NewSceneSetup.EmptyScene, NewSceneMode.Additive);
+        EditorSceneManager.SetActiveScene(activeScene);
+
+        MoveGosToScene(scene, objs);
+
+        bool result = EditorSceneManager.SaveScene(scene, scenePath);
+        Debug.Log("SaveSceneResult1:" + result);
+        AssetDatabase.Refresh();
+        return scene;
+    }
+
+    public static Scene CreateScene(string path, bool isOveride, params GameObject[] objs)
+    {
+        string scenePath = GetScenePath(path);
+        Debug.Log($"objs:{objs.Length},\tpath:{path},\nscenePath:{scenePath}");
+
+        FileInfo file = new FileInfo(scenePath);
+        Debug.Log($"file:{file.FullName},\ndir:{file.Directory.FullName}\t{file.Directory.Exists}");
+        if (file.Directory.Exists == false)
+        {
+            var path1 = file.FullName;
+            var relativeDirPath = PathToRelative(path1);
+            var relativeDirPath2 = relativeDirPath.Replace("\\", "/");
+            Debug.Log($"relativeDirPath:{relativeDirPath}\nrelativeDirPath2:{relativeDirPath2}");
+
+            makeParentDirExist(relativeDirPath2);//创建文件夹
+        }
+
+        bool isExist = File.Exists(scenePath);
+        Debug.Log("isExist:" + isExist);
+
+        //var asset = AssetDatabase.LoadMainAssetAtPath(scenePath);
+        //Debug.Log("asset:" + asset);
+
+        if (isExist == false)//场景不存在
+        {
+            return CreateScene(scenePath, objs);
+        }
+        else
+        {
+            if (isOveride)//重新覆盖
+            {
+                Scene scene = EditorSceneManager.GetSceneByPath(scenePath);
+                Debug.Log("scene IsValid:" + scene.IsValid());
+                if (scene.IsValid() == true)//打开
+                {
+                    bool r1 = EditorSceneManager.CloseScene(scene, true);//关闭场景，不关闭无法覆盖
+                    Debug.Log("r1:" + r1);
+                }
+                return CreateScene(scenePath, objs);
+            }
+            else
+            {
+                Scene scene = EditorSceneManager.GetSceneByPath(scenePath);
+                if (scene.IsValid() == false)//没有打开
+                {
+                    scene = EditorSceneManager.OpenScene(scenePath, OpenSceneMode.Additive);//打开
+                }
+                MoveGosToScene(scene, objs);
+                bool result2 = EditorSceneManager.SaveScene(scene, scenePath);
+                Debug.Log("SaveSceneResult3:" + result2);
+                AssetDatabase.Refresh();
+                return scene;
+            }
+        }
+    }
+
+    public static void SelectObject(GameObject obj)
+    {
+        EditorGUIUtility.PingObject(obj);
+        Selection.activeGameObject = obj;
+        EditorApplication.ExecuteMenuItem("Edit/Frame Selected");
+    }
+
+    /// <summary>
+    /// 得到模型所在路径
+    /// </summary>
+    /// <param name="obj"></param>
+    /// <returns></returns>
+    public static string GetMeshPath(GameObject obj)
+    {
+        if (obj == null)
+        {
+            Debug.LogError("GetMeshPath failed...obj==null");
+        }
+        var meshFilter = obj.GetComponentInChildren<MeshFilter>();
+        var mesh = meshFilter.sharedMesh;
+        var path = AssetDatabase.GetAssetPath(mesh);
+        return path;
+    }
+
+    public static void SetAssetBundleName(string path, string assetName)
+    {
+        string relativePath = PathToRelative(path, null);
+        //Object subObj = AssetDatabase.LoadAssetAtPath<Object>(relativePath);
+        AssetImporter importer1 = AssetImporter.GetAtPath(relativePath);
+        if (importer1 == null)
+        {
+            Debug.LogError("importer1 == null:" + relativePath);
+        }
+        else
+        {
+            importer1.assetBundleName = assetName;
+        }
+    }
+
+    public static void makePrefab(string path, GameObject obj)
+    {
+        makeParentDirExist(path);
+        Object prefab = PrefabUtility.CreateEmptyPrefab(path);
+        PrefabUtility.ReplacePrefab(obj, prefab, ReplacePrefabOptions.ConnectToPrefab);
+    }
+
+    public static void makeParentDirExist(string path)
+    {
+        if (string.IsNullOrEmpty(path))
+        {
+            Debug.LogError($"makeParentDirExist pDir == path");
+            return;
+        }
+        string pDir = getParentPath(path);
+        Debug.Log($"makeParentDirExist path:{path}\npDir:{pDir}");
+        if (pDir == path)
+        {
+            Debug.LogError($"makeParentDirExist pDir == path");
+            return;
+        }
+        if (!AssetDatabase.IsValidFolder(pDir))
+        {
+            makeParentDirExist(pDir);
+            AssetDatabase.CreateFolder(getParentPath(pDir), getParentName(path));
+            AssetDatabase.Refresh();
+        }
+        else
+        {
+            return;
+        }
+    }
+
+    public static void CreateDir(string rootDir, string newDir)
+    {
+        try
+        {
+            //string rootDir = RootDir;
+            //string newDir = SceneDir;
+
+            string parentDir = $"Assets/{rootDir}";
+            if (string.IsNullOrEmpty(rootDir))
+            {
+                parentDir = "Assets";
+            }
+
+            Debug.Log("parentDir:" + parentDir);
+            string dirPath = $"{parentDir}/{newDir}";
+            Debug.Log("dirPath:" + dirPath);
+            //UnityEditor.AssetDatabase
+            string fullPath = $"{Application.dataPath}/{parentDir}/{newDir}";
+            Debug.Log("fullPath:" + fullPath);
+
+            bool isValidFolder = UnityEditor.AssetDatabase.IsValidFolder(dirPath);
+            Debug.Log("isValidFolder:" + isValidFolder);
+
+            if (isValidFolder == false)
+            {
+                //string parentDir = "Assets/Models/Instances/Trees";
+                string guid = UnityEditor.AssetDatabase.CreateFolder(parentDir, newDir);
+                Debug.Log("guid:" + guid);
+                string path = UnityEditor.AssetDatabase.GUIDToAssetPath(guid);
+                Debug.Log("path:" + path);
+                AssetDatabase.Refresh();
+            }
+        }
+        catch (System.Exception ex)
+        {
+            Debug.LogError(ex.ToString());
+        }
+    }
+
+    public static string GetPrefabPath(GameObject obj)
+    {
+        var meshPath = EditorHelper.GetMeshPath(obj);
+        //Debug.Log("meshPath:" + meshPath);//Assets/Models/SiHuiFactory/J1_Devices/主厂房设备8/主厂房设备8.FBX
+        var dirPath = EditorHelper.GetDirPath(meshPath);
+        //Debug.Log("dirPath:" + dirPath);
+        //2.使用当前游戏物体创建预设，在该模型位置
+        var prefatPath = dirPath + obj.name + ".prefab";
+        return prefatPath;
+    }
+
+    public static string GetModelName(GameObject obj)
+    {
+        var path = EditorHelper.GetMeshPath(obj);//Assets/Models/SiHuiFactory/J1_Devices/主厂房设备8/主厂房设备8.FBX
+        if (string.IsNullOrEmpty(path))
+        {
+            Debug.LogError("string.IsNullOrEmpty(path):" + obj);
+            return path;
+        }
+        var newPath = path;
+        try
+        {
+
+            int id = path.LastIndexOf("/");
+            if (id != -1)
+            {
+                newPath = path.Substring(id + 1);
+            }
+            int id2 = newPath.LastIndexOf(".");
+            newPath = newPath.Substring(0, id2);
+        }
+        catch (System.Exception ex)
+        {
+            Debug.LogError("path:" + path + "\n" + ex);
+        }
+        return newPath;
+    }
+
+    #region CopyComponent
+    public static T CopyComponent<T>(GameObject fromObj, GameObject targetObj) where T : Component
+    {
+        T component = fromObj.GetComponent<T>();
+        if (component != null)
+        {
+            CopyComponent(targetObj, component);
+            T newComponent = targetObj.GetComponent<T>();
+            return newComponent;
+        }
+        return null;
+    }
+
+    public static List<T> CopyComponents<T>(GameObject fromObj, GameObject targetObj) where T : Component
+    {
+        List<T> componentsNew = new List<T>();
+        T[] components = fromObj.GetComponentsInChildren<T>();
+        foreach (var component in components)
+        {
+            var cName1 = component.name;
+            var cName2 = cName1 + "_Simple";
+            var targetObjNew = targetObj.transform.GetChildByName(cName1);
+            if (targetObjNew == null)
+            {
+                if (targetObj.name == cName1 || targetObj.name == cName2)
+                {
+                    targetObjNew = targetObj.transform;
+                }
+                else
+                {
+                    Debug.LogError("CopyComponents. targetObjNew == null : " + component.name);
+                    continue;
+                }
+            }
+            CopyComponent(targetObjNew.gameObject, component);
+            T newComponent = targetObjNew.GetComponent<T>();
+            componentsNew.Add(newComponent);
+        }
+        return componentsNew;
+    }
+
+    public static void CopyComponent(GameObject targetObject, Component newComponent)
+    {
+        UnityEditorInternal.ComponentUtility.CopyComponent(newComponent);
+        Component oldComponent = targetObject.GetComponent(newComponent.GetType());
+        if (oldComponent != null)
+        {
+            if (UnityEditorInternal.ComponentUtility.PasteComponentValues(oldComponent))
+            {
+                Debug.Log("Paste Values " + newComponent.GetType().ToString() + " Success");
+            }
+            else
+            {
+                Debug.Log("Paste Values " + newComponent.GetType().ToString() + " Failed");
+            }
+        }
+        else
+        {
+            if (UnityEditorInternal.ComponentUtility.PasteComponentAsNew(targetObject))
+            {
+                Debug.Log("Paste New Values " + newComponent.GetType().ToString() + " Success");
+            }
+            else
+            {
+                Debug.Log("Paste New Values " + newComponent.GetType().ToString() + " Failed");
+            }
+        }
+    }
+    #endregion
+
+#endif
 
     //public static IEnumerator LoadScenesAsync(List<string> sceneList, System.Action<float> progressChanged, System.Action<Scene> finished, bool isAutoUnload = false)
     //{
@@ -153,26 +481,7 @@ public static class EditorHelper
         return objs;
     }
 
-    public static GameObject[] EditorLoadScene(Scene scene,string path,Transform parent)
-    {
-        string scenePath = EditorHelper.GetScenePath(path);
-        Debug.Log($"LoadScene scene:{scene.IsValid()},path:{path}\nscenePath:{scenePath}");
-        if (scene.IsValid() == false)//没有打开场景 > 打开
-        {
-            scene = EditorSceneManager.OpenScene(scenePath, OpenSceneMode.Additive);
-        }
-        var objs = scene.GetRootGameObjects();
-        if (parent)
-        {
-            
-            foreach (var obj in objs)
-            {
-                obj.transform.SetParent(parent);
-            }
-            EditorSceneManager.CloseScene(scene, true);
-        }
-        return objs;
-    }
+    
 
     private static void MoveGosToScene(Scene scene, params GameObject[] objs)
     {
@@ -184,33 +493,7 @@ public static class EditorHelper
         }
     }
 
-    public static Scene CreateScene(string scenePath, params GameObject[] objs)
-    {
-        Scene activeScene = EditorSceneManager.GetActiveScene();
-        Scene scene = EditorSceneManager.NewScene(NewSceneSetup.EmptyScene, NewSceneMode.Additive);
-        EditorSceneManager.SetActiveScene(activeScene);
-
-        MoveGosToScene(scene, objs);
-
-        bool result = EditorSceneManager.SaveScene(scene, scenePath);
-        Debug.Log("SaveSceneResult1:" + result);
-        AssetDatabase.Refresh();
-        return scene;
-    }
-
-    public static Scene CreateScene(GameObject objs,string scenePath)
-    {
-        Scene activeScene = EditorSceneManager.GetActiveScene();
-        Scene scene = EditorSceneManager.NewScene(NewSceneSetup.EmptyScene, NewSceneMode.Additive);
-        EditorSceneManager.SetActiveScene(activeScene);
-
-        MoveGosToScene(scene, objs);
-
-        bool result = EditorSceneManager.SaveScene(scene, scenePath);
-        Debug.Log("SaveSceneResult1:" + result);
-        AssetDatabase.Refresh();
-        return scene;
-    }
+    
 
 
     public static string GetScenePath(string path)
@@ -232,68 +515,7 @@ public static class EditorHelper
         return scenePath;
     }
 
-    public static Scene CreateScene(string path,bool isOveride, params GameObject[] objs)
-    {
-        string scenePath = GetScenePath(path);
-        Debug.Log($"objs:{objs.Length},\tpath:{path},\nscenePath:{scenePath}");
-
-        FileInfo file = new FileInfo(scenePath);
-        Debug.Log($"file:{file.FullName},\ndir:{file.Directory.FullName}\t{file.Directory.Exists}");
-        if (file.Directory.Exists == false)
-        {
-            var path1 = file.FullName;
-            var relativeDirPath = PathToRelative(path1);
-            var relativeDirPath2 = relativeDirPath.Replace("\\", "/");
-            Debug.Log($"relativeDirPath:{relativeDirPath}\nrelativeDirPath2:{relativeDirPath2}");
-            
-            makeParentDirExist(relativeDirPath2);//创建文件夹
-        }
-       
-        bool isExist = File.Exists(scenePath);
-        Debug.Log("isExist:" + isExist);
-
-        //var asset = AssetDatabase.LoadMainAssetAtPath(scenePath);
-        //Debug.Log("asset:" + asset);
-
-        if (isExist == false)//场景不存在
-        {
-            return CreateScene(scenePath, objs);
-        }
-        else
-        {
-            if (isOveride)//重新覆盖
-            {
-                Scene scene = EditorSceneManager.GetSceneByPath(scenePath);
-                Debug.Log("scene IsValid:" + scene.IsValid());
-                if (scene.IsValid() == true)//打开
-                {
-                    bool r1=EditorSceneManager.CloseScene(scene, true);//关闭场景，不关闭无法覆盖
-                    Debug.Log("r1:" + r1);
-                }
-                return CreateScene(scenePath, objs);
-            }
-            else
-            {
-                Scene scene = EditorSceneManager.GetSceneByPath(scenePath);
-                if (scene.IsValid() == false)//没有打开
-                {
-                    scene = EditorSceneManager.OpenScene(scenePath, OpenSceneMode.Additive);//打开
-                }
-                MoveGosToScene(scene, objs);
-                bool result2 = EditorSceneManager.SaveScene(scene, scenePath);
-                Debug.Log("SaveSceneResult3:" + result2);
-                AssetDatabase.Refresh();
-                return scene;
-            } 
-        } 
-    }
-
-    public static void SelectObject(GameObject obj)
-    {
-        EditorGUIUtility.PingObject(obj);
-        Selection.activeGameObject = obj;
-        EditorApplication.ExecuteMenuItem("Edit/Frame Selected");
-    }
+    
 
     public static int GetVertexs(GameObject obj)
     {
@@ -307,22 +529,7 @@ public static class EditorHelper
         return vertexs;
     }
 
-    /// <summary>
-    /// 得到模型所在路径
-    /// </summary>
-    /// <param name="obj"></param>
-    /// <returns></returns>
-    public static string GetMeshPath(GameObject obj)
-    {
-        if (obj == null)
-        {
-            Debug.LogError("GetMeshPath failed...obj==null");
-        }
-        var meshFilter = obj.GetComponentInChildren<MeshFilter>();
-        var mesh = meshFilter.sharedMesh;
-        var path = AssetDatabase.GetAssetPath(mesh);
-        return path;
-    }
+
 
     public static string GetDirPath(string path)//Assets/Models/SiHuiFactory/J1_Devices/主厂房设备8/主厂房设备8.FBX
     {
@@ -335,59 +542,6 @@ public static class EditorHelper
         {
             string dirPath = path.Substring(0, id + 1);
             return dirPath;
-        }
-    }
-
-    public static string GetPrefabPath(GameObject obj)
-    {
-        var meshPath = EditorHelper.GetMeshPath(obj);
-        //Debug.Log("meshPath:" + meshPath);//Assets/Models/SiHuiFactory/J1_Devices/主厂房设备8/主厂房设备8.FBX
-        var dirPath = EditorHelper.GetDirPath(meshPath);
-        //Debug.Log("dirPath:" + dirPath);
-        //2.使用当前游戏物体创建预设，在该模型位置
-        var prefatPath = dirPath + obj.name + ".prefab";
-        return prefatPath;
-    }
-
-    public static string GetModelName(GameObject obj)
-    {
-        var path = EditorHelper.GetMeshPath(obj);//Assets/Models/SiHuiFactory/J1_Devices/主厂房设备8/主厂房设备8.FBX
-        if (string.IsNullOrEmpty(path))
-        {
-            Debug.LogError("string.IsNullOrEmpty(path):" + obj);
-            return path;
-        }
-        var newPath = path;
-        try
-        {
-
-            int id = path.LastIndexOf("/");
-            if (id != -1)
-            {
-                newPath = path.Substring(id + 1);
-            }
-            int id2 = newPath.LastIndexOf(".");
-            newPath = newPath.Substring(0, id2);
-        }
-        catch (System.Exception ex)
-        {
-            Debug.LogError("path:" + path + "\n" + ex);
-        }
-        return newPath;
-    }
-
-    public static void SetAssetBundleName(string path, string assetName)
-    {
-        string relativePath = PathToRelative(path, null);
-        //Object subObj = AssetDatabase.LoadAssetAtPath<Object>(relativePath);
-        AssetImporter importer1 = AssetImporter.GetAtPath(relativePath);
-        if (importer1 == null)
-        {
-            Debug.LogError("importer1 == null:" + relativePath);
-        }
-        else
-        {
-            importer1.assetBundleName = assetName;
         }
     }
 
@@ -412,83 +566,10 @@ public static class EditorHelper
         }
     }
 
-    #region CopyComponent
-    public static T CopyComponent<T>(GameObject fromObj, GameObject targetObj) where T : Component
-    {
-        T component = fromObj.GetComponent<T>();
-        if (component != null)
-        {
-            CopyComponent(targetObj, component);
-            T newComponent = targetObj.GetComponent<T>();
-            return newComponent;
-        }
-        return null;
-    }
-
-    public static List<T> CopyComponents<T>(GameObject fromObj, GameObject targetObj) where T : Component
-    {
-        List<T> componentsNew = new List<T>();
-        T[] components = fromObj.GetComponentsInChildren<T>();
-        foreach (var component in components)
-        {
-            var cName1 = component.name;
-            var cName2 = cName1 + "_Simple";
-            var targetObjNew = targetObj.transform.GetChildByName(cName1);
-            if (targetObjNew == null)
-            {
-                if (targetObj.name == cName1 || targetObj.name == cName2)
-                {
-                    targetObjNew = targetObj.transform;
-                }
-                else
-                {
-                    Debug.LogError("CopyComponents. targetObjNew == null : " + component.name);
-                    continue;
-                }
-            }
-            CopyComponent(targetObjNew.gameObject, component);
-            T newComponent = targetObjNew.GetComponent<T>();
-            componentsNew.Add(newComponent);
-        }
-        return componentsNew;
-    }
-
-    public static void CopyComponent(GameObject targetObject, Component newComponent)
-    {
-        UnityEditorInternal.ComponentUtility.CopyComponent(newComponent);
-        Component oldComponent = targetObject.GetComponent(newComponent.GetType());
-        if (oldComponent != null)
-        {
-            if (UnityEditorInternal.ComponentUtility.PasteComponentValues(oldComponent))
-            {
-                Debug.Log("Paste Values " + newComponent.GetType().ToString() + " Success");
-            }
-            else
-            {
-                Debug.Log("Paste Values " + newComponent.GetType().ToString() + " Failed");
-            }
-        }
-        else
-        {
-            if (UnityEditorInternal.ComponentUtility.PasteComponentAsNew(targetObject))
-            {
-                Debug.Log("Paste New Values " + newComponent.GetType().ToString() + " Success");
-            }
-            else
-            {
-                Debug.Log("Paste New Values " + newComponent.GetType().ToString() + " Failed");
-            }
-        }
-    }
-    #endregion
+    
 
     #region makePrefab
-    public static void makePrefab(string path, GameObject obj)
-    {
-        makeParentDirExist(path);
-        Object prefab = PrefabUtility.CreateEmptyPrefab(path);
-        PrefabUtility.ReplacePrefab(obj, prefab, ReplacePrefabOptions.ConnectToPrefab);
-    }
+
 
     public static string getParentPath(string path, char splitFlag = '/')
     {
@@ -520,73 +601,11 @@ public static class EditorHelper
         }
     }
 
-    public static void makeParentDirExist(string path)
-    {
-        if(string.IsNullOrEmpty(path))
-        {
-            Debug.LogError($"makeParentDirExist pDir == path");
-            return;
-        }
-        string pDir = getParentPath(path);
-        Debug.Log($"makeParentDirExist path:{path}\npDir:{pDir}");
-        if (pDir == path)
-        {
-            Debug.LogError($"makeParentDirExist pDir == path");
-            return;
-        }
-        if (!AssetDatabase.IsValidFolder(pDir))
-        {
-            makeParentDirExist(pDir);
-            AssetDatabase.CreateFolder(getParentPath(pDir), getParentName(path));
-            AssetDatabase.Refresh();
-        }
-        else
-        {
-            return;
-        }
-    }
+    
     #endregion
 
-    public static void CreateDir(string rootDir, string newDir)
-    {
-#if UNITY_EDITOR
-        try
-        {
-            //string rootDir = RootDir;
-            //string newDir = SceneDir;
+    
 
-            string parentDir = $"Assets/{rootDir}";
-            if (string.IsNullOrEmpty(rootDir))
-            {
-                parentDir = "Assets";
-            }
 
-            Debug.Log("parentDir:" + parentDir);
-            string dirPath = $"{parentDir}/{newDir}";
-            Debug.Log("dirPath:" + dirPath);
-            //UnityEditor.AssetDatabase
-            string fullPath = $"{Application.dataPath}/{parentDir}/{newDir}";
-            Debug.Log("fullPath:" + fullPath);
-
-            bool isValidFolder = UnityEditor.AssetDatabase.IsValidFolder(dirPath);
-            Debug.Log("isValidFolder:" + isValidFolder);
-
-            if (isValidFolder == false)
-            {
-                //string parentDir = "Assets/Models/Instances/Trees";
-                string guid = UnityEditor.AssetDatabase.CreateFolder(parentDir, newDir);
-                Debug.Log("guid:" + guid);
-                string path = UnityEditor.AssetDatabase.GUIDToAssetPath(guid);
-                Debug.Log("path:" + path);
-                AssetDatabase.Refresh();
-            }
-        }
-        catch (System.Exception ex)
-        {
-            Debug.LogError(ex.ToString());
-        }
-#endif
-    }
-
-#endif
 }
+

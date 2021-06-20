@@ -31,6 +31,11 @@ public class SubSceneManager : MonoBehaviour
 
     public bool IsOneCoroutine = true;
 
+
+    public bool IsPartScene = false;
+
+    public bool IsClearOtherScenes = true;
+
     public event Action<float> ProgressChanged;
 
     protected void OnProgressChanged(float progress)
@@ -317,16 +322,6 @@ public class SubSceneManager : MonoBehaviour
         Debug.LogError($"EditorLoadScenes count:{scenes.Length},\t time:{(DateTime.Now - start).ToString()}");
     }
 
-    public string Log = "";
-
-    private void WriteLog(string log)
-    {
-        Log = log;
-        Debug.LogError(Log);
-    }
-
-
-
     [ContextMenu("EditorSaveScenes")]
     public void EditorSaveScenes()
     {
@@ -351,10 +346,6 @@ public class SubSceneManager : MonoBehaviour
 
         WriteLog($"EditorSaveScenes count:{subScenes.Length},\t time:{(DateTime.Now - start).ToString()}");
     }
-
-    public bool IsPartScene = false;
-
-    public bool IsClearOtherScenes = true;
 
     [ContextMenu("EditorCreateBuildingScenes")]
     private void EditorCreateBuildingScenes()
@@ -534,4 +525,13 @@ public class SubSceneManager : MonoBehaviour
     //}
 
 #endif
+
+
+    public string Log = "";
+
+    private void WriteLog(string log)
+    {
+        Log = log;
+        Debug.LogError(Log);
+    }
 }
