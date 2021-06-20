@@ -21,6 +21,10 @@ public class SubScene_Base : MonoBehaviour
 
     public Bounds bounds;
 
+    public Vector3 center;
+
+    public float radius;
+
     public List<GameObject> gos = new List<GameObject>();
 
     public int childCount;
@@ -144,6 +148,26 @@ public class SubScene_Base : MonoBehaviour
         IsLoading = false;
     }
 
+    public float DisToCam;
+
+    internal void HideObjects()
+    {
+        foreach (var go in gos)
+        {
+            if (go == null) continue;
+            go.SetActive(false);
+        }
+    }
+
+    internal void ShowObjects()
+    {
+        foreach (var go in gos)
+        {
+            if (go == null) continue;
+            go.SetActive(true);
+        }
+    }
+
     [ContextMenu("UnLoadGosM")]
     public void UnLoadGosM()
     {
@@ -196,7 +220,7 @@ public class SubScene_Base : MonoBehaviour
     {
         if (IsLoading || IsLoaded)
         {
-            Debug.LogWarning("IsLoading || IsLoaded :" + GetSceneName());
+            //Debug.LogWarning("IsLoading || IsLoaded :" + GetSceneName());
             if (callback != null)
             {
                 callback(false);
@@ -212,7 +236,7 @@ public class SubScene_Base : MonoBehaviour
             yield return EditorHelper.LoadSceneAsync(GetSceneName(), progress =>
             {
                 OnProgressChanged(progress);
-                Debug.Log("progress:" + progress);
+                //Debug.Log("progress:" + progress);
             }, s =>
             {
                 if (IsSetParent)
@@ -279,7 +303,7 @@ public class SubScene_Base : MonoBehaviour
     {
         if (IsLoaded == false)
         {
-            Debug.LogWarning("IsLoaded==false :" + GetSceneName());
+            //Debug.LogWarning("IsLoaded==false :" + GetSceneName());
             return;
         }
         //DestoryGosImmediate();
@@ -419,6 +443,8 @@ public class SubScene_Base : MonoBehaviour
     {
         rendererCount = renderers.Length;
         bounds = ColliderHelper.CaculateBounds(renderers);
+        center = bounds.center;
+        //radius=bounds.
         vertexCount = GetVertexCount(renderers);
     }
 

@@ -71,7 +71,7 @@ public class SubSceneUI : MonoBehaviour
 
     private void Scene_ProgressChanged(float obj)
     {
-        Debug.Log("Scene_ProgressChanged:"+obj);
+        //Debug.Log("Scene_ProgressChanged:"+obj);
         sliderProgresss.value = obj;
     }
 }
