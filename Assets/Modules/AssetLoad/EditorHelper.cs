@@ -431,6 +431,8 @@ public static class EditorHelper
         if(scene.IsValid())
         {
             AsyncOperation async = SceneManager.UnloadSceneAsync(sName, UnloadSceneOptions.UnloadAllEmbeddedSceneObjects);
+            //UnloadSceneOptions.
+
             //async.allowSceneActivation = false;
             while (async!=null && !async.isDone)
             {
@@ -440,6 +442,10 @@ public static class EditorHelper
                 }
                 yield return null;
             }
+
+            //yield return Resources.UnloadUnusedAssets();
+
+            //System.GC.Collect();
 
             if (progressChanged != null)
             {
@@ -453,6 +459,12 @@ public static class EditorHelper
         {
             finished();
         }
+
+
+        //yield return Resources.UnloadUnusedAssets();
+        //System.GC.Collect();
+        //从内存卸载，没有的话，第二次开始不会从硬盘读取了。
+
         Debug.Log($"UnLoadSceneAsync[{sName}] time:{(System.DateTime.Now - start).ToString()}");
         yield return null;
     }

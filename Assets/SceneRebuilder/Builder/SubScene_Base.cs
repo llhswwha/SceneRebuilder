@@ -30,6 +30,9 @@ public class SubScene_Base : MonoBehaviour
     public float vertexCount = 0;
 
 
+    public bool IsSetParent = true;
+
+    public bool IsAutoLoad = false;
 
     public event Action<float> ProgressChanged;
 
@@ -92,9 +95,6 @@ public class SubScene_Base : MonoBehaviour
         return sceneName;
     }
 
-    public bool IsSetParent = true;
-
-    public bool IsAutoLoad = true;
 
     void Start()
     {
@@ -439,5 +439,5 @@ public class SubScene_Base : MonoBehaviour
 
 public enum SubSceneType
 {
-    Single,In,Out0,Out1
+    Single, Part, Base,In,Out0,Out1
 }
