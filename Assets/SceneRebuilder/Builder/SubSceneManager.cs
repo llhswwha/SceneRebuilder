@@ -11,7 +11,7 @@ using UnityEngine.SceneManagement;
 
 public class SubSceneManager : MonoBehaviour
 {
-    public SubScene[] subScenes;
+    public SubScene_Base[] subScenes;
 
     public string RootDir = "SubScenes";
 
@@ -55,17 +55,25 @@ public class SubSceneManager : MonoBehaviour
 
     }
 
+    [ContextMenu("LoadScenesEx")]
     public void LoadScenesEx()
+    {
+        subScenes = GameObject.FindObjectsOfType<SubScene_Single>(true);
+        LoadScenesEx(subScenes);
+    }
+
+    public void LoadScenesEx<T>(T[] scenes) where T : SubScene_Base
     {
         if (IsOneCoroutine)
         {
-            LoadScenesAsyncEx();
+            LoadScenesAsyncEx(scenes);
         }
         else
         {
-            LoadScenesAsync();
+            LoadScenesAsync(scenes);
         }
     }
+    
 
     void Start()
     {
@@ -79,7 +87,7 @@ public class SubSceneManager : MonoBehaviour
     public void GetSceneInfos()
     {
         Debug.Log("GetSceneInfos");
-        subScenes = GameObject.FindObjectsOfType<SubScene>(true);
+        subScenes = GameObject.FindObjectsOfType<SubScene_Single>(true);
         foreach (var item in subScenes)
         {
             item.Init();
@@ -90,7 +98,7 @@ public class SubSceneManager : MonoBehaviour
     [ContextMenu("SortScenes")]
     private void SortScenes()
     {
-        var list = GameObject.FindObjectsOfType<SubScene>(true).ToList();
+        var list = GameObject.FindObjectsOfType<SubScene_Single>(true).ToList();
         list.Sort((a, b) => b.vertexCount.CompareTo(a.vertexCount));
         subScenes = list.ToArray();
     }
@@ -99,7 +107,7 @@ public class SubSceneManager : MonoBehaviour
     [ContextMenu("SetSetting")]
     public void SetSetting()
     {
-        subScenes = GameObject.FindObjectsOfType<SubScene>(true);
+        subScenes = GameObject.FindObjectsOfType<SubScene_Single>(true);
         foreach (var item in subScenes)
         {
             item.IsSetParent = this.IsSetParent;
@@ -112,21 +120,37 @@ public class SubSceneManager : MonoBehaviour
         //return Application.dataPath + "/Models/Instances/Buildings/" + sceneName + ".unity";
         //return Application.dataPath + SaveDir + sceneName + ".unity";
         //return $"{Application.dataPath}/{RootDir}/{SceneDir}/{sceneName}.unity";
-        return $"{RootDir}/{SceneDir}/{sceneName}.unity";
+        
+
+        if (IsPartScene)
+        {
+            return $"{RootDir}/{SceneDir}_Parts/{sceneName}.unity";
+        }
+        else
+        {
+            return $"{RootDir}/{SceneDir}/{sceneName}.unity";
+        }
     }
 
-    private string GetSceneDir()
+    public string GetSceneDir(bool isPart)
     {
         //return Application.dataPath + "/Models/Instances/Buildings/" + sceneName + ".unity";
         //return Application.dataPath + SaveDir + sceneName + ".unity";
         //return $"{Application.dataPath}/{RootDir}/{SceneDir}/{sceneName}.unity";
-        return $"{RootDir}/{SceneDir}/";
+        if (isPart)
+        {
+            return $"{RootDir}/{SceneDir}_Parts/";
+        }
+        else
+        {
+            return $"{RootDir}/{SceneDir}/";
+        }
     }
 
     [ContextMenu("RemoveSubScenes")]
     public void RemoveSubScenes()
     {
-        subScenes = GameObject.FindObjectsOfType<SubScene>(true);
+        subScenes = GameObject.FindObjectsOfType<SubScene_Single>(true);
         foreach (var item in subScenes)
         {
             //item.LoadScene();
@@ -137,7 +161,7 @@ public class SubSceneManager : MonoBehaviour
     [ContextMenu("LoadScenes")]
     public void LoadScenes()
     {
-        subScenes = GameObject.FindObjectsOfType<SubScene>(true);
+        subScenes = GameObject.FindObjectsOfType<SubScene_Single>(true);
         foreach (var item in subScenes)
         {
             item.LoadScene();
@@ -147,22 +171,28 @@ public class SubSceneManager : MonoBehaviour
     [ContextMenu("LoadScenesAsync")]
     public void LoadScenesAsync()
     {
+        subScenes = GameObject.FindObjectsOfType<SubScene_Single>(true);
+        LoadScenesAsync(subScenes);
+    }
+
+    public void LoadScenesAsync<T>(T[] scenes) where T : SubScene_Base
+    {
         DateTime start = DateTime.Now;
         OnProgressChanged(0);
-        subScenes = GameObject.FindObjectsOfType<SubScene>(true);
+        //subScenes = GameObject.FindObjectsOfType<SubScene>(true);
         int count = 0;
-        for (int i = 0; i < subScenes.Length; i++)
+        for (int i = 0; i < scenes.Length; i++)
         {
-            SubScene item = subScenes[i];
-            item.LoadSceneAsync(b=>
+            T item = scenes[i];
+            item.LoadSceneAsync(b =>
             {
                 count++;
-                var progress = (count + 0.0f) / subScenes.Length;
+                var progress = (count + 0.0f) / scenes.Length;
                 OnProgressChanged(progress);
-                if(count== subScenes.Length)
+                if (count == scenes.Length)
                 {
                     OnAllLoaded();
-                    WriteLog($"LoadScenesAsync  count:{subScenes.Length},\t time:{(DateTime.Now - start).ToString()}");
+                    WriteLog($"LoadScenesAsync  count:{scenes.Length},\t time:{(DateTime.Now - start).ToString()}");
                 }
             });//多个协程，乱序
         }
@@ -171,27 +201,33 @@ public class SubSceneManager : MonoBehaviour
     [ContextMenu("LoadScenesAsyncEx")]
     public void LoadScenesAsyncEx()
     {
-        StartCoroutine(LoadAllScenesCoroutine());//一个协程顺序
+        subScenes = GameObject.FindObjectsOfType<SubScene_Single>(true);
+        LoadScenesAsyncEx(subScenes);//一个协程顺序
+    }
+
+    public void LoadScenesAsyncEx<T>(T[] scenes) where T : SubScene_Base
+    {
+        StartCoroutine(LoadAllScenesCoroutine(scenes));//一个协程顺序
     }
 
     public float loadProgress = 0;
 
-    IEnumerator LoadAllScenesCoroutine()
+    IEnumerator LoadAllScenesCoroutine<T>(T[] scenes) where T : SubScene_Base
     {
         //loadProgress = 0;
         OnProgressChanged(0);
         DateTime start = DateTime.Now;
-        subScenes = GameObject.FindObjectsOfType<SubScene>(true);
-        for (int i = 0; i < subScenes.Length; i++)
+        //subScenes = GameObject.FindObjectsOfType<SubScene>(true);
+        for (int i = 0; i < scenes.Length; i++)
         {
-            var subScene = subScenes[i];
-            var progress = (i+0.0f) / subScenes.Length;
+            var subScene = scenes[i];
+            var progress = (i+0.0f) / scenes.Length;
             OnProgressChanged(progress);
             Debug.Log($"loadProgress:{loadProgress},scene:{subScene.GetSceneName()}");
             
             yield return subScene.LoadSceneAsyncCoroutine(null);
         }
-        WriteLog($"LoadScenesAsyncEx  count:{subScenes.Length},\t time:{(DateTime.Now - start).ToString()}");
+        WriteLog($"LoadScenesAsyncEx  count:{scenes.Length},\t time:{(DateTime.Now - start).ToString()}");
         OnAllLoaded();
         yield return null;
     }
@@ -199,7 +235,7 @@ public class SubSceneManager : MonoBehaviour
     [ContextMenu("DestoryChildren")]
     public void DestoryChildren()
     {
-        subScenes = GameObject.FindObjectsOfType<SubScene>(true);
+        subScenes = GameObject.FindObjectsOfType<SubScene_Single>(true);
         foreach (var item in subScenes)
         {
             item.DestoryChildren();
@@ -209,13 +245,9 @@ public class SubSceneManager : MonoBehaviour
     [ContextMenu("ShowBounds")]
     public void ShowBounds()
     {
-        AreaTreeManager areaTreeManager = GameObject.FindObjectOfType<AreaTreeManager>();
-        if (areaTreeManager)
-        {
-            AreaTreeHelper.CubePrefab = areaTreeManager.CubePrefab;
-        }
+        AreaTreeHelper.InitCubePrefab();
 
-        subScenes = GameObject.FindObjectsOfType<SubScene>(true);
+        subScenes = GameObject.FindObjectsOfType<SubScene_Single>(true);
         foreach (var item in subScenes)
         {
             item.ShowBounds();
@@ -225,17 +257,17 @@ public class SubSceneManager : MonoBehaviour
     [ContextMenu("DestoryGosImmediate")]
     public void DestoryGosImmediate()
     {
-        subScenes = GameObject.FindObjectsOfType<SubScene>(true);
+        subScenes = GameObject.FindObjectsOfType<SubScene_Single>(true);
         foreach (var item in subScenes)
         {
-            item.DestoryGosImmediate();
+            item.UnLoadGosM();
         }
     }
 
     [ContextMenu("UnLoadSceneAsync")]
     public void UnLoadScenesAsync()
     {
-        subScenes = GameObject.FindObjectsOfType<SubScene>(true);
+        subScenes = GameObject.FindObjectsOfType<SubScene_Single>(true);
         foreach (var item in subScenes)
         {
             item.UnLoadSceneAsync();
@@ -244,20 +276,35 @@ public class SubSceneManager : MonoBehaviour
 
 #if UNITY_EDITOR
 
+    private void GetSubScenes()
+    {
+
+    }
+
+    [ContextMenu("EditorLoadScenes_Part")]
+    public void EditorLoadScenes_Part()
+    {
+        subScenes = GameObject.FindObjectsOfType<SubScene_Part>(true);
+        EditorLoadScenes(subScenes);
+    }
+
     [ContextMenu("EditorLoadScenes")]
     public void EditorLoadScenes()
     {
-        
-        DateTime start = DateTime.Now;
+        subScenes = GameObject.FindObjectsOfType<SubScene_Single>(true);
+        EditorLoadScenes(subScenes);
+    }
 
-        subScenes = GameObject.FindObjectsOfType<SubScene>(true);
-        for (int i = 0; i < subScenes.Length; i++)
+    public static void EditorLoadScenes<T>(T[] scenes) where T :SubScene_Base
+    {
+        DateTime start = DateTime.Now;
+        for (int i = 0; i < scenes.Length; i++)
         {
-            SubScene item = subScenes[i];
-            float progress = (float)i / subScenes.Length;
+            SubScene_Base item = scenes[i];
+            float progress = (float)i / scenes.Length;
             float percents = progress * 100;
 
-            if (ProgressBarHelper.DisplayCancelableProgressBar("EditorLoadScenes", $"{item.GetSceneName()}\t{i}/{subScenes.Length} {percents}% of 100%", progress))
+            if (ProgressBarHelper.DisplayCancelableProgressBar("EditorLoadScenes", $"{item.GetSceneName()}\t{i}/{scenes.Length} {percents}% of 100%", progress))
             {
                 //ProgressBarHelper.ClearProgressBar();
                 break;
@@ -267,7 +314,7 @@ public class SubSceneManager : MonoBehaviour
 
         ProgressBarHelper.ClearProgressBar();
 
-        WriteLog($"EditorLoadScenes count:{subScenes.Length},\t time:{(DateTime.Now - start).ToString()}");
+        Debug.LogError($"EditorLoadScenes count:{scenes.Length},\t time:{(DateTime.Now - start).ToString()}");
     }
 
     public string Log = "";
@@ -278,14 +325,16 @@ public class SubSceneManager : MonoBehaviour
         Debug.LogError(Log);
     }
 
+
+
     [ContextMenu("EditorSaveScenes")]
     public void EditorSaveScenes()
     {
         DateTime start = DateTime.Now;
-        subScenes = GameObject.FindObjectsOfType<SubScene>(true);
+        subScenes = GameObject.FindObjectsOfType<SubScene_Single>(true);
         for (int i = 0; i < subScenes.Length; i++)
         {
-            SubScene item = subScenes[i];
+            SubScene_Base item = subScenes[i];
             float progress = (float)i / subScenes.Length;
             float percents = progress * 100;
 
@@ -303,16 +352,62 @@ public class SubSceneManager : MonoBehaviour
         WriteLog($"EditorSaveScenes count:{subScenes.Length},\t time:{(DateTime.Now - start).ToString()}");
     }
 
+    public bool IsPartScene = false;
+
+    public bool IsClearOtherScenes = true;
+
+    [ContextMenu("EditorCreateBuildingScenes")]
+    private void EditorCreateBuildingScenes()
+    {
+        AreaTreeHelper.InitCubePrefab();
+
+        DateTime start = DateTime.Now;
+        var buildings = GameObject.FindObjectsOfType<BuildingModelInfo>();
+        for (int i = 0; i < buildings.Length; i++)
+        {
+            var item = buildings[i];
+            float progress = (float)i / buildings.Length;
+            float percents = progress * 100;
+
+            if (ProgressBarHelper.DisplayCancelableProgressBar("EditorSaveScenes", $"{item.name}\t{i}/{subScenes.Length} {percents}% of 100%", progress))
+            {
+                //ProgressBarHelper.ClearProgressBar();
+                break;
+            }
+
+            if (IsPartScene)
+            {
+                string dir = GetSceneDir(true);
+                item.EditorCreatePartScenes(dir, IsOverride);
+            }
+            else
+            {
+                CreateSubScene(item.gameObject);
+            }
+        }
+        ProgressBarHelper.ClearProgressBar();
+
+        SetBuildings();
+        SetSetting();
+
+        if (IsClearOtherScenes)
+        {
+            ClearOtherScenes();
+        }
+
+        WriteLog($"EditorSaveScenes count:{buildings.Length},\t time:{(DateTime.Now - start).ToString()}");
+    }
+
     [ContextMenu("SetBuildings")]
     public void SetBuildings()
     {
-        var subScenes = GameObject.FindObjectsOfType<SubScene>(true);
+        var subScenes = GameObject.FindObjectsOfType<SubScene_Single>(true);
         Debug.Log($"scenes:{subScenes.Length}");
         EditorBuildSettingsScene[] buildingScenes = new EditorBuildSettingsScene[subScenes.Length+1];
         buildingScenes[0] = new EditorBuildSettingsScene(EditorSceneManager.GetActiveScene().path, true);
         for (int i = 0; i < subScenes.Length; i++)
         {
-            SubScene item = subScenes[i];
+            SubScene_Single item = subScenes[i];
             string path = item.GetRalativePath();
             Debug.Log("path:" + path);
             buildingScenes[i+1] = new EditorBuildSettingsScene(path, true);
@@ -362,7 +457,7 @@ public class SubSceneManager : MonoBehaviour
 
     public string ScenePath;
 
-    public SubScene subScene;
+    //public SubScene_Single subScene;
 
     //[ContextMenu("TestSaveGos")]
     //public void TestSaveGos()
@@ -383,47 +478,13 @@ public class SubSceneManager : MonoBehaviour
     //    }
     //}
 
-    [ContextMenu("CreateBuildingScenes")]
-    public void CreateBuildingScenes()
-    {
-        AreaTreeManager areaTreeManager = GameObject.FindObjectOfType<AreaTreeManager>();
-        if(areaTreeManager)
-        {
-            AreaTreeHelper.CubePrefab = areaTreeManager.CubePrefab;
-        }
 
-        DateTime start = DateTime.Now;
-        var buildings = GameObject.FindObjectsOfType<BuildingModelInfo>();
-        for (int i = 0; i < buildings.Length; i++)
-        {
-            var item = buildings[i];
-            float progress = (float)i / buildings.Length;
-            float percents = progress * 100;
 
-            if (ProgressBarHelper.DisplayCancelableProgressBar("EditorSaveScenes", $"{item.name}\t{i}/{subScenes.Length} {percents}% of 100%", progress))
-            {
-                //ProgressBarHelper.ClearProgressBar();
-                break;
-            }
-
-            string dir = GetSceneDir();
-            item.SaveScenes(dir, IsOverride);
-
-            //CreateSubScene(item.gameObject);
-        }
-        ProgressBarHelper.ClearProgressBar();
-
-        SetBuildings();
-        SetSetting();
-
-        WriteLog($"EditorSaveScenes count:{buildings.Length},\t time:{(DateTime.Now - start).ToString()}");
-    }
-
-    private SubScene CreateSubScene(GameObject go)
+    private SubScene_Single CreateSubScene(GameObject go)
     {
         UpackPrefab_One(go);
 
-        SubScene ss = go.AddComponent<SubScene>();
+        SubScene_Single ss = go.AddComponent<SubScene_Single>();
         ss.Init();
         string path = GetScenePath(go.name);
         ss.SaveChildrenToScene(path, IsOverride);
@@ -447,7 +508,7 @@ public class SubSceneManager : MonoBehaviour
     {
         if (root)
         {
-            SubScene ss = root.AddComponent<SubScene>();
+            SubScene_Single ss = root.AddComponent<SubScene_Single>();
             ss.Init();
             string path = GetScenePath(root.name);
             ss.SaveChildrenToScene(path, IsOverride);

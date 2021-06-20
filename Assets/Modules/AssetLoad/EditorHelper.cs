@@ -215,6 +215,11 @@ public static class EditorHelper
 
     public static string GetScenePath(string path)
     {
+        if(string.IsNullOrEmpty(path))
+        {
+            return path;
+        }
+
         string scenePath = path;
         if (path.Contains(":"))//绝对路径
         {

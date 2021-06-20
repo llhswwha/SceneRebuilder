@@ -1,15 +1,24 @@
 using System;
 using System.Collections;
 using System.Collections.Generic;
+using System.Linq;
 using UnityEngine;
 using UnityEngine.SceneManagement;
-using System.Linq;
-#if UNITY_EDITOR
-using UnityEditor;
-using UnityEditor.SceneManagement;
-#endif
-public class SubScene : MonoBehaviour
+
+public class SubScene_Base : MonoBehaviour
 {
+    public bool IsLoaded = false;
+
+    public bool IsLoading = false;
+
+    //public SubSceneType sceneType;
+
+    public string sceneName = "";
+
+    public string scenePath;
+
+    public Scene scene;
+
     public Bounds bounds;
 
     public List<GameObject> gos = new List<GameObject>();
@@ -20,9 +29,7 @@ public class SubScene : MonoBehaviour
 
     public float vertexCount = 0;
 
-    public Scene scene;
 
-    public string scenePath;
 
     public event Action<float> ProgressChanged;
 
@@ -62,18 +69,25 @@ public class SubScene : MonoBehaviour
         //}
         //return rPath;
 
-        string rPath= EditorHelper.PathToRelative(scenePath);
+        string rPath = EditorHelper.PathToRelative(scenePath);
         return rPath;
     }
 
-    public string sceneName = "";
 
     public string GetSceneName()
     {
-        if(string.IsNullOrEmpty(sceneName))
+        if (string.IsNullOrEmpty(sceneName))
         {
-            string[] parts = scenePath.Split(new char[] { '.', '\\', '/' });
-            sceneName = parts[parts.Length - 2];
+            try
+            {
+                string[] parts = scenePath.Split(new char[] { '.', '\\', '/' });
+                sceneName = parts[parts.Length - 2];
+            }
+            catch (Exception ex)
+            {
+                Debug.LogError($"GetSceneName  obj:{this},path:{scenePath},Exception:{ex}");
+            }
+            
         }
         return sceneName;
     }
@@ -92,13 +106,27 @@ public class SubScene : MonoBehaviour
 
     public GameObject boundsGo;
 
+    protected virtual string BoundsName
+    {
+        get
+        {
+            return this.name + "_Bounds";
+        }
+    }
+
+
     internal void ShowBounds()
+    {
+        DestroyBoundsBox();
+        boundsGo = AreaTreeHelper.CreateBoundsCube(bounds, BoundsName, transform);
+    }
+
+    internal void DestroyBoundsBox()
     {
         if (boundsGo)
         {
             GameObject.DestroyImmediate(boundsGo);
         }
-        boundsGo=AreaTreeHelper.CreateBoundsCube(bounds, this.name + "_Bounds", transform);
     }
 
     [ContextMenu("DestoryChildren")]
@@ -116,10 +144,10 @@ public class SubScene : MonoBehaviour
         IsLoading = false;
     }
 
-    [ContextMenu("DestoryGosImmediate")]
-    public void DestoryGosImmediate()
+    [ContextMenu("UnLoadGosM")]
+    public void UnLoadGosM()
     {
-        foreach(var go in gos)
+        foreach (var go in gos)
         {
             if (go == null) continue;
             GameObject.DestroyImmediate(go);
@@ -130,8 +158,8 @@ public class SubScene : MonoBehaviour
         IsLoading = false;
     }
 
-    [ContextMenu("DestoryGos")]
-    public void DestoryGos()
+    [ContextMenu("UnLoadGos")]
+    public void UnLoadGos()
     {
         foreach (var go in gos)
         {
@@ -147,13 +175,9 @@ public class SubScene : MonoBehaviour
     [ContextMenu("ReLoadScene")]
     public void ReLoadScene()
     {
-        DestoryGosImmediate();
+        UnLoadGosM();
         LoadScene();
     }
-
-    public bool IsLoaded = false;
-
-    public bool IsLoading = false;
 
     [ContextMenu("LoadScene")]
     public void LoadScene()
@@ -253,13 +277,13 @@ public class SubScene : MonoBehaviour
     [ContextMenu("UnLoadSceneAsync")]
     public void UnLoadSceneAsync()
     {
-        if(IsLoaded==false )
+        if (IsLoaded == false)
         {
             Debug.LogWarning("IsLoaded==false :" + GetSceneName());
             return;
         }
         //DestoryGosImmediate();
-        DestoryGos();
+        UnLoadGos();
         StartCoroutine(EditorHelper.UnLoadSceneAsync(GetSceneName(), progress =>
         {
             loadProgress = progress;
@@ -299,14 +323,14 @@ public class SubScene : MonoBehaviour
     [ContextMenu("EditorReLoadScene")]
     public void EditorReLoadScene()
     {
-        DestoryGosImmediate();
+        UnLoadGosM();
         EditorLoadScene();
     }
 
     [ContextMenu("EditorLoadScene")]
     public void EditorLoadScene()
     {
-        if (IsLoaded==true)
+        if (IsLoaded == true)
         {
             Debug.LogWarning("EditorLoadScene IsLoaded==true :" + GetSceneName());
             return;
@@ -317,9 +341,7 @@ public class SubScene : MonoBehaviour
         {
             GameObject.DestroyImmediate(boundsGo);
         }
-        gos = EditorHelper.EditorLoadScene(scene, scenePath, IsSetParent ? this.transform : null).ToList() ;
-
-       
+        gos = EditorHelper.EditorLoadScene(scene, scenePath, IsSetParent ? this.transform : null).ToList();
     }
 
     [ContextMenu("EditorSaveScene")]
@@ -332,18 +354,27 @@ public class SubScene : MonoBehaviour
         }
         IsLoaded = false;
 
+        if (this is SubScene_Single)
+        {
+            gos = GetChildrenGos();//获取新的全部子物体，以便下面更新场景
+        }
 
-        EditorHelper.CreateScene(scenePath, true, gos.ToArray());
+        Scene scene=EditorHelper.CreateScene(scenePath, true, gos.ToArray());
         gos.Clear();
         IsLoaded = false;
+
+        AreaTreeHelper.InitCubePrefab();
+        ShowBounds();
+        bool r1 = UnityEditor.SceneManagement.EditorSceneManager.CloseScene(scene, true);//关闭场景，不关闭无法覆盖
+        Debug.Log("r1:" + r1);
     }
 
     //[ContextMenu("SaveScene")]
-    public void SaveChildrenToScene(string path,bool isOverride)
+    public void SaveChildrenToScene(string path, bool isOverride)
     {
 
         var children = GetChildrenGos();
-        scene=EditorHelper.CreateScene(path, isOverride, children.ToArray());
+        scene = EditorHelper.CreateScene(path, isOverride, children.ToArray());
         scenePath = path;
 
     }
@@ -370,12 +401,27 @@ public class SubScene : MonoBehaviour
 
     internal void Init()
     {
-        var renderers = this.GetComponentsInChildren<MeshRenderer>(true);
+        if (gos.Count == 0)
+        {
+            var renderers = this.GetComponentsInChildren<MeshRenderer>(true);
+            InitRenderersInfo(renderers);
+        }
+        else
+        {
+            List<MeshRenderer> renderers = new List<MeshRenderer>();
+            foreach(var go in gos)
+            {
+                if (go == null) continue;
+                renderers.AddRange(go.GetComponentsInChildren<MeshRenderer>(true));
+            }
+            InitRenderersInfo(renderers.ToArray());
+        }
+    }
+
+    private void InitRenderersInfo(MeshRenderer[] renderers)
+    {
         rendererCount = renderers.Length;
-
         bounds = ColliderHelper.CaculateBounds(renderers);
-        //ShowBounds();
-
         vertexCount = GetVertexCount(renderers);
     }
 

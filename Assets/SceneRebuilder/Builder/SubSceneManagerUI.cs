@@ -37,17 +37,32 @@ public class SubSceneManagerUI : MonoBehaviour
         sliderProgress.value = obj;
     }
 
+    public bool IsPartScene;
+
     public void ClickGetScenes()
     {
-        var subScenes = GameObject.FindObjectsOfType<SubScene>().ToList();
-        subScenes.Sort((a, b) => b.vertexCount.CompareTo(a.vertexCount));
-        for (int i=0;i<subScenes.Count;i++)
+        if (IsPartScene)
         {
-            var subScene = subScenes[i];
+            var subScenes = GameObject.FindObjectsOfType<SubScene_Part>().ToList();
+            ShowSceneList(subScenes);
+        }
+        else
+        {
+            var subScenes = GameObject.FindObjectsOfType<SubScene_Single>().ToList();
+            ShowSceneList(subScenes);
+        }
+    }
+
+    public void ShowSceneList<T>(List<T> scenes) where T :SubScene_Base
+    {
+        scenes.Sort((a, b) => b.vertexCount.CompareTo(a.vertexCount));
+        for (int i = 0; i < scenes.Count; i++)
+        {
+            var subScene = scenes[i];
             var uiItem = GameObject.Instantiate(subSceneUIPrefab);
             uiItem.SetActive(true);
             SubSceneUI ui = uiItem.GetComponent<SubSceneUI>();
-            ui.SetScene(i+1,subScene);
+            ui.SetScene(i + 1, subScene);
             uiItem.transform.SetParent(panelSceneList);
         }
     }

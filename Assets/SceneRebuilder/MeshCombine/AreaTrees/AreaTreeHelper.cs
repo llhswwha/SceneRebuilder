@@ -49,6 +49,17 @@ public static class AreaTreeHelper
     }
 
     public static GameObject CubePrefab;
+
+    public static AreaTreeManager InitCubePrefab()
+    {
+        AreaTreeManager areaTreeManager = GameObject.FindObjectOfType<AreaTreeManager>();
+        if (areaTreeManager)
+        {
+            AreaTreeHelper.CubePrefab = areaTreeManager.CubePrefab;
+        }
+        return areaTreeManager;
+    }
+
     public static GameObject CreateBoundsCube(Bounds bounds,string n,Transform parent)
     {
         if(CubePrefab==null){
@@ -56,6 +67,7 @@ public static class AreaTreeHelper
             CubePrefab.SetActive(false);
         }
         GameObject cube=GameObject.Instantiate(CubePrefab);
+        cube.AddComponent<BoundsBox>();
         cube.SetActive(true);
         cube.name=n;
         cube.transform.position=bounds.center;

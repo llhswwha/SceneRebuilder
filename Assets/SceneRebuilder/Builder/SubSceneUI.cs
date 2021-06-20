@@ -42,9 +42,9 @@ public class SubSceneUI : MonoBehaviour
         
     }
 
-    public SubScene scene;
+    public SubScene_Base scene;
 
-    internal void SetScene(int id,SubScene subScene)
+    internal void SetScene(int id,SubScene_Base subScene)
     {
         txtName.text = $"[{id:000}]{subScene.GetSceneInfo()}";
         scene = subScene;
