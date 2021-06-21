@@ -14,7 +14,11 @@ public class SubSceneManagerUI : MonoBehaviour
 
     public Dropdown dropdownSceneType;
 
+    public Toggle ToggleDynamicShow;
+
     public SubSceneManager subSceneManager;
+
+    public SubSceneShowManager subSceneShowManager;
 
     public RectTransform panelSceneList;
 
@@ -28,7 +32,17 @@ public class SubSceneManagerUI : MonoBehaviour
 
         dropdownSceneType.onValueChanged.AddListener(OnSceneTypeChanged);
 
+        subSceneShowManager = GameObject.FindObjectOfType<SubSceneShowManager>();
+        ToggleDynamicShow.onValueChanged.AddListener(OnDynamicShowChanged);
+
         ClickGetScenes();
+    }
+
+    private void OnDynamicShowChanged(bool isOn)
+    {
+        Debug.Log("OnDynamicShowChanged:" + isOn);
+
+        subSceneShowManager.gameObject.SetActive(isOn);
     }
 
     private void OnSceneTypeChanged(int i)

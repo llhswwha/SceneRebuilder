@@ -152,6 +152,8 @@ public class SubScene_Base : MonoBehaviour
 
     internal void HideObjects()
     {
+        if (IsVisible==false) return;
+        IsVisible = false;
         foreach (var go in gos)
         {
             if (go == null) continue;
@@ -159,8 +161,13 @@ public class SubScene_Base : MonoBehaviour
         }
     }
 
+    //public bool IsFirst
+
+    public bool IsVisible = true;
     internal void ShowObjects()
     {
+        if (IsVisible) return;
+        IsVisible = true;
         foreach (var go in gos)
         {
             if (go == null) continue;
@@ -329,6 +336,8 @@ public class SubScene_Base : MonoBehaviour
         DestroyBoundsBox();
 
         gos = EditorHelper.GetSceneObjects(GetSceneName(), this.transform).ToList();
+
+        InitVisible();
     }
 
     //public void Update()
@@ -380,7 +389,9 @@ public class SubScene_Base : MonoBehaviour
             gos = GetChildrenGos();//获取新的全部子物体，以便下面更新场景
         }
 
-        Scene scene=EditorHelper.CreateScene(scenePath, true, gos.ToArray());
+        SubSceneManager subSceneManager = GameObject.FindObjectOfType<SubSceneManager>();
+
+        Scene scene=EditorHelper.CreateScene(scenePath, true, subSceneManager.IsOpenSubScene, gos.ToArray());
         gos.Clear();
         IsLoaded = false;
 
@@ -393,16 +404,17 @@ public class SubScene_Base : MonoBehaviour
     //[ContextMenu("SaveScene")]
     public void SaveChildrenToScene(string path, bool isOverride)
     {
-
+        SubSceneManager subSceneManager = GameObject.FindObjectOfType<SubSceneManager>();
         var children = GetChildrenGos();
-        scene = EditorHelper.CreateScene(path, isOverride, children.ToArray());
+        scene = EditorHelper.CreateScene(path, isOverride, subSceneManager.IsOpenSubScene, children.ToArray());
         scenePath = path;
 
     }
 
     public void SaveScene(string path, bool isOverride)
     {
-        scene = EditorHelper.CreateScene(path, isOverride, gos.ToArray());
+        SubSceneManager subSceneManager = GameObject.FindObjectOfType<SubSceneManager>();
+        scene = EditorHelper.CreateScene(path, isOverride, subSceneManager.IsOpenSubScene, gos.ToArray());
         scenePath = path;
         GetSceneName();
     }
@@ -437,6 +449,21 @@ public class SubScene_Base : MonoBehaviour
             }
             InitRenderersInfo(renderers.ToArray());
         }
+
+        InitVisible();
+    }
+
+    private void InitVisible()
+    {
+        IsVisible = true;
+        foreach (var go in gos)
+        {
+            if (go.activeInHierarchy == false)
+            {
+                IsVisible = false;
+                break;
+            }
+        }
     }
 
     private void InitRenderersInfo(MeshRenderer[] renderers)
@@ -460,6 +487,20 @@ public class SubScene_Base : MonoBehaviour
         }
         float vertexCount = count / 10000.0f;
         return vertexCount;
+    }
+
+    [ContextMenu("GetClostPoint")]
+    public void GetClostPoint()
+    {
+        Camera cam = GameObject.FindObjectOfType<Camera>();
+        var pos = cam.transform.position;
+        var clo = this.bounds.ClosestPoint(pos);
+        GameObject go = GameObject.CreatePrimitive(PrimitiveType.Sphere);
+        go.transform.position = clo;
+
+        var dis = Vector3.Distance(clo, pos);
+        Debug.Log("dis:" + dis+"|"+(dis*dis));
+        Debug.DrawLine(clo, pos, Color.red, 10);
     }
 }
 

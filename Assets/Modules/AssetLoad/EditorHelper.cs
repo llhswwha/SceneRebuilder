@@ -66,7 +66,7 @@ public static class EditorHelper
         return objs;
     }
 
-    public static Scene CreateScene(string scenePath, params GameObject[] objs)
+    private static Scene CreateScene(string scenePath,bool isOpen, params GameObject[] objs)
     {
         Scene activeScene = EditorSceneManager.GetActiveScene();
         Scene scene = EditorSceneManager.NewScene(NewSceneSetup.EmptyScene, NewSceneMode.Additive);
@@ -77,6 +77,12 @@ public static class EditorHelper
         bool result = EditorSceneManager.SaveScene(scene, scenePath);
         Debug.Log("SaveSceneResult1:" + result);
         AssetDatabase.Refresh();
+
+
+        if (isOpen == false)
+        {
+            EditorSceneManager.CloseScene(scene, true);//保存后关闭
+        }
         return scene;
     }
 
@@ -94,7 +100,7 @@ public static class EditorHelper
         return scene;
     }
 
-    public static Scene CreateScene(string path, bool isOveride, params GameObject[] objs)
+    public static Scene CreateScene(string path, bool isOveride,bool isOpen, params GameObject[] objs)
     {
         string scenePath = GetScenePath(path);
         Debug.Log($"objs:{objs.Length},\tpath:{path},\nscenePath:{scenePath}");
@@ -119,7 +125,7 @@ public static class EditorHelper
 
         if (isExist == false)//场景不存在
         {
-            return CreateScene(scenePath, objs);
+            return CreateScene(scenePath, isOpen,objs);
         }
         else
         {
@@ -132,7 +138,7 @@ public static class EditorHelper
                     bool r1 = EditorSceneManager.CloseScene(scene, true);//关闭场景，不关闭无法覆盖
                     Debug.Log("r1:" + r1);
                 }
-                return CreateScene(scenePath, objs);
+                return CreateScene(scenePath, isOpen, objs);
             }
             else
             {
@@ -145,6 +151,11 @@ public static class EditorHelper
                 bool result2 = EditorSceneManager.SaveScene(scene, scenePath);
                 Debug.Log("SaveSceneResult3:" + result2);
                 AssetDatabase.Refresh();
+
+                if (isOpen == false)
+                {
+                    EditorSceneManager.CloseScene(scene, true);//保存后关闭子场景
+                }
                 return scene;
             }
         }
@@ -503,6 +514,7 @@ public static class EditorHelper
             obj.transform.parent = null;
             SceneManager.MoveGameObjectToScene(obj, scene);
         }
+
     }
 
     

@@ -35,6 +35,10 @@ public class SubSceneShowManager : MonoBehaviour
     public float DisOfHidden = 3600;//60
     public float DisOfUnLoad = 4900;//70
 
+    public float MinDisSqrtToCam = 0;
+
+    public float MaxDisSqrtToCam = 0;
+
     public float MinDisToCam = 0;
 
     public float MaxDisToCam = 0;
@@ -43,18 +47,20 @@ public class SubSceneShowManager : MonoBehaviour
 
     public double TimeOfDis = 0;
 
+    public SubScene_Base MinDisScene;
+
     public List<SubScene_Base> visibleScenes = new List<SubScene_Base>();
-    public List<SubScene_Base> hiddenScenes = new List<SubScene_Base>();
     public List<SubScene_Base> loadScenes = new List<SubScene_Base>();
+    public List<SubScene_Base> hiddenScenes = new List<SubScene_Base>();
     public List<SubScene_Base> unloadScenes = new List<SubScene_Base>();
 
-    void CalculateDistance()
+    void CalculateDistance(List<SubScene_Base> scenes)
     {
         DateTime start = DateTime.Now;
 
-        MaxDisToCam = 0;
+        MaxDisSqrtToCam = 0;
 
-        MinDisToCam = float.MaxValue;
+        MinDisSqrtToCam = float.MaxValue;
 
         float sumDis = 0;
 
@@ -63,7 +69,7 @@ public class SubSceneShowManager : MonoBehaviour
         loadScenes = new List<SubScene_Base>();
         unloadScenes = new List<SubScene_Base>();
 
-        foreach (var scene in scenes_In)
+        foreach (var scene in scenes)
         {
             float disToCams = 0;
             foreach (var cam in cameras)
@@ -76,13 +82,14 @@ public class SubSceneShowManager : MonoBehaviour
                 }
             }
 
-            if (disToCams > MaxDisToCam)
+            if (disToCams > MaxDisSqrtToCam)
             {
-                MaxDisToCam = disToCams;
+                MaxDisSqrtToCam = disToCams;
             }
-            if (disToCams < MinDisToCam)
+            if (disToCams < MinDisSqrtToCam)
             {
-                MinDisToCam = disToCams;
+                MinDisSqrtToCam = disToCams;
+                MinDisScene = scene;
             }
             sumDis += disToCams;
 
@@ -105,7 +112,9 @@ public class SubSceneShowManager : MonoBehaviour
             scene.DisToCam = disToCams;
         }
 
-        AvgDisToCam = sumDis / scenes_In.Length;
+        AvgDisToCam = Mathf.Sqrt(sumDis / scenes.Count);
+        MinDisToCam = Mathf.Sqrt(MinDisSqrtToCam);
+        MaxDisToCam = Mathf.Sqrt(MaxDisSqrtToCam);
 
         foreach (var scene in visibleScenes)
         {
@@ -131,6 +140,15 @@ public class SubSceneShowManager : MonoBehaviour
     // Update is called once per frame
     void Update()
     {
-        CalculateDistance();
+        List<SubScene_Base> subScenes = new List<SubScene_Base>();
+        foreach(var scene in scenes_In)
+        {
+            subScenes.Add(scene);
+        }
+        foreach (var scene in scenes_Out1)
+        {
+            subScenes.Add(scene);
+        }
+        CalculateDistance(subScenes);
     }
 }

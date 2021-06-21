@@ -630,10 +630,12 @@ public class SubSceneManager : MonoBehaviour
         EditorHelper.ClearOtherScenes();
     }
 
+    public bool IsOpenSubScene = false;
+
     public Scene CreateScene(params GameObject[] objs)
     {
         ScenePath = GetScenePath(SceneName);
-        return EditorHelper.CreateScene(ScenePath, IsOverride, objs);
+        return EditorHelper.CreateScene(ScenePath, IsOverride, IsOpenSubScene, objs);
     }
 
     //public Scene CreateScene(string sceneName,params GameObject[] objs)

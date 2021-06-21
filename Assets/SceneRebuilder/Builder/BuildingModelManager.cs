@@ -79,6 +79,7 @@ public class BuildingModelManager : MonoBehaviour
     [ContextMenu("* CombineAll")]
     public void CombineAll()
     {
+        GetInfos();
         CombinedBuildings(Buildings);
     }
 
@@ -97,7 +98,11 @@ public class BuildingModelManager : MonoBehaviour
         for (int i = 0; i < buildings.Count; i++)
         {
             BuildingModelInfo b = buildings[i];
-            if (b == null) continue;
+            if (b == null)
+            {
+                Debug.LogWarning($"CombinedBuildings b == null i={i}");
+                continue;
+            }
 
             var trees = b.CreateTreesInnerEx(IsOut0BigSmall);
 

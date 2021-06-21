@@ -588,28 +588,31 @@ public class BuildingModelInfo : MonoBehaviour
         DestroyOldBounds();
         DestroyOldPartScenes();//重新创建，把之前的删除
 
-        SubScene_Single subScene_Single = this.GetComponent<SubScene_Single>();
-        if (subScene_Single)
-        {
-            subScene_Single.EditorLoadScene();
-        }
+        //SubScene_Single subScene_Single = this.GetComponent<SubScene_Single>();
+        //if (subScene_Single)
+        //{
+        //    subScene_Single.EditorLoadScene();
+        //}
 
         InitInOut();
 
         var trees = this.GetComponentsInChildren<ModelAreaTree>();
 
-        if(InPart)
+        if (InPart)
             CreatePartScene(InPart, "_In", trees, dir, isOverride, gameObject.AddComponent<SubScene_In>());
-        if(OutPart0)
+        if (OutPart0)
             CreatePartScene(OutPart0, "_Out0", trees, dir, isOverride, gameObject.AddComponent<SubScene_Out0>());
-        if(OutPart1)
+        if (OutPart1)
             CreatePartScene(OutPart1, "_Out1", trees, dir, isOverride, gameObject.AddComponent<SubScene_Out1>());
 
 
-        if (subScene_Single)
-        {
-            subScene_Single.IsLoaded = false;
-        }
+        //if (subScene_Single)
+        //{
+        //    subScene_Single.IsLoaded = false;
+        //}
+
+        //SubSceneManager subSceneManager = GameObject.FindObjectOfType<SubSceneManager>();
+        //subSceneManager.ClearOtherScenes();
     }
 
     public SubScene_Base CreatePartScene(GameObject go,string nameAf, ModelAreaTree[] trees,string dir,bool isOverride, SubScene_Base ss)

@@ -394,7 +394,7 @@ public class AreaTreeManager : MonoBehaviour
             }
             catch (Exception ex)
             {
-                Debug.LogError(ex.ToString());
+                Debug.LogWarning($"ClearTrees tree:{tree},Excption:{ex}");//一般是某个预设里的树不让删除
             }
             
         }
