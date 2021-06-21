@@ -436,7 +436,7 @@ public class AreaTreeManager : MonoBehaviour
 
     public void AddTrees(ModelAreaTree[] trees)
     {
-        Debug.Log("AddTrees:"+trees.Length);
+        Debug.Log("AreaTreeManager.AddTrees:"+trees.Length);
 
         foreach(var tree in trees)
         {

@@ -29,6 +29,17 @@ public class SubSceneEditorInitializer
                 style.hover.textColor = Color.green;
                 GUI.Label(r, "[SubScene]", style);
             }
+            else if (go.GetComponent<ModelAreaTree>() != null)
+            {
+                Rect r = new Rect(selectionRect);
+                r.x = r.width+20;
+                r.width = 80;
+                //r.y += 2;
+                var style = new GUIStyle();
+                style.normal.textColor = Color.green;
+                style.hover.textColor = Color.blue;
+                GUI.Label(r, "[ModelTree]", style);
+            }
         }
     }
 }

@@ -21,6 +21,12 @@ public class SubScene_Base : MonoBehaviour
 
     public string scenePath;
 
+    public void SetPath(string path)
+    {
+        scenePath = path;
+        GetSceneName();
+    }
+
     public Scene scene;
 
     public Bounds bounds;

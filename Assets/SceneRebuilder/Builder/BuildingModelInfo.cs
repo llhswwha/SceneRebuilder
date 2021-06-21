@@ -51,9 +51,15 @@ public class BuildingModelInfo : MonoBehaviour
         UpackPrefab_One(this.gameObject);
 
         ShowRenderers();
+
+        if (this.OutPart0 == null)
+        {
+            InitInOut();
+        }
+
         if (this.OutPart1 == null && this.InPart == null)
         {
-            return CreateTrees_BigSmall_Core();
+            return CreateTrees_BigSmall_Core();//没有In的状态下直接把Out0分成Small和Big
         }
         else
         {
@@ -66,6 +72,8 @@ public class BuildingModelInfo : MonoBehaviour
                 return CreateTreesCoreBS();
             }
         }
+
+        //return null;
     }
 
     public ModelAreaTree[] CreateTreesInnerBS()
@@ -80,6 +88,17 @@ public class BuildingModelInfo : MonoBehaviour
 
     public ModelAreaTree[] CreateTreesCore()
     {
+        if (OutPart0 == null)
+        {
+            Debug.LogWarning("CreateTreesCore OutPart0 == null");
+        }
+
+        if(InPart==null && OutPart0==null&& OutPart1 == null)
+        {
+            InitInOut();
+        }
+        
+
         ModelAreaTree[] trees = new ModelAreaTree[3];
         var tree1 = CreateTree(InPart, "InTree");
         trees[0] = tree1;
@@ -92,6 +111,11 @@ public class BuildingModelInfo : MonoBehaviour
 
     public ModelAreaTree[] CreateTreesCoreBS()
     {
+        if (InPart == null && OutPart0 == null && OutPart1 == null)
+        {
+            InitInOut();
+        }
+
         ModelAreaTree[] trees = new ModelAreaTree[3];
         var tree1 = CreateTree(InPart, "InTree");
         trees[0] = tree1;
@@ -204,6 +228,10 @@ public class BuildingModelInfo : MonoBehaviour
 
     public ModelAreaTree[] CreateTrees_BigSmall_Core()
     {
+        if(this.OutPart0==null)
+        {
+            return null;
+        }
         //var trees = CreateTreesInner();
         Debug.Log("CreateTrees_BigSmall");
         AreaTreeManager treeManager = GameObject.FindObjectOfType<AreaTreeManager>();
@@ -289,8 +317,11 @@ public class BuildingModelInfo : MonoBehaviour
             tree1.nodeSetting = treeManager.nodeSetting;
         }
             //tree1.GenerateTree();//没有合并
-            tree1.GenerateMesh();//合并
-        //treeGo1.SetActive(target.activeInHierarchy);//该隐藏的继续隐藏
+
+        tree1.GenerateMesh();//合并
+
+        treeGo1.SetActive(target.activeInHierarchy);//该隐藏的继续隐藏
+
         tree1.IsHidden = !target.activeInHierarchy;//动态隐藏
         return tree1;
     }
@@ -466,14 +497,15 @@ public class BuildingModelInfo : MonoBehaviour
         }
     }
 
-    public void DestroyOldBounds()
-    {
-        var components = this.GetComponentsInChildren<BoundsBox>();//In Out0 Out1
-        foreach (var c in components)
-        {
-            GameObject.DestroyImmediate(c.gameObject);//重新创建，把之前的删除
-        }
-    }
+    //public void DestroyOldBounds()
+    //{
+    //    var components = this.GetComponentsInChildren<BoundsBox>();//In Out0 Out1
+    //    foreach (var c in components)
+    //    {
+    //        if (c == null) continue;
+    //        GameObject.DestroyImmediate(c.gameObject);//重新创建，把之前的删除
+    //    }
+    //}
 
     //public string SceneState = "";
 
@@ -541,14 +573,18 @@ public class BuildingModelInfo : MonoBehaviour
         string sceneName = this.name;
 
         GameObject goScene = CreateEmptySceneGo(sceneName, this.transform);
+        SubSceneManager subSceneManager = GameObject.FindObjectOfType<SubSceneManager>();
+        SubScene_Single ss = goScene.AddComponent<SubScene_Single>();
 
-        //SubSceneManager subSceneManager = GameObject.FindObjectOfType<SubSceneManager>();
+        ss.gos = SubSceneHelper.GetChildrenGos(this.transform);
+        ss.Init();
 
-        //SubScene_Single ss = goScene.AddComponent<SubScene_Single>();
-        //ss.Init();
-        //string path = subSceneManager.GetScenePath(sceneName, false);
-        //SubSceneHelper.SaveChildrenToScene(path,this.transform, subSceneManager.IsOverride);
-        //ss.ShowBounds();
+        string path= subSceneManager.GetScenePath(sceneName, false);
+        ss.SetPath(path);
+
+        SubSceneHelper.SaveChildrenToScene(path, this.transform, subSceneManager.IsOverride);
+
+        ss.ShowBounds();
     }
 
     [ContextMenu("EditorCreateScene")]
@@ -588,6 +624,8 @@ public class BuildingModelInfo : MonoBehaviour
 
 
         //SceneState = "SaveScenes_InOut";
+
+        //DestroyOldBounds();
     }
 
     [ContextMenu("EditorLoadScenes_InOut")]
@@ -648,7 +686,7 @@ public class BuildingModelInfo : MonoBehaviour
 
     internal void EditorCreatePartScenes(string dir, bool isOverride)
     {
-        DestroyOldBounds();
+        //DestroyOldBounds();
         DestroyOldPartScenes();//重新创建，把之前的删除
 
         //SubScene_Single subScene_Single = this.GetComponent<SubScene_Single>();
@@ -659,7 +697,7 @@ public class BuildingModelInfo : MonoBehaviour
 
         InitInOut();
 
-        var trees = this.GetComponentsInChildren<ModelAreaTree>();
+        var trees = this.GetComponentsInChildren<ModelAreaTree>(true);
 
         if (InPart)
             CreatePartScene(InPart, "_In", trees, dir, isOverride, gameObject.AddComponent<SubScene_In>());
@@ -686,7 +724,9 @@ public class BuildingModelInfo : MonoBehaviour
             gos.Add(go);
             foreach (var tree in trees)
             {
-                if (tree.Target == OutPart0)
+                if (tree == null) continue;
+                
+                if (tree.Target == go)
                 {
                     gos.Add(tree.gameObject);
                 }
@@ -705,27 +745,4 @@ public class BuildingModelInfo : MonoBehaviour
     }
 
 #endif
-
-    public List<GameObject> GetInGos()
-    {
-        InitInOut();
-
-        var trees = this.GetComponentsInChildren<ModelAreaTree>();
-
-        List<GameObject> gos = new List<GameObject>();
-        if (InPart != null)
-        {
-            gos.Add(InPart);
-
-            foreach(var tree in trees)
-            {
-                if(tree.Target==InPart)
-                {
-                    gos.Add(tree.gameObject);
-                }
-            }
-        }
-        return gos;
-    }
-
 }

@@ -415,7 +415,10 @@ public class ModelAreaTree : MonoBehaviour
         // {
         //     CreateDictionary();
         // }
-        
+        if (AreaTreeNodeShowManager.Instance)
+        {
+            AreaTreeNodeShowManager.Instance.RegistHiddenTree(this);
+        }
         CreateDictionary();
     }
 

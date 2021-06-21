@@ -5,6 +5,8 @@ using UnityEngine;
 
 public class SubSceneShowManager : MonoBehaviour
 {
+    public static SubSceneShowManager Instance;
+
     public SubSceneManager sceneManager;
     public SubScene_Out0[] scenes_Out0;
     public SubScene_Out1[] scenes_Out1;
@@ -23,11 +25,26 @@ public class SubSceneShowManager : MonoBehaviour
         cameras = GameObject.FindObjectsOfType<Camera>();
     }
 
+    public bool IsAutoLoad = false;
+
+    private void Awake()
+    {
+        Instance = this;
+    }
+
     // Start is called before the first frame update
     void Start()
     {
         Init();
-        sceneManager.LoadScenesEx(scenes_Out0);//1.启动时自动加载模型
+
+        if(IsAutoLoad)
+            sceneManager.LoadScenesEx(scenes_Out0);//1.启动时自动加载模型
+
+        if(AreaTreeNodeShowManager.Instance)
+        {
+            AreaTreeNodeShowManager.Instance.ShowNodeDistance = this.DisOfVisible;
+            AreaTreeNodeShowManager.Instance.HideNodeDistance = this.DisOfHidden;
+        }
     }
 
     public float DisOfVisible = 1600;//40

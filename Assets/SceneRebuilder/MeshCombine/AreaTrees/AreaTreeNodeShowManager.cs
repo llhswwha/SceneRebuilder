@@ -27,7 +27,9 @@ public class AreaTreeNodeShowManager : MonoBehaviour
 
     public float ShownTreesVertexCount = 0;
 
-    public float ShowNodeDistance=25;
+    public float ShowNodeDistance=1600;//40
+
+    public float HideNodeDistance = 3600;//60
 
     private void Awake()
     {
@@ -50,13 +52,46 @@ public class AreaTreeNodeShowManager : MonoBehaviour
         GetLeafNodes();
     }
 
-     [ContextMenu("InitTrees")]
+    public void RegistHiddenTree(ModelAreaTree tree)
+    {
+        if (tree == null) return;
+        if (tree.IsHidden == false) return;
+        if (HiddenTrees.Contains(tree))
+        {
+            return;
+        }
+        HiddenTrees.Add(tree);
+        HiddenTreesVertexCount += tree.VertexCount;
+
+        GetHiddenTreeLeafs(tree);
+    }
+
+    private void ShowSortedHiddenTrees()
+    {
+        HiddenTreesVertex.Clear();
+        HiddenTrees.Sort((a, b) => b.VertexCount.CompareTo(a.VertexCount));
+        foreach (var t in HiddenTrees)
+        {
+            HiddenTreesVertex.Add(t.VertexCount);
+        }
+    }
+
+    private void ShowSortedShownTrees()
+    {
+        ShownTreesVertex.Clear();
+        ShownTrees.Sort((a, b) => b.VertexCount.CompareTo(a.VertexCount));
+        foreach (var t in ShownTrees)
+        {
+            ShownTreesVertex.Add(t.VertexCount);
+        }
+    }
+
+    [ContextMenu("InitTrees")]
     private void InitTrees()
     {
         HiddenTrees.Clear();
         ShownTrees.Clear();
-        HiddenTreesVertex.Clear();
-        ShownTreesVertex.Clear();
+
         HiddenTreesVertexCount = 0;
         ShownTreesVertexCount = 0;
 
@@ -75,16 +110,9 @@ public class AreaTreeNodeShowManager : MonoBehaviour
             }
         }
 
-        HiddenTrees.Sort((a, b) => b.VertexCount.CompareTo(a.VertexCount));
-        foreach(var t in HiddenTrees)
-        {
-            HiddenTreesVertex.Add(t.VertexCount);
-        }
-        ShownTrees.Sort((a, b) => b.VertexCount.CompareTo(a.VertexCount));
-        foreach (var t in ShownTrees)
-        {
-            ShownTreesVertex.Add(t.VertexCount);
-        }
+        ShowSortedHiddenTrees();
+
+        ShowSortedShownTrees();
     }
 
     [ContextMenu("InitCameras")]
@@ -100,6 +128,17 @@ public class AreaTreeNodeShowManager : MonoBehaviour
         }
     }
 
+    private void GetHiddenTreeLeafs(ModelAreaTree tree)
+    {
+        if (tree == null) return;
+        var leafs = tree.TreeLeafs;
+        foreach (var node in leafs)
+        {
+            if (node == null) continue;
+            HiddenLeafNodes.Add(node);
+        }
+    }
+
     [ContextMenu("GetLeafNodes")]
     public void GetLeafNodes()
     {
@@ -107,12 +146,7 @@ public class AreaTreeNodeShowManager : MonoBehaviour
 
         foreach(var tree in HiddenTrees)
         {
-            if(tree==null)continue;
-            var leafs=tree.TreeLeafs;
-            foreach(var node in leafs){
-                if(node==null)continue;
-                HiddenLeafNodes.Add(node);
-            }
+            GetHiddenTreeLeafs(tree);
         }
 
         ShownLeafNodes.Clear();
@@ -161,28 +195,48 @@ public class AreaTreeNodeShowManager : MonoBehaviour
                 if(cam==null)continue;
                 var camPos=cam.transform.position;
 
-                float dis = 0;
-                if(IsDisToBounds)
-                {
-                    dis = bounds.SqrDistance(camPos);
-                }
-                else
-                {
-                    //dis = Vector3.SqrMagnitude(camPos - nodePos);
-                    dis = Vector3.Distance(camPos,nodePos);
-                }
+                //float dis = 0;
+                //if(IsDisToBounds)
+                //{
+                //    dis = bounds.SqrDistance(camPos);
+                //}
+                //else
+                //{
+                //    //dis = Vector3.SqrMagnitude(camPos - nodePos);
+                //    dis = Vector3.Distance(camPos,nodePos);
+                //}
+
+                float dis = bounds.SqrDistance(camPos);
+
                 if (dis < nodeDis1)
                 {
                     nodeDis1 = dis;
                 }
             }
-            if(nodeDis1<ShowNodeDistance)
+            if(nodeDis1<=ShowNodeDistance)
             {
                 ShownNodes.Add(node);
             }
-            else{
+            //else{
+            //    HiddenNodes.Add(node);
+            //}
+
+            else if (nodeDis1 > HideNodeDistance)
+            {
                 HiddenNodes.Add(node);
             }
+            else //[ShowNodeDistance,HideNodeDistance]
+            {
+                if (node.IsNodeVisible)
+                {
+                    ShownNodes.Add(node);
+                }
+                else
+                {
+                    HiddenNodes.Add(node);
+                }
+            }
+
             node.DistanceToCamera=nodeDis1;
             if(nodeDis1>MaxDistance)
             {

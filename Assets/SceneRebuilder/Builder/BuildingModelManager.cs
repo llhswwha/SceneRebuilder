@@ -106,7 +106,7 @@ public class BuildingModelManager : MonoBehaviour
 
             var trees = b.CreateTreesInnerEx(IsOut0BigSmall);
 
-            if(trees!=null)
+            if (trees != null)
             {
                 allTrees.AddRange(trees);
             }
@@ -116,7 +116,6 @@ public class BuildingModelManager : MonoBehaviour
 
             if (ProgressBarHelper.DisplayCancelableProgressBar("CreateTrees", $"{i}/{buildings.Count} {percents}% of 100%", progress))
             {
-                //ProgressBarHelper.ClearProgressBar();
                 break;
             }
         }
@@ -296,8 +295,10 @@ public class BuildingModelManager : MonoBehaviour
             if (b == null) continue;
             GameObject go = b.gameObject;
 
-            var path = GetScenePath(go.name);
-            Scene scene = EditorHelper.CreateScene(path,true,go);
+            //var path = GetScenePath(go.name);
+            //Scene scene = EditorHelper.CreateScene(path,true,go);
+            b.EditorCreateScene();
+
             scenes.Add(go.name);
 
             float progress = (float)i / buildings.Count;

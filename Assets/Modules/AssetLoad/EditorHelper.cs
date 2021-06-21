@@ -441,7 +441,7 @@ public static class EditorHelper
         Scene scene = SceneManager.GetSceneByName(sName);
         if(scene.IsValid())
         {
-            AsyncOperation async = SceneManager.UnloadSceneAsync(sName, UnloadSceneOptions.UnloadAllEmbeddedSceneObjects);
+            AsyncOperation async = SceneManager.UnloadSceneAsync(sName, UnloadSceneOptions.None);
             //UnloadSceneOptions.
 
             //async.allowSceneActivation = false;

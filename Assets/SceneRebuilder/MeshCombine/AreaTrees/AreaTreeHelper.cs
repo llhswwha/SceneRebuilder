@@ -62,6 +62,8 @@ public static class AreaTreeHelper
 
     public static GameObject CreateBoundsCube(Bounds bounds,string n,Transform parent)
     {
+        InitCubePrefab();
+
         if(CubePrefab==null){
             CubePrefab=GameObject.CreatePrimitive(PrimitiveType.Cube);
             CubePrefab.SetActive(false);
