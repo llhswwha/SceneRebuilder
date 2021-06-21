@@ -20,14 +20,25 @@ public class SubSceneEditorInitializer
         {
             if(go.GetComponent<SubScene_Base>()!=null)
             {
+                SubScene_Base scene = go.GetComponent<SubScene_Base>();
+                bool isLoaded = scene.HaveGos();
                 Rect r = new Rect(selectionRect);
                 r.x = r.width;
                 r.width = 80;
                 //r.y += 2;
                 var style = new GUIStyle();
-                style.normal.textColor = Color.yellow;
+                if (isLoaded)
+                {
+                    style.normal.textColor = new Color(1,0.5f,0);
+                }
+                else
+                {
+                    style.normal.textColor = Color.yellow;
+                }
+                
                 style.hover.textColor = Color.green;
-                GUI.Label(r, "[SubScene]", style);
+                //GUI.Label(r, $"[Scene][{isLoaded}]", style);
+                GUI.Label(r, $"[Scene]", style);
             }
             else if (go.GetComponent<ModelAreaTree>() != null)
             {

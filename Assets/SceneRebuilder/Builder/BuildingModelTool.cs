@@ -113,7 +113,7 @@ public class BuildingModelTool : MonoBehaviour
             InRoot = doors.transform;
         }
 
-        info.InitInOut();
+        info.InitInOut(true);
 
     }
 
@@ -154,7 +154,7 @@ public class BuildingModelTool : MonoBehaviour
         }
 
         BuildingModelInfo info = this.GetComponent<BuildingModelInfo>();
-        info.InitInOut();
+        info.InitInOut(true);
 
         Debug.Log($"FindGosInBounds95:in:{inList.Count},out:{outList.Count},gos:{gos.Count}");
     }

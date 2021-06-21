@@ -11,11 +11,42 @@ using UnityEditor.SceneManagement;
 
 public class SubScene_Base : MonoBehaviour
 {
+    public Transform sceneParent;
+
+    public Transform GetSceneParent()
+    {
+        if (sceneParent != null)
+        {
+            return sceneParent;
+        }
+        return this.transform;
+    }
+
     public bool IsLoaded = false;
+
+    public bool GetIsLoaded()
+    {
+        return IsLoaded;
+    }
+
+    public bool HaveGos()
+    {
+        bool r = false;
+        foreach(var g in gos)
+        {
+            if (g != null)
+            {
+                r = true;
+            }
+        }
+        return r;
+    }
 
     public bool IsLoading = false;
 
     //public SubSceneType sceneType;
+
+    public SceneContentType contentType;
 
     public string sceneName = "";
 
@@ -75,6 +106,11 @@ public class SubScene_Base : MonoBehaviour
     internal string GetSceneInfo()
     {
         return $"r:{rendererCount}\tv:{vertexCount:F1}w\t[{GetSceneName()}] ";
+    }
+
+    internal string GetSceneNameEx()
+    {
+        return $"[{contentType}]{GetSceneName()} r:{rendererCount} v:{vertexCount:F0}w ";
     }
 
     public string GetRalativePath()
@@ -146,7 +182,7 @@ public class SubScene_Base : MonoBehaviour
     [ContextMenu("DestoryChildren")]
     public void DestoryChildren()
     {
-        var children = SubSceneHelper.GetChildrenGos(this.transform);
+        var children = SubSceneHelper.GetChildrenGos(GetSceneParent());
         foreach (var go in children)
         {
             if (go == null) continue;
@@ -223,7 +259,7 @@ public class SubScene_Base : MonoBehaviour
     [ContextMenu("LoadScene")]
     public void LoadScene()
     {
-        gos = EditorHelper.LoadScene(GetSceneName(), IsSetParent ? this.transform : null).ToList();
+        gos = EditorHelper.LoadScene(GetSceneName(), IsSetParent ? GetSceneParent() : null).ToList();
         IsLoaded = true;
     }
     //[ContextMenu("TestLoadSceneAsync")]
@@ -345,7 +381,7 @@ public class SubScene_Base : MonoBehaviour
     {
         DestroyBoundsBox();
 
-        gos = EditorHelper.GetSceneObjects(GetSceneName(), this.transform).ToList();
+        gos = EditorHelper.GetSceneObjects(GetSceneName(), GetSceneParent()).ToList();
 
         InitVisible();
     }
@@ -381,7 +417,7 @@ public class SubScene_Base : MonoBehaviour
         {
             GameObject.DestroyImmediate(boundsGo);
         }
-        gos = EditorHelper.EditorLoadScene(scene, scenePath, IsSetParent ? this.transform : null).ToList();
+        gos = EditorHelper.EditorLoadScene(scene, scenePath, IsSetParent ? GetSceneParent() : null).ToList();
     }
 
     [ContextMenu("EditorSaveScene")]
@@ -396,7 +432,7 @@ public class SubScene_Base : MonoBehaviour
 
         if (this is SubScene_Single)
         {
-            gos = SubSceneHelper.GetChildrenGos(this.transform);//获取新的全部子物体，以便下面更新场景
+            gos = SubSceneHelper.GetChildrenGos(GetSceneParent());//获取新的全部子物体，以便下面更新场景
         }
 
         SubSceneManager subSceneManager = GameObject.FindObjectOfType<SubSceneManager>();
@@ -417,7 +453,7 @@ public class SubScene_Base : MonoBehaviour
     {
         SubSceneManager subSceneManager = GameObject.FindObjectOfType<SubSceneManager>();
         scene = EditorHelper.CreateScene(path, isOverride, subSceneManager.IsOpenSubScene, gos.ToArray());
-        scenePath = path;
+        SetPath(path);
         GetSceneName();
     }
 
@@ -444,6 +480,8 @@ public class SubScene_Base : MonoBehaviour
         }
 
         InitVisible();
+
+        this.sceneParent = this.transform;
     }
 
     private void InitVisible()

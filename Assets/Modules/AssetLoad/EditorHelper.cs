@@ -48,7 +48,7 @@ public static class EditorHelper
     public static GameObject[] EditorLoadScene(Scene scene, string path, Transform parent)
     {
         string scenePath = EditorHelper.GetScenePath(path);
-        Debug.Log($"LoadScene scene:{scene.IsValid()},path:{path}\nscenePath:{scenePath}");
+        Debug.Log($"LoadScene IsValid:{scene.IsValid()}, \tpath:{path}\nscenePath:{scenePath}");
         if (scene.IsValid() == false)//没有打开场景 > 打开
         {
             scene = EditorSceneManager.OpenScene(scenePath, OpenSceneMode.Additive);

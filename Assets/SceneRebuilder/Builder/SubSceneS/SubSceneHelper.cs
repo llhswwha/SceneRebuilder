@@ -31,13 +31,31 @@ public static class SubSceneHelper
         //scenePath = path;
     }
 
-    public static SubScene_Single CreateSubScene(GameObject go, string path, bool isOverride)
+    public static SubScene_Single EditorCreateScene(GameObject go)
+    {
+
+        //UpackPrefab_One(go);
+        //SubSceneManager subSceneManager = SubSceneManager.Instance;
+        //SubScene_Single ss = go.AddComponent<SubScene_Single>();
+        //ss.Init();
+        //string path = subSceneManager.GetScenePath(go.name, SubSceneDir.Single);
+        //SubSceneHelper.SaveChildrenToScene(path, go.transform, subSceneManager.IsOverride);
+        //ss.ShowBounds();
+
+        SubSceneManager subSceneManager = SubSceneManager.Instance;
+        string path = subSceneManager.GetScenePath(go.name, SceneContentType.Single);
+        return EditorCreateScene(go, path, subSceneManager.IsOverride);
+    }
+
+    public static SubScene_Single EditorCreateScene(GameObject go, string path, bool isOverride)
     {
         UpackPrefab_One(go);
 
         SubScene_Single ss = go.AddComponent<SubScene_Single>();
-        ss.Init();
         //string path = GetScenePath(go.name, isPart);
+        ss.SetPath(path);
+        ss.Init();
+        //
         SubSceneHelper.SaveChildrenToScene(path, go.transform, isOverride);
         ss.ShowBounds();
         return ss;
@@ -58,4 +76,9 @@ public static class SubSceneHelper
 public enum SubSceneType
 {
     Single, Part, Base, In, Out0, Out1
+}
+
+public enum SceneContentType
+{
+    Single,Part,Tree,TreePart
 }

@@ -11,6 +11,24 @@ using UnityEngine.SceneManagement;
 
 public class SubSceneManager : MonoBehaviour
 {
+    private static SubSceneManager _instance;
+    public static SubSceneManager Instance
+    {
+        get
+        {
+            if (_instance == null)
+            {
+                _instance= GameObject.FindObjectOfType<SubSceneManager>();
+            }
+            if (_instance == null)
+            {
+                GameObject go = new GameObject("SubSceneManager");
+                _instance = go.AddComponent<SubSceneManager>();
+            }
+            return _instance;
+        }
+    }
+
     public SubScene_Base[] subScenes;
 
     public string RootDir = "SubScenes";
@@ -129,36 +147,49 @@ public class SubSceneManager : MonoBehaviour
         Debug.Log("SetSetting:"+subScenes.Length);
     }
 
-    public string GetScenePath(string sceneName,bool isPart)
+    public string GetScenePath(string sceneName, SceneContentType dir)
     {
         //return Application.dataPath + "/Models/Instances/Buildings/" + sceneName + ".unity";
         //return Application.dataPath + SaveDir + sceneName + ".unity";
         //return $"{Application.dataPath}/{RootDir}/{SceneDir}/{sceneName}.unity";
         
 
-        if (isPart)
-        {
-            return $"{RootDir}/{SceneDir}_Parts/{sceneName}.unity";
-        }
-        else
-        {
-            return $"{RootDir}/{SceneDir}/{sceneName}.unity";
-        }
+        //if (dir==SubSceneDir.Part)
+        //{
+        //    return $"{RootDir}/{SceneDir}_Part/{sceneName}.unity";
+        //}
+        //else if (dir == SubSceneDir.Tree)
+        //{
+        //    return $"{RootDir}/{SceneDir}_Tree/{sceneName}.unity";
+        //}
+        //else if (dir == SubSceneDir.TreePart)
+        //{
+        //    return $"{RootDir}/{SceneDir}_TreePart/{sceneName}.unity";
+        //}
+        //else
+        //{
+        //    return $"{RootDir}/{SceneDir}/{sceneName}.unity";
+        //}
+
+        return $"{RootDir}/{SceneDir}_{dir}/{sceneName}.unity";
     }
 
-    public string GetSceneDir(bool isPart)
+    public string GetSceneDir(SceneContentType dir)
     {
         //return Application.dataPath + "/Models/Instances/Buildings/" + sceneName + ".unity";
         //return Application.dataPath + SaveDir + sceneName + ".unity";
         //return $"{Application.dataPath}/{RootDir}/{SceneDir}/{sceneName}.unity";
-        if (isPart)
-        {
-            return $"{RootDir}/{SceneDir}_Parts/";
-        }
-        else
-        {
-            return $"{RootDir}/{SceneDir}/";
-        }
+
+        //if (isPart)
+        //{
+        //    return $"{RootDir}/{SceneDir}_Parts/";
+        //}
+        //else
+        //{
+        //    return $"{RootDir}/{SceneDir}/";
+        //}
+
+        return $"{RootDir}/{SceneDir}_{dir}/";
     }
 
     [ContextMenu("RemoveSubScenes")]
@@ -452,12 +483,12 @@ public class SubSceneManager : MonoBehaviour
 
             if (IsPartScene)
             {
-                string dir = GetSceneDir(true);
+                string dir = GetSceneDir(SceneContentType.Part);
                 item.EditorCreatePartScenes(dir, IsOverride);
             }
             else
             {
-                SubSceneHelper.CreateSubScene(item.gameObject, GetScenePath(item.name, IsPartScene),IsOverride);
+                SubSceneHelper.EditorCreateScene(item.gameObject, GetScenePath(item.name, SceneContentType.Single),IsOverride);
             }
         }
         ProgressBarHelper.ClearProgressBar();
@@ -609,7 +640,7 @@ public class SubSceneManager : MonoBehaviour
 
     public Scene CreateScene(params GameObject[] objs)
     {
-        ScenePath = GetScenePath(SceneName, IsPartScene);
+        ScenePath = GetScenePath(SceneName, SceneContentType.Single);
         return EditorHelper.CreateScene(ScenePath, IsOverride, IsOpenSubScene, objs);
     }
 

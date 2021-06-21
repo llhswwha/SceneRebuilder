@@ -64,7 +64,7 @@ public class BuildingModelManager : MonoBehaviour
                 //ProgressBarHelper.ClearProgressBar();
                 break;
             }
-            Buildings[i].InitInOut();
+            Buildings[i].InitInOut(true);
         }
         ProgressBarHelper.ClearProgressBar();
 
@@ -275,6 +275,8 @@ public class BuildingModelManager : MonoBehaviour
 
     public List<string> scenes = new List<string>();
 
+    public SceneContentType contentType;
+
     //[ContextMenu("CreateScenes")]
     public void CreateScenesInner(List<BuildingModelInfo> buildings)
     {
@@ -297,7 +299,8 @@ public class BuildingModelManager : MonoBehaviour
 
             //var path = GetScenePath(go.name);
             //Scene scene = EditorHelper.CreateScene(path,true,go);
-            b.EditorCreateScene();
+            b.contentType = this.contentType;
+            b.EditorCreateScenes();
 
             scenes.Add(go.name);
 
