@@ -17,11 +17,42 @@ public class AreaTreeNode : MonoBehaviour
 
     public List<MeshRenderer> Renderers=new List<MeshRenderer>();
 
+    public List<int> RenderersId = new List<int>();
+
     public MeshRenderer[] CombinedRenderers;
 
     private List<Transform> RendererParents = new List<Transform>();
 
     private List<MeshRenderer> newRenderers = new List<MeshRenderer>();
+    public List<int> newRenderersId = new List<int>();
+
+    [ContextMenu("InitRenderersDict")]
+    public void InitRenderersDict()
+    {
+        RendererDictionay.InitRenderers();
+    }
+
+    [ContextMenu("SaveRenderersId")]
+    public void SaveRenderersId()
+    {
+        RenderersId.Clear();
+        foreach (var renderer in Renderers)
+        {
+            RenderersId.Add(renderer.GetInstanceID());
+        }
+        newRenderersId.Clear();
+        foreach (var renderer in newRenderers)
+        {
+            newRenderersId.Add(renderer.GetInstanceID());
+        }
+    }
+
+    [ContextMenu("LoadRenderers")]
+    public void LoadRenderers()
+    {
+        Renderers = RendererDictionay.GetRenderers(RenderersId);
+        newRenderers = RendererDictionay.GetRenderers(newRenderersId);
+    }
 
     public List<Collider> colliders = new List<Collider>();
 
@@ -640,7 +671,7 @@ public class AreaTreeNode : MonoBehaviour
 
     Mesh meshAsset = null;
 
-    [ContextMenu("SaveMeshes")]
+    //[ContextMenu("SaveMeshes")]
     public void SaveMeshes(string dir)
     {
 #if UNITY_EDITOR
