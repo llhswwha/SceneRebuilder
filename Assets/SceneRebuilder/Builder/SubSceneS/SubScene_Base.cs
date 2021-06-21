@@ -4,6 +4,10 @@ using System.Collections.Generic;
 using System.Linq;
 using UnityEngine;
 using UnityEngine.SceneManagement;
+#if UNITY_EDITOR
+using UnityEditor;
+using UnityEditor.SceneManagement;
+#endif
 
 public class SubScene_Base : MonoBehaviour
 {
@@ -136,7 +140,7 @@ public class SubScene_Base : MonoBehaviour
     [ContextMenu("DestoryChildren")]
     public void DestoryChildren()
     {
-        var children = GetChildrenGos();
+        var children = SubSceneHelper.GetChildrenGos(this.transform);
         foreach (var go in children)
         {
             if (go == null) continue;
@@ -386,7 +390,7 @@ public class SubScene_Base : MonoBehaviour
 
         if (this is SubScene_Single)
         {
-            gos = GetChildrenGos();//获取新的全部子物体，以便下面更新场景
+            gos = SubSceneHelper.GetChildrenGos(this.transform);//获取新的全部子物体，以便下面更新场景
         }
 
         SubSceneManager subSceneManager = GameObject.FindObjectOfType<SubSceneManager>();
@@ -401,15 +405,7 @@ public class SubScene_Base : MonoBehaviour
         Debug.Log("r1:" + r1);
     }
 
-    //[ContextMenu("SaveScene")]
-    public void SaveChildrenToScene(string path, bool isOverride)
-    {
-        SubSceneManager subSceneManager = GameObject.FindObjectOfType<SubSceneManager>();
-        var children = GetChildrenGos();
-        scene = EditorHelper.CreateScene(path, isOverride, subSceneManager.IsOpenSubScene, children.ToArray());
-        scenePath = path;
 
-    }
 
     public void SaveScene(string path, bool isOverride)
     {
@@ -421,16 +417,7 @@ public class SubScene_Base : MonoBehaviour
 
 #endif
 
-    public List<GameObject> GetChildrenGos()
-    {
-        List<GameObject> rootChildren = new List<GameObject>();
-        childCount = this.transform.childCount;
-        for (int i = 0; i < this.transform.childCount; i++)
-        {
-            rootChildren.Add(this.transform.GetChild(i).gameObject);
-        }
-        return rootChildren;
-    }
+
 
     internal void Init()
     {
@@ -504,7 +491,4 @@ public class SubScene_Base : MonoBehaviour
     }
 }
 
-public enum SubSceneType
-{
-    Single, Part, Base,In,Out0,Out1
-}
+

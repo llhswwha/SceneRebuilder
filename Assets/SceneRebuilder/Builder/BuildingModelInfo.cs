@@ -512,6 +512,69 @@ public class BuildingModelInfo : MonoBehaviour
 
 #if UNITY_EDITOR
 
+    [ContextMenu("EditorRemoveScene")]
+    public void EditorRemoveScene()
+    {
+        var scenes = gameObject.GetComponentsInChildren<SubScene_Single>();
+        foreach (var scene in scenes)
+        {
+            GameObject.DestroyImmediate(scene);
+        }
+    }
+
+    public static GameObject CreateEmptySceneGo(string sceneName,Transform t)
+    {
+        GameObject goScene = new GameObject($"{sceneName}_Scene");
+        int index = t.GetSiblingIndex();
+        //Debug.Log("index:"+index);
+        //goScene.transform.SetSiblingIndex(index);
+        goScene.transform.position = t.position;
+        goScene.transform.rotation = t.rotation;
+        goScene.transform.parent = t.parent;
+        goScene.transform.localScale = t.localScale;
+        return goScene;
+    }
+
+    [ContextMenu("EditorCreateSceneGO")]
+    public void EditorCreateSceneGO()
+    {
+        string sceneName = this.name;
+
+        GameObject goScene = CreateEmptySceneGo(sceneName, this.transform);
+
+        //SubSceneManager subSceneManager = GameObject.FindObjectOfType<SubSceneManager>();
+
+        //SubScene_Single ss = goScene.AddComponent<SubScene_Single>();
+        //ss.Init();
+        //string path = subSceneManager.GetScenePath(sceneName, false);
+        //SubSceneHelper.SaveChildrenToScene(path,this.transform, subSceneManager.IsOverride);
+        //ss.ShowBounds();
+    }
+
+    [ContextMenu("EditorCreateScene")]
+    public void EditorCreateScene()
+    {
+        GameObject go = this.gameObject;
+
+        SubScene_Single ss1 = go.GetComponent<SubScene_Single>();
+        if (ss1 != null)
+        {
+            Debug.LogWarning("已经存在SubScene_Single，调用EditorSaveScenes，保存场景");
+            EditorSaveScenes();
+            return;
+        }
+
+        UpackPrefab_One(go);
+
+        SubSceneManager subSceneManager = GameObject.FindObjectOfType<SubSceneManager>();
+
+        SubScene_Single ss = go.AddComponent<SubScene_Single>();
+        ss.Init();
+        string path = subSceneManager.GetScenePath(go.name, false);
+        SubSceneHelper.SaveChildrenToScene(path, this.transform, subSceneManager.IsOverride);
+        ss.ShowBounds();
+    }
+
     [ContextMenu("EditorCreatePartScenes")]
     private void EditorCreatePartScenes()
     {
@@ -572,6 +635,7 @@ public class BuildingModelInfo : MonoBehaviour
         var scenes = gameObject.GetComponentsInChildren<SubScene_Single>();
         foreach (var scene in scenes)
         {
+            scene.IsLoaded = true;
             scene.EditorSaveScene();
         }
 
@@ -579,8 +643,7 @@ public class BuildingModelInfo : MonoBehaviour
     }
 
 
-
-
+ 
 
 
     internal void EditorCreatePartScenes(string dir, bool isOverride)

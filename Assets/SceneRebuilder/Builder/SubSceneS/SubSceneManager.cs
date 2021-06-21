@@ -129,14 +129,14 @@ public class SubSceneManager : MonoBehaviour
         Debug.Log("SetSetting:"+subScenes.Length);
     }
 
-    private string GetScenePath(string sceneName)
+    public string GetScenePath(string sceneName,bool isPart)
     {
         //return Application.dataPath + "/Models/Instances/Buildings/" + sceneName + ".unity";
         //return Application.dataPath + SaveDir + sceneName + ".unity";
         //return $"{Application.dataPath}/{RootDir}/{SceneDir}/{sceneName}.unity";
         
 
-        if (IsPartScene)
+        if (isPart)
         {
             return $"{RootDir}/{SceneDir}_Parts/{sceneName}.unity";
         }
@@ -457,7 +457,7 @@ public class SubSceneManager : MonoBehaviour
             }
             else
             {
-                CreateSubScene(item.gameObject);
+                SubSceneHelper.CreateSubScene(item.gameObject, GetScenePath(item.name, IsPartScene),IsOverride);
             }
         }
         ProgressBarHelper.ClearProgressBar();
@@ -587,31 +587,6 @@ public class SubSceneManager : MonoBehaviour
     //    }
     //}
 
-
-
-    private SubScene_Single CreateSubScene(GameObject go)
-    {
-        UpackPrefab_One(go);
-
-        SubScene_Single ss = go.AddComponent<SubScene_Single>();
-        ss.Init();
-        string path = GetScenePath(go.name);
-        ss.SaveChildrenToScene(path, IsOverride);
-        ss.ShowBounds();
-        return ss;
-    }
-
-    public static void UpackPrefab_One(GameObject go)
-    {
-#if UNITY_EDITOR
-        GameObject root = PrefabUtility.GetOutermostPrefabInstanceRoot(go);
-        if (root != null)
-        {
-            PrefabUtility.UnpackPrefabInstance(root, PrefabUnpackMode.Completely, InteractionMode.UserAction);
-        }
-#endif
-    }
-
     //[ContextMenu("LoadAllScenes")]
     //public void LoadAllScenes()
     //{
@@ -634,7 +609,7 @@ public class SubSceneManager : MonoBehaviour
 
     public Scene CreateScene(params GameObject[] objs)
     {
-        ScenePath = GetScenePath(SceneName);
+        ScenePath = GetScenePath(SceneName, IsPartScene);
         return EditorHelper.CreateScene(ScenePath, IsOverride, IsOpenSubScene, objs);
     }
 
