@@ -19,12 +19,14 @@ public class RendererId
 
     internal void Init(GameObject go)
     {
+        if (go == null) return;
         this.mr = go.GetComponent<MeshRenderer>();
         Id = Guid.NewGuid().ToString();
     }
 
     public static string GetId(GameObject r)
     {
+        if (r == null) return "";
         RendererId id = r.GetComponent<RendererId>();
         if (id == null)
         {

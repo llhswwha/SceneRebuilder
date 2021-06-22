@@ -554,7 +554,7 @@ public class SubSceneManager : MonoBehaviour
         for (int i = 0; i < scenes.Length; i++)
         {
             T item = scenes[i];
-            string path = item.GetRalativePath();
+            string path = item.sceneArg.GetRalativePath();
             Debug.Log("path:" + path);
             buildingScenes[i + 1] = new EditorBuildSettingsScene(path, true);
         }

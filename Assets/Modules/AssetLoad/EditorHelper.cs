@@ -106,6 +106,16 @@ public static class EditorHelper
         return scene;
     }
 
+    //public static SubSceneArg GetSceneArg(string path, bool isOverride, bool isOpen, params GameObject[] objs)
+    //{
+    //    SubSceneArg arg = new SubSceneArg(path, isOverride, isOpen, objs);
+    //}
+
+    //public static Scene CreateScene(SubSceneArg arg)
+    //{
+
+    //}
+
     public static Scene CreateScene(string path, bool isOveride,bool isOpen, params GameObject[] objs)
     {
         string scenePath = GetScenePath(path);

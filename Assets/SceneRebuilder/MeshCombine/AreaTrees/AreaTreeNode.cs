@@ -54,8 +54,26 @@ public class AreaTreeNode : MonoBehaviour
     [ContextMenu("LoadRenderers")]
     public void LoadRenderers()
     {
-        Renderers = IdDictionay.GetRenderers(RenderersId);
-        newRenderers = IdDictionay.GetRenderers(newRenderersId);
+        var rs1= IdDictionay.GetRenderers(RenderersId);
+        if (rs1.Count == RenderersId.Count)//数量没变说明找到了全部的Renderers
+        {
+            Renderers = rs1;
+        }
+        else
+        {
+            Debug.LogError($"LoadRenderers rs1.Count != RenderersId.Count [{this.name}]");
+        }
+
+        var rs2= IdDictionay.GetRenderers(newRenderersId);
+        if (rs2.Count == newRenderersId.Count)//数量没变说明找到了全部的Renderers
+        {
+            newRenderers = rs2;
+        }
+        else
+        {
+            Debug.LogError($"LoadRenderers rs2.Count != newRenderersId.Count [{this.name}]");
+        }
+        //newRenderers = rs2;
     }
 
     public List<Collider> colliders = new List<Collider>();

@@ -27,7 +27,14 @@ public static class SubSceneHelper
     {
         SubSceneManager subSceneManager = GameObject.FindObjectOfType<SubSceneManager>();
         var children = GetChildrenGos(target);
-        return EditorHelper.CreateScene(path, isOverride, subSceneManager.IsOpenSubScene, children.ToArray());
+        SubSceneArg arg = new SubSceneArg(path, isOverride, subSceneManager.IsOpenSubScene, children.ToArray());
+        return CreateScene(arg);
+        //scenePath = path;
+    }
+
+    public static Scene CreateScene(SubSceneArg arg)
+    {
+        return EditorHelper.CreateScene(arg.path, arg.isOveride, arg.isOpen, arg.objs);
         //scenePath = path;
     }
 

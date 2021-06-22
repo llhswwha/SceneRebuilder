@@ -750,9 +750,10 @@ public class BuildingModelInfo : MonoBehaviour
     {
         DateTime start = DateTime.Now;
 
-        EditorLoadScenes(SceneContentType.Tree);
+        EditorLoadScenes(SceneContentType.Tree);//按照实际使用中也是先呈现Tree，再按需加载Part的
         EditorLoadScenes(SceneContentType.Part);
         LoadTreeRenderers();
+        InitInOut();//这个是和Part有关的。
 
         Debug.LogError($"EditorLoadScenes_TreeWithPart time:{(DateTime.Now - start)}");
     }
@@ -907,8 +908,9 @@ public class BuildingModelInfo : MonoBehaviour
 
         DestroyOldPartScenes();
 
+        CreatePartScene(SceneContentType.Tree);//这里会保存RendererId的关联关系
         CreatePartScene(SceneContentType.Part);
-        CreatePartScene(SceneContentType.Tree);
+        LoadTreeRenderers();//关联回Tree中的Renderers
 
         SubSceneManager.Instance.ClearOtherScenes();
         EditorMoveScenes();
