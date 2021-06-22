@@ -1,18 +1,16 @@
+using System;
 using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 
-public class RendererId : MonoBehaviour
+public class RendererId : Behaviour
 {
-    // Start is called before the first frame update
-    void Start()
-    {
-        
-    }
+    public string Id;
 
-    // Update is called once per frame
-    void Update()
+    public MeshRenderer renderer;
+
+    internal void Init()
     {
-        
+        Id = Guid.NewGuid().ToString();
     }
 }
