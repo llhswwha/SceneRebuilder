@@ -14,18 +14,21 @@ public class BuildingModelInfo : MonoBehaviour
         {
             if (trees != null && trees.Length > 0)
             {
-                return "Model(S)(T)";
+                //return "Model(S)(T)";
+                return $"Model(S{SceneList.sceneCount})(T{trees.Length})";
             }
             else
             {
-                return "Model(S)";
+                //return "Model(S)";
+                return $"Model(S{SceneList.sceneCount})";
             }
         }
         else
         {
             if (trees != null && trees.Length > 0)
             {
-                return "Model(T)";
+                //return "Model(T)";
+                return $"Model(T{trees.Length})";
             }
         }
         
@@ -81,23 +84,25 @@ public class BuildingModelInfo : MonoBehaviour
             InitInOut(false);
         }
 
+        ModelAreaTree[] ts = null;
         if (this.OutPart1 == null && this.InPart == null)
         {
-            return CreateTrees_BigSmall_Core();//没有In的状态下直接把Out0分成Small和Big
+            ts= CreateTrees_BigSmall_Core();//没有In的状态下直接把Out0分成Small和Big
         }
         else
         {
             if (isOut0BS == false)
             {
-                return CreateTreesCore();
+                ts= CreateTreesCore();
             }
             else
             {
-                return CreateTreesCoreBS();
+                ts= CreateTreesCoreBS();
             }
         }
+        trees = ts;
 
-        //return null;
+        return ts;
     }
 
     public ModelAreaTree[] CreateTreesInnerBS()
@@ -123,14 +128,23 @@ public class BuildingModelInfo : MonoBehaviour
         }
         
 
-        ModelAreaTree[] trees = new ModelAreaTree[3];
+        List<ModelAreaTree> ts = new List<ModelAreaTree>();
         var tree1 = CreateTree(InPart, "InTree");
-        trees[0] = tree1;
+        if (tree1 != null)
+        {
+            ts.Add(tree1);
+        }
         var tree2 = CreateTree(OutPart0, "OutTree0");
-        trees[1] = tree2;
+        if (tree2 != null)
+        {
+            ts.Add(tree2);
+        }
         var tree3 = CreateTree(OutPart1, "OutTree1");
-        trees[2] = tree3;
-        return trees;
+        if (tree3 != null)
+        {
+            ts.Add(tree3);
+        }
+        return ts.ToArray();
     }
 
     public ModelAreaTree[] CreateTreesCoreBS()
@@ -140,18 +154,31 @@ public class BuildingModelInfo : MonoBehaviour
             InitInOut(false);
         }
 
-        ModelAreaTree[] trees = new ModelAreaTree[3];
+        List<ModelAreaTree> ts = new List<ModelAreaTree>();
         var tree1 = CreateTree(InPart, "InTree");
-        trees[0] = tree1;
+        if (tree1 != null)
+        {
+            ts.Add(tree1);
+        }
 
         //var tree2 = CreateTree(OutPart0, "OutTree0");
         //trees[1] = tree2;
 
-        CreateTrees_BigSmall_Core();
+       var tbs= CreateTrees_BigSmall_Core();
+        foreach(var t in tbs)
+        {
+            if (t != null)
+            {
+                ts.Add(t);
+            }
+        }
 
         var tree3 = CreateTree(OutPart1, "OutTree1");
-        trees[2] = tree3;
-        return trees;
+        if (tree3 != null)
+        {
+            ts.Add(tree3);
+        }
+        return ts.ToArray();
     }
 
     [ContextMenu("* InitInOut")]
@@ -275,13 +302,13 @@ public class BuildingModelInfo : MonoBehaviour
         if (treeManager)
         {
             treeManager.Target = this.OutPart0;
-            trees= treeManager.CreateOne_BigSmall_Core(this.transform, this.OutPart0);
-            foreach(var tree in trees)
+            var ts= treeManager.CreateOne_BigSmall_Core(this.transform, this.OutPart0);
+            foreach(var tree in ts)
             {
                 if (tree == null) continue;
                 tree.name = this.name + "_" + tree.name;
             }
-            return trees;
+            return ts;
         }
         else
         {

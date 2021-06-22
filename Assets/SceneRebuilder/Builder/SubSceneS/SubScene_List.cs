@@ -21,5 +21,6 @@ public class SubScene_List : MonoBehaviour
         subSceneGo.transform.SetParent(this.transform);
 
         EditorHelper.CopyComponent(subSceneGo, scene);
+        sceneCount++;
     }
 }

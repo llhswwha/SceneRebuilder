@@ -30,7 +30,7 @@ public class SubSceneEditorInitializer
         GUI.Label(r, text, style);
     }
 
-    public static float Layer1Width = 100;
+    public static float Layer1Width = 115;
     public static float Layer2Width = 65;
     public static float Layer3Width = 45;
 
@@ -77,7 +77,7 @@ public class SubSceneEditorInitializer
             {
                 if (go.GetComponent<BuildingController>() != null)
                 {
-                    CreateLabel("[Models][Building]", selectionRect, Layer1Width, new Color(0.9f, 0.3f, 0.3f), Color.red);
+                    CreateLabel("[Models][Build]", selectionRect, Layer1Width, new Color(0.9f, 0.3f, 0.3f), Color.red);
                 }
                 else
                 {
@@ -90,7 +90,7 @@ public class SubSceneEditorInitializer
                 BuildingModelInfo modelInfo = go.GetComponent<BuildingModelInfo>();
                 if (go.GetComponent<BuildingController>() != null)
                 {
-                    CreateLabel($"[{modelInfo.GetInfoName()}][Building]", selectionRect, Layer1Width, new Color(1, 0.5f, 0.5f), Color.red);
+                    CreateLabel($"[{modelInfo.GetInfoName()}][Build]", selectionRect, Layer1Width, new Color(1, 0.5f, 0.5f), Color.red);
                 }
                 else if (go.GetComponent<FloorController>() != null)
                 {
@@ -103,7 +103,7 @@ public class SubSceneEditorInitializer
             }
             else if (go.GetComponent<BuildingController>() != null)
             {
-                CreateLabel("[Building]", selectionRect, Layer1Width, new Color(0.4f, 0.5f, 1), Color.red);
+                CreateLabel("[Build]", selectionRect, Layer1Width, new Color(0.4f, 0.5f, 1), Color.red);
             }
             else if (go.GetComponent<FloorController>() != null)
             {
