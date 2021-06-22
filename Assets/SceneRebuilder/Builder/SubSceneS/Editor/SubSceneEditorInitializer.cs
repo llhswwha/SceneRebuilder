@@ -12,8 +12,18 @@ public class SubSceneEditorInitializer
         Debug.Log("SubSceneEditorInitializer");
     }
 
+    public static Rect CreateRect(Rect selectionRect,float width)
+    {
+        float width = 45;
+        Rect r = new Rect(selectionRect);
+        r.x = selectionRect.x + selectionRect.width - width;
+        r.width = width;
+        return r;
+    }
+
     private static void hierarchyOnGUI(int instancedId,Rect selectionRect)
     {
+        //EditorUtility.Hi
         //Debug.Log("SubSceneEditorInitializer.hierarchyOnGUI");
         var go = EditorUtility.InstanceIDToObject(instancedId) as GameObject;
         if (go)
@@ -22,10 +32,8 @@ public class SubSceneEditorInitializer
             {
                 SubScene_Base scene = go.GetComponent<SubScene_Base>();
                 bool isLoaded = scene.HaveGos();
-                Rect r = new Rect(selectionRect);
-                r.x = r.width;
-                r.width = 80;
-                //r.y += 2;
+                Rect r = CreateRect(selectionRect, 45);
+
                 var style = new GUIStyle();
                 if (isLoaded)
                 {
@@ -42,14 +50,19 @@ public class SubSceneEditorInitializer
             }
             else if (go.GetComponent<ModelAreaTree>() != null)
             {
-                Rect r = new Rect(selectionRect);
-                r.x = r.width+20;
-                r.width = 80;
-                //r.y += 2;
+                Rect r = CreateRect(selectionRect, 55);
                 var style = new GUIStyle();
                 style.normal.textColor = Color.green;
                 style.hover.textColor = Color.blue;
                 GUI.Label(r, "[ModelTree]", style);
+            }
+            else if (go.GetComponent<AreaTreeNode>() != null)
+            {
+                Rect r = CreateRect(selectionRect, 55);
+                var style = new GUIStyle();
+                style.normal.textColor = new Color(0, 0.5f, 1);
+                style.hover.textColor = Color.red;
+                GUI.Label(r, "[TreeNode]", style);
             }
         }
     }
