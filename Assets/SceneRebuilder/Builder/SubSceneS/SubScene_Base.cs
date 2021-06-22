@@ -160,13 +160,15 @@ public class SubScene_Base : MonoBehaviour
     {
         get
         {
-            return this.name + "_Bounds";
+            return $"{this.name}_Bounds_{contentType}";
+            //return "123";
         }
     }
 
 
     internal void ShowBounds()
     {
+        Debug.Log("ShowBounds:"+BoundsName+"|"+ contentType);
         DestroyBoundsBox();
         boundsGo = AreaTreeHelper.CreateBoundsCube(bounds, BoundsName, transform);
     }
@@ -395,6 +397,14 @@ public class SubScene_Base : MonoBehaviour
     //}
 
 #if UNITY_EDITOR
+
+    [ContextMenu("EditorCreateScene")]
+    public void EditorCreateScene()
+    {
+        SubSceneManager subSceneManager = SubSceneManager.Instance;
+        string path = subSceneManager.GetScenePath(this.name, SceneContentType.Single);
+        SubSceneHelper.EditorCreateScene(this.gameObject, path, subSceneManager.IsOverride,this);
+    }
 
     [ContextMenu("EditorReLoadScene")]
     public void EditorReLoadScene()

@@ -44,14 +44,34 @@ public static class SubSceneHelper
 
         SubSceneManager subSceneManager = SubSceneManager.Instance;
         string path = subSceneManager.GetScenePath(go.name, SceneContentType.Single);
-        return EditorCreateScene(go, path, subSceneManager.IsOverride);
+        return EditorCreateScene<SubScene_Single>(go, path, subSceneManager.IsOverride);
     }
 
-    public static SubScene_Single EditorCreateScene(GameObject go, string path, bool isOverride)
+    public static T EditorCreateScene<T>(GameObject go, string path, bool isOverride) where T : SubScene_Base
+    {
+        //UpackPrefab_One(go);
+
+        //SubScene_Single ss = go.AddComponent<SubScene_Single>();
+        ////string path = GetScenePath(go.name, isPart);
+        //ss.SetPath(path);
+        //ss.Init();
+        ////
+        //SubSceneHelper.SaveChildrenToScene(path, go.transform, isOverride);
+        //ss.ShowBounds();
+        //return ss;
+
+        return EditorCreateScene<T>(go, path, isOverride, null);
+    }
+
+    public static T EditorCreateScene<T>(GameObject go, string path, bool isOverride, T ss) where T : SubScene_Base
     {
         UpackPrefab_One(go);
 
-        SubScene_Single ss = go.AddComponent<SubScene_Single>();
+        if (ss == null)
+        {
+            ss = go.AddComponent<T>();
+        }
+        //SubScene_Single ss = go.AddComponent<SubScene_Single>();
         //string path = GetScenePath(go.name, isPart);
         ss.SetPath(path);
         ss.Init();

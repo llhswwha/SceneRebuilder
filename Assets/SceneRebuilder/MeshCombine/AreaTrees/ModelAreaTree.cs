@@ -791,5 +791,25 @@ public class ModelAreaTree : MonoBehaviour
         Debug.LogError($"SaveTree {(DateTime.Now - start).ToString()}");
 #endif
     }
-    
+
+    [ContextMenu("SaveRenderersId")]
+    public void SaveRenderersId()
+    {
+        foreach (var node in TreeLeafs)
+        {
+            node.SaveRenderersId();
+        }
+
+        Debug.Log("SaveRenderersId");
+    }
+
+    [ContextMenu("LoadRenderers")]
+    public void LoadRenderers()
+    {
+        foreach (var node in TreeLeafs)
+        {
+            node.LoadRenderers();
+        }
+        Debug.Log("LoadRenderers");
+    }
 }

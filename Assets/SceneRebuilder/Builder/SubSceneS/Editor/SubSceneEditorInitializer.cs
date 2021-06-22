@@ -71,7 +71,17 @@ public class SubSceneEditorInitializer
             }
             else if (go.GetComponent<AreaTreeNode>() != null)
             {
-                CreateLabel("[TreeNode]", selectionRect, Layer2Width, new Color(0, 0.5f, 1), Color.red);
+                AreaTreeNode node = go.GetComponent<AreaTreeNode>();
+
+                if (node.IsLeaf)
+                {
+                    CreateLabel($"[LeafNode]", selectionRect, Layer2Width, new Color(0, 0.7f, 1), Color.red);
+                }
+                else
+                {
+                    CreateLabel($"[TreeNode]", selectionRect, Layer2Width, new Color(0, 0.5f, 1), Color.red);
+                }
+                
             }
             else if (go.GetComponent<BuildingModelInfoList>() != null)
             {

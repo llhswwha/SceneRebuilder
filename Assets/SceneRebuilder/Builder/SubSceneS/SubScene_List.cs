@@ -32,7 +32,9 @@ public class SubScene_List : MonoBehaviour
         scenes = gameObject.GetComponentsInChildren<SubScene_Base>(true);
         foreach(var scene in scenes)
         {
+            scene.DestroyBoundsBox();
             GameObject.DestroyImmediate(scene.gameObject);
         }
+        sceneCount = 0;
     }
 }

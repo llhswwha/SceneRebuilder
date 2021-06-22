@@ -31,12 +31,21 @@ public class BuildingModelInfo : MonoBehaviour
             if (tc > 0)
             {
                 //return "Model(S)(T)";
-                return $"Model(S{SceneList.sceneCount})(T{tc})";
+                if (SceneList.sceneCount > 0)
+                {
+                    return $"Model(S{SceneList.sceneCount})(T{tc})";
+                }
+                else
+                {
+                    return $"Model(T{tc})";
+                }
             }
             else
             {
-                //return "Model(S)";
-                return $"Model(S{SceneList.sceneCount})";
+                if (SceneList.sceneCount > 0)
+                {
+                    return $"Model(S{SceneList.sceneCount})";
+                }
             }
         }
         else
@@ -73,6 +82,26 @@ public class BuildingModelInfo : MonoBehaviour
         foreach (var oldT in oldTrees)
         {
             GameObject.DestroyImmediate(oldT.gameObject);
+        }
+    }
+
+    [ContextMenu("SaveTreeRendersId")]
+    public void SaveTreeRendersId()
+    {
+        trees = this.GetComponentsInChildren<ModelAreaTree>(true);
+        foreach(var t in trees)
+        {
+            t.SaveRenderersId();
+        }
+    }
+
+    [ContextMenu("LoadTreeRenderers")]
+    public void LoadTreeRenderers()
+    {
+        trees = this.GetComponentsInChildren<ModelAreaTree>(true);
+        foreach (var t in trees)
+        {
+            t.LoadRenderers();
         }
     }
 
@@ -589,6 +618,7 @@ public class BuildingModelInfo : MonoBehaviour
         }
     }
 
+    [ContextMenu("DestroyOldPartScenes")]
     private void DestroyOldPartScenes()
     {
         Debug.LogError("DestroyOldPartScenes");
@@ -708,20 +738,15 @@ public class BuildingModelInfo : MonoBehaviour
         EditorLoadScenes(contentType);
         this.InitInOut(false);
         //SceneState = "EditLoadScenes_Part";
+        LoadTreeRenderers();
     }
 
     [ContextMenu("EditorLoadScenes_TreeWithPart")]
     public void EditorLoadScenes_TreeWithPart()
     {
-        DestroyOldPartScenes();
-
         EditorLoadScenes(SceneContentType.Tree);
-
         EditorLoadScenes(SceneContentType.Part);
-
-        //this.InitInOut(false);
-
-        //SceneState = "EditLoadScenes_Part";
+        LoadTreeRenderers();
     }
 
     public void EditorLoadScenes(SceneContentType ct)
@@ -851,6 +876,8 @@ public class BuildingModelInfo : MonoBehaviour
     [ContextMenu("* EditorCreateScenes")]
     public void EditorCreateScenes()
     {
+        SaveTreeRendersId();
+
         CreatePartScene(contentType);
 
         SubSceneManager.Instance.ClearOtherScenes();
@@ -860,6 +887,10 @@ public class BuildingModelInfo : MonoBehaviour
     [ContextMenu("* EditorCreateScenes_TreeWithPart")]
     public void EditorCreateScenes_TreeWithPart()
     {
+        SaveTreeRendersId();
+
+        DestroyOldPartScenes();
+
         CreatePartScene(SceneContentType.Part);
         CreatePartScene(SceneContentType.Tree);
 

@@ -192,15 +192,23 @@ public class SubSceneManager : MonoBehaviour
         return $"{RootDir}/{SceneDir}_{dir}/";
     }
 
-    [ContextMenu("RemoveSubScenes")]
-    public void RemoveSubScenes()
+    [ContextMenu("ClearScenes")]
+    public void ClearScenes()
     {
-        subScenes = GetSubScenes();
-        foreach (var item in subScenes)
+
+        var ssList = GameObject.FindObjectsOfType<SubScene_List>(true);
+        foreach (var item in ssList)
+        {
+            item.Clear();
+        }
+        var ss = GameObject.FindObjectsOfType<SubScene_Base>(true);
+        foreach (var item in ss)
         {
             //item.LoadScene();
             GameObject.DestroyImmediate(item);
         }
+
+        Debug.Log($"ClearScenes list:{ssList.Length},ss:{ss.Length}");
     }
 
     [ContextMenu("LoadScenes")]
@@ -488,7 +496,7 @@ public class SubSceneManager : MonoBehaviour
             }
             else
             {
-                SubSceneHelper.EditorCreateScene(item.gameObject, GetScenePath(item.name, SceneContentType.Single),IsOverride);
+                SubSceneHelper.EditorCreateScene<SubScene_Single>(item.gameObject, GetScenePath(item.name, SceneContentType.Single),IsOverride);
             }
         }
         ProgressBarHelper.ClearProgressBar();

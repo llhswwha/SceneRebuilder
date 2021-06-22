@@ -8,7 +8,7 @@ public class SubScene_Out0 : SubScene_Part
     {
         get
         {
-            return this.name + "_Bounds_Out0";
+            return this.name + "_Bounds_Out0_" + contentType;
         }
     }
 }

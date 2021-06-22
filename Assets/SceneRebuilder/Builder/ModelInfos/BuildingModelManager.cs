@@ -318,7 +318,9 @@ public class BuildingModelManager : MonoBehaviour
             //var path = GetScenePath(go.name);
             //Scene scene = EditorHelper.CreateScene(path,true,go);
             b.contentType = this.contentType;
-            b.EditorCreateScenes();
+            //b.EditorCreateScenes();
+
+            b.EditorCreateScenes_TreeWithPart();
 
             scenes.Add(go.name);
 
