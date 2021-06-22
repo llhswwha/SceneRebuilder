@@ -217,7 +217,6 @@ public class SubSceneManager : MonoBehaviour
 
             if (ProgressBarHelper.DisplayCancelableProgressBar("EditorSaveScenes", $"{item.GetSceneName()}\t{i}/{subScenes.Length} {percents}% of 100%", progress))
             {
-                //ProgressBarHelper.ClearProgressBar();
                 break;
             }
             item.EditorSaveScene();

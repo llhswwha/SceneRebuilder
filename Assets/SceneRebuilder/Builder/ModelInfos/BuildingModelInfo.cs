@@ -859,6 +859,7 @@ public class BuildingModelInfo : MonoBehaviour
 
         CreatePartScene(SceneContentType.Tree);//这里会保存RendererId的关联关系
         CreatePartScene(SceneContentType.Part);
+
         LoadTreeRenderers();//关联回Tree中的Renderers
 
         SubSceneManager.Instance.ClearOtherScenes();
@@ -1003,7 +1004,11 @@ public class BuildingModelInfo : MonoBehaviour
     {
         DateTime start = DateTime.Now;
 
-        EditorLoadScenes(contentType);
+        //EditorLoadScenes(contentType);
+
+        var scenes = GetSubScenesOfTypes(new List<SceneContentType>() { contentType });//按照实际使用中也是先呈现Tree，再按需加载Part的
+        EditorLoadScenes(scenes.ToArray());
+
         this.InitInOut(false);
         //SceneState = "EditLoadScenes_Part";
         LoadTreeRenderers();
@@ -1016,25 +1021,55 @@ public class BuildingModelInfo : MonoBehaviour
     {
         DateTime start = DateTime.Now;
 
-        EditorLoadScenes(SceneContentType.Tree);//按照实际使用中也是先呈现Tree，再按需加载Part的
-        EditorLoadScenes(SceneContentType.Part);
+        //EditorLoadScenes(SceneContentType.Tree);
+        //EditorLoadScenes(SceneContentType.Part);
+
+        var scenes=GetSubScenesOfTypes(new List<SceneContentType>() { SceneContentType.Tree, SceneContentType.Part });//按照实际使用中也是先呈现Tree，再按需加载Part的
+        EditorLoadScenes(scenes.ToArray());
         LoadTreeRenderers();
         InitInOut();//这个是和Part有关的。
 
         Debug.LogError($"EditorLoadScenes_TreeWithPart time:{(DateTime.Now - start)}");
     }
 
+    private List<SubScene_Base> GetSubScenesOfTypes(List<SceneContentType> types)
+    {
+        List<SubScene_Base> list = new List<SubScene_Base>();
+        var scenes = gameObject.GetComponentsInChildren<SubScene_Base>();
+        for (int i = 0; i < scenes.Length; i++)
+        {
+            SubScene_Base scene = scenes[i];
+            if (types.Contains(scene.contentType))
+            {
+                list.Add(scene);
+            }
+        }
+        return list;
+    }
+
     public void EditorLoadScenes(SceneContentType ct)
     {
         var scenes = gameObject.GetComponentsInChildren<SubScene_Base>();
-        foreach (var scene in scenes)
+        EditorLoadScenes(scenes);
+    }
+
+    public void EditorLoadScenes(SubScene_Base[] scenes)
+    {
+        Debug.Log("EditorLoadScenes:"+scenes.Length);
+        for (int i = 0; i < scenes.Length; i++)
         {
-            if (scene.contentType == ct)
+            SubScene_Base scene = scenes[i];
+            scene.IsLoaded = false;
+            scene.EditorLoadScene();
+
+            float progress = (float)i / scenes.Length;
+            float percents = progress * 100;
+            if (ProgressBarHelper.DisplayCancelableProgressBar("EditorLoadScenes", $"{i}/{scenes.Length} {percents}% of 100%", progress))
             {
-                scene.IsLoaded = false;
-                scene.EditorLoadScene();
+                break;
             }
         }
+        ProgressBarHelper.ClearProgressBar();
         //this.InitInOut(false);
         //SceneState = "EditLoadScenes_Part";
     }

@@ -58,10 +58,8 @@ public class BuildingModelManager : MonoBehaviour
         {
             float progress = (float)i / Buildings.Count;
             float percents = progress * 100;
-
             if (ProgressBarHelper.DisplayCancelableProgressBar("InitBuildings", $"{i}/{Buildings.Count} {percents}% of 100%", progress))
             {
-                //ProgressBarHelper.ClearProgressBar();
                 break;
             }
             Buildings[i].InitInOut(true);

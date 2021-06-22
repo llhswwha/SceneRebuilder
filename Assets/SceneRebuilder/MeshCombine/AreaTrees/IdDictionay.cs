@@ -9,6 +9,54 @@ public static class IdDictionay
 
     public static Dictionary<string, RendererId> IdDict = new Dictionary<string, RendererId>();
 
+    private static void SetId(RendererId id)
+    {
+        try
+        {
+
+            if (!IdDict.ContainsKey(id.Id))
+            {
+                IdDict.Add(id.Id, id);
+            }
+            else
+            {
+                IdDict[id.Id] = id;//旧的可能被卸载、删除。
+            }
+        }
+        catch (Exception ex)
+        {
+            Debug.LogError($"RendererDictionay.SetId Renderer:{id},Exception:{ex}");
+        }
+    }
+
+    private static void SetRendererId(RendererId id,MeshRenderer renderer)
+    {
+        try
+        {
+            if (!RendererDict.ContainsKey(id.Id))
+            {
+                RendererDict.Add(id.Id, renderer);
+            }
+            else
+            {
+                RendererDict[id.Id] = renderer;
+            }
+
+            if (!IdDict.ContainsKey(id.Id))
+            {
+                IdDict.Add(id.Id, id);
+            }
+            else
+            {
+                IdDict[id.Id] = id;//旧的可能被卸载、删除。
+            }
+        }
+        catch (Exception ex)
+        {
+            Debug.LogError($"RendererDictionay.SetRendererId Renderer:{id},Exception:{ex}");
+        }
+    }
+
     public static void InitInfos()
     {
         RendererDict.Clear();
@@ -31,16 +79,7 @@ public static class IdDictionay
         var ids = GameObject.FindObjectsOfType<RendererId>(true);
         foreach (var id in ids)
         {
-            try
-            {
-
-                if (!IdDict.ContainsKey(id.Id))
-                    IdDict.Add(id.Id, id);
-            }
-            catch (Exception ex)
-            {
-                Debug.LogError($"RendererDictionay.InitIds Renderer:{id},Exception:{ex}");
-            }
+            SetId(id);
         }
         Debug.LogError($"RendererDictionay.InitIds count:{ids.Length},Dict:{IdDict.Count} time:{(DateTime.Now - start)}");
     }
@@ -54,23 +93,8 @@ public static class IdDictionay
                 Debug.LogError($"renderer==null");
                 continue;
             }
-            try
-            {
-                //Dict.Add(renderer.GetInstanceID(), renderer);
-                //Dict.Add(renderer., renderer);
-
-                RendererId id = RendererId.GetId(renderer);
-
-                if(!RendererDict.ContainsKey(id.Id))
-                    RendererDict.Add(id.Id, renderer);
-                if(!IdDict.ContainsKey(id.Id))
-                    IdDict.Add(id.Id, id);
-            }
-            catch (Exception ex)
-            {
-                Debug.LogError($"RendererDictionay.InitRenderers Renderer:{renderer},Exception:{ex}");
-            }
-           
+            RendererId id = RendererId.GetId(renderer);
+            SetRendererId(id, renderer);
         }
     }
 
@@ -87,16 +111,7 @@ public static class IdDictionay
             var ids = obj.GetComponentsInChildren<RendererId>();
             foreach(var id in ids)
             {
-                try
-                {
-
-                    if (!IdDict.ContainsKey(id.Id))
-                        IdDict.Add(id.Id, id);
-                }
-                catch (Exception ex)
-                {
-                    Debug.LogError($"RendererDictionay.InitRenderers22 Id:{id},Exception:{ex}");
-                }
+                SetId(id);
             }
         }
         int count2 = RendererDict.Count;
@@ -112,6 +127,10 @@ public static class IdDictionay
 
         if (IdDict.ContainsKey(id))
         {
+            if (IdDict[id] == null)
+            {
+                InitIds();
+            }
             return IdDict[id].gameObject;
         }
         return null;
