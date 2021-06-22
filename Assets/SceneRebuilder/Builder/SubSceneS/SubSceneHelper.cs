@@ -38,7 +38,7 @@ public static class SubSceneHelper
         //scenePath = path;
     }
 
-    public static SubScene_Single EditorCreateScene(GameObject go)
+    public static SubScene_Single EditorCreateScene(GameObject go,bool isSave)
     {
 
         //UpackPrefab_One(go);
@@ -51,10 +51,10 @@ public static class SubSceneHelper
 
         SubSceneManager subSceneManager = SubSceneManager.Instance;
         string path = subSceneManager.GetScenePath(go.name, SceneContentType.Single);
-        return EditorCreateScene<SubScene_Single>(go, path, subSceneManager.IsOverride);
+        return EditorCreateScene<SubScene_Single>(go, path, subSceneManager.IsOverride, isSave);
     }
 
-    public static T EditorCreateScene<T>(GameObject go, string path, bool isOverride) where T : SubScene_Base
+    public static T EditorCreateScene<T>(GameObject go, string path, bool isOverride, bool isSave) where T : SubScene_Base
     {
         //UpackPrefab_One(go);
 
@@ -67,10 +67,10 @@ public static class SubSceneHelper
         //ss.ShowBounds();
         //return ss;
 
-        return EditorCreateScene<T>(go, path, isOverride, null);
+        return EditorCreateScene<T>(go, path, isOverride, isSave,null);
     }
 
-    public static T EditorCreateScene<T>(GameObject go, string path, bool isOverride, T ss) where T : SubScene_Base
+    public static T EditorCreateScene<T>(GameObject go, string path, bool isOverride, bool isSave, T ss) where T : SubScene_Base
     {
         UpackPrefab_One(go);
 
@@ -80,11 +80,21 @@ public static class SubSceneHelper
         }
         //SubScene_Single ss = go.AddComponent<SubScene_Single>();
         //string path = GetScenePath(go.name, isPart);
-        ss.SetPath(path);
+
+        SubSceneManager subSceneManager = GameObject.FindObjectOfType<SubSceneManager>();
+        ss.sceneArg = new SubSceneArg(path, isOverride, subSceneManager.IsOpenSubScene, go);
+
+        //ss.SetPath(path);
         ss.Init();
-        //
-        SubSceneHelper.SaveChildrenToScene(path, go.transform, isOverride);
-        ss.ShowBounds();
+
+        //SubSceneHelper.SaveChildrenToScene(path, go.transform, isOverride);
+        if (isSave)
+        {
+            ss.SaveScene();
+            ss.ShowBounds();
+        }
+
+       
         return ss;
     }
 

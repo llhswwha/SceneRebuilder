@@ -148,7 +148,7 @@ public static class EditorHelper
             if (isOveride)//重新覆盖
             {
                 Scene scene = EditorSceneManager.GetSceneByPath(scenePath);
-                Debug.Log("scene IsValid:" + scene.IsValid());
+                //Debug.Log("scene IsValid:" + scene.IsValid());
                 if (scene.IsValid() == true)//打开
                 {
                     bool r1 = EditorSceneManager.CloseScene(scene, true);//关闭场景，不关闭无法覆盖

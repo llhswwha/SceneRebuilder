@@ -163,7 +163,7 @@ public class SubScene_Base : MonoBehaviour
 
     internal void ShowBounds()
     {
-        Debug.Log("ShowBounds:"+BoundsName+"|"+ contentType);
+        //Debug.Log("ShowBounds:"+BoundsName+"|"+ contentType);
         DestroyBoundsBox();
         boundsGo = AreaTreeHelper.CreateBoundsCube(bounds, BoundsName, transform);
     }
@@ -398,7 +398,7 @@ public class SubScene_Base : MonoBehaviour
     {
         SubSceneManager subSceneManager = SubSceneManager.Instance;
         string path = subSceneManager.GetScenePath(this.name, SceneContentType.Single);
-        SubSceneHelper.EditorCreateScene(this.gameObject, path, subSceneManager.IsOverride,this);
+        SubSceneHelper.EditorCreateScene(this.gameObject, path, subSceneManager.IsOverride, true,this);
     }
 
     [ContextMenu("EditorReLoadScene")]
@@ -453,12 +453,29 @@ public class SubScene_Base : MonoBehaviour
         Debug.Log("r1:" + r1);
     }
 
-    public void SaveScene(string path, bool isOverride)
+    //public void SaveScene(string path, bool isOverride)
+    //{
+    //    SubSceneManager subSceneManager = GameObject.FindObjectOfType<SubSceneManager>();
+    //    sceneArg = new SubSceneArg(path, isOverride, subSceneManager.IsOpenSubScene, gos.ToArray());
+    //    scene = SubSceneHelper.CreateScene(sceneArg);
+    //    //SetPath(path);
+    //    GetSceneName();
+    //}
+
+    public void SaveScene(SubSceneArg arg)
+    {
+        scene = SubSceneHelper.CreateScene(arg);
+    }
+
+    public void SaveScene()
+    {
+        scene = SubSceneHelper.CreateScene(sceneArg);
+    }
+
+    public void SetArg(string path, bool isOverride)
     {
         SubSceneManager subSceneManager = GameObject.FindObjectOfType<SubSceneManager>();
         sceneArg = new SubSceneArg(path, isOverride, subSceneManager.IsOpenSubScene, gos.ToArray());
-        scene = SubSceneHelper.CreateScene(sceneArg);
-        //SetPath(path);
         GetSceneName();
     }
 
