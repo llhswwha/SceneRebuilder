@@ -232,6 +232,15 @@ public class BuildingModelManager : MonoBehaviour
         }
     }
 
+    [ContextMenu("EditorMoveScenes")]
+    public void EditorMoveScenes()
+    {
+        foreach (var b in Buildings)
+        {
+            b.EditorMoveScenes();
+        }
+    }
+
     [ContextMenu("CreatePrefabs")]
     public void CreatePrefabs()
     {

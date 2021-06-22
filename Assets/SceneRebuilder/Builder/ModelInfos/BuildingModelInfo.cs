@@ -583,15 +583,17 @@ public class BuildingModelInfo : MonoBehaviour
 
 #if UNITY_EDITOR
 
-    public GameObject SceneListGo = null;
+    public SubScene_List SceneList = null;
 
     private void InitSceneListGO()
     {
-        if (SceneListGo == null)
+        if (SceneList == null)
         {
-            SceneListGo = new GameObject("SubScenes");
-            SceneListGo.transform.position = this.transform.position;
-            SceneListGo.transform.SetParent(this.transform);
+            GameObject go = new GameObject("SubScenes");
+            go.transform.position = this.transform.position;
+            go.transform.SetParent(this.transform);
+            SceneList = go.AddComponent<SubScene_List>();
+            SceneList.Init();
         }
     }
     /// <summary>
@@ -605,13 +607,7 @@ public class BuildingModelInfo : MonoBehaviour
         var scenes = gameObject.GetComponentsInChildren<SubScene_Base>();
         foreach (var scene in scenes)
         {
-            //
-            GameObject subSceneGo = new GameObject(scene.GetSceneNameEx());
-            subSceneGo.transform.position = this.transform.position;
-            subSceneGo.transform.SetParent(SceneListGo.transform);
-
-            EditorHelper.CopyComponent(subSceneGo, scene);
-            
+            SceneList.AddScene(scene);
             GameObject.DestroyImmediate(scene);
         }
     }

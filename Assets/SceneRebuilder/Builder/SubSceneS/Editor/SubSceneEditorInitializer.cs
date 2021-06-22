@@ -37,7 +37,11 @@ public class SubSceneEditorInitializer
         var go = EditorUtility.InstanceIDToObject(instancedId) as GameObject;
         if (go)
         {
-            if(go.GetComponent<SubScene_Base>()!=null)
+            if (go.GetComponent<SubScene_List>() != null)
+            {
+                CreateLabel("[SceneList]", selectionRect, 65, new Color(1, 0.5f, 0.5f), Color.blue);
+            }
+            else if (go.GetComponent<SubScene_Base>()!=null)
             {
                 SubScene_Base scene = go.GetComponent<SubScene_Base>();
                 bool isLoaded = scene.HaveGos();
@@ -65,12 +69,27 @@ public class SubSceneEditorInitializer
             {
                 CreateLabel("[TreeNode]", selectionRect, 65, new Color(0, 0.5f, 1), Color.red);
             }
+            else if (go.GetComponent<BuildingModelInfoList>() != null)
+            {
+                if (go.GetComponent<BuildingController>() != null)
+                {
+                    CreateLabel("[Models][Building]", selectionRect, 90, new Color(0.9f, 0.3f, 0.3f), Color.red);
+                }
+                else
+                {
+                    CreateLabel("[Models]", selectionRect, 90, new Color(0.9f, 0.3f, 1), Color.red);
+                }
+            }
 
             else if (go.GetComponent<BuildingModelInfo>() != null)
             {
                 if (go.GetComponent<BuildingController>() != null)
                 {
-                    CreateLabel("[Building][Model]", selectionRect, 90, new Color(1, 0.5f, 0.5f), Color.red);
+                    CreateLabel("[Model][Building]", selectionRect, 90, new Color(1, 0.5f, 0.5f), Color.red);
+                }
+                else if (go.GetComponent<FloorController>() != null)
+                {
+                    CreateLabel("[Model][Floor]", selectionRect, 90, new Color(1, 0.7f, 0.3f), Color.red);
                 }
                 else
                 {
@@ -84,6 +103,18 @@ public class SubSceneEditorInitializer
             else if (go.GetComponent<FloorController>() != null)
             {
                 CreateLabel("[Floor]", selectionRect, 65, new Color(0.6f, 0.5f, 0.8f), Color.red);
+            }
+            else if (go.GetComponent<Camera>() != null)
+            {
+                CreateLabel("[Camera]", selectionRect, 65, Color.gray, Color.red);
+            }
+            else if (go.GetComponent<Light>() != null)
+            {
+                CreateLabel("[Light]", selectionRect, 65, Color.gray, Color.red);
+            }
+            else if (go.GetComponent<Canvas>() != null)
+            {
+                CreateLabel("[Canvas]", selectionRect, 65, Color.gray, Color.red);
             }
             else
             {
