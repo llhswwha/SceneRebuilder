@@ -107,5 +107,5 @@ public enum SubSceneType
 
 public enum SceneContentType
 {
-    Single,Part,Tree,TreePart
+    Single,Part,Tree,TreeAndPart,TreeWithPart
 }

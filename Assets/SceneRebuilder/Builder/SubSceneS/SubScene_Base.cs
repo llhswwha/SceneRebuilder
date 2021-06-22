@@ -58,6 +58,10 @@ public class SubScene_Base : MonoBehaviour
 
     public void SetPath(string path)
     {
+        if (sceneArg == null)
+        {
+            sceneArg = new SubSceneArg();
+        }
         sceneArg.path = path;
         GetSceneName();
     }
@@ -452,8 +456,9 @@ public class SubScene_Base : MonoBehaviour
     public void SaveScene(string path, bool isOverride)
     {
         SubSceneManager subSceneManager = GameObject.FindObjectOfType<SubSceneManager>();
-        scene = EditorHelper.CreateScene(path, isOverride, subSceneManager.IsOpenSubScene, gos.ToArray());
-        SetPath(path);
+        sceneArg = new SubSceneArg(path, isOverride, subSceneManager.IsOpenSubScene, gos.ToArray());
+        scene = SubSceneHelper.CreateScene(sceneArg);
+        //SetPath(path);
         GetSceneName();
     }
 

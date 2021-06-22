@@ -39,6 +39,8 @@ public class SubSceneManager : MonoBehaviour
 
     public bool IsOverride = true;
 
+    public SceneContentType contentType;
+
     public List<GameObject> gos = new List<GameObject>();
 
     public GameObject root = null;
@@ -50,7 +52,7 @@ public class SubSceneManager : MonoBehaviour
     public bool IsOneCoroutine = true;
 
 
-    public bool IsPartScene = false;
+    //public bool IsPartScene = false;
 
     public bool IsClearOtherScenes = true;
 
@@ -77,6 +79,306 @@ public class SubSceneManager : MonoBehaviour
         }
 
     }
+
+#if UNITY_EDITOR
+
+    [ContextMenu("* EditorCreateBuildingScenes")]
+    private void EditorCreateBuildingScenes()
+    {
+        AreaTreeHelper.InitCubePrefab();
+
+        DateTime start = DateTime.Now;
+        var buildings = GameObject.FindObjectsOfType<BuildingModelInfo>();
+        for (int i = 0; i < buildings.Length; i++)
+        {
+            var item = buildings[i];
+            float progress = (float)i / buildings.Length;
+            float percents = progress * 100;
+
+            if (ProgressBarHelper.DisplayCancelableProgressBar("EditorSaveScenes", $"{item.name}\t{i}/{subScenes.Length} {percents}% of 100%", progress))
+            {
+                //ProgressBarHelper.ClearProgressBar();
+                break;
+            }
+
+            //if (IsPartScene)
+            //{
+            //    string dir = GetSceneDir(SceneContentType.Part);
+            //    item.EditorCreatePartScenes(dir, IsOverride);
+            //}
+            //else
+            //{
+            //    SubSceneHelper.EditorCreateScene<SubScene_Single>(item.gameObject, GetScenePath(item.name, SceneContentType.Single),IsOverride);
+            //}
+            item.EditorCreateScenesEx(this.contentType);
+        }
+        ProgressBarHelper.ClearProgressBar();
+
+        SetBuildings();
+        SetSetting();
+
+        if (IsClearOtherScenes)
+        {
+            ClearOtherScenes();
+        }
+
+        WriteLog($"EditorSaveScenes count:{buildings.Length},\t time:{(DateTime.Now - start).ToString()}");
+    }
+
+    //[ContextMenu("EditorLoadScenes_Part")]
+    //public void EditorLoadScenes_Part()
+    //{
+    //    subScenes = GameObject.FindObjectsOfType<SubScene_Part>(true);
+    //    EditorLoadScenes(subScenes);
+    //}
+
+    //[ContextMenu("EditorLoadScenes")]
+    //public void EditorLoadScenes()
+    //{
+    //    subScenes = GetSubScenes();
+    //    EditorLoadScenes(subScenes);
+    //}
+
+    [ContextMenu("* EditorLoadScenes")]
+    public void EditorLoadScenes()
+    {
+        AreaTreeHelper.InitCubePrefab();
+
+        DateTime start = DateTime.Now;
+        var buildings = GameObject.FindObjectsOfType<BuildingModelInfo>();
+        for (int i = 0; i < buildings.Length; i++)
+        {
+            var item = buildings[i];
+            float progress = (float)i / buildings.Length;
+            float percents = progress * 100;
+
+            if (ProgressBarHelper.DisplayCancelableProgressBar("EditorSaveScenes", $"{item.name}\t{i}/{subScenes.Length} {percents}% of 100%", progress))
+            {
+                //ProgressBarHelper.ClearProgressBar();
+                break;
+            }
+
+            //if (IsPartScene)
+            //{
+            //    string dir = GetSceneDir(SceneContentType.Part);
+            //    item.EditorCreatePartScenes(dir, IsOverride);
+            //}
+            //else
+            //{
+            //    SubSceneHelper.EditorCreateScene<SubScene_Single>(item.gameObject, GetScenePath(item.name, SceneContentType.Single),IsOverride);
+            //}
+            item.EditorLoadScenesEx(this.contentType);
+        }
+        ProgressBarHelper.ClearProgressBar();
+
+        SetBuildings();
+        SetSetting();
+
+        if (IsClearOtherScenes)
+        {
+            ClearOtherScenes();
+        }
+
+        WriteLog($"EditorSaveScenes count:{buildings.Length},\t time:{(DateTime.Now - start).ToString()}");
+    }
+
+    public static void EditorLoadScenes<T>(T[] scenes) where T : SubScene_Base
+    {
+        DateTime start = DateTime.Now;
+        for (int i = 0; i < scenes.Length; i++)
+        {
+            SubScene_Base item = scenes[i];
+            float progress = (float)i / scenes.Length;
+            float percents = progress * 100;
+
+            if (ProgressBarHelper.DisplayCancelableProgressBar("EditorLoadScenes", $"{item.GetSceneName()}\t{i}/{scenes.Length} {percents}% of 100%", progress))
+            {
+                //ProgressBarHelper.ClearProgressBar();
+                break;
+            }
+            item.EditorLoadScene();
+        }
+
+        ProgressBarHelper.ClearProgressBar();
+
+        Debug.LogError($"EditorLoadScenes count:{scenes.Length},\t time:{(DateTime.Now - start).ToString()}");
+    }
+
+    [ContextMenu("EditorSaveScenes")]
+    public void EditorSaveScenes()
+    {
+        DateTime start = DateTime.Now;
+        subScenes = GetSubScenes();
+        for (int i = 0; i < subScenes.Length; i++)
+        {
+            SubScene_Base item = subScenes[i];
+            float progress = (float)i / subScenes.Length;
+            float percents = progress * 100;
+
+            if (ProgressBarHelper.DisplayCancelableProgressBar("EditorSaveScenes", $"{item.GetSceneName()}\t{i}/{subScenes.Length} {percents}% of 100%", progress))
+            {
+                //ProgressBarHelper.ClearProgressBar();
+                break;
+            }
+            item.EditorSaveScene();
+        }
+        ProgressBarHelper.ClearProgressBar();
+
+        ClearOtherScenes();
+
+        WriteLog($"EditorSaveScenes count:{subScenes.Length},\t time:{(DateTime.Now - start).ToString()}");
+    }
+
+    
+
+    public void SetBuildings()
+    {
+        if (contentType == SceneContentType.Part)
+        {
+            SetBuildings_Parts();
+        }
+        else
+        {
+            SetBuildings_Single();
+        }
+    }
+
+
+    [ContextMenu("SetBuildings_Single")]
+    public void SetBuildings_Single()
+    {
+        subScenes = GameObject.FindObjectsOfType<SubScene_Single>(true);
+        SetBuildings(subScenes);
+    }
+
+    [ContextMenu("SetBuildings_Parts")]
+    public void SetBuildings_Parts()
+    {
+        subScenes = GameObject.FindObjectsOfType<SubScene_Part>(true);
+        SetBuildings(subScenes);
+    }
+
+    [ContextMenu("SetBuildings_All")]
+    public void SetBuildings_All()
+    {
+        subScenes = GameObject.FindObjectsOfType<SubScene_Base>(true);
+        SetBuildings(subScenes);
+    }
+
+    public static void SetBuildings<T>(T[] scenes) where T : SubScene_Base
+    {
+        Debug.Log($"scenes:{scenes.Length}");
+        EditorBuildSettingsScene[] buildingScenes = new EditorBuildSettingsScene[scenes.Length + 1];
+        buildingScenes[0] = new EditorBuildSettingsScene(EditorSceneManager.GetActiveScene().path, true);
+        for (int i = 0; i < scenes.Length; i++)
+        {
+            T item = scenes[i];
+            string path = item.sceneArg.GetRalativePath();
+            Debug.Log("path:" + path);
+            buildingScenes[i + 1] = new EditorBuildSettingsScene(path, true);
+        }
+        EditorBuildSettings.scenes = buildingScenes;
+
+        Debug.Log("SetBuildings:" + scenes.Length);
+    }
+
+    //[ContextMenu("TestCreateDir")]
+    //public void TestCreateDir()
+    //{
+
+    //    EditorHelper.CreateDir(RootDir, SceneDir);
+
+    //}
+
+    //public int Count = 1;
+
+    //[ContextMenu("TestCreateScene")]
+    //public void TestCreateScene()
+    //{
+    //    string scenePath = GetScenePath(SceneName);
+    //    List<GameObject> newGos = new List<GameObject>();
+    //    for (int i = 0; i<Count;i++)
+    //    {
+    //        newGos.Add(new GameObject($"go_{Count}_{i}"));
+    //    }
+    //    Count++;
+    //    EditorHelper.CreateScene( scenePath, IsOverride, newGos.ToArray());
+    //}
+
+    //[ContextMenu("TestCloseScene")]
+    //public void TestCloseScene()
+    //{
+    //    string scenePath = GetScenePath(SceneName);
+
+    //    Scene scene = UnityEditor.SceneManagement.EditorSceneManager.GetSceneByPath(scenePath);
+    //    Debug.Log("scene IsValid:" + scene.IsValid());
+    //    if (scene.IsValid() == true)//打开
+    //    {
+    //        bool r=UnityEditor.SceneManagement.EditorSceneManager.CloseScene(scene, true);//关闭场景，不关闭无法覆盖
+    //        Debug.Log("r:" + r);
+
+    //    }
+    //}
+
+    public Scene newScene;
+
+    public string ScenePath;
+
+    //public SubScene_Single subScene;
+
+    //[ContextMenu("TestSaveGos")]
+    //public void TestSaveGos()
+    //{
+    //    //string scenePath = GetScenePath(SceneName);
+    //    newScene= CreateScene(gos.ToArray());
+    //}
+
+    //[ContextMenu("TestSubScene")]
+    //public void TestSubScene()
+    //{
+    //    if (root)
+    //    {
+    //        SubScene ss=root.AddComponent<SubScene>();
+    //        ss.Init();
+    //        string path = GetScenePath(root.name);
+    //        ss.SaveChildrenToScene(path, IsOverride);
+    //    }
+    //}
+
+    //[ContextMenu("LoadAllScenes")]
+    //public void LoadAllScenes()
+    //{
+    //    if (root)
+    //    {
+    //        SubScene_Single ss = root.AddComponent<SubScene_Single>();
+    //        ss.Init();
+    //        string path = GetScenePath(root.name);
+    //        ss.SaveChildrenToScene(path, IsOverride);
+    //    }
+    //}
+
+    [ContextMenu("ClearOtherScenes")]
+    public void ClearOtherScenes()
+    {
+        EditorHelper.ClearOtherScenes();
+    }
+
+    public bool IsOpenSubScene = false;
+
+    public Scene CreateScene(params GameObject[] objs)
+    {
+        ScenePath = GetScenePath(SceneName, SceneContentType.Single);
+        return EditorHelper.CreateScene(ScenePath, IsOverride, IsOpenSubScene, objs);
+    }
+
+    //public Scene CreateScene(string sceneName,params GameObject[] objs)
+    //{
+    //    string scenePath = GetScenePath(sceneName);
+    //    return EditorHelper.CreateScene(scenePath, IsOverride, objs);
+    //}
+
+#endif
+
 
     [ContextMenu("AutoLoadScenes")]
     public void AutoLoadScenes()
@@ -379,7 +681,7 @@ public class SubSceneManager : MonoBehaviour
     public SubScene_Base[] GetSubScenes()
     {
         List<SubScene_Base> scenes = new List<SubScene_Base>();
-        if (IsPartScene)
+        if (contentType==SceneContentType.Part)
         {
             var ss = GameObject.FindObjectsOfType<SubScene_Part>(true);
             foreach(var s in ss)
@@ -406,259 +708,7 @@ public class SubSceneManager : MonoBehaviour
         }
     }
 
-#if UNITY_EDITOR
 
-
-    [ContextMenu("EditorLoadScenes_Part")]
-    public void EditorLoadScenes_Part()
-    {
-        subScenes = GameObject.FindObjectsOfType<SubScene_Part>(true);
-        EditorLoadScenes(subScenes);
-    }
-
-    [ContextMenu("EditorLoadScenes")]
-    public void EditorLoadScenes()
-    {
-        subScenes = GetSubScenes();
-        EditorLoadScenes(subScenes);
-    }
-
-    public static void EditorLoadScenes<T>(T[] scenes) where T :SubScene_Base
-    {
-        DateTime start = DateTime.Now;
-        for (int i = 0; i < scenes.Length; i++)
-        {
-            SubScene_Base item = scenes[i];
-            float progress = (float)i / scenes.Length;
-            float percents = progress * 100;
-
-            if (ProgressBarHelper.DisplayCancelableProgressBar("EditorLoadScenes", $"{item.GetSceneName()}\t{i}/{scenes.Length} {percents}% of 100%", progress))
-            {
-                //ProgressBarHelper.ClearProgressBar();
-                break;
-            }
-            item.EditorLoadScene();
-        }
-
-        ProgressBarHelper.ClearProgressBar();
-
-        Debug.LogError($"EditorLoadScenes count:{scenes.Length},\t time:{(DateTime.Now - start).ToString()}");
-    }
-
-    [ContextMenu("EditorSaveScenes")]
-    public void EditorSaveScenes()
-    {
-        DateTime start = DateTime.Now;
-        subScenes = GetSubScenes();
-        for (int i = 0; i < subScenes.Length; i++)
-        {
-            SubScene_Base item = subScenes[i];
-            float progress = (float)i / subScenes.Length;
-            float percents = progress * 100;
-
-            if (ProgressBarHelper.DisplayCancelableProgressBar("EditorSaveScenes", $"{item.GetSceneName()}\t{i}/{subScenes.Length} {percents}% of 100%", progress))
-            {
-                //ProgressBarHelper.ClearProgressBar();
-                break;
-            }
-            item.EditorSaveScene();
-        }
-        ProgressBarHelper.ClearProgressBar();
-
-        ClearOtherScenes();
-
-        WriteLog($"EditorSaveScenes count:{subScenes.Length},\t time:{(DateTime.Now - start).ToString()}");
-    }
-
-    [ContextMenu("EditorCreateBuildingScenes")]
-    private void EditorCreateBuildingScenes()
-    {
-        AreaTreeHelper.InitCubePrefab();
-
-        DateTime start = DateTime.Now;
-        var buildings = GameObject.FindObjectsOfType<BuildingModelInfo>();
-        for (int i = 0; i < buildings.Length; i++)
-        {
-            var item = buildings[i];
-            float progress = (float)i / buildings.Length;
-            float percents = progress * 100;
-
-            if (ProgressBarHelper.DisplayCancelableProgressBar("EditorSaveScenes", $"{item.name}\t{i}/{subScenes.Length} {percents}% of 100%", progress))
-            {
-                //ProgressBarHelper.ClearProgressBar();
-                break;
-            }
-
-            if (IsPartScene)
-            {
-                string dir = GetSceneDir(SceneContentType.Part);
-                item.EditorCreatePartScenes(dir, IsOverride);
-            }
-            else
-            {
-                SubSceneHelper.EditorCreateScene<SubScene_Single>(item.gameObject, GetScenePath(item.name, SceneContentType.Single),IsOverride);
-            }
-        }
-        ProgressBarHelper.ClearProgressBar();
-
-        SetBuildings();
-        SetSetting();
-
-        if (IsClearOtherScenes)
-        {
-            ClearOtherScenes();
-        }
-
-        WriteLog($"EditorSaveScenes count:{buildings.Length},\t time:{(DateTime.Now - start).ToString()}");
-    }
-
-    public void SetBuildings()
-    {
-        if (IsPartScene)
-        {
-            SetBuildings_Parts();
-        }
-        else
-        {
-            SetBuildings_Single();
-        }
-    }
-
-
-    [ContextMenu("SetBuildings_Single")]
-    public void SetBuildings_Single()
-    {
-        subScenes = GameObject.FindObjectsOfType<SubScene_Single>(true);
-        SetBuildings(subScenes);
-    }
-
-    [ContextMenu("SetBuildings_Parts")]
-    public void SetBuildings_Parts()
-    {
-        subScenes = GameObject.FindObjectsOfType<SubScene_Part>(true);
-        SetBuildings(subScenes);
-    }
-
-    [ContextMenu("SetBuildings_All")]
-    public void SetBuildings_All()
-    {
-        subScenes = GameObject.FindObjectsOfType<SubScene_Base>(true);
-        SetBuildings(subScenes);
-    }
-
-    public static void SetBuildings<T>(T[] scenes) where T: SubScene_Base
-    {
-        Debug.Log($"scenes:{scenes.Length}");
-        EditorBuildSettingsScene[] buildingScenes = new EditorBuildSettingsScene[scenes.Length + 1];
-        buildingScenes[0] = new EditorBuildSettingsScene(EditorSceneManager.GetActiveScene().path, true);
-        for (int i = 0; i < scenes.Length; i++)
-        {
-            T item = scenes[i];
-            string path = item.sceneArg.GetRalativePath();
-            Debug.Log("path:" + path);
-            buildingScenes[i + 1] = new EditorBuildSettingsScene(path, true);
-        }
-        EditorBuildSettings.scenes = buildingScenes;
-
-        Debug.Log("SetBuildings:"+scenes.Length);
-    }
-
-    //[ContextMenu("TestCreateDir")]
-    //public void TestCreateDir()
-    //{
-
-    //    EditorHelper.CreateDir(RootDir, SceneDir);
-
-    //}
-
-    //public int Count = 1;
-
-    //[ContextMenu("TestCreateScene")]
-    //public void TestCreateScene()
-    //{
-    //    string scenePath = GetScenePath(SceneName);
-    //    List<GameObject> newGos = new List<GameObject>();
-    //    for (int i = 0; i<Count;i++)
-    //    {
-    //        newGos.Add(new GameObject($"go_{Count}_{i}"));
-    //    }
-    //    Count++;
-    //    EditorHelper.CreateScene( scenePath, IsOverride, newGos.ToArray());
-    //}
-
-    //[ContextMenu("TestCloseScene")]
-    //public void TestCloseScene()
-    //{
-    //    string scenePath = GetScenePath(SceneName);
-
-    //    Scene scene = UnityEditor.SceneManagement.EditorSceneManager.GetSceneByPath(scenePath);
-    //    Debug.Log("scene IsValid:" + scene.IsValid());
-    //    if (scene.IsValid() == true)//打开
-    //    {
-    //        bool r=UnityEditor.SceneManagement.EditorSceneManager.CloseScene(scene, true);//关闭场景，不关闭无法覆盖
-    //        Debug.Log("r:" + r);
-
-    //    }
-    //}
-
-    public Scene newScene;
-
-    public string ScenePath;
-
-    //public SubScene_Single subScene;
-
-    //[ContextMenu("TestSaveGos")]
-    //public void TestSaveGos()
-    //{
-    //    //string scenePath = GetScenePath(SceneName);
-    //    newScene= CreateScene(gos.ToArray());
-    //}
-
-    //[ContextMenu("TestSubScene")]
-    //public void TestSubScene()
-    //{
-    //    if (root)
-    //    {
-    //        SubScene ss=root.AddComponent<SubScene>();
-    //        ss.Init();
-    //        string path = GetScenePath(root.name);
-    //        ss.SaveChildrenToScene(path, IsOverride);
-    //    }
-    //}
-
-    //[ContextMenu("LoadAllScenes")]
-    //public void LoadAllScenes()
-    //{
-    //    if (root)
-    //    {
-    //        SubScene_Single ss = root.AddComponent<SubScene_Single>();
-    //        ss.Init();
-    //        string path = GetScenePath(root.name);
-    //        ss.SaveChildrenToScene(path, IsOverride);
-    //    }
-    //}
-
-    [ContextMenu("ClearOtherScenes")]
-    public void ClearOtherScenes()
-    {
-        EditorHelper.ClearOtherScenes();
-    }
-
-    public bool IsOpenSubScene = false;
-
-    public Scene CreateScene(params GameObject[] objs)
-    {
-        ScenePath = GetScenePath(SceneName, SceneContentType.Single);
-        return EditorHelper.CreateScene(ScenePath, IsOverride, IsOpenSubScene, objs);
-    }
-
-    //public Scene CreateScene(string sceneName,params GameObject[] objs)
-    //{
-    //    string scenePath = GetScenePath(sceneName);
-    //    return EditorHelper.CreateScene(scenePath, IsOverride, objs);
-    //}
-
-#endif
 
 
     public string Log = "";
