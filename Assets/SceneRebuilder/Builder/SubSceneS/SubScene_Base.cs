@@ -475,13 +475,17 @@ public class SubScene_Base : MonoBehaviour
     {
         if (gos.Count == 0)
         {
-            var renderers = this.GetComponentsInChildren<MeshRenderer>(true);
-            InitRenderersInfo(renderers);
+            Debug.LogError("SubScene.Init gos.Count == 0:"+this.name);
         }
-        else
+        //if (gos.Count == 0)
+        //{
+        //    var renderers = this.GetComponentsInChildren<MeshRenderer>(true);
+        //    InitRenderersInfo(renderers);
+        //}
+        //else
         {
             List<MeshRenderer> renderers = new List<MeshRenderer>();
-            foreach(var go in gos)
+            foreach (var go in gos)
             {
                 if (go == null) continue;
                 renderers.AddRange(go.GetComponentsInChildren<MeshRenderer>(true));

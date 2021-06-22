@@ -25,7 +25,7 @@ public class RendererManager : MonoBehaviour
             if (id == null)
             {
                 id = r.gameObject.AddComponent<RendererId>();
-                id.Init();
+                id.Init(r);
             }
             allIds.Add(id);
         }

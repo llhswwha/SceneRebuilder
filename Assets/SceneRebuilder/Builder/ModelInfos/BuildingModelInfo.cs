@@ -735,18 +735,26 @@ public class BuildingModelInfo : MonoBehaviour
     [ContextMenu("EditorLoadScenes")]
     public void EditorLoadScenes()
     {
+        DateTime start = DateTime.Now;
+
         EditorLoadScenes(contentType);
         this.InitInOut(false);
         //SceneState = "EditLoadScenes_Part";
         LoadTreeRenderers();
+
+        Debug.LogError($"EditorLoadScenes time:{(DateTime.Now - start)}");
     }
 
     [ContextMenu("EditorLoadScenes_TreeWithPart")]
     public void EditorLoadScenes_TreeWithPart()
     {
+        DateTime start = DateTime.Now;
+
         EditorLoadScenes(SceneContentType.Tree);
         EditorLoadScenes(SceneContentType.Part);
         LoadTreeRenderers();
+
+        Debug.LogError($"EditorLoadScenes_TreeWithPart time:{(DateTime.Now - start)}");
     }
 
     public void EditorLoadScenes(SceneContentType ct)
@@ -876,17 +884,25 @@ public class BuildingModelInfo : MonoBehaviour
     [ContextMenu("* EditorCreateScenes")]
     public void EditorCreateScenes()
     {
+        DateTime start = DateTime.Now;
+
         SaveTreeRendersId();
+
+        DestroyOldPartScenes();
 
         CreatePartScene(contentType);
 
         SubSceneManager.Instance.ClearOtherScenes();
         EditorMoveScenes();
+
+        Debug.LogError($"EditorCreateScenes time:{(DateTime.Now - start)}");
     }
 
     [ContextMenu("* EditorCreateScenes_TreeWithPart")]
     public void EditorCreateScenes_TreeWithPart()
     {
+        DateTime start = DateTime.Now;
+
         SaveTreeRendersId();
 
         DestroyOldPartScenes();
@@ -896,6 +912,8 @@ public class BuildingModelInfo : MonoBehaviour
 
         SubSceneManager.Instance.ClearOtherScenes();
         EditorMoveScenes();
+
+        Debug.LogError($"EditorCreateScenes_TreeWithPart time:{(DateTime.Now - start)}");
     }
 
     public void CreatePartScene(SceneContentType contentType)

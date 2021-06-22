@@ -63,7 +63,7 @@ public static class EditorHelper
             }
             EditorSceneManager.CloseScene(scene, true);
 
-            RendererDictionay.InitRenderers(objs);
+            IdDictionay.InitRenderers(objs);
         }
         return objs;
     }
@@ -365,7 +365,7 @@ public static class EditorHelper
         {
             if (UnityEditorInternal.ComponentUtility.PasteComponentValues(oldComponent))
             {
-                Debug.Log("Paste Values " + newComponent.GetType().ToString() + " Success");
+                //Debug.Log("Paste Values " + newComponent.GetType().ToString() + " Success");
             }
             else
             {
@@ -376,7 +376,7 @@ public static class EditorHelper
         {
             if (UnityEditorInternal.ComponentUtility.PasteComponentAsNew(targetObject))
             {
-                Debug.Log("Paste New Values " + newComponent.GetType().ToString() + " Success");
+                //Debug.Log("Paste New Values " + newComponent.GetType().ToString() + " Success");
             }
             else
             {
@@ -507,7 +507,7 @@ public static class EditorHelper
             }
             //EditorSceneManager.CloseScene(scene, true);
 
-            RendererDictionay.InitRenderers(objs);
+            IdDictionay.InitRenderers(objs);
         }
         return objs;
     }

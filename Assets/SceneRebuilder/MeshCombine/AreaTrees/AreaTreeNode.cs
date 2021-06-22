@@ -17,19 +17,19 @@ public class AreaTreeNode : MonoBehaviour
 
     public List<MeshRenderer> Renderers=new List<MeshRenderer>();
 
-    public List<int> RenderersId = new List<int>();
+    public List<string> RenderersId = new List<string>();
 
     public MeshRenderer[] CombinedRenderers;
 
     private List<Transform> RendererParents = new List<Transform>();
 
     private List<MeshRenderer> newRenderers = new List<MeshRenderer>();
-    public List<int> newRenderersId = new List<int>();
+    public List<string> newRenderersId = new List<string>();
 
     [ContextMenu("InitRenderersDict")]
     public void InitRenderersDict()
     {
-        RendererDictionay.InitRenderers();
+        IdDictionay.InitInfos();
     }
 
     [ContextMenu("SaveRenderersId")]
@@ -38,20 +38,24 @@ public class AreaTreeNode : MonoBehaviour
         RenderersId.Clear();
         foreach (var renderer in Renderers)
         {
-            RenderersId.Add(renderer.GetInstanceID());
+            if (renderer == null) continue;
+            var id = RendererId.GetId(renderer);
+            RenderersId.Add(id.Id);
         }
         newRenderersId.Clear();
         foreach (var renderer in newRenderers)
         {
-            newRenderersId.Add(renderer.GetInstanceID());
+            if (renderer == null) continue;
+            var id = RendererId.GetId(renderer);
+            newRenderersId.Add(id.Id);
         }
     }
 
     [ContextMenu("LoadRenderers")]
     public void LoadRenderers()
     {
-        Renderers = RendererDictionay.GetRenderers(RenderersId);
-        newRenderers = RendererDictionay.GetRenderers(newRenderersId);
+        Renderers = IdDictionay.GetRenderers(RenderersId);
+        newRenderers = IdDictionay.GetRenderers(newRenderersId);
     }
 
     public List<Collider> colliders = new List<Collider>();
