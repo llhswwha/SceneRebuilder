@@ -120,6 +120,7 @@ public class CombinedMesh{
         for(int i=0;i<count;i++)
         {
             MeshFilter mf=meshFilters[i];
+            if (mf.sharedMesh == null) continue;
             Mesh ms=mf.sharedMesh;
             //Debug.Log(string.Format("DoCombine[{0}/{1}]:{2}",i,count,VertexCount));
             int vc=ms.vertexCount;

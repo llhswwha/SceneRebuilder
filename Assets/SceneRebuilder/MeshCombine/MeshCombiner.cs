@@ -46,12 +46,17 @@ public class MeshCombiner : MonoBehaviour
 
     public MeshCombinerSetting GetSetting()
     {
+        if (Setting == null)
+        {
+            Setting = this.GetComponent<MeshCombinerSetting>();
+        }
         if(Setting==null){
             Setting=MeshCombinerSetting.Instance;
         }
         if(Setting==null){
             Setting=this.gameObject.AddComponent<MeshCombinerSetting>();
         }
+        Setting.SetSetting();
         return Setting;
     }
 
@@ -61,6 +66,8 @@ public class MeshCombiner : MonoBehaviour
     [ContextMenu("Combine")]
 
     public void Combine(){
+        GetSetting();
+        sourceList.Clear();
         CombineEx(2);
     }
 
@@ -177,6 +184,8 @@ public class MeshCombiner : MonoBehaviour
     [ContextMenu("CombineByMaterial")]
 
     public void CombineByMaterial(){
+        GetSetting();
+        sourceList.Clear();
         CombineEx(1);
     }
 
@@ -184,6 +193,8 @@ public class MeshCombiner : MonoBehaviour
     [ContextMenu("CombineEx")]
 
     public void CombineEx(){
+        GetSetting();
+        sourceList.Clear();
         CombineEx(0);
     }
 

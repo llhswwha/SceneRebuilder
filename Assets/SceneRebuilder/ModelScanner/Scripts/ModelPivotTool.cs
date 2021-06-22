@@ -85,9 +85,14 @@ public class ModelPivotTool : MonoBehaviour
         if(!string.IsNullOrEmpty(path)){
             PrefabUtility.UnpackPrefabInstance(obj,PrefabUnpackMode.OutermostRoot,InteractionMode.UserAction);
         }
-        
+
 
         // PrefabUtility.SaveAsPrefabAsset(obj, "Assets/Editor/Prefabs/parent.prefab");
+        var renderers = obj.GetComponentsInChildren<MeshRenderer>(true);
+        foreach(var render in renderers)
+        {
+            render.enabled = true;
+        }
 
         var ps = ColliderHelper.GetBoundsMaxMinPoints(obj);
         var center = (ps[0] + ps[1]) / 2;
@@ -100,7 +105,9 @@ public class ModelPivotTool : MonoBehaviour
         {
             item.parent = null;
         }
+        Debug.Log("position:" + obj.transform.position);
         obj.transform.position = center;
+        Debug.Log("center:" + center);
         foreach (var item in items)
         {
             item.parent = obj.transform;
