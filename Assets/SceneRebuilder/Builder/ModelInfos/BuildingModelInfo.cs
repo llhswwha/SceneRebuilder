@@ -8,14 +8,30 @@ using UnityEditor;
 #endif
 public class BuildingModelInfo : MonoBehaviour
 {
+
+    public int GetTreeCount()
+    {
+        if (trees == null) return 0;
+        int i = 0;
+        foreach(var t in trees)
+        {
+            if (t != null)
+            {
+                i++;
+            }
+        }
+        return i;
+    }
     public string GetInfoName()
     {
+        var tc = GetTreeCount();
         if (SceneList != null)
         {
-            if (trees != null && trees.Length > 0)
+            
+            if (tc > 0)
             {
                 //return "Model(S)(T)";
-                return $"Model(S{SceneList.sceneCount})(T{trees.Length})";
+                return $"Model(S{SceneList.sceneCount})(T{tc})";
             }
             else
             {
@@ -25,10 +41,10 @@ public class BuildingModelInfo : MonoBehaviour
         }
         else
         {
-            if (trees != null && trees.Length > 0)
+            if (tc > 0)
             {
                 //return "Model(T)";
-                return $"Model(T{trees.Length})";
+                return $"Model(T{tc})";
             }
         }
         
@@ -58,6 +74,12 @@ public class BuildingModelInfo : MonoBehaviour
         {
             GameObject.DestroyImmediate(oldT.gameObject);
         }
+    }
+
+    [ContextMenu("GetTrees")]
+    public void GetTrees()
+    {
+        trees = this.GetComponentsInChildren<ModelAreaTree>(true);
     }
 
     //[ContextMenu("* CreateTrees")]
@@ -569,12 +591,25 @@ public class BuildingModelInfo : MonoBehaviour
 
     private void DestroyOldPartScenes()
     {
-        var components = this.GetComponentsInChildren<SubScene_Base>();//In Out0 Out1
-        foreach (var c in components)
+        Debug.LogError("DestroyOldPartScenes");
+        if (SceneList == null)
         {
-            //if (c.contentType == contentType)
-                GameObject.DestroyImmediate(c);//重新创建，把之前的删除
+            SceneList = this.GetComponentInChildren<SubScene_List>();
         }
+        if (SceneList != null)
+        {
+            SceneList.Clear();
+        }
+        else
+        {
+            var components = this.GetComponentsInChildren<SubScene_Base>();//In Out0 Out1
+            foreach (var c in components)
+            {
+                //if (c.contentType == contentType)
+                GameObject.DestroyImmediate(c);//重新创建，把之前的删除
+            }
+        }
+
     }
 
     //public void DestroyOldBounds()
@@ -678,6 +713,8 @@ public class BuildingModelInfo : MonoBehaviour
     [ContextMenu("EditorLoadScenes_TreeWithPart")]
     public void EditorLoadScenes_TreeWithPart()
     {
+        DestroyOldPartScenes();
+
         EditorLoadScenes(SceneContentType.Tree);
 
         EditorLoadScenes(SceneContentType.Part);

@@ -232,6 +232,15 @@ public class BuildingModelManager : MonoBehaviour
         }
     }
 
+    [ContextMenu("GetTrees")]
+    public void GetTrees()
+    {
+        foreach (var b in Buildings)
+        {
+            b.GetTrees();
+        }
+    }
+
     [ContextMenu("EditorMoveScenes")]
     public void EditorMoveScenes()
     {

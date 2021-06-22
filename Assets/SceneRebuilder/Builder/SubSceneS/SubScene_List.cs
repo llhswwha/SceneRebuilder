@@ -7,10 +7,12 @@ public class SubScene_List : MonoBehaviour
 {
     public int sceneCount;
 
+    public SubScene_Base[] scenes;
+
     [ContextMenu("Init")]
     public void Init()
     {
-        var scenes = gameObject.GetComponentsInChildren<SubScene_Base>();
+        scenes = gameObject.GetComponentsInChildren<SubScene_Base>(true);
         sceneCount = scenes.Length;
     }
 
@@ -21,6 +23,16 @@ public class SubScene_List : MonoBehaviour
         subSceneGo.transform.SetParent(this.transform);
 
         EditorHelper.CopyComponent(subSceneGo, scene);
-        sceneCount++;
+        Init();
+    }
+
+    [ContextMenu("Clear")]
+    internal void Clear()
+    {
+        scenes = gameObject.GetComponentsInChildren<SubScene_Base>(true);
+        foreach(var scene in scenes)
+        {
+            GameObject.DestroyImmediate(scene.gameObject);
+        }
     }
 }
