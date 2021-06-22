@@ -30,6 +30,10 @@ public class SubSceneEditorInitializer
         GUI.Label(r, text, style);
     }
 
+    public static float Layer1Width = 100;
+    public static float Layer2Width = 65;
+    public static float Layer3Width = 45;
+
     private static void hierarchyOnGUI(int instancedId,Rect selectionRect)
     {
         //EditorUtility.Hi
@@ -39,13 +43,13 @@ public class SubSceneEditorInitializer
         {
             if (go.GetComponent<SubScene_List>() != null)
             {
-                CreateLabel("[SceneList]", selectionRect, 65, new Color(1, 0.5f, 0.5f), Color.blue);
+                CreateLabel("[SceneList]", selectionRect, Layer2Width, new Color(1, 0.5f, 0.5f), Color.blue);
             }
             else if (go.GetComponent<SubScene_Base>()!=null)
             {
                 SubScene_Base scene = go.GetComponent<SubScene_Base>();
                 bool isLoaded = scene.HaveGos();
-                Rect r = CreateRect(selectionRect, 45);
+                Rect r = CreateRect(selectionRect, Layer3Width);
 
                 var style = new GUIStyle();
                 if (isLoaded)
@@ -63,64 +67,65 @@ public class SubSceneEditorInitializer
             }
             else if (go.GetComponent<ModelAreaTree>() != null)
             {
-                CreateLabel("[ModelTree]", selectionRect, 65, Color.green, Color.blue);
+                CreateLabel("[ModelTree]", selectionRect, Layer2Width, Color.green, Color.blue);
             }
             else if (go.GetComponent<AreaTreeNode>() != null)
             {
-                CreateLabel("[TreeNode]", selectionRect, 65, new Color(0, 0.5f, 1), Color.red);
+                CreateLabel("[TreeNode]", selectionRect, Layer2Width, new Color(0, 0.5f, 1), Color.red);
             }
             else if (go.GetComponent<BuildingModelInfoList>() != null)
             {
                 if (go.GetComponent<BuildingController>() != null)
                 {
-                    CreateLabel("[Models][Building]", selectionRect, 90, new Color(0.9f, 0.3f, 0.3f), Color.red);
+                    CreateLabel("[Models][Building]", selectionRect, Layer1Width, new Color(0.9f, 0.3f, 0.3f), Color.red);
                 }
                 else
                 {
-                    CreateLabel("[Models]", selectionRect, 90, new Color(0.9f, 0.3f, 1), Color.red);
+                    CreateLabel("[Models]", selectionRect, Layer1Width, new Color(0.9f, 0.3f, 1), Color.red);
                 }
             }
 
             else if (go.GetComponent<BuildingModelInfo>() != null)
             {
+                BuildingModelInfo modelInfo = go.GetComponent<BuildingModelInfo>();
                 if (go.GetComponent<BuildingController>() != null)
                 {
-                    CreateLabel("[Model][Building]", selectionRect, 90, new Color(1, 0.5f, 0.5f), Color.red);
+                    CreateLabel($"[{modelInfo.GetInfoName()}][Building]", selectionRect, Layer1Width, new Color(1, 0.5f, 0.5f), Color.red);
                 }
                 else if (go.GetComponent<FloorController>() != null)
                 {
-                    CreateLabel("[Model][Floor]", selectionRect, 90, new Color(1, 0.7f, 0.3f), Color.red);
+                    CreateLabel($"[{modelInfo.GetInfoName()}][Floor]", selectionRect, Layer1Width, new Color(1, 0.7f, 0.3f), Color.red);
                 }
                 else
                 {
-                    CreateLabel("[Model]", selectionRect, 90, new Color(1, 0.5f, 1), Color.red);
+                    CreateLabel($"[{modelInfo.GetInfoName()}]", selectionRect, Layer1Width, new Color(1, 0.5f, 1), Color.red);
                 }
             }
             else if (go.GetComponent<BuildingController>() != null)
             {
-                CreateLabel("[Building]", selectionRect, 90, new Color(0.4f, 0.5f, 1), Color.red);
+                CreateLabel("[Building]", selectionRect, Layer1Width, new Color(0.4f, 0.5f, 1), Color.red);
             }
             else if (go.GetComponent<FloorController>() != null)
             {
-                CreateLabel("[Floor]", selectionRect, 65, new Color(0.6f, 0.5f, 0.8f), Color.red);
+                CreateLabel("[Floor]", selectionRect, Layer2Width, new Color(0.6f, 0.5f, 0.8f), Color.red);
             }
             else if (go.GetComponent<Camera>() != null)
             {
-                CreateLabel("[Camera]", selectionRect, 65, Color.gray, Color.red);
+                CreateLabel("[Camera]", selectionRect, Layer2Width, Color.gray, Color.red);
             }
             else if (go.GetComponent<Light>() != null)
             {
-                CreateLabel("[Light]", selectionRect, 65, Color.gray, Color.red);
+                CreateLabel("[Light]", selectionRect, Layer2Width, Color.gray, Color.red);
             }
             else if (go.GetComponent<Canvas>() != null)
             {
-                CreateLabel("[Canvas]", selectionRect, 65, Color.gray, Color.red);
+                CreateLabel("[Canvas]", selectionRect, Layer2Width, Color.gray, Color.red);
             }
             else
             {
                 if(go.name=="In" || go.name == "Out1" || go.name == "Out0")
                 {
-                    CreateLabel("[Part]", selectionRect, 65, Color.cyan, Color.red);
+                    CreateLabel("[Part]", selectionRect, Layer2Width, Color.cyan, Color.red);
                 }
             }
         }

@@ -8,6 +8,30 @@ using UnityEditor;
 #endif
 public class BuildingModelInfo : MonoBehaviour
 {
+    public string GetInfoName()
+    {
+        if (SceneList != null)
+        {
+            if (trees != null && trees.Length > 0)
+            {
+                return "Model(S)(T)";
+            }
+            else
+            {
+                return "Model(S)";
+            }
+        }
+        else
+        {
+            if (trees != null && trees.Length > 0)
+            {
+                return "Model(T)";
+            }
+        }
+        
+        return "Model";
+    }
+
     public GameObject InPart;
 
     public GameObject OutPart0;
@@ -197,11 +221,13 @@ public class BuildingModelInfo : MonoBehaviour
     }
 
 
+    public ModelAreaTree[] trees;
+
     [ContextMenu("* CreateTreesEx")]
     public void CreateTreesEx()
     {
         AreaTreeManager treeManager = GameObject.FindObjectOfType<AreaTreeManager>();
-        var trees = CreateTreesInnerEx(false);
+        trees = CreateTreesInnerEx(false);
         if (treeManager)
         {
             treeManager.AddTrees(trees);
@@ -212,7 +238,7 @@ public class BuildingModelInfo : MonoBehaviour
     public void CreateTreesBSEx()
     {
         AreaTreeManager treeManager = GameObject.FindObjectOfType<AreaTreeManager>();
-        var trees = CreateTreesInnerEx(true);
+        trees = CreateTreesInnerEx(true);
         if (treeManager)
         {
             treeManager.AddTrees(trees);
@@ -223,7 +249,7 @@ public class BuildingModelInfo : MonoBehaviour
     public void CreateTrees()
     {
         AreaTreeManager treeManager = GameObject.FindObjectOfType<AreaTreeManager>();
-        var trees = CreateTreesInner();
+        trees = CreateTreesInner();
         if (treeManager)
         {
             treeManager.AddTrees(trees);
@@ -243,13 +269,13 @@ public class BuildingModelInfo : MonoBehaviour
         {
             return null;
         }
-        //var trees = CreateTreesInner();
+        //trees = CreateTreesInner();
         Debug.Log("CreateTrees_BigSmall");
         AreaTreeManager treeManager = GameObject.FindObjectOfType<AreaTreeManager>();
         if (treeManager)
         {
             treeManager.Target = this.OutPart0;
-            var trees= treeManager.CreateOne_BigSmall_Core(this.transform, this.OutPart0);
+            trees= treeManager.CreateOne_BigSmall_Core(this.transform, this.OutPart0);
             foreach(var tree in trees)
             {
                 if (tree == null) continue;
@@ -803,7 +829,7 @@ public class BuildingModelInfo : MonoBehaviour
 
         InitInOut(false);
 
-        var trees = this.GetComponentsInChildren<ModelAreaTree>(true);
+        trees = this.GetComponentsInChildren<ModelAreaTree>(true);
         if (InPart)
             CreatePartSceneEx(InPart, contentType,"_In_"+ contentType, trees, dir, isOverride, gameObject.AddComponent<SubScene_In>());
         if (OutPart0)
@@ -855,7 +881,7 @@ public class BuildingModelInfo : MonoBehaviour
 
         InitInOut(false);
 
-        var trees = this.GetComponentsInChildren<ModelAreaTree>(true);
+        trees = this.GetComponentsInChildren<ModelAreaTree>(true);
 
         if (InPart)
             CreatePartScene(InPart, "_In", trees, dir, isOverride, gameObject.AddComponent<SubScene_In>());

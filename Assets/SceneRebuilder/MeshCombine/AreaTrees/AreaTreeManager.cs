@@ -48,6 +48,7 @@ public class AreaTreeManager : MonoBehaviour
             }
         }
 
+
         if(prefabInstanceBuilder && prefabInstanceBuilder.TargetRoots==null){
             prefabInstanceBuilder.TargetRoots=Target;
         }
