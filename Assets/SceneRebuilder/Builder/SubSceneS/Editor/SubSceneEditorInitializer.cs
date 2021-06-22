@@ -14,7 +14,7 @@ public class SubSceneEditorInitializer
 
     public static Rect CreateRect(Rect selectionRect,float width)
     {
-        float width = 45;
+        //float width = 45;
         Rect r = new Rect(selectionRect);
         r.x = selectionRect.x + selectionRect.width - width;
         r.width = width;
