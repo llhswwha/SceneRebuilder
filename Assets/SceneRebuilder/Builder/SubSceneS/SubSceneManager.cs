@@ -99,7 +99,6 @@ public class SubSceneManager : MonoBehaviour
 
             if (ProgressBarHelper.DisplayCancelableProgressBar("EditorCreateBuildingScenes", $"Progress1 {i}/{count} {percents:F1}% {item.name}", progress))
             {
-                //ProgressBarHelper.ClearProgressBar();
                 break;
             }
 
@@ -293,7 +292,7 @@ public class SubSceneManager : MonoBehaviour
 
     public static void SetBuildings<T>(T[] scenes) where T : SubScene_Base
     {
-        Debug.Log($"scenes:{scenes.Length}");
+        Debug.Log($"SetBuildings scenes:{scenes.Length}");
         EditorBuildSettingsScene[] buildingScenes = new EditorBuildSettingsScene[scenes.Length + 1];
         buildingScenes[0] = new EditorBuildSettingsScene(EditorSceneManager.GetActiveScene().path, true);
         for (int i = 0; i < scenes.Length; i++)
@@ -305,7 +304,7 @@ public class SubSceneManager : MonoBehaviour
         }
         EditorBuildSettings.scenes = buildingScenes;
 
-        Debug.Log("SetBuildings:" + scenes.Length);
+        //Debug.Log("SetBuildings:" + scenes.Length);
     }
 
     //[ContextMenu("TestCreateDir")]

@@ -108,6 +108,30 @@ public static class SubSceneHelper
         }
 #endif
     }
+
+    public static void LinkScenes(SubScene_Base[] scenes)
+    {
+        int count = scenes.Length;
+        Debug.Log("LinkScenes:" + count);
+        for (int i = 0; i < count; i++)
+        {
+            SubScene_Base scene = scenes[i];
+            if (scene.LinkedScene == null)
+            {
+                for (int j = i + 1; j < count; j++)
+                {
+                    SubScene_Base scene2 = scenes[j];
+                    Debug.Log($"LinkScenes sceneType:{scene.GetType()} sceneType2:{scene2.GetType()} {scene.GetType() == scene2.GetType()}");
+                    if (scene.GetType() == scene2.GetType())
+                    {
+                        scene.LinkedScene = scene2;
+                        scene2.LinkedScene = scene;
+                        break;
+                    }
+                }
+            }
+        }
+    }
 }
 
 public enum SubSceneType

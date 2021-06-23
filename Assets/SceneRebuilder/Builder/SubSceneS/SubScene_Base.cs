@@ -11,7 +11,7 @@ using UnityEditor.SceneManagement;
 
 public class SubScene_Base : MonoBehaviour
 {
-    public int PreviewSceneId;//这个应该会一直存在主场景中，用InstanceId好了。
+    public SubScene_Base LinkedScene;//这个应该会一直存在主场景中，用InstanceId好了。
 
     public SubSceneArg sceneArg;
 
@@ -189,6 +189,16 @@ public class SubScene_Base : MonoBehaviour
 
         IsLoaded = false;
         IsLoading = false;
+    }
+
+    internal List<ModelAreaTree> GetTrees()
+    {
+        List<ModelAreaTree> ts = new List<ModelAreaTree>();
+        foreach(var go in gos)
+        {
+            ts.AddRange(go.GetComponentsInChildren<ModelAreaTree>());
+        }
+        return ts;
     }
 
     public float DisToCam;
@@ -423,6 +433,89 @@ public class SubScene_Base : MonoBehaviour
             GameObject.DestroyImmediate(boundsGo);
         }
         gos = EditorHelper.EditorLoadScene(scene, sceneArg.path, IsSetParent ? GetSceneParent() : null).ToList();
+
+        InitIdDict();
+    }
+
+    [ContextMenu("EditorLoadLinkedScene")]
+    public void EditorLoadLinkedScene()
+    {
+        if (LinkedScene != null)
+        {
+            LinkedScene.EditorLoadScene();
+        }
+        else
+        {
+            Debug.LogError($"SubScene_Base.EditorLoadLinkedScene LinkedScene==null scene:{this.name}");
+        }
+    }
+
+    /// <summary>
+    /// 获取合并树关联的原模型的游戏对象
+    /// </summary>
+    private void LoadTreeRenderers()
+    {
+        var trees = GetTrees();
+        foreach(var tree in trees)
+        {
+            tree.LoadRenderers();
+        }
+    }
+
+    /// <summary>
+    /// 注册加载的子场景的模型，并获取其中的[合并树]的关联游戏对象。
+    /// </summary>
+    internal void InitIdDict()
+    {
+        Debug.Log($"SubScene_Base.InitIdDict name:{this.name} type:{contentType} linked:{LinkedScene}");
+        IdDictionay.InitGos(gos, sceneName);//子场景加载后，注册子场景中的模型信息
+        if (LinkedScene != null)
+        {
+            if (this.contentType == SceneContentType.Tree)//本身是保存了[合并树]的子场景
+            {
+                if (LinkedScene.IsLoaded)//对应的[合并树]和[原模型]同时都加载到场景中后，才去寻找关联的游戏对象
+                {
+                    this.LoadTreeRenderers();
+                }
+                else
+                {
+                    Debug.LogError($"SubScene_Base.InitIdDict LinkedScene.IsLoaded==false scene:{this.name}");
+                }
+            }
+            else if (this.contentType == SceneContentType.Part)//本身是保存了[原模型]的子场景
+            {
+                if (LinkedScene.IsLoaded)//对应的[合并树]和[原模型]同时都加载到场景中后，才去寻找关联的游戏对象
+                {
+                    LinkedScene.LoadTreeRenderers();//获取对应的[合并树]的关联模型
+                }
+                else
+                {
+                    Debug.LogError($"SubScene_Base.InitIdDict LinkedScene.IsLoaded==false scene:{this.name}");
+                }
+            }
+            //暂时没测试到
+            else if (this.contentType == SceneContentType.TreeAndPart)//本身是保存了[合并树]和[原模型]的子场景
+            {
+                LoadTreeRenderers();
+            }
+            else
+            {
+                //应该不会跑到这里
+                if (LinkedScene.IsLoaded)//对应的[合并树]和[原模型]同时都加载到场景中后，才去寻找关联的游戏对象
+                {
+                    LinkedScene.LoadTreeRenderers();//获取对应的[合并树]的关联模型
+                    this.LoadTreeRenderers();
+                }
+                else
+                {
+                    Debug.LogError($"SubScene_Base.InitIdDict LinkedScene.IsLoaded==false scene:{this.name}");
+                }
+            }
+        }
+        else
+        {
+            Debug.LogError($"SubScene_Base.InitIdDict LinkedScene==null scene:{this.name}");
+        }
     }
 
     [ContextMenu("EditorSaveScene")]

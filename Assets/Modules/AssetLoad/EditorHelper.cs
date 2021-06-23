@@ -71,19 +71,19 @@ public static class EditorHelper
         var objs = scene.GetRootGameObjects();
         if (parent)
         {
-            int idCount = 0;
+            //int idCount = 0;
             foreach (var obj in objs)
             {
                 obj.transform.SetParent(parent);
 
-                var ids = obj.GetComponentsInChildren<RendererId>(true);//场景中的对象在场景创建时就应该保存Id信息的
-                idCount += ids.Length;
+                //var ids = obj.GetComponentsInChildren<RendererId>(true);//场景中的对象在场景创建时就应该保存Id信息的
+                //idCount += ids.Length;
             }
-            Debug.LogError($"EditorLoadScene sceneName:{sceneName} objs:{objs.Length},idCount:{idCount}");
+            //Debug.LogError($"EditorLoadScene sceneName:{sceneName} objs:{objs.Length},idCount:{idCount}");
 
             EditorSceneManager.CloseScene(scene, true);
 
-            IdDictionay.InitRenderers(objs, sceneName);
+            IdDictionay.InitGos(objs, sceneName);
         }
         return objs;
     }
@@ -417,20 +417,29 @@ public static class EditorHelper
         System.DateTime start = System.DateTime.Now;
         //Debug.Log("LoadSceneAsync:" + sName);
         AsyncOperation async = SceneManager.LoadSceneAsync(sName, LoadSceneMode.Additive);
-        //async.allowSceneActivation = false;
-        while (!async.isDone)
+        if (async == null)
         {
+            Debug.LogError($"EditorHelper.LoadSceneAsync async == null sName:{sName}");
+        }
+        else
+        {
+            //async.allowSceneActivation = false;
+            while (!async.isDone)
+            {
+                if (progressChanged != null)
+                {
+                    progressChanged(async.progress);
+                }
+                yield return null;
+            }
             if (progressChanged != null)
             {
                 progressChanged(async.progress);
             }
-            yield return null;
         }
 
-        if (progressChanged != null)
-        {
-            progressChanged(async.progress);
-        }
+
+
 
         Scene scene = SceneManager.GetSceneByName(sName);
         //var objs = scene.GetRootGameObjects();
@@ -518,7 +527,7 @@ public static class EditorHelper
             }
             //EditorSceneManager.CloseScene(scene, true);
 
-            IdDictionay.InitRenderers(objs,sceneName);
+            IdDictionay.InitGos(objs,sceneName);
         }
         return objs;
     }

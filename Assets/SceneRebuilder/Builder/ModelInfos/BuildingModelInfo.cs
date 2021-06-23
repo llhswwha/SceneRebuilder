@@ -146,6 +146,25 @@ public class BuildingModelInfo : MonoBehaviour
         }
     }
 
+    public void LoadTreeRenderers(List<SubScene_Base> scenes)
+    {
+        //trees = this.GetComponentsInChildren<ModelAreaTree>(true);
+        ////IdDictionay.InitRenderers(t.gameObject);
+        //foreach (var t in trees)
+        //{
+        //    t.LoadRenderers();
+        //}
+
+        //foreach(var scene in scenes)
+        //{
+        //    var ts = scene.GetTrees();
+        //    foreach (var t in ts)
+        //    {
+        //        t.LoadRenderers();
+        //    }
+        //}
+    }
+
     [ContextMenu("GetTrees")]
     public void GetTrees()
     {
@@ -904,6 +923,9 @@ public class BuildingModelInfo : MonoBehaviour
             SceneList.AddScene(scene);
             GameObject.DestroyImmediate(scene);
         }
+
+        var scenes2= SceneList.gameObject.GetComponentsInChildren<SubScene_Base>();
+        SubSceneHelper.LinkScenes(scenes2);
     }
 
     public SceneContentType contentType;
@@ -1004,7 +1026,7 @@ public class BuildingModelInfo : MonoBehaviour
         scenes.AddRange(CreatePartScene(SceneContentType.Part));
         EditorCreateScenes(scenes, progressChanged);
 
-        LoadTreeRenderers();//关联回Tree中的Renderers
+        //LoadTreeRenderers();//关联回Tree中的Renderers
 
         SubSceneManager.Instance.ClearOtherScenes();
         EditorMoveScenes();
@@ -1019,13 +1041,14 @@ public class BuildingModelInfo : MonoBehaviour
         for (int i = 0; i < count; i++)
         {
             SubScene_Base scene = scenes[i];
+
             if (scene.gos.Count == 0)
             {
                 Debug.LogError($"EditorCreateScenes scene.gos.Count == 0 Scene:{scene.name}");
                 GameObject.DestroyImmediate(scene);
                 continue;
             }
-            scene.IsLoaded = true;
+            //scene.IsLoaded = true;
             scene.SaveScene();
             scene.ShowBounds();
 
@@ -1163,28 +1186,28 @@ public class BuildingModelInfo : MonoBehaviour
         return null;
     }
 
-    internal void EditorCreatePartScenes(string dir, bool isOverride)
-    {
-        //DestroyOldBounds();
-        DestroyOldPartScenes();//重新创建，把之前的删除
+    //internal void EditorCreatePartScenes(string dir, bool isOverride)
+    //{
+    //    //DestroyOldBounds();
+    //    DestroyOldPartScenes();//重新创建，把之前的删除
 
-        InitInOut(false);
+    //    InitInOut(false);
 
-        trees = this.GetComponentsInChildren<ModelAreaTree>(true);
+    //    trees = this.GetComponentsInChildren<ModelAreaTree>(true);
 
-        if (InPart)
-        {
-            CreatePartScene(InPart, "_In", trees, dir, isOverride, gameObject.AddComponent<SubScene_In>());
-        }
-        if (OutPart0)
-        {
-            CreatePartScene(OutPart0, "_Out0", trees, dir, isOverride, gameObject.AddComponent<SubScene_Out0>());
-        }
-        if (OutPart1)
-        {
-            CreatePartScene(OutPart1, "_Out1", trees, dir, isOverride, gameObject.AddComponent<SubScene_Out1>());
-        }
-    }
+    //    if (InPart)
+    //    {
+    //        CreatePartScene(InPart, "_In", trees, dir, isOverride, gameObject.AddComponent<SubScene_In>());
+    //    }
+    //    if (OutPart0)
+    //    {
+    //        CreatePartScene(OutPart0, "_Out0", trees, dir, isOverride, gameObject.AddComponent<SubScene_Out0>());
+    //    }
+    //    if (OutPart1)
+    //    {
+    //        CreatePartScene(OutPart1, "_Out1", trees, dir, isOverride, gameObject.AddComponent<SubScene_Out1>());
+    //    }
+    //}
 
     
     #endregion
@@ -1237,9 +1260,12 @@ public class BuildingModelInfo : MonoBehaviour
         //EditorLoadScenes(SceneContentType.Tree);
         //EditorLoadScenes(SceneContentType.Part);
 
-        var scenes=GetSubScenesOfTypes(new List<SceneContentType>() { SceneContentType.Tree, SceneContentType.Part });//按照实际使用中也是先呈现Tree，再按需加载Part的
+        //var scenes=GetSubScenesOfTypes(new List<SceneContentType>() { SceneContentType.Tree, SceneContentType.Part });//按照实际使用中也是先呈现Tree，再按需加载Part的
+
+        var scenes = GetSubScenesOfTypes(new List<SceneContentType>() { SceneContentType.Part, SceneContentType.Tree });//按照实际使用中也是先呈现Tree，再按需加载Part的
+
         EditorLoadScenes(scenes.ToArray(), progressChanged);
-        LoadTreeRenderers();
+        LoadTreeRenderers(scenes);
         InitInOut();//这个是和Part有关的。
 
         Debug.LogError($"EditorLoadScenes_TreeWithPart time:{(DateTime.Now - start)}");

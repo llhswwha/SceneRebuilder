@@ -8,9 +8,12 @@ public class SubSceneShowManager : MonoBehaviour
     public static SubSceneShowManager Instance;
 
     public SubSceneManager sceneManager;
-    public SubScene_Out0[] scenes_Out0;
+    //public SubScene_Out0[] scenes_Out0;//
     public SubScene_Out1[] scenes_Out1;
     public SubScene_In[] scenes_In;
+
+    public List<SubScene_Out0> scenes_Out0_Part = new List<SubScene_Out0>();
+    public List<SubScene_Out0> scenes_Out0_Tree = new List<SubScene_Out0>();
 
     public Camera[] cameras;
 
@@ -19,7 +22,19 @@ public class SubSceneShowManager : MonoBehaviour
     {
         sceneManager = GameObject.FindObjectOfType<SubSceneManager>();
         scenes_In = GameObject.FindObjectsOfType<SubScene_In>(true);
-        scenes_Out0 = GameObject.FindObjectsOfType<SubScene_Out0>(true);
+
+        var scenes_Out0 = GameObject.FindObjectsOfType<SubScene_Out0>(true);
+        foreach(var s in scenes_Out0)
+        {
+            if(s.contentType==SceneContentType.Part)
+            {
+                scenes_Out0_Part.Add(s);
+            }
+            if (s.contentType == SceneContentType.Tree)
+            {
+                scenes_Out0_Tree.Add(s);
+            }
+        }
         scenes_Out1 = GameObject.FindObjectsOfType<SubScene_Out1>(true);
 
         cameras = GameObject.FindObjectsOfType<Camera>();
@@ -38,7 +53,7 @@ public class SubSceneShowManager : MonoBehaviour
         Init();
 
         if(IsAutoLoad)
-            sceneManager.LoadScenesEx(scenes_Out0);//1.启动时自动加载模型
+            sceneManager.LoadScenesEx(scenes_Out0_Tree.ToArray());//1.启动时自动加载模型
 
         if(AreaTreeNodeShowManager.Instance)
         {
