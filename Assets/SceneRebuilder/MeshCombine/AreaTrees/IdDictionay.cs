@@ -145,6 +145,10 @@ public static class IdDictionay
 
         if (RendererDict.ContainsKey(id))
         {
+            if (RendererDict[id] == null)
+            {
+                InitInfos();//¿ÉÄÜ±»É¾³ýµô
+            }
             return RendererDict[id];
         }
         Debug.LogError($"RendererDictionay.GerRenderer not found id:{id},Dict:{RendererDict.Count}");

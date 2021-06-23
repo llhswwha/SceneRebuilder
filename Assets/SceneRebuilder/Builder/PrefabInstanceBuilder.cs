@@ -1067,11 +1067,11 @@ break;
             float progress = (float)i / meshFilters.Length;
             float percents = progress * 100;
             
-            if(ProgressBarHelper.DisplayCancelableProgressBar("GetBigSmallRenderers", $"{i}/{meshFilters.Length} {percents:F2}% of 100%", progress))
-            {
-                //ProgressBarHelper.ClearProgressBar();
-                break;
-            } 
+            //if(ProgressBarHelper.DisplayCancelableProgressBar("GetBigSmallRenderers", $"{i}/{meshFilters.Length} {percents:F2}% of 100%", progress))
+            //{
+            //    //ProgressBarHelper.ClearProgressBar();
+            //    break;
+            //} 
 
             Bounds bounds = mf.sharedMesh.bounds;
             Vector3 scale = mf.transform.lossyScale;
@@ -1106,7 +1106,7 @@ break;
             }
         }
 
-        ProgressBarHelper.ClearProgressBar();
+        //ProgressBarHelper.ClearProgressBar();
 
         Debug.LogWarning($"GetBigSmallRenderers maxLength:{maxLength},bigModels:{bigModels.Count},smallModels:{smallModels.Count},Renderers:{meshFilters.Length},Time:{(DateTime.Now-start).TotalMilliseconds:F1}ms");
     }
