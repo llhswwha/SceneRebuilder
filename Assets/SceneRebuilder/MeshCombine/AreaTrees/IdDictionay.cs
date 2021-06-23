@@ -11,45 +11,58 @@ public static class IdDictionay
 
     private static void SetId(RendererId id)
     {
-        try
-        {
+        //try
+        //{
 
-            if (!IdDict.ContainsKey(id.Id))
-            {
-                IdDict.Add(id.Id, id);
-            }
-            else
-            {
-                IdDict[id.Id] = id;//旧的可能被卸载、删除。
-            }
-        }
-        catch (Exception ex)
-        {
-            Debug.LogError($"RendererDictionay.SetId Renderer:{id},Exception:{ex}");
-        }
+        //    if (!IdDict.ContainsKey(id.Id))
+        //    {
+        //        IdDict.Add(id.Id, id);
+        //    }
+        //    else
+        //    {
+        //        IdDict[id.Id] = id;//旧的可能被卸载、删除。
+        //    }
+        //}
+        //catch (Exception ex)
+        //{
+        //    Debug.LogError($"RendererDictionay.SetId Renderer:{id},Exception:{ex}");
+        //}
+
+        SetRendererId(id, id.mr);
     }
 
     private static void SetRendererId(RendererId id,MeshRenderer renderer)
     {
         try
         {
-            if (!RendererDict.ContainsKey(id.Id))
+            if (id == null)
             {
-                RendererDict.Add(id.Id, renderer);
+                Debug.LogError($"RendererDictionay.SetRendererId id == null");
             }
             else
             {
-                RendererDict[id.Id] = renderer;
-            }
+                if (renderer != null)
+                {
+                    if (!RendererDict.ContainsKey(id.Id))
+                    {
+                        RendererDict.Add(id.Id, renderer);
+                    }
+                    else
+                    {
+                        RendererDict[id.Id] = renderer;
+                    }
+                }
 
-            if (!IdDict.ContainsKey(id.Id))
-            {
-                IdDict.Add(id.Id, id);
+                if (!IdDict.ContainsKey(id.Id))
+                {
+                    IdDict.Add(id.Id, id);
+                }
+                else
+                {
+                    IdDict[id.Id] = id;//旧的可能被卸载、删除。
+                }
             }
-            else
-            {
-                IdDict[id.Id] = id;//旧的可能被卸载、删除。
-            }
+            
         }
         catch (Exception ex)
         {
@@ -99,59 +112,72 @@ public static class IdDictionay
     }
 
 
-    internal static void InitRenderers(GameObject[] objs)
+    internal static void InitRenderers(GameObject[] objs,string tag)
     {
         DateTime start = DateTime.Now;
         int count1 = RendererDict.Count;
+        int idCount = 0;
         foreach(var obj in objs)
         {
             //var renderers = obj.GetComponentsInChildren<MeshRenderer>();
             //InitRenderers(renderers);
 
-            var ids = obj.GetComponentsInChildren<RendererId>();
+            var ids = obj.GetComponentsInChildren<RendererId>(true);//场景中的对象在场景创建时就应该保存Id信息的
             foreach(var id in ids)
             {
                 SetId(id);
             }
+            idCount += ids.Length;
         }
         int count2 = RendererDict.Count;
-        Debug.LogError($"RendererDictionay.InitRenderers count1:{count1} count2:{count2} add:{count2-count1} time:{(DateTime.Now - start)}");
+        Debug.LogError($"RendererDictionay.InitRenderers tag:{tag} objs:{objs.Length},idCount:{idCount} count1:{count1} count2:{count2} add:{count2-count1} time:{(DateTime.Now - start)}");
     }
 
     public static GameObject GetGo(string id)
     {
-        if (!IdDict.ContainsKey(id))
-        {
-            InitIds();
-        }
+        //if (!IdDict.ContainsKey(id))
+        //{
+        //    InitIds();
+        //}
 
         if (IdDict.ContainsKey(id))
         {
-            if (IdDict[id] == null)
+            var go = IdDict[id];
+            if (go == null)
             {
-                InitIds();
+                Debug.LogError($"RendererDictionay.GetGo go == null :{id},Dict:{IdDict.Count}");
             }
-            return IdDict[id].gameObject;
+            //if (IdDict[id] == null)
+            //{
+            //    InitIds();
+            //}
+            //return IdDict[id].gameObject;
         }
+        Debug.LogError($"RendererDictionay.GetGo go not found id:{id},Dict:{IdDict.Count}");
         return null;
     }
 
     public static MeshRenderer GetRenderer(string id)
     {
-        if (!RendererDict.ContainsKey(id))
-        {
-            InitInfos();
-        }
+        //if (!RendererDict.ContainsKey(id))
+        //{
+        //    InitInfos();
+        //}
 
         if (RendererDict.ContainsKey(id))
         {
-            if (RendererDict[id] == null)
+            //if (RendererDict[id] == null)
+            //{
+            //    InitInfos();//可能被删除掉
+            //}
+            var renderer = RendererDict[id];
+            if (renderer == null)
             {
-                InitInfos();//可能被删除掉
+                Debug.LogError($"RendererDictionay.GetRenderer renderer == null :{id},Dict:{RendererDict.Count}");
             }
-            return RendererDict[id];
+            return renderer;
         }
-        Debug.LogError($"RendererDictionay.GerRenderer not found id:{id},Dict:{RendererDict.Count}");
+        Debug.LogError($"RendererDictionay.GetRenderer not found id:{id},Dict:{RendererDict.Count}");
         return null;
     }
 

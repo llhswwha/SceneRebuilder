@@ -170,7 +170,7 @@ public class SubSceneManager : MonoBehaviour
             float progress = (float)i / count;
             float percents = progress * 100;
 
-            if (ProgressBarHelper.DisplayCancelableProgressBar("EditorSaveScenes", $"Progress1 {i}/{count} {percents:F2}% of 100%  {item.name}", progress))
+            if (ProgressBarHelper.DisplayCancelableProgressBar("EditorLoadScenes", $"Progress1 {i}/{count} {percents:F2}% of 100%  {item.name}", progress))
             {
                 //ProgressBarHelper.ClearProgressBar();
                 break;
@@ -190,7 +190,7 @@ public class SubSceneManager : MonoBehaviour
                 float progress = (float)(i+p) / count;
                 float percents = progress * 100;
 
-                if (ProgressBarHelper.DisplayCancelableProgressBar("EditorSaveScenes", $"Progress2 {(i + p):F1}/{count} {percents:F2}% of 100%  {item.name}", progress))
+                if (ProgressBarHelper.DisplayCancelableProgressBar("EditorLoadScenes", $"Progress2 {(i + p):F1}/{count} {percents:F2}% of 100%  {item.name}", progress))
                 {
                     return;
                 }

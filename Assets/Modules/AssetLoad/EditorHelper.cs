@@ -44,9 +44,25 @@ public static class EditorHelper
         //ProgressBarHelper.ClearProgressBar();
     }
 
+    public static string GetSceneName(string path)
+    {
+        try
+        {
+            string[] parts = path.Split(new char[] { '.', '\\', '/' });
+            string sceneName = parts[parts.Length - 2];
+            return sceneName;
+        }
+        catch (System.Exception ex)
+        {
+            Debug.LogError($"GetSceneName  path:{path},Exception:{ex}");
+            return path;
+        }
+    }
+
     public static GameObject[] EditorLoadScene(Scene scene, string path, Transform parent)
     {
         string scenePath = EditorHelper.GetScenePath(path);
+        string sceneName = GetSceneName(scenePath);
         Debug.Log($"LoadScene IsValid:{scene.IsValid()}, \tpath:{path}\nscenePath:{scenePath}");
         if (scene.IsValid() == false)//没有打开场景 > 打开
         {
@@ -55,14 +71,19 @@ public static class EditorHelper
         var objs = scene.GetRootGameObjects();
         if (parent)
         {
-
+            int idCount = 0;
             foreach (var obj in objs)
             {
                 obj.transform.SetParent(parent);
+
+                var ids = obj.GetComponentsInChildren<RendererId>(true);//场景中的对象在场景创建时就应该保存Id信息的
+                idCount += ids.Length;
             }
+            Debug.LogError($"EditorLoadScene sceneName:{sceneName} objs:{objs.Length},idCount:{idCount}");
+
             EditorSceneManager.CloseScene(scene, true);
 
-            IdDictionay.InitRenderers(objs);
+            IdDictionay.InitRenderers(objs, sceneName);
         }
         return objs;
     }
@@ -497,7 +518,7 @@ public static class EditorHelper
             }
             //EditorSceneManager.CloseScene(scene, true);
 
-            IdDictionay.InitRenderers(objs);
+            IdDictionay.InitRenderers(objs,sceneName);
         }
         return objs;
     }

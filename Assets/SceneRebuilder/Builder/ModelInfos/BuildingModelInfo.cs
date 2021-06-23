@@ -139,6 +139,7 @@ public class BuildingModelInfo : MonoBehaviour
     public void LoadTreeRenderers()
     {
         trees = this.GetComponentsInChildren<ModelAreaTree>(true);
+        //IdDictionay.InitRenderers(t.gameObject);
         foreach (var t in trees)
         {
             t.LoadRenderers();

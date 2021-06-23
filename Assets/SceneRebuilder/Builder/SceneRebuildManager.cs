@@ -26,19 +26,51 @@ public class SceneRebuildManager : MonoBehaviour
     [ContextMenu("SaveScenes")]
     public void SaveScenes()
     {
+        SubSceneManager.contentType = SceneContentType.TreeWithPart;
         SubSceneManager.EditorCreateBuildingScenes(); // CombinedTree To Scene
     }
 
-    [ContextMenu("LoadOut0")]
-    public void LoadOut0()
-    {
-        //SubSceneManager //LoadScenes
-    }
 
     [ContextMenu("OneKey")]
     public void OneKey()
     {
         InitBuildings();
     }
+
+    [ContextMenu("LoadScenes")]
+    public void LoadScenes()
+    {
+        SubSceneManager.contentType = SceneContentType.TreeWithPart;
+        SubSceneManager.EditorLoadScenes();
+    }
+
+    [ContextMenu("LoadTrees")]
+    public void LoadTrees()
+    {
+        SubSceneManager.contentType = SceneContentType.Tree;
+        SubSceneManager.EditorLoadScenes();
+    }
+
+    [ContextMenu("LoadOut0")]
+    public void LoadOut0()
+    {
+        SubSceneManager.contentType = SceneContentType.Tree;
+        SubSceneManager.EditorLoadScenes();
+    }
+
+    [ContextMenu("LoadOutTree")]
+    public void LoadOutTree()
+    {
+        SubSceneManager.contentType = SceneContentType.Tree;
+        SubSceneManager.EditorLoadScenes();
+    }
+
+    [ContextMenu("LoadOutPart")]
+    public void LoadOutPart()
+    {
+        SubSceneManager.contentType = SceneContentType.Tree;
+        SubSceneManager.EditorLoadScenes();
+    }
+
 }
 #endif
