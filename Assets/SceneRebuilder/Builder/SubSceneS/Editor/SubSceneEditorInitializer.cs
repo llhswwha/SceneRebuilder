@@ -43,7 +43,7 @@ public class SubSceneEditorInitializer
         {
             if (go.GetComponent<SubScene_List>() != null)
             {
-                CreateLabel("[SceneList]", selectionRect, Layer2Width, new Color(1, 0.5f, 0.5f), Color.blue);
+                CreateLabel("[SceneList]", selectionRect, Layer2Width, new Color(1,0.7f,0), Color.blue);
             }
             else if (go.GetComponent<SubScene_Base>()!=null)
             {

@@ -455,12 +455,12 @@ public class AreaTreeManager : MonoBehaviour
     public void TestCreateOne_BigSmall()
     {
         var target = GetTarget();
-        CreateOne_BigSmall(null, target);
+        CreateOne_BigSmall(null, target,null);
     }
 
     //public AreaTreeNodeShowManager TreeNodeShowManager;
 
-    public ModelAreaTree[] CreateOne_BigSmall_Core(Transform parent, GameObject target)
+    public ModelAreaTree[] CreateOne_BigSmall_Core(Transform parent, GameObject target,Action<float> progressChanged)
     {
         IsCopy = false;
 
@@ -473,7 +473,10 @@ public class AreaTreeManager : MonoBehaviour
         prefabInstanceBuilder.TargetRoots = target;
         prefabInstanceBuilder.GetBigSmallRenderers(bigModels, smallModels);
 
-
+        if (progressChanged!=null)
+        {
+            progressChanged(0);
+        }
         ModelAreaTree tree2 = null;
         if (smallModels.Count>0)
         {
@@ -492,6 +495,10 @@ public class AreaTreeManager : MonoBehaviour
             tree2.DestroyNodeRender();
         }
 
+        if (progressChanged != null)
+        {
+            progressChanged(0.5f);
+        }
         ModelAreaTree tree1 = null;
         if (bigModels.Count>0)
         {
@@ -509,7 +516,10 @@ public class AreaTreeManager : MonoBehaviour
 
 
         //TreeNodeShowManager.HiddenTrees.Add(tree2);
-        
+        if (progressChanged != null)
+        {
+            progressChanged(1f);
+        }
 
         ModelAreaTree[] trees = new ModelAreaTree[2] { tree1, tree2 };
         Debug.LogError($"CreateOne_BigSmall_Core \t{(DateTime.Now - start).TotalMilliseconds:F1}ms");
@@ -517,11 +527,11 @@ public class AreaTreeManager : MonoBehaviour
     }
 
     //[ContextMenu("CreateOne_BigSmall")]
-    private ModelAreaTree[] CreateOne_BigSmall(Transform parent,GameObject target)
+    private ModelAreaTree[] CreateOne_BigSmall(Transform parent,GameObject target, Action<float> progressChanged)
     {
         DateTime start = DateTime.Now;
         Clear();
-        var trees=CreateOne_BigSmall_Core(parent, target);
+        var trees=CreateOne_BigSmall_Core(parent, target, progressChanged);
         Debug.LogError($"CreateOne_BigSmall \t{(DateTime.Now - start).ToString()}");
         return trees;
     }

@@ -152,17 +152,17 @@ public class BuildingModelInfo : MonoBehaviour
     }
 
     //[ContextMenu("* CreateTrees")]
-    public ModelAreaTree[] CreateTreesInner()
+    public ModelAreaTree[] CreateTreesInner(Action<float> progressChanged)
     {
         ClearTrees();
 
         UpackPrefab_One(this.gameObject);
 
         ShowRenderers();
-        return CreateTreesCore();
+        return CreateTreesCore(progressChanged);
     }
 
-    public ModelAreaTree[] CreateTreesInnerEx(bool isOut0BS)
+    public ModelAreaTree[] CreateTreesInnerEx(bool isOut0BS, Action<float> progressChanged)
     {
         ClearTrees();
 
@@ -178,17 +178,17 @@ public class BuildingModelInfo : MonoBehaviour
         ModelAreaTree[] ts = null;
         if (this.OutPart1 == null && this.InPart == null)
         {
-            ts= CreateTrees_BigSmall_Core();//没有In的状态下直接把Out0分成Small和Big
+            ts= CreateTrees_BigSmall_Core(progressChanged);//没有In的状态下直接把Out0分成Small和Big
         }
         else
         {
             if (isOut0BS == false)
             {
-                ts= CreateTreesCore();
+                ts= CreateTreesCore(progressChanged);
             }
             else
             {
-                ts= CreateTreesCoreBS();
+                ts= CreateTreesCoreBS(progressChanged);
             }
         }
         trees = ts;
@@ -196,17 +196,17 @@ public class BuildingModelInfo : MonoBehaviour
         return ts;
     }
 
-    public ModelAreaTree[] CreateTreesInnerBS()
-    {
-        ClearTrees();
+    //public ModelAreaTree[] CreateTreesInnerBS()
+    //{
+    //    ClearTrees();
 
-        UpackPrefab_One(this.gameObject);
+    //    UpackPrefab_One(this.gameObject);
 
-        ShowRenderers();
-        return CreateTreesCoreBS();
-    }
+    //    ShowRenderers();
+    //    return CreateTreesCoreBS(null);
+    //}
 
-    public ModelAreaTree[] CreateTreesCore()
+    public ModelAreaTree[] CreateTreesCore(Action<float> progressChanged)
     {
         if (OutPart0 == null)
         {
@@ -220,30 +220,78 @@ public class BuildingModelInfo : MonoBehaviour
         
 
         List<ModelAreaTree> ts = new List<ModelAreaTree>();
+
+        if (progressChanged != null)
+        {
+            progressChanged(0 / 3f);
+        }
+        else
+        {
+            ProgressBarHelper.DisplayProgressBar("CreateTree", "InTree", 0 / 3f);
+        }
         var tree1 = CreateTree(InPart, "InTree");
         if (tree1 != null)
         {
             ts.Add(tree1);
         }
+
+        if (progressChanged != null)
+        {
+            progressChanged(1 / 3f);
+        }
+        else
+        {
+            ProgressBarHelper.DisplayProgressBar("CreateTree", "OutTree0", 1 / 3f);
+        }
+
         var tree2 = CreateTree(OutPart0, "OutTree0");
         if (tree2 != null)
         {
             ts.Add(tree2);
+        }
+
+        if (progressChanged != null)
+        {
+            progressChanged(2 / 3f);
+        }
+        else
+        {
+            ProgressBarHelper.DisplayProgressBar("CreateTree", "OutTree1", 2 / 3f);
         }
         var tree3 = CreateTree(OutPart1, "OutTree1");
         if (tree3 != null)
         {
             ts.Add(tree3);
         }
+        if (progressChanged != null)
+        {
+            progressChanged(3 / 3f);
+        }
+        else
+        {
+            ProgressBarHelper.DisplayProgressBar("CreateTree", "OutTree1", 3 / 3f);
+            ProgressBarHelper.ClearProgressBar();
+        }
+
         return ts.ToArray();
     }
 
-    public ModelAreaTree[] CreateTreesCoreBS()
+    public ModelAreaTree[] CreateTreesCoreBS(Action<float> progressChanged)
     {
         if (InPart == null && OutPart0 == null && OutPart1 == null)
         {
             InitInOut(false);
         }
+
+        if (progressChanged != null)
+        {
+            progressChanged(0 / 3f);
+        }
+        else
+        {
+            ProgressBarHelper.DisplayProgressBar("CreateTree", "InTree", 0 / 3f);
+        }
+        
 
         List<ModelAreaTree> ts = new List<ModelAreaTree>();
         var tree1 = CreateTree(InPart, "InTree");
@@ -255,8 +303,28 @@ public class BuildingModelInfo : MonoBehaviour
         //var tree2 = CreateTree(OutPart0, "OutTree0");
         //trees[1] = tree2;
 
-       var tbs= CreateTrees_BigSmall_Core();
-        foreach(var t in tbs)
+        if (progressChanged != null)
+        {
+            progressChanged(1 / 3f);
+        }
+        else
+        {
+            ProgressBarHelper.DisplayProgressBar("CreateTree", "OutTree0", 1 / 3f);
+        }
+
+        var tbs = CreateTrees_BigSmall_Core(subProgress =>
+         {
+             //0,0.5,1
+             if (progressChanged != null)
+             {
+                 progressChanged((1 + subProgress) / 3f);
+             }
+             else
+             {
+                 ProgressBarHelper.DisplayProgressBar("CreateTree", "OutTree0", (1 + subProgress) / 3f);
+             }
+         });
+        foreach (var t in tbs)
         {
             if (t != null)
             {
@@ -264,11 +332,30 @@ public class BuildingModelInfo : MonoBehaviour
             }
         }
 
+        if (progressChanged != null)
+        {
+            progressChanged(2 / 3f);
+        }
+        else
+        {
+            ProgressBarHelper.DisplayProgressBar("CreateTree", "OutTree1", 2 / 3f);
+        }
         var tree3 = CreateTree(OutPart1, "OutTree1");
         if (tree3 != null)
         {
             ts.Add(tree3);
         }
+
+        if (progressChanged != null)
+        {
+            progressChanged(3 / 3f);
+        }
+        else
+        {
+            ProgressBarHelper.DisplayProgressBar("CreateTree", "OutTree1", 3 / 3f);
+            ProgressBarHelper.ClearProgressBar();
+        }
+        
         return ts.ToArray();
     }
 
@@ -345,7 +432,7 @@ public class BuildingModelInfo : MonoBehaviour
     public void CreateTreesEx()
     {
         AreaTreeManager treeManager = GameObject.FindObjectOfType<AreaTreeManager>();
-        trees = CreateTreesInnerEx(false);
+        trees = CreateTreesInnerEx(false,null);
         if (treeManager)
         {
             treeManager.AddTrees(trees);
@@ -355,33 +442,38 @@ public class BuildingModelInfo : MonoBehaviour
     [ContextMenu("* CreateTreesBSEx")]
     public void CreateTreesBSEx()
     {
+        DateTime start = DateTime.Now;
         AreaTreeManager treeManager = GameObject.FindObjectOfType<AreaTreeManager>();
-        trees = CreateTreesInnerEx(true);
+        trees = CreateTreesInnerEx(true,null);
         if (treeManager)
         {
             treeManager.AddTrees(trees);
         }
+        Debug.LogError($"CreateTreesBSEx {(DateTime.Now - start).ToString()}");
     }
 
     [ContextMenu("* CreateTrees")]
     public void CreateTrees()
     {
+        DateTime start = DateTime.Now;
         AreaTreeManager treeManager = GameObject.FindObjectOfType<AreaTreeManager>();
-        trees = CreateTreesInner();
+        trees = CreateTreesInner(null);
         if (treeManager)
         {
             treeManager.AddTrees(trees);
         }
+        Debug.LogError($"CreateTreesBSEx {(DateTime.Now - start).ToString()}");
     }
 
     [ContextMenu("* CreateTreesBS")]
     public void CreateTrees_BS()
     {
+
         AreaTreeManager treeManager = GameObject.FindObjectOfType<AreaTreeManager>();
-        CreateTrees_BigSmall_Core();
+        CreateTrees_BigSmall_Core(null);
     }
 
-    public ModelAreaTree[] CreateTrees_BigSmall_Core()
+    public ModelAreaTree[] CreateTrees_BigSmall_Core(Action<float> progressChanged)
     {
         if(this.OutPart0==null)
         {
@@ -393,7 +485,7 @@ public class BuildingModelInfo : MonoBehaviour
         if (treeManager)
         {
             treeManager.Target = this.OutPart0;
-            var ts= treeManager.CreateOne_BigSmall_Core(this.transform, this.OutPart0);
+            var ts= treeManager.CreateOne_BigSmall_Core(this.transform, this.OutPart0, progressChanged);
             foreach(var tree in ts)
             {
                 if (tree == null) continue;
