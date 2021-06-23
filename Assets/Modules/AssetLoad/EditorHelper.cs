@@ -62,6 +62,8 @@ public static class EditorHelper
                 obj.transform.SetParent(parent);
             }
             EditorSceneManager.CloseScene(scene, true);
+
+            IdDictionay.InitRenderers(objs);
         }
         return objs;
     }
@@ -75,7 +77,11 @@ public static class EditorHelper
         MoveGosToScene(scene, objs);
 
         bool result = EditorSceneManager.SaveScene(scene, scenePath);
-        Debug.Log("SaveSceneResult1:" + result);
+        if(result==false)
+        {
+            Debug.LogError("CreateScene SaveSceneResult1:" + result);
+        }
+        
         AssetDatabase.Refresh();
 
 
@@ -95,30 +101,40 @@ public static class EditorHelper
         MoveGosToScene(scene, objs);
 
         bool result = EditorSceneManager.SaveScene(scene, scenePath);
-        Debug.Log("SaveSceneResult1:" + result);
+        Debug.Log("CreateScene  SaveSceneResult1:" + result);
         AssetDatabase.Refresh();
         return scene;
     }
 
+    //public static SubSceneArg GetSceneArg(string path, bool isOverride, bool isOpen, params GameObject[] objs)
+    //{
+    //    SubSceneArg arg = new SubSceneArg(path, isOverride, isOpen, objs);
+    //}
+
+    //public static Scene CreateScene(SubSceneArg arg)
+    //{
+
+    //}
+
     public static Scene CreateScene(string path, bool isOveride,bool isOpen, params GameObject[] objs)
     {
         string scenePath = GetScenePath(path);
-        Debug.Log($"objs:{objs.Length},\tpath:{path},\nscenePath:{scenePath}");
+        Debug.Log($"CreateScene1 objs:{objs.Length},\tpath:{path},\nscenePath:{scenePath}");
 
         FileInfo file = new FileInfo(scenePath);
-        Debug.Log($"file:{file.FullName},\ndir:{file.Directory.FullName}\t{file.Directory.Exists}");
+        //Debug.Log($"CreateScene2 file:{file.FullName},\ndir:{file.Directory.FullName}\t{file.Directory.Exists}");
         if (file.Directory.Exists == false)
         {
             var path1 = file.FullName;
             var relativeDirPath = PathToRelative(path1);
             var relativeDirPath2 = relativeDirPath.Replace("\\", "/");
-            Debug.Log($"relativeDirPath:{relativeDirPath}\nrelativeDirPath2:{relativeDirPath2}");
+            Debug.Log($"CreateScene relativeDirPath:{relativeDirPath}\nrelativeDirPath2:{relativeDirPath2}");
 
             makeParentDirExist(relativeDirPath2);//创建文件夹
         }
 
         bool isExist = File.Exists(scenePath);
-        Debug.Log("isExist:" + isExist);
+        //Debug.Log("isExist:" + isExist);
 
         //var asset = AssetDatabase.LoadMainAssetAtPath(scenePath);
         //Debug.Log("asset:" + asset);
@@ -132,7 +148,7 @@ public static class EditorHelper
             if (isOveride)//重新覆盖
             {
                 Scene scene = EditorSceneManager.GetSceneByPath(scenePath);
-                Debug.Log("scene IsValid:" + scene.IsValid());
+                //Debug.Log("scene IsValid:" + scene.IsValid());
                 if (scene.IsValid() == true)//打开
                 {
                     bool r1 = EditorSceneManager.CloseScene(scene, true);//关闭场景，不关闭无法覆盖
@@ -359,7 +375,7 @@ public static class EditorHelper
         {
             if (UnityEditorInternal.ComponentUtility.PasteComponentValues(oldComponent))
             {
-                Debug.Log("Paste Values " + newComponent.GetType().ToString() + " Success");
+                //Debug.Log("Paste Values " + newComponent.GetType().ToString() + " Success");
             }
             else
             {
@@ -370,7 +386,7 @@ public static class EditorHelper
         {
             if (UnityEditorInternal.ComponentUtility.PasteComponentAsNew(targetObject))
             {
-                Debug.Log("Paste New Values " + newComponent.GetType().ToString() + " Success");
+                //Debug.Log("Paste New Values " + newComponent.GetType().ToString() + " Success");
             }
             else
             {
@@ -500,6 +516,8 @@ public static class EditorHelper
                 obj.transform.SetParent(parent);
             }
             //EditorSceneManager.CloseScene(scene, true);
+
+            IdDictionay.InitRenderers(objs);
         }
         return objs;
     }

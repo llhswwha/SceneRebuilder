@@ -58,10 +58,8 @@ public class BuildingModelManager : MonoBehaviour
         {
             float progress = (float)i / Buildings.Count;
             float percents = progress * 100;
-
             if (ProgressBarHelper.DisplayCancelableProgressBar("InitBuildings", $"{i}/{Buildings.Count} {percents}% of 100%", progress))
             {
-                //ProgressBarHelper.ClearProgressBar();
                 break;
             }
             Buildings[i].InitInOut(true);
@@ -318,7 +316,9 @@ public class BuildingModelManager : MonoBehaviour
             //var path = GetScenePath(go.name);
             //Scene scene = EditorHelper.CreateScene(path,true,go);
             b.contentType = this.contentType;
-            b.EditorCreateScenes();
+            //b.EditorCreateScenes();
+
+            b.EditorCreateScenes_TreeWithPart();
 
             scenes.Add(go.name);
 

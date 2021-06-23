@@ -8,6 +8,8 @@ public class ModelAreaTree : MonoBehaviour
 {
    public GameObject Target=null;
 
+    public string TargetId;
+
     public GameObject TargetCopy = null;
 
     public bool IsFirst = true;
@@ -727,7 +729,7 @@ public class ModelAreaTree : MonoBehaviour
         Debug.LogError($"ShowModelInfo renders:{renderCount},mats:{mats.Count},vertext:{w}w");
     }
 
-    [ContextMenu("SaveMeshes")]
+    //[ContextMenu("SaveMeshes")]
     public void SaveMeshes(string dir)
     {
 #if UNITY_EDITOR
@@ -791,5 +793,28 @@ public class ModelAreaTree : MonoBehaviour
         Debug.LogError($"SaveTree {(DateTime.Now - start).ToString()}");
 #endif
     }
-    
+
+    [ContextMenu("SaveRenderersId")]
+    public void SaveRenderersId()
+    {
+        foreach (var node in TreeLeafs)
+        {
+            node.SaveRenderersId();
+        }
+
+        TargetId = RendererId.GetId(Target);
+
+        Debug.Log("SaveRenderersId:"+this.name);
+    }
+
+    [ContextMenu("LoadRenderers")]
+    public void LoadRenderers()
+    {
+        foreach (var node in TreeLeafs)
+        {
+            node.LoadRenderers();
+        }
+        Target = IdDictionay.GetGo(TargetId);
+        Debug.Log("LoadRenderers:"+this.name);
+    }
 }

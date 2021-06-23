@@ -31,12 +31,21 @@ public class BuildingModelInfo : MonoBehaviour
             if (tc > 0)
             {
                 //return "Model(S)(T)";
-                return $"Model(S{SceneList.sceneCount})(T{tc})";
+                if (SceneList.sceneCount > 0)
+                {
+                    return $"Model(S{SceneList.sceneCount})(T{tc})";
+                }
+                else
+                {
+                    return $"Model(T{tc})";
+                }
             }
             else
             {
-                //return "Model(S)";
-                return $"Model(S{SceneList.sceneCount})";
+                if (SceneList.sceneCount > 0)
+                {
+                    return $"Model(S{SceneList.sceneCount})";
+                }
             }
         }
         else
@@ -73,6 +82,26 @@ public class BuildingModelInfo : MonoBehaviour
         foreach (var oldT in oldTrees)
         {
             GameObject.DestroyImmediate(oldT.gameObject);
+        }
+    }
+
+    [ContextMenu("SaveTreeRendersId")]
+    public void SaveTreeRendersId()
+    {
+        trees = this.GetComponentsInChildren<ModelAreaTree>(true);
+        foreach(var t in trees)
+        {
+            t.SaveRenderersId();
+        }
+    }
+
+    [ContextMenu("LoadTreeRenderers")]
+    public void LoadTreeRenderers()
+    {
+        trees = this.GetComponentsInChildren<ModelAreaTree>(true);
+        foreach (var t in trees)
+        {
+            t.LoadRenderers();
         }
     }
 
@@ -589,6 +618,7 @@ public class BuildingModelInfo : MonoBehaviour
         }
     }
 
+    [ContextMenu("DestroyOldPartScenes")]
     private void DestroyOldPartScenes()
     {
         Debug.LogError("DestroyOldPartScenes");
@@ -667,7 +697,25 @@ public class BuildingModelInfo : MonoBehaviour
         }
     }
 
+    [ContextMenu("DestroyModels")]
+    public void DestroyModels()
+    {
+        var scenes = gameObject.GetComponentsInChildren<SubScene_Base>();
+        foreach (var scene in scenes)
+        {
+            scene.UnLoadGosM();
+        }
+    }
 
+    [ContextMenu("ShowBounds")]
+    public void ShowBounds()
+    {
+        var scenes = gameObject.GetComponentsInChildren<SubScene_Base>();
+        foreach (var scene in scenes)
+        {
+            scene.ShowBounds();
+        }
+    }
 
 #if UNITY_EDITOR
 
@@ -701,84 +749,6 @@ public class BuildingModelInfo : MonoBehaviour
     }
 
     public SceneContentType contentType;
-
-    [ContextMenu("EditorLoadScenes")]
-    public void EditorLoadScenes()
-    {
-        EditorLoadScenes(contentType);
-        this.InitInOut(false);
-        //SceneState = "EditLoadScenes_Part";
-    }
-
-    [ContextMenu("EditorLoadScenes_TreeWithPart")]
-    public void EditorLoadScenes_TreeWithPart()
-    {
-        DestroyOldPartScenes();
-
-        EditorLoadScenes(SceneContentType.Tree);
-
-        EditorLoadScenes(SceneContentType.Part);
-
-        //this.InitInOut(false);
-
-        //SceneState = "EditLoadScenes_Part";
-    }
-
-    public void EditorLoadScenes(SceneContentType ct)
-    {
-        var scenes = gameObject.GetComponentsInChildren<SubScene_Base>();
-        foreach (var scene in scenes)
-        {
-            if (scene.contentType == ct)
-            {
-                scene.IsLoaded = false;
-                scene.EditorLoadScene();
-            }
-        }
-        //this.InitInOut(false);
-        //SceneState = "EditLoadScenes_Part";
-    }
-
-    [ContextMenu("EditorSaveScenes_Part")]
-    public void EditorSaveScenes_Part()
-    {
-        var scenes = gameObject.GetComponentsInChildren<SubScene_Part>();
-        foreach (var scene in scenes)
-        {
-            scene.EditorSaveScene();
-        }
-
-        //SceneState = "EditSaveScenes_Part";
-    }
-
-    //[ContextMenu("EditorLoadScenes")]
-    //public void EditorLoadScenes()
-    //{
-    //    UnloadPartScenes();
-
-    //    var scenes = gameObject.GetComponentsInChildren<SubScene_Single>();
-    //    foreach(var scene in scenes)
-    //    {
-    //        scene.EditorLoadScene();
-    //    }
-
-    //    this.InitInOut();
-
-    //    //SceneState = "EditLoadScenes";
-    //}
-
-    [ContextMenu("EditorSaveScenes")]
-    public void EditorSaveScenes()
-    {
-        var scenes = gameObject.GetComponentsInChildren<SubScene_Single>();
-        foreach (var scene in scenes)
-        {
-            scene.IsLoaded = true;
-            scene.EditorSaveScene();
-        }
-
-        //SceneState = "EditSaveScenes";
-    }
 
     #region CreateScenes
     public static GameObject CreateEmptySceneGo(string sceneName, Transform t)
@@ -848,31 +818,88 @@ public class BuildingModelInfo : MonoBehaviour
     //    CreatePartScene(SceneContentType.Single);
     //}
 
+    public void EditorCreateScenesEx(SceneContentType contentType)
+    {
+        this.contentType = contentType;
+        if (contentType == SceneContentType.TreeWithPart)
+        {
+            EditorCreateScenes_TreeWithPart();
+        }
+        else
+        {
+            EditorCreateScenes();
+        }
+    }
+
     [ContextMenu("* EditorCreateScenes")]
     public void EditorCreateScenes()
     {
-        CreatePartScene(contentType);
+        DateTime start = DateTime.Now;
+
+        SaveTreeRendersId();
+
+        DestroyOldPartScenes();
+
+        var scenes=CreatePartScene(contentType);
+        EditorCreateScenes(scenes);
 
         SubSceneManager.Instance.ClearOtherScenes();
         EditorMoveScenes();
+
+        Debug.LogError($"EditorCreateScenes time:{(DateTime.Now - start)}");
     }
 
     [ContextMenu("* EditorCreateScenes_TreeWithPart")]
     public void EditorCreateScenes_TreeWithPart()
     {
-        CreatePartScene(SceneContentType.Part);
-        CreatePartScene(SceneContentType.Tree);
+        DateTime start = DateTime.Now;
+
+        SaveTreeRendersId();
+
+        DestroyOldPartScenes();
+
+        List<SubScene_Base> scenes = new List<SubScene_Base>();
+        scenes.AddRange(CreatePartScene(SceneContentType.Tree));//这里会保存RendererId的关联关系
+        scenes.AddRange(CreatePartScene(SceneContentType.Part));
+        EditorCreateScenes(scenes);
+
+        LoadTreeRenderers();//关联回Tree中的Renderers
 
         SubSceneManager.Instance.ClearOtherScenes();
         EditorMoveScenes();
+
+        Debug.LogError($"EditorCreateScenes_TreeWithPart time:{(DateTime.Now - start)}");
     }
 
-    public void CreatePartScene(SceneContentType contentType)
+    public void EditorCreateScenes(List<SubScene_Base> scenes)
     {
+        int count = scenes.Count;
+        Debug.Log("EditorCreateScenes:" + count);
+        for (int i = 0; i < count; i++)
+        {
+            SubScene_Base scene = scenes[i];
+            scene.IsLoaded = true;
+            scene.SaveScene();
+            scene.ShowBounds();
+
+            float progress = (float)i / count;
+            float percents = progress * 100;
+            if (ProgressBarHelper.DisplayCancelableProgressBar("EditorCreateScenes", $"{i}/{count} {percents}% of 100%", progress))
+            {
+                break;
+            }
+        }
+        ProgressBarHelper.ClearProgressBar();
+    }
+
+    public List<SubScene_Base> CreatePartScene(SceneContentType contentType)
+    {
+        List<SubScene_Base> scenes = new List<SubScene_Base>();
         AreaTreeHelper.InitCubePrefab();
         if (contentType == SceneContentType.Single)
         {
-            SubSceneHelper.EditorCreateScene(this.gameObject);
+            var scene=SubSceneHelper.EditorCreateScene(this.gameObject,false);
+            scenes.Add(scene);
         }
         //else if (contentType == SceneContentType.TreePart)
         //{
@@ -882,24 +909,35 @@ public class BuildingModelInfo : MonoBehaviour
         else
         {
             string dirPath = SubSceneManager.Instance.GetSceneDir(contentType);
-            EditorCreatePartScenesEx(dirPath, true, contentType);
+            scenes.AddRange(EditorCreatePartScenesEx(dirPath, true, contentType));
         }
+        return scenes;
     }
 
-    internal void EditorCreatePartScenesEx(string dir, bool isOverride, SceneContentType contentType)
+    internal List<SubScene_Base> EditorCreatePartScenesEx(string dir, bool isOverride, SceneContentType contentType)
     {
         //DestroyOldBounds();
         DestroyOldPartScenes(contentType);//重新创建，把之前的删除
 
         InitInOut(false);
-
+        List<SubScene_Base> senes = new List<SubScene_Base>();
         trees = this.GetComponentsInChildren<ModelAreaTree>(true);
         if (InPart)
-            CreatePartSceneEx(InPart, contentType,"_In_"+ contentType, trees, dir, isOverride, gameObject.AddComponent<SubScene_In>());
+        {
+            var scene = CreatePartSceneEx(InPart, contentType, "_In_" + contentType, trees, dir, isOverride, gameObject.AddComponent<SubScene_In>());
+            senes.Add(scene);
+        }
         if (OutPart0)
-            CreatePartSceneEx(OutPart0, contentType, "_Out0_" + contentType, trees, dir, isOverride, gameObject.AddComponent<SubScene_Out0>());
+        {
+            var scene = CreatePartSceneEx(OutPart0, contentType, "_Out0_" + contentType, trees, dir, isOverride, gameObject.AddComponent<SubScene_Out0>());
+            senes.Add(scene);
+        }
         if (OutPart1)
-            CreatePartSceneEx(OutPart1, contentType, "_Out1_" + contentType, trees, dir, isOverride, gameObject.AddComponent<SubScene_Out1>());
+        {
+            var scene = CreatePartSceneEx(OutPart1, contentType, "_Out1_" + contentType, trees, dir, isOverride, gameObject.AddComponent<SubScene_Out1>());
+            senes.Add(scene);
+        }
+        return senes;
     }
 
     public SubScene_Base CreatePartSceneEx(GameObject go, SceneContentType contentType, string nameAf, ModelAreaTree[] trees, string path, bool isOverride, SubScene_Base ss)
@@ -910,10 +948,10 @@ public class BuildingModelInfo : MonoBehaviour
 
             List<GameObject> gos = new List<GameObject>();
 
-            if(contentType==SceneContentType.Part || contentType==SceneContentType.TreePart)
+            if (contentType == SceneContentType.Part || contentType == SceneContentType.TreeAndPart)
                 gos.Add(go);
 
-            if (trees != null && (contentType == SceneContentType.Tree || contentType == SceneContentType.TreePart))
+            if (trees != null && (contentType == SceneContentType.Tree || contentType == SceneContentType.TreeAndPart))
                 foreach (var tree in trees)
                 {
                     if (tree == null) continue;
@@ -927,13 +965,43 @@ public class BuildingModelInfo : MonoBehaviour
             ss.gos = gos;
             ss.Init();
             string scenePath = $"{path}{this.name}{nameAf}.unity";
-            ss.SaveScene(scenePath, isOverride);
-            ss.ShowBounds();
+            ss.SetArg(scenePath, isOverride);
+            //ss.SaveScene();
+            //ss.ShowBounds();
             return ss;
         }
         else
         {
             Debug.LogError("CreatePartSceneEx go==null");
+        }
+        return null;
+    }
+    public SubScene_Base CreatePartScene(GameObject go, string nameAf, ModelAreaTree[] trees, string path, bool isOverride, SubScene_Base ss)
+    {
+        if (go)
+        {
+            List<GameObject> gos = new List<GameObject>();
+            gos.Add(go);
+
+            if (trees != null)
+                foreach (var tree in trees)
+                {
+                    if (tree == null) continue;
+
+                    if (tree.Target == go)
+                    {
+                        gos.Add(tree.gameObject);
+                    }
+                }
+
+            ss.contentType = SceneContentType.TreeAndPart;
+            ss.gos = gos;
+            ss.Init();
+            string scenePath = $"{path}{this.name}{nameAf}.unity";
+            ss.SetArg(scenePath, isOverride);
+            //ss.SaveScene();
+            ss.ShowBounds();
+            return ss;
         }
         return null;
     }
@@ -948,43 +1016,152 @@ public class BuildingModelInfo : MonoBehaviour
         trees = this.GetComponentsInChildren<ModelAreaTree>(true);
 
         if (InPart)
-            CreatePartScene(InPart, "_In", trees, dir, isOverride, gameObject.AddComponent<SubScene_In>());
-        if (OutPart0)
-            CreatePartScene(OutPart0, "_Out0", trees, dir, isOverride, gameObject.AddComponent<SubScene_Out0>());
-        if (OutPart1)
-            CreatePartScene(OutPart1, "_Out1", trees, dir, isOverride, gameObject.AddComponent<SubScene_Out1>());
-    }
-
-    public SubScene_Base CreatePartScene(GameObject go,string nameAf, ModelAreaTree[] trees,string path,bool isOverride, SubScene_Base ss)
-    {
-        if (go)
         {
-            List<GameObject> gos = new List<GameObject>();
-            gos.Add(go);
-
-            if(trees!=null)
-                foreach (var tree in trees)
-                {
-                    if (tree == null) continue;
-                
-                    if (tree.Target == go)
-                    {
-                        gos.Add(tree.gameObject);
-                    }
-                }
-
-            ss.contentType = SceneContentType.TreePart;
-            ss.gos = gos;
-            ss.Init();
-            string scenePath = $"{path}{this.name}{nameAf}.unity";
-            ss.SaveScene(scenePath, isOverride);
-            ss.ShowBounds();
-            return ss;
+            CreatePartScene(InPart, "_In", trees, dir, isOverride, gameObject.AddComponent<SubScene_In>());
         }
-        return null;
+        if (OutPart0)
+        {
+            CreatePartScene(OutPart0, "_Out0", trees, dir, isOverride, gameObject.AddComponent<SubScene_Out0>());
+        }
+        if (OutPart1)
+        {
+            CreatePartScene(OutPart1, "_Out1", trees, dir, isOverride, gameObject.AddComponent<SubScene_Out1>());
+        }
     }
+
+    
     #endregion
 
+    public void EditorLoadScenesEx(SceneContentType contentType)
+    {
+        this.contentType = contentType;
+        if (contentType == SceneContentType.TreeWithPart)
+        {
+            EditorLoadScenes_TreeWithPart();
+        }
+        else
+        {
+            EditorLoadScenes();
+        }
+    }
+
+    [ContextMenu("EditorLoadScenes")]
+    public void EditorLoadScenes()
+    {
+        DateTime start = DateTime.Now;
+
+        //EditorLoadScenes(contentType);
+
+        var scenes = GetSubScenesOfTypes(new List<SceneContentType>() { contentType });//按照实际使用中也是先呈现Tree，再按需加载Part的
+        EditorLoadScenes(scenes.ToArray());
+
+        this.InitInOut(false);
+        //SceneState = "EditLoadScenes_Part";
+        LoadTreeRenderers();
+
+        Debug.LogError($"EditorLoadScenes time:{(DateTime.Now - start)}");
+    }
+
+    [ContextMenu("EditorLoadScenes_TreeWithPart")]
+    public void EditorLoadScenes_TreeWithPart()
+    {
+        DateTime start = DateTime.Now;
+
+        //EditorLoadScenes(SceneContentType.Tree);
+        //EditorLoadScenes(SceneContentType.Part);
+
+        var scenes=GetSubScenesOfTypes(new List<SceneContentType>() { SceneContentType.Tree, SceneContentType.Part });//按照实际使用中也是先呈现Tree，再按需加载Part的
+        EditorLoadScenes(scenes.ToArray());
+        LoadTreeRenderers();
+        InitInOut();//这个是和Part有关的。
+
+        Debug.LogError($"EditorLoadScenes_TreeWithPart time:{(DateTime.Now - start)}");
+    }
+
+    private List<SubScene_Base> GetSubScenesOfTypes(List<SceneContentType> types)
+    {
+        List<SubScene_Base> list = new List<SubScene_Base>();
+        var scenes = gameObject.GetComponentsInChildren<SubScene_Base>();
+        for (int i = 0; i < scenes.Length; i++)
+        {
+            SubScene_Base scene = scenes[i];
+            if (types.Contains(scene.contentType))
+            {
+                list.Add(scene);
+            }
+        }
+        return list;
+    }
+
+    public void EditorLoadScenes(SceneContentType ct)
+    {
+        var scenes = gameObject.GetComponentsInChildren<SubScene_Base>();
+        EditorLoadScenes(scenes);
+    }
+
+    public void EditorLoadScenes(SubScene_Base[] scenes)
+    {
+        Debug.Log("EditorLoadScenes:"+scenes.Length);
+        for (int i = 0; i < scenes.Length; i++)
+        {
+            SubScene_Base scene = scenes[i];
+            scene.IsLoaded = false;
+            scene.EditorLoadScene();
+
+            float progress = (float)i / scenes.Length;
+            float percents = progress * 100;
+            if (ProgressBarHelper.DisplayCancelableProgressBar("EditorLoadScenes", $"{i}/{scenes.Length} {percents}% of 100%", progress))
+            {
+                break;
+            }
+        }
+        ProgressBarHelper.ClearProgressBar();
+        //this.InitInOut(false);
+        //SceneState = "EditLoadScenes_Part";
+    }
+
+    [ContextMenu("EditorSaveScenes_Part")]
+    public void EditorSaveScenes_Part()
+    {
+        var scenes = gameObject.GetComponentsInChildren<SubScene_Part>();
+        foreach (var scene in scenes)
+        {
+            scene.EditorSaveScene();
+        }
+
+        //SceneState = "EditSaveScenes_Part";
+    }
+
+    //[ContextMenu("EditorLoadScenes")]
+    //public void EditorLoadScenes()
+    //{
+    //    UnloadPartScenes();
+
+    //    var scenes = gameObject.GetComponentsInChildren<SubScene_Single>();
+    //    foreach(var scene in scenes)
+    //    {
+    //        scene.EditorLoadScene();
+    //    }
+
+    //    this.InitInOut();
+
+    //    //SceneState = "EditLoadScenes";
+    //}
+
+    [ContextMenu("EditorSaveScenes")]
+    public void EditorSaveScenes()
+    {
+        var scenes = gameObject.GetComponentsInChildren<SubScene_Single>();
+        foreach (var scene in scenes)
+        {
+            scene.IsLoaded = true;
+            scene.EditorSaveScene();
+        }
+
+        //SceneState = "EditSaveScenes";
+    }
+
+ 
 
 #endif
 }

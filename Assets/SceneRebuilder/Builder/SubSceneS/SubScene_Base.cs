@@ -11,6 +11,10 @@ using UnityEditor.SceneManagement;
 
 public class SubScene_Base : MonoBehaviour
 {
+    public int PreviewSceneId;//这个应该会一直存在主场景中，用InstanceId好了。
+
+    public SubSceneArg sceneArg;
+
     public Transform sceneParent;
 
     public Transform GetSceneParent()
@@ -50,11 +54,15 @@ public class SubScene_Base : MonoBehaviour
 
     public string sceneName = "";
 
-    public string scenePath;
+    //public string scenePath;
 
     public void SetPath(string path)
     {
-        scenePath = path;
+        if (sceneArg == null)
+        {
+            sceneArg = new SubSceneArg();
+        }
+        sceneArg.path = path;
         GetSceneName();
     }
 
@@ -113,19 +121,6 @@ public class SubScene_Base : MonoBehaviour
         return $"[{contentType}]{GetSceneName()} r:{rendererCount} v:{vertexCount:F0}w ";
     }
 
-    public string GetRalativePath()
-    {
-        //string rPath = scenePath;
-        //if(rPath.Contains(":"))
-        //{
-        //    rPath = EditorHelper.PathToRelative(rPath);
-        //}
-        //return rPath;
-
-        string rPath = EditorHelper.PathToRelative(scenePath);
-        return rPath;
-    }
-
 
     public string GetSceneName()
     {
@@ -133,12 +128,12 @@ public class SubScene_Base : MonoBehaviour
         {
             try
             {
-                string[] parts = scenePath.Split(new char[] { '.', '\\', '/' });
+                string[] parts = sceneArg.path.Split(new char[] { '.', '\\', '/' });
                 sceneName = parts[parts.Length - 2];
             }
             catch (Exception ex)
             {
-                Debug.LogError($"GetSceneName  obj:{this},path:{scenePath},Exception:{ex}");
+                Debug.LogError($"GetSceneName  obj:{this},path:{sceneArg.path},Exception:{ex}");
             }
             
         }
@@ -160,13 +155,15 @@ public class SubScene_Base : MonoBehaviour
     {
         get
         {
-            return this.name + "_Bounds";
+            return $"{this.name}_Bounds_{contentType}";
+            //return "123";
         }
     }
 
 
     internal void ShowBounds()
     {
+        //Debug.Log("ShowBounds:"+BoundsName+"|"+ contentType);
         DestroyBoundsBox();
         boundsGo = AreaTreeHelper.CreateBoundsCube(bounds, BoundsName, transform);
     }
@@ -396,6 +393,14 @@ public class SubScene_Base : MonoBehaviour
 
 #if UNITY_EDITOR
 
+    [ContextMenu("EditorCreateScene")]
+    public void EditorCreateScene()
+    {
+        SubSceneManager subSceneManager = SubSceneManager.Instance;
+        string path = subSceneManager.GetScenePath(this.name, SceneContentType.Single);
+        SubSceneHelper.EditorCreateScene(this.gameObject, path, subSceneManager.IsOverride, true,this);
+    }
+
     [ContextMenu("EditorReLoadScene")]
     public void EditorReLoadScene()
     {
@@ -417,7 +422,7 @@ public class SubScene_Base : MonoBehaviour
         {
             GameObject.DestroyImmediate(boundsGo);
         }
-        gos = EditorHelper.EditorLoadScene(scene, scenePath, IsSetParent ? GetSceneParent() : null).ToList();
+        gos = EditorHelper.EditorLoadScene(scene, sceneArg.path, IsSetParent ? GetSceneParent() : null).ToList();
     }
 
     [ContextMenu("EditorSaveScene")]
@@ -437,7 +442,8 @@ public class SubScene_Base : MonoBehaviour
 
         SubSceneManager subSceneManager = GameObject.FindObjectOfType<SubSceneManager>();
 
-        Scene scene=EditorHelper.CreateScene(scenePath, true, subSceneManager.IsOpenSubScene, gos.ToArray());
+        //Scene scene=EditorHelper.CreateScene(scenePath, true, subSceneManager.IsOpenSubScene, gos.ToArray());
+        Scene scene = SubSceneHelper.CreateScene(sceneArg);
         gos.Clear();
         IsLoaded = false;
 
@@ -447,13 +453,29 @@ public class SubScene_Base : MonoBehaviour
         Debug.Log("r1:" + r1);
     }
 
+    //public void SaveScene(string path, bool isOverride)
+    //{
+    //    SubSceneManager subSceneManager = GameObject.FindObjectOfType<SubSceneManager>();
+    //    sceneArg = new SubSceneArg(path, isOverride, subSceneManager.IsOpenSubScene, gos.ToArray());
+    //    scene = SubSceneHelper.CreateScene(sceneArg);
+    //    //SetPath(path);
+    //    GetSceneName();
+    //}
 
+    public void SaveScene(SubSceneArg arg)
+    {
+        scene = SubSceneHelper.CreateScene(arg);
+    }
 
-    public void SaveScene(string path, bool isOverride)
+    public void SaveScene()
+    {
+        scene = SubSceneHelper.CreateScene(sceneArg);
+    }
+
+    public void SetArg(string path, bool isOverride)
     {
         SubSceneManager subSceneManager = GameObject.FindObjectOfType<SubSceneManager>();
-        scene = EditorHelper.CreateScene(path, isOverride, subSceneManager.IsOpenSubScene, gos.ToArray());
-        SetPath(path);
+        sceneArg = new SubSceneArg(path, isOverride, subSceneManager.IsOpenSubScene, gos.ToArray());
         GetSceneName();
     }
 
@@ -465,13 +487,17 @@ public class SubScene_Base : MonoBehaviour
     {
         if (gos.Count == 0)
         {
-            var renderers = this.GetComponentsInChildren<MeshRenderer>(true);
-            InitRenderersInfo(renderers);
+            Debug.LogError("SubScene.Init gos.Count == 0:"+this.name);
         }
-        else
+        //if (gos.Count == 0)
+        //{
+        //    var renderers = this.GetComponentsInChildren<MeshRenderer>(true);
+        //    InitRenderersInfo(renderers);
+        //}
+        //else
         {
             List<MeshRenderer> renderers = new List<MeshRenderer>();
-            foreach(var go in gos)
+            foreach (var go in gos)
             {
                 if (go == null) continue;
                 renderers.AddRange(go.GetComponentsInChildren<MeshRenderer>(true));
