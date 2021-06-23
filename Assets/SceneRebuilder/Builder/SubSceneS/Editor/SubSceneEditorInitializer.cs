@@ -67,7 +67,7 @@ public class SubSceneEditorInitializer
             }
             else if (go.GetComponent<ModelAreaTree>() != null)
             {
-                CreateLabel("[ModelTree]", selectionRect, Layer2Width, Color.green, Color.blue);
+                CreateLabel("[ModelTree]", selectionRect, Layer2Width, new Color(0, 1f, 1), Color.blue);
             }
             else if (go.GetComponent<AreaTreeNode>() != null)
             {
@@ -98,17 +98,45 @@ public class SubSceneEditorInitializer
             else if (go.GetComponent<BuildingModelInfo>() != null)
             {
                 BuildingModelInfo modelInfo = go.GetComponent<BuildingModelInfo>();
+                bool r = modelInfo.IsModelSceneFinish();
+                Color c = new Color(0, 1, 0);
                 if (go.GetComponent<BuildingController>() != null)
                 {
-                    CreateLabel($"[{modelInfo.GetInfoName()}][Build]", selectionRect, Layer1Width, new Color(1, 0.5f, 0.5f), Color.red);
+                    if (r)
+                    {
+                        CreateLabel($"[{modelInfo.GetInfoName()}][Build]", selectionRect, Layer1Width, c, Color.red);
+                    }
+                    else
+                    {
+                        CreateLabel($"[{modelInfo.GetInfoName()}][Build]", selectionRect, Layer1Width, new Color(1, 0.5f, 0.5f), Color.red);
+                    }
+                    
                 }
                 else if (go.GetComponent<FloorController>() != null)
                 {
-                    CreateLabel($"[{modelInfo.GetInfoName()}][Floor]", selectionRect, Layer1Width, new Color(1, 0.7f, 0.3f), Color.red);
+                    //CreateLabel($"[{modelInfo.GetInfoName()}][Floor]", selectionRect, Layer1Width, new Color(1, 0.7f, 0.3f), Color.red);
+
+                    if (r)
+                    {
+                        CreateLabel($"[{modelInfo.GetInfoName()}][Build]", selectionRect, Layer1Width, c, Color.red);
+                    }
+                    else
+                    {
+                        CreateLabel($"[{modelInfo.GetInfoName()}][Floor]", selectionRect, Layer1Width, new Color(1, 0.5f, 0.5f), Color.red);
+                    }
                 }
                 else
                 {
-                    CreateLabel($"[{modelInfo.GetInfoName()}]", selectionRect, Layer1Width, new Color(1, 0.5f, 1), Color.red);
+                    //CreateLabel($"[{modelInfo.GetInfoName()}]", selectionRect, Layer1Width, new Color(1, 0.5f, 1), Color.red);
+
+                    if (r)
+                    {
+                        CreateLabel($"[{modelInfo.GetInfoName()}]", selectionRect, Layer1Width, c, Color.red);
+                    }
+                    else
+                    {
+                        CreateLabel($"[{modelInfo.GetInfoName()}]", selectionRect, Layer1Width, new Color(1, 0.5f, 0.5f), Color.red);
+                    }
                 }
             }
             else if (go.GetComponent<BoundsBox>() != null)
@@ -139,7 +167,7 @@ public class SubSceneEditorInitializer
             {
                 if(go.name=="In" || go.name == "Out1" || go.name == "Out0")
                 {
-                    CreateLabel("[Part]", selectionRect, Layer2Width, Color.cyan, Color.red);
+                    CreateLabel("[Part]", selectionRect, Layer2Width, Color.grey, Color.red);
                 }
             }
         }

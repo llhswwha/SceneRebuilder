@@ -487,7 +487,7 @@ public class SubScene_Base : MonoBehaviour
     {
         if (gos.Count == 0)
         {
-            Debug.LogError("SubScene.Init gos.Count == 0:"+this.name);
+            Debug.LogError($"SubScene.Init gos.Count == 0 subScene:{this.name} contentType:{contentType}");
         }
         //if (gos.Count == 0)
         //{

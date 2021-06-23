@@ -22,9 +22,49 @@ public class BuildingModelInfo : MonoBehaviour
         }
         return i;
     }
+
+    public bool IsModelSceneFinish()
+    {
+        int pC = GetPartCount();
+        if (pC > 0) return false;
+        var tc = GetTreeCount();
+        if (tc > 0) return false;
+        if (SceneList == null || SceneList.sceneCount == 0) return false;
+        return true;
+    }
+
+    private int GetPartCount()
+    {
+        int pC = 0;
+        if (InPart != null)
+        {
+            pC++;
+        }
+        if (OutPart0 != null)
+        {
+            pC++;
+        }
+        if (OutPart1 != null)
+        {
+            pC++;
+        }
+        return pC;
+    }
+
     public string GetInfoName()
     {
+        //int m = 0;
+        
         var tc = GetTreeCount();
+        //string infoName = "Mod";
+
+        int pC = GetPartCount();
+
+        string p = "";
+        if (pC>0)
+        {
+            p = $"|P{pC}";
+        }
         if (SceneList != null)
         {
             
@@ -33,18 +73,18 @@ public class BuildingModelInfo : MonoBehaviour
                 //return "Model(S)(T)";
                 if (SceneList.sceneCount > 0)
                 {
-                    return $"Model(S{SceneList.sceneCount})(T{tc})";
+                    return $"Mod|S{SceneList.sceneCount}|T{tc}{p}";
                 }
                 else
                 {
-                    return $"Model(T{tc})";
+                    return $"Mod|T{tc}{p}";
                 }
             }
             else
             {
                 if (SceneList.sceneCount > 0)
                 {
-                    return $"Model(S{SceneList.sceneCount})";
+                    return $"Mod|S{SceneList.sceneCount}{p}";
                 }
             }
         }
@@ -53,11 +93,11 @@ public class BuildingModelInfo : MonoBehaviour
             if (tc > 0)
             {
                 //return "Model(T)";
-                return $"Model(T{tc})";
+                return $"Mod|T{tc}{p}";
             }
         }
         
-        return "Model";
+        return $"Mod{p}";
     }
 
     public GameObject InPart;
@@ -861,6 +901,12 @@ public class BuildingModelInfo : MonoBehaviour
         for (int i = 0; i < count; i++)
         {
             SubScene_Base scene = scenes[i];
+            if (scene.gos.Count == 0)
+            {
+                Debug.LogError($"EditorCreateScenes scene.gos.Count == 0 Scene:{scene.name}");
+                GameObject.DestroyImmediate(scene);
+                continue;
+            }
             scene.IsLoaded = true;
             scene.SaveScene();
             scene.ShowBounds();
