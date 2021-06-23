@@ -36,5 +36,18 @@ public class SubScene_List : MonoBehaviour
             GameObject.DestroyImmediate(scene.gameObject);
         }
         sceneCount = 0;
+        ClearChildren();
+    }
+
+    public void ClearChildren()
+    {
+        List<Transform> children=new List<Transform>();
+        for(int i=0;i<this.transform.childCount;i++)
+        {
+            children.Add(this.transform.GetChild(i));
+        }
+        foreach(var child in children){
+            GameObject.DestroyImmediate(child.gameObject);
+        }
     }
 }
