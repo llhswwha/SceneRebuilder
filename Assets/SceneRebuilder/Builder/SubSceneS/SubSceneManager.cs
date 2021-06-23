@@ -83,7 +83,7 @@ public class SubSceneManager : MonoBehaviour
 #if UNITY_EDITOR
 
     [ContextMenu("* EditorCreateBuildingScenes")]
-    private void EditorCreateBuildingScenes()
+    public void EditorCreateBuildingScenes()
     {
         AreaTreeHelper.InitCubePrefab();
 
