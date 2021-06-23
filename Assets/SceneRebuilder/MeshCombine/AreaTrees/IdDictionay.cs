@@ -1,6 +1,7 @@
 using System;
 using System.Collections;
 using System.Collections.Generic;
+using System.Linq;
 using UnityEngine;
 
 public static class IdDictionay
@@ -8,6 +9,26 @@ public static class IdDictionay
     public static Dictionary<string, MeshRenderer> RendererDict = new Dictionary<string, MeshRenderer>();
 
     public static Dictionary<string, RendererId> IdDict = new Dictionary<string, RendererId>();
+
+    public static List<string> GetIds()
+    {
+        return IdDict.Keys.ToList();
+    }
+
+    public static List<RendererId> GetRIds()
+    {
+        return IdDict.Values.ToList();
+    }
+
+    public static List<MeshRenderer> GetRenderers()
+    {
+        return RendererDict.Values.ToList();
+    }
+
+    //public static List<RendererId> GetIds()
+    //{
+    //    return IdDict.Values.ToList();
+    //}
 
     private static void SetId(RendererId id)
     {
@@ -111,14 +132,19 @@ public static class IdDictionay
         }
     }
 
-
-    internal static void InitRenderers(GameObject[] objs,string tag)
+    /// <summary>
+    /// 子场景加载后，注册子场景中的模型信息
+    /// </summary>
+    /// <param name="objs"></param>
+    /// <param name="tag"></param>
+    internal static void InitGos(IEnumerable<GameObject> objs,string tag)
     {
         DateTime start = DateTime.Now;
         int count1 = RendererDict.Count;
         int idCount = 0;
         foreach(var obj in objs)
         {
+            if (obj == null) continue;
             //var renderers = obj.GetComponentsInChildren<MeshRenderer>();
             //InitRenderers(renderers);
 
@@ -130,7 +156,7 @@ public static class IdDictionay
             idCount += ids.Length;
         }
         int count2 = RendererDict.Count;
-        Debug.LogError($"RendererDictionay.InitRenderers tag:{tag} objs:{objs.Length},idCount:{idCount} count1:{count1} count2:{count2} add:{count2-count1} time:{(DateTime.Now - start)}");
+        Debug.Log($"RendererDictionay.InitRenderers tag:{tag} objs:{objs.Count()},idCount:{idCount} count1:{count1} count2:{count2} add:{count2-count1} time:{(DateTime.Now - start)}");
     }
 
     public static GameObject GetGo(string id)
@@ -146,12 +172,9 @@ public static class IdDictionay
             if (go == null)
             {
                 Debug.LogError($"RendererDictionay.GetGo go == null :{id},Dict:{IdDict.Count}");
+                return null;
             }
-            //if (IdDict[id] == null)
-            //{
-            //    InitIds();
-            //}
-            //return IdDict[id].gameObject;
+            return go.gameObject;
         }
         Debug.LogError($"RendererDictionay.GetGo go not found id:{id},Dict:{IdDict.Count}");
         return null;

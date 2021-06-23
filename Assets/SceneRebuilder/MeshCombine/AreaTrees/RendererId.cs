@@ -9,12 +9,15 @@ public class RendererId
 {
     public string Id;
 
+    public int insId;
+
     public MeshRenderer mr;
 
     internal void Init(MeshRenderer r)
     {
         this.mr = r;
         Id = Guid.NewGuid().ToString();
+        insId = r.gameObject.GetInstanceID();
     }
 
     internal void Init(GameObject go)
@@ -22,6 +25,7 @@ public class RendererId
         if (go == null) return;
         this.mr = go.GetComponent<MeshRenderer>();
         Id = Guid.NewGuid().ToString();
+        insId = go.GetInstanceID();
     }
 
     public static string GetId(GameObject r)

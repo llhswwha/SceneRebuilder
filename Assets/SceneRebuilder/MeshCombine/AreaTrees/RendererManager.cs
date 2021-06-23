@@ -6,30 +6,75 @@ using UnityEngine;
 
 public class RendererManager : MonoBehaviour
 {
+    public GameObject[] GetAllGos;
 
     public MeshRenderer[] allRenderers;
 
-    public List<RendererId> allIds = new List<RendererId>();
+    public List<RendererId> allRIds = new List<RendererId>();
+
+    public List<string> allIds = new List<string>();
 
     public int Count = 0;
+
+    public string TestId = "";
+
+    public GameObject TestGo;
+
+    public Renderer TestRenderer;
+
+    [ContextMenu("TestGetRenderer")]
+    public void TestGetRenderer()
+    {
+        TestRenderer = IdDictionay.GetRenderer(TestId);
+        Debug.Log($"TestGetRenderer id:{TestId},renderer:{TestRenderer}");
+    }
+
+    [ContextMenu("TestGetGo")]
+    public void TestGetGo()
+    {
+        TestGo = IdDictionay.GetGo(TestId);
+        Debug.Log($"TestGetRenderer id:{TestId},go:{TestGo}");
+    }
 
     [ContextMenu("InitIds")]
     public void InitIds()
     {
+        IdDictionay.InitInfos();
+        allIds = IdDictionay.GetIds();
+        allRIds = IdDictionay.GetRIds();
+        allRenderers = IdDictionay.GetRenderers().ToArray();
+        Count = allRIds.Count;
+    }
+
+    [ContextMenu("InitRenderers")]
+    public void InitRenderers()
+    {
         DateTime start = DateTime.Now;
+        ProgressBarHelper.DisplayProgressBar("InitIds", "Start", 0);
         allRenderers = GameObject.FindObjectsOfType<MeshRenderer>(true);
-        allIds.Clear();
-        foreach(var r in allRenderers)
+        allRIds.Clear();
+        int count = allRenderers.Length;
+        for (int i = 0; i < count; i++)
         {
+            MeshRenderer r = allRenderers[i];
             RendererId id = r.GetComponent<RendererId>();
             if (id == null)
             {
                 id = r.gameObject.AddComponent<RendererId>();
                 id.Init(r);
             }
-            allIds.Add(id);
+            allRIds.Add(id);
+
+            float progress = (float)i / count;
+            float percents = progress * 100;
+
+            if (ProgressBarHelper.DisplayCancelableProgressBar("InitIds", $"Progress1 {i}/{count} {percents:F1}% {r.name}", progress))
+            {
+                break;
+            }
         }
         Count = allRenderers.Length;
+        ProgressBarHelper.ClearProgressBar();
         Debug.LogError($"InitRenderers count:{allRenderers.Length} time:{(DateTime.Now - start)}");
     }
 
@@ -37,8 +82,8 @@ public class RendererManager : MonoBehaviour
     public void ClearIds()
     {
         DateTime start = DateTime.Now;
-        allIds = GameObject.FindObjectsOfType<RendererId>(true).ToList();
-        foreach(var id in allIds)
+        allRIds = GameObject.FindObjectsOfType<RendererId>(true).ToList();
+        foreach(var id in allRIds)
         {
             GameObject.DestroyImmediate(id);
         }
