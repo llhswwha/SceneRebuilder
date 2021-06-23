@@ -33,15 +33,15 @@ public static class EditorHelper
             float progress = (float)i / allScenes.Length;
             float percents = progress * 100;
 
-            if (ProgressBarHelper.DisplayCancelableProgressBar("ClearOtherScenes", $"{i}/{allScenes.Length} {percents:F2}% of 100%", progress))
-            {
-                break;
-            }
+            //if (ProgressBarHelper.DisplayCancelableProgressBar("ClearOtherScenes", $"{i}/{allScenes.Length} {percents:F2}% of 100%", progress))
+            //{
+            //    break;
+            //}
             Scene scene = allScenes[i];
             EditorSceneManager.CloseScene(scene, true);
         }
 
-        ProgressBarHelper.ClearProgressBar();
+        //ProgressBarHelper.ClearProgressBar();
     }
 
     public static GameObject[] EditorLoadScene(Scene scene, string path, Transform parent)

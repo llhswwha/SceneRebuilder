@@ -89,14 +89,15 @@ public class SubSceneManager : MonoBehaviour
 
         DateTime start = DateTime.Now;
         var buildings = GameObject.FindObjectsOfType<BuildingModelInfo>();
-        for (int i = 0; i < buildings.Length; i++)
+        int count = buildings.Length;
+        for (int i = 0; i < count; i++)
         {
             var item = buildings[i];
 
-            float progress = (float)i / buildings.Length;
+            float progress = (float)i / count;
             float percents = progress * 100;
 
-            if (ProgressBarHelper.DisplayCancelableProgressBar("EditorSaveScenes", $"Progress1 {i}/{subScenes.Length} {percents:F1}% {item.name}", progress))
+            if (ProgressBarHelper.DisplayCancelableProgressBar("EditorCreateBuildingScenes", $"Progress1 {i}/{count} {percents:F1}% {item.name}", progress))
             {
                 //ProgressBarHelper.ClearProgressBar();
                 break;
@@ -117,9 +118,9 @@ public class SubSceneManager : MonoBehaviour
                 //вс╫Ь╤х
 
                 //Debug.Log($"EditorCreateBuildingScenes subProgress:{subProgress} || {i}/{subScenes.Length} {percents:F2}% of 100% \t{item.name}");
-                float progress = (float)(i+subProgress) / buildings.Length;
+                float progress = (float)(i+subProgress) / count;
                 float percents = progress * 100;
-                if (ProgressBarHelper.DisplayCancelableProgressBar("EditorSaveScenes ", $"Progress2 {(i + subProgress):F1}/{subScenes.Length} {percents:F1}% {item.name}", progress+ subProgress))
+                if (ProgressBarHelper.DisplayCancelableProgressBar("EditorCreateBuildingScenes ", $"Progress2 {(i + subProgress):F1}/{count} {percents:F1}% {item.name}", progress))
                 {
                     //ProgressBarHelper.ClearProgressBar();
                     //break;
@@ -162,13 +163,14 @@ public class SubSceneManager : MonoBehaviour
 
         DateTime start = DateTime.Now;
         var buildings = GameObject.FindObjectsOfType<BuildingModelInfo>();
-        for (int i = 0; i < buildings.Length; i++)
+        int count = buildings.Length;
+        for (int i = 0; i < count; i++)
         {
             var item = buildings[i];
-            float progress = (float)i / buildings.Length;
+            float progress = (float)i / count;
             float percents = progress * 100;
 
-            if (ProgressBarHelper.DisplayCancelableProgressBar("EditorSaveScenes", $"{i}/{subScenes.Length} {percents:F2}% of 100% \t{item.name}", progress))
+            if (ProgressBarHelper.DisplayCancelableProgressBar("EditorSaveScenes", $"Progress1 {i}/{count} {percents:F2}% of 100%  {item.name}", progress))
             {
                 //ProgressBarHelper.ClearProgressBar();
                 break;
@@ -183,7 +185,16 @@ public class SubSceneManager : MonoBehaviour
             //{
             //    SubSceneHelper.EditorCreateScene<SubScene_Single>(item.gameObject, GetScenePath(item.name, SceneContentType.Single),IsOverride);
             //}
-            item.EditorLoadScenesEx(this.contentType);
+            item.EditorLoadScenesEx(this.contentType,p=>
+            {
+                float progress = (float)(i+p) / count;
+                float percents = progress * 100;
+
+                if (ProgressBarHelper.DisplayCancelableProgressBar("EditorSaveScenes", $"Progress2 {(i + p):F1}/{count} {percents:F2}% of 100%  {item.name}", progress))
+                {
+                    return;
+                }
+            });
         }
         ProgressBarHelper.ClearProgressBar();
 

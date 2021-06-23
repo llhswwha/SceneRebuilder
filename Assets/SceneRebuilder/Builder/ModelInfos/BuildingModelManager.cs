@@ -89,6 +89,7 @@ public class BuildingModelManager : MonoBehaviour
 
     public void CombinedBuildings(List<BuildingModelInfo> buildings)
     {
+        Debug.Log($"CombinedBuildings count:{buildings.Count}");
         DateTime start = DateTime.Now;
         AreaTreeManager treeManager = GameObject.FindObjectOfType<AreaTreeManager>();
         if (treeManager != null) treeManager.Clear();
@@ -113,6 +114,7 @@ public class BuildingModelManager : MonoBehaviour
                 {
                     return;
                 }
+                System.Threading.Thread.Sleep(2000);
             });
 
             if (trees != null)
@@ -126,6 +128,7 @@ public class BuildingModelManager : MonoBehaviour
             {
                 break;
             }
+            System.Threading.Thread.Sleep(2000);
         }
 
 

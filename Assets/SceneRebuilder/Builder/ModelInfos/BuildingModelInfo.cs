@@ -1188,28 +1188,33 @@ public class BuildingModelInfo : MonoBehaviour
     
     #endregion
 
-    public void EditorLoadScenesEx(SceneContentType contentType)
+    public void EditorLoadScenesEx(SceneContentType contentType, Action<float> progressChanged)
     {
         this.contentType = contentType;
         if (contentType == SceneContentType.TreeWithPart)
         {
-            EditorLoadScenes_TreeWithPart();
+            EditorLoadScenes_TreeWithPart(progressChanged);
         }
         else
         {
-            EditorLoadScenes();
+            EditorLoadScenes(progressChanged);
         }
     }
 
     [ContextMenu("EditorLoadScenes")]
-    public void EditorLoadScenes()
+    private void EditorLoadScenes()
+    {
+        EditorLoadScenes(null);
+    }
+
+    public void EditorLoadScenes(Action<float> progressChanged)
     {
         DateTime start = DateTime.Now;
 
         //EditorLoadScenes(contentType);
 
         var scenes = GetSubScenesOfTypes(new List<SceneContentType>() { contentType });//按照实际使用中也是先呈现Tree，再按需加载Part的
-        EditorLoadScenes(scenes.ToArray());
+        EditorLoadScenes(scenes.ToArray(), progressChanged);
 
         this.InitInOut(false);
         //SceneState = "EditLoadScenes_Part";
@@ -1219,7 +1224,12 @@ public class BuildingModelInfo : MonoBehaviour
     }
 
     [ContextMenu("EditorLoadScenes_TreeWithPart")]
-    public void EditorLoadScenes_TreeWithPart()
+    private void EditorLoadScenes_TreeWithPart()
+    {
+        EditorLoadScenes_TreeWithPart(null);
+    }
+
+    public void EditorLoadScenes_TreeWithPart(Action<float> progressChanged)
     {
         DateTime start = DateTime.Now;
 
@@ -1227,7 +1237,7 @@ public class BuildingModelInfo : MonoBehaviour
         //EditorLoadScenes(SceneContentType.Part);
 
         var scenes=GetSubScenesOfTypes(new List<SceneContentType>() { SceneContentType.Tree, SceneContentType.Part });//按照实际使用中也是先呈现Tree，再按需加载Part的
-        EditorLoadScenes(scenes.ToArray());
+        EditorLoadScenes(scenes.ToArray(), progressChanged);
         LoadTreeRenderers();
         InitInOut();//这个是和Part有关的。
 
@@ -1249,13 +1259,13 @@ public class BuildingModelInfo : MonoBehaviour
         return list;
     }
 
-    public void EditorLoadScenes(SceneContentType ct)
+    public void EditorLoadScenes(SceneContentType ct, Action<float> progressChanged)
     {
         var scenes = gameObject.GetComponentsInChildren<SubScene_Base>();
-        EditorLoadScenes(scenes);
+        EditorLoadScenes(scenes, progressChanged);
     }
 
-    public void EditorLoadScenes(SubScene_Base[] scenes)
+    public void EditorLoadScenes(SubScene_Base[] scenes,Action<float> progressChanged)
     {
         Debug.Log("EditorLoadScenes:"+scenes.Length);
         for (int i = 0; i < scenes.Length; i++)
@@ -1266,12 +1276,28 @@ public class BuildingModelInfo : MonoBehaviour
 
             float progress = (float)i / scenes.Length;
             float percents = progress * 100;
-            if (ProgressBarHelper.DisplayCancelableProgressBar("EditorLoadScenes", $"{i}/{scenes.Length} {percents:F2}% of 100%", progress))
+
+            if (progressChanged != null)
             {
-                break;
+                progressChanged(progress);
+            }
+            else
+            {
+                if (ProgressBarHelper.DisplayCancelableProgressBar("EditorLoadScenes", $"{i}/{scenes.Length} {percents:F2}% of 100%", progress))
+                {
+                    break;
+                }
             }
         }
-        ProgressBarHelper.ClearProgressBar();
+        if (progressChanged != null)
+        {
+            progressChanged(1);
+        }
+        else
+        {
+            ProgressBarHelper.ClearProgressBar();
+        }
+       
         //this.InitInOut(false);
         //SceneState = "EditLoadScenes_Part";
     }
