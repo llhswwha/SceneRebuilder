@@ -106,10 +106,10 @@ public class BuildingModelManager : MonoBehaviour
             {
                 float progress = (float)(i+ subProgress) / buildings.Count;
 
-                Debug.Log($"CombinedBuildings subProgress:{subProgress},progress:{progress}");
+                //Debug.Log($"CombinedBuildings subProgress:{subProgress},progress:{progress}");
 
                 float percents = progress * 100;
-                if (ProgressBarHelper.DisplayCancelableProgressBar("CombinedBuildings", $"Progress2 {(i + subProgress):F1}/{buildings.Count} {percents:F2}% \t{b.name}", progress))
+                if (ProgressBarHelper.DisplayCancelableProgressBar("CombinedBuildings", $"Progress2 {(i + subProgress):F1}/{buildings.Count} {percents:F2}%  {b.name}", progress))
                 {
                     return;
                 }
@@ -122,7 +122,7 @@ public class BuildingModelManager : MonoBehaviour
 
             float progress = (float)i / buildings.Count;
             float percents = progress * 100;
-            if (ProgressBarHelper.DisplayCancelableProgressBar("CombinedBuildings", $"Progress1 {i}/{buildings.Count} {percents:F2}% \t{b.name}", progress))
+            if (ProgressBarHelper.DisplayCancelableProgressBar("CombinedBuildings", $"Progress1 {i}/{buildings.Count} {percents:F2}%  {b.name}", progress))
             {
                 break;
             }

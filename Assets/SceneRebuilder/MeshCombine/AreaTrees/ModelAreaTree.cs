@@ -125,17 +125,28 @@ public class ModelAreaTree : MonoBehaviour
 
     public bool IsHidden=false;
 
-    [ContextMenu("CombineMesh")]
-    public void CombineMesh()
+    //[ContextMenu("CombineMesh")]
+    //public void CombineMesh()
+    //{
+    //    CombineMesh(null);
+    //}
+
+    public void CombineMesh(Action<float> progressChanged)
     {   
         //IsCombined=true;
         DateTime start=DateTime.Now;
         int renderCount=0;
-        foreach(AreaTreeNode node in TreeNodes)
+        for (int i = 0; i < TreeNodes.Count; i++)
         {
-            if(node==null)continue;
+            float progress = (float)i / TreeNodes.Count;
+            if (progressChanged != null)
+            {
+                progressChanged(progress);
+            }
+            AreaTreeNode node = TreeNodes[i];
+            if (node==null)continue;
             if(node.Nodes.Count>0)continue;
-            node.CombineMesh();
+            node.CombineMesh();//ºËÐÄ
             renderCount += node.RendererCount;
         }
 
@@ -377,16 +388,20 @@ public class ModelAreaTree : MonoBehaviour
         }
         Debug.LogWarning($"CreateDictionary tree:{this.name},render2NodeDict:{AreaTreeHelper.render2NodeDict.Count},\t{(DateTime.Now-start).TotalMilliseconds:F1}ms");
     }
-
     [ContextMenu("* GenerateMesh")]
-    public void GenerateMesh()
+    private void GenerateMesh()
+    {
+        GenerateMesh(null);
+    }
+
+    public void GenerateMesh(Action<float> progressChanged)
     {
          DateTime start=DateTime.Now;
 
         //ShowRenderers();
         AddColliders();
         CreateCells_Tree();
-        CombineMesh();
+        CombineMesh(progressChanged);//ºËÐÄ
         CreateDictionary();
         foreach (var item in TreeNodes)
         {

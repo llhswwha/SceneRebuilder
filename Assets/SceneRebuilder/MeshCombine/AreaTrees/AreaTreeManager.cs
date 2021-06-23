@@ -224,7 +224,7 @@ public class AreaTreeManager : MonoBehaviour
     public List<ModelAreaTree> Trees = new List<ModelAreaTree>();
 
     List<Material> matList = new List<Material>();
-    public ModelAreaTree CreateTree(GameObject go, bool isC,string suffix, MeshRenderer[] renderers)
+    public ModelAreaTree CreateTree(GameObject go, bool isC,string suffix, MeshRenderer[] renderers, Action<float> progressChanged)
     {
         
         string treeName = "NewAreaTree" + suffix;
@@ -256,7 +256,7 @@ public class AreaTreeManager : MonoBehaviour
             {
                 combinerSetting.SetSetting();
             }
-            areaTree.GenerateMesh();
+            areaTree.GenerateMesh(progressChanged);
         }
         else
         {
@@ -424,7 +424,10 @@ public class AreaTreeManager : MonoBehaviour
             Target=prefabInstanceBuilder.GetTarget();
         }
 
-        CreateTree(GetTarget(),false,"_HiddenTree",hiddenRenderers);//动态显示模型的树
+        CreateTree(GetTarget(),false,"_HiddenTree",hiddenRenderers, p =>
+        {
+
+        });//动态显示模型的树
         
         Debug.LogError($"CreateHiddenOne \t{(DateTime.Now - start).ToString()}");
     }
@@ -480,7 +483,13 @@ public class AreaTreeManager : MonoBehaviour
         ModelAreaTree tree2 = null;
         if (smallModels.Count>0)
         {
-            tree2 = CreateTree(target, isCombine, "_SamllTree", smallModels.ToArray());//动态显示模型的树
+            tree2 = CreateTree(target, isCombine, "_SamllTree", smallModels.ToArray(),p=>
+            {
+                if (progressChanged != null)
+                {
+                    progressChanged((0+p)/2);
+                }
+            });//动态显示模型的树
             tree2.IsHidden = true;
             if (isCombine)
             {
@@ -502,7 +511,13 @@ public class AreaTreeManager : MonoBehaviour
         ModelAreaTree tree1 = null;
         if (bigModels.Count>0)
         {
-            tree1 = CreateTree(target, isCombine, "_BigTree", bigModels.ToArray());//合并模型的树
+            tree1 = CreateTree(target, isCombine, "_BigTree", bigModels.ToArray(), p =>
+            {
+                if (progressChanged != null)
+                {
+                    progressChanged((1f + p) / 2);
+                }
+            });//合并模型的树
             if (isCombine)
             {
                 tree1.HideRenderers();
@@ -550,7 +565,10 @@ public class AreaTreeManager : MonoBehaviour
         {
             hiddenRenderers = prefabInstanceBuilder.GetHiddenRenderers().ToArray();
         }
-        var tree2=CreateTree(target,isCombine,"_HiddenTree",hiddenRenderers);//动态显示模型的树
+        var tree2=CreateTree(target,isCombine,"_HiddenTree",hiddenRenderers, p =>
+        {
+
+        });//动态显示模型的树
         tree2.IsHidden=true;
         tree2.HideRenderers();
 
@@ -559,7 +577,10 @@ public class AreaTreeManager : MonoBehaviour
         {
             combinedRenderers = prefabInstanceBuilder.GetCombinedRenderers().ToArray();
         }
-        var tree1=CreateTree(target,isCombine,"_ShownTree",combinedRenderers);//合并模型的树
+        var tree1=CreateTree(target,isCombine,"_ShownTree",combinedRenderers, p =>
+        {
+
+        });//合并模型的树
 
         //TreeNodeShowManager.HiddenTrees.Add(tree2);
         tree2.DestroyNodeRender();
@@ -580,7 +601,10 @@ public class AreaTreeManager : MonoBehaviour
         {
             combinedRenderers = prefabInstanceBuilder.GetCombinedRenderers().ToArray();
         }
-        var tree1=CreateTree(target,isCombine,"_Tree",combinedRenderers);//合并模型的树
+        var tree1=CreateTree(target,isCombine,"_Tree",combinedRenderers, p =>
+        {
+
+        });//合并模型的树
 
         Debug.LogError($"CreateOne \t{(DateTime.Now - start).ToString()}");
     }
@@ -594,7 +618,10 @@ public class AreaTreeManager : MonoBehaviour
         for (int i = 0; i < target.transform.childCount; i++)
         {
             var child = target.transform.GetChild(i);
-            CreateTree(child.gameObject,isCombine,"_CombineTree",null);
+            CreateTree(child.gameObject,isCombine,"_CombineTree",null, p =>
+            {
+
+            });
         }
 
         //AvgCount /= Target.transform.childCount;

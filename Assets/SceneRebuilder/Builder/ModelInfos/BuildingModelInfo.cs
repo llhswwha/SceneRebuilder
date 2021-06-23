@@ -229,7 +229,9 @@ public class BuildingModelInfo : MonoBehaviour
         {
             ProgressBarHelper.DisplayProgressBar("CreateTree", "InTree", 0 / 3f);
         }
-        var tree1 = CreateTree(InPart, "InTree");
+        var tree1 = CreateTree(InPart, "InTree",p=> { 
+
+        });
         if (tree1 != null)
         {
             ts.Add(tree1);
@@ -244,7 +246,9 @@ public class BuildingModelInfo : MonoBehaviour
             ProgressBarHelper.DisplayProgressBar("CreateTree", "OutTree0", 1 / 3f);
         }
 
-        var tree2 = CreateTree(OutPart0, "OutTree0");
+        var tree2 = CreateTree(OutPart0, "OutTree0", p => {
+
+        });
         if (tree2 != null)
         {
             ts.Add(tree2);
@@ -258,7 +262,9 @@ public class BuildingModelInfo : MonoBehaviour
         {
             ProgressBarHelper.DisplayProgressBar("CreateTree", "OutTree1", 2 / 3f);
         }
-        var tree3 = CreateTree(OutPart1, "OutTree1");
+        var tree3 = CreateTree(OutPart1, "OutTree1", p => {
+
+        });
         if (tree3 != null)
         {
             ts.Add(tree3);
@@ -294,7 +300,17 @@ public class BuildingModelInfo : MonoBehaviour
         
 
         List<ModelAreaTree> ts = new List<ModelAreaTree>();
-        var tree1 = CreateTree(InPart, "InTree");
+        var tree1 = CreateTree(InPart, "InTree", p => {
+            //Debug.Log($"CreateTreesCoreBS subProgress:{p},progress:{(0 + p) / 3f}");
+            if (progressChanged != null)
+            {
+                progressChanged((0 + p) / 3f);
+            }
+            else
+            {
+                ProgressBarHelper.DisplayProgressBar("CreateTree", $"InTree progress:{((0 + p) / 3f):P1}", (0 + p) / 3f);
+            }
+        });
         if (tree1 != null)
         {
             ts.Add(tree1);
@@ -312,16 +328,16 @@ public class BuildingModelInfo : MonoBehaviour
             ProgressBarHelper.DisplayProgressBar("CreateTree", "OutTree0", 1 / 3f);
         }
 
-        var tbs = CreateTrees_BigSmall_Core(subProgress =>
+        var tbs = CreateTrees_BigSmall_Core(p =>
          {
              //0,0.5,1
              if (progressChanged != null)
              {
-                 progressChanged((1 + subProgress) / 3f);
+                 progressChanged((1 + p) / 3f);
              }
              else
              {
-                 ProgressBarHelper.DisplayProgressBar("CreateTree", "OutTree0", (1 + subProgress) / 3f);
+                 ProgressBarHelper.DisplayProgressBar("CreateTree", $"OutTree0 progress:{((1 + p) / 3f):P1}", (1 + p) / 3f);
              }
          });
         foreach (var t in tbs)
@@ -340,7 +356,16 @@ public class BuildingModelInfo : MonoBehaviour
         {
             ProgressBarHelper.DisplayProgressBar("CreateTree", "OutTree1", 2 / 3f);
         }
-        var tree3 = CreateTree(OutPart1, "OutTree1");
+        var tree3 = CreateTree(OutPart1, "OutTree1", p => {
+            if (progressChanged != null)
+            {
+                progressChanged((1 + p) / 3f);
+            }
+            else
+            {
+                ProgressBarHelper.DisplayProgressBar("CreateTree", $"OutTree1 progress:{((2 + p) / 3f):P1}", (2 + p) / 3f);
+            }
+        });
         if (tree3 != null)
         {
             ts.Add(tree3);
@@ -548,7 +573,7 @@ public class BuildingModelInfo : MonoBehaviour
 
  
 
-    private ModelAreaTree CreateTree(GameObject target,string treeName)
+    private ModelAreaTree CreateTree(GameObject target,string treeName, Action<float> progressChanged)
     {
         if (target == null) return null;
         
@@ -565,7 +590,7 @@ public class BuildingModelInfo : MonoBehaviour
         }
             //tree1.GenerateTree();//没有合并
 
-        tree1.GenerateMesh();//合并
+        tree1.GenerateMesh(progressChanged);//合并
 
         treeGo1.SetActive(target.activeInHierarchy);//该隐藏的继续隐藏
 
