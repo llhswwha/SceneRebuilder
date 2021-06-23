@@ -111,6 +111,10 @@ public class SubSceneEditorInitializer
                     CreateLabel($"[{modelInfo.GetInfoName()}]", selectionRect, Layer1Width, new Color(1, 0.5f, 1), Color.red);
                 }
             }
+            else if (go.GetComponent<BoundsBox>() != null)
+            {
+                CreateLabel("[Bounds]", selectionRect, Layer2Width, Color.white, Color.red);
+            }
             else if (go.GetComponent<BuildingController>() != null)
             {
                 CreateLabel("[Build]", selectionRect, Layer1Width, new Color(0.4f, 0.5f, 1), Color.red);

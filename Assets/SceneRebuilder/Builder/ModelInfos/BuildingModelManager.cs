@@ -58,7 +58,7 @@ public class BuildingModelManager : MonoBehaviour
         {
             float progress = (float)i / Buildings.Count;
             float percents = progress * 100;
-            if (ProgressBarHelper.DisplayCancelableProgressBar("InitBuildings", $"{i}/{Buildings.Count} {percents}% of 100%", progress))
+            if (ProgressBarHelper.DisplayCancelableProgressBar("InitBuildings", $"{i}/{Buildings.Count} {percents:F2}% of 100%", progress))
             {
                 break;
             }
@@ -112,7 +112,7 @@ public class BuildingModelManager : MonoBehaviour
             float progress = (float)i / buildings.Count;
             float percents = progress * 100;
 
-            if (ProgressBarHelper.DisplayCancelableProgressBar("CreateTrees", $"{i}/{buildings.Count} {percents}% of 100%", progress))
+            if (ProgressBarHelper.DisplayCancelableProgressBar("CombinedBuildings", $"{i}/{buildings.Count} {percents:F2}% of 100%", progress))
             {
                 break;
             }
@@ -269,7 +269,7 @@ public class BuildingModelManager : MonoBehaviour
             float progress = (float)i / Buildings.Count;
             float percents = progress * 100;
 
-            if (ProgressBarHelper.DisplayCancelableProgressBar("CreatePrefabs", $"{i}/{Buildings.Count} {percents}% of 100%", progress))
+            if (ProgressBarHelper.DisplayCancelableProgressBar("CreatePrefabs", $"{i}/{Buildings.Count} {percents:F2}% of 100%", progress))
             {
                 //ProgressBarHelper.ClearProgressBar();
                 break;
@@ -318,25 +318,30 @@ public class BuildingModelManager : MonoBehaviour
             b.contentType = this.contentType;
             //b.EditorCreateScenes();
 
-            b.EditorCreateScenes_TreeWithPart();
+            b.EditorCreateScenes_TreeWithPart((subProgress,si,c)=>
+            {
+                Debug.Log($"CreateScenesInner subProgress:{subProgress} building:{b}");
+            });
 
             scenes.Add(go.name);
 
             float progress = (float)i / buildings.Count;
             float percents = progress * 100;
 
-            if (ProgressBarHelper.DisplayCancelableProgressBar("CreatePrefabs", $"{i}/{buildings.Count} {percents}% of 100%", progress))
+            if (ProgressBarHelper.DisplayCancelableProgressBar("CreatePrefabs", $"{i}/{buildings.Count} {percents:F2}% of 100%", progress))
             {
                 //ProgressBarHelper.ClearProgressBar();
                 break;
             }
+
+            break;
         }
 
 
         if (treeManager) treeManager.AddTrees(allTrees.ToArray());
 
         ProgressBarHelper.ClearProgressBar();
-        Debug.LogWarning($"CreatePrefabs Buildings:{Buildings.Count},Time:{(DateTime.Now - start).TotalMilliseconds}ms");
+        Debug.LogWarning($"CreateScenesInner End Buildings:{Buildings.Count},Time:{(DateTime.Now - start).TotalMilliseconds}ms");
 #endif
     }
 

@@ -726,7 +726,7 @@ public class MeshComparer : MonoBehaviour
             DateTime start1=DateTime.Now;
             float progress = (float)i / MaxICPCount;
             float percents = progress * 100;
-            if(ProgressBarHelper.DisplayCancelableProgressBar("TestICP2", $"{i}/{MaxICPCount} {percents}% of 100%", progress))
+            if(ProgressBarHelper.DisplayCancelableProgressBar("TestICP2", $"{i}/{MaxICPCount} {percents:F2}% of 100%", progress))
             {
                 break;
             }

@@ -92,10 +92,11 @@ public class SubSceneManager : MonoBehaviour
         for (int i = 0; i < buildings.Length; i++)
         {
             var item = buildings[i];
+
             float progress = (float)i / buildings.Length;
             float percents = progress * 100;
 
-            if (ProgressBarHelper.DisplayCancelableProgressBar("EditorSaveScenes", $"{item.name}\t{i}/{subScenes.Length} {percents}% of 100%", progress))
+            if (ProgressBarHelper.DisplayCancelableProgressBar("EditorSaveScenes", $"Progress1 {i}/{subScenes.Length} {percents:F1}% {item.name}", progress))
             {
                 //ProgressBarHelper.ClearProgressBar();
                 break;
@@ -110,7 +111,20 @@ public class SubSceneManager : MonoBehaviour
             //{
             //    SubSceneHelper.EditorCreateScene<SubScene_Single>(item.gameObject, GetScenePath(item.name, SceneContentType.Single),IsOverride);
             //}
-            item.EditorCreateScenesEx(this.contentType);
+
+            item.EditorCreateScenesEx(this.contentType,(subProgress,si,c)=>
+            {
+                //вс╫Ь╤х
+
+                //Debug.Log($"EditorCreateBuildingScenes subProgress:{subProgress} || {i}/{subScenes.Length} {percents:F2}% of 100% \t{item.name}");
+                float progress = (float)(i+subProgress) / buildings.Length;
+                float percents = progress * 100;
+                if (ProgressBarHelper.DisplayCancelableProgressBar("EditorSaveScenes ", $"Progress2 {(i + subProgress):F1}/{subScenes.Length} {percents:F1}% {item.name}", progress+ subProgress))
+                {
+                    //ProgressBarHelper.ClearProgressBar();
+                    //break;
+                }
+            });
         }
         ProgressBarHelper.ClearProgressBar();
 
@@ -121,6 +135,8 @@ public class SubSceneManager : MonoBehaviour
         {
             ClearOtherScenes();
         }
+
+        EditorHelper.RefreshAssets();
 
         WriteLog($"EditorSaveScenes count:{buildings.Length},\t time:{(DateTime.Now - start).ToString()}");
     }
@@ -152,7 +168,7 @@ public class SubSceneManager : MonoBehaviour
             float progress = (float)i / buildings.Length;
             float percents = progress * 100;
 
-            if (ProgressBarHelper.DisplayCancelableProgressBar("EditorSaveScenes", $"{item.name}\t{i}/{subScenes.Length} {percents}% of 100%", progress))
+            if (ProgressBarHelper.DisplayCancelableProgressBar("EditorSaveScenes", $"{i}/{subScenes.Length} {percents:F2}% of 100% \t{item.name}", progress))
             {
                 //ProgressBarHelper.ClearProgressBar();
                 break;
@@ -191,7 +207,7 @@ public class SubSceneManager : MonoBehaviour
             float progress = (float)i / scenes.Length;
             float percents = progress * 100;
 
-            if (ProgressBarHelper.DisplayCancelableProgressBar("EditorLoadScenes", $"{item.GetSceneName()}\t{i}/{scenes.Length} {percents}% of 100%", progress))
+            if (ProgressBarHelper.DisplayCancelableProgressBar("EditorLoadScenes", $"{item.GetSceneName()}\t{i}/{scenes.Length} {percents:F2}% of 100%", progress))
             {
                 //ProgressBarHelper.ClearProgressBar();
                 break;
@@ -215,7 +231,7 @@ public class SubSceneManager : MonoBehaviour
             float progress = (float)i / subScenes.Length;
             float percents = progress * 100;
 
-            if (ProgressBarHelper.DisplayCancelableProgressBar("EditorSaveScenes", $"{item.GetSceneName()}\t{i}/{subScenes.Length} {percents}% of 100%", progress))
+            if (ProgressBarHelper.DisplayCancelableProgressBar("EditorSaveScenes", $"{item.GetSceneName()}\t{i}/{subScenes.Length} {percents:F2}% of 100%", progress))
             {
                 break;
             }

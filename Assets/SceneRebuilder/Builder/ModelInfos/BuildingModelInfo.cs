@@ -621,7 +621,7 @@ public class BuildingModelInfo : MonoBehaviour
     [ContextMenu("DestroyOldPartScenes")]
     private void DestroyOldPartScenes()
     {
-        Debug.LogError("DestroyOldPartScenes");
+        //Debug.Log("DestroyOldPartScenes");
         if (SceneList == null)
         {
             SceneList = this.GetComponentInChildren<SubScene_List>();
@@ -793,37 +793,12 @@ public class BuildingModelInfo : MonoBehaviour
         ss.ShowBounds();
     }
 
-    //[ContextMenu("EditorCreateScene")]
-    //public void EditorCreateScene()
-    //{
-    //    //GameObject go = this.gameObject;
-
-    //    //SubScene_Single ss1 = go.GetComponent<SubScene_Single>();
-    //    //if (ss1 != null)
-    //    //{
-    //    //    Debug.LogWarning("已经存在SubScene_Single，调用EditorSaveScenes，保存场景");
-    //    //    EditorSaveScenes();
-    //    //    return;
-    //    //}
-    //    ////UpackPrefab_One(go);
-    //    ////SubSceneManager subSceneManager = GameObject.FindObjectOfType<SubSceneManager>();
-    //    ////SubScene_Single ss = go.AddComponent<SubScene_Single>();
-    //    ////ss.Init();
-    //    ////string path = subSceneManager.GetScenePath(go.name, SubSceneDir.Single);
-    //    ////SubSceneHelper.SaveChildrenToScene(path, this.transform, subSceneManager.IsOverride);
-    //    ////ss.ShowBounds();
-
-    //    //SubSceneHelper.EditorCreateScene(go);
-
-    //    CreatePartScene(SceneContentType.Single);
-    //}
-
-    public void EditorCreateScenesEx(SceneContentType contentType)
+    public void EditorCreateScenesEx(SceneContentType contentType, Action<float,int,int> progressChanged)
     {
         this.contentType = contentType;
         if (contentType == SceneContentType.TreeWithPart)
         {
-            EditorCreateScenes_TreeWithPart();
+            EditorCreateScenes_TreeWithPart(progressChanged);
         }
         else
         {
@@ -840,8 +815,9 @@ public class BuildingModelInfo : MonoBehaviour
 
         DestroyOldPartScenes();
 
+        InitInOut(false);
         var scenes=CreatePartScene(contentType);
-        EditorCreateScenes(scenes);
+        EditorCreateScenes(scenes,null);
 
         SubSceneManager.Instance.ClearOtherScenes();
         EditorMoveScenes();
@@ -850,7 +826,12 @@ public class BuildingModelInfo : MonoBehaviour
     }
 
     [ContextMenu("* EditorCreateScenes_TreeWithPart")]
-    public void EditorCreateScenes_TreeWithPart()
+    private void EditorCreateScenes_TreeWithPart()
+    {
+        EditorCreateScenes_TreeWithPart(null);
+    }
+
+    public void EditorCreateScenes_TreeWithPart(Action<float,int,int> progressChanged)
     {
         DateTime start = DateTime.Now;
 
@@ -858,20 +839,22 @@ public class BuildingModelInfo : MonoBehaviour
 
         DestroyOldPartScenes();
 
+        InitInOut(false);
+
         List<SubScene_Base> scenes = new List<SubScene_Base>();
         scenes.AddRange(CreatePartScene(SceneContentType.Tree));//这里会保存RendererId的关联关系
         scenes.AddRange(CreatePartScene(SceneContentType.Part));
-        EditorCreateScenes(scenes);
+        EditorCreateScenes(scenes, progressChanged);
 
         LoadTreeRenderers();//关联回Tree中的Renderers
 
         SubSceneManager.Instance.ClearOtherScenes();
         EditorMoveScenes();
 
-        Debug.LogError($"EditorCreateScenes_TreeWithPart time:{(DateTime.Now - start)}");
+        Debug.LogError($"EditorCreateScenes_TreeWithPart time:{(DateTime.Now - start)},progressChanged:{progressChanged}");
     }
 
-    public void EditorCreateScenes(List<SubScene_Base> scenes)
+    public void EditorCreateScenes(List<SubScene_Base> scenes, Action<float,int,int> progressChanged)
     {
         int count = scenes.Count;
         Debug.Log("EditorCreateScenes:" + count);
@@ -884,12 +867,22 @@ public class BuildingModelInfo : MonoBehaviour
 
             float progress = (float)i / count;
             float percents = progress * 100;
-            if (ProgressBarHelper.DisplayCancelableProgressBar("EditorCreateScenes", $"{i}/{count} {percents}% of 100%", progress))
+            if (progressChanged != null)
             {
-                break;
+                progressChanged(progress,i,count);
             }
+            else
+            {
+                Debug.Log($"EditorCreateScenes progress:{progress:F2},percents:{percents:F2}");
+                if (ProgressBarHelper.DisplayCancelableProgressBar("EditorCreateScenes", $"{i}/{count} {percents:F2}% of 100%", progress))
+                {
+                    break;
+                }
+            }
+            //System.Threading.Thread.Sleep(1000);
         }
-        ProgressBarHelper.ClearProgressBar();
+        if(progressChanged==null)
+            ProgressBarHelper.ClearProgressBar();
     }
 
     public List<SubScene_Base> CreatePartScene(SceneContentType contentType)
@@ -918,8 +911,8 @@ public class BuildingModelInfo : MonoBehaviour
     {
         //DestroyOldBounds();
         DestroyOldPartScenes(contentType);//重新创建，把之前的删除
+        //InitInOut(false);//放到外面去
 
-        InitInOut(false);
         List<SubScene_Base> senes = new List<SubScene_Base>();
         trees = this.GetComponentsInChildren<ModelAreaTree>(true);
         if (InPart)
@@ -1000,7 +993,7 @@ public class BuildingModelInfo : MonoBehaviour
             string scenePath = $"{path}{this.name}{nameAf}.unity";
             ss.SetArg(scenePath, isOverride);
             //ss.SaveScene();
-            ss.ShowBounds();
+            //ss.ShowBounds();
             return ss;
         }
         return null;
@@ -1110,7 +1103,7 @@ public class BuildingModelInfo : MonoBehaviour
 
             float progress = (float)i / scenes.Length;
             float percents = progress * 100;
-            if (ProgressBarHelper.DisplayCancelableProgressBar("EditorLoadScenes", $"{i}/{scenes.Length} {percents}% of 100%", progress))
+            if (ProgressBarHelper.DisplayCancelableProgressBar("EditorLoadScenes", $"{i}/{scenes.Length} {percents:F2}% of 100%", progress))
             {
                 break;
             }

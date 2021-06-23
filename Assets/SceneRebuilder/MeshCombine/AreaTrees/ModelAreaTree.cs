@@ -804,7 +804,7 @@ public class ModelAreaTree : MonoBehaviour
 
         TargetId = RendererId.GetId(Target);
 
-        Debug.Log("SaveRenderersId:"+this.name);
+        //Debug.Log("SaveRenderersId:"+this.name);
     }
 
     [ContextMenu("LoadRenderers")]
@@ -815,6 +815,6 @@ public class ModelAreaTree : MonoBehaviour
             node.LoadRenderers();
         }
         Target = IdDictionay.GetGo(TargetId);
-        Debug.Log("LoadRenderers:"+this.name);
+        //Debug.Log("LoadRenderers:"+this.name);
     }
 }

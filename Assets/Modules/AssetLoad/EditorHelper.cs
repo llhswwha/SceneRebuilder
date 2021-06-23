@@ -26,16 +26,15 @@ public static class EditorHelper
     public static void ClearOtherScenes()
     {
         //EditorSceneManager.
-        Debug.Log("sceneCount:" + EditorSceneManager.sceneCount);
+        //Debug.Log("ClearOtherScenes sceneCount:" + EditorSceneManager.sceneCount);
         Scene[] allScenes = SceneManager.GetAllScenes();
         for (int i = 1; i < allScenes.Length; i++)
         {
             float progress = (float)i / allScenes.Length;
             float percents = progress * 100;
 
-            if (ProgressBarHelper.DisplayCancelableProgressBar("ClearOtherScenes", $"{i}/{allScenes.Length} {percents}% of 100%", progress))
+            if (ProgressBarHelper.DisplayCancelableProgressBar("ClearOtherScenes", $"{i}/{allScenes.Length} {percents:F2}% of 100%", progress))
             {
-                //ProgressBarHelper.ClearProgressBar();
                 break;
             }
             Scene scene = allScenes[i];
@@ -81,9 +80,8 @@ public static class EditorHelper
         {
             Debug.LogError("CreateScene SaveSceneResult1:" + result);
         }
-        
-        AssetDatabase.Refresh();
 
+        //RefreshAssets();
 
         if (isOpen == false)
         {
@@ -92,28 +90,23 @@ public static class EditorHelper
         return scene;
     }
 
-    public static Scene CreateScene(GameObject objs, string scenePath)
+    public static void RefreshAssets()
     {
-        Scene activeScene = EditorSceneManager.GetActiveScene();
-        Scene scene = EditorSceneManager.NewScene(NewSceneSetup.EmptyScene, NewSceneMode.Additive);
-        EditorSceneManager.SetActiveScene(activeScene);
-
-        MoveGosToScene(scene, objs);
-
-        bool result = EditorSceneManager.SaveScene(scene, scenePath);
-        Debug.Log("CreateScene  SaveSceneResult1:" + result);
         AssetDatabase.Refresh();
-        return scene;
     }
 
-    //public static SubSceneArg GetSceneArg(string path, bool isOverride, bool isOpen, params GameObject[] objs)
+    //public static Scene CreateScene(GameObject objs, string scenePath)
     //{
-    //    SubSceneArg arg = new SubSceneArg(path, isOverride, isOpen, objs);
-    //}
+    //    Scene activeScene = EditorSceneManager.GetActiveScene();
+    //    Scene scene = EditorSceneManager.NewScene(NewSceneSetup.EmptyScene, NewSceneMode.Additive);
+    //    EditorSceneManager.SetActiveScene(activeScene);
 
-    //public static Scene CreateScene(SubSceneArg arg)
-    //{
+    //    MoveGosToScene(scene, objs);
 
+    //    bool result = EditorSceneManager.SaveScene(scene, scenePath);
+    //    Debug.Log("CreateScene  SaveSceneResult1:" + result);
+    //    RefreshAssets();
+    //    return scene;
     //}
 
     public static Scene CreateScene(string path, bool isOveride,bool isOpen, params GameObject[] objs)
@@ -166,7 +159,7 @@ public static class EditorHelper
                 MoveGosToScene(scene, objs);
                 bool result2 = EditorSceneManager.SaveScene(scene, scenePath);
                 Debug.Log("SaveSceneResult3:" + result2);
-                AssetDatabase.Refresh();
+                //RefreshAssets();
 
                 if (isOpen == false)
                 {
@@ -241,7 +234,7 @@ public static class EditorHelper
         {
             makeParentDirExist(pDir);
             AssetDatabase.CreateFolder(getParentPath(pDir), getParentName(path));
-            AssetDatabase.Refresh();
+            RefreshAssets();
         }
         else
         {
@@ -398,19 +391,6 @@ public static class EditorHelper
 
 #endif
 
-    //public static IEnumerator LoadScenesAsync(List<string> sceneList, System.Action<float> progressChanged, System.Action<Scene> finished, bool isAutoUnload = false)
-    //{
-    //    System.DateTime start = System.DateTime.Now;
-    //    for (int i = 0; i < sceneList.Count; i++)
-    //    {
-    //        var sceneName = sceneList[i];
-    //        yield return LoadSceneAsync(sceneName,);
-    //        yield return new WaitForSeconds(0.1f);
-    //    }
-    //    Debug.LogError($"LoadAllScene time:{(DateTime.Now - start).ToString()}");
-    //    yield return null;
-    //}
-
     public static IEnumerator LoadSceneAsync(string sName, System.Action<float> progressChanged, System.Action<Scene> finished,bool isAutoUnload=false)
     {
         System.DateTime start = System.DateTime.Now;
@@ -535,9 +515,6 @@ public static class EditorHelper
 
     }
 
-    
-
-
     public static string GetScenePath(string path)
     {
         if(string.IsNullOrEmpty(path))
@@ -570,8 +547,6 @@ public static class EditorHelper
         }
         return vertexs;
     }
-
-
 
     public static string GetDirPath(string path)//Assets/Models/SiHuiFactory/J1_Devices/主厂房设备8/主厂房设备8.FBX
     {

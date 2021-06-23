@@ -288,7 +288,7 @@ UnpackPrefab();
             float progress = (float)i / TargetCount;
             float percents = progress * 100;
             
-            if(ProgressBarHelper.DisplayCancelableProgressBar("ReplaceToPrefab", $"{i}/{TargetCount} {percents}% of 100%", progress))
+            if(ProgressBarHelper.DisplayCancelableProgressBar("CreateTestModel", $"{i}/{TargetCount} {percents:F2}% of 100%", progress))
             {
                 //ProgressBarHelper.ClearProgressBar();
                 break;
@@ -471,7 +471,7 @@ UnpackPrefab();
             float progress = (float)i /models.Count;
             float percents = progress * 100;
             
-            if(ProgressBarHelper.DisplayCancelableProgressBar("ReplaceToPrefab_Core", $"{i}/{models.Count} {percents}% of 100%", progress))
+            if(ProgressBarHelper.DisplayCancelableProgressBar("ReplaceToPrefab_Core", $"{i}/{models.Count} {percents:F2}% of 100%", progress))
             {
                 //ProgressBarHelper.ClearProgressBar();
                 break;
@@ -1067,7 +1067,7 @@ break;
             float progress = (float)i / meshFilters.Length;
             float percents = progress * 100;
             
-            if(ProgressBarHelper.DisplayCancelableProgressBar("GetBigSmallRenderers", $"{i}/{meshFilters.Length} {percents}% of 100%", progress))
+            if(ProgressBarHelper.DisplayCancelableProgressBar("GetBigSmallRenderers", $"{i}/{meshFilters.Length} {percents:F2}% of 100%", progress))
             {
                 //ProgressBarHelper.ClearProgressBar();
                 break;
@@ -1132,7 +1132,7 @@ break;
 
             float progress = (float)i / meshFilters.Length;
             float percents = progress * 100;
-            if(ProgressBarHelper.DisplayCancelableProgressBar("GetMeshSizeInfo", $"{i}/{meshFilters.Length} {percents}% of 100%", progress))
+            if(ProgressBarHelper.DisplayCancelableProgressBar("GetMeshSizeInfo", $"{i}/{meshFilters.Length} {percents:F2}% of 100%", progress))
             {
                 //ProgressBarHelper.ClearProgressBar();
                 break;
@@ -1270,7 +1270,7 @@ break;
             float progress = (float)i / TargetCount;
             float percents = progress * 100;
             
-            if(ProgressBarHelper.DisplayCancelableProgressBar("ReplaceToPrefab", $"{i}/{TargetCount} {percents}% of 100%", progress))
+            if(ProgressBarHelper.DisplayCancelableProgressBar("ReplaceToPrefab", $"{i}/{TargetCount} {percents:F2}% of 100%", progress))
             {
                 //ProgressBarHelper.ClearProgressBar();
                 break;
@@ -1484,7 +1484,7 @@ break;
                 float progress = (float)currentCount / totalCount;
                 float percents = progress * 100;
 
-                if (ProgressBarHelper.DisplayCancelableProgressBar("CreatePrefabs", $"{currentCount}/{totalCount} {percents}% of 100%", progress))
+                if (ProgressBarHelper.DisplayCancelableProgressBar("CreatePrefabs", $"{currentCount}/{totalCount} {percents:F2}% of 100%", progress))
                 {
                     isBreak = true;
                     //ProgressBarHelper.ClearProgressBar();
@@ -1554,7 +1554,7 @@ break;
             float progress = (float)i / PrefabInfoList.Count;
             float percents = progress * 100;
 
-            if (ProgressBarHelper.DisplayCancelableProgressBar("CreatePrefabs", $"{i}/{PrefabInfoList.Count} {percents}% of 100%", progress))
+            if (ProgressBarHelper.DisplayCancelableProgressBar("CreatePrefabs", $"{i}/{PrefabInfoList.Count} {percents:F2}% of 100%", progress))
             {
                 //ProgressBarHelper.ClearProgressBar();
                 break;
