@@ -893,10 +893,11 @@ public class BuildingModelInfo : MonoBehaviour
             scene.ShowBounds();
         }
     }
+    public SubScene_List SceneList = null;
 
 #if UNITY_EDITOR
 
-    public SubScene_List SceneList = null;
+
 
     private void InitSceneListGO()
     {

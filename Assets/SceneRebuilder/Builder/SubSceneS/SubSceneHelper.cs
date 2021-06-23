@@ -11,6 +11,31 @@ using UnityEditor.SceneManagement;
 
 public static class SubSceneHelper
 {
+
+    public static void LinkScenes(SubScene_Base[] scenes)
+    {
+        int count = scenes.Length;
+        Debug.Log("LinkScenes:" + count);
+        for (int i = 0; i < count; i++)
+        {
+            SubScene_Base scene = scenes[i];
+            if (scene.LinkedScene == null)
+            {
+                for (int j = i + 1; j < count; j++)
+                {
+                    SubScene_Base scene2 = scenes[j];
+                    Debug.Log($"LinkScenes sceneType:{scene.GetType()} sceneType2:{scene2.GetType()} {scene.GetType() == scene2.GetType()}");
+                    if (scene.GetType() == scene2.GetType())
+                    {
+                        scene.LinkedScene = scene2;
+                        scene2.LinkedScene = scene;
+                        break;
+                    }
+                }
+            }
+        }
+    }
+
     public static List<GameObject> GetChildrenGos(Transform parent)
     {
         List<GameObject> rootChildren = new List<GameObject>();
@@ -21,6 +46,8 @@ public static class SubSceneHelper
         }
         return rootChildren;
     }
+
+#if UNITY_EDITOR
 
     //[ContextMenu("SaveScene")]
     public static Scene SaveChildrenToScene(string path, Transform target, bool isOverride)
@@ -100,38 +127,16 @@ public static class SubSceneHelper
 
     public static void UpackPrefab_One(GameObject go)
     {
-#if UNITY_EDITOR
+
         GameObject root = PrefabUtility.GetOutermostPrefabInstanceRoot(go);
         if (root != null)
         {
             PrefabUtility.UnpackPrefabInstance(root, PrefabUnpackMode.Completely, InteractionMode.UserAction);
         }
-#endif
-    }
 
-    public static void LinkScenes(SubScene_Base[] scenes)
-    {
-        int count = scenes.Length;
-        Debug.Log("LinkScenes:" + count);
-        for (int i = 0; i < count; i++)
-        {
-            SubScene_Base scene = scenes[i];
-            if (scene.LinkedScene == null)
-            {
-                for (int j = i + 1; j < count; j++)
-                {
-                    SubScene_Base scene2 = scenes[j];
-                    Debug.Log($"LinkScenes sceneType:{scene.GetType()} sceneType2:{scene2.GetType()} {scene.GetType() == scene2.GetType()}");
-                    if (scene.GetType() == scene2.GetType())
-                    {
-                        scene.LinkedScene = scene2;
-                        scene2.LinkedScene = scene;
-                        break;
-                    }
-                }
-            }
-        }
     }
+#endif
+
 }
 
 public enum SubSceneType

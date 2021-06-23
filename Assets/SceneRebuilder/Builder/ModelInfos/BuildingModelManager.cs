@@ -250,6 +250,8 @@ public class BuildingModelManager : MonoBehaviour
         }
     }
 
+#if UNITY_EDITOR
+
     [ContextMenu("EditorMoveScenes")]
     public void EditorMoveScenes()
     {
@@ -262,7 +264,7 @@ public class BuildingModelManager : MonoBehaviour
     [ContextMenu("CreatePrefabs")]
     public void CreatePrefabs()
     {
-#if UNITY_EDITOR
+
         Unpack();
         DateTime start = DateTime.Now;
         AreaTreeManager treeManager = GameObject.FindObjectOfType<AreaTreeManager>();
@@ -292,8 +294,9 @@ public class BuildingModelManager : MonoBehaviour
 
         ProgressBarHelper.ClearProgressBar();
         Debug.LogWarning($"CreatePrefabs Buildings:{Buildings.Count},Time:{(DateTime.Now - start).TotalMilliseconds}ms");
-#endif
+
     }
+#endif
 
     private string GetScenePath(string sceneName)
     {
