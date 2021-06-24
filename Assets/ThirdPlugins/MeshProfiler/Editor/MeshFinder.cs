@@ -7,20 +7,25 @@ using System.Text;
 
 namespace MeshProfilerNS
 {
-    public class MeshElement
+    public class ListItemElementValues
+    {
+
+    }
+
+    public class ListItemElement<T> where T : ListItemElementValues
     {
         public string name;
         public string assetPath;
         public bool isGroup = false;
-        public List<MeshValues> childList;
-        public MeshValues rootMeshValue;
+        public List<T> childList;
+        public T rootMeshValue;
         public List<GameObject> refList;
         public GameObject rootObj;
         public int AllVertsNum;
-        public bool isAsset=false;
-        public bool isSkin=false;
+        public bool isAsset = false;
+        public bool isSkin = false;
 
-        public MeshElement(GameObject _rootObj, bool _isAsset,bool _isSkin=false)
+        public ListItemElement(GameObject _rootObj, bool _isAsset, bool _isSkin = false)
         {
             rootObj = _rootObj;
             isAsset = _isAsset;
@@ -30,8 +35,39 @@ namespace MeshProfilerNS
 
         }
 
-        public void RefleshProps()
+        public virtual void RefleshProps()
         {
+            name = rootObj.name;
+        }
+    }
+
+    public class MeshElement : ListItemElement<MeshValues>
+    {
+        //public string name;
+        //public string assetPath;
+        //public bool isGroup = false;
+        //public List<MeshValues> childList;
+        //public MeshValues rootMeshValue;
+        //public List<GameObject> refList;
+        //public GameObject rootObj;
+        //public int AllVertsNum;
+        //public bool isAsset=false;
+        //public bool isSkin=false;
+
+        public MeshElement(GameObject _rootObj, bool _isAsset,bool _isSkin=false):base(_rootObj,_isAsset,_isSkin)
+        {
+            //rootObj = _rootObj;
+            //isAsset = _isAsset;
+            //isSkin = _isSkin;
+            //refList = new List<GameObject>();
+            //RefleshProps();
+
+        }
+
+        public override void RefleshProps()
+        {
+            base.RefleshProps();
+
             childList = new List<MeshValues>();
             rootMeshValue = new MeshValues();
 
@@ -135,7 +171,7 @@ namespace MeshProfilerNS
     }
 
 
-    public class MeshValues
+    public class MeshValues : ListItemElementValues
     {
         public string parentName = "";
         public Mesh mesh = null;
