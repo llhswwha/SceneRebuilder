@@ -198,7 +198,18 @@ public class BuildingModelInfo : MonoBehaviour
         ModelAreaTree[] ts = null;
         if (this.OutPart1 == null && this.InPart == null)
         {
-            ts= CreateTrees_BigSmall_Core(progressChanged);//Ã»ÓÐInµÄ×´Ì¬ÏÂÖ±½Ó°ÑOut0·Ö³ÉSmallºÍBig
+            ts= CreateTrees_BigSmall_Core(progressChanged);//Ã»ï¿½ï¿½Inï¿½ï¿½×´Ì¬ï¿½ï¿½Ö±ï¿½Ó°ï¿½Out0ï¿½Ö³ï¿½Smallï¿½ï¿½Big
+
+            // ts= CreateTrees_BigSmall_Core(p=>{
+            //     if (progressChanged != null)
+            //     {
+            //         progressChanged(p);
+            //     }
+            //     else
+            //     {
+            //         ProgressBarHelper.DisplayProgressBar("CreateTreesInnerEx", "CreateTrees_BigSmall_Core", p);
+            //     }
+            // });//Ã»ï¿½ï¿½Inï¿½ï¿½×´Ì¬ï¿½ï¿½Ö±ï¿½Ó°ï¿½Out0ï¿½Ö³ï¿½Smallï¿½ï¿½Big
         }
         else
         {
@@ -489,11 +500,16 @@ public class BuildingModelInfo : MonoBehaviour
     {
         DateTime start = DateTime.Now;
         AreaTreeManager treeManager = GameObject.FindObjectOfType<AreaTreeManager>();
-        trees = CreateTreesInnerEx(true,null);
+        //trees = CreateTreesInnerEx(true,null);
+
+        trees = CreateTreesInnerEx(true,p=>{
+            ProgressBarHelper.DisplayProgressBar("CreateTreesBSEx",$"Progress {p:P1}",p);
+        });
         if (treeManager)
         {
             treeManager.AddTrees(trees);
         }
+        ProgressBarHelper.ClearProgressBar();
         Debug.LogError($"CreateTreesBSEx {(DateTime.Now - start).ToString()}");
     }
 
@@ -608,13 +624,13 @@ public class BuildingModelInfo : MonoBehaviour
         {
             tree1.nodeSetting = treeManager.nodeSetting;
         }
-            //tree1.GenerateTree();//Ã»ÓÐºÏ²¢
+            //tree1.GenerateTree();//Ã»ï¿½ÐºÏ²ï¿½
 
-        tree1.GenerateMesh(progressChanged);//ºÏ²¢
+        tree1.GenerateMesh(progressChanged);//ï¿½Ï²ï¿½
 
-        treeGo1.SetActive(target.activeInHierarchy);//¸ÃÒþ²ØµÄ¼ÌÐøÒþ²Ø
+        treeGo1.SetActive(target.activeInHierarchy);//ï¿½ï¿½ï¿½ï¿½ï¿½ØµÄ¼ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½
 
-        tree1.IsHidden = !target.activeInHierarchy;//¶¯Ì¬Òþ²Ø
+        tree1.IsHidden = !target.activeInHierarchy;//ï¿½ï¿½Ì¬ï¿½ï¿½ï¿½ï¿½
         return tree1;
     }
 
@@ -791,7 +807,7 @@ public class BuildingModelInfo : MonoBehaviour
         foreach (var c in components)
         {
             if(c.contentType==contentType)
-                GameObject.DestroyImmediate(c);//ÖØÐÂ´´½¨£¬°ÑÖ®Ç°µÄÉ¾³ý
+                GameObject.DestroyImmediate(c);//ï¿½ï¿½ï¿½Â´ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½Ö®Ç°ï¿½ï¿½É¾ï¿½ï¿½
         }
     }
 
@@ -813,7 +829,7 @@ public class BuildingModelInfo : MonoBehaviour
             foreach (var c in components)
             {
                 //if (c.contentType == contentType)
-                GameObject.DestroyImmediate(c);//ÖØÐÂ´´½¨£¬°ÑÖ®Ç°µÄÉ¾³ý
+                GameObject.DestroyImmediate(c);//ï¿½ï¿½ï¿½Â´ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½Ö®Ç°ï¿½ï¿½É¾ï¿½ï¿½
             }
         }
 
@@ -825,7 +841,7 @@ public class BuildingModelInfo : MonoBehaviour
     //    foreach (var c in components)
     //    {
     //        if (c == null) continue;
-    //        GameObject.DestroyImmediate(c.gameObject);//ÖØÐÂ´´½¨£¬°ÑÖ®Ç°µÄÉ¾³ý
+    //        GameObject.DestroyImmediate(c.gameObject);//ï¿½ï¿½ï¿½Â´ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½Ö®Ç°ï¿½ï¿½É¾ï¿½ï¿½
     //    }
     //}
 
@@ -911,7 +927,7 @@ public class BuildingModelInfo : MonoBehaviour
         }
     }
     /// <summary>
-    /// ×¨ÃÅ´´½¨Ò»¸öSceneList·Ö±ðÏÔÊ¾SubSceneµÄÐÅÏ¢
+    /// ×¨ï¿½Å´ï¿½ï¿½ï¿½Ò»ï¿½ï¿½SceneListï¿½Ö±ï¿½ï¿½ï¿½Ê¾SubSceneï¿½ï¿½ï¿½ï¿½Ï¢
     /// </summary>
     [ContextMenu("EditorMoveScenes")]
     public void EditorMoveScenes()
@@ -1023,11 +1039,11 @@ public class BuildingModelInfo : MonoBehaviour
         InitInOut(false);
 
         List<SubScene_Base> scenes = new List<SubScene_Base>();
-        scenes.AddRange(CreatePartScene(SceneContentType.Tree));//ÕâÀï»á±£´æRendererIdµÄ¹ØÁª¹ØÏµ
+        scenes.AddRange(CreatePartScene(SceneContentType.Tree));//ï¿½ï¿½ï¿½ï¿½á±£ï¿½ï¿½RendererIdï¿½Ä¹ï¿½ï¿½ï¿½ï¿½ï¿½Ïµ
         scenes.AddRange(CreatePartScene(SceneContentType.Part));
         EditorCreateScenes(scenes, progressChanged);
 
-        //LoadTreeRenderers();//¹ØÁª»ØTreeÖÐµÄRenderers
+        //LoadTreeRenderers();//ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½Treeï¿½Ðµï¿½Renderers
 
         SubSceneManager.Instance.ClearOtherScenes();
         EditorMoveScenes();
@@ -1098,8 +1114,8 @@ public class BuildingModelInfo : MonoBehaviour
     internal List<SubScene_Base> EditorCreatePartScenesEx(string dir, bool isOverride, SceneContentType contentType)
     {
         //DestroyOldBounds();
-        DestroyOldPartScenes(contentType);//ÖØÐÂ´´½¨£¬°ÑÖ®Ç°µÄÉ¾³ý
-        //InitInOut(false);//·Åµ½ÍâÃæÈ¥
+        DestroyOldPartScenes(contentType);//ï¿½ï¿½ï¿½Â´ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½Ö®Ç°ï¿½ï¿½É¾ï¿½ï¿½
+        //InitInOut(false);//ï¿½Åµï¿½ï¿½ï¿½ï¿½ï¿½È¥
 
         List<SubScene_Base> senes = new List<SubScene_Base>();
         trees = this.GetComponentsInChildren<ModelAreaTree>(true);
@@ -1190,7 +1206,7 @@ public class BuildingModelInfo : MonoBehaviour
     //internal void EditorCreatePartScenes(string dir, bool isOverride)
     //{
     //    //DestroyOldBounds();
-    //    DestroyOldPartScenes();//ÖØÐÂ´´½¨£¬°ÑÖ®Ç°µÄÉ¾³ý
+    //    DestroyOldPartScenes();//ï¿½ï¿½ï¿½Â´ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½Ö®Ç°ï¿½ï¿½É¾ï¿½ï¿½
 
     //    InitInOut(false);
 
@@ -1238,7 +1254,7 @@ public class BuildingModelInfo : MonoBehaviour
 
         //EditorLoadScenes(contentType);
 
-        var scenes = GetSubScenesOfTypes(new List<SceneContentType>() { contentType });//°´ÕÕÊµ¼ÊÊ¹ÓÃÖÐÒ²ÊÇÏÈ³ÊÏÖTree£¬ÔÙ°´Ðè¼ÓÔØPartµÄ
+        var scenes = GetSubScenesOfTypes(new List<SceneContentType>() { contentType });//ï¿½ï¿½ï¿½ï¿½Êµï¿½ï¿½Ê¹ï¿½ï¿½ï¿½ï¿½Ò²ï¿½ï¿½ï¿½È³ï¿½ï¿½ï¿½Treeï¿½ï¿½ï¿½Ù°ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½Partï¿½ï¿½
         EditorLoadScenes(scenes.ToArray(), progressChanged);
 
         this.InitInOut(false);
@@ -1261,13 +1277,13 @@ public class BuildingModelInfo : MonoBehaviour
         //EditorLoadScenes(SceneContentType.Tree);
         //EditorLoadScenes(SceneContentType.Part);
 
-        //var scenes=GetSubScenesOfTypes(new List<SceneContentType>() { SceneContentType.Tree, SceneContentType.Part });//°´ÕÕÊµ¼ÊÊ¹ÓÃÖÐÒ²ÊÇÏÈ³ÊÏÖTree£¬ÔÙ°´Ðè¼ÓÔØPartµÄ
+        //var scenes=GetSubScenesOfTypes(new List<SceneContentType>() { SceneContentType.Tree, SceneContentType.Part });//ï¿½ï¿½ï¿½ï¿½Êµï¿½ï¿½Ê¹ï¿½ï¿½ï¿½ï¿½Ò²ï¿½ï¿½ï¿½È³ï¿½ï¿½ï¿½Treeï¿½ï¿½ï¿½Ù°ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½Partï¿½ï¿½
 
-        var scenes = GetSubScenesOfTypes(new List<SceneContentType>() { SceneContentType.Part, SceneContentType.Tree });//°´ÕÕÊµ¼ÊÊ¹ÓÃÖÐÒ²ÊÇÏÈ³ÊÏÖTree£¬ÔÙ°´Ðè¼ÓÔØPartµÄ
+        var scenes = GetSubScenesOfTypes(new List<SceneContentType>() { SceneContentType.Part, SceneContentType.Tree });//ï¿½ï¿½ï¿½ï¿½Êµï¿½ï¿½Ê¹ï¿½ï¿½ï¿½ï¿½Ò²ï¿½ï¿½ï¿½È³ï¿½ï¿½ï¿½Treeï¿½ï¿½ï¿½Ù°ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½Partï¿½ï¿½
 
         EditorLoadScenes(scenes.ToArray(), progressChanged);
         LoadTreeRenderers(scenes);
-        InitInOut();//Õâ¸öÊÇºÍPartÓÐ¹ØµÄ¡£
+        InitInOut();//ï¿½ï¿½ï¿½ï¿½Çºï¿½Partï¿½Ð¹ØµÄ¡ï¿½
 
         Debug.LogError($"EditorLoadScenes_TreeWithPart time:{(DateTime.Now - start)}");
     }

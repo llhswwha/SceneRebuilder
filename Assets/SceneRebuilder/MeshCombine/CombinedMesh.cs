@@ -12,8 +12,26 @@ public class MeshPartInfo{
 
     public List<MeshFilter> meshFilters;
 
+    public int vertexCount=0;
+
     public MeshPartInfo(List<MeshFilter> mfs){
         meshFilters=mfs;
+    }
+
+    public MeshPartInfo(){
+        meshFilters=new List<MeshFilter>();
+    }
+
+    public void Add(MeshFilter mf)
+    {
+        meshFilters.Add(mf);
+        vertexCount+=mf.sharedMesh.vertexCount;
+    }
+
+    public void Add(MeshFilter mf,int vc)
+    {
+        meshFilters.Add(mf);
+        vertexCount+=vc;
     }
 }
 
@@ -77,7 +95,7 @@ public class CombinedMesh{
             combines[i].mesh=ms;
             combines[i].transform=matrix*mf.transform.localToWorldMatrix;
             //combines[i].transform=mf.transform;
-            mr.enabled=false;//不渲染
+            mr.enabled=false;//不渲染原模型
 
             if(mat==null)
                 mats[i]=mr.sharedMaterial;
@@ -94,7 +112,7 @@ public class CombinedMesh{
         }
         bool mergeSubMeshes=mat!=null;
 
-        newMesh.CombineMeshes(combines,mergeSubMeshes);//核心 合并网格
+        newMesh.CombineMeshes(combines,mergeSubMeshes);//核心 合并网格API
 
         // MeshPartInfo info=new MeshPartInfo();
         info.mesh=newMesh;
@@ -111,8 +129,8 @@ public class CombinedMesh{
     public void DoCombine(bool logTime){
 
         List<MeshPartInfo> allList=new List<MeshPartInfo>();
-        List<MeshFilter> list=new List<MeshFilter>();
-        allList.Add(new MeshPartInfo(list));
+        MeshPartInfo list=new MeshPartInfo();
+        allList.Add(list);
 
         VertexCount=0;
         int vcSum=0;
@@ -126,16 +144,16 @@ public class CombinedMesh{
             int vc=ms.vertexCount;
             VertexCount+=vc;
 
-            if(vcSum+vc>MaxVertex)
+            if(vcSum+vc>MaxVertex)//判断数量
             {
                 vcSum=vc;
-                list=new List<MeshFilter>();
-                list.Add(mf);
-                allList.Add(new MeshPartInfo(list));
+                list=new MeshPartInfo();//新的
+                list.Add(mf,vc);
+                allList.Add(list);
             }
             else{
                 vcSum+=vc;
-                list.Add(mf);
+                list.Add(mf,vc);
             }
         }
         meshes=new List<MeshPartInfo>();
@@ -144,8 +162,8 @@ public class CombinedMesh{
         for(int i=0;i<allList.Count;i++)
         {
             //Debug.LogWarning(string.Format("DoCombine {0} ({1}/{2})",allList[i].mesh,i+1,allList.Count));
-            var newMesh=InnerDoCombine(allList[i],i);
-            meshes.Add(newMesh);
+            var newMesh=InnerDoCombine(allList[i],i);//合并核心代码
+            if(newMesh!=null) meshes.Add(newMesh);
         }
 
         DateTime start=DateTime.Now;
@@ -194,7 +212,7 @@ public class CombinedMesh{
                 yield return null;
             }
             var newMesh=InnerDoCombine(allList[i],i);
-            meshes.Add(newMesh);
+            if(newMesh!=null) meshes.Add(newMesh);
         }
 
         DateTime start=DateTime.Now;
@@ -315,9 +333,11 @@ public static class MeshCombineHelper
         MeshRenderer[] renderers = go.GetComponentsInChildren<MeshRenderer>(true);
         //int count=0;
         Dictionary<Material,List<MeshFilter>> mat2Filters=GetMatFilters(renderers, out count);
+        string mats="";
         foreach(var item in mat2Filters)
         {
             Material material=item.Key;
+            mats+=material.name+";";
             List<MeshFilter> list=item.Value;
 
             CombinedMesh combinedMesh=new CombinedMesh(go.transform,list,material);
@@ -328,7 +348,7 @@ public static class MeshCombineHelper
         }
 
         goNew.transform.SetParent(go.transform.parent);
-        Debug.Log(string.Format("CombineMaterials 用时:{0},Mat数量:{1},Mesh数量:{2}",(DateTime.Now-start),mat2Filters.Count,count));
+        Debug.Log(string.Format("CombineMaterials 用时:{0} \tMesh数量:{2} \tMat数量:{1} \tMats:{3}",(DateTime.Now-start),mat2Filters.Count,count,mats));
         return goNew;
     }
 
