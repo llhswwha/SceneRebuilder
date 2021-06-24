@@ -144,13 +144,17 @@ public class BuildingModelManager : MonoBehaviour
     [ContextMenu("* GetInfos")]
     public void GetInfos()
     {
-        Buildings.Clear();
-
-        Buildings.AddRange(GameObject.FindObjectsOfType<BuildingModelInfo>(true));
+        GetBuildings();
 
         SortByOut0();
 
         GetCountInfo();
+    }
+
+    private void GetBuildings()
+    {
+        Buildings.Clear();
+        Buildings.AddRange(GameObject.FindObjectsOfType<BuildingModelInfo>(true));
     }
 
     private void GetCountInfo()
@@ -208,6 +212,7 @@ public class BuildingModelManager : MonoBehaviour
     [ContextMenu("ShowAll")]
     public void ShowAll()
     {
+        GetBuildings();
         foreach (var b in Buildings)
         {
             b.ShowAll();
@@ -217,6 +222,7 @@ public class BuildingModelManager : MonoBehaviour
     [ContextMenu("ShowRenderers")]
     public void ShowRenderers()
     {
+        GetBuildings();
         foreach (var b in Buildings)
         {
             b.ShowRenderers();
@@ -226,6 +232,7 @@ public class BuildingModelManager : MonoBehaviour
     [ContextMenu("HideDetail")]
     public void HideDetail()
     {
+        GetBuildings();
         foreach (var b in Buildings)
         {
             b.HideDetail();
@@ -235,6 +242,7 @@ public class BuildingModelManager : MonoBehaviour
     [ContextMenu("Unpack")]
     public void Unpack()
     {
+        GetBuildings();
         foreach (var b in Buildings)
         {
             b.Unpack();
@@ -244,8 +252,10 @@ public class BuildingModelManager : MonoBehaviour
     [ContextMenu("GetTrees")]
     public void GetTrees()
     {
+        GetBuildings();
         foreach (var b in Buildings)
         {
+            if (b == null) continue;
             b.GetTrees();
         }
     }
@@ -255,6 +265,7 @@ public class BuildingModelManager : MonoBehaviour
     [ContextMenu("EditorMoveScenes")]
     public void EditorMoveScenes()
     {
+        GetBuildings();
         foreach (var b in Buildings)
         {
             b.EditorMoveScenes();

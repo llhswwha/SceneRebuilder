@@ -80,7 +80,7 @@ namespace MeshProfilerNS
         const int pageCount = 100;
         int pageIndex = 0;
 
-        DataClass dataChart = new DataClass();
+        MeshDataClass dataChart = new MeshDataClass();
         /// <summary>
         /// 刷新统计图
         /// </summary>
@@ -1208,6 +1208,102 @@ namespace MeshProfilerNS
             GUILayout.EndArea();
 
         }
+
+        ///// <summary>
+        ///// 绘制数据
+        ///// </summary>
+        //void DrawDataBlock(string[] titles,float[] values)
+        //{
+        //    GUI.Box(MPGUIStyles.BorderArea(MPGUIStyles.DATA_BLOCK), "");
+        //    int modelCount = dataChart.modelCount;
+        //    if (modelCount == 0)
+        //    {
+        //        modelCount = 1;
+        //    }
+        //    GUILayout.BeginArea(MPGUIStyles.BorderArea(MPGUIStyles.DATA_BLOCK, 5));
+        //    GUILayout.Label("Data Panel", MPGUIStyles.centerStyle);
+
+        //    // GUILayout.Space(10);
+        //    GUILayout.BeginHorizontal();
+        //    GUILayout.Label("Model Count", MPGUIStyles.dataAreaStyle, GUILayout.Width(295));
+        //    GUILayout.Space(5);
+        //    GUILayout.Label(dataChart.modelCount.ToString(), MPGUIStyles.dataAreaStyle, GUILayout.Width(295));
+        //    GUILayout.EndHorizontal();
+
+        //    for (int i=0;i<titles.Length && i<values.Length;i++)
+        //    {
+        //        GUILayout.Space(5);
+        //        GUILayout.BeginHorizontal();
+        //        GUILayout.Label(titles[i], MPGUIStyles.dataAreaStyle, GUILayout.Width(295));
+        //        GUILayout.Space(5);
+        //        GUILayout.Label(values[i] + " [" + (int)((float)values[i] / modelCount * 100) + "%]", MPGUIStyles.dataAreaStyle, GUILayout.Width(295));
+        //        GUILayout.EndHorizontal();
+        //    }
+
+        //    string[] titles2 = new string[6];
+        //    float[] values2 = new float[6];
+
+        //    //// GUILayout.Space(10);
+        //    //GUILayout.BeginHorizontal();
+        //    //GUILayout.Label("Model Count", MPGUIStyles.dataAreaStyle, GUILayout.Width(295));
+        //    //GUILayout.Space(5);
+        //    //GUILayout.Label(dataChart.modelCount.ToString(), MPGUIStyles.dataAreaStyle, GUILayout.Width(295));
+        //    //GUILayout.EndHorizontal();
+
+        //    //1
+        //    //GUILayout.Space(5);
+        //    //GUILayout.BeginHorizontal();
+        //    //GUILayout.Label("Asset Count", MPGUIStyles.dataAreaStyle, GUILayout.Width(295));
+        //    //GUILayout.Space(5);
+        //    //GUILayout.Label(dataChart.assetCount.ToString() + " [" + (int)((float)dataChart.assetCount / modelCount * 100) + "%]", MPGUIStyles.dataAreaStyle, GUILayout.Width(295));
+        //    //GUILayout.EndHorizontal();
+
+        //    //2
+        //    //GUILayout.Space(5);
+        //    //GUILayout.BeginHorizontal();
+        //    //GUILayout.Label("Normals", MPGUIStyles.dataAreaStyle, GUILayout.Width(295));
+        //    //GUILayout.Space(5);
+        //    //GUILayout.Label(dataChart.normalCount.ToString() + " [" + (int)((float)dataChart.normalCount / modelCount * 100) + "%]", MPGUIStyles.dataAreaStyle, GUILayout.Width(295));
+        //    //GUILayout.EndHorizontal();
+
+        //    //3
+        //    //GUILayout.Space(5);
+        //    //GUILayout.BeginHorizontal();
+        //    //GUILayout.Label("Tangents", MPGUIStyles.dataAreaStyle, GUILayout.Width(295));
+        //    //GUILayout.Space(5);
+        //    //GUILayout.Label(dataChart.tangentCount.ToString() + " [" + (int)((float)dataChart.tangentCount / modelCount * 100) + "%]", MPGUIStyles.dataAreaStyle, GUILayout.Width(295));
+        //    //GUILayout.EndHorizontal();
+
+        //    //4
+        //    //GUILayout.Space(5);
+        //    //GUILayout.BeginHorizontal();
+        //    //GUILayout.Label("Colors", MPGUIStyles.dataAreaStyle, GUILayout.Width(295));
+        //    //GUILayout.Space(5);
+        //    //GUILayout.Label(dataChart.colorCount.ToString() + " [" + (int)((float)dataChart.colorCount / modelCount * 100) + "%]", MPGUIStyles.dataAreaStyle, GUILayout.Width(295));
+        //    //GUILayout.EndHorizontal();
+
+        //    //5
+        //    //GUILayout.Space(5);
+        //    //GUILayout.BeginHorizontal();
+        //    //GUILayout.Label("UV3,UV4", MPGUIStyles.dataAreaStyle, GUILayout.Width(295));
+        //    //GUILayout.Space(5);
+        //    //GUILayout.Label(dataChart.UVXCount.ToString() + " [" + (int)((float)dataChart.UVXCount / modelCount * 100) + "%]", MPGUIStyles.dataAreaStyle, GUILayout.Width(295));
+        //    //GUILayout.EndHorizontal();
+
+        //    //6
+        //    //GUILayout.Space(5);
+        //    //GUILayout.BeginHorizontal();
+        //    //GUILayout.Label("Readable", MPGUIStyles.dataAreaStyle, GUILayout.Width(295));
+        //    //GUILayout.Space(5);
+        //    //GUILayout.Label(dataChart.readableCount.ToString() + " [" + (int)((float)dataChart.readableCount / modelCount * 100) + "%]", MPGUIStyles.dataAreaStyle, GUILayout.Width(295));
+        //    //GUILayout.EndHorizontal();
+
+
+
+        //    GUILayout.EndArea();
+
+
+        //}
         /// <summary>
         /// 绘制数据
         /// </summary>
@@ -1275,7 +1371,7 @@ namespace MeshProfilerNS
         }
     }
 
-    class DataClass
+    class MeshDataClass
     {
         public int modelCount = 0;
         public int assetCount = 0;

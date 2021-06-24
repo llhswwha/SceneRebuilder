@@ -10,7 +10,7 @@ namespace MeshProfilerNS
         public static bool IsDirty=false;
         public const int SCREEN_WIDTH = 1500;
         public const int SCREEN_HEIGHT = 770;
-        public const int PAGE_COUNT = 100;//ini
+        public const int PAGE_COUNT = 100;//ini 100
 
         public static Rect PREVIEW_BLOCK = new Rect(0, 5, 300, 200);
         public static Rect PREVIEW_BLOCK_CENTER = new Rect(10, 15, 280, 180);

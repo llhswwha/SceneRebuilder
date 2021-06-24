@@ -67,16 +67,16 @@ public class SceneRebuildEditorWindow : ListManagerEditorWindow
     static BuildingSortWays sortWays;
     bool IsIgnoreKeywordsList = false;
     static string IgnoreKeywordList = "";
-    static int[] LevelNum = new int[5] { 0, 500, 1000, 1500, 2000 };
+    static int[] LevelNum = new int[5] { 0, 50, 100, 200, 400 };//new int[5] { 0, 500, 1000, 1500, 2000 };
 
     string m_InputSearchText;
 
     Vector2 scVector = new Vector2(0, 0);
     bool isRetract = false;//是否折叠
-    const int pageCount = 100;
+    const int pageCount = 16;
     int pageIndex = 0;
 
-    DataClass dataChart = new DataClass();
+    BuildingDataClass dataChart = new BuildingDataClass();
     /// <summary>
     /// 刷新统计图
     /// </summary>
@@ -84,7 +84,7 @@ public class SceneRebuildEditorWindow : ListManagerEditorWindow
     {
         if (!(LevelNum[0] < LevelNum[1] && LevelNum[1] < LevelNum[2] && LevelNum[2] < LevelNum[3] && LevelNum[3] < LevelNum[4]))
         {
-            LevelNum = new int[5] { 0, 500, 1000, 1500, 2000 };
+            LevelNum = new int[5] { 0, 50, 100, 200, 400 };
             Debug.LogError("Your parameter is wrong,bar chart parameter has been reset!");
         }
         int[] array = new int[5] { 0, 0, 0, 0, 0 };
@@ -92,23 +92,23 @@ public class SceneRebuildEditorWindow : ListManagerEditorWindow
         for (int i = 0; i < originList.Count; i++)
         {
 
-            if (originList[i].rootMeshValue.vertCount < LevelNum[1] && originList[i].rootMeshValue.vertCount >= LevelNum[0])
+            if (originList[i].rootMeshValue.AllVertextCount < LevelNum[1] && originList[i].rootMeshValue.AllVertextCount >= LevelNum[0])
             {
                 array[0]++;
             }
-            else if (originList[i].rootMeshValue.vertCount < LevelNum[2] && originList[i].rootMeshValue.vertCount >= LevelNum[1])
+            else if (originList[i].rootMeshValue.AllVertextCount < LevelNum[2] && originList[i].rootMeshValue.AllVertextCount >= LevelNum[1])
             {
                 array[1]++;
             }
-            else if (originList[i].rootMeshValue.vertCount < LevelNum[3] && originList[i].rootMeshValue.vertCount >= LevelNum[2])
+            else if (originList[i].rootMeshValue.AllVertextCount < LevelNum[3] && originList[i].rootMeshValue.AllVertextCount >= LevelNum[2])
             {
                 array[2]++;
             }
-            else if (originList[i].rootMeshValue.vertCount < LevelNum[4] && originList[i].rootMeshValue.vertCount >= LevelNum[3])
+            else if (originList[i].rootMeshValue.AllVertextCount < LevelNum[4] && originList[i].rootMeshValue.AllVertextCount >= LevelNum[3])
             {
                 array[3]++;
             }
-            else if (originList[i].rootMeshValue.vertCount >= LevelNum[0])
+            else if (originList[i].rootMeshValue.AllVertextCount >= LevelNum[0])
             {
                 array[4]++;
             }
@@ -129,33 +129,19 @@ public class SceneRebuildEditorWindow : ListManagerEditorWindow
     void RefleshDataChart()
     {
         dataChart.Reset();
-        dataChart.modelCount = meshElementList.Count;
+        //dataChart.modelCount = meshElementList.Count;
         for (int i = 0; i < meshElementList.Count; i++)
         {
-            if (meshElementList[i].isAsset)
-            {
-                dataChart.assetCount++;
-            }
-            if (meshElementList[i].rootMeshValue.exist_normals)
-            {
-                dataChart.normalCount++;
-            }
-            if (meshElementList[i].rootMeshValue.exist_tangents)
-            {
-                dataChart.tangentCount++;
-            }
-            if (meshElementList[i].rootMeshValue.exist_colors)
-            {
-                dataChart.colorCount++;
-            }
-            if (meshElementList[i].rootMeshValue.exist_uv[2] || meshElementList[i].rootMeshValue.exist_uv[3])
-            {
-                dataChart.UVXCount++;
-            }
-            if (meshElementList[i].rootMeshValue.isRead)
-            {
-                dataChart.readableCount++;
-            }
+            var values = meshElementList[i].rootMeshValue;
+            dataChart.AllRendererCount += values.AllRendererCount;
+            dataChart.AllVertextCount += values.AllVertextCount;
+
+            dataChart.InVertextCount += values.InVertextCount;
+            dataChart.Out0VertextCount += values.Out0VertextCount;
+            dataChart.Out1VertextCount += values.Out1VertextCount;
+            dataChart.InRendererCount += values.InRendererCount;
+            dataChart.Out0RendererCount += values.Out0RendererCount;
+            dataChart.Out1RendererCount += values.Out1RendererCount;
         }
 
     }
@@ -164,8 +150,8 @@ public class SceneRebuildEditorWindow : ListManagerEditorWindow
     {
         MPGUIStyles.InitGUIStyles();
         RefleshList();
-        //RefleshDataChart();
-        //RefleshBarChart();
+        RefleshDataChart();
+        RefleshBarChart();
         EditorSceneManager.sceneOpened -= OnOpenedScene;
         EditorSceneManager.sceneOpened += OnOpenedScene;
 
@@ -231,8 +217,8 @@ public class SceneRebuildEditorWindow : ListManagerEditorWindow
             }
         }
 
-        //Sort(meshElementList, sortWays);
-        //SelectByConditions(meshElementList);
+        Sort(meshElementList, sortWays);
+        SelectByConditions(meshElementList);
 
         originList.Clear();
         originList.AddRange(meshElementList);
@@ -428,12 +414,12 @@ public class SceneRebuildEditorWindow : ListManagerEditorWindow
         }
         DrawSettingBlock();
         DrawPreviewBlock();
-        //DrawPageIndexBlock();
+        DrawPageIndexBlock();
         DrawListBlock();
         DrawInputTextField();
         DrawToolBlock();
-        //DrawChartBlock();
-        //DrawDataBlock();
+        DrawChartBlock();
+        DrawDataBlock();
     }
 
     /// <summary>
@@ -540,6 +526,49 @@ public class SceneRebuildEditorWindow : ListManagerEditorWindow
         GUILayout.EndArea();
     }
 
+    /// <summary>
+    /// 绘制图表
+    /// </summary>
+    void DrawChartBlock()
+    {
+        GUI.Box(MPGUIStyles.BorderArea(MPGUIStyles.CHART_BLOCK), "");
+        GUILayout.BeginArea(MPGUIStyles.CHART_BLOCK);
+        GUILayout.Space(5);
+        GUILayout.Label("Bar Chart Panel", MPGUIStyles.centerStyle);
+        GUILayout.EndArea();
+        DataLinePainter.Draw();
+        GUILayout.BeginArea(MPGUIStyles.BorderArea(MPGUIStyles.CHART_PARAS_BLOCK, 10));
+        GUILayout.BeginHorizontal();
+        GUILayout.Label("High>=", GUILayout.Width(70));
+        LevelNum[4] = EditorGUILayout.IntField(LevelNum[4]);
+        GUILayout.EndHorizontal();
+        GUILayout.BeginHorizontal();
+        GUILayout.Label("Mid High>=", GUILayout.Width(70));
+        LevelNum[3] = EditorGUILayout.IntField(LevelNum[3]);
+        GUILayout.EndHorizontal();
+        GUILayout.BeginHorizontal();
+        GUILayout.Label("Mid>=", GUILayout.Width(70));
+        LevelNum[2] = EditorGUILayout.IntField(LevelNum[2]);
+        GUILayout.EndHorizontal();
+        GUILayout.BeginHorizontal();
+        GUILayout.Label("Mid Low>=", GUILayout.Width(70));
+        LevelNum[1] = EditorGUILayout.IntField(LevelNum[1]);
+        GUILayout.EndHorizontal();
+        GUILayout.BeginHorizontal();
+        GUILayout.Label("Low>=", GUILayout.Width(70));
+        GUI.enabled = false;
+        LevelNum[0] = EditorGUILayout.IntField(0);
+        GUI.enabled = true;
+        GUILayout.EndHorizontal();
+        GUILayout.Space(5);
+        if (GUILayout.Button("Reflesh"))
+        {
+            RefleshBarChart();
+        }
+        GUILayout.EndArea();
+
+    }
+
     List<BuildingModelElement> tempList = new List<BuildingModelElement>();
     /// <summary>
     /// 按照搜索结果刷新列表，不重新获取。
@@ -622,16 +651,25 @@ public class SceneRebuildEditorWindow : ListManagerEditorWindow
 
         GUIContent icon_expand_Content = element.isGroup ? MPGUIStyles.icon_down_Content : MPGUIStyles.icon_right_Content;
 
-        if (element.isGroup && GUILayout.Button(isRetract && isSelect ? MPGUIStyles.icon_retract_Contents[1] : MPGUIStyles.icon_retract_Contents[0], isSelect ? MPGUIStyles.icon_tab_Style : MPGUIStyles.icon_tab_normal_Style, MPGUIStyles.options_icon))
+        if (element.isGroup && 
+            GUILayout.Button(isRetract && isSelect ? MPGUIStyles.icon_retract_Contents[1] : MPGUIStyles.icon_retract_Contents[0], isSelect ? MPGUIStyles.icon_tab_Style : MPGUIStyles.icon_tab_normal_Style, MPGUIStyles.options_icon))
         {
             SelectIndex = index;
             isRetract = !isRetract;
             SelectChildIndex = -1;
         }
 
-       
+        if (GUILayout.Button($"[{index:00}]", lineStyle, GUILayout.Height(30), GUILayout.Width(20)))
+        {
+            if (SelectIndex != index)
+            {
+                isRetract = false;
+            }
+            SelectIndex = index;
+            SelectChildIndex = -1;
+        }
 
-        if (GUILayout.Button(element.name, lineStyle, GUILayout.Height(30), element.isGroup ? GUILayout.Width(200) : GUILayout.Width(220)))
+        if (GUILayout.Button(element.name, lineStyle, GUILayout.Height(30), element.isGroup ? GUILayout.Width(180) : GUILayout.Width(200)))
         {
             if (SelectIndex != index)
             {
@@ -925,6 +963,69 @@ public class SceneRebuildEditorWindow : ListManagerEditorWindow
     }
 
     /// <summary>
+    /// 绘制页标
+    /// </summary>
+    void DrawPageIndexBlock()
+    {
+        int count = meshElementList.Count;
+        int pages = count / pageCount;
+        if (count % pageCount != 0)
+            pages++;
+
+        Rect ActualRect = MPGUIStyles.PAGEINDEX_BLOCK;
+        ActualRect.x = MPGUIStyles.PAGEINDEX_BLOCK.x + MPGUIStyles.PAGEINDEX_BLOCK.width - 160 - 35 * pages;
+        GUILayout.BeginArea(ActualRect);
+        GUILayout.BeginHorizontal();
+        if (meshElementList.Count != 0)
+        {
+            if (pageIndex == 0)
+            {
+                GUI.enabled = false;
+            }
+            if (GUILayout.Button("Last Page", MPGUIStyles.itemBtnStyles_child[0], GUILayout.MaxWidth(70)))
+            {
+                pageIndex--;
+                scVector = Vector2.zero;
+            }
+            GUI.enabled = true;
+
+            for (int i = 0; i < pages; i++)
+            {
+                bool isGoal = i == pageIndex;
+                string str = "[" + i + "]";
+                if (isGoal)
+                {
+                    if (GUILayout.Button(str, MPGUIStyles.itemBtnStyles_child[1], GUILayout.MaxWidth(35)))
+                    {
+                        pageIndex = i;
+                        scVector = Vector2.zero;
+                    }
+                }
+                else
+                {
+                    if (GUILayout.Button(str, MPGUIStyles.itemBtnStyles_child[0], GUILayout.MaxWidth(35)))
+                    {
+                        pageIndex = i;
+                        scVector = Vector2.zero;
+                    }
+                }
+            }
+            if (pageIndex == (pages - 1))
+            {
+                GUI.enabled = false;
+            }
+            if (GUILayout.Button("Next Page", MPGUIStyles.itemBtnStyles_child[0], GUILayout.MaxWidth(70)))
+            {
+                pageIndex++;
+                scVector = Vector2.zero;
+            }
+            GUI.enabled = true;
+        }
+        GUILayout.EndHorizontal();
+        GUILayout.EndArea();
+    }
+
+    /// <summary>
     /// 初始化预览物体
     /// </summary>
     /// <param name="obj"></param>
@@ -952,6 +1053,120 @@ public class SceneRebuildEditorWindow : ListManagerEditorWindow
             previewEditor.DrawPreview(MPGUIStyles.PREVIEW_BLOCK_CENTER);
         }
 
+    }
+
+    private void DrawDataBlockItem(string title,string value)
+    {
+        GUILayout.Space(1);
+        GUILayout.BeginHorizontal();
+        GUILayout.Label(title, MPGUIStyles.dataAreaStyle, GUILayout.Width(295));
+        GUILayout.Space(5);
+        GUILayout.Label(value, MPGUIStyles.dataAreaStyle, GUILayout.Width(295));
+        GUILayout.EndHorizontal();
+    }
+
+    /// <summary>
+    /// 绘制数据
+    /// </summary>
+    void DrawDataBlock()
+    {
+        GUI.Box(MPGUIStyles.BorderArea(MPGUIStyles.DATA_BLOCK), "");
+        //int modelCount = dataChart.modelCount;
+        //if (modelCount == 0)
+        //{
+        //    modelCount = 1;
+        //}
+        GUILayout.BeginArea(MPGUIStyles.BorderArea(MPGUIStyles.DATA_BLOCK, 5));
+        GUILayout.Label("Data Panel", MPGUIStyles.centerStyle);
+
+        //// GUILayout.Space(10);
+        //GUILayout.BeginHorizontal();
+        //GUILayout.Label("AllVertextCount", MPGUIStyles.dataAreaStyle, GUILayout.Width(295));
+        //GUILayout.Space(5);
+        //GUILayout.Label(dataChart.AllVertextCount.ToString(), MPGUIStyles.dataAreaStyle, GUILayout.Width(295));
+        //GUILayout.EndHorizontal();
+
+        DrawDataBlockItem("AllVertextCount", dataChart.AllVertextCount.ToString("F1"));
+        DrawDataBlockItem("AllRendererCount", dataChart.AllRendererCount.ToString());
+        DrawDataBlockItem("InVertextCount", dataChart.InVertextCount.ToString("F1"));
+        DrawDataBlockItem("Out0VertextCount", dataChart.Out0VertextCount.ToString("F1"));
+        DrawDataBlockItem("Out1VertextCount", dataChart.Out1VertextCount.ToString("F1"));
+        DrawDataBlockItem("InRendererCount", dataChart.InRendererCount.ToString());
+        DrawDataBlockItem("Out0RendererCount", dataChart.Out0RendererCount.ToString());
+        DrawDataBlockItem("Out1RendererCount", dataChart.Out1RendererCount.ToString());
+
+        //GUILayout.Space(5);
+        //GUILayout.BeginHorizontal();
+        //GUILayout.Label("Asset Count", MPGUIStyles.dataAreaStyle, GUILayout.Width(295));
+        //GUILayout.Space(5);
+        //GUILayout.Label(dataChart.assetCount.ToString() + " [" + (int)((float)dataChart.assetCount / modelCount * 100) + "%]", MPGUIStyles.dataAreaStyle, GUILayout.Width(295));
+        //GUILayout.EndHorizontal();
+
+        //GUILayout.Space(5);
+        //GUILayout.BeginHorizontal();
+        //GUILayout.Label("Normals", MPGUIStyles.dataAreaStyle, GUILayout.Width(295));
+        //GUILayout.Space(5);
+        //GUILayout.Label(dataChart.normalCount.ToString() + " [" + (int)((float)dataChart.normalCount / modelCount * 100) + "%]", MPGUIStyles.dataAreaStyle, GUILayout.Width(295));
+        //GUILayout.EndHorizontal();
+        //GUILayout.Space(5);
+        //GUILayout.BeginHorizontal();
+        //GUILayout.Label("Tangents", MPGUIStyles.dataAreaStyle, GUILayout.Width(295));
+        //GUILayout.Space(5);
+        //GUILayout.Label(dataChart.tangentCount.ToString() + " [" + (int)((float)dataChart.tangentCount / modelCount * 100) + "%]", MPGUIStyles.dataAreaStyle, GUILayout.Width(295));
+        //GUILayout.EndHorizontal();
+        //GUILayout.Space(5);
+        //GUILayout.BeginHorizontal();
+        //GUILayout.Label("Colors", MPGUIStyles.dataAreaStyle, GUILayout.Width(295));
+        //GUILayout.Space(5);
+        //GUILayout.Label(dataChart.colorCount.ToString() + " [" + (int)((float)dataChart.colorCount / modelCount * 100) + "%]", MPGUIStyles.dataAreaStyle, GUILayout.Width(295));
+        //GUILayout.EndHorizontal();
+        //GUILayout.Space(5);
+        //GUILayout.BeginHorizontal();
+        //GUILayout.Label("UV3,UV4", MPGUIStyles.dataAreaStyle, GUILayout.Width(295));
+        //GUILayout.Space(5);
+        //GUILayout.Label(dataChart.UVXCount.ToString() + " [" + (int)((float)dataChart.UVXCount / modelCount * 100) + "%]", MPGUIStyles.dataAreaStyle, GUILayout.Width(295));
+        //GUILayout.EndHorizontal();
+
+        //GUILayout.Space(5);
+        //GUILayout.BeginHorizontal();
+        //GUILayout.Label("Readable", MPGUIStyles.dataAreaStyle, GUILayout.Width(295));
+        //GUILayout.Space(5);
+        //GUILayout.Label(dataChart.readableCount.ToString() + " [" + (int)((float)dataChart.readableCount / modelCount * 100) + "%]", MPGUIStyles.dataAreaStyle, GUILayout.Width(295));
+        //GUILayout.EndHorizontal();
+
+
+
+        GUILayout.EndArea();
+
+
+    }
+}
+
+class BuildingDataClass
+{
+    public float AllVertextCount = 0;
+    public int AllRendererCount = 0;
+
+    public float InVertextCount = 0;
+    public float Out0VertextCount = 0;
+    public float Out1VertextCount = 0;
+
+    public int InRendererCount = 0;
+    public int Out0RendererCount = 0;
+    public int Out1RendererCount = 0;
+
+    public void Reset()
+    {
+        AllVertextCount = 0;
+        AllRendererCount = 0;
+
+        InVertextCount = 0;
+        Out0VertextCount = 0;
+        Out1VertextCount = 0;
+
+        InRendererCount = 0;
+        Out0RendererCount = 0;
+        Out1RendererCount = 0;
     }
 }
 
@@ -1042,15 +1257,15 @@ public class BuildingModelValues
         this.Out0VertextCount = modelInfo.Out0VertextCount;
         this.Out1VertextCount = modelInfo.Out1VertextCount;
         this.InRendererCount = modelInfo.InRendererCount;
-        this.Out0VertextCount = modelInfo.Out0VertextCount;
-        this.Out1VertextCount = modelInfo.Out1VertextCount;
+        this.Out0RendererCount = modelInfo.Out0RendererCount;
+        this.Out1RendererCount = modelInfo.Out1RendererCount;
     }
 
     public string[] GetValues()
     {
         return new string[] { AllVertextCount.ToString("F1"),AllRendererCount.ToString(),
             InVertextCount.ToString("F1"),Out0VertextCount.ToString("F1"),Out1VertextCount.ToString("F1"),
-        InRendererCount.ToString(),Out0RendererCount.ToString(),Out1VertextCount.ToString(),
+        InRendererCount.ToString(),Out0RendererCount.ToString(),Out1RendererCount.ToString(),
         info.GetPartCount().ToString(),info.GetTreeCount().ToString(),info.GetSceneCount().ToString(),
         info.IsModelSceneFinish().ToString() };
     }
