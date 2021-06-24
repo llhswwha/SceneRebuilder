@@ -895,6 +895,155 @@ namespace MeshProfilerNS
             }
 
         }
+
+        #region TOOL_BLOCK
+        private bool ExportExcelData()
+        {
+            string sceneName = SceneManager.GetActiveScene().name;
+            string exportPath = EditorUtility.SaveFilePanel("Save SkuInfo File", "", "MeshData-" + sceneName + ".xlsx", "xlsx");
+            if (string.IsNullOrEmpty(exportPath))
+            {
+                return false;
+            }
+            if (File.Exists(exportPath))
+            {
+                File.Delete(exportPath);
+            }
+
+            using (ExcelPackage package = new ExcelPackage(new FileInfo(exportPath)))
+            {
+                ExcelWorksheet worksheet = package.Workbook.Worksheets.Add("Sheet1");
+                worksheet.Column(1).Width = 30;
+                for (int i = 2; i <= 13; i++)
+                {
+                    worksheet.Column(i).Width = 13;
+                    worksheet.Column(i).Style.HorizontalAlignment = OfficeOpenXml.Style.ExcelHorizontalAlignment.Center;
+
+                }
+
+                string ConStr = "SortWays:" + sortWays.ToString() + "  Select Conditions:";
+                if (!isSelectConditions)
+                {
+                    ConStr += "None";
+                }
+                else
+                {
+                    ConStr += "Vertex Count:" + minVertNum + "-" + maxVertNum;
+                    for (int k = 0; k < tableConditions.Length; k++)
+                    {
+                        if (selectConditions[k] == true)
+                        {
+                            ConStr += "," + tableConditions[k];
+                        }
+                    }
+                }
+                ConStr += "\r\n   IgnoreKeywords:";
+                if (!IsIgnoreKeywordsList)
+                {
+                    ConStr += "\nNone";
+                }
+                else
+                {
+                    ConStr += IgnoreKeywordList;
+                }
+
+                worksheet.Cells["A1:M1"].Merge = true;
+                worksheet.Cells["A2:M2"].Merge = true;
+                worksheet.Cells[1, 1].Value = "Mesh Profiler Data";
+                worksheet.Cells[2, 1].Value = ConStr;
+                worksheet.Cells[1, 1].Style.HorizontalAlignment = OfficeOpenXml.Style.ExcelHorizontalAlignment.Center;
+                worksheet.Cells[2, 1].Style.HorizontalAlignment = OfficeOpenXml.Style.ExcelHorizontalAlignment.Center;
+                worksheet.Cells[1, 1].Style.Font.Bold = true;
+                worksheet.Cells[2, 1].Style.Font.Bold = true;
+                worksheet.Cells[1, 1].Style.Font.Size = 15;
+                for (int i = 0; i < tableTitle.Length; i++)
+                {
+                    worksheet.Cells[3, i + 1].Value = tableTitle[i];
+                    worksheet.Cells[3, i + 1].Style.Font.Bold = true;
+                    worksheet.Cells[3, i + 1].Style.Font.Size = 12;
+                    //worksheet.Cells[3, i + 1].Style.Fill.BackgroundColor.SetColor(System.Drawing.Color.FromArgb(255, 255, 0)) ;
+                }
+                for (int i = 0; i < originList.Count; i++)
+                {
+                    worksheet.Cells[i + 4, 1].Value = originList[i].name;
+                    worksheet.Cells[i + 4, 2].Value = originList[i].rootMeshValue.vertCount;
+                    worksheet.Cells[i + 4, 3].Value = originList[i].refList.Count;
+                    worksheet.Cells[i + 4, 4].Value = originList[i].rootMeshValue.triangles;
+                    worksheet.Cells[i + 4, 5].Value = originList[i].rootMeshValue.exist_normals ? "√" : "";
+                    worksheet.Cells[i + 4, 6].Value = originList[i].rootMeshValue.exist_tangents ? "√" : "";
+                    worksheet.Cells[i + 4, 7].Value = originList[i].rootMeshValue.exist_colors ? "√" : "";
+                    worksheet.Cells[i + 4, 8].Value = originList[i].rootMeshValue.exist_uv[0] ? "√" : "";
+                    worksheet.Cells[i + 4, 9].Value = originList[i].rootMeshValue.exist_uv[1] ? "√" : "";
+                    worksheet.Cells[i + 4, 10].Value = originList[i].rootMeshValue.exist_uv[2] ? "√" : "";
+                    worksheet.Cells[i + 4, 11].Value = originList[i].rootMeshValue.exist_uv[3] ? "√" : "";
+                    worksheet.Cells[i + 4, 12].Value = originList[i].rootMeshValue.memory >= 1000 ? (originList[i].rootMeshValue.memory / 1000.0f).ToString("F2") + "MB" : originList[i].rootMeshValue.memory.ToString("F2") + "KB";
+                    worksheet.Cells[i + 4, 13].Value = originList[i].rootMeshValue.isRead ? "√" : "";
+                }
+                package.Save();
+                exportPath = exportPath.Replace('/', '\\');
+#if UNITY_EDITOR_WIN
+                System.Diagnostics.Process p = new System.Diagnostics.Process();
+                p.StartInfo.FileName = "explorer.exe";
+                p.StartInfo.Arguments = (@" /select," + exportPath);
+                p.Start();
+#endif
+            }
+
+            return true;
+        }
+
+        private void OpenMeshFolder()
+        {
+            string meshPath = meshElementList[SelectIndex].assetPath;
+            if (!string.IsNullOrEmpty(meshPath) && !meshPath.Contains("unity default resources"))
+            {
+                string path = meshPath.Substring(0, meshPath.LastIndexOf('/'));
+                DirectoryInfo direction = new DirectoryInfo(path);
+                path = direction.GetFiles("*", SearchOption.TopDirectoryOnly)[0].FullName.ToString();
+                path = (path.Substring(0, path.IndexOf("Assets")) + meshPath).Replace('/', '\\'); ;
+                System.Diagnostics.Process p = new System.Diagnostics.Process();
+                p.StartInfo.FileName = "explorer.exe";
+                p.StartInfo.Arguments = (@" /select," + path);
+                p.Start();
+            }
+            else
+            {
+                EditorUtility.DisplayDialog("warning", "This mesh is not asset file！", "ok");
+            }
+        }
+
+        private void SelectAsset()
+        {
+            string meshPath = meshElementList[SelectIndex].assetPath;
+
+            if (!string.IsNullOrEmpty(meshPath) && !meshPath.Contains("unity default resources"))
+            {
+                UnityEngine.Object obj = (UnityEngine.Object)AssetDatabase.LoadAssetAtPath(meshPath, typeof(UnityEngine.Object));
+                Selection.activeObject = obj;
+            }
+            else
+            {
+                EditorUtility.DisplayDialog("warning", "This mesh is not asset file！", "ok");
+            }
+        }
+
+        private void ShowLostMeshObjs()
+        {
+            MeshFilter[] filters = FindObjectsOfType<MeshFilter>();
+            List<GameObject> objList = new List<GameObject>();
+
+            for (int i = filters.Length - 1; i >= 0; i--)
+            {
+                if (filters[i].sharedMesh == null)
+                {
+                    objList.Add(filters[i].gameObject);
+                }
+            }
+            ShowRefList.AddWindow(objList, "Lost Mesh List");
+        }
+
+        #endregion
+
         /// <summary>
         /// 绘制工具面板
         /// </summary>
@@ -910,95 +1059,7 @@ namespace MeshProfilerNS
             {
                 if (GUILayout.Button("Export Excel Data", GUILayout.Height(buttonHeight)))
                 {
-                    string sceneName = SceneManager.GetActiveScene().name;
-                    string exportPath = EditorUtility.SaveFilePanel("Save SkuInfo File", "", "MeshData-"+sceneName+".xlsx", "xlsx");
-                    if (string.IsNullOrEmpty(exportPath))
-                    {
-                        return;
-                    }
-                    if (File.Exists(exportPath))
-                    {
-                        File.Delete(exportPath);
-                    }
-
-                    using (ExcelPackage package = new ExcelPackage(new FileInfo(exportPath)))
-                    {
-                        ExcelWorksheet worksheet = package.Workbook.Worksheets.Add("Sheet1");
-                        worksheet.Column(1).Width = 30;
-                        for (int i = 2; i <= 13; i++)
-                        {
-                            worksheet.Column(i).Width = 13;
-                            worksheet.Column(i).Style.HorizontalAlignment = OfficeOpenXml.Style.ExcelHorizontalAlignment.Center;
-
-                        }
-
-                        string ConStr = "SortWays:" + sortWays.ToString() + "  Select Conditions:";
-                        if (!isSelectConditions)
-                        {
-                            ConStr += "None";
-                        }
-                        else
-                        {
-                            ConStr += "Vertex Count:" + minVertNum + "-" + maxVertNum;
-                            for (int k = 0; k < tableConditions.Length; k++)
-                            {
-                                if (selectConditions[k] == true)
-                                {
-                                    ConStr += "," + tableConditions[k];
-                                }
-                            }
-                        }
-                        ConStr += "\r\n   IgnoreKeywords:";
-                        if (!IsIgnoreKeywordsList)
-                        {
-                            ConStr += "\nNone";
-                        }
-                        else
-                        {
-                            ConStr += IgnoreKeywordList;
-                        }
-
-                        worksheet.Cells["A1:M1"].Merge = true;
-                        worksheet.Cells["A2:M2"].Merge = true;
-                        worksheet.Cells[1, 1].Value = "Mesh Profiler Data";
-                        worksheet.Cells[2, 1].Value = ConStr;
-                        worksheet.Cells[1, 1].Style.HorizontalAlignment = OfficeOpenXml.Style.ExcelHorizontalAlignment.Center;
-                        worksheet.Cells[2, 1].Style.HorizontalAlignment = OfficeOpenXml.Style.ExcelHorizontalAlignment.Center;
-                        worksheet.Cells[1, 1].Style.Font.Bold = true;
-                        worksheet.Cells[2, 1].Style.Font.Bold = true;
-                        worksheet.Cells[1, 1].Style.Font.Size = 15;
-                        for (int i = 0; i < tableTitle.Length; i++)
-                        {
-                            worksheet.Cells[3, i + 1].Value = tableTitle[i];
-                            worksheet.Cells[3, i + 1].Style.Font.Bold = true;
-                            worksheet.Cells[3, i + 1].Style.Font.Size = 12;
-                            //worksheet.Cells[3, i + 1].Style.Fill.BackgroundColor.SetColor(System.Drawing.Color.FromArgb(255, 255, 0)) ;
-                        }
-                        for (int i = 0; i < originList.Count; i++)
-                        {
-                            worksheet.Cells[i + 4, 1].Value = originList[i].name;
-                            worksheet.Cells[i + 4, 2].Value = originList[i].rootMeshValue.vertCount;
-                            worksheet.Cells[i + 4, 3].Value = originList[i].refList.Count;
-                            worksheet.Cells[i + 4, 4].Value = originList[i].rootMeshValue.triangles;
-                            worksheet.Cells[i + 4, 5].Value = originList[i].rootMeshValue.exist_normals ? "√" : "";
-                            worksheet.Cells[i + 4, 6].Value = originList[i].rootMeshValue.exist_tangents ? "√" : "";
-                            worksheet.Cells[i + 4, 7].Value = originList[i].rootMeshValue.exist_colors ? "√" : "";
-                            worksheet.Cells[i + 4, 8].Value = originList[i].rootMeshValue.exist_uv[0] ? "√" : "";
-                            worksheet.Cells[i + 4, 9].Value = originList[i].rootMeshValue.exist_uv[1] ? "√" : "";
-                            worksheet.Cells[i + 4, 10].Value = originList[i].rootMeshValue.exist_uv[2] ? "√" : "";
-                            worksheet.Cells[i + 4, 11].Value = originList[i].rootMeshValue.exist_uv[3] ? "√" : "";
-                            worksheet.Cells[i + 4, 12].Value = originList[i].rootMeshValue.memory >= 1000 ? (originList[i].rootMeshValue.memory / 1000.0f).ToString("F2") + "MB" : originList[i].rootMeshValue.memory.ToString("F2") + "KB";
-                            worksheet.Cells[i + 4, 13].Value = originList[i].rootMeshValue.isRead ? "√" : "";
-                        }
-                        package.Save();
-                        exportPath = exportPath.Replace('/', '\\');
-#if UNITY_EDITOR_WIN
-                        System.Diagnostics.Process p = new System.Diagnostics.Process();
-                        p.StartInfo.FileName = "explorer.exe";
-                        p.StartInfo.Arguments = (@" /select," + exportPath);
-                        p.Start();
-#endif
-                    }
+                    if (ExportExcelData() == false) return;
                 }
 
 #if UNITY_EDITOR_WIN
@@ -1006,23 +1067,7 @@ namespace MeshProfilerNS
                 {
                     if (SelectIndex < 0)
                         return;
-
-                    string meshPath = meshElementList[SelectIndex].assetPath;
-                    if (!string.IsNullOrEmpty(meshPath) && !meshPath.Contains("unity default resources"))
-                    {
-                        string path = meshPath.Substring(0, meshPath.LastIndexOf('/'));
-                        DirectoryInfo direction = new DirectoryInfo(path);
-                        path = direction.GetFiles("*", SearchOption.TopDirectoryOnly)[0].FullName.ToString();
-                        path = (path.Substring(0, path.IndexOf("Assets"))+ meshPath).Replace('/', '\\'); ;
-                        System.Diagnostics.Process p = new System.Diagnostics.Process();
-                        p.StartInfo.FileName = "explorer.exe";
-                        p.StartInfo.Arguments = (@" /select," + path);
-                        p.Start();
-                    }
-                    else
-                    {
-                        EditorUtility.DisplayDialog("warning", "This mesh is not asset file！", "ok");
-                    }
+                    OpenMeshFolder();
                 }
 #endif
 
@@ -1030,34 +1075,12 @@ namespace MeshProfilerNS
                 {
                     if (SelectIndex < 0)
                         return;
-
-                    string meshPath = meshElementList[SelectIndex].assetPath;
-
-                    if (!string.IsNullOrEmpty(meshPath) && !meshPath.Contains("unity default resources"))
-                    {
-                            UnityEngine.Object obj = (UnityEngine.Object)AssetDatabase.LoadAssetAtPath(meshPath, typeof(UnityEngine.Object));
-                            Selection.activeObject = obj;
-                    }
-                    else
-                    {
-                        EditorUtility.DisplayDialog("warning", "This mesh is not asset file！", "ok");
-                    }
+                    SelectAsset();
                 }
 
                 if (GUILayout.Button("Show Lost Mesh Objs", GUILayout.Height(buttonHeight)))
                 {
-
-                    MeshFilter[] filters = FindObjectsOfType<MeshFilter>();
-                    List<GameObject> objList = new List<GameObject>();
-                    
-                    for (int i = filters.Length - 1; i >= 0; i--)
-                    {
-                        if (filters[i].sharedMesh == null)
-                        {
-                            objList.Add(filters[i].gameObject);
-                        }
-                    }
-                    ShowRefList.AddWindow(objList, "Lost Mesh List");
+                    ShowLostMeshObjs();
                 }
 
 
@@ -1126,6 +1149,7 @@ namespace MeshProfilerNS
             GUILayout.EndArea();
 
         }
+
 
         /// <summary>
         /// 绘制搜索栏
