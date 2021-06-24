@@ -126,7 +126,7 @@ public class CombinedMesh{
         return target;
     }
 
-    public void DoCombine(bool logTime){
+    public int DoCombine(bool logTime){
 
         List<MeshPartInfo> allList=new List<MeshPartInfo>();
         MeshPartInfo list=new MeshPartInfo();
@@ -171,6 +171,8 @@ public class CombinedMesh{
         //     string.Format("CombinedMesh 用时:{1}ms,Mesh数量:{1} 子模型数:{2},VertexCount:{3},Mat:{4}"
         //     ,(DateTime.Now-start).TotalMilliseconds,count,allList.Count,VertexCount,mat)
         //     );
+
+        return VertexCount;
     }
 
     public IEnumerator DoCombine_Coroutine(bool logTime,int waitCount){
@@ -341,10 +343,15 @@ public static class MeshCombineHelper
             List<MeshFilter> list=item.Value;
 
             CombinedMesh combinedMesh=new CombinedMesh(go.transform,list,material);
-            combinedMesh.DoCombine(true);
-            GameObject matGo=combinedMesh.CreateNewGo(false,null);
-            matGo.name=material.name;
-            matGo.transform.SetParent(goNew.transform);
+            int vs=combinedMesh.DoCombine(true);
+            if(vs>0){
+                GameObject matGo=combinedMesh.CreateNewGo(false,null);
+                matGo.name=material.name;
+                matGo.transform.SetParent(goNew.transform);
+            }
+            else{
+                Debug.LogWarning($"CombineMaterials vs==0 material:{material},list:{list.Count}");
+            }
         }
 
         goNew.transform.SetParent(go.transform.parent);
