@@ -12,7 +12,7 @@ public class MeshManagerEditorWindow : EditorWindow
     [MenuItem("Window/Tools/ MeshManager")]
 public static void AddWindow()
 {
-    SceneRebuildEditorWindow window = (SceneRebuildEditorWindow)EditorWindow.GetWindowWithRect(typeof(SceneRebuildEditorWindow), new Rect(0, 0, MPGUIStyles.SCREEN_WIDTH * 0.8f, MPGUIStyles.SCREEN_HEIGHT * 0.8f), true, "MeshManagerEditorWindow");
+    MeshManagerEditorWindow window = (MeshManagerEditorWindow)EditorWindow.GetWindowWithRect(typeof(MeshManagerEditorWindow), new Rect(0, 0, MPGUIStyles.SCREEN_WIDTH, MPGUIStyles.SCREEN_HEIGHT), true, "MeshManagerEditorWindow");
     window.Show();
     window.Init();
 }

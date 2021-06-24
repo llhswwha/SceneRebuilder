@@ -33,7 +33,7 @@ public class BuildingModelInfo : MonoBehaviour
         return true;
     }
 
-    private int GetPartCount()
+    public int GetPartCount()
     {
         int pC = 0;
         if (InPart != null)
@@ -49,6 +49,18 @@ public class BuildingModelInfo : MonoBehaviour
             pC++;
         }
         return pC;
+    }
+
+    public int GetSceneCount()
+    {
+        if (SceneList == null)
+        {
+            return 0;
+        }
+        else
+        {
+            return SceneList.sceneCount;
+        }
     }
 
     public string GetInfoName()

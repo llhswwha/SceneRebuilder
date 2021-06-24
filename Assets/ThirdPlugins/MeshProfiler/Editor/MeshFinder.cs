@@ -12,7 +12,7 @@ namespace MeshProfilerNS
 
     }
 
-    public class ListItemElement<T> where T : ListItemElementValues
+    public class ListItemElement<T> where T : ListItemElementValues ,new()
     {
         public string name;
         public string assetPath;
@@ -24,6 +24,10 @@ namespace MeshProfilerNS
         public int AllVertsNum;
         public bool isAsset = false;
         public bool isSkin = false;
+        public ListItemElement()
+        {
+
+        }
 
         public ListItemElement(GameObject _rootObj, bool _isAsset, bool _isSkin = false)
         {
@@ -38,6 +42,9 @@ namespace MeshProfilerNS
         public virtual void RefleshProps()
         {
             name = rootObj.name;
+
+            childList = new List<T>();
+            rootMeshValue = new T();
         }
     }
 
@@ -68,8 +75,8 @@ namespace MeshProfilerNS
         {
             base.RefleshProps();
 
-            childList = new List<MeshValues>();
-            rootMeshValue = new MeshValues();
+            //childList = new List<MeshValues>();
+            //rootMeshValue = new MeshValues();
 
             if (!isSkin)
             {
@@ -183,6 +190,11 @@ namespace MeshProfilerNS
         public bool exist_colors;
         public bool[] exist_uv = new bool[4];
         public bool isRead;
+
+        public MeshValues()
+        {
+
+        }
 
         public List<StringBuilder> GetVerticsStr()
         {

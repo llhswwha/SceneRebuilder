@@ -13,7 +13,7 @@ using OfficeOpenXml;
 
 namespace MeshProfilerNS
 {
-    public class MeshProfiler : EditorWindow
+    public class MeshProfiler : ListManagerEditorWindow
     {
         [MenuItem("Window/Analysis/Mesh Profiler")]
         public static void AddWindow()
@@ -21,15 +21,6 @@ namespace MeshProfilerNS
             MeshProfiler window = (MeshProfiler)EditorWindow.GetWindowWithRect(typeof(MeshProfiler), new Rect(0, 0, MPGUIStyles.SCREEN_WIDTH, MPGUIStyles.SCREEN_HEIGHT), true, "Mesh Profiler 1.1");
             window.Show();
             window.Init();
-        }
-        enum SortWays
-        {
-            SortByVertNum,
-            SortByRefNum,
-            SortByVertsMultiplyRefCount,
-            SortByTriangles,
-            SortByName,
-            SortByMemory
         }
 
         string[] tableTitle = new string[] { "name", "Vertex","RefCount", "Triangles", "Normals", "Tangents", "Colors", "UV", "UV2", "UV3", "UV4", "Memory", "Readable", };
@@ -43,7 +34,7 @@ namespace MeshProfilerNS
          bool isSelectConditions = false;
         string[] tableConditions = new string[] { "Normals", "UV", "Tangents", "UV2", "Colors", "UV3", "Readable", "UV4" };
         static bool[] selectConditions = new bool[8];
-        static SortWays sortWays;
+        static MeshSortWays sortWays;
         bool IsIgnoreKeywordsList = false;
         static string IgnoreKeywordList = "";
         static int[] LevelNum = new int[5] { 0,500,1000,1500,2000};
@@ -88,28 +79,6 @@ namespace MeshProfilerNS
         bool isRetract = false;//是否折叠
         const int pageCount = 100;
         int pageIndex = 0;
-
-
-        class DataClass
-        {
-            public int modelCount = 0;
-            public int assetCount = 0;
-            public int normalCount = 0;
-            public int tangentCount = 0;
-            public int colorCount = 0;
-            public int UVXCount = 0;
-            public int readableCount = 0;
-            public void Reset()
-            {
-                modelCount = 0;
-                assetCount = 0;
-                normalCount = 0;
-                tangentCount = 0;
-                colorCount = 0;
-                UVXCount = 0;
-                readableCount = 0;
-            }
-        }
 
         DataClass dataChart = new DataClass();
         /// <summary>
@@ -342,12 +311,12 @@ namespace MeshProfilerNS
             }
         }
         //按排序方式排序
-        void Sort(List<MeshElement> list, SortWays sortways)
+        void Sort(List<MeshElement> list, MeshSortWays sortways)
         {
             for (int i = 1; i < list.Count; i++)
                 for (int j = 0; j < list.Count - i; j++)
                 {
-                    if (sortways == SortWays.SortByVertNum)
+                    if (sortways == MeshSortWays.SortByVertNum)
                     {
                         if (list[j].rootMeshValue.vertCount < list[j + 1].rootMeshValue.vertCount)
                         {
@@ -356,7 +325,7 @@ namespace MeshProfilerNS
                             list[j + 1] = temp;
                         }
                     }
-                    else if (sortways == SortWays.SortByMemory)
+                    else if (sortways == MeshSortWays.SortByMemory)
                     {
                         if (list[j].rootMeshValue.memory < list[j + 1].rootMeshValue.memory)
                         {
@@ -365,7 +334,7 @@ namespace MeshProfilerNS
                             list[j + 1] = temp;
                         }
                     }
-                    else if (sortways == SortWays.SortByTriangles)
+                    else if (sortways == MeshSortWays.SortByTriangles)
                     {
                         if (list[j].rootMeshValue.triangles < list[j + 1].rootMeshValue.triangles)
                         {
@@ -374,7 +343,7 @@ namespace MeshProfilerNS
                             list[j + 1] = temp;
                         }
                     }
-                    else if (sortways == SortWays.SortByVertsMultiplyRefCount)
+                    else if (sortways == MeshSortWays.SortByVertsMultiplyRefCount)
                     {
                         if (list[j].AllVertsNum < list[j + 1].AllVertsNum)
                         {
@@ -383,7 +352,7 @@ namespace MeshProfilerNS
                             list[j + 1] = temp;
                         }
                     }
-                    else if (sortways == SortWays.SortByRefNum)
+                    else if (sortways == MeshSortWays.SortByRefNum)
                     {
                         if (list[j].refList.Count < list[j + 1].refList.Count)
                         {
@@ -392,7 +361,7 @@ namespace MeshProfilerNS
                             list[j + 1] = temp;
                         }
                     }
-                    else if (sortways == SortWays.SortByName)
+                    else if (sortways == MeshSortWays.SortByName)
                     {
                         if (list[j].name.CompareTo(list[j + 1].name)>0)
                         {
@@ -437,7 +406,7 @@ namespace MeshProfilerNS
             GUILayout.Label("Setting Panel", MPGUIStyles.centerStyle);
             GUILayout.Space(5);
             EditorGUI.BeginChangeCheck();
-            sortWays = (SortWays)EditorGUILayout.EnumPopup("Sort Ways", sortWays);
+            sortWays = (MeshSortWays)EditorGUILayout.EnumPopup("Sort Ways", sortWays);
             if (EditorGUI.EndChangeCheck())
             {
                 Sort(meshElementList, sortWays);
@@ -1304,6 +1273,37 @@ namespace MeshProfilerNS
 
 
         }
+    }
+
+    class DataClass
+    {
+        public int modelCount = 0;
+        public int assetCount = 0;
+        public int normalCount = 0;
+        public int tangentCount = 0;
+        public int colorCount = 0;
+        public int UVXCount = 0;
+        public int readableCount = 0;
+        public void Reset()
+        {
+            modelCount = 0;
+            assetCount = 0;
+            normalCount = 0;
+            tangentCount = 0;
+            colorCount = 0;
+            UVXCount = 0;
+            readableCount = 0;
+        }
+    }
+
+    enum MeshSortWays
+    {
+        SortByVertNum,
+        SortByRefNum,
+        SortByVertsMultiplyRefCount,
+        SortByTriangles,
+        SortByName,
+        SortByMemory
     }
 }
 
