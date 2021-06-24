@@ -49,6 +49,12 @@ public class SceneRebuildManager : MonoBehaviour
         Debug.LogError($"OneKey Time:{(DateTime.Now - start).ToString()}");
     }
 
+    [ContextMenu("ClearBuildings")]
+    public void ClearBuildings()
+    {
+        SubSceneManager.ClearBuildings();
+    }
+
     //[ContextMenu("LoadScenes")]
     //public void LoadScenes()
     //{

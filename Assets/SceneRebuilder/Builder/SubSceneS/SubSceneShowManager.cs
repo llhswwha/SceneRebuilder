@@ -169,6 +169,16 @@ public class SubSceneShowManager : MonoBehaviour
         TimeOfDis = (DateTime.Now - start).TotalMilliseconds;
     }
 
+    public string GetSceneInfo()
+    {
+        return $"visible:{visibleScenes.Count},loaded:{loadScenes.Count},hidden:{hiddenScenes.Count},unloaded:{unloadScenes.Count}";
+    }
+
+    public string GetDisInfo()
+    {
+        return $"Min:{MinDisToCam:F0},Max:{MaxDisToCam:F0},MinSqrt:{MinDisSqrtToCam:F0},MaxSqrt:{MaxDisSqrtToCam:F0},time:{TimeOfDis:F1}";
+    }
+
     // Update is called once per frame
     void Update()
     {

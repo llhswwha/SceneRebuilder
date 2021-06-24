@@ -89,4 +89,6 @@ public class RendererManager : MonoBehaviour
         }
         Debug.LogError($"ClearIds count:{allRenderers.Length} time:{(DateTime.Now - start)}");
     }
+
+    //public  
 }

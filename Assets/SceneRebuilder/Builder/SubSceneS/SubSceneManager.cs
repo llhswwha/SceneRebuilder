@@ -290,6 +290,14 @@ public class SubSceneManager : MonoBehaviour
         SetBuildings(subScenes);
     }
 
+    [ContextMenu("ClearBuildings")]
+    public void ClearBuildings()
+    {
+        EditorBuildSettingsScene[] buildingScenes = new EditorBuildSettingsScene[1];
+        buildingScenes[0] = new EditorBuildSettingsScene(EditorSceneManager.GetActiveScene().path, true);
+        EditorBuildSettings.scenes = buildingScenes;
+    }
+
     public static void SetBuildings<T>(T[] scenes) where T : SubScene_Base
     {
         Debug.Log($"SetBuildings scenes:{scenes.Length}");
