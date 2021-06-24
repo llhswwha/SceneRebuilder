@@ -93,7 +93,7 @@ public class SubSceneManager : MonoBehaviour
         for (int i = 0; i < count; i++)
         {
             var item = buildings[i];
-
+            if(item==null)continue;
             float progress = (float)i / count;
             float percents = progress * 100;
 
@@ -114,7 +114,7 @@ public class SubSceneManager : MonoBehaviour
 
             item.EditorCreateScenesEx(this.contentType,(subProgress,si,c)=>
             {
-                //×Ó½ø¶È
+                //ï¿½Ó½ï¿½ï¿½ï¿½
 
                 //Debug.Log($"EditorCreateBuildingScenes subProgress:{subProgress} || {i}/{subScenes.Length} {percents:F2}% of 100% \t{item.name}");
                 float progress = (float)(i+subProgress) / count;
@@ -345,9 +345,9 @@ public class SubSceneManager : MonoBehaviour
 
     //    Scene scene = UnityEditor.SceneManagement.EditorSceneManager.GetSceneByPath(scenePath);
     //    Debug.Log("scene IsValid:" + scene.IsValid());
-    //    if (scene.IsValid() == true)//´ò¿ª
+    //    if (scene.IsValid() == true)//ï¿½ï¿½
     //    {
-    //        bool r=UnityEditor.SceneManagement.EditorSceneManager.CloseScene(scene, true);//¹Ø±Õ³¡¾°£¬²»¹Ø±ÕÎÞ·¨¸²¸Ç
+    //        bool r=UnityEditor.SceneManagement.EditorSceneManager.CloseScene(scene, true);//ï¿½Ø±Õ³ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½Ø±ï¿½ï¿½Þ·ï¿½ï¿½ï¿½ï¿½ï¿½
     //        Debug.Log("r:" + r);
 
     //    }
@@ -582,7 +582,7 @@ public class SubSceneManager : MonoBehaviour
                     OnAllLoaded();
                     WriteLog($"LoadScenesAsync  count:{scenes.Length},\t time:{(DateTime.Now - start).ToString()}");
                 }
-            });//¶à¸öÐ­³Ì£¬ÂÒÐò
+            });//ï¿½ï¿½ï¿½Ð­ï¿½Ì£ï¿½ï¿½ï¿½ï¿½ï¿½
         }
     }
 
@@ -590,12 +590,12 @@ public class SubSceneManager : MonoBehaviour
     public void LoadScenesAsyncEx()
     {
         subScenes = GetSubScenes();
-        LoadScenesAsyncEx(subScenes);//Ò»¸öÐ­³ÌË³Ðò
+        LoadScenesAsyncEx(subScenes);//Ò»ï¿½ï¿½Ð­ï¿½ï¿½Ë³ï¿½ï¿½
     }
 
     public void LoadScenesAsyncEx<T>(T[] scenes) where T : SubScene_Base
     {
-        StartCoroutine(LoadAllScenesCoroutine(scenes));//Ò»¸öÐ­³ÌË³Ðò
+        StartCoroutine(LoadAllScenesCoroutine(scenes));//Ò»ï¿½ï¿½Ð­ï¿½ï¿½Ë³ï¿½ï¿½
     }
 
     public float loadProgress = 0;
@@ -697,7 +697,7 @@ public class SubSceneManager : MonoBehaviour
             var scenes = GameObject.FindObjectsOfType<SubScene_Single>();
             result = ToBaseScene(scenes);
         }
-        else //È«²¿
+        else //È«ï¿½ï¿½
         {
             var scenes = GameObject.FindObjectsOfType<SubScene_Base>();
             result = ToBaseScene(scenes);
@@ -708,7 +708,7 @@ public class SubSceneManager : MonoBehaviour
     }
 
     /// <summary>
-    /// ¸ù¾ÝIsPartScene»ñÈ¡²»Í¬µÄÀàÐÍ
+    /// ï¿½ï¿½ï¿½ï¿½IsPartSceneï¿½ï¿½È¡ï¿½ï¿½Í¬ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½
     /// </summary>
     /// <returns></returns>
     public SubScene_Base[] GetSubScenes()
