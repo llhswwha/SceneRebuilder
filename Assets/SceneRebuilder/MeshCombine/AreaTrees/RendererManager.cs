@@ -36,6 +36,14 @@ public class RendererManager : MonoBehaviour
         Debug.Log($"TestGetRenderer id:{TestId},go:{TestGo}");
     }
 
+    [ContextMenu("TestBounds")]
+    public void TestBounds()
+    {
+        var renderers=TestGo.GetComponentsInChildren<MeshRenderer>(true);
+        var bounds = ColliderHelper.CaculateBounds(renderers);
+        AreaTreeHelper.CreateBoundsCube(bounds, "TestBounds", transform);
+    }
+
     [ContextMenu("InitIds")]
     public void InitIds()
     {

@@ -11,7 +11,7 @@ using UnityEditor.SceneManagement;
 
 public class SubScene_Base : MonoBehaviour
 {
-    public SubScene_Base LinkedScene;//Õâ¸öÓ¦¸Ã»áÒ»Ö±´æÔÚÖ÷³¡¾°ÖÐ£¬ÓÃInstanceIdºÃÁË¡£
+    public SubScene_Base LinkedScene;//ï¿½ï¿½ï¿½Ó¦ï¿½Ã»ï¿½Ò»Ö±ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½Ð£ï¿½ï¿½ï¿½InstanceIdï¿½ï¿½ï¿½Ë¡ï¿½
 
     public SubSceneArg sceneArg;
 
@@ -451,7 +451,7 @@ public class SubScene_Base : MonoBehaviour
     }
 
     /// <summary>
-    /// »ñÈ¡ºÏ²¢Ê÷¹ØÁªµÄÔ­Ä£ÐÍµÄÓÎÏ·¶ÔÏó
+    /// ï¿½ï¿½È¡ï¿½Ï²ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½Ô­Ä£ï¿½Íµï¿½ï¿½ï¿½Ï·ï¿½ï¿½ï¿½ï¿½
     /// </summary>
     private void LoadTreeRenderers()
     {
@@ -463,17 +463,17 @@ public class SubScene_Base : MonoBehaviour
     }
 
     /// <summary>
-    /// ×¢²á¼ÓÔØµÄ×Ó³¡¾°µÄÄ£ÐÍ£¬²¢»ñÈ¡ÆäÖÐµÄ[ºÏ²¢Ê÷]µÄ¹ØÁªÓÎÏ·¶ÔÏó¡£
+    /// ×¢ï¿½ï¿½ï¿½ï¿½Øµï¿½ï¿½Ó³ï¿½ï¿½ï¿½ï¿½ï¿½Ä£ï¿½Í£ï¿½ï¿½ï¿½ï¿½ï¿½È¡ï¿½ï¿½ï¿½Ðµï¿½[ï¿½Ï²ï¿½ï¿½ï¿½]ï¿½Ä¹ï¿½ï¿½ï¿½ï¿½ï¿½Ï·ï¿½ï¿½ï¿½ï¿½
     /// </summary>
     internal void InitIdDict()
     {
         Debug.Log($"SubScene_Base.InitIdDict name:{this.name} type:{contentType} linked:{LinkedScene}");
-        IdDictionay.InitGos(gos, sceneName);//×Ó³¡¾°¼ÓÔØºó£¬×¢²á×Ó³¡¾°ÖÐµÄÄ£ÐÍÐÅÏ¢
+        IdDictionay.InitGos(gos, sceneName);//ï¿½Ó³ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½Øºï¿½×¢ï¿½ï¿½ï¿½Ó³ï¿½ï¿½ï¿½ï¿½Ðµï¿½Ä£ï¿½ï¿½ï¿½ï¿½Ï¢
         if (LinkedScene != null)
         {
-            if (this.contentType == SceneContentType.Tree)//±¾ÉíÊÇ±£´æÁË[ºÏ²¢Ê÷]µÄ×Ó³¡¾°
+            if (this.contentType == SceneContentType.Tree)//ï¿½ï¿½ï¿½ï¿½ï¿½Ç±ï¿½ï¿½ï¿½ï¿½ï¿½[ï¿½Ï²ï¿½ï¿½ï¿½]ï¿½ï¿½ï¿½Ó³ï¿½ï¿½ï¿½
             {
-                if (LinkedScene.IsLoaded)//¶ÔÓ¦µÄ[ºÏ²¢Ê÷]ºÍ[Ô­Ä£ÐÍ]Í¬Ê±¶¼¼ÓÔØµ½³¡¾°ÖÐºó£¬²ÅÈ¥Ñ°ÕÒ¹ØÁªµÄÓÎÏ·¶ÔÏó
+                if (LinkedScene.IsLoaded)//ï¿½ï¿½Ó¦ï¿½ï¿½[ï¿½Ï²ï¿½ï¿½ï¿½]ï¿½ï¿½[Ô­Ä£ï¿½ï¿½]Í¬Ê±ï¿½ï¿½ï¿½ï¿½ï¿½Øµï¿½ï¿½ï¿½ï¿½ï¿½ï¿½Ðºó£¬²ï¿½È¥Ñ°ï¿½Ò¹ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½Ï·ï¿½ï¿½ï¿½ï¿½
                 {
                     this.LoadTreeRenderers();
                 }
@@ -482,28 +482,28 @@ public class SubScene_Base : MonoBehaviour
                     Debug.LogError($"SubScene_Base.InitIdDict LinkedScene.IsLoaded==false scene:{this.name}");
                 }
             }
-            else if (this.contentType == SceneContentType.Part)//±¾ÉíÊÇ±£´æÁË[Ô­Ä£ÐÍ]µÄ×Ó³¡¾°
+            else if (this.contentType == SceneContentType.Part)//ï¿½ï¿½ï¿½ï¿½ï¿½Ç±ï¿½ï¿½ï¿½ï¿½ï¿½[Ô­Ä£ï¿½ï¿½]ï¿½ï¿½ï¿½Ó³ï¿½ï¿½ï¿½
             {
-                if (LinkedScene.IsLoaded)//¶ÔÓ¦µÄ[ºÏ²¢Ê÷]ºÍ[Ô­Ä£ÐÍ]Í¬Ê±¶¼¼ÓÔØµ½³¡¾°ÖÐºó£¬²ÅÈ¥Ñ°ÕÒ¹ØÁªµÄÓÎÏ·¶ÔÏó
+                if (LinkedScene.IsLoaded)//ï¿½ï¿½Ó¦ï¿½ï¿½[ï¿½Ï²ï¿½ï¿½ï¿½]ï¿½ï¿½[Ô­Ä£ï¿½ï¿½]Í¬Ê±ï¿½ï¿½ï¿½ï¿½ï¿½Øµï¿½ï¿½ï¿½ï¿½ï¿½ï¿½Ðºó£¬²ï¿½È¥Ñ°ï¿½Ò¹ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½Ï·ï¿½ï¿½ï¿½ï¿½
                 {
-                    LinkedScene.LoadTreeRenderers();//»ñÈ¡¶ÔÓ¦µÄ[ºÏ²¢Ê÷]µÄ¹ØÁªÄ£ÐÍ
+                    LinkedScene.LoadTreeRenderers();//ï¿½ï¿½È¡ï¿½ï¿½Ó¦ï¿½ï¿½[ï¿½Ï²ï¿½ï¿½ï¿½]ï¿½Ä¹ï¿½ï¿½ï¿½Ä£ï¿½ï¿½
                 }
                 else
                 {
                     Debug.LogError($"SubScene_Base.InitIdDict LinkedScene.IsLoaded==false scene:{this.name}");
                 }
             }
-            //ÔÝÊ±Ã»²âÊÔµ½
-            else if (this.contentType == SceneContentType.TreeAndPart)//±¾ÉíÊÇ±£´æÁË[ºÏ²¢Ê÷]ºÍ[Ô­Ä£ÐÍ]µÄ×Ó³¡¾°
+            //ï¿½ï¿½Ê±Ã»ï¿½ï¿½ï¿½Ôµï¿½
+            else if (this.contentType == SceneContentType.TreeAndPart)//ï¿½ï¿½ï¿½ï¿½ï¿½Ç±ï¿½ï¿½ï¿½ï¿½ï¿½[ï¿½Ï²ï¿½ï¿½ï¿½]ï¿½ï¿½[Ô­Ä£ï¿½ï¿½]ï¿½ï¿½ï¿½Ó³ï¿½ï¿½ï¿½
             {
                 LoadTreeRenderers();
             }
             else
             {
-                //Ó¦¸Ã²»»áÅÜµ½ÕâÀï
-                if (LinkedScene.IsLoaded)//¶ÔÓ¦µÄ[ºÏ²¢Ê÷]ºÍ[Ô­Ä£ÐÍ]Í¬Ê±¶¼¼ÓÔØµ½³¡¾°ÖÐºó£¬²ÅÈ¥Ñ°ÕÒ¹ØÁªµÄÓÎÏ·¶ÔÏó
+                //Ó¦ï¿½Ã²ï¿½ï¿½ï¿½ï¿½Üµï¿½ï¿½ï¿½ï¿½ï¿½
+                if (LinkedScene.IsLoaded)//ï¿½ï¿½Ó¦ï¿½ï¿½[ï¿½Ï²ï¿½ï¿½ï¿½]ï¿½ï¿½[Ô­Ä£ï¿½ï¿½]Í¬Ê±ï¿½ï¿½ï¿½ï¿½ï¿½Øµï¿½ï¿½ï¿½ï¿½ï¿½ï¿½Ðºó£¬²ï¿½È¥Ñ°ï¿½Ò¹ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½Ï·ï¿½ï¿½ï¿½ï¿½
                 {
-                    LinkedScene.LoadTreeRenderers();//»ñÈ¡¶ÔÓ¦µÄ[ºÏ²¢Ê÷]µÄ¹ØÁªÄ£ÐÍ
+                    LinkedScene.LoadTreeRenderers();//ï¿½ï¿½È¡ï¿½ï¿½Ó¦ï¿½ï¿½[ï¿½Ï²ï¿½ï¿½ï¿½]ï¿½Ä¹ï¿½ï¿½ï¿½Ä£ï¿½ï¿½
                     this.LoadTreeRenderers();
                 }
                 else
@@ -530,7 +530,7 @@ public class SubScene_Base : MonoBehaviour
 
         if (this is SubScene_Single)
         {
-            gos = SubSceneHelper.GetChildrenGos(GetSceneParent());//»ñÈ¡ÐÂµÄÈ«²¿×ÓÎïÌå£¬ÒÔ±ãÏÂÃæ¸üÐÂ³¡¾°
+            gos = SubSceneHelper.GetChildrenGos(GetSceneParent());//ï¿½ï¿½È¡ï¿½Âµï¿½È«ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½å£¬ï¿½Ô±ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½Â³ï¿½ï¿½ï¿½
         }
 
         SubSceneManager subSceneManager = GameObject.FindObjectOfType<SubSceneManager>();
@@ -542,7 +542,7 @@ public class SubScene_Base : MonoBehaviour
 
         AreaTreeHelper.InitCubePrefab();
         ShowBounds();
-        bool r1 = UnityEditor.SceneManagement.EditorSceneManager.CloseScene(scene, true);//¹Ø±Õ³¡¾°£¬²»¹Ø±ÕÎÞ·¨¸²¸Ç
+        bool r1 = UnityEditor.SceneManagement.EditorSceneManager.CloseScene(scene, true);//ï¿½Ø±Õ³ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½Ø±ï¿½ï¿½Þ·ï¿½ï¿½ï¿½ï¿½ï¿½
         Debug.Log("r1:" + r1);
     }
 
@@ -595,6 +595,7 @@ public class SubScene_Base : MonoBehaviour
                 if (go == null) continue;
                 renderers.AddRange(go.GetComponentsInChildren<MeshRenderer>(true));
             }
+            Debug.Log($"SubScene_Base.Init name:{this.name} gos:{gos.Count},renderers:{renderers.Count}");
             InitRenderersInfo(renderers.ToArray());
         }
 
@@ -623,6 +624,7 @@ public class SubScene_Base : MonoBehaviour
         center = bounds.center;
         //radius=bounds.
         vertexCount = GetVertexCount(renderers);
+        Debug.Log($"SubScene_Base.Init name:{this.name} renderers:{renderers.Length} bounds:{bounds} center:{center}");
     }
 
     public float GetVertexCount(MeshRenderer[] renderers)
