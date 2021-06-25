@@ -87,31 +87,37 @@ public class SceneRebuildEditorWindow : ListManagerEditorWindow
             LevelNum = new int[5] { 0, 50, 100, 200, 400 };
             Debug.LogError("Your parameter is wrong,bar chart parameter has been reset!");
         }
-        int[] array = new int[5] { 0, 0, 0, 0, 0 };
+        int[] array = new int[5] { 10, 20, 0, 40, 0 };
 
+        float max = 0;
+        float min = float.MaxValue;
+        float avg = 0;
+        float sum = 0;
         for (int i = 0; i < originList.Count; i++)
         {
-
-            if (originList[i].rootMeshValue.AllVertextCount < LevelNum[1] && originList[i].rootMeshValue.AllVertextCount >= LevelNum[0])
+            var vc = originList[i].rootMeshValue.AllVertextCount;
+            if (vc < LevelNum[1] && vc >= LevelNum[0])
             {
                 array[0]++;
             }
-            else if (originList[i].rootMeshValue.AllVertextCount < LevelNum[2] && originList[i].rootMeshValue.AllVertextCount >= LevelNum[1])
+            else if (vc < LevelNum[2] && vc >= LevelNum[1])
             {
                 array[1]++;
             }
-            else if (originList[i].rootMeshValue.AllVertextCount < LevelNum[3] && originList[i].rootMeshValue.AllVertextCount >= LevelNum[2])
+            else if (vc < LevelNum[3] && vc >= LevelNum[2])
             {
                 array[2]++;
             }
-            else if (originList[i].rootMeshValue.AllVertextCount < LevelNum[4] && originList[i].rootMeshValue.AllVertextCount >= LevelNum[3])
+            else if (vc < LevelNum[4] && vc >= LevelNum[3])
             {
                 array[3]++;
             }
-            else if (originList[i].rootMeshValue.AllVertextCount >= LevelNum[0])
+            else if (vc >= LevelNum[0])
             {
                 array[4]++;
             }
+            sum += vc;
+            //if()
         }
 
 
@@ -659,7 +665,7 @@ public class SceneRebuildEditorWindow : ListManagerEditorWindow
             SelectChildIndex = -1;
         }
 
-        if (GUILayout.Button($"[{index:00}]", lineStyle, GUILayout.Height(30), GUILayout.Width(20)))
+        if (GUILayout.Button($"{index+1:00}", lineStyle, GUILayout.Height(30), GUILayout.Width(25)))
         {
             if (SelectIndex != index)
             {
@@ -669,7 +675,8 @@ public class SceneRebuildEditorWindow : ListManagerEditorWindow
             SelectChildIndex = -1;
         }
 
-        if (GUILayout.Button(element.name, lineStyle, GUILayout.Height(30), element.isGroup ? GUILayout.Width(180) : GUILayout.Width(200)))
+        int widthOff = 7;
+        if (GUILayout.Button(element.name, lineStyle, GUILayout.Height(30), element.isGroup ? GUILayout.Width(180- widthOff) : GUILayout.Width(200- widthOff)))
         {
             if (SelectIndex != index)
             {
