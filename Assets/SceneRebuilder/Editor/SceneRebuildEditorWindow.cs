@@ -17,8 +17,8 @@ public class SceneRebuildEditorWindow : ListManagerEditorWindow
         window.Init();
     }
 
-    //UI¸¨Öú²ÎÊý
-    int selectIndex = 0;//¸¸ÎïÌåÑ¡ÔñÏÂ±ê
+    //UIï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½
+    int selectIndex = 0;//ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½Ñ¡ï¿½ï¿½ï¿½Â±ï¿½
     int SelectIndex
     {
         get { return selectIndex; }
@@ -40,7 +40,7 @@ public class SceneRebuildEditorWindow : ListManagerEditorWindow
         }
     }
 
-    int selectChildIndex = 0;//×ÓÎïÌåÑ¡ÔñÏÂ±ê
+    int selectChildIndex = 0;//ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½Ñ¡ï¿½ï¿½ï¿½Â±ï¿½
     int SelectChildIndex
     {
         get { return selectChildIndex; }
@@ -57,14 +57,14 @@ public class SceneRebuildEditorWindow : ListManagerEditorWindow
     List<BuildingModelElement> meshElementList = new List<BuildingModelElement>();
     List<BuildingModelElement> originList = new List<BuildingModelElement>();
 
-    //Setting¸¨Öú²ÎÊý
+    //Settingï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½
     Editor previewEditor;
     static int minVertNum = 0;
     static int maxVertNum = 65000;
     bool isSelectConditions = false;
     string[] tableConditions = new string[] { "Normals", "UV", "Tangents", "UV2", "Colors", "UV3", "Readable", "UV4" };
     static bool[] selectConditions = new bool[8];
-    static BuildingSortWays sortWays;
+    static BuildingSortWays sortWays=BuildingSortWays.SortByAllVertext;
     bool IsIgnoreKeywordsList = false;
     static string IgnoreKeywordList = "";
     static int[] LevelNum = new int[5] { 0, 50, 100, 200, 400 };//new int[5] { 0, 500, 1000, 1500, 2000 };
@@ -72,13 +72,19 @@ public class SceneRebuildEditorWindow : ListManagerEditorWindow
     string m_InputSearchText;
 
     Vector2 scVector = new Vector2(0, 0);
-    bool isRetract = false;//ÊÇ·ñÕÛµþ
+    bool isRetract = false;//ï¿½Ç·ï¿½ï¿½Ûµï¿½
     const int pageCount = 16;
     int pageIndex = 0;
 
+    float max;
+    float min;
+    float avg;
+
+    float sum;
+
     BuildingDataClass dataChart = new BuildingDataClass();
     /// <summary>
-    /// Ë¢ÐÂÍ³¼ÆÍ¼
+    /// Ë¢ï¿½ï¿½Í³ï¿½ï¿½Í¼
     /// </summary>
     void RefleshBarChart()
     {
@@ -87,12 +93,12 @@ public class SceneRebuildEditorWindow : ListManagerEditorWindow
             LevelNum = new int[5] { 0, 50, 100, 200, 400 };
             Debug.LogError("Your parameter is wrong,bar chart parameter has been reset!");
         }
-        int[] array = new int[5] { 10, 20, 0, 40, 0 };
+        int[] array = new int[5] { 0, 0, 0, 0, 0 };
 
-        float max = 0;
-        float min = float.MaxValue;
-        float avg = 0;
-        float sum = 0;
+        max = 0;
+        min = float.MaxValue;
+        avg = 0;
+        sum = 0;
         for (int i = 0; i < originList.Count; i++)
         {
             var vc = originList[i].rootMeshValue.AllVertextCount;
@@ -117,20 +123,22 @@ public class SceneRebuildEditorWindow : ListManagerEditorWindow
                 array[4]++;
             }
             sum += vc;
-            //if()
+            if(vc>max){
+                max=vc;
+            }
+            if(vc<min){
+                min=vc;
+            }
         }
-
-
+        avg=sum/originList.Count;
 
         List<int> list = new List<int>();
         list.AddRange(array);
 
-
-
         DataLinePainter.Init(list);
     }
     /// <summary>
-    /// Ë¢ÐÂÊý¾Ý
+    /// Ë¢ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½
     /// </summary>
     void RefleshDataChart()
     {
@@ -174,7 +182,7 @@ public class SceneRebuildEditorWindow : ListManagerEditorWindow
     }
 
     /// <summary>
-    /// Ë¢ÐÂÁÐ±í£¬ÖØÐÂËÑË÷
+    /// Ë¢ï¿½ï¿½ï¿½Ð±ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½
     /// </summary>
     void RefleshList()
     {
@@ -237,7 +245,7 @@ public class SceneRebuildEditorWindow : ListManagerEditorWindow
     }
 
     /// <summary>
-    /// °´Ìõ¼þÉ¸Ñ¡
+    /// ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½É¸Ñ¡
     /// </summary>
     /// <param name="list"></param>
     void SelectByConditions(List<BuildingModelElement> list)
@@ -317,7 +325,7 @@ public class SceneRebuildEditorWindow : ListManagerEditorWindow
             SelectIndex = -1;
         }
     }
-    //°´ÅÅÐò·½Ê½ÅÅÐò
+    //ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½Ê½ï¿½ï¿½ï¿½ï¿½
     void Sort(List<BuildingModelElement> list, BuildingSortWays sortways)
     {
         for (int i = 1; i < list.Count; i++)
@@ -410,7 +418,7 @@ public class SceneRebuildEditorWindow : ListManagerEditorWindow
 
 
     /// <summary>
-    /// UIÖ÷º¯Êý
+    /// UIï¿½ï¿½ï¿½ï¿½ï¿½ï¿½
     /// </summary>
     private void OnGUI()
     {
@@ -429,7 +437,7 @@ public class SceneRebuildEditorWindow : ListManagerEditorWindow
     }
 
     /// <summary>
-    /// »æÖÆÉèÖÃÃæ°å
+    /// ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½
     /// </summary>
     void DrawSettingBlock()
     {
@@ -486,7 +494,7 @@ public class SceneRebuildEditorWindow : ListManagerEditorWindow
     }
 
     /// <summary>
-    /// »æÖÆËÑË÷À¸
+    /// ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½
     /// </summary>
     void DrawInputTextField()
     {
@@ -533,7 +541,7 @@ public class SceneRebuildEditorWindow : ListManagerEditorWindow
     }
 
     /// <summary>
-    /// »æÖÆÍ¼±í
+    /// ï¿½ï¿½ï¿½ï¿½Í¼ï¿½ï¿½
     /// </summary>
     void DrawChartBlock()
     {
@@ -542,30 +550,53 @@ public class SceneRebuildEditorWindow : ListManagerEditorWindow
         GUILayout.Space(5);
         GUILayout.Label("Bar Chart Panel", MPGUIStyles.centerStyle);
         GUILayout.EndArea();
+
         DataLinePainter.Draw();
+
         GUILayout.BeginArea(MPGUIStyles.BorderArea(MPGUIStyles.CHART_PARAS_BLOCK, 10));
+
+        GUILayout.BeginHorizontal();
+        GUILayout.Label("Min", GUILayout.Width(70));
+        GUILayout.Label(min.ToString("F1"));
+        GUILayout.EndHorizontal();
+
+        GUILayout.BeginHorizontal();
+        GUILayout.Label("Max", GUILayout.Width(70));
+        GUILayout.Label(max.ToString("F1"));
+        GUILayout.EndHorizontal();
+
+        GUILayout.BeginHorizontal();
+        GUILayout.Label("Avg", GUILayout.Width(70));
+        GUILayout.Label(avg.ToString("F1"));
+        GUILayout.EndHorizontal();
+
         GUILayout.BeginHorizontal();
         GUILayout.Label("High>=", GUILayout.Width(70));
         LevelNum[4] = EditorGUILayout.IntField(LevelNum[4]);
         GUILayout.EndHorizontal();
+
         GUILayout.BeginHorizontal();
         GUILayout.Label("Mid High>=", GUILayout.Width(70));
         LevelNum[3] = EditorGUILayout.IntField(LevelNum[3]);
         GUILayout.EndHorizontal();
+
         GUILayout.BeginHorizontal();
         GUILayout.Label("Mid>=", GUILayout.Width(70));
         LevelNum[2] = EditorGUILayout.IntField(LevelNum[2]);
         GUILayout.EndHorizontal();
+
         GUILayout.BeginHorizontal();
         GUILayout.Label("Mid Low>=", GUILayout.Width(70));
         LevelNum[1] = EditorGUILayout.IntField(LevelNum[1]);
         GUILayout.EndHorizontal();
+
         GUILayout.BeginHorizontal();
         GUILayout.Label("Low>=", GUILayout.Width(70));
         GUI.enabled = false;
         LevelNum[0] = EditorGUILayout.IntField(0);
         GUI.enabled = true;
         GUILayout.EndHorizontal();
+
         GUILayout.Space(5);
         if (GUILayout.Button("Reflesh"))
         {
@@ -577,7 +608,7 @@ public class SceneRebuildEditorWindow : ListManagerEditorWindow
 
     List<BuildingModelElement> tempList = new List<BuildingModelElement>();
     /// <summary>
-    /// °´ÕÕËÑË÷½á¹ûË¢ÐÂÁÐ±í£¬²»ÖØÐÂ»ñÈ¡¡£
+    /// ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½Ë¢ï¿½ï¿½ï¿½Ð±ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½Â»ï¿½È¡ï¿½ï¿½
     /// </summary>
     void RefleshSearchList()
     {
@@ -614,7 +645,7 @@ public class SceneRebuildEditorWindow : ListManagerEditorWindow
     }
 
     /// <summary>
-    /// »æÖÆÁÐ±íÃæ°å
+    /// ï¿½ï¿½ï¿½ï¿½ï¿½Ð±ï¿½ï¿½ï¿½ï¿½
     /// </summary>
     void DrawListBlock()
     {
@@ -643,7 +674,7 @@ public class SceneRebuildEditorWindow : ListManagerEditorWindow
     }
 
     /// <summary>
-    /// »æÖÆÌõÄ¿¿ò
+    /// ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½Ä¿ï¿½ï¿½
     /// </summary>
     /// <param name="element"></param>
     /// <param name="isSelect"></param>
@@ -657,14 +688,6 @@ public class SceneRebuildEditorWindow : ListManagerEditorWindow
 
         GUIContent icon_expand_Content = element.isGroup ? MPGUIStyles.icon_down_Content : MPGUIStyles.icon_right_Content;
 
-        if (element.isGroup && 
-            GUILayout.Button(isRetract && isSelect ? MPGUIStyles.icon_retract_Contents[1] : MPGUIStyles.icon_retract_Contents[0], isSelect ? MPGUIStyles.icon_tab_Style : MPGUIStyles.icon_tab_normal_Style, MPGUIStyles.options_icon))
-        {
-            SelectIndex = index;
-            isRetract = !isRetract;
-            SelectChildIndex = -1;
-        }
-
         if (GUILayout.Button($"{index+1:00}", lineStyle, GUILayout.Height(30), GUILayout.Width(25)))
         {
             if (SelectIndex != index)
@@ -672,6 +695,14 @@ public class SceneRebuildEditorWindow : ListManagerEditorWindow
                 isRetract = false;
             }
             SelectIndex = index;
+            SelectChildIndex = -1;
+        }
+
+        if (element.isGroup && 
+            GUILayout.Button(isRetract && isSelect ? MPGUIStyles.icon_retract_Contents[1] : MPGUIStyles.icon_retract_Contents[0], isSelect ? MPGUIStyles.icon_tab_Style : MPGUIStyles.icon_tab_normal_Style, MPGUIStyles.options_icon))
+        {
+            SelectIndex = index;
+            isRetract = !isRetract;
             SelectChildIndex = -1;
         }
 
@@ -760,7 +791,7 @@ public class SceneRebuildEditorWindow : ListManagerEditorWindow
         //        ShowDataList.AddWindow(meshValueRoot.GetTrianglesStr(), "Triangles" + "-" + element.name);
         //    }
         //}
-        //if (GUILayout.Button(meshValueRoot.exist_normals ? "¡Ì" : "", lineStyle, (isSelect && meshValueRoot.exist_normals) ? MPGUIStyles.options_exist : MPGUIStyles.options_none))
+        //if (GUILayout.Button(meshValueRoot.exist_normals ? "ï¿½ï¿½" : "", lineStyle, (isSelect && meshValueRoot.exist_normals) ? MPGUIStyles.options_exist : MPGUIStyles.options_none))
         //{
         //    if (SelectIndex != index)
         //    {
@@ -778,7 +809,7 @@ public class SceneRebuildEditorWindow : ListManagerEditorWindow
         //        ShowDataList.AddWindow(meshValueRoot.GetNormalsStr(), "Normals" + "-" + element.name);
         //    }
         //}
-        //if (GUILayout.Button(meshValueRoot.exist_tangents ? "¡Ì" : "", lineStyle, (isSelect && meshValueRoot.exist_tangents) ? MPGUIStyles.options_exist : MPGUIStyles.options_none))
+        //if (GUILayout.Button(meshValueRoot.exist_tangents ? "ï¿½ï¿½" : "", lineStyle, (isSelect && meshValueRoot.exist_tangents) ? MPGUIStyles.options_exist : MPGUIStyles.options_none))
         //{
         //    if (SelectIndex != index)
         //    {
@@ -796,7 +827,7 @@ public class SceneRebuildEditorWindow : ListManagerEditorWindow
         //        ShowDataList.AddWindow(meshValueRoot.GetTangentsStr(), "Tangents" + "-" + element.name);
         //    }
         //}
-        //if (GUILayout.Button(meshValueRoot.exist_colors ? "¡Ì" : "", lineStyle, (isSelect && meshValueRoot.exist_colors) ? MPGUIStyles.options_exist : MPGUIStyles.options_none))
+        //if (GUILayout.Button(meshValueRoot.exist_colors ? "ï¿½ï¿½" : "", lineStyle, (isSelect && meshValueRoot.exist_colors) ? MPGUIStyles.options_exist : MPGUIStyles.options_none))
         //{
         //    if (SelectIndex != index)
         //    {
@@ -817,7 +848,7 @@ public class SceneRebuildEditorWindow : ListManagerEditorWindow
 
         //for (int m = 0; m < 4; m++)
         //{
-        //    if (GUILayout.Button(meshValueRoot.exist_uv[m] ? "¡Ì" : "", lineStyle, (isSelect && meshValueRoot.exist_uv[m]) ? MPGUIStyles.options_exist : MPGUIStyles.options_none))
+        //    if (GUILayout.Button(meshValueRoot.exist_uv[m] ? "ï¿½ï¿½" : "", lineStyle, (isSelect && meshValueRoot.exist_uv[m]) ? MPGUIStyles.options_exist : MPGUIStyles.options_none))
         //    {
         //        if (SelectIndex != index)
         //        {
@@ -847,7 +878,7 @@ public class SceneRebuildEditorWindow : ListManagerEditorWindow
         //    SelectIndex = index;
         //    SelectChildIndex = -1;
         //}
-        //if (GUILayout.Button(meshValueRoot.isRead ? "¡Ì" : "", lineStyle, MPGUIStyles.options_none))
+        //if (GUILayout.Button(meshValueRoot.isRead ? "ï¿½ï¿½" : "", lineStyle, MPGUIStyles.options_none))
         //{
         //    if (SelectIndex != index)
         //    {
@@ -871,7 +902,7 @@ public class SceneRebuildEditorWindow : ListManagerEditorWindow
     }
 
     /// <summary>
-    /// »æÖÆ×ÓÏîÌõÄ¿¿ò
+    /// ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½Ä¿ï¿½ï¿½
     /// </summary>
     /// <param name="meshValue"></param>
     /// <param name="index"></param>
@@ -920,7 +951,7 @@ public class SceneRebuildEditorWindow : ListManagerEditorWindow
         //}
 
 
-        //if (GUILayout.Button(meshValue.exist_normals ? "¡Ì" : "", lineStyle, (isSelect && meshValue.exist_normals) ? MPGUIStyles.options_child_exist : MPGUIStyles.options_child_none))
+        //if (GUILayout.Button(meshValue.exist_normals ? "ï¿½ï¿½" : "", lineStyle, (isSelect && meshValue.exist_normals) ? MPGUIStyles.options_child_exist : MPGUIStyles.options_child_none))
         //{
         //    SelectChildIndex = index;
         //}
@@ -928,7 +959,7 @@ public class SceneRebuildEditorWindow : ListManagerEditorWindow
         //{
         //    ShowDataList.AddWindow(meshValue.GetNormalsStr(), "Normals" + "-" + meshValue.mesh.name);
         //}
-        //if (GUILayout.Button(meshValue.exist_tangents ? "¡Ì" : "", lineStyle, (isSelect && meshValue.exist_tangents) ? MPGUIStyles.options_child_exist : MPGUIStyles.options_child_none))
+        //if (GUILayout.Button(meshValue.exist_tangents ? "ï¿½ï¿½" : "", lineStyle, (isSelect && meshValue.exist_tangents) ? MPGUIStyles.options_child_exist : MPGUIStyles.options_child_none))
         //{
         //    SelectChildIndex = index;
         //}
@@ -936,7 +967,7 @@ public class SceneRebuildEditorWindow : ListManagerEditorWindow
         //{
         //    ShowDataList.AddWindow(meshValue.GetTangentsStr(), "Tangents" + "-" + meshValue.mesh.name);
         //}
-        //if (GUILayout.Button(meshValue.exist_colors ? "¡Ì" : "", lineStyle, (isSelect && meshValue.exist_colors) ? MPGUIStyles.options_child_exist : MPGUIStyles.options_child_none))
+        //if (GUILayout.Button(meshValue.exist_colors ? "ï¿½ï¿½" : "", lineStyle, (isSelect && meshValue.exist_colors) ? MPGUIStyles.options_child_exist : MPGUIStyles.options_child_none))
         //{
         //    SelectChildIndex = index;
         //}
@@ -947,7 +978,7 @@ public class SceneRebuildEditorWindow : ListManagerEditorWindow
 
         //for (int m = 0; m < 4; m++)
         //{
-        //    if (GUILayout.Button(meshValue.exist_uv[m] ? "¡Ì" : "", lineStyle, (isSelect && meshValue.exist_uv[m]) ? MPGUIStyles.options_child_exist : MPGUIStyles.options_child_none))
+        //    if (GUILayout.Button(meshValue.exist_uv[m] ? "ï¿½ï¿½" : "", lineStyle, (isSelect && meshValue.exist_uv[m]) ? MPGUIStyles.options_child_exist : MPGUIStyles.options_child_none))
         //    {
         //        SelectChildIndex = index;
         //    }
@@ -962,7 +993,7 @@ public class SceneRebuildEditorWindow : ListManagerEditorWindow
         //    SelectChildIndex = index;
         //}
 
-        //if (GUILayout.Button(meshValue.isRead ? "¡Ì" : "", lineStyle, MPGUIStyles.options_child_none))
+        //if (GUILayout.Button(meshValue.isRead ? "ï¿½ï¿½" : "", lineStyle, MPGUIStyles.options_child_none))
         //{
         //    SelectChildIndex = index;
         //}
@@ -970,7 +1001,7 @@ public class SceneRebuildEditorWindow : ListManagerEditorWindow
     }
 
     /// <summary>
-    /// »æÖÆÒ³±ê
+    /// ï¿½ï¿½ï¿½ï¿½Ò³ï¿½ï¿½
     /// </summary>
     void DrawPageIndexBlock()
     {
@@ -1033,7 +1064,7 @@ public class SceneRebuildEditorWindow : ListManagerEditorWindow
     }
 
     /// <summary>
-    /// ³õÊ¼»¯Ô¤ÀÀÎïÌå
+    /// ï¿½ï¿½Ê¼ï¿½ï¿½Ô¤ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½
     /// </summary>
     /// <param name="obj"></param>
     void InitPreview(UnityEngine.Object obj)
@@ -1048,7 +1079,7 @@ public class SceneRebuildEditorWindow : ListManagerEditorWindow
     }
 
     /// <summary>
-    /// »æÖÆÔ¤ÀÀ´°¿Ú
+    /// ï¿½ï¿½ï¿½ï¿½Ô¤ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½
     /// </summary>
     void DrawPreviewBlock()
     {
@@ -1073,7 +1104,7 @@ public class SceneRebuildEditorWindow : ListManagerEditorWindow
     }
 
     /// <summary>
-    /// »æÖÆÊý¾Ý
+    /// ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½
     /// </summary>
     void DrawDataBlock()
     {
