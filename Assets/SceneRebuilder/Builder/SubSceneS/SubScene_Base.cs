@@ -160,12 +160,33 @@ public class SubScene_Base : MonoBehaviour
         }
     }
 
+    internal void ShowBounds(Transform boxP)
+    {
+        //Debug.Log("ShowBounds:"+BoundsName+"|"+ contentType);
+        //DestroyBoundsBox();
+        //boundsGo = AreaTreeHelper.CreateBoundsCube(bounds, BoundsName, transform);
+
+        if (boundsGo == null)
+        {
+            boundsGo = AreaTreeHelper.CreateBoundsCube(bounds, BoundsName, boxP);
+        }
+        else
+        {
+            boundsGo.SetActive(true);
+        }
+    }
 
     internal void ShowBounds()
     {
-        //Debug.Log("ShowBounds:"+BoundsName+"|"+ contentType);
-        DestroyBoundsBox();
-        boundsGo = AreaTreeHelper.CreateBoundsCube(bounds, BoundsName, transform);
+        ShowBounds(this.transform);
+    }
+
+    public void HideBoundsBox()
+    {
+        if (boundsGo)
+        {
+            boundsGo.SetActive(false);
+        }
     }
 
     public virtual void DestroyBoundsBox()
@@ -386,7 +407,8 @@ public class SubScene_Base : MonoBehaviour
     [ContextMenu("GetSceneObjects")]
     public void GetSceneObjects()
     {
-        DestroyBoundsBox();
+        //DestroyBoundsBox();
+        HideBoundsBox();
 
         gos = EditorHelper.GetSceneObjects(GetSceneName(), GetSceneParent()).ToList();
 

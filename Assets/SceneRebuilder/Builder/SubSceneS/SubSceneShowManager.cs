@@ -29,6 +29,8 @@ public class SubSceneShowManager : MonoBehaviour
             if(s.contentType==SceneContentType.Part)
             {
                 scenes_Out0_Part.Add(s);
+                s.HideBoundsBox();//一开始都是只有tree（合成模型）显示出来
+
             }
             if (s.contentType == SceneContentType.Tree)
             {

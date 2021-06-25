@@ -439,6 +439,14 @@ public class ModelAreaTree : MonoBehaviour
         CreateDictionary();
     }
 
+    private void OnDestroy()
+    {
+        if (AreaTreeNodeShowManager.Instance)
+        {
+            AreaTreeNodeShowManager.Instance.UnRegistHiddenTree(this);
+        }
+    }
+
     public Vector3 LeafCellSize;
 
     [ContextMenu("DestroyNodeRender")]

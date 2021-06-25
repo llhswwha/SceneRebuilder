@@ -66,6 +66,18 @@ public class AreaTreeNodeShowManager : MonoBehaviour
         GetHiddenTreeLeafs(tree);
     }
 
+    public void UnRegistHiddenTree(ModelAreaTree tree)
+    {
+        Debug.LogError("UnRegistHiddenTree:"+tree);
+        if (tree == null) return;
+        if (tree.IsHidden == false) return;
+        if (HiddenTrees.Contains(tree))
+        {
+            HiddenTrees.Remove(tree);
+        }
+        RemoveHiddenTreeLeafs(tree);
+    }
+
     private void ShowSortedHiddenTrees()
     {
         HiddenTreesVertex.Clear();
@@ -139,6 +151,17 @@ public class AreaTreeNodeShowManager : MonoBehaviour
         }
     }
 
+    private void RemoveHiddenTreeLeafs(ModelAreaTree tree)
+    {
+        if (tree == null) return;
+        var leafs = tree.TreeLeafs;
+        foreach (var node in leafs)
+        {
+            if (node == null) continue;
+            HiddenLeafNodes.Remove(node);
+        }
+    }
+
     [ContextMenu("GetLeafNodes")]
     public void GetLeafNodes()
     {
@@ -186,6 +209,17 @@ public class AreaTreeNodeShowManager : MonoBehaviour
         int count=HiddenLeafNodes.Count;
         foreach(var node in HiddenLeafNodes)
         {
+            if (node == null)
+            {
+                //continue;
+                Debug.LogError("node == null");
+                continue;
+            }
+            if (node.gameObject == null)
+            {
+                Debug.LogError("node.gameObject == null");
+                continue;
+            }
             var bounds = node.Bounds;
             var nodePos=node.transform.position;
             float nodeDis1=float.MaxValue;

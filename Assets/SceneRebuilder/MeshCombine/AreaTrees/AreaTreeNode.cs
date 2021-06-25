@@ -380,6 +380,16 @@ public class AreaTreeNode : MonoBehaviour
         for (int i = 0; i < Renderers.Count; i++)
         {
             MeshRenderer r = Renderers[i];
+            if (r == null)
+            {
+                Debug.LogError($"SwitchModel r == null node:{this.name}");
+                continue;
+            }
+            if (r.gameObject == null)
+            {
+                Debug.LogError($"SwitchModel r.gameObject == null node:{this.name}");
+                continue;
+            }
             r.gameObject.SetActive(!isCombined);
             r.enabled=!isCombined;
             // var collider = colliders[i];
