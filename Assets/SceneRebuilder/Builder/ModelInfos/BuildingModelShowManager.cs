@@ -23,7 +23,7 @@ public class BuildingModelShowManager : MonoBehaviour
         cameras.AddRange(GameObject.FindObjectsOfType<Camera>());
 
         Buildings.Clear();
-        Buildings.AddRange(GameObject.FindObjectsOfType<BuildingModelInfo>());
+        Buildings.AddRange(GameObject.FindObjectsOfType<BuildingModelInfo>(true));
 
         BuildingBounds.Clear();
         foreach (BuildingModelInfo b in Buildings)

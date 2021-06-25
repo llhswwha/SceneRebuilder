@@ -88,7 +88,7 @@ public class SubSceneManager : MonoBehaviour
         AreaTreeHelper.InitCubePrefab();
 
         DateTime start = DateTime.Now;
-        var buildings = GameObject.FindObjectsOfType<BuildingModelInfo>();
+        var buildings = GameObject.FindObjectsOfType<BuildingModelInfo>(true);
         int count = buildings.Length;
         for (int i = 0; i < count; i++)
         {
@@ -135,7 +135,7 @@ public class SubSceneManager : MonoBehaviour
         AreaTreeHelper.InitCubePrefab();
 
         DateTime start = DateTime.Now;
-        var buildings = GameObject.FindObjectsOfType<BuildingModelInfo>();
+        var buildings = GameObject.FindObjectsOfType<BuildingModelInfo>(true);
         int count = buildings.Length;
         for (int i = 0; i < count; i++)
         {
@@ -209,7 +209,7 @@ public class SubSceneManager : MonoBehaviour
         AreaTreeHelper.InitCubePrefab();
 
         DateTime start = DateTime.Now;
-        var buildings = GameObject.FindObjectsOfType<BuildingModelInfo>();
+        var buildings = GameObject.FindObjectsOfType<BuildingModelInfo>(true);
         int count = buildings.Length;
         for (int i = 0; i < count; i++)
         {
@@ -251,7 +251,7 @@ public class SubSceneManager : MonoBehaviour
         AreaTreeHelper.InitCubePrefab();
 
         DateTime start = DateTime.Now;
-        var buildings = GameObject.FindObjectsOfType<BuildingModelInfo>();
+        var buildings = GameObject.FindObjectsOfType<BuildingModelInfo>(true);
         int count = buildings.Length;
         for (int i = 0; i < count; i++)
         {

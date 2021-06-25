@@ -191,7 +191,7 @@ public class SceneRebuildEditorWindow : ListManagerEditorWindow<BuildingModelEle
 
         //meshElementList.AddRange(MeshFinder.GetMeshElementList());
         
-        var buildings = GameObject.FindObjectsOfType<BuildingModelInfo>();
+        var buildings = GameObject.FindObjectsOfType<BuildingModelInfo>(true);
         foreach(var b in buildings)
         {
             if (b == null) continue;
