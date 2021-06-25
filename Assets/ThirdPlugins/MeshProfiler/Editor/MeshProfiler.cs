@@ -13,7 +13,9 @@ using OfficeOpenXml;
 
 namespace MeshProfilerNS
 {
-    public class MeshProfiler : ListManagerEditorWindow
+    public class MeshProfiler 
+    //: ListManagerEditorWindow<MeshElement,MeshValues>
+    :EditorWindow
     {
         [MenuItem("Window/Analysis/Mesh Profiler")]
         public static void AddWindow()
@@ -195,7 +197,10 @@ namespace MeshProfilerNS
         void RefleshList()
         {
             meshElementList.Clear();
-            meshElementList.AddRange(MeshFinder.GetMeshElementList());
+            meshElementList.AddRange(MeshFinder.GetMeshElementList(MeshElementType.Mesh));
+            // meshElementList.AddRange(MeshFinder.GetMeshElementList(MeshElementType.File));
+            // meshElementList.AddRange(MeshFinder.GetMeshElementList(MeshElementType.Asset));
+            Debug.Log($"MeshProfiler.RefleshList:{meshElementList.Count}");
             Sort(meshElementList, sortWays);
             SelectByConditions(meshElementList);
             originList.Clear();

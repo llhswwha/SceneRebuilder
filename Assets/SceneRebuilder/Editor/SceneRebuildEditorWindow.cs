@@ -7,7 +7,7 @@ using UnityEditor.SceneManagement;
 using UnityEngine;
 using UnityEngine.SceneManagement;
 
-public class SceneRebuildEditorWindow : ListManagerEditorWindow
+public class SceneRebuildEditorWindow : ListManagerEditorWindow<BuildingModelElement,BuildingModelValues>
 {
     [MenuItem("Window/Tools/SceneRebuild")]
     public static void AddWindow()
@@ -54,8 +54,9 @@ public class SceneRebuildEditorWindow : ListManagerEditorWindow
 
     string[] tableTitle = new string[] { "Name", "Vertex", "Renderer", "Vert_In", "Vert_Out0", "Vert_Out1", "Rend_In",
         "Rend_Out0", "Rend_Out1", "Parts", "Trees", "Scenes", "Finished", };
-    List<BuildingModelElement> meshElementList = new List<BuildingModelElement>();
-    List<BuildingModelElement> originList = new List<BuildingModelElement>();
+
+    // List<BuildingModelElement> meshElementList = new List<BuildingModelElement>();
+    // List<BuildingModelElement> originList = new List<BuildingModelElement>();
 
     //Setting��������
     Editor previewEditor;

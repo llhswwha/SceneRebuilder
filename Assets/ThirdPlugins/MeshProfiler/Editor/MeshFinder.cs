@@ -343,79 +343,119 @@ namespace MeshProfilerNS
         }
 
     }
+
+    public enum MeshElementType
+    {
+        File,Asset,Mesh
+    }
+
     public class MeshFinder
     {
-        public static List<MeshElement> GetMeshElementList()
+        
+        public static List<MeshElement> GetMeshElementList(MeshElementType type)
         {
             Dictionary<string, MeshElement> meshDataDict = new Dictionary<string, MeshElement>();
-            MeshFilter[] filters = GameObject.FindObjectsOfType<MeshFilter>();
-            
+            MeshFilter[] filters = GameObject.FindObjectsOfType<MeshFilter>(true);
+            Debug.Log($"MeshFinder.GetMeshElementList filters:{filters.Length}");
             int oldInstanceID = -1;
+            int errorMesh=0;
+            int count1=0;
+            int count2=0;
             for (int i = 0; i < filters.Length; i++)
             {
-                if (filters[i].sharedMesh == null)
-                    continue;
-                string assetPath = AssetDatabase.GetAssetPath(filters[i].sharedMesh);
-                if ((!string.IsNullOrEmpty(assetPath) && !assetPath.Contains("unity default resources")))//is Asset
+                try
                 {
-#if UNITY_2018_3_OR_NEWER
-                    GameObject root = PrefabUtility.GetOutermostPrefabInstanceRoot(filters[i].gameObject);
-#else
-                    GameObject root = PrefabUtility.FindPrefabRoot(filters[i].gameObject);
-#endif
-                    if (root == null)
+                    if (filters[i].sharedMesh == null)
                     {
-                        if (!assetPath.EndsWith(".asset"))
-                            continue;
-                        else
-                        {
-                            root = filters[i].gameObject;
-                        }
+                        errorMesh++;
+                        continue;
                     }
+                        
+                    string assetPath = AssetDatabase.GetAssetPath(filters[i].sharedMesh);
 
                     
-                    if (!meshDataDict.ContainsKey(assetPath))
+                    if ((type==MeshElementType.File || type==MeshElementType.Asset) && (!string.IsNullOrEmpty(assetPath) && !assetPath.Contains("unity default resources")))//is Asset
                     {
-                        GameObject obj = (GameObject)AssetDatabase.LoadAssetAtPath(assetPath, typeof(GameObject));
-                        if (obj == null)
+                        Debug.Log($"MeshFinder.GetMeshElementList1 i:{i} meshDataDict:{meshDataDict.Count} assetPath:{assetPath}");
+
+    #if UNITY_2018_3_OR_NEWER
+                        GameObject root = PrefabUtility.GetOutermostPrefabInstanceRoot(filters[i].gameObject);
+    #else
+                        GameObject root = PrefabUtility.FindPrefabRoot(filters[i].gameObject);
+    #endif
+                        if (root == null)
                         {
-                            obj = root;
+                            if (type==MeshElementType.Asset && !assetPath.EndsWith(".asset"))
+                            {
+                                //Debug.LogWarning($"MeshFinder [!assetPath.EndsWith(\".asset\")] i:{i} meshDataDict:{meshDataDict.Count} assetPath:{assetPath}");
+                                continue;
+                            }
+                            else
+                            {
+                                root = filters[i].gameObject;
+                            }
+
+                            // root = filters[i].gameObject;
                         }
-                        MeshElement element = new MeshElement(obj, true);
-                        meshDataDict.Add(assetPath, element);
 
-                    }
+                        
+                        if (!meshDataDict.ContainsKey(assetPath))
+                        {
+                            GameObject obj = (GameObject)AssetDatabase.LoadAssetAtPath(assetPath, typeof(GameObject));
+                            if (obj == null)
+                            {
+                                obj = root;
+                            }
+                            MeshElement element = new MeshElement(obj, true);
+                            meshDataDict.Add(assetPath, element);
+                        }
 
-                    int newInstanceID = root.GetInstanceID();
-                    if (newInstanceID != oldInstanceID)
-                    {
-                        meshDataDict[assetPath].refList.Add(root);
-                        oldInstanceID = newInstanceID;
+                        int newInstanceID = root.GetInstanceID();
+                        if (newInstanceID != oldInstanceID)
+                        {
+                            meshDataDict[assetPath].refList.Add(root);
+                            oldInstanceID = newInstanceID;
+                        }
+                        count1++;
                     }
-                }
-                else
-                {
-                    string id = filters[i].sharedMesh.GetInstanceID().ToString();
-                    if (!meshDataDict.ContainsKey(id))
-                    {
-                        MeshElement element = new MeshElement(filters[i].gameObject, false);
-                        meshDataDict.Add(id, element);
-                        element.refList.Add(filters[i].gameObject);
-                        element.AllVertsNum += filters[i].sharedMesh.vertexCount;
-                    }
-
                     else
                     {
-                        MeshElement element = meshDataDict[id];
-                        element.refList.Add(filters[i].gameObject);
-                        element.AllVertsNum += filters[i].sharedMesh.vertexCount;
+                        Debug.Log($"MeshFinder.GetMeshElementList2 i:{i} meshDataDict:{meshDataDict.Count} assetPath:{assetPath}");
+
+                        count2++;
+                        string id = filters[i].sharedMesh.GetInstanceID().ToString();
+                        if (!meshDataDict.ContainsKey(id))
+                        {
+                            MeshElement element = new MeshElement(filters[i].gameObject, false);
+                            meshDataDict.Add(id, element);
+                            element.refList.Add(filters[i].gameObject);
+                            element.AllVertsNum += filters[i].sharedMesh.vertexCount;
+                        }
+
+                        else
+                        {
+                            MeshElement element = meshDataDict[id];
+                            element.refList.Add(filters[i].gameObject);
+                            element.AllVertsNum += filters[i].sharedMesh.vertexCount;
+
+                        }
 
                     }
-
+                }
+                catch(System.Exception ex)
+                {
+                    Debug.Log($"Exception:{ex}");
                 }
             }
+            Debug.Log($"count1:{count1}");
+            Debug.Log($"count2:{count2}");
+            Debug.Log($"errorMesh:{errorMesh}");
+            Debug.Log($"meshDataDict:{meshDataDict.Count}");
+            
             //search skins
-            SkinnedMeshRenderer[] skins = GameObject.FindObjectsOfType<SkinnedMeshRenderer>();            for (int i = 0; i < skins.Length; i++)
+            SkinnedMeshRenderer[] skins = GameObject.FindObjectsOfType<SkinnedMeshRenderer>(true);            
+            Debug.Log($"skins:{skins.Length}");
+            for (int i = 0; i < skins.Length; i++)
             {
                 if (skins[i].sharedMesh == null)
                     continue;
@@ -471,7 +511,7 @@ namespace MeshProfilerNS
 
                 }
             }
-
+            Debug.Log($"meshDataDict:{meshDataDict.Count}");
             List<MeshElement> meshDataList = new List<MeshElement>();
             foreach (string key in meshDataDict.Keys)
             {
