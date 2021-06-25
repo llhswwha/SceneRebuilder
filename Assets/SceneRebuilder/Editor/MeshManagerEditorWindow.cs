@@ -9,13 +9,13 @@ using UnityEngine.SceneManagement;
 
 public class MeshManagerEditorWindow : EditorWindow
 {
-    [MenuItem("Window/Tools/ MeshManager")]
-public static void AddWindow()
-{
-    MeshManagerEditorWindow window = (MeshManagerEditorWindow)EditorWindow.GetWindowWithRect(typeof(MeshManagerEditorWindow), new Rect(0, 0, MPGUIStyles.SCREEN_WIDTH, MPGUIStyles.SCREEN_HEIGHT), true, "MeshManagerEditorWindow");
-    window.Show();
-    window.Init();
-}
+//     [MenuItem("Window/Tools/ MeshManager")]
+// public static void AddWindow()
+// {
+//     MeshManagerEditorWindow window = (MeshManagerEditorWindow)EditorWindow.GetWindowWithRect(typeof(MeshManagerEditorWindow), new Rect(0, 0, MPGUIStyles.SCREEN_WIDTH, MPGUIStyles.SCREEN_HEIGHT), true, "MeshManagerEditorWindow");
+//     window.Show();
+//     window.Init();
+// }
 
 public void Init()
 {
@@ -39,7 +39,7 @@ void OnOpenedScene(Scene sce, OpenSceneMode mode)
 }
 
 /// <summary>
-/// Ë¢ÐÂÁÐ±í£¬ÖØÐÂËÑË÷
+/// Ë¢ï¿½ï¿½ï¿½Ð±ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½
 /// </summary>
 void RefleshList()
 {
@@ -58,7 +58,7 @@ void RefleshList()
 }
 
 /// <summary>
-/// UIÖ÷º¯Êý
+/// UIï¿½ï¿½ï¿½ï¿½ï¿½ï¿½
 /// </summary>
 private void OnGUI()
 {

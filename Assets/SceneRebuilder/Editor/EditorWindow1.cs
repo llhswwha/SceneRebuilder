@@ -8,13 +8,13 @@ using UnityEngine.SceneManagement;
 
 public class EditorWindow1 : EditorWindow
 {
-    [MenuItem("Window/Tools/Window1")]
-    public static void AddWindow()
-    {
-        SceneRebuildEditorWindow window = (SceneRebuildEditorWindow)EditorWindow.GetWindowWithRect(typeof(SceneRebuildEditorWindow), new Rect(0, 0, MPGUIStyles.SCREEN_WIDTH * 0.8f, MPGUIStyles.SCREEN_HEIGHT * 0.8f), true, "EditorWindow1");
-        window.Show();
-        window.Init();
-    }
+    // [MenuItem("Window/Tools/Window1")]
+    // public static void AddWindow()
+    // {
+    //     SceneRebuildEditorWindow window = (SceneRebuildEditorWindow)EditorWindow.GetWindowWithRect(typeof(SceneRebuildEditorWindow), new Rect(0, 0, MPGUIStyles.SCREEN_WIDTH * 0.8f, MPGUIStyles.SCREEN_HEIGHT * 0.8f), true, "EditorWindow1");
+    //     window.Show();
+    //     window.Init();
+    // }
 
     public void Init()
     {
@@ -38,7 +38,7 @@ public class EditorWindow1 : EditorWindow
     }
 
     /// <summary>
-    /// Ë¢ÐÂÁÐ±í£¬ÖØÐÂËÑË÷
+    /// Ë¢ï¿½ï¿½ï¿½Ð±ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½
     /// </summary>
     void RefleshList()
     {
@@ -57,7 +57,7 @@ public class EditorWindow1 : EditorWindow
     }
 
     /// <summary>
-    /// UIÖ÷º¯Êý
+    /// UIï¿½ï¿½ï¿½ï¿½ï¿½ï¿½
     /// </summary>
     private void OnGUI()
     {

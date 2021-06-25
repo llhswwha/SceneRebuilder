@@ -17,7 +17,8 @@ namespace MeshProfilerNS
     : ListManagerEditorWindow<MeshElement,MeshValues>
     //:EditorWindow
     {
-        [MenuItem("Window/Analysis/Mesh Profiler")]
+        //[MenuItem("Window/Analysis/Mesh Profiler")]
+        [MenuItem("Window/Mesh Profiler")]
         public static void AddWindow()
         {
             MeshProfiler window = (MeshProfiler)EditorWindow.GetWindowWithRect(typeof(MeshProfiler), new Rect(0, 0, MPGUIStyles.SCREEN_WIDTH, MPGUIStyles.SCREEN_HEIGHT), true, "Mesh Profiler 1.1");
@@ -203,7 +204,7 @@ namespace MeshProfilerNS
         void RefleshList()
         {
             meshElementList.Clear();
-            meshElementList.AddRange(MeshFinder.GetMeshElementList(MeshElementType.Mesh));
+            meshElementList.AddRange(MeshFinder.GetMeshElementList(eleType));
             // meshElementList.AddRange(MeshFinder.GetMeshElementList(MeshElementType.File));
             // meshElementList.AddRange(MeshFinder.GetMeshElementList(MeshElementType.Asset));
             Debug.Log($"MeshProfiler.RefleshList:{meshElementList.Count}");
@@ -1047,10 +1048,15 @@ namespace MeshProfilerNS
         void DrawInputTextField()
         {
             GUILayout.BeginArea(MPGUIStyles.BorderArea(MPGUIStyles.SEARCH_BLOCK));
+
+            GUILayout.BeginHorizontal();
+
             Rect position = EditorGUILayout.GetControlRect();
+
             GUIStyle textFieldRoundEdge = MPGUIStyles.TextFieldRoundEdge;
             GUIStyle transparentTextField = MPGUIStyles.TransparentTextField;
             GUIStyle gUIStyle = (m_InputSearchText != "") ? MPGUIStyles.TextFieldRoundEdgeCancelButton : MPGUIStyles.TextFieldRoundEdgeCancelButtonEmpty;
+
             position.width -= gUIStyle.fixedWidth;
             if (Event.current.type == EventType.Repaint)
             {
@@ -1078,15 +1084,23 @@ namespace MeshProfilerNS
             }
             position.x += position.width;
             position.width = gUIStyle.fixedWidth;
-            if (GUI.Button(position, GUIContent.none, gUIStyle) && m_InputSearchText != "")
-            {
-                m_InputSearchText = "";
-                GUI.changed = true;
-                GUIUtility.keyboardControl = 0;
-                RefleshSearchList();
-            }
+
+            // if (GUI.Button(position, GUIContent.none, gUIStyle) && m_InputSearchText != "")
+            // {
+            //     m_InputSearchText = "";
+            //     GUI.changed = true;
+            //     GUIUtility.keyboardControl = 0;
+            //     RefleshSearchList();
+            // }
+
+            eleType=(MeshElementType)EditorGUILayout.EnumPopup("ElementType", eleType,GUILayout.Width(250));
+
+            GUILayout.EndHorizontal();
+
             GUILayout.EndArea();
         }
+
+        MeshElementType eleType=MeshElementType.Mesh;
         /// <summary>
         /// 绘制图表
         /// </summary>

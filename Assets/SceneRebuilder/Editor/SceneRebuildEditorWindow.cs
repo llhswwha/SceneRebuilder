@@ -9,7 +9,8 @@ using UnityEngine.SceneManagement;
 
 public class SceneRebuildEditorWindow : ListManagerEditorWindow<BuildingModelElement,BuildingModelValues>
 {
-    [MenuItem("Window/Tools/SceneRebuild")]
+    //[MenuItem("Window/Tools/SceneRebuild")]
+    [MenuItem("Window/Scene Rebuild")]
     public static void AddWindow()
     {
         SceneRebuildEditorWindow window = (SceneRebuildEditorWindow)EditorWindow.GetWindowWithRect(typeof(SceneRebuildEditorWindow), new Rect(0, 0, MPGUIStyles.SCREEN_WIDTH, MPGUIStyles.SCREEN_HEIGHT), true, "SceneRebuildEditorWindow");
@@ -1019,7 +1020,7 @@ public class SceneRebuildEditorWindow : ListManagerEditorWindow<BuildingModelEle
 
     private void DrawDataBlockItem(string title,string value)
     {
-        GUILayout.Space(1);
+        GUILayout.Space(2);
         GUILayout.BeginHorizontal();
         GUILayout.Label(title, MPGUIStyles.dataAreaStyle, GUILayout.Width(295));
         GUILayout.Space(5);
