@@ -8,33 +8,33 @@ using UnityEditor.SceneManagement;
 
 public class SceneRebuildManager : MonoBehaviour
 {
-    public SubSceneManager SubSceneManager;
+    public SubSceneManager subSceneManager;
 
-    public BuildingModelManager BuildingModelManager;
+    public BuildingModelManager buildingModelManager;
 
     [ContextMenu("InitBuildings")]
     public void InitBuildings()
     {
-        BuildingModelManager.InitBuildings();
+        buildingModelManager.InitBuildings();
     }
 
     [ContextMenu("CombineBuildings")]
     public void CombineBuildings()
     {
-        BuildingModelManager.CombineAll();//Model -> CombinedToTree
+        buildingModelManager.CombineAll();//Model -> CombinedToTree
     }
 
     [ContextMenu("SaveScenes")]
     public void SaveScenes()
     {
-        SubSceneManager.contentType = SceneContentType.TreeWithPart;
-        SubSceneManager.EditorCreateBuildingScenes(); // CombinedTree To Scene
+        subSceneManager.contentType = SceneContentType.TreeWithPart;
+        subSceneManager.EditorCreateBuildingScenes(); // CombinedTree To Scene
     }
 
     [ContextMenu("SetBuildings")]
     public void SetBuildings()
     {
-        SubSceneManager.SetBuildings_Parts();
+        subSceneManager.SetBuildings_Parts();
     }
 
 
@@ -52,7 +52,7 @@ public class SceneRebuildManager : MonoBehaviour
     [ContextMenu("ClearBuildings")]
     public void ClearBuildings()
     {
-        SubSceneManager.ClearBuildings();
+        subSceneManager.ClearBuildings();
     }
 
     //[ContextMenu("LoadScenes")]

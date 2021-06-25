@@ -82,6 +82,53 @@ public class SubSceneManager : MonoBehaviour
 
 #if UNITY_EDITOR
 
+    [ContextMenu("* OneKey")]
+    public void OneKey()
+    {
+        AreaTreeHelper.InitCubePrefab();
+
+        DateTime start = DateTime.Now;
+        var buildings = GameObject.FindObjectsOfType<BuildingModelInfo>();
+        int count = buildings.Length;
+        for (int i = 0; i < count; i++)
+        {
+            var item = buildings[i];
+            if (item == null) continue;
+            float progress = (float)i / count;
+            float percents = progress * 100;
+
+            if (ProgressBarHelper.DisplayCancelableProgressBar("OneKey", $"Progress1 {i}/{count} {percents:F1}% {item.name}", progress))
+            {
+                break;
+            }
+
+            item.OneKey((subProgress) =>
+            {
+                //Debug.Log($"EditorCreateBuildingScenes subProgress:{subProgress} || {i}/{subScenes.Length} {percents:F2}% of 100% \t{item.name}");
+                float progress = (float)(i + subProgress) / count;
+                float percents = progress * 100;
+                if (ProgressBarHelper.DisplayCancelableProgressBar("OneKey ", $"Progress2 {(i + subProgress):F1}/{count} {percents:F1}% {item.name}", progress))
+                {
+                    //ProgressBarHelper.ClearProgressBar();
+                    //break;
+                }
+            });
+        }
+        ProgressBarHelper.ClearProgressBar();
+
+        SetBuildings();
+        SetSetting();
+
+        if (IsClearOtherScenes)
+        {
+            ClearOtherScenes();
+        }
+
+        EditorHelper.RefreshAssets();
+
+        WriteLog($"OneKey count:{buildings.Length},\t time:{(DateTime.Now - start).ToString()}");
+    }
+
     [ContextMenu("* EditorCreateBuildingScenes")]
     public void EditorCreateBuildingScenes()
     {
@@ -138,7 +185,7 @@ public class SubSceneManager : MonoBehaviour
 
         EditorHelper.RefreshAssets();
 
-        WriteLog($"EditorSaveScenes count:{buildings.Length},\t time:{(DateTime.Now - start).ToString()}");
+        WriteLog($"EditorCreateBuildingScenes count:{buildings.Length},\t time:{(DateTime.Now - start).ToString()}");
     }
 
     //[ContextMenu("EditorLoadScenes_Part")]
@@ -154,6 +201,7 @@ public class SubSceneManager : MonoBehaviour
     //    subScenes = GetSubScenes();
     //    EditorLoadScenes(subScenes);
     //}
+
 
     [ContextMenu("* EditorLoadScenes")]
     public void EditorLoadScenes()
@@ -171,19 +219,8 @@ public class SubSceneManager : MonoBehaviour
 
             if (ProgressBarHelper.DisplayCancelableProgressBar("EditorLoadScenes", $"Progress1 {i}/{count} {percents:F2}% of 100%  {item.name}", progress))
             {
-                //ProgressBarHelper.ClearProgressBar();
                 break;
             }
-
-            //if (IsPartScene)
-            //{
-            //    string dir = GetSceneDir(SceneContentType.Part);
-            //    item.EditorCreatePartScenes(dir, IsOverride);
-            //}
-            //else
-            //{
-            //    SubSceneHelper.EditorCreateScene<SubScene_Single>(item.gameObject, GetScenePath(item.name, SceneContentType.Single),IsOverride);
-            //}
             item.EditorLoadScenesEx(this.contentType,p=>
             {
                 float progress = (float)(i+p) / count;
@@ -206,6 +243,39 @@ public class SubSceneManager : MonoBehaviour
         }
 
         WriteLog($"EditorSaveScenes count:{buildings.Length},\t time:{(DateTime.Now - start).ToString()}");
+    }
+
+    [ContextMenu("* EditorUnLoadScenes")]
+    public void EditorUnLoadScenes()
+    {
+        AreaTreeHelper.InitCubePrefab();
+
+        DateTime start = DateTime.Now;
+        var buildings = GameObject.FindObjectsOfType<BuildingModelInfo>();
+        int count = buildings.Length;
+        for (int i = 0; i < count; i++)
+        {
+            var item = buildings[i];
+            float progress = (float)i / count;
+            float percents = progress * 100;
+
+            if (ProgressBarHelper.DisplayCancelableProgressBar("EditorUnLoadScenes", $"Progress1 {i}/{count} {percents:F2}% of 100%  {item.name}", progress))
+            {
+                break;
+            }
+            item.UnLoadScenes();
+        }
+        ProgressBarHelper.ClearProgressBar();
+
+        //SetBuildings();
+        //SetSetting();
+
+        //if (IsClearOtherScenes)
+        //{
+        //    ClearOtherScenes();
+        //}
+
+        WriteLog($"EditorUnLoadScenes count:{buildings.Length},\t time:{(DateTime.Now - start).ToString()}");
     }
 
     public static void EditorLoadScenes<T>(T[] scenes) where T : SubScene_Base

@@ -647,31 +647,34 @@ public class SceneRebuildEditorWindow : ListManagerEditorWindow<BuildingModelEle
 
     void DrawToolBlock()
     {
-        GUI.Box(MPGUIStyles.BorderArea(MPGUIStyles.TOOL_BLOCK), "");
+        Rect toolBlockAreaLeft = MPGUIStyles.TOOL_BLOCK_LEFT;
+        GUI.Box(MPGUIStyles.BorderArea(toolBlockAreaLeft), "");
         int border = 10;
-        GUILayout.BeginArea(MPGUIStyles.BorderArea(new Rect(MPGUIStyles.TOOL_BLOCK.x + border, MPGUIStyles.TOOL_BLOCK.y + 5, MPGUIStyles.TOOL_BLOCK.width - 2 * border, MPGUIStyles.TOOL_BLOCK.height - 2 * border)));
-        GUILayout.Label("Tool Panel", MPGUIStyles.centerStyle);
+        GUILayout.BeginArea(MPGUIStyles.BorderArea(new Rect(toolBlockAreaLeft.x + border, toolBlockAreaLeft.y + 5, toolBlockAreaLeft.width - 2 * border, toolBlockAreaLeft.height - 2 * border)));
+        GUILayout.Label("ToolPanel(Item)", MPGUIStyles.centerStyle);
         //GUILayout.Space(15);
-        int buttonHeight = 29;
+        int buttonHeight = 26;
 
-        if (GUILayout.Button("SelectObject", GUILayout.Height(buttonHeight)))
-        {
-            if (SelectIndex < 0) return;
-            var ele = meshElementList[SelectIndex];
-            EditorHelper.SelectObject(ele.rootObj);
-            Debug.Log($"SelectObject index:{SelectIndex} ele:{ele} obj:{ele.rootObj}");
-        }
+        //if (GUILayout.Button("SelectObject", GUILayout.Height(buttonHeight)))
+        //{
+        //    if (SelectIndex < 0) return;
+        //    var ele = meshElementList[SelectIndex];
+        //    EditorHelper.SelectObject(ele.rootObj);
+        //    Debug.Log($"SelectObject index:{SelectIndex} ele:{ele} obj:{ele.rootObj}");
+        //}
         if (GUILayout.Button("InitInOut", GUILayout.Height(buttonHeight)))
         {
             if (SelectIndex < 0) return;
             var ele = meshElementList[SelectIndex];
             ele.modelInfo.InitInOut();
+            Debug.Log($"InitInOut index:{SelectIndex} ele:{ele} obj:{ele.rootObj}");
         }
         if (GUILayout.Button("GetTrees", GUILayout.Height(buttonHeight)))
         {
             if (SelectIndex < 0) return;
             var ele = meshElementList[SelectIndex];
-            ele.modelInfo.InitInOut();
+            ele.modelInfo.GetTrees();
+            Debug.Log($"GetTrees index:{SelectIndex} ele:{ele} obj:{ele.rootObj}");
         }
         if (GUILayout.Button("ClearTrees", GUILayout.Height(buttonHeight)))
         {
@@ -679,18 +682,103 @@ public class SceneRebuildEditorWindow : ListManagerEditorWindow<BuildingModelEle
             var ele = meshElementList[SelectIndex];
             ele.modelInfo.ClearTrees();
             ele.modelInfo.ShowRenderers();
+            Debug.Log($"ClearTrees index:{SelectIndex} ele:{ele} obj:{ele.rootObj}");
         }
-        if (GUILayout.Button("LoadScenes", GUILayout.Height(buttonHeight)))
+        if (GUILayout.Button("CreateTrees", GUILayout.Height(buttonHeight)))
         {
             if (SelectIndex < 0) return;
             var ele = meshElementList[SelectIndex];
-            ele.modelInfo.EditorLoadScenes_TreeWithPart();
+            ele.modelInfo.CreateTreesBSEx();
+            Debug.Log($"CreateTrees index:{SelectIndex} ele:{ele} obj:{ele.rootObj}");
         }
         if (GUILayout.Button("SaveScenes", GUILayout.Height(buttonHeight)))
         {
             if (SelectIndex < 0) return;
             var ele = meshElementList[SelectIndex];
             ele.modelInfo.EditorCreateScenes_TreeWithPart();
+            Debug.Log($"SaveScenes index:{SelectIndex} ele:{ele} obj:{ele.rootObj}");
+        }
+        if (GUILayout.Button("LoadScenes", GUILayout.Height(buttonHeight)))
+        {
+            if (SelectIndex < 0) return;
+            var ele = meshElementList[SelectIndex];
+            ele.modelInfo.EditorLoadScenes_TreeWithPart();
+            Debug.Log($"LoadScenes index:{SelectIndex} ele:{ele} obj:{ele.rootObj}");
+        }
+        if (GUILayout.Button("UnLoadScenes", GUILayout.Height(buttonHeight)))
+        {
+            if (SelectIndex < 0) return;
+            var ele = meshElementList[SelectIndex];
+            ele.modelInfo.UnLoadScenes();
+            Debug.Log($"UnLoadScenes index:{SelectIndex} ele:{ele} obj:{ele.rootObj}");
+        }
+        if (GUILayout.Button("OneKey", GUILayout.Height(buttonHeight)))
+        {
+            if (SelectIndex < 0) return;
+            var ele = meshElementList[SelectIndex];
+            ele.modelInfo.OneKey();
+            Debug.Log($"OneKey index:{SelectIndex} ele:{ele} obj:{ele.rootObj}");
+        }
+        GUILayout.EndArea();
+
+        Rect toolBlockAreaRight = MPGUIStyles.TOOL_BLOCK_RIGHT;
+        GUI.Box(MPGUIStyles.BorderArea(toolBlockAreaRight), "");
+        GUILayout.BeginArea(MPGUIStyles.BorderArea(new Rect(toolBlockAreaRight.x + border, toolBlockAreaRight.y + 5, toolBlockAreaRight.width - 2 * border, toolBlockAreaRight.height - 2 * border)));
+        GUILayout.Label("ToolPanel(All)", MPGUIStyles.centerStyle);
+        //GUILayout.Space(15);
+
+        //if (GUILayout.Button("SelectObject", GUILayout.Height(buttonHeight)))
+        //{
+        //    if (SelectIndex < 0) return;
+        //    var ele = meshElementList[SelectIndex];
+        //    EditorHelper.SelectObject(ele.rootObj);
+        //    Debug.Log($"SelectObject index:{SelectIndex} ele:{ele} obj:{ele.rootObj}");
+        //}
+        if (GUILayout.Button("InitBuildings", GUILayout.Height(buttonHeight)))
+        {
+            BuildingModelManager buildingModelManager = GameObject.FindObjectOfType<BuildingModelManager>();
+            buildingModelManager.InitBuildings();
+        }
+        if (GUILayout.Button("GetTrees", GUILayout.Height(buttonHeight)))
+        {
+            BuildingModelManager buildingModelManager = GameObject.FindObjectOfType<BuildingModelManager>();
+            buildingModelManager.GetTrees();
+        }
+        if (GUILayout.Button("ClearTrees", GUILayout.Height(buttonHeight)))
+        {
+            BuildingModelManager buildingModelManager = GameObject.FindObjectOfType<BuildingModelManager>();
+            buildingModelManager.ClearTrees();
+        }
+        if (GUILayout.Button("CreateTrees", GUILayout.Height(buttonHeight)))
+        {
+            BuildingModelManager buildingModelManager = GameObject.FindObjectOfType<BuildingModelManager>();
+            buildingModelManager.CombineAll();
+        }
+        if (GUILayout.Button("SaveScenes", GUILayout.Height(buttonHeight)))
+        {
+            SubSceneManager subSceneManager = GameObject.FindObjectOfType<SubSceneManager>();
+            subSceneManager.contentType = SceneContentType.TreeWithPart;
+            subSceneManager.EditorCreateBuildingScenes();
+        }
+        if (GUILayout.Button("LoadScenes", GUILayout.Height(buttonHeight)))
+        {
+            SubSceneManager subSceneManager = GameObject.FindObjectOfType<SubSceneManager>();
+            subSceneManager.EditorLoadScenes();
+        }
+        if (GUILayout.Button("UnLoadScenes", GUILayout.Height(buttonHeight)))
+        {
+            SubSceneManager subSceneManager = GameObject.FindObjectOfType<SubSceneManager>();
+            subSceneManager.EditorUnLoadScenes();
+        }
+        if (GUILayout.Button("OneKey", GUILayout.Height(buttonHeight)))
+        {
+            SubSceneManager subSceneManager = GameObject.FindObjectOfType<SubSceneManager>();
+            subSceneManager.OneKey();
+        }
+        if (GUILayout.Button("SetBuildings", GUILayout.Height(buttonHeight)))
+        {
+            SubSceneManager subSceneManager = GameObject.FindObjectOfType<SubSceneManager>();
+            subSceneManager.SetBuildings_Parts();
         }
         GUILayout.EndArea();
 

@@ -1,4 +1,4 @@
-using System;
+﻿using System;
 using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
@@ -260,7 +260,31 @@ public class BuildingModelManager : MonoBehaviour
         }
     }
 
+    [ContextMenu("ClearTrees")]
+    public void ClearTrees()
+    {
+        GetBuildings();
+        foreach (var b in Buildings)
+        {
+            if (b == null) continue;
+            b.ClearTrees();
+        }
+    }
+
 #if UNITY_EDITOR
+
+    //[ContextMenu("OneKey")]
+    //public void OneKey()
+    //{
+    //    GetBuildings();
+    //    foreach (var b in Buildings)
+    //    {
+    //        if (b == null) continue;
+    //        b.GetTrees();
+    //    }
+
+
+    //}
 
     [ContextMenu("EditorMoveScenes")]
     public void EditorMoveScenes()
