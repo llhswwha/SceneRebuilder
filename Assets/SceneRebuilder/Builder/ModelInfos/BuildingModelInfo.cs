@@ -128,7 +128,7 @@ public class BuildingModelInfo : MonoBehaviour
     public int AllRendererCount = 0;
     public float AllVertextCount = 0;
 
-    private void ClearTrees()
+    public void ClearTrees()
     {
         var oldTrees = this.GetComponentsInChildren<ModelAreaTree>(true);
         foreach (var oldT in oldTrees)
@@ -428,7 +428,7 @@ public class BuildingModelInfo : MonoBehaviour
     }
 
     [ContextMenu("* InitInOut")]
-    private void InitInOut()
+    public void InitInOut()
     {
         InitInOut(true);
     }
@@ -1035,7 +1035,7 @@ public class BuildingModelInfo : MonoBehaviour
     }
 
     [ContextMenu("* EditorCreateScenes_TreeWithPart")]
-    private void EditorCreateScenes_TreeWithPart()
+    public void EditorCreateScenes_TreeWithPart()
     {
         EditorCreateScenes_TreeWithPart(null);
     }
@@ -1277,7 +1277,7 @@ public class BuildingModelInfo : MonoBehaviour
     }
 
     [ContextMenu("EditorLoadScenes_TreeWithPart")]
-    private void EditorLoadScenes_TreeWithPart()
+    public void EditorLoadScenes_TreeWithPart()
     {
         EditorLoadScenes_TreeWithPart(null);
     }

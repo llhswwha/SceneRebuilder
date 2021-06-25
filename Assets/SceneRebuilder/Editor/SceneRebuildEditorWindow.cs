@@ -654,9 +654,43 @@ public class SceneRebuildEditorWindow : ListManagerEditorWindow<BuildingModelEle
         //GUILayout.Space(15);
         int buttonHeight = 29;
 
-        if (GUILayout.Button("Export Excel Data", GUILayout.Height(buttonHeight)))
+        if (GUILayout.Button("SelectObject", GUILayout.Height(buttonHeight)))
         {
-            //ExportExcelData();
+            if (SelectIndex < 0) return;
+            var ele = meshElementList[SelectIndex];
+            EditorHelper.SelectObject(ele.rootObj);
+            Debug.Log($"SelectObject index:{SelectIndex} ele:{ele} obj:{ele.rootObj}");
+        }
+        if (GUILayout.Button("InitInOut", GUILayout.Height(buttonHeight)))
+        {
+            if (SelectIndex < 0) return;
+            var ele = meshElementList[SelectIndex];
+            ele.modelInfo.InitInOut();
+        }
+        if (GUILayout.Button("GetTrees", GUILayout.Height(buttonHeight)))
+        {
+            if (SelectIndex < 0) return;
+            var ele = meshElementList[SelectIndex];
+            ele.modelInfo.InitInOut();
+        }
+        if (GUILayout.Button("ClearTrees", GUILayout.Height(buttonHeight)))
+        {
+            if (SelectIndex < 0) return;
+            var ele = meshElementList[SelectIndex];
+            ele.modelInfo.ClearTrees();
+            ele.modelInfo.ShowRenderers();
+        }
+        if (GUILayout.Button("LoadScenes", GUILayout.Height(buttonHeight)))
+        {
+            if (SelectIndex < 0) return;
+            var ele = meshElementList[SelectIndex];
+            ele.modelInfo.EditorLoadScenes_TreeWithPart();
+        }
+        if (GUILayout.Button("SaveScenes", GUILayout.Height(buttonHeight)))
+        {
+            if (SelectIndex < 0) return;
+            var ele = meshElementList[SelectIndex];
+            ele.modelInfo.EditorCreateScenes_TreeWithPart();
         }
         GUILayout.EndArea();
 
@@ -724,7 +758,7 @@ public class SceneRebuildEditorWindow : ListManagerEditorWindow<BuildingModelEle
             SelectChildIndex = -1;
         }
 
-        int widthOff = 7;
+        int widthOff = 32;
         if (GUILayout.Button(element.name, lineStyle, GUILayout.Height(30), element.isGroup ? GUILayout.Width(180- widthOff) : GUILayout.Width(200- widthOff)))
         {
             if (SelectIndex != index)
@@ -733,6 +767,19 @@ public class SceneRebuildEditorWindow : ListManagerEditorWindow<BuildingModelEle
             }
             SelectIndex = index;
             SelectChildIndex = -1;
+        }
+
+        if (GUILayout.Button($"S", lineStyle, GUILayout.Height(30), GUILayout.Width(25)))
+        {
+            if (SelectIndex != index)
+            {
+                isRetract = false;
+            }
+            SelectIndex = index;
+            SelectChildIndex = -1;
+
+            Debug.Log($"SelectObject index:{index} ele:{element}");
+            EditorHelper.SelectObject(element.rootObj);
         }
 
         //GUILayoutOption[] btnOption = isSelect ? MPGUIStyles.options_exist : MPGUIStyles.options_none;
@@ -747,14 +794,47 @@ public class SceneRebuildEditorWindow : ListManagerEditorWindow<BuildingModelEle
             {
                 v = "-";
             }
-            if (GUILayout.Button(v, lineStyle, btnOption))
-            {
-                if (SelectIndex != index)
+            // if (GUILayout.Button(v, lineStyle, btnOption))
+            // {
+            //     if (SelectIndex != index)
+            //     {
+            //         isRetract = false;
+            //     }
+            //     SelectIndex = index;
+            //     SelectChildIndex = -1;
+            // }
+            if(i==0){ //vertex
+
+                // GUILayoutOption[] btnOption = isSelect ? MPGUIStyles.options_exist : MPGUIStyles.options_none;
+                if (GUILayout.Button(v, lineStyle, isSelect ? MPGUIStyles.options_exist : MPGUIStyles.options_none))
                 {
-                    isRetract = false;
+                    if (SelectIndex != index)
+                    {
+                        isRetract = false;
+                    }
+                    SelectIndex = index;
+                    SelectChildIndex = -1;
                 }
-                SelectIndex = index;
-                SelectChildIndex = -1;
+                if (isSelect && GUILayout.Button(MPGUIStyles.icon_right_Content, MPGUIStyles.icon_tab_Style, MPGUIStyles.options_icon))
+                {
+                    if (element.isGroup)
+                        isRetract = !isRetract;
+                    else
+                    {
+                        ShowDataList.AddWindow(meshValueRoot.GetVerticsStr(), "Vertices" + "-" + element.name);
+                    }
+                }
+            }
+            else{
+                if (GUILayout.Button(v, lineStyle, btnOption))
+                {
+                    if (SelectIndex != index)
+                    {
+                        isRetract = false;
+                    }
+                    SelectIndex = index;
+                    SelectChildIndex = -1;
+                }
             }
         }
 
