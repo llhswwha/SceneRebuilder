@@ -20,7 +20,7 @@ namespace MeshProfilerNS
         public static Rect TOOL_BLOCK = new Rect(0, 465, 300, 295);
         public static Rect PAGEINDEX_BLOCK = new Rect(300, 535, 1200, 25);
         public static Rect CHART_BLOCK = new Rect(300, 560, 598, 200);
-        public static Rect CHART_PARAS_BLOCK = new Rect(750, 560, 150, 200);//new Rect(750, 620, 150, 180);
+        public static Rect CHART_PARAS_BLOCK = new Rect(750, 570, 150, 200);//new Rect(750, 620, 150, 180);
         public static Rect DATA_BLOCK = new Rect(902, 560, 595, 200);
         public static GUIStyle itemStyle = new GUIStyle(UnityEditor.EditorStyles.label);
         public static GUIStyle[] itemBtnStyles = new GUIStyle[2] { new GUIStyle(UnityEditor.EditorStyles.toolbarButton), new GUIStyle(UnityEditor.EditorStyles.toolbarButton) };

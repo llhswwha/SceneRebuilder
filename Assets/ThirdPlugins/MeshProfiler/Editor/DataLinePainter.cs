@@ -21,7 +21,7 @@ namespace MeshProfilerNS
         private static int _sampleCount;
         private static int maxValue;
         private static List<int> _samples = new List<int>();
-        static string[] labelArray = new string[5] { "Low", "Mid Low", "Mid", "Mid High", "High" };
+        static string[] labelArray = new string[7] {"Very Low", "Low", "Mid Low", "Mid", "Mid High", "High","Very High" };
         public static void Init(List<int> data)
         {
             _samples = data;

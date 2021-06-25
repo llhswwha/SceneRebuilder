@@ -67,7 +67,7 @@ public class SceneRebuildEditorWindow : ListManagerEditorWindow
     static BuildingSortWays sortWays=BuildingSortWays.SortByAllVertext;
     bool IsIgnoreKeywordsList = false;
     static string IgnoreKeywordList = "";
-    static int[] LevelNum = new int[5] { 0, 5, 10, 50, 100 };//new int[5] { 0, 500, 1000, 1500, 2000 };
+    static int[] LevelNum = new int[7] { 0, 2, 10, 50, 100,200,400 };//new int[5] { 0, 500, 1000, 1500, 2000 };
 
     string m_InputSearchText;
 
@@ -90,10 +90,10 @@ public class SceneRebuildEditorWindow : ListManagerEditorWindow
     {
         if (!(LevelNum[0] < LevelNum[1] && LevelNum[1] < LevelNum[2] && LevelNum[2] < LevelNum[3] && LevelNum[3] < LevelNum[4]))
         {
-            LevelNum = new int[5] { 0, 50, 100, 200, 400 };
+            LevelNum = new int[7] { 0, 5, 10, 50, 100,200,400 };
             Debug.LogError("Your parameter is wrong,bar chart parameter has been reset!");
         }
-        int[] array = new int[5] { 0, 0, 0, 0, 0 };
+        int[] array = new int[7] { 0, 0, 0, 0, 0,0,0 };
 
         max = 0;
         min = float.MaxValue;
@@ -118,9 +118,17 @@ public class SceneRebuildEditorWindow : ListManagerEditorWindow
             {
                 array[3]++;
             }
-            else if (vc >= LevelNum[0])
+            else if (vc < LevelNum[5] && vc >= LevelNum[4])
             {
                 array[4]++;
+            }
+            else if (vc < LevelNum[6] && vc >= LevelNum[5])
+            {
+                array[5]++;
+            }
+            else if (vc >= LevelNum[6])
+            {
+                array[6]++;
             }
             sum += vc;
             if(vc>max){
@@ -548,8 +556,14 @@ public class SceneRebuildEditorWindow : ListManagerEditorWindow
         GUI.Box(MPGUIStyles.BorderArea(MPGUIStyles.CHART_BLOCK), "");
         GUILayout.BeginArea(MPGUIStyles.CHART_BLOCK);
         GUILayout.Space(5);
-        GUILayout.Label("Bar Chart Panel", MPGUIStyles.centerStyle);
-        GUILayout.Label($"Min={min:F1},Max={max:F1},Avg={avg:F1}", MPGUIStyles.centerStyle);
+        // GUILayout.Label("Bar Chart Panel", MPGUIStyles.centerStyle);
+        GUILayout.Label($"[Chart Panel] Min={min:F1},Max={max:F1},Avg={avg:F1}", MPGUIStyles.centerStyle);
+
+        // GUILayout.BeginHorizontal();
+        // GUILayout.Label("High>=", GUILayout.Width(70));
+        // LevelNum[4] = EditorGUILayout.IntField(LevelNum[4]);
+        // GUILayout.EndHorizontal();
+
         GUILayout.EndArea();
 
         DataLinePainter.Draw();
@@ -572,27 +586,37 @@ public class SceneRebuildEditorWindow : ListManagerEditorWindow
         //GUILayout.EndHorizontal();
 
         GUILayout.BeginHorizontal();
-        GUILayout.Label("High>=", GUILayout.Width(70));
+        GUILayout.Label("Very High=", GUILayout.Width(70));
+        LevelNum[6] = EditorGUILayout.IntField(LevelNum[6]);
+        GUILayout.EndHorizontal();
+
+        GUILayout.BeginHorizontal();
+        GUILayout.Label("High=", GUILayout.Width(70));
+        LevelNum[5] = EditorGUILayout.IntField(LevelNum[5]);
+        GUILayout.EndHorizontal();
+
+        GUILayout.BeginHorizontal();
+        GUILayout.Label("Mid High=", GUILayout.Width(70));
         LevelNum[4] = EditorGUILayout.IntField(LevelNum[4]);
         GUILayout.EndHorizontal();
 
         GUILayout.BeginHorizontal();
-        GUILayout.Label("Mid High>=", GUILayout.Width(70));
+        GUILayout.Label("Mid=", GUILayout.Width(70));
         LevelNum[3] = EditorGUILayout.IntField(LevelNum[3]);
         GUILayout.EndHorizontal();
 
         GUILayout.BeginHorizontal();
-        GUILayout.Label("Mid>=", GUILayout.Width(70));
+        GUILayout.Label("Mid Low=", GUILayout.Width(70));
         LevelNum[2] = EditorGUILayout.IntField(LevelNum[2]);
         GUILayout.EndHorizontal();
 
         GUILayout.BeginHorizontal();
-        GUILayout.Label("Mid Low>=", GUILayout.Width(70));
+        GUILayout.Label("Low=", GUILayout.Width(70));
         LevelNum[1] = EditorGUILayout.IntField(LevelNum[1]);
         GUILayout.EndHorizontal();
 
         GUILayout.BeginHorizontal();
-        GUILayout.Label("Low>=", GUILayout.Width(70));
+        GUILayout.Label("Very Low=", GUILayout.Width(70));
         GUI.enabled = false;
         LevelNum[0] = EditorGUILayout.IntField(0);
         GUI.enabled = true;
