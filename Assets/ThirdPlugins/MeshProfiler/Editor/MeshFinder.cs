@@ -376,7 +376,7 @@ namespace MeshProfilerNS
                     
                     if ((type==MeshElementType.File || type==MeshElementType.Asset) && (!string.IsNullOrEmpty(assetPath) && !assetPath.Contains("unity default resources")))//is Asset
                     {
-                        Debug.Log($"MeshFinder.GetMeshElementList1 i:{i} meshDataDict:{meshDataDict.Count} assetPath:{assetPath}");
+                        // Debug.Log($"MeshFinder.GetMeshElementList1 i:{i} meshDataDict:{meshDataDict.Count} assetPath:{assetPath}");
 
     #if UNITY_2018_3_OR_NEWER
                         GameObject root = PrefabUtility.GetOutermostPrefabInstanceRoot(filters[i].gameObject);
@@ -420,7 +420,7 @@ namespace MeshProfilerNS
                     }
                     else
                     {
-                        Debug.Log($"MeshFinder.GetMeshElementList2 i:{i} meshDataDict:{meshDataDict.Count} assetPath:{assetPath}");
+                        // Debug.Log($"MeshFinder.GetMeshElementList2 i:{i} meshDataDict:{meshDataDict.Count} assetPath:{assetPath}");
 
                         count2++;
                         string id = filters[i].sharedMesh.GetInstanceID().ToString();

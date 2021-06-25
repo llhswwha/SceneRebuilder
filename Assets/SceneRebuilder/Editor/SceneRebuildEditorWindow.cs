@@ -55,11 +55,7 @@ public class SceneRebuildEditorWindow : ListManagerEditorWindow<BuildingModelEle
     string[] tableTitle = new string[] { "Name", "Vertex", "Renderer", "Vert_In", "Vert_Out0", "Vert_Out1", "Rend_In",
         "Rend_Out0", "Rend_Out1", "Parts", "Trees", "Scenes", "Finished", };
 
-    // List<BuildingModelElement> meshElementList = new List<BuildingModelElement>();
-    // List<BuildingModelElement> originList = new List<BuildingModelElement>();
-
     //Setting��������
-    Editor previewEditor;
     static int minVertNum = 0;
     static int maxVertNum = 65000;
     bool isSelectConditions = false;
@@ -71,11 +67,6 @@ public class SceneRebuildEditorWindow : ListManagerEditorWindow<BuildingModelEle
     static int[] LevelNum = new int[7] { 0, 2, 10, 50, 100,200,400 };//new int[5] { 0, 500, 1000, 1500, 2000 };
 
     string m_InputSearchText;
-
-    Vector2 scVector = new Vector2(0, 0);
-    bool isRetract = false;//�Ƿ��۵�
-    const int pageCount = 16;
-    int pageIndex = 0;
 
     float max;
     float min;
@@ -1024,99 +1015,6 @@ public class SceneRebuildEditorWindow : ListManagerEditorWindow<BuildingModelEle
         //    SelectChildIndex = index;
         //}
         GUILayout.EndHorizontal();
-    }
-
-    /// <summary>
-    /// ����ҳ��
-    /// </summary>
-    void DrawPageIndexBlock()
-    {
-        int count = meshElementList.Count;
-        int pages = count / pageCount;
-        if (count % pageCount != 0)
-            pages++;
-
-        Rect ActualRect = MPGUIStyles.PAGEINDEX_BLOCK;
-        ActualRect.x = MPGUIStyles.PAGEINDEX_BLOCK.x + MPGUIStyles.PAGEINDEX_BLOCK.width - 160 - 35 * pages;
-        GUILayout.BeginArea(ActualRect);
-        GUILayout.BeginHorizontal();
-        if (meshElementList.Count != 0)
-        {
-            if (pageIndex == 0)
-            {
-                GUI.enabled = false;
-            }
-            if (GUILayout.Button("Last Page", MPGUIStyles.itemBtnStyles_child[0], GUILayout.MaxWidth(70)))
-            {
-                pageIndex--;
-                scVector = Vector2.zero;
-            }
-            GUI.enabled = true;
-
-            for (int i = 0; i < pages; i++)
-            {
-                bool isGoal = i == pageIndex;
-                string str = "[" + i + "]";
-                if (isGoal)
-                {
-                    if (GUILayout.Button(str, MPGUIStyles.itemBtnStyles_child[1], GUILayout.MaxWidth(35)))
-                    {
-                        pageIndex = i;
-                        scVector = Vector2.zero;
-                    }
-                }
-                else
-                {
-                    if (GUILayout.Button(str, MPGUIStyles.itemBtnStyles_child[0], GUILayout.MaxWidth(35)))
-                    {
-                        pageIndex = i;
-                        scVector = Vector2.zero;
-                    }
-                }
-            }
-            if (pageIndex == (pages - 1))
-            {
-                GUI.enabled = false;
-            }
-            if (GUILayout.Button("Next Page", MPGUIStyles.itemBtnStyles_child[0], GUILayout.MaxWidth(70)))
-            {
-                pageIndex++;
-                scVector = Vector2.zero;
-            }
-            GUI.enabled = true;
-        }
-        GUILayout.EndHorizontal();
-        GUILayout.EndArea();
-    }
-
-    /// <summary>
-    /// ��ʼ��Ԥ������
-    /// </summary>
-    /// <param name="obj"></param>
-    void InitPreview(UnityEngine.Object obj)
-    {
-        if (previewEditor != null)
-        {
-            DestroyImmediate(previewEditor);
-        }
-
-        previewEditor = Editor.CreateEditor(obj);
-
-    }
-
-    /// <summary>
-    /// ����Ԥ������
-    /// </summary>
-    void DrawPreviewBlock()
-    {
-        GUI.Box(MPGUIStyles.BorderArea(MPGUIStyles.PREVIEW_BLOCK), "");
-
-
-        if (meshElementList.Count > 0 && previewEditor != null)
-        {
-            previewEditor.DrawPreview(MPGUIStyles.PREVIEW_BLOCK_CENTER);
-        }
-
     }
 
     private void DrawDataBlockItem(string title,string value)

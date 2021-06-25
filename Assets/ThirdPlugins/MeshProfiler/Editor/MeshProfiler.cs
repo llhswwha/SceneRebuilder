@@ -14,8 +14,8 @@ using OfficeOpenXml;
 namespace MeshProfilerNS
 {
     public class MeshProfiler 
-    //: ListManagerEditorWindow<MeshElement,MeshValues>
-    :EditorWindow
+    : ListManagerEditorWindow<MeshElement,MeshValues>
+    //:EditorWindow
     {
         [MenuItem("Window/Analysis/Mesh Profiler")]
         public static void AddWindow()
@@ -26,11 +26,11 @@ namespace MeshProfilerNS
         }
 
         string[] tableTitle = new string[] { "name", "Vertex","RefCount", "Triangles", "Normals", "Tangents", "Colors", "UV", "UV2", "UV3", "UV4", "Memory", "Readable", };
-        List<MeshElement> meshElementList = new List<MeshElement>();
-        List<MeshElement> originList = new List<MeshElement>();
+        // List<MeshElement> meshElementList = new List<MeshElement>();
+        // List<MeshElement> originList = new List<MeshElement>();
 
         //Setting辅助参数
-        Editor previewEditor;
+
         static int minVertNum = 0;
         static int maxVertNum = 65000;
          bool isSelectConditions = false;
@@ -51,18 +51,24 @@ namespace MeshProfilerNS
                 selectIndex = value;
                 if (selectIndex >= 0)
                 {
-                    if (meshElementList[selectIndex].isGroup)
-                    {
-                        InitPreview(meshElementList[selectIndex].rootObj);
-                    }
-                    else
-                    {
-                        InitPreview(meshElementList[selectIndex].rootMeshValue.mesh);
-                    }
+                    PreviewSelectedItem(meshElementList[selectIndex]);
                 }
                     
             }
         }
+    
+        protected void PreviewSelectedItem(MeshElement ele)
+        {
+            if (ele.isGroup)
+            {
+                InitPreview(ele.rootObj);
+            }
+            else
+            {
+                InitPreview(ele.rootMeshValue.mesh);
+            }
+        }
+
         int selectChildIndex = 0;//子物体选择下标
         int SelectChildIndex
         {
@@ -75,12 +81,12 @@ namespace MeshProfilerNS
             }
         }
 
-        string m_InputSearchText;
+        protected void PreviewSelectedChildItem(MeshElement ele)
+        {
+            InitPreview(ele.childList[selectChildIndex].mesh);
+        }
 
-        Vector2 scVector = new Vector2(0, 0);
-        bool isRetract = false;//是否折叠
-        const int pageCount = 100;
-        int pageIndex = 0;
+        string m_InputSearchText;
 
         MeshDataClass dataChart = new MeshDataClass();
         /// <summary>
@@ -778,97 +784,7 @@ namespace MeshProfilerNS
             GUILayout.EndHorizontal();
         }
 
-        /// <summary>
-        /// 绘制页标
-        /// </summary>
-        void DrawPageIndexBlock()
-        {
-            int count = meshElementList.Count;
-            int pages = count / pageCount;
-            if (count % pageCount != 0)
-                pages++;
-
-            Rect ActualRect = MPGUIStyles.PAGEINDEX_BLOCK;
-            ActualRect.x = MPGUIStyles.PAGEINDEX_BLOCK.x + MPGUIStyles.PAGEINDEX_BLOCK.width - 160 - 35 * pages;
-            GUILayout.BeginArea(ActualRect);
-            GUILayout.BeginHorizontal();
-            if (meshElementList.Count != 0)
-            {
-                if (pageIndex == 0)
-                {
-                    GUI.enabled = false;
-                }
-                if (GUILayout.Button("Last Page", MPGUIStyles.itemBtnStyles_child[0], GUILayout.MaxWidth(70)))
-                {
-                    pageIndex--;
-                    scVector = Vector2.zero;
-                }
-                GUI.enabled = true;
-
-                for (int i = 0; i < pages; i++)
-                {
-                    bool isGoal = i == pageIndex;
-                    string str = "[" + i + "]";
-                    if (isGoal)
-                    {
-                        if (GUILayout.Button(str, MPGUIStyles.itemBtnStyles_child[1], GUILayout.MaxWidth(35)))
-                        {
-                            pageIndex = i;
-                            scVector = Vector2.zero;
-                        }
-                    }
-                    else
-                    {
-                        if (GUILayout.Button(str, MPGUIStyles.itemBtnStyles_child[0], GUILayout.MaxWidth(35)))
-                        {
-                            pageIndex = i;
-                            scVector = Vector2.zero;
-                        }
-                    }
-                }
-                if (pageIndex == (pages - 1))
-                {
-                    GUI.enabled = false;
-                }
-                if (GUILayout.Button("Next Page", MPGUIStyles.itemBtnStyles_child[0], GUILayout.MaxWidth(70)))
-                {
-                    pageIndex++;
-                    scVector = Vector2.zero;
-                }
-                GUI.enabled = true;
-            }
-            GUILayout.EndHorizontal();
-            GUILayout.EndArea();
-        }
-
-        /// <summary>
-        /// 初始化预览物体
-        /// </summary>
-        /// <param name="obj"></param>
-        void InitPreview(UnityEngine.Object obj)
-        {
-            if (previewEditor != null)
-            {
-                DestroyImmediate(previewEditor);
-            }
-
-            previewEditor = Editor.CreateEditor(obj);
-            
-        }
-        /// <summary>
-        /// 绘制预览窗口
-        /// </summary>
-        void DrawPreviewBlock()
-        {
-            GUI.Box(MPGUIStyles.BorderArea(MPGUIStyles.PREVIEW_BLOCK), "");
-            
-
-            if (meshElementList.Count > 0 && previewEditor != null)
-            {
-                previewEditor.DrawPreview(MPGUIStyles.PREVIEW_BLOCK_CENTER);
-            }
-
-        }
+        
 
         #region TOOL_BLOCK
         private bool ExportExcelData()
