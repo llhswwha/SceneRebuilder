@@ -67,7 +67,7 @@ public class SceneRebuildEditorWindow : ListManagerEditorWindow
     static BuildingSortWays sortWays=BuildingSortWays.SortByAllVertext;
     bool IsIgnoreKeywordsList = false;
     static string IgnoreKeywordList = "";
-    static int[] LevelNum = new int[5] { 0, 50, 100, 200, 400 };//new int[5] { 0, 500, 1000, 1500, 2000 };
+    static int[] LevelNum = new int[5] { 0, 5, 10, 50, 100 };//new int[5] { 0, 500, 1000, 1500, 2000 };
 
     string m_InputSearchText;
 
@@ -549,26 +549,27 @@ public class SceneRebuildEditorWindow : ListManagerEditorWindow
         GUILayout.BeginArea(MPGUIStyles.CHART_BLOCK);
         GUILayout.Space(5);
         GUILayout.Label("Bar Chart Panel", MPGUIStyles.centerStyle);
+        GUILayout.Label($"Min={min:F1},Max={max:F1},Avg={avg:F1}", MPGUIStyles.centerStyle);
         GUILayout.EndArea();
 
         DataLinePainter.Draw();
 
         GUILayout.BeginArea(MPGUIStyles.BorderArea(MPGUIStyles.CHART_PARAS_BLOCK, 10));
 
-        GUILayout.BeginHorizontal();
-        GUILayout.Label("Min", GUILayout.Width(70));
-        GUILayout.Label(min.ToString("F1"));
-        GUILayout.EndHorizontal();
+        //GUILayout.BeginHorizontal();
+        //GUILayout.Label("Min", GUILayout.Width(70));
+        //GUILayout.Label(min.ToString("F1"));
+        //GUILayout.EndHorizontal();
 
-        GUILayout.BeginHorizontal();
-        GUILayout.Label("Max", GUILayout.Width(70));
-        GUILayout.Label(max.ToString("F1"));
-        GUILayout.EndHorizontal();
+        //GUILayout.BeginHorizontal();
+        //GUILayout.Label("Max", GUILayout.Width(70));
+        //GUILayout.Label(max.ToString("F1"));
+        //GUILayout.EndHorizontal();
 
-        GUILayout.BeginHorizontal();
-        GUILayout.Label("Avg", GUILayout.Width(70));
-        GUILayout.Label(avg.ToString("F1"));
-        GUILayout.EndHorizontal();
+        //GUILayout.BeginHorizontal();
+        //GUILayout.Label("Avg", GUILayout.Width(70));
+        //GUILayout.Label(avg.ToString("F1"));
+        //GUILayout.EndHorizontal();
 
         GUILayout.BeginHorizontal();
         GUILayout.Label("High>=", GUILayout.Width(70));

@@ -10,9 +10,11 @@ namespace MeshProfilerNS
     public class DataLinePainter
     {
         private static Material _graphMaterial;
-        private static Rect _axisRect = new Rect(310, 580, 440, 150);
-        private static Rect _graphRect = new Rect(320, 580, 420, 130);
-        private static Rect _graphContentRect = new Rect(320, 600, 420, 130);
+        const float x = 310;
+        const float y = 580;
+        private static Rect _axisRect = new Rect(x, y, 440, 150);
+        private static Rect _graphRect = new Rect(x+10, y, 420, 130);
+        private static Rect _graphContentRect = new Rect(x + 10, y+20, 420, 130);
         private static Color _layerColor = new Color(190f / 255f, 192f / 255f, 41f / 255f, 0.6f);
         private static Vector3[] _points = null;
 
