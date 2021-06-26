@@ -555,7 +555,7 @@ public class SceneRebuildEditorWindow : ListManagerEditorWindow<BuildingModelEle
             RefleshList();
         }
         //GUILayout.Space(5);
-        isSelectConditions = EditorGUILayout.BeginToggleGroup("Select Conditions2", isSelectConditions);
+        isSelectConditions = EditorGUILayout.BeginToggleGroup("Select Conditions", isSelectConditions);
         GUILayout.BeginHorizontal();
         GUILayout.Label("vertexs count:");
         minVertNum = EditorGUILayout.IntField(minVertNum);
@@ -924,11 +924,16 @@ public class SceneRebuildEditorWindow : ListManagerEditorWindow<BuildingModelEle
             //{
             //    tableHeaderName += " *";
             //}
+
+            GUIStyle stytle = tableHeadStyle;
             if (i == (int)sortWays)
             {
                 tableHeaderName += " *";
+                stytle = new GUIStyle(tableHeadStyle);
+                stytle.normal.textColor = new Color(0, 0, 1);
             }
-            GUILayout.Label(tableHeaderName, tableHeadStyle, i == 0 ? GUILayout.Width(220) : GUILayout.Width(80));
+            
+            GUILayout.Label(tableHeaderName, stytle, i == 0 ? GUILayout.Width(220) : GUILayout.Width(80));
         }
         GUILayout.EndHorizontal();
         GUILayout.Space(5);
@@ -944,6 +949,82 @@ public class SceneRebuildEditorWindow : ListManagerEditorWindow<BuildingModelEle
 
         GUILayout.EndScrollView();
         GUILayout.EndArea();
+    }
+
+    private string GetValue(object v, GUIStyle style)
+    {
+        string t = v + "";
+        if (v is int)
+        {
+            int i = (int)v;
+            if (i == 0)
+            {
+                t = "-";
+            }
+            if (i > 50000)//5w
+            {
+                style.normal.textColor = new Color(1, 0, 0);
+            }
+            else if (i > 10000)//1w
+            {
+                style.normal.textColor = new Color(1, 102f / 255, 102f / 255);
+            }
+            else if (i > 5000)//5k
+            {
+                style.normal.textColor = new Color(1, 153f / 255, 102f / 255);
+            }
+            else if (i > 1000)//1k
+            {
+                style.normal.textColor = new Color(1, 204f / 255, 153f / 255);
+            }
+            else
+            {
+
+            }
+            
+        }
+        else if (v is float)
+        {
+            float f = (float)v;
+            if (f == 0)
+            {
+                t = "-";
+            }
+            if (f > 400)
+            {
+                style.normal.textColor = new Color(1, 0, 0);
+            }
+            else if (f > 200)
+            {
+                style.normal.textColor = new Color(1, 102f / 255, 102f / 255);
+            }
+            else if (f > 100)
+            {
+                style.normal.textColor = new Color(1, 153f / 255, 102f / 255);
+            }
+            else if (f > 50)
+            {
+                style.normal.textColor = new Color(1, 204f / 255, 153f / 255);
+            }
+            else
+            {
+
+            }
+            t = f.ToString("F1");
+        }
+        else if (v is bool)
+        {
+            bool b = (bool)v;
+            if (b == true)
+            {
+                style.normal.textColor = new Color(0, 1, 0);
+            }
+        }
+        else
+        {
+
+        }
+        return t;
     }
 
     /// <summary>
@@ -980,7 +1061,12 @@ public class SceneRebuildEditorWindow : ListManagerEditorWindow<BuildingModelEle
         }
 
         int widthOff = 32;
-        if (GUILayout.Button(element.name, lineStyle, GUILayout.Height(30), element.isGroup ? GUILayout.Width(180- widthOff) : GUILayout.Width(200- widthOff)))
+        GUIStyle nameStyle = new GUIStyle(lineStyle);
+        if (element.rootObj.activeInHierarchy==false)
+        {
+            nameStyle.normal.textColor = new Color(0.5f, 0.5f, 0.5f);
+        }
+        if (GUILayout.Button(element.name, nameStyle, GUILayout.Height(30), element.isGroup ? GUILayout.Width(180- widthOff) : GUILayout.Width(200- widthOff)))
         {
             if (SelectIndex != index)
             {
@@ -1010,11 +1096,22 @@ public class SceneRebuildEditorWindow : ListManagerEditorWindow<BuildingModelEle
         var values = meshValueRoot.GetValues();
         for(int i=0;i<values.Length;i++)
         {
-            var v = values[i];
-            if(v=="0" || v == "0.0")
-            {
-                v = "-";
-            }
+            object v = values[i];
+            GUIStyle style = new GUIStyle(lineStyle);
+            string vt = GetValue(v,style);
+
+            
+            //if (v == "True")
+            //{
+            //    style = new GUIStyle(lineStyle);
+            //    style.normal.textColor = new Color(0, 1, 0);
+            //}
+            //if (float.Parse(v) == "True")
+            //{
+            //    style = new GUIStyle(lineStyle);
+            //    style.normal.textColor = new Color(0, 1, 0);
+            //}
+
             // if (GUILayout.Button(v, lineStyle, btnOption))
             // {
             //     if (SelectIndex != index)
@@ -1024,10 +1121,11 @@ public class SceneRebuildEditorWindow : ListManagerEditorWindow<BuildingModelEle
             //     SelectIndex = index;
             //     SelectChildIndex = -1;
             // }
-            if(i==0){ //vertex
+
+            if (i==0){ //vertex
 
                 // GUILayoutOption[] btnOption = isSelect ? MPGUIStyles.options_exist : MPGUIStyles.options_none;
-                if (GUILayout.Button(v, lineStyle, isSelect ? MPGUIStyles.options_exist : MPGUIStyles.options_none))
+                if (GUILayout.Button(vt, style, isSelect ? MPGUIStyles.options_exist : MPGUIStyles.options_none))
                 {
                     if (SelectIndex != index)
                     {
@@ -1047,7 +1145,7 @@ public class SceneRebuildEditorWindow : ListManagerEditorWindow<BuildingModelEle
                 }
             }
             else{
-                if (GUILayout.Button(v, lineStyle, btnOption))
+                if (GUILayout.Button(vt, style, btnOption))
                 {
                     if (SelectIndex != index)
                     {
@@ -1529,12 +1627,12 @@ public class BuildingModelValues
         this.Out1RendererCount = modelInfo.Out1RendererCount;
     }
 
-    public string[] GetValues()
+    public object[] GetValues()
     {
-        return new string[] { AllVertextCount.ToString("F1"),AllRendererCount.ToString(),
-            InVertextCount.ToString("F1"),Out0VertextCount.ToString("F1"),Out1VertextCount.ToString("F1"),
-        InRendererCount.ToString(),Out0RendererCount.ToString(),Out1RendererCount.ToString(),
-        info.GetPartCount().ToString(),info.GetTreeCount().ToString(),info.GetSceneCount().ToString(),
-        info.IsModelSceneFinish().ToString() };
+        return new object[] { AllVertextCount,AllRendererCount,
+            InVertextCount,Out0VertextCount,Out1VertextCount,
+        InRendererCount,Out0RendererCount,Out1RendererCount,
+        info.GetPartCount(),info.GetTreeCount(),info.GetSceneCount(),
+        info.IsModelSceneFinish() };
     }
 }
