@@ -487,9 +487,24 @@ public static class MeshHelper
     //     return result;
     // }
 
+    // public static Bounds GetBounds(MeshFilter meshFilter)
+    // {
+    //     Vector3[] vs=GetWorldVertexes(meshFilter);
+    //     Bounds bounds=new Bounds();
+    //     bounds.center=vs[3];
+    //     bounds.size=vs[2];
+    //     return bounds;
+    // }
+    
+    public static Vector3[] GetMinMax(MeshFilter meshFilter)
+    {
+        Vector3[] vs=GetWorldVertexes(meshFilter);
+        return GetMinMax(vs);
+    }
+
     public static Vector3[] GetMinMax(Vector3[] vs)
     {
-        Vector3[] minMax=new Vector3[3];
+        Vector3[] minMax=new Vector3[4];
         float minX=float.MaxValue;
         float minY=float.MaxValue;
         float minZ=float.MaxValue;
@@ -520,7 +535,8 @@ public static class MeshHelper
         }
         minMax[0]=new Vector3(minX,minY,minZ);
         minMax[1]=new Vector3(maxX,maxY,maxZ);
-        minMax[2]=minMax[1]-minMax[0];
+        minMax[2]=minMax[1]-minMax[0];//size
+        minMax[3]=(minMax[1]+minMax[0])/2;//center
         return minMax;
     }
 
