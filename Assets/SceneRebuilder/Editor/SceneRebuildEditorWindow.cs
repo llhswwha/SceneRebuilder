@@ -1042,7 +1042,13 @@ public class SceneRebuildEditorWindow : ListManagerEditorWindow<BuildingModelEle
 
         GUIContent icon_expand_Content = element.isGroup ? MPGUIStyles.icon_down_Content : MPGUIStyles.icon_right_Content;
 
-        if (GUILayout.Button($"{index+1:00}", lineStyle, GUILayout.Height(30), GUILayout.Width(25)))
+        GUIStyle nameStyle = new GUIStyle(lineStyle);
+        if (element.rootObj.activeInHierarchy == false)
+        {
+            nameStyle.normal.textColor = new Color(0.4f, 0.4f, 0.4f);
+        }
+
+        if (GUILayout.Button($"{index+1:00}", nameStyle, GUILayout.Height(30), GUILayout.Width(25)))
         {
             if (SelectIndex != index)
             {
@@ -1061,11 +1067,7 @@ public class SceneRebuildEditorWindow : ListManagerEditorWindow<BuildingModelEle
         }
 
         int widthOff = 32;
-        GUIStyle nameStyle = new GUIStyle(lineStyle);
-        if (element.rootObj.activeInHierarchy==false)
-        {
-            nameStyle.normal.textColor = new Color(0.5f, 0.5f, 0.5f);
-        }
+
         if (GUILayout.Button(element.name, nameStyle, GUILayout.Height(30), element.isGroup ? GUILayout.Width(180- widthOff) : GUILayout.Width(200- widthOff)))
         {
             if (SelectIndex != index)
@@ -1076,7 +1078,7 @@ public class SceneRebuildEditorWindow : ListManagerEditorWindow<BuildingModelEle
             SelectChildIndex = -1;
         }
 
-        if (GUILayout.Button($"S", lineStyle, GUILayout.Height(30), GUILayout.Width(25)))
+        if (GUILayout.Button($"S", nameStyle, GUILayout.Height(30), GUILayout.Width(25)))
         {
             if (SelectIndex != index)
             {
@@ -1097,7 +1099,7 @@ public class SceneRebuildEditorWindow : ListManagerEditorWindow<BuildingModelEle
         for(int i=0;i<values.Length;i++)
         {
             object v = values[i];
-            GUIStyle style = new GUIStyle(lineStyle);
+            GUIStyle style = new GUIStyle(nameStyle);
             string vt = GetValue(v,style);
 
             
