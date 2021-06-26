@@ -98,5 +98,38 @@ public class RendererManager : MonoBehaviour
         Debug.LogError($"ClearIds count:{allRenderers.Length} time:{(DateTime.Now - start)}");
     }
 
+    public float centerPivotDis=0.0001f;
+
+    [ContextMenu("CenterPivotAll")]
+    public void CenterPivotAll()
+    {
+        DateTime start = DateTime.Now;
+        ProgressBarHelper.DisplayProgressBar("ClearIds", "Start", 0);
+        allRenderers = GameObject.FindObjectsOfType<MeshRenderer>(true);
+        int count = allRenderers.Length;
+        for (int i = 0; i < count; i++)
+        {
+            MeshRenderer r = allRenderers[i];
+            MeshRendererInfo id = r.GetComponent<MeshRendererInfo>();
+            if (id == null)
+            {
+                id = r.gameObject.AddComponent<MeshRendererInfo>();
+            }
+            id.Init();
+            id.CenterPivot(centerPivotDis);
+
+            float progress = (float)i / count;
+            float percents = progress * 100;
+
+            if (ProgressBarHelper.DisplayCancelableProgressBar("ClearIds", $"Progress1 {i}/{count} {percents:F1}% {r.name}", progress))
+            {
+                break;
+            }
+        }
+        Count = allRenderers.Length;
+        ProgressBarHelper.ClearProgressBar();
+        Debug.LogError($"ClearIds count:{allRenderers.Length} time:{(DateTime.Now - start)}");
+    }
+
     //public  
 }

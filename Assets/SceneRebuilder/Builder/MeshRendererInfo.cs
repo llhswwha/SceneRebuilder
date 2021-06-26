@@ -7,6 +7,9 @@ public class MeshRendererInfo : MonoBehaviour
     public Vector3 position;
 
     public Vector3 center;
+
+    public float disToCenter;
+
     public Vector3 size;
 
     // public Bounds bounds;
@@ -32,6 +35,8 @@ public class MeshRendererInfo : MonoBehaviour
         minMax=MeshHelper.GetMinMax(meshFilter);
         center=minMax[3];
         size=minMax[2];
+
+        disToCenter=Vector3.Distance(center,position);
     }
 
     [ContextMenu("ShowBounds")]
@@ -74,6 +79,16 @@ public class MeshRendererInfo : MonoBehaviour
     public void CenterPivot()
     {
         var oldP=this.transform.parent;
+        
+        if(oldP!=null){
+            float disToParent=Vector3.Distance(oldP.transform.position,center);
+            Debug.Log("disToParent:"+disToParent);
+            if(disToParent<0.0001)//
+            {
+                Debug.Log("CenterPivot 0:"+this.name);
+                return;
+            }
+        }
         if(oldP!=null && oldP.childCount==1 && oldP.GetComponents<Component>().Length==1){
 
             Debug.Log("CenterPivot 1:"+this.name);
@@ -89,6 +104,25 @@ public class MeshRendererInfo : MonoBehaviour
             
             this.transform.SetParent(centerGo.transform);
             centerGo.transform.SetParent(oldP);
+        }
+    }
+
+    [ContextMenu("TestCenterPivot")]
+    public void TestCenterPivot()
+    {
+        CenterPivot(0.0001f);
+    }
+
+    public bool CenterPivot(float dis)
+    {
+        if(disToCenter>dis)
+        {
+            CenterPivot();
+            return true;
+        }
+        else{
+            Debug.Log($"No CenterPivot dis:{disToCenter} max:{dis}");
+            return false;
         }
     }
 }
