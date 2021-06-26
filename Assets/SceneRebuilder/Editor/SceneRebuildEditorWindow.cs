@@ -747,6 +747,16 @@ public class SceneRebuildEditorWindow : ListManagerEditorWindow<BuildingModelEle
         pageIndex = 0;
     }
 
+    List<BuildingModelInfo> GetBuildingModelInfos()
+    {
+        List<BuildingModelInfo> list=new List<BuildingModelInfo>();
+        foreach(var ele in meshElementList)
+        {
+            list.Add(ele.modelInfo);
+        }
+        return list;
+    }
+
     void DrawToolBlock()
     {
         Rect toolBlockAreaLeft = MPGUIStyles.TOOL_BLOCK_LEFT;
@@ -826,7 +836,7 @@ public class SceneRebuildEditorWindow : ListManagerEditorWindow<BuildingModelEle
         Rect toolBlockAreaRight = MPGUIStyles.TOOL_BLOCK_RIGHT;
         GUI.Box(MPGUIStyles.BorderArea(toolBlockAreaRight), "");
         GUILayout.BeginArea(MPGUIStyles.BorderArea(new Rect(toolBlockAreaRight.x + border, toolBlockAreaRight.y + 5, toolBlockAreaRight.width - 2 * border, toolBlockAreaRight.height - 2 * border)));
-        GUILayout.Label("ToolPanel(All)", MPGUIStyles.centerStyle);
+        GUILayout.Label("ToolPanel(Selection)", MPGUIStyles.centerStyle);
         //GUILayout.Space(15);
 
         //if (GUILayout.Button("SelectObject", GUILayout.Height(buttonHeight)))
@@ -838,44 +848,54 @@ public class SceneRebuildEditorWindow : ListManagerEditorWindow<BuildingModelEle
         //}
         if (GUILayout.Button("InitBuildings", GUILayout.Height(buttonHeight)))
         {
+            var list=GetBuildingModelInfos();
             BuildingModelManager buildingModelManager = GameObject.FindObjectOfType<BuildingModelManager>();
-            buildingModelManager.InitBuildings();
+            buildingModelManager.InitBuildings(list);
         }
         if (GUILayout.Button("GetTrees", GUILayout.Height(buttonHeight)))
         {
+            var list=GetBuildingModelInfos();
             BuildingModelManager buildingModelManager = GameObject.FindObjectOfType<BuildingModelManager>();
-            buildingModelManager.GetTrees();
+            buildingModelManager.GetTrees(list);
         }
         if (GUILayout.Button("ClearTrees", GUILayout.Height(buttonHeight)))
         {
+            var list=GetBuildingModelInfos();
             BuildingModelManager buildingModelManager = GameObject.FindObjectOfType<BuildingModelManager>();
-            buildingModelManager.ClearTrees();
+            buildingModelManager.ClearTrees(list);
         }
         if (GUILayout.Button("CreateTrees", GUILayout.Height(buttonHeight)))
         {
+            var list=GetBuildingModelInfos();
             BuildingModelManager buildingModelManager = GameObject.FindObjectOfType<BuildingModelManager>();
-            buildingModelManager.CombineAll();
+            //buildingModelManager.CombineAll();
+            buildingModelManager.CombinedBuildings(list);
         }
+
         if (GUILayout.Button("SaveScenes", GUILayout.Height(buttonHeight)))
         {
+            var list=GetBuildingModelInfos();
             SubSceneManager subSceneManager = GameObject.FindObjectOfType<SubSceneManager>();
             subSceneManager.contentType = SceneContentType.TreeWithPart;
-            subSceneManager.EditorCreateBuildingScenes();
+            subSceneManager.EditorCreateBuildingScenes(list.ToArray());
         }
         if (GUILayout.Button("LoadScenes", GUILayout.Height(buttonHeight)))
         {
+            var list=GetBuildingModelInfos();
             SubSceneManager subSceneManager = GameObject.FindObjectOfType<SubSceneManager>();
-            subSceneManager.EditorLoadScenes();
+            subSceneManager.EditorLoadScenes(list.ToArray());
         }
         if (GUILayout.Button("UnLoadScenes", GUILayout.Height(buttonHeight)))
         {
+            var list=GetBuildingModelInfos();
             SubSceneManager subSceneManager = GameObject.FindObjectOfType<SubSceneManager>();
-            subSceneManager.EditorUnLoadScenes();
+            subSceneManager.EditorUnLoadScenes(list.ToArray());
         }
         if (GUILayout.Button("OneKey", GUILayout.Height(buttonHeight)))
         {
+            var list=GetBuildingModelInfos();
             SubSceneManager subSceneManager = GameObject.FindObjectOfType<SubSceneManager>();
-            subSceneManager.OneKey();
+            subSceneManager.OneKey(list.ToArray());
         }
         if (GUILayout.Button("SetBuildings", GUILayout.Height(buttonHeight)))
         {

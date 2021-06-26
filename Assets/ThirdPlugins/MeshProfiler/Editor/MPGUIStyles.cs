@@ -18,7 +18,7 @@ namespace MeshProfilerNS
         public static Rect LIST_BLOCK = new Rect(301, 20, 1200, 515);
         public static Rect SETTING_BLOCK = new Rect(0, 210, 300, 250);
         public static Rect TOOL_BLOCK = new Rect(0, 465, 300, 295);
-        public static Rect TOOL_BLOCK_LEFT = new Rect(0, 465, 150, 295);
+        public static Rect TOOL_BLOCK_LEFT = new Rect(0, 465, 150, 300);
         public static Rect TOOL_BLOCK_RIGHT = new Rect(150, 465, 150, 295);
         public static Rect PAGEINDEX_BLOCK = new Rect(300, 535, 1200, 25);
         public static Rect CHART_BLOCK = new Rect(300, 560, 598, 200);

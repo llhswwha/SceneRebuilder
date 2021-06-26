@@ -51,18 +51,23 @@ public class BuildingModelManager : MonoBehaviour
     [ContextMenu("* InitBuildings")]
     public void InitBuildings()
     {
-        DateTime start = DateTime.Now;
         Buildings.Clear();
         Buildings.AddRange(GameObject.FindObjectsOfType<BuildingModelInfo>(true));
-        for (int i = 0; i < Buildings.Count; i++)
+        InitBuildings(Buildings);
+    }
+
+    public void InitBuildings(List<BuildingModelInfo> buildings)
+    {
+        DateTime start = DateTime.Now;
+        for (int i = 0; i < buildings.Count; i++)
         {
-            float progress = (float)i / Buildings.Count;
+            float progress = (float)i / buildings.Count;
             float percents = progress * 100;
-            if (ProgressBarHelper.DisplayCancelableProgressBar("InitBuildings", $"{i}/{Buildings.Count} {percents:F2}% of 100%", progress))
+            if (ProgressBarHelper.DisplayCancelableProgressBar("InitBuildings", $"{i}/{buildings.Count} {percents:F2}% of 100%", progress))
             {
                 break;
             }
-            Buildings[i].InitInOut(true);
+            buildings[i].InitInOut(true);
         }
         ProgressBarHelper.ClearProgressBar();
 
@@ -70,7 +75,7 @@ public class BuildingModelManager : MonoBehaviour
 
         SortByOut0();
 
-        Debug.LogWarning($"InitBuildings Buildings:{Buildings.Count},Time:{(DateTime.Now - start).TotalMilliseconds}ms");
+        Debug.LogError($"InitBuildings Buildings:{buildings.Count},Time:{(DateTime.Now - start).TotalMilliseconds}ms");
     }
 
 
@@ -137,7 +142,7 @@ public class BuildingModelManager : MonoBehaviour
         }
 
         ProgressBarHelper.ClearProgressBar();
-        Debug.LogError($"CreateTrees Buildings:{Buildings.Count},Trees:{allTrees.Count},Time:{(DateTime.Now - start).ToString()}");
+        Debug.LogError($"CreateTrees Buildings:{buildings.Count},Trees:{allTrees.Count},Time:{(DateTime.Now - start).ToString()}");
     }
 
 
@@ -253,7 +258,12 @@ public class BuildingModelManager : MonoBehaviour
     public void GetTrees()
     {
         GetBuildings();
-        foreach (var b in Buildings)
+        GetTrees(Buildings);
+    }
+
+    public void GetTrees(List<BuildingModelInfo> buildings)
+    {
+        foreach (var b in buildings)
         {
             if (b == null) continue;
             b.GetTrees();
@@ -264,7 +274,14 @@ public class BuildingModelManager : MonoBehaviour
     public void ClearTrees()
     {
         GetBuildings();
-        foreach (var b in Buildings)
+        ClearTrees(Buildings);
+    }
+
+    [ContextMenu("ClearTrees")]
+    public void ClearTrees(List<BuildingModelInfo> buildings)
+    {
+        GetBuildings();
+        foreach (var b in buildings)
         {
             if (b == null) continue;
             b.ClearTrees();

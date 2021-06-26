@@ -116,19 +116,20 @@ public static class EditorHelper
         AssetDatabase.Refresh();
     }
 
-    //public static Scene CreateScene(GameObject objs, string scenePath)
-    //{
-    //    Scene activeScene = EditorSceneManager.GetActiveScene();
-    //    Scene scene = EditorSceneManager.NewScene(NewSceneSetup.EmptyScene, NewSceneMode.Additive);
-    //    EditorSceneManager.SetActiveScene(activeScene);
+    //兼容主项目用的接口
+    public static Scene CreateScene(GameObject objs, string scenePath)
+    {
+        Scene activeScene = EditorSceneManager.GetActiveScene();
+        Scene scene = EditorSceneManager.NewScene(NewSceneSetup.EmptyScene, NewSceneMode.Additive);
+        EditorSceneManager.SetActiveScene(activeScene);
 
-    //    MoveGosToScene(scene, objs);
+        MoveGosToScene(scene, objs);
 
-    //    bool result = EditorSceneManager.SaveScene(scene, scenePath);
-    //    Debug.Log("CreateScene  SaveSceneResult1:" + result);
-    //    RefreshAssets();
-    //    return scene;
-    //}
+        bool result = EditorSceneManager.SaveScene(scene, scenePath);
+        Debug.Log("CreateScene  SaveSceneResult1:" + result);
+        RefreshAssets();
+        return scene;
+    }
 
     public static Scene CreateScene(string path, bool isOveride,bool isOpen, params GameObject[] objs)
     {

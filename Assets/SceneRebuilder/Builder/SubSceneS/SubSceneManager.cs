@@ -85,10 +85,15 @@ public class SubSceneManager : MonoBehaviour
     [ContextMenu("* OneKey")]
     public void OneKey()
     {
+        var buildings = GameObject.FindObjectsOfType<BuildingModelInfo>(true);
+        OneKey(buildings);
+    }
+
+    public void OneKey(BuildingModelInfo[] buildings)
+    {
         AreaTreeHelper.InitCubePrefab();
 
         DateTime start = DateTime.Now;
-        var buildings = GameObject.FindObjectsOfType<BuildingModelInfo>(true);
         int count = buildings.Length;
         for (int i = 0; i < count; i++)
         {
@@ -132,10 +137,14 @@ public class SubSceneManager : MonoBehaviour
     [ContextMenu("* EditorCreateBuildingScenes")]
     public void EditorCreateBuildingScenes()
     {
-        AreaTreeHelper.InitCubePrefab();
-
-        DateTime start = DateTime.Now;
         var buildings = GameObject.FindObjectsOfType<BuildingModelInfo>(true);
+        EditorCreateBuildingScenes(buildings);
+    }
+
+    public void EditorCreateBuildingScenes(BuildingModelInfo[] buildings)
+    {
+        AreaTreeHelper.InitCubePrefab();
+        DateTime start = DateTime.Now;
         int count = buildings.Length;
         for (int i = 0; i < count; i++)
         {
@@ -143,27 +152,12 @@ public class SubSceneManager : MonoBehaviour
             if(item==null)continue;
             float progress = (float)i / count;
             float percents = progress * 100;
-
             if (ProgressBarHelper.DisplayCancelableProgressBar("EditorCreateBuildingScenes", $"Progress1 {i}/{count} {percents:F1}% {item.name}", progress))
             {
                 break;
             }
-
-            //if (IsPartScene)
-            //{
-            //    string dir = GetSceneDir(SceneContentType.Part);
-            //    item.EditorCreatePartScenes(dir, IsOverride);
-            //}
-            //else
-            //{
-            //    SubSceneHelper.EditorCreateScene<SubScene_Single>(item.gameObject, GetScenePath(item.name, SceneContentType.Single),IsOverride);
-            //}
-
             item.EditorCreateScenesEx(this.contentType,(subProgress,si,c)=>
             {
-                //�ӽ���
-
-                //Debug.Log($"EditorCreateBuildingScenes subProgress:{subProgress} || {i}/{subScenes.Length} {percents:F2}% of 100% \t{item.name}");
                 float progress = (float)(i+subProgress) / count;
                 float percents = progress * 100;
                 if (ProgressBarHelper.DisplayCancelableProgressBar("EditorCreateBuildingScenes ", $"Progress2 {(i + subProgress):F1}/{count} {percents:F1}% {item.name}", progress))
@@ -184,7 +178,6 @@ public class SubSceneManager : MonoBehaviour
         }
 
         EditorHelper.RefreshAssets();
-
         WriteLog($"EditorCreateBuildingScenes count:{buildings.Length},\t time:{(DateTime.Now - start).ToString()}");
     }
 
@@ -206,10 +199,15 @@ public class SubSceneManager : MonoBehaviour
     [ContextMenu("* EditorLoadScenes")]
     public void EditorLoadScenes()
     {
+        var buildings = GameObject.FindObjectsOfType<BuildingModelInfo>(true);
+        EditorLoadScenes(buildings);
+    }
+
+    public void EditorLoadScenes(BuildingModelInfo[] buildings)
+    {
         AreaTreeHelper.InitCubePrefab();
 
         DateTime start = DateTime.Now;
-        var buildings = GameObject.FindObjectsOfType<BuildingModelInfo>(true);
         int count = buildings.Length;
         for (int i = 0; i < count; i++)
         {
@@ -248,10 +246,15 @@ public class SubSceneManager : MonoBehaviour
     [ContextMenu("* EditorUnLoadScenes")]
     public void EditorUnLoadScenes()
     {
+        var buildings = GameObject.FindObjectsOfType<BuildingModelInfo>(true);
+        EditorUnLoadScenes(buildings);
+    }
+
+    public void EditorUnLoadScenes(BuildingModelInfo[] buildings)
+    {
         AreaTreeHelper.InitCubePrefab();
 
         DateTime start = DateTime.Now;
-        var buildings = GameObject.FindObjectsOfType<BuildingModelInfo>(true);
         int count = buildings.Length;
         for (int i = 0; i < count; i++)
         {

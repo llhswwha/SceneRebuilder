@@ -45,9 +45,11 @@ public class ListManagerEditorWindow<T1,T2> : EditorWindow where T1 : ListItemEl
 
     protected Vector2 scVector = new Vector2(0, 0);
     protected bool isRetract = false;//是否折叠
-    protected const int pageCount = 16;
+    protected int pageCount = 16;
     protected int pageIndex = 0;
 
+    string[] pageSizeList ={"10","16","50","100","1000","2000","100000"};
+    int pageSizeId=1;
     /// <summary>
     /// 绘制页标
     /// </summary>
@@ -59,15 +61,20 @@ public class ListManagerEditorWindow<T1,T2> : EditorWindow where T1 : ListItemEl
             pages++;
 
         Rect ActualRect = MPGUIStyles.PAGEINDEX_BLOCK;
-        ActualRect.x = MPGUIStyles.PAGEINDEX_BLOCK.x + MPGUIStyles.PAGEINDEX_BLOCK.width - 160 - 35 * pages-70;
+        ActualRect.x = MPGUIStyles.PAGEINDEX_BLOCK.x + MPGUIStyles.PAGEINDEX_BLOCK.width - 160 - 35 * pages-140;
         GUILayout.BeginArea(ActualRect);
         GUILayout.BeginHorizontal();
         if (meshElementList.Count != 0)
         {
+            var index =EditorGUILayout.Popup(pageSizeId, pageSizeList,GUILayout.MaxWidth(70));
+            pageSizeId=index;
+            pageCount=int.Parse(pageSizeList[pageSizeId]);
+
             if (pageIndex == 0)
             {
                 GUI.enabled = false;
             }
+
             if (GUILayout.Button($"{count}", MPGUIStyles.itemBtnStyles_child[0], GUILayout.MaxWidth(70)))
             {
                 

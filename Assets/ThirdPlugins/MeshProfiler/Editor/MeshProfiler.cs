@@ -905,7 +905,8 @@ namespace MeshProfilerNS
 
         private void SelectAsset()
         {
-            string meshPath = meshElementList[SelectIndex].assetPath;
+            var ele=meshElementList[SelectIndex];
+            string meshPath = ele.assetPath;
 
             if (!string.IsNullOrEmpty(meshPath) && !meshPath.Contains("unity default resources"))
             {
@@ -914,7 +915,8 @@ namespace MeshProfilerNS
             }
             else
             {
-                EditorUtility.DisplayDialog("warning", "This mesh is not asset file！", "ok");
+                EditorHelper.SelectObject(ele.rootObj);
+                //EditorUtility.DisplayDialog("warning", "This mesh is not asset file！", "ok");
             }
         }
 
