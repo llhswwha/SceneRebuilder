@@ -1,4 +1,4 @@
-﻿using UnityEngine;
+using UnityEngine;
 using UnityEditor;
 using System.Collections;
 using System.IO;
@@ -13,31 +13,27 @@ using OfficeOpenXml;
 
 namespace MeshProfilerNS
 {
-    public class MeshProfiler 
+    public class GameObjectListMeshEditorWindow 
     : ListManagerEditorWindow<MeshElement,MeshValues>
     //:EditorWindow
     {
-        //[MenuItem("Window/Analysis/Mesh Profiler")]
-        [MenuItem("Window/Mesh Profiler")]
-        public static void ShowWindow()
+        // //[MenuItem("Window/Analysis/Mesh Profiler")]
+        // [MenuItem("Window/Mesh Profiler")]
+        // public static void ShowWindow()
+        // {
+        //     GameObjectListMeshEditorWindow window = (GameObjectListMeshEditorWindow)EditorWindow.GetWindowWithRect(typeof(GameObjectListMeshEditorWindow), new Rect(0, 0, MPGUIStyles.SCREEN_WIDTH, MPGUIStyles.SCREEN_HEIGHT), true, "Mesh Profiler 1.1");
+        //     window.Show();
+        //     window.Init();
+        // }
+
+        public static void ShowWindow(GameObject rootObj,string wndName)
         {
-            MeshProfiler window = (MeshProfiler)EditorWindow.GetWindowWithRect(typeof(MeshProfiler), new Rect(0, 0, MPGUIStyles.SCREEN_WIDTH, MPGUIStyles.SCREEN_HEIGHT), true, "Mesh Profiler 1.1");
+            GameObjectListMeshEditorWindow window = (GameObjectListMeshEditorWindow)EditorWindow.GetWindowWithRect(typeof(GameObjectListMeshEditorWindow), new Rect(0, 0, MPGUIStyles.SCREEN_WIDTH, MPGUIStyles.SCREEN_HEIGHT), true, $"GameObjectList | {wndName} ");
             window.Show();
-            window.Init();
+            window.Init(rootObj);
         }
 
-        public static void ShowWindow(MeshElementType type,MeshFilter[] filters,string wndName)
-        {
-            int count=0;
-            if(filters!=null){
-                count=filters.Length;
-            }
-            MeshProfiler window = (MeshProfiler)EditorWindow.GetWindowWithRect(typeof(MeshProfiler), new Rect(0, 0, MPGUIStyles.SCREEN_WIDTH, MPGUIStyles.SCREEN_HEIGHT), true, $"Mesh Profiler | {wndName} | {count}");
-            window.Show();
-            window.Init(type,filters);
-        }
-
-        string[] tableTitle = new string[] { "name", "Vertex","RefCount", "Triangles", "Normals", "Tangents", "Colors", "UV", "UV2", "UV3", "UV4", "Memory", "Readable", };
+        string[] tableTitle = new string[] { "name", "Vertex","ChildCount", "Triangles", "Normals", "Tangents", "Colors", "UV", "UV2", "UV3", "UV4", "Memory", "Readable", };
         // List<MeshElement> meshElementList = new List<MeshElement>();
         // List<MeshElement> originList = new List<MeshElement>();
 
@@ -185,11 +181,10 @@ namespace MeshProfilerNS
         }
 
         
-
-        public void Init(MeshElementType type,MeshFilter[] filters)
+        public GameObject rootObj;
+        public void Init(GameObject rootObj)
         {
-            this.eleType=type;
-            this.meshFilters=filters;
+            this.rootObj=rootObj;
             Init();
         }
 
@@ -224,7 +219,7 @@ namespace MeshProfilerNS
         void RefleshList()
         {
             meshElementList.Clear();
-            meshElementList.AddRange(MeshFinder.GetMeshElementList(eleType,meshFilters,null));
+            meshElementList.AddRange(MeshFinder.GetMeshElementList(eleType,rootObj));
             // meshElementList.AddRange(MeshFinder.GetMeshElementList(MeshElementType.File));
             // meshElementList.AddRange(MeshFinder.GetMeshElementList(MeshElementType.Asset));
             Debug.Log($"MeshProfiler.RefleshList:{meshElementList.Count}");
@@ -526,13 +521,15 @@ namespace MeshProfilerNS
 
             GUIContent icon_expand_Content = element.isGroup ? MPGUIStyles.icon_down_Content : MPGUIStyles.icon_right_Content;
 
-            if (element.isGroup && GUILayout.Button(isRetract && isSelect ? MPGUIStyles.icon_retract_Contents[1] : MPGUIStyles.icon_retract_Contents[0], isSelect ? MPGUIStyles.icon_tab_Style : MPGUIStyles.icon_tab_normal_Style, MPGUIStyles.options_icon))
+            if (GUILayout.Button(isRetract && isSelect ? MPGUIStyles.icon_retract_Contents[1] : MPGUIStyles.icon_retract_Contents[0], isSelect ? MPGUIStyles.icon_tab_Style : MPGUIStyles.icon_tab_normal_Style, MPGUIStyles.options_icon))
             {
                 SelectIndex = index;
                 isRetract = !isRetract;
                 SelectChildIndex = -1;
             }
-            if (GUILayout.Button(element.name, lineStyle, GUILayout.Height(30), element.isGroup ? GUILayout.Width(200) : GUILayout.Width(220)))
+            GUIStyle nameStyle=new GUIStyle(lineStyle);
+            nameStyle.alignment=TextAnchor.MiddleLeft;
+            if (GUILayout.Button(element.name, nameStyle, GUILayout.Height(30), GUILayout.Width(200) ))
             {
                 if (SelectIndex != index)
                 {
@@ -565,7 +562,7 @@ namespace MeshProfilerNS
                 }
             }
 
-            if (GUILayout.Button(element.refList.Count.ToString(), lineStyle, btnOption))
+            if (GUILayout.Button(element.childList.Count.ToString(), lineStyle, btnOption))
             {
                 if (SelectIndex != index)
                 {
@@ -935,8 +932,17 @@ namespace MeshProfilerNS
             }
             else
             {
-                EditorHelper.SelectObject(ele.rootObj);
+                //EditorHelper.SelectObject(ele.rootObj);
                 //EditorUtility.DisplayDialog("warning", "This mesh is not asset file！", "ok");
+                if (selectChildIndex >= 0)
+                {
+                    EditorHelper.SelectObject(ele.childList[selectChildIndex].obj);
+                }
+                else
+                {
+                    EditorHelper.SelectObject(ele.rootObj);
+                }
+                    
             }
         }
 
@@ -1122,7 +1128,7 @@ namespace MeshProfilerNS
             GUILayout.EndArea();
         }
         public MeshFilter[] meshFilters;
-        public MeshElementType eleType=MeshElementType.Mesh;
+        public MeshElementType eleType=MeshElementType.GameObject;
         /// <summary>
         /// 绘制图表
         /// </summary>
@@ -1166,101 +1172,6 @@ namespace MeshProfilerNS
 
         }
 
-        ///// <summary>
-        ///// 绘制数据
-        ///// </summary>
-        //void DrawDataBlock(string[] titles,float[] values)
-        //{
-        //    GUI.Box(MPGUIStyles.BorderArea(MPGUIStyles.DATA_BLOCK), "");
-        //    int modelCount = dataChart.modelCount;
-        //    if (modelCount == 0)
-        //    {
-        //        modelCount = 1;
-        //    }
-        //    GUILayout.BeginArea(MPGUIStyles.BorderArea(MPGUIStyles.DATA_BLOCK, 5));
-        //    GUILayout.Label("Data Panel", MPGUIStyles.centerStyle);
-
-        //    // GUILayout.Space(10);
-        //    GUILayout.BeginHorizontal();
-        //    GUILayout.Label("Model Count", MPGUIStyles.dataAreaStyle, GUILayout.Width(295));
-        //    GUILayout.Space(5);
-        //    GUILayout.Label(dataChart.modelCount.ToString(), MPGUIStyles.dataAreaStyle, GUILayout.Width(295));
-        //    GUILayout.EndHorizontal();
-
-        //    for (int i=0;i<titles.Length && i<values.Length;i++)
-        //    {
-        //        GUILayout.Space(5);
-        //        GUILayout.BeginHorizontal();
-        //        GUILayout.Label(titles[i], MPGUIStyles.dataAreaStyle, GUILayout.Width(295));
-        //        GUILayout.Space(5);
-        //        GUILayout.Label(values[i] + " [" + (int)((float)values[i] / modelCount * 100) + "%]", MPGUIStyles.dataAreaStyle, GUILayout.Width(295));
-        //        GUILayout.EndHorizontal();
-        //    }
-
-        //    string[] titles2 = new string[6];
-        //    float[] values2 = new float[6];
-
-        //    //// GUILayout.Space(10);
-        //    //GUILayout.BeginHorizontal();
-        //    //GUILayout.Label("Model Count", MPGUIStyles.dataAreaStyle, GUILayout.Width(295));
-        //    //GUILayout.Space(5);
-        //    //GUILayout.Label(dataChart.modelCount.ToString(), MPGUIStyles.dataAreaStyle, GUILayout.Width(295));
-        //    //GUILayout.EndHorizontal();
-
-        //    //1
-        //    //GUILayout.Space(5);
-        //    //GUILayout.BeginHorizontal();
-        //    //GUILayout.Label("Asset Count", MPGUIStyles.dataAreaStyle, GUILayout.Width(295));
-        //    //GUILayout.Space(5);
-        //    //GUILayout.Label(dataChart.assetCount.ToString() + " [" + (int)((float)dataChart.assetCount / modelCount * 100) + "%]", MPGUIStyles.dataAreaStyle, GUILayout.Width(295));
-        //    //GUILayout.EndHorizontal();
-
-        //    //2
-        //    //GUILayout.Space(5);
-        //    //GUILayout.BeginHorizontal();
-        //    //GUILayout.Label("Normals", MPGUIStyles.dataAreaStyle, GUILayout.Width(295));
-        //    //GUILayout.Space(5);
-        //    //GUILayout.Label(dataChart.normalCount.ToString() + " [" + (int)((float)dataChart.normalCount / modelCount * 100) + "%]", MPGUIStyles.dataAreaStyle, GUILayout.Width(295));
-        //    //GUILayout.EndHorizontal();
-
-        //    //3
-        //    //GUILayout.Space(5);
-        //    //GUILayout.BeginHorizontal();
-        //    //GUILayout.Label("Tangents", MPGUIStyles.dataAreaStyle, GUILayout.Width(295));
-        //    //GUILayout.Space(5);
-        //    //GUILayout.Label(dataChart.tangentCount.ToString() + " [" + (int)((float)dataChart.tangentCount / modelCount * 100) + "%]", MPGUIStyles.dataAreaStyle, GUILayout.Width(295));
-        //    //GUILayout.EndHorizontal();
-
-        //    //4
-        //    //GUILayout.Space(5);
-        //    //GUILayout.BeginHorizontal();
-        //    //GUILayout.Label("Colors", MPGUIStyles.dataAreaStyle, GUILayout.Width(295));
-        //    //GUILayout.Space(5);
-        //    //GUILayout.Label(dataChart.colorCount.ToString() + " [" + (int)((float)dataChart.colorCount / modelCount * 100) + "%]", MPGUIStyles.dataAreaStyle, GUILayout.Width(295));
-        //    //GUILayout.EndHorizontal();
-
-        //    //5
-        //    //GUILayout.Space(5);
-        //    //GUILayout.BeginHorizontal();
-        //    //GUILayout.Label("UV3,UV4", MPGUIStyles.dataAreaStyle, GUILayout.Width(295));
-        //    //GUILayout.Space(5);
-        //    //GUILayout.Label(dataChart.UVXCount.ToString() + " [" + (int)((float)dataChart.UVXCount / modelCount * 100) + "%]", MPGUIStyles.dataAreaStyle, GUILayout.Width(295));
-        //    //GUILayout.EndHorizontal();
-
-        //    //6
-        //    //GUILayout.Space(5);
-        //    //GUILayout.BeginHorizontal();
-        //    //GUILayout.Label("Readable", MPGUIStyles.dataAreaStyle, GUILayout.Width(295));
-        //    //GUILayout.Space(5);
-        //    //GUILayout.Label(dataChart.readableCount.ToString() + " [" + (int)((float)dataChart.readableCount / modelCount * 100) + "%]", MPGUIStyles.dataAreaStyle, GUILayout.Width(295));
-        //    //GUILayout.EndHorizontal();
-
-
-
-        //    GUILayout.EndArea();
-
-
-        //}
         /// <summary>
         /// 绘制数据
         /// </summary>
@@ -1326,37 +1237,6 @@ namespace MeshProfilerNS
 
 
         }
-    }
-
-    class MeshDataClass
-    {
-        public int modelCount = 0;
-        public int assetCount = 0;
-        public int normalCount = 0;
-        public int tangentCount = 0;
-        public int colorCount = 0;
-        public int UVXCount = 0;
-        public int readableCount = 0;
-        public void Reset()
-        {
-            modelCount = 0;
-            assetCount = 0;
-            normalCount = 0;
-            tangentCount = 0;
-            colorCount = 0;
-            UVXCount = 0;
-            readableCount = 0;
-        }
-    }
-
-    enum MeshSortWays
-    {
-        SortByVertNum,
-        SortByRefNum,
-        SortByVertsMultiplyRefCount,
-        SortByTriangles,
-        SortByName,
-        SortByMemory
     }
 }
 

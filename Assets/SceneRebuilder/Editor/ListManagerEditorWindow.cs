@@ -20,6 +20,7 @@ public class ListManagerEditorWindow<T1,T2> : EditorWindow where T1 : ListItemEl
     /// <param name="obj"></param>
     protected void InitPreview(UnityEngine.Object obj)
     {
+        Debug.Log($"InitPreview:{obj}");
         if (previewEditor != null)
         {
             DestroyImmediate(previewEditor);

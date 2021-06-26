@@ -1158,12 +1158,8 @@ public class SceneRebuildEditorWindow : ListManagerEditorWindow<BuildingModelEle
                 }
                 if (isSelect && GUILayout.Button(MPGUIStyles.icon_right_Content, MPGUIStyles.icon_tab_Style, MPGUIStyles.options_icon))
                 {
-                    if (element.isGroup)
-                        isRetract = !isRetract;
-                    else
-                    {
-                        ShowDataList.AddWindow(meshValueRoot.GetVerticsStr(), "Vertices" + "-" + element.name);
-                    }
+                    //MeshFilter[] filters = element.rootObj.GetComponentsInChildren<MeshFilter>(true);
+                    GameObjectListMeshEditorWindow.ShowWindow(element.rootObj,element.name);
                 }
             }
             else{

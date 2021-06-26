@@ -107,7 +107,8 @@ namespace MeshProfilerNS
                 }
                 else
                 {
-                    name = filters[0].sharedMesh.name + "_InsID=" + filters[0].sharedMesh.GetInstanceID();
+                    //name = filters[0].sharedMesh.name + "_InsID=" + filters[0].sharedMesh.GetInstanceID();
+                    name = rootObj.name;
                 }
                 rootMeshValue.parentName = name;
                 for (int i = 0; i < filters.Count; i++)
@@ -115,6 +116,7 @@ namespace MeshProfilerNS
                     if (filters[i].sharedMesh != null)
                     {
                         MeshValues value = new MeshValues(filters[i].sharedMesh);
+                        value.obj=filters[i].gameObject;
                         value.parentName = name;
                         childList.Add(value);
                         rootMeshValue += value;
@@ -180,6 +182,7 @@ namespace MeshProfilerNS
 
     public class MeshValues : ListItemElementValues
     {
+        public GameObject obj=null;
         public string parentName = "";
         public Mesh mesh = null;
         public int vertCount = 0;
@@ -346,17 +349,90 @@ namespace MeshProfilerNS
 
     public enum MeshElementType
     {
-        File,Asset,Mesh
+        File,Asset,Mesh,GameObject
     }
 
     public class MeshFinder
     {
-        
+        public static List<MeshElement> GetMeshElementList(MeshElementType type,GameObject rootObj)
+        {
+            MeshFilter[] filters = rootObj.GetComponentsInChildren<MeshFilter>(true);
+            return GetMeshElementList(type,filters,rootObj);
+        }
+
         public static List<MeshElement> GetMeshElementList(MeshElementType type)
         {
-            Dictionary<string, MeshElement> meshDataDict = new Dictionary<string, MeshElement>();
             MeshFilter[] filters = GameObject.FindObjectsOfType<MeshFilter>(true);
-            Debug.Log($"MeshFinder.GetMeshElementList filters:{filters.Length}");
+            return GetMeshElementList(type,filters,null);
+        }
+
+        private static string GetPath(Transform t,int maxlevel)
+        {
+            if(t.parent==null || maxlevel <= 0 ){
+                return t.name;
+            }
+            else{
+                return GetPath(t.parent,maxlevel-1)+"/"+t.name;
+            }
+        }
+
+        private static string GetRelativePath(Transform t,Transform root,int level)
+        {
+            List<string> path=new List<string>();
+            GetRelativePath(t.parent,root,path);
+            path.Reverse();
+            string r="";
+            for (int i = 0; i < path.Count && i<level; i++)
+            {
+                string p = path[i];
+                r +=p+"/";
+            }
+            return r;
+        }
+
+        private static void GetRelativePath(Transform t,Transform root,List<string> path)
+        {
+            path.Add(t.name);
+            if(t.parent==null || t.parent==root ){
+                return ;
+            }
+            else{
+                GetRelativePath(t.parent,root,path);
+            }
+        }
+
+        private static Transform GetParent(Transform t,Transform root,int level)
+        {
+            List<Transform> path=new List<Transform>();
+            GetParent(t.parent,root,path);
+            path.Reverse();
+            Transform p=null;
+            for (int i = 0; i < path.Count && i<level; i++)
+            {
+                p = path[i];
+            }
+            return p;
+        }
+
+        private static void GetParent(Transform t,Transform root,List<Transform> path)
+        {
+            path.Add(t);
+            if(t.parent==null || t.parent==root ){
+                return ;
+            }
+            else{
+                GetParent(t.parent,root,path);
+            }
+        }
+
+        public static List<MeshElement> GetMeshElementList(MeshElementType type,MeshFilter[] filters,GameObject rootObj)
+        {
+            if(filters==null||filters.Length==0){
+                filters = GameObject.FindObjectsOfType<MeshFilter>(true);
+            }
+            Dictionary<string, MeshElement> meshDataDict = new Dictionary<string, MeshElement>();
+            //MeshFilter[] filters = GameObject.FindObjectsOfType<MeshFilter>(true);
+            Debug.Log($"MeshFinder.GetMeshElementList filters:{filters.Length},rootObj:{rootObj}");
             int oldInstanceID = -1;
             int errorMesh=0;
             int count1=0;
@@ -418,6 +494,29 @@ namespace MeshProfilerNS
                         }
                         count1++;
                     }
+                    else if(type==MeshElementType.GameObject)
+                    {
+                        string path=GetRelativePath(filters[i].gameObject.transform,rootObj.transform,2);
+                        if (!meshDataDict.ContainsKey(path))
+                        {
+                            MeshElement element = new MeshElement(filters[i].gameObject, false);
+                            meshDataDict.Add(path, element);
+                            element.refList.Add(filters[i].gameObject);
+                            element.AllVertsNum += filters[i].sharedMesh.vertexCount;
+
+                            element.name=path;
+                            element.rootObj=GetParent(filters[i].gameObject.transform,rootObj.transform,2).gameObject;
+                            //element.name=element.rootObj.name;
+                            element.isGroup=true;
+                        }
+                        else
+                        {
+
+                            MeshElement element = meshDataDict[path];
+                            element.refList.Add(filters[i].gameObject);
+                            element.AllVertsNum += filters[i].sharedMesh.vertexCount;
+                        }
+                    }
                     else
                     {
                         // Debug.Log($"MeshFinder.GetMeshElementList2 i:{i} meshDataDict:{meshDataDict.Count} assetPath:{assetPath}");
@@ -437,7 +536,6 @@ namespace MeshProfilerNS
                             MeshElement element = meshDataDict[id];
                             element.refList.Add(filters[i].gameObject);
                             element.AllVertsNum += filters[i].sharedMesh.vertexCount;
-
                         }
 
                     }
@@ -447,8 +545,8 @@ namespace MeshProfilerNS
                     Debug.Log($"Exception:{ex}");
                 }
             }
-            Debug.Log($"count1:{count1}");
-            Debug.Log($"count2:{count2}");
+            // Debug.Log($"count1:{count1}");
+            // Debug.Log($"count2:{count2}");
             Debug.Log($"errorMesh:{errorMesh}");
             Debug.Log($"meshDataDict:{meshDataDict.Count}");
             
@@ -499,6 +597,8 @@ namespace MeshProfilerNS
                         meshDataDict.Add(id, element);
                         element.refList.Add(skins[i].gameObject);
                         element.AllVertsNum += skins[i].sharedMesh.vertexCount;
+
+                       
                     }
 
                     else
@@ -515,8 +615,21 @@ namespace MeshProfilerNS
             List<MeshElement> meshDataList = new List<MeshElement>();
             foreach (string key in meshDataDict.Keys)
             {
-                meshDataDict[key].AllVertsNum = meshDataDict[key].rootMeshValue.vertCount * meshDataDict[key].refList.Count;
-                meshDataList.Add(meshDataDict[key]);
+                var ele=meshDataDict[key];
+                if(type==MeshElementType.GameObject)
+                {
+                    if(ele.rootObj.transform.parent==rootObj.transform){
+                        continue;
+                    }
+                    var eleNew=new MeshElement(ele.rootObj,false,false);
+                     meshDataList.Add(eleNew);
+                     eleNew.name=ele.name;
+                     //eleNew.name=GetRelativePath(ele.rootObj.transform,rootObj.transform,3);
+                }
+                else{
+                    ele.AllVertsNum = ele.rootMeshValue.vertCount * ele.refList.Count;
+                    meshDataList.Add(ele);
+                }
             }
             return meshDataList;
         }
