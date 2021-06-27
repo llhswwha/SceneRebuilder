@@ -50,6 +50,10 @@ namespace MeshProfilerNS
         public static GUIStyle centerStyle=new GUIStyle();
         public static List<Texture2D> texList=new List<Texture2D>();
 
+        public static int tableItemWidthShort = 60;
+        public static int tableIconWidth = 20;
+        public static int tableItemWidthLong = 80;// itemWidth+ itemIconWidth;
+
         public static void InitGUIStyles()
         {
             texList.Clear();
@@ -100,13 +104,14 @@ namespace MeshProfilerNS
             TransparentTextField = new GUIStyle(EditorStyles.whiteLabel);
             TransparentTextField.normal.textColor = EditorStyles.textField.normal.textColor;
 
-            options_none = new GUILayoutOption[2] { GUILayout.Width(80), GUILayout.Height(30) };
-            options_exist = new GUILayoutOption[2] { GUILayout.Width(60), GUILayout.Height(30) };
-            options_icon = new GUILayoutOption[2] { GUILayout.Width(20), GUILayout.Height(23) };
 
-            options_child_none = new GUILayoutOption[2] { GUILayout.Width(80), GUILayout.Height(25) };
-            options_child_exist = new GUILayoutOption[2] { GUILayout.Width(60), GUILayout.Height(25) };
-            options_child_icon = new GUILayoutOption[2] { GUILayout.Width(20), GUILayout.Height(20) };
+            options_none = new GUILayoutOption[2] { GUILayout.Width(tableItemWidthLong), GUILayout.Height(30) };
+            options_exist = new GUILayoutOption[2] { GUILayout.Width(tableItemWidthShort), GUILayout.Height(30) };
+            options_icon = new GUILayoutOption[2] { GUILayout.Width(tableIconWidth), GUILayout.Height(23) };
+
+            options_child_none = new GUILayoutOption[2] { GUILayout.Width(tableItemWidthLong), GUILayout.Height(25) };
+            options_child_exist = new GUILayoutOption[2] { GUILayout.Width(tableItemWidthShort), GUILayout.Height(25) };
+            options_child_icon = new GUILayoutOption[2] { GUILayout.Width(tableIconWidth), GUILayout.Height(20) };
 
             icon_down_Content = EditorGUIUtility.IconContent("Icon Dropdown");
             icon_right_Content = EditorGUIUtility.IconContent("Clipboard");

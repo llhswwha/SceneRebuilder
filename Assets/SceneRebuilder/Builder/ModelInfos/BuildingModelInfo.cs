@@ -128,6 +128,11 @@ public class BuildingModelInfo : MonoBehaviour
     public int AllRendererCount = 0;
     public float AllVertextCount = 0;
 
+    public float Out0BigVertextCount = 0;
+    public float Out0SmallVertextCount = 0;
+    public int Out0BigRendererCount = 0;
+    public int Out0SmallRendererCount = 0;
+
     public void ClearTrees()
     {
         var oldTrees = this.GetComponentsInChildren<ModelAreaTree>(true);
@@ -135,53 +140,6 @@ public class BuildingModelInfo : MonoBehaviour
         {
             GameObject.DestroyImmediate(oldT.gameObject);
         }
-    }
-
-    [ContextMenu("OneKey")]
-    public void OneKey()
-    {
-        OneKey(p =>
-        {
-            ProgressBarHelper.DisplayProgressBar("OneKey", $"Progress:{p:P2}", p);
-        });
-        ProgressBarHelper.ClearProgressBar();
-    }
-
-    public void OneKey(Action<float> progressChanged)
-    {
-        DateTime start = DateTime.Now;
-        if (progressChanged!=null)
-        {
-            progressChanged(0 / 3f);
-        }
-        InitInOut();
-        if (progressChanged != null)
-        {
-            progressChanged(1 / 3f);
-        }
-        CreateTreesInnerEx(true,subP=>
-        {
-            if (progressChanged != null)
-            {
-                progressChanged((1+subP) / 3f);
-            }
-        });
-        if (progressChanged != null)
-        {
-            progressChanged(2 / 3f);
-        }
-        EditorCreateScenes_TreeWithPart((subP,i,c) =>
-        {
-            if (progressChanged != null)
-            {
-                progressChanged((2 + subP) / 3f);
-            }
-        });
-        if (progressChanged != null)
-        {
-            progressChanged(3 / 3f);
-        }
-        Debug.LogError($"BuildingModelInfo.OneKey Time:{(DateTime.Now - start).ToString()}");
     }
 
     [ContextMenu("SaveTreeRendersId")]
@@ -496,6 +454,28 @@ public class BuildingModelInfo : MonoBehaviour
         HideDetail();
 
         //var manager=GameObject.FindObjectOfType<>
+
+        GetBigSmallInfo();
+    }
+
+    private static AcRTAlignJobSetting JobSetting;
+
+    private void GetBigSmallInfo()
+    {
+        JobSetting =GameObject.FindObjectOfType<AcRTAlignJobSetting>(true);
+        if (JobSetting == null)
+        {
+            Debug.LogError("GetSmallBigInfo JobSetting == null");
+            return;
+        }
+        var meshFilters = OutPart0.GetComponentsInChildren<MeshFilter>(true);
+        var info=PrefabInstanceBuilder.GetBigSmallRenderers(meshFilters, JobSetting.MaxModelLength);
+
+        Out0BigRendererCount = info.bigModels.Count;
+        Out0BigVertextCount = info.sumVertex_Big;
+        Out0SmallRendererCount = info.smallModels.Count;
+        Out0SmallVertextCount = info.sumVertex_Small;
+        
     }
 
     private void GetInOutParts()
@@ -975,7 +955,52 @@ public class BuildingModelInfo : MonoBehaviour
 
 #if UNITY_EDITOR
 
+    [ContextMenu("OneKey")]
+    public void OneKey()
+    {
+        OneKey(p =>
+        {
+            ProgressBarHelper.DisplayProgressBar("OneKey", $"Progress:{p:P2}", p);
+        });
+        ProgressBarHelper.ClearProgressBar();
+    }
 
+    public void OneKey(Action<float> progressChanged)
+    {
+        DateTime start = DateTime.Now;
+        if (progressChanged != null)
+        {
+            progressChanged(0 / 3f);
+        }
+        InitInOut();
+        if (progressChanged != null)
+        {
+            progressChanged(1 / 3f);
+        }
+        CreateTreesInnerEx(true, subP =>
+        {
+            if (progressChanged != null)
+            {
+                progressChanged((1 + subP) / 3f);
+            }
+        });
+        if (progressChanged != null)
+        {
+            progressChanged(2 / 3f);
+        }
+        EditorCreateScenes_TreeWithPart((subP, i, c) =>
+        {
+            if (progressChanged != null)
+            {
+                progressChanged((2 + subP) / 3f);
+            }
+        });
+        if (progressChanged != null)
+        {
+            progressChanged(3 / 3f);
+        }
+        Debug.LogError($"BuildingModelInfo.OneKey Time:{(DateTime.Now - start).ToString()}");
+    }
 
     private void InitSceneListGO()
     {

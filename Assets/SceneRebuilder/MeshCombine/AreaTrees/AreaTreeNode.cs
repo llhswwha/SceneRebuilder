@@ -575,7 +575,15 @@ public class AreaTreeNode : MonoBehaviour
         var renderers=this.Renderers;
          foreach(var render in renderers)
         {
-            var pos=render.transform.position;
+            //var pos=render.transform.position;
+            MeshRendererInfo renderInfo = render.GetComponent<MeshRendererInfo>();
+            if (renderInfo == null)
+            {
+                renderInfo = render.gameObject.AddComponent<MeshRendererInfo>();
+                renderInfo.Init();
+            }
+            var pos = renderInfo.center;  //position not center
+
             foreach(AreaTreeNode node in nodes)
             {
                 if(node.Bounds.Contains(pos))

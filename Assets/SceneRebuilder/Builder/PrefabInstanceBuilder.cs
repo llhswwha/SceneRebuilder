@@ -1023,30 +1023,39 @@ break;
     }
 
     [ContextMenu("TestGetBigSmallRenderers")]
-    private void TestGetBigSmallRenderers()
+    private BigSmallListInfo TestGetBigSmallRenderers()
     {
-        List<MeshRenderer> bigModels=new List<MeshRenderer>();
-        List<MeshRenderer> smallModels=new List<MeshRenderer>();
+        //List<MeshRenderer> bigModels=new List<MeshRenderer>();
+        //List<MeshRenderer> smallModels=new List<MeshRenderer>();
         if(JobSetting==null){
             JobSetting=this.GetComponent<AcRTAlignJobSetting>();
         }
         var meshFilters=GetMeshFilters();
-        GetBigSmallRenderers(meshFilters,bigModels,smallModels,JobSetting.MaxModelLength);
+        return GetBigSmallRenderers(meshFilters,JobSetting.MaxModelLength);
     }
 
     // [ContextMenu("GetBigSmallRenderers")]
-    public void GetBigSmallRenderers(List<MeshRenderer> bigModels,List<MeshRenderer> smallModels)
+    public BigSmallListInfo GetBigSmallRenderers()
     {
         if(JobSetting==null){
             JobSetting=this.GetComponent<AcRTAlignJobSetting>();
         }
         var meshFilters=GetMeshFilters();
-        GetBigSmallRenderers(meshFilters,bigModels,smallModels,JobSetting.MaxModelLength);
+        return GetBigSmallRenderers(meshFilters,JobSetting.MaxModelLength);
+    }
+
+    public class BigSmallListInfo
+    {
+        public List<MeshRenderer> bigModels = new List<MeshRenderer>();
+        public List<MeshRenderer> smallModels = new List<MeshRenderer>();
+        public float sumVertex_Big = 0;
+        public float sumVertex_Small = 0;
     }
 
     // [ContextMenu("GetBigSmallRenderers")]
-    public static void GetBigSmallRenderers(MeshFilter[] meshFilters,List<MeshRenderer> bigModels,List<MeshRenderer> smallModels,float maxLength)
+    public static BigSmallListInfo GetBigSmallRenderers(MeshFilter[] meshFilters,float maxLength)
     {
+        BigSmallListInfo info = new BigSmallListInfo();
         DateTime start=DateTime.Now;
         //var meshFilters=GetMeshFilters();
         // float minCount=float.MaxValue;
@@ -1058,6 +1067,8 @@ break;
         // List<MeshRenderer> bigModels=new List<MeshRenderer>();
         // List<MeshRenderer> smallModels=new List<MeshRenderer>();
         //foreach(MeshFilter mf in meshFilters)
+        int sumVertex_Big = 0;
+        int sumVertex_Small = 0;
         for(int i=0;i<meshFilters.Length;i++)
         {
             MeshFilter mf=meshFilters[i];
@@ -1072,7 +1083,6 @@ break;
             //    //ProgressBarHelper.ClearProgressBar();
             //    break;
             //} 
-
             Bounds bounds = mf.sharedMesh.bounds;
             Vector3 scale = mf.transform.lossyScale;
             scale = new Vector3(Mathf.Abs(scale.x), Mathf.Abs(scale.y), Mathf.Abs(scale.y));
@@ -1099,16 +1109,20 @@ break;
             MeshRenderer mr=mf.GetComponent<MeshRenderer>();
             if(length<maxLength)
             {
-                smallModels.Add(mr);
+                info.smallModels.Add(mr);
+                sumVertex_Small += mf.sharedMesh.vertexCount;
             }
             else{
-                bigModels.Add(mr);
+                info.bigModels.Add(mr);
+                sumVertex_Big += mf.sharedMesh.vertexCount;
             }
         }
 
         //ProgressBarHelper.ClearProgressBar();
-
-        Debug.LogWarning($"GetBigSmallRenderers maxLength:{maxLength},bigModels:{bigModels.Count},smallModels:{smallModels.Count},Renderers:{meshFilters.Length},Time:{(DateTime.Now-start).TotalMilliseconds:F1}ms");
+        info.sumVertex_Small = sumVertex_Small/10000f;
+        info.sumVertex_Big = sumVertex_Big / 10000f;
+        Debug.LogWarning($"GetBigSmallRenderers maxLength:{maxLength},bigModels:{info.bigModels.Count},smallModels:{info.smallModels.Count},bigVertex:{info.sumVertex_Big},smallVertex:{info.sumVertex_Small},Renderers:{meshFilters.Length},Time:{(DateTime.Now-start).TotalMilliseconds:F1}ms");
+        return info;
     }
 
     // public float MaxModelLength=1.2f;

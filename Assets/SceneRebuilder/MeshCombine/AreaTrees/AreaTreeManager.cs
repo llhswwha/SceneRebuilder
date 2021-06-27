@@ -469,21 +469,18 @@ public class AreaTreeManager : MonoBehaviour
 
         DateTime start = DateTime.Now;
 
-        List<MeshRenderer> bigModels = new List<MeshRenderer>();
-        List<MeshRenderer> smallModels = new List<MeshRenderer>();
-
         prefabInstanceBuilder.IsCopyTargetRoot = this.IsCopy;
         prefabInstanceBuilder.TargetRoots = target;
-        prefabInstanceBuilder.GetBigSmallRenderers(bigModels, smallModels);
+        var bigSmallInfo=prefabInstanceBuilder.GetBigSmallRenderers();
 
         if (progressChanged!=null)
         {
             progressChanged(0);
         }
         ModelAreaTree tree2 = null;
-        if (smallModels.Count>0)
+        if (bigSmallInfo.smallModels.Count>0)
         {
-            tree2 = CreateTree(target, isCombine, "_SamllTree", smallModels.ToArray(),p=>
+            tree2 = CreateTree(target, isCombine, "_SamllTree", bigSmallInfo.smallModels.ToArray(),p=>
             {
                 if (progressChanged != null)
                 {
@@ -509,9 +506,9 @@ public class AreaTreeManager : MonoBehaviour
             progressChanged(0.5f);
         }
         ModelAreaTree tree1 = null;
-        if (bigModels.Count>0)
+        if (bigSmallInfo.bigModels.Count>0)
         {
-            tree1 = CreateTree(target, isCombine, "_BigTree", bigModels.ToArray(), p =>
+            tree1 = CreateTree(target, isCombine, "_BigTree", bigSmallInfo.bigModels.ToArray(), p =>
             {
                 if (progressChanged != null)
                 {

@@ -1,4 +1,5 @@
 using MeshProfilerNS;
+using System;
 using System.Collections;
 using System.Collections.Generic;
 using System.IO;
@@ -53,8 +54,8 @@ public class SceneRebuildEditorWindow : ListManagerEditorWindow<BuildingModelEle
         }
     }
 
-    string[] tableTitle = new string[] { "Name", "Vertex", "Renderer", "Vert_In", "Vert_Out0", "Vert_Out1", "Rend_In",
-        "Rend_Out0", "Rend_Out1", "Parts", "Trees", "Scenes", "Finished", };
+    string[] tableTitle = new string[] { "Name", "Vertex", "Renderer", "VertIn", "VtOut1", "VtOut0","VtOut0B","VtOut0S", "RenderIn",
+        "RdOut1", "RdOut0","RdOut0B","RdOut0S", "P", "T", "S", "F", };
 
     //Setting��������
     static int minVertNum = 0;
@@ -94,6 +95,7 @@ public class SceneRebuildEditorWindow : ListManagerEditorWindow<BuildingModelEle
         sum = 0;
         for (int i = 0; i < originList.Count; i++)
         {
+            if (originList[i].name.Contains("统计")) continue;
             var vc = originList[i].rootMeshValue.AllVertextCount;
             if (vc < LevelNum[1] && vc >= LevelNum[0])
             {
@@ -147,6 +149,7 @@ public class SceneRebuildEditorWindow : ListManagerEditorWindow<BuildingModelEle
         //dataChart.modelCount = meshElementList.Count;
         for (int i = 0; i < meshElementList.Count; i++)
         {
+            if (meshElementList[i].name.Contains("统计")) continue;
             var values = meshElementList[i].rootMeshValue;
             dataChart.AllRendererCount += values.AllRendererCount;
             dataChart.AllVertextCount += values.AllVertextCount;
@@ -192,11 +195,17 @@ public class SceneRebuildEditorWindow : ListManagerEditorWindow<BuildingModelEle
         //meshElementList.AddRange(MeshFinder.GetMeshElementList());
         
         var buildings = GameObject.FindObjectsOfType<BuildingModelInfo>(true);
-        foreach(var b in buildings)
+
+        BuildingModelElement sumEle = new BuildingModelElement(null);
+        sumEle.name = "统计_求和";
+        meshElementList.Add(sumEle);
+
+        foreach (var b in buildings)
         {
             if (b == null) continue;
             BuildingModelElement ele = new BuildingModelElement(b);
             meshElementList.Add(ele);
+            sumEle.rootMeshValue.Add(ele.rootMeshValue);
 
             if (b.InPart)
             {
@@ -442,6 +451,24 @@ public class SceneRebuildEditorWindow : ListManagerEditorWindow<BuildingModelEle
                         list[j + 1] = temp;
                     }
                 }
+                else if (sortways == BuildingSortWays.SortByRend_Out0S)
+                {
+                    if (values1.Out0SmallRendererCount < values2.Out0SmallRendererCount)
+                    {
+                        BuildingModelElement temp = list[j];
+                        list[j] = list[j + 1];
+                        list[j + 1] = temp;
+                    }
+                }
+                else if (sortways == BuildingSortWays.SortByRend_Out0B)
+                {
+                    if (values1.Out0BigRendererCount < values2.Out0BigRendererCount)
+                    {
+                        BuildingModelElement temp = list[j];
+                        list[j] = list[j + 1];
+                        list[j + 1] = temp;
+                    }
+                }
                 else if (sortways == BuildingSortWays.SortByRend_Out1)
                 {
                     if (values1.Out1RendererCount < values2.Out1RendererCount)
@@ -463,6 +490,24 @@ public class SceneRebuildEditorWindow : ListManagerEditorWindow<BuildingModelEle
                 else if (sortways == BuildingSortWays.SortByVertex_Out0)
                 {
                     if (values1.Out0VertextCount < values2.Out0VertextCount)
+                    {
+                        BuildingModelElement temp = list[j];
+                        list[j] = list[j + 1];
+                        list[j + 1] = temp;
+                    }
+                }
+                else if (sortways == BuildingSortWays.SortByVertex_Out0B)
+                {
+                    if (values1.Out0BigVertextCount < values2.Out0BigVertextCount)
+                    {
+                        BuildingModelElement temp = list[j];
+                        list[j] = list[j + 1];
+                        list[j + 1] = temp;
+                    }
+                }
+                else if (sortways == BuildingSortWays.SortByVertex_Out0S)
+                {
+                    if (values1.Out0SmallVertextCount < values2.Out0SmallVertextCount)
                     {
                         BuildingModelElement temp = list[j];
                         list[j] = list[j + 1];
@@ -906,6 +951,10 @@ public class SceneRebuildEditorWindow : ListManagerEditorWindow<BuildingModelEle
 
     }
 
+    int width1 = 66;
+    int width2 = 40;
+    int width3 = 50;
+
     /// <summary>
     /// �����б����
     /// </summary>
@@ -952,8 +1001,21 @@ public class SceneRebuildEditorWindow : ListManagerEditorWindow<BuildingModelEle
                 stytle = new GUIStyle(tableHeadStyle);
                 stytle.normal.textColor = new Color(0, 0, 1);
             }
-            
-            GUILayout.Label(tableHeaderName, stytle, i == 0 ? GUILayout.Width(220) : GUILayout.Width(80));
+            GUILayoutOption option = GUILayout.Width(width1);
+            if (i == 0)
+            {
+                option = GUILayout.Width(220);
+            }
+            else if (i == tableTitle.Length - 1)
+            {
+                option = GUILayout.Width(width3);
+            }
+            else if(i>=tableTitle.Length-4)
+            {
+                option = GUILayout.Width(width2);
+            }
+
+            GUILayout.Label(tableHeaderName, stytle, option);
         }
         GUILayout.EndHorizontal();
         GUILayout.Space(5);
@@ -1006,10 +1068,7 @@ public class SceneRebuildEditorWindow : ListManagerEditorWindow<BuildingModelEle
         else if (v is float)
         {
             float f = (float)v;
-            if (f == 0)
-            {
-                t = "-";
-            }
+
             if (f > 400)
             {
                 style.normal.textColor = new Color(1, 0, 0);
@@ -1030,7 +1089,23 @@ public class SceneRebuildEditorWindow : ListManagerEditorWindow<BuildingModelEle
             {
 
             }
-            t = f.ToString("F1");
+            if (f < 10)
+            {
+                t = f.ToString("F2");
+            }
+            else if (f < 100)
+            {
+                t = f.ToString("F1");
+            }
+            else
+            {
+                t = f.ToString("F0");
+            }
+            
+            if (f == 0)
+            {
+                t = "-";
+            }
         }
         else if (v is bool)
         {
@@ -1063,7 +1138,7 @@ public class SceneRebuildEditorWindow : ListManagerEditorWindow<BuildingModelEle
         GUIContent icon_expand_Content = element.isGroup ? MPGUIStyles.icon_down_Content : MPGUIStyles.icon_right_Content;
 
         GUIStyle nameStyle = new GUIStyle(lineStyle);
-        if (element.rootObj.activeInHierarchy == false)
+        if (element.rootObj!=null && element.rootObj.activeInHierarchy == false)
         {
             nameStyle.normal.textColor = new Color(0.4f, 0.4f, 0.4f);
         }
@@ -1122,32 +1197,29 @@ public class SceneRebuildEditorWindow : ListManagerEditorWindow<BuildingModelEle
             GUIStyle style = new GUIStyle(nameStyle);
             string vt = GetValue(v,style);
 
-            
-            //if (v == "True")
-            //{
-            //    style = new GUIStyle(lineStyle);
-            //    style.normal.textColor = new Color(0, 1, 0);
-            //}
-            //if (float.Parse(v) == "True")
-            //{
-            //    style = new GUIStyle(lineStyle);
-            //    style.normal.textColor = new Color(0, 1, 0);
-            //}
-
-            // if (GUILayout.Button(v, lineStyle, btnOption))
-            // {
-            //     if (SelectIndex != index)
-            //     {
-            //         isRetract = false;
-            //     }
-            //     SelectIndex = index;
-            //     SelectChildIndex = -1;
-            // }
+            if (i == values.Length - 1)
+            {
+                btnOption = new GUILayoutOption[2] { GUILayout.Width(width3), GUILayout.Height(30) };
+            }
+            else if (i >= values.Length - 4)
+            {
+                btnOption = new GUILayoutOption[2] { GUILayout.Width(width2), GUILayout.Height(30) };
+            }
+            else
+            {
+                btnOption = new GUILayoutOption[2] { GUILayout.Width(width1), GUILayout.Height(30) };
+                
+            }
 
             if (i==0){ //vertex
+                    
+                if (isSelect)
+                {
+                    btnOption = new GUILayoutOption[2] { GUILayout.Width(width1-20), GUILayout.Height(30) };
+                }
 
                 // GUILayoutOption[] btnOption = isSelect ? MPGUIStyles.options_exist : MPGUIStyles.options_none;
-                if (GUILayout.Button(vt, style, isSelect ? MPGUIStyles.options_exist : MPGUIStyles.options_none))
+                if (GUILayout.Button(vt, style, btnOption))
                 {
                     if (SelectIndex != index)
                     {
@@ -1163,6 +1235,7 @@ public class SceneRebuildEditorWindow : ListManagerEditorWindow<BuildingModelEle
                 }
             }
             else{
+
                 if (GUILayout.Button(vt, style, btnOption))
                 {
                     if (SelectIndex != index)
@@ -1556,11 +1629,17 @@ enum BuildingSortWays
     SortByAllVertext,
     SortByAllRenderer,
     SortByVertex_In,
-    SortByVertex_Out0,
     SortByVertex_Out1,
+    SortByVertex_Out0,
+    SortByVertex_Out0B,
+    SortByVertex_Out0S,
+
     SortByRend_In,
-    SortByRend_Out0,
     SortByRend_Out1,
+    SortByRend_Out0,
+    SortByRend_Out0B,
+    SortByRend_Out0S,
+
     SortByParts,
     SortByTrees,
     SortByScenes,
@@ -1576,11 +1655,14 @@ public class BuildingModelElement: ListItemElement<BuildingModelValues>
     }
     public BuildingModelElement(BuildingModelInfo info)
     {
-        this.name = info.name;
+        if (info != null)
+        {
+            this.name = info.name;
+            modelInfo = info;
+            rootObj = info.gameObject;
+        }
 
-        modelInfo = info;
 
-        rootObj = info.gameObject;
         isAsset = false;
         isSkin = false;
         refList = new List<GameObject>();
@@ -1591,8 +1673,15 @@ public class BuildingModelElement: ListItemElement<BuildingModelValues>
     public override void RefleshProps()
     {
         base.RefleshProps();
-        rootMeshValue = new BuildingModelValues(modelInfo);
-        rootMeshValue.name = modelInfo.name;
+        if (modelInfo != null)
+        {
+            rootMeshValue = new BuildingModelValues(modelInfo);
+            rootMeshValue.name = modelInfo.name;
+        }
+        else
+        {
+            rootMeshValue = new BuildingModelValues();
+        }
 
 
     }
@@ -1619,6 +1708,11 @@ public class BuildingModelValues
     public int Out0RendererCount = 0;
     public int Out1RendererCount = 0;
 
+    public float Out0BigVertextCount = 0;
+    public float Out0SmallVertextCount = 0;
+    public int Out0BigRendererCount = 0;
+    public int Out0SmallRendererCount = 0;
+
 
     public BuildingModelValues()
     {
@@ -1643,14 +1737,64 @@ public class BuildingModelValues
         this.InRendererCount = modelInfo.InRendererCount;
         this.Out0RendererCount = modelInfo.Out0RendererCount;
         this.Out1RendererCount = modelInfo.Out1RendererCount;
+
+        this.Out0BigVertextCount = modelInfo.Out0BigVertextCount;
+        this.Out0SmallVertextCount = modelInfo.Out0SmallVertextCount;
+        this.Out0BigRendererCount = modelInfo.Out0BigRendererCount;
+        this.Out0SmallRendererCount = modelInfo.Out0SmallRendererCount;
+    }
+
+    internal void Add(BuildingModelValues modelInfo)
+    {
+        this.AllVertextCount += modelInfo.AllVertextCount;
+        this.AllRendererCount += modelInfo.AllRendererCount;
+        this.InVertextCount += modelInfo.InVertextCount;
+        this.Out0VertextCount += modelInfo.Out0VertextCount;
+        this.Out1VertextCount += modelInfo.Out1VertextCount;
+        this.InRendererCount += modelInfo.InRendererCount;
+        this.Out0RendererCount += modelInfo.Out0RendererCount;
+        this.Out1RendererCount += modelInfo.Out1RendererCount;
+
+        this.Out0BigVertextCount += modelInfo.Out0BigVertextCount;
+        this.Out0SmallVertextCount += modelInfo.Out0SmallVertextCount;
+        this.Out0BigRendererCount += modelInfo.Out0BigRendererCount;
+        this.Out0SmallRendererCount += modelInfo.Out0SmallRendererCount;
     }
 
     public object[] GetValues()
     {
-        return new object[] { AllVertextCount,AllRendererCount,
-            InVertextCount,Out0VertextCount,Out1VertextCount,
-        InRendererCount,Out0RendererCount,Out1RendererCount,
-        info.GetPartCount(),info.GetTreeCount(),info.GetSceneCount(),
-        info.IsModelSceneFinish() };
+        //return new object[] { AllVertextCount,AllRendererCount,
+        //    InVertextCount,GetOut0VertexInfo(),Out1VertextCount,
+        //InRendererCount,GetOut0RenderInfo(),Out1RendererCount,
+        //info.GetPartCount(),info.GetTreeCount(),info.GetSceneCount(),
+        //info.IsModelSceneFinish() };
+
+        if (info != null)
+        {
+            return new object[] { AllVertextCount,AllRendererCount,
+        InVertextCount,     Out1VertextCount,   Out0VertextCount,   Out0BigVertextCount,   Out0SmallVertextCount,
+        InRendererCount,    Out1RendererCount,  Out0RendererCount,  Out0BigRendererCount,  Out0SmallRendererCount,
+        info.GetPartCount(),info.GetTreeCount(),info.GetSceneCount(),        info.IsModelSceneFinish() };
+        }
+        else
+        {
+            return new object[] { AllVertextCount,AllRendererCount,
+        InVertextCount,     Out1VertextCount,   Out0VertextCount,   Out0BigVertextCount,   Out0SmallVertextCount,
+        InRendererCount,    Out1RendererCount,  Out0RendererCount,  Out0BigRendererCount,  Out0SmallRendererCount,
+        "-","-","-","-" };
+        }
+        
     }
+
+    public string GetOut0VertexInfo()
+    {
+        return $"{Out0VertextCount:F0}={info.Out0SmallVertextCount:F0}+{info.Out0BigVertextCount:F0}";
+    }
+
+    public string GetOut0RenderInfo()
+    {
+        return $"{Out0RendererCount:F0}={info.Out0SmallRendererCount:F0}+{info.Out0BigRendererCount:F0}";
+    }
+
+
 }

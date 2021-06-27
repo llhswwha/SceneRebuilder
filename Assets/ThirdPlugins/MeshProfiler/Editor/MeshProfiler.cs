@@ -495,7 +495,7 @@ namespace MeshProfilerNS
             GUILayout.BeginHorizontal();
             for (int i = 0; i < tableTitle.Length; i++)
             {
-                GUILayout.Label(tableTitle[i], MPGUIStyles.itemStyle, i == 0 ? GUILayout.Width(220) : GUILayout.Width(80));
+                GUILayout.Label(tableTitle[i], MPGUIStyles.itemStyle, i == 0 ? GUILayout.Width(220) : GUILayout.Width(MPGUIStyles.tableItemWidthLong));
             }
             GUILayout.EndHorizontal();
             GUILayout.Space(5);

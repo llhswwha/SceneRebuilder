@@ -41,7 +41,11 @@ namespace MeshProfilerNS
 
         public virtual void RefleshProps()
         {
-            name = rootObj.name;
+            if (rootObj != null)
+            {
+                name = rootObj.name;
+            }
+            
 
             childList = new List<T>();
             rootMeshValue = new T();
