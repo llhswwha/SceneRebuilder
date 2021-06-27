@@ -134,7 +134,7 @@ public static class EditorHelper
     public static Scene CreateScene(string path, bool isOveride,bool isOpen, params GameObject[] objs)
     {
         string scenePath = GetScenePath(path);
-        Debug.Log($"CreateScene1 objs:{objs.Length},\tpath:{path},\nscenePath:{scenePath}");
+        Debug.Log($"CreateScene1 objs:{objs.Length},obj1:{objs[0]},\tpath:{path},\nscenePath:{scenePath}");
 
         FileInfo file = new FileInfo(scenePath);
         //Debug.Log($"CreateScene2 file:{file.FullName},\ndir:{file.Directory.FullName}\t{file.Directory.Exists}");

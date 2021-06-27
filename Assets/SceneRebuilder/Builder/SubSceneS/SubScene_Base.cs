@@ -76,6 +76,15 @@ public class SubScene_Base : MonoBehaviour
 
     public List<GameObject> gos = new List<GameObject>();
 
+    public void SetObjects(List<GameObject> goList)
+    {
+        gos = goList;
+        if (sceneArg != null)
+        {
+            sceneArg.objs = goList.ToArray();
+        }
+    }
+
     public int childCount;
 
     public int rendererCount;
@@ -430,6 +439,14 @@ public class SubScene_Base : MonoBehaviour
     {
         SubSceneManager subSceneManager = SubSceneManager.Instance;
         string path = subSceneManager.GetScenePath(this.name, SceneContentType.Single);
+        //if (sceneArg == null)
+        //{
+        //    sceneArg = new SubSceneArg();
+        //}
+        //if (sceneArg.objs.Length == 0)
+        //{
+
+        //}
         SubSceneHelper.EditorCreateScene(this.gameObject, path, subSceneManager.IsOverride, true,this);
     }
 
@@ -612,12 +629,20 @@ public class SubScene_Base : MonoBehaviour
         //else
         {
             List<MeshRenderer> renderers = new List<MeshRenderer>();
-            foreach (var go in gos)
+            //foreach (var go in gos)
+            //{
+            //    if (go == null) continue;
+            //    renderers.AddRange(go.GetComponentsInChildren<MeshRenderer>(true));
+            //}
+            //Debug.Log($"SubScene_Base.Init name:{this.name} gos:{gos.Count},renderers:{renderers.Count}");
+
+            foreach (var go in sceneArg.objs)
             {
                 if (go == null) continue;
                 renderers.AddRange(go.GetComponentsInChildren<MeshRenderer>(true));
             }
-            Debug.Log($"SubScene_Base.Init name:{this.name} gos:{gos.Count},renderers:{renderers.Count}");
+            Debug.Log($"SubScene_Base.Init name:{this.name} sceneArg.objs:{sceneArg.objs.Length},renderers:{renderers.Count}");
+
             InitRenderersInfo(renderers.ToArray());
         }
 
@@ -675,6 +700,11 @@ public class SubScene_Base : MonoBehaviour
         var dis = Vector3.Distance(clo, pos);
         Debug.Log("dis:" + dis+"|"+(dis*dis));
         Debug.DrawLine(clo, pos, Color.red, 10);
+    }
+
+    public void OnDestroy()
+    {
+        Debug.Log("SubScene.OnDestroy:"+this.name);
     }
 }
 
