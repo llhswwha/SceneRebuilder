@@ -11,7 +11,7 @@ using UnityEditor.SceneManagement;
 
 public class SubScene_Base : MonoBehaviour
 {
-    public SubScene_Base LinkedScene;//���Ӧ�û�һֱ�����������У���InstanceId���ˡ�
+    public SubScene_Base LinkedScene;
 
     public SubSceneArg sceneArg;
 
@@ -408,6 +408,7 @@ public class SubScene_Base : MonoBehaviour
             //    callback(false);
             //}
             //return;
+            HideBoundsBox();
             this.gameObject.SetActive(true);
         }
         StartCoroutine(LoadSceneAsyncCoroutine(callback));
@@ -455,13 +456,39 @@ public class SubScene_Base : MonoBehaviour
         InitVisible();
     }
 
-    //public void Update()
-    //{
-    //    if(IsLoaded==true && gos.Count == 0 && IsSetParent)
-    //    {
-    //        GetSceneObjects();
-    //    }
-    //}
+    public int GetSceneObjectCount()
+    {
+        int i = 0;
+        foreach(var g in gos)
+        {
+            if (g != null) i++;
+        }
+        return i;
+    }
+
+    public void Update()
+    {
+        //if (IsLoaded == true && gos.Count == 0 && IsSetParent)
+        //{
+        //    GetSceneObjects();
+        //}
+    }
+
+    public void CheckGetSceneObjects()
+    {
+        //Debug.LogError($"CheckGetSceneObjects {this.name} IsLoaded:{IsLoaded},count:{gos.Count},IsSetParent:{IsSetParent}");
+        if (IsLoaded == true && gos.Count == 0 && IsSetParent)
+        {
+            GetSceneObjects();
+            Debug.LogError($"CheckGetSceneObjects {this.name} UnLoadSceneAsync1!!!");
+            StartCoroutine(EditorHelper.UnLoadSceneAsync(GetSceneName(), null,null));
+        }
+        else
+        {
+            //Debug.LogError($"CheckGetSceneObjects {this.name} UnLoadSceneAsync2!!!");
+            //this.UnLoadSceneAsync();
+        }
+    }
 
 #if UNITY_EDITOR
 

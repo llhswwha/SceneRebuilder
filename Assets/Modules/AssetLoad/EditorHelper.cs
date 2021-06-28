@@ -439,17 +439,37 @@ public static class EditorHelper
             }
         }
 
-
-
-
         Scene scene = SceneManager.GetSceneByName(sName);
-        //var objs = scene.GetRootGameObjects();
+        var objs = scene.GetRootGameObjects();
+        if (objs.Length == 0)
+        {
+            Debug.LogError($"LoadSceneAsync[{sName}] objs:{objs.Length} time:{(System.DateTime.Now - start).ToString()} objs.Length == 0");
+            //for (int i = 0; i < 10; i++)
+            //{
+            //    objs = scene.GetRootGameObjects();
+            //    if(objs.Length==0)
+            //    {
+            //        yield return null;
+            //    }
+            //    else
+            //    {
+            //        Debug.LogError($"LoadSceneAsync[{sName}] break objs:{objs.Length} time:{(System.DateTime.Now - start).ToString()} objs.Length == 0");
+            //        break;
+            //    }
+            //}
+            
+        }
+        else
+        {
+            Debug.Log($"LoadSceneAsync[{sName}] objs:{objs.Length} time:{(System.DateTime.Now - start).ToString()}");
+        }
+        
         if (finished != null)
         {
             finished(scene);
         }
 
-        Debug.Log($"LoadSceneAsync[{sName}] time:{(System.DateTime.Now - start).ToString()}");
+        //Debug.Log($"LoadSceneAsync[{sName}] time:{(System.DateTime.Now - start).ToString()}");
 
         if (isAutoUnload)
         {

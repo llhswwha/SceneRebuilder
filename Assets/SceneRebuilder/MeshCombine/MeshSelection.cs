@@ -39,6 +39,15 @@ public class MeshSelection : MonoBehaviour
             {
                 if(hitParentName.EndsWith("_Combined"))
                 {
+                    if (!AreaTreeHelper.combined2NodeDict.ContainsKey(lastRenderer))
+                    {
+                        var treeNode = lastRenderer.GetComponentInParent<AreaTreeNode>();
+                        Debug.LogError("FindTreeNode :" + lastRenderer);
+                        if (treeNode)
+                        {
+                            treeNode.CreateDictionary();
+                        }
+                    }
                     if (AreaTreeHelper.combined2NodeDict.ContainsKey(lastRenderer))//点中了合并的模型
                     {
                         var treeNode = AreaTreeHelper.combined2NodeDict[lastRenderer];

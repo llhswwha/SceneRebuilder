@@ -54,6 +54,8 @@ public class SubSceneShowManager : MonoBehaviour
         Instance = this;
     }
 
+    public List<SubScene_Base> WaitingScenes = new List<SubScene_Base>();
+
     // Start is called before the first frame update
     void Start()
     {
@@ -61,11 +63,15 @@ public class SubSceneShowManager : MonoBehaviour
 
         if (IsAutoLoad)
         {
+            
             //sceneManager.LoadScenesEx(scenes_Out0_Tree.ToArray());//1.启动时自动加载模型
             sceneManager.LoadScenesEx(scenes_Out0_TreeNode.ToArray(), () =>
              {
-                //AreaTreeNodeShowManager.Instance.IsUpdateTreeNodeByDistance = true;
-            });//1.启动时自动加载模型
+                 //AreaTreeNodeShowManager.Instance.IsUpdateTreeNodeByDistance = true;
+
+                 WaitingScenes.AddRange(scenes_Out0_TreeNode);
+
+             });//1.启动时自动加载模型
         }
 
         if (AreaTreeNodeShowManager.Instance)
@@ -212,7 +218,27 @@ public class SubSceneShowManager : MonoBehaviour
     // Update is called once per frame
     void Update()
     {
+        if (WaitingScenes.Count > 0)
+        {
+            Debug.LogError("CheckWaittingScenes 1:"+ WaitingScenes.Count);
+            for(int i = 0; i < WaitingScenes.Count; i++)
+            {
+                var scene = WaitingScenes[i];
+                
+                if (scene.GetSceneObjectCount()>0)
+                {
+                    WaitingScenes.RemoveAt(i);
+                    i--;
+                }
+                else
+                {
+                    scene.CheckGetSceneObjects();
+                }
 
+
+            }
+            Debug.LogError("CheckWaittingScenes 2:" + WaitingScenes.Count);
+        }
 
         if (IsUpdateDistance)
         {

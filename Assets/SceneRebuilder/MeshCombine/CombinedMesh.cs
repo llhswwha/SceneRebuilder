@@ -446,6 +446,11 @@ public static class MeshCombineHelper
         for (int i = 0; i < renderers.Length; i++)
         {
             MeshRenderer renderer = renderers[i];
+            NoCombine noCombine = renderer.GetComponent<NoCombine>();
+            if (noCombine != null)
+            {
+                continue;
+            }
             if (!mat2Filters.ContainsKey(renderer.sharedMaterial))
             {
                 mat2Filters.Add(renderer.sharedMaterial, new List<MeshFilter>());
