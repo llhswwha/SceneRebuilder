@@ -50,4 +50,9 @@ public class RendererId
         }
         return id;
     }
+
+    private void OnDestroy()
+    {
+        Debug.Log("RendererId.OnDestroy:"+this.name);
+    }
 }

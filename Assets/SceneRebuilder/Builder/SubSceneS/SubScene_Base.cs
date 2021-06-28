@@ -310,7 +310,7 @@ public class SubScene_Base : MonoBehaviour
     {
         if (IsLoading || IsLoaded)
         {
-            //Debug.LogWarning("IsLoading || IsLoaded :" + GetSceneName());
+            Debug.LogWarning("IsLoading || IsLoaded :" + GetSceneName());
             if (callback != null)
             {
                 callback(false);
@@ -379,6 +379,15 @@ public class SubScene_Base : MonoBehaviour
         //}, IsSetParent)
         //);
 
+        if (this.gameObject.activeInHierarchy == false)
+        {
+            Debug.LogError("this.gameObject.activeInHierarchy == false :"+name);
+            if (callback != null)
+            {
+                callback(false);
+            }
+            return;
+        }
         StartCoroutine(LoadSceneAsyncCoroutine(callback));
     }
     [ContextMenu("TestUnLoadSceneAsync")]
@@ -438,7 +447,7 @@ public class SubScene_Base : MonoBehaviour
     public void EditorCreateScene()
     {
         SubSceneManager subSceneManager = SubSceneManager.Instance;
-        string path = subSceneManager.GetScenePath(this.name, SceneContentType.Single);
+        string path = subSceneManager.GetScenePath(this.name, SceneContentType.Single,"");
         //if (sceneArg == null)
         //{
         //    sceneArg = new SubSceneArg();
@@ -501,18 +510,16 @@ public class SubScene_Base : MonoBehaviour
         }
     }
 
-    /// <summary>
-    /// ע����ص��ӳ�����ģ�ͣ�����ȡ���е�[�ϲ���]�Ĺ�����Ϸ����
-    /// </summary>
+
     internal void InitIdDict()
     {
         Debug.Log($"SubScene_Base.InitIdDict name:{this.name} type:{contentType} linked:{LinkedScene}");
-        IdDictionay.InitGos(gos, sceneName);//�ӳ������غ�ע���ӳ����е�ģ����Ϣ
+        IdDictionay.InitGos(gos, sceneName);
         if (LinkedScene != null)
         {
-            if (this.contentType == SceneContentType.Tree)//�����Ǳ�����[�ϲ���]���ӳ���
+            if (this.contentType == SceneContentType.Tree)
             {
-                if (LinkedScene.IsLoaded)//��Ӧ��[�ϲ���]��[ԭģ��]ͬʱ�����ص������к󣬲�ȥѰ�ҹ�������Ϸ����
+                if (LinkedScene.IsLoaded)
                 {
                     this.LoadTreeRenderers();
                 }
@@ -521,28 +528,28 @@ public class SubScene_Base : MonoBehaviour
                     Debug.LogError($"SubScene_Base.InitIdDict LinkedScene.IsLoaded==false scene:{this.name}");
                 }
             }
-            else if (this.contentType == SceneContentType.Part)//�����Ǳ�����[ԭģ��]���ӳ���
+            else if (this.contentType == SceneContentType.Part)
             {
-                if (LinkedScene.IsLoaded)//��Ӧ��[�ϲ���]��[ԭģ��]ͬʱ�����ص������к󣬲�ȥѰ�ҹ�������Ϸ����
+                if (LinkedScene.IsLoaded)
                 {
-                    LinkedScene.LoadTreeRenderers();//��ȡ��Ӧ��[�ϲ���]�Ĺ���ģ��
+                    LinkedScene.LoadTreeRenderers();
                 }
                 else
                 {
                     Debug.LogError($"SubScene_Base.InitIdDict LinkedScene.IsLoaded==false scene:{this.name}");
                 }
             }
-            //��ʱû���Ե�
-            else if (this.contentType == SceneContentType.TreeAndPart)//�����Ǳ�����[�ϲ���]��[ԭģ��]���ӳ���
+           
+            else if (this.contentType == SceneContentType.TreeAndPart)
             {
                 LoadTreeRenderers();
             }
             else
             {
-                //Ӧ�ò����ܵ�����
-                if (LinkedScene.IsLoaded)//��Ӧ��[�ϲ���]��[ԭģ��]ͬʱ�����ص������к󣬲�ȥѰ�ҹ�������Ϸ����
+               
+                if (LinkedScene.IsLoaded)
                 {
-                    LinkedScene.LoadTreeRenderers();//��ȡ��Ӧ��[�ϲ���]�Ĺ���ģ��
+                    LinkedScene.LoadTreeRenderers();
                     this.LoadTreeRenderers();
                 }
                 else
@@ -569,7 +576,7 @@ public class SubScene_Base : MonoBehaviour
 
         if (this is SubScene_Single)
         {
-            gos = SubSceneHelper.GetChildrenGos(GetSceneParent());//��ȡ�µ�ȫ�������壬�Ա�������³���
+            gos = SubSceneHelper.GetChildrenGos(GetSceneParent());
         }
 
         SubSceneManager subSceneManager = GameObject.FindObjectOfType<SubSceneManager>();
@@ -581,7 +588,7 @@ public class SubScene_Base : MonoBehaviour
 
         AreaTreeHelper.InitCubePrefab();
         ShowBounds();
-        bool r1 = UnityEditor.SceneManagement.EditorSceneManager.CloseScene(scene, true);//�رճ��������ر��޷�����
+        bool r1 = UnityEditor.SceneManagement.EditorSceneManager.CloseScene(scene, true);
         Debug.Log("r1:" + r1);
     }
 

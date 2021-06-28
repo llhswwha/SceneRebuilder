@@ -5,7 +5,7 @@ using System;
 
 public class AreaTreeNode : SubSceneCreater
 {
-    public string FullName;
+    public ModelAreaTree tree;
 
     public Bounds Bounds;
 
@@ -22,6 +22,7 @@ public class AreaTreeNode : SubSceneCreater
     public List<string> RenderersId = new List<string>();
 
     public MeshRenderer[] CombinedRenderers;
+    public List<string> CombinedRenderersId = new List<string>();
 
     private List<Transform> RendererParents = new List<Transform>();
 
@@ -50,6 +51,14 @@ public class AreaTreeNode : SubSceneCreater
             if (renderer == null) continue;
             var id = RendererId.GetId(renderer);
             newRenderersId.Add(id.Id);
+        }
+
+        CombinedRenderersId.Clear();
+        foreach (var renderer in CombinedRenderers)
+        {
+            if (renderer == null) continue;
+            var id = RendererId.GetId(renderer);
+            CombinedRenderersId.Add(id.Id);
         }
     }
 
@@ -100,10 +109,19 @@ public class AreaTreeNode : SubSceneCreater
         {
             Debug.LogError($"LoadRenderers rs2.Count != newRenderersId.Count [{this.name}]");
         }
-        //newRenderers = rs2;
+
+        var rs3 = IdDictionay.GetRenderers(CombinedRenderersId);
+        if (rs3.Count == CombinedRenderersId.Count)//数量没变说明找到了全部的Renderers
+        {
+            CombinedRenderers = rs3.ToArray();
+        }
+        else
+        {
+            Debug.LogError($"LoadRenderers rs3.Count != CombinedRenderersId.Count [{this.name}]");
+        }
     }
 
-    public List<Collider> colliders = new List<Collider>();
+    //public List<Collider> colliders = new List<Collider>();
 
     public List<AreaTreeNode> Nodes = new List<AreaTreeNode>();
 
@@ -167,7 +185,7 @@ public class AreaTreeNode : SubSceneCreater
         //IsCopyed = true;
         newRenderers.Clear();
         RendererParents.Clear();
-        colliders.Clear();
+        //colliders.Clear();
 
         //newRenderers.Clear();
         if (renderersRoot == null)
@@ -204,7 +222,7 @@ public class AreaTreeNode : SubSceneCreater
             MeshCollider collider = go.GetComponent<MeshCollider>();
             if (collider)
                 collider.enabled = false;
-            colliders.Add(collider);
+            //colliders.Add(collider);
         }
     }
 
@@ -307,10 +325,10 @@ public class AreaTreeNode : SubSceneCreater
     public void CombineMesh()
     {
 
-        if (renderersRoot)
-        {
-            GameObject.DestroyImmediate(renderersRoot);
-        }
+        //if (renderersRoot)
+        //{
+        //    GameObject.DestroyImmediate(renderersRoot);
+        //}
 
         DestroySelfRenderer();
 
@@ -327,7 +345,13 @@ public class AreaTreeNode : SubSceneCreater
 
     public void RecoverParent()
     {
-        for (int i = 0; i < Renderers.Count; i++)
+        
+        if(Renderers.Count!= RendererParents.Count)
+        {
+            Debug.LogError($"RecoverParent[{this.name}][Renderers.Count && i<RendererParents.Count][{Renderers.Count}][{RendererParents.Count}]");
+            return;
+        }
+        for (int i = 0; i < Renderers.Count && i<RendererParents.Count; i++)
         {
             MeshRenderer render = Renderers[i];
             if (render == null) continue;
@@ -448,7 +472,7 @@ public class AreaTreeNode : SubSceneCreater
     }
 
 
-    private ModelAreaTree tree;
+    //private ModelAreaTree tree;
     public List<AreaTreeNode> CreateSubNodes(int level, int index, ModelAreaTree tree)
     {
 
@@ -628,7 +652,7 @@ public class AreaTreeNode : SubSceneCreater
             // }
 
             node.name += $"_{node.RendererCount}_{node.GetVertexCount():F0}w";
-            node.FullName = tree.name + "_" + node.name;
+            //node.TreeName=tree.name;
             node.CreateSubNodes(level + 1, i, tree);
 
             //if (node.VertexCount > tree.nodeStatics.MaxNodeVertexCount || tree.nodeStatics.MaxNodeVertexCount == 0)
@@ -749,14 +773,26 @@ public class AreaTreeNode : SubSceneCreater
         //Debug.Log("HideNodes:" + this.name);
         IsNodeVisible = false;
         this.gameObject.SetActive(false);
-        foreach (AreaTreeNode node in Nodes)
+        for (int i = 0; i < Nodes.Count; i++)
         {
-            if (node == null) continue;
+            AreaTreeNode node = Nodes[i];
+            //if (node == null) continue;
+            if (node == null)
+            {
+                Debug.LogError($"HideNodes[{i}] node == null:" + this.name);
+                continue;
+            }
             node.ShowNodes();
         }
 
-        foreach (var render in CombinedRenderers)
+        for (int i = 0; i < CombinedRenderers.Length; i++)
         {
+            MeshRenderer render = CombinedRenderers[i];
+            if (render == null)
+            {
+                Debug.LogError($"HideNodes[{i}] render == null:"+this.name);
+                continue;
+            }
             render.gameObject.SetActive(false);
         }
     }
@@ -806,8 +842,13 @@ public class AreaTreeNode : SubSceneCreater
         this.SaveRenderersId();
     }
 
-    [ContextMenu("* EditorCreateScenes")]
-    public void EditorCreateScenes()
+    [ContextMenu("* EditorCreateNodeScenes")]
+    private void EditorCreateNodeScenes()
+    {
+        EditorCreateNodeScenes(null);
+    }
+
+    public void EditorCreateNodeScenes(Action<float, int, int> progressChanged)
     {
         DateTime start = DateTime.Now;
 
@@ -824,7 +865,8 @@ public class AreaTreeNode : SubSceneCreater
         SubScene_Out0 scene1 = null;
         if (combindResult)
         {
-            scene1 = SubSceneHelper.EditorCreateScene<SubScene_Out0>(combindResult, false);
+            scene1 = SubSceneHelper.EditorCreateScene<SubScene_Out0>(combindResult, SceneContentType.TreeNode, false, tree.name);
+            scene1.contentType = SceneContentType.TreeNode;
             //scene1.gos = SubSceneHelper.GetChildrenGos(combindResult.transform);
             scene1.SetObjects(SubSceneHelper.GetChildrenGos(combindResult.transform));
             scene1.Init();
@@ -832,15 +874,16 @@ public class AreaTreeNode : SubSceneCreater
         }
         else
         {
-            Debug.LogError("AreaTreeNode.EditorCreateScenes combindResult==null:"+this.name);
+            Debug.LogError("AreaTreeNode.EditorCreateScenes combindResult==null:" + this.name);
         }
 
         SubScene_In scene2 = null;
         if (renderersRoot)
         {
             MoveRenderers();
-            scene2 = SubSceneHelper.EditorCreateScene<SubScene_In>(renderersRoot, false);
+            scene2 = SubSceneHelper.EditorCreateScene<SubScene_In>(renderersRoot, SceneContentType.TreeNode, false, tree.name);
             //scene2.gos = SubSceneHelper.GetChildrenGos(renderersRoot.transform);
+            scene2.contentType = SceneContentType.TreeNode;
             scene2.SetObjects(SubSceneHelper.GetChildrenGos(renderersRoot.transform));
             scene2.Init();
             scenes.Add(scene2);
@@ -853,10 +896,10 @@ public class AreaTreeNode : SubSceneCreater
         if (scene2 != null)
             scene2.LinkedScene = scene1;
 
-        if(scene1!=null)
+        if (scene1 != null)
             scene1.LinkedScene = scene2;
 
-        EditorCreateScenes(scenes, null);
+        EditorCreateScenes(scenes, progressChanged);
 
         SubSceneManager.Instance.ClearOtherScenes();
         //EditorMoveScenes();
@@ -865,7 +908,7 @@ public class AreaTreeNode : SubSceneCreater
     }
 
     [ContextMenu("* EditorLoadScenes")]
-    public void EditorLoadScenes()
+    private void EditorLoadScenes()
     {
         EditorLoadScenes(null);
     }
@@ -873,7 +916,7 @@ public class AreaTreeNode : SubSceneCreater
     public void EditorLoadScenes(Action<float> progressChanged)
     {
         DateTime start = DateTime.Now;
-        var scenes = GetSubScenesOfTypes(new List<SceneContentType>() { SceneContentType.Single });//����ʵ��ʹ����Ҳ���ȳ���Tree���ٰ������Part��
+        var scenes = GetSubScenesOfTypes(new List<SceneContentType>() { SceneContentType.TreeNode });//����ʵ��ʹ����Ҳ���ȳ���Tree���ٰ������Part��
         EditorLoadScenes(scenes.ToArray(), progressChanged);
 
         //this.InitInOut(false);
@@ -882,5 +925,23 @@ public class AreaTreeNode : SubSceneCreater
         this.LoadRenderers();
 
         Debug.LogError($"EditorLoadScenes time:{(DateTime.Now - start)}");
+    }
+
+
+    public void LoadAndSwitchToRenderers(Action<bool> callback)
+    {
+        Debug.LogError($"LoadAndSwitchToRenderers[{this.name}]");
+        var scene = this.GetComponentInChildren<SubScene_In>();
+        scene.LoadSceneAsync(b =>
+        {
+            this.LoadRenderers();
+
+            SwitchToRenderers();
+
+            if (callback != null)
+            {
+                callback(b);
+            }
+        });
     }
 }

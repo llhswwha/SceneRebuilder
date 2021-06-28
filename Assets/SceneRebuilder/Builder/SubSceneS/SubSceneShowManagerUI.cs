@@ -16,7 +16,11 @@ public class SubSceneShowManagerUI : MonoBehaviour
 
     public void Update()
     {
-        txtInfo.text = $"{subSceneShowManager.GetDisInfo()}\n{subSceneShowManager.GetSceneInfo()}";
+        if(subSceneShowManager)
+        {
+            txtInfo.text = $"{subSceneShowManager.GetDisInfo()}\n{subSceneShowManager.GetSceneInfo()}";
+        }
+        
     }
 
     public void HideAllRenderers()

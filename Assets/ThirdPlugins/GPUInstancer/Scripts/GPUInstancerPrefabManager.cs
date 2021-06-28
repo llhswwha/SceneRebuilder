@@ -1170,7 +1170,7 @@ namespace GPUInstancer
             float progress = (float)i / list.Count;
             float percents = progress * 100;
 
-            if (EditorUtility.DisplayCancelableProgressBar("CreatePrefabs", $"{i}/{list.Count} {percents}% of 100%", progress))
+            if (EditorUtility.DisplayCancelableProgressBar("CreatePrefabs", $"{i}/{list.Count} {percents:F1}%", progress))
             {
                 break;
             }

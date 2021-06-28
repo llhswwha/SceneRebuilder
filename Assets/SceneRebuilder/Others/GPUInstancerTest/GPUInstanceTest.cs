@@ -27,7 +27,7 @@ public class GPUInstanceTest : MonoBehaviour
         //    float progress = (float)i / PrefabList.Count;
         //    float percents = progress * 100;
 
-        //    if (ProgressBarHelper.DisplayCancelableProgressBar("CreatePrefabs", $"{i}/{PrefabList.Count} {percents}% of 100%", progress))
+        //    if (ProgressBarHelper.DisplayCancelableProgressBar("CreatePrefabs", $"{i}/{PrefabList.Count} {percents:F1}%", progress))
         //    {
         //        break;
         //    }

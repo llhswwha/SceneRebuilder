@@ -471,11 +471,11 @@ public class SubSceneManager : MonoBehaviour
 
     public bool IsOpenSubScene = false;
 
-    public Scene CreateScene(params GameObject[] objs)
-    {
-        ScenePath = GetScenePath(SceneName, SceneContentType.Single);
-        return EditorHelper.CreateScene(ScenePath, IsOverride, IsOpenSubScene, objs);
-    }
+    //public Scene CreateScene(params GameObject[] objs)
+    //{
+    //    ScenePath = GetScenePath(SceneName, SceneContentType.Single,"");
+    //    return EditorHelper.CreateScene(ScenePath, IsOverride, IsOpenSubScene, objs);
+    //}
 
     //public Scene CreateScene(string sceneName,params GameObject[] objs)
     //{
@@ -555,7 +555,7 @@ public class SubSceneManager : MonoBehaviour
         Debug.Log("SetSetting:"+subScenes.Length);
     }
 
-    public string GetScenePath(string sceneName, SceneContentType dir)
+    public string GetScenePath(string sceneName, SceneContentType contentType,string dir)
     {
         //return Application.dataPath + "/Models/Instances/Buildings/" + sceneName + ".unity";
         //return Application.dataPath + SaveDir + sceneName + ".unity";
@@ -579,7 +579,14 @@ public class SubSceneManager : MonoBehaviour
         //    return $"{RootDir}/{SceneDir}/{sceneName}.unity";
         //}
 
-        return $"{RootDir}/{SceneDir}_{dir}/{sceneName}.unity";
+        if(string.IsNullOrEmpty(dir))
+        {
+            return $"{RootDir}/{SceneDir}/{contentType}/{sceneName}.unity";
+        }
+        else
+        {
+            return $"{RootDir}/{SceneDir}/{contentType}/{dir}/{sceneName}.unity";
+        }
     }
 
     public string GetSceneDir(SceneContentType dir)

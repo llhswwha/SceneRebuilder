@@ -49,9 +49,13 @@ public class MeshSelection : MonoBehaviour
                             lastNode.SwitchToCombined();
                         }
                         lastNode = treeNode;
-                        lastNode.SwitchToRenderers();
+                        //lastNode.SwitchToRenderers();
+                        //HitTest(count + 1);//重新点击
 
-                        HitTest(count + 1);//重新点击
+                        lastNode.LoadAndSwitchToRenderers(b =>
+                        {
+                            HitTest(count + 1);//重新点击
+                        });
                     }
                     else
                     {

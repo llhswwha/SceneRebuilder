@@ -68,7 +68,7 @@ public class PrefabComparer : MonoBehaviour
             // float progress = (float)i / meshFilters.Length;
             // float percents = progress * 100;
             
-            // if(ProgressBarHelper.DisplayCancelableProgressBar("ReplaceToPrefab", $"{i}/{meshFilters.Length} {percents}% of 100%", progress))
+            // if(ProgressBarHelper.DisplayCancelableProgressBar("ReplaceToPrefab", $"{i}/{meshFilters.Length} {percents:F1}%", progress))
             // {
             //     //ProgressBarHelper.ClearProgressBar();
             //     break;
@@ -93,7 +93,7 @@ public class PrefabComparer : MonoBehaviour
             float progress = (float)i /models.Count;
             float percents = progress * 100;
             
-            if(ProgressBarHelper.DisplayCancelableProgressBar("ReplaceToPrefab_Core", $"{i}/{models.Count} {percents}% of 100%", progress))
+            if(ProgressBarHelper.DisplayCancelableProgressBar("ReplaceToPrefab_Core", $"{i}/{models.Count} {percents:F1}%", progress))
             {
                 //ProgressBarHelper.ClearProgressBar();
                 break;

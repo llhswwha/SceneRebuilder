@@ -65,7 +65,7 @@ public static class SubSceneHelper
         //scenePath = path;
     }
 
-    public static T EditorCreateScene<T>(GameObject go,bool isSave) where T : SubScene_Base
+    public static T EditorCreateScene<T>(GameObject go, SceneContentType contentType,bool isSave,string dir) where T : SubScene_Base
     {
         if (go == null)
         {
@@ -81,7 +81,7 @@ public static class SubSceneHelper
         //ss.ShowBounds();
 
         SubSceneManager subSceneManager = SubSceneManager.Instance;
-        string path = subSceneManager.GetScenePath(go.name, SceneContentType.Single);
+        string path = subSceneManager.GetScenePath(go.name, contentType, dir);
         return EditorCreateScene<T>(go, path, subSceneManager.IsOverride, isSave);
     }
 
@@ -151,5 +151,5 @@ public enum SubSceneType
 
 public enum SceneContentType
 {
-    Single,Part,Tree,TreeAndPart,TreeWithPart
+    Single,Part,Tree,TreeAndPart,TreeWithPart,TreeNode
 }

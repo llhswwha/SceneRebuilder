@@ -110,7 +110,7 @@ using System;
             {
                 float progress = (float)i / count;
                 float percents = progress * 100;
-                if(ProgressBarHelper.DisplayCancelableProgressBar("CompleteAllPage", $"{name}:{i}/{count} {percents}% of 100%", progress))
+                if(ProgressBarHelper.DisplayCancelableProgressBar("CompleteAllPage", $"{name}:{i}/{count} {percents:F1}%", progress))
                 {
                     break;
                 }

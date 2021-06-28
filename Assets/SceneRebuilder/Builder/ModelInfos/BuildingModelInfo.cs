@@ -1041,7 +1041,7 @@ public class BuildingModelInfo : SubSceneCreater
         AreaTreeHelper.InitCubePrefab();
         if (contentType == SceneContentType.Single)
         {
-            var scene=SubSceneHelper.EditorCreateScene<SubScene_Single>(this.gameObject,false);
+            var scene=SubSceneHelper.EditorCreateScene<SubScene_Single>(this.gameObject, SceneContentType.Single, false,"");
             scenes.Add(scene);
         }
         //else if (contentType == SceneContentType.TreePart)
@@ -1231,6 +1231,60 @@ public class BuildingModelInfo : SubSceneCreater
         }
 
         //SceneState = "EditSaveScenes";
+    }
+
+    [ContextMenu("* EditorCreateNodeScenes")]
+    public void EditorCreateNodeScenes()
+    {
+        DateTime start = DateTime.Now;
+
+        for (int i = 0; i < trees.Length; i++)
+        {
+            var tree = trees[i];
+            if (tree == null) continue;
+            float progress = (float)i / trees.Length;
+            float percents = progress * 100;
+            if (ProgressBarHelper.DisplayCancelableProgressBar("BuildingModelInfo.EditorCreateNodeScenes", $"Progress1 {i}/{trees.Length} {percents:F2}%", progress))
+            {
+                break;
+            }
+            tree.EditorCreateNodeScenes(p=>
+            {
+                float progress2 = (float)(i+p) / trees.Length;
+                float percents2 = progress2 * 100;
+                ProgressBarHelper.DisplayCancelableProgressBar("BuildingModelInfo.EditorCreateNodeScenes", $"Progress2 {(i + p):F2}/{trees.Length} {percents2:F2}%", progress2);
+            });
+        }
+        EditorHelper.RefreshAssets();
+        ProgressBarHelper.ClearProgressBar();
+        Debug.LogError($"BuildingModelInfo.EditorCreateNodeScenes time:{(DateTime.Now - start)}");
+    }
+
+    [ContextMenu("* EditorLoadNodeScenes")]
+    private void EditorLoadNodeScenes()
+    {
+        DateTime start = DateTime.Now;
+
+        for (int i = 0; i < trees.Length; i++)
+        {
+            var tree = trees[i];
+            if (tree == null) continue;
+            float progress = (float)i / trees.Length;
+            float percents = progress * 100;
+            if (ProgressBarHelper.DisplayCancelableProgressBar("BuildingModelInfo.EditorLoadNodeScenes", $"Progress1 {i}/{trees.Length} {percents:F2}%", progress))
+            {
+                break;
+            }
+            tree.EditorLoadNodeScenes(p =>
+            {
+                float progress2 = (float)(i + p) / trees.Length;
+                float percents2 = progress2 * 100;
+                ProgressBarHelper.DisplayCancelableProgressBar("BuildingModelInfo.EditorLoadNodeScenes", $"Progress2 {(i + p):F2}/{trees.Length} {percents2:F2}%", progress2);
+            });
+        }
+        EditorHelper.RefreshAssets();
+        ProgressBarHelper.ClearProgressBar();
+        Debug.LogError($"BuildingModelInfo.EditorLoadNodeScenes time:{(DateTime.Now - start)}");
     }
 #endif
 }

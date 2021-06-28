@@ -50,7 +50,7 @@ namespace GPUInstancer
 
 
 #if UNITY_EDITOR
-                if (UnityEditor.EditorUtility.DisplayCancelableProgressBar("CreatePrefabs", $"{i}/{prefabs.Length} {percents}% of 100%", progress))
+                if (UnityEditor.EditorUtility.DisplayCancelableProgressBar("CreatePrefabs", $"{i}/{prefabs.Length} {percents:F1}%", progress))
                 {
                     break;
                 }

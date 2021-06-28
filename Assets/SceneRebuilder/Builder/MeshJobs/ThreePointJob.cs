@@ -624,7 +624,7 @@ namespace MeshJobs
             {
                 float progress = (float)i / count;
                 float percents = progress * 100;
-                if (ProgressBarHelper.DisplayCancelableProgressBar("CompleteAllPage", $"CreateThreePointJobs:{i}/{count} {percents}% of 100%", progress))
+                if (ProgressBarHelper.DisplayCancelableProgressBar("CompleteAllPage", $"CreateThreePointJobs:{i}/{count} {percents:F1}%", progress))
                 {
                     break;
                 }

@@ -764,7 +764,7 @@ public class ModelAreaTree : SubSceneCreater
             if (leafNode == null) continue;
             float progress = (float)i / TreeLeafs.Count;
             float percents = progress * 100;
-            if (ProgressBarHelper.DisplayCancelableProgressBar("SaveMeshes", $"{i}/{TreeLeafs.Count} {percents}% of 100%", progress))
+            if (ProgressBarHelper.DisplayCancelableProgressBar("SaveMeshes", $"{i}/{TreeLeafs.Count} {percents:F1}%", progress))
             {
                 break;
             }
@@ -841,30 +841,13 @@ public class ModelAreaTree : SubSceneCreater
         //Debug.Log("LoadRenderers:"+this.name);
     }
 
-    [ContextMenu("* EditorCreateScenes")]
-    public void EditorCreateScenes()
+    [ContextMenu("* EditorCreateNodeScenes")]
+    private void EditorCreateNodeScenes()
     {
-        DateTime start = DateTime.Now;
-
-        for (int i = 0; i < TreeLeafs.Count; i++)
-        {
-            var leafNode = TreeLeafs[i];
-            if (leafNode == null) continue;
-            float progress = (float)i / TreeLeafs.Count;
-            float percents = progress * 100;
-            if (ProgressBarHelper.DisplayCancelableProgressBar("EditorCreateScenes", $"{i}/{TreeLeafs.Count} {percents}% of 100%", progress))
-            {
-                break;
-            }
-            leafNode.EditorCreateScenes();
-        }
-        ProgressBarHelper.ClearProgressBar();
-
-        Debug.LogError($"ModelAreaTree.EditorCreateScenes time:{(DateTime.Now - start)}");
+        EditorCreateNodeScenes(null);
     }
 
-    [ContextMenu("* EditorLoadScenes")]
-    private void EditorLoadScenes()
+    public void EditorCreateNodeScenes(Action<float> progressChanged)
     {
         DateTime start = DateTime.Now;
 
@@ -874,14 +857,108 @@ public class ModelAreaTree : SubSceneCreater
             if (leafNode == null) continue;
             float progress = (float)i / TreeLeafs.Count;
             float percents = progress * 100;
-            if (ProgressBarHelper.DisplayCancelableProgressBar("EditorLoadScenes", $"{i}/{TreeLeafs.Count} {percents}% of 100%", progress))
-            {
-                break;
-            }
-            leafNode.EditorLoadScenes();
-        }
-        ProgressBarHelper.ClearProgressBar();
 
-        Debug.LogError($"ModelAreaTree.EditorLoadScenes time:{(DateTime.Now - start)}");
+            if (progressChanged == null)
+            {
+                if (ProgressBarHelper.DisplayCancelableProgressBar("EditorCreateNodeScenes", $"Progress1 {i}/{TreeLeafs.Count} {percents:F2}%", progress))
+                {
+                    break;
+                }
+            }
+            else
+            {
+                progressChanged(progress);
+            }
+
+            leafNode.EditorCreateNodeScenes((p,i2,c)=>
+            {
+                float progress2 = (float)(i+p) / TreeLeafs.Count;
+                float percents2 = progress2 * 100;
+
+                if (progressChanged == null)
+                {
+                    if (ProgressBarHelper.DisplayCancelableProgressBar("EditorCreateNodeScenes", $"Progress2 {(i + p):F2}/{TreeLeafs.Count} {percents2:F2}% of 100%", progress2))
+                    {
+                        
+                    }
+                }
+                else
+                {
+                    progressChanged(progress2);
+                }
+            });
+        }
+       
+        if (progressChanged == null)
+        {
+            EditorHelper.RefreshAssets();
+            ProgressBarHelper.ClearProgressBar();
+        }
+        else
+        {
+            progressChanged(1);
+        }
+
+        Debug.LogError($"ModelAreaTree.EditorCreateNodeScenes time:{(DateTime.Now - start)}");
+    }
+
+    [ContextMenu("* EditorLoadNodeScenes")]
+    private void EditorLoadNodeScenes()
+    {
+        EditorLoadNodeScenes(null);
+    }
+
+    public void EditorLoadNodeScenes(Action<float> progressChanged)
+    {
+        DateTime start = DateTime.Now;
+
+        for (int i = 0; i < TreeLeafs.Count; i++)
+        {
+            var leafNode = TreeLeafs[i];
+            if (leafNode == null) continue;
+            float progress = (float)i / TreeLeafs.Count;
+            float percents = progress * 100;
+
+            if (progressChanged == null)
+            {
+                if (ProgressBarHelper.DisplayCancelableProgressBar("EditorLoadNodeScenes", $"Progress1 {i}/{TreeLeafs.Count} {percents:F2}%", progress))
+                {
+                    break;
+                }
+            }
+            else
+            {
+                progressChanged(progress);
+            }
+            leafNode.EditorLoadScenes((p) =>
+            {
+                float progress2 = (float)(i + p) / TreeLeafs.Count;
+                float percents2 = progress2 * 100;
+
+                if (progressChanged == null)
+                {
+                    if (ProgressBarHelper.DisplayCancelableProgressBar("EditorLoadNodeScenes", $"Progress2 {(i + p):F2}/{TreeLeafs.Count} {percents2:F2}% of 100%", progress2))
+                    {
+
+                    }
+                }
+                else
+                {
+                    progressChanged(progress2);
+                }
+            });
+        }
+
+        if (progressChanged == null)
+        {
+            EditorHelper.RefreshAssets();
+            ProgressBarHelper.ClearProgressBar();
+        }
+        else
+        {
+            progressChanged(1);
+        }
+
+        Debug.LogError($"ModelAreaTree.EditorLoadNodeScenes time:{(DateTime.Now - start)}");
     }
 }
