@@ -516,12 +516,16 @@ public static class EditorHelper
     public static GameObject[] GetSceneObjects(string sceneName, Transform parent)
     {
         Scene scene = SceneManager.GetSceneByName(sceneName);
-        
-        
+
+        Debug.Log($"LoadScene scene:{sceneName},isLoaded:{scene.isLoaded},isValid:{scene.IsValid()}");
+
         var objs = scene.GetRootGameObjects();
-        Debug.Log($"LoadScene scene:{sceneName},isLoaded:{scene.isLoaded},isValid:{scene.IsValid()},objs:{objs.Length}");
         if (parent)
         {
+            if (objs.Length == 0)
+            {
+                Debug.LogError($"LoadScene scene:{sceneName},isLoaded:{scene.isLoaded},isValid:{scene.IsValid()}  objs.Length == 0");
+            }
             foreach (var obj in objs)
             {
                 obj.transform.SetParent(parent);

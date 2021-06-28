@@ -490,25 +490,25 @@ public class SubSceneManager : MonoBehaviour
     public void AutoLoadScenes()
     {
         var outScenes = GetSubScenes(SubSceneType.Out0);
-        LoadScenesEx(outScenes);
+        LoadScenesEx(outScenes,null);
     }
 
     [ContextMenu("LoadScenesEx")]
     public void LoadScenesEx()
     {
         subScenes = GetSubScenes();
-        LoadScenesEx(subScenes);
+        LoadScenesEx(subScenes,null);
     }
 
-    public void LoadScenesEx<T>(T[] scenes) where T : SubScene_Base
+    public void LoadScenesEx<T>(T[] scenes, Action finishedCallbak) where T : SubScene_Base
     {
         if (IsOneCoroutine)
         {
-            LoadScenesAsyncEx(scenes);
+            LoadScenesAsyncEx(scenes, finishedCallbak);
         }
         else
         {
-            LoadScenesAsync(scenes);
+            LoadScenesAsync(scenes, finishedCallbak);
         }
     }
     
@@ -640,10 +640,10 @@ public class SubSceneManager : MonoBehaviour
     public void LoadScenesAsync()
     {
         subScenes = GetSubScenes();
-        LoadScenesAsync(subScenes);
+        LoadScenesAsync(subScenes,null);
     }
 
-    public void LoadScenesAsync<T>(T[] scenes) where T : SubScene_Base
+    public void LoadScenesAsync<T>(T[] scenes, Action finishedCallbak) where T : SubScene_Base
     {
         DateTime start = DateTime.Now;
         OnProgressChanged(0);
@@ -652,17 +652,26 @@ public class SubSceneManager : MonoBehaviour
         for (int i = 0; i < scenes.Length; i++)
         {
             T item = scenes[i];
-            item.LoadSceneAsync(b =>
+
+            //WriteLog($"LoadScenesAsync Start count:{scenes.Length} index:{i} scene:{item.name}");
+
+            item.LoadSceneAsync((b,s) =>
             {
                 count++;
                 var progress = (count + 0.0f) / scenes.Length;
+                //WriteLog($"LoadScenesAsync End count:{scenes.Length} index:{count} progress:{progress} ");
+
                 OnProgressChanged(progress);
                 if (count == scenes.Length)
                 {
+                    if (finishedCallbak != null)
+                    {
+                        finishedCallbak();
+                    }
                     OnAllLoaded();
-                    WriteLog($"LoadScenesAsync  count:{scenes.Length},\t time:{(DateTime.Now - start).ToString()}");
+                    WriteLog($"count:{scenes.Length},\t time:{(DateTime.Now - start).ToString()}");
                 }
-            });//���Э�̣�����
+            });
         }
     }
 
@@ -670,17 +679,17 @@ public class SubSceneManager : MonoBehaviour
     public void LoadScenesAsyncEx()
     {
         subScenes = GetSubScenes();
-        LoadScenesAsyncEx(subScenes);//һ��Э��˳��
+        LoadScenesAsyncEx(subScenes,null);
     }
 
-    public void LoadScenesAsyncEx<T>(T[] scenes) where T : SubScene_Base
+    public void LoadScenesAsyncEx<T>(T[] scenes, Action finishedCallbak) where T : SubScene_Base
     {
-        StartCoroutine(LoadAllScenesCoroutine(scenes));//һ��Э��˳��
+        StartCoroutine(LoadAllScenesCoroutine(scenes, finishedCallbak));
     }
 
     public float loadProgress = 0;
 
-    IEnumerator LoadAllScenesCoroutine<T>(T[] scenes) where T : SubScene_Base
+    IEnumerator LoadAllScenesCoroutine<T>(T[] scenes,Action finishedCallbak) where T : SubScene_Base
     {
         //loadProgress = 0;
         OnProgressChanged(0);
@@ -696,7 +705,10 @@ public class SubSceneManager : MonoBehaviour
             yield return subScene.LoadSceneAsyncCoroutine(null);
         }
         WriteLog($"LoadScenesAsyncEx  count:{scenes.Length},\t time:{(DateTime.Now - start).ToString()}");
+
+        if (finishedCallbak != null) finishedCallbak();
         OnAllLoaded();
+        
         yield return null;
     }
 
@@ -777,7 +789,7 @@ public class SubSceneManager : MonoBehaviour
             var scenes = GameObject.FindObjectsOfType<SubScene_Single>();
             result = ToBaseScene(scenes);
         }
-        else //ȫ��
+        else
         {
             var scenes = GameObject.FindObjectsOfType<SubScene_Base>();
             result = ToBaseScene(scenes);
@@ -787,10 +799,6 @@ public class SubSceneManager : MonoBehaviour
         return result;
     }
 
-    /// <summary>
-    /// ����IsPartScene��ȡ��ͬ������
-    /// </summary>
-    /// <returns></returns>
     public SubScene_Base[] GetSubScenes()
     {
         List<SubScene_Base> scenes = new List<SubScene_Base>();

@@ -194,117 +194,112 @@ public class AreaTreeNodeShowManager : MonoBehaviour
 
     public bool IsDisToBounds = false;
 
+    public bool IsUpdateTreeNodeByDistance = false;
+
     public void Update()
     {
-        DateTime start=DateTime.Now;
-
-        ShownNodes.Clear();
-        HiddenNodes.Clear();
-        AvgDistance=0;
-        MinDistance=float.MaxValue;
-        MaxDistance=0;
-        ShownRenderCount=0;
-        HiddenRenderCount=0;
-        float sum=0;
-        int count=HiddenLeafNodes.Count;
-        foreach(var node in HiddenLeafNodes)
+        if (IsUpdateTreeNodeByDistance)
         {
-            if (node == null)
-            {
-                //continue;
-                Debug.LogError("node == null");
-                continue;
-            }
-            if (node.gameObject == null)
-            {
-                Debug.LogError("node.gameObject == null");
-                continue;
-            }
-            var bounds = node.Bounds;
-            var nodePos=node.transform.position;
-            float nodeDis1=float.MaxValue;
-            float nodeDis2=float.MaxValue;
-            foreach(var cam in cameras)
-            {
-                if(cam==null)continue;
-                var camPos=cam.transform.position;
+            DateTime start = DateTime.Now;
 
-                //float dis = 0;
-                //if(IsDisToBounds)
-                //{
-                //    dis = bounds.SqrDistance(camPos);
-                //}
-                //else
-                //{
-                //    //dis = Vector3.SqrMagnitude(camPos - nodePos);
-                //    dis = Vector3.Distance(camPos,nodePos);
-                //}
-
-                float dis = bounds.SqrDistance(camPos);
-
-                if (dis < nodeDis1)
+            ShownNodes.Clear();
+            HiddenNodes.Clear();
+            AvgDistance = 0;
+            MinDistance = float.MaxValue;
+            MaxDistance = 0;
+            ShownRenderCount = 0;
+            HiddenRenderCount = 0;
+            float sum = 0;
+            int count = HiddenLeafNodes.Count;
+            foreach (var node in HiddenLeafNodes)
+            {
+                if (node == null)
                 {
-                    nodeDis1 = dis;
+                    //continue;
+                    Debug.LogError("node == null");
+                    continue;
                 }
-            }
-            if(nodeDis1<=ShowNodeDistance)
-            {
-                ShownNodes.Add(node);
-            }
-            //else{
-            //    HiddenNodes.Add(node);
-            //}
+                if (node.gameObject == null)
+                {
+                    Debug.LogError("node.gameObject == null");
+                    continue;
+                }
+                var bounds = node.Bounds;
+                var nodePos = node.transform.position;
+                float nodeDis1 = float.MaxValue;
+                float nodeDis2 = float.MaxValue;
+                foreach (var cam in cameras)
+                {
+                    if (cam == null) continue;
+                    var camPos = cam.transform.position;
 
-            else if (nodeDis1 > HideNodeDistance)
-            {
-                HiddenNodes.Add(node);
-            }
-            else //[ShowNodeDistance,HideNodeDistance]
-            {
-                if (node.IsNodeVisible)
+                    float dis = bounds.SqrDistance(camPos);
+
+                    if (dis < nodeDis1)
+                    {
+                        nodeDis1 = dis;
+                    }
+                }
+                if (nodeDis1 <= ShowNodeDistance)
                 {
                     ShownNodes.Add(node);
                 }
-                else
+                //else{
+                //    HiddenNodes.Add(node);
+                //}
+
+                else if (nodeDis1 > HideNodeDistance)
                 {
                     HiddenNodes.Add(node);
                 }
+                else //[ShowNodeDistance,HideNodeDistance]
+                {
+                    if (node.IsNodeVisible)
+                    {
+                        ShownNodes.Add(node);
+                    }
+                    else
+                    {
+                        HiddenNodes.Add(node);
+                    }
+                }
+
+                node.DistanceToCamera = nodeDis1;
+                if (nodeDis1 > MaxDistance)
+                {
+                    MaxDistance = nodeDis1;
+                }
+                if (nodeDis1 < MinDistance)
+                {
+                    MinDistance = nodeDis1;
+                }
+                sum += nodeDis1;
             }
 
-            node.DistanceToCamera=nodeDis1;
-            if(nodeDis1>MaxDistance)
+
+            AvgDistance = sum / count;
+
+            UpdateTime1 = (DateTime.Now - start).TotalMilliseconds;
+            start = DateTime.Now;
+            //Debug.Log("HideNodes:" + HiddenNodes.Count);
+            foreach (var node in HiddenNodes)
             {
-                MaxDistance=nodeDis1;
+                //node.HideRenders();
+                node.HideNodes();
+                HiddenRenderCount += node.RendererCount;
             }
-            if(nodeDis1<MinDistance)
+            //Debug.Log("ShownNodes:" + ShownNodes.Count);
+            foreach (var node in ShownNodes)
             {
-                MinDistance=nodeDis1;
+                //node.ShowRenders();
+                node.ShowNodes();
+                ShownRenderCount += node.RendererCount;
             }
-            sum+=nodeDis1;
-        }
-        
 
-        AvgDistance=sum/count;
-
-        UpdateTime1=(DateTime.Now-start).TotalMilliseconds;
-        start=DateTime.Now;
-        //Debug.Log("HideNodes:" + HiddenNodes.Count);
-        foreach (var node in HiddenNodes)
-        {
-            //node.HideRenders();
-            node.HideNodes();
-            HiddenRenderCount+=node.RendererCount;
-        }
-        //Debug.Log("ShownNodes:" + ShownNodes.Count);
-        foreach (var node in ShownNodes)
-        {
-            //node.ShowRenders();
-            node.ShowNodes();
-            ShownRenderCount+=node.RendererCount;
+            UpdateTime2 = (DateTime.Now - start).TotalMilliseconds;
+            //Debug.Log($"AreaTreeNodeShowManager Update usedTime:{usedTime.TotalMilliseconds}ms");
         }
 
-        UpdateTime2=(DateTime.Now-start).TotalMilliseconds;
-        //Debug.Log($"AreaTreeNodeShowManager Update usedTime:{usedTime.TotalMilliseconds}ms");
     }
 
     public double UpdateTime1=0;

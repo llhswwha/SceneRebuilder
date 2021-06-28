@@ -60,10 +60,11 @@ public class SubSceneManagerUI : MonoBehaviour
 
     private void SubSceneManager_ProgressChanged(float obj)
     {
+        //Debug.LogError($"SubSceneManager_ProgressChanged progress:{obj}");
         sliderProgress.value = obj;
     }
 
-    public SubSceneType sceneType=SubSceneType.Single;
+    public SubSceneType sceneType=SubSceneType.Out0;
 
     public List<SubScene_Base> subScenes = new List<SubScene_Base>();
 
@@ -107,7 +108,7 @@ public class SubSceneManagerUI : MonoBehaviour
     {
         Debug.Log("ClickLoadAll");
         subSceneManager.IsOneCoroutine = toggleIsOneCoroutine.isOn;
-        subSceneManager.LoadScenesEx(subScenes.ToArray());
+        subSceneManager.LoadScenesEx(subScenes.ToArray(),null);
     }
 
     public void ClickUnloadAll()

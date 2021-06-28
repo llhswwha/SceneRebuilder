@@ -209,7 +209,11 @@ public static class IdDictionay
         List<MeshRenderer> renderers = new List<MeshRenderer>();
         foreach(var id in renderersId)
         {
-            renderers.Add(GetRenderer(id));
+            var renderer = GetRenderer(id);
+            if (renderer != null)
+            {
+                renderers.Add(renderer);
+            }
         }
         return renderers;
     }

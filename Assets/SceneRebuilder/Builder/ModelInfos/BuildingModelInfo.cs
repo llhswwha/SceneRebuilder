@@ -863,7 +863,7 @@ public class BuildingModelInfo : SubSceneCreater
 
         var partScenes = gameObject.GetComponentsInChildren<SubScene_Part>(true);
         SubSceneManager subSceneManager = GameObject.FindObjectOfType<SubSceneManager>();
-        subSceneManager.LoadScenesEx(partScenes);
+        subSceneManager.LoadScenesEx(partScenes,null);
 
         //SceneState = "LoadScenes_Part";
     }
@@ -885,7 +885,7 @@ public class BuildingModelInfo : SubSceneCreater
 
         var scenes = gameObject.GetComponentsInChildren<SubScene_Single>(true);
         SubSceneManager subSceneManager = GameObject.FindObjectOfType<SubSceneManager>();
-        subSceneManager.LoadScenesEx(scenes);
+        subSceneManager.LoadScenesEx(scenes,null);
     }
 
     [ContextMenu("DestroyScenes")]

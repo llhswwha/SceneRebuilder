@@ -268,6 +268,16 @@ public class SubScene_Base : MonoBehaviour
         }
         gos.Clear();
 
+        if (sceneArg != null && sceneArg.objs != null)
+        {
+            foreach (var obj in sceneArg.objs)
+            {
+                if (obj == null) continue;
+                GameObject.DestroyImmediate(obj);
+            }
+            sceneArg.objs = null;
+        }
+
         IsLoaded = false;
         IsLoading = false;
     }
@@ -281,6 +291,17 @@ public class SubScene_Base : MonoBehaviour
             GameObject.Destroy(go);
         }
         gos.Clear();
+
+        if(sceneArg!=null&& sceneArg.objs != null)
+        {
+            foreach (var obj in sceneArg.objs)
+            {
+                if (obj == null) continue;
+                GameObject.Destroy(obj);
+            }
+            sceneArg.objs = null;
+        }
+
 
         IsLoaded = false;
         IsLoading = false;
@@ -306,14 +327,14 @@ public class SubScene_Base : MonoBehaviour
     //    LoadSceneAsync();
     //}
 
-    public IEnumerator LoadSceneAsyncCoroutine(Action<bool> callback)
+    public IEnumerator LoadSceneAsyncCoroutine(Action<bool,SubScene_Base> callback)
     {
         if (IsLoading || IsLoaded)
         {
             Debug.LogWarning("IsLoading || IsLoaded :" + GetSceneName());
             if (callback != null)
             {
-                callback(false);
+                callback(false,this);
             }
             yield return null;
         }
@@ -336,7 +357,7 @@ public class SubScene_Base : MonoBehaviour
 
                 if (callback != null)
                 {
-                    callback(true);
+                    callback(true,this);
                 }
 
 
@@ -362,7 +383,7 @@ public class SubScene_Base : MonoBehaviour
     }
 
     //[ContextMenu("LoadSceneAsync")]
-    public void LoadSceneAsync(Action<bool> callback)
+    public void LoadSceneAsync(Action<bool,SubScene_Base> callback)
     {
 
 
@@ -381,12 +402,13 @@ public class SubScene_Base : MonoBehaviour
 
         if (this.gameObject.activeInHierarchy == false)
         {
-            Debug.LogError("this.gameObject.activeInHierarchy == false :"+name);
-            if (callback != null)
-            {
-                callback(false);
-            }
-            return;
+            Debug.LogWarning("this.gameObject.activeInHierarchy == false :" + name);
+            //if (callback != null)
+            //{
+            //    callback(false);
+            //}
+            //return;
+            this.gameObject.SetActive(true);
         }
         StartCoroutine(LoadSceneAsyncCoroutine(callback));
     }

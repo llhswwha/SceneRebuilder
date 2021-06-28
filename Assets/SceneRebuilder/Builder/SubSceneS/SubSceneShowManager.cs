@@ -14,18 +14,19 @@ public class SubSceneShowManager : MonoBehaviour
 
     public List<SubScene_Out0> scenes_Out0_Part = new List<SubScene_Out0>();
     public List<SubScene_Out0> scenes_Out0_Tree = new List<SubScene_Out0>();
-
+    public List<SubScene_Out0> scenes_Out0_TreeNode = new List<SubScene_Out0>();
     public Camera[] cameras;
 
     [ContextMenu("Init")]
     public void Init()
     {
-        sceneManager = GameObject.FindObjectOfType<SubSceneManager>();
+        sceneManager = GameObject.FindObjectOfType<SubSceneManager>(true);
         scenes_In = GameObject.FindObjectsOfType<SubScene_In>(true);
 
         var scenes_Out0 = GameObject.FindObjectsOfType<SubScene_Out0>(true);
         foreach(var s in scenes_Out0)
         {
+            //s.gameObject.SetActive(true);
             if(s.contentType==SceneContentType.Part)
             {
                 scenes_Out0_Part.Add(s);
@@ -35,6 +36,10 @@ public class SubSceneShowManager : MonoBehaviour
             if (s.contentType == SceneContentType.Tree)
             {
                 scenes_Out0_Tree.Add(s);
+            }
+            if (s.contentType == SceneContentType.TreeNode)
+            {
+                scenes_Out0_TreeNode.Add(s);
             }
         }
         scenes_Out1 = GameObject.FindObjectsOfType<SubScene_Out1>(true);
@@ -54,10 +59,16 @@ public class SubSceneShowManager : MonoBehaviour
     {
         Init();
 
-        if(IsAutoLoad)
-            sceneManager.LoadScenesEx(scenes_Out0_Tree.ToArray());//1.启动时自动加载模型
+        if (IsAutoLoad)
+        {
+            //sceneManager.LoadScenesEx(scenes_Out0_Tree.ToArray());//1.启动时自动加载模型
+            sceneManager.LoadScenesEx(scenes_Out0_TreeNode.ToArray(), () =>
+             {
+                //AreaTreeNodeShowManager.Instance.IsUpdateTreeNodeByDistance = true;
+            });//1.启动时自动加载模型
+        }
 
-        if(AreaTreeNodeShowManager.Instance)
+        if (AreaTreeNodeShowManager.Instance)
         {
             AreaTreeNodeShowManager.Instance.ShowNodeDistance = this.DisOfVisible;
             AreaTreeNodeShowManager.Instance.HideNodeDistance = this.DisOfHidden;
@@ -181,18 +192,40 @@ public class SubSceneShowManager : MonoBehaviour
         return $"Min:{MinDisToCam:F0},Max:{MaxDisToCam:F0},MinSqrt:{MinDisSqrtToCam:F0},MaxSqrt:{MaxDisSqrtToCam:F0},time:{TimeOfDis:F1}";
     }
 
+    public bool IsUpdateDistance = true;
+
+    //int updateCount = 0;
+    //private void FixedUpdate()
+    //{
+    //    updateCount++;
+    //    if (IsAutoLoad&& updateCount>100)
+    //    {
+    //        IsAutoLoad = false;
+    //        //sceneManager.LoadScenesEx(scenes_Out0_Tree.ToArray());//1.启动时自动加载模型
+    //        sceneManager.LoadScenesEx(scenes_Out0_TreeNode.ToArray(), () =>
+    //        {
+    //            //AreaTreeNodeShowManager.Instance.IsUpdateTreeNodeByDistance = true;
+    //        });//1.启动时自动加载模型
+    //    }
+    //}
+
     // Update is called once per frame
     void Update()
     {
-        List<SubScene_Base> subScenes = new List<SubScene_Base>();
-        foreach(var scene in scenes_In)
+
+
+        if (IsUpdateDistance)
         {
-            subScenes.Add(scene);
+            List<SubScene_Base> subScenes = new List<SubScene_Base>();
+            foreach (var scene in scenes_In)
+            {
+                subScenes.Add(scene);
+            }
+            foreach (var scene in scenes_Out1)
+            {
+                subScenes.Add(scene);
+            }
+            CalculateDistance(subScenes);
         }
-        foreach (var scene in scenes_Out1)
-        {
-            subScenes.Add(scene);
-        }
-        CalculateDistance(subScenes);
     }
 }
