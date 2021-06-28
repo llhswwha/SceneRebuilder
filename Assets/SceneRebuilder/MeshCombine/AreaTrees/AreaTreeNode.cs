@@ -821,22 +821,40 @@ public class AreaTreeNode : SubSceneCreater
 
         List<SubScene_Base> scenes = new List<SubScene_Base>();
 
-        var scene1 = SubSceneHelper.EditorCreateScene<SubScene_Out0>(combindResult, false);
-        //scene1.gos = SubSceneHelper.GetChildrenGos(combindResult.transform);
-        scene1.SetObjects(SubSceneHelper.GetChildrenGos(combindResult.transform));
-        scene1.Init();
-        scenes.Add(scene1);
+        SubScene_Out0 scene1 = null;
+        if (combindResult)
+        {
+            scene1 = SubSceneHelper.EditorCreateScene<SubScene_Out0>(combindResult, false);
+            //scene1.gos = SubSceneHelper.GetChildrenGos(combindResult.transform);
+            scene1.SetObjects(SubSceneHelper.GetChildrenGos(combindResult.transform));
+            scene1.Init();
+            scenes.Add(scene1);
+        }
+        else
+        {
+            Debug.LogError("AreaTreeNode.EditorCreateScenes combindResult==null:"+this.name);
+        }
 
+        SubScene_In scene2 = null;
+        if (renderersRoot)
+        {
+            MoveRenderers();
+            scene2 = SubSceneHelper.EditorCreateScene<SubScene_In>(renderersRoot, false);
+            //scene2.gos = SubSceneHelper.GetChildrenGos(renderersRoot.transform);
+            scene2.SetObjects(SubSceneHelper.GetChildrenGos(renderersRoot.transform));
+            scene2.Init();
+            scenes.Add(scene2);
+        }
+        else
+        {
+            Debug.LogError("AreaTreeNode.EditorCreateScenes renderersRoot==null:" + this.name);
+        }
 
-        MoveRenderers();
-        var scene2 = SubSceneHelper.EditorCreateScene<SubScene_In>(renderersRoot, false);
-        //scene2.gos = SubSceneHelper.GetChildrenGos(renderersRoot.transform);
-        scene2.SetObjects(SubSceneHelper.GetChildrenGos(renderersRoot.transform));
-        scene2.Init();
-        scenes.Add(scene2);
+        if (scene2 != null)
+            scene2.LinkedScene = scene1;
 
-        scene2.LinkedScene = scene1;
-        scene1.LinkedScene = scene2;
+        if(scene1!=null)
+            scene1.LinkedScene = scene2;
 
         EditorCreateScenes(scenes, null);
 
@@ -847,7 +865,7 @@ public class AreaTreeNode : SubSceneCreater
     }
 
     [ContextMenu("* EditorLoadScenes")]
-    private void EditorLoadScenes()
+    public void EditorLoadScenes()
     {
         EditorLoadScenes(null);
     }

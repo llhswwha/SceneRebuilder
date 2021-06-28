@@ -162,18 +162,18 @@ public class SubSceneCreater : MonoBehaviour
     }
 
 
-    [ContextMenu("Base> SaveTreeRendersId")]
+    //[ContextMenu("Base> SaveTreeRendersId")]
     public virtual void SaveTreeRendersId()
     {
         Debug.Log("SubSceneCreater.SaveTreeRendersId");
     }
 
-    [ContextMenu("Base> TestSaveTreeRendersId")]
-    public virtual void TestSaveTreeRendersId()
-    {
-        Debug.Log("SubSceneCreater.TestSaveTreeRendersId");
-        SaveTreeRendersId();
-    }
+    //[ContextMenu("Base> TestSaveTreeRendersId")]
+    //public virtual void TestSaveTreeRendersId()
+    //{
+    //    Debug.Log("SubSceneCreater.TestSaveTreeRendersId");
+    //    SaveTreeRendersId();
+    //}
 
     //[ContextMenu("Base> EditorCreateScenes")]
     //public void EditorCreateScenes()

@@ -67,7 +67,11 @@ public static class SubSceneHelper
 
     public static T EditorCreateScene<T>(GameObject go,bool isSave) where T : SubScene_Base
     {
-
+        if (go == null)
+        {
+            Debug.LogError("SubSceneHelper.EditorCreateScene go==null");
+            return null;
+        }
         //UpackPrefab_One(go);
         //SubSceneManager subSceneManager = SubSceneManager.Instance;
         //SubScene_Single ss = go.AddComponent<SubScene_Single>();

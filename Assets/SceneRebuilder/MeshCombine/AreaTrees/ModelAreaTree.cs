@@ -4,7 +4,7 @@ using UnityEngine;
 using System;
 using System.Linq;
 
-public class ModelAreaTree : MonoBehaviour
+public class ModelAreaTree : SubSceneCreater
 {
    public GameObject Target=null;
 
@@ -348,7 +348,7 @@ public class ModelAreaTree : MonoBehaviour
         }
     }
 
-    [ContextMenu("1.AddColliders")]
+    //[ContextMenu("1.AddColliders")]
     public void AddColliders()
     {
         DateTime start=DateTime.Now;
@@ -363,7 +363,7 @@ public class ModelAreaTree : MonoBehaviour
         Debug.LogWarning($"AddColliders renderers:{renderers.Length},\t{(DateTime.Now-start).ToString()}");
     }
 
-    [ContextMenu("ClearDictionary")]
+    //[ContextMenu("ClearDictionary")]
     public void ClearDictionary()
     {
         AreaTreeHelper.render2NodeDict.Clear();
@@ -605,20 +605,20 @@ public class ModelAreaTree : MonoBehaviour
         }
     }
 
-    [ContextMenu("RecoverParent")]
-    public List<MeshRenderer> GetCombinedRenderers()
-    {
-        List<MeshRenderer> renderers=new List<MeshRenderer>();
-         foreach(var node in TreeLeafs){
-               renderers.AddRange(node.GetCombinedRenderers());
-        }
-        Debug.Log("GetCombinedRenderers:"+renderers);
-        return renderers;
-    }
+    //[ContextMenu("RecoverParent")]
+    //public List<MeshRenderer> GetCombinedRenderers()
+    //{
+    //    List<MeshRenderer> renderers=new List<MeshRenderer>();
+    //     foreach(var node in TreeLeafs){
+    //           renderers.AddRange(node.GetCombinedRenderers());
+    //    }
+    //    Debug.Log("GetCombinedRenderers:"+renderers);
+    //    return renderers;
+    //}
 
     public int VertexCount;
 
-    [ContextMenu("GetVertexCount")]
+    //[ContextMenu("GetVertexCount")]
     public void GetVertexCount()
     {
         DateTime start = DateTime.Now;
@@ -722,7 +722,7 @@ public class ModelAreaTree : MonoBehaviour
         Debug.LogError($"SetMaterials {(DateTime.Now - start).ToString()},mats:{mats.Count},count:{count}");
     }
 
-    [ContextMenu("ShowModelInfo")]
+    //[ContextMenu("ShowModelInfo")]
     private void ShowModelInfo()
     {
         int renderCount = 0;
@@ -839,5 +839,49 @@ public class ModelAreaTree : MonoBehaviour
         }
         Target = IdDictionay.GetGo(TargetId);
         //Debug.Log("LoadRenderers:"+this.name);
+    }
+
+    [ContextMenu("* EditorCreateScenes")]
+    public void EditorCreateScenes()
+    {
+        DateTime start = DateTime.Now;
+
+        for (int i = 0; i < TreeLeafs.Count; i++)
+        {
+            var leafNode = TreeLeafs[i];
+            if (leafNode == null) continue;
+            float progress = (float)i / TreeLeafs.Count;
+            float percents = progress * 100;
+            if (ProgressBarHelper.DisplayCancelableProgressBar("EditorCreateScenes", $"{i}/{TreeLeafs.Count} {percents}% of 100%", progress))
+            {
+                break;
+            }
+            leafNode.EditorCreateScenes();
+        }
+        ProgressBarHelper.ClearProgressBar();
+
+        Debug.LogError($"ModelAreaTree.EditorCreateScenes time:{(DateTime.Now - start)}");
+    }
+
+    [ContextMenu("* EditorLoadScenes")]
+    private void EditorLoadScenes()
+    {
+        DateTime start = DateTime.Now;
+
+        for (int i = 0; i < TreeLeafs.Count; i++)
+        {
+            var leafNode = TreeLeafs[i];
+            if (leafNode == null) continue;
+            float progress = (float)i / TreeLeafs.Count;
+            float percents = progress * 100;
+            if (ProgressBarHelper.DisplayCancelableProgressBar("EditorLoadScenes", $"{i}/{TreeLeafs.Count} {percents}% of 100%", progress))
+            {
+                break;
+            }
+            leafNode.EditorLoadScenes();
+        }
+        ProgressBarHelper.ClearProgressBar();
+
+        Debug.LogError($"ModelAreaTree.EditorLoadScenes time:{(DateTime.Now - start)}");
     }
 }
