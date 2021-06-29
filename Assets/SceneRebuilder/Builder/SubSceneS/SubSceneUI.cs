@@ -49,7 +49,7 @@ public class SubSceneUI : MonoBehaviour
         txtName.text = $"[{id:000}]{subScene.GetSceneInfo()}";
         scene = subScene;
         scene.ProgressChanged += Scene_ProgressChanged;
-        scene.AllLoaded += Scene_AllLoaded;
+        scene.LoadFinished += Scene_AllLoaded;
 
         toggleIsLoaded.isOn = scene.IsLoaded;
         txtLog.text = scene.Log;
@@ -59,17 +59,17 @@ public class SubSceneUI : MonoBehaviour
     private void OnDestroy()
     {
         scene.ProgressChanged -= Scene_ProgressChanged;
-        scene.AllLoaded -= Scene_AllLoaded;
+        scene.LoadFinished -= Scene_AllLoaded;
     }
 
-    private void Scene_AllLoaded()
+    private void Scene_AllLoaded(SubScene_Base scene)
     {
         Debug.Log("Scene_AllLoaded:" + scene.Log+"|"+scene.loadProgress);
         txtLog.text = scene.Log;
         toggleIsLoaded.isOn = true;
     }
 
-    private void Scene_ProgressChanged(float obj)
+    private void Scene_ProgressChanged(float obj,SubScene_Base scene)
     {
         //Debug.Log("Scene_ProgressChanged:"+obj);
         sliderProgresss.value = obj;

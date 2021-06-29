@@ -22,6 +22,8 @@ public class SubSceneManagerUI : MonoBehaviour
 
     public RectTransform panelSceneList;
 
+    public RectTransform panelSceneList_Loaded;
+
     public GameObject subSceneUIPrefab;
 
     void Start()
@@ -36,6 +38,36 @@ public class SubSceneManagerUI : MonoBehaviour
         ToggleDynamicShow.onValueChanged.AddListener(OnDynamicShowChanged);
 
         ClickGetScenes();
+
+        var allScenes = GameObject.FindObjectsOfType<SubScene_Base>(true);
+        Debug.LogError($"SubSceneManager.Start allScenes:{allScenes.Length}");
+        foreach (var scene in allScenes)
+        {
+            scene.ProgressChanged += Scene_ProgressChanged;
+        }
+    }
+
+    private List<SubScene_Base> loadedScene = new List<SubScene_Base>();
+
+    private List<SubSceneUI> sceneUIList = new List<SubSceneUI>();
+
+    private void Scene_ProgressChanged(float arg1, SubScene_Base arg2)
+    {
+        
+        if(!loadedScene.Contains(arg2))
+        {
+            Debug.LogError($"Scene_ProgressChanged scene:{arg2}");
+
+            loadedScene.Add(arg2);
+
+            sceneUIList.Add(CreateSceneUIItem(arg2, loadedScene.Count, panelSceneList_Loaded));
+            for (int i = sceneUIList.Count-1; i >=0; i--)
+            {
+                SubSceneUI ui = sceneUIList[i];
+                ui.transform.SetParent(null);
+                ui.transform.SetParent(panelSceneList_Loaded);
+            }
+        }
     }
 
     private void OnDynamicShowChanged(bool isOn)
@@ -93,15 +125,21 @@ public class SubSceneManagerUI : MonoBehaviour
         {
             var subScene = scenes[i];
             if (subScene == null) continue;
-            var uiItem = GameObject.Instantiate(subSceneUIPrefab);
-            itemList.Add(uiItem);
-            uiItem.SetActive(true);
-            SubSceneUI ui = uiItem.GetComponent<SubSceneUI>();
-            ui.SetScene(i + 1, subScene);
-            uiItem.transform.SetParent(panelSceneList);
-
-            subScenes.Add(subScene);
+            CreateSceneUIItem(subScene,i+1, panelSceneList);
         }
+    }
+
+    public SubSceneUI CreateSceneUIItem(SubScene_Base subScene,int id,Transform parent)
+    {
+        var uiItem = GameObject.Instantiate(subSceneUIPrefab);
+        itemList.Add(uiItem);
+        uiItem.SetActive(true);
+        SubSceneUI ui = uiItem.GetComponent<SubSceneUI>();
+        ui.SetScene(id, subScene);
+        uiItem.transform.SetParent(parent);
+
+        subScenes.Add(subScene);
+        return ui;
     }
 
     public void ClickLoadAll()

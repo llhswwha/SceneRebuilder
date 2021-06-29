@@ -96,27 +96,27 @@ public class SubScene_Base : MonoBehaviour
 
     public bool IsAutoLoad = false;
 
-    public event Action<float> ProgressChanged;
+    public event Action<float,SubScene_Base> ProgressChanged;
 
     protected void OnProgressChanged(float progress)
     {
         this.loadProgress = progress;
         if (ProgressChanged != null)
         {
-            ProgressChanged(progress);
+            ProgressChanged(progress,this);
         }
     }
 
-    public event Action AllLoaded;
+    public event Action<SubScene_Base> LoadFinished;
 
-    protected void OnAllLoaded()
+    protected void OnLoadedFinished()
     {
 
         OnProgressChanged(1);
 
-        if (AllLoaded != null)
+        if (LoadFinished != null)
         {
-            AllLoaded();
+            LoadFinished(this);
         }
     }
 
@@ -363,7 +363,7 @@ public class SubScene_Base : MonoBehaviour
 
                 //WriteLog($"Load name:{GetSceneName()},time:{(DateTime.Now - start).ToString()},progress:{loadProgress}");
                 WriteLog($"Load {GetSceneName()} : {(DateTime.Now - start).ToString()}");
-                OnAllLoaded();
+                OnLoadedFinished();
             }, IsSetParent);
         }
     }

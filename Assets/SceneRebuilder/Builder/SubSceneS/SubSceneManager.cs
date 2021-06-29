@@ -791,7 +791,7 @@ public class SubSceneManager : MonoBehaviour
         }
         else
         {
-            var scenes = GameObject.FindObjectsOfType<SubScene_Base>();
+            var scenes = GameObject.FindObjectsOfType<SubScene_Base>(true);
             result = ToBaseScene(scenes);
         }
 
