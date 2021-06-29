@@ -23,9 +23,7 @@ public class SubSceneCreater : MonoBehaviour
         }
     }
 
-    /// <summary>
-    /// ר�Ŵ���һ��SceneList�ֱ���ʾSubScene����Ϣ
-    /// </summary>
+#if UNITY_EDITOR
     [ContextMenu("EditorMoveScenes")]
     public void EditorMoveScenes()
     {
@@ -60,7 +58,7 @@ public class SubSceneCreater : MonoBehaviour
             foreach (var c in components)
             {
                 //if (c.contentType == contentType)
-                GameObject.DestroyImmediate(c);//���´�������֮ǰ��ɾ��
+                GameObject.DestroyImmediate(c);
             }
         }
 
@@ -146,27 +144,7 @@ public class SubSceneCreater : MonoBehaviour
         //this.InitInOut(false);
         //SceneState = "EditLoadScenes_Part";
     }
-    protected List<SubScene_Base> GetSubScenesOfTypes(List<SceneContentType> types)
-    {
-        List<SubScene_Base> list = new List<SubScene_Base>();
-        var scenes = gameObject.GetComponentsInChildren<SubScene_Base>(true);
-        for (int i = 0; i < scenes.Length; i++)
-        {
-            SubScene_Base scene = scenes[i];
-            if (types.Contains(scene.contentType))
-            {
-                list.Add(scene);
-            }
-        }
-        return list;
-    }
 
-
-    //[ContextMenu("Base> SaveTreeRendersId")]
-    public virtual void SaveTreeRendersId()
-    {
-        Debug.Log("SubSceneCreater.SaveTreeRendersId");
-    }
 
     //[ContextMenu("Base> TestSaveTreeRendersId")]
     //public virtual void TestSaveTreeRendersId()
@@ -190,4 +168,29 @@ public class SubSceneCreater : MonoBehaviour
     //{
     //    //EditorCreateScenes_TreeWithPart(null);
     //}
+
+#endif
+
+    protected List<SubScene_Base> GetSubScenesOfTypes(List<SceneContentType> types)
+    {
+        List<SubScene_Base> list = new List<SubScene_Base>();
+        var scenes = gameObject.GetComponentsInChildren<SubScene_Base>(true);
+        for (int i = 0; i < scenes.Length; i++)
+        {
+            SubScene_Base scene = scenes[i];
+            if (types.Contains(scene.contentType))
+            {
+                list.Add(scene);
+            }
+        }
+        return list;
+    }
+
+
+    //[ContextMenu("Base> SaveTreeRendersId")]
+    public virtual void SaveTreeRendersId()
+    {
+        Debug.Log("SubSceneCreater.SaveTreeRendersId");
+    }
+
 }

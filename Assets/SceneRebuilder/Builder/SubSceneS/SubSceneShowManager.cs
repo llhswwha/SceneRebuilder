@@ -71,6 +71,8 @@ public class SubSceneShowManager : MonoBehaviour
 
                  WaitingScenes.AddRange(scenes_Out0_TreeNode);
 
+                 AreaTreeNodeShowManager.Instance.IsUpdateTreeNodeByDistance = true;
+
              });//1.启动时自动加载模型
         }
 

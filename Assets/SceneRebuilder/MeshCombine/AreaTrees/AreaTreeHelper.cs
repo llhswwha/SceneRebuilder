@@ -23,7 +23,7 @@ public static class AreaTreeHelper
             //renderer.gameObject.AddComponent<MeshCollider>();
             if (AreaTreeHelper.render2NodeDict.ContainsKey(render))
             {
-                //Debug.LogError($"ģ���ظ��ڲ�ͬ��Node��:{AreaTreeHelper.render2NodeDict[render]},{this}");
+                
             }
             else
             {
@@ -39,7 +39,7 @@ public static class AreaTreeHelper
             //renderer.gameObject.AddComponent<MeshCollider>();
             if (AreaTreeHelper.combined2NodeDict.ContainsKey(render))
             {
-                //Debug.LogError($"ģ���ظ��ڲ�ͬ��Node��:{AreaTreeHelper.render2NodeDict[render]},{this}");
+                
             }
             else
             {

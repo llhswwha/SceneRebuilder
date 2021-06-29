@@ -42,7 +42,7 @@ public class MeshSelection : MonoBehaviour
                     if (!AreaTreeHelper.combined2NodeDict.ContainsKey(lastRenderer))
                     {
                         var treeNode = lastRenderer.GetComponentInParent<AreaTreeNode>();
-                        Debug.LogError("FindTreeNode :" + lastRenderer);
+                        Debug.LogError($"FindTreeNode renderer:{lastRenderer} node:{treeNode}");
                         if (treeNode)
                         {
                             treeNode.CreateDictionary();

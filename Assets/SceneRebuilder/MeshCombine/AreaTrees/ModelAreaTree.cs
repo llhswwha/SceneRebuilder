@@ -841,6 +841,7 @@ public class ModelAreaTree : SubSceneCreater
         //Debug.Log("LoadRenderers:"+this.name);
     }
 
+#if UNITY_EDITOR
     [ContextMenu("* EditorCreateNodeScenes")]
     private void EditorCreateNodeScenes()
     {
@@ -961,4 +962,5 @@ public class ModelAreaTree : SubSceneCreater
 
         Debug.LogError($"ModelAreaTree.EditorLoadNodeScenes time:{(DateTime.Now - start)}");
     }
+#endif
 }

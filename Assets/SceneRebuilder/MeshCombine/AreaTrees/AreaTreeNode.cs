@@ -2,6 +2,7 @@ using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 using System;
+using System.Linq;
 
 public class AreaTreeNode : SubSceneCreater
 {
@@ -18,6 +19,19 @@ public class AreaTreeNode : SubSceneCreater
     public bool IsLeaf = false;
 
     public List<MeshRenderer> Renderers = new List<MeshRenderer>();
+
+    public int GetRendererCount()
+    {
+        int i = 0;
+        foreach(var r in Renderers)
+        {
+            if (r != null)
+            {
+                i++;
+            }
+        }
+        return i;
+    }
 
     public List<string> RenderersId = new List<string>();
 
@@ -717,12 +731,24 @@ public class AreaTreeNode : SubSceneCreater
     [ContextMenu("CreateDictionary")]
     public void CreateDictionary()
     {
-        //Debug.Log("CreateDictionary Start:"+AreaTreeHelper.render2NodeDict.Count);
+        Debug.Log($"CreateDictionary StartCount:{AreaTreeHelper.render2NodeDict.Count},Renderers:{Renderers.Count} Count:{GetRendererCount()}");
         if (this.Nodes.Count == 0)
         {
-            //Renders
-            foreach (var render in this.Renderers)
+            if(GetRendererCount()==0)
             {
+                Renderers= renderersRoot.GetComponentsInChildren<MeshRenderer>(true).ToList();
+                Debug.Log($"CreateDictionary FindRenderers Renderers:{Renderers.Count} Count:{GetRendererCount()}");
+            }
+ 
+            //Renders
+            for (int i = 0; i < Renderers.Count; i++)
+            {
+                MeshRenderer render = this.Renderers[i];
+                if (render == null)
+                {
+                    Debug.LogError($"AreaTreeNode.CreateDictionary render == null id:{i}");
+                    continue;
+                }
                 if (AreaTreeHelper.render2NodeDict.ContainsKey(render))
                 {
                     var node = AreaTreeHelper.render2NodeDict[render];
@@ -754,7 +780,7 @@ public class AreaTreeNode : SubSceneCreater
         //Debug.Log("CreateDictionary 2:"+AreaTreeHelper.render2NodeDict.Count);
         if (combindResult != null)
         {
-            var renderers = combindResult.GetComponentsInChildren<MeshRenderer>();
+            var renderers = combindResult.GetComponentsInChildren<MeshRenderer>(true);
             AreaTreeHelper.AddNodeDictItem_Renderers(renderers, this);
             AreaTreeHelper.AddNodeDictItem_Combined(renderers, this);
         }
@@ -864,7 +890,7 @@ public class AreaTreeNode : SubSceneCreater
     {
         this.SaveRenderersId();
     }
-
+#if UNITY_EDITOR
     [ContextMenu("* EditorCreateNodeScenes")]
     private void EditorCreateNodeScenes()
     {
@@ -939,7 +965,7 @@ public class AreaTreeNode : SubSceneCreater
     public void EditorLoadScenes(Action<float> progressChanged)
     {
         DateTime start = DateTime.Now;
-        var scenes = GetSubScenesOfTypes(new List<SceneContentType>() { SceneContentType.TreeNode });//����ʵ��ʹ����Ҳ���ȳ���Tree���ٰ������Part��
+        var scenes = GetSubScenesOfTypes(new List<SceneContentType>() { SceneContentType.TreeNode });
         EditorLoadScenes(scenes.ToArray(), progressChanged);
 
         //this.InitInOut(false);
@@ -949,6 +975,8 @@ public class AreaTreeNode : SubSceneCreater
 
         Debug.LogError($"EditorLoadScenes time:{(DateTime.Now - start)}");
     }
+
+#endif
 
 
     public void LoadAndSwitchToRenderers(Action<bool> callback)
