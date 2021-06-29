@@ -169,6 +169,8 @@ public class SubScene_Base : MonoBehaviour
         }
     }
 
+    public int cubePrefabId = 0;
+
     internal void ShowBounds(Transform boxP)
     {
         //Debug.Log("ShowBounds:"+BoundsName+"|"+ contentType);
@@ -177,7 +179,7 @@ public class SubScene_Base : MonoBehaviour
 
         if (boundsGo == null)
         {
-            boundsGo = AreaTreeHelper.CreateBoundsCube(bounds, BoundsName, boxP);
+            boundsGo = AreaTreeHelper.CreateBoundsCube(bounds, BoundsName, boxP, cubePrefabId);
         }
         else
         {
@@ -481,6 +483,13 @@ public class SubScene_Base : MonoBehaviour
         {
             GetSceneObjects();
             Debug.LogError($"CheckGetSceneObjects {this.name} UnLoadSceneAsync1!!!");
+
+            //if (this.gameObject.activeSelf == false)
+            //{
+            //    HideBoundsBox();
+            //    this.gameObject.SetActive(true);
+            //}
+
             StartCoroutine(EditorHelper.UnLoadSceneAsync(GetSceneName(), null,null));
         }
         else

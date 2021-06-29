@@ -107,7 +107,7 @@ public class SubSceneManager : MonoBehaviour
                 break;
             }
 
-            item.OneKey((subProgress) =>
+            item.OneKey_TreePartScene((subProgress) =>
             {
                 //Debug.Log($"EditorCreateBuildingScenes subProgress:{subProgress} || {i}/{subScenes.Length} {percents:F2}% of 100% \t{item.name}");
                 float progress = (float)(i + subProgress) / count;
@@ -659,7 +659,7 @@ public class SubSceneManager : MonoBehaviour
             {
                 count++;
                 var progress = (count + 0.0f) / scenes.Length;
-                //WriteLog($"LoadScenesAsync End count:{scenes.Length} index:{count} progress:{progress} ");
+                WriteLog($"count:{scenes.Length} index:{count} progress:{progress} ");
 
                 OnProgressChanged(progress);
                 if (count == scenes.Length)
@@ -668,8 +668,9 @@ public class SubSceneManager : MonoBehaviour
                     {
                         finishedCallbak();
                     }
-                    OnAllLoaded();
                     WriteLog($"count:{scenes.Length},\t time:{(DateTime.Now - start).ToString()}");
+                    OnAllLoaded();
+                    
                 }
             });
         }
@@ -699,12 +700,14 @@ public class SubSceneManager : MonoBehaviour
         {
             var subScene = scenes[i];
             var progress = (i+0.0f) / scenes.Length;
+            WriteLog($"count:{scenes.Length} index:{i} progress:{progress} ");
+
             OnProgressChanged(progress);
-            Debug.Log($"loadProgress:{loadProgress},scene:{subScene.GetSceneName()}");
+            //Debug.Log($"loadProgress:{loadProgress},scene:{subScene.GetSceneName()}");
             
             yield return subScene.LoadSceneAsyncCoroutine(null);
         }
-        WriteLog($"LoadScenesAsyncEx  count:{scenes.Length},\t time:{(DateTime.Now - start).ToString()}");
+        WriteLog($"count:{scenes.Length},\t time:{(DateTime.Now - start).ToString()}");
 
         if (finishedCallbak != null) finishedCallbak();
         OnAllLoaded();

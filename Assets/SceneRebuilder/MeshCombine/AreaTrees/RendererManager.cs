@@ -41,7 +41,7 @@ public class RendererManager : MonoBehaviour
     {
         var renderers=TestGo.GetComponentsInChildren<MeshRenderer>(true);
         var bounds = ColliderHelper.CaculateBounds(renderers);
-        AreaTreeHelper.CreateBoundsCube(bounds, "TestBounds", transform);
+        AreaTreeHelper.CreateBoundsCube(bounds, "TestBounds", transform,0);
     }
 
     [ContextMenu("InitIds")]

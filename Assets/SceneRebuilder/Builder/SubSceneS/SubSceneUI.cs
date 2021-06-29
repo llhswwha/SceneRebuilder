@@ -58,8 +58,12 @@ public class SubSceneUI : MonoBehaviour
 
     private void OnDestroy()
     {
-        scene.ProgressChanged -= Scene_ProgressChanged;
-        scene.LoadFinished -= Scene_AllLoaded;
+        if (scene)
+        {
+            scene.ProgressChanged -= Scene_ProgressChanged;
+            scene.LoadFinished -= Scene_AllLoaded;
+        }
+
     }
 
     private void Scene_AllLoaded(SubScene_Base scene)

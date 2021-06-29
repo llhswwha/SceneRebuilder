@@ -510,7 +510,7 @@ public class AreaTreeNode : SubSceneCreater
 
 
     //private ModelAreaTree tree;
-    public List<AreaTreeNode> CreateSubNodes(int level, int index, ModelAreaTree tree)
+    public List<AreaTreeNode> CreateSubNodes(int level, int index, ModelAreaTree tree,int prefabId)
     {
 
         this.tree = tree;
@@ -645,7 +645,7 @@ public class AreaTreeNode : SubSceneCreater
                     cellBounds.size = size;
                     cellBoundsList.Add(cellBounds);
 
-                    GameObject cube = AreaTreeHelper.CreateBoundsCube(cellBounds, $"Node_{level}_{id}", transform);
+                    GameObject cube = AreaTreeHelper.CreateBoundsCube(cellBounds, $"Node_{level}_{id}", transform, prefabId);
                     AreaTreeNode node = cube.AddComponent<AreaTreeNode>();
                     nodes.Add(node);
                     node.Bounds = cellBounds;
@@ -690,7 +690,7 @@ public class AreaTreeNode : SubSceneCreater
 
             node.name += $"_{node.RendererCount}_{node.GetVertexCount():F0}w";
             //node.TreeName=tree.name;
-            node.CreateSubNodes(level + 1, i, tree);
+            node.CreateSubNodes(level + 1, i, tree, prefabId);
 
             //if (node.VertexCount > tree.nodeStatics.MaxNodeVertexCount || tree.nodeStatics.MaxNodeVertexCount == 0)
             //{
@@ -915,6 +915,7 @@ public class AreaTreeNode : SubSceneCreater
         if (combindResult)
         {
             scene1 = SubSceneHelper.EditorCreateScene<SubScene_Out0>(combindResult, SceneContentType.TreeNode, false, tree.name);
+            scene1.cubePrefabId = tree.GetCubePrefabId();
             scene1.contentType = SceneContentType.TreeNode;
             //scene1.gos = SubSceneHelper.GetChildrenGos(combindResult.transform);
             scene1.SetObjects(SubSceneHelper.GetChildrenGos(combindResult.transform));
@@ -932,6 +933,7 @@ public class AreaTreeNode : SubSceneCreater
             MoveRenderers();
             scene2 = SubSceneHelper.EditorCreateScene<SubScene_In>(renderersRoot, SceneContentType.TreeNode, false, tree.name);
             //scene2.gos = SubSceneHelper.GetChildrenGos(renderersRoot.transform);
+            scene2.cubePrefabId = tree.GetCubePrefabId();
             scene2.contentType = SceneContentType.TreeNode;
             scene2.SetObjects(SubSceneHelper.GetChildrenGos(renderersRoot.transform));
             scene2.Init();

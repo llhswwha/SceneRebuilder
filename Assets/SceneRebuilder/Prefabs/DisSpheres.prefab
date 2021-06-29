@@ -46,6 +46,8 @@ GameObject:
   - component: {fileID: 7613296661540801178}
   - component: {fileID: 7613296661540801179}
   - component: {fileID: 7613296661540801180}
+  - component: {fileID: 7613296663533249251}
+  - component: {fileID: 7613296663533249260}
   m_Layer: 0
   m_Name: DisSphere50
   m_TagString: Untagged
@@ -83,7 +85,7 @@ MeshRenderer:
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 7613296661540801182}
   m_Enabled: 1
-  m_CastShadows: 1
+  m_CastShadows: 0
   m_ReceiveShadows: 1
   m_DynamicOccludee: 1
   m_MotionVectors: 1
@@ -129,6 +131,44 @@ SphereCollider:
   serializedVersion: 2
   m_Radius: 0.5
   m_Center: {x: 0, y: 0, z: 0}
+--- !u!114 &7613296663533249251
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 7613296661540801182}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: ebc4f9af7effc1f49bca4ed86101a468, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  Id: 2ce6c89c-baf2-43ee-9023-f95e8f670dbe
+  insId: 0
+  mr: {fileID: 7613296661540801179}
+--- !u!114 &7613296663533249260
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 7613296661540801182}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 433624eb993355740b3a9d3c38a10284, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  position: {x: -276.008, y: 13.32238, z: 6.2506924}
+  center: {x: -275.94153, y: 13.368309, z: 6.3142433}
+  disToCenter: 0.102791496
+  size: {x: 99.467316, y: 99.42282, z: 99.58523}
+  meshFilter: {fileID: 7613296661540801178}
+  meshRenderer: {fileID: 7613296661540801179}
+  minMax:
+  - {x: -325.67517, y: -36.3431, z: -43.47837}
+  - {x: -226.20786, y: 63.07972, z: 56.106857}
+  - {x: 99.467316, y: 99.42282, z: 99.58523}
+  - {x: -275.94153, y: 13.368309, z: 6.3142433}
 --- !u!1 &7613296661558907903
 GameObject:
   m_ObjectHideFlags: 0
@@ -141,6 +181,8 @@ GameObject:
   - component: {fileID: 7613296661558907899}
   - component: {fileID: 7613296661558907900}
   - component: {fileID: 7613296661558907901}
+  - component: {fileID: 7613296663533249252}
+  - component: {fileID: 7613296663533249257}
   m_Layer: 0
   m_Name: DisSphere40
   m_TagString: Untagged
@@ -178,7 +220,7 @@ MeshRenderer:
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 7613296661558907903}
   m_Enabled: 1
-  m_CastShadows: 1
+  m_CastShadows: 0
   m_ReceiveShadows: 1
   m_DynamicOccludee: 1
   m_MotionVectors: 1
@@ -224,6 +266,44 @@ SphereCollider:
   serializedVersion: 2
   m_Radius: 0.5
   m_Center: {x: 0, y: 0, z: 0}
+--- !u!114 &7613296663533249252
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 7613296661558907903}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: ebc4f9af7effc1f49bca4ed86101a468, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  Id: 535cb328-39c5-4724-b6ac-1eeda82b9ba4
+  insId: 0
+  mr: {fileID: 7613296661558907900}
+--- !u!114 &7613296663533249257
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 7613296661558907903}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 433624eb993355740b3a9d3c38a10284, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  position: {x: -276.008, y: 13.32238, z: 6.2506924}
+  center: {x: -275.9548, y: 13.359123, z: 6.301529}
+  disToCenter: 0.082242444
+  size: {x: 79.57385, y: 79.53825, z: 79.66818}
+  meshFilter: {fileID: 7613296661558907899}
+  meshRenderer: {fileID: 7613296661558907900}
+  minMax:
+  - {x: -315.74173, y: -26.410004, z: -33.532562}
+  - {x: -236.16788, y: 53.12825, z: 46.13562}
+  - {x: 79.57385, y: 79.53825, z: 79.66818}
+  - {x: -275.9548, y: 13.359123, z: 6.301529}
 --- !u!1 &7613296662206536198
 GameObject:
   m_ObjectHideFlags: 0
@@ -236,6 +316,8 @@ GameObject:
   - component: {fileID: 7613296662206536194}
   - component: {fileID: 7613296662206536195}
   - component: {fileID: 7613296662206536196}
+  - component: {fileID: 7613296663533249249}
+  - component: {fileID: 7613296663533249258}
   m_Layer: 0
   m_Name: DisSphere70
   m_TagString: Untagged
@@ -273,7 +355,7 @@ MeshRenderer:
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 7613296662206536198}
   m_Enabled: 1
-  m_CastShadows: 1
+  m_CastShadows: 0
   m_ReceiveShadows: 1
   m_DynamicOccludee: 1
   m_MotionVectors: 1
@@ -319,6 +401,44 @@ SphereCollider:
   serializedVersion: 2
   m_Radius: 0.5
   m_Center: {x: 0, y: 0, z: 0}
+--- !u!114 &7613296663533249249
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 7613296662206536198}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: ebc4f9af7effc1f49bca4ed86101a468, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  Id: a64a0136-a08d-4ab7-bdd1-d77c9500be10
+  insId: 0
+  mr: {fileID: 7613296662206536195}
+--- !u!114 &7613296663533249258
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 7613296662206536198}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 433624eb993355740b3a9d3c38a10284, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  position: {x: -276.008, y: 13.32238, z: 6.2506924}
+  center: {x: -275.91492, y: 13.386677, z: 6.3396606}
+  disToCenter: 0.14392029
+  size: {x: 139.25427, y: 139.19196, z: 139.41933}
+  meshFilter: {fileID: 7613296662206536194}
+  meshRenderer: {fileID: 7613296662206536195}
+  minMax:
+  - {x: -345.54205, y: -56.209297, z: -63.370003}
+  - {x: -206.28778, y: 82.98265, z: 76.049324}
+  - {x: 139.25427, y: 139.19196, z: 139.41933}
+  - {x: -275.91492, y: 13.386677, z: 6.3396606}
 --- !u!1 &7613296662970353057
 GameObject:
   m_ObjectHideFlags: 0
@@ -331,6 +451,8 @@ GameObject:
   - component: {fileID: 7613296662970353069}
   - component: {fileID: 7613296662970353070}
   - component: {fileID: 7613296662970353071}
+  - component: {fileID: 7613296663533249250}
+  - component: {fileID: 7613296663533249259}
   m_Layer: 0
   m_Name: DisSphere60
   m_TagString: Untagged
@@ -368,7 +490,7 @@ MeshRenderer:
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 7613296662970353057}
   m_Enabled: 1
-  m_CastShadows: 1
+  m_CastShadows: 0
   m_ReceiveShadows: 1
   m_DynamicOccludee: 1
   m_MotionVectors: 1
@@ -414,3 +536,41 @@ SphereCollider:
   serializedVersion: 2
   m_Radius: 0.5
   m_Center: {x: 0, y: 0, z: 0}
+--- !u!114 &7613296663533249250
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 7613296662970353057}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: ebc4f9af7effc1f49bca4ed86101a468, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  Id: 266fb137-0949-4860-b04f-6a65b7642f18
+  insId: 0
+  mr: {fileID: 7613296662970353070}
+--- !u!114 &7613296663533249259
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 7613296662970353057}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 433624eb993355740b3a9d3c38a10284, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  position: {x: -276.008, y: 13.32238, z: 6.2506924}
+  center: {x: -275.92822, y: 13.377495, z: 6.3269463}
+  disToCenter: 0.12335321
+  size: {x: 119.36078, y: 119.30739, z: 119.50228}
+  meshFilter: {fileID: 7613296662970353069}
+  meshRenderer: {fileID: 7613296662970353070}
+  minMax:
+  - {x: -335.6086, y: -46.2762, z: -53.424194}
+  - {x: -216.24783, y: 73.03119, z: 66.07809}
+  - {x: 119.36078, y: 119.30739, z: 119.50228}
+  - {x: -275.92822, y: 13.377495, z: 6.3269463}

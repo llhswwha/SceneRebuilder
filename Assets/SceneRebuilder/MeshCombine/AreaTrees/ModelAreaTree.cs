@@ -56,7 +56,7 @@ public class ModelAreaTree : SubSceneCreater
         DateTime start = DateTime.Now;
         Renderer[] renders = target.GetComponentsInChildren<Renderer>();
         Bounds bounds=ColliderHelper.CaculateBounds(renders);
-        AreaTreeHelper.CreateBoundsCube(bounds, target.name+"_TargetBound",transform);
+        AreaTreeHelper.CreateBoundsCube(bounds, target.name+"_TargetBound",transform, GetCubePrefabId());
 
         Debug.LogWarning($"target:{target.name},renders:{renders.Length},bounds:{bounds}");
         Debug.LogWarning($"CreateBoundes \t{(DateTime.Now - start).ToString()}");
@@ -81,7 +81,7 @@ public class ModelAreaTree : SubSceneCreater
             //var child = this.transform.GetChild(i);
             Renderer[] renders = child.GetComponentsInChildren<Renderer>();
             Bounds bounds = ColliderHelper.CaculateBounds(renders);
-            AreaTreeHelper.CreateBoundsCube(bounds, child.name+"_TargetBound", transform);
+            AreaTreeHelper.CreateBoundsCube(bounds, child.name+"_TargetBound", transform, GetCubePrefabId());
 
             
             boundsAll.Encapsulate(bounds);
@@ -90,7 +90,19 @@ public class ModelAreaTree : SubSceneCreater
         }
         Debug.LogWarning($"CreateSubBoundes \t{(DateTime.Now - start).ToString()}");
 
-        AreaTreeHelper.CreateBoundsCube(boundsAll, target.name + "_TargetBoundAll", transform);
+        AreaTreeHelper.CreateBoundsCube(boundsAll, target.name + "_TargetBoundAll", transform, GetCubePrefabId());
+    }
+
+    public int GetCubePrefabId()
+    {
+        if (IsHidden)
+        {
+            return 1;
+        }
+        else
+        {
+            return 0;
+        }
     }
 
     [ContextMenu("2.1. ClearChildren")]
@@ -244,7 +256,7 @@ public class ModelAreaTree : SubSceneCreater
         this.TreeNodes.Clear();
 
         nodeStatics.LevelDepth = 0;
-        GameObject rootCube=AreaTreeHelper.CreateBoundsCube(bounds,$"RootNode",null);
+        GameObject rootCube=AreaTreeHelper.CreateBoundsCube(bounds,$"RootNode",null, GetCubePrefabId());
         AreaTreeNode node=rootCube.AddComponent<AreaTreeNode>();
         DestoryNodes();
         this.RootNode=node;
@@ -253,7 +265,7 @@ public class ModelAreaTree : SubSceneCreater
         node.Bounds=bounds;
         node.AddRenderers(renderers.ToList());
         
-        node.CreateSubNodes(0,0,this);
+        node.CreateSubNodes(0,0,this,GetCubePrefabId());
 
         var allCount=this.TreeNodes.Count;
         

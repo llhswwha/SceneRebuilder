@@ -107,7 +107,7 @@ public class AreaTreeNodeShowManager : MonoBehaviour
         HiddenTreesVertexCount = 0;
         ShownTreesVertexCount = 0;
 
-        var ts=GameObject.FindObjectsOfType<ModelAreaTree>();
+        var ts=GameObject.FindObjectsOfType<ModelAreaTree>(true);
         foreach(ModelAreaTree t in ts)
         {
             if(t.IsHidden && !HiddenTrees.Contains(t))

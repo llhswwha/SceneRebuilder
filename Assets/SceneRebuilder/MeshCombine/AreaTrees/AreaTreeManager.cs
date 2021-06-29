@@ -61,7 +61,7 @@ public class AreaTreeManager : MonoBehaviour
     public void CreateCells_Count()
     {
 
-        AreaTreeHelper.CubePrefab = this.CubePrefab;
+        AreaTreeHelper.CubePrefabs = this.CubePrefabs;
         var allCount = Count.x * Count.y * Count.z;
         DateTime start = DateTime.Now;
         ClearChildren();
@@ -90,7 +90,7 @@ public class AreaTreeManager : MonoBehaviour
                     cellBounds.size = size;
                     cellBoundsList.Add(cellBounds);
 
-                    GameObject cube = AreaTreeHelper.CreateBoundsCube(cellBounds, $"cell[{i},{j},{k}]", transform);
+                    GameObject cube = AreaTreeHelper.CreateBoundsCube(cellBounds, $"cell[{i},{j},{k}]", transform,0);
                     AreaTreeNode node = cube.AddComponent<AreaTreeNode>();
                     TreeNodes.Add(node);
                     node.Bounds = cellBounds;
@@ -130,12 +130,12 @@ public class AreaTreeManager : MonoBehaviour
 
 
 
-    public GameObject CubePrefab = null;
+    public List<GameObject> CubePrefabs = new List<GameObject>();
 
     [ContextMenu("CreateCells_Size")]
     public void CreateCells_Size()
     {
-        AreaTreeHelper.CubePrefab = this.CubePrefab;
+        AreaTreeHelper.CubePrefabs = this.CubePrefabs;
         DateTime start = DateTime.Now;
         ClearChildren();
         var target=GetTarget();
@@ -182,7 +182,7 @@ public class AreaTreeManager : MonoBehaviour
                     cellBounds.size = size;
                     cellBoundsList.Add(cellBounds);
 
-                    GameObject cube = AreaTreeHelper.CreateBoundsCube(cellBounds, $"cell[{i},{j},{k}]", transform);
+                    GameObject cube = AreaTreeHelper.CreateBoundsCube(cellBounds, $"cell[{i},{j},{k}]", transform,0);
                     AreaTreeNode node = cube.AddComponent<AreaTreeNode>();
                     TreeNodes.Add(node);
                     node.Bounds = cellBounds;
@@ -239,7 +239,7 @@ public class AreaTreeManager : MonoBehaviour
             return null;
         }
 
-        AreaTreeHelper.CubePrefab = this.CubePrefab;
+        AreaTreeHelper.CubePrefabs = this.CubePrefabs;
 
         GameObject treeGo = new GameObject(treeName);
         ModelAreaTree areaTree = treeGo.AddComponent<ModelAreaTree>();

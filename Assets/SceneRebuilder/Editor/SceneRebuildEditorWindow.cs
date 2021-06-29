@@ -873,7 +873,7 @@ public class SceneRebuildEditorWindow : ListManagerEditorWindow<BuildingModelEle
         {
             if (SelectIndex < 0) return;
             var ele = meshElementList[SelectIndex];
-            ele.modelInfo.OneKey();
+            ele.modelInfo.OneKey_TreePartScene();
             Debug.Log($"OneKey index:{SelectIndex} ele:{ele} obj:{ele.rootObj}");
         }
         GUILayout.EndArea();

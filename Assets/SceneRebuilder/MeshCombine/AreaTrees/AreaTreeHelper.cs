@@ -48,28 +48,28 @@ public static class AreaTreeHelper
         }
     }
 
-    public static GameObject CubePrefab;
+    public static List<GameObject> CubePrefabs = new List<GameObject>();
 
     public static AreaTreeManager InitCubePrefab()
     {
         AreaTreeManager areaTreeManager = GameObject.FindObjectOfType<AreaTreeManager>();
         if (areaTreeManager)
         {
-            AreaTreeHelper.CubePrefab = areaTreeManager.CubePrefab;
+            AreaTreeHelper.CubePrefabs = areaTreeManager.CubePrefabs;
         }
         return areaTreeManager;
     }
 
-    public static GameObject CreateBoundsCube(Bounds bounds,string n,Transform parent)
+    public static GameObject CreateBoundsCube(Bounds bounds,string n,Transform parent,int prefabId)
     {
         Debug.LogError($"CreateBoundsCube bounds:{bounds} name:{n} parent:{parent}");
         InitCubePrefab();
 
-        if(CubePrefab==null){
-            CubePrefab=GameObject.CreatePrimitive(PrimitiveType.Cube);
-            CubePrefab.SetActive(false);
+        if(CubePrefabs==null||CubePrefabs.Count==0){
+            var cubePrefab=GameObject.CreatePrimitive(PrimitiveType.Cube);
+            cubePrefab.SetActive(false);
         }
-        GameObject cube=GameObject.Instantiate(CubePrefab);
+        GameObject cube=GameObject.Instantiate(CubePrefabs[prefabId]);
         cube.AddComponent<BoundsBox>();
         cube.SetActive(true);
         cube.name=n;

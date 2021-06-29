@@ -39,21 +39,21 @@ public class BuildingModelTool : MonoBehaviour
     public void CreateBounds()
     {
         Bounds bounds = GetBounds(new Vector3(1,1,1));
-        AreaTreeHelper.CreateBoundsCube(bounds, this.name + "_Bounds", transform);
+        AreaTreeHelper.CreateBoundsCube(bounds, this.name + "_Bounds", transform,0);
     }
 
     [ContextMenu("CreateBounds95")]
     public void CreateBounds95()
     {
         Bounds bounds = GetBounds(new Vector3(0.95f, 1f, 0.95f));
-        AreaTreeHelper.CreateBoundsCube(bounds, this.name + "_Bounds", transform);
+        AreaTreeHelper.CreateBoundsCube(bounds, this.name + "_Bounds", transform,0);
     }
 
     [ContextMenu("CreateBounds90")]
     public void CreateBounds90()
     {
         Bounds bounds = GetBounds(new Vector3(0.9f, 0.9f, 0.9f));
-        AreaTreeHelper.CreateBoundsCube(bounds, this.name + "_Bounds", transform);
+        AreaTreeHelper.CreateBoundsCube(bounds, this.name + "_Bounds", transform,0);
     }
 
     public List<GameObject> inList = new List<GameObject>();

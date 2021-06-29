@@ -921,17 +921,17 @@ public class BuildingModelInfo : SubSceneCreater
 
 #if UNITY_EDITOR
 
-    [ContextMenu("OneKey")]
-    public void OneKey()
+    [ContextMenu("OneKey_TreePartScene")]
+    public void OneKey_TreePartScene()
     {
-        OneKey(p =>
+        OneKey_TreePartScene(p =>
         {
-            ProgressBarHelper.DisplayProgressBar("OneKey", $"Progress:{p:P2}", p);
+            ProgressBarHelper.DisplayProgressBar("OneKey_TreePartScene", $"Progress:{p:P2}", p);
         });
         ProgressBarHelper.ClearProgressBar();
     }
 
-    public void OneKey(Action<float> progressChanged)
+    public void OneKey_TreePartScene(Action<float> progressChanged)
     {
         DateTime start = DateTime.Now;
         if (progressChanged != null)
@@ -954,18 +954,52 @@ public class BuildingModelInfo : SubSceneCreater
         {
             progressChanged(2 / 3f);
         }
-        EditorCreateScenes_TreeWithPart((subP, i, c) =>
-        {
-            if (progressChanged != null)
-            {
-                progressChanged((2 + subP) / 3f);
-            }
-        });
+        EditorCreateNodeScenes();
         if (progressChanged != null)
         {
             progressChanged(3 / 3f);
         }
-        Debug.LogError($"BuildingModelInfo.OneKey Time:{(DateTime.Now - start).ToString()}");
+        Debug.LogError($"BuildingModelInfo.OneKey_TreePart Time:{(DateTime.Now - start).ToString()}");
+    }
+
+    [ContextMenu("OneKey_TreeNodeScene")]
+    public void OneKey_TreeNodeScene()
+    {
+        OneKey_TreeNodeScene(null);
+        ProgressBarHelper.ClearProgressBar();
+    }
+
+    public void OneKey_TreeNodeScene(Action<float> progressChanged)
+    {
+        DateTime start = DateTime.Now;
+        if (progressChanged != null)
+        {
+            progressChanged(0 / 3f);
+        }
+        InitInOut();
+        if (progressChanged != null)
+        {
+            progressChanged(1 / 3f);
+        }
+        CreateTreesBSEx();
+        //CreateTreesInnerEx(true, null);
+        if (progressChanged != null)
+        {
+            progressChanged(2 / 3f);
+        }
+        //EditorCreateScenes_TreeWithPart((subP, i, c) =>
+        //{
+        //    if (progressChanged != null)
+        //    {
+        //        progressChanged((2 + subP) / 3f);
+        //    }
+        //});
+        EditorCreateNodeScenes();
+        if (progressChanged != null)
+        {
+            progressChanged(3 / 3f);
+        }
+        Debug.LogError($"BuildingModelInfo.OneKey_TreeNodeScene Time:{(DateTime.Now - start).ToString()}");
     }
 
     public SceneContentType contentType;
@@ -1259,6 +1293,33 @@ public class BuildingModelInfo : SubSceneCreater
         ProgressBarHelper.ClearProgressBar();
         Debug.LogError($"BuildingModelInfo.EditorCreateNodeScenes time:{(DateTime.Now - start)}");
     }
+
+    //[ContextMenu("* EditorCreateNodeScenes")]
+    //public void EditorCreateNodeScenes(Action<float> progressChanged)
+    //{
+    //    DateTime start = DateTime.Now;
+
+    //    for (int i = 0; i < trees.Length; i++)
+    //    {
+    //        var tree = trees[i];
+    //        if (tree == null) continue;
+    //        float progress = (float)i / trees.Length;
+    //        float percents = progress * 100;
+    //        if (ProgressBarHelper.DisplayCancelableProgressBar("BuildingModelInfo.EditorCreateNodeScenes", $"Progress1 {i}/{trees.Length} {percents:F2}%", progress))
+    //        {
+    //            break;
+    //        }
+    //        tree.EditorCreateNodeScenes(p =>
+    //        {
+    //            float progress2 = (float)(i + p) / trees.Length;
+    //            float percents2 = progress2 * 100;
+    //            ProgressBarHelper.DisplayCancelableProgressBar("BuildingModelInfo.EditorCreateNodeScenes", $"Progress2 {(i + p):F2}/{trees.Length} {percents2:F2}%", progress2);
+    //        });
+    //    }
+    //    EditorHelper.RefreshAssets();
+    //    ProgressBarHelper.ClearProgressBar();
+    //    Debug.LogError($"BuildingModelInfo.EditorCreateNodeScenes time:{(DateTime.Now - start)}");
+    //}
 
     [ContextMenu("* EditorLoadNodeScenes")]
     private void EditorLoadNodeScenes()

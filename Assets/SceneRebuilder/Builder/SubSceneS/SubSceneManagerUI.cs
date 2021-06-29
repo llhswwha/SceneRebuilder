@@ -94,6 +94,7 @@ public class SubSceneManagerUI : MonoBehaviour
     {
         //Debug.LogError($"SubSceneManager_ProgressChanged progress:{obj}");
         sliderProgress.value = obj;
+        txtResult.text = subSceneManager.Log;
     }
 
     public SubSceneType sceneType=SubSceneType.Out0;

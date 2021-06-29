@@ -14,7 +14,9 @@ public class SubSceneShowManager : MonoBehaviour
 
     public List<SubScene_Out0> scenes_Out0_Part = new List<SubScene_Out0>();
     public List<SubScene_Out0> scenes_Out0_Tree = new List<SubScene_Out0>();
-    public List<SubScene_Out0> scenes_Out0_TreeNode = new List<SubScene_Out0>();
+    //public List<SubScene_Out0> scenes_Out0_TreeNode = new List<SubScene_Out0>();
+    public List<SubScene_Out0> scenes_Out0_TreeNode_Hidden = new List<SubScene_Out0>();
+    public List<SubScene_Out0> scenes_Out0_TreeNode_Shown = new List<SubScene_Out0>();
     public Camera[] cameras;
 
     [ContextMenu("Init")]
@@ -37,14 +39,37 @@ public class SubSceneShowManager : MonoBehaviour
             {
                 scenes_Out0_Tree.Add(s);
             }
-            if (s.contentType == SceneContentType.TreeNode)
-            {
-                scenes_Out0_TreeNode.Add(s);
-            }
+            //if (s.contentType == SceneContentType.TreeNode)
+            //{
+            //    scenes_Out0_TreeNode.Add(s);
+            //}
         }
         scenes_Out1 = GameObject.FindObjectsOfType<SubScene_Out1>(true);
 
         cameras = GameObject.FindObjectsOfType<Camera>();
+
+        List<ModelAreaTree> HiddenTrees = new List<ModelAreaTree>();
+        List<ModelAreaTree> ShownTrees = new List<ModelAreaTree>();
+        var ts = GameObject.FindObjectsOfType<ModelAreaTree>(true);
+
+        foreach (ModelAreaTree t in ts)
+        {
+            if (t.IsHidden && !HiddenTrees.Contains(t))
+            {
+                HiddenTrees.Add(t);
+                //HiddenTreesVertexCount += t.VertexCount;
+                var scenes = t.GetComponentsInChildren<SubScene_Out0>(true);
+                scenes_Out0_TreeNode_Hidden.AddRange(scenes);
+            }
+            else if (t.IsHidden == false && !ShownTrees.Contains(t))
+            {
+                ShownTrees.Add(t);
+                //ShownTreesVertexCount += t.VertexCount;
+
+                var scenes = t.GetComponentsInChildren<SubScene_Out0>(true);
+                scenes_Out0_TreeNode_Shown.AddRange(scenes);
+            }
+        }
     }
 
     public bool IsAutoLoad = false;
@@ -56,6 +81,10 @@ public class SubSceneShowManager : MonoBehaviour
 
     public List<SubScene_Base> WaitingScenes = new List<SubScene_Base>();
 
+    public bool IsUpdateTreeNodeByDistance = false;
+    public bool IsUpdateDistance = true;
+    public bool EnableLoadUnload = false;
+
     // Start is called before the first frame update
     void Start()
     {
@@ -63,15 +92,16 @@ public class SubSceneShowManager : MonoBehaviour
 
         if (IsAutoLoad)
         {
-            
+            AreaTreeNodeShowManager.Instance.IsUpdateTreeNodeByDistance = false;
+
             //sceneManager.LoadScenesEx(scenes_Out0_Tree.ToArray());//1.启动时自动加载模型
-            sceneManager.LoadScenesEx(scenes_Out0_TreeNode.ToArray(), () =>
+            sceneManager.LoadScenesEx(scenes_Out0_TreeNode_Shown.ToArray(), () =>
              {
                  //AreaTreeNodeShowManager.Instance.IsUpdateTreeNodeByDistance = true;
 
-                 WaitingScenes.AddRange(scenes_Out0_TreeNode);
+                 WaitingScenes.AddRange(scenes_Out0_TreeNode_Shown);
 
-                 AreaTreeNodeShowManager.Instance.IsUpdateTreeNodeByDistance = true;
+                 AreaTreeNodeShowManager.Instance.IsUpdateTreeNodeByDistance = IsUpdateTreeNodeByDistance;
 
              });//1.启动时自动加载模型
         }
@@ -100,23 +130,47 @@ public class SubSceneShowManager : MonoBehaviour
 
     public double TimeOfDis = 0;
 
+    public double TimeOfLoad = 0;
+
     public SubScene_Base MinDisScene;
+
 
     public List<SubScene_Base> visibleScenes = new List<SubScene_Base>();
     public List<SubScene_Base> loadScenes = new List<SubScene_Base>();
     public List<SubScene_Base> hiddenScenes = new List<SubScene_Base>();
     public List<SubScene_Base> unloadScenes = new List<SubScene_Base>();
 
+   void LoadUnloadScenes()
+    {
+        if (EnableLoadUnload == false) return;
+        DateTime start = DateTime.Now;
+        foreach (var scene in visibleScenes)
+        {
+            scene.ShowObjects();
+        }
+        foreach (var scene in hiddenScenes)
+        {
+            scene.HideObjects();
+        }
+        foreach (var scene in loadScenes)
+        {
+            
+            scene.LoadSceneAsync(null);
+        }
+        foreach (var scene in unloadScenes)
+        {
+            scene.UnLoadSceneAsync();
+        }
+        TimeOfLoad = (DateTime.Now - start).TotalMilliseconds;
+    }
+
     void CalculateDistance(List<SubScene_Base> scenes)
     {
         DateTime start = DateTime.Now;
 
         MaxDisSqrtToCam = 0;
-
         MinDisSqrtToCam = float.MaxValue;
-
         float sumDis = 0;
-
         visibleScenes = new List<SubScene_Base>();
         hiddenScenes = new List<SubScene_Base>();
         loadScenes = new List<SubScene_Base>();
@@ -162,30 +216,37 @@ public class SubSceneShowManager : MonoBehaviour
             {
                 hiddenScenes.Add(scene);
             }
+
+            if (disToCams <= DisOfLoad)
+            {
+                loadScenes.Add(scene);
+
+                
+            }
+
+            if (disToCams <= DisOfVisible)
+            {
+                scene.boundsGo.GetComponent<MeshRenderer>().material.color = new Color(1, 0, 0, 0.2f);
+            }
+            else if (disToCams <= DisOfLoad)
+            {
+                scene.boundsGo.GetComponent<MeshRenderer>().material.color = new Color(1, 0.5f, 0, 0.2f);
+            }
+            else if (disToCams <= DisOfHidden)
+            {
+                scene.boundsGo.GetComponent<MeshRenderer>().material.color = new Color(1, 1, 0, 0.2f);
+            }
+            else if (disToCams <= DisOfUnLoad)
+            {
+                scene.boundsGo.GetComponent<MeshRenderer>().material.color = new Color(1, 1, 1, 0.2f);
+            }
+
             scene.DisToCam = disToCams;
         }
 
         AvgDisToCam = Mathf.Sqrt(sumDis / scenes.Count);
         MinDisToCam = Mathf.Sqrt(MinDisSqrtToCam);
         MaxDisToCam = Mathf.Sqrt(MaxDisSqrtToCam);
-
-        foreach (var scene in visibleScenes)
-        {
-            scene.ShowObjects();
-        }
-        foreach (var scene in hiddenScenes)
-        {
-            scene.HideObjects();
-        }
-        foreach (var scene in loadScenes)
-        {
-            scene.LoadSceneAsync(null);
-        }
-        foreach (var scene in unloadScenes)
-        {
-            scene.UnLoadSceneAsync();
-        }
-
 
         TimeOfDis = (DateTime.Now - start).TotalMilliseconds;
     }
@@ -199,8 +260,6 @@ public class SubSceneShowManager : MonoBehaviour
     {
         return $"Min:{MinDisToCam:F0},Max:{MaxDisToCam:F0},MinSqrt:{MinDisSqrtToCam:F0},MaxSqrt:{MaxDisSqrtToCam:F0},time:{TimeOfDis:F1}";
     }
-
-    public bool IsUpdateDistance = true;
 
     //int updateCount = 0;
     //private void FixedUpdate()
@@ -245,15 +304,20 @@ public class SubSceneShowManager : MonoBehaviour
         if (IsUpdateDistance)
         {
             List<SubScene_Base> subScenes = new List<SubScene_Base>();
-            foreach (var scene in scenes_In)
-            {
-                subScenes.Add(scene);
-            }
-            foreach (var scene in scenes_Out1)
+            //foreach (var scene in scenes_In)
+            //{
+            //    subScenes.Add(scene);
+            //}
+            //foreach (var scene in scenes_Out1)
+            //{
+            //    subScenes.Add(scene);
+            //}
+            foreach (var scene in scenes_Out0_TreeNode_Hidden)
             {
                 subScenes.Add(scene);
             }
             CalculateDistance(subScenes);
+            LoadUnloadScenes();
         }
     }
 }
