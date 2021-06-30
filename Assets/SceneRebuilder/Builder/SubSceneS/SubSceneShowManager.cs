@@ -32,7 +32,7 @@ public class SubSceneShowManager : MonoBehaviour
             if(s.contentType==SceneContentType.Part)
             {
                 scenes_Out0_Part.Add(s);
-                s.HideBoundsBox();//一开始都是只有tree（合成模型）显示出来
+                s.HideBoundsBox();//一锟斤拷始锟斤拷锟斤拷只锟斤拷tree锟斤拷锟较筹拷模锟酵ｏ拷锟斤拷示锟斤拷锟斤拷
 
             }
             if (s.contentType == SceneContentType.Tree)
@@ -83,7 +83,21 @@ public class SubSceneShowManager : MonoBehaviour
 
     public bool IsUpdateTreeNodeByDistance = false;
     public bool IsUpdateDistance = true;
-    public bool EnableLoadUnload = false;
+    public bool EnableLoadUnload = false; 
+
+    public void LoadStartScens()
+    {
+        AreaTreeNodeShowManager.Instance.IsUpdateTreeNodeByDistance = false;
+        //sceneManager.LoadScenesEx(scenes_Out0_Tree.ToArray());
+        sceneManager.LoadScenesEx(scenes_Out0_TreeNode_Shown.ToArray(), () =>
+            {
+                //AreaTreeNodeShowManager.Instance.IsUpdateTreeNodeByDistance = true;
+
+                WaitingScenes.AddRange(scenes_Out0_TreeNode_Shown);
+
+                AreaTreeNodeShowManager.Instance.IsUpdateTreeNodeByDistance = IsUpdateTreeNodeByDistance;
+            });
+    }
 
     // Start is called before the first frame update
     void Start()
@@ -92,18 +106,7 @@ public class SubSceneShowManager : MonoBehaviour
 
         if (IsAutoLoad)
         {
-            AreaTreeNodeShowManager.Instance.IsUpdateTreeNodeByDistance = false;
-
-            //sceneManager.LoadScenesEx(scenes_Out0_Tree.ToArray());//1.启动时自动加载模型
-            sceneManager.LoadScenesEx(scenes_Out0_TreeNode_Shown.ToArray(), () =>
-             {
-                 //AreaTreeNodeShowManager.Instance.IsUpdateTreeNodeByDistance = true;
-
-                 WaitingScenes.AddRange(scenes_Out0_TreeNode_Shown);
-
-                 AreaTreeNodeShowManager.Instance.IsUpdateTreeNodeByDistance = IsUpdateTreeNodeByDistance;
-
-             });//1.启动时自动加载模型
+            LoadStartScens();
         }
 
         if (AreaTreeNodeShowManager.Instance)
@@ -268,11 +271,11 @@ public class SubSceneShowManager : MonoBehaviour
     //    if (IsAutoLoad&& updateCount>100)
     //    {
     //        IsAutoLoad = false;
-    //        //sceneManager.LoadScenesEx(scenes_Out0_Tree.ToArray());//1.启动时自动加载模型
+    //        //sceneManager.LoadScenesEx(scenes_Out0_Tree.ToArray());//1.锟斤拷锟斤拷时锟皆讹拷锟斤拷锟斤拷模锟斤拷
     //        sceneManager.LoadScenesEx(scenes_Out0_TreeNode.ToArray(), () =>
     //        {
     //            //AreaTreeNodeShowManager.Instance.IsUpdateTreeNodeByDistance = true;
-    //        });//1.启动时自动加载模型
+    //        });//1.锟斤拷锟斤拷时锟皆讹拷锟斤拷锟斤拷模锟斤拷
     //    }
     //}
 

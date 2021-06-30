@@ -36,12 +36,6 @@ public class SubSceneUI : MonoBehaviour
         }
     }
 
-    // Update is called once per frame
-    void Update()
-    {
-        
-    }
-
     public SubScene_Base scene;
 
     internal void SetScene(int id,SubScene_Base subScene)

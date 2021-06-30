@@ -32,4 +32,24 @@ public class SubSceneShowManagerUI : MonoBehaviour
     {
 
     }
+
+    [ContextMenu("LoadStartScenes")]
+    public void LoadStartScenes()
+    {
+        subSceneShowManager.LoadStartScens();
+    }
+
+    [ContextMenu("CloseSceneListUI")]
+    public void CloseSceneListUI()
+    {
+        SubSceneManagerUI subSceneManagerUI=GameObject.FindObjectOfType<SubSceneManagerUI>(true);
+        subSceneManagerUI.gameObject.SetActive(false);
+    }
+
+    [ContextMenu("OpenSceneListUI")]
+    public void OpenSceneListUI()
+    {
+        SubSceneManagerUI subSceneManagerUI=GameObject.FindObjectOfType<SubSceneManagerUI>(true);
+        subSceneManagerUI.gameObject.SetActive(true);
+    }
 }

@@ -142,7 +142,8 @@ public class SubScene_Base : MonoBehaviour
 
     internal string GetSceneInfo()
     {
-        return $"r:{rendererCount}\tv:{vertexCount:F1}w\t[{GetSceneName()}] ";
+        //return $"r:{rendererCount}\tv:{vertexCount:F1}w\t[{GetSceneName()}] ";
+        return $"{GetSceneName()} r:{rendererCount} v:{vertexCount:F0}w ";
     }
 
     internal string GetSceneNameEx()
@@ -385,9 +386,27 @@ public class SubScene_Base : MonoBehaviour
 
 
                 //WriteLog($"Load name:{GetSceneName()},time:{(DateTime.Now - start).ToString()},progress:{loadProgress}");
-                WriteLog($"Load {GetSceneName()} : {(DateTime.Now - start).ToString()}");
+                //WriteLog($"Load[ {GetSceneName()} ]: {(DateTime.Now - start).ToString()}");
+                WriteLog($"{(DateTime.Now - start).ToString()}|r:{rendererCount}|v:{GetVertexCountText()}w");
                 OnLoadedFinished();
             }, IsSetParent);
+        }
+    }
+
+    public string GetVertexCountText()
+    {
+        if(vertexCount<0.1){
+            return vertexCount.ToString("F3");
+        }
+        else if(vertexCount<1){
+            return vertexCount.ToString("F2");
+        }
+        else if(vertexCount<10){
+            return vertexCount.ToString("F1");
+        }
+        else
+        {
+            return vertexCount.ToString("F0");
         }
     }
 

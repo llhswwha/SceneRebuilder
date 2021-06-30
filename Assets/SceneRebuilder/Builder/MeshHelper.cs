@@ -496,6 +496,41 @@ public static class MeshHelper
     //     return bounds;
     // }
 
+       
+
+    public static void CenterPivot(Transform t,Vector3 center)
+    {
+        List<Transform> children=new List<Transform>();
+        for(int i=0;i<t.childCount;i++)
+        {
+            children.Add(t.GetChild(i));
+        }
+        foreach(var child in children){
+            child.SetParent(null);
+        }
+        t.position=center;
+
+        foreach(var child in children){
+            child.SetParent(t);
+        }
+    }
+
+    public static Vector3[] CenterPivot(Transform t,IEnumerable<MeshFilter> meshFilters)
+    {
+        var minMax=MeshHelper.GetMinMax(meshFilters);
+        CenterPivot(t,minMax[3]);
+        return minMax;
+    }
+
+    public static Vector3[] CenterPivot(GameObject go)
+    {
+        if(go==null) return null;
+        MeshFilter[] mfs = go.GetComponentsInChildren<MeshFilter>(true);
+        var minMax=MeshHelper.GetMinMax(mfs);
+        CenterPivot(go.transform,minMax[3]);
+        return minMax;
+    }
+
     public static Vector3[] GetMinMax(IEnumerable<MeshFilter> meshFilters)
     {
         List<Vector3> allVs=new List<Vector3>();

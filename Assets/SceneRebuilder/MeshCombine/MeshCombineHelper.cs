@@ -17,7 +17,7 @@ public static class MeshCombineHelper
         target.AddComponent<MeshFilterInfo>();
         Debug.Log("Combine:"+source+"->"+target);
 
-        CenterPivot(target.transform,combinedMesh.minMax[3]);
+        MeshHelper.CenterPivot(target.transform,combinedMesh.minMax[3]);
 
         return target;
     }
@@ -70,28 +70,28 @@ public static class MeshCombineHelper
         goNew.transform.SetParent(go.transform.parent);
         Debug.Log(string.Format("CombineMaterials 用时:{0} \tMesh数量:{2} \tMat数量:{1} \tMats:{3}",(DateTime.Now-start),mat2Filters.Count,count,mats));
         
-        var minMax=MeshHelper.GetMinMax(mfList);
-        CenterPivot(goNew.transform,minMax[3]);
+        // var minMax=MeshHelper.GetMinMax(mfList);
+        MeshHelper.CenterPivot(goNew.transform,mfList);
         
         return goNew;
     }
 
-    public static void CenterPivot(Transform t,Vector3 center)
-    {
-        List<Transform> children=new List<Transform>();
-        for(int i=0;i<t.childCount;i++)
-        {
-            children.Add(t.GetChild(i));
-        }
-        foreach(var child in children){
-            child.SetParent(null);
-        }
-        t.position=center;
+    // public static void CenterPivot(Transform t,Vector3 center)
+    // {
+    //     List<Transform> children=new List<Transform>();
+    //     for(int i=0;i<t.childCount;i++)
+    //     {
+    //         children.Add(t.GetChild(i));
+    //     }
+    //     foreach(var child in children){
+    //         child.SetParent(null);
+    //     }
+    //     t.position=center;
 
-        foreach(var child in children){
-            child.SetParent(t);
-        }
-    }
+    //     foreach(var child in children){
+    //         child.SetParent(t);
+    //     }
+    // }
 
      public static IEnumerator CombineMaterials_Coroutine(GameObject go,int waitCount,bool isDestroy){
         DateTime start=DateTime.Now;
@@ -252,7 +252,7 @@ public static class MeshCombineHelper
         goNew.transform.SetParent(target.transform);
         GameObject.DestroyImmediate(goNew);
         //Debug.LogError(string.Format("CombinedMesh 用时:{0}ms,数量:{1}",(DateTime.Now-start).TotalMilliseconds,count));
-        CenterPivot(target.transform,combinedMesh.minMax[3]);
+        MeshHelper.CenterPivot(target.transform,combinedMesh.minMax[3]);
         return target;
     }
 

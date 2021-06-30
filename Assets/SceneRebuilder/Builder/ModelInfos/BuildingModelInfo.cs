@@ -447,6 +447,19 @@ public class BuildingModelInfo : SubSceneCreater
         //var manager=GameObject.FindObjectOfType<>
 
         GetBigSmallInfo();
+
+
+    }
+
+    [ContextMenu("CenterPivot")]
+    public void CenterPivot()
+    {
+        var start=DateTime.Now;
+        MeshHelper.CenterPivot(InPart);
+        MeshHelper.CenterPivot(OutPart0);
+        MeshHelper.CenterPivot(OutPart1);
+        MeshHelper.CenterPivot(this.gameObject);
+        Debug.LogError($"BuildingModelInfo.CenterPivot Time:{(DateTime.Now - start).ToString()}");
     }
 
     private static AcRTAlignJobSetting JobSetting;
@@ -475,6 +488,9 @@ public class BuildingModelInfo : SubSceneCreater
 
     private void GetInOutParts()
     {
+        InPart=null;
+        OutPart0=null;
+        OutPart1=null;
         List<Transform> children = new List<Transform>();
         for (int i = 0; i < transform.childCount; i++)
         {
@@ -658,13 +674,13 @@ public class BuildingModelInfo : SubSceneCreater
         {
             tree1.nodeSetting = treeManager.nodeSetting;
         }
-            //tree1.GenerateTree();//û�кϲ�
+            //tree1.GenerateTree();
 
-        tree1.GenerateMesh(progressChanged);//�ϲ�
+        tree1.GenerateMesh(progressChanged);
 
-        treeGo1.SetActive(target.activeInHierarchy);//�����صļ�������
+        treeGo1.SetActive(target.activeInHierarchy);
 
-        tree1.IsHidden = !target.activeInHierarchy;//��̬����
+        tree1.IsHidden = !target.activeInHierarchy;
         return tree1;
     }
 
@@ -818,6 +834,9 @@ public class BuildingModelInfo : SubSceneCreater
             InPart.SetActive(false);
         if(OutPart1)
             OutPart1.SetActive(false);
+
+        if(OutPart0)
+            OutPart0.SetActive(true);
     }
 
     [ContextMenu("ShowDetail")]
