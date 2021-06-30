@@ -9,7 +9,7 @@ public class SubSceneArg
     public string path;
     public bool isOveride = true;
     public bool isOpen = false;
-    public GameObject[] objs;
+    public List<GameObject> objs = new List<GameObject>();
 
     public SubSceneArg()
     {
@@ -20,7 +20,8 @@ public class SubSceneArg
         this.path = path;
         this.isOveride = isOveride;
         this.isOpen = isOpen;
-        this.objs = objs;
+        //this.objs = objs;
+        this.objs.AddRange(objs);
     }
 
     public string GetRalativePath()

@@ -1,3 +1,4 @@
+//using System;
 using System.Collections;
 using System.Collections.Generic;
 using UltimateGameTools.MeshSimplifier;
@@ -211,13 +212,14 @@ public static class AutomaticLODHelper
         }
     }
 
-    public static void CreateLOD(GameObject go, Material[] mats,float[] lvs,float[] lodVertexPercents,bool isDestroy=true,bool isSaveAsset=true)
+    public static void CreateLOD(GameObject go, Material[] mats,float[] lvs,float[] lodVertexPercents,bool isDestroyScript=true,bool isSaveAsset=false, System.Action<float> progressChanged=null)
     {
         if(lvs==null)
         {
             SetMaterials(go,mats);
             return;
         }
+        if (progressChanged != null) progressChanged(0/2f);
         int nLevels=0;
         if(lvs!=null)
         {
@@ -240,8 +242,14 @@ public static class AutomaticLODHelper
 
         bool bRecurseIntoChildren = true;
         AutomaticLODHelper.CreateDefaultLODS(nLevels, aLOD, bRecurseIntoChildren,lodVertexPercents);
-        aLOD.ComputeLODData(bRecurseIntoChildren, Progress);
-        aLOD.ComputeAllLODMeshes(bRecurseIntoChildren, Progress);
+        aLOD.ComputeLODData(bRecurseIntoChildren, (t,m,p)=>
+        {
+            if (progressChanged != null) progressChanged(p / 2f);
+        });
+        aLOD.ComputeAllLODMeshes(bRecurseIntoChildren, (t, m, p) =>
+        {
+            if (progressChanged != null) progressChanged((1+p) / 2f);
+        });
 
         if (isSaveAsset)
         {
@@ -272,7 +280,7 @@ public static class AutomaticLODHelper
         // }
         SetMaterials(go,mats);
 
-        if(isDestroy){
+        if(isDestroyScript){
             GameObject.DestroyImmediate(aLOD);
 
             Simplifier simplifier=go.GetComponent<Simplifier>();
@@ -280,5 +288,7 @@ public static class AutomaticLODHelper
                 GameObject.DestroyImmediate(simplifier);
             }
         }
+
+        if (progressChanged != null) progressChanged(1);
     }
 }

@@ -295,7 +295,7 @@ public class SubSceneManager : MonoBehaviour
                 //ProgressBarHelper.ClearProgressBar();
                 break;
             }
-            item.EditorLoadScene();
+            item.EditorLoadSceneEx();
         }
 
         ProgressBarHelper.ClearProgressBar();

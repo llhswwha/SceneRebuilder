@@ -975,4 +975,34 @@ public class ModelAreaTree : SubSceneCreater
         Debug.LogError($"ModelAreaTree.EditorLoadNodeScenes time:{(DateTime.Now - start)}");
     }
 #endif
+
+    [ContextMenu("CreateLOD")]
+    public void CreateLOD()
+    {
+        DateTime start = DateTime.Now;
+
+        for (int i = 0; i < TreeLeafs.Count; i++)
+        {
+            var leafNode = TreeLeafs[i];
+            if (leafNode == null) continue;
+            float progress = (float)i / TreeLeafs.Count;
+            float percents = progress * 100;
+            if (ProgressBarHelper.DisplayCancelableProgressBar("CreateLOD", $"P1 node:{leafNode.name} vertex:{leafNode.VertexCount:F1} {i}/{TreeLeafs.Count} {percents:F1}%", progress))
+            {
+                break;
+            }
+            leafNode.CreateLOD(p=>
+            {
+                float progress2 = (float)(i+p) / TreeLeafs.Count;
+                float percents2 = progress2 * 100;
+                if (ProgressBarHelper.DisplayCancelableProgressBar("CreateLOD", $"P2 node:{leafNode.name} vertex:{leafNode.VertexCount:F1} {(i + p):F1}/{TreeLeafs.Count} {percents2:F1}%", progress2))
+                {
+                    //break;
+                }
+            });
+        }
+        ProgressBarHelper.ClearProgressBar();
+
+        Debug.LogError($"CreateLOD {(DateTime.Now - start).ToString()}");
+    }
 }

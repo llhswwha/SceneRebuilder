@@ -115,7 +115,7 @@ public class SubSceneCreater : MonoBehaviour
         {
             SubScene_Base scene = scenes[i];
             scene.IsLoaded = false;
-            scene.EditorLoadScene();
+            scene.EditorLoadSceneEx();
 
             float progress = (float)i / scenes.Length;
             float percents = progress * 100;

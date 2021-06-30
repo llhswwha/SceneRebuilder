@@ -3,6 +3,7 @@ using UnityEngine;
 using System.Collections;
 using System.Collections.Generic;
 using Object = UnityEngine.Object;
+using System.Linq;
 
 /// <summary>
 /// 自动创建碰撞体
@@ -340,7 +341,7 @@ public static class ColliderHelper  {
     /// <returns></returns>
     public static Bounds CaculateBounds(IEnumerable<Renderer> renders,bool isAll=true)
     {
-        Debug.Log($"CaculateBounds renders:{renders},isAll:{isAll}");
+        Debug.Log($"CaculateBounds renders:{renders.Count()},isAll:{isAll}");
         Vector3 center = Vector3.zero;
         int count = 0;
         foreach (Renderer child in renders)

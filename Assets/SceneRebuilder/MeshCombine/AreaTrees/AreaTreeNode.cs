@@ -1019,4 +1019,35 @@ public class AreaTreeNode : SubSceneCreater
     {
         //Debug.LogError($"AreaTreeNode.OnDisable {this.name}");
     }
+
+    [ContextMenu("CreateLOD")]
+    public void CreateLOD()
+    {
+        CreateLOD(null);
+    }
+
+    public void CreateLOD(Action<float> progressChanged)
+    {
+        var renderers = CombinedRenderers;
+        for (int i = 0; i < renderers.Length; i++)
+        {
+            float progress = (float)i / renderers.Length;
+            if (progressChanged != null)
+            {
+                progressChanged(progress);
+            }
+            MeshRenderer renderer = renderers[i];
+            LODManager.Instance.CreateLOD(renderer.gameObject,p=> {
+                float progress2 = (float)(i+p) / renderers.Length;
+                if (progressChanged != null)
+                {
+                    progressChanged(progress2);
+                }
+            });
+        }
+        if (progressChanged != null)
+        {
+            progressChanged(1);
+        }
+    }
 }

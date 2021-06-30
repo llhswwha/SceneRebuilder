@@ -61,7 +61,7 @@ public static class SubSceneHelper
 
     public static Scene CreateScene(SubSceneArg arg)
     {
-        return EditorHelper.CreateScene(arg.path, arg.isOveride, arg.isOpen, arg.objs);
+        return EditorHelper.CreateScene(arg.path, arg.isOveride, arg.isOpen, arg.objs.ToArray());
         //scenePath = path;
     }
 
@@ -113,7 +113,7 @@ public static class SubSceneHelper
         //string path = GetScenePath(go.name, isPart);
 
         SubSceneManager subSceneManager = GameObject.FindObjectOfType<SubSceneManager>();
-        if(ss.sceneArg==null|| ss.sceneArg.objs==null|| ss.sceneArg.objs.Length==0)
+        if(ss.sceneArg==null|| ss.sceneArg.objs==null|| ss.sceneArg.objs.Count==0)
             ss.sceneArg = new SubSceneArg(path, isOverride, subSceneManager.IsOpenSubScene, go);
 
         //ss.SetPath(path);

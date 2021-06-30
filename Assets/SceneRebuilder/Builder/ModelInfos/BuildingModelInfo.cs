@@ -1139,10 +1139,10 @@ public class BuildingModelInfo : SubSceneCreater
                     }
                 }
 
-            ss.gos = gos;
-            ss.Init();
             string scenePath = $"{path}{this.name}{nameAf}.unity";
-            ss.SetArg(scenePath, isOverride);
+            ss.SetArg(scenePath, isOverride,gos);
+            ss.Init();
+
             //ss.SaveScene();
             //ss.ShowBounds();
             return ss;
@@ -1172,10 +1172,9 @@ public class BuildingModelInfo : SubSceneCreater
                 }
 
             ss.contentType = SceneContentType.TreeAndPart;
-            ss.gos = gos;
-            ss.Init();
             string scenePath = $"{path}{this.name}{nameAf}.unity";
-            ss.SetArg(scenePath, isOverride);
+            ss.SetArg(scenePath, isOverride,gos);
+            ss.Init();
             //ss.SaveScene();
             //ss.ShowBounds();
             return ss;

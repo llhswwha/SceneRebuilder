@@ -33,6 +33,21 @@ public class SubScene_Base : MonoBehaviour
         return IsLoaded;
     }
 
+    public List<GameObject> gos
+    {
+        get
+        {
+            if (sceneArg == null)
+            {
+                return new List<GameObject>();
+            }
+            else
+            {
+                return sceneArg.objs;
+            }
+        }
+    }
+
     public bool HaveGos()
     {
         bool r = false;
@@ -74,14 +89,19 @@ public class SubScene_Base : MonoBehaviour
 
     public float radius;
 
-    public List<GameObject> gos = new List<GameObject>();
+    //public List<GameObject> gos = new List<GameObject>();
 
     public void SetObjects(List<GameObject> goList)
     {
-        gos = goList;
+        //gos = goList;
+        if (sceneArg == null)
+        {
+            sceneArg = new SubSceneArg();
+        }
+
         if (sceneArg != null)
         {
-            sceneArg.objs = goList.ToArray();
+            sceneArg.objs = goList;
         }
     }
 
@@ -319,7 +339,8 @@ public class SubScene_Base : MonoBehaviour
     [ContextMenu("LoadScene")]
     public void LoadScene()
     {
-        gos = EditorHelper.LoadScene(GetSceneName(), IsSetParent ? GetSceneParent() : null).ToList();
+        var gs= EditorHelper.LoadScene(GetSceneName(), IsSetParent ? GetSceneParent() : null).ToList();
+        SetObjects(gs);
         IsLoaded = true;
     }
     //[ContextMenu("TestLoadSceneAsync")]
@@ -453,7 +474,8 @@ public class SubScene_Base : MonoBehaviour
         //DestroyBoundsBox();
         HideBoundsBox();
 
-        gos = EditorHelper.GetSceneObjects(GetSceneName(), GetSceneParent()).ToList();
+        var gs = EditorHelper.GetSceneObjects(GetSceneName(), GetSceneParent()).ToList();
+        SetObjects(gs);
 
         InitVisible();
     }
@@ -521,11 +543,24 @@ public class SubScene_Base : MonoBehaviour
     public void EditorReLoadScene()
     {
         UnLoadGosM();
-        EditorLoadScene();
+        EditorLoadSceneEx();
     }
 
     [ContextMenu("EditorLoadScene")]
     public void EditorLoadScene()
+    {
+        if (boundsGo)
+        {
+            GameObject.DestroyImmediate(boundsGo);
+        }
+        var gs = EditorHelper.EditorLoadScene(scene, sceneArg.path, IsSetParent ? GetSceneParent() : null).ToList();
+        SetObjects(gs);
+
+        InitIdDict();
+    }
+
+    [ContextMenu("EditorLoadSceneEx")]
+    public void EditorLoadSceneEx()
     {
         if (IsLoaded == true)
         {
@@ -534,13 +569,7 @@ public class SubScene_Base : MonoBehaviour
         }
         IsLoaded = true;
 
-        if (boundsGo)
-        {
-            GameObject.DestroyImmediate(boundsGo);
-        }
-        gos = EditorHelper.EditorLoadScene(scene, sceneArg.path, IsSetParent ? GetSceneParent() : null).ToList();
-
-        InitIdDict();
+        EditorLoadScene();
     }
 
     [ContextMenu("EditorLoadLinkedScene")]
@@ -548,7 +577,7 @@ public class SubScene_Base : MonoBehaviour
     {
         if (LinkedScene != null)
         {
-            LinkedScene.EditorLoadScene();
+            LinkedScene.EditorLoadSceneEx();
         }
         else
         {
@@ -634,7 +663,8 @@ public class SubScene_Base : MonoBehaviour
 
         if (this is SubScene_Single)
         {
-            gos = SubSceneHelper.GetChildrenGos(GetSceneParent());
+            var gs = SubSceneHelper.GetChildrenGos(GetSceneParent());
+            SetObjects(gs);
         }
 
         SubSceneManager subSceneManager = GameObject.FindObjectOfType<SubSceneManager>();
@@ -669,10 +699,17 @@ public class SubScene_Base : MonoBehaviour
         scene = SubSceneHelper.CreateScene(sceneArg);
     }
 
-    public void SetArg(string path, bool isOverride)
+    public void SetArg(string path, bool isOverride, List<GameObject> gs)
     {
         SubSceneManager subSceneManager = GameObject.FindObjectOfType<SubSceneManager>();
-        sceneArg = new SubSceneArg(path, isOverride, subSceneManager.IsOpenSubScene, gos.ToArray());
+        if (sceneArg == null)
+        {
+            sceneArg = new SubSceneArg();
+        }
+        sceneArg.path = path;
+        sceneArg.isOveride = isOverride;
+        sceneArg.isOpen= subSceneManager.IsOpenSubScene;
+        sceneArg.objs = gs;
         GetSceneName();
     }
 
@@ -693,27 +730,57 @@ public class SubScene_Base : MonoBehaviour
         //}
         //else
         {
-            List<MeshRenderer> renderers = new List<MeshRenderer>();
-            //foreach (var go in gos)
-            //{
-            //    if (go == null) continue;
-            //    renderers.AddRange(go.GetComponentsInChildren<MeshRenderer>(true));
-            //}
-            //Debug.Log($"SubScene_Base.Init name:{this.name} gos:{gos.Count},renderers:{renderers.Count}");
-
-            foreach (var go in sceneArg.objs)
-            {
-                if (go == null) continue;
-                renderers.AddRange(go.GetComponentsInChildren<MeshRenderer>(true));
-            }
-            Debug.Log($"SubScene_Base.Init name:{this.name} sceneArg.objs:{sceneArg.objs.Length},renderers:{renderers.Count}");
-
+            List<MeshRenderer> renderers = GetSceneRenderers();
             InitRenderersInfo(renderers.ToArray());
         }
 
         InitVisible();
 
         this.sceneParent = this.transform;
+    }
+
+    public List<GameObject> GetLoadedSceneGos()
+    {
+        List<GameObject> objs = new List<GameObject>();
+        foreach (var go in gos)
+        {
+            if (go == null) continue;
+            if (!objs.Contains(go))
+            {
+                objs.Add(go);
+            }
+        }
+        if(sceneArg!=null)
+            foreach (var go in sceneArg.objs)
+            {
+                if (go == null) continue;
+                if (!objs.Contains(go))
+                {
+                    objs.Add(go);
+                }
+            }
+        if (objs.Count == 0 && sceneParent!=null)
+        {
+            for(int i=0;i<sceneParent.childCount;i++)
+            {
+                var child = sceneParent.GetChild(i);
+                objs.Add(child.gameObject);
+            }
+        }
+        return objs;
+    }
+
+    public List<MeshRenderer> GetSceneRenderers()
+    {
+        List<GameObject> objs = GetLoadedSceneGos();
+        List<MeshRenderer> renderers = new List<MeshRenderer>();
+        foreach (var go in objs)
+        {
+            if (go == null) continue;
+            renderers.AddRange(go.GetComponentsInChildren<MeshRenderer>(true));
+        }
+        Debug.Log($"SubScene_Base.GetSceneRenderers name:{this.name} gos:{objs.Count},renderers:{renderers.Count}");
+        return renderers;
     }
 
     private void InitVisible()
@@ -765,6 +832,17 @@ public class SubScene_Base : MonoBehaviour
         var dis = Vector3.Distance(clo, pos);
         Debug.Log("dis:" + dis+"|"+(dis*dis));
         Debug.DrawLine(clo, pos, Color.red, 10);
+    }
+
+    [ContextMenu("CreateLOD")]
+    public void CreateLOD()
+    {
+        var renderers = GetSceneRenderers();
+        foreach(var renderer in renderers)
+        {
+            //AutomaticLODHelper.CreateLOD(renderer.gameObject, null, null, null, true, true);
+            LODManager.Instance.CreateLOD(renderer.gameObject);
+        }
     }
 
     public void OnDestroy()
