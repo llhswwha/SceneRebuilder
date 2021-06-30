@@ -378,13 +378,14 @@ public class BuildingModelInfo : SubSceneCreater
                  ProgressBarHelper.DisplayProgressBar("CreateTree", $"OutTree0 progress:{((1 + p) / 3f):P1}", (1 + p) / 3f);
              }
          });
-        foreach (var t in tbs)
-        {
-            if (t != null)
+        if(tbs!=null)
+            foreach (var t in tbs)
             {
-                ts.Add(t);
+                if (t != null)
+                {
+                    ts.Add(t);
+                }
             }
-        }
 
         if (progressChanged != null)
         {
@@ -452,6 +453,10 @@ public class BuildingModelInfo : SubSceneCreater
 
     private void GetBigSmallInfo()
     {
+        if(OutPart0==null){
+            Debug.LogError("GetSmallBigInfo OutPart0==null");
+            return;
+        }
         JobSetting =GameObject.FindObjectOfType<AcRTAlignJobSetting>(true);
         if (JobSetting == null)
         {

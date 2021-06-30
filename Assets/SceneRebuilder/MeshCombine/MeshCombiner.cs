@@ -241,4 +241,13 @@ public class MeshCombiner : MonoBehaviour
     
     public bool AutoRemove;
 
+
+    [ContextMenu("ShowRenderers")]
+
+    public void ShowRenderers(){
+        var renderers=sourceRoot.GetComponentsInChildren<MeshRenderer>(true);
+        foreach(var renderer in renderers){
+            renderer.enabled=true;
+        }
+    }
 }

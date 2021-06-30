@@ -42,4 +42,12 @@ public class LODManager : MonoBehaviour
     {
         AutomaticLODHelper.CreateLOD(go, LODMaterials, LODLevels, lodVertexPercents, isDestroy, isSaveAsset, progressChanged);
     }
+
+    public GameObject TestTarget;
+
+    [ContextMenu("TestCreateLOD")]
+    public void TestCreateLOD()
+    {
+        CreateLOD(TestTarget);
+    }
 }

@@ -495,6 +495,16 @@ public static class MeshHelper
     //     bounds.size=vs[2];
     //     return bounds;
     // }
+
+    public static Vector3[] GetMinMax(IEnumerable<MeshFilter> meshFilters)
+    {
+        List<Vector3> allVs=new List<Vector3>();
+        foreach(var mf in meshFilters){
+            Vector3[] vs=GetWorldVertexes(mf);
+            allVs.AddRange(vs);
+        }
+        return GetMinMax(allVs.ToArray());
+    }
     
     public static Vector3[] GetMinMax(MeshFilter meshFilter)
     {
