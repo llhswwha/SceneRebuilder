@@ -3568,7 +3568,7 @@ MonoBehaviour:
   - 0.5
   - 0.25
   - 0.1
-  isDestroy: 1
+  isDestroy: 0
   isSaveAsset: 0
 --- !u!1 &4013184157387807942
 GameObject:
