@@ -32,7 +32,7 @@ public class SubSceneShowManager : MonoBehaviour
             if(s.contentType==SceneContentType.Part)
             {
                 scenes_Out0_Part.Add(s);
-                s.HideBoundsBox();//һ��ʼ����ֻ��tree���ϳ�ģ�ͣ���ʾ����
+                s.HideBoundsBox();
 
             }
             if (s.contentType == SceneContentType.Tree)
@@ -83,7 +83,10 @@ public class SubSceneShowManager : MonoBehaviour
 
     public bool IsUpdateTreeNodeByDistance = false;
     public bool IsUpdateDistance = true;
-    public bool EnableLoadUnload = false; 
+    public bool IsEnableLoad = false; 
+    public bool IsEnableUnload=false;
+    public bool IsEnableHide = false; 
+    public bool IsEnableShow=false;
 
     public void LoadStartScens()
     {
@@ -145,25 +148,29 @@ public class SubSceneShowManager : MonoBehaviour
 
    void LoadUnloadScenes()
     {
-        if (EnableLoadUnload == false) return;
+        //if (EnableLoadUnload == false) return;
         DateTime start = DateTime.Now;
-        foreach (var scene in visibleScenes)
-        {
-            scene.ShowObjects();
-        }
-        foreach (var scene in hiddenScenes)
-        {
-            scene.HideObjects();
-        }
-        foreach (var scene in loadScenes)
-        {
-            
-            scene.LoadSceneAsync(null);
-        }
-        foreach (var scene in unloadScenes)
-        {
-            scene.UnLoadSceneAsync();
-        }
+        if(IsEnableShow)
+            foreach (var scene in visibleScenes)
+            {
+                scene.ShowObjects();
+            }
+        if(IsEnableHide)
+            foreach (var scene in hiddenScenes)
+            {
+                scene.HideObjects();
+            }
+        if(IsEnableLoad)
+            foreach (var scene in loadScenes)
+            {
+                
+                scene.LoadSceneAsync(null);
+            }
+        if(IsEnableUnload)
+            foreach (var scene in unloadScenes)
+            {
+                scene.UnLoadSceneAsync();
+            }
         TimeOfLoad = (DateTime.Now - start).TotalMilliseconds;
     }
 

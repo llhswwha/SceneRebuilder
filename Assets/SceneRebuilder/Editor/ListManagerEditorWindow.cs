@@ -49,15 +49,59 @@ public class ListManagerEditorWindow<T1,T2> : EditorWindow where T1 : ListItemEl
     protected int pageCount = 16;
     protected int pageIndex = 0;
 
-    string[] pageSizeList ={"10","16","50","100","1000","2000","100000"};
+    string[] pageSizeList ={"10","16","50","100","500","1000","2000","4000"};
     int pageSizeId=1;
+
+    protected bool setPageIndexSetting=false;
     /// <summary>
     /// 绘制页标
     /// </summary>
     protected void DrawPageIndexBlock()
     {
+        //count:1000 pageCount:16 pages:62
         int count = meshElementList.Count;
+        if(setPageIndexSetting){
+            setPageIndexSetting=false;
+            if(count<=100){
+                pageCount=10;
+                pageSizeId=0;
+            }
+            else if(count<=500){
+                pageCount=16;
+                pageSizeId=1;
+            }
+            else if(count<=1000){
+                pageCount=50;
+                pageSizeId=2;
+            }
+            else if(count<=5000){
+                pageCount=100;
+                pageSizeId=3;
+            }
+            else if(count<=10000){
+                pageCount=500;
+                pageSizeId=4;
+            }
+            else if(count<=20000){
+                pageCount=1000;
+                pageSizeId=5;
+            }
+            else if(count<=40000){
+                pageCount=2000;
+                pageSizeId=6;
+            }
+            else{
+                
+                pageCount=4000;
+                pageSizeId=7;
+            }
+
+            Debug.LogError($"DrawPageIndexBlock count:{count} pageCount:{pageCount}");
+        }
+
         int pages = count / pageCount;
+        
+        Debug.Log($"DrawPageIndexBlock count:{count} pageCount:{pageCount} pages:{pages}");
         if (count % pageCount != 0)
             pages++;
 
@@ -76,10 +120,20 @@ public class ListManagerEditorWindow<T1,T2> : EditorWindow where T1 : ListItemEl
                 GUI.enabled = false;
             }
 
-            if (GUILayout.Button($"{count}", MPGUIStyles.itemBtnStyles_child[0], GUILayout.MaxWidth(70)))
-            {
-                
+            if(count!=originList.Count){
+                 if (GUILayout.Button($"{count}/{originList.Count}", MPGUIStyles.itemBtnStyles_child[0], GUILayout.MaxWidth(70)))
+                {
+                    
+                }
             }
+            else{
+                if (GUILayout.Button($"{count}", MPGUIStyles.itemBtnStyles_child[0], GUILayout.MaxWidth(70)))
+                {
+                    
+                }
+            }
+
+
             if (GUILayout.Button("Last Page", MPGUIStyles.itemBtnStyles_child[0], GUILayout.MaxWidth(70)))
             {
                 pageIndex--;

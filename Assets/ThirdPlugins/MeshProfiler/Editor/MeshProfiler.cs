@@ -223,23 +223,36 @@ namespace MeshProfilerNS
         /// </summary>
         void RefleshList()
         {
+            DateTime start=DateTime.Now;
             meshElementList.Clear();
             meshElementList.AddRange(MeshFinder.GetMeshElementList(eleType,meshFilters,null));
             // meshElementList.AddRange(MeshFinder.GetMeshElementList(MeshElementType.File));
             // meshElementList.AddRange(MeshFinder.GetMeshElementList(MeshElementType.Asset));
-            Debug.Log($"MeshProfiler.RefleshList:{meshElementList.Count}");
+            // Debug.Log($"MeshProfiler.RefleshList:{meshElementList.Count}");
+            // Debug.Log($"RefleshList time1:{(DateTime.Now-start).ToString()}");
+
+
             Sort(meshElementList, sortWays);
+
+            // Debug.Log($"RefleshList time2:{(DateTime.Now-start).ToString()}");
             SelectByConditions(meshElementList);
+
+            // Debug.Log($"RefleshList time3:{(DateTime.Now-start).ToString()}");
             originList.Clear();
             originList.AddRange(meshElementList);
             if (meshElementList.Count > 0)
                 SelectIndex = 0;
             else
                 SelectIndex = -1;
+
+            // Debug.Log($"RefleshList time4:{(DateTime.Now-start).ToString()}");
+
             pageIndex = 0;
             scVector = Vector2.zero;
-            
 
+            setPageIndexSetting=true;
+            
+            Debug.Log($"RefleshList time:{(DateTime.Now-start).ToString()}");
         }
         List<MeshElement> tempList = new List<MeshElement>();
         /// <summary>
@@ -267,6 +280,8 @@ namespace MeshProfilerNS
         /// <param name="list"></param>
         void SelectByConditions(List<MeshElement> list)
         {
+            int count1=list.Count;
+            DateTime start=DateTime.Now;
             if (isSelectConditions)
             {
                 for (int i = list.Count - 1; i >= 0; i--)
@@ -341,13 +356,64 @@ namespace MeshProfilerNS
             {
                 SelectIndex = -1;
             }
+            int maxCount=1000;
+            if(list.Count>maxCount){
+                List<MeshElement> list2=new List<MeshElement>();
+                for (int i = 0; i < list.Count && i<maxCount; i++)
+                {
+                    MeshElement item = list[i];
+                    list2.Add(item);
+                }
+                list.Clear();
+                list.AddRange(list2);
+            }
+
+            Debug.Log($"SelectByConditions count:{count1}->{list.Count} time:{(DateTime.Now-start).ToString()}");
         }
         //按排序方式排序
         void Sort(List<MeshElement> list, MeshSortWays sortways)
         {
+            DateTime start=DateTime.Now;
+            int all=0;
             for (int i = 1; i < list.Count; i++)
+            {
+                float progress = (float)i / list.Count;
+                float percents = progress * 100;
+                if (ProgressBarHelper.DisplayCancelableProgressBar("Sort1", $"{i}/{list.Count} {percents:F2}% of 100%", progress))
+                {
+                    break;
+                }
                 for (int j = 0; j < list.Count - i; j++)
                 {
+                    all++;
+                }
+            }
+            Debug.Log($"Sort all:{all} time:{(DateTime.Now-start).ToString()}");
+
+            int id=0;
+            for (int i = 1; i < list.Count; i++)
+            {
+                // float progress = (float)i / list.Count;
+                // float percents = progress * 100;
+                // if (ProgressBarHelper.DisplayCancelableProgressBar("Sort", $"{i}/{list.Count} {percents:F2}% of 100%", progress))
+                // {
+                //     break;
+                // }
+
+                float progress = (float)id / all;
+                float percents = progress * 100;
+                if (ProgressBarHelper.DisplayCancelableProgressBar("Sort2", $"{id}/{all} | {i}/{list.Count} {percents:F2}%", progress))
+                {
+                    break;
+                }
+
+                for (int j = 0; j < list.Count - i; j++)
+                {
+
+                    id++;
+
+  
+
                     if (sortways == MeshSortWays.SortByVertNum)
                     {
                         if (list[j].rootMeshValue.vertCount < list[j + 1].rootMeshValue.vertCount)
@@ -403,6 +469,9 @@ namespace MeshProfilerNS
                         }
                     }
                 }
+            }
+            ProgressBarHelper.ClearProgressBar();
+            Debug.Log($"Sort count:{list.Count} time:{(DateTime.Now-start).ToString()}");
         }
 
         /// <summary>
@@ -489,6 +558,7 @@ namespace MeshProfilerNS
         /// </summary>
         void DrawListBlock()
         {
+            DateTime start=DateTime.Now;
 
             GUILayout.BeginArea(MPGUIStyles.BorderArea(MPGUIStyles.LIST_BLOCK));
             GUILayout.Space(5);
@@ -511,6 +581,8 @@ namespace MeshProfilerNS
 
             GUILayout.EndScrollView();
             GUILayout.EndArea();
+
+            Debug.Log($"DrawListBlock meshElementList:{meshElementList.Count} pageIndex:{pageIndex} pageCount:{pageCount} startId:{pageIndex * pageCount} endId:{(pageIndex + 1) * pageCount} time:{(DateTime.Now-start).ToString()}");
         }
         /// <summary>
         /// 绘制条目框

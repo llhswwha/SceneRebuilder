@@ -118,7 +118,7 @@ public class SubSceneEditorInitializer
 
                     if (r)
                     {
-                        CreateLabel($"[{modelInfo.GetInfoName()}][Build]", selectionRect, Layer1Width, c, Color.red);
+                        CreateLabel($"[{modelInfo.GetInfoName()}][Floor]", selectionRect, Layer1Width, c, Color.red);
                     }
                     else
                     {
