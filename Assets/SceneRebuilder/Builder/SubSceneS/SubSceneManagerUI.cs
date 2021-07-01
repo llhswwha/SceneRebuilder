@@ -28,13 +28,13 @@ public class SubSceneManagerUI : MonoBehaviour
 
     void Start()
     {
-        subSceneManager = GameObject.FindObjectOfType<SubSceneManager>();
+        subSceneManager = GameObject.FindObjectOfType<SubSceneManager>(true);
         subSceneManager.ProgressChanged += SubSceneManager_ProgressChanged;
         subSceneManager.AllLoaded += SubSceneManager_AllLoaded;
 
         dropdownSceneType.onValueChanged.AddListener(OnSceneTypeChanged);
 
-        subSceneShowManager = GameObject.FindObjectOfType<SubSceneShowManager>();
+        subSceneShowManager = GameObject.FindObjectOfType<SubSceneShowManager>(true);
         ToggleDynamicShow.onValueChanged.AddListener(OnDynamicShowChanged);
 
         ClickGetScenes();

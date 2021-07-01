@@ -67,7 +67,7 @@ public class AreaTreeNodeShowManagerUI : MonoBehaviour
     private void Start()
     {
         if (areaTreeNodeShowManager == null)
-            areaTreeNodeShowManager = GameObject.FindObjectOfType<AreaTreeNodeShowManager>();
+            areaTreeNodeShowManager = GameObject.FindObjectOfType<AreaTreeNodeShowManager>(true);
     }
 
     public int ShowNodeCount = 0;
@@ -77,12 +77,14 @@ public class AreaTreeNodeShowManagerUI : MonoBehaviour
     // Update is called once per frame
     void Update()
     {
-        int count1= areaTreeNodeShowManager.ShownNodes.Count;
-        //if (ShowNodeCount != count1)
-        //{
-        //    ClickUpdateInfo();
-        //}
-        ShowNodeCount = count1;
-        ShowHideInfo.text=string.Format("ShowNode:{0},HideNode:{1},StaticNode:{2}", ShowNodeCount, areaTreeNodeShowManager.HiddenNodes.Count,areaTreeNodeShowManager.ShownLeafNodes.Count);
+        if(areaTreeNodeShowManager!=null){
+            int count1= areaTreeNodeShowManager.ShownNodes.Count;
+            //if (ShowNodeCount != count1)
+            //{
+            //    ClickUpdateInfo();
+            //}
+            ShowNodeCount = count1;
+            ShowHideInfo.text=string.Format("ShowNode:{0},HideNode:{1},StaticNode:{2}", ShowNodeCount, areaTreeNodeShowManager.HiddenNodes.Count,areaTreeNodeShowManager.ShownLeafNodes.Count);
+        }
     }
 }

@@ -8,9 +8,12 @@ public class SubSceneShowManager : MonoBehaviour
     public static SubSceneShowManager Instance;
 
     public SubSceneManager sceneManager;
-    //public SubScene_Out0[] scenes_Out0;//
+    public SubScene_Out0[] scenes_Out0;
     public SubScene_Out1[] scenes_Out1;
     public SubScene_In[] scenes_In;
+
+    public List<SubScene_In> scenes_In_Part = new List<SubScene_In>();
+    public List<SubScene_In> scenes_In_Tree = new List<SubScene_In>();
 
     public List<SubScene_Out0> scenes_Out0_Part = new List<SubScene_Out0>();
     public List<SubScene_Out0> scenes_Out0_Tree = new List<SubScene_Out0>();
@@ -19,13 +22,65 @@ public class SubSceneShowManager : MonoBehaviour
     public List<SubScene_Out0> scenes_Out0_TreeNode_Shown = new List<SubScene_Out0>();
     public Camera[] cameras;
 
+    public string GetSceneCountInfo()
+    {
+
+        var alls=GameObject.FindObjectsOfType<SubScene_Base>(true);
+        var allsInfo=GetSceneRenderInfo(alls);
+        var ins=GameObject.FindObjectsOfType<SubScene_In>(true);
+        var insInfo=GetSceneRenderInfo(ins);
+        var out0s=GameObject.FindObjectsOfType<SubScene_Out0>(true);
+        var out0sInfo=GetSceneRenderInfo(out0s);
+        var out1s=GameObject.FindObjectsOfType<SubScene_Out1>(true);
+        var out1sInfo=GetSceneRenderInfo(out1s);
+        
+        // List<SubScene_Out0> out0s_tree
+        
+        
+        return $"all:{alls.Length}(v:{allsInfo[0]:F0},r:{allsInfo[1]:F0}) | out0:{out0s.Length}(v:{out0sInfo[0]:F0},r:{out0sInfo[1]:F0})\nout1:{out1s.Length}(v:{out1sInfo[0]:F0},r:{out1sInfo[1]:F0}) | ins:{ins.Length}(v:{insInfo[0]:F0},r:{insInfo[1]:F0})";
+    }
+
+    public string GetShowSceneCountInfo()
+    {
+        var scenes_Out0_Part_Info=GetSceneRenderInfo(scenes_Out0_Tree);
+        var scenes_In_Tree_Info=GetSceneRenderInfo(scenes_In_Tree);
+        var scenes_Out0_TreeNode_Shown_Info=GetSceneRenderInfo(scenes_Out0_TreeNode_Shown);
+        var scenes_Out0_TreeNode_Hidden_Info=GetSceneRenderInfo(scenes_Out0_TreeNode_Hidden);
+
+        return $"out0_tree:{scenes_Out0_Tree.Count}(v:{scenes_Out0_Part_Info[0]:F0},r:{scenes_Out0_Part_Info[1]:F0})"
+        +$" out0_node_show:{scenes_Out0_TreeNode_Shown.Count}(v:{scenes_Out0_TreeNode_Shown_Info[0]:F0},r:{scenes_Out0_TreeNode_Shown_Info[1]:F0})"
+        +$"\nin_tree:{scenes_In_Tree.Count}(v:{scenes_In_Tree_Info[0]:F0},r:{scenes_In_Tree_Info[1]:F0})"
+        +$" out0_node_hide:{scenes_Out0_TreeNode_Hidden.Count}(v:{scenes_Out0_TreeNode_Hidden_Info[0]:F0},r:{scenes_Out0_TreeNode_Hidden_Info[1]:F0})";
+    }
+
+    public float[] GetSceneRenderInfo<T>(IEnumerable<T> scenes) where T : SubScene_Base
+    {
+        float vCount=0;
+        float rCount=0;
+        foreach(T scene in scenes){
+            vCount+=scene.vertexCount;
+            rCount+=scene.rendererCount;
+        }
+        return new float[]{vCount,rCount};
+    }
+    
+    public string GetSceneInfo()
+    {
+        return $"visible:{visibleScenes.Count},loaded:{loadScenes.Count},hidden:{hiddenScenes.Count},unloaded:{unloadScenes.Count}";
+    }
+
+    public string GetDisInfo()
+    {
+        return $"Min:{MinDisToCam:F0},Max:{MaxDisToCam:F0},MinSqrt:{MinDisSqrtToCam:F0},MaxSqrt:{MaxDisSqrtToCam:F0},time:{TimeOfDis:F1}";
+    }
+
     [ContextMenu("Init")]
     public void Init()
     {
         sceneManager = GameObject.FindObjectOfType<SubSceneManager>(true);
         scenes_In = GameObject.FindObjectsOfType<SubScene_In>(true);
+        scenes_Out0 = GameObject.FindObjectsOfType<SubScene_Out0>(true);
 
-        var scenes_Out0 = GameObject.FindObjectsOfType<SubScene_Out0>(true);
         foreach(var s in scenes_Out0)
         {
             //s.gameObject.SetActive(true);
@@ -44,6 +99,27 @@ public class SubSceneShowManager : MonoBehaviour
             //    scenes_Out0_TreeNode.Add(s);
             //}
         }
+
+        foreach(var s in scenes_In)
+        {
+            //s.gameObject.SetActive(true);
+            if(s.contentType==SceneContentType.Part)
+            {
+                scenes_In_Part.Add(s);
+                s.HideBoundsBox();
+
+            }
+            if (s.contentType == SceneContentType.Tree)
+            {
+                scenes_In_Tree.Add(s);
+            }
+            //if (s.contentType == SceneContentType.TreeNode)
+            //{
+            //    scenes_Out0_TreeNode.Add(s);
+            //}
+        }
+
+
         scenes_Out1 = GameObject.FindObjectsOfType<SubScene_Out1>(true);
 
         cameras = GameObject.FindObjectsOfType<Camera>();
@@ -77,6 +153,7 @@ public class SubSceneShowManager : MonoBehaviour
     private void Awake()
     {
         Instance = this;
+        Init();
     }
 
     public List<SubScene_Base> WaitingScenes = new List<SubScene_Base>();
@@ -90,22 +167,51 @@ public class SubSceneShowManager : MonoBehaviour
 
     public void LoadStartScens()
     {
+        List<SubScene_Out0> scene_Out0s=new List<SubScene_Out0>();
+        scene_Out0s.AddRange(scenes_Out0_Tree);
+        scene_Out0s.AddRange(scenes_Out0_TreeNode_Shown);
         AreaTreeNodeShowManager.Instance.IsUpdateTreeNodeByDistance = false;
         //sceneManager.LoadScenesEx(scenes_Out0_Tree.ToArray());
-        sceneManager.LoadScenesEx(scenes_Out0_TreeNode_Shown.ToArray(), () =>
+        sceneManager.LoadScenesEx(scene_Out0s.ToArray(), () =>
             {
                 //AreaTreeNodeShowManager.Instance.IsUpdateTreeNodeByDistance = true;
 
-                WaitingScenes.AddRange(scenes_Out0_TreeNode_Shown);
+                WaitingScenes.AddRange(scene_Out0s);
 
                 AreaTreeNodeShowManager.Instance.IsUpdateTreeNodeByDistance = IsUpdateTreeNodeByDistance;
             });
     }
 
+    public void LoadOut0TreeScenes()
+    {
+        //AreaTreeNodeShowManager.Instance.IsUpdateTreeNodeByDistance = false;
+        //sceneManager.LoadScenesEx(scenes_Out0_Tree.ToArray());
+        sceneManager.LoadScenesEx(scenes_Out0_Tree.ToArray(), () =>
+            {
+                //AreaTreeNodeShowManager.Instance.IsUpdateTreeNodeByDistance = true;
+
+                WaitingScenes.AddRange(scenes_Out0_Tree);
+
+                //AreaTreeNodeShowManager.Instance.IsUpdateTreeNodeByDistance = IsUpdateTreeNodeByDistance;
+            });
+    }
+
+    public void LoadOut0TreeNodeScenes()
+    {
+        //AreaTreeNodeShowManager.Instance.IsUpdateTreeNodeByDistance = false;
+        //sceneManager.LoadScenesEx(scenes_Out0_Tree.ToArray());
+        sceneManager.LoadScenesEx(scenes_Out0_TreeNode_Shown.ToArray(), () =>
+        {
+                //AreaTreeNodeShowManager.Instance.IsUpdateTreeNodeByDistance = true;
+                WaitingScenes.AddRange(scenes_Out0_TreeNode_Shown);
+                //AreaTreeNodeShowManager.Instance.IsUpdateTreeNodeByDistance = IsUpdateTreeNodeByDistance;
+        });
+    }
+
     // Start is called before the first frame update
     void Start()
     {
-        Init();
+        //Init();
 
         if (IsAutoLoad)
         {
@@ -259,16 +365,6 @@ public class SubSceneShowManager : MonoBehaviour
         MaxDisToCam = Mathf.Sqrt(MaxDisSqrtToCam);
 
         TimeOfDis = (DateTime.Now - start).TotalMilliseconds;
-    }
-
-    public string GetSceneInfo()
-    {
-        return $"visible:{visibleScenes.Count},loaded:{loadScenes.Count},hidden:{hiddenScenes.Count},unloaded:{unloadScenes.Count}";
-    }
-
-    public string GetDisInfo()
-    {
-        return $"Min:{MinDisToCam:F0},Max:{MaxDisToCam:F0},MinSqrt:{MinDisSqrtToCam:F0},MaxSqrt:{MaxDisSqrtToCam:F0},time:{TimeOfDis:F1}";
     }
 
     //int updateCount = 0;
