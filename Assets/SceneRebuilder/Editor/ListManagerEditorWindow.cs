@@ -176,4 +176,191 @@ public class ListManagerEditorWindow<T1,T2> : EditorWindow where T1 : ListItemEl
         GUILayout.EndHorizontal();
         GUILayout.EndArea();
     }
+
+    protected virtual void PreviewSelectedItem(T1 ele)
+    {
+        InitPreview(ele.rootObj);
+    }
+
+    protected virtual void DrawItem(T1 element, bool isSelect, int index)
+    {
+
+    }
+
+    protected virtual void Sort(List<T1> list)
+    {
+
+    }
+
+    protected virtual void SelectByConditions(List<T1> list)
+    {
+
+    }
+
+    protected virtual int width1
+    {
+        get
+        {
+            return 66;
+        }
+    }
+    protected virtual int width2
+    {
+        get
+        {
+            return 40;
+        }
+    }
+    protected virtual int width3
+    {
+        get
+        {
+            return 50;
+        }
+    }
+
+    protected virtual string GetValue(object v, GUIStyle style)
+    {
+        string t = v + "";
+        if (v is int)
+        {
+            int i = (int)v;
+            if (i == 0)
+            {
+                t = "-";
+            }
+            if (i > 50000)//5w
+            {
+                style.normal.textColor = new Color(1, 0, 0);
+            }
+            else if (i > 10000)//1w
+            {
+                style.normal.textColor = new Color(1, 102f / 255, 102f / 255);
+            }
+            else if (i > 5000)//5k
+            {
+                style.normal.textColor = new Color(1, 153f / 255, 102f / 255);
+            }
+            else if (i > 1000)//1k
+            {
+                style.normal.textColor = new Color(1, 204f / 255, 153f / 255);
+            }
+            else
+            {
+
+            }
+
+        }
+        else if (v is float)
+        {
+            float f = (float)v;
+
+            if (f > 400)
+            {
+                style.normal.textColor = new Color(1, 0, 0);
+            }
+            else if (f > 200)
+            {
+                style.normal.textColor = new Color(1, 102f / 255, 102f / 255);
+            }
+            else if (f > 100)
+            {
+                style.normal.textColor = new Color(1, 153f / 255, 102f / 255);
+            }
+            else if (f > 50)
+            {
+                style.normal.textColor = new Color(1, 204f / 255, 153f / 255);
+            }
+            else
+            {
+
+            }
+            if (f < 10)
+            {
+                t = f.ToString("F2");
+            }
+            else if (f < 100)
+            {
+                t = f.ToString("F1");
+            }
+            else
+            {
+                t = f.ToString("F0");
+            }
+
+            if (f == 0)
+            {
+                t = "-";
+            }
+        }
+        else if (v is bool)
+        {
+            bool b = (bool)v;
+            if (b == true)
+            {
+                style.normal.textColor = new Color(0, 1, 0);
+            }
+        }
+        else
+        {
+
+        }
+        return t;
+    }
+
+    protected List<T1> tempList = new List<T1>();
+
+
+    protected string m_InputSearchText;
+    /// <summary>
+    /// 按照搜索结果刷新列表，不重新获取。
+    /// </summary>
+    protected void RefleshSearchList()
+    {
+        tempList.Clear();
+        for (int i = 0; i < originList.Count; i++)
+        {
+            if (originList[i].name.Contains(m_InputSearchText))
+            {
+                tempList.Add(originList[i]);
+            }
+        }
+        meshElementList.Clear();
+        meshElementList.AddRange(tempList);
+
+        SelectIndex = -1;
+        pageIndex = 0;
+    }
+
+    protected int selectChildIndex = 0;//子物体选择下标
+    protected virtual int SelectChildIndex
+    {
+        get { return selectChildIndex; }
+        set
+        {
+            selectChildIndex = value;
+            if (selectChildIndex >= 0)
+                InitPreviewChild(meshElementList[SelectIndex].childList[selectChildIndex]);
+        }
+    }
+
+    protected virtual void InitPreviewChild(T2 obj)
+    {
+
+    }
+
+    protected int selectIndex = 0;//父物体选择下标
+    protected int SelectIndex
+    {
+        get { return selectIndex; }
+        set
+        {
+            selectIndex = value;
+            if (selectIndex >= 0)
+            {
+                PreviewSelectedItem(meshElementList[selectIndex]);
+            }
+
+        }
+    }
 }

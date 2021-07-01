@@ -1,4 +1,3 @@
-//using System;
 using System.Collections;
 using System.Collections.Generic;
 using UltimateGameTools.MeshSimplifier;
@@ -214,6 +213,7 @@ public static class AutomaticLODHelper
 
     public static void CreateLOD(GameObject go, Material[] mats,float[] lvs,float[] lodVertexPercents,bool isDestroyScript=true,bool isSaveAsset=false, System.Action<float> progressChanged=null)
     {
+        System.DateTime start= System.DateTime.Now;
         if(lvs==null)
         {
             SetMaterials(go,mats);
@@ -244,12 +244,19 @@ public static class AutomaticLODHelper
         AutomaticLODHelper.CreateDefaultLODS(nLevels, aLOD, bRecurseIntoChildren,lodVertexPercents);
         aLOD.ComputeLODData(bRecurseIntoChildren, (t,m,p)=>
         {
-            if (progressChanged != null) progressChanged(p / 2f);
+            //Debug.LogError($"CreateLOD[{go.name}][{go.GetInstanceID()}] ComputeLODData t:{t},m:{m},p:{p}");
+            if (progressChanged != null) progressChanged(p*0.4f);
         });
+
+        //Debug.LogError($"CreateLOD time1:{(System.DateTime.Now - start).ToString()}");
+
         aLOD.ComputeAllLODMeshes(bRecurseIntoChildren, (t, m, p) =>
         {
-            if (progressChanged != null) progressChanged((1+p) / 2f);
+            //Debug.LogError($"CreateLOD[{go.name}][{go.GetInstanceID()}] ComputeAllLODMeshes t:{t},m:{m},p:{p}");
+            if (progressChanged != null) progressChanged(0.4f+p*0.6f);
         });
+        //Debug.LogError($"CreateLOD time2:{(System.DateTime.Now - start).ToString()}");
+
 
         if (isSaveAsset)
         {
@@ -290,5 +297,7 @@ public static class AutomaticLODHelper
         }
 
         if (progressChanged != null) progressChanged(1);
+
+        Debug.LogError($"CreateLOD vertexCount:{aLOD.m_originalMesh.vertexCount},time:{(System.DateTime.Now - start).ToString()}");
     }
 }

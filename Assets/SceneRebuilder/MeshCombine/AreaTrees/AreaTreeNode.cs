@@ -1020,13 +1020,31 @@ public class AreaTreeNode : SubSceneCreater
         //Debug.LogError($"AreaTreeNode.OnDisable {this.name}");
     }
 
+    private float lastP = 0;
+
     [ContextMenu("CreateLOD")]
     public void CreateLOD()
     {
-        CreateLOD(null);
+        CreateLOD((p,f)=>
+        {
+            if (f)
+            {
+                ProgressBarHelper.ClearProgressBar();
+            }
+            else
+            {
+                if (p < lastP)
+                {
+                    Debug.LogError($"p < lastP {p}->{lastP}");
+                }
+                lastP = p;
+                ProgressBarHelper.DisplayProgressBar("CreateLOD", $"P1 {p:P1}%", p);
+                System.Threading.Thread.Sleep(100);
+            }
+        });
     }
 
-    public void CreateLOD(Action<float> progressChanged)
+    public void CreateLOD(Action<float,bool> progressChanged)
     {
         var renderers = CombinedRenderers;
         for (int i = 0; i < renderers.Length; i++)
@@ -1034,20 +1052,20 @@ public class AreaTreeNode : SubSceneCreater
             float progress = (float)i / renderers.Length;
             if (progressChanged != null)
             {
-                progressChanged(progress);
+                progressChanged(progress,false);
             }
             MeshRenderer renderer = renderers[i];
             LODManager.Instance.CreateLOD(renderer.gameObject,p=> {
                 float progress2 = (float)(i+p) / renderers.Length;
                 if (progressChanged != null)
                 {
-                    progressChanged(progress2);
+                    progressChanged(progress2,false);
                 }
             });
         }
         if (progressChanged != null)
         {
-            progressChanged(1);
+            progressChanged(1,true);
         }
     }
 }

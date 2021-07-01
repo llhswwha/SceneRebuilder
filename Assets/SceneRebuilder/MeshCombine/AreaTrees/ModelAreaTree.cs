@@ -991,7 +991,7 @@ public class ModelAreaTree : SubSceneCreater
             {
                 break;
             }
-            leafNode.CreateLOD(p=>
+            leafNode.CreateLOD((p,f)=>
             {
                 float progress2 = (float)(i+p) / TreeLeafs.Count;
                 float percents2 = progress2 * 100;

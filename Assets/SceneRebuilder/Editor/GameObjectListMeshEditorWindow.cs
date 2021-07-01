@@ -513,7 +513,7 @@ namespace MeshProfilerNS
         /// <param name="element"></param>
         /// <param name="isSelect"></param>
         /// <param name="index"></param>
-        void DrawItem(MeshElement element, bool isSelect, int index)
+        protected override void DrawItem(MeshElement element, bool isSelect, int index)
         {
             GUIStyle lineStyle = isSelect ? MPGUIStyles.itemBtnStyles[1] : MPGUIStyles.itemBtnStyles[0];
             GUILayout.BeginHorizontal();

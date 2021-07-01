@@ -186,7 +186,7 @@ namespace MeshProfilerNS
 
     public class MeshValues : ListItemElementValues
     {
-        public GameObject obj=null;
+        public GameObject obj = null;
         public string parentName = "";
         public Mesh mesh = null;
         public int vertCount = 0;
@@ -209,7 +209,7 @@ namespace MeshProfilerNS
             int count = 0;
             int sum = mesh.vertexCount;
             Vector3[] vertices = mesh.vertices;
-            for (int i = 0; i < sum; i ++)
+            for (int i = 0; i < sum; i++)
             {
                 if (i % 500 == 0)
                 {
@@ -224,17 +224,17 @@ namespace MeshProfilerNS
         public List<StringBuilder> GetTrianglesStr()
         {
             List<StringBuilder> list = new List<StringBuilder>();
-            int count=0;
+            int count = 0;
             int sum = mesh.triangles.Length;
             int[] triangles = mesh.triangles;
-            for (int i = 0; i < sum; i +=3)
+            for (int i = 0; i < sum; i += 3)
             {
                 if (i % 1500 == 0)
                 {
                     list.Add(new StringBuilder());
                     count++;
                 }
-                list[count - 1].Append("[" + i/3 + "]——" + triangles[i] + " " + triangles[i + 1] + " " + triangles[i + 2] + "\n");
+                list[count - 1].Append("[" + i / 3 + "]——" + triangles[i] + " " + triangles[i + 1] + " " + triangles[i + 2] + "\n");
             }
             return list;
         }
@@ -262,7 +262,7 @@ namespace MeshProfilerNS
             List<StringBuilder> list = new List<StringBuilder>();
             int count = 0;
             int sum = mesh.tangents.Length;
-            Vector4 []tangents = mesh.tangents;
+            Vector4[] tangents = mesh.tangents;
             for (int i = 0; i < sum; i++)
             {
                 if (i % 500 == 0)
@@ -271,7 +271,7 @@ namespace MeshProfilerNS
                     count++;
                 }
 
-                list[count - 1].Append("[" + i + "]——" +tangents[i].ToString("F3") + "\n");
+                list[count - 1].Append("[" + i + "]——" + tangents[i].ToString("F3") + "\n");
             }
             return list;
         }
@@ -289,7 +289,7 @@ namespace MeshProfilerNS
                     count++;
                 }
 
-                list[count - 1].Append("[" + i + "]——" + normals[i].ToString("F3")+"\n");
+                list[count - 1].Append("[" + i + "]——" + normals[i].ToString("F3") + "\n");
             }
             return list;
         }
@@ -349,6 +349,10 @@ namespace MeshProfilerNS
             return value;
         }
 
+        public virtual object[] GetValues()
+        {
+            return new object[10];
+        }
     }
 
     public enum MeshElementType

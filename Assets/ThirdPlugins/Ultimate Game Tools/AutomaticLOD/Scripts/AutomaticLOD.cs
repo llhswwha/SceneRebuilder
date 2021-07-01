@@ -1009,7 +1009,26 @@ public class AutomaticLOD : MonoBehaviour
 
     public void ComputeLODData(bool bRecurseIntoChildren, Simplifier.ProgressDelegate progress = null)
     {
+        System.DateTime start = System.DateTime.Now;
         ComputeLODDataRecursive(this, this.gameObject, bRecurseIntoChildren, progress);
+        Debug.LogError($"ComputeLODData time:{(System.DateTime.Now - start).ToString()}");
+    }
+
+    private void DestroySimplifiers(AutomaticLOD automaticLOD)
+    {
+        Simplifier[] simplifiers = automaticLOD.GetComponents<Simplifier>();
+
+        for (int c = 0; c < simplifiers.Length; c++)
+        {
+            if (Application.isEditor && Application.isPlaying == false)
+            {
+                DestroyImmediate(simplifiers[c]);
+            }
+            else
+            {
+                Destroy(simplifiers[c]);
+            }
+        }
     }
 
     private void ComputeLODDataRecursive(AutomaticLOD root, GameObject gameObject, bool bRecurseIntoChildren, Simplifier.ProgressDelegate progress = null)
@@ -1026,34 +1045,18 @@ public class AutomaticLOD : MonoBehaviour
             if (IsRootOrBelongsToLODTree(automaticLOD, root))
             {
                 automaticLOD.FreeLODData(false);
-
                 MeshFilter meshFilter = automaticLOD.GetComponent<MeshFilter>();
-
                 if (meshFilter != null)
                 {
                     if (automaticLOD.m_originalMesh == null)
                     {
                         automaticLOD.m_originalMesh = meshFilter.sharedMesh;
                     }
-
-                    Simplifier[] simplifiers = automaticLOD.GetComponents<Simplifier>();
-
-                    for (int c = 0; c < simplifiers.Length; c++)
-                    {
-                        if (Application.isEditor && Application.isPlaying == false)
-                        {
-                            DestroyImmediate(simplifiers[c]);
-                        }
-                        else
-                        {
-                            Destroy(simplifiers[c]);
-                        }
-                    }
-
+                    DestroySimplifiers(automaticLOD);
                     automaticLOD.m_meshSimplifier = automaticLOD.gameObject.AddComponent<Simplifier>();
                     automaticLOD.m_meshSimplifier.hideFlags = HideFlags.HideInInspector;
-                    IEnumerator enumerator = automaticLOD.m_meshSimplifier.ProgressiveMesh(gameObject, automaticLOD.m_originalMesh, root.m_aRelevanceSpheres, automaticLOD.name, progress);
-
+                    IEnumerator enumerator = automaticLOD.m_meshSimplifier.ProgressiveMesh(gameObject, automaticLOD.m_originalMesh, 
+                        root.m_aRelevanceSpheres, automaticLOD.name, progress);
                     while (enumerator.MoveNext())
                     {
                         if (Simplifier.Cancelled)
@@ -1061,41 +1064,22 @@ public class AutomaticLOD : MonoBehaviour
                             return;
                         }
                     }
-
-                    if (Simplifier.Cancelled)
-                    {
-                        return;
-                    }
+                    if (Simplifier.Cancelled)   return;
                 }
                 else
                 {
                     SkinnedMeshRenderer skin = automaticLOD.GetComponent<SkinnedMeshRenderer>();
-
                     if (skin != null)
                     {
                         if (automaticLOD.m_originalMesh == null)
                         {
                             automaticLOD.m_originalMesh = skin.sharedMesh;
                         }
-
-                        Simplifier[] simplifiers = automaticLOD.GetComponents<Simplifier>();
-
-                        for (int c = 0; c < simplifiers.Length; c++)
-                        {
-                            if (Application.isEditor && Application.isPlaying == false)
-                            {
-                                DestroyImmediate(simplifiers[c]);
-                            }
-                            else
-                            {
-                                Destroy(simplifiers[c]);
-                            }
-                        }
-
+                        DestroySimplifiers(automaticLOD);
                         automaticLOD.m_meshSimplifier = automaticLOD.gameObject.AddComponent<Simplifier>();
                         automaticLOD.m_meshSimplifier.hideFlags = HideFlags.HideInInspector;
-                        IEnumerator enumerator = automaticLOD.m_meshSimplifier.ProgressiveMesh(gameObject, automaticLOD.m_originalMesh, root.m_aRelevanceSpheres, automaticLOD.name, progress);
-
+                        IEnumerator enumerator = automaticLOD.m_meshSimplifier.ProgressiveMesh(gameObject, automaticLOD.m_originalMesh, 
+                            root.m_aRelevanceSpheres, automaticLOD.name, progress);
                         while (enumerator.MoveNext())
                         {
                             if (Simplifier.Cancelled)
@@ -1103,32 +1087,24 @@ public class AutomaticLOD : MonoBehaviour
                                 return;
                             }
                         }
-
-                        if (Simplifier.Cancelled)
-                        {
-                            return;
-                        }
+                        if (Simplifier.Cancelled)   return;
                     }
                 }
             }
-
             //Debug.LogError("automaticLOD.m_listLODLevels:" + automaticLOD.m_listLODLevels.Count);
             for (int i = 0; i < automaticLOD.m_listLODLevels.Count; i++)
             {
                 var data = automaticLOD.m_listLODLevels[i];
-                //Debug.LogError("data��" + data);
                 data.m_mesh = null;
             }
 
             automaticLOD.m_bLODDataDirty = false;
         }
-
         if (bRecurseIntoChildren)
         {
             for (int nChild = 0; nChild < gameObject.transform.childCount && Simplifier.Cancelled == false; nChild++)
             {
                 ComputeLODDataRecursive(root, gameObject.transform.GetChild(nChild).gameObject, bRecurseIntoChildren, progress);
-
                 if (Simplifier.Cancelled)
                 {
                     return;
@@ -1303,11 +1279,17 @@ public class AutomaticLOD : MonoBehaviour
 
     public void ComputeAllLODMeshes(bool bRecurseIntoChildren, Simplifier.ProgressDelegate progress = null)
     {
+        System.DateTime start = System.DateTime.Now;
         if (m_listLODLevels != null)
         {
             for (int i = 0; i < m_listLODLevels.Count; i++)
             {
-                ComputeLODMeshRecursive(this, this.gameObject, i, bRecurseIntoChildren, progress);
+                float p1 = (float)i / m_listLODLevels.Count;
+                ComputeLODMeshRecursive(this, this.gameObject, i, bRecurseIntoChildren, (t,m,sP)=>
+                {
+                    float p2 = (float)(i + sP) / m_listLODLevels.Count;
+                    progress(t, m, p2);
+                });
 
                 if (Simplifier.Cancelled)
                 {
@@ -1317,6 +1299,7 @@ public class AutomaticLOD : MonoBehaviour
 
             SetupLODGroup();
         }
+        Debug.LogError($"ComputeLODData time:{(System.DateTime.Now - start).ToString()}");
     }
 
     public void ComputeLODMesh(int nLevel, bool bRecurseIntoChildren, Simplifier.ProgressDelegate progress = null)

@@ -125,8 +125,9 @@ namespace UltimateGameTools
       // Public methods
       /////////////////////////////////////////////////////////////////////////////////////////////////
 
-      public IEnumerator ProgressiveMesh(GameObject gameObject, Mesh sourceMesh, RelevanceSphere[] aRelevanceSpheres, string strProgressDisplayObjectName = "", ProgressDelegate progress = null)
+      public IEnumerator ProgressiveMesh(GameObject gameObject, Mesh sourceMesh, RelevanceSphere[] aRelevanceSpheres, string strProgressDisplayObjectName = "", ProgressDelegate progressChanged = null)
       {
+                float percent = 0;
         m_meshOriginal = sourceMesh;
 
         Vector3[] aVerticesWorld = GetWorldVertices(gameObject);
@@ -142,9 +143,11 @@ namespace UltimateGameTools
         m_listVertices              = new List<Vertex>();
         m_aListTriangles            = new TriangleList[m_meshOriginal.subMeshCount];
 
-        if (progress != null)
+        if (progressChanged != null)
         {
-          progress("Preprocessing mesh: " + strProgressDisplayObjectName, "Building unique vertex data", 1.0f);
+          //progress("Preprocessing mesh1: " + strProgressDisplayObjectName, "Building unique vertex data", 1.0f);
+
+          progressChanged("Preprocessing mesh1: " + strProgressDisplayObjectName, "Building unique vertex data", 0f);
 
           if (Simplifier.Cancelled)
           {
@@ -153,7 +156,9 @@ namespace UltimateGameTools
           }
         }
 
-        m_meshUniqueVertices = new MeshUniqueVertices();
+                percent = 0.1f;
+
+                m_meshUniqueVertices = new MeshUniqueVertices();
         m_meshUniqueVertices.BuildData(m_meshOriginal, aVerticesWorld);
 
         m_nOriginalMeshVertexCount = m_meshUniqueVertices.ListVertices.Count;
@@ -180,7 +185,12 @@ namespace UltimateGameTools
 
         if(Application.isEditor && !Application.isPlaying)
         {
-          IEnumerator enumerator = ComputeAllEdgeCollapseCosts(strProgressDisplayObjectName, gameObject.transform, aRelevanceSpheres, progress);
+          //IEnumerator enumerator = ComputeAllEdgeCollapseCosts(strProgressDisplayObjectName, gameObject.transform, aRelevanceSpheres, progress);
+          IEnumerator enumerator = ComputeAllEdgeCollapseCosts(strProgressDisplayObjectName, gameObject.transform, aRelevanceSpheres, (t,m,p)=>
+          {
+              float p2 = 0.1f + p * 0.2f;
+              progressChanged(t, m, p2);
+          });
 
           while (enumerator.MoveNext())
           {
@@ -193,7 +203,11 @@ namespace UltimateGameTools
         }
         else
         {
-          yield return StartCoroutine(ComputeAllEdgeCollapseCosts(strProgressDisplayObjectName, gameObject.transform, aRelevanceSpheres, progress));
+          yield return StartCoroutine(ComputeAllEdgeCollapseCosts(strProgressDisplayObjectName, gameObject.transform, aRelevanceSpheres, (t, m, p) =>
+          {
+              float p2 = 0.1f + p * 0.2f;
+              progressChanged(t, m, p2);
+          }));
         }
 
         int nVertices = m_listVertices.Count;
@@ -202,9 +216,11 @@ namespace UltimateGameTools
 
         while (m_listVertices.Count > 0)
         {
-          if (progress != null && ((m_listVertices.Count & 0xFF) == 0))
+          if (progressChanged != null && ((m_listVertices.Count & 0xFF) == 0))
           {
-            progress("Preprocessing mesh: " + strProgressDisplayObjectName, "Collapsing edges", 1.0f - ((float)m_listVertices.Count / (float)nVertices));
+                        float p1 = 1.0f - ((float)m_listVertices.Count / (float)nVertices);
+                        float p2 = 0.3f + 0.7f * p1;
+            progressChanged("Preprocessing mesh2: " + strProgressDisplayObjectName, "Collapsing edges", p2);
 
             if(Cancelled)
             {
@@ -311,7 +327,8 @@ namespace UltimateGameTools
             if (nTotalVertices != nVertices && ((listVertices.Count & 0xFF) == 0))
             {
               fT = 1.0f - ((float)(listVertices.Count - nVertices) / (float)(nTotalVertices - nVertices));
-              progress("Simplifying mesh: " + strProgressDisplayObjectName, "Collapsing edges", fT);
+                            float p2 = 0.8f * fT;
+              progress("Simplifying mesh: " + strProgressDisplayObjectName, "Collapsing edges", p2);
 
               if (Cancelled)
               {
@@ -342,7 +359,12 @@ namespace UltimateGameTools
 
         if (Application.isEditor && !Application.isPlaying)
         {
-          IEnumerator enumerator = ConsolidateMesh(gameObject, m_meshOriginal, meshOut, m_aListTriangles, av3Vertices, strProgressDisplayObjectName, progress);
+          IEnumerator enumerator = ConsolidateMesh(gameObject, m_meshOriginal, meshOut, m_aListTriangles, av3Vertices, strProgressDisplayObjectName, 
+              (t,m,p)=>
+          {
+              float p2 = 0.8f + 0.2f * p;
+              progress(t, m, p2);
+          });
 
           while (enumerator.MoveNext())
           {
@@ -355,7 +377,11 @@ namespace UltimateGameTools
         }
         else
         {
-          yield return StartCoroutine(ConsolidateMesh(gameObject, m_meshOriginal, meshOut, m_aListTriangles, av3Vertices, strProgressDisplayObjectName, progress));
+          yield return StartCoroutine(ConsolidateMesh(gameObject, m_meshOriginal, meshOut, m_aListTriangles, av3Vertices, strProgressDisplayObjectName, (t, m, p) =>
+          {
+              float p2 = 0.8f + 0.2f * p;
+              progress(t, m, p2);
+          }));
         }
 
         CoroutineEnded = true;
@@ -740,7 +766,8 @@ namespace UltimateGameTools
         {
           if (progress != null && ((i & 0xFF) == 0))
           {
-            progress("Preprocessing mesh: " + strProgressDisplayObjectName, "Computing edge collapse cost", m_listVertices.Count == 1 ? 1.0f : ((float)i / (m_listVertices.Count - 1.0f)));
+                        float p1 = m_listVertices.Count == 1 ? 1.0f : ((float)i / (m_listVertices.Count - 1.0f));
+            progress("Preprocessing mesh3: " + strProgressDisplayObjectName, "Computing edge collapse cost", p1);
 
             if(Cancelled)
             {

@@ -241,7 +241,7 @@ public class SceneRebuildEditorWindow : ListManagerEditorWindow<BuildingModelEle
             }
         }
 
-        Sort(meshElementList, sortWays);
+        Sort(meshElementList);
         SelectByConditions(meshElementList);
 
         originList.Clear();
@@ -258,7 +258,7 @@ public class SceneRebuildEditorWindow : ListManagerEditorWindow<BuildingModelEle
     /// ������ɸѡ
     /// </summary>
     /// <param name="list"></param>
-    void SelectByConditions(List<BuildingModelElement> list)
+    protected override void SelectByConditions(List<BuildingModelElement> list)
     {
         if (isSelectConditions)
         {
@@ -396,8 +396,8 @@ public class SceneRebuildEditorWindow : ListManagerEditorWindow<BuildingModelEle
             SelectIndex = -1;
         }
     }
-    //������ʽ����
-    void Sort(List<BuildingModelElement> list, BuildingSortWays sortways)
+
+    protected override void Sort(List<BuildingModelElement> list)
     {
         for (int i = 1; i < list.Count; i++)
             for (int j = 0; j < list.Count - i; j++)
@@ -406,155 +406,155 @@ public class SceneRebuildEditorWindow : ListManagerEditorWindow<BuildingModelEle
                 var ele2 = list[j + 1];
                 var values1 = ele1.rootMeshValue;
                 var values2 = ele2.rootMeshValue;
-                if (sortways == BuildingSortWays.SortByName)
+                if (sortWays == BuildingSortWays.SortByName)
                 {
                     if (values1.name.CompareTo(values2.name)>0)
                     {
-                        BuildingModelElement temp = list[j];
+                        var temp = list[j];
                         list[j] = list[j + 1];
                         list[j + 1] = temp;
                     }
                 }
-                else if (sortways == BuildingSortWays.SortByAllRenderer)
+                else if (sortWays == BuildingSortWays.SortByAllRenderer)
                 {
                     if (values1.AllRendererCount < values2.AllRendererCount)
                     {
-                        BuildingModelElement temp = list[j];
+                        var temp = list[j];
                         list[j] = list[j + 1];
                         list[j + 1] = temp;
                     }
                 }
-                else if (sortways == BuildingSortWays.SortByAllVertext)
+                else if (sortWays == BuildingSortWays.SortByAllVertext)
                 {
                     if (values1.AllVertextCount < values2.AllVertextCount)
                     {
-                        BuildingModelElement temp = list[j];
+                        var temp = list[j];
                         list[j] = list[j + 1];
                         list[j + 1] = temp;
                     }
                 }
-                else if (sortways == BuildingSortWays.SortByRend_In)
+                else if (sortWays == BuildingSortWays.SortByRend_In)
                 {
                     if (values1.InRendererCount < values2.InRendererCount)
                     {
-                        BuildingModelElement temp = list[j];
+                        var temp = list[j];
                         list[j] = list[j + 1];
                         list[j + 1] = temp;
                     }
                 }
-                else if (sortways == BuildingSortWays.SortByRend_Out0)
+                else if (sortWays == BuildingSortWays.SortByRend_Out0)
                 {
                     if (values1.Out0RendererCount < values2.Out0RendererCount)
                     {
-                        BuildingModelElement temp = list[j];
+                        var temp = list[j];
                         list[j] = list[j + 1];
                         list[j + 1] = temp;
                     }
                 }
-                else if (sortways == BuildingSortWays.SortByRend_Out0S)
+                else if (sortWays == BuildingSortWays.SortByRend_Out0S)
                 {
                     if (values1.Out0SmallRendererCount < values2.Out0SmallRendererCount)
                     {
-                        BuildingModelElement temp = list[j];
+                        var temp = list[j];
                         list[j] = list[j + 1];
                         list[j + 1] = temp;
                     }
                 }
-                else if (sortways == BuildingSortWays.SortByRend_Out0B)
+                else if (sortWays == BuildingSortWays.SortByRend_Out0B)
                 {
                     if (values1.Out0BigRendererCount < values2.Out0BigRendererCount)
                     {
-                        BuildingModelElement temp = list[j];
+                        var temp = list[j];
                         list[j] = list[j + 1];
                         list[j + 1] = temp;
                     }
                 }
-                else if (sortways == BuildingSortWays.SortByRend_Out1)
+                else if (sortWays == BuildingSortWays.SortByRend_Out1)
                 {
                     if (values1.Out1RendererCount < values2.Out1RendererCount)
                     {
-                        BuildingModelElement temp = list[j];
+                        var temp = list[j];
                         list[j] = list[j + 1];
                         list[j + 1] = temp;
                     }
                 }
-                else if (sortways == BuildingSortWays.SortByVertex_In)
+                else if (sortWays == BuildingSortWays.SortByVertex_In)
                 {
                     if (values1.InVertextCount < values2.InVertextCount)
                     {
-                        BuildingModelElement temp = list[j];
+                        var temp = list[j];
                         list[j] = list[j + 1];
                         list[j + 1] = temp;
                     }
                 }
-                else if (sortways == BuildingSortWays.SortByVertex_Out0)
+                else if (sortWays == BuildingSortWays.SortByVertex_Out0)
                 {
                     if (values1.Out0VertextCount < values2.Out0VertextCount)
                     {
-                        BuildingModelElement temp = list[j];
+                        var temp = list[j];
                         list[j] = list[j + 1];
                         list[j + 1] = temp;
                     }
                 }
-                else if (sortways == BuildingSortWays.SortByVertex_Out0B)
+                else if (sortWays == BuildingSortWays.SortByVertex_Out0B)
                 {
                     if (values1.Out0BigVertextCount < values2.Out0BigVertextCount)
                     {
-                        BuildingModelElement temp = list[j];
+                        var temp = list[j];
                         list[j] = list[j + 1];
                         list[j + 1] = temp;
                     }
                 }
-                else if (sortways == BuildingSortWays.SortByVertex_Out0S)
+                else if (sortWays == BuildingSortWays.SortByVertex_Out0S)
                 {
                     if (values1.Out0SmallVertextCount < values2.Out0SmallVertextCount)
                     {
-                        BuildingModelElement temp = list[j];
+                        var temp = list[j];
                         list[j] = list[j + 1];
                         list[j + 1] = temp;
                     }
                 }
-                else if (sortways == BuildingSortWays.SortByVertex_Out1)
+                else if (sortWays == BuildingSortWays.SortByVertex_Out1)
                 {
                     if (values1.Out1VertextCount < values2.Out1VertextCount)
                     {
-                        BuildingModelElement temp = list[j];
+                        var temp = list[j];
                         list[j] = list[j + 1];
                         list[j + 1] = temp;
                     }
                 }
-                else if (sortways == BuildingSortWays.SortByParts)
+                else if (sortWays == BuildingSortWays.SortByParts)
                 {
                     if (ele1.modelInfo.GetPartCount() < ele2.modelInfo.GetPartCount())
                     {
-                        BuildingModelElement temp = list[j];
+                        var temp = list[j];
                         list[j] = list[j + 1];
                         list[j + 1] = temp;
                     }
                 }
-                else if (sortways == BuildingSortWays.SortByTrees)
+                else if (sortWays == BuildingSortWays.SortByTrees)
                 {
                     if (ele1.modelInfo.GetTreeCount() < ele2.modelInfo.GetTreeCount())
                     {
-                        BuildingModelElement temp = list[j];
+                        var temp = list[j];
                         list[j] = list[j + 1];
                         list[j + 1] = temp;
                     }
                 }
-                else if (sortways == BuildingSortWays.SortByScenes)
+                else if (sortWays == BuildingSortWays.SortByScenes)
                 {
                     if (ele1.modelInfo.GetSceneCount() < ele2.modelInfo.GetSceneCount())
                     {
-                        BuildingModelElement temp = list[j];
+                        var temp = list[j];
                         list[j] = list[j + 1];
                         list[j + 1] = temp;
                     }
                 }
-                else if (sortways == BuildingSortWays.SortByIsFinished)
+                else if (sortWays == BuildingSortWays.SortByIsFinished)
                 {
                     if (ele1.modelInfo.IsModelSceneFinish().CompareTo(ele2.modelInfo.IsModelSceneFinish())<0)
                     {
-                        BuildingModelElement temp = list[j];
+                        var temp = list[j];
                         list[j] = list[j + 1];
                         list[j + 1] = temp;
                     }
@@ -596,7 +596,7 @@ public class SceneRebuildEditorWindow : ListManagerEditorWindow<BuildingModelEle
         sortWays = (BuildingSortWays)EditorGUILayout.EnumPopup("Sort Ways", sortWays);
         if (EditorGUI.EndChangeCheck())
         {
-            Sort(meshElementList, sortWays);
+            Sort(meshElementList);
             RefleshList();
         }
         //GUILayout.Space(5);
@@ -951,13 +951,6 @@ public class SceneRebuildEditorWindow : ListManagerEditorWindow<BuildingModelEle
 
     }
 
-    int width1 = 66;
-    int width2 = 40;
-    int width3 = 50;
-
-    /// <summary>
-    /// �����б����
-    /// </summary>
     void DrawListBlock()
     {
 
@@ -1033,102 +1026,12 @@ public class SceneRebuildEditorWindow : ListManagerEditorWindow<BuildingModelEle
         GUILayout.EndArea();
     }
 
-    private string GetValue(object v, GUIStyle style)
-    {
-        string t = v + "";
-        if (v is int)
-        {
-            int i = (int)v;
-            if (i == 0)
-            {
-                t = "-";
-            }
-            if (i > 50000)//5w
-            {
-                style.normal.textColor = new Color(1, 0, 0);
-            }
-            else if (i > 10000)//1w
-            {
-                style.normal.textColor = new Color(1, 102f / 255, 102f / 255);
-            }
-            else if (i > 5000)//5k
-            {
-                style.normal.textColor = new Color(1, 153f / 255, 102f / 255);
-            }
-            else if (i > 1000)//1k
-            {
-                style.normal.textColor = new Color(1, 204f / 255, 153f / 255);
-            }
-            else
-            {
+    
 
-            }
-            
-        }
-        else if (v is float)
-        {
-            float f = (float)v;
-
-            if (f > 400)
-            {
-                style.normal.textColor = new Color(1, 0, 0);
-            }
-            else if (f > 200)
-            {
-                style.normal.textColor = new Color(1, 102f / 255, 102f / 255);
-            }
-            else if (f > 100)
-            {
-                style.normal.textColor = new Color(1, 153f / 255, 102f / 255);
-            }
-            else if (f > 50)
-            {
-                style.normal.textColor = new Color(1, 204f / 255, 153f / 255);
-            }
-            else
-            {
-
-            }
-            if (f < 10)
-            {
-                t = f.ToString("F2");
-            }
-            else if (f < 100)
-            {
-                t = f.ToString("F1");
-            }
-            else
-            {
-                t = f.ToString("F0");
-            }
-            
-            if (f == 0)
-            {
-                t = "-";
-            }
-        }
-        else if (v is bool)
-        {
-            bool b = (bool)v;
-            if (b == true)
-            {
-                style.normal.textColor = new Color(0, 1, 0);
-            }
-        }
-        else
-        {
-
-        }
-        return t;
-    }
-
-    /// <summary>
-    /// ������Ŀ��
-    /// </summary>
     /// <param name="element"></param>
     /// <param name="isSelect"></param>
     /// <param name="index"></param>
-    void DrawItem(BuildingModelElement element, bool isSelect, int index)
+    protected override void DrawItem(BuildingModelElement element, bool isSelect, int index)
     {
         GUIStyle lineStyle = isSelect ? MPGUIStyles.itemBtnStyles[1] : MPGUIStyles.itemBtnStyles[0];
         GUILayout.BeginHorizontal();
