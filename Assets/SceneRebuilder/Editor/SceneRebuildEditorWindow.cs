@@ -11,7 +11,7 @@ using UnityEngine.SceneManagement;
 public class SceneRebuildEditorWindow : ListManagerEditorWindow<BuildingModelElement,BuildingModelValues>
 {
     //[MenuItem("Window/Tools/SceneRebuild")]
-    [MenuItem("Window/Scene Rebuild")]
+    [MenuItem("Window/Tools/Scene Rebuild")]
     public static void AddWindow()
     {
         SceneRebuildEditorWindow window = (SceneRebuildEditorWindow)EditorWindow.GetWindowWithRect(typeof(SceneRebuildEditorWindow), new Rect(0, 0, MPGUIStyles.SCREEN_WIDTH, MPGUIStyles.SCREEN_HEIGHT), true, "SceneRebuildEditorWindow");

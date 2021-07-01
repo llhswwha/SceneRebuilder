@@ -17,7 +17,7 @@ namespace MeshProfilerNS
     //:EditorWindow
     {
         //[MenuItem("Window/Analysis/Mesh Profiler")]
-        [MenuItem("Window/TreeNode Manager")]
+        [MenuItem("Window/Tools/TreeNode Manager")]
         public static void ShowWindow()
         {
             TreeNodeManagerEditorWindow window = (TreeNodeManagerEditorWindow)EditorWindow.GetWindowWithRect(typeof(TreeNodeManagerEditorWindow), new Rect(0, 0, MPGUIStyles.SCREEN_WIDTH, MPGUIStyles.SCREEN_HEIGHT), true, "Mesh Profiler 1.1");
@@ -36,7 +36,7 @@ namespace MeshProfilerNS
         // List<MeshElement> meshElementList = new List<MeshElement>();
         // List<MeshElement> originList = new List<MeshElement>();
 
-        //Setting¸¨Öú²ÎÊý
+        //Settingï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½
 
         static int minVertNum = 0;
         static int maxVertNum = 65000;
@@ -48,8 +48,8 @@ namespace MeshProfilerNS
         static string IgnoreKeywordList = "";
         static int[] LevelNum = new int[5] { 0, 500, 1000, 1500, 2000 };
 
-        ////UI¸¨Öú²ÎÊý
-        //int selectIndex = 0;//¸¸ÎïÌåÑ¡ÔñÏÂ±ê
+        ////UIï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½
+        //int selectIndex = 0;//ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½Ñ¡ï¿½ï¿½ï¿½Â±ï¿½
         //int SelectIndex
         //{
         //    get { return selectIndex; }
@@ -76,7 +76,7 @@ namespace MeshProfilerNS
             }
         }
 
-        //int selectChildIndex = 0;//×ÓÎïÌåÑ¡ÔñÏÂ±ê
+        //int selectChildIndex = 0;//ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½Ñ¡ï¿½ï¿½ï¿½Â±ï¿½
         //int SelectChildIndex
         //{
         //    get { return selectChildIndex; }
@@ -97,7 +97,7 @@ namespace MeshProfilerNS
 
         MeshDataClass dataChart = new MeshDataClass();
         /// <summary>
-        /// Ë¢ÐÂÍ³¼ÆÍ¼
+        /// Ë¢ï¿½ï¿½Í³ï¿½ï¿½Í¼
         /// </summary>
         void RefleshBarChart()
         {
@@ -143,7 +143,7 @@ namespace MeshProfilerNS
             DataLinePainter.Init(list);
         }
         /// <summary>
-        /// Ë¢ÐÂÊý¾Ý
+        /// Ë¢ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½
         /// </summary>
         void RefleshDataChart()
         {
@@ -188,7 +188,7 @@ namespace MeshProfilerNS
         }
 
         /// <summary>
-        /// ³õÊ¼»¯UI StyleºÍË¢ÐÂÁÐ±í
+        /// ï¿½ï¿½Ê¼ï¿½ï¿½UI Styleï¿½ï¿½Ë¢ï¿½ï¿½ï¿½Ð±ï¿½
         /// </summary>
         public void Init()
         {
@@ -213,7 +213,7 @@ namespace MeshProfilerNS
         }
 
         /// <summary>
-        /// Ë¢ÐÂÁÐ±í£¬ÖØÐÂËÑË÷
+        /// Ë¢ï¿½ï¿½ï¿½Ð±ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½
         /// </summary>
         void RefleshList()
         {
@@ -243,7 +243,7 @@ namespace MeshProfilerNS
         }
 
         /// <summary>
-        /// °´Ìõ¼þÉ¸Ñ¡
+        /// ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½É¸Ñ¡
         /// </summary>
         /// <param name="list"></param>
         protected override void SelectByConditions(List<TreeNodeElement> list)
@@ -489,7 +489,7 @@ namespace MeshProfilerNS
         }
 
         /// <summary>
-        /// UIÖ÷º¯Êý
+        /// UIï¿½ï¿½ï¿½ï¿½ï¿½ï¿½
         /// </summary>
         private void OnGUI()
         {
@@ -511,7 +511,7 @@ namespace MeshProfilerNS
         }
 
         /// <summary>
-        /// »æÖÆÉèÖÃÃæ°å
+        /// ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½
         /// </summary>
         void DrawSettingBlock()
         {
@@ -568,7 +568,7 @@ namespace MeshProfilerNS
         }
 
         /// <summary>
-        /// »æÖÆÁÐ±íÃæ°å
+        /// ï¿½ï¿½ï¿½ï¿½ï¿½Ð±ï¿½ï¿½ï¿½ï¿½
         /// </summary>
         void DrawListBlock()
         {
@@ -619,7 +619,7 @@ namespace MeshProfilerNS
         }
 
         /// <summary>
-        /// »æÖÆÌõÄ¿¿ò
+        /// ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½Ä¿ï¿½ï¿½
         /// </summary>
         /// <param name="element"></param>
         /// <param name="isSelect"></param>
@@ -760,7 +760,7 @@ namespace MeshProfilerNS
         }
 
         ///// <summary>
-        ///// »æÖÆÌõÄ¿¿ò
+        ///// ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½Ä¿ï¿½ï¿½
         ///// </summary>
         ///// <param name="element"></param>
         ///// <param name="isSelect"></param>
@@ -848,7 +848,7 @@ namespace MeshProfilerNS
         //    //    }
         //    //}
 
-        //    //if (GUILayout.Button(meshValueRoot.exist_normals ? "¡Ì" : "", lineStyle, (isSelect && meshValueRoot.exist_normals) ? MPGUIStyles.options_exist : MPGUIStyles.options_none))
+        //    //if (GUILayout.Button(meshValueRoot.exist_normals ? "ï¿½ï¿½" : "", lineStyle, (isSelect && meshValueRoot.exist_normals) ? MPGUIStyles.options_exist : MPGUIStyles.options_none))
         //    //{
         //    //    if (SelectIndex != index)
         //    //    {
@@ -867,7 +867,7 @@ namespace MeshProfilerNS
         //    //    }
         //    //}
 
-        //    //if (GUILayout.Button(meshValueRoot.exist_tangents ? "¡Ì" : "", lineStyle, (isSelect && meshValueRoot.exist_tangents) ? MPGUIStyles.options_exist : MPGUIStyles.options_none))
+        //    //if (GUILayout.Button(meshValueRoot.exist_tangents ? "ï¿½ï¿½" : "", lineStyle, (isSelect && meshValueRoot.exist_tangents) ? MPGUIStyles.options_exist : MPGUIStyles.options_none))
         //    //{
         //    //    if (SelectIndex != index)
         //    //    {
@@ -885,7 +885,7 @@ namespace MeshProfilerNS
         //    //        ShowDataList.AddWindow(meshValueRoot.GetTangentsStr(), "Tangents" + "-" + element.name);
         //    //    }
         //    //}
-        //    //if (GUILayout.Button(meshValueRoot.exist_colors ? "¡Ì" : "", lineStyle, (isSelect && meshValueRoot.exist_colors) ? MPGUIStyles.options_exist : MPGUIStyles.options_none))
+        //    //if (GUILayout.Button(meshValueRoot.exist_colors ? "ï¿½ï¿½" : "", lineStyle, (isSelect && meshValueRoot.exist_colors) ? MPGUIStyles.options_exist : MPGUIStyles.options_none))
         //    //{
         //    //    if (SelectIndex != index)
         //    //    {
@@ -906,7 +906,7 @@ namespace MeshProfilerNS
 
         //    //for (int m = 0; m < 4; m++)
         //    //{
-        //    //    if (GUILayout.Button(meshValueRoot.exist_uv[m] ? "¡Ì" : "", lineStyle, (isSelect && meshValueRoot.exist_uv[m]) ? MPGUIStyles.options_exist : MPGUIStyles.options_none))
+        //    //    if (GUILayout.Button(meshValueRoot.exist_uv[m] ? "ï¿½ï¿½" : "", lineStyle, (isSelect && meshValueRoot.exist_uv[m]) ? MPGUIStyles.options_exist : MPGUIStyles.options_none))
         //    //    {
         //    //        if (SelectIndex != index)
         //    //        {
@@ -938,7 +938,7 @@ namespace MeshProfilerNS
         //    //    SelectChildIndex = -1;
         //    //}
 
-        //    //if (GUILayout.Button(meshValueRoot.isRead ? "¡Ì" : "", lineStyle, MPGUIStyles.options_none))
+        //    //if (GUILayout.Button(meshValueRoot.isRead ? "ï¿½ï¿½" : "", lineStyle, MPGUIStyles.options_none))
         //    //{
         //    //    if (SelectIndex != index)
         //    //    {
@@ -961,7 +961,7 @@ namespace MeshProfilerNS
         //}
 
         /// <summary>
-        /// »æÖÆ×ÓÏîÌõÄ¿¿ò
+        /// ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½Ä¿ï¿½ï¿½
         /// </summary>
         /// <param name="meshValue"></param>
         /// <param name="index"></param>
@@ -1006,7 +1006,7 @@ namespace MeshProfilerNS
             }
 
 
-            if (GUILayout.Button(meshValue.exist_normals ? "¡Ì" : "", lineStyle, (isSelect && meshValue.exist_normals) ? MPGUIStyles.options_child_exist : MPGUIStyles.options_child_none))
+            if (GUILayout.Button(meshValue.exist_normals ? "ï¿½ï¿½" : "", lineStyle, (isSelect && meshValue.exist_normals) ? MPGUIStyles.options_child_exist : MPGUIStyles.options_child_none))
             {
                 SelectChildIndex = index;
             }
@@ -1014,7 +1014,7 @@ namespace MeshProfilerNS
             {
                 ShowDataList.AddWindow(meshValue.GetNormalsStr(), "Normals" + "-" + meshValue.mesh.name);
             }
-            if (GUILayout.Button(meshValue.exist_tangents ? "¡Ì" : "", lineStyle, (isSelect && meshValue.exist_tangents) ? MPGUIStyles.options_child_exist : MPGUIStyles.options_child_none))
+            if (GUILayout.Button(meshValue.exist_tangents ? "ï¿½ï¿½" : "", lineStyle, (isSelect && meshValue.exist_tangents) ? MPGUIStyles.options_child_exist : MPGUIStyles.options_child_none))
             {
                 SelectChildIndex = index;
             }
@@ -1022,7 +1022,7 @@ namespace MeshProfilerNS
             {
                 ShowDataList.AddWindow(meshValue.GetTangentsStr(), "Tangents" + "-" + meshValue.mesh.name);
             }
-            if (GUILayout.Button(meshValue.exist_colors ? "¡Ì" : "", lineStyle, (isSelect && meshValue.exist_colors) ? MPGUIStyles.options_child_exist : MPGUIStyles.options_child_none))
+            if (GUILayout.Button(meshValue.exist_colors ? "ï¿½ï¿½" : "", lineStyle, (isSelect && meshValue.exist_colors) ? MPGUIStyles.options_child_exist : MPGUIStyles.options_child_none))
             {
                 SelectChildIndex = index;
             }
@@ -1033,7 +1033,7 @@ namespace MeshProfilerNS
 
             for (int m = 0; m < 4; m++)
             {
-                if (GUILayout.Button(meshValue.exist_uv[m] ? "¡Ì" : "", lineStyle, (isSelect && meshValue.exist_uv[m]) ? MPGUIStyles.options_child_exist : MPGUIStyles.options_child_none))
+                if (GUILayout.Button(meshValue.exist_uv[m] ? "ï¿½ï¿½" : "", lineStyle, (isSelect && meshValue.exist_uv[m]) ? MPGUIStyles.options_child_exist : MPGUIStyles.options_child_none))
                 {
                     SelectChildIndex = index;
                 }
@@ -1048,7 +1048,7 @@ namespace MeshProfilerNS
                 SelectChildIndex = index;
             }
 
-            if (GUILayout.Button(meshValue.isRead ? "¡Ì" : "", lineStyle, MPGUIStyles.options_child_none))
+            if (GUILayout.Button(meshValue.isRead ? "ï¿½ï¿½" : "", lineStyle, MPGUIStyles.options_child_none))
             {
                 SelectChildIndex = index;
             }
@@ -1130,15 +1130,15 @@ namespace MeshProfilerNS
                     worksheet.Cells[i + 4, 2].Value = originList[i].rootMeshValue.vertCount;
                     worksheet.Cells[i + 4, 3].Value = originList[i].refList.Count;
                     worksheet.Cells[i + 4, 4].Value = originList[i].rootMeshValue.triangles;
-                    worksheet.Cells[i + 4, 5].Value = originList[i].rootMeshValue.exist_normals ? "¡Ì" : "";
-                    worksheet.Cells[i + 4, 6].Value = originList[i].rootMeshValue.exist_tangents ? "¡Ì" : "";
-                    worksheet.Cells[i + 4, 7].Value = originList[i].rootMeshValue.exist_colors ? "¡Ì" : "";
-                    worksheet.Cells[i + 4, 8].Value = originList[i].rootMeshValue.exist_uv[0] ? "¡Ì" : "";
-                    worksheet.Cells[i + 4, 9].Value = originList[i].rootMeshValue.exist_uv[1] ? "¡Ì" : "";
-                    worksheet.Cells[i + 4, 10].Value = originList[i].rootMeshValue.exist_uv[2] ? "¡Ì" : "";
-                    worksheet.Cells[i + 4, 11].Value = originList[i].rootMeshValue.exist_uv[3] ? "¡Ì" : "";
+                    worksheet.Cells[i + 4, 5].Value = originList[i].rootMeshValue.exist_normals ? "ï¿½ï¿½" : "";
+                    worksheet.Cells[i + 4, 6].Value = originList[i].rootMeshValue.exist_tangents ? "ï¿½ï¿½" : "";
+                    worksheet.Cells[i + 4, 7].Value = originList[i].rootMeshValue.exist_colors ? "ï¿½ï¿½" : "";
+                    worksheet.Cells[i + 4, 8].Value = originList[i].rootMeshValue.exist_uv[0] ? "ï¿½ï¿½" : "";
+                    worksheet.Cells[i + 4, 9].Value = originList[i].rootMeshValue.exist_uv[1] ? "ï¿½ï¿½" : "";
+                    worksheet.Cells[i + 4, 10].Value = originList[i].rootMeshValue.exist_uv[2] ? "ï¿½ï¿½" : "";
+                    worksheet.Cells[i + 4, 11].Value = originList[i].rootMeshValue.exist_uv[3] ? "ï¿½ï¿½" : "";
                     worksheet.Cells[i + 4, 12].Value = originList[i].rootMeshValue.memory >= 1000 ? (originList[i].rootMeshValue.memory / 1000.0f).ToString("F2") + "MB" : originList[i].rootMeshValue.memory.ToString("F2") + "KB";
-                    worksheet.Cells[i + 4, 13].Value = originList[i].rootMeshValue.isRead ? "¡Ì" : "";
+                    worksheet.Cells[i + 4, 13].Value = originList[i].rootMeshValue.isRead ? "ï¿½ï¿½" : "";
                 }
                 package.Save();
                 exportPath = exportPath.Replace('/', '\\');
@@ -1169,7 +1169,7 @@ namespace MeshProfilerNS
             }
             else
             {
-                EditorUtility.DisplayDialog("warning", "This mesh is not asset file£¡", "ok");
+                EditorUtility.DisplayDialog("warning", "This mesh is not asset fileï¿½ï¿½", "ok");
             }
         }
 
@@ -1186,7 +1186,7 @@ namespace MeshProfilerNS
             else
             {
                 //EditorHelper.SelectObject(ele.rootObj);
-                //EditorUtility.DisplayDialog("warning", "This mesh is not asset file£¡", "ok");
+                //EditorUtility.DisplayDialog("warning", "This mesh is not asset fileï¿½ï¿½", "ok");
                 if (selectChildIndex >= 0)
                 {
                     EditorHelper.SelectObject(ele.childList[selectChildIndex].obj);
@@ -1217,7 +1217,7 @@ namespace MeshProfilerNS
         #endregion
 
         /// <summary>
-        /// »æÖÆ¹¤¾ßÃæ°å
+        /// ï¿½ï¿½ï¿½Æ¹ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½
         /// </summary>
         void DrawToolBlock()
         {
@@ -1271,7 +1271,7 @@ namespace MeshProfilerNS
                     }
                     else
                     {
-                        EditorUtility.DisplayDialog("warning", "This mesh is not model file£¡", "ok");
+                        EditorUtility.DisplayDialog("warning", "This mesh is not model fileï¿½ï¿½", "ok");
                     }
                 }
 
@@ -1293,7 +1293,7 @@ namespace MeshProfilerNS
                     }
                     else
                     {
-                        EditorUtility.DisplayDialog("warning", "This mesh is not model file£¡", "ok");
+                        EditorUtility.DisplayDialog("warning", "This mesh is not model fileï¿½ï¿½", "ok");
                     }
                 }
                 if (GUILayout.Button(meshElementList[SelectIndex].rootMeshValue.isRead ? "Shutdown the Readable" : "Open the Readable", GUILayout.Height(buttonHeight)))
@@ -1310,7 +1310,7 @@ namespace MeshProfilerNS
                     }
                     else
                     {
-                        EditorUtility.DisplayDialog("warning", "This mesh is not model file£¡", "ok");
+                        EditorUtility.DisplayDialog("warning", "This mesh is not model fileï¿½ï¿½", "ok");
                     }
                 }
             }
@@ -1324,7 +1324,7 @@ namespace MeshProfilerNS
 
 
         /// <summary>
-        /// »æÖÆËÑË÷À¸
+        /// ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½
         /// </summary>
         void DrawInputTextField()
         {
@@ -1383,7 +1383,7 @@ namespace MeshProfilerNS
         public MeshFilter[] meshFilters;
         public MeshElementType eleType = MeshElementType.GameObject;
         /// <summary>
-        /// »æÖÆÍ¼±í
+        /// ï¿½ï¿½ï¿½ï¿½Í¼ï¿½ï¿½
         /// </summary>
         void DrawChartBlock()
         {
@@ -1426,7 +1426,7 @@ namespace MeshProfilerNS
         }
 
         /// <summary>
-        /// »æÖÆÊý¾Ý
+        /// ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½
         /// </summary>
         void DrawDataBlock()
         {
@@ -1594,7 +1594,7 @@ public class TreeNodeValues
         //this.Out0SmallRendererCount = modelInfo.Out0SmallRendererCount;
     }
 
-    internal void Add(BuildingModelValues modelInfo)
+    internal void Add(TreeNodeValues modelInfo)
     {
         this.AllVertextCount += modelInfo.AllVertextCount;
         this.AllRendererCount += modelInfo.AllRendererCount;

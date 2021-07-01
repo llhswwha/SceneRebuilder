@@ -29,6 +29,7 @@ public class BoundsBoxManager : MonoBehaviour
         GetBoxes();
         foreach(var box in boxes){
             MeshRenderer renderer=box.GetComponent<MeshRenderer>();
+            if(renderer==null)continue;
             renderer.enabled=false;
 
             //box.gameObject.SetActive(false);
@@ -53,6 +54,19 @@ public class BoundsBoxManager : MonoBehaviour
         GetBoxes();
         foreach(var box in boxes){
             box.gameObject.SetActive(true);
+        }
+    }
+
+    [ContextMenu("DisableShadow")]
+    public void DisableShadow()
+    {
+        GetBoxes();
+        foreach(var box in boxes){
+            MeshRenderer renderer=box.GetComponent<MeshRenderer>();
+            if(renderer==null)continue;
+            renderer.shadowCastingMode=UnityEngine.Rendering.ShadowCastingMode.Off;
+
+            //box.gameObject.SetActive(false);
         }
     }
 }

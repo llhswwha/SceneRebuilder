@@ -24,10 +24,16 @@ public class SubSceneManagerUI : MonoBehaviour
 
     public RectTransform panelSceneList_Loaded;
 
+    public GameObject panelSceneList_RootGo;
+
+    public GameObject panelSceneList_Loaded_RootGo;
+
     public GameObject subSceneUIPrefab;
 
     void Start()
     {
+
+
         subSceneManager = GameObject.FindObjectOfType<SubSceneManager>(true);
         subSceneManager.ProgressChanged += SubSceneManager_ProgressChanged;
         subSceneManager.AllLoaded += SubSceneManager_AllLoaded;
@@ -45,11 +51,15 @@ public class SubSceneManagerUI : MonoBehaviour
         {
             scene.ProgressChanged += Scene_ProgressChanged;
         }
+
+        toggleIsOneCoroutine.isOn=subSceneManager.IsOneCoroutine;
     }
 
     private List<SubScene_Base> loadedScene = new List<SubScene_Base>();
 
     private List<SubSceneUI> sceneUIList = new List<SubSceneUI>();
+
+    public int MaxListCount=10;
 
     private void Scene_ProgressChanged(float arg1, SubScene_Base arg2)
     {
@@ -60,13 +70,37 @@ public class SubSceneManagerUI : MonoBehaviour
 
             loadedScene.Add(arg2);
 
-            sceneUIList.Add(CreateSceneUIItem(arg2, loadedScene.Count, panelSceneList_Loaded));
-            for (int i = sceneUIList.Count-1; i >=0; i--)
+            //if(sceneUIList.Count<MaxListCount)
             {
-                SubSceneUI ui = sceneUIList[i];
-                ui.transform.SetParent(null);
-                ui.transform.SetParent(panelSceneList_Loaded);
+                sceneUIList.Add(CreateSceneUIItem(arg2, loadedScene.Count, panelSceneList_Loaded));
+
+                //List<SubSceneUI> sceneUIListNew = new List<SubSceneUI>();
+                int j=0;
+                for (int i = sceneUIList.Count-1; i >=0; i--)
+                {
+                    SubSceneUI ui = sceneUIList[i];
+                    ui.transform.SetParent(null);
+                    ui.transform.SetParent(panelSceneList_Loaded);
+
+                    j++;
+                    if(j>MaxListCount){
+                        // SubSceneUI ui = sceneUIList[i];
+                        // ui.transform.SetParent(null);
+                        // GameObject.Destroy(ui.gameObject);
+                        // // sceneUIListNew.Add(ui);
+                        // sceneUIList.RemoveAt(i);
+                        // i++;
+
+                        ui.gameObject.SetActive(false);
+                    }
+                    else
+                    {
+                        
+                    }
+                }
             }
+
+
         }
     }
 
@@ -143,10 +177,15 @@ public class SubSceneManagerUI : MonoBehaviour
         return ui;
     }
 
+    public void SetIsOneCoroutine()
+    {
+        subSceneManager.IsOneCoroutine = toggleIsOneCoroutine.isOn;
+    }
+
     public void ClickLoadAll()
     {
         Debug.Log("ClickLoadAll");
-        subSceneManager.IsOneCoroutine = toggleIsOneCoroutine.isOn;
+        SetIsOneCoroutine();
         subSceneManager.LoadScenesEx(subScenes.ToArray(),null);
     }
 
