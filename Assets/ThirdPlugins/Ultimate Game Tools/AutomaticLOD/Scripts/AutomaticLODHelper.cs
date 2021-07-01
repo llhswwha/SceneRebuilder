@@ -177,7 +177,7 @@ public static class AutomaticLODHelper
         }
     }
 
-    private static void ClearLODAndChildren(GameObject go)
+    public static void ClearLODAndChildren(GameObject go)
     {
         LODGroup lODGroup=go.GetComponent<LODGroup>();
         if(lODGroup!=null){
@@ -211,6 +211,20 @@ public static class AutomaticLODHelper
         }
     }
 
+    public static AutomaticLOD CreateNewAutomaticLOD(GameObject go)
+    {
+        AutomaticLOD aLOD = go.GetComponent<AutomaticLOD>();
+        if (aLOD)
+        {
+            GameObject.DestroyImmediate(aLOD);
+        }
+        if (aLOD == null)
+        {
+            aLOD = go.AddComponent<AutomaticLOD>();
+        }
+        return aLOD;
+    }
+
     public static void CreateLOD(GameObject go, Material[] mats,float[] lvs,float[] lodVertexPercents,bool isDestroyScript=true,bool isSaveAsset=false, System.Action<float> progressChanged=null)
     {
         System.DateTime start= System.DateTime.Now;
@@ -229,14 +243,7 @@ public static class AutomaticLODHelper
         }
         //要放到最前面
 
-        AutomaticLOD aLOD = go.GetComponent<AutomaticLOD>();
-        if(aLOD){
-            GameObject.DestroyImmediate(aLOD);
-        }
-        if (aLOD == null)
-        {
-            aLOD = go.AddComponent<AutomaticLOD>();
-        }
+        AutomaticLOD aLOD = CreateNewAutomaticLOD(go);
 
         ClearLODAndChildren(go);
 
@@ -273,18 +280,6 @@ public static class AutomaticLODHelper
             AutomaticLODHelper.SaveMeshAssetsRecursive(go, go, meshPath, true, bAssetAlreadyCreated, ref nCounter);
         }
 
-        // if(mats!=null&& mats.Length > go.transform.childCount)
-        // {
-        //     for (int i = 0; i < go.transform.childCount; i++)
-        //     {
-        //         var child = go.transform.GetChild(i);
-        //         MeshRenderer mr = child.GetComponent<MeshRenderer>();
-
-        //         mr.material = mats[i];
-        //     }
-        //     MeshRenderer mr0 = go.GetComponent<MeshRenderer>();
-        //     mr0.material = mats[0];
-        // }
         SetMaterials(go,mats);
 
         if(isDestroyScript){

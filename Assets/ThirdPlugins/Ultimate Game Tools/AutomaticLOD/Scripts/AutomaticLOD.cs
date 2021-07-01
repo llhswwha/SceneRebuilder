@@ -1011,7 +1011,7 @@ public class AutomaticLOD : MonoBehaviour
     {
         System.DateTime start = System.DateTime.Now;
         ComputeLODDataRecursive(this, this.gameObject, bRecurseIntoChildren, progress);
-        Debug.LogError($"ComputeLODData time:{(System.DateTime.Now - start).ToString()}");
+        Debug.LogError($"ComputeLODData[{this.name}] time:{(System.DateTime.Now - start).ToString()}");
     }
 
     private void DestroySimplifiers(AutomaticLOD automaticLOD)
@@ -1299,7 +1299,7 @@ public class AutomaticLOD : MonoBehaviour
 
             SetupLODGroup();
         }
-        Debug.LogError($"ComputeLODData time:{(System.DateTime.Now - start).ToString()}");
+        Debug.LogError($"ComputeLODData[{this.name}]] time:{(System.DateTime.Now - start).ToString()}");
     }
 
     public void ComputeLODMesh(int nLevel, bool bRecurseIntoChildren, Simplifier.ProgressDelegate progress = null)

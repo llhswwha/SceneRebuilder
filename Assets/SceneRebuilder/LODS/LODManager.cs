@@ -43,10 +43,26 @@ public class LODManager : MonoBehaviour
         AutomaticLODHelper.CreateLOD(go, LODMaterials, LODLevels, lodVertexPercents, isDestroy, isSaveAsset, progressChanged);
     }
 
+    public void CreateLOD(GameObject go, float percent,Action<float> progressChanged)
+    {
+        AutomaticLODHelper.CreateLOD(go, LODMaterials, new float[] { 0.5f}, new float[] { percent }, isDestroy, isSaveAsset, progressChanged);
+    }
+
+    public void RemoveLOD(GameObject go)
+    {
+        AutomaticLODHelper.ClearLODAndChildren(go);
+    }
+
     public GameObject TestTarget;
 
     [ContextMenu("TestCreateLOD")]
     public void TestCreateLOD()
+    {
+        CreateLOD(TestTarget);
+    }
+
+    [ContextMenu("GetLODInfo")]
+    public void GetLODInfo()
     {
         CreateLOD(TestTarget);
     }

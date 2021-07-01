@@ -631,7 +631,7 @@ public class ModelAreaTree : SubSceneCreater
     public int VertexCount;
 
     //[ContextMenu("GetVertexCount")]
-    public void GetVertexCount()
+    public int GetVertexCount()
     {
         DateTime start = DateTime.Now;
         VertexCount = 0;
@@ -643,6 +643,7 @@ public class ModelAreaTree : SubSceneCreater
         }
         VertexCount = VertexCount / 10000;
         Debug.Log($"GetVertexCount VertexCount:{VertexCount} time:{(DateTime.Now - start).TotalMilliseconds}ms");
+        return VertexCount;
     }
 
     [ContextMenu("GetMaterials")]
@@ -1003,6 +1004,6 @@ public class ModelAreaTree : SubSceneCreater
         }
         ProgressBarHelper.ClearProgressBar();
 
-        Debug.LogError($"CreateLOD {(DateTime.Now - start).ToString()}");
+        Debug.LogError($"CreateLOD[{this.name}] vertexCount:{this.GetVertexCount()} {(DateTime.Now - start).ToString()}");
     }
 }
