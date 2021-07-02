@@ -12,6 +12,8 @@ public class MeshRendererInfo : MonoBehaviour
 
     public Vector3 size;
 
+    public float vertexCount;
+
     // public Bounds bounds;
 
     public MeshFilter meshFilter;
@@ -20,13 +22,16 @@ public class MeshRendererInfo : MonoBehaviour
 
     public Vector3[] minMax;
 
+    public MeshRendererType rendererType;
+
     [ContextMenu("Init")]
     public void Init()
     {
-        Debug.Log("Init");
+        //Debug.Log("Init");
         position=this.transform.position;
         meshRenderer=gameObject.GetComponent<MeshRenderer>();
         meshFilter=gameObject.GetComponent<MeshFilter>();
+        vertexCount=meshFilter.sharedMesh.vertexCount;
 
         //bounds=meshFilter.sharedMesh.bounds;
         // bounds=MeshHelper.GetBounds(meshFilter);
@@ -37,7 +42,31 @@ public class MeshRendererInfo : MonoBehaviour
         size=minMax[2];
 
         disToCenter=Vector3.Distance(center,position);
+
+        // if(rendererType!=MeshRendererType.Detail)
+        // {
+        //     if(IsStatic()){
+        //         rendererType=MeshRendererType.Static;
+        //     }
+        //     else{
+        //         rendererType=MeshRendererType.None;
+        //     }
+        // }
     }
+
+    // public bool IsStatic()
+    // {
+    //     List<string> detailNames=new List<string>(){
+    //         //"90 Degree Direction Change"
+    //         };
+    //     foreach(var dn in detailNames){
+    //         if(this.name.Contains(dn) || this.transform.parent.name.Contains(dn))
+    //         {
+    //             return true;
+    //         }
+    //     }
+    //     return false;
+    // }
 
     [ContextMenu("ShowBounds")]
     public void ShowBounds()
@@ -89,7 +118,7 @@ public class MeshRendererInfo : MonoBehaviour
                 return;
             }
         }
-        if(oldP!=null && oldP.childCount==1 && oldP.GetComponents<Component>().Length==1){
+        if(oldP!=null && oldP.childCount==1 /* && oldP.GetComponents<Component>().Length==1 */){
 
             Debug.Log("CenterPivot 1:"+this.name);
             this.transform.SetParent(null);
@@ -125,4 +154,21 @@ public class MeshRendererInfo : MonoBehaviour
             return false;
         }
     }
+
+    public void OnDisable()
+    {
+        Debug.Log($"OnDisable {this.name} p:{transform.parent}");
+    }
+    public void OnTransformParentChanged()
+    {
+        Debug.Log($"OnTransformParentChanged {this.name} p:{transform.parent}");
+    }
+}
+
+
+public enum MeshRendererType
+{
+    None,
+    Static,//(Big)
+    Detail,//(Small)
 }

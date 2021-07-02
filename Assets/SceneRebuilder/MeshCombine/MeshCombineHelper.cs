@@ -9,7 +9,7 @@ public static class MeshCombineHelper
 
     public static bool AddScripted = false;
 
-    public static GameObject SimpleCombine(GameObject source,GameObject target){
+    public static GameObject SimpleCombine(MeshCombineArg source,GameObject target){
         
         CombinedMesh combinedMesh=new CombinedMesh(source.transform,null,null);
         combinedMesh.DoCombine(true);
@@ -22,7 +22,7 @@ public static class MeshCombineHelper
         return target;
     }
 
-    public static IEnumerator SimpleCombine_Coroutine(GameObject source,GameObject target,int waitCount,bool isDestroy){
+    public static IEnumerator SimpleCombine_Coroutine(MeshCombineArg source,GameObject target,int waitCount,bool isDestroy){
         
         CombinedMesh combinedMesh=new CombinedMesh(source.transform,null,null);
         yield return combinedMesh.DoCombine_Coroutine(true,waitCount);
@@ -30,16 +30,16 @@ public static class MeshCombineHelper
         target.AddComponent<MeshFilterInfo>();
         Debug.Log("Combine:"+source+"->"+target);
         if(isDestroy){
-            GameObject.Destroy(source);
+            source.DestroySource();
         }
         yield return target;
     }
     
-    public static GameObject CombineMaterials(GameObject go,out int  count){
+    public static GameObject CombineMaterials(MeshCombineArg go,out int  count){
         DateTime start=DateTime.Now;
         GameObject goNew=new GameObject();
         goNew.name=go.name+"_Combined_M";
-        MeshRenderer[] renderers = go.GetComponentsInChildren<MeshRenderer>(true);
+        MeshRenderer[] renderers = go.GetRenderers();
 
         // MeshFilter[] mfList =go.GetComponentsInChildren<MeshFilter>(true);
         // var minMax=MeshHelper.GetMinMax(mfList);
@@ -93,13 +93,13 @@ public static class MeshCombineHelper
     //     }
     // }
 
-     public static IEnumerator CombineMaterials_Coroutine(GameObject go,int waitCount,bool isDestroy){
+     public static IEnumerator CombineMaterials_Coroutine(MeshCombineArg go,int waitCount,bool isDestroy){
         DateTime start=DateTime.Now;
         GameObject goNew=new GameObject();
         goNew.name=go.name+"_Combined_MC";
         goNew.transform.SetParent(go.transform.parent);
         int count=0;
-        MeshRenderer[] renderers = go.GetComponentsInChildren<MeshRenderer>();
+        MeshRenderer[] renderers = go.GetRenderers();
         Dictionary<Material,List<MeshFilter>> mat2Filters=GetMatFilters(renderers, out count);
         yield return null;
         int i=0;
@@ -117,7 +117,7 @@ public static class MeshCombineHelper
             i++;
         }
         if(isDestroy){
-            GameObject.Destroy(go);
+            go.DestroySource();
         }
         Debug.LogError(string.Format("CombineMaterials 用时:{0},Mat数量:{1},Mesh数量:{2}",(DateTime.Now-start),mat2Filters.Count,count));
         yield return goNew;
@@ -241,7 +241,7 @@ public static class MeshCombineHelper
         return mat2Filters;
     }
 
-    public static GameObject Combine(GameObject source){
+    public static GameObject Combine(MeshCombineArg source){
         DateTime start=DateTime.Now;
         int count=0;
         GameObject goNew=CombineMaterials(source,out count);//按材质合并
@@ -256,7 +256,7 @@ public static class MeshCombineHelper
         return target;
     }
 
-    public static IEnumerator Combine_Coroutine(GameObject source,int waitCount,bool isDestroy){
+    public static IEnumerator Combine_Coroutine(MeshCombineArg source,int waitCount,bool isDestroy){
         DateTime start=DateTime.Now;
         int count=0;
         GameObject goNew=CombineMaterials(source,out count);//按材质合并
@@ -269,13 +269,13 @@ public static class MeshCombineHelper
         //Debug.LogError(string.Format("CombinedMesh 用时:{0}ms,数量:{1}",(DateTime.Now-start).TotalMilliseconds,count));
         if(isDestroy)
         {
-            GameObject.Destroy(source);
+            source.DestroySource();
         }
         //CenterPivot(target.transform,combinedMesh.minMax[3]);
         yield return target;
     }
 
-    public static GameObject CombineEx(GameObject source,int mode=0){
+    public static GameObject CombineEx(MeshCombineArg source,int mode=0){
         if(mode==0){
             return Combine(source);
         }
@@ -289,7 +289,7 @@ public static class MeshCombineHelper
         }
     }
 
-    public static IEnumerator CombineEx_Coroutine(GameObject source,bool isDestroy,int waitCount,int mode=0){
+    public static IEnumerator CombineEx_Coroutine(MeshCombineArg source,bool isDestroy,int waitCount,int mode=0){
         if(mode==0){
             yield return Combine_Coroutine(source,waitCount,isDestroy);
         }
@@ -344,4 +344,54 @@ public static class MeshCombineHelper
         }
     }
 
+}
+
+public class MeshCombineArg
+{
+    public GameObject source;
+
+    public MeshCombineArg(GameObject source,MeshRenderer[] rs){
+        this.source=source;
+        this.renderers=rs;
+    }
+
+    public MeshRenderer[] renderers;
+
+    public MeshRenderer[] GetRenderers()
+    {
+        if(renderers!=null){
+            return renderers;
+        }
+        return source.GetComponentsInChildren<MeshRenderer>(true);
+    }
+
+    public string name{
+        get{
+            if(source==null)return "";
+            return source.name;
+        }
+    }
+
+    public Transform transform
+    {
+        get{
+            if(source==null)return null;
+            return source.transform;
+        }
+    }
+
+    public void DestroySource()
+    {
+        if(renderers!=null){
+            foreach(var r in renderers)
+            {
+                if(r==null)continue;
+                GameObject.Destroy(r.gameObject);
+            }
+        }
+        else{
+            GameObject.Destroy(source);
+        }
+        
+    }
 }

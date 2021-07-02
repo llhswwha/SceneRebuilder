@@ -90,6 +90,21 @@ public class SubSceneShowManagerUI : MonoBehaviour
     }
 
 
+    [ContextMenu("LoadOut0TreeNodeScenesTopN")]
+    public void LoadOut0TreeNodeScenesTopN(int index)
+    {
+        Debug.Log("LoadOut0TreeNodeScenesTopN:"+index);
+        subSceneManagerUI.SetIsOneCoroutine();
+        subSceneShowManager.LoadOut0TreeNodeSceneTopN(index);
+    }
+
+    [ContextMenu("LoadOut0TreeNodeScenesTopBigN")]
+    public void LoadOut0TreeNodeScenesTopBigN(int index)
+    {
+        Debug.Log("LoadOut0TreeNodeScenesTopBigN:"+index);
+        subSceneManagerUI.SetIsOneCoroutine();
+        subSceneShowManager.LoadOut0TreeNodeSceneTopBiggerN(index);
+    }
 
     [ContextMenu("CloseSceneListUI")]
     public void CloseSceneListUI()

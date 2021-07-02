@@ -158,14 +158,14 @@ public class ModelAreaTree : SubSceneCreater
             AreaTreeNode node = TreeNodes[i];
             if (node==null)continue;
             if(node.Nodes.Count>0)continue;
-            node.CombineMesh();//ºËÐÄ
+            node.CombineMesh();//ï¿½ï¿½ï¿½ï¿½
             renderCount += node.RendererCount;
         }
 
         int newRenderCount=0;
         if(this.RootNode==null)
         {
-            Debug.LogError("CombineMesh this.RootNode==null£¡£¡:"+this.name);
+            Debug.LogError("CombineMesh this.RootNode==nullï¿½ï¿½ï¿½ï¿½:"+this.name);
             return;
         }
         var renderersNew=this.RootNode.GetComponentsInChildren<MeshRenderer>();
@@ -413,7 +413,7 @@ public class ModelAreaTree : SubSceneCreater
         //ShowRenderers();
         AddColliders();
         CreateCells_Tree();
-        CombineMesh(progressChanged);//ºËÐÄ
+        CombineMesh(progressChanged);//ï¿½ï¿½ï¿½ï¿½
         CreateDictionary();
         foreach (var item in TreeNodes)
         {
@@ -615,6 +615,13 @@ public class ModelAreaTree : SubSceneCreater
          foreach(var node in TreeLeafs){
                node.RecoverParent();
         }
+    }
+
+    [ContextMenu("RecoverParentEx")]
+    public void RecoverParentEx()
+    {
+        IdDictionay.InitInfos();
+        RecoverParent();
     }
 
     //[ContextMenu("RecoverParent")]
@@ -914,6 +921,13 @@ public class ModelAreaTree : SubSceneCreater
         }
 
         Debug.LogError($"ModelAreaTree.EditorCreateNodeScenes time:{(DateTime.Now - start)}");
+    }
+
+    [ContextMenu("* EditorLoadNodeScenesEx")]
+    private void EditorLoadNodeScenesEx()
+    {
+        IdDictionay.InitInfos();
+        EditorLoadNodeScenes(null);
     }
 
     [ContextMenu("* EditorLoadNodeScenes")]

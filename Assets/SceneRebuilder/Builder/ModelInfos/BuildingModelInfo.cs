@@ -549,6 +549,9 @@ public class BuildingModelInfo : SubSceneCreater
     public void CreateTreesBSEx()
     {
         DateTime start = DateTime.Now;
+
+        InitInOut();
+
         AreaTreeManager treeManager = GameObject.FindObjectOfType<AreaTreeManager>();
         //trees = CreateTreesInnerEx(true,null);
 

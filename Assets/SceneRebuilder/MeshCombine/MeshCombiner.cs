@@ -97,34 +97,6 @@ public class MeshCombiner : MonoBehaviour
             }
         }
         Debug.LogError("sourceList:"+sourceName);
-        // foreach(var source in sourceList){
-        //     if(source==null)continue;
-
-        //     if(CombineBySub){
-        //         MeshCombiner subCombiner=gameObject.AddComponent<MeshCombiner>();
-        //         subCombiner.Auto=true;
-        //         //subCombiner.IsCoroutine=this.IsCoroutine;
-        //         subCombiner.CombineBySub=false;
-        //         //subCombiner.WaitCount=this.WaitCount;
-        //         //subCombiner.IsDestroySource=false;
-        //         subCombiner.sourceList.Add(source);
-        //         SubCombiners.Add(subCombiner);
-        //     }
-        //     else{
-        //         if(Setting.IsCoroutine){
-        //             StartCoroutine(MeshCombineHelper.CombineEx_Coroutine(source,Setting.IsDestroySource,mode,Setting.WaitCount));
-        //         }
-        //         else{
-        //             GameObject target=MeshCombineHelper.CombineEx(source,mode);
-        //             resultList.Add(target);
-        //             Debug.Log("Combine:"+source+"->"+target);
-        //             if(Setting.IsDestroySource){
-        //                 GameObject.Destroy(source);
-        //             }
-        //         }
-
-        //     }
-        // }
 
         if(Setting.IsCoroutine){
             StartCoroutine(CombineEx_Coroutine(mode));
@@ -152,7 +124,7 @@ public class MeshCombiner : MonoBehaviour
                     // }
                     // else
                     {
-                        GameObject target=MeshCombineHelper.CombineEx(source,mode);
+                        GameObject target=MeshCombineHelper.CombineEx(new MeshCombineArg(source,null),mode);
                         resultList.Add(target);
                         Debug.Log("Combine:"+source+"->"+target);
                         if(Setting.IsDestroySource){
@@ -173,7 +145,7 @@ public class MeshCombiner : MonoBehaviour
              Debug.LogError(string.Format("CombineEx {0} ({1}/{2})",source,i+1,sourceList.Count));
             if (source!=null)
             {
-                yield return MeshCombineHelper.CombineEx_Coroutine(source,Setting.IsDestroySource,Setting.WaitCount,mode);
+                yield return MeshCombineHelper.CombineEx_Coroutine(new MeshCombineArg(source,null),Setting.IsDestroySource,Setting.WaitCount,mode);
             }
         }
         Setting.WriteLog("完成合并 用时:"+(DateTime.Now-start));
