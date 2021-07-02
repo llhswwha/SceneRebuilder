@@ -225,8 +225,8 @@ public class AreaTreeNode : SubSceneCreater
 
     //private bool IsCopyed = false;
 
-    [ContextMenu("CopyRenderers")]
-    public void CopyRenderers()
+    [ContextMenu("InitRenderers")]
+    public void InitRenderers()
     {
         //if (IsCopyed)
         //{
@@ -252,11 +252,11 @@ public class AreaTreeNode : SubSceneCreater
             GameObject go = render.gameObject;
             //newRenderers.Add(render);
             var rId=RendererId.GetId(render);
-            if (go.transform.parent != renderersRoot.transform)
-            {
-                // RendererParents.Add(go.transform.parent);
-                go.transform.SetParent(renderersRoot.transform);
-            }
+            // if (go.transform.parent != renderersRoot.transform)
+            // {
+            //     // RendererParents.Add(go.transform.parent);
+            //     go.transform.SetParent(renderersRoot.transform);
+            // }
 
             MeshCollider collider = go.GetComponent<MeshCollider>();
             if (collider)
@@ -371,7 +371,7 @@ public class AreaTreeNode : SubSceneCreater
 
         DestroySelfRenderer();
 
-        CopyRenderers();
+        InitRenderers();
 
         CombineInner();
 
@@ -379,7 +379,7 @@ public class AreaTreeNode : SubSceneCreater
 
         renderersRoot.transform.SetParent(this.transform);
 
-        RecoverParent();
+        //RecoverParent();
     }
 
     [ContextMenu("RecoverParent")]
@@ -428,7 +428,7 @@ public class AreaTreeNode : SubSceneCreater
         {
             GameObject.DestroyImmediate(combindResult);
         }
-        combindResult = MeshCombineHelper.CombineEx(this.renderersRoot, 1);
+        combindResult = MeshCombineHelper.CombineEx(new MeshCombineArg(this.renderersRoot,Renderers.ToArray()), 1);
         combindResult.name = this.name + "_Combined";
         combindResult.transform.SetParent(this.transform);
 

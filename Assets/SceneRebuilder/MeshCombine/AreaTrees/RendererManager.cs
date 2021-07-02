@@ -84,8 +84,8 @@ public class RendererManager : MonoBehaviour
             if (info == null)
             {
                 info = r.gameObject.AddComponent<MeshRendererInfo>();
-                info.Init();
             }
+            info.Init();
 
 
             float progress = (float)i / count;
@@ -236,6 +236,52 @@ public class RendererManager : MonoBehaviour
         }
         ProgressBarHelper.ClearProgressBar();
         Debug.LogError($"SetShadowCastingMode count:{renderers.Length} count2:{count2} time:{(DateTime.Now - start)}");
+    }
+
+    public List<string> DetailNames=new List<string>();
+
+    public bool IsDetail(GameObject go)
+    {
+        // List<string> detailNames=new List<string>(){
+        //     //"90 Degree Direction Change"
+        //     };
+        foreach(var dn in DetailNames){
+            var parent=go.transform.parent;
+            if(go.name.Contains(dn) || 
+                (parent!=null && parent.childCount==1 && parent.GetComponent<MeshRenderer>()==null && parent.name.Contains(dn))
+            )
+            {
+                return true;
+            }
+        }
+        return false;
+    }
+
+    [ContextMenu("SetDetailRenderers")]
+    public void SetDetailRenderers()
+    {
+        DateTime start = DateTime.Now;
+        int count=0;
+        float vertexCount=0;
+        var rendererInfos=GameObject.FindObjectsOfType<MeshRendererInfo>(true);
+        foreach(var info in rendererInfos){
+            if(IsDetail(info.gameObject))
+            {
+                info.rendererType=MeshRendererType.Detail;
+                count++;
+                vertexCount+=info.vertexCount;
+            }
+        }
+        Debug.LogError($"SetDetailRenderers count:{rendererInfos.Length} detailCount:{count} vertexCount:{vertexCount/10000:F1} time:{(DateTime.Now - start)}");
+    }
+
+    [ContextMenu("ClearAllType")]
+    public void ClearAllType()
+    {
+        var rendererInfos=GameObject.FindObjectsOfType<MeshRendererInfo>(true);
+        foreach(var info in rendererInfos){
+            info.rendererType=MeshRendererType.None;
+        }
     }
 
     //public  

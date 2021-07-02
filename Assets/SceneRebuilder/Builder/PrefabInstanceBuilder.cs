@@ -1106,15 +1106,43 @@ break;
             //     sizeList.Add(strSize);
             // }
 
-            MeshRenderer mr=mf.GetComponent<MeshRenderer>();
-            if(length<maxLength)
-            {
-                info.smallModels.Add(mr);
-                sumVertex_Small += mf.sharedMesh.vertexCount;
+            MeshRendererInfo rendererInfo=mf.GetComponent<MeshRendererInfo>();
+            if(rendererInfo!=null){
+                MeshRenderer mr=rendererInfo.meshRenderer;
+                if(rendererInfo.rendererType==MeshRendererType.Static)
+                {
+                    info.bigModels.Add(mr);
+                    sumVertex_Big += mf.sharedMesh.vertexCount;
+                }
+                else if(rendererInfo.rendererType==MeshRendererType.Detail)
+                {
+                    info.smallModels.Add(mr);
+                    sumVertex_Small += mf.sharedMesh.vertexCount;
+                }
+                else
+                {
+                    if(length<maxLength)
+                    {
+                        info.smallModels.Add(mr);
+                        sumVertex_Small += mf.sharedMesh.vertexCount;
+                    }
+                    else{
+                        info.bigModels.Add(mr);
+                        sumVertex_Big += mf.sharedMesh.vertexCount;
+                    }
+                }
             }
             else{
-                info.bigModels.Add(mr);
-                sumVertex_Big += mf.sharedMesh.vertexCount;
+                MeshRenderer mr=mf.GetComponent<MeshRenderer>();
+                if(length<maxLength)
+                {
+                    info.smallModels.Add(mr);
+                    sumVertex_Small += mf.sharedMesh.vertexCount;
+                }
+                else{
+                    info.bigModels.Add(mr);
+                    sumVertex_Big += mf.sharedMesh.vertexCount;
+                }
             }
         }
 
