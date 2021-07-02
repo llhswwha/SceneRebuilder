@@ -38,7 +38,7 @@ public class AreaTreeNode : SubSceneCreater
     public MeshRenderer[] CombinedRenderers;
     public List<string> CombinedRenderersId = new List<string>();
 
-    private List<Transform> RendererParents = new List<Transform>();
+    // private List<Transform> RendererParents = new List<Transform>();
 
     //private List<MeshRenderer> newRenderers = new List<MeshRenderer>();
     //public List<string> newRenderersId = new List<string>();
@@ -237,7 +237,8 @@ public class AreaTreeNode : SubSceneCreater
 
         //newRenderers.Clear();
 
-        RendererParents.Clear();
+        // RendererParents.Clear();
+
         //colliders.Clear();
 
         //newRenderers.Clear();
@@ -250,9 +251,10 @@ public class AreaTreeNode : SubSceneCreater
             if (render == null) continue;
             GameObject go = render.gameObject;
             //newRenderers.Add(render);
+            var rId=RendererId.GetId(render);
             if (go.transform.parent != renderersRoot.transform)
             {
-                RendererParents.Add(go.transform.parent);
+                // RendererParents.Add(go.transform.parent);
                 go.transform.SetParent(renderersRoot.transform);
             }
 
@@ -267,7 +269,7 @@ public class AreaTreeNode : SubSceneCreater
     public void MoveRenderers()
     {
         //newRenderers.Clear();
-        RendererParents.Clear();
+        // RendererParents.Clear();
 
         //newRenderers.Clear();
         if (renderersRoot == null)
@@ -283,7 +285,7 @@ public class AreaTreeNode : SubSceneCreater
             //newRenderers.Add(render);
             if (go.transform.parent != renderersRoot.transform)
             {
-                RendererParents.Add(go.transform.parent);
+                // RendererParents.Add(go.transform.parent);
                 go.transform.SetParent(renderersRoot.transform);
             }
         }
@@ -380,21 +382,44 @@ public class AreaTreeNode : SubSceneCreater
         RecoverParent();
     }
 
+    [ContextMenu("RecoverParent")]
     public void RecoverParent()
     {
         
-        if(Renderers.Count!= RendererParents.Count)
-        {
-            Debug.LogError($"AreaTreeNode.RecoverParent [{this.name}][Renderers.Count && i<RendererParents.Count][{Renderers.Count}][{RendererParents.Count}]");
-            return;
-        }
-        for (int i = 0; i < Renderers.Count && i<RendererParents.Count; i++)
+        // if(Renderers.Count!= RendererParents.Count)
+        // {
+        //     Debug.LogError($"AreaTreeNode.RecoverParent [{this.name}][Renderers.Count && i<RendererParents.Count][{Renderers.Count}][{RendererParents.Count}]");
+        //     return;
+        // }
+        // for (int i = 0; i < Renderers.Count && i<RendererParents.Count; i++)
+        // {
+        //     MeshRenderer render = Renderers[i];
+        //     if (render == null) continue;
+        //     Transform parent = RendererParents[i];
+        //     render.transform.SetParent(parent);
+        // }
+
+        for (int i = 0; i < Renderers.Count; i++)
         {
             MeshRenderer render = Renderers[i];
             if (render == null) continue;
-            Transform parent = RendererParents[i];
-            render.transform.SetParent(parent);
+            RendererId rId=render.GetComponent<RendererId>();
+            if(rId!=null){
+                rId.SetParent();
+            }
+            else{
+                Transform parent = tree.Target.transform;
+                render.transform.SetParent(parent);
+            }
         }
+    }
+
+    [ContextMenu("RecoverParentEx")]
+    public void RecoverParentEx()
+    {
+        IdDictionay.InitInfos();
+
+        RecoverParent();
     }
 
     private void CombineInner()

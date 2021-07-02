@@ -23,7 +23,7 @@ public class MeshRendererInfo : MonoBehaviour
     [ContextMenu("Init")]
     public void Init()
     {
-        Debug.Log("Init");
+        //Debug.Log("Init");
         position=this.transform.position;
         meshRenderer=gameObject.GetComponent<MeshRenderer>();
         meshFilter=gameObject.GetComponent<MeshFilter>();
@@ -124,5 +124,14 @@ public class MeshRendererInfo : MonoBehaviour
             Debug.Log($"No CenterPivot dis:{disToCenter} max:{dis}");
             return false;
         }
+    }
+
+    public void OnDisable()
+    {
+        Debug.Log($"OnDisable {this.name} p:{transform.parent}");
+    }
+    public void OnTransformParentChanged()
+    {
+        Debug.Log($"OnTransformParentChanged {this.name} p:{transform.parent}");
     }
 }

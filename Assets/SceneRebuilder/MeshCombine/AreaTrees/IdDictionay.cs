@@ -41,7 +41,7 @@ public static class IdDictionay
         //    }
         //    else
         //    {
-        //        IdDict[id.Id] = id;//¾ÉµÄ¿ÉÄÜ±»Ð¶ÔØ¡¢É¾³ý¡£
+        //        IdDict[id.Id] = id;//ï¿½ÉµÄ¿ï¿½ï¿½Ü±ï¿½Ð¶ï¿½Ø¡ï¿½É¾ï¿½ï¿½ï¿½ï¿½
         //    }
         //}
         //catch (Exception ex)
@@ -80,7 +80,7 @@ public static class IdDictionay
                 }
                 else
                 {
-                    IdDict[id.Id] = id;//¾ÉµÄ¿ÉÄÜ±»Ð¶ÔØ¡¢É¾³ý¡£
+                    IdDict[id.Id] = id;//ï¿½ÉµÄ¿ï¿½ï¿½Ü±ï¿½Ð¶ï¿½Ø¡ï¿½É¾ï¿½ï¿½ï¿½ï¿½
                 }
             }
             
@@ -133,7 +133,7 @@ public static class IdDictionay
     }
 
     /// <summary>
-    /// ×Ó³¡¾°¼ÓÔØºó£¬×¢²á×Ó³¡¾°ÖÐµÄÄ£ÐÍÐÅÏ¢
+    /// ï¿½Ó³ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½Øºï¿½×¢ï¿½ï¿½ï¿½Ó³ï¿½ï¿½ï¿½ï¿½Ðµï¿½Ä£ï¿½ï¿½ï¿½ï¿½Ï¢
     /// </summary>
     /// <param name="objs"></param>
     /// <param name="tag"></param>
@@ -148,7 +148,7 @@ public static class IdDictionay
             //var renderers = obj.GetComponentsInChildren<MeshRenderer>();
             //InitRenderers(renderers);
 
-            var ids = obj.GetComponentsInChildren<RendererId>(true);//³¡¾°ÖÐµÄ¶ÔÏóÔÚ³¡¾°´´½¨Ê±¾ÍÓ¦¸Ã±£´æIdÐÅÏ¢µÄ
+            var ids = obj.GetComponentsInChildren<RendererId>(true);//ï¿½ï¿½ï¿½ï¿½ï¿½ÐµÄ¶ï¿½ï¿½ï¿½ï¿½Ú³ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½Ê±ï¿½ï¿½Ó¦ï¿½Ã±ï¿½ï¿½ï¿½Idï¿½ï¿½Ï¢ï¿½ï¿½
             foreach(var id in ids)
             {
                 SetId(id);
@@ -161,11 +161,6 @@ public static class IdDictionay
 
     public static GameObject GetGo(string id)
     {
-        //if (!IdDict.ContainsKey(id))
-        //{
-        //    InitIds();
-        //}
-
         if (IdDict.ContainsKey(id))
         {
             var go = IdDict[id];
@@ -180,6 +175,15 @@ public static class IdDictionay
         return null;
     }
 
+    public static GameObject GetGoEx(string id)
+    {
+        if (!IdDict.ContainsKey(id))
+        {
+           InitIds();
+        }
+        return GetGo(id);
+    }
+
     public static MeshRenderer GetRenderer(string id)
     {
         //if (!RendererDict.ContainsKey(id))
@@ -191,7 +195,7 @@ public static class IdDictionay
         {
             //if (RendererDict[id] == null)
             //{
-            //    InitInfos();//¿ÉÄÜ±»É¾³ýµô
+            //    InitInfos();//ï¿½ï¿½ï¿½Ü±ï¿½É¾ï¿½ï¿½ï¿½ï¿½
             //}
             var renderer = RendererDict[id];
             if (renderer == null)

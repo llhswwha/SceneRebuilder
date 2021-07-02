@@ -103,6 +103,8 @@ public class SubScene_Base : MonoBehaviour
         {
             sceneArg.objs = goList;
         }
+
+        //SetRendererParent();
     }
 
     public int childCount;
@@ -342,6 +344,7 @@ public class SubScene_Base : MonoBehaviour
     {
         var gs= EditorHelper.LoadScene(GetSceneName(), IsSetParent ? GetSceneParent() : null).ToList();
         SetObjects(gs);
+        SetRendererParent();
         IsLoaded = true;
     }
     //[ContextMenu("TestLoadSceneAsync")]
@@ -387,7 +390,7 @@ public class SubScene_Base : MonoBehaviour
 
                 //WriteLog($"Load name:{GetSceneName()},time:{(DateTime.Now - start).ToString()},progress:{loadProgress}");
                 //WriteLog($"Load[ {GetSceneName()} ]: {(DateTime.Now - start).ToString()}");
-                WriteLog($"{(DateTime.Now - start).ToString()}|r:{rendererCount}|v:{GetVertexCountText()}w");
+                WriteLog($"Load name:{GetSceneName()}",$"{(DateTime.Now - start).ToString()}|r:{rendererCount}|v:{GetVertexCountText()}w");
                 OnLoadedFinished();
             }, IsSetParent);
         }
@@ -412,10 +415,10 @@ public class SubScene_Base : MonoBehaviour
 
     public string Log = "";
 
-    private void WriteLog(string log)
+    private void WriteLog(string tag,string log)
     {
         Log = log;
-        Debug.LogError(Log);
+        Debug.LogError($"[{tag}]{log}");
     }
 
     [ContextMenu("TestLoadSceneAsync")]
@@ -495,8 +498,17 @@ public class SubScene_Base : MonoBehaviour
 
         var gs = EditorHelper.GetSceneObjects(GetSceneName(), GetSceneParent()).ToList();
         SetObjects(gs);
-
+        SetRendererParent();
         InitVisible();
+    }
+
+     [ContextMenu("SetRendererParent")]
+    private void SetRendererParent()
+    {
+        RendererId[] rIds=this.GetComponentsInChildren<RendererId>(true);
+        foreach(var rI in rIds){
+            rI.SetParent();
+        }
     }
 
     public int GetSceneObjectCount()
@@ -604,9 +616,7 @@ public class SubScene_Base : MonoBehaviour
         }
     }
 
-    /// <summary>
-    /// ��ȡ�ϲ���������ԭģ�͵���Ϸ����
-    /// </summary>
+
     private void LoadTreeRenderers()
     {
         var trees = GetTrees();
@@ -711,11 +721,13 @@ public class SubScene_Base : MonoBehaviour
     public void SaveScene(SubSceneArg arg)
     {
         scene = SubSceneHelper.CreateScene(arg);
+        this.IsLoaded=false;
     }
 
     public void SaveScene()
     {
         scene = SubSceneHelper.CreateScene(sceneArg);
+        this.IsLoaded=false;
     }
 
     public void SetArg(string path, bool isOverride, List<GameObject> gs)

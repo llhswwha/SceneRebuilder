@@ -62,7 +62,7 @@ public static class AreaTreeHelper
 
     public static GameObject CreateBoundsCube(Bounds bounds,string n,Transform parent,int prefabId)
     {
-        Debug.LogError($"CreateBoundsCube bounds:{bounds} name:{n} parent:{parent}");
+        // Debug.Log($"CreateBoundsCube bounds:{bounds} name:{n} parent:{parent}");
         InitCubePrefab();
 
         if(CubePrefabs==null||CubePrefabs.Count==0){

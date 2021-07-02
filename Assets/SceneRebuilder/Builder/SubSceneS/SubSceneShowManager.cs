@@ -196,6 +196,45 @@ public class SubSceneShowManager : MonoBehaviour
             });
     }
 
+    public void LoadOut0TreeNodeSceneTop1()
+    {
+        //AreaTreeNodeShowManager.Instance.IsUpdateTreeNodeByDistance = false;
+        //sceneManager.LoadScenesEx(scenes_Out0_Tree.ToArray());
+        sceneManager.LoadScenesEx(scenes_Out0_TreeNode_Shown.ToArray(), () =>
+        {
+                //AreaTreeNodeShowManager.Instance.IsUpdateTreeNodeByDistance = true;
+                WaitingScenes.AddRange(scenes_Out0_TreeNode_Shown);
+                //AreaTreeNodeShowManager.Instance.IsUpdateTreeNodeByDistance = IsUpdateTreeNodeByDistance;
+        });
+    }
+
+    public void LoadOut0TreeNodeSceneTopN(int index)
+    {
+        scenes_Out0_TreeNode_Shown.Sort((a,b)=>b.vertexCount.CompareTo(a.vertexCount));
+        var scene=scenes_Out0_TreeNode_Shown[index];
+        Debug.Log($"LoadOut0TreeNodeSceneTopN index:{index} scene:{scene.name} vertexCount:{scene.vertexCount}");
+        scene.LoadSceneAsync(null);
+    }
+
+    public void LoadOut0TreeNodeSceneTopBiggerN(int index)
+    {
+        scenes_Out0_TreeNode_Shown.Sort((a,b)=>b.vertexCount.CompareTo(a.vertexCount));
+        List<SubScene_Base> topsScenes=new List<SubScene_Base>();
+        float vertexCount=0;
+        for(int i=index;i<scenes_Out0_TreeNode_Shown.Count;i++)
+        {
+             var scene=scenes_Out0_TreeNode_Shown[i];
+            topsScenes.Add(scene);
+            vertexCount+=scene.vertexCount;
+        }
+        sceneManager.LoadScenesEx(topsScenes.ToArray(), () =>
+        {
+                WaitingScenes.AddRange(topsScenes);
+        });
+
+        Debug.Log($"LoadOut0TreeNodeSceneTopN index:{index} scene:{topsScenes.Count} vertexCount:{vertexCount}");
+    }
+
     public void LoadOut0TreeNodeScenes()
     {
         //AreaTreeNodeShowManager.Instance.IsUpdateTreeNodeByDistance = false;
