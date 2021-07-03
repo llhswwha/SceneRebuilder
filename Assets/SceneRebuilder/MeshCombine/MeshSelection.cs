@@ -129,7 +129,7 @@ public class MeshSelection : MonoBehaviour
 
     public void Update()
     {
-        if(Input.GetMouseButtonUp(0))
+        if(Input.GetMouseButtonUp(0)&&enableSelection)
         {
             if(camera==null){
                 camera=Camera.main;
@@ -146,4 +146,6 @@ public class MeshSelection : MonoBehaviour
     public Material lastRendererMat;
 
     public Material selectedMat;
+
+    public bool enableSelection;
 }
