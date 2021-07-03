@@ -533,8 +533,10 @@ public static class MeshHelper
 
     public static Vector3[] GetMinMax(IEnumerable<MeshFilter> meshFilters)
     {
+        if(meshFilters==null)return null;
         List<Vector3> allVs=new List<Vector3>();
         foreach(var mf in meshFilters){
+            if(mf==null) continue;
             Vector3[] vs=GetWorldVertexes(mf);
             allVs.AddRange(vs);
         }
@@ -543,12 +545,14 @@ public static class MeshHelper
     
     public static Vector3[] GetMinMax(MeshFilter meshFilter)
     {
+        if(meshFilter==null)return null;
         Vector3[] vs=GetWorldVertexes(meshFilter);
         return GetMinMax(vs);
     }
 
     public static Vector3[] GetMinMax(Vector3[] vs)
     {
+        if(vs==null)return null;
         Vector3[] minMax=new Vector3[4];
         float minX=float.MaxValue;
         float minY=float.MaxValue;
