@@ -2,6 +2,10 @@ Shader "Unlit/SpecularColorFrag"
 {
     Properties
     {
+        _MainColor("MainColor",color)=(1,1,1,1)
+        _SpecularColor("SpecularColor",color)=(1,1,1,1)
+        _Shininess("Sphininess",range(1,8))=4
+
         _MainTex ("Texture", 2D) = "white" {}
     }
     SubShader
@@ -12,45 +16,51 @@ Shader "Unlit/SpecularColorFrag"
         Pass
         {
             CGPROGRAM
+            //#pragma multi_compile_fwdbase
             #pragma vertex vert
             #pragma fragment frag
-            // make fog work
-            #pragma multi_compile_fog
-
-            #include "UnityCG.cginc"
-
-            struct appdata
+            #include "unitycg.cginc"
+            #include "Lighting.cginc"
+            float4 _MainColor;
+            float4 _SpecularColor;
+            float _Shininess;
+            struct v2f 
             {
-                float4 vertex : POSITION;
-                float2 uv : TEXCOORD0;
+                float4 pos:POSITION;
+                float3 normal:TEXCOORD0;
+                fixed4 vertex:COLOR;
             };
-
-            struct v2f
-            {
-                float2 uv : TEXCOORD0;
-                UNITY_FOG_COORDS(1)
-                float4 vertex : SV_POSITION;
-            };
-
-            sampler2D _MainTex;
-            float4 _MainTex_ST;
-
-            v2f vert (appdata v)
+            v2f vert(appdata_base v)
             {
                 v2f o;
-                o.vertex = UnityObjectToClipPos(v.vertex);
-                o.uv = TRANSFORM_TEX(v.uv, _MainTex);
-                UNITY_TRANSFER_FOG(o,o.vertex);
+                o.pos=UnityObjectToClipPos(v.vertex);
+                o.normal=v.normal;//法向量
+                o.vertex=v.vertex;//原始坐标
                 return o;
             }
-
-            fixed4 frag (v2f i) : SV_Target
+            fixed4 frag(v2f IN):COLOR
             {
-                // sample the texture
-                fixed4 col = tex2D(_MainTex, i.uv);
-                // apply fog
-                UNITY_APPLY_FOG(i.fogCoord, col);
-                return col;
+                //fixed4 color=UNITY_LIGHTMODEL_AMBIENT;//环境光
+
+                //diffuse Color
+                float3 N= UnityObjectToWorldNormal(IN.normal);
+                float3 L= normalize(WorldSpaceLightDir(IN.vertex));
+                float diffuseScale=saturate(dot(N,L));
+                fixed4 color=_MainColor*_LightColor0*diffuseScale;
+
+                // //Specular Color
+                // float3 V= normalize(WorldSpaceViewDir(IN.vertex));
+                // float3 R= 2*dot(N,L)*N-L;
+                // float specularScale=saturate(dot(R,V));
+                // color+=_SpecularColor*pow(specularScale,_Shininess);
+
+                // //compute 4 points lighting;
+                // float3 wpos=mul(unity_ObjectToWorld,IN.vertex).xyz;
+                // color.rgb+=Shade4PointLights(unity_4LightPosX0,unity_4LightPosY0,unity_4LightPosZ0,
+                //     unity_LightColor[0].rgb,unity_LightColor[1].rgb,unity_LightColor[2].rgb,unity_LightColor[3].rgb,
+                //     unity_4LightAtten0,wpos,N);//+点光源
+
+                return color;
             }
             ENDCG
         }
