@@ -29,12 +29,29 @@ public class AreaTreeNodeShowManagerUI : MonoBehaviour
         ModelInfo.text=ShowModelInfo();
     }
 
+    public List<string> combinedName=new List<string>();
+
+    public List<MeshRenderer> ShownRenderers=new List<MeshRenderer>();
+
+    public List<MeshRenderer> CombinedRenderers=new List<MeshRenderer>();
+
     //private MeshRenderer[] allRenderers = null;
+
+    public bool IsCombinedRenderer(MeshRenderer render)
+    {
+        return AreaTreeNodeShowManager.Instance.IsCombinedRenderer(render);
+        // // bool r=false;
+        // foreach(var n in combinedName){
+        //     if(render.name.Contains(n))return true;
+        // }
+        // return false;
+    }
 
     [ContextMenu("ShowModelInfo")]
     private string ShowModelInfo()
     {
-        
+        AreaTreeNodeShowManager.Instance.Init();
+
         var renderers = GameObject.FindObjectsOfType<MeshRenderer>(true);
         int vertextCount = 0;
         int renderCount = 0;
@@ -63,6 +80,17 @@ public class AreaTreeNodeShowManagerUI : MonoBehaviour
             else{
                 vertextCount += vc;
                 renderCount++;
+
+
+                if(IsCombinedRenderer(render))
+                {
+                    CombinedRenderers.Add(render);
+                }
+                else{
+                    ShownRenderers.Add(render);
+                
+                }
+                
             }
             
             //Debug.Log("render:"+render.name+"|"+render.transform.parent);

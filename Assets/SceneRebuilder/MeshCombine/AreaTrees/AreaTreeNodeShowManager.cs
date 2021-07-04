@@ -6,7 +6,16 @@ using System.Linq;
 
 public class AreaTreeNodeShowManager : MonoBehaviour
 {
-    public static AreaTreeNodeShowManager Instance;
+    private static AreaTreeNodeShowManager _instance;
+    public static AreaTreeNodeShowManager Instance
+    {
+        get{
+            if(_instance==null){
+                _instance=GameObject.FindObjectOfType<AreaTreeNodeShowManager>();
+            }
+            return _instance;
+        }
+    }
 
     public List<Camera> cameras=new List<Camera>();
     public List<ModelAreaTree> HiddenTrees=new List<ModelAreaTree>();
@@ -23,6 +32,11 @@ public class AreaTreeNodeShowManager : MonoBehaviour
 
     public List<AreaTreeNode> HiddenNodes=new List<AreaTreeNode>();
 
+    public int AllCombinedRenderersCount=0;
+    public List<MeshRenderer> AllCombinedRenderers=new List<MeshRenderer>();
+
+    private Dictionary<MeshRenderer,MeshRenderer> dictCombined=new System.Collections.Generic.Dictionary<MeshRenderer,MeshRenderer>();
+
     public float HiddenTreesVertexCount = 0;
 
     public float ShownTreesVertexCount = 0;
@@ -33,23 +47,43 @@ public class AreaTreeNodeShowManager : MonoBehaviour
 
     private void Awake()
     {
-        if (Instance != null)
-        {
-            GameObject.Destroy(Instance);
-        }
-        Instance = this;
+        // if (Instance != null)
+        // {
+        //     GameObject.Destroy(Instance);
+        // }
+        //Instance = this;
     }
 
     void Start()
     {
-        InitCameras();
+       
         Init();
     }
 
+    [ContextMenu("Init")]
     public void Init()
     {
+        InitCameras();
         InitTrees();
         GetLeafNodes();
+    }
+
+    [ContextMenu("DisableHiddenTrees")]
+    public void DisableHiddenTrees()
+    {
+        foreach(ModelAreaTree t in HiddenTrees)
+        {
+            t.gameObject.SetActive(false);
+        }
+    }
+
+    [ContextMenu("EnableHiddenTrees")]
+    public void EnableHiddenTrees()
+    {
+        foreach(ModelAreaTree t in HiddenTrees)
+        {
+            t.gameObject.SetActive(true);
+        }
     }
 
     public void RegistHiddenTree(ModelAreaTree tree)
@@ -98,6 +132,10 @@ public class AreaTreeNodeShowManager : MonoBehaviour
         }
     }
 
+    public bool IsCombinedRenderer(MeshRenderer renderer){
+        return dictCombined.ContainsKey(renderer);
+    }
+
     [ContextMenu("InitTrees")]
     private void InitTrees()
     {
@@ -119,6 +157,28 @@ public class AreaTreeNodeShowManager : MonoBehaviour
             {
                 ShownTrees.Add(t);
                 ShownTreesVertexCount += t.VertexCount;
+            }
+
+             var leafs = t.TreeLeafs;
+            foreach (var node in leafs)
+            {
+                if (node == null) continue;
+                foreach(var r in node.CombinedRenderers)
+                {
+                    if(r==null)continue;
+
+                    
+                    if(!dictCombined.ContainsKey(r))
+                    {
+                        AllCombinedRenderers.Add(r);
+                        AllCombinedRenderersCount++;
+                        dictCombined.Add(r,r);
+                    }
+                    else{
+                        Debug.LogError("dictCombined.ContainsKey(r):"+r);
+                    }
+                }
+                
             }
         }
 

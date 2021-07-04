@@ -170,16 +170,19 @@ public class SubSceneShowManager : MonoBehaviour
         List<SubScene_Out0> scene_Out0s=new List<SubScene_Out0>();
         scene_Out0s.AddRange(scenes_Out0_Tree);
         scene_Out0s.AddRange(scenes_Out0_TreeNode_Shown);
-        AreaTreeNodeShowManager.Instance.IsUpdateTreeNodeByDistance = false;
-        //sceneManager.LoadScenesEx(scenes_Out0_Tree.ToArray());
-        sceneManager.LoadScenesEx(scene_Out0s.ToArray(), () =>
-            {
-                //AreaTreeNodeShowManager.Instance.IsUpdateTreeNodeByDistance = true;
+        if(scene_Out0s.Count>0){
+            AreaTreeNodeShowManager.Instance.IsUpdateTreeNodeByDistance = false;
+            //sceneManager.LoadScenesEx(scenes_Out0_Tree.ToArray());
+            sceneManager.LoadScenesEx(scene_Out0s.ToArray(), () =>
+                {
+                    //AreaTreeNodeShowManager.Instance.IsUpdateTreeNodeByDistance = true;
 
-                WaitingScenes.AddRange(scene_Out0s);
+                    WaitingScenes.AddRange(scene_Out0s);
 
-                AreaTreeNodeShowManager.Instance.IsUpdateTreeNodeByDistance = IsUpdateTreeNodeByDistance;
-            });
+                    AreaTreeNodeShowManager.Instance.IsUpdateTreeNodeByDistance = IsUpdateTreeNodeByDistance;
+                });
+        }
+        
     }
 
     public void LoadOut0TreeScenes()
