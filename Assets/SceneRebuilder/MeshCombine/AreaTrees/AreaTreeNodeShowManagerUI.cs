@@ -34,13 +34,18 @@ public class AreaTreeNodeShowManagerUI : MonoBehaviour
     [ContextMenu("ShowModelInfo")]
     private string ShowModelInfo()
     {
-        int renderCount = 0;
-        var renderers = GameObject.FindObjectsOfType<MeshRenderer>(false);
+        
+        var renderers = GameObject.FindObjectsOfType<MeshRenderer>(true);
         int vertextCount = 0;
+        int renderCount = 0;
+        int vertextCount_hidden = 0;
+        int renderCount_hidden = 0;
+        int vertextCount_all = 0;
+        int renderCount_all = renderers.Length;
         List<Material> mats = new List<Material>();
         foreach (var render in renderers)
         {
-            if (render.enabled == false) continue;
+            
             if (!mats.Contains(render.sharedMaterial))
             {
                 mats.Add(render.sharedMaterial);
@@ -48,20 +53,30 @@ public class AreaTreeNodeShowManagerUI : MonoBehaviour
             MeshFilter meshFilter = render.GetComponent<MeshFilter>();
             if (meshFilter == null) continue;
             if (meshFilter.sharedMesh == null) continue;
-            vertextCount += meshFilter.sharedMesh.vertexCount;
-            renderCount++;
+            var vc=meshFilter.sharedMesh.vertexCount;
+            vertextCount_all += vc;
+            if (render.enabled == false && render.gameObject.activeInHierarchy==false)
+            {
+                renderCount_hidden++;
+                vertextCount_hidden += vc;
+            }
+            else{
+                vertextCount += vc;
+                renderCount++;
+            }
+            
             //Debug.Log("render:"+render.name+"|"+render.transform.parent);
         }
-        int w = vertextCount / 10000;
+        //int w = vertextCount / 10000;
 
         //ModelInfoText.text = $"renders:{renderCount}(+{renderCount - lastRenderCount}),mats:{mats.Count}(+{mats.Count - lastMatCount}) \nvertext:{w}w(+{w - lastVertextCount})";
 
         //lastRenderCount = renderCount;
         //lastVertextCount = w;
         //lastMatCount = mats.Count;
-
-        Debug.LogError($"ShowModelInfo renders:{renderCount}/{renderers.Length},mats:{mats.Count},vertext:{w}w");
-        return $"renders:{renderCount},mats:{mats.Count},vertext:{w}w";
+        string log=$"mats:{mats.Count},renders:{renderCount}/{renderers.Length},vertext:{vertextCount/ 10000}w/{vertextCount_all/1000}\nhiddenR:{renderCount_hidden},hiddenV:{vertextCount_hidden/10000}w";
+        Debug.LogError($"ShowModelInfo {log}");
+        return log;
     }
 
     private void Start()
