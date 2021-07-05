@@ -76,6 +76,11 @@ public class GlobalMaterialManager : MonoBehaviour
 
             foreach(var mat in r.sharedMaterials)
             {
+                if(mat==null)
+                {
+                    Debug.LogError($" mat==null renderer:{r}");
+                    continue;
+                }
                 if(!SharedMaterials.Contains(mat))
                 {
                     SharedMaterials.Add(mat);

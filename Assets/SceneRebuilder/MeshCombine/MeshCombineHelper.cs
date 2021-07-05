@@ -165,6 +165,7 @@ public static class MeshCombineHelper
             var list = mats[mat];
             foreach (var item in list)
             {
+                if(item==null)continue;
                 MeshRenderer renderer = item.GetComponent<MeshRenderer>();
                 renderer.sharedMaterial = mat;
             }
@@ -180,6 +181,8 @@ public static class MeshCombineHelper
         for (int i = 0; i < renderers.Length; i++)
         {
             MeshRenderer renderer = renderers[i];
+            if(renderer==null)continue;
+            if(renderer.sharedMaterial==null)continue;
             NoCombine noCombine = renderer.GetComponent<NoCombine>();
             if (noCombine != null)
             {

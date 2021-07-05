@@ -46,10 +46,14 @@ public class AreaTreeNodeShowManagerUI : MonoBehaviour
         // }
         // return false;
     }
-
+public List<Material> mats;
+public List<Material> mats_Shown;
     [ContextMenu("ShowModelInfo")]
     private string ShowModelInfo()
     {
+        CombinedRenderers.Clear();
+        ShownRenderers.Clear();
+
         AreaTreeNodeShowManager.Instance.Init();
 
         var renderers = GameObject.FindObjectsOfType<MeshRenderer>(true);
@@ -59,10 +63,11 @@ public class AreaTreeNodeShowManagerUI : MonoBehaviour
         int renderCount_hidden = 0;
         int vertextCount_all = 0;
         int renderCount_all = renderers.Length;
-        List<Material> mats = new List<Material>();
-        foreach (var render in renderers)
+        mats = new List<Material>();
+        mats_Shown=new List<Material>();
+        for (int i = 0; i < renderers.Length; i++)
         {
-            
+            MeshRenderer render = renderers[i];
             if (!mats.Contains(render.sharedMaterial))
             {
                 mats.Add(render.sharedMaterial);
@@ -70,9 +75,18 @@ public class AreaTreeNodeShowManagerUI : MonoBehaviour
             MeshFilter meshFilter = render.GetComponent<MeshFilter>();
             if (meshFilter == null) continue;
             if (meshFilter.sharedMesh == null) continue;
+
+
+            float progress = (float)i / renderers.Length;
+            float percents = progress * 100;
+            if (ProgressBarHelper.DisplayCancelableProgressBar("Sort2", $"{i}/{renderers.Length} {percents:F2}%", progress))
+            {
+                break;
+            }
+
             var vc=meshFilter.sharedMesh.vertexCount;
             vertextCount_all += vc;
-            if (render.enabled == false && render.gameObject.activeInHierarchy==false)
+            if (render.enabled == false || render.gameObject.activeInHierarchy==false)
             {
                 renderCount_hidden++;
                 vertextCount_hidden += vc;
@@ -90,6 +104,11 @@ public class AreaTreeNodeShowManagerUI : MonoBehaviour
                     ShownRenderers.Add(render);
                 
                 }
+
+                if (!mats_Shown.Contains(render.sharedMaterial))
+                {
+                    mats_Shown.Add(render.sharedMaterial);
+                }
                 
             }
             
@@ -102,8 +121,9 @@ public class AreaTreeNodeShowManagerUI : MonoBehaviour
         //lastRenderCount = renderCount;
         //lastVertextCount = w;
         //lastMatCount = mats.Count;
-        string log=$"mats:{mats.Count},renders:{renderCount}/{renderers.Length},vertext:{vertextCount/ 10000}w/{vertextCount_all/1000}\nhiddenR:{renderCount_hidden},hiddenV:{vertextCount_hidden/10000}w";
+        string log=$"mats:{mats_Shown.Count}/{mats.Count},renders:{renderCount}/{renderers.Length},vertext:{vertextCount/ 10000}w/{vertextCount_all/1000}\nhiddenR:{renderCount_hidden},hiddenV:{vertextCount_hidden/10000}w";
         Debug.LogError($"ShowModelInfo {log}");
+        ProgressBarHelper.ClearProgressBar();
         return log;
     }
 

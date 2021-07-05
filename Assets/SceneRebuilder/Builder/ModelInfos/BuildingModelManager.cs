@@ -384,7 +384,12 @@ public class BuildingModelManager : MonoBehaviour
             b.contentType = this.contentType;
             //b.EditorCreateScenes();
 
-            b.EditorCreateScenes_TreeWithPart((subProgress,si,c)=>
+            // b.EditorCreateScenes_TreeWithPart((subProgress,si,c)=>
+            // {
+            //     Debug.Log($"CreateScenesInner subProgress:{subProgress} building:{b}");
+            // });
+
+            b.EditorCreateNodeScenes((subProgress)=>
             {
                 Debug.Log($"CreateScenesInner subProgress:{subProgress} building:{b}");
             });
