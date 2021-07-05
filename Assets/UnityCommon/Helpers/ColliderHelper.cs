@@ -341,7 +341,7 @@ public static class ColliderHelper  {
     /// <returns></returns>
     public static Bounds CaculateBounds(IEnumerable<Renderer> renders,bool isAll=true)
     {
-        Debug.Log($"CaculateBounds renders:{renders.Count()},isAll:{isAll}");
+        //Debug.Log($"CaculateBounds renders:{renders.Count()},isAll:{isAll}");
         Vector3 center = Vector3.zero;
         int count = 0;
         foreach (Renderer child in renders)

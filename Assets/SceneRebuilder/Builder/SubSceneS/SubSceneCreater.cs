@@ -67,7 +67,7 @@ public class SubSceneCreater : MonoBehaviour
     public void EditorCreateScenes(List<SubScene_Base> scenes, Action<float, int, int> progressChanged)
     {
         int count = scenes.Count;
-        Debug.Log("EditorCreateScenes:" + count);
+        //Debug.Log("EditorCreateScenes:" + count);
         for (int i = 0; i < count; i++)
         {
             SubScene_Base scene = scenes[i];

@@ -810,7 +810,7 @@ public class SubScene_Base : MonoBehaviour
             if (go == null) continue;
             renderers.AddRange(go.GetComponentsInChildren<MeshRenderer>(true));
         }
-        Debug.Log($"SubScene_Base.GetSceneRenderers name:{this.name} gos:{objs.Count},renderers:{renderers.Count}");
+        //Debug.Log($"SubScene_Base.GetSceneRenderers name:{this.name} gos:{objs.Count},renderers:{renderers.Count}");
         return renderers;
     }
 
@@ -834,7 +834,7 @@ public class SubScene_Base : MonoBehaviour
         center = bounds.center;
         //radius=bounds.
         vertexCount = GetVertexCount(renderers);
-        Debug.Log($"SubScene_Base.Init name:{this.name} renderers:{renderers.Length} bounds:{bounds} center:{center}");
+        //Debug.Log($"SubScene_Base.Init name:{this.name} renderers:{renderers.Length} bounds:{bounds} center:{center}");
     }
 
     public float GetVertexCount(MeshRenderer[] renderers)

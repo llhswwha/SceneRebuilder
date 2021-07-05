@@ -379,7 +379,7 @@ public class BuildingModelManager : MonoBehaviour
         for (int i = 0; i < buildings.Count; i++)
         {
             BuildingModelInfo b = buildings[i];
-            Debug.Log($"CreateScenesInner [{i}] building:{b}");
+            //Debug.Log($"CreateScenesInner [{i}] building:{b}");
             if (b == null) continue;
             GameObject go = b.gameObject;
 
@@ -396,10 +396,10 @@ public class BuildingModelManager : MonoBehaviour
            
             b.EditorCreateNodeScenes((subProgress)=>
             {
-                Debug.Log($"CreateScenesInner subProgress:{subProgress} building:{b}");
+                //Debug.Log($"CreateScenesInner subProgress:{subProgress} building:{b}");
                 float progress2 = (float)(i+subProgress) / buildings.Count;
                 float percents2 = progress2 * 100;
-                ProgressBarHelper.DisplayCancelableProgressBar("BuildingModelInfo.EditorCreateNodeScenes", $"Progress2 {(i + subProgress):F2}/{buildings.Count} {percents2:F2}%", progress2);
+                ProgressBarHelper.DisplayCancelableProgressBar("BuildingModelInfo.EditorCreateNodeScenes", $"Progress2 {(i + subProgress):F2}/{buildings.Count} {percents2:F2}% Model:{b.name}", progress2);
             });
 
             scenes.Add(go.name);
@@ -420,7 +420,7 @@ public class BuildingModelManager : MonoBehaviour
         if (treeManager) treeManager.AddTrees(allTrees.ToArray());
 
         ProgressBarHelper.ClearProgressBar();
-        Debug.LogWarning($"CreateScenesInner End Buildings:{Buildings.Count},Time:{(DateTime.Now - start).TotalMilliseconds}ms");
+        Debug.LogError($"CreateScenesInner End Buildings:{Buildings.Count},Time:{(DateTime.Now - start)}");
 #endif
     }
 

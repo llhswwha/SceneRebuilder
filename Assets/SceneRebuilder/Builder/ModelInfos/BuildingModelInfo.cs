@@ -1352,7 +1352,7 @@ public class BuildingModelInfo : SubSceneCreater
         //    progressChanged(1);
         //}
 
-        Debug.LogError($"BuildingModelInfo.EditorCreateNodeScenes time:{(DateTime.Now - start)}");
+        if (progressChanged == null) Debug.LogError($"BuildingModelInfo.EditorCreateNodeScenes time:{(DateTime.Now - start)}");
     }
 
     //[ContextMenu("* EditorCreateNodeScenes")]

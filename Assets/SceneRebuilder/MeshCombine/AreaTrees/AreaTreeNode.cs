@@ -980,7 +980,7 @@ public class AreaTreeNode : SubSceneCreater
         SubSceneManager.Instance.ClearOtherScenes();
         //EditorMoveScenes();
 
-        Debug.LogError($"AreaTreeNode.EditorCreateScenes time:{(DateTime.Now - start)}");
+        if (progressChanged == null) Debug.LogError($"AreaTreeNode.EditorCreateScenes time:{(DateTime.Now - start)}");
     }
 
     [ContextMenu("* EditorLoadScenes")]

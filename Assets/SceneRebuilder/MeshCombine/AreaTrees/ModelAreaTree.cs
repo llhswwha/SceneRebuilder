@@ -920,7 +920,7 @@ public class ModelAreaTree : SubSceneCreater
             progressChanged(1);
         }
 
-        Debug.LogError($"ModelAreaTree.EditorCreateNodeScenes time:{(DateTime.Now - start)}");
+        if (progressChanged == null) Debug.LogError($"ModelAreaTree.EditorCreateNodeScenes time:{(DateTime.Now - start)}");
     }
 
     [ContextMenu("* EditorLoadNodeScenesEx")]
