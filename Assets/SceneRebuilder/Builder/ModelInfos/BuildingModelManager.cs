@@ -367,15 +367,19 @@ public class BuildingModelManager : MonoBehaviour
         //Scene scene = EditorSceneManager.NewScene(NewSceneSetup.EmptyScene, NewSceneMode.Additive);
         //var rootObjs = scene.GetRootGameObjects();
         //Debug.Log("rootObjs:"+ rootObjs.Length);
+        Debug.Log($"CreateScenesInner building:{buildings.Count}");
 
         DateTime start = DateTime.Now;
         AreaTreeManager treeManager = GameObject.FindObjectOfType<AreaTreeManager>();
         if (treeManager != null) treeManager.Clear();
         List<ModelAreaTree> allTrees = new List<ModelAreaTree>();
         scenes.Clear();
+
+
         for (int i = 0; i < buildings.Count; i++)
         {
             BuildingModelInfo b = buildings[i];
+            Debug.Log($"CreateScenesInner [{i}] building:{b}");
             if (b == null) continue;
             GameObject go = b.gameObject;
 
@@ -389,9 +393,13 @@ public class BuildingModelManager : MonoBehaviour
             //     Debug.Log($"CreateScenesInner subProgress:{subProgress} building:{b}");
             // });
 
+           
             b.EditorCreateNodeScenes((subProgress)=>
             {
                 Debug.Log($"CreateScenesInner subProgress:{subProgress} building:{b}");
+                float progress2 = (float)(i+subProgress) / buildings.Count;
+                float percents2 = progress2 * 100;
+                ProgressBarHelper.DisplayCancelableProgressBar("BuildingModelInfo.EditorCreateNodeScenes", $"Progress2 {(i + subProgress):F2}/{buildings.Count} {percents2:F2}%", progress2);
             });
 
             scenes.Add(go.name);
@@ -399,13 +407,13 @@ public class BuildingModelManager : MonoBehaviour
             float progress = (float)i / buildings.Count;
             float percents = progress * 100;
 
-            if (ProgressBarHelper.DisplayCancelableProgressBar("CreatePrefabs", $"{i}/{buildings.Count} {percents:F2}% of 100%", progress))
+            if (ProgressBarHelper.DisplayCancelableProgressBar("CreatePrefabs", $"Progress1 {i}/{buildings.Count} {percents:F2}%", progress))
             {
                 //ProgressBarHelper.ClearProgressBar();
                 break;
             }
 
-            break;
+            //break;
         }
 
 

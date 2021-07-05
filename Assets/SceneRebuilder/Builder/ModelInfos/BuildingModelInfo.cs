@@ -1309,37 +1309,48 @@ public class BuildingModelInfo : SubSceneCreater
             if (tree == null) continue;
             float progress = (float)i / trees.Length;
             float percents = progress * 100;
-            if(progressChanged==null){
+            if (progressChanged == null)
+            {
                 if (ProgressBarHelper.DisplayCancelableProgressBar("BuildingModelInfo.EditorCreateNodeScenes", $"Progress1 {i}/{trees.Length} {percents:F2}%", progress))
                 {
                     break;
                 }
             }
-            else{
+            else
+            {
                 progressChanged(progress);
             }
 
-            tree.EditorCreateNodeScenes(p=>
+            tree.EditorCreateNodeScenes(p =>
             {
-                float progress2 = (float)(i+p) / trees.Length;
+                float progress2 = (float)(i + p) / trees.Length;
                 float percents2 = progress2 * 100;
                 //ProgressBarHelper.DisplayCancelableProgressBar("BuildingModelInfo.EditorCreateNodeScenes", $"Progress2 {(i + p):F2}/{trees.Length} {percents2:F2}%", progress2);
-            
-                if(progressChanged==null){
+
+                if (progressChanged == null)
+                {
                     ProgressBarHelper.DisplayCancelableProgressBar("BuildingModelInfo.EditorCreateNodeScenes", $"Progress2 {(i + p):F2}/{trees.Length} {percents2:F2}%", progress2);
                 }
-                else{
-                    progressChanged(percents2);
+                else
+                {
+                    progressChanged(progress2);
                 }
             });
         }
-        if(progressChanged==null){
-             EditorHelper.RefreshAssets();
+        if (progressChanged == null)
+        {
+            EditorHelper.RefreshAssets();
             ProgressBarHelper.ClearProgressBar();
         }
-        else{
+        else
+        {
             progressChanged(1);
         }
+
+        //if (progressChanged != null)
+        //{
+        //    progressChanged(1);
+        //}
 
         Debug.LogError($"BuildingModelInfo.EditorCreateNodeScenes time:{(DateTime.Now - start)}");
     }
