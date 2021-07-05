@@ -35,4 +35,9 @@ public class GlobalMaterialManagerUI : MonoBehaviour
     {
         manager.ReplaceShaderDefault();
     }
+
+    public void SetAllOneMaterial()
+    {
+        manager.SetAllOneMaterial();
+    }
 }
