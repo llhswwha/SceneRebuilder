@@ -10,6 +10,8 @@ public class GlobalMaterialManager : MonoBehaviour
 
     public List<Material> SharedMaterials=new List<Material>();
 
+    public List<MeshRenderer> MatRenderers = new List<MeshRenderer>();
+
     public List<Texture> Textures=new List<Texture>();
 
     public List<Material> CombinedMaterials=new List<Material>();
@@ -81,6 +83,7 @@ public class GlobalMaterialManager : MonoBehaviour
         SharedMaterials.Clear();
         Shaders.Clear();
         Textures.Clear();
+        MatRenderers.Clear();
 
         ProgressBarHelper.DisplayProgressBar("ClearIds", "Start", 0);
         var allRenderers = GameObject.FindObjectsOfType<MeshRenderer>(true);
@@ -88,6 +91,12 @@ public class GlobalMaterialManager : MonoBehaviour
         for (int i = 0; i < count; i++)
         {
             MeshRenderer r = allRenderers[i];
+
+            BoundsBox bb = r.GetComponent<BoundsBox>();
+            if (bb != null)
+            {
+                continue;
+            }
 
             foreach(var mat in r.sharedMaterials)
             {
@@ -101,6 +110,11 @@ public class GlobalMaterialManager : MonoBehaviour
                     SharedMaterials.Add(mat);
                     var txt=mat.GetTexture("_BaseColorMap");
                     Textures.Add(txt);
+
+                    if (!MatRenderers.Contains(r))
+                    {
+                        MatRenderers.Add(r);
+                    }
                 }
 
                 if(!Shaders.Contains(mat.shader))

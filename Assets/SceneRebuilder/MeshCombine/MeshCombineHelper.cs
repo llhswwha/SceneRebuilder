@@ -162,12 +162,29 @@ public static class MeshCombineHelper
         //var mats = MeshCombineHelper.GetMatFilters(go, out count);
         foreach (var mat in mats.Keys)
         {
+            string matKey= MatInfo.GetMatKey(mat);
             var list = mats[mat];
             foreach (var item in list)
             {
                 if(item==null)continue;
                 MeshRenderer renderer = item.GetComponent<MeshRenderer>();
-                renderer.sharedMaterial = mat;
+                if (renderer == null) continue;
+                //renderer.sharedMaterial = mat;
+
+                var mats2 = renderer.sharedMaterials;
+                bool isChanged = false;
+                for (int i = 0; i < mats2.Length; i++)
+                {
+                    Material m = (Material)mats2[i];
+                    var key1 = MatInfo.GetMatKey(m);
+                    if(key1==matKey)
+                    {
+                        mats2[i] = mat;
+                        isChanged = true;
+                    }
+                }
+                if(isChanged)
+                    renderer.sharedMaterials = mats2;
             }
         }
     }
@@ -182,19 +199,33 @@ public static class MeshCombineHelper
         {
             MeshRenderer renderer = renderers[i];
             if(renderer==null)continue;
-            if(renderer.sharedMaterial==null)continue;
             NoCombine noCombine = renderer.GetComponent<NoCombine>();
             if (noCombine != null)
             {
                 continue;
             }
-            if (!mat2Filters.ContainsKey(renderer.sharedMaterial))
+
+            //if (renderer.sharedMaterial==null)continue;
+            //if (!mat2Filters.ContainsKey(renderer.sharedMaterial))
+            //{
+            //    mat2Filters.Add(renderer.sharedMaterial, new List<MeshFilter>());
+            //}
+            //List<MeshFilter> list = mat2Filters[renderer.sharedMaterial];
+            //MeshFilter filter = renderer.GetComponent<MeshFilter>();
+            //list.Add(filter);
+
+            for (int i1 = 0; i1 < renderer.sharedMaterials.Length; i1++)
             {
-                mat2Filters.Add(renderer.sharedMaterial, new List<MeshFilter>());
+                Material mat = renderer.sharedMaterials[i1];
+                if (mat == null) continue;
+                if (!mat2Filters.ContainsKey(mat))
+                {
+                    mat2Filters.Add(mat, new List<MeshFilter>());
+                }
+                List<MeshFilter> list = mat2Filters[mat];
+                MeshFilter filter = renderer.GetComponent<MeshFilter>();
+                list.Add(filter);
             }
-            List<MeshFilter> list = mat2Filters[renderer.sharedMaterial];
-            MeshFilter filter = renderer.GetComponent<MeshFilter>();
-            list.Add(filter);
         }
 
         Dictionary<string, MatInfo> infos = new Dictionary<string, MatInfo>();
