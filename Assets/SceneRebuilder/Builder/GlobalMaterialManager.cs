@@ -20,6 +20,8 @@ public class GlobalMaterialManager : MonoBehaviour
 
     public Shader NewShader;
 
+    public Material NewMaterial;
+
     [ContextMenu("ReplaceShaderDefault")]
     public void ReplaceShaderDefault()
     {
@@ -35,6 +37,19 @@ public class GlobalMaterialManager : MonoBehaviour
     public void ReplaceShader()
     {
         ReplaceShader(IsReplaceAll);
+    }
+
+    [ContextMenu("SetAllOneMaterial")]
+    internal void SetAllOneMaterial()
+    {
+        var allRenderers = GameObject.FindObjectsOfType<MeshRenderer>(true);
+        int count = allRenderers.Length;
+        for (int i = 0; i < count; i++)
+        {
+            MeshRenderer r = allRenderers[i];
+            //r.material = NewMaterial;
+            r.sharedMaterial = NewMaterial;
+        }
     }
 
     public void ReplaceShader(bool isAll)
