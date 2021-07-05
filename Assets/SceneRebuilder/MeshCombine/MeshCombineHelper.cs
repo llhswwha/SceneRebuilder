@@ -138,7 +138,33 @@ public static class MeshCombineHelper
 
         public static string GetMatKey(Material mat)
         {
-            return $"{mat.GetColor("_BaseColor")},{mat.GetFloat("_Metallic")},{mat.GetFloat("_Smoothness")},{mat.GetTexture("_BaseColorMap")},{mat.GetTexture("_NormalMap")}";
+            string key = "";
+            if(mat.HasProperty("_BaseColor"))
+            {
+                key += mat.GetColor("_BaseColor");
+            }
+            else
+            {
+                key += mat.color;
+            }
+            if (mat.HasProperty("_Metallic"))
+            {
+                key += mat.GetFloat("_Metallic");
+            }
+            if (mat.HasProperty("_Smoothness"))
+            {
+                key += mat.GetFloat("_Smoothness");
+            }
+            if (mat.HasProperty("_BaseColorMap"))
+            {
+                key += mat.GetTexture("_BaseColorMap");
+            }
+            if (mat.HasProperty("_NormalMap"))
+            {
+                key += mat.GetTexture("_NormalMap");
+            }
+            return key;
+            //return $"{mat.GetColor("_BaseColor")},{mat.GetFloat("_Metallic")},{mat.GetFloat("_Smoothness")},{mat.GetTexture("_BaseColorMap")},{mat.GetTexture("_NormalMap")}";
         }
 
         public List<MeshFilter> MeshFilters = new List<MeshFilter>();
