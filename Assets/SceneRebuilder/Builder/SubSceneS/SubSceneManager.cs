@@ -500,18 +500,76 @@ public class SubSceneManager : MonoBehaviour
         LoadScenesEx(subScenes,null);
     }
 
-    public void LoadScenesEx<T>(T[] scenes, Action finishedCallbak) where T : SubScene_Base
+    public List<SubScene_Base> WattingForLoadedAll = new List<SubScene_Base>();
+    public List<SubScene_Base> WattingForLoadedCurrent = new List<SubScene_Base>();
+
+    public int LoadingSceneMaxCount = 1;
+    
+    public void LoadScenesEx<T>(T[] scenes, Action finishedCallback) where T : SubScene_Base
     {
-        if (IsOneCoroutine)
+        //if (IsOneCoroutine)
+        //{
+        //    LoadScenesAsyncEx(scenes, finishedCallbak);
+        //}
+        //else
+        //{
+        //    LoadScenesAsync(scenes, finishedCallbak);
+        //}
+
+        if (LoadingSceneMaxCount == 1)
         {
-            LoadScenesAsyncEx(scenes, finishedCallbak);
+            LoadScenesAsyncEx(scenes, finishedCallback);
+        }
+        else if(LoadingSceneMaxCount <= 0)
+        {
+            LoadScenesAsync(scenes, finishedCallback);
         }
         else
         {
-            LoadScenesAsync(scenes, finishedCallbak);
+            StartCoroutine(LoadScenesByBag(scenes, finishedCallback));
         }
     }
-    
+
+    IEnumerator LoadScenesByBag<T>(T[] scenes, Action finishedCallback) where T : SubScene_Base
+    {
+        var start = DateTime.Now;
+        WattingForLoadedAll.AddRange(scenes);
+        int count = 0;
+        while (WattingForLoadedAll.Count>0)
+        {
+            if(WattingForLoadedCurrent.Count< LoadingSceneMaxCount)
+            {
+                var scene = WattingForLoadedAll[0];
+                WattingForLoadedAll.RemoveAt(0);
+                WattingForLoadedCurrent.Add(scene);
+                Debug.Log($"LoadScenesByBag Start scene:{scene.GetSceneName()},currentList:{WattingForLoadedCurrent.Count} allList:{WattingForLoadedAll.Count}");
+                scene.LoadSceneAsync((b, s) =>
+                {
+                    WattingForLoadedCurrent.Remove(s);
+                    Debug.Log($"LoadScenesByBag End scene:{s.GetSceneName()},currentList:{WattingForLoadedCurrent.Count} allList:{WattingForLoadedAll.Count}");
+
+                    count++;
+                    var progress = (count + 0.0f) / scenes.Length;
+                    WriteLog($"count:{scenes.Length} index:{count} progress:{progress} ");
+                    OnProgressChanged(progress);
+                    if (count == scenes.Length)
+                    {
+                        if (finishedCallback != null)
+                        {
+                            finishedCallback();
+                        }
+                        WriteLog($"count:{scenes.Length},\t time:{(DateTime.Now - start).ToString()}");
+                        OnAllLoaded();
+
+                    }
+                });
+            }
+            yield return new WaitForSeconds(0.02f);
+        }
+        Debug.Log($"LoadSceneAsync Finished currentList:{WattingForLoadedCurrent.Count} allList:{WattingForLoadedAll.Count}");
+        yield return null;
+    }
+
 
     void Start()
     {
