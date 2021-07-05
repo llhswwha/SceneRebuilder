@@ -936,6 +936,16 @@ public class AreaTreeNode : SubSceneCreater
 
         List<SubScene_Base> scenes = new List<SubScene_Base>();
 
+        if(tree==null){
+            Debug.LogError("AreaTreeNode.EditorCreateNodeScenes tree==null 1 :"+this.name);
+            tree=this.GetComponentInParent<ModelAreaTree>();
+        }
+
+        if(tree==null){
+            Debug.LogError("AreaTreeNode.EditorCreateNodeScenes tree==null 2 !!!!!!!!!!!!!!!:"+this.name);
+            return ;
+        }
+
         SubScene_Out0 scene1 = null;
         if (combindResult)
         {

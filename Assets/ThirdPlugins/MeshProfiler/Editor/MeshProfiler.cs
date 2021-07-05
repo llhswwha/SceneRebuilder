@@ -18,7 +18,7 @@ namespace MeshProfilerNS
     //:EditorWindow
     {
         //[MenuItem("Window/Analysis/Mesh Profiler")]
-        [MenuItem("Window/Mesh Profiler")]
+        [MenuItem("Window/Tools/Mesh Profiler")]
         public static void ShowWindow()
         {
             MeshProfiler window = (MeshProfiler)EditorWindow.GetWindowWithRect(typeof(MeshProfiler), new Rect(0, 0, MPGUIStyles.SCREEN_WIDTH, MPGUIStyles.SCREEN_HEIGHT), true, "Mesh Profiler 1.1");
