@@ -8,7 +8,7 @@ public class SubSceneManagerUI : MonoBehaviour
 {
     public Text txtResult;
 
-    public Toggle toggleIsOneCoroutine;
+    public InputField inputFieldMaxCoroutineCount;
 
     public Slider sliderProgress;
 
@@ -43,7 +43,7 @@ public class SubSceneManagerUI : MonoBehaviour
         subSceneShowManager = GameObject.FindObjectOfType<SubSceneShowManager>(true);
         ToggleDynamicShow.onValueChanged.AddListener(OnDynamicShowChanged);
 
-        ClickGetScenes();
+        //ClickGetScenes();
 
         var allScenes = GameObject.FindObjectsOfType<SubScene_Base>(true);
         Debug.LogError($"SubSceneManager.Start allScenes:{allScenes.Length}");
@@ -52,7 +52,7 @@ public class SubSceneManagerUI : MonoBehaviour
             scene.ProgressChanged += Scene_ProgressChanged;
         }
 
-        toggleIsOneCoroutine.isOn=subSceneManager.IsOneCoroutine;
+        //toggleIsOneCoroutine.isOn=subSceneManager.IsOneCoroutine;
     }
 
     private List<SubScene_Base> loadedScene = new List<SubScene_Base>();
@@ -116,7 +116,7 @@ public class SubSceneManagerUI : MonoBehaviour
         Debug.Log("OnSceneTypeChanged:"+i);
         sceneType= (SubSceneType)i;
 
-        ClickGetScenes();
+        //ClickGetScenes();
     }
 
     private void SubSceneManager_AllLoaded()
@@ -177,15 +177,15 @@ public class SubSceneManagerUI : MonoBehaviour
         return ui;
     }
 
-    public void SetIsOneCoroutine()
+    public void SetLoadingSceneMaxCount()
     {
-        subSceneManager.IsOneCoroutine = toggleIsOneCoroutine.isOn;
+        subSceneManager.LoadingSceneMaxCount = int.Parse( inputFieldMaxCoroutineCount.text);
     }
 
     public void ClickLoadAll()
     {
         Debug.Log("ClickLoadAll");
-        SetIsOneCoroutine();
+        SetLoadingSceneMaxCount();
         subSceneManager.LoadScenesEx(subScenes.ToArray(),null);
     }
 

@@ -49,7 +49,7 @@ public class SubSceneManager : MonoBehaviour
 
     public bool IsAutoLoad = false;
 
-    public bool IsOneCoroutine = true;
+    //public bool IsOneCoroutine = true;
 
 
     //public bool IsPartScene = false;

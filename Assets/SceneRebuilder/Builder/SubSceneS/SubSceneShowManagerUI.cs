@@ -69,7 +69,7 @@ public class SubSceneShowManagerUI : MonoBehaviour
     public void LoadStartScenes()
     {
         Debug.Log("LoadStartScenes");
-        subSceneManagerUI.SetIsOneCoroutine();
+        subSceneManagerUI.SetLoadingSceneMaxCount();
         subSceneShowManager.LoadStartScens();
     }
 
@@ -77,7 +77,7 @@ public class SubSceneShowManagerUI : MonoBehaviour
     public void LoadOut0TreeScenes()
     {
         Debug.Log("LoadOut0TreeScenes");
-        subSceneManagerUI.SetIsOneCoroutine();
+        subSceneManagerUI.SetLoadingSceneMaxCount();
         subSceneShowManager.LoadOut0TreeScenes();
     }
 
@@ -85,7 +85,7 @@ public class SubSceneShowManagerUI : MonoBehaviour
     public void LoadOut0TreeNodeScenes()
     {
         Debug.Log("LoadOut0TreeNodeScenes");
-        subSceneManagerUI.SetIsOneCoroutine();
+        subSceneManagerUI.SetLoadingSceneMaxCount();
         subSceneShowManager.LoadOut0TreeNodeScenes();
     }
 
@@ -94,7 +94,7 @@ public class SubSceneShowManagerUI : MonoBehaviour
     public void LoadOut0TreeNodeScenesTopN(int index)
     {
         Debug.Log("LoadOut0TreeNodeScenesTopN:"+index);
-        subSceneManagerUI.SetIsOneCoroutine();
+        subSceneManagerUI.SetLoadingSceneMaxCount();
         subSceneShowManager.LoadOut0TreeNodeSceneTopN(index);
     }
 
@@ -102,7 +102,7 @@ public class SubSceneShowManagerUI : MonoBehaviour
     public void LoadOut0TreeNodeScenesTopBigN(int index)
     {
         Debug.Log("LoadOut0TreeNodeScenesTopBigN:"+index);
-        subSceneManagerUI.SetIsOneCoroutine();
+        subSceneManagerUI.SetLoadingSceneMaxCount();
         subSceneShowManager.LoadOut0TreeNodeSceneTopBiggerN(index);
     }
 
