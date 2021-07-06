@@ -278,7 +278,7 @@ public class AreaTreeNode : SubSceneCreater
         {
             if (render == null)
             {
-                Debug.LogError("render==null:" + this);
+                Debug.LogError("MoveRenderers render==null:" + this);
                 continue;
             }
             GameObject go = render.gameObject;
