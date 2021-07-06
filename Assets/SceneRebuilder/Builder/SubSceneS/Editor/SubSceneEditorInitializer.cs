@@ -43,7 +43,28 @@ public class SubSceneEditorInitializer
         {
             if (go.GetComponent<SubScene_List>() != null)
             {
-                CreateLabel("[SceneList]", selectionRect, Layer2Width, new Color(1,0.7f,0), Color.blue);
+                if (go.GetComponent<AreaTreeNode>() != null)
+                {
+                    AreaTreeNode node = go.GetComponent<AreaTreeNode>();
+
+                    if (node.IsLeaf)
+                    {
+                        CreateLabel("[SceneList][Leaf]", selectionRect, Layer1Width, new Color(1,0.7f,0), Color.blue);
+                    }
+                    else
+                    {
+                        CreateLabel("[SceneList][Node]", selectionRect, Layer1Width, new Color(1,0.7f,0), Color.blue);
+                    }
+                    
+                }
+                else if (go.GetComponent<ModelAreaTree>() != null)
+                {
+                    CreateLabel("[SceneList][Tree]", selectionRect, Layer1Width, new Color(1,0.7f,0), Color.blue);
+                }
+                else{
+                    CreateLabel("[SceneList]", selectionRect, Layer1Width, new Color(1,0.7f,0), Color.blue);
+                }
+                
             }
             else if (go.GetComponent<SubScene_Base>()!=null)
             {

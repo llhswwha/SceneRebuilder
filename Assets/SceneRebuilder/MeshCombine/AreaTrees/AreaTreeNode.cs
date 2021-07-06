@@ -937,8 +937,13 @@ public class AreaTreeNode : SubSceneCreater
         List<SubScene_Base> scenes = new List<SubScene_Base>();
 
         if(tree==null){
-            Debug.LogError("AreaTreeNode.EditorCreateNodeScenes tree==null 1 :"+this.name);
-            tree=this.GetComponentInParent<ModelAreaTree>();
+            
+            var trees=this.GetComponentsInParent<ModelAreaTree>(true);
+            if(trees.Length>0){
+                tree=trees[0];
+                Debug.LogWarning("AreaTreeNode.EditorCreateNodeScenes tree==null 1 :"+this.name+" tree:"+tree.name);
+            }
+            
         }
 
         if(tree==null){
@@ -996,6 +1001,7 @@ public class AreaTreeNode : SubSceneCreater
     [ContextMenu("* EditorLoadScenes")]
     private void EditorLoadScenes()
     {
+        IdDictionay.InitInfos();
         EditorLoadScenes(null);
     }
 
