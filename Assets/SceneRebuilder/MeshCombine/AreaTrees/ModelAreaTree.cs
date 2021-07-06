@@ -870,8 +870,18 @@ public class ModelAreaTree : SubSceneCreater
 
     public void EditorCreateNodeScenes(Action<float> progressChanged)
     {
-        DateTime start = DateTime.Now;
+        //GetTreeNodeScenes();
 
+        Debug.Log("EditorCreateNodeScenes:"+this.name);
+        if(SceneList!=null&& SceneList.sceneCount>0){
+            Debug.LogError("EditorCreateNodeScenes SceneList!=null&& SceneList.sceneCount>0 "+this.name);
+            if(progressChanged!=null){
+                progressChanged(1);
+            }
+            return ;
+        }
+        DateTime start = DateTime.Now;
+        
         for (int i = 0; i < TreeLeafs.Count; i++)
         {
             var leafNode = TreeLeafs[i];
@@ -909,6 +919,8 @@ public class ModelAreaTree : SubSceneCreater
                 }
             });
         }
+
+        GetTreeNodeScenes();
        
         if (progressChanged == null)
         {

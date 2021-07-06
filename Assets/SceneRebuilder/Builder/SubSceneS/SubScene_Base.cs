@@ -511,6 +511,13 @@ public class SubScene_Base : MonoBehaviour
         }
     }
 
+     [ContextMenu("SetRendererParentEx")]
+    private void SetRendererParentEx()
+    {
+        IdDictionay.InitInfos();
+        SetRendererParent();
+    }
+
     public int GetSceneObjectCount()
     {
         int i = 0;
@@ -588,6 +595,8 @@ public class SubScene_Base : MonoBehaviour
         SetObjects(gs);
 
         InitIdDict();
+
+        SetRendererParent();
     }
 
     [ContextMenu("EditorLoadSceneEx")]

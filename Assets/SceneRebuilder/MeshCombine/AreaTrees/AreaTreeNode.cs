@@ -278,7 +278,7 @@ public class AreaTreeNode : SubSceneCreater
         {
             if (render == null)
             {
-                Debug.LogError("render==null:" + this);
+                Debug.LogError("MoveRenderers render==null:" + this);
                 continue;
             }
             GameObject go = render.gameObject;
@@ -936,6 +936,21 @@ public class AreaTreeNode : SubSceneCreater
 
         List<SubScene_Base> scenes = new List<SubScene_Base>();
 
+        if(tree==null){
+            
+            var trees=this.GetComponentsInParent<ModelAreaTree>(true);
+            if(trees.Length>0){
+                tree=trees[0];
+                Debug.LogWarning("AreaTreeNode.EditorCreateNodeScenes tree==null 1 :"+this.name+" tree:"+tree.name);
+            }
+            
+        }
+
+        if(tree==null){
+            Debug.LogError("AreaTreeNode.EditorCreateNodeScenes tree==null 2 !!!!!!!!!!!!!!!:"+this.name);
+            return ;
+        }
+
         SubScene_Out0 scene1 = null;
         if (combindResult)
         {
@@ -986,6 +1001,7 @@ public class AreaTreeNode : SubSceneCreater
     [ContextMenu("* EditorLoadScenes")]
     private void EditorLoadScenes()
     {
+        IdDictionay.InitInfos();
         EditorLoadScenes(null);
     }
 

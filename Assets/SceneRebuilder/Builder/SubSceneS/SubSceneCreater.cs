@@ -11,6 +11,15 @@ public class SubSceneCreater : MonoBehaviour
 {
     public SubScene_List SceneList = null;
 
+    [ContextMenu("GetTreeNodeScenes")]
+    public void GetTreeNodeScenes()
+    {
+        if(SceneList==null){
+            SceneList=this.gameObject.AddComponent<SubScene_List>();
+        }
+        SceneList.Init();
+    }
+
     private void InitSceneListGO()
     {
         if (SceneList == null)

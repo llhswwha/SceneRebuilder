@@ -364,6 +364,31 @@ public class AreaTreeManager : MonoBehaviour
 
     //public int Depth = 0;
 
+
+    [ContextMenu("SaveTreeNodeScenes")]
+    public void SaveTreeNodeScenes()
+    {
+        DateTime start = DateTime.Now;
+        Trees = GameObject.FindObjectsOfType<ModelAreaTree>(true).ToList();
+        foreach(var tree in Trees)
+        {
+            tree.GetTreeNodeScenes();
+        }
+        Debug.LogError($"GetTreeNodeScenes \t{(DateTime.Now - start).ToString()}");
+    }
+
+        [ContextMenu("GetTreeNodeScenes")]
+    public void GetTreeNodeScenes()
+    {
+        DateTime start = DateTime.Now;
+        Trees = GameObject.FindObjectsOfType<ModelAreaTree>(true).ToList();
+        foreach(var tree in Trees)
+        {
+            tree.GetTreeNodeScenes();
+        }
+        Debug.LogError($"GetTreeNodeScenes \t{(DateTime.Now - start).ToString()}");
+    }
+
     [ContextMenu("GetTreeInfos")]
     public void GetTreeInfos()
     {
