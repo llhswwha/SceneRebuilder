@@ -4,12 +4,12 @@ using UnityEditor;
 using UnityEngine;
 
 [InitializeOnLoad]
-public class SubSceneEditorInitializer
+public class MyHierarchyEditorInitializer
 {
-    static SubSceneEditorInitializer()
+    static MyHierarchyEditorInitializer()
     {
         EditorApplication.hierarchyWindowItemOnGUI += hierarchyOnGUI;
-        Debug.Log("SubSceneEditorInitializer");
+        Debug.Log("HierarchyEditorInitializer");
     }
 
     public static Rect CreateRect(Rect selectionRect,float width)
@@ -183,6 +183,10 @@ public class SubSceneEditorInitializer
             else if (go.GetComponent<Canvas>() != null)
             {
                 CreateLabel("[Canvas]", selectionRect, Layer2Width, Color.gray, Color.red);
+            }
+            else if (go.GetComponent<LODGroup>() != null)
+            {
+                CreateLabel("[LODGroup]", selectionRect, Layer2Width, Color.gray, Color.red);
             }
             else
             {

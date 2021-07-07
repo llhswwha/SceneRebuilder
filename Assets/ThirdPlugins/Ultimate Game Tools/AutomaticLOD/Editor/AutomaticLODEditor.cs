@@ -682,7 +682,7 @@ public class AutomaticLODEditor : Editor
                     }
                     else
                     {
-                        DeleteLODDataRecursive(automaticLOD.gameObject, automaticLOD.gameObject, true);
+                        AutomaticLODHelper.DeleteLODDataRecursive(automaticLOD.gameObject, automaticLOD.gameObject, true);
                         break;
                     }
 
@@ -737,7 +737,7 @@ public class AutomaticLODEditor : Editor
                     }
                     else
                     {
-                        DeleteLODDataRecursive(automaticLOD.gameObject, automaticLOD.gameObject, true);
+                        AutomaticLODHelper.DeleteLODDataRecursive(automaticLOD.gameObject, automaticLOD.gameObject, true);
                         break;
                     }
                 }
@@ -1476,50 +1476,54 @@ public class AutomaticLODEditor : Editor
         foreach (Object targetObject in targets)
         {
             AutomaticLOD automaticLOD = targetObject as AutomaticLOD;
-
-            if (automaticLOD.m_LODObjectRoot == null)
-            {
-                DeleteLODDataRecursive(automaticLOD.gameObject, automaticLOD.gameObject, true);
-            }
+            AutomaticLODHelper.DeleteLODData(automaticLOD);
         }
     }
 
-    void DeleteLODDataRecursive(GameObject root, GameObject gameObject, bool bRecurseIntoChildren)
-    {
-        AutomaticLOD automaticLOD = gameObject.GetComponent<AutomaticLOD>();
+    // public static void DeleteLODData(AutomaticLOD automaticLOD)
+    // {
+    //     if (automaticLOD.m_LODObjectRoot == null)
+    //     {
+    //         DeleteLODDataRecursive(automaticLOD.gameObject, automaticLOD.gameObject, true);
+    //     }
+    // }
 
-        if (automaticLOD)
-        {
-            if (automaticLOD.m_LODObjectRoot == null || automaticLOD.m_LODObjectRoot.gameObject == root)
-            {
-                automaticLOD.RestoreOriginalMesh(true, false);
+    // public static void DeleteLODDataRecursive(GameObject root, GameObject gameObject, bool bRecurseIntoChildren)
+    // {
+    //     AutomaticLOD automaticLOD = gameObject.GetComponent<AutomaticLOD>();
 
-                if (automaticLOD.m_LODObjectRoot != null)
-                {
-                    if (Application.isEditor && Application.isPlaying == false)
-                    {
-                        UnityEngine.Object.DestroyImmediate(automaticLOD);
-                    }
-                    else
-                    {
-                        UnityEngine.Object.Destroy(automaticLOD);
-                    }
-                }
-            }
+    //     if (automaticLOD)
+    //     {
+    //         if (automaticLOD.m_LODObjectRoot == null || automaticLOD.m_LODObjectRoot.gameObject == root)
+    //         {
+    //             automaticLOD.RestoreOriginalMesh(true, false);
 
-            automaticLOD.m_aRelevanceSpheres = null;
-            automaticLOD.m_bEnablePrefabUsage = false;
-            automaticLOD.m_strAssetPath = "";
-        }
+    //             if (automaticLOD.m_LODObjectRoot != null)
+    //             {
+    //                 if (Application.isEditor && Application.isPlaying == false)
+    //                 {
+    //                     UnityEngine.Object.DestroyImmediate(automaticLOD);
+    //                 }
+    //                 else
+    //                 {
+    //                     UnityEngine.Object.Destroy(automaticLOD);
+    //                 }
+    //             }
+    //         }
 
-        if (bRecurseIntoChildren)
-        {
-            for (int nChild = 0; nChild < gameObject.transform.childCount; nChild++)
-            {
-                DeleteLODDataRecursive(root, gameObject.transform.GetChild(nChild).gameObject, true);
-            }
-        }
-    }
+    //         automaticLOD.m_aRelevanceSpheres = null;
+    //         automaticLOD.m_bEnablePrefabUsage = false;
+    //         automaticLOD.m_strAssetPath = "";
+    //     }
+
+    //     if (bRecurseIntoChildren)
+    //     {
+    //         for (int nChild = 0; nChild < gameObject.transform.childCount; nChild++)
+    //         {
+    //             DeleteLODDataRecursive(root, gameObject.transform.GetChild(nChild).gameObject, true);
+    //         }
+    //     }
+    // }
 
     void SaveSceneViewCameraInfo()
     {

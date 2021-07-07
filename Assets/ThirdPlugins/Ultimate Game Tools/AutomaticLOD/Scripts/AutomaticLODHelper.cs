@@ -179,19 +179,25 @@ public static class AutomaticLODHelper
 
     public static void ClearLODAndChildren(GameObject go)
     {
-        LODGroup lODGroup=go.GetComponent<LODGroup>();
-        if(lODGroup!=null){
-            GameObject.DestroyImmediate(lODGroup);
+        AutomaticLOD aLOD = go.GetComponent<AutomaticLOD>();
+        if(aLOD){
+            DeleteLODData(aLOD);
         }
+        else{
+            LODGroup lODGroup=go.GetComponent<LODGroup>();
+            if(lODGroup!=null){
+                GameObject.DestroyImmediate(lODGroup);
+            }
 
-        List<Transform> children=new List<Transform>();
-        for(int i=0;i<go.transform.childCount;i++)
-        {
-            var child=go.transform.GetChild(i);
-            children.Add(child);
-        }
-        foreach(var child in children){
-            GameObject.DestroyImmediate(child.gameObject);
+            List<Transform> children=new List<Transform>();
+            for(int i=0;i<go.transform.childCount;i++)
+            {
+                var child=go.transform.GetChild(i);
+                children.Add(child);
+            }
+            foreach(var child in children){
+                GameObject.DestroyImmediate(child.gameObject);
+            }
         }
     }
 
@@ -207,7 +213,8 @@ public static class AutomaticLODHelper
                 mr.material = mats[i];
             }
             MeshRenderer mr0 = go.GetComponent<MeshRenderer>();
-            mr0.material = mats[0];
+            if(mr0!=null)
+                mr0.material = mats[0];
         }
     }
 
@@ -245,7 +252,8 @@ public static class AutomaticLODHelper
 
         AutomaticLOD aLOD = CreateNewAutomaticLOD(go);
 
-        ClearLODAndChildren(go);
+        if(go.GetComponent<MeshRenderer>()!=null)
+            ClearLODAndChildren(go);
 
         bool bRecurseIntoChildren = true;
         AutomaticLODHelper.CreateDefaultLODS(nLevels, aLOD, bRecurseIntoChildren,lodVertexPercents);
@@ -293,6 +301,57 @@ public static class AutomaticLODHelper
 
         if (progressChanged != null) progressChanged(1);
 
-        Debug.LogError($"CreateLOD vertexCount:{aLOD.m_originalMesh.vertexCount},time:{(System.DateTime.Now - start).ToString()}");
+        if(aLOD.m_originalMesh==null){
+            Debug.LogError($"CreateLOD vertexCount:[ aLOD.m_originalMesh==null ],time:{(System.DateTime.Now - start).ToString()}");
+        }
+        else{
+            Debug.LogError($"CreateLOD vertexCount:{aLOD.m_originalMesh.vertexCount},time:{(System.DateTime.Now - start).ToString()}");
+        }
     }
+
+    public static void DeleteLODData(AutomaticLOD automaticLOD)
+    {
+        if (automaticLOD.m_LODObjectRoot == null)
+        {
+            DeleteLODDataRecursive(automaticLOD.gameObject, automaticLOD.gameObject, true);
+        }
+    }
+
+    public static void DeleteLODDataRecursive(GameObject root, GameObject gameObject, bool bRecurseIntoChildren)
+    {
+        AutomaticLOD automaticLOD = gameObject.GetComponent<AutomaticLOD>();
+
+        if (automaticLOD)
+        {
+            if (automaticLOD.m_LODObjectRoot == null || automaticLOD.m_LODObjectRoot.gameObject == root)
+            {
+                automaticLOD.RestoreOriginalMesh(true, false);
+
+                if (automaticLOD.m_LODObjectRoot != null)
+                {
+                    if (Application.isEditor && Application.isPlaying == false)
+                    {
+                        UnityEngine.Object.DestroyImmediate(automaticLOD);
+                    }
+                    else
+                    {
+                        UnityEngine.Object.Destroy(automaticLOD);
+                    }
+                }
+            }
+
+            automaticLOD.m_aRelevanceSpheres = null;
+            automaticLOD.m_bEnablePrefabUsage = false;
+            automaticLOD.m_strAssetPath = "";
+        }
+
+        if (bRecurseIntoChildren)
+        {
+            for (int nChild = 0; nChild < gameObject.transform.childCount; nChild++)
+            {
+                DeleteLODDataRecursive(root, gameObject.transform.GetChild(nChild).gameObject, true);
+            }
+        }
+    }
+
 }
