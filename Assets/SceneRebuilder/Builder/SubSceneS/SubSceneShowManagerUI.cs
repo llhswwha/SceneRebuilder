@@ -17,7 +17,7 @@ public class SubSceneShowManagerUI : MonoBehaviour
         subSceneManagerUI=GameObject.FindObjectOfType<SubSceneManagerUI>(true);
 
         subSceneShowManager = GameObject.FindObjectOfType<SubSceneShowManager>(true);
-        sceneCountInfo=subSceneShowManager.GetSceneCountInfo()+"\n"+subSceneShowManager.GetShowSceneCountInfo();
+        sceneCountInfo=subSceneShowManager.GetSceneCountInfoEx();
         if(toggleListVisible1.isOn==false)
         {
             ToggleSceneUIList1(false);
@@ -73,12 +73,12 @@ public class SubSceneShowManagerUI : MonoBehaviour
         subSceneShowManager.LoadStartScens();
     }
 
-   [ContextMenu("LoadOut0TreeScenes")]
-    public void LoadOut0TreeScenes()
+   [ContextMenu("LoadOut0BuildingScenes")]
+    public void LoadOut0BuildingScenes()
     {
-        Debug.Log("LoadOut0TreeScenes");
+        Debug.Log("LoadOut0BuildingScenes");
         subSceneManagerUI.SetLoadingSceneMaxCount();
-        subSceneShowManager.LoadOut0TreeScenes();
+        subSceneShowManager.LoadOut0BuildingScenes();
     }
 
     [ContextMenu("LoadOut0TreeNodeScenes")]

@@ -3,7 +3,7 @@ using System.Collections.Generic;
 using System.Linq;
 using UnityEngine;
 using UnityEngine.UI;
-
+using UnityEngine.SceneManagement;
 public class SubSceneManagerUI : MonoBehaviour
 {
     public Text txtResult;
@@ -201,5 +201,12 @@ public class SubSceneManagerUI : MonoBehaviour
         yield return Resources.UnloadUnusedAssets();
 
         System.GC.Collect();
+    }
+
+    public void ResetScene()
+    {
+        Debug.Log("ResetScene");
+        Scene scene = SceneManager.GetSceneAt(0);
+        SceneManager.LoadScene(scene.name,LoadSceneMode.Single);
     }
 }

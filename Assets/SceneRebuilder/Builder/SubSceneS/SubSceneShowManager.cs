@@ -22,6 +22,13 @@ public class SubSceneShowManager : MonoBehaviour
     public List<SubScene_Out0> scenes_Out0_TreeNode_Shown = new List<SubScene_Out0>();
     public Camera[] cameras;
 
+    [ContextMenu("GetSceneCountInfoEx")]
+    public string GetSceneCountInfoEx()
+    {
+        return this.GetSceneCountInfo()+"\n"+this.GetShowSceneCountInfo();
+    }
+
+    [ContextMenu("GetSceneCountInfo")]
     public string GetSceneCountInfo()
     {
 
@@ -36,21 +43,31 @@ public class SubSceneShowManager : MonoBehaviour
         
         // List<SubScene_Out0> out0s_tree
         
-        
-        return $"all:{alls.Length}(v:{allsInfo[0]:F0},r:{allsInfo[1]:F0}) | out0:{out0s.Length}(v:{out0sInfo[0]:F0},r:{out0sInfo[1]:F0})\nout1:{out1s.Length}(v:{out1sInfo[0]:F0},r:{out1sInfo[1]:F0}) | ins:{ins.Length}(v:{insInfo[0]:F0},r:{insInfo[1]:F0})";
+        string log=$"all:{alls.Length}(v:{allsInfo[0]:F0},r:{allsInfo[1]:F0}) | out0:{out0s.Length}(v:{out0sInfo[0]:F0},r:{out0sInfo[1]:F0})\nout1:{out1s.Length}(v:{out1sInfo[0]:F0},r:{out1sInfo[1]:F0}) | ins:{ins.Length}(v:{insInfo[0]:F0},r:{insInfo[1]:F0})";
+        Debug.Log("GetSceneCountInfo "+log);
+        return log;
     }
 
+    [ContextMenu("GetShowSceneCountInfo")]
     public string GetShowSceneCountInfo()
     {
-        var scenes_Out0_Part_Info=GetSceneRenderInfo(scenes_Out0_Tree);
-        var scenes_In_Tree_Info=GetSceneRenderInfo(scenes_In_Tree);
+        List<SubScene_Out0> out0TreeAndPart=new List<SubScene_Out0>();
+        out0TreeAndPart.AddRange(scenes_Out0_Tree);
+        out0TreeAndPart.AddRange(scenes_Out0_Part);
+
+        var scenes_Out0_Info=GetSceneRenderInfo(out0TreeAndPart);
+        var scenes_In_Info=GetSceneRenderInfo(scenes_In);
+        var scenes_Out1_Info=GetSceneRenderInfo(scenes_Out1);
         var scenes_Out0_TreeNode_Shown_Info=GetSceneRenderInfo(scenes_Out0_TreeNode_Shown);
         var scenes_Out0_TreeNode_Hidden_Info=GetSceneRenderInfo(scenes_Out0_TreeNode_Hidden);
 
-        return $"out0_tree:{scenes_Out0_Tree.Count}(v:{scenes_Out0_Part_Info[0]:F0},r:{scenes_Out0_Part_Info[1]:F0})"
+        string log= $"out0:{out0TreeAndPart.Count}(v:{scenes_Out0_Info[0]:F0},r:{scenes_Out0_Info[1]:F0})"
         +$" out0_node_show:{scenes_Out0_TreeNode_Shown.Count}(v:{scenes_Out0_TreeNode_Shown_Info[0]:F0},r:{scenes_Out0_TreeNode_Shown_Info[1]:F0})"
-        +$"\nin_tree:{scenes_In_Tree.Count}(v:{scenes_In_Tree_Info[0]:F0},r:{scenes_In_Tree_Info[1]:F0})"
+        +$"\nin:{scenes_In.Length}(v:{scenes_In_Info[0]:F0},r:{scenes_In_Info[1]:F0})"
+        +$" out1:{scenes_Out1.Length}(v:{scenes_Out1_Info[0]:F0},r:{scenes_Out1_Info[1]:F0})"
         +$" out0_node_hide:{scenes_Out0_TreeNode_Hidden.Count}(v:{scenes_Out0_TreeNode_Hidden_Info[0]:F0},r:{scenes_Out0_TreeNode_Hidden_Info[1]:F0})";
+        Debug.Log("GetShowSceneCountInfo "+log);
+        return log;
     }
 
     public float[] GetSceneRenderInfo<T>(IEnumerable<T> scenes) where T : SubScene_Base
@@ -81,6 +98,10 @@ public class SubSceneShowManager : MonoBehaviour
         scenes_In = GameObject.FindObjectsOfType<SubScene_In>(true);
         scenes_Out0 = GameObject.FindObjectsOfType<SubScene_Out0>(true);
 
+        scenes_Out0_Part.Clear();
+        scenes_Out0_Tree.Clear();
+        // scenes_Out0_TreeNode.Clear();
+        
         foreach(var s in scenes_Out0)
         {
             //s.gameObject.SetActive(true);
@@ -100,6 +121,8 @@ public class SubSceneShowManager : MonoBehaviour
             //}
         }
 
+        scenes_In_Part.Clear();
+        scenes_In_Tree.Clear();
         foreach(var s in scenes_In)
         {
             //s.gameObject.SetActive(true);
@@ -128,6 +151,8 @@ public class SubSceneShowManager : MonoBehaviour
         List<ModelAreaTree> ShownTrees = new List<ModelAreaTree>();
         var ts = GameObject.FindObjectsOfType<ModelAreaTree>(true);
 
+        scenes_Out0_TreeNode_Hidden.Clear();
+        scenes_Out0_TreeNode_Shown.Clear();
         foreach (ModelAreaTree t in ts)
         {
             if (t.IsHidden && !HiddenTrees.Contains(t))
@@ -168,48 +193,47 @@ public class SubSceneShowManager : MonoBehaviour
     public void LoadStartScens()
     {
         List<SubScene_Out0> scene_Out0s=new List<SubScene_Out0>();
-        scene_Out0s.AddRange(scenes_Out0_Tree);
+        // scene_Out0s.AddRange(scenes_Out0_Tree);
+        scene_Out0s.AddRange(scenes_Out0_Part);
         scene_Out0s.AddRange(scenes_Out0_TreeNode_Shown);
         if(scene_Out0s.Count>0){
             AreaTreeNodeShowManager.Instance.IsUpdateTreeNodeByDistance = false;
-            //sceneManager.LoadScenesEx(scenes_Out0_Tree.ToArray());
             sceneManager.LoadScenesEx(scene_Out0s.ToArray(), () =>
                 {
-                    //AreaTreeNodeShowManager.Instance.IsUpdateTreeNodeByDistance = true;
-
                     WaitingScenes.AddRange(scene_Out0s);
-
                     AreaTreeNodeShowManager.Instance.IsUpdateTreeNodeByDistance = IsUpdateTreeNodeByDistance;
                 });
         }
         
     }
 
-    public void LoadOut0TreeScenes()
+    public void LoadOut0BuildingScenes()
     {
-        //AreaTreeNodeShowManager.Instance.IsUpdateTreeNodeByDistance = false;
-        //sceneManager.LoadScenesEx(scenes_Out0_Tree.ToArray());
-        sceneManager.LoadScenesEx(scenes_Out0_Tree.ToArray(), () =>
-            {
-                //AreaTreeNodeShowManager.Instance.IsUpdateTreeNodeByDistance = true;
-
-                WaitingScenes.AddRange(scenes_Out0_Tree);
-
-                //AreaTreeNodeShowManager.Instance.IsUpdateTreeNodeByDistance = IsUpdateTreeNodeByDistance;
-            });
+        List<SubScene_Out0> scene_Out0s=new List<SubScene_Out0>();
+        scene_Out0s.AddRange(scenes_Out0_Tree);
+        scene_Out0s.AddRange(scenes_Out0_Part);
+        // scene_Out0s.AddRange(scenes_Out0_TreeNode_Shown);
+        if(scene_Out0s.Count>0){
+            AreaTreeNodeShowManager.Instance.IsUpdateTreeNodeByDistance = false;
+            sceneManager.LoadScenesEx(scene_Out0s.ToArray(), () =>
+                {
+                    WaitingScenes.AddRange(scene_Out0s);
+                    AreaTreeNodeShowManager.Instance.IsUpdateTreeNodeByDistance = IsUpdateTreeNodeByDistance;
+                });
+        }
     }
 
-    public void LoadOut0TreeNodeSceneTop1()
-    {
-        //AreaTreeNodeShowManager.Instance.IsUpdateTreeNodeByDistance = false;
-        //sceneManager.LoadScenesEx(scenes_Out0_Tree.ToArray());
-        sceneManager.LoadScenesEx(scenes_Out0_TreeNode_Shown.ToArray(), () =>
-        {
-                //AreaTreeNodeShowManager.Instance.IsUpdateTreeNodeByDistance = true;
-                WaitingScenes.AddRange(scenes_Out0_TreeNode_Shown);
-                //AreaTreeNodeShowManager.Instance.IsUpdateTreeNodeByDistance = IsUpdateTreeNodeByDistance;
-        });
-    }
+    // public void LoadOut0TreeNodeSceneTop1()
+    // {
+    //     //AreaTreeNodeShowManager.Instance.IsUpdateTreeNodeByDistance = false;
+    //     //sceneManager.LoadScenesEx(scenes_Out0_Tree.ToArray());
+    //     sceneManager.LoadScenesEx(scenes_Out0_TreeNode_Shown.ToArray(), () =>
+    //     {
+    //             //AreaTreeNodeShowManager.Instance.IsUpdateTreeNodeByDistance = true;
+    //             WaitingScenes.AddRange(scenes_Out0_TreeNode_Shown);
+    //             //AreaTreeNodeShowManager.Instance.IsUpdateTreeNodeByDistance = IsUpdateTreeNodeByDistance;
+    //     });
+    // }
 
     public void LoadOut0TreeNodeSceneTopN(int index)
     {
@@ -433,8 +457,12 @@ public class SubSceneShowManager : MonoBehaviour
             for(int i = 0; i < WaitingScenes.Count; i++)
             {
                 var scene = WaitingScenes[i];
-                
-                if (scene.GetSceneObjectCount()>0)
+                if(scene.IsLoaded==false)//加载失败的情况，比如是inactive的情况
+                {
+                     WaitingScenes.RemoveAt(i);
+                    i--;
+                }
+                else if (scene.GetSceneObjectCount()>0)
                 {
                     WaitingScenes.RemoveAt(i);
                     i--;
@@ -443,8 +471,6 @@ public class SubSceneShowManager : MonoBehaviour
                 {
                     scene.CheckGetSceneObjects();
                 }
-
-
             }
             Debug.LogError("CheckWaittingScenes 2:" + WaitingScenes.Count);
         }

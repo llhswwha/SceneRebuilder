@@ -398,7 +398,7 @@ public class ModelAreaTree : SubSceneCreater
             // }
             tn.CreateDictionary();
         }
-        Debug.LogWarning($"CreateDictionary tree:{this.name},render2NodeDict:{AreaTreeHelper.render2NodeDict.Count},\t{(DateTime.Now-start).TotalMilliseconds:F1}ms");
+        // Debug.LogWarning($"CreateDictionary tree:{this.name}, \trender2NodeDict:{AreaTreeHelper.render2NodeDict.Count}, \t{(DateTime.Now-start).TotalMilliseconds:F1}ms");
     }
     [ContextMenu("* GenerateMesh")]
     private void GenerateMesh()

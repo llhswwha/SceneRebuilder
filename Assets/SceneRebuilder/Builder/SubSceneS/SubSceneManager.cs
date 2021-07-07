@@ -550,7 +550,7 @@ public class SubSceneManager : MonoBehaviour
 
                     count++;
                     var progress = (count + 0.0f) / scenes.Length;
-                    WriteLog($"count:{scenes.Length} index:{count} progress:{progress} ");
+                    WriteLog($"count:{scenes.Length} index:{count} progress:{progress} time:{(DateTime.Now - start).ToString()}");
                     OnProgressChanged(progress);
                     if (count == scenes.Length)
                     {

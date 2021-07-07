@@ -20,7 +20,7 @@ public class ProgressBarHelper : MonoBehaviour
     public static bool DisplayCancelableProgressBar(string title, string info, float progress)
     {
         //Debug.Log($"DisplayCancelableProgressBar title:{title}\tinfo:{info}\tprogress:{progress}");
-        bool result = true;
+        bool result = false;
 #if UNITY_EDITOR
         result= UnityEditor.EditorUtility.DisplayCancelableProgressBar(title, info, progress);
 #endif

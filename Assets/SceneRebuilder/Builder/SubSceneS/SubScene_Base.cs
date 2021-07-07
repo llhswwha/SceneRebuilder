@@ -456,7 +456,16 @@ public class SubScene_Base : MonoBehaviour
             HideBoundsBox();
             this.gameObject.SetActive(true);
         }
-        StartCoroutine(LoadSceneAsyncCoroutine(callback));
+        if (this.gameObject.activeInHierarchy == true)
+        {
+            StartCoroutine(LoadSceneAsyncCoroutine(callback));
+        }
+        else{
+            if(callback!=null){
+                callback(false,this);
+            }
+             Debug.LogError("this.gameObject.activeInHierarchy == false :" + name);
+        }
     }
     [ContextMenu("TestUnLoadSceneAsync")]
     public void TestUnLoadSceneAsync()

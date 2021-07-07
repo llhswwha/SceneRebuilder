@@ -756,16 +756,15 @@ public class AreaTreeNode : SubSceneCreater
     [ContextMenu("CreateDictionary")]
     public void CreateDictionary()
     {
-        Debug.Log($"CreateDictionary StartCount:{AreaTreeHelper.render2NodeDict.Count},Renderers:{Renderers.Count} Count:{GetRendererCount()}");
+        // Debug.Log($"CreateDictionary StartCount:{AreaTreeHelper.render2NodeDict.Count},Renderers:{Renderers.Count} Count:{GetRendererCount()}");
         if (this.Nodes.Count == 0)
         {
             if(GetRendererCount()==0)
             {
                 Renderers= renderersRoot.GetComponentsInChildren<MeshRenderer>(true).ToList();
-                Debug.Log($"CreateDictionary FindRenderers Renderers:{Renderers.Count} Count:{GetRendererCount()}");
+                // Debug.Log($"CreateDictionary FindRenderers Renderers:{Renderers.Count} Count:{GetRendererCount()}");
             }
  
-            //Renders
             for (int i = 0; i < Renderers.Count; i++)
             {
                 MeshRenderer render = this.Renderers[i];
@@ -853,7 +852,7 @@ public class AreaTreeNode : SubSceneCreater
             //if (node == null) continue;
             if (node == null)
             {
-                Debug.LogError($"HideNodes[{i}] node == null:" + this.name);
+                Debug.LogError($"HideNodes[{i}] node == null:" + this.name+"|"+tree);
                 continue;
             }
             node.ShowNodes();
@@ -864,7 +863,7 @@ public class AreaTreeNode : SubSceneCreater
             MeshRenderer render = CombinedRenderers[i];
             if (render == null)
             {
-                Debug.LogError($"HideNodes[{i}] render == null:"+this.name);
+                Debug.LogError($"HideNodes[{i}] render == null:"+this.name+"|"+tree);
                 continue;
             }
             render.gameObject.SetActive(false);
