@@ -99,6 +99,6 @@ public class RendererId
 
     private void OnDestroy()
     {
-        Debug.Log("RendererId.OnDestroy:"+this.name);
+        // Debug.Log("RendererId.OnDestroy:"+this.name);
     }
 }

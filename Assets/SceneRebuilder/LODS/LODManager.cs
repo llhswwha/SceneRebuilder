@@ -2,6 +2,7 @@ using System;
 using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
+// using LODLevelCaculate;
 
 public class LODManager : MonoBehaviour
 {
@@ -57,12 +58,6 @@ public class LODManager : MonoBehaviour
 
     [ContextMenu("TestCreateLOD")]
     public void TestCreateLOD()
-    {
-        CreateLOD(TestTarget);
-    }
-
-    [ContextMenu("GetLODInfo")]
-    public void GetLODInfo()
     {
         CreateLOD(TestTarget);
     }
@@ -134,9 +129,59 @@ public class LODManager : MonoBehaviour
         Debug.LogError($"CombineLOD0AndLOD1 count1:{renderers_1.Length} count0:{renderers_0.Length} time:{(DateTime.Now - start)}");
     }
 
-    [ContextMenu("RemoveLOD")]
-    public void RemoveLOD()
+    // public List<Renderer> GetLODRenderers()
+    // {
+    //     List<Renderer> renderers=new List<Renderer>();
+    //     DateTime start = DateTime.Now;
+    //     var lodGroups=GameObject.FindObjectsOfType<LODGroup>();
+    //     foreach(LODGroup group in lodGroups){
+    //         var lods=group.GetLODs();
+    //         for(int i=0;i<lods.Length;i++)
+    //         {
+    //             var lod=lods[i];
+    //             foreach(var renderer in lod.renderers)
+    //             {
+    //                 if(renderer==null)continue;
+    //                 renderers.Add(renderer);
+    //             }
+    //         }
+    //     }
+    //     Debug.LogError($"GetLODRenderers lodGroups:{lodGroups.Length} time:{(DateTime.Now - start)}");
+    //     return renderers;
+    // }
+
+    public Dictionary<Renderer,Renderer> GetLODRendererDict()
     {
+        Dictionary<Renderer,Renderer> dict=new Dictionary<Renderer, Renderer>();
+        var lodGroups=GameObject.FindObjectsOfType<LODGroup>();
+         foreach(LODGroup group in lodGroups){
+            var lods=group.GetLODs();
+            for(int i=0;i<lods.Length;i++)
+            {
+                var lod=lods[i];
+                foreach(var renderer in lod.renderers)
+                {
+                    if(renderer==null)continue;
+                    // renderers.Add(renderer);
+                    if(!dict.ContainsKey(renderer))
+                    {
+                        dict.Add(renderer,renderer);
+                    }
+                }
+            }
+        }
+
+        // List<Renderer> renderers=GetLODRenderers();
+        // foreach(var render in renderers){
+        //     if(!dict.ContainsKey(render)){
+        //         dict.Add(render,render);
+        //     }
+        //     else{
+        //         Debug.LogError("GetLODRendererDict 重复 :"+render);
+        //     }
+        // }
+
+        return dict;
     }
 
     [ContextMenu("SetLODMatColor")]
@@ -173,5 +218,99 @@ public class LODManager : MonoBehaviour
             
         }
         Debug.LogError($"SetLODMatColor lodGroups:{lodGroups.Length} time:{(DateTime.Now - start)}");
+    }
+
+    [ContextMenu("DisableLOD")]
+    public void DisableLOD()
+    {
+        SetLODEnabled(false);
+    }
+
+    public void SetLODEnabled(bool isEnabled)
+    {
+        DateTime start = DateTime.Now;
+        var lodGroups=GameObject.FindObjectsOfType<LODGroup>();
+        foreach(LODGroup group in lodGroups){
+            var lods=group.GetLODs();
+            for(int i=1;i<lods.Length;i++)
+            //foreach(var lod in lods)
+            {
+                var lod=lods[i];
+                foreach(var renderer in lod.renderers)
+                {
+                    if(renderer==null)continue;
+                    renderer.enabled=isEnabled;
+                }
+            }
+            group.enabled=isEnabled;
+        }
+        Debug.LogError($"DisableLOD lodGroups:{lodGroups.Length} time:{(DateTime.Now - start)}");
+    }
+
+    [ContextMenu("EnableLOD")]
+    public void EnableLOD()
+    {
+        SetLODEnabled(true);
+    }
+
+    [ContextMenu("RemoveLOD")]
+    public void RemoveLOD()
+    {
+    }
+
+    public List<LODGroupDetails> lodInfos;
+
+    [ContextMenu("GetLODInfo")]
+    public string GetLODInfo()
+    {
+        DateTime now = DateTime.Now;
+        if(lodInfos==null||lodInfos.Count==0){
+            lodInfos=LODGroupDetails.GetSceneLodGroupInfo();
+        }
+        
+        Camera cam = GameObject.FindObjectOfType<Camera>();
+
+        int[] infos=LODGroupDetails.CaculateGroupInfo(lodInfos,LODSceneView.GameView,LODSortType.Vertex,cam);
+
+        int[] lodCount=new int[5];
+        int[] lodVertexCount=new int[5];
+        float[] lodPercent=new float[5];
+        float allVertex0=0;
+        foreach(LODGroupDetails lodI in lodInfos)
+        {
+            if(lodI.currentChild==null)continue;
+            lodCount[lodI.currentInfo.currentLevel]++;
+            lodVertexCount[lodI.currentInfo.currentLevel]+=lodI.currentChild.vertexCount;
+            lodPercent[lodI.currentInfo.currentLevel]+=lodI.currentChild.vertexPercent;
+
+            allVertex0+=lodI.childs[0].vertexCount;
+            // foreach(var child in lodI.childs){
+            //     allVertex0+=child.vertexCount;
+            // }
+        }
+
+        // string lodInfoTxt="";
+        // for(int i=0;i<lodCount.Length;i++){
+        //     lodInfoTxt+=$"LOD{i}({lodCount[i]},{lodVertexCount[i]/10000f:F1},{lodPercent[i]:P1}) ";
+        // }
+
+        string lodInfoTxt_count="";
+        string lodInfoTxt_vertex="";
+        string lodInfoTxt_percent="";
+        for(int i=0;i<lodCount.Length;i++){
+            lodInfoTxt_count+=$"L{i}({lodCount[i]})\t\t";
+            lodInfoTxt_vertex+=$"L{i}({lodVertexCount[i]/10000f:F0})\t\t";
+            lodInfoTxt_percent+=$"L{i}({lodPercent[i]:P1})\t";
+        }
+
+        var allVertexCount=infos[0];
+        var allMeshCount=infos[1];
+        double time=(DateTime.Now-now).TotalMilliseconds;
+        string info=$"LOD:{lodInfos.Count}, Vertex:{allVertexCount/10000f:F0}/{allVertex0/10000f:F0}, Mesh:{allMeshCount}, t:{time:F0}ms";
+        // info+="\n"+lodInfoTxt;
+        info+="\n"+lodInfoTxt_count+"\n"+lodInfoTxt_vertex+"\n"+lodInfoTxt_percent;
+
+        //Debug.Log($"CaculateGroupInfo完成，耗时{time}ms "+info);
+        return info;
     }
 }

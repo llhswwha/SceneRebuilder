@@ -65,6 +65,9 @@ public List<Material> mats_Shown;
         int renderCount_all = renderers.Length;
         mats = new List<Material>();
         mats_Shown=new List<Material>();
+
+        var lodRendererDict=LODManager.Instance.GetLODRendererDict();
+
         for (int i = 0; i < renderers.Length; i++)
         {
             MeshRenderer render = renderers[i];
@@ -76,7 +79,8 @@ public List<Material> mats_Shown;
             if (meshFilter == null) continue;
             if (meshFilter.sharedMesh == null) continue;
 
-
+            if(lodRendererDict.ContainsKey(render)) continue;
+            
             float progress = (float)i / renderers.Length;
             float percents = progress * 100;
             if (ProgressBarHelper.DisplayCancelableProgressBar("Sort2", $"{i}/{renderers.Length} {percents:F2}%", progress))

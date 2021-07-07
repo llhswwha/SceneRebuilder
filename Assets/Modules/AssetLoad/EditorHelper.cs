@@ -421,6 +421,14 @@ public static class EditorHelper
         if (async == null)
         {
             Debug.LogError($"EditorHelper.LoadSceneAsync async == null sName:{sName}");
+
+            Scene scene = SceneManager.GetSceneByName(sName);
+            if (finished != null)
+            {
+                finished(scene);
+            }
+
+            yield return null;
         }
         else
         {
@@ -437,47 +445,33 @@ public static class EditorHelper
             {
                 progressChanged(async.progress);
             }
-        }
 
-        Scene scene = SceneManager.GetSceneByName(sName);
-        var objs = scene.GetRootGameObjects();
-        if (objs.Length == 0)
-        {
-            Debug.LogError($"LoadSceneAsync[{sName}] objs:{objs.Length} time:{(System.DateTime.Now - start).ToString()} objs.Length == 0");
-            //for (int i = 0; i < 10; i++)
-            //{
-            //    objs = scene.GetRootGameObjects();
-            //    if(objs.Length==0)
-            //    {
-            //        yield return null;
-            //    }
-            //    else
-            //    {
-            //        Debug.LogError($"LoadSceneAsync[{sName}] break objs:{objs.Length} time:{(System.DateTime.Now - start).ToString()} objs.Length == 0");
-            //        break;
-            //    }
-            //}
+            Scene scene = SceneManager.GetSceneByName(sName);
+            var objs = scene.GetRootGameObjects();
+            if (objs.Length == 0)
+            {
+                Debug.LogError($"LoadSceneAsync[{sName}] objs:{objs.Length} time:{(System.DateTime.Now - start).ToString()} objs.Length == 0");
+            }
+            else
+            {
+                Debug.Log($"LoadSceneAsync[{sName}] objs:{objs.Length} time:{(System.DateTime.Now - start).ToString()}");
+            }
             
-        }
-        else
-        {
-            Debug.Log($"LoadSceneAsync[{sName}] objs:{objs.Length} time:{(System.DateTime.Now - start).ToString()}");
-        }
-        
-        if (finished != null)
-        {
-            finished(scene);
-        }
+            if (finished != null)
+            {
+                finished(scene);
+            }
 
-        //Debug.Log($"LoadSceneAsync[{sName}] time:{(System.DateTime.Now - start).ToString()}");
+            //Debug.Log($"LoadSceneAsync[{sName}] time:{(System.DateTime.Now - start).ToString()}");
 
-        if (isAutoUnload)
-        {
-            yield return UnLoadSceneAsync(sName, null, null);
-        }
-        else
-        {
-            yield return null;
+            if (isAutoUnload)
+            {
+                yield return UnLoadSceneAsync(sName, null, null);
+            }
+            else
+            {
+                yield return null;
+            }
         }
     }
 
@@ -537,24 +531,32 @@ public static class EditorHelper
     {
         Scene scene = SceneManager.GetSceneByName(sceneName);
 
-        Debug.Log($"LoadScene scene:{sceneName},isLoaded:{scene.isLoaded},isValid:{scene.IsValid()}");
+        Debug.Log($"GetSceneObjects scene:{sceneName},isLoaded:{scene.isLoaded},isValid:{scene.IsValid()}");
 
-        var objs = scene.GetRootGameObjects();
-        if (parent)
-        {
-            if (objs.Length == 0)
+        if(scene.IsValid()){
+            var objs = scene.GetRootGameObjects();
+            if (parent)
             {
-                Debug.LogError($"LoadScene scene:{sceneName},isLoaded:{scene.isLoaded},isValid:{scene.IsValid()}  objs.Length == 0");
-            }
-            foreach (var obj in objs)
-            {
-                obj.transform.SetParent(parent);
-            }
-            //EditorSceneManager.CloseScene(scene, true);
+                if (objs.Length == 0)
+                {
+                    Debug.LogError($"GetSceneObjects scene:{sceneName},isLoaded:{scene.isLoaded},isValid:{scene.IsValid()}  objs.Length == 0");
+                }
+                foreach (var obj in objs)
+                {
+                    obj.transform.SetParent(parent);
+                }
+                //EditorSceneManager.CloseScene(scene, true);
 
-            IdDictionay.InitGos(objs,sceneName);
+                IdDictionay.InitGos(objs,sceneName);
+            }
+            return objs;
         }
-        return objs;
+        else
+        {
+            Debug.LogError($"GetSceneObjects scene:{sceneName},isLoaded:{scene.isLoaded},isValid:{scene.IsValid()}");
+            return new GameObject[1]{new GameObject("GetSceneObjectsError:"+sceneName)};
+        }
+
     }
 
     
