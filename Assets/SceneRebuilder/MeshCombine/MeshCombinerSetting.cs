@@ -26,6 +26,7 @@ public class MeshCombinerSetting : MonoBehaviour
         SetSetting();
     }
 
+    [ContextMenu("SetSetting")]
     public void SetSetting()
     {
         if (NoLimit)

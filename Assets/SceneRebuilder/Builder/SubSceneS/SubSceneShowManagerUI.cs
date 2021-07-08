@@ -34,7 +34,29 @@ public class SubSceneShowManagerUI : MonoBehaviour
 
     public Toggle toggleListVisible2;
 
-    
+    public Toggle toggleEnableShow;
+    public Toggle toggleEnableLoad;
+    public Toggle toggleEnableHide;
+    public Toggle toggleEnableUnload;
+
+    public InputField InputDisOfShow;
+    public InputField InputDisOfLoad;
+    public InputField InputDisOfHide;
+    public InputField InputDisOfUnload;
+
+    public void SetShowSetting()
+    {
+        Debug.Log("SetShowSetting");
+        subSceneShowManager.IsEnableHide = toggleEnableHide.isOn;
+        subSceneShowManager.IsEnableLoad = toggleEnableLoad.isOn;
+        subSceneShowManager.IsEnableShow = toggleEnableShow.isOn;
+        subSceneShowManager.IsEnableUnload = toggleEnableUnload.isOn;
+        subSceneShowManager.DisOfHidden = int.Parse(InputDisOfHide.text)* int.Parse(InputDisOfHide.text);
+        subSceneShowManager.DisOfLoad = int.Parse(InputDisOfLoad.text) * int.Parse(InputDisOfLoad.text);
+        subSceneShowManager.DisOfUnLoad = int.Parse(InputDisOfUnload.text) * int.Parse(InputDisOfUnload.text);
+        subSceneShowManager.DisOfVisible = int.Parse(InputDisOfShow.text) * int.Parse(InputDisOfShow.text);
+    }
+
     public void ToggleSceneUIList1(bool isValue)
     {
         Debug.Log("ToggleSceneUIList1:"+isValue);
