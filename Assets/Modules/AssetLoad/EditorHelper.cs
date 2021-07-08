@@ -527,6 +527,37 @@ public static class EditorHelper
         return GetSceneObjects(sceneName, parent); ;
     }
 
+    public static GameObject[] GetSceneObjectsByPath(string scenePath, Transform parent)
+    {
+        Scene scene = SceneManager.GetSceneByName(scenePath);
+
+        Debug.Log($"GetSceneObjects scene:{scenePath},isLoaded:{scene.isLoaded},isValid:{scene.IsValid()}");
+
+        if(scene.IsValid()){
+            var objs = scene.GetRootGameObjects();
+            if (parent)
+            {
+                if (objs.Length == 0)
+                {
+                    Debug.LogError($"GetSceneObjects scene:{scenePath},isLoaded:{scene.isLoaded},isValid:{scene.IsValid()}  objs.Length == 0");
+                }
+                foreach (var obj in objs)
+                {
+                    obj.transform.SetParent(parent);
+                }
+                //EditorSceneManager.CloseScene(scene, true);
+
+                IdDictionay.InitGos(objs,scenePath);
+            }
+            return objs;
+        }
+        else
+        {
+            Debug.LogError($"GetSceneObjects scene:{scenePath},isLoaded:{scene.isLoaded},isValid:{scene.IsValid()}");
+            return new GameObject[1]{new GameObject("GetSceneObjectsError:"+scenePath)};
+        }
+    }
+
     public static GameObject[] GetSceneObjects(string sceneName, Transform parent)
     {
         Scene scene = SceneManager.GetSceneByName(sceneName);

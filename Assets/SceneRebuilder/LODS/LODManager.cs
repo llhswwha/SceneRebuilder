@@ -2,6 +2,9 @@ using System;
 using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
+#if UNITY_EDITOR
+using UnityEditor;
+#endif
 // using LODLevelCaculate;
 
 public class LODManager : MonoBehaviour
@@ -68,9 +71,22 @@ public class LODManager : MonoBehaviour
 
     public float zeroDistance=0.0002f;
 
+    public static void UpackPrefab_One(GameObject go)
+    {
+#if UNITY_EDITOR
+        GameObject root = PrefabUtility.GetOutermostPrefabInstanceRoot(go);
+        if (root != null)
+        {
+            PrefabUtility.UnpackPrefabInstance(root, PrefabUnpackMode.Completely, InteractionMode.UserAction);
+        }
+#endif
+    }
+
     [ContextMenu("CombineLOD0AndLOD1")]
     public void CombineLOD0AndLOD1()
     {
+        UpackPrefab_One(GoLOD1);
+        UpackPrefab_One(GoLOD0);
         DateTime start = DateTime.Now;
         var renderers_1=GoLOD1.GetComponentsInChildren<MeshRenderer>(true);
         var renderers_0=GoLOD0.GetComponentsInChildren<MeshRenderer>(true);
@@ -113,11 +129,11 @@ public class LODManager : MonoBehaviour
                     if(lODGroup==null){
                         lODGroup=minRenderer.gameObject.AddComponent<LODGroup>();
                     }
-                    LOD[] lods = new LOD[3];
+                    LOD[] lods = new LOD[2];
                     lods[0]=new LOD(0.5f,new Renderer[1]{minRenderer});     //LOD0 >50% 
-                    lods[1]=new LOD(0.2f,new Renderer[1]{render1});         //LOD1  > 20% - 50% 
+                    //lods[1]=new LOD(0.2f,new Renderer[1]{render1});         //LOD1  > 20% - 50% 
                     // lods[2]=new LOD(0.1f,new Renderer[1]{render1});         //LOD2  > 10% - 20% 
-                    lods[2]=new LOD(0.02f,new Renderer[1]{render1});        //LOD3  > 1% - 10% 
+                    lods[1]=new LOD(0.02f,new Renderer[1]{render1});        //LOD3  > 1% - 10% 
                                                                             //Culled > 0% - 1%
                     lODGroup.SetLODs(lods);
                 }
