@@ -426,7 +426,7 @@ public class SubScene_Base : MonoBehaviour
     private void WriteLog(string tag,string log)
     {
         Log = log;
-        Debug.LogError($"[{tag}]{log}");
+        Debug.Log($"[{tag}]{log}");
     }
 
     [ContextMenu("TestLoadSceneAsync")]
@@ -696,7 +696,7 @@ public class SubScene_Base : MonoBehaviour
                 }
                 else
                 {
-                    Debug.LogError($"SubScene_Base.InitIdDict LinkedScene.IsLoaded==false scene:{this.name}");
+                    Debug.LogError($"SubScene_Base.InitIdDict LinkedScene.IsLoaded==false scene:{this.name} linkedScene:{LinkedScene.name}");
                 }
             }
         }

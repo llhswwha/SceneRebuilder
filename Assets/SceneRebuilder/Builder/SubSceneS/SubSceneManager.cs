@@ -131,7 +131,7 @@ public class SubSceneManager : MonoBehaviour
 
         EditorHelper.RefreshAssets();
 
-        WriteLog($"OneKey count:{buildings.Length},\t time:{(DateTime.Now - start).ToString()}");
+        WriteLog("OneKey",$"count:{buildings.Length},\t time:{(DateTime.Now - start).ToString()}");
     }
 
     [ContextMenu("* EditorCreateBuildingScenes")]
@@ -156,7 +156,17 @@ public class SubSceneManager : MonoBehaviour
             {
                 break;
             }
-            item.EditorCreateScenesEx(this.contentType,(subProgress,si,c)=>
+            // item.EditorCreateScenesEx(this.contentType,(subProgress,si,c)=>
+            // {
+            //     float progress = (float)(i+subProgress) / count;
+            //     float percents = progress * 100;
+            //     if (ProgressBarHelper.DisplayCancelableProgressBar("EditorCreateBuildingScenes ", $"Progress2 {(i + subProgress):F1}/{count} {percents:F1}% {item.name}", progress))
+            //     {
+            //         //ProgressBarHelper.ClearProgressBar();
+            //         //break;
+            //     }
+            // });
+            item.EditorCreateNodeScenes((subProgress)=>
             {
                 float progress = (float)(i+subProgress) / count;
                 float percents = progress * 100;
@@ -178,7 +188,7 @@ public class SubSceneManager : MonoBehaviour
         }
 
         EditorHelper.RefreshAssets();
-        WriteLog($"EditorCreateBuildingScenes count:{buildings.Length},\t time:{(DateTime.Now - start).ToString()}");
+        WriteLog("EditorCreateBuildingScenes",$"count:{buildings.Length},\t time:{(DateTime.Now - start).ToString()}");
     }
 
     //[ContextMenu("EditorLoadScenes_Part")]
@@ -240,7 +250,7 @@ public class SubSceneManager : MonoBehaviour
             ClearOtherScenes();
         }
 
-        WriteLog($"EditorSaveScenes count:{buildings.Length},\t time:{(DateTime.Now - start).ToString()}");
+        WriteLog("EditorSaveScenes",$"count:{buildings.Length},\t time:{(DateTime.Now - start).ToString()}");
     }
 
     [ContextMenu("* EditorUnLoadScenes")]
@@ -278,7 +288,7 @@ public class SubSceneManager : MonoBehaviour
         //    ClearOtherScenes();
         //}
 
-        WriteLog($"EditorUnLoadScenes count:{buildings.Length},\t time:{(DateTime.Now - start).ToString()}");
+        WriteLog("EditorUnLoadScenes",$"count:{buildings.Length},\t time:{(DateTime.Now - start).ToString()}");
     }
 
     public static void EditorLoadScenes<T>(T[] scenes) where T : SubScene_Base
@@ -324,7 +334,7 @@ public class SubSceneManager : MonoBehaviour
 
         ClearOtherScenes();
 
-        WriteLog($"EditorSaveScenes count:{subScenes.Length},\t time:{(DateTime.Now - start).ToString()}");
+        WriteLog("EditorSaveScenes",$"count:{subScenes.Length},\t time:{(DateTime.Now - start).ToString()}");
     }
 
     
@@ -410,21 +420,6 @@ public class SubSceneManager : MonoBehaviour
     //    }
     //    Count++;
     //    EditorHelper.CreateScene( scenePath, IsOverride, newGos.ToArray());
-    //}
-
-    //[ContextMenu("TestCloseScene")]
-    //public void TestCloseScene()
-    //{
-    //    string scenePath = GetScenePath(SceneName);
-
-    //    Scene scene = UnityEditor.SceneManagement.EditorSceneManager.GetSceneByPath(scenePath);
-    //    Debug.Log("scene IsValid:" + scene.IsValid());
-    //    if (scene.IsValid() == true)//��
-    //    {
-    //        bool r=UnityEditor.SceneManagement.EditorSceneManager.CloseScene(scene, true);//�رճ��������ر��޷�����
-    //        Debug.Log("r:" + r);
-
-    //    }
     //}
 
     public Scene newScene;
@@ -551,7 +546,7 @@ public class SubSceneManager : MonoBehaviour
 
                     count++;
                     var progress = (count + 0.0f) / scenes.Length;
-                    WriteLog($"count:{scenes.Length} index:{count} progress:{progress} time:{(DateTime.Now - start).ToString()}");
+                    WriteLog("LoadScenesByBag",$"count:{scenes.Length} index:{count} progress:{progress} time:{(DateTime.Now - start).ToString()}");
                     OnProgressChanged(progress);
                     if (count == scenes.Length)
                     {
@@ -559,7 +554,7 @@ public class SubSceneManager : MonoBehaviour
                         {
                             finishedCallback();
                         }
-                        WriteLog($"count:{scenes.Length},\t time:{(DateTime.Now - start).ToString()}");
+                        WriteLog("LoadScenesByBag",$"count:{scenes.Length},\t time:{(DateTime.Now - start).ToString()}");
                         OnAllLoaded();
 
                     }
@@ -718,7 +713,7 @@ public class SubSceneManager : MonoBehaviour
             {
                 count++;
                 var progress = (count + 0.0f) / scenes.Length;
-                WriteLog($"count:{scenes.Length} index:{count} progress:{progress} ");
+                WriteLog("LoadScenesAsync",$"count:{scenes.Length} index:{count} progress:{progress} ");
 
                 OnProgressChanged(progress);
                 if (count == scenes.Length)
@@ -727,7 +722,7 @@ public class SubSceneManager : MonoBehaviour
                     {
                         finishedCallbak();
                     }
-                    WriteLog($"count:{scenes.Length},\t time:{(DateTime.Now - start).ToString()}");
+                    WriteLog("LoadScenesAsync",$"count:{scenes.Length},\t time:{(DateTime.Now - start).ToString()}");
                     OnAllLoaded();
                     
                 }
@@ -759,14 +754,14 @@ public class SubSceneManager : MonoBehaviour
         {
             var subScene = scenes[i];
             var progress = (i+0.0f) / scenes.Length;
-            WriteLog($"count:{scenes.Length} index:{i} progress:{progress} ");
+            WriteLog("LoadAllScenesCoroutine",$"count:{scenes.Length} index:{i} progress:{progress} ");
 
             OnProgressChanged(progress);
             //Debug.Log($"loadProgress:{loadProgress},scene:{subScene.GetSceneName()}");
             
             yield return subScene.LoadSceneAsyncCoroutine(null);
         }
-        WriteLog($"count:{scenes.Length},\t time:{(DateTime.Now - start).ToString()}");
+        WriteLog("LoadAllScenesCoroutine",$"count:{scenes.Length},\t time:{(DateTime.Now - start).ToString()}");
 
         if (finishedCallbak != null) finishedCallbak();
         OnAllLoaded();
@@ -896,9 +891,17 @@ public class SubSceneManager : MonoBehaviour
 
     public string Log = "";
 
-    private void WriteLog(string log)
+    // private void WriteLog(string log)
+    // {
+    //     Log = log;
+    //     Debug.Log(Log);
+    // }
+
+    private void WriteLog(string tag,string log)
     {
         Log = log;
-        Debug.LogError(Log);
+        Debug.Log($"[{tag}]{log}");
     }
 }
+
+

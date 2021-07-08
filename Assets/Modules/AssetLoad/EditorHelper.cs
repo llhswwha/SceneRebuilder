@@ -417,64 +417,75 @@ public static class EditorHelper
     {
         System.DateTime start = System.DateTime.Now;
         //Debug.Log("LoadSceneAsync:" + sName);
-        AsyncOperation async = SceneManager.LoadSceneAsync(arg.index, LoadSceneMode.Additive);
-        if (async == null)
-        {
-            Debug.LogError($"EditorHelper.LoadSceneAsync async == null sName:{arg.name}");
+        if(arg.index<=0){
+            Debug.LogError($"EditorHelper.LoadSceneAsync arg.index<=0 sName:{arg.name} index:{arg.index}");
 
             Scene scene = SceneManager.GetSceneByBuildIndex(arg.index);
             if (finished != null)
             {
                 finished(scene);
             }
-
             yield return null;
         }
-        else
-        {
-            //async.allowSceneActivation = false;
-            while (!async.isDone)
+        else{
+            AsyncOperation async = SceneManager.LoadSceneAsync(arg.index, LoadSceneMode.Additive);
+            if (async == null)
             {
+                Debug.LogError($"EditorHelper.LoadSceneAsync async == null sName:{arg.name}");
+
+                Scene scene = SceneManager.GetSceneByBuildIndex(arg.index);
+                if (finished != null)
+                {
+                    finished(scene);
+                }
+                yield return null;
+            }
+            else
+            {
+                //async.allowSceneActivation = false;
+                while (!async.isDone)
+                {
+                    if (progressChanged != null)
+                    {
+                        progressChanged(async.progress);
+                    }
+                    yield return null;
+                }
                 if (progressChanged != null)
                 {
                     progressChanged(async.progress);
                 }
-                yield return null;
-            }
-            if (progressChanged != null)
-            {
-                progressChanged(async.progress);
-            }
 
 
-            //SceneManager.GetSceneByBuildIndex
-            //Scene scene = SceneManager.GetSceneByName(arg.name);
-            // Scene scene = SceneManager.GetSceneByPath(arg.path);
-            Scene scene = SceneManager.GetSceneByBuildIndex(arg.index);
-            var objs = scene.GetRootGameObjects();
-            if (objs.Length == 0)
-            {
-                Debug.LogError($"LoadSceneAsync[{arg.name}] objs:{objs.Length} time:{(System.DateTime.Now - start).ToString()} objs.Length == 0");
-            }
-            else
-            {
-                Debug.Log($"LoadSceneAsync[{arg.name}] objs:{objs.Length} time:{(System.DateTime.Now - start).ToString()}");
-            }
-            
-            if (finished != null)
-            {
-                finished(scene);
-            }
+                //SceneManager.GetSceneByBuildIndex
+                //Scene scene = SceneManager.GetSceneByName(arg.name);
+                // Scene scene = SceneManager.GetSceneByPath(arg.path);
+                Scene scene = SceneManager.GetSceneByBuildIndex(arg.index);
+                var objs = scene.GetRootGameObjects();
+                if (objs.Length == 0)
+                {
+                    Debug.LogError($"LoadSceneAsync[{arg.name}] objs:{objs.Length} time:{(System.DateTime.Now - start).ToString()} objs.Length == 0");
+                }
+                else
+                {
+                    Debug.Log($"LoadSceneAsync[{arg.name}] objs:{objs.Length} time:{(System.DateTime.Now - start).ToString()}");
+                }
+                
+                if (finished != null)
+                {
+                    finished(scene);
+                }
 
-            //Debug.Log($"LoadSceneAsync[{sName}] time:{(System.DateTime.Now - start).ToString()}");
+                //Debug.Log($"LoadSceneAsync[{sName}] time:{(System.DateTime.Now - start).ToString()}");
 
-            if (isAutoUnload)
-            {
-                yield return UnLoadSceneAsync(arg, null, null);
-            }
-            else
-            {
-                yield return null;
+                if (isAutoUnload)
+                {
+                    yield return UnLoadSceneAsync(arg, null, null);
+                }
+                else
+                {
+                    yield return null;
+                }
             }
         }
     }

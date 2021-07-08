@@ -161,14 +161,14 @@ public class MeshRendererInfo : MonoBehaviour
         }
     }
 
-    public void OnDisable()
-    {
-        Debug.Log($"OnDisable {this.name} p:{transform.parent}");
-    }
-    public void OnTransformParentChanged()
-    {
-        Debug.Log($"OnTransformParentChanged {this.name} p:{transform.parent}");
-    }
+    // public void OnDisable()
+    // {
+    //     //Debug.Log($"OnDisable {this.name} p:{transform.parent}");
+    // }
+    // public void OnTransformParentChanged()
+    // {
+    //     //Debug.Log($"OnTransformParentChanged {this.name} p:{transform.parent}");
+    // }
 }
 
 

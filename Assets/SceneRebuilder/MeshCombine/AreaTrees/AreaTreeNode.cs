@@ -830,10 +830,19 @@ public class AreaTreeNode : SubSceneCreater
             if (node == null) continue;
             node.ShowNodes();
         }
-
-        foreach (var render in CombinedRenderers)
+        if(CombinedRenderers==null)
         {
-            render.gameObject.SetActive(true);
+            Debug.LogError("AreaTreeNode.ShowNodes CombinedRenderers==null ："+this.name);
+        }
+        else{
+            foreach (var render in CombinedRenderers)
+            {
+                if(render==null){
+                    Debug.LogError("AreaTreeNode.ShowNodes render==null ："+this.name);
+                    continue;
+                }
+                render.gameObject.SetActive(true);
+            }
         }
     }
 
@@ -855,7 +864,7 @@ public class AreaTreeNode : SubSceneCreater
                 Debug.LogError($"HideNodes[{i}] node == null:" + this.name+"|"+tree);
                 continue;
             }
-            node.ShowNodes();
+            node.HideNodes();
         }
 
         for (int i = 0; i < CombinedRenderers.Length; i++)
@@ -1015,7 +1024,7 @@ public class AreaTreeNode : SubSceneCreater
 
         this.LoadRenderers();
 
-        Debug.LogError($"EditorLoadScenes time:{(DateTime.Now - start)}");
+        Debug.LogError($"AreaTreeNode.EditorLoadScenes time:{(DateTime.Now - start)}");
     }
 
 #endif

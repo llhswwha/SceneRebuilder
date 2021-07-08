@@ -49,6 +49,7 @@ public static class MeshCombineHelper
         List<MeshFilter> mfList=new List<MeshFilter>();
         Dictionary<Material,List<MeshFilter>> mat2Filters=GetMatFilters(renderers, out count);
         string mats="";
+        int allVs=0;
         foreach(var item in mat2Filters)
         {
             Material material=item.Key;
@@ -65,10 +66,11 @@ public static class MeshCombineHelper
             else{
                 Debug.LogWarning($"CombineMaterials vs==0 material:{material},list:{list.Count}");
             }
+            allVs+=vs;
         }
 
         goNew.transform.SetParent(go.transform.parent);
-        Debug.Log(string.Format("CombineMaterials 用时:{0} \tMesh数量:{2} \tMat数量:{1} \tMats:{3}",(DateTime.Now-start),mat2Filters.Count,count,mats));
+        Debug.Log(string.Format("CombineMaterials 用时:{0} \tMesh数量:{2} \tMat数量:{1} \tMats:{3} \tVertex:{4:F1}",(DateTime.Now-start),mat2Filters.Count,count,mats,(allVs/10000f)));
         
         // var minMax=MeshHelper.GetMinMax(mfList);
         MeshHelper.CenterPivot(goNew.transform,mfList);

@@ -849,6 +849,10 @@ public class BuildingModelInfo : SubSceneCreater
             InPart.SetActive(true);
         if(OutPart1)
             OutPart1.SetActive(true);
+        foreach(var tree in trees){
+            if(tree==null)continue;
+            tree.gameObject.SetActive(true);
+        }
     }
 
     private void DestroyOldPartScenes(SceneContentType contentType)
@@ -1386,7 +1390,7 @@ public class BuildingModelInfo : SubSceneCreater
     private void EditorLoadNodeScenes()
     {
         DateTime start = DateTime.Now;
-
+        IdDictionay.InitInfos();
         for (int i = 0; i < trees.Length; i++)
         {
             var tree = trees[i];

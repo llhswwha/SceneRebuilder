@@ -10,7 +10,7 @@ public class SceneLoadArg
 
     public string path;
 
-    public int index;
+    public int index=-1;
 
     public override string ToString()
     {

@@ -66,7 +66,7 @@ public class SubSceneManagerUI : MonoBehaviour
         
         if(!loadedScene.Contains(arg2))
         {
-            Debug.LogError($"Scene_ProgressChanged scene:{arg2}");
+            Debug.Log($"SubSceneManagerUI.Scene_ProgressChanged scene:{arg2} progress:{arg1}");
 
             loadedScene.Add(arg2);
 

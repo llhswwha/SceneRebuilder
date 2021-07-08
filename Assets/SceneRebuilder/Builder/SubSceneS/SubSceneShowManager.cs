@@ -262,18 +262,22 @@ public class SubSceneShowManager : MonoBehaviour
         Debug.Log($"LoadOut0TreeNodeSceneTopN index:{index} scene:{topsScenes.Count} vertexCount:{vertexCount}");
     }
 
-    public void LoadOut0TreeNodeScenes()
+    public void LoadShownTreeNodes()
     {
-        //AreaTreeNodeShowManager.Instance.IsUpdateTreeNodeByDistance = false;
-        //sceneManager.LoadScenesEx(scenes_Out0_Tree.ToArray());
         sceneManager.LoadScenesEx(scenes_Out0_TreeNode_Shown.ToArray(), () =>
         {
-                //AreaTreeNodeShowManager.Instance.IsUpdateTreeNodeByDistance = true;
                 WaitingScenes.AddRange(scenes_Out0_TreeNode_Shown);
-                //AreaTreeNodeShowManager.Instance.IsUpdateTreeNodeByDistance = IsUpdateTreeNodeByDistance;
         });
     }
-
+    
+    public void LoadHiddenTreeNodes()
+    {
+        BuildingModelManager.Instance.ShowDetail();
+        sceneManager.LoadScenesEx(scenes_Out0_TreeNode_Hidden.ToArray(), () =>
+        {
+                WaitingScenes.AddRange(scenes_Out0_TreeNode_Hidden);
+        });
+    }
     // Start is called before the first frame update
     void Start()
     {
@@ -289,6 +293,22 @@ public class SubSceneShowManager : MonoBehaviour
             AreaTreeNodeShowManager.Instance.ShowNodeDistance = this.DisOfVisible;
             AreaTreeNodeShowManager.Instance.HideNodeDistance = this.DisOfHidden;
         }
+
+        BuildingModelManager.Instance.ShowDetail();
+
+        CheckSceneIndex();
+    }
+
+    private void CheckSceneIndex()
+    {
+        DateTime start = DateTime.Now;
+        var alls=GameObject.FindObjectsOfType<SubScene_Base>(true);
+        foreach(var s in alls){
+            if(s.sceneArg.index<=0){
+                Debug.LogError($"SubSceneShowManager.CheckSceneIndex index<=0 sName:{s.name} index:{s.sceneArg.index}");
+            }
+        }
+        Debug.LogError($"CheckSceneIndex Time:{(DateTime.Now - start).ToString()}");
     }
 
     public float DisOfVisible = 1600;//40
@@ -402,25 +422,28 @@ public class SubSceneShowManager : MonoBehaviour
             if (disToCams <= DisOfLoad)
             {
                 loadScenes.Add(scene);
-
-                
             }
 
-            if (disToCams <= DisOfVisible)
-            {
-                scene.boundsGo.GetComponent<MeshRenderer>().material.color = new Color(1, 0, 0, 0.2f);
+            if(scene.boundsGo==null){
+                Debug.LogError("SubSceneShowManager.CalculateDistance scene.boundsGo==null :"+scene);
             }
-            else if (disToCams <= DisOfLoad)
-            {
-                scene.boundsGo.GetComponent<MeshRenderer>().material.color = new Color(1, 0.5f, 0, 0.2f);
-            }
-            else if (disToCams <= DisOfHidden)
-            {
-                scene.boundsGo.GetComponent<MeshRenderer>().material.color = new Color(1, 1, 0, 0.2f);
-            }
-            else if (disToCams <= DisOfUnLoad)
-            {
-                scene.boundsGo.GetComponent<MeshRenderer>().material.color = new Color(1, 1, 1, 0.2f);
+            else{
+                if (disToCams <= DisOfVisible)
+                {
+                    scene.boundsGo.GetComponent<MeshRenderer>().material.color = new Color(1, 0, 0, 0.2f);
+                }
+                else if (disToCams <= DisOfLoad)
+                {
+                    scene.boundsGo.GetComponent<MeshRenderer>().material.color = new Color(1, 0.5f, 0, 0.2f);
+                }
+                else if (disToCams <= DisOfHidden)
+                {
+                    scene.boundsGo.GetComponent<MeshRenderer>().material.color = new Color(1, 1, 0, 0.2f);
+                }
+                else if (disToCams <= DisOfUnLoad)
+                {
+                    scene.boundsGo.GetComponent<MeshRenderer>().material.color = new Color(1, 1, 1, 0.2f);
+                }
             }
 
             scene.DisToCam = disToCams;

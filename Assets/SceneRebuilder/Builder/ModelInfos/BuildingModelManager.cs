@@ -10,6 +10,15 @@ using UnityEditor.SceneManagement;
 #endif
 public class BuildingModelManager : MonoBehaviour
 {
+    private static BuildingModelManager _instance;
+    public static BuildingModelManager Instance{
+        get{
+            if(_instance==null){
+                _instance=GameObject.FindObjectOfType<BuildingModelManager>();
+            }
+            return _instance;
+        }
+    }
     public int selectCount = 5;
     public List<BuildingModelInfo> SelectedBuildings = new List<BuildingModelInfo>();
 
@@ -241,6 +250,16 @@ public class BuildingModelManager : MonoBehaviour
         foreach (var b in Buildings)
         {
             b.HideDetail();
+        }
+    }
+
+    [ContextMenu("ShowDetail")]
+    public void ShowDetail()
+    {
+        GetBuildings();
+        foreach (var b in Buildings)
+        {
+            b.ShowDetail();
         }
     }
 

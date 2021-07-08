@@ -55,16 +55,6 @@ public class SubSceneShowManagerUI : MonoBehaviour
         
     }
 
-    public void HideAllRenderers()
-    {
-
-    }
-
-    public void ShowAllRenderers()
-    {
-
-    }
-
     [ContextMenu("LoadStartScenes")]
     public void LoadStartScenes()
     {
@@ -81,12 +71,20 @@ public class SubSceneShowManagerUI : MonoBehaviour
         subSceneShowManager.LoadOut0BuildingScenes();
     }
 
-    [ContextMenu("LoadOut0TreeNodeScenes")]
-    public void LoadOut0TreeNodeScenes()
+    [ContextMenu("LoadShownTreeNodes")]
+    public void LoadShownTreeNodes()
     {
-        Debug.Log("LoadOut0TreeNodeScenes");
+        Debug.Log("LoadShownTreeNodes");
         subSceneManagerUI.SetLoadingSceneMaxCount();
-        subSceneShowManager.LoadOut0TreeNodeScenes();
+        subSceneShowManager.LoadShownTreeNodes();
+    }
+
+    [ContextMenu("LoadHiddenTreeNodes")]
+    public void LoadHiddenTreeNodes()
+    {
+        Debug.Log("LoadHiddenTreeNodes");
+        subSceneManagerUI.SetLoadingSceneMaxCount();
+        subSceneShowManager.LoadHiddenTreeNodes();
     }
 
 
