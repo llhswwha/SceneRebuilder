@@ -153,6 +153,14 @@ public class SubScene_Base : MonoBehaviour
         return $"[{contentType}]{GetSceneName()} r:{rendererCount} v:{vertexCount:F0}w ";
     }
 
+    public SceneLoadArg GetSceneArg()
+    {
+        SceneLoadArg arg=new SceneLoadArg();
+        arg.name=GetSceneName();
+        arg.path=sceneArg.path;
+        arg.index=sceneArg.index;
+        return arg;
+    }
 
     public string GetSceneName()
     {
@@ -342,7 +350,7 @@ public class SubScene_Base : MonoBehaviour
     [ContextMenu("LoadScene")]
     public void LoadScene()
     {
-        var gs= EditorHelper.LoadScene(GetSceneName(), IsSetParent ? GetSceneParent() : null).ToList();
+        var gs= EditorHelper.LoadScene(GetSceneArg(), IsSetParent ? GetSceneParent() : null).ToList();
         SetObjects(gs);
         SetRendererParent();
         IsLoaded = true;
@@ -371,7 +379,7 @@ public class SubScene_Base : MonoBehaviour
 
             IsLoading = true;
             OnProgressChanged(0);
-            yield return EditorHelper.LoadSceneAsync(GetSceneName(), progress =>
+            yield return EditorHelper.LoadSceneAsync(GetSceneArg(), progress =>
             {
                 OnProgressChanged(progress);
                 //Debug.Log("progress:" + progress);
@@ -484,7 +492,7 @@ public class SubScene_Base : MonoBehaviour
         }
         //DestoryGosImmediate();
         UnLoadGos();
-        StartCoroutine(EditorHelper.UnLoadSceneAsync(GetSceneName(), progress =>
+        StartCoroutine(EditorHelper.UnLoadSceneAsync(GetSceneArg(), progress =>
         {
             loadProgress = progress;
             Debug.Log("progress:" + progress);
@@ -505,7 +513,7 @@ public class SubScene_Base : MonoBehaviour
         //DestroyBoundsBox();
         HideBoundsBox();
 
-        var gs = EditorHelper.GetSceneObjects(GetSceneName(), GetSceneParent()).ToList();
+        var gs = EditorHelper.GetSceneObjects(GetSceneArg(), GetSceneParent()).ToList();
         SetObjects(gs);
         SetRendererParent();
         InitVisible();
@@ -559,7 +567,7 @@ public class SubScene_Base : MonoBehaviour
             //    this.gameObject.SetActive(true);
             //}
 
-            StartCoroutine(EditorHelper.UnLoadSceneAsync(GetSceneName(), null,null));
+            StartCoroutine(EditorHelper.UnLoadSceneAsync(GetSceneArg(), null,null));
         }
         else
         {

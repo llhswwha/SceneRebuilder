@@ -7,6 +7,7 @@ using UnityEngine;
 public class SubSceneArg 
 {
     public string path;
+    public int index;
     public bool isOveride = true;
     public bool isOpen = false;
     public List<GameObject> objs = new List<GameObject>();

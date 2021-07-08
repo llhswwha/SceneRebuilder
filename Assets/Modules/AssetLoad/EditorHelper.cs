@@ -413,16 +413,16 @@ public static class EditorHelper
 
 #endif
 
-    public static IEnumerator LoadSceneAsync(string sName, System.Action<float> progressChanged, System.Action<Scene> finished,bool isAutoUnload=false)
+    public static IEnumerator LoadSceneAsync(SceneLoadArg arg, System.Action<float> progressChanged, System.Action<Scene> finished,bool isAutoUnload=false)
     {
         System.DateTime start = System.DateTime.Now;
         //Debug.Log("LoadSceneAsync:" + sName);
-        AsyncOperation async = SceneManager.LoadSceneAsync(sName, LoadSceneMode.Additive);
+        AsyncOperation async = SceneManager.LoadSceneAsync(arg.index, LoadSceneMode.Additive);
         if (async == null)
         {
-            Debug.LogError($"EditorHelper.LoadSceneAsync async == null sName:{sName}");
+            Debug.LogError($"EditorHelper.LoadSceneAsync async == null sName:{arg.name}");
 
-            Scene scene = SceneManager.GetSceneByName(sName);
+            Scene scene = SceneManager.GetSceneByBuildIndex(arg.index);
             if (finished != null)
             {
                 finished(scene);
@@ -446,15 +446,19 @@ public static class EditorHelper
                 progressChanged(async.progress);
             }
 
-            Scene scene = SceneManager.GetSceneByName(sName);
+
+            //SceneManager.GetSceneByBuildIndex
+            //Scene scene = SceneManager.GetSceneByName(arg.name);
+            // Scene scene = SceneManager.GetSceneByPath(arg.path);
+            Scene scene = SceneManager.GetSceneByBuildIndex(arg.index);
             var objs = scene.GetRootGameObjects();
             if (objs.Length == 0)
             {
-                Debug.LogError($"LoadSceneAsync[{sName}] objs:{objs.Length} time:{(System.DateTime.Now - start).ToString()} objs.Length == 0");
+                Debug.LogError($"LoadSceneAsync[{arg.name}] objs:{objs.Length} time:{(System.DateTime.Now - start).ToString()} objs.Length == 0");
             }
             else
             {
-                Debug.Log($"LoadSceneAsync[{sName}] objs:{objs.Length} time:{(System.DateTime.Now - start).ToString()}");
+                Debug.Log($"LoadSceneAsync[{arg.name}] objs:{objs.Length} time:{(System.DateTime.Now - start).ToString()}");
             }
             
             if (finished != null)
@@ -466,7 +470,7 @@ public static class EditorHelper
 
             if (isAutoUnload)
             {
-                yield return UnLoadSceneAsync(sName, null, null);
+                yield return UnLoadSceneAsync(arg, null, null);
             }
             else
             {
@@ -475,14 +479,14 @@ public static class EditorHelper
         }
     }
 
-    public static IEnumerator UnLoadSceneAsync(string sName, System.Action<float> progressChanged, System.Action finished)
+    public static IEnumerator UnLoadSceneAsync(SceneLoadArg arg, System.Action<float> progressChanged, System.Action finished)
     {
         System.DateTime start = System.DateTime.Now;
         //Debug.Log("UnLoadSceneAsync:" + sName);
-        Scene scene = SceneManager.GetSceneByName(sName);
+        Scene scene = SceneManager.GetSceneByBuildIndex(arg.index);
         if(scene.IsValid())
         {
-            AsyncOperation async = SceneManager.UnloadSceneAsync(sName, UnloadSceneOptions.None);
+            AsyncOperation async = SceneManager.UnloadSceneAsync(arg.index, UnloadSceneOptions.None);
             //UnloadSceneOptions.
 
             //async.allowSceneActivation = false;
@@ -504,8 +508,6 @@ public static class EditorHelper
                 progressChanged(async.progress);
             }
         }
-
-        //Scene scene = SceneManager.GetSceneByName(sName);
         //var objs = scene.GetRootGameObjects();
         if (finished != null)
         {
@@ -517,19 +519,21 @@ public static class EditorHelper
         //System.GC.Collect();
         //从内存卸载，没有的话，第二次开始不会从硬盘读取了。
 
-        Debug.Log($"UnLoadSceneAsync[{sName}] time:{(System.DateTime.Now - start).ToString()}");
+        Debug.Log($"UnLoadSceneAsync[{arg.name}] time:{(System.DateTime.Now - start).ToString()}");
         yield return null;
     }
 
-    public static GameObject[] LoadScene(string sceneName, Transform parent)
+    public static GameObject[] LoadScene(SceneLoadArg arg, Transform parent)
     {
-        SceneManager.LoadScene(sceneName, LoadSceneMode.Additive);
-        return GetSceneObjects(sceneName, parent); ;
+        //SceneManager.LoadScene(arg, LoadSceneMode.Additive);
+        SceneManager.LoadScene(arg.index, LoadSceneMode.Additive);
+        return GetSceneObjects(arg, parent); ;
     }
 
-    public static GameObject[] GetSceneObjectsByPath(string scenePath, Transform parent)
+    public static GameObject[] GetSceneObjects(SceneLoadArg arg, Transform parent)
     {
-        Scene scene = SceneManager.GetSceneByName(scenePath);
+        string scenePath=arg.path;
+        Scene scene = SceneManager.GetSceneByBuildIndex(arg.index);
 
         Debug.Log($"GetSceneObjects scene:{scenePath},isLoaded:{scene.isLoaded},isValid:{scene.IsValid()}");
 
@@ -555,37 +559,6 @@ public static class EditorHelper
         {
             Debug.LogError($"GetSceneObjects scene:{scenePath},isLoaded:{scene.isLoaded},isValid:{scene.IsValid()}");
             return new GameObject[1]{new GameObject("GetSceneObjectsError:"+scenePath)};
-        }
-    }
-
-    public static GameObject[] GetSceneObjects(string sceneName, Transform parent)
-    {
-        Scene scene = SceneManager.GetSceneByName(sceneName);
-
-        Debug.Log($"GetSceneObjects scene:{sceneName},isLoaded:{scene.isLoaded},isValid:{scene.IsValid()}");
-
-        if(scene.IsValid()){
-            var objs = scene.GetRootGameObjects();
-            if (parent)
-            {
-                if (objs.Length == 0)
-                {
-                    Debug.LogError($"GetSceneObjects scene:{sceneName},isLoaded:{scene.isLoaded},isValid:{scene.IsValid()}  objs.Length == 0");
-                }
-                foreach (var obj in objs)
-                {
-                    obj.transform.SetParent(parent);
-                }
-                //EditorSceneManager.CloseScene(scene, true);
-
-                IdDictionay.InitGos(objs,sceneName);
-            }
-            return objs;
-        }
-        else
-        {
-            Debug.LogError($"GetSceneObjects scene:{sceneName},isLoaded:{scene.isLoaded},isValid:{scene.IsValid()}");
-            return new GameObject[1]{new GameObject("GetSceneObjectsError:"+sceneName)};
         }
 
     }
