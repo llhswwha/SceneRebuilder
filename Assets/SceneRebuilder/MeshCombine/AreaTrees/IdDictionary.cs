@@ -4,7 +4,7 @@ using System.Collections.Generic;
 using System.Linq;
 using UnityEngine;
 
-public static class IdDictionay
+public static class IdDictionary
 {
     public static Dictionary<string, MeshRenderer> RendererDict = new Dictionary<string, MeshRenderer>();
 
@@ -104,7 +104,7 @@ public static class IdDictionay
         DateTime start = DateTime.Now;
         var renderers = GameObject.FindObjectsOfType<MeshRenderer>(true);
         InitRenderers(renderers);
-        Debug.LogError($"RendererDictionay.InitRenderers count:{renderers.Length},Dict:{RendererDict.Count} time:{(DateTime.Now - start)}");
+        Debug.Log($"RendererDictionay.InitRenderers count:{renderers.Length},Dict:{RendererDict.Count} time:{(DateTime.Now - start)}");
     }
 
     public static void InitIds()
@@ -115,7 +115,7 @@ public static class IdDictionay
         {
             SetId(id);
         }
-        Debug.LogError($"RendererDictionay.InitIds count:{ids.Length},Dict:{IdDict.Count} time:{(DateTime.Now - start)}");
+        Debug.Log($"RendererDictionay.InitIds count:{ids.Length},Dict:{IdDict.Count} time:{(DateTime.Now - start)}");
     }
 
     public static void InitRenderers(MeshRenderer[] renderers)
@@ -132,11 +132,7 @@ public static class IdDictionay
         }
     }
 
-    /// <summary>
-    /// �ӳ������غ�ע���ӳ����е�ģ����Ϣ
-    /// </summary>
-    /// <param name="objs"></param>
-    /// <param name="tag"></param>
+
     internal static void InitGos(IEnumerable<GameObject> objs,string tag)
     {
         DateTime start = DateTime.Now;
@@ -148,7 +144,7 @@ public static class IdDictionay
             //var renderers = obj.GetComponentsInChildren<MeshRenderer>();
             //InitRenderers(renderers);
 
-            var ids = obj.GetComponentsInChildren<RendererId>(true);//�����еĶ����ڳ�������ʱ��Ӧ�ñ���Id��Ϣ��
+            var ids = obj.GetComponentsInChildren<RendererId>(true);
             foreach(var id in ids)
             {
                 SetId(id);
@@ -193,10 +189,6 @@ public static class IdDictionay
 
         if (RendererDict.ContainsKey(id))
         {
-            //if (RendererDict[id] == null)
-            //{
-            //    InitInfos();//���ܱ�ɾ����
-            //}
             var renderer = RendererDict[id];
             if (renderer == null)
             {

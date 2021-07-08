@@ -102,7 +102,7 @@ public class AreaTreeNodeShowManager : MonoBehaviour
 
     public void UnRegistHiddenTree(ModelAreaTree tree)
     {
-        Debug.LogError("UnRegistHiddenTree:"+tree);
+        Debug.Log("UnRegistHiddenTree:"+tree);
         if (tree == null) return;
         if (tree.IsHidden == false) return;
         if (HiddenTrees.Contains(tree))

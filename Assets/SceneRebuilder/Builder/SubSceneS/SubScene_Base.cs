@@ -51,6 +51,7 @@ public class SubScene_Base : MonoBehaviour
     public bool HaveGos()
     {
         bool r = false;
+        if(gos==null)return false;
         foreach(var g in gos)
         {
             if (g != null)
@@ -366,7 +367,7 @@ public class SubScene_Base : MonoBehaviour
     {
         if (IsLoading || IsLoaded)
         {
-            Debug.LogWarning("IsLoading || IsLoaded :" + GetSceneName());
+            Debug.LogWarning($"[SubScene_Base.LoadSceneAsyncCoroutine] scene:{GetSceneName()}, IsLoading:{IsLoading} || IsLoaded:{IsLoaded}");
             if (callback != null)
             {
                 callback(false,this);
@@ -438,7 +439,15 @@ public class SubScene_Base : MonoBehaviour
     //[ContextMenu("LoadSceneAsync")]
     public void LoadSceneAsync(Action<bool,SubScene_Base> callback)
     {
-
+        if (IsLoading || IsLoaded)
+        {
+            Debug.LogWarning($"[SubScene_Base.LoadSceneAsync] scene:{GetSceneName()}, IsLoading:{IsLoading} || IsLoaded:{IsLoaded}");
+            if (callback != null)
+            {
+                callback(false,this);
+            }
+            return;
+        }
 
         //StartCoroutine(EditorHelper.LoadSceneAsync(GetSceneName(), progress=>
         //{
@@ -455,7 +464,7 @@ public class SubScene_Base : MonoBehaviour
 
         if (this.gameObject.activeInHierarchy == false)
         {
-            Debug.LogWarning("this.gameObject.activeInHierarchy == false :" + name);
+            Debug.LogWarning("[SubScene_Base.LoadSceneAsync]this.gameObject.activeInHierarchy == false :" + name);
             //if (callback != null)
             //{
             //    callback(false);
@@ -472,7 +481,7 @@ public class SubScene_Base : MonoBehaviour
             if(callback!=null){
                 callback(false,this);
             }
-             Debug.LogError("this.gameObject.activeInHierarchy == false :" + name);
+             Debug.LogError("[SubScene_Base.LoadSceneAsync]this.gameObject.activeInHierarchy == false :" + name);
         }
     }
     [ContextMenu("TestUnLoadSceneAsync")]
@@ -517,6 +526,10 @@ public class SubScene_Base : MonoBehaviour
         SetObjects(gs);
         SetRendererParent();
         InitVisible();
+
+        AreaTreeNode node=this.transform.parent.GetComponent<AreaTreeNode>();
+        if(node!=null)
+            node.LoadRenderers(this.gameObject);
     }
 
      [ContextMenu("SetRendererParent")]
@@ -531,7 +544,7 @@ public class SubScene_Base : MonoBehaviour
      [ContextMenu("SetRendererParentEx")]
     private void SetRendererParentEx()
     {
-        IdDictionay.InitInfos();
+        IdDictionary.InitInfos();
         SetRendererParent();
     }
 
@@ -656,7 +669,7 @@ public class SubScene_Base : MonoBehaviour
     internal void InitIdDict()
     {
         Debug.Log($"SubScene_Base.InitIdDict name:{this.name} type:{contentType} linked:{LinkedScene}");
-        IdDictionay.InitGos(gos, sceneName);
+        IdDictionary.InitGos(gos, sceneName);
         if (LinkedScene != null)
         {
             if (this.contentType == SceneContentType.Tree)

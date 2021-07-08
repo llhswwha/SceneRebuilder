@@ -297,6 +297,8 @@ public class SubSceneShowManager : MonoBehaviour
         BuildingModelManager.Instance.ShowDetail();
 
         CheckSceneIndex();
+
+        IdDictionary.InitInfos();
     }
 
     private void CheckSceneIndex()
@@ -308,7 +310,7 @@ public class SubSceneShowManager : MonoBehaviour
                 Debug.LogError($"SubSceneShowManager.CheckSceneIndex index<=0 sName:{s.name} index:{s.sceneArg.index}");
             }
         }
-        Debug.LogError($"CheckSceneIndex Time:{(DateTime.Now - start).ToString()}");
+        Debug.Log($"CheckSceneIndex Time:{(DateTime.Now - start).ToString()}");
     }
 
     public float DisOfVisible = 1600;//40
@@ -355,12 +357,21 @@ public class SubSceneShowManager : MonoBehaviour
         if(IsEnableLoad)
             foreach (var scene in loadScenes)
             {
-                
+                if (scene.IsLoading || scene.IsLoaded)
+                {
+                    // Debug.LogWarning($"[LoadUnloadScenes.Load] scene:{scene.GetSceneName()}, IsLoading:{scene.IsLoading} || IsLoaded:{scene.IsLoaded}");
+                    continue;
+                }
                 scene.LoadSceneAsync(null);
             }
         if(IsEnableUnload)
             foreach (var scene in unloadScenes)
             {
+                if (scene.IsLoaded==false)
+                {
+                    // Debug.LogWarning($"[LoadUnloadScenes.Unload] scene:{scene.GetSceneName()}, IsLoading:{scene.IsLoading} || IsLoaded:{scene.IsLoaded}");
+                    continue;
+                }
                 scene.UnLoadSceneAsync();
             }
         TimeOfLoad = (DateTime.Now - start).TotalMilliseconds;
@@ -476,7 +487,7 @@ public class SubSceneShowManager : MonoBehaviour
     {
         if (WaitingScenes.Count > 0)
         {
-            Debug.LogError("CheckWaittingScenes 1:"+ WaitingScenes.Count);
+            Debug.Log("CheckWaittingScenes 1:"+ WaitingScenes.Count);
             for(int i = 0; i < WaitingScenes.Count; i++)
             {
                 var scene = WaitingScenes[i];
@@ -495,7 +506,7 @@ public class SubSceneShowManager : MonoBehaviour
                     scene.CheckGetSceneObjects();
                 }
             }
-            Debug.LogError("CheckWaittingScenes 2:" + WaitingScenes.Count);
+            Debug.Log("CheckWaittingScenes 2:" + WaitingScenes.Count);
         }
 
         if (IsUpdateDistance)

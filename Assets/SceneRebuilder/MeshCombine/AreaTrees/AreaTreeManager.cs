@@ -655,6 +655,7 @@ public class AreaTreeManager : MonoBehaviour
     [ContextMenu("ToReanderers")]
     public void ToReanderers()
     {
+         Trees = GameObject.FindObjectsOfType<ModelAreaTree>(true).ToList();
         foreach (var tree in Trees)
         {
             if (tree == null) continue;
@@ -665,6 +666,7 @@ public class AreaTreeManager : MonoBehaviour
     [ContextMenu("ToCombined")]
     public void ToCombined()
     {
+         Trees = GameObject.FindObjectsOfType<ModelAreaTree>(true).ToList();
         foreach (var tree in Trees)
         {
             if (tree == null) continue;
@@ -675,6 +677,7 @@ public class AreaTreeManager : MonoBehaviour
     [ContextMenu("CreateDictionary")]
     public void CreateDictionary()
     {
+         Trees = GameObject.FindObjectsOfType<ModelAreaTree>(true).ToList();
         AreaTreeHelper.render2NodeDict.Clear();
         Debug.Log("AreaTreeManager.CreateDictionary:" + Trees.Count);
         foreach (var tree in Trees)
@@ -688,6 +691,7 @@ public class AreaTreeManager : MonoBehaviour
     [ContextMenu("HideLeafNodes")]
     public void HideLeafNodes()
     {
+         Trees = GameObject.FindObjectsOfType<ModelAreaTree>(true).ToList();
         foreach (var tree in Trees)
         {
             if (tree == null) continue;
@@ -698,6 +702,7 @@ public class AreaTreeManager : MonoBehaviour
     [ContextMenu("ShowLeafNodes")]
     public void ShowLeafNodes()
     {
+         Trees = GameObject.FindObjectsOfType<ModelAreaTree>(true).ToList();
         foreach (var tree in Trees)
         {
             if (tree == null) continue;
@@ -708,6 +713,7 @@ public class AreaTreeManager : MonoBehaviour
     [ContextMenu("ShowRenderers")]
     public void ShowRenderers()
     {
+         Trees = GameObject.FindObjectsOfType<ModelAreaTree>(true).ToList();
         int count = 0;
         foreach (var tree in Trees)
         {
@@ -721,6 +727,7 @@ public class AreaTreeManager : MonoBehaviour
     [ContextMenu("HideRenderers")]
     public void HideRenderers()
     {
+         Trees = GameObject.FindObjectsOfType<ModelAreaTree>(true).ToList();
         foreach (var tree in Trees)
         {
             if (tree == null) continue;
@@ -747,7 +754,7 @@ public class AreaTreeManager : MonoBehaviour
         }
         int count = 0;
         var matsEx = MeshCombineHelper.GetMatFilters(target, out count, false);
-        Debug.LogError($"GetMaterials {(DateTime.Now - start).ToString()},mats1:{mats.Count},mats2:{matsEx.Count},count:{count}");
+        Debug.Log($"GetMaterials {(DateTime.Now - start).ToString()},mats1:{mats.Count},mats2:{matsEx.Count},count:{count}");
     }
 
 
@@ -763,6 +770,20 @@ public class AreaTreeManager : MonoBehaviour
 
         //MeshCombineHelper.SetMaterials(target);
 
-        Debug.LogError($"SetMaterials {(DateTime.Now - start).ToString()},mats:{mats.Count},count:{count}");
+        Debug.Log($"SetMaterials {(DateTime.Now - start).ToString()},mats:{mats.Count},count:{count}");
+    }
+
+    [ContextMenu("CheckNodeName")]
+    public void CheckNodeName()
+    {
+        DateTime start = DateTime.Now;
+        int count=0;
+         Trees = GameObject.FindObjectsOfType<ModelAreaTree>(true).ToList();
+        foreach (var tree in Trees)
+        {
+            if (tree == null) continue;
+            count+=tree.CheckLeafNodeName();
+        }
+        Debug.Log($"CheckNodeName tree:{Trees.Count} errorCount:{count} time:{(DateTime.Now - start).ToString()}");
     }
 }

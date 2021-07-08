@@ -46,7 +46,7 @@ public class SubSceneManagerUI : MonoBehaviour
         //ClickGetScenes();
 
         var allScenes = GameObject.FindObjectsOfType<SubScene_Base>(true);
-        Debug.LogError($"SubSceneManager.Start allScenes:{allScenes.Length}");
+        Debug.Log($"SubSceneManager.Start allScenes:{allScenes.Length}");
         foreach (var scene in allScenes)
         {
             scene.ProgressChanged += Scene_ProgressChanged;

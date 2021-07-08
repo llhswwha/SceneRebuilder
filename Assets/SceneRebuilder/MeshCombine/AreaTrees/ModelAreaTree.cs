@@ -135,6 +135,27 @@ public class ModelAreaTree : SubSceneCreater
         Debug.LogWarning($"CheckRenderers renderCount:{renderCount},\t{(DateTime.Now-start).ToString()}");
     }
 
+    [ContextMenu("CheckLeafNodeName")]
+    public int CheckLeafNodeName()
+    {   
+        int errorCount=0;
+        DateTime start=DateTime.Now;
+        int renderCount=0;
+        List<string> names=new List<string>();
+        foreach(var node in TreeLeafs)
+        {
+            if(names.Contains(node.name)){
+                errorCount++;
+                Debug.LogError($"RepeatNodeName! [{this.name}][{node.transform.parent.name}][{node.name}]");
+            }
+            else{
+                names.Add(node.name);
+            }
+        }
+        //Debug.LogWarning($"CheckRenderers renderCount:{renderCount},\t{(DateTime.Now-start).ToString()}");
+        return errorCount;
+    }
+
     public bool IsHidden=false;
 
     //[ContextMenu("CombineMesh")]
@@ -620,7 +641,7 @@ public class ModelAreaTree : SubSceneCreater
     [ContextMenu("RecoverParentEx")]
     public void RecoverParentEx()
     {
-        IdDictionay.InitInfos();
+        IdDictionary.InitInfos();
         RecoverParent();
     }
 
@@ -857,7 +878,7 @@ public class ModelAreaTree : SubSceneCreater
         {
             node.LoadRenderers();
         }
-        Target = IdDictionay.GetGo(TargetId);
+        Target = IdDictionary.GetGo(TargetId);
         //Debug.Log("LoadRenderers:"+this.name);
     }
 
@@ -938,7 +959,7 @@ public class ModelAreaTree : SubSceneCreater
     [ContextMenu("* EditorLoadNodeScenesEx")]
     private void EditorLoadNodeScenesEx()
     {
-        IdDictionay.InitInfos();
+        IdDictionary.InitInfos();
         EditorLoadNodeScenes(null);
     }
 

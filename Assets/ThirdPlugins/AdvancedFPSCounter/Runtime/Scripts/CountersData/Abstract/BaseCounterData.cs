@@ -208,6 +208,7 @@
 		internal virtual void Activate()
 		{
 			if (!enabled) return;
+			if(main==null)return;
 			if (main.OperationMode == OperationMode.Disabled) return;
 			if (!HasData()) return;
 

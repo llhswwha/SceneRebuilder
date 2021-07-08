@@ -157,7 +157,7 @@ public class BuildingModelInfo : SubSceneCreater
     public void LoadTreeRenderers()
     {
         trees = this.GetComponentsInChildren<ModelAreaTree>(true);
-        //IdDictionay.InitRenderers(t.gameObject);
+        //IdDictionary.InitRenderers(t.gameObject);
         foreach (var t in trees)
         {
             t.LoadRenderers();
@@ -167,7 +167,7 @@ public class BuildingModelInfo : SubSceneCreater
     public void LoadTreeRenderers(List<SubScene_Base> scenes)
     {
         //trees = this.GetComponentsInChildren<ModelAreaTree>(true);
-        ////IdDictionay.InitRenderers(t.gameObject);
+        ////IdDictionary.InitRenderers(t.gameObject);
         //foreach (var t in trees)
         //{
         //    t.LoadRenderers();
@@ -1390,7 +1390,7 @@ public class BuildingModelInfo : SubSceneCreater
     private void EditorLoadNodeScenes()
     {
         DateTime start = DateTime.Now;
-        IdDictionay.InitInfos();
+        IdDictionary.InitInfos();
         for (int i = 0; i < trees.Length; i++)
         {
             var tree = trees[i];

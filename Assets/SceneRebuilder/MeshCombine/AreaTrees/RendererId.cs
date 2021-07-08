@@ -39,7 +39,7 @@ public class RendererId
         if(string.IsNullOrEmpty(parentId)){
             return;//
         }
-        GameObject pGo=IdDictionay.GetGo(parentId);
+        GameObject pGo=IdDictionary.GetGo(parentId);
         if(pGo!=null){
             this.transform.SetParent(pGo.transform);
         }
@@ -51,14 +51,14 @@ public class RendererId
     [ContextMenu("GetParent")]
     public void GetParent()
     {
-        GameObject pGo=IdDictionay.GetGo(parentId);
+        GameObject pGo=IdDictionary.GetGo(parentId);
         Debug.LogError($"RendererId.GetParent name:{this.name} Id:{this.Id} parentId:{this.parentId} pGo:{pGo}");
     }
 
     [ContextMenu("GetParentEx")]
     public void GetParentEx()
     {
-        GameObject pGo=IdDictionay.GetGoEx(parentId);
+        GameObject pGo=IdDictionary.GetGoEx(parentId);
         Debug.LogError($"RendererId.GetParentEx name:{this.name} Id:{this.Id} parentId:{this.parentId} pGo:{pGo}");
     }
 

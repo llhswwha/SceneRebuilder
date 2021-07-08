@@ -25,14 +25,14 @@ public class RendererManager : MonoBehaviour
     [ContextMenu("TestGetRenderer")]
     public void TestGetRenderer()
     {
-        TestRenderer = IdDictionay.GetRenderer(TestId);
+        TestRenderer = IdDictionary.GetRenderer(TestId);
         Debug.Log($"TestGetRenderer id:{TestId},renderer:{TestRenderer}");
     }
 
     [ContextMenu("TestGetGo")]
     public void TestGetGo()
     {
-        TestGo = IdDictionay.GetGo(TestId);
+        TestGo = IdDictionary.GetGo(TestId);
         Debug.Log($"TestGetRenderer id:{TestId},go:{TestGo}");
     }
 
@@ -48,12 +48,12 @@ public class RendererManager : MonoBehaviour
     public void InitIds()
     {
          DateTime start = DateTime.Now;
-        IdDictionay.InitInfos();
-        allIds = IdDictionay.GetIds();
-        allRIds = IdDictionay.GetRIds();
-        allRenderers = IdDictionay.GetRenderers().ToArray();
+        IdDictionary.InitInfos();
+        allIds = IdDictionary.GetIds();
+        allRIds = IdDictionary.GetRIds();
+        allRenderers = IdDictionary.GetRenderers().ToArray();
         Count = allRIds.Count;
-        Debug.LogError($"InitIds count:{Count} time:{(DateTime.Now - start)}");
+        Debug.Log($"InitIds count:{Count} time:{(DateTime.Now - start)}");
     }
 
     public void Start()
@@ -98,7 +98,7 @@ public class RendererManager : MonoBehaviour
         }
         Count = allRenderers.Length;
         ProgressBarHelper.ClearProgressBar();
-        Debug.LogError($"InitRenderers_All count:{allRenderers.Length} time:{(DateTime.Now - start)}");
+        Debug.Log($"InitRenderers_All count:{allRenderers.Length} time:{(DateTime.Now - start)}");
     }
 
     [ContextMenu("InitRenderers_Target")]
@@ -140,7 +140,7 @@ public class RendererManager : MonoBehaviour
 
         Count = allRenderers.Length;
         ProgressBarHelper.ClearProgressBar();
-        Debug.LogError($"InitRenderers_Target count:{allRenderers.Length} allRIds:{allRIds.Count} time:{(DateTime.Now - start)}");
+        Debug.Log($"InitRenderers_Target count:{allRenderers.Length} allRIds:{allRIds.Count} time:{(DateTime.Now - start)}");
     }
 
     [ContextMenu("ClearIds_All")]
@@ -152,7 +152,7 @@ public class RendererManager : MonoBehaviour
         {
             GameObject.DestroyImmediate(id);
         }
-        Debug.LogError($"ClearIds_All count:{allRIds.Count} time:{(DateTime.Now - start)}");
+        Debug.Log($"ClearIds_All count:{allRIds.Count} time:{(DateTime.Now - start)}");
     }
 
     [ContextMenu("ClearIds_Target")]
@@ -164,7 +164,7 @@ public class RendererManager : MonoBehaviour
         {
             GameObject.DestroyImmediate(id);
         }
-        Debug.LogError($"ClearIds_Target count:{allRIds.Count} time:{(DateTime.Now - start)}");
+        Debug.Log($"ClearIds_Target count:{allRIds.Count} time:{(DateTime.Now - start)}");
     }
 
     public float centerPivotDis=0.0001f;
@@ -197,7 +197,7 @@ public class RendererManager : MonoBehaviour
         }
         Count = allRenderers.Length;
         ProgressBarHelper.ClearProgressBar();
-        Debug.LogError($"ClearIds count:{allRenderers.Length} time:{(DateTime.Now - start)}");
+        Debug.Log($"ClearIds count:{allRenderers.Length} time:{(DateTime.Now - start)}");
     }
 
     [ContextMenu("DisableShadow_All")]
@@ -235,7 +235,7 @@ public class RendererManager : MonoBehaviour
             }
         }
         ProgressBarHelper.ClearProgressBar();
-        Debug.LogError($"SetShadowCastingMode count:{renderers.Length} count2:{count2} time:{(DateTime.Now - start)}");
+        Debug.Log($"SetShadowCastingMode count:{renderers.Length} count2:{count2} time:{(DateTime.Now - start)}");
     }
 
     public List<string> DetailNames=new List<string>();
@@ -272,7 +272,7 @@ public class RendererManager : MonoBehaviour
                 vertexCount+=info.vertexCount;
             }
         }
-        Debug.LogError($"SetDetailRenderers count:{rendererInfos.Length} detailCount:{count} vertexCount:{vertexCount/10000:F1} time:{(DateTime.Now - start)}");
+        Debug.Log($"SetDetailRenderers count:{rendererInfos.Length} detailCount:{count} vertexCount:{vertexCount/10000:F1} time:{(DateTime.Now - start)}");
     }
 
     [ContextMenu("ClearAllType")]

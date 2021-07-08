@@ -884,9 +884,10 @@ namespace CodeStage.AdvancedFPSCounter
 			DeactivateCounters();
 			if (IsInvoking("RefreshForcedFrameRate")) CancelInvoke("RefreshForcedFrameRate");
 			RefreshForcedFrameRate(true);
-
+			if(labels==null)return;
 			for (var i = 0; i < anchorsCount; i++)
 			{
+				if(labels[i]==null)continue;
 				labels[i].Clear();
 			}
 		}

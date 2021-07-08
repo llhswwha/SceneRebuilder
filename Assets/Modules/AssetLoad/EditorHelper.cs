@@ -83,7 +83,7 @@ public static class EditorHelper
 
             EditorSceneManager.CloseScene(scene, true);
 
-            IdDictionay.InitGos(objs, sceneName);
+            IdDictionary.InitGos(objs, sceneName);
         }
         return objs;
     }
@@ -562,7 +562,7 @@ public static class EditorHelper
                 }
                 //EditorSceneManager.CloseScene(scene, true);
 
-                IdDictionay.InitGos(objs,scenePath);
+                IdDictionary.InitGos(objs,scenePath);
             }
             return objs;
         }
