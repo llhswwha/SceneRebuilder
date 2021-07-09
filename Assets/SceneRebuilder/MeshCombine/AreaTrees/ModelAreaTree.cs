@@ -209,27 +209,30 @@ public class ModelAreaTree : SubSceneCreater
     {
         DateTime start=DateTime.Now;
 
+        int c = 0;
         foreach(var node in TreeNodes)
         {
             if(node==null)continue;
             node.SwitchToCombined();
+            c++;
         }
 
-        Debug.LogWarning($"SwitchToCombined \t{(DateTime.Now-start).ToString()}");
+        Debug.LogWarning($"SwitchToCombined count:{c} \t{(DateTime.Now-start).ToString()}");
     }
 
     [ContextMenu("SwitchToRenderers")]
     public void SwitchToRenderers()
     {
         DateTime start=DateTime.Now;
-
-        foreach(var node in TreeNodes)
+        int c = 0;
+        foreach (var node in TreeNodes)
         {
             if(node==null)continue;
             node.SwitchToRenderers();
+            c++;
         }
 
-        Debug.LogWarning($"SwitchToRenderers \t{(DateTime.Now-start).ToString()}");
+        Debug.LogWarning($"SwitchToRenderers count:{c} \t{(DateTime.Now-start).ToString()}");
     }
 
     public MeshRenderer[] TreeRenderers;

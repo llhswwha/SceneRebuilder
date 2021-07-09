@@ -1043,6 +1043,54 @@ public class AreaTreeNode : SubSceneCreater
         Debug.LogError($"AreaTreeNode.EditorLoadScenes time:{(DateTime.Now - start)}");
     }
 
+    [ContextMenu("* EditorUnLoadRenderers")]
+    private void EditorUnLoadRenderers()
+    {
+        SubScene_Base rendererScene = renderersRoot.GetComponent<SubScene_Base>();
+        if (rendererScene)
+        {
+            rendererScene.UnLoadGosM();
+        }
+        else
+        {
+            Debug.LogError("EditorUnLoadRenderers rendererScene==null :" + this.name);
+        }
+    }
+
+    [ContextMenu("* EditorLoadRenderers")]
+    private void EditorLoadRenderers()
+    {
+        IdDictionary.InitInfos();
+        SubScene_Base rendererScene = renderersRoot.GetComponent<SubScene_Base>();
+        if (rendererScene)
+        {
+            rendererScene.EditorLoadSceneEx();
+            LoadRenderers_Renderers();
+            //SwitchToCombined();
+        }
+        else
+        {
+            Debug.LogError("EditorUnLoadRenderers rendererScene==null :" + this.name);
+        }
+    }
+
+    [ContextMenu("* EditorLoadRenderersEx")]
+    private void EditorLoadRenderersEx()
+    {
+        IdDictionary.InitInfos();
+        SubScene_Base rendererScene = renderersRoot.GetComponent<SubScene_Base>();
+        if (rendererScene)
+        {
+            rendererScene.EditorLoadSceneEx();
+            LoadRenderers_Renderers();
+            SwitchToCombined();
+        }
+        else
+        {
+            Debug.LogError("EditorUnLoadRenderers rendererScene==null :" + this.name);
+        }
+    }
+
 #endif
 
 
@@ -1077,7 +1125,6 @@ public class AreaTreeNode : SubSceneCreater
                 }
             });
         }
-
     }
 
     private void OnDisable()

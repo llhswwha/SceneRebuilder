@@ -8,7 +8,10 @@ public class MeshSelection : MonoBehaviour
     // Start is called before the first frame update
     void Start()
     {
-        
+        if (camera == null)
+        {
+            camera = GameObject.FindObjectOfType<Camera>();
+        }
     }
 
     public Camera camera;

@@ -295,12 +295,16 @@ public class SubScene_Base : MonoBehaviour
     [ContextMenu("UnLoadGosM")]
     public void UnLoadGosM()
     {
-        foreach (var go in gos)
-        {
-            if (go == null) continue;
-            GameObject.DestroyImmediate(go);
-        }
-        gos.Clear();
+        //if (gos != null)
+        //{
+        //    foreach (var go in gos)
+        //    {
+        //        if (go == null) continue;
+        //        GameObject.DestroyImmediate(go);
+        //    }
+        //    gos.Clear();
+        //}
+
 
         if (sceneArg != null && sceneArg.objs != null)
         {
@@ -309,7 +313,8 @@ public class SubScene_Base : MonoBehaviour
                 if (obj == null) continue;
                 GameObject.DestroyImmediate(obj);
             }
-            sceneArg.objs = null;
+            //sceneArg.objs = null;
+            sceneArg.objs.Clear();
         }
 
         IsLoaded = false;
@@ -617,6 +622,7 @@ public class SubScene_Base : MonoBehaviour
     [ContextMenu("EditorLoadScene")]
     public void EditorLoadScene()
     {
+        IsLoaded = true;
         if (boundsGo)
         {
             GameObject.DestroyImmediate(boundsGo);
@@ -637,7 +643,7 @@ public class SubScene_Base : MonoBehaviour
             Debug.LogWarning("EditorLoadScene IsLoaded==true :" + GetSceneName());
             return;
         }
-        IsLoaded = true;
+
 
         EditorLoadScene();
     }
