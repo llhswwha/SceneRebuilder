@@ -59,16 +59,25 @@ public class GlobalMaterialManager : MonoBehaviour
         Debug.Log("ReplaceShader:"+isAll);
         foreach(var mat in SharedMaterials)
         {
-            if(isAll){
-                mat.shader=NewShader;
-            }
-            else{
-                var txt=mat.GetTexture("_BaseColorMap");
-                if(txt==null){
-                    mat.shader=NewShader;
+            if(mat.shader.name=="HDRP/Lit")
+            {
+                if (isAll)
+                {
+                    mat.shader = NewShader;
+                }
+                else
+                {
+                    var txt = mat.GetTexture("_BaseColorMap");//HDRP/Lit
+                    if (txt == null)
+                    {
+                        mat.shader = NewShader;
+                    }
                 }
             }
-            
+            else
+            {
+                Debug.LogError("Not HDRP/Lit :"+mat+"|"+mat.shader);
+            }
         }
     }
 

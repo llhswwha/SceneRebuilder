@@ -905,6 +905,8 @@ public class ModelAreaTree : SubSceneCreater
             return ;
         }
         DateTime start = DateTime.Now;
+
+        MoveRenderers();
         
         for (int i = 0; i < TreeLeafs.Count; i++)
         {
@@ -925,7 +927,7 @@ public class ModelAreaTree : SubSceneCreater
                 progressChanged(progress);
             }
 
-            leafNode.EditorCreateNodeScenes((p,i2,c)=>
+            leafNode.EditorCreateNodeScenes(false,(p,i2,c)=>
             {
                 float progress2 = (float)(i+p) / TreeLeafs.Count;
                 float percents2 = progress2 * 100;
