@@ -943,10 +943,10 @@ public class AreaTreeNode : SubSceneCreater
     [ContextMenu("* EditorCreateNodeScenes")]
     private void EditorCreateNodeScenes()
     {
-        EditorCreateNodeScenes(null);
+        EditorCreateNodeScenes(true,null);
     }
 
-    public void EditorCreateNodeScenes(Action<float, int, int> progressChanged)
+    public void EditorCreateNodeScenes(bool isSingle,Action<float, int, int> progressChanged)
     {
         DateTime start = DateTime.Now;
 
@@ -994,7 +994,8 @@ public class AreaTreeNode : SubSceneCreater
         SubScene_In scene2 = null;
         if (renderersRoot)
         {
-            MoveRenderers();
+            if(isSingle)
+                MoveRenderers();
             scene2 = SubSceneHelper.EditorCreateScene<SubScene_In>(renderersRoot, SceneContentType.TreeNode, false, tree.name);
             //scene2.gos = SubSceneHelper.GetChildrenGos(renderersRoot.transform);
             scene2.cubePrefabId = tree.GetCubePrefabId();

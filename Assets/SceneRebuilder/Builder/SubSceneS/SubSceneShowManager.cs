@@ -28,17 +28,19 @@ public class SubSceneShowManager : MonoBehaviour
         return this.GetSceneCountInfo()+"\n"+this.GetShowSceneCountInfo();
     }
 
+    public bool IncludeInactive = false;
+
     [ContextMenu("GetSceneCountInfo")]
     public string GetSceneCountInfo()
     {
 
-        var alls=GameObject.FindObjectsOfType<SubScene_Base>(true);
+        var alls=GameObject.FindObjectsOfType<SubScene_Base>(IncludeInactive);
         var allsInfo=GetSceneRenderInfo(alls);
-        var ins=GameObject.FindObjectsOfType<SubScene_In>(true);
+        var ins=GameObject.FindObjectsOfType<SubScene_In>(IncludeInactive);
         var insInfo=GetSceneRenderInfo(ins);
-        var out0s=GameObject.FindObjectsOfType<SubScene_Out0>(true);
+        var out0s=GameObject.FindObjectsOfType<SubScene_Out0>(IncludeInactive);
         var out0sInfo=GetSceneRenderInfo(out0s);
-        var out1s=GameObject.FindObjectsOfType<SubScene_Out1>(true);
+        var out1s=GameObject.FindObjectsOfType<SubScene_Out1>(IncludeInactive);
         var out1sInfo=GetSceneRenderInfo(out1s);
         
         // List<SubScene_Out0> out0s_tree
@@ -94,9 +96,9 @@ public class SubSceneShowManager : MonoBehaviour
     [ContextMenu("Init")]
     public void Init()
     {
-        sceneManager = GameObject.FindObjectOfType<SubSceneManager>(true);
-        scenes_In = GameObject.FindObjectsOfType<SubScene_In>(true);
-        scenes_Out0 = GameObject.FindObjectsOfType<SubScene_Out0>(true);
+        sceneManager = GameObject.FindObjectOfType<SubSceneManager>(IncludeInactive);
+        scenes_In = GameObject.FindObjectsOfType<SubScene_In>(IncludeInactive);
+        scenes_Out0 = GameObject.FindObjectsOfType<SubScene_Out0>(IncludeInactive);
 
         scenes_Out0_Part.Clear();
         scenes_Out0_Tree.Clear();
@@ -143,13 +145,13 @@ public class SubSceneShowManager : MonoBehaviour
         }
 
 
-        scenes_Out1 = GameObject.FindObjectsOfType<SubScene_Out1>(true);
+        scenes_Out1 = GameObject.FindObjectsOfType<SubScene_Out1>(IncludeInactive);
 
         cameras = GameObject.FindObjectsOfType<Camera>();
 
         List<ModelAreaTree> HiddenTrees = new List<ModelAreaTree>();
         List<ModelAreaTree> ShownTrees = new List<ModelAreaTree>();
-        var ts = GameObject.FindObjectsOfType<ModelAreaTree>(true);
+        var ts = GameObject.FindObjectsOfType<ModelAreaTree>(IncludeInactive);
 
         scenes_Out0_TreeNode_Hidden.Clear();
         scenes_Out0_TreeNode_Shown.Clear();
@@ -159,7 +161,7 @@ public class SubSceneShowManager : MonoBehaviour
             {
                 HiddenTrees.Add(t);
                 //HiddenTreesVertexCount += t.VertexCount;
-                var scenes = t.GetComponentsInChildren<SubScene_Out0>(true);
+                var scenes = t.GetComponentsInChildren<SubScene_Out0>(IncludeInactive);
                 scenes_Out0_TreeNode_Hidden.AddRange(scenes);
             }
             else if (t.IsHidden == false && !ShownTrees.Contains(t))
@@ -167,7 +169,7 @@ public class SubSceneShowManager : MonoBehaviour
                 ShownTrees.Add(t);
                 //ShownTreesVertexCount += t.VertexCount;
 
-                var scenes = t.GetComponentsInChildren<SubScene_Out0>(true);
+                var scenes = t.GetComponentsInChildren<SubScene_Out0>(IncludeInactive);
                 scenes_Out0_TreeNode_Shown.AddRange(scenes);
             }
         }
