@@ -538,7 +538,7 @@ public class SubScene_Base : MonoBehaviour
     }
 
      [ContextMenu("SetRendererParent")]
-    private void SetRendererParent()
+    public void SetRendererParent()
     {
         RendererId[] rIds=this.GetComponentsInChildren<RendererId>(true);
         foreach(var rI in rIds){

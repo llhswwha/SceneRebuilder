@@ -30,25 +30,40 @@ public class SubScene_List : MonoBehaviour
     [ContextMenu("Clear")]
     internal void Clear()
     {
+        IdDictionary.InitInfos();
+
         scenes = gameObject.GetComponentsInChildren<SubScene_Base>(true);
         foreach(var scene in scenes)
         {
             scene.DestroyBoundsBox();
-            GameObject.DestroyImmediate(scene.gameObject);
+            scene.SetRendererParent();
+
+            // GameObject.DestroyImmediate(scene.gameObject);
+
+            // scene.UnLoadGosM();
+            GameObject.DestroyImmediate(scene);
+
+
         }
         sceneCount = 0;
-        ClearChildren();
+        //ClearChildren();
+
+        var sceneList= gameObject.GetComponentsInChildren<SubScene_List>(true);
+        foreach(var ss in sceneList)
+        {
+            GameObject.DestroyImmediate(ss);
+        }
     }
 
-    public void ClearChildren()
-    {
-        List<Transform> children=new List<Transform>();
-        for(int i=0;i<this.transform.childCount;i++)
-        {
-            children.Add(this.transform.GetChild(i));
-        }
-        foreach(var child in children){
-            GameObject.DestroyImmediate(child.gameObject);
-        }
-    }
+    // public void ClearChildren()
+    // {
+    //     List<Transform> children=new List<Transform>();
+    //     for(int i=0;i<this.transform.childCount;i++)
+    //     {
+    //         children.Add(this.transform.GetChild(i));
+    //     }
+    //     foreach(var child in children){
+    //         GameObject.DestroyImmediate(child.gameObject);
+    //     }
+    // }
 }

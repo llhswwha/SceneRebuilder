@@ -55,7 +55,8 @@ public class SubSceneCreater : MonoBehaviour
         //Debug.Log("DestroyOldPartScenes");
         if (SceneList == null)
         {
-            SceneList = this.GetComponentInChildren<SubScene_List>();
+            //SceneList = this.GetComponentInChildren<SubScene_List>();
+            GetTreeNodeScenes();
         }
         if (SceneList != null)
         {
