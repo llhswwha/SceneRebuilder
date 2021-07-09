@@ -232,7 +232,7 @@ public class ModelAreaTree : SubSceneCreater
             c++;
         }
 
-        Debug.LogWarning($"SwitchToRenderers count:{c} \t{(DateTime.Now-start).ToString()}");
+        Debug.LogWarning($"SwitchToRenderers tree:{this.name} count:{c} \t{(DateTime.Now-start).ToString()}");
     }
 
     public MeshRenderer[] TreeRenderers;
@@ -1025,7 +1025,45 @@ public class ModelAreaTree : SubSceneCreater
             progressChanged(1);
         }
 
-        Debug.LogError($"ModelAreaTree.EditorLoadNodeScenes time:{(DateTime.Now - start)}");
+        Debug.Log($"ModelAreaTree.EditorLoadNodeScenes time:{(DateTime.Now - start)}");
+    }
+
+    public void UnLoadScenes(Action<float> progressChanged)
+    {
+        DateTime start = DateTime.Now;
+
+        for (int i = 0; i < TreeLeafs.Count; i++)
+        {
+            var leafNode = TreeLeafs[i];
+            if (leafNode == null) continue;
+            float progress = (float)i / TreeLeafs.Count;
+            float percents = progress * 100;
+
+            if (progressChanged == null)
+            {
+                if (ProgressBarHelper.DisplayCancelableProgressBar("EditorLoadNodeScenes", $"Progress1 {i}/{TreeLeafs.Count} {percents:F2}%", progress))
+                {
+                    break;
+                }
+            }
+            else
+            {
+                progressChanged(progress);
+            }
+            leafNode.UnLoadScenes();
+        }
+
+        if (progressChanged == null)
+        {
+            EditorHelper.RefreshAssets();
+            ProgressBarHelper.ClearProgressBar();
+        }
+        else
+        {
+            progressChanged(1);
+        }
+
+        Debug.Log($"ModelAreaTree.EditorLoadNodeScenes time:{(DateTime.Now - start)}");
     }
 #endif
 
@@ -1056,6 +1094,6 @@ public class ModelAreaTree : SubSceneCreater
         }
         ProgressBarHelper.ClearProgressBar();
 
-        Debug.LogError($"CreateLOD[{this.name}] vertexCount:{this.GetVertexCount()} {(DateTime.Now - start).ToString()}");
+        Debug.Log($"CreateLOD[{this.name}] vertexCount:{this.GetVertexCount()} {(DateTime.Now - start).ToString()}");
     }
 }

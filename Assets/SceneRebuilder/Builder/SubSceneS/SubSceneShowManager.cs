@@ -200,7 +200,7 @@ public class SubSceneShowManager : MonoBehaviour
         scene_Out0s.AddRange(scenes_Out0_TreeNode_Shown);
         if(scene_Out0s.Count>0){
             AreaTreeNodeShowManager.Instance.IsUpdateTreeNodeByDistance = false;
-            sceneManager.LoadScenesEx(scene_Out0s.ToArray(), () =>
+            sceneManager.LoadScenesEx(scene_Out0s.ToArray(), (p,r) =>
                 {
                     WaitingScenes.AddRange(scene_Out0s);
                     AreaTreeNodeShowManager.Instance.IsUpdateTreeNodeByDistance = IsUpdateTreeNodeByDistance;
@@ -217,12 +217,23 @@ public class SubSceneShowManager : MonoBehaviour
         // scene_Out0s.AddRange(scenes_Out0_TreeNode_Shown);
         if(scene_Out0s.Count>0){
             AreaTreeNodeShowManager.Instance.IsUpdateTreeNodeByDistance = false;
-            sceneManager.LoadScenesEx(scene_Out0s.ToArray(), () =>
+            sceneManager.LoadScenesEx(scene_Out0s.ToArray(), (p,r) =>
                 {
                     WaitingScenes.AddRange(scene_Out0s);
                     AreaTreeNodeShowManager.Instance.IsUpdateTreeNodeByDistance = IsUpdateTreeNodeByDistance;
                 });
         }
+    }
+
+    public void LoadScenes<T>(List<T> scenes,Action<float,bool> finished) where T : SubScene_Base
+    {
+        sceneManager.LoadScenesEx(scenes.ToArray(), (p,r) =>
+                {
+                    WaitingScenes.AddRange(scenes);
+                    if(finished!=null){
+                        finished(p,r);
+                    }
+                });
     }
 
     // public void LoadOut0TreeNodeSceneTop1()
@@ -256,29 +267,32 @@ public class SubSceneShowManager : MonoBehaviour
             topsScenes.Add(scene);
             vertexCount+=scene.vertexCount;
         }
-        sceneManager.LoadScenesEx(topsScenes.ToArray(), () =>
-        {
-                WaitingScenes.AddRange(topsScenes);
+        // sceneManager.LoadScenesEx(topsScenes.ToArray(), (p,r) =>
+        // {
+        //         WaitingScenes.AddRange(topsScenes);
+        // });
+
+        LoadScenes(topsScenes,(p,r)=>{
+            Debug.Log($"LoadOut0TreeNodeSceneTopN2 index:{index} scene:{topsScenes.Count} vertexCount:{vertexCount}");
         });
 
-        Debug.Log($"LoadOut0TreeNodeSceneTopN index:{index} scene:{topsScenes.Count} vertexCount:{vertexCount}");
+        Debug.Log($"LoadOut0TreeNodeSceneTopN1 index:{index} scene:{topsScenes.Count} vertexCount:{vertexCount}");
     }
 
     public void LoadShownTreeNodes()
     {
-        sceneManager.LoadScenesEx(scenes_Out0_TreeNode_Shown.ToArray(), () =>
-        {
-                WaitingScenes.AddRange(scenes_Out0_TreeNode_Shown);
-        });
+        // sceneManager.LoadScenesEx(scenes_Out0_TreeNode_Shown.ToArray(), () =>
+        // {
+        //         WaitingScenes.AddRange(scenes_Out0_TreeNode_Shown);
+        // });
+
+        LoadScenes(scenes_Out0_TreeNode_Shown,null);
     }
     
     public void LoadHiddenTreeNodes()
     {
         BuildingModelManager.Instance.ShowDetail();
-        sceneManager.LoadScenesEx(scenes_Out0_TreeNode_Hidden.ToArray(), () =>
-        {
-                WaitingScenes.AddRange(scenes_Out0_TreeNode_Hidden);
-        });
+        LoadScenes(scenes_Out0_TreeNode_Hidden,null);
     }
     // Start is called before the first frame update
     void Start()
@@ -438,7 +452,7 @@ public class SubSceneShowManager : MonoBehaviour
             }
 
             if(scene.boundsGo==null){
-                Debug.LogError("SubSceneShowManager.CalculateDistance scene.boundsGo==null :"+scene);
+                // Debug.LogError("SubSceneShowManager.CalculateDistance scene.boundsGo==null :"+scene);
             }
             else{
                 if (disToCams <= DisOfVisible)

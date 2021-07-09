@@ -501,7 +501,7 @@ public class SubSceneManager : MonoBehaviour
 
     public int LoadingSceneMaxCount = 1;
     
-    public void LoadScenesEx<T>(T[] scenes, Action finishedCallback) where T : SubScene_Base
+    public void LoadScenesEx<T>(T[] scenes, Action<float,bool> finishedCallback) where T : SubScene_Base
     {
         //if (IsOneCoroutine)
         //{
@@ -526,7 +526,7 @@ public class SubSceneManager : MonoBehaviour
         }
     }
 
-    IEnumerator LoadScenesByBag<T>(T[] scenes, Action finishedCallback) where T : SubScene_Base
+    IEnumerator LoadScenesByBag<T>(T[] scenes, Action<float,bool> finishedCallback) where T : SubScene_Base
     {
         var start = DateTime.Now;
         WattingForLoadedAll.AddRange(scenes);
@@ -552,11 +552,17 @@ public class SubSceneManager : MonoBehaviour
                     {
                         if (finishedCallback != null)
                         {
-                            finishedCallback();
+                            finishedCallback(1,true);
                         }
                         WriteLog("LoadScenesByBag",$"count:{scenes.Length},\t time:{(DateTime.Now - start).ToString()}");
                         OnAllLoaded();
-
+                    }
+                    else
+                    {
+                        if (finishedCallback != null)
+                        {
+                            finishedCallback(progress,false);
+                        }
                     }
                 });
             }
@@ -697,7 +703,7 @@ public class SubSceneManager : MonoBehaviour
         LoadScenesAsync(subScenes,null);
     }
 
-    public void LoadScenesAsync<T>(T[] scenes, Action finishedCallbak) where T : SubScene_Base
+    public void LoadScenesAsync<T>(T[] scenes, Action<float,bool> finishedCallbak) where T : SubScene_Base
     {
         DateTime start = DateTime.Now;
         OnProgressChanged(0);
@@ -716,15 +722,22 @@ public class SubSceneManager : MonoBehaviour
                 WriteLog("LoadScenesAsync",$"count:{scenes.Length} index:{count} progress:{progress} ");
 
                 OnProgressChanged(progress);
+
+
                 if (count == scenes.Length)
                 {
                     if (finishedCallbak != null)
                     {
-                        finishedCallbak();
+                        finishedCallbak(1,true);
                     }
                     WriteLog("LoadScenesAsync",$"count:{scenes.Length},\t time:{(DateTime.Now - start).ToString()}");
                     OnAllLoaded();
-                    
+                }
+                else{
+                    if (finishedCallbak != null)
+                    {
+                        finishedCallbak(1,false);
+                    }
                 }
             });
         }
@@ -737,14 +750,14 @@ public class SubSceneManager : MonoBehaviour
         LoadScenesAsyncEx(subScenes,null);
     }
 
-    public void LoadScenesAsyncEx<T>(T[] scenes, Action finishedCallbak) where T : SubScene_Base
+    public void LoadScenesAsyncEx<T>(T[] scenes, Action<float,bool> finishedCallbak) where T : SubScene_Base
     {
         StartCoroutine(LoadAllScenesCoroutine(scenes, finishedCallbak));
     }
 
     public float loadProgress = 0;
 
-    IEnumerator LoadAllScenesCoroutine<T>(T[] scenes,Action finishedCallbak) where T : SubScene_Base
+    IEnumerator LoadAllScenesCoroutine<T>(T[] scenes,Action<float,bool> finishedCallbak) where T : SubScene_Base
     {
         //loadProgress = 0;
         OnProgressChanged(0);
@@ -757,13 +770,16 @@ public class SubSceneManager : MonoBehaviour
             WriteLog("LoadAllScenesCoroutine",$"count:{scenes.Length} index:{i} progress:{progress} ");
 
             OnProgressChanged(progress);
+            if(finishedCallbak!=null){
+                finishedCallbak(progress,false);
+            }
             //Debug.Log($"loadProgress:{loadProgress},scene:{subScene.GetSceneName()}");
             
             yield return subScene.LoadSceneAsyncCoroutine(null);
         }
         WriteLog("LoadAllScenesCoroutine",$"count:{scenes.Length},\t time:{(DateTime.Now - start).ToString()}");
 
-        if (finishedCallbak != null) finishedCallbak();
+        if (finishedCallbak != null) finishedCallbak(1,true);
         OnAllLoaded();
         
         yield return null;

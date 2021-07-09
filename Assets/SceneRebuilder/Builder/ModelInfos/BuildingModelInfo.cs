@@ -133,6 +133,79 @@ public class BuildingModelInfo : SubSceneCreater
     public int Out0BigRendererCount = 0;
     public int Out0SmallRendererCount = 0;
 
+    [ContextMenu("TestLoadAndSwitchToRenderers")]
+    public void TestLoadAndSwitchToRenderers()
+    {
+       LoadAndSwitchToRenderers((p,r)=>{
+           Debug.LogError($"TestLoadAndSwitchToRenderers progress:{p} isFinished:{r}");
+       });
+    }
+
+    public void LoadAndSwitchToRenderers(Action<float,bool> finished)
+    {
+        DateTime start=DateTime.Now;
+        trees = this.GetComponentsInChildren<ModelAreaTree>(true);
+        var nodes=new List<AreaTreeNode>();
+        foreach (var tree in trees)
+        {
+            nodes.AddRange(tree.TreeLeafs);
+        }
+        var scenes=new List<SubScene_Base>();
+        for(int i=0;i<nodes.Count;i++){
+            var node=nodes[i];
+            var rendererScene=node.GetRendererScene();
+            if(rendererScene!=null){
+                scenes.Add(rendererScene);
+            }
+        }
+        SubSceneShowManager.Instance.LoadScenes(scenes,(p,r)=>{
+            Debug.LogError($"SwitchToCombined2 nodes:{nodes.Count} scenes:{scenes.Count}\t{(DateTime.Now-start).ToString()}");
+            
+            if(r){
+                for(int i=0;i<nodes.Count;i++){
+                    var node=nodes[i];
+                    node.SwitchToRenderers();
+                }
+            }
+            if(finished!=null){
+                finished(p,r);
+            }
+
+            Debug.LogError($"SwitchToCombined3 nodes:{nodes.Count} scenes:{scenes.Count}\t{(DateTime.Now-start).ToString()}");
+        });
+        Debug.LogError($"SwitchToCombined1 nodes:{nodes.Count} scenes:{scenes.Count}\t{(DateTime.Now-start).ToString()}");
+    }
+
+    
+    [ContextMenu("SwitchToCombined")]
+    public void SwitchToCombined()
+    {
+        DateTime start=DateTime.Now;
+         Debug.Log("BuildingModelInfo.SwitchToCombined");
+        trees = this.GetComponentsInChildren<ModelAreaTree>(true);
+        foreach(var t in trees)
+        {
+            t.SwitchToCombined();
+        }
+
+        Debug.LogWarning($"SwitchToCombined \t{(DateTime.Now-start).ToString()}");
+    }
+
+    [ContextMenu("SwitchToRenderers")]
+    public void SwitchToRenderers()
+    {
+        DateTime start=DateTime.Now;
+         Debug.Log("BuildingModelInfo.SwitchToRenderers");
+        trees = this.GetComponentsInChildren<ModelAreaTree>(true);
+        foreach(var t in trees)
+        {
+            t.SwitchToRenderers();
+        }
+
+        Debug.LogWarning($"SwitchToRenderers \t{(DateTime.Now-start).ToString()}");
+    }
+
+    [ContextMenu("ClearTrees")]
     public void ClearTrees()
     {
         var oldTrees = this.GetComponentsInChildren<ModelAreaTree>(true);
@@ -141,6 +214,7 @@ public class BuildingModelInfo : SubSceneCreater
             GameObject.DestroyImmediate(oldT.gameObject);
         }
     }
+    
 
     [ContextMenu("SaveTreeRendersId")]
     public override void SaveTreeRendersId()
@@ -871,7 +945,7 @@ public class BuildingModelInfo : SubSceneCreater
         var scenes = gameObject.GetComponentsInChildren<SubScene_Base>(true);
         foreach (var scene in scenes)
         {
-            scene.ShowBounds(this.transform);
+            scene.ShowBounds();
         }
     }
 
@@ -882,7 +956,7 @@ public class BuildingModelInfo : SubSceneCreater
         foreach(var scene in scenes)
         {
             scene.UnLoadGosM();
-            scene.ShowBounds(this.transform);
+            scene.ShowBounds();
         }
     }
 
@@ -1415,5 +1489,32 @@ public class BuildingModelInfo : SubSceneCreater
         ProgressBarHelper.ClearProgressBar();
         Debug.LogError($"BuildingModelInfo.EditorLoadNodeScenes time:{(DateTime.Now - start)}");
     }
+
+    // [ContextMenu("* UnLoadScenes")]
+    // private void UnLoadScenes()
+    // {
+    //     DateTime start = DateTime.Now;
+    //     // IdDictionary.InitInfos();
+    //     for (int i = 0; i < trees.Length; i++)
+    //     {
+    //         var tree = trees[i];
+    //         if (tree == null) continue;
+    //         float progress = (float)i / trees.Length;
+    //         float percents = progress * 100;
+    //         if (ProgressBarHelper.DisplayCancelableProgressBar("BuildingModelInfo.UnLoadScenes", $"Progress1 {i}/{trees.Length} {percents:F2}%", progress))
+    //         {
+    //             break;
+    //         }
+    //         tree.UnLoadScenes(p =>
+    //         {
+    //             float progress2 = (float)(i + p) / trees.Length;
+    //             float percents2 = progress2 * 100;
+    //             ProgressBarHelper.DisplayCancelableProgressBar("BuildingModelInfo.UnLoadScenes", $"Progress2 {(i + p):F2}/{trees.Length} {percents2:F2}%", progress2);
+    //         });
+    //     }
+    //     EditorHelper.RefreshAssets();
+    //     ProgressBarHelper.ClearProgressBar();
+    //     Debug.LogError($"BuildingModelInfo.UnLoadScenes time:{(DateTime.Now - start)}");
+    // }
 #endif
 }

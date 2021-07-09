@@ -857,6 +857,22 @@ public class AreaTreeNode : SubSceneCreater
 
     SubScene_Base scene_combined;
 
+    public SubScene_Base GetCombinedScene()
+    {
+        if(scene_combined==null){
+            scene_combined=combindResult.GetComponent<SubScene_Base>();
+        }
+        return scene_combined;
+    }
+
+    public SubScene_Base GetRendererScene()
+    {
+        if(scene_combined==null){
+            scene_combined=combindResult.GetComponent<SubScene_Base>();
+        }
+        return scene_combined.LinkedScene;
+    }
+
     [ContextMenu("HideNodes")]
     public void HideNodes()
     {
@@ -877,10 +893,8 @@ public class AreaTreeNode : SubSceneCreater
             }
             node.HideNodes();
         }
-        if(scene_combined==null){
-            scene_combined=combindResult.GetComponent<SubScene_Base>();
-        }
-        if(scene_combined!=null && scene_combined.IsLoaded)
+        var scene1=GetCombinedScene();
+        if(scene1!=null && scene1.IsLoaded)
         {
             for (int i = 0; i < CombinedRenderers.Length; i++)
             {
@@ -1044,8 +1058,18 @@ public class AreaTreeNode : SubSceneCreater
         Debug.LogError($"AreaTreeNode.EditorLoadScenes time:{(DateTime.Now - start)}");
     }
 
-    [ContextMenu("* EditorUnLoadRenderers")]
-    private void EditorUnLoadRenderers()
+    [ContextMenu("* UnLoadScenes")]
+    public void UnLoadScenes()
+    {
+        var scenes = this.GetComponentsInChildren<SubScene_Base>(true);
+       foreach (var scene in scenes)
+       {
+           scene.UnLoadGosM();
+       }
+    }
+
+    [ContextMenu("* UnLoadRenderers")]
+    public void UnLoadRenderers()
     {
         SubScene_Base rendererScene = renderersRoot.GetComponent<SubScene_Base>();
         if (rendererScene)
