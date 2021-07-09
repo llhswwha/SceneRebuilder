@@ -284,5 +284,41 @@ public class RendererManager : MonoBehaviour
         }
     }
 
+    [ContextMenu("RemoveEmptyParent_Target")]
+    public void RemoveEmptyParent_Target()
+    {
+        DateTime start = DateTime.Now;
+        ProgressBarHelper.DisplayProgressBar("RemoveEmptyParent_Target", "Start", 0);
+        allRenderers = TestGo.GetComponentsInChildren<MeshRenderer>(true);
+        int count = allRenderers.Length;
+        int removeCount = 0;
+        for (int i = 0; i < count; i++)
+        {
+            MeshRenderer r = allRenderers[i];
+            Transform p = r.transform.parent;
+            Transform pp = p.parent;
+            if (p.transform.childCount == 1)
+            {
+                r.transform.SetParent(pp);
+                
+                removeCount++;
+                r.name = p.name;
+
+                GameObject.DestroyImmediate(p);
+            }
+
+            float progress = (float)i / count;
+            float percents = progress * 100;
+
+            if (ProgressBarHelper.DisplayCancelableProgressBar("RemoveEmptyParent_Target", $"Progress1 {i}/{count} {percents:F1}% {r.name}", progress))
+            {
+                break;
+            }
+        }
+
+        ProgressBarHelper.ClearProgressBar();
+        Debug.Log($"RemoveEmptyParent_Target TestGo:{TestGo} count:{allRenderers.Length} removeCount:{removeCount} time:{(DateTime.Now - start)}");
+    }
+
     //public  
 }

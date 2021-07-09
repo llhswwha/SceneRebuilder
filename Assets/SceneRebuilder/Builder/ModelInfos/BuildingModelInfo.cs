@@ -970,6 +970,9 @@ public class BuildingModelInfo : SubSceneCreater
             progressChanged(0 / 3f);
         }
         InitInOut();
+
+        ShowDetail();
+
         if (progressChanged != null)
         {
             progressChanged(1 / 3f);
@@ -1306,7 +1309,7 @@ public class BuildingModelInfo : SubSceneCreater
     public void EditorCreateNodeScenes(Action<float> progressChanged)
     {
         DateTime start = DateTime.Now;
-
+        ShowDetail();
         for (int i = 0; i < trees.Length; i++)
         {
             var tree = trees[i];
