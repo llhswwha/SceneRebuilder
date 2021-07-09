@@ -11,7 +11,7 @@ public class SubSceneCreater : MonoBehaviour
 {
     public SubScene_List SceneList = null;
 
-    [ContextMenu("GetTreeNodeScenes")]
+    //[ContextMenu("GetTreeNodeScenes")]
     public void GetTreeNodeScenes()
     {
         if(SceneList==null){

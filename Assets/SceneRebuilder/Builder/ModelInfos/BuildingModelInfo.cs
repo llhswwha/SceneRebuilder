@@ -1016,15 +1016,15 @@ public class BuildingModelInfo : SubSceneCreater
 
 #if UNITY_EDITOR
 
-    [ContextMenu("OneKey_TreePartScene")]
-    public void OneKey_TreePartScene()
-    {
-        OneKey_TreePartScene(p =>
-        {
-            ProgressBarHelper.DisplayProgressBar("OneKey_TreePartScene", $"Progress:{p:P2}", p);
-        });
-        ProgressBarHelper.ClearProgressBar();
-    }
+    //[ContextMenu("OneKey_TreePartScene")]
+    //public void OneKey_TreePartScene()
+    //{
+    //    OneKey_TreePartScene(p =>
+    //    {
+    //        ProgressBarHelper.DisplayProgressBar("OneKey_TreePartScene", $"Progress:{p:P2}", p);
+    //    });
+    //    ProgressBarHelper.ClearProgressBar();
+    //}
 
     public void OneKey_TreePartScene(Action<float> progressChanged)
     {
@@ -1060,7 +1060,7 @@ public class BuildingModelInfo : SubSceneCreater
         Debug.LogError($"BuildingModelInfo.OneKey_TreePart Time:{(DateTime.Now - start).ToString()}");
     }
 
-    [ContextMenu("OneKey_TreeNodeScene")]
+    [ContextMenu("* OneKey_TreeNodeScene")]
     public void OneKey_TreeNodeScene()
     {
         OneKey_TreeNodeScene(null);
@@ -1136,7 +1136,7 @@ public class BuildingModelInfo : SubSceneCreater
         Debug.LogError($"EditorCreateScenes time:{(DateTime.Now - start)}");
     }
 
-    [ContextMenu("* EditorCreateScenes_TreeWithPart")]
+    //[ContextMenu("* EditorCreateScenes_TreeWithPart")]
     public void EditorCreateScenes_TreeWithPart()
     {
         EditorCreateScenes_TreeWithPart(null);
@@ -1153,11 +1153,10 @@ public class BuildingModelInfo : SubSceneCreater
         InitInOut(false);
 
         List<SubScene_Base> scenes = new List<SubScene_Base>();
-        scenes.AddRange(CreatePartScene(SceneContentType.Tree));//����ᱣ��RendererId�Ĺ�����ϵ
+        scenes.AddRange(CreatePartScene(SceneContentType.Tree));
         scenes.AddRange(CreatePartScene(SceneContentType.Part));
         EditorCreateScenes(scenes, progressChanged);
 
-        //LoadTreeRenderers();//������Tree�е�Renderers
 
         SubSceneManager.Instance.ClearOtherScenes();
         EditorMoveScenes();
@@ -1192,8 +1191,7 @@ public class BuildingModelInfo : SubSceneCreater
     internal List<SubScene_Base> EditorCreatePartScenesEx(string dir, bool isOverride, SceneContentType contentType)
     {
         //DestroyOldBounds();
-        DestroyOldPartScenes(contentType);//���´�������֮ǰ��ɾ��
-        //InitInOut(false);//�ŵ�����ȥ
+        DestroyOldPartScenes(contentType);
 
         List<SubScene_Base> senes = new List<SubScene_Base>();
         trees = this.GetComponentsInChildren<ModelAreaTree>(true);
@@ -1284,14 +1282,14 @@ public class BuildingModelInfo : SubSceneCreater
 
 
 
-    [ContextMenu("EditorLoadScenes")]
+    [ContextMenu("* EditorLoadScenes")]
     private void EditorLoadScenes()
     {
         EditorLoadScenes(null);
     }
 
 
-    public void EditorLoadScenesEx(SceneContentType contentType, Action<float> progressChanged)
+    public void EditorLoadScenesByContentType(SceneContentType contentType, Action<float> progressChanged)
     {
         this.contentType = contentType;
         if (contentType == SceneContentType.TreeWithPart)
@@ -1304,7 +1302,7 @@ public class BuildingModelInfo : SubSceneCreater
         }
     }
 
-    public void EditorLoadScenes(Action<float> progressChanged)
+    private void EditorLoadScenes(Action<float> progressChanged)
     {
         DateTime start = DateTime.Now;
 
@@ -1320,7 +1318,7 @@ public class BuildingModelInfo : SubSceneCreater
         Debug.LogError($"EditorLoadScenes time:{(DateTime.Now - start)}");
     }
 
-    public void EditorLoadScenes_TreeWithPart(Action<float> progressChanged)
+    private void EditorLoadScenes_TreeWithPart(Action<float> progressChanged)
     {
         DateTime start = DateTime.Now;
 
@@ -1333,7 +1331,7 @@ public class BuildingModelInfo : SubSceneCreater
         Debug.LogError($"EditorLoadScenes_TreeWithPart time:{(DateTime.Now - start)}");
     }
 
-    [ContextMenu("EditorLoadScenes_TreeWithPart")]
+    //[ContextMenu("EditorLoadScenes_TreeWithPart")]
     public void EditorLoadScenes_TreeWithPart()
     {
         EditorLoadScenes_TreeWithPart(null);
@@ -1350,7 +1348,7 @@ public class BuildingModelInfo : SubSceneCreater
     //    //SceneState = "EditSaveScenes_Part";
     //}
 
-    [ContextMenu("EditorSaveScenes")]
+    [ContextMenu("* EditorSaveScenes")]
     public void EditorSaveScenes()
     {
         var scenes = gameObject.GetComponentsInChildren<SubScene_Base>(true);
@@ -1420,7 +1418,13 @@ public class BuildingModelInfo : SubSceneCreater
     }
 
     [ContextMenu("* EditorLoadNodeScenes")]
-    private void EditorLoadNodeScenes()
+    public void EditorLoadNodeScenes()
+    {
+        EditorLoadNodeScenes(null);
+    }
+
+    //[ContextMenu("* EditorLoadNodeScenes")]
+    public void EditorLoadNodeScenes(Action<float> progressChanged)
     {
         DateTime start = DateTime.Now;
         IdDictionary.InitInfos();
@@ -1430,19 +1434,46 @@ public class BuildingModelInfo : SubSceneCreater
             if (tree == null) continue;
             float progress = (float)i / trees.Length;
             float percents = progress * 100;
-            if (ProgressBarHelper.DisplayCancelableProgressBar("BuildingModelInfo.EditorLoadNodeScenes", $"Progress1 {i}/{trees.Length} {percents:F2}%", progress))
+
+            if (progressChanged == null)
             {
-                break;
+                if (ProgressBarHelper.DisplayCancelableProgressBar("BuildingModelInfo.EditorLoadNodeScenes", $"Progress1 {i}/{trees.Length} {percents:F2}%", progress))
+                {
+                    break;
+                }
             }
+            else
+            {
+                progressChanged(progress);
+            }
+
+
             tree.EditorLoadNodeScenes(p =>
             {
                 float progress2 = (float)(i + p) / trees.Length;
                 float percents2 = progress2 * 100;
-                ProgressBarHelper.DisplayCancelableProgressBar("BuildingModelInfo.EditorLoadNodeScenes", $"Progress2 {(i + p):F2}/{trees.Length} {percents2:F2}%", progress2);
+
+                if (progressChanged == null)
+                {
+                    ProgressBarHelper.DisplayCancelableProgressBar("BuildingModelInfo.EditorLoadNodeScenes", $"Progress2 {(i + p):F2}/{trees.Length} {percents2:F2}%", progress2);
+                }
+                else
+                {
+                    progressChanged(progress2);
+                }
             });
         }
-        EditorHelper.RefreshAssets();
-        ProgressBarHelper.ClearProgressBar();
+
+        if (progressChanged == null)
+        {
+            EditorHelper.RefreshAssets();
+            ProgressBarHelper.ClearProgressBar();
+        }
+        else
+        {
+            progressChanged(1);
+        }
+
         Debug.LogError($"BuildingModelInfo.EditorLoadNodeScenes time:{(DateTime.Now - start)}");
     }
 #endif
