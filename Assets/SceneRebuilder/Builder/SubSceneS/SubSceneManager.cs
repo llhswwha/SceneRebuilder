@@ -686,15 +686,15 @@ public class SubSceneManager : MonoBehaviour
         Debug.Log($"ClearScenes list:{ssList.Length},ss:{ss.Length}");
     }
 
-    [ContextMenu("LoadScenes")]
-    public void LoadScenes()
-    {
-        subScenes = GetSubScenes();
-        foreach (var item in subScenes)
-        {
-            item.LoadScene();
-        }
-    }
+    //[ContextMenu("LoadScenes")]
+    //public void LoadScenes()
+    //{
+    //    subScenes = GetSubScenes();
+    //    foreach (var item in subScenes)
+    //    {
+    //        item.LoadScene();
+    //    }
+    //}
 
     [ContextMenu("LoadScenesAsync")]
     public void LoadScenesAsync()
@@ -785,15 +785,15 @@ public class SubSceneManager : MonoBehaviour
         yield return null;
     }
 
-    [ContextMenu("DestoryChildren")]
-    public void DestoryChildren()
-    {
-        subScenes = GetSubScenes();
-        foreach (var item in subScenes)
-        {
-            item.DestoryChildren();
-        }
-    }
+    //[ContextMenu("DestoryChildren")]
+    //public void DestoryChildren()
+    //{
+    //    subScenes = GetSubScenes();
+    //    foreach (var item in subScenes)
+    //    {
+    //        item.DestoryChildren();
+    //    }
+    //}
 
     [ContextMenu("ShowBounds")]
     public void ShowBounds()

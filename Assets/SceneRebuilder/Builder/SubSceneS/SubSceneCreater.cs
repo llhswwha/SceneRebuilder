@@ -37,20 +37,18 @@ public class SubSceneCreater : MonoBehaviour
     public void EditorMoveScenes()
     {
         InitSceneListGO();
-
         var scenes = gameObject.GetComponentsInChildren<SubScene_Base>(true);
         foreach (var scene in scenes)
         {
             SceneList.AddScene(scene);
             GameObject.DestroyImmediate(scene);
         }
-
         var scenes2 = SceneList.gameObject.GetComponentsInChildren<SubScene_Base>(true);
         SubSceneHelper.LinkScenes(scenes2);
     }
 
-    [ContextMenu("DestroyOldPartScenes")]
-    protected void DestroyOldPartScenes()
+    [ContextMenu("DestroyScenes")]
+    protected void DestroyScenes()
     {
         //Debug.Log("DestroyOldPartScenes");
         if (SceneList == null)
