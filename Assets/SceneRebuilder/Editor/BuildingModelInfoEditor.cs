@@ -5,43 +5,19 @@ using UnityEngine;
 using System;
 
 [CustomEditor(typeof(BuildingModelInfo))]
-public class BuildingModelInfoEditor : Editor
+public class BuildingModelInfoEditor : BaseEditor
 {
-    
-    GUIStyle contentStyle;
-    int buttonWidth=110;
-
-    void OnEnable () {
-		
-	}
-
-    private void NewButton(string text,bool isEnable,Action clickEvent)
-    {
-        EditorGUI.BeginDisabledGroup(!isEnable);
-        if (GUILayout.Button(text,contentStyle,GUILayout.Width(buttonWidth)))
-        {
-            if(clickEvent!=null){
-                clickEvent();
-            }
-        }
-        EditorGUI.EndDisabledGroup();
-
-        // if (GUILayout.Button(text))
-        // {
-        //     if(clickEvent!=null){
-        //         clickEvent();
-        //     }
-        // }
-    }
-
     public override void OnInspectorGUI()
     {
+        contentStyle = new GUIStyle(EditorStyles.miniButton);
+        contentStyle.alignment = TextAnchor.MiddleLeft;
+
         BuildingModelInfo info = target as BuildingModelInfo;
         int sceneCount=info.GetSceneCount();
         bool isAllLoaded=info.IsSceneLoaded();
         int treeCount=info.GetTreeCount();
-        contentStyle = new GUIStyle(EditorStyles.miniButton);
-        contentStyle.alignment = TextAnchor.MiddleLeft;
+        int partCount=info.GetPartCount();
+        
 
         EditorGUILayout.BeginHorizontal();
         if(GUILayout.Button("1.GetInfo",contentStyle,GUILayout.Width(buttonWidth)))
@@ -49,31 +25,32 @@ public class BuildingModelInfoEditor : Editor
             info.InitInOut();
         }
 
-        if(GUILayout.Button("FindDoors",contentStyle,GUILayout.Width(buttonWidth)))
+        // if(GUILayout.Button("FindDoors",contentStyle,GUILayout.Width(90)))
+        // {
+        //     //info.FindDoors();
+        // }
+        NewButton("FindDoors",90,partCount>0,info.FindInDoors);
+
+        if(GUILayout.Button("ShowMeshes",contentStyle,GUILayout.Width(90)))
         {
             //info.FindDoors();
+            MeshProfilerNS.GameObjectListMeshEditorWindow.ShowWindow(info.gameObject);
         }
-
-        if(GUILayout.Button("ShowMeshes",contentStyle,GUILayout.Width(buttonWidth)))
-        {
-            //info.FindDoors();
-        }
-
         EditorGUILayout.EndHorizontal();
 
         EditorGUILayout.BeginHorizontal();
-        NewButton("2.CreateTree",true,info.CreateTreesBSEx);
-        NewButton("RemoveTrees",treeCount>0,info.ClearTrees);
+        NewButton("2.CreateTree",buttonWidth,isAllLoaded==true && partCount>0,info.CreateTreesBSEx);
+        NewButton("RemoveTrees",buttonWidth,isAllLoaded==true && treeCount>0,info.ClearTrees);
         EditorGUILayout.EndHorizontal();
 
         EditorGUILayout.BeginHorizontal();
-        NewButton("3.CreateScenes",true,info.EditorCreateNodeScenes);
-        NewButton("RemoveScenes",isAllLoaded && sceneCount>0,info.DestroyScenes);
+        NewButton("3.CreateScenes",buttonWidth,isAllLoaded==true && treeCount>0,info.EditorCreateNodeScenes);
+        NewButton("RemoveScenes",buttonWidth,isAllLoaded==true && sceneCount>0,info.DestroyScenes);
         EditorGUILayout.EndHorizontal();
 
         EditorGUILayout.BeginHorizontal();
-        NewButton("4.LoadScenes",isAllLoaded==false && sceneCount>0,info.EditorLoadNodeScenes);
-        NewButton("UnloadScenes",isAllLoaded==true && sceneCount>0,info.UnLoadScenes);
+        NewButton("4.LoadScenes",buttonWidth,isAllLoaded==false && sceneCount>0,info.EditorLoadNodeScenesEx);
+        NewButton("UnloadScenes",buttonWidth,isAllLoaded==true && sceneCount>0,info.UnLoadScenes);
         EditorGUILayout.EndHorizontal();
 
          base.OnInspectorGUI();

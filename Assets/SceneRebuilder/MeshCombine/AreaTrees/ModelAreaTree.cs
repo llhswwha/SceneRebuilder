@@ -887,7 +887,7 @@ public class ModelAreaTree : SubSceneCreater
 
 #if UNITY_EDITOR
     [ContextMenu("* EditorCreateNodeScenes")]
-    private void EditorCreateNodeScenes()
+    public void EditorCreateNodeScenes()
     {
         EditorCreateNodeScenes(null);
     }
@@ -962,7 +962,7 @@ public class ModelAreaTree : SubSceneCreater
     }
 
     [ContextMenu("* EditorLoadNodeScenesEx")]
-    private void EditorLoadNodeScenesEx()
+    public void EditorLoadNodeScenesEx()
     {
         IdDictionary.InitInfos();
         EditorLoadNodeScenes(null);
@@ -1028,7 +1028,12 @@ public class ModelAreaTree : SubSceneCreater
         Debug.Log($"ModelAreaTree.EditorLoadNodeScenes time:{(DateTime.Now - start)}");
     }
 
-    public void UnLoadScenes(Action<float> progressChanged)
+    // public void UnLoadScenes()
+    // {
+    //     UnLoadScenes(null);
+    // }
+
+    public void UnLoadLeafScenes(Action<float> progressChanged)
     {
         DateTime start = DateTime.Now;
 

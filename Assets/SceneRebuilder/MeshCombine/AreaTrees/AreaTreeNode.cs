@@ -114,6 +114,7 @@ public class AreaTreeNode : SubSceneCreater
 
     public void LoadRenderers_Renderers()
     {
+        // Debug.LogError("LoadRenderers_Renderers:"+this.name);
         int count1 = GetRendererCount(Renderers);
         if(count1!= RenderersId.Count)
         {
@@ -135,6 +136,7 @@ public class AreaTreeNode : SubSceneCreater
 
     public void LoadRenderers_Combined()
     {
+        // Debug.LogError("LoadRenderers_Combined:"+this.name);
         int count3 = GetRendererCount(CombinedRenderers);
         if (count3 != CombinedRenderersId.Count)
         {
@@ -1047,26 +1049,29 @@ public class AreaTreeNode : SubSceneCreater
     public void EditorLoadScenes(Action<float> progressChanged)
     {
         DateTime start = DateTime.Now;
-        var scenes = GetSubScenesOfTypes(new List<SceneContentType>() { SceneContentType.TreeNode });
-        EditorLoadScenes(scenes.ToArray(), progressChanged);
+        // var scenes = GetSubScenesOfTypes(new List<SceneContentType>() { SceneContentType.TreeNode });
+        // base.EditorLoadScenes(scenes.ToArray(), progressChanged);
+
+        base.EditorLoadScenes(progressChanged);
 
         //this.InitInOut(false);
         //LoadTreeRenderers();
 
         this.LoadRenderers();
-
-        Debug.LogError($"AreaTreeNode.EditorLoadScenes time:{(DateTime.Now - start)}");
+        var time=DateTime.Now - start;
+        
+        Debug.LogWarning($"AreaTreeNode.EditorLoadScenes tree:{tree.name} node:{this.name} time:{time}");
     }
 
-    [ContextMenu("* UnLoadScenes")]
-    public void UnLoadScenes()
-    {
-        var scenes = this.GetComponentsInChildren<SubScene_Base>(true);
-       foreach (var scene in scenes)
-       {
-           scene.UnLoadGosM();
-       }
-    }
+    // [ContextMenu("* UnLoadScenes")]
+    // public void UnLoadScenes()
+    // {
+    //     var scenes = this.GetComponentsInChildren<SubScene_Base>(true);
+    //    foreach (var scene in scenes)
+    //    {
+    //        scene.UnLoadGosM();
+    //    }
+    // }
 
     [ContextMenu("* UnLoadRenderers")]
     public void UnLoadRenderers()

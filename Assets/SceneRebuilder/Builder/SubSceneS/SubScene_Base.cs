@@ -701,23 +701,22 @@ public class SubScene_Base : MonoBehaviour
                     Debug.LogError($"SubScene_Base.InitIdDict LinkedScene.IsLoaded==false scene:{this.name}");
                 }
             }
-           
             else if (this.contentType == SceneContentType.TreeAndPart)
             {
                 LoadTreeRenderers();
             }
-            else
+            else //TreeNode
             {
                
-                if (LinkedScene.IsLoaded)
-                {
-                    LinkedScene.LoadTreeRenderers();
-                    this.LoadTreeRenderers();
-                }
-                else
-                {
-                    Debug.LogError($"SubScene_Base.InitIdDict LinkedScene.IsLoaded==false scene:{this.name} linkedScene:{LinkedScene.name}");
-                }
+                // if (LinkedScene.IsLoaded)
+                // {
+                //     LinkedScene.LoadTreeRenderers();
+                //     this.LoadTreeRenderers();
+                // }
+                // else
+                // {
+                //     Debug.LogError($"SubScene_Base.InitIdDict LinkedScene.IsLoaded==false scene:{this.name} linkedScene:{LinkedScene.name}");
+                // }
             }
         }
         else

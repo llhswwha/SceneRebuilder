@@ -122,11 +122,11 @@ public class SubSceneCreater : MonoBehaviour
             ProgressBarHelper.ClearProgressBar();
     }
 
-    //public void EditorLoadScenes(SceneContentType ct, Action<float> progressChanged)
-    //{
-    //    var scenes = gameObject.GetComponentsInChildren<SubScene_Base>(true);
-    //    EditorLoadScenes(scenes, progressChanged);
-    //}
+    public void EditorLoadScenes(Action<float> progressChanged)
+    {
+        SubScene_Base[] scenes=gameObject.GetComponentsInChildren<SubScene_Base>(true);
+        EditorLoadScenes(scenes,progressChanged);
+    }
 
     public void EditorLoadScenes(SubScene_Base[] scenes, Action<float> progressChanged)
     {
@@ -165,30 +165,6 @@ public class SubSceneCreater : MonoBehaviour
         //SceneState = "EditLoadScenes_Part";
     }
 
-
-    //[ContextMenu("Base> TestSaveTreeRendersId")]
-    //public virtual void TestSaveTreeRendersId()
-    //{
-    //    Debug.Log("SubSceneCreater.TestSaveTreeRendersId");
-    //    SaveTreeRendersId();
-    //}
-
-    //[ContextMenu("Base> EditorCreateScenes")]
-    //public void EditorCreateScenes()
-    //{
-    //    //EditorCreateScenes_TreeWithPart(null);
-    //}
-    //[ContextMenu("Base> EditorLoadScenes")]
-    //public void EditorLoadScenes()
-    //{
-    //    //EditorCreateScenes_TreeWithPart(null);
-    //}
-    //[ContextMenu("Base> EditorUnloadScenes")]
-    //public void EditorUnloadScenes()
-    //{
-    //    //EditorCreateScenes_TreeWithPart(null);
-    //}
-
 #endif
 
     protected List<SubScene_Base> GetSubScenesOfTypes(List<SceneContentType> types)
@@ -211,6 +187,79 @@ public class SubSceneCreater : MonoBehaviour
     public virtual void SaveTreeRendersId()
     {
         Debug.Log("SubSceneCreater.SaveTreeRendersId");
+    }
+
+    // [ContextMenu("* UnLoadScenes")]
+    // public void UnLoadScenes()
+    // {
+    //     var scenes = this.GetComponentsInChildren<SubScene_Base>(true);
+    //    foreach (var scene in scenes)
+    //    {
+    //        scene.UnLoadGosM();
+    //    }
+    // }
+
+    [ContextMenu("ShowSceneBounds")]
+    public void ShowSceneBounds()
+    {
+        var scenes = gameObject.GetComponentsInChildren<SubScene_Base>(true);
+        foreach (var scene in scenes)
+        {
+            scene.ShowBounds();
+        }
+    }
+
+    [ContextMenu("UnLoadScenes")]
+    public virtual void UnLoadScenes()
+    {
+        // var scenes = gameObject.GetComponentsInChildren<SubScene_Base>(true);
+        // foreach(var scene in scenes)
+        // {
+        //     scene.UnLoadGosM();
+        //     scene.ShowBounds();
+        // }
+
+        UnLoadScenes(null);
+    }
+
+    public void UnLoadScenes(Action<float> progressChanged)
+    {
+        DateTime start = DateTime.Now;
+
+        var scenes = gameObject.GetComponentsInChildren<SubScene_Base>(true);
+        for (int i = 0; i < scenes.Length; i++)
+        {
+            var scene = scenes[i];
+            if (scene == null) continue;
+            float progress = (float)i / scenes.Length;
+            float percents = progress * 100;
+
+            if (progressChanged == null)
+            {
+                if (ProgressBarHelper.DisplayCancelableProgressBar("UnLoadScenes", $"Progress1 {i}/{ scenes.Length} {percents:F2}%", progress))
+                {
+                    break;
+                }
+            }
+            else
+            {
+                progressChanged(progress);
+            }
+             scene.UnLoadGosM();
+            scene.ShowBounds();
+        }
+
+        if (progressChanged == null)
+        {
+            EditorHelper.RefreshAssets();
+            ProgressBarHelper.ClearProgressBar();
+        }
+        else
+        {
+            progressChanged(1);
+        }
+
+        Debug.Log($"UnLoadScenes time:{(DateTime.Now - start)}");
     }
 
 }

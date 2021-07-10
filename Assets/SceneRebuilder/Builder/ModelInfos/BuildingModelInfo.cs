@@ -51,6 +51,15 @@ public class BuildingModelInfo : SubSceneCreater
         return pC;
     }
 
+    public void FindInDoors()
+    {
+        BuildingModelTool tool=this.GetComponent<BuildingModelTool>();
+        if(tool==null){
+            tool=this.gameObject.AddComponent<BuildingModelTool>();
+        }
+        tool.FindDoorsInBounds95();
+    }
+
     // public int GetSceneCount()
     // {
     //     if (SceneList == null)
@@ -503,6 +512,24 @@ public class BuildingModelInfo : SubSceneCreater
     {
         InitInOut(true);
     }
+
+    [ContextMenu("ClearInOut")]
+    public void ClearInOut()
+    {
+        //ClearInOut(true);
+
+        ClearPart(InPart);
+        ClearPart(OutPart0);
+        ClearPart(OutPart1);
+
+        BuildingModelTool tool=this.GetComponent<BuildingModelTool>();
+        if(tool!=null){
+            GameObject.DestroyImmediate(tool);
+        }
+    }
+
+
+
     public void InitInOut(bool isShowOut0Log)
     {
         Debug.Log("InitInOut:"+this.name);
@@ -594,7 +621,21 @@ public class BuildingModelInfo : SubSceneCreater
             {
                 child.SetParent(outRoot.transform);
             }
+
+            // InPart = InitPart("In");
+            // OutPart1 = InitPart("Out1");
         }
+
+        if (InPart == null)
+        {
+            InPart = InitPart("In");
+        }
+        if (OutPart1 == null)
+        {
+            OutPart1 = InitPart("Out1");
+        }
+
+
 
         if (OutPart1 == null && OutPart0 != null && InPart == null && OutPart0.transform.childCount == 0)
         {
@@ -762,7 +803,17 @@ public class BuildingModelInfo : SubSceneCreater
         return tree1;
     }
 
-    
+    private void ClearPart(GameObject partObj)
+    {
+        if(partObj!=null){
+            while(partObj.transform.childCount>0){
+                Transform child=partObj.transform.GetChild(0);
+                child.SetParent(this.transform);
+            }
+            GameObject.DestroyImmediate(partObj);
+        }
+
+    }
 
     public GameObject InitPart(string n)
     {
@@ -940,26 +991,26 @@ public class BuildingModelInfo : SubSceneCreater
         }
     }
 
-    [ContextMenu("ShowSceneBounds")]
-    public void ShowSceneBounds()
-    {
-        var scenes = gameObject.GetComponentsInChildren<SubScene_Base>(true);
-        foreach (var scene in scenes)
-        {
-            scene.ShowBounds();
-        }
-    }
+    // [ContextMenu("ShowSceneBounds")]
+    // public void ShowSceneBounds()
+    // {
+    //     var scenes = gameObject.GetComponentsInChildren<SubScene_Base>(true);
+    //     foreach (var scene in scenes)
+    //     {
+    //         scene.ShowBounds();
+    //     }
+    // }
 
-    [ContextMenu("UnLoadScenes")]
-    public void UnLoadScenes()
-    {
-        var scenes = gameObject.GetComponentsInChildren<SubScene_Base>(true);
-        foreach(var scene in scenes)
-        {
-            scene.UnLoadGosM();
-            scene.ShowBounds();
-        }
-    }
+    // [ContextMenu("UnLoadScenes")]
+    // public void UnLoadScenes()
+    // {
+    //     var scenes = gameObject.GetComponentsInChildren<SubScene_Base>(true);
+    //     foreach(var scene in scenes)
+    //     {
+    //         scene.UnLoadGosM();
+    //         scene.ShowBounds();
+    //     }
+    // }
 
     //[ContextMenu("LoadScenes_Part")]
     //public void LoadScenes_Part()
@@ -1424,6 +1475,12 @@ public class BuildingModelInfo : SubSceneCreater
         EditorLoadNodeScenes(null);
     }
 
+    public void EditorLoadNodeScenesEx()
+    {
+        IdDictionary.InitInfos();
+        EditorLoadNodeScenes(null);
+    }
+
     //[ContextMenu("* EditorLoadNodeScenes")]
     public void EditorLoadNodeScenes(Action<float> progressChanged)
     {
@@ -1475,7 +1532,7 @@ public class BuildingModelInfo : SubSceneCreater
             progressChanged(1);
         }
 
-        Debug.LogError($"BuildingModelInfo.EditorLoadNodeScenes time:{(DateTime.Now - start)}");
+        Debug.LogWarning($"BuildingModelInfo.EditorLoadNodeScenes time:{(DateTime.Now - start)}");
     }
 #endif
 }

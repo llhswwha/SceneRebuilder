@@ -173,7 +173,7 @@ public class BuildingModelTool : MonoBehaviour
                 if (child.childCount == 0)
                 {
                     var components = t.GetComponents<Component>();
-                    if (components.Length == 1)//只有一个Transform组件
+                    if (components.Length == 1)
                     {
                         groupList.Add(t);
                         Debug.Log($"group:{t.name}");
@@ -206,7 +206,7 @@ public class BuildingModelTool : MonoBehaviour
             if (t.childCount == 0)
             {
                 var components = t.GetComponents<Component>();
-                if (components.Length == 1)//只有一个Transform组件
+                if (components.Length == 1)
                 {
                     emptyList.Add(t);
                     Debug.Log($"empty:{t.name}");

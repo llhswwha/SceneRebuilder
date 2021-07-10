@@ -26,8 +26,11 @@ namespace MeshProfilerNS
         //     window.Init();
         // }
 
-        public static void ShowWindow(GameObject rootObj,string wndName)
+        public static void ShowWindow(GameObject rootObj,string wndName=null)
         {
+            if(string.IsNullOrEmpty(wndName)){
+                wndName=rootObj.name;
+            }
             GameObjectListMeshEditorWindow window = (GameObjectListMeshEditorWindow)EditorWindow.GetWindowWithRect(typeof(GameObjectListMeshEditorWindow), new Rect(0, 0, MPGUIStyles.SCREEN_WIDTH, MPGUIStyles.SCREEN_HEIGHT), true, $"GameObjectList | {wndName} ");
             window.Show();
             window.Init(rootObj);
