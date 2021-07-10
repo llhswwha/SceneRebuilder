@@ -53,7 +53,10 @@ public class BoundsBoxManager : MonoBehaviour
     {
         GetBoxes();
         foreach(var box in boxes){
-            box.gameObject.SetActive(true);
+            //box.gameObject.SetActive(true);
+            MeshRenderer renderer = box.GetComponent<MeshRenderer>();
+            if (renderer == null) continue;
+            renderer.enabled = true;
         }
     }
 

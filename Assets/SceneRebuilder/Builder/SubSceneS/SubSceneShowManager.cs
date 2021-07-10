@@ -192,7 +192,7 @@ public class SubSceneShowManager : MonoBehaviour
     public bool IsEnableHide = false; 
     public bool IsEnableShow=false;
 
-    public void LoadStartScens()
+    public void LoadStartScens(Action<float,bool> onComplete=null)
     {
         List<SubScene_Out0> scene_Out0s=new List<SubScene_Out0>();
         // scene_Out0s.AddRange(scenes_Out0_Tree);
@@ -204,6 +204,7 @@ public class SubSceneShowManager : MonoBehaviour
                 {
                     WaitingScenes.AddRange(scene_Out0s);
                     AreaTreeNodeShowManager.Instance.IsUpdateTreeNodeByDistance = IsUpdateTreeNodeByDistance;
+					if (onComplete != null) onComplete(p,r);
                 });
         }
         
@@ -289,10 +290,10 @@ public class SubSceneShowManager : MonoBehaviour
         LoadScenes(scenes_Out0_TreeNode_Shown,null);
     }
     
-    public void LoadHiddenTreeNodes()
+    public void LoadHiddenTreeNodes(Action<float,bool> onComplete=null)
     {
         BuildingModelManager.Instance.ShowDetail();
-        LoadScenes(scenes_Out0_TreeNode_Hidden,null);
+        LoadScenes(scenes_Out0_TreeNode_Hidden,onComplete);
     }
     // Start is called before the first frame update
     void Start()
