@@ -966,7 +966,7 @@ public class AreaTreeNode : SubSceneCreater
 
         SaveTreeRendersId();
 
-        DestroyOldPartScenes();
+        DestroyScenes();
 
         //InitInOut(false);
         //var scenes = CreatePartScene(contentType);

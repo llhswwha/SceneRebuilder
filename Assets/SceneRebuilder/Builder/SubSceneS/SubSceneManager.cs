@@ -229,9 +229,20 @@ public class SubSceneManager : MonoBehaviour
             {
                 break;
             }
-            item.EditorLoadScenesEx(this.contentType,p=>
+
+            //item.EditorLoadScenesByContentType(this.contentType,p=>
+            //{
+            //    float progress = (float)(i+p) / count;
+            //    float percents = progress * 100;
+            //    if (ProgressBarHelper.DisplayCancelableProgressBar("EditorLoadScenes", $"Progress2 {(i + p):F1}/{count} {percents:F2}% of 100%  {item.name}", progress))
+            //    {
+            //        return;
+            //    }
+            //});
+
+            item.EditorLoadNodeScenes(p =>
             {
-                float progress = (float)(i+p) / count;
+                float progress = (float)(i + p) / count;
                 float percents = progress * 100;
 
                 if (ProgressBarHelper.DisplayCancelableProgressBar("EditorLoadScenes", $"Progress2 {(i + p):F1}/{count} {percents:F2}% of 100%  {item.name}", progress))
@@ -239,6 +250,7 @@ public class SubSceneManager : MonoBehaviour
                     return;
                 }
             });
+
         }
         ProgressBarHelper.ClearProgressBar();
 
@@ -291,27 +303,27 @@ public class SubSceneManager : MonoBehaviour
         WriteLog("EditorUnLoadScenes",$"count:{buildings.Length},\t time:{(DateTime.Now - start).ToString()}");
     }
 
-    public static void EditorLoadScenes<T>(T[] scenes) where T : SubScene_Base
-    {
-        DateTime start = DateTime.Now;
-        for (int i = 0; i < scenes.Length; i++)
-        {
-            SubScene_Base item = scenes[i];
-            float progress = (float)i / scenes.Length;
-            float percents = progress * 100;
+    //public static void EditorLoadScenes<T>(T[] scenes) where T : SubScene_Base
+    //{
+    //    DateTime start = DateTime.Now;
+    //    for (int i = 0; i < scenes.Length; i++)
+    //    {
+    //        SubScene_Base item = scenes[i];
+    //        float progress = (float)i / scenes.Length;
+    //        float percents = progress * 100;
 
-            if (ProgressBarHelper.DisplayCancelableProgressBar("EditorLoadScenes", $"{item.GetSceneName()}\t{i}/{scenes.Length} {percents:F2}% of 100%", progress))
-            {
-                //ProgressBarHelper.ClearProgressBar();
-                break;
-            }
-            item.EditorLoadSceneEx();
-        }
+    //        if (ProgressBarHelper.DisplayCancelableProgressBar("EditorLoadScenes", $"{item.GetSceneName()}\t{i}/{scenes.Length} {percents:F2}% of 100%", progress))
+    //        {
+    //            //ProgressBarHelper.ClearProgressBar();
+    //            break;
+    //        }
+    //        item.EditorLoadSceneEx();
+    //    }
 
-        ProgressBarHelper.ClearProgressBar();
+    //    ProgressBarHelper.ClearProgressBar();
 
-        Debug.LogError($"EditorLoadScenes count:{scenes.Length},\t time:{(DateTime.Now - start).ToString()}");
-    }
+    //    Debug.LogError($"EditorLoadScenes count:{scenes.Length},\t time:{(DateTime.Now - start).ToString()}");
+    //}
 
     [ContextMenu("EditorSaveScenes")]
     public void EditorSaveScenes()
@@ -686,15 +698,15 @@ public class SubSceneManager : MonoBehaviour
         Debug.Log($"ClearScenes list:{ssList.Length},ss:{ss.Length}");
     }
 
-    [ContextMenu("LoadScenes")]
-    public void LoadScenes()
-    {
-        subScenes = GetSubScenes();
-        foreach (var item in subScenes)
-        {
-            item.LoadScene();
-        }
-    }
+    //[ContextMenu("LoadScenes")]
+    //public void LoadScenes()
+    //{
+    //    subScenes = GetSubScenes();
+    //    foreach (var item in subScenes)
+    //    {
+    //        item.LoadScene();
+    //    }
+    //}
 
     [ContextMenu("LoadScenesAsync")]
     public void LoadScenesAsync()
@@ -785,15 +797,15 @@ public class SubSceneManager : MonoBehaviour
         yield return null;
     }
 
-    [ContextMenu("DestoryChildren")]
-    public void DestoryChildren()
-    {
-        subScenes = GetSubScenes();
-        foreach (var item in subScenes)
-        {
-            item.DestoryChildren();
-        }
-    }
+    //[ContextMenu("DestoryChildren")]
+    //public void DestoryChildren()
+    //{
+    //    subScenes = GetSubScenes();
+    //    foreach (var item in subScenes)
+    //    {
+    //        item.DestoryChildren();
+    //    }
+    //}
 
     [ContextMenu("ShowBounds")]
     public void ShowBounds()

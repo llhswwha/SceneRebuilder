@@ -859,7 +859,8 @@ public class SceneRebuildEditorWindow : ListManagerEditorWindow<BuildingModelEle
         {
             if (SelectIndex < 0) return;
             var ele = meshElementList[SelectIndex];
-            ele.modelInfo.EditorLoadScenes_TreeWithPart();
+            //ele.modelInfo.EditorLoadScenes_TreeWithPart();
+            ele.modelInfo.EditorLoadNodeScenes();
             Debug.Log($"LoadScenes index:{SelectIndex} ele:{ele} obj:{ele.rootObj}");
         }
         if (GUILayout.Button("UnLoadScenes", GUILayout.Height(buttonHeight)))
@@ -873,7 +874,7 @@ public class SceneRebuildEditorWindow : ListManagerEditorWindow<BuildingModelEle
         {
             if (SelectIndex < 0) return;
             var ele = meshElementList[SelectIndex];
-            ele.modelInfo.OneKey_TreePartScene();
+            ele.modelInfo.OneKey_TreeNodeScene();
             Debug.Log($"OneKey index:{SelectIndex} ele:{ele} obj:{ele.rootObj}");
         }
         GUILayout.EndArea();

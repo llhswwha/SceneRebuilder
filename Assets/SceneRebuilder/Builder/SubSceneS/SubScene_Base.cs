@@ -346,21 +346,22 @@ public class SubScene_Base : MonoBehaviour
         IsLoading = false;
     }
 
-    [ContextMenu("ReLoadScene")]
-    public void ReLoadScene()
-    {
-        UnLoadGosM();
-        LoadScene();
-    }
+    //[ContextMenu("ReLoadScene")]
+    //public void ReLoadScene()
+    //{
+    //    UnLoadGosM();
+    //    LoadScene();
+    //}
 
-    [ContextMenu("LoadScene")]
-    public void LoadScene()
-    {
-        var gs= EditorHelper.LoadScene(GetSceneArg(), IsSetParent ? GetSceneParent() : null).ToList();
-        SetObjects(gs);
-        SetRendererParent();
-        IsLoaded = true;
-    }
+    //[ContextMenu("LoadScene")]
+    //public void LoadScene()
+    //{
+    //    var gs= EditorHelper.LoadScene(GetSceneArg(), IsSetParent ? GetSceneParent() : null).ToList();
+    //    SetObjects(gs);
+    //    SetRendererParent();
+    //    IsLoaded = true;
+    //}
+
     //[ContextMenu("TestLoadSceneAsync")]
     //public void TestLoadSceneAsync()
     //{
@@ -435,7 +436,7 @@ public class SubScene_Base : MonoBehaviour
         Debug.Log($"[{tag}]{log}");
     }
 
-    [ContextMenu("TestLoadSceneAsync")]
+    [ContextMenu("LoadSceneAsync")]
     public void TestLoadSceneAsync()
     {
         StartCoroutine(LoadSceneAsyncCoroutine(null));
@@ -489,7 +490,7 @@ public class SubScene_Base : MonoBehaviour
              Debug.LogError("[SubScene_Base.LoadSceneAsync]this.gameObject.activeInHierarchy == false :" + name);
         }
     }
-    [ContextMenu("TestUnLoadSceneAsync")]
+    [ContextMenu("UnLoadSceneAsync2")]
     public void TestUnLoadSceneAsync()
     {
         UnLoadSceneAsync();
@@ -538,7 +539,7 @@ public class SubScene_Base : MonoBehaviour
     }
 
      [ContextMenu("SetRendererParent")]
-    private void SetRendererParent()
+    public void SetRendererParent()
     {
         RendererId[] rIds=this.GetComponentsInChildren<RendererId>(true);
         foreach(var rI in rIds){
@@ -546,7 +547,7 @@ public class SubScene_Base : MonoBehaviour
         }
     }
 
-     [ContextMenu("SetRendererParentEx")]
+     [ContextMenu("SetRendererParent_Ids")]
     private void SetRendererParentEx()
     {
         IdDictionary.InitInfos();
@@ -563,13 +564,13 @@ public class SubScene_Base : MonoBehaviour
         return i;
     }
 
-    public void Update()
-    {
-        //if (IsLoaded == true && gos.Count == 0 && IsSetParent)
-        //{
-        //    GetSceneObjects();
-        //}
-    }
+    //public void Update()
+    //{
+    //    //if (IsLoaded == true && gos.Count == 0 && IsSetParent)
+    //    //{
+    //    //    GetSceneObjects();
+    //    //}
+    //}
 
     public void CheckGetSceneObjects()
     {
