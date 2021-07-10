@@ -179,14 +179,14 @@ public class ModelAreaTree : SubSceneCreater
             AreaTreeNode node = TreeNodes[i];
             if (node==null)continue;
             if(node.Nodes.Count>0)continue;
-            node.CombineMesh();//����
+            node.CombineMesh();
             renderCount += node.RendererCount;
         }
 
         int newRenderCount=0;
         if(this.RootNode==null)
         {
-            Debug.LogError("CombineMesh this.RootNode==null����:"+this.name);
+            Debug.LogError("CombineMesh this.RootNode==null :"+this.name);
             return;
         }
         var renderersNew=this.RootNode.GetComponentsInChildren<MeshRenderer>();

@@ -55,6 +55,20 @@ public class SubScene_List : MonoBehaviour
         }
     }
 
+    public bool IsAllLoaded()
+    {
+        bool isLoaded=true;
+        foreach(var scene in scenes)
+        {
+            if(scene==null)continue;
+            if(scene.IsLoaded==false){
+                isLoaded=false;
+                break;
+            }
+        }
+        return isLoaded;
+    }
+
     // public void ClearChildren()
     // {
     //     List<Transform> children=new List<Transform>();

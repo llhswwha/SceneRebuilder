@@ -20,6 +20,18 @@ public class SubSceneCreater : MonoBehaviour
         SceneList.Init();
     }
 
+    public int GetSceneCount()
+    {
+        GetTreeNodeScenes();
+        return SceneList.sceneCount;
+    }
+
+    public bool IsSceneLoaded()
+    {
+        GetTreeNodeScenes();
+        return SceneList.IsAllLoaded();
+    }
+
     private void InitSceneListGO()
     {
         if (SceneList == null)
@@ -48,7 +60,7 @@ public class SubSceneCreater : MonoBehaviour
     }
 
     [ContextMenu("DestroyScenes")]
-    protected void DestroyScenes()
+    public void DestroyScenes()
     {
         //Debug.Log("DestroyOldPartScenes");
         if (SceneList == null)

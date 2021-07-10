@@ -51,17 +51,17 @@ public class BuildingModelInfo : SubSceneCreater
         return pC;
     }
 
-    public int GetSceneCount()
-    {
-        if (SceneList == null)
-        {
-            return 0;
-        }
-        else
-        {
-            return SceneList.sceneCount;
-        }
-    }
+    // public int GetSceneCount()
+    // {
+    //     if (SceneList == null)
+    //     {
+    //         return 0;
+    //     }
+    //     else
+    //     {
+    //         return SceneList.sceneCount;
+    //     }
+    // }
 
     public string GetInfoName()
     {
@@ -160,7 +160,7 @@ public class BuildingModelInfo : SubSceneCreater
         }
         SubSceneShowManager.Instance.LoadScenes(scenes,(p,r)=>{
             Debug.LogError($"SwitchToCombined2 nodes:{nodes.Count} scenes:{scenes.Count}\t{(DateTime.Now-start).ToString()}");
-            
+
             if(r){
                 for(int i=0;i<nodes.Count;i++){
                     var node=nodes[i];
@@ -213,6 +213,7 @@ public class BuildingModelInfo : SubSceneCreater
         {
             GameObject.DestroyImmediate(oldT.gameObject);
         }
+        this.ShowRenderers();
     }
     
 
