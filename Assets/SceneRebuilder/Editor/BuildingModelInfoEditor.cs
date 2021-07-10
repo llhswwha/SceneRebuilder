@@ -5,7 +5,7 @@ using UnityEngine;
 using System;
 
 [CustomEditor(typeof(BuildingModelInfo))]
-public class BuildingModelInfoEditor : BaseEditor
+public class BuildingModelInfoEditor : BaseEditor<BuildingModelInfo>
 {
     public override void OnInspectorGUI()
     {
@@ -17,7 +17,23 @@ public class BuildingModelInfoEditor : BaseEditor
         bool isAllLoaded=info.IsSceneLoaded();
         int treeCount=info.GetTreeCount();
         int partCount=info.GetPartCount();
-        
+
+        EditorGUILayout.BeginHorizontal();
+        //if (GUILayout.Button("Debug", contentStyle, GUILayout.Width(80)))
+        //{
+        //    info.SceneList.IsAllLoaded_Debug();
+        //}
+        if (GUILayout.Button("SetUnloadScenes", contentStyle, GUILayout.Width(150)))
+        {
+            //info.SceneList.IsAllLoaded_Debug();
+
+            var scenes=info.SceneList.GetUnloadedScenes();
+            Debug.Log($"scenes:{scenes.Count}");
+            //EditorHelper.SelectObject(element.rootObj);
+            EditorHelper.SelectObjects(scenes);
+        }
+        GUILayout.Label($"loaded:{isAllLoaded},part:{partCount} tree:{treeCount},scene:{sceneCount}");
+        EditorGUILayout.EndHorizontal();
 
         EditorGUILayout.BeginHorizontal();
         if(GUILayout.Button("1.GetInfo",contentStyle,GUILayout.Width(buttonWidth)))

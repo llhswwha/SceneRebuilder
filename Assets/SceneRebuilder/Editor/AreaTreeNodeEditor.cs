@@ -4,10 +4,6 @@ using UnityEditor;
 using UnityEngine;
 
 [CustomEditor(typeof(AreaTreeNode))]
-public class AreaTreeNodeEditor : Editor
+public class AreaTreeNodeEditor : BaseEditor<AreaTreeNode>
 {
-    public override void OnInspectorGUI()
-    {
-        base.OnInspectorGUI();
-    }
 }

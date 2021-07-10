@@ -4,28 +4,46 @@ using UnityEngine;
 using UnityEditor;
 
 [CustomEditor(typeof(BuildingModelTool))]
-public class BuildingModelToolEditor : BaseEditor
+public class BuildingModelToolEditor : BaseEditor<BuildingModelTool>
 {
-    public override void OnInspectorGUI()
+    //public override void OnInspectorGUI()
+    //{
+    //    contentStyle = new GUIStyle(EditorStyles.miniButton);
+    //    contentStyle.alignment = TextAnchor.MiddleLeft;
+
+    //    BuildingModelTool tool = target as BuildingModelTool;
+
+    //    if(GUILayout.Button("SetDoorSetting",contentStyle))
+    //    {
+    //        tool.SetDoorSetting();
+    //    }
+    //    if(GUILayout.Button("RemoveGeometryGroup",contentStyle))
+    //    {
+    //        tool.RemoveGeometryGroup();
+    //    }
+    //    if(GUILayout.Button("RemoveEmptyObjects",contentStyle))
+    //    {
+    //        tool.RemoveEmptyObjects();
+    //    }
+
+    //    base.OnInspectorGUI();
+    //}
+
+    public override void OnToolLayout(BuildingModelTool item)
     {
-        contentStyle = new GUIStyle(EditorStyles.miniButton);
-        contentStyle.alignment = TextAnchor.MiddleLeft;
+        base.OnToolLayout(item);
 
-        BuildingModelTool tool = target as BuildingModelTool;
-
-        if(GUILayout.Button("SetDoorSetting",contentStyle))
+        if (GUILayout.Button("SetDoorSetting", contentStyle))
         {
-            tool.SetDoorSetting();
+            item.SetDoorSetting();
         }
-        if(GUILayout.Button("RemoveGeometryGroup",contentStyle))
+        if (GUILayout.Button("RemoveGeometryGroup", contentStyle))
         {
-            tool.RemoveGeometryGroup();
+            item.RemoveGeometryGroup();
         }
-        if(GUILayout.Button("RemoveEmptyObjects",contentStyle))
+        if (GUILayout.Button("RemoveEmptyObjects", contentStyle))
         {
-            tool.RemoveEmptyObjects();
+            item.RemoveEmptyObjects();
         }
-
-        base.OnInspectorGUI();
     }
 }

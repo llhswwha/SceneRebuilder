@@ -263,3 +263,8 @@ public class SubSceneCreater : MonoBehaviour
     }
 
 }
+
+public enum ScenesState
+{
+
+}

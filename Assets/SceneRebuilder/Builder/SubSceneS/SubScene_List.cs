@@ -69,6 +69,38 @@ public class SubScene_List : MonoBehaviour
         return isLoaded;
     }
 
+    public bool IsAllLoaded_Debug()
+    {
+        bool isLoaded = true;
+        foreach (var scene in scenes)
+        {
+            if (scene == null) continue;
+            if (scene.IsLoaded == false)
+            {
+                //isLoaded = false;
+                //break;
+                Debug.Log($"scene:{scene.name} isLoaded:{scene.IsLoaded}");
+            }
+        }
+        return isLoaded;
+    }
+
+    public List<SubScene_Base> GetUnloadedScenes()
+    {
+        List<SubScene_Base> unloadscenes = new List<SubScene_Base>();
+        foreach (var scene in scenes)
+        {
+            if (scene == null) continue;
+            if (scene.IsLoaded == false)
+            {
+                unloadscenes.Add(scene);
+
+                //Debug.Log($"unload scene:{scene.name} isLoaded:{scene.IsLoaded}");
+            }
+        }
+        return unloadscenes;
+    }
+
     // public void ClearChildren()
     // {
     //     List<Transform> children=new List<Transform>();
