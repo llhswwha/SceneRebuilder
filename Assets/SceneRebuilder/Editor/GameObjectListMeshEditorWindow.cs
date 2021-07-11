@@ -28,6 +28,7 @@ namespace MeshProfilerNS
 
         public static void ShowWindow(GameObject rootObj,string wndName=null)
         {
+            Debug.LogError("GameObjectListMeshEditorWindow.ShowWindow:"+rootObj);
             if(string.IsNullOrEmpty(wndName)){
                 wndName=rootObj.name;
             }

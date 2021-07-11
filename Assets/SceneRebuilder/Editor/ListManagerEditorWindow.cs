@@ -101,7 +101,7 @@ public class ListManagerEditorWindow<T1,T2> : EditorWindow where T1 : ListItemEl
 
         int pages = count / pageCount;
         
-        Debug.Log($"DrawPageIndexBlock count:{count} pageCount:{pageCount} pages:{pages}");
+        //Debug.Log($"DrawPageIndexBlock count:{count} pageCount:{pageCount} pages:{pages}");
         if (count % pageCount != 0)
             pages++;
 

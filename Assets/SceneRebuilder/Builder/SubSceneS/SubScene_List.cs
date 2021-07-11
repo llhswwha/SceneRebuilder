@@ -101,6 +101,16 @@ public class SubScene_List : MonoBehaviour
         return unloadscenes;
     }
 
+    public void LoadUnloadedScenes()
+    {
+        var scenes = this.GetUnloadedScenes();
+        //foreach (var scene in scenes)
+        //{
+        //    scene.EditorLoadScene();
+        //}
+        SubSceneCreater.EditorLoadScenes(scenes, null);
+    }
+
     // public void ClearChildren()
     // {
     //     List<Transform> children=new List<Transform>();

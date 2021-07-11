@@ -779,14 +779,19 @@ public class AreaTreeNode : SubSceneCreater
                 if (AreaTreeHelper.render2NodeDict.ContainsKey(render))
                 {
                     var node = AreaTreeHelper.render2NodeDict[render];
-                    if (node == this)
+                    if (node == null)
+                    {
+                        //Debug.LogWarning($"Node1被删除了 render:{render},node1:{AreaTreeHelper.render2NodeDict[render]},node2:{this}");
+                        AreaTreeHelper.render2NodeDict[render] = this;
+                    }
+                    else if(node == this)
                     {
 
                     }
                     else
                     {
+                        Debug.LogWarning($"模型重复在不同的Node里 render:{render},node1:{AreaTreeHelper.render2NodeDict[render].name},node2:{this.name}");
                         AreaTreeHelper.render2NodeDict[render] = this;
-                        Debug.LogWarning($"模型重复在不同的Node里:{AreaTreeHelper.render2NodeDict[render]},{this}");
                     }
                 }
                 else
@@ -1160,6 +1165,11 @@ public class AreaTreeNode : SubSceneCreater
     private void OnDisable()
     {
         //Debug.LogError($"AreaTreeNode.OnDisable {this.name}");
+    }
+
+    private void OnDestroy()
+    {
+        Debug.LogError($"AreaTreeNode.OnDestroy {this.name}");
     }
 
     private float lastP = 0;

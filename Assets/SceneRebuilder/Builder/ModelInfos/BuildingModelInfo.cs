@@ -126,6 +126,8 @@ public class BuildingModelInfo : SubSceneCreater
     public GameObject OutPart0;
     public GameObject OutPart1;
 
+    //public MeshVertexInfo InVertexInfo;
+
     public float InVertextCount = 0;
     public float Out0VertextCount = 0;
     public float Out1VertextCount = 0;

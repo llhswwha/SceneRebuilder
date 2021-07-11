@@ -192,11 +192,32 @@ public static class EditorHelper
         }
     }
 
-    public static void SelectObject(GameObject obj)
+    public static void SelectObject(Object obj)
     {
+        //EditorGUIUtility.Object
         EditorGUIUtility.PingObject(obj);
-        Selection.activeGameObject = obj;
+        Selection.activeObject = obj;
         EditorApplication.ExecuteMenuItem("Edit/Frame Selected");
+    }
+
+    public static void SelectObjects(GameObject[] objs)
+    {
+        //EditorGUIUtility.Object
+        if(objs.Length>0)
+            EditorGUIUtility.PingObject(objs[0]);
+        Selection.objects = objs;
+        EditorApplication.ExecuteMenuItem("Edit/Frame Selected");
+    }
+
+    public static void SelectObjects<T>(IEnumerable<T> components) where T :Component
+    {
+        List<GameObject> objs = new List<GameObject>();
+        foreach(var com in components)
+        {
+            if (com == null) continue;
+            objs.Add(com.gameObject);
+        }
+        SelectObjects(objs.ToArray());
     }
 
     /// <summary>

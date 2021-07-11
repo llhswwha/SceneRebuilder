@@ -165,7 +165,12 @@ public class ModelAreaTree : SubSceneCreater
     //}
 
     public void CombineMesh(Action<float> progressChanged)
-    {   
+    {
+        if (TreeNodes.Count == 0)
+        {
+            Debug.LogError("CombineMesh TreeNodes.Count == 0 :" + this.name);
+            return;
+        }
         //IsCombined=true;
         DateTime start=DateTime.Now;
         int renderCount=0;
@@ -266,6 +271,11 @@ public class ModelAreaTree : SubSceneCreater
         //ClearChildren();
 
         MeshRenderer[] renderers=GetTreeRendererers();
+        if (renderers.Length == 0)
+        {
+            Debug.LogWarning("CreateCells_Tree renderers:" + renderers.Length+"|tree:"+this.name);
+            return;
+        }
         
         Debug.Log("CreateCells_Tree renderers:"+renderers.Length);
         foreach(var render in renderers){
@@ -282,15 +292,12 @@ public class ModelAreaTree : SubSceneCreater
         nodeStatics.LevelDepth = 0;
         GameObject rootCube=AreaTreeHelper.CreateBoundsCube(bounds,$"RootNode",null, GetCubePrefabId());
         AreaTreeNode node=rootCube.AddComponent<AreaTreeNode>();
-        DestoryNodes();
+        //DestoryNodes();
         this.RootNode=node;
-        this.TreeNodes.Add(node);
-
-        node.Bounds=bounds;
+        this.TreeNodes.Add(node);        node.Bounds=bounds;
         node.AddRenderers(renderers.ToList());
         
         node.CreateSubNodes(0,0,this,GetCubePrefabId());
-
         var allCount=this.TreeNodes.Count;
         
         int cellCount=ClearNodes();
@@ -304,7 +311,6 @@ public class ModelAreaTree : SubSceneCreater
         }
         
         if(rootCube==null){
-            Debug.LogError("rootCube==null:"+this.name);
             return;
         }
         rootCube.transform.SetParent(this.transform);
@@ -387,7 +393,7 @@ public class ModelAreaTree : SubSceneCreater
     //[ContextMenu("1.AddColliders")]
     public void AddColliders()
     {
-        DateTime start=DateTime.Now;
+        //DateTime start=DateTime.Now;
         var renderers=GetTreeRendererers();
         foreach(var render in renderers){
             if(render==null)continue;
@@ -396,7 +402,7 @@ public class ModelAreaTree : SubSceneCreater
                 collider=render.gameObject.AddComponent<MeshCollider>();
             }
         }
-        Debug.LogWarning($"AddColliders renderers:{renderers.Length},\t{(DateTime.Now-start).ToString()}");
+        //Debug.LogWarning($"AddColliders renderers:{renderers.Length},\t{(DateTime.Now-start).ToString()}");
     }
 
     //[ContextMenu("ClearDictionary")]
@@ -433,6 +439,13 @@ public class ModelAreaTree : SubSceneCreater
     public void GenerateMesh(Action<float> progressChanged)
     {
          DateTime start=DateTime.Now;
+
+        MeshRenderer[] renderers = GetTreeRendererers();
+        if (renderers.Length == 0)
+        {
+            Debug.LogWarning("CreateCells_Tree renderers:" + renderers.Length + "|tree:" + this.name);
+            return;
+        }
 
         //ShowRenderers();
         AddColliders();
@@ -606,6 +619,7 @@ public class ModelAreaTree : SubSceneCreater
     [ContextMenu("DestoryNodes")]
     public void DestoryNodes()
     {
+        Debug.LogError("DestoryNodes:"+this.name+ "|IsCopy:" + IsCopy);
         var target = GetTarget();
         if(IsCopy){
             if(RootNode!=null)
@@ -896,9 +910,9 @@ public class ModelAreaTree : SubSceneCreater
     {
         //GetTreeNodeScenes();
 
-        Debug.Log("EditorCreateNodeScenes:"+this.name);
+        //Debug.Log("EditorCreateNodeScenes:"+this.name);
         if(SceneList!=null&& SceneList.sceneCount>0){
-            Debug.LogError("EditorCreateNodeScenes SceneList!=null&& SceneList.sceneCount>0 "+this.name);
+            Debug.LogError("ModelAreaTree.EditorCreateNodeScenes SceneList!=null&& SceneList.sceneCount>0 "+this.name);
             if(progressChanged!=null){
                 progressChanged(1);
             }

@@ -122,13 +122,23 @@ public class SubSceneCreater : MonoBehaviour
             ProgressBarHelper.ClearProgressBar();
     }
 
+    public void LoadUnloadedScenes()
+    {
+        SceneList.LoadUnloadedScenes();
+    }
+
     public void EditorLoadScenes(Action<float> progressChanged)
     {
         SubScene_Base[] scenes=gameObject.GetComponentsInChildren<SubScene_Base>(true);
         EditorLoadScenes(scenes,progressChanged);
     }
 
-    public void EditorLoadScenes(SubScene_Base[] scenes, Action<float> progressChanged)
+    public static void EditorLoadScenes(List<SubScene_Base> scenes, Action<float> progressChanged)
+    {
+        EditorLoadScenes(scenes.ToArray(), progressChanged);
+    }
+
+        public static void EditorLoadScenes(SubScene_Base[] scenes, Action<float> progressChanged)
     {
         Debug.Log("EditorLoadScenes:" + scenes.Length);
         for (int i = 0; i < scenes.Length; i++)

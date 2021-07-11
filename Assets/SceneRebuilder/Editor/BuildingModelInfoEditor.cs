@@ -14,61 +14,122 @@ public class BuildingModelInfoEditor : BaseEditor<BuildingModelInfo>
 
         BuildingModelInfo info = target as BuildingModelInfo;
         int sceneCount=info.GetSceneCount();
+        int unloadedSceneCount = info.SceneList.GetUnloadedScenes().Count;
+
+
         bool isAllLoaded=info.IsSceneLoaded();
         int treeCount=info.GetTreeCount();
         int partCount=info.GetPartCount();
 
+        if(isAllLoaded==false && sceneCount>0 && unloadedSceneCount>0 && unloadedSceneCount<sceneCount)
+        {
+            EditorGUILayout.BeginHorizontal();
+            if (GUILayout.Button("SelectUnload", contentStyle, GUILayout.Width(100)))
+            {
+                //info.SceneList.IsAllLoaded_Debug();
+
+                var scenes = info.SceneList.GetUnloadedScenes();
+                Debug.Log($"scenes:{scenes.Count}");
+                //EditorHelper.SelectObject(element.rootObj);
+                EditorHelper.SelectObjects(scenes);
+            }
+            if (GUILayout.Button("LoadUnloaded", contentStyle, GUILayout.Width(100)))
+            {
+                IdDictionary.InitInfos();
+                info.LoadUnloadedScenes();
+            }
+            GUILayout.Label($"loaded:{isAllLoaded},part:{partCount} tree:{treeCount},scene:{sceneCount},unloaded:{unloadedSceneCount}");
+            EditorGUILayout.EndHorizontal();
+        }
+
+
         EditorGUILayout.BeginHorizontal();
-        //if (GUILayout.Button("Debug", contentStyle, GUILayout.Width(80)))
+        NewButton("1.GetInfo", buttonWidth, isAllLoaded == true || sceneCount==0 || treeCount==0, info.InitInOut);
+        NewButton("FindDoors",90,partCount>0 && (isAllLoaded == true || sceneCount == 0 || treeCount == 0),info.FindInDoors);
+
+        //if(GUILayout.Button("ShowMeshes",contentStyle,GUILayout.Width(90)))
         //{
-        //    info.SceneList.IsAllLoaded_Debug();
+        //    //info.FindDoors();
+        //    MeshProfilerNS.GameObjectListMeshEditorWindow.ShowWindow(info.gameObject);
         //}
-        if (GUILayout.Button("SetUnloadScenes", contentStyle, GUILayout.Width(150)))
-        {
-            //info.SceneList.IsAllLoaded_Debug();
-
-            var scenes=info.SceneList.GetUnloadedScenes();
-            Debug.Log($"scenes:{scenes.Count}");
-            //EditorHelper.SelectObject(element.rootObj);
-            EditorHelper.SelectObjects(scenes);
-        }
-        GUILayout.Label($"loaded:{isAllLoaded},part:{partCount} tree:{treeCount},scene:{sceneCount}");
         EditorGUILayout.EndHorizontal();
 
         EditorGUILayout.BeginHorizontal();
-        if(GUILayout.Button("1.GetInfo",contentStyle,GUILayout.Width(buttonWidth)))
-        {
-            info.InitInOut();
-        }
-
-        // if(GUILayout.Button("FindDoors",contentStyle,GUILayout.Width(90)))
-        // {
-        //     //info.FindDoors();
-        // }
-        NewButton("FindDoors",90,partCount>0,info.FindInDoors);
-
-        if(GUILayout.Button("ShowMeshes",contentStyle,GUILayout.Width(90)))
-        {
-            //info.FindDoors();
-            MeshProfilerNS.GameObjectListMeshEditorWindow.ShowWindow(info.gameObject);
-        }
-        EditorGUILayout.EndHorizontal();
-
-        EditorGUILayout.BeginHorizontal();
-        NewButton("2.CreateTree",buttonWidth,isAllLoaded==true && partCount>0,info.CreateTreesBSEx);
+        NewButton("2.CreateTree",buttonWidth,isAllLoaded==true && partCount>0 && treeCount==0,info.CreateTreesBSEx);
         NewButton("RemoveTrees",buttonWidth,isAllLoaded==true && treeCount>0,info.ClearTrees);
         EditorGUILayout.EndHorizontal();
 
         EditorGUILayout.BeginHorizontal();
-        NewButton("3.CreateScenes",buttonWidth,isAllLoaded==true && treeCount>0,info.EditorCreateNodeScenes);
+        NewButton("3.CreateScenes",buttonWidth,isAllLoaded==true && treeCount>0 && sceneCount==0,info.EditorCreateNodeScenes);
         NewButton("RemoveScenes",buttonWidth,isAllLoaded==true && sceneCount>0,info.DestroyScenes);
         EditorGUILayout.EndHorizontal();
 
         EditorGUILayout.BeginHorizontal();
-        NewButton("4.LoadScenes",buttonWidth,isAllLoaded==false && sceneCount>0,info.EditorLoadNodeScenesEx);
+
+
+        //int unloadedSceneCount = info.SceneList.GetUnloadedScenes().Count;
+        NewButton("4.LoadScenes",buttonWidth,isAllLoaded==false && sceneCount>0,()=>
+        {
+            info.EditorLoadNodeScenesEx();
+            //info.LoadUnloadedScenes();
+        });
         NewButton("UnloadScenes",buttonWidth,isAllLoaded==true && sceneCount>0,info.UnLoadScenes);
         EditorGUILayout.EndHorizontal();
 
-         base.OnInspectorGUI();
+        EditorGUILayout.BeginHorizontal();
+        if(GUILayout.Button("All",GUILayout.Width(50)))
+        {
+            MeshProfilerNS.GameObjectListMeshEditorWindow.ShowWindow(info.gameObject);
+        }
+        GUILayout.Button(info.AllRendererCount.ToString(), GUILayout.Width(50));
+        GUILayout.Button(info.AllVertextCount.ToString("F2"), GUILayout.Width(80));
+        EditorGUILayout.EndHorizontal();
+
+        EditorGUILayout.BeginHorizontal();
+        if(GUILayout.Button("Out0", GUILayout.Width(50)))
+        {
+            MeshProfilerNS.GameObjectListMeshEditorWindow.ShowWindow(info.OutPart0.gameObject);
+        }
+        GUILayout.Button(info.Out0RendererCount.ToString(), GUILayout.Width(50));
+        GUILayout.Button(info.Out0VertextCount.ToString("F2"), GUILayout.Width(80));
+        EditorGUILayout.EndHorizontal();
+
+        EditorGUILayout.BeginHorizontal();
+        if(GUILayout.Button("In", GUILayout.Width(50)))
+        {
+            MeshProfilerNS.GameObjectListMeshEditorWindow.ShowWindow(info.InPart.gameObject);
+        }
+        GUILayout.Button(info.InRendererCount.ToString(), GUILayout.Width(50));
+        GUILayout.Button(info.InVertextCount.ToString("F2"), GUILayout.Width(80));
+        EditorGUILayout.EndHorizontal();
+
+        EditorGUILayout.BeginHorizontal();
+        if(GUILayout.Button("Out1", GUILayout.Width(50)))
+        {
+            MeshProfilerNS.GameObjectListMeshEditorWindow.ShowWindow(info.OutPart1.gameObject);
+        }
+        GUILayout.Button(info.Out1RendererCount.ToString(), GUILayout.Width(50));
+        GUILayout.Button(info.Out1VertextCount.ToString("F2"), GUILayout.Width(80));
+        EditorGUILayout.EndHorizontal();
+
+        EditorGUILayout.BeginHorizontal();
+        if (GUILayout.Button("Out0B", GUILayout.Width(50)))
+        {
+            //MeshProfilerNS.GameObjectListMeshEditorWindow.ShowWindow(info.OutPart1.gameObject);
+        }
+        GUILayout.Button(info.Out0BigRendererCount.ToString(), GUILayout.Width(50));
+        GUILayout.Button(info.Out0BigVertextCount.ToString("F2"), GUILayout.Width(80));
+        EditorGUILayout.EndHorizontal();
+
+        EditorGUILayout.BeginHorizontal();
+        if (GUILayout.Button("Out0S", GUILayout.Width(50)))
+        {
+            //MeshProfilerNS.GameObjectListMeshEditorWindow.ShowWindow(info.OutPart1.gameObject);
+        }
+        GUILayout.Button(info.Out0SmallRendererCount.ToString(), GUILayout.Width(50));
+        GUILayout.Button(info.Out0SmallVertextCount.ToString("F2"), GUILayout.Width(80));
+        EditorGUILayout.EndHorizontal();
+
+        base.OnInspectorGUI();
     }
 }

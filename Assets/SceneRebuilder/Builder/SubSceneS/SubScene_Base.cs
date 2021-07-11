@@ -630,9 +630,7 @@ public class SubScene_Base : MonoBehaviour
         }
         var gs = EditorHelper.EditorLoadScene(scene, sceneArg.path, IsSetParent ? GetSceneParent() : null).ToList();
         SetObjects(gs);
-
         InitIdDict();
-
         SetRendererParent();
     }
 
@@ -644,8 +642,6 @@ public class SubScene_Base : MonoBehaviour
             Debug.LogWarning("EditorLoadScene IsLoaded==true :" + GetSceneName());
             return;
         }
-
-
         EditorLoadScene();
     }
 
