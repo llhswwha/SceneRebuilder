@@ -12,25 +12,49 @@ public class MeshPartInfo{
 
     public List<MeshFilter> meshFilters;
 
+    public List<int> meshIndexes;
+
     public int vertexCount=0;
 
-    public MeshPartInfo(List<MeshFilter> mfs){
+    public int GetMeshIndex(int id)
+    {
+        if (meshIndexes == null)
+        {
+            return 0;
+        }
+        if(meshIndexes.Count-1>=id)
+        {
+            return meshIndexes[id];
+        }
+        else
+        {
+            return 0;
+        }
+    }
+
+    public MeshPartInfo(List<MeshFilter> mfs, List<int> indexes)
+    {
         meshFilters=mfs;
+        meshIndexes = indexes;
     }
 
     public MeshPartInfo(){
         meshFilters=new List<MeshFilter>();
+        meshIndexes = new List<int>();
     }
 
-    public void Add(MeshFilter mf)
-    {
-        meshFilters.Add(mf);
-        vertexCount+=mf.sharedMesh.vertexCount;
-    }
+    //public void Add(MeshFilter mf,int id)
+    //{
+    //    meshFilters.Add(mf);
+    //    meshIndexes.Add(id);
+    //    //vertexCount+=mf.sharedMesh.vertexCount;
+    //    vertexCount += (int)(mf.sharedMesh.GetIndexCount(id));
+    //}
 
-    public void Add(MeshFilter mf,int vc)
+    public void Add(MeshFilter mf, int id, int vc)
     {
         meshFilters.Add(mf);
-        vertexCount+=vc;
+        meshIndexes.Add(id);
+        vertexCount += vc;
     }
 }

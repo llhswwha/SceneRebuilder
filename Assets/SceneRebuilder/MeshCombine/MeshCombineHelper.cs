@@ -192,10 +192,10 @@ public static class MeshCombineHelper
         {
             string matKey= MatInfo.GetMatKey(mat);
             var list = mats[mat];
-            foreach (var item in list)
+            foreach (MeshFilter meshFilter in list)
             {
-                if(item==null)continue;
-                MeshRenderer renderer = item.GetComponent<MeshRenderer>();
+                if(meshFilter==null)continue;
+                MeshRenderer renderer = meshFilter.GetComponent<MeshRenderer>();
                 if (renderer == null) continue;
                 //renderer.sharedMaterial = mat;
 
@@ -390,8 +390,16 @@ public static class MeshCombineHelper
             Debug.Log("mesh:"+mesh.name);
             Debug.Log("mesh.meshFilters:"+mesh.meshFilters.Count);
             MeshFilter[] meshFilters=gameObject.GetComponentsInChildren<MeshFilter>();
-            foreach(var mf in meshFilters){
-                mesh.meshFilters.Remove(mf);
+            for (int i = 0; i < meshFilters.Length; i++)
+            {
+                MeshFilter mf = meshFilters[i];
+                //mesh.meshFilters.Remove(mf);
+                int id = mesh.meshFilters.IndexOf(mf);
+                if (id != -1)
+                {
+                    mesh.meshFilters.RemoveAt(id);
+                    mesh.meshIndexes.RemoveAt(id);
+                }
             }
             MeshRenderer[] meshRenderers=gameObject.GetComponentsInChildren<MeshRenderer>();
             foreach(var mr in meshRenderers){

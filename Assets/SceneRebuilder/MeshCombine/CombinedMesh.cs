@@ -15,7 +15,9 @@ public class CombinedMesh{
     public Material mat;
 
     public Transform source;
+
     public List<MeshFilter> meshFilters;
+    public List<int> meshIndexes;
 
     public int VertexCount=0;
 
@@ -34,7 +36,22 @@ public class CombinedMesh{
         else{
             this.meshFilters=new List<MeshFilter>(mfs);
         }
+        meshIndexes = new List<int>();
         this.mat=mat;
+        foreach(var mf in mfs)
+        {
+            MeshRenderer render = mf.GetComponent<MeshRenderer>();
+            int id = 0;
+            for(int i = 0; i < render.sharedMaterials.Length; i++)
+            {
+                if (render.sharedMaterials[i] == mat)
+                {
+                    id = i;
+                    break;
+                }
+            }
+            meshIndexes.Add(id);
+        }
 
         minMax=MeshHelper.GetMinMax(this.meshFilters);
 
@@ -67,6 +84,7 @@ public class CombinedMesh{
                 continue;
             }
             combines[i].mesh=ms;
+            combines[i].subMeshIndex = info.GetMeshIndex(i);
             combines[i].transform=matrix*mf.transform.localToWorldMatrix;
             //combines[i].transform=mf.transform;
             mr.enabled=false;//不渲染原模型
@@ -113,21 +131,24 @@ public class CombinedMesh{
         {
             MeshFilter mf=meshFilters[i];
             if (mf.sharedMesh == null) continue;
+            int meshId = meshIndexes[i];
             Mesh ms=mf.sharedMesh;
+
             //Debug.Log(string.Format("DoCombine[{0}/{1}]:{2}",i,count,VertexCount));
-            int vc=ms.vertexCount;
+            //int vc=ms.vertexCount;
+            int vc = (int)(ms.GetIndexCount(meshId));
             VertexCount+=vc;
 
             if(vcSum+vc>MaxVertex)//判断数量
             {
                 vcSum=vc;
                 list=new MeshPartInfo();//新的
-                list.Add(mf,vc);
+                list.Add(mf, meshId,vc);
                 allList.Add(list);
             }
             else{
                 vcSum+=vc;
-                list.Add(mf,vc);
+                list.Add(mf, meshId, vc);
             }
         }
         meshes=new List<MeshPartInfo>();
@@ -153,7 +174,8 @@ public class CombinedMesh{
 
         List<MeshPartInfo> allList=new List<MeshPartInfo>();
         List<MeshFilter> list=new List<MeshFilter>();
-        allList.Add(new MeshPartInfo(list));
+        List<int> indexes = new List<int>();
+        allList.Add(new MeshPartInfo(list, indexes));
 
         VertexCount=0;
         int vcSum=0;
@@ -161,6 +183,7 @@ public class CombinedMesh{
         for(int i=0;i<count;i++)
         {
             MeshFilter mf=meshFilters[i];
+            int id = meshIndexes[i];
             Mesh ms=mf.sharedMesh;
             //Debug.Log(string.Format("DoCombine[{0}/{1}]:{2}",i,count,VertexCount));
             int vc=ms.vertexCount;
@@ -171,11 +194,14 @@ public class CombinedMesh{
                 vcSum=vc;
                 list=new List<MeshFilter>();
                 list.Add(mf);
-                allList.Add(new MeshPartInfo(list));
+                indexes = new List<int>();
+                indexes.Add(id);
+                allList.Add(new MeshPartInfo(list, indexes));
             }
             else{
                 vcSum+=vc;
                 list.Add(mf);
+                indexes.Add(id);
             }
         }
         meshes=new List<MeshPartInfo>();
