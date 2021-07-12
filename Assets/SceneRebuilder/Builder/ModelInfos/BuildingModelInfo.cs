@@ -584,6 +584,9 @@ public class BuildingModelInfo : SubSceneCreater
             Debug.LogError("GetSmallBigInfo JobSetting == null");
             return;
         }
+
+        RendererManager.Instance.SetDetailRenderers();
+
         var meshFilters = OutPart0.GetComponentsInChildren<MeshFilter>(true);
         var info=PrefabInstanceBuilder.GetBigSmallRenderers(meshFilters, JobSetting.MaxModelLength);
 
