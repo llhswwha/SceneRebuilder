@@ -1483,6 +1483,7 @@ public class BuildingModelInfo : SubSceneCreater
 
     public void EditorLoadNodeScenesEx()
     {
+        Unpack();
         IdDictionary.InitInfos();
         EditorLoadNodeScenes(null);
     }
