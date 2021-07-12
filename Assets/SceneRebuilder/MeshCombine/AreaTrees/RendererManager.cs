@@ -60,24 +60,21 @@ public class RendererManager : MonoBehaviour
     {
         InitIds();
     }
+    [ContextMenu("CheckRenderers")]
+    public void CheckRenderers()
+    {
 
-    [ContextMenu("InitRenderers_All")]
-    public void InitRenderers_All()
+    }
+
+    private void InitRenderers()
     {
         DateTime start = DateTime.Now;
-        ProgressBarHelper.DisplayProgressBar("InitIds", "Start", 0);
-        allRenderers = GameObject.FindObjectsOfType<MeshRenderer>(true);
-        allRIds.Clear();
         int count = allRenderers.Length;
         for (int i = 0; i < count; i++)
         {
             MeshRenderer r = allRenderers[i];
-            RendererId id = r.GetComponent<RendererId>();
-            if (id == null)
-            {
-                id = r.gameObject.AddComponent<RendererId>();
-                id.Init(r);
-            }
+            RendererId id = RendererId.InitId(r);
+
             allRIds.Add(id);
 
             MeshRendererInfo info = r.GetComponent<MeshRendererInfo>();
@@ -98,52 +95,50 @@ public class RendererManager : MonoBehaviour
         }
         Count = allRenderers.Length;
         ProgressBarHelper.ClearProgressBar();
-        Debug.Log($"InitRenderers_All count:{allRenderers.Length} time:{(DateTime.Now - start)}");
+        Debug.Log($"InitRenderers count:{allRenderers.Length} time:{(DateTime.Now - start)}");
     }
 
-    [ContextMenu("InitRenderers_Target")]
+    [ContextMenu("InitRenderers(All)")]
+    public void InitRenderers_All()
+    {
+        ProgressBarHelper.DisplayProgressBar("InitRenderers_All", "Start", 0);
+        allRenderers = GameObject.FindObjectsOfType<MeshRenderer>(true);
+        allRIds.Clear();
+
+        InitRenderers();
+    }
+
+    [ContextMenu("InitRenderers(Target)")]
     public void InitRenderers_Target()
     {
-        DateTime start = DateTime.Now;
-        ProgressBarHelper.DisplayProgressBar("InitIds", "Start", 0);
+        ProgressBarHelper.DisplayProgressBar("InitRenderers_Target", "Start", 0);
         allRenderers = TestGo.GetComponentsInChildren<MeshRenderer>(true);
         allRIds.Clear();
-        int count = allRenderers.Length;
-        for (int i = 0; i < count; i++)
-        {
-            MeshRenderer r = allRenderers[i];
-            RendererId id = r.GetComponent<RendererId>();
-            if (id == null)
-            {
-                id = r.gameObject.AddComponent<RendererId>();
-                id.Init(r);
-            }
-            allRIds.Add(id);
 
-            MeshRendererInfo info = r.GetComponent<MeshRendererInfo>();
-            if (info == null)
-            {
-                info = r.gameObject.AddComponent<MeshRendererInfo>();
-                info.Init();
-            }
-
-
-            float progress = (float)i / count;
-            float percents = progress * 100;
-
-            if (ProgressBarHelper.DisplayCancelableProgressBar("InitIds", $"Progress1 {i}/{count} {percents:F1}% {r.name}", progress))
-            {
-                break;
-            }
-        }
-        allRIds = TestGo.GetComponentsInChildren<RendererId>(true).ToList();
-
-        Count = allRenderers.Length;
-        ProgressBarHelper.ClearProgressBar();
-        Debug.Log($"InitRenderers_Target count:{allRenderers.Length} allRIds:{allRIds.Count} time:{(DateTime.Now - start)}");
+        InitRenderers();
     }
 
-    [ContextMenu("ClearIds_All")]
+    [ContextMenu("CheckRendererParent")]
+    public void CheckRendererParent()
+    {
+        DateTime start = DateTime.Now;
+        
+        IdDictionary.InitInfos();
+
+        allRIds = GameObject.FindObjectsOfType<RendererId>(true).ToList();
+        int changedCount=0;
+        foreach(var id in allRIds)
+        {
+            if(id.IsParentChanged())
+            {
+                // Debug.Log($"ParentChanged \t{id.name}");
+                changedCount++;
+            }
+        }
+        Debug.Log($"CheckRendererParent count:{allRIds.Count} changedCount:{changedCount} time:{(DateTime.Now - start)}");
+    }
+
+    [ContextMenu("ClearIds(All)")]
     public void ClearIds_All()
     {
         DateTime start = DateTime.Now;
@@ -155,7 +150,7 @@ public class RendererManager : MonoBehaviour
         Debug.Log($"ClearIds_All count:{allRIds.Count} time:{(DateTime.Now - start)}");
     }
 
-    [ContextMenu("ClearIds_Target")]
+    [ContextMenu("ClearIds(Target)")]
     public void ClearIds_Target()
     {
         DateTime start = DateTime.Now;

@@ -155,8 +155,12 @@ public static class IdDictionary
         Debug.Log($"RendererDictionay.InitRenderers tag:{tag} objs:{objs.Count()},idCount:{idCount} count1:{count1} count2:{count2} add:{count2-count1} time:{(DateTime.Now - start)}");
     }
 
-    public static GameObject GetGo(string id)
+    public static GameObject GetGo(string id,string goName="")
     {
+        if(string.IsNullOrEmpty(id)){
+            Debug.LogError($"RendererDictionay.GetGo IsNullOrEmpty !!! ,Dict:{IdDict.Count}");
+            return null;
+        }
         if (IdDict.ContainsKey(id))
         {
             var go = IdDict[id];
@@ -167,7 +171,7 @@ public static class IdDictionary
             }
             return go.gameObject;
         }
-        Debug.LogError($"RendererDictionay.GetGo go not found id:{id},Dict:{IdDict.Count}");
+        Debug.LogError($"RendererDictionay.GetGo go not found id:{id},\tgoName:{goName},\tDict:{IdDict.Count}");
         return null;
     }
 

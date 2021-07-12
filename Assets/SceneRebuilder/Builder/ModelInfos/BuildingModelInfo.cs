@@ -534,7 +534,9 @@ public class BuildingModelInfo : SubSceneCreater
 
     public void InitInOut(bool isShowOut0Log)
     {
+        DateTime start = DateTime.Now;
         Debug.Log("InitInOut:"+this.name);
+
         if (this.transform.childCount == 0)
         {
             Debug.LogWarning("InitInOut this.transform.childCount == 0");
@@ -552,7 +554,9 @@ public class BuildingModelInfo : SubSceneCreater
 
         GetBigSmallInfo();
 
+        RendererId.InitIds(this.gameObject);
 
+         Debug.Log($"InitInOut time:{(DateTime.Now - start)}");
     }
 
     [ContextMenu("CenterPivot")]

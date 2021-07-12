@@ -24,6 +24,16 @@ public class RendererId
         parentId=GetId(this.transform.parent);
     }
 
+    public bool IsParentChanged()
+    {
+        var newParentId=GetId(this.transform.parent);
+        bool isChanged=newParentId != parentId;
+        if(isChanged){
+            Debug.Log($"ParentChanged {this.name} parentId:{parentId} newParentId:{newParentId} parent:{GetParent()} newParent:{this.transform.parent}");
+        }
+        return isChanged;
+    }
+
     internal void Init(GameObject go)
     {
         if (go == null) return;
@@ -49,10 +59,15 @@ public class RendererId
     }
 
     [ContextMenu("GetParent")]
-    public void GetParent()
+    public GameObject GetParent()
     {
+        if(string.IsNullOrEmpty(parentId))
+        {
+            parentId=GetId(this.transform.parent);
+        }
         GameObject pGo=IdDictionary.GetGo(parentId);
-        Debug.LogError($"RendererId.GetParent name:{this.name} Id:{this.Id} parentId:{this.parentId} pGo:{pGo}");
+        // Debug.LogError($"RendererId.GetParent name:{this.name} Id:{this.Id} parentId:{this.parentId} pGo:{pGo}");
+        return pGo;
     }
 
     [ContextMenu("GetParentEx")]
@@ -95,6 +110,46 @@ public class RendererId
             id.Init(r);
         }
         return id;
+    }
+
+    public static RendererId InitId(MeshRenderer r)
+    {
+        RendererId id = r.GetComponent<RendererId>();
+        if (id == null)
+        {
+            id = r.gameObject.AddComponent<RendererId>();
+        }
+        id.Init(r);
+        return id;
+    }
+
+    public static void InitIds(GameObject rootObj)
+    {
+        MeshRenderer[] renderers=rootObj.GetComponentsInChildren<MeshRenderer>();
+        InitIds(renderers);
+    }
+
+    public static void InitIds(MeshRenderer[] renderers)
+    {
+        // DateTime start = DateTime.Now;
+        int count = renderers.Length;
+        for (int i = 0; i < count; i++)
+        {
+            MeshRenderer r = renderers[i];
+            RendererId id = RendererId.InitId(r);
+            // float progress = (float)i / count;
+            // float percents = progress * 100;
+            // if (ProgressBarHelper.DisplayCancelableProgressBar("InitIds", $"Progress1 {i}/{count} {percents:F1}% {r.name}", progress))
+            // {
+            //     break;
+            // }
+
+        }
+
+        // Count = allRenderers.Length;
+        // ProgressBarHelper.ClearProgressBar();
+
+        // Debug.Log($"InitIds count:{renderers.Length} time:{(DateTime.Now - start)}");
     }
 
     private void OnDestroy()

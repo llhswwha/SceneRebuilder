@@ -75,8 +75,18 @@ public class BuildingModelInfoEditor : BaseEditor<BuildingModelInfo>
         EditorGUILayout.EndHorizontal();
 
         EditorGUILayout.BeginHorizontal();
-        NewButton("5.OneKey",buttonWidth,isAllLoaded==true && treeCount>0 && sceneCount==0,info.EditorCreateNodeScenes);
-        NewButton("Reset",buttonWidth,isAllLoaded==true && sceneCount>0,info.DestroyScenes);
+        NewButton("5.OneKey",buttonWidth,treeCount==0 && sceneCount==0,()=>{
+            // info.InitInOut();
+            // info.CreateTreesBSEx();
+            // info.EditorCreateNodeScenes();
+            info.OneKey_TreeNodeScene();
+
+        });
+        NewButton("Reset",buttonWidth,sceneCount>0 && treeCount>0,()=>{
+            info.EditorLoadNodeScenesEx();
+            info.DestroyScenes();
+            info.ClearTrees();
+        });
         EditorGUILayout.EndHorizontal();
 
         EditorGUILayout.BeginHorizontal();
