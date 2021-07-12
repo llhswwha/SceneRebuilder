@@ -65,8 +65,6 @@ public class BuildingModelInfoEditor : BaseEditor<BuildingModelInfo>
         EditorGUILayout.EndHorizontal();
 
         EditorGUILayout.BeginHorizontal();
-
-
         //int unloadedSceneCount = info.SceneList.GetUnloadedScenes().Count;
         NewButton("4.LoadScenes",buttonWidth,isAllLoaded==false && sceneCount>0,()=>
         {
@@ -77,12 +75,17 @@ public class BuildingModelInfoEditor : BaseEditor<BuildingModelInfo>
         EditorGUILayout.EndHorizontal();
 
         EditorGUILayout.BeginHorizontal();
+        NewButton("5.OneKey",buttonWidth,isAllLoaded==true && treeCount>0 && sceneCount==0,info.EditorCreateNodeScenes);
+        NewButton("Reset",buttonWidth,isAllLoaded==true && sceneCount>0,info.DestroyScenes);
+        EditorGUILayout.EndHorizontal();
+
+        EditorGUILayout.BeginHorizontal();
         if(GUILayout.Button("All",GUILayout.Width(50)))
         {
             MeshProfilerNS.GameObjectListMeshEditorWindow.ShowWindow(info.gameObject);
         }
+        GUILayout.Button(info.AllVertextCount.ToString("F1")+"w", GUILayout.Width(80));
         GUILayout.Button(info.AllRendererCount.ToString(), GUILayout.Width(50));
-        GUILayout.Button(info.AllVertextCount.ToString("F2"), GUILayout.Width(80));
         EditorGUILayout.EndHorizontal();
 
         EditorGUILayout.BeginHorizontal();
@@ -90,8 +93,9 @@ public class BuildingModelInfoEditor : BaseEditor<BuildingModelInfo>
         {
             MeshProfilerNS.GameObjectListMeshEditorWindow.ShowWindow(info.OutPart0.gameObject);
         }
+        GUILayout.Button(info.Out0VertextCount.ToString("F1")+"w", GUILayout.Width(80));
         GUILayout.Button(info.Out0RendererCount.ToString(), GUILayout.Width(50));
-        GUILayout.Button(info.Out0VertextCount.ToString("F2"), GUILayout.Width(80));
+
         EditorGUILayout.EndHorizontal();
 
         EditorGUILayout.BeginHorizontal();
@@ -99,8 +103,9 @@ public class BuildingModelInfoEditor : BaseEditor<BuildingModelInfo>
         {
             MeshProfilerNS.GameObjectListMeshEditorWindow.ShowWindow(info.InPart.gameObject);
         }
+        GUILayout.Button(info.InVertextCount.ToString("F1")+"w", GUILayout.Width(80));
         GUILayout.Button(info.InRendererCount.ToString(), GUILayout.Width(50));
-        GUILayout.Button(info.InVertextCount.ToString("F2"), GUILayout.Width(80));
+
         EditorGUILayout.EndHorizontal();
 
         EditorGUILayout.BeginHorizontal();
@@ -108,8 +113,8 @@ public class BuildingModelInfoEditor : BaseEditor<BuildingModelInfo>
         {
             MeshProfilerNS.GameObjectListMeshEditorWindow.ShowWindow(info.OutPart1.gameObject);
         }
+        GUILayout.Button(info.Out1VertextCount.ToString("F1")+"w", GUILayout.Width(80));
         GUILayout.Button(info.Out1RendererCount.ToString(), GUILayout.Width(50));
-        GUILayout.Button(info.Out1VertextCount.ToString("F2"), GUILayout.Width(80));
         EditorGUILayout.EndHorizontal();
 
         EditorGUILayout.BeginHorizontal();
@@ -117,8 +122,8 @@ public class BuildingModelInfoEditor : BaseEditor<BuildingModelInfo>
         {
             //MeshProfilerNS.GameObjectListMeshEditorWindow.ShowWindow(info.OutPart1.gameObject);
         }
+        GUILayout.Button(info.Out0BigVertextCount.ToString("F1")+"w", GUILayout.Width(80));
         GUILayout.Button(info.Out0BigRendererCount.ToString(), GUILayout.Width(50));
-        GUILayout.Button(info.Out0BigVertextCount.ToString("F2"), GUILayout.Width(80));
         EditorGUILayout.EndHorizontal();
 
         EditorGUILayout.BeginHorizontal();
@@ -126,8 +131,9 @@ public class BuildingModelInfoEditor : BaseEditor<BuildingModelInfo>
         {
             //MeshProfilerNS.GameObjectListMeshEditorWindow.ShowWindow(info.OutPart1.gameObject);
         }
+        GUILayout.Button(info.Out0SmallVertextCount.ToString("F1")+"w", GUILayout.Width(80));
         GUILayout.Button(info.Out0SmallRendererCount.ToString(), GUILayout.Width(50));
-        GUILayout.Button(info.Out0SmallVertextCount.ToString("F2"), GUILayout.Width(80));
+
         EditorGUILayout.EndHorizontal();
 
         base.OnInspectorGUI();

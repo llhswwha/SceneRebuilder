@@ -171,6 +171,7 @@ public class ModelAreaTree : SubSceneCreater
             Debug.LogError("CombineMesh TreeNodes.Count == 0 :" + this.name);
             return;
         }
+        MeshCombinerSetting.Instance.SetSetting();
         //IsCombined=true;
         DateTime start=DateTime.Now;
         int renderCount=0;
@@ -450,7 +451,7 @@ public class ModelAreaTree : SubSceneCreater
         //ShowRenderers();
         AddColliders();
         CreateCells_Tree();
-        CombineMesh(progressChanged);//����
+        CombineMesh(progressChanged);
         CreateDictionary();
         foreach (var item in TreeNodes)
         {

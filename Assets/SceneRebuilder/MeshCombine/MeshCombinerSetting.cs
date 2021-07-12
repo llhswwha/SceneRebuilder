@@ -4,7 +4,16 @@ using UnityEngine;
 using UnityEngine.UI;
 public class MeshCombinerSetting : MonoBehaviour
 {
-    public static MeshCombinerSetting Instance;
+    private static MeshCombinerSetting _instance;
+    public static MeshCombinerSetting Instance
+    {
+        get{
+            if(_instance==null){
+                _instance=GameObject.FindObjectOfType<MeshCombinerSetting>();
+            }
+            return _instance;
+        }
+    }
 
     public int MaxVertex=65535;
 
@@ -21,7 +30,7 @@ public class MeshCombinerSetting : MonoBehaviour
     public int WaitCount=10000;
 
     void Awake(){
-        Instance=this;
+        //Instance=this;
 
         SetSetting();
     }
