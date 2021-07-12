@@ -24,6 +24,17 @@ public class MeshRendererInfo : MonoBehaviour
 
     public MeshRendererType rendererType;
 
+    [ContextMenu("GetRendererType")]
+    public void GetRendererType()
+    {
+        bool isDetail=RendererManager.Instance.IsDetail(this.gameObject);
+        if(isDetail)
+        {
+            rendererType=MeshRendererType.Detail;
+        }
+        Debug.Log("isDetail:"+isDetail);
+    }
+
     [ContextMenu("Init")]
     public void Init()
     {

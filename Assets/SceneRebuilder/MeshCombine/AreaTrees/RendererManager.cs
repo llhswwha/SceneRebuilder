@@ -6,11 +6,22 @@ using UnityEngine;
 
 public class RendererManager : MonoBehaviour
 {
+    private static RendererManager _instance;
+
+    public static RendererManager Instance
+    {
+        get{
+            if(_instance==null){
+                _instance=GameObject.FindObjectOfType<RendererManager>();
+            }
+            return _instance;
+        }
+    }
     public GameObject[] GetAllGos;
 
-    private MeshRenderer[] allRenderers;
+    // private MeshRenderer[] allRenderers;
 
-    private List<RendererId> allRIds = new List<RendererId>();
+    // private List<RendererId> allRIds = new List<RendererId>();
 
     private List<string> allIds = new List<string>();
 
@@ -50,8 +61,8 @@ public class RendererManager : MonoBehaviour
          DateTime start = DateTime.Now;
         IdDictionary.InitInfos();
         allIds = IdDictionary.GetIds();
-        allRIds = IdDictionary.GetRIds();
-        allRenderers = IdDictionary.GetRenderers().ToArray();
+        var allRIds = IdDictionary.GetRIds();
+        var allRenderers = IdDictionary.GetRenderers().ToArray();
         Count = allRIds.Count;
         Debug.Log($"InitIds count:{Count} time:{(DateTime.Now - start)}");
     }
@@ -66,10 +77,11 @@ public class RendererManager : MonoBehaviour
 
     }
 
-    private void InitRenderers_Inner()
+    private List<RendererId> InitRenderers_Inner(MeshRenderer[] allRenderers)
     {
         DateTime start = DateTime.Now;
         int count = allRenderers.Length;
+        List<RendererId> allRIds = new List<RendererId>();
         for (int i = 0; i < count; i++)
         {
             MeshRenderer r = allRenderers[i];
@@ -88,7 +100,7 @@ public class RendererManager : MonoBehaviour
             float progress = (float)i / count;
             float percents = progress * 100;
 
-            if (ProgressBarHelper.DisplayCancelableProgressBar("InitIds", $"Progress1 {i}/{count} {percents:F1}% {r.name}", progress))
+            if (ProgressBarHelper.DisplayCancelableProgressBar("InitRenderers", $"Progress1 {i}/{count} {percents:F1}% {r.name}", progress))
             {
                 break;
             }
@@ -96,26 +108,27 @@ public class RendererManager : MonoBehaviour
         Count = allRenderers.Length;
         ProgressBarHelper.ClearProgressBar();
         Debug.Log($"InitRenderers count:{allRenderers.Length} time:{(DateTime.Now - start)}");
+        return allRIds;
     }
 
     [ContextMenu("InitRenderers(All)")]
     public void InitRenderers_All()
     {
         ProgressBarHelper.DisplayProgressBar("InitRenderers_All", "Start", 0);
-        allRenderers = GameObject.FindObjectsOfType<MeshRenderer>(true);
-        allRIds.Clear();
+        var allRenderers = GameObject.FindObjectsOfType<MeshRenderer>(true);
+        //allRIds.Clear();
 
-        InitRenderers_Inner();
+        InitRenderers_Inner(allRenderers);
     }
 
     [ContextMenu("InitRenderers(Target)")]
     public void InitRenderers_Target()
     {
         ProgressBarHelper.DisplayProgressBar("InitRenderers_Target", "Start", 0);
-        allRenderers = TestGo.GetComponentsInChildren<MeshRenderer>(true);
-        allRIds.Clear();
+        var allRenderers = TestGo.GetComponentsInChildren<MeshRenderer>(true);
+        //allRIds.Clear();
 
-        InitRenderers_Inner();
+        InitRenderers_Inner(allRenderers);
     }
 
     [ContextMenu("CheckRendererParent")]
@@ -125,7 +138,7 @@ public class RendererManager : MonoBehaviour
         
         IdDictionary.InitInfos();
 
-        allRIds = GameObject.FindObjectsOfType<RendererId>(true).ToList();
+        var allRIds = GameObject.FindObjectsOfType<RendererId>(true).ToList();
         int changedCount=0;
         foreach(var id in allRIds)
         {
@@ -142,7 +155,7 @@ public class RendererManager : MonoBehaviour
     public void ClearIds_All()
     {
         DateTime start = DateTime.Now;
-        allRIds = GameObject.FindObjectsOfType<RendererId>(true).ToList();
+        var allRIds = GameObject.FindObjectsOfType<RendererId>(true).ToList();
         foreach(var id in allRIds)
         {
             GameObject.DestroyImmediate(id);
@@ -154,7 +167,7 @@ public class RendererManager : MonoBehaviour
     public void ClearIds_Target()
     {
         DateTime start = DateTime.Now;
-        allRIds = TestGo.GetComponentsInChildren<RendererId>(true).ToList();
+        var allRIds = TestGo.GetComponentsInChildren<RendererId>(true).ToList();
         foreach(var id in allRIds)
         {
             GameObject.DestroyImmediate(id);
@@ -169,7 +182,7 @@ public class RendererManager : MonoBehaviour
     {
         DateTime start = DateTime.Now;
         ProgressBarHelper.DisplayProgressBar("ClearIds", "Start", 0);
-        allRenderers = GameObject.FindObjectsOfType<MeshRenderer>(true);
+        var allRenderers = GameObject.FindObjectsOfType<MeshRenderer>(true);
         int count = allRenderers.Length;
         for (int i = 0; i < count; i++)
         {
@@ -198,14 +211,14 @@ public class RendererManager : MonoBehaviour
     [ContextMenu("DisableShadow_All")]
     public void DisableShadow_All()
     {
-        allRenderers = GameObject.FindObjectsOfType<MeshRenderer>(true);
+        var allRenderers = GameObject.FindObjectsOfType<MeshRenderer>(true);
         SetShadowCastingMode(allRenderers,UnityEngine.Rendering.ShadowCastingMode.Off);
     }
 
     [ContextMenu("EnableShadow_All")]
     public void EnableShadow_All()
     {
-        allRenderers = GameObject.FindObjectsOfType<MeshRenderer>(true);
+        var allRenderers = GameObject.FindObjectsOfType<MeshRenderer>(true);
         SetShadowCastingMode(allRenderers,UnityEngine.Rendering.ShadowCastingMode.On);
     }
 
@@ -263,6 +276,7 @@ public class RendererManager : MonoBehaviour
         if(rendererInfos.Length!=renderers.Length)
         {
             InitRenderers_All();
+            rendererInfos=GameObject.FindObjectsOfType<MeshRendererInfo>(true);
         }
         foreach(var info in rendererInfos){
             if(IsDetail(info.gameObject))
@@ -289,7 +303,7 @@ public class RendererManager : MonoBehaviour
     {
         DateTime start = DateTime.Now;
         ProgressBarHelper.DisplayProgressBar("RemoveEmptyParent_Target", "Start", 0);
-        allRenderers = TestGo.GetComponentsInChildren<MeshRenderer>(true);
+        var allRenderers = TestGo.GetComponentsInChildren<MeshRenderer>(true);
         int count = allRenderers.Length;
         int removeCount = 0;
         for (int i = 0; i < count; i++)
