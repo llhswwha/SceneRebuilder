@@ -4,7 +4,7 @@ namespace CodeStage.AdvancedFPSCounter.Editor.UI
 	using UnityEditor;
 	using UnityEngine;
 
-	internal struct EditorUIUtils : System.IDisposable
+	public struct EditorUIUtils : System.IDisposable
 	{
 		public static GUIStyle richBoldFoldout;
 		public static GUIStyle richMiniLabel;
@@ -106,7 +106,18 @@ namespace CodeStage.AdvancedFPSCounter.Editor.UI
 			return foldout.isExpanded;
 		}
 
-		public static bool ToggleFoldout(SerializedProperty toggle, SerializedProperty foldout, string caption, bool bold = true, bool separator = true, bool background = true)
+        public static bool Foldout(bool isExpanded, string caption)
+        {
+            //Separator(5);
+            //GUILayout.BeginHorizontal(panelWithBackground);
+            GUILayout.BeginHorizontal();
+            GUILayout.Space(13);
+            isExpanded = EditorGUI.Foldout(EditorGUILayout.GetControlRect(), isExpanded, caption, true, richBoldFoldout);
+            GUILayout.EndHorizontal();
+            return isExpanded;
+        }
+
+        public static bool ToggleFoldout(SerializedProperty toggle, SerializedProperty foldout, string caption, bool bold = true, bool separator = true, bool background = true)
 		{
 			if (separator) Separator(5);
 
@@ -133,7 +144,50 @@ namespace CodeStage.AdvancedFPSCounter.Editor.UI
 			return toggle.boolValue;
 		}
 
-		public static bool DrawProperty(SerializedProperty property, System.Action setter, params GUILayoutOption[] options)
+        public static bool ToggleFoldout(bool isExpanded, string caption,string info, bool bold = true, bool separator = true, bool background = true,System.Action clieckAction=null)
+        {
+            if (separator) Separator(5);
+
+            if (background)
+            {
+                GUILayout.BeginHorizontal(panelWithBackground);
+            }
+            else
+            {
+                GUILayout.BeginHorizontal();
+            }
+
+            var currentLabelWidth = EditorGUIUtility.labelWidth;
+
+            //EditorGUIUtility.labelWidth = 1;
+            ////EditorGUILayout.PropertyField(toggle, GUIContent.none, GUILayout.ExpandWidth(false));
+            //GUILayout.Label("aaa");
+            //EditorGUIUtility.labelWidth = currentLabelWidth;
+
+            GUILayout.Space(10);
+            var rect = EditorGUILayout.GetControlRect();
+            isExpanded = EditorGUI.Foldout(rect, isExpanded, caption, true, bold ? richBoldFoldout : EditorStyles.foldout);
+
+            EditorGUIUtility.labelWidth = 1;
+            var contentStyle = new GUIStyle(EditorStyles.label);
+            contentStyle.alignment = TextAnchor.MiddleRight;
+            //EditorGUILayout.PropertyField(toggle, GUIContent.none, GUILayout.ExpandWidth(false));
+            GUILayout.Label(info, contentStyle);
+            if(GUILayout.Button("S", EditorStyles.miniButtonLeft, GUILayout.Width(20)))
+            {
+                if (clieckAction != null)
+                {
+                    clieckAction();
+                }
+            }
+            EditorGUIUtility.labelWidth = currentLabelWidth;
+
+            GUILayout.EndHorizontal();
+
+            return isExpanded;
+        }
+
+        public static bool DrawProperty(SerializedProperty property, System.Action setter, params GUILayoutOption[] options)
 		{
 			return DrawProperty(property, (GUIContent)null, setter, options);
 		}

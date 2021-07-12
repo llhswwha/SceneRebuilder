@@ -8,6 +8,10 @@ using UnityEditor.SceneManagement;
 
 public class SceneRebuildManager : MonoBehaviour
 {
+    [HideInInspector]
+    [SerializeField]
+    private bool buildingListFoldout;
+
     public SubSceneManager subSceneManager;
 
     public BuildingModelManager buildingModelManager;

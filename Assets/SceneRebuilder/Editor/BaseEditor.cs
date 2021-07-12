@@ -10,10 +10,15 @@ public class BaseEditor<T> : Editor where T:class
     protected GUIStyle contentStyle;
     protected int buttonWidth=110;
 
-    protected void NewButton(string text,int width,bool isEnable,Action clickEvent)
+    public void NewButton(string text, int width, bool isEnable, Action clickEvent)
+    {
+        NewButton(text, width, isEnable, contentStyle, clickEvent);
+    }
+
+    public static void NewButton(string text,int width,bool isEnable, GUIStyle style, Action clickEvent)
     {
         EditorGUI.BeginDisabledGroup(!isEnable || clickEvent==null);
-        if (GUILayout.Button(text,contentStyle,GUILayout.Width(width)))
+        if (GUILayout.Button(text, style, GUILayout.Width(width)))
         {
             if(clickEvent!=null){
                 clickEvent();
