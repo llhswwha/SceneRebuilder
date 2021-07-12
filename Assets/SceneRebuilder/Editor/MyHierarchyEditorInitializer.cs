@@ -34,6 +34,51 @@ public class MyHierarchyEditorInitializer
     public static float Layer2Width = 65;
     public static float Layer3Width = 45;
 
+    private static void ShowBuildingModelInfo(GameObject go,int instancedId,Rect selectionRect)
+    {
+        BuildingModelInfo modelInfo = go.GetComponent<BuildingModelInfo>();
+        bool r = modelInfo.IsModelSceneFinish();
+        Color c = new Color(0, 1, 0);
+        if (go.GetComponent<BuildingController>() != null)
+        {
+            if (r)
+            {
+                CreateLabel($"[{modelInfo.GetInfoName()}][Build]", selectionRect, Layer1Width, c, Color.red);
+            }
+            else
+            {
+                CreateLabel($"[{modelInfo.GetInfoName()}][Build]", selectionRect, Layer1Width, new Color(1, 0.5f, 0.5f), Color.red);
+            }
+            
+        }
+        else if (go.GetComponent<FloorController>() != null)
+        {
+            //CreateLabel($"[{modelInfo.GetInfoName()}][Floor]", selectionRect, Layer1Width, new Color(1, 0.7f, 0.3f), Color.red);
+
+            if (r)
+            {
+                CreateLabel($"[{modelInfo.GetInfoName()}][Floor]", selectionRect, Layer1Width, c, Color.red);
+            }
+            else
+            {
+                CreateLabel($"[{modelInfo.GetInfoName()}][Floor]", selectionRect, Layer1Width, new Color(1, 0.5f, 0.5f), Color.red);
+            }
+        }
+        else
+        {
+            //CreateLabel($"[{modelInfo.GetInfoName()}]", selectionRect, Layer1Width, new Color(1, 0.5f, 1), Color.red);
+
+            if (r)
+            {
+                CreateLabel($"[{modelInfo.GetInfoName()}]", selectionRect, Layer1Width, c, Color.red);
+            }
+            else
+            {
+                CreateLabel($"[{modelInfo.GetInfoName()}]", selectionRect, Layer1Width, new Color(1, 0.5f, 0.5f), Color.red);
+            }
+        }
+    }
+
     private static void hierarchyOnGUI(int instancedId,Rect selectionRect)
     {
         //EditorUtility.Hi
@@ -61,12 +106,16 @@ public class MyHierarchyEditorInitializer
                 {
                     CreateLabel("[SceneList][Tree]", selectionRect, Layer1Width, new Color(1,0.7f,0), Color.blue);
                 }
+                else if (go.GetComponent<BuildingModelInfo>() != null)
+                {
+                    ShowBuildingModelInfo(go,instancedId,selectionRect);
+                }
                 else{
                     CreateLabel("[SceneList]", selectionRect, Layer1Width, new Color(1,0.7f,0), Color.blue);
                 }
-                
             }
-            else if (go.GetComponent<SubScene_Base>()!=null)
+            else 
+                if (go.GetComponent<SubScene_Base>()!=null)
             {
                 SubScene_Base scene = go.GetComponent<SubScene_Base>();
                 bool isLoaded = scene.HaveGos();
@@ -118,47 +167,7 @@ public class MyHierarchyEditorInitializer
 
             else if (go.GetComponent<BuildingModelInfo>() != null)
             {
-                BuildingModelInfo modelInfo = go.GetComponent<BuildingModelInfo>();
-                bool r = modelInfo.IsModelSceneFinish();
-                Color c = new Color(0, 1, 0);
-                if (go.GetComponent<BuildingController>() != null)
-                {
-                    if (r)
-                    {
-                        CreateLabel($"[{modelInfo.GetInfoName()}][Build]", selectionRect, Layer1Width, c, Color.red);
-                    }
-                    else
-                    {
-                        CreateLabel($"[{modelInfo.GetInfoName()}][Build]", selectionRect, Layer1Width, new Color(1, 0.5f, 0.5f), Color.red);
-                    }
-                    
-                }
-                else if (go.GetComponent<FloorController>() != null)
-                {
-                    //CreateLabel($"[{modelInfo.GetInfoName()}][Floor]", selectionRect, Layer1Width, new Color(1, 0.7f, 0.3f), Color.red);
-
-                    if (r)
-                    {
-                        CreateLabel($"[{modelInfo.GetInfoName()}][Floor]", selectionRect, Layer1Width, c, Color.red);
-                    }
-                    else
-                    {
-                        CreateLabel($"[{modelInfo.GetInfoName()}][Floor]", selectionRect, Layer1Width, new Color(1, 0.5f, 0.5f), Color.red);
-                    }
-                }
-                else
-                {
-                    //CreateLabel($"[{modelInfo.GetInfoName()}]", selectionRect, Layer1Width, new Color(1, 0.5f, 1), Color.red);
-
-                    if (r)
-                    {
-                        CreateLabel($"[{modelInfo.GetInfoName()}]", selectionRect, Layer1Width, c, Color.red);
-                    }
-                    else
-                    {
-                        CreateLabel($"[{modelInfo.GetInfoName()}]", selectionRect, Layer1Width, new Color(1, 0.5f, 0.5f), Color.red);
-                    }
-                }
+                ShowBuildingModelInfo(go,instancedId,selectionRect);
             }
             else if (go.GetComponent<BoundsBox>() != null)
             {

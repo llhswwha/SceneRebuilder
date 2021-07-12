@@ -12,7 +12,7 @@ public class SceneRebuildEditorWindow : ListManagerEditorWindow<BuildingModelEle
 {
     //[MenuItem("Window/Tools/SceneRebuild")]
     [MenuItem("Window/Tools/Scene Rebuild")]
-    public static void AddWindow()
+    public static void ShowWindow()
     {
         SceneRebuildEditorWindow window = (SceneRebuildEditorWindow)EditorWindow.GetWindowWithRect(typeof(SceneRebuildEditorWindow), new Rect(0, 0, MPGUIStyles.SCREEN_WIDTH, MPGUIStyles.SCREEN_HEIGHT), true, "SceneRebuildEditorWindow");
         window.Show();

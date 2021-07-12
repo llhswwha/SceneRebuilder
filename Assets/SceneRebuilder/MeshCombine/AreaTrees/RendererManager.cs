@@ -8,11 +8,11 @@ public class RendererManager : MonoBehaviour
 {
     public GameObject[] GetAllGos;
 
-    public MeshRenderer[] allRenderers;
+    private MeshRenderer[] allRenderers;
 
-    public List<RendererId> allRIds = new List<RendererId>();
+    private List<RendererId> allRIds = new List<RendererId>();
 
-    public List<string> allIds = new List<string>();
+    private List<string> allIds = new List<string>();
 
     public int Count = 0;
 
@@ -66,7 +66,7 @@ public class RendererManager : MonoBehaviour
 
     }
 
-    private void InitRenderers()
+    private void InitRenderers_Inner()
     {
         DateTime start = DateTime.Now;
         int count = allRenderers.Length;
@@ -105,7 +105,7 @@ public class RendererManager : MonoBehaviour
         allRenderers = GameObject.FindObjectsOfType<MeshRenderer>(true);
         allRIds.Clear();
 
-        InitRenderers();
+        InitRenderers_Inner();
     }
 
     [ContextMenu("InitRenderers(Target)")]
@@ -115,7 +115,7 @@ public class RendererManager : MonoBehaviour
         allRenderers = TestGo.GetComponentsInChildren<MeshRenderer>(true);
         allRIds.Clear();
 
-        InitRenderers();
+        InitRenderers_Inner();
     }
 
     [ContextMenu("CheckRendererParent")]
@@ -259,6 +259,11 @@ public class RendererManager : MonoBehaviour
         int count=0;
         float vertexCount=0;
         var rendererInfos=GameObject.FindObjectsOfType<MeshRendererInfo>(true);
+        var renderers=GameObject.FindObjectsOfType<MeshRenderer>(true);
+        if(rendererInfos.Length!=renderers.Length)
+        {
+            InitRenderers_All();
+        }
         foreach(var info in rendererInfos){
             if(IsDetail(info.gameObject))
             {
@@ -267,7 +272,7 @@ public class RendererManager : MonoBehaviour
                 vertexCount+=info.vertexCount;
             }
         }
-        Debug.Log($"SetDetailRenderers count:{rendererInfos.Length} detailCount:{count} vertexCount:{vertexCount/10000:F1} time:{(DateTime.Now - start)}");
+        Debug.Log($"SetDetailRenderers renderers:{renderers.Length} infos:{rendererInfos.Length} detailCount:{count} vertexCount:{vertexCount/10000:F1} time:{(DateTime.Now - start)}");
     }
 
     [ContextMenu("ClearAllType")]

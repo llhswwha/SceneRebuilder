@@ -3,6 +3,8 @@ using System.Collections.Generic;
 using UnityEngine;
 using UnityEditor;
 using System;
+
+[CanEditMultipleObjects]
 public class BaseEditor<T> : Editor where T:class
 {
     protected GUIStyle contentStyle;

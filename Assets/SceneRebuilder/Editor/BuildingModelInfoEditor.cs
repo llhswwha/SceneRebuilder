@@ -2,15 +2,23 @@ using System.Collections;
 using System.Collections.Generic;
 using UnityEditor;
 using UnityEngine;
-using System;
+// using System;
 
+// [CanEditMultipleObjects]
 [CustomEditor(typeof(BuildingModelInfo))]
 public class BuildingModelInfoEditor : BaseEditor<BuildingModelInfo>
 {
     public override void OnInspectorGUI()
     {
+        // serializedObject.Update ();
+
         contentStyle = new GUIStyle(EditorStyles.miniButton);
         contentStyle.alignment = TextAnchor.MiddleLeft;
+
+        // if (GUILayout.Button("Multi-Objects", contentStyle, GUILayout.Width(100)))
+        // {
+
+        // }
 
         BuildingModelInfo info = target as BuildingModelInfo;
         int sceneCount=info.GetSceneCount();
@@ -44,7 +52,15 @@ public class BuildingModelInfoEditor : BaseEditor<BuildingModelInfo>
 
 
         EditorGUILayout.BeginHorizontal();
-        NewButton("1.GetInfo", buttonWidth, isAllLoaded == true || sceneCount==0 || treeCount==0, info.InitInOut);
+        NewButton("1.GetInfo", buttonWidth, isAllLoaded == true || sceneCount==0 || treeCount==0, ()=>{
+            info.InitInOut();
+            // foreach (Object obj in targets)
+            // {
+            //     BuildingModelInfo item = obj as BuildingModelInfo;
+            //     // item.InitInOut();
+            //     Debug.Log("GetInfo_"+item);
+            // }
+        });
         NewButton("FindDoors",90,partCount>0 && (isAllLoaded == true || sceneCount == 0 || treeCount == 0),info.FindInDoors);
 
         //if(GUILayout.Button("ShowMeshes",contentStyle,GUILayout.Width(90)))

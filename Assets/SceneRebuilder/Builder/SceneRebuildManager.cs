@@ -24,10 +24,16 @@ public class SceneRebuildManager : MonoBehaviour
         buildingModelManager.CombineAll();//Model -> CombinedToTree
     }
 
+    [ContextMenu("ClearTrees")]
+    public void ClearTrees()
+    {
+        buildingModelManager.ClearTrees();//Model -> CombinedToTree
+    }
+
     [ContextMenu("SaveScenes")]
     public void SaveScenes()
     {
-        subSceneManager.contentType = SceneContentType.TreeWithPart;
+        subSceneManager.contentType = SceneContentType.TreeNode;
         subSceneManager.EditorCreateBuildingScenes(); // CombinedTree To Scene
     }
 
@@ -47,6 +53,13 @@ public class SceneRebuildManager : MonoBehaviour
         SaveScenes();
         SetBuildings();
         Debug.LogError($"OneKey Time:{(DateTime.Now - start).ToString()}");
+    }
+
+    [ContextMenu("LoadScenes")]
+    public void LoadScenes()
+    {
+        subSceneManager.contentType = SceneContentType.TreeNode;
+        subSceneManager.EditorLoadScenes();
     }
 
     [ContextMenu("ClearBuildings")]

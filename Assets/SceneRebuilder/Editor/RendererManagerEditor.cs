@@ -25,6 +25,9 @@ public class RendererManagerEditor : BaseEditor<RendererManager>
        {
            item.CheckRendererParent();
        }
-       
+        if(GUILayout.Button("SetDetailRenderers"))
+       {
+           item.SetDetailRenderers();
+       }
     }
 }
