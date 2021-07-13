@@ -11,12 +11,14 @@ public class SceneRebuildManagerEditor : BaseEditor<SceneRebuildManager>
 {
     //private SerializedProperty buildingListFoldout;
 
-    private FoldoutEditorArg buildingListFoldoutEditorArg=new FoldoutEditorArg();
-    private FoldoutEditorArg treeListFoldoutEditorArg=new FoldoutEditorArg();
+    private FoldoutEditorArg buildingListArg=new FoldoutEditorArg();
+    private FoldoutEditorArg treeListArg=new FoldoutEditorArg();
 
-    private bool isNodeListExpanded=false;
+    private FoldoutEditorArg nodeListArg=new FoldoutEditorArg();
 
-    private bool isSceneListExpanded=false;
+    private FoldoutEditorArg sceneListArg=new FoldoutEditorArg();
+
+    private FoldoutEditorArg meshListArg=new FoldoutEditorArg();
 
     public void OnEnable()
     {
@@ -106,8 +108,8 @@ public class SceneRebuildManagerEditor : BaseEditor<SceneRebuildManager>
         //GUIStyle contentStyle = new GUIStyle(EditorStyles.miniButton);
         //contentStyle.alignment = TextAnchor.MiddleLeft;
         List<BuildingModelInfo> buildings=new List<BuildingModelInfo>();
-        buildingListFoldoutEditorArg.caption=$"Building List";
-        EditorUIUtils.ToggleFoldout(buildingListFoldoutEditorArg, 
+        buildingListArg.caption=$"Building List";
+        EditorUIUtils.ToggleFoldout(buildingListArg, 
         (arg)=>{
             float sumVertexCount=0;
             int sumRendererCount=0;
@@ -136,13 +138,16 @@ public class SceneRebuildManagerEditor : BaseEditor<SceneRebuildManager>
 			}
         });
 
-        if (buildingListFoldoutEditorArg.isExpanded)
+        if (buildingListArg.isExpanded && buildingListArg.isEnabled)
         {
-            foreach (var b in buildings)
+            buildingListArg.DrawPageToolbar(buildings.Count);
+            for(int i=buildingListArg.GetStartId();i<buildings.Count && i<buildingListArg.GetEndId();i++)
+            // foreach (var b in buildings)
             {
+                var b=buildings[i];
                 var arg = editorArgs[b];
                 arg.isExpanded = EditorUIUtils.ObjectFoldout(arg.isExpanded, 
-                $"{b.name} {b.GetInfoText()}", 
+                $"[{i+1:00}] {b.name} {b.GetInfoText()}", 
                 $"[{b.AllVertextCount:F0}w][{b.AllRendererCount}]|{b.Out0BigVertextCount:F0}+{b.Out0SmallVertextCount:F0}+{b.Out1VertextCount:F0}+{b.InVertextCount:F0}", 
                 false,false,true,b.gameObject,
                 ()=>{
@@ -260,10 +265,8 @@ public class SceneRebuildManagerEditor : BaseEditor<SceneRebuildManager>
 
         //-------------------------------------------------------TreeList-----------------------------------------------------------
         List<ModelAreaTree> trees=new List<ModelAreaTree>();
-
-
-        treeListFoldoutEditorArg.caption=$"Tree List";
-        EditorUIUtils.ToggleFoldout(treeListFoldoutEditorArg, 
+        treeListArg.caption=$"Tree List";
+        EditorUIUtils.ToggleFoldout(treeListArg, 
         (arg)=>{
             float sumVertexCount=0;
             int sumRendererCount=0;
@@ -283,18 +286,23 @@ public class SceneRebuildManagerEditor : BaseEditor<SceneRebuildManager>
             arg.info=$"[{sumVertexCount:F0}w][{sumRendererCount}]";
         },
         ()=>{
-            
+            if(GUILayout.Button("------",GUILayout.Width(60)))
+			{
+				//TreeNodeManagerEditorWindow.ShowWindow();
+			}
         });
-        if (treeListFoldoutEditorArg.isExpanded&&treeListFoldoutEditorArg.isEnabled)
+        if (treeListArg.isExpanded && treeListArg.isEnabled)
         {
-            foreach (var tree in trees)
+            treeListArg.DrawPageToolbar(trees.Count);
+            for(int i=treeListArg.GetStartId();i<trees.Count && i<treeListArg.GetEndId();i++)
             {
-                if(tree==null)continue;
+                var tree=trees[i];
+                // if(tree==null)continue;
                 var arg = editorArgs[tree];
                 if(arg==null){
                     editorArgs[tree]=new FoldoutEditorArg();
                 }
-                arg.isExpanded = EditorUIUtils.ObjectFoldout(arg.isExpanded, $"{tree.name}", $"[{tree.VertexCount}w][{tree.GetRendererCount()}][{tree.TreeLeafs.Count}]", false,false,false,tree.gameObject);
+                arg.isExpanded = EditorUIUtils.ObjectFoldout(arg.isExpanded, $"[{i+1:00}] {tree.name}", $"[{tree.VertexCount}w][{tree.GetRendererCount()}][{tree.TreeLeafs.Count}]", false,false,false,tree.gameObject);
                 if (arg.isExpanded)
                 {
                     //BuildingModelInfoEditor.DrawToolbar(b, contentStyle, buttonWidth);
@@ -303,27 +311,39 @@ public class SceneRebuildManagerEditor : BaseEditor<SceneRebuildManager>
         }
 
         //-------------------------------------------------------NodeList-----------------------------------------------------------
-        var nodes=GameObject.FindObjectsOfType<AreaTreeNode>(true).Where(n=>n.IsLeaf).ToList() ;
-        nodes.Sort((a, b) =>
-        {
-            return b.VertexCount.CompareTo(a.VertexCount);
-        });
-        InitEditorArg(nodes);
-        isNodeListExpanded=EditorUIUtils.ButtonFoldout(isNodeListExpanded, $"Node List({nodes.Count})","",true,true,true,"Window",()=>{
-            TreeNodeManagerEditorWindow.ShowWindow();
-        });
-        if (isNodeListExpanded)
-        {
-            foreach (var node in nodes)
+        List<AreaTreeNode> nodes=new List<AreaTreeNode>();
+        nodeListArg.caption=$"Node List";
+        EditorUIUtils.ToggleFoldout(nodeListArg, 
+        (arg)=>{
+            float sumVertexCount=0;
+            int sumRendererCount=0;
+            nodes=GameObject.FindObjectsOfType<AreaTreeNode>(true).Where(n=>n.IsLeaf).ToList() ;
+            nodes.Sort((a, b) =>
             {
+                return b.VertexCount.CompareTo(a.VertexCount);
+            });
+            nodes.ForEach(b=>{
+                sumVertexCount+=b.VertexCount;
+                sumRendererCount+=b.Renderers.Count;
+            });
+            InitEditorArg(nodes);
+            arg.caption= $"Node List({nodes.Count})";
+            arg.info=$"[{sumVertexCount:F0}w][{sumRendererCount}]";
+        },
+        ()=>{
+            if(GUILayout.Button("Window",GUILayout.Width(60)))
+			{
+				TreeNodeManagerEditorWindow.ShowWindow();
+			}
+        });
+        if (nodeListArg.isExpanded && nodeListArg.isEnabled)
+        {
+            nodeListArg.DrawPageToolbar(nodes.Count);
+            for(int i=nodeListArg.GetStartId();i<nodes.Count && i<nodeListArg.GetEndId();i++)
+            {
+                var node=nodes[i];
                 var arg = editorArgs[node];
-                //arg.isExpanded = EditorUIUtils.Foldout(arg.isExpanded, $"{b.name} \t[{b.AllVertextCount:F0}w][{b.AllRendererCount}]");
-                //if (arg.isExpanded)
-                //{
-
-                //}
-                // var vCount=node.GetVertexCount();
-                arg.isExpanded = EditorUIUtils.ObjectFoldout(arg.isExpanded, $"{node.name}", $"[{node.VertexCount:F0}w][{node.Renderers.Count}]", false,false,false,node.gameObject);
+                arg.isExpanded = EditorUIUtils.ObjectFoldout(arg.isExpanded, $"[{i+1:00}] {node.tree.name}.{node.name}", $"[{node.VertexCount:F0}w][{node.Renderers.Count}]", false,false,false,node.gameObject);
                 if (arg.isExpanded)
                 {
                     //BuildingModelInfoEditor.DrawToolbar(b, contentStyle, buttonWidth);
@@ -332,27 +352,93 @@ public class SceneRebuildManagerEditor : BaseEditor<SceneRebuildManager>
         }
 
         //-------------------------------------------------------SceneList-----------------------------------------------------------
-        var scenes=GameObject.FindObjectsOfType<SubScene_Base>(true).ToList() ;
-        scenes.Sort((a, b) =>
-        {
-            return b.vertexCount.CompareTo(a.vertexCount);
-        });
-        InitEditorArg(scenes);
-        isSceneListExpanded=EditorUIUtils.ButtonFoldout(isSceneListExpanded, $"Scene List({scenes.Count})","",true,true,true,"Window",()=>{
-            SubSceneManagerEditorWindow.ShowWindow();
-        });
-        if (isSceneListExpanded)
-        {
-            foreach (var scene in scenes)
+        List<SubScene_Base> scenes=new List<SubScene_Base>();
+        sceneListArg.caption=$"Scene List";
+        EditorUIUtils.ToggleFoldout(sceneListArg, (arg)=>{
+            float sumVertexCount=0;
+            int sumRendererCount=0;
+            scenes=GameObject.FindObjectsOfType<SubScene_Base>(true).ToList() ;
+            scenes.Sort((a, b) =>
             {
+                return b.vertexCount.CompareTo(a.vertexCount);
+            });
+            scenes.ForEach(b=>{
+                sumVertexCount+=b.vertexCount;
+                sumRendererCount+=b.rendererCount;
+            });
+            InitEditorArg(scenes);
+            arg.caption= $"Scene List({scenes.Count})";
+            arg.info=$"[{sumVertexCount:F0}w][{sumRendererCount}]";
+        },()=>{
+            if(GUILayout.Button("Window",GUILayout.Width(60)))
+			{
+				SubSceneManagerEditorWindow.ShowWindow();
+			}
+        });
+        if (sceneListArg.isExpanded && sceneListArg.isEnabled)
+        {
+            sceneListArg.DrawPageToolbar(scenes.Count);
+            for(int i=sceneListArg.GetStartId();i<scenes.Count && i<sceneListArg.GetEndId();i++)
+            {
+                var scene=scenes[i];
                 var arg = editorArgs[scene];
-                //arg.isExpanded = EditorUIUtils.Foldout(arg.isExpanded, $"{b.name} \t[{b.AllVertextCount:F0}w][{b.AllRendererCount}]");
-                //if (arg.isExpanded)
-                //{
+                arg.isExpanded = EditorUIUtils.ObjectFoldout(arg.isExpanded, $"[{i+1:00}] {scene.name}", $"[{scene.vertexCount:F0}w][{scene.rendererCount}]", false,false,false,scene.gameObject);
+                if (arg.isExpanded)
+                {
+                    //BuildingModelInfoEditor.DrawToolbar(b, contentStyle, buttonWidth);
+                }
+            }
+        }
 
-                //}
-                // var vCount=node.GetVertexCount();
-                arg.isExpanded = EditorUIUtils.ObjectFoldout(arg.isExpanded, $"{scene.name}", $"[{scene.vertexCount:F0}w][{scene.rendererCount}]", false,false,false,scene.gameObject);
+        //-------------------------------------------------------MeshList-----------------------------------------------------------
+        List<MeshFilter> meshes=new List<MeshFilter>();
+        meshListArg.caption=$"Mesh List";
+        EditorUIUtils.ToggleFoldout(meshListArg, (arg)=>{
+            System.DateTime start=System.DateTime.Now;
+            float sumVertexCount=0;
+            float sumVertexCountVisible=0;
+            int sumRendererCount=0;
+            int sumRendererCountVisible=0;
+            meshes=GameObject.FindObjectsOfType<MeshFilter>(true).Where(m=>m.sharedMesh!=null && m.sharedMesh.name!="Cube").ToList() ;
+            meshes.Sort((a, b) =>
+            {
+                return b.sharedMesh.vertexCount.CompareTo(a.sharedMesh.vertexCount);
+            });
+            meshes.ForEach(b=>{
+                if(b.GetComponent<MeshRenderer>()!=null && b.GetComponent<MeshRenderer>().enabled == true && b.gameObject.activeInHierarchy==true){
+                    sumVertexCountVisible+=b.sharedMesh.vertexCount;
+                    sumRendererCountVisible++;
+                }
+                sumVertexCount+=b.sharedMesh.vertexCount;
+                sumRendererCount++;
+            });
+            sumVertexCount/=10000;
+            sumVertexCountVisible/=10000;
+            //InitEditorArg(scenes);
+            arg.caption= $"Mesh List({meshes.Count})";
+            arg.info=$"[{sumVertexCountVisible:F0}/{sumVertexCount:F0}w][{sumRendererCountVisible}/{sumRendererCount}]";
+            var time=System.DateTime.Now-start;
+            Debug.Log($"MeshList count:{meshes.Count} time:{time.TotalMilliseconds:F1}ms ");
+
+        },()=>{
+            if(GUILayout.Button("----------",GUILayout.Width(60)))
+			{
+				//SubSceneManagerEditorWindow.ShowWindow();
+			}
+        });
+
+        if (meshListArg.isExpanded && meshListArg.isEnabled)
+        {
+            meshListArg.DrawPageToolbar(meshes.Count);
+            for(int i=meshListArg.GetStartId();i<meshes.Count && i<meshListArg.GetEndId();i++)
+            {
+                var mesh=meshes[i];
+                if(!editorArgs.ContainsKey(mesh)){
+                    editorArgs.Add(mesh,new FoldoutEditorArg());
+                }
+                var arg = editorArgs[mesh];
+                BuildingModelInfo building=mesh.GetComponentInParent<BuildingModelInfo>();
+                arg.isExpanded = EditorUIUtils.ObjectFoldout(arg.isExpanded, $"[{i+1:00}] {building.name}>>{mesh.transform.parent.name}>{mesh.name}", $"[{mesh.sharedMesh.vertexCount/10000f:F0}w]", false,false,false,mesh.gameObject);
                 if (arg.isExpanded)
                 {
                     //BuildingModelInfoEditor.DrawToolbar(b, contentStyle, buttonWidth);

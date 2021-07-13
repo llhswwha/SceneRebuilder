@@ -7,13 +7,60 @@ namespace CodeStage.AdvancedFPSCounter.Editor.UI
 	[System.Serializable]
 	public class FoldoutEditorArg
     {
-        public bool isEnabled=true;
+        public bool isEnabled=false;
         public bool isExpanded = false;
 		public string caption="";
 		public string info=""; 
 		public bool bold = true; 
 		public bool separator = true; 
 		public bool background = true;
+
+		public int pageSize_selected = 10;
+        public string[] pageSize_names = new string[] {"5", "10", "15","20","50","100","200","500","1000","2000"};
+        public int[] pageSize_sizes = {5, 10, 15,20,50,100,200,500,1000,2000};
+		public int pageId_selected=1;
+		public string[] pageId_names=null;
+        public int[] pageId_sizes =null;
+		public int pageCount=1;
+
+		public int DrawPageSizeList()
+		{
+			pageSize_selected = EditorGUILayout.IntPopup("PageSize: ", pageSize_selected, pageSize_names, pageSize_sizes);
+			return pageSize_selected;	
+		}
+
+		public void DrawPageIndexList(float count)
+		{
+			pageCount=(int)Mathf.Ceil(count/pageSize_selected);
+			if(pageId_sizes==null || pageId_sizes.Length!=pageCount){
+				pageId_sizes=new int[pageCount];
+				pageId_names=new string[pageCount];
+				for(int i=0;i<pageCount;i++)
+				{
+					pageId_sizes[i]=i+1;
+					pageId_names[i]=(i+1).ToString();
+				}
+				pageId_selected=1;
+			}
+			pageId_selected = EditorGUILayout.IntPopup("PageIndex: ", pageId_selected, pageId_names, pageId_sizes);
+		}
+
+		public void DrawPageToolbar(int count)
+		{
+			//EditorGUILayout.BeginHorizontal();
+			DrawPageSizeList();
+			DrawPageIndexList(count);
+			//EditorGUILayout.EndHorizontal();
+		}
+
+		public int GetStartId()
+		{
+			return (pageId_selected-1)*pageSize_selected;
+		}
+		public int GetEndId()
+		{
+			return (pageId_selected)*pageSize_selected;
+		}
     }
 
 	public struct EditorUIUtils : System.IDisposable
