@@ -60,8 +60,7 @@ public class BuildingModelManager : MonoBehaviour
     [ContextMenu("* InitBuildings")]
     public void InitBuildings()
     {
-        Buildings.Clear();
-        Buildings.AddRange(GameObject.FindObjectsOfType<BuildingModelInfo>(true));
+        UpdateBuildings();
         InitBuildings(Buildings);
     }
 
@@ -158,14 +157,14 @@ public class BuildingModelManager : MonoBehaviour
     [ContextMenu("* GetInfos")]
     public void GetInfos()
     {
-        GetBuildings();
+        UpdateBuildings();
 
         SortByOut0();
 
         GetCountInfo();
     }
 
-    private void GetBuildings()
+    public void UpdateBuildings()
     {
         Buildings.Clear();
         Buildings.AddRange(GameObject.FindObjectsOfType<BuildingModelInfo>(true));
@@ -226,7 +225,7 @@ public class BuildingModelManager : MonoBehaviour
     [ContextMenu("ShowAll")]
     public void ShowAll()
     {
-        GetBuildings();
+        UpdateBuildings();
         foreach (var b in Buildings)
         {
             b.ShowAll();
@@ -236,7 +235,7 @@ public class BuildingModelManager : MonoBehaviour
     [ContextMenu("ShowRenderers")]
     public void ShowRenderers()
     {
-        GetBuildings();
+        UpdateBuildings();
         foreach (var b in Buildings)
         {
             b.ShowRenderers();
@@ -246,7 +245,7 @@ public class BuildingModelManager : MonoBehaviour
     [ContextMenu("HideDetail")]
     public void HideDetail()
     {
-        GetBuildings();
+        UpdateBuildings();
         foreach (var b in Buildings)
         {
             b.HideDetail();
@@ -256,7 +255,7 @@ public class BuildingModelManager : MonoBehaviour
     [ContextMenu("ShowDetail")]
     public void ShowDetail()
     {
-        GetBuildings();
+        UpdateBuildings();
         foreach (var b in Buildings)
         {
             b.ShowDetail();
@@ -266,7 +265,7 @@ public class BuildingModelManager : MonoBehaviour
     [ContextMenu("Unpack")]
     public void Unpack()
     {
-        GetBuildings();
+        UpdateBuildings();
         foreach (var b in Buildings)
         {
             b.Unpack();
@@ -276,7 +275,7 @@ public class BuildingModelManager : MonoBehaviour
     [ContextMenu("UpdateTrees")]
     public void UpdateTrees()
     {
-        GetBuildings();
+        UpdateBuildings();
         UpdateTrees(Buildings);
     }
 
@@ -287,7 +286,7 @@ public class BuildingModelManager : MonoBehaviour
         foreach (var b in Buildings)
         {
             if (b == null) continue;
-            b.UpdateTrees();
+            trees.AddRange(b.trees);
         }
 
         return trees;
@@ -305,14 +304,14 @@ public class BuildingModelManager : MonoBehaviour
     [ContextMenu("ClearTrees")]
     public void ClearTrees()
     {
-        GetBuildings();
+        UpdateBuildings();
         ClearTrees(Buildings);
     }
 
     [ContextMenu("ClearTrees")]
     public void ClearTrees(List<BuildingModelInfo> buildings)
     {
-        GetBuildings();
+        UpdateBuildings();
         foreach (var b in buildings)
         {
             if (b == null) continue;
@@ -338,7 +337,7 @@ public class BuildingModelManager : MonoBehaviour
     [ContextMenu("EditorMoveScenes")]
     public void EditorMoveScenes()
     {
-        GetBuildings();
+        UpdateBuildings();
         foreach (var b in Buildings)
         {
             b.EditorMoveScenes();

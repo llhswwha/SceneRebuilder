@@ -364,13 +364,19 @@ public class AreaTreeManager : MonoBehaviour
 
     //public int Depth = 0;
 
+    [ContextMenu("UpdateTrees")]
+    public List<ModelAreaTree> UpdateTrees()
+    {
+        Trees = GameObject.FindObjectsOfType<ModelAreaTree>(true).ToList();
+        return Trees;
+    }
 
     [ContextMenu("SaveTreeNodeScenes")]
     public void SaveTreeNodeScenes()
     {
         DateTime start = DateTime.Now;
-        Trees = GameObject.FindObjectsOfType<ModelAreaTree>(true).ToList();
-        foreach(var tree in Trees)
+        UpdateTrees();
+        foreach (var tree in Trees)
         {
             tree.GetTreeNodeScenes();
         }
@@ -381,7 +387,7 @@ public class AreaTreeManager : MonoBehaviour
     public void GetTreeNodeScenes()
     {
         DateTime start = DateTime.Now;
-        Trees = GameObject.FindObjectsOfType<ModelAreaTree>(true).ToList();
+        UpdateTrees();
         foreach(var tree in Trees)
         {
             tree.GetTreeNodeScenes();
@@ -393,7 +399,7 @@ public class AreaTreeManager : MonoBehaviour
     public void GetTreeInfos()
     {
         ClearCount();
-        Trees = GameObject.FindObjectsOfType<ModelAreaTree>(true).ToList();
+        UpdateTrees();
         foreach(var tree in Trees)
         {
             ShowTreeInfo(tree);
@@ -403,7 +409,7 @@ public class AreaTreeManager : MonoBehaviour
     [ContextMenu("ClearTreesEx")]
     public void ClearTreesEx()
     {
-        Trees = GameObject.FindObjectsOfType<ModelAreaTree>(true).ToList();
+        UpdateTrees();
         ClearTrees();
     }
 
@@ -655,7 +661,7 @@ public class AreaTreeManager : MonoBehaviour
     [ContextMenu("ToReanderers")]
     public void ToReanderers()
     {
-         Trees = GameObject.FindObjectsOfType<ModelAreaTree>(true).ToList();
+         UpdateTrees();
         foreach (var tree in Trees)
         {
             if (tree == null) continue;
@@ -666,7 +672,7 @@ public class AreaTreeManager : MonoBehaviour
     [ContextMenu("ToCombined")]
     public void ToCombined()
     {
-         Trees = GameObject.FindObjectsOfType<ModelAreaTree>(true).ToList();
+         UpdateTrees();
         foreach (var tree in Trees)
         {
             if (tree == null) continue;
@@ -677,7 +683,7 @@ public class AreaTreeManager : MonoBehaviour
     [ContextMenu("CreateDictionary")]
     public void CreateDictionary()
     {
-         Trees = GameObject.FindObjectsOfType<ModelAreaTree>(true).ToList();
+         UpdateTrees();
         AreaTreeHelper.render2NodeDict.Clear();
         Debug.Log("AreaTreeManager.CreateDictionary:" + Trees.Count);
         foreach (var tree in Trees)
@@ -691,7 +697,7 @@ public class AreaTreeManager : MonoBehaviour
     [ContextMenu("HideLeafNodes")]
     public void HideLeafNodes()
     {
-         Trees = GameObject.FindObjectsOfType<ModelAreaTree>(true).ToList();
+         UpdateTrees();
         foreach (var tree in Trees)
         {
             if (tree == null) continue;
@@ -702,7 +708,7 @@ public class AreaTreeManager : MonoBehaviour
     [ContextMenu("ShowLeafNodes")]
     public void ShowLeafNodes()
     {
-         Trees = GameObject.FindObjectsOfType<ModelAreaTree>(true).ToList();
+         UpdateTrees();
         foreach (var tree in Trees)
         {
             if (tree == null) continue;
@@ -713,7 +719,7 @@ public class AreaTreeManager : MonoBehaviour
     [ContextMenu("ShowRenderers")]
     public void ShowRenderers()
     {
-         Trees = GameObject.FindObjectsOfType<ModelAreaTree>(true).ToList();
+         UpdateTrees();
         int count = 0;
         foreach (var tree in Trees)
         {
@@ -727,7 +733,7 @@ public class AreaTreeManager : MonoBehaviour
     [ContextMenu("HideRenderers")]
     public void HideRenderers()
     {
-         Trees = GameObject.FindObjectsOfType<ModelAreaTree>(true).ToList();
+         UpdateTrees();
         foreach (var tree in Trees)
         {
             if (tree == null) continue;
@@ -778,7 +784,7 @@ public class AreaTreeManager : MonoBehaviour
     {
         DateTime start = DateTime.Now;
         int count=0;
-         Trees = GameObject.FindObjectsOfType<ModelAreaTree>(true).ToList();
+         UpdateTrees();
         foreach (var tree in Trees)
         {
             if (tree == null) continue;

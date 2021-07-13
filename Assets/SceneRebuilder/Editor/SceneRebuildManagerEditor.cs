@@ -22,8 +22,8 @@ public class SceneRebuildManagerEditor : BaseEditor<SceneRebuildManager>
 
     public void OnEnable()
     {
-        //buildingListFoldout = serializedObject.FindProperty("buildingListFoldout");
-
+        SceneRebuildManager manager = target as SceneRebuildManager;
+        manager.UpdateList();
     }
 
     public Dictionary<Object, FoldoutEditorArg> editorArgs = new Dictionary<Object, FoldoutEditorArg>();
@@ -113,7 +113,7 @@ public class SceneRebuildManagerEditor : BaseEditor<SceneRebuildManager>
 
             //buildings = GameObject.FindObjectsOfType<BuildingModelInfo>(true).ToList() ;
 
-            buildings = item.buildingModelManager.Buildings.Where(b=>b!=null).ToList();
+            buildings = item.GetBuildings().Where(b=>b!=null).ToList();
 
             //Debug.Log($"Init BuildingList1 count:{buildings.Count} time:{(System.DateTime.Now - start).TotalMilliseconds:F1}ms ");
             buildings.Sort((a, b) =>
@@ -289,7 +289,7 @@ public class SceneRebuildManagerEditor : BaseEditor<SceneRebuildManager>
             int sumRendererCount=0;
 
             //trees=GameObject.FindObjectsOfType<ModelAreaTree>(true).Where(t=>t.VertexCount>0).ToList() ;
-            trees = item.subSceneManager.Where(t => t.VertexCount > 0).ToList();
+            trees = item.GetTrees().Where(t => t.VertexCount > 0).ToList();
 
             trees.Sort((a, b) =>
             {
@@ -344,7 +344,8 @@ public class SceneRebuildManagerEditor : BaseEditor<SceneRebuildManager>
             System.DateTime start=System.DateTime.Now;
             float sumVertexCount=0;
             int sumRendererCount=0;
-            nodes=GameObject.FindObjectsOfType<AreaTreeNode>(true).Where(n=>n.IsLeaf).ToList() ;
+            nodes = item.GetLeafNodes();
+
             nodes.Sort((a, b) =>
             {
                 return b.VertexCount.CompareTo(a.VertexCount);

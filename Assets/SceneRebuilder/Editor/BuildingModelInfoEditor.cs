@@ -153,6 +153,8 @@ public class BuildingModelInfoEditor : BaseEditor<BuildingModelInfo>
         EditorGUILayout.EndHorizontal();
     }
 
+
+
     public override void OnInspectorGUI()
     {
         // serializedObject.Update ();

@@ -2,15 +2,13 @@ using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 using System;
+using System.Linq;
 #if UNITY_EDITOR
 using UnityEditor;
 using UnityEditor.SceneManagement;
 
 public class SceneRebuildManager : MonoBehaviour
 {
-    [HideInInspector]
-    [SerializeField]
-    private bool buildingListFoldout;
 
     public SubSceneManager subSceneManager;
 
@@ -34,6 +32,31 @@ public class SceneRebuildManager : MonoBehaviour
     public void ClearTrees()
     {
         buildingModelManager.ClearTrees();//Model -> CombinedToTree
+    }
+
+    public List<BuildingModelInfo> GetBuildings()
+    {
+        return buildingModelManager.Buildings;
+    }
+
+    public List<ModelAreaTree> GetTrees()
+    {
+        if (areaTreeManager == null) areaTreeManager = GameObject.FindObjectOfType<AreaTreeManager>();
+        return areaTreeManager.Trees;
+    }
+
+    public List<AreaTreeNode> GetLeafNodes()
+    {
+        return GameObject.FindObjectsOfType<AreaTreeNode>(true).Where(n => n.IsLeaf).ToList();
+    }
+
+    public void UpdateList()
+    {
+        //if (areaTreeManager == null) areaTreeManager = GameObject.FindObjectOfType<AreaTreeManager>();
+        //areaTreeManager.UpdateTrees();
+
+        //buildingModelManager.UpdateBuildings();
+        buildingModelManager.UpdateTrees();//.UpdateBuildings();
     }
 
     [ContextMenu("SaveScenes")]
