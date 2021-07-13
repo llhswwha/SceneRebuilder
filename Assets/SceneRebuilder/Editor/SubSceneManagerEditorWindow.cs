@@ -12,7 +12,7 @@ public class SubSceneManagerEditorWindow : ListManagerEditorWindow<SubSceneEleme
 {
     //[MenuItem("Window/Tools/SceneRebuild")]
     [MenuItem("Window/Tools/SubSceneManager")]
-    public static void AddWindow()
+    public static void ShowWindow()
     {
         SubSceneManagerEditorWindow window = (SubSceneManagerEditorWindow)EditorWindow.GetWindowWithRect(typeof(SubSceneManagerEditorWindow), new Rect(0, 0, MPGUIStyles.SCREEN_WIDTH, MPGUIStyles.SCREEN_HEIGHT), true, "BuildingModelEditorWindow");
         window.Show();
@@ -147,6 +147,8 @@ public class SubSceneManagerEditorWindow : ListManagerEditorWindow<SubSceneEleme
         //dataChart.modelCount = meshElementList.Count;
         for (int i = 0; i < meshElementList.Count; i++)
         {
+            if(meshElementList[i]==null)continue;
+            if(string.IsNullOrEmpty(meshElementList[i].name))continue;
             if (meshElementList[i].name.Contains("统计")) continue;
             var values = meshElementList[i].rootMeshValue;
             dataChart.AllRendererCount += values.AllRendererCount;

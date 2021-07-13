@@ -16,13 +16,17 @@ public class BuildingModelInfoEditor : BaseEditor<BuildingModelInfo>
         // }
 
         //BuildingModelInfo info = target as BuildingModelInfo;
-        int sceneCount = info.GetSceneCount();
-        int unloadedSceneCount = info.SceneList.GetUnloadedScenes().Count;
-        bool isAllLoaded = info.IsSceneLoaded();
-        int treeCount = info.GetTreeCount();
-        int partCount = info.GetPartCount();
 
-        if (isAllLoaded == false && sceneCount > 0 && unloadedSceneCount > 0 && unloadedSceneCount < sceneCount)
+        // int sceneCount = info.GetSceneCount();
+        // int unloadedSceneCount = info.SceneList.GetUnloadedScenes().Count;
+        // bool isAllLoaded = info.IsSceneLoaded();
+        // int treeCount = info.GetTreeCount();
+        // int partCount = info.GetPartCount();
+
+        BuildingModelState state=info.GetState();
+
+
+        //if (state.HaveUnloadedScenes)
         {
             EditorGUILayout.BeginHorizontal();
             if (GUILayout.Button("SelectUnload", btnStyle, GUILayout.Width(100)))
@@ -39,13 +43,13 @@ public class BuildingModelInfoEditor : BaseEditor<BuildingModelInfo>
                 IdDictionary.InitInfos();
                 info.LoadUnloadedScenes();
             }
-            GUILayout.Label($"loaded:{isAllLoaded},part:{partCount} tree:{treeCount},scene:{sceneCount},unloaded:{unloadedSceneCount}");
+            GUILayout.Label(state.ToString());
             EditorGUILayout.EndHorizontal();
         }
 
 
         EditorGUILayout.BeginHorizontal();
-        NewButton("1.GetInfo", buttonWidth, isAllLoaded == true || sceneCount == 0 || treeCount == 0, btnStyle,() => {
+        NewButton("1.GetInfo", buttonWidth, state.CanGetInfo(), btnStyle,() => {
             info.InitInOut();
             // foreach (Object obj in targets)
             // {
@@ -54,37 +58,37 @@ public class BuildingModelInfoEditor : BaseEditor<BuildingModelInfo>
             //     Debug.Log("GetInfo_"+item);
             // }
         });
-        NewButton("FindDoors", 90, partCount > 0 && (isAllLoaded == true || sceneCount == 0 || treeCount == 0), btnStyle, info.FindInDoors);
+        NewButton("FindDoors", 90, state.CanFindDoors(), btnStyle, info.FindInDoors);
         EditorGUILayout.EndHorizontal();
 
         EditorGUILayout.BeginHorizontal();
-        NewButton("2.CreateTree", buttonWidth, isAllLoaded == true && partCount > 0 && treeCount == 0, btnStyle, info.CreateTreesBSEx);
-        NewButton("RemoveTrees", buttonWidth, isAllLoaded == true && treeCount > 0, btnStyle, info.ClearTrees);
+        NewButton("2.CreateTree", buttonWidth,state.CanCreateTrees, btnStyle, info.CreateTreesBSEx);
+        NewButton("RemoveTrees", buttonWidth,state.CanRemoveTrees, btnStyle, info.ClearTrees);
         EditorGUILayout.EndHorizontal();
 
         EditorGUILayout.BeginHorizontal();
-        NewButton("3.CreateScenes", buttonWidth, isAllLoaded == true && treeCount > 0 && sceneCount == 0, btnStyle, info.EditorCreateNodeScenes);
-        NewButton("RemoveScenes", buttonWidth, isAllLoaded == true && sceneCount > 0, btnStyle, info.DestroyScenes);
+        NewButton("3.CreateScenes", buttonWidth, state.CanCreateScenes, btnStyle, info.EditorCreateNodeScenes);
+        NewButton("RemoveScenes", buttonWidth, state.CanRemoveScenes, btnStyle, info.DestroyScenes);
         EditorGUILayout.EndHorizontal();
 
         EditorGUILayout.BeginHorizontal();
         //int unloadedSceneCount = info.SceneList.GetUnloadedScenes().Count;
-        NewButton("4.LoadScenes", buttonWidth, isAllLoaded == false && sceneCount > 0, btnStyle, () =>
+        NewButton("4.LoadScenes", buttonWidth, state.CanLoadScenes, btnStyle, () =>
         {
             info.EditorLoadNodeScenesEx();
         });
-        NewButton("UnloadScenes", buttonWidth, isAllLoaded == true && sceneCount > 0, btnStyle, info.UnLoadScenes);
+        NewButton("UnloadScenes", buttonWidth, state.CanUnloadScenes, btnStyle, info.UnLoadScenes);
         EditorGUILayout.EndHorizontal();
 
         EditorGUILayout.BeginHorizontal();
-        NewButton("5.OneKey", buttonWidth, treeCount == 0 && sceneCount == 0, btnStyle, () => {
+        NewButton("5.OneKey", buttonWidth, state.CanOneKey(), btnStyle, () => {
             // info.InitInOut();
             // info.CreateTreesBSEx();
             // info.EditorCreateNodeScenes();
             info.OneKey_TreeNodeScene();
 
         });
-        NewButton("Reset", buttonWidth, sceneCount > 0 && treeCount > 0, btnStyle, () => {
+        NewButton("Reset", buttonWidth, state.CanReset(), btnStyle, () => {
             info.EditorLoadNodeScenesEx();
             info.DestroyScenes();
             info.ClearTrees();

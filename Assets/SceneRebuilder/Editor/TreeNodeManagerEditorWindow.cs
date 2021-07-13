@@ -11,8 +11,8 @@ using System.Text;
 using OfficeOpenXml;
 using MeshProfilerNS;
 
-namespace MeshProfilerNS
-{
+//namespace MeshProfilerNS
+// {
     public class TreeNodeManagerEditorWindow : ListManagerEditorWindow<TreeNodeElement, TreeNodeValues>
     //:EditorWindow
     {
@@ -1492,7 +1492,7 @@ namespace MeshProfilerNS
         }
     }
 
-}
+// }
 public class TreeNodeElement : ListItemElement<TreeNodeValues>
 {
     public AreaTreeNode modelInfo;

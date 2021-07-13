@@ -8,6 +8,10 @@ using UnityEditor;
 #endif
 public class BuildingModelInfo : SubSceneCreater
 {
+    public BuildingModelState GetState()
+    {
+        return new BuildingModelState(this);
+    }
 
     public int GetTreeCount()
     {
@@ -74,6 +78,55 @@ public class BuildingModelInfo : SubSceneCreater
 
     public string GetInfoName()
     {
+        // //int m = 0;
+        
+        // var tc = GetTreeCount();
+        // //string infoName = "Mod";
+
+        // int pC = GetPartCount();
+
+        // string p = "";
+        // if (pC>0)
+        // {
+        //     p = $"|P{pC}";
+        // }
+        // if (SceneList != null)
+        // {
+            
+        //     if (tc > 0)
+        //     {
+        //         //return "Model(S)(T)";
+        //         if (SceneList.sceneCount > 0)
+        //         {
+        //             return $"Mod|S{SceneList.sceneCount}|T{tc}{p}";
+        //         }
+        //         else
+        //         {
+        //             return $"Mod|T{tc}{p}";
+        //         }
+        //     }
+        //     else
+        //     {
+        //         if (SceneList.sceneCount > 0)
+        //         {
+        //             return $"Mod|S{SceneList.sceneCount}{p}";
+        //         }
+        //     }
+        // }
+        // else
+        // {
+        //     if (tc > 0)
+        //     {
+        //         //return "Model(T)";
+        //         return $"Mod|T{tc}{p}";
+        //     }
+        // }
+        
+        return $"Mod{GetInfoText()}";
+    }
+
+    public string GetInfoText()
+    {
         //int m = 0;
         
         var tc = GetTreeCount();
@@ -94,18 +147,18 @@ public class BuildingModelInfo : SubSceneCreater
                 //return "Model(S)(T)";
                 if (SceneList.sceneCount > 0)
                 {
-                    return $"Mod|S{SceneList.sceneCount}|T{tc}{p}";
+                    return $"{p}|S{SceneList.sceneCount}|T{tc}";
                 }
                 else
                 {
-                    return $"Mod|T{tc}{p}";
+                    return $"{p}|T{tc}";
                 }
             }
             else
             {
                 if (SceneList.sceneCount > 0)
                 {
-                    return $"Mod|S{SceneList.sceneCount}{p}";
+                    return $"{p}|S{SceneList.sceneCount}";
                 }
             }
         }
@@ -114,11 +167,11 @@ public class BuildingModelInfo : SubSceneCreater
             if (tc > 0)
             {
                 //return "Model(T)";
-                return $"Mod|T{tc}{p}";
+                return $"{p}|T{tc}";
             }
         }
         
-        return $"Mod{p}";
+        return p;
     }
 
     public GameObject InPart;
@@ -1545,4 +1598,70 @@ public class BuildingModelInfo : SubSceneCreater
         Debug.LogWarning($"BuildingModelInfo.EditorLoadNodeScenes time:{(DateTime.Now - start)}");
     }
 #endif
+}
+
+public class BuildingModelState
+{
+    public int sceneCount ;
+    public int unloadedSceneCount ;
+    public bool isAllLoaded ;
+    public int treeCount ;
+    public int partCount ;
+
+    public bool HaveUnloadedScenes;
+
+    public bool CanCreateTrees;
+
+    public bool CanRemoveTrees;
+
+    public bool CanCreateScenes;
+
+    public bool CanRemoveScenes;
+
+    public bool CanLoadScenes;
+
+    public bool CanUnloadScenes;
+
+    public BuildingModelState(BuildingModelInfo b)
+    {
+        sceneCount = b.GetSceneCount();
+        unloadedSceneCount = b.SceneList.GetUnloadedScenes().Count;
+        isAllLoaded = b.IsSceneLoaded();
+        treeCount = b.GetTreeCount();
+        partCount = b.GetPartCount();
+
+        CanCreateTrees = isAllLoaded == true && partCount > 0 && treeCount == 0;
+        CanRemoveTrees = isAllLoaded == true && treeCount > 0;
+        CanCreateScenes = isAllLoaded == true && treeCount > 0 && sceneCount == 0;
+        CanRemoveScenes = isAllLoaded == true && sceneCount > 0;
+        CanLoadScenes = isAllLoaded == false && sceneCount > 0;
+        CanUnloadScenes = isAllLoaded == true && sceneCount > 0;
+
+        HaveUnloadedScenes = isAllLoaded == false && sceneCount > 0 && unloadedSceneCount > 0 && unloadedSceneCount < sceneCount;
+    }
+
+    public bool CanGetInfo()
+    {
+        return isAllLoaded == true && sceneCount == 0 && treeCount == 0;
+    }
+
+    public bool CanFindDoors()
+    {
+        return partCount > 0 && (isAllLoaded == true || sceneCount == 0 || treeCount == 0);
+    }
+
+    public bool CanOneKey()
+    {
+        return treeCount == 0 && sceneCount == 0;
+    }
+
+    public bool CanReset()
+    {
+        return sceneCount > 0 && treeCount > 0;
+    }
+
+    public override string ToString()
+    {
+        return $"loaded:{isAllLoaded},part:{partCount} tree:{treeCount},scene:{sceneCount},unloaded:{unloadedSceneCount}";
+    }
 }
