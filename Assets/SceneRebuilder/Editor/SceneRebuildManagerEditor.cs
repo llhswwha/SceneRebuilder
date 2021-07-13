@@ -46,6 +46,10 @@ public class SceneRebuildManagerEditor : BaseEditor<SceneRebuildManager>
 
     public override void OnToolLayout(SceneRebuildManager item)
     {
+        Debug.Log($"------------------------------------------------------------------------");
+
+        System.DateTime startT=System.DateTime.Now;
+
         base.OnToolLayout(item);
 
         // int count = buildings.Count;
@@ -111,6 +115,7 @@ public class SceneRebuildManagerEditor : BaseEditor<SceneRebuildManager>
         buildingListArg.caption=$"Building List";
         EditorUIUtils.ToggleFoldout(buildingListArg, 
         (arg)=>{
+            System.DateTime start=System.DateTime.Now;
             float sumVertexCount=0;
             int sumRendererCount=0;
 
@@ -127,6 +132,8 @@ public class SceneRebuildManagerEditor : BaseEditor<SceneRebuildManager>
             InitEditorArg(buildings);
             arg.caption= $"Building List({buildings.Count})";
             arg.info=$"[{sumVertexCount:F0}w][{sumRendererCount}]";
+            var time=System.DateTime.Now-start;
+            Debug.Log($"Init BuildingList count:{buildings.Count} time:{time.TotalMilliseconds:F1}ms ");
         },
         //"Window",
         ()=>{
@@ -140,10 +147,12 @@ public class SceneRebuildManagerEditor : BaseEditor<SceneRebuildManager>
 
         if (buildingListArg.isExpanded && buildingListArg.isEnabled)
         {
+            System.DateTime start=System.DateTime.Now;
             buildingListArg.DrawPageToolbar(buildings.Count);
+            int c=0;
             for(int i=buildingListArg.GetStartId();i<buildings.Count && i<buildingListArg.GetEndId();i++)
-            // foreach (var b in buildings)
             {
+                c++;
                 var b=buildings[i];
                 var arg = editorArgs[b];
                 arg.isExpanded = EditorUIUtils.ObjectFoldout(arg.isExpanded, 
@@ -261,6 +270,8 @@ public class SceneRebuildManagerEditor : BaseEditor<SceneRebuildManager>
                     BuildingModelInfoEditor.DrawToolbar(b, contentStyle, buttonWidth);
                 }
             }
+            var time=System.DateTime.Now-start;
+            Debug.Log($"Show BuildingList count:{c} time:{time.TotalMilliseconds:F1}ms ");
         }
 
         //-------------------------------------------------------TreeList-----------------------------------------------------------
@@ -268,6 +279,7 @@ public class SceneRebuildManagerEditor : BaseEditor<SceneRebuildManager>
         treeListArg.caption=$"Tree List";
         EditorUIUtils.ToggleFoldout(treeListArg, 
         (arg)=>{
+            System.DateTime start=System.DateTime.Now;
             float sumVertexCount=0;
             int sumRendererCount=0;
 
@@ -284,6 +296,8 @@ public class SceneRebuildManagerEditor : BaseEditor<SceneRebuildManager>
 
             arg.caption= $"Tree List({trees.Count})";
             arg.info=$"[{sumVertexCount:F0}w][{sumRendererCount}]";
+            var time=System.DateTime.Now-start;
+            Debug.Log($"Init TreeList count:{trees.Count} time:{time.TotalMilliseconds:F1}ms ");
         },
         ()=>{
             if(GUILayout.Button("------",GUILayout.Width(60)))
@@ -293,9 +307,12 @@ public class SceneRebuildManagerEditor : BaseEditor<SceneRebuildManager>
         });
         if (treeListArg.isExpanded && treeListArg.isEnabled)
         {
+            System.DateTime start=System.DateTime.Now;
             treeListArg.DrawPageToolbar(trees.Count);
+            int c=0;
             for(int i=treeListArg.GetStartId();i<trees.Count && i<treeListArg.GetEndId();i++)
             {
+                c++;
                 var tree=trees[i];
                 // if(tree==null)continue;
                 var arg = editorArgs[tree];
@@ -308,6 +325,8 @@ public class SceneRebuildManagerEditor : BaseEditor<SceneRebuildManager>
                     //BuildingModelInfoEditor.DrawToolbar(b, contentStyle, buttonWidth);
                 }
             }
+            var time=System.DateTime.Now-start;
+            Debug.Log($"Show TreeList count:{c} time:{time.TotalMilliseconds:F1}ms ");
         }
 
         //-------------------------------------------------------NodeList-----------------------------------------------------------
@@ -315,6 +334,7 @@ public class SceneRebuildManagerEditor : BaseEditor<SceneRebuildManager>
         nodeListArg.caption=$"Node List";
         EditorUIUtils.ToggleFoldout(nodeListArg, 
         (arg)=>{
+            System.DateTime start=System.DateTime.Now;
             float sumVertexCount=0;
             int sumRendererCount=0;
             nodes=GameObject.FindObjectsOfType<AreaTreeNode>(true).Where(n=>n.IsLeaf).ToList() ;
@@ -329,6 +349,8 @@ public class SceneRebuildManagerEditor : BaseEditor<SceneRebuildManager>
             InitEditorArg(nodes);
             arg.caption= $"Node List({nodes.Count})";
             arg.info=$"[{sumVertexCount:F0}w][{sumRendererCount}]";
+            var time=System.DateTime.Now-start;
+            Debug.Log($"Init NodeList count:{nodes.Count} time:{time.TotalMilliseconds:F1}ms ");
         },
         ()=>{
             if(GUILayout.Button("Window",GUILayout.Width(60)))
@@ -338,9 +360,12 @@ public class SceneRebuildManagerEditor : BaseEditor<SceneRebuildManager>
         });
         if (nodeListArg.isExpanded && nodeListArg.isEnabled)
         {
+            System.DateTime start=System.DateTime.Now;
             nodeListArg.DrawPageToolbar(nodes.Count);
+            int c=0;
             for(int i=nodeListArg.GetStartId();i<nodes.Count && i<nodeListArg.GetEndId();i++)
             {
+                c++;
                 var node=nodes[i];
                 var arg = editorArgs[node];
                 arg.isExpanded = EditorUIUtils.ObjectFoldout(arg.isExpanded, $"[{i+1:00}] {node.tree.name}.{node.name}", $"[{node.VertexCount:F0}w][{node.Renderers.Count}]", false,false,false,node.gameObject);
@@ -349,12 +374,15 @@ public class SceneRebuildManagerEditor : BaseEditor<SceneRebuildManager>
                     //BuildingModelInfoEditor.DrawToolbar(b, contentStyle, buttonWidth);
                 }
             }
+            var time=System.DateTime.Now-start;
+            Debug.Log($"Show NodeList count:{c} time:{time.TotalMilliseconds:F1}ms ");
         }
 
         //-------------------------------------------------------SceneList-----------------------------------------------------------
         List<SubScene_Base> scenes=new List<SubScene_Base>();
         sceneListArg.caption=$"Scene List";
         EditorUIUtils.ToggleFoldout(sceneListArg, (arg)=>{
+            System.DateTime start=System.DateTime.Now;
             float sumVertexCount=0;
             int sumRendererCount=0;
             scenes=GameObject.FindObjectsOfType<SubScene_Base>(true).ToList() ;
@@ -369,6 +397,8 @@ public class SceneRebuildManagerEditor : BaseEditor<SceneRebuildManager>
             InitEditorArg(scenes);
             arg.caption= $"Scene List({scenes.Count})";
             arg.info=$"[{sumVertexCount:F0}w][{sumRendererCount}]";
+            var time=System.DateTime.Now-start;
+            Debug.Log($"Init SceneList count:{scenes.Count} time:{time.TotalMilliseconds:F1}ms ");
         },()=>{
             if(GUILayout.Button("Window",GUILayout.Width(60)))
 			{
@@ -377,9 +407,12 @@ public class SceneRebuildManagerEditor : BaseEditor<SceneRebuildManager>
         });
         if (sceneListArg.isExpanded && sceneListArg.isEnabled)
         {
+            System.DateTime start=System.DateTime.Now;
             sceneListArg.DrawPageToolbar(scenes.Count);
+            int c=0;
             for(int i=sceneListArg.GetStartId();i<scenes.Count && i<sceneListArg.GetEndId();i++)
             {
+                c++;
                 var scene=scenes[i];
                 var arg = editorArgs[scene];
                 arg.isExpanded = EditorUIUtils.ObjectFoldout(arg.isExpanded, $"[{i+1:00}] {scene.name}", $"[{scene.vertexCount:F0}w][{scene.rendererCount}]", false,false,false,scene.gameObject);
@@ -388,6 +421,8 @@ public class SceneRebuildManagerEditor : BaseEditor<SceneRebuildManager>
                     //BuildingModelInfoEditor.DrawToolbar(b, contentStyle, buttonWidth);
                 }
             }
+            var time=System.DateTime.Now-start;
+            Debug.Log($"Show SceneList count:{c} time:{time.TotalMilliseconds:F1}ms ");
         }
 
         //-------------------------------------------------------MeshList-----------------------------------------------------------
@@ -418,8 +453,7 @@ public class SceneRebuildManagerEditor : BaseEditor<SceneRebuildManager>
             arg.caption= $"Mesh List({meshes.Count})";
             arg.info=$"[{sumVertexCountVisible:F0}/{sumVertexCount:F0}w][{sumRendererCountVisible}/{sumRendererCount}]";
             var time=System.DateTime.Now-start;
-            Debug.Log($"MeshList count:{meshes.Count} time:{time.TotalMilliseconds:F1}ms ");
-
+            Debug.Log($"Init MeshList count:{meshes.Count} time:{time.TotalMilliseconds:F1}ms ");
         },()=>{
             if(GUILayout.Button("----------",GUILayout.Width(60)))
 			{
@@ -429,21 +463,48 @@ public class SceneRebuildManagerEditor : BaseEditor<SceneRebuildManager>
 
         if (meshListArg.isExpanded && meshListArg.isEnabled)
         {
+            System.DateTime start=System.DateTime.Now;
             meshListArg.DrawPageToolbar(meshes.Count);
+            int c=0;
             for(int i=meshListArg.GetStartId();i<meshes.Count && i<meshListArg.GetEndId();i++)
             {
+                c++;
                 var mesh=meshes[i];
                 if(!editorArgs.ContainsKey(mesh)){
                     editorArgs.Add(mesh,new FoldoutEditorArg());
                 }
                 var arg = editorArgs[mesh];
-                BuildingModelInfo building=mesh.GetComponentInParent<BuildingModelInfo>();
+                BuildingModelInfo[] bs=mesh.GetComponentsInParent<BuildingModelInfo>(true);
+                if(bs.Length==0){
+                    Debug.LogError($"Show MeshList buildings.Length==0");continue;
+                }
+                BuildingModelInfo building=bs[0];
+                if(mesh==null){
+                    Debug.LogError($"Show MeshList mesh==null");continue;
+                }
+                if(mesh.sharedMesh==null){
+                    Debug.LogError($"Show MeshList mesh.sharedMesh==null");continue;
+                }
+                if(arg==null){
+                    Debug.LogError($"Show MeshList arg==null");continue;
+                }
+                if(building==null){
+                    Debug.LogError($"Show MeshList building==null");continue;
+                }
+                if(mesh.transform.parent==null){
+                    Debug.LogError($"Show MeshList mesh.transform.parent==null");continue;
+                }
                 arg.isExpanded = EditorUIUtils.ObjectFoldout(arg.isExpanded, $"[{i+1:00}] {building.name}>>{mesh.transform.parent.name}>{mesh.name}", $"[{mesh.sharedMesh.vertexCount/10000f:F0}w]", false,false,false,mesh.gameObject);
                 if (arg.isExpanded)
                 {
                     //BuildingModelInfoEditor.DrawToolbar(b, contentStyle, buttonWidth);
                 }
             }
+            var time=System.DateTime.Now-start;
+            Debug.Log($"Show MeshList count:{c} time:{time.TotalMilliseconds:F1}ms ");
         }
+
+        var timeT=System.DateTime.Now-startT;
+        Debug.Log($"SceneRebuildManagerEditor time:{timeT.TotalMilliseconds:F1}ms ");
     }
 }

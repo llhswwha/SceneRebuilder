@@ -220,7 +220,6 @@ namespace CodeStage.AdvancedFPSCounter.Editor.UI
 			}
 
 			var currentLabelWidth = EditorGUIUtility.labelWidth;
-
 			EditorGUIUtility.labelWidth = 1;
 			//EditorGUILayout.PropertyField(toggle, GUIContent.none, GUILayout.ExpandWidth(false));
 			arg.isEnabled=EditorGUILayout.Toggle(arg.isEnabled,GUILayout.Width(15));
@@ -299,54 +298,54 @@ namespace CodeStage.AdvancedFPSCounter.Editor.UI
             return isExpanded;
         }
 
-        public static bool ObjectFoldout(bool isExpanded, string caption,string info, bool bold = true, bool separator = true, bool background = true,GameObject obj=null)
-        {
-            if (separator) Separator(5);
+        // public static bool ObjectFoldout(bool isExpanded, string caption,string info, bool bold = true, bool separator = true, bool background = true,GameObject obj=null)
+        // {
+        //     if (separator) Separator(5);
 
-            if (background)
-            {
-                GUILayout.BeginHorizontal(panelWithBackground);
-            }
-            else
-            {
-                GUILayout.BeginHorizontal();
-            }
+        //     if (background)
+        //     {
+        //         GUILayout.BeginHorizontal(panelWithBackground);
+        //     }
+        //     else
+        //     {
+        //         GUILayout.BeginHorizontal();
+        //     }
 
-            var currentLabelWidth = EditorGUIUtility.labelWidth;
+        //     var currentLabelWidth = EditorGUIUtility.labelWidth;
 
-            //EditorGUIUtility.labelWidth = 1;
-            ////EditorGUILayout.PropertyField(toggle, GUIContent.none, GUILayout.ExpandWidth(false));
-            //GUILayout.Label("aaa");
-            //EditorGUIUtility.labelWidth = currentLabelWidth;
+        //     //EditorGUIUtility.labelWidth = 1;
+        //     ////EditorGUILayout.PropertyField(toggle, GUIContent.none, GUILayout.ExpandWidth(false));
+        //     //GUILayout.Label("aaa");
+        //     //EditorGUIUtility.labelWidth = currentLabelWidth;
 
-            GUILayout.Space(10);
-            var rect = EditorGUILayout.GetControlRect();
-            isExpanded = EditorGUI.Foldout(rect, isExpanded, caption, true, bold ? richBoldFoldout : EditorStyles.foldout);
+        //     GUILayout.Space(10);
+        //     var rect = EditorGUILayout.GetControlRect();
+        //     isExpanded = EditorGUI.Foldout(rect, isExpanded, caption, true, bold ? richBoldFoldout : EditorStyles.foldout);
 
-            EditorGUIUtility.labelWidth = 1;
-            var contentStyle = new GUIStyle(EditorStyles.label);
-            contentStyle.alignment = TextAnchor.MiddleRight;
-            //EditorGUILayout.PropertyField(toggle, GUIContent.none, GUILayout.ExpandWidth(false));
-            GUILayout.Label(info, contentStyle);
-			if(obj!=null){
-				// if(GUILayout.Button("P", EditorStyles.miniButtonLeft, GUILayout.Width(20)))
-				// {
-				// 	EditorGUIUtility.PingObject(obj);
-				// }
-				if(GUILayout.Button(">", EditorStyles.miniButtonLeft, GUILayout.Width(20)))
-				{
-					Selection.activeObject = obj;
-					EditorGUIUtility.PingObject(obj);
-					EditorApplication.ExecuteMenuItem("Edit/Frame Selected");
-				}
-			}
+        //     EditorGUIUtility.labelWidth = 1;
+        //     var contentStyle = new GUIStyle(EditorStyles.label);
+        //     contentStyle.alignment = TextAnchor.MiddleRight;
+        //     //EditorGUILayout.PropertyField(toggle, GUIContent.none, GUILayout.ExpandWidth(false));
+        //     GUILayout.Label(info, contentStyle);
+		// 	if(obj!=null){
+		// 		// if(GUILayout.Button("P", EditorStyles.miniButtonLeft, GUILayout.Width(20)))
+		// 		// {
+		// 		// 	EditorGUIUtility.PingObject(obj);
+		// 		// }
+		// 		if(GUILayout.Button(">", EditorStyles.miniButtonLeft, GUILayout.Width(20)))
+		// 		{
+		// 			Selection.activeObject = obj;
+		// 			EditorGUIUtility.PingObject(obj);
+		// 			EditorApplication.ExecuteMenuItem("Edit/Frame Selected");
+		// 		}
+		// 	}
 
-            EditorGUIUtility.labelWidth = currentLabelWidth;
+        //     EditorGUIUtility.labelWidth = currentLabelWidth;
 
-            GUILayout.EndHorizontal();
+        //     GUILayout.EndHorizontal();
 
-            return isExpanded;
-        }
+        //     return isExpanded;
+        // }
 
 		public static bool ObjectFoldout(bool isExpanded, string caption,string info, bool bold = true, bool separator = true, bool background = true,GameObject obj=null,System.Action toolbarEvent=null)
         {
@@ -361,12 +360,25 @@ namespace CodeStage.AdvancedFPSCounter.Editor.UI
                 GUILayout.BeginHorizontal();
             }
 
-            var currentLabelWidth = EditorGUIUtility.labelWidth;
+			var currentLabelWidth = EditorGUIUtility.labelWidth;
 
-            //EditorGUIUtility.labelWidth = 1;
-            ////EditorGUILayout.PropertyField(toggle, GUIContent.none, GUILayout.ExpandWidth(false));
-            //GUILayout.Label("aaa");
-            //EditorGUIUtility.labelWidth = currentLabelWidth;
+			if(obj!=null){
+				EditorGUIUtility.labelWidth = 1;
+				//EditorGUILayout.PropertyField(toggle, GUIContent.none, GUILayout.ExpandWidth(false));
+				EditorGUILayout.Toggle(obj.activeInHierarchy,GUILayout.Width(15));
+				bool isOn=EditorGUILayout.Toggle(obj.activeSelf,GUILayout.Width(15));
+				if(isOn!=obj.activeSelf)
+				{
+					obj.SetActive(isOn);
+				}
+				// if(arg.isEnabled){
+				// 	if(toggleEvent!=null){
+				// 		toggleEvent(arg);
+				// 	}
+				// }
+				EditorGUIUtility.labelWidth = currentLabelWidth;
+			}
+
 
             GUILayout.Space(10);
             var rect = EditorGUILayout.GetControlRect(GUILayout.Width(100));
