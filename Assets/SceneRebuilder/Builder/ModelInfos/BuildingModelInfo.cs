@@ -323,7 +323,7 @@ public class BuildingModelInfo : SubSceneCreater
     }
 
     //[ContextMenu("GetTrees")]
-    public void GetTrees()
+    public void UpdateTrees()
     {
         trees = this.GetComponentsInChildren<ModelAreaTree>(true);
     }
@@ -1627,6 +1627,7 @@ public class BuildingModelState
         sceneCount = b.GetSceneCount();
         unloadedSceneCount = b.SceneList.GetUnloadedScenes().Count;
         isAllLoaded = b.IsSceneLoaded();
+
         treeCount = b.GetTreeCount();
         partCount = b.GetPartCount();
 

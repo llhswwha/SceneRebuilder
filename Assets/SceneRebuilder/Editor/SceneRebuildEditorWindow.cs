@@ -830,7 +830,7 @@ public class SceneRebuildEditorWindow : ListManagerEditorWindow<BuildingModelEle
         {
             if (SelectIndex < 0) return;
             var ele = meshElementList[SelectIndex];
-            ele.modelInfo.GetTrees();
+            ele.modelInfo.UpdateTrees();
             Debug.Log($"GetTrees index:{SelectIndex} ele:{ele} obj:{ele.rootObj}");
         }
         if (GUILayout.Button("ClearTrees", GUILayout.Height(buttonHeight)))
@@ -902,7 +902,7 @@ public class SceneRebuildEditorWindow : ListManagerEditorWindow<BuildingModelEle
         {
             var list=GetBuildingModelInfos();
             BuildingModelManager buildingModelManager = GameObject.FindObjectOfType<BuildingModelManager>();
-            buildingModelManager.GetTrees(list);
+            buildingModelManager.UpdateTrees(list);
         }
         if (GUILayout.Button("ClearTrees", GUILayout.Height(buttonHeight)))
         {

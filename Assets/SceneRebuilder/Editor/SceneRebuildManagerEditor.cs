@@ -44,6 +44,8 @@ public class SceneRebuildManagerEditor : BaseEditor<SceneRebuildManager>
         }
     }
 
+    public bool IsShowList = true;
+
     public override void OnToolLayout(SceneRebuildManager item)
     {
         Debug.Log($"------------------------------------------------------------------------");
@@ -63,21 +65,6 @@ public class SceneRebuildManagerEditor : BaseEditor<SceneRebuildManager>
         //          SceneRebuildEditorWindow.ShowWindow();
         //      });
         EditorGUILayout.EndHorizontal();
-
-        // if (GUILayout.Button("InitModels", contentStyle))
-        // {
-        //     item.InitBuildings();
-        // }
-
-        // if (GUILayout.Button("2.CreateTrees", contentStyle))
-        // {
-        //     item.CombineBuildings();
-        // }
-
-        // if (GUILayout.Button("CreateScenes", contentStyle))
-        // {
-        //     item.SaveScenes();
-        // }
 
         EditorGUILayout.BeginHorizontal();
         NewButton("3.CreateTrees", buttonWidth, true, item.CombineBuildings);
@@ -102,12 +89,11 @@ public class SceneRebuildManagerEditor : BaseEditor<SceneRebuildManager>
         {
             item.OneKey();
         }
-        // if (GUILayout.Button("ClearBuildings", contentStyle))
-        // {
-        //     item.ClearBuildings();
-        // }
-        EditorUIUtils.SetupStyles();
 
+        IsShowList = GUILayout.Toggle(IsShowList, "IsShowList");
+        if (IsShowList == false) return;
+
+        EditorUIUtils.SetupStyles();
         //-------------------------------------------------------BuildingList-----------------------------------------------------------
         //GUIStyle contentStyle = new GUIStyle(EditorStyles.miniButton);
         //contentStyle.alignment = TextAnchor.MiddleLeft;
@@ -119,21 +105,33 @@ public class SceneRebuildManagerEditor : BaseEditor<SceneRebuildManager>
             float sumVertexCount=0;
             int sumRendererCount=0;
 
-            buildings = GameObject.FindObjectsOfType<BuildingModelInfo>(true).ToList() ;
+            //var ts= GameObject.FindObjectsOfType<Transform>(true);
+            //Debug.Log($"Init BuildingList00 count:{ts.Length} time:{(System.DateTime.Now - start).TotalMilliseconds:F1}ms ");
+
+            //var bs = GameObject.FindObjectsOfType<BuildingModelInfo>(true);
+            //Debug.Log($"Init BuildingList0 count:{bs.Length} time:{(System.DateTime.Now - start).TotalMilliseconds:F1}ms ");
+
+            //buildings = GameObject.FindObjectsOfType<BuildingModelInfo>(true).ToList() ;
+
+            buildings = item.buildingModelManager.Buildings.Where(b=>b!=null).ToList();
+
+            //Debug.Log($"Init BuildingList1 count:{buildings.Count} time:{(System.DateTime.Now - start).TotalMilliseconds:F1}ms ");
             buildings.Sort((a, b) =>
             {
                 //return b.AllVertextCount.CompareTo(a.AllVertextCount);
                 return b.Out0BigVertextCount.CompareTo(a.Out0BigVertextCount);
             });
+            //Debug.Log($"Init BuildingList2 count:{buildings.Count} time:{(System.DateTime.Now - start).TotalMilliseconds:F1}ms ");
             buildings.ForEach(b=>{
                 sumVertexCount+=b.AllVertextCount;
                 sumRendererCount+=b.AllRendererCount;
             });
+            //Debug.Log($"Init BuildingList3 count:{buildings.Count} time:{(System.DateTime.Now - start).TotalMilliseconds:F1}ms ");
             InitEditorArg(buildings);
+            //Debug.Log($"Init BuildingList4 count:{buildings.Count} time:{(System.DateTime.Now - start).TotalMilliseconds:F1}ms ");
             arg.caption= $"Building List({buildings.Count})";
             arg.info=$"[{sumVertexCount:F0}w][{sumRendererCount}]";
-            var time=System.DateTime.Now-start;
-            Debug.Log($"Init BuildingList count:{buildings.Count} time:{time.TotalMilliseconds:F1}ms ");
+            Debug.Log($"Init BuildingList count:{buildings.Count} time:{(System.DateTime.Now - start).TotalMilliseconds:F1}ms ");
         },
         //"Window",
         ()=>{
@@ -155,112 +153,119 @@ public class SceneRebuildManagerEditor : BaseEditor<SceneRebuildManager>
                 c++;
                 var b=buildings[i];
                 var arg = editorArgs[b];
-                arg.isExpanded = EditorUIUtils.ObjectFoldout(arg.isExpanded, 
-                $"[{i+1:00}] {b.name} {b.GetInfoText()}", 
-                $"[{b.AllVertextCount:F0}w][{b.AllRendererCount}]|{b.Out0BigVertextCount:F0}+{b.Out0SmallVertextCount:F0}+{b.Out1VertextCount:F0}+{b.InVertextCount:F0}", 
-                false,false,true,b.gameObject,
-                ()=>{
-                    
-                    int width=25;
+                arg.isExpanded = EditorUIUtils.ObjectFoldout(arg.isExpanded,
+                $"[{i+1:00}] {b.name} {b.GetInfoText()}",
+                //$"[{i + 1:00}] {b.name} ",
+                $"[{b.AllVertextCount:F0}w][{b.AllRendererCount}]|{b.Out0BigVertextCount:F0}+{b.Out0SmallVertextCount:F0}+{b.Out1VertextCount:F0}+{b.InVertextCount:F0}",
+                false, false, true, b.gameObject,
+                () =>
+                {
+                    int width = 25;
                     var contentStyle = new GUIStyle(EditorStyles.miniButton);
-                    contentStyle.margin=new RectOffset(0,0,0,0);
-                    contentStyle.padding=new RectOffset(0,0,0,0);
-                   var state=b.GetState();
-
-                    if(state.CanOneKey()){
-                        if(GUILayout.Button("I",contentStyle, GUILayout.Width(20)))
+                    contentStyle.margin = new RectOffset(0, 0, 0, 0);
+                    contentStyle.padding = new RectOffset(0, 0, 0, 0);
+                    var state = b.GetState();
+                    if (state.CanOneKey())
+                    {
+                        if (GUILayout.Button("I", contentStyle, GUILayout.Width(20)))
                         {
                             b.InitInOut();
                         }
                     }
-                    else{
-                        if(GUILayout.Button("-",contentStyle,GUILayout.Width(20)))
+                    else
+                    {
+                        if (GUILayout.Button("-", contentStyle, GUILayout.Width(20)))
                         {
-                            // b.InitInOut();
+                            b.InitInOut();
                         }
                     }
-
-                    if(state.CanOneKey()){
-                        if(GUILayout.Button("+O",contentStyle,GUILayout.Width(width)))
+                    if (state.CanOneKey())
+                    {
+                        if (GUILayout.Button("+O", contentStyle, GUILayout.Width(width)))
                         {
                             b.CreateTreesBSEx();
                         }
                     }
-                    else if(state.CanReset())
+                    else if (state.CanReset())
                     {
-                        if(GUILayout.Button("-O",contentStyle,GUILayout.Width(width)))
+                        if (GUILayout.Button("-O", contentStyle, GUILayout.Width(width)))
                         {
                             b.EditorLoadNodeScenesEx();
                             b.DestroyScenes();
                             b.ClearTrees();
                         }
                     }
-                    else{
-                        if(GUILayout.Button("--",contentStyle,GUILayout.Width(width)))
-                        {
-                            //b.CreateTreesBSEx();
-                        }
-                    }
-
-                    if(state.CanCreateTrees){
-                        if(GUILayout.Button("+T",contentStyle,GUILayout.Width(width)))
+                    else
+                    {
+                        if (GUILayout.Button("--", contentStyle, GUILayout.Width(width)))
                         {
                             b.CreateTreesBSEx();
                         }
                     }
-                    else if(state.CanRemoveTrees)
+
+                    if (state.CanCreateTrees)
                     {
-                        if(GUILayout.Button("-T",contentStyle,GUILayout.Width(width)))
+                        if (GUILayout.Button("+T", contentStyle, GUILayout.Width(width)))
+                        {
+                            b.CreateTreesBSEx();
+                        }
+                    }
+                    else if (state.CanRemoveTrees)
+                    {
+                        if (GUILayout.Button("-T", contentStyle, GUILayout.Width(width)))
                         {
                             b.ClearTrees();
                         }
                     }
-                    else{
-                        if(GUILayout.Button("--",contentStyle,GUILayout.Width(width)))
+                    else
+                    {
+                        if (GUILayout.Button("--", contentStyle, GUILayout.Width(width)))
                         {
-                            //b.CreateTreesBSEx();
+                            b.CreateTreesBSEx();
                         }
                     }
-                    
-                    if(state.CanCreateScenes)
+
+                    if (state.CanCreateScenes)
                     {
-                        if(GUILayout.Button("+S",contentStyle,GUILayout.Width(width)))
+                        if (GUILayout.Button("+S", contentStyle, GUILayout.Width(width)))
                         {
                             b.EditorCreateNodeScenes();
                         }
                     }
-                    else if(state.CanRemoveScenes)
+                    else if (state.CanRemoveScenes)
                     {
-                        if(GUILayout.Button("-S",contentStyle,GUILayout.Width(width)))
+                        if (GUILayout.Button("-S", contentStyle, GUILayout.Width(width)))
                         {
                             b.DestroyScenes();
                         }
                     }
-                    else{
-                        if(GUILayout.Button("--",contentStyle,GUILayout.Width(width)))
+                    else
+                    {
+                        if (GUILayout.Button("--", contentStyle, GUILayout.Width(width)))
                         {
-                            
+
                         }
                     }
 
-                    if(state.CanLoadScenes)
+                    if (state.CanLoadScenes)
                     {
-                        if(GUILayout.Button("+L",contentStyle,GUILayout.Width(width)))
+                        if (GUILayout.Button("+L", contentStyle, GUILayout.Width(width)))
                         {
                             b.EditorLoadNodeScenesEx();
                         }
                     }
-                    else if(state.CanUnloadScenes)
+                    else if (state.CanUnloadScenes)
                     {
-                         if(GUILayout.Button("-L",contentStyle,GUILayout.Width(width)))
+                        if (GUILayout.Button("-L", contentStyle, GUILayout.Width(width)))
                         {
                             b.UnLoadScenes();
                         }
                     }
-                    else{
-                        if(GUILayout.Button("--",contentStyle,GUILayout.Width(width)))
+                    else
+                    {
+                        if (GUILayout.Button("--", contentStyle, GUILayout.Width(width)))
                         {
-                            
+
                         }
                     }
                 }
@@ -283,7 +288,9 @@ public class SceneRebuildManagerEditor : BaseEditor<SceneRebuildManager>
             float sumVertexCount=0;
             int sumRendererCount=0;
 
-            trees=GameObject.FindObjectsOfType<ModelAreaTree>(true).Where(t=>t.VertexCount>0).ToList() ;
+            //trees=GameObject.FindObjectsOfType<ModelAreaTree>(true).Where(t=>t.VertexCount>0).ToList() ;
+            trees = item.subSceneManager.Where(t => t.VertexCount > 0).ToList();
+
             trees.Sort((a, b) =>
             {
                 return b.VertexCount.CompareTo(a.VertexCount);

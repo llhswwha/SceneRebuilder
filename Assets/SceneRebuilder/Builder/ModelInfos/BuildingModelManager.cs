@@ -273,19 +273,32 @@ public class BuildingModelManager : MonoBehaviour
         }
     }
 
-    [ContextMenu("GetTrees")]
-    public void GetTrees()
+    [ContextMenu("UpdateTrees")]
+    public void UpdateTrees()
     {
         GetBuildings();
-        GetTrees(Buildings);
+        UpdateTrees(Buildings);
     }
 
-    public void GetTrees(List<BuildingModelInfo> buildings)
+    public List<ModelAreaTree> GetTrees()
+    {
+        List<ModelAreaTree> trees = new List<ModelAreaTree>();
+
+        foreach (var b in Buildings)
+        {
+            if (b == null) continue;
+            b.UpdateTrees();
+        }
+
+        return trees;
+    }
+
+    public void UpdateTrees(List<BuildingModelInfo> buildings)
     {
         foreach (var b in buildings)
         {
             if (b == null) continue;
-            b.GetTrees();
+            b.UpdateTrees();
         }
     }
 

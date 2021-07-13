@@ -14,8 +14,26 @@ public class SubSceneCreater : MonoBehaviour
     //[ContextMenu("GetTreeNodeScenes")]
     public void GetTreeNodeScenes()
     {
-        if(SceneList==null){
-            SceneList=this.gameObject.AddComponent<SubScene_List>();
+        if (SceneList == null)
+        {
+            SceneList = this.gameObject.GetComponent<SubScene_List>();
+        }
+        if (SceneList == null)
+        {
+            SceneList = this.gameObject.AddComponent<SubScene_List>();
+            SceneList.Init();
+        }
+    }
+
+    public void UpdateSceneList()
+    {
+        if (SceneList == null)
+        {
+            SceneList = this.gameObject.GetComponent<SubScene_List>();
+        }
+        if (SceneList == null)
+        {
+            SceneList = this.gameObject.AddComponent<SubScene_List>();
         }
         SceneList.Init();
     }
@@ -120,6 +138,8 @@ public class SubSceneCreater : MonoBehaviour
         }
         if (progressChanged == null)
             ProgressBarHelper.ClearProgressBar();
+
+        UpdateSceneList();
     }
 
     public void LoadUnloadedScenes()

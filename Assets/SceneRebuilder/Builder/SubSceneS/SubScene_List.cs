@@ -15,6 +15,7 @@ public class SubScene_List : MonoBehaviour
         scenes = gameObject.GetComponentsInChildren<SubScene_Base>(true);
         sceneCount = scenes.Length;
     }
+
 #if UNITY_EDITOR
     internal void AddScene(SubScene_Base scene)
     {

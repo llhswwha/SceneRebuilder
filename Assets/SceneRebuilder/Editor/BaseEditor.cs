@@ -40,6 +40,7 @@ public class BaseEditor<T> : Editor where T:class
         contentStyle.alignment = TextAnchor.MiddleLeft;
 
         T item = target as T;
+        
         OnToolLayout(item);
 
         base.OnInspectorGUI();

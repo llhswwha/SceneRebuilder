@@ -16,6 +16,8 @@ public class SceneRebuildManager : MonoBehaviour
 
     public BuildingModelManager buildingModelManager;
 
+    public AreaTreeManager areaTreeManager;
+
     [ContextMenu("InitBuildings")]
     public void InitBuildings()
     {
