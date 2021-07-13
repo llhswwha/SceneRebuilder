@@ -27,8 +27,14 @@ public class SceneRebuildManagerEditor : BaseEditor<SceneRebuildManager>
     public void OnEnable()
     {
         manager = target as SceneRebuildManager;
-        manager.UpdateList();
+        UpdateList();
         Debug.LogError("SceneRebuildManagerEditor.OnEnable");
+    }
+
+    public void UpdateList()
+    {
+        manager.UpdateList();
+        InitMeshList(meshListArg);
     }
 
     public Dictionary<Object, FoldoutEditorArg> editorArgs = new Dictionary<Object, FoldoutEditorArg>();
@@ -189,7 +195,7 @@ public class SceneRebuildManagerEditor : BaseEditor<SceneRebuildManager>
                         if (GUILayout.Button("+O", contentStyle, GUILayout.Width(width)))
                         {
                             b.CreateTreesBSEx();
-                            manager.UpdateList();
+                            UpdateList();
                         }
                     }
                     else if (state.CanReset())
@@ -199,7 +205,7 @@ public class SceneRebuildManagerEditor : BaseEditor<SceneRebuildManager>
                             b.EditorLoadNodeScenesEx();
                             b.DestroyScenes();
                             b.ClearTrees();
-                            manager.UpdateList();
+                            UpdateList();
                         }
                     }
                     else
@@ -215,7 +221,7 @@ public class SceneRebuildManagerEditor : BaseEditor<SceneRebuildManager>
                         if (GUILayout.Button("+T", contentStyle, GUILayout.Width(width)))
                         {
                             b.CreateTreesBSEx();
-                            manager.UpdateList();
+                            UpdateList();
                         }
                     }
                     else if (state.CanRemoveTrees)
@@ -223,7 +229,7 @@ public class SceneRebuildManagerEditor : BaseEditor<SceneRebuildManager>
                         if (GUILayout.Button("-T", contentStyle, GUILayout.Width(width)))
                         {
                             b.ClearTrees();
-                            manager.UpdateList();
+                            UpdateList();
                         }
                     }
                     else
@@ -239,7 +245,7 @@ public class SceneRebuildManagerEditor : BaseEditor<SceneRebuildManager>
                         if (GUILayout.Button("+S", contentStyle, GUILayout.Width(width)))
                         {
                             b.EditorCreateNodeScenes();
-                            manager.UpdateList();
+                            UpdateList();
                         }
                     }
                     else if (state.CanRemoveScenes)
@@ -247,7 +253,7 @@ public class SceneRebuildManagerEditor : BaseEditor<SceneRebuildManager>
                         if (GUILayout.Button("-S", contentStyle, GUILayout.Width(width)))
                         {
                             b.DestroyScenes();
-                            manager.UpdateList();
+                            UpdateList();
                         }
                     }
                     else
@@ -263,7 +269,7 @@ public class SceneRebuildManagerEditor : BaseEditor<SceneRebuildManager>
                         if (GUILayout.Button("+L", contentStyle, GUILayout.Width(width)))
                         {
                             b.EditorLoadNodeScenesEx();
-                            manager.UpdateList();
+                            UpdateList();
                         }
                     }
                     else if (state.CanUnloadScenes)
@@ -271,7 +277,7 @@ public class SceneRebuildManagerEditor : BaseEditor<SceneRebuildManager>
                         if (GUILayout.Button("-L", contentStyle, GUILayout.Width(width)))
                         {
                             b.UnLoadScenes();
-                            manager.UpdateList();
+                            UpdateList();
                         }
                     }
                     else
@@ -448,48 +454,17 @@ public class SceneRebuildManagerEditor : BaseEditor<SceneRebuildManager>
 
         //-------------------------------------------------------MeshList-----------------------------------------------------------
         //List<MeshFilter> meshes=new List<MeshFilter>();
-        meshListArg.caption=$"Mesh List";
+        if(string.IsNullOrEmpty(meshListArg.caption)) meshListArg.caption=$"Mesh List";
         EditorUIUtils.ToggleFoldout(meshListArg, (arg)=>{
-            System.DateTime start=System.DateTime.Now;
-            float sumVertexCount=0;
-            float sumVertexCountVisible=0;
-            int sumRendererCount=0;
-            int sumRendererCountVisible=0;
+
             if (meshFilters.Count == 0)
             {
-                meshFilters = GameObject.FindObjectsOfType<MeshFilter>(true).Where(m => m!=null && m.sharedMesh != null && m.sharedMesh.name != "Cube").ToList();
-                meshFilters.Sort((a, b) =>
-                {
-                    return b.sharedMesh.vertexCount.CompareTo(a.sharedMesh.vertexCount);
-                });
+                InitMeshList(arg);
             }
-            Debug.Log($"Init MeshList1 count:{meshFilters.Count} time:{(System.DateTime.Now - start).TotalMilliseconds:F1}ms ");
-
-            meshFilters.ForEach(b=>{
-                if (b == null) return;
-                if(b.gameObject.activeInHierarchy == true && b.GetComponent<MeshRenderer>()!=null && b.GetComponent<MeshRenderer>().enabled == true ){
-                    sumVertexCountVisible+=b.sharedMesh.vertexCount;
-                    sumRendererCountVisible++;
-                }
-                sumVertexCount+=b.sharedMesh.vertexCount;
-                sumRendererCount++;
-            });
-            Debug.Log($"Init MeshList2 count:{meshFilters.Count} time:{(System.DateTime.Now - start).TotalMilliseconds:F1}ms ");
-
-            sumVertexCount /=10000;
-            sumVertexCountVisible/=10000;
-            //InitEditorArg(scenes);
-            arg.caption= $"Mesh List({meshFilters.Count})";
-            arg.info=$"[{sumVertexCountVisible:F0}/{sumVertexCount:F0}w][{sumRendererCountVisible}/{sumRendererCount}]";
-            Debug.Log($"Init MeshList count:{meshFilters.Count} time:{(System.DateTime.Now - start).TotalMilliseconds:F1}ms ");
         },()=>{
             if (GUILayout.Button("Update", GUILayout.Width(60)))
             {
-                meshFilters = GameObject.FindObjectsOfType<MeshFilter>(true).Where(m => m.sharedMesh != null && m.sharedMesh.name != "Cube").ToList();
-                meshFilters.Sort((a, b) =>
-                {
-                    return b.sharedMesh.vertexCount.CompareTo(a.sharedMesh.vertexCount);
-                });
+                InitMeshList(meshListArg);
             }
             if (GUILayout.Button("Window",GUILayout.Width(60)))
 			{
@@ -543,5 +518,37 @@ public class SceneRebuildManagerEditor : BaseEditor<SceneRebuildManager>
 
         var timeT=System.DateTime.Now-startT;
         Debug.Log($"SceneRebuildManagerEditor time:{timeT.TotalMilliseconds:F1}ms ");
+    }
+
+    private void InitMeshList(FoldoutEditorArg arg)
+    {
+        System.DateTime start = System.DateTime.Now;
+        float sumVertexCount = 0;
+        float sumVertexCountVisible = 0;
+        int sumRendererCount = 0;
+        int sumRendererCountVisible = 0;
+        meshFilters = GameObject.FindObjectsOfType<MeshFilter>(true).Where(m => m != null && m.sharedMesh != null && m.sharedMesh.name != "Cube").ToList();
+        meshFilters.Sort((a, b) =>
+        {
+            return b.sharedMesh.vertexCount.CompareTo(a.sharedMesh.vertexCount);
+        });
+        Debug.Log($"Init MeshList1 count:{meshFilters.Count} time:{(System.DateTime.Now - start).TotalMilliseconds:F1}ms ");
+        meshFilters.ForEach(b => {
+            if (b == null) return;
+            if (b.gameObject.activeInHierarchy == true && b.GetComponent<MeshRenderer>() != null && b.GetComponent<MeshRenderer>().enabled == true)
+            {
+                sumVertexCountVisible += b.sharedMesh.vertexCount;
+                sumRendererCountVisible++;
+            }
+            sumVertexCount += b.sharedMesh.vertexCount;
+            sumRendererCount++;
+        });
+        Debug.Log($"Init MeshList2 count:{meshFilters.Count} time:{(System.DateTime.Now - start).TotalMilliseconds:F1}ms ");
+        sumVertexCount /= 10000;
+        sumVertexCountVisible /= 10000;
+        //InitEditorArg(scenes);
+        arg.caption = $"Mesh List({meshFilters.Count})";
+        arg.info = $"[{sumVertexCountVisible:F0}/{sumVertexCount:F0}w][{sumRendererCountVisible}/{sumRendererCount}]";
+        Debug.Log($"Init MeshList count:{meshFilters.Count} time:{(System.DateTime.Now - start).TotalMilliseconds:F1}ms ");
     }
 }
