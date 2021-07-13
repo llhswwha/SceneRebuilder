@@ -168,6 +168,7 @@ public class BuildingModelManager : MonoBehaviour
     {
         Buildings.Clear();
         Buildings.AddRange(GameObject.FindObjectsOfType<BuildingModelInfo>(true));
+        //Debug.Log("");
     }
 
     private void GetCountInfo()

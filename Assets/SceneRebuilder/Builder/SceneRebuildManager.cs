@@ -14,7 +14,7 @@ public class SceneRebuildManager : MonoBehaviour
 
     public BuildingModelManager buildingModelManager;
 
-    public AreaTreeManager areaTreeManager;
+    //public AreaTreeManager areaTreeManager;
 
     [ContextMenu("InitBuildings")]
     public void InitBuildings()
@@ -41,13 +41,24 @@ public class SceneRebuildManager : MonoBehaviour
 
     public List<ModelAreaTree> GetTrees()
     {
-        if (areaTreeManager == null) areaTreeManager = GameObject.FindObjectOfType<AreaTreeManager>();
-        return areaTreeManager.Trees;
+        //if (areaTreeManager == null) areaTreeManager = GameObject.FindObjectOfType<AreaTreeManager>();
+        //return areaTreeManager.Trees;
+        return buildingModelManager.GetTrees();
     }
 
     public List<AreaTreeNode> GetLeafNodes()
     {
-        return GameObject.FindObjectsOfType<AreaTreeNode>(true).Where(n => n.IsLeaf).ToList();
+        
+        List<AreaTreeNode> nodes = new List<AreaTreeNode>();
+        var trees = GetTrees();
+        trees.ForEach(t => nodes.AddRange(t.TreeLeafs));
+        return nodes;
+        //return GameObject.FindObjectsOfType<AreaTreeNode>(true).Where(n => n.IsLeaf).ToList();
+    }
+
+    public List<SubScene_Base> GetScenes()
+    {
+        return subSceneManager.subScenes.ToList() ;
     }
 
     public void UpdateList()
@@ -56,7 +67,9 @@ public class SceneRebuildManager : MonoBehaviour
         //areaTreeManager.UpdateTrees();
 
         //buildingModelManager.UpdateBuildings();
+        
         buildingModelManager.UpdateTrees();//.UpdateBuildings();
+        subSceneManager.UpdateScenes();
     }
 
     [ContextMenu("SaveScenes")]

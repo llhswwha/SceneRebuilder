@@ -20,10 +20,15 @@ public class SceneRebuildManagerEditor : BaseEditor<SceneRebuildManager>
 
     private FoldoutEditorArg meshListArg=new FoldoutEditorArg();
 
+    private SceneRebuildManager manager;
+
+    private List<MeshFilter> meshFilters = new List<MeshFilter>();
+
     public void OnEnable()
     {
-        SceneRebuildManager manager = target as SceneRebuildManager;
+        manager = target as SceneRebuildManager;
         manager.UpdateList();
+        Debug.LogError("SceneRebuildManagerEditor.OnEnable");
     }
 
     public Dictionary<Object, FoldoutEditorArg> editorArgs = new Dictionary<Object, FoldoutEditorArg>();
@@ -176,7 +181,7 @@ public class SceneRebuildManagerEditor : BaseEditor<SceneRebuildManager>
                     {
                         if (GUILayout.Button("-", contentStyle, GUILayout.Width(20)))
                         {
-                            b.InitInOut();
+                            
                         }
                     }
                     if (state.CanOneKey())
@@ -184,6 +189,7 @@ public class SceneRebuildManagerEditor : BaseEditor<SceneRebuildManager>
                         if (GUILayout.Button("+O", contentStyle, GUILayout.Width(width)))
                         {
                             b.CreateTreesBSEx();
+                            manager.UpdateList();
                         }
                     }
                     else if (state.CanReset())
@@ -193,13 +199,14 @@ public class SceneRebuildManagerEditor : BaseEditor<SceneRebuildManager>
                             b.EditorLoadNodeScenesEx();
                             b.DestroyScenes();
                             b.ClearTrees();
+                            manager.UpdateList();
                         }
                     }
                     else
                     {
                         if (GUILayout.Button("--", contentStyle, GUILayout.Width(width)))
                         {
-                            b.CreateTreesBSEx();
+                            
                         }
                     }
 
@@ -208,6 +215,7 @@ public class SceneRebuildManagerEditor : BaseEditor<SceneRebuildManager>
                         if (GUILayout.Button("+T", contentStyle, GUILayout.Width(width)))
                         {
                             b.CreateTreesBSEx();
+                            manager.UpdateList();
                         }
                     }
                     else if (state.CanRemoveTrees)
@@ -215,13 +223,14 @@ public class SceneRebuildManagerEditor : BaseEditor<SceneRebuildManager>
                         if (GUILayout.Button("-T", contentStyle, GUILayout.Width(width)))
                         {
                             b.ClearTrees();
+                            manager.UpdateList();
                         }
                     }
                     else
                     {
                         if (GUILayout.Button("--", contentStyle, GUILayout.Width(width)))
                         {
-                            b.CreateTreesBSEx();
+                            
                         }
                     }
 
@@ -230,6 +239,7 @@ public class SceneRebuildManagerEditor : BaseEditor<SceneRebuildManager>
                         if (GUILayout.Button("+S", contentStyle, GUILayout.Width(width)))
                         {
                             b.EditorCreateNodeScenes();
+                            manager.UpdateList();
                         }
                     }
                     else if (state.CanRemoveScenes)
@@ -237,6 +247,7 @@ public class SceneRebuildManagerEditor : BaseEditor<SceneRebuildManager>
                         if (GUILayout.Button("-S", contentStyle, GUILayout.Width(width)))
                         {
                             b.DestroyScenes();
+                            manager.UpdateList();
                         }
                     }
                     else
@@ -252,6 +263,7 @@ public class SceneRebuildManagerEditor : BaseEditor<SceneRebuildManager>
                         if (GUILayout.Button("+L", contentStyle, GUILayout.Width(width)))
                         {
                             b.EditorLoadNodeScenesEx();
+                            manager.UpdateList();
                         }
                     }
                     else if (state.CanUnloadScenes)
@@ -259,6 +271,7 @@ public class SceneRebuildManagerEditor : BaseEditor<SceneRebuildManager>
                         if (GUILayout.Button("-L", contentStyle, GUILayout.Width(width)))
                         {
                             b.UnLoadScenes();
+                            manager.UpdateList();
                         }
                     }
                     else
@@ -393,7 +406,7 @@ public class SceneRebuildManagerEditor : BaseEditor<SceneRebuildManager>
             System.DateTime start=System.DateTime.Now;
             float sumVertexCount=0;
             int sumRendererCount=0;
-            scenes=GameObject.FindObjectsOfType<SubScene_Base>(true).ToList() ;
+            scenes = item.GetScenes();
             scenes.Sort((a, b) =>
             {
                 return b.vertexCount.CompareTo(a.vertexCount);
@@ -434,7 +447,7 @@ public class SceneRebuildManagerEditor : BaseEditor<SceneRebuildManager>
         }
 
         //-------------------------------------------------------MeshList-----------------------------------------------------------
-        List<MeshFilter> meshes=new List<MeshFilter>();
+        //List<MeshFilter> meshes=new List<MeshFilter>();
         meshListArg.caption=$"Mesh List";
         EditorUIUtils.ToggleFoldout(meshListArg, (arg)=>{
             System.DateTime start=System.DateTime.Now;
@@ -442,42 +455,58 @@ public class SceneRebuildManagerEditor : BaseEditor<SceneRebuildManager>
             float sumVertexCountVisible=0;
             int sumRendererCount=0;
             int sumRendererCountVisible=0;
-            meshes=GameObject.FindObjectsOfType<MeshFilter>(true).Where(m=>m.sharedMesh!=null && m.sharedMesh.name!="Cube").ToList() ;
-            meshes.Sort((a, b) =>
+            if (meshFilters.Count == 0)
             {
-                return b.sharedMesh.vertexCount.CompareTo(a.sharedMesh.vertexCount);
-            });
-            meshes.ForEach(b=>{
-                if(b.GetComponent<MeshRenderer>()!=null && b.GetComponent<MeshRenderer>().enabled == true && b.gameObject.activeInHierarchy==true){
+                meshFilters = GameObject.FindObjectsOfType<MeshFilter>(true).Where(m => m!=null && m.sharedMesh != null && m.sharedMesh.name != "Cube").ToList();
+                meshFilters.Sort((a, b) =>
+                {
+                    return b.sharedMesh.vertexCount.CompareTo(a.sharedMesh.vertexCount);
+                });
+            }
+            Debug.Log($"Init MeshList1 count:{meshFilters.Count} time:{(System.DateTime.Now - start).TotalMilliseconds:F1}ms ");
+
+            meshFilters.ForEach(b=>{
+                if (b == null) return;
+                if(b.gameObject.activeInHierarchy == true && b.GetComponent<MeshRenderer>()!=null && b.GetComponent<MeshRenderer>().enabled == true ){
                     sumVertexCountVisible+=b.sharedMesh.vertexCount;
                     sumRendererCountVisible++;
                 }
                 sumVertexCount+=b.sharedMesh.vertexCount;
                 sumRendererCount++;
             });
-            sumVertexCount/=10000;
+            Debug.Log($"Init MeshList2 count:{meshFilters.Count} time:{(System.DateTime.Now - start).TotalMilliseconds:F1}ms ");
+
+            sumVertexCount /=10000;
             sumVertexCountVisible/=10000;
             //InitEditorArg(scenes);
-            arg.caption= $"Mesh List({meshes.Count})";
+            arg.caption= $"Mesh List({meshFilters.Count})";
             arg.info=$"[{sumVertexCountVisible:F0}/{sumVertexCount:F0}w][{sumRendererCountVisible}/{sumRendererCount}]";
-            var time=System.DateTime.Now-start;
-            Debug.Log($"Init MeshList count:{meshes.Count} time:{time.TotalMilliseconds:F1}ms ");
+            Debug.Log($"Init MeshList count:{meshFilters.Count} time:{(System.DateTime.Now - start).TotalMilliseconds:F1}ms ");
         },()=>{
-            if(GUILayout.Button("----------",GUILayout.Width(60)))
+            if (GUILayout.Button("Update", GUILayout.Width(60)))
+            {
+                meshFilters = GameObject.FindObjectsOfType<MeshFilter>(true).Where(m => m.sharedMesh != null && m.sharedMesh.name != "Cube").ToList();
+                meshFilters.Sort((a, b) =>
+                {
+                    return b.sharedMesh.vertexCount.CompareTo(a.sharedMesh.vertexCount);
+                });
+            }
+            if (GUILayout.Button("Window",GUILayout.Width(60)))
 			{
-				//SubSceneManagerEditorWindow.ShowWindow();
+                //SubSceneManagerEditorWindow.ShowWindow();
+                MeshProfilerNS.MeshProfiler.ShowWindow();
 			}
         });
 
         if (meshListArg.isExpanded && meshListArg.isEnabled)
         {
             System.DateTime start=System.DateTime.Now;
-            meshListArg.DrawPageToolbar(meshes.Count);
+            meshListArg.DrawPageToolbar(meshFilters.Count);
             int c=0;
-            for(int i=meshListArg.GetStartId();i<meshes.Count && i<meshListArg.GetEndId();i++)
+            for(int i=meshListArg.GetStartId();i<meshFilters.Count && i<meshListArg.GetEndId();i++)
             {
                 c++;
-                var mesh=meshes[i];
+                var mesh=meshFilters[i];
                 if(!editorArgs.ContainsKey(mesh)){
                     editorArgs.Add(mesh,new FoldoutEditorArg());
                 }

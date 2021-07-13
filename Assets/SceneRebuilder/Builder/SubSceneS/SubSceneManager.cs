@@ -378,10 +378,15 @@ public class SubSceneManager : MonoBehaviour
         SetBuildings(subScenes);
     }
 
+    public void UpdateScenes()
+    {
+        subScenes = GameObject.FindObjectsOfType<SubScene_Base>(true);
+    }
+
     [ContextMenu("SetBuildings_All")]
     public void SetBuildings_All()
     {
-        subScenes = GameObject.FindObjectsOfType<SubScene_Base>(true);
+        UpdateScenes();
         SetBuildings(subScenes);
     }
 
@@ -883,6 +888,8 @@ public class SubSceneManager : MonoBehaviour
         //txtResult.text = $"type:{sceneType},count:{result.Length}";
         return result;
     }
+
+
 
     public SubScene_Base[] GetSubScenes()
     {
