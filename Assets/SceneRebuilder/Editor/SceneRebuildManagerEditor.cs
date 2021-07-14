@@ -59,7 +59,7 @@ public class SceneRebuildManagerEditor : BaseEditor<SceneRebuildManager>
 
     public override void OnToolLayout(SceneRebuildManager item)
     {
-        Debug.Log($"------------------------------------------------------------------------");
+
 
         System.DateTime startT=System.DateTime.Now;
 
@@ -104,6 +104,7 @@ public class SceneRebuildManagerEditor : BaseEditor<SceneRebuildManager>
         IsShowList = GUILayout.Toggle(IsShowList, "IsShowList");
         if (IsShowList == false) return;
 
+        Debug.Log($"------------------------------------------------------------------------");
         EditorUIUtils.SetupStyles();
         //-------------------------------------------------------BuildingList-----------------------------------------------------------
         //GUIStyle contentStyle = new GUIStyle(EditorStyles.miniButton);
