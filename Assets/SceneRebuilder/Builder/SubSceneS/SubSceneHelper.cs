@@ -72,17 +72,8 @@ public static class SubSceneHelper
             Debug.LogError("SubSceneHelper.EditorCreateScene go==null");
             return null;
         }
-        //UpackPrefab_One(go);
-        //SubSceneManager subSceneManager = SubSceneManager.Instance;
-        //SubScene_Single ss = go.AddComponent<SubScene_Single>();
-        //ss.Init();
-        //string path = subSceneManager.GetScenePath(go.name, SubSceneDir.Single);
-        //SubSceneHelper.SaveChildrenToScene(path, go.transform, subSceneManager.IsOverride);
-        //ss.ShowBounds();
-
-        SubSceneManager subSceneManager = SubSceneManager.Instance;
-        string path = subSceneManager.GetScenePath(go.name, contentType, dir);
-        return EditorCreateScene<T>(go, path, subSceneManager.IsOverride, isSave);
+        string path = SubSceneManager.Instance.GetScenePath(go.name, contentType, dir);
+        return EditorCreateScene<T>(go, path, SubSceneManager.Instance.IsOverride, isSave);
     }
 
     public static T EditorCreateScene<T>(GameObject go, string path, bool isOverride, bool isSave) where T : SubScene_Base

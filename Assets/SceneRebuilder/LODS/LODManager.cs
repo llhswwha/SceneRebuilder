@@ -245,7 +245,7 @@ public class LODManager : MonoBehaviour
     public void SetLODEnabled(bool isEnabled)
     {
         DateTime start = DateTime.Now;
-        var lodGroups=GameObject.FindObjectsOfType<LODGroup>();
+        var lodGroups=GameObject.FindObjectsOfType<LODGroup>(true);
         foreach(LODGroup group in lodGroups){
             var lods=group.GetLODs();
             for(int i=1;i<lods.Length;i++)
@@ -261,6 +261,17 @@ public class LODManager : MonoBehaviour
             group.enabled=isEnabled;
         }
         Debug.LogError($"DisableLOD lodGroups:{lodGroups.Length} time:{(DateTime.Now - start)}");
+    }
+
+    public void SetLODActive(bool isActive)
+    {
+        //DateTime start = DateTime.Now;
+        var lodGroups = GameObject.FindObjectsOfType<LODGroup>(true);
+        foreach (LODGroup group in lodGroups)
+        {
+            group.gameObject.SetActive(isActive);
+        }
+        //Debug.LogError($"DisableLOD lodGroups:{lodGroups.Length} time:{(DateTime.Now - start)}");
     }
 
     [ContextMenu("EnableLOD")]

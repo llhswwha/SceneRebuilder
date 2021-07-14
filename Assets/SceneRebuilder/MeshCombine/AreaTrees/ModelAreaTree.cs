@@ -917,18 +917,83 @@ public class ModelAreaTree : SubSceneCreater
         EditorCreateNodeScenes(null);
     }
 
+    public bool IsScenesFolderExists()
+    {
+        string dir = SubSceneManager.Instance.GetSceneDir(SceneContentType.TreeNode, this.name);
+        string dirPath = Application.dataPath + "/" + dir;
+        return System.IO.Directory.Exists(dirPath);
+    }
+
+    public void SelectScenesFolder()
+    {
+        string dir=SubSceneManager.Instance.GetSceneDir(SceneContentType.TreeNode, this.name);
+        Debug.Log(dir);
+        string folderPath = "Assets/" + dir;
+        Debug.Log(folderPath);
+        UnityEngine.Object asset = UnityEditor.AssetDatabase.LoadAssetAtPath(folderPath, typeof(UnityEngine.Object));
+        Debug.Log(asset);
+        if (asset != null)
+        {
+            EditorHelper.SelectObject(asset);
+        }
+        string dirPath= Application.dataPath + "/" + dir;
+        Debug.Log(dirPath);
+        Debug.Log(System.IO.Directory.Exists(dirPath));
+    }
+
+    public UnityEngine.Object GetScenesFolder()
+    {
+        string dir = SubSceneManager.Instance.GetSceneDir(SceneContentType.TreeNode, this.name);
+        string folderPath = "Assets/" + dir;
+        UnityEngine.Object asset = UnityEditor.AssetDatabase.LoadAssetAtPath(folderPath, typeof(UnityEngine.Object));
+        string dirPath = Application.dataPath + "/" + dir;
+        Debug.Log($"GetScenesFolder tree:{this.name} \nfolderPath:{folderPath} asset:[{asset}] \ndirPath:{dirPath} Exists:{System.IO.Directory.Exists(dirPath)}");
+        return asset;
+    }
+
+    public void DeleteScenesFolder()
+    {
+        DeleteScenesFolder(true);
+    }
+
+    public void DeleteScenesFolder(bool isRefresh)
+    {
+        string dir = SubSceneManager.Instance.GetSceneDir(SceneContentType.TreeNode, this.name);
+        Debug.Log(dir);
+        string folderPath = "Assets/" + dir;
+        Debug.Log(folderPath);
+        UnityEngine.Object asset = UnityEditor.AssetDatabase.LoadAssetAtPath(folderPath, typeof(UnityEngine.Object));
+        Debug.Log(asset);
+        //if (asset != null)
+        //{
+        //    EditorHelper.SelectObject(asset);
+        //}
+        string dirPath = Application.dataPath + "/" + dir;
+        Debug.Log(dirPath);
+        Debug.Log(System.IO.Directory.Exists(dirPath));
+
+        if (System.IO.Directory.Exists(dirPath))
+        {
+            //System.IO.Directory.Delete(dirPath, true);
+
+            UnityEditor.AssetDatabase.DeleteAsset(folderPath);
+            if(isRefresh)
+                EditorHelper.RefreshAssets();
+
+            DestroyScenes();
+        }
+    }
+
     public void EditorCreateNodeScenes(Action<float> progressChanged)
     {
-        //GetTreeNodeScenes();
+        //if(SceneList!=null&& SceneList.sceneCount>0){
+        //    Debug.LogError("ModelAreaTree.EditorCreateNodeScenes SceneList!=null&& SceneList.sceneCount>0 "+this.name);
+        //    if(progressChanged!=null){
+        //        progressChanged(1);
+        //    }
+        //    return ;
+        //}
 
-        //Debug.Log("EditorCreateNodeScenes:"+this.name);
-        if(SceneList!=null&& SceneList.sceneCount>0){
-            Debug.LogError("ModelAreaTree.EditorCreateNodeScenes SceneList!=null&& SceneList.sceneCount>0 "+this.name);
-            if(progressChanged!=null){
-                progressChanged(1);
-            }
-            return ;
-        }
         DateTime start = DateTime.Now;
 
         MoveRenderers();
@@ -982,6 +1047,8 @@ public class ModelAreaTree : SubSceneCreater
         {
             progressChanged(1);
         }
+
+        UpdateSceneList();
 
         if (progressChanged == null) Debug.LogError($"ModelAreaTree.EditorCreateNodeScenes time:{(DateTime.Now - start)}");
     }

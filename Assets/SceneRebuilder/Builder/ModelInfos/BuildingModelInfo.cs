@@ -1480,6 +1480,56 @@ public class BuildingModelInfo : SubSceneCreater
         EditorCreateNodeScenes(null);
     }
 
+    public bool IsScenesFolderExists()
+    {
+        foreach (var t in trees)
+        {
+            if (t.IsScenesFolderExists() == false)
+            {
+                return false;
+            }
+        }
+        return true;
+    }
+
+    public void SelectScenesFolder()
+    {
+        //string dir = SubSceneManager.Instance.GetSceneDir(SceneContentType.TreeNode, this.name);
+        //Debug.Log(dir);
+        //string folderPath = "Assets/" + dir;
+        //Debug.Log(folderPath);
+        //UnityEngine.Object asset = UnityEditor.AssetDatabase.LoadAssetAtPath(folderPath, typeof(UnityEngine.Object));
+        //Debug.Log(asset);
+        //if (asset != null)
+        //{
+        //    EditorHelper.SelectObject(asset);
+        //}
+        //string dirPath = Application.dataPath + "/" + dir;
+        //Debug.Log(dirPath);
+        //Debug.Log(System.IO.Directory.Exists(dirPath));
+
+        List<UnityEngine.Object> folderAssets = new List<UnityEngine.Object>();
+        foreach(var t in trees)
+        {
+            var folder = t.GetScenesFolder();
+            if (folder != null)
+            {
+                folderAssets.Add(folder);
+            }
+        }
+        EditorHelper.SelectObjects(folderAssets);
+    }
+
+    public void DeleteScenesFolder()
+    {
+        foreach (var t in trees)
+        {
+            t.DeleteScenesFolder(false);
+        }
+        this.DestroyScenes();
+        EditorHelper.RefreshAssets();
+    }
+
     public void EditorCreateNodeScenes(Action<float> progressChanged)
     {
         DateTime start = DateTime.Now;
@@ -1527,6 +1577,8 @@ public class BuildingModelInfo : SubSceneCreater
         {
             progressChanged(1);
         }
+
+        UpdateSceneList();
 
         if (progressChanged == null) Debug.LogError($"BuildingModelInfo.EditorCreateNodeScenes time:{(DateTime.Now - start)}");
     }

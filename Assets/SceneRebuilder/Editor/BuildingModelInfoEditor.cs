@@ -8,6 +8,11 @@ using UnityEngine;
 [CustomEditor(typeof(BuildingModelInfo))]
 public class BuildingModelInfoEditor : BaseEditor<BuildingModelInfo>
 {
+    public void OnEnable()
+    {
+        BuildingModelInfo item = target as BuildingModelInfo;
+        item.UpdateSceneList();
+    }
     public static void DrawToolbar(BuildingModelInfo info, GUIStyle btnStyle,int buttonWidth)
     {
         // if (GUILayout.Button("Multi-Objects", contentStyle, GUILayout.Width(100)))
@@ -67,8 +72,11 @@ public class BuildingModelInfoEditor : BaseEditor<BuildingModelInfo>
         EditorGUILayout.EndHorizontal();
 
         EditorGUILayout.BeginHorizontal();
+        //bool folderExists = info.IsScenesFolderExists();
         NewButton("3.CreateScenes", buttonWidth, state.CanCreateScenes, btnStyle, info.EditorCreateNodeScenes);
         NewButton("RemoveScenes", buttonWidth, state.CanRemoveScenes, btnStyle, info.DestroyScenes);
+        NewButton("SelectFolder", buttonWidth, state.sceneCount > 0, btnStyle, info.SelectScenesFolder);
+        NewButton("DeleteFolder", buttonWidth, state.isAllLoaded == true && state.sceneCount > 0, btnStyle, info.DeleteScenesFolder);
         EditorGUILayout.EndHorizontal();
 
         EditorGUILayout.BeginHorizontal();

@@ -666,6 +666,18 @@ public class SubSceneManager : MonoBehaviour
         }
     }
 
+    public string GetSceneDir(SceneContentType contentType, string dir)
+    {
+        if (string.IsNullOrEmpty(dir))
+        {
+            return $"{RootDir}/{SceneDir}/{contentType}";
+        }
+        else
+        {
+            return $"{RootDir}/{SceneDir}/{contentType}/{dir}";
+        }
+    }
+
     public string GetSceneDir(SceneContentType dir)
     {
         //return Application.dataPath + "/Models/Instances/Buildings/" + sceneName + ".unity";
