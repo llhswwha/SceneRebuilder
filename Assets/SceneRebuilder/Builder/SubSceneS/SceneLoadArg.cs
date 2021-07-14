@@ -16,4 +16,16 @@ public class SceneLoadArg
     {
         return $"name:{name} index:{index} path:{path}";
     }
+
+    public string GetSceneAssetPath()
+    {
+        string sceneAssetPath = "Assets/" + path;
+        return sceneAssetPath;
+    }
+
+    public string GetSceneFilePath()
+    {
+        string sceneFilePath = Application.dataPath + "/" + path;
+        return sceneFilePath;
+    }
 }

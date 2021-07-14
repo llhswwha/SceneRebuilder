@@ -13,12 +13,14 @@ public class SubSceneEditor<T> : BaseEditor<T> where T : SubScene_Base
         base.OnToolLayout(item);
 
         EditorGUILayout.BeginHorizontal();
-        string scenePath1 = item.GetSceneArg().path;
-        string sceneAssetPath = "Assets/" + item.GetSceneArg().path;
-        string sceneFilePath = Application.dataPath + "/"+ scenePath1;
+        var arg = item.GetSceneArg();
+        string scenePath1 = arg.path;
+        string sceneAssetPath = arg.GetSceneAssetPath();
+        string sceneFilePath = arg.GetSceneFilePath();
+
         //sceneFilePath = sceneFilePath.Replace("/", "\\\\");
         bool isFileExist = System.IO.File.Exists(sceneFilePath);
-        NewButton("SelectFile", buttonWidth, true, () =>
+        NewButton("SelectFile", buttonWidth, isFileExist, () =>
         {
             //item.GetSceneArg().path;
             Debug.Log(scenePath1);
@@ -29,16 +31,11 @@ public class SubSceneEditor<T> : BaseEditor<T> where T : SubScene_Base
             //var scene=EditorSceneManager.GetSceneByPath(item.GetSceneArg().path);
             EditorHelper.SelectObject(sceneAsset);
         });
-        NewButton("DeleteFile", buttonWidth, true, () =>
+        NewButton("DeleteFile", buttonWidth, isFileExist && item.IsLoaded == true, () =>
         {
-            //item.GetSceneArg().path;
-            Debug.Log(scenePath1);
-            Debug.Log(Application.dataPath);
-            Debug.Log(sceneFilePath + "|" + System.IO.File.Exists(sceneFilePath));
-            SceneAsset sceneAsset = AssetDatabase.LoadAssetAtPath<SceneAsset>(sceneAssetPath);
-            Debug.Log(sceneAsset);
-            //var scene=EditorSceneManager.GetSceneByPath(item.GetSceneArg().path);
-            EditorHelper.SelectObject(sceneAsset);
+            System.IO.File.Delete(sceneFilePath);
+            EditorHelper.RefreshAssets();
+            //EditorHelper.PathToRelative
         });
         if (Application.isPlaying)
         {
@@ -54,12 +51,17 @@ public class SubSceneEditor<T> : BaseEditor<T> where T : SubScene_Base
         }
         else
         {
-            NewButton("Load", buttonWidth, item.IsLoaded == false, () =>
+            NewButton("Create", buttonWidth, item.IsLoaded == true, () =>
+            {
+                item.EditorCreateScene();
+                EditorHelper.RefreshAssets();
+            });
+            NewButton("Load", buttonWidth, item.IsLoaded == false && isFileExist, () =>
             {
                 IdDictionary.InitInfos();
                 item.EditorLoadScene();
             });
-            NewButton("Unload", buttonWidth, item.IsLoaded == true, item.UnLoadGosM);
+            NewButton("Unload", buttonWidth, item.IsLoaded == true && isFileExist, item.UnLoadGosM);
 
         }
         EditorGUILayout.EndHorizontal();
