@@ -1,7 +1,8 @@
 ﻿#if UNITY_EDITOR
 namespace CodeStage.AdvancedFPSCounter.Editor.UI
 {
-	using UnityEditor;
+    using System.Collections.Generic;
+    using UnityEditor;
 	using UnityEngine;
 
 	[System.Serializable]
@@ -63,7 +64,13 @@ namespace CodeStage.AdvancedFPSCounter.Editor.UI
 		}
     }
 
-	public struct EditorUIUtils : System.IDisposable
+    [System.Serializable]
+    public class FoldoutEditorArg<T>: FoldoutEditorArg
+    {
+        public List<T> Items = new List<T>();
+    }
+
+    public struct EditorUIUtils : System.IDisposable
 	{
 
 
@@ -347,7 +354,7 @@ namespace CodeStage.AdvancedFPSCounter.Editor.UI
         //     return isExpanded;
         // }
 
-		public static bool ObjectFoldout(bool isExpanded, string caption,string info, bool bold = true, bool separator = true, bool background = true,GameObject obj=null,System.Action toolbarEvent=null)
+		public static bool ObjectFoldout(bool isExpanded, string caption,string info, bool bold = true, bool separator = true, bool background = true,GameObject obj=null,System.Action itemToolbarEvent=null)
         {
             if (separator) Separator(5);
 
@@ -391,8 +398,8 @@ namespace CodeStage.AdvancedFPSCounter.Editor.UI
             //EditorGUILayout.PropertyField(toggle, GUIContent.none, GUILayout.ExpandWidth(false));
             GUILayout.Label(info, contentStyle);
 			
-			if(toolbarEvent!=null){
-				toolbarEvent();
+			if(itemToolbarEvent!=null){
+				itemToolbarEvent();
 			}
 
 			if(obj!=null){

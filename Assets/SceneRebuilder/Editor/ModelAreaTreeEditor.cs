@@ -9,6 +9,7 @@ public class ModelAreaTreeEditor : BaseEditor<ModelAreaTree>
 {
     public override void OnEnable()
     {
+        base.OnEnable();
         ModelAreaTree item = target as ModelAreaTree;
         item.UpdateSceneList();
     }

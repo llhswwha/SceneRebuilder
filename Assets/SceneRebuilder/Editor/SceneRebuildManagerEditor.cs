@@ -18,11 +18,11 @@ public class SceneRebuildManagerEditor : BaseFoldoutEditor<SceneRebuildManager>
 
     private FoldoutEditorArg sceneListArg=new FoldoutEditorArg();
 
-    private FoldoutEditorArg meshListArg=new FoldoutEditorArg();
+    private FoldoutEditorArg<MeshFilter> meshListArg=new FoldoutEditorArg<MeshFilter>();
 
     private SceneRebuildManager manager;
 
-    private List<MeshFilter> meshFilters = new List<MeshFilter>();
+    //private List<MeshFilter> meshFilters = new List<MeshFilter>();
 
     public override void OnEnable()
     {
@@ -32,10 +32,10 @@ public class SceneRebuildManagerEditor : BaseFoldoutEditor<SceneRebuildManager>
         Debug.LogError("SceneRebuildManagerEditor.OnEnable");
     }
 
-    public void UpdateList()
+    public override void UpdateList()
     {
         manager.UpdateList();
-        InitMeshList(meshListArg);
+        DrawMeshList(meshListArg, GetMeshList);
     }
 
     
@@ -92,57 +92,102 @@ public class SceneRebuildManagerEditor : BaseFoldoutEditor<SceneRebuildManager>
         //-------------------------------------------------------BuildingList-----------------------------------------------------------
         //GUIStyle contentStyle = new GUIStyle(EditorStyles.miniButton);
         //contentStyle.alignment = TextAnchor.MiddleLeft;
-        List<BuildingModelInfo> buildings=new List<BuildingModelInfo>();
-        buildingListArg.caption=$"Building List";
-        EditorUIUtils.ToggleFoldout(buildingListArg, 
-        (arg)=>{
-            System.DateTime start=System.DateTime.Now;
-            float sumVertexCount=0;
-            int sumRendererCount=0;
-            float sumVertexCount_Shown = 0;
-            float sumVertexCount_Hidden = 0;
-            //var ts= GameObject.FindObjectsOfType<Transform>(true);
-            //Debug.Log($"Init BuildingList00 count:{ts.Length} time:{(System.DateTime.Now - start).TotalMilliseconds:F1}ms ");
 
-            //var bs = GameObject.FindObjectsOfType<BuildingModelInfo>(true);
-            //Debug.Log($"Init BuildingList0 count:{bs.Length} time:{(System.DateTime.Now - start).TotalMilliseconds:F1}ms ");
+        //     List<BuildingModelInfo> buildings=new List<BuildingModelInfo>();
+        //     buildingListArg.caption=$"Building List";
+        //     EditorUIUtils.ToggleFoldout(buildingListArg, 
+        //     (arg)=>{
+        //         System.DateTime start=System.DateTime.Now;
+        //         float sumVertexCount=0;
+        //         int sumRendererCount=0;
+        //         float sumVertexCount_Shown = 0;
+        //         float sumVertexCount_Hidden = 0;
+        //         //var ts= GameObject.FindObjectsOfType<Transform>(true);
+        //         //Debug.Log($"Init BuildingList00 count:{ts.Length} time:{(System.DateTime.Now - start).TotalMilliseconds:F1}ms ");
 
-            //buildings = GameObject.FindObjectsOfType<BuildingModelInfo>(true).ToList() ;
+        //         //var bs = GameObject.FindObjectsOfType<BuildingModelInfo>(true);
+        //         //Debug.Log($"Init BuildingList0 count:{bs.Length} time:{(System.DateTime.Now - start).TotalMilliseconds:F1}ms ");
 
-            buildings = item.GetBuildings().Where(b=>b!=null).ToList();
+        //         //buildings = GameObject.FindObjectsOfType<BuildingModelInfo>(true).ToList() ;
 
-            //Debug.Log($"Init BuildingList1 count:{buildings.Count} time:{(System.DateTime.Now - start).TotalMilliseconds:F1}ms ");
-            buildings.Sort((a, b) =>
-            {
-                //return b.AllVertextCount.CompareTo(a.AllVertextCount);
-                return b.Out0BigVertextCount.CompareTo(a.Out0BigVertextCount);
-            });
-            //Debug.Log($"Init BuildingList2 count:{buildings.Count} time:{(System.DateTime.Now - start).TotalMilliseconds:F1}ms ");
-            buildings.ForEach(b=>{
-                sumVertexCount+=b.AllVertextCount;
-                sumRendererCount+=b.AllRendererCount;
+        //         buildings = item.GetBuildings().Where(b=>b!=null).ToList();
 
-                sumVertexCount_Shown += b.Out0BigVertextCount;
-                sumVertexCount_Hidden += b.Out0SmallVertextCount + b.InVertextCount + b.Out1VertextCount;
-            });
-            //Debug.Log($"Init BuildingList3 count:{buildings.Count} time:{(System.DateTime.Now - start).TotalMilliseconds:F1}ms ");
-            InitEditorArg(buildings);
-            //Debug.Log($"Init BuildingList4 count:{buildings.Count} time:{(System.DateTime.Now - start).TotalMilliseconds:F1}ms ");
-            arg.caption= $"Building List({buildings.Count})";
-            arg.info=$"[{sumVertexCount:F0}w={sumVertexCount_Shown:F0}+{sumVertexCount_Hidden:F0}+({(sumVertexCount- sumVertexCount_Shown- sumVertexCount_Hidden):F0})][{sumRendererCount/10000f:F0}w]";
-            Debug.Log($"Init BuildingList count:{buildings.Count} time:{(System.DateTime.Now - start).TotalMilliseconds:F1}ms ");
-        },
-        //"Window",
-        ()=>{
-            //SceneRebuildEditorWindow.ShowWindow();
+        //         //Debug.Log($"Init BuildingList1 count:{buildings.Count} time:{(System.DateTime.Now - start).TotalMilliseconds:F1}ms ");
+        //         buildings.Sort((a, b) =>
+        //         {
+        //             //return b.AllVertextCount.CompareTo(a.AllVertextCount);
+        //             return b.Out0BigVertextCount.CompareTo(a.Out0BigVertextCount);
+        //         });
+        //         //Debug.Log($"Init BuildingList2 count:{buildings.Count} time:{(System.DateTime.Now - start).TotalMilliseconds:F1}ms ");
+        //         buildings.ForEach(b=>{
+        //             sumVertexCount+=b.AllVertextCount;
+        //             sumRendererCount+=b.AllRendererCount;
 
-            if(GUILayout.Button("Window",GUILayout.Width(60)))
-			{
-				SceneRebuildEditorWindow.ShowWindow();
-			}
-        });
+        //             sumVertexCount_Shown += b.Out0BigVertextCount;
+        //             sumVertexCount_Hidden += b.Out0SmallVertextCount + b.InVertextCount + b.Out1VertextCount;
+        //         });
+        //         //Debug.Log($"Init BuildingList3 count:{buildings.Count} time:{(System.DateTime.Now - start).TotalMilliseconds:F1}ms ");
+        //         InitEditorArg(buildings);
+        //         //Debug.Log($"Init BuildingList4 count:{buildings.Count} time:{(System.DateTime.Now - start).TotalMilliseconds:F1}ms ");
+        //         arg.caption= $"Building List({buildings.Count})";
+        //         arg.info=$"[{sumVertexCount:F0}w={sumVertexCount_Shown:F0}+{sumVertexCount_Hidden:F0}+({(sumVertexCount- sumVertexCount_Shown- sumVertexCount_Hidden):F0})][{sumRendererCount/10000f:F0}w]";
+        //         Debug.Log($"Init BuildingList count:{buildings.Count} time:{(System.DateTime.Now - start).TotalMilliseconds:F1}ms ");
+        //     },
+        //     //"Window",
+        //     ()=>{
+        //         //SceneRebuildEditorWindow.ShowWindow();
 
-        if (buildingListArg.isExpanded && buildingListArg.isEnabled)
+        //         if(GUILayout.Button("Window",GUILayout.Width(60)))
+        //{
+        //	SceneRebuildEditorWindow.ShowWindow();
+        //}
+        //     });
+
+        //     if (buildingListArg.isExpanded && buildingListArg.isEnabled)
+        //     {
+        //         EditorGUILayout.BeginHorizontal();
+        //         if (GUILayout.Button("ActiveAll"))
+        //         {
+        //             //item.gameObject.SetActive();
+        //             item.SetModelsActive(true);
+        //         }
+        //         if (GUILayout.Button("InactiveAll"))
+        //         {
+        //             item.SetModelsActive(false);
+        //         }
+        //         EditorGUILayout.EndHorizontal();
+
+        //         System.DateTime start=System.DateTime.Now;
+        //         buildingListArg.DrawPageToolbar(buildings.Count);
+        //         int c=0;
+        //         for(int i=buildingListArg.GetStartId();i<buildings.Count && i<buildingListArg.GetEndId();i++)
+        //         {
+        //             c++;
+        //             var b=buildings[i];
+        //             var arg = editorArgs[b];
+        //             arg.isExpanded = EditorUIUtils.ObjectFoldout(arg.isExpanded,
+        //             $"[{i+1:00}] {b.name} {b.GetInfoText()}",
+        //             //$"[{i + 1:00}] {b.name} ",
+        //             $"[{b.Out0BigVertextCount:F0}+{b.Out0SmallVertextCount:F0}+{b.Out1VertextCount:F0}+{b.InVertextCount:F0}={b.AllVertextCount:F0}][{b.AllRendererCount}]",
+        //             false, false, true, b.gameObject,
+        //             () =>
+        //             {
+        //                 DrawModelItemToolbar(b);
+        //             }
+        //             );
+        //             if (arg.isExpanded)
+        //             {
+        //                 BuildingModelInfoEditor.DrawToolbar(b, contentStyle, buttonWidth);
+        //             }
+        //         }
+        //         var time=System.DateTime.Now-start;
+        //         Debug.Log($"Show BuildingList count:{c} time:{time.TotalMilliseconds:F1}ms ");
+        //     }
+
+        DrawModelList(buildingListArg, () =>
+        {
+            return item.GetBuildings().Where(b => b != null).ToList(); ;
+        }, () =>
         {
             EditorGUILayout.BeginHorizontal();
             if (GUILayout.Button("ActiveAll"))
@@ -155,406 +200,197 @@ public class SceneRebuildManagerEditor : BaseFoldoutEditor<SceneRebuildManager>
                 item.SetModelsActive(false);
             }
             EditorGUILayout.EndHorizontal();
-
-            System.DateTime start=System.DateTime.Now;
-            buildingListArg.DrawPageToolbar(buildings.Count);
-            int c=0;
-            for(int i=buildingListArg.GetStartId();i<buildings.Count && i<buildingListArg.GetEndId();i++)
-            {
-                c++;
-                var b=buildings[i];
-                var arg = editorArgs[b];
-                arg.isExpanded = EditorUIUtils.ObjectFoldout(arg.isExpanded,
-                $"[{i+1:00}] {b.name} {b.GetInfoText()}",
-                //$"[{i + 1:00}] {b.name} ",
-                $"[{b.Out0BigVertextCount:F0}+{b.Out0SmallVertextCount:F0}+{b.Out1VertextCount:F0}+{b.InVertextCount:F0}={b.AllVertextCount:F0}][{b.AllRendererCount}]",
-                false, false, true, b.gameObject,
-                () =>
-                {
-                    int width = 25;
-                    var contentStyle = new GUIStyle(EditorStyles.miniButton);
-                    contentStyle.margin = new RectOffset(0, 0, 0, 0);
-                    contentStyle.padding = new RectOffset(0, 0, 0, 0);
-                    var state = b.GetState();
-                    if (state.CanOneKey())
-                    {
-                        if (GUILayout.Button("I", contentStyle, GUILayout.Width(20)))
-                        {
-                            b.InitInOut();
-                        }
-                    }
-                    else
-                    {
-                        if (GUILayout.Button("-", contentStyle, GUILayout.Width(20)))
-                        {
-                            
-                        }
-                    }
-                    if (state.CanOneKey())
-                    {
-                        if (GUILayout.Button("+O", contentStyle, GUILayout.Width(width)))
-                        {
-                            b.CreateTreesBSEx();
-                            UpdateList();
-                        }
-                    }
-                    else if (state.CanReset())
-                    {
-                        if (GUILayout.Button("-O", contentStyle, GUILayout.Width(width)))
-                        {
-                            b.EditorLoadNodeScenesEx();
-                            b.DestroyScenes();
-                            b.ClearTrees();
-                            UpdateList();
-                        }
-                    }
-                    else
-                    {
-                        if (GUILayout.Button("--", contentStyle, GUILayout.Width(width)))
-                        {
-                            
-                        }
-                    }
-
-                    if (state.CanCreateTrees)
-                    {
-                        if (GUILayout.Button("+T", contentStyle, GUILayout.Width(width)))
-                        {
-                            b.CreateTreesBSEx();
-                            UpdateList();
-                        }
-                    }
-                    else if (state.CanRemoveTrees)
-                    {
-                        if (GUILayout.Button("-T", contentStyle, GUILayout.Width(width)))
-                        {
-                            b.ClearTrees();
-                            UpdateList();
-                        }
-                    }
-                    else
-                    {
-                        if (GUILayout.Button("--", contentStyle, GUILayout.Width(width)))
-                        {
-                            
-                        }
-                    }
-
-                    if (state.CanCreateScenes)
-                    {
-                        if (GUILayout.Button("+S", contentStyle, GUILayout.Width(width)))
-                        {
-                            b.EditorCreateNodeScenes();
-                            UpdateList();
-                        }
-                    }
-                    else if (state.CanRemoveScenes)
-                    {
-                        if (GUILayout.Button("-S", contentStyle, GUILayout.Width(width)))
-                        {
-                            b.DestroyScenes();
-                            UpdateList();
-                        }
-                    }
-                    else
-                    {
-                        if (GUILayout.Button("--", contentStyle, GUILayout.Width(width)))
-                        {
-
-                        }
-                    }
-
-                    if (state.CanLoadScenes)
-                    {
-                        if (GUILayout.Button("+L", contentStyle, GUILayout.Width(width)))
-                        {
-                            b.EditorLoadNodeScenesEx();
-                            UpdateList();
-                        }
-                    }
-                    else if (state.CanUnloadScenes)
-                    {
-                        if (GUILayout.Button("-L", contentStyle, GUILayout.Width(width)))
-                        {
-                            b.UnLoadScenes();
-                            UpdateList();
-                        }
-                    }
-                    else
-                    {
-                        if (GUILayout.Button("--", contentStyle, GUILayout.Width(width)))
-                        {
-
-                        }
-                    }
-                }
-                );
-                if (arg.isExpanded)
-                {
-                    BuildingModelInfoEditor.DrawToolbar(b, contentStyle, buttonWidth);
-                }
-            }
-            var time=System.DateTime.Now-start;
-            Debug.Log($"Show BuildingList count:{c} time:{time.TotalMilliseconds:F1}ms ");
-        }
+        });
 
         //-------------------------------------------------------TreeList-----------------------------------------------------------
-        List<ModelAreaTree> trees=new List<ModelAreaTree>();
-        treeListArg.caption=$"Tree List";
-        EditorUIUtils.ToggleFoldout(treeListArg, 
-        (arg)=>{
-            System.DateTime start=System.DateTime.Now;
-            float sumVertexCount=0;
-            int sumRendererCount=0;
+        //     List<ModelAreaTree> trees=new List<ModelAreaTree>();
+        //     treeListArg.caption=$"Tree List";
+        //     EditorUIUtils.ToggleFoldout(treeListArg, 
+        //     (arg)=>{
+        //         System.DateTime start=System.DateTime.Now;
+        //         float sumVertexCount=0;
+        //         int sumRendererCount=0;
 
-            //trees=GameObject.FindObjectsOfType<ModelAreaTree>(true).Where(t=>t.VertexCount>0).ToList() ;
-            trees = item.GetTrees().Where(t => t.VertexCount > 0).ToList();
-            //Debug.Log($"Init TreeList1 count:{trees.Count} time:{(System.DateTime.Now - start).TotalMilliseconds:F1}ms ");
-            trees.Sort((a, b) =>
-            {
-                return b.VertexCount.CompareTo(a.VertexCount);
-            });
-            //Debug.Log($"Init TreeList2 count:{trees.Count} time:{(System.DateTime.Now - start).TotalMilliseconds:F1}ms ");
+        //         //trees=GameObject.FindObjectsOfType<ModelAreaTree>(true).Where(t=>t.VertexCount>0).ToList() ;
+        //         trees = item.GetTrees().Where(t => t.VertexCount > 0).ToList();
+        //         //Debug.Log($"Init TreeList1 count:{trees.Count} time:{(System.DateTime.Now - start).TotalMilliseconds:F1}ms ");
+        //         trees.Sort((a, b) =>
+        //         {
+        //             return b.VertexCount.CompareTo(a.VertexCount);
+        //         });
+        //         //Debug.Log($"Init TreeList2 count:{trees.Count} time:{(System.DateTime.Now - start).TotalMilliseconds:F1}ms ");
 
-            trees.ForEach(b=>{
-                sumVertexCount+=b.VertexCount;
-                sumRendererCount+=b.GetRendererCount();
-            });
-            //Debug.Log($"Init TreeList3 count:{trees.Count} time:{(System.DateTime.Now - start).TotalMilliseconds:F1}ms ");
-            InitEditorArg(trees);
+        //         trees.ForEach(b=>{
+        //             sumVertexCount+=b.VertexCount;
+        //             sumRendererCount+=b.GetRendererCount();
+        //         });
+        //         //Debug.Log($"Init TreeList3 count:{trees.Count} time:{(System.DateTime.Now - start).TotalMilliseconds:F1}ms ");
+        //         InitEditorArg(trees);
 
-            arg.caption= $"Tree List({trees.Count})";
-            arg.info=$"[{sumVertexCount:F0}w][{sumRendererCount/10000f:F0}w]";
-            Debug.Log($"Init TreeList count:{trees.Count} time:{(System.DateTime.Now - start).TotalMilliseconds:F1}ms ");
-        },
-        ()=>{
-            if(GUILayout.Button("------",GUILayout.Width(60)))
-			{
-				//TreeNodeManagerEditorWindow.ShowWindow();
-			}
-        });
-        if (treeListArg.isExpanded && treeListArg.isEnabled)
+        //         arg.caption= $"Tree List({trees.Count})";
+        //         arg.info=$"[{sumVertexCount:F0}w][{sumRendererCount/10000f:F0}w]";
+        //         Debug.Log($"Init TreeList count:{trees.Count} time:{(System.DateTime.Now - start).TotalMilliseconds:F1}ms ");
+        //     },
+        //     ()=>{
+        //         if(GUILayout.Button("------",GUILayout.Width(60)))
+        //{
+        //	//TreeNodeManagerEditorWindow.ShowWindow();
+        //}
+        //     });
+        //     if (treeListArg.isExpanded && treeListArg.isEnabled)
+        //     {
+        //         System.DateTime start=System.DateTime.Now;
+        //         treeListArg.DrawPageToolbar(trees.Count);
+        //         int c=0;
+        //         for(int i=treeListArg.GetStartId();i<trees.Count && i<treeListArg.GetEndId();i++)
+        //         {
+        //             c++;
+        //             var tree=trees[i];
+        //             // if(tree==null)continue;
+        //             var arg = editorArgs[tree];
+        //             if(arg==null){
+        //                 editorArgs[tree]=new FoldoutEditorArg();
+        //             }
+        //             arg.isExpanded = EditorUIUtils.ObjectFoldout(arg.isExpanded, $"[{i+1:00}] {tree.name}", $"[{tree.VertexCount}w][{tree.GetRendererCount()}][{tree.TreeLeafs.Count}]", false,false,false,tree.gameObject);
+        //             if (arg.isExpanded)
+        //             {
+        //                 //BuildingModelInfoEditor.DrawToolbar(b, contentStyle, buttonWidth);
+        //             }
+        //         }
+        //         var time=System.DateTime.Now-start;
+        //         Debug.Log($"Show TreeList count:{c} time:{time.TotalMilliseconds:F1}ms ");
+        //     }
+        DrawTreeList(treeListArg, () =>
         {
-            System.DateTime start=System.DateTime.Now;
-            treeListArg.DrawPageToolbar(trees.Count);
-            int c=0;
-            for(int i=treeListArg.GetStartId();i<trees.Count && i<treeListArg.GetEndId();i++)
-            {
-                c++;
-                var tree=trees[i];
-                // if(tree==null)continue;
-                var arg = editorArgs[tree];
-                if(arg==null){
-                    editorArgs[tree]=new FoldoutEditorArg();
-                }
-                arg.isExpanded = EditorUIUtils.ObjectFoldout(arg.isExpanded, $"[{i+1:00}] {tree.name}", $"[{tree.VertexCount}w][{tree.GetRendererCount()}][{tree.TreeLeafs.Count}]", false,false,false,tree.gameObject);
-                if (arg.isExpanded)
-                {
-                    //BuildingModelInfoEditor.DrawToolbar(b, contentStyle, buttonWidth);
-                }
-            }
-            var time=System.DateTime.Now-start;
-            Debug.Log($"Show TreeList count:{c} time:{time.TotalMilliseconds:F1}ms ");
-        }
+            return item.GetTrees().Where(t => t.VertexCount > 0).ToList();
+        });
 
         //-------------------------------------------------------NodeList-----------------------------------------------------------
-        List<AreaTreeNode> nodes=new List<AreaTreeNode>();
-        nodeListArg.caption=$"Node List";
-        EditorUIUtils.ToggleFoldout(nodeListArg, 
-        (arg)=>{
-            System.DateTime start=System.DateTime.Now;
-            float sumVertexCount=0;
-            int sumRendererCount=0;
-            nodes = item.GetLeafNodes();
+        //     List<AreaTreeNode> nodes=new List<AreaTreeNode>();
+        //     nodeListArg.caption=$"Node List";
+        //     EditorUIUtils.ToggleFoldout(nodeListArg, 
+        //     (arg)=>{
+        //         System.DateTime start=System.DateTime.Now;
+        //         float sumVertexCount=0;
+        //         int sumRendererCount=0;
+        //         nodes = item.GetLeafNodes();
 
-            nodes.Sort((a, b) =>
-            {
-                return b.VertexCount.CompareTo(a.VertexCount);
-            });
-            nodes.ForEach(b=>{
-                sumVertexCount+=b.VertexCount;
-                sumRendererCount+=b.Renderers.Count;
-            });
-            InitEditorArg(nodes);
-            arg.caption= $"Node List({nodes.Count})";
-            arg.info=$"[{sumVertexCount:F0}w][{sumRendererCount/10000f:F0}w]";
-            var time=System.DateTime.Now-start;
-            Debug.Log($"Init NodeList count:{nodes.Count} time:{time.TotalMilliseconds:F1}ms ");
-        },
-        ()=>{
-            if(GUILayout.Button("Window",GUILayout.Width(60)))
-			{
-				TreeNodeManagerEditorWindow.ShowWindow();
-			}
-        });
-        if (nodeListArg.isExpanded && nodeListArg.isEnabled)
-        {
-            System.DateTime start=System.DateTime.Now;
-            nodeListArg.DrawPageToolbar(nodes.Count);
-            int c=0;
-            for(int i=nodeListArg.GetStartId();i<nodes.Count && i<nodeListArg.GetEndId();i++)
-            {
-                c++;
-                var node=nodes[i];
-                var arg = editorArgs[node];
-                arg.isExpanded = EditorUIUtils.ObjectFoldout(arg.isExpanded, $"[{i+1:00}] {node.tree.name}.{node.name}", $"[{node.VertexCount:F0}w][{node.Renderers.Count}]", false,false,false,node.gameObject);
-                if (arg.isExpanded)
-                {
-                    //BuildingModelInfoEditor.DrawToolbar(b, contentStyle, buttonWidth);
-                }
-            }
-            var time=System.DateTime.Now-start;
-            Debug.Log($"Show NodeList count:{c} time:{time.TotalMilliseconds:F1}ms ");
-        }
+        //         nodes.Sort((a, b) =>
+        //         {
+        //             return b.VertexCount.CompareTo(a.VertexCount);
+        //         });
+        //         nodes.ForEach(b=>{
+        //             sumVertexCount+=b.VertexCount;
+        //             sumRendererCount+=b.Renderers.Count;
+        //         });
+        //         InitEditorArg(nodes);
+        //         arg.caption= $"Node List({nodes.Count})";
+        //         arg.info=$"[{sumVertexCount:F0}w][{sumRendererCount/10000f:F0}w]";
+        //         var time=System.DateTime.Now-start;
+        //         Debug.Log($"Init NodeList count:{nodes.Count} time:{time.TotalMilliseconds:F1}ms ");
+        //     },
+        //     ()=>{
+        //         if(GUILayout.Button("Window",GUILayout.Width(60)))
+        //{
+        //	TreeNodeManagerEditorWindow.ShowWindow();
+        //}
+        //     });
+        //     if (nodeListArg.isExpanded && nodeListArg.isEnabled)
+        //     {
+        //         System.DateTime start=System.DateTime.Now;
+        //         nodeListArg.DrawPageToolbar(nodes.Count);
+        //         int c=0;
+        //         for(int i=nodeListArg.GetStartId();i<nodes.Count && i<nodeListArg.GetEndId();i++)
+        //         {
+        //             c++;
+        //             var node=nodes[i];
+        //             var arg = editorArgs[node];
+        //             arg.isExpanded = EditorUIUtils.ObjectFoldout(arg.isExpanded, $"[{i+1:00}] {node.tree.name}.{node.name}", $"[{node.VertexCount:F0}w][{node.Renderers.Count}]", false,false,false,node.gameObject);
+        //             if (arg.isExpanded)
+        //             {
+        //                 //BuildingModelInfoEditor.DrawToolbar(b, contentStyle, buttonWidth);
+        //             }
+        //         }
+        //         var time=System.DateTime.Now-start;
+        //         Debug.Log($"Show NodeList count:{c} time:{time.TotalMilliseconds:F1}ms ");
+        //     }
+        DrawNodeList(nodeListArg, item.GetLeafNodes);
 
         //-------------------------------------------------------SceneList-----------------------------------------------------------
-
-
         DrawSceneList(sceneListArg, item.GetScenes);
-   //     List<SubScene_Base> scenes=new List<SubScene_Base>();
-   //     sceneListArg.caption=$"Scene List";
-   //     EditorUIUtils.ToggleFoldout(sceneListArg, (arg)=>{
-   //         System.DateTime start=System.DateTime.Now;
-   //         scenes = item.GetScenes();
-   //         float sumVertexCount=0;
-   //         int sumRendererCount=0;
-   //         scenes.Sort((a, b) =>
-   //         {
-   //             return b.vertexCount.CompareTo(a.vertexCount);
-   //         });
-   //         scenes.ForEach(b=>
-   //         {
-   //             sumVertexCount+=b.vertexCount;
-   //             sumRendererCount+=b.rendererCount;
-   //         });
-   //         InitEditorArg(scenes);
-   //         arg.caption= $"Scene List({scenes.Count})";
-   //         arg.info=$"[{sumVertexCount:F0}w][{sumRendererCount/10000f:F0}w]";
-   //         var time=System.DateTime.Now-start;
-   //         Debug.Log($"Init SceneList count:{scenes.Count} time:{time.TotalMilliseconds:F1}ms ");
-   //     },()=>{
-   //         if(GUILayout.Button("Window",GUILayout.Width(60)))
-			//{
-			//	SubSceneManagerEditorWindow.ShowWindow();
-			//}
-   //     });
-   //     if (sceneListArg.isExpanded && sceneListArg.isEnabled)
-   //     {
-   //         System.DateTime start=System.DateTime.Now;
-   //         sceneListArg.DrawPageToolbar(scenes.Count);
-   //         int c=0;
-   //         for(int i=sceneListArg.GetStartId();i<scenes.Count && i<sceneListArg.GetEndId();i++)
-   //         {
-   //             c++;
-   //             var scene=scenes[i];
-   //             var arg = editorArgs[scene];
-   //             arg.isExpanded = EditorUIUtils.ObjectFoldout(arg.isExpanded, $"[{i+1:00}] {scene.name}", $"[{scene.vertexCount:F0}w][{scene.rendererCount}]", false,false,false,scene.gameObject);
-   //             if (arg.isExpanded)
-   //             {
-   //                 //BuildingModelInfoEditor.DrawToolbar(b, contentStyle, buttonWidth);
-   //             }
-   //         }
-   //         var time=System.DateTime.Now-start;
-   //         Debug.Log($"Show SceneList count:{c} time:{time.TotalMilliseconds:F1}ms ");
-   //     }
 
         //-------------------------------------------------------MeshList-----------------------------------------------------------
         //List<MeshFilter> meshes=new List<MeshFilter>();
-        if(string.IsNullOrEmpty(meshListArg.caption)) meshListArg.caption=$"Mesh List";
-        EditorUIUtils.ToggleFoldout(meshListArg, (arg)=>{
+        //     if(string.IsNullOrEmpty(meshListArg.caption)) meshListArg.caption=$"Mesh List";
+        //     List<MeshFilter> meshFilters = new List<MeshFilter>();
+        //     EditorUIUtils.ToggleFoldout(meshListArg, (arg)=>{
 
-            if (meshFilters.Count == 0)
-            {
-                InitMeshList(arg);
-            }
-        },()=>{
-            if (GUILayout.Button("Update", GUILayout.Width(60)))
-            {
-                InitMeshList(meshListArg);
-            }
-            if (GUILayout.Button("Window",GUILayout.Width(60)))
-			{
-                //SubSceneManagerEditorWindow.ShowWindow();
-                MeshProfilerNS.MeshProfiler.ShowWindow();
-			}
-        });
+        //         if (meshFilters.Count == 0)
+        //         {
+        //            meshFilters =  InitMeshList(arg);
+        //         }
+        //     },()=>{
+        //         if (GUILayout.Button("Update", GUILayout.Width(60)))
+        //         {
+        //             meshFilters = InitMeshList(meshListArg);
+        //         }
+        //         if (GUILayout.Button("Window",GUILayout.Width(60)))
+        //{
+        //             //SubSceneManagerEditorWindow.ShowWindow();
+        //             MeshProfilerNS.MeshProfiler.ShowWindow();
+        //}
+        //     });
 
-        if (meshListArg.isExpanded && meshListArg.isEnabled)
-        {
-            System.DateTime start=System.DateTime.Now;
-            meshListArg.DrawPageToolbar(meshFilters.Count);
-            int c=0;
-            for(int i=meshListArg.GetStartId();i<meshFilters.Count && i<meshListArg.GetEndId();i++)
-            {
-                c++;
-                var mesh=meshFilters[i];
-                if(!editorArgs.ContainsKey(mesh)){
-                    editorArgs.Add(mesh,new FoldoutEditorArg());
-                }
-                var arg = editorArgs[mesh];
-                BuildingModelInfo[] bs=mesh.GetComponentsInParent<BuildingModelInfo>(true);
-                if(bs.Length==0){
-                    Debug.LogError($"Show MeshList buildings.Length==0");continue;
-                }
-                BuildingModelInfo building=bs[0];
-                if(mesh==null){
-                    Debug.LogError($"Show MeshList mesh==null");continue;
-                }
-                if(mesh.sharedMesh==null){
-                    Debug.LogError($"Show MeshList mesh.sharedMesh==null");continue;
-                }
-                if(arg==null){
-                    Debug.LogError($"Show MeshList arg==null");continue;
-                }
-                if(building==null){
-                    Debug.LogError($"Show MeshList building==null");continue;
-                }
-                if(mesh.transform.parent==null){
-                    Debug.LogError($"Show MeshList mesh.transform.parent==null");continue;
-                }
-                arg.isExpanded = EditorUIUtils.ObjectFoldout(arg.isExpanded, $"[{i+1:00}] {building.name}>>{mesh.transform.parent.name}>{mesh.name}", $"[{mesh.sharedMesh.vertexCount/10000f:F0}w]", false,false,false,mesh.gameObject);
-                if (arg.isExpanded)
-                {
-                    //BuildingModelInfoEditor.DrawToolbar(b, contentStyle, buttonWidth);
-                }
-            }
-            var time=System.DateTime.Now-start;
-            Debug.Log($"Show MeshList count:{c} time:{time.TotalMilliseconds:F1}ms ");
-        }
+        //     if (meshListArg.isExpanded && meshListArg.isEnabled)
+        //     {
+        //         System.DateTime start=System.DateTime.Now;
+        //         meshListArg.DrawPageToolbar(meshFilters.Count);
+        //         int c=0;
+        //         for(int i=meshListArg.GetStartId();i<meshFilters.Count && i<meshListArg.GetEndId();i++)
+        //         {
+        //             c++;
+        //             var mesh=meshFilters[i];
+        //             if(!editorArgs.ContainsKey(mesh)){
+        //                 editorArgs.Add(mesh,new FoldoutEditorArg());
+        //             }
+        //             var arg = editorArgs[mesh];
+        //             BuildingModelInfo[] bs=mesh.GetComponentsInParent<BuildingModelInfo>(true);
+        //             if(bs.Length==0){
+        //                 Debug.LogError($"Show MeshList buildings.Length==0");continue;
+        //             }
+        //             BuildingModelInfo building=bs[0];
+        //             if(mesh==null){
+        //                 Debug.LogError($"Show MeshList mesh==null");continue;
+        //             }
+        //             if(mesh.sharedMesh==null){
+        //                 Debug.LogError($"Show MeshList mesh.sharedMesh==null");continue;
+        //             }
+        //             if(arg==null){
+        //                 Debug.LogError($"Show MeshList arg==null");continue;
+        //             }
+        //             if(building==null){
+        //                 Debug.LogError($"Show MeshList building==null");continue;
+        //             }
+        //             if(mesh.transform.parent==null){
+        //                 Debug.LogError($"Show MeshList mesh.transform.parent==null");continue;
+        //             }
+        //             arg.isExpanded = EditorUIUtils.ObjectFoldout(arg.isExpanded, $"[{i+1:00}] {building.name}>>{mesh.transform.parent.name}>{mesh.name}", $"[{mesh.sharedMesh.vertexCount/10000f:F0}w]", false,false,false,mesh.gameObject);
+        //             if (arg.isExpanded)
+        //             {
+        //                 //BuildingModelInfoEditor.DrawToolbar(b, contentStyle, buttonWidth);
+        //             }
+        //         }
+        //         var time=System.DateTime.Now-start;
+        //         Debug.Log($"Show MeshList count:{c} time:{time.TotalMilliseconds:F1}ms ");
+        //     }
+        DrawMeshList(meshListArg, GetMeshList);
 
         var timeT=System.DateTime.Now-startT;
         Debug.Log($"SceneRebuildManagerEditor time:{timeT.TotalMilliseconds:F1}ms ");
     }
 
-    private void InitMeshList(FoldoutEditorArg arg)
+    private List<MeshFilter> GetMeshList()
     {
-        System.DateTime start = System.DateTime.Now;
-        float sumVertexCount = 0;
-        float sumVertexCountVisible = 0;
-        int sumRendererCount = 0;
-        int sumRendererCountVisible = 0;
-        meshFilters = GameObject.FindObjectsOfType<MeshFilter>(true).Where(m => m != null && m.sharedMesh != null && m.sharedMesh.name != "Cube").ToList();
-        meshFilters.Sort((a, b) =>
-        {
-            return b.sharedMesh.vertexCount.CompareTo(a.sharedMesh.vertexCount);
-        });
-        Debug.Log($"Init MeshList1 count:{meshFilters.Count} time:{(System.DateTime.Now - start).TotalMilliseconds:F1}ms ");
-        meshFilters.ForEach(b => {
-            if (b == null) return;
-            if (b.gameObject.activeInHierarchy == true && b.GetComponent<MeshRenderer>() != null && b.GetComponent<MeshRenderer>().enabled == true)
-            {
-                sumVertexCountVisible += b.sharedMesh.vertexCount;
-                sumRendererCountVisible++;
-            }
-            sumVertexCount += b.sharedMesh.vertexCount;
-            sumRendererCount++;
-        });
-        Debug.Log($"Init MeshList2 count:{meshFilters.Count} time:{(System.DateTime.Now - start).TotalMilliseconds:F1}ms ");
-        sumVertexCount /= 10000;
-        sumVertexCountVisible /= 10000;
-        //InitEditorArg(scenes);
-        arg.caption = $"Mesh List({meshFilters.Count})";
-        arg.info = $"[{sumVertexCountVisible:F0}/{sumVertexCount:F0}w][{sumRendererCountVisible}/{sumRendererCount}]";
-        Debug.Log($"Init MeshList count:{meshFilters.Count} time:{(System.DateTime.Now - start).TotalMilliseconds:F1}ms ");
+        return GameObject.FindObjectsOfType<MeshFilter>(true).Where(m => m != null && m.sharedMesh != null && m.sharedMesh.name != "Cube").ToList();
     }
 }
