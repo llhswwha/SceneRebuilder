@@ -7,7 +7,7 @@ using System;
 [CustomEditor(typeof(ModelAreaTree))]
 public class ModelAreaTreeEditor : BaseEditor<ModelAreaTree>
 {
-    public void OnEnable()
+    public override void OnEnable()
     {
         ModelAreaTree item = target as ModelAreaTree;
         item.UpdateSceneList();

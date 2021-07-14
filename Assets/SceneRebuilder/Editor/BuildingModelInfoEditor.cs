@@ -8,7 +8,7 @@ using UnityEngine;
 [CustomEditor(typeof(BuildingModelInfo))]
 public class BuildingModelInfoEditor : BaseEditor<BuildingModelInfo>
 {
-    public void OnEnable()
+    public override void OnEnable()
     {
         BuildingModelInfo item = target as BuildingModelInfo;
         item.UpdateSceneList();

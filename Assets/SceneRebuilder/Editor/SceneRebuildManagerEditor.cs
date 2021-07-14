@@ -7,7 +7,7 @@ using CodeStage.AdvancedFPSCounter.Editor.UI;
 using System.Linq;
 
 [CustomEditor(typeof(SceneRebuildManager))]
-public class SceneRebuildManagerEditor : BaseEditor<SceneRebuildManager>
+public class SceneRebuildManagerEditor : BaseFoldoutEditor<SceneRebuildManager>
 {
     //private SerializedProperty buildingListFoldout;
 
@@ -24,8 +24,9 @@ public class SceneRebuildManagerEditor : BaseEditor<SceneRebuildManager>
 
     private List<MeshFilter> meshFilters = new List<MeshFilter>();
 
-    public void OnEnable()
+    public override void OnEnable()
     {
+        base.OnEnable();
         manager = target as SceneRebuildManager;
         UpdateList();
         Debug.LogError("SceneRebuildManagerEditor.OnEnable");
@@ -37,23 +38,7 @@ public class SceneRebuildManagerEditor : BaseEditor<SceneRebuildManager>
         InitMeshList(meshListArg);
     }
 
-    public Dictionary<Object, FoldoutEditorArg> editorArgs = new Dictionary<Object, FoldoutEditorArg>();
-
-    public void InitEditorArg<T>(List<T> items) where T : Object
-    {
-        foreach(var item in items)
-        {
-            if (!editorArgs.ContainsKey(item))
-            {
-                editorArgs.Add(item, new FoldoutEditorArg());
-            }
-            else{
-                if(editorArgs[item]==null){
-                    editorArgs[item]=new FoldoutEditorArg();
-                }
-            }
-        }
-    }
+    
 
     public bool IsShowList = true;
 
@@ -423,52 +408,55 @@ public class SceneRebuildManagerEditor : BaseEditor<SceneRebuildManager>
         }
 
         //-------------------------------------------------------SceneList-----------------------------------------------------------
-        List<SubScene_Base> scenes=new List<SubScene_Base>();
-        sceneListArg.caption=$"Scene List";
-        EditorUIUtils.ToggleFoldout(sceneListArg, (arg)=>{
-            System.DateTime start=System.DateTime.Now;
-            float sumVertexCount=0;
-            int sumRendererCount=0;
-            scenes = item.GetScenes();
-            scenes.Sort((a, b) =>
-            {
-                return b.vertexCount.CompareTo(a.vertexCount);
-            });
-            scenes.ForEach(b=>
-            {
-                sumVertexCount+=b.vertexCount;
-                sumRendererCount+=b.rendererCount;
-            });
-            InitEditorArg(scenes);
-            arg.caption= $"Scene List({scenes.Count})";
-            arg.info=$"[{sumVertexCount:F0}w][{sumRendererCount/10000f:F0}w]";
-            var time=System.DateTime.Now-start;
-            Debug.Log($"Init SceneList count:{scenes.Count} time:{time.TotalMilliseconds:F1}ms ");
-        },()=>{
-            if(GUILayout.Button("Window",GUILayout.Width(60)))
-			{
-				SubSceneManagerEditorWindow.ShowWindow();
-			}
-        });
-        if (sceneListArg.isExpanded && sceneListArg.isEnabled)
-        {
-            System.DateTime start=System.DateTime.Now;
-            sceneListArg.DrawPageToolbar(scenes.Count);
-            int c=0;
-            for(int i=sceneListArg.GetStartId();i<scenes.Count && i<sceneListArg.GetEndId();i++)
-            {
-                c++;
-                var scene=scenes[i];
-                var arg = editorArgs[scene];
-                arg.isExpanded = EditorUIUtils.ObjectFoldout(arg.isExpanded, $"[{i+1:00}] {scene.name}", $"[{scene.vertexCount:F0}w][{scene.rendererCount}]", false,false,false,scene.gameObject);
-                if (arg.isExpanded)
-                {
-                    //BuildingModelInfoEditor.DrawToolbar(b, contentStyle, buttonWidth);
-                }
-            }
-            var time=System.DateTime.Now-start;
-            Debug.Log($"Show SceneList count:{c} time:{time.TotalMilliseconds:F1}ms ");
-        }
+
+
+        DrawSceneList(sceneListArg, item.GetScenes);
+   //     List<SubScene_Base> scenes=new List<SubScene_Base>();
+   //     sceneListArg.caption=$"Scene List";
+   //     EditorUIUtils.ToggleFoldout(sceneListArg, (arg)=>{
+   //         System.DateTime start=System.DateTime.Now;
+   //         scenes = item.GetScenes();
+   //         float sumVertexCount=0;
+   //         int sumRendererCount=0;
+   //         scenes.Sort((a, b) =>
+   //         {
+   //             return b.vertexCount.CompareTo(a.vertexCount);
+   //         });
+   //         scenes.ForEach(b=>
+   //         {
+   //             sumVertexCount+=b.vertexCount;
+   //             sumRendererCount+=b.rendererCount;
+   //         });
+   //         InitEditorArg(scenes);
+   //         arg.caption= $"Scene List({scenes.Count})";
+   //         arg.info=$"[{sumVertexCount:F0}w][{sumRendererCount/10000f:F0}w]";
+   //         var time=System.DateTime.Now-start;
+   //         Debug.Log($"Init SceneList count:{scenes.Count} time:{time.TotalMilliseconds:F1}ms ");
+   //     },()=>{
+   //         if(GUILayout.Button("Window",GUILayout.Width(60)))
+			//{
+			//	SubSceneManagerEditorWindow.ShowWindow();
+			//}
+   //     });
+   //     if (sceneListArg.isExpanded && sceneListArg.isEnabled)
+   //     {
+   //         System.DateTime start=System.DateTime.Now;
+   //         sceneListArg.DrawPageToolbar(scenes.Count);
+   //         int c=0;
+   //         for(int i=sceneListArg.GetStartId();i<scenes.Count && i<sceneListArg.GetEndId();i++)
+   //         {
+   //             c++;
+   //             var scene=scenes[i];
+   //             var arg = editorArgs[scene];
+   //             arg.isExpanded = EditorUIUtils.ObjectFoldout(arg.isExpanded, $"[{i+1:00}] {scene.name}", $"[{scene.vertexCount:F0}w][{scene.rendererCount}]", false,false,false,scene.gameObject);
+   //             if (arg.isExpanded)
+   //             {
+   //                 //BuildingModelInfoEditor.DrawToolbar(b, contentStyle, buttonWidth);
+   //             }
+   //         }
+   //         var time=System.DateTime.Now-start;
+   //         Debug.Log($"Show SceneList count:{c} time:{time.TotalMilliseconds:F1}ms ");
+   //     }
 
         //-------------------------------------------------------MeshList-----------------------------------------------------------
         //List<MeshFilter> meshes=new List<MeshFilter>();

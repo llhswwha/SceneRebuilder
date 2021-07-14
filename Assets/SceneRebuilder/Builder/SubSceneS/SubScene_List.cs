@@ -10,7 +10,7 @@ public class SubScene_List : MonoBehaviour
     public SubScene_Base[] scenes;
 
     [ContextMenu("Init")]
-    public void Init()
+    public void GetScenes()
     {
         scenes = gameObject.GetComponentsInChildren<SubScene_Base>(true);
         sceneCount = scenes.Length;
@@ -24,7 +24,7 @@ public class SubScene_List : MonoBehaviour
         subSceneGo.transform.SetParent(this.transform);
 
         EditorHelper.CopyComponent(subSceneGo, scene);
-        Init();
+        GetScenes();
     }
 #endif
 

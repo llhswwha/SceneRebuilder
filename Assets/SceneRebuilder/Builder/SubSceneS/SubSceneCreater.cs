@@ -21,7 +21,7 @@ public class SubSceneCreater : MonoBehaviour
         if (SceneList == null)
         {
             SceneList = this.gameObject.AddComponent<SubScene_List>();
-            SceneList.Init();
+            SceneList.GetScenes();
         }
     }
 
@@ -35,7 +35,7 @@ public class SubSceneCreater : MonoBehaviour
         {
             SceneList = this.gameObject.AddComponent<SubScene_List>();
         }
-        SceneList.Init();
+        SceneList.GetScenes();
     }
 
     public int GetSceneCount()
@@ -58,7 +58,7 @@ public class SubSceneCreater : MonoBehaviour
             go.transform.position = this.transform.position;
             go.transform.SetParent(this.transform);
             SceneList = go.AddComponent<SubScene_List>();
-            SceneList.Init();
+            SceneList.GetScenes();
         }
     }
 
