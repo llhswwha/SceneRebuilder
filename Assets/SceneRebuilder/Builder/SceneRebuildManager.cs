@@ -58,7 +58,7 @@ public class SceneRebuildManager : MonoBehaviour
 
     public List<SubScene_Base> GetScenes()
     {
-        return subSceneManager.subScenes.ToList() ;
+        return subSceneManager.subScenes.ToList().Where(s=>s!=null).ToList() ;
     }
 
     public void UpdateList()
@@ -108,6 +108,11 @@ public class SceneRebuildManager : MonoBehaviour
     public void ClearBuildings()
     {
         subSceneManager.ClearBuildings();
+    }
+
+    public void SetModelsActive(bool v)
+    {
+        buildingModelManager.SetModelsActive(v);
     }
 
     //[ContextMenu("LoadScenes")]

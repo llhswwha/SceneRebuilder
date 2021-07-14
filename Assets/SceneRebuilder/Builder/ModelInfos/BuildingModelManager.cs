@@ -153,6 +153,22 @@ public class BuildingModelManager : MonoBehaviour
         Debug.LogError($"CreateTrees Buildings:{buildings.Count},Trees:{allTrees.Count},Time:{(DateTime.Now - start).ToString()}");
     }
 
+    internal void SetModelsActive(bool v)
+    {
+        foreach(var b in Buildings)
+        {
+            b.gameObject.SetActive(v);
+        }
+
+        if (v)
+        {
+            var bList = GameObject.FindObjectsOfType<BuildingModelInfoList>(true);
+            foreach (var l in bList)
+            {
+                l.gameObject.SetActive(v);
+            }
+        }
+    }
 
     [ContextMenu("* GetInfos")]
     public void GetInfos()

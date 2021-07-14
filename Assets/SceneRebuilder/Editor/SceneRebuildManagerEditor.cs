@@ -141,7 +141,7 @@ public class SceneRebuildManagerEditor : BaseEditor<SceneRebuildManager>
             InitEditorArg(buildings);
             //Debug.Log($"Init BuildingList4 count:{buildings.Count} time:{(System.DateTime.Now - start).TotalMilliseconds:F1}ms ");
             arg.caption= $"Building List({buildings.Count})";
-            arg.info=$"[{sumVertexCount:F0}w][{sumRendererCount}]";
+            arg.info=$"[{sumVertexCount:F0}w][{sumRendererCount/10000f:F0}w]";
             Debug.Log($"Init BuildingList count:{buildings.Count} time:{(System.DateTime.Now - start).TotalMilliseconds:F1}ms ");
         },
         //"Window",
@@ -156,6 +156,18 @@ public class SceneRebuildManagerEditor : BaseEditor<SceneRebuildManager>
 
         if (buildingListArg.isExpanded && buildingListArg.isEnabled)
         {
+            EditorGUILayout.BeginHorizontal();
+            if (GUILayout.Button("ActiveAll"))
+            {
+                //item.gameObject.SetActive();
+                item.SetModelsActive(true);
+            }
+            if (GUILayout.Button("InactiveAll"))
+            {
+                item.SetModelsActive(false);
+            }
+            EditorGUILayout.EndHorizontal();
+
             System.DateTime start=System.DateTime.Now;
             buildingListArg.DrawPageToolbar(buildings.Count);
             int c=0;
@@ -309,21 +321,23 @@ public class SceneRebuildManagerEditor : BaseEditor<SceneRebuildManager>
 
             //trees=GameObject.FindObjectsOfType<ModelAreaTree>(true).Where(t=>t.VertexCount>0).ToList() ;
             trees = item.GetTrees().Where(t => t.VertexCount > 0).ToList();
-
+            //Debug.Log($"Init TreeList1 count:{trees.Count} time:{(System.DateTime.Now - start).TotalMilliseconds:F1}ms ");
             trees.Sort((a, b) =>
             {
                 return b.VertexCount.CompareTo(a.VertexCount);
             });
+            //Debug.Log($"Init TreeList2 count:{trees.Count} time:{(System.DateTime.Now - start).TotalMilliseconds:F1}ms ");
+
             trees.ForEach(b=>{
                 sumVertexCount+=b.VertexCount;
                 sumRendererCount+=b.GetRendererCount();
             });
+            //Debug.Log($"Init TreeList3 count:{trees.Count} time:{(System.DateTime.Now - start).TotalMilliseconds:F1}ms ");
             InitEditorArg(trees);
 
             arg.caption= $"Tree List({trees.Count})";
-            arg.info=$"[{sumVertexCount:F0}w][{sumRendererCount}]";
-            var time=System.DateTime.Now-start;
-            Debug.Log($"Init TreeList count:{trees.Count} time:{time.TotalMilliseconds:F1}ms ");
+            arg.info=$"[{sumVertexCount:F0}w][{sumRendererCount/10000f:F0}w]";
+            Debug.Log($"Init TreeList count:{trees.Count} time:{(System.DateTime.Now - start).TotalMilliseconds:F1}ms ");
         },
         ()=>{
             if(GUILayout.Button("------",GUILayout.Width(60)))
@@ -375,7 +389,7 @@ public class SceneRebuildManagerEditor : BaseEditor<SceneRebuildManager>
             });
             InitEditorArg(nodes);
             arg.caption= $"Node List({nodes.Count})";
-            arg.info=$"[{sumVertexCount:F0}w][{sumRendererCount}]";
+            arg.info=$"[{sumVertexCount:F0}w][{sumRendererCount/10000f:F0}w]";
             var time=System.DateTime.Now-start;
             Debug.Log($"Init NodeList count:{nodes.Count} time:{time.TotalMilliseconds:F1}ms ");
         },
@@ -417,13 +431,14 @@ public class SceneRebuildManagerEditor : BaseEditor<SceneRebuildManager>
             {
                 return b.vertexCount.CompareTo(a.vertexCount);
             });
-            scenes.ForEach(b=>{
+            scenes.ForEach(b=>
+            {
                 sumVertexCount+=b.vertexCount;
                 sumRendererCount+=b.rendererCount;
             });
             InitEditorArg(scenes);
             arg.caption= $"Scene List({scenes.Count})";
-            arg.info=$"[{sumVertexCount:F0}w][{sumRendererCount}]";
+            arg.info=$"[{sumVertexCount:F0}w][{sumRendererCount/10000f:F0}w]";
             var time=System.DateTime.Now-start;
             Debug.Log($"Init SceneList count:{scenes.Count} time:{time.TotalMilliseconds:F1}ms ");
         },()=>{

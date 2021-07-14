@@ -18,6 +18,11 @@ public class ObjectActiveItemUI : MonoBehaviour
         ToggleName.text=go.name;
     }
 
+    public void SetTitle(string txt)
+    {
+        ToggleName.text = txt;
+    }
+
     // Start is called before the first frame update
     void Start()
     {

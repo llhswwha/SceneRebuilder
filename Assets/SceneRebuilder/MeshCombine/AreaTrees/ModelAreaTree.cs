@@ -245,7 +245,12 @@ public class ModelAreaTree : SubSceneCreater
 
     public int GetRendererCount()
     {
-        return GetTreeRendererers().Length;
+        //return GetTreeRendererers().Length;
+        if (TreeRenderers == null)
+        {
+            return 0;
+        }
+        return TreeRenderers.Length;
     }
 
     public MeshRenderer[] GetTreeRendererers()
