@@ -63,7 +63,7 @@ public static class EditorHelper
     {
         string scenePath = EditorHelper.GetScenePath(path);
         string sceneName = GetSceneName(scenePath);
-        Debug.Log($"LoadScene IsValid:{scene.IsValid()}, \tpath:{path}\nscenePath:{scenePath}");
+        Debug.Log($"LoadScene IsValid:{scene.IsValid()}, \tpath:{path}\nscenePath:{scenePath}\n{System.IO.File.Exists(scenePath)}");
         if (scene.IsValid() == false)//没有打开场景 > 打开
         {
             scene = EditorSceneManager.OpenScene(scenePath, OpenSceneMode.Additive);
@@ -200,7 +200,12 @@ public static class EditorHelper
         EditorApplication.ExecuteMenuItem("Edit/Frame Selected");
     }
 
-    public static void SelectObjects(GameObject[] objs)
+    public static void SelectObjects(List<Object> objs)
+    {
+        SelectObjects(objs.ToArray());
+    }
+
+    public static void SelectObjects(Object[] objs)
     {
         //EditorGUIUtility.Object
         if(objs.Length>0)
