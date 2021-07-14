@@ -13,11 +13,29 @@ public class SubSceneEditor<T> : BaseEditor<T> where T : SubScene_Base
         base.OnToolLayout(item);
 
         EditorGUILayout.BeginHorizontal();
-        NewButton("SelectScene", buttonWidth, item.IsLoaded == false, () =>
+        string scenePath1 = item.GetSceneArg().path;
+        string sceneAssetPath = "Assets/" + item.GetSceneArg().path;
+        string sceneFilePath = Application.dataPath + "/"+ scenePath1;
+        //sceneFilePath = sceneFilePath.Replace("/", "\\\\");
+        bool isFileExist = System.IO.File.Exists(sceneFilePath);
+        NewButton("SelectFile", buttonWidth, true, () =>
         {
             //item.GetSceneArg().path;
-            Debug.Log(item.GetSceneArg().path);
-            SceneAsset sceneAsset=AssetDatabase.LoadAssetAtPath<SceneAsset>("Assets/"+item.GetSceneArg().path);
+            Debug.Log(scenePath1);
+            Debug.Log(Application.dataPath);
+            Debug.Log(sceneFilePath+"|"+System.IO.File.Exists(sceneFilePath));
+            SceneAsset sceneAsset=AssetDatabase.LoadAssetAtPath<SceneAsset>(sceneAssetPath);
+            Debug.Log(sceneAsset);
+            //var scene=EditorSceneManager.GetSceneByPath(item.GetSceneArg().path);
+            EditorHelper.SelectObject(sceneAsset);
+        });
+        NewButton("DeleteFile", buttonWidth, true, () =>
+        {
+            //item.GetSceneArg().path;
+            Debug.Log(scenePath1);
+            Debug.Log(Application.dataPath);
+            Debug.Log(sceneFilePath + "|" + System.IO.File.Exists(sceneFilePath));
+            SceneAsset sceneAsset = AssetDatabase.LoadAssetAtPath<SceneAsset>(sceneAssetPath);
             Debug.Log(sceneAsset);
             //var scene=EditorSceneManager.GetSceneByPath(item.GetSceneArg().path);
             EditorHelper.SelectObject(sceneAsset);

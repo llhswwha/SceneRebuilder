@@ -57,18 +57,8 @@ public class SceneRebuildManagerEditor : BaseEditor<SceneRebuildManager>
 
     public bool IsShowList = true;
 
-    public override void OnToolLayout(SceneRebuildManager item)
+    private void DrawManagerToolbar(SceneRebuildManager item)
     {
-
-
-        System.DateTime startT=System.DateTime.Now;
-
-        base.OnToolLayout(item);
-
-        // int count = buildings.Count;
-        // if (GUILayout.Button("Count:"+count, contentStyle))
-        // {
-        // }
         EditorGUILayout.BeginHorizontal();
         NewButton("1.InitModels", buttonWidth, true, item.InitBuildings);
         // NewButton("ListWindow:" + count, buttonWidth, true, () =>
@@ -100,6 +90,14 @@ public class SceneRebuildManagerEditor : BaseEditor<SceneRebuildManager>
         {
             item.OneKey();
         }
+    }
+
+    public override void OnToolLayout(SceneRebuildManager item)
+    {
+        System.DateTime startT=System.DateTime.Now;
+
+        base.OnToolLayout(item);
+        DrawManagerToolbar(item);
 
         IsShowList = GUILayout.Toggle(IsShowList, "IsShowList");
         if (IsShowList == false) return;
@@ -116,7 +114,8 @@ public class SceneRebuildManagerEditor : BaseEditor<SceneRebuildManager>
             System.DateTime start=System.DateTime.Now;
             float sumVertexCount=0;
             int sumRendererCount=0;
-
+            float sumVertexCount_Shown = 0;
+            float sumVertexCount_Hidden = 0;
             //var ts= GameObject.FindObjectsOfType<Transform>(true);
             //Debug.Log($"Init BuildingList00 count:{ts.Length} time:{(System.DateTime.Now - start).TotalMilliseconds:F1}ms ");
 
@@ -137,12 +136,15 @@ public class SceneRebuildManagerEditor : BaseEditor<SceneRebuildManager>
             buildings.ForEach(b=>{
                 sumVertexCount+=b.AllVertextCount;
                 sumRendererCount+=b.AllRendererCount;
+
+                sumVertexCount_Shown += b.Out0BigVertextCount;
+                sumVertexCount_Hidden += b.Out0SmallVertextCount + b.InVertextCount + b.Out1VertextCount;
             });
             //Debug.Log($"Init BuildingList3 count:{buildings.Count} time:{(System.DateTime.Now - start).TotalMilliseconds:F1}ms ");
             InitEditorArg(buildings);
             //Debug.Log($"Init BuildingList4 count:{buildings.Count} time:{(System.DateTime.Now - start).TotalMilliseconds:F1}ms ");
             arg.caption= $"Building List({buildings.Count})";
-            arg.info=$"[{sumVertexCount:F0}w][{sumRendererCount/10000f:F0}w]";
+            arg.info=$"[{sumVertexCount:F0}w={sumVertexCount_Shown:F0}+{sumVertexCount_Hidden:F0}+({(sumVertexCount- sumVertexCount_Shown- sumVertexCount_Hidden):F0})][{sumRendererCount/10000f:F0}w]";
             Debug.Log($"Init BuildingList count:{buildings.Count} time:{(System.DateTime.Now - start).TotalMilliseconds:F1}ms ");
         },
         //"Window",
@@ -180,7 +182,7 @@ public class SceneRebuildManagerEditor : BaseEditor<SceneRebuildManager>
                 arg.isExpanded = EditorUIUtils.ObjectFoldout(arg.isExpanded,
                 $"[{i+1:00}] {b.name} {b.GetInfoText()}",
                 //$"[{i + 1:00}] {b.name} ",
-                $"[{b.AllVertextCount:F0}w][{b.AllRendererCount}]|{b.Out0BigVertextCount:F0}+{b.Out0SmallVertextCount:F0}+{b.Out1VertextCount:F0}+{b.InVertextCount:F0}",
+                $"[{b.Out0BigVertextCount:F0}+{b.Out0SmallVertextCount:F0}+{b.Out1VertextCount:F0}+{b.InVertextCount:F0}={b.AllVertextCount:F0}][{b.AllRendererCount}]",
                 false, false, true, b.gameObject,
                 () =>
                 {

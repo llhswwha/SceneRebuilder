@@ -77,6 +77,14 @@ public class SubSceneShowManagerUI : MonoBehaviour
         
     }
 
+    [ContextMenu("LoadAllScenes")]
+    public void LoadAllScenes()
+    {
+        Debug.Log("LoadAllScenes");
+        subSceneManagerUI.SetLoadingSceneMaxCount();
+        subSceneShowManager.LoadStartScens_All();
+    }
+
     [ContextMenu("LoadStartScenes")]
     public void LoadStartScenes()
     {
@@ -85,21 +93,21 @@ public class SubSceneShowManagerUI : MonoBehaviour
         subSceneShowManager.LoadStartScens();
     }
 
-   [ContextMenu("LoadOut0BuildingScenes")]
-    public void LoadOut0BuildingScenes()
-    {
-        Debug.Log("LoadOut0BuildingScenes");
-        subSceneManagerUI.SetLoadingSceneMaxCount();
-        subSceneShowManager.LoadOut0BuildingScenes();
-    }
+   //[ContextMenu("LoadOut0BuildingScenes")]
+   // public void LoadOut0BuildingScenes()
+   // {
+   //     Debug.Log("LoadOut0BuildingScenes");
+   //     subSceneManagerUI.SetLoadingSceneMaxCount();
+   //     subSceneShowManager.LoadOut0BuildingScenes();
+   // }
 
-    [ContextMenu("LoadShownTreeNodes")]
-    public void LoadShownTreeNodes()
-    {
-        Debug.Log("LoadShownTreeNodes");
-        subSceneManagerUI.SetLoadingSceneMaxCount();
-        subSceneShowManager.LoadShownTreeNodes();
-    }
+   // [ContextMenu("LoadShownTreeNodes")]
+   // public void LoadShownTreeNodes()
+   // {
+   //     Debug.Log("LoadShownTreeNodes");
+   //     subSceneManagerUI.SetLoadingSceneMaxCount();
+   //     subSceneShowManager.LoadShownTreeNodes();
+   // }
 
     [ContextMenu("LoadHiddenTreeNodes")]
     public void LoadHiddenTreeNodes()
