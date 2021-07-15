@@ -200,16 +200,17 @@ public static class EditorHelper
         EditorApplication.ExecuteMenuItem("Edit/Frame Selected");
     }
 
-    public static void SelectObjects(List<Object> objs)
+    public static void SelectObjects<T>(List<T> objs) where T :Object
     {
         SelectObjects(objs.ToArray());
     }
 
-    public static void SelectObjects(Object[] objs)
+    public static void SelectObjects<T>(T[] objs) where T : Object
     {
         //EditorGUIUtility.Object
-        if(objs.Length>0)
+        if(objs.Length==1)
             EditorGUIUtility.PingObject(objs[0]);
+
         Selection.objects = objs;
         EditorApplication.ExecuteMenuItem("Edit/Frame Selected");
     }

@@ -8,6 +8,146 @@ using UnityEngine;
 
 public static class MeshHelper
 {
+    //public static GameObject InstantiatePrefabFromSceneGo()
+    //{
+
+    //}
+
+    public static GameObject EditorCopyGo(GameObject sourceGo)
+    {
+#if UNITY_EDITOR
+        GameObject newObj = null;
+        GameObject root = PrefabUtility.GetNearestPrefabInstanceRoot(sourceGo);
+        //Debug.Log($"root:[{root}]");
+        if (root != null)
+        {
+            string prefabPath = UnityEditor.PrefabUtility.GetPrefabAssetPathOfNearestInstanceRoot(root);
+            //Debug.Log($"prefabPath:[{prefabPath}]");
+            var prefabAsset = AssetDatabase.LoadAssetAtPath(prefabPath, typeof(GameObject));
+            //Debug.Log($"prefabAsset:[{prefabAsset}]");
+            var prefab = PrefabUtility.InstantiatePrefab(prefabAsset);
+            //Debug.Log($"prefab:[{prefab}]");
+            newObj = prefab as GameObject;
+        }
+        else
+        {
+            newObj = CopyGO(sourceGo);
+        }
+#else
+        GameObject newObj = CopyGO(prefab);
+#endif
+        return newObj;
+    }
+
+    public static GameObject ReplaceGameObject(GameObject oldObj, GameObject prefab,bool isDestoryOriginal, TransfromReplaceSetting transfromReplaceSetting)
+    {
+        if (prefab == null) return null;
+        GameObject newObj = EditorCopyGo(prefab);
+
+        newObj.SetActive(true);
+
+        //newObj.transform.position = oldObj.transform.position;
+        //newObj.transform.eulerAngles = oldObj.transform.eulerAngles;
+        //newObj.transform.parent = oldObj.transform;
+
+        newObj.transform.position = prefab.transform.position;
+
+        newObj.transform.parent = oldObj.transform.parent;
+        if (transfromReplaceSetting == null)
+        {
+            newObj.transform.localPosition = oldObj.transform.localPosition;
+        }
+        else
+        {
+            var minMax_TO = MeshRendererInfo.GetMinMax(oldObj);
+            var minMax_From = MeshRendererInfo.GetMinMax(prefab);
+
+            var pos = newObj.transform.localPosition;
+            if(transfromReplaceSetting.Align== TransfromAlignMode.Pivot)
+            {
+                if (transfromReplaceSetting.SetPosX)
+                {
+                    pos.x = oldObj.transform.localPosition.x;
+                }
+                if (transfromReplaceSetting.SetPosY)
+                {
+                    pos.y = oldObj.transform.localPosition.y;
+                }
+                if (transfromReplaceSetting.SetPosZ)
+                {
+                    pos.z = oldObj.transform.localPosition.z;
+                }
+            }
+            else if (transfromReplaceSetting.Align == TransfromAlignMode.Min)
+            {
+                var dis = minMax_TO[0] - minMax_From[0];
+                if (transfromReplaceSetting.SetPosX)
+                {
+                    pos.x += dis.x;
+                }
+                if (transfromReplaceSetting.SetPosY)
+                {
+                    pos.y += dis.y;
+                }
+                if (transfromReplaceSetting.SetPosZ)
+                {
+                    pos.z += dis.z;
+                }
+            }
+            else if (transfromReplaceSetting.Align == TransfromAlignMode.Max)
+            {
+                var dis = minMax_TO[1] - minMax_From[1];
+                if (transfromReplaceSetting.SetPosX)
+                {
+                    pos.x += dis.x;
+                }
+                if (transfromReplaceSetting.SetPosY)
+                {
+                    pos.y += dis.y;
+                }
+                if (transfromReplaceSetting.SetPosZ)
+                {
+                    pos.z += dis.z;
+                }
+            }
+            else if (transfromReplaceSetting.Align == TransfromAlignMode.Center)
+            {
+                var dis = minMax_TO[3] - minMax_From[3];
+                if (transfromReplaceSetting.SetPosX)
+                {
+                    pos.x += dis.x;
+                }
+                if (transfromReplaceSetting.SetPosY)
+                {
+                    pos.y += dis.y;
+                }
+                if (transfromReplaceSetting.SetPosZ)
+                {
+                    pos.z += dis.z;
+                }
+            }
+
+            newObj.transform.localPosition = pos;
+        }
+        
+       
+        newObj.transform.localScale = oldObj.transform.localScale;
+        newObj.transform.localEulerAngles = oldObj.transform.localEulerAngles;
+        //newObj.transform.localEulerAngles = oldObj.transform.localEulerAngles + new Vector3(0, 90, 90);
+
+        if (isDestoryOriginal)
+        {
+            newObj.name = oldObj.name;
+            GameObject.DestroyImmediate(oldObj);
+        }
+        else
+        {
+            newObj.name = oldObj.name + "_New";
+        }
+
+        return newObj;
+    }
+
     /// <summary>
     /// 用一个单元模型，替换掉场景中的相同模型。
     /// </summary>
@@ -17,17 +157,7 @@ public static class MeshHelper
     public static GameObject ReplaceByPrefab(GameObject oldObj, GameObject prefab)
     {
         if (prefab == null) return null;
-        GameObject newObj = CopyGO(prefab);
-        newObj.SetActive(true);
-        newObj.name = oldObj.name + "_New";
-
-        //newObj.transform.position = oldObj.transform.position;
-        //newObj.transform.eulerAngles = oldObj.transform.eulerAngles;
-        //newObj.transform.parent = oldObj.transform;
-        newObj.transform.parent = oldObj.transform.parent;
-        newObj.transform.localPosition = oldObj.transform.localPosition;
-        newObj.transform.localScale = oldObj.transform.localScale;
-        //newObj.transform.localEulerAngles = Vector3.zero;
+        GameObject newObj=ReplaceGameObject(oldObj, prefab,false,null);
         newObj.transform.localEulerAngles = oldObj.transform.localEulerAngles + new Vector3(0, 90, 90);
 
         //GameObject.Destroy(item.gameObject.transform);
@@ -542,7 +672,13 @@ public static class MeshHelper
         }
         return GetMinMax(allVs.ToArray());
     }
-    
+
+    public static Vector3[] GetMinMax(GameObject go)
+    {
+        MeshFilter[] meshFilters = go.GetComponentsInChildren<MeshFilter>(true);
+        return GetMinMax(meshFilters);
+    }
+
     public static Vector3[] GetMinMax(MeshFilter meshFilter)
     {
         if(meshFilter==null)return null;
@@ -1651,4 +1787,83 @@ public enum AlignDebugStep
 public enum AlignRotateMode
 {
     ShortQuat,LongQuat,ShortAngle,LongAngle,AvgAngle
+}
+
+[System.Serializable]
+public class MeshReplaceItem
+{
+    public GameObject prefab;
+    public List<GameObject> targetList = new List<GameObject>();
+    public List<GameObject> targetListNew = new List<GameObject>();
+
+    public void Replace(bool isDestoryOriginal,bool isHidden, TransfromReplaceSetting transfromReplaceSetting)
+    {
+        //MeshHelper.ReplaceByPrefab(target, prefab);
+        //StartCoroutine(MeshHelper.ReplaceByPrefabEx(target, prefab,"", "",isDestoryOriginal));
+        targetListNew.Clear();
+        foreach (var target in targetList)
+        {
+            if (target == null) continue;
+            targetListNew.Add(MeshHelper.ReplaceGameObject(target, prefab, isDestoryOriginal, transfromReplaceSetting));
+            if(isHidden)
+                target.SetActive(false);
+        }
+    }
+
+    public void ClearNewGos()
+    {
+        foreach (var go in targetListNew)
+        {
+            if (go == null) continue;
+            GameObject.DestroyImmediate(go);
+        }
+        targetListNew.Clear();
+
+        foreach (var target in targetList)
+        {
+            if (target == null) continue;
+            target.SetActive(true);
+        }
+    }
+
+    public void ApplyNewGos()
+    {
+        foreach (var target in targetList)
+        {
+            if (target == null) continue;
+            GameObject.DestroyImmediate(target);
+        }
+        foreach (var target in targetListNew)
+        {
+            if (target == null) continue;
+            target.name = target.name.Replace("_New", "");
+
+            MeshRendererInfo info = target.GetComponent<MeshRendererInfo>();
+            if (info)
+            {
+                GameObject.DestroyImmediate(info);
+            }
+        }
+        targetList.Clear();
+        targetList.AddRange(targetListNew);
+        targetListNew.Clear();
+    }
+}
+
+[System.Serializable]
+public class TransfromReplaceSetting
+{
+    public TransfromAlignMode Align;
+    public bool SetPosX = true;
+    public bool SetPosY = true;
+    public bool SetPosZ = true;
+
+    //public bool SetPosByMinX = true;
+    //public bool SetPosByMinY = true;
+    //public bool SetPosByMinZ = true;
+}
+
+public enum TransfromAlignMode
+{
+    Pivot,Min,Max,Center
 }

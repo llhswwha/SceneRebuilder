@@ -22,6 +22,17 @@ public class MeshRendererInfo : MonoBehaviour
 
     public Vector3[] minMax;
 
+    public static Vector3[] GetMinMax(GameObject go)
+    {
+        MeshRendererInfo info = go.GetComponent<MeshRendererInfo>();
+        if (go == null)
+        {
+            info = go.AddComponent<MeshRendererInfo>();
+            info.Init();
+        }
+        return info.minMax;
+    }
+
     public MeshRendererType rendererType;
 
     [ContextMenu("GetRendererType")]

@@ -63,7 +63,8 @@ public class BuildingModelInfoEditor : BaseEditor<BuildingModelInfo>
             //     Debug.Log("GetInfo_"+item);
             // }
         });
-        NewButton("FindDoors", 90, state.CanFindDoors(), btnStyle, info.FindInDoors);
+        NewButton("FindDoors", buttonWidth, state.CanFindDoors(), btnStyle, info.FindInDoors);
+        NewButton("ClearParts", buttonWidth, state.partCount>0, btnStyle, info.ClearInOut);
         EditorGUILayout.EndHorizontal();
 
         EditorGUILayout.BeginHorizontal();

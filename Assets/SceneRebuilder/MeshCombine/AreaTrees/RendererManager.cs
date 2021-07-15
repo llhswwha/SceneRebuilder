@@ -77,11 +77,12 @@ public class RendererManager : MonoBehaviour
 
     }
 
-    private List<RendererId> InitRenderers_Inner(MeshRenderer[] allRenderers)
+    private List<MeshRendererInfo> InitRenderers_Inner(MeshRenderer[] allRenderers)
     {
         DateTime start = DateTime.Now;
         int count = allRenderers.Length;
         List<RendererId> allRIds = new List<RendererId>();
+        List<MeshRendererInfo> allInfos = new List<MeshRendererInfo>();
         for (int i = 0; i < count; i++)
         {
             MeshRenderer r = allRenderers[i];
@@ -95,7 +96,7 @@ public class RendererManager : MonoBehaviour
                 info = r.gameObject.AddComponent<MeshRendererInfo>();
             }
             info.Init();
-
+            allInfos.Add(info);
 
             float progress = (float)i / count;
             float percents = progress * 100;
@@ -108,7 +109,7 @@ public class RendererManager : MonoBehaviour
         Count = allRenderers.Length;
         ProgressBarHelper.ClearProgressBar();
         Debug.Log($"InitRenderers count:{allRenderers.Length} time:{(DateTime.Now - start)}");
-        return allRIds;
+        return allInfos;
     }
 
     [ContextMenu("InitRenderers(All)")]
@@ -265,28 +266,41 @@ public class RendererManager : MonoBehaviour
         return false;
     }
 
+   
+    public void SetDetailRenderers(MeshRenderer[] renderers)
+    {
+        var rendererInfos=InitRenderers_Inner(renderers);
+        SetIsDetail(rendererInfos, renderers);
+    }
+
     [ContextMenu("SetDetailRenderers")]
     public void SetDetailRenderers()
     {
-        DateTime start = DateTime.Now;
-        int count=0;
-        float vertexCount=0;
-        var rendererInfos=GameObject.FindObjectsOfType<MeshRendererInfo>(true);
-        var renderers=GameObject.FindObjectsOfType<MeshRenderer>(true);
-        if(rendererInfos.Length!=renderers.Length)
+        var rendererInfos = GameObject.FindObjectsOfType<MeshRendererInfo>(true);
+        var renderers = GameObject.FindObjectsOfType<MeshRenderer>(true);
+        if (rendererInfos.Length != renderers.Length)
         {
             InitRenderers_All();
-            rendererInfos=GameObject.FindObjectsOfType<MeshRendererInfo>(true);
+            rendererInfos = GameObject.FindObjectsOfType<MeshRendererInfo>(true);
         }
-        foreach(var info in rendererInfos){
-            if(IsDetail(info.gameObject))
+        SetIsDetail(rendererInfos, renderers);
+    }
+
+    private void SetIsDetail(IEnumerable<MeshRendererInfo> rendererInfos, MeshRenderer[] renderers)
+    {
+        DateTime start = DateTime.Now;
+        int count = 0;
+        float vertexCount = 0;
+        foreach (var info in rendererInfos)
+        {
+            if (IsDetail(info.gameObject))
             {
-                info.rendererType=MeshRendererType.Detail;
+                info.rendererType = MeshRendererType.Detail;
                 count++;
-                vertexCount+=info.vertexCount;
+                vertexCount += info.vertexCount;
             }
         }
-        Debug.Log($"SetDetailRenderers renderers:{renderers.Length} infos:{rendererInfos.Length} detailCount:{count} vertexCount:{vertexCount/10000:F1} time:{(DateTime.Now - start)}");
+        Debug.Log($"SetDetailRenderers renderers:{renderers.Length} infos:{rendererInfos.Count()} detailCount:{count} vertexCount:{vertexCount / 10000:F1} time:{(DateTime.Now - start)}");
     }
 
     [ContextMenu("ClearAllType")]

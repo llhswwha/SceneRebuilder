@@ -21,7 +21,12 @@ public class RendererId
         Id = Guid.NewGuid().ToString();
         insId = r.gameObject.GetInstanceID();
 
-        parentId=GetId(this.transform.parent);
+        SetParentId();
+    }
+
+    public void SetParentId()
+    {
+        parentId = GetId(this.transform.parent);
     }
 
     public bool IsParentChanged()
@@ -118,8 +123,9 @@ public class RendererId
         if (id == null)
         {
             id = r.gameObject.AddComponent<RendererId>();
+            id.Init(r);
         }
-        id.Init(r);
+        id.SetParentId();
         return id;
     }
 
