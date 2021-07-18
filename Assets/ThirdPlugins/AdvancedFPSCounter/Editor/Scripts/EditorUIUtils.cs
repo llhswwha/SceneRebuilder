@@ -24,7 +24,22 @@ namespace CodeStage.AdvancedFPSCounter.Editor.UI
         public int[] pageId_sizes =null;
 		public int pageCount=1;
 
-		public int DrawPageSizeList()
+        public int listFilterId = 1;
+        public string[] listFilterId_Names = new string[] { "All" };
+        //public int[] pageSize_sizes = { 5, 10, 15, 20, 50, 100, 200, 500, 1000, 2000 };
+
+        public int DrawFilterList(int width,params string[] filters)
+        {
+            if(listFilterId_Names==null|| listFilterId_Names.Length != filters.Length)
+            {
+                listFilterId_Names = filters;
+                listFilterId = 1;
+            }
+            listFilterId = EditorGUILayout.Popup(listFilterId, listFilterId_Names,GUILayout.Width(width));
+            return listFilterId;
+        }
+
+        public int DrawPageSizeList()
 		{
 			pageSize_selected = EditorGUILayout.IntPopup("PageSize: ", pageSize_selected, pageSize_names, pageSize_sizes);
 			return pageSize_selected;	

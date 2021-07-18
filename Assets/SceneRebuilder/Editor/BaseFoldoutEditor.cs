@@ -1,6 +1,7 @@
 using CodeStage.AdvancedFPSCounter.Editor.UI;
 using System.Collections;
 using System.Collections.Generic;
+using System.Linq;
 using UnityEditor;
 using UnityEngine;
 
@@ -199,7 +200,7 @@ public class BaseFoldoutEditor<T> : BaseEditor<T> where T : class
         () => {
             //SceneRebuildEditorWindow.ShowWindow();
 
-            if (GUILayout.Button("Window", GUILayout.Width(60)))
+            if (GUILayout.Button("Win", GUILayout.Width(35)))
             {
                 SceneRebuildEditorWindow.ShowWindow();
             }
@@ -337,7 +338,7 @@ public class BaseFoldoutEditor<T> : BaseEditor<T> where T : class
             Debug.Log($"Init NodeList count:{nodes.Count} time:{time.TotalMilliseconds:F1}ms ");
         },
         () => {
-            if (GUILayout.Button("Window", GUILayout.Width(60)))
+            if (GUILayout.Button("Win", GUILayout.Width(35)))
             {
                 TreeNodeManagerEditorWindow.ShowWindow();
             }
@@ -371,6 +372,18 @@ public class BaseFoldoutEditor<T> : BaseEditor<T> where T : class
             System.DateTime start = System.DateTime.Now;
             //scenes = item.scenes.ToList();
             scenes = funcGetList();
+            if (foldoutArg.listFilterId == 1)
+            {
+                scenes = scenes.Where(i => { return i.name.Contains("Combined"); }).ToList();
+            }
+            else if (foldoutArg.listFilterId == 2)
+            {
+                scenes = scenes.Where(i => { return i.name.Contains("Renderers"); }).ToList();
+            }
+            else
+            {
+
+            }
             float sumVertexCount = 0;
             int sumRendererCount = 0;
             scenes.Sort((a, b) =>
@@ -388,10 +401,12 @@ public class BaseFoldoutEditor<T> : BaseEditor<T> where T : class
             var time = System.DateTime.Now - start;
             Debug.Log($"Init SceneList count:{scenes.Count} time:{time.TotalMilliseconds:F1}ms ");
         }, () => {
-            if (GUILayout.Button("Window", GUILayout.Width(60)))
+            int filterType = foldoutArg.DrawFilterList(100,"All","Combined","Renderers");
+            if (GUILayout.Button("Win", GUILayout.Width(35)))
             {
                 SubSceneManagerEditorWindow.ShowWindow();
             }
+            
         });
         if (foldoutArg.isExpanded && foldoutArg.isEnabled)
         {
@@ -469,7 +484,7 @@ public class BaseFoldoutEditor<T> : BaseEditor<T> where T : class
                 foldoutArg.Items.Clear();
                 meshFilters = InitMeshList(foldoutArg, funcGetList);
             }
-            if (GUILayout.Button("Window", GUILayout.Width(60)))
+            if (GUILayout.Button("Win", GUILayout.Width(35)))
             {
                 //SubSceneManagerEditorWindow.ShowWindow();
                 MeshProfilerNS.MeshProfiler.ShowWindow();

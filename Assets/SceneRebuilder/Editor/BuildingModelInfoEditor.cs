@@ -1,3 +1,4 @@
+using CodeStage.AdvancedFPSCounter.Editor.UI;
 using System.Collections;
 using System.Collections.Generic;
 using UnityEditor;
@@ -6,10 +7,12 @@ using UnityEngine;
 
 // [CanEditMultipleObjects]
 [CustomEditor(typeof(BuildingModelInfo))]
-public class BuildingModelInfoEditor : BaseEditor<BuildingModelInfo>
+public class BuildingModelInfoEditor : BaseFoldoutEditor<BuildingModelInfo>
 {
     public override void OnEnable()
     {
+        base.OnEnable();
+
         BuildingModelInfo item = target as BuildingModelInfo;
         item.UpdateSceneList();
     }
@@ -160,9 +163,17 @@ public class BuildingModelInfoEditor : BaseEditor<BuildingModelInfo>
         GUILayout.Button(info.Out0SmallRendererCount.ToString(), GUILayout.Width(50));
 
         EditorGUILayout.EndHorizontal();
+
+        
     }
 
+    //private FoldoutEditorArg buildingListArg = new FoldoutEditorArg();
 
+    private FoldoutEditorArg treeListArg = new FoldoutEditorArg();
+
+    private FoldoutEditorArg nodeListArg = new FoldoutEditorArg();
+
+    private FoldoutEditorArg sceneListArg = new FoldoutEditorArg();
 
     public override void OnInspectorGUI()
     {
@@ -173,6 +184,25 @@ public class BuildingModelInfoEditor : BaseEditor<BuildingModelInfo>
 
         BuildingModelInfo info = target as BuildingModelInfo;
         DrawToolbar(info,contentStyle,buttonWidth);
+
+        //DrawModelList(buildingListArg, 
+        //    () => { return null; }, 
+        //    () =>
+        //   {
+        //   });
+
+        DrawTreeList(treeListArg, () =>
+         {
+             return info.GetTreeList();
+         });
+        DrawNodeList(nodeListArg, () =>
+        {
+            return info.GetNodeList();
+        });
+        DrawSceneList(sceneListArg, () =>
+        {
+            return info.GetSceneList();
+        });
 
         base.OnInspectorGUI();
     }

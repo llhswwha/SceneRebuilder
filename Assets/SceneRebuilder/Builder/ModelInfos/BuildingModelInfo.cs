@@ -208,7 +208,7 @@ public class BuildingModelInfo : SubSceneCreater
     public void LoadAndSwitchToRenderers(Action<float,bool> finished)
     {
         DateTime start=DateTime.Now;
-        trees = this.GetComponentsInChildren<ModelAreaTree>(true);
+        UpdateTrees();
         var nodes=new List<AreaTreeNode>();
         foreach (var tree in trees)
         {
@@ -246,7 +246,7 @@ public class BuildingModelInfo : SubSceneCreater
     {
         DateTime start=DateTime.Now;
          Debug.Log("BuildingModelInfo.SwitchToCombined");
-        trees = this.GetComponentsInChildren<ModelAreaTree>(true);
+        UpdateTrees();
         foreach(var t in trees)
         {
             t.SwitchToCombined();
@@ -260,7 +260,7 @@ public class BuildingModelInfo : SubSceneCreater
     {
         DateTime start=DateTime.Now;
          Debug.Log("BuildingModelInfo.SwitchToRenderers");
-        trees = this.GetComponentsInChildren<ModelAreaTree>(true);
+        UpdateTrees();
         foreach(var t in trees)
         {
             t.SwitchToRenderers();
@@ -272,10 +272,10 @@ public class BuildingModelInfo : SubSceneCreater
     [ContextMenu("ClearTrees")]
     public void ClearTrees()
     {
-        var oldTrees = this.GetComponentsInChildren<ModelAreaTree>(true);
-        foreach (var oldT in oldTrees)
+        UpdateTrees();
+        foreach (var t in trees)
         {
-            GameObject.DestroyImmediate(oldT.gameObject);
+            GameObject.DestroyImmediate(t.gameObject);
         }
         this.ShowRenderers();
     }
@@ -285,7 +285,7 @@ public class BuildingModelInfo : SubSceneCreater
     public override void SaveTreeRendersId()
     {
         Debug.Log("BuildingModelInfo.SaveTreeRendersId");
-        trees = this.GetComponentsInChildren<ModelAreaTree>(true);
+        UpdateTrees();
         foreach(var t in trees)
         {
             t.SaveRenderersId();
@@ -295,7 +295,7 @@ public class BuildingModelInfo : SubSceneCreater
     [ContextMenu("LoadTreeRenderers")]
     public void LoadTreeRenderers()
     {
-        trees = this.GetComponentsInChildren<ModelAreaTree>(true);
+        UpdateTrees();
         //IdDictionary.InitRenderers(t.gameObject);
         foreach (var t in trees)
         {
@@ -305,7 +305,7 @@ public class BuildingModelInfo : SubSceneCreater
 
     public void LoadTreeRenderers(List<SubScene_Base> scenes)
     {
-        //trees = this.GetComponentsInChildren<ModelAreaTree>(true);
+        //UpdateTrees();
         ////IdDictionary.InitRenderers(t.gameObject);
         //foreach (var t in trees)
         //{
@@ -711,6 +711,25 @@ public class BuildingModelInfo : SubSceneCreater
 
 
     public ModelAreaTree[] trees;
+
+    public List<ModelAreaTree> GetTreeList()
+    {
+        if (trees == null)
+        {
+            trees= this.GetComponentsInChildren<ModelAreaTree>(true);
+        }
+        return trees.ToList();
+    }
+
+    public List<AreaTreeNode> GetNodeList()
+    {
+        List<AreaTreeNode> nodes = new List<AreaTreeNode>();
+        foreach(var t in trees)
+        {
+            nodes.AddRange(t.TreeLeafs);
+        }
+        return nodes;
+    }
 
     //[ContextMenu("* CreateTreesEx")]
     public void CreateTreesEx()
@@ -1308,7 +1327,7 @@ public class BuildingModelInfo : SubSceneCreater
         DestroyOldPartScenes(contentType);
 
         List<SubScene_Base> senes = new List<SubScene_Base>();
-        trees = this.GetComponentsInChildren<ModelAreaTree>(true);
+        UpdateTrees();
         if (InPart)
         {
             var scene = CreatePartSceneEx(InPart, contentType, "_In_" + contentType, trees, dir, isOverride, gameObject.AddComponent<SubScene_In>());
@@ -1416,7 +1435,7 @@ public class BuildingModelInfo : SubSceneCreater
         }
     }
 
-    private void EditorLoadScenes(Action<float> progressChanged)
+    public override void EditorLoadScenes(Action<float> progressChanged)
     {
         DateTime start = DateTime.Now;
 

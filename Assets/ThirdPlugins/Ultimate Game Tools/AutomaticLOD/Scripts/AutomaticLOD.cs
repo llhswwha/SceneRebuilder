@@ -1454,9 +1454,13 @@ public class AutomaticLOD : MonoBehaviour
                 if (bDeleteLODData)
                 {
                     automaticLOD.FreeLODData(false);
-                    automaticLOD.m_listLODLevels.Clear();
-                    automaticLOD.m_listLODLevels = null;
-                    automaticLOD.m_listDependentChildren.Clear();
+                    if(automaticLOD.m_listLODLevels!=null)
+                    {
+                        automaticLOD.m_listLODLevels.Clear();
+                        automaticLOD.m_listLODLevels = null;
+                        automaticLOD.m_listDependentChildren.Clear();
+                    }
+                    
                 }
             }
         }

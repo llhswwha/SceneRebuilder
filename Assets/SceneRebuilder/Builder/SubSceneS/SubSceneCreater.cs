@@ -12,7 +12,7 @@ public class SubSceneCreater : MonoBehaviour
     public SubScene_List SceneList = null;
 
     //[ContextMenu("GetTreeNodeScenes")]
-    public void GetTreeNodeScenes()
+    public SubScene_Base[] GetScenes()
     {
         if (SceneList == null)
         {
@@ -23,6 +23,12 @@ public class SubSceneCreater : MonoBehaviour
             SceneList = this.gameObject.AddComponent<SubScene_List>();
             SceneList.GetScenes();
         }
+        return SceneList.scenes;
+    }
+
+    public List<SubScene_Base> GetSceneList()
+    {
+        return GetScenes().ToList();
     }
 
     public void UpdateSceneList()
@@ -40,13 +46,13 @@ public class SubSceneCreater : MonoBehaviour
 
     public int GetSceneCount()
     {
-        GetTreeNodeScenes();
+        GetScenes();
         return SceneList.sceneCount;
     }
 
     public bool IsSceneLoaded()
     {
-        GetTreeNodeScenes();
+        GetScenes();
         return SceneList.IsAllLoaded();
     }
 
@@ -84,7 +90,7 @@ public class SubSceneCreater : MonoBehaviour
         if (SceneList == null)
         {
             //SceneList = this.GetComponentInChildren<SubScene_List>();
-            GetTreeNodeScenes();
+            GetScenes();
         }
         if (SceneList != null)
         {
@@ -147,7 +153,7 @@ public class SubSceneCreater : MonoBehaviour
         SceneList.LoadUnloadedScenes();
     }
 
-    public void EditorLoadScenes(Action<float> progressChanged)
+    public virtual void EditorLoadScenes(Action<float> progressChanged)
     {
         SubScene_Base[] scenes=gameObject.GetComponentsInChildren<SubScene_Base>(true);
         EditorLoadScenes(scenes,progressChanged);

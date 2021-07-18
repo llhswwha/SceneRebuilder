@@ -378,7 +378,7 @@ public class AreaTreeManager : MonoBehaviour
         UpdateTrees();
         foreach (var tree in Trees)
         {
-            tree.GetTreeNodeScenes();
+            tree.GetScenes();
         }
         Debug.LogError($"GetTreeNodeScenes \t{(DateTime.Now - start).ToString()}");
     }
@@ -390,7 +390,7 @@ public class AreaTreeManager : MonoBehaviour
         UpdateTrees();
         foreach(var tree in Trees)
         {
-            tree.GetTreeNodeScenes();
+            tree.GetScenes();
         }
         Debug.LogError($"GetTreeNodeScenes \t{(DateTime.Now - start).ToString()}");
     }

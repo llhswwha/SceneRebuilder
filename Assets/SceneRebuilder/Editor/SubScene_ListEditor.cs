@@ -14,6 +14,7 @@ public class SubScene_ListEditor : BaseFoldoutEditor<SubScene_List>
     {
         base.OnEnable();
         targetT.GetScenes();
+        sceneListArg.isEnabled = true;
     }
 
     public override void OnToolLayout(SubScene_List item)

@@ -1036,7 +1036,7 @@ public class ModelAreaTree : SubSceneCreater
             });
         }
 
-        GetTreeNodeScenes();
+        GetScenes();
        
         if (progressChanged == null)
         {
