@@ -312,7 +312,7 @@ public class BaseFoldoutEditor<T> : BaseEditor<T> where T : class
         }
     }
 
-    public void DrawNodeList(FoldoutEditorArg foldoutArg, System.Func<List<AreaTreeNode>> funcGetList)
+    public List<AreaTreeNode> DrawNodeList(FoldoutEditorArg foldoutArg, System.Func<List<AreaTreeNode>> funcGetList)
     {
         List<AreaTreeNode> nodes = new List<AreaTreeNode>();
         foldoutArg.caption = $"Node List";
@@ -362,6 +362,7 @@ public class BaseFoldoutEditor<T> : BaseEditor<T> where T : class
             var time = System.DateTime.Now - start;
             Debug.Log($"Show NodeList count:{c} time:{time.TotalMilliseconds:F1}ms ");
         }
+        return nodes;
     }
 
     public void DrawSceneList(FoldoutEditorArg foldoutArg,System.Func<List<SubScene_Base>> funcGetList)
@@ -459,7 +460,7 @@ public class BaseFoldoutEditor<T> : BaseEditor<T> where T : class
         //InitEditorArg(scenes);
         arg.caption = $"Mesh List({meshes.Count})";
         arg.info = $"[{sumVertexCountVisible:F0}/{sumVertexCount:F0}w][{sumRendererCountVisible}/{sumRendererCount}]";
-        Debug.Log($"Init MeshList count:{meshes.Count} time:{(System.DateTime.Now - start).TotalMilliseconds:F1}ms ");
+        Debug.LogWarning($"Init MeshList count:{meshes.Count} time:{(System.DateTime.Now - start).TotalMilliseconds:F1}ms ");
         arg.Items = meshes;
         return meshes;
     }

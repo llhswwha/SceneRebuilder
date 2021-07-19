@@ -1,6 +1,7 @@
 using CodeStage.AdvancedFPSCounter.Editor.UI;
 using System.Collections;
 using System.Collections.Generic;
+using System.Linq;
 using UnityEditor;
 using UnityEngine;
 // using System;
@@ -13,27 +14,18 @@ public class BuildingModelInfoEditor : BaseFoldoutEditor<BuildingModelInfo>
     {
         base.OnEnable();
 
+        treeListArg = new FoldoutEditorArg(true, false);
+        nodeListArg = new FoldoutEditorArg(true, false);
+        sceneListArg = new FoldoutEditorArg(true, false);
+
+        meshListArg = new FoldoutEditorArg<MeshFilter>(true, false);
+
         BuildingModelInfo item = target as BuildingModelInfo;
         item.UpdateSceneList();
     }
     public static void DrawToolbar(BuildingModelInfo info, GUIStyle btnStyle,int buttonWidth)
     {
-        // if (GUILayout.Button("Multi-Objects", contentStyle, GUILayout.Width(100)))
-        // {
-
-        // }
-
-        //BuildingModelInfo info = target as BuildingModelInfo;
-
-        // int sceneCount = info.GetSceneCount();
-        // int unloadedSceneCount = info.SceneList.GetUnloadedScenes().Count;
-        // bool isAllLoaded = info.IsSceneLoaded();
-        // int treeCount = info.GetTreeCount();
-        // int partCount = info.GetPartCount();
-
         BuildingModelState state=info.GetState();
-
-
         //if (state.HaveUnloadedScenes)
         {
             EditorGUILayout.BeginHorizontal();
@@ -175,15 +167,13 @@ public class BuildingModelInfoEditor : BaseFoldoutEditor<BuildingModelInfo>
 
     private FoldoutEditorArg sceneListArg = new FoldoutEditorArg();
 
-    public override void OnInspectorGUI()
+    private FoldoutEditorArg<MeshFilter> meshListArg = new FoldoutEditorArg<MeshFilter>();
+
+    public override void OnToolLayout(BuildingModelInfo item)
     {
-        // serializedObject.Update ();
+        base.OnToolLayout(item);
 
-        contentStyle = new GUIStyle(EditorStyles.miniButton);
-        contentStyle.alignment = TextAnchor.MiddleLeft;
-
-        BuildingModelInfo info = target as BuildingModelInfo;
-        DrawToolbar(info,contentStyle,buttonWidth);
+        DrawToolbar(item, contentStyle, buttonWidth);
 
         //DrawModelList(buildingListArg, 
         //    () => { return null; }, 
@@ -192,18 +182,70 @@ public class BuildingModelInfoEditor : BaseFoldoutEditor<BuildingModelInfo>
         //   });
 
         DrawTreeList(treeListArg, () =>
-         {
-             return info.GetTreeList();
-         });
-        DrawNodeList(nodeListArg, () =>
         {
-            return info.GetNodeList();
+            return item.GetTreeList();
+        });
+        List<AreaTreeNode> nodes = DrawNodeList(nodeListArg, () =>
+        {
+            return item.GetNodeList();
         });
         DrawSceneList(sceneListArg, () =>
         {
-            return info.GetSceneList();
+            return item.GetSceneList();
         });
+        
+        DrawMeshList(meshListArg, () =>
+        {
+            //List<MeshFilter> meshes = new List<MeshFilter>();
+            //foreach(var node in nodes)
+            //{
+            //    //meshes.AddRange(node.gameObject.GetComponentsInChildren<MeshFilter>(true));
+            //    meshes.AddRange(node.gameObject.GetComponentsInChildren<MeshFilter>(true).Where(m => m != null && m.sharedMesh != null && m.sharedMesh.name != "Cube").ToList());
+            //}
 
-        base.OnInspectorGUI();
+            //List<MeshFilter> meshes = item.GetComponentsInChildren<MeshFilter>(true).Where(m => m != null && m.sharedMesh != null && m.sharedMesh.name != "Cube").ToList();
+
+            List<MeshFilter> meshes = new List<MeshFilter>();
+            if(item.InPart)
+                meshes.AddRange(item.InPart.GetComponentsInChildren<MeshFilter>(true));
+            if (item.OutPart0)
+                meshes.AddRange(item.OutPart0.GetComponentsInChildren<MeshFilter>(true));
+            if (item.OutPart1)
+                meshes.AddRange(item.OutPart1.GetComponentsInChildren<MeshFilter>(true));
+            meshes=meshes.Where(m => m != null && m.sharedMesh != null && m.sharedMesh.name != "Cube").ToList();
+            return meshes;
+        });
     }
+
+    //public override void OnInspectorGUI()
+    //{
+    //    // serializedObject.Update ();
+
+    //    contentStyle = new GUIStyle(EditorStyles.miniButton);
+    //    contentStyle.alignment = TextAnchor.MiddleLeft;
+
+    //    BuildingModelInfo info = target as BuildingModelInfo;
+    //    DrawToolbar(info,contentStyle,buttonWidth);
+
+    //    //DrawModelList(buildingListArg, 
+    //    //    () => { return null; }, 
+    //    //    () =>
+    //    //   {
+    //    //   });
+
+    //    DrawTreeList(treeListArg, () =>
+    //     {
+    //         return info.GetTreeList();
+    //     });
+    //    DrawNodeList(nodeListArg, () =>
+    //    {
+    //        return info.GetNodeList();
+    //    });
+    //    DrawSceneList(sceneListArg, () =>
+    //    {
+    //        return info.GetSceneList();
+    //    });
+
+    //    base.OnInspectorGUI();
+    //}
 }

@@ -3,15 +3,23 @@ using System.Collections.Generic;
 using UnityEditor;
 using UnityEngine;
 using System;
+using CodeStage.AdvancedFPSCounter.Editor.UI;
 
 [CustomEditor(typeof(ModelAreaTree))]
-public class ModelAreaTreeEditor : BaseEditor<ModelAreaTree>
+public class ModelAreaTreeEditor : BaseFoldoutEditor<ModelAreaTree>
 {
+    private FoldoutEditorArg nodeListArg = new FoldoutEditorArg();
+
+    private FoldoutEditorArg sceneListArg = new FoldoutEditorArg();
+
     public override void OnEnable()
     {
         base.OnEnable();
         ModelAreaTree item = target as ModelAreaTree;
         item.UpdateSceneList();
+
+        nodeListArg = new FoldoutEditorArg(true, false);
+        sceneListArg = new FoldoutEditorArg(true, false);
     }
 
     public override void OnToolLayout(ModelAreaTree item)
@@ -52,5 +60,14 @@ public class ModelAreaTreeEditor : BaseEditor<ModelAreaTree>
         NewButton("LoadScenes", buttonWidth, isAllLoaded == false && sceneCount > 0 && folderExists, item.EditorLoadNodeScenesEx);
         NewButton("UnloadScenes", buttonWidth, isAllLoaded == true && sceneCount > 0 && folderExists, item.UnLoadScenes);
         EditorGUILayout.EndHorizontal();
+
+        DrawNodeList(nodeListArg, () =>
+        {
+            return item.TreeLeafs;
+        });
+        DrawSceneList(sceneListArg, () =>
+        {
+            return item.GetSceneList();
+        });
     }
 }

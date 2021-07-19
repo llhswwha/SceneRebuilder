@@ -10,6 +10,7 @@ namespace CodeStage.AdvancedFPSCounter.Editor.UI
     {
         public bool isEnabled=false;
         public bool isExpanded = false;
+        public bool isToggle = true;
 		public string caption="";
 		public string info=""; 
 		public bool bold = true; 
@@ -27,6 +28,24 @@ namespace CodeStage.AdvancedFPSCounter.Editor.UI
         public int listFilterId = 1;
         public string[] listFilterId_Names = new string[] { "All" };
         //public int[] pageSize_sizes = { 5, 10, 15, 20, 50, 100, 200, 500, 1000, 2000 };
+
+        public FoldoutEditorArg()
+        {
+
+        }
+
+        public FoldoutEditorArg(bool isEnabled, bool isExpanded)
+        {
+            this.isEnabled = isEnabled;
+            this.isExpanded = isExpanded;
+        }
+
+        public FoldoutEditorArg(bool isEnabled,bool isExpanded,bool isToggle)
+        {
+            this.isEnabled = isEnabled;
+            this.isExpanded = isExpanded;
+            this.isToggle = isToggle;
+        }
 
         public int DrawFilterList(int width,params string[] filters)
         {
@@ -83,6 +102,21 @@ namespace CodeStage.AdvancedFPSCounter.Editor.UI
     public class FoldoutEditorArg<T>: FoldoutEditorArg
     {
         public List<T> Items = new List<T>();
+
+        public FoldoutEditorArg()
+        {
+
+        }
+
+        public FoldoutEditorArg(bool isEnabled, bool isExpanded):base(isEnabled,isExpanded)
+        {
+            
+        }
+
+        public FoldoutEditorArg(bool isEnabled, bool isExpanded, bool isToggle) : base(isEnabled, isExpanded, isToggle)
+        {
+            
+        }
     }
 
     public struct EditorUIUtils : System.IDisposable
@@ -242,17 +276,25 @@ namespace CodeStage.AdvancedFPSCounter.Editor.UI
 			}
 
 			var currentLabelWidth = EditorGUIUtility.labelWidth;
-			EditorGUIUtility.labelWidth = 1;
-			//EditorGUILayout.PropertyField(toggle, GUIContent.none, GUILayout.ExpandWidth(false));
-			arg.isEnabled=EditorGUILayout.Toggle(arg.isEnabled,GUILayout.Width(15));
-			if(arg.isEnabled){
-				if(toggleEvent!=null){
-					toggleEvent(arg);
-				}
-			}
-			EditorGUIUtility.labelWidth = currentLabelWidth;
-			
-			GUILayout.Space(10);
+
+            if (arg.isToggle)
+            {
+                EditorGUIUtility.labelWidth = 1;
+                //EditorGUILayout.PropertyField(toggle, GUIContent.none, GUILayout.ExpandWidth(false));
+                arg.isEnabled = EditorGUILayout.Toggle(arg.isEnabled, GUILayout.Width(15));
+                if (arg.isEnabled)
+                {
+                    if (toggleEvent != null)
+                    {
+                        toggleEvent(arg);
+                    }
+                }
+                EditorGUIUtility.labelWidth = currentLabelWidth;
+            }
+
+
+
+            GUILayout.Space(10);
 			var rect = EditorGUILayout.GetControlRect(); 
 			arg.isExpanded = EditorGUI.Foldout(rect, arg.isExpanded, arg.caption, true, arg.bold ? richBoldFoldout : EditorStyles.foldout);
 
