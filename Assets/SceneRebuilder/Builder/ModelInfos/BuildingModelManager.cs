@@ -24,6 +24,8 @@ public class BuildingModelManager : MonoBehaviour
 
     public bool IsOut0BigSmall = false;
 
+    //public List<BuildingModelInfo> Buildings = new List<BuildingModelInfo>();
+
     public List<BuildingModelInfo> Buildings = new List<BuildingModelInfo>();
 
     public List<float> BuildingsOut0Vertex = new List<float>();
@@ -66,24 +68,13 @@ public class BuildingModelManager : MonoBehaviour
 
     public void InitBuildings(List<BuildingModelInfo> buildings)
     {
-        DateTime start = DateTime.Now;
-        for (int i = 0; i < buildings.Count; i++)
-        {
-            float progress = (float)i / buildings.Count;
-            float percents = progress * 100;
-            if (ProgressBarHelper.DisplayCancelableProgressBar("InitBuildings", $"{i}/{buildings.Count} {percents:F2}% of 100%", progress))
-            {
-                break;
-            }
-            buildings[i].InitInOut(true);
-        }
-        ProgressBarHelper.ClearProgressBar();
+        BuildingModelInfoList.InitBuildings(buildings);
 
         GetCountInfo();
 
         SortByOut0();
 
-        Debug.LogError($"InitBuildings Buildings:{buildings.Count},Time:{(DateTime.Now - start).TotalMilliseconds}ms");
+        //Debug.LogError($"InitBuildings Buildings:{buildings.Count},Time:{(DateTime.Now - start).TotalMilliseconds}ms");
     }
 
 
@@ -91,66 +82,68 @@ public class BuildingModelManager : MonoBehaviour
     public void CombineAll()
     {
         GetInfos();
-        CombinedBuildings(Buildings);
+        CombineBuildings(Buildings);
     }
 
     [ContextMenu("* CombineSelection")]
     public void CombineSelection()
     {
-        CombinedBuildings(SelectedBuildings);
+        CombineBuildings(SelectedBuildings);
     }
 
-    public void CombinedBuildings(List<BuildingModelInfo> buildings)
+    public void CombineBuildings(List<BuildingModelInfo> buildings)
     {
-        Debug.Log($"CombinedBuildings count:{buildings.Count}");
-        DateTime start = DateTime.Now;
-        AreaTreeManager treeManager = GameObject.FindObjectOfType<AreaTreeManager>();
-        if (treeManager != null) treeManager.Clear();
-        List<ModelAreaTree> allTrees = new List<ModelAreaTree>();
-        for (int i = 0; i < buildings.Count; i++)
-        {
-            BuildingModelInfo b = buildings[i];
-            if (b == null)
-            {
-                Debug.LogError($"CombinedBuildings b == null i={i}");
-                continue;
-            }
+        //Debug.Log($"CombinedBuildings count:{buildings.Count}");
+        //DateTime start = DateTime.Now;
+        //AreaTreeManager treeManager = GameObject.FindObjectOfType<AreaTreeManager>();
+        //if (treeManager != null) treeManager.Clear();
+        //List<ModelAreaTree> allTrees = new List<ModelAreaTree>();
+        //for (int i = 0; i < buildings.Count; i++)
+        //{
+        //    BuildingModelInfo b = buildings[i];
+        //    if (b == null)
+        //    {
+        //        Debug.LogError($"CombinedBuildings b == null i={i}");
+        //        continue;
+        //    }
 
-            var trees = b.CreateTreesInnerEx(IsOut0BigSmall,subProgress=>
-            {
-                float progress = (float)(i+ subProgress) / buildings.Count;
+        //    var trees = b.CreateTreesInnerEx(IsOut0BigSmall,subProgress=>
+        //    {
+        //        float progress = (float)(i+ subProgress) / buildings.Count;
 
-                //Debug.Log($"CombinedBuildings subProgress:{subProgress},progress:{progress}");
+        //        //Debug.Log($"CombinedBuildings subProgress:{subProgress},progress:{progress}");
 
-                float percents = progress * 100;
-                if (ProgressBarHelper.DisplayCancelableProgressBar("CombinedBuildings", $"Progress2 {(i + subProgress):F1}/{buildings.Count} {percents:F2}%  {b.name}", progress))
-                {
-                    return;
-                }
-            });
+        //        float percents = progress * 100;
+        //        if (ProgressBarHelper.DisplayCancelableProgressBar("CombinedBuildings", $"Progress2 {(i + subProgress):F1}/{buildings.Count} {percents:F2}%  {b.name}", progress))
+        //        {
+        //            return;
+        //        }
+        //    });
 
-            if (trees != null)
-            {
-                allTrees.AddRange(trees);
-            }
+        //    if (trees != null)
+        //    {
+        //        allTrees.AddRange(trees);
+        //    }
 
-            float progress = (float)i / buildings.Count;
-            float percents = progress * 100;
-            if (ProgressBarHelper.DisplayCancelableProgressBar("CombinedBuildings", $"Progress1 {i}/{buildings.Count} {percents:F2}%  {b.name}", progress))
-            {
-                break;
-            }
-        }
+        //    float progress = (float)i / buildings.Count;
+        //    float percents = progress * 100;
+        //    if (ProgressBarHelper.DisplayCancelableProgressBar("CombinedBuildings", $"Progress1 {i}/{buildings.Count} {percents:F2}%  {b.name}", progress))
+        //    {
+        //        break;
+        //    }
+        //}
 
 
-        if (treeManager)
-        {
-            treeManager.AddTrees(allTrees.ToArray());
-            treeManager.GetTreeInfos();
-        }
+        //if (treeManager)
+        //{
+        //    treeManager.AddTrees(allTrees.ToArray());
+        //    treeManager.GetTreeInfos();
+        //}
 
-        ProgressBarHelper.ClearProgressBar();
-        Debug.LogError($"CreateTrees Buildings:{buildings.Count},Trees:{allTrees.Count},Time:{(DateTime.Now - start).ToString()}");
+        //ProgressBarHelper.ClearProgressBar();
+        //Debug.LogError($"CreateTrees Buildings:{buildings.Count},Trees:{allTrees.Count},Time:{(DateTime.Now - start).ToString()}");
+
+        BuildingModelInfoList.CombinedBuildings(buildings,IsOut0BigSmall);
     }
 
     internal void SetModelsActive(bool v)

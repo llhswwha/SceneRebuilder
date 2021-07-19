@@ -98,7 +98,7 @@ public class CombinedMesh{
 
         Mesh newMesh=new Mesh();
         newMesh.indexFormat=indexFormat;
-        Debug.Log("indexFormat:"+indexFormat);
+        //Debug.Log("indexFormat:"+indexFormat);
         newMesh.name=source.name+"_Combined"+id;
         if(mat!=null){
             newMesh.name=mat.name+"_Combined"+id;

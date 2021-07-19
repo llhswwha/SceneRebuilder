@@ -623,6 +623,8 @@ public class SubScene_Base : MonoBehaviour
     [ContextMenu("EditorLoadScene")]
     public void EditorLoadScene()
     {
+        EditorHelper.UnpackPrefab(this.gameObject);
+
         IsLoaded = true;
         if (boundsGo)
         {

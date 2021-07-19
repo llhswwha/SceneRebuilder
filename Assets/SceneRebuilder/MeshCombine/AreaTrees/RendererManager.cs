@@ -277,7 +277,7 @@ public class RendererManager : MonoBehaviour
     public void SetDetailRenderers()
     {
         var rendererInfos = GameObject.FindObjectsOfType<MeshRendererInfo>(true);
-        var renderers = GameObject.FindObjectsOfType<MeshRenderer>(true);
+        var renderers = GameObject.FindObjectsOfType<MeshRenderer>(true).Where(i => i.GetComponent<MeshFilter>().sharedMesh != null).ToArray();
         if (rendererInfos.Length != renderers.Length)
         {
             InitRenderers_All();
