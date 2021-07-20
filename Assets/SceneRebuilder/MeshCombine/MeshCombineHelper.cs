@@ -34,7 +34,15 @@ public static class MeshCombineHelper
         }
         yield return target;
     }
-    
+
+    public static GameObject SplitByMaterials(GameObject go)
+    {
+        int count = 0;
+        MeshCombineArg arg = new MeshCombineArg(go);
+        GameObject result = CombineMaterials(arg, out count);
+        return result;
+    }
+
     public static GameObject CombineMaterials(MeshCombineArg go,out int  count){
         DateTime start=DateTime.Now;
         GameObject goNew=new GameObject();
@@ -419,6 +427,12 @@ public static class MeshCombineHelper
 public class MeshCombineArg
 {
     public GameObject source;
+
+    public MeshCombineArg(GameObject source)
+    {
+        this.source = source;
+        this.renderers = source.GetComponentsInChildren<MeshRenderer>(true);
+    }
 
     public MeshCombineArg(GameObject source,MeshRenderer[] rs){
         this.source=source;

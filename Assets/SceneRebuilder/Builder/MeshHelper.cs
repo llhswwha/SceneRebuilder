@@ -660,8 +660,12 @@ public static class MeshHelper
         CenterPivot(go.transform,minMax[3]);
         return minMax;
     }
+    //public static Vector3[] GetMinMax(MeshFilter meshFilter)
+    //{
+    //    return GetMinMax(new MeshFilter[] { meshFilter });
+    //}
 
-    public static Vector3[] GetMinMax(IEnumerable<MeshFilter> meshFilters)
+        public static Vector3[] GetMinMax(IEnumerable<MeshFilter> meshFilters)
     {
         if(meshFilters==null)return null;
         List<Vector3> allVs=new List<Vector3>();

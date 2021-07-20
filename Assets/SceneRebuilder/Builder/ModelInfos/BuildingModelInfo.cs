@@ -718,7 +718,7 @@ public class BuildingModelInfo : SubSceneCreater
         {
             trees= this.GetComponentsInChildren<ModelAreaTree>(true);
         }
-        return trees.ToList();
+        return trees.Where(i=>i!=null).ToList();
     }
 
     public List<AreaTreeNode> GetNodeList()
@@ -726,6 +726,7 @@ public class BuildingModelInfo : SubSceneCreater
         List<AreaTreeNode> nodes = new List<AreaTreeNode>();
         foreach(var t in trees)
         {
+            if (t == null) continue;
             nodes.AddRange(t.TreeLeafs);
         }
         return nodes;

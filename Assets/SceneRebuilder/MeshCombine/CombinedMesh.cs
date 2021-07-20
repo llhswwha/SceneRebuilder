@@ -163,10 +163,10 @@ public class CombinedMesh{
         }
 
         DateTime start=DateTime.Now;
-        // Debug.LogWarning(
-        //     string.Format("CombinedMesh 用时:{1}ms,Mesh数量:{1} 子模型数:{2},VertexCount:{3},Mat:{4}"
-        //     ,(DateTime.Now-start).TotalMilliseconds,count,allList.Count,VertexCount,mat)
-        //     );
+        Debug.LogWarning(
+            string.Format("CombinedMesh 用时:{1}ms,Mesh数量:{1} 子模型数:{2},VertexCount:{3},Mat:{4}"
+            , (DateTime.Now - start).TotalMilliseconds, count, allList.Count, VertexCount, mat)
+            );
 
         return VertexCount;
     }

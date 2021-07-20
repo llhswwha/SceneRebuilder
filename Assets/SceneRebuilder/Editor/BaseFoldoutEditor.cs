@@ -7,9 +7,9 @@ using UnityEngine;
 
 public class BaseFoldoutEditor<T> : BaseEditor<T> where T : class
 {
-    public Dictionary<Object, FoldoutEditorArg> editorArgs = new Dictionary<Object, FoldoutEditorArg>();
+    public Dictionary<System.Object, FoldoutEditorArg> editorArgs = new Dictionary<System.Object, FoldoutEditorArg>();
 
-    public void InitEditorArg<T>(List<T> items) where T : Object
+    public void InitEditorArg<T2>(List<T2> items)/* where T2 : System.Object*/
     {
         foreach (var item in items)
         {
@@ -265,13 +265,18 @@ public class BaseFoldoutEditor<T> : BaseEditor<T> where T : class
             //Debug.Log($"Init TreeList1 count:{trees.Count} time:{(System.DateTime.Now - start).TotalMilliseconds:F1}ms ");
             trees.Sort((a, b) =>
             {
+                if (b == null) return -1;
+                if (a == null) return 1;
                 return b.VertexCount.CompareTo(a.VertexCount);
             });
             //Debug.Log($"Init TreeList2 count:{trees.Count} time:{(System.DateTime.Now - start).TotalMilliseconds:F1}ms ");
 
             trees.ForEach(b => {
-                sumVertexCount += b.VertexCount;
-                sumRendererCount += b.GetRendererCount();
+                if (b != null)
+                {
+                    sumVertexCount += b.VertexCount;
+                    sumRendererCount += b.GetRendererCount();
+                }
             });
             //Debug.Log($"Init TreeList3 count:{trees.Count} time:{(System.DateTime.Now - start).TotalMilliseconds:F1}ms ");
             InitEditorArg(trees);

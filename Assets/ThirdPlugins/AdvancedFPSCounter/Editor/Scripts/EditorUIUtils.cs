@@ -9,13 +9,14 @@ namespace CodeStage.AdvancedFPSCounter.Editor.UI
 	public class FoldoutEditorArg
     {
         public bool isEnabled=false;
+        public bool isSelected = false;
         public bool isExpanded = false;
         public bool isToggle = true;
 		public string caption="";
 		public string info=""; 
-		public bool bold = true; 
-		public bool separator = true; 
-		public bool background = true;
+		public bool bold = false; 
+		public bool separator = false; 
+		public bool background = false;
 
 		public int pageSize_selected = 10;
         public string[] pageSize_names = new string[] {"5", "10", "15","20","50","100","200","500","1000","2000"};
@@ -362,56 +363,82 @@ namespace CodeStage.AdvancedFPSCounter.Editor.UI
             return isExpanded;
         }
 
-        // public static bool ObjectFoldout(bool isExpanded, string caption,string info, bool bold = true, bool separator = true, bool background = true,GameObject obj=null)
-        // {
-        //     if (separator) Separator(5);
+        public static bool ObjectFoldout(FoldoutEditorArg arg, GameObject obj = null, System.Action itemToolbarEvent = null)
+        {
+            if (arg.separator) Separator(5);
 
-        //     if (background)
-        //     {
-        //         GUILayout.BeginHorizontal(panelWithBackground);
-        //     }
-        //     else
-        //     {
-        //         GUILayout.BeginHorizontal();
-        //     }
+            if (arg.background)
+            {
+                GUILayout.BeginHorizontal(panelWithBackground);
+            }
+            else
+            {
+                GUILayout.BeginHorizontal();
+            }
 
-        //     var currentLabelWidth = EditorGUIUtility.labelWidth;
+            var currentLabelWidth = EditorGUIUtility.labelWidth;
 
-        //     //EditorGUIUtility.labelWidth = 1;
-        //     ////EditorGUILayout.PropertyField(toggle, GUIContent.none, GUILayout.ExpandWidth(false));
-        //     //GUILayout.Label("aaa");
-        //     //EditorGUIUtility.labelWidth = currentLabelWidth;
+            if (obj != null)
+            {
+                EditorGUIUtility.labelWidth = 1;
+                //EditorGUILayout.PropertyField(toggle, GUIContent.none, GUILayout.ExpandWidth(false));
+                EditorGUILayout.Toggle(obj.activeInHierarchy, GUILayout.Width(15));
+                bool isOn = EditorGUILayout.Toggle(obj.activeSelf, GUILayout.Width(15));
+                if (isOn != obj.activeSelf)
+                {
+                    obj.SetActive(isOn);
+                }
+                // if(arg.isEnabled){
+                // 	if(toggleEvent!=null){
+                // 		toggleEvent(arg);
+                // 	}
+                // }
+                EditorGUIUtility.labelWidth = currentLabelWidth;
+            }
 
-        //     GUILayout.Space(10);
-        //     var rect = EditorGUILayout.GetControlRect();
-        //     isExpanded = EditorGUI.Foldout(rect, isExpanded, caption, true, bold ? richBoldFoldout : EditorStyles.foldout);
 
-        //     EditorGUIUtility.labelWidth = 1;
-        //     var contentStyle = new GUIStyle(EditorStyles.label);
-        //     contentStyle.alignment = TextAnchor.MiddleRight;
-        //     //EditorGUILayout.PropertyField(toggle, GUIContent.none, GUILayout.ExpandWidth(false));
-        //     GUILayout.Label(info, contentStyle);
-		// 	if(obj!=null){
-		// 		// if(GUILayout.Button("P", EditorStyles.miniButtonLeft, GUILayout.Width(20)))
-		// 		// {
-		// 		// 	EditorGUIUtility.PingObject(obj);
-		// 		// }
-		// 		if(GUILayout.Button(">", EditorStyles.miniButtonLeft, GUILayout.Width(20)))
-		// 		{
-		// 			Selection.activeObject = obj;
-		// 			EditorGUIUtility.PingObject(obj);
-		// 			EditorApplication.ExecuteMenuItem("Edit/Frame Selected");
-		// 		}
-		// 	}
+            GUILayout.Space(10);
+            var rect = EditorGUILayout.GetControlRect(GUILayout.Width(100));
+            // rect.
+            arg.isExpanded = EditorGUI.Foldout(rect, arg.isExpanded, arg.caption, true, (arg.bold || arg.isSelected) ? richBoldFoldout : EditorStyles.foldout);
 
-        //     EditorGUIUtility.labelWidth = currentLabelWidth;
+            EditorGUIUtility.labelWidth = 1;
+            var contentStyle = new GUIStyle(EditorStyles.label);
+            contentStyle.alignment = TextAnchor.MiddleRight;
+            //EditorGUILayout.PropertyField(toggle, GUIContent.none, GUILayout.ExpandWidth(false));
+            GUILayout.Label(arg.info, contentStyle);
 
-        //     GUILayout.EndHorizontal();
+            if (itemToolbarEvent != null)
+            {
+                itemToolbarEvent();
+            }
 
-        //     return isExpanded;
-        // }
+            if (obj != null)
+            {
+                // if(GUILayout.Button("P", EditorStyles.miniButtonLeft, GUILayout.Width(20)))
+                // {
+                // 	EditorGUIUtility.PingObject(obj);
+                // }
+                var btnStyle = new GUIStyle(EditorStyles.miniButton);
+                btnStyle.margin = new RectOffset(0, 0, 0, 0);
+                btnStyle.padding = new RectOffset(0, 0, 0, 0);
+                if (GUILayout.Button(">", btnStyle, GUILayout.Width(20)))
+                {
+                    Selection.activeObject = obj;
+                    EditorGUIUtility.PingObject(obj);
+                    EditorApplication.ExecuteMenuItem("Edit/Frame Selected");
+                    arg.isSelected = true;
+                }
+            }
 
-		public static bool ObjectFoldout(bool isExpanded, string caption,string info, bool bold = true, bool separator = true, bool background = true,GameObject obj=null,System.Action itemToolbarEvent=null)
+            EditorGUIUtility.labelWidth = currentLabelWidth;
+
+            GUILayout.EndHorizontal();
+
+            return arg.isExpanded;
+        }
+
+        public static bool ObjectFoldout(bool isExpanded, string caption,string info, bool bold = true, bool separator = true, bool background = true,GameObject obj=null,System.Action itemToolbarEvent=null)
         {
             if (separator) Separator(5);
 
