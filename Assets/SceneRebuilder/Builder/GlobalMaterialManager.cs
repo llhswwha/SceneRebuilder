@@ -3,9 +3,12 @@ using System.Collections.Generic;
 using UnityEngine;
 using System;
 using System.Linq;
+using static MeshCombineHelper;
 
 public class GlobalMaterialManager : MonoBehaviour
 {
+    public SharedMeshMaterialList meshMaterialList;
+
     public List<Material> Materials=new List<Material>();
 
     public List<Material> SharedMaterials=new List<Material>();
@@ -81,6 +84,16 @@ public class GlobalMaterialManager : MonoBehaviour
         }
     }
 
+    public Color DefaultColor = new Color(1, 1, 1, 1);
+
+    public void ResetColor()
+    {
+        foreach(var mat in meshMaterialList)
+        {
+            mat.SetColor(DefaultColor.r,DefaultColor.g,DefaultColor.b);
+        }
+    }
+
     [ContextMenu("InitMaterials")]
     public string InitMaterials()
     {
@@ -96,6 +109,9 @@ public class GlobalMaterialManager : MonoBehaviour
 
         ProgressBarHelper.DisplayProgressBar("ClearIds", "Start", 0);
         var allRenderers = GameObject.FindObjectsOfType<MeshRenderer>(true);
+
+        meshMaterialList = SharedMeshMaterialList.GetMeshMaterialList(allRenderers);
+
         int count = allRenderers.Length;
         for (int i = 0; i < count; i++)
         {

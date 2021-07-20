@@ -36,20 +36,35 @@ public class DoorManagerEditor : BaseFoldoutEditor<DoorManager>
         });
         if(doorListArg.isEnabled&& doorListArg.isExpanded)
         {
-            foreach (var door in item.Doors)
+            //foreach (var door in item.Doors)
+            //{
+            //    var arg = editorArgs[door];
+            //    arg.caption = door.GetTitle();
+            //    arg.info = door.ToString();
+            //    EditorUIUtils.ObjectFoldout(arg, door.DoorGo, ()=>
+            //    {
+            //        if (GUILayout.Button("Split",GUILayout.Width(50)))
+            //        {
+            //            Debug.Log($"Split:{door.GetTitle()}");
+            //            GameObject result=MeshCombineHelper.SplitByMaterials(door.DoorGo);
+            //        }
+            //    });
+            //}
+
+            doorListArg.DrawPageToolbar(item.Doors, (door,i) =>
             {
                 var arg = editorArgs[door];
-                arg.caption = door.GetTitle();
+                arg.caption = $"[{i + 1:00}] {door.GetTitle()}";
                 arg.info = door.ToString();
-                EditorUIUtils.ObjectFoldout(arg, door.DoorGo, ()=>
+                EditorUIUtils.ObjectFoldout(arg, door.DoorGo, () =>
                 {
-                    if (GUILayout.Button("Split",GUILayout.Width(50)))
+                    if (GUILayout.Button("Split", GUILayout.Width(50)))
                     {
                         Debug.Log($"Split:{door.GetTitle()}");
-                        GameObject result=MeshCombineHelper.SplitByMaterials(door.DoorGo);
+                        GameObject result = MeshCombineHelper.SplitByMaterials(door.DoorGo);
                     }
                 });
-            }
+            });
         }
     }
 }

@@ -27,6 +27,17 @@ public class BaseFoldoutEditor<T> : BaseEditor<T> where T : class
         }
     }
 
+    public void RemoveEditorArg<T2>(List<T2> items)/* where T2 : System.Object*/
+    {
+        foreach (var item in items)
+        {
+            if (editorArgs.ContainsKey(item))
+            {
+                editorArgs.Remove(item);
+            }
+        }
+    }
+
     public virtual void UpdateList()
     {
         //manager.UpdateList();

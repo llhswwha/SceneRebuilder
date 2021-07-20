@@ -89,7 +89,29 @@ namespace CodeStage.AdvancedFPSCounter.Editor.UI
 			//EditorGUILayout.EndHorizontal();
 		}
 
-		public int GetStartId()
+        public void DrawPageToolbar<T>(List<T> list,System.Action<T,int> drawItemAction)
+        {
+            this.DrawPageToolbar(list.Count);
+            int c = 0;
+            for (int i = this.GetStartId(); i < list.Count && i < this.GetEndId(); i++)
+            {
+                c++;
+                var item = list[i];
+                if (drawItemAction != null)
+                {
+                    drawItemAction(item,i);
+                }
+
+                //var arg = editorArgs[meshMat];
+                //arg.caption = meshMat.mat.name;
+                //EditorUIUtils.ObjectFoldout(arg, meshMat.mat, () =>
+                //{
+                //    EditorGUILayout.ColorField("Color", meshMat.color, GUILayout.Width(50));
+                //});
+            }
+        }
+
+        public int GetStartId()
 		{
 			return (pageId_selected-1)*pageSize_selected;
 		}
@@ -363,7 +385,7 @@ namespace CodeStage.AdvancedFPSCounter.Editor.UI
             return isExpanded;
         }
 
-        public static bool ObjectFoldout(FoldoutEditorArg arg, GameObject obj = null, System.Action itemToolbarEvent = null)
+        public static bool ObjectFoldout(FoldoutEditorArg arg, Object obj = null, System.Action itemToolbarEvent = null)
         {
             if (arg.separator) Separator(5);
 
@@ -378,15 +400,16 @@ namespace CodeStage.AdvancedFPSCounter.Editor.UI
 
             var currentLabelWidth = EditorGUIUtility.labelWidth;
 
-            if (obj != null)
+            if (obj != null && obj is GameObject)
             {
+                GameObject go = obj as GameObject;
                 EditorGUIUtility.labelWidth = 1;
                 //EditorGUILayout.PropertyField(toggle, GUIContent.none, GUILayout.ExpandWidth(false));
-                EditorGUILayout.Toggle(obj.activeInHierarchy, GUILayout.Width(15));
-                bool isOn = EditorGUILayout.Toggle(obj.activeSelf, GUILayout.Width(15));
-                if (isOn != obj.activeSelf)
+                EditorGUILayout.Toggle(go.activeInHierarchy, GUILayout.Width(15));
+                bool isOn = EditorGUILayout.Toggle(go.activeSelf, GUILayout.Width(15));
+                if (isOn != go.activeSelf)
                 {
-                    obj.SetActive(isOn);
+                    go.SetActive(isOn);
                 }
                 // if(arg.isEnabled){
                 // 	if(toggleEvent!=null){

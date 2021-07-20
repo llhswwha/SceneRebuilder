@@ -47,10 +47,16 @@ public class BaseEditor<T> : Editor where T:class
         toolbarArg.isEnabled = true;
         toolbarArg.isToggle = false;
         toolbarArg.isExpanded = true;
+        toolbarArg.separator = false;
+        toolbarArg.background = true;
+        toolbarArg.bold = true;
 
         propertyArg.caption = "Properties";
         propertyArg.isEnabled = true;
         propertyArg.isToggle = false;
+        propertyArg.separator = true;
+        propertyArg.background = true;
+        propertyArg.bold = true;
     }
 
     public override void OnInspectorGUI()

@@ -248,12 +248,12 @@ public class MeshCombiner : MonoBehaviour
     {
         var renderers = sourceRoot.GetComponentsInChildren<MeshRenderer>(true);
         //int count = 0;
-        var list = MeshCombineHelper.GetMeshMaterialList(renderers);
+        var list = MeshMaterialList.GetMeshMaterialList(renderers);
         list.SortByMat();
         Debug.LogError("----------SortByMat -----------------");
         for (int i = 0; i < list.Count; i++)
         {
-            MeshCombineHelper.MeshMaterial item = list[i];
+            var item = list[i];
             Debug.Log($"[{i}] {item}");
         }
 
@@ -261,7 +261,7 @@ public class MeshCombiner : MonoBehaviour
         Debug.LogError("----------SortByMesh -----------------");
         for (int i = 0; i < list.Count; i++)
         {
-            MeshCombineHelper.MeshMaterial item = list[i];
+            var item = list[i];
             Debug.Log($"[{i}] {item}");
         }
 
@@ -269,7 +269,7 @@ public class MeshCombiner : MonoBehaviour
         Debug.LogError("----------SortByKey -----------------");
         for (int i = 0; i < list.Count; i++)
         {
-            MeshCombineHelper.MeshMaterial item = list[i];
+            var item = list[i];
             Debug.Log($"[{i}] {item}");
         }
     }
