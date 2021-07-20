@@ -127,14 +127,18 @@ public class GlobalMaterialManager : MonoBehaviour
             {
                 if(mat==null)
                 {
-                    Debug.LogError($" mat==null renderer:{r}");
+                    Debug.Log($" mat==null renderer:{r}");
                     continue;
                 }
                 if(!SharedMaterials.Contains(mat))
                 {
                     SharedMaterials.Add(mat);
-                    var txt=mat.GetTexture("_BaseColorMap");
-                    Textures.Add(txt);
+                    if(mat.HasProperty("_BaseColorMap"))
+                    {
+                        var txt = mat.GetTexture("_BaseColorMap");
+                        Textures.Add(txt);
+                    }
+                    
 
                     if (!MatRenderers.Contains(r))
                     {

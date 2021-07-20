@@ -344,7 +344,8 @@ public class MatInfo
         }
         else
         {
-            return mat.color;
+            //return mat.color;
+            return new Color(0, 0, 0, 0);
         }
     }
 
@@ -364,7 +365,7 @@ public class MatInfo
         }
         else
         {
-            mat.color = color;
+            //mat.color = color;
         }
     }
 
