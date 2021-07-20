@@ -18,10 +18,10 @@ public class DoorManagerEditor : BaseFoldoutEditor<DoorManager>
     public override void OnToolLayout(DoorManager item)
     {
         base.OnToolLayout(item);
-        if(GUILayout.Button("GetDoors"))
-        {
-            item.GetDoors();
-        }
+        //if(GUILayout.Button("GetDoors"))
+        //{
+        //    item.GetDoors();
+        //}
 
         doorListArg.caption = $"Door List";
         EditorUIUtils.ToggleFoldout(doorListArg, arg =>
@@ -32,7 +32,12 @@ public class DoorManagerEditor : BaseFoldoutEditor<DoorManager>
         },
         () =>
         {
-
+            if (GUILayout.Button("Update"))
+            {
+                RemoveEditorArg(item.Doors);
+                item.GetDoors();
+                InitEditorArg(item.Doors);
+            }
         });
         if(doorListArg.isEnabled&& doorListArg.isExpanded)
         {

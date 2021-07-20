@@ -19,9 +19,12 @@ public class BuildingModelInfoEditor : BaseFoldoutEditor<BuildingModelInfo>
         sceneListArg = new FoldoutEditorArg(true, false);
 
         meshListArg = new FoldoutEditorArg<MeshFilter>(true, false);
+        matListArg = new FoldoutEditorArg(true, false);
 
-        BuildingModelInfo item = target as BuildingModelInfo;
-        item.UpdateSceneList();
+        GlobalMaterialManager.Instance.LocalTarget = targetT.gameObject;
+        GlobalMaterialManager.Instance.GetSharedMaterials();
+
+        targetT.UpdateSceneList();
     }
     public static void DrawToolbar(BuildingModelInfo info, GUIStyle btnStyle,int buttonWidth)
     {
@@ -169,6 +172,8 @@ public class BuildingModelInfoEditor : BaseFoldoutEditor<BuildingModelInfo>
 
     private FoldoutEditorArg<MeshFilter> meshListArg = new FoldoutEditorArg<MeshFilter>();
 
+    private FoldoutEditorArg matListArg = new FoldoutEditorArg();
+
     public override void OnToolLayout(BuildingModelInfo item)
     {
         base.OnToolLayout(item);
@@ -215,6 +220,9 @@ public class BuildingModelInfoEditor : BaseFoldoutEditor<BuildingModelInfo>
             meshes=meshes.Where(m => m != null && m.sharedMesh != null && m.sharedMesh.name != "Cube").ToList();
             return meshes;
         });
+
+        GlobalMaterialManager.Instance.LocalTarget = item.gameObject;
+        DrawMatList(GlobalMaterialManager.Instance, matListArg);
     }
 
     //public override void OnInspectorGUI()

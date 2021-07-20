@@ -558,4 +558,78 @@ public class BaseFoldoutEditor<T> : BaseEditor<T> where T : class
             Debug.Log($"Show MeshList count:{c} time:{time.TotalMilliseconds:F1}ms ");
         }
     }
+
+    public void DrawMatList(GlobalMaterialManager item, FoldoutEditorArg matListArg)
+    {
+        //if (GUILayout.Button("InitMaterials"))
+        //{
+        //    item.GetSharedMaterials();
+        //}
+
+        //item.LocalTarget = EditorGUILayout.ObjectField(item.LocalTarget, typeof(GameObject)) as GameObject;
+
+        matListArg.caption = $"Material List";
+        EditorUIUtils.ToggleFoldout(matListArg, arg =>
+        {
+            arg.caption = $"Material List ({item.meshMaterialList.Count})";
+            arg.info = $"Renderers:{item.meshMaterialList.RendererCount}";
+            InitEditorArg(item.meshMaterialList);
+        },
+        () =>
+        {
+            //MeshCombineHelper.GetMatFilters
+            if (GUILayout.Button("Update"))
+            {
+                RemoveEditorArg(item.meshMaterialList);
+                item.GetSharedMaterials();
+                InitEditorArg(item.meshMaterialList);
+            }
+        });
+
+        if (matListArg.isEnabled && matListArg.isExpanded)
+        {
+            if (item.LocalTarget != null)
+            {
+                EditorGUILayout.BeginHorizontal();
+                item.DefaultColor = EditorGUILayout.ColorField("DefaultColor", item.DefaultColor);
+                if (GUILayout.Button("ResetColor"))
+                {
+                    item.ResetColor();
+                }
+                EditorGUILayout.EndHorizontal();
+            }
+
+            matListArg.DrawPageToolbar(item.meshMaterialList, (meshMat, i) =>
+            {
+
+                var matArg = editorArgs[meshMat];
+                matArg.background = true;
+                matArg.caption = $"[{i + 1:00}] {meshMat.GetName()} ({meshMat.subMeshs.Count})";
+                //matArg.info = $"count:{meshMat.subMeshs.Count}";
+                EditorUIUtils.ObjectFoldout(matArg, meshMat.GetMat(), () =>
+                {
+                    var newColor = EditorGUILayout.ColorField("Color", meshMat.GetColor(), GUILayout.Width(50));
+                    meshMat.SetColor(newColor);
+                });
+
+                if (matArg.isExpanded)
+                {
+                    InitEditorArg(meshMat.subMeshs);
+                    matArg.DrawPageToolbar(meshMat.subMeshs, (subMesh, j) =>
+                    {
+
+                        var arg = editorArgs[subMesh];
+                        arg.caption = $"[{j + 1:00}] {subMesh.GetName()}";
+                        //arg.info = $"count:{subMesh.subMeshs.Count}";
+                        EditorUIUtils.ObjectFoldout(arg, subMesh.meshFilter.gameObject, () =>
+                        {
+                            //EditorGUILayout.ColorField("Color", subMesh.GetColor(), GUILayout.Width(50));
+                        });
+                    });
+                }
+            });
+        }
+
+        
+    }
 }

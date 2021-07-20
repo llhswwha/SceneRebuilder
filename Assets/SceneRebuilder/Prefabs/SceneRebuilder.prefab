@@ -6165,26 +6165,44 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   Materials: []
   SharedMaterials:
-  - {fileID: 2100000, guid: 3f4b57391b29d014097691047049b7e8, type: 2}
-  - {fileID: 2100000, guid: bb4355385e53f1749aa827240f25d0fd, type: 2}
-  - {fileID: 2100000, guid: 2a97268132ba6134499fdf840d67c3a9, type: 2}
-  - {fileID: 2100000, guid: f07bb246e7cd52b43a9bd90486c4eef8, type: 2}
+  - {fileID: 2100000, guid: a5a688ee82cd9634ba1583139ab5266a, type: 2}
+  - {fileID: 2100000, guid: 55e42e6467676ef4ba50411a0a11bf86, type: 2}
+  - {fileID: 2100000, guid: d1f5afc13ab8c944695efa3ae2a04f12, type: 2}
+  - {fileID: 2100000, guid: a3845717e2e8c2749ab3f51d0ee54110, type: 2}
+  - {fileID: 2100000, guid: e513005929ccf5b429831778ecb56cad, type: 2}
+  - {fileID: 2100000, guid: aa95a42fd78af2e4f8285a6d0dc474c3, type: 2}
+  - {fileID: 2100000, guid: d70a96de3fecccc4b973a9a60f69a942, type: 2}
   MatRenderers:
   - {fileID: 0}
+  - {fileID: 0}
+  - {fileID: 0}
+  - {fileID: 0}
+  - {fileID: 0}
+  - {fileID: 0}
+  - {fileID: 0}
   Textures:
-  - {fileID: 0}
-  - {fileID: 0}
-  - {fileID: 0}
-  - {fileID: 0}
+  - {fileID: 2800000, guid: fbba9a7a3c36c744f9de429fb6b43103, type: 3}
+  - {fileID: 2800000, guid: 8a80cf7d7faf95441a03f92b9e9bae02, type: 3}
+  - {fileID: 2800000, guid: 7d42823ac90ef6946870abd60adfd882, type: 3}
+  - {fileID: 2800000, guid: 5e4d506c55326864aa6cbf19b63a945a, type: 3}
+  - {fileID: 2800000, guid: ac890b648a1fa984887eacb5041f2f21, type: 3}
+  - {fileID: 2800000, guid: 2555894d51e707d4aae0c5d3e301f007, type: 3}
+  - {fileID: 2800000, guid: b7aef8f3f81758f44b0f3da386359ca0, type: 3}
   CombinedMaterials:
-  - {fileID: 2100000, guid: 3f4b57391b29d014097691047049b7e8, type: 2}
-  - {fileID: 2100000, guid: bb4355385e53f1749aa827240f25d0fd, type: 2}
+  - {fileID: 2100000, guid: a5a688ee82cd9634ba1583139ab5266a, type: 2}
+  - {fileID: 2100000, guid: 55e42e6467676ef4ba50411a0a11bf86, type: 2}
+  - {fileID: 2100000, guid: d1f5afc13ab8c944695efa3ae2a04f12, type: 2}
+  - {fileID: 2100000, guid: a3845717e2e8c2749ab3f51d0ee54110, type: 2}
+  - {fileID: 2100000, guid: e513005929ccf5b429831778ecb56cad, type: 2}
+  - {fileID: 2100000, guid: aa95a42fd78af2e4f8285a6d0dc474c3, type: 2}
+  - {fileID: 2100000, guid: d70a96de3fecccc4b973a9a60f69a942, type: 2}
   Shaders:
   - {fileID: 4800000, guid: 6e4ae4064600d784cac1e41a9e6f2e59, type: 3}
   LitShader: {fileID: 4800000, guid: 6e4ae4064600d784cac1e41a9e6f2e59, type: 3}
   NewShader: {fileID: 4800000, guid: 8f2ea7e8d97dcf04e9e13e33bfe3ea32, type: 3}
   NewMaterial: {fileID: 2100000, guid: b74f0d92a8c6c6045834edd3067bd1e5, type: 2}
   IsReplaceAll: 1
+  DefaultColor: {r: 1, g: 1, b: 1, a: 1}
 --- !u!1 &1906205532
 GameObject:
   m_ObjectHideFlags: 0

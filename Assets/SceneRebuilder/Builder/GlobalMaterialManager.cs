@@ -7,6 +7,20 @@ using static MeshCombineHelper;
 
 public class GlobalMaterialManager : MonoBehaviour
 {
+    private static GlobalMaterialManager _instance;
+
+    public static GlobalMaterialManager Instance
+    {
+        get
+        {
+            if(_instance==null)
+            {
+                _instance = GameObject.FindObjectOfType<GlobalMaterialManager>();
+            }
+            return _instance;
+        }
+    }
+
     public SharedMeshMaterialList meshMaterialList;
 
     public List<Material> Materials=new List<Material>();
@@ -86,11 +100,29 @@ public class GlobalMaterialManager : MonoBehaviour
 
     public Color DefaultColor = new Color(1, 1, 1, 1);
 
+    public GameObject LocalTarget = null;
+
     public void ResetColor()
     {
         foreach(var mat in meshMaterialList)
         {
             mat.SetColor(DefaultColor.r,DefaultColor.g,DefaultColor.b);
+        }
+    }
+
+    public void GetSharedMaterials()
+    {
+        if (LocalTarget == null)
+        {
+            var allRenderers = GameObject.FindObjectsOfType<MeshRenderer>(true);
+
+            meshMaterialList = SharedMeshMaterialList.GetMeshMaterialList(allRenderers);
+        }
+        else
+        {
+            var allRenderers = LocalTarget.GetComponentsInChildren<MeshRenderer>(true);
+
+            meshMaterialList = SharedMeshMaterialList.GetMeshMaterialList(allRenderers);
         }
     }
 
@@ -110,7 +142,7 @@ public class GlobalMaterialManager : MonoBehaviour
         ProgressBarHelper.DisplayProgressBar("ClearIds", "Start", 0);
         var allRenderers = GameObject.FindObjectsOfType<MeshRenderer>(true);
 
-        meshMaterialList = SharedMeshMaterialList.GetMeshMaterialList(allRenderers);
+        //meshMaterialList = SharedMeshMaterialList.GetMeshMaterialList(allRenderers);
 
         int count = allRenderers.Length;
         for (int i = 0; i < count; i++)

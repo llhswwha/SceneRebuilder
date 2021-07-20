@@ -131,6 +131,8 @@ public class SharedMeshMaterial
 [Serializable]
 public class SharedMeshMaterialList : List<SharedMeshMaterial>
 {
+    public int RendererCount = 0;
+
     private Dictionary<string, SharedMeshMaterial> matDict = new Dictionary<string, SharedMeshMaterial>();
     //public List<SharedMeshMaterial> Mats = new List<SharedMeshMaterial>();
 
@@ -191,6 +193,7 @@ public class SharedMeshMaterialList : List<SharedMeshMaterial>
     public static SharedMeshMaterialList GetMeshMaterialList(MeshRenderer[] renderers)
     {
         SharedMeshMaterialList meshMaterials = new SharedMeshMaterialList();
+        meshMaterials.RendererCount = renderers.Length;
         for (int i = 0; i < renderers.Length; i++)
         {
             MeshRenderer renderer = renderers[i];
