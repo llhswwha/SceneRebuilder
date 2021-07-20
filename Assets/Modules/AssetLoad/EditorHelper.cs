@@ -22,6 +22,15 @@ public static class EditorHelper
 {
 #if UNITY_EDITOR
 
+    public static void UnpackPrefab(GameObject go)
+    {
+        GameObject root = PrefabUtility.GetOutermostPrefabInstanceRoot(go);
+        if (root != null)
+        {
+            PrefabUtility.UnpackPrefabInstance(root, PrefabUnpackMode.Completely, InteractionMode.UserAction);
+        }
+    }
+
 
     public static void ClearOtherScenes()
     {

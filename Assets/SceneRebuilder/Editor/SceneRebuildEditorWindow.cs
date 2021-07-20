@@ -915,7 +915,7 @@ public class SceneRebuildEditorWindow : ListManagerEditorWindow<BuildingModelEle
             var list=GetBuildingModelInfos();
             BuildingModelManager buildingModelManager = GameObject.FindObjectOfType<BuildingModelManager>();
             //buildingModelManager.CombineAll();
-            buildingModelManager.CombinedBuildings(list);
+            buildingModelManager.CombineBuildings(list);
         }
 
         if (GUILayout.Button("SaveScenes", GUILayout.Height(buttonHeight)))

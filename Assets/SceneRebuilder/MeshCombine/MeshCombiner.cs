@@ -222,4 +222,55 @@ public class MeshCombiner : MonoBehaviour
             renderer.enabled=true;
         }
     }
+
+    [ContextMenu("GetMaterilasDict")] 
+    public void GetMaterilasDict()
+    {
+        var renderers = sourceRoot.GetComponentsInChildren<MeshRenderer>(true);
+        int count = 0;
+        var dict=MeshCombineHelper.GetMatFiltersInner(renderers, out count);
+        foreach(var key in dict.Keys)
+        {
+            
+            var list = dict[key];
+            string names = "";
+            foreach(var item in list)
+            {
+                names += item.name + ";\t";
+            }
+
+            Debug.Log($"mat:{key.name}\t\t list:{names}");
+        }
+    }
+
+    [ContextMenu("GetMaterilasList")]
+    public void GetMaterilasList()
+    {
+        var renderers = sourceRoot.GetComponentsInChildren<MeshRenderer>(true);
+        //int count = 0;
+        var list = MeshCombineHelper.GetMeshMaterialList(renderers);
+        list.SortByMat();
+        Debug.LogError("----------SortByMat -----------------");
+        for (int i = 0; i < list.Count; i++)
+        {
+            MeshCombineHelper.MeshMaterial item = list[i];
+            Debug.Log($"[{i}] {item}");
+        }
+
+        list.SortByMesh();
+        Debug.LogError("----------SortByMesh -----------------");
+        for (int i = 0; i < list.Count; i++)
+        {
+            MeshCombineHelper.MeshMaterial item = list[i];
+            Debug.Log($"[{i}] {item}");
+        }
+
+        list.SortByKey();
+        Debug.LogError("----------SortByKey -----------------");
+        for (int i = 0; i < list.Count; i++)
+        {
+            MeshCombineHelper.MeshMaterial item = list[i];
+            Debug.Log($"[{i}] {item}");
+        }
+    }
 }

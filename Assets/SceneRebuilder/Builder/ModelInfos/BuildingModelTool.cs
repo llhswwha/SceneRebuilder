@@ -65,8 +65,30 @@ public class BuildingModelTool : MonoBehaviour
     public void FindDoorsInBounds95()
     {
         SetDoorSetting();
-        FindGosInBounds95();
+        FindGosInBounds(0.95f);
     }
+
+    [ContextMenu("* FindDoorsInBounds90")]
+    public void FindDoorsInBounds90()
+    {
+        SetDoorSetting();
+        FindGosInBounds(0.90f);
+    }
+
+    [ContextMenu("* FindDoorsInBounds85")]
+    public void FindDoorsInBounds85()
+    {
+        SetDoorSetting();
+        FindGosInBounds(0.85f);
+    }
+
+    [ContextMenu("* FindDoorsInBounds80")]
+    public void FindDoorsInBounds80()
+    {
+        SetDoorSetting();
+        FindGosInBounds(0.80f);
+    }
+
 
     [ContextMenu("* SetDoorSetting")]
     public void SetDoorSetting()
@@ -120,7 +142,12 @@ public class BuildingModelTool : MonoBehaviour
     [ContextMenu("* FindGosInBounds95")]
     public void FindGosInBounds95()
     {
-        Bounds bounds = GetBounds(new Vector3(0.95f, 1f, 0.95f));
+        FindGosInBounds(0.95f);
+    }
+
+    public void FindGosInBounds(float scale)
+    {
+        Bounds bounds = GetBounds(new Vector3(scale, 1f, scale));
 
         inList.Clear();
         outList.Clear();

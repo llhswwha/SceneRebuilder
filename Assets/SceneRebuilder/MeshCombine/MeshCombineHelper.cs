@@ -63,6 +63,8 @@ public static class MeshCombineHelper
             Material material=item.Key;
             mats+=material.name+";";
             List<MeshFilter> list=item.Value;
+            string meshNames = "";
+            list.ForEach(i => meshNames += i.name + ";");
             mfList.AddRange(list);
             CombinedMesh combinedMesh=new CombinedMesh(go.transform,list,material);
             int vs=combinedMesh.DoCombine(true);
@@ -75,10 +77,11 @@ public static class MeshCombineHelper
                 Debug.LogWarning($"CombineMaterials vs==0 material:{material},list:{list.Count}");
             }
             allVs+=vs;
+            Debug.Log($"CombineMaterials material:{material.name} meshes:{list.Count} meshNames:{meshNames}");
         }
 
         goNew.transform.SetParent(go.transform.parent);
-        Debug.Log(string.Format("CombineMaterials 用时:{0} \tMesh数量:{2} \tMat数量:{1} \tMats:{3} \tVertex:{4:F1}",(DateTime.Now-start),mat2Filters.Count,count,mats,(allVs/10000f)));
+        Debug.Log(string.Format("CombineMaterials name:{5} 用时:{0} \tMesh数量:{2} \tMat数量:{1} \tMats:{3} \tVertex:{4:F1}", (DateTime.Now-start),mat2Filters.Count,count,mats,(allVs/10000f),go.name));
         
         // var minMax=MeshHelper.GetMinMax(mfList);
         MeshHelper.CenterPivot(goNew.transform,mfList);
@@ -261,6 +264,140 @@ public static class MeshCombineHelper
                 List<MeshFilter> list = mat2Filters[mat];
                 MeshFilter filter = renderer.GetComponent<MeshFilter>();
                 list.Add(filter);
+            }
+        }
+
+        Dictionary<string, MatInfo> infos = new Dictionary<string, MatInfo>();
+        foreach (var mat in mat2Filters.Keys)
+        {
+            var list = mat2Filters[mat];
+            MatInfo info = new MatInfo(mat);
+            if (infos.ContainsKey(info.Key))
+            {
+                var item = infos[info.Key];
+                item.AddList(list);
+            }
+            else
+            {
+                infos.Add(info.Key, info);
+                info.AddList(list);
+            }
+        }
+
+        Dictionary<Material, List<MeshFilter>> mat2Filters2 = new Dictionary<Material, List<MeshFilter>>();
+        foreach (var info in infos.Values)
+        {
+            mat2Filters2.Add(info.Mat, info.MeshFilters);
+        }
+        return mat2Filters2;
+    }
+
+    public class MeshMaterial
+    {
+        public Material mat;
+        public MeshFilter meshFilter;
+        public int meshIndex;
+        public string key = "";
+
+        public MeshMaterial(Material mat,MeshFilter meshFilter,int index)
+        {
+            this.mat = mat;
+            this.meshFilter = meshFilter;
+            this.meshIndex = index;
+            key = MatInfo.GetMatKey(mat);
+        }
+
+        public override string ToString()
+        {
+            return $"mat:{mat.name}, mesh:{meshFilter.name}, index:{meshIndex}, key:{key}";
+        }
+    }
+
+    public class MeshMaterialList:List<MeshMaterial>
+    {
+        public void SortByMat()
+        {
+            this.Sort((a, b) =>
+            {
+                return a.mat.name.CompareTo(b.mat.name);
+            });
+        }
+
+        public void SortByMesh()
+        {
+            this.Sort((a, b) =>
+            {
+                return a.meshFilter.name.CompareTo(b.meshFilter.name);
+            });
+        }
+
+        public void SortByKey()
+        {
+            this.Sort((a, b) =>
+            {
+                return a.key.CompareTo(b.key);
+            });
+        }
+    }
+
+    public static MeshMaterialList GetMeshMaterialList(MeshRenderer[] renderers)
+    {
+        MeshMaterialList meshMaterials = new MeshMaterialList();
+        for (int i = 0; i < renderers.Length; i++)
+        {
+            MeshRenderer renderer = renderers[i];
+            if (renderer == null) continue;
+            NoCombine noCombine = renderer.GetComponent<NoCombine>();
+            if (noCombine != null)
+            {
+                continue;
+            }
+
+            for (int i1 = 0; i1 < renderer.sharedMaterials.Length; i1++)
+            {
+                Material mat = renderer.sharedMaterials[i1];
+                if (mat == null) continue;
+                MeshFilter filter = renderer.GetComponent<MeshFilter>();
+                MeshMaterial meshMaterial = new MeshMaterial(mat, filter, i1);
+                meshMaterials.Add(meshMaterial);
+            }
+        }
+        return meshMaterials;
+    }
+
+    public static Dictionary<Material, List<MeshFilter>> GetMatFiltersInnerEx(MeshRenderer[] renderers, out int count)
+    {
+        DateTime start = DateTime.Now;
+        MeshMaterialList meshMaterials = new MeshMaterialList();
+
+        Dictionary<Material, List<MeshFilter>> mat2Filters = new Dictionary<Material, List<MeshFilter>>();
+        //MeshRenderer[] renderers = go.GetComponentsInChildren<MeshRenderer>();
+        count = renderers.Length;
+        for (int i = 0; i < renderers.Length; i++)
+        {
+            MeshRenderer renderer = renderers[i];
+            if (renderer == null) continue;
+            NoCombine noCombine = renderer.GetComponent<NoCombine>();
+            if (noCombine != null)
+            {
+                continue;
+            }
+
+            for (int i1 = 0; i1 < renderer.sharedMaterials.Length; i1++)
+            {
+                Material mat = renderer.sharedMaterials[i1];
+                if (mat == null) continue;
+                MeshFilter filter = renderer.GetComponent<MeshFilter>();
+
+                if (!mat2Filters.ContainsKey(mat))
+                {
+                    mat2Filters.Add(mat, new List<MeshFilter>());
+                }
+                List<MeshFilter> list = mat2Filters[mat];
+                list.Add(filter);
+
+                MeshMaterial meshMaterial = new MeshMaterial(mat, filter, i1);
+                meshMaterials.Add(meshMaterial);
             }
         }
 
