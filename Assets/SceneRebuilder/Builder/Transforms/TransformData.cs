@@ -102,4 +102,48 @@ public class TransformData
         this.lossyScale = t.lossyScale;
         this.localScale = t.localScale;
     }
+
+    public void Reset()
+    {
+        transform.SetParent(null);
+        transform.rotation = Quaternion.identity;
+        //transform.localScale = Vector3.zero;
+        transform.localScale = Vector3.one;
+    }
+
+    public void Recover()
+    {
+        //transform.position = this.position;
+        //transform.rotation = this.rotation;
+        //transform.SetParent(this.parent);
+        //transform.localScale = this.localScale;
+
+        transform.position = this.position;
+        transform.rotation = this.rotation;
+        transform.SetParent(this.parent);
+        transform.localScale = this.localScale;
+    }
+
+    public void Recover(Transform t)
+    {
+        //transform.position = this.position;
+        //transform.rotation = this.rotation;
+        //transform.SetParent(this.parent);
+        //transform.localScale = this.localScale;
+
+        t.position = this.position;
+        t.rotation = this.rotation;
+        t.SetParent(this.parent);
+        t.localScale = this.localScale;
+    }
+
+    public GameObject NewObject(string name)
+    {
+        GameObject goNew = new GameObject();
+        goNew.name = name;
+        goNew.transform.position = this.position;
+        goNew.transform.localScale = this.lossyScale;
+        goNew.transform.rotation = this.rotation;
+        return goNew;
+    }
 }

@@ -661,6 +661,7 @@ public class MeshNode : MonoBehaviour,IComparable<MeshNode>
     [ContextMenu("ShowVertexes")]
     public void ShowVertexes()
     {
+        RefreshInfo();
         meshData.vertexCount=meshData.mesh.vertices.Length;
         if (meshData.vertexCount == 0)
         {

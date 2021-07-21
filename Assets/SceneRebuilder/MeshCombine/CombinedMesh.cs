@@ -31,27 +31,36 @@ public class CombinedMesh{
         this.source=source;
 
         if(mfs==null || mfs.Count==0){
-            this.meshFilters=source.GetComponentsInChildren<MeshFilter>().ToList();
+            this.meshFilters=source.GetComponentsInChildren<MeshFilter>(true).ToList();
         }
         else{
             this.meshFilters=new List<MeshFilter>(mfs);
         }
         meshIndexes = new List<int>();
         this.mat=mat;
-        foreach(var mf in mfs)
+        if (mfs != null)
         {
-            MeshRenderer render = mf.GetComponent<MeshRenderer>();
-            int id = 0;
-            for(int i = 0; i < render.sharedMaterials.Length; i++)
+            foreach (var mf in mfs)
             {
-                if (render.sharedMaterials[i] == mat)
+                if (mf == null) continue;
+                MeshRenderer render = mf.GetComponent<MeshRenderer>();
+                int id = 0;
+                for (int i = 0; i < render.sharedMaterials.Length; i++)
                 {
-                    id = i;
-                    break;
+                    if (render.sharedMaterials[i] == mat)
+                    {
+                        id = i;
+                        break;
+                    }
                 }
+                meshIndexes.Add(id);
             }
-            meshIndexes.Add(id);
         }
+        else
+        {
+            Debug.LogError("CombinedMesh mfs == null ");
+        }
+
 
         minMax=MeshHelper.GetMinMax(this.meshFilters);
 
@@ -68,6 +77,8 @@ public class CombinedMesh{
             Debug.LogError("meshFiltersToCombined.Count == 0");
             return null;
         }
+        
+       
         CombineInstance[] combines=new CombineInstance[count];
         Material[] mats=null;
         if(mat==null)

@@ -35,19 +35,52 @@ public static class MeshCombineHelper
         yield return target;
     }
 
-    public static GameObject SplitByMaterials(GameObject go)
+    public static GameObject SplitByMaterials(GameObject obj)
     {
+        //SplitByMaterials：
+        //1.ResetTransform
+        //2.CombineByMaterial
+        //3.SetParent To Source
+        //4.RecoverTransform
+        //5.SetParent To Source.parent
+
+        TransformData t = new TransformData(obj.transform);
+        t.Reset();
+
+        //GameObject goNew = CombineMaterials(obj);
         int count = 0;
-        MeshCombineArg arg = new MeshCombineArg(go);
+        MeshCombineArg arg = new MeshCombineArg(obj);
+        arg.prefix = obj.name+"_";
+        GameObject goNew = CombineMaterials(arg, out count);
+
+        goNew.transform.SetParent(obj.transform);
+        t.Recover();
+        goNew.transform.SetParent(obj.transform.parent);
+        //goNew.name = obj.name + "_Split";
+        goNew.name = obj.name;
+
+        GameObject.DestroyImmediate(obj);
+
+        return goNew;
+    }
+
+    public static GameObject CombineMaterials(GameObject obj)
+    {
+        //TransformData t = new TransformData(obj.transform);
+        //t.Reset();
+
+        int count = 0;
+        MeshCombineArg arg = new MeshCombineArg(obj);
         GameObject result = CombineMaterials(arg, out count);
         return result;
     }
 
-    public static GameObject CombineMaterials(MeshCombineArg go,out int  count){
+    public static GameObject CombineMaterials(MeshCombineArg arg,out int  count)
+    {
         DateTime start=DateTime.Now;
         GameObject goNew=new GameObject();
-        goNew.name=go.name+"_Combined_M";
-        MeshRenderer[] renderers = go.GetRenderers();
+        goNew.name=arg.name+"_Combined_M";
+        MeshRenderer[] renderers = arg.GetRenderers();
 
         // MeshFilter[] mfList =go.GetComponentsInChildren<MeshFilter>(true);
         // var minMax=MeshHelper.GetMinMax(mfList);
@@ -66,11 +99,11 @@ public static class MeshCombineHelper
             string meshNames = "";
             list.ForEach(i => meshNames += i.name + ";");
             mfList.AddRange(list);
-            CombinedMesh combinedMesh=new CombinedMesh(go.transform,list,material);
+            CombinedMesh combinedMesh=new CombinedMesh(arg.transform,list,material);
             int vs=combinedMesh.DoCombine(true);
             if(vs>0){
                 GameObject matGo=combinedMesh.CreateNewGo(false,null);
-                matGo.name=material.name;
+                matGo.name=arg.prefix+material.name;
                 matGo.transform.SetParent(goNew.transform);
             }
             else{
@@ -80,8 +113,8 @@ public static class MeshCombineHelper
             Debug.Log($"CombineMaterials material:{material.name} meshes:{list.Count} meshNames:{meshNames}");
         }
 
-        goNew.transform.SetParent(go.transform.parent);
-        Debug.Log(string.Format("CombineMaterials name:{5} 用时:{0} \tMesh数量:{2} \tMat数量:{1} \tMats:{3} \tVertex:{4:F1}", (DateTime.Now-start),mat2Filters.Count,count,mats,(allVs/10000f),go.name));
+        goNew.transform.SetParent(arg.transform.parent);
+        Debug.Log(string.Format("CombineMaterials name:{5} 用时:{0} \tMesh数量:{2} \tMat数量:{1} \tMats:{3} \tVertex:{4:F1}", (DateTime.Now-start),mat2Filters.Count,count,mats,(allVs/10000f),arg.name));
         
         // var minMax=MeshHelper.GetMinMax(mfList);
         MeshHelper.CenterPivot(goNew.transform,mfList);
@@ -438,56 +471,65 @@ public static class MeshCombineHelper
 
 public class MeshCombineArg
 {
+    public string prefix = "";
     public GameObject source;
 
     public MeshCombineArg(GameObject source)
     {
+        //prefix = source.name;
         this.source = source;
         this.renderers = source.GetComponentsInChildren<MeshRenderer>(true);
     }
 
-    public MeshCombineArg(GameObject source,MeshRenderer[] rs){
-        this.source=source;
-        this.renderers=rs;
+    public MeshCombineArg(GameObject source, MeshRenderer[] rs)
+    {
+        this.source = source;
+        this.renderers = rs;
     }
 
     public MeshRenderer[] renderers;
 
     public MeshRenderer[] GetRenderers()
     {
-        if(renderers!=null){
+        if (renderers != null)
+        {
             return renderers;
         }
         return source.GetComponentsInChildren<MeshRenderer>(true);
     }
 
-    public string name{
-        get{
-            if(source==null)return "";
+    public string name
+    {
+        get
+        {
+            if (source == null) return "";
             return source.name;
         }
     }
 
     public Transform transform
     {
-        get{
-            if(source==null)return null;
+        get
+        {
+            if (source == null) return null;
             return source.transform;
         }
     }
 
     public void DestroySource()
     {
-        if(renderers!=null){
-            foreach(var r in renderers)
+        if (renderers != null)
+        {
+            foreach (var r in renderers)
             {
-                if(r==null)continue;
+                if (r == null) continue;
                 GameObject.Destroy(r.gameObject);
             }
         }
-        else{
+        else
+        {
             GameObject.Destroy(source);
         }
-        
+
     }
 }

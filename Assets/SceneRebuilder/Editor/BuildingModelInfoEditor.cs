@@ -20,9 +20,13 @@ public class BuildingModelInfoEditor : BaseFoldoutEditor<BuildingModelInfo>
 
         meshListArg = new FoldoutEditorArg<MeshFilter>(true, false, true, true, false);
         matListArg = new FoldoutEditorArg(true, false, true, true, false);
+        doorListArg = new FoldoutEditorArg(true, false, true, true, false);
 
         GlobalMaterialManager.Instance.LocalTarget = targetT.gameObject;
         GlobalMaterialManager.Instance.GetSharedMaterials();
+
+        DoorManager.Instance.LocalTarget = targetT.gameObject;
+        DoorManager.Instance.UpdateDoors();
 
         targetT.UpdateSceneList();
     }
@@ -63,6 +67,7 @@ public class BuildingModelInfoEditor : BaseFoldoutEditor<BuildingModelInfo>
         });
         NewButton("FindDoors", buttonWidth, state.CanFindDoors(), btnStyle, info.FindInDoors);
         NewButton("ClearParts", buttonWidth, state.partCount>0, btnStyle, info.ClearInOut);
+        NewButton("ShowRenderers", buttonWidth, true, btnStyle, info.ShowRenderers);
         EditorGUILayout.EndHorizontal();
 
         EditorGUILayout.BeginHorizontal();
@@ -174,6 +179,8 @@ public class BuildingModelInfoEditor : BaseFoldoutEditor<BuildingModelInfo>
 
     private FoldoutEditorArg matListArg = new FoldoutEditorArg();
 
+    private FoldoutEditorArg doorListArg = new FoldoutEditorArg();
+
     public override void OnToolLayout(BuildingModelInfo item)
     {
         base.OnToolLayout(item);
@@ -223,6 +230,9 @@ public class BuildingModelInfoEditor : BaseFoldoutEditor<BuildingModelInfo>
 
         GlobalMaterialManager.Instance.LocalTarget = item.gameObject;
         DrawMatList(GlobalMaterialManager.Instance, matListArg);
+
+        DoorManager.Instance.LocalTarget = item.gameObject;
+        DrawDoorList(doorListArg, DoorManager.Instance);
     }
 
     //public override void OnInspectorGUI()
