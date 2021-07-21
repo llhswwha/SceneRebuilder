@@ -5,21 +5,26 @@ using System;
 using System.Linq;
 using static MeshCombineHelper;
 
-public class GlobalMaterialManager : MonoBehaviour
+public class GlobalMaterialManager : SingletonBehaviour<GlobalMaterialManager>
 {
-    private static GlobalMaterialManager _instance;
+    // private static GlobalMaterialManager _instance;
 
-    public static GlobalMaterialManager Instance
-    {
-        get
-        {
-            if(_instance==null)
-            {
-                _instance = GameObject.FindObjectOfType<GlobalMaterialManager>();
-            }
-            return _instance;
-        }
-    }
+    // public static GlobalMaterialManager Instance
+    // {
+    //     get
+    //     {
+    //         if(_instance==null)
+    //         {
+    //             _instance = GameObject.FindObjectOfType<GlobalMaterialManager>();
+    //         }
+    //         if(_instance==null)
+    //         {
+    //             GameObject insGo=new GameObject(typeof(GlobalMaterialManager).Name);
+    //             _instance = insGo.AddComponent<GlobalMaterialManager>();
+    //         }
+    //         return _instance;
+    //     }
+    // }
 
     public SharedMeshMaterialList meshMaterialList;
 

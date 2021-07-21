@@ -15,6 +15,7 @@ public class BuildingModelInfoListEditor : BaseFoldoutEditor<BuildingModelInfoLi
         base.OnEnable();
         buildingListArg.isEnabled = true;
         buildingListArg.isExpanded = true;
+        targetT.UpdateBuildings();
     }
 
     public override void OnToolLayout(BuildingModelInfoList item)

@@ -4,21 +4,21 @@ using System.Collections.Generic;
 using System.Linq;
 using UnityEngine;
 
-public class DoorManager : MonoBehaviour
+public class DoorManager : SingletonBehaviour<DoorManager>
 {
-    private static DoorManager _instance;
+    // private static DoorManager _instance;
 
-    public static DoorManager Instance
-    {
-        get
-        {
-            if (_instance == null)
-            {
-                _instance = GameObject.FindObjectOfType<DoorManager>();
-            }
-            return _instance;
-        }
-    }
+    // public static DoorManager Instance
+    // {
+    //     get
+    //     {
+    //         if (_instance == null)
+    //         {
+    //             _instance = GameObject.FindObjectOfType<DoorManager>();
+    //         }
+    //         return _instance;
+    //     }
+    // }
 
     public GameObject LocalTarget = null;
 

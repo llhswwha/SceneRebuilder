@@ -6,7 +6,7 @@ using MeshJobs;
 using UnityEngine;
 using System.IO;
 
-public class AcRTAlignJobSetting : MonoBehaviour
+public class AcRTAlignJobSetting : SingletonBehaviour<AcRTAlignJobSetting>
 {
     public bool IsTryAngles=true;
 

@@ -623,7 +623,7 @@ public class BuildingModelInfo : SubSceneCreater
         Debug.LogError($"BuildingModelInfo.CenterPivot Time:{(DateTime.Now - start).ToString()}");
     }
 
-    private static AcRTAlignJobSetting JobSetting;
+    // private static AcRTAlignJobSetting JobSetting;
 
     private void GetBigSmallInfo()
     {
@@ -631,17 +631,17 @@ public class BuildingModelInfo : SubSceneCreater
             Debug.LogError("GetSmallBigInfo OutPart0==null");
             return;
         }
-        JobSetting =GameObject.FindObjectOfType<AcRTAlignJobSetting>(true);
-        if (JobSetting == null)
-        {
-            Debug.LogError("GetSmallBigInfo JobSetting == null");
-            return;
-        }
+        // JobSetting =GameObject.FindObjectOfType<AcRTAlignJobSetting>(true);
+        // if (JobSetting == null)
+        // {
+        //     Debug.LogError("GetSmallBigInfo JobSetting == null");
+        //     return;
+        // }
 
-        RendererManager.Instance.SetDetailRenderers();
+        RendererManager.Instance.SetDetailRenderers(this.GetComponentsInChildren<MeshRenderer>(true));
 
         var meshFilters = OutPart0.GetComponentsInChildren<MeshFilter>(true);
-        var info=PrefabInstanceBuilder.GetBigSmallRenderers(meshFilters, JobSetting.MaxModelLength);
+        var info=PrefabInstanceBuilder.GetBigSmallRenderers(meshFilters, AcRTAlignJobSetting.Instance.MaxModelLength);
 
         Out0BigRendererCount = info.bigModels.Count;
         Out0BigVertextCount = info.sumVertex_Big;

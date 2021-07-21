@@ -4,19 +4,19 @@ using System.Collections.Generic;
 using System.Linq;
 using UnityEngine;
 
-public class RendererManager : MonoBehaviour
+public class RendererManager : SingletonBehaviour<RendererManager>
 {
-    private static RendererManager _instance;
+    // private static RendererManager _instance;
 
-    public static RendererManager Instance
-    {
-        get{
-            if(_instance==null){
-                _instance=GameObject.FindObjectOfType<RendererManager>();
-            }
-            return _instance;
-        }
-    }
+    // public static RendererManager Instance
+    // {
+    //     get{
+    //         if(_instance==null){
+    //             _instance=GameObject.FindObjectOfType<RendererManager>();
+    //         }
+    //         return _instance;
+    //     }
+    // }
     public GameObject[] GetAllGos;
 
     // private MeshRenderer[] allRenderers;
@@ -277,7 +277,7 @@ public class RendererManager : MonoBehaviour
     public void SetDetailRenderers()
     {
         var rendererInfos = GameObject.FindObjectsOfType<MeshRendererInfo>(true);
-        var renderers = GameObject.FindObjectsOfType<MeshRenderer>(true).Where(i => i.GetComponent<MeshFilter>().sharedMesh != null).ToArray();
+        var renderers = GameObject.FindObjectsOfType<MeshRenderer>(true).Where(i => i.GetComponent<MeshFilter>()!=null && i.GetComponent<MeshFilter>().sharedMesh != null).ToArray();
         if (rendererInfos.Length != renderers.Length)
         {
             InitRenderers_All();
