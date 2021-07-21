@@ -14,12 +14,12 @@ public class BuildingModelInfoEditor : BaseFoldoutEditor<BuildingModelInfo>
     {
         base.OnEnable();
 
-        treeListArg = new FoldoutEditorArg(true, false);
-        nodeListArg = new FoldoutEditorArg(true, false);
-        sceneListArg = new FoldoutEditorArg(true, false);
+        treeListArg = new FoldoutEditorArg(true, false,true,true,false);
+        nodeListArg = new FoldoutEditorArg(true, false, true, true, false);
+        sceneListArg = new FoldoutEditorArg(true, false, true, true, false);
 
-        meshListArg = new FoldoutEditorArg<MeshFilter>(true, false);
-        matListArg = new FoldoutEditorArg(true, false);
+        meshListArg = new FoldoutEditorArg<MeshFilter>(true, false, true, true, false);
+        matListArg = new FoldoutEditorArg(true, false, true, true, false);
 
         GlobalMaterialManager.Instance.LocalTarget = targetT.gameObject;
         GlobalMaterialManager.Instance.GetSharedMaterials();

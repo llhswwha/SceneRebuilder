@@ -484,6 +484,7 @@ public class BaseFoldoutEditor<T> : BaseEditor<T> where T : class
     {
         if (string.IsNullOrEmpty(foldoutArg.caption)) foldoutArg.caption = $"Mesh List";
         List<MeshFilter> meshFilters = foldoutArg.Items;
+        EditorUIUtils.SetupStyles();
         EditorUIUtils.ToggleFoldout(foldoutArg, (arg) => {
 
             if (meshFilters.Count == 0)
@@ -608,8 +609,21 @@ public class BaseFoldoutEditor<T> : BaseEditor<T> where T : class
                 //matArg.info = $"count:{meshMat.subMeshs.Count}";
                 EditorUIUtils.ObjectFoldout(matArg, meshMat.GetMat(), () =>
                 {
-                    var newColor = EditorGUILayout.ColorField("Color", meshMat.GetColor(), GUILayout.Width(50));
-                    meshMat.SetColor(newColor);
+                    if (meshMat!=null && meshMat.matInfo != null && meshMat.matInfo.shader!=null)
+                    {
+                        EditorGUILayout.LabelField(meshMat.matInfo.shader.name,GUILayout.Width(60));
+
+                        var newColor = EditorGUILayout.ColorField("Color", meshMat.GetColor(), GUILayout.Width(50));
+                        meshMat.SetColor(newColor);
+                        bool isD=EditorGUILayout.Toggle(meshMat.matInfo.isDoubleSide, GUILayout.Width(20));
+                        meshMat.matInfo.SetIsDoubleSide(isD);
+                        Texture tex=EditorGUILayout.ObjectField(meshMat.matInfo.tex, typeof(Texture), GUILayout.Width(100)) as Texture;
+                        meshMat.matInfo.SetTexture(tex);
+
+                        Texture normal = EditorGUILayout.ObjectField(meshMat.matInfo.normal, typeof(Texture), GUILayout.Width(100)) as Texture;
+                        meshMat.matInfo.SetNormal(normal);
+                    }
+
                 });
 
                 if (matArg.isExpanded)

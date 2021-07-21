@@ -20,24 +20,34 @@ public class SceneRebuildManagerEditor : BaseFoldoutEditor<SceneRebuildManager>
 
     private FoldoutEditorArg<MeshFilter> meshListArg=new FoldoutEditorArg<MeshFilter>();
 
-    private SceneRebuildManager manager;
+    private FoldoutEditorArg matListArg = new FoldoutEditorArg();
+
+    //private SceneRebuildManager manager;
 
     //private List<MeshFilter> meshFilters = new List<MeshFilter>();
 
     public override void OnEnable()
     {
         base.OnEnable();
-        manager = target as SceneRebuildManager;
+        //manager = target as SceneRebuildManager;
         UpdateList();
-        buildingListArg.isEnabled = true;
-        buildingListArg.isExpanded = true;
+       
         Debug.LogError("SceneRebuildManagerEditor.OnEnable");
+
+        treeListArg = new FoldoutEditorArg(true, false, true, true, false);
+        nodeListArg = new FoldoutEditorArg(true, false, true, true, false);
+        sceneListArg = new FoldoutEditorArg(true, false, true, true, false);
+
+        meshListArg = new FoldoutEditorArg<MeshFilter>(true, false, true, true, false);
+        matListArg = new FoldoutEditorArg(true, false, true, true, false);
+
+        buildingListArg = new FoldoutEditorArg(true, true, true, true, false);
     }
 
     public override void UpdateList()
     {
-        manager.UpdateList();
-        DrawMeshList(meshListArg, GetMeshList);
+        targetT.UpdateList();
+        //DrawMeshList(meshListArg, GetMeshList);
     }
 
     
@@ -124,6 +134,8 @@ public class SceneRebuildManagerEditor : BaseFoldoutEditor<SceneRebuildManager>
 
         //-------------------------------------------------------MeshList-----------------------------------------------------------
         DrawMeshList(meshListArg, GetMeshList);
+
+        DrawMatList(GlobalMaterialManager.Instance, matListArg);
 
         var timeT=System.DateTime.Now-startT;
         Debug.Log($"SceneRebuildManagerEditor time:{timeT.TotalMilliseconds:F1}ms ");
