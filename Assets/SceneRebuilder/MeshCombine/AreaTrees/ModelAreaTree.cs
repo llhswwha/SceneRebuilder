@@ -894,7 +894,7 @@ public class ModelAreaTree : SubSceneCreater
             node.SaveRenderersId();
         }
 
-        TargetId = RendererId.GetId(Target);
+        TargetId = RendererId.GetId(Target,0);
 
         //Debug.Log("SaveRenderersId:"+this.name);
     }

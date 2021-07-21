@@ -66,6 +66,10 @@ public class BuildingModelInfoEditor : BaseFoldoutEditor<BuildingModelInfo>
             // }
         });
         NewButton("FindDoors", buttonWidth, state.CanFindDoors(), btnStyle, info.FindInDoors);
+        NewButton("SplitDoors", buttonWidth, true, btnStyle, ()=>
+        {
+
+        });
         NewButton("ClearParts", buttonWidth, state.partCount>0, btnStyle, info.ClearInOut);
         NewButton("ShowRenderers", buttonWidth, true, btnStyle, info.ShowRenderers);
         EditorGUILayout.EndHorizontal();
