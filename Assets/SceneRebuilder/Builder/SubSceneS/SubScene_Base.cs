@@ -143,6 +143,19 @@ public class SubScene_Base : MonoBehaviour
         }
     }
 
+    public event Action<SubScene_Base> UnLoadFinished;
+
+    protected void OnUnLoadedFinished()
+    {
+
+        //OnProgressChanged(1);
+
+        if (UnLoadFinished != null)
+        {
+            UnLoadFinished(this);
+        }
+    }
+
     internal string GetSceneInfo()
     {
         //return $"r:{rendererCount}\tv:{vertexCount:F1}w\t[{GetSceneName()}] ";
@@ -271,11 +284,12 @@ public class SubScene_Base : MonoBehaviour
     {
         if (IsVisible==false) return;
         IsVisible = false;
-        foreach (var go in gos)
-        {
-            if (go == null) continue;
-            go.SetActive(false);
-        }
+        if (gos != null)
+            foreach (var go in gos)
+            {
+                if (go == null) continue;
+                go.SetActive(false);
+            }
     }
 
     //public bool IsFirst
@@ -285,11 +299,12 @@ public class SubScene_Base : MonoBehaviour
     {
         if (IsVisible) return;
         IsVisible = true;
-        foreach (var go in gos)
-        {
-            if (go == null) continue;
-            go.SetActive(true);
-        }
+        if(gos!=null)
+            foreach (var go in gos)
+            {
+                if (go == null) continue;
+                go.SetActive(true);
+            }
     }
 
     [ContextMenu("UnLoadGosM")]
@@ -319,6 +334,8 @@ public class SubScene_Base : MonoBehaviour
 
         IsLoaded = false;
         IsLoading = false;
+
+        OnUnLoadedFinished();
     }
 
     [ContextMenu("UnLoadGos")]
@@ -344,6 +361,8 @@ public class SubScene_Base : MonoBehaviour
 
         IsLoaded = false;
         IsLoading = false;
+
+        OnUnLoadedFinished();
     }
 
     //[ContextMenu("ReLoadScene")]
@@ -601,7 +620,7 @@ public class SubScene_Base : MonoBehaviour
     public void EditorCreateScene()
     {
         SubSceneManager subSceneManager = SubSceneManager.Instance;
-        string path = subSceneManager.GetScenePath(this.name, SceneContentType.Single,"");
+        string path = subSceneManager.GetScenePath(this.name, SceneContentType.Single,null);
         //if (sceneArg == null)
         //{
         //    sceneArg = new SubSceneArg();

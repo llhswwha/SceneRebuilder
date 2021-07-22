@@ -68,6 +68,7 @@ public class BuildingModelInfoEditor : BaseFoldoutEditor<BuildingModelInfo>
         NewButton("FindDoors", buttonWidth, state.CanFindDoors(), btnStyle, info.FindInDoors);
         NewButton("SplitDoors", buttonWidth, true, btnStyle, ()=>
         {
+            DoorManager.Instance.LocalTarget = info.gameObject;
 
         });
         NewButton("ClearParts", buttonWidth, state.partCount>0, btnStyle, info.ClearInOut);

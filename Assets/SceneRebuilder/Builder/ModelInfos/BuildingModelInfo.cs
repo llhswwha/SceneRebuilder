@@ -1306,7 +1306,7 @@ public class BuildingModelInfo : SubSceneCreater
         AreaTreeHelper.InitCubePrefab();
         if (contentType == SceneContentType.Single)
         {
-            var scene=SubSceneHelper.EditorCreateScene<SubScene_Single>(this.gameObject, SceneContentType.Single, false,"");
+            var scene=SubSceneHelper.EditorCreateScene<SubScene_Single>(this.gameObject, SceneContentType.Single, false,null);
             scenes.Add(scene);
         }
         //else if (contentType == SceneContentType.TreePart)

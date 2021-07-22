@@ -72,6 +72,6 @@ public class LODManagerUI : MonoBehaviour
     public void GetLODInfo()
     {
         txtLog.text=LODManager.GetLODInfo();
-        Debug.Log("LODManagerUI.GetLODInfo");
+        //Debug.Log("LODManagerUI.GetLODInfo");
     }
 }

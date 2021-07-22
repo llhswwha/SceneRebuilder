@@ -125,7 +125,7 @@ public List<Material> mats_Shown;
         //lastRenderCount = renderCount;
         //lastVertextCount = w;
         //lastMatCount = mats.Count;
-        string log=$"mats:{mats_Shown.Count}/{mats.Count},renders:{renderCount}/{renderers.Length},vertext:{vertextCount/ 10000}w/{vertextCount_all/1000}\nhiddenR:{renderCount_hidden},hiddenV:{vertextCount_hidden/10000}w";
+        string log=$"mats:{mats_Shown.Count}/{mats.Count},renders:{renderCount}/{renderers.Length},vertext:{vertextCount/ 10000}w/{vertextCount_all/10000}\nhiddenR:{renderCount_hidden},hiddenV:{vertextCount_hidden/10000}w";
         Debug.LogError($"ShowModelInfo {log}");
         ProgressBarHelper.ClearProgressBar();
         return log;

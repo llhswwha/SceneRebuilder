@@ -35,6 +35,11 @@ public class SubSceneManager : MonoBehaviour
 
     public string SceneDir = "MinHangBuildings";
 
+
+    public bool IsDirId = false;
+
+    public bool IsDirHaveParent = false;
+
     public string SceneName = "abc";
 
     public bool IsOverride = true;
@@ -632,49 +637,104 @@ public class SubSceneManager : MonoBehaviour
         Debug.Log("SetSetting:"+subScenes.Length);
     }
 
-    public string GetScenePath(string sceneName, SceneContentType contentType,string dir)
+    //public string GetScenePath(string sceneName, SceneContentType contentType,string dir)
+    //{
+    //    if(string.IsNullOrEmpty(dir))
+    //    {
+    //        return $"{RootDir}/{SceneDir}/{contentType}/{sceneName}.unity";
+    //    }
+    //    else
+    //    {
+    //        return $"{RootDir}/{SceneDir}/{contentType}/{dir}/{sceneName}.unity";
+    //    }
+    //}
+
+    public string GetScenePath(string sceneName, SceneContentType contentType, GameObject go)
     {
-        //return Application.dataPath + "/Models/Instances/Buildings/" + sceneName + ".unity";
-        //return Application.dataPath + SaveDir + sceneName + ".unity";
-        //return $"{Application.dataPath}/{RootDir}/{SceneDir}/{sceneName}.unity";
-        
-
-        //if (dir==SubSceneDir.Part)
-        //{
-        //    return $"{RootDir}/{SceneDir}_Part/{sceneName}.unity";
-        //}
-        //else if (dir == SubSceneDir.Tree)
-        //{
-        //    return $"{RootDir}/{SceneDir}_Tree/{sceneName}.unity";
-        //}
-        //else if (dir == SubSceneDir.TreePart)
-        //{
-        //    return $"{RootDir}/{SceneDir}_TreePart/{sceneName}.unity";
-        //}
-        //else
-        //{
-        //    return $"{RootDir}/{SceneDir}/{sceneName}.unity";
-        //}
-
-        if(string.IsNullOrEmpty(dir))
+        if (go==null)
         {
             return $"{RootDir}/{SceneDir}/{contentType}/{sceneName}.unity";
         }
         else
         {
-            return $"{RootDir}/{SceneDir}/{contentType}/{dir}/{sceneName}.unity";
+            //return $"{RootDir}/{SceneDir}/{contentType}/{dir}/{sceneName}.unity";
+            if (go.transform.parent != null && IsDirHaveParent)
+            {
+                var p = go.transform.parent.gameObject;
+                if (IsDirId)
+                {
+                    return $"{RootDir}/{SceneDir}/{contentType}/{p.name}[{p.GetInstanceID()}]/{go.name}/{sceneName}.unity";
+                }
+                else
+                {
+                    return $"{RootDir}/{SceneDir}/{contentType}/{p.name}/{go.name}/{sceneName}.unity";
+                }
+            }
+            else
+            {
+                if (IsDirId)
+                {
+                    return $"{RootDir}/{SceneDir}/{contentType}/{go.name}[{go.GetInstanceID()}]/{sceneName}.unity";
+                }
+                else
+                {
+                    return $"{RootDir}/{SceneDir}/{contentType}/{go.name}/{sceneName}.unity";
+                }
+            }
         }
     }
 
-    public string GetSceneDir(SceneContentType contentType, string dir)
+    //public string GetSceneDir(SceneContentType contentType, string dir)
+    //{
+    //    if (string.IsNullOrEmpty(dir))
+    //    {
+    //        return $"{RootDir}/{SceneDir}/{contentType}";
+    //    }
+    //    else
+    //    {
+    //        return $"{RootDir}/{SceneDir}/{contentType}/{dir}";
+    //    }
+    //}
+
+    public string GetSceneDir(SceneContentType contentType, GameObject go)
     {
-        if (string.IsNullOrEmpty(dir))
+        if (go==null)
         {
             return $"{RootDir}/{SceneDir}/{contentType}";
         }
         else
         {
-            return $"{RootDir}/{SceneDir}/{contentType}/{dir}";
+            //if(IsDirId)
+            //{
+            //    return $"{RootDir}/{SceneDir}/{contentType}/{go.name}[{go.GetInstanceID()}]";
+            //}
+            //else
+            //{
+            //    return $"{RootDir}/{SceneDir}/{contentType}/{go.name}";
+            //}
+            if (go.transform.parent != null && IsDirHaveParent)
+            {
+                var p = go.transform.parent.gameObject;
+                if (IsDirId)
+                {
+                    return $"{RootDir}/{SceneDir}/{contentType}/{p.name}[{p.GetInstanceID()}]/{go.name}";
+                }
+                else
+                {
+                    return $"{RootDir}/{SceneDir}/{contentType}/{p.name}/{go.name}";
+                }
+            }
+            else
+            {
+                if (IsDirId)
+                {
+                    return $"{RootDir}/{SceneDir}/{contentType}/{go.name}[{go.GetInstanceID()}]";
+                }
+                else
+                {
+                    return $"{RootDir}/{SceneDir}/{contentType}/{go.name}";
+                }
+            }
         }
     }
 
@@ -868,27 +928,27 @@ public class SubSceneManager : MonoBehaviour
         SubScene_Base[] result = null;
         if (sceneType == SubSceneType.In)
         {
-            var scenes = GameObject.FindObjectsOfType<SubScene_In>();
+            var scenes = GameObject.FindObjectsOfType<SubScene_In>(true);
             result= ToBaseScene(scenes);
         }
         else if (sceneType == SubSceneType.Out0)
         {
-            var scenes = GameObject.FindObjectsOfType<SubScene_Out0>();
+            var scenes = GameObject.FindObjectsOfType<SubScene_Out0>(true);
             result = ToBaseScene(scenes);
         }
         else if (sceneType == SubSceneType.Out1)
         {
-            var scenes = GameObject.FindObjectsOfType<SubScene_Out1>();
+            var scenes = GameObject.FindObjectsOfType<SubScene_Out1>(true);
             result = ToBaseScene(scenes);
         }
         else if (sceneType == SubSceneType.Part)
         {
-            var scenes = GameObject.FindObjectsOfType<SubScene_Part>();
+            var scenes = GameObject.FindObjectsOfType<SubScene_Part>(true);
             result = ToBaseScene(scenes);
         }
         else if (sceneType == SubSceneType.Single)
         {
-            var scenes = GameObject.FindObjectsOfType<SubScene_Single>();
+            var scenes = GameObject.FindObjectsOfType<SubScene_Single>(true);
             result = ToBaseScene(scenes);
         }
         else

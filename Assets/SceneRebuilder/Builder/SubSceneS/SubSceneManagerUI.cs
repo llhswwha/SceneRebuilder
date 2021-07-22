@@ -14,6 +14,8 @@ public class SubSceneManagerUI : MonoBehaviour
 
     public Dropdown dropdownSceneType;
 
+    public Dropdown dropdownShownType;
+
     public Toggle ToggleDynamicShow;
 
     public SubSceneManager subSceneManager;
@@ -50,9 +52,21 @@ public class SubSceneManagerUI : MonoBehaviour
         foreach (var scene in allScenes)
         {
             scene.ProgressChanged += Scene_ProgressChanged;
+            scene.UnLoadFinished += Scene_UnLoadFinished;
         }
 
         //toggleIsOneCoroutine.isOn=subSceneManager.IsOneCoroutine;
+    }
+
+    private void Scene_UnLoadFinished(SubScene_Base obj)
+    {
+        var ui = sceneUIList.Find(i => i.scene == obj);
+        if (ui != null)
+        {
+            sceneUIList.Remove(ui);
+            GameObject.DestroyImmediate(ui.gameObject);
+            loadedScene.Remove(obj);
+        }
     }
 
     private List<SubScene_Base> loadedScene = new List<SubScene_Base>();
@@ -79,6 +93,7 @@ public class SubSceneManagerUI : MonoBehaviour
                 for (int i = sceneUIList.Count-1; i >=0; i--)
                 {
                     SubSceneUI ui = sceneUIList[i];
+                    if (ui == null) continue;
                     ui.transform.SetParent(null);
                     ui.transform.SetParent(panelSceneList_Loaded);
 
@@ -138,7 +153,20 @@ public class SubSceneManagerUI : MonoBehaviour
     public void ClickGetScenes()
     {
         var scenes = SubSceneManager.GetSubScenes(sceneType);
-        ShowSceneList(scenes.ToList());
+        var list = scenes.ToList();
+        if (dropdownShownType.value == 0)
+        {
+
+        }
+        else if (dropdownShownType.value == 1)
+        {
+            list=list.Where(i => subSceneShowManager.scenes_TreeNode_Shown.Contains(i)).ToList();
+        }
+        else if (dropdownShownType.value == 2)
+        {
+            list = list.Where(i => subSceneShowManager.scenes_TreeNode_Hidden.Contains(i)).ToList();
+        }
+        ShowSceneList(list);
 
         txtResult.text = $"type:{sceneType},count:{subScenes.Count}";
     }
