@@ -34,7 +34,7 @@ public static class MeshHelper
             newObj = CopyGO(sourceGo);
         }
 #else
-        GameObject newObj = CopyGO(prefab);
+        GameObject newObj = CopyGO(sourceGo);
 #endif
         return newObj;
     }

@@ -287,7 +287,6 @@ public class SubSceneCreater : MonoBehaviour
 
         if (progressChanged == null)
         {
-            EditorHelper.RefreshAssets();
             ProgressBarHelper.ClearProgressBar();
         }
         else
