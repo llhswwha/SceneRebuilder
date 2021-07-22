@@ -2,7 +2,7 @@ using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 
-public class BoundsBoxManager : MonoBehaviour
+public class BoundsBoxManager : SingletonBehaviour<BoundsBoxManager>
 {
     public BoundsBox[] boxes;
 
