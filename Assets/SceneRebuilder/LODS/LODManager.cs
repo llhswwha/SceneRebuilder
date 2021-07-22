@@ -285,6 +285,26 @@ public class LODManager : MonoBehaviour
     {
     }
 
+    [ContextMenu("SetRenderersLODInfo")]
+    public void SetRenderersLODInfo()
+    {
+        var lodGroups = GameObject.FindObjectsOfType<LODGroup>(true);
+        foreach (LODGroup group in lodGroups)
+        {
+            LOD[] lods = group.GetLODs();
+            foreach (LOD lod in lods)
+            {
+                LODInfo lodInfo = new LODInfo(lod);
+                foreach(var r in lod.renderers){
+                    // MeshFilter meshFilter=r.GetComponent<MeshFilter>();
+                    // vc+=meshFilter.sharedMesh.vertexCount;
+                    MeshRendererId rendererId=r.GetComponent<MeshRendererId>();
+
+                }
+            }
+        }
+    }
+
     public List<LODGroupDetails> lodInfos;
 
     [ContextMenu("GetLODInfo")]
