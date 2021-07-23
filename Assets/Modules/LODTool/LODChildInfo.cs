@@ -1,4 +1,8 @@
-    public class LODChildInfo
+
+using System;
+
+[Serializable]
+public class LODChildInfo
     {
         public int vertexCount;
 

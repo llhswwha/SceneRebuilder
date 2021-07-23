@@ -392,7 +392,7 @@ public static class MeshHelper
     /// <param name="t1"></param>
     /// <param name="t2"></param>
     /// <returns></returns>
-    public static float GetVertexDistance(Transform t1, Transform t2)
+    public static float GetVertexDistance(Transform t1, Transform t2,bool isFroce=false)
     {
         MeshFilter mf1 = t1.GetComponent<MeshFilter>();
         MeshFilter mf2 = t2.GetComponent<MeshFilter>();
@@ -405,7 +405,7 @@ public static class MeshHelper
             //return GetVertexDistance(mf1.sharedMesh, mf2.sharedMesh);
             Mesh mesh1 = mf1.sharedMesh;
             Mesh mesh2 = mf2.sharedMesh;
-            if (mesh1.vertexCount != mesh2.vertexCount)
+            if (mesh1.vertexCount != mesh2.vertexCount && isFroce==false)
             {
                 return float.MaxValue;
             }
@@ -463,20 +463,90 @@ public static class MeshHelper
         return GetVertexDistanceEx(new DistanceArgs(t1,t2,progress,showLog));
     }
 
+    public static float GetAvgVertexDistanceEx(Transform t1, Transform t2, string progress = "", bool showLog = false)
+    {
+        return GetAvgVertexDistanceEx(new DistanceArgs(t1, t2, progress, showLog));
+    }
+
+    public static float GetAvgVertexDistanceEx(DistanceArgs arg)
+    {
+        if (arg.showLog) Debug.Log($"GetVertexDistanceEx {arg.t1.name}|{arg.t2.name}");
+        Transform t1 = arg.t1;
+        Transform t2 = arg.t2;
+
+
+        Vector3 p01 = t1.position;
+        Vector3 p02 = t2.position;
+
+        if (arg.isResetPos)
+        {
+            t1.position = Vector3.zero;
+            t2.position = Vector3.zero;
+        }
+
+        Quaternion q1 = t1.rotation;
+        Quaternion q2 = t2.rotation;
+        if (arg.isResetRotation)
+        {
+            t1.rotation = Quaternion.identity;
+            t2.rotation = Quaternion.identity;
+        }
+
+        DateTime start = DateTime.Now;
+
+        MeshFilter mf1 = t1.GetComponent<MeshFilter>();
+        MeshFilter mf2 = t2.GetComponent<MeshFilter>();
+        float dis = -1;
+        if (mf1 == null || mf2 == null)
+        {
+            //return -1;
+        }
+        else
+        {
+            Mesh mesh1 = mf1.sharedMesh;
+            Mesh mesh2 = mf2.sharedMesh;
+            {
+                float distance = 0;
+                Vector3[] points1 = GetWorldVertexes(mesh1, t1);
+                Vector3[] points2 = GetWorldVertexes(mesh2, t2);
+                int count = points1.Length;
+                if(points2.Length<count)
+                {
+                    count = points2.Length;
+                }
+                dis = DistanceUtil.GetDistance(points1, points2, arg.showLog)/ count;
+            }
+        }
+
+        if (arg.isResetPos)
+        {
+            t1.position = p01;
+            t2.position = p02;
+        }
+
+        if (arg.isResetRotation)
+        {
+            t1.rotation = q1;
+            t2.rotation = q2;
+        }
+
+        // if(isResetParent){
+        //     t1.SetParent(parent1,true);
+        //     t2.SetParent(parent2,true);
+        // }
+
+        InvokeGetVertexDistanceExCount++;
+
+        return dis;
+    }
+
     public static int InvokeGetVertexDistanceExCount=0;
+
+
 
     public static float GetVertexDistanceEx(DistanceArgs arg)
     {
         if(arg.showLog)Debug.Log($"GetVertexDistanceEx {arg.t1.name}|{arg.t2.name}");
-        // Transform parent1=t1.parent;
-        // Transform parent2=t2.parent;
-        // if(isResetParent)
-        // {
-        //     t1.SetParent(null,true);
-        //     t2.SetParent(null,true);
-        // }
-        //不能修改parent，不然还是会导致偏差，甚至修改模型位置，这个算法仅仅是计算距离，不能修改模型的。
-
         Transform t1=arg.t1;
         Transform t2=arg.t2;
 
@@ -498,76 +568,23 @@ public static class MeshHelper
             t2.rotation=Quaternion.identity;
         }
 
-        //Vector3 scale=
-
-
         DateTime start = DateTime.Now;
 
         MeshFilter mf1 = t1.GetComponent<MeshFilter>();
         MeshFilter mf2 = t2.GetComponent<MeshFilter>();
         float dis=-1;
-        float disSum=0;
         if (mf1 == null || mf2 == null)
         {
             //return -1;
         }
         else
         {
-            //return GetVertexDistance(mf1.sharedMesh, mf2.sharedMesh);
             Mesh mesh1 = mf1.sharedMesh;
             Mesh mesh2 = mf2.sharedMesh;
-            // if (mesh1.vertexCount != mesh2.vertexCount)
-            // {
-            //     dis= float.MaxValue;//顶点数量就不同了
-            // }
-            // else
             {
                 float distance = 0;
                 Vector3[] points1 = GetWorldVertexes(mesh1, t1);
                 Vector3[] points2 = GetWorldVertexes(mesh2, t2);
-                // //List<float> disList = new List<float>();
-                // int zeroCount = 0;
-                // int i = 0;
-                // for (; i < points1.Length; i++)
-                // {
-                //     Vector3 p1 = points1[i];
-                //     Vector3 p2 = GetMinDistancePoint(p1, points2);
-                //     float d = Vector3.Distance(p1, p2);
-                //     disSum+=d;//不做处理，直接累计
-                //     if (d <= zero)
-                //     {
-                //         //DebugLog($"[{i}]d1:{d}|{distance}");
-                //         zeroCount++;
-                //         if (zeroCount > zeroMax)//没必要计算完，大概100个都位置相同的话，就是可以的了。
-                //         {
-                //             //return distance;//不能返回0哦
-                //             break;
-                //         }
-                //         else
-                //         {
-
-                //         }
-                //         d=0;//不考虑累计，小于zero就是0了。，比如10个E-06就E-05，100个就是E-04，1000个就是E-03了，0.001了，那我就不是很有把握是不是重合了。
-                //     }
-                //     else{
-                //         //DebugWarning($"[{i}]d2:{d}|{distance}");
-                //     }
-                //     //disList.Add(d);
-                //     distance += d;
-
-                //     if (distance > maxDistance)//没必要计算完，整体距离很大的话，就是已经是不行的了
-                //     {
-                //         break;
-                //     }
-                // }
-
-                // //disList.Sort();
-                // //disList.Reverse();
-                // if(arg.showLog)
-                //     DebugLog($"GetVertexDistanceEx 用时:{(DateTime.Now - start).TotalMilliseconds:F2}ms，累计:{disSum:F7},结果:{distance:F7},序号:{i}/{points1.Length}，物体1:{t1.name}，物体2:{t2.name}，进度:{arg.progress}");
-
-                // //return distance;
-                // dis=distance;
                 dis=DistanceUtil.GetDistance(points1,points2,arg.showLog);
             }
         }
@@ -680,6 +697,12 @@ public static class MeshHelper
     public static Vector3[] GetMinMax(GameObject go)
     {
         MeshFilter[] meshFilters = go.GetComponentsInChildren<MeshFilter>(true);
+        return GetMinMax(meshFilters);
+    }
+
+    public static Vector3[] GetMinMax<T>(T t) where T :Component
+    {
+        MeshFilter[] meshFilters = t.GetComponentsInChildren<MeshFilter>(true);
         return GetMinMax(meshFilters);
     }
 
@@ -1573,7 +1596,7 @@ public static class DistanceSetting
 
     
 
-    public static double maxDistance = 5;
+    public static double maxDistance = 10;
 
     public static int minDistance = 5;
 
