@@ -71,7 +71,7 @@ public class LODManagerUI : MonoBehaviour
     [ContextMenu("GetLODInfo")]
     public void GetLODInfo()
     {
-        txtLog.text=LODManager.GetRuntimeLODDetail();
+        txtLog.text=LODManager.GetRuntimeLODDetail(false);
         //Debug.Log("LODManagerUI.GetLODInfo");
     }
 }

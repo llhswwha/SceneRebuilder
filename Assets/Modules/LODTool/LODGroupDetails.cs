@@ -14,6 +14,7 @@ public class LODGroupDetails
     public LODChildInfo currentChild;//当前level对应的LOD[]
     public GameObject childObj;
     public bool isCullOff;
+    public int vertexCount = 0;
 
     public LODGroupDetails(LODGroup groupT)
     {
@@ -26,7 +27,10 @@ public class LODGroupDetails
             LODChildInfo child = new LODChildInfo();
             child.meshCount = item.renderers == null ? 0 : item.renderers.Length;
             child.vertexCount = CaculteVertex(item);
+            child.renderers = item.renderers;
+            child.screenRelativeTransitionHeight = item.screenRelativeTransitionHeight;
             childs.Add(child);
+            vertexCount += child.vertexCount;
         }
     }
     /// <summary>

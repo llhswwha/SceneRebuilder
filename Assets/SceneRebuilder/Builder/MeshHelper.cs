@@ -1858,6 +1858,7 @@ public class MeshReplaceItem
         foreach (var target in targetList)
         {
             if (target == null) continue;
+            EditorHelper.UnpackPrefab(target);
             GameObject.DestroyImmediate(target);
         }
         foreach (var target in targetListNew)

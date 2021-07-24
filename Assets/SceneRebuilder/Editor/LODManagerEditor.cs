@@ -9,6 +9,8 @@ public class LODManagerEditor : BaseFoldoutEditor<LODManager>
 {
     FoldoutEditorArg twoListArg = new FoldoutEditorArg();
 
+    FoldoutEditorArg lodListArg = new FoldoutEditorArg();
+
     public override void OnToolLayout(LODManager item)
     {
         base.OnToolLayout(item);
@@ -17,12 +19,90 @@ public class LODManagerEditor : BaseFoldoutEditor<LODManager>
         //{
         //    item.CheckLODPositions();
         //}
+
         
+         if (GUILayout.Button("UniformLOD"))
+        {
+            item.UniformLOD();
+        }
+
         if (GUILayout.Button("GetRuntimeLODDetail"))
         {
-            string detail=item.GetRuntimeLODDetail();
+            string detail=item.GetRuntimeLODDetail(true);
+            item.lodDetails.Sort((a, b) =>
+            {
+                return b.vertexCount.CompareTo(a.vertexCount);
+            });
             Debug.Log($"lod detail:{detail}");
         }
+
+        lodListArg.caption = $"LOD List";
+        EditorUIUtils.ToggleFoldout(lodListArg, arg =>
+        {
+            var lods = item.lodDetails;
+            float[] sumVertex = new float[4];
+            for (int i = 0; i < lods.Count; i++)
+            {
+                LODGroupDetails lod = (LODGroupDetails)lods[i];
+                //sumVertex[i] += lod.chi
+                for(int j=0;j<lod.childs.Count;j++)
+                {
+                    sumVertex[j] += lod.childs[j].vertexCount;
+                }
+            }
+            arg.caption = $"LOD List ({lods.Count})";
+            string txt = "";
+            float v0 = 0;
+            for (int i = 0; i < sumVertex.Length; i++)
+            {
+                float v = sumVertex[i];
+                if(i==0)
+                {
+                    v0 = v;
+                }
+                txt += $"{v/10000f:F1}({v/v0:P0})|";
+            }
+            arg.info = txt;
+            InitEditorArg(lods);
+        },
+        () =>
+        {
+            //if (GUILayout.Button("Update"))
+            //{
+            //    RemoveEditorArg(item.GetDoors());
+            //    InitEditorArg(item.UpdateDoors());
+            //}
+        });
+        if (lodListArg.isEnabled && lodListArg.isExpanded)
+        {
+            var lods = item.lodDetails;
+            InitEditorArg(lods);
+            lodListArg.DrawPageToolbar(lods, (lodDetail, i) =>
+            {
+                var arg = editorArgs[lodDetail];
+                if (lodDetail.group == null) return;
+                arg.caption = $"[{i:00}] {lodDetail.group.name}";
+                //arg.info = door.ToString();
+                EditorUIUtils.ObjectFoldout(arg, lodDetail.group, () =>
+                {
+                    float lod0Vertex = 0;
+                    for(int i=0;i<lodDetail.childs.Count;i++)
+                    {
+                        var lodChild = lodDetail.childs[i];
+                        if (i == 0)
+                        {
+                            lod0Vertex = lodChild.vertexCount;
+                        }
+                        if (GUILayout.Button($"L{i}[{lodChild.GetVertexCountF():F2}][{lodChild.vertexCount/lod0Vertex:P0}][{lodChild.screenRelativeTransitionHeight}]", GUILayout.Width(140)))
+                        {
+                            //EditorHelper.SelectObject()
+                            EditorHelper.SelectObjects(lodChild.renderers);
+                        }
+                    }
+                });
+            });
+        }
+
         if (GUILayout.Button("SetRenderersLODInfo"))
         {
             item.SetRenderersLODInfo();
@@ -33,20 +113,6 @@ public class LODManagerEditor : BaseFoldoutEditor<LODManager>
         item.zeroDistance = EditorGUILayout.FloatField(item.zeroDistance);
         item.DoCreateGroup = GUILayout.Toggle(item.DoCreateGroup, "CreateGroup");
         EditorGUILayout.EndHorizontal();
-
-        //EditorGUILayout.BeginHorizontal();
-        //GUILayout.Label("LOD0:");
-        //item.GoLOD0=EditorGUILayout.ObjectField(item.GoLOD0, typeof(GameObject)) as GameObject;
-        //GUILayout.Label("LOD1:");
-        //item.GoLOD1 = EditorGUILayout.ObjectField(item.GoLOD1, typeof(GameObject)) as GameObject;
-        //EditorGUILayout.EndHorizontal();
-
-        //EditorGUILayout.BeginHorizontal();
-        //if (GUILayout.Button("CombineLOD0AndLOD1"))
-        //{
-        //    item.CombineLOD0AndLOD1();
-        //}
-        //EditorGUILayout.EndHorizontal();
 
         EditorGUILayout.BeginHorizontal();
 

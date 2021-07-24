@@ -24,10 +24,15 @@ public static class EditorHelper
 
     public static void UnpackPrefab(GameObject go)
     {
+        UnpackPrefab(go, PrefabUnpackMode.Completely);
+    }
+
+    public static void UnpackPrefab(GameObject go, PrefabUnpackMode unpackMode)
+    {
         GameObject root = PrefabUtility.GetOutermostPrefabInstanceRoot(go);
         if (root != null)
         {
-            PrefabUtility.UnpackPrefabInstance(root, PrefabUnpackMode.Completely, InteractionMode.UserAction);
+            PrefabUtility.UnpackPrefabInstance(root, unpackMode, InteractionMode.UserAction);
         }
     }
 
@@ -217,11 +222,16 @@ public static class EditorHelper
     public static void SelectObjects<T>(T[] objs) where T : Object
     {
         //EditorGUIUtility.Object
-        if(objs.Length==1)
-            EditorGUIUtility.PingObject(objs[0]);
-
-        Selection.objects = objs;
-        EditorApplication.ExecuteMenuItem("Edit/Frame Selected");
+        if (objs.Length == 1)
+        {
+            //EditorGUIUtility.PingObject(objs[0]);
+            SelectObject(objs[0]);
+        }
+        else
+        {
+            Selection.objects = objs;
+            EditorApplication.ExecuteMenuItem("Edit/Frame Selected");
+        }
     }
 
     public static void SelectObjects<T>(IEnumerable<T> components) where T :Component
