@@ -359,7 +359,7 @@ public class BaseFoldoutEditor<T> : BaseEditor<T> where T : class
             arg.caption = $"Node List({nodes.Count})";
             arg.info = $"[{sumVertexCount:F0}w][{sumRendererCount / 10000f:F0}w]";
             var time = System.DateTime.Now - start;
-            Debug.Log($"Init NodeList count:{nodes.Count} time:{time.TotalMilliseconds:F1}ms ");
+            //Debug.Log($"Init NodeList count:{nodes.Count} time:{time.TotalMilliseconds:F1}ms ");
         },
         () =>
         {
@@ -574,6 +574,124 @@ public class BaseFoldoutEditor<T> : BaseEditor<T> where T : class
         }
     }
 
+    private List<MeshRendererInfo> InitMeshListEx(FoldoutEditorArg<MeshRendererInfo> arg, System.Func<List<MeshRendererInfo>> funcGetList)
+    {
+        System.DateTime start = System.DateTime.Now;
+        float sumVertexCount = 0;
+        float sumVertexCountVisible = 0;
+        int sumRendererCount = 0;
+        int sumRendererCountVisible = 0;
+        //List<MeshFilter> meshes = GameObject.FindObjectsOfType<MeshFilter>(true).Where(m => m != null && m.sharedMesh != null && m.sharedMesh.name != "Cube").ToList();
+        List<MeshRendererInfo> meshes = funcGetList();
+        meshes.Sort((a, b) =>
+        {
+            return b.vertexCount.CompareTo(a.vertexCount);
+        });
+        Debug.Log($"Init MeshList1 count:{meshes.Count} time:{(System.DateTime.Now - start).TotalMilliseconds:F1}ms ");
+        meshes.ForEach(b =>
+        {
+            if (b == null) return;
+            if (b.gameObject.activeInHierarchy == true && b.GetComponent<MeshRenderer>() != null && b.GetComponent<MeshRenderer>().enabled == true)
+            {
+                sumVertexCountVisible += b.vertexCount;
+                sumRendererCountVisible++;
+            }
+            sumVertexCount += b.vertexCount;
+            sumRendererCount++;
+        });
+        Debug.Log($"Init MeshList2 count:{meshes.Count} time:{(System.DateTime.Now - start).TotalMilliseconds:F1}ms ");
+        sumVertexCount /= 10000;
+        sumVertexCountVisible /= 10000;
+        //InitEditorArg(scenes);
+        arg.caption = $"Mesh List({meshes.Count})";
+        arg.info = $"[{sumVertexCountVisible:F0}/{sumVertexCount:F0}w][{sumRendererCountVisible}/{sumRendererCount}]";
+        Debug.LogWarning($"Init MeshList count:{meshes.Count} time:{(System.DateTime.Now - start).TotalMilliseconds:F1}ms ");
+        arg.Items = meshes;
+        return meshes;
+    }
+
+    public void DrawMeshListEx(FoldoutEditorArg<MeshRendererInfo> foldoutArg, System.Func<List<MeshRendererInfo>> funcGetList)
+    {
+        if (string.IsNullOrEmpty(foldoutArg.caption)) foldoutArg.caption = $"Mesh List";
+        List<MeshRendererInfo> meshFilters = foldoutArg.Items;
+        EditorUIUtils.SetupStyles();
+        EditorUIUtils.ToggleFoldout(foldoutArg, (arg) =>
+        {
+
+            if (meshFilters.Count == 0)
+            {
+                meshFilters = InitMeshListEx(arg as FoldoutEditorArg<MeshRendererInfo>, funcGetList);
+            }
+            //else
+            //{
+            //    meshFilters = foldoutArg.Items;
+            //}
+
+        }, () =>
+        {
+            if (GUILayout.Button("Update", GUILayout.Width(60)))
+            {
+                foldoutArg.Items.Clear();
+                meshFilters = InitMeshListEx(foldoutArg, funcGetList);
+            }
+            if (GUILayout.Button("Win", GUILayout.Width(35)))
+            {
+                //SubSceneManagerEditorWindow.ShowWindow();
+                MeshProfilerNS.MeshProfiler.ShowWindow();
+            }
+        });
+
+        if (foldoutArg.isExpanded && foldoutArg.isEnabled)
+        {
+            System.DateTime start = System.DateTime.Now;
+            foldoutArg.DrawPageToolbar(meshFilters.Count);
+            int c = 0;
+            for (int i = foldoutArg.GetStartId(); i < meshFilters.Count && i < foldoutArg.GetEndId(); i++)
+            {
+                c++;
+                var mesh = meshFilters[i];
+                if (!editorArgs.ContainsKey(mesh))
+                {
+                    editorArgs.Add(mesh, new FoldoutEditorArg());
+                }
+                var arg = editorArgs[mesh];
+                BuildingModelInfo[] bs = mesh.GetComponentsInParent<BuildingModelInfo>(true);
+                if (bs.Length == 0)
+                {
+                    Debug.LogError($"Show MeshList buildings.Length==0"); continue;
+                }
+                BuildingModelInfo building = bs[0];
+                if (mesh == null)
+                {
+                    Debug.LogError($"Show MeshList mesh==null"); continue;
+                }
+                //if (mesh.sharedMesh == null)
+                //{
+                //    Debug.LogError($"Show MeshList mesh.sharedMesh==null"); continue;
+                //}
+                if (arg == null)
+                {
+                    Debug.LogError($"Show MeshList arg==null"); continue;
+                }
+                if (building == null)
+                {
+                    Debug.LogError($"Show MeshList building==null"); continue;
+                }
+                if (mesh.transform.parent == null)
+                {
+                    Debug.LogError($"Show MeshList mesh.transform.parent==null"); continue;
+                }
+                arg.isExpanded = EditorUIUtils.ObjectFoldout(arg.isExpanded, $"[{i + 1:00}] {building.name}>>{mesh.transform.parent.name}>{mesh.name}", $"[{mesh.vertexCount / 10000f:F1}w]", false, false, false, mesh.gameObject);
+                if (arg.isExpanded)
+                {
+                    //BuildingModelInfoEditor.DrawToolbar(b, contentStyle, buttonWidth);
+                }
+            }
+            var time = System.DateTime.Now - start;
+            Debug.Log($"Show MeshList count:{c} time:{time.TotalMilliseconds:F1}ms ");
+        }
+    }
+
     public void DrawMatList(GlobalMaterialManager item, FoldoutEditorArg matListArg)
     {
         //if (GUILayout.Button("InitMaterials"))
@@ -702,6 +820,105 @@ public class BaseFoldoutEditor<T> : BaseEditor<T> where T : class
                     {
                         Debug.Log($"Split:{door.GetTitle()}");
                         GameObject result = MeshCombineHelper.SplitByMaterials(door.DoorGo);
+                    }
+                });
+            });
+        }
+    }
+
+    public void DrawLODGroupList(FoldoutEditorArg lodGroupListArg, LODManager item)
+    {
+        lodGroupListArg.caption = $"LOD List";
+        EditorUIUtils.ToggleFoldout(lodGroupListArg, arg =>
+        {
+            var lods = item.lodDetails;
+            float[] sumVertex = new float[4];
+            for (int i = 0; i < lods.Count; i++)
+            {
+                LODGroupDetails lod = (LODGroupDetails)lods[i];
+                //sumVertex[i] += lod.chi
+                for (int j = 0; j < lod.childs.Count; j++)
+                {
+                    sumVertex[j] += lod.childs[j].vertexCount;
+                }
+            }
+            arg.caption = $"LOD List ({lods.Count})";
+            string txt = "";
+            float v0 = 0;
+            float sv = 0;
+            for (int i = 0; i < sumVertex.Length; i++)
+            {
+                float v = sumVertex[i];
+                if (i == 0)
+                {
+                    v0 = v;
+                }
+                if (i <= 1)
+                {
+                    txt += $"{v / 10000f:F0}({v / v0:P0})|";
+                }
+                else
+                {
+                    txt += $"{v / 10000f:F1}({v / v0:P0})|";
+                }
+
+                sv += v;
+            }
+            arg.info = $"({sv / 10000f:F0}){txt}";
+            InitEditorArg(lods);
+        },
+        () =>
+        {
+            //if (GUILayout.Button("Update"))
+            //{
+            //    RemoveEditorArg(item.GetDoors());
+            //    InitEditorArg(item.UpdateDoors());
+            //}
+        });
+        if (lodGroupListArg.isEnabled && lodGroupListArg.isExpanded)
+        {
+            var lods = item.lodDetails;
+            InitEditorArg(lods);
+            lodGroupListArg.DrawPageToolbar(lods, (lodDetail, i) =>
+            {
+                var arg = editorArgs[lodDetail];
+                if (lodDetail.group == null) return;
+                arg.caption = $"[{i:00}] {lodDetail.group.name}";
+                //arg.info = door.ToString();
+                EditorUIUtils.ObjectFoldout(arg, lodDetail.group, () =>
+                {
+                    float lod0Vertex = 0;
+                    for (int i = 0; i < lodDetail.childs.Count; i++)
+                    {
+                        var lodChild = lodDetail.childs[i];
+                        float vertexF = lodChild.GetVertexCountF();
+                        string vertexS = "";
+                        if (vertexF > 100)
+                        {
+                            vertexS = vertexF.ToString("F0");
+                        }
+                        else if (vertexF > 10)
+                        {
+                            vertexS = vertexF.ToString("F1");
+                        }
+                        else
+                        {
+                            vertexS = vertexF.ToString("F2");
+                        }
+                        if (i == 0)
+                        {
+                            lod0Vertex = lodChild.vertexCount;
+                        }
+                        else
+                        {
+
+                        }
+
+                        if (GUILayout.Button($"L{i}[{vertexS}][{lodChild.vertexCount / lod0Vertex:P0}][{lodChild.screenRelativeTransitionHeight}]", GUILayout.Width(140)))
+                        {
+                            //EditorHelper.SelectObject()
+                            EditorHelper.SelectObjects(lodChild.renderers);
+                        }
                     }
                 });
             });

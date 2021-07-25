@@ -3,7 +3,7 @@ using System.Collections.Generic;
 using System.Linq;
 using UnityEngine;
 
-public class AreaTreeManager : MonoBehaviour
+public class AreaTreeManager : SingletonBehaviour<AreaTreeManager>
 {
     void OnStart()
     {
@@ -344,6 +344,8 @@ public class AreaTreeManager : MonoBehaviour
 
     public bool IsCopy = true;
 
+    public bool IsByLOD = false;
+
     public int VertexCount = 0;
 
     public int RendererCount = 0;
@@ -354,15 +356,6 @@ public class AreaTreeManager : MonoBehaviour
 
     public int LeafCount;
 
-    //public float MaxModelLength=0.6f;
-
-    //public int CellCount = 0;
-
-    //public int AvgCount;
-
-    //public int MaxCount;
-
-    //public int Depth = 0;
 
     [ContextMenu("UpdateTrees")]
     public List<ModelAreaTree> UpdateTrees()

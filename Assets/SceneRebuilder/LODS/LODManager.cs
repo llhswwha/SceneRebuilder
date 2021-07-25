@@ -8,21 +8,8 @@ using UnityEditor;
 #endif
 // using LODLevelCaculate;
 
-public class LODManager : MonoBehaviour
+public class LODManager : SingletonBehaviour<LODManager>
 {
-    private static LODManager _instance;
-    public static LODManager Instance
-    {
-        get
-        {
-            if (_instance == null)
-            {
-                _instance = GameObject.FindObjectOfType<LODManager>();
-            }
-            return _instance;
-        }
-    }
-
     public void CheckLODPositions()
     {
         var lodGroups = GameObject.FindObjectsOfType<LODGroup>(true);
@@ -95,22 +82,7 @@ public class LODManager : MonoBehaviour
         CreateLOD(TestTarget);
     }
 
-    //public GameObject GoLOD0;
-
-    //public GameObject GoLOD1;
-
     public float zeroDistance=0.0002f;
-
-//    public static void UpackPrefab(GameObject go)
-//    {
-//#if UNITY_EDITOR
-//        GameObject root = PrefabUtility.GetOutermostPrefabInstanceRoot(go);
-//        if (root != null)
-//        {
-//            PrefabUtility.UnpackPrefabInstance(root, PrefabUnpackMode.Completely, InteractionMode.UserAction);
-//        }
-//#endif
-//    }
 
     public GameObject GroupRoot;
 
@@ -127,12 +99,6 @@ public class LODManager : MonoBehaviour
     private void AppendLodInner(int lodLevel)
     {
         twoList.Clear();
-        //var renderers_0 = MeshRendererInfo.GetLod0s(GroupRoot);
-        //var renderers_2 = LOD2Root.GetComponentsInChildren<MeshRenderer>(true);
-
-        //UpackPrefab(GroupRoot);
-        //UpackPrefab(LODnRoot);
-
         EditorHelper.UnpackPrefab(GroupRoot, PrefabUnpackMode.OutermostRoot);
         EditorHelper.UnpackPrefab(LODnRoot, PrefabUnpackMode.OutermostRoot);
         DateTime start = DateTime.Now;
@@ -223,74 +189,6 @@ public class LODManager : MonoBehaviour
     public void AppendLod2ToGroup()
     {
         AppendLodInner(2);
-        //twoList.Clear();
-        ////var renderers_0 = MeshRendererInfo.GetLod0s(GroupRoot);
-        ////var renderers_2 = LOD2Root.GetComponentsInChildren<MeshRenderer>(true);
-
-        //UpackPrefab_One(GroupRoot);
-        //UpackPrefab_One(LODnRoot);
-        //DateTime start = DateTime.Now;
-        //var renderers_2 = LODnRoot.GetComponentsInChildren<MeshRenderer>(true);
-        //var renderers_0 = MeshRendererInfo.GetLod0s(GroupRoot);
-        //List<MeshRendererInfo> list_lod0 = new List<MeshRendererInfo>();
-        //list_lod0.AddRange(renderers_0);
-        ////renderers_0.ToList().ForEach(i => { ts.Add(i.transform); });
-        //for (int i = 0; i < renderers_2.Length; i++)
-        //{
-        //    MeshRenderer render_lod1 = renderers_2[i];
-
-        //    float progress = (float)i / renderers_2.Length;
-        //    ProgressBarHelper.DisplayCancelableProgressBar("CombineLOD0AndLOD1", $"{i}/{renderers_2.Length} {progress:P1} MeshRenderer:{render_lod1.name}", progress);
-
-        //    var min = GetMinDisTransform<MeshRendererInfo>(list_lod0, render_lod1.transform);
-        //    float minDis = min.dis;
-        //    MeshRenderer render_lod0 = min.target.meshRenderer;
-
-        //    MeshFilter filter1 = render_lod1.GetComponent<MeshFilter>();
-        //    MeshFilter filter0 = render_lod0.GetComponent<MeshFilter>();
-        //    int vertexCount0 = filter0.sharedMesh.vertexCount;
-        //    int vertexCount1 = filter1.sharedMesh.vertexCount;
-        //    if (minDis <= zeroDistance)
-        //    {
-        //        if (DoCreateGroup)
-        //        {
-        //            if (vertexCount1 == vertexCount0)
-        //            {
-        //                //GameObject.DestroyImmediate(filter1.gameObject);
-        //                render_lod1 = CreateSimplifier(render_lod0, 0.5f);
-        //                GameObject.DestroyImmediate(filter1.gameObject);
-        //            }
-
-        //            //else
-        //            {
-        //                Debug.Log($"GetDistance1 \tLOD2:{render_lod1.name}({vertexCount1}) \tLOD0:{render_lod0.name}({vertexCount0}) \tDistance:{minDis} \t{(float)vertexCount1 / vertexCount0:P2}");
-        //                render_lod1.transform.SetParent(render_lod0.transform);
-        //                render_lod1.name += "_LOD2";
-
-        //                AddLOD2(render_lod0, render_lod1);
-        //            }
-        //        }
-
-        //        twoList.Add(new TwoRenderers(render_lod0, render_lod1, minDis, min.meshDis));
-        //    }
-        //    else
-        //    {
-        //        Debug.LogWarning($"GetDistance1 \tLOD1:{render_lod1.name}({vertexCount1}) \tLOD0:{render_lod0.name}({vertexCount0}) \tDistance:{minDis} \t{(float)vertexCount1 / vertexCount0:P2}");
-
-        //        twoList.Add(new TwoRenderers(render_lod0, render_lod1, minDis, min.meshDis));
-        //    }
-        //}
-        //ProgressBarHelper.ClearProgressBar();
-
-        //twoList.Sort((a, b) =>
-        //{
-        //    return b.dis.CompareTo(a.dis);
-        //});
-
-        //RemoveEmpty(LODnRoot.transform);
-        //RemoveEmpty(LODnRoot.transform);
-
-        //Debug.LogError($"AppendLod2ToGroup count1:{renderers_2.Length} count0:{renderers_0.Count} time:{(DateTime.Now - start)}");
     }
 
     [ContextMenu("AppendLod2ToGroup")]
@@ -709,33 +607,45 @@ public class LODManager : MonoBehaviour
     }
 
     [ContextMenu("SetRenderersLODInfo")]
-    public void SetRenderersLODInfo()
+    public List<MeshRendererInfo> SetRenderersLODInfo()
     {
+        List<MeshRendererInfo> meshRendererInfos = new List<MeshRendererInfo>();
+        DateTime start = DateTime.Now;
         var lodGroups = GameObject.FindObjectsOfType<LODGroup>(true);
+        var renderers = GameObject.FindObjectsOfType<Renderer>(true).ToList();
         for (int i1 = 0; i1 < lodGroups.Length; i1++)
         {
             LODGroup group = lodGroups[i1];
             float progress = (float)i1 / lodGroups.Length;
 
             ProgressBarHelper.DisplayCancelableProgressBar("SetRenderersLODInfo", $"{i1}/{lodGroups.Length} {progress:P1} group:{group}", progress);
-            
+
             LOD[] lods = group.GetLODs();
             for (int i = 0; i < lods.Length; i++)
             {
                 LOD lod = lods[i];
                 //LODInfo lodInfo = new LODInfo(lod);
-                foreach(var r in lod.renderers){
+                foreach (var r in lod.renderers)
+                {
                     if (r == null) continue;
                     MeshRendererInfo rendererInfo = MeshRendererInfo.GetInfo(r.gameObject);
                     //Debug.Log($"renderer:{r},parent:{r.transform.parent.name},path:{r.transform.GetPathToRoot()},rendererInfo:{rendererInfo}");
-                    if(rendererInfo.LodId>i)
+                    if (rendererInfo.LodId > i)
                         rendererInfo.LodId = i;
+                    renderers.Remove(r);
                 }
                 //break;
             }
             //break;
         }
+        foreach (var r in renderers)
+        {
+            MeshRendererInfo rendererInfo = MeshRendererInfo.GetInfo(r.gameObject);
+            rendererInfo.LodId = -1;
+        }
         ProgressBarHelper.ClearProgressBar();
+        Debug.LogError($"SetRenderersLODInfo lods:{lodGroups.Length} count:{renderers.Count} time:{(DateTime.Now - start)}");
+        return meshRendererInfos;
     }
 
     public List<LODGroupInfo> lODGroupInfos = new List<LODGroupInfo>();
@@ -765,13 +675,15 @@ public class LODManager : MonoBehaviour
 
     public List<LODGroupDetails> lodDetails;
 
+    public GameObject LocalTarget;
+
     [ContextMenu("GetRuntimeLODDetail")]
     public string GetRuntimeLODDetail(bool isForce)
     {
         DateTime now = DateTime.Now;
         if(lodDetails==null||lodDetails.Count==0 || isForce)
         {
-            lodDetails=LODGroupDetails.GetSceneLodGroupInfo();
+            lodDetails=LODGroupDetails.GetSceneLodGroupInfo(LocalTarget);
         }
         
         Camera cam = GameObject.FindObjectOfType<Camera>();
@@ -817,6 +729,12 @@ public class LODManager : MonoBehaviour
         info+="\n"+lodInfoTxt_count+"\n"+lodInfoTxt_vertex+"\n"+lodInfoTxt_percent;
 
         //Debug.Log($"CaculateGroupInfo完成，耗时{time}ms "+info);
+
+        lodDetails.Sort((a, b) =>
+        {
+            return b.vertexCount.CompareTo(a.vertexCount);
+        });
+
         return info;
     }
 }

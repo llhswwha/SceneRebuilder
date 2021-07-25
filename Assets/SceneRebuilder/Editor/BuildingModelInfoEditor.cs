@@ -10,6 +10,22 @@ using UnityEngine;
 [CustomEditor(typeof(BuildingModelInfo))]
 public class BuildingModelInfoEditor : BaseFoldoutEditor<BuildingModelInfo>
 {
+    //private FoldoutEditorArg buildingListArg = new FoldoutEditorArg();
+
+    private FoldoutEditorArg treeListArg = new FoldoutEditorArg();
+
+    private FoldoutEditorArg nodeListArg = new FoldoutEditorArg();
+
+    private FoldoutEditorArg sceneListArg = new FoldoutEditorArg();
+
+    private FoldoutEditorArg<MeshFilter> meshListArg = new FoldoutEditorArg<MeshFilter>();
+
+    private FoldoutEditorArg matListArg = new FoldoutEditorArg();
+
+    private FoldoutEditorArg doorListArg = new FoldoutEditorArg();
+
+    private FoldoutEditorArg lodGroupListArg = new FoldoutEditorArg();
+
     public override void OnEnable()
     {
         base.OnEnable();
@@ -21,12 +37,16 @@ public class BuildingModelInfoEditor : BaseFoldoutEditor<BuildingModelInfo>
         meshListArg = new FoldoutEditorArg<MeshFilter>(true, false, true, true, false);
         matListArg = new FoldoutEditorArg(true, false, true, true, false);
         doorListArg = new FoldoutEditorArg(true, false, true, true, false);
+        lodGroupListArg = new FoldoutEditorArg(true, false, true, true, false);
 
         GlobalMaterialManager.Instance.LocalTarget = targetT.gameObject;
         GlobalMaterialManager.Instance.GetSharedMaterials();
 
         DoorManager.Instance.LocalTarget = targetT.gameObject;
         DoorManager.Instance.UpdateDoors();
+
+        LODManager.Instance.LocalTarget = targetT.gameObject;
+        LODManager.Instance.GetRuntimeLODDetail(true);
 
         targetT.UpdateSceneList();
     }
@@ -64,20 +84,28 @@ public class BuildingModelInfoEditor : BaseFoldoutEditor<BuildingModelInfo>
             //     // item.InitInOut();
             //     Debug.Log("GetInfo_"+item);
             // }
+
+
         });
-        NewButton("FindDoors", buttonWidth, state.CanFindDoors(), btnStyle, info.FindInDoors);
-        NewButton("SplitDoors", buttonWidth, true, btnStyle, ()=>
+        int btnW1 = 90;
+        NewButton("FindDoors", btnW1, state.CanFindDoors(), btnStyle, info.FindInDoors);
+        NewButton("SplitDoors", btnW1, true, btnStyle, ()=>
         {
             DoorManager.Instance.LocalTarget = info.gameObject;
 
         });
-        NewButton("ClearParts", buttonWidth, state.partCount>0, btnStyle, info.ClearInOut);
-        NewButton("ShowRenderers", buttonWidth, true, btnStyle, info.ShowRenderers);
+        NewButton("ClearParts", btnW1, state.partCount>0, btnStyle, info.ClearInOut);
+        NewButton("ShowRenderers", btnW1, true, btnStyle, info.ShowRenderers);
+        NewButton("InitMeshNodes", btnW1, true, btnStyle, ()=>
+        {
+            MeshNode.InitNodes(info.gameObject);
+        });
         EditorGUILayout.EndHorizontal();
 
         EditorGUILayout.BeginHorizontal();
         NewButton("2.CreateTree", buttonWidth,state.CanCreateTrees, btnStyle, info.CreateTreesBSEx);
         NewButton("RemoveTrees", buttonWidth,state.CanRemoveTrees, btnStyle, info.ClearTrees);
+        NewButton("CreateTreeByLOD", buttonWidth, state.CanCreateTrees, btnStyle, info.CreateTreesByLOD);
         EditorGUILayout.EndHorizontal();
 
         EditorGUILayout.BeginHorizontal();
@@ -172,20 +200,6 @@ public class BuildingModelInfoEditor : BaseFoldoutEditor<BuildingModelInfo>
         
     }
 
-    //private FoldoutEditorArg buildingListArg = new FoldoutEditorArg();
-
-    private FoldoutEditorArg treeListArg = new FoldoutEditorArg();
-
-    private FoldoutEditorArg nodeListArg = new FoldoutEditorArg();
-
-    private FoldoutEditorArg sceneListArg = new FoldoutEditorArg();
-
-    private FoldoutEditorArg<MeshFilter> meshListArg = new FoldoutEditorArg<MeshFilter>();
-
-    private FoldoutEditorArg matListArg = new FoldoutEditorArg();
-
-    private FoldoutEditorArg doorListArg = new FoldoutEditorArg();
-
     public override void OnToolLayout(BuildingModelInfo item)
     {
         base.OnToolLayout(item);
@@ -238,6 +252,9 @@ public class BuildingModelInfoEditor : BaseFoldoutEditor<BuildingModelInfo>
 
         DoorManager.Instance.LocalTarget = item.gameObject;
         DrawDoorList(doorListArg, DoorManager.Instance);
+
+        LODManager.Instance.LocalTarget = item.gameObject;
+        DrawLODGroupList(lodGroupListArg, LODManager.Instance);
     }
 
     //public override void OnInspectorGUI()

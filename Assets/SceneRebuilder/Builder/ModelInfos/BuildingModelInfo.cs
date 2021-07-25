@@ -372,7 +372,7 @@ public class BuildingModelInfo : SubSceneCreater
 
         return ts;
     }
-
+    
     //public ModelAreaTree[] CreateTreesInnerBS()
     //{
     //    ClearTrees();
@@ -746,22 +746,28 @@ public class BuildingModelInfo : SubSceneCreater
     [ContextMenu("* CreateTreesBSEx")]
     public void CreateTreesBSEx()
     {
+        CreateTreesBSEx(false);
+    }
+
+    public void CreateTreesBSEx(bool isLod)
+    {
+        AreaTreeManager.Instance.IsByLOD = isLod;
         DateTime start = DateTime.Now;
 
         InitInOut();
 
-        AreaTreeManager treeManager = GameObject.FindObjectOfType<AreaTreeManager>();
-        //trees = CreateTreesInnerEx(true,null);
-
-        trees = CreateTreesInnerEx(true,p=>{
-            ProgressBarHelper.DisplayProgressBar("CreateTreesBSEx",$"Progress {p:P1}",p);
+        trees = CreateTreesInnerEx(true, p => {
+            ProgressBarHelper.DisplayProgressBar("CreateTreesBSEx", $"Progress {p:P1}", p);
         });
-        if (treeManager)
-        {
-            treeManager.AddTrees(trees);
-        }
+        AreaTreeManager.Instance.AddTrees(trees);
         ProgressBarHelper.ClearProgressBar();
         Debug.LogError($"CreateTreesBSEx {(DateTime.Now - start).ToString()}");
+    }
+
+    [ContextMenu("* CreateTreesByLOD")]
+    public void CreateTreesByLOD()
+    {
+        CreateTreesBSEx(true);
     }
 
     //[ContextMenu("* CreateTrees")]

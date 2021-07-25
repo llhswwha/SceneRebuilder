@@ -7,7 +7,7 @@ public class MeshNode : MonoBehaviour,IComparable<MeshNode>
 {
     public string MeshTypeName = "";
 
-    public List<MeshType> TypesList = new List<MeshType>();
+    //public List<MeshType> TypesList = new List<MeshType>();
 
     public MeshData meshData;
 
@@ -28,6 +28,16 @@ public class MeshNode : MonoBehaviour,IComparable<MeshNode>
             return meshData.vertexCount;
         }
         return 0;
+    }
+
+    public int GetSumVertexCount()
+    {
+        VertexCount = 0;
+        foreach(var node in subMeshes)
+        {
+            VertexCount += node.VertexCount;
+        }
+        return VertexCount;
     }
 
     public string GetMeshKey1()
@@ -62,17 +72,21 @@ public class MeshNode : MonoBehaviour,IComparable<MeshNode>
 
     public MeshNode parentMesh = null;
 
-    public MeshData totalMesh = null;
+    //public MeshData totalMesh = null;
 
-    private  void AddSubMeshInfo(MeshNode mn)
+    private  void AddSubMeshInfo(MeshNode mn,int level)
     {
         meshData.Add(mn.meshData);
-        AddType(mn);
-        if (parentMesh != null)
-        {
-            parentMesh.AddSubMeshInfo(mn);
-        }
+        //AddType(mn);
+        //if (parentMesh != null)
+        //{
+        //    parentMesh.AddSubMeshInfo(mn);
+        //}
         VertexCount += mn.GetVertexCount();
+        if (level == 0)
+        {
+            Debug.Log($"AddSubMeshInfo {mn}|{VertexCount}|{mn.GetVertexCount()}");
+        }
     }
 
     // Start is called before the first frame update
@@ -86,7 +100,7 @@ public class MeshNode : MonoBehaviour,IComparable<MeshNode>
         {
             //GameObjectUtility.SetStaticEditorFlags.
             
-            VertexCount=0;
+            //VertexCount=0;
             meshData = new MeshData(gameObject);
             meshData.IsWorld=this.IsWorld;
 
@@ -96,7 +110,7 @@ public class MeshNode : MonoBehaviour,IComparable<MeshNode>
             //    Info.Update();
             //}
 
-            VertexCount += meshData.vertexCount;
+            VertexCount = meshData.vertexCount;
         }
 
         //if (transformData == null)
@@ -117,15 +131,27 @@ public class MeshNode : MonoBehaviour,IComparable<MeshNode>
 
     void Start()
     {
-        Init();
+        //Init();
     }
 
     public bool isInited = false;
 
+    [ContextMenu("Init")]
     public void Init()
     {
-        if (isInited == true) return;
+        Init(0,false, null);
+    }
+
+    public void Init(int level,bool isforce,Action<float> progressChanged)
+    {
+        if (isInited == true && isforce ==false) return;
         isInited = true;
+
+        if (isforce)
+        {
+            meshData = null;
+            subMeshes.Clear();
+        }
 
         MeshTypeName = MeshType.GetTypeName(gameObject.name);
 
@@ -139,66 +165,83 @@ public class MeshNode : MonoBehaviour,IComparable<MeshNode>
 
         if (initAllChildren)
         {
-            subMeshes.Clear();
+            //subMeshes.Clear();
             for (int i = 0; i < transform.childCount; i++)
             {
+                float progress1 = (float)i / transform.childCount;
+                if (progressChanged != null)
+                {
+                    progressChanged(progress1);
+                }
                 var child = transform.GetChild(i).gameObject;
                 MeshNode subMesh = child.GetComponent<MeshNode>();
                 if (subMesh == null)
                 {
                     subMesh = child.AddComponent<MeshNode>();
-                    subMesh.Init();
                 }
-                AddSubMesh(subMesh);
-                subMesh.parentMesh = this;
-                subMesh.AddInfoToParent();
-            }
-            subMeshes.Sort();
-            TypesList.Sort();
 
-            int allCount = 0;
-            foreach (MeshType meshType in TypesList)
-            {
-                allCount += meshType.VertexCount;
-            }
-
-            if(allCount>0)
-                foreach (MeshType meshType in TypesList)
+                subMesh.Init(level + 1, isforce, (subP) =>
                 {
-                    meshType.Percent = meshType.VertexCount * 100f / allCount;
-                }
+                    float progress2 = (float)(i + subP) / transform.childCount;
+                    if (progressChanged != null)
+                    {
+                        progressChanged(progress2);
+                    }
+                });
+
+                AddSubMesh(subMesh,level);
+                subMesh.parentMesh = this;
+                //subMesh.AddInfoToParent();
+            }
+
+            subMeshes.Sort();
+            //TypesList.Sort();
+
+            //int allCount = 0;
+            //foreach (MeshType meshType in TypesList)
+            //{
+            //    allCount += meshType.VertexCount;
+            //}
+
+            //if(allCount>0)
+            //    foreach (MeshType meshType in TypesList)
+            //    {
+            //        meshType.Percent = meshType.VertexCount * 100f / allCount;
+            //    }
         }
     }
 
-    public void AddInfoToParent()
-    {
-        if (parentMesh != null)
-        {
-            parentMesh.AddSubMeshInfo(this);
-        }
-    }
+    //public void AddInfoToParent()
+    //{
+    //    if (parentMesh != null)
+    //    {
+    //        parentMesh.AddSubMeshInfo(this);
+    //    }
+    //}
 
-    public void AddSubMesh(MeshNode mn)
+    public void AddSubMesh(MeshNode mn,int level)
     {
         if (!subMeshes.Contains(mn))
         {
             subMeshes.Add(mn);
-            AddType(mn);
+            //AddType(mn);
+            AddSubMeshInfo(mn,level);
         }
-        
+
+        //AddType(mn);
     }
 
-    public void AddType(MeshNode mn)
-    {
-        MeshType meshType = TypesList.Find(i => i.TypeName == mn.MeshTypeName);
-        if (meshType == null)
-        {
-            meshType = new MeshType();
-            meshType.TypeName = mn.MeshTypeName;
-            TypesList.Add(meshType);
-        }
-        meshType.AddItem(mn);
-    }
+    //public void AddType(MeshNode mn)
+    //{
+    //    MeshType meshType = TypesList.Find(i => i.TypeName == mn.MeshTypeName);
+    //    if (meshType == null)
+    //    {
+    //        meshType = new MeshType();
+    //        meshType.TypeName = mn.MeshTypeName;
+    //        TypesList.Add(meshType);
+    //    }
+    //    meshType.AddItem(mn);
+    //}
 
     [ContextMenu("SortSubMeshes")]
     public void SortSubMeshes()
@@ -716,7 +759,8 @@ public class MeshNode : MonoBehaviour,IComparable<MeshNode>
 
     public int CompareTo(MeshNode other)
     {
-        return other.GetVertexCount().CompareTo(this.GetVertexCount());
+        //return other.GetVertexCount().CompareTo(this.GetVertexCount());
+        return other.VertexCount.CompareTo(this.VertexCount);
     }
 
     private void OnDestroy()
@@ -733,5 +777,25 @@ public class MeshNode : MonoBehaviour,IComparable<MeshNode>
         }
         node=go.AddComponent<MeshNode>();
         return node;
+    }
+
+    public static MeshNode InitNodes(GameObject go)
+    {
+        DateTime start = DateTime.Now;
+        MeshNode meshNode = go.GetComponent<MeshNode>();
+        if (meshNode == null)
+        {
+            meshNode = go.AddComponent<MeshNode>();
+        }
+
+        meshNode.Init(0, true, p =>
+        {
+            ProgressBarHelper.DisplayProgressBar("MeshNode.Init", $"{p:P2}", p);
+        });
+
+        var meshNodes = meshNode.GetComponentsInChildren<MeshNode>(true);
+        ProgressBarHelper.ClearProgressBar();
+        Debug.Log($"MeshNode.Init count:{meshNodes.Length} time:{(DateTime.Now - start)}");
+        return meshNode;
     }
 }

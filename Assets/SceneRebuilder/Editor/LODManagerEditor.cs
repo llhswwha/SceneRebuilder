@@ -9,7 +9,7 @@ public class LODManagerEditor : BaseFoldoutEditor<LODManager>
 {
     FoldoutEditorArg twoListArg = new FoldoutEditorArg();
 
-    FoldoutEditorArg lodListArg = new FoldoutEditorArg();
+    FoldoutEditorArg lodGroupListArg = new FoldoutEditorArg();
 
     public override void OnToolLayout(LODManager item)
     {
@@ -19,94 +19,37 @@ public class LODManagerEditor : BaseFoldoutEditor<LODManager>
         //{
         //    item.CheckLODPositions();
         //}
-
-        
-         if (GUILayout.Button("UniformLOD"))
+        EditorGUILayout.BeginHorizontal();
+        if (GUILayout.Button("InActive"))
         {
-            item.UniformLOD();
+            item.SetLODActive(false);
         }
-
-        if (GUILayout.Button("GetRuntimeLODDetail"))
+        if (GUILayout.Button("Active"))
         {
-            string detail=item.GetRuntimeLODDetail(true);
-            item.lodDetails.Sort((a, b) =>
-            {
-                return b.vertexCount.CompareTo(a.vertexCount);
-            });
-            Debug.Log($"lod detail:{detail}");
+            item.SetLODActive(true);
         }
-
-        lodListArg.caption = $"LOD List";
-        EditorUIUtils.ToggleFoldout(lodListArg, arg =>
-        {
-            var lods = item.lodDetails;
-            float[] sumVertex = new float[4];
-            for (int i = 0; i < lods.Count; i++)
-            {
-                LODGroupDetails lod = (LODGroupDetails)lods[i];
-                //sumVertex[i] += lod.chi
-                for(int j=0;j<lod.childs.Count;j++)
-                {
-                    sumVertex[j] += lod.childs[j].vertexCount;
-                }
-            }
-            arg.caption = $"LOD List ({lods.Count})";
-            string txt = "";
-            float v0 = 0;
-            for (int i = 0; i < sumVertex.Length; i++)
-            {
-                float v = sumVertex[i];
-                if(i==0)
-                {
-                    v0 = v;
-                }
-                txt += $"{v/10000f:F1}({v/v0:P0})|";
-            }
-            arg.info = txt;
-            InitEditorArg(lods);
-        },
-        () =>
-        {
-            //if (GUILayout.Button("Update"))
-            //{
-            //    RemoveEditorArg(item.GetDoors());
-            //    InitEditorArg(item.UpdateDoors());
-            //}
-        });
-        if (lodListArg.isEnabled && lodListArg.isExpanded)
-        {
-            var lods = item.lodDetails;
-            InitEditorArg(lods);
-            lodListArg.DrawPageToolbar(lods, (lodDetail, i) =>
-            {
-                var arg = editorArgs[lodDetail];
-                if (lodDetail.group == null) return;
-                arg.caption = $"[{i:00}] {lodDetail.group.name}";
-                //arg.info = door.ToString();
-                EditorUIUtils.ObjectFoldout(arg, lodDetail.group, () =>
-                {
-                    float lod0Vertex = 0;
-                    for(int i=0;i<lodDetail.childs.Count;i++)
-                    {
-                        var lodChild = lodDetail.childs[i];
-                        if (i == 0)
-                        {
-                            lod0Vertex = lodChild.vertexCount;
-                        }
-                        if (GUILayout.Button($"L{i}[{lodChild.GetVertexCountF():F2}][{lodChild.vertexCount/lod0Vertex:P0}][{lodChild.screenRelativeTransitionHeight}]", GUILayout.Width(140)))
-                        {
-                            //EditorHelper.SelectObject()
-                            EditorHelper.SelectObjects(lodChild.renderers);
-                        }
-                    }
-                });
-            });
-        }
+        EditorGUILayout.EndHorizontal();
 
         if (GUILayout.Button("SetRenderersLODInfo"))
         {
             item.SetRenderersLODInfo();
         }
+
+        if (GUILayout.Button("UniformLOD"))
+        {
+            item.UniformLOD();
+        }
+        EditorUIUtils.Separator(5);
+
+        if (GUILayout.Button("GetLODDetail"))
+        {
+            string detail=item.GetRuntimeLODDetail(true);
+            Debug.Log($"lod detail:{detail}");
+        }
+        DrawLODGroupList(lodGroupListArg, item);
+
+
+        EditorUIUtils.Separator(5);
 
         EditorGUILayout.BeginHorizontal();
         GUILayout.Label("ZeroDistance:");
@@ -118,7 +61,7 @@ public class LODManagerEditor : BaseFoldoutEditor<LODManager>
 
         GUILayout.Label("Group:");
         item.GroupRoot = EditorGUILayout.ObjectField(item.GroupRoot, typeof(GameObject)) as GameObject;
-        GUILayout.Label("LOD2:");
+        GUILayout.Label("LOD:");
         item.LODnRoot = EditorGUILayout.ObjectField(item.LODnRoot, typeof(GameObject)) as GameObject;
         EditorGUILayout.EndHorizontal();
 

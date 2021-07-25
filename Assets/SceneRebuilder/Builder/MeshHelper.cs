@@ -13,6 +13,31 @@ public static class MeshHelper
 
     //}
 
+     public static string GetVertexCountS(int vertexCount)
+    {
+        float f = vertexCount / 10000f;
+        if (f >= 100)
+        {
+            return $"{f:F0}";
+        }
+        else if (f>=10)
+        {
+            return $"{f:F1}";
+        }
+        else if (f >= 1)
+        {
+            return $"{f:F1}";
+        }
+        else if (vertexCount >= 1000)
+        {
+            return $"{f:F2}";
+        }
+        else
+        {
+            return $"{f:F3}";
+        }
+    }
+
     public static GameObject EditorCopyGo(GameObject sourceGo)
     {
 #if UNITY_EDITOR

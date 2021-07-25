@@ -12,7 +12,7 @@ public class LODGroupInfo : MonoBehaviour
     public int lodCount;
 
 
-    public List<int> lodVertexCount=new List<int>();
+    //public List<int> lodVertexCount=new List<int>();
 
     // Start is called before the first frame update
     void Start()
@@ -21,22 +21,24 @@ public class LODGroupInfo : MonoBehaviour
     }
 
     [ContextMenu("GetLODs")]
-    void GetLODs()
+    public void GetLODs()
     {
         LodInfos.Clear();
-        lodVertexCount.Clear();
+        //lodVertexCount.Clear();
         LODGroup = gameObject.GetComponent<LODGroup>();
         LOD[] lods = LODGroup.GetLODs();
-        foreach (LOD lod in lods)
+        for (int i = 0; i < lods.Length; i++)
         {
-            LODInfo lodInfo = new LODInfo(lod);
+            LOD lod = lods[i];
+            LODInfo lodInfo = new LODInfo(lod,i);
             LodInfos.Add(lodInfo);
             int vc=0;
             foreach(var r in lod.renderers){
                 MeshFilter meshFilter=r.GetComponent<MeshFilter>();
                 vc+=meshFilter.sharedMesh.vertexCount;
             }
-            lodVertexCount.Add(vc);
+            //lodVertexCount.Add(vc);
+            lodInfo.vertextCount = vc;
         }
         lodCount = LODGroup.lodCount;
 
@@ -44,7 +46,7 @@ public class LODGroupInfo : MonoBehaviour
     }
 
     [ContextMenu("SetLODs")]
-    void SetLODs()
+    public void SetLODs()
     {
         LODGroup = gameObject.GetComponent<LODGroup>();
         List<LOD> lods = new List<LOD>();
@@ -61,13 +63,13 @@ public class LODGroupInfo : MonoBehaviour
     public float[] ls = new float[] { 0.6f, 0.2f,0.1f,0.01f};
 
     [ContextMenu("SetDefulatLOD")]
-    void SetDefulatLOD()
+    public void SetDefulatLOD()
     {
         LODGroup.SetLODs(CreateLODs(ls));
     }
 
     [ContextMenu("CreateLOD")]
-    void CreateLOD()
+    public void CreateLOD()
     {
         CreateLODs(gameObject, ls);
     }

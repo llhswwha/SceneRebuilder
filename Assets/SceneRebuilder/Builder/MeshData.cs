@@ -61,7 +61,7 @@ public class MeshData
 
     public MeshData(GameObject obj)
     {
-        //Debug.Log("MeshData");
+        //Debug.Log($"MeshData.ctor obj:{obj}");
         _obj = obj;
         this.name=obj.name;
         t=obj.transform;
@@ -101,15 +101,13 @@ public class MeshData
                 Info.Update();
             }
             else{
-                Debug.LogError("msFilter==null");
+                Debug.Log($"MeshData.ctor msFilter==null obj:{obj}");
             }
         }
         catch (Exception ex)
         {
-            Debug.LogError("MeshData.cotr,"+ msFilter + ","+ex);
+            Debug.LogError("MeshData.ctor,"+ msFilter + ","+ex);
         }
-
-
     }
 
     public MeshData()
@@ -131,7 +129,12 @@ public class MeshData
             }
             else
             {
-                Debug.LogWarning("MeshData.Add ms==null:"+info);
+                //Debug.LogWarning("MeshData.Add ms==null:"+info);
+
+                triangleCount += info.triangleCount;
+                vertexCount += info.vertexCount;
+                vertexBufferCount += info.vertexBufferCount;
+                vertexAttributeCount += info.vertexAttributeCount;
             }
         }
         else

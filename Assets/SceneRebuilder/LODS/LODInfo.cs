@@ -20,11 +20,15 @@ public class LODInfo
     //     List of renderers for this LOD level.
     public Renderer[] renderers;
 
-    public LODInfo(LOD lod)
+    public int id;
+
+    public LODInfo(LOD lod,int id)
     {
         screenRelativeTransitionHeight = lod.screenRelativeTransitionHeight;
         fadeTransitionWidth = lod.fadeTransitionWidth;
         renderers = lod.renderers;
+
+        this.id = id;
     }
 
     internal LOD GetLOD()
@@ -34,5 +38,32 @@ public class LODInfo
         lod.fadeTransitionWidth = fadeTransitionWidth;
         lod.renderers = renderers;
         return lod;
+    }
+
+    public int vertextCount = 0;
+
+    public string GetName()
+    {
+        if (renderers == null)
+        {
+            return $"LOD{id} (NULL)";
+        }
+        if(renderers.Length ==1)
+        {
+            return $"LOD{id} ({renderers[0].name})";
+        }
+        else
+        {
+            return $"LOD{id} ([{renderers.Length}])";
+        }
+    }
+
+    public Renderer GetRenderer()
+    {
+        if (renderers == null || renderers.Length==0)
+        {
+            return null;
+        }
+        return renderers[0];
     }
 }
