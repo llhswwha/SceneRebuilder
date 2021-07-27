@@ -8,6 +8,7 @@ namespace CodeStage.AdvancedFPSCounter.Editor.UI
 	[System.Serializable]
 	public class FoldoutEditorArg
     {
+        public bool isFoldout = true;
         public bool isEnabled=false;
         public bool isSelected = false;
         public bool isExpanded = false;
@@ -29,6 +30,8 @@ namespace CodeStage.AdvancedFPSCounter.Editor.UI
         public int listFilterId = 1;
         public string[] listFilterId_Names = new string[] { "All" };
         //public int[] pageSize_sizes = { 5, 10, 15, 20, 50, 100, 200, 500, 1000, 2000 };
+
+        public int level = 0;
 
         public FoldoutEditorArg()
         {
@@ -98,14 +101,18 @@ namespace CodeStage.AdvancedFPSCounter.Editor.UI
 		public void DrawPageToolbar(int count)
 		{
 			EditorGUILayout.BeginHorizontal();
-			DrawPageSizeList();
+            EditorUIUtils.BeforeSpace(level+1);
+            DrawPageSizeList();
 			DrawPageIndexList(count);
 			EditorGUILayout.EndHorizontal();
 		}
 
         public void DrawPageToolbar<T>(List<T> list,System.Action<T,int> drawItemAction)
         {
-            this.DrawPageToolbar(list.Count);
+            if (level == 0 || list.Count > pageSize_selected)
+            {
+                this.DrawPageToolbar(list.Count);
+            }
             int c = 0;
             for (int i = this.GetStartId(); i < list.Count && i < this.GetEndId(); i++)
             {
@@ -115,13 +122,6 @@ namespace CodeStage.AdvancedFPSCounter.Editor.UI
                 {
                     drawItemAction(item,i);
                 }
-
-                //var arg = editorArgs[meshMat];
-                //arg.caption = meshMat.mat.name;
-                //EditorUIUtils.ObjectFoldout(arg, meshMat.mat, () =>
-                //{
-                //    EditorGUILayout.ColorField("Color", meshMat.color, GUILayout.Width(50));
-                //});
             }
         }
 
@@ -404,7 +404,24 @@ namespace CodeStage.AdvancedFPSCounter.Editor.UI
             return isExpanded;
         }
 
-        public static bool ObjectFoldout(FoldoutEditorArg arg, Object obj = null, System.Action itemToolbarEvent = null)
+        public static void BeforeSpace(int level)
+        {
+            if (level > 0)
+            {
+                string txt = "";
+                int spaceWidth = 0;
+                for (int i = 0; i < level; i++)
+                {
+                    txt += " ";
+                    spaceWidth += 10;
+                }
+                GUILayout.Label(txt, GUILayout.Width(spaceWidth));
+            }
+
+            //GUILayout.Space(level * 10);
+        }
+
+        public static bool ObjectFoldout(FoldoutEditorArg arg,Object obj = null, System.Action itemToolbarEvent = null)
         {
             if (arg.separator) Separator(5);
 
@@ -419,48 +436,52 @@ namespace CodeStage.AdvancedFPSCounter.Editor.UI
 
             var currentLabelWidth = EditorGUIUtility.labelWidth;
 
+
+           
+
             if (obj != null && obj is GameObject)
             {
                 GameObject go = obj as GameObject;
                 EditorGUIUtility.labelWidth = 1;
                 //EditorGUILayout.PropertyField(toggle, GUIContent.none, GUILayout.ExpandWidth(false));
-                EditorGUILayout.Toggle(go.activeInHierarchy, GUILayout.Width(15));
-                bool isOn = EditorGUILayout.Toggle(go.activeSelf, GUILayout.Width(15));
+
+                GUILayout.Space(10* arg.level);
+                //BeforeSpace(arg.level);
+
+                EditorGUILayout.Toggle(go.activeInHierarchy, GUILayout.Width(15));//go.activeInHierarchy
+                bool isOn = EditorGUILayout.Toggle(go.activeSelf, GUILayout.Width(15));//go.activeSelf
                 if (isOn != go.activeSelf)
                 {
                     go.SetActive(isOn);
                 }
-                // if(arg.isEnabled){
-                // 	if(toggleEvent!=null){
-                // 		toggleEvent(arg);
-                // 	}
-                // }
                 EditorGUIUtility.labelWidth = currentLabelWidth;
             }
 
+            
 
-            GUILayout.Space(10);
-            var rect = EditorGUILayout.GetControlRect(GUILayout.Width(100));
-            // rect.
-            arg.isExpanded = EditorGUI.Foldout(rect, arg.isExpanded, arg.caption, true, (arg.bold || arg.isSelected) ? richBoldFoldout : EditorStyles.foldout);
+            if (arg.isFoldout)
+            {
+                GUILayout.Space(10);
+                var rect = EditorGUILayout.GetControlRect(GUILayout.Width(100));
+                // rect.
+                arg.isExpanded = EditorGUI.Foldout(rect, arg.isExpanded, arg.caption, true, (arg.bold || arg.isSelected) ? richBoldFoldout : EditorStyles.foldout);
+            }
+            else
+            {
+                GUILayout.Label(arg.caption);
+            }
 
             EditorGUIUtility.labelWidth = 1;
             var contentStyle = new GUIStyle(EditorStyles.label);
             contentStyle.alignment = TextAnchor.MiddleRight;
             //EditorGUILayout.PropertyField(toggle, GUIContent.none, GUILayout.ExpandWidth(false));
             GUILayout.Label(arg.info, contentStyle);
-
             if (itemToolbarEvent != null)
             {
                 itemToolbarEvent();
             }
-
             if (obj != null)
             {
-                // if(GUILayout.Button("P", EditorStyles.miniButtonLeft, GUILayout.Width(20)))
-                // {
-                // 	EditorGUIUtility.PingObject(obj);
-                // }
                 var btnStyle = new GUIStyle(EditorStyles.miniButton);
                 btnStyle.margin = new RectOffset(0, 0, 0, 0);
                 btnStyle.padding = new RectOffset(0, 0, 0, 0);
@@ -472,11 +493,8 @@ namespace CodeStage.AdvancedFPSCounter.Editor.UI
                     arg.isSelected = true;
                 }
             }
-
             EditorGUIUtility.labelWidth = currentLabelWidth;
-
             GUILayout.EndHorizontal();
-
             return arg.isExpanded;
         }
 

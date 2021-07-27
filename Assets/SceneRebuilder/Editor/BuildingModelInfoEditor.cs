@@ -78,14 +78,6 @@ public class BuildingModelInfoEditor : BaseFoldoutEditor<BuildingModelInfo>
         EditorGUILayout.BeginHorizontal();
         NewButton("1.GetInfo", buttonWidth, state.CanGetInfo(), btnStyle,() => {
             info.InitInOut();
-            // foreach (Object obj in targets)
-            // {
-            //     BuildingModelInfo item = obj as BuildingModelInfo;
-            //     // item.InitInOut();
-            //     Debug.Log("GetInfo_"+item);
-            // }
-
-
         });
         int btnW1 = 90;
         NewButton("FindDoors", btnW1, state.CanFindDoors(), btnStyle, info.FindInDoors);
@@ -227,15 +219,6 @@ public class BuildingModelInfoEditor : BaseFoldoutEditor<BuildingModelInfo>
         
         DrawMeshList(meshListArg, () =>
         {
-            //List<MeshFilter> meshes = new List<MeshFilter>();
-            //foreach(var node in nodes)
-            //{
-            //    //meshes.AddRange(node.gameObject.GetComponentsInChildren<MeshFilter>(true));
-            //    meshes.AddRange(node.gameObject.GetComponentsInChildren<MeshFilter>(true).Where(m => m != null && m.sharedMesh != null && m.sharedMesh.name != "Cube").ToList());
-            //}
-
-            //List<MeshFilter> meshes = item.GetComponentsInChildren<MeshFilter>(true).Where(m => m != null && m.sharedMesh != null && m.sharedMesh.name != "Cube").ToList();
-
             List<MeshFilter> meshes = new List<MeshFilter>();
             if(item.InPart)
                 meshes.AddRange(item.InPart.GetComponentsInChildren<MeshFilter>(true));
@@ -256,36 +239,4 @@ public class BuildingModelInfoEditor : BaseFoldoutEditor<BuildingModelInfo>
         LODManager.Instance.LocalTarget = item.gameObject;
         DrawLODGroupList(lodGroupListArg, LODManager.Instance);
     }
-
-    //public override void OnInspectorGUI()
-    //{
-    //    // serializedObject.Update ();
-
-    //    contentStyle = new GUIStyle(EditorStyles.miniButton);
-    //    contentStyle.alignment = TextAnchor.MiddleLeft;
-
-    //    BuildingModelInfo info = target as BuildingModelInfo;
-    //    DrawToolbar(info,contentStyle,buttonWidth);
-
-    //    //DrawModelList(buildingListArg, 
-    //    //    () => { return null; }, 
-    //    //    () =>
-    //    //   {
-    //    //   });
-
-    //    DrawTreeList(treeListArg, () =>
-    //     {
-    //         return info.GetTreeList();
-    //     });
-    //    DrawNodeList(nodeListArg, () =>
-    //    {
-    //        return info.GetNodeList();
-    //    });
-    //    DrawSceneList(sceneListArg, () =>
-    //    {
-    //        return info.GetSceneList();
-    //    });
-
-    //    base.OnInspectorGUI();
-    //}
 }

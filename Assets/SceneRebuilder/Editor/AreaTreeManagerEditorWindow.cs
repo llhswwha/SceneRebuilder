@@ -1,18 +1,13 @@
 using System.Collections;
 using System.Collections.Generic;
+using UnityEditor;
 using UnityEngine;
 
-public class AreaTreeManagerEditorWindow : MonoBehaviour
+[CustomEditor(typeof(AreaTreeManager))]
+public class AreaTreeManagerEditorWindow : BaseFoldoutEditor<AreaTreeManager>
 {
-    // Start is called before the first frame update
-    void Start()
+    public override void OnToolLayout(AreaTreeManager item)
     {
-        
-    }
-
-    // Update is called once per frame
-    void Update()
-    {
-        
+        base.OnToolLayout(item);
     }
 }

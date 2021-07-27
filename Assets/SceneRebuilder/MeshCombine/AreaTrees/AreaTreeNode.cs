@@ -20,6 +20,17 @@ public class AreaTreeNode : SubSceneCreater
 
     public List<MeshRenderer> Renderers = new List<MeshRenderer>();
 
+    public List<MeshRendererInfo> GetRendererInfos()
+    {
+        List<MeshRendererInfo> list = new List<MeshRendererInfo>();
+        foreach(var renderer in Renderers)
+        {
+            MeshRendererInfo info = MeshRendererInfo.GetInfo(renderer.gameObject);
+            list.Add(info);
+        }
+        return list;
+    }
+
     public int GetRendererCount()
     {
         int i = 0;
@@ -427,11 +438,43 @@ public class AreaTreeNode : SubSceneCreater
 
     private void CombineInner()
     {
+        if(AreaTreeManager.Instance.IsByLOD)
+        {
+            CombineInnerLOD();
+        }
+        else
+        {
+            if (combindResult)
+            {
+                GameObject.DestroyImmediate(combindResult);
+            }
+            combindResult = MeshCombineHelper.CombineEx(new MeshCombineArg(this.renderersRoot, Renderers.ToArray()), 1);
+            //combindResult = MeshCombineHelper.CombineEx(new MeshCombineArg(this.renderersRoot, Renderers.ToArray()), 0);
+            combindResult.name = this.name + "_Combined";
+            combindResult.transform.SetParent(this.transform);
+
+            CombinedRenderers = combindResult.GetComponentsInChildren<MeshRenderer>();
+
+            var meshFilters = combindResult.GetComponentsInChildren<MeshFilter>();
+            foreach (var mf in meshFilters)
+            {
+                mf.gameObject.AddComponent<MeshCollider>();
+            }
+            this.renderersRoot.SetActive(false);
+        }
+    }
+
+    private void CombineInnerLOD()
+    {
         if (combindResult)
         {
             GameObject.DestroyImmediate(combindResult);
         }
-        combindResult = MeshCombineHelper.CombineEx(new MeshCombineArg(this.renderersRoot,Renderers.ToArray()), 1);
+
+        List<MeshRendererInfo> infoList = MeshRendererInfo.GetLod0s();
+
+        combindResult = MeshCombineHelper.CombineEx(new MeshCombineArg(this.renderersRoot, Renderers.ToArray()), 1);
+        //combindResult = MeshCombineHelper.CombineEx(new MeshCombineArg(this.renderersRoot, Renderers.ToArray()), 0);
         combindResult.name = this.name + "_Combined";
         combindResult.transform.SetParent(this.transform);
 

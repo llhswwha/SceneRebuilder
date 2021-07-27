@@ -299,7 +299,7 @@ public class BaseFoldoutEditor<T> : BaseEditor<T> where T : class
 
             arg.caption = $"Tree List({trees.Count})";
             arg.info = $"[{sumVertexCount:F0}w][{sumRendererCount / 10000f:F0}w]";
-            Debug.Log($"Init TreeList count:{trees.Count} time:{(System.DateTime.Now - start).TotalMilliseconds:F1}ms ");
+            //Debug.Log($"Init TreeList count:{trees.Count} time:{(System.DateTime.Now - start).TotalMilliseconds:F1}ms ");
         },
         () =>
         {
@@ -426,7 +426,7 @@ public class BaseFoldoutEditor<T> : BaseEditor<T> where T : class
             arg.caption = $"Scenes({scenes.Count})";
             arg.info = $"[{sumVertexCount:F0}w][{sumRendererCount / 10000f:F0}w]";
             var time = System.DateTime.Now - start;
-            Debug.Log($"Init SceneList count:{scenes.Count} time:{time.TotalMilliseconds:F1}ms ");
+            //Debug.Log($"Init SceneList count:{scenes.Count} time:{time.TotalMilliseconds:F1}ms ");
         }, () =>
         {
             int filterType = foldoutArg.DrawFilterList(100, "All", "Combined", "Renderers");
@@ -470,7 +470,7 @@ public class BaseFoldoutEditor<T> : BaseEditor<T> where T : class
         {
             return b.sharedMesh.vertexCount.CompareTo(a.sharedMesh.vertexCount);
         });
-        Debug.Log($"Init MeshList1 count:{meshes.Count} time:{(System.DateTime.Now - start).TotalMilliseconds:F1}ms ");
+        //Debug.Log($"Init MeshList1 count:{meshes.Count} time:{(System.DateTime.Now - start).TotalMilliseconds:F1}ms ");
         meshes.ForEach(b =>
         {
             if (b == null) return;
@@ -482,13 +482,13 @@ public class BaseFoldoutEditor<T> : BaseEditor<T> where T : class
             sumVertexCount += b.sharedMesh.vertexCount;
             sumRendererCount++;
         });
-        Debug.Log($"Init MeshList2 count:{meshes.Count} time:{(System.DateTime.Now - start).TotalMilliseconds:F1}ms ");
+        //Debug.Log($"Init MeshList2 count:{meshes.Count} time:{(System.DateTime.Now - start).TotalMilliseconds:F1}ms ");
         sumVertexCount /= 10000;
         sumVertexCountVisible /= 10000;
         //InitEditorArg(scenes);
         arg.caption = $"Mesh List({meshes.Count})";
         arg.info = $"[{sumVertexCountVisible:F0}/{sumVertexCount:F0}w][{sumRendererCountVisible}/{sumRendererCount}]";
-        Debug.LogWarning($"Init MeshList count:{meshes.Count} time:{(System.DateTime.Now - start).TotalMilliseconds:F1}ms ");
+        //Debug.LogWarning($"Init MeshList count:{meshes.Count} time:{(System.DateTime.Now - start).TotalMilliseconds:F1}ms ");
         arg.Items = meshes;
         return meshes;
     }

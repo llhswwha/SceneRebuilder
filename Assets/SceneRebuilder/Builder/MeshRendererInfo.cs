@@ -51,16 +51,44 @@ public class MeshRendererInfo : MonoBehaviour
     public static List<MeshRendererInfo> GetLod0s(GameObject go)
     {
         var renderers = go.GetComponentsInChildren<MeshRenderer>(true);
+        List<MeshRendererInfo> list = GetLod0s(renderers);
+        return list;
+    }
+
+    public static List<MeshRendererInfo> GetLod0s(MeshRenderer[] renderers)
+    {
         List<MeshRendererInfo> list = new List<MeshRendererInfo>();
         foreach (var renderer in renderers)
         {
             var info = MeshRendererInfo.GetInfo(renderer.gameObject);
-            if(info.LodId==0||info.LodId==-1)
+            if (info.LodIds.Contains(0) || info.LodIds.Contains(-1))
             {
                 list.Add(info);
             }
         }
-        
+        //var infos= go.GetComponentsInChildren<MeshRendererInfo>(true);
+        //list = infos.Where(i => i.LodId == 0|| i.LodId == -1).ToList();
+        return list;
+    }
+
+    public static List<MeshRendererInfo> GetLodN(GameObject go,int lv)
+    {
+        var renderers = go.GetComponentsInChildren<MeshRenderer>(true);
+        List<MeshRendererInfo> list = GetLodN(renderers, lv);
+        return list;
+    }
+
+    public static List<MeshRendererInfo> GetLodN(MeshRenderer[] renderers,int lv)
+    {
+        List<MeshRendererInfo> list = new List<MeshRendererInfo>();
+        foreach (var renderer in renderers)
+        {
+            var info = MeshRendererInfo.GetInfo(renderer.gameObject);
+            if (info.LodIds.Contains(lv))
+            {
+                list.Add(info);
+            }
+        }
         //var infos= go.GetComponentsInChildren<MeshRendererInfo>(true);
         //list = infos.Where(i => i.LodId == 0|| i.LodId == -1).ToList();
         return list;
@@ -225,7 +253,22 @@ public class MeshRendererInfo : MonoBehaviour
     //     //Debug.Log($"OnTransformParentChanged {this.name} p:{transform.parent}");
     // }
 
-    public int LodId = -1;
+    public List<int> LodIds = new List<int>();
+
+    public string GetLODIds()
+    {
+        string txt = "";
+        for (int i = 0; i < LodIds.Count; i++)
+        {
+            int ld = LodIds[i];
+            txt += ld.ToString();
+            if(i< LodIds.Count-1)
+            {
+                txt += ";";
+            }
+        }
+        return txt;
+    }
 }
 
 public enum MeshRendererType

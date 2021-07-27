@@ -32,11 +32,12 @@ public class MeshNode : MonoBehaviour,IComparable<MeshNode>
 
     public int GetSumVertexCount()
     {
-        VertexCount = 0;
+        int sum= meshData.vertexCount;
         foreach(var node in subMeshes)
         {
-            VertexCount += node.VertexCount;
+            sum += node.VertexCount;
         }
+        VertexCount = sum;
         return VertexCount;
     }
 
@@ -68,15 +69,33 @@ public class MeshNode : MonoBehaviour,IComparable<MeshNode>
 
     //public MeshInfo Info = new MeshInfo();
 
+    public List<MeshNode> GetMeshNodes()
+    {
+        List<MeshNode> list = new List<MeshNode>();
+        //if (this.meshData.vertexCount > 0)
+        //{
+        //    list.Add(this);
+        //}
+        list.AddRange(subMeshes);
+        return list;
+    }
+
     public List<MeshNode> subMeshes = new List<MeshNode>();
 
     public MeshNode parentMesh = null;
 
-    //public MeshData totalMesh = null;
+    public MeshData totalMesh = null;
 
     private  void AddSubMeshInfo(MeshNode mn,int level)
     {
-        meshData.Add(mn.meshData);
+        //meshData.Add(mn.meshData);
+        if(totalMesh==null)
+        {
+            totalMesh = new MeshData();
+            totalMesh.Add(meshData);
+        }
+        totalMesh.Add(mn.meshData);
+
         //AddType(mn);
         //if (parentMesh != null)
         //{
@@ -111,6 +130,9 @@ public class MeshNode : MonoBehaviour,IComparable<MeshNode>
             //}
 
             VertexCount = meshData.vertexCount;
+
+            totalMesh = new MeshData();
+            totalMesh.Add(meshData);
         }
 
         //if (transformData == null)
@@ -195,6 +217,9 @@ public class MeshNode : MonoBehaviour,IComparable<MeshNode>
             }
 
             subMeshes.Sort();
+
+            GetSumVertexCount();
+
             //TypesList.Sort();
 
             //int allCount = 0;

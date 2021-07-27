@@ -58,7 +58,7 @@ public class CombinedMesh{
         }
         else
         {
-            Debug.LogError("CombinedMesh mfs == null ");
+            Debug.LogError($"CombinedMesh mfs == null name:{name}");
         }
 
 

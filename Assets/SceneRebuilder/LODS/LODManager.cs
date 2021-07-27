@@ -10,34 +10,34 @@ using UnityEditor;
 
 public class LODManager : SingletonBehaviour<LODManager>
 {
-    public void CheckLODPositions()
-    {
-        var lodGroups = GameObject.FindObjectsOfType<LODGroup>(true);
-        for (int i1 = 0; i1 < lodGroups.Length; i1++)
-        {
-            LODGroup group = lodGroups[i1];
-            float progress = (float)i1 / lodGroups.Length;
+    //public void CheckLODPositions()
+    //{
+    //    var lodGroups = GameObject.FindObjectsOfType<LODGroup>(true);
+    //    for (int i1 = 0; i1 < lodGroups.Length; i1++)
+    //    {
+    //        LODGroup group = lodGroups[i1];
+    //        float progress = (float)i1 / lodGroups.Length;
 
-            ProgressBarHelper.DisplayCancelableProgressBar("SetRenderersLODInfo", $"{i1}/{lodGroups.Length} {progress:P1} group:{group}", progress);
+    //        ProgressBarHelper.DisplayCancelableProgressBar("SetRenderersLODInfo", $"{i1}/{lodGroups.Length} {progress:P1} group:{group}", progress);
 
-            LOD[] lods = group.GetLODs();
-            for (int i = 0; i < lods.Length; i++)
-            {
-                LOD lod = lods[i];
-                //LODInfo lodInfo = new LODInfo(lod);
-                foreach (var r in lod.renderers)
-                {
-                    if (r == null) continue;
-                    MeshRendererInfo rendererInfo = MeshRendererInfo.GetInfo(r.gameObject);
-                    //Debug.Log($"renderer:{r},parent:{r.transform.parent.name},path:{r.transform.GetPathToRoot()},rendererInfo:{rendererInfo}");
-                    rendererInfo.LodId = i;
-                }
-                //break;
-            }
-            //break;
-        }
-        ProgressBarHelper.ClearProgressBar();
-    }
+    //        LOD[] lods = group.GetLODs();
+    //        for (int i = 0; i < lods.Length; i++)
+    //        {
+    //            LOD lod = lods[i];
+    //            //LODInfo lodInfo = new LODInfo(lod);
+    //            foreach (var r in lod.renderers)
+    //            {
+    //                if (r == null) continue;
+    //                MeshRendererInfo rendererInfo = MeshRendererInfo.GetInfo(r.gameObject);
+    //                //Debug.Log($"renderer:{r},parent:{r.transform.parent.name},path:{r.transform.GetPathToRoot()},rendererInfo:{rendererInfo}");
+    //                rendererInfo.LodId = i;
+    //            }
+    //            //break;
+    //        }
+    //        //break;
+    //    }
+    //    ProgressBarHelper.ClearProgressBar();
+    //}
 
     public Material[] LODMaterials;
 
@@ -613,6 +613,12 @@ public class LODManager : SingletonBehaviour<LODManager>
         DateTime start = DateTime.Now;
         var lodGroups = GameObject.FindObjectsOfType<LODGroup>(true);
         var renderers = GameObject.FindObjectsOfType<Renderer>(true).ToList();
+        foreach(var renderer in renderers)
+        {
+            MeshRendererInfo rendererInfo = MeshRendererInfo.GetInfo(renderer.gameObject);
+            rendererInfo.LodIds.Clear();
+        }
+
         for (int i1 = 0; i1 < lodGroups.Length; i1++)
         {
             LODGroup group = lodGroups[i1];
@@ -630,19 +636,18 @@ public class LODManager : SingletonBehaviour<LODManager>
                     if (r == null) continue;
                     MeshRendererInfo rendererInfo = MeshRendererInfo.GetInfo(r.gameObject);
                     //Debug.Log($"renderer:{r},parent:{r.transform.parent.name},path:{r.transform.GetPathToRoot()},rendererInfo:{rendererInfo}");
-                    if (rendererInfo.LodId > i)
-                        rendererInfo.LodId = i;
+                    rendererInfo.LodIds.Add(i);
                     renderers.Remove(r);
                 }
                 //break;
             }
             //break;
         }
-        foreach (var r in renderers)
-        {
-            MeshRendererInfo rendererInfo = MeshRendererInfo.GetInfo(r.gameObject);
-            rendererInfo.LodId = -1;
-        }
+        //foreach (var r in renderers)
+        //{
+        //    MeshRendererInfo rendererInfo = MeshRendererInfo.GetInfo(r.gameObject);
+        //    rendererInfo.LodId = -1;
+        //}
         ProgressBarHelper.ClearProgressBar();
         Debug.LogError($"SetRenderersLODInfo lods:{lodGroups.Length} count:{renderers.Count} time:{(DateTime.Now - start)}");
         return meshRendererInfos;

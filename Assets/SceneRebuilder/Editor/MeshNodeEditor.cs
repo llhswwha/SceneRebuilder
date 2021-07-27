@@ -20,7 +20,18 @@ public class MeshNodeEditor : BaseFoldoutEditor<MeshNode>
     {
         base.OnToolLayout(item);
 
-        GUILayout.Label($"vertexCount:{MeshHelper.GetVertexCountS(item.VertexCount)}");
+        if (item.meshData.vertexCount > 0)
+        {
+            GUILayout.Label($"vertexCount:{MeshHelper.GetVertexCountS(item.VertexCount)}({MeshHelper.GetVertexCountS(item.meshData.vertexCount)}|{item.meshData.vertexCount / (float)item.VertexCount:P1})");
+        }
+        else
+        {
+            GUILayout.Label($"vertexCount:{MeshHelper.GetVertexCountS(item.VertexCount)}");
+        }
+        
+
+        
+
         EditorGUILayout.BeginHorizontal();
         if (GUILayout.Button("Init"))
         {
@@ -55,62 +66,54 @@ public class MeshNodeEditor : BaseFoldoutEditor<MeshNode>
         }
         EditorGUILayout.EndHorizontal();
 
-        meshnodeListArg.caption = $"MeshNode List";
-        EditorUIUtils.ToggleFoldout(meshnodeListArg, arg =>
+        var subms = item.GetMeshNodes();
+        if (subms.Count > 0)
         {
-            var subms = item.subMeshes;
-            arg.caption = $"MeshNode List ({subms.Count})";
-            //arg.info = $"({sv / 10000f:F0}){txt}";
-            InitEditorArg(subms);
-        },
-        () =>
-        {
-        });
-        //if (meshnodeListArg.isEnabled && meshnodeListArg.isExpanded)
-        //{
-        //    InitEditorArg(item.subMeshes);
-        //    meshnodeListArg.DrawPageToolbar(item.subMeshes, (node, i) =>
-        //    {
-        //        var arg = editorArgs[node];
-        //        arg.caption = $"[{i:00}] {node.name}";
-        //        arg.info = $"{MeshHelper.GetVertexCountS(node.VertexCount)}[{node.VertexCount/(float)item.VertexCount:P1}]";
-        //        EditorUIUtils.ObjectFoldout(arg, node.gameObject, () =>
-        //        {
-
-        //        });
-
-        //        if (arg.isEnabled && arg.isExpanded)
-        //        {
-        //            InitEditorArg(node.subMeshes);
-
-        //        }
-        //    });
-        //}
-        DrawMeshNodeList(meshnodeListArg, item,0);
+            meshnodeListArg.caption = $"MeshNode List";
+            EditorUIUtils.ToggleFoldout(meshnodeListArg, arg =>
+            {
+                arg.caption = $"MeshNode List ({subms.Count})";
+                //arg.info = $"({sv / 10000f:F0}){txt}";
+                InitEditorArg(subms);
+            },
+            () =>
+            {
+            });
+            DrawMeshNodeList(meshnodeListArg, item, 0);
+        }
     }
 
     private void DrawMeshNodeList(FoldoutEditorArg meshnodeListArg, MeshNode item,int level)
     {
         meshnodeListArg.level = level;
-        if (meshnodeListArg.isEnabled && meshnodeListArg.isExpanded)
+        var nodes = item.GetMeshNodes();
+        if (meshnodeListArg.isEnabled && meshnodeListArg.isExpanded && nodes.Count>0)
         {
-            InitEditorArg(item.subMeshes);
-            meshnodeListArg.DrawPageToolbar(item.subMeshes, (node, i) =>
+            
+            InitEditorArg(nodes);
+            meshnodeListArg.DrawPageToolbar(nodes, (node, i) =>
             {
                 var arg = editorArgs[node];
-                arg.caption = $"[{i:00}] {node.name} ({node.subMeshes.Count})";
+                arg.isFoldout = node.GetMeshNodes().Count > 0;
+                arg.caption = $"[{i:00}] {node.name} ({node.GetMeshNodes().Count})";
                 arg.isEnabled = true;
                 arg.info = $"{MeshHelper.GetVertexCountS(node.VertexCount)}[{node.VertexCount / (float)item.VertexCount:P1}]";
                 if (level == 0)
                 {
                     arg.background = true;
+                    arg.bold = node == item;
                 }
+                
                 EditorUIUtils.ObjectFoldout(arg, node.gameObject, () =>
                 {
 
                 });
 
-                DrawMeshNodeList(arg, node,level+1);
+                if (node != item)
+                {
+                    DrawMeshNodeList(arg, node, level + 1);
+                }
+                
             });
         }
     }
