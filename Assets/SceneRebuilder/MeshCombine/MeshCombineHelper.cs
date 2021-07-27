@@ -87,17 +87,17 @@ public static class MeshCombineHelper
         // goNew.transform.position=minMax[3];
 
         //int count=0;
-        List<MeshFilter> mfList=new List<MeshFilter>();
-        Dictionary<Material,List<MeshFilter>> mat2Filters=GetMatFilters(renderers, out count);
+        List<SubMesh> mfList=new List<SubMesh>();
+        Dictionary<Material,List<SubMesh>> mat2Filters=GetMatFilters(renderers, out count);
         string mats="";
         int allVs=0;
         foreach(var item in mat2Filters)
         {
             Material material=item.Key;
             mats+=material.name+";";
-            List<MeshFilter> list=item.Value;
+            List<SubMesh> list=item.Value;
             string meshNames = "";
-            list.ForEach(i => meshNames += i.name + ";");
+            list.ForEach(i => meshNames += i.meshFilter.name + ";");
             mfList.AddRange(list);
             CombinedMesh combinedMesh=new CombinedMesh(arg.transform,list,material);
             int vs=combinedMesh.DoCombine(true);
@@ -110,14 +110,20 @@ public static class MeshCombineHelper
                 Debug.LogWarning($"CombineMaterials vs==0 material:{material},list:{list.Count}");
             }
             allVs+=vs;
-            Debug.Log($"CombineMaterials material:{material.name} meshes:{list.Count} meshNames:{meshNames}");
+            Debug.Log($"CombineMaterials material:[{material.name}] meshes:[{list.Count}] meshNames:[{meshNames}]");
         }
 
         goNew.transform.SetParent(arg.transform.parent);
         Debug.Log(string.Format("CombineMaterials name:{5} 用时:{0} \tMesh数量:{2} \tMat数量:{1} \tMats:{3} \tVertex:{4:F1}", (DateTime.Now-start),mat2Filters.Count,count,mats,(allVs/10000f),arg.name));
-        
+
         // var minMax=MeshHelper.GetMinMax(mfList);
-        MeshHelper.CenterPivot(goNew.transform,mfList);
+
+        List<MeshFilter> filterlist = new List<MeshFilter>();
+        foreach(var item in mfList)
+        {
+            filterlist.Add(item.meshFilter);
+        }
+        MeshHelper.CenterPivot(goNew.transform, filterlist);
         
         return goNew;
     }
@@ -146,13 +152,13 @@ public static class MeshCombineHelper
         goNew.transform.SetParent(go.transform.parent);
         int count=0;
         MeshRenderer[] renderers = go.GetRenderers();
-        Dictionary<Material,List<MeshFilter>> mat2Filters=GetMatFilters(renderers, out count);
+        Dictionary<Material,List<SubMesh>> mat2Filters=GetMatFilters(renderers, out count);
         yield return null;
         int i=0;
         foreach(var item in mat2Filters)
         {
             Material material=item.Key;
-            List<MeshFilter> list=item.Value;
+            List<SubMesh> list=item.Value;
             Debug.LogWarning(string.Format("CombineMaterials_Coroutine {0} ({1}/{2})",material,i+1,mat2Filters.Count));
             CombinedMesh combinedMesh=new CombinedMesh(go.transform,list,material);
             yield return combinedMesh.DoCombine_Coroutine(true,waitCount);
@@ -176,7 +182,7 @@ public static class MeshCombineHelper
     //    SetMaterials(mats);
     //}
 
-    public static void SetMaterials(Dictionary<Material, List<MeshFilter>> mats)
+    public static void SetMaterials(Dictionary<Material, List<SubMesh>> mats)
     {
         //int count = 0;
         //var mats = MeshCombineHelper.GetMatFilters(go, out count);
@@ -184,9 +190,10 @@ public static class MeshCombineHelper
         {
             string matKey= MatInfo.GetMatKey(mat);
             var list = mats[mat];
-            foreach (MeshFilter meshFilter in list)
+            foreach (SubMesh subMesh in list)
             {
-                if(meshFilter==null)continue;
+                MeshFilter meshFilter = subMesh.meshFilter;
+                if (meshFilter==null)continue;
                 MeshRenderer renderer = meshFilter.GetComponent<MeshRenderer>();
                 if (renderer == null) continue;
                 //renderer.sharedMaterial = mat;
@@ -209,10 +216,10 @@ public static class MeshCombineHelper
         }
     }
 
-    public static Dictionary<Material, List<MeshFilter>> GetMatFiltersInner(MeshRenderer[] renderers, out int count)
+    public static Dictionary<Material, List<SubMesh>> GetMatFiltersInner(MeshRenderer[] renderers, out int count)
     {
         DateTime start = DateTime.Now;
-        Dictionary<Material, List<MeshFilter>> mat2Filters = new Dictionary<Material, List<MeshFilter>>();
+        Dictionary<Material, List<SubMesh>> mat2Filters = new Dictionary<Material, List<SubMesh>>();
         //MeshRenderer[] renderers = go.GetComponentsInChildren<MeshRenderer>();
         count = renderers.Length;
         for (int i = 0; i < renderers.Length; i++)
@@ -240,11 +247,11 @@ public static class MeshCombineHelper
                 if (mat == null) continue;
                 if (!mat2Filters.ContainsKey(mat))
                 {
-                    mat2Filters.Add(mat, new List<MeshFilter>());
+                    mat2Filters.Add(mat, new List<SubMesh>());
                 }
-                List<MeshFilter> list = mat2Filters[mat];
+                List<SubMesh> list = mat2Filters[mat];
                 MeshFilter filter = renderer.GetComponent<MeshFilter>();
-                list.Add(filter);
+                list.Add(new SubMesh(filter,i1));
             }
         }
 
@@ -265,7 +272,7 @@ public static class MeshCombineHelper
             }
         }
 
-        Dictionary<Material, List<MeshFilter>> mat2Filters2 = new Dictionary<Material, List<MeshFilter>>();
+        Dictionary<Material, List<SubMesh>> mat2Filters2 = new Dictionary<Material, List<SubMesh>>();
         foreach (var info in infos.Values)
         {
             mat2Filters2.Add(info.mat, info.MeshFilters);
@@ -273,12 +280,12 @@ public static class MeshCombineHelper
         return mat2Filters2;
     }
 
-    public static Dictionary<Material, List<MeshFilter>> GetMatFiltersInnerEx(MeshRenderer[] renderers, out int count)
+    public static Dictionary<Material, List<SubMesh>> GetMatFiltersInnerEx(MeshRenderer[] renderers, out int count)
     {
         DateTime start = DateTime.Now;
         MeshMaterialList meshMaterials = new MeshMaterialList();
 
-        Dictionary<Material, List<MeshFilter>> mat2Filters = new Dictionary<Material, List<MeshFilter>>();
+        Dictionary<Material, List<SubMesh>> mat2Filters = new Dictionary<Material, List<SubMesh>>();
         //MeshRenderer[] renderers = go.GetComponentsInChildren<MeshRenderer>();
         count = renderers.Length;
         for (int i = 0; i < renderers.Length; i++)
@@ -299,10 +306,10 @@ public static class MeshCombineHelper
 
                 if (!mat2Filters.ContainsKey(mat))
                 {
-                    mat2Filters.Add(mat, new List<MeshFilter>());
+                    mat2Filters.Add(mat, new List<SubMesh>());
                 }
-                List<MeshFilter> list = mat2Filters[mat];
-                list.Add(filter);
+                List<SubMesh> list = mat2Filters[mat];
+                list.Add(new SubMesh(filter,i1));
 
                 MeshMaterial meshMaterial = new MeshMaterial(mat, filter, i1);
                 meshMaterials.Add(meshMaterial);
@@ -326,7 +333,7 @@ public static class MeshCombineHelper
             }
         }
 
-        Dictionary<Material, List<MeshFilter>> mat2Filters2 = new Dictionary<Material, List<MeshFilter>>();
+        Dictionary<Material, List<SubMesh>> mat2Filters2 = new Dictionary<Material, List<SubMesh>>();
         foreach (var info in infos.Values)
         {
             mat2Filters2.Add(info.mat, info.MeshFilters);
@@ -334,10 +341,10 @@ public static class MeshCombineHelper
         return mat2Filters2;
     }
 
-    public static Dictionary<Material, List<MeshFilter>> GetMatFilters(GameObject go, out int count, bool isSetMaterial = false)
+    public static Dictionary<Material, List<SubMesh>> GetMatFilters(GameObject go, out int count, bool isSetMaterial = false)
     {
         MeshRenderer[] renderers = go.GetComponentsInChildren<MeshRenderer>();
-        Dictionary<Material, List<MeshFilter>> mat2Filters = GetMatFiltersInner(renderers, out count);
+        Dictionary<Material, List<SubMesh>> mat2Filters = GetMatFiltersInner(renderers, out count);
         if (isSetMaterial)
         {
             SetMaterials(mat2Filters);
@@ -346,8 +353,8 @@ public static class MeshCombineHelper
         return mat2Filters;
     }
 
-    public static Dictionary<Material, List<MeshFilter>> GetMatFilters(MeshRenderer[] renderers, out int count,bool isSetMaterial=false){
-        Dictionary<Material, List<MeshFilter>> mat2Filters = GetMatFiltersInner(renderers, out count);
+    public static Dictionary<Material, List<SubMesh>> GetMatFilters(MeshRenderer[] renderers, out int count,bool isSetMaterial=false){
+        Dictionary<Material, List<SubMesh>> mat2Filters = GetMatFiltersInner(renderers, out count);
         if (isSetMaterial)
         {
             SetMaterials(mat2Filters);

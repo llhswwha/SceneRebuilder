@@ -236,7 +236,7 @@ public class MeshCombiner : MonoBehaviour
             string names = "";
             foreach(var item in list)
             {
-                names += item.name + ";\t";
+                names += item.meshFilter.name + ";\t";
             }
 
             Debug.Log($"mat:{key.name}\t\t list:{names}");

@@ -442,9 +442,9 @@ public class MatInfo
         //return $"{mat.GetColor("_BaseColor")},{mat.GetFloat("_Metallic")},{mat.GetFloat("_Smoothness")},{mat.GetTexture("_BaseColorMap")},{mat.GetTexture("_NormalMap")}";
     }
 
-    public List<MeshFilter> MeshFilters = new List<MeshFilter>();
+    public List<SubMesh> MeshFilters = new List<SubMesh>();
 
-    public void AddList(List<MeshFilter> list)
+    public void AddList(List<SubMesh> list)
     {
         MeshFilters.AddRange(list);
     }

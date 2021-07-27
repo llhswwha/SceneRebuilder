@@ -448,18 +448,15 @@ public class AreaTreeNode : SubSceneCreater
             {
                 GameObject.DestroyImmediate(combindResult);
             }
-            combindResult = MeshCombineHelper.CombineEx(new MeshCombineArg(this.renderersRoot, Renderers.ToArray()), 1);
-            //combindResult = MeshCombineHelper.CombineEx(new MeshCombineArg(this.renderersRoot, Renderers.ToArray()), 0);
-            combindResult.name = this.name + "_Combined";
-            combindResult.transform.SetParent(this.transform);
 
-            CombinedRenderers = combindResult.GetComponentsInChildren<MeshRenderer>();
+            combindResult = CombineRenderers(Renderers.ToArray(), this.transform, this.name + "_Combined");
+            //MeshCombineHelper.CombineEx(new MeshCombineArg(this.renderersRoot, Renderers.ToArray()), 1);
+            ////combindResult = MeshCombineHelper.CombineEx(new MeshCombineArg(this.renderersRoot, Renderers.ToArray()), 0);
+            //combindResult.name = this.name + "_Combined";
+            //combindResult.transform.SetParent(this.transform);
 
-            var meshFilters = combindResult.GetComponentsInChildren<MeshFilter>();
-            foreach (var mf in meshFilters)
-            {
-                mf.gameObject.AddComponent<MeshCollider>();
-            }
+            CombinedRenderers = combindResult.GetComponentsInChildren<MeshRenderer>(true);
+            //AddMeshCollider(combindResult);
             this.renderersRoot.SetActive(false);
         }
     }
@@ -472,26 +469,46 @@ public class AreaTreeNode : SubSceneCreater
         }
 
         MeshRendererInfoList[] infoLodList = MeshRendererInfo.SplitByLOD(Renderers.ToArray());
-        for(int i=0;i<infoLodList.Length;i++)
-        {
 
-        }
-
-        List<MeshRendererInfo> infoList = MeshRendererInfo.GetLodN(Renderers.ToArray(),0);
-
-        combindResult = MeshCombineHelper.CombineEx(new MeshCombineArg(this.renderersRoot, Renderers.ToArray()), 1);
-        //combindResult = MeshCombineHelper.CombineEx(new MeshCombineArg(this.renderersRoot, Renderers.ToArray()), 0);
-        combindResult.name = this.name + "_Combined";
+        combindResult = new GameObject(this.name + "_Combined_LOD");
+        combindResult.transform.position = this.transform.position;
         combindResult.transform.SetParent(this.transform);
 
-        CombinedRenderers = combindResult.GetComponentsInChildren<MeshRenderer>();
+        for (int i=0;i<infoLodList.Length;i++)
+        {
+            var list = infoLodList[i];
+            var renderers = list.GetRenderers();
+            var combinedLOD = CombineRenderers(renderers.ToArray(), combindResult.transform, this.name + "_Combined_LOD"+i);
 
-        var meshFilters = combindResult.GetComponentsInChildren<MeshFilter>();
+            foreach(var renderer in renderers)
+            {
+                renderer.transform.SetParent(combinedLOD.transform);
+            }
+        }
+        CombinedRenderers = combindResult.GetComponentsInChildren<MeshRenderer>(true);
+        this.renderersRoot.SetActive(false);
+    }
+
+    private GameObject CombineRenderers(MeshRenderer[] renderers,Transform parent,string name)
+    {
+        GameObject cResult = MeshCombineHelper.CombineEx(new MeshCombineArg(this.renderersRoot, renderers), 1);
+        //combindResult = MeshCombineHelper.CombineEx(new MeshCombineArg(this.renderersRoot, Renderers.ToArray()), 0);
+        cResult.name = name;
+        cResult.transform.SetParent(parent);
+
+        //CombinedRenderers = cResult.GetComponentsInChildren<MeshRenderer>(true);
+
+        AddMeshCollider(cResult);
+        return cResult;
+    }
+
+    private void AddMeshCollider(GameObject root)
+    {
+        var meshFilters = root.GetComponentsInChildren<MeshFilter>(true);
         foreach (var mf in meshFilters)
         {
             mf.gameObject.AddComponent<MeshCollider>();
         }
-        this.renderersRoot.SetActive(false);
     }
 
     [ContextMenu("UpdateCombined")]

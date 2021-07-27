@@ -27,14 +27,19 @@ public class CombinedMesh{
 
     public Vector3[] minMax;
 
-    public CombinedMesh(Transform source,List<MeshFilter> mfs, Material mat){
+    public CombinedMesh(Transform source,List<SubMesh> mfs, Material mat){
         this.source=source;
 
         if(mfs==null || mfs.Count==0){
             this.meshFilters=source.GetComponentsInChildren<MeshFilter>(true).ToList();
         }
         else{
-            this.meshFilters=new List<MeshFilter>(mfs);
+            //this.meshFilters=new List<MeshFilter>(mfs);
+            this.meshFilters = new List<MeshFilter>();
+            foreach(var mesh in mfs)
+            {
+                this.meshFilters.Add(mesh.meshFilter);
+            }
         }
         meshIndexes = new List<int>();
         this.mat=mat;
@@ -42,18 +47,18 @@ public class CombinedMesh{
         {
             foreach (var mf in mfs)
             {
-                if (mf == null) continue;
-                MeshRenderer render = mf.GetComponent<MeshRenderer>();
-                int id = 0;
-                for (int i = 0; i < render.sharedMaterials.Length; i++)
-                {
-                    if (render.sharedMaterials[i] == mat)
-                    {
-                        id = i;
-                        break;
-                    }
-                }
-                meshIndexes.Add(id);
+                if (mf == null || mf.meshFilter == null) continue;
+                //MeshRenderer render = mf.meshFilter.GetComponent<MeshRenderer>();
+                //int id = 0;
+                //for (int i = 0; i < render.sharedMaterials.Length; i++)
+                //{
+                //    if (render.sharedMaterials[i] == mat)
+                //    {
+                //        id = i;
+                //        break;
+                //    }
+                //}
+                meshIndexes.Add(mf.meshIndex);
             }
         }
         else

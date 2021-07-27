@@ -307,7 +307,15 @@ public class MeshRendererInfo : MonoBehaviour
 
 public class MeshRendererInfoList:List<MeshRendererInfo>
 {
-
+    public List<MeshRenderer> GetRenderers()
+    {
+        List<MeshRenderer> renderers = new List<MeshRenderer>();
+        foreach(var item in this)
+        {
+            renderers.Add(item.meshRenderer);
+        }
+        return renderers;
+    }
 }
 
 public enum MeshRendererType
