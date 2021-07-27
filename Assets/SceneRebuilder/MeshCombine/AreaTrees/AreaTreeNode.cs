@@ -471,7 +471,7 @@ public class AreaTreeNode : SubSceneCreater
             GameObject.DestroyImmediate(combindResult);
         }
 
-        List<MeshRendererInfo> infoList = MeshRendererInfo.GetLod0s();
+        List<MeshRendererInfo> infoList = MeshRendererInfo.GetLod0s(Renderers.ToArray());
 
         combindResult = MeshCombineHelper.CombineEx(new MeshCombineArg(this.renderersRoot, Renderers.ToArray()), 1);
         //combindResult = MeshCombineHelper.CombineEx(new MeshCombineArg(this.renderersRoot, Renderers.ToArray()), 0);
