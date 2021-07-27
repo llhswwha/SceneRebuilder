@@ -93,27 +93,35 @@ public class MeshNodeEditor : BaseFoldoutEditor<MeshNode>
             InitEditorArg(nodes);
             meshnodeListArg.DrawPageToolbar(nodes, (node, i) =>
             {
-                var arg = editorArgs[node];
-                arg.isFoldout = node.GetMeshNodes().Count > 0;
-                arg.caption = $"[{i:00}] {node.name} ({node.GetMeshNodes().Count})";
-                arg.isEnabled = true;
-                arg.info = $"{MeshHelper.GetVertexCountS(node.VertexCount)}[{node.VertexCount / (float)item.VertexCount:P1}]";
-                if (level == 0)
+                if (node == null)
                 {
-                    arg.background = true;
-                    arg.bold = node == item;
+                    var arg = new FoldoutEditorArg();
+                    arg.caption = "NULL";
+                    EditorUIUtils.ObjectFoldout(new FoldoutEditorArg(), null, null);
                 }
-                
-                EditorUIUtils.ObjectFoldout(arg, node.gameObject, () =>
+                else
                 {
+                    var arg = editorArgs[node];
+                    arg.isFoldout = node.GetMeshNodes().Count > 0;
+                    arg.caption = $"[{i:00}] {node.GetName()} ({node.GetMeshNodes().Count})";
+                    arg.isEnabled = true;
+                    arg.info = $"{MeshHelper.GetVertexCountS(node.VertexCount)}[{node.VertexCount / (float)item.VertexCount:P1}]";
+                    if (level == 0)
+                    {
+                        arg.background = true;
+                        arg.bold = node == item;
+                    }
 
-                });
+                    EditorUIUtils.ObjectFoldout(arg, node.gameObject, () =>
+                    {
 
-                if (node != item)
-                {
-                    DrawMeshNodeList(arg, node, level + 1);
+                    });
+
+                    if (node != item)
+                    {
+                        DrawMeshNodeList(arg, node, level + 1);
+                    }
                 }
-                
             });
         }
     }

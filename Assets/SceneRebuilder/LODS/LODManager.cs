@@ -392,7 +392,7 @@ public class LODManager : SingletonBehaviour<LODManager>
         if (group != null)
         {
             LOD[] lods = group.GetLODs();
-            LOD[] lodsNew = LODGroupInfo.CreateLODs(LODLevels_3);
+            LOD[] lodsNew = LODHelper.CreateLODs(LODLevels_3);
             for (int i = 0; i < lods.Length && i < lodsNew.Length; i++)
             {
                 lodsNew[i].renderers = lods[i].renderers;
@@ -423,7 +423,7 @@ public class LODManager : SingletonBehaviour<LODManager>
         if (group != null)
         {
             LOD[] lods = group.GetLODs();
-            LOD[] lodsNew = LODGroupInfo.CreateLODs(LODLevels_2);
+            LOD[] lodsNew = LODHelper.CreateLODs(LODLevels_2);
             for (int i = 0; i < lods.Length && i < lodsNew.Length; i++)
             {
                 lodsNew[i].renderers = lods[i].renderers;
@@ -449,6 +449,26 @@ public class LODManager : SingletonBehaviour<LODManager>
     public float[] LODLevels_1 = new float[] { 0.5f, 0.02f };
     public float[] LODLevels_2 = new float[] { 0.7f, 0.3f, 0.02f };
     public float[] LODLevels_3 = new float[] { 0.7f, 0.3f, 0.1f, 0.02f };
+
+    public LOD[] CreateLODS(int count)
+    {
+        if (count == 2)
+        {
+            return LODHelper.CreateLODs(LODLevels_1);
+        }
+        else if (count == 3)
+        {
+            return LODHelper.CreateLODs(LODLevels_2);
+        }
+        else if (count == 4)
+        {
+            return LODHelper.CreateLODs(LODLevels_3);
+        }
+        else{
+            //return LODHelper.CreateLODs(LODLevels_3);
+            return null;
+        }
+    }
 
     public void AddLOD1(MeshRenderer lod0,MeshRenderer lod1)
     {
@@ -744,5 +764,32 @@ public class LODManager : SingletonBehaviour<LODManager>
         });
 
         return info;
+    }
+}
+
+public static class LODHelper
+{
+    public static LOD[] CreateLODs(float[] ls)
+    {
+        LOD[] lods = new LOD[ls.Length];
+        for (int i = 0; i < ls.Length; i++)
+        {
+            LOD lod = new LOD();
+            lod.screenRelativeTransitionHeight = ls[i];
+            lod.fadeTransitionWidth = 0;
+            lods[i] = lod;
+        }
+        return lods;
+    }
+
+    public static LODGroup CreateLODs(GameObject obj, float[] ls)
+    {
+        LODGroup lodGroup = obj.GetComponent<LODGroup>();
+        if (lodGroup == null)
+        {
+            lodGroup = obj.AddComponent<LODGroup>();
+        }
+        lodGroup.SetLODs(CreateLODs(ls));
+        return lodGroup;
     }
 }

@@ -5,6 +5,15 @@ using UnityEngine;
 
 public class MeshNode : MonoBehaviour,IComparable<MeshNode>
 {
+    public string GetName()
+    {
+        if (gameObject == null)
+        {
+            return "[destroied]";
+        }
+        return this.name;
+    }
+
     public string MeshTypeName = "";
 
     //public List<MeshType> TypesList = new List<MeshType>();
@@ -19,7 +28,7 @@ public class MeshNode : MonoBehaviour,IComparable<MeshNode>
         return allIds;
     }
 
-    public TransformData transformData;
+    //public TransformData transformData;
 
     public int GetVertexCount()
     {
@@ -43,25 +52,25 @@ public class MeshNode : MonoBehaviour,IComparable<MeshNode>
 
     public string GetMeshKey1()
     {
-        if (meshData != null)
-        {
-            if (meshData.GetInfo() != null)
-            {
-                return meshData.GetInfo().m_meshFeature;
-            }
-        }
+        //if (meshData != null)
+        //{
+        //    if (meshData.GetInfo() != null)
+        //    {
+        //        return meshData.GetInfo().m_meshFeature;
+        //    }
+        //}
         return MeshTypeName;
     }
 
     public string GetMeshKey2()
     {
-        if (meshData != null)
-        {
-            if (meshData.GetInfo() != null)
-            {
-                return meshData.GetInfo().m_vertexFeature;
-            }
-        }
+        //if (meshData != null)
+        //{
+        //    if (meshData.GetInfo() != null)
+        //    {
+        //        return meshData.GetInfo().m_vertexFeature;
+        //    }
+        //}
         return MeshTypeName;
     }
 
@@ -136,9 +145,9 @@ public class MeshNode : MonoBehaviour,IComparable<MeshNode>
         }
 
         //if (transformData == null)
-        {
-            transformData = new TransformData(transform);
-        }
+        //{
+        //    transformData = new TransformData(transform);
+        //}
 
     }
 
@@ -147,7 +156,7 @@ public class MeshNode : MonoBehaviour,IComparable<MeshNode>
     {
         Debug.Log("RefreshInfo");
         meshData = null;
-        transformData = null;
+        //transformData = null;
         InitInfo();
     }
 

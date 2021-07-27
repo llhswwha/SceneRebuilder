@@ -1955,7 +1955,7 @@ public class AutomaticLOD : MonoBehaviour
             }
 
             //lods = rootAutomaticLOD.m_LODGroup.GetLODs();
-            lods = LODGroupInfo.CreateLODs(defaultLODValues);
+            lods = LODHelper.CreateLODs(defaultLODValues);
 
             //Debug.LogError("lods:" + lods.Length+"|"+lodStr);
 

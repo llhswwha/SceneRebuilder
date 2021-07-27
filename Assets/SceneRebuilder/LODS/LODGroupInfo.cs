@@ -65,36 +65,36 @@ public class LODGroupInfo : MonoBehaviour
     [ContextMenu("SetDefulatLOD")]
     public void SetDefulatLOD()
     {
-        LODGroup.SetLODs(CreateLODs(ls));
+        LODGroup.SetLODs(LODHelper.CreateLODs(ls));
     }
 
     [ContextMenu("CreateLOD")]
     public void CreateLOD()
     {
-        CreateLODs(gameObject, ls);
+        LODHelper.CreateLODs(gameObject, ls);
     }
 
-    public static LOD[] CreateLODs(float[] ls)
-    {
-        LOD[] lods = new LOD[ls.Length];
-        for(int i=0;i<ls.Length;i++)
-        {
-            LOD lod = new LOD();
-            lod.screenRelativeTransitionHeight = ls[i];
-            lod.fadeTransitionWidth = 0;
-            lods[i] = lod;
-        }
-        return lods;
-    }
+    //public static LOD[] CreateLODs(float[] ls)
+    //{
+    //    LOD[] lods = new LOD[ls.Length];
+    //    for(int i=0;i<ls.Length;i++)
+    //    {
+    //        LOD lod = new LOD();
+    //        lod.screenRelativeTransitionHeight = ls[i];
+    //        lod.fadeTransitionWidth = 0;
+    //        lods[i] = lod;
+    //    }
+    //    return lods;
+    //}
 
-    public static LODGroup CreateLODs(GameObject obj,float[] ls)
-    {
-        LODGroup lodGroup = obj.GetComponent<LODGroup>();
-        if (lodGroup == null)
-        {
-            lodGroup = obj.AddComponent<LODGroup>();
-        }
-        lodGroup.SetLODs(CreateLODs(ls));
-        return lodGroup;
-    }
+    //public static LODGroup CreateLODs(GameObject obj,float[] ls)
+    //{
+    //    LODGroup lodGroup = obj.GetComponent<LODGroup>();
+    //    if (lodGroup == null)
+    //    {
+    //        lodGroup = obj.AddComponent<LODGroup>();
+    //    }
+    //    lodGroup.SetLODs(CreateLODs(ls));
+    //    return lodGroup;
+    //}
 }

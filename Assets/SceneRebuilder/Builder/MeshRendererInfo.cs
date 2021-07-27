@@ -93,21 +93,21 @@ public class MeshRendererInfo : MonoBehaviour
         return list;
     }
 
-    public static MeshRendererInfoList[] SplitByLOD(MeshRenderer[] renderers)
+    public static List<MeshRendererInfoList> SplitByLOD(MeshRenderer[] renderers)
     {
-        MeshRendererInfoList[] lodList = new MeshRendererInfoList[4];
-        for(int i = 0; i < lodList.Length; i++)
-        {
-            lodList[i] = new MeshRendererInfoList();
-        }
-
+        List<MeshRendererInfoList> lodList = new List<MeshRendererInfoList>();
+        int max = 6;
         foreach (var renderer in renderers)
         {
             var info = MeshRendererInfo.GetInfo(renderer.gameObject);
-            for(int i=0;i<lodList.Length;i++)
+            for(int i=0;i< max; i++)
             {
                 if (info.IsLodN(i))//0,1,2,3
                 {
+                    if (lodList.Count <= i)
+                    {
+                        lodList.Add(new MeshRendererInfoList());
+                    }
                     lodList[i].Add(info);
                 }
             }

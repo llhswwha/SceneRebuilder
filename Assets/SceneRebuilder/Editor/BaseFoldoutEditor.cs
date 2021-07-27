@@ -13,6 +13,7 @@ public class BaseFoldoutEditor<T> : BaseEditor<T> where T : class
     {
         foreach (var item in items)
         {
+            if (item == null) continue;
             if (!editorArgs.ContainsKey(item))
             {
                 editorArgs.Add(item, new FoldoutEditorArg());

@@ -34,12 +34,12 @@ public class MeshData
 
     //public Vector2[] uv3;
 
-    private MeshInfo Info = new MeshInfo();
+    //private MeshInfo Info = new MeshInfo();
 
-    public MeshInfo GetInfo()
-    {
-        return Info;
-    }
+    //public MeshInfo GetInfo()
+    //{
+    //    return Info;
+    //}
 
     public GameObject _obj;
 
@@ -97,8 +97,8 @@ public class MeshData
                 //colors = ms.colors;
                 //colors32 = ms.colors32;
 
-                Info.m_Mesh = ms;
-                Info.Update();
+                //Info.m_Mesh = ms;
+                //Info.Update();
             }
             else{
                 Debug.Log($"MeshData.ctor msFilter==null obj:{obj}");
@@ -147,11 +147,11 @@ public class MeshData
 
     internal bool IsSameMesh(MeshData info)
     {
-        if (this.Info != null && info.Info != null)
-        {
-            return this.Info.m_meshFeature == info.Info.m_meshFeature;
-        }
-        else
+        //if (this.Info != null && info.Info != null)
+        //{
+        //    return this.Info.m_meshFeature == info.Info.m_meshFeature;
+        //}
+        //else
         {
             bool r1 = triangleCount == info.triangleCount && vertexCount == info.vertexCount && vertexBufferCount == info.vertexBufferCount && vertexAttributeCount == info.vertexAttributeCount;
             return r1;

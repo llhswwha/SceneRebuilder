@@ -468,23 +468,30 @@ public class AreaTreeNode : SubSceneCreater
             GameObject.DestroyImmediate(combindResult);
         }
 
-        MeshRendererInfoList[] infoLodList = MeshRendererInfo.SplitByLOD(Renderers.ToArray());
+        var infoLodList = MeshRendererInfo.SplitByLOD(Renderers.ToArray());
 
         combindResult = new GameObject(this.name + "_Combined_LOD");
         combindResult.transform.position = this.transform.position;
         combindResult.transform.SetParent(this.transform);
 
-        for (int i=0;i<infoLodList.Length;i++)
+        LODGroup group = combindResult.AddComponent<LODGroup>();
+        LOD[] lods = LODManager.Instance.CreateLODS(infoLodList.Count);
+        for (int i=0;i<infoLodList.Count;i++)
         {
             var list = infoLodList[i];
             var renderers = list.GetRenderers();
             var combinedLOD = CombineRenderers(renderers.ToArray(), combindResult.transform, this.name + "_Combined_LOD"+i);
 
-            foreach(var renderer in renderers)
-            {
-                renderer.transform.SetParent(combinedLOD.transform);
-            }
+            //foreach(var renderer in renderers)
+            //{
+            //    renderer.transform.SetParent(combinedLOD.transform);
+            //}
+            var combinedRenderers = combinedLOD.GetComponentsInChildren<MeshRenderer>(true);
+
+            lods[i].renderers = combinedRenderers;
         }
+        group.SetLODs(lods);
+
         CombinedRenderers = combindResult.GetComponentsInChildren<MeshRenderer>(true);
         this.renderersRoot.SetActive(false);
     }
