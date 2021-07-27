@@ -999,7 +999,7 @@ public class AreaTreeNode : SubSceneCreater
         SubScene_Out0 scene1 = null;
         if (combindResult)
         {
-            scene1 = SubSceneHelper.EditorCreateScene<SubScene_Out0>(combindResult, SceneContentType.TreeNode, false, tree.name);
+            scene1 = SubSceneHelper.EditorCreateScene<SubScene_Out0>(combindResult, SceneContentType.TreeNode, false, tree.gameObject);
             scene1.cubePrefabId = tree.GetCubePrefabId();
             scene1.contentType = SceneContentType.TreeNode;
             //scene1.gos = SubSceneHelper.GetChildrenGos(combindResult.transform);
@@ -1017,7 +1017,7 @@ public class AreaTreeNode : SubSceneCreater
         {
             if(isSingle)
                 MoveRenderers();
-            scene2 = SubSceneHelper.EditorCreateScene<SubScene_In>(renderersRoot, SceneContentType.TreeNode, false, tree.name);
+            scene2 = SubSceneHelper.EditorCreateScene<SubScene_In>(renderersRoot, SceneContentType.TreeNode, false, tree.gameObject);
             //scene2.gos = SubSceneHelper.GetChildrenGos(renderersRoot.transform);
             scene2.cubePrefabId = tree.GetCubePrefabId();
             scene2.contentType = SceneContentType.TreeNode;

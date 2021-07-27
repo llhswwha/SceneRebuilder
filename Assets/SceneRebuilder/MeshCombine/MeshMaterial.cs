@@ -310,6 +310,12 @@ public class MatInfo
     public Color color;
     public Texture tex;
 
+    public Shader shader;
+
+    public bool isDoubleSide = false;
+
+    public Texture normal;
+
     public void SetColor(Color color)
     {
         if (this.color == color) return;
@@ -328,7 +334,47 @@ public class MatInfo
         this.mat = m;
         color = GetColor(m);
         //Key = color.ToString();
+        shader = m.shader;
         key = GetMatKey(m);
+        tex = GetTexture(m);
+        normal = GetNormal(m);
+        isDoubleSide = GetIsDoubleSide(m);
+    }
+
+    public static Texture GetTexture(Material m)
+    {
+        if(m.HasProperty("_BaseColorMap"))
+        {
+            return m.GetTexture("_BaseColorMap");
+        }
+        else
+        {
+            return null;
+        }
+    }
+
+    public static Texture GetNormal(Material m)
+    {
+        if (m.HasProperty("_NormalMap"))
+        {
+            return m.GetTexture("_NormalMap");
+        }
+        else
+        {
+            return null;
+        }
+    }
+
+    public static bool GetIsDoubleSide(Material m)
+    {
+        if (m.HasProperty("_DoubleSidedEnable"))
+        {
+            return m.GetFloat("_DoubleSidedEnable")!=0;
+        }
+        else
+        {
+            return false;
+        }
     }
 
     public static Color GetColor(Material mat)
@@ -401,5 +447,63 @@ public class MatInfo
     public void AddList(List<MeshFilter> list)
     {
         MeshFilters.AddRange(list);
+    }
+
+    public void SetIsDoubleSide(bool isD)
+    {
+        if (isDoubleSide == isD) return;
+        SetIsDoubleSide(mat, isD);
+        isDoubleSide = isD;
+    }
+
+    public void SetTexture(Texture t)
+    {
+        if (tex == t) return;
+        SetTexture(mat, t);
+        tex = t;
+    }
+
+    public void SetNormal(Texture t)
+    {
+        if (normal == t) return;
+        SetTexture(mat, t);
+        normal = t;
+    }
+
+    public static void SetIsDoubleSide(Material m, bool isD)
+    {
+        Debug.LogError($"SetIsDoubleSide {m} {isD} {m.HasProperty("_DoubleSidedEnable")}");
+        if (m.HasProperty("_DoubleSidedEnable"))
+        {
+            m.SetFloat("_DoubleSidedEnable", isD ? 1 : 0);
+        }
+        else
+        {
+            //return false;
+        }
+    }
+
+    public static void SetTexture(Material m, Texture tex)
+    {
+        if (m.HasProperty("_BaseColorMap"))
+        {
+            m.SetTexture("_BaseColorMap",tex);
+        }
+        else
+        {
+            //return null;
+        }
+    }
+
+    public static void SetNormal(Material m, Texture tex)
+    {
+        if (m.HasProperty("_NormalMap"))
+        {
+            m.SetTexture("_NormalMap", tex);
+        }
+        else
+        {
+            //return null;
+        }
     }
 }

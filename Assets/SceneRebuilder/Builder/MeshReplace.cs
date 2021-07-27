@@ -25,6 +25,7 @@ public class MeshReplace : MonoBehaviour
         //Replace();
     }
 
+#if UNITY_EDITOR
     [ContextMenu("Replace")]
     public void Replace()
     {
@@ -35,6 +36,7 @@ public class MeshReplace : MonoBehaviour
         }
         SelectNewGos();
     }
+
 
     [ContextMenu("SelectNewGos")]
     public void SelectNewGos()
@@ -68,6 +70,7 @@ public class MeshReplace : MonoBehaviour
         }
         EditorHelper.SelectObjects(newGos);
     }
+#endif
 
     [ContextMenu("ClearNewGos")]
     public void ClearNewGos()

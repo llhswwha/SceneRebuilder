@@ -1,5 +1,6 @@
 using System.Collections;
 using System.Collections.Generic;
+using System.Linq;
 using UnityEngine;
 
 public class MeshRendererInfo : MonoBehaviour
@@ -31,6 +32,38 @@ public class MeshRendererInfo : MonoBehaviour
             info.Init();
         }
         return info.minMax;
+    }
+
+    public static MeshRendererInfo GetInfo(GameObject go)
+    {
+        //Debug.Log($"MeshRendererInfo go:{go}");
+        MeshRendererInfo info = go.GetComponent<MeshRendererInfo>();
+        //Debug.Log($"info:{info} go==null:{go == null}");
+        if (info == null)
+        {
+            info = go.AddComponent<MeshRendererInfo>();
+            info.Init();
+            //Debug.Log($"AddComponent info:{info} info==null:{info == null}");
+        }
+        return info;
+    }
+
+    public static List<MeshRendererInfo> GetLod0s(GameObject go)
+    {
+        var renderers = go.GetComponentsInChildren<MeshRenderer>(true);
+        List<MeshRendererInfo> list = new List<MeshRendererInfo>();
+        foreach (var renderer in renderers)
+        {
+            var info = MeshRendererInfo.GetInfo(renderer.gameObject);
+            if(info.LodId==0||info.LodId==-1)
+            {
+                list.Add(info);
+            }
+        }
+        
+        //var infos= go.GetComponentsInChildren<MeshRendererInfo>(true);
+        //list = infos.Where(i => i.LodId == 0|| i.LodId == -1).ToList();
+        return list;
     }
 
     public MeshRendererType rendererType;
@@ -191,8 +224,9 @@ public class MeshRendererInfo : MonoBehaviour
     // {
     //     //Debug.Log($"OnTransformParentChanged {this.name} p:{transform.parent}");
     // }
-}
 
+    public int LodId = -1;
+}
 
 public enum MeshRendererType
 {

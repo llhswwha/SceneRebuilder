@@ -1,4 +1,7 @@
-    public class LODValueInfo
+using System;
+
+[Serializable]
+public class LODValueInfo
     {
         /// <summary>
         /// 当前所属Level

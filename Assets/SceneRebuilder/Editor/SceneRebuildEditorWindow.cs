@@ -895,41 +895,41 @@ public class SceneRebuildEditorWindow : ListManagerEditorWindow<BuildingModelEle
         if (GUILayout.Button("InitBuildings", GUILayout.Height(buttonHeight)))
         {
             var list=GetBuildingModelInfos();
-            BuildingModelManager buildingModelManager = GameObject.FindObjectOfType<BuildingModelManager>();
-            buildingModelManager.InitBuildings(list);
+            //BuildingModelManager buildingModelManager = GameObject.FindObjectOfType<BuildingModelManager>();
+            BuildingModelManager.Instance.InitBuildings(list);
         }
         if (GUILayout.Button("GetTrees", GUILayout.Height(buttonHeight)))
         {
             var list=GetBuildingModelInfos();
-            BuildingModelManager buildingModelManager = GameObject.FindObjectOfType<BuildingModelManager>();
-            buildingModelManager.UpdateTrees(list);
+            //BuildingModelManager buildingModelManager = GameObject.FindObjectOfType<BuildingModelManager>();
+            BuildingModelManager.Instance.UpdateTrees(list);
         }
         if (GUILayout.Button("ClearTrees", GUILayout.Height(buttonHeight)))
         {
             var list=GetBuildingModelInfos();
-            BuildingModelManager buildingModelManager = GameObject.FindObjectOfType<BuildingModelManager>();
-            buildingModelManager.ClearTrees(list);
+            //BuildingModelManager buildingModelManager = GameObject.FindObjectOfType<BuildingModelManager>();
+            BuildingModelManager.Instance.ClearTrees(list);
         }
         if (GUILayout.Button("CreateTrees", GUILayout.Height(buttonHeight)))
         {
             var list=GetBuildingModelInfos();
-            BuildingModelManager buildingModelManager = GameObject.FindObjectOfType<BuildingModelManager>();
+            //BuildingModelManager buildingModelManager = GameObject.FindObjectOfType<BuildingModelManager>();
             //buildingModelManager.CombineAll();
-            buildingModelManager.CombineBuildings(list);
+            BuildingModelManager.Instance.CombineBuildings(list);
         }
 
         if (GUILayout.Button("SaveScenes", GUILayout.Height(buttonHeight)))
         {
             var list=GetBuildingModelInfos();
-            SubSceneManager subSceneManager = GameObject.FindObjectOfType<SubSceneManager>();
-            subSceneManager.contentType = SceneContentType.TreeWithPart;
-            subSceneManager.EditorCreateBuildingScenes(list.ToArray());
+            //SubSceneManager subSceneManager = GameObject.FindObjectOfType<SubSceneManager>();
+            //subSceneManager.contentType = SceneContentType.TreeWithPart;
+            SubSceneManager.Instance.EditorCreateBuildingScenes(list.ToArray());
         }
         if (GUILayout.Button("LoadScenes", GUILayout.Height(buttonHeight)))
         {
             var list=GetBuildingModelInfos();
-            SubSceneManager subSceneManager = GameObject.FindObjectOfType<SubSceneManager>();
-            subSceneManager.EditorLoadScenes(list.ToArray());
+            //SubSceneManager subSceneManager = GameObject.FindObjectOfType<SubSceneManager>();
+            SubSceneManager.Instance.EditorLoadScenes(list.ToArray());
         }
         if (GUILayout.Button("UnLoadScenes", GUILayout.Height(buttonHeight)))
         {

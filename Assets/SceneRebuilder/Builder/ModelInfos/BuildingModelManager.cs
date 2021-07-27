@@ -8,17 +8,17 @@ using UnityEngine.SceneManagement;
 using UnityEditor;
 using UnityEditor.SceneManagement;
 #endif
-public class BuildingModelManager : MonoBehaviour
+public class BuildingModelManager : SingletonBehaviour<BuildingModelManager>
 {
-    private static BuildingModelManager _instance;
-    public static BuildingModelManager Instance{
-        get{
-            if(_instance==null){
-                _instance=GameObject.FindObjectOfType<BuildingModelManager>();
-            }
-            return _instance;
-        }
-    }
+    // private static BuildingModelManager _instance;
+    // public static BuildingModelManager Instance{
+    //     get{
+    //         if(_instance==null){
+    //             _instance=GameObject.FindObjectOfType<BuildingModelManager>();
+    //         }
+    //         return _instance;
+    //     }
+    // }
     public int selectCount = 5;
     public List<BuildingModelInfo> SelectedBuildings = new List<BuildingModelInfo>();
 

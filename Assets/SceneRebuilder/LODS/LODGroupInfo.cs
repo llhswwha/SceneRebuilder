@@ -11,6 +11,9 @@ public class LODGroupInfo : MonoBehaviour
 
     public int lodCount;
 
+
+    public List<int> lodVertexCount=new List<int>();
+
     // Start is called before the first frame update
     void Start()
     {
@@ -21,14 +24,23 @@ public class LODGroupInfo : MonoBehaviour
     void GetLODs()
     {
         LodInfos.Clear();
+        lodVertexCount.Clear();
         LODGroup = gameObject.GetComponent<LODGroup>();
         LOD[] lods = LODGroup.GetLODs();
-        foreach (var lod in lods)
+        foreach (LOD lod in lods)
         {
             LODInfo lodInfo = new LODInfo(lod);
             LodInfos.Add(lodInfo);
+            int vc=0;
+            foreach(var r in lod.renderers){
+                MeshFilter meshFilter=r.GetComponent<MeshFilter>();
+                vc+=meshFilter.sharedMesh.vertexCount;
+            }
+            lodVertexCount.Add(vc);
         }
         lodCount = LODGroup.lodCount;
+
+        
     }
 
     [ContextMenu("SetLODs")]

@@ -4,29 +4,126 @@ using System.Collections.Generic;
 using System.Linq;
 using UnityEngine;
 
-public class DoorManager : MonoBehaviour
+public class DoorManager : SingletonBehaviour<DoorManager>
 {
-    public List<DoorInfo> Doors = new List<DoorInfo>();
+    // private static DoorManager _instance;
+
+    // public static DoorManager Instance
+    // {
+    //     get
+    //     {
+    //         if (_instance == null)
+    //         {
+    //             _instance = GameObject.FindObjectOfType<DoorManager>();
+    //         }
+    //         return _instance;
+    //     }
+    // }
+
+    public GameObject LocalTarget = null;
+
+    public bool IsOnlyActive = false;
+
+    public bool IsOnlyCanSplit = false;
+
+    public DoorInfoList doorInfos;
+
+    public DoorInfoList UpdateDoors()
+    {
+        MeshRenderer[] renderers = null;
+        if (LocalTarget != null)
+        {
+            renderers = LocalTarget.GetComponentsInChildren<MeshRenderer>(true);
+        }
+        else
+        {
+            renderers = GameObject.FindObjectsOfType<MeshRenderer>(true);
+        }
+        var rendererList = renderers.Where(i => i.name.ToLower().Contains("door")).ToList();
+        doorInfos = new DoorInfoList(rendererList);
+        return doorInfos;
+    }
+
+    public DoorInfoList GetDoors()
+    {
+        DoorInfoList doors = new DoorInfoList();
+
+        foreach(var door in doorInfos)
+        {
+            if (IsOnlyActive)
+            {
+                if (door.DoorGo && door.DoorGo.activeInHierarchy == false) continue;
+            }
+            if (IsOnlyCanSplit)
+            {
+                if (door.SubMeshCount <= 1) continue;
+            }
+            doors.Add(door);
+
+            doors.VertexCount += door.VertexCount;
+            if (door.DoorGo && door.DoorGo.activeInHierarchy)
+                doors.VertexCount_Show += door.VertexCount;
+        }
+        doors.Sort((a, b) =>
+        {
+            return b.VertexCount.CompareTo(a.VertexCount);
+        });
+        return doors;
+    }
+
+    public void SplitAll()
+    {
+        var doors = GetDoors();
+        for (int i = 0; i < doors.Count; i++)
+        {
+            var door = doors[i];
+            float progress = (float)i / doors.Count;
+            float percents = progress * 100;
+            if (ProgressBarHelper.DisplayCancelableProgressBar("CombinedBuildings", $"Progress1 {i}/{doors.Count} {percents:F2}%  {door.DoorGo.name}", progress))
+            {
+                break;
+            }
+            GameObject result = MeshCombineHelper.SplitByMaterials(door.DoorGo);
+        }
+        ProgressBarHelper.ClearProgressBar();
+    }
+}
+
+[Serializable]
+public class DoorInfoList: List<DoorInfo>
+{
+    //public List<DoorInfo> Doors = new List<DoorInfo>();
     public int VertexCount = 0;
     public int VertexCount_Show = 0;
 
-    public void GetDoors()
+
+    public DoorInfoList()
     {
-        Doors.Clear();
+        
+    }
+
+    public DoorInfoList(List<MeshRenderer> renderers)
+    {
+        GetDoors(renderers);
+    }
+
+    public void GetDoors(List<MeshRenderer> renderers)
+    {
+        //Doors.Clear();
         VertexCount = 0;
         VertexCount_Show = 0;
         DateTime start = DateTime.Now;
         ProgressBarHelper.DisplayCancelableProgressBar("GetDoors", "Start", 0);
-        var renderers = GameObject.FindObjectsOfType<MeshRenderer>(true).Where(i => i.name.ToLower().Contains("door")).ToList() ;
-        for(int i = 0; i < renderers.Count; i++)
+        //var renderers = GameObject.FindObjectsOfType<MeshRenderer>(true).Where(i => i.name.ToLower().Contains("door")).ToList();
+        for (int i = 0; i < renderers.Count; i++)
         {
 
             float progress = (float)i / renderers.Count;
             ProgressBarHelper.DisplayCancelableProgressBar("GetDoors", $"{i}/{renderers.Count} {progress:P1}", progress);
             var parent = renderers[i].transform.parent;
-            if (parent.name.ToLower().Contains("combined")) continue;
+            if (parent != null && parent.name.ToLower().Contains("combined")) continue;
             DoorInfo door = new DoorInfo(renderers[i]);
-            Doors.Add(door);
+            this.Add(door);
             VertexCount += door.VertexCount;
             if (renderers[i].gameObject.activeInHierarchy)
             {
@@ -34,7 +131,8 @@ public class DoorManager : MonoBehaviour
             }
         }
         ProgressBarHelper.ClearProgressBar();
-        Debug.Log($"GetDoors count:{renderers.Count} VertexCount:{VertexCount} time:{(DateTime.Now-start)}");
+        Debug.Log($"GetDoors count:{renderers.Count} VertexCount:{VertexCount} time:{(DateTime.Now - start)}");
+        //return Doors;
     }
 }
 
@@ -97,6 +195,7 @@ public class DoorInfo
 
     public override string ToString()
     {
-        return $"mat:{MatCount},mesh:{SubMeshCount},v:{VertexCount},dis:{DisToCenter:F1},off:({OffToCenter.x:F2},{OffToCenter.y:F2},{OffToCenter.z:F2})";
+        //return $"mat:{MatCount},mesh:{SubMeshCount},v:{VertexCount},dis:{DisToCenter:F1},off:({OffToCenter.x:F2},{OffToCenter.y:F2},{OffToCenter.z:F2})";
+        return $"mat:{MatCount},mesh:{SubMeshCount},v:{VertexCount},dis:{DisToCenter:F1}";
     }
 }

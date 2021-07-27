@@ -48,6 +48,15 @@ namespace CodeStage.AdvancedFPSCounter.Editor.UI
             this.isToggle = isToggle;
         }
 
+        public FoldoutEditorArg(bool isEnabled, bool isExpanded, bool isToggle,bool separator,bool background)
+        {
+            this.isEnabled = isEnabled;
+            this.isExpanded = isExpanded;
+            this.isToggle = isToggle;
+            this.separator = separator;
+            this.background = background;
+        }
+
         public int DrawFilterList(int width,params string[] filters)
         {
             if(listFilterId_Names==null|| listFilterId_Names.Length != filters.Length)
@@ -61,7 +70,10 @@ namespace CodeStage.AdvancedFPSCounter.Editor.UI
 
         public int DrawPageSizeList()
 		{
-			pageSize_selected = EditorGUILayout.IntPopup("PageSize: ", pageSize_selected, pageSize_names, pageSize_sizes);
+            EditorGUILayout.LabelField("PageSize:", GUILayout.Width(80));
+            pageSize_selected = EditorGUILayout.IntPopup(pageSize_selected, pageSize_names, pageSize_sizes);
+            
+            //EditorGUILayout.Popup("Size", 0, pageSize_names);
 			return pageSize_selected;	
 		}
 
@@ -78,15 +90,17 @@ namespace CodeStage.AdvancedFPSCounter.Editor.UI
 				}
 				pageId_selected=1;
 			}
-			pageId_selected = EditorGUILayout.IntPopup("PageIndex: ", pageId_selected, pageId_names, pageId_sizes);
-		}
+            EditorGUILayout.LabelField("PageIndex:",GUILayout.Width(100));
+            pageId_selected = EditorGUILayout.IntPopup( pageId_selected, pageId_names, pageId_sizes);
+            EditorGUILayout.LabelField("/"+pageCount, GUILayout.Width(30));
+        }
 
 		public void DrawPageToolbar(int count)
 		{
-			//EditorGUILayout.BeginHorizontal();
+			EditorGUILayout.BeginHorizontal();
 			DrawPageSizeList();
 			DrawPageIndexList(count);
-			//EditorGUILayout.EndHorizontal();
+			EditorGUILayout.EndHorizontal();
 		}
 
         public void DrawPageToolbar<T>(List<T> list,System.Action<T,int> drawItemAction)
@@ -139,6 +153,11 @@ namespace CodeStage.AdvancedFPSCounter.Editor.UI
         public FoldoutEditorArg(bool isEnabled, bool isExpanded, bool isToggle) : base(isEnabled, isExpanded, isToggle)
         {
             
+        }
+
+        public FoldoutEditorArg(bool isEnabled, bool isExpanded, bool isToggle, bool separator, bool background) : base(isEnabled, isExpanded, isToggle,separator,background)
+        {
+
         }
     }
 

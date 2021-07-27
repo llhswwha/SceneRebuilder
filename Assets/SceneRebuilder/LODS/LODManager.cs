@@ -2,6 +2,7 @@ using System;
 using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
+using System.Linq;
 #if UNITY_EDITOR
 using UnityEditor;
 #endif
@@ -20,6 +21,35 @@ public class LODManager : MonoBehaviour
             }
             return _instance;
         }
+    }
+
+    public void CheckLODPositions()
+    {
+        var lodGroups = GameObject.FindObjectsOfType<LODGroup>(true);
+        for (int i1 = 0; i1 < lodGroups.Length; i1++)
+        {
+            LODGroup group = lodGroups[i1];
+            float progress = (float)i1 / lodGroups.Length;
+
+            ProgressBarHelper.DisplayCancelableProgressBar("SetRenderersLODInfo", $"{i1}/{lodGroups.Length} {progress:P1} group:{group}", progress);
+
+            LOD[] lods = group.GetLODs();
+            for (int i = 0; i < lods.Length; i++)
+            {
+                LOD lod = lods[i];
+                //LODInfo lodInfo = new LODInfo(lod);
+                foreach (var r in lod.renderers)
+                {
+                    if (r == null) continue;
+                    MeshRendererInfo rendererInfo = MeshRendererInfo.GetInfo(r.gameObject);
+                    //Debug.Log($"renderer:{r},parent:{r.transform.parent.name},path:{r.transform.GetPathToRoot()},rendererInfo:{rendererInfo}");
+                    rendererInfo.LodId = i;
+                }
+                //break;
+            }
+            //break;
+        }
+        ProgressBarHelper.ClearProgressBar();
     }
 
     public Material[] LODMaterials;
@@ -65,9 +95,9 @@ public class LODManager : MonoBehaviour
         CreateLOD(TestTarget);
     }
 
-    public GameObject GoLOD0;
+    //public GameObject GoLOD0;
 
-    public GameObject GoLOD1;
+    //public GameObject GoLOD1;
 
     public float zeroDistance=0.0002f;
 
@@ -82,67 +112,517 @@ public class LODManager : MonoBehaviour
 #endif
     }
 
-    [ContextMenu("CombineLOD0AndLOD1")]
-    public void CombineLOD0AndLOD1()
+    public GameObject GroupRoot;
+
+    public GameObject LODnRoot;
+
+    public MeshRenderer CreateSimplifier(MeshRenderer lod0,float percent)
     {
-        UpackPrefab_One(GoLOD1);
-        UpackPrefab_One(GoLOD0);
+        GameObject newObj = MeshHelper.CopyGO(lod0.gameObject);
+        MeshRenderer renderer = newObj.GetComponent<MeshRenderer>();
+        newObj.name += "_" + percent;
+        return renderer;
+    }
+
+    private void AppendLodInner(int lodLevel)
+    {
+        twoList.Clear();
+        //var renderers_0 = MeshRendererInfo.GetLod0s(GroupRoot);
+        //var renderers_2 = LOD2Root.GetComponentsInChildren<MeshRenderer>(true);
+
+        UpackPrefab_One(GroupRoot);
+        UpackPrefab_One(LODnRoot);
         DateTime start = DateTime.Now;
-        var renderers_1=GoLOD1.GetComponentsInChildren<MeshRenderer>(true);
-        var renderers_0=GoLOD0.GetComponentsInChildren<MeshRenderer>(true);
-        List<MeshRenderer> renderersList_0=new List<MeshRenderer>();
-        renderersList_0.AddRange(renderers_0);
-        foreach(var render1 in renderers_1)
+        var renderers_2 = LODnRoot.GetComponentsInChildren<MeshRenderer>(true);
+        var renderers_0 = MeshRendererInfo.GetLod0s(GroupRoot);
+        List<MeshRendererInfo> list_lod0 = new List<MeshRendererInfo>();
+        list_lod0.AddRange(renderers_0);
+        //renderers_0.ToList().ForEach(i => { ts.Add(i.transform); });
+        for (int i = 0; i < renderers_2.Length; i++)
         {
-            bool isFound=false;
-            float minDis=float.MaxValue;
-            MeshRenderer minRenderer=null;
-            foreach(var render0 in renderersList_0)
+            MeshRenderer render_lod1 = renderers_2[i];
+
+            float progress = (float)i / renderers_2.Length;
+            ProgressBarHelper.DisplayCancelableProgressBar("CombineLOD0AndLOD1", $"{i}/{renderers_2.Length} {progress:P1} MeshRenderer:{render_lod1.name}", progress);
+
+            var min = GetMinDisTransform<MeshRendererInfo>(list_lod0, render_lod1.transform);
+            float minDis = min.dis;
+            MeshRenderer render_lod0 = min.target.meshRenderer;
+
+            MeshFilter filter1 = render_lod1.GetComponent<MeshFilter>();
+            MeshFilter filter0 = render_lod0.GetComponent<MeshFilter>();
+            int vertexCount0 = filter0.sharedMesh.vertexCount;
+            int vertexCount1 = filter1.sharedMesh.vertexCount;
+            if (minDis <= zeroDistance)
             {
-                float distance=Vector3.Distance(render0.transform.position,render1.transform.position);
-                if(distance<minDis){
-                    minDis=distance;
-                    minRenderer=render0;
-                }
-            }
-           MeshFilter filter1=render1.GetComponent<MeshFilter>();
-            MeshFilter filter0=minRenderer.GetComponent<MeshFilter>();
-            int vertexCount0=filter0.sharedMesh.vertexCount;
-            int vertexCount1=filter1.sharedMesh.vertexCount;
-            if(minDis<=zeroDistance)
-            {
-                if(vertexCount1==vertexCount0){
-                    GameObject.DestroyImmediate(filter1.gameObject);
-                }
-                else{
-                    Debug.Log($"GetDistance1 \tLOD1:{render1.name}({vertexCount1}) \tLOD0:{minRenderer.name}({vertexCount0}) \tDistance:{minDis} \t{(float)vertexCount1/vertexCount0:P2}");
-
-                    //  LODGroupInfo lODGroup=minRenderer.GetComponent<LODGroupInfo>();
-                    //  if(lODGroup==null){
-                    //      lODGroup=minRenderer.AddComponent<LODGroupInfo>();
-                    //  }
-
-                    render1.transform.SetParent(minRenderer.transform);
-                    render1.name+="_LOD1";
-
-                    LODGroup lODGroup=minRenderer.GetComponent<LODGroup>();
-                    if(lODGroup==null){
-                        lODGroup=minRenderer.gameObject.AddComponent<LODGroup>();
+                if (DoCreateGroup)
+                {
+                    if (vertexCount1 == vertexCount0)
+                    {
+                        //GameObject.DestroyImmediate(filter1.gameObject);
+                        render_lod1 = CreateSimplifier(render_lod0, 0.5f);
+                        GameObject.DestroyImmediate(filter1.gameObject);
                     }
-                    LOD[] lods = new LOD[2];
-                    lods[0]=new LOD(0.5f,new Renderer[1]{minRenderer});     //LOD0 >50% 
-                    //lods[1]=new LOD(0.2f,new Renderer[1]{render1});         //LOD1  > 20% - 50% 
-                    // lods[2]=new LOD(0.1f,new Renderer[1]{render1});         //LOD2  > 10% - 20% 
-                    lods[1]=new LOD(0.02f,new Renderer[1]{render1});        //LOD3  > 1% - 10% 
-                                                                            //Culled > 0% - 1%
-                    lODGroup.SetLODs(lods);
+
+                    //else
+                    {
+                        Debug.Log($"GetDistance1 \tLOD3:{render_lod1.name}({vertexCount1}) \tLOD0:{render_lod0.name}({vertexCount0}) \tDistance:{minDis} \t{(float)vertexCount1 / vertexCount0:P2}");
+                        render_lod1.transform.SetParent(render_lod0.transform);
+                        render_lod1.name += "_LOD"+lodLevel;
+
+                        if (lodLevel == 1)
+                        {
+                            AddLOD1(render_lod0, render_lod1);
+                        }
+                        else if (lodLevel == 2)
+                        {
+                            AddLOD2(render_lod0, render_lod1);
+                        }
+                        else if (lodLevel == 3)
+                        {
+                            AddLOD3(render_lod0, render_lod1);
+                        }
+                        
+                    }
                 }
+
+                twoList.Add(new TwoRenderers(render_lod0, render_lod1, minDis, min.meshDis));
             }
-            else{
-                Debug.LogWarning($"GetDistance1 \tLOD1:{render1.name}({vertexCount1}) \tLOD0:{minRenderer.name}({vertexCount0}) \tDistance:{minDis} \t{(float)vertexCount1/vertexCount0:P2}");
+            else
+            {
+                Debug.LogWarning($"GetDistance1 \tLOD3:{render_lod1.name}({vertexCount1}) \tLOD0:{render_lod0.name}({vertexCount0}) \tDistance:{minDis} \t{(float)vertexCount1 / vertexCount0:P2}");
+
+                twoList.Add(new TwoRenderers(render_lod0, render_lod1, minDis, min.meshDis));
             }
         }
-        Debug.LogError($"CombineLOD0AndLOD1 count1:{renderers_1.Length} count0:{renderers_0.Length} time:{(DateTime.Now - start)}");
+        ProgressBarHelper.ClearProgressBar();
+
+        twoList.Sort((a, b) =>
+        {
+            return b.dis.CompareTo(a.dis);
+        });
+
+        RemoveEmpty(LODnRoot.transform);
+        RemoveEmpty(LODnRoot.transform);
+
+        Debug.LogError($"AppendLod3ToGroup count1:{renderers_2.Length} count0:{renderers_0.Count} time:{(DateTime.Now - start)}");
+    }
+
+    [ContextMenu("AppendLod1ToGroup")]
+    public void AppendLod1ToGroup()
+    {
+        AppendLodInner(1);
+    }
+
+    [ContextMenu("AppendLod2ToGroup")]
+    public void AppendLod2ToGroup()
+    {
+        AppendLodInner(2);
+        //twoList.Clear();
+        ////var renderers_0 = MeshRendererInfo.GetLod0s(GroupRoot);
+        ////var renderers_2 = LOD2Root.GetComponentsInChildren<MeshRenderer>(true);
+
+        //UpackPrefab_One(GroupRoot);
+        //UpackPrefab_One(LODnRoot);
+        //DateTime start = DateTime.Now;
+        //var renderers_2 = LODnRoot.GetComponentsInChildren<MeshRenderer>(true);
+        //var renderers_0 = MeshRendererInfo.GetLod0s(GroupRoot);
+        //List<MeshRendererInfo> list_lod0 = new List<MeshRendererInfo>();
+        //list_lod0.AddRange(renderers_0);
+        ////renderers_0.ToList().ForEach(i => { ts.Add(i.transform); });
+        //for (int i = 0; i < renderers_2.Length; i++)
+        //{
+        //    MeshRenderer render_lod1 = renderers_2[i];
+
+        //    float progress = (float)i / renderers_2.Length;
+        //    ProgressBarHelper.DisplayCancelableProgressBar("CombineLOD0AndLOD1", $"{i}/{renderers_2.Length} {progress:P1} MeshRenderer:{render_lod1.name}", progress);
+
+        //    var min = GetMinDisTransform<MeshRendererInfo>(list_lod0, render_lod1.transform);
+        //    float minDis = min.dis;
+        //    MeshRenderer render_lod0 = min.target.meshRenderer;
+
+        //    MeshFilter filter1 = render_lod1.GetComponent<MeshFilter>();
+        //    MeshFilter filter0 = render_lod0.GetComponent<MeshFilter>();
+        //    int vertexCount0 = filter0.sharedMesh.vertexCount;
+        //    int vertexCount1 = filter1.sharedMesh.vertexCount;
+        //    if (minDis <= zeroDistance)
+        //    {
+        //        if (DoCreateGroup)
+        //        {
+        //            if (vertexCount1 == vertexCount0)
+        //            {
+        //                //GameObject.DestroyImmediate(filter1.gameObject);
+        //                render_lod1 = CreateSimplifier(render_lod0, 0.5f);
+        //                GameObject.DestroyImmediate(filter1.gameObject);
+        //            }
+
+        //            //else
+        //            {
+        //                Debug.Log($"GetDistance1 \tLOD2:{render_lod1.name}({vertexCount1}) \tLOD0:{render_lod0.name}({vertexCount0}) \tDistance:{minDis} \t{(float)vertexCount1 / vertexCount0:P2}");
+        //                render_lod1.transform.SetParent(render_lod0.transform);
+        //                render_lod1.name += "_LOD2";
+
+        //                AddLOD2(render_lod0, render_lod1);
+        //            }
+        //        }
+
+        //        twoList.Add(new TwoRenderers(render_lod0, render_lod1, minDis, min.meshDis));
+        //    }
+        //    else
+        //    {
+        //        Debug.LogWarning($"GetDistance1 \tLOD1:{render_lod1.name}({vertexCount1}) \tLOD0:{render_lod0.name}({vertexCount0}) \tDistance:{minDis} \t{(float)vertexCount1 / vertexCount0:P2}");
+
+        //        twoList.Add(new TwoRenderers(render_lod0, render_lod1, minDis, min.meshDis));
+        //    }
+        //}
+        //ProgressBarHelper.ClearProgressBar();
+
+        //twoList.Sort((a, b) =>
+        //{
+        //    return b.dis.CompareTo(a.dis);
+        //});
+
+        //RemoveEmpty(LODnRoot.transform);
+        //RemoveEmpty(LODnRoot.transform);
+
+        //Debug.LogError($"AppendLod2ToGroup count1:{renderers_2.Length} count0:{renderers_0.Count} time:{(DateTime.Now - start)}");
+    }
+
+    [ContextMenu("AppendLod2ToGroup")]
+    public void AppendLod3ToGroup()
+    {
+        //twoList.Clear();
+        ////var renderers_0 = MeshRendererInfo.GetLod0s(GroupRoot);
+        ////var renderers_2 = LOD2Root.GetComponentsInChildren<MeshRenderer>(true);
+
+        //UpackPrefab_One(GroupRoot);
+        //UpackPrefab_One(LODnRoot);
+        //DateTime start = DateTime.Now;
+        //var renderers_2 = LODnRoot.GetComponentsInChildren<MeshRenderer>(true);
+        //var renderers_0 = MeshRendererInfo.GetLod0s(GroupRoot);
+        //List<MeshRendererInfo> list_lod0 = new List<MeshRendererInfo>();
+        //list_lod0.AddRange(renderers_0);
+        ////renderers_0.ToList().ForEach(i => { ts.Add(i.transform); });
+        //for (int i = 0; i < renderers_2.Length; i++)
+        //{
+        //    MeshRenderer render_lod1 = renderers_2[i];
+
+        //    float progress = (float)i / renderers_2.Length;
+        //    ProgressBarHelper.DisplayCancelableProgressBar("CombineLOD0AndLOD1", $"{i}/{renderers_2.Length} {progress:P1} MeshRenderer:{render_lod1.name}", progress);
+
+        //    var min = GetMinDisTransform<MeshRendererInfo>(list_lod0, render_lod1.transform);
+        //    float minDis = min.dis;
+        //    MeshRenderer render_lod0 = min.target.meshRenderer;
+
+        //    MeshFilter filter1 = render_lod1.GetComponent<MeshFilter>();
+        //    MeshFilter filter0 = render_lod0.GetComponent<MeshFilter>();
+        //    int vertexCount0 = filter0.sharedMesh.vertexCount;
+        //    int vertexCount1 = filter1.sharedMesh.vertexCount;
+        //    if (minDis <= zeroDistance)
+        //    {
+        //        if (DoCreateGroup)
+        //        {
+        //            if (vertexCount1 == vertexCount0)
+        //            {
+        //                //GameObject.DestroyImmediate(filter1.gameObject);
+        //                render_lod1 = CreateSimplifier(render_lod0, 0.5f);
+        //                GameObject.DestroyImmediate(filter1.gameObject);
+        //            }
+
+        //            //else
+        //            {
+        //                Debug.Log($"GetDistance1 \tLOD2:{render_lod1.name}({vertexCount1}) \tLOD0:{render_lod0.name}({vertexCount0}) \tDistance:{minDis} \t{(float)vertexCount1 / vertexCount0:P2}");
+        //                render_lod1.transform.SetParent(render_lod0.transform);
+        //                render_lod1.name += "_LOD2";
+
+        //                AddLOD2(render_lod0,render_lod1);
+        //            }
+        //        }
+
+        //        twoList.Add(new TwoRenderers(render_lod0, render_lod1, minDis, min.meshDis));
+        //    }
+        //    else
+        //    {
+        //        Debug.LogWarning($"GetDistance1 \tLOD1:{render_lod1.name}({vertexCount1}) \tLOD0:{render_lod0.name}({vertexCount0}) \tDistance:{minDis} \t{(float)vertexCount1 / vertexCount0:P2}");
+
+        //        twoList.Add(new TwoRenderers(render_lod0, render_lod1, minDis, min.meshDis));
+        //    }
+        //}
+        //ProgressBarHelper.ClearProgressBar();
+
+        //twoList.Sort((a, b) =>
+        //{
+        //    return b.dis.CompareTo(a.dis);
+        //});
+
+        //RemoveEmpty(LODnRoot.transform);
+        //RemoveEmpty(LODnRoot.transform);
+
+        //Debug.LogError($"AppendLod2ToGroup count1:{renderers_2.Length} count0:{renderers_0.Count} time:{(DateTime.Now - start)}");
+
+        AppendLodInner(3);
+    }
+
+    [Serializable]
+    public class MinDisTarget<T> where T :Component
+    {
+        public float dis = float.MaxValue;
+        public float meshDis = float.MaxValue;
+        public T target = null;
+        public MinDisTarget(float dis,float meshDis, T t)
+        {
+            this.dis = dis;
+            target = t;
+            this.meshDis = meshDis;
+        }
+    }
+
+    private float GetCenterDistance(GameObject go1,GameObject go2)
+    {
+        MeshRendererInfo info0 = MeshRendererInfo.GetInfo(go1);
+        var center0 = info0.center;
+        MeshRendererInfo info1 = MeshRendererInfo.GetInfo(go2);
+        var center1 = info1.center;
+        float distance = Vector3.Distance(center0, center1);
+        return distance;
+    }
+
+    private MinDisTarget<T> GetMinDisTransform<T>(List<T> ts,Transform t) where T : Component
+    {
+        float minDis = float.MaxValue;
+        float minDisEx = float.MaxValue;
+        T minT = null;
+        T minTEx = null;
+        foreach (var item in ts)
+        {
+            float distance = Vector3.Distance(item.transform.position, t.position);
+
+            //float distance = GetCenterDistance(item.gameObject, t.gameObject);
+
+            if (distance < 1)
+            {
+                float distance2 = MeshHelper.GetAvgVertexDistanceEx(item.transform, t);
+                if (distance2 < minDisEx)
+                {
+                    minDisEx = distance2;
+                    minTEx = item;
+                }
+            }
+
+            //float distance = distance2;
+            if (distance < minDis)
+            {
+                minDis = distance;
+                minT = item;
+            }
+        }
+
+        float distance3 = MeshHelper.GetAvgVertexDistanceEx(minT.transform, t);
+        if (distance3 < minDisEx)
+        {
+            minDisEx = distance3;
+            minTEx = minT;
+        }
+
+        if (minTEx == null)
+        {
+            minTEx = minT;
+        }
+        //float dis4 = GetCenterDistance(minTEx.gameObject, t.gameObject);
+
+        //minDisEx = MeshHelper.GetAvgVertexDistanceEx(minT.transform, t);
+        //if (distance3 < minDisEx)
+        //{
+        //    minDisEx = distance3;
+        //    minTEx = minT;
+        //}
+
+        return new MinDisTarget<T>(minDis,minDisEx, minTEx);
+    }
+
+    private void RemoveEmpty(Transform root)
+    {
+        Transform[] cs= root.GetComponentsInChildren<Transform>(true);
+        foreach(var c in cs)
+        {
+            if (c.childCount > 0) continue;
+            MeshRenderer meshRenderer = c.GetComponent<MeshRenderer>();
+            if (meshRenderer == null)
+            {
+                GameObject.DestroyImmediate(c.gameObject);
+            }
+        }
+    }
+
+    [Serializable]
+    public class TwoRenderers
+    {
+        public MeshRenderer renderer_lod0;
+        public MeshRenderer renderer_lod1;
+        public float dis;
+
+        public float meshDis;
+
+        public TwoRenderers(MeshRenderer lod0, MeshRenderer lod1,float d, float meshD)
+        {
+            renderer_lod0 = lod0;
+            renderer_lod1 = lod1;
+            dis = d;
+            meshDis = meshD;
+        }
+    }
+
+    public List<TwoRenderers> twoList = new List<TwoRenderers>();
+
+    public bool DoCreateGroup = false;
+
+    //[ContextMenu("CombineLOD0AndLOD1")]
+    //public List<TwoRenderers> CombineLOD0AndLOD1()
+    //{
+    //    UpackPrefab_One(GoLOD1);
+    //    UpackPrefab_One(GoLOD0);
+    //    DateTime start = DateTime.Now;
+    //    var renderers_1=GoLOD1.GetComponentsInChildren<MeshRenderer>(true);
+    //    var renderers_0=GoLOD0.GetComponentsInChildren<MeshRenderer>(true);
+
+    //    twoList.Clear();
+    //    List<MeshRenderer> list_lod0 = new List<MeshRenderer>();
+    //    list_lod0.AddRange(renderers_0);
+    //    //renderers_0.ToList().ForEach(i => { ts.Add(i.transform); });
+    //    //List<TwoRenderers> twoList = new List<TwoRenderers>();
+    //    for (int i = 0; i < renderers_1.Length; i++)
+    //    {
+    //        MeshRenderer render_lod1 = renderers_1[i];
+    //        float progress = (float)i / renderers_1.Length;
+    //        ProgressBarHelper.DisplayCancelableProgressBar("CombineLOD0AndLOD1", $"{i}/{renderers_1.Length} {progress:P1} MeshRenderer:{render_lod1.name}", progress);
+
+    //        var min = GetMinDisTransform<MeshRenderer>(list_lod0, render_lod1.transform);
+    //        float minDis = min.dis;
+    //        MeshRenderer render_lod0 = min.target;
+
+    //        MeshFilter filter1 =render_lod1.GetComponent<MeshFilter>();
+    //        MeshFilter filter0=render_lod0.GetComponent<MeshFilter>();
+    //        int vertexCount0=filter0.sharedMesh.vertexCount;
+    //        int vertexCount1=filter1.sharedMesh.vertexCount;
+    //        if(minDis<=zeroDistance)
+    //        {
+    //            if(DoCreateGroup)
+    //            {
+    //                if (vertexCount1 == vertexCount0)
+    //                {
+    //                    //GameObject.DestroyImmediate(filter1.gameObject);
+    //                    render_lod1 = CreateSimplifier(render_lod0, 0.5f);
+    //                    GameObject.DestroyImmediate(filter1.gameObject);
+    //                }
+
+    //                //else
+    //                {
+    //                    Debug.Log($"GetDistance1 \tLOD1:{render_lod1.name}({vertexCount1}) \tLOD0:{render_lod0.name}({vertexCount0}) \tDistance:{minDis} \t{(float)vertexCount1 / vertexCount0:P2}");
+    //                    render_lod1.transform.SetParent(render_lod0.transform);
+    //                    render_lod1.name += "_LOD1";
+
+    //                    CreateLODGroup_01(render_lod1, render_lod0);
+    //                }
+    //            }
+
+
+    //            twoList.Add(new TwoRenderers(render_lod0, render_lod1, minDis, min.meshDis));
+    //        }
+    //        else{
+    //            Debug.LogWarning($"GetDistance1 \tLOD1:{render_lod1.name}({vertexCount1}) \tLOD0:{render_lod0.name}({vertexCount0}) \tDistance:{minDis} \t{(float)vertexCount1/vertexCount0:P2}");
+    //            twoList.Add(new TwoRenderers(render_lod0, render_lod1, minDis, min.meshDis));
+    //        }
+    //    }
+    //    ProgressBarHelper.ClearProgressBar();
+
+    //    twoList.Sort((a, b) =>
+    //    {
+    //        return b.dis.CompareTo(a.dis);
+    //    });
+
+    //    RemoveEmpty(GoLOD1.transform);
+    //    RemoveEmpty(GoLOD1.transform);
+    //    RemoveEmpty(GoLOD1.transform);
+
+    //    Debug.LogError($"CombineLOD0AndLOD1 count1:{renderers_1.Length} count0:{renderers_0.Length} time:{(DateTime.Now - start)}");
+    //    return twoList;
+    //}
+
+    public void AddLOD3(MeshRenderer lod0, MeshRenderer lod2)
+    {
+        lod2.transform.SetParent(lod0.transform);
+        LODGroup group = lod0.GetComponent<LODGroup>();
+        if (group != null)
+        {
+            LOD[] lods = group.GetLODs();
+            LOD[] lodsNew = LODGroupInfo.CreateLODs(new float[] { 0.7f, 0.3f, 0.1f,0.05f });
+            for (int i = 0; i < lods.Length && i < lodsNew.Length; i++)
+            {
+                lodsNew[i].renderers = lods[i].renderers;
+            }
+            List<Renderer> renderers = new List<Renderer>();
+            if (lodsNew[lodsNew.Length - 1].renderers != null)
+                renderers.AddRange(lodsNew[lodsNew.Length - 1].renderers);
+            renderers.Add(lod2);
+            lodsNew[lodsNew.Length - 1].renderers = renderers.ToArray();
+            group.SetLODs(lodsNew);
+        }
+        else
+        {
+            group = lod0.gameObject.AddComponent<LODGroup>();
+            LOD[] lods = new LOD[3];
+            lods[0] = new LOD(0.7f, new Renderer[1] { lod0 });
+            lods[1] = new LOD(0.3f, new Renderer[1] { lod0 });
+            lods[2] = new LOD(0.1f, new Renderer[1] { lod2 });
+            lods[3] = new LOD(0.05f, new Renderer[1] { lod2 });
+            group.SetLODs(lods);
+        }
+    }
+
+    public void AddLOD2(MeshRenderer lod0, MeshRenderer lod2)
+    {
+        lod2.transform.SetParent(lod0.transform);
+        LODGroup group = lod0.GetComponent<LODGroup>();
+        if (group != null)
+        {
+            LOD[] lods = group.GetLODs();
+            LOD[] lodsNew = LODGroupInfo.CreateLODs(new float[] { 0.7f, 0.3f, 0.05f });
+            for (int i = 0; i < lods.Length && i < lodsNew.Length; i++)
+            {
+                lodsNew[i].renderers = lods[i].renderers;
+            }
+            List<Renderer> renderers = new List<Renderer>();
+            if(lodsNew[lodsNew.Length - 1].renderers!=null)
+                renderers.AddRange(lodsNew[lodsNew.Length - 1].renderers);
+            renderers.Add(lod2);
+            lodsNew[lodsNew.Length - 1].renderers = renderers.ToArray();
+            group.SetLODs(lodsNew);
+        }
+        else
+        {
+            group = lod0.gameObject.AddComponent<LODGroup>();
+            LOD[] lods = new LOD[3];
+            lods[0] = new LOD(0.7f, new Renderer[1] { lod0 });
+            lods[1] = new LOD(0.3f, new Renderer[1] { lod0 });
+            lods[2] = new LOD(0.05f, new Renderer[1] { lod2 });
+            group.SetLODs(lods);
+        }
+    }
+
+    public void AddLOD1(MeshRenderer lod0,MeshRenderer lod1)
+    {
+        LODGroup lODGroup = lod0.GetComponent<LODGroup>();
+        if (lODGroup == null)
+        {
+            lODGroup = lod0.gameObject.AddComponent<LODGroup>();
+        }
+        LOD[] lods = new LOD[2];
+        lods[0] = new LOD(0.5f, new Renderer[1] { lod0 });     //LOD0 >50% 
+                                                                      //lods[1]=new LOD(0.2f,new Renderer[1]{render1});         //LOD1  > 20% - 50% 
+                                                                      // lods[2]=new LOD(0.1f,new Renderer[1]{render1});         //LOD2  > 10% - 20% 
+        lods[1] = new LOD(0.02f, new Renderer[1] { lod1 });        //LOD3  > 1% - 10% 
+                                                                      //Culled > 0% - 1%
+        lODGroup.SetLODs(lods);
     }
 
     // public List<Renderer> GetLODRenderers()
@@ -285,25 +765,79 @@ public class LODManager : MonoBehaviour
     {
     }
 
-    public List<LODGroupDetails> lodInfos;
+    [ContextMenu("SetRenderersLODInfo")]
+    public void SetRenderersLODInfo()
+    {
+        var lodGroups = GameObject.FindObjectsOfType<LODGroup>(true);
+        for (int i1 = 0; i1 < lodGroups.Length; i1++)
+        {
+            LODGroup group = lodGroups[i1];
+            float progress = (float)i1 / lodGroups.Length;
 
-    [ContextMenu("GetLODInfo")]
-    public string GetLODInfo()
+            ProgressBarHelper.DisplayCancelableProgressBar("SetRenderersLODInfo", $"{i1}/{lodGroups.Length} {progress:P1} group:{group}", progress);
+            
+            LOD[] lods = group.GetLODs();
+            for (int i = 0; i < lods.Length; i++)
+            {
+                LOD lod = lods[i];
+                //LODInfo lodInfo = new LODInfo(lod);
+                foreach(var r in lod.renderers){
+                    if (r == null) continue;
+                    MeshRendererInfo rendererInfo = MeshRendererInfo.GetInfo(r.gameObject);
+                    //Debug.Log($"renderer:{r},parent:{r.transform.parent.name},path:{r.transform.GetPathToRoot()},rendererInfo:{rendererInfo}");
+                    rendererInfo.LodId = i;
+                }
+                //break;
+            }
+            //break;
+        }
+        ProgressBarHelper.ClearProgressBar();
+    }
+
+    public List<LODGroupInfo> lODGroupInfos = new List<LODGroupInfo>();
+
+    public List<LODGroupInfo> GetLodGroupInfos()
+    {
+        lODGroupInfos.Clear();
+        var lodGroups = GameObject.FindObjectsOfType<LODGroup>(true);
+        for (int i1 = 0; i1 < lodGroups.Length; i1++)
+        {
+            LODGroup group = lodGroups[i1];
+            //LODGroupInfo groupInfo=new LODGroupInfo()
+            //LOD[] lods = group.GetLODs();
+            //for (int i = 0; i < lods.Length; i++)
+            //{
+            //    LOD lod = lods[i];
+            //    LODInfo lodInfo = new LODInfo(lod);
+            //    foreach (var r in lod.renderers)
+            //    {
+            //        MeshRendererInfo rendererInfo = MeshRendererInfo.GetInfo(r.gameObject);
+            //        rendererInfo.LodId = i;
+            //    }
+            //}
+        }
+        return lODGroupInfos;
+    }
+
+    public List<LODGroupDetails> lodDetails;
+
+    [ContextMenu("GetRuntimeLODDetail")]
+    public string GetRuntimeLODDetail()
     {
         DateTime now = DateTime.Now;
-        if(lodInfos==null||lodInfos.Count==0){
-            lodInfos=LODGroupDetails.GetSceneLodGroupInfo();
+        if(lodDetails==null||lodDetails.Count==0){
+            lodDetails=LODGroupDetails.GetSceneLodGroupInfo();
         }
         
         Camera cam = GameObject.FindObjectOfType<Camera>();
 
-        int[] infos=LODGroupDetails.CaculateGroupInfo(lodInfos,LODSceneView.GameView,LODSortType.Vertex,cam);
+        int[] infos=LODGroupDetails.CaculateGroupInfo(lodDetails,LODSceneView.GameView,LODSortType.Vertex,cam);
 
         int[] lodCount=new int[5];
         int[] lodVertexCount=new int[5];
         float[] lodPercent=new float[5];
         float allVertex0=0;
-        foreach(LODGroupDetails lodI in lodInfos)
+        foreach(LODGroupDetails lodI in lodDetails)
         {
             if(lodI.currentChild==null)continue;
             lodCount[lodI.currentInfo.currentLevel]++;
@@ -333,7 +867,7 @@ public class LODManager : MonoBehaviour
         var allVertexCount=infos[0];
         var allMeshCount=infos[1];
         double time=(DateTime.Now-now).TotalMilliseconds;
-        string info=$"LOD:{lodInfos.Count}, Vertex:{allVertexCount/10000f:F0}/{allVertex0/10000f:F0}, Mesh:{allMeshCount}, t:{time:F0}ms";
+        string info=$"LOD:{lodDetails.Count}, Vertex:{allVertexCount/10000f:F0}/{allVertex0/10000f:F0}, Mesh:{allMeshCount}, t:{time:F0}ms";
         // info+="\n"+lodInfoTxt;
         info+="\n"+lodInfoTxt_count+"\n"+lodInfoTxt_vertex+"\n"+lodInfoTxt_percent;
 

@@ -164,12 +164,13 @@ public class BaseFoldoutEditor<T> : BaseEditor<T> where T : class
         }
     }
 
-    public void DrawModelList(FoldoutEditorArg foldoutArg, System.Func<List<BuildingModelInfo>> funcGetList,System.Action listToolbarEvent)
+    public void DrawModelList(FoldoutEditorArg foldoutArg, System.Func<List<BuildingModelInfo>> funcGetList, System.Action listToolbarEvent)
     {
         List<BuildingModelInfo> buildings = new List<BuildingModelInfo>();
         foldoutArg.caption = $"Building List";
         EditorUIUtils.ToggleFoldout(foldoutArg,
-        (arg) => {
+        (arg) =>
+        {
             System.DateTime start = System.DateTime.Now;
             float sumVertexCount = 0;
             int sumRendererCount = 0;
@@ -193,7 +194,8 @@ public class BaseFoldoutEditor<T> : BaseEditor<T> where T : class
                 return b.Out0BigVertextCount.CompareTo(a.Out0BigVertextCount);
             });
             //Debug.Log($"Init BuildingList2 count:{buildings.Count} time:{(System.DateTime.Now - start).TotalMilliseconds:F1}ms ");
-            buildings.ForEach(b => {
+            buildings.ForEach(b =>
+            {
                 sumVertexCount += b.AllVertextCount;
                 sumRendererCount += b.AllRendererCount;
 
@@ -208,7 +210,8 @@ public class BaseFoldoutEditor<T> : BaseEditor<T> where T : class
             Debug.Log($"Init BuildingList count:{buildings.Count} time:{(System.DateTime.Now - start).TotalMilliseconds:F1}ms ");
         },
         //"Window",
-        () => {
+        () =>
+        {
             //SceneRebuildEditorWindow.ShowWindow();
 
             if (GUILayout.Button("Win", GUILayout.Width(35)))
@@ -265,7 +268,8 @@ public class BaseFoldoutEditor<T> : BaseEditor<T> where T : class
         List<ModelAreaTree> trees = new List<ModelAreaTree>();
         foldoutArg.caption = $"Tree List";
         EditorUIUtils.ToggleFoldout(foldoutArg,
-        (arg) => {
+        (arg) =>
+        {
             System.DateTime start = System.DateTime.Now;
             float sumVertexCount = 0;
             int sumRendererCount = 0;
@@ -282,7 +286,8 @@ public class BaseFoldoutEditor<T> : BaseEditor<T> where T : class
             });
             //Debug.Log($"Init TreeList2 count:{trees.Count} time:{(System.DateTime.Now - start).TotalMilliseconds:F1}ms ");
 
-            trees.ForEach(b => {
+            trees.ForEach(b =>
+            {
                 if (b != null)
                 {
                     sumVertexCount += b.VertexCount;
@@ -296,7 +301,8 @@ public class BaseFoldoutEditor<T> : BaseEditor<T> where T : class
             arg.info = $"[{sumVertexCount:F0}w][{sumRendererCount / 10000f:F0}w]";
             Debug.Log($"Init TreeList count:{trees.Count} time:{(System.DateTime.Now - start).TotalMilliseconds:F1}ms ");
         },
-        () => {
+        () =>
+        {
             if (GUILayout.Button("------", GUILayout.Width(60)))
             {
                 //TreeNodeManagerEditorWindow.ShowWindow();
@@ -333,7 +339,8 @@ public class BaseFoldoutEditor<T> : BaseEditor<T> where T : class
         List<AreaTreeNode> nodes = new List<AreaTreeNode>();
         foldoutArg.caption = $"Node List";
         EditorUIUtils.ToggleFoldout(foldoutArg,
-        (arg) => {
+        (arg) =>
+        {
             System.DateTime start = System.DateTime.Now;
             float sumVertexCount = 0;
             int sumRendererCount = 0;
@@ -343,7 +350,8 @@ public class BaseFoldoutEditor<T> : BaseEditor<T> where T : class
             {
                 return b.VertexCount.CompareTo(a.VertexCount);
             });
-            nodes.ForEach(b => {
+            nodes.ForEach(b =>
+            {
                 sumVertexCount += b.VertexCount;
                 sumRendererCount += b.Renderers.Count;
             });
@@ -353,7 +361,8 @@ public class BaseFoldoutEditor<T> : BaseEditor<T> where T : class
             var time = System.DateTime.Now - start;
             Debug.Log($"Init NodeList count:{nodes.Count} time:{time.TotalMilliseconds:F1}ms ");
         },
-        () => {
+        () =>
+        {
             if (GUILayout.Button("Win", GUILayout.Width(35)))
             {
                 TreeNodeManagerEditorWindow.ShowWindow();
@@ -381,11 +390,12 @@ public class BaseFoldoutEditor<T> : BaseEditor<T> where T : class
         return nodes;
     }
 
-    public void DrawSceneList(FoldoutEditorArg foldoutArg,System.Func<List<SubScene_Base>> funcGetList)
+    public void DrawSceneList(FoldoutEditorArg foldoutArg, System.Func<List<SubScene_Base>> funcGetList)
     {
         List<SubScene_Base> scenes = new List<SubScene_Base>();
         foldoutArg.caption = $"Scenes";
-        EditorUIUtils.ToggleFoldout(foldoutArg, (arg) => {
+        EditorUIUtils.ToggleFoldout(foldoutArg, (arg) =>
+        {
             System.DateTime start = System.DateTime.Now;
             //scenes = item.scenes.ToList();
             scenes = funcGetList();
@@ -417,13 +427,14 @@ public class BaseFoldoutEditor<T> : BaseEditor<T> where T : class
             arg.info = $"[{sumVertexCount:F0}w][{sumRendererCount / 10000f:F0}w]";
             var time = System.DateTime.Now - start;
             Debug.Log($"Init SceneList count:{scenes.Count} time:{time.TotalMilliseconds:F1}ms ");
-        }, () => {
-            int filterType = foldoutArg.DrawFilterList(100,"All","Combined","Renderers");
+        }, () =>
+        {
+            int filterType = foldoutArg.DrawFilterList(100, "All", "Combined", "Renderers");
             if (GUILayout.Button("Win", GUILayout.Width(35)))
             {
                 SubSceneManagerEditorWindow.ShowWindow();
             }
-            
+
         });
         if (foldoutArg.isExpanded && foldoutArg.isEnabled)
         {
@@ -460,7 +471,8 @@ public class BaseFoldoutEditor<T> : BaseEditor<T> where T : class
             return b.sharedMesh.vertexCount.CompareTo(a.sharedMesh.vertexCount);
         });
         Debug.Log($"Init MeshList1 count:{meshes.Count} time:{(System.DateTime.Now - start).TotalMilliseconds:F1}ms ");
-        meshes.ForEach(b => {
+        meshes.ForEach(b =>
+        {
             if (b == null) return;
             if (b.gameObject.activeInHierarchy == true && b.GetComponent<MeshRenderer>() != null && b.GetComponent<MeshRenderer>().enabled == true)
             {
@@ -484,7 +496,9 @@ public class BaseFoldoutEditor<T> : BaseEditor<T> where T : class
     {
         if (string.IsNullOrEmpty(foldoutArg.caption)) foldoutArg.caption = $"Mesh List";
         List<MeshFilter> meshFilters = foldoutArg.Items;
-        EditorUIUtils.ToggleFoldout(foldoutArg, (arg) => {
+        EditorUIUtils.SetupStyles();
+        EditorUIUtils.ToggleFoldout(foldoutArg, (arg) =>
+        {
 
             if (meshFilters.Count == 0)
             {
@@ -495,7 +509,8 @@ public class BaseFoldoutEditor<T> : BaseEditor<T> where T : class
             //    meshFilters = foldoutArg.Items;
             //}
 
-        }, () => {
+        }, () =>
+        {
             if (GUILayout.Button("Update", GUILayout.Width(60)))
             {
                 foldoutArg.Items.Clear();
@@ -548,7 +563,7 @@ public class BaseFoldoutEditor<T> : BaseEditor<T> where T : class
                 {
                     Debug.LogError($"Show MeshList mesh.transform.parent==null"); continue;
                 }
-                arg.isExpanded = EditorUIUtils.ObjectFoldout(arg.isExpanded, $"[{i + 1:00}] {building.name}>>{mesh.transform.parent.name}>{mesh.name}", $"[{mesh.sharedMesh.vertexCount / 10000f:F0}w]", false, false, false, mesh.gameObject);
+                arg.isExpanded = EditorUIUtils.ObjectFoldout(arg.isExpanded, $"[{i + 1:00}] {building.name}>>{mesh.transform.parent.name}>{mesh.name}", $"[{mesh.sharedMesh.vertexCount / 10000f:F1}w]", false, false, false, mesh.gameObject);
                 if (arg.isExpanded)
                 {
                     //BuildingModelInfoEditor.DrawToolbar(b, contentStyle, buttonWidth);
@@ -608,8 +623,21 @@ public class BaseFoldoutEditor<T> : BaseEditor<T> where T : class
                 //matArg.info = $"count:{meshMat.subMeshs.Count}";
                 EditorUIUtils.ObjectFoldout(matArg, meshMat.GetMat(), () =>
                 {
-                    var newColor = EditorGUILayout.ColorField("Color", meshMat.GetColor(), GUILayout.Width(50));
-                    meshMat.SetColor(newColor);
+                    if (meshMat != null && meshMat.matInfo != null && meshMat.matInfo.shader != null)
+                    {
+                        EditorGUILayout.LabelField(meshMat.matInfo.shader.name, GUILayout.Width(60));
+
+                        var newColor = EditorGUILayout.ColorField("Color", meshMat.GetColor(), GUILayout.Width(50));
+                        meshMat.SetColor(newColor);
+                        bool isD = EditorGUILayout.Toggle(meshMat.matInfo.isDoubleSide, GUILayout.Width(20));
+                        meshMat.matInfo.SetIsDoubleSide(isD);
+                        Texture tex = EditorGUILayout.ObjectField(meshMat.matInfo.tex, typeof(Texture), GUILayout.Width(100)) as Texture;
+                        meshMat.matInfo.SetTexture(tex);
+
+                        Texture normal = EditorGUILayout.ObjectField(meshMat.matInfo.normal, typeof(Texture), GUILayout.Width(100)) as Texture;
+                        meshMat.matInfo.SetNormal(normal);
+                    }
+
                 });
 
                 if (matArg.isExpanded)
@@ -630,6 +658,53 @@ public class BaseFoldoutEditor<T> : BaseEditor<T> where T : class
             });
         }
 
-        
+
+    }
+
+    public void DrawDoorList(FoldoutEditorArg doorListArg, DoorManager item)
+    {
+        doorListArg.caption = $"Door List";
+        EditorUIUtils.ToggleFoldout(doorListArg, arg =>
+        {
+            var doors = item.GetDoors();
+            arg.caption = $"Door List ({doors.Count})";
+            arg.info = $"{doors.VertexCount_Show / 10000f:F0}/{doors.VertexCount / 10000f:F0}";
+            InitEditorArg(doors);
+        },
+        () =>
+        {
+            if (GUILayout.Button("Update"))
+            {
+                RemoveEditorArg(item.GetDoors());
+                InitEditorArg(item.UpdateDoors());
+            }
+        });
+        if (doorListArg.isEnabled && doorListArg.isExpanded)
+        {
+            EditorGUILayout.BeginHorizontal();
+            item.IsOnlyActive = EditorGUILayout.Toggle("Active", item.IsOnlyActive);
+            item.IsOnlyCanSplit = EditorGUILayout.Toggle("CanSplit", item.IsOnlyCanSplit);
+            if (GUILayout.Button("SplitAll", GUILayout.Width(50)))
+            {
+                item.SplitAll();
+            }
+            EditorGUILayout.EndHorizontal();
+            var doors = item.GetDoors();
+            InitEditorArg(doors);
+            doorListArg.DrawPageToolbar(doors, (door, i) =>
+            {
+                var arg = editorArgs[door];
+                arg.caption = $"[{i + 1:00}] {door.GetTitle()}";
+                arg.info = door.ToString();
+                EditorUIUtils.ObjectFoldout(arg, door.DoorGo, () =>
+                {
+                    if (GUILayout.Button("Split", GUILayout.Width(50)))
+                    {
+                        Debug.Log($"Split:{door.GetTitle()}");
+                        GameObject result = MeshCombineHelper.SplitByMaterials(door.DoorGo);
+                    }
+                });
+            });
+        }
     }
 }

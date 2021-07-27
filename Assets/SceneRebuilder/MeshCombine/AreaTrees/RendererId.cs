@@ -15,38 +15,82 @@ public class RendererId
 
     public MeshRenderer mr;
 
+    [ContextMenu("Init")]
+    public void Init()
+    {
+        Init(this.gameObject, 0);
+    }
+
     internal void Init(MeshRenderer r)
     {
         this.mr = r;
-        Id = Guid.NewGuid().ToString();
-        insId = r.gameObject.GetInstanceID();
-
-        SetParentId();
+        //int instanceId= r.gameObject.GetInstanceID();
+        //if(instanceId!= insId)
+        //{
+        //    //insId = instanceId;
+        //    //Id = Guid.NewGuid().ToString();
+        //    UpdateId(instanceId, r.gameObject.transform);
+        //}
+        //SetParentId();
+        Init(r.gameObject, 0);
     }
+
+    internal void Init(GameObject go, int level)
+    {
+        if (go == null) return;
+        if (this.mr == null)
+        {
+            this.mr = go.GetComponent<MeshRenderer>();
+        }
+        
+        //Id = Guid.NewGuid().ToString();
+        //insId = go.GetInstanceID();
+        //parentId=GetId(this.transform.parent,level+1);
+
+        int instanceId = go.GetInstanceID();
+        if (instanceId != insId)
+        {
+            UpdateId(instanceId, go.transform);
+        }
+        parentId = GetId(this.transform.parent, level + 1);
+    }
+
+    private void UpdateId(int instanceId,Transform t)
+    {
+        insId = instanceId;
+        if (string.IsNullOrEmpty(Id))
+        {
+            Id = Guid.NewGuid().ToString();
+        }
+        else
+        {
+            Id = Guid.NewGuid().ToString();
+            //update children 
+            for (int i = 0; i < t.childCount; i++)
+            {
+                RendererId rId = t.GetChild(i).GetComponent<RendererId>();
+                rId.Init();
+            }
+        }
+    }
+
+
 
     public void SetParentId()
     {
-        parentId = GetId(this.transform.parent);
+        parentId = GetId(this.transform.parent,0);
     }
 
     public bool IsParentChanged()
     {
-        var newParentId=GetId(this.transform.parent);
+        var newParentId=GetId(this.transform.parent,0);
         bool isChanged=newParentId != parentId;
         if(isChanged){
             Debug.Log($"ParentChanged {this.name} parentId:{parentId} newParentId:{newParentId} parent:{GetParent()} newParent:{this.transform.parent}");
         }
         return isChanged;
     }
-
-    internal void Init(GameObject go)
-    {
-        if (go == null) return;
-        this.mr = go.GetComponent<MeshRenderer>();
-        Id = Guid.NewGuid().ToString();
-        insId = go.GetInstanceID();
-        //parentId=GetId(this.transform.parent);
-    }
+    
 
     [ContextMenu("SetParent")]
     public void SetParent()
@@ -68,7 +112,7 @@ public class RendererId
     {
         if(string.IsNullOrEmpty(parentId))
         {
-            parentId=GetId(this.transform.parent);
+            parentId=GetId(this.transform.parent,0);
         }
         GameObject pGo=IdDictionary.GetGo(parentId);
         // Debug.LogError($"RendererId.GetParent name:{this.name} Id:{this.Id} parentId:{this.parentId} pGo:{pGo}");
@@ -82,26 +126,26 @@ public class RendererId
         Debug.LogError($"RendererId.GetParentEx name:{this.name} Id:{this.Id} parentId:{this.parentId} pGo:{pGo}");
     }
 
-    public static string GetId(GameObject r)
+    public static string GetId(GameObject go,int level)
     {
-        if (r == null) return "";
-        RendererId id = r.GetComponent<RendererId>();
+        if (go == null) return "";
+        RendererId id = go.GetComponent<RendererId>();
         if (id == null)
         {
-            id = r.gameObject.AddComponent<RendererId>();
-            id.Init(r);
+            id = go.gameObject.AddComponent<RendererId>();
+            id.Init(go, level+1);
         }
         return id.Id;
     }
 
-    public static string GetId(Transform r)
+    public static string GetId(Transform t,int level)
     {
-        if (r == null) return "";
-        RendererId id = r.GetComponent<RendererId>();
-        if (id == null)
+        if (t == null || level >= 2) return "";
+        RendererId id = t.GetComponent<RendererId>();
+        if (id == null )
         {
-            id = r.gameObject.AddComponent<RendererId>();
-            id.Init(r.gameObject);
+            id = t.gameObject.AddComponent<RendererId>();
+            id.Init(t.gameObject,level+1);
         }
         return id.Id;
     }

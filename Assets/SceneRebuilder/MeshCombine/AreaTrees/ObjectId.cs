@@ -11,6 +11,12 @@ public class ObjectId : MonoBehaviour
 
     public string parentId;
 
+    private void Awake()
+    {
+        Init();
+    }
+
+    [ContextMenu("Init")]
     public void Init()
     {
         Id = Guid.NewGuid().ToString();

@@ -3,9 +3,9 @@ using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 
-public class SubSceneShowManager : MonoBehaviour
+public class SubSceneShowManager : SingletonBehaviour<SubSceneShowManager>
 {
-    public static SubSceneShowManager Instance;
+    //public static SubSceneShowManager Instance;
 
     public SubSceneManager sceneManager;
     public SubScene_Out0[] scenes_Out0;
@@ -20,6 +20,8 @@ public class SubSceneShowManager : MonoBehaviour
     //public List<SubScene_Out0> scenes_Out0_TreeNode = new List<SubScene_Out0>();
     public List<SubScene_Out0> scenes_Out0_TreeNode_Hidden = new List<SubScene_Out0>();
     public List<SubScene_Out0> scenes_Out0_TreeNode_Shown = new List<SubScene_Out0>();
+    public List<SubScene_Base> scenes_TreeNode_Hidden = new List<SubScene_Base>();
+    public List<SubScene_Base> scenes_TreeNode_Shown = new List<SubScene_Base>();
     public Camera[] cameras;
 
     [ContextMenu("GetSceneCountInfoEx")]
@@ -85,7 +87,7 @@ public class SubSceneShowManager : MonoBehaviour
     
     public string GetSceneInfo()
     {
-        return $"visible:{visibleScenes.Count},loaded:{loadScenes.Count},hidden:{hiddenScenes.Count},unloaded:{unloadScenes.Count}";
+        return $"visible:{visibleScenes.Count},loaded:{loadScenes.Count-WaitingScenes_ToLoad.Count}/{loadScenes.Count},hidden:{hiddenScenes.Count},unloaded:{unloadScenes.Count-WaitingScenes_ToUnLoad.Count}/{unloadScenes.Count}";
     }
 
     public string GetDisInfo()
@@ -161,16 +163,16 @@ public class SubSceneShowManager : MonoBehaviour
             {
                 HiddenTrees.Add(t);
                 //HiddenTreesVertexCount += t.VertexCount;
-                var scenes = t.GetComponentsInChildren<SubScene_Out0>(IncludeInactive);
-                scenes_Out0_TreeNode_Hidden.AddRange(scenes);
+                scenes_TreeNode_Hidden.AddRange(t.GetComponentsInChildren<SubScene_Base>(IncludeInactive));
+                scenes_Out0_TreeNode_Hidden.AddRange(t.GetComponentsInChildren<SubScene_Out0>(IncludeInactive));
             }
             else if (t.IsHidden == false && !ShownTrees.Contains(t))
             {
                 ShownTrees.Add(t);
                 //ShownTreesVertexCount += t.VertexCount;
 
-                var scenes = t.GetComponentsInChildren<SubScene_Out0>(IncludeInactive);
-                scenes_Out0_TreeNode_Shown.AddRange(scenes);
+                scenes_TreeNode_Shown.AddRange(t.GetComponentsInChildren<SubScene_Base>(IncludeInactive));
+                scenes_Out0_TreeNode_Shown.AddRange(t.GetComponentsInChildren<SubScene_Out0>(IncludeInactive));
             }
         }
     }
@@ -179,12 +181,16 @@ public class SubSceneShowManager : MonoBehaviour
 
     private void Awake()
     {
-        Instance = this;
+        //Instance = this;
         Init();
     }
 
-    public List<SubScene_Base> WaitingScenes = new List<SubScene_Base>();
+    public List<SubScene_Base> WaitingScenes = new List<SubScene_Base>();//Waiting To Finish Load
 
+    public List<SubScene_Base> WaitingScenes_ToLoad = new List<SubScene_Base>();
+    public SubScene_Base LoadingScene = null;
+    public List<SubScene_Base> WaitingScenes_ToUnLoad = new List<SubScene_Base>();
+    public SubScene_Base UnLoadingScene = null;
     public bool IsUpdateTreeNodeByDistance = false;
     public bool IsUpdateDistance = true;
     public bool IsEnableLoad = false; 
@@ -384,6 +390,7 @@ public class SubSceneShowManager : MonoBehaviour
                 scene.HideObjects();
             }
         if(IsEnableLoad)
+            //var waittingScenes=loadScenes.Where(i=>i)
             foreach (var scene in loadScenes)
             {
                 if (scene.IsLoading || scene.IsLoaded)
@@ -391,7 +398,9 @@ public class SubSceneShowManager : MonoBehaviour
                     // Debug.LogWarning($"[LoadUnloadScenes.Load] scene:{scene.GetSceneName()}, IsLoading:{scene.IsLoading} || IsLoaded:{scene.IsLoaded}");
                     continue;
                 }
-                scene.LoadSceneAsync(null);
+                //scene.LoadSceneAsync(null);
+                if(!WaitingScenes_ToLoad.Contains(scene))
+                    WaitingScenes_ToLoad.Add(scene);
             }
         if(IsEnableUnload)
             foreach (var scene in unloadScenes)
@@ -401,7 +410,9 @@ public class SubSceneShowManager : MonoBehaviour
                     // Debug.LogWarning($"[LoadUnloadScenes.Unload] scene:{scene.GetSceneName()}, IsLoading:{scene.IsLoading} || IsLoaded:{scene.IsLoaded}");
                     continue;
                 }
-                scene.UnLoadSceneAsync();
+                //scene.UnLoadSceneAsync();
+                if (!WaitingScenes_ToUnLoad.Contains(scene))
+                    WaitingScenes_ToUnLoad.Add(scene);
             }
         TimeOfLoad = (DateTime.Now - start).TotalMilliseconds;
     }
@@ -496,21 +507,6 @@ public class SubSceneShowManager : MonoBehaviour
         TimeOfDis = (DateTime.Now - start).TotalMilliseconds;
     }
 
-    //int updateCount = 0;
-    //private void FixedUpdate()
-    //{
-    //    updateCount++;
-    //    if (IsAutoLoad&& updateCount>100)
-    //    {
-    //        IsAutoLoad = false;
-    //        //sceneManager.LoadScenesEx(scenes_Out0_Tree.ToArray());//1.����ʱ�Զ�����ģ��
-    //        sceneManager.LoadScenesEx(scenes_Out0_TreeNode.ToArray(), () =>
-    //        {
-    //            //AreaTreeNodeShowManager.Instance.IsUpdateTreeNodeByDistance = true;
-    //        });//1.����ʱ�Զ�����ģ��
-    //    }
-    //}
-
     // Update is called once per frame
     void Update()
     {
@@ -536,6 +532,35 @@ public class SubSceneShowManager : MonoBehaviour
                 }
             }
             Debug.Log("CheckWaittingScenes 2:" + WaitingScenes.Count);
+        }
+
+        if (WaitingScenes_ToLoad.Count > 0)
+        {
+            if (LoadingScene == null || (LoadingScene != null && LoadingScene.IsLoaded == true) )
+            {
+                LoadingScene = WaitingScenes_ToLoad[0];
+                WaitingScenes_ToLoad.RemoveAt(0);
+                LoadingScene.LoadSceneAsync((b, s) =>
+                {
+                    if (b)
+                    {
+                        WaitingScenes.Add(s);
+                        LoadingScene = null;
+                    }
+                });
+            }
+        }
+
+        if (WaitingScenes_ToUnLoad.Count > 0)
+        {
+            if (UnLoadingScene == null || (UnLoadingScene != null && UnLoadingScene.IsLoaded == false))
+            {
+                UnLoadingScene = WaitingScenes_ToUnLoad[0];
+                WaitingScenes_ToUnLoad.RemoveAt(0);
+                UnLoadingScene.UnLoadGos();
+                UnLoadingScene.ShowBounds();
+                UnLoadingScene = null;
+            }
         }
 
         if (IsUpdateDistance)

@@ -26,6 +26,16 @@ public class SubScene_List : MonoBehaviour
         EditorHelper.CopyComponent(subSceneGo, scene);
         GetScenes();
     }
+
+    public void LoadUnloadedScenes()
+    {
+        var scenes = this.GetUnloadedScenes();
+        //foreach (var scene in scenes)
+        //{
+        //    scene.EditorLoadScene();
+        //}
+        SubSceneCreater.EditorLoadScenes(scenes, null);
+    }
 #endif
 
     [ContextMenu("Clear")]
@@ -102,15 +112,7 @@ public class SubScene_List : MonoBehaviour
         return unloadscenes;
     }
 
-    public void LoadUnloadedScenes()
-    {
-        var scenes = this.GetUnloadedScenes();
-        //foreach (var scene in scenes)
-        //{
-        //    scene.EditorLoadScene();
-        //}
-        SubSceneCreater.EditorLoadScenes(scenes, null);
-    }
+
 
     // public void ClearChildren()
     // {

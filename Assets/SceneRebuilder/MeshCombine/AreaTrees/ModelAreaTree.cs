@@ -894,7 +894,7 @@ public class ModelAreaTree : SubSceneCreater
             node.SaveRenderersId();
         }
 
-        TargetId = RendererId.GetId(Target);
+        TargetId = RendererId.GetId(Target,0);
 
         //Debug.Log("SaveRenderersId:"+this.name);
     }
@@ -919,14 +919,14 @@ public class ModelAreaTree : SubSceneCreater
 
     public bool IsScenesFolderExists()
     {
-        string dir = SubSceneManager.Instance.GetSceneDir(SceneContentType.TreeNode, this.name);
+        string dir = SubSceneManager.Instance.GetSceneDir(SceneContentType.TreeNode, this.gameObject);
         string dirPath = Application.dataPath + "/" + dir;
         return System.IO.Directory.Exists(dirPath);
     }
 
     public void SelectScenesFolder()
     {
-        string dir=SubSceneManager.Instance.GetSceneDir(SceneContentType.TreeNode, this.name);
+        string dir=SubSceneManager.Instance.GetSceneDir(SceneContentType.TreeNode, this.gameObject);
         Debug.Log(dir);
         string folderPath = "Assets/" + dir;
         Debug.Log(folderPath);
@@ -943,7 +943,7 @@ public class ModelAreaTree : SubSceneCreater
 
     public UnityEngine.Object GetScenesFolder()
     {
-        string dir = SubSceneManager.Instance.GetSceneDir(SceneContentType.TreeNode, this.name);
+        string dir = SubSceneManager.Instance.GetSceneDir(SceneContentType.TreeNode, this.gameObject);
         string folderPath = "Assets/" + dir;
         UnityEngine.Object asset = UnityEditor.AssetDatabase.LoadAssetAtPath(folderPath, typeof(UnityEngine.Object));
         string dirPath = Application.dataPath + "/" + dir;
@@ -958,7 +958,7 @@ public class ModelAreaTree : SubSceneCreater
 
     public void DeleteScenesFolder(bool isRefresh)
     {
-        string dir = SubSceneManager.Instance.GetSceneDir(SceneContentType.TreeNode, this.name);
+        string dir = SubSceneManager.Instance.GetSceneDir(SceneContentType.TreeNode, this.gameObject);
         Debug.Log(dir);
         string folderPath = "Assets/" + dir;
         Debug.Log(folderPath);

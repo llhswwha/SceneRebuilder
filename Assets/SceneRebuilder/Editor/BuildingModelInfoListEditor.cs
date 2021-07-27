@@ -15,11 +15,54 @@ public class BuildingModelInfoListEditor : BaseFoldoutEditor<BuildingModelInfoLi
         base.OnEnable();
         buildingListArg.isEnabled = true;
         buildingListArg.isExpanded = true;
+        targetT.UpdateBuildings();
     }
 
     public override void OnToolLayout(BuildingModelInfoList item)
     {
         base.OnToolLayout(item);
+
+        EditorGUILayout.BeginHorizontal();
+        NewButton("1.InitModels", buttonWidth, true, ()=>
+        {
+            BuildingModelManager.Instance.InitBuildings(item.Buildings.ToList());
+        });
+        // NewButton("ListWindow:" + count, buttonWidth, true, () =>
+        //      {
+        //          SceneRebuildEditorWindow.ShowWindow();
+        //      });
+        EditorGUILayout.EndHorizontal();
+
+        EditorGUILayout.BeginHorizontal();
+        NewButton("3.CreateTrees", buttonWidth, true, ()=>
+        {
+            BuildingModelManager.Instance.CombineBuildings(item.Buildings.ToList());
+        });
+        NewButton("RemoveTrees", buttonWidth, true, ()=>
+        {
+            BuildingModelManager.Instance.ClearTrees(item.Buildings.ToList());
+        });
+        EditorGUILayout.EndHorizontal();
+
+        EditorGUILayout.BeginHorizontal();
+        NewButton("3.CreateScenes", buttonWidth, true, ()=>
+        {
+            SubSceneManager.Instance.EditorCreateBuildingScenes(item.Buildings);
+        });
+        NewButton("LoadScenes", buttonWidth, true, ()=>
+        {
+            SubSceneManager.Instance.EditorLoadScenes(item.Buildings);
+        });
+        NewButton("UnLoadScenes", buttonWidth, true, () =>
+        {
+            SubSceneManager.Instance.EditorUnLoadScenes(item.Buildings);
+        });
+        EditorGUILayout.EndHorizontal();
+
+        //EditorGUILayout.BeginHorizontal();
+        //NewButton("4.SetBuildings", buttonWidth, true, item.SetBuildings);
+        //NewButton("ClearBuildings", buttonWidth, true, item.ClearBuildings);
+        //EditorGUILayout.EndHorizontal();
 
         EditorUIUtils.SetupStyles();
         //-------------------------------------------------------BuildingList-----------------------------------------------------------
