@@ -95,7 +95,7 @@ public class LODManager : SingletonBehaviour<LODManager>
         newObj.name += "_" + percent;
         return renderer;
     }
-
+#if UNITY_EDITOR
     private void AppendLodInner(int lodLevel)
     {
         twoList.Clear();
@@ -103,7 +103,7 @@ public class LODManager : SingletonBehaviour<LODManager>
         EditorHelper.UnpackPrefab(LODnRoot, PrefabUnpackMode.OutermostRoot);
         DateTime start = DateTime.Now;
         var renderers_2 = LODnRoot.GetComponentsInChildren<MeshRenderer>(true);
-        var renderers_0 = MeshRendererInfo.GetLod0s(GroupRoot);
+        var renderers_0 = MeshRendererInfo.GetLodN(GroupRoot,0);
         List<MeshRendererInfo> list_lod0 = new List<MeshRendererInfo>();
         list_lod0.AddRange(renderers_0);
         //renderers_0.ToList().ForEach(i => { ts.Add(i.transform); });
@@ -178,7 +178,6 @@ public class LODManager : SingletonBehaviour<LODManager>
 
         Debug.LogError($"AppendLod3ToGroup count1:{renderers_2.Length} count0:{renderers_0.Count} time:{(DateTime.Now - start)}");
     }
-
     [ContextMenu("AppendLod1ToGroup")]
     public void AppendLod1ToGroup()
     {
@@ -196,6 +195,10 @@ public class LODManager : SingletonBehaviour<LODManager>
     {
         AppendLodInner(3);
     }
+
+#endif
+
+
 
     [Serializable]
     public class MinDisTarget<T> where T :Component
