@@ -29,7 +29,10 @@ namespace CodeStage.AdvancedFPSCounter.Editor.UI
 
         public int listFilterId = 1;
         public string[] listFilterId_Names = new string[] { "All" };
-        //public int[] pageSize_sizes = { 5, 10, 15, 20, 50, 100, 200, 500, 1000, 2000 };
+
+        public int listSortTypeId = 1;
+        public string[] listSortType_Names = new string[] { "Default" };
+
 
         public int level = 0;
 
@@ -71,6 +74,31 @@ namespace CodeStage.AdvancedFPSCounter.Editor.UI
             return listFilterId;
         }
 
+        public int DrawSortTypeList(int width,int defaultType, params string[] sorttypes)
+        {
+            GUILayout.Label("SortBy");
+            if (listSortType_Names == null || listSortType_Names.Length != sorttypes.Length)
+            {
+                listSortType_Names = sorttypes;
+                //listSortTypeId = defaultType;
+
+                listSortTypeId = EditorGUILayout.Popup(defaultType, listSortType_Names, GUILayout.Width(width));
+                return listSortTypeId;
+            }
+            int newSortType= EditorGUILayout.Popup(listSortTypeId, listSortType_Names, GUILayout.Width(width));
+            if(newSortType!= listSortTypeId)
+            {
+                listSortTypeId = newSortType;
+                return listSortTypeId;
+            }
+            else
+            {
+                //return -1;
+                return listSortTypeId;
+            }
+                
+        }
+
         public int DrawPageSizeList()
 		{
             EditorGUILayout.LabelField("PageSize:", GUILayout.Width(80));
@@ -106,6 +134,17 @@ namespace CodeStage.AdvancedFPSCounter.Editor.UI
 			DrawPageIndexList(count);
 			EditorGUILayout.EndHorizontal();
 		}
+
+        public int DrawPageToolbarWithSort(int count, int width, int defaultType, params string[] sorttypes)
+        {
+            EditorGUILayout.BeginHorizontal();
+            EditorUIUtils.BeforeSpace(level + 1);
+            DrawPageSizeList();
+            DrawPageIndexList(count);
+            DrawSortTypeList(width, defaultType, sorttypes);
+            EditorGUILayout.EndHorizontal();
+            return listSortTypeId;
+        }
 
         public void DrawPageToolbar<T>(List<T> list,System.Action<T,int> drawItemAction)
         {

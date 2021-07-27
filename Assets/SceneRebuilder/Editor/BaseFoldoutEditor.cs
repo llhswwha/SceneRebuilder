@@ -176,23 +176,14 @@ public class BaseFoldoutEditor<T> : BaseEditor<T> where T : class
             int sumRendererCount = 0;
             float sumVertexCount_Shown = 0;
             float sumVertexCount_Hidden = 0;
-            //var ts= GameObject.FindObjectsOfType<Transform>(true);
-            //Debug.Log($"Init BuildingList00 count:{ts.Length} time:{(System.DateTime.Now - start).TotalMilliseconds:F1}ms ");
-
-            //var bs = GameObject.FindObjectsOfType<BuildingModelInfo>(true);
-            //Debug.Log($"Init BuildingList0 count:{bs.Length} time:{(System.DateTime.Now - start).TotalMilliseconds:F1}ms ");
-
-            //buildings = GameObject.FindObjectsOfType<BuildingModelInfo>(true).ToList() ;
-
-            //buildings = item.GetBuildings().Where(b => b != null).ToList();
             buildings = funcGetList();
 
             //Debug.Log($"Init BuildingList1 count:{buildings.Count} time:{(System.DateTime.Now - start).TotalMilliseconds:F1}ms ");
-            buildings.Sort((a, b) =>
-            {
-                //return b.AllVertextCount.CompareTo(a.AllVertextCount);
-                return b.Out0BigVertextCount.CompareTo(a.Out0BigVertextCount);
-            });
+            //buildings.Sort((a, b) =>
+            //{
+            //    //return b.AllVertextCount.CompareTo(a.AllVertextCount);
+            //    return b.Out0BigVertextCount.CompareTo(a.Out0BigVertextCount);
+            //});
             //Debug.Log($"Init BuildingList2 count:{buildings.Count} time:{(System.DateTime.Now - start).TotalMilliseconds:F1}ms ");
             buildings.ForEach(b =>
             {
@@ -222,21 +213,57 @@ public class BaseFoldoutEditor<T> : BaseEditor<T> where T : class
 
         if (foldoutArg.isExpanded && foldoutArg.isEnabled)
         {
-            //EditorGUILayout.BeginHorizontal();
-            //if (GUILayout.Button("ActiveAll"))
-            //{
-            //    //item.gameObject.SetActive();
-            //    item.SetModelsActive(true);
-            //}
-            //if (GUILayout.Button("InactiveAll"))
-            //{
-            //    item.SetModelsActive(false);
-            //}
-            //EditorGUILayout.EndHorizontal();
+            
+
+
             if (listToolbarEvent != null) listToolbarEvent();
 
             System.DateTime start = System.DateTime.Now;
-            foldoutArg.DrawPageToolbar(buildings.Count);
+            //foldoutArg.DrawPageToolbar(buildings.Count);
+            int id = foldoutArg.DrawPageToolbarWithSort(buildings.Count, 100, 1, "All", "Out0B", "Out0S", "Out1", "In");
+
+            //int id = foldoutArg.DrawSortTypeList(100, 1, "All", "Out0B", "Out0S", "Out1", "In");
+            //if (id != -1)
+            //{
+            //    Debug.LogError($"sortType:{id}");
+            //}
+
+            if (id == 0)
+            {
+                buildings.Sort((a, b) =>
+                {
+                    return b.AllVertextCount.CompareTo(a.AllVertextCount);
+                });
+            }
+            else if (id == 1)
+            {
+                buildings.Sort((a, b) =>
+                {
+                    return b.Out0BigVertextCount.CompareTo(a.Out0BigVertextCount);
+                });
+            }
+            else if (id == 2)
+            {
+                buildings.Sort((a, b) =>
+                {
+                    return b.Out0SmallVertextCount.CompareTo(a.Out0SmallVertextCount);
+                });
+            }
+            else if (id == 3)
+            {
+                buildings.Sort((a, b) =>
+                {
+                    return b.Out1VertextCount.CompareTo(a.Out1VertextCount);
+                });
+            }
+            else if (id == 4)
+            {
+                buildings.Sort((a, b) =>
+                {
+                    return b.InVertextCount.CompareTo(a.InVertextCount);
+                });
+            }
+
             int c = 0;
             for (int i = foldoutArg.GetStartId(); i < buildings.Count && i < foldoutArg.GetEndId(); i++)
             {
