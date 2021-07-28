@@ -272,28 +272,34 @@ public class ModelAreaTree : SubSceneCreater
         return results.ToArray();
     }
 
+    public void CreateCells_TreeEx()
+    {
+        if (AreaTreeManager.Instance.IsByLOD)
+        {
+            CreateCells_Tree_LOD();
+        }
+        else
+        {
+            CreateCells_Tree();
+        }
+    }
+
     [ContextMenu("2.CreateCells_Tree")]
     public void CreateCells_Tree()
     {
-        
-
-        //var allCount=Count.x*Count.y*Count.z;
         DateTime start=DateTime.Now;
         //ClearChildren();
-
         MeshRenderer[] renderers=GetTreeRendererers();
         if (renderers.Length == 0)
         {
-            Debug.LogWarning("CreateCells_Tree renderers:" + renderers.Length+"|tree:"+this.name);
+            Debug.LogWarning($"CreateCells_Tree Start tree:{this.name} renderers:{renderers.Length} ");
             return;
         }
-        
-        Debug.Log("CreateCells_Tree renderers:"+renderers.Length);
+        Debug.Log($"CreateCells_Tree Start tree:{this.name} renderers:{renderers.Length} ");
         foreach(var render in renderers){
             if(render==null)continue;
             render.enabled=true;
         }
-
         Bounds bounds=ColliderHelper.CaculateBounds(renderers);
         // Debug.LogError("size:"+bounds.size);
         // Debug.LogError("size2:"+bounds.size/2);
@@ -328,10 +334,65 @@ public class ModelAreaTree : SubSceneCreater
 
         this.GetVertexCount();
 
-        Debug.LogWarning($"CreateCells_Tree cellCount:{cellCount}/{allCount},\tavg:{nodeStatics.AvgCellRendererCount},\t{(DateTime.Now-start).TotalMilliseconds:F1}ms");
+        Debug.LogWarning($"CreateCells_Tree End cellCount:{cellCount}/{allCount},\tavg:{nodeStatics.AvgCellRendererCount},\t{(DateTime.Now-start).TotalMilliseconds:F1}ms");
     }
 
+    [ContextMenu("2.CreateCells_Tree_LOD")]
+    public void CreateCells_Tree_LOD()
+    {
+        DateTime start = DateTime.Now;
+        //ClearChildren();
+        MeshRenderer[] renderers1 = GetTreeRendererers();
+        MeshRendererInfoList renderers = MeshRendererInfo.GetLodN(renderers1, 0);
+        if (renderers.Length == 0)
+        {
+            Debug.LogWarning($"CreateCells_Tree_LOD Start tree:{this.name} renderers:{renderers.Length} ");
+            return;
+        }
+        Debug.Log($"CreateCells_Tree_LOD Start tree:{this.name} renderers:{renderers.Length} ");
+        foreach (var render in renderers)
+        {
+            if (render == null) continue;
+            render.enabled = true;
+        }
+        Bounds bounds = ColliderHelper.CaculateBounds(renderers);
+        // Debug.LogError("size:"+bounds.size);
+        // Debug.LogError("size2:"+bounds.size/2);
 
+        this.TreeNodes.Clear();
+
+        nodeStatics.LevelDepth = 0;
+        GameObject rootCube = AreaTreeHelper.CreateBoundsCube(bounds, $"RootNode", null, GetCubePrefabId());
+        AreaTreeNode node = rootCube.AddComponent<AreaTreeNode>();
+        //DestoryNodes();
+        this.RootNode = node;
+        this.TreeNodes.Add(node); node.Bounds = bounds;
+        node.AddRenderers(renderers);
+
+        node.CreateSubNodes(0, 0, this, GetCubePrefabId());
+        var allCount = this.TreeNodes.Count;
+
+        int cellCount = ClearNodes();
+        nodeStatics.CellCount = cellCount;
+        if (cellCount != 0)
+        {
+            nodeStatics.AvgCellRendererCount = (int)(renderers.Length / cellCount);
+        }
+        else
+        {
+            nodeStatics.AvgCellRendererCount = 0;
+        }
+
+        if (rootCube == null)
+        {
+            return;
+        }
+        rootCube.transform.SetParent(this.transform);
+
+        this.GetVertexCount();
+
+        Debug.LogWarning($"CreateCells_Tree_LOD End cellCount:{cellCount}/{allCount},\tavg:{nodeStatics.AvgCellRendererCount},\t{(DateTime.Now - start).TotalMilliseconds:F1}ms");
+    }
 
 
 
@@ -454,13 +515,14 @@ public class ModelAreaTree : SubSceneCreater
         MeshRenderer[] renderers = GetTreeRendererers();
         if (renderers.Length == 0)
         {
-            Debug.LogWarning("CreateCells_Tree renderers:" + renderers.Length + "|tree:" + this.name);
+            Debug.LogWarning("GenerateMesh renderers:" + renderers.Length + "|tree:" + this.name);
             return;
         }
 
         //ShowRenderers();
         AddColliders();
-        CreateCells_Tree();
+        CreateCells_TreeEx();
+
         CombineMesh(progressChanged);
         CreateDictionary();
         foreach (var item in TreeNodes)
@@ -480,7 +542,7 @@ public class ModelAreaTree : SubSceneCreater
 
         //ShowRenderers();
         AddColliders();
-        CreateCells_Tree();
+        CreateCells_TreeEx();
         // CombineMesh();
         // CreateDictionary();
         Debug.LogWarning($"GenerateTree {(DateTime.Now-start).ToString()}");

@@ -544,6 +544,10 @@ namespace CodeStage.AdvancedFPSCounter.Editor.UI
                     EditorApplication.ExecuteMenuItem("Edit/Frame Selected");
                     arg.isSelected = true;
                 }
+                if (GUILayout.Button("X", btnStyle, GUILayout.Width(20)))
+                {
+                    GameObject.DestroyImmediate(obj);
+                }
             }
             EditorGUIUtility.labelWidth = currentLabelWidth;
             GUILayout.EndHorizontal();
@@ -612,7 +616,11 @@ namespace CodeStage.AdvancedFPSCounter.Editor.UI
 					EditorGUIUtility.PingObject(obj);
 					EditorApplication.ExecuteMenuItem("Edit/Frame Selected");
 				}
-			}
+                if (GUILayout.Button("X", btnStyle, GUILayout.Width(20)))
+                {
+                    GameObject.DestroyImmediate(obj);
+                }
+            }
 
             EditorGUIUtility.labelWidth = currentLabelWidth;
 

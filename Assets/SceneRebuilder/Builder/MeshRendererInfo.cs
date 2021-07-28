@@ -71,17 +71,17 @@ public class MeshRendererInfo : MonoBehaviour
     //    return list;
     //}
 
-    public static List<MeshRendererInfo> GetLodN(GameObject go,int lv)
+    public static MeshRendererInfoList GetLodN(GameObject go,int lv)
     {
         var renderers = go.GetComponentsInChildren<MeshRenderer>(true);
-        List<MeshRendererInfo> list = GetLodN(renderers, lv);
+        MeshRendererInfoList list = GetLodN(renderers, lv);
         return list;
     }
 
 
-    public static List<MeshRendererInfo> GetLodN(MeshRenderer[] renderers,int lv)
+    public static MeshRendererInfoList GetLodN(MeshRenderer[] renderers,int lv)
     {
-        List<MeshRendererInfo> list = new List<MeshRendererInfo>();
+        MeshRendererInfoList list = new MeshRendererInfoList();
         foreach (var renderer in renderers)
         {
             var info = MeshRendererInfo.GetInfo(renderer.gameObject);
@@ -293,9 +293,18 @@ public class MeshRendererInfo : MonoBehaviour
 
     public bool IsLodN(int lv)
     {
-        if (lv == 0)
+        //if (lv == 0)
+        //{
+        //    return LodIds.Count == 0 || LodIds.Contains(0);
+        //}
+        //else
+        //{
+        //    return LodIds.Contains(lv);
+        //}
+
+        if (lv == -1)
         {
-            return LodIds.Count == 0 || LodIds.Contains(0);
+            return LodIds.Count == 0;
         }
         else
         {
@@ -315,6 +324,25 @@ public class MeshRendererInfoList:List<MeshRendererInfo>
             renderers.Add(item.meshRenderer);
         }
         return renderers;
+    }
+
+    public List<MeshRenderer> GetAllRenderers()
+    {
+        List<MeshRenderer> renderers = new List<MeshRenderer>();
+        foreach (var item in this)
+        {
+            var rs = item.GetComponentsInChildren<MeshRenderer>();
+            renderers.AddRange(rs);
+        }
+        return renderers;
+    }
+
+    public int Length
+    {
+        get
+        {
+            return this.Count;
+        }
     }
 }
 

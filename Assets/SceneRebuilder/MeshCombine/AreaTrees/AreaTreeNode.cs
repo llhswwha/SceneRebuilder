@@ -235,6 +235,12 @@ public class AreaTreeNode : SubSceneCreater
         Renderers.AddRange(renderers);
     }
 
+    public void AddRenderers(MeshRendererInfoList rendererInfos)
+    {
+        var renderers = rendererInfos.GetAllRenderers();
+        Renderers.AddRange(renderers);
+    }
+
     //public static bool TestDebug = true;
 
     //private bool IsCopyed = false;
