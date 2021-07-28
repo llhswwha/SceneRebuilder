@@ -97,7 +97,7 @@ public class MeshInfo
             Set(ref m_Colors, m_Mesh.colors);
             Set(ref m_BoneWeights, m_Mesh.boneWeights);
             Resize(ref m_UVs, 4);
-            for (int i = 0; i < m_MeshSubmeshCount; i++)
+            for (int i = 0; i < m_MeshSubmeshCount && i<m_UVs.Length; i++)
             {
                 m_Mesh.GetUVs(i, m_UVs[i]);
             }
