@@ -640,7 +640,7 @@ public class BaseFoldoutEditor<T> : BaseEditor<T> where T : class
             meshes = filteredList;
         }
 
-        Debug.Log($"Init MeshList1 count:{meshes.Count} time:{(System.DateTime.Now - start).TotalMilliseconds:F1}ms ");
+        //Debug.Log($"Init MeshList1 count:{meshes.Count} time:{(System.DateTime.Now - start).TotalMilliseconds:F1}ms ");
         meshes.ForEach(b =>
         {
             if (b == null) return;
@@ -652,13 +652,13 @@ public class BaseFoldoutEditor<T> : BaseEditor<T> where T : class
             sumVertexCount += b.vertexCount;
             sumRendererCount++;
         });
-        Debug.Log($"Init MeshList2 count:{meshes.Count} time:{(System.DateTime.Now - start).TotalMilliseconds:F1}ms ");
+        //Debug.Log($"Init MeshList2 count:{meshes.Count} time:{(System.DateTime.Now - start).TotalMilliseconds:F1}ms ");
         sumVertexCount /= 10000;
         sumVertexCountVisible /= 10000;
         //InitEditorArg(scenes);
         arg.caption = $"Mesh Info List({meshes.Count})";
         arg.info = $"[{sumVertexCountVisible:F0}/{sumVertexCount:F0}w][{sumRendererCountVisible}/{sumRendererCount}]";
-        Debug.LogWarning($"Init MeshList count:{meshes.Count} time:{(System.DateTime.Now - start).TotalMilliseconds:F1}ms ");
+        //Debug.LogWarning($"Init MeshList count:{meshes.Count} time:{(System.DateTime.Now - start).TotalMilliseconds:F1}ms ");
         arg.Items = meshes;
         return meshes;
     }

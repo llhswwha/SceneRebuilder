@@ -296,7 +296,14 @@ public class BuildingModelManager : SingletonBehaviour<BuildingModelManager>
         foreach (var b in Buildings)
         {
             if (b == null) continue;
-            trees.AddRange(b.trees);
+            //trees.AddRange(b.trees);
+            foreach(var t in b.trees)
+            {
+                if (t != null)
+                {
+                    trees.Add(t);
+                }
+            }
         }
 
         return trees;

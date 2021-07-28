@@ -25,6 +25,7 @@ public class AreaTreeNode : SubSceneCreater
         List<MeshRendererInfo> list = new List<MeshRendererInfo>();
         foreach(var renderer in Renderers)
         {
+            if (renderer == null) continue;
             MeshRendererInfo info = MeshRendererInfo.GetInfo(renderer.gameObject);
             list.Add(info);
         }
@@ -71,21 +72,14 @@ public class AreaTreeNode : SubSceneCreater
             RenderersId.Add(id.Id);
         }
 
-        //newRenderersId.Clear();
-        //foreach (var renderer in newRenderers)
-        //{
-        //    if (renderer == null) continue;
-        //    var id = RendererId.GetId(renderer);
-        //    newRenderersId.Add(id.Id);
-        //}
-
         CombinedRenderersId.Clear();
-        foreach (var renderer in CombinedRenderers)
-        {
-            if (renderer == null) continue;
-            var id = RendererId.GetId(renderer);
-            CombinedRenderersId.Add(id.Id);
-        }
+        if(CombinedRenderers!=null)
+            foreach (var renderer in CombinedRenderers)
+            {
+                if (renderer == null) continue;
+                var id = RendererId.GetId(renderer);
+                CombinedRenderersId.Add(id.Id);
+            }
     }
 
     [ContextMenu("TestLoadRenderers")]
@@ -116,10 +110,11 @@ public class AreaTreeNode : SubSceneCreater
     public int GetRendererCount(IEnumerable<MeshRenderer> rs)
     {
         int count = 0;
-        foreach(var r in rs)
-        {
-            if (r != null) count++;
-        }
+        if(rs!=null)
+            foreach(var r in rs)
+            {
+                if (r != null) count++;
+            }
         return count;
     }
 
@@ -248,20 +243,6 @@ public class AreaTreeNode : SubSceneCreater
     [ContextMenu("InitRenderers")]
     public void InitRenderers()
     {
-        //if (IsCopyed)
-        //{
-        //    Debug.LogError("TestDebug IsCopyed==true");
-        //    return;
-        //}
-        //IsCopyed = true;
-
-        //newRenderers.Clear();
-
-        // RendererParents.Clear();
-
-        //colliders.Clear();
-
-        //newRenderers.Clear();
         if (renderersRoot == null)
             renderersRoot = new GameObject(this.name + "_Renderers");
 
@@ -272,12 +253,6 @@ public class AreaTreeNode : SubSceneCreater
             GameObject go = render.gameObject;
             //newRenderers.Add(render);
             var rId=RendererId.GetId(render);
-            // if (go.transform.parent != renderersRoot.transform)
-            // {
-            //     // RendererParents.Add(go.transform.parent);
-            //     go.transform.SetParent(renderersRoot.transform);
-            // }
-
             MeshCollider collider = go.GetComponent<MeshCollider>();
             if (collider)
                 collider.enabled = false;
@@ -288,6 +263,10 @@ public class AreaTreeNode : SubSceneCreater
     [ContextMenu("MoveRenderers")]
     public void MoveRenderers()
     {
+        Debug.Log($"AreaTreeNode.MoveRenderers tree:{tree.name} node:{this.name}");
+
+        InitRenderers();
+
         //newRenderers.Clear();
         // RendererParents.Clear();
 

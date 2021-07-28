@@ -415,6 +415,9 @@ public class AreaTreeManager : SingletonBehaviour<AreaTreeManager>
             try
             {
                 if (tree == null) continue;
+#if UNITY_EDITOR
+                EditorHelper.UnpackPrefab(tree.gameObject);
+#endif
                 GameObject.DestroyImmediate(tree.gameObject);
             }
             catch (Exception ex)
@@ -558,7 +561,7 @@ public class AreaTreeManager : SingletonBehaviour<AreaTreeManager>
         }
 
         ModelAreaTree[] trees = new ModelAreaTree[2] { tree1, tree2 };
-        Debug.LogError($"CreateOne_BigSmall_Core \t{(DateTime.Now - start).TotalMilliseconds:F1}ms");
+        Debug.LogWarning($"CreateOne_BigSmall_Core \t{(DateTime.Now - start).TotalMilliseconds:F1}ms");
         return trees;
     }
 
@@ -568,7 +571,7 @@ public class AreaTreeManager : SingletonBehaviour<AreaTreeManager>
         DateTime start = DateTime.Now;
         Clear();
         var trees=CreateOne_BigSmall_Core(parent, target, progressChanged);
-        Debug.LogError($"CreateOne_BigSmall \t{(DateTime.Now - start).ToString()}");
+        Debug.LogWarning($"CreateOne_BigSmall \t{(DateTime.Now - start).ToString()}");
         return trees;
     }
 

@@ -48,10 +48,15 @@ public class SceneRebuildManager : MonoBehaviour
 
     public List<AreaTreeNode> GetLeafNodes()
     {
-        
+
         List<AreaTreeNode> nodes = new List<AreaTreeNode>();
         var trees = GetTrees();
-        trees.ForEach(t => nodes.AddRange(t.TreeLeafs));
+        trees.ForEach(t =>
+        {
+            if (t != null)
+                nodes.AddRange(t.TreeLeafs);
+        }
+        );
         return nodes;
         //return GameObject.FindObjectsOfType<AreaTreeNode>(true).Where(n => n.IsLeaf).ToList();
     }

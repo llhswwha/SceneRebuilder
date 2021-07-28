@@ -206,4 +206,12 @@ public class RendererId
     {
         // Debug.Log("RendererId.OnDestroy:"+this.name);
     }
+
+    public bool IsDebug = false;
+
+    private void OnDisable()
+    {
+        if(IsDebug)
+            Debug.LogError("RendererId.OnDisable:" + this.name);
+    }
 }
