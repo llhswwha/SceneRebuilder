@@ -27,10 +27,10 @@ namespace CodeStage.AdvancedFPSCounter.Editor.UI
         public int[] pageId_sizes =null;
 		public int pageCount=1;
 
-        public int listFilterId = 1;
+        public int listFilterId = 0;
         public string[] listFilterId_Names = new string[] { "All" };
 
-        public int listSortTypeId = 1;
+        public int listSortTypeId = 0;
         public string[] listSortType_Names = new string[] { "Default" };
 
 
@@ -63,12 +63,12 @@ namespace CodeStage.AdvancedFPSCounter.Editor.UI
             this.background = background;
         }
 
-        public int DrawFilterList(int width,params string[] filters)
+        public int DrawFilterList(int width,int defaultId,params string[] filters)
         {
             if(listFilterId_Names==null|| listFilterId_Names.Length != filters.Length)
             {
                 listFilterId_Names = filters;
-                listFilterId = 1;
+                listFilterId = defaultId;
             }
             listFilterId = EditorGUILayout.Popup(listFilterId, listFilterId_Names,GUILayout.Width(width));
             return listFilterId;
@@ -144,6 +144,17 @@ namespace CodeStage.AdvancedFPSCounter.Editor.UI
             DrawSortTypeList(width, defaultType, sorttypes);
             EditorGUILayout.EndHorizontal();
             return listSortTypeId;
+        }
+
+        public int DrawPageToolbarWithFilter(int count, int width, int defaultId, params string[] filterList)
+        {
+            EditorGUILayout.BeginHorizontal();
+            EditorUIUtils.BeforeSpace(level + 1);
+            DrawPageSizeList();
+            DrawPageIndexList(count);
+            DrawFilterList(width, defaultId, filterList);
+            EditorGUILayout.EndHorizontal();
+            return listFilterId;
         }
 
         public void DrawPageToolbar<T>(List<T> list,System.Action<T,int> drawItemAction)
@@ -376,8 +387,10 @@ namespace CodeStage.AdvancedFPSCounter.Editor.UI
 
 
             GUILayout.Space(10);
-			var rect = EditorGUILayout.GetControlRect(); 
-			arg.isExpanded = EditorGUI.Foldout(rect, arg.isExpanded, arg.caption, true, arg.bold ? richBoldFoldout : EditorStyles.foldout);
+			var rect = EditorGUILayout.GetControlRect();
+            //rect.width = 100;
+
+            arg.isExpanded = EditorGUI.Foldout(rect, arg.isExpanded, arg.caption, true, arg.bold ? richBoldFoldout : EditorStyles.foldout);
 
 
 			EditorGUIUtility.labelWidth = 1;

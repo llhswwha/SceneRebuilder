@@ -18,8 +18,8 @@ public class ModelAreaTreeEditor : BaseFoldoutEditor<ModelAreaTree>
         ModelAreaTree item = target as ModelAreaTree;
         item.UpdateSceneList();
 
-        nodeListArg = new FoldoutEditorArg(true, false);
-        sceneListArg = new FoldoutEditorArg(true, false);
+        nodeListArg = new FoldoutEditorArg(true, false, true, true, false);
+        sceneListArg = new FoldoutEditorArg(true, false, true, true, false);
     }
 
     public override void OnToolLayout(ModelAreaTree item)
@@ -61,7 +61,7 @@ public class ModelAreaTreeEditor : BaseFoldoutEditor<ModelAreaTree>
         NewButton("UnloadScenes", buttonWidth, isAllLoaded == true && sceneCount > 0 && folderExists, item.UnLoadScenes);
         EditorGUILayout.EndHorizontal();
 
-        DrawNodeList(nodeListArg, () =>
+        DrawNodeList(nodeListArg,false, () =>
         {
             return item.TreeLeafs;
         });

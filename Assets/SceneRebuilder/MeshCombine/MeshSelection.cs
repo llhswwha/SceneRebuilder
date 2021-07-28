@@ -28,7 +28,9 @@ public class MeshSelection : MonoBehaviour
         if (Physics.Raycast(ray, out hit))
         {
             var hitGo = hit.collider.gameObject;
-            var hitParentName = hitGo.transform.parent.name;
+            string hitParentName = "";
+            if (hitGo.transform.parent!=null)
+                hitParentName = hitGo.transform.parent.name;
             Debug.Log("Hit Object:" + hitGo + "|"+ hitGo.transform.parent);
 
             if (lastRenderer != null)

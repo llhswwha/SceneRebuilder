@@ -98,6 +98,8 @@ public class BuildingModelInfoEditor : BaseFoldoutEditor<BuildingModelInfo>
         NewButton("2.CreateTree", buttonWidth,state.CanCreateTrees, btnStyle, info.CreateTreesBSEx);
         NewButton("RemoveTrees", buttonWidth,state.CanRemoveTrees, btnStyle, info.ClearTrees);
         NewButton("CreateTreeByLOD", buttonWidth, state.CanCreateTrees, btnStyle, info.CreateTreesByLOD);
+        AreaTreeManager.Instance.isCombine = GUILayout.Toggle(AreaTreeManager.Instance.isCombine, "Combine");
+        //NewButton("GetTreeAreas", buttonWidth, state.CanCreateTrees, btnStyle, info.CreateTreesByLOD);
         EditorGUILayout.EndHorizontal();
 
         EditorGUILayout.BeginHorizontal();
@@ -208,7 +210,7 @@ public class BuildingModelInfoEditor : BaseFoldoutEditor<BuildingModelInfo>
         {
             return item.GetTreeList();
         });
-        List<AreaTreeNode> nodes = DrawNodeList(nodeListArg, () =>
+        List<AreaTreeNode> nodes = DrawNodeList(nodeListArg,true, () =>
         {
             return item.GetNodeList();
         });

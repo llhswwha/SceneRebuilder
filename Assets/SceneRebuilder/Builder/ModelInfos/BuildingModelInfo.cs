@@ -275,6 +275,7 @@ public class BuildingModelInfo : SubSceneCreater
         UpdateTrees();
         foreach (var t in trees)
         {
+            t.RecoverParentEx();
             GameObject.DestroyImmediate(t.gameObject);
         }
         this.ShowRenderers();
@@ -751,6 +752,8 @@ public class BuildingModelInfo : SubSceneCreater
 
     public void CreateTreesBSEx(bool isLod)
     {
+        AreaTreeManager.Instance.ClearCount();
+
         AreaTreeManager.Instance.IsByLOD = isLod;
         DateTime start = DateTime.Now;
 
