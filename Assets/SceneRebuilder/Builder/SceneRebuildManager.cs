@@ -63,7 +63,7 @@ public class SceneRebuildManager : MonoBehaviour
 
     public List<SubScene_Base> GetScenes()
     {
-        return subSceneManager.subScenes.ToList().Where(s=>s!=null).ToList() ;
+        return subSceneManager.GetScenes();
     }
 
     public void UpdateList()

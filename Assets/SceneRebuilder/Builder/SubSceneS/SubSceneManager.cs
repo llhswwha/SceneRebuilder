@@ -1,6 +1,7 @@
 using System;
 using System.Collections;
 using System.Collections.Generic;
+using System.IO;
 using System.Linq;
 #if UNITY_EDITOR
 using UnityEditor;
@@ -9,27 +10,32 @@ using UnityEditor.SceneManagement;
 using UnityEngine;
 using UnityEngine.SceneManagement;
 
-public class SubSceneManager : MonoBehaviour
+public class SubSceneManager : SingletonBehaviour<SubSceneManager>
 {
-    private static SubSceneManager _instance;
-    public static SubSceneManager Instance
-    {
-        get
-        {
-            if (_instance == null)
-            {
-                _instance= GameObject.FindObjectOfType<SubSceneManager>();
-            }
-            if (_instance == null)
-            {
-                GameObject go = new GameObject("SubSceneManager");
-                _instance = go.AddComponent<SubSceneManager>();
-            }
-            return _instance;
-        }
-    }
+    //private static SubSceneManager _instance;
+    //public static SubSceneManager Instance
+    //{
+    //    get
+    //    {
+    //        if (_instance == null)
+    //        {
+    //            _instance= GameObject.FindObjectOfType<SubSceneManager>();
+    //        }
+    //        if (_instance == null)
+    //        {
+    //            GameObject go = new GameObject("SubSceneManager");
+    //            _instance = go.AddComponent<SubSceneManager>();
+    //        }
+    //        return _instance;
+    //    }
+    //}
 
     public SubScene_Base[] subScenes;
+
+    public List<SubScene_Base> GetScenes()
+    {
+        return subScenes.ToList().Where(s => s != null).ToList();
+    }
 
     public string RootDir = "SubScenes";
 
@@ -196,21 +202,6 @@ public class SubSceneManager : MonoBehaviour
         WriteLog("EditorCreateBuildingScenes",$"count:{buildings.Length},\t time:{(DateTime.Now - start).ToString()}");
     }
 
-    //[ContextMenu("EditorLoadScenes_Part")]
-    //public void EditorLoadScenes_Part()
-    //{
-    //    subScenes = GameObject.FindObjectsOfType<SubScene_Part>(true);
-    //    EditorLoadScenes(subScenes);
-    //}
-
-    //[ContextMenu("EditorLoadScenes")]
-    //public void EditorLoadScenes()
-    //{
-    //    subScenes = GetSubScenes();
-    //    EditorLoadScenes(subScenes);
-    //}
-
-
     [ContextMenu("* EditorLoadScenes")]
     public void EditorLoadScenes()
     {
@@ -234,16 +225,6 @@ public class SubSceneManager : MonoBehaviour
             {
                 break;
             }
-
-            //item.EditorLoadScenesByContentType(this.contentType,p=>
-            //{
-            //    float progress = (float)(i+p) / count;
-            //    float percents = progress * 100;
-            //    if (ProgressBarHelper.DisplayCancelableProgressBar("EditorLoadScenes", $"Progress2 {(i + p):F1}/{count} {percents:F2}% of 100%  {item.name}", progress))
-            //    {
-            //        return;
-            //    }
-            //});
 
             item.EditorLoadNodeScenes(p =>
             {
@@ -297,38 +278,8 @@ public class SubSceneManager : MonoBehaviour
         }
         ProgressBarHelper.ClearProgressBar();
 
-        //SetBuildings();
-        //SetSetting();
-
-        //if (IsClearOtherScenes)
-        //{
-        //    ClearOtherScenes();
-        //}
-
         WriteLog("EditorUnLoadScenes",$"count:{buildings.Length},\t time:{(DateTime.Now - start).ToString()}");
     }
-
-    //public static void EditorLoadScenes<T>(T[] scenes) where T : SubScene_Base
-    //{
-    //    DateTime start = DateTime.Now;
-    //    for (int i = 0; i < scenes.Length; i++)
-    //    {
-    //        SubScene_Base item = scenes[i];
-    //        float progress = (float)i / scenes.Length;
-    //        float percents = progress * 100;
-
-    //        if (ProgressBarHelper.DisplayCancelableProgressBar("EditorLoadScenes", $"{item.GetSceneName()}\t{i}/{scenes.Length} {percents:F2}% of 100%", progress))
-    //        {
-    //            //ProgressBarHelper.ClearProgressBar();
-    //            break;
-    //        }
-    //        item.EditorLoadSceneEx();
-    //    }
-
-    //    ProgressBarHelper.ClearProgressBar();
-
-    //    Debug.LogError($"EditorLoadScenes count:{scenes.Length},\t time:{(DateTime.Now - start).ToString()}");
-    //}
 
     [ContextMenu("EditorSaveScenes")]
     public void EditorSaveScenes()
@@ -354,8 +305,6 @@ public class SubSceneManager : MonoBehaviour
         WriteLog("EditorSaveScenes",$"count:{subScenes.Length},\t time:{(DateTime.Now - start).ToString()}");
     }
 
-    
-
     public void SetBuildings()
     {
         if (contentType == SceneContentType.Part)
@@ -367,7 +316,6 @@ public class SubSceneManager : MonoBehaviour
             SetBuildings_Single();
         }
     }
-
 
     [ContextMenu("SetBuildings_Single")]
     public void SetBuildings_Single()
@@ -421,65 +369,9 @@ public class SubSceneManager : MonoBehaviour
         //Debug.Log("SetBuildings:" + scenes.Length);
     }
 
-    //[ContextMenu("TestCreateDir")]
-    //public void TestCreateDir()
-    //{
-
-    //    EditorHelper.CreateDir(RootDir, SceneDir);
-
-    //}
-
-    //public int Count = 1;
-
-    //[ContextMenu("TestCreateScene")]
-    //public void TestCreateScene()
-    //{
-    //    string scenePath = GetScenePath(SceneName);
-    //    List<GameObject> newGos = new List<GameObject>();
-    //    for (int i = 0; i<Count;i++)
-    //    {
-    //        newGos.Add(new GameObject($"go_{Count}_{i}"));
-    //    }
-    //    Count++;
-    //    EditorHelper.CreateScene( scenePath, IsOverride, newGos.ToArray());
-    //}
-
     public Scene newScene;
 
     public string ScenePath;
-
-    //public SubScene_Single subScene;
-
-    //[ContextMenu("TestSaveGos")]
-    //public void TestSaveGos()
-    //{
-    //    //string scenePath = GetScenePath(SceneName);
-    //    newScene= CreateScene(gos.ToArray());
-    //}
-
-    //[ContextMenu("TestSubScene")]
-    //public void TestSubScene()
-    //{
-    //    if (root)
-    //    {
-    //        SubScene ss=root.AddComponent<SubScene>();
-    //        ss.Init();
-    //        string path = GetScenePath(root.name);
-    //        ss.SaveChildrenToScene(path, IsOverride);
-    //    }
-    //}
-
-    //[ContextMenu("LoadAllScenes")]
-    //public void LoadAllScenes()
-    //{
-    //    if (root)
-    //    {
-    //        SubScene_Single ss = root.AddComponent<SubScene_Single>();
-    //        ss.Init();
-    //        string path = GetScenePath(root.name);
-    //        ss.SaveChildrenToScene(path, IsOverride);
-    //    }
-    //}
 
     [ContextMenu("ClearOtherScenes")]
     public void ClearOtherScenes()
@@ -488,18 +380,6 @@ public class SubSceneManager : MonoBehaviour
     }
 
     public bool IsOpenSubScene = false;
-
-    //public Scene CreateScene(params GameObject[] objs)
-    //{
-    //    ScenePath = GetScenePath(SceneName, SceneContentType.Single,"");
-    //    return EditorHelper.CreateScene(ScenePath, IsOverride, IsOpenSubScene, objs);
-    //}
-
-    //public Scene CreateScene(string sceneName,params GameObject[] objs)
-    //{
-    //    string scenePath = GetScenePath(sceneName);
-    //    return EditorHelper.CreateScene(scenePath, IsOverride, objs);
-    //}
 
 #endif
 
@@ -637,18 +517,6 @@ public class SubSceneManager : MonoBehaviour
         Debug.Log("SetSetting:"+subScenes.Length);
     }
 
-    //public string GetScenePath(string sceneName, SceneContentType contentType,string dir)
-    //{
-    //    if(string.IsNullOrEmpty(dir))
-    //    {
-    //        return $"{RootDir}/{SceneDir}/{contentType}/{sceneName}.unity";
-    //    }
-    //    else
-    //    {
-    //        return $"{RootDir}/{SceneDir}/{contentType}/{dir}/{sceneName}.unity";
-    //    }
-    //}
-
     public string GetScenePath(string sceneName, SceneContentType contentType, GameObject go)
     {
         if (go==null)
@@ -744,16 +612,165 @@ public class SubSceneManager : MonoBehaviour
         //return Application.dataPath + SaveDir + sceneName + ".unity";
         //return $"{Application.dataPath}/{RootDir}/{SceneDir}/{sceneName}.unity";
 
-        //if (isPart)
-        //{
-        //    return $"{RootDir}/{SceneDir}_Parts/";
-        //}
-        //else
-        //{
-        //    return $"{RootDir}/{SceneDir}/";
-        //}
-
         return $"{RootDir}/{SceneDir}_{dir}/";
+    }
+
+    public string GetRootDir()
+    {
+        return $"{RootDir}/{SceneDir}/";
+    }
+
+    public DirectoryInfo GetRootDirInfo()
+    {
+        string path= $"{Application.dataPath}/{RootDir}/{SceneDir}/";
+        DirectoryInfo dirInfo = new DirectoryInfo(path);
+        Debug.Log($"path:{path}");
+        return dirInfo;
+    }
+
+    public FileInfo[] GetSceneFiles()
+    {
+        DirectoryInfo rootDir = GetRootDirInfo();
+        FileInfo[] files= rootDir.GetFiles("*.unity", SearchOption.AllDirectories);
+        Debug.Log($"files:{files.Length}");
+        return files;
+    }
+
+    public class SceneFile
+    {
+        public string scenePath1 ;
+        public string sceneAssetPath ;
+        public string sceneFilePath ;
+
+        public bool isActive = false;
+
+        public bool isExist = false;
+
+        public float fileLength = 0;
+
+        public SceneFile(SubScene_Base item)
+        {
+            var arg = item.GetSceneArg();
+            scenePath1 = arg.path;
+            sceneAssetPath = arg.GetSceneAssetPath();
+            sceneFilePath = arg.GetSceneFilePath();
+            isActive = true;
+
+            //isExist = File.Exists(sceneFilePath);
+
+            FileInfo fileInfo = new FileInfo(sceneFilePath);
+            isExist = fileInfo.Exists;
+            fileLength = fileInfo.Length / (1024f * 1024f);
+
+            sceneFilePath = fileInfo.FullName;
+        }
+
+        public SceneFile(FileInfo item)
+        {
+            sceneFilePath = item.FullName;
+            sceneAssetPath = EditorHelper.PathToRelative(sceneFilePath);
+            scenePath1 = sceneAssetPath.Replace("Assets", "");
+
+            FileInfo fileInfo = new FileInfo(sceneFilePath);
+            isExist = fileInfo.Exists;
+            fileLength = fileInfo.Length / (1024f * 1024f);
+
+            sceneFilePath = fileInfo.FullName;
+        }
+
+        public void SelectAsset()
+        {
+            Debug.Log(scenePath1);
+            Debug.Log(Application.dataPath);
+            Debug.Log(sceneFilePath + "|" + System.IO.File.Exists(sceneFilePath));
+            SceneAsset sceneAsset = AssetDatabase.LoadAssetAtPath<SceneAsset>(sceneAssetPath);
+            Debug.Log(sceneAsset);
+            //var scene=EditorSceneManager.GetSceneByPath(item.GetSceneArg().path);
+            EditorHelper.SelectObject(sceneAsset);
+        }
+
+        public void DeleteAsset()
+        {
+            //SceneAsset sceneAsset = AssetDatabase.LoadAssetAtPath<SceneAsset>(sceneAssetPath);
+            AssetDatabase.DeleteAsset(sceneAssetPath);
+            //AssetDatabase.Refresh();
+        }
+
+        public override string ToString()
+        {
+            return $"[{isExist}][{isActive}][{fileLength:F2} M] {scenePath1}";
+        }
+    }
+
+    public List<SceneFile> GetActiveSceneFiles()
+    {
+        List<SceneFile> sceneFiles1 = new List<SceneFile>();
+        var scenes = GetScenes();
+        foreach (var scene in scenes)
+        {
+            SceneFile sceneFile = new SceneFile(scene);
+            sceneFiles1.Add(sceneFile);
+        }
+        return sceneFiles1;
+    }
+
+    public List<SceneFile> GetAllSceneFiles()
+    {
+        List<SceneFile> sceneFiles2 = new List<SceneFile>();
+        DirectoryInfo rootDir = GetRootDirInfo();
+        FileInfo[] files = rootDir.GetFiles("*.unity", SearchOption.AllDirectories);
+        Debug.Log($"files:{files.Length}");
+        foreach (var file in files)
+        {
+            SceneFile sceneFile = new SceneFile(file);
+            sceneFiles2.Add(sceneFile);
+        }
+        return sceneFiles2;
+    }
+
+    public List<SceneFile> GetSceneFilesEx()
+    {
+        List<SceneFile> sceneFiles = new List<SceneFile>();
+        List<SceneFile> sceneFiles1 = GetActiveSceneFiles();
+        Dictionary<string, SceneFile> dict = new Dictionary<string, SceneFile>();
+        foreach(var scene in sceneFiles1)
+        {
+            dict.Add(scene.sceneFilePath, scene);
+        }
+        List<SceneFile> sceneFiles2 = GetAllSceneFiles();
+        foreach(var scene in sceneFiles2)
+        {
+            scene.isActive = dict.ContainsKey(scene.sceneFilePath);
+        }
+
+        return sceneFiles2;
+    }
+
+    public void DeleteInActiveScenes()
+    {
+        float fileLength = 0;
+        List<SceneFile> sceneFiles = GetSceneFilesEx();
+        int count = 0;
+        for (int i = 0; i < sceneFiles.Count; i++)
+        {
+            float progress = (float)i / sceneFiles.Count;
+            if(ProgressBarHelper.DisplayCancelableProgressBar("DeleteInActiveScenes", $"{i}/{sceneFiles.Count} {progress:P1}",progress))
+            {
+                break;
+            }
+            SceneFile scene = sceneFiles[i];
+            if (scene.isActive==false)
+            {
+                scene.DeleteAsset();
+                fileLength += scene.fileLength;
+                count++;
+            }
+        }
+
+        Debug.Log($"DeleteInActiveScenes all:{sceneFiles.Count} remove:{count} size:{fileLength}");
+        AssetDatabase.Refresh();
+
+        ProgressBarHelper.ClearProgressBar();
     }
 
     [ContextMenu("ClearScenes")]

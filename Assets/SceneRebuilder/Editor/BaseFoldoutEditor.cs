@@ -423,6 +423,46 @@ public class BaseFoldoutEditor<T> : BaseEditor<T> where T : class
         return nodes;
     }
 
+    public void DrawObjectList<T1>(FoldoutEditorArg foldoutArg,string title, System.Func<List<T1>> funcGetList,System.Action<T1> toolBarAction)
+    {
+        List<T1> list = new List<T1>();
+        foldoutArg.caption = title;
+        EditorUIUtils.ToggleFoldout(foldoutArg, (arg) =>
+        {
+            System.DateTime start = System.DateTime.Now;
+            //scenes = item.scenes.ToList();
+            list = funcGetList();
+            InitEditorArg(list);
+            arg.caption = $"{title}({list.Count})";
+        }, () =>
+        {
+        });
+        if (foldoutArg.isExpanded && foldoutArg.isEnabled)
+        {
+            System.DateTime start = System.DateTime.Now;
+            foldoutArg.DrawPageToolbar(list.Count);
+            int c = 0;
+            for (int i = foldoutArg.GetStartId(); i < list.Count && i < foldoutArg.GetEndId(); i++)
+            {
+                c++;
+                var item = list[i];
+                var arg = editorArgs[item];
+                arg.level = 1;
+                arg.caption = $"[{i:00}] {item.ToString()}";
+                arg.isFoldout = false;
+                EditorUIUtils.ObjectFoldout(arg, null, ()=>
+                {
+                    if (toolBarAction != null)
+                    {
+                        toolBarAction(item);
+                    }
+                });
+            }
+            var time = System.DateTime.Now - start;
+            //Debug.Log($"Show SceneList count:{c} time:{time.TotalMilliseconds:F1}ms ");
+        }
+    }
+
     public void DrawSceneList(FoldoutEditorArg foldoutArg, System.Func<List<SubScene_Base>> funcGetList)
     {
         List<SubScene_Base> scenes = new List<SubScene_Base>();
@@ -462,7 +502,7 @@ public class BaseFoldoutEditor<T> : BaseEditor<T> where T : class
             //Debug.Log($"Init SceneList count:{scenes.Count} time:{time.TotalMilliseconds:F1}ms ");
         }, () =>
         {
-            int filterType = foldoutArg.DrawFilterList(100, 1,"All", "Combined", "Renderers");
+            int filterType = foldoutArg.DrawFilterList(100, 0,"All", "Combined", "Renderers");
             if (GUILayout.Button("Win", GUILayout.Width(35)))
             {
                 SubSceneManagerEditorWindow.ShowWindow();
@@ -479,14 +519,17 @@ public class BaseFoldoutEditor<T> : BaseEditor<T> where T : class
                 c++;
                 var scene = scenes[i];
                 var arg = editorArgs[scene];
-                arg.isExpanded = EditorUIUtils.ObjectFoldout(arg.isExpanded, $"[{i + 1:00}] {scene.name}", $"[{scene.vertexCount:F0}w][{scene.rendererCount}]", false, false, false, scene.gameObject);
-                if (arg.isExpanded)
-                {
-                    //BuildingModelInfoEditor.DrawToolbar(b, contentStyle, buttonWidth);
-                }
+                BuildingModelInfo modelInfo = scene.GetComponentInParent<BuildingModelInfo>();
+                arg.caption = $"[{i + 1:00}] {modelInfo.name}>{scene.name}";
+                arg.info = $"[{scene.vertexCount:F0}w][{scene.rendererCount}]";
+                EditorUIUtils.ObjectFoldout(arg, scene.gameObject,null);
+                //if (arg.isExpanded)
+                //{
+                //    //BuildingModelInfoEditor.DrawToolbar(b, contentStyle, buttonWidth);
+                //}
             }
             var time = System.DateTime.Now - start;
-            Debug.Log($"Show SceneList count:{c} time:{time.TotalMilliseconds:F1}ms ");
+            //Debug.Log($"Show SceneList count:{c} time:{time.TotalMilliseconds:F1}ms ");
         }
     }
 
@@ -704,25 +747,6 @@ public class BaseFoldoutEditor<T> : BaseEditor<T> where T : class
             //int lodtypeId=foldoutArg.DrawFilterList(80, "NoLOD", "LOD0", "LOD1", "LOD2", "LOD3", "LOD4");
             //int lodtypeId = foldoutArg.DrawPageToolbarWithFilter(meshFilters.Count, 80,0, "All","NoLOD", "LOD0", "LOD1", "LOD2", "LOD3", "LOD4");
             foldoutArg.DrawPageToolbar(meshFilters.Count);
-
-            //List<MeshRendererInfo> filteredList = new List<MeshRendererInfo>();
-            //if(lodtypeId>0)
-            //{
-            //    int lv = lodtypeId - 2;
-            //    foreach (var mf in meshFilters)
-            //    {
-            //        if(lv==-1 && mf.LodIds.Count==0)
-            //        {
-            //            filteredList.Add(mf);
-            //        }
-            //        else if(mf.LodIds.Contains(lv))
-            //        {
-            //            filteredList.Add(mf);
-            //        }
-            //    }
-            //    meshFilters = filteredList;
-            //}
-
 
             int c = 0;
             for (int i = foldoutArg.GetStartId(); i < meshFilters.Count && i < foldoutArg.GetEndId(); i++)
