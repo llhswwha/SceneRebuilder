@@ -23,6 +23,16 @@ public class MeshRendererInfo : MonoBehaviour
 
     public Vector3[] minMax;
 
+    public Mesh sharedMesh
+    {
+        get
+        {
+            if (meshFilter == null) return null;
+            return meshFilter.sharedMesh;
+        }
+        
+    }
+
     public static Vector3[] GetMinMax(GameObject go)
     {
         MeshRendererInfo info = go.GetComponent<MeshRendererInfo>();
@@ -46,6 +56,18 @@ public class MeshRendererInfo : MonoBehaviour
             //Debug.Log($"AddComponent info:{info} info==null:{info == null}");
         }
         return info;
+    }
+
+   public static MeshRendererInfoList InitRenderers(GameObject go)
+    {
+        MeshRendererInfoList list = new MeshRendererInfoList();
+        MeshRenderer[] renderers = go.GetComponentsInChildren<MeshRenderer>(true);
+        foreach(var renderer in renderers)
+        {
+            var info = MeshRendererInfo.GetInfo(renderer.gameObject);
+            list.Add(info);
+        }
+        return list;
     }
 
     //public static List<MeshRendererInfo> GetLod0s(GameObject go)

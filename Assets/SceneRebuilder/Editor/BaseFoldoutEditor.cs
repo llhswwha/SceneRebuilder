@@ -784,11 +784,13 @@ public class BaseFoldoutEditor<T> : BaseEditor<T> where T : class
                 {
                     Debug.LogError($"Show MeshList mesh.transform.parent==null"); continue;
                 }
-                arg.isExpanded = EditorUIUtils.ObjectFoldout(arg.isExpanded, $"[{i + 1:00}] {building.name}>>{mesh.transform.parent.name}>{mesh.name}(LOD[{mesh.GetLODIds()}])", $"[{mesh.vertexCount / 10000f:F1}w]", false, false, false, mesh.gameObject);
-                if (arg.isExpanded)
-                {
-                    //BuildingModelInfoEditor.DrawToolbar(b, contentStyle, buttonWidth);
-                }
+                arg.caption = $"[{i + 1:00}] {building.name}>>{mesh.transform.parent.name}>{mesh.name}";
+                arg.info = $"[{mesh.vertexCount / 10000f:F1}w][{mesh.size}](LOD[{mesh.GetLODIds()}])";
+               EditorUIUtils.ObjectFoldout(arg, mesh.gameObject,null);
+                //if (arg.isExpanded)
+                //{
+                //    //BuildingModelInfoEditor.DrawToolbar(b, contentStyle, buttonWidth);
+                //}
             }
             var time = System.DateTime.Now - start;
             //Debug.Log($"Show MeshList count:{c} time:{time.TotalMilliseconds:F1}ms ");
