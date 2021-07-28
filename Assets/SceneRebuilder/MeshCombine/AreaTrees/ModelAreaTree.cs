@@ -355,7 +355,7 @@ public class ModelAreaTree : SubSceneCreater
             if (render == null) continue;
             render.enabled = true;
         }
-        Bounds bounds = ColliderHelper.CaculateBounds(renderers);
+        Bounds bounds = MeshRendererInfoList.CaculateBounds(renderers);
         // Debug.LogError("size:"+bounds.size);
         // Debug.LogError("size2:"+bounds.size/2);
 

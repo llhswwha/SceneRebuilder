@@ -344,6 +344,70 @@ public class MeshRendererInfoList:List<MeshRendererInfo>
             return this.Count;
         }
     }
+
+    public static Bounds CaculateBounds(MeshRendererInfoList renders, bool isAll = true)
+    {
+        //Debug.Log($"CaculateBounds renders:{renders.Count()},isAll:{isAll}");
+        Vector3 center = Vector3.zero;
+        int count = 0;
+        foreach (var info in renders)
+        {
+            var child = info.meshRenderer;
+            if (child == null) continue;
+            if (isAll == false && !child.enabled) continue;
+
+            MeshFilter meshFilter = child.GetComponent<MeshFilter>();
+            if (meshFilter.sharedMesh == null || meshFilter.sharedMesh.vertexCount == 0)
+            {
+                Debug.LogWarning($"CaculateBounds1 meshFilter.sharedMesh==null || meshFilter.sharedMesh.vertexCount==0 name:{child.name} path:{GetPath(child.transform, 1000)}");
+                continue;
+            }
+
+            center += child.bounds.center;
+            count++;
+        }
+
+        if (count > 0)
+        {
+            center /= count;
+        }
+        Bounds bounds = new Bounds(center, Vector3.zero);
+        foreach (var info in renders)
+        {
+            var child = info.meshRenderer;
+            if (isAll == false && !child.enabled) continue;
+
+            MeshFilter meshFilter = child.GetComponent<MeshFilter>();
+            if (meshFilter.sharedMesh == null || meshFilter.sharedMesh.vertexCount == 0)
+            {
+                Debug.LogWarning($"CaculateBounds2 meshFilter.sharedMesh==null || meshFilter.sharedMesh.vertexCount==0 name:{child.name} path:{GetPath(child.transform, 1000)}");
+                continue;
+            }
+
+            // Bounds bounds1=bounds;
+            bounds.Encapsulate(child.bounds);
+            //Debug.Log($"CaculateBounds bounds1:{bounds},bounds2:{child.bounds} name:{child.name}");
+            // if(bounds.size!=bounds1.size)
+            // {
+            //     Debug.Log($"CaculateBounds bounds1:{bounds},bounds2:{child.bounds} name:{child.name} path:{GetPath(child.transform,1000)}");
+            //     AreaTreeHelper.CreateBoundsCube(bounds, GetPath(child.transform,2), null);
+            // }
+
+        }
+        return bounds;
+    }
+
+    private static string GetPath(Transform t, int maxlevel)
+    {
+        if (t.parent == null || maxlevel <= 0)
+        {
+            return t.name;
+        }
+        else
+        {
+            return GetPath(t.parent, maxlevel - 1) + "/" + t.name;
+        }
+    }
 }
 
 public enum MeshRendererType
