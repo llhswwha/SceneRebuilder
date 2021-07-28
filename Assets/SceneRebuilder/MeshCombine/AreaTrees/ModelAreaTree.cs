@@ -760,7 +760,7 @@ public class ModelAreaTree : SubSceneCreater
             VertexCount += mf.sharedMesh.vertexCount;
         }
         VertexCount = VertexCount / 10000;
-        Debug.Log($"GetVertexCount VertexCount:{VertexCount} time:{(DateTime.Now - start).TotalMilliseconds}ms");
+        //Debug.Log($"ModelAreaTree.GetVertexCount tree:{this.name} VertexCount:{VertexCount} time:{(DateTime.Now - start).TotalMilliseconds}ms");
         return VertexCount;
     }
 

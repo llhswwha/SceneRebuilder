@@ -19,6 +19,21 @@ public class AreaTreeNodeEditor : BaseFoldoutEditor<AreaTreeNode>
     {
         base.OnToolLayout(areaTreeNode);
 
+        GUILayout.BeginHorizontal();
+        if (GUILayout.Button("MoveRenderers"))
+        {
+            areaTreeNode.MoveRenderers();
+        }
+        if (GUILayout.Button("RecoverParentEx"))
+        {
+            areaTreeNode.RecoverParentEx();
+        }
+        if (GUILayout.Button("RecoverParent"))
+        {
+            areaTreeNode.RecoverParent();
+        }
+        GUILayout.EndHorizontal();
+
         if (GUILayout.Button("GetRendererInfos"))
         {
             meshRendererInfoListArg.Items= areaTreeNode.GetRendererInfos();

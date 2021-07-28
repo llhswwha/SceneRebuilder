@@ -70,8 +70,9 @@ public class SceneRebuildManagerEditor : BaseFoldoutEditor<SceneRebuildManager>
         EditorGUILayout.EndHorizontal();
 
         EditorGUILayout.BeginHorizontal();
-        NewButton("3.CreateTrees", buttonWidth, true, item.CombineBuildings);
+        NewButton("2.CreateTrees", buttonWidth, true, item.CombineBuildings);
         NewButton("RemoveTrees", buttonWidth, true, item.ClearTrees);
+        AreaTreeManager.Instance.isCombine = GUILayout.Toggle(AreaTreeManager.Instance.isCombine, "Combine");
         EditorGUILayout.EndHorizontal();
 
         EditorGUILayout.BeginHorizontal();
@@ -104,7 +105,7 @@ public class SceneRebuildManagerEditor : BaseFoldoutEditor<SceneRebuildManager>
         IsShowList = GUILayout.Toggle(IsShowList, "IsShowList");
         if (IsShowList == false) return;
 
-        Debug.Log($"------------------------------------------------------------------------");
+        //Debug.Log($"------------------------------------------------------------------------");
         EditorUIUtils.SetupStyles();
         //-------------------------------------------------------BuildingList-----------------------------------------------------------
         //Debug.Log($"SceneRebuildManagerEditor6 time:{(System.DateTime.Now - startT).TotalMilliseconds:F1}ms ");
@@ -130,7 +131,7 @@ public class SceneRebuildManagerEditor : BaseFoldoutEditor<SceneRebuildManager>
         //Debug.Log($"SceneRebuildManagerEditor5 time:{(System.DateTime.Now - startT).TotalMilliseconds:F1}ms ");
         DrawTreeList(treeListArg, () =>
         {
-            return item.GetTrees().Where(t => t.VertexCount > 0).ToList();
+            return item.GetTrees().Where(t => t!=null && t.VertexCount > 0).ToList();
         });
 
         //-------------------------------------------------------NodeList-----------------------------------------------------------
@@ -150,7 +151,7 @@ public class SceneRebuildManagerEditor : BaseFoldoutEditor<SceneRebuildManager>
         //Debug.Log($"SceneRebuildManagerEditor1 time:{(System.DateTime.Now - startT).TotalMilliseconds:F1}ms ");
         DrawMatList(GlobalMaterialManager.Instance, matListArg);
 
-        Debug.Log($"SceneRebuildManagerEditor time:{(System.DateTime.Now - startT).TotalMilliseconds:F1}ms ");
+        //Debug.Log($"SceneRebuildManagerEditor time:{(System.DateTime.Now - startT).TotalMilliseconds:F1}ms ");
     }
 
     private List<MeshFilter> GetMeshList()

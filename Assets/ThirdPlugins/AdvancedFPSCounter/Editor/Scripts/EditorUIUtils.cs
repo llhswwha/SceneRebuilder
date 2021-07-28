@@ -509,18 +509,24 @@ namespace CodeStage.AdvancedFPSCounter.Editor.UI
                 EditorGUIUtility.labelWidth = currentLabelWidth;
             }
 
-            
 
+            GUILayout.Space(10);    
             if (arg.isFoldout)
             {
-                GUILayout.Space(10);
+                
                 var rect = EditorGUILayout.GetControlRect(GUILayout.Width(100));
                 // rect.
                 arg.isExpanded = EditorGUI.Foldout(rect, arg.isExpanded, arg.caption, true, (arg.bold || arg.isSelected) ? richBoldFoldout : EditorStyles.foldout);
             }
             else
             {
-                GUILayout.Label(arg.caption);
+                var btnStyle = new GUIStyle(EditorStyles.miniLabel);
+                btnStyle.margin = new RectOffset(0, 0, 0, 0);
+                btnStyle.padding = new RectOffset(0, 0, 0, 0);
+                btnStyle.alignment = TextAnchor.MiddleLeft;
+
+                //var rect = EditorGUILayout.GetControlRect(GUILayout.Width(100));
+                GUILayout.Label(arg.caption, btnStyle,GUILayout.Width(600));
             }
 
             EditorGUIUtility.labelWidth = 1;

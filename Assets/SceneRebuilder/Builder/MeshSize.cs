@@ -13,6 +13,8 @@ public class MeshSize : MonoBehaviour
 
     public float Length=0;
 
+    public float Diam = 0;
+
     [ContextMenu("GetSize")]
     public void GetSize()
     {
@@ -26,7 +28,11 @@ public class MeshSize : MonoBehaviour
             bounds = meshFiter.sharedMesh.bounds;
         }
         
-        size=bounds.size;
+        
+
+        //Diam = Vector3.size.z * scale.z + size.z * scale.z + size.z * scale.z;
+
+        size = bounds.size;
         scale = this.transform.lossyScale;
         scale = new Vector3(Mathf.Abs(scale.x), Mathf.Abs(scale.y), Mathf.Abs(scale.y));
         Length = size.x * scale.x;
@@ -36,7 +42,13 @@ public class MeshSize : MonoBehaviour
         }
         if (size.z * scale.z > Length)
         {
-            Length = size.z * scale.y;
+            Length = size.z * scale.z;
         }
+
+
+        var minMax = MeshHelper.GetMinMax(meshFiter);
+        //center = minMax[3];
+        //size = minMax[2];
+        Diam = Vector3.Distance(minMax[0], minMax[1]);
     }
 }
