@@ -90,6 +90,11 @@ public class SceneRebuildManager : MonoBehaviour
         subSceneManager.SetBuildings_Parts();
     }
 
+    [ContextMenu("SetBuildingsActive")]
+    public void SetBuildingsActive()
+    {
+        subSceneManager.SetBuildings_Parts();
+    }
 
     [ContextMenu("OneKey")]
     public void OneKey()
