@@ -1109,7 +1109,7 @@ break;
             MeshRendererInfo rendererInfo=mf.GetComponent<MeshRendererInfo>();
             if(rendererInfo!=null){
                 MeshRenderer mr=rendererInfo.meshRenderer;
-                if(rendererInfo.rendererType==MeshRendererType.Static)
+                if(rendererInfo.rendererType==MeshRendererType.Structure)
                 {
                     info.bigModels.Add(mr);
                     sumVertex_Big += mf.sharedMesh.vertexCount;
