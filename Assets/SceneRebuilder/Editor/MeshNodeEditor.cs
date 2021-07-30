@@ -10,10 +10,14 @@ public class MeshNodeEditor : BaseFoldoutEditor<MeshNode>
 {
     FoldoutEditorArg meshnodeListArg = new FoldoutEditorArg();
 
+    private int rendererCount = 0;
+
     public override void OnEnable()
     {
         base.OnEnable();
         meshnodeListArg = new FoldoutEditorArg(true,true,true,true,true);
+
+        rendererCount = targetT.gameObject.GetComponentsInChildren<MeshRenderer>(true).Length;
     }
 
     public override void OnToolLayout(MeshNode item)
@@ -22,11 +26,11 @@ public class MeshNodeEditor : BaseFoldoutEditor<MeshNode>
 
         if (item.meshData.vertexCount > 0)
         {
-            GUILayout.Label($"vertexCount:{MeshHelper.GetVertexCountS(item.VertexCount)}({MeshHelper.GetVertexCountS(item.meshData.vertexCount)}|{item.meshData.vertexCount / (float)item.VertexCount:P1})");
+            GUILayout.Label($"vertex:{MeshHelper.GetVertexCountS(item.VertexCount)}({MeshHelper.GetVertexCountS(item.meshData.vertexCount)}|{item.meshData.vertexCount / (float)item.VertexCount:P1}),renderers:{rendererCount}");
         }
         else
         {
-            GUILayout.Label($"vertexCount:{MeshHelper.GetVertexCountS(item.VertexCount)}");
+            GUILayout.Label($"vertex:{MeshHelper.GetVertexCountS(item.VertexCount)},renderers:{rendererCount}");
         }
         
 
