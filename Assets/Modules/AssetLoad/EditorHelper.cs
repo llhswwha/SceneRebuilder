@@ -22,6 +22,68 @@ public static class EditorHelper
 {
 #if UNITY_EDITOR
 
+    public static void SaveMeshAsset(string dir,GameObject go,MeshFilter[] meshFilters)
+    {
+        string assetName = go.name + go.GetInstanceID();
+
+        string meshPath = dir + "/" + assetName + ".asset";
+
+        bool isAllCreated = true;
+        for (int i = 0; i < meshFilters.Length; i++)
+        {
+            MeshFilter meshFilter = meshFilters[i];
+            if (UnityEditor.AssetDatabase.Contains(meshFilter.sharedMesh))
+            {
+                isAllCreated = false;
+            }
+        }
+        if (isAllCreated)
+        {
+            Debug.LogWarning($"SaveMeshAsset isAllCreated:{isAllCreated} assetName:{assetName} meshFilters:{meshFilters.Length}");
+            return;
+        }
+
+        Mesh meshAsset = new Mesh();
+        //string assetName = tree.Target.name+"_"+gameObject.name + gameObject.GetInstanceID();
+
+        EditorHelper.SaveAsset(meshAsset, meshPath, false);
+
+        for (int i = 0; i < meshFilters.Length; i++)
+        {
+            MeshFilter meshFilter = meshFilters[i];
+            Debug.LogError("meshFilter.sharedMesh :" + meshFilter.sharedMesh);
+            if (meshFilter.sharedMesh == null)
+            {
+                Debug.LogError("meshFilter.sharedMesh == null");
+                continue;
+            }
+            Mesh mesh = meshFilter.sharedMesh;
+            EditorHelper.SaveAsset(mesh, meshPath, true);
+        }
+    }
+
+    public static bool SaveAsset(Object assetObj, string strFile, bool bAssetAlreadyCreated)
+    {
+#if UNITY_EDITOR
+        if (bAssetAlreadyCreated == false && UnityEditor.AssetDatabase.Contains(assetObj) == false)
+        {
+            Debug.LogError($"CreateAsset:{strFile}");
+            UnityEditor.AssetDatabase.CreateAsset(assetObj, strFile);
+            bAssetAlreadyCreated = true;
+        }
+        else
+        {
+            if (UnityEditor.AssetDatabase.Contains(assetObj) == false)
+            {
+                Debug.LogError($"AddObjectToAsset:{strFile}");
+                UnityEditor.AssetDatabase.AddObjectToAsset(assetObj, strFile);
+                UnityEditor.AssetDatabase.ImportAsset(UnityEditor.AssetDatabase.GetAssetPath(assetObj));
+            }
+        }
+#endif
+        return bAssetAlreadyCreated;
+    }
+
     public static void UnpackPrefab(GameObject go)
     {
         UnpackPrefab(go, PrefabUnpackMode.Completely);

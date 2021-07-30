@@ -28,6 +28,7 @@ public class CombinedMesh{
     public Vector3[] minMax;
 
     public CombinedMesh(Transform source,List<SubMesh> mfs, Material mat){
+        this.name = source.name;
         this.source=source;
 
         if(mfs==null || mfs.Count==0){
@@ -135,53 +136,67 @@ public class CombinedMesh{
         return target;
     }
 
-    public int DoCombine(bool logTime){
-
-        List<MeshPartInfo> allList=new List<MeshPartInfo>();
-        MeshPartInfo list=new MeshPartInfo();
+    public List<MeshPartInfo> GetMeshPartInfoList()
+    {
+        List<MeshPartInfo> allList = new List<MeshPartInfo>();
+        MeshPartInfo list = new MeshPartInfo();
         allList.Add(list);
 
-        VertexCount=0;
-        int vcSum=0;
-        int count=meshFilters.Count;
-        for(int i=0;i<count;i++)
+        VertexCount = 0;
+        int vcSum = 0;
+        int count = meshFilters.Count;
+        for (int i = 0; i < count; i++)
         {
-            MeshFilter mf=meshFilters[i];
+            MeshFilter mf = meshFilters[i];
             if (mf.sharedMesh == null) continue;
             int meshId = meshIndexes[i];
-            Mesh ms=mf.sharedMesh;
+            Mesh ms = mf.sharedMesh;
 
             //Debug.Log(string.Format("DoCombine[{0}/{1}]:{2}",i,count,VertexCount));
             //int vc=ms.vertexCount;
             int vc = (int)(ms.GetIndexCount(meshId));
-            VertexCount+=vc;
+            VertexCount += vc;
 
-            if(vcSum+vc>MaxVertex)//判断数量
+            if (vcSum + vc > MaxVertex)//判断数量
             {
-                vcSum=vc;
-                list=new MeshPartInfo();//新的
-                list.Add(mf, meshId,vc);
+                vcSum = vc;
+                list = new MeshPartInfo();//新的
+                list.Add(mf, meshId, vc);
                 allList.Add(list);
             }
-            else{
-                vcSum+=vc;
+            else
+            {
+                vcSum += vc;
                 list.Add(mf, meshId, vc);
             }
         }
-        meshes=new List<MeshPartInfo>();
+        return allList;
+    }
+
+    public int DoCombine(bool logTime){
+
+        List<MeshPartInfo> allList = GetMeshPartInfoList();
+
+        meshes =new List<MeshPartInfo>();
 
         //Debug.Log(string.Format("DoCombine allList.Count:",allList.Count));
         for(int i=0;i<allList.Count;i++)
         {
             //Debug.LogWarning(string.Format("DoCombine {0} ({1}/{2})",allList[i].mesh,i+1,allList.Count));
-            var newMesh=InnerDoCombine(allList[i],i);//合并核心代码
+            var partInfo = allList[i];
+            if (partInfo.GetMeshCount() == 0)
+            {
+                Debug.LogError($"DoCombine partInfo.GetMeshCount()== 0 MaxVertex:{MaxVertex},all:{allList.Count} id:{i} mesh:{name} VertexCount:{VertexCount}");
+                continue;
+            }
+            var newMesh=InnerDoCombine(partInfo, i);//合并核心代码
             if(newMesh!=null) meshes.Add(newMesh);
         }
 
         DateTime start=DateTime.Now;
         Debug.LogWarning(
             string.Format("CombinedMesh 用时:{1}ms,Mesh数量:{1} 子模型数:{2},VertexCount:{3},Mat:{4}"
-            , (DateTime.Now - start).TotalMilliseconds, count, allList.Count, VertexCount, mat)
+            , (DateTime.Now - start).TotalMilliseconds, meshFilters.Count, allList.Count, VertexCount, mat)
             );
 
         return VertexCount;
@@ -230,7 +245,13 @@ public class CombinedMesh{
             if(i % waitCount == 0){
                 yield return null;
             }
-            var newMesh=InnerDoCombine(allList[i],i);
+            var partInfo = allList[i];
+            if (partInfo.GetMeshCount() == 0)
+            {
+                Debug.LogError($"DoCombine_Coroutine partInfo.GetMeshCount()== 0 all:{allList.Count} id:{i} mesh:{name}");
+                continue;
+            }
+            var newMesh=InnerDoCombine(partInfo, i);
             if(newMesh!=null) meshes.Add(newMesh);
         }
 

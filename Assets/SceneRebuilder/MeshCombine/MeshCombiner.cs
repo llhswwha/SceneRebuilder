@@ -77,9 +77,15 @@ public class MeshCombiner : MonoBehaviour
 
     private void CombineEx(int mode)
     {
+        DateTime start = DateTime.Now;
+
         GetSetting();
 
         Debug.LogError("Start CombineEx mode:"+mode+"|"+gameObject);
+        foreach(var result in resultList){
+            if(result==null)continue;
+            GameObject.DestroyImmediate(result);
+        }
         resultList=new List<GameObject>();
         string sourceName="";
         if((sourceList.Count==0 || CombineMode == MeshCombineMode.All)&&sourceRoot!=null){
@@ -96,7 +102,7 @@ public class MeshCombiner : MonoBehaviour
                 }
             }
         }
-        Debug.LogError("sourceList:"+sourceName);
+        Debug.Log("CombineEx sourceList:" + sourceName);
 
         if(Setting.IsCoroutine){
             StartCoroutine(CombineEx_Coroutine(mode));
@@ -105,10 +111,17 @@ public class MeshCombiner : MonoBehaviour
             for (int i = 0; i < sourceList.Count; i++)
             {
                 GameObject source = sourceList[i];
-                Debug.LogWarning(string.Format("CombineEx {0} ({1}/{2})",source,i+1,sourceList.Count));
+                //Debug.LogWarning(string.Format("CombineEx {0} ({1}/{2})",source,i+1,sourceList.Count));
+                
                 if(source==null)continue;
 
-                if(CombineBySub){
+                float progress = (float)i / sourceList.Count;
+                if(ProgressBarHelper.DisplayCancelableProgressBar("CombineEx", $"{i}/{sourceList.Count} {progress:P1} source:{source.name}", progress))
+                {
+                    break;
+                }
+
+                if (CombineBySub){
                     MeshCombiner subCombiner=gameObject.AddComponent<MeshCombiner>();
                     subCombiner.Auto=true;
                     //subCombiner.IsCoroutine=this.IsCoroutine;
@@ -128,12 +141,16 @@ public class MeshCombiner : MonoBehaviour
                         resultList.Add(target);
                         Debug.Log("Combine:"+source+"->"+target);
                         if(Setting.IsDestroySource){
-                            GameObject.Destroy(source);
+                            target.name=source.name;
+                            GameObject.DestroyImmediate(source);
                         }
                     }
 
                 }
             }
+            ProgressBarHelper.ClearProgressBar();
+
+            Debug.Log($"CombineEx mode:{mode} souces:{sourceList.Count} time:{DateTime.Now-start}");
         }
     }
     private IEnumerator CombineEx_Coroutine(int mode)

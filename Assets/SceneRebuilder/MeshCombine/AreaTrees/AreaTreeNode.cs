@@ -991,34 +991,36 @@ public class AreaTreeNode : SubSceneCreater
         if (meshAsset != null) return;
 
         MeshFilter[] meshFilters = combindResult.GetComponentsInChildren<MeshFilter>();
-        for (int i = 0; i < meshFilters.Length; i++)
-        {
-            MeshFilter meshFilter = meshFilters[i];
-            if (UnityEditor.AssetDatabase.Contains(meshFilter.sharedMesh))
-            {
-                return;
-            }
-        }
+        //for (int i = 0; i < meshFilters.Length; i++)
+        //{
+        //    MeshFilter meshFilter = meshFilters[i];
+        //    if (UnityEditor.AssetDatabase.Contains(meshFilter.sharedMesh))
+        //    {
+        //        return;
+        //    }
+        //}
 
-        meshAsset = new Mesh();
-        //string assetName = tree.Target.name+"_"+gameObject.name + gameObject.GetInstanceID();
-        string assetName = gameObject.name + gameObject.GetInstanceID();
+        //meshAsset = new Mesh();
+        ////string assetName = tree.Target.name+"_"+gameObject.name + gameObject.GetInstanceID();
+        //string assetName = gameObject.name + gameObject.GetInstanceID();
 
-        string meshPath = dir + "/" + assetName + ".asset";
-        AutomaticLODHelper.SaveAsset(meshAsset, meshPath, false);
+        //string meshPath = dir + "/" + assetName + ".asset";
+        //EditorHelper.SaveAsset(meshAsset, meshPath, false);
 
-        for (int i = 0; i < meshFilters.Length; i++)
-        {
-            MeshFilter meshFilter = meshFilters[i];
-            Debug.LogError("meshFilter.sharedMesh :" + meshFilter.sharedMesh);
-            if (meshFilter.sharedMesh == null)
-            {
-                Debug.LogError("meshFilter.sharedMesh == null");
-                continue;
-            }
-            Mesh mesh = meshFilter.sharedMesh;
-            AutomaticLODHelper.SaveAsset(mesh, meshPath, true);
-        }
+        //for (int i = 0; i < meshFilters.Length; i++)
+        //{
+        //    MeshFilter meshFilter = meshFilters[i];
+        //    Debug.LogError("meshFilter.sharedMesh :" + meshFilter.sharedMesh);
+        //    if (meshFilter.sharedMesh == null)
+        //    {
+        //        Debug.LogError("meshFilter.sharedMesh == null");
+        //        continue;
+        //    }
+        //    Mesh mesh = meshFilter.sharedMesh;
+        //    EditorHelper.SaveAsset(mesh, meshPath, true);
+        //}
+
+        EditorHelper.SaveMeshAsset(dir, gameObject, meshFilters);
 #endif
     }
 

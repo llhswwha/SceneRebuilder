@@ -15,7 +15,7 @@ public class MeshCombinerSetting : MonoBehaviour
         }
     }
 
-    public int MaxVertex=65535;
+    public float MaxVertex=10;
 
     public UnityEngine.Rendering.IndexFormat indexFormat=UnityEngine.Rendering.IndexFormat.UInt16;
 
@@ -40,18 +40,26 @@ public class MeshCombinerSetting : MonoBehaviour
     {
         if (NoLimit)
         {
-            indexFormat = UnityEngine.Rendering.IndexFormat.UInt32;
-            MaxVertex = int.MaxValue;
+            this.indexFormat = UnityEngine.Rendering.IndexFormat.UInt32;
+            //MaxVertex = int.MaxValue;
+
+            CombinedMesh.indexFormat = this.indexFormat;
+            CombinedMesh.MaxVertex = int.MaxValue;
         }
         else
         {
-            if (MaxVertex > 65535)
+            if (this.MaxVertex > 6.5535f)
             {
-                indexFormat = UnityEngine.Rendering.IndexFormat.UInt32;
+                this.indexFormat = UnityEngine.Rendering.IndexFormat.UInt32;
             }
         }
-        CombinedMesh.indexFormat = indexFormat;
-        CombinedMesh.MaxVertex = MaxVertex;
+        CombinedMesh.indexFormat = this.indexFormat;
+        CombinedMesh.MaxVertex = (int)(this.MaxVertex*10000);
+        if (CombinedMesh.MaxVertex < 0)
+        {
+            CombinedMesh.MaxVertex= int.MaxValue;
+        }
+        Debug.Log($"MeshCombinerSetting.SetSetting MaxVertex:{CombinedMesh.MaxVertex} indexFormat:{CombinedMesh.indexFormat}");
     }
 
     public void WriteLog(string log){

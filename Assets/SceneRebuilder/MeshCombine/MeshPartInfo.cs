@@ -16,6 +16,15 @@ public class MeshPartInfo{
 
     public int vertexCount=0;
 
+    public int GetMeshCount()
+    {
+        if (meshFilters == null)
+        {
+            return 0;
+        }
+        return meshFilters.Count;
+    }
+
     public int GetMeshIndex(int id)
     {
         if (meshIndexes == null)

@@ -44,7 +44,7 @@ public static class AutomaticLODHelper
         root.SetLODLevels(listLODLevels, AutomaticLOD.EvalMode.ScreenCoverage, 1000.0f, bRecurseIntoChildren);
     }
 
-    public static bool SaveAsset(Object assetObj,string strFile,bool bAssetAlreadyCreated)
+    private static bool SaveAsset(Object assetObj,string strFile,bool bAssetAlreadyCreated)
     {
 #if UNITY_EDITOR
         if (bAssetAlreadyCreated == false && UnityEditor.AssetDatabase.Contains(assetObj) == false)
