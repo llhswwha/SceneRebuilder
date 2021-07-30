@@ -7,14 +7,10 @@ using System;
 //[RequireComponent(typeof(MeshRenderer),typeof(MeshFilter))]
 public class MeshCombiner : MonoBehaviour
 {
-    public enum MeshCombineMode
-    {
-        All,//sourceRoot合并为一个模型
-        Self,//sourceRoot的子物体分别合并为一个模型
-    }
-    public MeshCombineMode CombineMode;//0:sourceRoot合并为一个模型，1:sourceRoot的子物体分别合并为一个模型
-
     public GameObject sourceRoot;
+
+    public MeshCombineSourceType sourceType;//0:sourceRoot合并为一个模型，1:sourceRoot的子物体分别合并为一个模型
+
 
     public List<GameObject> sourceList=new List<GameObject>();
 
@@ -88,9 +84,9 @@ public class MeshCombiner : MonoBehaviour
         }
         resultList=new List<GameObject>();
         string sourceName="";
-        if((sourceList.Count==0 || CombineMode == MeshCombineMode.All)&&sourceRoot!=null){
+        if((sourceList.Count==0 || sourceType == MeshCombineSourceType.All)&&sourceRoot!=null){
             sourceList=new List<GameObject>();
-            if(CombineMode==MeshCombineMode.All){
+            if(sourceType==MeshCombineSourceType.All){
                 sourceList.Add(sourceRoot);
                 sourceName+=sourceRoot.name;
             }
@@ -111,7 +107,7 @@ public class MeshCombiner : MonoBehaviour
             for (int i = 0; i < sourceList.Count; i++)
             {
                 GameObject source = sourceList[i];
-                //Debug.LogWarning(string.Format("CombineEx {0} ({1}/{2})",source,i+1,sourceList.Count));
+                Debug.Log(string.Format("CombineEx {0} ({1}/{2})",source,i+1,sourceList.Count));
                 
                 if(source==null)continue;
 
@@ -290,4 +286,10 @@ public class MeshCombiner : MonoBehaviour
             Debug.Log($"[{i}] {item}");
         }
     }
+}
+
+public enum MeshCombineSourceType
+{
+    All,//sourceRoot合并为一个模型
+    Self,//sourceRoot的子物体分别合并为一个模型
 }

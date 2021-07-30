@@ -11,6 +11,15 @@ public class MeshCombinerEditor : BaseEditor<MeshCombiner>
         base.OnToolLayout(item);
 
         EditorGUILayout.BeginHorizontal();
+        GUILayout.Label("Source", GUILayout.Width(60));
+        item.sourceRoot = EditorGUILayout.ObjectField(item.sourceRoot, typeof(GameObject)) as GameObject;
+
+        item.sourceType = (MeshCombineSourceType)EditorGUILayout.EnumPopup(item.sourceType, GUILayout.Width(80));
+
+        MeshCombinerSetting.Instance.IsDestroySource = GUILayout.Toggle(MeshCombinerSetting.Instance.IsDestroySource, "IsDestroy", GUILayout.Width(80));
+        EditorGUILayout.EndHorizontal();
+
+        EditorGUILayout.BeginHorizontal();
         if (GUILayout.Button("Combine"))
         {
             item.Combine();

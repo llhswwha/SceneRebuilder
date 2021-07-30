@@ -87,15 +87,15 @@ public static class MeshCombineHelper
         // goNew.transform.position=minMax[3];
 
         //int count=0;
-        List<SubMesh> mfList=new List<SubMesh>();
-        Dictionary<Material,List<SubMesh>> mat2Filters=GetMatFilters(renderers, out count);
+        SubMeshList mfList =new SubMeshList();
+        Dictionary<Material, SubMeshList> mat2Filters=GetMatFilters(renderers, out count);
         string mats="";
         int allVs=0;
         foreach(var item in mat2Filters)
         {
             Material material=item.Key;
             mats+=material.name+";";
-            List<SubMesh> list=item.Value;
+            var list=item.Value;
             string meshNames = "";
             list.ForEach(i => meshNames += i.meshFilter.name + ";");
             mfList.AddRange(list);
@@ -152,13 +152,13 @@ public static class MeshCombineHelper
         goNew.transform.SetParent(go.transform.parent);
         int count=0;
         MeshRenderer[] renderers = go.GetRenderers();
-        Dictionary<Material,List<SubMesh>> mat2Filters=GetMatFilters(renderers, out count);
+        Dictionary<Material, SubMeshList> mat2Filters=GetMatFilters(renderers, out count);
         yield return null;
         int i=0;
         foreach(var item in mat2Filters)
         {
             Material material=item.Key;
-            List<SubMesh> list=item.Value;
+            SubMeshList list =item.Value;
             Debug.LogWarning(string.Format("CombineMaterials_Coroutine {0} ({1}/{2})",material,i+1,mat2Filters.Count));
             CombinedMesh combinedMesh=new CombinedMesh(go.transform,list,material);
             yield return combinedMesh.DoCombine_Coroutine(true,waitCount);
@@ -182,7 +182,7 @@ public static class MeshCombineHelper
     //    SetMaterials(mats);
     //}
 
-    public static void SetMaterials(Dictionary<Material, List<SubMesh>> mats)
+    public static void SetMaterials(Dictionary<Material, SubMeshList> mats)
     {
         //int count = 0;
         //var mats = MeshCombineHelper.GetMatFilters(go, out count);
@@ -216,10 +216,10 @@ public static class MeshCombineHelper
         }
     }
 
-    public static Dictionary<Material, List<SubMesh>> GetMatFiltersInner(MeshRenderer[] renderers, out int count)
+    public static Dictionary<Material, SubMeshList> GetMatFiltersInner(MeshRenderer[] renderers, out int count)
     {
         DateTime start = DateTime.Now;
-        Dictionary<Material, List<SubMesh>> mat2Filters = new Dictionary<Material, List<SubMesh>>();
+        Dictionary<Material, SubMeshList> mat2Filters = new Dictionary<Material, SubMeshList>();
         //MeshRenderer[] renderers = go.GetComponentsInChildren<MeshRenderer>();
         count = renderers.Length;
         for (int i = 0; i < renderers.Length; i++)
@@ -247,7 +247,7 @@ public static class MeshCombineHelper
                 if (mat == null) continue;
                 if (!mat2Filters.ContainsKey(mat))
                 {
-                    mat2Filters.Add(mat, new List<SubMesh>());
+                    mat2Filters.Add(mat, new SubMeshList());
                 }
                 List<SubMesh> list = mat2Filters[mat];
                 MeshFilter filter = renderer.GetComponent<MeshFilter>();
@@ -272,7 +272,7 @@ public static class MeshCombineHelper
             }
         }
 
-        Dictionary<Material, List<SubMesh>> mat2Filters2 = new Dictionary<Material, List<SubMesh>>();
+        Dictionary<Material, SubMeshList> mat2Filters2 = new Dictionary<Material, SubMeshList>();
         foreach (var info in infos.Values)
         {
             mat2Filters2.Add(info.mat, info.MeshFilters);
@@ -341,10 +341,10 @@ public static class MeshCombineHelper
         return mat2Filters2;
     }
 
-    public static Dictionary<Material, List<SubMesh>> GetMatFilters(GameObject go, out int count, bool isSetMaterial = false)
+    public static Dictionary<Material, SubMeshList> GetMatFilters(GameObject go, out int count, bool isSetMaterial = false)
     {
         MeshRenderer[] renderers = go.GetComponentsInChildren<MeshRenderer>();
-        Dictionary<Material, List<SubMesh>> mat2Filters = GetMatFiltersInner(renderers, out count);
+        Dictionary<Material, SubMeshList> mat2Filters = GetMatFiltersInner(renderers, out count);
         if (isSetMaterial)
         {
             SetMaterials(mat2Filters);
@@ -353,8 +353,8 @@ public static class MeshCombineHelper
         return mat2Filters;
     }
 
-    public static Dictionary<Material, List<SubMesh>> GetMatFilters(MeshRenderer[] renderers, out int count,bool isSetMaterial=false){
-        Dictionary<Material, List<SubMesh>> mat2Filters = GetMatFiltersInner(renderers, out count);
+    public static Dictionary<Material, SubMeshList> GetMatFilters(MeshRenderer[] renderers, out int count,bool isSetMaterial=false){
+        Dictionary<Material, SubMeshList> mat2Filters = GetMatFiltersInner(renderers, out count);
         if (isSetMaterial)
         {
             SetMaterials(mat2Filters);
@@ -444,35 +444,35 @@ public static class MeshCombineHelper
         }
     }
 
-    public static void RemveGo(GameObject gameObject){
-        CombinedMesh mesh=GetMesh(gameObject);
-        if(mesh!=null){
-            Debug.Log("mesh:"+mesh.name);
-            Debug.Log("mesh.meshFilters:"+mesh.meshFilters.Count);
-            MeshFilter[] meshFilters=gameObject.GetComponentsInChildren<MeshFilter>();
-            for (int i = 0; i < meshFilters.Length; i++)
-            {
-                MeshFilter mf = meshFilters[i];
-                //mesh.meshFilters.Remove(mf);
-                int id = mesh.meshFilters.IndexOf(mf);
-                if (id != -1)
-                {
-                    mesh.meshFilters.RemoveAt(id);
-                    mesh.meshIndexes.RemoveAt(id);
-                }
-            }
-            MeshRenderer[] meshRenderers=gameObject.GetComponentsInChildren<MeshRenderer>();
-            foreach(var mr in meshRenderers){
-                mr.enabled=true;
-                mr.material.SetColor("_BaseColor",Color.red);
-            }
-            Debug.Log("mesh.meshFilters:"+mesh.meshFilters.Count);
-            mesh.Refresh();//重新合并
-        }
-        else{
-            Debug.LogError("未找到CombinedMesh:"+gameObject);
-        }
-    }
+    //public static void RemveGo(GameObject gameObject){
+    //    CombinedMesh mesh=GetMesh(gameObject);
+    //    if(mesh!=null){
+    //        Debug.Log("mesh:"+mesh.name);
+    //        Debug.Log("mesh.meshFilters:"+mesh.meshFilters.Count);
+    //        MeshFilter[] meshFilters=gameObject.GetComponentsInChildren<MeshFilter>();
+    //        for (int i = 0; i < meshFilters.Length; i++)
+    //        {
+    //            MeshFilter mf = meshFilters[i];
+    //            //mesh.meshFilters.Remove(mf);
+    //            int id = mesh.meshFilters.IndexOf(mf);
+    //            if (id != -1)
+    //            {
+    //                mesh.meshFilters.RemoveAt(id);
+    //                mesh.meshIndexes.RemoveAt(id);
+    //            }
+    //        }
+    //        MeshRenderer[] meshRenderers=gameObject.GetComponentsInChildren<MeshRenderer>();
+    //        foreach(var mr in meshRenderers){
+    //            mr.enabled=true;
+    //            mr.material.SetColor("_BaseColor",Color.red);
+    //        }
+    //        Debug.Log("mesh.meshFilters:"+mesh.meshFilters.Count);
+    //        mesh.Refresh();//重新合并
+    //    }
+    //    else{
+    //        Debug.LogError("未找到CombinedMesh:"+gameObject);
+    //    }
+    //}
 
 }
 

@@ -234,7 +234,7 @@ public class SubMesh
         return $"{meshFilter.name}[{meshIndex}]";
     }
 
-    public SubMesh(MeshFilter mf,int id)
+    public SubMesh(MeshFilter mf, int id)
     {
         meshFilter = mf;
         meshIndex = id;
@@ -244,6 +244,28 @@ public class SubMesh
     {
         if (meshFilter == null) return "NULL";
         return $"mesh:{meshFilter.name}, index:{meshIndex}";
+    }
+
+    public Mesh sharedMesh
+    {
+        get
+        {
+            if (meshFilter == null) return null;
+            return meshFilter.sharedMesh;
+        }
+    }
+}
+
+public class SubMeshList:List<SubMesh>
+{
+    public List<MeshFilter> GetMeshFilters()
+    {
+        List<MeshFilter> list = new List<MeshFilter>();
+        foreach(var item in this)
+        {
+            list.Add(item.meshFilter);
+        }
+        return list;
     }
 }
 
@@ -442,7 +464,7 @@ public class MatInfo
         //return $"{mat.GetColor("_BaseColor")},{mat.GetFloat("_Metallic")},{mat.GetFloat("_Smoothness")},{mat.GetTexture("_BaseColorMap")},{mat.GetTexture("_NormalMap")}";
     }
 
-    public List<SubMesh> MeshFilters = new List<SubMesh>();
+    public SubMeshList MeshFilters = new SubMeshList();
 
     public void AddList(List<SubMesh> list)
     {

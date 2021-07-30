@@ -34,8 +34,16 @@ public class MeshAlignmentManagerEditor : BaseEditor<MeshAlignmentManager>
 
 
         GUILayout.BeginHorizontal();
-        Vector3 offset = item.Target.transform.position - item.Source.transform.position;
-        GUILayout.Label($"offset:({offset.x},{offset.y},{offset.z})");
+        if(item.Target!=null && item.Source!=null)
+        {
+            Vector3 offset = item.Target.transform.position - item.Source.transform.position;
+            GUILayout.Label($"offset:({offset.x},{offset.y},{offset.z})");
+        }
+        else
+        {
+            GUILayout.Label($"offset:(NULL)");
+        }
+        
         item.transfromReplaceSetting.SetPosX = GUILayout.Toggle(item.transfromReplaceSetting.SetPosX, "X", GUILayout.Width(40));
         item.transfromReplaceSetting.SetPosY = GUILayout.Toggle(item.transfromReplaceSetting.SetPosY, "Y", GUILayout.Width(40));
         item.transfromReplaceSetting.SetPosZ = GUILayout.Toggle(item.transfromReplaceSetting.SetPosZ, "Z", GUILayout.Width(40));
