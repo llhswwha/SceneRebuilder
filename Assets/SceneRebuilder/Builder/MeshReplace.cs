@@ -11,7 +11,7 @@ public class MeshReplace : MonoBehaviour
 
     //public List<GameObject> targetListNew = new List<GameObject>();
 
-    public TransfromReplaceSetting transfromReplaceSetting;
+    public TransfromAlignSetting transfromReplaceSetting;
 
     public List<MeshReplaceItem> Items = new List<MeshReplaceItem>();
 

@@ -785,7 +785,7 @@ public class BaseFoldoutEditor<T> : BaseEditor<T> where T : class
                     Debug.LogError($"Show MeshList mesh.transform.parent==null"); continue;
                 }
                 arg.caption = $"[{i + 1:00}] {building.name}>>{mesh.transform.parent.name}>{mesh.name}";
-                arg.info = $"[{mesh.vertexCount / 10000f:F1}w][{mesh.size}](LOD[{mesh.GetLODIds()}])";
+                arg.info = $"[{mesh.vertexCount / 10000f:F1}w][{mesh.GetDiam():F1}](LOD[{mesh.GetLODIds()}])";
                EditorUIUtils.ObjectFoldout(arg, mesh.gameObject,null);
                 //if (arg.isExpanded)
                 //{

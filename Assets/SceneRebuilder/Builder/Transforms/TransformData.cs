@@ -81,7 +81,13 @@ public class TransformData
     //     The number of transforms in the transform's hierarchy data structure.
     public int hierarchyCount { get; }
 
-    public TransformData(Transform t)
+    public TransformData(GameObject go)
+    {
+        if(go!=null)
+            Init(go.transform);
+    }
+
+    private void Init(Transform t)
     {
         transform = t;
 
@@ -103,8 +109,14 @@ public class TransformData
         this.localScale = t.localScale;
     }
 
+        public TransformData(Transform t)
+    {
+        Init(t);
+    }
+
     public void Reset()
     {
+        if (transform == null) return;
         transform.SetParent(null);
         transform.rotation = Quaternion.identity;
         //transform.localScale = Vector3.zero;
@@ -117,7 +129,7 @@ public class TransformData
         //transform.rotation = this.rotation;
         //transform.SetParent(this.parent);
         //transform.localScale = this.localScale;
-
+        if (transform == null) return;
         transform.position = this.position;
         transform.rotation = this.rotation;
         transform.SetParent(this.parent);
@@ -126,6 +138,7 @@ public class TransformData
 
     public void Recover(Transform t)
     {
+        if (t == null) return;
         //transform.position = this.position;
         //transform.rotation = this.rotation;
         //transform.SetParent(this.parent);

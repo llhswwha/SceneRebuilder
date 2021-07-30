@@ -64,7 +64,307 @@ public static class MeshHelper
         return newObj;
     }
 
-    public static GameObject ReplaceGameObject(GameObject oldObj, GameObject prefab,bool isDestoryOriginal, TransfromReplaceSetting transfromReplaceSetting)
+    public static Vector3 GetNewPos(Vector3 pos,Vector3 fromP,Vector3 toP, TransfromAlignSetting transfromAlignSetting)
+    {
+        //var dis = toP - fromP;
+        //if (transfromAlignSetting.SetPosX)
+        //{
+        //    pos.x += dis.x;
+        //}
+        //if (transfromAlignSetting.SetPosY)
+        //{
+        //    pos.y += dis.y;
+        //}
+        //if (transfromAlignSetting.SetPosZ)
+        //{
+        //    pos.z += dis.z;
+        //}
+        //return pos;
+
+        Vector3 offset = GetPosOffset(fromP, toP, transfromAlignSetting);
+        return pos + offset;
+    }
+
+    public static Vector3 GetPosOffset(Vector3 fromP, Vector3 toP, TransfromAlignSetting transfromAlignSetting)
+    {
+        Vector3 offset = Vector3.zero;
+        var dis = toP - fromP;
+        if (transfromAlignSetting.SetPosX)
+        {
+            offset.x = dis.x;
+        }
+        if (transfromAlignSetting.SetPosY)
+        {
+            offset.y = dis.y;
+        }
+        if (transfromAlignSetting.SetPosZ)
+        {
+            offset.z = dis.z;
+        }
+        return offset;
+    }
+
+    public static void Align(GameObject source, GameObject target,  TransfromAlignSetting transfromAlignSetting)
+    {
+        var minMax_From = MeshRendererInfo.GetMinMax(source);
+        var minMax_TO = MeshRendererInfo.GetMinMax(target);
+
+        var pos = source.transform.position;
+        var offset = Vector3.zero;
+        if (transfromAlignSetting.Align == TransfromAlignMode.Pivot)
+        {
+            //if (transfromAlignSetting.SetPosX)
+            //{
+            //    pos.x = target.transform.position.x;
+            //}
+            //if (transfromAlignSetting.SetPosY)
+            //{
+            //    pos.y = target.transform.position.y;
+            //}
+            //if (transfromAlignSetting.SetPosZ)
+            //{
+            //    pos.z = target.transform.position.z;
+            //}
+
+            //pos = GetNewPos(pos, source.transform.position, target.transform.position, transfromAlignSetting);
+
+            offset= GetPosOffset(source.transform.position, target.transform.position, transfromAlignSetting);
+        }
+        else if (transfromAlignSetting.Align == TransfromAlignMode.Min)
+        {
+            //var dis = minMax_TO[0] - minMax_From[0];
+            //if (transfromAlignSetting.SetPosX)
+            //{
+            //    pos.x += dis.x;
+            //}
+            //if (transfromAlignSetting.SetPosY)
+            //{
+            //    pos.y += dis.y;
+            //}
+            //if (transfromAlignSetting.SetPosZ)
+            //{
+            //    pos.z += dis.z;
+            //}
+
+            //pos = GetNewPos(pos, minMax_From[0], minMax_TO[0], transfromAlignSetting);
+
+            offset = GetPosOffset(minMax_From[0], minMax_TO[0], transfromAlignSetting);
+        }
+        else if (transfromAlignSetting.Align == TransfromAlignMode.Max)
+        {
+            //var dis = minMax_TO[1] - minMax_From[1];
+            //if (transfromAlignSetting.SetPosX)
+            //{
+            //    pos.x += dis.x;
+            //}
+            //if (transfromAlignSetting.SetPosY)
+            //{
+            //    pos.y += dis.y;
+            //}
+            //if (transfromAlignSetting.SetPosZ)
+            //{
+            //    pos.z += dis.z;
+            //}
+
+            //pos = GetNewPos(pos, minMax_From[1], minMax_TO[1], transfromAlignSetting);
+
+            offset = GetPosOffset(minMax_From[1], minMax_TO[1], transfromAlignSetting);
+        }
+        else if (transfromAlignSetting.Align == TransfromAlignMode.Center)
+        {
+            //var dis = minMax_TO[3] - minMax_From[3];
+            //if (transfromAlignSetting.SetPosX)
+            //{
+            //    pos.x += dis.x;
+            //}
+            //if (transfromAlignSetting.SetPosY)
+            //{
+            //    pos.y += dis.y;
+            //}
+            //if (transfromAlignSetting.SetPosZ)
+            //{
+            //    pos.z += dis.z;
+            //}
+
+            //pos = GetNewPos(pos, minMax_From[3], minMax_TO[3], transfromAlignSetting);
+
+            offset = GetPosOffset(minMax_From[3], minMax_TO[3], transfromAlignSetting);
+        }
+        else if (transfromAlignSetting.Align == TransfromAlignMode.MinMax)
+        {
+            //var dis = minMax_TO[1] - minMax_From[0];
+            //if (transfromAlignSetting.SetPosX)
+            //{
+            //    pos.x += dis.x;
+            //}
+            //if (transfromAlignSetting.SetPosY)
+            //{
+            //    pos.y += dis.y;
+            //}
+            //if (transfromAlignSetting.SetPosZ)
+            //{
+            //    pos.z += dis.z;
+            //}
+
+            //pos = GetNewPos(pos, minMax_From[0], minMax_TO[1], transfromAlignSetting);
+
+            offset = GetPosOffset(minMax_From[0], minMax_TO[1], transfromAlignSetting);
+        }
+        else if (transfromAlignSetting.Align == TransfromAlignMode.MaxMin)
+        {
+            //var dis = minMax_TO[0] - minMax_From[1];
+            //if (transfromAlignSetting.SetPosX)
+            //{
+            //    pos.x += dis.x;
+            //}
+            //if (transfromAlignSetting.SetPosY)
+            //{
+            //    pos.y += dis.y;
+            //}
+            //if (transfromAlignSetting.SetPosZ)
+            //{
+            //    pos.z += dis.z;
+            //}
+
+            //pos = GetNewPos(pos, minMax_From[1], minMax_TO[0], transfromAlignSetting);
+
+            offset = GetPosOffset(minMax_From[1], minMax_TO[0], transfromAlignSetting);
+        }
+        source.transform.position += offset;
+    }
+
+    public static void AlignRoot(GameObject source, GameObject target, GameObject sourceRoot, TransfromAlignSetting transfromAlignSetting)
+    {
+        var minMax_From = MeshRendererInfo.GetMinMax(source);
+        var minMax_TO = MeshRendererInfo.GetMinMax(target);
+
+        //var pos = source.transform.position;
+        var offset = Vector3.zero;
+        if (transfromAlignSetting.Align == TransfromAlignMode.Pivot)
+        {
+            //if (transfromAlignSetting.SetPosX)
+            //{
+            //    pos.x = target.transform.position.x;
+            //}
+            //if (transfromAlignSetting.SetPosY)
+            //{
+            //    pos.y = target.transform.position.y;
+            //}
+            //if (transfromAlignSetting.SetPosZ)
+            //{
+            //    pos.z = target.transform.position.z;
+            //}
+
+            //pos = GetNewPos(pos, source.transform.position, target.transform.position, transfromAlignSetting);
+
+            offset = GetPosOffset(source.transform.position, target.transform.position, transfromAlignSetting);
+        }
+        else if (transfromAlignSetting.Align == TransfromAlignMode.Min)
+        {
+            //var dis = minMax_TO[0] - minMax_From[0];
+            //if (transfromAlignSetting.SetPosX)
+            //{
+            //    pos.x += dis.x;
+            //}
+            //if (transfromAlignSetting.SetPosY)
+            //{
+            //    pos.y += dis.y;
+            //}
+            //if (transfromAlignSetting.SetPosZ)
+            //{
+            //    pos.z += dis.z;
+            //}
+
+            //pos = GetNewPos(pos, minMax_From[0], minMax_TO[0], transfromAlignSetting);
+
+            offset = GetPosOffset(minMax_From[0], minMax_TO[0], transfromAlignSetting);
+        }
+        else if (transfromAlignSetting.Align == TransfromAlignMode.Max)
+        {
+            //var dis = minMax_TO[1] - minMax_From[1];
+            //if (transfromAlignSetting.SetPosX)
+            //{
+            //    pos.x += dis.x;
+            //}
+            //if (transfromAlignSetting.SetPosY)
+            //{
+            //    pos.y += dis.y;
+            //}
+            //if (transfromAlignSetting.SetPosZ)
+            //{
+            //    pos.z += dis.z;
+            //}
+
+            //pos = GetNewPos(pos, minMax_From[1], minMax_TO[1], transfromAlignSetting);
+
+            offset = GetPosOffset(minMax_From[1], minMax_TO[1], transfromAlignSetting);
+        }
+        else if (transfromAlignSetting.Align == TransfromAlignMode.Center)
+        {
+            //var dis = minMax_TO[3] - minMax_From[3];
+            //if (transfromAlignSetting.SetPosX)
+            //{
+            //    pos.x += dis.x;
+            //}
+            //if (transfromAlignSetting.SetPosY)
+            //{
+            //    pos.y += dis.y;
+            //}
+            //if (transfromAlignSetting.SetPosZ)
+            //{
+            //    pos.z += dis.z;
+            //}
+
+            //pos = GetNewPos(pos, minMax_From[3], minMax_TO[3], transfromAlignSetting);
+
+            offset = GetPosOffset(minMax_From[3], minMax_TO[3], transfromAlignSetting);
+        }
+        else if (transfromAlignSetting.Align == TransfromAlignMode.MinMax)
+        {
+            //var dis = minMax_TO[1] - minMax_From[0];
+            //if (transfromAlignSetting.SetPosX)
+            //{
+            //    pos.x += dis.x;
+            //}
+            //if (transfromAlignSetting.SetPosY)
+            //{
+            //    pos.y += dis.y;
+            //}
+            //if (transfromAlignSetting.SetPosZ)
+            //{
+            //    pos.z += dis.z;
+            //}
+
+            //pos = GetNewPos(pos, minMax_From[0], minMax_TO[1], transfromAlignSetting);
+
+            offset = GetPosOffset(minMax_From[0], minMax_TO[1], transfromAlignSetting);
+        }
+        else if (transfromAlignSetting.Align == TransfromAlignMode.MaxMin)
+        {
+            //var dis = minMax_TO[0] - minMax_From[1];
+            //if (transfromAlignSetting.SetPosX)
+            //{
+            //    pos.x += dis.x;
+            //}
+            //if (transfromAlignSetting.SetPosY)
+            //{
+            //    pos.y += dis.y;
+            //}
+            //if (transfromAlignSetting.SetPosZ)
+            //{
+            //    pos.z += dis.z;
+            //}
+
+            //pos = GetNewPos(pos, minMax_From[1], minMax_TO[0], transfromAlignSetting);
+
+            offset = GetPosOffset(minMax_From[1], minMax_TO[0], transfromAlignSetting);
+        }
+        //source.transform.position = pos + offset;
+
+        sourceRoot.transform.position += offset;
+    }
+
+    public static GameObject ReplaceGameObject(GameObject oldObj, GameObject prefab,bool isDestoryOriginal, TransfromAlignSetting transfromAlignSetting)
     {
         if (prefab == null) return null;
         GameObject newObj = EditorCopyGo(prefab);
@@ -78,7 +378,7 @@ public static class MeshHelper
         newObj.transform.position = prefab.transform.position;
 
         newObj.transform.parent = oldObj.transform.parent;
-        if (transfromReplaceSetting == null)
+        if (transfromAlignSetting == null)
         {
             newObj.transform.localPosition = oldObj.transform.localPosition;
         }
@@ -88,65 +388,65 @@ public static class MeshHelper
             var minMax_From = MeshRendererInfo.GetMinMax(prefab);
 
             var pos = newObj.transform.localPosition;
-            if(transfromReplaceSetting.Align== TransfromAlignMode.Pivot)
+            if(transfromAlignSetting.Align== TransfromAlignMode.Pivot)
             {
-                if (transfromReplaceSetting.SetPosX)
+                if (transfromAlignSetting.SetPosX)
                 {
                     pos.x = oldObj.transform.localPosition.x;
                 }
-                if (transfromReplaceSetting.SetPosY)
+                if (transfromAlignSetting.SetPosY)
                 {
                     pos.y = oldObj.transform.localPosition.y;
                 }
-                if (transfromReplaceSetting.SetPosZ)
+                if (transfromAlignSetting.SetPosZ)
                 {
                     pos.z = oldObj.transform.localPosition.z;
                 }
             }
-            else if (transfromReplaceSetting.Align == TransfromAlignMode.Min)
+            else if (transfromAlignSetting.Align == TransfromAlignMode.Min)
             {
                 var dis = minMax_TO[0] - minMax_From[0];
-                if (transfromReplaceSetting.SetPosX)
+                if (transfromAlignSetting.SetPosX)
                 {
                     pos.x += dis.x;
                 }
-                if (transfromReplaceSetting.SetPosY)
+                if (transfromAlignSetting.SetPosY)
                 {
                     pos.y += dis.y;
                 }
-                if (transfromReplaceSetting.SetPosZ)
+                if (transfromAlignSetting.SetPosZ)
                 {
                     pos.z += dis.z;
                 }
             }
-            else if (transfromReplaceSetting.Align == TransfromAlignMode.Max)
+            else if (transfromAlignSetting.Align == TransfromAlignMode.Max)
             {
                 var dis = minMax_TO[1] - minMax_From[1];
-                if (transfromReplaceSetting.SetPosX)
+                if (transfromAlignSetting.SetPosX)
                 {
                     pos.x += dis.x;
                 }
-                if (transfromReplaceSetting.SetPosY)
+                if (transfromAlignSetting.SetPosY)
                 {
                     pos.y += dis.y;
                 }
-                if (transfromReplaceSetting.SetPosZ)
+                if (transfromAlignSetting.SetPosZ)
                 {
                     pos.z += dis.z;
                 }
             }
-            else if (transfromReplaceSetting.Align == TransfromAlignMode.Center)
+            else if (transfromAlignSetting.Align == TransfromAlignMode.Center)
             {
                 var dis = minMax_TO[3] - minMax_From[3];
-                if (transfromReplaceSetting.SetPosX)
+                if (transfromAlignSetting.SetPosX)
                 {
                     pos.x += dis.x;
                 }
-                if (transfromReplaceSetting.SetPosY)
+                if (transfromAlignSetting.SetPosY)
                 {
                     pos.y += dis.y;
                 }
-                if (transfromReplaceSetting.SetPosZ)
+                if (transfromAlignSetting.SetPosZ)
                 {
                     pos.z += dis.z;
                 }
@@ -1848,7 +2148,7 @@ public class MeshReplaceItem
     public List<GameObject> targetList = new List<GameObject>();
     public List<GameObject> targetListNew = new List<GameObject>();
 
-    public void Replace(bool isDestoryOriginal,bool isHidden, TransfromReplaceSetting transfromReplaceSetting)
+    public void Replace(bool isDestoryOriginal,bool isHidden, TransfromAlignSetting transfromReplaceSetting)
     {
         //MeshHelper.ReplaceByPrefab(target, prefab);
         //StartCoroutine(MeshHelper.ReplaceByPrefabEx(target, prefab,"", "",isDestoryOriginal));
@@ -1906,7 +2206,7 @@ public class MeshReplaceItem
 }
 
 [System.Serializable]
-public class TransfromReplaceSetting
+public class TransfromAlignSetting
 {
     public TransfromAlignMode Align;
     public bool SetPosX = true;
@@ -1920,5 +2220,5 @@ public class TransfromReplaceSetting
 
 public enum TransfromAlignMode
 {
-    Pivot,Min,Max,Center
+    Pivot,Min,Max,Center, MinMax,MaxMin
 }

@@ -1,0 +1,250 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!1 &4079531824256310089
+GameObject:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  serializedVersion: 6
+  m_Component:
+  - component: {fileID: 4079531824256310088}
+  - component: {fileID: 4079531824256310095}
+  m_Layer: 0
+  m_Name: MeshAlignManager
+  m_TagString: Untagged
+  m_Icon: {fileID: 0}
+  m_NavMeshLayer: 0
+  m_StaticEditorFlags: 0
+  m_IsActive: 1
+--- !u!4 &4079531824256310088
+Transform:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 4079531824256310089}
+  m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
+  m_LocalPosition: {x: 0, y: 0, z: 0}
+  m_LocalScale: {x: 1, y: 1, z: 1}
+  m_Children: []
+  m_Father: {fileID: 0}
+  m_RootOrder: 0
+  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
+--- !u!114 &4079531824256310095
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 4079531824256310089}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 6ec876b415a09414e8db60bb412d4b60, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  transfromReplaceSetting:
+    Align: 5
+    SetPosX: 1
+    SetPosY: 1
+    SetPosZ: 1
+  Source: {fileID: 0}
+  Target: {fileID: 0}
+  tdSource:
+    transform: {fileID: 0}
+    localPosition: {x: 0, y: 0, z: 0}
+    eulerAngles: {x: -0, y: 0, z: 0}
+    localEulerAngles: {x: -0, y: 0, z: 0}
+    right: {x: 1, y: 0, z: 0}
+    up: {x: 0, y: 1, z: 0}
+    forward: {x: 0, y: 0, z: 1}
+    rotation: {x: -0, y: -0, z: -0, w: 1}
+    position: {x: -114.04, y: 746.54, z: -35.32}
+    localRotation: {x: -0, y: -0, z: -0, w: 1}
+    parent: {fileID: 0}
+    worldToLocalMatrix:
+      e00: 1
+      e01: 0
+      e02: 0
+      e03: 114.04
+      e10: 0
+      e11: 1
+      e12: 0
+      e13: -746.54
+      e20: 0
+      e21: 0
+      e22: 1
+      e23: 35.32
+      e30: 0
+      e31: 0
+      e32: 0
+      e33: 1
+    localToWorldMatrix:
+      e00: 1
+      e01: 0
+      e02: 0
+      e03: -114.04
+      e10: 0
+      e11: 1
+      e12: 0
+      e13: 746.54
+      e20: 0
+      e21: 0
+      e22: 1
+      e23: -35.32
+      e30: 0
+      e31: 0
+      e32: 0
+      e33: 1
+    root: {fileID: 0}
+    childCount: 0
+    lossyScale: {x: 1, y: 1, z: 1}
+  tdTarget:
+    transform: {fileID: 0}
+    localPosition: {x: 0, y: 0, z: 0}
+    eulerAngles: {x: -0, y: 0, z: 0}
+    localEulerAngles: {x: -0, y: 0, z: 0}
+    right: {x: 1, y: 0, z: 0}
+    up: {x: 0, y: 1, z: 0}
+    forward: {x: 0, y: 0, z: 1}
+    rotation: {x: -0, y: -0, z: -0, w: 1}
+    position: {x: -105.14217, y: 750.28156, z: -29.936846}
+    localRotation: {x: -0, y: -0, z: -0, w: 1}
+    parent: {fileID: 0}
+    worldToLocalMatrix:
+      e00: 1
+      e01: 0
+      e02: 0
+      e03: 105.14217
+      e10: 0
+      e11: 1
+      e12: 0
+      e13: -750.28156
+      e20: 0
+      e21: 0
+      e22: 1
+      e23: 29.936846
+      e30: 0
+      e31: 0
+      e32: 0
+      e33: 1
+    localToWorldMatrix:
+      e00: 1
+      e01: 0
+      e02: 0
+      e03: -105.14217
+      e10: 0
+      e11: 1
+      e12: 0
+      e13: 750.28156
+      e20: 0
+      e21: 0
+      e22: 1
+      e23: -29.936846
+      e30: 0
+      e31: 0
+      e32: 0
+      e33: 1
+    root: {fileID: 0}
+    childCount: 0
+    lossyScale: {x: 1, y: 1, z: 1}
+  SourceRoot: {fileID: 0}
+  TargetRoot: {fileID: 0}
+  tdSourceRoot:
+    transform: {fileID: 0}
+    localPosition: {x: -114.04, y: 746.54, z: -35.32}
+    eulerAngles: {x: -0, y: 0, z: 0}
+    localEulerAngles: {x: -0, y: 0, z: 0}
+    right: {x: 1, y: 0, z: 0}
+    up: {x: 0, y: 1, z: 0}
+    forward: {x: 0, y: 0, z: 1}
+    rotation: {x: 0, y: 0, z: 0, w: 1}
+    position: {x: -114.04, y: 746.54, z: -35.32}
+    localRotation: {x: 0, y: 0, z: 0, w: 1}
+    parent: {fileID: 0}
+    worldToLocalMatrix:
+      e00: 1
+      e01: 0
+      e02: 0
+      e03: 114.04
+      e10: 0
+      e11: 1
+      e12: 0
+      e13: -746.54
+      e20: 0
+      e21: 0
+      e22: 1
+      e23: 35.32
+      e30: 0
+      e31: 0
+      e32: 0
+      e33: 1
+    localToWorldMatrix:
+      e00: 1
+      e01: 0
+      e02: 0
+      e03: -114.04
+      e10: 0
+      e11: 1
+      e12: 0
+      e13: 746.54
+      e20: 0
+      e21: 0
+      e22: 1
+      e23: -35.32
+      e30: 0
+      e31: 0
+      e32: 0
+      e33: 1
+    root: {fileID: 0}
+    childCount: 5
+    lossyScale: {x: 1, y: 1, z: 1}
+  tdTargetRoot:
+    transform: {fileID: 0}
+    localPosition: {x: -105.14217, y: 750.28156, z: -29.936846}
+    eulerAngles: {x: -0, y: 0, z: 0}
+    localEulerAngles: {x: -0, y: 0, z: 0}
+    right: {x: 1, y: 0, z: 0}
+    up: {x: 0, y: 1, z: 0}
+    forward: {x: 0, y: 0, z: 1}
+    rotation: {x: 0, y: 0, z: 0, w: 1}
+    position: {x: -105.14217, y: 750.28156, z: -29.936846}
+    localRotation: {x: 0, y: 0, z: 0, w: 1}
+    parent: {fileID: 0}
+    worldToLocalMatrix:
+      e00: 1
+      e01: 0
+      e02: 0
+      e03: 105.14217
+      e10: 0
+      e11: 1
+      e12: 0
+      e13: -750.28156
+      e20: 0
+      e21: 0
+      e22: 1
+      e23: 29.936846
+      e30: 0
+      e31: 0
+      e32: 0
+      e33: 1
+    localToWorldMatrix:
+      e00: 1
+      e01: 0
+      e02: 0
+      e03: -105.14217
+      e10: 0
+      e11: 1
+      e12: 0
+      e13: 750.28156
+      e20: 0
+      e21: 0
+      e22: 1
+      e23: -29.936846
+      e30: 0
+      e31: 0
+      e32: 0
+      e33: 1
+    root: {fileID: 0}
+    childCount: 3
+    lossyScale: {x: 1, y: 1, z: 1}

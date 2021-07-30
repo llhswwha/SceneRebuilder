@@ -11,6 +11,17 @@ public class MeshRendererInfo : MonoBehaviour
 
     public float disToCenter;
 
+    public float diam = 0;
+
+    public float GetDiam()
+    {
+        if (diam==0)
+        {
+            diam = Vector3.Distance(minMax[0], minMax[1]);
+        }
+        return diam;
+    }
+
     public Vector3 size;
 
     public float vertexCount;
@@ -33,13 +44,20 @@ public class MeshRendererInfo : MonoBehaviour
         
     }
 
-    public static Vector3[] GetMinMax(GameObject go)
+    public static Vector3[] GetMinMax(GameObject go,bool isUpdate=true)
     {
         MeshRendererInfo info = go.GetComponent<MeshRendererInfo>();
         if (info == null)
         {
             info = go.AddComponent<MeshRendererInfo>();
             info.Init();
+        }
+        else
+        {
+            if (isUpdate)
+            {
+                info.Init();
+            }
         }
         return info.minMax;
     }
@@ -150,6 +168,11 @@ public class MeshRendererInfo : MonoBehaviour
         Debug.Log("isDetail:"+isDetail);
     }
 
+    public bool IsChanged()
+    {
+        return position != this.transform.position;
+    }
+
     [ContextMenu("Init")]
     public void Init()
     {
@@ -166,6 +189,7 @@ public class MeshRendererInfo : MonoBehaviour
                     center=minMax[3];
                     size=minMax[2];
                     disToCenter=Vector3.Distance(center,position);
+                    diam = Vector3.Distance(minMax[0], minMax[1]);
                 }
             }
             else{
