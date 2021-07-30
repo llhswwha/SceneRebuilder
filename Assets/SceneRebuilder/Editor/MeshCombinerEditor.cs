@@ -20,10 +20,6 @@ public class MeshCombinerEditor : BaseEditor<MeshCombiner>
         EditorGUILayout.EndHorizontal();
 
         EditorGUILayout.BeginHorizontal();
-        //if (GUILayout.Button("Combine"))
-        //{
-        //    item.Combine();
-        //}
         if (GUILayout.Button("Combine"))
         {
             item.CombineEx();
@@ -34,12 +30,8 @@ public class MeshCombinerEditor : BaseEditor<MeshCombiner>
         }
         if (GUILayout.Button("Clear"))
         {
-            item.CombineByMaterial();
+            item.ClearResult();
         }
-        //if (GUILayout.Button("Split"))
-        //{
-        //    item.Split();
-        //}
         EditorGUILayout.EndHorizontal();
     }
 }

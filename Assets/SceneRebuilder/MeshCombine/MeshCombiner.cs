@@ -56,17 +56,6 @@ public class MeshCombiner : MonoBehaviour
         return Setting;
     }
 
-    // public  CombinedMesh combinedMesh;
-
-
-    //[ContextMenu("Combine")]
-
-    //public void Combine(){
-    //    GetSetting();
-    //    sourceList.Clear();
-    //    CombineEx(2);
-    //}
-
     public bool CombineBySub=false;
 
     public List<MeshCombiner> SubCombiners=new List<MeshCombiner>();
@@ -78,83 +67,100 @@ public class MeshCombiner : MonoBehaviour
             if (result == null) continue;
             GameObject.DestroyImmediate(result);
         }
+        resultList = new List<GameObject>();
+        if (combineArg != null)
+        {
+            combineArg.ShowRendererers();
+        }
     }
 
-    private void CombineEx(MeshCombineMode mode)
+    private void Combine(MeshCombineMode mode)
     {
         DateTime start = DateTime.Now;
 
         GetSetting();
 
-        Debug.LogError("Start CombineEx mode:"+mode+"|"+gameObject);
-        
-        resultList=new List<GameObject>();
-        string sourceName="";
-        if((sourceList.Count==0 || sourceType == MeshCombineSourceType.All)&&sourceRoot!=null){
-            sourceList=new List<GameObject>();
-            if(sourceType==MeshCombineSourceType.All){
-                sourceList.Add(sourceRoot);
-                sourceName+=sourceRoot.name;
-            }
-            else{
-                for(int i=0;i<sourceRoot.transform.childCount;i++){
-                    GameObject child=sourceRoot.transform.GetChild(i).gameObject;
-                    sourceList.Add(child);
-                    sourceName+=child.name+";";
-                }
-            }
-        }
-        Debug.Log("CombineEx sourceList:" + sourceName);
+        Debug.LogError("Start CombineEx mode:" + mode + "|" + gameObject);
 
-        if(Setting.IsCoroutine){
+        ClearResult();
+
+        InitSourceList();
+
+        if (Setting.IsCoroutine)
+        {
             StartCoroutine(CombineEx_Coroutine(mode));
         }
-        else{
+        else
+        {
             for (int i = 0; i < sourceList.Count; i++)
             {
                 GameObject source = sourceList[i];
-                Debug.Log(string.Format("CombineEx {0} ({1}/{2})",source,i+1,sourceList.Count));
-                
-                if(source==null)continue;
+                Debug.Log(string.Format("CombineEx {0} ({1}/{2})", source, i + 1, sourceList.Count));
+
+                if (source == null) continue;
 
                 float progress = (float)i / sourceList.Count;
-                if(ProgressBarHelper.DisplayCancelableProgressBar("CombineEx", $"{i}/{sourceList.Count} {progress:P1} source:{source.name}", progress))
+                if (ProgressBarHelper.DisplayCancelableProgressBar("CombineEx", $"{i}/{sourceList.Count} {progress:P1} source:{source.name}", progress))
                 {
                     break;
                 }
 
-                if (CombineBySub){
-                    MeshCombiner subCombiner=gameObject.AddComponent<MeshCombiner>();
-                    subCombiner.Auto=true;
+                if (CombineBySub)
+                {
+                    MeshCombiner subCombiner = gameObject.AddComponent<MeshCombiner>();
+                    subCombiner.Auto = true;
                     //subCombiner.IsCoroutine=this.IsCoroutine;
-                    subCombiner.CombineBySub=false;
+                    subCombiner.CombineBySub = false;
                     //subCombiner.WaitCount=this.WaitCount;
                     //subCombiner.IsDestroySource=false;
                     subCombiner.sourceList.Add(source);
                     SubCombiners.Add(subCombiner);
                 }
-                else{
-                    // if(Setting.IsCoroutine){
-                    //     StartCoroutine(MeshCombineHelper.CombineEx_Coroutine(source,Setting.IsDestroySource,mode,Setting.WaitCount));
-                    // }
-                    // else
+                else
+                {
+                    combineArg = new MeshCombineArg(source);
+                    GameObject target = MeshCombineHelper.CombineEx(combineArg, mode);
+                    resultList.Add(target);
+                    Debug.Log("Combine:" + source + "->" + target);
+                    if (Setting.IsDestroySource)
                     {
-                        GameObject target=MeshCombineHelper.CombineEx(new MeshCombineArg(source),mode);
-                        resultList.Add(target);
-                        Debug.Log("Combine:"+source+"->"+target);
-                        if(Setting.IsDestroySource){
-                            target.name=source.name;
-                            GameObject.DestroyImmediate(source);
-                        }
+                        target.name = source.name;
+                        GameObject.DestroyImmediate(source);
                     }
-
                 }
             }
             ProgressBarHelper.ClearProgressBar();
 
-            Debug.Log($"CombineEx mode:{mode} souces:{sourceList.Count} time:{DateTime.Now-start}");
+            Debug.Log($"CombineEx mode:{mode} souces:{sourceList.Count} time:{DateTime.Now - start}");
         }
     }
+
+    public MeshCombineArg combineArg = null;
+
+    private void InitSourceList()
+    {
+        string sourceName = "";
+        if ((sourceList.Count == 0 || sourceType == MeshCombineSourceType.All) && sourceRoot != null)
+        {
+            sourceList = new List<GameObject>();
+            if (sourceType == MeshCombineSourceType.All)
+            {
+                sourceList.Add(sourceRoot);
+                sourceName += sourceRoot.name;
+            }
+            else
+            {
+                for (int i = 0; i < sourceRoot.transform.childCount; i++)
+                {
+                    GameObject child = sourceRoot.transform.GetChild(i).gameObject;
+                    sourceList.Add(child);
+                    sourceName += child.name + ";";
+                }
+            }
+        }
+        Debug.Log("CombineEx sourceList:" + sourceName);
+    }
+
     private IEnumerator CombineEx_Coroutine(MeshCombineMode mode)
     {
         DateTime start=DateTime.Now;
@@ -177,7 +183,7 @@ public class MeshCombiner : MonoBehaviour
     public void CombineByMaterial(){
         GetSetting();
         sourceList.Clear();
-        CombineEx(MeshCombineMode.MultiByMat);
+        Combine(MeshCombineMode.MultiByMat);
     }
 
 
@@ -186,7 +192,7 @@ public class MeshCombiner : MonoBehaviour
     public void CombineEx(){
         GetSetting();
         sourceList.Clear();
-        CombineEx(MeshCombineMode.OneMesh);
+        Combine(MeshCombineMode.OneMesh);
     }
 
     public bool AutoAdd;

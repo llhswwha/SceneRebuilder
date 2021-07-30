@@ -511,11 +511,18 @@ public class MeshCombineArg
 
     public MeshRenderer[] GetRenderers()
     {
+        return renderers;
+    }
+
+    public void ShowRendererers()
+    {
         if (renderers != null)
         {
-            return renderers;
+            foreach(var renderer in renderers)
+            {
+                renderer.enabled = true;
+            }
         }
-        return source.GetComponentsInChildren<MeshRenderer>(true);
     }
 
     public string name
