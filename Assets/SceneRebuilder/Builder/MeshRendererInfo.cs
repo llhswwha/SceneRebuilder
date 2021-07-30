@@ -157,6 +157,20 @@ public class MeshRendererInfo : MonoBehaviour
 
     public MeshRendererType rendererType;
 
+    public static MeshRendererInfoList FilterByTypes(IEnumerable<MeshRenderer> renderers,List<MeshRendererType> types)
+    {
+        MeshRendererInfoList list = new MeshRendererInfoList();
+        foreach (var renderer in renderers)
+        {
+            var info = MeshRendererInfo.GetInfo(renderer.gameObject);
+            if (types.Contains(info.rendererType))
+            {
+                list.Add(info);
+            }
+        }
+        return list;
+    }
+
     [ContextMenu("GetRendererType")]
     public void GetRendererType()
     {
@@ -459,6 +473,8 @@ public class MeshRendererInfoList:List<MeshRendererInfo>
 public enum MeshRendererType
 {
     None,
-    Static,//(Big)
+    Structure,//(Big)
     Detail,//(Small)
+    Static,
+    LOD
 }

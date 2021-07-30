@@ -30,10 +30,15 @@ public class MeshAlignmentManagerEditor : BaseEditor<MeshAlignmentManager>
         item.Target = EditorGUILayout.ObjectField(item.Target, typeof(GameObject)) as GameObject;
         GUILayout.EndHorizontal();
 
+       
+
+
         GUILayout.BeginHorizontal();
-        item.transfromReplaceSetting.SetPosX = GUILayout.Toggle(item.transfromReplaceSetting.SetPosX, "X");
-        item.transfromReplaceSetting.SetPosY = GUILayout.Toggle(item.transfromReplaceSetting.SetPosY, "Y");
-        item.transfromReplaceSetting.SetPosZ = GUILayout.Toggle(item.transfromReplaceSetting.SetPosZ, "Z");
+        Vector3 offset = item.Target.transform.position - item.Source.transform.position;
+        GUILayout.Label($"offset:({offset.x},{offset.y},{offset.z})");
+        item.transfromReplaceSetting.SetPosX = GUILayout.Toggle(item.transfromReplaceSetting.SetPosX, "X", GUILayout.Width(40));
+        item.transfromReplaceSetting.SetPosY = GUILayout.Toggle(item.transfromReplaceSetting.SetPosY, "Y", GUILayout.Width(40));
+        item.transfromReplaceSetting.SetPosZ = GUILayout.Toggle(item.transfromReplaceSetting.SetPosZ, "Z", GUILayout.Width(40));
         item.transfromReplaceSetting.Align = (TransfromAlignMode)EditorGUILayout.EnumPopup(item.transfromReplaceSetting.Align,GUILayout.Width(80));
         GUILayout.EndHorizontal();
 
