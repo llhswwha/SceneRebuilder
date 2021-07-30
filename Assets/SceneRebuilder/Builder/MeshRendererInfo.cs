@@ -133,6 +133,27 @@ public class MeshRendererInfo : MonoBehaviour
         return list;
     }
 
+    public static MeshRendererInfoList GetLodNs(GameObject go, params int[] lvs)
+    {
+        var renderers = go.GetComponentsInChildren<MeshRenderer>(true);
+        MeshRendererInfoList list = GetLodNs(renderers, lvs);
+        return list;
+    }
+
+    public static MeshRendererInfoList GetLodNs(MeshRenderer[] renderers, params int[] lvs)
+    {
+        MeshRendererInfoList list = new MeshRendererInfoList();
+        foreach (var renderer in renderers)
+        {
+            var info = MeshRendererInfo.GetInfo(renderer.gameObject);
+            if (info.IsLodNs(lvs))
+            {
+                list.Add(info);
+            }
+        }
+        return list;
+    }
+
     public static List<MeshRendererInfoList> SplitByLOD(MeshRenderer[] renderers)
     {
         List<MeshRendererInfoList> lodList = new List<MeshRendererInfoList>();
@@ -370,6 +391,15 @@ public class MeshRendererInfo : MonoBehaviour
         {
             return LodIds.Contains(lv);
         }
+    }
+
+    public bool IsLodNs(int[] lvs)
+    {
+        foreach(int lv in lvs)
+        {
+            if (IsLodN(lv)) return true;
+        }
+        return false;
     }
 }
 

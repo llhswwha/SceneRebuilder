@@ -103,7 +103,7 @@ public class LODManager : SingletonBehaviour<LODManager>
         EditorHelper.UnpackPrefab(LODnRoot, PrefabUnpackMode.OutermostRoot);
         DateTime start = DateTime.Now;
         var renderers_2 = LODnRoot.GetComponentsInChildren<MeshRenderer>(true);
-        var renderers_0 = MeshRendererInfo.GetLodN(GroupRoot,0);
+        var renderers_0 = MeshRendererInfo.GetLodNs(GroupRoot,-1,0);
         List<MeshRendererInfo> list_lod0 = new List<MeshRendererInfo>();
         list_lod0.AddRange(renderers_0);
         //renderers_0.ToList().ForEach(i => { ts.Add(i.transform); });
