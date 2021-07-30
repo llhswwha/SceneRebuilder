@@ -526,7 +526,9 @@ namespace CodeStage.AdvancedFPSCounter.Editor.UI
                 btnStyle.alignment = TextAnchor.MiddleLeft;
 
                 //var rect = EditorGUILayout.GetControlRect(GUILayout.Width(100));
-                GUILayout.Label(arg.caption, btnStyle,GUILayout.Width(600));
+                // GUILayout.Label(arg.caption, btnStyle,GUILayout.Width(600));
+
+                 GUILayout.Label(arg.caption);
             }
 
             EditorGUIUtility.labelWidth = 1;

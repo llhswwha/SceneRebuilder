@@ -735,7 +735,15 @@ public class SubSceneManager : SingletonBehaviour<SubSceneManager>
         Dictionary<string, SceneFile> dict = new Dictionary<string, SceneFile>();
         foreach(var scene in sceneFiles1)
         {
-            dict.Add(scene.sceneFilePath, scene);
+            if(dict.ContainsKey(scene.sceneFilePath))
+            {
+                SceneFile scene2=dict[scene.sceneFilePath];
+                Debug.LogError($"dict.ContainsKey scene1:{scene2} scene2:{scene} path:{scene.sceneFilePath}");
+            }
+            else{
+                dict.Add(scene.sceneFilePath, scene);
+            }
+            
         }
         List<SceneFile> sceneFiles2 = GetAllSceneFiles();
         foreach(var scene in sceneFiles2)
