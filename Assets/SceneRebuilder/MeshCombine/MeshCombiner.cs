@@ -59,29 +59,35 @@ public class MeshCombiner : MonoBehaviour
     // public  CombinedMesh combinedMesh;
 
 
-    [ContextMenu("Combine")]
+    //[ContextMenu("Combine")]
 
-    public void Combine(){
-        GetSetting();
-        sourceList.Clear();
-        CombineEx(2);
-    }
+    //public void Combine(){
+    //    GetSetting();
+    //    sourceList.Clear();
+    //    CombineEx(2);
+    //}
 
     public bool CombineBySub=false;
 
     public List<MeshCombiner> SubCombiners=new List<MeshCombiner>();
 
-    private void CombineEx(int mode)
+    public void ClearResult()
+    {
+        foreach (var result in resultList)
+        {
+            if (result == null) continue;
+            GameObject.DestroyImmediate(result);
+        }
+    }
+
+    private void CombineEx(MeshCombineMode mode)
     {
         DateTime start = DateTime.Now;
 
         GetSetting();
 
         Debug.LogError("Start CombineEx mode:"+mode+"|"+gameObject);
-        foreach(var result in resultList){
-            if(result==null)continue;
-            GameObject.DestroyImmediate(result);
-        }
+        
         resultList=new List<GameObject>();
         string sourceName="";
         if((sourceList.Count==0 || sourceType == MeshCombineSourceType.All)&&sourceRoot!=null){
@@ -133,7 +139,7 @@ public class MeshCombiner : MonoBehaviour
                     // }
                     // else
                     {
-                        GameObject target=MeshCombineHelper.CombineEx(new MeshCombineArg(source,null),mode);
+                        GameObject target=MeshCombineHelper.CombineEx(new MeshCombineArg(source),mode);
                         resultList.Add(target);
                         Debug.Log("Combine:"+source+"->"+target);
                         if(Setting.IsDestroySource){
@@ -149,7 +155,7 @@ public class MeshCombiner : MonoBehaviour
             Debug.Log($"CombineEx mode:{mode} souces:{sourceList.Count} time:{DateTime.Now-start}");
         }
     }
-    private IEnumerator CombineEx_Coroutine(int mode)
+    private IEnumerator CombineEx_Coroutine(MeshCombineMode mode)
     {
         DateTime start=DateTime.Now;
         for (int i = 0; i < sourceList.Count; i++)
@@ -171,7 +177,7 @@ public class MeshCombiner : MonoBehaviour
     public void CombineByMaterial(){
         GetSetting();
         sourceList.Clear();
-        CombineEx(1);
+        CombineEx(MeshCombineMode.MultiByMat);
     }
 
 
@@ -180,7 +186,7 @@ public class MeshCombiner : MonoBehaviour
     public void CombineEx(){
         GetSetting();
         sourceList.Clear();
-        CombineEx(0);
+        CombineEx(MeshCombineMode.OneMesh);
     }
 
     public bool AutoAdd;

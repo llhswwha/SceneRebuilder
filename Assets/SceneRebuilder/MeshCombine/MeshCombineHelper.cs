@@ -9,18 +9,18 @@ public static class MeshCombineHelper
 
     public static bool AddScripted = false;
 
-    public static GameObject SimpleCombine(MeshCombineArg source,GameObject target){
+    //public static GameObject SimpleCombine(MeshCombineArg source,GameObject target){
         
-        CombinedMesh combinedMesh=new CombinedMesh(source.transform,null,null);
-        combinedMesh.DoCombine(true);
-        target=combinedMesh.CreateNewGo(false,target);
-        target.AddComponent<MeshFilterInfo>();
-        Debug.Log("Combine:"+source+"->"+target);
+    //    CombinedMesh combinedMesh=new CombinedMesh(source.transform,null,null);
+    //    combinedMesh.DoCombine(true);
+    //    target=combinedMesh.CreateNewGo(false,target);
+    //    target.AddComponent<MeshFilterInfo>();
+    //    Debug.Log("Combine:"+source+"->"+target);
 
-        MeshHelper.CenterPivot(target.transform,combinedMesh.minMax[3]);
+    //    MeshHelper.CenterPivot(target.transform,combinedMesh.minMax[3]);
 
-        return target;
-    }
+    //    return target;
+    //}
 
     public static IEnumerator SimpleCombine_Coroutine(MeshCombineArg source,GameObject target,int waitCount,bool isDestroy){
         
@@ -51,7 +51,7 @@ public static class MeshCombineHelper
         int count = 0;
         MeshCombineArg arg = new MeshCombineArg(obj);
         arg.prefix = obj.name+"_";
-        GameObject goNew = CombineMaterials(arg, out count);
+        GameObject goNew = CombineInner_Multi(arg, out count);
 
         goNew.transform.SetParent(obj.transform);
         t.Recover();
@@ -71,11 +71,11 @@ public static class MeshCombineHelper
 
         int count = 0;
         MeshCombineArg arg = new MeshCombineArg(obj);
-        GameObject result = CombineMaterials(arg, out count);
+        GameObject result = CombineInner_Multi(arg, out count);
         return result;
     }
 
-    public static GameObject CombineMaterials(MeshCombineArg arg,out int  count)
+    public static GameObject CombineInner_Multi(MeshCombineArg arg,out int  count)
     {
         DateTime start=DateTime.Now;
         GameObject goNew=new GameObject();
@@ -363,10 +363,10 @@ public static class MeshCombineHelper
         return mat2Filters;
     }
 
-    public static GameObject Combine(MeshCombineArg source){
+    private static GameObject CombineInner_One(MeshCombineArg source){
         DateTime start=DateTime.Now;
         int count=0;
-        GameObject goNew=CombineMaterials(source,out count);//按材质合并
+        GameObject goNew=CombineInner_Multi(source,out count);//按材质合并
         CombinedMesh combinedMesh=new CombinedMesh(goNew.transform,null,null);
         combinedMesh.DoCombine(false);
         GameObject target=combinedMesh.CreateNewGo(false,null);
@@ -381,7 +381,7 @@ public static class MeshCombineHelper
     public static IEnumerator Combine_Coroutine(MeshCombineArg source,int waitCount,bool isDestroy){
         DateTime start=DateTime.Now;
         int count=0;
-        GameObject goNew=CombineMaterials(source,out count);//按材质合并
+        GameObject goNew=CombineInner_Multi(source,out count);//按材质合并
         CombinedMesh combinedMesh=new CombinedMesh(goNew.transform,null,null);
         yield return combinedMesh.DoCombine_Coroutine(false,waitCount);
         GameObject target=combinedMesh.CreateNewGo(false,null);
@@ -397,25 +397,29 @@ public static class MeshCombineHelper
         yield return target;
     }
 
-    public static GameObject CombineEx(MeshCombineArg source,int mode=0){
-        if(mode==0){
-            return Combine(source);
+    public static GameObject CombineEx(MeshCombineArg source, MeshCombineMode mode = MeshCombineMode.OneMesh)
+    {
+        if(mode== MeshCombineMode.OneMesh)
+        {
+            return CombineInner_One(source);
         }
-        else if(mode ==1 )
+        else //if(mode == MeshCombineMode.MultiByMat)
         {
             int count=0;
-            return CombineMaterials(source,out count);
+            return CombineInner_Multi(source,out count);
         }
-        else{
-            return SimpleCombine(source,null);
-        }
+        //else{
+        //    return SimpleCombine(source,null);
+        //}
     }
 
-    public static IEnumerator CombineEx_Coroutine(MeshCombineArg source,bool isDestroy,int waitCount,int mode=0){
-        if(mode==0){
+    public static IEnumerator CombineEx_Coroutine(MeshCombineArg source,bool isDestroy,int waitCount, MeshCombineMode mode = MeshCombineMode.OneMesh)
+    {
+        if(mode== MeshCombineMode.OneMesh)
+        {
             yield return Combine_Coroutine(source,waitCount,isDestroy);
         }
-        else if(mode ==1 )
+        else if(mode == MeshCombineMode.MultiByMat)
         {
             yield return CombineMaterials_Coroutine(source,waitCount,isDestroy);
         }
@@ -476,21 +480,30 @@ public static class MeshCombineHelper
 
 }
 
+public enum MeshCombineMode
+{
+    OneMesh,MultiByMat
+}
+
+[Serializable]
 public class MeshCombineArg
 {
     public string prefix = "";
-    public GameObject source;
+    public string sourceName;
+    private GameObject source;
 
-    public MeshCombineArg(GameObject source)
+    public MeshCombineArg(GameObject sour)
     {
+        this.sourceName = sour.name;
         //prefix = source.name;
-        this.source = source;
-        this.renderers = source.GetComponentsInChildren<MeshRenderer>(true);
+        this.source = sour;
+        this.renderers = sour.GetComponentsInChildren<MeshRenderer>(true);
     }
 
-    public MeshCombineArg(GameObject source, MeshRenderer[] rs)
+    public MeshCombineArg(GameObject sour, MeshRenderer[] rs)
     {
-        this.source = source;
+        this.sourceName = sour.name;
+        this.source = sour;
         this.renderers = rs;
     }
 

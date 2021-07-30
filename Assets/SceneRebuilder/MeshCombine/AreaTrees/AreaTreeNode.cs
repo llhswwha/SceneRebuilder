@@ -491,7 +491,7 @@ public class AreaTreeNode : SubSceneCreater
 
     private GameObject CombineRenderers(MeshRenderer[] renderers,Transform parent,string name)
     {
-        GameObject cResult = MeshCombineHelper.CombineEx(new MeshCombineArg(this.renderersRoot, renderers), 1);
+        GameObject cResult = MeshCombineHelper.CombineEx(new MeshCombineArg(this.renderersRoot, renderers), MeshCombineMode.MultiByMat);
         //combindResult = MeshCombineHelper.CombineEx(new MeshCombineArg(this.renderersRoot, Renderers.ToArray()), 0);
         cResult.name = name;
         cResult.transform.SetParent(parent);

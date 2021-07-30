@@ -20,15 +20,19 @@ public class MeshCombinerEditor : BaseEditor<MeshCombiner>
         EditorGUILayout.EndHorizontal();
 
         EditorGUILayout.BeginHorizontal();
+        //if (GUILayout.Button("Combine"))
+        //{
+        //    item.Combine();
+        //}
         if (GUILayout.Button("Combine"))
-        {
-            item.Combine();
-        }
-        if (GUILayout.Button("CombineEx"))
         {
             item.CombineEx();
         }
-        if (GUILayout.Button("CombineByMaterial"))
+        if (GUILayout.Button("CombineByMat"))
+        {
+            item.CombineByMaterial();
+        }
+        if (GUILayout.Button("Clear"))
         {
             item.CombineByMaterial();
         }
