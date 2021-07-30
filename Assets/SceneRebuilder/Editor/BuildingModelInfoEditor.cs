@@ -18,7 +18,7 @@ public class BuildingModelInfoEditor : BaseFoldoutEditor<BuildingModelInfo>
 
     private FoldoutEditorArg sceneListArg = new FoldoutEditorArg();
 
-    //private FoldoutEditorArg<MeshFilter> meshListArg = new FoldoutEditorArg<MeshFilter>();
+    private FoldoutEditorArg<MeshFilter> meshListArg = new FoldoutEditorArg<MeshFilter>();
 
     private FoldoutEditorArg<MeshRendererInfo> meshinfoListArg = new FoldoutEditorArg<MeshRendererInfo>();
 
@@ -36,7 +36,7 @@ public class BuildingModelInfoEditor : BaseFoldoutEditor<BuildingModelInfo>
         nodeListArg = new FoldoutEditorArg(true, false, true, true, false);
         sceneListArg = new FoldoutEditorArg(true, false, true, true, false);
 
-        //meshListArg = new FoldoutEditorArg<MeshFilter>(true, false, true, true, false);
+        meshListArg = new FoldoutEditorArg<MeshFilter>(true, false, true, true, false);
         meshinfoListArg = new FoldoutEditorArg<MeshRendererInfo>(true, false, true, true, false);
 
         matListArg = new FoldoutEditorArg(true, false, true, true, false);
@@ -224,18 +224,18 @@ public class BuildingModelInfoEditor : BaseFoldoutEditor<BuildingModelInfo>
             return item.GetSceneList();
         });
 
-        //DrawMeshList(meshListArg, () =>
-        //{
-        //    List<MeshFilter> meshes = new List<MeshFilter>();
-        //    if(item.InPart)
-        //        meshes.AddRange(item.InPart.GetComponentsInChildren<MeshFilter>(true));
-        //    if (item.OutPart0)
-        //        meshes.AddRange(item.OutPart0.GetComponentsInChildren<MeshFilter>(true));
-        //    if (item.OutPart1)
-        //        meshes.AddRange(item.OutPart1.GetComponentsInChildren<MeshFilter>(true));
-        //    meshes=meshes.Where(m => m != null && m.sharedMesh != null && m.sharedMesh.name != "Cube").ToList();
-        //    return meshes;
-        //});
+        DrawMeshList(meshListArg, () =>
+        {
+           List<MeshFilter> meshes = new List<MeshFilter>();
+           if(item.InPart)
+               meshes.AddRange(item.InPart.GetComponentsInChildren<MeshFilter>(true));
+           if (item.OutPart0)
+               meshes.AddRange(item.OutPart0.GetComponentsInChildren<MeshFilter>(true));
+           if (item.OutPart1)
+               meshes.AddRange(item.OutPart1.GetComponentsInChildren<MeshFilter>(true));
+           meshes=meshes.Where(m => m != null && m.sharedMesh != null && m.sharedMesh.name != "Cube").ToList();
+           return meshes;
+        });
 
         DrawMeshListEx(meshinfoListArg, () =>
         {

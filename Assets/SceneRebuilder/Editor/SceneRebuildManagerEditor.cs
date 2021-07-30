@@ -161,6 +161,6 @@ public class SceneRebuildManagerEditor : BaseFoldoutEditor<SceneRebuildManager>
 
     private List<MeshRendererInfo> GetMeshInfoList()
     {
-        return GameObject.FindObjectsOfType<MeshRendererInfo>(true).Where(m => m != null && m.meshFilter.sharedMesh != null && m.meshFilter.sharedMesh.name != "Cube").ToList();
+        return GameObject.FindObjectsOfType<MeshRendererInfo>(true).Where(m => m != null && m.sharedMesh != null && m.sharedMesh.name != "Cube").ToList();
     }
 }
