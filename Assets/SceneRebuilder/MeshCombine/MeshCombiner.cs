@@ -18,6 +18,17 @@ public class MeshCombiner : MonoBehaviour
 
     public bool Auto=false;
 
+    public void SetSourceRoot(GameObject newSource)
+    {
+        if(sourceRoot!=newSource)
+        {
+            sourceRoot = newSource;
+            sourceList.Clear();
+            resultList.Clear();
+        }
+        
+    }
+
     public bool IsCombine=false;
 
     public MeshCombinerSetting Setting;

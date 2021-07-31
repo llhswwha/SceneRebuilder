@@ -12,7 +12,8 @@ public class MeshCombinerEditor : BaseEditor<MeshCombiner>
 
         EditorGUILayout.BeginHorizontal();
         GUILayout.Label("Source", GUILayout.Width(60));
-        item.sourceRoot = EditorGUILayout.ObjectField(item.sourceRoot, typeof(GameObject)) as GameObject;
+        var newSource= EditorGUILayout.ObjectField(item.sourceRoot, typeof(GameObject)) as GameObject;
+        item.SetSourceRoot(newSource);
 
         item.sourceType = (MeshCombineSourceType)EditorGUILayout.EnumPopup(item.sourceType, GUILayout.Width(80));
 
