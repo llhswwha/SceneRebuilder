@@ -1,19 +1,28 @@
 using CodeStage.AdvancedFPSCounter.Editor.UI;
 using System.Collections;
 using System.Collections.Generic;
+using System.Linq;
 using UnityEditor;
 using UnityEngine;
 
 [CustomEditor(typeof(LODManager))]
 public class LODManagerEditor : BaseFoldoutEditor<LODManager>
 {
-    FoldoutEditorArg twoListArg = new FoldoutEditorArg();
+    FoldoutEditorArg<LODTwoRenderers> twoListArg = new FoldoutEditorArg<LODTwoRenderers>();
 
     FoldoutEditorArg lodGroupListArg = new FoldoutEditorArg();
 
-    public override void OnToolLayout(LODManager item)
+    private string searchKey = "";
+
+    public override void OnEnable()
     {
-        base.OnToolLayout(item);
+        base.OnEnable();
+        //twoListArg.Items = targetT.twoList;
+    }
+
+    public override void OnToolLayout(LODManager lodManager)
+    {
+        base.OnToolLayout(lodManager);
 
         //if (GUILayout.Button("CheckLODPositions"))
         //{
@@ -22,75 +31,80 @@ public class LODManagerEditor : BaseFoldoutEditor<LODManager>
         EditorGUILayout.BeginHorizontal();
         if (GUILayout.Button("InActive"))
         {
-            item.SetLODActive(false);
+            lodManager.SetLODActive(false);
         }
         if (GUILayout.Button("Active"))
         {
-            item.SetLODActive(true);
+            lodManager.SetLODActive(true);
         }
         EditorGUILayout.EndHorizontal();
 
         if (GUILayout.Button("SetRenderersLODInfo"))
         {
-            item.SetRenderersLODInfo();
+            lodManager.SetRenderersLODInfo();
         }
 
         if (GUILayout.Button("UniformLOD"))
         {
-            item.UniformLOD();
+            lodManager.UniformLOD();
         }
         EditorUIUtils.Separator(5);
 
         if (GUILayout.Button("GetLODDetail"))
         {
-            string detail=item.GetRuntimeLODDetail(true);
+            string detail=lodManager.GetRuntimeLODDetail(true);
             Debug.Log($"lod detail:{detail}");
         }
-        DrawLODGroupList(lodGroupListArg, item);
+        DrawLODGroupList(lodGroupListArg, lodManager);
 
 
         EditorUIUtils.Separator(5);
 
         EditorGUILayout.BeginHorizontal();
         GUILayout.Label("ZeroDistance:");
-        item.zeroDistance = EditorGUILayout.FloatField(item.zeroDistance);
-        item.DoCreateGroup = GUILayout.Toggle(item.DoCreateGroup, "CreateGroup");
+        lodManager.zeroDistance = EditorGUILayout.FloatField(lodManager.zeroDistance);
+        lodManager.DoCreateGroup = GUILayout.Toggle(lodManager.DoCreateGroup, "CreateGroup");
         EditorGUILayout.EndHorizontal();
 
         EditorGUILayout.BeginHorizontal();
 
         GUILayout.Label("Group:");
-        item.GroupRoot = EditorGUILayout.ObjectField(item.GroupRoot, typeof(GameObject)) as GameObject;
+        lodManager.GroupRoot = EditorGUILayout.ObjectField(lodManager.GroupRoot, typeof(GameObject)) as GameObject;
         GUILayout.Label("LOD:");
-        item.LODnRoot = EditorGUILayout.ObjectField(item.LODnRoot, typeof(GameObject)) as GameObject;
+        lodManager.LODnRoot = EditorGUILayout.ObjectField(lodManager.LODnRoot, typeof(GameObject)) as GameObject;
         EditorGUILayout.EndHorizontal();
 
         EditorGUILayout.BeginHorizontal();
         if (GUILayout.Button("AppendLod1"))
         {
-            item.AppendLod1ToGroup();
+            lodManager.AppendLod1ToGroup();
         }
         if (GUILayout.Button("AppendLod2"))
         {
-            item.AppendLod2ToGroup();
+            lodManager.AppendLod2ToGroup();
         }
         if (GUILayout.Button("AppendLod3"))
         {
-            item.AppendLod3ToGroup();
+            lodManager.AppendLod3ToGroup();
         }
         if (GUILayout.Button("SetColor"))
         {
-            item.SetAppendLod3Color();
+            lodManager.SetAppendLod3Color();
         }
         EditorGUILayout.EndHorizontal();
 
         twoListArg.caption = $"TwoObject List";
         EditorUIUtils.ToggleFoldout(twoListArg, arg =>
         {
-            var doors = item.twoList;
-            arg.caption = $"TwoObject List ({doors.Count}) ({item.LODRendererCount0})({item.LODRendererCount1})";
+            var list = targetT.twoList;
+            if (!string.IsNullOrEmpty(searchKey))
+            {
+                list = list.Where(i => i.renderer_lod1.name.Contains(searchKey)).ToList();
+            }
+            twoListArg.Items = list;
+            arg.caption = $"TwoObject List ({list.Count}) ({lodManager.LODRendererCount0})({lodManager.LODRendererCount1})";
             //arg.info = $"{doors.VertexCount_Show / 10000f:F0}/{doors.VertexCount / 10000f:F0}";
-            InitEditorArg(doors);
+            InitEditorArg(list);
         },
         () =>
         {
@@ -99,6 +113,7 @@ public class LODManagerEditor : BaseFoldoutEditor<LODManager>
             //    RemoveEditorArg(item.GetDoors());
             //    InitEditorArg(item.UpdateDoors());
             //}
+            searchKey=GUILayout.TextField(searchKey);
         });
         if (twoListArg.isEnabled && twoListArg.isExpanded)
         {
@@ -110,31 +125,36 @@ public class LODManagerEditor : BaseFoldoutEditor<LODManager>
             //    item.SplitAll();
             //}
             //EditorGUILayout.EndHorizontal();
-            var doors = item.twoList;
-            InitEditorArg(doors);
-            twoListArg.DrawPageToolbar(doors, (door, i) =>
+            var list = twoListArg.Items;
+            if (!string.IsNullOrEmpty(searchKey))
             {
-                if (door.renderer_lod1 == null)
+                list = list.Where(i => i.renderer_lod1.name.Contains(searchKey)).ToList();
+            }
+            InitEditorArg(list);
+            twoListArg.DrawPageToolbar(list, (item, i) =>
+            {
+                //var door = item;
+                if (item.renderer_lod1 == null)
                 {
                     return;
                 }
-                var arg = editorArgs[door];
-                arg.caption = $"[{i:00}] {door.renderer_lod1.name}({door.vertexCount1}) <{door.dis:F3}|{door.meshDis:F3}> {door.renderer_lod0.name}({door.vertexCount0})";
+                var arg = editorArgs[item];
+                arg.caption = $"[{i:00}] {item.renderer_lod1.name}({item.vertexCount1}) <{item.dis:F3}|{item.meshDis:F3}> {item.renderer_lod0.name}({item.vertexCount0})";
                 //arg.info = door.ToString();
-                EditorUIUtils.ObjectFoldout(arg, door.renderer_lod1, () =>
+                EditorUIUtils.ObjectFoldout(arg, item.renderer_lod1, () =>
                 {
                     if (GUILayout.Button("Add", GUILayout.Width(50)))
                     {
-                        item.AddLOD2(door.renderer_lod0, door.renderer_lod1);
+                        lodManager.AddLOD2(item.renderer_lod0, item.renderer_lod1);
                     }
                     if (GUILayout.Button("P", GUILayout.Width(50)))
                     {
                         //EditorHelper.SelectObject(door.renderer_lod0);
-                        door.renderer_lod1.transform.SetParent(door.renderer_lod0.transform);
+                        item.renderer_lod1.transform.SetParent(item.renderer_lod0.transform);
                     }
                     if (GUILayout.Button("LOD0", GUILayout.Width(50)))
                     {
-                        EditorHelper.SelectObject(door.renderer_lod0);
+                        EditorHelper.SelectObject(item.renderer_lod0);
                     }
                     //if (GUILayout.Button("0&1", GUILayout.Width(50)))
                     //{

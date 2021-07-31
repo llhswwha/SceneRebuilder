@@ -159,13 +159,13 @@ public class LODManager : SingletonBehaviour<LODManager>
                     }
                 }
 
-                twoList.Add(new TwoRenderers(render_lod0, render_lod1, minDis, min.meshDis, vertexCount0, vertexCount1));
+                twoList.Add(new LODTwoRenderers(render_lod0, render_lod1, minDis, min.meshDis, vertexCount0, vertexCount1));
             }
             else
             {
                 Debug.LogWarning($"GetDistance1 \tLOD3:{render_lod1.name}({vertexCount1}) \tLOD0:{render_lod0.name}({vertexCount0}) \tDistance:{minDis} \t{(float)vertexCount1 / vertexCount0:P2}");
 
-                twoList.Add(new TwoRenderers(render_lod0, render_lod1, minDis, min.meshDis, vertexCount0, vertexCount1));
+                twoList.Add(new LODTwoRenderers(render_lod0, render_lod1, minDis, min.meshDis, vertexCount0, vertexCount1));
             }
         }
         ProgressBarHelper.ClearProgressBar();
@@ -307,30 +307,7 @@ public class LODManager : SingletonBehaviour<LODManager>
         }
     }
 
-    [Serializable]
-    public class TwoRenderers
-    {
-        public MeshRenderer renderer_lod0;
-        public MeshRenderer renderer_lod1;
-        public float dis;
-
-        public float meshDis;
-
-        public int vertexCount0 ;
-        public int vertexCount1 ;
-
-        public TwoRenderers(MeshRenderer lod0, MeshRenderer lod1,float d, float meshD, int vertexCount0, int vertexCount1)
-        {
-            renderer_lod0 = lod0;
-            renderer_lod1 = lod1;
-            dis = d;
-            meshDis = meshD;
-            this.vertexCount0 = vertexCount0;
-            this.vertexCount1 = vertexCount1;
-        }
-    }
-
-    public List<TwoRenderers> twoList = new List<TwoRenderers>();
+    public List<LODTwoRenderers> twoList = new List<LODTwoRenderers>();
 
     public int LODRendererCount0;
     public int LODRendererCount1;
@@ -815,5 +792,28 @@ public static class LODHelper
         }
         lodGroup.SetLODs(CreateLODs(ls));
         return lodGroup;
+    }
+}
+
+[Serializable]
+public class LODTwoRenderers
+{
+    public MeshRenderer renderer_lod0;
+    public MeshRenderer renderer_lod1;
+    public float dis;
+
+    public float meshDis;
+
+    public int vertexCount0;
+    public int vertexCount1;
+
+    public LODTwoRenderers(MeshRenderer lod0, MeshRenderer lod1, float d, float meshD, int vertexCount0, int vertexCount1)
+    {
+        renderer_lod0 = lod0;
+        renderer_lod1 = lod1;
+        dis = d;
+        meshDis = meshD;
+        this.vertexCount0 = vertexCount0;
+        this.vertexCount1 = vertexCount1;
     }
 }
