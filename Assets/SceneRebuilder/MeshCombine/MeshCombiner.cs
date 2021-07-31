@@ -78,6 +78,33 @@ public class MeshCombiner : MonoBehaviour
         combineArgs.Clear();
     }
 
+    public void DestroySource()
+    {
+        DateTime start = DateTime.Now;
+        for (int i = 0; i < resultList.Count; i++)
+        {
+            GameObject result = resultList[i];
+            if (result == null) continue;
+            GameObject source = sourceList[i];
+
+            float progress = (float)i / resultList.Count;
+            if (ProgressBarHelper.DisplayCancelableProgressBar("DestroySource", $"{i}/{resultList.Count} {progress:P1} source:{result.name}", progress))
+            {
+                break;
+            }
+
+
+            //EditorHelper.SaveMeshAsset(source, result);
+            result.name = source.name;
+            EditorHelper.UnpackPrefab(source);
+            GameObject.DestroyImmediate(source);
+        }
+
+        ProgressBarHelper.ClearProgressBar();
+
+        Debug.Log($"DestroySource resultList:{resultList.Count} time:{DateTime.Now - start}");
+    }
+
     public void SaveResult()
     {
         DateTime start = DateTime.Now;
@@ -88,7 +115,7 @@ public class MeshCombiner : MonoBehaviour
             GameObject source = sourceList[i];
 
             float progress = (float)i / resultList.Count;
-            if (ProgressBarHelper.DisplayCancelableProgressBar("CombineEx", $"{i}/{resultList.Count} {progress:P1} source:{result.name}", progress))
+            if (ProgressBarHelper.DisplayCancelableProgressBar("SaveResult", $"{i}/{resultList.Count} {progress:P1} source:{result.name}", progress))
             {
                 break;
             }

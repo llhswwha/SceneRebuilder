@@ -36,6 +36,10 @@ public class MeshCombinerEditor : BaseEditor<MeshCombiner>
         {
             item.SaveResult();
         }
+        if (GUILayout.Button("Destroy"))
+        {
+            item.DestroySource();
+        }
         EditorGUILayout.EndHorizontal();
     }
 }
