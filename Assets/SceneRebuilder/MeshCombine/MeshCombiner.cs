@@ -184,6 +184,7 @@ public class MeshCombiner : MonoBehaviour
                 }
                 else
                 {
+
                     var combineArg = new MeshCombineArg(source);
                     combineArgs.Add(combineArg);
                     GameObject target = MeshCombineHelper.CombineEx(combineArg, mode);

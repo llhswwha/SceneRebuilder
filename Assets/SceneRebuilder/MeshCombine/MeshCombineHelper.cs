@@ -397,20 +397,29 @@ public static class MeshCombineHelper
         yield return target;
     }
 
-    public static GameObject CombineEx(MeshCombineArg source, MeshCombineMode mode = MeshCombineMode.OneMesh)
+    public static GameObject CombineEx(MeshCombineArg arg, MeshCombineMode mode = MeshCombineMode.OneMesh)
     {
-        if(mode== MeshCombineMode.OneMesh)
+        EditorHelper.UnpackPrefab(arg.source);
+        Transform parent = arg.source.transform.parent;
+        arg.source.transform.parent = null;
+
+        GameObject result = null;
+        if (mode== MeshCombineMode.OneMesh)
         {
-            return CombineInner_One(source);
+            result= CombineInner_One(arg);
         }
         else //if(mode == MeshCombineMode.MultiByMat)
         {
             int count=0;
-            return CombineInner_Multi(source,out count);
+            result= CombineInner_Multi(arg,out count);
         }
         //else{
         //    return SimpleCombine(source,null);
         //}
+        arg.source.transform.parent = parent;
+        result.transform.parent = parent;
+
+        return result;
     }
 
     public static IEnumerator CombineEx_Coroutine(MeshCombineArg source,bool isDestroy,int waitCount, MeshCombineMode mode = MeshCombineMode.OneMesh)
@@ -490,7 +499,7 @@ public class MeshCombineArg
 {
     public string prefix = "";
     public string sourceName;
-    private GameObject source;
+    public GameObject source;
 
     public MeshCombineArg(GameObject sour)
     {
