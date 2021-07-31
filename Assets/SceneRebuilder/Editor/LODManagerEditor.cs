@@ -78,13 +78,17 @@ public class LODManagerEditor : BaseFoldoutEditor<LODManager>
         {
             item.AppendLod3ToGroup();
         }
+        if (GUILayout.Button("SetColor"))
+        {
+            item.SetAppendLod3Color();
+        }
         EditorGUILayout.EndHorizontal();
 
         twoListArg.caption = $"TwoObject List";
         EditorUIUtils.ToggleFoldout(twoListArg, arg =>
         {
             var doors = item.twoList;
-            arg.caption = $"TwoObject List ({doors.Count})";
+            arg.caption = $"TwoObject List ({doors.Count}) ({item.LODRendererCount0})({item.LODRendererCount1})";
             //arg.info = $"{doors.VertexCount_Show / 10000f:F0}/{doors.VertexCount / 10000f:F0}";
             InitEditorArg(doors);
         },
@@ -115,7 +119,7 @@ public class LODManagerEditor : BaseFoldoutEditor<LODManager>
                     return;
                 }
                 var arg = editorArgs[door];
-                arg.caption = $"[{i:00}] {door.renderer_lod1.name} <{door.dis:F3}|{door.meshDis:F3}> {door.renderer_lod0.name}";
+                arg.caption = $"[{i:00}] {door.renderer_lod1.name}({door.vertexCount1}) <{door.dis:F3}|{door.meshDis:F3}> {door.renderer_lod0.name}({door.vertexCount0})";
                 //arg.info = door.ToString();
                 EditorUIUtils.ObjectFoldout(arg, door.renderer_lod1, () =>
                 {

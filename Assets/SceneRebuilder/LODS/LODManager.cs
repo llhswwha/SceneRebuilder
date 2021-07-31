@@ -104,6 +104,10 @@ public class LODManager : SingletonBehaviour<LODManager>
         DateTime start = DateTime.Now;
         var renderers_2 = LODnRoot.GetComponentsInChildren<MeshRenderer>(true);
         var renderers_0 = MeshRendererInfo.GetLodNs(GroupRoot,-1,0);
+
+        LODRendererCount0 = renderers_0.Count;
+        LODRendererCount1 = renderers_2.Length;
+
         List<MeshRendererInfo> list_lod0 = new List<MeshRendererInfo>();
         list_lod0.AddRange(renderers_0);
         //renderers_0.ToList().ForEach(i => { ts.Add(i.transform); });
@@ -155,13 +159,13 @@ public class LODManager : SingletonBehaviour<LODManager>
                     }
                 }
 
-                twoList.Add(new TwoRenderers(render_lod0, render_lod1, minDis, min.meshDis));
+                twoList.Add(new TwoRenderers(render_lod0, render_lod1, minDis, min.meshDis, vertexCount0, vertexCount1));
             }
             else
             {
                 Debug.LogWarning($"GetDistance1 \tLOD3:{render_lod1.name}({vertexCount1}) \tLOD0:{render_lod0.name}({vertexCount0}) \tDistance:{minDis} \t{(float)vertexCount1 / vertexCount0:P2}");
 
-                twoList.Add(new TwoRenderers(render_lod0, render_lod1, minDis, min.meshDis));
+                twoList.Add(new TwoRenderers(render_lod0, render_lod1, minDis, min.meshDis, vertexCount0, vertexCount1));
             }
         }
         ProgressBarHelper.ClearProgressBar();
@@ -194,6 +198,18 @@ public class LODManager : SingletonBehaviour<LODManager>
     public void AppendLod3ToGroup()
     {
         AppendLodInner(3);
+    }
+
+    public void SetAppendLod3Color()
+    {
+        foreach(var item in twoList)
+        {
+            if(item.dis< zeroDistance)
+            {
+                //item.renderer_lod1.sharedMaterial = item.renderer_lod0.sharedMaterial;
+                item.renderer_lod1.sharedMaterials = item.renderer_lod0.sharedMaterials;
+            }
+        }
     }
 
 #endif
@@ -300,16 +316,24 @@ public class LODManager : SingletonBehaviour<LODManager>
 
         public float meshDis;
 
-        public TwoRenderers(MeshRenderer lod0, MeshRenderer lod1,float d, float meshD)
+        public int vertexCount0 ;
+        public int vertexCount1 ;
+
+        public TwoRenderers(MeshRenderer lod0, MeshRenderer lod1,float d, float meshD, int vertexCount0, int vertexCount1)
         {
             renderer_lod0 = lod0;
             renderer_lod1 = lod1;
             dis = d;
             meshDis = meshD;
+            this.vertexCount0 = vertexCount0;
+            this.vertexCount1 = vertexCount1;
         }
     }
 
     public List<TwoRenderers> twoList = new List<TwoRenderers>();
+
+    public int LODRendererCount0;
+    public int LODRendererCount1;
 
     public bool DoCreateGroup = false;
 
