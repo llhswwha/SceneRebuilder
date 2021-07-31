@@ -63,6 +63,7 @@ public class LODManagerEditor : BaseFoldoutEditor<LODManager>
         EditorGUILayout.BeginHorizontal();
         GUILayout.Label("ZeroDistance:");
         lodManager.zeroDistance = EditorGUILayout.FloatField(lodManager.zeroDistance);
+        lodManager.compareMode = (LODCompareMode)EditorGUILayout.EnumPopup(lodManager.compareMode);
         lodManager.DoCreateGroup = GUILayout.Toggle(lodManager.DoCreateGroup, "CreateGroup");
         EditorGUILayout.EndHorizontal();
 
@@ -99,7 +100,8 @@ public class LODManagerEditor : BaseFoldoutEditor<LODManager>
             var list = targetT.twoList;
             if (!string.IsNullOrEmpty(searchKey))
             {
-                list = list.Where(i => i.renderer_lod1.name.Contains(searchKey)).ToList();
+                //list = list.Where(i => i != null && i.renderer_lod1 != null && i.renderer_lod1.name.Contains(searchKey)).ToList();
+                list = list.Where(i => i.GetCaption().Contains(searchKey)).ToList();
             }
             twoListArg.Items = list;
             arg.caption = $"TwoObject List ({list.Count}) ({lodManager.LODRendererCount0})({lodManager.LODRendererCount1})";
@@ -126,10 +128,12 @@ public class LODManagerEditor : BaseFoldoutEditor<LODManager>
             //}
             //EditorGUILayout.EndHorizontal();
             var list = twoListArg.Items;
-            if (!string.IsNullOrEmpty(searchKey))
-            {
-                list = list.Where(i => i.renderer_lod1.name.Contains(searchKey)).ToList();
-            }
+            //if (!string.IsNullOrEmpty(searchKey))
+            //{
+            //    //list = list.Where(i => i.renderer_lod1.name.Contains(searchKey)).ToList();
+            //    //list = list.Where(i => i.GetCaption().Contains(searchKey)).ToList();
+            //    list = list.Where(i => i.isSameName).ToList();
+            //}
             InitEditorArg(list);
             twoListArg.DrawPageToolbar(list, (item, i) =>
             {
@@ -139,19 +143,30 @@ public class LODManagerEditor : BaseFoldoutEditor<LODManager>
                     return;
                 }
                 var arg = editorArgs[item];
-                arg.caption = $"[{i:00}] {item.renderer_lod1.name}({item.vertexCount1}) <{item.dis:F3}|{item.meshDis:F3}> {item.renderer_lod0.name}({item.vertexCount0})";
+                arg.caption = $"[{i:00}] {item.GetCaption()}";
                 //arg.info = door.ToString();
                 EditorUIUtils.ObjectFoldout(arg, item.renderer_lod1, () =>
                 {
+                    if (GUILayout.Button("Debug", GUILayout.Width(50)))
+                    {
+                        //lodManager.AddLOD2(item.renderer_lod0, item.renderer_lod1);
+                        float dis1 = Vector3.Distance(item.renderer_lod0.transform.position, item.renderer_lod1.transform.position);
+                        float dis2 = LODManager.GetCenterDistance(item.renderer_lod0.gameObject, item.renderer_lod1.gameObject);
+                        float dis3 = MeshHelper.GetAvgVertexDistanceEx(item.renderer_lod0.transform, item.renderer_lod1.transform);
+                        Debug.Log($"Debug lod0:{item.renderer_lod0.name} lod1:{item.renderer_lod1.name} dis1:{dis1} dis2:{dis2} dis3:{dis3}");
+                        var min = lodManager.GetMinInfo(item.renderer_lod1.transform);
+                        Debug.Log($"dis:{min.dis} meshDis:{min.meshDis} target:{min.target}");
+
+                    }
                     if (GUILayout.Button("Add", GUILayout.Width(50)))
                     {
                         lodManager.AddLOD2(item.renderer_lod0, item.renderer_lod1);
                     }
-                    if (GUILayout.Button("P", GUILayout.Width(50)))
-                    {
-                        //EditorHelper.SelectObject(door.renderer_lod0);
-                        item.renderer_lod1.transform.SetParent(item.renderer_lod0.transform);
-                    }
+                    //if (GUILayout.Button("P", GUILayout.Width(50)))
+                    //{
+                    //    //EditorHelper.SelectObject(door.renderer_lod0);
+                    //    item.renderer_lod1.transform.SetParent(item.renderer_lod0.transform);
+                    //}
                     if (GUILayout.Button("LOD0", GUILayout.Width(50)))
                     {
                         EditorHelper.SelectObject(item.renderer_lod0);

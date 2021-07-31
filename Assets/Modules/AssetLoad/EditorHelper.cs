@@ -149,6 +149,7 @@ public static class EditorHelper
 
     public static void UnpackPrefab(GameObject go, PrefabUnpackMode unpackMode)
     {
+        if (go == null) return;
         GameObject root = PrefabUtility.GetOutermostPrefabInstanceRoot(go);
         if (root != null)
         {

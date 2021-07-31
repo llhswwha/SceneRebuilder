@@ -95,6 +95,16 @@ public class LODManager : SingletonBehaviour<LODManager>
         newObj.name += "_" + percent;
         return renderer;
     }
+
+    public List<MeshRendererInfo> list_lod0 = new List<MeshRendererInfo>();
+
+    public LODCompareMode compareMode = LODCompareMode.Name;
+
+    public MinDisTarget<MeshRendererInfo> GetMinInfo(Transform t)
+    {
+        var min = GetMinDisTransform<MeshRendererInfo>(list_lod0, t, compareMode);
+        return min;
+    }
 #if UNITY_EDITOR
     private void AppendLodInner(int lodLevel)
     {
@@ -108,7 +118,7 @@ public class LODManager : SingletonBehaviour<LODManager>
         LODRendererCount0 = renderers_0.Count;
         LODRendererCount1 = renderers_2.Length;
 
-        List<MeshRendererInfo> list_lod0 = new List<MeshRendererInfo>();
+        list_lod0 = new List<MeshRendererInfo>();
         list_lod0.AddRange(renderers_0);
         //renderers_0.ToList().ForEach(i => { ts.Add(i.transform); });
         for (int i = 0; i < renderers_2.Length; i++)
@@ -118,7 +128,7 @@ public class LODManager : SingletonBehaviour<LODManager>
             float progress = (float)i / renderers_2.Length;
             ProgressBarHelper.DisplayCancelableProgressBar("CombineLOD0AndLOD1", $"{i}/{renderers_2.Length} {progress:P1} MeshRenderer:{render_lod1.name}", progress);
 
-            var min = GetMinDisTransform<MeshRendererInfo>(list_lod0, render_lod1.transform);
+            var min = GetMinDisTransform<MeshRendererInfo>(list_lod0, render_lod1.transform, compareMode);
             float minDis = min.dis;
             MeshRenderer render_lod0 = min.target.meshRenderer;
 
@@ -133,7 +143,7 @@ public class LODManager : SingletonBehaviour<LODManager>
                     if (vertexCount1 == vertexCount0)
                     {
                         //GameObject.DestroyImmediate(filter1.gameObject);
-                        render_lod1 = CreateSimplifier(render_lod0, 0.5f);
+                        render_lod1 = CreateSimplifier(render_lod0, 0.7f);
                         GameObject.DestroyImmediate(filter1.gameObject);
                     }
 
@@ -230,7 +240,7 @@ public class LODManager : SingletonBehaviour<LODManager>
         }
     }
 
-    private float GetCenterDistance(GameObject go1,GameObject go2)
+    public static float GetCenterDistance(GameObject go1,GameObject go2)
     {
         MeshRendererInfo info0 = MeshRendererInfo.GetInfo(go1);
         var center0 = info0.center;
@@ -240,57 +250,94 @@ public class LODManager : SingletonBehaviour<LODManager>
         return distance;
     }
 
-    private MinDisTarget<T> GetMinDisTransform<T>(List<T> ts,Transform t) where T : Component
+    private MinDisTarget<T> GetMinDisTransformInner<T>(List<T> ts, Transform t) where T : Component
     {
         float minDis = float.MaxValue;
-        float minDisEx = float.MaxValue;
-        T minT = null;
-        T minTEx = null;
+        float minDisOffCenter = float.MaxValue;
+        float minDisOfMesh = float.MaxValue;
+        List<T> minTList = new List<T>();
+        List<T> minTExList = new List<T>();
         foreach (var item in ts)
         {
             float distance = Vector3.Distance(item.transform.position, t.position);
 
             //float distance = GetCenterDistance(item.gameObject, t.gameObject);
 
-            if (distance < 1)
-            {
-                float distance2 = MeshHelper.GetAvgVertexDistanceEx(item.transform, t);
-                if (distance2 < minDisEx)
-                {
-                    minDisEx = distance2;
-                    minTEx = item;
-                }
-            }
+            //if (distance < 1)
+            //{
+            //    float distance2 = MeshHelper.GetAvgVertexDistanceEx(item.transform, t);
+            //    if (distance2 < minDisOfMesh)
+            //    {
+            //        minDisOfMesh = distance2;
+            //        minTExList = new List<T>() { item };
+            //    }
+            //    else if (distance2 == minDisOfMesh)
+            //    {
+            //        minTExList.Add(item);
+            //    }
+            //}
 
             //float distance = distance2;
             if (distance < minDis)
             {
                 minDis = distance;
-                minT = item;
+                minTList = new List<T>() { item };
+                minDisOfMesh = MeshHelper.GetAvgVertexDistanceEx(item.transform, t);
+            }
+            else if (distance == minDisOfMesh)
+            {
+                minTList.Add(item);
             }
         }
 
-        float distance3 = MeshHelper.GetAvgVertexDistanceEx(minT.transform, t);
-        if (distance3 < minDisEx)
+        T minT = minTList[0];
+        T minTEx = null;
+        if (minTExList.Count > 0)
         {
-            minDisEx = distance3;
-            minTEx = minT;
+            minTEx = minTExList[0];
         }
+
+        //float distance3 = MeshHelper.GetAvgVertexDistanceEx(minT.transform, t);
+        //if (distance3 < minDisOfMesh)
+        //{
+        //    minDisOfMesh = distance3;
+        //    minTEx = minT;
+        //}
 
         if (minTEx == null)
         {
             minTEx = minT;
         }
-        //float dis4 = GetCenterDistance(minTEx.gameObject, t.gameObject);
 
-        //minDisEx = MeshHelper.GetAvgVertexDistanceEx(minT.transform, t);
-        //if (distance3 < minDisEx)
-        //{
-        //    minDisEx = distance3;
-        //    minTEx = minT;
-        //}
+        return new MinDisTarget<T>(minDis, minDisOfMesh, minTEx);
+    }
 
-        return new MinDisTarget<T>(minDis,minDisEx, minTEx);
+    private MinDisTarget<T> GetMinDisTransform<T>(List<T> ts,Transform t, LODCompareMode mode) where T : Component
+    {
+        //1.Find SameName
+        //2.Find Closed
+        List<T> ts0 = ts;
+        if (mode == LODCompareMode.Name)
+        {
+            var ts2 = ts.FindAll(i => i.name == t.name);
+            if (ts2.Count > 0)
+            {
+                ts = ts2;
+            }
+        }
+
+        MinDisTarget<T> min = GetMinDisTransformInner(ts, t); 
+
+        if (min.dis > 0.01f)
+        {
+            min=GetMinDisTransformInner(ts0, t);
+        }
+        else
+        {
+            ts0.Remove(min.target);
+        }
+
+        return min;
     }
 
     private void RemoveEmpty(Transform root)
@@ -768,6 +815,11 @@ public class LODManager : SingletonBehaviour<LODManager>
     }
 }
 
+public enum LODCompareMode
+{
+    Name,DisOfPosition,DisOfCenter,DisOfMesh
+}
+
 public static class LODHelper
 {
     public static LOD[] CreateLODs(float[] ls)
@@ -807,6 +859,8 @@ public class LODTwoRenderers
     public int vertexCount0;
     public int vertexCount1;
 
+    public bool isSameName = false;
+
     public LODTwoRenderers(MeshRenderer lod0, MeshRenderer lod1, float d, float meshD, int vertexCount0, int vertexCount1)
     {
         renderer_lod0 = lod0;
@@ -815,5 +869,13 @@ public class LODTwoRenderers
         meshDis = meshD;
         this.vertexCount0 = vertexCount0;
         this.vertexCount1 = vertexCount1;
+
+        this.isSameName = renderer_lod0.name == renderer_lod1.name;
+    }
+
+    public string GetCaption()
+    {
+        if (this.renderer_lod1 == null || this.renderer_lod0 == null) return "";
+        return $"[{this.renderer_lod1.name == this.renderer_lod0.name}] {this.renderer_lod1.name}({this.vertexCount1}) <{this.dis:F5}|{this.meshDis:F5}> {this.renderer_lod0.name}({this.vertexCount0})";
     }
 }
