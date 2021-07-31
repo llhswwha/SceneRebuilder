@@ -68,10 +68,38 @@ public class MeshCombiner : MonoBehaviour
             GameObject.DestroyImmediate(result);
         }
         resultList = new List<GameObject>();
-        if (combineArg != null)
+        foreach(var combineArg in combineArgs)
         {
-            combineArg.ShowRendererers();
+            if (combineArg != null)
+            {
+                combineArg.ShowRendererers();
+            }
         }
+        combineArgs.Clear();
+    }
+
+    public void SaveResult()
+    {
+        DateTime start = DateTime.Now;
+        for (int i = 0; i < resultList.Count; i++)
+        {
+            GameObject result = resultList[i];
+            if (result == null) continue;
+            GameObject source = sourceList[i];
+
+            float progress = (float)i / resultList.Count;
+            if (ProgressBarHelper.DisplayCancelableProgressBar("CombineEx", $"{i}/{resultList.Count} {progress:P1} source:{result.name}", progress))
+            {
+                break;
+            }
+
+            
+            EditorHelper.SaveMeshAsset(source, result);
+        }
+
+        ProgressBarHelper.ClearProgressBar();
+
+        Debug.Log($"SaveResult resultList:{resultList.Count} time:{DateTime.Now - start}");
     }
 
     private void Combine(MeshCombineMode mode)
@@ -118,7 +146,8 @@ public class MeshCombiner : MonoBehaviour
                 }
                 else
                 {
-                    combineArg = new MeshCombineArg(source);
+                    var combineArg = new MeshCombineArg(source);
+                    combineArgs.Add(combineArg);
                     GameObject target = MeshCombineHelper.CombineEx(combineArg, mode);
                     resultList.Add(target);
                     Debug.Log("Combine:" + source + "->" + target);
@@ -135,7 +164,7 @@ public class MeshCombiner : MonoBehaviour
         }
     }
 
-    public MeshCombineArg combineArg = null;
+    public List<MeshCombineArg> combineArgs = new List<MeshCombineArg>();
 
     private void InitSourceList()
     {
@@ -195,48 +224,48 @@ public class MeshCombiner : MonoBehaviour
         Combine(MeshCombineMode.OneMesh);
     }
 
-    public bool AutoAdd;
+    //public bool AutoAdd;
 
-    public List<GameObject> mergedObjs=new List<GameObject>();
+    //public List<GameObject> mergedObjs=new List<GameObject>();
 
-    public GameObject mergedObjRoot=null;
+    //public GameObject mergedObjRoot=null;
 
-    public GameObject mergedObj=null;
+    //public GameObject mergedObj=null;
 
-    // Update is called once per frame
-    void Update()
-    {
-        // if(Input.GetMouseButtonUp(0)){
-        //     Debug.Log("Click");
-        //     Ray ray=Camera.main.ScreenPointToRay(Input.mousePosition);
-        //     RaycastHit hit;
-        //     if(Physics.Raycast(ray,out hit))
-        //     {
-        //         GameObject go=hit.collider.gameObject;
-        //         Debug.Log("Hit:"+go);
-        //         if(AutoAdd){
-        //             if(!mergedObjs.Contains(go)){
-        //                 if(mergedObjRoot==null){
-        //                     mergedObjRoot=new GameObject();
-        //                     mergedObjRoot.name="mergedObjRoot";
-        //                 }
+    //// Update is called once per frame
+    //void Update()
+    //{
+    //    // if(Input.GetMouseButtonUp(0)){
+    //    //     Debug.Log("Click");
+    //    //     Ray ray=Camera.main.ScreenPointToRay(Input.mousePosition);
+    //    //     RaycastHit hit;
+    //    //     if(Physics.Raycast(ray,out hit))
+    //    //     {
+    //    //         GameObject go=hit.collider.gameObject;
+    //    //         Debug.Log("Hit:"+go);
+    //    //         if(AutoAdd){
+    //    //             if(!mergedObjs.Contains(go)){
+    //    //                 if(mergedObjRoot==null){
+    //    //                     mergedObjRoot=new GameObject();
+    //    //                     mergedObjRoot.name="mergedObjRoot";
+    //    //                 }
 
-        //                 mergedObjs.Add(go);
-        //                 go.transform.SetParent(mergedObjRoot.transform);
+    //    //                 mergedObjs.Add(go);
+    //    //                 go.transform.SetParent(mergedObjRoot.transform);
 
-        //                 mergedObj=MeshCombineHelper.SimpleCombine(mergedObjRoot,mergedObj);
-        //                 mergedObj.transform.SetParent(this.transform);
-        //             }
-        //         }
-        //         if(AutoRemove){
-        //             MeshCombineHelper.RemveGo(go);
-        //         }
-        //     }
-        // }
-    }
+    //    //                 mergedObj=MeshCombineHelper.SimpleCombine(mergedObjRoot,mergedObj);
+    //    //                 mergedObj.transform.SetParent(this.transform);
+    //    //             }
+    //    //         }
+    //    //         if(AutoRemove){
+    //    //             MeshCombineHelper.RemveGo(go);
+    //    //         }
+    //    //     }
+    //    // }
+    //}
 
     
-    public bool AutoRemove;
+    //public bool AutoRemove;
 
 
     [ContextMenu("ShowRenderers")]

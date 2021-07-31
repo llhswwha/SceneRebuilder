@@ -520,6 +520,7 @@ public class MeshCombineArg
         {
             foreach(var renderer in renderers)
             {
+                if (renderer == null) continue;
                 renderer.enabled = true;
             }
         }

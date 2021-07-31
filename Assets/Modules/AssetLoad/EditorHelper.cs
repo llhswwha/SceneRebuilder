@@ -22,21 +22,79 @@ public static class EditorHelper
 {
 #if UNITY_EDITOR
 
-    public static void SaveMeshAsset(string dir,GameObject go,MeshFilter[] meshFilters)
+    public static string GetMeshAssetDir(GameObject source)
     {
-        string assetName = go.name + go.GetInstanceID();
+        if (source != null)
+        {
+            MeshFilter[] meshFilters = source.GetComponentsInChildren<MeshFilter>(true);
+            foreach (var meshFilter in meshFilters)
+            {
+                if (UnityEditor.AssetDatabase.Contains(meshFilter.sharedMesh))
+                {
+                    string path = UnityEditor.AssetDatabase.GetAssetPath(meshFilter.sharedMesh);
+                    string parentDir = EditorHelper.getParentPath(path);
+                    Debug.Log($"GetMeshAssetDir sharedMesh:{meshFilter.sharedMesh}\npath:{path}\nparentDir:{parentDir}");
+                    //isAllCreated = false;
 
-        string meshPath = dir + "/" + assetName + ".asset";
+                    //return false;
 
-        bool isAllCreated = true;
+                    return parentDir+ "/MeshAssets";
+                }
+            }
+        }
+
+        return "Assets/Models/MeshAssets";
+    }
+
+    public static void SaveMeshAsset(GameObject source, GameObject go)
+    {
+        string dir = GetMeshAssetDir(source); ;
+        SaveMeshAsset(dir, go);
+    }
+
+    public static void SaveMeshAsset(string dir, GameObject go)
+    {
+        MeshFilter[] meshFilters = go.GetComponentsInChildren<MeshFilter>(true);
+        SaveMeshAsset(dir, go, meshFilters);
+    }
+
+    private static bool IsAllMeshCreated(MeshFilter[] meshFilters)
+    {
+        //bool isAllCreated = false;
         for (int i = 0; i < meshFilters.Length; i++)
         {
             MeshFilter meshFilter = meshFilters[i];
-            if (UnityEditor.AssetDatabase.Contains(meshFilter.sharedMesh))
+
+            if (!UnityEditor.AssetDatabase.Contains(meshFilter.sharedMesh))
             {
-                isAllCreated = false;
+                string path = UnityEditor.AssetDatabase.GetAssetPath(meshFilter.sharedMesh);
+                Debug.Log($"SaveMeshAsset[{i}] sharedMesh:{meshFilter.sharedMesh},path:{path}");
+                //isAllCreated = false;
+
+                return false;
+            }
+            else
+            {
+                
             }
         }
+        return true;
+    }
+
+    public static void SaveMeshAsset(string dir,GameObject go,MeshFilter[] meshFilters)
+    {
+        makeParentDirExist(dir+"/");
+
+        string assetName = go.name + go.GetInstanceID();
+
+        string meshPath = dir + "/" + assetName + ".asset";
+        if (meshFilters.Length == 0)
+        {
+            Debug.LogWarning($"SaveMeshAsset meshFilters.Length == 0 assetName:{assetName} meshFilters:{meshFilters.Length}");
+            return;
+        }
+
+        bool isAllCreated = IsAllMeshCreated(meshFilters);
         if (isAllCreated)
         {
             Debug.LogWarning($"SaveMeshAsset isAllCreated:{isAllCreated} assetName:{assetName} meshFilters:{meshFilters.Length}");
@@ -67,7 +125,7 @@ public static class EditorHelper
 #if UNITY_EDITOR
         if (bAssetAlreadyCreated == false && UnityEditor.AssetDatabase.Contains(assetObj) == false)
         {
-            Debug.LogError($"CreateAsset:{strFile}");
+            Debug.Log($"CreateAsset:{strFile}");
             UnityEditor.AssetDatabase.CreateAsset(assetObj, strFile);
             bAssetAlreadyCreated = true;
         }
@@ -75,7 +133,7 @@ public static class EditorHelper
         {
             if (UnityEditor.AssetDatabase.Contains(assetObj) == false)
             {
-                Debug.LogError($"AddObjectToAsset:{strFile}");
+                Debug.Log($"AddObjectToAsset:{strFile}");
                 UnityEditor.AssetDatabase.AddObjectToAsset(assetObj, strFile);
                 UnityEditor.AssetDatabase.ImportAsset(UnityEditor.AssetDatabase.GetAssetPath(assetObj));
             }
