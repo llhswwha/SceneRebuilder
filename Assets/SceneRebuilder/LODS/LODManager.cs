@@ -88,10 +88,10 @@ public class LODManager : SingletonBehaviour<LODManager>
 
     public GameObject LODnRoot;
 
-    public MeshRenderer CreateSimplifier(MeshRenderer lod0,float percent)
+    public MeshRendererInfo CreateSimplifier(MeshRendererInfo lod0,float percent)
     {
         GameObject newObj = MeshHelper.CopyGO(lod0.gameObject);
-        MeshRenderer renderer = newObj.GetComponent<MeshRenderer>();
+        MeshRendererInfo renderer = newObj.GetComponent<MeshRendererInfo>();
         newObj.name += "_" + percent;
         return renderer;
     }
@@ -112,7 +112,7 @@ public class LODManager : SingletonBehaviour<LODManager>
         EditorHelper.UnpackPrefab(GroupRoot, PrefabUnpackMode.OutermostRoot);
         EditorHelper.UnpackPrefab(LODnRoot, PrefabUnpackMode.OutermostRoot);
         DateTime start = DateTime.Now;
-        var renderers_2 = LODnRoot.GetComponentsInChildren<MeshRenderer>(true);
+        var renderers_2 = MeshRendererInfo.GetInfos(LODnRoot);//  LODnRoot.GetComponentsInChildren<MeshRenderer>(true);
         var renderers_0 = MeshRendererInfo.GetLodNs(GroupRoot,-1,0);
 
         LODRendererCount0 = renderers_0.Count;
@@ -123,19 +123,19 @@ public class LODManager : SingletonBehaviour<LODManager>
         //renderers_0.ToList().ForEach(i => { ts.Add(i.transform); });
         for (int i = 0; i < renderers_2.Length; i++)
         {
-            MeshRenderer render_lod1 = renderers_2[i];
+            MeshRendererInfo render_lod1 = renderers_2[i];
 
             float progress = (float)i / renderers_2.Length;
             ProgressBarHelper.DisplayCancelableProgressBar("CombineLOD0AndLOD1", $"{i}/{renderers_2.Length} {progress:P1} MeshRenderer:{render_lod1.name}", progress);
 
             var min = GetMinDisTransform<MeshRendererInfo>(list_lod0, render_lod1.transform, compareMode);
             float minDis = min.dis;
-            MeshRenderer render_lod0 = min.target.meshRenderer;
+            MeshRendererInfo render_lod0 = min.target;
 
-            MeshFilter filter1 = render_lod1.GetComponent<MeshFilter>();
-            MeshFilter filter0 = render_lod0.GetComponent<MeshFilter>();
-            int vertexCount0 = filter0.sharedMesh.vertexCount;
-            int vertexCount1 = filter1.sharedMesh.vertexCount;
+            //MeshFilter filter1 = render_lod1.GetComponent<MeshFilter>();
+            //MeshFilter filter0 = render_lod0.GetComponent<MeshFilter>();
+            int vertexCount0 = render_lod0.GetVertexCount();
+            int vertexCount1 = render_lod1.GetVertexCount();
             if (minDis <= zeroDistance)
             {
                 if (DoCreateGroup)
@@ -144,7 +144,7 @@ public class LODManager : SingletonBehaviour<LODManager>
                     {
                         //GameObject.DestroyImmediate(filter1.gameObject);
                         render_lod1 = CreateSimplifier(render_lod0, 0.7f);
-                        GameObject.DestroyImmediate(filter1.gameObject);
+                        GameObject.DestroyImmediate(render_lod1.gameObject);
                     }
 
                     //else
@@ -216,8 +216,7 @@ public class LODManager : SingletonBehaviour<LODManager>
         {
             if(item.dis< zeroDistance)
             {
-                //item.renderer_lod1.sharedMaterial = item.renderer_lod0.sharedMaterial;
-                item.renderer_lod1.sharedMaterials = item.renderer_lod0.sharedMaterials;
+                item.SetColor();
             }
         }
     }
@@ -433,7 +432,7 @@ public class LODManager : SingletonBehaviour<LODManager>
     //    return twoList;
     //}
 
-    public void AddLOD3(MeshRenderer lod0, MeshRenderer lod2)
+    public void AddLOD3(MeshRendererInfo lod0, MeshRendererInfo lod2)
     {
         lod2.transform.SetParent(lod0.transform);
         LODGroup group = lod0.GetComponent<LODGroup>();
@@ -448,7 +447,7 @@ public class LODManager : SingletonBehaviour<LODManager>
             List<Renderer> renderers = new List<Renderer>();
             if (lodsNew[lodsNew.Length - 1].renderers != null)
                 renderers.AddRange(lodsNew[lodsNew.Length - 1].renderers);
-            renderers.Add(lod2);
+            renderers.AddRange(lod2.GetRenderers());
             lodsNew[lodsNew.Length - 1].renderers = renderers.ToArray();
             group.SetLODs(lodsNew);
         }
@@ -456,15 +455,15 @@ public class LODManager : SingletonBehaviour<LODManager>
         {
             group = lod0.gameObject.AddComponent<LODGroup>();
             LOD[] lods = new LOD[3];
-            lods[0] = new LOD(LODLevels_3[0], new Renderer[1] { lod0 });
-            lods[1] = new LOD(LODLevels_3[1], new Renderer[1] { lod0 });
-            lods[2] = new LOD(LODLevels_3[2], new Renderer[1] { lod2 });
-            lods[3] = new LOD(LODLevels_3[3], new Renderer[1] { lod2 });
+            lods[0] = new LOD(LODLevels_3[0], lod0.GetRenderers());
+            lods[1] = new LOD(LODLevels_3[1], lod0.GetRenderers());
+            lods[2] = new LOD(LODLevels_3[2], lod2.GetRenderers());
+            lods[3] = new LOD(LODLevels_3[3], lod2.GetRenderers());
             group.SetLODs(lods);
         }
     }
 
-    public void AddLOD2(MeshRenderer lod0, MeshRenderer lod2)
+    public void AddLOD2(MeshRendererInfo lod0, MeshRendererInfo lod2)
     {
         lod2.transform.SetParent(lod0.transform);
         LODGroup group = lod0.GetComponent<LODGroup>();
@@ -479,7 +478,7 @@ public class LODManager : SingletonBehaviour<LODManager>
             List<Renderer> renderers = new List<Renderer>();
             if(lodsNew[lodsNew.Length - 1].renderers!=null)
                 renderers.AddRange(lodsNew[lodsNew.Length - 1].renderers);
-            renderers.Add(lod2);
+            renderers.AddRange(lod2.GetRenderers());
             lodsNew[lodsNew.Length - 1].renderers = renderers.ToArray();
             group.SetLODs(lodsNew);
         }
@@ -487,9 +486,9 @@ public class LODManager : SingletonBehaviour<LODManager>
         {
             group = lod0.gameObject.AddComponent<LODGroup>();
             LOD[] lods = new LOD[3];
-            lods[0] = new LOD(LODLevels_2[0], new Renderer[1] { lod0 });
-            lods[1] = new LOD(LODLevels_2[1], new Renderer[1] { lod0 });
-            lods[2] = new LOD(LODLevels_2[2], new Renderer[1] { lod2 });
+            lods[0] = new LOD(LODLevels_2[0], lod0.GetRenderers());
+            lods[1] = new LOD(LODLevels_2[1], lod0.GetRenderers());
+            lods[2] = new LOD(LODLevels_2[2], lod2.GetRenderers());
             group.SetLODs(lods);
         }
     }
@@ -518,7 +517,7 @@ public class LODManager : SingletonBehaviour<LODManager>
         }
     }
 
-    public void AddLOD1(MeshRenderer lod0,MeshRenderer lod1)
+    public void AddLOD1(MeshRendererInfo lod0, MeshRendererInfo lod1)
     {
         LODGroup lODGroup = lod0.GetComponent<LODGroup>();
         if (lODGroup == null)
@@ -526,10 +525,10 @@ public class LODManager : SingletonBehaviour<LODManager>
             lODGroup = lod0.gameObject.AddComponent<LODGroup>();
         }
         LOD[] lods = new LOD[2];
-        lods[0] = new LOD(LODLevels_1[0], new Renderer[1] { lod0 });     //LOD0 >50% 
+        lods[0] = new LOD(LODLevels_1[0], lod0.GetRenderers());     //LOD0 >50% 
                                                                       //lods[1]=new LOD(0.2f,new Renderer[1]{render1});         //LOD1  > 20% - 50% 
                                                                       // lods[2]=new LOD(0.1f,new Renderer[1]{render1});         //LOD2  > 10% - 20% 
-        lods[1] = new LOD(LODLevels_1[1], new Renderer[1] { lod1 });        //LOD3  > 1% - 10% 
+        lods[1] = new LOD(LODLevels_1[1], lod1.GetRenderers());        //LOD3  > 1% - 10% 
                                                                       //Culled > 0% - 1%
         lODGroup.SetLODs(lods);
     }
@@ -850,8 +849,8 @@ public static class LODHelper
 [Serializable]
 public class LODTwoRenderers
 {
-    public MeshRenderer renderer_lod0;
-    public MeshRenderer renderer_lod1;
+    public MeshRendererInfo renderer_lod0;
+    public MeshRendererInfo renderer_lod1;
     public float dis;
 
     public float meshDis;
@@ -861,7 +860,7 @@ public class LODTwoRenderers
 
     public bool isSameName = false;
 
-    public LODTwoRenderers(MeshRenderer lod0, MeshRenderer lod1, float d, float meshD, int vertexCount0, int vertexCount1)
+    public LODTwoRenderers(MeshRendererInfo lod0, MeshRendererInfo lod1, float d, float meshD, int vertexCount0, int vertexCount1)
     {
         renderer_lod0 = lod0;
         renderer_lod1 = lod1;
@@ -877,5 +876,64 @@ public class LODTwoRenderers
     {
         if (this.renderer_lod1 == null || this.renderer_lod0 == null) return "";
         return $"[{this.renderer_lod1.name == this.renderer_lod0.name}] {this.renderer_lod1.name}({this.vertexCount1}) <{this.dis:F5}|{this.meshDis:F5}> {this.renderer_lod0.name}({this.vertexCount0})";
+    }
+
+    public void SetColor()
+    {
+        var lod1 = renderer_lod1.meshRenderer;
+        var lod0 = renderer_lod0.meshRenderer;
+        //item.renderer_lod1.sharedMaterial = item.renderer_lod0.sharedMaterial;
+        if (lod1.sharedMaterials.Length == lod0.sharedMaterials.Length)
+        {
+            lod1.sharedMaterials = lod0.sharedMaterials;
+        }
+        else if (lod1.sharedMaterials.Length ==1 && lod0.sharedMaterials.Length==2)
+        {
+            var mats = lod1.sharedMaterials;
+            mats[0] = lod0.sharedMaterials[1];
+            lod1.sharedMaterials = mats;
+        }
+        else
+        {
+            
+
+            Debug.LogError($"SetAppendLod3Color lod1:{lod1.name} lod0:{lod0.name} length1:{lod1.sharedMaterials.Length} length0:{lod0.sharedMaterials.Length}");
+        }
+    }
+
+    public void SetColor1()
+    {
+        var lod1 = renderer_lod1.meshRenderer;
+        var lod0 = renderer_lod0.meshRenderer;
+        //item.renderer_lod1.sharedMaterial = item.renderer_lod0.sharedMaterial;
+        //if (lod1.sharedMaterials.Length == lod0.sharedMaterials.Length)
+        //{
+        lod1.sharedMaterials = lod0.sharedMaterials;
+
+        //}
+        //else
+        //{
+        //    Debug.LogError($"SetAppendLod3Color lod1:{lod1.name} lod0:{lod0.name} length1:{lod1.sharedMaterials.Length} length0:{lod0.sharedMaterials.Length}");
+        //}
+    }
+
+    public void SetColor2()
+    {
+        var lod1 = renderer_lod1.meshRenderer;
+        var lod0 = renderer_lod0.meshRenderer;
+        //item.renderer_lod1.sharedMaterial = item.renderer_lod0.sharedMaterial;
+        //if (lod1.sharedMaterials.Length == lod0.sharedMaterials.Length)
+        //{
+        var mats = lod1.sharedMaterials;
+            for (int i = 0; i < lod1.sharedMaterials.Length; i++)
+            {
+                mats[i] = lod0.sharedMaterials[i];
+            }
+            lod1.sharedMaterials = mats;
+        //}
+        //else
+        //{
+        //    Debug.LogError($"SetAppendLod3Color lod1:{lod1.name} lod0:{lod0.name} length1:{lod1.sharedMaterials.Length} length0:{lod0.sharedMaterials.Length}");
+        //}
     }
 }

@@ -168,6 +168,11 @@ public class CombinedMesh{
             int meshId = mesh.meshIndex;
             Mesh ms = mesh.sharedMesh;
             MeshFilter mf = mesh.meshFilter;
+            if(meshId>=ms.subMeshCount)
+            {
+                Debug.LogError($"CombinedMesh.GetMeshPartInfoList[{i}] mesh:{mesh.sharedMesh.name} id:{meshId} count:{ms.subMeshCount}");
+                meshId = 0;
+            }
 
             //Debug.Log(string.Format("DoCombine[{0}/{1}]:{2}",i,count,VertexCount));
             //int vc=ms.vertexCount;

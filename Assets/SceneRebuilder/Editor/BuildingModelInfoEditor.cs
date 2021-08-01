@@ -239,7 +239,7 @@ public class BuildingModelInfoEditor : BaseFoldoutEditor<BuildingModelInfo>
 
         DrawMeshListEx(meshinfoListArg, () =>
         {
-            MeshRendererInfo.InitRenderers(item.gameObject);
+            MeshRendererInfo.GetInfos(item.gameObject);
 
             List<MeshRendererInfo> meshes = new List<MeshRendererInfo>();
             if (item.InPart)

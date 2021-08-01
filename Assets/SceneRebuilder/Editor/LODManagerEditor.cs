@@ -73,6 +73,19 @@ public class LODManagerEditor : BaseFoldoutEditor<LODManager>
         lodManager.GroupRoot = EditorGUILayout.ObjectField(lodManager.GroupRoot, typeof(GameObject)) as GameObject;
         GUILayout.Label("LOD:");
         lodManager.LODnRoot = EditorGUILayout.ObjectField(lodManager.LODnRoot, typeof(GameObject)) as GameObject;
+
+        if (GUILayout.Button("Show0",GUILayout.Width(50)))
+        {
+            lodManager.GroupRoot.SetActive(true);
+            lodManager.LODnRoot.SetActive(false);
+        }
+        if (GUILayout.Button("Show1", GUILayout.Width(50)))
+        {
+            lodManager.GroupRoot.SetActive(false);
+            lodManager.LODnRoot.SetActive(true);
+        }
+
+
         EditorGUILayout.EndHorizontal();
 
         EditorGUILayout.BeginHorizontal();
@@ -147,7 +160,7 @@ public class LODManagerEditor : BaseFoldoutEditor<LODManager>
                 //arg.info = door.ToString();
                 EditorUIUtils.ObjectFoldout(arg, item.renderer_lod1, () =>
                 {
-                    if (GUILayout.Button("Debug", GUILayout.Width(50)))
+                    if (GUILayout.Button("DebugDis", GUILayout.Width(50)))
                     {
                         //lodManager.AddLOD2(item.renderer_lod0, item.renderer_lod1);
                         float dis1 = Vector3.Distance(item.renderer_lod0.transform.position, item.renderer_lod1.transform.position);
@@ -156,11 +169,18 @@ public class LODManagerEditor : BaseFoldoutEditor<LODManager>
                         Debug.Log($"Debug lod0:{item.renderer_lod0.name} lod1:{item.renderer_lod1.name} dis1:{dis1} dis2:{dis2} dis3:{dis3}");
                         var min = lodManager.GetMinInfo(item.renderer_lod1.transform);
                         Debug.Log($"dis:{min.dis} meshDis:{min.meshDis} target:{min.target}");
-
                     }
-                    if (GUILayout.Button("Add", GUILayout.Width(50)))
+                    //if (GUILayout.Button("Add", GUILayout.Width(50)))
+                    //{
+                    //    lodManager.AddLOD2(item.renderer_lod0, item.renderer_lod1);
+                    //}
+                    if (GUILayout.Button("Color1", GUILayout.Width(50)))
                     {
-                        lodManager.AddLOD2(item.renderer_lod0, item.renderer_lod1);
+                        item.SetColor1();
+                    }
+                    if (GUILayout.Button("Color2", GUILayout.Width(50)))
+                    {
+                        item.SetColor2();
                     }
                     //if (GUILayout.Button("P", GUILayout.Width(50)))
                     //{
