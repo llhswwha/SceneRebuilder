@@ -17,6 +17,7 @@ public class LODManagerUI : MonoBehaviour
     void Start()
     {
         LODManager=GameObject.FindObjectOfType<LODManager>();
+        txtLog.text = LODManager.GetRuntimeLODDetail(true);
         StartCoroutine(UpdateCoroutine());
     }
 

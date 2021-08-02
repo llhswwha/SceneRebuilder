@@ -304,7 +304,7 @@ public class LODLevelCaculateTool : EditorWindow
     private void GetSceneLodGroupInfo()
     {
         if (lodInfos != null) return;
-        lodInfos = LODGroupDetails.GetSceneLodGroupInfo(null);
+        lodInfos = LODGroupDetails.GetSceneLodGroupInfo(null,true);
     }
 
     static bool isCaculate;

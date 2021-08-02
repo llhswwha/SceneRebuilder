@@ -177,7 +177,7 @@ public class MeshRendererInfo : MonoBehaviour
             if (renderer.transform.parent != null)
             {
                 MeshRendererInfoEx parentInfo = renderer.transform.parent.GetComponent<MeshRendererInfoEx>();
-                if (parentInfo.IsLodN(lv))
+                if (parentInfo!=null && parentInfo.IsLodN(lv))
                 {
                     if(!list.Contains(parentInfo))
                         list.Add(parentInfo);
