@@ -84,7 +84,11 @@ public class LODManagerEditor : BaseFoldoutEditor<LODManager>
             lodManager.GroupRoot.SetActive(false);
             lodManager.LODnRoot.SetActive(true);
         }
-
+        if (GUILayout.Button("Show01", GUILayout.Width(60)))
+        {
+            lodManager.GroupRoot.SetActive(true);
+            lodManager.LODnRoot.SetActive(true);
+        }
 
         EditorGUILayout.EndHorizontal();
 
@@ -160,7 +164,7 @@ public class LODManagerEditor : BaseFoldoutEditor<LODManager>
                 //arg.info = door.ToString();
                 EditorUIUtils.ObjectFoldout(arg, item.renderer_lod1, () =>
                 {
-                    if (GUILayout.Button("DebugDis", GUILayout.Width(50)))
+                    if (GUILayout.Button("Debug", GUILayout.Width(50)))
                     {
                         //lodManager.AddLOD2(item.renderer_lod0, item.renderer_lod1);
                         float dis1 = Vector3.Distance(item.renderer_lod0.transform.position, item.renderer_lod1.transform.position);
@@ -170,24 +174,38 @@ public class LODManagerEditor : BaseFoldoutEditor<LODManager>
                         var min = lodManager.GetMinInfo(item.renderer_lod1.transform);
                         Debug.Log($"dis:{min.dis} meshDis:{min.meshDis} target:{min.target}");
                     }
-                    //if (GUILayout.Button("Add", GUILayout.Width(50)))
+                    //if (GUILayout.Button("Add1", GUILayout.Width(40)))
+                    //{
+                    //    lodManager.AddLOD1(item.renderer_lod0, item.renderer_lod1);
+                    //}
+                    //if (GUILayout.Button("Add2", GUILayout.Width(40)))
                     //{
                     //    lodManager.AddLOD2(item.renderer_lod0, item.renderer_lod1);
                     //}
-                    if (GUILayout.Button("Color1", GUILayout.Width(50)))
+                    //if (GUILayout.Button("Add3", GUILayout.Width(40)))
+                    //{
+                    //    lodManager.AddLOD3(item.renderer_lod0, item.renderer_lod1);
+                    //}
+
+                    if (GUILayout.Button("AddLOD", GUILayout.Width(40)))
                     {
-                        item.SetColor1();
+                        lodManager.CreateGroup(item);
                     }
-                    if (GUILayout.Button("Color2", GUILayout.Width(50)))
-                    {
-                        item.SetColor2();
-                    }
+
+                    //if (GUILayout.Button("Color1", GUILayout.Width(50)))
+                    //{
+                    //    item.SetColor1();
+                    //}
+                    //if (GUILayout.Button("Color2", GUILayout.Width(50)))
+                    //{
+                    //    item.SetColor2();
+                    //}
                     //if (GUILayout.Button("P", GUILayout.Width(50)))
                     //{
                     //    //EditorHelper.SelectObject(door.renderer_lod0);
                     //    item.renderer_lod1.transform.SetParent(item.renderer_lod0.transform);
                     //}
-                    if (GUILayout.Button("LOD0", GUILayout.Width(50)))
+                    if (GUILayout.Button("LOD0", GUILayout.Width(45)))
                     {
                         EditorHelper.SelectObject(item.renderer_lod0);
                     }

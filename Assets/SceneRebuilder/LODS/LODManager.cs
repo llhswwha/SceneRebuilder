@@ -91,7 +91,7 @@ public class LODManager : SingletonBehaviour<LODManager>
     public MeshRendererInfo CreateSimplifier(MeshRendererInfo lod0,float percent)
     {
         GameObject newObj = MeshHelper.CopyGO(lod0.gameObject);
-        MeshRendererInfo renderer = newObj.GetComponent<MeshRendererInfo>();
+        MeshRendererInfo renderer = MeshRendererInfo.GetInfo(newObj);
         newObj.name += "_" + percent;
         return renderer;
     }
@@ -104,6 +104,55 @@ public class LODManager : SingletonBehaviour<LODManager>
     {
         var min = GetMinDisTransform<MeshRendererInfo>(list_lod0, t, compareMode);
         return min;
+    }
+
+    public void CreateGroup(LODTwoRenderers twoRenderers)
+    {
+        var render_lod0 = twoRenderers.renderer_lod0;
+        //var render_lod1 = twoRenderers.renderer_lod1;
+        int lodLevel = 1;
+        LODGroup lODGroup = render_lod0.GetComponent<LODGroup>();
+        if (lODGroup != null)
+        {
+            lodLevel = lODGroup.GetLODs().Length - 1;
+        }
+        Debug.LogError($"CreateGroup lodLevel:{lodLevel}");
+
+        CreateGroup(twoRenderers, lodLevel);
+    }
+
+    private void CreateGroup(LODTwoRenderers twoRenderers, int lodLevel)
+    {
+        var render_lod0 = twoRenderers.renderer_lod0;
+        var render_lod1 = twoRenderers.renderer_lod1;
+        if (twoRenderers.vertexCount1 == twoRenderers.vertexCount0)
+        {
+            //GameObject.DestroyImmediate(filter1.gameObject);
+            render_lod1 = CreateSimplifier(render_lod0, 0.7f);
+            EditorHelper.UnpackPrefab(render_lod1.gameObject);
+            GameObject.DestroyImmediate(render_lod1.gameObject);
+        }
+
+        //else
+        {
+
+            render_lod1.transform.SetParent(render_lod0.transform);
+            render_lod1.name += "_LOD" + lodLevel;
+
+            if (lodLevel == 1)
+            {
+                AddLOD1(render_lod0, render_lod1);
+            }
+            else if (lodLevel == 2)
+            {
+                AddLOD2(render_lod0, render_lod1);
+            }
+            else if (lodLevel == 3)
+            {
+                AddLOD3(render_lod0, render_lod1);
+            }
+
+        }
     }
 #if UNITY_EDITOR
     private void AppendLodInner(int lodLevel)
@@ -138,38 +187,13 @@ public class LODManager : SingletonBehaviour<LODManager>
             int vertexCount1 = render_lod1.GetVertexCount();
             if (minDis <= zeroDistance)
             {
+                LODTwoRenderers lODTwoRenderers = new LODTwoRenderers(render_lod0, render_lod1, minDis, min.meshDis, vertexCount0, vertexCount1);
+                twoList.Add(lODTwoRenderers);
                 if (DoCreateGroup)
                 {
-                    if (vertexCount1 == vertexCount0)
-                    {
-                        //GameObject.DestroyImmediate(filter1.gameObject);
-                        render_lod1 = CreateSimplifier(render_lod0, 0.7f);
-                        GameObject.DestroyImmediate(render_lod1.gameObject);
-                    }
-
-                    //else
-                    {
-                        Debug.Log($"GetDistance1 \tLOD3:{render_lod1.name}({vertexCount1}) \tLOD0:{render_lod0.name}({vertexCount0}) \tDistance:{minDis} \t{(float)vertexCount1 / vertexCount0:P2}");
-                        render_lod1.transform.SetParent(render_lod0.transform);
-                        render_lod1.name += "_LOD"+lodLevel;
-
-                        if (lodLevel == 1)
-                        {
-                            AddLOD1(render_lod0, render_lod1);
-                        }
-                        else if (lodLevel == 2)
-                        {
-                            AddLOD2(render_lod0, render_lod1);
-                        }
-                        else if (lodLevel == 3)
-                        {
-                            AddLOD3(render_lod0, render_lod1);
-                        }
-                        
-                    }
+                    Debug.Log($"GetDistance1 \tLOD3:{render_lod1.name}({vertexCount1}) \tLOD0:{render_lod0.name}({vertexCount0}) \tDistance:{minDis} \t{(float)vertexCount1 / vertexCount0:P2}");
+                    CreateGroup(lODTwoRenderers, lodLevel);
                 }
-
-                twoList.Add(new LODTwoRenderers(render_lod0, render_lod1, minDis, min.meshDis, vertexCount0, vertexCount1));
             }
             else
             {
@@ -540,11 +564,16 @@ public class LODManager : SingletonBehaviour<LODManager>
         {
             var lods = group.GetLODs();
             Debug.Log($" group:{group.name} count:{lods.Length}");
-            if (lods.Length == 3)
+            if (lods.Length == 2)
             {
-                lods[0].screenRelativeTransitionHeight = LODLevels_3[0];
-                lods[1].screenRelativeTransitionHeight = LODLevels_3[1];
-                lods[2].screenRelativeTransitionHeight = LODLevels_3[2];
+                lods[0].screenRelativeTransitionHeight = LODLevels_1[0];
+                lods[1].screenRelativeTransitionHeight = LODLevels_1[1];
+            }
+            else if(lods.Length == 3)
+            {
+                lods[0].screenRelativeTransitionHeight = LODLevels_2[0];
+                lods[1].screenRelativeTransitionHeight = LODLevels_2[1];
+                lods[2].screenRelativeTransitionHeight = LODLevels_2[2];
             }
             else if (lods.Length == 4)
             {
