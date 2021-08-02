@@ -127,7 +127,9 @@ public class LODManager : SingletonBehaviour<LODManager>
         var render_lod1 = twoRenderers.renderer_lod1;
         if (twoRenderers.vertexCount1 == twoRenderers.vertexCount0)
         {
+#if UNITY_EDITOR
             EditorHelper.UnpackPrefab(render_lod1.gameObject);
+#endif
             GameObject.DestroyImmediate(render_lod1.gameObject);
 
             //GameObject.DestroyImmediate(filter1.gameObject);

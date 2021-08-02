@@ -107,7 +107,9 @@ public class MeshCombiner : MonoBehaviour
 
             //EditorHelper.SaveMeshAsset(source, result);
             result.name = source.name;
+#if UNITY_EDITOR
             EditorHelper.UnpackPrefab(source);
+#endif
             GameObject.DestroyImmediate(source);
         }
 
@@ -131,8 +133,9 @@ public class MeshCombiner : MonoBehaviour
                 break;
             }
 
-            
+#if UNITY_EDITOR
             EditorHelper.SaveMeshAsset(source, result);
+#endif
         }
 
         ProgressBarHelper.ClearProgressBar();

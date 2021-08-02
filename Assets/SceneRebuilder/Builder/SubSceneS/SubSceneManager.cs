@@ -678,15 +678,19 @@ public class SubSceneManager : SingletonBehaviour<SubSceneManager>
             sceneFilePath = fileInfo.FullName;
         }
 
+#if UNITY_EDITOR
         public void SelectAsset()
         {
             Debug.Log(scenePath1);
             Debug.Log(Application.dataPath);
             Debug.Log(sceneFilePath + "|" + System.IO.File.Exists(sceneFilePath));
+
             SceneAsset sceneAsset = AssetDatabase.LoadAssetAtPath<SceneAsset>(sceneAssetPath);
             Debug.Log(sceneAsset);
             //var scene=EditorSceneManager.GetSceneByPath(item.GetSceneArg().path);
+
             EditorHelper.SelectObject(sceneAsset);
+
         }
 
         public void DeleteAsset()
@@ -695,6 +699,7 @@ public class SubSceneManager : SingletonBehaviour<SubSceneManager>
             AssetDatabase.DeleteAsset(sceneAssetPath);
             //AssetDatabase.Refresh();
         }
+#endif
 
         public override string ToString()
         {
@@ -756,6 +761,7 @@ public class SubSceneManager : SingletonBehaviour<SubSceneManager>
 
     public void DeleteInActiveScenes()
     {
+#if UNITY_EDITOR
         float fileLength = 0;
         List<SceneFile> sceneFiles = GetSceneFilesEx();
         int count = 0;
@@ -776,8 +782,9 @@ public class SubSceneManager : SingletonBehaviour<SubSceneManager>
         }
 
         Debug.Log($"DeleteInActiveScenes all:{sceneFiles.Count} remove:{count} size:{fileLength}");
-        AssetDatabase.Refresh();
 
+        AssetDatabase.Refresh();
+#endif
         ProgressBarHelper.ClearProgressBar();
     }
 

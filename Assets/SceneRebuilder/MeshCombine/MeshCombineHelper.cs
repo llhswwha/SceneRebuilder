@@ -399,7 +399,9 @@ public static class MeshCombineHelper
 
     public static GameObject CombineEx(MeshCombineArg arg, MeshCombineMode mode = MeshCombineMode.OneMesh)
     {
+#if UNITY_EDITOR
         EditorHelper.UnpackPrefab(arg.source);
+#endif
         Transform parent = arg.source.transform.parent;
         arg.source.transform.parent = null;
 
