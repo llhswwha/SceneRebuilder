@@ -10,7 +10,7 @@ public class LODManagerEditor : BaseFoldoutEditor<LODManager>
 {
     FoldoutEditorArg<LODTwoRenderers> twoListArg = new FoldoutEditorArg<LODTwoRenderers>();
 
-    FoldoutEditorArg lodGroupListArg = new FoldoutEditorArg();
+    FoldoutEditorArg<LODGroupDetails> lodGroupListArg = new FoldoutEditorArg<LODGroupDetails>();
 
     private string searchKey = "";
 
@@ -50,9 +50,10 @@ public class LODManagerEditor : BaseFoldoutEditor<LODManager>
         }
         EditorUIUtils.Separator(5);
 
-        if (GUILayout.Button("GetLODDetail"))
+
+        if (GUILayout.Button("Update LODs"))
         {
-            string detail=lodManager.GetRuntimeLODDetail(true);
+            string detail = lodManager.GetRuntimeLODDetail(true);
             Debug.Log($"lod detail:{detail}");
         }
         DrawLODGroupList(lodGroupListArg, lodManager);
@@ -187,7 +188,7 @@ public class LODManagerEditor : BaseFoldoutEditor<LODManager>
                     //    lodManager.AddLOD3(item.renderer_lod0, item.renderer_lod1);
                     //}
 
-                    if (GUILayout.Button("AddLOD", GUILayout.Width(40)))
+                    if (GUILayout.Button("AddLOD", GUILayout.Width(60)))
                     {
                         lodManager.CreateGroup(item);
                     }
@@ -207,7 +208,8 @@ public class LODManagerEditor : BaseFoldoutEditor<LODManager>
                     //}
                     if (GUILayout.Button("LOD0", GUILayout.Width(45)))
                     {
-                        EditorHelper.SelectObject(item.renderer_lod0);
+                        Debug.Log($"v1:{item.renderer_lod0.GetMinLODVertexCount()} v2:{item.vertexCount0}");
+                        EditorHelper.SelectObject(item.renderer_lod0.GetMinLODGo());
                     }
                     //if (GUILayout.Button("0&1", GUILayout.Width(50)))
                     //{

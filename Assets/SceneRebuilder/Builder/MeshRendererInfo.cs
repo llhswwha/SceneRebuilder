@@ -64,6 +64,42 @@ public class MeshRendererInfo : MonoBehaviour
         return count;
     }
 
+    public int GetMinLODVertexCount()
+    {
+        LODGroup group = this.GetComponent<LODGroup>();
+        if (group == null)
+        {
+            return GetVertexCount();
+        }
+        else
+        {
+            var lods=group.GetLODs();
+            var renderers=lods[lods.Length - 1].renderers;
+            int count = 0;
+            foreach(var render in renderers)
+            {
+                MeshFilter filter = render.GetComponent<MeshFilter>();
+                count += filter.sharedMesh.vertexCount;
+            }
+            return count;
+        }
+    }
+
+    public GameObject GetMinLODGo()
+    {
+        LODGroup group = this.GetComponent<LODGroup>();
+        if (group == null)
+        {
+            return this.gameObject;
+        }
+        else
+        {
+            var lods = group.GetLODs();
+            var renderers = lods[lods.Length - 1].renderers;
+            return renderers[0].gameObject;
+        }
+    }
+
     public static Vector3[] GetMinMax(GameObject go,bool isUpdate=true)
     {
         MeshRendererInfo info = go.GetComponent<MeshRendererInfo>();

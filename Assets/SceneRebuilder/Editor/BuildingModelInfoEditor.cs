@@ -26,7 +26,7 @@ public class BuildingModelInfoEditor : BaseFoldoutEditor<BuildingModelInfo>
 
     private FoldoutEditorArg doorListArg = new FoldoutEditorArg();
 
-    private FoldoutEditorArg lodGroupListArg = new FoldoutEditorArg();
+    private FoldoutEditorArg<LODGroupDetails> lodGroupListArg = new FoldoutEditorArg<LODGroupDetails>();
 
     public override void OnEnable()
     {
@@ -41,7 +41,7 @@ public class BuildingModelInfoEditor : BaseFoldoutEditor<BuildingModelInfo>
 
         matListArg = new FoldoutEditorArg(true, false, true, true, false);
         doorListArg = new FoldoutEditorArg(true, false, true, true, false);
-        lodGroupListArg = new FoldoutEditorArg(true, false, true, true, false);
+        lodGroupListArg = new FoldoutEditorArg<LODGroupDetails>(true, false, true, true, false);
 
         GlobalMaterialManager.Instance.LocalTarget = targetT.gameObject;
         GlobalMaterialManager.Instance.GetSharedMaterials();

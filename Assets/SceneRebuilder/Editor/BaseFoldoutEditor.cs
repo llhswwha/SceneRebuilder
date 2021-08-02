@@ -931,12 +931,22 @@ public class BaseFoldoutEditor<T> : BaseEditor<T> where T : class
         }
     }
 
-    public void DrawLODGroupList(FoldoutEditorArg lodGroupListArg, LODManager item)
+    public void DrawLODGroupList(FoldoutEditorArg<LODGroupDetails> lodGroupListArg, LODManager lodManager)
     {
         lodGroupListArg.caption = $"LOD List";
         EditorUIUtils.ToggleFoldout(lodGroupListArg, arg =>
         {
-            var lods = item.lodDetails;
+            var lods = lodManager.lodDetails;
+            if (arg.listFilterId == 1)
+            {
+                lods = lods.Where(i => i.group.gameObject.activeInHierarchy).ToList();
+            }
+            else if (arg.listFilterId == 2)
+            {
+                lods = lods.Where(i => i.group.gameObject.activeInHierarchy==false).ToList();
+            }
+            lodGroupListArg.Items = lods;
+
             float[] sumVertex = new float[4];
             for (int i = 0; i < lods.Count; i++)
             {
@@ -979,18 +989,27 @@ public class BaseFoldoutEditor<T> : BaseEditor<T> where T : class
             //    RemoveEditorArg(item.GetDoors());
             //    InitEditorArg(item.UpdateDoors());
             //}
+
+            //if (GUILayout.Button("Update"))
+            //{
+            //    string detail = lodManager.GetRuntimeLODDetail(true);
+            //    Debug.Log($"lod detail:{detail}");
+            //}
+
+            lodGroupListArg.DrawFilterList(100, 0, "All", "Active", "InActive");
         });
         if (lodGroupListArg.isEnabled && lodGroupListArg.isExpanded)
         {
-            var lods = item.lodDetails;
+            var lods = lodGroupListArg.Items;
             InitEditorArg(lods);
             lodGroupListArg.DrawPageToolbar(lods, (lodDetail, i) =>
             {
                 var arg = editorArgs[lodDetail];
                 if (lodDetail.group == null) return;
                 arg.caption = $"[{i:00}] {lodDetail.group.name}";
+                arg.level = 1;
                 //arg.info = door.ToString();
-                EditorUIUtils.ObjectFoldout(arg, lodDetail.group, () =>
+                EditorUIUtils.ObjectFoldout(arg, lodDetail.group.gameObject, () =>
                 {
                     float lod0Vertex = 0;
                     for (int i = 0; i < lodDetail.childs.Count; i++)

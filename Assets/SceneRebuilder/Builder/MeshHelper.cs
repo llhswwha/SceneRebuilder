@@ -1768,6 +1768,46 @@ public static class MeshHelper
 
     public static int TotalCopyCount=0;
 
+    public static GameObject CopyRenderer(this GameObject go2)
+    {
+        DateTime start = DateTime.Now;
+
+        if (go2 == null) return null;
+        Transform t1 = go2.transform;
+
+        Transform parent1 = t1.parent;
+        //go2.transform.SetParent(null);
+
+        //List<Transform> children = new List<Transform>();
+        //for(int i=0;)
+
+        GameObject go2Copy = new GameObject(go2.name);
+
+        //GameObject go2Copy=new GameObject(go2.name);
+
+        Transform t2 = go2Copy.transform;
+        t2.SetParent(parent1);//复制后的默认的父是null的
+        t2.localPosition = t1.localPosition;
+        t2.localRotation = t1.localRotation; //我发现Instantiate居然不会复制比例，会变成(0,0,0)
+        t2.localScale = t1.localScale; //我发现Instantiate居然不会复制比例，会变成(1,1,1)
+        //发现必须这样设置parent，localxxx，不然会有有位置偏移!?
+
+        double t = (DateTime.Now - start).TotalMilliseconds;
+        TotalCopyTime += t;
+        TotalCopyCount++;
+        MeshRenderer renderer1 = go2.GetComponent<MeshRenderer>();
+        MeshFilter filter1 = go2.GetComponent<MeshFilter>();
+
+
+        MeshFilter filter2 = go2Copy.AddComponent<MeshFilter>();
+        filter2.sharedMesh = filter1.sharedMesh;
+
+        MeshRenderer renderer2 = go2Copy.AddComponent<MeshRenderer>();
+        renderer2.sharedMaterials = renderer1.sharedMaterials;
+
+        return go2Copy;
+    }
+
     public static GameObject CopyGO(this GameObject go2,bool isDebug=false)
     {
         DateTime start=DateTime.Now;
@@ -1777,6 +1817,9 @@ public static class MeshHelper
 
         Transform parent1=t1.parent;
         //go2.transform.SetParent(null);
+
+        //List<Transform> children = new List<Transform>();
+        //for(int i=0;)
 
         GameObject go2Copy = GameObject.Instantiate(go2);
 

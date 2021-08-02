@@ -90,7 +90,7 @@ public class LODManager : SingletonBehaviour<LODManager>
 
     public MeshRendererInfo CreateSimplifier(MeshRendererInfo lod0,float percent)
     {
-        GameObject newObj = MeshHelper.CopyGO(lod0.gameObject);
+        GameObject newObj = MeshHelper.CopyRenderer(lod0.GetMinLODGo());
         MeshRendererInfo renderer = MeshRendererInfo.GetInfo(newObj);
         newObj.name += "_" + percent;
         return renderer;
@@ -114,7 +114,7 @@ public class LODManager : SingletonBehaviour<LODManager>
         LODGroup lODGroup = render_lod0.GetComponent<LODGroup>();
         if (lODGroup != null)
         {
-            lodLevel = lODGroup.GetLODs().Length - 1;
+            lodLevel = lODGroup.GetLODs().Length;
         }
         Debug.LogError($"CreateGroup lodLevel:{lodLevel}");
 
@@ -127,10 +127,12 @@ public class LODManager : SingletonBehaviour<LODManager>
         var render_lod1 = twoRenderers.renderer_lod1;
         if (twoRenderers.vertexCount1 == twoRenderers.vertexCount0)
         {
-            //GameObject.DestroyImmediate(filter1.gameObject);
-            render_lod1 = CreateSimplifier(render_lod0, 0.7f);
             EditorHelper.UnpackPrefab(render_lod1.gameObject);
             GameObject.DestroyImmediate(render_lod1.gameObject);
+
+            //GameObject.DestroyImmediate(filter1.gameObject);
+            render_lod1 = CreateSimplifier(render_lod0, 0.7f);
+
         }
 
         //else
@@ -183,8 +185,8 @@ public class LODManager : SingletonBehaviour<LODManager>
 
             //MeshFilter filter1 = render_lod1.GetComponent<MeshFilter>();
             //MeshFilter filter0 = render_lod0.GetComponent<MeshFilter>();
-            int vertexCount0 = render_lod0.GetVertexCount();
-            int vertexCount1 = render_lod1.GetVertexCount();
+            int vertexCount0 = render_lod0.GetMinLODVertexCount();
+            int vertexCount1 = render_lod1.GetMinLODVertexCount();
             if (minDis <= zeroDistance)
             {
                 LODTwoRenderers lODTwoRenderers = new LODTwoRenderers(render_lod0, render_lod1, minDis, min.meshDis, vertexCount0, vertexCount1);
@@ -781,13 +783,15 @@ public class LODManager : SingletonBehaviour<LODManager>
 
     public GameObject LocalTarget;
 
+    public bool includeInactive = false;
+
     [ContextMenu("GetRuntimeLODDetail")]
     public string GetRuntimeLODDetail(bool isForce)
     {
         DateTime now = DateTime.Now;
         if(lodDetails==null||lodDetails.Count==0 || isForce)
         {
-            lodDetails=LODGroupDetails.GetSceneLodGroupInfo(LocalTarget);
+            lodDetails=LODGroupDetails.GetSceneLodGroupInfo(LocalTarget, includeInactive);
         }
         
         Camera cam = GameObject.FindObjectOfType<Camera>();
