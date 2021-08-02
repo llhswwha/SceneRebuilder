@@ -110,18 +110,18 @@ public class LODGroupDetails
     /// <summary>
     /// 查找当前场景下，所有的LodGroup信息
     /// </summary>
-    public static List<LODGroupDetails> GetSceneLodGroupInfo(GameObject root)
+    public static List<LODGroupDetails> GetSceneLodGroupInfo(GameObject root,bool includeinactive=false)
     {
         // if (lodInfos != null) return;
         var lodInfos = new List<LODGroupDetails>();
         LODGroup[] groups = null;
         if (root == null)
         {
-            groups = GameObject.FindObjectsOfType<LODGroup>(true);
+            groups = GameObject.FindObjectsOfType<LODGroup>(includeinactive);
         }
         else
         {
-            groups = root.GetComponentsInChildren<LODGroup>(true);
+            groups = root.GetComponentsInChildren<LODGroup>(includeinactive);
         }
         
         int i = 0;
