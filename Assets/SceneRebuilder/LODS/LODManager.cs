@@ -98,7 +98,7 @@ public class LODManager : SingletonBehaviour<LODManager>
 
     public List<MeshRendererInfo> list_lod0 = new List<MeshRendererInfo>();
 
-    public LODCompareMode compareMode = LODCompareMode.Name;
+    public LODCompareMode compareMode = LODCompareMode.NameWithCenter;
 
     public MinDisTarget<MeshRendererInfo> GetMinInfo(Transform t)
     {
@@ -249,6 +249,16 @@ public class LODManager : SingletonBehaviour<LODManager>
         }
     }
 
+    public void SetName0()
+    {
+
+    }
+
+    public void SetName1()
+    {
+
+    }
+
 #endif
 
 
@@ -277,18 +287,44 @@ public class LODManager : SingletonBehaviour<LODManager>
         return distance;
     }
 
-    private MinDisTarget<T> GetMinDisTransformInner<T>(List<T> ts, Transform t) where T : Component
+    public static float GetDistance<T>(T item, Transform t, LODCompareMode mode) where T : Component
+    {
+        if (mode == LODCompareMode.NameWithPos || mode == LODCompareMode.Pos)
+        {
+            float distance = Vector3.Distance(item.transform.position, t.position);
+            return distance;
+        }
+        else if (mode == LODCompareMode.NameWithCenter || mode == LODCompareMode.Center)
+        {
+            float distance = GetCenterDistance(item.gameObject, t.gameObject);
+            return distance;
+        }
+        else if (mode == LODCompareMode.NameWithMesh || mode == LODCompareMode.Mesh)
+        {
+            float distance = MeshHelper.GetAvgVertexDistanceEx(item.transform, t);
+            return distance;
+        }
+        else
+        {
+            float distance = Vector3.Distance(item.transform.position, t.position);
+            return distance;
+        }
+    }
+
+    private MinDisTarget<T> GetMinDisTransformInner<T>(List<T> ts, Transform t, LODCompareMode mode) where T : Component
     {
         float minDis = float.MaxValue;
         float minDisOffCenter = float.MaxValue;
         float minDisOfMesh = float.MaxValue;
         List<T> minTList = new List<T>();
         List<T> minTExList = new List<T>();
-        foreach (var item in ts)
+        foreach (T item in ts)
         {
-            float distance = Vector3.Distance(item.transform.position, t.position);
+            //float distance = Vector3.Distance(item.transform.position, t.position);
 
             //float distance = GetCenterDistance(item.gameObject, t.gameObject);
+
+            float distance = GetDistance(item, t, mode);
 
             //if (distance < 1)
             //{
@@ -344,26 +380,40 @@ public class LODManager : SingletonBehaviour<LODManager>
         //1.Find SameName
         //2.Find Closed
         List<T> ts0 = ts;
-        if (mode == LODCompareMode.Name)
+        MinDisTarget<T> min = null;
+        if (mode == LODCompareMode.Name || mode == LODCompareMode.NameWithPos|| mode == LODCompareMode.NameWithCenter || mode == LODCompareMode.NameWithMesh)
         {
+
             var ts2 = ts.FindAll(i => i.name == t.name);
+
+            //string tn = t.name;
+            //if(tn.Contains(" "))
+            //{
+            //    tn = tn.Split(' ')[0];
+            //}
+            //var ts2 = ts.FindAll(i => i.name.Contains(tn));
+
             if (ts2.Count > 0)
             {
                 ts = ts2;
             }
-        }
 
-        MinDisTarget<T> min = GetMinDisTransformInner(ts, t); 
+            min = GetMinDisTransformInner(ts, t, mode);
 
-        if (min.dis > 0.01f)
-        {
-            min=GetMinDisTransformInner(ts0, t);
+            if (min.dis > 0.01f && mode != LODCompareMode.Name)
+            {
+                min = GetMinDisTransformInner(ts0, t, mode);
+            }
         }
         else
         {
+            min = GetMinDisTransformInner(ts0, t, mode);
+        }      
+
+        if (min.dis <= 0.01f)
+        {
             ts0.Remove(min.target);
         }
-
         return min;
     }
 
@@ -851,7 +901,7 @@ public class LODManager : SingletonBehaviour<LODManager>
 
 public enum LODCompareMode
 {
-    Name,DisOfPosition,DisOfCenter,DisOfMesh
+    Name,NameWithPos,NameWithCenter,NameWithMesh, Pos, Center, Mesh
 }
 
 public static class LODHelper

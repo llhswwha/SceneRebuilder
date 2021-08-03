@@ -110,6 +110,14 @@ public class LODManagerEditor : BaseFoldoutEditor<LODManager>
         {
             lodManager.SetAppendLod3Color();
         }
+        if (GUILayout.Button("SetName0"))
+        {
+            lodManager.SetName0();
+        }
+        if (GUILayout.Button("SetName1"))
+        {
+            lodManager.SetName1();
+        }
         EditorGUILayout.EndHorizontal();
 
         twoListArg.caption = $"TwoObject List";

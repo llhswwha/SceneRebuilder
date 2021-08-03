@@ -367,6 +367,16 @@ public static class MeshHelper
     public static GameObject ReplaceGameObject(GameObject oldObj, GameObject prefab,bool isDestoryOriginal, TransfromAlignSetting transfromAlignSetting)
     {
         if (prefab == null) return null;
+#if UNITY_EDITOR
+        EditorHelper.UnpackPrefab(oldObj);
+        EditorHelper.UnpackPrefab(prefab);
+#endif
+
+        Transform parentOldObj = oldObj.transform.parent;
+        Transform parentPrefab = prefab.transform.parent;
+        oldObj.transform.parent = null;
+        prefab.transform.parent = null;
+
         GameObject newObj = EditorCopyGo(prefab);
 
         newObj.SetActive(true);
@@ -469,6 +479,10 @@ public static class MeshHelper
         {
             newObj.name = oldObj.name + "_New";
         }
+
+        newObj.transform.parent = parentOldObj;
+        oldObj.transform.parent = parentOldObj;
+        prefab.transform.parent = parentPrefab;
 
         return newObj;
     }
