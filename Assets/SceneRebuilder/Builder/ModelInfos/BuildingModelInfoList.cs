@@ -13,7 +13,7 @@ public class BuildingModelInfoList : MonoBehaviour
     [ContextMenu("UpdateBuildings")]
     public void UpdateBuildings()
     {
-        Buildings = gameObject.GetComponentsInChildren<BuildingModelInfo>();
+        Buildings = gameObject.GetComponentsInChildren<BuildingModelInfo>(true);
         AllRendererCount = 0;
         AllVertextCount = 0;
         ShowVertextCount = 0;
