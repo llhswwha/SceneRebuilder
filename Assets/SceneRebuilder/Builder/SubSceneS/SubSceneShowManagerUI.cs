@@ -82,7 +82,10 @@ public class SubSceneShowManagerUI : MonoBehaviour
     {
         Debug.Log("LoadAllScenes");
         subSceneManagerUI.SetLoadingSceneMaxCount();
-        subSceneShowManager.LoadStartScens_All();
+
+        //subSceneShowManager.LoadStartScens_All();
+
+        subSceneShowManager.LoadStartAndHiddenScenes(null, null);
     }
 
     [ContextMenu("LoadStartScenes")]

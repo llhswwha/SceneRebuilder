@@ -433,6 +433,13 @@ public class SubSceneManager : SingletonBehaviour<SubSceneManager>
         var start = DateTime.Now;
         WattingForLoadedAll.AddRange(scenes);
         int count = 0;
+        if (WattingForLoadedAll.Count == 0)
+        {
+            if (finishedCallback != null)
+            {
+                finishedCallback(1, true);
+            }
+        }
         while (WattingForLoadedAll.Count>0)
         {
             if(WattingForLoadedCurrent.Count< LoadingSceneMaxCount)
@@ -470,6 +477,7 @@ public class SubSceneManager : SingletonBehaviour<SubSceneManager>
             }
             yield return new WaitForSeconds(0.02f);
         }
+       
         Debug.Log($"LoadSceneAsync Finished currentList:{WattingForLoadedCurrent.Count} allList:{WattingForLoadedAll.Count}");
         yield return null;
     }
@@ -830,6 +838,13 @@ public class SubSceneManager : SingletonBehaviour<SubSceneManager>
         OnProgressChanged(0);
         //subScenes = GameObject.FindObjectsOfType<SubScene>(true);
         int count = 0;
+        if (scenes.Length == 0)
+        {
+            if (finishedCallbak != null)
+            {
+                finishedCallbak(1, true);
+            }
+        }
         for (int i = 0; i < scenes.Length; i++)
         {
             T item = scenes[i];

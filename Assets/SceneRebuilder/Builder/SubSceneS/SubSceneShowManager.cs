@@ -218,6 +218,27 @@ public class SubSceneShowManager : SingletonBehaviour<SubSceneShowManager>
         LoadStartScens_Innder(scenes, onComplete);
     }
 
+    public void LoadStartAndHiddenScenes(Action<float, bool> onComplete1, Action<float, bool> onComplete2)
+    {
+        LoadStartScens((p1, r1) =>
+        {
+            Debug.LogError($"LoadStartScens progress:{p1} isFinished:{r1}");
+            if (onComplete1 != null)
+            {
+                onComplete1(p1,r1);
+            }
+            if(r1)
+                LoadHiddenTreeNodes((p2, r2) =>
+                {
+                    Debug.LogError($"LoadHiddenTreeNodes progress:{p2} isFinished:{r2}");
+                    if (onComplete2 != null)
+                    {
+                        onComplete2(p2, r2);
+                    }
+                });
+        });
+    }
+
     private void LoadStartScens_Innder<T>(List<T> scenes,Action<float, bool> onComplete = null) where T :SubScene_Base
     {
         if (scenes.Count > 0)

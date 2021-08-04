@@ -137,6 +137,9 @@ public class BuildingModelInfoEditor : BaseFoldoutEditor<BuildingModelInfo>
             info.DestroyScenes();
             info.ClearTrees();
         });
+        NewButton("SetBuildings", buttonWidth, true, btnStyle, () => {
+            SubSceneManager.Instance.SetBuildings_All();
+        });
         EditorGUILayout.EndHorizontal();
 
         EditorGUILayout.BeginHorizontal();
