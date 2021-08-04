@@ -520,7 +520,15 @@ public class BaseFoldoutEditor<T> : BaseEditor<T> where T : class
                 var scene = scenes[i];
                 var arg = editorArgs[scene];
                 BuildingModelInfo modelInfo = scene.GetComponentInParent<BuildingModelInfo>();
-                arg.caption = $"[{i + 1:00}] {modelInfo.name}>{scene.name}";
+                if(modelInfo==null)
+                {
+                    arg.caption = $"[{i + 1:00}] {scene.name}";
+                }
+                else
+                {
+                    arg.caption = $"[{i + 1:00}] {modelInfo.name}>{scene.name}";
+                }
+               
                 arg.info = $"[{scene.vertexCount:F0}w][{scene.rendererCount}]";
                 EditorUIUtils.ObjectFoldout(arg, scene.gameObject,null);
                 //if (arg.isExpanded)
