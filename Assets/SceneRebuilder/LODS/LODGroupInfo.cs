@@ -26,6 +26,11 @@ public class LODGroupInfo : MonoBehaviour
         LodInfos.Clear();
         //lodVertexCount.Clear();
         LODGroup = gameObject.GetComponent<LODGroup>();
+        if (LODGroup == null)
+        {
+            Debug.LogError("LODGroupInfo.GetLODs LODGroup == null");
+            return;
+        }
         LOD[] lods = LODGroup.GetLODs();
         for (int i = 0; i < lods.Length; i++)
         {

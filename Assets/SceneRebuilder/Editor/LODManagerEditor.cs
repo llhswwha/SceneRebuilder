@@ -39,15 +39,24 @@ public class LODManagerEditor : BaseFoldoutEditor<LODManager>
         }
         EditorGUILayout.EndHorizontal();
 
+        EditorGUILayout.BeginHorizontal();
         if (GUILayout.Button("SetRenderersLODInfo"))
         {
             lodManager.SetRenderersLODInfo();
         }
 
-        if (GUILayout.Button("UniformLOD"))
+        if (GUILayout.Button("ChangeLODsRelativeHeight"))
         {
-            lodManager.UniformLOD();
+            lodManager.ChangeLODsRelativeHeight();
         }
+
+        if (GUILayout.Button("UniformLOD0"))
+        {
+            lodManager.UniformLOD0();
+        }
+
+        EditorGUILayout.EndHorizontal();
+
         EditorUIUtils.Separator(5);
 
 

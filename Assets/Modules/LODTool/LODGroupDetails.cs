@@ -114,15 +114,17 @@ public class LODGroupDetails
     {
         // if (lodInfos != null) return;
         var lodInfos = new List<LODGroupDetails>();
-        LODGroup[] groups = null;
-        if (root == null)
-        {
-            groups = GameObject.FindObjectsOfType<LODGroup>(includeinactive);
-        }
-        else
-        {
-            groups = root.GetComponentsInChildren<LODGroup>(includeinactive);
-        }
+        //LODGroup[] groups = null;
+        //if (root == null)
+        //{
+        //    groups = GameObject.FindObjectsOfType<LODGroup>(includeinactive);
+        //}
+        //else
+        //{
+        //    groups = root.GetComponentsInChildren<LODGroup>(includeinactive);
+        //}
+
+        LODGroup[] groups = LODHelper.GetLODGroups(root, includeinactive);
         
         int i = 0;
         foreach(var item in groups)

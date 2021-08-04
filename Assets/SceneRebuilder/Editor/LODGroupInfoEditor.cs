@@ -32,33 +32,31 @@ public class LODGroupInfoEditor : BaseFoldoutEditor<LODGroupInfo>
         }
         EditorGUILayout.EndHorizontal();
 
+        EditorGUILayout.BeginHorizontal();
+        if (GUILayout.Button("Uniform"))
+        {
+            //item.GetLODs();
+            LODHelper.UniformLOD0(item.LODGroup);
+        }
+        if (GUILayout.Button("LOD1->LOD0"))
+        {
+            item.GetLODs();
+        }
+        if (GUILayout.Button("SaveLOD0"))
+        {
+            //item.SetLODs();
+        }
+        if (GUILayout.Button("LoadLOD0"))
+        {
+            item.SetLODs();
+        }
+        EditorGUILayout.EndHorizontal();
+
         lodListArg.caption = $"LOD List";
         EditorUIUtils.ToggleFoldout(lodListArg, arg =>
         {
             var lods = item.LodInfos;
             arg.caption = $"LOD List ({lods.Count})";
-            //string txt = "";
-            //float v0 = 0;
-            //float sv = 0;
-            //for (int i = 0; i < lods.Count; i++)
-            //{
-            //    var v = lods[i];
-            //    if (i == 0)
-            //    {
-            //        v0 = v;
-            //    }
-            //    if (i <= 1)
-            //    {
-            //        txt += $"{v / 10000f:F0}({v / v0:P0})|";
-            //    }
-            //    else
-            //    {
-            //        txt += $"{v / 10000f:F1}({v / v0:P0})|";
-            //    }
-
-            //    sv += v;
-            //}
-            //arg.info = $"({sv / 10000f:F0}){txt}";
             InitEditorArg(lods);
         },
         () =>

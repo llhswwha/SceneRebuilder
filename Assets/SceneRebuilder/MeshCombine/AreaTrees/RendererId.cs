@@ -21,9 +21,17 @@ public class RendererId
         Init(this.gameObject, 0);
     }
 
-    internal void Init(MeshRenderer r)
+    internal void Init<T>(T r) where T :Component
     {
-        this.mr = r;
+        if(r is MeshRenderer)
+        {
+            this.mr = r as MeshRenderer;
+        }
+        else
+        {
+            this.mr = r.GetComponent<MeshRenderer>();
+        }
+        
         //int instanceId= r.gameObject.GetInstanceID();
         //if(instanceId!= insId)
         //{
@@ -138,7 +146,7 @@ public class RendererId
         return id.Id;
     }
 
-    public static string GetId(Transform t,int level)
+    public static string GetId<T>(T t,int level) where T : Component
     {
         if (t == null || level >= 2) return "";
         RendererId id = t.GetComponent<RendererId>();
@@ -150,7 +158,7 @@ public class RendererId
         return id.Id;
     }
 
-    public static RendererId GetId(MeshRenderer r)
+    public static RendererId GetId<T>(T r) where T : Component
     {
         RendererId id = r.GetComponent<RendererId>();
         if (id == null)
@@ -161,7 +169,7 @@ public class RendererId
         return id;
     }
 
-    public static RendererId InitId(MeshRenderer r)
+    public static RendererId InitId<T>(T r) where T :Component
     {
         RendererId id = r.GetComponent<RendererId>();
         if (id == null)
@@ -170,6 +178,18 @@ public class RendererId
             id.Init(r);
         }
         id.SetParentId();
+        return id;
+    }
+
+    public static RendererId UpdateId<T>(T r) where T : Component
+    {
+        RendererId id = r.GetComponent<RendererId>();
+        if (id == null)
+        {
+            id = r.gameObject.AddComponent<RendererId>();
+            
+        }
+        id.Init(r);
         return id;
     }
 
