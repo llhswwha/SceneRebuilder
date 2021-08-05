@@ -48,7 +48,7 @@ public class LODInfo
         {
             return $"LOD{id} (NULL)";
         }
-        if(renderers.Length ==1)
+        if(renderers.Length ==1 && renderers[0]!=null)
         {
             return $"LOD{id} ({renderers[0].name})";
         }

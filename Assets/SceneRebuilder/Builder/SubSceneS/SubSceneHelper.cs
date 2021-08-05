@@ -72,8 +72,18 @@ public static class SubSceneHelper
             Debug.LogError("SubSceneHelper.EditorCreateScene go==null");
             return null;
         }
-        string path = SubSceneManager.Instance.GetScenePath(go.name, contentType, dir);
-        return EditorCreateScene<T>(go, path, SubSceneManager.Instance.IsOverride, isSave);
+        string path = "";
+        if (contentType==SceneContentType.TreeNode)
+        {
+            path = SubSceneManager.Instance.GetScenePath($"{go.name}", contentType, dir);
+        }
+        else
+        {
+            path = SubSceneManager.Instance.GetScenePath($"{go.name}[{go.GetInstanceID()}]", contentType, dir);
+        }
+        T scene= EditorCreateScene<T>(go, path, SubSceneManager.Instance.IsOverride, isSave);
+        scene.contentType = contentType;
+        return scene;
     }
 
     public static T EditorCreateScene<T>(GameObject go, string path, bool isOverride, bool isSave) where T : SubScene_Base
@@ -121,6 +131,54 @@ public static class SubSceneHelper
         return ss;
     }
 
+    public static void EditorCreateScenes(List<SubScene_Base> scenes, Action<float, int, int> progressChanged)
+    {
+        int count = scenes.Count;
+        //Debug.Log("EditorCreateScenes:" + count);
+        for (int i = 0; i < count; i++)
+        {
+            SubScene_Base scene = scenes[i];
+
+            if (scene.gos.Count == 0)
+            {
+                Debug.LogError($"EditorCreateScenes scene.gos.Count == 0 Scene:{scene.name}");
+                GameObject.DestroyImmediate(scene);
+                continue;
+            }
+            //scene.IsLoaded = true;
+            scene.SaveScene();
+            scene.ShowBounds();
+
+            float progress = (float)i / count;
+            float percents = progress * 100;
+            if (progressChanged != null)
+            {
+                progressChanged(progress, i, count);
+            }
+            else
+            {
+                Debug.Log($"EditorCreateScenes progress:{progress:F2},percents:{percents:F2}");
+                if (ProgressBarHelper.DisplayCancelableProgressBar("EditorCreateScenes", $"{i}/{count} {percents:F2}% of 100%", progress))
+                {
+                    break;
+                }
+            }
+            //System.Threading.Thread.Sleep(1000);
+        }
+
+        EditorHelper.ClearOtherScenes();
+        //EditorHelper.RefreshAssets();
+
+        if (progressChanged == null)
+        {
+            ProgressBarHelper.ClearProgressBar();
+        }
+        else
+        {
+            progressChanged(1, count, count);
+        }
+    }
+
     public static void UpackPrefab_One(GameObject go)
     {
 
@@ -142,5 +200,5 @@ public enum SubSceneType
 
 public enum SceneContentType
 {
-    Single,Part,Tree,TreeAndPart,TreeWithPart,TreeNode
+    Single,Part,Tree,TreeAndPart,TreeWithPart,TreeNode,LOD0,LODGroup
 }

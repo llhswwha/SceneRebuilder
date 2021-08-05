@@ -129,6 +129,7 @@ public class MeshRendererInfo : MonoBehaviour
             info.Init();
             //Debug.Log($"AddComponent info:{info} info==null:{info == null}");
         }
+        RendererId.UpdateId(go);
         return info;
     }
 

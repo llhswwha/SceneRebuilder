@@ -38,15 +38,40 @@ public class LODGroupInfoEditor : BaseFoldoutEditor<LODGroupInfo>
             //item.GetLODs();
             LODHelper.UniformLOD0(item.LODGroup);
         }
-        if (GUILayout.Button("LOD1->LOD0"))
+        //if (GUILayout.Button("LOD1->LOD0"))
+        //{
+        //    LODHelper.LOD1ToLOD0(item.LODGroup);
+        //}
+
+
+        if (Application.isPlaying)
         {
-            item.GetLODs();
+            if (GUILayout.Button("LoadScene"))
+            {
+                item.LoadScene();
+            }
+            if (GUILayout.Button("UnloadScene"))
+            {
+
+            }
         }
-        if (GUILayout.Button("SaveLOD0"))
+        else
         {
-            //item.SetLODs();
+            if (GUILayout.Button("CreateScene"))
+            {
+                item.EditorCreateScene();
+            }
+            if (GUILayout.Button("LoadScene"))
+            {
+                item.EditorLoadScene();
+            }
+            if (GUILayout.Button("UnloadScene"))
+            {
+                
+            }
         }
-        if (GUILayout.Button("LoadLOD0"))
+ 
+        if (GUILayout.Button("SelectScene"))
         {
             item.SetLODs();
         }

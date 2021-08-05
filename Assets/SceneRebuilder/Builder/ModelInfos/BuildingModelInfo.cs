@@ -1273,7 +1273,7 @@ public class BuildingModelInfo : SubSceneCreater
         var scenes=CreatePartScene(contentType);
         EditorCreateScenes(scenes,null);
 
-        SubSceneManager.Instance.ClearOtherScenes();
+        //SubSceneManager.Instance.ClearOtherScenes();
         EditorMoveScenes();
 
         Debug.LogError($"EditorCreateScenes time:{(DateTime.Now - start)}");
@@ -1301,7 +1301,7 @@ public class BuildingModelInfo : SubSceneCreater
         EditorCreateScenes(scenes, progressChanged);
 
 
-        SubSceneManager.Instance.ClearOtherScenes();
+        //SubSceneManager.Instance.ClearOtherScenes();
         EditorMoveScenes();
 
         Debug.LogError($"EditorCreateScenes_TreeWithPart time:{(DateTime.Now - start)},progressChanged:{progressChanged}");

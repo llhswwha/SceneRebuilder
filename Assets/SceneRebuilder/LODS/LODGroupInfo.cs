@@ -102,4 +102,44 @@ public class LODGroupInfo : MonoBehaviour
     //    lodGroup.SetLODs(CreateLODs(ls));
     //    return lodGroup;
     //}
+
+    public SubScene_Base scene;
+
+    public void EditorCreateScene()
+    {
+        scene=LODHelper.SaveLOD0(null, this.LODGroup)[0];
+        EditorHelper.ClearOtherScenes();
+        EditorHelper.RefreshAssets();
+    }
+
+    public void EditorLoadScene()
+    {
+        IdDictionary.InitInfos();
+        if(scene==null)
+        {
+            scene = gameObject.GetComponent<SubScene_Base>();
+        }
+        scene.EditorLoadScene();
+        SetLOD0FromScene();
+    }
+
+    private void SetLOD0FromScene()
+    {
+        var lods = LODGroup.GetLODs();
+        lods[0].renderers = scene.GetSceneRenderers().ToArray();
+        LODGroup.SetLODs(lods);
+    }
+
+    public void LoadScene()
+    {
+        IdDictionary.InitInfos();
+        if (scene == null)
+        {
+            scene = gameObject.GetComponent<SubScene_Base>();
+        }
+        scene.LoadSceneAsync((b, s) =>
+        {
+            SetLOD0FromScene();
+        });
+    }
 }

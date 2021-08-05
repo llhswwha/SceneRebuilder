@@ -110,40 +110,42 @@ public class SubSceneCreater : MonoBehaviour
 
     public void EditorCreateScenes(List<SubScene_Base> scenes, Action<float, int, int> progressChanged)
     {
-        int count = scenes.Count;
-        //Debug.Log("EditorCreateScenes:" + count);
-        for (int i = 0; i < count; i++)
-        {
-            SubScene_Base scene = scenes[i];
+        //int count = scenes.Count;
+        ////Debug.Log("EditorCreateScenes:" + count);
+        //for (int i = 0; i < count; i++)
+        //{
+        //    SubScene_Base scene = scenes[i];
 
-            if (scene.gos.Count == 0)
-            {
-                Debug.LogError($"EditorCreateScenes scene.gos.Count == 0 Scene:{scene.name}");
-                GameObject.DestroyImmediate(scene);
-                continue;
-            }
-            //scene.IsLoaded = true;
-            scene.SaveScene();
-            scene.ShowBounds();
+        //    if (scene.gos.Count == 0)
+        //    {
+        //        Debug.LogError($"EditorCreateScenes scene.gos.Count == 0 Scene:{scene.name}");
+        //        GameObject.DestroyImmediate(scene);
+        //        continue;
+        //    }
+        //    //scene.IsLoaded = true;
+        //    scene.SaveScene();
+        //    scene.ShowBounds();
 
-            float progress = (float)i / count;
-            float percents = progress * 100;
-            if (progressChanged != null)
-            {
-                progressChanged(progress, i, count);
-            }
-            else
-            {
-                Debug.Log($"EditorCreateScenes progress:{progress:F2},percents:{percents:F2}");
-                if (ProgressBarHelper.DisplayCancelableProgressBar("EditorCreateScenes", $"{i}/{count} {percents:F2}% of 100%", progress))
-                {
-                    break;
-                }
-            }
-            //System.Threading.Thread.Sleep(1000);
-        }
-        if (progressChanged == null)
-            ProgressBarHelper.ClearProgressBar();
+        //    float progress = (float)i / count;
+        //    float percents = progress * 100;
+        //    if (progressChanged != null)
+        //    {
+        //        progressChanged(progress, i, count);
+        //    }
+        //    else
+        //    {
+        //        Debug.Log($"EditorCreateScenes progress:{progress:F2},percents:{percents:F2}");
+        //        if (ProgressBarHelper.DisplayCancelableProgressBar("EditorCreateScenes", $"{i}/{count} {percents:F2}% of 100%", progress))
+        //        {
+        //            break;
+        //        }
+        //    }
+        //    //System.Threading.Thread.Sleep(1000);
+        //}
+        //if (progressChanged == null)
+        //    ProgressBarHelper.ClearProgressBar();
+
+        SubSceneHelper.EditorCreateScenes(scenes, progressChanged);
 
         UpdateSceneList();
     }

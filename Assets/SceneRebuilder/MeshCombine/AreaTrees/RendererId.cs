@@ -180,6 +180,17 @@ public class RendererId
         id.SetParentId();
         return id;
     }
+    public static RendererId UpdateId(GameObject r) 
+    {
+        RendererId id = r.GetComponent<RendererId>();
+        if (id == null)
+        {
+            id = r.gameObject.AddComponent<RendererId>();
+
+        }
+        id.Init(r,0);
+        return id;
+    }
 
     public static RendererId UpdateId<T>(T r) where T : Component
     {
@@ -220,6 +231,22 @@ public class RendererId
         // ProgressBarHelper.ClearProgressBar();
 
         // Debug.Log($"InitIds count:{renderers.Length} time:{(DateTime.Now - start)}");
+    }
+
+    public static void ChangeChildrenParent(Transform root,Transform newParent)
+    {
+        List<Transform> childrens = new List<Transform>();
+        for (int i = 0; i < root.childCount; i++)
+        {
+            Transform child = root.GetChild(i);
+            childrens.Add(child);
+        }
+        foreach (var child in childrens)
+        {
+            child.SetParent(newParent);
+
+            UpdateId(child);
+        }
     }
 
     private void OnDestroy()

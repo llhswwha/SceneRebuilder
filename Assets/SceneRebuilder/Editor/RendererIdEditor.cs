@@ -17,7 +17,7 @@ public class RendererIdEditor : BaseEditor<RendererId>
     {
         base.OnToolLayout(item);
 
-
+        GUILayout.Label(item.Id);
         if (parent != null)
         {
             if (GUILayout.Button(parent.name))

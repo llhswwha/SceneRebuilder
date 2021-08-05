@@ -48,6 +48,20 @@ public class SubScene_Base : MonoBehaviour
         }
     }
 
+    //public List<MeshRenderer> GetRenderers()
+    //{
+    //    List<MeshRenderer> renderers = new List<MeshRenderer>();
+    //    foreach(var go in gos)
+    //    {
+    //        MeshRenderer renderer = go.GetComponent<MeshRenderer>();
+    //        if (renderer != null)
+    //        {
+    //            renderers.Add(renderer);
+    //        }
+    //    }
+    //    return renderers;
+    //}
+
     public bool HaveGos()
     {
         bool r = false;

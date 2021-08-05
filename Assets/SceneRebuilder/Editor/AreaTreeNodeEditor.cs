@@ -34,6 +34,21 @@ public class AreaTreeNodeEditor : BaseFoldoutEditor<AreaTreeNode>
         }
         GUILayout.EndHorizontal();
 
+        GUILayout.BeginHorizontal();
+        if (GUILayout.Button("CreateScenes"))
+        {
+            //areaTreeNode.EditorCreateScenes
+        }
+        if (GUILayout.Button("LoadScenes"))
+        {
+            
+        }
+        if (GUILayout.Button("UnloadScenes"))
+        {
+            
+        }
+        GUILayout.EndHorizontal();
+
         if (GUILayout.Button("GetRendererInfos"))
         {
             meshRendererInfoListArg.Items= areaTreeNode.GetRendererInfos();

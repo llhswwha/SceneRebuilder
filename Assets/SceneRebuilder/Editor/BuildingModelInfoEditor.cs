@@ -54,9 +54,9 @@ public class BuildingModelInfoEditor : BaseFoldoutEditor<BuildingModelInfo>
 
         targetT.UpdateSceneList();
     }
-    public static void DrawToolbar(BuildingModelInfo info, GUIStyle btnStyle,int buttonWidth)
+    public static void DrawToolbar(BuildingModelInfo info, GUIStyle btnStyle, int buttonWidth)
     {
-        BuildingModelState state=info.GetState();
+        BuildingModelState state = info.GetState();
         //if (state.HaveUnloadedScenes)
         {
             EditorGUILayout.BeginHorizontal();
@@ -80,27 +80,27 @@ public class BuildingModelInfoEditor : BaseFoldoutEditor<BuildingModelInfo>
 
 
         EditorGUILayout.BeginHorizontal();
-        NewButton("1.GetInfo", buttonWidth, state.CanGetInfo(), btnStyle,() => {
+        NewButton("1.GetInfo", buttonWidth, state.CanGetInfo(), btnStyle, () => {
             info.InitInOut();
         });
         int btnW1 = 90;
         NewButton("FindDoors", btnW1, state.CanFindDoors(), btnStyle, info.FindInDoors);
-        NewButton("SplitDoors", btnW1, true, btnStyle, ()=>
+        NewButton("SplitDoors", btnW1, true, btnStyle, () =>
         {
             DoorManager.Instance.LocalTarget = info.gameObject;
 
         });
-        NewButton("ClearParts", btnW1, state.partCount>0, btnStyle, info.ClearInOut);
+        NewButton("ClearParts", btnW1, state.partCount > 0, btnStyle, info.ClearInOut);
         NewButton("ShowRenderers", btnW1, true, btnStyle, info.ShowRenderers);
-        NewButton("InitMeshNodes", btnW1, true, btnStyle, ()=>
+        NewButton("InitMeshNodes", btnW1, true, btnStyle, () =>
         {
             MeshNode.InitNodes(info.gameObject);
         });
         EditorGUILayout.EndHorizontal();
 
         EditorGUILayout.BeginHorizontal();
-        NewButton("2.CreateTree", buttonWidth,state.CanCreateTrees, btnStyle, info.CreateTreesBSEx);
-        NewButton("RemoveTrees", buttonWidth,state.CanRemoveTrees, btnStyle, info.ClearTrees);
+        NewButton("2.CreateTree", buttonWidth, state.CanCreateTrees, btnStyle, info.CreateTreesBSEx);
+        NewButton("RemoveTrees", buttonWidth, state.CanRemoveTrees, btnStyle, info.ClearTrees);
         NewButton("CreateByLOD", buttonWidth, state.CanCreateTrees, btnStyle, info.CreateTreesByLOD);
         NewButton("CreateNoLOD", buttonWidth, state.CanCreateTrees, btnStyle, info.CreateTreesByLOD);
         AreaTreeManager.Instance.isCombine = GUILayout.Toggle(AreaTreeManager.Instance.isCombine, "Combine");
@@ -109,7 +109,11 @@ public class BuildingModelInfoEditor : BaseFoldoutEditor<BuildingModelInfo>
 
         EditorGUILayout.BeginHorizontal();
         //bool folderExists = info.IsScenesFolderExists();
-        NewButton("3.CreateScenes", buttonWidth, state.CanCreateScenes, btnStyle, info.EditorCreateNodeScenes);
+        NewButton("3.CreateScenes", buttonWidth, state.CanCreateScenes, btnStyle, () =>
+        {
+            //info.DeleteScenesFolder();
+            info.EditorCreateNodeScenes();
+        });
         NewButton("RemoveScenes", buttonWidth, state.CanRemoveScenes, btnStyle, info.DestroyScenes);
         NewButton("SelectFolder", buttonWidth, state.sceneCount > 0, btnStyle, info.SelectScenesFolder);
         NewButton("DeleteFolder", buttonWidth, state.isAllLoaded == true && state.sceneCount > 0, btnStyle, info.DeleteScenesFolder);

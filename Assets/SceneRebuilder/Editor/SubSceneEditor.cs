@@ -29,7 +29,8 @@ public class SubSceneEditor<T> : BaseEditor<T> where T : SubScene_Base
             SceneAsset sceneAsset=AssetDatabase.LoadAssetAtPath<SceneAsset>(sceneAssetPath);
             Debug.Log(sceneAsset);
             //var scene=EditorSceneManager.GetSceneByPath(item.GetSceneArg().path);
-            EditorHelper.SelectObject(sceneAsset);
+            if(sceneAsset!=null)
+                EditorHelper.SelectObject(sceneAsset);
         });
         NewButton("DeleteFile", buttonWidth, isFileExist && item.IsLoaded == true, () =>
         {
@@ -80,5 +81,10 @@ public class SubSceneOut0Editor : SubSceneEditor<SubScene_Out0>
 
 [CustomEditor(typeof(SubScene_Out1))]
 public class SubSceneOut1Editor : SubSceneEditor<SubScene_Out1>
+{
+}
+
+[CustomEditor(typeof(SubScene_Single))]
+public class SubScene_SingleEditor : SubSceneEditor<SubScene_Single>
 {
 }

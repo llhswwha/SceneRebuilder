@@ -1069,7 +1069,7 @@ public class AreaTreeNode : SubSceneCreater
         {
             scene1 = SubSceneHelper.EditorCreateScene<SubScene_Out0>(combindResult, SceneContentType.TreeNode, false, tree.gameObject);
             scene1.cubePrefabId = tree.GetCubePrefabId();
-            scene1.contentType = SceneContentType.TreeNode;
+            //scene1.contentType = SceneContentType.TreeNode;
             //scene1.gos = SubSceneHelper.GetChildrenGos(combindResult.transform);
             scene1.SetObjects(SubSceneHelper.GetChildrenGos(combindResult.transform));
             scene1.Init();
@@ -1088,7 +1088,7 @@ public class AreaTreeNode : SubSceneCreater
             scene2 = SubSceneHelper.EditorCreateScene<SubScene_In>(renderersRoot, SceneContentType.TreeNode, false, tree.gameObject);
             //scene2.gos = SubSceneHelper.GetChildrenGos(renderersRoot.transform);
             scene2.cubePrefabId = tree.GetCubePrefabId();
-            scene2.contentType = SceneContentType.TreeNode;
+            //scene2.contentType = SceneContentType.TreeNode;
             scene2.SetObjects(SubSceneHelper.GetChildrenGos(renderersRoot.transform));
             scene2.Init();
             scenes.Add(scene2);
@@ -1106,7 +1106,7 @@ public class AreaTreeNode : SubSceneCreater
 
         EditorCreateScenes(scenes, progressChanged);
 
-        SubSceneManager.Instance.ClearOtherScenes();
+        //SubSceneManager.Instance.ClearOtherScenes();
         //EditorMoveScenes();
 
         if (progressChanged == null) Debug.LogError($"AreaTreeNode.EditorCreateScenes time:{(DateTime.Now - start)}");

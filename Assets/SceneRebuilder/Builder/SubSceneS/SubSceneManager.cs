@@ -374,7 +374,7 @@ public class SubSceneManager : SingletonBehaviour<SubSceneManager>
     public string ScenePath;
 
     [ContextMenu("ClearOtherScenes")]
-    public void ClearOtherScenes()
+    private void ClearOtherScenes()
     {
         EditorHelper.ClearOtherScenes();
     }
