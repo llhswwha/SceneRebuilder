@@ -86,23 +86,38 @@ public class LODManagerEditor : BaseFoldoutEditor<LODManager>
 
         if (GUILayout.Button("Show0",GUILayout.Width(50)))
         {
-            lodManager.GroupRoot.SetActive(true);
-            lodManager.LODnRoot.SetActive(false);
+            //lodManager.GroupRoot.SetActive(true);
+            //lodManager.LODnRoot.SetActive(false);
+            lodManager.ShowRoot0();
+            EditorHelper.SelectObject(lodManager.GroupRoot);
         }
         if (GUILayout.Button("Show1", GUILayout.Width(50)))
         {
-            lodManager.GroupRoot.SetActive(false);
-            lodManager.LODnRoot.SetActive(true);
+            //lodManager.GroupRoot.SetActive(false);
+            //lodManager.LODnRoot.SetActive(true);
+            lodManager.ShowRoot1();
+            EditorHelper.SelectObject(lodManager.LODnRoot);
         }
         if (GUILayout.Button("Show01", GUILayout.Width(60)))
         {
-            lodManager.GroupRoot.SetActive(true);
-            lodManager.LODnRoot.SetActive(true);
+            //lodManager.GroupRoot.SetActive(true);
+            //lodManager.LODnRoot.SetActive(true);
+            lodManager.ShowRoot01();
+        }
+        if (GUILayout.Button("Hide01", GUILayout.Width(60)))
+        {
+            //lodManager.GroupRoot.SetActive(true);
+            //lodManager.LODnRoot.SetActive(true);
+            lodManager.HideRoot01();
         }
 
         EditorGUILayout.EndHorizontal();
 
         EditorGUILayout.BeginHorizontal();
+        if (GUILayout.Button("Compare"))
+        {
+            lodManager.CompareTwoRoot();
+        }
         if (GUILayout.Button("AppendLod1"))
         {
             lodManager.AppendLod1ToGroup();
@@ -115,7 +130,14 @@ public class LODManagerEditor : BaseFoldoutEditor<LODManager>
         {
             lodManager.AppendLod3ToGroup();
         }
+        EditorGUILayout.EndHorizontal();
+
+        EditorGUILayout.BeginHorizontal();
         if (GUILayout.Button("SetColor"))
+        {
+            lodManager.SetAppendLod3Color();
+        }
+        if (GUILayout.Button("Replace"))
         {
             lodManager.SetAppendLod3Color();
         }
@@ -180,7 +202,7 @@ public class LODManagerEditor : BaseFoldoutEditor<LODManager>
                 var arg = editorArgs[item];
                 arg.caption = $"[{i:00}] {item.GetCaption()}";
                 //arg.info = door.ToString();
-                EditorUIUtils.ObjectFoldout(arg, item.renderer_lod1, () =>
+                EditorUIUtils.ObjectFoldout(arg, item.renderer_lod1.gameObject, () =>
                 {
                     if (GUILayout.Button("Debug", GUILayout.Width(50)))
                     {

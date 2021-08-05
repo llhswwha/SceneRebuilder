@@ -211,11 +211,13 @@ public class GlobalMaterialManager : SingletonBehaviour<GlobalMaterialManager>
         return log+"\n"+log2;
     }
 
+    public bool includeInactive = false;
+
     [ContextMenu("GetCombineMaterial")]
     public void GetCombineMaterial()
     {
         DateTime start = DateTime.Now;
-        var allRenderers = GameObject.FindObjectsOfType<MeshRenderer>(true);
+        var allRenderers = GameObject.FindObjectsOfType<MeshRenderer>(includeInactive);
         int count = 0;
         var mats = MeshCombineHelper.GetMatFilters(allRenderers, out count, false);
         CombinedMaterials=mats.Keys.ToList();
@@ -227,7 +229,7 @@ public class GlobalMaterialManager : SingletonBehaviour<GlobalMaterialManager>
     public void SetCombineMaterial()
     {
         DateTime start = DateTime.Now;
-        var allRenderers = GameObject.FindObjectsOfType<MeshRenderer>(true);
+        var allRenderers = GameObject.FindObjectsOfType<MeshRenderer>(includeInactive);
         int count = 0;
         var mats = MeshCombineHelper.GetMatFilters(allRenderers, out count, true);
         CombinedMaterials=mats.Keys.ToList();

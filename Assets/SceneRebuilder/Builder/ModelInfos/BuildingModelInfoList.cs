@@ -61,12 +61,12 @@ public class BuildingModelInfoList : MonoBehaviour
 
             var trees = b.CreateTreesInnerEx(isOut0BigSmall, subProgress =>
             {
-                float progress = (float)(i + subProgress) / buildings.Count;
+                float progress2 = (float)(i + subProgress) / buildings.Count;
 
                 //Debug.Log($"CombinedBuildings subProgress:{subProgress},progress:{progress}");
 
-                float percents = progress * 100;
-                if (ProgressBarHelper.DisplayCancelableProgressBar("CombinedBuildings", $"Progress2 {(i + subProgress):F1}/{buildings.Count} {percents:F2}%  {b.name}", progress))
+                float percents2 = progress2 * 100;
+                if (ProgressBarHelper.DisplayCancelableProgressBar("CombinedBuildings", $"Progress2 {(i + subProgress):F1}/{buildings.Count} {percents2:F2}%  {b.name}", progress2))
                 {
                     return;
                 }

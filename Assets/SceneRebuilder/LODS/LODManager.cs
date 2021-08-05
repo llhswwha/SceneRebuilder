@@ -96,9 +96,12 @@ public class LODManager : SingletonBehaviour<LODManager>
         return renderer;
     }
 
+
     public List<MeshRendererInfo> list_lod0 = new List<MeshRendererInfo>();
 
     public LODCompareMode compareMode = LODCompareMode.NameWithCenter;
+
+
 
     public MinDisTarget<MeshRendererInfo> GetMinInfo(Transform t)
     {
@@ -161,12 +164,95 @@ public class LODManager : SingletonBehaviour<LODManager>
 #if UNITY_EDITOR
     private void AppendLodInner(int lodLevel)
     {
+        //twoList.Clear();
+        //EditorHelper.UnpackPrefab(GroupRoot, PrefabUnpackMode.OutermostRoot);
+        //EditorHelper.UnpackPrefab(LODnRoot, PrefabUnpackMode.OutermostRoot);
+        //DateTime start = DateTime.Now;
+        //var renderers_2 = MeshRendererInfo.GetInfos(LODnRoot);//  LODnRoot.GetComponentsInChildren<MeshRenderer>(true);
+        //var renderers_0 = MeshRendererInfo.GetLodNs(GroupRoot,-1,0);
+
+        //LODRendererCount0 = renderers_0.Count;
+        //LODRendererCount1 = renderers_2.Length;
+
+        //list_lod0 = new List<MeshRendererInfo>();
+        //list_lod0.AddRange(renderers_0);
+        ////renderers_0.ToList().ForEach(i => { ts.Add(i.transform); });
+        //for (int i = 0; i < renderers_2.Length; i++)
+        //{
+        //    MeshRendererInfo render_lod1 = renderers_2[i];
+
+        //    float progress = (float)i / renderers_2.Length;
+        //    ProgressBarHelper.DisplayCancelableProgressBar("CombineLOD0AndLOD1", $"{i}/{renderers_2.Length} {progress:P1} MeshRenderer:{render_lod1.name}", progress);
+
+        //    var min = GetMinDisTransform<MeshRendererInfo>(list_lod0, render_lod1.transform, compareMode);
+        //    float minDis = min.dis;
+        //    MeshRendererInfo render_lod0 = min.target;
+
+        //    //MeshFilter filter1 = render_lod1.GetComponent<MeshFilter>();
+        //    //MeshFilter filter0 = render_lod0.GetComponent<MeshFilter>();
+        //    int vertexCount0 = render_lod0.GetMinLODVertexCount();
+        //    int vertexCount1 = render_lod1.GetMinLODVertexCount();
+        //    if (minDis <= zeroDistance)
+        //    {
+        //        LODTwoRenderers lODTwoRenderers = new LODTwoRenderers(render_lod0, render_lod1, minDis, min.meshDis, vertexCount0, vertexCount1);
+        //        twoList.Add(lODTwoRenderers);
+        //        if (DoCreateGroup)
+        //        {
+        //            Debug.Log($"GetDistance1 \tLOD3:{render_lod1.name}({vertexCount1}) \tLOD0:{render_lod0.name}({vertexCount0}) \tDistance:{minDis} \t{(float)vertexCount1 / vertexCount0:P2}");
+        //            CreateGroup(lODTwoRenderers, lodLevel);
+        //        }
+        //    }
+        //    else
+        //    {
+        //        Debug.LogWarning($"GetDistance1 \tLOD3:{render_lod1.name}({vertexCount1}) \tLOD0:{render_lod0.name}({vertexCount0}) \tDistance:{minDis} \t{(float)vertexCount1 / vertexCount0:P2}");
+
+        //        twoList.Add(new LODTwoRenderers(render_lod0, render_lod1, minDis, min.meshDis, vertexCount0, vertexCount1));
+        //    }
+        //}
+        //ProgressBarHelper.ClearProgressBar();
+
+        //twoList.Sort((a, b) =>
+        //{
+        //    return b.dis.CompareTo(a.dis);
+        //});
+
+        //RemoveEmpty(LODnRoot.transform);
+        //RemoveEmpty(LODnRoot.transform);
+
+        //SetRenderersLODInfo();
+
+        //Debug.LogError($"AppendLod3ToGroup count1:{renderers_2.Length} count0:{renderers_0.Count} time:{(DateTime.Now - start)}");
+
+        foreach (var item in twoList)
+        {
+            var minDis = item.dis;
+            var render_lod1 = item.renderer_lod1;
+            var render_lod0 = item.renderer_lod0;
+            var vertexCount0 = item.vertexCount0;
+            var vertexCount1 = item.vertexCount1;
+            if (minDis <= zeroDistance)
+            {
+                if (DoCreateGroup)
+                {
+                    Debug.Log($"GetDistance1 \tLOD3:{render_lod1.name}({vertexCount1}) \tLOD0:{render_lod0.name}({vertexCount0}) \tDistance:{minDis} \t{(float)vertexCount1 / vertexCount0:P2}");
+                    CreateGroup(item, lodLevel);
+                }
+            }
+            else
+            {
+                Debug.LogWarning($"GetDistance1 \tLOD3:{render_lod1.name}({vertexCount1}) \tLOD0:{render_lod0.name}({vertexCount0}) \tDistance:{minDis} \t{(float)vertexCount1 / vertexCount0:P2}");
+            }
+        }
+    }
+
+    public void CompareTwoRoot()
+    {
         twoList.Clear();
         EditorHelper.UnpackPrefab(GroupRoot, PrefabUnpackMode.OutermostRoot);
         EditorHelper.UnpackPrefab(LODnRoot, PrefabUnpackMode.OutermostRoot);
         DateTime start = DateTime.Now;
         var renderers_2 = MeshRendererInfo.GetInfos(LODnRoot);//  LODnRoot.GetComponentsInChildren<MeshRenderer>(true);
-        var renderers_0 = MeshRendererInfo.GetLodNs(GroupRoot,-1,0);
+        var renderers_0 = MeshRendererInfo.GetLodNs(GroupRoot, -1, 0);
 
         LODRendererCount0 = renderers_0.Count;
         LODRendererCount1 = renderers_2.Length;
@@ -189,22 +275,8 @@ public class LODManager : SingletonBehaviour<LODManager>
             //MeshFilter filter0 = render_lod0.GetComponent<MeshFilter>();
             int vertexCount0 = render_lod0.GetMinLODVertexCount();
             int vertexCount1 = render_lod1.GetMinLODVertexCount();
-            if (minDis <= zeroDistance)
-            {
-                LODTwoRenderers lODTwoRenderers = new LODTwoRenderers(render_lod0, render_lod1, minDis, min.meshDis, vertexCount0, vertexCount1);
-                twoList.Add(lODTwoRenderers);
-                if (DoCreateGroup)
-                {
-                    Debug.Log($"GetDistance1 \tLOD3:{render_lod1.name}({vertexCount1}) \tLOD0:{render_lod0.name}({vertexCount0}) \tDistance:{minDis} \t{(float)vertexCount1 / vertexCount0:P2}");
-                    CreateGroup(lODTwoRenderers, lodLevel);
-                }
-            }
-            else
-            {
-                Debug.LogWarning($"GetDistance1 \tLOD3:{render_lod1.name}({vertexCount1}) \tLOD0:{render_lod0.name}({vertexCount0}) \tDistance:{minDis} \t{(float)vertexCount1 / vertexCount0:P2}");
-
-                twoList.Add(new LODTwoRenderers(render_lod0, render_lod1, minDis, min.meshDis, vertexCount0, vertexCount1));
-            }
+            LODTwoRenderers lODTwoRenderers = new LODTwoRenderers(render_lod0, render_lod1, minDis, min.meshDis, vertexCount0, vertexCount1);
+            twoList.Add(lODTwoRenderers);
         }
         ProgressBarHelper.ClearProgressBar();
 
@@ -220,6 +292,7 @@ public class LODManager : SingletonBehaviour<LODManager>
 
         Debug.LogError($"AppendLod3ToGroup count1:{renderers_2.Length} count0:{renderers_0.Count} time:{(DateTime.Now - start)}");
     }
+
     [ContextMenu("AppendLod1ToGroup")]
     public void AppendLod1ToGroup()
     {
@@ -238,6 +311,49 @@ public class LODManager : SingletonBehaviour<LODManager>
         AppendLodInner(3);
     }
 
+    public void ShowRoot0()
+    {
+        //GroupRoot.SetActive(true);
+        //LODnRoot.SetActive(false);
+
+        foreach (var item in twoList)
+        {
+            item.Show0();
+        }
+    }
+
+    public void ShowRoot1()
+    {
+        //GroupRoot.SetActive(true);
+        //LODnRoot.SetActive(false);
+
+        foreach (var item in twoList)
+        {
+            item.Show1();
+        }
+    }
+    public void ShowRoot01()
+    {
+        //GroupRoot.SetActive(true);
+        //LODnRoot.SetActive(false);
+
+        foreach (var item in twoList)
+        {
+            item.Show01();
+        }
+    }
+
+    public void HideRoot01()
+    {
+        //GroupRoot.SetActive(true);
+        //LODnRoot.SetActive(false);
+
+        foreach (var item in twoList)
+        {
+            item.Hide01();
+        }
+    }
+
     public void SetAppendLod3Color()
     {
         foreach(var item in twoList)
@@ -245,6 +361,17 @@ public class LODManager : SingletonBehaviour<LODManager>
             if(item.dis< zeroDistance)
             {
                 item.SetColor();
+            }
+        }
+    }
+
+    public void Replace()
+    {
+        foreach (var item in twoList)
+        {
+            if (item.dis < zeroDistance)
+            {
+                item.Replace();
             }
         }
     }
@@ -1118,6 +1245,16 @@ public class LODTwoRenderers
         return $"[{this.renderer_lod1.name == this.renderer_lod0.name}] {this.renderer_lod1.name}({this.vertexCount1}) <{this.dis:F5}|{this.meshDis:F5}> {this.renderer_lod0.name}({this.vertexCount0})";
     }
 
+    public void Replace()
+    {
+        var lod1 = renderer_lod1.meshRenderer;
+        var lod0 = renderer_lod0.meshRenderer;
+        lod1.transform.parent = lod0.transform;
+        //copy scripts
+        lod0.gameObject.SetActive(false);
+        //GameObject.DestroyImmediate(lod0.gameObject);
+    }
+
     public void SetColor()
     {
         var lod1 = renderer_lod1.meshRenderer;
@@ -1175,5 +1312,33 @@ public class LODTwoRenderers
         //{
         //    Debug.LogError($"SetAppendLod3Color lod1:{lod1.name} lod0:{lod0.name} length1:{lod1.sharedMaterials.Length} length0:{lod0.sharedMaterials.Length}");
         //}
+    }
+
+    internal void Hide01()
+    {
+        Set01Active(false, false);
+    }
+
+    private void Set01Active(bool active0,bool active1)
+    {
+        var lod1 = renderer_lod1.meshRenderer;
+        lod1.gameObject.SetActive(active1);
+        var lod0 = renderer_lod0.meshRenderer;
+        lod0.gameObject.SetActive(active0);
+    }
+
+    internal void Show0()
+    {
+        Set01Active(true, false);
+    }
+
+    internal void Show01()
+    {
+        Set01Active(true, true);
+    }
+
+    internal void Show1()
+    {
+        Set01Active(false, true);
     }
 }

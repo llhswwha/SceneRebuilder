@@ -121,9 +121,9 @@ public class SubSceneManager : SingletonBehaviour<SubSceneManager>
             item.OneKey_TreePartScene((subProgress) =>
             {
                 //Debug.Log($"EditorCreateBuildingScenes subProgress:{subProgress} || {i}/{subScenes.Length} {percents:F2}% of 100% \t{item.name}");
-                float progress = (float)(i + subProgress) / count;
-                float percents = progress * 100;
-                if (ProgressBarHelper.DisplayCancelableProgressBar("OneKey ", $"Progress2 {(i + subProgress):F1}/{count} {percents:F1}% {item.name}", progress))
+                float progress2 = (float)(i + subProgress) / count;
+                float percents2 = progress2 * 100;
+                if (ProgressBarHelper.DisplayCancelableProgressBar("OneKey ", $"Progress2 {(i + subProgress):F1}/{count} {percents:F1}% {item.name}", progress2))
                 {
                     //ProgressBarHelper.ClearProgressBar();
                     //break;
@@ -179,9 +179,9 @@ public class SubSceneManager : SingletonBehaviour<SubSceneManager>
             // });
             item.EditorCreateNodeScenes((subProgress)=>
             {
-                float progress = (float)(i+subProgress) / count;
-                float percents = progress * 100;
-                if (ProgressBarHelper.DisplayCancelableProgressBar("EditorCreateBuildingScenes ", $"Progress2 {(i + subProgress):F1}/{count} {percents:F1}% {item.name}", progress))
+                float progress2 = (float)(i+subProgress) / count;
+                float percents2 = progress2 * 100;
+                if (ProgressBarHelper.DisplayCancelableProgressBar("EditorCreateBuildingScenes ", $"Progress2 {(i + subProgress):F1}/{count} {percents2:F1}% {item.name}", progress2))
                 {
                     //ProgressBarHelper.ClearProgressBar();
                     //break;
@@ -228,10 +228,10 @@ public class SubSceneManager : SingletonBehaviour<SubSceneManager>
 
             item.EditorLoadNodeScenes(p =>
             {
-                float progress = (float)(i + p) / count;
-                float percents = progress * 100;
+                float progress2 = (float)(i + p) / count;
+                float percents2 = progress2 * 100;
 
-                if (ProgressBarHelper.DisplayCancelableProgressBar("EditorLoadScenes", $"Progress2 {(i + p):F1}/{count} {percents:F2}% of 100%  {item.name}", progress))
+                if (ProgressBarHelper.DisplayCancelableProgressBar("EditorLoadScenes", $"Progress2 {(i + p):F1}/{count} {percents2:F2}% of 100%  {item.name}", progress2))
                 {
                     return;
                 }
