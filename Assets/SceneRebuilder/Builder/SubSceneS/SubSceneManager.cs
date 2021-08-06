@@ -403,7 +403,7 @@ public class SubSceneManager : SingletonBehaviour<SubSceneManager>
 
     public int LoadingSceneMaxCount = 1;
     
-    public void LoadScenesEx<T>(T[] scenes, Action<float,bool> finishedCallback) where T : SubScene_Base
+    public void LoadScenesEx<T>(T[] scenes, Action<SceneLoadProgress> finishedCallback) where T : SubScene_Base
     {
         //if (IsOneCoroutine)
         //{
@@ -428,16 +428,18 @@ public class SubSceneManager : SingletonBehaviour<SubSceneManager>
         }
     }
 
-    IEnumerator LoadScenesByBag<T>(T[] scenes, Action<float,bool> finishedCallback) where T : SubScene_Base
+    IEnumerator LoadScenesByBag<T>(T[] scenes, Action<SceneLoadProgress> finishedCallback) where T : SubScene_Base
     {
         var start = DateTime.Now;
         WattingForLoadedAll.AddRange(scenes);
         int count = 0;
+        SceneLoadProgress loadProgress = new SceneLoadProgress();
         if (WattingForLoadedAll.Count == 0)
         {
             if (finishedCallback != null)
             {
-                finishedCallback(1, true);
+                loadProgress.SetInfo(null, 1, true);
+                finishedCallback(loadProgress);
             }
         }
         while (WattingForLoadedAll.Count>0)
@@ -461,7 +463,8 @@ public class SubSceneManager : SingletonBehaviour<SubSceneManager>
                     {
                         if (finishedCallback != null)
                         {
-                            finishedCallback(1,true);
+                            loadProgress.SetInfo(null, 1, true);
+                            finishedCallback(loadProgress);
                         }
                         WriteLog("LoadScenesByBag",$"count:{scenes.Length},\t time:{(DateTime.Now - start).ToString()}");
                         OnAllLoaded();
@@ -470,7 +473,8 @@ public class SubSceneManager : SingletonBehaviour<SubSceneManager>
                     {
                         if (finishedCallback != null)
                         {
-                            finishedCallback(progress,false);
+                            loadProgress.SetInfo(s, 1, true);
+                            finishedCallback(loadProgress);
                         }
                     }
                 });
@@ -832,17 +836,19 @@ public class SubSceneManager : SingletonBehaviour<SubSceneManager>
         LoadScenesAsync(subScenes,null);
     }
 
-    public void LoadScenesAsync<T>(T[] scenes, Action<float,bool> finishedCallbak) where T : SubScene_Base
+    public void LoadScenesAsync<T>(T[] scenes, Action<SceneLoadProgress> finishedCallbak) where T : SubScene_Base
     {
         DateTime start = DateTime.Now;
         OnProgressChanged(0);
         //subScenes = GameObject.FindObjectsOfType<SubScene>(true);
         int count = 0;
+        SceneLoadProgress progressInfo = new SceneLoadProgress();
         if (scenes.Length == 0)
         {
             if (finishedCallbak != null)
             {
-                finishedCallbak(1, true);
+                progressInfo.SetInfo(null, 1, true);
+                finishedCallbak(progressInfo);
             }
         }
         for (int i = 0; i < scenes.Length; i++)
@@ -864,7 +870,8 @@ public class SubSceneManager : SingletonBehaviour<SubSceneManager>
                 {
                     if (finishedCallbak != null)
                     {
-                        finishedCallbak(1,true);
+                        progressInfo.SetInfo(null, 1, true);
+                        finishedCallbak(progressInfo);
                     }
                     WriteLog("LoadScenesAsync",$"count:{scenes.Length},\t time:{(DateTime.Now - start).ToString()}");
                     OnAllLoaded();
@@ -872,7 +879,8 @@ public class SubSceneManager : SingletonBehaviour<SubSceneManager>
                 else{
                     if (finishedCallbak != null)
                     {
-                        finishedCallbak(1,false);
+                        progressInfo.SetInfo(s, progress, false);
+                        finishedCallbak(progressInfo);
                     }
                 }
             });
@@ -886,36 +894,42 @@ public class SubSceneManager : SingletonBehaviour<SubSceneManager>
         LoadScenesAsyncEx(subScenes,null);
     }
 
-    public void LoadScenesAsyncEx<T>(T[] scenes, Action<float,bool> finishedCallbak) where T : SubScene_Base
+    public void LoadScenesAsyncEx<T>(T[] scenes, Action<SceneLoadProgress> finishedCallbak) where T : SubScene_Base
     {
         StartCoroutine(LoadAllScenesCoroutine(scenes, finishedCallbak));
     }
 
     public float loadProgress = 0;
 
-    IEnumerator LoadAllScenesCoroutine<T>(T[] scenes,Action<float,bool> finishedCallbak) where T : SubScene_Base
+    
+    IEnumerator LoadAllScenesCoroutine<T>(T[] scenes,Action<SceneLoadProgress> finishedCallbak) where T : SubScene_Base
     {
         //loadProgress = 0;
         OnProgressChanged(0);
         DateTime start = DateTime.Now;
         //subScenes = GameObject.FindObjectsOfType<SubScene>(true);
+        SceneLoadProgress progressInfo = new SceneLoadProgress();
         for (int i = 0; i < scenes.Length; i++)
         {
             var subScene = scenes[i];
-            var progress = (i+0.0f) / scenes.Length;
-            WriteLog("LoadAllScenesCoroutine",$"count:{scenes.Length} index:{i} progress:{progress} ");
-
-            OnProgressChanged(progress);
-            if(finishedCallbak!=null){
-                finishedCallbak(progress,false);
-            }
             //Debug.Log($"loadProgress:{loadProgress},scene:{subScene.GetSceneName()}");
             
             yield return subScene.LoadSceneAsyncCoroutine(null);
+
+            var progress = (i + 0.0f) / scenes.Length;
+            WriteLog("LoadAllScenesCoroutine", $"count:{scenes.Length} index:{i} progress:{progress} ");
+            progressInfo.SetInfo(subScene, progress, false);
+            OnProgressChanged(progress);
+            if (finishedCallbak != null)
+            {
+                finishedCallbak(progressInfo);
+            }
         }
         WriteLog("LoadAllScenesCoroutine",$"count:{scenes.Length},\t time:{(DateTime.Now - start).ToString()}");
 
-        if (finishedCallbak != null) finishedCallbak(1,true);
+        progressInfo.SetInfo(null, 1, true);
+
+        if (finishedCallbak != null) finishedCallbak(progressInfo);
         OnAllLoaded();
         
         yield return null;
@@ -1057,5 +1071,28 @@ public class SubSceneManager : SingletonBehaviour<SubSceneManager>
         Debug.Log($"[{tag}]{log}");
     }
 }
+
+public class SceneLoadProgress
+{
+    public SubScene_Base scene;
+    public float progress;
+    public bool isAllFinished;
+    public SceneLoadProgress()
+    {
+
+    }
+    public SceneLoadProgress(SubScene_Base scene, float progress, bool isAllFinished)
+    {
+        SetInfo(scene, progress, isAllFinished);
+    }
+
+    public void SetInfo(SubScene_Base scene, float progress, bool isAllFinished)
+    {
+        this.scene = scene;
+        this.progress = progress;
+        this.isAllFinished = isAllFinished;
+    }
+}
+
 
 

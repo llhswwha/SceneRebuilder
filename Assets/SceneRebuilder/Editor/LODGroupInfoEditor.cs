@@ -32,6 +32,8 @@ public class LODGroupInfoEditor : BaseFoldoutEditor<LODGroupInfo>
         }
         EditorGUILayout.EndHorizontal();
 
+        EditorGUILayout.ObjectField(item.scene, typeof(SubScene_Base));
+
         EditorGUILayout.BeginHorizontal();
         if (GUILayout.Button("Uniform"))
         {
@@ -57,18 +59,30 @@ public class LODGroupInfoEditor : BaseFoldoutEditor<LODGroupInfo>
         }
         else
         {
-            if (GUILayout.Button("CreateScene"))
+            //if (GUILayout.Button("CreateScene"))
+            //{
+            //    item.EditorCreateScene();
+            //}
+            //if (GUILayout.Button("LoadScene"))
+            //{
+            //    item.EditorLoadScene();
+            //}
+            //if (GUILayout.Button("UnloadScene"))
+            //{
+            //    item.UnloadScene();
+            //}
+            NewButton("CreateScene", buttonWidth, item.IsSceneCreatable(), contentStyle, ()=>
             {
                 item.EditorCreateScene();
-            }
-            if (GUILayout.Button("LoadScene"))
+                EditorHelper.ClearOtherScenes();
+                EditorHelper.RefreshAssets();
+            });
+            if (item == null)
             {
-                item.EditorLoadScene();
+                return;
             }
-            if (GUILayout.Button("UnloadScene"))
-            {
-                
-            }
+            NewButton("LoadScene", buttonWidth, item.IsSceneCreatable() == false, contentStyle, item.EditorLoadScene);
+            NewButton("UnloadScene", buttonWidth, item.IsSceneCreatable(), contentStyle, item.UnloadScene);
         }
  
         if (GUILayout.Button("SelectScene"))

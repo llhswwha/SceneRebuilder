@@ -983,15 +983,73 @@ public class LODManager : SingletonBehaviour<LODManager>
 
     public bool includeInactive = false;
 
+    public LODGroupInfo[] InitGroupInfos()
+    {
+        LODGroup[] groups = LODHelper.GetLODGroups(LocalTarget, includeInactive);
+        LODGroupInfo[] infos = new LODGroupInfo[groups.Length];
+        for (int i = 0; i < groups.Length; i++)
+        {
+            LODGroup group = groups[i];
+            var info=LODGroupInfo.Init(group.gameObject);
+            infos[i] = info;
+        }
+        return infos;
+    }
+
+    public void SaveLOD0s()
+    {
+        //LODGroup[] groups = LODHelper.GetLODGroups(LocalTarget, includeInactive);
+        //var scenes = LODHelper.SaveLOD0s(null, groups);
+        //EditorHelper.ClearOtherScenes();
+        //EditorHelper.RefreshAssets();
+
+        //foreach (var group in groups)
+        //{
+        //    var info = LODGroupInfo.Init(group.gameObject);
+        //    info.GetScene();
+        //}
+
+        LODGroupInfo[] infos = InitGroupInfos();
+        for(int i = 0; i < infos.Length; i++)
+        {
+            var info = infos[i];
+
+            float progress = (float)i / infos.Length;
+            ProgressBarHelper.DisplayProgressBar("LODManager.SaveLODs", $"Progress {i}/{infos.Length} {progress:P1}", progress);
+
+            if (info.IsSceneCreatable() == false) continue;
+            info.EditorCreateScene();
+        }
+        EditorHelper.ClearOtherScenes();
+        EditorHelper.RefreshAssets();
+        ProgressBarHelper.ClearProgressBar();
+
+        SubSceneManager.Instance.SetBuildings_All();
+    }
+
+    public double lodInfoTime = 0;
+
     [ContextMenu("GetRuntimeLODDetail")]
     public string GetRuntimeLODDetail(bool isForce)
     {
+        ThreadManager.Instance.RunTask<GameObject>(() =>
+        {
+            Debug.Log("thread1");
+            return null;
+        }, (go) =>
+         {
+             Debug.Log("thread2");
+         }, "GetRuntimeLODDetail");
+
         DateTime now = DateTime.Now;
         if(lodDetails==null||lodDetails.Count==0 || isForce)
         {
             lodDetails=LODGroupDetails.GetSceneLodGroupInfo(LocalTarget, includeInactive);
         }
-        
+
+
+        List<LODGroupDetails> lod0List = new List<LODGroupDetails>();
+
         Camera cam = GameObject.FindObjectOfType<Camera>();
 
         int[] infos=LODGroupDetails.CaculateGroupInfo(lodDetails,LODSceneView.GameView,LODSortType.Vertex,cam);
@@ -1011,6 +1069,45 @@ public class LODManager : SingletonBehaviour<LODManager>
             // foreach(var child in lodI.childs){
             //     allVertex0+=child.vertexCount;
             // }
+
+            if(lodI.currentInfo.currentLevel==0)
+            {
+                lod0List.Add(lodI);
+            }
+        }
+
+        List<SubScene_Base> sceneList = new List<SubScene_Base>();
+        Dictionary<SubScene_Base, LODGroupInfo> scene2Group = new Dictionary<SubScene_Base, LODGroupInfo>();
+        foreach (var lod0 in lod0List)
+        {
+            LODGroupInfo ginfo = lod0.group.GetComponent<LODGroupInfo>();
+            if (ginfo == null) continue;
+            //ginfo.LoadScene();
+            var scene = ginfo.scene;
+            if (scene == null) continue;
+
+            if (scene.IsLoading == true) continue;
+            if (scene.IsLoaded == true) continue;
+
+            sceneList.Add(scene);
+            scene2Group.Add(scene, ginfo);
+        }
+        if (sceneList.Count > 0)
+        {
+            Debug.LogError($"GetRuntimeLODDetail lod0List:{lod0List.Count} sceneList:{sceneList.Count}");
+            SubSceneManager.Instance.LoadScenesEx(sceneList.ToArray(), (p) =>
+            {
+                if (p.scene != null)
+                {
+                    LODGroupInfo group = scene2Group[p.scene];
+                    group.SetLOD0FromScene();
+                }
+                
+            });
+        }
+        else
+        {
+            Debug.Log($"GetRuntimeLODDetail lod0List:{lod0List.Count}");
         }
 
         // string lodInfoTxt="";
@@ -1029,10 +1126,10 @@ public class LODManager : SingletonBehaviour<LODManager>
 
         var allVertexCount=infos[0];
         var allMeshCount=infos[1];
-        double time=(DateTime.Now-now).TotalMilliseconds;
-        string info=$"LOD:{lodDetails.Count}, Vertex:{allVertexCount/10000f:F0}/{allVertex0/10000f:F0}, Mesh:{allMeshCount}, t:{time:F0}ms";
+        lodInfoTime = (DateTime.Now-now).TotalMilliseconds;
+        string infoText=$"LOD:{lodDetails.Count}, Vertex:{allVertexCount/10000f:F0}/{allVertex0/10000f:F0}, Mesh:{allMeshCount}, t:{lodInfoTime:F0}ms";
         // info+="\n"+lodInfoTxt;
-        info+="\n"+lodInfoTxt_count+"\n"+lodInfoTxt_vertex+"\n"+lodInfoTxt_percent;
+        infoText+="\n"+lodInfoTxt_count+"\n"+lodInfoTxt_vertex+"\n"+lodInfoTxt_percent;
 
         //Debug.Log($"CaculateGroupInfo完成，耗时{time}ms "+info);
 
@@ -1041,7 +1138,12 @@ public class LODManager : SingletonBehaviour<LODManager>
             return b.vertexCount.CompareTo(a.vertexCount);
         });
 
-        return info;
+        return infoText;
+    }
+
+    public void ClearTwoList()
+    {
+        twoList = twoList.FindAll(i => i.renderer_lod0 != null || i.renderer_lod1 != null);
     }
 }
 
@@ -1090,48 +1192,73 @@ public static class LODHelper
         return groups;
     }
     
-    public static List<SubScene_Base> SaveLOD0(GameObject dirRoot,params LODGroup[] groups)
+    public static SubScene_Base GetLOD0Scene(GameObject dirRoot, LODGroup group)
+    {
+        LOD[] lods = group.GetLODs();
+        if (lods[0].renderers[0] == lods[1].renderers[0])
+        {
+            Debug.LogWarning("GetLOD0Scene lods[0].renderers[0] == lods[1].renderers[0] Group:"+group);
+            return null;
+        }
+
+        //lods[0].renderers = lods[1].renderers;
+        //group.SetLODs(lods);
+        GameObject dir = group.gameObject;
+        if (dirRoot != null)
+        {
+            dir = dirRoot;
+        }
+        else
+        {
+            BuildingModelInfo modelInfo = group.GetComponentInParent<BuildingModelInfo>();
+            if (modelInfo != null)
+            {
+                dir = modelInfo.gameObject;
+            }
+        }
+
+        var scene = SubSceneHelper.EditorCreateScene<SubScene_Single>(group.gameObject, SceneContentType.LOD0, false, dir);
+        List<GameObject> gos = new List<GameObject>();
+        foreach (var render in lods[0].renderers)
+        {
+            gos.Add(render.gameObject);
+        }
+
+        lods[0].renderers = lods[1].renderers;
+        group.SetLODs(lods);
+
+        scene.SetObjects(gos);
+        scene.Init();
+        return scene;
+    }
+
+    public static SubScene_Base SaveLOD0(GameObject dirRoot,LODGroup group)
+    {
+        group = UniformLOD0(group);
+        var scene = GetLOD0Scene(dirRoot, group);
+        if (scene != null)
+        {
+            scene.SaveScene();
+            scene.ShowBounds();
+        }
+
+        return scene;
+    }
+
+    public static List<SubScene_Base> SaveLOD0s(GameObject dirRoot, LODGroup[] groups)
     {
         List<SubScene_Base> scenes = new List<SubScene_Base>();
-        for (int i=0;i<groups.Length;i++)
+        for (int i = 0; i < groups.Length; i++)
         {
             var group = groups[i];
-
             group = UniformLOD0(group);
-
-            LOD[] lods = group.GetLODs();
-            //lods[0].renderers = lods[1].renderers;
-            //group.SetLODs(lods);
-            GameObject dir = group.gameObject;
-            if (dirRoot != null)
+            var scene = GetLOD0Scene(dirRoot, group);
+            if(scene!=null)
             {
-                dir = dirRoot;
+                scenes.Add(scene);
             }
-            else
-            {
-                BuildingModelInfo modelInfo = group.GetComponentInParent<BuildingModelInfo>();
-                if (modelInfo != null)
-                {
-                    dir = modelInfo.gameObject;
-                }
-            }
-
-            var scene = SubSceneHelper.EditorCreateScene<SubScene_Single>(group.gameObject, SceneContentType.LOD0, false, dir);
-            List<GameObject> gos = new List<GameObject>();
-            foreach (var render in lods[0].renderers)
-            {
-                gos.Add(render.gameObject);
-            }
-
-            lods[0].renderers = lods[1].renderers;
-            group.SetLODs(lods);
-
-            scene.SetObjects(gos);
-            scene.Init();
-
-            scenes.Add(scene);
         }
-        SubSceneHelper.EditorCreateScenes(scenes, (p,i,count)=>
+        SubSceneHelper.EditorCreateScenes(scenes, (p, i, count) =>
         {
             if (p == 1)
             {
@@ -1141,11 +1268,10 @@ public static class LODHelper
             {
                 ProgressBarHelper.DisplayProgressBar("SaveLOD0", $"Progress {i}/{count} {p:P1}", p);
             }
-            
+
         });
         return scenes;
     }
-
 
     public static void LOD1ToLOD0(LODGroup group)
     {
@@ -1156,6 +1282,7 @@ public static class LODHelper
 
     public static LODGroup UniformLOD0(LODGroup group)
     {
+        GameObject goOld = group.gameObject;
         MeshRenderer renderer = group.GetComponent<MeshRenderer>();
         if (renderer == null) return group;
 
@@ -1190,21 +1317,23 @@ public static class LODHelper
         //    lodsNew[i] = lods[i];
         //}
 
-        LODGroup newGroup = newGroupGo.AddComponent<LODGroup>();
-        newGroup.SetLODs(lods);
-        LODGroupInfo groupInfoNew=newGroupGo.AddComponent<LODGroupInfo>();
-
-        //MeshRendererInfo info = MeshRendererInfo.GetInfo(group.gameObject);
-        //info.Init();
-        RendererId.UpdateId(group);
-
-        LODGroupInfo groupInfo= group.GetComponent<LODGroupInfo>();
+        LODGroupInfo groupInfo = group.GetComponent<LODGroupInfo>();
         if (groupInfo != null)
         {
             GameObject.DestroyImmediate(groupInfo);
         }
 
         GameObject.DestroyImmediate(group);
+
+        LODGroup newGroup = newGroupGo.AddComponent<LODGroup>();
+        newGroup.SetLODs(lods);
+        LODGroupInfo groupInfoNew=newGroupGo.AddComponent<LODGroupInfo>();
+
+        //MeshRendererInfo info = MeshRendererInfo.GetInfo(group.gameObject);
+        //info.Init();
+        RendererId.UpdateId(goOld);
+
+
 
 #if UNITY_EDITOR
         EditorHelper.SelectObject(newGroupGo);

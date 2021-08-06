@@ -107,23 +107,41 @@ public class LODGroupInfo : MonoBehaviour
 
     public void EditorCreateScene()
     {
-        scene=LODHelper.SaveLOD0(null, this.LODGroup)[0];
-        EditorHelper.ClearOtherScenes();
-        EditorHelper.RefreshAssets();
+        scene=LODHelper.SaveLOD0(null, this.LODGroup);
     }
 
     public void EditorLoadScene()
     {
         IdDictionary.InitInfos();
-        if(scene==null)
-        {
-            scene = gameObject.GetComponent<SubScene_Base>();
-        }
+        GetScene();
         scene.EditorLoadScene();
         SetLOD0FromScene();
     }
 
-    private void SetLOD0FromScene()
+    public void UnloadScene()
+    {
+        LODHelper.LOD1ToLOD0(this.LODGroup);
+        GetScene();
+        scene.UnLoadGosM();
+    }
+
+    public bool IsSceneCreatable()
+    {
+        if (this.gameObject == false) return false;
+        GetScene();
+        if (scene == null) return true;
+        return scene.IsLoaded==true;
+    }
+
+    public void GetScene()
+    {
+        if (scene == null)
+        {
+            scene = gameObject.GetComponent<SubScene_Base>();
+        }
+    }
+
+    public void SetLOD0FromScene()
     {
         var lods = LODGroup.GetLODs();
         lods[0].renderers = scene.GetSceneRenderers().ToArray();
@@ -132,14 +150,28 @@ public class LODGroupInfo : MonoBehaviour
 
     public void LoadScene()
     {
+        //GetScene();
+
+        if (scene == null) return;
+        if (scene.IsLoaded) return;
+
         IdDictionary.InitInfos();
-        if (scene == null)
-        {
-            scene = gameObject.GetComponent<SubScene_Base>();
-        }
+
         scene.LoadSceneAsync((b, s) =>
         {
             SetLOD0FromScene();
         });
+    }
+
+    public static LODGroupInfo Init(GameObject go)
+    {
+        LODGroupInfo info = go.GetComponent<LODGroupInfo>();
+        if (info == null)
+        {
+            info=go.AddComponent<LODGroupInfo>();
+            info.GetLODs();
+        }
+        info.GetScene();
+        return info;
     }
 }

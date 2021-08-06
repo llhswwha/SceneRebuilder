@@ -18,6 +18,7 @@ public class LODManagerEditor : BaseFoldoutEditor<LODManager>
     {
         base.OnEnable();
         //twoListArg.Items = targetT.twoList;
+        targetT.ClearTwoList();
     }
 
     public override void OnToolLayout(LODManager lodManager)
@@ -59,14 +60,23 @@ public class LODManagerEditor : BaseFoldoutEditor<LODManager>
 
         EditorUIUtils.Separator(5);
 
-
+        lodManager.LocalTarget=EditorGUILayout.ObjectField(lodManager.LocalTarget, typeof(GameObject)) as GameObject;
         if (GUILayout.Button("Update LODs"))
         {
             string detail = lodManager.GetRuntimeLODDetail(true);
             Debug.Log($"lod detail:{detail}");
         }
-        DrawLODGroupList(lodGroupListArg, lodManager);
+        GUILayout.Label("time:" + lodManager.lodInfoTime);
 
+        DrawLODGroupList(lodGroupListArg, lodManager);
+        if (GUILayout.Button("InitGroupInfos"))
+        {
+            lodManager.InitGroupInfos();
+        }
+        if (GUILayout.Button("SaveLOD0s"))
+        {
+            lodManager.SaveLOD0s();
+        }
 
         EditorUIUtils.Separator(5);
 

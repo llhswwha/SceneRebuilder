@@ -200,12 +200,12 @@ public class BuildingModelInfo : SubSceneCreater
     [ContextMenu("TestLoadAndSwitchToRenderers")]
     public void TestLoadAndSwitchToRenderers()
     {
-       LoadAndSwitchToRenderers((p,r)=>{
-           Debug.LogError($"TestLoadAndSwitchToRenderers progress:{p} isFinished:{r}");
+       LoadAndSwitchToRenderers((p)=>{
+           Debug.LogError($"TestLoadAndSwitchToRenderers progress:{p.progress} isFinished:{p.isAllFinished}");
        });
     }
 
-    public void LoadAndSwitchToRenderers(Action<float,bool> finished)
+    public void LoadAndSwitchToRenderers(Action<SceneLoadProgress> loadSceneProgressChanged)
     {
         DateTime start=DateTime.Now;
         UpdateTrees();
@@ -222,17 +222,17 @@ public class BuildingModelInfo : SubSceneCreater
                 scenes.Add(rendererScene);
             }
         }
-        SubSceneShowManager.Instance.LoadScenes(scenes,(p,r)=>{
+        SubSceneShowManager.Instance.LoadScenes(scenes,(p)=>{
             Debug.LogError($"SwitchToCombined2 nodes:{nodes.Count} scenes:{scenes.Count}\t{(DateTime.Now-start).ToString()}");
 
-            if(r){
+            if(p.isAllFinished){
                 for(int i=0;i<nodes.Count;i++){
                     var node=nodes[i];
                     node.SwitchToRenderers();
                 }
             }
-            if(finished!=null){
-                finished(p,r);
+            if(loadSceneProgressChanged!=null){
+                loadSceneProgressChanged(p);
             }
 
             Debug.LogError($"SwitchToCombined3 nodes:{nodes.Count} scenes:{scenes.Count}\t{(DateTime.Now-start).ToString()}");

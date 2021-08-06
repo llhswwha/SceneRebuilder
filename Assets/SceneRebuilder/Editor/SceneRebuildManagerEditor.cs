@@ -34,7 +34,7 @@ public class SceneRebuildManagerEditor : BaseFoldoutEditor<SceneRebuildManager>
         //manager = target as SceneRebuildManager;
         UpdateList();
        
-        Debug.LogError("SceneRebuildManagerEditor.OnEnable");
+        //Debug.LogError("SceneRebuildManagerEditor.OnEnable");
 
         treeListArg = new FoldoutEditorArg(true, false, true, true, false);
         nodeListArg = new FoldoutEditorArg(true, false, true, true, false);

@@ -198,7 +198,7 @@ public class SubSceneShowManager : SingletonBehaviour<SubSceneShowManager>
     public bool IsEnableHide = false; 
     public bool IsEnableShow=false;
 
-    public void LoadStartScens(Action<float,bool> onComplete=null)
+    public void LoadStartScens(Action<SceneLoadProgress> onComplete=null)
     {
         List<SubScene_Out0> scenes=new List<SubScene_Out0>();
         // scenes.AddRange(scenes_Out0_Tree);
@@ -207,7 +207,7 @@ public class SubSceneShowManager : SingletonBehaviour<SubSceneShowManager>
         LoadStartScens_Innder(scenes, onComplete);
     }
 
-    public void LoadStartScens_All(Action<float, bool> onComplete = null)
+    public void LoadStartScens_All(Action<SceneLoadProgress> onComplete = null)
     {
         List<SubScene_Out0> scenes = new List<SubScene_Out0>();
         BuildingModelManager.Instance.ShowDetail();
@@ -218,37 +218,37 @@ public class SubSceneShowManager : SingletonBehaviour<SubSceneShowManager>
         LoadStartScens_Innder(scenes, onComplete);
     }
 
-    public void LoadStartAndHiddenScenes(Action<float, bool> onComplete1, Action<float, bool> onComplete2)
+    public void LoadStartAndHiddenScenes(Action<SceneLoadProgress> onComplete1, Action<SceneLoadProgress> onComplete2)
     {
-        LoadStartScens((p1, r1) =>
+        LoadStartScens((p1) =>
         {
-            Debug.LogError($"LoadStartScens progress:{p1} isFinished:{r1}");
+            Debug.LogError($"LoadStartScens progress:{p1.progress} isFinished:{p1.isAllFinished}");
             if (onComplete1 != null)
             {
-                onComplete1(p1,r1);
+                onComplete1(p1);
             }
-            if(r1)
-                LoadHiddenTreeNodes((p2, r2) =>
+            if(p1.isAllFinished)
+                LoadHiddenTreeNodes((p2) =>
                 {
-                    Debug.LogError($"LoadHiddenTreeNodes progress:{p2} isFinished:{r2}");
+                    Debug.LogError($"LoadHiddenTreeNodes progress:{p2.progress} isFinished:{p2.isAllFinished}");
                     if (onComplete2 != null)
                     {
-                        onComplete2(p2, r2);
+                        onComplete2(p2);
                     }
                 });
         });
     }
 
-    private void LoadStartScens_Innder<T>(List<T> scenes,Action<float, bool> onComplete = null) where T :SubScene_Base
+    private void LoadStartScens_Innder<T>(List<T> scenes,Action<SceneLoadProgress> onComplete = null) where T :SubScene_Base
     {
         if (scenes.Count > 0)
         {
             AreaTreeNodeShowManager.Instance.IsUpdateTreeNodeByDistance = false;
-            sceneManager.LoadScenesEx(scenes.ToArray(), (p, r) =>
+            sceneManager.LoadScenesEx(scenes.ToArray(), (p) =>
             {
                 WaitingScenes.AddRange(scenes);
                 AreaTreeNodeShowManager.Instance.IsUpdateTreeNodeByDistance = IsUpdateTreeNodeByDistance;
-                if (onComplete != null) onComplete(p, r);
+                if (onComplete != null) onComplete(p);
             });
         }
     }
@@ -258,7 +258,7 @@ public class SubSceneShowManager : SingletonBehaviour<SubSceneShowManager>
         LoadScenes(scenes_Out0_TreeNode_Shown, null);
     }
 
-    public void LoadHiddenTreeNodes(Action<float, bool> onComplete = null)
+    public void LoadHiddenTreeNodes(Action<SceneLoadProgress> onComplete = null)
     {
         BuildingModelManager.Instance.ShowDetail();
         LoadScenes(scenes_Out0_TreeNode_Hidden, onComplete);
@@ -272,7 +272,7 @@ public class SubSceneShowManager : SingletonBehaviour<SubSceneShowManager>
         // scene_Out0s.AddRange(scenes_Out0_TreeNode_Shown);
         if(scene_Out0s.Count>0){
             AreaTreeNodeShowManager.Instance.IsUpdateTreeNodeByDistance = false;
-            sceneManager.LoadScenesEx(scene_Out0s.ToArray(), (p,r) =>
+            sceneManager.LoadScenesEx(scene_Out0s.ToArray(), (p) =>
                 {
                     WaitingScenes.AddRange(scene_Out0s);
                     AreaTreeNodeShowManager.Instance.IsUpdateTreeNodeByDistance = IsUpdateTreeNodeByDistance;
@@ -280,13 +280,13 @@ public class SubSceneShowManager : SingletonBehaviour<SubSceneShowManager>
         }
     }
 
-    public void LoadScenes<T>(List<T> scenes,Action<float,bool> finished) where T : SubScene_Base
+    public void LoadScenes<T>(List<T> scenes,Action<SceneLoadProgress> finished) where T : SubScene_Base
     {
-        sceneManager.LoadScenesEx(scenes.ToArray(), (p,r) =>
+        sceneManager.LoadScenesEx(scenes.ToArray(), (p) =>
                 {
                     WaitingScenes.AddRange(scenes);
                     if(finished!=null){
-                        finished(p,r);
+                        finished(p);
                     }
                 });
     }
@@ -327,7 +327,7 @@ public class SubSceneShowManager : SingletonBehaviour<SubSceneShowManager>
         //         WaitingScenes.AddRange(topsScenes);
         // });
 
-        LoadScenes(topsScenes,(p,r)=>{
+        LoadScenes(topsScenes,(p)=>{
             Debug.Log($"LoadOut0TreeNodeSceneTopN2 index:{index} scene:{topsScenes.Count} vertexCount:{vertexCount}");
         });
 

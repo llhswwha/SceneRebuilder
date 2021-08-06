@@ -953,6 +953,24 @@ public class BaseFoldoutEditor<T> : BaseEditor<T> where T : class
             {
                 lods = lods.Where(i => i.group.gameObject.activeInHierarchy==false).ToList();
             }
+
+            if (Application.isPlaying)
+            {
+                lods.Sort((a, b) => 
+                {
+                    int r1 = a.currentInfo.currentLevel.CompareTo(b.currentInfo.currentLevel);
+                    if (r1 == 0)
+                    {
+                        r1 = b.currentInfo.currentPercentage.CompareTo(a.currentInfo.currentPercentage);
+                    }
+                    //if (r1 == 0)
+                    //{
+                    //    r1 = b.currentChild.renderers.CompareTo(a.currentInfo.currentPercentage);
+                    //}
+                    return r1; 
+                });
+            }
+
             lodGroupListArg.Items = lods;
 
             float[] sumVertex = new float[4];
@@ -992,18 +1010,6 @@ public class BaseFoldoutEditor<T> : BaseEditor<T> where T : class
         },
         () =>
         {
-            //if (GUILayout.Button("Update"))
-            //{
-            //    RemoveEditorArg(item.GetDoors());
-            //    InitEditorArg(item.UpdateDoors());
-            //}
-
-            //if (GUILayout.Button("Update"))
-            //{
-            //    string detail = lodManager.GetRuntimeLODDetail(true);
-            //    Debug.Log($"lod detail:{detail}");
-            //}
-
             lodGroupListArg.DrawFilterList(100, 0, "All", "Active", "InActive");
         });
         if (lodGroupListArg.isEnabled && lodGroupListArg.isExpanded)
@@ -1023,20 +1029,20 @@ public class BaseFoldoutEditor<T> : BaseEditor<T> where T : class
                     for (int i = 0; i < lodDetail.childs.Count; i++)
                     {
                         var lodChild = lodDetail.childs[i];
-                        float vertexF = lodChild.GetVertexCountF();
-                        string vertexS = "";
-                        if (vertexF > 100)
-                        {
-                            vertexS = vertexF.ToString("F0");
-                        }
-                        else if (vertexF > 10)
-                        {
-                            vertexS = vertexF.ToString("F1");
-                        }
-                        else
-                        {
-                            vertexS = vertexF.ToString("F2");
-                        }
+                        //float vertexF = lodChild.GetVertexCountF();
+                        string vertexS = MeshHelper.GetVertexCountS(lodChild.vertexCount);
+                        //if (vertexF > 100)
+                        //{
+                        //    vertexS = vertexF.ToString("F0");
+                        //}
+                        //else if (vertexF > 10)
+                        //{
+                        //    vertexS = vertexF.ToString("F1");
+                        //}
+                        //else
+                        //{
+                        //    vertexS = vertexF.ToString("F2");
+                        //}
                         if (i == 0)
                         {
                             lod0Vertex = lodChild.vertexCount;
@@ -1046,7 +1052,13 @@ public class BaseFoldoutEditor<T> : BaseEditor<T> where T : class
 
                         }
 
-                        if (GUILayout.Button($"L{i}[{vertexS}][{lodChild.vertexCount / lod0Vertex:P0}][{lodChild.screenRelativeTransitionHeight}]", GUILayout.Width(140)))
+                        string btnName = $"L{i}[{vertexS}][{lodChild.vertexCount / lod0Vertex:P0}][{lodChild.screenRelativeTransitionHeight}]";
+
+                        if(lodChild== lodDetail.currentChild)
+                        {
+                            btnName += "*";
+                        }
+                        if (GUILayout.Button(btnName, GUILayout.Width(140)))
                         {
                             //EditorHelper.SelectObject()
                             EditorHelper.SelectObjects(lodChild.renderers);

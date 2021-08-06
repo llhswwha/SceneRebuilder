@@ -752,7 +752,7 @@ public class SubScene_Base : MonoBehaviour
         }
         else
         {
-            Debug.LogError($"SubScene_Base.InitIdDict LinkedScene==null scene:{this.name}");
+            Debug.LogWarning($"SubScene_Base.InitIdDict LinkedScene==null scene:{this.name}");
         }
     }
 

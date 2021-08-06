@@ -27,7 +27,20 @@ public class SubSceneManagerEditor : BaseFoldoutEditor<SubSceneManager>
     {
         base.OnToolLayout(item);
 
-        if(GUILayout.Button("GetSceneFiles"))
+        if (GUILayout.Button("SetBuildings_All"))
+        {
+            item.SetBuildings_All();
+        }
+        if (GUILayout.Button("SetBuildings_Parts"))
+        {
+            item.SetBuildings_Parts();
+        }
+        if (GUILayout.Button("SetBuildings_Single"))
+        {
+            item.SetBuildings_Single();
+        }
+
+        if (GUILayout.Button("GetSceneFiles"))
         {
             sceneFileListArg1.Items = item.GetSceneFilesEx();
         }

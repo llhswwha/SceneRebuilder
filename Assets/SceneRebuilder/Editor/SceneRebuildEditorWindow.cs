@@ -946,7 +946,7 @@ public class SceneRebuildEditorWindow : ListManagerEditorWindow<BuildingModelEle
         if (GUILayout.Button("SetBuildings", GUILayout.Height(buttonHeight)))
         {
             SubSceneManager subSceneManager = GameObject.FindObjectOfType<SubSceneManager>();
-            subSceneManager.SetBuildings_Parts();
+            subSceneManager.SetBuildings_All();
         }
         GUILayout.EndArea();
 

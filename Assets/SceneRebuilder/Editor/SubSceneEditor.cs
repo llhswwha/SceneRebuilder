@@ -12,13 +12,16 @@ public class SubSceneEditor<T> : BaseEditor<T> where T : SubScene_Base
     {
         base.OnToolLayout(item);
 
-        EditorGUILayout.BeginHorizontal();
         var arg = item.GetSceneArg();
         string scenePath1 = arg.path;
         string sceneAssetPath = arg.GetSceneAssetPath();
         string sceneFilePath = arg.GetSceneFilePath();
+        GUILayout.Label(scenePath1);
+
+        EditorGUILayout.BeginHorizontal();
 
         //sceneFilePath = sceneFilePath.Replace("/", "\\\\");
+        
         bool isFileExist = System.IO.File.Exists(sceneFilePath);
         NewButton("SelectFile", buttonWidth, isFileExist, () =>
         {
