@@ -996,6 +996,7 @@ public class LODManager : SingletonBehaviour<LODManager>
         return infos;
     }
 
+#if UNITY_EDITOR
     public void SaveLOD0s()
     {
         //LODGroup[] groups = LODHelper.GetLODGroups(LocalTarget, includeInactive);
@@ -1026,56 +1027,153 @@ public class LODManager : SingletonBehaviour<LODManager>
 
         SubSceneManager.Instance.SetBuildings_All();
     }
+#endif
 
     public double lodInfoTime = 0;
 
-    [ContextMenu("GetRuntimeLODDetail")]
-    public string GetRuntimeLODDetail(bool isForce)
+    public bool IsThreadBusy = false;
+
+    public bool IsUseThread = false;
+
+    public string lodInfoText = "";
+
+    public string GetRuntimeLODDetailSubThread(bool isForce)
     {
-        ThreadManager.Instance.RunTask<GameObject>(() =>
-        {
-            Debug.Log("thread1");
-            return null;
-        }, (go) =>
-         {
-             Debug.Log("thread2");
-         }, "GetRuntimeLODDetail");
-
         DateTime now = DateTime.Now;
-        if(lodDetails==null||lodDetails.Count==0 || isForce)
+        if (lodDetails == null || lodDetails.Count == 0 || isForce)
         {
-            lodDetails=LODGroupDetails.GetSceneLodGroupInfo(LocalTarget, includeInactive);
+            lodDetails = LODGroupDetails.GetSceneLodGroupInfo(LocalTarget, includeInactive);
         }
+        Camera cam = GameObject.FindObjectOfType<Camera>();
+        CameraData camData = new CameraData(cam, LODSceneView.GameView);
+
+        if (IsThreadBusy == false)
+        {
+
+            int[] infos = null;
+            ThreadManager.Run(() =>
+            {
+                IsThreadBusy = true;
+
+                foreach (var lod in lodDetails)
+                {
+                    lod.UpdatePoint();
+                }
+
+                infos = LODGroupDetails.CaculateGroupInfo(lodDetails, LODSceneView.GameView, LODSortType.Vertex, camData);
+                //Debug.Log("thread1");
+            }, () =>
+            {
+                //Debug.Log("thread2");
+                lodInfoText = GetLODGroupInfoText(infos);
+                IsThreadBusy = false;
+            }, "GetRuntimeLODDetail");
+        }
+        lodInfoTime = (DateTime.Now - now).TotalMilliseconds;
+        string result = $"time:{lodInfoTime:F2}ms {lodInfoText}";
+        return result;
+    }
+
+    public string GetRuntimeLODDetailMainThread(bool isForce)
+    {
+        DateTime now = DateTime.Now;
+        if (lodDetails == null || lodDetails.Count == 0 || isForce)
+        {
+            lodDetails = LODGroupDetails.GetSceneLodGroupInfo(LocalTarget, includeInactive);
+        }
+        Camera cam = GameObject.FindObjectOfType<Camera>();
+        CameraData camData = new CameraData(cam, LODSceneView.GameView);
+        foreach (var lod in lodDetails)
+        {
+            lod.UpdatePoint();
+        }
+        int[] infos = LODGroupDetails.CaculateGroupInfo(lodDetails, LODSceneView.GameView, LODSortType.Vertex, camData);
+        lodInfoText = GetLODGroupInfoText(infos);
+        lodInfoTime = (DateTime.Now - now).TotalMilliseconds;
+        string result = $"time:{lodInfoTime:F2}ms {lodInfoText}";
+        return result;
+    }
 
 
+    public string GetLODGroupInfoText(int[] infos)
+    {
+        //DateTime now = DateTime.Now;
         List<LODGroupDetails> lod0List = new List<LODGroupDetails>();
 
-        Camera cam = GameObject.FindObjectOfType<Camera>();
-
-        int[] infos=LODGroupDetails.CaculateGroupInfo(lodDetails,LODSceneView.GameView,LODSortType.Vertex,cam);
-
-        int[] lodCount=new int[5];
-        int[] lodVertexCount=new int[5];
-        float[] lodPercent=new float[5];
-        float allVertex0=0;
-        foreach(LODGroupDetails lodI in lodDetails)
+        int[] lodCount = new int[5];
+        int[] lodVertexCount = new int[5];
+        float[] lodPercent = new float[5];
+        float allVertex0 = 0;
+        foreach (LODGroupDetails lodI in lodDetails)
         {
-            if(lodI.currentChild==null)continue;
+            if (lodI.currentChild == null) continue;
             lodCount[lodI.currentInfo.currentLevel]++;
-            lodVertexCount[lodI.currentInfo.currentLevel]+=lodI.currentChild.vertexCount;
-            lodPercent[lodI.currentInfo.currentLevel]+=lodI.currentChild.vertexPercent;
+            lodVertexCount[lodI.currentInfo.currentLevel] += lodI.currentChild.vertexCount;
+            lodPercent[lodI.currentInfo.currentLevel] += lodI.currentChild.vertexPercent;
 
-            allVertex0+=lodI.childs[0].vertexCount;
+            allVertex0 += lodI.childs[0].vertexCount;
             // foreach(var child in lodI.childs){
             //     allVertex0+=child.vertexCount;
             // }
 
-            if(lodI.currentInfo.currentLevel==0)
+            if (lodI.currentInfo.currentLevel == 0)
             {
                 lod0List.Add(lodI);
             }
         }
 
+        LoadLOD0Scenes(lod0List);
+
+        // string lodInfoTxt="";
+        // for(int i=0;i<lodCount.Length;i++){
+        //     lodInfoTxt+=$"LOD{i}({lodCount[i]},{lodVertexCount[i]/10000f:F1},{lodPercent[i]:P1}) ";
+        // }
+
+        string lodInfoTxt_count = "";
+        string lodInfoTxt_vertex = "";
+        string lodInfoTxt_percent = "";
+        for (int i = 0; i < lodCount.Length; i++)
+        {
+            lodInfoTxt_count += $"L{i}({lodCount[i]})\t\t";
+            lodInfoTxt_vertex += $"L{i}({lodVertexCount[i] / 10000f:F0})\t\t";
+            lodInfoTxt_percent += $"L{i}({lodPercent[i]:P1})\t";
+        }
+
+        var allVertexCount = infos[0];
+        var allMeshCount = infos[1];
+        //lodInfoTime = (DateTime.Now - now).TotalMilliseconds;
+        string infoText = $"LOD:{lodDetails.Count}, Vertex:{allVertexCount / 10000f:F0}/{allVertex0 / 10000f:F0}, Mesh:{allMeshCount}";
+        // info+="\n"+lodInfoTxt;
+        infoText += "\n" + lodInfoTxt_count + "\n" + lodInfoTxt_vertex + "\n" + lodInfoTxt_percent;
+
+        //Debug.Log($"CaculateGroupInfo完成，耗时{lodInfoTime}ms "+ infoText);
+
+        lodDetails.Sort((a, b) =>
+        {
+            return b.vertexCount.CompareTo(a.vertexCount);
+        });
+        return infoText;
+    }
+
+
+    [ContextMenu("GetRuntimeLODDetail")]
+    public string GetRuntimeLODDetail(bool isForce)
+    {
+        string detail = "";
+        if (IsUseThread)
+        {
+            detail= GetRuntimeLODDetailSubThread(isForce);
+        }
+        else
+        {
+            detail = GetRuntimeLODDetailMainThread(isForce);
+        }
+        //Debug.Log(detail);
+        return detail;
+    }
+
+    private static void LoadLOD0Scenes(List<LODGroupDetails> lod0List)
+    {
         List<SubScene_Base> sceneList = new List<SubScene_Base>();
         Dictionary<SubScene_Base, LODGroupInfo> scene2Group = new Dictionary<SubScene_Base, LODGroupInfo>();
         foreach (var lod0 in lod0List)
@@ -1102,43 +1200,13 @@ public class LODManager : SingletonBehaviour<LODManager>
                     LODGroupInfo group = scene2Group[p.scene];
                     group.SetLOD0FromScene();
                 }
-                
+
             });
         }
         else
         {
-            Debug.Log($"GetRuntimeLODDetail lod0List:{lod0List.Count}");
+            //Debug.Log($"GetRuntimeLODDetail lod0List:{lod0List.Count}");
         }
-
-        // string lodInfoTxt="";
-        // for(int i=0;i<lodCount.Length;i++){
-        //     lodInfoTxt+=$"LOD{i}({lodCount[i]},{lodVertexCount[i]/10000f:F1},{lodPercent[i]:P1}) ";
-        // }
-
-        string lodInfoTxt_count="";
-        string lodInfoTxt_vertex="";
-        string lodInfoTxt_percent="";
-        for(int i=0;i<lodCount.Length;i++){
-            lodInfoTxt_count+=$"L{i}({lodCount[i]})\t\t";
-            lodInfoTxt_vertex+=$"L{i}({lodVertexCount[i]/10000f:F0})\t\t";
-            lodInfoTxt_percent+=$"L{i}({lodPercent[i]:P1})\t";
-        }
-
-        var allVertexCount=infos[0];
-        var allMeshCount=infos[1];
-        lodInfoTime = (DateTime.Now-now).TotalMilliseconds;
-        string infoText=$"LOD:{lodDetails.Count}, Vertex:{allVertexCount/10000f:F0}/{allVertex0/10000f:F0}, Mesh:{allMeshCount}, t:{lodInfoTime:F0}ms";
-        // info+="\n"+lodInfoTxt;
-        infoText+="\n"+lodInfoTxt_count+"\n"+lodInfoTxt_vertex+"\n"+lodInfoTxt_percent;
-
-        //Debug.Log($"CaculateGroupInfo完成，耗时{time}ms "+info);
-
-        lodDetails.Sort((a, b) =>
-        {
-            return b.vertexCount.CompareTo(a.vertexCount);
-        });
-
-        return infoText;
     }
 
     public void ClearTwoList()
@@ -1191,7 +1259,8 @@ public static class LODHelper
         }
         return groups;
     }
-    
+
+#if UNITY_EDITOR
     public static SubScene_Base GetLOD0Scene(GameObject dirRoot, LODGroup group)
     {
         LOD[] lods = group.GetLODs();
@@ -1272,6 +1341,8 @@ public static class LODHelper
         });
         return scenes;
     }
+
+#endif
 
     public static void LOD1ToLOD0(LODGroup group)
     {

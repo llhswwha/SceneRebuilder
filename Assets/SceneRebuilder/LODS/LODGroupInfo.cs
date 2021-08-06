@@ -105,6 +105,7 @@ public class LODGroupInfo : MonoBehaviour
 
     public SubScene_Base scene;
 
+#if UNITY_EDITOR
     public void EditorCreateScene()
     {
         scene=LODHelper.SaveLOD0(null, this.LODGroup);
@@ -117,6 +118,7 @@ public class LODGroupInfo : MonoBehaviour
         scene.EditorLoadScene();
         SetLOD0FromScene();
     }
+#endif
 
     public void UnloadScene()
     {

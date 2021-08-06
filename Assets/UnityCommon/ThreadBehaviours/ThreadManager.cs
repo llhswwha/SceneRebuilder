@@ -75,7 +75,7 @@ public class ThreadManager : MonoBehaviour//, IAsyncTask
             ThreadInfos.RemoveAt(i);
             i--;
             threadBehaviour.Run(info.MainAction, info.UiAction, info.Name);
-            LogInfo.Info("Run A Thread");
+            //LogInfo.Info("Run A Thread");
         }
         InfoCount = ThreadInfos.Count;
     }
@@ -186,7 +186,7 @@ public class ThreadManager : MonoBehaviour//, IAsyncTask
         },taskName);
     }
 
-    public static bool IsUsePool;
+    public static bool IsUsePool = true;
 
     public static void Run(Func<object> mainAction, Action<object> uiAction)
     {

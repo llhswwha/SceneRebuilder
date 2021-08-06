@@ -263,7 +263,8 @@ public class LODLevelCaculateTool : EditorWindow
                     bool value = GUILayout.Toggle( obj==null?false:obj.activeSelf,"", GUILayout.Width(60));
                     if (obj != null && obj.activeSelf != value) obj.SetActive(value);
                     GUILayout.Label(obj==null?"":obj.name, GUILayout.Width(150));
-                    GUILayout.Label(detai.childObj==null?"CullOff":detai.childObj.name, GUILayout.Width(150));
+                    //GUILayout.Label(detai.childObj==null?"CullOff":detai.childObj.name, GUILayout.Width(150));
+                    GUILayout.Label(detai.isCullOff ? "CullOff" : detai.currentChild.ToString(), GUILayout.Width(150));
                     GUILayout.Label(detai.currentInfo==null?"empty":detai.currentInfo.currentLevel.ToString(), GUILayout.Width(150));
                     GUILayout.Label(detai.GetVertexString(), GUILayout.Width(150));
                     GUILayout.Label(detai.GetMeshString(), GUILayout.Width(150));

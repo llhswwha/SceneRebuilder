@@ -7,18 +7,23 @@ using UnityEngine;
 [Serializable]
 public class LODGroupDetails
 {
-    public LODGroup group;
+    public LODGroupData group;
     public List<LODChildInfo> childs;
 
     public LODValueInfo currentInfo;//当前所处level和百分比
     public LODChildInfo currentChild;//当前level对应的LOD[]
-    public GameObject childObj;
+    //public GameObject childObj;
     public bool isCullOff;
     public int vertexCount = 0;
 
+    public void UpdatePoint()
+    {
+        group.UpdatePoint();
+    }
+
     public LODGroupDetails(LODGroup groupT)
     {
-        group = groupT;
+        group = new LODGroupData(groupT);
         childs = new List<LODChildInfo>();
         if (group == null) return;
         LOD[] lods = group.GetLODs();
@@ -38,29 +43,33 @@ public class LODGroupDetails
     /// </summary>
     /// <param name="viewType"></param>
     /// <param name="cam"></param>
-    public LODChildInfo CaculateLODValueInfo(LODSceneView viewType,Camera cam=null)
+    public LODChildInfo CaculateLODValueInfo(LODSceneView viewType,CameraData cam)
     {
-        if(viewType==LODSceneView.GameView)
-        {
-            if (group == null || cam == null) return currentChild;
-            currentInfo = LODUtility.GetVisibleLOD(group,cam);                
-        }else
-        {
-            currentInfo = LODUtility.GetVisibleLODSceneView(group);
-        }
+        //if(viewType==LODSceneView.GameView)
+        //{
+        //    if (group == null || cam == null) return currentChild;
+        //    currentInfo = LODUtility.GetVisibleLOD(group,cam);                
+        //}else
+        //{
+        //    currentInfo = LODUtility.GetVisibleLODSceneView(group);
+        //}
+
+        if (group == null || cam == null) return currentChild;
+        currentInfo = LODUtility.GetVisibleLOD(group, cam);
+
         if (childs != null && currentInfo.currentLevel < childs.Count)
         {
             currentChild = childs[currentInfo.currentLevel]; 
-            if(group!=null&&group.transform.childCount>currentInfo.currentLevel)
-            {
-                childObj = group.transform.GetChild(currentInfo.currentLevel).gameObject;
-            }
+            //if(group!=null&&group.transform.childCount>currentInfo.currentLevel)
+            //{
+            //    childObj = group.transform.GetChild(currentInfo.currentLevel).gameObject;
+            //}
             isCullOff = false;
         }
         else
         {
             currentChild = null;
-            childObj = null;
+            //childObj = null;
             isCullOff = true;
         }
         return currentChild;
@@ -135,11 +144,16 @@ public class LODGroupDetails
         }
         return lodInfos;
     }
+    public static int[] CaculateGroupInfo(List<LODGroupDetails> lodInfos, LODSceneView viewType, LODSortType sortType, Camera cam)
+    {
+        CameraData camData = new CameraData(cam, viewType);
+        return CaculateGroupInfo(lodInfos, viewType, sortType, camData);
+    }
 
-    /// <summary>
-    /// 计算当前视角下，场景Lod信息
-    /// </summary>
-    public static int[] CaculateGroupInfo(List<LODGroupDetails> lodInfos,LODSceneView viewType,LODSortType sortType,Camera cam=null)
+        /// <summary>
+        /// 计算当前视角下，场景Lod信息
+        /// </summary>
+        public static int[] CaculateGroupInfo(List<LODGroupDetails> lodInfos,LODSceneView viewType,LODSortType sortType,CameraData cam)
     {
         DateTime now = DateTime.Now;
         int allVertexCount = 0;
@@ -183,5 +197,88 @@ public class LODGroupDetails
         //isCaculate = false;
         //Debug.Log($"CaculateGroupInfo完成，耗时{(DateTime.Now-now).TotalSeconds.ToString("f1")}s allVertexCount:{allVertexCount/10000f:F1}, allMeshCount:{allMeshCount}");
         return new int[2]{allVertexCount,allMeshCount};
+    }
+}
+
+public class CameraData
+{
+    public Camera camera;
+    public TransformData transform;
+    public bool orthographic;
+    public float orthographicSize;
+    public float fieldOfView;
+    public float lodBias;
+    public CameraData(Camera camera, LODSceneView viewType)
+    {
+        this.camera = camera ?? Camera.current;
+
+        if (viewType == LODSceneView.SceneView)
+        {
+#if UNITY_EDITOR
+            camera = UnityEditor.SceneView.lastActiveSceneView.camera;
+#endif
+        }
+
+        //this.camera = camera;
+        this.transform = new TransformData(camera.transform);
+
+        this.orthographic = camera.orthographic;
+        this.orthographicSize = camera.orthographicSize;
+        this.fieldOfView = camera.fieldOfView;
+
+        this.lodBias = QualitySettings.lodBias;
+    }
+}
+
+public class LODGroupData
+{
+    public string name;
+
+    public LODGroup group;
+
+    public GameObject gameObject;
+
+    public TransformData transform;
+
+    public LOD[] lods;
+
+    public float size = 0;
+
+    public int lodCount;
+
+    public Vector3 localReferencePoint;
+
+    public Vector3 worldReferencePoint;//??
+
+    public LODGroupData(LODGroup group)
+    {
+        this.name = group.name;
+        this.group = group;
+        this.gameObject = group.gameObject;
+        this.transform = new TransformData(group.transform);
+
+        this.lods = group.GetLODs();
+        this.size = group.size;
+        this.lodCount = group.lodCount;
+        this.localReferencePoint=group.localReferencePoint;
+        this.worldReferencePoint = group.transform.TransformPoint(group.localReferencePoint);
+    }
+
+    public void UpdatePoint()
+    {
+        //this.transform = new TransformData(group.transform);
+
+        //this.localReferencePoint = group.localReferencePoint;
+        //this.worldReferencePoint = group.transform.TransformPoint(group.localReferencePoint);
+    }
+
+    public LOD[] GetLODs()
+    {
+        return lods;
+    }
+
+    public T GetComponent<T>() where T :Component
+    {
+        return group.GetComponent<T>();
     }
 }

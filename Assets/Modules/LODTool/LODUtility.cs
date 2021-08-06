@@ -55,12 +55,12 @@ using System;
 
 
         //returns the currently visible LOD level of a specific LODGroup, from a specific camera. If no camera is define, uses the Camera.current.
-        public static LODValueInfo GetVisibleLOD(LODGroup lodGroup, Camera camera = null)
+        public static LODValueInfo GetVisibleLOD(LODGroupData lodGroup, CameraData camera = null)
         {
             LODValueInfo info = new LODValueInfo();
             var lods = lodGroup.GetLODs();
-            var relativeHeight = GetRelativeHeight(lodGroup, camera ?? Camera.current);
-
+            //var relativeHeight = GetRelativeHeight(lodGroup, camera ?? Camera.current);
+            var relativeHeight = GetRelativeHeight(lodGroup, camera);
 
             int lodIndex = GetMaxLOD(lodGroup);
             bool inNormalRange = false;
@@ -82,23 +82,24 @@ using System;
             return info;
         }
 
-        //returns the currently visible LOD level of a specific LODGroup, from a the SceneView Camera.
-        public static LODValueInfo GetVisibleLODSceneView(LODGroup lodGroup)
-        {
-#if UNITY_EDITOR
-            Camera camera = SceneView.lastActiveSceneView.camera;
-            return GetVisibleLOD(lodGroup, camera);
-#endif
-            return null;
-        }
+//        //returns the currently visible LOD level of a specific LODGroup, from a the SceneView Camera.
+//        public static LODValueInfo GetVisibleLODSceneView(LODGroupData lodGroup)
+//        {
+//#if UNITY_EDITOR
+//            Camera camera = SceneView.lastActiveSceneView.camera;
+//            return GetVisibleLOD(lodGroup, camera);
+//#endif
+//            return null;
+//        }
 
-        static float GetRelativeHeight(LODGroup lodGroup, Camera camera)
-        {
-            var distance = (lodGroup.transform.TransformPoint(lodGroup.localReferencePoint) - camera.transform.position).magnitude;
-            return DistanceToRelativeHeight(camera, (distance / QualitySettings.lodBias), GetWorldSpaceSize(lodGroup));
-        }
+    static float GetRelativeHeight(LODGroupData lodGroup, CameraData camera)
+    {
+        //var distance = (lodGroup.transform.TransformPoint(lodGroup.localReferencePoint) - camera.transform.position).magnitude;
+        var distance = (lodGroup.worldReferencePoint - camera.transform.position).magnitude;
+        return DistanceToRelativeHeight(camera, (distance / camera.lodBias), GetWorldSpaceSize(lodGroup));
+    }
 
-        static float DistanceToRelativeHeight(Camera camera, float distance, float size)
+        static float DistanceToRelativeHeight(CameraData camera, float distance, float size)
         {
             if (camera.orthographic)
                 return size * 0.5F / camera.orthographicSize;
@@ -107,15 +108,15 @@ using System;
             var relativeHeight = size * 0.5F / (distance * halfAngle);
             return relativeHeight;
         }
-        public static int GetMaxLOD(LODGroup lodGroup)
+        public static int GetMaxLOD(LODGroupData lodGroup)
         {
             return lodGroup.lodCount - 1;
         }
-        public static float GetWorldSpaceSize(LODGroup lodGroup)
+        public static float GetWorldSpaceSize(LODGroupData lodGroup)
         {
             return GetWorldSpaceScale(lodGroup.transform) * lodGroup.size;
         }
-        static float GetWorldSpaceScale(Transform t)
+        static float GetWorldSpaceScale(TransformData t)
         {
             var scale = t.lossyScale;
             float largestAxis = Mathf.Abs(scale.x);

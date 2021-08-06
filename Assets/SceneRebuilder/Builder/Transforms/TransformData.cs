@@ -114,6 +114,11 @@ public class TransformData
         Init(t);
     }
 
+    public Transform GetChild(int id)
+    {
+        return transform.GetChild(id);
+    }
+
     public void Reset()
     {
         if (transform == null) return;
