@@ -1049,16 +1049,17 @@ public class LODManager : SingletonBehaviour<LODManager>
 
         if (IsThreadBusy == false)
         {
+            foreach (var lod in lodDetails)
+            {
+                lod.UpdatePoint();
+            }
 
             int[] infos = null;
             ThreadManager.Run(() =>
             {
                 IsThreadBusy = true;
 
-                foreach (var lod in lodDetails)
-                {
-                    lod.UpdatePoint();
-                }
+
 
                 infos = LODGroupDetails.CaculateGroupInfo(lodDetails, LODSceneView.GameView, LODSortType.Vertex, camData);
                 //Debug.Log("thread1");
@@ -1118,7 +1119,8 @@ public class LODManager : SingletonBehaviour<LODManager>
 
             if (lodI.currentInfo.currentLevel == 0)
             {
-                lod0List.Add(lodI);
+                if(!lod0List.Contains(lodI))
+                    lod0List.Add(lodI);
             }
         }
 
@@ -1178,17 +1180,34 @@ public class LODManager : SingletonBehaviour<LODManager>
         Dictionary<SubScene_Base, LODGroupInfo> scene2Group = new Dictionary<SubScene_Base, LODGroupInfo>();
         foreach (var lod0 in lod0List)
         {
-            LODGroupInfo ginfo = lod0.group.GetComponent<LODGroupInfo>();
-            if (ginfo == null) continue;
-            //ginfo.LoadScene();
-            var scene = ginfo.scene;
-            if (scene == null) continue;
+            try
+            {
+                LODGroupInfo ginfo = lod0.group.GetComponent<LODGroupInfo>();
+                if (ginfo == null) continue;
+                //ginfo.LoadScene();
+                var scene = ginfo.scene;
+                if (scene == null) continue;
 
-            if (scene.IsLoading == true) continue;
-            if (scene.IsLoaded == true) continue;
+                if (scene.IsLoading == true) continue;
+                if (scene.IsLoaded == true) continue;
 
-            sceneList.Add(scene);
-            scene2Group.Add(scene, ginfo);
+                sceneList.Add(scene);
+                if (scene2Group.ContainsKey(scene))
+                {
+                    Debug.LogError("LoadLOD0Scenes scene2Group.ContainsKey(scene) scene:" + scene);
+                }
+                else
+                {
+                    scene2Group.Add(scene, ginfo);
+                }
+            }
+            catch (Exception ex)
+            {
+
+                Debug.LogError("LoadLOD0Scenes Exception:" + ex);
+            }
+
+            
         }
         if (sceneList.Count > 0)
         {
