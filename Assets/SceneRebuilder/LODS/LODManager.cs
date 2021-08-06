@@ -1049,6 +1049,8 @@ public class LODManager : SingletonBehaviour<LODManager>
 
         if (IsThreadBusy == false)
         {
+            IsThreadBusy = true;
+
             foreach (var lod in lodDetails)
             {
                 lod.UpdatePoint();
@@ -1057,10 +1059,6 @@ public class LODManager : SingletonBehaviour<LODManager>
             int[] infos = null;
             ThreadManager.Run(() =>
             {
-                IsThreadBusy = true;
-
-
-
                 infos = LODGroupDetails.CaculateGroupInfo(lodDetails, LODSceneView.GameView, LODSortType.Vertex, camData);
                 //Debug.Log("thread1");
             }, () =>
