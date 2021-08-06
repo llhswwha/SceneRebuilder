@@ -580,6 +580,19 @@ public static class EditorHelper
 
 #endif
 
+    public static Scene GetSceneByBuildIndex(SceneLoadArg arg)
+    {
+        if (arg.index <= 0)
+        {
+            Debug.LogError($"EditorHelper.LoadSceneAsync arg.index<=0 sName:{arg.name} index:{arg.index}");
+            return new Scene();
+        }
+        else
+        {
+            return SceneManager.GetSceneByBuildIndex(arg.index);
+        }
+    }
+
     public static IEnumerator LoadSceneAsync(SceneLoadArg arg, System.Action<float> progressChanged, System.Action<Scene> finished,bool isAutoUnload=false)
     {
         System.DateTime start = System.DateTime.Now;
@@ -587,7 +600,7 @@ public static class EditorHelper
         if(arg.index<=0){
             Debug.LogError($"EditorHelper.LoadSceneAsync arg.index<=0 sName:{arg.name} index:{arg.index}");
 
-            Scene scene = SceneManager.GetSceneByBuildIndex(arg.index);
+            Scene scene = GetSceneByBuildIndex(arg);
             if (finished != null)
             {
                 finished(scene);
@@ -600,7 +613,7 @@ public static class EditorHelper
             {
                 Debug.LogError($"EditorHelper.LoadSceneAsync async == null sName:{arg.name}");
 
-                Scene scene = SceneManager.GetSceneByBuildIndex(arg.index);
+                Scene scene = GetSceneByBuildIndex(arg);
                 if (finished != null)
                 {
                     finished(scene);
@@ -627,7 +640,7 @@ public static class EditorHelper
                 //SceneManager.GetSceneByBuildIndex
                 //Scene scene = SceneManager.GetSceneByName(arg.name);
                 // Scene scene = SceneManager.GetSceneByPath(arg.path);
-                Scene scene = SceneManager.GetSceneByBuildIndex(arg.index);
+                Scene scene = GetSceneByBuildIndex(arg);
                 var objs = scene.GetRootGameObjects();
                 if (objs.Length == 0)
                 {
@@ -661,7 +674,7 @@ public static class EditorHelper
     {
         System.DateTime start = System.DateTime.Now;
         //Debug.Log("UnLoadSceneAsync:" + sName);
-        Scene scene = SceneManager.GetSceneByBuildIndex(arg.index);
+        Scene scene = GetSceneByBuildIndex(arg);
         if(scene.IsValid())
         {
             AsyncOperation async = SceneManager.UnloadSceneAsync(arg.index, UnloadSceneOptions.None);
@@ -711,7 +724,7 @@ public static class EditorHelper
     public static GameObject[] GetSceneObjects(SceneLoadArg arg, Transform parent)
     {
         string scenePath=arg.path;
-        Scene scene = SceneManager.GetSceneByBuildIndex(arg.index);
+        Scene scene = GetSceneByBuildIndex(arg);
 
         Debug.Log($"GetSceneObjects scene:{scenePath},isLoaded:{scene.isLoaded},isValid:{scene.IsValid()}");
 
@@ -725,6 +738,10 @@ public static class EditorHelper
                 }
                 foreach (var obj in objs)
                 {
+                    if(obj.name.Contains("WebMsgReciver"))
+                    {
+                        Debug.LogError($"EditorHelper.GetSceneObjects WebMsgReciver scene:{scene} index:{arg}");
+                    }
                     obj.transform.SetParent(parent);
                 }
                 //EditorSceneManager.CloseScene(scene, true);
