@@ -360,13 +360,13 @@ public class SubSceneManager : SingletonBehaviour<SubSceneManager>
         {
             T item = scenes[i];
             string path = item.sceneArg.GetRalativePath();
-            Debug.Log("path:" + path);
+            //Debug.Log("path:" + path);
             buildingScenes[i + 1] = new EditorBuildSettingsScene(path, true);
             item.sceneArg.index=i+1;
         }
         EditorBuildSettings.scenes = buildingScenes;
 
-        //Debug.Log("SetBuildings:" + scenes.Length);
+        Debug.Log("SetBuildings:" + scenes.Length);
     }
 
     public Scene newScene;

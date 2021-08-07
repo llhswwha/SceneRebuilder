@@ -954,7 +954,7 @@ public class SubScene_Base : MonoBehaviour
 
     public void OnDestroy()
     {
-        Debug.Log("SubScene.OnDestroy:"+this.name);
+        //Debug.Log("SubScene.OnDestroy:"+this.name);
     }
 }
 

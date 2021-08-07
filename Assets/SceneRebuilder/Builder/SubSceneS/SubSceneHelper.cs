@@ -12,6 +12,19 @@ using UnityEditor.SceneManagement;
 public static class SubSceneHelper
 {
 
+    public static List<SubScene_Base> GetScenes<T>(List<T> list) where T :Component
+    {
+        List<SubScene_Base> scenes = new List<SubScene_Base>();
+        for (int i = 0; i < list.Count; i++)
+        {
+            var item = list[i];
+            if (item == null) continue;
+            var ss = item.GetComponentsInChildren<SubScene_Base>();
+            scenes.AddRange(ss);
+        }
+        return scenes;
+    }
+
     public static void LinkScenes(SubScene_Base[] scenes)
     {
         int count = scenes.Length;

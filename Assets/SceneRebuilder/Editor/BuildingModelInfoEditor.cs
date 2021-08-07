@@ -87,8 +87,7 @@ public class BuildingModelInfoEditor : BaseFoldoutEditor<BuildingModelInfo>
         NewButton("FindDoors", buttonWidth, state.CanFindDoors(), btnStyle, info.FindInDoors);
         NewButton("SplitDoors", buttonWidth, true, btnStyle, () =>
         {
-            DoorManager.Instance.LocalTarget = info.gameObject;
-
+            DoorManager.Instance.SplitDoors(info.gameObject);
         });
         NewButton("ClearParts", buttonWidth, state.partCount > 0, btnStyle, info.ClearInOut);
         EditorGUILayout.EndHorizontal();
@@ -249,7 +248,7 @@ public class BuildingModelInfoEditor : BaseFoldoutEditor<BuildingModelInfo>
 
         DrawMeshListEx(meshinfoListArg, () =>
         {
-            MeshRendererInfo.GetInfos(item.gameObject);
+            MeshRendererInfo.InitRenderers(item.gameObject);
 
             List<MeshRendererInfo> meshes = new List<MeshRendererInfo>();
             if (item.InPart)

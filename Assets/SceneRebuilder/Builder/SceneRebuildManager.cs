@@ -9,6 +9,12 @@ using UnityEditor.SceneManagement;
 
 public class SceneRebuildManager : MonoBehaviour
 {
+    public void Start()
+    {
+//#if UNITY_EDITOR
+//        SetBuildings();
+//#endif
+    }
 
     public SubSceneManager subSceneManager;
 

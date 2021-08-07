@@ -133,7 +133,7 @@ public class MeshRendererInfo : MonoBehaviour
         return info;
     }
 
-   public static MeshRendererInfoList GetInfos(GameObject go)
+   public static MeshRendererInfoList InitRenderers(GameObject go)
     {
         MeshRenderer[] renderers = go.GetComponentsInChildren<MeshRenderer>(true);
         return InitRenderers(renderers);

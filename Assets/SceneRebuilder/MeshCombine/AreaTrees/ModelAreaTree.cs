@@ -477,11 +477,11 @@ public class ModelAreaTree : SubSceneCreater
         //Debug.LogWarning($"AddColliders renderers:{renderers.Length},\t{(DateTime.Now-start).ToString()}");
     }
 
-    //[ContextMenu("ClearDictionary")]
-    public void ClearDictionary()
-    {
-        AreaTreeHelper.render2NodeDict.Clear();
-    }
+    ////[ContextMenu("ClearDictionary")]
+    //public void ClearDictionary()
+    //{
+    //    AreaTreeHelper.render2NodeDict.Clear();
+    //}
 
     [ContextMenu("CreateDictionary")]
     public void CreateDictionary()
@@ -489,15 +489,16 @@ public class ModelAreaTree : SubSceneCreater
         //Debug.LogError($"CreateDictionary Start");
         DateTime start=DateTime.Now;
         //ClearDictionary();
-        foreach(AreaTreeNode tn in TreeNodes)
+        //foreach(AreaTreeNode tn in TreeNodes)
+        //{
+        //    if(tn==null)continue;
+        //    if(tn.gameObject==null)continue;
+        //    tn.CreateDictionary();
+        //}
+        foreach (AreaTreeNode tn in TreeLeafs)
         {
-            if(tn==null)continue;
-            if(tn.gameObject==null)continue;
-            // if(tn.Nodes.Count==0){
-            //     foreach(var render in tn.Renderers){
-            //         render2NodeDict.Add(render,tn);
-            //     }
-            // }
+            if (tn == null) continue;
+            if (tn.gameObject == null) continue;
             tn.CreateDictionary();
         }
         // Debug.LogWarning($"CreateDictionary tree:{this.name}, \trender2NodeDict:{AreaTreeHelper.render2NodeDict.Count}, \t{(DateTime.Now-start).TotalMilliseconds:F1}ms");
@@ -715,9 +716,12 @@ public class ModelAreaTree : SubSceneCreater
     [ContextMenu("MoveRenderers")]
     public void MoveRenderers()
     {
-         foreach(var node in TreeLeafs){
-               node.MoveRenderers();
+        List<RendererId> idsAll = new List<RendererId>();
+         foreach (var node in TreeLeafs){
+            List<RendererId> ids=node.MoveRenderers();
+            idsAll.AddRange(ids);
         }
+        IdDictionary.SaveChildrenIds(idsAll,Target);
     }
 
     [ContextMenu("RecoverParent")]

@@ -71,6 +71,14 @@ public class DoorManager : SingletonBehaviour<DoorManager>
         return doors;
     }
 
+    public void SplitDoors(GameObject root)
+    {
+        IsOnlyCanSplit = true;
+        LocalTarget = root;
+        UpdateDoors();
+        SplitAll();
+    }
+
     public void SplitAll()
     {
         var doors = GetDoors();
@@ -84,6 +92,7 @@ public class DoorManager : SingletonBehaviour<DoorManager>
                 break;
             }
             GameObject result = MeshCombineHelper.SplitByMaterials(door.DoorGo);
+            MeshRendererInfo.InitRenderers(result);
         }
         ProgressBarHelper.ClearProgressBar();
     }

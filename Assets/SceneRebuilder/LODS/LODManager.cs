@@ -251,7 +251,7 @@ public class LODManager : SingletonBehaviour<LODManager>
         EditorHelper.UnpackPrefab(GroupRoot, PrefabUnpackMode.OutermostRoot);
         EditorHelper.UnpackPrefab(LODnRoot, PrefabUnpackMode.OutermostRoot);
         DateTime start = DateTime.Now;
-        var renderers_2 = MeshRendererInfo.GetInfos(LODnRoot);//  LODnRoot.GetComponentsInChildren<MeshRenderer>(true);
+        var renderers_2 = MeshRendererInfo.InitRenderers(LODnRoot);//  LODnRoot.GetComponentsInChildren<MeshRenderer>(true);
         var renderers_0 = MeshRendererInfo.GetLodNs(GroupRoot, -1, 0);
 
         LODRendererCount0 = renderers_0.Count;

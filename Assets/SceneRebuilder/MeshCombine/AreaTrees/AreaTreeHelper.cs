@@ -5,8 +5,81 @@ using System;
 using System.Linq;
 public static class AreaTreeHelper
 {
-    
+    public static AreaTreeNode GetNodeByRenderer(MeshRenderer renderer)
+    {
+        if (render2NodeDict.ContainsKey(renderer))
+        {
+            return render2NodeDict[renderer];
+        }
+        return null;
+    }
+
+    public static AreaTreeNode GetNodeByCombined(MeshRenderer renderer)
+    {
+        if (combined2NodeDict.ContainsKey(renderer))
+        {
+            return combined2NodeDict[renderer];
+        }
+        return null;
+    }
+
+    public static AreaTreeNode GetNodeById(string rendererId)
+    {
+        if (renderId2NodeDict.ContainsKey(rendererId))
+        {
+            return renderId2NodeDict[rendererId];
+        }
+        return null;
+    }
+
+    public static List<AreaTreeNode> GetNodesByChildrens(params RendererId[] rIds)
+    {
+        List<AreaTreeNode> list = new List<AreaTreeNode>();
+        foreach (var rId in rIds)
+        {
+            foreach (var id in rId.childrenIds)
+            {
+                if (renderId2NodeDict.ContainsKey(id))
+                {
+                    AreaTreeNode node = renderId2NodeDict[id];
+                    if (!list.Contains(node))
+                    {
+                        list.Add(node);
+                    }
+                }
+                else
+                {
+                    Debug.LogError($"GetNodesByIds not found node ! id:{id}");
+                }
+            }
+        }
+        return list;
+    }
+
+    public static List<AreaTreeNode> GetNodesByIds(List<string> ids)
+    {
+        List<AreaTreeNode> list = new List<AreaTreeNode>();
+        foreach(var id in ids)
+        {
+            if (renderId2NodeDict.ContainsKey(id))
+            {
+                AreaTreeNode node= renderId2NodeDict[id];
+                if(!list.Contains(node))
+                {
+                    list.Add(node);
+                }
+            }
+            else
+            {
+                Debug.LogError($"GetNodesByIds not found node ! id:{id}");
+            }
+        }
+        return list;
+    }
+
     public static Dictionary<MeshRenderer,AreaTreeNode> render2NodeDict=new Dictionary<MeshRenderer, AreaTreeNode>();
+
+    public static Dictionary<string, AreaTreeNode> renderId2NodeDict = new Dictionary<string, AreaTreeNode>();
 
     public static Dictionary<MeshRenderer, AreaTreeNode> combined2NodeDict = new Dictionary<MeshRenderer, AreaTreeNode>();
 
@@ -14,6 +87,61 @@ public static class AreaTreeHelper
     {
         render2NodeDict.Clear();
         combined2NodeDict.Clear();
+        renderId2NodeDict.Clear();
+    }
+
+    public static void RegisterRenderer(MeshRenderer render, AreaTreeNode newNode)
+    {
+        if (render == null) return;
+        if (render2NodeDict.ContainsKey(render))
+        {
+            var node = render2NodeDict[render];
+            if (node == null)
+            {
+                //Debug.LogWarning($"Node1被删除了 render:{render},node1:{AreaTreeHelper.render2NodeDict[render]},node2:{this}");
+                render2NodeDict[render] = newNode;
+            }
+            else if (node == newNode)
+            {
+
+            }
+            else
+            {
+                Debug.LogError($"RegisterRenderer 模型重复在不同的Node里 render:{render},node1:{render2NodeDict[render].name},node2:{newNode.name}");
+                render2NodeDict[render] = newNode;
+            }
+        }
+        else
+        {
+            render2NodeDict.Add(render, newNode);
+        }
+    }
+
+    public static void RegisterRendererId(string render, AreaTreeNode newNode)
+    {
+        if (render == null) return;
+        if (renderId2NodeDict.ContainsKey(render))
+        {
+            var node = renderId2NodeDict[render];
+            if (node == null)
+            {
+                //Debug.LogWarning($"Node1被删除了 render:{render},node1:{AreaTreeHelper.render2NodeDict[render]},node2:{this}");
+                renderId2NodeDict[render] = newNode;
+            }
+            else if (node == newNode)
+            {
+
+            }
+            else
+            {
+                Debug.LogError($"RegisterRendererId 模型重复在不同的Node里 render:{render},node1:{renderId2NodeDict[render].name},node2:{newNode.name}");
+                renderId2NodeDict[render] = newNode;
+            }
+        }
+        else
+        {
+            renderId2NodeDict.Add(render, newNode);
+        }
     }
 
     public static void AddNodeDictItem_Renderers(IEnumerable<MeshRenderer> renderers,AreaTreeNode node)
@@ -21,13 +149,13 @@ public static class AreaTreeHelper
         foreach (var render in renderers)
         {
             //renderer.gameObject.AddComponent<MeshCollider>();
-            if (AreaTreeHelper.render2NodeDict.ContainsKey(render))
+            if (render2NodeDict.ContainsKey(render))
             {
                 
             }
             else
             {
-                AreaTreeHelper.render2NodeDict.Add(render, node);
+                render2NodeDict.Add(render, node);
             }
         }
     }
@@ -37,13 +165,13 @@ public static class AreaTreeHelper
         foreach (var render in renderers)
         {
             //renderer.gameObject.AddComponent<MeshCollider>();
-            if (AreaTreeHelper.combined2NodeDict.ContainsKey(render))
+            if (combined2NodeDict.ContainsKey(render))
             {
                 
             }
             else
             {
-                AreaTreeHelper.combined2NodeDict.Add(render, node);
+                combined2NodeDict.Add(render, node);
             }
         }
     }

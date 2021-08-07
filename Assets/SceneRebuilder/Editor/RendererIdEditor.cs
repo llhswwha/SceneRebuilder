@@ -17,7 +17,8 @@ public class RendererIdEditor : BaseEditor<RendererId>
     {
         base.OnToolLayout(item);
 
-        GUILayout.Label(item.Id);
+        GUILayout.Label("Id:"+item.Id);
+        GUILayout.Label("Children:"+item.childrenIds.Count);
         if (parent != null)
         {
             if (GUILayout.Button(parent.name))

@@ -222,7 +222,7 @@ public class SubSceneShowManager : SingletonBehaviour<SubSceneShowManager>
     {
         LoadStartScens((p1) =>
         {
-            Debug.LogError($"LoadStartScens progress:{p1.progress} isFinished:{p1.isAllFinished}");
+            //Debug.LogError($"LoadStartScens progress:{p1.progress} isFinished:{p1.isAllFinished}");
             if (onComplete1 != null)
             {
                 onComplete1(p1);
@@ -230,7 +230,7 @@ public class SubSceneShowManager : SingletonBehaviour<SubSceneShowManager>
             if(p1.isAllFinished)
                 LoadHiddenTreeNodes((p2) =>
                 {
-                    Debug.LogError($"LoadHiddenTreeNodes progress:{p2.progress} isFinished:{p2.isAllFinished}");
+                    //Debug.LogError($"LoadHiddenTreeNodes progress:{p2.progress} isFinished:{p2.isAllFinished}");
                     if (onComplete2 != null)
                     {
                         onComplete2(p2);

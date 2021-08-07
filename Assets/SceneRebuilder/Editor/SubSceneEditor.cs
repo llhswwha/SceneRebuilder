@@ -16,7 +16,7 @@ public class SubSceneEditor<T> : BaseEditor<T> where T : SubScene_Base
         string scenePath1 = arg.path;
         string sceneAssetPath = arg.GetSceneAssetPath();
         string sceneFilePath = arg.GetSceneFilePath();
-        GUILayout.Label(scenePath1);
+        GUILayout.Label($"[{arg.index}] {scenePath1}");
 
         EditorGUILayout.BeginHorizontal();
 

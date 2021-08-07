@@ -3,6 +3,9 @@ using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 
+/// <summary>
+/// GameObjectId
+/// </summary>
 public class RendererId
     : MonoBehaviour
     //: Behaviour
@@ -14,6 +17,8 @@ public class RendererId
     public int insId;
 
     public MeshRenderer mr;
+
+    public List<string> childrenIds = new List<string>();
 
     [ContextMenu("Init")]
     public void Init()

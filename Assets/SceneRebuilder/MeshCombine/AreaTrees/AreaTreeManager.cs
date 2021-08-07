@@ -5,7 +5,7 @@ using UnityEngine;
 
 public class AreaTreeManager : SingletonBehaviour<AreaTreeManager>
 {
-    void OnStart()
+    void Start()
     {
         CreateDictionary();
     }
@@ -679,15 +679,21 @@ public class AreaTreeManager : SingletonBehaviour<AreaTreeManager>
     [ContextMenu("CreateDictionary")]
     public void CreateDictionary()
     {
-         UpdateTrees();
-        AreaTreeHelper.render2NodeDict.Clear();
-        Debug.Log("AreaTreeManager.CreateDictionary:" + Trees.Count);
+        DateTime start = DateTime.Now;
+        UpdateTrees();
+
+        AreaTreeHelper.ClearDict();
+
+        //Debug.Log("AreaTreeManager.CreateDictionary:" + Trees.Count);
+        int nodeCount = 0;
         foreach (var tree in Trees)
         {
             if (tree == null) continue;
-            Debug.Log("tree:" + tree);
+            //Debug.Log("CreateDictionary tree:" + tree);
             tree.CreateDictionary();
+            nodeCount += tree.TreeLeafs.Count;
         }
+        Debug.LogWarning($"CreateDictionary trees:{Trees.Count}, nodes:{nodeCount} \trender2NodeDict:{AreaTreeHelper.render2NodeDict.Count},\trenderId2NodeDict:{AreaTreeHelper.renderId2NodeDict.Count}, \t{(DateTime.Now - start).TotalMilliseconds:F1}ms");
     }
 
     [ContextMenu("HideLeafNodes")]

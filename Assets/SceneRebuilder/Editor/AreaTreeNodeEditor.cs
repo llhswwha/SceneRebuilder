@@ -37,7 +37,7 @@ public class AreaTreeNodeEditor : BaseFoldoutEditor<AreaTreeNode>
         GUILayout.BeginHorizontal();
         if (GUILayout.Button("CreateScenes"))
         {
-            //areaTreeNode.EditorCreateScenes
+            areaTreeNode.EditorCreateNodeScenes();
         }
         if (GUILayout.Button("LoadScenes"))
         {
