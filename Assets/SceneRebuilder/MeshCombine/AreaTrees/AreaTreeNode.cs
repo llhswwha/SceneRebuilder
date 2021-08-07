@@ -547,26 +547,40 @@ public class AreaTreeNode : SubSceneCreater
         //newRenderers=renderersRoot.GetComponentsInChildren<MeshRenderer>();
         for (int i = 0; i < Renderers.Count; i++)
         {
-            MeshRenderer r = Renderers[i];
-            if (r == null)
+            try
             {
-                Debug.LogError($"SwitchModel r == null node:{this.name}");
-                continue;
+                MeshRenderer r = Renderers[i];
+                if (r == null)
+                {
+                    Debug.LogError($"SwitchModel r == null node:{this.name}");
+                    continue;
+                }
+                if (r.gameObject == null)
+                {
+                    Debug.LogError($"SwitchModel r.gameObject == null node:{this.name}");
+                    continue;
+                }
+                r.gameObject.SetActive(!isCombined);
+                r.enabled = !isCombined;
+                // var collider = colliders[i];
+                // if (collider)
+                // {
+                //     collider.enabled = !isCombined;
+                // }
+                MeshCollider collider = r.GetComponent<MeshCollider>();
+                if (collider != null)
+                {
+                    collider.enabled = !isCombined;
+                }
+                else
+                {
+                    Debug.LogError("SwitchModel collider==null:" + r);
+                }
             }
-            if (r.gameObject == null)
+            catch (Exception ex)
             {
-                Debug.LogError($"SwitchModel r.gameObject == null node:{this.name}");
-                continue;
+                Debug.LogError($"SwitchModel Exception {ex}");
             }
-            r.gameObject.SetActive(!isCombined);
-            r.enabled = !isCombined;
-            // var collider = colliders[i];
-            // if (collider)
-            // {
-            //     collider.enabled = !isCombined;
-            // }
-            MeshCollider collider = r.GetComponent<MeshCollider>();
-            collider.enabled = !isCombined;
         }
 
         combindResult.SetActive(isCombined);

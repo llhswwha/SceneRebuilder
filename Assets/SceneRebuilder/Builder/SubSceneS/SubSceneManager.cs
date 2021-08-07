@@ -473,7 +473,7 @@ public class SubSceneManager : SingletonBehaviour<SubSceneManager>
                     {
                         if (finishedCallback != null)
                         {
-                            loadProgress.SetInfo(s, 1, true);
+                            loadProgress.SetInfo(s, progress, false);
                             finishedCallback(loadProgress);
                         }
                     }
