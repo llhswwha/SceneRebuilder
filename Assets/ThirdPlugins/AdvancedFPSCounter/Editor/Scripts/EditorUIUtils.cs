@@ -36,6 +36,8 @@ namespace CodeStage.AdvancedFPSCounter.Editor.UI
 
         public int level = 0;
 
+        public object tag = null;
+
         public FoldoutEditorArg()
         {
 

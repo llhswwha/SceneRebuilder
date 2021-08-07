@@ -10,12 +10,15 @@ public class MeshNodeEditor : BaseFoldoutEditor<MeshNode>
 {
     FoldoutEditorArg meshnodeListArg = new FoldoutEditorArg();
 
+    FoldoutEditorArg sharedMeshListArg = new FoldoutEditorArg();
+
     private int rendererCount = 0;
 
     public override void OnEnable()
     {
         base.OnEnable();
         meshnodeListArg = new FoldoutEditorArg(true,true,true,true,true);
+        sharedMeshListArg = new FoldoutEditorArg(true, true, true, true, true);
 
         rendererCount = targetT.gameObject.GetComponentsInChildren<MeshRenderer>(true).Length;
     }
@@ -37,23 +40,15 @@ public class MeshNodeEditor : BaseFoldoutEditor<MeshNode>
         
 
         EditorGUILayout.BeginHorizontal();
-        if (GUILayout.Button("Init"))
+        if (GUILayout.Button("UpdateList"))
         {
-            //DateTime start = DateTime.Now;
-            //item.Init(0,true,p=>
-            //{
-            //    ProgressBarHelper.DisplayProgressBar("MeshNode.Init", $"{p:P2}", p);
-            //});
-
-            //var meshNodes = item.GetComponentsInChildren<MeshNode>(true);
-            //ProgressBarHelper.ClearProgressBar();
-            //Debug.Log($"MeshNode.Init count:{meshNodes.Length} time:{(DateTime.Now - start)}");
             MeshNode.InitNodes(item.gameObject);
+            sharedMeshListArg.tag = item.GetSharedMeshList();
         }
-        if (GUILayout.Button("Refresh"))
-        {
-            item.RefreshInfo();
-        }
+        //if (GUILayout.Button("Refresh"))
+        //{
+        //    item.RefreshInfo();
+        //}
         if (GUILayout.Button("Clear"))
         {
             //item.RefreshInfo();
@@ -84,18 +79,25 @@ public class MeshNodeEditor : BaseFoldoutEditor<MeshNode>
             {
             });
             DrawMeshNodeList(meshnodeListArg, item, 0);
+
+            if (sharedMeshListArg.tag == null)
+            {
+                sharedMeshListArg.tag = item.GetSharedMeshList();
+            }
+            DrawSharedMeshListEx(sharedMeshListArg);
         }
     }
 
-    private void DrawMeshNodeList(FoldoutEditorArg meshnodeListArg, MeshNode item,int level)
+
+    private void DrawMeshNodeList(FoldoutEditorArg listArg, MeshNode item,int level)
     {
-        meshnodeListArg.level = level;
+        listArg.level = level;
         var nodes = item.GetMeshNodes();
-        if (meshnodeListArg.isEnabled && meshnodeListArg.isExpanded && nodes.Count>0)
+        if (listArg.isEnabled && listArg.isExpanded && nodes.Count>0)
         {
             
             InitEditorArg(nodes);
-            meshnodeListArg.DrawPageToolbar(nodes, (node, i) =>
+            listArg.DrawPageToolbar(nodes, (node, i) =>
             {
                 if (node == null)
                 {

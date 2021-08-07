@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections;
 using System.Collections.Generic;
+using System.Linq;
 using UnityEngine;
 
 public class MeshNode : MonoBehaviour,IComparable<MeshNode>
@@ -90,6 +91,11 @@ public class MeshNode : MonoBehaviour,IComparable<MeshNode>
     }
 
     public List<MeshNode> subMeshes = new List<MeshNode>();
+
+    public SharedMeshInfoList GetSharedMeshList()
+    {
+        return new SharedMeshInfoList(this.gameObject);
+    }
 
     public MeshNode parentMesh = null;
 
@@ -833,3 +839,5 @@ public class MeshNode : MonoBehaviour,IComparable<MeshNode>
         return meshNode;
     }
 }
+
+

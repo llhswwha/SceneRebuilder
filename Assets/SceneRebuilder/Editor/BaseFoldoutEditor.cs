@@ -28,6 +28,34 @@ public class BaseFoldoutEditor<T> : BaseEditor<T> where T : class
         }
     }
 
+    public FoldoutEditorArg GetEditorArg<T2>(T2 item, FoldoutEditorArg newArg)/* where T2 : System.Object*/
+    {
+        if (newArg == null)
+        {
+            newArg = new FoldoutEditorArg();
+        }
+        if (!editorArgs.ContainsKey(item))
+        {
+            editorArgs.Add(item, newArg);
+        }
+        return editorArgs[item];
+    }
+
+    public static Dictionary<System.Object, FoldoutEditorArg> editorArgs_global = new Dictionary<System.Object, FoldoutEditorArg>();
+
+    public FoldoutEditorArg GetGlobalEditorArg<T2>(T2 item, FoldoutEditorArg newArg)/* where T2 : System.Object*/
+    {
+        if (newArg == null)
+        {
+            newArg = new FoldoutEditorArg();
+        }
+        if (!editorArgs_global.ContainsKey(item))
+        {
+            editorArgs_global.Add(item, newArg);
+        }
+        return editorArgs_global[item];
+    }
+
     public void RemoveEditorArg<T2>(List<T2> items)/* where T2 : System.Object*/
     {
         foreach (var item in items)
@@ -939,7 +967,7 @@ public class BaseFoldoutEditor<T> : BaseEditor<T> where T : class
         }
     }
 
-    public void DrawLODGroupList(FoldoutEditorArg<LODGroupDetails> lodGroupListArg, LODManager lodManager)
+    protected void DrawLODGroupList(FoldoutEditorArg<LODGroupDetails> lodGroupListArg, LODManager lodManager)
     {
         lodGroupListArg.caption = $"LOD List";
         EditorUIUtils.ToggleFoldout(lodGroupListArg, arg =>
@@ -1068,4 +1096,92 @@ public class BaseFoldoutEditor<T> : BaseEditor<T> where T : class
             });
         }
     }
+
+    protected void DrawSharedMeshListEx(FoldoutEditorArg listArg)
+    {
+        listArg.caption = $"SharedMesh List";
+        var list = listArg.tag as SharedMeshInfoList;
+        if (list == null) return;
+        EditorUIUtils.ToggleFoldout(listArg, arg =>
+        {
+            
+            arg.caption = $"SharedMesh List ({list.Count})";
+            arg.info = $"{MeshHelper.GetVertexCountS(list.sharedVertexCount)}/{MeshHelper.GetVertexCountS(list.totalVertexCount)}({list.sharedVertexCount / (float)list.totalVertexCount:P1})|{list.filterCount}";
+            InitEditorArg(list);
+        },
+        () =>
+        {
+        });
+        DrawSharedMeshList(listArg);
+    }
+
+    protected void DrawSharedMeshList(FoldoutEditorArg listArg)
+    {
+        //listArg.level = level;
+        //var nodes = item.GetMeshNodes();
+        var list = listArg.tag as SharedMeshInfoList;
+        if (listArg.isEnabled && listArg.isExpanded && list.Count > 0)
+        {
+
+            InitEditorArg(list);
+            listArg.DrawPageToolbar(list, (node, i) =>
+            {
+                if (node == null)
+                {
+                    var arg = new FoldoutEditorArg();
+                    arg.caption = "NULL";
+                    //arg.info = $"{MeshHelper.GetVertexCountS(list.vertexCount)}|{list.filterCount}";
+                    EditorUIUtils.ObjectFoldout(new FoldoutEditorArg(), null, null);
+                }
+                else
+                {
+                    var arg = editorArgs[node];
+                    arg.level = 1;
+                    arg.isFoldout = node.GetCount() > 0;
+                    arg.caption = $"[{i:00}] {node.GetName()} ({node.GetCount()})";
+                    arg.isEnabled = true;
+                    arg.info = $"{MeshHelper.GetVertexCountS(node.vertexCount)}[{node.vertexCount / (float)list.sharedVertexCount:P1}]";
+                    //if (level == 0)
+                    //{
+                    //    arg.background = true;
+                    //    arg.bold = node == item;
+                    //}
+
+                    //EditorUIUtils.ObjectFoldout(arg, node.GetMainMeshFilter().gameObject, () =>
+                    //{
+
+                    //});
+
+                    EditorUIUtils.ObjectFoldout(arg, node.mesh, () =>
+                    {
+
+                    });
+
+                    if (arg.isEnabled && arg.isExpanded)
+                    {
+
+                        var filters = node.meshFilters;
+                        InitEditorArg(filters);
+                        foreach (var mf in filters)
+                        {
+                            var mfArg = editorArgs[mf];
+                            mfArg.isFoldout = false;
+                            mfArg.level = 2;
+                            mfArg.caption = mf.name;
+                            EditorUIUtils.ObjectFoldout(mfArg, mf.gameObject, () =>
+                            {
+
+                            });
+                        }
+                    }
+
+                    //if (node != item)
+                    //{
+                    //    DrawMeshNodeList(arg, node, level + 1);
+                    //}
+                }
+            });
+        }
+    }
+
 }

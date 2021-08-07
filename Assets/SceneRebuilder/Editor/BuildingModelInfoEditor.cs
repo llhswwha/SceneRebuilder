@@ -84,18 +84,13 @@ public class BuildingModelInfoEditor : BaseFoldoutEditor<BuildingModelInfo>
             info.InitInOut();
         });
         int btnW1 = 90;
-        NewButton("FindDoors", btnW1, state.CanFindDoors(), btnStyle, info.FindInDoors);
-        NewButton("SplitDoors", btnW1, true, btnStyle, () =>
+        NewButton("FindDoors", buttonWidth, state.CanFindDoors(), btnStyle, info.FindInDoors);
+        NewButton("SplitDoors", buttonWidth, true, btnStyle, () =>
         {
             DoorManager.Instance.LocalTarget = info.gameObject;
 
         });
-        NewButton("ClearParts", btnW1, state.partCount > 0, btnStyle, info.ClearInOut);
-        NewButton("ShowRenderers", btnW1, true, btnStyle, info.ShowRenderers);
-        NewButton("InitMeshNodes", btnW1, true, btnStyle, () =>
-        {
-            MeshNode.InitNodes(info.gameObject);
-        });
+        NewButton("ClearParts", buttonWidth, state.partCount > 0, btnStyle, info.ClearInOut);
         EditorGUILayout.EndHorizontal();
 
         EditorGUILayout.BeginHorizontal();
@@ -143,6 +138,14 @@ public class BuildingModelInfoEditor : BaseFoldoutEditor<BuildingModelInfo>
         });
         NewButton("SetBuildings", buttonWidth, true, btnStyle, () => {
             SubSceneManager.Instance.SetBuildings_All();
+        });
+        EditorGUILayout.EndHorizontal();
+
+        EditorGUILayout.BeginHorizontal();
+        NewButton("ShowRenderers", buttonWidth, true, btnStyle, info.ShowRenderers);
+        NewButton("InitMeshNodes", buttonWidth, true, btnStyle, () =>
+        {
+            MeshNode.InitNodes(info.gameObject);
         });
         EditorGUILayout.EndHorizontal();
 

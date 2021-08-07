@@ -4,6 +4,9 @@ using System.Collections.Generic;
 using System.Linq;
 using UnityEngine;
 
+/// <summary>
+/// MeshRenderer&MeshFilterManager
+/// </summary>
 public class RendererManager : SingletonBehaviour<RendererManager>
 {
     // private static RendererManager _instance;
@@ -346,6 +349,11 @@ public class RendererManager : SingletonBehaviour<RendererManager>
 
         ProgressBarHelper.ClearProgressBar();
         Debug.Log($"RemoveEmptyParent_Target TestGo:{TestGo} count:{allRenderers.Length} removeCount:{removeCount} time:{(DateTime.Now - start)}");
+    }
+
+    public SharedMeshInfoList GetSharedMeshList()
+    {
+        return new SharedMeshInfoList(null);
     }
 
     //public  
