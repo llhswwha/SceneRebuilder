@@ -1559,10 +1559,25 @@ public class BuildingModelInfo : SubSceneCreater
         EditorHelper.RefreshAssets();
     }
 
+    [ContextMenu("InitRenderers")]
+    public List<RendererId> InitRenderers()
+    {
+        List<RendererId> idsAll = new List<RendererId>();
+        for (int i = 0; i < trees.Length; i++)
+        {
+            var tree = trees[i];
+            var rs=tree.InitRenderers();
+            idsAll.AddRange(rs);
+        }
+        IdDictionary.SaveChildrenIds(idsAll,this.gameObject);
+        return idsAll;
+    }
+
     public void EditorCreateNodeScenes(Action<float> progressChanged)
     {
         DateTime start = DateTime.Now;
         ShowDetail();
+        InitRenderers();
         for (int i = 0; i < trees.Length; i++)
         {
             var tree = trees[i];

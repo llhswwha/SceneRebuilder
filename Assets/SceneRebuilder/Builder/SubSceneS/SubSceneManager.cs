@@ -449,11 +449,11 @@ public class SubSceneManager : SingletonBehaviour<SubSceneManager>
                 var scene = WattingForLoadedAll[0];
                 WattingForLoadedAll.RemoveAt(0);
                 WattingForLoadedCurrent.Add(scene);
-                Debug.Log($"LoadScenesByBag Start scene:{scene.GetSceneName()},currentList:{WattingForLoadedCurrent.Count} allList:{WattingForLoadedAll.Count}");
+                //Debug.Log($"LoadScenesByBag Start scene:{scene.GetSceneName()},currentList:{WattingForLoadedCurrent.Count} allList:{WattingForLoadedAll.Count}");
                 scene.LoadSceneAsync((b, s) =>
                 {
                     WattingForLoadedCurrent.Remove(s);
-                    Debug.Log($"LoadScenesByBag End scene:{s.GetSceneName()},currentList:{WattingForLoadedCurrent.Count} allList:{WattingForLoadedAll.Count}");
+                    //Debug.Log($"LoadScenesByBag End scene:{s.GetSceneName()},currentList:{WattingForLoadedCurrent.Count} allList:{WattingForLoadedAll.Count}");
 
                     count++;
                     var progress = (count + 0.0f) / scenes.Length;
@@ -482,7 +482,7 @@ public class SubSceneManager : SingletonBehaviour<SubSceneManager>
             yield return new WaitForSeconds(0.02f);
         }
        
-        Debug.Log($"LoadSceneAsync Finished currentList:{WattingForLoadedCurrent.Count} allList:{WattingForLoadedAll.Count}");
+        Debug.Log($"[SubSceneManager.LoadScenesByBag] Finished currentList:{WattingForLoadedCurrent.Count} allList:{WattingForLoadedAll.Count} time:{(DateTime.Now - start).ToString()}");
         yield return null;
     }
 
@@ -1068,7 +1068,7 @@ public class SubSceneManager : SingletonBehaviour<SubSceneManager>
     private void WriteLog(string tag,string log)
     {
         Log = log;
-        Debug.Log($"[{tag}]{log}");
+        //Debug.Log($"[{tag}]{log}");
     }
 }
 

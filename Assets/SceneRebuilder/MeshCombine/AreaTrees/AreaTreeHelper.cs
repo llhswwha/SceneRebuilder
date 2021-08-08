@@ -107,7 +107,7 @@ public static class AreaTreeHelper
             }
             else
             {
-                Debug.LogError($"RegisterRenderer 模型重复在不同的Node里 render:{render},node1:{render2NodeDict[render].name},node2:{newNode.name}");
+                Debug.LogError($"RegisterRenderer 模型重复在不同的Node里 render:{render.name},node1:{render2NodeDict[render].name},node2:{newNode.name}");
                 render2NodeDict[render] = newNode;
             }
         }
@@ -117,16 +117,16 @@ public static class AreaTreeHelper
         }
     }
 
-    public static void RegisterRendererId(string render, AreaTreeNode newNode)
+    public static bool RegisterRendererId(string rendererId,int id, AreaTreeNode newNode)
     {
-        if (render == null) return;
-        if (renderId2NodeDict.ContainsKey(render))
+        if (rendererId == null) return false;
+        if (renderId2NodeDict.ContainsKey(rendererId))
         {
-            var node = renderId2NodeDict[render];
+            var node = renderId2NodeDict[rendererId];
             if (node == null)
             {
                 //Debug.LogWarning($"Node1被删除了 render:{render},node1:{AreaTreeHelper.render2NodeDict[render]},node2:{this}");
-                renderId2NodeDict[render] = newNode;
+                renderId2NodeDict[rendererId] = newNode;
             }
             else if (node == newNode)
             {
@@ -134,14 +134,16 @@ public static class AreaTreeHelper
             }
             else
             {
-                Debug.LogError($"RegisterRendererId 模型重复在不同的Node里 render:{render},node1:{renderId2NodeDict[render].name},node2:{newNode.name}");
-                renderId2NodeDict[render] = newNode;
+                Debug.LogError($"RegisterRendererId 模型重复在不同的Node里 renderId:{rendererId},index:{id} node1:{renderId2NodeDict[rendererId].name},node2:{newNode.name}");
+                renderId2NodeDict[rendererId] = newNode;
+                return false;
             }
         }
         else
         {
-            renderId2NodeDict.Add(render, newNode);
+            renderId2NodeDict.Add(rendererId, newNode);
         }
+        return true;
     }
 
     public static void AddNodeDictItem_Renderers(IEnumerable<MeshRenderer> renderers,AreaTreeNode node)

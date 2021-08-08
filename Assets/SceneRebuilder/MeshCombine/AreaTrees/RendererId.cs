@@ -114,9 +114,10 @@ public class RendererId
         GameObject pGo=IdDictionary.GetGo(parentId);
         if(pGo!=null){
             this.transform.SetParent(pGo.transform);
+            //Debug.LogError($"RendererId.SetParent1 pGo!=null name:{this.name} Id:{this.Id} parentId:{this.parentId}");
         }
         else{
-            Debug.LogError($"RendererId.SetParent pGo==null name:{this.name} Id:{this.Id} parentId:{this.parentId}");
+            Debug.LogError($"RendererId.SetParent2 pGo==null name:{this.name} Id:{this.Id} parentId:{this.parentId}");
         }
     }
 

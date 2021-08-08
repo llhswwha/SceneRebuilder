@@ -85,7 +85,6 @@ public class MeshSelection : MonoBehaviour
                     callback(null);
                 }
             }
-            
         }
         else if (rId.childrenIds.Count == 0)
         {
@@ -101,7 +100,7 @@ public class MeshSelection : MonoBehaviour
             }
             else
             {
-                var rIds = rId.GetComponentsInChildren<RendererId>();
+                var rIds = rId.GetComponentsInChildren<RendererId>(true);
                 var nodes = AreaTreeHelper.GetNodesByChildrens(rIds);
                 SelectObjectByRId(id, callback, start, nodes);
             }
@@ -118,9 +117,14 @@ public class MeshSelection : MonoBehaviour
     private static void SelectObjectByRId(string id, Action<GameObject> callback, DateTime start, List<AreaTreeNode> nodes)
     {
         var scenes = SubSceneHelper.GetScenes(nodes);
-        Debug.Log($"SelectObjectByRId nodes:{nodes.Count} scenes:{scenes.Count} id:{id} ");
+        Debug.Log($"SelectObjectByRId nodes:{nodes.Count} scenes:{scenes.Count} scene1:{scenes[0]} id:{id} ");
         SubSceneShowManager.Instance.LoadScenes(scenes, p =>
         {
+            foreach(var node in nodes)
+            {
+                node.LoadRenderers();
+                node.SwitchToRenderers();
+            }
             if (p.isAllFinished)
             {
                 GameObject go = IdDictionary.GetGo(id);
@@ -134,7 +138,7 @@ public class MeshSelection : MonoBehaviour
                 }
                 else
                 {
-                    Debug.Log($"SelectObjectByRId time:{(DateTime.Now - start).TotalMilliseconds}ms go:{go} id:{id} ");
+                    Debug.Log($"SelectObjectByRId time:{(DateTime.Now - start).TotalMilliseconds:F1}ms go:{go} id:{id} ");
                     if (callback != null)
                     {
                         callback(go);

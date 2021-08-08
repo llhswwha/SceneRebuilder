@@ -354,7 +354,7 @@ public class SubSceneShowManager : SingletonBehaviour<SubSceneShowManager>
 
         CheckSceneIndex();
 
-        IdDictionary.InitInfos();
+        //IdDictionary.InitInfos();
     }
 
     private void CheckSceneIndex()
@@ -533,7 +533,7 @@ public class SubSceneShowManager : SingletonBehaviour<SubSceneShowManager>
     {
         if (WaitingScenes.Count > 0)
         {
-            Debug.Log("CheckWaittingScenes 1:"+ WaitingScenes.Count);
+            //Debug.Log("CheckWaittingScenes 1:"+ WaitingScenes.Count);
             for(int i = 0; i < WaitingScenes.Count; i++)
             {
                 var scene = WaitingScenes[i];
@@ -552,7 +552,7 @@ public class SubSceneShowManager : SingletonBehaviour<SubSceneShowManager>
                     scene.CheckGetSceneObjects();
                 }
             }
-            Debug.Log("CheckWaittingScenes 2:" + WaitingScenes.Count);
+            //Debug.Log("CheckWaittingScenes 2:" + WaitingScenes.Count);
         }
 
         if (WaitingScenes_ToLoad.Count > 0)

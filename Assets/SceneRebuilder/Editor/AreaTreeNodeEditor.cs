@@ -24,6 +24,7 @@ public class AreaTreeNodeEditor : BaseFoldoutEditor<AreaTreeNode>
         {
             areaTreeNode.MoveRenderers();
         }
+
         if (GUILayout.Button("RecoverParentEx"))
         {
             areaTreeNode.RecoverParentEx();
@@ -31,6 +32,26 @@ public class AreaTreeNodeEditor : BaseFoldoutEditor<AreaTreeNode>
         if (GUILayout.Button("RecoverParent"))
         {
             areaTreeNode.RecoverParent();
+        }
+        GUILayout.EndHorizontal();
+
+        GUILayout.BeginHorizontal();
+        if (GUILayout.Button("InitIds"))
+        {
+            IdDictionary.InitInfos();
+        }
+        if (GUILayout.Button("LoadRenderers"))
+        {
+            areaTreeNode.LoadRenderers();
+        }
+        if (GUILayout.Button("SwitchToRenderers"))
+        {
+            areaTreeNode.SwitchToRenderers();
+        }
+
+        if (GUILayout.Button("SwitchToCombined"))
+        {
+            areaTreeNode.SwitchToCombined();
         }
         GUILayout.EndHorizontal();
 

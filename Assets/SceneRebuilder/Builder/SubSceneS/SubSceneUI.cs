@@ -62,7 +62,7 @@ public class SubSceneUI : MonoBehaviour
 
     private void Scene_AllLoaded(SubScene_Base scene)
     {
-        Debug.Log("Scene_AllLoaded:" + scene.Log+"|"+scene.loadProgress);
+        //Debug.Log("Scene_AllLoaded:" + scene.Log+"|"+scene.loadProgress);
         txtLog.text = scene.Log;
         toggleIsLoaded.isOn = true;
     }

@@ -648,7 +648,7 @@ public static class EditorHelper
                 }
                 else
                 {
-                    Debug.Log($"LoadSceneAsync[{arg.name}] objs:{objs.Length} time:{(System.DateTime.Now - start).ToString()}");
+                    //Debug.Log($"LoadSceneAsync[{arg.name}] objs:{objs.Length} time:{(System.DateTime.Now - start).ToString()}");
                 }
                 
                 if (finished != null)
@@ -710,7 +710,7 @@ public static class EditorHelper
         //System.GC.Collect();
         //从内存卸载，没有的话，第二次开始不会从硬盘读取了。
 
-        Debug.Log($"UnLoadSceneAsync[{arg.name}] time:{(System.DateTime.Now - start).ToString()}");
+        //Debug.Log($"UnLoadSceneAsync[{arg.name}] time:{(System.DateTime.Now - start).ToString()}");
         yield return null;
     }
 
@@ -726,7 +726,7 @@ public static class EditorHelper
         string scenePath=arg.path;
         Scene scene = GetSceneByBuildIndex(arg);
 
-        Debug.Log($"GetSceneObjects scene:{scenePath},isLoaded:{scene.isLoaded},isValid:{scene.IsValid()}");
+        //Debug.Log($"GetSceneObjects scene:{scenePath},isLoaded:{scene.isLoaded},isValid:{scene.IsValid()}");
 
         if(scene.IsValid()){
             var objs = scene.GetRootGameObjects();

@@ -559,7 +559,7 @@ public class ModelAreaTree : SubSceneCreater
         {
             AreaTreeNodeShowManager.Instance.RegistHiddenTree(this);
         }
-        CreateDictionary();
+        //CreateDictionary();
     }
 
     private void OnDestroy()
@@ -716,12 +716,26 @@ public class ModelAreaTree : SubSceneCreater
     [ContextMenu("MoveRenderers")]
     public void MoveRenderers()
     {
-        List<RendererId> idsAll = new List<RendererId>();
+        //List<RendererId> idsAll = new List<RendererId>();
          foreach (var node in TreeLeafs){
             List<RendererId> ids=node.MoveRenderers();
+            //idsAll.AddRange(ids);
+        }
+        //IdDictionary.SaveChildrenIds(idsAll,Target);
+        //return idsAll;
+    }
+
+    [ContextMenu("MoveRenderers")]
+    public List<RendererId> InitRenderers()
+    {
+        List<RendererId> idsAll = new List<RendererId>();
+        foreach (var node in TreeLeafs)
+        {
+            List<RendererId> ids = node.InitRenderers();
             idsAll.AddRange(ids);
         }
-        IdDictionary.SaveChildrenIds(idsAll,Target);
+        //IdDictionary.SaveChildrenIds(idsAll,Target);
+        return idsAll;
     }
 
     [ContextMenu("RecoverParent")]
@@ -1117,6 +1131,7 @@ public class ModelAreaTree : SubSceneCreater
         UpdateSceneList();
 
         if (progressChanged == null) Debug.LogError($"ModelAreaTree.EditorCreateNodeScenes time:{(DateTime.Now - start)}");
+        //return idsAll;
     }
 
     [ContextMenu("* EditorLoadNodeScenesEx")]

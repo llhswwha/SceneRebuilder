@@ -20,7 +20,15 @@ public class RendererManagerEditor : BaseFoldoutEditor<RendererManager>
     public override void OnToolLayout(RendererManager item)
     {
         base.OnToolLayout(item);
+        GUILayout.Label(item.TestId);
+        if (GUILayout.Button("TestGetGo"))
+        {
+            item.TestGetGo();
+        }
+        EditorGUILayout.ObjectField(item.TestGo, typeof(GameObject));
+        EditorUIUtils.Separator(5);
 
+        GUILayout.BeginHorizontal();
         if (GUILayout.Button("InitRenderers_All"))
         {
             item.InitRenderers_All();
@@ -30,7 +38,9 @@ public class RendererManagerEditor : BaseFoldoutEditor<RendererManager>
         {
             item.InitIds();
         }
+        GUILayout.EndHorizontal();
 
+        GUILayout.BeginHorizontal();
         if (GUILayout.Button("CheckRendererParent"))
         {
             item.CheckRendererParent();
@@ -39,6 +49,7 @@ public class RendererManagerEditor : BaseFoldoutEditor<RendererManager>
         {
             item.SetDetailRenderers();
         }
+        GUILayout.EndHorizontal();
 
         EditorUIUtils.Separator(5);
 

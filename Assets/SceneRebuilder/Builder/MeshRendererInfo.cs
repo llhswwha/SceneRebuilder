@@ -34,6 +34,11 @@ public class MeshRendererInfo : MonoBehaviour
 
     public Vector3[] minMax;
 
+    public override string ToString()
+    {
+        return $"meshRenderer:{meshRenderer} vertexCount:{vertexCount}";
+    }
+
     public virtual MeshRenderer[] GetRenderers()
     {
         return new MeshRenderer[1] { meshRenderer };

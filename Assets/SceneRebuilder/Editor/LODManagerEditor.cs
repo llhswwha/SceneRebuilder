@@ -93,20 +93,24 @@ public class LODManagerEditor : BaseFoldoutEditor<LODManager>
         lodManager.GroupRoot = EditorGUILayout.ObjectField(lodManager.GroupRoot, typeof(GameObject)) as GameObject;
         GUILayout.Label("LOD:");
         lodManager.LODnRoot = EditorGUILayout.ObjectField(lodManager.LODnRoot, typeof(GameObject)) as GameObject;
-
+        if (GUILayout.Button("Unpack", GUILayout.Width(50)))
+        {
+            EditorHelper.UnpackPrefab(lodManager.GroupRoot);
+            EditorHelper.UnpackPrefab(lodManager.LODnRoot);
+        }
         if (GUILayout.Button("Show0",GUILayout.Width(50)))
         {
             //lodManager.GroupRoot.SetActive(true);
             //lodManager.LODnRoot.SetActive(false);
             lodManager.ShowRoot0();
-            EditorHelper.SelectObject(lodManager.GroupRoot);
+            //EditorHelper.SelectObject(lodManager.GroupRoot);
         }
         if (GUILayout.Button("Show1", GUILayout.Width(50)))
         {
             //lodManager.GroupRoot.SetActive(false);
             //lodManager.LODnRoot.SetActive(true);
             lodManager.ShowRoot1();
-            EditorHelper.SelectObject(lodManager.LODnRoot);
+            //EditorHelper.SelectObject(lodManager.LODnRoot);
         }
         if (GUILayout.Button("Show01", GUILayout.Width(60)))
         {
@@ -127,6 +131,10 @@ public class LODManagerEditor : BaseFoldoutEditor<LODManager>
         if (GUILayout.Button("Compare"))
         {
             lodManager.CompareTwoRoot();
+        }
+        if (GUILayout.Button("CheckLOD0"))
+        {
+            lodManager.CheckLOD0();
         }
         if (GUILayout.Button("AppendLod1"))
         {
@@ -240,6 +248,10 @@ public class LODManagerEditor : BaseFoldoutEditor<LODManager>
                     if (GUILayout.Button("AddLOD", GUILayout.Width(60)))
                     {
                         lodManager.CreateGroup(item);
+                    }
+                    if (GUILayout.Button("Align", GUILayout.Width(60)))
+                    {
+                        item.Align();
                     }
 
                     //if (GUILayout.Button("Color1", GUILayout.Width(50)))

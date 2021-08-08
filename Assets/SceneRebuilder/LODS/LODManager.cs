@@ -245,6 +245,28 @@ public class LODManager : SingletonBehaviour<LODManager>
         }
     }
 
+    public void CheckLOD0()
+    {
+        List<MeshRendererInfo> lod0s = new List<MeshRendererInfo>();
+        foreach (var item in twoList)
+        {
+            var minDis = item.dis;
+            var render_lod1 = item.renderer_lod1;
+            var render_lod0 = item.renderer_lod0;
+            var vertexCount0 = item.vertexCount0;
+            var vertexCount1 = item.vertexCount1;
+            if (!lod0s.Contains(render_lod0))
+            {
+                lod0s.Add(render_lod0);
+            }
+            else
+            {
+                Debug.LogError($"CheckLOD0 lod0s.Contains(render_lod0) lod0:[{render_lod0}] two:[{item.GetCaption()}]");
+            }
+            
+        }
+    }
+
     public void CompareTwoRoot()
     {
         twoList.Clear();
@@ -421,6 +443,25 @@ public class LODManager : SingletonBehaviour<LODManager>
         float distance = Vector3.Distance(center0, center1);
         return distance;
     }
+    public static float GetMinDistance(GameObject go1, GameObject go2)
+    {
+        MeshRendererInfo info0 = MeshRendererInfo.GetInfo(go1);
+        var center0 = info0.minMax[0];
+        MeshRendererInfo info1 = MeshRendererInfo.GetInfo(go2);
+        var center1 = info1.minMax[0];
+        float distance = Vector3.Distance(center0, center1);
+        return distance;
+    }
+
+    public static float GetMaxDistance(GameObject go1, GameObject go2)
+    {
+        MeshRendererInfo info0 = MeshRendererInfo.GetInfo(go1);
+        var center0 = info0.minMax[1];
+        MeshRendererInfo info1 = MeshRendererInfo.GetInfo(go2);
+        var center1 = info1.minMax[1];
+        float distance = Vector3.Distance(center0, center1);
+        return distance;
+    }
 
     public static float GetDistance<T>(T item, Transform t, LODCompareMode mode) where T : Component
     {
@@ -432,6 +473,16 @@ public class LODManager : SingletonBehaviour<LODManager>
         else if (mode == LODCompareMode.NameWithCenter || mode == LODCompareMode.Center)
         {
             float distance = GetCenterDistance(item.gameObject, t.gameObject);
+            return distance;
+        }
+        else if (mode == LODCompareMode.NameWithMin || mode == LODCompareMode.Min)
+        {
+            float distance = GetMinDistance(item.gameObject, t.gameObject);
+            return distance;
+        }
+        else if (mode == LODCompareMode.NameWithMax || mode == LODCompareMode.Max)
+        {
+            float distance = GetMaxDistance(item.gameObject, t.gameObject);
             return distance;
         }
         else if (mode == LODCompareMode.NameWithMesh || mode == LODCompareMode.Mesh)
@@ -516,7 +567,12 @@ public class LODManager : SingletonBehaviour<LODManager>
         //2.Find Closed
         List<T> ts0 = ts;
         MinDisTarget<T> min = null;
-        if (mode == LODCompareMode.Name || mode == LODCompareMode.NameWithPos|| mode == LODCompareMode.NameWithCenter || mode == LODCompareMode.NameWithMesh)
+        if (mode == LODCompareMode.Name 
+            || mode == LODCompareMode.NameWithPos
+            || mode == LODCompareMode.NameWithCenter
+            || mode == LODCompareMode.NameWithMin
+            || mode == LODCompareMode.NameWithMax
+            || mode == LODCompareMode.NameWithMesh)
         {
 
             var ts2 = ts.FindAll(i => i.name == t.name);
@@ -1234,7 +1290,7 @@ public class LODManager : SingletonBehaviour<LODManager>
 
 public enum LODCompareMode
 {
-    Name,NameWithPos,NameWithCenter,NameWithMesh, Pos, Center, Mesh
+    Name,NameWithPos, NameWithMin, NameWithMax, NameWithCenter,NameWithMesh, Pos, Center, Min, Max,Mesh,
 }
 
 public static class LODHelper
@@ -1538,7 +1594,9 @@ public class LODTwoRenderers
 
     private void Set01Active(bool active0,bool active1)
     {
+        if (renderer_lod1 == null) return;
         var lod1 = renderer_lod1.meshRenderer;
+        if (lod1 == null) return;
         lod1.gameObject.SetActive(active1);
         var lod0 = renderer_lod0.meshRenderer;
         lod0.gameObject.SetActive(active0);
@@ -1557,5 +1615,15 @@ public class LODTwoRenderers
     internal void Show1()
     {
         Set01Active(false, true);
+    }
+
+    public void Align()
+    {
+        if (renderer_lod1 == null) return;
+        var lod1 = renderer_lod1.meshRenderer;
+        if (lod1 == null) return;
+        var lod0 = renderer_lod0.meshRenderer;
+
+        lod1.transform.position = lod0.transform.position;
     }
 }

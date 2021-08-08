@@ -30,7 +30,7 @@ public static class IdDictionary
     //    return IdDict.Values.ToList();
     //}
 
-    private static void SetId(RendererId id)
+    public static void SetId(RendererId id)
     {
         //try
         //{
@@ -93,10 +93,12 @@ public static class IdDictionary
 
     public static void InitInfos(GameObject root = null)
     {
+        DateTime start = DateTime.Now;
         RendererDict.Clear();
         IdDict.Clear();
         InitRenderers(root);
         InitIds(root);
+        Debug.Log($"IdDictionay.InitInfos idCount:{IdDict.Count},RendererCount:{RendererDict.Count} time:{(DateTime.Now - start)}");
     }
 
     public static void InitRenderers(GameObject root = null)
@@ -112,10 +114,10 @@ public static class IdDictionary
             renderers = root.GetComponentsInChildren<MeshRenderer>(true);
         }
         InitRenderers(renderers);
-        Debug.Log($"RendererDictionay.InitRenderers count:{renderers.Length},Dict:{RendererDict.Count} time:{(DateTime.Now - start)}");
+        Debug.Log($"IdDictionay.InitRenderers count:{renderers.Length},Dict:{RendererDict.Count} time:{(DateTime.Now - start)}");
     }
 
-    public static void InitIds(GameObject root=null)
+    public static RendererId[] InitIds(GameObject root=null)
     {
         DateTime start = DateTime.Now;
         RendererId[] ids = null;
@@ -130,8 +132,10 @@ public static class IdDictionary
         foreach (var id in ids)
         {
             SetId(id);
+            //id.childrenIds.Clear();
         }
-        Debug.Log($"RendererDictionay.InitIds count:{ids.Length},Dict:{IdDict.Count} time:{(DateTime.Now - start)}");
+        Debug.Log($"IdDictionay.InitIds count:{ids.Length},Dict:{IdDict.Count} time:{(DateTime.Now - start)}");
+        return ids;
     }
 
     public static void SaveChildrenIds(List<RendererId> idsAll, GameObject root)
@@ -148,7 +152,7 @@ public static class IdDictionary
                     dict.Add(id.parentId, parent);
                     if (parent.childrenIds.Count > 0)
                     {
-                        Debug.LogError($"SaveChildrenIds parent.childrenIds.Count > 0 id:{id} parentId:{id.parentId} parent:{parent}");
+                        Debug.LogError($"SaveChildrenIds parent.childrenIds.Count > 0 childrens:{parent.childrenIds.Count} id:{id} parentId:{id.parentId} parent:{parent}");
                     }
                     parent.childrenIds.Clear();
                     parent.childrenIds.Add(id.Id);
@@ -201,7 +205,7 @@ public static class IdDictionary
             idCount += ids.Length;
         }
         int count2 = RendererDict.Count;
-        Debug.Log($"RendererDictionay.InitRenderers tag:{tag} objs:{objs.Count()},idCount:{idCount} count1:{count1} count2:{count2} add:{count2-count1} time:{(DateTime.Now - start)}");
+        //Debug.Log($"RendererDictionay.InitRenderers tag:{tag} objs:{objs.Count()},idCount:{idCount} count1:{count1} count2:{count2} add:{count2-count1} time:{(DateTime.Now - start)}");
     }
 
     public static GameObject GetGo(string id,string goName="")
@@ -275,11 +279,16 @@ public static class IdDictionary
             var renderer = RendererDict[id];
             if (renderer == null)
             {
-                Debug.LogError($"RendererDictionay.GetRenderer renderer == null :{id},Dict:{RendererDict.Count}");
+                Debug.LogError($"RendererDictionay.GetRenderer renderer == null :Dict:{RendererDict.Count} id:{id}");
             }
             return renderer;
         }
-        Debug.LogError($"RendererDictionay.GetRenderer not found id:{id},Dict:{RendererDict.Count}");
+        GameObject go = null;
+        if (IdDict.ContainsKey(id))
+        {
+            go = IdDict[id].gameObject;
+        }
+        Debug.LogError($"RendererDictionay.GetRenderer not found Dict:{RendererDict.Count} go:{go} id:{id}");
         return null;
     }
 

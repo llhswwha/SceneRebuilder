@@ -466,7 +466,7 @@ public class SubScene_Base : MonoBehaviour
     private void WriteLog(string tag,string log)
     {
         Log = log;
-        Debug.Log($"[{tag}]{log}");
+        //Debug.Log($"[{tag}]{log}");
     }
 
     [ContextMenu("LoadSceneAsync")]
@@ -577,7 +577,9 @@ public class SubScene_Base : MonoBehaviour
         RendererId[] rIds=this.GetComponentsInChildren<RendererId>(true);
         foreach(var rI in rIds){
             rI.SetParent();
+            IdDictionary.SetId(rI);
         }
+
     }
 
      [ContextMenu("SetRendererParent_Ids")]
