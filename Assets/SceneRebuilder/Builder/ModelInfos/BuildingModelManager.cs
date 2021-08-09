@@ -367,8 +367,10 @@ public class BuildingModelManager : SingletonBehaviour<BuildingModelManager>
 
         Unpack();
         DateTime start = DateTime.Now;
-        AreaTreeManager treeManager = GameObject.FindObjectOfType<AreaTreeManager>();
-        if (treeManager != null) treeManager.Clear();
+        
+        var treeManager = AreaTreeManager.Instance;
+        treeManager.Clear();
+
         List<ModelAreaTree> allTrees = new List<ModelAreaTree>();
         for (int i = 0; i < Buildings.Count; i++)
         {
@@ -389,8 +391,7 @@ public class BuildingModelManager : SingletonBehaviour<BuildingModelManager>
             }
         }
 
-
-        if (treeManager) treeManager.AddTrees(allTrees.ToArray());
+        treeManager.AddTrees(allTrees.ToArray());
 
         ProgressBarHelper.ClearProgressBar();
         Debug.LogWarning($"CreatePrefabs Buildings:{Buildings.Count},Time:{(DateTime.Now - start).TotalMilliseconds}ms");
@@ -418,8 +419,9 @@ public class BuildingModelManager : SingletonBehaviour<BuildingModelManager>
         Debug.Log($"CreateScenesInner building:{buildings.Count}");
 
         DateTime start = DateTime.Now;
-        AreaTreeManager treeManager = GameObject.FindObjectOfType<AreaTreeManager>();
-        if (treeManager != null) treeManager.Clear();
+        var treeManager = AreaTreeManager.Instance;
+        treeManager.Clear();
+
         List<ModelAreaTree> allTrees = new List<ModelAreaTree>();
         scenes.Clear();
 
@@ -464,8 +466,7 @@ public class BuildingModelManager : SingletonBehaviour<BuildingModelManager>
             //break;
         }
 
-
-        if (treeManager) treeManager.AddTrees(allTrees.ToArray());
+        treeManager.AddTrees(allTrees.ToArray());
 
         ProgressBarHelper.ClearProgressBar();
         Debug.LogError($"CreateScenesInner End Buildings:{Buildings.Count},Time:{(DateTime.Now - start)}");

@@ -410,29 +410,32 @@ public class AreaTreeManager : SingletonBehaviour<AreaTreeManager>
     public void ClearTreesEx()
     {
         UpdateTrees();
-        ClearTrees();
+        Clear();
     }
 
     [ContextMenu("ClearTrees")]
     public void ClearTrees()
     {
-        AreaTreeHelper.render2NodeDict.Clear();
-        foreach (var tree in Trees)
-        {
-            try
-            {
-                if (tree == null) continue;
-#if UNITY_EDITOR
-                EditorHelper.UnpackPrefab(tree.gameObject);
-#endif
-                GameObject.DestroyImmediate(tree.gameObject);
-            }
-            catch (Exception ex)
-            {
-                Debug.LogWarning($"ClearTrees tree:{tree},Excption:{ex}");//一般是某个预设里的树不让删除
-            }
+        Debug.Log($"AreaTreeManager.ClearTrees trees:{Trees.Count}");
+
+        //AreaTreeHelper.render2NodeDict.Clear();
+
+//        foreach (var tree in Trees)
+//        {
+//            try
+//            {
+//                if (tree == null) continue;
+//#if UNITY_EDITOR
+//                EditorHelper.UnpackPrefab(tree.gameObject);
+//#endif
+//                GameObject.DestroyImmediate(tree.gameObject);
+//            }
+//            catch (Exception ex)
+//            {
+//                Debug.LogWarning($"ClearTrees tree:{tree},Excption:{ex}");//一般是某个预设里的树不让删除
+//            }
             
-        }
+//        }
         Trees.Clear();
     }
 
@@ -440,8 +443,7 @@ public class AreaTreeManager : SingletonBehaviour<AreaTreeManager>
     public void CreateHiddenOne()
     {
         DateTime start = DateTime.Now;
-        ClearCount();
-        ClearTrees();
+        Clear();
 
         // MeshRenderer[] combinedRenderers=null;
         // if (prefabInstanceBuilder != null)
@@ -588,8 +590,7 @@ public class AreaTreeManager : SingletonBehaviour<AreaTreeManager>
         IsCopy=false;
 
         DateTime start = DateTime.Now;
-        ClearCount();
-        ClearTrees();
+        Clear();
         var target=GetTarget();
         MeshRenderer[] hiddenRenderers=null;
         if (prefabInstanceBuilder != null)
@@ -624,8 +625,7 @@ public class AreaTreeManager : SingletonBehaviour<AreaTreeManager>
         IsCopy=false;
 
         DateTime start = DateTime.Now;
-        ClearCount();
-        ClearTrees();
+        Clear();
         var target=GetTarget();
         MeshRenderer[] combinedRenderers=null;
         if (prefabInstanceBuilder != null)
@@ -644,7 +644,7 @@ public class AreaTreeManager : SingletonBehaviour<AreaTreeManager>
     public void CreateCombinedChildren()
     {
         DateTime start = DateTime.Now;
-        ClearTrees();
+        Clear();
         var target=GetTarget();
         for (int i = 0; i < target.transform.childCount; i++)
         {
