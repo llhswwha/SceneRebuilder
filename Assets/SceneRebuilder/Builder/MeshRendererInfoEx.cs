@@ -25,4 +25,15 @@ public class MeshRendererInfoEx : MeshRendererInfo
         }
         return meshFilters;
     }
+
+    [ContextMenu("Init")]
+    public override void Init()
+    {
+        //Debug.Log("Init");
+        position = this.transform.position;
+        meshRenderer = GetRenderers()[0];
+        meshFilter = GetMeshFilters()[0];
+
+        InitPos();
+    }
 }

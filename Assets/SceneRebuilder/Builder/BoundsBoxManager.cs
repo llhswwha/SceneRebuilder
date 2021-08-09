@@ -6,6 +6,17 @@ public class BoundsBoxManager : SingletonBehaviour<BoundsBoxManager>
 {
     public BoundsBox[] boxes;
 
+    public bool IsHide = true;
+    //public bool IsDestroy = true;
+
+    private void Start()
+    {
+        if(IsHide)
+            HideBoxes();
+        //if(IsDestroy)
+        //    DestroyBoxes();
+    }
+
     [ContextMenu("GetBoxes")]
     public void GetBoxes()
     {

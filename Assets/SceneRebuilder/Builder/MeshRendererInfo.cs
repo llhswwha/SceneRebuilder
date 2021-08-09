@@ -302,30 +302,46 @@ public class MeshRendererInfo : MonoBehaviour
     }
 
     [ContextMenu("Init")]
-    public void Init()
+    public virtual void Init()
     {
         //Debug.Log("Init");
         position=this.transform.position;
         meshRenderer=gameObject.GetComponent<MeshRenderer>();
+
         meshFilter=gameObject.GetComponent<MeshFilter>();
-        if(meshFilter!=null){
-            if(meshFilter.sharedMesh!=null)
+
+        //if(meshRenderer=null)
+        //    meshRenderer = GetRenderers()[0];
+        //if(meshFilter==null)
+        //    meshFilter = GetMeshFilters()[0];
+        InitPos();
+    }
+
+    protected void InitPos()
+    {
+        if (meshFilter != null)
+        {
+            if (meshFilter.sharedMesh != null)
             {
-                vertexCount=meshFilter.sharedMesh.vertexCount;
-                minMax=MeshHelper.GetMinMax(meshFilter);
-                if(minMax!=null && minMax.Length>3){
-                    center=minMax[3];
-                    size=minMax[2];
-                    disToCenter=Vector3.Distance(center,position);
+                vertexCount = meshFilter.sharedMesh.vertexCount;
+                //minMax = MeshHelper.GetMinMax(meshFilter);
+                minMax = MeshHelper.GetMinMax(GetMeshFilters());
+                if (minMax != null && minMax.Length > 3)
+                {
+                    center = minMax[3];
+                    size = minMax[2];
+                    disToCenter = Vector3.Distance(center, position);
                     diam = Vector3.Distance(minMax[0], minMax[1]);
                 }
             }
-            else{
-                Debug.LogError($"MeshRendererInfo.Init() meshFilter.sharedMesh==null:"+this.name);
+            else
+            {
+                Debug.LogError($"MeshRendererInfo.Init() meshFilter.sharedMesh==null:" + this.name);
             }
         }
-        else{
-            Debug.LogError($"MeshRendererInfo.Init() meshFilter==null:"+this.name);
+        else
+        {
+            Debug.LogError($"MeshRendererInfo.Init() meshFilter==null:" + this.name);
         }
         // if(rendererType!=MeshRendererType.Detail)
         // {

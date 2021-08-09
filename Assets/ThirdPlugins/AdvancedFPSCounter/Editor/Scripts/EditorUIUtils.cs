@@ -549,6 +549,16 @@ namespace CodeStage.AdvancedFPSCounter.Editor.UI
                 btnStyle.padding = new RectOffset(0, 0, 0, 0);
                 if (GUILayout.Button(">", btnStyle, GUILayout.Width(20)))
                 {
+                    if(obj is GameObject)
+                    {
+                        GameObject go = obj as GameObject;
+                        go.SetActive(true);
+                    }
+                    else if (obj is Component)
+                    {
+                        Component component = obj as Component;
+                        component.gameObject.SetActive(true);
+                    }
                     Selection.activeObject = obj;
                     EditorGUIUtility.PingObject(obj);
                     EditorApplication.ExecuteMenuItem("Edit/Frame Selected");
@@ -622,7 +632,12 @@ namespace CodeStage.AdvancedFPSCounter.Editor.UI
                     btnStyle.padding=new RectOffset(0,0,0,0);
 				if(GUILayout.Button(">", btnStyle, GUILayout.Width(20)))
 				{
-					Selection.activeObject = obj;
+                    if (obj is GameObject)
+                    {
+                        GameObject go = obj as GameObject;
+                        go.SetActive(true);
+                    }
+                    Selection.activeObject = obj;
 					EditorGUIUtility.PingObject(obj);
 					EditorApplication.ExecuteMenuItem("Edit/Frame Selected");
 				}

@@ -968,10 +968,20 @@ public class LODManager : SingletonBehaviour<LODManager>
         DateTime start = DateTime.Now;
         var lodGroups = GameObject.FindObjectsOfType<LODGroup>(true);
         var renderers = GameObject.FindObjectsOfType<Renderer>(true).ToList();
-        foreach(var renderer in renderers)
+
+
+
+        foreach (var renderer in renderers)
         {
             MeshRendererInfo rendererInfo = MeshRendererInfo.GetInfo(renderer.gameObject);
+            rendererInfo.Init();
             rendererInfo.LodIds.Clear();
+        }
+
+        var rendererInfos1 = GroupRoot.GetComponentsInChildren<MeshRendererInfo>(true);
+        foreach (var renderer in rendererInfos1)
+        {
+            renderer.Init();
         }
 
         for (int i1 = 0; i1 < lodGroups.Length; i1++)

@@ -232,12 +232,19 @@ public class AreaTreeManager : SingletonBehaviour<AreaTreeManager>
         {
             treeName = go.name + suffix;
         }
-        //Debug.LogError($"CreateTree name:{treeName},renderers:{renderers.Length} ");
+
+
         if (renderers.Length == 0)
         {
             Debug.LogError($"CreateTree name:{treeName},renderers.Length == 0 ");
             return null;
         }
+
+        if(renderers[0] == null)
+        {
+            Debug.LogError($"CreateTree name:{treeName},renderers:{renderers.Length} r1 is null:{renderers[0] == null}");
+        }
+        
 
         AreaTreeHelper.CubePrefabs = this.CubePrefabs;
 
@@ -252,7 +259,7 @@ public class AreaTreeManager : SingletonBehaviour<AreaTreeManager>
 
         if (isC)
         {
-            if(combinerSetting)
+            if (combinerSetting)
             {
                 combinerSetting.SetSetting();
             }

@@ -415,17 +415,18 @@ public class ModelAreaTree : SubSceneCreater
         var target = GetTarget();
 
 
-        if (TreeRenderers != null && TreeRenderers.Length > 0)
+        var trenderers = TreeRenderers;
+        if (trenderers != null && trenderers.Length > 0)
         {
             int count = 0;
-            foreach (var render in TreeRenderers)
+            foreach (var render in trenderers)
             {
                 if (render == null) continue;
                 render.enabled = isVisible;
                 render.gameObject.SetActive(isVisible);
                 count++;
             }
-            Debug.Log($"ShowRenderers1 renderers:{count},\t{(DateTime.Now - start).ToString()}");
+            Debug.Log($"ShowRenderers1 renderers:{count}/{trenderers.Length} tree:{this.name},\t{(DateTime.Now - start).ToString()}");
         }
         else if (target != null)
         {

@@ -81,8 +81,19 @@ public class RendererId
             //update children 
             for (int i = 0; i < t.childCount; i++)
             {
+                //RendererId rId = t.GetChild(i).GetComponent<RendererId>();
+                //rId.Init();
+
                 RendererId rId = t.GetChild(i).GetComponent<RendererId>();
-                rId.Init();
+                if (rId == null)
+                {
+                    rId = t.GetChild(i).gameObject.AddComponent<RendererId>();
+                    rId.Init();
+                }
+                else
+                {
+                    rId.Init();
+                }
             }
         }
     }

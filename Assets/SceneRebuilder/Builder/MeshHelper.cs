@@ -462,12 +462,20 @@ public static class MeshHelper
                 }
             }
 
-            newObj.transform.localPosition = pos;
+            if (transfromAlignSetting.SetPosition)
+            {
+                newObj.transform.localPosition = pos;
+            }
         }
-        
-       
-        newObj.transform.localScale = oldObj.transform.localScale;
-        newObj.transform.localEulerAngles = oldObj.transform.localEulerAngles;
+
+        if (transfromAlignSetting.SetScale)
+        {
+            newObj.transform.localScale = oldObj.transform.localScale;
+        }
+        if (transfromAlignSetting.SetRotation)
+        {
+            newObj.transform.localEulerAngles = oldObj.transform.localEulerAngles;
+        }
         //newObj.transform.localEulerAngles = oldObj.transform.localEulerAngles + new Vector3(0, 90, 90);
 
         if (isDestoryOriginal)
@@ -2265,6 +2273,10 @@ public class MeshReplaceItem
 [System.Serializable]
 public class TransfromAlignSetting
 {
+    
+    public bool SetPosition = true;
+    public bool SetScale = true;
+    public bool SetRotation = true;
     public TransfromAlignMode Align;
     public bool SetPosX = true;
     public bool SetPosY = true;
