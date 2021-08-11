@@ -115,7 +115,23 @@ public class BuildingModelInfoEditor : BaseFoldoutEditor<BuildingModelInfo>
 
         EditorGUILayout.BeginHorizontal();
         //int unloadedSceneCount = info.SceneList.GetUnloadedScenes().Count;
-        NewButton("4.LoadScenes", buttonWidth, state.CanLoadScenes, btnStyle, () =>
+        NewButton("4.SavePrefab", buttonWidth, state.CanLoadScenes, btnStyle, () =>
+        {
+            info.EditorSavePrefab();
+        });
+        
+        if(NewButton("LoadPrefab", buttonWidth, info.ModelPrefab!=null, btnStyle, info.EditorLoadPrefab))
+        {
+            return;
+        }
+        GUILayout.Label("ID:" + info.gameObject.GetInstanceID());
+        info.ModelPrefab= ObjectField(info.ModelPrefab);
+
+        EditorGUILayout.EndHorizontal();
+
+        EditorGUILayout.BeginHorizontal();
+        //int unloadedSceneCount = info.SceneList.GetUnloadedScenes().Count;
+        NewButton("5.LoadScenes", buttonWidth, state.CanLoadScenes, btnStyle, () =>
         {
             info.EditorLoadNodeScenesEx();
         });
@@ -123,7 +139,7 @@ public class BuildingModelInfoEditor : BaseFoldoutEditor<BuildingModelInfo>
         EditorGUILayout.EndHorizontal();
 
         EditorGUILayout.BeginHorizontal();
-        NewButton("5.OneKey", buttonWidth, state.CanOneKey(), btnStyle, () => {
+        NewButton("6.OneKey", buttonWidth, state.CanOneKey(), btnStyle, () => {
             // info.InitInOut();
             // info.CreateTreesBSEx();
             // info.EditorCreateNodeScenes();
@@ -139,6 +155,8 @@ public class BuildingModelInfoEditor : BaseFoldoutEditor<BuildingModelInfo>
             SubSceneManager.Instance.SetBuildings_All();
         });
         EditorGUILayout.EndHorizontal();
+
+
 
         EditorGUILayout.BeginHorizontal();
         NewButton("ShowRenderers", buttonWidth, true, btnStyle, info.ShowRenderers);
@@ -210,9 +228,12 @@ public class BuildingModelInfoEditor : BaseFoldoutEditor<BuildingModelInfo>
 
     public override void OnToolLayout(BuildingModelInfo item)
     {
+        if (item == null) return;
         base.OnToolLayout(item);
+        if (item == null) return;
 
         DrawToolbar(item, contentStyle, buttonWidth);
+        if (item == null) return;
 
         //DrawModelList(buildingListArg, 
         //    () => { return null; }, 

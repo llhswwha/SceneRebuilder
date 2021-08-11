@@ -28,20 +28,32 @@ public class BuildingModelInfoList : MonoBehaviour
 
     public static void InitBuildings(List<BuildingModelInfo> buildings)
     {
-        DateTime start = DateTime.Now;
-        for (int i = 0; i < buildings.Count; i++)
-        {
-            float progress = (float)i / buildings.Count;
-            float percents = progress * 100;
-            if (ProgressBarHelper.DisplayCancelableProgressBar("InitBuildings", $"{i}/{buildings.Count} {percents:F2}% of 100%", progress))
-            {
-                break;
-            }
-            buildings[i].InitInOut(true);
-        }
-        ProgressBarHelper.ClearProgressBar();
-        Debug.LogError($"InitBuildings Buildings:{buildings.Count},Time:{(DateTime.Now - start).TotalMilliseconds}ms");
+        //DateTime start = DateTime.Now;
+        //for (int i = 0; i < buildings.Count; i++)
+        //{
+        //    float progress = (float)i / buildings.Count;
+        //    float percents = progress * 100;
+        //    if (ProgressBarHelper.DisplayCancelableProgressBar("InitBuildings", $"{i}/{buildings.Count} {percents:F2}% of 100%", progress))
+        //    {
+        //        break;
+        //    }
+        //    buildings[i].InitInOut(true);
+        //}
+        //ProgressBarHelper.ClearProgressBar();
+        //Debug.LogError($"InitBuildings Buildings:{buildings.Count},Time:{(DateTime.Now - start).TotalMilliseconds}ms");
+        buildings.ForEachEx("InitBuildings", i => i.InitInOut(true));
     }
+
+    public static void SavePrefabs(List<BuildingModelInfo> buildings)
+    {
+        buildings.ForEachEx("SavePrefabs", i => i.EditorLoadPrefab());
+    }
+
+    public static void LoadPrefabs(List<BuildingModelInfo> buildings)
+    {
+        buildings.ForEachEx("LoadPrefabs", i => i.EditorLoadPrefab());
+    }
+    
 
     public static void CombinedBuildings(List<BuildingModelInfo> buildings,bool isOut0BigSmall)
     {
@@ -84,7 +96,6 @@ public class BuildingModelInfoList : MonoBehaviour
                 break;
             }
         }
-
 
         treeManager.AddTrees(allTrees.ToArray());
         treeManager.GetTreeInfos();

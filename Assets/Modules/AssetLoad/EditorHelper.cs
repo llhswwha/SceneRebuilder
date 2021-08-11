@@ -20,6 +20,24 @@ using UnityEngine.SceneManagement;
 
 public static class EditorHelper
 {
+    public static void ForEachEx<T>(this List<T> buildings, string actionName, System.Action<T> actionContent)
+    {
+        System.DateTime start = System.DateTime.Now;
+        for (int i = 0; i < buildings.Count; i++)
+        {
+            float progress = (float)i / buildings.Count;
+            float percents = progress * 100;
+            if (ProgressBarHelper.DisplayCancelableProgressBar(actionName, $"{i}/{buildings.Count} {percents:F2}% of 100%", progress))
+            {
+                break;
+            }
+            //buildings[i].LoadPrefab();
+            actionContent(buildings[i]);
+        }
+        ProgressBarHelper.ClearProgressBar();
+        Debug.LogError($"{actionName} Buildings:{buildings.Count},Time:{(System.DateTime.Now - start).TotalMilliseconds}ms");
+    }
+
 #if UNITY_EDITOR
 
     public static string GetMeshAssetDir(GameObject source)

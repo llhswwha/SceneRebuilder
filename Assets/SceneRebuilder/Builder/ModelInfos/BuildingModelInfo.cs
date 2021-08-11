@@ -240,7 +240,31 @@ public class BuildingModelInfo : SubSceneCreater
         Debug.LogError($"SwitchToCombined1 nodes:{nodes.Count} scenes:{scenes.Count}\t{(DateTime.Now-start).ToString()}");
     }
 
-    
+    public GameObject ModelPrefab;
+
+#if UNITY_EDITOR
+    public void EditorSavePrefab()
+    {
+        ModelPrefab = SubSceneManager.Instance.EditorSavePrefab(this.gameObject);
+    }
+
+    public void EditorLoadPrefab()
+    {
+        if (ModelPrefab != null)
+        {
+            GameObject prefabInstance = PrefabUtility.InstantiatePrefab(this.ModelPrefab,this.transform.parent) as GameObject;
+
+            BuildingModelInfo newInfo = prefabInstance.GetComponent<BuildingModelInfo>();
+            newInfo.ModelPrefab = this.ModelPrefab;
+
+            prefabInstance.name = this.name;
+            GameObject.DestroyImmediate(this.gameObject);
+
+            EditorHelper.SelectObject(prefabInstance);
+        }
+    }
+#endif
+
     [ContextMenu("SwitchToCombined")]
     public void SwitchToCombined()
     {
@@ -1621,6 +1645,8 @@ public class BuildingModelInfo : SubSceneCreater
         {
             progressChanged(1);
         }
+
+        EditorSavePrefab();
 
         UpdateSceneList();
 

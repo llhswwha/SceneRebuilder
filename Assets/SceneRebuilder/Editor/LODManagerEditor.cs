@@ -93,32 +93,36 @@ public class LODManagerEditor : BaseFoldoutEditor<LODManager>
         lodManager.GroupRoot = EditorGUILayout.ObjectField(lodManager.GroupRoot, typeof(GameObject)) as GameObject;
         GUILayout.Label("LOD:");
         lodManager.LODnRoot = EditorGUILayout.ObjectField(lodManager.LODnRoot, typeof(GameObject)) as GameObject;
-        if (GUILayout.Button("Unpack", GUILayout.Width(50)))
+
+        EditorGUILayout.EndHorizontal();
+
+        EditorGUILayout.BeginHorizontal();
+        if (GUILayout.Button("Unpack"))
         {
             EditorHelper.UnpackPrefab(lodManager.GroupRoot);
             EditorHelper.UnpackPrefab(lodManager.LODnRoot);
         }
-        if (GUILayout.Button("Show0",GUILayout.Width(50)))
+        if (GUILayout.Button("Show0"))
         {
             //lodManager.GroupRoot.SetActive(true);
             //lodManager.LODnRoot.SetActive(false);
             lodManager.ShowRoot0();
             //EditorHelper.SelectObject(lodManager.GroupRoot);
         }
-        if (GUILayout.Button("Show1", GUILayout.Width(50)))
+        if (GUILayout.Button("Show1"))
         {
             //lodManager.GroupRoot.SetActive(false);
             //lodManager.LODnRoot.SetActive(true);
             lodManager.ShowRoot1();
             //EditorHelper.SelectObject(lodManager.LODnRoot);
         }
-        if (GUILayout.Button("Show01", GUILayout.Width(60)))
+        if (GUILayout.Button("Show01"))
         {
             //lodManager.GroupRoot.SetActive(true);
             //lodManager.LODnRoot.SetActive(true);
             lodManager.ShowRoot01();
         }
-        if (GUILayout.Button("Hide01", GUILayout.Width(60)))
+        if (GUILayout.Button("Hide01"))
         {
             //lodManager.GroupRoot.SetActive(true);
             //lodManager.LODnRoot.SetActive(true);

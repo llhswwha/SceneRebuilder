@@ -19,10 +19,11 @@ public class BaseEditor<T> : Editor where T:class
         NewButton(text, width, isEnable, contentStyle, clickEvent);
     }
 
-    public static void NewButton(string text,int width,bool isEnable, GUIStyle style, Action clickEvent)
+    public static bool NewButton(string text,int width,bool isEnable, GUIStyle style, Action clickEvent)
     {
         EditorGUI.BeginDisabledGroup(!isEnable || clickEvent == null);
-        if (GUILayout.Button(text, style, GUILayout.Width(width)))
+        bool isClick = GUILayout.Button(text, style, GUILayout.Width(width));
+        if (isClick)
         {
             if (clickEvent != null)
             {
@@ -33,8 +34,9 @@ public class BaseEditor<T> : Editor where T:class
 
         //if (GUILayout.Button(text))
         //{
-            
+
         //}
+        return isClick;
     }
 
     protected T targetT ;
@@ -83,4 +85,10 @@ public class BaseEditor<T> : Editor where T:class
     {
 
     }
+
+    public static TO ObjectField<TO>(TO obj) where TO : UnityEngine.Object
+    {
+        return EditorGUILayout.ObjectField(obj, typeof(TO), false) as TO;
+    }
+    
 }

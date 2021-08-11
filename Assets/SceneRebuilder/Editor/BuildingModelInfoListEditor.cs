@@ -59,6 +59,17 @@ public class BuildingModelInfoListEditor : BaseFoldoutEditor<BuildingModelInfoLi
         });
         EditorGUILayout.EndHorizontal();
 
+        EditorGUILayout.BeginHorizontal();
+        NewButton("SavePrefabs", buttonWidth, true, () =>
+        {
+            BuildingModelManager.Instance.CombineBuildings(item.Buildings.ToList());
+        });
+        NewButton("LoadPrefabs", buttonWidth, true, () =>
+        {
+            BuildingModelManager.Instance.ClearTrees(item.Buildings.ToList());
+        });
+        EditorGUILayout.EndHorizontal();
+
         //EditorGUILayout.BeginHorizontal();
         //NewButton("4.SetBuildings", buttonWidth, true, item.SetBuildings);
         //NewButton("ClearBuildings", buttonWidth, true, item.ClearBuildings);

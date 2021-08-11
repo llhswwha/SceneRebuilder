@@ -575,6 +575,21 @@ public class SubSceneManager : SingletonBehaviour<SubSceneManager>
     //        return $"{RootDir}/{SceneDir}/{contentType}/{dir}";
     //    }
     //}
+#if UNITY_EDITOR
+    public GameObject EditorSavePrefab(GameObject go)
+    {
+        if (go == null)
+        {
+            Debug.LogError("SavePrefab go == null");
+            return null;
+        }
+        EditorHelper.UnpackPrefab(go);
+        string prefabPath = $"Assets/{RootDir}/{SceneDir}/Prefabs/{go.name}[{go.GetInstanceID()}].prefab";
+        GameObject assetObj= PrefabUtility.SaveAsPrefabAssetAndConnect(go, prefabPath, InteractionMode.UserAction);
+        Debug.Log($"SavePrefab go:{go.name} asset:{assetObj} path:{prefabPath}");
+        return assetObj;
+    }
+#endif
 
     public string GetSceneDir(SceneContentType contentType, GameObject go)
     {
