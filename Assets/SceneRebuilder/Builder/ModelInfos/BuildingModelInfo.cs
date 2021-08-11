@@ -245,7 +245,16 @@ public class BuildingModelInfo : SubSceneCreater
 #if UNITY_EDITOR
     public void EditorSavePrefab()
     {
-        ModelPrefab = SubSceneManager.Instance.EditorSavePrefab(this.gameObject);
+        BuildingModelState state = this.GetState();
+        if(state.CanLoadScenes)
+        {
+            ModelPrefab = SubSceneManager.Instance.EditorSavePrefab(this.gameObject);
+        }
+        else
+        {
+            Debug.LogError("BuildingModelInfo.EditorSavePrefab CanLoadScenes==false :"+this.name);
+        }
+        
     }
 
     public void EditorLoadPrefab()
@@ -1646,10 +1655,9 @@ public class BuildingModelInfo : SubSceneCreater
             progressChanged(1);
         }
 
-        EditorSavePrefab();
-
         UpdateSceneList();
 
+        EditorSavePrefab();
         if (progressChanged == null) Debug.LogError($"BuildingModelInfo.EditorCreateNodeScenes time:{(DateTime.Now - start)}");
     }
 

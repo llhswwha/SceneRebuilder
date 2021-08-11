@@ -35,7 +35,25 @@ public static class EditorHelper
             actionContent(buildings[i]);
         }
         ProgressBarHelper.ClearProgressBar();
-        Debug.LogError($"{actionName} Buildings:{buildings.Count},Time:{(System.DateTime.Now - start).TotalMilliseconds}ms");
+        Debug.LogError($"ForEachEx1 {actionName} Buildings:{buildings.Count},Time:{(System.DateTime.Now - start).TotalMilliseconds}ms");
+    }
+
+    public static void ForEachEx<T>(this T[] buildings, string actionName, System.Action<T> actionContent)
+    {
+        System.DateTime start = System.DateTime.Now;
+        for (int i = 0; i < buildings.Length; i++)
+        {
+            float progress = (float)i / buildings.Length;
+            float percents = progress * 100;
+            if (ProgressBarHelper.DisplayCancelableProgressBar(actionName, $"{i}/{buildings.Length} {percents:F2}% of 100%", progress))
+            {
+                break;
+            }
+            //buildings[i].LoadPrefab();
+            actionContent(buildings[i]);
+        }
+        ProgressBarHelper.ClearProgressBar();
+        Debug.LogError($"ForEachEx2 {actionName} Buildings:{buildings.Length},Time:{(System.DateTime.Now - start).TotalMilliseconds}ms");
     }
 
 #if UNITY_EDITOR

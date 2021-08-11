@@ -152,6 +152,12 @@ public class SubSceneManager : SingletonBehaviour<SubSceneManager>
         EditorCreateBuildingScenes(buildings);
     }
 
+    //public void SavePrefabs()
+    //{
+    //    var buildings = GameObject.FindObjectsOfType<BuildingModelInfo>(true);
+    //    BuildingModelInfoList.SavePrefabs(buildings);
+    //}
+
     public void EditorCreateBuildingScenes(BuildingModelInfo[] buildings)
     {
         AreaTreeHelper.InitCubePrefab();

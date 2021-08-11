@@ -150,10 +150,10 @@ public static class IdDictionary
                 if (parent != null)
                 {
                     dict.Add(id.parentId, parent);
-                    if (parent.childrenIds.Count > 0)
-                    {
-                        Debug.LogError($"SaveChildrenIds parent.childrenIds.Count > 0 childrens:{parent.childrenIds.Count} id:{id} parentId:{id.parentId} parent:{parent}");
-                    }
+                    //if (parent.childrenIds.Count > 0)
+                    //{
+                    //    Debug.LogError($"SaveChildrenIds parent.childrenIds.Count > 0 childrens:{parent.childrenIds.Count} id:{id} parentId:{id.parentId} parent:{parent}");
+                    //}
                     parent.childrenIds.Clear();
                     parent.childrenIds.Add(id.Id);
                 }

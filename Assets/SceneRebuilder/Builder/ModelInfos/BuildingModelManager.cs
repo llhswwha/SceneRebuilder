@@ -96,15 +96,15 @@ public class BuildingModelManager : SingletonBehaviour<BuildingModelManager>
         BuildingModelInfoList.CombinedBuildings(buildings,IsOut0BigSmall);
     }
 
-    public void SavePrefabs(List<BuildingModelInfo> buildings)
-    {
-        BuildingModelInfoList.SavePrefabs(buildings);
-    }
+    //public void SavePrefabs(BuildingModelInfo[] buildings)
+    //{
+    //    BuildingModelInfoList.SavePrefabs(buildings);
+    //}
 
-    public void LoadPrefabs(List<BuildingModelInfo> buildings)
-    {
-        BuildingModelInfoList.LoadPrefabs(buildings);
-    }
+    //public void LoadPrefabs(BuildingModelInfo[] buildings)
+    //{
+    //    BuildingModelInfoList.LoadPrefabs(buildings);
+    //}
 
     internal void SetModelsActive(bool v)
     {

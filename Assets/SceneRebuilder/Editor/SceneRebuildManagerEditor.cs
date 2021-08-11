@@ -81,7 +81,12 @@ public class SceneRebuildManagerEditor : BaseFoldoutEditor<SceneRebuildManager>
         EditorGUILayout.EndHorizontal();
 
         EditorGUILayout.BeginHorizontal();
-        NewButton("4.SetBuildings", buttonWidth, true, item.SetBuildings);
+        NewButton("4.SavePrefabs", buttonWidth, true, item.SavePrefabs);
+        NewButton("LoadPrefabs", buttonWidth, true, item.LoadPrefabs);
+        EditorGUILayout.EndHorizontal();
+
+        EditorGUILayout.BeginHorizontal();
+        NewButton("5.SetBuildings", buttonWidth, true, item.SetBuildings);
         NewButton("ClearBuildings", buttonWidth, true, item.ClearBuildings);
         EditorGUILayout.EndHorizontal();
 

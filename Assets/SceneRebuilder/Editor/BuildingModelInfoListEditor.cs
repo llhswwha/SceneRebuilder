@@ -62,11 +62,13 @@ public class BuildingModelInfoListEditor : BaseFoldoutEditor<BuildingModelInfoLi
         EditorGUILayout.BeginHorizontal();
         NewButton("SavePrefabs", buttonWidth, true, () =>
         {
-            BuildingModelManager.Instance.CombineBuildings(item.Buildings.ToList());
+            //BuildingModelManager.Instance.SavePrefabs(item.Buildings);
+            BuildingModelInfoList.SavePrefabs(item.Buildings);
         });
         NewButton("LoadPrefabs", buttonWidth, true, () =>
         {
-            BuildingModelManager.Instance.ClearTrees(item.Buildings.ToList());
+            //BuildingModelManager.Instance.LoadPrefabs(item.Buildings);
+            BuildingModelInfoList.LoadPrefabs(item.Buildings);
         });
         EditorGUILayout.EndHorizontal();
 
