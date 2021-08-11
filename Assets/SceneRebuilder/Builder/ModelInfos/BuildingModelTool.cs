@@ -225,27 +225,6 @@ public class BuildingModelTool : MonoBehaviour
     [ContextMenu("RemoveEmptyObjects")]
     public void RemoveEmptyObjects()
     {
-        var ts = this.GetComponentsInChildren<Transform>(true);
-        List<Transform> emptyList = new List<Transform>();
-        for (int i = 0; i < ts.Length; i++)
-        {
-            var t = ts[i];
-            if (t.childCount == 0)
-            {
-                var components = t.GetComponents<Component>();
-                if (components.Length == 1)
-                {
-                    emptyList.Add(t);
-                    Debug.Log($"empty:{t.name}");
-                }
-            }
-        }
-
-        for (int i = 0; i < emptyList.Count; i++)
-        {
-            GameObject.DestroyImmediate(emptyList[i].gameObject);
-        }
-
-        Debug.Log($"empty:{emptyList.Count},all:{ts.Length}");
+        MeshHelper.RemoveEmptyObjects(this.gameObject);
     }
 }

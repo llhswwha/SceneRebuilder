@@ -874,18 +874,18 @@ public class AreaTreeNode : SubSceneCreater
                 }
 
                 bool r=AreaTreeHelper.RegisterRendererId(renderId, i, this);
-                if (r == false)
-                {
-                    if(GetRendererCount()== RenderersId.Count)
-                    {
+                //if (r == false)
+                //{
+                //    if(GetRendererCount()== RenderersId.Count)
+                //    {
 
-                    }
-                    else
-                    {
-                        Debug.LogError($"AreaTreeNode.CreateDictionary3 GetRendererCount()!= RenderersId.Count id:{i} count1:{GetRendererCount()} count2:{RenderersId.Count}");
-                    }
+                //    }
+                //    else
+                //    {
+                //        Debug.LogError($"AreaTreeNode.CreateDictionary3 GetRendererCount()!= RenderersId.Count tree:{tree.name} node:{this.name} id:{i} count1:{GetRendererCount()} count2:{RenderersId.Count}");
+                //    }
                     
-                }
+                //}
             }
         }
         //Debug.Log("CreateDictionary 1:"+AreaTreeHelper.render2NodeDict.Count);

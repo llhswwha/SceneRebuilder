@@ -12,8 +12,80 @@ public static class MeshHelper
     //{
 
     //}
+    [ContextMenu("RemoveEmptyObjects")]
+    public static void RemoveEmptyObjects(GameObject root)
+    {
+        var ts = root.GetComponentsInChildren<Transform>(true);
+        List<Transform> emptyList = new List<Transform>();
+        for (int i = 0; i < ts.Length; i++)
+        {
+            var t = ts[i];
+            if (t.childCount == 0)
+            {
+                if (IsEmptyObject(t))
+                {
+                    emptyList.Add(t);
+                    Debug.Log($"empty:{t.name}");
+                }
+            }
+        }
 
-     public static string GetVertexCountS(int vertexCount)
+        for (int i = 0; i < emptyList.Count; i++)
+        {
+            GameObject.DestroyImmediate(emptyList[i].gameObject);
+        }
+
+        Debug.Log($"empty:{emptyList.Count},all:{ts.Length}");
+    }
+
+    public static List<Type> typesOfEmptyObject = new List<Type>() {typeof(Transform),typeof(RendererId),typeof(MeshRendererInfo) };
+
+    public static bool IsEmptyObject(Transform t)
+    {
+        var components = t.GetComponents<Component>();
+        if (components.Length == 1) return true;
+        bool r = true;
+        foreach(var c in components)
+        {
+            var type = c.GetType();
+            if (typesOfEmptyObject.Contains(type) == false) return false;
+        }
+        return r;
+    }
+
+    public static void DecreaseEmptyGroup(GameObject root)
+    {
+        var ts = root.GetComponentsInChildren<Transform>(true);
+        List<Transform> emptyList = new List<Transform>();
+        for (int i = 0; i < ts.Length; i++)
+        {
+            var t = ts[i];
+            if (t.childCount == 1)
+            {
+                if (IsEmptyObject(t))
+                {
+                    emptyList.Add(t);
+                    Debug.Log($"empty:{t.name}");
+                }
+            }
+        }
+
+        for (int i = 0; i < emptyList.Count; i++)
+        {
+            var t = emptyList[i];
+#if UNITY_EDITOR
+            EditorHelper.UnpackPrefab(t.gameObject);
+#endif
+            var child = t.GetChild(0);
+            child.SetParent(t.parent);
+            child.name = t.name;
+            GameObject.DestroyImmediate(t.gameObject);
+        }
+
+        Debug.Log($"empty:{emptyList.Count},all:{ts.Length}");
+    }
+
+    public static string GetVertexCountS(int vertexCount)
     {
         float f = vertexCount / 10000f;
         if (f >= 100)

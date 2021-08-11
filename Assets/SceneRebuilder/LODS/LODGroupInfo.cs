@@ -108,7 +108,16 @@ public class LODGroupInfo : MonoBehaviour
 #if UNITY_EDITOR
     public void EditorCreateScene()
     {
-        scene=LODHelper.SaveLOD0(null, this.LODGroup);
+        if (LODGroup == null)
+        {
+            LODGroup = gameObject.GetComponent<LODGroup>();
+        }
+        if (LODGroup == null)
+        {
+            Debug.LogError("LODGroupInfo.EditorCreateScene LODGroup == null:"+this);
+            return;
+        }
+        scene =LODHelper.SaveLOD0(null, this.LODGroup);
     }
 
     public void EditorLoadScene()

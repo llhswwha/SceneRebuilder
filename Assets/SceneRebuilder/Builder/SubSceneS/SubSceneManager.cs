@@ -362,7 +362,7 @@ public class SubSceneManager : SingletonBehaviour<SubSceneManager>
             string path = item.sceneArg.GetRalativePath();
             //Debug.Log("path:" + path);
             buildingScenes[i + 1] = new EditorBuildSettingsScene(path, true);
-            item.sceneArg.index=i+1;
+            item.sceneArg.index = i + 1;
         }
         EditorBuildSettings.scenes = buildingScenes;
 

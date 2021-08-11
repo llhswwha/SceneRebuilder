@@ -33,6 +33,20 @@ public class RendererIdEditor : BaseEditor<RendererId>
                 //EditorHelper.SelectObject(parent);
             }
         }
-        
+
+        if (GUILayout.Button("Clear"))
+        {
+            item.Clear();
+        }
+
+        if (GUILayout.Button("RemoveEmpty"))
+        {
+            MeshHelper.RemoveEmptyObjects(item.gameObject);
+        }
+
+        if (GUILayout.Button("DecreaseEmpty"))
+        {
+            MeshHelper.DecreaseEmptyGroup(item.gameObject);
+        }
     }
 }

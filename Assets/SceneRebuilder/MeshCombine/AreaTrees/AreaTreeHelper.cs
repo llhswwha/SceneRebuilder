@@ -134,7 +134,7 @@ public static class AreaTreeHelper
             }
             else
             {
-                Debug.LogError($"RegisterRendererId 模型重复在不同的Node里 renderId:{rendererId},index:{id} node1:{renderId2NodeDict[rendererId].name},node2:{newNode.name}");
+                Debug.LogError($"RegisterRendererId 模型重复在不同的Node里 tree:{newNode.tree.name} renderId:{rendererId},index:{id} node1:{renderId2NodeDict[rendererId].name},node2:{newNode.name}");
                 renderId2NodeDict[rendererId] = newNode;
                 return false;
             }

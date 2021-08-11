@@ -1080,7 +1080,7 @@ public class BaseFoldoutEditor<T> : BaseEditor<T> where T : class
 
                         }
 
-                        string btnName = $"L{i}[{vertexS}][{lodChild.vertexCount / lod0Vertex:P0}][{lodChild.screenRelativeTransitionHeight}]";
+                        string btnName = $"L{i}[{vertexS}][{lodChild.vertexCount / lod0Vertex:P0}][{lodChild.screenRelativeTransitionHeight:F1}]";
 
                         if(lodChild== lodDetail.currentChild)
                         {

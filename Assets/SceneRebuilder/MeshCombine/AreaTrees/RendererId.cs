@@ -26,6 +26,16 @@ public class RendererId
         Init(this.gameObject, 0);
     }
 
+    [ContextMenu("Init")]
+    public void Clear()
+    {
+        var ids = this.GetComponentsInChildren<RendererId>();
+        foreach(var id in ids)
+        {
+            GameObject.DestroyImmediate(id);
+        }
+    }
+
     internal void Init<T>(T r) where T :Component
     {
         if(r is MeshRenderer)
@@ -55,48 +65,53 @@ public class RendererId
         {
             this.mr = go.GetComponent<MeshRenderer>();
         }
-        
+
         //Id = Guid.NewGuid().ToString();
         //insId = go.GetInstanceID();
         //parentId=GetId(this.transform.parent,level+1);
 
-        int instanceId = go.GetInstanceID();
-        if (instanceId != insId)
-        {
-            UpdateId(instanceId, go.transform);
-        }
-        parentId = GetId(this.transform.parent, level + 1);
-    }
+        //int instanceId = go.GetInstanceID();
+        //if (instanceId != insId)
+        //{
+        //    UpdateId(instanceId, go.transform);
+        //}
 
-    private void UpdateId(int instanceId,Transform t)
-    {
-        insId = instanceId;
         if (string.IsNullOrEmpty(Id))
         {
             Id = Guid.NewGuid().ToString();
         }
-        else
-        {
-            Id = Guid.NewGuid().ToString();
-            //update children 
-            for (int i = 0; i < t.childCount; i++)
-            {
-                //RendererId rId = t.GetChild(i).GetComponent<RendererId>();
-                //rId.Init();
-
-                RendererId rId = t.GetChild(i).GetComponent<RendererId>();
-                if (rId == null)
-                {
-                    rId = t.GetChild(i).gameObject.AddComponent<RendererId>();
-                    rId.Init();
-                }
-                else
-                {
-                    rId.Init();
-                }
-            }
-        }
+        parentId = GetId(this.transform.parent, level + 1);
     }
+
+    //private void UpdateId(int instanceId,Transform t)
+    //{
+    //    insId = instanceId;
+    //    if (string.IsNullOrEmpty(Id))
+    //    {
+    //        Id = Guid.NewGuid().ToString();
+    //    }
+    //    else
+    //    {
+    //        Id = Guid.NewGuid().ToString();
+    //        //update children 
+    //        for (int i = 0; i < t.childCount; i++)
+    //        {
+    //            //RendererId rId = t.GetChild(i).GetComponent<RendererId>();
+    //            //rId.Init();
+
+    //            RendererId rId = t.GetChild(i).GetComponent<RendererId>();
+    //            if (rId == null)
+    //            {
+    //                rId = t.GetChild(i).gameObject.AddComponent<RendererId>();
+    //                rId.Init();
+    //            }
+    //            else
+    //            {
+    //                rId.Init();
+    //            }
+    //        }
+    //    }
+    //}
 
 
 
