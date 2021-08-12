@@ -30,6 +30,10 @@ public class LODGroupInfoEditor : BaseFoldoutEditor<LODGroupInfo>
         {
             item.SetLODs();
         }
+        if (GUILayout.Button("SetMats"))
+        {
+            item.SetMaterial();
+        }
         EditorGUILayout.EndHorizontal();
 
         EditorGUILayout.ObjectField(item.scene, typeof(SubScene_Base));

@@ -159,6 +159,10 @@ public class LODManagerEditor : BaseFoldoutEditor<LODManager>
         {
             lodManager.SetAppendLod3Color();
         }
+        if (GUILayout.Button("DeleteSame"))
+        {
+            lodManager.DeleteSame();
+        }
         if (GUILayout.Button("Replace"))
         {
             lodManager.SetAppendLod3Color();
@@ -183,8 +187,11 @@ public class LODManagerEditor : BaseFoldoutEditor<LODManager>
                 list = list.Where(i => i.GetCaption().Contains(searchKey)).ToList();
             }
             twoListArg.Items = list;
-            arg.caption = $"TwoObject List ({list.Count}) ({lodManager.LODRendererCount0})({lodManager.LODRendererCount1})";
-            //arg.info = $"{doors.VertexCount_Show / 10000f:F0}/{doors.VertexCount / 10000f:F0}";
+            int v0 = 0;
+            int v1 = 0;
+            list.ForEach(i => { v0 += i.vertexCount0;v1 += i.vertexCount1; });
+            arg.caption = $"TwoObject List ({list.Count})";
+            arg.info = $"(r0:{lodManager.LODRendererCount0},v0:{MeshHelper.GetVertexCountS(v0)})(r1:{lodManager.LODRendererCount1},v1:{MeshHelper.GetVertexCountS(v1)})";
             InitEditorArg(list);
         },
         () =>

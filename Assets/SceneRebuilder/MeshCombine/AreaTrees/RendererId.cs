@@ -26,7 +26,7 @@ public class RendererId
         Init(this.gameObject, 0);
     }
 
-    [ContextMenu("Init")]
+    [ContextMenu("Clear")]
     public void Clear()
     {
         var ids = this.GetComponentsInChildren<RendererId>();

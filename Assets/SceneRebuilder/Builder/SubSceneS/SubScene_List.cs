@@ -1,10 +1,16 @@
 using System;
 using System.Collections;
 using System.Collections.Generic;
+using System.Linq;
 using UnityEngine;
 
 public class SubScene_List : MonoBehaviour
 {
+    public  static SubScene_Base[] GetBaseScenes(GameObject go)
+    {
+        return go.GetComponentsInChildren<SubScene_Base>(true).Where(i => i.contentType != SceneContentType.LOD0).ToArray();
+    }
+
     public int sceneCount;
 
     public SubScene_Base[] scenes;
@@ -12,7 +18,7 @@ public class SubScene_List : MonoBehaviour
     [ContextMenu("Init")]
     public void GetScenes()
     {
-        scenes = gameObject.GetComponentsInChildren<SubScene_Base>(true);
+        scenes = SubScene_List.GetBaseScenes(gameObject);
         sceneCount = scenes.Length;
     }
 
@@ -43,8 +49,8 @@ public class SubScene_List : MonoBehaviour
     {
         IdDictionary.InitInfos();
 
-        scenes = gameObject.GetComponentsInChildren<SubScene_Base>(true);
-        foreach(var scene in scenes)
+        GetScenes();
+        foreach (var scene in scenes)
         {
             scene.DestroyBoundsBox();
             scene.SetRendererParent();

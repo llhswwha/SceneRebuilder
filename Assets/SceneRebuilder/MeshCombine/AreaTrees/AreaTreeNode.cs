@@ -202,6 +202,12 @@ public class AreaTreeNode : SubSceneCreater
         foreach (var renderer in Renderers)
         {
             MeshFilter meshFilter = renderer.GetComponent<MeshFilter>();
+            if (meshFilter == null) continue;
+            if (meshFilter.sharedMesh == null)
+            {
+                Debug.LogError("meshFilter.sharedMesh == null :"+meshFilter);
+                continue;
+            }
             count += meshFilter.sharedMesh.vertexCount;
         }
         VertexCount = count / 10000.0f;
@@ -1157,16 +1163,6 @@ public class AreaTreeNode : SubSceneCreater
         
         Debug.LogWarning($"AreaTreeNode.EditorLoadScenes tree:{tree.name} node:{this.name} time:{time}");
     }
-
-    // [ContextMenu("* UnLoadScenes")]
-    // public void UnLoadScenes()
-    // {
-    //     var scenes = this.GetComponentsInChildren<SubScene_Base>(true);
-    //    foreach (var scene in scenes)
-    //    {
-    //        scene.UnLoadGosM();
-    //    }
-    // }
 
     [ContextMenu("* UnLoadRenderers")]
     public void UnLoadRenderers()

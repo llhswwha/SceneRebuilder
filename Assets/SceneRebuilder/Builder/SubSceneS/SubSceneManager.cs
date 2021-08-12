@@ -313,39 +313,37 @@ public class SubSceneManager : SingletonBehaviour<SubSceneManager>
 
     public void SetBuildings()
     {
-        if (contentType == SceneContentType.Part)
-        {
-            SetBuildings_Parts();
-        }
-        else
-        {
-            SetBuildings_Single();
-        }
+        //if (contentType == SceneContentType.Part)
+        //{
+        //    SetBuildings_Parts();
+        //}
+        //else
+        //{
+        //    SetBuildings_Single();
+        //}
+
+        SetBuildings_All();
     }
 
-    [ContextMenu("SetBuildings_Single")]
-    public void SetBuildings_Single()
-    {
-        subScenes = GameObject.FindObjectsOfType<SubScene_Single>(true);
-        SetBuildings(subScenes);
-    }
+    //[ContextMenu("SetBuildings_Single")]
+    //public void SetBuildings_Single()
+    //{
+    //    subScenes = GameObject.FindObjectsOfType<SubScene_Single>(true);
+    //    SetBuildings(subScenes);
+    //}
 
-    [ContextMenu("SetBuildings_Parts")]
-    public void SetBuildings_Parts()
-    {
-        subScenes = GameObject.FindObjectsOfType<SubScene_Part>(true);
-        SetBuildings(subScenes);
-    }
-
-    public void UpdateScenes()
-    {
-        subScenes = GameObject.FindObjectsOfType<SubScene_Base>(true);
-    }
+    //[ContextMenu("SetBuildings_Parts")]
+    //public void SetBuildings_Parts()
+    //{
+    //    subScenes = GameObject.FindObjectsOfType<SubScene_Part>(true);
+    //    SetBuildings(subScenes);
+    //}
 
     [ContextMenu("SetBuildings_All")]
     public void SetBuildings_All()
     {
-        UpdateScenes();
+        //UpdateScenes();
+        subScenes = GameObject.FindObjectsOfType<SubScene_Base>(true);
         SetBuildings(subScenes);
     }
 
@@ -365,10 +363,15 @@ public class SubSceneManager : SingletonBehaviour<SubSceneManager>
         for (int i = 0; i < scenes.Length; i++)
         {
             T item = scenes[i];
+
+            EditorHelper.UnpackPrefab(item.gameObject);
+
             string path = item.sceneArg.GetRalativePath();
             //Debug.Log("path:" + path);
             buildingScenes[i + 1] = new EditorBuildSettingsScene(path, true);
             item.sceneArg.index = i + 1;
+
+            
         }
         EditorBuildSettings.scenes = buildingScenes;
 
@@ -388,6 +391,11 @@ public class SubSceneManager : SingletonBehaviour<SubSceneManager>
     public bool IsOpenSubScene = false;
 
 #endif
+
+    public void UpdateScenes()
+    {
+        subScenes = GameObject.FindObjectsOfType<SubScene_Base>(true);
+    }
 
 
     [ContextMenu("AutoLoadScenes")]
@@ -1047,24 +1055,26 @@ public class SubSceneManager : SingletonBehaviour<SubSceneManager>
 
     public SubScene_Base[] GetSubScenes()
     {
-        List<SubScene_Base> scenes = new List<SubScene_Base>();
-        if (contentType==SceneContentType.Part)
-        {
-            var ss = GameObject.FindObjectsOfType<SubScene_Part>(true);
-            foreach(var s in ss)
-            {
-                scenes.Add(s);
-            }
-        }
-        else
-        {
-            var ss = GameObject.FindObjectsOfType<SubScene_Single>(true);
-            foreach (var s in ss)
-            {
-                scenes.Add(s);
-            }
-        }
-        return scenes.ToArray();
+        //List<SubScene_Base> scenes = new List<SubScene_Base>();
+        //if (contentType==SceneContentType.Part)
+        //{
+        //    var ss = GameObject.FindObjectsOfType<SubScene_Part>(true);
+        //    foreach(var s in ss)
+        //    {
+        //        scenes.Add(s);
+        //    }
+        //}
+        //else
+        //{
+        //    var ss = GameObject.FindObjectsOfType<SubScene_Single>(true);
+        //    foreach (var s in ss)
+        //    {
+        //        scenes.Add(s);
+        //    }
+        //}
+        //return scenes.ToArray();
+        UpdateScenes();
+        return subScenes;
     }
 
     public void UnLoadScenesAsync<T>(T[] scenes) where T : SubScene_Base

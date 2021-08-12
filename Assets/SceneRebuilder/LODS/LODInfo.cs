@@ -66,4 +66,17 @@ public class LODInfo
         }
         return renderers[0];
     }
+
+    public Material[] GetMats()
+    {
+        return renderers[0].sharedMaterials;
+    }
+
+    public void SetMats(Material[] mats)
+    {
+        foreach(var renderer in renderers)
+        {
+            renderer.sharedMaterials = mats;
+        }
+    }
 }

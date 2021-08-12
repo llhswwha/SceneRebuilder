@@ -19,7 +19,7 @@ public static class SubSceneHelper
         {
             var item = list[i];
             if (item == null) continue;
-            var ss = item.GetComponentsInChildren<SubScene_Base>(true);
+            var ss = SubScene_List.GetBaseScenes(item.gameObject);
             scenes.AddRange(ss);
         }
         return scenes;

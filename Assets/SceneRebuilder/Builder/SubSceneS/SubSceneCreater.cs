@@ -73,13 +73,13 @@ public class SubSceneCreater : MonoBehaviour
     public void EditorMoveScenes()
     {
         InitSceneListGO();
-        var scenes = gameObject.GetComponentsInChildren<SubScene_Base>(true);
+        var scenes = SubScene_List.GetBaseScenes(gameObject);
         foreach (var scene in scenes)
         {
             SceneList.AddScene(scene);
             GameObject.DestroyImmediate(scene);
         }
-        var scenes2 = SceneList.gameObject.GetComponentsInChildren<SubScene_Base>(true);
+        var scenes2 = SubScene_List.GetBaseScenes(SceneList.gameObject);
         SubSceneHelper.LinkScenes(scenes2);
     }
 
@@ -98,7 +98,7 @@ public class SubSceneCreater : MonoBehaviour
         }
         else
         {
-            var components = this.GetComponentsInChildren<SubScene_Base>(true);//In Out0 Out1
+            var components = SubScene_List.GetBaseScenes(this.gameObject);//In Out0 Out1
             foreach (var c in components)
             {
                 //if (c.contentType == contentType)
@@ -157,7 +157,7 @@ public class SubSceneCreater : MonoBehaviour
 
     public virtual void EditorLoadScenes(Action<float> progressChanged)
     {
-        SubScene_Base[] scenes=gameObject.GetComponentsInChildren<SubScene_Base>(true);
+        SubScene_Base[] scenes= SubScene_List.GetBaseScenes(gameObject);
         EditorLoadScenes(scenes,progressChanged);
     }
 
@@ -208,7 +208,7 @@ public class SubSceneCreater : MonoBehaviour
     protected List<SubScene_Base> GetSubScenesOfTypes(List<SceneContentType> types)
     {
         List<SubScene_Base> list = new List<SubScene_Base>();
-        var scenes = gameObject.GetComponentsInChildren<SubScene_Base>(true);
+        var scenes = SubScene_List.GetBaseScenes(gameObject);
         for (int i = 0; i < scenes.Length; i++)
         {
             SubScene_Base scene = scenes[i];
@@ -240,7 +240,7 @@ public class SubSceneCreater : MonoBehaviour
     [ContextMenu("ShowSceneBounds")]
     public void ShowSceneBounds()
     {
-        var scenes = gameObject.GetComponentsInChildren<SubScene_Base>(true);
+        var scenes = SubScene_List.GetBaseScenes(gameObject);
         foreach (var scene in scenes)
         {
             scene.ShowBounds();
@@ -250,13 +250,6 @@ public class SubSceneCreater : MonoBehaviour
     [ContextMenu("UnLoadScenes")]
     public virtual void UnLoadScenes()
     {
-        // var scenes = gameObject.GetComponentsInChildren<SubScene_Base>(true);
-        // foreach(var scene in scenes)
-        // {
-        //     scene.UnLoadGosM();
-        //     scene.ShowBounds();
-        // }
-
         UnLoadScenes(null);
     }
 
@@ -264,7 +257,7 @@ public class SubSceneCreater : MonoBehaviour
     {
         DateTime start = DateTime.Now;
 
-        var scenes = gameObject.GetComponentsInChildren<SubScene_Base>(true);
+        var scenes = SubScene_List.GetBaseScenes(gameObject);
         for (int i = 0; i < scenes.Length; i++)
         {
             var scene = scenes[i];

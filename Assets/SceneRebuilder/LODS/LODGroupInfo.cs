@@ -174,6 +174,15 @@ public class LODGroupInfo : MonoBehaviour
         });
     }
 
+    public void SetMaterial()
+    {
+        var mats = LodInfos[0].GetMats();
+        for(int i = 1; i < LodInfos.Count; i++)
+        {
+            LodInfos[i].SetMats(mats);
+        }
+    }
+
     public static LODGroupInfo Init(GameObject go)
     {
         LODGroupInfo info = go.GetComponent<LODGroupInfo>();

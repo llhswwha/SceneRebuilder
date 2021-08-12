@@ -90,6 +90,7 @@ public class SceneRebuildManager : MonoBehaviour
         subSceneManager.EditorCreateBuildingScenes(); // CombinedTree To Scene
     }
 
+#if UNITY_EDITOR
     public void SavePrefabs()
     {
         var buildings = GameObject.FindObjectsOfType<BuildingModelInfo>(true);
@@ -102,6 +103,8 @@ public class SceneRebuildManager : MonoBehaviour
         var buildings = GameObject.FindObjectsOfType<BuildingModelInfo>(true);
         BuildingModelInfoList.LoadPrefabs(buildings);
     }
+
+#endif
 
     [ContextMenu("SetBuildings")]
     public void SetBuildings()

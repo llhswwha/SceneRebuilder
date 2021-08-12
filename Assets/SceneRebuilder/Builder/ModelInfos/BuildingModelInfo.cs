@@ -1107,34 +1107,13 @@ public class BuildingModelInfo : SubSceneCreater
 
     private void DestroyOldPartScenes(SceneContentType contentType)
     {
-        var components = this.GetComponentsInChildren<SubScene_Base>(true);//In Out0 Out1
+        var components = SubScene_List.GetBaseScenes(this.gameObject);//In Out0 Out1
         foreach (var c in components)
         {
             if(c.contentType==contentType)
-                GameObject.DestroyImmediate(c);//���´�������֮ǰ��ɾ��
+                GameObject.DestroyImmediate(c);
         }
     }
-
-    // [ContextMenu("ShowSceneBounds")]
-    // public void ShowSceneBounds()
-    // {
-    //     var scenes = gameObject.GetComponentsInChildren<SubScene_Base>(true);
-    //     foreach (var scene in scenes)
-    //     {
-    //         scene.ShowBounds();
-    //     }
-    // }
-
-    // [ContextMenu("UnLoadScenes")]
-    // public void UnLoadScenes()
-    // {
-    //     var scenes = gameObject.GetComponentsInChildren<SubScene_Base>(true);
-    //     foreach(var scene in scenes)
-    //     {
-    //         scene.UnLoadGosM();
-    //         scene.ShowBounds();
-    //     }
-    // }
 
     //[ContextMenu("LoadScenes_Part")]
     //public void LoadScenes_Part()
@@ -1168,27 +1147,6 @@ public class BuildingModelInfo : SubSceneCreater
     //    SubSceneManager subSceneManager = GameObject.FindObjectOfType<SubSceneManager>();
     //    subSceneManager.LoadScenesEx(scenes,null);
     //}
-
-    //[ContextMenu("DestroyScenes")]
-    //public void DestroyScenes()
-    //{
-    //    var scenes = gameObject.GetComponentsInChildren<SubScene_Base>(true);
-    //    foreach (var scene in scenes)
-    //    {
-    //        GameObject.DestroyImmediate(scene);
-    //    }
-    //}
-
-    //[ContextMenu("DestroyModels")]
-    //public void DestroyModels()
-    //{
-    //    var scenes = gameObject.GetComponentsInChildren<SubScene_Base>(true);
-    //    foreach (var scene in scenes)
-    //    {
-    //        scene.UnLoadGosM();
-    //    }
-    //}
-
 
 #if UNITY_EDITOR
 
@@ -1527,7 +1485,7 @@ public class BuildingModelInfo : SubSceneCreater
     [ContextMenu("* EditorSaveScenes")]
     public void EditorSaveScenes()
     {
-        var scenes = gameObject.GetComponentsInChildren<SubScene_Base>(true);
+        var scenes = SubScene_List.GetBaseScenes(gameObject);
         foreach (var scene in scenes)
         {
             scene.IsLoaded = true;

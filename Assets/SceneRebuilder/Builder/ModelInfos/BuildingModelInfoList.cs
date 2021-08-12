@@ -31,6 +31,7 @@ public class BuildingModelInfoList : MonoBehaviour
         buildings.ForEachEx("InitBuildings", i => i.InitInOut(true));
     }
 
+#if UNITY_EDITOR
     public static void SavePrefabs(BuildingModelInfo[] buildings)
     {
         buildings.ForEachEx("SavePrefabs", i => i.EditorSavePrefab());
@@ -40,7 +41,8 @@ public class BuildingModelInfoList : MonoBehaviour
     {
         buildings.ForEachEx("LoadPrefabs", i => i.EditorLoadPrefab());
     }
-    
+#endif
+
 
     public static void CombinedBuildings(List<BuildingModelInfo> buildings,bool isOut0BigSmall)
     {
