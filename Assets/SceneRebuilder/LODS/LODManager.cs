@@ -387,6 +387,19 @@ public class LODManager : SingletonBehaviour<LODManager>
         }
     }
 
+    
+
+    public void DeleteSame()
+    {
+        foreach (var item in twoList)
+        {
+            if (item.dis < zeroDistance && item.isSameName)
+            {
+                GameObject.DestroyImmediate(item.renderer_lod1.gameObject);
+            }
+        }
+    }
+
     public void Replace()
     {
         foreach (var item in twoList)

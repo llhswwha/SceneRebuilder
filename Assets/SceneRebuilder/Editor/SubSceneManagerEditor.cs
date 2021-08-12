@@ -31,14 +31,14 @@ public class SubSceneManagerEditor : BaseFoldoutEditor<SubSceneManager>
         {
             item.SetBuildings_All();
         }
-        if (GUILayout.Button("SetBuildings_Parts"))
-        {
-            item.SetBuildings_Parts();
-        }
-        if (GUILayout.Button("SetBuildings_Single"))
-        {
-            item.SetBuildings_Single();
-        }
+        //if (GUILayout.Button("SetBuildings_Parts"))
+        //{
+        //    item.SetBuildings_Parts();
+        //}
+        //if (GUILayout.Button("SetBuildings_Single"))
+        //{
+        //    item.SetBuildings_Single();
+        //}
 
         if (GUILayout.Button("GetSceneFiles"))
         {
