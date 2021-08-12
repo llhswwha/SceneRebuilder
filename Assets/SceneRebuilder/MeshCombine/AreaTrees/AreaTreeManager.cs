@@ -759,7 +759,7 @@ public class AreaTreeManager : SingletonBehaviour<AreaTreeManager>
         var target=GetTarget();
         List<string> matKeys = new List<string>();
         List<Material> mats = new List<Material>();
-        var renders = target.GetComponentsInChildren<MeshRenderer>();
+        var renders = target.GetComponentsInChildren<MeshRenderer>(true);
         foreach (var render in renders)
         {
             if (!mats.Contains(render.sharedMaterial))
@@ -767,9 +767,8 @@ public class AreaTreeManager : SingletonBehaviour<AreaTreeManager>
                 mats.Add(render.sharedMaterial);
             }
         }
-        int count = 0;
-        var matsEx = MeshCombineHelper.GetMatFilters(target, out count, false);
-        Debug.Log($"GetMaterials {(DateTime.Now - start).ToString()},mats1:{mats.Count},mats2:{matsEx.Count},count:{count}");
+        var matsEx = MeshCombineHelper.GetMatFilters(target, false);
+        Debug.Log($"GetMaterials {(DateTime.Now - start).ToString()},mats1:{mats.Count},mats2:{matsEx.Count},count:{renders.Length}");
     }
 
 
@@ -779,13 +778,11 @@ public class AreaTreeManager : SingletonBehaviour<AreaTreeManager>
         DateTime start = DateTime.Now;
         var target=GetTarget();
         ShowRenderers();
-
-        int count = 0;
-        var mats = MeshCombineHelper.GetMatFilters(target, out count, true);
+        var mats = MeshCombineHelper.GetMatFilters(target, true);
 
         //MeshCombineHelper.SetMaterials(target);
 
-        Debug.Log($"SetMaterials {(DateTime.Now - start).ToString()},mats:{mats.Count},count:{count}");
+        Debug.Log($"SetMaterials {(DateTime.Now - start).ToString()},mats:{mats.Count}");
     }
 
     [ContextMenu("CheckNodeName")]

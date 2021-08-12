@@ -42,5 +42,16 @@ public class MeshCombinerEditor : BaseEditor<MeshCombiner>
             item.DestroySource();
         }
         EditorGUILayout.EndHorizontal();
+
+        EditorGUILayout.BeginHorizontal();
+        if (GUILayout.Button("Split"))
+        {
+            MeshCombineHelper.SplitByMaterials(item.sourceRoot,false);
+        }
+        if (GUILayout.Button("Combine"))
+        {
+            MeshCombineHelper.CombineEx(new MeshCombineArg(item.sourceRoot), MeshCombineMode.OneMesh);
+        }
+        EditorGUILayout.EndHorizontal();
     }
 }

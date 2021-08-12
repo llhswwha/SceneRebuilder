@@ -74,7 +74,6 @@ public class PrefabInstanceBuilder : MonoBehaviour
 
     public float RandomRadius=10;
 
-    [ContextMenu("DestroySimgleOnes")]
     public void DestroySimgleOnes()
     {
         List<Transform> children=new List<Transform>();
@@ -104,7 +103,6 @@ public class PrefabInstanceBuilder : MonoBehaviour
         // }
     }
 
-    [ContextMenu("ResetPrefabs")]
     public void ResetPrefabs()
     {
         // PrefabInfoList.Sort((a,b)=>{
@@ -123,7 +121,6 @@ public class PrefabInstanceBuilder : MonoBehaviour
         }
     }
 
-    [ContextMenu("DestoryInstances")]
     public void DestoryInstances()
     {
         
@@ -133,7 +130,6 @@ public class PrefabInstanceBuilder : MonoBehaviour
         }
     }
 
-    [ContextMenu("ShowPrefabListCount")]
     public void ShowPrefabListCount()
     {
         DateTime start=DateTime.Now;
@@ -141,8 +137,6 @@ public class PrefabInstanceBuilder : MonoBehaviour
         Debug.Log($"ShowPrefabListCount Time:{(DateTime.Now-start).ToString()}");
     }
 
-
-    [ContextMenu("ShowPrefabCount")]
     public void ShowPrefabCount()
     {
         int count1=0;
@@ -194,7 +188,6 @@ public class PrefabInstanceBuilder : MonoBehaviour
         Debug.Log($"1\t{count1}\n2\t{count2}\n3\t{count3}\n4\t{count4}\n5\t{count5}\n6_10\t{count6_10}\n11_20\t{count11_20}\n21_100\t{count21_100}\n101_500\t{count101_500}\n>500\t{count500B}\n");
     }
 
-    [ContextMenu("ShowInstanceCount")]
     public void ShowInstanceCount()
     {
         int count1=0;
@@ -246,7 +239,6 @@ public class PrefabInstanceBuilder : MonoBehaviour
         Debug.Log($"1\t{count1}\n2\t{count2}\n3\t{count3}\n4\t{count4}\n5\t{count5}\n6_10\t{count6_10}\n11_20\t{count11_20}\n21_100\t{count21_100}\n101_500\t{count101_500}\n>500\t{count500B}\n");
     }
 
-    [ContextMenu("GetTargetCount")]
     public void GetTargetCount()
     {
         var target=GetTarget();
@@ -255,7 +247,6 @@ public class PrefabInstanceBuilder : MonoBehaviour
     }
 
     
-    [ContextMenu("CreatePrefab")]
     public void CreatePrefab()
     {
         #if UNITY_EDITOR
@@ -267,7 +258,6 @@ public class PrefabInstanceBuilder : MonoBehaviour
         #endif
     }
 
-    [ContextMenu("CreateTestModel")]
     public void CreateTestModel()
     {
 UnpackPrefab();
@@ -330,9 +320,7 @@ UnpackPrefab();
         }
 #endif
     }
-
-    [ContextMenu("UnpackPrefab")]
-    private void UnpackPrefab()
+    public void UnpackPrefab()
     {
         if(TargetRoots==null&&transform.childCount==1){
             TargetRoots=transform.GetChild(0).gameObject;
@@ -352,7 +340,6 @@ UnpackPrefab();
         ShowRenderers();
     }
 
-    [ContextMenu("ShowRenderers")]
     public void ShowRenderers()
     {
         DateTime start=DateTime.Now;
@@ -393,7 +380,6 @@ UnpackPrefab();
 
     public int maxLoopCount=0;
 
-    [ContextMenu("CreateInstance")]
     public void CreateInstance()
     {
         UnpackPrefab();
@@ -510,40 +496,6 @@ UnpackPrefab();
     public int CurrentTestId=0;
     
     public MeshComparer meshComparer;
-
-    // [ContextMenu("TestOne1")]
-    // public void TestOne1()
-    // {
-    //     GetVertexCenterInfos();
-
-    //     CurrentPrefab=TargetList[0];//第一个作为预设
-    //     List<GameObject> newModels=ReplaceToPrefab_Test(CurrentPrefab,TargetList,CurrentTestId);
-    //     CurrentTestId++;
-    // }
-
-    // #if UNITY_EDITOR
-
-    // public PrefabComparer prefabComparer;
-    // [ContextMenu("TestOne2")]
-    // public void TestOne2()
-    // {
-    //     GetVertexCenterInfos();
-    //     prefabComparer = this.gameObject.GetComponent<PrefabComparer>();
-    //     prefabComparer.Prefab = TargetList[0];
-    //     prefabComparer.Target = TargetList[1];
-    //     prefabComparer.ReplaceToPrefab();
-    // }
-    // #endif
-
-    // [ContextMenu("TestOne3")]
-    // public void TestOne3()
-    // {
-    //     GetVertexCenterInfos();
-    //     meshComparer = this.gameObject.GetComponent<MeshComparer>();
-    //     meshComparer.goFrom = MeshHelper.CopyGO(TargetList[0]);
-    //     meshComparer.goTo = TargetList[1];
-    //     meshComparer.AlignModels();
-    // }
 
     public List<GameObject> ReplaceToPrefab_Test(GameObject prefabGo,List<GameObject> models,int i)
     {
@@ -719,8 +671,7 @@ UnpackPrefab();
 
     public bool SetParentNull=true;
 
-    [ContextMenu("GetThreePointJobs")]
-    private void GetThreePointJobs()
+    public void GetThreePointJobs()
     {
         UnpackPrefab();
          Debug.Log("GetThreePointJobs");
@@ -728,8 +679,7 @@ UnpackPrefab();
         MeshJobHelper.NewThreePointJobs(meshFilters,JobSize);
     }
 
-    [ContextMenu("MeshAlignJobs")]
-    private void MeshAlignJobs()
+    public void MeshAlignJobs()
     {
         UnpackPrefab();
         CleanNodes();
@@ -738,9 +688,7 @@ UnpackPrefab();
         PrefabInfoList.Clear();
         PrefabInfoList = MeshJobHelper.NewMeshAlignJobs(meshFilters,JobSize);
     }
-
-    [ContextMenu("RTAlignJobs")]
-    private void RTAlignJobs()
+    public void RTAlignJobs()
     {
         UnpackPrefab();
         CleanNodes();
@@ -761,8 +709,7 @@ UnpackPrefab();
         DistanceSetting.ICPMinDis=this.ICPMinDis;
     }
 
-    [ContextMenu("AcRTAlignJobs")]
-    private void AcRTAlignJobs()
+    public void AcRTAlignJobs()
     {
         
         SetDistanceSettings();
@@ -774,8 +721,7 @@ UnpackPrefab();
         PrefabInfoList = MeshJobHelper.NewAcRTAlignJobs(meshFilters,JobSize);
     }
 
-    [ContextMenu("* AcRTAlignJobsEx")]
-    private void AcRTAlignJobsEx()
+    public void AcRTAlignJobsEx()
     {
         SetAcRTAlignJobSetting();
         SetDistanceSettings();
@@ -786,14 +732,12 @@ UnpackPrefab();
         SetPrefabInfoList(MeshJobHelper.NewAcRTAlignJobsEx(meshFilters, JobSize));
     }
 
-     [ContextMenu("SortPrefabInfoList")]
 
     public void SortPrefabInfoList()
     {
         SetPrefabInfoList(PrefabInfoList);
     }
 
-    [ContextMenu("RemoveInstances1")]
 
     public void RemoveInstances1()
     {
@@ -803,15 +747,11 @@ UnpackPrefab();
         PrefabInfoList4.RemoveInstances();
     }
 
-    [ContextMenu("RemoveInstances2")]
-
     public void RemoveInstances2()
     {
         PrefabInfoList5.RemoveInstances();
         PrefabInfoList6.RemoveInstances();
     }
-
-    [ContextMenu("HideInstances1")]
 
     public void HideInstances1()
     {
@@ -821,16 +761,12 @@ UnpackPrefab();
         PrefabInfoList4.RemoveInstances();
     }
 
-    [ContextMenu("HideInstances2")]
-
     public void HideInstances2()
     {
         //PrefabInfoList4.RemoveInstances();
         PrefabInfoList5.HideInstances();
         PrefabInfoList6.HideInstances();
     }
-
-    [ContextMenu("ShowInstances1")]
 
     public void ShowInstances1()
     {
@@ -840,8 +776,6 @@ UnpackPrefab();
         PrefabInfoList4.ShowInstances();
     }
 
-    [ContextMenu("ShowInstances2")]
-
     public void ShowInstances2()
     {
         //PrefabInfoList4.RemoveInstances();
@@ -849,16 +783,28 @@ UnpackPrefab();
         PrefabInfoList6.ShowInstances();
     }
 
-    public void SetPrefabInfoList(List<PrefabInfo> list){
-        //PrefabInfoList.Clear();
-        PrefabInfoList = list;
+    public void ClearPrefabs()
+    {
+        PrefabInfoList.Clear();
+        ClearPrefabs16();
+    }
 
+    public void ClearPrefabs16()
+    {
         PrefabInfoList1.Clear();
         PrefabInfoList2.Clear();
         PrefabInfoList3.Clear();
         PrefabInfoList4.Clear();
         PrefabInfoList5.Clear();
         PrefabInfoList6.Clear();
+    }
+
+    public void SetPrefabInfoList(List<PrefabInfo> list){
+        //PrefabInfoList.Clear();
+        PrefabInfoList = list;
+
+        ClearPrefabs16();
+
         for (int i=0;i<list.Count;i++)
         {
             if(list[i].InstanceCount<InsCountList[0])//1
@@ -919,8 +865,7 @@ UnpackPrefab();
 
     public List<GameObject> TestList=new List<GameObject>();
 
-    [ContextMenu("AcRTAlignJobsEx(TestList)")]
-    private void AcRTAlignJobsExTestList()
+    public void AcRTAlignJobsExTestList()
     {
         SetAcRTAlignJobSetting();
         IsCopyTargetRoot=false;
@@ -936,8 +881,7 @@ UnpackPrefab();
         Debug.LogError(log);
     }
 
-    [ContextMenu("AcRTAlignJobsEx2")]
-    private void AcRTAlignJobsEx2()
+    public void AcRTAlignJobsEx2()
     {
         SetDistanceSettings();
         UnpackPrefab();
@@ -950,8 +894,7 @@ UnpackPrefab();
 
     public AcRigidTransform acRigidTransform;
 
-    [ContextMenu("TestRTs")]
-    private void TestRTs()
+    public void TestRTs()
     {
         if(acRigidTransform==null){
             acRigidTransform=AcRigidTransform.Instance;
@@ -1022,19 +965,17 @@ break;
         }
     }
 
-    [ContextMenu("TestGetBigSmallRenderers")]
-    private BigSmallListInfo TestGetBigSmallRenderers()
-    {
-        //List<MeshRenderer> bigModels=new List<MeshRenderer>();
-        //List<MeshRenderer> smallModels=new List<MeshRenderer>();
-        if(JobSetting==null){
-            JobSetting=this.GetComponent<AcRTAlignJobSetting>();
-        }
-        var meshFilters=GetMeshFilters();
-        return GetBigSmallRenderers(meshFilters,JobSetting.MaxModelLength);
-    }
+    //private BigSmallListInfo TestGetBigSmallRenderers()
+    //{
+    //    //List<MeshRenderer> bigModels=new List<MeshRenderer>();
+    //    //List<MeshRenderer> smallModels=new List<MeshRenderer>();
+    //    if(JobSetting==null){
+    //        JobSetting=this.GetComponent<AcRTAlignJobSetting>();
+    //    }
+    //    var meshFilters=GetMeshFilters();
+    //    return GetBigSmallRenderers(meshFilters,JobSetting.MaxModelLength);
+    //}
 
-    // [ContextMenu("GetBigSmallRenderers")]
     public BigSmallListInfo GetBigSmallRenderers()
     {
         if(JobSetting==null){
@@ -1052,7 +993,6 @@ break;
         public float sumVertex_Small = 0;
     }
 
-    // [ContextMenu("GetBigSmallRenderers")]
     public static BigSmallListInfo GetBigSmallRenderers(MeshFilter[] meshFilters,float maxLength)
     {
         BigSmallListInfo info = new BigSmallListInfo();
@@ -1155,8 +1095,7 @@ break;
 
     // public float MaxModelLength=1.2f;
 
-    [ContextMenu("GetMeshSizeInfo")]
-    private void GetMeshSizeInfo()
+    public void GetMeshSizeInfo()
     {
         DateTime start=DateTime.Now;
         var meshFilters=GetMeshFilters();
@@ -1248,7 +1187,6 @@ break;
         Debug.LogWarning($"GetMeshSizeInfo bigModels:{bigModels.Count},smallModels:{smallModels.Count},Renderers:{meshFilters.Length},Time:{(DateTime.Now-start).TotalMilliseconds}ms\n lengthStr: {lengthStr} \n sizeStr :{sizeStr}");
     }
 
-    // [ContextMenu("GetVertexCountInfo")]
     // private void GetVertexCountInfo()
     // {
     //     ShowRenderers();
@@ -1285,8 +1223,7 @@ break;
     // }
 
 
-    [ContextMenu("GetVertexCenterInfos")]
-    private void GetVertexCenterInfos()
+    public void GetVertexCenterInfos()
     {
         UnpackPrefab();
 
@@ -1361,7 +1298,6 @@ break;
 
     public Material[] LODMaterials ;
 
-    [ContextMenu("GetCombinedRenderers")]
     public List<MeshRenderer> GetCombinedRenderers()
     {
         var list2=GetHiddenRenderers();
@@ -1392,7 +1328,6 @@ break;
         return list3;
     }
 
-    [ContextMenu("GetHiddenRenderers")]
     public List<MeshRenderer> GetHiddenRenderers()
     {
         List<MeshRenderer> list = new List<MeshRenderer>();
@@ -1609,20 +1544,17 @@ break;
 
     public float[] LODLevels = new float[] { 0.6f, 0.2f, 0.07f, 0.01f };
 
-    [ContextMenu("CreatePrefabs")]
-    private void CreatePrefabs()
+    public void CreatePrefabs()
     {
         CreatePrefabInner(true, 0,LODLevels,null);
     }
 
-    [ContextMenu("CreateInstances")]
-    private void CreateInstances()
+    public void CreateInstances()
     {
         CreateInstancesInner(false,true,0,LODLevels,null);
     }
 
-    [ContextMenu("CreateInstances(LOD)")]
-    private void CreateInstances_LOD()
+    public void CreateInstances_LOD()
     {
         CreateInstancesInner(true,true,0,LODLevels,null);
     }
@@ -1645,8 +1577,7 @@ break;
     //     CreateInstancesInner(true,true,0,new float[] { 0.6f, 0.2f, 0.01f },new float[] { 1f,0.7f,0.2f });
     // }
 
-    [ContextMenu("ShowPrefabInfo")]
-    private void ShowPrefabInfo()
+    public void ShowPrefabInfo()
     {
         PrefabInfoList.Sort((a,b)=>{
             return a.VertexCount.CompareTo(b.VertexCount);
@@ -1656,7 +1587,6 @@ break;
         }
     }
 
-    [ContextMenu("OneKey_Align_Remove_Instance")]
     public void OneKey_Align_Remove_Instance()
     {
         DateTime start = DateTime.Now;
@@ -1665,8 +1595,6 @@ break;
         CreateInstances();
         Debug.LogWarning($"OneKey_Align_Remove_Instance Time:{(DateTime.Now - start).ToString()}ms");
     }
-
-    [ContextMenu("OneKey_Align_Remove_Instance(LOD)")]
     public void OneKey_Align_Remove_Instance_LOD()
     {
         DateTime start = DateTime.Now;
@@ -1675,10 +1603,4 @@ break;
         CreateInstances_LOD();
         Debug.LogWarning($"OneKey_Align_Remove_Instance_LOD Time:{(DateTime.Now - start).ToString()}ms");
     }
-
-    // [ContextMenu("CreateInstances(LOD_10)")]
-    // private void CreateInstances_LOD_10()
-    // {
-    //     CreateInstancesInner(true, 10);
-    // }
 }

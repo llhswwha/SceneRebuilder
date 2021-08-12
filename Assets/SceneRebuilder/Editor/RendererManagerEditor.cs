@@ -25,7 +25,7 @@ public class RendererManagerEditor : BaseFoldoutEditor<RendererManager>
         {
             item.TestGetGo();
         }
-        EditorGUILayout.ObjectField(item.TestGo, typeof(GameObject));
+        item.TestGo=ObjectField(item.TestGo);
         EditorUIUtils.Separator(5);
 
         GUILayout.BeginHorizontal();
@@ -37,6 +37,10 @@ public class RendererManagerEditor : BaseFoldoutEditor<RendererManager>
         if (GUILayout.Button("InitIds"))
         {
             item.InitIds();
+        }
+        if (GUILayout.Button("ShowAll"))
+        {
+            item.ShowAll();
         }
         GUILayout.EndHorizontal();
 

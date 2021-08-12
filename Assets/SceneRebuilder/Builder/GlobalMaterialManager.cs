@@ -203,7 +203,7 @@ public class GlobalMaterialManager : SingletonBehaviour<GlobalMaterialManager>
         Debug.LogError(log);
 
         DateTime start2 = DateTime.Now;
-        var mats = MeshCombineHelper.GetMatFilters(allRenderers, out count, false);
+        var mats = MeshCombineHelper.GetMatFilters(allRenderers, false);
         CombinedMaterials=mats.Keys.ToList();
         string log2=$"CombineMat mats:{mats.Count},{(DateTime.Now - start).ToString()}";
         Debug.LogError(log2);
@@ -218,10 +218,9 @@ public class GlobalMaterialManager : SingletonBehaviour<GlobalMaterialManager>
     {
         DateTime start = DateTime.Now;
         var allRenderers = GameObject.FindObjectsOfType<MeshRenderer>(includeInactive);
-        int count = 0;
-        var mats = MeshCombineHelper.GetMatFilters(allRenderers, out count, false);
+        var mats = MeshCombineHelper.GetMatFilters(allRenderers, false);
         CombinedMaterials=mats.Keys.ToList();
-        Debug.LogError($"GetCombineMaterial {(DateTime.Now - start).ToString()},mats:{mats.Count},count:{count}");
+        Debug.LogError($"GetCombineMaterial {(DateTime.Now - start).ToString()},mats:{mats.Count},count:{allRenderers.Length}");
     }
 
 
@@ -230,9 +229,8 @@ public class GlobalMaterialManager : SingletonBehaviour<GlobalMaterialManager>
     {
         DateTime start = DateTime.Now;
         var allRenderers = GameObject.FindObjectsOfType<MeshRenderer>(includeInactive);
-        int count = 0;
-        var mats = MeshCombineHelper.GetMatFilters(allRenderers, out count, true);
+        var mats = MeshCombineHelper.GetMatFilters(allRenderers, true);
         CombinedMaterials=mats.Keys.ToList();
-        Debug.LogError($"GetCombineMaterial {(DateTime.Now - start).ToString()},mats:{mats.Count},count:{count}");
+        Debug.LogError($"GetCombineMaterial {(DateTime.Now - start).ToString()},mats:{mats.Count},count:{allRenderers.Length}");
     }
 }

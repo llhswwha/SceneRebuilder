@@ -74,10 +74,25 @@ public class RendererManager : SingletonBehaviour<RendererManager>
     {
         InitIds();
     }
-    [ContextMenu("CheckRenderers")]
-    public void CheckRenderers()
+    [ContextMenu("ShowAll")]
+    public void ShowAll()
     {
+        DateTime start = DateTime.Now;
+        //var allRenderers = GameObject.FindObjectsOfType<MeshRenderer>(true);
+        var allRenderers = TestGo.GetComponentsInChildren<MeshRenderer>(true);
+        foreach (var renderer in allRenderers)
+        {
+            renderer.enabled = true;
+            GameObject go = renderer.gameObject;
 
+            for(int i=0;i<5&& go!=null &&go.activeInHierarchy == false;i++)
+            {
+                go.SetActive(true);
+                if(go.transform.parent!=null)
+                    go = go.transform.parent.gameObject;
+            }
+        }
+        Debug.Log($"ShowAll count:{allRenderers.Length} time:{(DateTime.Now - start)}");
     }
 
     private List<MeshRendererInfo> InitRenderers_Inner(MeshRenderer[] allRenderers)

@@ -842,8 +842,7 @@ public class ModelAreaTree : SubSceneCreater
         //    txt2 += key + "\n";
         //}
 
-        int count = 0;
-        var matsEx = MeshCombineHelper.GetMatFilters(target, out count,false);
+        var matsEx = MeshCombineHelper.GetMatFilters(target, false);
         //foreach(var mat in mats.Keys)
         //{
         //    var list = mats[mat];
@@ -854,7 +853,7 @@ public class ModelAreaTree : SubSceneCreater
         //    }
         //}
 
-        Debug.LogError($"GetMaterials {(DateTime.Now - start).ToString()},mats1:{mats.Count},mats2:{matsEx.Count},count:{count}");
+        Debug.LogError($"GetMaterials {(DateTime.Now - start).ToString()},mats1:{mats.Count},mats2:{matsEx.Count},count:{renders.Length}");
     }
 
 
@@ -866,10 +865,9 @@ public class ModelAreaTree : SubSceneCreater
         //ShowRenderers();
 
         var target = GetTarget();
-        int count = 0;
-        var mats = MeshCombineHelper.GetMatFilters(target, out count,true);
+        var mats = MeshCombineHelper.GetMatFilters(target, true);
 
-        Debug.LogError($"SetMaterials {(DateTime.Now - start).ToString()},mats:{mats.Count},count:{count}");
+        Debug.LogError($"SetMaterials {(DateTime.Now - start).ToString()},mats:{mats.Count}");
     }
 
     //[ContextMenu("ShowModelInfo")]

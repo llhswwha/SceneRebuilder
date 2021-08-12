@@ -7,7 +7,7 @@ using System.Linq;
 #if UNITY_EDITOR
 using UnityEditor;
 #endif
-public class MeshComparer : MonoBehaviour
+public class MeshComparer : SingletonBehaviour<MeshComparer>
 {
     public AlignDebugStep step;
 
@@ -24,6 +24,16 @@ public class MeshComparer : MonoBehaviour
     public GameObject goFrom;
 
     public GameObject goFromCopy;
+
+    public void SetGos(GameObject from,GameObject to)
+    {
+        goFrom = from;
+        goTo = to;
+        if (goFromCopy != null)
+        {
+            GameObject.DestroyImmediate(goFromCopy);
+        }
+    }
 
     public MeshNode node1;
 
@@ -42,8 +52,7 @@ public class MeshComparer : MonoBehaviour
         return node;
     }
 
-    [ContextMenu("InitMeshNodeInfo")]
-    private void InitMeshNodeInfo()
+    public void InitMeshNodeInfo()
     {
         SetDistanceSetting();
 
@@ -95,7 +104,6 @@ public class MeshComparer : MonoBehaviour
         }
     }
 
-    [ContextMenu("TryScales")]
     public void TryScales()
     {
         var goNew = MeshHelper.CopyGO(goFrom);
@@ -137,7 +145,6 @@ public class MeshComparer : MonoBehaviour
         }
     }
 
-    [ContextMenu("TryAngles")]
     public void TryAngles()
     {
         SetDistanceSetting();
@@ -212,31 +219,26 @@ public class MeshComparer : MonoBehaviour
         }
     }
 
-    [ContextMenu("TryMatrixAngle0_0_0")]
     public void TryMatrixAngle0_0_0()
     {
         TryMatrixAngle(new Vector3(0, 0, 0));
     }
 
-    [ContextMenu("TryMatrixAngle90_0_0")]
     public void TryMatrixAngle90_0_0()
     {
         TryMatrixAngle(new Vector3(90, 0, 0));
     }
 
-    [ContextMenu("TryMatrixAngle180_0_0")]
     public void TryMatrixAngle180_0_0()
     {
         TryMatrixAngle(new Vector3(180, 0, 0));
     }
 
-    [ContextMenu("TryMatrixAngle0_90_0")]
     public void TryMatrixAngle0_90_0()
     {
         TryMatrixAngle(new Vector3(0, 90, 0));
     }
 
-    [ContextMenu("TryMatrixAngle0_0_90")]
     public void TryMatrixAngle0_0_90()
     {
         TryMatrixAngle(new Vector3(0, 0, 90));
@@ -335,7 +337,6 @@ public class MeshComparer : MonoBehaviour
 
     public float pScale=0.005f;
     
-    [ContextMenu("TryAnglesMatrix")]
     public void TryAnglesMatrix()
     {
         var mfFrom=goFrom.GetComponent<MeshFilter>();
@@ -451,11 +452,12 @@ public class MeshComparer : MonoBehaviour
         }
     }
 
-    [ContextMenu("GetDistance12(From_To)")]
+    public float distance = 0;
+
     public void GetDistance12()
     {
         SetDistanceSetting();
-        MeshHelper.GetVertexDistanceEx(goTo.transform,goFrom.transform,"GetDistance12",true);
+        distance=MeshHelper.GetVertexDistanceEx(goTo.transform,goFrom.transform,"GetDistance12",true);
     }
 
     private void SetDistanceSetting()
@@ -464,25 +466,22 @@ public class MeshComparer : MonoBehaviour
         DistanceSetting.maxDistance = this.zeroDis;
     }
 
-    [ContextMenu("GetDistance12C(FromC_To)")]
     public void GetDistance12C()
     {
         DestroyGO2Copy();
         goFromCopy = MeshHelper.CopyGO(goFrom);
         SetDistanceSetting();
-        MeshHelper.GetVertexDistanceEx(goTo.transform,goFromCopy.transform,"GetDistance12C",true);
+        distance = MeshHelper.GetVertexDistanceEx(goTo.transform,goFromCopy.transform,"GetDistance12C",true);
     }
 
-    [ContextMenu("GetDistance22C(From_FromC)")]
     public void GetDistance22C()
     {
         DestroyGO2Copy();
         goFromCopy = MeshHelper.CopyGO(goFrom);
         SetDistanceSetting();
-        MeshHelper.GetVertexDistanceEx(goFrom.transform,goFromCopy.transform,"GetDistance22C",true);
+        distance = MeshHelper.GetVertexDistanceEx(goFrom.transform,goFromCopy.transform,"GetDistance22C",true);
     }
 
-    [ContextMenu("SwitchGO")]
     public void SwitchGO()
     {
         GameObject temp=goTo;
@@ -505,7 +504,6 @@ public class MeshComparer : MonoBehaviour
         }
     }
 
-    [ContextMenu("CopyGo2")]
     public void CopyGo2()
     {
         // go2 = GameObject.Instantiate(go2);
@@ -516,14 +514,12 @@ public class MeshComparer : MonoBehaviour
 
     public bool IsSetParentNull=true;
 
-    [ContextMenu("CopyTest")]
     public void CopyTest()
     {
         Transform t2=MeshHelper.CopyT(goTo.transform);
         Debug.Log(t2);
     }
 
-    [ContextMenu("CreatePlaneByThreePoint")]
     public void CreatePlaneByThreePoint()
     {
         CopyGo2();
@@ -566,56 +562,33 @@ public class MeshComparer : MonoBehaviour
 
     public int maxTestCount=1;
 
-    [ContextMenu("AcRTAlign")]
     public void AcRTAlign()
     {
-        DateTime start=DateTime.Now;
 
         CopyGo2();
+        MeshAlignHelper.AcRTAlign(goFromCopy, goTo);
 
-#if UNITY_EDITOR
-                GameObject root1=PrefabUtility.GetOutermostPrefabInstanceRoot(goTo);
-                if(root1!=null){
-                    PrefabUtility.UnpackPrefabInstance(root1,PrefabUnpackMode.OutermostRoot,InteractionMode.UserAction);
-                }
-                GameObject root2=PrefabUtility.GetOutermostPrefabInstanceRoot(goFromCopy);
-                if(root2!=null){
-                    PrefabUtility.UnpackPrefabInstance(root2,PrefabUnpackMode.OutermostRoot,InteractionMode.UserAction);
-                }
-#endif
-
-        MeshHelper.SetParentZero(goTo);
-        MeshHelper.SetParentZero(goFromCopy);
-
-        var mfFrom=goFromCopy.GetComponent<MeshFilter>();
-        var mfTo=goTo.GetComponent<MeshFilter>();
-
-        MeshJobHelper.NewThreePointJobs(new MeshFilter[]{mfFrom,mfTo},10000);
-        AcRigidTransform.RTAlign(mfFrom,mfTo);
-
-        Debug.Log($"AcRTAlign End Time:{(DateTime.Now-start).TotalMilliseconds}ms");
     }
 
-    [ContextMenu("AcRTAlignJob")]
     public void AcRTAlignJob()
     {
-        DateTime start=DateTime.Now;
-
         CopyGo2();
-
-        MeshHelper.SetParentZero(goTo);
-        MeshHelper.SetParentZero(goFromCopy);
-
-        var mfFrom=goFromCopy.GetComponent<MeshFilter>();
-        var mfTo=goTo.GetComponent<MeshFilter>();
-
-        AcRTAlignJobResult.CleanResults();
-        AcRtAlignJobArg.CleanArgs();
-        MeshJobHelper.NewThreePointJobs(new MeshFilter[]{mfFrom,mfTo},10000);
-        MeshJobHelper.DoAcRTAlignJob(mfFrom, mfTo,1);
-
-        Debug.Log($"AcRTAlignJob End Time:{(DateTime.Now-start).TotalMilliseconds}ms");
+        MeshAlignHelper.AcRTAlignJob(goFromCopy, goTo);
     }
+
+    public void AcRTAlignJob(GameObject from, GameObject to)
+    {
+        SetGos(from, to);
+
+        //goFromCopy = from;
+
+        //AcRTAlignJob();   
+
+        //CopyGo2();
+        MeshAlignHelper.AcRTAlignJob(from, goTo);
+    }
+
+
 
     private void CreatePlaneByThreePoints(ThreePoint[] list,Transform parent)
     {
@@ -631,7 +604,6 @@ public class MeshComparer : MonoBehaviour
         }
     }
 
-    [ContextMenu("TestRTAlignJob")]
     public void TestRTAlignJob()
     {
         CopyGo2();
@@ -652,7 +624,6 @@ public class MeshComparer : MonoBehaviour
     public int JobSize=10000;
 
 
-    [ContextMenu("TestMeshAlignJob")]
     public void TestMeshAlignJob()
     {
         CopyGo2();
@@ -664,7 +635,6 @@ public class MeshComparer : MonoBehaviour
         MeshJobHelper.NewMeshAlignJob(goTo, goFromCopy,true);
     }
 
-    [ContextMenu("AlignModels")]
     public void AlignModels()
     {
         InitMeshNodeInfoEx();
@@ -699,7 +669,6 @@ public class MeshComparer : MonoBehaviour
 
     public int MaxICPCount=5;
 
-    [ContextMenu("TestICP")]
     public void TestICP()
     {
         SetDistanceSetting();
@@ -772,7 +741,6 @@ public class MeshComparer : MonoBehaviour
         Debug.Log($"TestICP2 End Time:{(DateTime.Now-start).TotalMilliseconds}ms");
     }
 
-    [ContextMenu("ReplacePrefab")]
     public void ReplacePrefab()
     {
         InitMeshNodeInfo();
@@ -823,7 +791,6 @@ public class MeshComparer : MonoBehaviour
         Debug.Log($"AlignMeshNode End Time:{(DateTime.Now-start).TotalMilliseconds}ms");
     }
 
-    [ContextMenu("Rotate2")]
     public void Rotate2()
     {
         float angle = Vector3.Angle(node2.GetShortLine(), node1.GetShortLine());

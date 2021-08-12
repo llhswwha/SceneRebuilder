@@ -35,7 +35,7 @@ public static class MeshCombineHelper
         yield return target;
     }
 
-    public static GameObject SplitByMaterials(GameObject obj)
+    public static GameObject SplitByMaterials(GameObject obj,bool isDestroy=true)
     {
         //SplitByMaterials：
         //1.ResetTransform
@@ -48,10 +48,9 @@ public static class MeshCombineHelper
         t.Reset();
 
         //GameObject goNew = CombineMaterials(obj);
-        int count = 0;
         MeshCombineArg arg = new MeshCombineArg(obj);
         arg.prefix = obj.name+"_";
-        GameObject goNew = CombineInner_Multi(arg, out count);
+        GameObject goNew = CombineInner_Multi(arg,false);
 
         goNew.transform.SetParent(obj.transform);
         t.Recover();
@@ -59,7 +58,14 @@ public static class MeshCombineHelper
         //goNew.name = obj.name + "_Split";
         goNew.name = obj.name;
 
-        GameObject.DestroyImmediate(obj);
+        if(isDestroy)
+        {
+            GameObject.DestroyImmediate(obj);
+        }
+        else
+        {
+            obj.SetActive(false);
+        }
 
         return goNew;
     }
@@ -69,17 +75,20 @@ public static class MeshCombineHelper
         //TransformData t = new TransformData(obj.transform);
         //t.Reset();
 
-        int count = 0;
         MeshCombineArg arg = new MeshCombineArg(obj);
-        GameObject result = CombineInner_Multi(arg, out count);
+        GameObject result = CombineInner_Multi(arg);
         return result;
     }
 
-    public static GameObject CombineInner_Multi(MeshCombineArg arg,out int  count)
+    public static GameObject CombineInner_Multi(MeshCombineArg arg,bool isCenterPivot=true)
     {
         DateTime start=DateTime.Now;
         GameObject goNew=new GameObject();
         goNew.name=arg.name+"_Combined_M";
+        if (arg.source != null)
+        {
+            goNew.transform.position = arg.source.transform.position;
+        }
         MeshRenderer[] renderers = arg.GetRenderers();
 
         // MeshFilter[] mfList =go.GetComponentsInChildren<MeshFilter>(true);
@@ -88,7 +97,7 @@ public static class MeshCombineHelper
 
         //int count=0;
         SubMeshList mfList =new SubMeshList();
-        Dictionary<Material, SubMeshList> mat2Filters=GetMatFilters(renderers, out count);
+        Dictionary<Material, SubMeshList> mat2Filters=GetMatFilters(renderers);
         string mats="";
         int allVs=0;
         foreach(var item in mat2Filters)
@@ -114,7 +123,7 @@ public static class MeshCombineHelper
         }
 
         goNew.transform.SetParent(arg.transform.parent);
-        Debug.Log(string.Format("CombineMaterials name:{5} 用时:{0} \tMesh数量:{2} \tMat数量:{1} \tMats:{3} \tVertex:{4:F1}", (DateTime.Now-start),mat2Filters.Count,count,mats,(allVs/10000f),arg.name));
+        Debug.Log($"CombineMaterials name:{arg.name} 用时:{DateTime.Now - start} \tMesh数量:{renderers.Length} \tMat数量:{mat2Filters.Count} \tMats:{mats} \tVertex:{(allVs / 10000f):F1}");
 
         // var minMax=MeshHelper.GetMinMax(mfList);
 
@@ -123,7 +132,14 @@ public static class MeshCombineHelper
         {
             filterlist.Add(item.meshFilter);
         }
-        MeshHelper.CenterPivot(goNew.transform, filterlist);
+        if (isCenterPivot)
+        {
+            MeshHelper.CenterPivot(goNew.transform, filterlist);
+        }
+        else
+        {
+
+        }
         
         return goNew;
     }
@@ -150,9 +166,8 @@ public static class MeshCombineHelper
         GameObject goNew=new GameObject();
         goNew.name=go.name+"_Combined_MC";
         goNew.transform.SetParent(go.transform.parent);
-        int count=0;
         MeshRenderer[] renderers = go.GetRenderers();
-        Dictionary<Material, SubMeshList> mat2Filters=GetMatFilters(renderers, out count);
+        Dictionary<Material, SubMeshList> mat2Filters=GetMatFilters(renderers);
         yield return null;
         int i=0;
         foreach(var item in mat2Filters)
@@ -171,7 +186,7 @@ public static class MeshCombineHelper
         if(isDestroy){
             go.DestroySource();
         }
-        Debug.LogError(string.Format("CombineMaterials 用时:{0},Mat数量:{1},Mesh数量:{2}",(DateTime.Now-start),mat2Filters.Count,count));
+        Debug.LogError(string.Format("CombineMaterials 用时:{0},Mat数量:{1},Mesh数量:{2}",(DateTime.Now-start),mat2Filters.Count, renderers.Length));
         yield return goNew;
     }
 
@@ -216,12 +231,12 @@ public static class MeshCombineHelper
         }
     }
 
-    public static Dictionary<Material, SubMeshList> GetMatFiltersInner(MeshRenderer[] renderers, out int count)
+    public static Dictionary<Material, SubMeshList> GetMatFiltersInner(MeshRenderer[] renderers)
     {
         DateTime start = DateTime.Now;
         Dictionary<Material, SubMeshList> mat2Filters = new Dictionary<Material, SubMeshList>();
         //MeshRenderer[] renderers = go.GetComponentsInChildren<MeshRenderer>();
-        count = renderers.Length;
+        //count = renderers.Length;
         for (int i = 0; i < renderers.Length; i++)
         {
             MeshRenderer renderer = renderers[i];
@@ -341,32 +356,31 @@ public static class MeshCombineHelper
         return mat2Filters2;
     }
 
-    public static Dictionary<Material, SubMeshList> GetMatFilters(GameObject go, out int count, bool isSetMaterial = false)
+    public static Dictionary<Material, SubMeshList> GetMatFilters(GameObject go,  bool isSetMaterial = false)
     {
         MeshRenderer[] renderers = go.GetComponentsInChildren<MeshRenderer>();
-        Dictionary<Material, SubMeshList> mat2Filters = GetMatFiltersInner(renderers, out count);
+        Dictionary<Material, SubMeshList> mat2Filters = GetMatFiltersInner(renderers);
         if (isSetMaterial)
         {
             SetMaterials(mat2Filters);
-            mat2Filters = GetMatFiltersInner(renderers, out count);
+            mat2Filters = GetMatFiltersInner(renderers);
         }
         return mat2Filters;
     }
 
-    public static Dictionary<Material, SubMeshList> GetMatFilters(MeshRenderer[] renderers, out int count,bool isSetMaterial=false){
-        Dictionary<Material, SubMeshList> mat2Filters = GetMatFiltersInner(renderers, out count);
+    public static Dictionary<Material, SubMeshList> GetMatFilters(MeshRenderer[] renderers,bool isSetMaterial=false){
+        Dictionary<Material, SubMeshList> mat2Filters = GetMatFiltersInner(renderers);
         if (isSetMaterial)
         {
             SetMaterials(mat2Filters);
-            mat2Filters = GetMatFiltersInner(renderers, out count);
+            mat2Filters = GetMatFiltersInner(renderers);
         }
         return mat2Filters;
     }
 
     private static GameObject CombineInner_One(MeshCombineArg source){
         DateTime start=DateTime.Now;
-        int count=0;
-        GameObject goNew=CombineInner_Multi(source,out count);//按材质合并
+        GameObject goNew=CombineInner_Multi(source);//按材质合并
         CombinedMesh combinedMesh=new CombinedMesh(goNew.transform,null,null);
         combinedMesh.DoCombine(false);
         GameObject target=combinedMesh.CreateNewGo(false,null);
@@ -380,8 +394,7 @@ public static class MeshCombineHelper
 
     public static IEnumerator Combine_Coroutine(MeshCombineArg source,int waitCount,bool isDestroy){
         DateTime start=DateTime.Now;
-        int count=0;
-        GameObject goNew=CombineInner_Multi(source,out count);//按材质合并
+        GameObject goNew=CombineInner_Multi(source);//按材质合并
         CombinedMesh combinedMesh=new CombinedMesh(goNew.transform,null,null);
         yield return combinedMesh.DoCombine_Coroutine(false,waitCount);
         GameObject target=combinedMesh.CreateNewGo(false,null);
@@ -413,7 +426,7 @@ public static class MeshCombineHelper
         else //if(mode == MeshCombineMode.MultiByMat)
         {
             int count=0;
-            result= CombineInner_Multi(arg,out count);
+            result= CombineInner_Multi(arg);
         }
         //else{
         //    return SimpleCombine(source,null);

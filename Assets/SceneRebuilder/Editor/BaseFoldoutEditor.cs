@@ -451,7 +451,7 @@ public class BaseFoldoutEditor<T> : BaseEditor<T> where T : class
         return nodes;
     }
 
-    public void DrawObjectList<T1>(FoldoutEditorArg foldoutArg,string title, System.Func<List<T1>> funcGetList,System.Action<T1> toolBarAction)
+    public void DrawObjectList<T1>(FoldoutEditorArg foldoutArg,string title, System.Func<List<T1>> funcGetList, System.Action<FoldoutEditorArg,T1,int> drawItemAction,System.Action<T1> toolBarAction, System.Action<FoldoutEditorArg, T1, int> drawSubListAction)
     {
         List<T1> list = new List<T1>();
         foldoutArg.caption = title;
@@ -478,13 +478,35 @@ public class BaseFoldoutEditor<T> : BaseEditor<T> where T : class
                 arg.level = 1;
                 arg.caption = $"[{i:00}] {item.ToString()}";
                 arg.isFoldout = false;
-                EditorUIUtils.ObjectFoldout(arg, null, ()=>
+                arg.isEnabled = true;
+
+                Object obj = arg.tag as Object;
+                if(item is Object)
+                {
+                    obj = item as Object;
+                    arg.caption = obj.name;
+                }
+
+                if (drawItemAction != null)
+                {
+                    drawItemAction(arg, item, i);
+                }
+
+                EditorUIUtils.ObjectFoldout(arg, obj, ()=>
                 {
                     if (toolBarAction != null)
                     {
                         toolBarAction(item);
                     }
                 });
+                if(arg.isEnabled && arg.isExpanded)
+                {
+                    if (drawSubListAction != null)
+                    {
+                        drawSubListAction(arg, item, i);
+                    }
+                }
+
             }
             var time = System.DateTime.Now - start;
             //Debug.Log($"Show SceneList count:{c} time:{time.TotalMilliseconds:F1}ms ");

@@ -65,6 +65,17 @@ public class MeshNodeEditor : BaseFoldoutEditor<MeshNode>
         }
         EditorGUILayout.EndHorizontal();
 
+        EditorGUILayout.BeginHorizontal();
+        if (GUILayout.Button("Split"))
+        {
+            MeshCombineHelper.SplitByMaterials(item.gameObject);
+        }
+        if (GUILayout.Button("Combine"))
+        {
+            MeshCombineHelper.CombineEx(new MeshCombineArg(item.gameObject), MeshCombineMode.OneMesh);
+        }
+        EditorGUILayout.EndHorizontal();
+
         var subms = item.GetMeshNodes();
         if (subms.Count > 0)
         {

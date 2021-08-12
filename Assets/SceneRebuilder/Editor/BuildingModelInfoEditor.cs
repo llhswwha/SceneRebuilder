@@ -125,7 +125,7 @@ public class BuildingModelInfoEditor : BaseFoldoutEditor<BuildingModelInfo>
             return;
         }
         GUILayout.Label("ID:" + info.gameObject.GetInstanceID());
-        info.ModelPrefab= ObjectField(info.ModelPrefab);
+        info.ModelPrefab= BaseEditorHelper.ObjectField(info.ModelPrefab);
 
         EditorGUILayout.EndHorizontal();
 

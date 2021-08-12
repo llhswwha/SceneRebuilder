@@ -323,8 +323,7 @@ public class MeshCombiner : MonoBehaviour
     public void GetMaterilasDict()
     {
         var renderers = sourceRoot.GetComponentsInChildren<MeshRenderer>(true);
-        int count = 0;
-        var dict=MeshCombineHelper.GetMatFiltersInner(renderers, out count);
+        var dict=MeshCombineHelper.GetMatFiltersInner(renderers);
         foreach(var key in dict.Keys)
         {
             

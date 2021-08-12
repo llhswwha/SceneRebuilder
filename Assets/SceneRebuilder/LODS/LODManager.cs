@@ -754,12 +754,19 @@ public class LODManager : SingletonBehaviour<LODManager>
         else
         {
             group = lod0.gameObject.AddComponent<LODGroup>();
-            LOD[] lods = new LOD[3];
-            lods[0] = new LOD(LODLevels_2[0], lod0.GetRenderers());
-            lods[1] = new LOD(LODLevels_2[1], lod0.GetRenderers());
-            lods[2] = new LOD(LODLevels_2[2], lod2.GetRenderers());
+            LOD[] lods = GetLODs3(lod0.GetRenderers(), lod0.GetRenderers(), lod2.GetRenderers());
             group.SetLODs(lods);
         }
+    }
+
+    public LOD[] GetLODs3(MeshRenderer[] renderers0, MeshRenderer[] renderers1, MeshRenderer[] renderers2)
+    {
+        LOD[] lods = new LOD[3];
+        lods[0] = new LOD(LODLevels_2[0], renderers0);
+        lods[1] = new LOD(LODLevels_2[1], renderers1);
+        lods[2] = new LOD(LODLevels_2[2], renderers2);
+
+        return lods;
     }
 
     public float[] LODLevels_1 = new float[] { 0.5f, 0.02f };
@@ -793,13 +800,20 @@ public class LODManager : SingletonBehaviour<LODManager>
         {
             lODGroup = lod0.gameObject.AddComponent<LODGroup>();
         }
-        LOD[] lods = new LOD[2];
-        lods[0] = new LOD(LODLevels_1[0], lod0.GetRenderers());     //LOD0 >50% 
-                                                                      //lods[1]=new LOD(0.2f,new Renderer[1]{render1});         //LOD1  > 20% - 50% 
-                                                                      // lods[2]=new LOD(0.1f,new Renderer[1]{render1});         //LOD2  > 10% - 20% 
-        lods[1] = new LOD(LODLevels_1[1], lod1.GetRenderers());        //LOD3  > 1% - 10% 
-                                                                      //Culled > 0% - 1%
+        LOD[] lods= GetLODs2(lod0.GetRenderers(), lod1.GetRenderers());
         lODGroup.SetLODs(lods);
+    }
+
+    public LOD[] GetLODs2(MeshRenderer[] renderers0,MeshRenderer[] renderers1)
+    {
+        LOD[] lods = new LOD[2];
+        lods[0] = new LOD(LODLevels_1[0], renderers0);     //LOD0 >50% 
+                                                                    //lods[1]=new LOD(0.2f,new Renderer[1]{render1});         //LOD1  > 20% - 50% 
+                                                                    // lods[2]=new LOD(0.1f,new Renderer[1]{render1});         //LOD2  > 10% - 20% 
+        lods[1] = new LOD(LODLevels_1[1], renderers1);        //LOD3  > 1% - 10% 
+                                                                       //Culled > 0% - 1%
+        
+        return lods;
     }
 
     public void UniformLOD0()

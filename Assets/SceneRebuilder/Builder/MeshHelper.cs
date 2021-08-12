@@ -1,3 +1,4 @@
+using MeshJobs;
 using System;
 using System.Collections;
 using System.Collections.Generic;
@@ -1954,7 +1955,7 @@ public static class MeshHelper
 
     public static GameObject ZeroPointGo;
 
-    public static void SetParentZero(GameObject go)
+    public static Transform SetParentZero(GameObject go)
     {
         if(ZeroPointGo==null){
             ZeroPointGo=GameObject.Find("ZeroPoint");
@@ -1962,7 +1963,9 @@ public static class MeshHelper
         if(ZeroPointGo==null){
             ZeroPointGo=new GameObject("ZeroPoint");
         }
+        var parent = go.transform.parent;
         go.transform.SetParent(ZeroPointGo.transform);
+        return parent;
     }
 
     public static void ClearChildren(Transform t)
@@ -2362,4 +2365,61 @@ public class TransfromAlignSetting
 public enum TransfromAlignMode
 {
     Pivot,Min,Max,Center, MinMax,MaxMin
+}
+
+public static class MeshAlignHelper
+{
+    public static void AcRTAlign(GameObject from, GameObject to)
+    {
+        DateTime start = DateTime.Now;
+
+
+#if UNITY_EDITOR
+        GameObject root1 = PrefabUtility.GetOutermostPrefabInstanceRoot(to);
+        if (root1 != null)
+        {
+            PrefabUtility.UnpackPrefabInstance(root1, PrefabUnpackMode.OutermostRoot, InteractionMode.UserAction);
+        }
+        GameObject root2 = PrefabUtility.GetOutermostPrefabInstanceRoot(from);
+        if (root2 != null)
+        {
+            PrefabUtility.UnpackPrefabInstance(root2, PrefabUnpackMode.OutermostRoot, InteractionMode.UserAction);
+        }
+#endif
+
+        var pTo=MeshHelper.SetParentZero(to);
+        var pFrom=MeshHelper.SetParentZero(from);
+
+        var mfFrom = from.GetComponent<MeshFilter>();
+        var mfTo = to.GetComponent<MeshFilter>();
+
+        MeshJobHelper.NewThreePointJobs(new MeshFilter[] { mfFrom, mfTo }, 10000);
+        AcRigidTransform.RTAlign(mfFrom, mfTo);
+
+        to.transform.SetParent(pTo);
+        from.transform.SetParent(pFrom);
+
+        Debug.Log($"AcRTAlign End Time:{(DateTime.Now - start).TotalMilliseconds}ms");
+    }
+
+    public static bool AcRTAlignJob(GameObject from, GameObject to)
+    {
+        DateTime start = DateTime.Now;
+        var pTo = MeshHelper.SetParentZero(to);
+        var pFrom = MeshHelper.SetParentZero(from);
+
+        var mfFrom = from.GetComponent<MeshFilter>();
+        var mfTo = to.GetComponent<MeshFilter>();
+
+        AcRTAlignJobResult.CleanResults();
+        AcRtAlignJobArg.CleanArgs();
+        MeshJobHelper.NewThreePointJobs(new MeshFilter[] { mfFrom, mfTo }, 10000);
+        bool r=MeshJobHelper.DoAcRTAlignJob(mfFrom, mfTo, 1);
+
+        to.transform.SetParent(pTo);
+        from.transform.SetParent(pFrom);
+
+        Debug.Log($"AcRTAlignJob End Time:{(DateTime.Now - start).TotalMilliseconds}ms");
+        return r;
+    }
 }

@@ -150,6 +150,8 @@ public class MeshNode : MonoBehaviour,IComparable<MeshNode>
             totalMesh.Add(meshData);
         }
 
+        RendererId.GetId(this.gameObject, 0);
+
         //if (transformData == null)
         //{
         //    transformData = new TransformData(transform);

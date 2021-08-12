@@ -56,7 +56,7 @@ public class SubSceneManagerEditor : BaseFoldoutEditor<SubSceneManager>
             DrawObjectList(sceneFileListArg1, "Scene File List", () =>
             {
                 return sceneFileListArg1.Items;
-            },file=>
+            },null,file=>
             {
                 var btnStyle = new GUIStyle(EditorStyles.miniButton);
                 btnStyle.margin = new RectOffset(0, 0, 0, 0);
@@ -77,7 +77,7 @@ public class SubSceneManagerEditor : BaseFoldoutEditor<SubSceneManager>
                     AssetDatabase.DeleteAsset(file.sceneAssetPath);
                     //AssetDatabase.Refresh();
                 }
-            });
+            },null);
         }
 
         if (GUILayout.Button("UpdateScenes"))

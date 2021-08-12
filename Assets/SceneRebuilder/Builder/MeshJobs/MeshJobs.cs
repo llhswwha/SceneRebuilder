@@ -521,7 +521,7 @@ namespace MeshJobs
         #endregion
         #region AcRTAlign
 
-        public static void DoAcRTAlignJob(MeshFilter mfFrom, MeshFilter mfTo, int id)
+        public static bool DoAcRTAlignJob(MeshFilter mfFrom, MeshFilter mfTo, int id)
         {
             AcRTAlignJob job = AcRTAlignJobHelper.NewJob(mfFrom, mfTo, id);
             job.Schedule().Complete();//DoJob
@@ -535,18 +535,21 @@ namespace MeshJobs
                 if (result.Distance < 0.001)
                 {
                     Debug.LogError($"对齐成功 {mfFrom.name} -> {mfTo.name} 距离:{result.Distance}");
+                    return true;
                 }
                 else
                 {
                     Debug.LogError($"对齐失败2 {mfFrom.name} -> {mfTo.name} 距离:{result.Distance}");
+                    return false;
                 }
 
             }
             else
             {
                 Debug.LogError($"对齐失败1 id:{id} {mfFrom.name} -> {mfTo.name}");
+                return false;
             }
-            return;
+            //return result;
         }
 
         private static MeshFilterListDict CreateMeshFilterListDict(MeshFilter[] meshFilters){
