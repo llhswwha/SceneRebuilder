@@ -114,7 +114,7 @@ public static class IdDictionary
             renderers = root.GetComponentsInChildren<MeshRenderer>(true);
         }
         InitRenderers(renderers);
-        Debug.Log($"IdDictionay.InitRenderers count:{renderers.Length},Dict:{RendererDict.Count} time:{(DateTime.Now - start)}");
+        //Debug.Log($"IdDictionay.InitRenderers count:{renderers.Length},Dict:{RendererDict.Count} time:{(DateTime.Now - start)}");
     }
 
     public static RendererId[] InitIds(GameObject root=null)
@@ -134,7 +134,7 @@ public static class IdDictionary
             SetId(id);
             //id.childrenIds.Clear();
         }
-        Debug.Log($"IdDictionay.InitIds count:{ids.Length},Dict:{IdDict.Count} time:{(DateTime.Now - start)}");
+        //Debug.Log($"IdDictionay.InitIds count:{ids.Length},Dict:{IdDict.Count} time:{(DateTime.Now - start)}");
         return ids;
     }
 

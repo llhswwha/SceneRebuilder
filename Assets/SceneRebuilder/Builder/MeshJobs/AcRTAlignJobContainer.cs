@@ -122,7 +122,7 @@ public class AcRTAlignJobContainer
                     //Debug.LogError("GetAlignJobs mfTo:"+mfTo);
                     if (mfTo == null) continue;
 
-                    if(mfTo.sharedMesh==mfFrom.sharedMesh){//已经处理过的相同的模型
+                    if(mfTo.IsSameMesh(mfFrom)){//已经处理过的相同的模型
                         prefabInfo.Add(mfTo.gameObject);
                         item.Remove(mfTo);
                         //i--;
@@ -178,7 +178,7 @@ public class AcRTAlignJobContainer
                 {
                     var mfTo = mfList[i];
                     if (mfTo == null) continue;
-                    if(mfTo.sharedMesh==mfFrom.sharedMesh){
+                    if(mfTo.IsSameMesh(mfFrom)){
                         prefabInfo.Add(mfTo.gameObject);
                         item.Remove(mfTo);
                         continue;
@@ -239,7 +239,7 @@ public class AcRTAlignJobContainer
                 {
                     var mfTo = mfList[i];
                     if (mfTo == null) continue;
-                    if(mfTo.sharedMesh==mfFrom.sharedMesh){
+                    if(mfTo.IsSameMesh(mfFrom)){
                         prefabInfo.Add(mfTo.gameObject);
                         item.Remove(mfTo);
                         continue;

@@ -1201,6 +1201,18 @@ public static class MeshHelper
         return vertexes.ToArray() ;
     }
 
+    public static Vector3[] GetChildrenVertexes(GameObject t1)
+    {
+        List<Vector3> vertexes = new List<Vector3>();
+        var meshFilters = t1.GetComponentsInChildren<MeshFilter>();
+        foreach (var mf in meshFilters)
+        {
+            if (mf.sharedMesh == null) continue;
+            vertexes.AddRange(mf.sharedMesh.vertices);
+        }
+        return vertexes.ToArray();
+    }
+
     public static Vector3[] GetWorldVertexes(Vector3[] vs, Transform t1){
         var vCount=vs.Length;
         Vector3[] points1 = new Vector3[vCount];

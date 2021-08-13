@@ -57,7 +57,7 @@ namespace MeshJobs
             }
             else
             {
-                vertices= MeshHelper.GetChildrenWorldVertexes(root);
+                vertices= MeshHelper.GetChildrenVertexes(root);
                 //worldVertices = MeshHelper.GetChildrenWorldVertexes(root);
                 InstanceId = root.GetInstanceID();
                 size = MeshHelper.GetMinMax(vertices)[2];
@@ -81,6 +81,11 @@ namespace MeshJobs
                 worldVertices = MeshHelper.GetChildrenWorldVertexes(gameObject);
             }
             return worldVertices;
+        }
+
+        public bool IsSameMesh(MeshPoints other)
+        {
+            return (this.sharedMesh != null && other.sharedMesh != null && this.sharedMesh == other.sharedMesh);
         }
     }
 

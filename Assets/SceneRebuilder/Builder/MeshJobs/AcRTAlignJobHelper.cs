@@ -49,10 +49,12 @@ public static class AcRTAlignJobHelper
             }
             else
             {
-                var vsLocal=mfFrom.sharedMesh.vertices;
+                var vsLocal=mfFrom.vertices;
                 vsDictLocal.Add(idFrom, vsLocal);
 
-                var vsWorld=MeshHelper.GetWorldVertexes(vsLocal,mfFrom.transform);
+                //var vsWorld=MeshHelper.GetWorldVertexes(vsLocal,mfFrom.transform);
+
+                var vsWorld = mfFrom.GetWorldVertexes();
                 vsDictWorld.Add(idFrom, vsWorld);
 
                 posDict.Add(idFrom,mfFrom.transform.position);
@@ -80,10 +82,11 @@ public static class AcRTAlignJobHelper
                 // //job.vsTo = vsTo2;
                 // vsDictWorld.Add(idTo, vsTo);
 
-                var vsLocal=mfTo.sharedMesh.vertices;
+                var vsLocal=mfTo.vertices;
                 vsDictLocal.Add(idTo, vsLocal);
 
-                var vsWorld=MeshHelper.GetWorldVertexes(vsLocal,mfTo.transform);
+                //var vsWorld=MeshHelper.GetWorldVertexes(vsLocal,mfTo.transform);
+                var vsWorld = mfTo.GetWorldVertexes();
                 vsDictWorld.Add(idTo, vsWorld);
 
                 posDict.Add(idTo,mfTo.transform.position);
@@ -155,10 +158,11 @@ public static class AcRTAlignJobHelper
             }
             else
             {
-                var vsLocal=mfFrom.sharedMesh.vertices;
+                var vsLocal=mfFrom.vertices;
                 vsDictLocal.Add(idFrom, vsLocal);
 
-                var vsWorld=MeshHelper.GetWorldVertexes(vsLocal,mfFrom.transform);
+                //var vsWorld=MeshHelper.GetWorldVertexes(vsLocal,mfFrom.transform);
+                var vsWorld = mfFrom.GetWorldVertexes();
                 vsDictWorld.Add(idFrom, vsWorld);
 
                 posDict.Add(idFrom,mfFrom.transform.position);
@@ -186,10 +190,11 @@ public static class AcRTAlignJobHelper
                 // //job.vsTo = vsTo2;
                 // vsDictWorld.Add(idTo, vsTo);
 
-                var vsLocal=mfTo.sharedMesh.vertices;
+                var vsLocal=mfTo.vertices;
                 vsDictLocal.Add(idTo, vsLocal);
 
-                var vsWorld=MeshHelper.GetWorldVertexes(vsLocal,mfTo.transform);
+                //var vsWorld=MeshHelper.GetWorldVertexes(vsLocal,mfTo.transform);
+                var vsWorld = mfTo.GetWorldVertexes();
                 vsDictWorld.Add(idTo, vsWorld);
 
                 posDict.Add(idTo,mfTo.transform.position);
