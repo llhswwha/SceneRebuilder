@@ -118,11 +118,11 @@ public class SceneRebuilder : MonoBehaviour
         }
     }
 
-    [ContextMenu("Rebuild")]
-    public void Rebuild()
-    {
-        StartCoroutine(StartRebuild());
-    }
+    //[ContextMenu("Rebuild")]
+    //public void Rebuild()
+    //{
+    //    StartCoroutine(StartRebuild());
+    //}
 
     [ContextMenu("Search")]
     public void Search()
@@ -135,16 +135,16 @@ public class SceneRebuilder : MonoBehaviour
         Debug.Log(string.Format("StartRebuild 数量:{0},用时:{1:F1}s", MeshPrefabs.Count, (DateTime.Now - start).TotalSeconds));
     }
 
-    private IEnumerator StartRebuild()
-    {
-        //MeshHelper.showLog = false;
-        DateTime start = DateTime.Now;
-        foreach (var prefab in MeshPrefabs)
-        {
-            yield return prefab.StartReplaceTargets();
-        }
-        Debug.LogWarning(string.Format("StartRebuild 数量:{0},用时:{1:F1}s", MeshPrefabs.Count, (DateTime.Now - start).TotalSeconds));
-    }
+    //private IEnumerator StartRebuild()
+    //{
+    //    //MeshHelper.showLog = false;
+    //    DateTime start = DateTime.Now;
+    //    foreach (var prefab in MeshPrefabs)
+    //    {
+    //        yield return prefab.StartReplaceTargets();
+    //    }
+    //    Debug.LogWarning(string.Format("StartRebuild 数量:{0},用时:{1:F1}s", MeshPrefabs.Count, (DateTime.Now - start).TotalSeconds));
+    //}
 
     private void InitPrefabs()
     {

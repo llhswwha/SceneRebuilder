@@ -45,11 +45,11 @@ public static class MathematicsDistance
             float3 p2 = GetMinDistancePoint(p1, points2);
             float d = math.distance(p1, p2);
             disSum+=d;//不做处理，直接累计
-            if (d <= DistanceSetting.zero)
+            if (d <= DistanceSetting.zeroP)
             {
                 //if(showLog)Debug.Log($"GetDistance1[{i}]d1:{d}|{distance}");
                 zeroCount++;
-                if (zeroCount > DistanceSetting.zeroMax)//没必要计算完，大概100个都位置相同的话，就是可以的了。
+                if (zeroCount > DistanceSetting.zeroPMaxCount)//没必要计算完，大概100个都位置相同的话，就是可以的了。
                 {
                     //return distance;//不能返回0哦
                     break;
@@ -66,7 +66,7 @@ public static class MathematicsDistance
             //disList.Add(d);
             distance += d;
 
-            if (distance > DistanceSetting.maxDistance)//没必要计算完，整体距离很大的话，就是已经是不行的了
+            if (distance > DistanceSetting.zeroMMaxDis)//没必要计算完，整体距离很大的话，就是已经是不行的了
             {
                 break;
             }

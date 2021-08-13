@@ -13,8 +13,14 @@ public class MeshComparerEditor : BaseEditor<MeshComparer>
         EditorGUILayout.BeginHorizontal();
         item.step=(AlignDebugStep)EditorGUILayout.EnumPopup(item.step);
         item.mode = (AlignRotateMode)EditorGUILayout.EnumPopup(item.mode);
-        item.zeroDis=EditorGUILayout.FloatField(item.zeroDis);
-        item.zeroValue = EditorGUILayout.FloatField(item.zeroValue);
+        GUILayout.Label("zeroM:");
+        item.disSetting.zeroM = EditorGUILayout.DoubleField(item.disSetting.zeroM);
+        GUILayout.Label("zeroP:");
+        item.disSetting.zeroP = EditorGUILayout.DoubleField(item.disSetting.zeroP);
+        GUILayout.Label("PCount:");
+        item.disSetting.zeroPMaxCount = EditorGUILayout.IntField(item.disSetting.zeroPMaxCount);
+        GUILayout.Label("MaxDis:");
+        item.disSetting.zeroMMaxDis = EditorGUILayout.DoubleField(item.disSetting.zeroMMaxDis);
         EditorGUILayout.EndHorizontal();
 
         EditorGUILayout.BeginHorizontal();
@@ -32,6 +38,7 @@ public class MeshComparerEditor : BaseEditor<MeshComparer>
         EditorGUILayout.EndHorizontal();
 
         EditorGUILayout.BeginHorizontal();
+        item.ShowLog = GUILayout.Toggle(item.ShowLog, "Log");
         if (GUILayout.Button("DisOf12(From_To)"))
         {
             item.GetDistance12();

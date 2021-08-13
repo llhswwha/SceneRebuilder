@@ -594,17 +594,17 @@ public static class MeshHelper
         return newObj;
     }
 
-    public static IEnumerator ReplaceByPrefabEx(GameObject oldObj, GameObject prefab, string bufferKey1 = "", string bufferKey2 = "", bool isDestoryOriginal = true)
-    {
-        if (prefab == null)
-        {
-            yield break;
-        }
-        GameObject newObj = ReplaceByPrefab(oldObj, prefab);
-        yield return RotateUntilMinDistanceEx(oldObj.transform, newObj.transform, bufferKey1, bufferKey2);
-        if(isDestoryOriginal)
-            GameObject.Destroy(oldObj.gameObject);
-    }
+    //public static IEnumerator ReplaceByPrefabEx(GameObject oldObj, GameObject prefab, string bufferKey1 = "", string bufferKey2 = "", bool isDestoryOriginal = true)
+    //{
+    //    if (prefab == null)
+    //    {
+    //        yield break;
+    //    }
+    //    GameObject newObj = ReplaceByPrefab(oldObj, prefab);
+    //    yield return RotateUntilMinDistanceEx(oldObj.transform, newObj.transform, bufferKey1, bufferKey2);
+    //    if(isDestoryOriginal)
+    //        GameObject.Destroy(oldObj.gameObject);
+    //}
 
     public static MeshRotateBuffer buffer = new MeshRotateBuffer();
 
@@ -621,98 +621,98 @@ public static class MeshHelper
             Debug.LogWarning(msg);
     }
 
-    public static IEnumerator RotateUntilMinDistanceEx(Transform oldObj, Transform newObj, string bufferKey1 = "",string bufferKey2="", YieldInstruction yieldInstruction = null)
-    {
-        //int rx = 0;
-        //int ry = 0;
-        //int rz = 0;
+    //public static IEnumerator RotateUntilMinDistanceEx(Transform oldObj, Transform newObj, string bufferKey1 = "",string bufferKey2="", YieldInstruction yieldInstruction = null)
+    //{
+    //    //int rx = 0;
+    //    //int ry = 0;
+    //    //int rz = 0;
 
-        DateTime start = DateTime.Now;
-        Transform target = oldObj;
-        double min = double.MaxValue;
-        Vector3 v = Vector3.zero;
-        int i = 0;
-        {
-            if (!string.IsNullOrEmpty(bufferKey1))
-            {
-                MeshRotateInfo info = buffer.Get(bufferKey1, bufferKey2, oldObj.localEulerAngles);
-                if (info != null)
-                {
-                    newObj.localEulerAngles = info.V2;
+    //    DateTime start = DateTime.Now;
+    //    Transform target = oldObj;
+    //    double min = double.MaxValue;
+    //    Vector3 v = Vector3.zero;
+    //    int i = 0;
+    //    {
+    //        if (!string.IsNullOrEmpty(bufferKey1))
+    //        {
+    //            MeshRotateInfo info = buffer.Get(bufferKey1, bufferKey2, oldObj.localEulerAngles);
+    //            if (info != null)
+    //            {
+    //                newObj.localEulerAngles = info.V2;
 
-                    DebugLog(string.Format("RotateUntilMinDistance 获取缓存信息:{0}", info));
+    //                DebugLog(string.Format("RotateUntilMinDistance 获取缓存信息:{0}", info));
 
-                    //yield break;
-                }
-            }
-        }
+    //                //yield break;
+    //            }
+    //        }
+    //    }
 
-        {
-            var distance = MeshHelper.GetVertexDistanceEx(target, newObj);
-            if (DistanceSetting.minDistance > 0 && distance < DistanceSetting.minDistance)
-            {
-                DebugLog(string.Format("[{0}]RotateUntilMinDistance(成功) 用时:{1:F1}s，距离:{2},角度1:{3},角度2:{4}",
-                    i, (DateTime.Now - start).TotalSeconds, distance, oldObj.localEulerAngles, newObj.localEulerAngles));
-                //结束1:成功
+    //    {
+    //        var distance = MeshHelper.GetVertexDistanceEx(target, newObj);
+    //        if (DistanceSetting.minDistance > 0 && distance < DistanceSetting.minDistance)
+    //        {
+    //            DebugLog(string.Format("[{0}]RotateUntilMinDistance(成功) 用时:{1:F1}s，距离:{2},角度1:{3},角度2:{4}",
+    //                i, (DateTime.Now - start).TotalSeconds, distance, oldObj.localEulerAngles, newObj.localEulerAngles));
+    //            //结束1:成功
 
-                yield break;
-            }
-        }
+    //            yield break;
+    //        }
+    //    }
 
-        for (int rx = 0; rx < 4; rx++)
-        {
-            for (int ry = 0; ry < 4; ry++)
-            {
-                for (int rz = 0; rz < 4; rz++)
-                {
-                    i++;
-                    newObj.localEulerAngles = new Vector3(90 * rx, 90 * ry, 90 * rz);
-                    var distance = MeshHelper.GetVertexDistanceEx(target, newObj,string.Format("{0}/{1}",i,64));
-                    if (distance > 0)
-                    {
-                        if (DistanceSetting.minDistance > 0 && distance < DistanceSetting.minDistance)
-                        {
-                            DebugLog(string.Format("[{0}]RotateUntilMinDistance(成功) 用时:{1:F1}s，距离:{2},角度1:{3},角度2:{4}",
-                                i, (DateTime.Now - start).TotalSeconds, distance, oldObj.localEulerAngles, newObj.localEulerAngles));
-                            //结束1:成功
-                            if (!string.IsNullOrEmpty(bufferKey1))
-                            {
-                                buffer.Set(bufferKey1,bufferKey2, oldObj.localEulerAngles, newObj.localEulerAngles);
-                            }
-                            yield break;
-                        }
+    //    for (int rx = 0; rx < 4; rx++)
+    //    {
+    //        for (int ry = 0; ry < 4; ry++)
+    //        {
+    //            for (int rz = 0; rz < 4; rz++)
+    //            {
+    //                i++;
+    //                newObj.localEulerAngles = new Vector3(90 * rx, 90 * ry, 90 * rz);
+    //                var distance = MeshHelper.GetVertexDistanceEx(target, newObj,string.Format("{0}/{1}",i,64));
+    //                if (distance > 0)
+    //                {
+    //                    if (DistanceSetting.minDistance > 0 && distance < DistanceSetting.minDistance)
+    //                    {
+    //                        DebugLog(string.Format("[{0}]RotateUntilMinDistance(成功) 用时:{1:F1}s，距离:{2},角度1:{3},角度2:{4}",
+    //                            i, (DateTime.Now - start).TotalSeconds, distance, oldObj.localEulerAngles, newObj.localEulerAngles));
+    //                        //结束1:成功
+    //                        if (!string.IsNullOrEmpty(bufferKey1))
+    //                        {
+    //                            buffer.Set(bufferKey1,bufferKey2, oldObj.localEulerAngles, newObj.localEulerAngles);
+    //                        }
+    //                        yield break;
+    //                    }
 
-                        if (distance < min)
-                        {
-                            min = distance;
-                            v = newObj.localEulerAngles;
-                        }
-                        //继续
-                        //DebugLog(string.Format("[{0}]RotateUntilMinDistance(继续) 用时:{1:F1}s，距离:{2},角度:{3}，最小距离:{4}",i, (DateTime.Now - start).TotalSeconds, distance, v, min));
-                        //yield return new WaitForSeconds(0.5f);
-                        //yield return new WaitForEndOfFrame();//17.2s / 64 = 0.269
-                        //yield return null;//13.2s / 64 = 0.206s
-                        //yield return new WaitForFixedUpdate();//4.8s / 64 = 0.075
-                        yield return yieldInstruction;
-                    }
-                    else
-                    {
-                        //结束2:失败1
-                        yield break;
-                    }
-                }
-            }
-        }
+    //                    if (distance < min)
+    //                    {
+    //                        min = distance;
+    //                        v = newObj.localEulerAngles;
+    //                    }
+    //                    //继续
+    //                    //DebugLog(string.Format("[{0}]RotateUntilMinDistance(继续) 用时:{1:F1}s，距离:{2},角度:{3}，最小距离:{4}",i, (DateTime.Now - start).TotalSeconds, distance, v, min));
+    //                    //yield return new WaitForSeconds(0.5f);
+    //                    //yield return new WaitForEndOfFrame();//17.2s / 64 = 0.269
+    //                    //yield return null;//13.2s / 64 = 0.206s
+    //                    //yield return new WaitForFixedUpdate();//4.8s / 64 = 0.075
+    //                    yield return yieldInstruction;
+    //                }
+    //                else
+    //                {
+    //                    //结束2:失败1
+    //                    yield break;
+    //                }
+    //            }
+    //        }
+    //    }
 
-        {
-            //结束3:失败2，没有结束1的情况下，走到这里也可以找出最合适的角度
-            DebugLog(string.Format("RotateUntilMinDistance(成功) 用时:{0:F1}s，距离:{1},角度:{2}", (DateTime.Now - start).TotalSeconds, min, v));
-            newObj.localEulerAngles = v;
-        }
-        //结束1:成功
-        yield break;
+    //    {
+    //        //结束3:失败2，没有结束1的情况下，走到这里也可以找出最合适的角度
+    //        DebugLog(string.Format("RotateUntilMinDistance(成功) 用时:{0:F1}s，距离:{1},角度:{2}", (DateTime.Now - start).TotalSeconds, min, v));
+    //        newObj.localEulerAngles = v;
+    //    }
+    //    //结束1:成功
+    //    yield break;
 
-    }
+    //}
 
 
     public static IEnumerator RotateUntilMinDistance(Transform oldObj, Transform newObj, string bufferKey = "",float minDistance = 0.01f, YieldInstruction yieldInstruction=null)
@@ -996,17 +996,18 @@ public static class MeshHelper
         if (mf1 == null || mf2 == null)
         {
             //return -1;
+            Debug.LogWarning("mf1 == null || mf2 == null");
+            Vector3[] points1 = GetChildrenWorldVertexes(t1);
+            Vector3[] points2 = GetChildrenWorldVertexes(t2);
+            dis = DistanceUtil.GetDistance(points1, points2, arg.showLog);
         }
         else
         {
             Mesh mesh1 = mf1.sharedMesh;
             Mesh mesh2 = mf2.sharedMesh;
-            {
-                float distance = 0;
-                Vector3[] points1 = GetWorldVertexes(mesh1, t1);
-                Vector3[] points2 = GetWorldVertexes(mesh2, t2);
-                dis=DistanceUtil.GetDistance(points1,points2,arg.showLog);
-            }
+            Vector3[] points1 = GetWorldVertexes(mesh1, t1);
+            Vector3[] points2 = GetWorldVertexes(mesh2, t2);
+            dis = DistanceUtil.GetDistance(points1, points2, arg.showLog);
         }
 
         if(arg.isResetPos)
@@ -1180,6 +1181,19 @@ public static class MeshHelper
     public static Vector3[] GetWorldVertexes(Mesh mesh1, Transform t1){
         var vs=mesh1.vertices;
         return GetWorldVertexes(vs,t1);
+    }
+
+    public static Vector3[] GetChildrenWorldVertexes(Transform t1)
+    {
+        List<Vector3> vertexes = new List<Vector3>();
+        var meshFilters = t1.GetComponentsInChildren<MeshFilter>();
+        foreach(var mf in meshFilters)
+        {
+            if (mf.sharedMesh == null) continue;
+            var vs = GetWorldVertexes(mf.sharedMesh, mf.transform);
+            vertexes.AddRange(vs);
+        }
+        return vertexes.ToArray() ;
     }
 
     public static Vector3[] GetWorldVertexes(Vector3[] vs, Transform t1){
@@ -1699,7 +1713,7 @@ public static class MeshHelper
         {
             result.IsRelativeZero=true;
         }
-        else if(angle1>0 || angle2>0 || dis2> DistanceSetting.zeroDis)
+        else if(angle1>0 || angle2>0 || dis2> DistanceSetting.zeroM)
         {
             result.IsRelativeZero=false;
         }
@@ -2053,21 +2067,58 @@ public class AlignResult{
 
 public static class DistanceSetting
 {
-    
-    public static double zero = 0.0007f;//1E-05
-    public static int zeroMax = 100;
+    /// <summary>
+    /// zero of two vertex point
+    /// </summary>
+    public static double zeroP = 0.0007f;//1E-05
+    public static int zeroPMaxCount = 100;
 
-    public static double zeroDis=0.007f;//1E-04
+    /// <summary>
+    /// zero of two mesh (point clouds)
+    /// </summary>
+    public static double zeroM=0.007f;//1E-04
 
-    
-
-    public static double maxDistance = 10;
+    public static double zeroMMaxDis = 10;
 
     public static int minDistance = 5;
 
     public static double ICPMinDis=0.2f;//1E-04
 
     public static int ICPMaxCount=20;
+
+    public static void Set(DisSetting setting)
+    {
+        zeroP = setting.zeroP;
+        zeroPMaxCount = setting.zeroPMaxCount;
+        zeroM = setting.zeroM;
+        zeroMMaxDis = setting.zeroMMaxDis;
+        minDistance = setting.minDistance;
+        ICPMinDis = setting.ICPMinDis;
+        ICPMaxCount = setting.ICPMaxCount;
+    }
+}
+
+[Serializable]
+public class DisSetting
+{
+    /// <summary>
+    /// zero of two vertex point
+    /// </summary>
+    public double zeroP = 0.0007f;//1E-05
+    public int zeroPMaxCount = 100;
+
+    /// <summary>
+    /// zero of two mesh (point clouds)
+    /// </summary>
+    public double zeroM = 0.007f;//1E-04
+
+    public double zeroMMaxDis = 10;
+
+    public int minDistance = 5;
+
+    public double ICPMinDis = 0.2f;//1E-04
+
+    public int ICPMaxCount = 20;
 }
 
 public static class DistanceUtil
@@ -2091,11 +2142,11 @@ public static class DistanceUtil
             Vector3 p2 = GetMinDistancePoint(p1, points2);
             float d = Vector3.Distance(p1, p2);
             disSum+=d;//不做处理，直接累计
-            if (d <= DistanceSetting.zero)
+            if (d <= DistanceSetting.zeroP)
             {
                 if(showLog)Debug.Log($"GetDistance1[{i}]d1:{d}|{distance}");
                 zeroCount++;
-                if (zeroCount > DistanceSetting.zeroMax)//没必要计算完，大概100个都位置相同的话，就是可以的了。
+                if (zeroCount > DistanceSetting.zeroPMaxCount)//没必要计算完，大概100个都位置相同的话，就是可以的了。
                 {
                     //return distance;//不能返回0哦
                     break;
@@ -2112,7 +2163,7 @@ public static class DistanceUtil
             //disList.Add(d);
             distance += d;
 
-            if (distance > DistanceSetting.maxDistance)//没必要计算完，整体距离很大的话，就是已经是不行的了
+            if (distance > DistanceSetting.zeroMMaxDis)//没必要计算完，整体距离很大的话，就是已经是不行的了
             {
                 break;
             }
@@ -2178,17 +2229,21 @@ public static class DistanceUtil
         //List<float> disList = new List<float>();
         int zeroCount = 0;
         int i = 0;
+        
         for (; i < points1.Length & i<points2.Length; i++)
         {
             Vector3 p1 = points1[i];
             Vector3 p2 = GetMinDistancePoint(p1, points2);
             float d = Vector3.Distance(p1, p2);
             disSum+=d;//不做处理，直接累计
-            if (d <= DistanceSetting.zero)
+            if (d <= DistanceSetting.zeroP)
             {
-                if(showLog)Debug.Log($"GetDistance1[{i}]d1:{d}|{distance}");
+                if (showLog)
+                {
+                    Debug.Log($"GetDistance1[{i}]d1:{d}|{distance}");
+                }
                 zeroCount++;
-                if (zeroCount > DistanceSetting.zeroMax)//没必要计算完，大概100个都位置相同的话，就是可以的了。
+                if (zeroCount > DistanceSetting.zeroPMaxCount)//没必要计算完，大概100个都位置相同的话，就是可以的了。
                 {
                     //return distance;//不能返回0哦
                     break;
@@ -2200,19 +2255,27 @@ public static class DistanceUtil
                 d=0;//不考虑累计，小于zero就是0了。，比如10个E-06就E-05，100个就是E-04，1000个就是E-03了，0.001了，那我就不是很有把握是不是重合了。
             }
             else{
-                if(showLog)Debug.LogWarning($"GetDistance2[{i}]d2:{d}|{distance}");
+                if (showLog)
+                {
+                    Debug.LogWarning($"GetDistance2[{i}]d2:{d}|{distance}");
+                }
             }
             //disList.Add(d);
             distance += d;
 
-            if (distance > DistanceSetting.maxDistance)//没必要计算完，整体距离很大的话，就是已经是不行的了
+            if (distance > DistanceSetting.zeroMMaxDis)//没必要计算完，整体距离很大的话，就是已经是不行的了
             {
                 break;
             }
         }
-        if(showLog)Debug.Log($"GetVertexDistanceEx 用时:{(DateTime.Now - start).TotalMilliseconds:F2}ms，累计:{disSum:F7},结果:{distance:F7},序号:{i}/{points1.Length}");
+
+        DisLog = $"GetVertexDistanceEx points1:{points1.Length} points2:{points2.Length} 用时:{(DateTime.Now - start).TotalMilliseconds:F2}ms，累计:{disSum:F7},结果:{distance:F7},序号:{i}/{points1.Length}";
+        if (showLog)Debug.Log(DisLog);
         return distance;
     }
+
+    public static string DisLog = "";
+
     public static Vector3 GetMinDistancePoint(Vector3 p1, Vector3[] points)
     {
         //DateTime start = DateTime.Now;

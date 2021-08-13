@@ -532,7 +532,7 @@ namespace MeshJobs
                 //可以改成这里创建模型，并变换，原来的模型不动。
                 result.ApplyMatrix(mfFrom.transform, mfTo.transform); //变换模型
 
-                if (result.Distance < 0.001)
+                if (result.Distance < DistanceSetting.zeroM)
                 {
                     Debug.LogError($"对齐成功 {mfFrom.name} -> {mfTo.name} 距离:{result.Distance}");
                     return true;
@@ -657,7 +657,7 @@ namespace MeshJobs
                     {
                         //可以改成这里创建模型，并变换，原来的模型不动。
 
-                        if (result.Distance < 0.01f)
+                        if (result.Distance < DistanceSetting.zeroM)
                         {
                             pref.RemoveMeshFilter(arg.mfFrom);
                             pref.RemoveMeshFilter(arg.mfTo);
@@ -888,7 +888,7 @@ namespace MeshJobs
                     {
                         //可以改成这里创建模型，并变换，原来的模型不动。
                         
-                        if (result.Distance < 0.01f)
+                        if (result.Distance < DistanceSetting.zeroM)
                         {
                             //Debug.LogError($"对齐成功 {arg.mfFrom.name} -> {arg.mfTo.name} 距离:{result.Distance}");
                             GameObject newGo = MeshHelper.CopyGO(prefab);

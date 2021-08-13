@@ -25,13 +25,15 @@ public class PrefabInstanceBuilder : MonoBehaviour
 
     public float MaxAngle = 10;
 
-    public double maxDistance = 5;
-    public double zero = 0.0004f;
-    public int zeroMax = 100;
+    //public double maxDistance = 5;
+    //public double zero = 0.0004f;
+    //public int zeroMax = 100;
 
-    public int ICPMaxCount = 20;
+    //public int ICPMaxCount = 20;
 
-    public float ICPMinDis = 0.2f;
+    //public float ICPMinDis = 0.2f;
+
+    public DisSetting disSetting;
 
     public List<GameObject> TargetList=new List<GameObject>();
 
@@ -701,12 +703,14 @@ UnpackPrefab();
     private void SetDistanceSettings()
     {
         AcRTAlignJob.MaxAngle = this.MaxAngle;
-        DistanceSetting.maxDistance = this.maxDistance;
-        DistanceSetting.zero = this.zero;//0.0004f
-        DistanceSetting.zeroMax = this.zeroMax;
+        //DistanceSetting.zeroMMaxDis = this.maxDistance;
+        //DistanceSetting.zeroP = this.zero;//0.0004f
+        //DistanceSetting.zeroPMaxCount = this.zeroMax;
 
-        DistanceSetting.ICPMaxCount=this.ICPMaxCount;
-        DistanceSetting.ICPMinDis=this.ICPMinDis;
+        //DistanceSetting.ICPMaxCount=this.ICPMaxCount;
+        //DistanceSetting.ICPMinDis=this.ICPMinDis;
+
+        DistanceSetting.Set(this.disSetting);
     }
 
     public void AcRTAlignJobs()

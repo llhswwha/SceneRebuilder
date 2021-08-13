@@ -13,9 +13,14 @@ public class MeshComparer : SingletonBehaviour<MeshComparer>
 
     public AlignRotateMode mode;
 
-    public float zeroValue=0.00001f;//0.0004f
+    //public float zeroP= 0.0001f;//0.0004f
 
-    public float zeroDis=0.0001f;
+
+    //public double zeroPMaxDis = 5;
+
+    //public float zeroM=0.0004f;//PointZero
+
+    public DisSetting disSetting;
 
     public bool IsWorld=false;
 
@@ -454,32 +459,43 @@ public class MeshComparer : SingletonBehaviour<MeshComparer>
 
     public float distance = 0;
 
+    public bool ShowLog = false;
+
     public void GetDistance12()
     {
+        DateTime start = DateTime.Now;
         SetDistanceSetting();
-        distance=MeshHelper.GetVertexDistanceEx(goTo.transform,goFrom.transform,"GetDistance12",true);
+        distance=MeshHelper.GetVertexDistanceEx(goTo.transform,goFrom.transform,"GetDistance12", ShowLog);
+        Debug.Log($"GetDistance12 distance:{distance} 用时:{(DateTime.Now - start).TotalMilliseconds:F2}ms log:{DistanceUtil.DisLog}");
     }
 
     private void SetDistanceSetting()
     {
-        DistanceSetting.zero=this.zeroValue;
-        DistanceSetting.maxDistance = this.zeroDis;
+        //DistanceSetting.zeroP=this.zeroP;
+        //DistanceSetting.zeroM = this.zeroM;
+        //DistanceSetting.zeroMMaxDis = this.zeroPMaxDis;
+
+        DistanceSetting.Set(this.disSetting);
     }
 
     public void GetDistance12C()
     {
+        DateTime start = DateTime.Now;
         DestroyGO2Copy();
         goFromCopy = MeshHelper.CopyGO(goFrom);
         SetDistanceSetting();
         distance = MeshHelper.GetVertexDistanceEx(goTo.transform,goFromCopy.transform,"GetDistance12C",true);
+        Debug.Log($"GetDistance12 distance:{distance} 用时:{(DateTime.Now - start).TotalMilliseconds:F2}ms log:{DistanceUtil.DisLog}");
     }
 
     public void GetDistance22C()
     {
+        DateTime start = DateTime.Now;
         DestroyGO2Copy();
         goFromCopy = MeshHelper.CopyGO(goFrom);
         SetDistanceSetting();
         distance = MeshHelper.GetVertexDistanceEx(goFrom.transform,goFromCopy.transform,"GetDistance22C",true);
+        Debug.Log($"GetDistance12 distance:{distance} 用时:{(DateTime.Now - start).TotalMilliseconds:F2}ms log:{DistanceUtil.DisLog}");
     }
 
     public void SwitchGO()
@@ -645,9 +661,10 @@ public class MeshComparer : SingletonBehaviour<MeshComparer>
     {
         MeshHelper.step = this.step;
         MeshHelper.mode = this.mode;
-        DistanceSetting.zero=this.zeroValue;
+        //DistanceSetting.zeroP=this.zeroP;
+        DistanceSetting.Set(this.disSetting);
 
-        if(IsSetParentNull)
+        if (IsSetParentNull)
         {
             // go1.transform.SetParent(null);
             // go2.transform.SetParent(null);

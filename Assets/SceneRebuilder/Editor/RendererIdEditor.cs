@@ -72,6 +72,10 @@ public class RendererIdEditor : BaseEditor<RendererId>
         EditorGUILayout.EndHorizontal();
 
         EditorGUILayout.BeginHorizontal();
+        if (GUILayout.Button("Copy_Split"))
+        {
+            MeshCombineHelper.SplitByMaterials(item.gameObject);
+        }
         if (GUILayout.Button("Split"))
         {
             MeshCombineHelper.SplitByMaterials(item.gameObject);
@@ -119,10 +123,17 @@ public class RendererIdEditor : BaseEditor<RendererId>
                     //door2.gameObject.SetActive(false);
                     //MeshAlignHelper.AcRTAlignJob(newDoor2, door2.gameObject);
 
-                    MeshComparer.Instance.AcRTAlignJob(newDoor2, door2.gameObject);
+                    if (distance1 > DistanceSetting.zeroM)
+                    {
+                        MeshComparer.Instance.AcRTAlignJob(newDoor2, door2.gameObject);
 
-                    float distance2 = MeshHelper.GetVertexDistanceEx(door2.transform, newDoor2.transform, "CopyDoor2", false);
-                    Debug.Log($"distance1:{distance1} distance2:{distance2}");
+                        float distance2 = MeshHelper.GetVertexDistanceEx(door2.transform, newDoor2.transform, "CopyDoor2", false);
+                        Debug.Log($"distance1:{distance1} distance2:{distance2}");
+                    }
+                    else
+                    {
+                        Debug.Log($"distance1:{distance1}");
+                    }
 
                     newDoor2.name = door2.name + "_New";
                     GameObject.DestroyImmediate(door2.gameObject);

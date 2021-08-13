@@ -415,7 +415,7 @@ public class AcRTAlignJobContainer
             {
                 //可以改成这里创建模型，并变换，原来的模型不动。
 
-                if (result.Distance < DistanceSetting.zeroDis)
+                if (result.Distance < DistanceSetting.zeroM)
                 {
                     pref.RemoveMeshFilter(arg.mfFrom);
                     pref.RemoveMeshFilter(arg.mfTo);
@@ -436,18 +436,18 @@ public class AcRTAlignJobContainer
 
                     if(IsCheckResult){
                        var disNew=MeshHelper.GetVertexDistanceEx(newGo.transform,arg.mfTo.transform,"测试结果",false);
-                        if(disNew>DistanceSetting.zeroDis)
+                        if(disNew>DistanceSetting.zeroM)
                         {
                             errorCount++;
                             RTResult rT = result as RTResult;
                             if (rT != null)
                             {
-                                Debug.LogError($"对齐成功 有错误[{errorCount}] zero:{DistanceSetting.zeroDis:F5},dis:{disNew},Mode:{rT.Mode},from:{arg.mfFrom.name},to:{arg.mfTo} " + $" Trans:{rT.Translation.Vector3ToString()},Matrix:\n{rT.TransformationMatrix}");
+                                Debug.LogError($"对齐成功 有错误[{errorCount}] zero:{DistanceSetting.zeroM:F5},dis:{disNew},Mode:{rT.Mode},from:{arg.mfFrom.name},to:{arg.mfTo} " + $" Trans:{rT.Translation.Vector3ToString()},Matrix:\n{rT.TransformationMatrix}");
                                 //Debug.LogError($"Mode:{rT.Mode},Trans:{rT.Translation.Vector3ToString()},Matrix:\n{rT.TransformationMatrix}");
                             }
                             else
                             {
-                                Debug.LogError($"对齐成功 有错误[{errorCount}] zero:{DistanceSetting.zeroDis:F5},dis:{disNew},from:{arg.mfFrom.name},to:{arg.mfTo} rT==null" );
+                                Debug.LogError($"对齐成功 有错误[{errorCount}] zero:{DistanceSetting.zeroM:F5},dis:{disNew},from:{arg.mfFrom.name},to:{arg.mfTo} rT==null" );
                             }
                         }
                         else

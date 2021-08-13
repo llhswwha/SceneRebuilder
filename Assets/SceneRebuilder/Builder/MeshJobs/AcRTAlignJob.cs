@@ -308,7 +308,7 @@ namespace MeshJobs
             Matrix4x4 matrix4World2=localMatrix*matrix2;
             ApplyMatrix(vsFromLocal,matrix4World2,trans,newVs2);
             var dis2=DistanceUtil.GetDistance(newVs2,vsToWorld);
-            if(dis2<=DistanceSetting.zeroDis){//0.000005
+            if(dis2<=DistanceSetting.zeroM){//0.000005
                 //GameObject gameObject3=new GameObject("TryScale"+scale);
                 //MeshHelper.ShowVertexes(newVs3,pScale,gameObject3.transform);
                 //Debug.LogWarning($"dis2:{dis2},matrix4World:\n{matrix4World2}");
@@ -556,7 +556,7 @@ namespace MeshJobs
                 //break;
             }
 
-            if(minDis<DistanceSetting.ICPMinDis && minDis>DistanceSetting.zeroDis){
+            if(minDis<DistanceSetting.ICPMinDis && minDis>DistanceSetting.zeroM){
                 // if(minDis<DistanceSetting.ICPMinDis)
                 {
                     //Debug.LogError("minDis>DistanceSetting.zeroDis:"+minDis+">"+DistanceSetting.zeroDis+" and <"+DistanceSetting.ICPMinDis);
@@ -580,14 +580,14 @@ namespace MeshJobs
                         vsFromStart=vsFromNew1;
                         r1.Distance=dis2;
                         rList.Distance=dis2;
-                        if(dis2<=DistanceSetting.zeroDis)
+                        if(dis2<=DistanceSetting.zeroM)
                         {
                             isFoundZero=true;
                             break;
                         }
                     }
 
-                    Debug.LogError($"ICP({DistanceSetting.zeroDis:F4},{DistanceSetting.ICPMinDis:F2}) IsFoundZero:[{isFoundZero}],\tstartDis:{minDis},\tendDis:{rList.Distance},\tlog:{log}");
+                    Debug.LogError($"ICP({DistanceSetting.zeroM:F4},{DistanceSetting.ICPMinDis:F2}) IsFoundZero:[{isFoundZero}],\tstartDis:{minDis},\tendDis:{rList.Distance},\tlog:{log}");
                     
                     if(rList.Distance<minRT.Distance){ //ICP算法处理后更加匹配了
                         //ICPCount++;

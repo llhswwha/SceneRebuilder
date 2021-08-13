@@ -628,6 +628,7 @@ namespace MeshJobs
                 {
                     break;
                 }
+                
                 MeshFilter filter = meshFilters[i];
 
                 ThreePointJob job1 = new ThreePointJob();

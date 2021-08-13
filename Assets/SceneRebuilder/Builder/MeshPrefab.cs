@@ -78,21 +78,21 @@ public class MeshPrefab : MonoBehaviour
 
     public int TargetCount = 0;
 
-    [ContextMenu("ReplaceTargets")]
-    public void ReplaceTargets()
-    {
-        Search();
-        //ReplaceList(TargetItems);
-        StartCoroutine(StartReplaceList(TargetItems));
-    }
+    //[ContextMenu("ReplaceTargets")]
+    //public void ReplaceTargets()
+    //{
+    //    Search();
+    //    //ReplaceList(TargetItems);
+    //    StartCoroutine(StartReplaceList(TargetItems));
+    //}
 
-    [ContextMenu("ReplaceTypes")]
-    public void ReplaceTypes()
-    {
-        Search();
-        //ReplaceList(TypeItems);
-        StartCoroutine(StartReplaceList(TypeItems));
-    }
+    //[ContextMenu("ReplaceTypes")]
+    //public void ReplaceTypes()
+    //{
+    //    Search();
+    //    //ReplaceList(TypeItems);
+    //    StartCoroutine(StartReplaceList(TypeItems));
+    //}
 
     private void ReplaceList(List<MeshNode> list)
     {
@@ -103,27 +103,27 @@ public class MeshPrefab : MonoBehaviour
         //StartCoroutine(MeshHelper.ReplaceByPrefabEx(oldObj, Prefab));
     }
 
-    private IEnumerator StartReplaceList(List<MeshNode> list)
-    {
-        DateTime start = DateTime.Now;
-        for (int i = 0; i < list.Count; i++)
-        {
-            MeshNode item = list[i];
-            yield return MeshHelper.ReplaceByPrefabEx(item.gameObject, Prefab, meshNode.GetMeshKey1(), item.GetMeshKey2());
-            //yield return null;
-        }
-        Debug.LogWarning(string.Format("StartReplaceList 类型:{0},数量:{1},用时:{2:F1}s", meshNode.MeshTypeName, list.Count, (DateTime.Now - start).TotalSeconds));
-    }
+    //private IEnumerator StartReplaceList(List<MeshNode> list)
+    //{
+    //    DateTime start = DateTime.Now;
+    //    for (int i = 0; i < list.Count; i++)
+    //    {
+    //        MeshNode item = list[i];
+    //        yield return MeshHelper.ReplaceByPrefabEx(item.gameObject, Prefab, meshNode.GetMeshKey1(), item.GetMeshKey2());
+    //        //yield return null;
+    //    }
+    //    Debug.LogWarning(string.Format("StartReplaceList 类型:{0},数量:{1},用时:{2:F1}s", meshNode.MeshTypeName, list.Count, (DateTime.Now - start).TotalSeconds));
+    //}
 
-    public IEnumerator StartReplaceTargets()
-    {
-        Search();
-        yield return StartReplaceList(TargetItems);
-    }
+    //public IEnumerator StartReplaceTargets()
+    //{
+    //    Search();
+    //    yield return StartReplaceList(TargetItems);
+    //}
 
-    public IEnumerator StartReplaceTypes()
-    {
-        Search();
-        yield return StartReplaceList(TypeItems);
-    }
+    //public IEnumerator StartReplaceTypes()
+    //{
+    //    Search();
+    //    yield return StartReplaceList(TypeItems);
+    //}
 }
