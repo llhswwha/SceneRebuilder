@@ -285,7 +285,7 @@ UnpackPrefab();
                 //ProgressBarHelper.ClearProgressBar();
                 break;
             }
-            MeshFilter mf = meshFilters[i];
+            var mf = meshFilters[i];
             if(mf==null)
             {
                 continue;
@@ -591,7 +591,7 @@ UnpackPrefab();
         return TargetRoots;
     }
 
-    private MeshFilter[] GetMeshFilters()
+    private MeshPoints[] GetMeshFilters()
     {
         
         // MeshFilter[] meshFilters=null;
@@ -651,7 +651,8 @@ UnpackPrefab();
         else{
             meshFilters=GameObject.FindObjectsOfType<MeshFilter>(true);
         }
-        return meshFilters;
+        List<MeshPoints> meshPoints = MeshPoints.GetMeshPoints(meshFilters);
+        return meshPoints.ToArray() ;
     }
 
     private MeshRenderer[] GetMeshRenderers()
@@ -997,7 +998,7 @@ break;
         public float sumVertex_Small = 0;
     }
 
-    public static BigSmallListInfo GetBigSmallRenderers(MeshFilter[] meshFilters,float maxLength)
+    public static BigSmallListInfo GetBigSmallRenderers(MeshPoints[] meshFilters,float maxLength)
     {
         BigSmallListInfo info = new BigSmallListInfo();
         DateTime start=DateTime.Now;
@@ -1015,7 +1016,7 @@ break;
         int sumVertex_Small = 0;
         for(int i=0;i<meshFilters.Length;i++)
         {
-            MeshFilter mf=meshFilters[i];
+            var mf=meshFilters[i];
             if (mf == null) continue;
             if (mf.sharedMesh == null) continue;
 
@@ -1109,11 +1110,11 @@ break;
         // float avgCount=0;
         List<string> sizeList = new List<string>();
         List<float> lengthList = new List<float>();
-        List<MeshFilter> bigModels=new List<MeshFilter>();
-        List<MeshFilter> smallModels=new List<MeshFilter>();
+        List<MeshPoints> bigModels=new List<MeshPoints>();
+        List<MeshPoints> smallModels=new List<MeshPoints>();
         for(int i=0;i<meshFilters.Length;i++)
         {
-            MeshFilter mf=meshFilters[i];
+            var mf=meshFilters[i];
 
             float progress = (float)i / meshFilters.Length;
             float percents = progress * 100;
@@ -1258,7 +1259,7 @@ break;
                 //ProgressBarHelper.ClearProgressBar();
                 break;
             }
-            MeshFilter mf = meshFilters[i];
+            var mf = meshFilters[i];
             if(mf==null)
             {
                 continue;

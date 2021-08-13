@@ -1,3 +1,4 @@
+using MeshJobs;
 using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
@@ -62,13 +63,13 @@ public class MeshFilterListDict
     //     mfl.Add(mf);
     // }
 
-    public MeshFilterListDict(MeshFilter[] meshFilters)
+    public MeshFilterListDict(MeshPoints[] meshFilters)
     {
         int[] meshCounts = new int[meshFilters.Length];
         for(int i=0;i<meshFilters.Length;i++)
         {
             var mf=meshFilters[i];
-            var vCount = mf.sharedMesh.vertexCount;
+            var vCount = mf.vertexCount;
 
             // if(vCount>AcRTAlignJobContainer.MaxVertexCount)//排除点数特别多的，不然会卡住
             // {
@@ -166,7 +167,7 @@ public class MeshFilterListDict
         return sum;
     }
 
-  internal void RemoveMeshFilter(MeshFilter meshFilter)
+  internal void RemoveMeshFilter(MeshPoints meshFilter)
   {
     for (int i1 = 0; i1 < list.Count; i1++)
         {

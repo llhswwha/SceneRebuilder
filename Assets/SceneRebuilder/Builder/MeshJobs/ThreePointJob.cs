@@ -38,7 +38,7 @@ namespace MeshJobs
             return results;
         }
 
-        internal ThreePointJobResult GetThreePointResult(MeshFilter go1)
+        internal ThreePointJobResult GetThreePointResult(MeshPoints go1)
         {
             int goId = MeshHelper.GetInstanceID(go1);
 
@@ -73,7 +73,7 @@ namespace MeshJobs
             return new ThreePointJobResult() { IsNull = true };
         }
 
-        public ThreePoint[] GetThreePoints(MeshFilter mf)
+        public ThreePoint[] GetThreePoints(MeshPoints mf)
         {
             Transform t = mf.transform;
             ThreePointJobResult resultFrom = ThreePointJobResultList.Instance.GetThreePointResult(mf);
@@ -612,7 +612,7 @@ namespace MeshJobs
 
     public static class TreePointJobHelper
     {
-        public static JobList<ThreePointJob> CreateThreePointJobs(MeshFilter[] meshFilters, int size)
+        public static JobList<ThreePointJob> CreateThreePointJobs(MeshPoints[] meshFilters, int size)
         {
             //DateTime start = DateTime.Now;
             int count = meshFilters.Length;
@@ -628,14 +628,15 @@ namespace MeshJobs
                 {
                     break;
                 }
-                
-                MeshFilter filter = meshFilters[i];
+
+                MeshPoints filter = meshFilters[i];
 
                 ThreePointJob job1 = new ThreePointJob();
                 job1.id = i;
-                job1.goId = MeshHelper.GetInstanceID(filter);//模型会复制，但是sharedMesh不会改变
+                //job1.goId = MeshHelper.GetInstanceID(filter);//模型会复制，但是sharedMesh不会改变
+                job1.goId = filter.InstanceId;
                                                               //job1.results=results;
-                job1.InitVertex(filter.sharedMesh);
+                job1.InitVertex(filter.vertices);
                 handles.Add(job1);
             }
             ProgressBarHelper.ClearProgressBar();
@@ -643,18 +644,18 @@ namespace MeshJobs
             return handles;
         }
 
-        public static MeshFilter[] NewThreePointJobs(GameObject[] objs, int size)
+        public static MeshPoints[] NewThreePointJobs(GameObject[] objs, int size)
         {
-            MeshFilter[] meshFilters = new MeshFilter[objs.Length];
+            MeshPoints[] meshFilters = new MeshPoints[objs.Length];
             for (int i = 0; i < objs.Length; i++)
             {
-                meshFilters[i] = objs[i].GetComponent<MeshFilter>();
+                meshFilters[i] = new MeshPoints(objs[i]);
             }
             NewThreePointJobs(meshFilters, size);
             return meshFilters;
         }
 
-        public static void NewThreePointJobs(MeshFilter[] meshFilters, int size)
+        public static void NewThreePointJobs(MeshPoints[] meshFilters, int size)
         {
             //DateTime start = DateTime.Now;
             Debug.Log("NewThreePointJobs:" + meshFilters.Length);
@@ -866,14 +867,46 @@ namespace MeshJobs
 
         //private ManagedObjectRef<Vector3[]> vs;
 
-        public void InitVertex(Mesh mesh)
+        //public void InitVertex(Mesh mesh)
+        //{
+        //    //MeshRef=ManagedObjectWorld.Instance.Add(mesh);//78ms
+
+        //    //DateTime start=DateTime.Now;
+        //    vertexCount = mesh.vertexCount;
+        //    //vs=ManagedObjectWorld.Instance.Add(mesh.vertices);//958ms/484ms
+        //    vertices = new NativeArray<Vector3>(mesh.vertices, Allocator.TempJob);//14641个2318个点要1117ms，没有这句话要90ms
+        //                                                                          //vertexCount=0;
+        //                                                                          //vertices= new NativeList<Vector3>(Allocator.TempJob);
+        //                                                                          //   Result=new ThreePointJobResult();
+        //                                                                          //   Result.minPList= new NativeList<Vector3>(Allocator.Persistent);
+        //                                                                          //   Result.maxPList= new NativeList<Vector3>(Allocator.Persistent);
+
+        //    minPList = new NativeList<Vector3>(Allocator.TempJob);
+        //    maxPList = new NativeList<Vector3>(Allocator.TempJob);
+
+        //    //   Vector3[] vs=mesh.vertices;//发现mesh.vertices放遍历里面的成本很大，要事先取出来再用
+        //    //   vertices=new NativeArray<Vector3>(vertexCount,Allocator.TempJob);
+        //    //   Vector3 sum=Vector3.zero;
+        //    //   for(int i=0;i<vertexCount;i++) //遍历要花费时间，2318多个点要120-140ms
+        //    //   {
+        //    //     //var v=mesh.vertices[i];//120-140ms
+        //    //     //sum+=v;
+        //    //     //vertices[i]=mesh.vertices[i];//两个的话双倍
+
+        //    //     var v=vs[i];
+        //    //   }
+
+        //    //Debug.Log($"InitVertex Time:{(DateTime.Now-start).TotalMilliseconds}ms");
+        //}
+
+        public void InitVertex(Vector3[] vs)
         {
             //MeshRef=ManagedObjectWorld.Instance.Add(mesh);//78ms
 
             //DateTime start=DateTime.Now;
-            vertexCount = mesh.vertexCount;
+            vertexCount = vs.Length;
             //vs=ManagedObjectWorld.Instance.Add(mesh.vertices);//958ms/484ms
-            vertices = new NativeArray<Vector3>(mesh.vertices, Allocator.TempJob);//14641个2318个点要1117ms，没有这句话要90ms
+            vertices = new NativeArray<Vector3>(vs, Allocator.TempJob);//14641个2318个点要1117ms，没有这句话要90ms
                                                                                   //vertexCount=0;
                                                                                   //vertices= new NativeList<Vector3>(Allocator.TempJob);
                                                                                   //   Result=new ThreePointJobResult();

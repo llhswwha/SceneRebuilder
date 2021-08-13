@@ -1,3 +1,4 @@
+using MeshJobs;
 using System;
 using System.Collections;
 using System.Collections.Generic;
@@ -10,18 +11,18 @@ public class PrefabInfo:IComparable<PrefabInfo>
         this.Prefab=prefab;
     }
 
-    public PrefabInfo(MeshFilter mf){
+    public PrefabInfo(MeshPoints mf){
         this.MeshFilter=mf;
         this.Prefab=mf.gameObject;
-        this.VertexCount=mf.sharedMesh.vertexCount;
-        this.Size=mf.sharedMesh.bounds.size;
+        this.VertexCount=mf.vertexCount;
+        this.Size=mf.size;
     }
 
     public GameObject Prefab;
 
     public GameObject PrefAsset;
 
-    public MeshFilter MeshFilter;
+    public MeshPoints MeshFilter;
 
     public List<GameObject> Instances=new List<GameObject>();
 

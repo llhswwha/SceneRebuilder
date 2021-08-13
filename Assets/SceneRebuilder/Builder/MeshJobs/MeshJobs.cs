@@ -11,20 +11,93 @@ using System;
 namespace MeshJobs
 {
 
+    public class MeshPoints
+    {
+        public static List<MeshPoints> GetMeshPoints(MeshFilter[] meshFilters)
+        {
+            List<MeshPoints> meshPoints = new List<MeshPoints>();
+            foreach (var mf in meshFilters)
+            {
+                meshPoints.Add(new MeshPoints(mf.gameObject));
+            }
+            return meshPoints;
+        }
+
+        public Vector3[] vertices;
+        //public Vector3[] localVertices;
+        private Vector3[] worldVertices;
+        public int vertexCount = 0;
+        public Vector3 size;
+
+        public int InstanceId = 0;
+
+        public GameObject gameObject;
+
+        public string name;
+
+        public Transform transform;
+        public MeshFilter mf;
+
+        public Mesh sharedMesh;
+
+        public MeshPoints(GameObject root)
+        {
+            this.name = root.name;
+            this.transform = root.transform;
+            this.gameObject = root;
+            this.mf = root.GetComponent<MeshFilter>();
+            if (mf != null)
+            {
+                sharedMesh = mf.sharedMesh;
+                vertices = sharedMesh.vertices;
+                //localVertices = mf.sharedMesh.vertices;
+                InstanceId = sharedMesh.GetInstanceID();
+                size = sharedMesh.bounds.size;
+                //worldVertices = MeshHelper.GetWorldVertexes(mf);
+            }
+            else
+            {
+                vertices= MeshHelper.GetChildrenWorldVertexes(root);
+                //worldVertices = MeshHelper.GetChildrenWorldVertexes(root);
+                InstanceId = root.GetInstanceID();
+                size = MeshHelper.GetMinMax(vertices)[2];
+            }
+            vertexCount = vertices.Length;
+        }
+
+        public T GetComponent<T>() where T : Component
+        {
+            return gameObject.GetComponent<T>();
+        }
+
+        internal Vector3[] GetWorldVertexes()
+        {
+            if (mf != null)
+            {
+                worldVertices = MeshHelper.GetWorldVertexes(mf);
+            }
+            else
+            {
+                worldVertices = MeshHelper.GetChildrenWorldVertexes(gameObject);
+            }
+            return worldVertices;
+        }
+    }
+
     public static class MeshJobHelper
     {
         #region ThreePointJob
-        public static JobList<ThreePointJob> CreateThreePointJobs(MeshFilter[] meshFilters, int size)
+        public static JobList<ThreePointJob> CreateThreePointJobs(MeshPoints[] meshFilters, int size)
         {
             return TreePointJobHelper.CreateThreePointJobs(meshFilters, size);
         }
 
-        public static MeshFilter[] NewThreePointJobs(GameObject[] objs, int size)
+        public static MeshPoints[] NewThreePointJobs(GameObject[] objs, int size)
         {
             return TreePointJobHelper.NewThreePointJobs(objs, size);
         }
 
-        public static void NewThreePointJobs(MeshFilter[] meshFilters, int size)
+        public static void NewThreePointJobs(MeshPoints[] meshFilters, int size)
         {
             TreePointJobHelper.NewThreePointJobs(meshFilters, size);
         }
@@ -51,8 +124,8 @@ namespace MeshJobs
             //go1不动，go2匹配go1。
             DateTime start = DateTime.Now;
 
-            var mf1 = go1.GetComponent<MeshFilter>();
-            var mf2 = go2.GetComponent<MeshFilter>();
+            var mf1 = new MeshPoints(go1);
+            var mf2 = new MeshPoints(go2);
 
             //1.判断顶点数据是否相同
             ThreePointJobResult r1 = ThreePointJobResultList.Instance.GetThreePointResult(mf1);
@@ -80,7 +153,7 @@ namespace MeshJobs
             return result;
         }
 
-        public static List<PrefabInfo> NewMeshAlignJobs(MeshFilter[] meshFilters, int size)
+        public static List<PrefabInfo> NewMeshAlignJobs(MeshPoints[] meshFilters, int size)
         {
             MeshAlignJobContainer.InitTime();
             MeshHelper.TotalCopyTime = 0;
@@ -103,17 +176,17 @@ namespace MeshJobs
             for (int j = 0; j < targetCount; j++)
             {
                 //一次
-                MeshFilter first = meshFilters[0];
+                MeshPoints first = meshFilters[0];
                 GameObject prefab = first.gameObject;
                 progressCount++;//一个作为预设
 
                 PrefabInfo prefabInfo = new PrefabInfo(first);
                 prefabInfoList.Add(prefabInfo);
 
-                List<MeshFilter> newTargets = new List<MeshFilter>();
+                List<MeshPoints> newTargets = new List<MeshPoints>();
                 for (int i = 1; i < meshFilters.Length; i++)
                 {
-                    MeshFilter item = meshFilters[i];
+                    var item = meshFilters[i];
                     GameObject model = item.gameObject;
                     var result = NewMeshAlignJob(model, prefab, false);//核心
                     if (result.IsZero)
@@ -158,7 +231,7 @@ namespace MeshJobs
             return prefabInfoList;
         }
 
-        private static void SetParentZero(MeshFilter[] meshFilters)
+        private static void SetParentZero(MeshPoints[] meshFilters)
         {
             int targetCount = meshFilters.Length;
             for (int j = 0; j < targetCount; j++)
@@ -171,7 +244,7 @@ namespace MeshJobs
 
         #region RTAlignJob //无用
 
-        public static List<PrefabInfo> NewRTAlignJobs(MeshFilter[] meshFilters, int size)
+        public static List<PrefabInfo> NewRTAlignJobs(MeshPoints[] meshFilters, int size)
         {
             MeshAlignJobContainer.InitTime();
             MeshHelper.TotalCopyTime = 0;
@@ -194,17 +267,17 @@ namespace MeshJobs
             for (int j = 0; j < targetCount; j++)
             {
                 //一次
-                MeshFilter first = meshFilters[0];
+                var first = meshFilters[0];
                 GameObject prefab = first.gameObject;
                 progressCount++;//一个作为预设
 
                 PrefabInfo prefabInfo = new PrefabInfo(first);
                 prefabInfoList.Add(prefabInfo);
 
-                List<MeshFilter> newTargets = new List<MeshFilter>();
+                List<MeshPoints> newTargets = new List<MeshPoints>();
                 for (int i = 1; i < meshFilters.Length; i++)
                 {
-                    MeshFilter item = meshFilters[i];
+                    var item = meshFilters[i];
                     GameObject model = item.gameObject;
                     var result = NewMeshAlignJob(model, prefab, false);//核心
                     if (result.IsZero)
@@ -249,7 +322,7 @@ namespace MeshJobs
             return prefabInfoList;
         }
 
-        public static JobList<RTAlignJob> CreateRTAlignJobs(MeshFilter mf1, MeshFilter mf2, int size)
+        public static JobList<RTAlignJob> CreateRTAlignJobs(MeshPoints mf1, MeshPoints mf2, int size)
         {
             DateTime start = DateTime.Now;
             JobList<RTAlignJob> jobList = new JobList<RTAlignJob>(size);
@@ -265,13 +338,15 @@ namespace MeshJobs
             var rts1 = r1.GetRTTransforms(t1.localToWorldMatrix);
             var rts2 = r2.GetRTTransforms(t2.localToWorldMatrix);
 
-            Vector3[] vertices1 = mf1.sharedMesh.vertices;
-            Vector3[] vertices1World = MeshHelper.GetWorldVertexes(vertices1, t1);
+            //Vector3[] vertices1 = mf1.sharedMesh.vertices;
+            //Vector3[] vertices1World = MeshHelper.GetWorldVertexes(vertices1, t1);
+            Vector3[] vertices1World = mf1.GetWorldVertexes();
             NativeArray<Vector3> verticesArray1 = new NativeArray<Vector3>(vertices1World, Allocator.TempJob);
 
-            Vector3[] vertices2 = mf2.sharedMesh.vertices;
-            Vector3[] vertices2World = MeshHelper.GetWorldVertexes(vertices1, t2);
-            NativeArray<Vector3> verticesArray2 = new NativeArray<Vector3>(vertices2World, Allocator.TempJob);
+            //Vector3[] vertices2 = mf2.sharedMesh.vertices;
+            //Vector3[] vertices2World = MeshHelper.GetWorldVertexes(vertices1, t2);
+            Vector3[] vertices2World = mf2.GetWorldVertexes();
+            NativeArray <Vector3> verticesArray2 = new NativeArray<Vector3>(vertices2World, Allocator.TempJob);
 
             int rId = MeshDistanceJobHelper.InitResult();
             int jobId = 0;
@@ -296,7 +371,7 @@ namespace MeshJobs
             return jobList;
         }
 
-        public static void NewRTAlignJobs(MeshFilter mf1, MeshFilter mf2, int size)
+        public static void NewRTAlignJobs(MeshPoints mf1, MeshPoints mf2, int size)
         {
             DateTime start = DateTime.Now;
             JobList<RTAlignJob> jobList = CreateRTAlignJobs(mf1, mf2, size);
@@ -521,7 +596,7 @@ namespace MeshJobs
         #endregion
         #region AcRTAlign
 
-        public static bool DoAcRTAlignJob(MeshFilter mfFrom, MeshFilter mfTo, int id)
+        public static bool DoAcRTAlignJob(MeshPoints mfFrom, MeshPoints mfTo, int id)
         {
             AcRTAlignJob job = AcRTAlignJobHelper.NewJob(mfFrom, mfTo, id);
             job.Schedule().Complete();//DoJob
@@ -552,14 +627,15 @@ namespace MeshJobs
             //return result;
         }
 
-        private static MeshFilterListDict CreateMeshFilterListDict(MeshFilter[] meshFilters){
-        DateTime start = DateTime.Now;
-        var mfld = new MeshFilterListDict(meshFilters);
-        Debug.Log($"CreateMeshFilterListDict meshFilters:{meshFilters.Length},Time:{(DateTime.Now - start).TotalMilliseconds:F1}ms");
-        return mfld;
-    }
+        private static MeshFilterListDict CreateMeshFilterListDict(MeshPoints[] meshFilters)
+        {
+            DateTime start = DateTime.Now;
+            var mfld = new MeshFilterListDict(meshFilters);
+            Debug.Log($"CreateMeshFilterListDict meshFilters:{meshFilters.Length},Time:{(DateTime.Now - start).TotalMilliseconds:F1}ms");
+            return mfld;
+        }
 
-        public static List<PrefabInfo> NewAcRTAlignJobsEx_OLD(MeshFilter[] meshFilters, int size)
+        public static List<PrefabInfo> NewAcRTAlignJobsEx_OLD(MeshPoints[] meshFilters, int size)
         {
             Debug.Log("NewAcRTAlignJobsEx:"+meshFilters.Length);
 
@@ -616,7 +692,7 @@ namespace MeshJobs
                     MeshFilterList item = mfsList[i1];
                     var mfList = item.GetList();
 
-                    MeshFilter mfFrom = mfList[0];
+                    var mfFrom = mfList[0];
                     GameObject prefab = mfFrom.gameObject;
                     //progressCount++;//一个作为预设
                     PrefabInfo prefabInfo = new PrefabInfo(mfFrom);
@@ -625,7 +701,7 @@ namespace MeshJobs
                     if(mfList.Count>1){
                         for (int i = 1; i < mfList.Count; i++)
                         {
-                            MeshFilter mfTo = mfList[i];
+                            var mfTo = mfList[i];
                             if (mfTo == null) continue;
                             //int jobId = AcRTAlignJobResult.GetId();
                             var job = AcRTAlignJobHelper.NewJob(mfFrom, mfTo, jobId);
@@ -717,7 +793,7 @@ namespace MeshJobs
             return prefabInfoList;
         }
 
-        public static Dictionary<Transform, Transform> GetParentDict(MeshFilter[] meshFilters)
+        public static Dictionary<Transform, Transform> GetParentDict(MeshPoints[] meshFilters)
         {
             Dictionary<Transform, Transform> parentDict = new Dictionary<Transform, Transform>();
             foreach (var meshFilter in meshFilters)
@@ -774,7 +850,7 @@ namespace MeshJobs
             }
         }
 
-        public static List<PrefabInfo> NewAcRTAlignJobsEx(MeshFilter[] meshFilters, int size)
+        public static List<PrefabInfo> NewAcRTAlignJobsEx(MeshPoints[] meshFilters, int size)
         {
             DateTime start = DateTime.Now;
             Debug.Log("NewAcRTAlignJobsEx:"+meshFilters.Length);
@@ -796,7 +872,7 @@ namespace MeshJobs
             return preafbs;
         }
 
-        public static List<PrefabInfo> NewAcRTAlignJobsEx2(MeshFilter[] meshFilters, int size)
+        public static List<PrefabInfo> NewAcRTAlignJobsEx2(MeshPoints[] meshFilters, int size)
         {
             DateTime start = DateTime.Now;
             Debug.Log("NewAcRTAlignJobsEx:" + meshFilters.Length);
@@ -815,7 +891,7 @@ namespace MeshJobs
         }
 
 
-        public static List<PrefabInfo> NewAcRTAlignJobs(MeshFilter[] meshFilters, int size)
+        public static List<PrefabInfo> NewAcRTAlignJobs(MeshPoints[] meshFilters, int size)
         {
             AcRtAlignJobArg.CleanArgs();
             AcRTAlignJobResult.CleanResults();
@@ -853,16 +929,16 @@ namespace MeshJobs
                 AcRtAlignJobArg.CleanArgs();
 
                 //一次
-                MeshFilter mfFrom = meshFilters[0];
+                var mfFrom = meshFilters[0];
                 GameObject prefab = mfFrom.gameObject;
 
                 PrefabInfo prefabInfo = new PrefabInfo(mfFrom);
                 prefabInfoList.Add(prefabInfo);
 
-                List<MeshFilter> newTargets = new List<MeshFilter>();
+                List<MeshPoints> newTargets = new List<MeshPoints>();
                 for (int i = 1; i < meshFilters.Length; i++)
                 {
-                    MeshFilter mfTo = meshFilters[i];
+                    var mfTo = meshFilters[i];
                     //int jobId = AcRTAlignJobResult.GetId();
                     var job = AcRTAlignJobHelper.NewJob(mfFrom, mfTo, jobId);
                     jobList.Add(job);

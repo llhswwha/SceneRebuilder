@@ -1,3 +1,4 @@
+using MeshJobs;
 using System;
 using System.Collections;
 using System.Collections.Generic;
@@ -11,9 +12,9 @@ using UnityEngine;
 
     public string Key;
 
-    private List<MeshFilter> List = new List<MeshFilter>();
+    private List<MeshPoints> List = new List<MeshPoints>();
 
-    private Dictionary<MeshFilter, MeshFilter> dict = new Dictionary<MeshFilter, MeshFilter>();
+    private Dictionary<MeshPoints, MeshPoints> dict = new Dictionary<MeshPoints, MeshPoints>();
 
     public MeshFilterList()
     {
@@ -33,13 +34,13 @@ using UnityEngine;
         }
     }
 
-    public void Add(MeshFilter mf)
+    public void Add(MeshPoints mf)
     {
         //List.Add(mf);
         dict.Add(mf, mf);
     }
 
-    internal void Remove(MeshFilter mf)
+    internal void Remove(MeshPoints mf)
     {
         int count1 = dict.Count;
         
@@ -58,7 +59,7 @@ using UnityEngine;
         }
     }
 
-    public List<MeshFilter> GetList()
+    public List<MeshPoints> GetList()
     {
         List.Clear();
         foreach (var item in dict.Keys)

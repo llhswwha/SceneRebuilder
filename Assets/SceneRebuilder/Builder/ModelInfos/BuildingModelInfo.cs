@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using UnityEngine;
 using System.Linq;
 using System;
+using MeshJobs;
 #if UNITY_EDITOR
 using UnityEditor;
 #endif
@@ -675,7 +676,8 @@ public class BuildingModelInfo : SubSceneCreater
         RendererManager.Instance.SetDetailRenderers(this.GetComponentsInChildren<MeshRenderer>(true));
 
         var meshFilters = OutPart0.GetComponentsInChildren<MeshFilter>(true);
-        var info=PrefabInstanceBuilder.GetBigSmallRenderers(meshFilters, AcRTAlignJobSetting.Instance.MaxModelLength);
+        List<MeshPoints> meshPoints = MeshPoints.GetMeshPoints(meshFilters);
+        var info=PrefabInstanceBuilder.GetBigSmallRenderers(meshPoints.ToArray(), AcRTAlignJobSetting.Instance.MaxModelLength);
 
         Out0BigRendererCount = info.bigModels.Count;
         Out0BigVertextCount = info.sumVertex_Big;

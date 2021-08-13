@@ -997,8 +997,8 @@ public static class MeshHelper
         {
             //return -1;
             Debug.LogWarning("mf1 == null || mf2 == null");
-            Vector3[] points1 = GetChildrenWorldVertexes(t1);
-            Vector3[] points2 = GetChildrenWorldVertexes(t2);
+            Vector3[] points1 = GetChildrenWorldVertexes(t1.gameObject);
+            Vector3[] points2 = GetChildrenWorldVertexes(t2.gameObject);
             dis = DistanceUtil.GetDistance(points1, points2, arg.showLog);
         }
         else
@@ -1178,12 +1178,17 @@ public static class MeshHelper
         return GetWorldVertexes(meshFilter.sharedMesh,go.transform);
     }
 
+    public static Vector3[] GetWorldVertexes(MeshPoints go)
+    {
+        return go.vertices;
+    }
+
     public static Vector3[] GetWorldVertexes(Mesh mesh1, Transform t1){
         var vs=mesh1.vertices;
         return GetWorldVertexes(vs,t1);
     }
 
-    public static Vector3[] GetChildrenWorldVertexes(Transform t1)
+    public static Vector3[] GetChildrenWorldVertexes(GameObject t1)
     {
         List<Vector3> vertexes = new List<Vector3>();
         var meshFilters = t1.GetComponentsInChildren<MeshFilter>();
@@ -2030,6 +2035,12 @@ public static class MeshHelper
         //return mf.sharedMesh.GetInstanceID();
         return mf.GetInstanceID();
     }
+
+    public static int GetInstanceID(MeshPoints mf)
+    {
+        //return mf.sharedMesh.GetInstanceID();
+        return mf.InstanceId;
+    }
 }
 
 [Serializable]
@@ -2453,10 +2464,10 @@ public static class MeshAlignHelper
         var pTo=MeshHelper.SetParentZero(to);
         var pFrom=MeshHelper.SetParentZero(from);
 
-        var mfFrom = from.GetComponent<MeshFilter>();
-        var mfTo = to.GetComponent<MeshFilter>();
+        var mfFrom = new MeshPoints(from);
+        var mfTo = new MeshPoints(to);
 
-        MeshJobHelper.NewThreePointJobs(new MeshFilter[] { mfFrom, mfTo }, 10000);
+        MeshJobHelper.NewThreePointJobs(new MeshPoints[] { mfFrom, mfTo }, 10000);
         AcRigidTransform.RTAlign(mfFrom, mfTo);
 
         to.transform.SetParent(pTo);
@@ -2471,12 +2482,12 @@ public static class MeshAlignHelper
         var pTo = MeshHelper.SetParentZero(to);
         var pFrom = MeshHelper.SetParentZero(from);
 
-        var mfFrom = from.GetComponent<MeshFilter>();
-        var mfTo = to.GetComponent<MeshFilter>();
+        var mfFrom = new MeshPoints(from);
+        var mfTo = new MeshPoints(to);
 
         AcRTAlignJobResult.CleanResults();
         AcRtAlignJobArg.CleanArgs();
-        MeshJobHelper.NewThreePointJobs(new MeshFilter[] { mfFrom, mfTo }, 10000);
+        MeshJobHelper.NewThreePointJobs(new MeshPoints[] { mfFrom, mfTo }, 10000);
         bool r=MeshJobHelper.DoAcRTAlignJob(mfFrom, mfTo, 1);
 
         to.transform.SetParent(pTo);

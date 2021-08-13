@@ -15,7 +15,7 @@ namespace MeshJobs
 public static class AcRTAlignJobHelper 
 {
     
-    public static AcRTAlignJob NewJob(MeshFilter mfFrom, MeshFilter mfTo, int id)
+    public static AcRTAlignJob NewJob(MeshPoints mfFrom, MeshPoints mfTo, int id)
         {
             AcRtAlignJobArg.SaveArg(id, mfFrom, mfTo);
 
@@ -120,7 +120,7 @@ public static class AcRTAlignJobHelper
             scaleDict.Clear();
         }
 
-        public static AcRTAlignJobEx NewJobEx(MeshFilter mfFrom, MeshFilter mfTo, int id,int rId)
+        public static AcRTAlignJobEx NewJobEx(MeshPoints mfFrom, MeshPoints mfTo, int id,int rId)
         {
             AcRTAlignJobEx job = new AcRTAlignJobEx();
             

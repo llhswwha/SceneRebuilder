@@ -567,7 +567,7 @@ public class AcRigidTransform : MonoBehaviour {
     //     RTAlignOneCore(mfFrom,mfTo);
     // }
 
-    public static void RTAlign(MeshFilter mfFrom,MeshFilter mfTo)
+    public static void RTAlign(MeshPoints mfFrom, MeshPoints mfTo)
     {
         DateTime start=DateTime.Now;
 

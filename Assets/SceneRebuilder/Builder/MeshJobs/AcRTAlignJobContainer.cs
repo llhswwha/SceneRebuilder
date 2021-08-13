@@ -11,7 +11,7 @@ using MeshJobs;
 
 public class AcRTAlignJobContainer 
 {
-    MeshFilter[] meshFilters;
+    MeshPoints[] meshFilters;
     int targetCount =0;
     int jobSize=0;
     int mfCount;
@@ -24,14 +24,14 @@ public class AcRTAlignJobContainer
 
     public Dictionary<Transform, Transform> parentDict = new Dictionary<Transform, Transform>();
 
-    public AcRTAlignJobContainer(MeshFilter[] meshFilters,int size)
+    public AcRTAlignJobContainer(MeshPoints[] meshFilters,int size)
     {
         if(AcRTAlignJobContainer.MaxVertexCount>0)
         {
-            List<MeshFilter> mfs=new List<MeshFilter>();
+            List<MeshPoints> mfs=new List<MeshPoints>();
             foreach(var mf in meshFilters)
             {
-                if(mf.sharedMesh.vertexCount>AcRTAlignJobContainer.MaxVertexCount)//排除点数特别多的，不然会卡住
+                if(mf.vertexCount>AcRTAlignJobContainer.MaxVertexCount)//排除点数特别多的，不然会卡住
                 {
                     continue;
                 }
@@ -98,7 +98,7 @@ public class AcRTAlignJobContainer
             MeshFilterList item = mfsList[i1];
             var mfList = item.GetList();
             //Debug.LogError("GetAlignJobs mfList:"+mfList.Count);
-            MeshFilter mfFrom = mfList[0];
+            var mfFrom = mfList[0];
             if (mfFrom == null) continue;
 
             
@@ -118,7 +118,7 @@ public class AcRTAlignJobContainer
             if(mfList.Count>1){
                 for (int i = 1; i < mfList.Count; i++)
                 {
-                    MeshFilter mfTo = mfList[i];
+                    var mfTo = mfList[i];
                     //Debug.LogError("GetAlignJobs mfTo:"+mfTo);
                     if (mfTo == null) continue;
 
@@ -165,7 +165,7 @@ public class AcRTAlignJobContainer
             MeshFilterList item = mfsList[i1];
             var mfList = item.GetList();
 
-            MeshFilter mfFrom = mfList[0];
+            var mfFrom = mfList[0];
             GameObject prefab = mfFrom.gameObject;
             //progressCount++;//一个作为预设
             PrefabInfo prefabInfo = new PrefabInfo(mfFrom);
@@ -176,7 +176,7 @@ public class AcRTAlignJobContainer
             {
                 for (int i = 1; i < mfList.Count; i++)
                 {
-                    MeshFilter mfTo = mfList[i];
+                    var mfTo = mfList[i];
                     if (mfTo == null) continue;
                     if(mfTo.sharedMesh==mfFrom.sharedMesh){
                         prefabInfo.Add(mfTo.gameObject);
@@ -226,7 +226,7 @@ public class AcRTAlignJobContainer
             MeshFilterList item = mfsList[i1];
             var mfList = item.GetList();
 
-            MeshFilter mfFrom = mfList[0];
+            var mfFrom = mfList[0];
             GameObject prefab = mfFrom.gameObject;
             //progressCount++;//一个作为预设
             PrefabInfo prefabInfo = new PrefabInfo(mfFrom);
@@ -237,7 +237,7 @@ public class AcRTAlignJobContainer
             {
                 for (int i = 1; i < mfList.Count; i++)
                 {
-                    MeshFilter mfTo = mfList[i];
+                    var mfTo = mfList[i];
                     if (mfTo == null) continue;
                     if(mfTo.sharedMesh==mfFrom.sharedMesh){
                         prefabInfo.Add(mfTo.gameObject);
@@ -681,7 +681,7 @@ public class AcRTAlignJobContainer
         return prefabInfoList;
     }
 
-    private static MeshFilterListDict CreateMeshFilterListDict(MeshFilter[] meshFilters){
+    private static MeshFilterListDict CreateMeshFilterListDict(MeshPoints[] meshFilters){
         DateTime start = DateTime.Now;
         var mfld = new MeshFilterListDict(meshFilters);
         Debug.Log($"CreateMeshFilterListDict meshFilters:{meshFilters.Length},Time:{(DateTime.Now - start).TotalMilliseconds:F1}ms");

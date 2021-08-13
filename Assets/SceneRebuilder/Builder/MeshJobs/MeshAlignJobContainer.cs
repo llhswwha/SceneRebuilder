@@ -18,9 +18,9 @@ public class MeshAlignJobContainer
 
     public GameObject go2;
 
-    public MeshFilter mf1;
+    public MeshPoints mf1;
 
-    public MeshFilter mf2;
+    public MeshPoints mf2;
 
     public int count;
 
@@ -59,7 +59,7 @@ public class MeshAlignJobContainer
     
     public MeshDistanceJobResult Result;
 
-    public MeshAlignJobContainer(MeshFilter mf1,MeshFilter mf2,bool showLog)
+    public MeshAlignJobContainer(MeshPoints mf1, MeshPoints mf2,bool showLog)
     {
         this.mf1=mf1;
         this.mf2=mf2;
@@ -211,12 +211,13 @@ public class MeshAlignJobContainer
         //3.比较距离，找出最小的
 
 
-        Vector3[] vertices1=mf1.sharedMesh.vertices;
-        Vector3[] vertices1World=MeshHelper.GetWorldVertexes(vertices1,go1.transform);
-        NativeArray<Vector3> verticesArray1=new NativeArray<Vector3>(vertices1World,Allocator.TempJob);
+        //Vector3[] vertices1=mf1.sharedMesh.vertices;
+        //Vector3[] vertices1World=MeshHelper.GetWorldVertexes(vertices1,go1.transform);
+        Vector3[] vertices1World = mf1.GetWorldVertexes();
+        NativeArray <Vector3> verticesArray1=new NativeArray<Vector3>(vertices1World,Allocator.TempJob);
 
         
-        Vector3[] vertices2=mf2.sharedMesh.vertices;
+        Vector3[] vertices2=mf2.vertices;
         NativeArray<Vector3> verticesArray2=new NativeArray<Vector3>(vertices2,Allocator.TempJob);
 
         // MeshDistanceJob.minDis=float.MaxValue;

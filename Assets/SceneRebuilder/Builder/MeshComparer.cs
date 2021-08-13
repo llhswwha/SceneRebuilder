@@ -545,10 +545,10 @@ public class MeshComparer : SingletonBehaviour<MeshComparer>
 
         Transform t1=goTo.transform;
         Transform t2=goFromCopy.transform;
-        var mf1=goTo.GetComponent<MeshFilter>();
-        var mf2=goFromCopy.GetComponent<MeshFilter>();
+        var mf1=new MeshPoints(goTo);
+        var mf2=new MeshPoints(goFromCopy);
 
-        MeshJobHelper.NewThreePointJobs(new MeshFilter[]{mf1,mf2},10000);
+        MeshJobHelper.NewThreePointJobs(new MeshPoints[]{mf1,mf2},10000);
         // MeshJobs.NewMeshAlignJob(go1, go2Copy,true);
 
         ThreePointJobResult r1=ThreePointJobResultList.Instance.GetThreePointResult(mf1);
@@ -629,10 +629,10 @@ public class MeshComparer : SingletonBehaviour<MeshComparer>
 
         Transform t1=goTo.transform;
         Transform t2=goFromCopy.transform;
-        var mf1=goTo.GetComponent<MeshFilter>();
-        var mf2=goFromCopy.GetComponent<MeshFilter>();
+        var mf1=new MeshPoints(goTo);
+        var mf2=new MeshPoints(goFromCopy);
 
-        MeshJobHelper.NewThreePointJobs(new MeshFilter[]{mf1,mf2},JobSize);
+        MeshJobHelper.NewThreePointJobs(new MeshPoints[]{mf1,mf2},JobSize);
         MeshJobHelper.NewRTAlignJobs(mf1, mf2,JobSize);
     }
     

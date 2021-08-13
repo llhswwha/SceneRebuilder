@@ -129,11 +129,11 @@ namespace MeshJobs
     {
         public int id;
 
-        public MeshFilter mfFrom;
+        public MeshPoints mfFrom;
 
-        public MeshFilter mfTo;
+        public MeshPoints mfTo;
 
-        public AcRtAlignJobArg(int i, MeshFilter from, MeshFilter to)
+        public AcRtAlignJobArg(int i, MeshPoints from, MeshPoints to)
         {
             this.id = i;
             this.mfFrom = from;
@@ -142,7 +142,7 @@ namespace MeshJobs
 
         public static Dictionary<int, AcRtAlignJobArg> Dicts = new Dictionary<int, AcRtAlignJobArg>();
 
-        public static AcRtAlignJobArg SaveArg(int i, MeshFilter from, MeshFilter to)
+        public static AcRtAlignJobArg SaveArg(int i, MeshPoints from, MeshPoints to)
         {
             AcRtAlignJobArg arg = new AcRtAlignJobArg(i, from, to);
             Dicts.Add(i, arg);
@@ -175,7 +175,7 @@ namespace MeshJobs
 
         public MeshFilterList List;
 
-        public void RemoveMeshFilter(MeshFilter mf)
+        public void RemoveMeshFilter(MeshPoints mf)
         {
             List.Remove(mf);
         }

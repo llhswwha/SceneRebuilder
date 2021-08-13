@@ -126,6 +126,67 @@ public static class DoorHelper
     //        Debug.LogError("DoorHelper.SetDoorLOD infoList.Count != 3");
     //    }
     //}
+    public static void CopyDoorA(GameObject gameObject,bool align)
+    {
+        EditorHelper.UnpackPrefab(gameObject);
+        var childCount = gameObject.transform.childCount;
+        if (childCount == 2)
+        {
+            var door1 = gameObject.transform.GetChild(0);
+            var door2 = gameObject.transform.GetChild(1);
+
+            var scale1 = door1.localScale;
+            var scale2 = door2.localScale;
+            if (scale1 == Vector3.one || scale2 == Vector3.one)
+            {
+                if (scale2 == Vector3.one)
+                {
+                    var tmp = door1;
+                    door1 = door2;
+                    door2 = tmp;
+                }
+
+                GameObject newDoor2 = MeshHelper.CopyGO(door1.gameObject);
+                newDoor2.transform.localScale = new Vector3(-1, 1, 1);
+                newDoor2.transform.position = door2.transform.position;
+                float distance1 = MeshHelper.GetVertexDistanceEx(door2.transform, newDoor2.transform, "CopyDoor1", false);
+                //door2.gameObject.SetActive(false);
+                //MeshAlignHelper.AcRTAlignJob(newDoor2, door2.gameObject);
+
+                if (distance1 > DistanceSetting.zeroM && align)
+                {
+                    MeshComparer.Instance.AcRTAlignJob(newDoor2, door2.gameObject);
+
+                    float distance2 = MeshHelper.GetVertexDistanceEx(door2.transform, newDoor2.transform, "CopyDoor2", false);
+                    Debug.Log($"distance1:{distance1} distance2:{distance2}");
+
+                    if (distance2 < DistanceSetting.zeroM)
+                    {
+                        newDoor2.name = door2.name + "_New";
+                        GameObject.DestroyImmediate(door2.gameObject);
+                    }
+                    else
+                    {
+                        Debug.LogError("¶ÔÆëÊ§°Ü");
+                    }
+                }
+                else
+                {
+                    Debug.Log($"distance1:{distance1}");
+                }
+
+
+            }
+            else
+            {
+                Debug.LogError($"RendererIdEditor.CopyDoorA scale1!=Vector3.one && scale2 != Vector3.one scale1:{scale1} scale2:{scale2}");
+            }
+        }
+        else
+        {
+            Debug.LogError("RendererIdEditor.CopyDoorA childCount =!= 2");
+        }
+    }
 }
 
 [Serializable]
