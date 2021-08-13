@@ -53,6 +53,13 @@ public class RendererIdEditor : BaseEditor<RendererId>
         {
             EditorHelper.UnpackPrefab(item.gameObject);
         }
+        if (GUILayout.Button("Center"))
+        {
+            MeshHelper.CenterPivot(item.gameObject);
+        }
+        EditorGUILayout.EndHorizontal();
+
+        EditorGUILayout.BeginHorizontal();
         if (GUILayout.Button("RemoveEmpty"))
         {
             MeshHelper.RemoveEmptyObjects(item.gameObject);
@@ -71,14 +78,19 @@ public class RendererIdEditor : BaseEditor<RendererId>
         }
         if (GUILayout.Button("Combine"))
         {
-            MeshCombineHelper.CombineEx(new MeshCombineArg(item.gameObject), MeshCombineMode.OneMesh);
+            //MeshCombineHelper.CombineEx(new MeshCombineArg(item.gameObject), MeshCombineMode.OneMesh);
+            MeshCombiner.Instance.CombineToOne(item.gameObject);
         }
         EditorGUILayout.EndHorizontal();
 
         EditorGUILayout.BeginHorizontal();
+        if (GUILayout.Button("SetLOD"))
+        {
+            LODHelper.CreateLODs(item.gameObject);
+        }
         if (GUILayout.Button("DoorLOD"))
         {
-            DoorHelper.SetDoorLOD(item.gameObject);
+            LODHelper.SetDoorLOD(item.gameObject);
         }
         if (GUILayout.Button("CopyDoorA"))
         {

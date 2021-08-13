@@ -5,7 +5,7 @@ using System.Linq;
 using System;
 
 //[RequireComponent(typeof(MeshRenderer),typeof(MeshFilter))]
-public class MeshCombiner : MonoBehaviour
+public class MeshCombiner : SingletonBehaviour<MeshCombiner>
 {
     public GameObject sourceRoot;
 
@@ -266,6 +266,15 @@ public class MeshCombiner : MonoBehaviour
         Combine(MeshCombineMode.OneMesh);
     }
 
+    public void CombineToOne(GameObject source)
+    {
+        sourceRoot = source;
+        sourceType = MeshCombineSourceType.All;
+        CombineEx();
+        SaveResult();
+        DestroySource();
+    }
+
     //public bool AutoAdd;
 
     //public List<GameObject> mergedObjs=new List<GameObject>();
@@ -306,7 +315,7 @@ public class MeshCombiner : MonoBehaviour
     //    // }
     //}
 
-    
+
     //public bool AutoRemove;
 
 

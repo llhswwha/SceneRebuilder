@@ -736,11 +736,13 @@ public class LODManager : SingletonBehaviour<LODManager>
         else
         {
             group = lod0.gameObject.AddComponent<LODGroup>();
-            LOD[] lods = new LOD[3];
-            lods[0] = new LOD(LODLevels_3[0], lod0.GetRenderers());
-            lods[1] = new LOD(LODLevels_3[1], lod0.GetRenderers());
-            lods[2] = new LOD(LODLevels_3[2], lod2.GetRenderers());
-            lods[3] = new LOD(LODLevels_3[3], lod2.GetRenderers());
+            //LOD[] lods = new LOD[3];
+            //lods[0] = new LOD(LODLevels_3[0], lod0.GetRenderers());
+            //lods[1] = new LOD(LODLevels_3[1], lod0.GetRenderers());
+            //lods[2] = new LOD(LODLevels_3[2], lod2.GetRenderers());
+            //lods[3] = new LOD(LODLevels_3[3], lod2.GetRenderers());
+
+            LOD[] lods = GetLODs4(lod0.GetRenderers(), lod0.GetRenderers(), lod2.GetRenderers(), lod2.GetRenderers());
             group.SetLODs(lods);
         }
     }
@@ -772,16 +774,6 @@ public class LODManager : SingletonBehaviour<LODManager>
         }
     }
 
-    public LOD[] GetLODs3(MeshRenderer[] renderers0, MeshRenderer[] renderers1, MeshRenderer[] renderers2)
-    {
-        LOD[] lods = new LOD[3];
-        lods[0] = new LOD(LODLevels_2[0], renderers0);
-        lods[1] = new LOD(LODLevels_2[1], renderers1);
-        lods[2] = new LOD(LODLevels_2[2], renderers2);
-
-        return lods;
-    }
-
     public float[] LODLevels_1 = new float[] { 0.5f, 0.02f };
     public float[] LODLevels_2 = new float[] { 0.7f, 0.3f, 0.02f };
     public float[] LODLevels_3 = new float[] { 0.7f, 0.3f, 0.1f, 0.02f };
@@ -806,6 +798,28 @@ public class LODManager : SingletonBehaviour<LODManager>
         }
     }
 
+    public LOD[] GetLODsN(params MeshRenderer[][] meshRenderersArray)
+    {
+        int count = meshRenderersArray.Length;
+        if (count == 2)
+        {
+            return GetLODs2(meshRenderersArray[0], meshRenderersArray[1]);
+        }
+        else if (count == 3)
+        {
+            return GetLODs3(meshRenderersArray[0], meshRenderersArray[1], meshRenderersArray[2]);
+        }
+        else if (count == 4)
+        {
+            return GetLODs4(meshRenderersArray[0], meshRenderersArray[1], meshRenderersArray[2], meshRenderersArray[3]);
+        }
+        else
+        {
+            //return LODHelper.CreateLODs(LODLevels_3);
+            return null;
+        }
+    }
+
     public void AddLOD1(MeshRendererInfo lod0, MeshRendererInfo lod1)
     {
         LODGroup lODGroup = lod0.GetComponent<LODGroup>();
@@ -819,14 +833,38 @@ public class LODManager : SingletonBehaviour<LODManager>
 
     public LOD[] GetLODs2(MeshRenderer[] renderers0,MeshRenderer[] renderers1)
     {
-        LOD[] lods = new LOD[2];
-        lods[0] = new LOD(LODLevels_1[0], renderers0);     //LOD0 >50% 
-                                                                    //lods[1]=new LOD(0.2f,new Renderer[1]{render1});         //LOD1  > 20% - 50% 
-                                                                    // lods[2]=new LOD(0.1f,new Renderer[1]{render1});         //LOD2  > 10% - 20% 
-        lods[1] = new LOD(LODLevels_1[1], renderers1);        //LOD3  > 1% - 10% 
-                                                                       //Culled > 0% - 1%
-        
-        return lods;
+        //LOD[] lods = new LOD[2];
+        //lods[0] = new LOD(LODLevels_1[0], renderers0);     //LOD0 >50% 
+        //                                                            //lods[1]=new LOD(0.2f,new Renderer[1]{render1});         //LOD1  > 20% - 50% 
+        //                                                            // lods[2]=new LOD(0.1f,new Renderer[1]{render1});         //LOD2  > 10% - 20% 
+        //lods[1] = new LOD(LODLevels_1[1], renderers1);        //LOD3  > 1% - 10% 
+        //                                                               //Culled > 0% - 1%
+        //return lods;
+
+        return LODHelper.GetLODs2(LODLevels_1, renderers0, renderers1);
+    }
+
+    public LOD[] GetLODs3(MeshRenderer[] renderers0, MeshRenderer[] renderers1, MeshRenderer[] renderers2)
+    {
+        //LOD[] lods = new LOD[3];
+        //lods[0] = new LOD(LODLevels_2[0], renderers0);
+        //lods[1] = new LOD(LODLevels_2[1], renderers1);
+        //lods[2] = new LOD(LODLevels_2[2], renderers2);
+        //return lods;
+
+        return LODHelper.GetLODs3(LODLevels_2, renderers0, renderers1, renderers2);
+    }
+
+    public LOD[] GetLODs4(MeshRenderer[] renderers0, MeshRenderer[] renderers1, MeshRenderer[] renderers2, MeshRenderer[] renderers3)
+    {
+        //LOD[] lods = new LOD[4];
+        //lods[0] = new LOD(LODLevels_3[0], renderers0);
+        //lods[1] = new LOD(LODLevels_3[1], renderers1);
+        //lods[2] = new LOD(LODLevels_3[2], renderers2);
+        //lods[3] = new LOD(LODLevels_3[3], renderers3);
+        //return lods;
+
+        return LODHelper.GetLODs4(LODLevels_3, renderers0, renderers1, renderers2, renderers3);
     }
 
     public void UniformLOD0()
@@ -1332,6 +1370,98 @@ public enum LODCompareMode
 
 public static class LODHelper
 {
+    public static LODGroup CreateLODs(GameObject root)
+    {
+        ClearGroupInfo(root);
+        MeshRendererInfoList infoList = MeshRendererInfo.InitRenderers(root);
+        LODGroup groupNew = root.AddComponent<LODGroup>();
+        var lods = LODManager.Instance.GetLODsN(infoList.GetRenderersArray());
+        groupNew.SetLODs(lods);
+        LODGroupInfo.Init(root);
+        return groupNew;
+    }
+
+    private static void ClearGroupInfo(GameObject go)
+    {
+        LODGroup group = go.GetComponent<LODGroup>();
+        if (group != null)
+        {
+            GameObject.DestroyImmediate(group);
+        }
+        LODGroupInfo groupInfo = go.GetComponent<LODGroupInfo>();
+        if (groupInfo != null)
+        {
+            GameObject.DestroyImmediate(groupInfo);
+        }
+    }
+
+    public static LODGroup SetDoorLOD(GameObject door)
+    {
+        ClearGroupInfo(door);
+
+        GameObject doorRoot = door;
+        MeshRenderer meshRenderer = door.GetComponent<MeshRenderer>();
+        if (meshRenderer != null)
+        {
+            doorRoot = MeshCombineHelper.SplitByMaterials(door);
+        }
+
+        MeshRendererInfoList infoList = MeshRendererInfo.InitRenderers(doorRoot);
+        if (infoList.Count == 3)
+        {
+            LODGroup groupNew = door.AddComponent<LODGroup>();
+            //var lods2 = LODManager.Instance.GetLODs3(
+            //    infoList.GetRenderers().ToArray(), 
+            //    new MeshRenderer[] { infoList[0].meshRenderer, infoList[1].meshRenderer },
+            //    new MeshRenderer[] { infoList[1].GetBoundsRenderer() }
+            //);
+            var lods2 = LODManager.Instance.GetLODs3(
+                infoList.GetRenderers().ToArray(),
+                new MeshRenderer[] { infoList[1].meshRenderer, infoList[2].meshRenderer },
+                new MeshRenderer[] { infoList[1].GetBoundsRenderer() }
+            );
+            groupNew.SetLODs(lods2);
+
+            LODGroupInfo.Init(door);
+            return groupNew;
+        }
+        else
+        {
+            Debug.LogError("DoorHelper.SetDoorLOD infoList.Count != 3");
+            return null;
+        }
+    }
+
+    public static LOD[] GetLODs2(float[] lvs,MeshRenderer[] renderers0, MeshRenderer[] renderers1)
+    {
+        LOD[] lods = new LOD[2];
+        lods[0] = new LOD(lvs[0], renderers0);     //LOD0 >50% 
+                                                           //lods[1]=new LOD(0.2f,new Renderer[1]{render1});         //LOD1  > 20% - 50% 
+                                                           // lods[2]=new LOD(0.1f,new Renderer[1]{render1});         //LOD2  > 10% - 20% 
+        lods[1] = new LOD(lvs[1], renderers1);        //LOD3  > 1% - 10% 
+                                                              //Culled > 0% - 1%
+        return lods;
+    }
+
+    public static LOD[] GetLODs3(float[] lvs, MeshRenderer[] renderers0, MeshRenderer[] renderers1, MeshRenderer[] renderers2)
+    {
+        LOD[] lods = new LOD[3];
+        lods[0] = new LOD(lvs[0], renderers0);
+        lods[1] = new LOD(lvs[1], renderers1);
+        lods[2] = new LOD(lvs[2], renderers2);
+        return lods;
+    }
+
+    public static LOD[] GetLODs4(float[] lvs, MeshRenderer[] renderers0, MeshRenderer[] renderers1, MeshRenderer[] renderers2, MeshRenderer[] renderers3)
+    {
+        LOD[] lods = new LOD[4];
+        lods[0] = new LOD(lvs[0], renderers0);
+        lods[1] = new LOD(lvs[1], renderers1);
+        lods[2] = new LOD(lvs[2], renderers2);
+        lods[3] = new LOD(lvs[3], renderers2);
+        return lods;
+    }
+
     public static LOD[] CreateLODs(float[] ls)
     {
         LOD[] lods = new LOD[ls.Length];

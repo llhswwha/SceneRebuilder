@@ -569,8 +569,8 @@ public class MeshRendererInfo : MonoBehaviour,IComparable<MeshRendererInfo>
 
     public int CompareTo(MeshRendererInfo other)
     {
-        //return other.vertexCount.CompareTo(this.vertexCount);
-        return this.vertexCount.CompareTo(other.vertexCount);
+        return other.vertexCount.CompareTo(this.vertexCount);
+        //return this.vertexCount.CompareTo(other.vertexCount);
     }
 }
 
@@ -596,6 +596,16 @@ public class MeshRendererInfoList:List<MeshRendererInfo>
             renderers.AddRange(rs);
         }
         return renderers;
+    }
+
+    public MeshRenderer[][] GetRenderersArray()
+    {
+        List<MeshRenderer[]> renderersList = new List<MeshRenderer[]>();
+        foreach (var item in this)
+        {
+            renderersList.Add(item.GetRenderers());
+        }
+        return renderersList.ToArray();
     }
 
     public int Length

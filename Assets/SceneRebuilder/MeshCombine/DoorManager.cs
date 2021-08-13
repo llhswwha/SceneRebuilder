@@ -100,32 +100,32 @@ public class DoorManager : SingletonBehaviour<DoorManager>
 
 public static class DoorHelper
 {
-    public static void SetDoorLOD(GameObject door)
-    {
-        LODGroup group = door.GetComponent<LODGroup>();
-        if (group != null)
-        {
-            GameObject.DestroyImmediate(group);
-        }
-        GameObject doorRoot = door;
-        MeshRenderer meshRenderer = door.GetComponent<MeshRenderer>();
-        if (meshRenderer != null)
-        {
-            doorRoot = MeshCombineHelper.SplitByMaterials(door);
-        }
+    //public static void SetDoorLOD(GameObject door)
+    //{
+    //    LODGroup group = door.GetComponent<LODGroup>();
+    //    if (group != null)
+    //    {
+    //        GameObject.DestroyImmediate(group);
+    //    }
+    //    GameObject doorRoot = door;
+    //    MeshRenderer meshRenderer = door.GetComponent<MeshRenderer>();
+    //    if (meshRenderer != null)
+    //    {
+    //        doorRoot = MeshCombineHelper.SplitByMaterials(door);
+    //    }
 
-        MeshRendererInfoList infoList = MeshRendererInfo.InitRenderers(doorRoot);
-        if (infoList.Count == 3)
-        {
-            LODGroup groupNew = door.AddComponent<LODGroup>();
-            var lods2 = LODManager.Instance.GetLODs3(infoList.GetRenderers().ToArray(), new MeshRenderer[] { infoList[0].meshRenderer, infoList[1].meshRenderer }, new MeshRenderer[] { infoList[1].GetBoundsRenderer() });
-            groupNew.SetLODs(lods2);
-        }
-        else
-        {
-            Debug.LogError("DoorHelper.SetDoorLOD infoList.Count != 3");
-        }
-    }
+    //    MeshRendererInfoList infoList = MeshRendererInfo.InitRenderers(doorRoot);
+    //    if (infoList.Count == 3)
+    //    {
+    //        LODGroup groupNew = door.AddComponent<LODGroup>();
+    //        var lods2 = LODManager.Instance.GetLODs3(infoList.GetRenderers().ToArray(), new MeshRenderer[] { infoList[0].meshRenderer, infoList[1].meshRenderer }, new MeshRenderer[] { infoList[1].GetBoundsRenderer() });
+    //        groupNew.SetLODs(lods2);
+    //    }
+    //    else
+    //    {
+    //        Debug.LogError("DoorHelper.SetDoorLOD infoList.Count != 3");
+    //    }
+    //}
 }
 
 [Serializable]
