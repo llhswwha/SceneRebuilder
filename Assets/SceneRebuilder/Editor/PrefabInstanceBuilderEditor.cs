@@ -71,10 +71,10 @@ public class PrefabInstanceBuilderEditor : BaseFoldoutEditor<PrefabInstanceBuild
         {
             item.ShowInstanceCount();
         }
-        if (GUILayout.Button("PrefabCount"))
-        {
-            item.ShowPrefabCount();
-        }
+        //if (GUILayout.Button("PrefabCount"))
+        //{
+        //    item.ShowPrefabCount();
+        //}
         if (GUILayout.Button("MeshSize"))
         {
             item.GetMeshSizeInfo();

@@ -15,7 +15,7 @@ public class AcRTAlignJobContainer
     int targetCount =0;
     int jobSize=0;
     int mfCount;
-    public List<PrefabInfo> prefabInfoList = new List<PrefabInfo>();
+    public PrefabInfoList prefabInfoList = new PrefabInfoList();
     int totalJobCount = 0;
     int loopCount = 0;
     string jobCountDetails = "";
@@ -83,7 +83,7 @@ public class AcRTAlignJobContainer
 
     private int AlignJobCount;
 
-    public List<PrefabInfo> newPrefabInfoList=new List<PrefabInfo>();//这一轮新增加的预设
+    public PrefabInfoList newPrefabInfoList=new PrefabInfoList();//这一轮新增加的预设
     public JobList<AcRTAlignJob> GetAlignJobs()
     {
         jobId = 0;
@@ -540,7 +540,7 @@ public class AcRTAlignJobContainer
     public double totalTime4;
     public double totalTime5;
 
-    public List<PrefabInfo> GetPrefabs()
+    public PrefabInfoList GetPrefabs()
     {
         DateTime start = DateTime.Now;
         this.ResetLoopInfo();
@@ -612,7 +612,7 @@ public class AcRTAlignJobContainer
 
     public static string ReportLog="";
 
-    public List<PrefabInfo> GetPrefabsEx()
+    public PrefabInfoList GetPrefabsEx()
     {
         DateTime start = DateTime.Now;
         this.ResetLoopInfo();

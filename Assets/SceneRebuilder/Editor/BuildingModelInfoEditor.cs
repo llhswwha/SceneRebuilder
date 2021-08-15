@@ -286,7 +286,7 @@ public class BuildingModelInfoEditor : BaseFoldoutEditor<BuildingModelInfo>
         DrawMatList(GlobalMaterialManager.Instance, matListArg);
 
         DoorManager.Instance.LocalTarget = item.gameObject;
-        DrawDoorList(doorListArg, DoorManager.Instance);
+        DrawDoorPartList(doorListArg, DoorManager.Instance);
 
         LODManager.Instance.LocalTarget = item.gameObject;
         DrawLODGroupList(lodGroupListArg, LODManager.Instance);

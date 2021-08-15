@@ -942,13 +942,14 @@ public class BaseFoldoutEditor<T> : BaseEditor<T> where T : class
 
     }
 
-    public void DrawDoorList(FoldoutEditorArg doorListArg, DoorManager item)
+    public void DrawDoorPartList(FoldoutEditorArg doorListArg, DoorManager item)
     {
-        doorListArg.caption = $"Door List";
+        //ObjectField(item.LocalTarget);
+        doorListArg.caption = $"Door Part List";
         EditorUIUtils.ToggleFoldout(doorListArg, arg =>
         {
-            var doors = item.GetDoors();
-            arg.caption = $"Door List ({doors.Count})";
+            var doors = item.GetDoorParts();
+            arg.caption = $"Door Part List ({doors.Count})";
             arg.info = $"{doors.VertexCount_Show / 10000f:F0}/{doors.VertexCount / 10000f:F0}";
             InitEditorArg(doors);
         },
@@ -956,7 +957,7 @@ public class BaseFoldoutEditor<T> : BaseEditor<T> where T : class
         {
             if (GUILayout.Button("Update"))
             {
-                RemoveEditorArg(item.GetDoors());
+                RemoveEditorArg(item.GetDoorParts());
                 InitEditorArg(item.UpdateDoors());
             }
         });
@@ -970,7 +971,7 @@ public class BaseFoldoutEditor<T> : BaseEditor<T> where T : class
                 item.SplitAll();
             }
             EditorGUILayout.EndHorizontal();
-            var doors = item.GetDoors();
+            var doors = item.GetDoorParts();
             InitEditorArg(doors);
             doorListArg.DrawPageToolbar(doors, (door, i) =>
             {
@@ -989,7 +990,165 @@ public class BaseFoldoutEditor<T> : BaseEditor<T> where T : class
         }
     }
 
-    protected void DrawLODGroupList(FoldoutEditorArg<LODGroupDetails> lodGroupListArg, LODManager lodManager)
+    public void DrawPrefabList(FoldoutEditorArg prefabListArg, System.Func<PrefabInfoList> funcGetList)
+    {
+        //ObjectField(item.LocalTarget);
+        prefabListArg.caption = $"Prefab List";
+        prefabListArg.level = 0;
+        EditorUIUtils.ToggleFoldout(prefabListArg, arg =>
+        {
+            var prefabs = funcGetList();
+            int vCount = 0;
+            int vAllCount = 0;
+            int rCount = 0;
+            prefabs.ForEach(i =>
+            {
+                vCount += i.VertexCount;
+                vAllCount += i.VertexCount*(i.InstanceCount+1);
+                rCount += (i.InstanceCount + 1);
+            });
+            arg.caption = $"Prefab List ({prefabs.Count})";
+            arg.info = $"r:{rCount}|{MeshHelper.GetVertexCountS(vCount)}/{MeshHelper.GetVertexCountS(vAllCount)}({(float)vCount/ vAllCount:P1})";
+            InitEditorArg(prefabs);
+        },
+        () =>
+        {
+            //if (GUILayout.Button("Update"))
+            //{
+            //    RemoveEditorArg(item.doorRoots);
+            //    InitEditorArg(item.UpdateDoors());
+            //}
+        });
+        if (prefabListArg.isEnabled && prefabListArg.isExpanded)
+        {
+            var prefabList = funcGetList();
+            InitEditorArg(prefabList);
+            prefabListArg.DrawPageToolbar(prefabList, (prefabInfo, i) =>
+            {
+                var prefabInfoArg = editorArgs[prefabInfo];
+                prefabInfoArg.level = 1;
+                prefabInfoArg.background = true;
+                prefabInfoArg.caption = $"[{i + 1:00}] {prefabInfo.GetTitle()}";
+                prefabInfoArg.info = prefabInfo.ToString();
+                //EditorUIUtils.ObjectFoldout(doorRootArg, doorRoot.gameObject, () =>
+                //{
+
+                //});
+
+                EditorUIUtils.ObjectFoldout(prefabInfoArg, prefabInfo.Prefab, () =>
+                {
+                    //if (GUILayout.Button("Share", GUILayout.Width(50)))
+                    //{
+                    //    doorRoot.SetDoorShared(false);
+                    //}
+                });
+
+                //DrawDoorList(doorRootArg, doorRoot, true);
+            });
+        }
+    }
+
+    public void DrawDoorsRootList(FoldoutEditorArg doorRootListArg, DoorManager item)
+    {
+        //ObjectField(item.LocalTarget);
+        doorRootListArg.caption = $"DoorsRoot List";
+        doorRootListArg.level = 0;
+        EditorUIUtils.ToggleFoldout(doorRootListArg, arg =>
+        {
+            var doors = item.doorRoots;
+            arg.caption = $"DoorsRoot List ({doors.Count})";
+            arg.info = $"{doors.VertexCount_Show / 10000f:F0}/{doors.VertexCount / 10000f:F0}";
+            InitEditorArg(doors);
+        },
+        () =>
+        {
+            if (GUILayout.Button("Update"))
+            {
+                RemoveEditorArg(item.doorRoots);
+                InitEditorArg(item.UpdateDoors());
+            }
+        });
+        if (doorRootListArg.isEnabled && doorRootListArg.isExpanded)
+        {
+            //EditorGUILayout.BeginHorizontal();
+            //item.IsOnlyActive = EditorGUILayout.Toggle("Active", item.IsOnlyActive);
+            //item.IsOnlyCanSplit = EditorGUILayout.Toggle("CanSplit", item.IsOnlyCanSplit);
+            //if (GUILayout.Button("SplitAll", GUILayout.Width(50)))
+            //{
+            //    item.SplitAll();
+            //}
+            //EditorGUILayout.EndHorizontal();
+            var rootList = item.doorRoots;
+            InitEditorArg(rootList);
+            doorRootListArg.DrawPageToolbar(rootList, (doorRoot, i) =>
+            {
+                var doorRootArg = editorArgs[doorRoot];
+                doorRootArg.level = 1;
+                doorRootArg.background = true;
+                doorRootArg.caption = $"[{i + 1:00}] {doorRoot.GetTitle()}";
+                doorRootArg.info = doorRoot.ToString();
+                //EditorUIUtils.ObjectFoldout(doorRootArg, doorRoot.gameObject, () =>
+                //{
+                    
+                //});
+
+                EditorUIUtils.ObjectFoldout(doorRootArg, doorRoot.gameObject, () =>
+                {
+                    if (GUILayout.Button("Share",GUILayout.Width(50)))
+                    {
+                        doorRoot.SetDoorShared(false,false);
+                    }
+                });
+
+                DrawDoorList(doorRootArg, doorRoot,true);
+            });
+        }
+    }
+
+    public void DrawDoorList(FoldoutEditorArg doorRootArg, DoorsRoot doorsRoot,bool isSubList)
+    {
+        if (isSubList==false)
+        {
+            doorRootArg.caption = $"DoorsRoot List";
+            doorRootArg.level = 0;
+            EditorUIUtils.ToggleFoldout(doorRootArg, arg =>
+            {
+                var doors = doorsRoot.Doors;
+                arg.caption = $"DoorsRoot List ({doors.Count})";
+                arg.info = $"{doorsRoot.VertexCount_Show / 10000f:F0}/{doorsRoot.VertexCount / 10000f:F0}";
+                InitEditorArg(doors);
+            },
+            () =>
+            {
+            //if (GUILayout.Button("Update"))
+            //{
+            //    RemoveEditorArg(doorsRoot.doorRoots);
+            //    InitEditorArg(item.UpdateDoors());
+            //}
+        });
+        }
+
+
+        if (doorRootArg.isExpanded)
+        {
+            doorRootArg.level = 1;
+            var doors = doorsRoot.Doors;
+            InitEditorArg(doors);
+            doorRootArg.DrawPageToolbar(doors, (door, i) =>
+            {
+                var arg = editorArgs[door];
+                arg.caption = $"[{i + 1:00}] {door.GetTitle()}";
+                arg.info = door.ToString();
+                arg.level = 2;
+                EditorUIUtils.ObjectFoldout(arg, door.DoorGo, () =>
+                {
+
+                });
+            });
+        }
+    }
+
+   protected void DrawLODGroupList(FoldoutEditorArg<LODGroupDetails> lodGroupListArg, LODManager lodManager)
     {
         lodGroupListArg.caption = $"LOD List";
         EditorUIUtils.ToggleFoldout(lodGroupListArg, arg =>

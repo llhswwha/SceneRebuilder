@@ -10,7 +10,6 @@ using System;
 
 namespace MeshJobs
 {
-
     public class MeshPoints
     {
         public static List<MeshPoints> GetMeshPoints(MeshFilter[] meshFilters)
@@ -57,7 +56,7 @@ namespace MeshJobs
             }
             else
             {
-                vertices= MeshHelper.GetChildrenVertexes(root);
+                vertices = MeshHelper.GetChildrenVertexes(root);
                 //worldVertices = MeshHelper.GetChildrenWorldVertexes(root);
                 InstanceId = root.GetInstanceID();
                 size = MeshHelper.GetMinMax(vertices)[2];
@@ -88,7 +87,6 @@ namespace MeshJobs
             return (this.sharedMesh != null && other.sharedMesh != null && this.sharedMesh == other.sharedMesh);
         }
     }
-
     public static class MeshJobHelper
     {
         #region ThreePointJob
@@ -158,7 +156,7 @@ namespace MeshJobs
             return result;
         }
 
-        public static List<PrefabInfo> NewMeshAlignJobs(MeshPoints[] meshFilters, int size)
+        public static PrefabInfoList NewMeshAlignJobs(MeshPoints[] meshFilters, int size)
         {
             MeshAlignJobContainer.InitTime();
             MeshHelper.TotalCopyTime = 0;
@@ -174,7 +172,7 @@ namespace MeshJobs
             NewThreePointJobs(meshFilters, size);
 
             //3.创建预设，替换模型
-            List<PrefabInfo> prefabInfoList = new List<PrefabInfo>();
+            PrefabInfoList prefabInfoList = new PrefabInfoList();
             int progressCount = 0;
             bool isCancel = false;
 
@@ -249,7 +247,7 @@ namespace MeshJobs
 
         #region RTAlignJob //无用
 
-        public static List<PrefabInfo> NewRTAlignJobs(MeshPoints[] meshFilters, int size)
+        public static PrefabInfoList NewRTAlignJobs(MeshPoints[] meshFilters, int size)
         {
             MeshAlignJobContainer.InitTime();
             MeshHelper.TotalCopyTime = 0;
@@ -265,7 +263,7 @@ namespace MeshJobs
             NewThreePointJobs(meshFilters, size);
 
             //3.创建预设，替换模型
-            List<PrefabInfo> prefabInfoList = new List<PrefabInfo>();
+            PrefabInfoList prefabInfoList = new PrefabInfoList();
             int progressCount = 0;
             bool isCancel = false;
 
@@ -640,7 +638,7 @@ namespace MeshJobs
             return mfld;
         }
 
-        public static List<PrefabInfo> NewAcRTAlignJobsEx_OLD(MeshPoints[] meshFilters, int size)
+        public static PrefabInfoList NewAcRTAlignJobsEx_OLD(MeshPoints[] meshFilters, int size)
         {
             Debug.Log("NewAcRTAlignJobsEx:"+meshFilters.Length);
 
@@ -662,7 +660,7 @@ namespace MeshJobs
 
 
             //3.创建预设，替换模型
-            List<PrefabInfo> prefabInfoList = new List<PrefabInfo>();
+            PrefabInfoList prefabInfoList = new PrefabInfoList();
 
             int totalJobCount = 0;
             int loopCount = 0;
@@ -855,7 +853,7 @@ namespace MeshJobs
             }
         }
 
-        public static List<PrefabInfo> NewAcRTAlignJobsEx(MeshPoints[] meshFilters, int size)
+        public static PrefabInfoList NewAcRTAlignJobsEx(MeshPoints[] meshFilters, int size)
         {
             DateTime start = DateTime.Now;
             Debug.Log("NewAcRTAlignJobsEx:"+meshFilters.Length);
@@ -877,7 +875,7 @@ namespace MeshJobs
             return preafbs;
         }
 
-        public static List<PrefabInfo> NewAcRTAlignJobsEx2(MeshPoints[] meshFilters, int size)
+        public static PrefabInfoList NewAcRTAlignJobsEx2(MeshPoints[] meshFilters, int size)
         {
             DateTime start = DateTime.Now;
             Debug.Log("NewAcRTAlignJobsEx:" + meshFilters.Length);
@@ -896,7 +894,7 @@ namespace MeshJobs
         }
 
 
-        public static List<PrefabInfo> NewAcRTAlignJobs(MeshPoints[] meshFilters, int size)
+        public static PrefabInfoList NewAcRTAlignJobs(MeshPoints[] meshFilters, int size)
         {
             AcRtAlignJobArg.CleanArgs();
             AcRTAlignJobResult.CleanResults();
@@ -915,7 +913,7 @@ namespace MeshJobs
             NewThreePointJobs(meshFilters, size);
 
             //3.创建预设，替换模型
-            List<PrefabInfo> prefabInfoList = new List<PrefabInfo>();
+            PrefabInfoList prefabInfoList = new PrefabInfoList();
 
             //JobList<AcRTAlignJob> totalJobList = new JobList<AcRTAlignJob>(size);
             int totalJobCount = 0;
@@ -1021,3 +1019,4 @@ namespace MeshJobs
         #endregion
     }
 }
+

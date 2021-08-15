@@ -996,7 +996,7 @@ public static class MeshHelper
         if (mf1 == null || mf2 == null)
         {
             //return -1;
-            Debug.LogWarning("mf1 == null || mf2 == null");
+            //Debug.LogWarning("mf1 == null || mf2 == null");
             Vector3[] points1 = GetChildrenWorldVertexes(t1.gameObject);
             Vector3[] points2 = GetChildrenWorldVertexes(t2.gameObject);
             dis = DistanceUtil.GetDistance(points1, points2, arg.showLog);

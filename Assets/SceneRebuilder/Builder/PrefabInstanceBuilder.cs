@@ -10,7 +10,7 @@ using UnityEngine;
 using GPUInstancer;
 using System.IO;
 
-public class PrefabInstanceBuilder : MonoBehaviour
+public class PrefabInstanceBuilder : SingletonBehaviour<PrefabInstanceBuilder>
 {
     public AlignDebugStep step;
 
@@ -43,15 +43,9 @@ public class PrefabInstanceBuilder : MonoBehaviour
 
     public int[] InsCountList=new int[]{1,5,10,50,100};
 
-    public List<PrefabInfo> PrefabInfoList=new List<PrefabInfo>();
+    public PrefabInfoList PrefabInfoList=new PrefabInfoList();
 
-    public List<PrefabInfo> PrefabInfoList1 =new List<PrefabInfo>();
-    public List<PrefabInfo> PrefabInfoList2 =new List<PrefabInfo>();
-    public List<PrefabInfo> PrefabInfoList3 =new List<PrefabInfo>();
-     public List<PrefabInfo> PrefabInfoList4 =new List<PrefabInfo>();
-    public List<PrefabInfo> PrefabInfoList5 = new List<PrefabInfo>();
-
-    public List<PrefabInfo> PrefabInfoList6 = new List<PrefabInfo>();
+    public PrefabInfoListBags PrefabInfoListBags = new PrefabInfoListBags();
 
     public GameObject CurrentPrefab=null;
 
@@ -125,120 +119,26 @@ public class PrefabInstanceBuilder : MonoBehaviour
 
     public void DestoryInstances()
     {
-        
-        foreach(var info in PrefabInfoList)
-        {
-            info.DestroyInstances();
-        }
+
+        PrefabInfoList.DestroyInstances();
     }
 
     public void ShowPrefabListCount()
     {
-        DateTime start=DateTime.Now;
-        Debug.Log($"all:{PrefabInfoList.Count}={PrefabInfoList.GetInstanceCount()}\t list1:{PrefabInfoList1.Count}={PrefabInfoList1.GetInstanceCount()}\t list2:{PrefabInfoList2.Count}={PrefabInfoList2.GetInstanceCount()}\t list3:{PrefabInfoList3.Count}={PrefabInfoList3.GetInstanceCount()}\t list4:{PrefabInfoList4.Count}={PrefabInfoList4.GetInstanceCount()}\t list5:{PrefabInfoList5.Count}={PrefabInfoList5.GetInstanceCount()} \tlist6:{PrefabInfoList6.Count}={PrefabInfoList6.GetInstanceCount()},");
-        Debug.Log($"ShowPrefabListCount Time:{(DateTime.Now-start).ToString()}");
+        //DateTime start=DateTime.Now;
+        //Debug.Log($"all:{PrefabInfoList.Count}={PrefabInfoList.GetInstanceCount()}\t list1:{PrefabInfoList1.Count}={PrefabInfoList1.GetInstanceCount()}\t list2:{PrefabInfoList2.Count}={PrefabInfoList2.GetInstanceCount()}\t list3:{PrefabInfoList3.Count}={PrefabInfoList3.GetInstanceCount()}\t list4:{PrefabInfoList4.Count}={PrefabInfoList4.GetInstanceCount()}\t list5:{PrefabInfoList5.Count}={PrefabInfoList5.GetInstanceCount()} \tlist6:{PrefabInfoList6.Count}={PrefabInfoList6.GetInstanceCount()},");
+        //Debug.Log($"ShowPrefabListCount Time:{(DateTime.Now-start).ToString()}");
+        PrefabInfoListBags.ShowPrefabListCount();
     }
 
-    public void ShowPrefabCount()
-    {
-        int count1=0;
-        int count2=0;
-        int count3=0;
-        int count4=0;
-        int count5=0;
-        int count6_10=0;
-        int count11_20=0;
-        int count21_100=0;
-        int count101_500=0;
-        int count500B=0;
-        foreach(var info in PrefabInfoList)
-        {
-            int count=info.InstanceCount+1;
-            if(count==1){
-                count1++;
-            }
-            else if(count==2){
-                count2++;
-            }
-            else if(count==3){
-                count3++;
-            }
-            else if(count==4){
-                count4++;
-            }
-            else if(count==5){
-                count5++;
-            }
-            else if(count<=10){
-                count6_10++;
-            }
-            else if(count<=20){
-                count11_20++;
-            }
-            else if(count<=100){
-                count21_100++;
-            }
-            else if(count<=500){
-                count101_500++;
-            }
-            else{
-                count500B++;
-            }
-        }
-
-        Debug.Log($"1={count1};2={count2};3={count3};4={count4};5={count5};6_10={count6_10};11_20={count11_20};21_100={count21_100};101_500={count101_500};>500={count500B};");
-        Debug.Log($"1\t{count1}\n2\t{count2}\n3\t{count3}\n4\t{count4}\n5\t{count5}\n6_10\t{count6_10}\n11_20\t{count11_20}\n21_100\t{count21_100}\n101_500\t{count101_500}\n>500\t{count500B}\n");
-    }
+    //public void ShowPrefabCount()
+    //{
+    //    PrefabInfoList.ShowPrefabCount();
+    //}
 
     public void ShowInstanceCount()
     {
-        int count1=0;
-        int count2=0;
-        int count3=0;
-        int count4=0;
-        int count5=0;
-        int count6_10=0;
-        int count11_20=0;
-        int count21_100=0;
-        int count101_500=0;
-        int count500B=0;
-        foreach(var info in PrefabInfoList)
-        {
-            int count=info.InstanceCount+1;
-            if(count==1){
-                count1+=count;
-            }
-            else if(count==2){
-                count2+=count;
-            }
-            else if(count==3){
-                count3+=count;
-            }
-            else if(count==4){
-                count4+=count;
-            }
-            else if(count==5){
-                count5+=count;
-            }
-            else if(count<=10){
-                count6_10+=count;
-            }
-            else if(count<=20){
-                count11_20+=count;
-            }
-            else if(count<=100){
-                count21_100+=count;
-            }
-            else if(count<=500){
-                count101_500+=count;
-            }
-            else{
-                count500B+=count;
-            }
-        }
-
-        Debug.Log($"1={count1};2={count2};3={count3};4={count4};5={count5};6_10={count6_10};11_20={count11_20};21_100={count21_100};101_500={count101_500};>500={count500B};");
-        Debug.Log($"1\t{count1}\n2\t{count2}\n3\t{count3}\n4\t{count4}\n5\t{count5}\n6_10\t{count6_10}\n11_20\t{count11_20}\n21_100\t{count21_100}\n101_500\t{count101_500}\n>500\t{count500B}\n");
+        PrefabInfoList.ShowInstanceCount();
     }
 
     public void GetTargetCount()
@@ -716,25 +616,33 @@ UnpackPrefab();
 
     public void AcRTAlignJobs()
     {
-        
+        var meshFilters=GetMeshFilters();
+        AcRTAlignJobs(meshFilters);
+    }
+
+    public void AcRTAlignJobs(MeshPoints[] meshPoints)
+    {
         SetDistanceSettings();
         UnpackPrefab();
         CleanNodes();
         Debug.Log("AcRTAlignJobs");
-        var meshFilters=GetMeshFilters();
-         PrefabInfoList.Clear();
-        PrefabInfoList = MeshJobHelper.NewAcRTAlignJobs(meshFilters,JobSize);
+        SetPrefabInfoList(MeshJobHelper.NewAcRTAlignJobs(meshPoints, JobSize));
     }
 
     public void AcRTAlignJobsEx()
+    {
+        var meshFilters = GetMeshFilters();
+        AcRTAlignJobsEx(meshFilters);
+    }
+
+    public void AcRTAlignJobsEx(MeshPoints[] meshPoints)
     {
         SetAcRTAlignJobSetting();
         SetDistanceSettings();
         UnpackPrefab();
         CleanNodes();
         Debug.Log("AcRTAlignJobsEx");
-        var meshFilters = GetMeshFilters();
-        SetPrefabInfoList(MeshJobHelper.NewAcRTAlignJobsEx(meshFilters, JobSize));
+        SetPrefabInfoList(MeshJobHelper.NewAcRTAlignJobsEx(meshPoints, JobSize));
     }
 
 
@@ -746,99 +654,49 @@ UnpackPrefab();
 
     public void RemoveInstances1()
     {
-        PrefabInfoList1.RemoveInstances();
-        PrefabInfoList2.RemoveInstances();
-        PrefabInfoList3.RemoveInstances();
-        PrefabInfoList4.RemoveInstances();
+        PrefabInfoListBags.RemoveInstances1();
     }
 
     public void RemoveInstances2()
     {
-        PrefabInfoList5.RemoveInstances();
-        PrefabInfoList6.RemoveInstances();
+        PrefabInfoListBags.RemoveInstances2();
     }
 
     public void HideInstances1()
     {
-        PrefabInfoList1.HideInstances();
-        PrefabInfoList2.HideInstances();
-        PrefabInfoList3.HideInstances();
-        PrefabInfoList4.RemoveInstances();
+        PrefabInfoListBags.HideInstances1();
     }
 
     public void HideInstances2()
     {
-        //PrefabInfoList4.RemoveInstances();
-        PrefabInfoList5.HideInstances();
-        PrefabInfoList6.HideInstances();
+        PrefabInfoListBags.HideInstances2();
     }
 
     public void ShowInstances1()
     {
-        PrefabInfoList1.ShowInstances();
-        PrefabInfoList2.ShowInstances();
-        PrefabInfoList3.ShowInstances();
-        PrefabInfoList4.ShowInstances();
+        PrefabInfoListBags.ShowInstances1();
     }
 
     public void ShowInstances2()
     {
-        //PrefabInfoList4.RemoveInstances();
-        PrefabInfoList5.ShowInstances();
-        PrefabInfoList6.ShowInstances();
-    }
-
-    public void ClearPrefabs()
-    {
-        PrefabInfoList.Clear();
-        ClearPrefabs16();
+        PrefabInfoListBags.ShowInstances2();
     }
 
     public void ClearPrefabs16()
     {
-        PrefabInfoList1.Clear();
-        PrefabInfoList2.Clear();
-        PrefabInfoList3.Clear();
-        PrefabInfoList4.Clear();
-        PrefabInfoList5.Clear();
-        PrefabInfoList6.Clear();
+        PrefabInfoListBags.ClearPrefabs16();
     }
 
-    public void SetPrefabInfoList(List<PrefabInfo> list){
+    public void ClearPrefabs()
+    {
+        PrefabInfoListBags.ClearPrefabs();
+    }
+
+
+    public void SetPrefabInfoList(PrefabInfoList list){
         //PrefabInfoList.Clear();
         PrefabInfoList = list;
-
-        ClearPrefabs16();
-
-        for (int i=0;i<list.Count;i++)
-        {
-            if(list[i].InstanceCount<InsCountList[0])//1
-            {
-                PrefabInfoList1.Add(list[i]);
-            }
-            else if(list[i].InstanceCount<InsCountList[1])//5
-            {
-                PrefabInfoList2.Add(list[i]);
-            }
-            else if (list[i].InstanceCount < InsCountList[2])//10
-            {
-                PrefabInfoList3.Add(list[i]);
-            }
-            else if (list[i].InstanceCount < InsCountList[3])//50
-            {
-                PrefabInfoList4.Add(list[i]);
-            }
-            else if (list[i].InstanceCount < InsCountList[4])//100
-            {
-                PrefabInfoList5.Add(list[i]);
-            }
-            else
-            {
-                PrefabInfoList6.Add(list[i]);
-            }
-        }
-
-        Debug.LogError($"SetPrefabInfoList all:{PrefabInfoList.Count}={PrefabInfoList.GetInstanceCount()}\t list1:{PrefabInfoList1.Count}={PrefabInfoList1.GetInstanceCount()}\t list2:{PrefabInfoList2.Count}={PrefabInfoList2.GetInstanceCount()}\t list3:{PrefabInfoList3.Count}={PrefabInfoList3.GetInstanceCount()}\t list4:{PrefabInfoList4.Count}={PrefabInfoList4.GetInstanceCount()}\t list5:{PrefabInfoList5.Count}={PrefabInfoList5.GetInstanceCount()} \tlist6:{PrefabInfoList6.Count}={PrefabInfoList6.GetInstanceCount()},");
+        PrefabInfoListBags.SetPrefabInfoList(list, InsCountList);
     }
 
     // public bool IsTryAngles=true;
@@ -1335,11 +1193,7 @@ break;
 
     public List<MeshRenderer> GetHiddenRenderers()
     {
-        List<MeshRenderer> list = new List<MeshRenderer>();
-        list.AddRange(PrefabInfoList5.GetRenderers());
-        list.AddRange(PrefabInfoList6.GetRenderers());
-        Debug.LogError("GetHiddenRenderers "+list.Count);
-        return list;
+        return PrefabInfoListBags.GetHiddenRenderers();
     }
 
     private void CreateInstancesInner(bool userLOD,bool userGPUPrefab,int maxInstanceCount,float[] lvs,float[] lodVertexPercents)
@@ -1364,13 +1218,13 @@ break;
         DateTime start = DateTime.Now;
         int totalCount = 0;
 
-        //List<PrefabInfo> lodPrefabInfoList
-        List<PrefabInfo> list = new List<PrefabInfo>();
-        //list.AddRange(PrefabInfoList3);
+        //PrefabInfoList lodPrefabInfoList
+        PrefabInfoList list = new PrefabInfoList();
+        //list.AddRange(PrefabInfoListBags.PrefabInfoList3);
 
-        //list.AddRange(PrefabInfoList4);
-        list.AddRange(PrefabInfoList5);
-        list.AddRange(PrefabInfoList6);
+        //list.AddRange(PrefabInfoListBags.PrefabInfoList4);
+        list.AddRange(PrefabInfoListBags.PrefabInfoList5);
+        list.AddRange(PrefabInfoListBags.PrefabInfoList6);
 
         for (int i = 0; i < list.Count; i++)
         {

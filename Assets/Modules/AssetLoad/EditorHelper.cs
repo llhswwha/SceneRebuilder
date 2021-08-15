@@ -180,17 +180,21 @@ public static class EditorHelper
 
     public static void UnpackPrefab(GameObject go)
     {
+#if UNITY_EDITOR
         UnpackPrefab(go, PrefabUnpackMode.Completely);
+#endif
     }
 
     public static void UnpackPrefab(GameObject go, PrefabUnpackMode unpackMode)
     {
+#if UNITY_EDITOR
         if (go == null) return;
         GameObject root = PrefabUtility.GetOutermostPrefabInstanceRoot(go);
         if (root != null)
         {
             PrefabUtility.UnpackPrefabInstance(root, unpackMode, InteractionMode.UserAction);
         }
+#endif
     }
 
 

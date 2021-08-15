@@ -2,6 +2,7 @@ using System;
 using System.Collections;
 using System.Collections.Generic;
 using System.Linq;
+using MeshJobs;
 using UnityEngine;
 
 public class DoorManager : SingletonBehaviour<DoorManager>
@@ -26,49 +27,103 @@ public class DoorManager : SingletonBehaviour<DoorManager>
 
     public bool IsOnlyCanSplit = false;
 
-    public DoorInfoList doorInfos;
+    public DoorsRootList doorRoots;
 
-    public DoorInfoList UpdateDoors()
+    public DoorsRootList UpdateDoors()
     {
-        MeshRenderer[] renderers = null;
+        //MeshRenderer[] renderers = null;
+        DoorsRoot[] doorsRoots = null;
         if (LocalTarget != null)
         {
-            renderers = LocalTarget.GetComponentsInChildren<MeshRenderer>(true);
+            doorsRoots= LocalTarget.GetComponentsInChildren<DoorsRoot>(true);
+            if(doorsRoots.Length == 0)
+            {
+                var ts = LocalTarget.GetComponentsInChildren<Transform>(true);
+                doorsRoots = InitDoorsRoot(ts);
+            }
+            //renderers = LocalTarget.GetComponentsInChildren<MeshRenderer>(true);
         }
         else
         {
-            renderers = GameObject.FindObjectsOfType<MeshRenderer>(true);
+            //renderers = GameObject.FindObjectsOfType<MeshRenderer>(true);
+
+            doorsRoots = GameObject.FindObjectsOfType<DoorsRoot>(true);
+            if (doorsRoots.Length == 0)
+            {
+                var ts = GameObject.FindObjectsOfType<Transform>(true);
+                doorsRoots = InitDoorsRoot(ts);
+                Debug.Log("UpdateDoors ");
+            }
         }
-        var rendererList = renderers.Where(i => i.name.ToLower().Contains("door")).ToList();
-        doorInfos = new DoorInfoList(rendererList);
-        return doorInfos;
+        //var rendererList = renderers.Where(i => i.name.ToLower().Contains("door")).ToList();
+        doorRoots = new DoorsRootList(doorsRoots);
+        return doorRoots;
     }
 
-    public DoorInfoList GetDoors()
+    public void ApplyReplace()
     {
-        DoorInfoList doors = new DoorInfoList();
+        doorRoots.ApplyReplace();
+    }
 
-        foreach(var door in doorInfos)
+    public void RevertReplace()
+    {
+        doorRoots.ApplyReplace();
+    }
+
+    public void ShowOri()
+    {
+        doorRoots.ShowOri();
+    }
+
+    public void ShowNew()
+    {
+        doorRoots.ShowNew();
+    }
+
+    private DoorsRoot[] InitDoorsRoot(Transform[] ts)
+    {
+        List<DoorsRoot> list = new List<DoorsRoot>();
+        var doorsList = ts.Where(i => i.name.ToLower().Contains("doors")).ToList();
+        Debug.Log($"InitDoorsRoot ts:{ts.Length} doorsRoots:{doorsList.Count}");
+        foreach (var doors in doorsList)
         {
-            if (IsOnlyActive)
-            {
-                if (door.DoorGo && door.DoorGo.activeInHierarchy == false) continue;
-            }
-            if (IsOnlyCanSplit)
-            {
-                if (door.SubMeshCount <= 1) continue;
-            }
-            doors.Add(door);
-
-            doors.VertexCount += door.VertexCount;
-            if (door.DoorGo && door.DoorGo.activeInHierarchy)
-                doors.VertexCount_Show += door.VertexCount;
+            var root = doors.gameObject.AddComponent<DoorsRoot>();
+            list.Add(root);
         }
-        doors.Sort((a, b) =>
+        return list.ToArray();
+    }
+
+    public DoorPartInfoList GetDoorParts()
+    {
+        DoorPartInfoList doorParts = new DoorPartInfoList();
+
+        foreach(var doorRoot in doorRoots)
+        {
+            foreach(var doors in doorRoot.Doors)
+            {
+                foreach (var door in doors.DoorParts)
+                {
+                    if (IsOnlyActive)
+                    {
+                        if (door.DoorGo && door.DoorGo.activeInHierarchy == false) continue;
+                    }
+                    if (IsOnlyCanSplit)
+                    {
+                        if (door.SubMeshCount <= 1) continue;
+                    }
+                    doorParts.Add(door);
+
+                    doorParts.VertexCount += door.VertexCount;
+                    if (door.DoorGo && door.DoorGo.activeInHierarchy)
+                        doorParts.VertexCount_Show += door.VertexCount;
+                }
+            }
+        }
+        doorParts.Sort((a, b) =>
         {
             return b.VertexCount.CompareTo(a.VertexCount);
         });
-        return doors;
+        return doorParts;
     }
 
     public void SplitDoors(GameObject root)
@@ -81,7 +136,7 @@ public class DoorManager : SingletonBehaviour<DoorManager>
 
     public void SplitAll()
     {
-        var doors = GetDoors();
+        var doors = GetDoorParts();
         for (int i = 0; i < doors.Count; i++)
         {
             var door = doors[i];
@@ -190,54 +245,125 @@ public static class DoorHelper
 }
 
 [Serializable]
-public class DoorInfoList: List<DoorInfo>
+public class DoorsRootList: List<DoorsRoot>
 {
-    //public List<DoorInfo> Doors = new List<DoorInfo>();
+    //public DoorInfoList Doors = new DoorInfoList();
     public int VertexCount = 0;
     public int VertexCount_Show = 0;
 
 
-    public DoorInfoList()
+    public DoorsRootList()
     {
         
     }
 
-    public DoorInfoList(List<MeshRenderer> renderers)
+    //public DoorInfoList(List<MeshRenderer> renderers)
+    //{
+    //    GetDoors(renderers);
+    //}
+
+    public DoorsRootList(DoorsRoot[] doorsRoots)
     {
-        GetDoors(renderers);
+        GetDoors(doorsRoots);
     }
 
-    public void GetDoors(List<MeshRenderer> renderers)
+    public void GetDoors(DoorsRoot[] doorsRoots)
     {
+        Debug.Log($"GetDoors roots:{doorsRoots.Length}");
         //Doors.Clear();
         VertexCount = 0;
         VertexCount_Show = 0;
         DateTime start = DateTime.Now;
         ProgressBarHelper.DisplayCancelableProgressBar("GetDoors", "Start", 0);
         //var renderers = GameObject.FindObjectsOfType<MeshRenderer>(true).Where(i => i.name.ToLower().Contains("door")).ToList();
-        for (int i = 0; i < renderers.Count; i++)
+        for (int i = 0; i < doorsRoots.Length; i++)
         {
 
-            float progress = (float)i / renderers.Count;
-            ProgressBarHelper.DisplayCancelableProgressBar("GetDoors", $"{i}/{renderers.Count} {progress:P1}", progress);
-            var parent = renderers[i].transform.parent;
-            if (parent != null && parent.name.ToLower().Contains("combined")) continue;
-            DoorInfo door = new DoorInfo(renderers[i]);
-            this.Add(door);
-            VertexCount += door.VertexCount;
-            if (renderers[i].gameObject.activeInHierarchy)
+            float progress = (float)i / doorsRoots.Length;
+            ProgressBarHelper.DisplayCancelableProgressBar("GetDoors", $"{i}/{doorsRoots.Length} {progress:P1}", progress);
+            //var parent = doorsRoots[i].transform.parent;
+            ////if (parent != null && parent.name.ToLower().Contains("combined")) continue;
+            var doorRoot = doorsRoots[i];
+            doorRoot.Init();
+            this.Add(doorRoot);
+            VertexCount += doorRoot.VertexCount;
+            if (doorRoot.gameObject.activeInHierarchy)
             {
-                VertexCount_Show += door.VertexCount;
+                VertexCount_Show += doorRoot.VertexCount;
             }
         }
+        this.Sort((a, b) =>
+        {
+            return b.VertexCount.CompareTo(a.VertexCount);
+        });
         ProgressBarHelper.ClearProgressBar();
-        Debug.Log($"GetDoors count:{renderers.Count} VertexCount:{VertexCount} time:{(DateTime.Now - start)}");
+        Debug.Log($"GetDoors count:{doorsRoots.Length} VertexCount:{VertexCount} time:{(DateTime.Now - start)}");
         //return Doors;
+    }
+
+    //public void GetDoors(List<MeshRenderer> renderers)
+    //{
+    //    //Doors.Clear();
+    //    VertexCount = 0;
+    //    VertexCount_Show = 0;
+    //    DateTime start = DateTime.Now;
+    //    ProgressBarHelper.DisplayCancelableProgressBar("GetDoors", "Start", 0);
+    //    //var renderers = GameObject.FindObjectsOfType<MeshRenderer>(true).Where(i => i.name.ToLower().Contains("door")).ToList();
+    //    for (int i = 0; i < renderers.Count; i++)
+    //    {
+
+    //        float progress = (float)i / renderers.Count;
+    //        ProgressBarHelper.DisplayCancelableProgressBar("GetDoors", $"{i}/{renderers.Count} {progress:P1}", progress);
+    //        var parent = renderers[i].transform.parent;
+    //        if (parent != null && parent.name.ToLower().Contains("combined")) continue;
+    //        DoorInfo door = new DoorInfo(renderers[i]);
+    //        this.Add(door);
+    //        VertexCount += door.VertexCount;
+    //        if (renderers[i].gameObject.activeInHierarchy)
+    //        {
+    //            VertexCount_Show += door.VertexCount;
+    //        }
+    //    }
+    //    ProgressBarHelper.ClearProgressBar();
+    //    Debug.Log($"GetDoors count:{renderers.Count} VertexCount:{VertexCount} time:{(DateTime.Now - start)}");
+    //    //return Doors;
+    //}
+
+    public void ApplyReplace()
+    {
+        for (int i = 0; i < this.Count; i++)
+        {
+            this[i].ApplyReplace();
+        }
+    }
+
+    public void RevertReplace()
+    {
+        for (int i = 0; i < this.Count; i++)
+        {
+            this[i].RevertReplace();
+        }
+    }
+
+    public void ShowOri()
+    {
+        for (int i = 0; i < this.Count; i++)
+        {
+            this[i].ShowOri();
+        }
+    }
+
+    public void ShowNew()
+    {
+        for (int i = 0; i < this.Count; i++)
+        {
+            this[i].ShowNew();
+        }
     }
 }
 
 [Serializable]
-public class DoorInfo
+public class DoorPartInfo
 {
     public string Root;
     public GameObject DoorGo;
@@ -258,7 +384,7 @@ public class DoorInfo
 
     public int SubMeshCount;
 
-    public DoorInfo()
+    public DoorPartInfo()
     {
 
     }
@@ -269,7 +395,7 @@ public class DoorInfo
         return $"{Root}>{DoorGo.name}";
     }
 
-    public DoorInfo(MeshRenderer renderer)
+    public DoorPartInfo(MeshRenderer renderer)
     {
         BuildingModelInfo[] models = renderer.gameObject.GetComponentsInParent<BuildingModelInfo>(true);
         if (models.Length > 0)
@@ -284,7 +410,7 @@ public class DoorInfo
         DisToCenter = Vector3.Distance(Pos, Center);
         OffToCenter = Center - Pos;
         MatCount = renderer.sharedMaterials.Length;
-        foreach(var mat in renderer.sharedMaterials)
+        foreach (var mat in renderer.sharedMaterials)
         {
             if (mat == null) continue;
             MatNames += mat.name + ";";
@@ -293,9 +419,84 @@ public class DoorInfo
         SubMeshCount = mf.sharedMesh.subMeshCount;
     }
 
+
+
     public override string ToString()
     {
         //return $"mat:{MatCount},mesh:{SubMeshCount},v:{VertexCount},dis:{DisToCenter:F1},off:({OffToCenter.x:F2},{OffToCenter.y:F2},{OffToCenter.z:F2})";
         return $"mat:{MatCount},mesh:{SubMeshCount},v:{VertexCount},dis:{DisToCenter:F1}";
+    }
+}
+
+[Serializable]
+public class DoorPartInfoList:List<DoorPartInfo>
+{
+    public int VertexCount = 0;
+    public int VertexCount_Show = 0;
+}
+
+[Serializable]
+public class DoorInfoList : List<DoorInfo>
+{
+    public DoorInfoList()
+    {
+
+    }
+
+    public DoorInfoList(DoorInfoList list)
+    {
+        this.AddRange(list);
+    }
+
+    internal MeshPoints[] GetMeshPoints()
+    {
+        MeshPoints[] meshPoints = new MeshPoints[this.Count];
+        for(int i = 0; i < this.Count; i++)
+        {
+            meshPoints[i] = new MeshPoints(this[i].DoorGo);
+        }
+        return meshPoints;
+    }
+}
+
+[Serializable]
+public class DoorInfo
+{
+    public string Root;
+    public GameObject DoorGo;
+    public int VertexCount = 0;
+    public List<DoorPartInfo> DoorParts = new List<DoorPartInfo>();
+    public string name;
+    public DoorInfo(GameObject root)
+    {
+        this.name = root.name;
+        DoorGo = root.gameObject;
+
+        BuildingModelInfo[] models = root.gameObject.GetComponentsInParent<BuildingModelInfo>(true);
+        if (models.Length > 0)
+        {
+            Root = models[0].name;
+        }
+
+        MeshRenderer[] renderers = root.GetComponentsInChildren<MeshRenderer>(true);
+        foreach(var renderer in renderers)
+        {
+            DoorPartInfo doorPart = new DoorPartInfo(renderer);
+            DoorParts.Add(doorPart);
+            VertexCount += doorPart.VertexCount;
+        }
+        DoorParts.Sort((a, b) => { return b.VertexCount.CompareTo(a.VertexCount); });
+        Debug.Log($"DoorInfo door:{root.name} parts:{DoorParts.Count} VertexCount:{VertexCount}");
+    }
+
+    public string GetTitle()
+    {
+        if (DoorGo == null) return "NULL";
+        return $"{Root}>{DoorGo.name}({DoorParts.Count})";
+    }
+
+    public override string ToString()
+    {
+        return $"v:{MeshHelper.GetVertexCountS(VertexCount)}";
     }
 }

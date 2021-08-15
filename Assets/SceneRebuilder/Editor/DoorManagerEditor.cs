@@ -7,57 +7,60 @@ using UnityEngine;
 [CustomEditor(typeof(DoorManager))]
 public class DoorManagerEditor : BaseFoldoutEditor<DoorManager>
 {
+    FoldoutEditorArg doorRootListArg = new FoldoutEditorArg();
+
     FoldoutEditorArg doorListArg = new FoldoutEditorArg();
+
+    FoldoutEditorArg doorPartListArg = new FoldoutEditorArg();
 
     public override void OnEnable()
     {
         base.OnEnable();
-        doorListArg.isEnabled = true;
+
+        doorRootListArg=new FoldoutEditorArg(true, false, true, true, false);
+        doorListArg = new FoldoutEditorArg(true, false, true, true, false);
+        doorPartListArg = new FoldoutEditorArg(true, false, true, true, false);
+
+        doorPartListArg.isEnabled = true;
         targetT.LocalTarget = null;
     }
 
     public override void OnToolLayout(DoorManager item)
     {
         base.OnToolLayout(item);
-        //if(GUILayout.Button("GetDoors"))
-        //{
-        //    item.GetDoors();
-        //}
 
-        //doorListArg.caption = $"Door List";
-        //EditorUIUtils.ToggleFoldout(doorListArg, arg =>
+        GUILayout.BeginHorizontal();
+        //if (GUILayout.Button("GetPrefab"))
         //{
-        //    var doors = item.doorInfos;
-        //    arg.caption = $"Door List ({doors.Count})";
-        //    arg.info = $"{doors.VertexCount_Show/10000f:F0}/{doors.VertexCount/10000f:F0}";
-        //    InitEditorArg(doors);
-        //},
-        //() =>
-        //{
-        //    if (GUILayout.Button("Update"))
-        //    {
-        //        RemoveEditorArg(item.doorInfos);
-        //        InitEditorArg(item.GetDoors());
-        //    }
-        //});
-        //if(doorListArg.isEnabled&& doorListArg.isExpanded)
-        //{
-        //    doorListArg.DrawPageToolbar(item.doorInfos, (door,i) =>
-        //    {
-        //        var arg = editorArgs[door];
-        //        arg.caption = $"[{i + 1:00}] {door.GetTitle()}";
-        //        arg.info = door.ToString();
-        //        EditorUIUtils.ObjectFoldout(arg, door.DoorGo, () =>
-        //        {
-        //            if (GUILayout.Button("Split", GUILayout.Width(50)))
-        //            {
-        //                Debug.Log($"Split:{door.GetTitle()}");
-        //                GameObject result = MeshCombineHelper.SplitByMaterials(door.DoorGo);
-        //            }
-        //        });
-        //    });
+        //    item.SetDoorShared(item.IsAlign, item.IsReplace);
         //}
+        if (GUILayout.Button("Apply"))
+        {
+            item.ApplyReplace();
+        }
+        if (GUILayout.Button("Revert"))
+        {
+            item.RevertReplace();
+        }
+        if (GUILayout.Button("ShowOri"))
+        {
+            item.ShowOri();
+        }
+        if (GUILayout.Button("ShowNew"))
+        {
+            item.ShowNew();
+        }
+        //if (GUILayout.Button("CombinePrefab"))
+        //{
+        //    item.CombinePrefab(item.IsAlign, item.IsReplace);
+        //}
+        GUILayout.EndHorizontal();
 
-        DrawDoorList(doorListArg, item);
+        EditorUIUtils.Separator(5);
+
+        item.LocalTarget = ObjectField(item.LocalTarget);
+
+        DrawDoorsRootList(doorRootListArg, item);
+        DrawDoorPartList(doorPartListArg, item);
     }
 }
