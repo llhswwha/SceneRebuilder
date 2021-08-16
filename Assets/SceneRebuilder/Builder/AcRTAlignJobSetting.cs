@@ -16,7 +16,7 @@ public class AcRTAlignJobSetting : SingletonBehaviour<AcRTAlignJobSetting>
 
     public bool IsSetParent=false;
 
-    public int MaxVertexCount=2400;
+    public float MaxVertexCount=10;
 
     [ContextMenu("SetAcRTAlignJobSetting")]
     public void SetAcRTAlignJobSetting()
@@ -27,7 +27,7 @@ public class AcRTAlignJobSetting : SingletonBehaviour<AcRTAlignJobSetting>
 
          AcRTAlignJobContainer.IsSetParent=this.IsSetParent;
 
-         AcRTAlignJobContainer.MaxVertexCount=this.MaxVertexCount;
+         AcRTAlignJobContainer.MaxVertexCount=(int)(this.MaxVertexCount*10000);
     }
 
     public float MaxModelLength=1.2f;

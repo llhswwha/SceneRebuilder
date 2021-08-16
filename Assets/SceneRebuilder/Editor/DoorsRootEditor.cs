@@ -30,15 +30,15 @@ public class DoorsRootEditor : BaseFoldoutEditor<DoorsRoot>
     {
         base.OnToolLayout(item);
 
-        GUILayout.BeginHorizontal();
-        item.IsAlign=GUILayout.Toggle(item.IsAlign, "IsAlign");
-        item.IsReplace = GUILayout.Toggle(item.IsReplace, "IsReplace");
-        GUILayout.EndHorizontal();
+        //GUILayout.BeginHorizontal();
+        //item.IsAlign=GUILayout.Toggle(item.IsAlign, "IsAlign");
+        //item.IsReplace = GUILayout.Toggle(item.IsReplace, "IsReplace");
+        //GUILayout.EndHorizontal();
 
         GUILayout.BeginHorizontal();
         if (GUILayout.Button("GetPrefab"))
         {
-            item.SetDoorShared(item.IsAlign, item.IsReplace);
+            item.SetDoorShared();
         }
         if (GUILayout.Button("Apply"))
         {
@@ -56,9 +56,36 @@ public class DoorsRootEditor : BaseFoldoutEditor<DoorsRoot>
         {
             item.ShowNew();
         }
+        GUILayout.EndHorizontal();
+
+        GUILayout.BeginHorizontal();
+        if (GUILayout.Button("Clear"))
+        {
+            item.prefabs.Clear();
+        }
+        if (GUILayout.Button("DestroyIns"))
+        {
+            item.DestroyInstances();
+        }
+        if (GUILayout.Button("Reset"))
+        {
+            item.ResetPrefabs();
+        }
+
         if (GUILayout.Button("CombinePrefab"))
         {
-            item.CombinePrefab(item.IsAlign, item.IsReplace);
+            item.CombinePrefab();
+        }
+        GUILayout.EndHorizontal();
+
+        GUILayout.BeginHorizontal();
+        if (GUILayout.Button("Split"))
+        {
+            item.Split();
+        }
+        if (GUILayout.Button("CopyPart"))
+        {
+            item.CopyPart();
         }
         GUILayout.EndHorizontal();
 

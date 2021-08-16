@@ -26,4 +26,18 @@ public class ProgressBarHelper : MonoBehaviour
 #endif
         return result;
     }
+
+    public static bool DisplayCancelableProgressBar(string title, int i,int count)
+    {
+        float progress1 = (float)i / count;
+        return ProgressBarHelper.DisplayCancelableProgressBar(title, $"Progress {i}/{count} {progress1:P1}", progress1);
+    }
+
+    public static bool DisplayCancelableProgressBar(string title, int i1, int count1,int i2,int count2)
+    {
+        
+        float progress2 = (float)i2 / count2;
+        float progress1 = (float)(i1+ progress2) / count1;
+        return ProgressBarHelper.DisplayCancelableProgressBar(title, $"Progress {i1}/{count1} {i2}/{count2} {progress1:P1}", progress1);
+    }
 }

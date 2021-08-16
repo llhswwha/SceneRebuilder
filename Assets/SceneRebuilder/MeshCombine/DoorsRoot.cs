@@ -12,9 +12,9 @@ public class DoorsRoot : MonoBehaviour
 
     public DoorInfoList Doors = new DoorInfoList();
 
-    public bool IsAlign = false;
+    //public bool IsAlign = false;
 
-    public bool IsReplace = false;
+    //public bool IsReplace = false;
 
     public void Init()
     {
@@ -55,14 +55,14 @@ public class DoorsRoot : MonoBehaviour
     //    SetDoorShared(false);
     //}
 
-    public void CombinePrefab(bool isAlign, bool isReplace)
+    public void CombinePrefab()
     {
 
         PrefabInfoList list1 = new PrefabInfoList(prefabs);
         PrefabInfoList list2 = new PrefabInfoList(prefabs);
 
         DateTime start = DateTime.Now;
-        Debug.Log($"SetDoorShared root:{this.name}");
+        Debug.Log($"CombinePrefab root:{this.name}");
         int allCount = 0;
         for (int i = 0; i < Doors.Count; i++)
         {
@@ -84,7 +84,7 @@ public class DoorsRoot : MonoBehaviour
             var item1Go = item1.Prefab;
             list2.Remove(item1);
 
-            if (ProgressBarHelper.DisplayCancelableProgressBar("SetDoorShared1", i, list1.Count))
+            if (ProgressBarHelper.DisplayCancelableProgressBar("CombinePrefab1", i, list1.Count))
             {
                 break;
             }
@@ -104,7 +104,7 @@ public class DoorsRoot : MonoBehaviour
             for (int j = 0; j < list2.Count; j++)
             {
                 count++;
-                if (ProgressBarHelper.DisplayCancelableProgressBar("SetDoorShared2", i, list1.Count, j, list2.Count))
+                if (ProgressBarHelper.DisplayCancelableProgressBar("CombinePrefab2", i, list1.Count, j, list2.Count))
                 {
                     isBreak = true;
                     break;
@@ -116,15 +116,14 @@ public class DoorsRoot : MonoBehaviour
                 //var copyDoor1 = MeshHelper.CopyGO(door1.DoorGo);
                 copyDoor1.transform.position = item2Go.transform.position;
 
-                float distance1 = MeshHelper.GetVertexDistanceEx(copyDoor1.transform, item2Go.transform, "SetDoorShared1", false);
-
+                float distance1 = MeshHelper.GetVertexDistanceEx(copyDoor1.transform, item2Go.transform, "CombinePrefab1", false);
 
                 if (distance1 < DistanceSetting.zeroM)
                 {
                     Debug.Log($"SetDoorShared2[{i}/{list1.Count} {j}/{list2.Count}] door1:{item1Go.name} door2:{item2Go.name} distance:{distance1} {distance1 < DistanceSetting.zeroM}");
 
                     posAlinCount++;
-                    prefab.Add(item2Go, copyDoor1);
+                    prefab.AddInstance(item2Go, copyDoor1);
 
                     //list1.Remove(door2);
                     instances.Add(item2);
@@ -132,40 +131,39 @@ public class DoorsRoot : MonoBehaviour
                     list2.Remove(item2);
                     j--;
 
-
                 }
                 else
                 {
-                    if (isAlign)
-                    {
-                        //Debug.LogWarning($"SetDoorShared2[{i}/{list1.Count} {j}/{list2.Count}] door1:{door1Go.name} door2:{door2Go.name} distance:{distance1} {distance1 < DistanceSetting.zeroM}");
+                    ////if (isAlign)
+                    //{
+                    //    //Debug.LogWarning($"SetDoorShared2[{i}/{list1.Count} {j}/{list2.Count}] door1:{door1Go.name} door2:{door2Go.name} distance:{distance1} {distance1 < DistanceSetting.zeroM}");
 
-                        MeshComparer.Instance.AcRTAlignJob(copyDoor1.gameObject, item2Go.gameObject);
-                        isBreak = true;
-                        break;
+                    //    MeshComparer.Instance.AcRTAlignJob(copyDoor1.gameObject, item2Go.gameObject);
+                    //    isBreak = true;
+                    //    break;
 
-                        //float distance2 = MeshHelper.GetVertexDistanceEx(copyDoor1.transform, door2Go.transform, "SetDoorShared2", false);
-                        //Debug.Log($"distance1:{distance1} distance2:{distance2}");
+                    //    //float distance2 = MeshHelper.GetVertexDistanceEx(copyDoor1.transform, door2Go.transform, "SetDoorShared2", false);
+                    //    //Debug.Log($"distance1:{distance1} distance2:{distance2}");
 
-                        //if (distance2 < DistanceSetting.zeroM)
-                        //{
-                        //    //newDoor2.name = door2.name + "_New";
-                        //    //GameObject.DestroyImmediate(door2.gameObject);
-                        //    meshAlignCount++;
-                        //}
-                        //else
-                        //{
-                        //    noAlignCount++;
-                        //    //Debug.LogError("¶ÔÆëÊ§°Ü");
+                    //    //if (distance2 < DistanceSetting.zeroM)
+                    //    //{
+                    //    //    //newDoor2.name = door2.name + "_New";
+                    //    //    //GameObject.DestroyImmediate(door2.gameObject);
+                    //    //    meshAlignCount++;
+                    //    //}
+                    //    //else
+                    //    //{
+                    //    //    noAlignCount++;
+                    //    //    //Debug.LogError("¶ÔÆëÊ§°Ü");
 
-                        //    Debug.LogWarning($"¶ÔÆëÊ§°Ü SetDoorShared2[{i}/{list1.Count} {j}/{list2.Count}] door1:{door1Go.name} door2:{door2Go.name} distance:{distance1} {distance1 < DistanceSetting.zeroM}");
-                        //}
-                    }
-                    else
-                    {
-                        Debug.LogWarning($"SetDoorShared2[{i}/{list1.Count} {j}/{list2.Count}] door1:{item1Go.name} door2:{item2Go.name} distance:{distance1} {distance1 < DistanceSetting.zeroM}");
-                    }
-
+                    //    //    Debug.LogWarning($"¶ÔÆëÊ§°Ü SetDoorShared2[{i}/{list1.Count} {j}/{list2.Count}] door1:{door1Go.name} door2:{door2Go.name} distance:{distance1} {distance1 < DistanceSetting.zeroM}");
+                    //    //}
+                    //}
+                    //else
+                    //{
+                        
+                    //}
+                    Debug.LogWarning($"SetDoorShared2[{i}/{list1.Count} {j}/{list2.Count}] door1:{item1Go.name} door2:{item2Go.name} distance:{distance1} {distance1 < DistanceSetting.zeroM}");
                 }
             }
 
@@ -185,166 +183,60 @@ public class DoorsRoot : MonoBehaviour
         prefabs = prefabsNew;
     }
 
+    public void CopyPart()
+    {
+        for(int i=0;i<Doors.Count;i++)
+        {
+            ProgressBarHelper.DisplayCancelableProgressBar("CopyPart", i, Doors.Count);
+            DoorHelper.CopyDoorA(Doors[i].DoorGo, true);
+        }
+        ProgressBarHelper.ClearProgressBar();
+    }
+
+    public void Split()
+    {
+        var parts=Doors.GetDoorParts();
+        DoorManager.SplitDoorParts(parts);
+    }
+
     public void AcRTAlignJobs()
     {
         MeshPoints[] meshPoints = Doors.GetMeshPoints();
-        PrefabInstanceBuilder.Instance.AcRTAlignJobs(meshPoints);
+        prefabs=PrefabInstanceBuilder.Instance.AcRTAlignJobs(meshPoints);
     }
 
     public void AcRTAlignJobsEx()
     {
         MeshPoints[] meshPoints = Doors.GetMeshPoints();
-        PrefabInstanceBuilder.Instance.AcRTAlignJobsEx(meshPoints);
+        prefabs = PrefabInstanceBuilder.Instance.AcRTAlignJobsEx(meshPoints);
     }
 
-    public void SetDoorShared(bool isAlign,bool isReplace)
+    public void SetDoorShared()
     {
         EditorHelper.UnpackPrefab(this.gameObject);
-
         Init();
-
-        DoorInfoList list1 = new DoorInfoList(Doors);
-        DoorInfoList list2 = new DoorInfoList(Doors);
-
-        DateTime start = DateTime.Now;
         Debug.Log($"SetDoorShared root:{this.name}");
-        int allCount = 0;
-        for (int i = 0; i < Doors.Count; i++)
-        {
-            allCount += Doors.Count - 1 - i;
-        }
-
-        int count = 0;
-        int meshAlignCount = 0;
-        int posAlinCount = 0;
-        int noAlignCount = 0;
-
-
-        PrefabInfoList  prefabsNew = new PrefabInfoList();
-        DoorInfoList instances = new DoorInfoList();
-
-        for (int i = 0; i < list1.Count; i++)
-        {
-            var item1 = list1[i];
-            var item1Go = item1.DoorGo;
-            list2.Remove(item1);
-
-            if (ProgressBarHelper.DisplayCancelableProgressBar("SetDoorShared1", i, list1.Count))
-            {
-                break;
-            }
-
-            if (instances.Contains(item1))
-            {
-                continue;
-            }
-
-            PrefabInfo prefab = new PrefabInfo(item1Go);
-            prefabsNew.Add(prefab);
-
-            var copyItem1 = MeshHelper.CopyGO(item1Go);
-            //copyDoor1.transform.position = door2.DoorGo.transform.position;
-            bool isAligned = false;
-            bool isBreak = false;
-            for (int j = 0; j < list2.Count; j++)
-            {
-                if (copyItem1 == null)
-                {
-                    copyItem1 = MeshHelper.CopyGO(item1Go);
-                }
-                count++;
-                if (ProgressBarHelper.DisplayCancelableProgressBar("SetDoorShared2", i, list1.Count, j, list2.Count))
-                {
-                    isBreak = true;
-                    break;
-                }
-
-                var item2 = list2[j];
-                var item2Go = item2.DoorGo;
-
-                //var copyDoor1 = MeshHelper.CopyGO(door1.DoorGo);
-                copyItem1.transform.position = item2Go.transform.position;
-
-                float distance1 = MeshHelper.GetVertexDistanceEx(copyItem1.transform, item2Go.transform, "SetDoorShared1", false);
-
-                if (distance1 < DistanceSetting.zeroM)
-                {
-                    Debug.Log($"SetDoorShared2[{i}/{list1.Count} {j}/{list2.Count}] door1:{item1Go.name} door2:{item2Go.name} distance:{distance1} {distance1 < DistanceSetting.zeroM}");
-
-                    posAlinCount++;
-                    //var copyItem2 = MeshHelper.CopyGO(copyItem1);
-
-                    item2Go.SetActive(false);
-                    copyItem1.name = item2Go.name + "_New";
-                    prefab.Add(item2Go, copyItem1);
-                    copyItem1 = null;
-
-                    //list1.Remove(door2);
-                    instances.Add(item2);
-
-                    list2.Remove(item2);
-                    j--;
-
-                    isAligned = true;
-                }
-                else
-                {
-                    if (isAlign)
-                    {
-                        //Debug.LogWarning($"SetDoorShared2[{i}/{list1.Count} {j}/{list2.Count}] door1:{door1Go.name} door2:{door2Go.name} distance:{distance1} {distance1 < DistanceSetting.zeroM}");
-
-                        MeshComparer.Instance.AcRTAlignJob(copyItem1.gameObject, item2Go.gameObject);
-                        isBreak = true;
-                        break;
-
-                        //float distance2 = MeshHelper.GetVertexDistanceEx(copyDoor1.transform, door2Go.transform, "SetDoorShared2", false);
-                        //Debug.Log($"distance1:{distance1} distance2:{distance2}");
-
-                        //if (distance2 < DistanceSetting.zeroM)
-                        //{
-                        //    //newDoor2.name = door2.name + "_New";
-                        //    //GameObject.DestroyImmediate(door2.gameObject);
-                        //    meshAlignCount++;
-                        //}
-                        //else
-                        //{
-                        //    noAlignCount++;
-                        //    //Debug.LogError("¶ÔÆëÊ§°Ü");
-
-                        //    Debug.LogWarning($"¶ÔÆëÊ§°Ü SetDoorShared2[{i}/{list1.Count} {j}/{list2.Count}] door1:{door1Go.name} door2:{door2Go.name} distance:{distance1} {distance1 < DistanceSetting.zeroM}");
-                        //}
-                    }
-                    else
-                    {
-                        Debug.LogWarning($"SetDoorShared2[{i}/{list1.Count} {j}/{list2.Count}] door1:{item1Go.name} door2:{item2Go.name} distance:{distance1} {distance1 < DistanceSetting.zeroM}");
-                    }
-
-                }
-            }
-
-            if (copyItem1)
-            {
-                GameObject.DestroyImmediate(copyItem1);
-            }
-
-            if (isBreak)
-            {
-                break;
-            }
-        }
-
-        prefabsNew.SortByInstanceCount();
-
-        ProgressBarHelper.ClearProgressBar();
-        Debug.Log($"SetDoorShared count:{count} posAlinCount:{posAlinCount} meshAlignCount:{meshAlignCount} noAlignCount:{noAlignCount} prefabs:{prefabsNew.Count} instances:{instances.Count} time:{DateTime.Now - start}");
-
-        prefabs = prefabsNew;
+        prefabs = DoorHelper.SetDoorShared(Doors);
     }
+
+    
 
     public void ApplyReplace()
     {
         prefabs.ApplyReplace();
     }
+
+    public void DestroyInstances()
+    {
+        prefabs.DestroyInstances();
+    }
+
+    public void ResetPrefabs()
+    {
+        prefabs.ResetPrefabs();
+    }
+
+    
 
     public void RevertReplace()
     {

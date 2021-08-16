@@ -225,39 +225,41 @@ public class PrefabInstanceBuilderEditor : BaseFoldoutEditor<PrefabInstanceBuild
             item.OneKey_Align_Remove_Instance_LOD();
         }
 
-        base.DrawObjectList(prefabInfoListArg, "PrefabInfoList", () =>
-        {
-            return item.PrefabInfoList;
-        },
-        (arg,item,i) =>
-        {
-            arg.caption = $"[{i:00}] {item.Prefab.name}({item.InstanceCount})";
-            arg.tag = item.Prefab;
-            arg.isFoldout = true;
-            arg.background = true;
-        },
-        (item) =>
-         {
-             //ObjectField(item.Prefab);
-             //if (GUILayout.Button(item.Prefab.name,GUILayout.Width(100)))
-             //{
-             //    EditorHelper.SelectObject(item.Prefab);
-             //}
+        base.DrawPrefabList(prefabInfoListArg, () => item.PrefabInfoList);
 
-             //base.DrawObjectList(item.Instances,"")
-         }, (arg, item, i) =>
-         {
-             //arg.caption = $"[{i:00}] {item.Prefab.name}({item.InstanceCount})";
-             //arg.tag = item.Prefab;
-             //arg.isFoldout = true;
+        //base.DrawObjectList(prefabInfoListArg, "PrefabInfoList", () =>
+        //{
+        //    return item.PrefabInfoList;
+        //},
+        //(arg,item,i) =>
+        //{
+        //    arg.caption = $"[{i:00}] {item.Prefab.name}({item.InstanceCount})";
+        //    arg.tag = item.Prefab;
+        //    arg.isFoldout = true;
+        //    arg.background = true;
+        //},
+        //(item) =>
+        // {
+        //     //ObjectField(item.Prefab);
+        //     //if (GUILayout.Button(item.Prefab.name,GUILayout.Width(100)))
+        //     //{
+        //     //    EditorHelper.SelectObject(item.Prefab);
+        //     //}
 
-             base.DrawObjectList(arg, "InstanceList", () =>
-               {
-                   return item.Instances;
-               }, (subArg,subItem,subI)=>
-               {
-                   subArg.level = 2;
-               }, null, null);
-         });
+        //     //base.DrawObjectList(item.Instances,"")
+        // }, (arg, item, i) =>
+        // {
+        //     //arg.caption = $"[{i:00}] {item.Prefab.name}({item.InstanceCount})";
+        //     //arg.tag = item.Prefab;
+        //     //arg.isFoldout = true;
+
+        //     base.DrawObjectList(arg, "InstanceList", () =>
+        //       {
+        //           return item.Instances;
+        //       }, (subArg,subItem,subI)=>
+        //       {
+        //           subArg.level = 2;
+        //       }, null, null);
+        // });
     }
 }

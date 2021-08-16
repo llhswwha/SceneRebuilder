@@ -44,6 +44,8 @@ public static class MeshCombineHelper
         //4.RecoverTransform
         //5.SetParent To Source.parent
 
+        EditorHelper.UnpackPrefab(obj);
+
         TransformData t = new TransformData(obj.transform);
         t.Reset();
 

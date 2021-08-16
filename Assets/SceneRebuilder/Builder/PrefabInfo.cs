@@ -52,9 +52,18 @@ public class PrefabInfo:IComparable<PrefabInfo>
 
     public void DestroyInstances()
     {
-      foreach(var ins in Instances){
-        GameObject.DestroyImmediate(ins);
-      }
+        foreach (var ins in Instances)
+        {
+            if (ins != null)
+                GameObject.DestroyImmediate(ins);
+        }
+        Instances.Clear();
+        foreach (var ins in InstancesNew)
+        {
+            if (ins != null)
+                GameObject.DestroyImmediate(ins);
+        }
+        InstancesNew.Clear();
     }
 
     public int VertexCount=0;
@@ -81,12 +90,12 @@ public class PrefabInfo:IComparable<PrefabInfo>
         }
     }
 
-    public void Add(GameObject instance){
+    public void AddInstance(GameObject instance){
         Instances.Add(instance);
         //InstanceCount++;
     }
 
-    public void Add(GameObject instance, GameObject instanceNew)
+    public void AddInstance(GameObject instance, GameObject instanceNew)
     {
         Instances.Add(instance);
         InstancesNew.Add(instanceNew);
@@ -458,6 +467,22 @@ public class PrefabInfoList: List<PrefabInfo>
             this[i].ApplyReplace();
         }
     }
+
+    public void ResetPrefabs()
+    {
+        for (int i = 0; i < this.Count; i++)
+        {
+            //this[i].ApplyReplace();
+            var t = this[i].Prefab.transform;
+            
+            
+            t.localPosition = Vector3.one;
+            t.rotation = Quaternion.identity;
+            //t.localScale = Vector3.one;
+        }
+    }
+
+    
 
     public void RevertReplace()
     {
