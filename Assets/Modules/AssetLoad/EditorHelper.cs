@@ -56,7 +56,26 @@ public static class EditorHelper
         Debug.LogError($"ForEachEx2 {actionName} Buildings:{buildings.Length},Time:{(System.DateTime.Now - start).TotalMilliseconds}ms");
     }
 
+    public static void UnpackPrefab(GameObject go)
+    {
 #if UNITY_EDITOR
+        UnpackPrefab(go, PrefabUnpackMode.Completely);
+#endif
+    }
+
+
+
+#if UNITY_EDITOR
+
+    public static void UnpackPrefab(GameObject go, PrefabUnpackMode unpackMode)
+    {
+        if (go == null) return;
+        GameObject root = PrefabUtility.GetOutermostPrefabInstanceRoot(go);
+        if (root != null)
+        {
+            PrefabUtility.UnpackPrefabInstance(root, unpackMode, InteractionMode.UserAction);
+        }
+    }
 
     public static string GetMeshAssetDir(GameObject source)
     {
@@ -176,25 +195,6 @@ public static class EditorHelper
         }
 #endif
         return bAssetAlreadyCreated;
-    }
-
-    public static void UnpackPrefab(GameObject go)
-    {
-#if UNITY_EDITOR
-        UnpackPrefab(go, PrefabUnpackMode.Completely);
-#endif
-    }
-
-    public static void UnpackPrefab(GameObject go, PrefabUnpackMode unpackMode)
-    {
-#if UNITY_EDITOR
-        if (go == null) return;
-        GameObject root = PrefabUtility.GetOutermostPrefabInstanceRoot(go);
-        if (root != null)
-        {
-            PrefabUtility.UnpackPrefabInstance(root, unpackMode, InteractionMode.UserAction);
-        }
-#endif
     }
 
 

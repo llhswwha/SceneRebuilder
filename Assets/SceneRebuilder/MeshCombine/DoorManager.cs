@@ -239,6 +239,7 @@ public static class DoorHelper
             PrefabInfo prefab = new PrefabInfo(item1Go);
             prefabsNew.Add(prefab);
 
+            item1.Split();//LOD//CopyA
             var copyItem1 = MeshHelper.CopyGO(item1Go);
             //copyDoor1.transform.position = door2.DoorGo.transform.position;
             bool isAligned = false;
@@ -569,6 +570,16 @@ public class DoorPartInfo
         //return $"mat:{MatCount},mesh:{SubMeshCount},v:{VertexCount},dis:{DisToCenter:F1},off:({OffToCenter.x:F2},{OffToCenter.y:F2},{OffToCenter.z:F2})";
         return $"mat:{MatCount},mesh:{SubMeshCount},v:{VertexCount},dis:{DisToCenter:F1}";
     }
+
+    internal void SetLOD()
+    {
+        LODHelper.SetDoorLOD(this.DoorGo);
+    }
+
+    internal void Split()
+    {
+        MeshCombineHelper.SplitByMaterials(this.DoorGo);
+    }
 }
 
 [Serializable]
@@ -651,5 +662,26 @@ public class DoorInfo
     public override string ToString()
     {
         return $"v:{MeshHelper.GetVertexCountS(VertexCount)}";
+    }
+
+    public void Split()
+    {
+        foreach(var part in DoorParts)
+        {
+            part.Split();
+        }
+    }
+
+    public void SetLOD()
+    {
+        foreach (var part in DoorParts)
+        {
+            part.SetLOD();
+        }
+    }
+
+    public void CopyPart1()
+    {
+        DoorHelper.CopyDoorA(this.DoorGo, true);
     }
 }
