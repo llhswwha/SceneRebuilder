@@ -176,6 +176,7 @@ public class LODGroupInfo : MonoBehaviour
 
     public void SetMaterial()
     {
+        GetLODs();
         var mats = LodInfos[0].GetMats();
         for(int i = 1; i < LodInfos.Count; i++)
         {

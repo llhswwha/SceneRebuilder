@@ -67,7 +67,7 @@ public class RendererId
         }
 
         //Id = Guid.NewGuid().ToString();
-        //insId = go.GetInstanceID();
+        insId = go.GetInstanceID();
         //parentId=GetId(this.transform.parent,level+1);
 
         //int instanceId = go.GetInstanceID();
@@ -81,6 +81,14 @@ public class RendererId
             Id = Guid.NewGuid().ToString();
         }
         parentId = GetId(this.transform.parent, level + 1);
+    }
+
+    public void Refresh()
+    {
+        insId = 0;
+        Id = "";
+        parentId = "";
+        Init();
     }
 
     //private void UpdateId(int instanceId,Transform t)
