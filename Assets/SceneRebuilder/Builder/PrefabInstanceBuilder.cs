@@ -386,7 +386,7 @@ UnpackPrefab();
                 newModels.Add(go);
             }
             else{
-                prefabInfo.Add(newGo);
+                prefabInfo.AddInstance(newGo);
             }
         }
         ProgressBarHelper.ClearProgressBar();
@@ -620,13 +620,14 @@ UnpackPrefab();
         AcRTAlignJobs(meshFilters);
     }
 
-    public void AcRTAlignJobs(MeshPoints[] meshPoints)
+    public PrefabInfoList AcRTAlignJobs(MeshPoints[] meshPoints)
     {
         SetDistanceSettings();
         UnpackPrefab();
         CleanNodes();
         Debug.Log("AcRTAlignJobs");
         SetPrefabInfoList(MeshJobHelper.NewAcRTAlignJobs(meshPoints, JobSize));
+        return PrefabInfoList;
     }
 
     public void AcRTAlignJobsEx()
@@ -635,7 +636,7 @@ UnpackPrefab();
         AcRTAlignJobsEx(meshFilters);
     }
 
-    public void AcRTAlignJobsEx(MeshPoints[] meshPoints)
+    public PrefabInfoList AcRTAlignJobsEx(MeshPoints[] meshPoints)
     {
         SetAcRTAlignJobSetting();
         SetDistanceSettings();
@@ -643,6 +644,7 @@ UnpackPrefab();
         CleanNodes();
         Debug.Log("AcRTAlignJobsEx");
         SetPrefabInfoList(MeshJobHelper.NewAcRTAlignJobsEx(meshPoints, JobSize));
+        return PrefabInfoList;
     }
 
 
@@ -1351,7 +1353,7 @@ break;
                 t2.localRotation = t1.localRotation;
 
                 GameObject.DestroyImmediate(instance);
-                info.Add(prefabInstance);
+                info.AddInstance(prefabInstance);
             }
             if (isBreak)
             {

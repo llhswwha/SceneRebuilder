@@ -86,6 +86,43 @@ namespace MeshJobs
         {
             return (this.sharedMesh != null && other.sharedMesh != null && this.sharedMesh == other.sharedMesh);
         }
+
+        private static string GetMatId(MeshRenderer renderer)
+        {
+            Color color = Color.black;
+            try
+            {
+                if (renderer.sharedMaterial != null)
+                {
+                    if (renderer.sharedMaterial.HasProperty("_Color"))
+                        color = renderer.sharedMaterial.color;
+                }
+            }
+            catch (System.Exception ex)
+            {
+                Debug.LogError($"MeshFilterListDict render:{renderer},mat:{renderer.sharedMaterial},matName:{renderer.sharedMaterial.name},ex:{ex.ToString()}");
+            }
+            var matId = color.ToString();
+            return matId;
+        }
+
+        public string GetMatId()
+        {
+            //MeshRenderer renderer = mf.GetComponent<MeshRenderer>();
+            //return GetMatId(renderer);
+
+            MeshRenderer[] renderers = gameObject.GetComponentsInChildren<MeshRenderer>(true);
+            string matId = "";
+            List<string> ids = new List<string>();
+            foreach(var renderer in renderers)
+            {
+                string id = GetMatId(renderer);
+                ids.Add(id);
+            }
+            ids.Sort();
+            ids.ForEach(i => matId += i+"|");
+            return matId;
+        }
     }
     public static class MeshJobHelper
     {
@@ -195,7 +232,7 @@ namespace MeshJobs
                     if (result.IsZero)
                     {
                         GameObject.DestroyImmediate(model);//匹配成功，删除老的
-                        prefabInfo.Add(result.Instance);
+                        prefabInfo.AddInstance(result.Instance);
                         progressCount++;//一个作为实例
                     }
                     else
@@ -286,7 +323,7 @@ namespace MeshJobs
                     if (result.IsZero)
                     {
                         GameObject.DestroyImmediate(model);//匹配成功，删除老的
-                        prefabInfo.Add(result.Instance);
+                        prefabInfo.AddInstance(result.Instance);
                         progressCount++;//一个作为实例
                     }
                     else
@@ -612,7 +649,7 @@ namespace MeshJobs
 
                 if (result.Distance < DistanceSetting.zeroM)
                 {
-                    Debug.LogError($"对齐成功 {mfFrom.name} -> {mfTo.name} 距离:{result.Distance}");
+                    Debug.LogWarning($"对齐成功 {mfFrom.name} -> {mfTo.name} 距离:{result.Distance}");
                     return true;
                 }
                 else
@@ -972,7 +1009,7 @@ namespace MeshJobs
                             //Debug.LogError($"对齐成功 {arg.mfFrom.name} -> {arg.mfTo.name} 距离:{result.Distance}");
                             GameObject newGo = MeshHelper.CopyGO(prefab);
                             newGo.name = arg.mfTo.name + "_New";
-                            prefabInfo.Add(newGo);
+                            prefabInfo.AddInstance(newGo);
                             
                             result.ApplyMatrix(newGo.transform, arg.mfTo.transform); //变换模型
 
@@ -981,7 +1018,7 @@ namespace MeshJobs
                         else
                         {
                             newTargets.Add(arg.mfTo);
-                            //Debug.LogWarning($"对齐失败(距离太大) {arg.mfFrom.name} -> {arg.mfTo.name} 距离:{result.Distance}");
+                            Debug.LogWarning($"对齐失败(距离太大) {arg.mfFrom.name} -> {arg.mfTo.name} 距离:{result.Distance}");
                         }
                     }
                     else

@@ -182,7 +182,7 @@ namespace MeshJobs
 
         public void AddInstance(GameObject instance)
         {
-            PrefabInfo.Add(instance);
+            PrefabInfo.AddInstance(instance);
         }
 
         public static Dictionary<int, AcRTAlignJobPrefab> Items = new Dictionary<int, AcRTAlignJobPrefab>();

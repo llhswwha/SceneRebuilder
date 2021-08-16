@@ -12,7 +12,7 @@ public class DoorManagerEditor : BaseFoldoutEditor<DoorManager>
     FoldoutEditorArg doorListArg = new FoldoutEditorArg();
 
     FoldoutEditorArg doorPartListArg = new FoldoutEditorArg();
-
+    FoldoutEditorArg prefabListArg = new FoldoutEditorArg();
     public override void OnEnable()
     {
         base.OnEnable();
@@ -20,6 +20,7 @@ public class DoorManagerEditor : BaseFoldoutEditor<DoorManager>
         doorRootListArg=new FoldoutEditorArg(true, false, true, true, false);
         doorListArg = new FoldoutEditorArg(true, false, true, true, false);
         doorPartListArg = new FoldoutEditorArg(true, false, true, true, false);
+        prefabListArg = new FoldoutEditorArg(true, false, true, true, false);
 
         doorPartListArg.isEnabled = true;
         targetT.LocalTarget = null;
@@ -30,10 +31,10 @@ public class DoorManagerEditor : BaseFoldoutEditor<DoorManager>
         base.OnToolLayout(item);
 
         GUILayout.BeginHorizontal();
-        //if (GUILayout.Button("GetPrefab"))
-        //{
-        //    item.SetDoorShared(item.IsAlign, item.IsReplace);
-        //}
+        if (GUILayout.Button("GetPrefab"))
+        {
+            item.SetDoorShared();
+        }
         if (GUILayout.Button("Apply"))
         {
             item.ApplyReplace();
@@ -62,5 +63,7 @@ public class DoorManagerEditor : BaseFoldoutEditor<DoorManager>
 
         DrawDoorsRootList(doorRootListArg, item);
         DrawDoorPartList(doorPartListArg, item);
+
+        DrawPrefabList(prefabListArg, () => item.prefabs);
     }
 }

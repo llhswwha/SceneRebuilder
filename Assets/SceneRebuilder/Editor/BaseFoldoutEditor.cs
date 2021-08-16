@@ -1056,8 +1056,9 @@ public class BaseFoldoutEditor<T> : BaseEditor<T> where T : class
         EditorUIUtils.ToggleFoldout(doorRootListArg, arg =>
         {
             var doors = item.doorRoots;
+            int count = doors.GetDoors().Count;
             arg.caption = $"DoorsRoot List ({doors.Count})";
-            arg.info = $"{doors.VertexCount_Show / 10000f:F0}/{doors.VertexCount / 10000f:F0}";
+            arg.info = $"d:{count}|{doors.VertexCount_Show / 10000f:F0}/{doors.VertexCount / 10000f:F0}";
             InitEditorArg(doors);
         },
         () =>
@@ -1082,6 +1083,7 @@ public class BaseFoldoutEditor<T> : BaseEditor<T> where T : class
             InitEditorArg(rootList);
             doorRootListArg.DrawPageToolbar(rootList, (doorRoot, i) =>
             {
+                if (doorRoot == null) return;
                 var doorRootArg = editorArgs[doorRoot];
                 doorRootArg.level = 1;
                 doorRootArg.background = true;
@@ -1096,7 +1098,7 @@ public class BaseFoldoutEditor<T> : BaseEditor<T> where T : class
                 {
                     if (GUILayout.Button("Share",GUILayout.Width(50)))
                     {
-                        doorRoot.SetDoorShared(false,false);
+                        doorRoot.SetDoorShared();
                     }
                 });
 

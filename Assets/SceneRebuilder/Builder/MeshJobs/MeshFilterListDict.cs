@@ -63,12 +63,14 @@ public class MeshFilterListDict
     //     mfl.Add(mf);
     // }
 
-    public MeshFilterListDict(MeshPoints[] meshFilters)
+
+
+    public MeshFilterListDict(MeshPoints[] meshPoints)
     {
-        int[] meshCounts = new int[meshFilters.Length];
-        for(int i=0;i<meshFilters.Length;i++)
+        int[] meshCounts = new int[meshPoints.Length];
+        for(int i=0;i<meshPoints.Length;i++)
         {
-            var mf=meshFilters[i];
+            var mf=meshPoints[i];
             var vCount = mf.vertexCount;
 
             // if(vCount>AcRTAlignJobContainer.MaxVertexCount)//排除点数特别多的，不然会卡住
@@ -76,22 +78,8 @@ public class MeshFilterListDict
             //     continue;
             // }
 
-            MeshRenderer renderer=mf.GetComponent<MeshRenderer>();
-            
-            Color color = Color.black;
-            try
-            {
-                if (renderer.sharedMaterial != null)
-                {
-                    if(renderer.sharedMaterial.HasProperty("_Color"))
-                        color = renderer.sharedMaterial.color;
-                }
-            }
-            catch (System.Exception ex)
-            {
-                Debug.LogError($"MeshFilterListDict render:{renderer},mat:{renderer.sharedMaterial},matName:{renderer.sharedMaterial.name},ex:{ex.ToString()}");
-            }
-            var matId=color.ToString();
+            var matId = mf.GetMatId();
+            Debug.Log($"MeshFilterListDict [{i}] points:{mf.name} mat:{matId}");
 
             string key=vCount+"_"+matId;
             if(!dict.ContainsKey(key)){
@@ -112,7 +100,7 @@ public class MeshFilterListDict
             mfl.Add(mf);
         }
 
-        Debug.LogError("MeshFilterListDict:"+dict.Count);
+        Debug.LogError($"MeshFilterListDict meshPoints:{meshPoints.Length} dict:{dict.Count} ");
 
         // for (int i = 0; i < meshCounts.Length; i++)
         // {

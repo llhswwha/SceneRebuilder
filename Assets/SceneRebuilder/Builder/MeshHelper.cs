@@ -1175,7 +1175,14 @@ public static class MeshHelper
 
     public static Vector3[] GetWorldVertexes(GameObject go){
         MeshFilter meshFilter=go.GetComponent<MeshFilter>();
-        return GetWorldVertexes(meshFilter.sharedMesh,go.transform);
+        if (meshFilter != null)
+        {
+            return GetWorldVertexes(meshFilter.sharedMesh, go.transform);
+        }
+        else
+        {
+            return GetChildrenWorldVertexes(go);
+        }
     }
 
     public static Vector3[] GetWorldVertexes(MeshPoints go)

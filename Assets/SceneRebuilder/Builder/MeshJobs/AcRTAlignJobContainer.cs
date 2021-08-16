@@ -26,6 +26,7 @@ public class AcRTAlignJobContainer
 
     public AcRTAlignJobContainer(MeshPoints[] meshFilters,int size)
     {
+        Debug.Log($"AcRTAlignJobContainer meshFilters:{meshFilters.Length} MaxVertexCount:{AcRTAlignJobContainer.MaxVertexCount}");
         if(AcRTAlignJobContainer.MaxVertexCount>0)
         {
             List<MeshPoints> mfs=new List<MeshPoints>();
@@ -33,6 +34,7 @@ public class AcRTAlignJobContainer
             {
                 if(mf.vertexCount>AcRTAlignJobContainer.MaxVertexCount)//排除点数特别多的，不然会卡住
                 {
+                    Debug.LogError($"AcRTAlignJobContainer mf.vertexCount>MaxVertexCount mf:{mf.name} vertexCount:{mf.vertexCount}");
                     continue;
                 }
                 else{
@@ -123,7 +125,7 @@ public class AcRTAlignJobContainer
                     if (mfTo == null) continue;
 
                     if(mfTo.IsSameMesh(mfFrom)){//已经处理过的相同的模型
-                        prefabInfo.Add(mfTo.gameObject);
+                        prefabInfo.AddInstance(mfTo.gameObject);
                         item.Remove(mfTo);
                         //i--;
                         continue;
@@ -179,7 +181,7 @@ public class AcRTAlignJobContainer
                     var mfTo = mfList[i];
                     if (mfTo == null) continue;
                     if(mfTo.IsSameMesh(mfFrom)){
-                        prefabInfo.Add(mfTo.gameObject);
+                        prefabInfo.AddInstance(mfTo.gameObject);
                         item.Remove(mfTo);
                         continue;
                     }
@@ -240,7 +242,7 @@ public class AcRTAlignJobContainer
                     var mfTo = mfList[i];
                     if (mfTo == null) continue;
                     if(mfTo.IsSameMesh(mfFrom)){
-                        prefabInfo.Add(mfTo.gameObject);
+                        prefabInfo.AddInstance(mfTo.gameObject);
                         item.Remove(mfTo);
                         continue;
                     }
