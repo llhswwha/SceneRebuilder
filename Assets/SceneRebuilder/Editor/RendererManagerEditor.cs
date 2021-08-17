@@ -57,10 +57,10 @@ public class RendererManagerEditor : BaseFoldoutEditor<RendererManager>
 
         EditorUIUtils.Separator(5);
 
-        if (GUILayout.Button("UpdateMeshList"))
-        {
-            sharedMeshListArg.tag = item.GetSharedMeshList();
-        }
-        DrawSharedMeshListEx(sharedMeshListArg);
+        //if (GUILayout.Button("UpdateMeshList"))
+        //{
+        //    sharedMeshListArg.tag = item.GetSharedMeshList();
+        //}
+        DrawSharedMeshListEx(sharedMeshListArg,()=> item.GetSharedMeshList());
     }
 }

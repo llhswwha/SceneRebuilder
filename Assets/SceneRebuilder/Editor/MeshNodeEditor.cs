@@ -91,11 +91,11 @@ public class MeshNodeEditor : BaseFoldoutEditor<MeshNode>
             });
             DrawMeshNodeList(meshnodeListArg, item, 0);
 
-            if (sharedMeshListArg.tag == null)
-            {
-                sharedMeshListArg.tag = item.GetSharedMeshList();
-            }
-            DrawSharedMeshListEx(sharedMeshListArg);
+            //if (sharedMeshListArg.tag == null)
+            //{
+            //    sharedMeshListArg.tag = item.GetSharedMeshList();
+            //}
+            DrawSharedMeshListEx(sharedMeshListArg,()=> item.GetSharedMeshList());
         }
     }
 

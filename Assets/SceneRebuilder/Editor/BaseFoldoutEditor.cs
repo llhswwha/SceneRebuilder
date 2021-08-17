@@ -960,21 +960,26 @@ public class BaseFoldoutEditor<T> : BaseEditor<T> where T : class
         },
         () =>
         {
-            if (GUILayout.Button("Update"))
+            //item.IsOnlyActive = EditorGUILayout.Toggle("Active", item.IsOnlyActive);
+            item.IsOnlyActive = GUILayout.Toggle(item.IsOnlyActive,"Active");
+            //item.IsOnlyCanSplit = EditorGUILayout.Toggle("CanSplit", item.IsOnlyCanSplit);
+            item.IsOnlyCanSplit = GUILayout.Toggle(item.IsOnlyCanSplit,"CanSplit");
+            if (GUILayout.Button("Split", GUILayout.Width(50)))
+            {
+                item.SplitAll();
+            }
+            if (GUILayout.Button("Update",GUILayout.Width(70)))
             {
                 RemoveEditorArg(item.GetDoorParts());
-                InitEditorArg(item.UpdateDoors());
+                item.UpdateDoors();
+                InitEditorArg(item.GetDoorParts());
             }
         });
         if (doorListArg.isEnabled && doorListArg.isExpanded)
         {
             EditorGUILayout.BeginHorizontal();
-            item.IsOnlyActive = EditorGUILayout.Toggle("Active", item.IsOnlyActive);
-            item.IsOnlyCanSplit = EditorGUILayout.Toggle("CanSplit", item.IsOnlyCanSplit);
-            if (GUILayout.Button("SplitAll", GUILayout.Width(50)))
-            {
-                item.SplitAll();
-            }
+            
+            
             EditorGUILayout.EndHorizontal();
             var doors = item.GetDoorParts();
             InitEditorArg(doors);
@@ -1128,12 +1133,12 @@ public class BaseFoldoutEditor<T> : BaseEditor<T> where T : class
     {
         if (isSubList==false)
         {
-            doorRootArg.caption = $"DoorsRoot List";
+            doorRootArg.caption = $"Door List";
             doorRootArg.level = 0;
             EditorUIUtils.ToggleFoldout(doorRootArg, arg =>
             {
                 var doors = doorsRoot.Doors;
-                arg.caption = $"DoorsRoot List ({doors.Count})";
+                arg.caption = $"Door List ({doors.Count})";
                 arg.info = $"{doorsRoot.VertexCount_Show / 10000f:F0}/{doorsRoot.VertexCount / 10000f:F0}";
                 InitEditorArg(doors);
             },
@@ -1297,11 +1302,14 @@ public class BaseFoldoutEditor<T> : BaseEditor<T> where T : class
         }
     }
 
-    protected void DrawSharedMeshListEx(FoldoutEditorArg listArg)
+    protected void DrawSharedMeshListEx(FoldoutEditorArg listArg, System.Func<SharedMeshInfoList> funcGetList)
     {
         listArg.caption = $"SharedMesh List";
         var list = listArg.tag as SharedMeshInfoList;
-        if (list == null) return;
+        if (list == null)
+        {
+            list = new SharedMeshInfoList();
+        }
         EditorUIUtils.ToggleFoldout(listArg, arg =>
         {
             
@@ -1311,10 +1319,41 @@ public class BaseFoldoutEditor<T> : BaseEditor<T> where T : class
         },
         () =>
         {
-            if(GUILayout.Button("GetPrefabs", GUILayout.Width(100)))
+            var btnStyle = new GUIStyle(EditorStyles.miniButton);
+            btnStyle.margin = new RectOffset(0, 0, 0, 0);
+            btnStyle.padding = new RectOffset(0, 0, 0, 0);
+
+            if (funcGetList != null)
+            {
+                if (GUILayout.Button("Update", btnStyle, GUILayout.Width(56)))
+                {
+                    listArg.tag = funcGetList();
+                }
+            }
+            if (GUILayout.Button("GetPrefabs", btnStyle, GUILayout.Width(76)))
             {
                 list.GetPrefabs();
             }
+            //if (GUILayout.Button("X1", btnStyle, GUILayout.Width(25)))
+            //{
+            //    list.Destroy(1);
+            //}
+            //if (GUILayout.Button("X2", btnStyle, GUILayout.Width(25)))
+            //{
+            //    list.Destroy(2);
+            //}
+            //if (GUILayout.Button("X3", btnStyle, GUILayout.Width(25)))
+            //{
+            //    list.Destroy(3);
+            //}
+            //if (GUILayout.Button("X4", btnStyle, GUILayout.Width(25)))
+            //{
+            //    list.Destroy(4);
+            //}
+            //if (GUILayout.Button("X5", btnStyle, GUILayout.Width(25)))
+            //{
+            //    list.Destroy(5);
+            //}
         });
         DrawSharedMeshList(listArg);
     }
@@ -1324,7 +1363,11 @@ public class BaseFoldoutEditor<T> : BaseEditor<T> where T : class
         //listArg.level = level;
         //var nodes = item.GetMeshNodes();
         var list = listArg.tag as SharedMeshInfoList;
-        if (listArg.isEnabled && listArg.isExpanded && list.Count > 0)
+        if (list == null)
+        {
+            list = new SharedMeshInfoList();
+        }
+        if (listArg.isEnabled && listArg.isExpanded)
         {
 
             InitEditorArg(list);
@@ -1365,6 +1408,10 @@ public class BaseFoldoutEditor<T> : BaseEditor<T> where T : class
                         {
                             EditorHelper.SelectObjects(node.GetGameObjects());
                         }
+                        //if (GUILayout.Button("X1", btnStyle, GUILayout.Width(25)))
+                        //{
+                        //    node.Destroy(1);
+                        //}
                     },()=>
                     {
                         node.Destroy();

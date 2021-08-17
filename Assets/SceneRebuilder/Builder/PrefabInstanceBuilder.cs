@@ -251,7 +251,7 @@ UnpackPrefab();
             GetTarget();
         }
 
-        if(TargetRoots)
+        if(TargetRoots && TargetRootsCopy==null)
         {
             TargetRoots.gameObject.SetActive(true);
             var ts=AreaTreeHelper.GetAllTransforms(TargetRoots.transform);
@@ -270,8 +270,6 @@ UnpackPrefab();
         }
         
 
-        //var renderers=GameObject.FindObjectsOfType<MeshRenderer>();
-        //var renderers=Target.GetComponentsInChildren<MeshRenderer>();
         var renderers=this.GetMeshRenderers();
         foreach(var render in renderers){
             render.enabled=true;
@@ -445,9 +443,9 @@ UnpackPrefab();
         if(TargetRoots){
             nodes=TargetRoots.GetComponentsInChildren<MeshNode>();
         }
-        else{
-            nodes=GameObject.FindObjectsOfType<MeshNode>();
-        }
+        //else{
+        //    nodes=GameObject.FindObjectsOfType<MeshNode>();
+        //}
         nodes1.AddRange(nodes);
        //TargetNodeList.Clear();
         nodes1.AddRange(TargetNodeList);
@@ -552,9 +550,9 @@ UnpackPrefab();
         else if(TargetRoots){
             meshFilters=TargetRoots.GetComponentsInChildren<MeshFilter>(true);
         }
-        else{
-            meshFilters=GameObject.FindObjectsOfType<MeshFilter>(true);
-        }
+        //else{
+        //    meshFilters=GameObject.FindObjectsOfType<MeshFilter>(true);
+        //}
         List<MeshPoints> meshPoints = MeshPoints.GetMeshPoints(meshFilters);
         return meshPoints.ToArray() ;
     }
@@ -587,9 +585,9 @@ UnpackPrefab();
         else if(TargetRoots){
             meshRenderers = TargetRoots.GetComponentsInChildren<MeshRenderer>(true);
         }
-        else{
-            meshRenderers=GameObject.FindObjectsOfType<MeshRenderer>();
-        }
+        //else{
+        //    meshRenderers=GameObject.FindObjectsOfType<MeshRenderer>();
+        //}
         return meshRenderers;
     }
 

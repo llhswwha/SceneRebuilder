@@ -2090,11 +2090,11 @@ public static class MeshHelper
     }
 
 
-    public static int GetInstanceID(MeshFilter mf)
-    {
-        //return mf.sharedMesh.GetInstanceID();
-        return mf.GetInstanceID();
-    }
+    //public static int GetInstanceID(MeshFilter mf)
+    //{
+    //    //return mf.sharedMesh.GetInstanceID();
+    //    return mf.GetInstanceID();
+    //}
 
     public static int GetInstanceID(MeshPoints mf)
     {

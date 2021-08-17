@@ -13,6 +13,8 @@ public class DoorsRootEditor : BaseFoldoutEditor<DoorsRoot>
 
     FoldoutEditorArg prefabListArg = new FoldoutEditorArg();
 
+    FoldoutEditorArg sharedMeshListArg = new FoldoutEditorArg();
+
     public override void OnEnable()
     {
         base.OnEnable();
@@ -20,6 +22,7 @@ public class DoorsRootEditor : BaseFoldoutEditor<DoorsRoot>
         doorListArg = new FoldoutEditorArg(true, false, true, true, false);
         doorPartListArg = new FoldoutEditorArg(true, false, true, true, false);
         prefabListArg = new FoldoutEditorArg(true, false, true, true, false);
+        sharedMeshListArg = new FoldoutEditorArg(true, false, true, true, false);
 
         doorPartListArg.isEnabled = true;
 
@@ -37,11 +40,17 @@ public class DoorsRootEditor : BaseFoldoutEditor<DoorsRoot>
         //item.IsReplace = GUILayout.Toggle(item.IsReplace, "IsReplace");
         //GUILayout.EndHorizontal();
 
+        GUILayout.BeginHorizontal();
         if (GUILayout.Button("Update"))
         {
             DoorManager.Instance.LocalTarget = targetT.gameObject;
             DoorManager.Instance.UpdateDoors();
         }
+        if (GUILayout.Button("SetParent",GUILayout.Width(100)))
+        {
+            item.SetParent();
+        }
+        GUILayout.EndHorizontal();
 
         GUILayout.BeginHorizontal();
         if (GUILayout.Button("GetPrefab"))
@@ -95,7 +104,7 @@ public class DoorsRootEditor : BaseFoldoutEditor<DoorsRoot>
         {
             item.CopyPart();
         }
-        if (GUILayout.Button("InitMeshNodes"))
+        if (GUILayout.Button("InitNodes"))
         {
             MeshNode.InitNodes(item.gameObject);
         }
@@ -103,11 +112,11 @@ public class DoorsRootEditor : BaseFoldoutEditor<DoorsRoot>
 
         GUILayout.BeginHorizontal();
         isCopyTarget = GUILayout.Toggle(isCopyTarget, "Copy");
-        if (GUILayout.Button("AcRTAlignJobs"))
+        if (GUILayout.Button("Align"))
         {
             item.AcRTAlignJobs(isCopyTarget);
         }
-        if (GUILayout.Button("AcRTAlignJobsEx"))
+        if (GUILayout.Button("AlignEx"))
         {
             item.AcRTAlignJobsEx(isCopyTarget);
         }
@@ -118,5 +127,7 @@ public class DoorsRootEditor : BaseFoldoutEditor<DoorsRoot>
         DrawDoorPartList(doorPartListArg, DoorManager.Instance);
 
         DrawPrefabList(prefabListArg, () => item.prefabs);
+
+        DrawSharedMeshListEx(sharedMeshListArg, () => item.GetSharedMeshList());
     }
 }

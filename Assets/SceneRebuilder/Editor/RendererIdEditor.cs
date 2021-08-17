@@ -41,6 +41,25 @@ public class RendererIdEditor : BaseEditor<RendererId>
         EditorGUILayout.EndHorizontal();
 
         EditorGUILayout.BeginHorizontal();
+        if (GUILayout.Button("ResetT"))
+        {
+            item.ResetTransform();
+        }
+        if (GUILayout.Button("ResetPos"))
+        {
+            item.ResetPos();
+        }
+        if (GUILayout.Button("CenterParent"))
+        {
+            MeshHelper.CenterPivot(item.gameObject);
+        }
+        if (GUILayout.Button("CenterMesh"))
+        {
+            //MeshHelper.CenterMesh(item.gameObject);
+        }
+        EditorGUILayout.EndHorizontal();
+
+        EditorGUILayout.BeginHorizontal();
         if (GUILayout.Button("NewId"))
         {
             item.NewId();
@@ -57,30 +76,40 @@ public class RendererIdEditor : BaseEditor<RendererId>
         {
             item.ClearScripts();
         }
+        if (GUILayout.Button("ClearLODs"))
+        {
+            item.ClearLODs();
+        }
+        
         if (GUILayout.Button("Unpack"))
         {
             EditorHelper.UnpackPrefab(item.gameObject);
         }
-        if (GUILayout.Button("Center"))
-        {
-            MeshHelper.CenterPivot(item.gameObject);
-        }
+
         EditorGUILayout.EndHorizontal();
 
         EditorGUILayout.BeginHorizontal();
-        if (GUILayout.Button("RemoveEmpty"))
+        if (GUILayout.Button("RmEmpty"))
         {
             MeshHelper.RemoveEmptyObjects(item.gameObject);
         }
 
-        if (GUILayout.Button("DecreaseEmpty"))
+        if (GUILayout.Button("DcsEmpty"))
         {
             MeshHelper.DecreaseEmptyGroup(item.gameObject);
         }
 
-        if (GUILayout.Button("InitMeshNodes"))
+        if (GUILayout.Button("InitNodes"))
         {
             MeshNode.InitNodes(item.gameObject);
+        }
+        if (GUILayout.Button("Align"))
+        {
+            PrefabInstanceBuilder.Instance.AcRTAlignJobs(item.gameObject, true);
+        }
+        if (GUILayout.Button("AlignEx"))
+        {
+            PrefabInstanceBuilder.Instance.AcRTAlignJobsEx(item.gameObject, true);
         }
         EditorGUILayout.EndHorizontal();
 
@@ -123,11 +152,11 @@ public class RendererIdEditor : BaseEditor<RendererId>
             EditorHelper.SelectObject(obj);
 
         }
-        if (GUILayout.Button("CopyDoorA1"))
+        if (GUILayout.Button("CpDoor1"))
         {
             DoorHelper.CopyDoorA(item.gameObject,false);
         }
-        if (GUILayout.Button("CopyDoorA2"))
+        if (GUILayout.Button("CpDoor2"))
         {
             DoorHelper.CopyDoorA(item.gameObject,true);
         }

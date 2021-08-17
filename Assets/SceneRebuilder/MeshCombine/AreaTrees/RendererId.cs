@@ -50,6 +50,48 @@ public class RendererId
         Debug.Log("ClearScripts "+count);
     }
 
+    [ContextMenu("ClearLODs")]
+    public void ClearLODs()
+    {
+        var ids = this.GetComponentsInChildren<LODGroup>(true);
+        int count = 0;
+        foreach (var id in ids)
+        {
+            if (id.gameObject == this.gameObject) continue;
+            count++;
+            GameObject.DestroyImmediate(id);
+        }
+        Debug.Log("ClearScripts " + count);
+    }
+
+    public void ResetTransform()
+    {
+        //transform.rotation = Quaternion.identity;
+        //transform.localScale = Vector3.one;
+        //transform.position = Vector3.zero;
+
+        var renderers = this.GetComponentsInChildren<MeshRenderer>(true);
+        foreach (var renderer in renderers)
+        {
+            renderer.transform.rotation = Quaternion.identity;
+            renderer.transform.localScale = Vector3.one;
+            renderer.transform.position = Vector3.zero;
+        }
+    }
+
+    public void ResetPos()
+    {
+        //transform.rotation = Quaternion.identity;
+        //transform.localScale = Vector3.one;
+        //transform.position = Vector3.zero;
+
+        var renderers = this.GetComponentsInChildren<MeshRenderer>(true);
+        foreach(var renderer in renderers)
+        {
+            renderer.transform.position= Vector3.zero;
+        }
+    }
+
     //[ContextMenu("ClearComponents")]
     //public void ClearComponents()
     //{
@@ -357,5 +399,11 @@ public class RendererId
     {
         if(IsDebug)
             Debug.LogError("RendererId.OnDisable:" + this.name);
+    }
+
+    private void OnEnable()
+    {
+        if (IsDebug)
+            Debug.LogError("RendererId.OnEnable:" + this.name);
     }
 }

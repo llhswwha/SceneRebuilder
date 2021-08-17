@@ -37,8 +37,17 @@ public static class MeshCombineHelper
 
     public static GameObject SplitByMaterials(GameObject obj,bool isCenterPivot,bool isDestroy=true)
     {
+        if (obj == null)
+        {
+            Debug.LogError("SplitByMaterials obj == null");
+            return null;
+        }
         MeshRenderer renderer = obj.GetComponent<MeshRenderer>();
-        if (renderer == null) return null;
+        if (renderer == null)
+        {
+            Debug.LogError("SplitByMaterials renderer == null :"+obj);
+            return null;
+        }
         if (renderer.sharedMaterials.Length == 1) return obj;
         //SplitByMaterials：
         //1.ResetTransform

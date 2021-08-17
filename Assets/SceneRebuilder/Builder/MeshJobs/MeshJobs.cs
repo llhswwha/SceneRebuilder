@@ -50,7 +50,8 @@ namespace MeshJobs
                 sharedMesh = mf.sharedMesh;
                 vertices = sharedMesh.vertices;
                 //localVertices = mf.sharedMesh.vertices;
-                InstanceId = sharedMesh.GetInstanceID();
+                //InstanceId = sharedMesh.GetInstanceID();
+                InstanceId = root.GetInstanceID();
                 size = sharedMesh.bounds.size;
                 //worldVertices = MeshHelper.GetWorldVertexes(mf);
             }

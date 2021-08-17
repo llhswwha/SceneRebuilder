@@ -13,6 +13,9 @@ public class DoorManagerEditor : BaseFoldoutEditor<DoorManager>
 
     FoldoutEditorArg doorPartListArg = new FoldoutEditorArg();
     FoldoutEditorArg prefabListArg = new FoldoutEditorArg();
+
+    FoldoutEditorArg sharedMeshListArg = new FoldoutEditorArg();
+
     public override void OnEnable()
     {
         base.OnEnable();
@@ -21,6 +24,7 @@ public class DoorManagerEditor : BaseFoldoutEditor<DoorManager>
         doorListArg = new FoldoutEditorArg(true, false, true, true, false);
         doorPartListArg = new FoldoutEditorArg(true, false, true, true, false);
         prefabListArg = new FoldoutEditorArg(true, false, true, true, false);
+        sharedMeshListArg = new FoldoutEditorArg(true, false, true, true, false);
 
         doorPartListArg.isEnabled = true;
         targetT.LocalTarget = null;
@@ -65,5 +69,7 @@ public class DoorManagerEditor : BaseFoldoutEditor<DoorManager>
         DrawDoorPartList(doorPartListArg, item);
 
         DrawPrefabList(prefabListArg, () => item.prefabs);
+
+        DrawSharedMeshListEx(sharedMeshListArg,()=> item.GetSharedMeshList());
     }
 }

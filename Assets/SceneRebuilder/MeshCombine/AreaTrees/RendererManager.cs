@@ -368,7 +368,9 @@ public class RendererManager : SingletonBehaviour<RendererManager>
 
     public SharedMeshInfoList GetSharedMeshList()
     {
-        return new SharedMeshInfoList();
+        SharedMeshInfoList sharedMeshes = new SharedMeshInfoList();
+        sharedMeshes.InitAll();
+        return sharedMeshes;
     }
 
     //public  

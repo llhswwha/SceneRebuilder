@@ -16,6 +16,11 @@ public class SharedMeshInfoList : List<SharedMeshInfo>
 
     public SharedMeshInfoList()
     {
+        
+    }
+
+    public void InitAll()
+    {
         InitByRoot(null);
     }
 
@@ -44,13 +49,14 @@ public class SharedMeshInfoList : List<SharedMeshInfo>
         InitMeshFilters(meshFilters);
     }
 
-    private SharedMeshInfoList(MeshFilter[] meshFilters)
+    public SharedMeshInfoList(MeshFilter[] meshFilters)
     {
         InitMeshFilters(meshFilters);
     }
 
     private void InitMeshFilters(MeshFilter[] meshFilters)
     {
+        Debug.Log($"SharedMeshInfo.InitMeshFilters meshFilters:{meshFilters.Length}");
         Dictionary<Mesh, SharedMeshInfo> meshDict = new Dictionary<Mesh, SharedMeshInfo>();
         for (int i = 0; i < meshFilters.Length; i++)
         {
@@ -109,6 +115,14 @@ public class SharedMeshInfoList : List<SharedMeshInfo>
 
         PrefabInfoListHelper.GetPrefabInfos(this,true);
     }
+
+    public void Destroy(int v)
+    {
+        foreach(var item in this)
+        {
+            item.Destroy(v);
+        }
+    }
 }
 
 [Serializable]
@@ -145,7 +159,23 @@ public class SharedMeshInfo:IPrefab<SharedMeshInfo>
         foreach(var mf in meshFilters)
         {
             if (mf == null) continue;
+            EditorHelper.UnpackPrefab(mf.gameObject);
             GameObject.DestroyImmediate(mf.gameObject);
+        }
+    }
+
+    public void Destroy(int id)
+    {
+        for (int i = id; i < meshFilters.Count; i++)
+        {
+            MeshFilter mf = meshFilters[i];
+            if (mf == null)
+            {
+                continue;
+            }
+            EditorHelper.UnpackPrefab(mf.gameObject);
+            GameObject.DestroyImmediate(mf.gameObject);
+            
         }
     }
 

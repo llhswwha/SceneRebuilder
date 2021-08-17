@@ -183,11 +183,11 @@ public class PrefabInstanceBuilderEditor : BaseFoldoutEditor<PrefabInstanceBuild
         {
             item.TestRTs();
         }
-        if (GUILayout.Button("AcRTAlignJobsEx2"))
+        if (GUILayout.Button("AlignEx2"))
         {
             item.AcRTAlignJobsEx2();
         }
-        if (GUILayout.Button("AcRTAlignJobsEx(TestList)"))
+        if (GUILayout.Button("AlignEx(TestList)"))
         {
             item.AcRTAlignJobsExTestList();
         }

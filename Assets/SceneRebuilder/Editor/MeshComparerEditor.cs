@@ -59,11 +59,11 @@ public class MeshComparerEditor : BaseEditor<MeshComparer>
         EditorGUILayout.EndHorizontal();
 
         EditorGUILayout.BeginHorizontal();
-        if (GUILayout.Button("AcRTAlign"))
+        if (GUILayout.Button("Align"))
         {
             item.AcRTAlign();
         }
-        if (GUILayout.Button("AcRTAlignJob"))
+        if (GUILayout.Button("AlignJob"))
         {
             item.AcRTAlignJob();
         }

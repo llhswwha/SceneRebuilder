@@ -32,14 +32,14 @@ public class DoorManager : SingletonBehaviour<DoorManager>
     public DoorsRootList UpdateDoors()
     {
         //MeshRenderer[] renderers = null;
-        DoorsRoot[] doorsRoots = null;
+        DoorsRoot[] items = null;
         if (LocalTarget != null)
         {
-            doorsRoots= LocalTarget.GetComponentsInChildren<DoorsRoot>(true);
-            if(doorsRoots.Length == 0)
+            //items= LocalTarget.GetComponentsInChildren<DoorsRoot>(true);
+            //if(items.Length == 0)
             {
                 var ts = LocalTarget.GetComponentsInChildren<Transform>(true);
-                doorsRoots = InitDoorsRoot(ts);
+                items = InitDoorsRoot(ts);
             }
             //renderers = LocalTarget.GetComponentsInChildren<MeshRenderer>(true);
         }
@@ -47,16 +47,17 @@ public class DoorManager : SingletonBehaviour<DoorManager>
         {
             //renderers = GameObject.FindObjectsOfType<MeshRenderer>(true);
 
-            doorsRoots = GameObject.FindObjectsOfType<DoorsRoot>(true);
-            if (doorsRoots.Length == 0)
+            //items = GameObject.FindObjectsOfType<DoorsRoot>(true);
+            //if (items.Length == 0)
             {
                 var ts = GameObject.FindObjectsOfType<Transform>(true);
-                doorsRoots = InitDoorsRoot(ts);
-                Debug.Log("UpdateDoors ");
+                items = InitDoorsRoot(ts);
+                //Debug.Log("UpdateDoors ");
             }
         }
         //var rendererList = renderers.Where(i => i.name.ToLower().Contains("door")).ToList();
-        doorRoots = new DoorsRootList(doorsRoots);
+        doorRoots = new DoorsRootList(items);
+        Debug.Log($"DoorManager.UpdateDoors LocalTarget:[{LocalTarget}] doorRoots:{doorRoots.Count}");
         return doorRoots;
     }
 
@@ -88,6 +89,13 @@ public class DoorManager : SingletonBehaviour<DoorManager>
         prefabs.ShowNew();
     }
 
+    public SharedMeshInfoList GetSharedMeshList()
+    {
+        var doors = doorRoots.GetDoors();
+        var filters = doors.GetMeshFilters();
+        return new SharedMeshInfoList(filters);
+    }
+
     private DoorsRoot[] InitDoorsRoot(Transform[] ts)
     {
         List<DoorsRoot> list = new List<DoorsRoot>();
@@ -95,7 +103,12 @@ public class DoorManager : SingletonBehaviour<DoorManager>
         Debug.Log($"InitDoorsRoot ts:{ts.Length} doorsRoots:{doorsList.Count}");
         foreach (var doors in doorsList)
         {
-            var root = doors.gameObject.AddComponent<DoorsRoot>();
+            var root = doors.gameObject.GetComponent<DoorsRoot>();
+            if (root == null)
+            {
+                root = doors.gameObject.AddComponent<DoorsRoot>();
+            }
+            root.Init();
             list.Add(root);
         }
         return list.ToArray();
@@ -104,7 +117,6 @@ public class DoorManager : SingletonBehaviour<DoorManager>
     public DoorPartInfoList GetDoorParts()
     {
         DoorPartInfoList doorParts = new DoorPartInfoList();
-
         foreach(var doorRoot in doorRoots)
         {
             if (doorRoot == null) continue;
@@ -134,6 +146,7 @@ public class DoorManager : SingletonBehaviour<DoorManager>
         {
             return b.VertexCount.CompareTo(a.VertexCount);
         });
+        //Debug.Log($"DoorManager.GetDoorParts IsOnlyActive:{IsOnlyActive} IsOnlyCanSplit:{IsOnlyCanSplit} doorRoots:{doorRoots.Count} doorParts:{doorParts.Count}");
         return doorParts;
     }
 
@@ -685,7 +698,7 @@ public class DoorPartInfo
         }
         else
         {
-            Debug.LogWarning("DoorPartInfo.ctor MeshFilter == null:" + go);
+            //Debug.LogWarning("DoorPartInfo.ctor MeshFilter == null:" + go);
         }
         
 
@@ -701,7 +714,7 @@ public class DoorPartInfo
         }
         else
         {
-            Debug.LogWarning("DoorPartInfo.ctor MeshRenderer == null:" + go);
+            //Debug.LogWarning("DoorPartInfo.ctor MeshRenderer == null:" + go);
         }
 
         
@@ -754,6 +767,19 @@ public class DoorInfoList : List<DoorInfo>
             meshPoints[i] = new MeshPoints(this[i].gameObject);
         }
         return meshPoints;
+    }
+
+    public MeshFilter[] GetMeshFilters()
+    {
+        List<MeshFilter> meshFilters = new List<MeshFilter>();
+        for (int i = 0; i < this.Count; i++)
+        {
+            DoorInfo info = this[i];
+            if (info == null) continue;
+            if (info.gameObject == null) continue;
+            meshFilters.AddRange(info.gameObject.GetComponentsInChildren<MeshFilter>(true));
+        }
+        return meshFilters.ToArray();
     }
 
     public DoorPartInfoList GetDoorParts()

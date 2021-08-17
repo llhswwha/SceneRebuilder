@@ -36,6 +36,7 @@ public class DoorsRoot : MonoBehaviour
                 VertexCount_Show += door.vertexCount;
         }
         Doors.Sort((a, b) => b.vertexCount.CompareTo(a.vertexCount));
+        Debug.Log($"DoorsRoot.Init name:{this.gameObject.name} children:{transform.childCount} Doors:{Doors.Count}");
     }
     public string GetTitle()
     {
@@ -238,6 +239,15 @@ public class DoorsRoot : MonoBehaviour
         prefabs.ResetPrefabs();
     }
 
+    public void SetParent()
+    {
+        var mfs = this.gameObject.GetComponentsInChildren<MeshFilter>(true);
+        foreach(var mf in mfs)
+        {
+            mf.transform.SetParent(this.transform);
+            mf.transform.position = mf.transform.position * 0.8f;
+        }
+    }
     
 
     public void RevertReplace()
@@ -253,5 +263,12 @@ public class DoorsRoot : MonoBehaviour
     public void ShowNew()
     {
         prefabs.ShowNew();
+    }
+
+    public SharedMeshInfoList GetSharedMeshList()
+    {
+        var doors = this.Doors;
+        var filters = doors.GetMeshFilters();
+        return new SharedMeshInfoList(filters);
     }
 }
