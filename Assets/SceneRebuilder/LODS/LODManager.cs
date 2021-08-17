@@ -778,6 +778,8 @@ public class LODManager : SingletonBehaviour<LODManager>
     public float[] LODLevels_2 = new float[] { 0.7f, 0.3f, 0.02f };
     public float[] LODLevels_3 = new float[] { 0.7f, 0.3f, 0.1f, 0.02f };
 
+    public float[] DoorLODLevels_2 = new float[] { 0.6f, 0.1f, 0.01f };
+
     public LOD[] CreateLODS(int count)
     {
         if (count == 2)
@@ -846,13 +848,12 @@ public class LODManager : SingletonBehaviour<LODManager>
 
     public LOD[] GetLODs3(MeshRenderer[] renderers0, MeshRenderer[] renderers1, MeshRenderer[] renderers2)
     {
-        //LOD[] lods = new LOD[3];
-        //lods[0] = new LOD(LODLevels_2[0], renderers0);
-        //lods[1] = new LOD(LODLevels_2[1], renderers1);
-        //lods[2] = new LOD(LODLevels_2[2], renderers2);
-        //return lods;
-
         return LODHelper.GetLODs3(LODLevels_2, renderers0, renderers1, renderers2);
+    }
+
+    public LOD[] GetDoorLODs3(MeshRenderer[] renderers0, MeshRenderer[] renderers1, MeshRenderer[] renderers2)
+    {
+        return LODHelper.GetLODs3(DoorLODLevels_2, renderers0, renderers1, renderers2);
     }
 
     public LOD[] GetLODs4(MeshRenderer[] renderers0, MeshRenderer[] renderers1, MeshRenderer[] renderers2, MeshRenderer[] renderers3)
@@ -1372,6 +1373,7 @@ public static class LODHelper
 {
     public static LODGroup CreateLODs(GameObject root)
     {
+        if (root == null) return null;
         ClearGroupInfo(root);
         MeshRendererInfoList infoList = MeshRendererInfo.InitRenderers(root);
         LODGroup groupNew = root.AddComponent<LODGroup>();
@@ -1383,6 +1385,7 @@ public static class LODHelper
 
     private static void ClearGroupInfo(GameObject go)
     {
+        if (go == null) return;
         LODGroup group = go.GetComponent<LODGroup>();
         if (group != null)
         {
@@ -1395,40 +1398,64 @@ public static class LODHelper
         }
     }
 
-    public static LODGroup SetDoorLOD(GameObject door)
+    public static GameObject SetDoorLOD(GameObject door)
     {
+        if (door == null)
+        {
+            Debug.LogError("SetDoorLOD");
+            return null;
+        }
         ClearGroupInfo(door);
 
         GameObject doorRoot = door;
         MeshRenderer meshRenderer = door.GetComponent<MeshRenderer>();
         if (meshRenderer != null)
         {
-            doorRoot = MeshCombineHelper.SplitByMaterials(door);
+            doorRoot = MeshCombineHelper.SplitByMaterials(door,false);
         }
 
         MeshRendererInfoList infoList = MeshRendererInfo.InitRenderers(doorRoot);
         if (infoList.Count == 3)
         {
-            LODGroup groupNew = door.AddComponent<LODGroup>();
+            LODGroup groupNew = doorRoot.AddComponent<LODGroup>();
             //var lods2 = LODManager.Instance.GetLODs3(
             //    infoList.GetRenderers().ToArray(), 
             //    new MeshRenderer[] { infoList[0].meshRenderer, infoList[1].meshRenderer },
             //    new MeshRenderer[] { infoList[1].GetBoundsRenderer() }
             //);
-            var lods2 = LODManager.Instance.GetLODs3(
+
+            var lods2 = LODManager.Instance.GetDoorLODs3(
                 infoList.GetRenderers().ToArray(),
                 new MeshRenderer[] { infoList[1].meshRenderer, infoList[2].meshRenderer },
                 new MeshRenderer[] { infoList[1].GetBoundsRenderer() }
             );
+
             groupNew.SetLODs(lods2);
 
-            LODGroupInfo.Init(door);
-            return groupNew;
+            LODGroupInfo.Init(doorRoot);
+            return doorRoot;
         }
+        //else if (infoList.Count == 2)
+        //{
+        //    LODGroup groupNew = doorRoot.AddComponent<LODGroup>();
+        //    //var lods2 = LODManager.Instance.GetLODs3(
+        //    //    infoList.GetRenderers().ToArray(), 
+        //    //    new MeshRenderer[] { infoList[0].meshRenderer, infoList[1].meshRenderer },
+        //    //    new MeshRenderer[] { infoList[1].GetBoundsRenderer() }
+        //    //);
+        //    var lods2 = LODManager.Instance.GetLODs2(
+        //        infoList.GetRenderers().ToArray(),
+        //        new MeshRenderer[] { infoList[1].GetBoundsRenderer() }
+        //    );
+        //    groupNew.SetLODs(lods2);
+
+        //    LODGroupInfo.Init(doorRoot);
+        //    return groupNew;
+        //}
         else
         {
-            Debug.LogError("DoorHelper.SetDoorLOD infoList.Count != 3");
-            return null;
+            Debug.LogWarning($"DoorHelper.SetDoorLOD infoList.Count != 3 door:{doorRoot} infoList:{infoList.Count}");
+            return doorRoot;
         }
     }
 

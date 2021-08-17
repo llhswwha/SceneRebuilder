@@ -611,8 +611,9 @@ public class AcRigidTransform : MonoBehaviour {
             {
                 var tpTo=tpsTo[k];
                 count++;
-                var rt=acRigidTransform.GetRTMatrix(tpFrom,tpTo);//核心,基于脚本的
-                //var rt=GetRTMatrixS(tpFrom,tpTo);//核心，静态函数的
+                //var rt=acRigidTransform.GetRTMatrix(tpFrom,tpTo);//核心,基于脚本的
+                //var rt = AcRigidTransform.GetRTMatrixS(tpFrom, tpTo);//静态的
+                var rt=GetRTMatrixS(tpFrom,tpTo);//核心，静态函数的
                 MeshHelper.ClearChildren(tFrom);
                 var vsNew=rt.ApplyPoints(vsFrom);
                 var dis=DistanceUtil.GetDistance(vsTo,vsNew);
@@ -620,7 +621,7 @@ public class AcRigidTransform : MonoBehaviour {
                     minDis=dis;
                     minRT=rt;
                 }
-                Debug.LogError($">>>RTAlignOneCore [{l},{k}]\tIsZero:{rt.IsZero},\tIsReflection:{rt.IsReflection},\tdis:{dis}");
+                Debug.LogError($">>>RTAlignOneCore [{l},{k}]\tIsZero:{rt.IsZero},\tIsReflection:{rt.IsReflection},\tdis:{dis},\n{rt.TransformationMatrix}");
                 if(dis==0)
                 {
                     Debug.LogError($"RTAlignOneCore2 Count:{count},Time:{(DateTime.Now-start).TotalMilliseconds}ms");

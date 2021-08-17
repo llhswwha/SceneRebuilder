@@ -475,7 +475,7 @@ namespace CodeStage.AdvancedFPSCounter.Editor.UI
             //GUILayout.Space(level * 10);
         }
 
-        public static bool ObjectFoldout(FoldoutEditorArg arg,Object obj = null, System.Action itemToolbarEvent = null)
+        public static bool ObjectFoldout(FoldoutEditorArg arg,Object obj = null, System.Action itemToolbarEvent = null, System.Action destroyAction = null)
         {
             if (arg.separator) Separator(5);
 
@@ -566,7 +566,23 @@ namespace CodeStage.AdvancedFPSCounter.Editor.UI
                 }
                 if (GUILayout.Button("X", btnStyle, GUILayout.Width(20)))
                 {
-                    GameObject.DestroyImmediate(obj);
+                    if (destroyAction != null)
+                    {
+                        destroyAction();
+                    }
+                    else
+                    {
+                        if (obj is GameObject)
+                        {
+                            GameObject.DestroyImmediate(obj);
+                        }
+                        else
+                        {
+                            Debug.LogError("X obj not GameObject");
+                        }
+                    }
+                    
+                    
                 }
             }
             EditorGUIUtility.labelWidth = currentLabelWidth;

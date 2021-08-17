@@ -39,6 +39,7 @@ public class LODGroupInfo : MonoBehaviour
             LodInfos.Add(lodInfo);
             int vc=0;
             foreach(var r in lod.renderers){
+                if (r == null) continue;
                 MeshFilter meshFilter=r.GetComponent<MeshFilter>();
                 vc+=meshFilter.sharedMesh.vertexCount;
             }
@@ -186,6 +187,11 @@ public class LODGroupInfo : MonoBehaviour
 
     public static LODGroupInfo Init(GameObject go)
     {
+        if (go == null)
+        {
+            Debug.LogError("LODGroupInfo.Init go == null");
+            return null;
+        }
         LODGroupInfo info = go.GetComponent<LODGroupInfo>();
         if (info == null)
         {

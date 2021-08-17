@@ -14,7 +14,22 @@ public class SharedMeshInfoList : List<SharedMeshInfo>
 
     public int filterCount = 0;
 
+    public SharedMeshInfoList()
+    {
+        InitByRoot(null);
+    }
+
+    public SharedMeshInfoList(SharedMeshInfoList root)
+    {
+        this.AddRange(root);
+    }
+
     public SharedMeshInfoList(GameObject root)
+    {
+        InitByRoot(root);
+    }
+
+    private void InitByRoot(GameObject root)
     {
         MeshFilter[] meshFilters = null;
         if (root == null)
@@ -70,7 +85,12 @@ public class SharedMeshInfoList : List<SharedMeshInfo>
         }
         this.Sort((a, b) =>
         {
-            return b.vertexCount.CompareTo(a.vertexCount);
+            var r1= b.vertexCount.CompareTo(a.vertexCount);
+            if (r1 == 0)
+            {
+                r1 = b.meshFilters.Count.CompareTo(a.meshFilters.Count);
+            }
+            return r1;
         });
     }
 
@@ -81,10 +101,18 @@ public class SharedMeshInfoList : List<SharedMeshInfo>
         filterCount += item.GetCount();
         totalVertexCount += item.GetAllVertexCount();
     }
+
+    public void GetPrefabs()
+    {
+        //SharedMeshInfoList list1 = new SharedMeshInfoList(this);
+        //SharedMeshInfoList list2 = new SharedMeshInfoList(this);
+
+        PrefabInfoListHelper.GetPrefabInfos(this,true);
+    }
 }
 
 [Serializable]
-public class SharedMeshInfo
+public class SharedMeshInfo:IPrefab<SharedMeshInfo>
 {
     public Mesh mesh;
 
@@ -101,7 +129,51 @@ public class SharedMeshInfo
         return mainMeshFilter;
     }
 
-    public int vertexCount = 0;
+    public List<GameObject> GetGameObjects()
+    {
+        List<GameObject> objs = new List<GameObject>();
+        foreach (var mf in meshFilters)
+        {
+            if (mf == null) continue;
+            objs.Add(mf.gameObject);
+        }
+        return objs;
+    }
+
+    public void Destroy()
+    {
+        foreach(var mf in meshFilters)
+        {
+            if (mf == null) continue;
+            GameObject.DestroyImmediate(mf.gameObject);
+        }
+    }
+
+    public int vertexCount;
+
+    public int GetVertexCount()
+    {
+        if (vertexCount == 0 && mesh!=null)
+        {
+            vertexCount = mesh.vertexCount;
+        }
+        return vertexCount;
+    }
+
+    public SharedMeshInfo(GameObject go)
+    {
+        this.go = go;
+        MeshFilter mf = go.GetComponent<MeshFilter>();
+        
+        this.mesh = mf.sharedMesh;
+        this.vertexCount = mesh.vertexCount;
+
+        meshFilters.Add(mf);
+        if (mf.name == mesh.name)
+        {
+            mainMeshFilter = mf;
+        }
+    }
 
     public SharedMeshInfo(Mesh mesh)
     {
@@ -111,11 +183,17 @@ public class SharedMeshInfo
 
     public void AddMeshFilter(MeshFilter mf)
     {
+        if (mf == null)
+        {
+            Debug.LogError("SharedMeshInfo.AddMeshFilter mf == null");
+            return;
+        }
         meshFilters.Add(mf);
         if (mf.name == mesh.name)
         {
             mainMeshFilter = mf;
         }
+        go = GetMainMeshFilter().gameObject;
     }
 
     public string GetName()
@@ -131,5 +209,47 @@ public class SharedMeshInfo
     public int GetAllVertexCount()
     {
         return meshFilters.Count * vertexCount;
+    }
+
+    private GameObject go;
+
+
+    public GameObject gameObject
+    {
+        get
+        {
+            return go;
+        }
+        set
+        {
+            go = value;
+        }
+    }
+
+    public override string ToString()
+    {
+        return $"{gameObject.name}(v:{vertexCount}|c:{GetCount()})";
+    }
+
+    public Transform transform
+    {
+        get
+        {
+            return gameObject.transform;
+        }
+    }
+
+    public void PreparePrefab()
+    {
+        
+    }
+
+    public SharedMeshInfo Clone()
+    {
+        
+        GameObject goNew = MeshHelper.CopyGO(this.gameObject);
+        SharedMeshInfo info = new SharedMeshInfo(goNew);
+        return info;
+        
     }
 }

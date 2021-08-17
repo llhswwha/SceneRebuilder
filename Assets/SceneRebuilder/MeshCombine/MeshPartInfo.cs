@@ -16,6 +16,8 @@ public class MeshPartInfo{
 
     public int vertexCount=0;
 
+    public Vector3 offset = Vector3.zero;
+
     public int GetMeshCount()
     {
         if (meshFilters == null)

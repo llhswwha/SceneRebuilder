@@ -31,11 +31,11 @@ public class DoorsRoot : MonoBehaviour
             var child = transform.GetChild(i);
             DoorInfo door = new DoorInfo(child.gameObject);
             Doors.Add(door);
-            VertexCount += door.VertexCount;
-            if (door.DoorGo && door.DoorGo.activeInHierarchy)
-                VertexCount_Show += door.VertexCount;
+            VertexCount += door.vertexCount;
+            if (door.gameObject && door.gameObject.activeInHierarchy)
+                VertexCount_Show += door.vertexCount;
         }
-        Doors.Sort((a, b) => b.VertexCount.CompareTo(a.VertexCount));
+        Doors.Sort((a, b) => b.vertexCount.CompareTo(a.vertexCount));
     }
     public string GetTitle()
     {
@@ -188,7 +188,7 @@ public class DoorsRoot : MonoBehaviour
         for(int i=0;i<Doors.Count;i++)
         {
             ProgressBarHelper.DisplayCancelableProgressBar("CopyPart", i, Doors.Count);
-            DoorHelper.CopyDoorA(Doors[i].DoorGo, true);
+            DoorHelper.CopyDoorA(Doors[i].gameObject, true);
         }
         ProgressBarHelper.ClearProgressBar();
     }
@@ -199,16 +199,18 @@ public class DoorsRoot : MonoBehaviour
         DoorManager.SplitDoorParts(parts);
     }
 
-    public void AcRTAlignJobs()
+    public void AcRTAlignJobs(bool isCopy)
     {
-        MeshPoints[] meshPoints = Doors.GetMeshPoints();
-        prefabs=PrefabInstanceBuilder.Instance.AcRTAlignJobs(meshPoints);
+        //MeshPoints[] meshPoints = Doors.GetMeshPoints();
+        //prefabs=PrefabInstanceBuilder.Instance.AcRTAlignJobs(meshPoints);
+        prefabs = PrefabInstanceBuilder.Instance.AcRTAlignJobs(this.gameObject, isCopy);
     }
 
-    public void AcRTAlignJobsEx()
+    public void AcRTAlignJobsEx(bool isCopy)
     {
-        MeshPoints[] meshPoints = Doors.GetMeshPoints();
-        prefabs = PrefabInstanceBuilder.Instance.AcRTAlignJobsEx(meshPoints);
+        //MeshPoints[] meshPoints = Doors.GetMeshPoints();
+        //prefabs = PrefabInstanceBuilder.Instance.AcRTAlignJobsEx(meshPoints);
+        prefabs = PrefabInstanceBuilder.Instance.AcRTAlignJobsEx(this.gameObject, isCopy);
     }
 
     public void SetDoorShared()

@@ -22,9 +22,11 @@ public class DoorsRootEditor : BaseFoldoutEditor<DoorsRoot>
         prefabListArg = new FoldoutEditorArg(true, false, true, true, false);
 
         doorPartListArg.isEnabled = true;
+
         DoorManager.Instance.LocalTarget = targetT.gameObject;
-        DoorManager.Instance.UpdateDoors();
     }
+
+    private bool isCopyTarget = true;
 
     public override void OnToolLayout(DoorsRoot item)
     {
@@ -34,6 +36,12 @@ public class DoorsRootEditor : BaseFoldoutEditor<DoorsRoot>
         //item.IsAlign=GUILayout.Toggle(item.IsAlign, "IsAlign");
         //item.IsReplace = GUILayout.Toggle(item.IsReplace, "IsReplace");
         //GUILayout.EndHorizontal();
+
+        if (GUILayout.Button("Update"))
+        {
+            DoorManager.Instance.LocalTarget = targetT.gameObject;
+            DoorManager.Instance.UpdateDoors();
+        }
 
         GUILayout.BeginHorizontal();
         if (GUILayout.Button("GetPrefab"))
@@ -87,16 +95,21 @@ public class DoorsRootEditor : BaseFoldoutEditor<DoorsRoot>
         {
             item.CopyPart();
         }
+        if (GUILayout.Button("InitMeshNodes"))
+        {
+            MeshNode.InitNodes(item.gameObject);
+        }
         GUILayout.EndHorizontal();
 
         GUILayout.BeginHorizontal();
+        isCopyTarget = GUILayout.Toggle(isCopyTarget, "Copy");
         if (GUILayout.Button("AcRTAlignJobs"))
         {
-            item.AcRTAlignJobs();
+            item.AcRTAlignJobs(isCopyTarget);
         }
         if (GUILayout.Button("AcRTAlignJobsEx"))
         {
-            item.AcRTAlignJobsEx();
+            item.AcRTAlignJobsEx(isCopyTarget);
         }
         GUILayout.EndHorizontal();
 

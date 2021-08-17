@@ -481,8 +481,14 @@ public class MeshComparer : SingletonBehaviour<MeshComparer>
     public void GetDistance12C()
     {
         DateTime start = DateTime.Now;
-        DestroyGO2Copy();
-        goFromCopy = MeshHelper.CopyGO(goFrom);
+
+        if (goFromCopy == null)
+        {
+            DestroyGO2Copy();
+            goFromCopy = MeshHelper.CopyGO(goFrom);
+        }
+        
+
         SetDistanceSetting();
         distance = MeshHelper.GetVertexDistanceEx(goTo.transform,goFromCopy.transform,"GetDistance12C",true);
         Debug.Log($"GetDistance12 distance:{distance} 用时:{(DateTime.Now - start).TotalMilliseconds:F2}ms log:{DistanceUtil.DisLog}");
@@ -594,6 +600,7 @@ public class MeshComparer : SingletonBehaviour<MeshComparer>
 
     public void AcRTAlignJob(GameObject from, GameObject to)
     {
+        SetDistanceSetting();
         SetGos(from, to);
 
         //goFromCopy = from;
@@ -622,6 +629,7 @@ public class MeshComparer : SingletonBehaviour<MeshComparer>
 
     public void TestRTAlignJob()
     {
+        SetDistanceSetting();
         CopyGo2();
 
         MeshHelper.SetParentZero(goTo);
@@ -659,6 +667,7 @@ public class MeshComparer : SingletonBehaviour<MeshComparer>
 
     private void InitMeshNodeInfoEx()
     {
+        SetDistanceSetting();
         MeshHelper.step = this.step;
         MeshHelper.mode = this.mode;
         //DistanceSetting.zeroP=this.zeroP;
@@ -692,6 +701,9 @@ public class MeshComparer : SingletonBehaviour<MeshComparer>
 
         DateTime start=DateTime.Now;
          CopyGo2();
+
+        var pTo = goTo.transform.parent;
+        var pFrom = goFromCopy.transform.parent;
 
         MeshHelper.SetParentZero(goTo);
         MeshHelper.SetParentZero(goFromCopy);
@@ -754,6 +766,9 @@ public class MeshComparer : SingletonBehaviour<MeshComparer>
 
         rList.ApplyMatrix(goOld.transform, goTo.transform);
 
+        goTo.transform.parent = pTo;
+        goFromCopy.transform.parent = pFrom;
+
         ProgressBarHelper.ClearProgressBar();
         Debug.Log($"TestICP2 End Time:{(DateTime.Now-start).TotalMilliseconds}ms");
     }
@@ -768,6 +783,7 @@ public class MeshComparer : SingletonBehaviour<MeshComparer>
 
     public void AlignMeshNode(MeshNode node1,MeshNode node2,int tryCount)
     {
+        SetDistanceSetting();
         DateTime start=DateTime.Now;
         Debug.Log("AlignMeshNode Start");
         Vector3 longLine1 = node1.GetLongLine();

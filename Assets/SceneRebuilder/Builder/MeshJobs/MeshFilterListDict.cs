@@ -79,7 +79,7 @@ public class MeshFilterListDict
             // }
 
             var matId = mf.GetMatId();
-            Debug.Log($"MeshFilterListDict [{i}] points:{mf.name} mat:{matId}");
+            //Debug.Log($"MeshFilterListDict [{i}] points:{mf.name} mat:{matId}");
 
             string key=vCount+"_"+matId;
             if(!dict.ContainsKey(key)){

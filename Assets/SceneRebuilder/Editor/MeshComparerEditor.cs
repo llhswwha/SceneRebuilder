@@ -83,6 +83,7 @@ public class MeshComparerEditor : BaseEditor<MeshComparer>
         EditorGUILayout.EndHorizontal();
 
         EditorGUILayout.BeginHorizontal();
+        item.MaxICPCount = EditorGUILayout.IntField(item.MaxICPCount);
         if (GUILayout.Button("TestICP"))
         {
             item.TestICP();

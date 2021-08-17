@@ -39,7 +39,7 @@ public static class MeshHelper
         Debug.Log($"empty:{emptyList.Count},all:{ts.Length}");
     }
 
-    public static List<Type> typesOfEmptyObject = new List<Type>() {typeof(Transform),typeof(RendererId),typeof(MeshRendererInfo) };
+    public static List<Type> typesOfEmptyObject = new List<Type>() {typeof(Transform),typeof(RendererId),typeof(MeshNode),typeof(MeshRendererInfo),typeof(LODGroup) };
 
     public static bool IsEmptyObject(Transform t)
     {
@@ -877,6 +877,7 @@ public static class MeshHelper
             this.showLog=showLog;
         }
     }
+
 
     public static float GetVertexDistanceEx(Transform t1,Transform t2,string progress="",bool showLog=false)
     {
@@ -1945,7 +1946,11 @@ public static class MeshHelper
     {
         DateTime start=DateTime.Now;
 
-        if (go2 == null) return null;
+        if (go2 == null)
+        {
+            Debug.LogError("CopyGO go2==null");
+            return null;
+        }
         Transform t1=go2.transform;
 
         Transform parent1=t1.parent;
@@ -1968,6 +1973,9 @@ public static class MeshHelper
         double t=(DateTime.Now-start).TotalMilliseconds;
         TotalCopyTime+=t;
         TotalCopyCount++;
+
+        //var ids = go2Copy.GetComponentsInChildren<RendererId>();
+        RendererId.UpdateIds(go2Copy);
 
         return go2Copy;
     }
@@ -2001,10 +2009,43 @@ public static class MeshHelper
         if(ZeroPointGo==null){
             ZeroPointGo=new GameObject("ZeroPoint");
         }
+        //SaveParent(go.transform);
         var parent = go.transform.parent;
         go.transform.SetParent(ZeroPointGo.transform);
         return parent;
     }
+
+    public static void SaveParent(Transform t)
+    {
+        var parent = t.parent;
+        if (parent == ZeroPointGo.transform) return;
+        if (parents.ContainsKey(t))
+        {
+            var parentOld = parents[t];
+            Debug.LogError($"MeshHelper.SaveParent t:{t} old:{parentOld},parent:{parent}");
+        }
+        else
+        {
+            parents.Add(t, parent);
+        }
+    }
+
+    public static void LoadParent(Transform t)
+    {
+        var parent = t.parent;
+        if (parent == ZeroPointGo.transform) return;
+        if (parents.ContainsKey(t))
+        {
+            var parentOld = parents[t];
+            t.SetParent(parentOld);
+        }
+        else
+        {
+            Debug.LogError($"MeshHelper.LoadParent parents.ContainsKey(t) == false t:{t}");
+        }
+    }
+
+    private static Dictionary<Transform, Transform> parents = new Dictionary<Transform, Transform>();
 
     public static void ClearChildren(Transform t)
     {
@@ -2507,7 +2548,7 @@ public static class MeshAlignHelper
         AcRTAlignJobResult.CleanResults();
         AcRtAlignJobArg.CleanArgs();
         MeshJobHelper.NewThreePointJobs(new MeshPoints[] { mfFrom, mfTo }, 10000);
-        bool r=MeshJobHelper.DoAcRTAlignJob(mfFrom, mfTo, 1);
+        bool r=MeshJobHelper.DoAcRTAlignJob(mfFrom, mfTo, 2);
 
         to.transform.SetParent(pTo);
         from.transform.SetParent(pFrom);

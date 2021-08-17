@@ -39,6 +39,6 @@ public class TransformNode : MonoBehaviour
     [ContextMenu("SplitByMaterials")]
     public void SplitByMaterials()
     {
-        MeshCombineHelper.SplitByMaterials(this.gameObject);
+        MeshCombineHelper.SplitByMaterials(this.gameObject,false);
     }
 }

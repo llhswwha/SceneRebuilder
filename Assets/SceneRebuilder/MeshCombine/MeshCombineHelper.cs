@@ -35,8 +35,11 @@ public static class MeshCombineHelper
         yield return target;
     }
 
-    public static GameObject SplitByMaterials(GameObject obj,bool isDestroy=true)
+    public static GameObject SplitByMaterials(GameObject obj,bool isCenterPivot,bool isDestroy=true)
     {
+        MeshRenderer renderer = obj.GetComponent<MeshRenderer>();
+        if (renderer == null) return null;
+        if (renderer.sharedMaterials.Length == 1) return obj;
         //SplitByMaterials：
         //1.ResetTransform
         //2.CombineByMaterial
@@ -51,6 +54,7 @@ public static class MeshCombineHelper
 
         //GameObject goNew = CombineMaterials(obj);
         MeshCombineArg arg = new MeshCombineArg(obj);
+        arg.isCenterPivot = isCenterPivot;
         arg.prefix = obj.name+"_";
         GameObject goNew = CombineInner_Multi(arg,false);
 
@@ -110,11 +114,12 @@ public static class MeshCombineHelper
             string meshNames = "";
             list.ForEach(i => meshNames += i.meshFilter.name + ";");
             mfList.AddRange(list);
-            CombinedMesh combinedMesh=new CombinedMesh(arg.transform,list,material);
+            CombinedMesh combinedMesh=new CombinedMesh(arg,list,material);
             int vs=combinedMesh.DoCombine(true);
             if(vs>0){
                 GameObject matGo=combinedMesh.CreateNewGo(false,null);
                 matGo.name=arg.prefix+material.name;
+                combinedMesh.meshPartList[0].mesh.name = matGo.name;
                 matGo.transform.SetParent(goNew.transform);
             }
             else{
@@ -517,6 +522,7 @@ public class MeshCombineArg
     public string prefix = "";
     public string sourceName;
     public GameObject source;
+    public bool isCenterPivot = false;
 
     public MeshCombineArg(GameObject sour)
     {

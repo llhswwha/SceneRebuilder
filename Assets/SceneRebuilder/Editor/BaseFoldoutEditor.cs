@@ -60,6 +60,11 @@ public class BaseFoldoutEditor<T> : BaseEditor<T> where T : class
     {
         foreach (var item in items)
         {
+            if (item == null)
+            {
+                
+                continue;
+            }
             if (editorArgs.ContainsKey(item))
             {
                 editorArgs.Remove(item);
@@ -978,12 +983,12 @@ public class BaseFoldoutEditor<T> : BaseEditor<T> where T : class
                 var arg = editorArgs[door];
                 arg.caption = $"[{i + 1:00}] {door.GetTitle()}";
                 arg.info = door.ToString();
-                EditorUIUtils.ObjectFoldout(arg, door.DoorGo, () =>
+                EditorUIUtils.ObjectFoldout(arg, door.gameObject, () =>
                 {
                     if (GUILayout.Button("Split", GUILayout.Width(50)))
                     {
                         Debug.Log($"Split:{door.GetTitle()}");
-                        GameObject result = MeshCombineHelper.SplitByMaterials(door.DoorGo);
+                        GameObject result = MeshCombineHelper.SplitByMaterials(door.gameObject,false);
                     }
                 });
             });
@@ -1030,22 +1035,34 @@ public class BaseFoldoutEditor<T> : BaseEditor<T> where T : class
                 prefabInfoArg.background = true;
                 prefabInfoArg.caption = $"[{i + 1:00}] {prefabInfo.GetTitle()}";
                 prefabInfoArg.info = prefabInfo.ToString();
-                //EditorUIUtils.ObjectFoldout(doorRootArg, doorRoot.gameObject, () =>
-                //{
-
-                //});
-
                 EditorUIUtils.ObjectFoldout(prefabInfoArg, prefabInfo.Prefab, () =>
                 {
-                    //if (GUILayout.Button("Share", GUILayout.Width(50)))
-                    //{
-                    //    doorRoot.SetDoorShared(false);
-                    //}
                 });
+
+                if (prefabInfoArg.isExpanded)
+                {
+                    InitEditorArg(prefabInfo.Instances);
+                    prefabInfoArg.DrawPageToolbar(prefabInfo.Instances, (ins, j) =>
+                     {
+                         var insArg = editorArgs[ins];
+                         insArg.level = 2;
+                         insArg.background = true;
+                         insArg.caption = $"[{i + 1:00}] {ins.name}";
+                         //insArg.info = prefabInfo.ToString();
+                         EditorUIUtils.ObjectFoldout(insArg, ins, () =>
+                         {
+                         });
+                     });
+                }
 
                 //DrawDoorList(doorRootArg, doorRoot, true);
             });
         }
+    }
+
+    public void DrawPrefabInstanceList()
+    {
+
     }
 
     public void DrawDoorsRootList(FoldoutEditorArg doorRootListArg, DoorManager item)
@@ -1142,7 +1159,7 @@ public class BaseFoldoutEditor<T> : BaseEditor<T> where T : class
                 arg.caption = $"[{i + 1:00}] {door.GetTitle()}";
                 arg.info = door.ToString();
                 arg.level = 2;
-                EditorUIUtils.ObjectFoldout(arg, door.DoorGo, () =>
+                EditorUIUtils.ObjectFoldout(arg, door.gameObject, () =>
                 {
 
                 });
@@ -1294,6 +1311,10 @@ public class BaseFoldoutEditor<T> : BaseEditor<T> where T : class
         },
         () =>
         {
+            if(GUILayout.Button("GetPrefabs", GUILayout.Width(100)))
+            {
+                list.GetPrefabs();
+            }
         });
         DrawSharedMeshList(listArg);
     }
@@ -1337,7 +1358,17 @@ public class BaseFoldoutEditor<T> : BaseEditor<T> where T : class
 
                     EditorUIUtils.ObjectFoldout(arg, node.mesh, () =>
                     {
-
+                        var btnStyle = new GUIStyle(EditorStyles.miniButton);
+                        btnStyle.margin = new RectOffset(0, 0, 0, 0);
+                        btnStyle.padding = new RectOffset(0, 0, 0, 0);
+                        if (GUILayout.Button("S", btnStyle,GUILayout.Width(25)))
+                        {
+                            EditorHelper.SelectObjects(node.GetGameObjects());
+                        }
+                    },()=>
+                    {
+                        node.Destroy();
+                        list.Remove(node);
                     });
 
                     if (arg.isEnabled && arg.isExpanded)
@@ -1347,10 +1378,19 @@ public class BaseFoldoutEditor<T> : BaseEditor<T> where T : class
                         InitEditorArg(filters);
                         foreach (var mf in filters)
                         {
+                            if (mf == null) continue;
                             var mfArg = editorArgs[mf];
                             mfArg.isFoldout = false;
                             mfArg.level = 2;
-                            mfArg.caption = mf.name;
+                            if (mf.transform.parent == null)
+                            {
+                                mfArg.caption = "[ROOT]> " + mf.name;
+                            }
+                            else
+                            {
+                                mfArg.caption = mf.transform.parent.name + "> " + mf.name;
+                            }
+                            
                             EditorUIUtils.ObjectFoldout(mfArg, mf.gameObject, () =>
                             {
 

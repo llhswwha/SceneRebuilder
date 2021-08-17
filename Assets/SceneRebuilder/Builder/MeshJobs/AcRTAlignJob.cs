@@ -249,7 +249,7 @@ namespace MeshJobs
 
         public static int ICPCount=0;
 
-        public static bool IsTryAngles=true;
+        public static bool IsTryAngles= true;
 
         public static bool IsTryAngles_Scale=true;
 

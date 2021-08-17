@@ -27,14 +27,39 @@ public class RendererId
     }
 
     [ContextMenu("Clear")]
-    public void Clear()
+    public void ClearIds()
     {
-        var ids = this.GetComponentsInChildren<RendererId>();
+        var ids = this.GetComponentsInChildren<RendererId>(true);
         foreach(var id in ids)
         {
             GameObject.DestroyImmediate(id);
         }
     }
+
+    [ContextMenu("ClearScripts")]
+    public void ClearScripts()
+    {
+        var ids = this.GetComponentsInChildren<MonoBehaviour>(true);
+        int count = 0;
+        foreach (var id in ids)
+        {
+            if (id.gameObject == this.gameObject) continue;
+            count++;
+            GameObject.DestroyImmediate(id);
+        }
+        Debug.Log("ClearScripts "+count);
+    }
+
+    //[ContextMenu("ClearComponents")]
+    //public void ClearComponents()
+    //{
+    //    var ids = this.GetComponentsInChildren<MonoBehaviour>(true);
+    //    foreach (var id in ids)
+    //    {
+    //        if (id.gameObject == this.gameObject) continue;
+    //        GameObject.DestroyImmediate(id);
+    //    }
+    //}
 
     internal void Init<T>(T r) where T :Component
     {
@@ -78,9 +103,14 @@ public class RendererId
 
         if (string.IsNullOrEmpty(Id))
         {
-            Id = Guid.NewGuid().ToString();
+            NewId();
         }
         parentId = GetId(this.transform.parent, level + 1);
+    }
+
+    public void NewId()
+    {
+        Id = Guid.NewGuid().ToString();
     }
 
     public void Refresh()
@@ -220,25 +250,52 @@ public class RendererId
         id.SetParentId();
         return id;
     }
-    public static RendererId UpdateId(GameObject r) 
+
+    public static RendererId[] UpdateIds(GameObject go)
+    {
+        RendererId[] ids = go.GetComponentsInChildren<RendererId>(true);
+        foreach(var id in ids)
+        {
+            id.NewId();
+        }
+        return ids;
+    }
+
+    public static RendererId[] UpdateIds<T>(T go) where T : Component
+    {
+        RendererId[] ids = go.GetComponentsInChildren<RendererId>(true);
+        foreach (var id in ids)
+        {
+            id.NewId();
+        }
+        return ids;
+    }
+
+    public static RendererId UpdateId(GameObject r,bool isForce=false) 
     {
         RendererId id = r.GetComponent<RendererId>();
         if (id == null)
         {
             id = r.gameObject.AddComponent<RendererId>();
-
+        }
+        if (isForce)
+        {
+            id.NewId();
         }
         id.Init(r,0);
         return id;
     }
 
-    public static RendererId UpdateId<T>(T r) where T : Component
+    public static RendererId UpdateId<T>(T r, bool isForce = false) where T : Component
     {
         RendererId id = r.GetComponent<RendererId>();
         if (id == null)
         {
             id = r.gameObject.AddComponent<RendererId>();
-            
+        }
+        if (isForce)
+        {
+            id.NewId();
         }
         id.Init(r);
         return id;

@@ -29,61 +29,79 @@ public class CombinedMesh{
 
     public Vector3[] minMax;
 
-    public CombinedMesh(Transform source, SubMeshList mfs, Material mat){
+    public MeshCombineArg arg;
+
+    public bool isCenterPivot = false;
+
+    public CombinedMesh(MeshCombineArg arg, SubMeshList mfs, Material mat)
+    {
+        this.arg = arg;
+        isCenterPivot = arg.isCenterPivot;
+        Init(arg.transform, mfs, mat);
+    }
+
+    public CombinedMesh(Transform source, SubMeshList mfs, Material mat)
+    {
+        Init(source, mfs, mat);
+    }
+
+    private void Init(Transform source, SubMeshList mfs, Material mat)
+    {
         Debug.Log($"CombinedMesh source:[{source}] mfs:[{mfs}] mat:{mat}");
         this.name = source.name;
-        this.source=source;
+        this.source = source;
 
-        if(mfs==null || mfs.Count==0){
-            var meshFilters=source.GetComponentsInChildren<MeshFilter>(true).ToList();
+        if (mfs == null || mfs.Count == 0)
+        {
+            var meshFilters = source.GetComponentsInChildren<MeshFilter>(true).ToList();
             meshList = new SubMeshList();
             foreach (var mf in meshFilters)
             {
-                meshList.Add(new SubMesh(mf,0));
+                meshList.Add(new SubMesh(mf, 0));
             }
         }
-        else{
-            //this.meshFilters=new List<MeshFilter>(mfs);
-
-            //this.meshFilters = new List<MeshFilter>();
-            //foreach(var mesh in mfs)
-            //{
-            //    this.meshFilters.Add(mesh.meshFilter);
-            //}
-
+        else
+        {
             this.meshList = mfs;
         }
         //meshIndexes = new List<int>();
-        this.mat=mat;
-        //if (mfs != null)
-        //{
-        //    foreach (var mf in mfs)
-        //    {
-        //        if (mf == null || mf.meshFilter == null) continue;
-        //        //MeshRenderer render = mf.meshFilter.GetComponent<MeshRenderer>();
-        //        //int id = 0;
-        //        //for (int i = 0; i < render.sharedMaterials.Length; i++)
-        //        //{
-        //        //    if (render.sharedMaterials[i] == mat)
-        //        //    {
-        //        //        id = i;
-        //        //        break;
-        //        //    }
-        //        //}
-        //        meshIndexes.Add(mf.meshIndex);
-        //    }
-        //}
-        //else
-        //{
-        //    Debug.LogError($"CombinedMesh mfs == null name:{name}");
-        //}
+        this.mat = mat;
+        minMax = MeshHelper.GetMinMax(meshList.GetMeshFilters());
+    }
 
+    /// <summary>
+    /// 自动计算所有子对象包围盒
+    /// </summary>
+    /// <param name="renders"></param>
+    /// <returns></returns>
+    public static Bounds CaculateBounds(IEnumerable<MeshFilter> meshFilters)
+    {
+        //Debug.Log($"CaculateBounds renders:{renders.Count()},isAll:{isAll}");
+        Vector3 center = Vector3.zero;
+        int count = 0;
+        foreach (MeshFilter meshFilter in meshFilters)
+        {
+            center += meshFilter.sharedMesh.bounds.center;
+            count++;
+        }
 
-        minMax=MeshHelper.GetMinMax(meshList.GetMeshFilters());
+        if (count > 0)
+        {
+            center /= count;
+        }
+        Bounds bounds = new Bounds(center, Vector3.zero);
+        foreach (MeshFilter meshFilter in meshFilters)
+        {
+            bounds.Encapsulate(meshFilter.sharedMesh.bounds);
+        }
+        return bounds;
+    }
 
-        //SimpleCombine();
-
-        //Debug.LogError("CombinedMesh Read/Write Enabled = True !! :"+ms);
+    public static Mesh CloneMesh(MeshFilter mf)
+    {
+        Mesh mesh=GameObject.Instantiate(mf.sharedMesh);
+        //Mesh mesh = mf.mesh;
+        return mesh;
     }
 
     private MeshPartInfo InnerDoCombine(MeshPartInfo info,int id){
@@ -101,16 +119,44 @@ public class CombinedMesh{
         if(mat==null)
             mats=new Material[count];
         Matrix4x4 matrix=source.worldToLocalMatrix;
-        for(int i=0;i<count;i++)
+
+        Bounds bounds = CaculateBounds(mfs);
+        //Vector3 off= new Vector3(bounds.extents.x, 0, 0);
+
+
+        for (int i=0;i<count;i++)
         {
             MeshFilter mf=mfs[i];
             MeshRenderer mr=mf.GetComponent<MeshRenderer>();
             if(mr==null)continue;
-            Mesh ms=mf.sharedMesh;
-            if(ms.isReadable==false){
-                Debug.LogError("模型必须设置为 Read/Write Enabled = True !! :"+ms);
+            Mesh msold=mf.sharedMesh;
+            if(msold.isReadable==false){
+                Debug.LogError("模型必须设置为 Read/Write Enabled = True !! :"+ msold);
                 continue;
             }
+
+
+            Mesh ms = msold;
+            if (isCenterPivot)
+            {
+                ms = CloneMesh(mf);
+                //CenterPivot
+                var vs = ms.vertices;
+                var subMesh = ms.GetSubMesh(info.GetMeshIndex(i));
+                var subMeshBounds = subMesh.bounds;
+                Debug.LogError($"InnerDoCombine id:{id} i:{i} count:{count} name:{mf.name} subMeshIndex:{info.GetMeshIndex(i)},bounds:{subMeshBounds}");
+                Vector3 off = -subMeshBounds.center;
+                for (int j = 0; j < subMesh.vertexCount; j++)
+                {
+                    vs[subMesh.firstVertex + j] += off;
+                }
+                if (count == 1)
+                {
+                    info.offset = off;
+                }
+                ms.vertices = vs;
+            }
+
             combines[i].mesh=ms;
             combines[i].subMeshIndex = info.GetMeshIndex(i);
             combines[i].transform=matrix*mf.transform.localToWorldMatrix;
@@ -320,6 +366,7 @@ public class CombinedMesh{
     public GameObject NewGo;
 
     public GameObject CreateNewGo(bool enableCollider,GameObject target){
+        Vector3 offset = Vector3.zero;
         if(target==null){
             target=new GameObject();
             target.name=source.name+"_Combined_N";
@@ -328,13 +375,15 @@ public class CombinedMesh{
             this.SetRendererAndFilter(target,meshPartList[0]);
             if(enableCollider)
                 this.SetCollider(target,meshPartList[0]);
+            offset = meshPartList[0].offset;
         }
         else{
             for(int i=0;i<meshPartList.Count;i++){
                 var info=meshPartList[i];
                 if (info == null) continue;
                 GameObject subObj=new GameObject();
-                subObj.name=info.mesh.name;
+                //subObj.name = i + "_" + info.mesh.name;
+                subObj.name = info.mesh.name;
                 subObj.transform.SetParent(target.transform);
 
                 this.SetRendererAndFilter(subObj,info);
@@ -343,7 +392,7 @@ public class CombinedMesh{
             }
         }
         
-        target.transform.position=source.transform.position;//坐标一致,不设置的话，就是按照新的target的坐标来
+        target.transform.position=source.transform.position- offset;//坐标一致,不设置的话，就是按照新的target的坐标来
         //target.transform.position=Vector3.zero;
         target.transform.localRotation=source.transform.localRotation;//坐标一致,不设置的话，就是按照新的target的坐标来
         target.transform.localScale=source.transform.localScale;//坐标一致,不设置的话，就是按照新的target的坐标来

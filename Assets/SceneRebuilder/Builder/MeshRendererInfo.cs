@@ -60,6 +60,11 @@ public class MeshRendererInfo : MonoBehaviour,IComparable<MeshRendererInfo>
         cube.transform.SetParent(this.transform.parent);
         MeshRenderer renderer = cube.GetComponent<MeshRenderer>();
         renderer.sharedMaterials = meshRenderer.sharedMaterials;
+        Collider collider = cube.GetComponent<Collider>();
+        if (collider)
+        {
+            GameObject.DestroyImmediate(collider);
+        }
         return renderer;
     }
 

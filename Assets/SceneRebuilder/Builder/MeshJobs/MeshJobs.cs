@@ -123,6 +123,11 @@ namespace MeshJobs
             ids.ForEach(i => matId += i+"|");
             return matId;
         }
+
+        public override string ToString()
+        {
+            return $"{name}({vertexCount})";
+        }
     }
     public static class MeshJobHelper
     {
@@ -279,6 +284,8 @@ namespace MeshJobs
                 MeshHelper.SetParentZero(meshFilters[j].gameObject);//要么设置为null，要么设置为zero，不然会影响到精度
             }
         }
+
+        
 
         #endregion
 
@@ -650,18 +657,31 @@ namespace MeshJobs
                 if (result.Distance < DistanceSetting.zeroM)
                 {
                     Debug.LogWarning($"对齐成功 {mfFrom.name} -> {mfTo.name} 距离:{result.Distance}");
+
+                    var disNew = MeshHelper.GetVertexDistanceEx(mfFrom.transform, mfTo.transform, "测试结果", false);
+
+                    RTResult rT = result as RTResult;
+                    if (rT != null)
+                    {
+                        Debug.LogError($"对齐成功1 id:{id} zero:{DistanceSetting.zeroM:F5},dis:{result.Distance},disNew:{disNew},Mode:{rT.Mode},from:[{mfFrom.name}],to:[{mfTo.name}] " + $" Trans:{rT.Translation.Vector3ToString()},Matrix:\n{rT.TransformationMatrix}");
+                        //Debug.LogError($"Mode:{rT.Mode},Trans:{rT.Translation.Vector3ToString()},Matrix:\n{rT.TransformationMatrix}");
+                    }
+                    else
+                    {
+                        Debug.LogError($"对齐成功2 id:{id}  zero:{DistanceSetting.zeroM:F5},dis:{result.Distance},disNew:{disNew},from:[{mfFrom.name}],to:[{mfTo.name}] rT==null");
+                    }
                     return true;
                 }
                 else
                 {
-                    Debug.LogError($"对齐失败2 {mfFrom.name} -> {mfTo.name} 距离:{result.Distance}");
+                    Debug.LogError($"对齐失败2 {mfFrom.name} -> {mfTo.name} 距离:{result.Distance} zeroM:{DistanceSetting.zeroM} zeroP:{DistanceSetting.zeroP}");
                     return false;
                 }
 
             }
             else
             {
-                Debug.LogError($"对齐失败1 id:{id} {mfFrom.name} -> {mfTo.name}");
+                Debug.LogError($"对齐失败1 id:{id} {mfFrom.name} -> {mfTo.name} zeroM:{DistanceSetting.zeroM} zeroP:{DistanceSetting.zeroP}");
                 return false;
             }
             //return result;
@@ -943,6 +963,8 @@ namespace MeshJobs
             DateTime start = DateTime.Now;
             int targetCount = meshFilters.Length;
 
+            var parentDict = GetParentDict(meshFilters);
+
             //1.设置父
             SetParentZero(meshFilters);
 
@@ -1008,6 +1030,13 @@ namespace MeshJobs
                         {
                             //Debug.LogError($"对齐成功 {arg.mfFrom.name} -> {arg.mfTo.name} 距离:{result.Distance}");
                             GameObject newGo = MeshHelper.CopyGO(prefab);
+
+                            if (parentDict.ContainsKey(arg.mfTo.transform))
+                            {
+                                Transform oldTransformParent = parentDict[arg.mfTo.transform];
+                                parentDict.Add(newGo.transform, oldTransformParent);
+                            }
+
                             newGo.name = arg.mfTo.name + "_New";
                             prefabInfo.AddInstance(newGo);
                             
@@ -1018,13 +1047,13 @@ namespace MeshJobs
                         else
                         {
                             newTargets.Add(arg.mfTo);
-                            Debug.LogWarning($"对齐失败(距离太大) {arg.mfFrom.name} -> {arg.mfTo.name} 距离:{result.Distance}");
+                            Debug.LogWarning($"对齐失败(距离太大) {arg.mfFrom} -> {arg.mfTo} 距离:{result.Distance}");
                         }
                     }
                     else
                     {
                         newTargets.Add(arg.mfTo);
-                        Debug.LogError($"对齐失败(无结果数据) {arg.mfFrom.name} -> {arg.mfTo.name}");
+                        Debug.LogError($"对齐失败(无结果数据) {arg.mfFrom} -> {arg.mfTo}");
                     }
                 }
                 int count1 = meshFilters.Length;
@@ -1051,6 +1080,9 @@ namespace MeshJobs
             Debug.Log($"{prefabInfoList.Count}\t{totalJobCount}\t{loopCount}\t{(DateTime.Now - start).TotalSeconds:F2}s");
             MeshAlignJobContainer.PrintTime();
             prefabInfoList.Sort();
+
+            RestoreParent(parentDict);
+
             return prefabInfoList;
         }
         #endregion

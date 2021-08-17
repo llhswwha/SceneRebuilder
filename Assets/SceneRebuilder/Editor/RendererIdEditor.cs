@@ -41,13 +41,21 @@ public class RendererIdEditor : BaseEditor<RendererId>
         EditorGUILayout.EndHorizontal();
 
         EditorGUILayout.BeginHorizontal();
+        if (GUILayout.Button("NewId"))
+        {
+            item.NewId();
+        }
         if (GUILayout.Button("InitIds"))
         {
             IdDictionary.InitInfos();
         }
-        if (GUILayout.Button("Clear"))
+        if (GUILayout.Button("ClearIds"))
         {
-            item.Clear();
+            item.ClearIds();
+        }
+        if (GUILayout.Button("ClearScripts"))
+        {
+            item.ClearScripts();
         }
         if (GUILayout.Button("Unpack"))
         {
@@ -69,16 +77,33 @@ public class RendererIdEditor : BaseEditor<RendererId>
         {
             MeshHelper.DecreaseEmptyGroup(item.gameObject);
         }
+
+        if (GUILayout.Button("InitMeshNodes"))
+        {
+            MeshNode.InitNodes(item.gameObject);
+        }
         EditorGUILayout.EndHorizontal();
 
         EditorGUILayout.BeginHorizontal();
         if (GUILayout.Button("Copy_Split"))
         {
-            MeshCombineHelper.SplitByMaterials(item.gameObject);
+            var newGo1 = MeshHelper.CopyGO(item.gameObject);
+           
+            var newGo1Split=MeshCombineHelper.SplitByMaterials(newGo1,true);
+            newGo1Split.name += "_Center";
+            float dis1 = MeshHelper.GetVertexDistanceEx(item.gameObject.transform, newGo1Split.transform);
+
+            var newGo2 = MeshHelper.CopyGO(item.gameObject);
+            var newGo2Split = MeshCombineHelper.SplitByMaterials(newGo2, false);
+            float dis2 = MeshHelper.GetVertexDistanceEx(item.gameObject.transform, newGo2Split.transform);
+
+            float dis3 = MeshHelper.GetVertexDistanceEx(newGo1Split.transform, newGo2Split.transform);
+
+            Debug.Log($"dis1:{dis1},dis2:{dis2},dis3:{dis3}");
         }
         if (GUILayout.Button("Split"))
         {
-            MeshCombineHelper.SplitByMaterials(item.gameObject);
+            MeshCombineHelper.SplitByMaterials(item.gameObject,false);
         }
         if (GUILayout.Button("Combine"))
         {
@@ -94,7 +119,9 @@ public class RendererIdEditor : BaseEditor<RendererId>
         }
         if (GUILayout.Button("DoorLOD"))
         {
-            LODHelper.SetDoorLOD(item.gameObject);
+            var obj=LODHelper.SetDoorLOD(item.gameObject);
+            EditorHelper.SelectObject(obj);
+
         }
         if (GUILayout.Button("CopyDoorA1"))
         {
@@ -103,6 +130,11 @@ public class RendererIdEditor : BaseEditor<RendererId>
         if (GUILayout.Button("CopyDoorA2"))
         {
             DoorHelper.CopyDoorA(item.gameObject,true);
+        }
+
+        if (GUILayout.Button("Prepare"))
+        {
+            DoorHelper.Prepare(item.gameObject);
         }
         EditorGUILayout.EndHorizontal();
     }

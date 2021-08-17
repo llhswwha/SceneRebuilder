@@ -246,7 +246,7 @@ UnpackPrefab();
     {
         DateTime start=DateTime.Now;
 
-        if(TargetRoots==null&&TargetRootsCopy==null)
+        if(TargetRoots==null && TargetRootsCopy==null)
         {
             GetTarget();
         }
@@ -491,7 +491,7 @@ UnpackPrefab();
         return TargetRoots;
     }
 
-    private MeshPoints[] GetMeshFilters()
+    public MeshPoints[] GetMeshFilters()
     {
         
         // MeshFilter[] meshFilters=null;
@@ -534,16 +534,20 @@ UnpackPrefab();
                 // if(TargetRootsCopy!=null){
                 //     GameObject.DestroyImmediate(TargetRootsCopy);
                 // }
-                TargetRoots.SetActive(false);
-                GameObject copy=MeshHelper.CopyGO(TargetRoots);
-                copy.SetActive(true);
-                TargetRootsCopy=copy;
+                CopyTarget();
             }
         }
 
         MeshFilter[] meshFilters=null;
         if(TargetRootsCopy){
-            meshFilters=TargetRootsCopy.GetComponentsInChildren<MeshFilter>(true);      
+            var meshFilters1=TargetRootsCopy.GetComponentsInChildren<MeshFilter>(true);
+            var meshFilters2 = TargetRoots.GetComponentsInChildren<MeshFilter>(true);
+            if (meshFilters1.Length == 0 && meshFilters2.Length > 0)
+            {
+                CopyTarget();
+                meshFilters1 = TargetRootsCopy.GetComponentsInChildren<MeshFilter>(true);
+            }
+            meshFilters = meshFilters1;
         }
         else if(TargetRoots){
             meshFilters=TargetRoots.GetComponentsInChildren<MeshFilter>(true);
@@ -555,14 +559,33 @@ UnpackPrefab();
         return meshPoints.ToArray() ;
     }
 
+    private void CopyTarget()
+    {
+        if (TargetRootsCopy != null)
+        {
+            GameObject.DestroyImmediate(TargetRootsCopy);
+        }
+        TargetRoots.SetActive(false);
+        GameObject copy = MeshHelper.CopyGO(TargetRoots);
+        copy.SetActive(true);
+        TargetRootsCopy = copy;
+    }
+
     private MeshRenderer[] GetMeshRenderers()
     {
         MeshRenderer[] meshRenderers=null;
         if(TargetRootsCopy){
-            meshRenderers=TargetRootsCopy.GetComponentsInChildren<MeshRenderer>(true);      
+            MeshRenderer[] meshRenderers1 = TargetRootsCopy.GetComponentsInChildren<MeshRenderer>(true);
+            MeshRenderer[] meshRenderers2 = TargetRoots.GetComponentsInChildren<MeshRenderer>(true);
+            if(meshRenderers1.Length==0&& meshRenderers2.Length>0)
+            {
+                CopyTarget();
+                meshRenderers1 = TargetRootsCopy.GetComponentsInChildren<MeshRenderer>(true);
+            }
+            meshRenderers = meshRenderers1;
         }
         else if(TargetRoots){
-            meshRenderers=TargetRoots.GetComponentsInChildren<MeshRenderer>(true);
+            meshRenderers = TargetRoots.GetComponentsInChildren<MeshRenderer>(true);
         }
         else{
             meshRenderers=GameObject.FindObjectsOfType<MeshRenderer>();
@@ -614,10 +637,26 @@ UnpackPrefab();
         DistanceSetting.Set(this.disSetting);
     }
 
-    public void AcRTAlignJobs()
+    public PrefabInfoList AcRTAlignJobs()
     {
         var meshFilters=GetMeshFilters();
-        AcRTAlignJobs(meshFilters);
+        return AcRTAlignJobs(meshFilters);
+        //return null;
+    }
+
+    public PrefabInfoList AcRTAlignJobs(GameObject target,bool isCopy)
+    {
+        if (TargetRootsCopy != null)
+        {
+            GameObject.DestroyImmediate(TargetRootsCopy);
+        }
+        TargetRoots = target;
+        IsCopyTargetRoot = isCopy;
+        //if (isCopy == false && TargetRootsCopy!=null)
+        //{
+        //    GameObject.DestroyImmediate(TargetRootsCopy);
+        //}
+        return AcRTAlignJobs();
     }
 
     public PrefabInfoList AcRTAlignJobs(MeshPoints[] meshPoints)
@@ -630,10 +669,25 @@ UnpackPrefab();
         return PrefabInfoList;
     }
 
-    public void AcRTAlignJobsEx()
+    public PrefabInfoList AcRTAlignJobsEx()
     {
         var meshFilters = GetMeshFilters();
-        AcRTAlignJobsEx(meshFilters);
+        return AcRTAlignJobsEx(meshFilters);
+    }
+
+    public PrefabInfoList AcRTAlignJobsEx(GameObject target, bool isCopy)
+    {
+        if (TargetRootsCopy != null)
+        {
+            GameObject.DestroyImmediate(TargetRootsCopy);
+        }
+        TargetRoots = target;
+        IsCopyTargetRoot = isCopy;
+        //if (isCopy == false && TargetRootsCopy != null)
+        //{
+        //    GameObject.DestroyImmediate(TargetRootsCopy);
+        //}
+        return AcRTAlignJobsEx();
     }
 
     public PrefabInfoList AcRTAlignJobsEx(MeshPoints[] meshPoints)

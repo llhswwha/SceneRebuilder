@@ -108,6 +108,8 @@ public class PrefabInstanceBuilderEditor : BaseFoldoutEditor<PrefabInstanceBuild
 
         
         GUILayout.BeginHorizontal();
+
+        
         if (GUILayout.Button("TargetCount"))
         {
             item.GetTargetCount();
@@ -141,6 +143,11 @@ public class PrefabInstanceBuilderEditor : BaseFoldoutEditor<PrefabInstanceBuild
         item.TargetRoots = ObjectField(item.TargetRoots);
         item.IsCopyTargetRoot=GUILayout.Toggle(item.IsCopyTargetRoot, "IsCopy");
         item.TargetRootsCopy = ObjectField(item.TargetRootsCopy);
+
+        if (GUILayout.Button("GetMeshFilters"))
+        {
+            item.GetMeshFilters();
+        }
         GUILayout.EndHorizontal();
 
         GUILayout.BeginHorizontal();
@@ -160,7 +167,7 @@ public class PrefabInstanceBuilderEditor : BaseFoldoutEditor<PrefabInstanceBuild
         {
             item.RTAlignJobs();
         }
-        if (GUILayout.Button("AcRTAlignJobs"))
+        if (GUILayout.Button("* AcRTAlignJobs"))
         {
             item.AcRTAlignJobs();
         }

@@ -837,6 +837,9 @@ public class MeshNode : MonoBehaviour,IComparable<MeshNode>
 
         var meshNodes = meshNode.GetComponentsInChildren<MeshNode>(true);
         ProgressBarHelper.ClearProgressBar();
+
+        MeshRendererInfo.InitRenderers(go);
+
         Debug.Log($"MeshNode.Init count:{meshNodes.Length} time:{(DateTime.Now - start)}");
         return meshNode;
     }

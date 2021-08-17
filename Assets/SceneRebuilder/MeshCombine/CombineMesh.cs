@@ -49,6 +49,6 @@ public class CombineMesh : MonoBehaviour {
 
     public void Split()
     {
-        MeshCombineHelper.SplitByMaterials(this.gameObject);
+        MeshCombineHelper.SplitByMaterials(this.gameObject,false);
     }
 }
