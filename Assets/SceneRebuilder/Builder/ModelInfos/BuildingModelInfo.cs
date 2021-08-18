@@ -388,7 +388,7 @@ public class BuildingModelInfo : SubSceneCreater
     }
 
     //[ContextMenu("* CreateTrees")]
-    public ModelAreaTree[] CreateTreesInner(Action<float> progressChanged)
+    public ModelAreaTree[] CreateTreesInner(Action<ProgressArg> progressChanged)
     {
         ClearTrees();
 
@@ -398,7 +398,7 @@ public class BuildingModelInfo : SubSceneCreater
         return CreateTreesCore(progressChanged);
     }
 
-    public ModelAreaTree[] CreateTreesInnerEx(bool isOut0BS, Action<float> progressChanged)
+    public ModelAreaTree[] CreateTreesInnerEx(bool isOut0BS, Action<ProgressArg> progressChanged)
     {
         ClearTrees();
 
@@ -442,64 +442,54 @@ public class BuildingModelInfo : SubSceneCreater
     //    return CreateTreesCoreBS(null);
     //}
 
-    public ModelAreaTree[] CreateTreesCore(Action<float> progressChanged)
+    public ModelAreaTree[] CreateTreesCore(Action<ProgressArg> progressChanged)
     {
         if (OutPart0 == null)
         {
             Debug.LogWarning("CreateTreesCore OutPart0 == null");
         }
 
-        if(InPart==null && OutPart0==null&& OutPart1 == null)
+        if (InPart == null && OutPart0 == null && OutPart1 == null)
         {
             InitInOut(false);
         }
-        
+
 
         List<ModelAreaTree> ts = new List<ModelAreaTree>();
 
-        if (progressChanged != null)
-        {
-            progressChanged(0 / 3f);
-        }
-        else
-        {
-            ProgressBarHelper.DisplayProgressBar("CreateTree", "InTree", 0 / 3f);
-        }
-        var tree1 = CreateTree(InPart, "InTree",p=> { 
+        ProgressArg p1 = new ProgressArg(0, 3);
+        DisplayProgressBar("InTree", progressChanged, p1);
 
+        var tree1 = CreateTree(InPart, "InTree", p =>
+        {
+            p1.AddSubProgress(p);
+            DisplayProgressBar("InTree", progressChanged, p1);
         });
         if (tree1 != null)
         {
             ts.Add(tree1);
         }
 
-        if (progressChanged != null)
-        {
-            progressChanged(1 / 3f);
-        }
-        else
-        {
-            ProgressBarHelper.DisplayProgressBar("CreateTree", "OutTree0", 1 / 3f);
-        }
+        ProgressArg p2 = new ProgressArg(1, 3);
+        DisplayProgressBar("OutTree0", progressChanged, p2);
 
-        var tree2 = CreateTree(OutPart0, "OutTree0", p => {
-
+        var tree2 = CreateTree(OutPart0, "OutTree0", p =>
+        {
+            p2.AddSubProgress(p);
+            DisplayProgressBar("OutTree0", progressChanged, p2);
         });
+
         if (tree2 != null)
         {
             ts.Add(tree2);
         }
 
-        if (progressChanged != null)
+        ProgressArg p3 = new ProgressArg(2, 3);
+        DisplayProgressBar("OutTree1", progressChanged, p3);
+        var tree3 = CreateTree(OutPart1, "OutTree1", p =>
         {
-            progressChanged(2 / 3f);
-        }
-        else
-        {
-            ProgressBarHelper.DisplayProgressBar("CreateTree", "OutTree1", 2 / 3f);
-        }
-        var tree3 = CreateTree(OutPart1, "OutTree1", p => {
-
+            p3.AddSubProgress(p);
+            DisplayProgressBar("OutTree1", progressChanged, p3);
         });
         if (tree3 != null)
         {
@@ -507,45 +497,43 @@ public class BuildingModelInfo : SubSceneCreater
         }
         if (progressChanged != null)
         {
-            progressChanged(3 / 3f);
+            progressChanged(new ProgressArg(3, 3));
         }
         else
         {
-            ProgressBarHelper.DisplayProgressBar("CreateTree", "OutTree1", 3 / 3f);
+            ProgressBarHelper.DisplayProgressBar("OutTree1", new ProgressArg(3, 3));
             ProgressBarHelper.ClearProgressBar();
         }
 
         return ts.ToArray();
     }
 
-    public ModelAreaTree[] CreateTreesCoreBS(Action<float> progressChanged)
+    private static void DisplayProgressBar(string title,Action<ProgressArg> progressChanged, ProgressArg p1)
+    {
+        if (progressChanged != null)
+        {
+            progressChanged(p1);
+        }
+        else
+        {
+            ProgressBarHelper.DisplayProgressBar(title, p1);
+        }
+    }
+
+    public ModelAreaTree[] CreateTreesCoreBS(Action<ProgressArg> progressChanged)
     {
         if (InPart == null && OutPart0 == null && OutPart1 == null)
         {
             InitInOut(false);
         }
 
-        if (progressChanged != null)
-        {
-            progressChanged(0 / 3f);
-        }
-        else
-        {
-            ProgressBarHelper.DisplayProgressBar("CreateTree", "InTree", 0 / 3f);
-        }
-        
+        ProgressArg p1 = new ProgressArg(0, 3);
+        DisplayProgressBar("InTree", progressChanged, p1);
 
         List<ModelAreaTree> ts = new List<ModelAreaTree>();
         var tree1 = CreateTree(InPart, "InTree", p => {
-            //Debug.Log($"CreateTreesCoreBS subProgress:{p},progress:{(0 + p) / 3f}");
-            if (progressChanged != null)
-            {
-                progressChanged((0 + p) / 3f);
-            }
-            else
-            {
-                ProgressBarHelper.DisplayProgressBar("CreateTree", $"InTree progress:{((0 + p) / 3f):P1}", (0 + p) / 3f);
-            }
+            p1.AddSubProgress(p);
+            DisplayProgressBar("InTree", progressChanged, p1);
         });
         if (tree1 != null)
         {
@@ -555,26 +543,13 @@ public class BuildingModelInfo : SubSceneCreater
         //var tree2 = CreateTree(OutPart0, "OutTree0");
         //trees[1] = tree2;
 
-        if (progressChanged != null)
-        {
-            progressChanged(1 / 3f);
-        }
-        else
-        {
-            ProgressBarHelper.DisplayProgressBar("CreateTree", "OutTree0", 1 / 3f);
-        }
+        ProgressArg p2 = new ProgressArg(1, 3);
+        DisplayProgressBar("OutTree0", progressChanged, p2);
 
         var tbs = CreateTrees_BigSmall_Core(p =>
          {
-             //0,0.5,1
-             if (progressChanged != null)
-             {
-                 progressChanged((1 + p) / 3f);
-             }
-             else
-             {
-                 ProgressBarHelper.DisplayProgressBar("CreateTree", $"OutTree0 progress:{((1 + p) / 3f):P1}", (1 + p) / 3f);
-             }
+             p2.AddSubProgress(p);
+             DisplayProgressBar("OutTree0", progressChanged, p2);
          });
         if(tbs!=null)
             foreach (var t in tbs)
@@ -585,23 +560,11 @@ public class BuildingModelInfo : SubSceneCreater
                 }
             }
 
-        if (progressChanged != null)
-        {
-            progressChanged(2 / 3f);
-        }
-        else
-        {
-            ProgressBarHelper.DisplayProgressBar("CreateTree", "OutTree1", 2 / 3f);
-        }
+        ProgressArg p3 = new ProgressArg(2, 3);
+        DisplayProgressBar("OutTree1", progressChanged, p3);
         var tree3 = CreateTree(OutPart1, "OutTree1", p => {
-            if (progressChanged != null)
-            {
-                progressChanged((1 + p) / 3f);
-            }
-            else
-            {
-                ProgressBarHelper.DisplayProgressBar("CreateTree", $"OutTree1 progress:{((2 + p) / 3f):P1}", (2 + p) / 3f);
-            }
+            p3.AddSubProgress(p);
+            DisplayProgressBar("OutTree1", progressChanged, p3);
         });
         if (tree3 != null)
         {
@@ -610,7 +573,7 @@ public class BuildingModelInfo : SubSceneCreater
 
         if (progressChanged != null)
         {
-            progressChanged(3 / 3f);
+            progressChanged(new ProgressArg(3, 3));
         }
         else
         {
@@ -819,7 +782,7 @@ public class BuildingModelInfo : SubSceneCreater
         InitInOut();
 
         trees = CreateTreesInnerEx(true, p => {
-            ProgressBarHelper.DisplayProgressBar("CreateTreesBSEx", $"Progress {p:P1}", p);
+            ProgressBarHelper.DisplayProgressBar("CreateTreesBSEx", p);
         });
         AreaTreeManager.Instance.AddTrees(trees);
         ProgressBarHelper.ClearProgressBar();
@@ -853,7 +816,7 @@ public class BuildingModelInfo : SubSceneCreater
         CreateTrees_BigSmall_Core(null);
     }
 
-    public ModelAreaTree[] CreateTrees_BigSmall_Core(Action<float> progressChanged)
+    public ModelAreaTree[] CreateTrees_BigSmall_Core(Action<ProgressArg> progressChanged)
     {
         if(this.OutPart0==null)
         {
@@ -928,7 +891,7 @@ public class BuildingModelInfo : SubSceneCreater
 
  
 
-    private ModelAreaTree CreateTree(GameObject target,string treeName, Action<float> progressChanged)
+    private ModelAreaTree CreateTree(GameObject target,string treeName, Action<ProgressArg> progressChanged)
     {
         if (target == null) return null;
         
@@ -1187,36 +1150,39 @@ public class BuildingModelInfo : SubSceneCreater
     //    ProgressBarHelper.ClearProgressBar();
     //}
 
-    public void OneKey_TreePartScene(Action<float> progressChanged)
+    public void OneKey_TreePartScene(Action<ProgressArg> progressChanged)
     {
         DateTime start = DateTime.Now;
         if (progressChanged != null)
         {
-            progressChanged(0 / 3f);
+            progressChanged(new ProgressArg(0,3));
         }
         InitInOut();
 
         ShowDetail();
 
+        ProgressArg p1 = new ProgressArg(1, 3);
         if (progressChanged != null)
         {
-            progressChanged(1 / 3f);
+            progressChanged(p1);
         }
         CreateTreesInnerEx(true, subP =>
         {
+            p1.AddSubProgress(subP);
             if (progressChanged != null)
             {
-                progressChanged((1 + subP) / 3f);
+                progressChanged(p1);
             }
         });
+
         if (progressChanged != null)
         {
-            progressChanged(2 / 3f);
+            progressChanged(new ProgressArg(2, 3));
         }
         EditorCreateNodeScenes();
         if (progressChanged != null)
         {
-            progressChanged(3 / 3f);
+            progressChanged(new ProgressArg(3, 3));
         }
         Debug.LogError($"BuildingModelInfo.OneKey_TreePart Time:{(DateTime.Now - start).ToString()}");
     }

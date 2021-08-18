@@ -110,20 +110,23 @@ public class SubSceneManager : SingletonBehaviour<SubSceneManager>
         {
             var item = buildings[i];
             if (item == null) continue;
-            float progress = (float)i / count;
-            float percents = progress * 100;
+            //float progress = (float)i / count;
+            //float percents = progress * 100;
+            var p1 = new ProgressArg(i, count, item);
 
-            if (ProgressBarHelper.DisplayCancelableProgressBar("OneKey", $"Progress1 {i}/{count} {percents:F1}% {item.name}", progress))
+            if (ProgressBarHelper.DisplayCancelableProgressBar("OneKey", p1))
             {
                 break;
             }
 
             item.OneKey_TreePartScene((subProgress) =>
             {
+                p1.AddSubProgress(subProgress);
+
                 //Debug.Log($"EditorCreateBuildingScenes subProgress:{subProgress} || {i}/{subScenes.Length} {percents:F2}% of 100% \t{item.name}");
-                float progress2 = (float)(i + subProgress) / count;
-                float percents2 = progress2 * 100;
-                if (ProgressBarHelper.DisplayCancelableProgressBar("OneKey ", $"Progress2 {(i + subProgress):F1}/{count} {percents:F1}% {item.name}", progress2))
+                //float progress2 = (float)(i + subProgress) / count;
+                //float percents2 = progress2 * 100;
+                if (ProgressBarHelper.DisplayCancelableProgressBar("OneKey ", p1))
                 {
                     //ProgressBarHelper.ClearProgressBar();
                     //break;

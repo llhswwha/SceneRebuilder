@@ -60,14 +60,27 @@ public class BuildingModelInfoList : MonoBehaviour
                 continue;
             }
 
+            //float progress = (float)i / buildings.Count;
+            //float percents = progress * 100;
+
+            var p1 = new ProgressArg(i, buildings.Count, b);
+
+            if (ProgressBarHelper.DisplayCancelableProgressBar("CombinedBuildings", p1))
+            {
+                break;
+            }
+
+            
+
             var trees = b.CreateTreesInnerEx(isOut0BigSmall, subProgress =>
             {
-                float progress2 = (float)(i + subProgress) / buildings.Count;
+                p1.AddSubProgress(subProgress);
 
-                //Debug.Log($"CombinedBuildings subProgress:{subProgress},progress:{progress}");
+                //float progress2 = (float)(i + subProgress) / buildings.Count;
+                ////Debug.Log($"CombinedBuildings subProgress:{subProgress},progress:{progress}");
+                //float percents2 = progress2 * 100;
 
-                float percents2 = progress2 * 100;
-                if (ProgressBarHelper.DisplayCancelableProgressBar("CombinedBuildings", $"Progress2 {(i + subProgress):F1}/{buildings.Count} {percents2:F2}%  {b.name}", progress2))
+                if (ProgressBarHelper.DisplayCancelableProgressBar("CombinedBuildings", p1))
                 {
                     return;
                 }
@@ -78,12 +91,7 @@ public class BuildingModelInfoList : MonoBehaviour
                 allTrees.AddRange(trees);
             }
 
-            float progress = (float)i / buildings.Count;
-            float percents = progress * 100;
-            if (ProgressBarHelper.DisplayCancelableProgressBar("CombinedBuildings", $"Progress1 {i}/{buildings.Count} {percents:F2}%  {b.name}", progress))
-            {
-                break;
-            }
+            
         }
 
         treeManager.AddTrees(allTrees.ToArray());

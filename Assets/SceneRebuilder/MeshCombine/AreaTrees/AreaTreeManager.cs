@@ -224,7 +224,7 @@ public class AreaTreeManager : SingletonBehaviour<AreaTreeManager>
     public List<ModelAreaTree> Trees = new List<ModelAreaTree>();
 
     List<Material> matList = new List<Material>();
-    public ModelAreaTree CreateTree(GameObject go, bool isC,string suffix, MeshRenderer[] renderers, Action<float> progressChanged)
+    public ModelAreaTree CreateTree(GameObject go, bool isC,string suffix, MeshRenderer[] renderers, Action<ProgressArg> progressChanged)
     {
         Debug.Log($"AreaTreeManager.CreateTree go:{go} isC:{isC} suffix:{suffix} renderers:{renderers.Length}");
         string treeName = "NewAreaTree" + suffix;
@@ -500,7 +500,7 @@ public class AreaTreeManager : SingletonBehaviour<AreaTreeManager>
 
     //public AreaTreeNodeShowManager TreeNodeShowManager;
 
-    public ModelAreaTree[] CreateOne_BigSmall_Core(Transform parent, GameObject target,Action<float> progressChanged)
+    public ModelAreaTree[] CreateOne_BigSmall_Core(Transform parent, GameObject target,Action<ProgressArg> progressChanged)
     {
         IsCopy = false;
 
@@ -510,18 +510,20 @@ public class AreaTreeManager : SingletonBehaviour<AreaTreeManager>
         prefabInstanceBuilder.TargetRoots = target;
         var bigSmallInfo=prefabInstanceBuilder.GetBigSmallRenderers();
 
+        ProgressArg p1 = new ProgressArg(0,2);
         if (progressChanged!=null)
         {
-            progressChanged(0);
+            progressChanged(p1);
         }
         ModelAreaTree tree2 = null;
         if (bigSmallInfo.smallModels.Count>0)
         {
             tree2 = CreateTree(target, isCombine, "_SamllTree", bigSmallInfo.smallModels.ToArray(),p=>
             {
+                p1.AddSubProgress(p);
                 if (progressChanged != null)
                 {
-                    progressChanged((0+p)/2);
+                    progressChanged(p1);
                 }
             });//动态显示模型的树
             tree2.IsHidden = true;
@@ -538,18 +540,20 @@ public class AreaTreeManager : SingletonBehaviour<AreaTreeManager>
             tree2.DestroyNodeRender();
         }
 
+        ProgressArg p2 = new ProgressArg(1, 2);
         if (progressChanged != null)
         {
-            progressChanged(0.5f);
+            progressChanged(p2);
         }
         ModelAreaTree tree1 = null;
         if (bigSmallInfo.bigModels.Count>0)
         {
             tree1 = CreateTree(target, isCombine, "_BigTree", bigSmallInfo.bigModels.ToArray(), p =>
             {
+                p2.AddSubProgress(p);
                 if (progressChanged != null)
                 {
-                    progressChanged((1f + p) / 2);
+                    progressChanged(p2);
                 }
             });//合并模型的树
             if (isCombine)
@@ -563,11 +567,11 @@ public class AreaTreeManager : SingletonBehaviour<AreaTreeManager>
             tree1.transform.SetParent(parent);
         }
 
-
+        ProgressArg p3 = new ProgressArg(2, 2);
         //TreeNodeShowManager.HiddenTrees.Add(tree2);
         if (progressChanged != null)
         {
-            progressChanged(1f);
+            progressChanged(p3);
         }
 
         ModelAreaTree[] trees = new ModelAreaTree[2] { tree1, tree2 };
@@ -576,7 +580,7 @@ public class AreaTreeManager : SingletonBehaviour<AreaTreeManager>
     }
 
     //[ContextMenu("CreateOne_BigSmall")]
-    private ModelAreaTree[] CreateOne_BigSmall(Transform parent,GameObject target, Action<float> progressChanged)
+    private ModelAreaTree[] CreateOne_BigSmall(Transform parent,GameObject target, Action<ProgressArg> progressChanged)
     {
         DateTime start = DateTime.Now;
         Clear();

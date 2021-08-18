@@ -309,7 +309,7 @@ public class MeshRendererInfo : MonoBehaviour,IComparable<MeshRendererInfo>
 
     public MeshRendererType rendererType;
 
-    public static MeshRendererInfoList FilterByTypes(IEnumerable<MeshRenderer> renderers,List<MeshRendererType> types)
+    public static MeshRendererInfoList FindByTypes(IEnumerable<MeshRenderer> renderers,List<MeshRendererType> types)
     {
         MeshRendererInfoList list = new MeshRendererInfoList();
         foreach (var renderer in renderers)

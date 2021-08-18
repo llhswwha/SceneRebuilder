@@ -163,7 +163,6 @@ public class AreaTreeNode : SubSceneCreater
         }
     }
 
-    [ContextMenu("LoadRenderers")]
     public void LoadRenderers()
     {
         LoadRenderers_Renderers();
@@ -269,7 +268,6 @@ public class AreaTreeNode : SubSceneCreater
         return ids;
     }
 
-    [ContextMenu("MoveRenderers")]
     public List<RendererId> MoveRenderers()
     {
         Debug.Log($"AreaTreeNode.MoveRenderers tree:{tree.name} node:{this.name}");
@@ -424,7 +422,6 @@ public class AreaTreeNode : SubSceneCreater
         }
     }
 
-    [ContextMenu("RecoverParentEx")]
     public void RecoverParentEx()
     {
         IdDictionary.InitInfos();
@@ -444,9 +441,10 @@ public class AreaTreeNode : SubSceneCreater
             {
                 GameObject.DestroyImmediate(combindResult);
             }
-            MeshRendererInfoList list=MeshRendererInfo.FilterByTypes(Renderers, new List<MeshRendererType>() { MeshRendererType.None, MeshRendererType.Structure, MeshRendererType.Detail });
+            //MeshRendererInfoList list=MeshRendererInfo.FindByTypes(Renderers, new List<MeshRendererType>() { MeshRendererType.None, MeshRendererType.Structure, MeshRendererType.Detail });
 
-            combindResult = CombineRenderers(list.GetRenderers().ToArray(), this.transform, this.name + "_Combined");
+            combindResult = CombineRenderers(Renderers.ToArray(), this.transform, this.name + "_Combined");
+
             //MeshCombineHelper.CombineEx(new MeshCombineArg(this.renderersRoot, Renderers.ToArray()), 1);
             ////combindResult = MeshCombineHelper.CombineEx(new MeshCombineArg(this.renderersRoot, Renderers.ToArray()), 0);
             //combindResult.name = this.name + "_Combined";
@@ -598,13 +596,11 @@ public class AreaTreeNode : SubSceneCreater
         renderersRoot.SetActive(!isCombined);
     }
 
-    [ContextMenu("SwitchToCombined")]
     public void SwitchToCombined()
     {
         SwitchModel(true);
     }
 
-    [ContextMenu("SwitchToRenderers")]
     public void SwitchToRenderers()
     {
         SwitchModel(false);
@@ -1056,8 +1052,8 @@ public class AreaTreeNode : SubSceneCreater
     {
         this.SaveRenderersId();
     }
+
 #if UNITY_EDITOR
-    [ContextMenu("* EditorCreateNodeScenes")]
     public void EditorCreateNodeScenes()
     {
         EditorCreateNodeScenes(false,null);

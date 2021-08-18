@@ -164,7 +164,7 @@ public class ModelAreaTree : SubSceneCreater
     //    CombineMesh(null);
     //}
 
-    public void CombineMesh(Action<float> progressChanged)
+    public void CombineMesh(Action<ProgressArg> progressChanged)
     {
         if (TreeNodes.Count == 0)
         {
@@ -177,14 +177,16 @@ public class ModelAreaTree : SubSceneCreater
         int renderCount=0;
         for (int i = 0; i < TreeNodes.Count; i++)
         {
-            float progress = (float)i / TreeNodes.Count;
+            AreaTreeNode node = TreeNodes[i];
+            if (node == null) continue;
+            //float progress = (float)i / TreeNodes.Count;
+
+            var p = new ProgressArg(i, TreeNodes.Count, node);
             if (progressChanged != null)
             {
-                progressChanged(progress);
+                progressChanged(p);
             }
-            AreaTreeNode node = TreeNodes[i];
-            if (node==null)continue;
-            if(node.Nodes.Count>0)continue;
+            if (node.Nodes.Count>0)continue;
             node.CombineMesh();
             renderCount += node.RendererCount;
         }
@@ -195,7 +197,7 @@ public class ModelAreaTree : SubSceneCreater
             Debug.LogError("CombineMesh this.RootNode==null :"+this.name);
             return;
         }
-        var renderersNew=this.RootNode.GetComponentsInChildren<MeshRenderer>();
+        var renderersNew=this.RootNode.GetComponentsInChildren<MeshRenderer>(true);
         foreach(var render in renderersNew){
             if(render.enabled==true)
             {
@@ -531,7 +533,7 @@ public class ModelAreaTree : SubSceneCreater
         GenerateMesh(null);
     }
 
-    public void GenerateMesh(Action<float> progressChanged)
+    public void GenerateMesh(Action<ProgressArg> progressChanged)
     {
          DateTime start=DateTime.Now;
 
@@ -555,7 +557,7 @@ public class ModelAreaTree : SubSceneCreater
                 item.Renderers = null;
             }
         }
-        Debug.LogWarning($"GenerateMesh {(DateTime.Now-start).ToString()}");
+        Debug.LogWarning($"GenerateMesh name:{this.name} time:{(DateTime.Now-start).ToString()}");
     }
 
     [ContextMenu("* GenerateTree")]
