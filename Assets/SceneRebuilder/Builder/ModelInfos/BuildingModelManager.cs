@@ -66,95 +66,7 @@ public class BuildingModelManager : SingletonBehaviour<BuildingModelManager>
         InitBuildings(Buildings);
     }
 
-    public void OneKey_Save()
-    {
-        DateTime start = DateTime.Now;
-        UpdateBuildings();
-        for (int i = 0; i < Buildings.Count; i++)
-        {
-            BuildingModelInfo building = Buildings[i];
-            var p1 = new ProgressArg("OneKey_Save", i, Buildings.Count, building);
-            if(ProgressBarHelper.DisplayCancelableProgressBar(p1))
-            {
-                break;
-            }
-            building.OneKey_TreeNodeScene(p=>
-            {
-                p1.AddSubProgress(p);
-                ProgressBarHelper.DisplayCancelableProgressBar(p1);
-            });
-        }
-        EditorHelper.RefreshAssets();
-        ProgressBarHelper.DisplayCancelableProgressBar(new ProgressArg("OneKey_Save", Buildings.Count, Buildings.Count));
-        ProgressBarHelper.ClearProgressBar();
-        Debug.LogError($"OneKey_Save Buildings:{Buildings.Count} Time:{(DateTime.Now - start).ToString()}");
-    }
-
-    public void OneKey_Reset()
-    {
-        //DateTime start = DateTime.Now;
-        //UpdateBuildings();
-        //for (int i = 0; i < Buildings.Count; i++)
-        //{
-        //    BuildingModelInfo building = Buildings[i];
-        //    building.ResetModel();
-        //}
-        //Debug.LogError($"OneKey_Reset Buildings:{Buildings.Count} Time:{(DateTime.Now - start).ToString()}");
-
-        DateTime start = DateTime.Now;
-        UpdateBuildings();
-        for (int i = 0; i < Buildings.Count; i++)
-        {
-            BuildingModelInfo building = Buildings[i];
-            var p1 = new ProgressArg("OneKey_Reset", i, Buildings.Count, building);
-            if (ProgressBarHelper.DisplayCancelableProgressBar(p1))
-            {
-                break;
-            }
-            building.ResetModel(p =>
-            {
-                p1.AddSubProgress(p);
-                ProgressBarHelper.DisplayCancelableProgressBar(p1);
-            });
-        }
-        //EditorHelper.RefreshAssets();
-        ProgressBarHelper.DisplayCancelableProgressBar(new ProgressArg("OneKey_Reset", Buildings.Count, Buildings.Count));
-        ProgressBarHelper.ClearProgressBar();
-        Debug.LogError($"OneKey_Reset Buildings:{Buildings.Count} Time:{(DateTime.Now - start).ToString()}");
-    }
-
-    public void OneKey_Resave()
-    {
-        //DateTime start = DateTime.Now;
-        //UpdateBuildings();
-        //for (int i = 0; i < Buildings.Count; i++)
-        //{
-        //    BuildingModelInfo building = Buildings[i];
-        //    building.ResaveScenes();
-        //}
-        //Debug.LogError($"OneKey_Resave Buildings:{Buildings.Count} Time:{(DateTime.Now - start).ToString()}");
-
-        DateTime start = DateTime.Now;
-        UpdateBuildings();
-        for (int i = 0; i < Buildings.Count; i++)
-        {
-            BuildingModelInfo building = Buildings[i];
-            var p1 = new ProgressArg("OneKey_Resave", i, Buildings.Count, building);
-            if (ProgressBarHelper.DisplayCancelableProgressBar(p1))
-            {
-                break;
-            }
-            building.ResaveScenes(p =>
-            {
-                p1.AddSubProgress(p);
-                ProgressBarHelper.DisplayCancelableProgressBar(p1);
-            });
-        }
-        //EditorHelper.RefreshAssets();
-        ProgressBarHelper.DisplayCancelableProgressBar(new ProgressArg("OneKey_Resave", Buildings.Count, Buildings.Count));
-        ProgressBarHelper.ClearProgressBar();
-        Debug.LogError($"OneKey_Resave Buildings:{Buildings.Count} Time:{(DateTime.Now - start).ToString()}");
-    }
+    
 
     public void InitBuildings(List<BuildingModelInfo> buildings)
     {
@@ -387,6 +299,96 @@ public class BuildingModelManager : SingletonBehaviour<BuildingModelManager>
     }
 
 #if UNITY_EDITOR
+
+    public void OneKey_Save()
+    {
+        DateTime start = DateTime.Now;
+        UpdateBuildings();
+        for (int i = 0; i < Buildings.Count; i++)
+        {
+            BuildingModelInfo building = Buildings[i];
+            var p1 = new ProgressArg("OneKey_Save", i, Buildings.Count, building);
+            if (ProgressBarHelper.DisplayCancelableProgressBar(p1))
+            {
+                break;
+            }
+            building.OneKey_TreeNodeScene(p =>
+            {
+                p1.AddSubProgress(p);
+                ProgressBarHelper.DisplayCancelableProgressBar(p1);
+            });
+        }
+        EditorHelper.RefreshAssets();
+        ProgressBarHelper.DisplayCancelableProgressBar(new ProgressArg("OneKey_Save", Buildings.Count, Buildings.Count));
+        ProgressBarHelper.ClearProgressBar();
+        Debug.LogError($"OneKey_Save Buildings:{Buildings.Count} Time:{(DateTime.Now - start).ToString()}");
+    }
+
+    public void OneKey_Reset()
+    {
+        //DateTime start = DateTime.Now;
+        //UpdateBuildings();
+        //for (int i = 0; i < Buildings.Count; i++)
+        //{
+        //    BuildingModelInfo building = Buildings[i];
+        //    building.ResetModel();
+        //}
+        //Debug.LogError($"OneKey_Reset Buildings:{Buildings.Count} Time:{(DateTime.Now - start).ToString()}");
+
+        DateTime start = DateTime.Now;
+        UpdateBuildings();
+        for (int i = 0; i < Buildings.Count; i++)
+        {
+            BuildingModelInfo building = Buildings[i];
+            var p1 = new ProgressArg("OneKey_Reset", i, Buildings.Count, building);
+            if (ProgressBarHelper.DisplayCancelableProgressBar(p1))
+            {
+                break;
+            }
+            building.ResetModel(p =>
+            {
+                p1.AddSubProgress(p);
+                ProgressBarHelper.DisplayCancelableProgressBar(p1);
+            });
+        }
+        //EditorHelper.RefreshAssets();
+        ProgressBarHelper.DisplayCancelableProgressBar(new ProgressArg("OneKey_Reset", Buildings.Count, Buildings.Count));
+        ProgressBarHelper.ClearProgressBar();
+        Debug.LogError($"OneKey_Reset Buildings:{Buildings.Count} Time:{(DateTime.Now - start).ToString()}");
+    }
+
+    public void OneKey_Resave()
+    {
+        //DateTime start = DateTime.Now;
+        //UpdateBuildings();
+        //for (int i = 0; i < Buildings.Count; i++)
+        //{
+        //    BuildingModelInfo building = Buildings[i];
+        //    building.ResaveScenes();
+        //}
+        //Debug.LogError($"OneKey_Resave Buildings:{Buildings.Count} Time:{(DateTime.Now - start).ToString()}");
+
+        DateTime start = DateTime.Now;
+        UpdateBuildings();
+        for (int i = 0; i < Buildings.Count; i++)
+        {
+            BuildingModelInfo building = Buildings[i];
+            var p1 = new ProgressArg("OneKey_Resave", i, Buildings.Count, building);
+            if (ProgressBarHelper.DisplayCancelableProgressBar(p1))
+            {
+                break;
+            }
+            building.ResaveScenes(p =>
+            {
+                p1.AddSubProgress(p);
+                ProgressBarHelper.DisplayCancelableProgressBar(p1);
+            });
+        }
+        //EditorHelper.RefreshAssets();
+        ProgressBarHelper.DisplayCancelableProgressBar(new ProgressArg("OneKey_Resave", Buildings.Count, Buildings.Count));
+        ProgressBarHelper.ClearProgressBar();
+        Debug.LogError($"OneKey_Resave Buildings:{Buildings.Count} Time:{(DateTime.Now - start).ToString()}");
+    }
 
     //[ContextMenu("OneKey")]
     //public void OneKey()
