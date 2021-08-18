@@ -101,7 +101,7 @@ public static class IdDictionary
         Debug.Log($"IdDictionay.InitInfos idCount:{IdDict.Count},RendererCount:{RendererDict.Count} time:{(DateTime.Now - start)}");
     }
 
-    public static void InitRenderers(GameObject root = null)
+    private static void InitRenderers(GameObject root = null)
     {
         DateTime start = DateTime.Now;
         MeshRenderer[] renderers = null;
@@ -117,7 +117,7 @@ public static class IdDictionary
         //Debug.Log($"IdDictionay.InitRenderers count:{renderers.Length},Dict:{RendererDict.Count} time:{(DateTime.Now - start)}");
     }
 
-    public static RendererId[] InitIds(GameObject root=null)
+    private static RendererId[] InitIds(GameObject root=null)
     {
         DateTime start = DateTime.Now;
         RendererId[] ids = null;

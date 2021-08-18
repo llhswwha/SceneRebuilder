@@ -144,7 +144,7 @@ public static class SubSceneHelper
         return ss;
     }
 
-    public static void EditorCreateScenes(List<SubScene_Base> scenes, Action<float, int, int> progressChanged)
+    public static void EditorCreateScenes(List<SubScene_Base> scenes, Action<ProgressArg> progressChanged)
     {
         int count = scenes.Count;
         //Debug.Log("EditorCreateScenes:" + count);
@@ -162,16 +162,17 @@ public static class SubSceneHelper
             scene.SaveScene();
             scene.ShowBounds();
 
-            float progress = (float)i / count;
-            float percents = progress * 100;
+            //float progress = (float)i / count;
+            //float percents = progress * 100;
+            ProgressArg p1 = new ProgressArg(i, count, scene);
             if (progressChanged != null)
             {
-                progressChanged(progress, i, count);
+                progressChanged(p1);
             }
             else
             {
-                Debug.Log($"EditorCreateScenes progress:{progress:F2},percents:{percents:F2}");
-                if (ProgressBarHelper.DisplayCancelableProgressBar("EditorCreateScenes", $"{i}/{count} {percents:F2}% of 100%", progress))
+                Debug.Log($"EditorCreateScenes {p1}");
+                if (ProgressBarHelper.DisplayCancelableProgressBar("EditorCreateScenes", p1))
                 {
                     break;
                 }
@@ -188,7 +189,7 @@ public static class SubSceneHelper
         }
         else
         {
-            progressChanged(1, count, count);
+            progressChanged(new ProgressArg(1));
         }
     }
 

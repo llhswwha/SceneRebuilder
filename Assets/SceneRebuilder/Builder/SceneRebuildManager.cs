@@ -118,15 +118,29 @@ public class SceneRebuildManager : MonoBehaviour
     //    subSceneManager.SetBuildings_Parts();
     //}
 
-    [ContextMenu("OneKey")]
-    public void OneKey()
+    [ContextMenu("OneKey_Save")]
+    public void OneKey_Save()
     {
-        DateTime start = DateTime.Now;
-        InitBuildings();
-        CombineBuildings();
-        SaveScenes();
-        SetBuildings();
-        Debug.LogError($"OneKey Time:{(DateTime.Now - start).ToString()}");
+        //DateTime start = DateTime.Now;
+        //InitBuildings();
+        //CombineBuildings();
+        //SaveScenes();
+        //SetBuildings();
+        //Debug.LogError($"OneKey_Save Time:{(DateTime.Now - start).ToString()}");
+        buildingModelManager.OneKey_Save();
+       
+    }
+
+    [ContextMenu("OneKey_Reset")]
+    public void OneKey_Reset()
+    {
+        buildingModelManager.OneKey_Reset();
+    }
+
+    [ContextMenu("OneKey_Save")]
+    public void OneKey_Resave()
+    {
+        buildingModelManager.OneKey_Resave();
     }
 
     [ContextMenu("LoadScenes")]

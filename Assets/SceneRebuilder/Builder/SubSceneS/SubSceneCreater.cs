@@ -108,7 +108,7 @@ public class SubSceneCreater : MonoBehaviour
 
     }
 
-    public void EditorCreateScenes(List<SubScene_Base> scenes, Action<float, int, int> progressChanged)
+    public void EditorCreateScenes(List<SubScene_Base> scenes, Action<ProgressArg> progressChanged)
     {
         //int count = scenes.Count;
         ////Debug.Log("EditorCreateScenes:" + count);
@@ -155,18 +155,18 @@ public class SubSceneCreater : MonoBehaviour
         SceneList.LoadUnloadedScenes();
     }
 
-    public virtual void EditorLoadScenes(Action<float> progressChanged)
+    public virtual void EditorLoadScenes(Action<ProgressArg> progressChanged)
     {
         SubScene_Base[] scenes= SubScene_List.GetBaseScenes(gameObject);
         EditorLoadScenes(scenes,progressChanged);
     }
 
-    public static void EditorLoadScenes(List<SubScene_Base> scenes, Action<float> progressChanged)
+    public static void EditorLoadScenes(List<SubScene_Base> scenes, Action<ProgressArg> progressChanged)
     {
         EditorLoadScenes(scenes.ToArray(), progressChanged);
     }
 
-        public static void EditorLoadScenes(SubScene_Base[] scenes, Action<float> progressChanged)
+        public static void EditorLoadScenes(SubScene_Base[] scenes, Action<ProgressArg> progressChanged)
     {
         Debug.Log("EditorLoadScenes:" + scenes.Length);
         for (int i = 0; i < scenes.Length; i++)
@@ -174,17 +174,14 @@ public class SubSceneCreater : MonoBehaviour
             SubScene_Base scene = scenes[i];
             scene.IsLoaded = false;
             scene.EditorLoadSceneEx();
-
-            float progress = (float)i / scenes.Length;
-            float percents = progress * 100;
-
+            ProgressArg p = new ProgressArg(i, scenes.Length, scene);
             if (progressChanged != null)
             {
-                progressChanged(progress);
+                progressChanged(p);
             }
             else
             {
-                if (ProgressBarHelper.DisplayCancelableProgressBar("EditorLoadScenes", $"{i}/{scenes.Length} {percents:F2}% of 100%", progress))
+                if (ProgressBarHelper.DisplayCancelableProgressBar("EditorLoadScenes", p))
                 {
                     break;
                 }
@@ -192,7 +189,7 @@ public class SubSceneCreater : MonoBehaviour
         }
         if (progressChanged != null)
         {
-            progressChanged(1);
+            progressChanged(new ProgressArg(1));
         }
         else
         {
@@ -253,7 +250,7 @@ public class SubSceneCreater : MonoBehaviour
         UnLoadScenes(null);
     }
 
-    public void UnLoadScenes(Action<float> progressChanged)
+    public void UnLoadScenes(Action<ProgressArg> progressChanged)
     {
         DateTime start = DateTime.Now;
 
@@ -262,19 +259,17 @@ public class SubSceneCreater : MonoBehaviour
         {
             var scene = scenes[i];
             if (scene == null) continue;
-            float progress = (float)i / scenes.Length;
-            float percents = progress * 100;
-
+            ProgressArg progressArg=new ProgressArg(i, scenes.Length,scene);
             if (progressChanged == null)
             {
-                if (ProgressBarHelper.DisplayCancelableProgressBar("UnLoadScenes", $"Progress1 {i}/{ scenes.Length} {percents:F2}%", progress))
+                if (ProgressBarHelper.DisplayCancelableProgressBar("UnLoadScenes", progressArg))
                 {
                     break;
                 }
             }
             else
             {
-                progressChanged(progress);
+                progressChanged(progressArg);
             }
              scene.UnLoadGosM();
             scene.ShowBounds();
@@ -286,12 +281,56 @@ public class SubSceneCreater : MonoBehaviour
         }
         else
         {
-            progressChanged(1);
+            progressChanged(new ProgressArg(1));
         }
 
         Debug.Log($"UnLoadScenes time:{(DateTime.Now - start)}");
     }
 
+}
+
+public class ProgressArg
+{
+    public float progress;
+    public int i;
+    public int count;
+    public object tag;
+
+    public ProgressArg(float p,object t=null)
+    {
+        this.progress = p;
+        this.tag = t;
+    }
+
+    public ProgressArg(int i,int count, object t = null)
+    {
+        this.i = i;
+        this.count = count;
+        this.progress = (float)i / count;
+        this.tag = t;
+    }
+
+    public override string ToString()
+    {
+        if (subP == null)
+        {
+            return $"Progress1 {i}/{count} {progress:P1} tag:[{tag}]";
+        }
+        else
+        {
+            //"{i1}/{count1} {i2}/{count2} {progress1:P1}"
+            return $"Progress2 [{i}/{count}|{subP.i}/{subP.count}] [{progress:P1}|{subP.progress:P1}]";
+        }
+        
+    }
+
+    public ProgressArg subP;
+
+    internal void AddSubProgress(ProgressArg p)
+    {
+        subP = p;
+        this.progress = (i + p.progress) / count;
+    }
 }
 
 public enum ScenesState

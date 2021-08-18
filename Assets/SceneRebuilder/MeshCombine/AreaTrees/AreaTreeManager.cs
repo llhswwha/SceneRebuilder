@@ -226,7 +226,7 @@ public class AreaTreeManager : SingletonBehaviour<AreaTreeManager>
     List<Material> matList = new List<Material>();
     public ModelAreaTree CreateTree(GameObject go, bool isC,string suffix, MeshRenderer[] renderers, Action<float> progressChanged)
     {
-        
+        Debug.Log($"AreaTreeManager.CreateTree go:{go} isC:{isC} suffix:{suffix} renderers:{renderers.Length}");
         string treeName = "NewAreaTree" + suffix;
         if (go != null)
         {
@@ -251,10 +251,11 @@ public class AreaTreeManager : SingletonBehaviour<AreaTreeManager>
         GameObject treeGo = new GameObject(treeName);
         ModelAreaTree areaTree = treeGo.AddComponent<ModelAreaTree>();
         areaTree.nodeSetting = this.nodeSetting;
-        areaTree.IsCopy = this.IsCopy;
+        //areaTree.IsCopy = this.IsCopy;
 
-        areaTree.Target = go;
-        areaTree.TreeRenderers = renderers;
+        //areaTree.Target = go;
+        //areaTree.name = go.name;
+        areaTree.SetRenderers(renderers);
         areaTree.ShowRenderers();
 
         if (isC)
@@ -362,7 +363,7 @@ public class AreaTreeManager : SingletonBehaviour<AreaTreeManager>
     public int MatCount = 0;
 
     public int LeafCount;
-
+    public List<MeshRendererType> FilterTypes = new List<MeshRendererType>() { MeshRendererType.LOD, MeshRendererType.Static };
 
     [ContextMenu("UpdateTrees")]
     public List<ModelAreaTree> UpdateTrees()

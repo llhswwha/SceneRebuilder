@@ -845,7 +845,8 @@ public class DoorPartInfo
             //Debug.LogWarning("DoorPartInfo.ctor MeshRenderer == null:" + go);
         }
 
-        
+        var meshRenderers = MeshRendererInfo.InitRenderers(go);
+        meshRenderers.SetType(MeshRendererType.Static);
     }
 
 

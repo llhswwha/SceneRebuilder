@@ -46,8 +46,7 @@ public class BuildingModelInfoEditor : BaseFoldoutEditor<BuildingModelInfo>
         GlobalMaterialManager.Instance.LocalTarget = targetT.gameObject;
         GlobalMaterialManager.Instance.GetSharedMaterials();
 
-        DoorManager.Instance.LocalTarget = targetT.gameObject;
-        DoorManager.Instance.UpdateDoors();
+        targetT.UpdateDoors();
 
         LODManager.Instance.LocalTarget = targetT.gameObject;
         LODManager.Instance.GetRuntimeLODDetail(true);
@@ -147,9 +146,7 @@ public class BuildingModelInfoEditor : BaseFoldoutEditor<BuildingModelInfo>
 
         });
         NewButton("Reset", buttonWidth, state.CanReset(), btnStyle, () => {
-            info.EditorLoadNodeScenesEx();
-            info.DestroyScenes();
-            info.ClearTrees();
+            info.ResetModel();
         });
         NewButton("SetBuildings", buttonWidth, true, btnStyle, () => {
             SubSceneManager.Instance.SetBuildings_All();
@@ -163,6 +160,10 @@ public class BuildingModelInfoEditor : BaseFoldoutEditor<BuildingModelInfo>
         NewButton("InitMeshNodes", buttonWidth, true, btnStyle, () =>
         {
             MeshNode.InitNodes(info.gameObject);
+        });
+        NewButton("ResaveScenes", buttonWidth, state.CanLoadScenes, btnStyle, () =>
+        {
+            info.ResaveScenes();
         });
         EditorGUILayout.EndHorizontal();
 

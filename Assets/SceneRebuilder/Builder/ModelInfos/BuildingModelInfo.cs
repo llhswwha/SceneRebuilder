@@ -126,6 +126,14 @@ public class BuildingModelInfo : SubSceneCreater
         return $"Mod{GetInfoText()}";
     }
 
+    public DoorsRootList doorRoots;
+
+    public void UpdateDoors()
+    {
+        DoorManager.Instance.LocalTarget = this.gameObject;
+        doorRoots=DoorManager.Instance.UpdateDoors();
+    }
+
     public string GetInfoText()
     {
         //int m = 0;
@@ -272,6 +280,22 @@ public class BuildingModelInfo : SubSceneCreater
 
             EditorHelper.SelectObject(prefabInstance);
         }
+    }
+
+    public void ResetModel()
+    {
+        this.EditorLoadNodeScenesEx();
+        this.DestroyScenes();
+        this.ClearTrees();
+    }
+
+    public void ResaveScenes()
+    {
+        DateTime start = DateTime.Now;
+        ResetModel();
+        UpdateDoors();
+        OneKey_TreeNodeScene();
+        Debug.LogWarning($"ResaveScenes \t{(DateTime.Now - start).ToString()}");
     }
 #endif
 
@@ -914,7 +938,8 @@ public class BuildingModelInfo : SubSceneCreater
         treeGo1.transform.position = target.transform.position;
         treeGo1.transform.SetParent(this.transform);
         ModelAreaTree tree1 = treeGo1.AddComponent<ModelAreaTree>();
-        tree1.Target = target;
+        //tree1.Target = target;
+        tree1.SetRenderers(target);
         if (treeManager)
         {
             tree1.nodeSetting = treeManager.nodeSetting;
@@ -1240,7 +1265,7 @@ public class BuildingModelInfo : SubSceneCreater
 
     #region CreateScenes
 
-    public void EditorCreateScenesEx(SceneContentType contentType, Action<float,int,int> progressChanged)
+    public void EditorCreateScenesEx(SceneContentType contentType, Action<ProgressArg> progressChanged)
     {
         this.contentType = contentType;
         if (contentType == SceneContentType.TreeWithPart)
@@ -1278,7 +1303,7 @@ public class BuildingModelInfo : SubSceneCreater
         EditorCreateScenes_TreeWithPart(null);
     }
 
-    public void EditorCreateScenes_TreeWithPart(Action<float,int,int> progressChanged)
+    public void EditorCreateScenes_TreeWithPart(Action<ProgressArg> progressChanged)
     {
         DateTime start = DateTime.Now;
 
@@ -1360,16 +1385,16 @@ public class BuildingModelInfo : SubSceneCreater
             if (contentType == SceneContentType.Part || contentType == SceneContentType.TreeAndPart)
                 gos.Add(go);
 
-            if (trees != null && (contentType == SceneContentType.Tree || contentType == SceneContentType.TreeAndPart))
-                foreach (var tree in trees)
-                {
-                    if (tree == null) continue;
+            //if (trees != null && (contentType == SceneContentType.Tree || contentType == SceneContentType.TreeAndPart))
+            //    foreach (var tree in trees)
+            //    {
+            //        if (tree == null) continue;
 
-                    if (tree.Target == go)
-                    {
-                        gos.Add(tree.gameObject);
-                    }
-                }
+            //        if (tree.Target == go)
+            //        {
+            //            gos.Add(tree.gameObject);
+            //        }
+            //    }
 
             string scenePath = $"{path}{this.name}{nameAf}.unity";
             ss.SetArg(scenePath, isOverride,gos);
@@ -1385,34 +1410,34 @@ public class BuildingModelInfo : SubSceneCreater
         }
         return null;
     }
-    public SubScene_Base CreatePartScene(GameObject go, string nameAf, ModelAreaTree[] trees, string path, bool isOverride, SubScene_Base ss)
-    {
-        if (go)
-        {
-            List<GameObject> gos = new List<GameObject>();
-            gos.Add(go);
+    //public SubScene_Base CreatePartScene(GameObject go, string nameAf, ModelAreaTree[] trees, string path, bool isOverride, SubScene_Base ss)
+    //{
+    //    if (go)
+    //    {
+    //        List<GameObject> gos = new List<GameObject>();
+    //        gos.Add(go);
 
-            if (trees != null)
-                foreach (var tree in trees)
-                {
-                    if (tree == null) continue;
+    //        if (trees != null)
+    //            foreach (var tree in trees)
+    //            {
+    //                if (tree == null) continue;
 
-                    if (tree.Target == go)
-                    {
-                        gos.Add(tree.gameObject);
-                    }
-                }
+    //                if (tree.Target == go)
+    //                {
+    //                    gos.Add(tree.gameObject);
+    //                }
+    //            }
 
-            ss.contentType = SceneContentType.TreeAndPart;
-            string scenePath = $"{path}{this.name}{nameAf}.unity";
-            ss.SetArg(scenePath, isOverride,gos);
-            ss.Init();
-            //ss.SaveScene();
-            //ss.ShowBounds();
-            return ss;
-        }
-        return null;
-    }
+    //        ss.contentType = SceneContentType.TreeAndPart;
+    //        string scenePath = $"{path}{this.name}{nameAf}.unity";
+    //        ss.SetArg(scenePath, isOverride,gos);
+    //        ss.Init();
+    //        //ss.SaveScene();
+    //        //ss.ShowBounds();
+    //        return ss;
+    //    }
+    //    return null;
+    //}
     
     #endregion
 
@@ -1425,7 +1450,7 @@ public class BuildingModelInfo : SubSceneCreater
     }
 
 
-    public void EditorLoadScenesByContentType(SceneContentType contentType, Action<float> progressChanged)
+    public void EditorLoadScenesByContentType(SceneContentType contentType, Action<ProgressArg> progressChanged)
     {
         this.contentType = contentType;
         if (contentType == SceneContentType.TreeWithPart)
@@ -1438,7 +1463,7 @@ public class BuildingModelInfo : SubSceneCreater
         }
     }
 
-    public override void EditorLoadScenes(Action<float> progressChanged)
+    public override void EditorLoadScenes(Action<ProgressArg> progressChanged)
     {
         DateTime start = DateTime.Now;
 
@@ -1454,7 +1479,7 @@ public class BuildingModelInfo : SubSceneCreater
         Debug.LogError($"EditorLoadScenes time:{(DateTime.Now - start)}");
     }
 
-    private void EditorLoadScenes_TreeWithPart(Action<float> progressChanged)
+    private void EditorLoadScenes_TreeWithPart(Action<ProgressArg> progressChanged)
     {
         DateTime start = DateTime.Now;
 
@@ -1566,7 +1591,7 @@ public class BuildingModelInfo : SubSceneCreater
         return idsAll;
     }
 
-    public void EditorCreateNodeScenes(Action<float> progressChanged)
+    public void EditorCreateNodeScenes(Action<ProgressArg> progressChanged)
     {
         DateTime start = DateTime.Now;
         ShowDetail();
@@ -1575,33 +1600,35 @@ public class BuildingModelInfo : SubSceneCreater
         {
             var tree = trees[i];
             if (tree == null) continue;
-            float progress = (float)i / trees.Length;
-            float percents = progress * 100;
+            //float progress = (float)i / trees.Length;
+            //float percents = progress * 100;
+            ProgressArg p1 = new ProgressArg(i, trees.Length, tree);
             if (progressChanged == null)
             {
-                if (ProgressBarHelper.DisplayCancelableProgressBar("BuildingModelInfo.EditorCreateNodeScenes", $"Progress1 {i}/{trees.Length} {percents:F2}%", progress))
+                if (ProgressBarHelper.DisplayCancelableProgressBar("BuildingModelInfo.EditorCreateNodeScenes", p1))
                 {
                     break;
                 }
             }
             else
             {
-                progressChanged(progress);
+                progressChanged(p1);
             }
 
             tree.EditorCreateNodeScenes(p =>
             {
-                float progress2 = (float)(i + p) / trees.Length;
-                float percents2 = progress2 * 100;
+                p1.AddSubProgress(p);
+                //float progress2 = (float)(i + p) / trees.Length;
+                //float percents2 = progress2 * 100;
                 //ProgressBarHelper.DisplayCancelableProgressBar("BuildingModelInfo.EditorCreateNodeScenes", $"Progress2 {(i + p):F2}/{trees.Length} {percents2:F2}%", progress2);
 
                 if (progressChanged == null)
                 {
-                    ProgressBarHelper.DisplayCancelableProgressBar("BuildingModelInfo.EditorCreateNodeScenes", $"Progress2 {(i + p):F2}/{trees.Length} {percents2:F2}%", progress2);
+                    ProgressBarHelper.DisplayCancelableProgressBar("BuildingModelInfo.EditorCreateNodeScenes", p1);
                 }
                 else
                 {
-                    progressChanged(progress2);
+                    progressChanged(p1);
                 }
             });
         }
@@ -1612,7 +1639,7 @@ public class BuildingModelInfo : SubSceneCreater
         }
         else
         {
-            progressChanged(1);
+            progressChanged(new ProgressArg(1));
         }
 
         UpdateSceneList();
@@ -1635,7 +1662,7 @@ public class BuildingModelInfo : SubSceneCreater
     }
 
     //[ContextMenu("* EditorLoadNodeScenes")]
-    public void EditorLoadNodeScenes(Action<float> progressChanged)
+    public void EditorLoadNodeScenes(Action<ProgressArg> progressChanged)
     {
         DateTime start = DateTime.Now;
         IdDictionary.InitInfos();
@@ -1643,34 +1670,35 @@ public class BuildingModelInfo : SubSceneCreater
         {
             var tree = trees[i];
             if (tree == null) continue;
-            float progress = (float)i / trees.Length;
-            float percents = progress * 100;
+            ProgressArg p1 = new ProgressArg(i, trees.Length, tree);
 
             if (progressChanged == null)
             {
-                if (ProgressBarHelper.DisplayCancelableProgressBar("BuildingModelInfo.EditorLoadNodeScenes", $"Progress1 {i}/{trees.Length} {percents:F2}%", progress))
+                if (ProgressBarHelper.DisplayCancelableProgressBar("BuildingModelInfo.EditorLoadNodeScenes", p1))
                 {
                     break;
                 }
             }
             else
             {
-                progressChanged(progress);
+                progressChanged(p1);
             }
 
 
             tree.EditorLoadNodeScenes(p =>
             {
-                float progress2 = (float)(i + p) / trees.Length;
-                float percents2 = progress2 * 100;
+                p1.AddSubProgress(p);
+
+                //float progress2 = (float)(i + p) / trees.Length;
+                //float percents2 = progress2 * 100;
 
                 if (progressChanged == null)
                 {
-                    ProgressBarHelper.DisplayCancelableProgressBar("BuildingModelInfo.EditorLoadNodeScenes", $"Progress2 {(i + p):F2}/{trees.Length} {percents2:F2}%", progress2);
+                    ProgressBarHelper.DisplayCancelableProgressBar("BuildingModelInfo.EditorLoadNodeScenes", p1);
                 }
                 else
                 {
-                    progressChanged(progress2);
+                    progressChanged(p1);
                 }
             });
         }
@@ -1682,7 +1710,7 @@ public class BuildingModelInfo : SubSceneCreater
         }
         else
         {
-            progressChanged(1);
+            progressChanged(new ProgressArg(1));
         }
 
         Debug.LogWarning($"BuildingModelInfo.EditorLoadNodeScenes time:{(DateTime.Now - start)}");

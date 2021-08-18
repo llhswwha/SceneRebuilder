@@ -66,6 +66,42 @@ public class BuildingModelManager : SingletonBehaviour<BuildingModelManager>
         InitBuildings(Buildings);
     }
 
+    public void OneKey_Save()
+    {
+        DateTime start = DateTime.Now;
+        UpdateBuildings();
+        for (int i = 0; i < Buildings.Count; i++)
+        {
+            BuildingModelInfo building = Buildings[i];
+            building.OneKey_TreeNodeScene();
+        }
+        Debug.LogError($"OneKey_Save Buildings:{Buildings.Count} Time:{(DateTime.Now - start).ToString()}");
+    }
+
+    public void OneKey_Reset()
+    {
+        DateTime start = DateTime.Now;
+        UpdateBuildings();
+        for (int i = 0; i < Buildings.Count; i++)
+        {
+            BuildingModelInfo building = Buildings[i];
+            building.ResetModel();
+        }
+        Debug.LogError($"OneKey_Reset Buildings:{Buildings.Count} Time:{(DateTime.Now - start).ToString()}");
+    }
+
+    public void OneKey_Resave()
+    {
+        DateTime start = DateTime.Now;
+        UpdateBuildings();
+        for (int i = 0; i < Buildings.Count; i++)
+        {
+            BuildingModelInfo building = Buildings[i];
+            building.ResaveScenes();
+        }
+        Debug.LogError($"OneKey_Resave Buildings:{Buildings.Count} Time:{(DateTime.Now - start).ToString()}");
+    }
+
     public void InitBuildings(List<BuildingModelInfo> buildings)
     {
         BuildingModelInfoList.InitBuildings(buildings);
@@ -403,25 +439,30 @@ public class BuildingModelManager : SingletonBehaviour<BuildingModelManager>
             //     Debug.Log($"CreateScenesInner subProgress:{subProgress} building:{b}");
             // });
 
-           
-            b.EditorCreateNodeScenes((subProgress)=>
-            {
-                //Debug.Log($"CreateScenesInner subProgress:{subProgress} building:{b}");
-                float progress2 = (float)(i+subProgress) / buildings.Count;
-                float percents2 = progress2 * 100;
-                ProgressBarHelper.DisplayCancelableProgressBar("BuildingModelInfo.EditorCreateNodeScenes", $"Progress2 {(i + subProgress):F2}/{buildings.Count} {percents2:F2}% Model:{b.name}", progress2);
-            });
+                       
+            //float progress = (float)i / buildings.Count;
+            //float percents = progress * 100;
 
-            scenes.Add(go.name);
+            var p1 = new ProgressArg(i, buildings.Count, b);
 
-            float progress = (float)i / buildings.Count;
-            float percents = progress * 100;
-
-            if (ProgressBarHelper.DisplayCancelableProgressBar("CreatePrefabs", $"Progress1 {i}/{buildings.Count} {percents:F2}%", progress))
+            if (ProgressBarHelper.DisplayCancelableProgressBar("CreatePrefabs", p1))
             {
                 //ProgressBarHelper.ClearProgressBar();
                 break;
             }
+
+            b.EditorCreateNodeScenes((subProgress)=>
+            {
+                p1.AddSubProgress(subProgress);
+                //Debug.Log($"CreateScenesInner subProgress:{subProgress} building:{b}");
+                //float progress2 = (float)(i+subProgress) / buildings.Count;
+                //float percents2 = progress2 * 100;
+                ProgressBarHelper.DisplayCancelableProgressBar("BuildingModelInfo.EditorCreateNodeScenes", p1);
+            });
+
+            scenes.Add(go.name);
+
+
 
             //break;
         }

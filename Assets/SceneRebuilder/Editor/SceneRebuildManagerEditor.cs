@@ -94,10 +94,20 @@ public class SceneRebuildManagerEditor : BaseFoldoutEditor<SceneRebuildManager>
         // {
         //     item.SetBuildings();
         // }
-        if (GUILayout.Button("OneKey", contentStyle))
-        {
-            item.OneKey();
-        }
+        EditorGUILayout.BeginHorizontal();
+        //if (GUILayout.Button("OneKey_Save", contentStyle))
+        //{
+        //    item.OneKey();
+        //}
+        //if (GUILayout.Button("OneKey_Reset", contentStyle))
+        //{
+        //    item.OneKey();
+        //}
+
+        NewButton("OneKey_Save", buttonWidth, true, item.OneKey_Save);
+        NewButton("OneKey_Reset", buttonWidth, true, item.OneKey_Reset);
+        NewButton("OneKey_Resave", buttonWidth, true, item.OneKey_Resave);
+        EditorGUILayout.EndHorizontal();
     }
 
     public override void OnToolLayout(SceneRebuildManager item)

@@ -1600,15 +1600,15 @@ public static class LODHelper
                 scenes.Add(scene);
             }
         }
-        SubSceneHelper.EditorCreateScenes(scenes, (p, i, count) =>
+        SubSceneHelper.EditorCreateScenes(scenes, (p) =>
         {
-            if (p == 1)
+            if (p.progress == 1)
             {
                 ProgressBarHelper.ClearProgressBar();
             }
             else
             {
-                ProgressBarHelper.DisplayProgressBar("SaveLOD0", $"Progress {i}/{count} {p:P1}", p);
+                ProgressBarHelper.DisplayProgressBar("SaveLOD0", p);
             }
 
         });

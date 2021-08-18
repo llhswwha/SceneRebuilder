@@ -418,8 +418,8 @@ public class AreaTreeNode : SubSceneCreater
                 rId.SetParent();
             }
             else{
-                Transform parent = tree.Target.transform;
-                render.transform.SetParent(parent);
+                //Transform parent = tree.Target.transform;
+                render.transform.SetParent(tree.transform);
             }
         }
     }
@@ -1063,7 +1063,7 @@ public class AreaTreeNode : SubSceneCreater
         EditorCreateNodeScenes(false,null);
     }
 
-    public void EditorCreateNodeScenes(bool isSingle,Action<float, int, int> progressChanged)
+    public void EditorCreateNodeScenes(bool isSingle,Action<ProgressArg> progressChanged)
     {
         DateTime start = DateTime.Now;
 
@@ -1147,7 +1147,7 @@ public class AreaTreeNode : SubSceneCreater
         EditorLoadScenes(null);
     }
 
-    public override void EditorLoadScenes(Action<float> progressChanged)
+    public override void EditorLoadScenes(Action<ProgressArg> progressChanged)
     {
         DateTime start = DateTime.Now;
         // var scenes = GetSubScenesOfTypes(new List<SceneContentType>() { SceneContentType.TreeNode });

@@ -6,31 +6,31 @@ using System.Linq;
 
 public class ModelAreaTree : SubSceneCreater
 {
-   public GameObject Target=null;
+   //public GameObject Target=null;
 
-    public string TargetId;
+   // public string TargetId;
 
-    public GameObject TargetCopy = null;
+   // public GameObject TargetCopy = null;
 
-    public bool IsFirst = true;
-    public GameObject GetTarget()
-    {
-        if (IsCopy && IsFirst)
-        {
-            IsFirst = false;
-            Debug.Log("GetTarget Target1:"+Target);
-            Target.SetActive(false);
-            TargetCopy = MeshHelper.CopyGO(Target);
-            TargetCopy.SetActive(true);
-            Debug.Log("GetTarget Target2:"+TargetCopy);
-        }
+   // public bool IsFirst = true;
+   // public GameObject GetTarget()
+   // {
+   //     if (IsCopy && IsFirst)
+   //     {
+   //         IsFirst = false;
+   //         Debug.Log("GetTarget Target1:"+Target);
+   //         Target.SetActive(false);
+   //         TargetCopy = MeshHelper.CopyGO(Target);
+   //         TargetCopy.SetActive(true);
+   //         Debug.Log("GetTarget Target2:"+TargetCopy);
+   //     }
 
-        if (!IsCopy)
-        {
-            TargetCopy = Target;
-        }
-        return TargetCopy;
-    }
+   //     if (!IsCopy)
+   //     {
+   //         TargetCopy = Target;
+   //     }
+   //     return TargetCopy;
+   // }
 
     public AreaTreeNode RootNode;
 
@@ -52,46 +52,46 @@ public class ModelAreaTree : SubSceneCreater
     [ContextMenu("CreateBoundes")]
     public void CreateBoundes()
     {
-        var target = GetTarget();
+        //var target = GetTarget();
         DateTime start = DateTime.Now;
-        Renderer[] renders = target.GetComponentsInChildren<Renderer>();
+        Renderer[] renders = GetTreeRendererers();
         Bounds bounds=ColliderHelper.CaculateBounds(renders);
-        AreaTreeHelper.CreateBoundsCube(bounds, target.name+"_TargetBound",transform, GetCubePrefabId());
+        AreaTreeHelper.CreateBoundsCube(bounds, this.name+"_TargetBound",transform, GetCubePrefabId());
 
-        Debug.LogWarning($"target:{target.name},renders:{renders.Length},bounds:{bounds}");
+        Debug.LogWarning($"target:{this.name},renders:{renders.Length},bounds:{bounds}");
         Debug.LogWarning($"CreateBoundes \t{(DateTime.Now - start).ToString()}");
     }
 
-    [ContextMenu("CreateSubBoundes")]
-    public void CreateSubBoundes()
-    {
-        //ClearChildren();
+    //[ContextMenu("CreateSubBoundes")]
+    //public void CreateSubBoundes()
+    //{
+    //    //ClearChildren();
 
-        DateTime start = DateTime.Now;
-        var target = GetTarget();
-        List<Transform> children = new List<Transform>();
-        for (int i = 0; i < target.transform.childCount; i++)
-        {
-            children.Add(target.transform.GetChild(i));
-        }
-        Bounds boundsAll = new Bounds();
-        for (int i = 0; i < children.Count; i++)
-        {
-            Transform child = children[i];
-            //var child = this.transform.GetChild(i);
-            Renderer[] renders = child.GetComponentsInChildren<Renderer>();
-            Bounds bounds = ColliderHelper.CaculateBounds(renders);
-            AreaTreeHelper.CreateBoundsCube(bounds, child.name+"_TargetBound", transform, GetCubePrefabId());
+    //    DateTime start = DateTime.Now;
+    //    var target = GetTarget();
+    //    List<Transform> children = new List<Transform>();
+    //    for (int i = 0; i < target.transform.childCount; i++)
+    //    {
+    //        children.Add(target.transform.GetChild(i));
+    //    }
+    //    Bounds boundsAll = new Bounds();
+    //    for (int i = 0; i < children.Count; i++)
+    //    {
+    //        Transform child = children[i];
+    //        //var child = this.transform.GetChild(i);
+    //        Renderer[] renders = child.GetComponentsInChildren<Renderer>();
+    //        Bounds bounds = ColliderHelper.CaculateBounds(renders);
+    //        AreaTreeHelper.CreateBoundsCube(bounds, child.name+"_TargetBound", transform, GetCubePrefabId());
 
             
-            boundsAll.Encapsulate(bounds);
+    //        boundsAll.Encapsulate(bounds);
 
-            Debug.LogWarning($"[{i}] target:{child.name},renders:{renders.Length},bounds:{bounds},boundsAll:{boundsAll}");
-        }
-        Debug.LogWarning($"CreateSubBoundes \t{(DateTime.Now - start).ToString()}");
+    //        Debug.LogWarning($"[{i}] target:{child.name},renders:{renders.Length},bounds:{bounds},boundsAll:{boundsAll}");
+    //    }
+    //    Debug.LogWarning($"CreateSubBoundes \t{(DateTime.Now - start).ToString()}");
 
-        AreaTreeHelper.CreateBoundsCube(boundsAll, target.name + "_TargetBoundAll", transform, GetCubePrefabId());
-    }
+    //    AreaTreeHelper.CreateBoundsCube(boundsAll, target.name + "_TargetBoundAll", transform, GetCubePrefabId());
+    //}
 
     public int GetCubePrefabId()
     {
@@ -241,7 +241,23 @@ public class ModelAreaTree : SubSceneCreater
         Debug.LogWarning($"SwitchToRenderers tree:{this.name} count:{c} \t{(DateTime.Now-start).ToString()}");
     }
 
-    public MeshRenderer[] TreeRenderers;
+    [SerializeField]
+    private MeshRendererInfoList TreeRenderers;
+
+    public void SetRenderers(IEnumerable<MeshRenderer> renderers)
+    {
+        TreeRenderers = new MeshRendererInfoList(renderers);
+        TreeRenderers.RemoveTypes(AreaTreeManager.Instance.FilterTypes, this.name);
+    }
+
+    public void SetRenderers(GameObject renderersRoot)
+    {
+        var renderers = renderersRoot.GetComponentsInChildren<MeshRenderer>(true);
+        SetRenderers(renderers);
+
+        //TreeRenderers = new MeshRendererInfoList(renderersRoot);
+        //TreeRenderers.RemoveTypes(AreaTreeManager.Instance.FilterTypes, this.name);
+    }
 
     public int GetRendererCount()
     {
@@ -255,21 +271,26 @@ public class ModelAreaTree : SubSceneCreater
 
     public MeshRenderer[] GetTreeRendererers()
     {
-        List<MeshRenderer> results = new List<MeshRenderer>();
+        //List<MeshRenderer> results = new List<MeshRenderer>();
 
-        MeshRenderer[] renders = null;
-        var target = GetTarget();
-        if(TreeRenderers!=null){
-            renders= TreeRenderers;
-        }
-        else if(target != null){
-            renders = target.GetComponentsInChildren<MeshRenderer>();
-        }
-        else{
-            renders= TreeRenderers;
-        }
-        results = renders.ToList().FindAll(i => i != null);
-        return results.ToArray();
+        //MeshRenderer[] renders = null;
+        //var target = GetTarget();
+        //if(TreeRenderers!=null){
+        //    renders= TreeRenderers;
+        //}
+        //else if(target != null){
+        //    renders = target.GetComponentsInChildren<MeshRenderer>(true);
+        //}
+        //else{
+        //    renders= TreeRenderers;
+        //}
+        //results = renders.ToList().FindAll(i => i != null);
+        ////return results.ToArray();
+
+        //MeshRendererInfoList infoList = new MeshRendererInfoList(results);
+        //infoList.RemoveTypes(new List<MeshRendererType>() { MeshRendererType.LOD, MeshRendererType.Static },this.name);
+        //return infoList.GetRenderers().ToArray();
+        return TreeRenderers.GetRenderers().ToArray();
     }
 
     public void CreateCells_TreeEx()
@@ -412,7 +433,7 @@ public class ModelAreaTree : SubSceneCreater
     {
         DateTime start = DateTime.Now;
 
-        var target = GetTarget();
+        //var target = GetTarget();
 
 
         var trenderers = TreeRenderers;
@@ -428,22 +449,22 @@ public class ModelAreaTree : SubSceneCreater
             }
             Debug.Log($"ShowRenderers1 renderers:{count}/{trenderers.Length} tree:{this.name},\t{(DateTime.Now - start).ToString()}");
         }
-        else if (target != null)
-        {
-            var ts = AreaTreeHelper.GetAllTransforms(target.transform);
-            foreach (var t in ts)
-            {
-                t.gameObject.SetActive(true);
-            }
-            var renderers = target.GetComponentsInChildren<MeshRenderer>();
-            foreach (var render in renderers)
-            {
-                render.enabled = isVisible;
-                render.gameObject.SetActive(isVisible);
-            }
-            TreeRenderers = renderers;
-            Debug.Log($"ShowRenderers2 renderers:{renderers.Length},\t{(DateTime.Now - start).ToString()}");
-        }
+        //else if (target != null)
+        //{
+        //    var ts = AreaTreeHelper.GetAllTransforms(target.transform);
+        //    foreach (var t in ts)
+        //    {
+        //        t.gameObject.SetActive(true);
+        //    }
+        //    var renderers = target.GetComponentsInChildren<MeshRenderer>();
+        //    foreach (var render in renderers)
+        //    {
+        //        render.enabled = isVisible;
+        //        render.gameObject.SetActive(isVisible);
+        //    }
+        //    TreeRenderers = renderers;
+        //    Debug.Log($"ShowRenderers2 renderers:{renderers.Length},\t{(DateTime.Now - start).ToString()}");
+        //}
         else
         {
             if (TreeRenderers != null)
@@ -651,7 +672,7 @@ public class ModelAreaTree : SubSceneCreater
 
     public AreaTreeNodeStatics nodeStatics = new AreaTreeNodeStatics();
 
-    public bool IsCopy=false;
+    //public bool IsCopy=false;
 
     [ContextMenu("ShowNodes")]
     public void ShowNodes()
@@ -694,20 +715,23 @@ public class ModelAreaTree : SubSceneCreater
     [ContextMenu("DestoryNodes")]
     public void DestoryNodes()
     {
-        Debug.LogError("DestoryNodes:"+this.name+ "|IsCopy:" + IsCopy);
-        var target = GetTarget();
-        if(IsCopy){
-            if(RootNode!=null)
-                GameObject.DestroyImmediate(RootNode.gameObject);
-        }
-        else{
+        Debug.LogError("DestoryNodes:"+this.name);
+        ////var target = GetTarget();
+        //if(IsCopy){
+        //    if(RootNode!=null)
+        //        GameObject.DestroyImmediate(RootNode.gameObject);
+        //}
+        //else
+        {
+            IdDictionary.InitInfos();
             foreach(var node in TreeLeafs){
-                var renders = node.GetRenderers();
-                foreach (var render in renders)
-                {
-                    render.enabled=true;
-                    render.transform.SetParent(target.transform);
-                }
+                node.RecoverParent();
+                //var renders = node.GetRenderers();
+                //foreach (var render in renders)
+                //{
+                //    render.enabled=true;
+                //    render.transform.SetParent(target.transform);
+                //}
             }
             if(RootNode!=null)
                 GameObject.DestroyImmediate(RootNode.gameObject);
@@ -792,8 +816,8 @@ public class ModelAreaTree : SubSceneCreater
 
         List<string> matKeys = new List<string>();
         List<Material> mats = new List<Material>();
-        var target = GetTarget();
-        var renders = target.GetComponentsInChildren<MeshRenderer>();
+        //var target = GetTarget();
+        var renders = GetTreeRendererers();
         foreach (var render in renders)
         {
             if (!mats.Contains(render.sharedMaterial))
@@ -842,7 +866,7 @@ public class ModelAreaTree : SubSceneCreater
         //    txt2 += key + "\n";
         //}
 
-        var matsEx = MeshCombineHelper.GetMatFilters(target, false);
+        var matsEx = MeshCombineHelper.GetMatFilters(renders, false);
         //foreach(var mat in mats.Keys)
         //{
         //    var list = mats[mat];
@@ -864,8 +888,9 @@ public class ModelAreaTree : SubSceneCreater
 
         //ShowRenderers();
 
-        var target = GetTarget();
-        var mats = MeshCombineHelper.GetMatFilters(target, true);
+        //var target = GetTarget();
+        var renderers = GetTreeRendererers();
+        var mats = MeshCombineHelper.GetMatFilters(renderers, true);
 
         Debug.LogError($"SetMaterials {(DateTime.Now - start).ToString()},mats:{mats.Count}");
     }
@@ -947,8 +972,8 @@ public class ModelAreaTree : SubSceneCreater
         //Debug.LogError("newFolderPath:" + newFolderPath);
 
         string parentDir = "Assets/Models/Instances/Trees";
-        var target = GetTarget();
-        string treeName= target.name+"_"+ target.GetInstanceID();
+        //var target = GetTarget();
+        string treeName= this.name+"_"+ this.gameObject.GetInstanceID();
         string treePath = UnityEditor.AssetDatabase.GUIDToAssetPath( UnityEditor.AssetDatabase.CreateFolder(parentDir, treeName));
         Debug.LogError("treePath:" + treePath);
          string meshPath = UnityEditor.AssetDatabase.GUIDToAssetPath( UnityEditor.AssetDatabase.CreateFolder(treePath, "Meshes"));
@@ -973,7 +998,7 @@ public class ModelAreaTree : SubSceneCreater
             node.SaveRenderersId();
         }
 
-        TargetId = RendererId.GetId(Target,0);
+        //TargetId = RendererId.GetId(Target,0);
 
         //Debug.Log("SaveRenderersId:"+this.name);
     }
@@ -985,7 +1010,7 @@ public class ModelAreaTree : SubSceneCreater
         {
             node.LoadRenderers();
         }
-        Target = IdDictionary.GetGo(TargetId);
+        //Target = IdDictionary.GetGo(TargetId);
         //Debug.Log("LoadRenderers:"+this.name);
     }
 
@@ -1063,7 +1088,7 @@ public class ModelAreaTree : SubSceneCreater
         }
     }
 
-    public void EditorCreateNodeScenes(Action<float> progressChanged)
+    public void EditorCreateNodeScenes(Action<ProgressArg> progressChanged)
     {
         //if(SceneList!=null&& SceneList.sceneCount>0){
         //    Debug.LogError("ModelAreaTree.EditorCreateNodeScenes SceneList!=null&& SceneList.sceneCount>0 "+this.name);
@@ -1084,33 +1109,36 @@ public class ModelAreaTree : SubSceneCreater
             float progress = (float)i / TreeLeafs.Count;
             float percents = progress * 100;
 
+            var p1 = new ProgressArg(i, TreeLeafs.Count, leafNode);
+
             if (progressChanged == null)
             {
-                if (ProgressBarHelper.DisplayCancelableProgressBar("EditorCreateNodeScenes", $"Progress1 {i}/{TreeLeafs.Count} {percents:F2}%", progress))
+                if (ProgressBarHelper.DisplayCancelableProgressBar("EditorCreateNodeScenes", p1))
                 {
                     break;
                 }
             }
             else
             {
-                progressChanged(progress);
+                progressChanged(p1);
             }
 
-            leafNode.EditorCreateNodeScenes(false,(p,i2,c)=>
+            leafNode.EditorCreateNodeScenes(false,(p2)=>
             {
-                float progress2 = (float)(i+p) / TreeLeafs.Count;
-                float percents2 = progress2 * 100;
+                p1.AddSubProgress(p2);
+                //float progress2 = (float)(i+p) / TreeLeafs.Count;
+                //float percents2 = progress2 * 100;
 
                 if (progressChanged == null)
                 {
-                    if (ProgressBarHelper.DisplayCancelableProgressBar("EditorCreateNodeScenes", $"Progress2 {(i + p):F2}/{TreeLeafs.Count} {percents2:F2}% of 100%", progress2))
+                    if (ProgressBarHelper.DisplayCancelableProgressBar("EditorCreateNodeScenes", p1))
                     {
                         
                     }
                 }
                 else
                 {
-                    progressChanged(progress2);
+                    progressChanged(p1);
                 }
             });
         }
@@ -1124,7 +1152,7 @@ public class ModelAreaTree : SubSceneCreater
         }
         else
         {
-            progressChanged(1);
+            progressChanged(new ProgressArg(1));
         }
 
         UpdateSceneList();
@@ -1146,7 +1174,7 @@ public class ModelAreaTree : SubSceneCreater
         EditorLoadNodeScenes(null);
     }
 
-    public void EditorLoadNodeScenes(Action<float> progressChanged)
+    public void EditorLoadNodeScenes(Action<ProgressArg> progressChanged)
     {
         DateTime start = DateTime.Now;
 
@@ -1154,35 +1182,39 @@ public class ModelAreaTree : SubSceneCreater
         {
             var leafNode = TreeLeafs[i];
             if (leafNode == null) continue;
-            float progress = (float)i / TreeLeafs.Count;
-            float percents = progress * 100;
+            //float progress = (float)i / TreeLeafs.Count;
+            //float percents = progress * 100;
+
+            var p1 = new ProgressArg(i, TreeLeafs.Count, leafNode);
 
             if (progressChanged == null)
             {
-                if (ProgressBarHelper.DisplayCancelableProgressBar("EditorLoadNodeScenes", $"Progress1 {i}/{TreeLeafs.Count} {percents:F2}%", progress))
+                if (ProgressBarHelper.DisplayCancelableProgressBar("EditorLoadNodeScenes", p1))
                 {
                     break;
                 }
             }
             else
             {
-                progressChanged(progress);
+                progressChanged(p1);
             }
             leafNode.EditorLoadScenes((p) =>
             {
-                float progress2 = (float)(i + p) / TreeLeafs.Count;
-                float percents2 = progress2 * 100;
+                p1.AddSubProgress(p);
+
+                //float progress2 = (float)(i + p) / TreeLeafs.Count;
+                //float percents2 = progress2 * 100;
 
                 if (progressChanged == null)
                 {
-                    if (ProgressBarHelper.DisplayCancelableProgressBar("EditorLoadNodeScenes", $"Progress2 {(i + p):F2}/{TreeLeafs.Count} {percents2:F2}% of 100%", progress2))
+                    if (ProgressBarHelper.DisplayCancelableProgressBar("EditorLoadNodeScenes", p1))
                     {
 
                     }
                 }
                 else
                 {
-                    progressChanged(progress2);
+                    progressChanged(p1);
                 }
             });
         }
@@ -1194,7 +1226,7 @@ public class ModelAreaTree : SubSceneCreater
         }
         else
         {
-            progressChanged(1);
+            progressChanged(new ProgressArg(1));
         }
 
         Debug.Log($"ModelAreaTree.EditorLoadNodeScenes time:{(DateTime.Now - start)}");

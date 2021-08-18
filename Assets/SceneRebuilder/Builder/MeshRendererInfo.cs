@@ -182,7 +182,8 @@ public class MeshRendererInfo : MonoBehaviour,IComparable<MeshRendererInfo>
    public static MeshRendererInfoList InitRenderers(GameObject go)
     {
         MeshRenderer[] renderers = go.GetComponentsInChildren<MeshRenderer>(true);
-        return InitRenderers(renderers);
+        MeshRendererInfoList list = new MeshRendererInfoList(renderers);
+        return list;
     }
 
     //public static List<MeshRendererInfo> GetLod0s(GameObject go)
@@ -243,11 +244,11 @@ public class MeshRendererInfo : MonoBehaviour,IComparable<MeshRendererInfo>
     public static MeshRendererInfoList GetLodNs(GameObject go, params int[] lvs)
     {
         var renderers = go.GetComponentsInChildren<MeshRenderer>(true);
-        InitRenderers(renderers);
-
+        //InitRenderers(renderers);
+        MeshRendererInfoList list1 = new MeshRendererInfoList(renderers);
         var rendererInfos = go.GetComponentsInChildren<MeshRendererInfo>(true);
-        MeshRendererInfoList list = GetLodNs(rendererInfos, lvs);
-        return list;
+        MeshRendererInfoList list2 = GetLodNs(rendererInfos, lvs);
+        return list2;
     }
 
     //public static MeshRendererInfoList GetLodNs(MeshRenderer[] renderers, params int[] lvs)
@@ -277,17 +278,12 @@ public class MeshRendererInfo : MonoBehaviour,IComparable<MeshRendererInfo>
         return list;
     }
 
-    public static MeshRendererInfoList InitRenderers(MeshRenderer[] renderers, params int[] lvs)
-    {
-        MeshRendererInfoList list = new MeshRendererInfoList();
-        foreach (var renderer in renderers)
-        {
-            var info = MeshRendererInfo.GetInfo(renderer.gameObject);
-            list.Add(info);
-        }
-        list.Sort();
-        return list;
-    }
+    //public static MeshRendererInfoList InitRenderers(MeshRenderer[] renderers)
+    //{
+    //    MeshRendererInfoList list = new MeshRendererInfoList(renderers);
+
+    //    return list;
+    //}
 
     public static List<MeshRendererInfoList> SplitByLOD(MeshRenderer[] renderers)
     {
@@ -579,9 +575,35 @@ public class MeshRendererInfo : MonoBehaviour,IComparable<MeshRendererInfo>
     }
 }
 
-
+[Serializable]
 public class MeshRendererInfoList:List<MeshRendererInfo>
 {
+    public MeshRendererInfoList()
+    {
+
+    }
+
+    //public MeshRendererInfoList(GameObject root)
+    //{
+    //    var renderers = root.GetComponentsInChildren<MeshRenderer>(true);
+    //    InitRenderers(renderers);
+    //}
+
+    public MeshRendererInfoList(IEnumerable<MeshRenderer> renderers)
+    {
+        InitRenderers(renderers);
+    }
+
+    private void InitRenderers(IEnumerable<MeshRenderer> renderers)
+    {
+        foreach (var renderer in renderers)
+        {
+            var info = MeshRendererInfo.GetInfo(renderer.gameObject);
+            this.Add(info);
+        }
+        this.Sort();
+    }
+
     public List<MeshRenderer> GetRenderers()
     {
         List<MeshRenderer> renderers = new List<MeshRenderer>();
@@ -597,7 +619,7 @@ public class MeshRendererInfoList:List<MeshRendererInfo>
         List<MeshRenderer> renderers = new List<MeshRenderer>();
         foreach (var item in this)
         {
-            var rs = item.GetComponentsInChildren<MeshRenderer>();
+            var rs = item.GetComponentsInChildren<MeshRenderer>(true);
             renderers.AddRange(rs);
         }
         return renderers;
@@ -683,6 +705,33 @@ public class MeshRendererInfoList:List<MeshRendererInfo>
         {
             return GetPath(t.parent, maxlevel - 1) + "/" + t.name;
         }
+    }
+
+    internal void SetType(MeshRendererType rendererType)
+    {
+        foreach(var item in this)
+        {
+            item.rendererType = rendererType;
+        }
+    }
+
+    internal void RemoveTypes(List<MeshRendererType> list,string logTag)
+    {
+        if (this.Count == 0) return;
+        if (list==null || list.Count== 0) return;
+        int count1 = this.Count;
+        
+        for(int i = 0; i < this.Count; i++)
+        {
+            if(list.Contains(this[i].rendererType))
+            {
+                this.RemoveAt(i);
+                i--;
+            }
+        }
+        int count2 = this.Count;
+
+        Debug.LogError($"MeshRenderInfoList.RemoveTypes[{logTag}] count1:{count1} count2:{count2} types:{list.Count}");
     }
 }
 
