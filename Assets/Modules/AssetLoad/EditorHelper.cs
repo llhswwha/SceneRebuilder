@@ -288,6 +288,7 @@ public static class EditorHelper
 
     public static void RefreshAssets()
     {
+        Debug.LogError("RefreshAssets");
         AssetDatabase.Refresh();
     }
 
@@ -463,7 +464,7 @@ public static class EditorHelper
         {
             makeParentDirExist(pDir);
             AssetDatabase.CreateFolder(getParentPath(pDir), getParentName(path));
-            RefreshAssets();
+            //RefreshAssets();
         }
         else
         {
@@ -501,7 +502,7 @@ public static class EditorHelper
                 Debug.Log("guid:" + guid);
                 string path = UnityEditor.AssetDatabase.GUIDToAssetPath(guid);
                 Debug.Log("path:" + path);
-                AssetDatabase.Refresh();
+                RefreshAssets();
             }
         }
         catch (System.Exception ex)

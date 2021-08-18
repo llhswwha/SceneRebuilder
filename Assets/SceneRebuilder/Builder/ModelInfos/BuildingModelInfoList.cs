@@ -63,7 +63,7 @@ public class BuildingModelInfoList : MonoBehaviour
             //float progress = (float)i / buildings.Count;
             //float percents = progress * 100;
 
-            var p1 = new ProgressArg(i, buildings.Count, b);
+            var p1 = new ProgressArg("CombinedBuildings", i, buildings.Count, b);
 
             if (ProgressBarHelper.DisplayCancelableProgressBar("CombinedBuildings", p1))
             {

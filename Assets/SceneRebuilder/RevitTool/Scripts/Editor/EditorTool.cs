@@ -32,7 +32,7 @@ public class EditorTool : MonoBehaviour
             //var dir = GetDirInfo(dirObj);
             Delete(dir, false);
         }
-        AssetDatabase.Refresh();
+        EditorHelper.RefreshAssets();
     }
 
     private static void Delete(DirectoryInfo dir, bool isTest)
@@ -104,7 +104,7 @@ public class EditorTool : MonoBehaviour
             //var dir = GetDirInfo(dirObj);
             Rename(dir, false);
         }
-        AssetDatabase.Refresh();
+        EditorHelper.RefreshAssets();
     }
 
     private static void Rename(DirectoryInfo dir, bool isTest)
@@ -199,7 +199,7 @@ public class EditorTool : MonoBehaviour
             //var dir = GetDirInfo(dirObj);
             CreatePrefab(dir, false);
         }
-        AssetDatabase.Refresh();
+        EditorHelper.RefreshAssets();
     }
 
     [MenuItem("EditorTool/Models/CreatePrefab(Test)")]
@@ -223,7 +223,7 @@ public class EditorTool : MonoBehaviour
             //var dir = GetDirInfo(dirObj);
             CreatePrefab(dir, true);
         }
-        AssetDatabase.Refresh();
+        EditorHelper.RefreshAssets();
     }
 
     private static List<GameObject> GetGameObject(DirectoryInfo dir,string filter)
@@ -418,7 +418,7 @@ public class EditorTool : MonoBehaviour
             CreateLODGroup(dir,4);
 
         }
-        AssetDatabase.Refresh();
+        EditorHelper.RefreshAssets();
     }
 
     [MenuItem("EditorTool/Models/CreateLODGroup2")]
@@ -443,7 +443,7 @@ public class EditorTool : MonoBehaviour
             //var dir = GetDirInfo(dirObj);
             CreateLODGroup(dir, 3);
         }
-        AssetDatabase.Refresh();
+        EditorHelper.RefreshAssets();
     }
 
     private static Renderer[] CreateAndGetRenderers(GameObject pre,GameObject parent)
@@ -596,7 +596,7 @@ public class EditorTool : MonoBehaviour
             //var dir = GetDirInfo(dirObj);
             FindModelInDir(dir, false,0);
         }
-        AssetDatabase.Refresh();
+        EditorHelper.RefreshAssets();
     }
 
     [MenuItem("EditorTool/Models/ChangeModel(100)")]//清空AssetBunldeName
@@ -614,7 +614,7 @@ public class EditorTool : MonoBehaviour
             //var dir = GetDirInfo(dirObj);
             FindModelInDir(dir,true,100);
         }
-        AssetDatabase.Refresh();
+        EditorHelper.RefreshAssets();
     }
 
     [MenuItem("EditorTool/Models/ChangeModel(1000)")]//清空AssetBunldeName
@@ -632,7 +632,7 @@ public class EditorTool : MonoBehaviour
             //var dir = GetDirInfo(dirObj);
             FindModelInDir(dir, true, 1000);
         }
-        AssetDatabase.Refresh();
+        EditorHelper.RefreshAssets();
     }
 
     [MenuItem("EditorTool/Models/ChangeModel(All)")]
@@ -650,7 +650,7 @@ public class EditorTool : MonoBehaviour
             //var dir = GetDirInfo(dirObj);
             FindModelInDir(dir, true,0);
         }
-        AssetDatabase.Refresh();
+        EditorHelper.RefreshAssets();
     }
 
     [MenuItem("EditorTool/Models/ChangeModel(Selection)")]

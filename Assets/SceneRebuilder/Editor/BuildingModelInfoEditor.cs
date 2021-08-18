@@ -80,7 +80,7 @@ public class BuildingModelInfoEditor : BaseFoldoutEditor<BuildingModelInfo>
 
         EditorGUILayout.BeginHorizontal();
         NewButton("1.GetInfo", buttonWidth, state.CanGetInfo(), btnStyle, () => {
-            info.InitInOut();
+            info.InitInOut(true);
         });
         int btnW1 = 90;
         NewButton("FindDoors", buttonWidth, state.CanFindDoors(), btnStyle, info.FindInDoors);
@@ -146,7 +146,7 @@ public class BuildingModelInfoEditor : BaseFoldoutEditor<BuildingModelInfo>
 
         });
         NewButton("Reset", buttonWidth, state.CanReset(), btnStyle, () => {
-            info.ResetModel();
+            info.ResetModel(null);
         });
         NewButton("SetBuildings", buttonWidth, true, btnStyle, () => {
             SubSceneManager.Instance.SetBuildings_All();
@@ -163,7 +163,7 @@ public class BuildingModelInfoEditor : BaseFoldoutEditor<BuildingModelInfo>
         });
         NewButton("ResaveScenes", buttonWidth, state.CanLoadScenes, btnStyle, () =>
         {
-            info.ResaveScenes();
+            info.ResaveScenes(null);
         });
         EditorGUILayout.EndHorizontal();
 

@@ -1007,7 +1007,7 @@ break;
         //ProgressBarHelper.ClearProgressBar();
         info.sumVertex_Small = sumVertex_Small/10000f;
         info.sumVertex_Big = sumVertex_Big / 10000f;
-        Debug.LogWarning($"GetBigSmallRenderers maxLength:{maxLength},bigModels:{info.bigModels.Count},smallModels:{info.smallModels.Count},bigVertex:{info.sumVertex_Big},smallVertex:{info.sumVertex_Small},Renderers:{meshFilters.Length},Time:{(DateTime.Now-start).TotalMilliseconds:F1}ms");
+        //Debug.LogWarning($"GetBigSmallRenderers maxLength:{maxLength},bigModels:{info.bigModels.Count},smallModels:{info.smallModels.Count},bigVertex:{info.sumVertex_Big},smallVertex:{info.sumVertex_Small},Renderers:{meshFilters.Length},Time:{(DateTime.Now-start).TotalMilliseconds:F1}ms");
         return info;
     }
 

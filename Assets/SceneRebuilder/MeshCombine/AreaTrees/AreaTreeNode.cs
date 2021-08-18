@@ -6,6 +6,10 @@ using System.Linq;
 
 public class AreaTreeNode : SubSceneCreater
 {
+    public override string ToString()
+    {
+        return this.name;
+    }
     public ModelAreaTree tree;
 
     public Bounds Bounds;

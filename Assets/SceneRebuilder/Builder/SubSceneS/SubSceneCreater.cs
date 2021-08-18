@@ -174,14 +174,14 @@ public class SubSceneCreater : MonoBehaviour
             SubScene_Base scene = scenes[i];
             scene.IsLoaded = false;
             scene.EditorLoadSceneEx();
-            ProgressArg p = new ProgressArg(i, scenes.Length, scene);
+            ProgressArg p = new ProgressArg("EditorLoadScenes", i, scenes.Length, scene);
             if (progressChanged != null)
             {
                 progressChanged(p);
             }
             else
             {
-                if (ProgressBarHelper.DisplayCancelableProgressBar("EditorLoadScenes", p))
+                if (ProgressBarHelper.DisplayCancelableProgressBar(p))
                 {
                     break;
                 }
@@ -189,7 +189,7 @@ public class SubSceneCreater : MonoBehaviour
         }
         if (progressChanged != null)
         {
-            progressChanged(new ProgressArg(1));
+            progressChanged(new ProgressArg("EditorLoadScenes", scenes.Length, scenes.Length));
         }
         else
         {
@@ -259,10 +259,10 @@ public class SubSceneCreater : MonoBehaviour
         {
             var scene = scenes[i];
             if (scene == null) continue;
-            ProgressArg progressArg=new ProgressArg(i, scenes.Length,scene);
+            ProgressArg progressArg=new ProgressArg("UnLoadScenes", i, scenes.Length,scene);
             if (progressChanged == null)
             {
-                if (ProgressBarHelper.DisplayCancelableProgressBar("UnLoadScenes", progressArg))
+                if (ProgressBarHelper.DisplayCancelableProgressBar(progressArg))
                 {
                     break;
                 }
@@ -281,7 +281,7 @@ public class SubSceneCreater : MonoBehaviour
         }
         else
         {
-            progressChanged(new ProgressArg(1));
+            progressChanged(new ProgressArg("UnLoadScenes", scenes.Length, scenes.Length));
         }
 
         Debug.Log($"UnLoadScenes time:{(DateTime.Now - start)}");
@@ -291,37 +291,122 @@ public class SubSceneCreater : MonoBehaviour
 
 public class ProgressArg
 {
+    public string title = "";
     public float progress;
     public int i;
     public int count;
     public object tag;
 
-    public ProgressArg(float p,object t=null)
-    {
-        this.progress = p;
-        this.tag = t;
-    }
+    //public ProgressArg(float p,object t=null)
+    //{
+    //    this.progress = p;
+    //    this.tag = t;
+    //}
 
-    public ProgressArg(int i,int count, object t = null)
+    //public ProgressArg(string title, float p, object t = null)
+    //{
+    //    this.title = title;
+    //    this.progress = p;
+    //    this.tag = t;
+    //}
+
+    //public ProgressArg(int i,int count, object t = null)
+    //{
+    //    this.i = i;
+    //    this.count = count;
+    //    this.progress = (float)i / count;
+    //    this.tag = t;
+    //}
+
+    public ProgressArg(string title,int i, int count, object t = null)
     {
+        this.title = title;
         this.i = i;
         this.count = count;
         this.progress = (float)i / count;
         this.tag = t;
+
+        if (count == 0)
+        {
+            Debug.LogError($"ProgressArg count==0 title:{title} i:{i} t:{t}");
+        }
+
+        if (float.IsNaN(progress))
+        {
+            Debug.LogError($"ProgressArg IsNaN title:{title} i:{i} t:{t}");
+        }
+    }
+
+    private string GetProgress()
+    {
+        return $"{i}/{count} {progress:P1}";
     }
 
     public override string ToString()
     {
         if (subP == null)
         {
-            return $"Progress1 {i}/{count} {progress:P1} tag:[{tag}]";
+            return $"P1{GetProgress()} ({tag})";
         }
         else
         {
             //"{i1}/{count1} {i2}/{count2} {progress1:P1}"
-            return $"Progress2 [{i}/{count}|{subP.i}/{subP.count}] [{progress:P1}|{subP.progress:P1}]";
+            //return $"Progress2 [{i}/{count} > {subP.i}/{subP.count}] [{progress:P1} > {subP.progress:P1}]";
+
+            //return $"P2[{GetProgress()}]>[{subP.GetProgress()}] ({tag}>{subP.tag})";
+            var subP2 = subP.subP;
+            if (subP2 == null)
+            {
+                return $"P2[{GetProgress()}]>[{subP.GetProgress()}] ({tag}>{subP.tag})";
+            }
+            else
+            {
+                //return $"P3[{GetProgress()}]>[{subP.GetProgress()}]>[{subP.subP.GetProgress()}] ({tag}>{subP.tag}>{subP.subP.tag})";
+                var subP3 = subP2.subP;
+                if (subP3 == null)
+                {
+                    return $"P3[{GetProgress()}]>[{subP.GetProgress()}]>[{subP2.GetProgress()}] ({tag}>{subP.tag}>{subP2.tag})";
+                }
+                else
+                {
+                    return $"P4[{GetProgress()}]>[{subP.GetProgress()}]>[{subP2.GetProgress()}]>[{subP3.GetProgress()}] ({tag}>{subP.tag}>{subP2.tag}>{subP3.tag})";
+                }
+            }
         }
         
+    }
+
+    public string GetTitle()
+    {
+        if (subP == null)
+        {
+            return $"T1{title}";
+        }
+        else
+        {
+            //"{i1}/{count1} {i2}/{count2} {progress1:P1}"
+            //return $"Progress2 [{i}/{count} > {subP.i}/{subP.count}] [{progress:P1} > {subP.progress:P1}]";
+
+            //return $"P2[{GetProgress()}]>[{subP.GetProgress()}] ({tag}>{subP.tag})";
+
+            if (subP.subP == null)
+            {
+                return $"T2[{title}]>[{subP.title}]";
+            }
+            else
+            {
+                
+                if (subP.subP.subP == null)
+                {
+                    return $"T3[{title}]>[{subP.title}]>[{subP.subP.title}]";
+                }
+                else
+                {
+                    
+                    return $"T3[{title}]>[{subP.title}]>[{subP.subP.title}]>[{subP.subP.subP.title}]";
+                }
+            }
+        }
     }
 
     public ProgressArg subP;

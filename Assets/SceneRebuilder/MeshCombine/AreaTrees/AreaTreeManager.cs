@@ -510,7 +510,7 @@ public class AreaTreeManager : SingletonBehaviour<AreaTreeManager>
         prefabInstanceBuilder.TargetRoots = target;
         var bigSmallInfo=prefabInstanceBuilder.GetBigSmallRenderers();
 
-        ProgressArg p1 = new ProgressArg(0,2);
+        ProgressArg p1 = new ProgressArg("CreateOne_BigSmall_Core", 0,2, "SamllTree");
         if (progressChanged!=null)
         {
             progressChanged(p1);
@@ -540,7 +540,7 @@ public class AreaTreeManager : SingletonBehaviour<AreaTreeManager>
             tree2.DestroyNodeRender();
         }
 
-        ProgressArg p2 = new ProgressArg(1, 2);
+        ProgressArg p2 = new ProgressArg("CreateOne_BigSmall_Core",1, 2, "SamllTree");
         if (progressChanged != null)
         {
             progressChanged(p2);
@@ -567,7 +567,7 @@ public class AreaTreeManager : SingletonBehaviour<AreaTreeManager>
             tree1.transform.SetParent(parent);
         }
 
-        ProgressArg p3 = new ProgressArg(2, 2);
+        ProgressArg p3 = new ProgressArg("CreateOne_BigSmall_Core", 2, 2);
         //TreeNodeShowManager.HiddenTrees.Add(tree2);
         if (progressChanged != null)
         {

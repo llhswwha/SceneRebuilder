@@ -19,8 +19,8 @@ public class SceneRebuildEditorWindow : ListManagerEditorWindow<BuildingModelEle
         window.Init();
     }
 
-    //UI��������
-    int selectIndex = 0;//������ѡ���±�
+
+    int selectIndex = 0;
     int SelectIndex
     {
         get { return selectIndex; }
@@ -42,7 +42,7 @@ public class SceneRebuildEditorWindow : ListManagerEditorWindow<BuildingModelEle
         }
     }
 
-    int selectChildIndex = 0;//������ѡ���±�
+    int selectChildIndex = 0;
     int SelectChildIndex
     {
         get { return selectChildIndex; }
@@ -57,7 +57,7 @@ public class SceneRebuildEditorWindow : ListManagerEditorWindow<BuildingModelEle
     string[] tableTitle = new string[] { "Name", "Vertex", "Renderer", "VertIn", "VtOut1", "VtOut0","VtOut0B","VtOut0S", "RenderIn",
         "RdOut1", "RdOut0","RdOut0B","RdOut0S", "P", "T", "S", "F", };
 
-    //Setting��������
+    //Setting
     static int minVertNum = 0;
     static int maxVertNum = 65000;
     bool isSelectConditions = false;
@@ -77,9 +77,7 @@ public class SceneRebuildEditorWindow : ListManagerEditorWindow<BuildingModelEle
     float sum;
 
     BuildingDataClass dataChart = new BuildingDataClass();
-    /// <summary>
-    /// ˢ��ͳ��ͼ
-    /// </summary>
+
     void RefleshBarChart()
     {
         if (!(LevelNum[0] < LevelNum[1] && LevelNum[1] < LevelNum[2] && LevelNum[2] < LevelNum[3] && LevelNum[3] < LevelNum[4]))
@@ -140,9 +138,7 @@ public class SceneRebuildEditorWindow : ListManagerEditorWindow<BuildingModelEle
 
         DataLinePainter.Init(list);
     }
-    /// <summary>
-    /// ˢ������
-    /// </summary>
+
     void RefleshDataChart()
     {
         dataChart.Reset();
@@ -185,9 +181,6 @@ public class SceneRebuildEditorWindow : ListManagerEditorWindow<BuildingModelEle
         RefleshList();
     }
 
-    /// <summary>
-    /// ˢ���б�����������
-    /// </summary>
     void RefleshList()
     {
         meshElementList.Clear();
@@ -254,10 +247,6 @@ public class SceneRebuildEditorWindow : ListManagerEditorWindow<BuildingModelEle
         scVector = Vector2.zero;
     }
 
-    /// <summary>
-    /// ������ɸѡ
-    /// </summary>
-    /// <param name="list"></param>
     protected override void SelectByConditions(List<BuildingModelElement> list)
     {
         if (isSelectConditions)

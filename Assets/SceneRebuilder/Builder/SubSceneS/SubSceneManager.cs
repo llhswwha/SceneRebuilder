@@ -112,7 +112,7 @@ public class SubSceneManager : SingletonBehaviour<SubSceneManager>
             if (item == null) continue;
             //float progress = (float)i / count;
             //float percents = progress * 100;
-            var p1 = new ProgressArg(i, count, item);
+            var p1 = new ProgressArg("OneKey", i, count, item);
 
             if (ProgressBarHelper.DisplayCancelableProgressBar("OneKey", p1))
             {
@@ -172,7 +172,7 @@ public class SubSceneManager : SingletonBehaviour<SubSceneManager>
             if(item==null)continue;
             //float progress = (float)i / count;
             //float percents = progress * 100;
-            var p1 = new ProgressArg(i, count, item);
+            var p1 = new ProgressArg("EditorCreateBuildingScenes", i, count, item);
             if (ProgressBarHelper.DisplayCancelableProgressBar("EditorCreateBuildingScenes", p1))
             {
                 break;
@@ -231,9 +231,9 @@ public class SubSceneManager : SingletonBehaviour<SubSceneManager>
             var item = buildings[i];
             //float progress = (float)i / count;
             //float percents = progress * 100;
-            var p1 = new ProgressArg(i, count, item);
+            var p1 = new ProgressArg("EditorLoadScenes", i, count, item);
 
-            if (ProgressBarHelper.DisplayCancelableProgressBar("EditorLoadScenes", p1))
+            if (ProgressBarHelper.DisplayCancelableProgressBar(p1))
             {
                 break;
             }
@@ -244,7 +244,7 @@ public class SubSceneManager : SingletonBehaviour<SubSceneManager>
                 //float progress2 = (float)(i + p) / count;
                 //float percents2 = progress2 * 100;
 
-                if (ProgressBarHelper.DisplayCancelableProgressBar("EditorLoadScenes", p1))
+                if (ProgressBarHelper.DisplayCancelableProgressBar(p1))
                 {
                     return;
                 }
@@ -831,7 +831,7 @@ public class SubSceneManager : SingletonBehaviour<SubSceneManager>
 
         Debug.Log($"DeleteInActiveScenes all:{sceneFiles.Count} remove:{count} size:{fileLength}");
 
-        AssetDatabase.Refresh();
+        EditorHelper.RefreshAssets();
 #endif
         ProgressBarHelper.ClearProgressBar();
     }

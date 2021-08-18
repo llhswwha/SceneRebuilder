@@ -139,7 +139,7 @@ public static class MeshCombineHelper
         }
 
         goNew.transform.SetParent(arg.transform.parent);
-        Debug.Log($"CombineMaterials name:{arg.name} 用时:{(DateTime.Now - start).TotalMilliseconds:F1}ms \tMesh数量:{renderers.Length} \tMat数量:{mat2Filters.Count} \tMats:{mats} \tVertex:{(allVs / 10000f):F1}");
+        /*Debug.Log($"CombineMaterials name:{arg.name} 用时:{(DateTime.Now - start).TotalMilliseconds:F1}ms \tMesh数量:{renderers.Length} \tMat数量:{mat2Filters.Count} \tMats:{mats} \tVertex:{(allVs / 10000f):F1}");*/
 
         // var minMax=MeshHelper.GetMinMax(mfList);
 
@@ -156,7 +156,7 @@ public static class MeshCombineHelper
         {
 
         }
-        
+        //EditorHelper.RefreshAssets();
         return goNew;
     }
 

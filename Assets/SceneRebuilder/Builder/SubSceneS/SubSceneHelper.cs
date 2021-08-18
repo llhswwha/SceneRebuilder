@@ -164,7 +164,7 @@ public static class SubSceneHelper
 
             //float progress = (float)i / count;
             //float percents = progress * 100;
-            ProgressArg p1 = new ProgressArg(i, count, scene);
+            ProgressArg p1 = new ProgressArg("EditorCreateScenes", i, count, scene);
             if (progressChanged != null)
             {
                 progressChanged(p1);
@@ -172,7 +172,7 @@ public static class SubSceneHelper
             else
             {
                 Debug.Log($"EditorCreateScenes {p1}");
-                if (ProgressBarHelper.DisplayCancelableProgressBar("EditorCreateScenes", p1))
+                if (ProgressBarHelper.DisplayCancelableProgressBar(p1))
                 {
                     break;
                 }
@@ -189,7 +189,7 @@ public static class SubSceneHelper
         }
         else
         {
-            progressChanged(new ProgressArg(1));
+            progressChanged(new ProgressArg("EditorCreateScenes",count,count));
         }
     }
 

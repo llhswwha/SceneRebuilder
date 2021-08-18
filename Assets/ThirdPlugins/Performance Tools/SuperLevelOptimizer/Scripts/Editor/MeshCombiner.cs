@@ -57,7 +57,7 @@ namespace NGS.SuperLevelOptimizer
 
             EditorUtility.ClearProgressBar();
 
-            AssetsManager.Refresh();
+            EditorHelper.RefreshAssets();
 
             return root;
         }

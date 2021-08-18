@@ -119,14 +119,14 @@ public class RendererManager : SingletonBehaviour<RendererManager>
             float progress = (float)i / count;
             float percents = progress * 100;
 
-            if (ProgressBarHelper.DisplayCancelableProgressBar("InitRenderers", $"Progress1 {i}/{count} {percents:F1}% {r.name}", progress))
-            {
-                break;
-            }
+            //if (ProgressBarHelper.DisplayCancelableProgressBar("InitRenderers", $"Progress1 {i}/{count} {percents:F1}% {r.name}", progress))
+            //{
+            //    break;
+            //}
         }
         Count = allRenderers.Length;
-        ProgressBarHelper.ClearProgressBar();
-        Debug.Log($"InitRenderers count:{allRenderers.Length} time:{(DateTime.Now - start)}");
+        //ProgressBarHelper.ClearProgressBar();
+        //Debug.Log($"InitRenderers count:{allRenderers.Length} time:{(DateTime.Now - start)}");
         return allInfos;
     }
 

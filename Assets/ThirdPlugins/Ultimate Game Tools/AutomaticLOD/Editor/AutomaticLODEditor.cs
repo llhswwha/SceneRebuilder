@@ -1732,7 +1732,7 @@ public class AutomaticLODEditor : Editor
         }
 
         EditorUtility.ClearProgressBar();
-        UnityEditor.AssetDatabase.Refresh();
+        EditorHelper.RefreshAssets();
         Simplifier.Cancelled = false;
     }
 

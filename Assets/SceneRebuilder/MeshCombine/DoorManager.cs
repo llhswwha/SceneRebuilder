@@ -584,13 +584,13 @@ public class DoorsRootList: List<DoorsRoot>
         VertexCount = 0;
         VertexCount_Show = 0;
         DateTime start = DateTime.Now;
-        ProgressBarHelper.DisplayCancelableProgressBar("GetDoors", "Start", 0);
+        //ProgressBarHelper.DisplayCancelableProgressBar("GetDoors", "Start", 0);
         //var renderers = GameObject.FindObjectsOfType<MeshRenderer>(true).Where(i => i.name.ToLower().Contains("door")).ToList();
         for (int i = 0; i < doorsRoots.Length; i++)
         {
 
             float progress = (float)i / doorsRoots.Length;
-            ProgressBarHelper.DisplayCancelableProgressBar("GetDoors", $"{i}/{doorsRoots.Length} {progress:P1}", progress);
+            //ProgressBarHelper.DisplayCancelableProgressBar("GetDoors", $"{i}/{doorsRoots.Length} {progress:P1}", progress);
             //var parent = doorsRoots[i].transform.parent;
             ////if (parent != null && parent.name.ToLower().Contains("combined")) continue;
             var doorRoot = doorsRoots[i];
@@ -606,7 +606,7 @@ public class DoorsRootList: List<DoorsRoot>
         {
             return b.Doors.VertexCount.CompareTo(a.Doors.VertexCount);
         });
-        ProgressBarHelper.ClearProgressBar();
+        //ProgressBarHelper.ClearProgressBar();
         Debug.Log($"GetDoors count:{doorsRoots.Length} VertexCount:{VertexCount} time:{(DateTime.Now - start)}");
         //return Doors;
     }

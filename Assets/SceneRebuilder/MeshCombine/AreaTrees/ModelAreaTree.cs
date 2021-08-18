@@ -6,31 +6,35 @@ using System.Linq;
 
 public class ModelAreaTree : SubSceneCreater
 {
-   //public GameObject Target=null;
+    public override string ToString()
+    {
+        return this.name;
+    }
+    //public GameObject Target=null;
 
-   // public string TargetId;
+    // public string TargetId;
 
-   // public GameObject TargetCopy = null;
+    // public GameObject TargetCopy = null;
 
-   // public bool IsFirst = true;
-   // public GameObject GetTarget()
-   // {
-   //     if (IsCopy && IsFirst)
-   //     {
-   //         IsFirst = false;
-   //         Debug.Log("GetTarget Target1:"+Target);
-   //         Target.SetActive(false);
-   //         TargetCopy = MeshHelper.CopyGO(Target);
-   //         TargetCopy.SetActive(true);
-   //         Debug.Log("GetTarget Target2:"+TargetCopy);
-   //     }
+    // public bool IsFirst = true;
+    // public GameObject GetTarget()
+    // {
+    //     if (IsCopy && IsFirst)
+    //     {
+    //         IsFirst = false;
+    //         Debug.Log("GetTarget Target1:"+Target);
+    //         Target.SetActive(false);
+    //         TargetCopy = MeshHelper.CopyGO(Target);
+    //         TargetCopy.SetActive(true);
+    //         Debug.Log("GetTarget Target2:"+TargetCopy);
+    //     }
 
-   //     if (!IsCopy)
-   //     {
-   //         TargetCopy = Target;
-   //     }
-   //     return TargetCopy;
-   // }
+    //     if (!IsCopy)
+    //     {
+    //         TargetCopy = Target;
+    //     }
+    //     return TargetCopy;
+    // }
 
     public AreaTreeNode RootNode;
 
@@ -168,7 +172,7 @@ public class ModelAreaTree : SubSceneCreater
     {
         if (TreeNodes.Count == 0)
         {
-            Debug.LogError("CombineMesh TreeNodes.Count == 0 :" + this.name);
+            Debug.LogError("Tree.CombineMesh TreeNodes.Count == 0 :" + this.name);
             return;
         }
         MeshCombinerSetting.Instance.SetSetting();
@@ -181,7 +185,7 @@ public class ModelAreaTree : SubSceneCreater
             if (node == null) continue;
             //float progress = (float)i / TreeNodes.Count;
 
-            var p = new ProgressArg(i, TreeNodes.Count, node);
+            var p = new ProgressArg("CombineMesh", i, TreeNodes.Count, node);
             if (progressChanged != null)
             {
                 progressChanged(p);
@@ -194,7 +198,7 @@ public class ModelAreaTree : SubSceneCreater
         int newRenderCount=0;
         if(this.RootNode==null)
         {
-            Debug.LogError("CombineMesh this.RootNode==null :"+this.name);
+            Debug.LogError("Tree.CombineMesh this.RootNode==null :" + this.name);
             return;
         }
         var renderersNew=this.RootNode.GetComponentsInChildren<MeshRenderer>(true);
@@ -207,7 +211,7 @@ public class ModelAreaTree : SubSceneCreater
 
         CombinedCount = newRenderCount;
 
-        Debug.LogWarning($"CombineMesh renderCount:{renderCount}->{newRenderCount},\t{(DateTime.Now-start).ToString()}");
+        Debug.LogWarning($"Tree.CombineMesh renderCount:{renderCount}->{newRenderCount},\t{(DateTime.Now-start).ToString()}");
     }
 
     public int CombinedCount = 0;
@@ -225,7 +229,7 @@ public class ModelAreaTree : SubSceneCreater
             c++;
         }
 
-        Debug.LogWarning($"SwitchToCombined count:{c} \t{(DateTime.Now-start).ToString()}");
+        Debug.LogWarning($"Tree.SwitchToCombined count:{c} \t{(DateTime.Now-start).ToString()}");
     }
 
     [ContextMenu("SwitchToRenderers")]
@@ -240,7 +244,7 @@ public class ModelAreaTree : SubSceneCreater
             c++;
         }
 
-        Debug.LogWarning($"SwitchToRenderers tree:{this.name} count:{c} \t{(DateTime.Now-start).ToString()}");
+        Debug.LogWarning($"Tree.SwitchToRenderers tree:{this.name} count:{c} \t{(DateTime.Now-start).ToString()}");
     }
 
     [SerializeField]
@@ -315,10 +319,10 @@ public class ModelAreaTree : SubSceneCreater
         MeshRenderer[] renderers=GetTreeRendererers();
         if (renderers.Length == 0)
         {
-            Debug.LogWarning($"CreateCells_Tree Start tree:{this.name} renderers:{renderers.Length} ");
+            //Debug.LogWarning($"CreateCells_Tree Start tree:{this.name} renderers:{renderers.Length} ");
             return;
         }
-        Debug.Log($"CreateCells_Tree Start tree:{this.name} renderers:{renderers.Length} ");
+        //Debug.Log($"CreateCells_Tree Start tree:{this.name} renderers:{renderers.Length} ");
         foreach(var render in renderers){
             if(render==null)continue;
             render.enabled=true;
@@ -540,7 +544,7 @@ public class ModelAreaTree : SubSceneCreater
         MeshRenderer[] renderers = GetTreeRendererers();
         if (renderers.Length == 0)
         {
-            Debug.LogWarning("GenerateMesh renderers:" + renderers.Length + "|tree:" + this.name);
+            //Debug.LogWarning("GenerateMesh renderers:" + renderers.Length + "|tree:" + this.name);
             return;
         }
 
@@ -557,7 +561,7 @@ public class ModelAreaTree : SubSceneCreater
                 item.Renderers = null;
             }
         }
-        Debug.LogWarning($"GenerateMesh name:{this.name} time:{(DateTime.Now-start).ToString()}");
+        Debug.LogWarning($"ModelAreaTree.GenerateMesh name:{this.name} time:{(DateTime.Now-start).ToString()}");
     }
 
     [ContextMenu("* GenerateTree")]
@@ -1092,6 +1096,11 @@ public class ModelAreaTree : SubSceneCreater
 
     public void EditorCreateNodeScenes(Action<ProgressArg> progressChanged)
     {
+        if (TreeLeafs.Count == 0) return;
+        //if (TreeLeafs.Count == 0)
+        //{
+        //    return;
+        //}
         //if(SceneList!=null&& SceneList.sceneCount>0){
         //    Debug.LogError("ModelAreaTree.EditorCreateNodeScenes SceneList!=null&& SceneList.sceneCount>0 "+this.name);
         //    if(progressChanged!=null){
@@ -1111,11 +1120,11 @@ public class ModelAreaTree : SubSceneCreater
             float progress = (float)i / TreeLeafs.Count;
             float percents = progress * 100;
 
-            var p1 = new ProgressArg(i, TreeLeafs.Count, leafNode);
+            var p1 = new ProgressArg("EditorCreateNodeScenes", i, TreeLeafs.Count, leafNode);
 
             if (progressChanged == null)
             {
-                if (ProgressBarHelper.DisplayCancelableProgressBar("EditorCreateNodeScenes", p1))
+                if (ProgressBarHelper.DisplayCancelableProgressBar(p1))
                 {
                     break;
                 }
@@ -1133,7 +1142,7 @@ public class ModelAreaTree : SubSceneCreater
 
                 if (progressChanged == null)
                 {
-                    if (ProgressBarHelper.DisplayCancelableProgressBar("EditorCreateNodeScenes", p1))
+                    if (ProgressBarHelper.DisplayCancelableProgressBar(p1))
                     {
                         
                     }
@@ -1154,7 +1163,7 @@ public class ModelAreaTree : SubSceneCreater
         }
         else
         {
-            progressChanged(new ProgressArg(1));
+            progressChanged(new ProgressArg("EditorCreateNodeScenes", TreeLeafs.Count, TreeLeafs.Count));
         }
 
         UpdateSceneList();
@@ -1178,6 +1187,10 @@ public class ModelAreaTree : SubSceneCreater
 
     public void EditorLoadNodeScenes(Action<ProgressArg> progressChanged)
     {
+        if (TreeLeafs.Count == 0)
+        {
+            return;
+        }
         DateTime start = DateTime.Now;
 
         for (int i = 0; i < TreeLeafs.Count; i++)
@@ -1187,11 +1200,11 @@ public class ModelAreaTree : SubSceneCreater
             //float progress = (float)i / TreeLeafs.Count;
             //float percents = progress * 100;
 
-            var p1 = new ProgressArg(i, TreeLeafs.Count, leafNode);
+            var p1 = new ProgressArg("EditorLoadNodeScenes", i, TreeLeafs.Count, leafNode);
 
             if (progressChanged == null)
             {
-                if (ProgressBarHelper.DisplayCancelableProgressBar("EditorLoadNodeScenes", p1))
+                if (ProgressBarHelper.DisplayCancelableProgressBar(p1))
                 {
                     break;
                 }
@@ -1209,7 +1222,7 @@ public class ModelAreaTree : SubSceneCreater
 
                 if (progressChanged == null)
                 {
-                    if (ProgressBarHelper.DisplayCancelableProgressBar("EditorLoadNodeScenes", p1))
+                    if (ProgressBarHelper.DisplayCancelableProgressBar(p1))
                     {
 
                     }
@@ -1228,7 +1241,7 @@ public class ModelAreaTree : SubSceneCreater
         }
         else
         {
-            progressChanged(new ProgressArg(1));
+            progressChanged(new ProgressArg("EditorLoadNodeScenes", TreeLeafs.Count, TreeLeafs.Count));
         }
 
         Debug.Log($"ModelAreaTree.EditorLoadNodeScenes time:{(DateTime.Now - start)}");
