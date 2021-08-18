@@ -446,7 +446,8 @@ UnpackPrefab();
         //else{
         //    nodes=GameObject.FindObjectsOfType<MeshNode>();
         //}
-        nodes1.AddRange(nodes);
+        if(nodes!=null)
+            nodes1.AddRange(nodes);
        //TargetNodeList.Clear();
         nodes1.AddRange(TargetNodeList);
         return nodes1;
@@ -1515,5 +1516,22 @@ break;
         //RemoveInstances();
         CreateInstances_LOD();
         Debug.LogWarning($"OneKey_Align_Remove_Instance_LOD Time:{(DateTime.Now - start).ToString()}ms");
+    }
+
+    public PrefabInfoList GetPrefabInfos<T>(List<T> list, bool align) where T: class,IPrefab<T>
+    {
+        List<MeshPoints> meshFilters = new List<MeshPoints>();
+        foreach(var item in list)
+        {
+            foreach(var mf in item.GetMeshFilters())
+            {
+                meshFilters.Add(new MeshPoints(mf.gameObject));
+            }
+            //meshFilters.AddRange();
+        }
+        //var prefabList=PrefabInfoListHelper.GetPrefabInfos(list, align);
+        //SetPrefabInfoList(prefabList);
+        //return prefabList;
+        return AcRTAlignJobsEx(meshFilters.ToArray());
     }
 }

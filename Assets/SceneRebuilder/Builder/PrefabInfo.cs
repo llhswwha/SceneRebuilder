@@ -9,6 +9,11 @@ public class PrefabInfo:IComparable<PrefabInfo>
 {
     public PrefabInfo(GameObject prefab){
         this.Prefab=prefab;
+        if (prefab == null)
+        {
+            Debug.LogError("PrefabInfo.ctor prefab == null");
+            return;
+        }
         Init(new MeshPoints(prefab));
     }
 
@@ -529,6 +534,8 @@ public interface IPrefab<T>
     public T Clone();
 
     public int GetVertexCount();
+
+    public List<MeshFilter> GetMeshFilters();
 }
 
 [Serializable]
@@ -656,6 +663,11 @@ public static class PrefabInfoListHelper
             }
 
             item1.PreparePrefab();//Split+LOD+CopyA
+            if (item1.gameObject == null)
+            {
+                Debug.LogError($"GetPrefabInfos item1.gameObject == null item1:{item1}");
+                continue;
+            }
 
             PrefabInfo prefab = new PrefabInfo(item1.gameObject);
             prefabsNew.Add(prefab);

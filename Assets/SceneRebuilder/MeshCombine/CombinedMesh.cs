@@ -47,7 +47,7 @@ public class CombinedMesh{
 
     private void Init(Transform source, SubMeshList mfs, Material mat)
     {
-        Debug.Log($"CombinedMesh source:[{source}] mfs:[{mfs}] mat:{mat}");
+        //Debug.Log($"CombinedMesh.Init source:[{source}] mfs:[{mfs}] mat:{mat}");
         this.name = source.name;
         this.source = source;
 
@@ -243,6 +243,8 @@ public class CombinedMesh{
 
     public int DoCombine(bool logTime){
 
+        DateTime start = DateTime.Now;
+
         List<MeshPartInfo> allList = GetMeshPartInfoList();
 
         meshPartList =new List<MeshPartInfo>();
@@ -261,11 +263,11 @@ public class CombinedMesh{
             if(newMesh!=null) meshPartList.Add(newMesh);
         }
 
-        DateTime start=DateTime.Now;
-        Debug.LogWarning(
-            string.Format("CombinedMesh 用时:{1}ms,Mesh数量:{1} 子模型数:{2},VertexCount:{3},Mat:{4}"
-            , (DateTime.Now - start).TotalMilliseconds, meshList.Count, allList.Count, VertexCount, mat)
-            );
+        
+        //Debug.LogWarning(
+        //    string.Format("CombinedMesh 用时:{1}ms,Mesh数量:{1} 子模型数:{2},VertexCount:{3},Mat:{4}"
+        //    , (DateTime.Now - start).TotalMilliseconds, meshList.Count, allList.Count, VertexCount, mat)
+        //    );
 
         return VertexCount;
     }

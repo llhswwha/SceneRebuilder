@@ -100,9 +100,18 @@ public class DoorsRootEditor : BaseFoldoutEditor<DoorsRoot>
         {
             item.Split();
         }
+        if (GUILayout.Button("SetLOD"))
+        {
+            item.SetLOD();
+        }
         if (GUILayout.Button("CopyPart"))
         {
             item.CopyPart();
+        }
+
+        if (GUILayout.Button("Prepare"))
+        {
+            item.Prepare();
         }
         if (GUILayout.Button("InitNodes"))
         {
@@ -122,7 +131,7 @@ public class DoorsRootEditor : BaseFoldoutEditor<DoorsRoot>
         }
         GUILayout.EndHorizontal();
 
-        DrawDoorList(doorListArg, item, false);
+        DrawDoorList(doorListArg, item.Doors, false);
 
         DrawDoorPartList(doorPartListArg, DoorManager.Instance);
 

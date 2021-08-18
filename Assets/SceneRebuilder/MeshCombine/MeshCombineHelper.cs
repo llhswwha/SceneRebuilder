@@ -135,11 +135,11 @@ public static class MeshCombineHelper
                 Debug.LogWarning($"CombineMaterials vs==0 material:{material},list:{list.Count}");
             }
             allVs+=vs;
-            Debug.Log($"CombineMaterials material:[{material.name}] meshes:[{list.Count}] meshNames:[{meshNames}]");
+            //Debug.Log($"CombineMaterials material:[{material.name}] meshes:[{list.Count}] meshNames:[{meshNames}]");
         }
 
         goNew.transform.SetParent(arg.transform.parent);
-        Debug.Log($"CombineMaterials name:{arg.name} 用时:{DateTime.Now - start} \tMesh数量:{renderers.Length} \tMat数量:{mat2Filters.Count} \tMats:{mats} \tVertex:{(allVs / 10000f):F1}");
+        Debug.Log($"CombineMaterials name:{arg.name} 用时:{(DateTime.Now - start).TotalMilliseconds:F1}ms \tMesh数量:{renderers.Length} \tMat数量:{mat2Filters.Count} \tMats:{mats} \tVertex:{(allVs / 10000f):F1}");
 
         // var minMax=MeshHelper.GetMinMax(mfList);
 

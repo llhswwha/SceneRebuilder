@@ -41,6 +41,10 @@ namespace MeshJobs
 
         public MeshPoints(GameObject root)
         {
+            if (root == null)
+            {
+                Debug.LogError("MeshPoints.ctor root==null");
+            }
             this.name = root.name;
             this.transform = root.transform;
             this.gameObject = root;
@@ -657,19 +661,19 @@ namespace MeshJobs
 
                 if (result.Distance < DistanceSetting.zeroM)
                 {
-                    Debug.LogWarning($"对齐成功 {mfFrom.name} -> {mfTo.name} 距离:{result.Distance}");
+                    //Debug.LogWarning($"对齐成功 {mfFrom.name} -> {mfTo.name} 距离:{result.Distance}");
 
                     var disNew = MeshHelper.GetVertexDistanceEx(mfFrom.transform, mfTo.transform, "测试结果", false);
 
                     RTResult rT = result as RTResult;
                     if (rT != null)
                     {
-                        Debug.LogError($"对齐成功1 id:{id} zero:{DistanceSetting.zeroM:F5},dis:{result.Distance},disNew:{disNew},Mode:{rT.Mode},from:[{mfFrom.name}],to:[{mfTo.name}] " + $" Trans:{rT.Translation.Vector3ToString()},Matrix:\n{rT.TransformationMatrix}");
+                        Debug.LogWarning($"对齐成功1 id:{id} zero:{DistanceSetting.zeroM:F5},dis:{result.Distance},disNew:{disNew},Mode:{rT.Mode},from:[{mfFrom.name}],to:[{mfTo.name}] " + $" Trans:{rT.Translation.Vector3ToString()},Matrix:\n{rT.TransformationMatrix}");
                         //Debug.LogError($"Mode:{rT.Mode},Trans:{rT.Translation.Vector3ToString()},Matrix:\n{rT.TransformationMatrix}");
                     }
                     else
                     {
-                        Debug.LogError($"对齐成功2 id:{id}  zero:{DistanceSetting.zeroM:F5},dis:{result.Distance},disNew:{disNew},from:[{mfFrom.name}],to:[{mfTo.name}] rT==null");
+                        Debug.LogWarning($"对齐成功2 id:{id}  zero:{DistanceSetting.zeroM:F5},dis:{result.Distance},disNew:{disNew},from:[{mfFrom.name}],to:[{mfTo.name}] rT==null");
                     }
                     return true;
                 }
@@ -882,20 +886,20 @@ namespace MeshJobs
                 children.Add(child);
             }
 
-            foreach (var p in parentChildren.Keys)
-            {
-                var center = Vector3.zero;
-                var list = parentChildren[p];
-                for (int i=0;i< list.Count; i++)
-                {
-                    center += list[i].position;
-                }
-                center /= list.Count;
+            //foreach (var p in parentChildren.Keys)
+            //{
+            //    var center = Vector3.zero;
+            //    var list = parentChildren[p];
+            //    for (int i=0;i< list.Count; i++)
+            //    {
+            //        center += list[i].position;
+            //    }
+            //    center /= list.Count;
 
-                p.position = center;
+            //    p.position = center;
 
-                //Debug.LogError("center:" + center);
-            }
+            //    //Debug.LogError("center:" + center);
+            //}
             
             //Debug.LogError("RestoreParent parentDict:" + parentDict.Count);
             foreach (var child in parentDict.Keys)

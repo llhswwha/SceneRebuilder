@@ -7,8 +7,8 @@ using UnityEngine;
 public class DoorsRoot : MonoBehaviour
 {
     public string Root;
-    public int VertexCount = 0;
-    public int VertexCount_Show = 0;
+    //public int VertexCount = 0;
+    //public int VertexCount_Show = 0;
 
     public DoorInfoList Doors = new DoorInfoList();
 
@@ -24,16 +24,16 @@ public class DoorsRoot : MonoBehaviour
         {
             Root = models[0].name;
         }
-        VertexCount = 0;
-        VertexCount_Show = 0;
+        Doors.VertexCount = 0;
+        Doors.VertexCount_Show = 0;
         for (int i=0;i<transform.childCount;i++)
         {
             var child = transform.GetChild(i);
             DoorInfo door = new DoorInfo(child.gameObject);
             Doors.Add(door);
-            VertexCount += door.vertexCount;
+            Doors.VertexCount += door.vertexCount;
             if (door.gameObject && door.gameObject.activeInHierarchy)
-                VertexCount_Show += door.vertexCount;
+                Doors.VertexCount_Show += door.vertexCount;
         }
         Doors.Sort((a, b) => b.vertexCount.CompareTo(a.vertexCount));
         Debug.Log($"DoorsRoot.Init name:{this.gameObject.name} children:{transform.childCount} Doors:{Doors.Count}");
@@ -46,7 +46,7 @@ public class DoorsRoot : MonoBehaviour
 
     public override string ToString()
     {
-        return $"v:{MeshHelper.GetVertexCountS(VertexCount)}";
+        return $"v:{MeshHelper.GetVertexCountS(Doors.VertexCount)}";
     }
 
     public PrefabInfoList prefabs = new PrefabInfoList();
@@ -184,20 +184,24 @@ public class DoorsRoot : MonoBehaviour
         prefabs = prefabsNew;
     }
 
+    public void Prepare()
+    {
+        Doors.Prepare();
+    }
+
+    public void SetLOD()
+    {
+        Doors.SetLOD();
+    }
+
     public void CopyPart()
     {
-        for(int i=0;i<Doors.Count;i++)
-        {
-            ProgressBarHelper.DisplayCancelableProgressBar("CopyPart", i, Doors.Count);
-            DoorHelper.CopyDoorA(Doors[i].gameObject, true);
-        }
-        ProgressBarHelper.ClearProgressBar();
+        Doors.CopyPart();
     }
 
     public void Split()
     {
-        var parts=Doors.GetDoorParts();
-        DoorManager.SplitDoorParts(parts);
+        Doors.Split();   
     }
 
     public void AcRTAlignJobs(bool isCopy)

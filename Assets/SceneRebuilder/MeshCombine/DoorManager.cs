@@ -63,10 +63,44 @@ public class DoorManager : SingletonBehaviour<DoorManager>
 
     public PrefabInfoList prefabs;
 
-    public void SetDoorShared()
+    public void GetPrefabs()
     {
         var doors = doorRoots.GetDoors();
         prefabs = DoorHelper.SetDoorShared(doors);
+    }
+
+    public void Split()
+    {
+        doorRoots.Split();
+    }
+
+    public void SetLOD()
+    {
+        doorRoots.SetLOD();
+    }
+
+    public void CopyPart()
+    {
+        doorRoots.CopyPart();
+    }
+
+    public void Prepare()
+    {
+        doorRoots.Prepare();
+    }
+
+    public void AcRTAlignJobs()
+    {
+        var doors = doorRoots.GetDoors();
+        var meshPoints = doors.GetFilterMeshPoints();
+        PrefabInstanceBuilder.Instance.AcRTAlignJobs(meshPoints);
+    }
+
+    public void AcRTAlignJobsEx()
+    {
+        var doors = doorRoots.GetDoors();
+        var meshPoints = doors.GetFilterMeshPoints();
+        PrefabInstanceBuilder.Instance.AcRTAlignJobsEx(meshPoints);
     }
 
     public void ApplyReplace()
@@ -91,8 +125,10 @@ public class DoorManager : SingletonBehaviour<DoorManager>
 
     public SharedMeshInfoList GetSharedMeshList()
     {
+        UpdateDoors();
         var doors = doorRoots.GetDoors();
         var filters = doors.GetMeshFilters();
+        Debug.Log($"GetSharedMeshList roots:{doorRoots.Count} doors:{doors.Count} filters:{filters.Count}");
         return new SharedMeshInfoList(filters);
     }
 
@@ -112,6 +148,30 @@ public class DoorManager : SingletonBehaviour<DoorManager>
             list.Add(root);
         }
         return list.ToArray();
+    }
+
+    public DoorInfoList GetDoors()
+    {
+        DoorInfoList doorsList = new DoorInfoList();
+        foreach (var doorRoot in doorRoots)
+        {
+            if (doorRoot == null) continue;
+            foreach (var door in doorRoot.Doors)
+            {
+                if (door == null) continue;
+                doorsList.Add(door);
+
+                doorsList.VertexCount += door.GetVertexCount();
+                if (door.gameObject && door.gameObject.activeInHierarchy)
+                    doorsList.VertexCount_Show += door.GetVertexCount();
+            }
+        }
+        doorsList.Sort((a, b) =>
+        {
+            return b.GetVertexCount().CompareTo(a.GetVertexCount());
+        });
+        //Debug.Log($"DoorManager.GetDoorParts IsOnlyActive:{IsOnlyActive} IsOnlyCanSplit:{IsOnlyCanSplit} doorRoots:{doorRoots.Count} doorParts:{doorParts.Count}");
+        return doorsList;
     }
 
     public DoorPartInfoList GetDoorParts()
@@ -375,27 +435,35 @@ public static class DoorHelper
                 //door2.gameObject.SetActive(false);
                 //MeshAlignHelper.AcRTAlignJob(newDoor2, door2.gameObject);
 
-                if (distance1 > DistanceSetting.zeroM && align)
+                if (distance1 > DistanceSetting.zeroM)
                 {
-                    MeshComparer.Instance.AcRTAlignJob(newDoor2, door2.gameObject);
-
-                    float distance2 = MeshHelper.GetVertexDistanceEx(door2.transform, newDoor2.transform, "CopyDoor2", false);
-                    Debug.Log($"distance1:{distance1} distance2:{distance2}");
-
-                    if (distance2 < DistanceSetting.zeroM)
+                    if (align)
                     {
-                        newDoor2.name = door2.name + "_New";
-                        GameObject.DestroyImmediate(door2.gameObject);
+                        MeshComparer.Instance.AcRTAlignJob(newDoor2, door2.gameObject);
+
+                        float distance2 = MeshHelper.GetVertexDistanceEx(door2.transform, newDoor2.transform, "CopyDoor2", false);
+                        if (distance2 < DistanceSetting.zeroM)
+                        {
+                            //Debug.LogWarning($"CopyDoorA 对齐成功2 door2:{door2.gameObject} newDoor2:{newDoor2} distance1:{distance1} ");
+                            newDoor2.name = door2.name + "_New";
+                            GameObject.DestroyImmediate(door2.gameObject);
+                        }
+                        else
+                        {
+                            //GameObject.DestroyImmediate(newDoor2.gameObject);
+                            Debug.LogError($"CopyDoorA 对齐失败1 door2:{door2.gameObject.name} newDoor2:{newDoor2.name} distance1:{distance1} distance2:{distance2}");
+                            GameObject.DestroyImmediate(newDoor2);
+                        }
                     }
                     else
                     {
-                        //GameObject.DestroyImmediate(newDoor2.gameObject);
-                        Debug.LogError("对齐失败");
+                        Debug.LogError($"CopyDoorA 对齐失败2 door2:{door2.gameObject.name} newDoor2:{newDoor2.name} distance1:{distance1} ");
+                        GameObject.DestroyImmediate(newDoor2);
                     }
                 }
                 else
                 {
-                    Debug.Log($"CopyDoorA door1:{door1} door2:{door2} newDoor2:{newDoor2} distance1:{distance1}");
+                    //Debug.LogWarning($"CopyDoorA 对齐成功1 door2:{door2.gameObject} newDoor2:{newDoor2} distance1:{distance1} ");
 
                     newDoor2.name = door2.name + "_New";
                     GameObject.DestroyImmediate(door2.gameObject);
@@ -528,15 +596,15 @@ public class DoorsRootList: List<DoorsRoot>
             var doorRoot = doorsRoots[i];
             doorRoot.Init();
             this.Add(doorRoot);
-            VertexCount += doorRoot.VertexCount;
+            VertexCount += doorRoot.Doors.VertexCount;
             if (doorRoot.gameObject.activeInHierarchy)
             {
-                VertexCount_Show += doorRoot.VertexCount;
+                VertexCount_Show += doorRoot.Doors.VertexCount;
             }
         }
         this.Sort((a, b) =>
         {
-            return b.VertexCount.CompareTo(a.VertexCount);
+            return b.Doors.VertexCount.CompareTo(a.Doors.VertexCount);
         });
         ProgressBarHelper.ClearProgressBar();
         Debug.Log($"GetDoors count:{doorsRoots.Length} VertexCount:{VertexCount} time:{(DateTime.Now - start)}");
@@ -606,13 +674,54 @@ public class DoorsRootList: List<DoorsRoot>
     public DoorInfoList GetDoors()
     {
         DoorInfoList doors = new DoorInfoList();
+        Dictionary<GameObject, DoorInfo> doorDict = new Dictionary<GameObject, DoorInfo>();
         foreach(var root in this)
         {
             if (root == null) continue ;
             EditorHelper.UnpackPrefab(root.gameObject);
-            doors.AddRange(root.Doors);
+            //doors.AddRange(root.Doors);
+            foreach(var door in root.Doors)
+            {
+                if(!doorDict.ContainsKey(door.gameObject))
+                {
+                    doors.Add(door);
+                    doorDict.Add(door.gameObject, door);
+                }
+            }
         }
         return doors;
+    }
+
+    internal void Split()
+    {
+        for (int i = 0; i < this.Count; i++)
+        {
+            this[i].Split();
+        }
+    }
+
+    internal void SetLOD()
+    {
+        for (int i = 0; i < this.Count; i++)
+        {
+            this[i].SetLOD();
+        }
+    }
+
+    internal void CopyPart()
+    {
+        for (int i = 0; i < this.Count; i++)
+        {
+            this[i].CopyPart();
+        }
+    }
+
+    internal void Prepare()
+    {
+        for (int i = 0; i < this.Count; i++)
+        {
+            this[i].Prepare();
+        }
     }
 }
 
@@ -670,7 +779,16 @@ public class DoorPartInfo
     public string GetTitle()
     {
         if (gameObject == null) return "NULL";
-        return $"{Root}>{gameObject.name}";
+        if (gameObject.transform.parent != null)
+        {
+            return $"{gameObject.transform.parent.name}>{gameObject.name}";
+        }
+        else
+        {
+            return $"{gameObject.name}";
+            //return $"{Root}>{gameObject.name}";
+        }
+        //return $"{Root}>{gameObject.name}";
     }
 
     public DoorPartInfo(GameObject go)
@@ -698,7 +816,17 @@ public class DoorPartInfo
         }
         else
         {
-            //Debug.LogWarning("DoorPartInfo.ctor MeshFilter == null:" + go);
+            var filters = go.GetComponentsInChildren<MeshFilter>();
+
+            var minMax = MeshHelper.GetMinMax(filters);
+            Center = minMax[3];
+            DisToCenter = Vector3.Distance(Pos, Center);
+            OffToCenter = Center - Pos;
+
+            foreach (var mf2 in filters)
+            {
+                VertexCount += mf2.sharedMesh.vertexCount;
+            }
         }
         
 
@@ -749,6 +877,8 @@ public class DoorPartInfoList:List<DoorPartInfo>
 [Serializable]
 public class DoorInfoList : List<DoorInfo>
 {
+    public int VertexCount = 0;
+    public int VertexCount_Show = 0;
     public DoorInfoList()
     {
 
@@ -759,7 +889,7 @@ public class DoorInfoList : List<DoorInfo>
         this.AddRange(list);
     }
 
-    internal MeshPoints[] GetMeshPoints()
+    internal MeshPoints[] GetDoorMeshPoints()
     {
         MeshPoints[] meshPoints = new MeshPoints[this.Count];
         for(int i = 0; i < this.Count; i++)
@@ -769,7 +899,7 @@ public class DoorInfoList : List<DoorInfo>
         return meshPoints;
     }
 
-    public MeshFilter[] GetMeshFilters()
+    public List<MeshFilter> GetMeshFilters()
     {
         List<MeshFilter> meshFilters = new List<MeshFilter>();
         for (int i = 0; i < this.Count; i++)
@@ -777,9 +907,30 @@ public class DoorInfoList : List<DoorInfo>
             DoorInfo info = this[i];
             if (info == null) continue;
             if (info.gameObject == null) continue;
-            meshFilters.AddRange(info.gameObject.GetComponentsInChildren<MeshFilter>(true));
+            var mfs = info.gameObject.GetComponentsInChildren<MeshFilter>(true);
+            //Debug.Log($"[{i}/{this.Count}]GetMeshFilters meshFilters:{meshFilters.Count} go:{info.gameObject} mfs:{mfs.Length}");
+            //meshFilters.AddRange(mfs);
+            foreach(var mf in mfs)
+            {
+                if (!meshFilters.Contains(mf))
+                {
+                    meshFilters.Add(mf);
+                }
+            }
+            
         }
-        return meshFilters.ToArray();
+        return meshFilters;
+    }
+
+    public MeshPoints[] GetFilterMeshPoints()
+    {
+        List<MeshPoints> meshPoints = new List<MeshPoints>();
+        List<MeshFilter> meshFilters = GetMeshFilters();
+        foreach (var mf in meshFilters)
+        {
+            meshPoints.Add(new MeshPoints(mf.gameObject));
+        }
+        return meshPoints.ToArray();
     }
 
     public DoorPartInfoList GetDoorParts()
@@ -790,6 +941,51 @@ public class DoorInfoList : List<DoorInfo>
             list.AddRange(this[i].DoorParts);
         }
         return list;
+    }
+
+    internal void Prepare()
+    {
+        DateTime start = DateTime.Now;
+        for (int i = 0; i < this.Count; i++)
+        {
+            ProgressBarHelper.DisplayCancelableProgressBar("Prepare", i, this.Count);
+            this[i].PreparePrefab();
+        }
+        ProgressBarHelper.ClearProgressBar();
+        Debug.Log($"DoorInfoList.Prepare count:{ this.Count} time:{(DateTime.Now-start).TotalMilliseconds}ms");
+    }
+
+    internal void SetLOD()
+    {
+        for (int i = 0; i < this.Count; i++)
+        {
+            this[i].SetLOD();
+        }
+        Debug.Log($"DoorInfoList.SetLOD count:{ this.Count}");
+    }
+
+    internal void CopyPart()
+    {
+        for (int i = 0; i < this.Count; i++)
+        {
+            ProgressBarHelper.DisplayCancelableProgressBar("CopyPart", i, this.Count);
+            //DoorHelper.CopyDoorA(this[i].gameObject, true);
+            this[i].CopyPart1();
+        }
+        ProgressBarHelper.ClearProgressBar();
+        Debug.Log($"DoorInfoList.CopyPart count:{ this.Count}");
+    }
+
+    internal void Split()
+    {
+        //var parts = this.GetDoorParts();
+        //DoorManager.SplitDoorParts(parts);
+
+        for (int i = 0; i < this.Count; i++)
+        {
+            this[i].Split();
+        }
+        Debug.Log($"DoorInfoList.Split count:{ this.Count}");
     }
 }
 
@@ -832,6 +1028,14 @@ public class DoorInfo: IPrefab<DoorInfo>
         }
     }
 
+    public List<MeshFilter> meshFilters = new List<MeshFilter>();
+
+    public List<MeshFilter> GetMeshFilters()
+    {
+        meshFilters = gameObject.GetComponentsInChildren<MeshFilter>(true).ToList();
+        return meshFilters;
+    }
+
     public Vector3 localScale
     {
         get
@@ -856,7 +1060,7 @@ public class DoorInfo: IPrefab<DoorInfo>
 
     private void InitParts(GameObject root)
     {
-        if (transform.childCount == 0)
+        if (transform.childCount == 0 || root.GetComponent<LODGroup>()!=null)
         {
             DoorPartInfo doorPart = new DoorPartInfo(root);
             DoorParts.Add(doorPart);
@@ -895,7 +1099,7 @@ public class DoorInfo: IPrefab<DoorInfo>
         return $"v:{MeshHelper.GetVertexCountS(vertexCount)}";
     }
 
-    private void Split()
+    public void Split()
     {
         if (DoorParts.Count == 1 && DoorParts[0].gameObject==this.gameObject)
         {
@@ -912,7 +1116,7 @@ public class DoorInfo: IPrefab<DoorInfo>
         
     }
 
-    private void SetLOD()
+    public void SetLOD()
     {
         foreach (var part in DoorParts)
         {
@@ -920,7 +1124,7 @@ public class DoorInfo: IPrefab<DoorInfo>
         }
     }
 
-    private void CopyPart1()
+    public void CopyPart1()
     {
         DoorHelper.CopyDoorA(this.gameObject, true);
     }
@@ -928,8 +1132,20 @@ public class DoorInfo: IPrefab<DoorInfo>
     public void PreparePrefab()
     {
         Split();
+        if (this.gameObject == null)
+        {
+            Debug.LogError("DoorInfo.PreparePrefab1 this.gameObject==null:" + this.name);
+        }
         SetLOD();
+        if (this.gameObject == null)
+        {
+            Debug.LogError("DoorInfo.PreparePrefab2 this.gameObject==null:" + this.name);
+        }
         CopyPart1();
+        if (this.gameObject == null)
+        {
+            Debug.LogError("DoorInfo.PreparePrefab3 this.gameObject==null:" + this.name);
+        }
     }
 
     public DoorInfo Clone()

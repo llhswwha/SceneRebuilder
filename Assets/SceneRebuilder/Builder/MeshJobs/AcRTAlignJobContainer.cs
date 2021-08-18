@@ -26,7 +26,7 @@ public class AcRTAlignJobContainer
 
     public AcRTAlignJobContainer(MeshPoints[] meshFilters,int size)
     {
-        Debug.Log($"AcRTAlignJobContainer meshFilters:{meshFilters.Length} MaxVertexCount:{AcRTAlignJobContainer.MaxVertexCount}");
+        Debug.Log($"AcRTAlignJobContainer MeshPoints:{meshFilters.Length} MaxVertexCount:{AcRTAlignJobContainer.MaxVertexCount}");
         if(AcRTAlignJobContainer.MaxVertexCount>0)
         {
             List<MeshPoints> mfs=new List<MeshPoints>();

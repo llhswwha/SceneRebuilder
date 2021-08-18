@@ -6,7 +6,12 @@ using UnityEngine;
 
 public class SharedMeshInfoList : List<SharedMeshInfo>
 {
-    //public List<SharedMeshInfo> Items = new List<SharedMeshInfo>();
+    public List<MeshFilter> meshFilters = new List<MeshFilter>();
+
+    public List<MeshFilter> GetMeshFilters()
+    {
+        return meshFilters;
+    }
 
     public int sharedVertexCount = 0;
 
@@ -49,20 +54,26 @@ public class SharedMeshInfoList : List<SharedMeshInfo>
         InitMeshFilters(meshFilters);
     }
 
-    public SharedMeshInfoList(MeshFilter[] meshFilters)
+    public SharedMeshInfoList(MeshFilter[] mfs)
     {
-        InitMeshFilters(meshFilters);
+        InitMeshFilters(mfs);
     }
 
-    private void InitMeshFilters(MeshFilter[] meshFilters)
+    public SharedMeshInfoList(List<MeshFilter> mfs)
     {
-        Debug.Log($"SharedMeshInfo.InitMeshFilters meshFilters:{meshFilters.Length}");
+        InitMeshFilters(mfs.ToArray());
+    }
+
+    private void InitMeshFilters(MeshFilter[] mfs)
+    {
+        this.meshFilters.AddRange(mfs);
+        Debug.Log($"SharedMeshInfo.InitMeshFilters meshFilters:{mfs.Length}");
         Dictionary<Mesh, SharedMeshInfo> meshDict = new Dictionary<Mesh, SharedMeshInfo>();
-        for (int i = 0; i < meshFilters.Length; i++)
+        for (int i = 0; i < mfs.Length; i++)
         {
-            float progress = (float)i / meshFilters.Length;
-            ProgressBarHelper.DisplayProgressBar("InitMeshFilters", $"Progress {i}/{meshFilters.Length} {progress:P1}", progress);
-            MeshFilter mf = meshFilters[i];
+            float progress = (float)i / mfs.Length;
+            ProgressBarHelper.DisplayProgressBar("InitMeshFilters", $"Progress {i}/{mfs.Length} {progress:P1}", progress);
+            MeshFilter mf = mfs[i];
             var mesh = mf.sharedMesh;
             if (mesh == null) continue;
             if (!meshDict.ContainsKey(mesh))
@@ -108,13 +119,13 @@ public class SharedMeshInfoList : List<SharedMeshInfo>
         totalVertexCount += item.GetAllVertexCount();
     }
 
-    public void GetPrefabs()
-    {
-        //SharedMeshInfoList list1 = new SharedMeshInfoList(this);
-        //SharedMeshInfoList list2 = new SharedMeshInfoList(this);
+    //public void GetPrefabs()
+    //{
+    //    //SharedMeshInfoList list1 = new SharedMeshInfoList(this);
+    //    //SharedMeshInfoList list2 = new SharedMeshInfoList(this);
 
-        PrefabInfoListHelper.GetPrefabInfos(this,true);
-    }
+    //    PrefabInfoListHelper.GetPrefabInfos(this,true);
+    //}
 
     public void Destroy(int v)
     {
@@ -131,6 +142,11 @@ public class SharedMeshInfo:IPrefab<SharedMeshInfo>
     public Mesh mesh;
 
     public List<MeshFilter> meshFilters = new List<MeshFilter>();
+
+    public List<MeshFilter> GetMeshFilters()
+    {
+        return meshFilters;
+    }
 
     public MeshFilter mainMeshFilter;
 

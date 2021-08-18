@@ -658,7 +658,7 @@ namespace MeshJobs
         public static void NewThreePointJobs(MeshPoints[] meshFilters, int size)
         {
             //DateTime start = DateTime.Now;
-            Debug.Log("NewThreePointJobs:" + meshFilters.Length);
+            //Debug.Log("NewThreePointJobs:" + meshFilters.Length);
             JobList<ThreePointJob> jobList = CreateThreePointJobs(meshFilters, size);
             //handles.CompleteAll();
             jobList.CompleteAllPage();

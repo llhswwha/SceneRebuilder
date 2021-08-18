@@ -42,8 +42,24 @@ namespace MeshJobs
             //     Debug.LogError("SetResult r==null:"+id);
             // }
             //rs.Add(r);
-            rs[id] = r;
+            
 
+            if (rs.Length-1 < id)
+            {
+                Debug.LogError($"AcRTAlignJobResult rs.Length-1 < id id:{id} length:{rs.Length} r:{r}");
+                var newRs=new IRTResult[id+1];
+                for(int i=0;i< newRs.Length;i++)
+                {
+                    newRs[i] = rs[i];
+                }
+                rs = newRs;
+
+                rs[id] = r;
+            }
+            else
+            {
+                rs[id] = r;
+            }
            
 
             //if(Results.ContainsKey(id)){

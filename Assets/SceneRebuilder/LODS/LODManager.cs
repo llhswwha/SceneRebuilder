@@ -1396,6 +1396,12 @@ public static class LODHelper
         {
             GameObject.DestroyImmediate(groupInfo);
         }
+
+        BoundsBox[] boxes = go.GetComponentsInChildren<BoundsBox>(true);
+        foreach(var box in boxes)
+        {
+            GameObject.DestroyImmediate(box.gameObject);
+        }
     }
 
     public static GameObject SetDoorLOD(GameObject door)

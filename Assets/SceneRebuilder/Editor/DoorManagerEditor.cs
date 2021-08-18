@@ -34,10 +34,15 @@ public class DoorManagerEditor : BaseFoldoutEditor<DoorManager>
     {
         base.OnToolLayout(item);
 
-        GUILayout.BeginHorizontal();
-        if (GUILayout.Button("GetPrefab"))
+        if (GUILayout.Button("Update"))
         {
-            item.SetDoorShared();
+            item.UpdateDoors();
+        }
+
+        GUILayout.BeginHorizontal();
+        if (GUILayout.Button("GetPrefabs"))
+        {
+            item.GetPrefabs();
         }
         if (GUILayout.Button("Apply"))
         {
@@ -61,11 +66,49 @@ public class DoorManagerEditor : BaseFoldoutEditor<DoorManager>
         //}
         GUILayout.EndHorizontal();
 
+        GUILayout.BeginHorizontal();
+        if (GUILayout.Button("Split"))
+        {
+            item.Split();
+        }
+        if (GUILayout.Button("SetLOD"))
+        {
+            item.SetLOD();
+        }
+        if (GUILayout.Button("CopyPart"))
+        {
+            item.CopyPart();
+        }
+
+        if (GUILayout.Button("Prepare"))
+        {
+            item.Prepare();
+        }
+        if (GUILayout.Button("InitNodes"))
+        {
+            MeshNode.InitNodes(item.gameObject);
+        }
+        GUILayout.EndHorizontal();
+
+        GUILayout.BeginHorizontal();
+        if (GUILayout.Button("Align"))
+        {
+            item.AcRTAlignJobs();
+        }
+        if (GUILayout.Button("AlignEx"))
+        {
+            item.AcRTAlignJobsEx();
+        }
+        GUILayout.EndHorizontal();
+
         EditorUIUtils.Separator(5);
 
         item.LocalTarget = ObjectField(item.LocalTarget);
 
         DrawDoorsRootList(doorRootListArg, item);
+
+        DrawDoorList(doorListArg, item.GetDoors(), false);
+
         DrawDoorPartList(doorPartListArg, item);
 
         DrawPrefabList(prefabListArg, () => item.prefabs);

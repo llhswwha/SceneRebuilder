@@ -1049,6 +1049,7 @@ public class BaseFoldoutEditor<T> : BaseEditor<T> where T : class
                     InitEditorArg(prefabInfo.Instances);
                     prefabInfoArg.DrawPageToolbar(prefabInfo.Instances, (ins, j) =>
                      {
+                         if (ins == null) return;
                          var insArg = editorArgs[ins];
                          insArg.level = 2;
                          insArg.background = true;
@@ -1124,12 +1125,12 @@ public class BaseFoldoutEditor<T> : BaseEditor<T> where T : class
                     }
                 });
 
-                DrawDoorList(doorRootArg, doorRoot,true);
+                DrawDoorList(doorRootArg, doorRoot.Doors,true);
             });
         }
     }
 
-    public void DrawDoorList(FoldoutEditorArg doorRootArg, DoorsRoot doorsRoot,bool isSubList)
+    public void DrawDoorList(FoldoutEditorArg doorRootArg, DoorInfoList doors, bool isSubList)
     {
         if (isSubList==false)
         {
@@ -1137,9 +1138,9 @@ public class BaseFoldoutEditor<T> : BaseEditor<T> where T : class
             doorRootArg.level = 0;
             EditorUIUtils.ToggleFoldout(doorRootArg, arg =>
             {
-                var doors = doorsRoot.Doors;
+                //var doors = doorsRoot.Doors;
                 arg.caption = $"Door List ({doors.Count})";
-                arg.info = $"{doorsRoot.VertexCount_Show / 10000f:F0}/{doorsRoot.VertexCount / 10000f:F0}";
+                arg.info = $"{doors.VertexCount_Show / 10000f:F0}/{doors.VertexCount / 10000f:F0}";
                 InitEditorArg(doors);
             },
             () =>
@@ -1156,7 +1157,7 @@ public class BaseFoldoutEditor<T> : BaseEditor<T> where T : class
         if (doorRootArg.isExpanded)
         {
             doorRootArg.level = 1;
-            var doors = doorsRoot.Doors;
+            //var doors = doorsRoot.Doors;
             InitEditorArg(doors);
             doorRootArg.DrawPageToolbar(doors, (door, i) =>
             {
@@ -1332,7 +1333,9 @@ public class BaseFoldoutEditor<T> : BaseEditor<T> where T : class
             }
             if (GUILayout.Button("GetPrefabs", btnStyle, GUILayout.Width(76)))
             {
-                list.GetPrefabs();
+                //list.GetPrefabs();
+
+                PrefabInstanceBuilder.Instance.GetPrefabInfos(list, true);
             }
             //if (GUILayout.Button("X1", btnStyle, GUILayout.Width(25)))
             //{
