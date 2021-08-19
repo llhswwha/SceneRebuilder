@@ -87,9 +87,9 @@ public class BaseEditor<T> : Editor where T:class
     }
 
 
-    public TO ObjectField<TO>(TO obj) where TO : UnityEngine.Object
+    public TO ObjectField<TO>(TO obj, params GUILayoutOption[] options) where TO : UnityEngine.Object
     {
-        return EditorGUILayout.ObjectField(obj, typeof(TO), true) as TO;
+        return EditorGUILayout.ObjectField(obj, typeof(TO), true, options) as TO;
     }
 
     public TO ObjectField<TO>(string label,TO obj) where TO : UnityEngine.Object
@@ -107,6 +107,14 @@ public static class BaseEditorHelper
 {
     public static TO ObjectField<TO>(TO obj) where TO : UnityEngine.Object
     {
+        return EditorGUILayout.ObjectField(obj, typeof(TO), true) as TO;
+    }
+    public static TO ObjectField<TO>(string label, TO obj) where TO : UnityEngine.Object
+    {
+        if (GUILayout.Button(label))
+        {
+            EditorHelper.SelectObject(obj);
+        }
         return EditorGUILayout.ObjectField(obj, typeof(TO), true) as TO;
     }
 }

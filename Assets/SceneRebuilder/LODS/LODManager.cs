@@ -1016,6 +1016,15 @@ public class LODManager : SingletonBehaviour<LODManager>
         //Debug.LogError($"DisableLOD lodGroups:{lodGroups.Length} time:{(DateTime.Now - start)}");
     }
 
+    public void DeleteLODs()
+    {
+        var lodGroups = GameObject.FindObjectsOfType<LODGroup>(true);
+        foreach (LODGroup group in lodGroups)
+        {
+            GameObject.DestroyImmediate(group.gameObject);
+        }
+    }
+
     [ContextMenu("EnableLOD")]
     public void EnableLOD()
     {
@@ -1406,14 +1415,21 @@ public static class LODHelper
 
     public static GameObject SetDoorLOD(GameObject door)
     {
+
         if (door == null)
         {
-            Debug.LogError("SetDoorLOD");
+            Debug.LogError("SetDoorLOD door == null");
             return null;
         }
+        string name = door.name;
         ClearGroupInfo(door);
 
         GameObject doorRoot = door;
+        if (door == null)
+        {
+            Debug.LogError($"SetDoorLOD door == null go:[{name}]");
+            return null;
+        }
         MeshRenderer meshRenderer = door.GetComponent<MeshRenderer>();
         if (meshRenderer != null)
         {

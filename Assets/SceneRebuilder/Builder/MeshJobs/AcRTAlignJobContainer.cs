@@ -451,14 +451,25 @@ public class AcRTAlignJobContainer
                             {
                                 Debug.LogError($"对齐成功 有错误[{errorCount}] zero:{DistanceSetting.zeroM:F5},dis:{disNew},from:{arg.mfFrom.name},to:{arg.mfTo} rT==null" );
                             }
+
+                            newGo.name += "_Error";
+                            newGo.SetActive(false);
+
+                            //GameObject.DestroyImmediate(newGo);
                         }
                         else
                         {
                             //GameObject.DestroyImmediate(arg.mfTo.gameObject);//测试用，留下有问题的
                             //GameObject.DestroyImmediate(newGo);//测试用，留下有问题的
+
+                            GameObject.DestroyImmediate(arg.mfTo.gameObject);
                         }
                     }
-                    GameObject.DestroyImmediate(arg.mfTo.gameObject);
+                    else
+                    {
+                        GameObject.DestroyImmediate(arg.mfTo.gameObject);
+                    }
+                    
                 }
                 else if (result.Distance < DistanceSetting.ICPMinDis)
                 {

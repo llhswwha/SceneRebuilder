@@ -43,6 +43,79 @@ public class BuildingModelInfo : SubSceneCreater
         return true;
     }
 
+    public void CombineDoors()
+    {
+        var rootList = DoorManager.UpdateDoors(this.gameObject);
+        Debug.Log($"CombineDoors roots:{rootList.Count} name:{this.name}");
+        if (rootList.Count == 1) return;
+        if (rootList.Count ==2)
+        {
+            DoorsRoot inDoors = null;
+            DoorsRoot outDoors = null;
+            foreach (var root in rootList)
+            {
+                if(root.name.ToLower()=="doors")
+                {
+                    inDoors = root;
+                }
+                else
+                {
+                    outDoors = root;
+                }
+            }
+            if(inDoors==null)
+            {
+                Debug.LogError($"CombineDoors roots:{rootList.Count} name:{this.name} inDoors==null");
+                return;
+            }
+            if (outDoors == null)
+            {
+                Debug.LogError($"CombineDoors roots:{rootList.Count} name:{this.name} outDoors==null");
+                return;
+            }
+            Debug.Log($"CombineDoors inDoors:{inDoors.name}({inDoors.transform.childCount}) outDoors:{outDoors.name}({outDoors.transform.childCount})");
+            //for (int i=0;i<inDoors.transform.childCount;i++)
+            //{
+            //    var door = inDoors.transform.GetChild(i);
+            //    door.SetParent(outDoors.transform);
+            //}
+            foreach(var door in inDoors.Doors)
+            {
+                door.transform.SetParent(outDoors.transform);
+            }
+            if (inDoors.transform.childCount == 0)
+            {
+                GameObject.DestroyImmediate(inDoors.gameObject);
+            }
+            outDoors.transform.SetParent(this.transform);
+        }
+        Debug.LogError($"CombineDoors roots:{rootList.Count} name:{this.name}");
+    }
+
+    public Transform[] GetChildren()
+    {
+        List<Transform> ts = new List<Transform>();
+        for(int i=0;i<transform.childCount;i++)
+        {
+            ts.Add(transform.GetChild(i));
+        }
+        return ts.ToArray();
+    }
+
+    public void DeleteOthersOfDoor()
+    {
+        var rootList = DoorManager.UpdateDoors(this.gameObject);
+        rootList.SetParent(null);
+
+        var children = this.GetChildren();
+        foreach(var child in children)
+        {
+            GameObject.DestroyImmediate(child.gameObject);
+        }
+
+        rootList.SetParent(this.transform);
+    }
+
     public int GetPartCount()
     {
         int pC = 0;

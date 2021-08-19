@@ -725,7 +725,7 @@ public static class PrefabInfoListHelper
 
                 if (distance1 < DistanceSetting.zeroM)
                 {
-                    Debug.Log($"SetDoorShared1(Pos Aligned)[{i}/{list1.Count} {j}/{list2.Count}] door1:{item1.ToString()} door2:{item2.ToString()} distance:{distance1} {distance1 < DistanceSetting.zeroM}");
+                    //Debug.Log($"SetDoorShared1(Pos Aligned)[{i}/{list1.Count} {j}/{list2.Count}] door1:{item1.ToString()} door2:{item2.ToString()} distance:{distance1} {distance1 < DistanceSetting.zeroM}");
 
                     posAlinCount++;
                     //var copyItem2 = MeshHelper.CopyGO(copyItem1);

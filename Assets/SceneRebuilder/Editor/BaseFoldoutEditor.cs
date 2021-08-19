@@ -954,7 +954,7 @@ public class BaseFoldoutEditor<T> : BaseEditor<T> where T : class
         EditorUIUtils.ToggleFoldout(doorListArg, arg =>
         {
             var doors = item.GetDoorParts();
-            arg.caption = $"Door Part List ({doors.Count})";
+            arg.caption = $"Door Part List ({doors.Count})(LOD{doors.lodCount})";
             arg.info = $"{doors.VertexCount_Show / 10000f:F0}/{doors.VertexCount / 10000f:F0}";
             InitEditorArg(doors);
         },

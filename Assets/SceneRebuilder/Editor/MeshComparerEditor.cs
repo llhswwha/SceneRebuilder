@@ -6,12 +6,10 @@ using UnityEngine;
 [CustomEditor(typeof(MeshComparer))]
 public class MeshComparerEditor : BaseEditor<MeshComparer>
 {
-    public override void OnToolLayout(MeshComparer item)
+    public static void DrawSetting(MeshComparer item)
     {
-        base.OnToolLayout(item);
-
         EditorGUILayout.BeginHorizontal();
-        item.step=(AlignDebugStep)EditorGUILayout.EnumPopup(item.step);
+        item.step = (AlignDebugStep)EditorGUILayout.EnumPopup(item.step);
         item.mode = (AlignRotateMode)EditorGUILayout.EnumPopup(item.mode);
         GUILayout.Label("zeroM:");
         item.disSetting.zeroM = EditorGUILayout.DoubleField(item.disSetting.zeroM);
@@ -22,15 +20,20 @@ public class MeshComparerEditor : BaseEditor<MeshComparer>
         GUILayout.Label("MaxDis:");
         item.disSetting.zeroMMaxDis = EditorGUILayout.DoubleField(item.disSetting.zeroMMaxDis);
         EditorGUILayout.EndHorizontal();
+    }
+
+    public static void DrawUI(MeshComparer item)
+    {
+        DrawSetting(item);
 
         EditorGUILayout.BeginHorizontal();
-        item.goFrom = ObjectField("From",item.goFrom);
+        item.goFrom = BaseEditorHelper.ObjectField("From", item.goFrom);
         if (GUILayout.Button("Copy"))
         {
             item.CopyGo2();
         }
-        item.goFromCopy = ObjectField("FromC", item.goFromCopy);
-        item.goTo = ObjectField("To",item.goTo);
+        item.goFromCopy = BaseEditorHelper.ObjectField("FromC", item.goFromCopy);
+        item.goTo = BaseEditorHelper.ObjectField("To", item.goTo);
         if (GUILayout.Button("Switch"))
         {
             item.SwitchGO();
@@ -39,19 +42,47 @@ public class MeshComparerEditor : BaseEditor<MeshComparer>
 
         EditorGUILayout.BeginHorizontal();
         item.ShowLog = GUILayout.Toggle(item.ShowLog, "Log");
-        if (GUILayout.Button("DisOf12(From_To)"))
+        if (GUILayout.Button("Dis12"))
         {
             item.GetDistance12();
         }
-        if (GUILayout.Button("DisOf12C(FromC_To)"))
+        if (GUILayout.Button("Dis12C"))
         {
             item.GetDistance12C();
         }
-        if (GUILayout.Button("DisOf22C(From_FromC)"))
+        if (GUILayout.Button("Dis22C"))
         {
             item.GetDistance22C();
         }
-        GUILayout.Label("Dis:"+item.distance);
+
+        if (GUILayout.Button("Show0"))
+        {
+            item.goFrom.SetActive(true);
+            item.goTo.SetActive(false);
+            Selection.activeObject = item.goFrom;
+            //EditorHelper.SelectObject(item.goFrom);
+        }
+        if (GUILayout.Button("Show1"))
+        {
+            item.goFrom.SetActive(false);
+            item.goTo.SetActive(true);
+            Selection.activeObject = item.goTo;
+            //EditorHelper.SelectObject(item.goTo);
+        }
+        if (GUILayout.Button("Show01"))
+        {
+            item.goFrom.SetActive(true);
+            item.goTo.SetActive(true);
+
+            //EditorHelper.SelectObjects(new List<GameObject>() { item.goFrom,item.goTo });
+        }
+        if (GUILayout.Button("Hide01"))
+        {
+            item.goFrom.SetActive(false);
+            item.goTo.SetActive(false);
+        }
+
+        GUILayout.Label("Dis:" + item.distance);
         //if (GUILayout.Button("CopyTest"))
         //{
         //    item.CopyTest();
@@ -111,7 +142,7 @@ public class MeshComparerEditor : BaseEditor<MeshComparer>
         {
             item.Rotate2();
         }
-        
+
         EditorGUILayout.EndHorizontal();
 
         EditorGUILayout.BeginHorizontal();
@@ -135,7 +166,7 @@ public class MeshComparerEditor : BaseEditor<MeshComparer>
         {
             item.TryMatrixAngle0_0_90();
         }
-        
+
         EditorGUILayout.EndHorizontal();
 
 
@@ -145,14 +176,22 @@ public class MeshComparerEditor : BaseEditor<MeshComparer>
         {
             item.CreatePlaneByThreePoint();
         }
-        EditorGUILayout.EndHorizontal();
-
-        EditorGUILayout.BeginHorizontal();
         if (GUILayout.Button("ReplacePrefab"))
         {
             item.ReplacePrefab();
         }
         EditorGUILayout.EndHorizontal();
+    }
 
+    public override void OnToolLayout(MeshComparer item)
+    {
+        base.OnToolLayout(item);
+
+        MeshComparerEditor.DrawUI(item);
+
+        if (GUILayout.Button("Window"))
+        {
+            MeshComparerEditorWindow.ShowWindow();
+        }
     }
 }

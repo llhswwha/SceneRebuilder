@@ -346,7 +346,7 @@ public class ProgressArg
     {
         if (subP == null)
         {
-            return $"P1{GetProgress()} ({tag})";
+            return $"P1:{GetProgress()} ({tag})";
         }
         else
         {
@@ -357,7 +357,7 @@ public class ProgressArg
             var subP2 = subP.subP;
             if (subP2 == null)
             {
-                return $"P2[{GetProgress()}]>[{subP.GetProgress()}] ({tag}>{subP.tag})";
+                return $"P2:[{GetProgress()}]>[{subP.GetProgress()}] ({tag}>{subP.tag})";
             }
             else
             {
@@ -365,11 +365,11 @@ public class ProgressArg
                 var subP3 = subP2.subP;
                 if (subP3 == null)
                 {
-                    return $"P3[{GetProgress()}]>[{subP.GetProgress()}]>[{subP2.GetProgress()}] ({tag}>{subP.tag}>{subP2.tag})";
+                    return $"P3:[{GetProgress()}]>[{subP.GetProgress()}]>[{subP2.GetProgress()}] ({tag}>{subP.tag}>{subP2.tag})";
                 }
                 else
                 {
-                    return $"P4[{GetProgress()}]>[{subP.GetProgress()}]>[{subP2.GetProgress()}]>[{subP3.GetProgress()}] ({tag}>{subP.tag}>{subP2.tag}>{subP3.tag})";
+                    return $"P4:[{GetProgress()}]>[{subP.GetProgress()}]>[{subP2.GetProgress()}]>[{subP3.GetProgress()}] ({tag}>{subP.tag}>{subP2.tag}>{subP3.tag})";
                 }
             }
         }

@@ -168,6 +168,17 @@ public class BuildingModelInfoEditor : BaseFoldoutEditor<BuildingModelInfo>
         EditorGUILayout.EndHorizontal();
 
         EditorGUILayout.BeginHorizontal();
+        NewButton("CombineDoors", buttonWidth, true, btnStyle, () =>
+        {
+            info.CombineDoors();
+        });
+        NewButton("DeleteOthers", buttonWidth, true, btnStyle, () =>
+        {
+            info.DeleteOthersOfDoor();
+        });
+        EditorGUILayout.EndHorizontal();
+
+        EditorGUILayout.BeginHorizontal();
         if (GUILayout.Button("All", GUILayout.Width(50)))
         {
             MeshProfilerNS.GameObjectListMeshEditorWindow.ShowWindow(info.gameObject);

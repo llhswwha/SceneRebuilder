@@ -40,6 +40,17 @@ public class DoorManagerEditor : BaseFoldoutEditor<DoorManager>
         }
 
         GUILayout.BeginHorizontal();
+        if (GUILayout.Button("CombineDoors"))
+        {
+            item.CombineDoors();
+        }
+        if (GUILayout.Button("DeleteOthers"))
+        {
+            item.DeleteOthersOfDoor();
+        }
+        GUILayout.EndHorizontal();
+
+        GUILayout.BeginHorizontal();
         if (GUILayout.Button("GetPrefabs"))
         {
             item.GetPrefabs();

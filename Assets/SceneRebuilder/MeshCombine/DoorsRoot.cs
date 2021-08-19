@@ -36,7 +36,7 @@ public class DoorsRoot : MonoBehaviour
                 Doors.VertexCount_Show += door.vertexCount;
         }
         Doors.Sort((a, b) => b.vertexCount.CompareTo(a.vertexCount));
-        Debug.Log($"DoorsRoot.Init name:{this.gameObject.name} children:{transform.childCount} Doors:{Doors.Count}");
+        //Debug.Log($"DoorsRoot.Init name:{this.gameObject.name} children:{transform.childCount} Doors:{Doors.Count}");
     }
     public string GetTitle()
     {

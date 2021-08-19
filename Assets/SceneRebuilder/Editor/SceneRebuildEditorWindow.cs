@@ -551,10 +551,6 @@ public class SceneRebuildEditorWindow : ListManagerEditorWindow<BuildingModelEle
             }
     }
 
-
-    /// <summary>
-    /// UI������
-    /// </summary>
     private void OnGUI()
     {
         if (!MPGUIStyles.IsDirty)
@@ -571,9 +567,6 @@ public class SceneRebuildEditorWindow : ListManagerEditorWindow<BuildingModelEle
         DrawDataBlock();
     }
 
-    /// <summary>
-    /// �����������
-    /// </summary>
     void DrawSettingBlock()
     {
         GUI.Box(MPGUIStyles.BorderArea(MPGUIStyles.SETTING_BLOCK), "");
@@ -630,9 +623,6 @@ public class SceneRebuildEditorWindow : ListManagerEditorWindow<BuildingModelEle
 
     }
 
-    /// <summary>
-    /// ����������
-    /// </summary>
     void DrawInputTextField()
     {
         GUILayout.BeginArea(MPGUIStyles.BorderArea(MPGUIStyles.SEARCH_BLOCK));
@@ -677,9 +667,6 @@ public class SceneRebuildEditorWindow : ListManagerEditorWindow<BuildingModelEle
         GUILayout.EndArea();
     }
 
-    /// <summary>
-    /// ����ͼ��
-    /// </summary>
     void DrawChartBlock()
     {
         GUI.Box(MPGUIStyles.BorderArea(MPGUIStyles.CHART_BLOCK), "");
@@ -761,9 +748,7 @@ public class SceneRebuildEditorWindow : ListManagerEditorWindow<BuildingModelEle
     }
 
     List<BuildingModelElement> tempList = new List<BuildingModelElement>();
-    /// <summary>
-    /// �����������ˢ���б��������»�ȡ��
-    /// </summary>
+
     void RefleshSearchList()
     {
         tempList.Clear();
@@ -1302,11 +1287,6 @@ public class SceneRebuildEditorWindow : ListManagerEditorWindow<BuildingModelEle
         }
     }
 
-    /// <summary>
-    /// ����������Ŀ��
-    /// </summary>
-    /// <param name="meshValue"></param>
-    /// <param name="index"></param>
 
     void DrawItemChild(BuildingModelValues meshValue, int index)
     {
@@ -1411,9 +1391,6 @@ public class SceneRebuildEditorWindow : ListManagerEditorWindow<BuildingModelEle
         GUILayout.EndHorizontal();
     }
 
-    /// <summary>
-    /// ��������
-    /// </summary>
     void DrawDataBlock()
     {
         GUI.Box(MPGUIStyles.BorderArea(MPGUIStyles.DATA_BLOCK), "");

@@ -29,16 +29,6 @@ public class LODManagerEditor : BaseFoldoutEditor<LODManager>
         //{
         //    item.CheckLODPositions();
         //}
-        EditorGUILayout.BeginHorizontal();
-        if (GUILayout.Button("InActive"))
-        {
-            lodManager.SetLODActive(false);
-        }
-        if (GUILayout.Button("Active"))
-        {
-            lodManager.SetLODActive(true);
-        }
-        EditorGUILayout.EndHorizontal();
 
         EditorGUILayout.BeginHorizontal();
         if (GUILayout.Button("SetRenderersLODInfo"))
@@ -60,15 +50,38 @@ public class LODManagerEditor : BaseFoldoutEditor<LODManager>
 
         EditorUIUtils.Separator(5);
 
-        lodManager.LocalTarget=EditorGUILayout.ObjectField(lodManager.LocalTarget, typeof(GameObject)) as GameObject;
+        EditorGUILayout.BeginHorizontal();
+        lodManager.LocalTarget=ObjectField(lodManager.LocalTarget, GUILayout.Width(100));
         if (GUILayout.Button("Update LODs"))
         {
             string detail = lodManager.GetRuntimeLODDetail(true);
             Debug.Log($"lod detail:{detail}");
         }
+        //if (GUILayout.Button("Delete LODs",GUILayout.Width(100)))
+        //{
+        //    string detail = lodManager.GetRuntimeLODDetail(true);
+        //    Debug.Log($"lod detail:{detail}");
+        //}
+
+        if (GUILayout.Button("InActive", GUILayout.Width(65)))
+        {
+            lodManager.SetLODActive(false);
+        }
+        if (GUILayout.Button("Active", GUILayout.Width(65)))
+        {
+            lodManager.SetLODActive(true);
+        }
+        if (GUILayout.Button("Delete", GUILayout.Width(65)))
+        {
+            lodManager.DeleteLODs();
+        }
+        EditorGUILayout.EndHorizontal();
+
         GUILayout.Label("time:" + lodManager.lodInfoTime);
 
         DrawLODGroupList(lodGroupListArg, lodManager);
+
+
         if (GUILayout.Button("InitGroupInfos"))
         {
             lodManager.InitGroupInfos();
@@ -104,28 +117,18 @@ public class LODManagerEditor : BaseFoldoutEditor<LODManager>
         }
         if (GUILayout.Button("Show0"))
         {
-            //lodManager.GroupRoot.SetActive(true);
-            //lodManager.LODnRoot.SetActive(false);
             lodManager.ShowRoot0();
-            //EditorHelper.SelectObject(lodManager.GroupRoot);
         }
         if (GUILayout.Button("Show1"))
         {
-            //lodManager.GroupRoot.SetActive(false);
-            //lodManager.LODnRoot.SetActive(true);
             lodManager.ShowRoot1();
-            //EditorHelper.SelectObject(lodManager.LODnRoot);
         }
         if (GUILayout.Button("Show01"))
         {
-            //lodManager.GroupRoot.SetActive(true);
-            //lodManager.LODnRoot.SetActive(true);
             lodManager.ShowRoot01();
         }
         if (GUILayout.Button("Hide01"))
         {
-            //lodManager.GroupRoot.SetActive(true);
-            //lodManager.LODnRoot.SetActive(true);
             lodManager.HideRoot01();
         }
 
