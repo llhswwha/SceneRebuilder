@@ -19,7 +19,7 @@ public class MeshNodeEditor : BaseFoldoutEditor<MeshNode>
         base.OnEnable();
         meshnodeListArg = new FoldoutEditorArg(true,true,true,true,true);
         sharedMeshListArg = new FoldoutEditorArg(true, true, true, true, true);
-
+        sharedMeshListArg.tag = targetT.sharedMeshInfos;
         rendererCount = targetT.gameObject.GetComponentsInChildren<MeshRenderer>(true).Length;
     }
 
@@ -29,11 +29,11 @@ public class MeshNodeEditor : BaseFoldoutEditor<MeshNode>
 
         if (item.meshData.vertexCount > 0)
         {
-            GUILayout.Label($"vertex:{MeshHelper.GetVertexCountS(item.VertexCount)}({MeshHelper.GetVertexCountS(item.meshData.vertexCount)}|{item.meshData.vertexCount / (float)item.VertexCount:P1}),renderers:{rendererCount}");
+            GUILayout.Label($"vertex:{MeshHelper.GetVertexCountS(item.VertexCount)}({MeshHelper.GetVertexCountS(item.meshData.vertexCount)}|{item.meshData.vertexCount / (float)item.VertexCount:P1}),renderers:{rendererCount}({item.sharedMeshInfos})");
         }
         else
         {
-            GUILayout.Label($"vertex:{MeshHelper.GetVertexCountS(item.VertexCount)},renderers:{rendererCount}");
+            GUILayout.Label($"vertex:{MeshHelper.GetVertexCountS(item.VertexCount)},renderers:{rendererCount}({item.sharedMeshInfos})");
         }
         
 
@@ -44,6 +44,14 @@ public class MeshNodeEditor : BaseFoldoutEditor<MeshNode>
         {
             MeshNode.InitNodes(item.gameObject);
             sharedMeshListArg.tag = item.GetSharedMeshList();
+        }
+        if (GUILayout.Button("ShowShared"))
+        {
+            item.GetChildrenSharedMeshInfo();
+        }
+        if (GUILayout.Button("ShowShared(All)"))
+        {
+            item.GetChildrenSharedMeshInfo_All();
         }
         //if (GUILayout.Button("Refresh"))
         //{
@@ -122,7 +130,7 @@ public class MeshNodeEditor : BaseFoldoutEditor<MeshNode>
                     arg.isFoldout = node.GetMeshNodes().Count > 0;
                     arg.caption = $"[{i:00}] {node.GetName()} ({node.GetMeshNodes().Count})";
                     arg.isEnabled = true;
-                    arg.info = $"{MeshHelper.GetVertexCountS(node.VertexCount)}[{node.VertexCount / (float)item.VertexCount:P1}]";
+                    arg.info = node.GetItemInfo(item.VertexCount);
                     if (level == 0)
                     {
                         arg.background = true;

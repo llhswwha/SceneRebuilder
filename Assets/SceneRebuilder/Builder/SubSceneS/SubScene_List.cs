@@ -44,6 +44,17 @@ public class SubScene_List : MonoBehaviour
     }
 #endif
 
+    public List<MeshRenderer> GetRenderers()
+    {
+        List<MeshRenderer> renderers = new List<MeshRenderer>();
+        foreach (var scene in scenes)
+        {
+            var rs=scene.GetSceneRenderers();
+            renderers.AddRange(rs);
+        }
+        return renderers;
+    }
+
     [ContextMenu("Clear")]
     internal void Clear()
     {

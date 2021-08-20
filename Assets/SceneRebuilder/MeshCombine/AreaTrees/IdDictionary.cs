@@ -120,6 +120,9 @@ public static class IdDictionary
     private static RendererId[] InitIds(GameObject root=null)
     {
         DateTime start = DateTime.Now;
+
+        RendererId.InitIds(root);
+
         RendererId[] ids = null;
         if (root == null)
         {

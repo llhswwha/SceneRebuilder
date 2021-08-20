@@ -86,6 +86,25 @@ public static class MeshHelper
         Debug.Log($"empty:{emptyList.Count},all:{ts.Length}");
     }
 
+    internal static void ShowAllRenderers(MeshRenderer[] allRenderers,int lv)
+    {
+        DateTime start = DateTime.Now;
+        //var allRenderers = GetRenderers();
+        foreach (var renderer in allRenderers)
+        {
+            renderer.enabled = true;
+            GameObject go = renderer.gameObject;
+
+            for (int i = 0; i < lv && go != null && go.activeInHierarchy == false; i++)
+            {
+                go.SetActive(true);
+                if (go.transform.parent != null)
+                    go = go.transform.parent.gameObject;
+            }
+        }
+        Debug.Log($"ShowAllRenderers count:{allRenderers.Length} time:{(DateTime.Now - start)}");
+    }
+
     public static string GetVertexCountS(int vertexCount)
     {
         float f = vertexCount / 10000f;

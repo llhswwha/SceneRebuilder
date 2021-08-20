@@ -6,6 +6,13 @@ using UnityEngine;
 
 public class MeshNode : MonoBehaviour,IComparable<MeshNode>
 {
+    public int rendererCount = 0;
+    public string GetTitle()
+    {
+        
+        return $"vertex:{MeshHelper.GetVertexCountS(VertexCount)}({MeshHelper.GetVertexCountS(meshData.vertexCount)}|{meshData.vertexCount / (float)VertexCount:P1}),renderers:{rendererCount}({rendererCount})";
+    }
+
     public string GetName()
     {
         if (gameObject == null)
@@ -75,7 +82,53 @@ public class MeshNode : MonoBehaviour,IComparable<MeshNode>
         return MeshTypeName;
     }
 
+    public void GetChildrenSharedMeshInfo()
+    {
+        for(int i=0;i<subMeshes.Count;i++)
+        {
+            var sub = subMeshes[i];
+            var p1 = new ProgressArg("GetChildrenSharedMeshInfo", i, subMeshes.Count, sub);
+            if(ProgressBarHelper.DisplayCancelableProgressBar(p1))
+            {
+                break;
+            }
+            sub.GetSharedMeshList();
+        }
+        subMeshes.Sort((a, b) =>
+        
+            b.sharedMeshInfos.sharedVertexCount.CompareTo(a.sharedMeshInfos.sharedVertexCount)
+        );
+        this.GetSharedMeshList();
+        ProgressBarHelper.ClearProgressBar();
+    }
+
+    public void GetChildrenSharedMeshInfo_All()
+    {
+        var allNodes = this.GetComponentsInChildren<MeshNode>(true);
+        for (int i = 0; i < allNodes.Length; i++)
+        {
+            var sub = allNodes[i];
+            var p1 = new ProgressArg("GetChildrenSharedMeshInfo_All", i, allNodes.Length, sub);
+            if (ProgressBarHelper.DisplayCancelableProgressBar(p1))
+            {
+                break;
+            }
+            sub.GetSharedMeshList();
+            sub.subMeshes.Sort((a, b) =>
+                b.sharedMeshInfos.sharedVertexCount.CompareTo(a.sharedMeshInfos.sharedVertexCount)
+            );
+        }
+        subMeshes.Sort((a, b) =>
+
+            b.sharedMeshInfos.sharedVertexCount.CompareTo(a.sharedMeshInfos.sharedVertexCount)
+        );
+        this.GetSharedMeshList();
+        ProgressBarHelper.ClearProgressBar();
+    }
+
     public int VertexCount = 0;
+
+    public int RenderCount = 0;
 
     //public MeshInfo Info = new MeshInfo();
 
@@ -92,9 +145,25 @@ public class MeshNode : MonoBehaviour,IComparable<MeshNode>
 
     public List<MeshNode> subMeshes = new List<MeshNode>();
 
+    public SharedMeshInfoList sharedMeshInfos = null;
+
     public SharedMeshInfoList GetSharedMeshList()
     {
-        return new SharedMeshInfoList(this.gameObject);
+        sharedMeshInfos= new SharedMeshInfoList(this.gameObject);
+        return sharedMeshInfos;
+    }
+
+    public string GetItemInfo(float sumCount)
+    {
+        if (sharedMeshInfos != null)
+        {
+            return $"{MeshHelper.GetVertexCountS(VertexCount)}[{VertexCount / (float)sumCount:P1}]|{MeshHelper.GetVertexCountS(sharedMeshInfos.sharedVertexCount)}";
+        }
+        else
+        {
+            return $"{MeshHelper.GetVertexCountS(VertexCount)}[{VertexCount / (float)sumCount:P1}]";
+        }
+        
     }
 
     public MeshNode parentMesh = null;
@@ -181,7 +250,7 @@ public class MeshNode : MonoBehaviour,IComparable<MeshNode>
         Init(0,false, null);
     }
 
-    public void Init(int level,bool isforce,Action<float> progressChanged)
+    public void Init(int level,bool isforce,Action<ProgressArg> progressChanged)
     {
         if (isInited == true && isforce ==false) return;
         isInited = true;
@@ -207,12 +276,14 @@ public class MeshNode : MonoBehaviour,IComparable<MeshNode>
             //subMeshes.Clear();
             for (int i = 0; i < transform.childCount; i++)
             {
-                float progress1 = (float)i / transform.childCount;
+                var child = transform.GetChild(i).gameObject;
+                var p1 = new ProgressArg("MeshNode.Init", i, transform.childCount, child);
+                //float progress1 = (float)i / transform.childCount;
                 if (progressChanged != null)
                 {
-                    progressChanged(progress1);
+                    progressChanged(p1);
                 }
-                var child = transform.GetChild(i).gameObject;
+                
                 MeshNode subMesh = child.GetComponent<MeshNode>();
                 if (subMesh == null)
                 {
@@ -221,10 +292,11 @@ public class MeshNode : MonoBehaviour,IComparable<MeshNode>
 
                 subMesh.Init(level + 1, isforce, (subP) =>
                 {
-                    float progress2 = (float)(i + subP) / transform.childCount;
+                    p1.AddSubProgress(subP);
+                    //float progress2 = (float)(i + subP) / transform.childCount;
                     if (progressChanged != null)
                     {
-                        progressChanged(progress2);
+                        progressChanged(p1);
                     }
                 });
 
@@ -251,6 +323,8 @@ public class MeshNode : MonoBehaviour,IComparable<MeshNode>
             //        meshType.Percent = meshType.VertexCount * 100f / allCount;
             //    }
         }
+
+        rendererCount = gameObject.GetComponentsInChildren<MeshRenderer>(true).Length;
     }
 
     //public void AddInfoToParent()
@@ -832,7 +906,7 @@ public class MeshNode : MonoBehaviour,IComparable<MeshNode>
 
         meshNode.Init(0, true, p =>
         {
-            ProgressBarHelper.DisplayProgressBar("MeshNode.Init", $"{p:P2}", p);
+            ProgressBarHelper.DisplayProgressBar(p);
         });
 
         var meshNodes = meshNode.GetComponentsInChildren<MeshNode>(true);

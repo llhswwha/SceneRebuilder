@@ -1255,7 +1255,7 @@ public class BaseFoldoutEditor<T> : BaseEditor<T> where T : class
                     listArg.tag = funcGetList();
                 }
             }
-            if (GUILayout.Button("GetPrefabs", btnStyle, GUILayout.Width(76)))
+            if (GUILayout.Button("Prefabs", btnStyle, GUILayout.Width(66)))
             {
                 //list.GetPrefabs();
 
@@ -1298,8 +1298,13 @@ public class BaseFoldoutEditor<T> : BaseEditor<T> where T : class
         {
 
             InitEditorArg(list);
-            listArg.DrawPageToolbar(list, (node, i) =>
+
+            int sortType = listArg.DrawPageToolbarWithSort(list.Count, 100, 0, "SharedV", "AllV", "SharedCount");
+            list.SortByType(sortType);
+
+            for (int i = listArg.GetStartId(); i < list.Count && i < listArg.GetEndId(); i++)
             {
+                var node = list[i];
                 if (node == null)
                 {
                     var arg = new FoldoutEditorArg();
@@ -1314,7 +1319,7 @@ public class BaseFoldoutEditor<T> : BaseEditor<T> where T : class
                     arg.isFoldout = node.GetCount() > 0;
                     arg.caption = $"[{i:00}] {node.GetName()} ({node.GetCount()})";
                     arg.isEnabled = true;
-                    arg.info = $"{MeshHelper.GetVertexCountS(node.vertexCount)}[{node.vertexCount / (float)list.sharedVertexCount:P1}]";
+                    arg.info = $"{MeshHelper.GetVertexCountS(node.vertexCount)}|{MeshHelper.GetVertexCountS(node.GetAllVertexCount())}[{node.GetAllVertexCount() / (float)list.totalVertexCount:P1}]";
                     //if (level == 0)
                     //{
                     //    arg.background = true;
@@ -1340,10 +1345,10 @@ public class BaseFoldoutEditor<T> : BaseEditor<T> where T : class
                         //    node.Destroy(1);
                         //}
                     }, () =>
-                     {
-                         node.Destroy();
-                         list.Remove(node);
-                     });
+                    {
+                        node.Destroy();
+                        list.Remove(node);
+                    });
 
                     if (arg.isEnabled && arg.isExpanded)
                     {
@@ -1371,13 +1376,84 @@ public class BaseFoldoutEditor<T> : BaseEditor<T> where T : class
                             });
                         }
                     }
-
-                    //if (node != item)
-                    //{
-                    //    DrawMeshNodeList(arg, node, level + 1);
-                    //}
                 }
-            });
+            }
+
+            // listArg.DrawPageToolbar(list, (node, i) =>
+            //{
+            //    if (node == null)
+            //    {
+            //        var arg = new FoldoutEditorArg();
+            //        arg.caption = "NULL";
+            //        //arg.info = $"{MeshHelper.GetVertexCountS(list.vertexCount)}|{list.filterCount}";
+            //        EditorUIUtils.ObjectFoldout(new FoldoutEditorArg(), null, null);
+            //    }
+            //    else
+            //    {
+            //        var arg = FoldoutEditorArgBuffer.editorArgs[node];
+            //        arg.level = 1;
+            //        arg.isFoldout = node.GetCount() > 0;
+            //        arg.caption = $"[{i:00}] {node.GetName()} ({node.GetCount()})";
+            //        arg.isEnabled = true;
+            //        arg.info = $"{MeshHelper.GetVertexCountS(node.vertexCount)}|{MeshHelper.GetVertexCountS(node.GetAllVertexCount())}[{node.GetAllVertexCount() / (float)list.totalVertexCount:P1}]";
+            //        //if (level == 0)
+            //        //{
+            //        //    arg.background = true;
+            //        //    arg.bold = node == item;
+            //        //}
+
+            //        //EditorUIUtils.ObjectFoldout(arg, node.GetMainMeshFilter().gameObject, () =>
+            //        //{
+
+            //        //});
+
+            //        EditorUIUtils.ObjectFoldout(arg, node.mesh, () =>
+            //        {
+            //            var btnStyle = new GUIStyle(EditorStyles.miniButton);
+            //            btnStyle.margin = new RectOffset(0, 0, 0, 0);
+            //            btnStyle.padding = new RectOffset(0, 0, 0, 0);
+            //            if (GUILayout.Button("S", btnStyle, GUILayout.Width(25)))
+            //            {
+            //                EditorHelper.SelectObjects(node.GetGameObjects());
+            //            }
+            //            //if (GUILayout.Button("X1", btnStyle, GUILayout.Width(25)))
+            //            //{
+            //            //    node.Destroy(1);
+            //            //}
+            //        }, () =>
+            //         {
+            //             node.Destroy();
+            //             list.Remove(node);
+            //         });
+
+            //        if (arg.isEnabled && arg.isExpanded)
+            //        {
+
+            //            var filters = node.meshFilters;
+            //            InitEditorArg(filters);
+            //            foreach (var mf in filters)
+            //            {
+            //                if (mf == null) continue;
+            //                var mfArg = FoldoutEditorArgBuffer.editorArgs[mf];
+            //                mfArg.isFoldout = false;
+            //                mfArg.level = 2;
+            //                if (mf.transform.parent == null)
+            //                {
+            //                    mfArg.caption = "[ROOT]> " + mf.name;
+            //                }
+            //                else
+            //                {
+            //                    mfArg.caption = mf.transform.parent.name + "> " + mf.name;
+            //                }
+
+            //                EditorUIUtils.ObjectFoldout(mfArg, mf.gameObject, () =>
+            //                {
+
+            //                });
+            //            }
+            //        }
+            //    }
+            //});
         }
     }
 

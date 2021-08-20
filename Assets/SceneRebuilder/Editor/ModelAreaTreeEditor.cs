@@ -30,7 +30,7 @@ public class ModelAreaTreeEditor : BaseFoldoutEditor<ModelAreaTree>
         bool isAllLoaded = item.IsSceneLoaded();
         int unloadedSceneCount = item.SceneList.GetUnloadedScenes().Count;
 
-        GUILayout.Label($"loaded:{isAllLoaded},scene:{sceneCount},unloaded:{unloadedSceneCount}");
+        GUILayout.Label($"renderers:{item.GetRendererCount()},loaded:{isAllLoaded},scene:{sceneCount},unloaded:{unloadedSceneCount}");
 
         EditorGUILayout.BeginHorizontal();
         if (GUILayout.Button("ShowMeshes", contentStyle, GUILayout.Width(buttonWidth)))

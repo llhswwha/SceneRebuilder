@@ -909,6 +909,11 @@ break;
         public List<MeshRenderer> smallModels = new List<MeshRenderer>();
         public float sumVertex_Big = 0;
         public float sumVertex_Small = 0;
+
+        public override string ToString()
+        {
+            return $"bigModels:{bigModels.Count} smallModels:{smallModels.Count} sumVertex_Big:{sumVertex_Big} sumVertex_Small:{sumVertex_Small}";
+        }
     }
 
     public static BigSmallListInfo GetBigSmallRenderers(MeshPoints[] meshFilters,float maxLength)
@@ -1007,7 +1012,7 @@ break;
         //ProgressBarHelper.ClearProgressBar();
         info.sumVertex_Small = sumVertex_Small/10000f;
         info.sumVertex_Big = sumVertex_Big / 10000f;
-        //Debug.LogWarning($"GetBigSmallRenderers maxLength:{maxLength},bigModels:{info.bigModels.Count},smallModels:{info.smallModels.Count},bigVertex:{info.sumVertex_Big},smallVertex:{info.sumVertex_Small},Renderers:{meshFilters.Length},Time:{(DateTime.Now-start).TotalMilliseconds:F1}ms");
+        Debug.LogWarning($"GetBigSmallRenderers maxLength:{maxLength},bigModels:{info.bigModels.Count}+smallModels:{info.smallModels.Count}=BS:{info.bigModels.Count+ info.smallModels.Count},Renderers:{meshFilters.Length},bigVertex:{info.sumVertex_Big},smallVertex:{info.sumVertex_Small},Time:{(DateTime.Now - start).TotalMilliseconds:F1}ms");
         return info;
     }
 
