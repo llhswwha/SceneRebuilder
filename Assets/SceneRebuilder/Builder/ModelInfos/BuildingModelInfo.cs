@@ -23,7 +23,7 @@ public class BuildingModelInfo : SubSceneCreater
     {
         if (trees == null) return 0;
         int i = 0;
-        foreach(var t in trees)
+        foreach(var t in GetTrees())
         {
             if (t != null)
             {
@@ -297,7 +297,7 @@ public class BuildingModelInfo : SubSceneCreater
         DateTime start=DateTime.Now;
         UpdateTrees();
         var nodes=new List<AreaTreeNode>();
-        foreach (var tree in trees)
+        foreach (var tree in GetTrees())
         {
             nodes.AddRange(tree.TreeLeafs);
         }
@@ -407,7 +407,7 @@ public class BuildingModelInfo : SubSceneCreater
         DateTime start=DateTime.Now;
          Debug.Log("BuildingModelInfo.SwitchToCombined");
         UpdateTrees();
-        foreach(var t in trees)
+        foreach(var t in GetTrees())
         {
             t.SwitchToCombined();
         }
@@ -421,7 +421,7 @@ public class BuildingModelInfo : SubSceneCreater
         DateTime start=DateTime.Now;
          Debug.Log("BuildingModelInfo.SwitchToRenderers");
         UpdateTrees();
-        foreach(var t in trees)
+        foreach(var t in GetTrees())
         {
             t.SwitchToRenderers();
         }
@@ -433,7 +433,7 @@ public class BuildingModelInfo : SubSceneCreater
     public void ClearTrees()
     {
         UpdateTrees();
-        foreach (var t in trees)
+        foreach (var t in GetTrees())
         {
             t.RecoverParentEx();
             GameObject.DestroyImmediate(t.gameObject);
@@ -447,7 +447,7 @@ public class BuildingModelInfo : SubSceneCreater
     {
         Debug.Log("BuildingModelInfo.SaveTreeRendersId");
         UpdateTrees();
-        foreach(var t in trees)
+        foreach(var t in GetTrees())
         {
             t.SaveRenderersId();
         }
@@ -458,7 +458,7 @@ public class BuildingModelInfo : SubSceneCreater
     {
         UpdateTrees();
         //IdDictionary.InitRenderers(t.gameObject);
-        foreach (var t in trees)
+        foreach (var t in GetTrees())
         {
             t.LoadRenderers();
         }
@@ -468,7 +468,7 @@ public class BuildingModelInfo : SubSceneCreater
     {
         //UpdateTrees();
         ////IdDictionary.InitRenderers(t.gameObject);
-        //foreach (var t in trees)
+        //foreach (var t in GetTrees())
         //{
         //    t.LoadRenderers();
         //}
@@ -837,6 +837,15 @@ public class BuildingModelInfo : SubSceneCreater
 
     public ModelAreaTree[] trees;
 
+    public ModelAreaTree[] GetTrees()
+    {
+        if (trees == null)
+        {
+            UpdateTrees();
+        }
+        return trees;
+    }
+
     public List<ModelAreaTree> GetTreeList()
     {
         if (trees == null)
@@ -849,7 +858,7 @@ public class BuildingModelInfo : SubSceneCreater
     public List<AreaTreeNode> GetNodeList()
     {
         List<AreaTreeNode> nodes = new List<AreaTreeNode>();
-        foreach(var t in trees)
+        foreach(var t in GetTrees())
         {
             if (t == null) continue;
             nodes.AddRange(t.TreeLeafs);
@@ -1199,7 +1208,11 @@ public class BuildingModelInfo : SubSceneCreater
             InPart.SetActive(true);
         if(OutPart1)
             OutPart1.SetActive(true);
-        foreach(var tree in trees){
+        if (trees == null)
+        {
+            UpdateTrees();
+        }
+        foreach(var tree in GetTrees()){
             if(tree==null)continue;
             tree.gameObject.SetActive(true);
         }
@@ -1462,17 +1475,17 @@ public class BuildingModelInfo : SubSceneCreater
         UpdateTrees();
         if (InPart)
         {
-            var scene = CreatePartSceneEx(InPart, contentType, "_In_" + contentType, trees, dir, isOverride, gameObject.AddComponent<SubScene_In>());
+            var scene = CreatePartSceneEx(InPart, contentType, "_In_" + contentType, GetTrees(), dir, isOverride, gameObject.AddComponent<SubScene_In>());
             senes.Add(scene);
         }
         if (OutPart0)
         {
-            var scene = CreatePartSceneEx(OutPart0, contentType, "_Out0_" + contentType, trees, dir, isOverride, gameObject.AddComponent<SubScene_Out0>());
+            var scene = CreatePartSceneEx(OutPart0, contentType, "_Out0_" + contentType, GetTrees(), dir, isOverride, gameObject.AddComponent<SubScene_Out0>());
             senes.Add(scene);
         }
         if (OutPart1)
         {
-            var scene = CreatePartSceneEx(OutPart1, contentType, "_Out1_" + contentType, trees, dir, isOverride, gameObject.AddComponent<SubScene_Out1>());
+            var scene = CreatePartSceneEx(OutPart1, contentType, "_Out1_" + contentType, GetTrees(), dir, isOverride, gameObject.AddComponent<SubScene_Out1>());
             senes.Add(scene);
         }
         return senes;
@@ -1490,7 +1503,7 @@ public class BuildingModelInfo : SubSceneCreater
                 gos.Add(go);
 
             //if (trees != null && (contentType == SceneContentType.Tree || contentType == SceneContentType.TreeAndPart))
-            //    foreach (var tree in trees)
+            //    foreach (var tree in GetTrees())
             //    {
             //        if (tree == null) continue;
 
@@ -1633,7 +1646,7 @@ public class BuildingModelInfo : SubSceneCreater
 
     public bool IsScenesFolderExists()
     {
-        foreach (var t in trees)
+        foreach (var t in GetTrees())
         {
             if (t.IsScenesFolderExists() == false)
             {
@@ -1660,7 +1673,7 @@ public class BuildingModelInfo : SubSceneCreater
         //Debug.Log(System.IO.Directory.Exists(dirPath));
 
         List<UnityEngine.Object> folderAssets = new List<UnityEngine.Object>();
-        foreach(var t in trees)
+        foreach(var t in GetTrees())
         {
             var folder = t.GetScenesFolder();
             if (folder != null)
@@ -1673,7 +1686,7 @@ public class BuildingModelInfo : SubSceneCreater
 
     public void DeleteScenesFolder()
     {
-        foreach (var t in trees)
+        foreach (var t in GetTrees())
         {
             t.DeleteScenesFolder(false);
         }
@@ -1685,9 +1698,10 @@ public class BuildingModelInfo : SubSceneCreater
     public List<RendererId> InitRenderers()
     {
         List<RendererId> idsAll = new List<RendererId>();
-        for (int i = 0; i < trees.Length; i++)
+        var ts = GetTrees();
+        for (int i = 0; i < ts.Length; i++)
         {
-            var tree = trees[i];
+            var tree = ts[i];
             var rs=tree.InitRenderers();
             idsAll.AddRange(rs);
         }
@@ -1700,13 +1714,14 @@ public class BuildingModelInfo : SubSceneCreater
         DateTime start = DateTime.Now;
         ShowDetail();
         InitRenderers();
-        for (int i = 0; i < trees.Length; i++)
+        var ts = GetTrees();
+        for (int i = 0; i < ts.Length; i++)
         {
-            var tree = trees[i];
+            var tree = ts[i];
             if (tree == null) continue;
-            //float progress = (float)i / trees.Length;
+            //float progress = (float)i / ts.Length;
             //float percents = progress * 100;
-            ProgressArg p1 = new ProgressArg("EditorCreateNodeScenes", i, trees.Length, tree);
+            ProgressArg p1 = new ProgressArg("EditorCreateNodeScenes", i, ts.Length, tree);
             if (progressChanged == null)
             {
                 if (ProgressBarHelper.DisplayCancelableProgressBar(p1))
@@ -1722,7 +1737,7 @@ public class BuildingModelInfo : SubSceneCreater
             tree.EditorCreateNodeScenes(p =>
             {
                 p1.AddSubProgress(p);
-                //float progress2 = (float)(i + p) / trees.Length;
+                //float progress2 = (float)(i + p) / ts.Length;
                 //float percents2 = progress2 * 100;
                 //ProgressBarHelper.DisplayCancelableProgressBar("BuildingModelInfo.EditorCreateNodeScenes", $"Progress2 {(i + p):F2}/{trees.Length} {percents2:F2}%", progress2);
 
@@ -1743,7 +1758,7 @@ public class BuildingModelInfo : SubSceneCreater
         }
         else
         {
-            progressChanged(new ProgressArg("EditorCreateNodeScenes", trees.Length, trees.Length));
+            progressChanged(new ProgressArg("EditorCreateNodeScenes", ts.Length, ts.Length));
         }
 
         UpdateSceneList();
@@ -1770,11 +1785,12 @@ public class BuildingModelInfo : SubSceneCreater
         Unpack();
         DateTime start = DateTime.Now;
         IdDictionary.InitInfos();
-        for (int i = 0; i < trees.Length; i++)
+        var ts = GetTrees();
+        for (int i = 0; i < ts.Length; i++)
         {
-            var tree = trees[i];
+            var tree = ts[i];
             if (tree == null) continue;
-            ProgressArg p1 = new ProgressArg("EditorLoadNodeScenes", i, trees.Length, tree);
+            ProgressArg p1 = new ProgressArg("EditorLoadNodeScenes", i, ts.Length, tree);
 
             if (progressChanged == null)
             {
@@ -1793,7 +1809,7 @@ public class BuildingModelInfo : SubSceneCreater
             {
                 p1.AddSubProgress(p);
 
-                //float progress2 = (float)(i + p) / trees.Length;
+                //float progress2 = (float)(i + p) / ts.Length;
                 //float percents2 = progress2 * 100;
 
                 if (progressChanged == null)
@@ -1814,7 +1830,7 @@ public class BuildingModelInfo : SubSceneCreater
         }
         else
         {
-            progressChanged(new ProgressArg("EditorLoadNodeScenes", trees.Length, trees.Length));
+            progressChanged(new ProgressArg("EditorLoadNodeScenes", ts.Length, ts.Length));
         }
 
         Debug.LogWarning($"BuildingModelInfo.EditorLoadNodeScenes time:{(DateTime.Now - start)}");

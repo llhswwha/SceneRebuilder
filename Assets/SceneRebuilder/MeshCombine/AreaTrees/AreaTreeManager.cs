@@ -477,6 +477,11 @@ public class AreaTreeManager : SingletonBehaviour<AreaTreeManager>
 
     public void AddTrees(ModelAreaTree[] trees)
     {
+        if (trees == null)
+        {
+            Debug.Log("AreaTreeManager.AddTrees trees == null");
+            return;
+        }
         Debug.Log("AreaTreeManager.AddTrees:"+trees.Length);
 
         foreach(var tree in trees)

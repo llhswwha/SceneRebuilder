@@ -606,6 +606,7 @@ public class SubSceneManager : SingletonBehaviour<SubSceneManager>
         }
         EditorHelper.UnpackPrefab(go);
         string prefabPath = $"Assets/{RootDir}/{SceneDir}/Prefabs/{go.name}[{go.GetInstanceID()}].prefab";
+        EditorHelper.makeParentDirExist(prefabPath);
         GameObject assetObj= PrefabUtility.SaveAsPrefabAssetAndConnect(go, prefabPath, InteractionMode.UserAction);
         Debug.Log($"SavePrefab go:{go.name} asset:{assetObj} path:{prefabPath}");
         return assetObj;

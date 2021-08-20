@@ -49,7 +49,7 @@ namespace MeshJobs
             this.transform = root.transform;
             this.gameObject = root;
             this.mf = root.GetComponent<MeshFilter>();
-            if (mf != null)
+            if (mf != null && mf.sharedMesh!=null)
             {
                 sharedMesh = mf.sharedMesh;
                 vertices = sharedMesh.vertices;
