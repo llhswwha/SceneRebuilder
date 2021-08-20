@@ -4,6 +4,7 @@ using System.Collections.Generic;
 using System.Linq;
 using UnityEngine;
 
+[Serializable]
 public class SharedMeshInfoList : List<SharedMeshInfo>
 {
     public List<MeshFilter> meshFilters = new List<MeshFilter>();
@@ -100,15 +101,13 @@ public class SharedMeshInfoList : List<SharedMeshInfo>
         {
             this.AddEx(item);
         }
-        this.Sort((a, b) =>
-        {
-            var r1= b.vertexCount.CompareTo(a.vertexCount);
-            if (r1 == 0)
-            {
-                r1 = b.meshFilters.Count.CompareTo(a.meshFilters.Count);
-            }
-            return r1;
-        });
+        
+        
+    }
+
+    public override string ToString()
+    {
+        return $"v:{MeshHelper.GetVertexCountS(sharedVertexCount)} m:{this.Count}";
     }
 
     public void AddEx(SharedMeshInfo item)
@@ -117,6 +116,8 @@ public class SharedMeshInfoList : List<SharedMeshInfo>
         sharedVertexCount += item.vertexCount;
         filterCount += item.GetCount();
         totalVertexCount += item.GetAllVertexCount();
+
+        SortByType(0);
     }
 
     //public void GetPrefabs()
@@ -133,6 +134,55 @@ public class SharedMeshInfoList : List<SharedMeshInfo>
         {
             item.Destroy(v);
         }
+    }
+
+    public void SortByType(int sortType)
+    {
+        //"SharedV", "AllV", "SharedCount"
+        if (sortType==0)
+        {
+            this.Sort((a, b) =>
+            {
+                var r1 = b.vertexCount.CompareTo(a.vertexCount);
+                if (r1 == 0)
+                {
+                    r1 = b.meshFilters.Count.CompareTo(a.meshFilters.Count);
+                }
+                return r1;
+            });
+        }
+
+        if (sortType == 1)
+        {
+            this.Sort((a, b) =>
+            {
+                var r1 = b.GetAllVertexCount().CompareTo(a.GetAllVertexCount());
+                //if (r1 == 0)
+                //{
+                //    r1 = b.vertexCount.CompareTo(a.vertexCount);
+                //}
+                return r1;
+            });
+        }
+
+        if (sortType == 2)
+        {
+            this.Sort((a, b) =>
+            {
+                var r1 = b.meshFilters.Count.CompareTo(a.meshFilters.Count);
+                if (r1 == 0)
+                {
+                    r1 = b.vertexCount.CompareTo(a.vertexCount);
+                }
+                return r1;
+            });
+        }
+
+
+
+
+
+        
     }
 }
 
