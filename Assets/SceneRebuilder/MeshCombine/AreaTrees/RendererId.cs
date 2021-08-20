@@ -64,6 +64,13 @@ public class RendererId
         Debug.Log("ClearScripts " + count);
     }
 
+    [ContextMenu("ShowRenderers")]
+    public void ShowRenderers()
+    {
+        var renderers = this.GetComponentsInChildren<MeshRenderer>(true);
+        MeshHelper.ShowAllRenderers(renderers, 5);
+    }
+
     public void ResetTransform()
     {
         //transform.rotation = Quaternion.identity;
@@ -345,17 +352,22 @@ public class RendererId
 
     public static void InitIds(GameObject rootObj)
     {
+        if (rootObj == null)
+        {
+            Debug.LogError("InitIds rootObj == null");
+            return;
+        }
         MeshRenderer[] renderers=rootObj.GetComponentsInChildren<MeshRenderer>();
         InitIds(renderers);
     }
 
-    public static void InitIds(MeshRenderer[] renderers)
+    public static void InitIds<T>(T[] renderers) where T : Component
     {
         // DateTime start = DateTime.Now;
         int count = renderers.Length;
         for (int i = 0; i < count; i++)
         {
-            MeshRenderer r = renderers[i];
+            T r = renderers[i];
             RendererId id = RendererId.InitId(r);
             // float progress = (float)i / count;
             // float percents = progress * 100;

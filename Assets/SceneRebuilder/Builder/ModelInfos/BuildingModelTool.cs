@@ -13,11 +13,8 @@ public class BuildingModelTool : MonoBehaviour
     [ContextMenu("ShowRenderers")]
     public void ShowRenderers()
     {
-        var renderers = this.GetComponentsInChildren<Renderer>(true);
-        foreach (var render in renderers)
-        {
-            render.enabled = true;
-        }
+        var renderers = this.GetComponentsInChildren<MeshRenderer>(true);
+        MeshHelper.ShowAllRenderers(renderers, 5);
     }
 
     public Bounds GetBounds(Vector3 scale)

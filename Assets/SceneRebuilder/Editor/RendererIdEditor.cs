@@ -57,6 +57,10 @@ public class RendererIdEditor : BaseEditor<RendererId>
         {
             //MeshHelper.CenterMesh(item.gameObject);
         }
+        if (GUILayout.Button("ShowRenderers"))
+        {
+            item.ShowRenderers();
+        }
         EditorGUILayout.EndHorizontal();
 
         EditorGUILayout.BeginHorizontal();

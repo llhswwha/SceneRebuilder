@@ -1255,7 +1255,7 @@ public class BaseFoldoutEditor<T> : BaseEditor<T> where T : class
                     listArg.tag = funcGetList();
                 }
             }
-            if (GUILayout.Button("GetPrefabs", btnStyle, GUILayout.Width(76)))
+            if (GUILayout.Button("Prefabs", btnStyle, GUILayout.Width(66)))
             {
                 //list.GetPrefabs();
 

@@ -956,12 +956,8 @@ public class BuildingModelInfo : SubSceneCreater
     [ContextMenu("ShowRenderers")]
     public void ShowRenderers()
     {
-        var renderers = this.GetComponentsInChildren<Renderer>(true) ;
-        foreach(var render in renderers)
-        {
-            render.gameObject.SetActive(true);
-            render.enabled = true;
-        }
+        var renderers = this.GetComponentsInChildren<MeshRenderer>(true) ;
+        MeshHelper.ShowAllRenderers(renderers, 5);
     }
 
     //[ContextMenu("ShowAll")]

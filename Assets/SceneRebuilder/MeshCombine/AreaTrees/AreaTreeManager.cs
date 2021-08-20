@@ -509,6 +509,7 @@ public class AreaTreeManager : SingletonBehaviour<AreaTreeManager>
         prefabInstanceBuilder.IsCopyTargetRoot = this.IsCopy;
         prefabInstanceBuilder.TargetRoots = target;
         var bigSmallInfo=prefabInstanceBuilder.GetBigSmallRenderers();
+        Debug.LogError($"CreateOne_BigSmall_Core bigSmallInfo:{bigSmallInfo}");
 
         ProgressArg p1 = new ProgressArg("CreateOne_BigSmall_Core", 0,2, "SamllTree");
         if (progressChanged!=null)
