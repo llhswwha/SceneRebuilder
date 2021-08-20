@@ -1188,7 +1188,8 @@ public static class MeshHelper
 
     public static Vector3[] GetWorldVertexes(MeshPoints go)
     {
-        return go.vertices;
+        //return go.vertices;
+        return go.GetWorldVertexes();
     }
 
     public static Vector3[] GetWorldVertexes(Mesh mesh1, Transform t1){

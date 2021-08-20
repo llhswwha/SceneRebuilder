@@ -48,7 +48,7 @@ namespace MeshJobs
             {
                 Debug.LogError($"AcRTAlignJobResult rs.Length-1 < id id:{id} length:{rs.Length} r:{r}");
                 var newRs=new IRTResult[id+1];
-                for(int i=0;i< newRs.Length;i++)
+                for(int i=0;i< newRs.Length && i<rs.Length;i++)
                 {
                     newRs[i] = rs[i];
                 }
@@ -437,7 +437,11 @@ namespace MeshJobs
                                 result.Distance=dis;
                                 result.IsZero=true;
                                 result.TransformationMatrix=matrix4World;
+                                result.NewVecties = newVs2;
                                 result.Translation=trans;
+
+                                //RTResult rt = RTResult.ApplyAngleMatrix(trans, matrix4World, newVs2.ToArray(), goNew.transform);
+
                                 AcRTAlignJobResult.SetResult(Id, result);
 
                                 //AngleCount++;

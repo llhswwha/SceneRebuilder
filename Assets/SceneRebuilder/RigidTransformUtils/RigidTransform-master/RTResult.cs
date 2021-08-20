@@ -41,6 +41,8 @@ public class RTResult:IRTResult
     public UnityEngine.Matrix4x4 TransformationMatrix;
     public UnityEngine.Vector3 Translation;
 
+    public UnityEngine.Vector3[] NewVecties = null;
+
     public UnityEngine.Vector3 Scale=UnityEngine.Vector3.one;
 
     public Matrix3x3 R;
@@ -49,7 +51,19 @@ public class RTResult:IRTResult
 
     public bool IsReflection;
 
-    public float Distance {get;set;}
+    private float _dis = -1;
+
+    public float Distance
+    {
+        get
+        {
+            return _dis;
+        }
+        set
+        {
+            _dis = value;
+        }
+    }
 
     // private List<RTResult> SubResults=null;
 
@@ -125,6 +139,19 @@ public class RTResult:IRTResult
         return vs3;
     }
 
+    public static RTResult ApplyAngleMatrix(UnityEngine.Vector3 trans, 
+        UnityEngine.Matrix4x4 matrix4World, 
+        UnityEngine.Vector3[] newVs3,Transform t)
+    {
+        RTResult rt = new RTResult();
+        rt.Mode = AlignMode.Rotate;
+        rt.NewVecties = newVs3;
+        rt.Translation = trans;
+        rt.TransformationMatrix = matrix4World;
+        rt.ApplyMatrix(t, null);
+        return rt;
+    }
+
     public void ApplyMatrix(Transform tFrom, Transform tTo)
     {
 
@@ -139,9 +166,48 @@ public class RTResult:IRTResult
         }
         else if (Mode == AlignMode.Rotate)
         {
+            if (tFrom.transform.parent != null)
+            {
+                tFrom.transform.parent = null;
+                
+                Debug.LogError($"ApplyMatrix01 tFrom.transform.parent != null from:{tFrom.name}");
+            }
+
+            tFrom.rotation = Quaternion.Euler(0, 0, 0);
+            qt = tFrom.rotation;
+
             tFrom.position = pos + Translation;
-            tFrom.rotation = Quaternion.LookRotation(TransformationMatrix.GetColumn(1), TransformationMatrix.GetColumn(2)) * qt;//测试钢架时这个是正确的
-            //t.rotation = Quaternion.LookRotation(TransformationMatrix.GetColumn(2), TransformationMatrix.GetColumn(1)) * qt;//测试teaports时这个是正确的
+            //tFrom.rotation = Quaternion.LookRotation(TransformationMatrix.GetColumn(1), TransformationMatrix.GetColumn(2)) * qt;//测试钢架时这个是正确的
+            tFrom.rotation = Quaternion.LookRotation(TransformationMatrix.GetColumn(2), TransformationMatrix.GetColumn(1)) * qt;//测试teaports时这个是正确的
+
+            var vsNew = MeshHelper.GetWorldVertexes(tFrom.gameObject);
+            var disNew = DistanceUtil.GetDistance(vsNew, NewVecties);
+            if (disNew == 0)
+            {
+                //ok
+                
+            }
+            else
+            {
+                
+                Debug.LogError($"ApplyMatrix01 zero:{DistanceSetting.zeroM:F5},Distance:{this.Distance} newDis:{disNew},\tMode:{Mode},\tfrom:{tFrom.name}");
+                tFrom.rotation = Quaternion.LookRotation(TransformationMatrix.GetColumn(1), TransformationMatrix.GetColumn(2)) * qt;//测试钢架时这个是正确的
+                //tFrom.rotation = Quaternion.LookRotation(TransformationMatrix.GetColumn(2), TransformationMatrix.GetColumn(1)) * qt;//测试teaports时这个是正确的
+
+                var vsNew2 = MeshHelper.GetWorldVertexes(tFrom.gameObject);
+                var disNew2 = DistanceUtil.GetDistance(vsNew2, NewVecties);
+
+                if (disNew2 == 0)
+                {
+                    //ok
+                }
+                else
+                {
+                    Debug.LogError($"ApplyMatrix02 zero:{DistanceSetting.zeroM:F5},Distance:{this.Distance} newDis:{disNew},newDis2:{disNew2},\tMode:{Mode},\tfrom:{tFrom.name}");
+                }
+            }
+
+            //
 
             //var disNew = MeshHelper.GetVertexDistanceEx(tFrom, tTo, "测试结果", false);
             //RTResult rT = this as RTResult;
@@ -155,10 +221,10 @@ public class RTResult:IRTResult
             //}
             //if (tTo!=null)
             //{
-                
+
             //    if (disNew > DistanceSetting.zeroDis)
             //    {
-                    
+
             //        if (rT != null)
             //        {
             //            Debug.LogError($"ApplyMatrix1 对齐成功 有错误 zero:{DistanceSetting.zeroDis:F5},dis:{disNew},Mode:{rT.Mode},from:{tFrom.name},to:{tTo.name} " + $" Trans:{rT.Translation.Vector3ToString()},Matrix:\n{rT.TransformationMatrix}");

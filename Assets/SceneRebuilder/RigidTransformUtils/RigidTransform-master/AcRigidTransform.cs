@@ -580,17 +580,7 @@ public class AcRigidTransform : MonoBehaviour {
         // resultTo.localToWorldMatrix=tTo.localToWorldMatrix;
 
         var tpsFrom = ThreePointJobResultList.Instance.GetThreePoints(mfFrom);
-        // for (int i = 0; i < tpsFrom.Length; i++)
-        // {
-        //     ThreePoint tp = tpsFrom[i];
-        //     tp.PrintLog("From"+i);
-        // }
         var tpsTo = ThreePointJobResultList.Instance.GetThreePoints(mfTo);
-        // for (int i = 0; i < tpsTo.Length; i++)
-        // {
-        //     ThreePoint tp = tpsTo[i];
-        //     tp.PrintLog("To"+i);
-        // }
 
         MeshHelper.ClearChildren(tFrom);
         MeshHelper.ClearChildren(tTo);
@@ -604,6 +594,7 @@ public class AcRigidTransform : MonoBehaviour {
         var vsFrom=MeshHelper.GetWorldVertexes(mfFrom);
         var vsTo=MeshHelper.GetWorldVertexes(mfTo);
         bool isFound=false;
+        Debug.Log($"RTAlign tpsFrom:{tpsFrom.Length} tpsTo:{tpsTo.Length}");
         for(int l=0;l<tpsFrom.Length;l++)
         {
             var tpFrom=tpsFrom[l];
@@ -621,10 +612,10 @@ public class AcRigidTransform : MonoBehaviour {
                     minDis=dis;
                     minRT=rt;
                 }
-                Debug.LogError($">>>RTAlignOneCore [{l},{k}]\tIsZero:{rt.IsZero},\tIsReflection:{rt.IsReflection},\tdis:{dis},\n{rt.TransformationMatrix}");
+                Debug.Log($">>>RTAlignOneCore [{count}][{l},{k}]\tdis:{dis},\tIsZero:{rt.IsZero},\tIsReflection:{rt.IsReflection}\n{rt.TransformationMatrix}");
                 if(dis==0)
                 {
-                    Debug.LogError($"RTAlignOneCore2 Count:{count},Time:{(DateTime.Now-start).TotalMilliseconds}ms");
+                    Debug.LogError($"RTAlignOneCore2 Time:{(DateTime.Now-start).TotalMilliseconds}ms");
                     //acRigidTransform.ApplyTransform(t1);
                     
                     //AcRigidTransform.ApplyMatrix(matrix,tFrom);

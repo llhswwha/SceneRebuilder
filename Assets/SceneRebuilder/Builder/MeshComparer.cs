@@ -156,10 +156,10 @@ public class MeshComparer : SingletonBehaviour<MeshComparer>
         GameObject gameObject=new GameObject("TryAngles");
         Quaternion rotation=goFrom.transform.rotation;
         int count=0;
-        for(int i=0;i<3;i++){
-            for(int j=0;j<3;j++)
+        for(int i=0;i<4;i++){
+            for(int j=0;j<4;j++)
             {
-                for(int k=0;k<3;k++)
+                for(int k=0;k<4;k++)
                 {
                     Vector3 angle=new Vector3(i*90,j*90,k*90);
                     count++;
@@ -224,29 +224,71 @@ public class MeshComparer : SingletonBehaviour<MeshComparer>
         }
     }
 
-    public void TryMatrixAngle0_0_0()
+    public GameObject TryMatrixAngle0_0_0()
     {
-        TryMatrixAngle(new Vector3(0, 0, 0));
+        return TryMatrixAngle(new Vector3(0, 0, 0));
     }
 
-    public void TryMatrixAngle90_0_0()
+    public GameObject TryMatrixAngle()
     {
-        TryMatrixAngle(new Vector3(90, 0, 0));
+        return TryMatrixAngle(TryAngle);
     }
 
-    public void TryMatrixAngle180_0_0()
+    private static Vector3Int GetTryAngle(int id)
     {
-        TryMatrixAngle(new Vector3(180, 0, 0));
+        int count = 0;
+        for (int i = 0; i < 4; i++)
+        {
+            for (int j = 0; j < 4; j++)
+            {
+                for (int k = 0; k < 4; k++)
+                {
+                    count++;
+                    if (count == id)
+                    {
+                        Vector3Int angle = new Vector3Int(i * 90, j * 90, k * 90);
+                        return angle;
+                    }
+                    
+                }
+            }
+        }
+        return Vector3Int.zero;
     }
 
-    public void TryMatrixAngle0_90_0()
+    public GameObject TryMatrixAngleN()
     {
-        TryMatrixAngle(new Vector3(0, 90, 0));
+        TryAngleId++;
+        if (TryAngleId > 64)
+        {
+            TryAngleId = 0;
+        }
+        TryAngle = GetTryAngle(TryAngleId);
+        return TryMatrixAngle(TryAngle);
     }
 
-    public void TryMatrixAngle0_0_90()
+    public GameObject TryMatrixAngle90_0_0()
     {
-        TryMatrixAngle(new Vector3(0, 0, 90));
+        return TryMatrixAngle(new Vector3(90, 0, 0));
+    }
+
+    //public GameObject TryMatrixAngle180_0_0()
+    //{
+    //    TryMatrixAngle(new Vector3(180, 0, 0));
+    //}
+
+    public GameObject TryMatrixAngle0_90_0()
+    {
+        return TryMatrixAngle(new Vector3(0, 90, 0));
+    }
+
+    public Vector3Int TryAngle = Vector3Int.zero;
+
+    public int TryAngleId = 0;
+
+    public GameObject TryMatrixAngle0_0_90()
+    {
+        return TryMatrixAngle(new Vector3(0, 0, 90));
     }
 
     private Vector3[] ShowVertexes(GameObject go,string tag)
@@ -255,40 +297,54 @@ public class MeshComparer : SingletonBehaviour<MeshComparer>
         var vsFrom = mfFrom.sharedMesh.vertices;
         var vsFromWorld = MeshHelper.GetWorldVertexes(vsFrom, mfFrom.transform);
 
-        GameObject TryAngleFromW = new GameObject($"TryAngle{tag}W_vsFromWorld_" + mfFrom.name);
-        TryAngleFromW.transform.position = mfFrom.transform.position;
+        GameObject TryAngleFromW = CreateEmptyGo($"TryAngle{tag}W_vsFromWorld_" + mfFrom.name, mfFrom.transform.position);
         MeshHelper.ShowVertexes(vsFromWorld, pScale, TryAngleFromW.transform);
         return vsFromWorld;
     }
+
+
 
     public GameObject CreateEmptyGo(string name,Vector3 pos)
     {
         GameObject go = new GameObject(name);
         go.transform.position = pos;
+        tmpGos.Add(go);
         return go;
+    }
+
+    public void ClearTmpObjects()
+    {
+        foreach(var go in tmpGos)
+        {
+            GameObject.DestroyImmediate(go);
+        }
+        tmpGos.Clear();
     }
 
     public List<GameObject> tmpGos = new List<GameObject>();
 
-    public void TryMatrixAngle(Vector3 angle)
+    public GameObject TryMatrixAngle(Vector3 angle)
     {
+        ClearTmpObjects();
+
         var mfFrom = goFrom.GetComponent<MeshFilter>();
         var vsFrom = mfFrom.sharedMesh.vertices;
         var vsFromWorld = ShowVertexes(goFrom, "From");
         var vsToWorld = ShowVertexes(goTo, "To");
 
         var dis0 = DistanceUtil.GetDistance(vsFromWorld, vsToWorld);
-        Debug.LogError("dis0:" + dis0);
+        Debug.Log("dis0:" + dis0);
 
         Matrix4x4 localMatrix = mfFrom.transform.localToWorldMatrix;
-        Debug.LogError("localMatrix:\n" + localMatrix);
+        Debug.Log("localMatrix:\n" + localMatrix);
 
         Vector3 trans = goTo.transform.position - goFrom.transform.position;
-        Debug.LogError("trans:\n" + trans);
+        Debug.Log("trans:" + trans);
 
         //Vector3 angle = new Vector3(90, 0, 0);
         Quaternion R = Quaternion.Euler(angle);
         Matrix4x4 matrix = Matrix4x4.TRS(Vector3.zero, Quaternion.Euler(angle), Vector3.one);
+        Debug.Log("matrix:" + matrix);
 
         List<Vector3> newVs = new List<Vector3>();
         List<Vector3> newVs2 = new List<Vector3>();
@@ -309,27 +365,35 @@ public class MeshComparer : SingletonBehaviour<MeshComparer>
         }
 
         var goNew = MeshHelper.CopyGO(goFrom);
+        tmpGos.Add(goNew);
         var mfNew = goNew.GetComponent<MeshFilter>();
         //mfNew.mesh.vertices=newVs.ToArray();
 
-        RTResult rt = new RTResult();
-        rt.Mode = AlignMode.Rotate;
-        rt.Translation = trans;
-        rt.TransformationMatrix = matrix4World;
-        rt.ApplyMatrix(goNew.transform,null);
+        //RTResult rt = new RTResult();
+        //rt.Mode = AlignMode.Rotate;
+        //rt.NewVecties = newVs3.ToArray();
+        //rt.Translation = trans;
+        //rt.TransformationMatrix = matrix4World;
+        //rt.ApplyMatrix(goNew.transform,null);
 
-        GameObject TryAngle1Go = new GameObject("TryAngle1" + angle);
+        RTResult rt = RTResult.ApplyAngleMatrix(trans, matrix4World, newVs3.ToArray(), goNew.transform);
+
+        Debug.Log("TransformationMatrix:\n" + matrix4World);
+
+        GameObject TryAngle1Go = CreateEmptyGo("TryAngle1" + angle, goTo.transform.position);
         MeshHelper.ShowVertexes(newVs2.ToArray(), pScale, TryAngle1Go.transform);
         var dis1 = DistanceUtil.GetDistance(newVs2.ToArray(), vsToWorld);
         TryAngle1Go.name += "_" +dis1;
 
-        GameObject TryAngle2Go = new GameObject("TryAngle2" + angle);
+        GameObject TryAngle2Go = CreateEmptyGo("TryAngle2" + angle, goTo.transform.position);
         MeshHelper.ShowVertexes(newVs3.ToArray(), pScale, TryAngle2Go.transform);
         var dis2 = DistanceUtil.GetDistance(newVs3.ToArray(), vsToWorld);
         TryAngle2Go.name += "_" + dis2;
+
+        return goNew;
     }
 
-    public Vector3[] ApplyMatrix(Vector3[] vs1,Matrix4x4 matrix4World,Vector3 trans)
+    public static Vector3[] ApplyMatrix(Vector3[] vs1,Matrix4x4 matrix4World,Vector3 trans)
     {
          Vector3[] newVs2=new Vector3[vs1.Length];
          for(int l=0;l<vs1.Length;l++){
@@ -339,7 +403,7 @@ public class MeshComparer : SingletonBehaviour<MeshComparer>
         return newVs2;
     }
 
-    public void ApplyMatrix(Vector3[] vs1,Matrix4x4 matrix4World,Vector3 trans,Vector3[] newVs2)
+    public static void ApplyMatrix(Vector3[] vs1,Matrix4x4 matrix4World,Vector3 trans,Vector3[] newVs2)
     {
          //Vector3[] newVs2=new Vector3[vs1.Length];
          for(int l=0;l<vs1.Length;l++){
@@ -363,9 +427,12 @@ public class MeshComparer : SingletonBehaviour<MeshComparer>
     }
 
     public float pScale=0.005f;
-    
-    public void TryAnglesMatrix()
+  
+    public void TryAnglesMatrix(bool isTryScale)
     {
+        ClearTmpObjects();
+
+        DateTime start = DateTime.Now;
         var mfFrom=goFrom.GetComponent<MeshFilter>();
         var mfTo=goTo.GetComponent<MeshFilter>();
 
@@ -376,107 +443,76 @@ public class MeshComparer : SingletonBehaviour<MeshComparer>
 
         var vsFromLocal=mfFrom.sharedMesh.vertices;
         var vsFromWorld=MeshHelper.GetWorldVertexes(vsFromLocal,mfFrom.transform);
-
+        var scale1=goTo.transform.localScale;
         SetDistanceSetting();
-        GameObject gameObject=new GameObject("TryAngles");
-        Quaternion rotation=goFrom.transform.rotation;
-        for(int i=0;i<3;i++){
-            for(int j=0;j<3;j++)
+        //GameObject gameObject=new GameObject("TryAngles");
+        //Quaternion rotation=goFrom.transform.rotation;
+        int count = 0;
+        for(int i=0;i<4;i++){
+            for(int j=0;j<4;j++)
             {
-                for(int k=0;k<3;k++)
+                for(int k=0;k<4;k++)
                 {
                     Vector3 angle=new Vector3(i*90,j*90,k*90);
+                    count++;
+                    var p = new ProgressArg("TryAnglesMatrix", count, 4 * 4 * 4, angle);
+                    if (ProgressBarHelper.DisplayCancelableProgressBar(p))
+                    {
+                        return;
+                    }
 
                     Matrix4x4 matrix=Matrix4x4.TRS(Vector3.zero,Quaternion.Euler(angle),Vector3.one);
-
-                    
                     Matrix4x4 matrix4World=localMatrix*matrix;
-
-                    var scale1=goTo.transform.localScale;
-
-                    // Vector3[] newVs=new Vector3[vsFromLocal.Length];
-                    // Vector3[] newVs2=new Vector3[vsFromLocal.Length];
-                    // for(int l=0;l<vsFromLocal.Length;l++){
-                    //     //Vector3 vN=matrix.MultiplyPoint(vsFrom[i]);
-                    //     Vector3 vN=matrix.MultiplyPoint3x4(vsFromLocal[l]);
-                    //     Vector3 v2N1=localMatrix.MultiplyPoint3x4(matrix.MultiplyPoint3x4(vsFromLocal[l]))+trans;
-                    //     Vector3 v2N2=matrix4World.MultiplyPoint3x4(vsFromLocal[l])+trans;
-                    //     if(v2N2!=v2N1){
-                    //         Debug.LogError("v2N2!=v2N1");
-                    //     }
-                    //     newVs[l]=vN;
-                    //     newVs2[l]=v2N2;
-                    // }
-
-                    //Vector3[] newVs2=ApplyMatrix(vsFromLocal,matrix4World,trans);
                     Vector3[] newVs2=new Vector3[vsFromLocal.Length];
                     ApplyMatrix(vsFromLocal,matrix4World,trans,newVs2);
-
-                    //GameObject gameObject2=new GameObject("TryAngle"+angle);
-                    //MeshHelper.ShowVertexes(newVs2,0.01f,gameObject2.transform);
-                    
-                   
-                    // goNew.transform.position=goTo.transform.position;
-                    // goNew.transform.rotation=Quaternion.Euler(angle)*rotation;
-                    // goNew.transform.SetParent(gameObject.transform);
                     var dis=DistanceUtil.GetDistance(newVs2,vsToWorld);
-                    if(dis<0.5f){
-                         var mm1=MeshHelper.GetMinMax(newVs2);
-                        var mm2=MeshHelper.GetMinMax(vsToWorld);
-                        var scaleNew=new Vector3(mm2[2].x/mm1[2].x,mm2[2].y/mm1[2].y,mm2[2].z/mm1[2].z);
-                        Vector3 scaleNN=new Vector3(scale1.x*scaleNew.x,scale1.y*scaleNew.y,scale1.z*scaleNew.z);
 
-                        Debug.LogWarning($"angle:{angle},Distance:{dis},scaleNew:{scaleNew.Vector3ToString()},matrix4World:\n{matrix4World}");
+                    
+
+                    if (dis<0.5f){
+                        Debug.LogWarning($"[{count:00}] angle:{angle},Distance:{dis}");
 
                         var goNew = MeshHelper.CopyGO(goFrom);
-                        // Matrix4x4 matrix2=Matrix4x4.TRS(Vector3.zero,Quaternion.Euler(angle),Vector3.one);
+                        goNew.name += "_" + angle+"_"+ dis;
+                        tmpGos.Add(goNew);
 
-                        goNew.transform.position=goTo.transform.position;
-                        // goNew.transform.rotation=Quaternion.Euler(angle)*rotation;
+                        //// Matrix4x4 matrix2=Matrix4x4.TRS(Vector3.zero,Quaternion.Euler(angle),Vector3.one);
+                        //goNew.transform.position=goTo.transform.position;
+                        //// goNew.transform.rotation = Quaternion.LookRotation(matrix4World.GetColumn(2), matrix4World.GetColumn(1))* rotation;
+                        //goNew.transform.rotation = Quaternion.LookRotation(matrix4World.GetColumn(1), matrix4World.GetColumn(2))* rotation;
 
-                        // goNew.transform.rotation = Quaternion.LookRotation(matrix4World.GetColumn(2), matrix4World.GetColumn(1))* rotation;
-                        goNew.transform.rotation = Quaternion.LookRotation(matrix4World.GetColumn(1), matrix4World.GetColumn(2))* rotation;
+                        RTResult rt = RTResult.ApplyAngleMatrix(trans, matrix4World, newVs2, goNew.transform);
 
-                        GameObject gameObject2=new GameObject("TryAngle"+angle);
+                        GameObject gameObject2=CreateEmptyGo("TryAngle"+angle, goTo.transform.position);
                         MeshHelper.ShowVertexes(newVs2,pScale,gameObject2.transform);
 
-                        // goNew.transform.localToWorldMatrix=matrix4World;
+                        if (isTryScale)
+                        {
+                            var mm1 = MeshHelper.GetMinMax(newVs2);
+                            var mm2 = MeshHelper.GetMinMax(vsToWorld);
+                            var scaleNew = new Vector3(mm2[2].x / mm1[2].x, mm2[2].y / mm1[2].y, mm2[2].z / mm1[2].z);
+                            Vector3 scaleNN = new Vector3(scale1.x * scaleNew.x, scale1.y * scaleNew.y, scale1.z * scaleNew.z);
 
-                        // GameObject gameObject2=new GameObject("TryAngle"+angle);
-                        // MeshHelper.ShowVertexes(newVs2,0.01f,gameObject2.transform);
-                        // return;
+                            Debug.LogWarning($"angle:{angle},Distance:{dis},scaleNew:{scaleNew.Vector3ToString()},matrix4World:\n{matrix4World}");
 
-                        //-----------------------------------------------------------
-                        // Matrix4x4 matrix2=Matrix4x4.TRS(Vector3.zero,Quaternion.Euler(angle),scaleNN);
-                        // Matrix4x4 matrix4World2=localMatrix*matrix2;
-                        // Vector3[] newVs3=ApplyMatrix(vsFromLocal,matrix4World2,trans);
-                        // GameObject gameObject3=new GameObject("TryScale"+scaleNN);
-                        // MeshHelper.ShowVertexes(newVs3,pScale,gameObject3.transform);
-                        // var dis2=DistanceUtil.GetDistance(newVs3,vsToWorld);
-                        // Debug.LogWarning($"dis2:{dis2},matrix4World:\n{matrix4World2}");
-
-                        // CreateNewScaleGo(goNew,new Vector3(scaleNN.x,scaleNN.y,scaleNN.z));
-                        // CreateNewScaleGo(goNew,new Vector3(scaleNN.y,scaleNN.x,scaleNN.z));
-                        // CreateNewScaleGo(goNew,new Vector3(scaleNN.z,scaleNN.y,scaleNN.x));
-                        // CreateNewScaleGo(goNew,new Vector3(scaleNN.z,scaleNN.x,scaleNN.y));
-                        // CreateNewScaleGo(goNew,new Vector3(scaleNN.x,scaleNN.z,scaleNN.y));
-                        // CreateNewScaleGo(goNew,new Vector3(scaleNN.y,scaleNN.z,scaleNN.x));//6种情况
-
-                        CreateNewScaleGoMatrix(localMatrix,vsFromLocal,vsToWorld,angle,new Vector3(scaleNN.x,scaleNN.y,scaleNN.z),trans);
-                        CreateNewScaleGoMatrix(localMatrix,vsFromLocal,vsToWorld,angle,new Vector3(scaleNN.y,scaleNN.x,scaleNN.z),trans);
-                        CreateNewScaleGoMatrix(localMatrix,vsFromLocal,vsToWorld,angle,new Vector3(scaleNN.z,scaleNN.y,scaleNN.x),trans);
-                        CreateNewScaleGoMatrix(localMatrix,vsFromLocal,vsToWorld,angle,new Vector3(scaleNN.z,scaleNN.x,scaleNN.y),trans);
-                        CreateNewScaleGoMatrix(localMatrix,vsFromLocal,vsToWorld,angle,new Vector3(scaleNN.x,scaleNN.z,scaleNN.y),trans);
-                        CreateNewScaleGoMatrix(localMatrix,vsFromLocal,vsToWorld,angle,new Vector3(scaleNN.y,scaleNN.z,scaleNN.x),trans);
+                            CreateNewScaleGoMatrix(localMatrix, vsFromLocal, vsToWorld, angle, new Vector3(scaleNN.x, scaleNN.y, scaleNN.z), trans);
+                            CreateNewScaleGoMatrix(localMatrix, vsFromLocal, vsToWorld, angle, new Vector3(scaleNN.y, scaleNN.x, scaleNN.z), trans);
+                            CreateNewScaleGoMatrix(localMatrix, vsFromLocal, vsToWorld, angle, new Vector3(scaleNN.z, scaleNN.y, scaleNN.x), trans);
+                            CreateNewScaleGoMatrix(localMatrix, vsFromLocal, vsToWorld, angle, new Vector3(scaleNN.z, scaleNN.x, scaleNN.y), trans);
+                            CreateNewScaleGoMatrix(localMatrix, vsFromLocal, vsToWorld, angle, new Vector3(scaleNN.x, scaleNN.z, scaleNN.y), trans);
+                            CreateNewScaleGoMatrix(localMatrix, vsFromLocal, vsToWorld, angle, new Vector3(scaleNN.y, scaleNN.z, scaleNN.x), trans);
+                        }
                     }
                     else{
-                        Debug.Log($"angle:{angle},Distance:{dis}");
+                        Debug.Log($"[{count:00}] angle:{angle},Distance:{dis}");
                         //GameObject.DestroyImmediate(goNew);
                     }
                     
                 }
             }
         }
+        ProgressBarHelper.ClearProgressBar();
+        Debug.Log($"TryAnglesMatrix time:{DateTime.Now-start}");
     }
 
     public float distance = 0;

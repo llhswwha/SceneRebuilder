@@ -8,7 +8,7 @@ public class MeshComparerEditorWindow : EditorWindow
     [MenuItem("Window/Tools/MeshComparer")]
     public static void ShowWindow()
     {
-        MeshComparerEditorWindow window = (MeshComparerEditorWindow)EditorWindow.GetWindowWithRect(typeof(MeshComparerEditorWindow), new Rect(0, 0, 600, 200), true, "MeshComparer");
+        MeshComparerEditorWindow window = (MeshComparerEditorWindow)EditorWindow.GetWindowWithRect(typeof(MeshComparerEditorWindow), new Rect(0, 0, 550, 230), true, "MeshComparer");
         window.Show();
         window.Init();
     }

@@ -11,50 +11,39 @@ public class MeshComparerEditor : BaseEditor<MeshComparer>
         EditorGUILayout.BeginHorizontal();
         item.step = (AlignDebugStep)EditorGUILayout.EnumPopup(item.step);
         item.mode = (AlignRotateMode)EditorGUILayout.EnumPopup(item.mode);
-        GUILayout.Label("zeroM:");
+        GUILayout.Label("zM");
         item.disSetting.zeroM = EditorGUILayout.DoubleField(item.disSetting.zeroM);
-        GUILayout.Label("zeroP:");
-        item.disSetting.zeroP = EditorGUILayout.DoubleField(item.disSetting.zeroP);
-        GUILayout.Label("PCount:");
-        item.disSetting.zeroPMaxCount = EditorGUILayout.IntField(item.disSetting.zeroPMaxCount);
-        GUILayout.Label("MaxDis:");
-        item.disSetting.zeroMMaxDis = EditorGUILayout.DoubleField(item.disSetting.zeroMMaxDis);
+        GUILayout.Label("zP");
+        item.disSetting.zeroP = EditorGUILayout.DoubleField(item.disSetting.zeroP, GUILayout.Width(50));
+        GUILayout.Label("pC");
+        item.disSetting.zeroPMaxCount = EditorGUILayout.IntField(item.disSetting.zeroPMaxCount, GUILayout.Width(50));
+        GUILayout.Label("mDis");
+        item.disSetting.zeroMMaxDis = EditorGUILayout.DoubleField(item.disSetting.zeroMMaxDis,GUILayout.Width(40));
         EditorGUILayout.EndHorizontal();
     }
 
     public static void DrawUI(MeshComparer item)
     {
+        if (item == null) return;
         DrawSetting(item);
 
         EditorGUILayout.BeginHorizontal();
-        item.goFrom = BaseEditorHelper.ObjectField("From", item.goFrom);
+        item.goFrom = BaseEditorHelper.ObjectField(">",20, item.goFrom);
+        
+        item.goFromCopy = BaseEditorHelper.ObjectField(">", 20, item.goFromCopy, 100);
+        item.goTo = BaseEditorHelper.ObjectField(">", 20, item.goTo);
+        
+        EditorGUILayout.EndHorizontal();
+
+        EditorGUILayout.BeginHorizontal();
         if (GUILayout.Button("Copy"))
         {
             item.CopyGo2();
         }
-        item.goFromCopy = BaseEditorHelper.ObjectField("FromC", item.goFromCopy);
-        item.goTo = BaseEditorHelper.ObjectField("To", item.goTo);
         if (GUILayout.Button("Switch"))
         {
             item.SwitchGO();
         }
-        EditorGUILayout.EndHorizontal();
-
-        EditorGUILayout.BeginHorizontal();
-        item.ShowLog = GUILayout.Toggle(item.ShowLog, "Log");
-        if (GUILayout.Button("Dis12"))
-        {
-            item.GetDistance12();
-        }
-        if (GUILayout.Button("Dis12C"))
-        {
-            item.GetDistance12C();
-        }
-        if (GUILayout.Button("Dis22C"))
-        {
-            item.GetDistance22C();
-        }
-
         if (GUILayout.Button("Show0"))
         {
             item.goFrom.SetActive(true);
@@ -81,6 +70,26 @@ public class MeshComparerEditor : BaseEditor<MeshComparer>
             item.goFrom.SetActive(false);
             item.goTo.SetActive(false);
         }
+        
+
+        EditorGUILayout.EndHorizontal();
+
+        EditorGUILayout.BeginHorizontal();
+        item.ShowLog = GUILayout.Toggle(item.ShowLog, "Log",GUILayout.Width(40));
+        if (GUILayout.Button("Dis12"))
+        {
+            item.GetDistance12();
+        }
+        if (GUILayout.Button("Dis12C"))
+        {
+            item.GetDistance12C();
+        }
+        if (GUILayout.Button("Dis22C"))
+        {
+            item.GetDistance22C();
+        }
+
+
 
         GUILayout.Label("Dis:" + item.distance);
         //if (GUILayout.Button("CopyTest"))
@@ -90,13 +99,15 @@ public class MeshComparerEditor : BaseEditor<MeshComparer>
         EditorGUILayout.EndHorizontal();
 
         EditorGUILayout.BeginHorizontal();
-        if (GUILayout.Button("Align"))
+        if (GUILayout.Button("*Align"))
         {
             item.AcRTAlign();
+            EditorHelper.SelectObject(item.goFromCopy);
         }
-        if (GUILayout.Button("AlignJob"))
+        if (GUILayout.Button("*AlignJob"))
         {
             item.AcRTAlignJob();
+            EditorHelper.SelectObject(item.goFromCopy);
         }
         if (GUILayout.Button("TestRTAlignJob"))
         {
@@ -122,10 +133,6 @@ public class MeshComparerEditor : BaseEditor<MeshComparer>
         EditorGUILayout.EndHorizontal();
 
         EditorGUILayout.BeginHorizontal();
-        if (GUILayout.Button("InitMeshNodeInfo"))
-        {
-            item.InitMeshNodeInfo();
-        }
         if (GUILayout.Button("TryScales"))
         {
             item.TryScales();
@@ -134,9 +141,13 @@ public class MeshComparerEditor : BaseEditor<MeshComparer>
         {
             item.TryAngles();
         }
-        if (GUILayout.Button("TryAnglesMatrix"))
+        if (GUILayout.Button("TryAnglesM1"))
         {
-            item.TryAnglesMatrix();
+            item.TryAnglesMatrix(false);
+        }
+        if (GUILayout.Button("TryAnglesM2"))
+        {
+            item.TryAnglesMatrix(true);
         }
         if (GUILayout.Button("Rotate2"))
         {
@@ -146,25 +157,54 @@ public class MeshComparerEditor : BaseEditor<MeshComparer>
         EditorGUILayout.EndHorizontal();
 
         EditorGUILayout.BeginHorizontal();
-        if (GUILayout.Button("TryMA_0_0_0"))
+        int x= EditorGUILayout.IntField(item.TryAngle.x, GUILayout.Width(30));
+        int y = EditorGUILayout.IntField(item.TryAngle.y, GUILayout.Width(30));
+        int z = EditorGUILayout.IntField(item.TryAngle.z, GUILayout.Width(30));
+        item.TryAngle = new Vector3Int(x, y, z);
+        if (GUILayout.Button("Try"))
         {
-            item.TryMatrixAngle0_0_0();
+            var go=item.TryMatrixAngle();
+            EditorHelper.SelectObject(go);
         }
-        if (GUILayout.Button("TryMA_90_0_0"))
+        item.TryAngleId = EditorGUILayout.IntField(item.TryAngleId, GUILayout.Width(30));
+        if (GUILayout.Button("TryN"))
         {
-            item.TryMatrixAngle90_0_0();
+            var go=item.TryMatrixAngleN();
+            EditorHelper.SelectObject(go);
         }
-        if (GUILayout.Button("TryMA_180_0_0"))
+        if (GUILayout.Button("Clear"))
         {
-            item.TryMatrixAngle180_0_0();
+            item.ClearTmpObjects();
         }
-        if (GUILayout.Button("TryMA_0_90_0"))
+        if (GUILayout.Button("0_0_0"))
         {
-            item.TryMatrixAngle0_90_0();
+            var go=item.TryMatrixAngle0_0_0();
+            EditorHelper.SelectObject(go);
         }
-        if (GUILayout.Button("TryMA_0_0_90"))
+        if (GUILayout.Button("90_0_0"))
         {
-            item.TryMatrixAngle0_0_90();
+            var go=item.TryMatrixAngle90_0_0();
+            EditorHelper.SelectObject(go);
+        }
+        if (GUILayout.Button("180_0_0"))
+        {
+            var go=item.TryMatrixAngle(new Vector3(180, 0, 0));
+            EditorHelper.SelectObject(go);
+        }
+        if (GUILayout.Button("270_0_0"))
+        {
+            var go=item.TryMatrixAngle(new Vector3(270,0,0));
+            EditorHelper.SelectObject(go);
+        }
+        if (GUILayout.Button("0_90_0"))
+        {
+            var go=item.TryMatrixAngle0_90_0();
+            EditorHelper.SelectObject(go);
+        }
+        if (GUILayout.Button("0_0_90"))
+        {
+            var go=item.TryMatrixAngle0_0_90();
+            EditorHelper.SelectObject(go);
         }
 
         EditorGUILayout.EndHorizontal();
@@ -172,6 +212,10 @@ public class MeshComparerEditor : BaseEditor<MeshComparer>
 
 
         EditorGUILayout.BeginHorizontal();
+        if (GUILayout.Button("InitMeshNodeInfo"))
+        {
+            item.InitMeshNodeInfo();
+        }
         if (GUILayout.Button("CreatePlaneByThreePoint"))
         {
             item.CreatePlaneByThreePoint();

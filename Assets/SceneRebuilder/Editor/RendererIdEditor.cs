@@ -10,11 +10,11 @@ public class RendererIdEditor : BaseEditor<RendererId>
     public override void OnEnable()
     {
         base.OnEnable();
-        if (parent == null)
-        {
-            IdDictionary.InitInfos();
-            parent = targetT.GetParent();
-        }
+        //if (parent == null)
+        //{
+        //    IdDictionary.InitInfos();
+        //    parent = targetT.GetParent();
+        //}
         
     }
     public override void OnToolLayout(RendererId item)

@@ -105,16 +105,33 @@ public class BaseEditor<T> : Editor where T:class
 
 public static class BaseEditorHelper
 {
-    public static TO ObjectField<TO>(TO obj) where TO : UnityEngine.Object
+    public static TO ObjectField<TO>(TO obj, params GUILayoutOption[] options) where TO : UnityEngine.Object
     {
-        return EditorGUILayout.ObjectField(obj, typeof(TO), true) as TO;
+        return EditorGUILayout.ObjectField(obj, typeof(TO), true, options) as TO;
     }
-    public static TO ObjectField<TO>(string label, TO obj) where TO : UnityEngine.Object
+    public static TO ObjectField<TO>(string label, TO obj, params GUILayoutOption[] options) where TO : UnityEngine.Object
     {
         if (GUILayout.Button(label))
         {
             EditorHelper.SelectObject(obj);
         }
-        return EditorGUILayout.ObjectField(obj, typeof(TO), true) as TO;
+        return EditorGUILayout.ObjectField(obj, typeof(TO), true, options) as TO;
+    }
+
+    public static TO ObjectField<TO>(string label,int width1, TO obj, int width2=0) where TO : UnityEngine.Object
+    {
+        if (GUILayout.Button(label,GUILayout.Width(width1)))
+        {
+            EditorHelper.SelectObject(obj);
+        }
+        if (width2 == 0)
+        {
+            return EditorGUILayout.ObjectField(obj, typeof(TO), true) as TO;
+        }
+        else
+        {
+            return EditorGUILayout.ObjectField(obj, typeof(TO), true, GUILayout.Width(width2)) as TO;
+        }
+        
     }
 }

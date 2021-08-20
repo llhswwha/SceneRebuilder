@@ -7,69 +7,57 @@ using UnityEngine;
 
 public class BaseFoldoutEditor<T> : BaseEditor<T> where T : class
 {
-    public Dictionary<System.Object, FoldoutEditorArg> editorArgs = new Dictionary<System.Object, FoldoutEditorArg>();
-
-    public void InitEditorArg<T2>(List<T2> items)/* where T2 : System.Object*/
+    public static Dictionary<System.Object, FoldoutEditorArg> editorArgs
     {
-        foreach (var item in items)
+        get
         {
-            if (item == null) continue;
-            if (!editorArgs.ContainsKey(item))
-            {
-                editorArgs.Add(item, new FoldoutEditorArg());
-            }
-            else
-            {
-                if (editorArgs[item] == null)
-                {
-                    editorArgs[item] = new FoldoutEditorArg();
-                }
-            }
+            return FoldoutEditorArgBuffer.editorArgs;
         }
     }
 
-    public FoldoutEditorArg GetEditorArg<T2>(T2 item, FoldoutEditorArg newArg)/* where T2 : System.Object*/
+    public static void InitEditorArg<T2>(List<T2> items)/* where T2 : System.Object*/
     {
-        if (newArg == null)
-        {
-            newArg = new FoldoutEditorArg();
-        }
-        if (!editorArgs.ContainsKey(item))
-        {
-            editorArgs.Add(item, newArg);
-        }
-        return editorArgs[item];
+        FoldoutEditorArgBuffer.InitEditorArg<T2>(items);
     }
 
-    public static Dictionary<System.Object, FoldoutEditorArg> editorArgs_global = new Dictionary<System.Object, FoldoutEditorArg>();
-
-    public FoldoutEditorArg GetGlobalEditorArg<T2>(T2 item, FoldoutEditorArg newArg)/* where T2 : System.Object*/
+    public static FoldoutEditorArg GetEditorArg<T2>(T2 item, FoldoutEditorArg newArg)/* where T2 : System.Object*/
     {
-        if (newArg == null)
-        {
-            newArg = new FoldoutEditorArg();
-        }
-        if (!editorArgs_global.ContainsKey(item))
-        {
-            editorArgs_global.Add(item, newArg);
-        }
-        return editorArgs_global[item];
+        return FoldoutEditorArgBuffer.GetEditorArg<T2>(item, newArg);
     }
 
-    public void RemoveEditorArg<T2>(List<T2> items)/* where T2 : System.Object*/
+    //public static Dictionary<System.Object, FoldoutEditorArg> editorArgs_global = new Dictionary<System.Object, FoldoutEditorArg>();
+
+    public static FoldoutEditorArg GetGlobalEditorArg<T2>(T2 item, FoldoutEditorArg newArg)/* where T2 : System.Object*/
     {
-        foreach (var item in items)
-        {
-            if (item == null)
-            {
-                
-                continue;
-            }
-            if (editorArgs.ContainsKey(item))
-            {
-                editorArgs.Remove(item);
-            }
-        }
+        //if (newArg == null)
+        //{
+        //    newArg = new FoldoutEditorArg();
+        //}
+        //if (!editorArgs_global.ContainsKey(item))
+        //{
+        //    editorArgs_global.Add(item, newArg);
+        //}
+        //return editorArgs_global[item];
+
+        return FoldoutEditorArgBuffer.GetGlobalEditorArg<T2>(item, newArg);
+    }
+
+    public static void RemoveEditorArg<T2>(List<T2> items)/* where T2 : System.Object*/
+    {
+        //foreach (var item in items)
+        //{
+        //    if (item == null)
+        //    {
+
+        //        continue;
+        //    }
+        //    if (editorArgs.ContainsKey(item))
+        //    {
+        //        editorArgs.Remove(item);
+        //    }
+        //}
+
+        FoldoutEditorArgBuffer.RemoveEditorArg<T2>(items);
     }
 
     public virtual void UpdateList()
@@ -247,7 +235,7 @@ public class BaseFoldoutEditor<T> : BaseEditor<T> where T : class
 
         if (foldoutArg.isExpanded && foldoutArg.isEnabled)
         {
-            
+
 
 
             if (listToolbarEvent != null) listToolbarEvent();
@@ -303,7 +291,7 @@ public class BaseFoldoutEditor<T> : BaseEditor<T> where T : class
             {
                 c++;
                 var b = buildings[i];
-                var arg = editorArgs[b];
+                var arg = FoldoutEditorArgBuffer.editorArgs[b];
                 arg.isExpanded = EditorUIUtils.ObjectFoldout(arg.isExpanded,
                 $"[{i + 1:00}] {b.name} {b.GetInfoText()}",
                 //$"[{i + 1:00}] {b.name} ",
@@ -379,10 +367,10 @@ public class BaseFoldoutEditor<T> : BaseEditor<T> where T : class
                 c++;
                 var tree = trees[i];
                 // if(tree==null)continue;
-                var arg = editorArgs[tree];
+                var arg = FoldoutEditorArgBuffer.editorArgs[tree];
                 if (arg == null)
                 {
-                    editorArgs[tree] = new FoldoutEditorArg();
+                    FoldoutEditorArgBuffer.editorArgs[tree] = new FoldoutEditorArg();
                 }
                 arg.isExpanded = EditorUIUtils.ObjectFoldout(arg.isExpanded, $"[{i + 1:00}] {tree.name}", $"[{tree.VertexCount}w][{tree.GetRendererCount()}][{tree.TreeLeafs.Count}]", false, false, false, tree.gameObject);
                 if (arg.isExpanded)
@@ -395,7 +383,7 @@ public class BaseFoldoutEditor<T> : BaseEditor<T> where T : class
         }
     }
 
-    public List<AreaTreeNode> DrawNodeList(FoldoutEditorArg foldoutArg, bool showTreeName,System.Func<List<AreaTreeNode>> funcGetList)
+    public List<AreaTreeNode> DrawNodeList(FoldoutEditorArg foldoutArg, bool showTreeName, System.Func<List<AreaTreeNode>> funcGetList)
     {
         List<AreaTreeNode> nodes = new List<AreaTreeNode>();
         foldoutArg.caption = $"Node List";
@@ -438,7 +426,7 @@ public class BaseFoldoutEditor<T> : BaseEditor<T> where T : class
             {
                 c++;
                 var node = nodes[i];
-                var arg = editorArgs[node];
+                var arg = FoldoutEditorArgBuffer.editorArgs[node];
                 string title = $"[{i + 1:00}] {node.tree.name}.{node.name}";
                 if (showTreeName == false)
                 {
@@ -456,7 +444,7 @@ public class BaseFoldoutEditor<T> : BaseEditor<T> where T : class
         return nodes;
     }
 
-    public void DrawObjectList<T1>(FoldoutEditorArg foldoutArg,string title, System.Func<List<T1>> funcGetList, System.Action<FoldoutEditorArg,T1,int> drawItemAction,System.Action<T1> toolBarAction, System.Action<FoldoutEditorArg, T1, int> drawSubListAction)
+    public void DrawObjectList<T1>(FoldoutEditorArg foldoutArg, string title, System.Func<List<T1>> funcGetList, System.Action<FoldoutEditorArg, T1, int> drawItemAction, System.Action<T1> toolBarAction, System.Action<FoldoutEditorArg, T1, int> drawSubListAction)
     {
         List<T1> list = new List<T1>();
         foldoutArg.caption = title;
@@ -479,14 +467,14 @@ public class BaseFoldoutEditor<T> : BaseEditor<T> where T : class
             {
                 c++;
                 var item = list[i];
-                var arg = editorArgs[item];
+                var arg = FoldoutEditorArgBuffer.editorArgs[item];
                 arg.level = 1;
                 arg.caption = $"[{i:00}] {item.ToString()}";
                 arg.isFoldout = false;
                 arg.isEnabled = true;
 
                 Object obj = arg.tag as Object;
-                if(item is Object)
+                if (item is Object)
                 {
                     obj = item as Object;
                     arg.caption = obj.name;
@@ -497,14 +485,14 @@ public class BaseFoldoutEditor<T> : BaseEditor<T> where T : class
                     drawItemAction(arg, item, i);
                 }
 
-                EditorUIUtils.ObjectFoldout(arg, obj, ()=>
+                EditorUIUtils.ObjectFoldout(arg, obj, () =>
                 {
                     if (toolBarAction != null)
                     {
                         toolBarAction(item);
                     }
                 });
-                if(arg.isEnabled && arg.isExpanded)
+                if (arg.isEnabled && arg.isExpanded)
                 {
                     if (drawSubListAction != null)
                     {
@@ -557,7 +545,7 @@ public class BaseFoldoutEditor<T> : BaseEditor<T> where T : class
             //Debug.Log($"Init SceneList count:{scenes.Count} time:{time.TotalMilliseconds:F1}ms ");
         }, () =>
         {
-            int filterType = foldoutArg.DrawFilterList(100, 0,"All", "Combined", "Renderers");
+            int filterType = foldoutArg.DrawFilterList(100, 0, "All", "Combined", "Renderers");
             if (GUILayout.Button("Win", GUILayout.Width(35)))
             {
                 SubSceneManagerEditorWindow.ShowWindow();
@@ -573,9 +561,9 @@ public class BaseFoldoutEditor<T> : BaseEditor<T> where T : class
             {
                 c++;
                 var scene = scenes[i];
-                var arg = editorArgs[scene];
+                var arg = FoldoutEditorArgBuffer.editorArgs[scene];
                 BuildingModelInfo modelInfo = scene.GetComponentInParent<BuildingModelInfo>();
-                if(modelInfo==null)
+                if (modelInfo == null)
                 {
                     arg.caption = $"[{i + 1:00}] {scene.name}";
                 }
@@ -583,9 +571,9 @@ public class BaseFoldoutEditor<T> : BaseEditor<T> where T : class
                 {
                     arg.caption = $"[{i + 1:00}] {modelInfo.name}>{scene.name}";
                 }
-               
+
                 arg.info = $"[{scene.vertexCount:F0}w][{scene.rendererCount}]";
-                EditorUIUtils.ObjectFoldout(arg, scene.gameObject,null);
+                EditorUIUtils.ObjectFoldout(arg, scene.gameObject, null);
                 //if (arg.isExpanded)
                 //{
                 //    //BuildingModelInfoEditor.DrawToolbar(b, contentStyle, buttonWidth);
@@ -671,11 +659,11 @@ public class BaseFoldoutEditor<T> : BaseEditor<T> where T : class
             {
                 c++;
                 var mesh = meshFilters[i];
-                if (!editorArgs.ContainsKey(mesh))
+                if (!FoldoutEditorArgBuffer.editorArgs.ContainsKey(mesh))
                 {
-                    editorArgs.Add(mesh, new FoldoutEditorArg());
+                    FoldoutEditorArgBuffer.editorArgs.Add(mesh, new FoldoutEditorArg());
                 }
-                var arg = editorArgs[mesh];
+                var arg = FoldoutEditorArgBuffer.editorArgs[mesh];
                 BuildingModelInfo[] bs = mesh.GetComponentsInParent<BuildingModelInfo>(true);
                 if (bs.Length == 0)
                 {
@@ -801,7 +789,7 @@ public class BaseFoldoutEditor<T> : BaseEditor<T> where T : class
                 MeshProfilerNS.MeshProfiler.ShowWindow();
             }
 
-            
+
         });
 
         if (foldoutArg.isExpanded && foldoutArg.isEnabled)
@@ -816,11 +804,11 @@ public class BaseFoldoutEditor<T> : BaseEditor<T> where T : class
             {
                 c++;
                 var mesh = meshFilters[i];
-                if (!editorArgs.ContainsKey(mesh))
+                if (!FoldoutEditorArgBuffer.editorArgs.ContainsKey(mesh))
                 {
-                    editorArgs.Add(mesh, new FoldoutEditorArg());
+                    FoldoutEditorArgBuffer.editorArgs.Add(mesh, new FoldoutEditorArg());
                 }
-                var arg = editorArgs[mesh];
+                var arg = FoldoutEditorArgBuffer.editorArgs[mesh];
                 BuildingModelInfo[] bs = mesh.GetComponentsInParent<BuildingModelInfo>(true);
                 if (bs.Length == 0)
                 {
@@ -849,7 +837,7 @@ public class BaseFoldoutEditor<T> : BaseEditor<T> where T : class
                 }
                 arg.caption = $"[{i + 1:00}] {building.name}>>{mesh.transform.parent.name}>{mesh.name}";
                 arg.info = $"[{mesh.vertexCount / 10000f:F1}w][{mesh.GetDiam():F1}](LOD[{mesh.GetLODIds()}])";
-               EditorUIUtils.ObjectFoldout(arg, mesh.gameObject,null);
+                EditorUIUtils.ObjectFoldout(arg, mesh.gameObject, null);
                 //if (arg.isExpanded)
                 //{
                 //    //BuildingModelInfoEditor.DrawToolbar(b, contentStyle, buttonWidth);
@@ -903,7 +891,7 @@ public class BaseFoldoutEditor<T> : BaseEditor<T> where T : class
             matListArg.DrawPageToolbar(item.meshMaterialList, (meshMat, i) =>
             {
 
-                var matArg = editorArgs[meshMat];
+                var matArg = FoldoutEditorArgBuffer.editorArgs[meshMat];
                 matArg.background = true;
                 matArg.caption = $"[{i + 1:00}] {meshMat.GetName()} ({meshMat.subMeshs.Count})";
                 //matArg.info = $"count:{meshMat.subMeshs.Count}";
@@ -932,7 +920,7 @@ public class BaseFoldoutEditor<T> : BaseEditor<T> where T : class
                     matArg.DrawPageToolbar(meshMat.subMeshs, (subMesh, j) =>
                     {
 
-                        var arg = editorArgs[subMesh];
+                        var arg = FoldoutEditorArgBuffer.editorArgs[subMesh];
                         arg.caption = $"[{j + 1:00}] {subMesh.GetName()}";
                         //arg.info = $"count:{subMesh.subMeshs.Count}";
                         EditorUIUtils.ObjectFoldout(arg, subMesh.meshFilter.gameObject, () =>
@@ -961,14 +949,14 @@ public class BaseFoldoutEditor<T> : BaseEditor<T> where T : class
         () =>
         {
             //item.IsOnlyActive = EditorGUILayout.Toggle("Active", item.IsOnlyActive);
-            item.IsOnlyActive = GUILayout.Toggle(item.IsOnlyActive,"Active");
+            item.IsOnlyActive = GUILayout.Toggle(item.IsOnlyActive, "Active");
             //item.IsOnlyCanSplit = EditorGUILayout.Toggle("CanSplit", item.IsOnlyCanSplit);
-            item.IsOnlyCanSplit = GUILayout.Toggle(item.IsOnlyCanSplit,"CanSplit");
+            item.IsOnlyCanSplit = GUILayout.Toggle(item.IsOnlyCanSplit, "CanSplit");
             if (GUILayout.Button("Split", GUILayout.Width(50)))
             {
                 item.SplitAll();
             }
-            if (GUILayout.Button("Update",GUILayout.Width(70)))
+            if (GUILayout.Button("Update", GUILayout.Width(70)))
             {
                 RemoveEditorArg(item.GetDoorParts());
                 item.UpdateDoors();
@@ -978,14 +966,14 @@ public class BaseFoldoutEditor<T> : BaseEditor<T> where T : class
         if (doorListArg.isEnabled && doorListArg.isExpanded)
         {
             EditorGUILayout.BeginHorizontal();
-            
-            
+
+
             EditorGUILayout.EndHorizontal();
             var doors = item.GetDoorParts();
             InitEditorArg(doors);
             doorListArg.DrawPageToolbar(doors, (door, i) =>
             {
-                var arg = editorArgs[door];
+                var arg = FoldoutEditorArgBuffer.editorArgs[door];
                 arg.caption = $"[{i + 1:00}] {door.GetTitle()}";
                 arg.info = door.ToString();
                 EditorUIUtils.ObjectFoldout(arg, door.gameObject, () =>
@@ -993,78 +981,14 @@ public class BaseFoldoutEditor<T> : BaseEditor<T> where T : class
                     if (GUILayout.Button("Split", GUILayout.Width(50)))
                     {
                         Debug.Log($"Split:{door.GetTitle()}");
-                        GameObject result = MeshCombineHelper.SplitByMaterials(door.gameObject,false);
+                        GameObject result = MeshCombineHelper.SplitByMaterials(door.gameObject, false);
                     }
                 });
             });
         }
     }
 
-    public void DrawPrefabList(FoldoutEditorArg prefabListArg, System.Func<PrefabInfoList> funcGetList)
-    {
-        //ObjectField(item.LocalTarget);
-        prefabListArg.caption = $"Prefab List";
-        prefabListArg.level = 0;
-        EditorUIUtils.ToggleFoldout(prefabListArg, arg =>
-        {
-            var prefabs = funcGetList();
-            int vCount = 0;
-            int vAllCount = 0;
-            int rCount = 0;
-            prefabs.ForEach(i =>
-            {
-                vCount += i.VertexCount;
-                vAllCount += i.VertexCount*(i.InstanceCount+1);
-                rCount += (i.InstanceCount + 1);
-            });
-            arg.caption = $"Prefab List ({prefabs.Count})";
-            arg.info = $"r:{rCount}|{MeshHelper.GetVertexCountS(vCount)}/{MeshHelper.GetVertexCountS(vAllCount)}({(float)vCount/ vAllCount:P1})";
-            InitEditorArg(prefabs);
-        },
-        () =>
-        {
-            //if (GUILayout.Button("Update"))
-            //{
-            //    RemoveEditorArg(item.doorRoots);
-            //    InitEditorArg(item.UpdateDoors());
-            //}
-        });
-        if (prefabListArg.isEnabled && prefabListArg.isExpanded)
-        {
-            var prefabList = funcGetList();
-            InitEditorArg(prefabList);
-            prefabListArg.DrawPageToolbar(prefabList, (prefabInfo, i) =>
-            {
-                var prefabInfoArg = editorArgs[prefabInfo];
-                prefabInfoArg.level = 1;
-                prefabInfoArg.background = true;
-                prefabInfoArg.caption = $"[{i + 1:00}] {prefabInfo.GetTitle()}";
-                prefabInfoArg.info = prefabInfo.ToString();
-                EditorUIUtils.ObjectFoldout(prefabInfoArg, prefabInfo.Prefab, () =>
-                {
-                });
 
-                if (prefabInfoArg.isExpanded)
-                {
-                    InitEditorArg(prefabInfo.Instances);
-                    prefabInfoArg.DrawPageToolbar(prefabInfo.Instances, (ins, j) =>
-                     {
-                         if (ins == null) return;
-                         var insArg = editorArgs[ins];
-                         insArg.level = 2;
-                         insArg.background = true;
-                         insArg.caption = $"[{i + 1:00}] {ins.name}";
-                         //insArg.info = prefabInfo.ToString();
-                         EditorUIUtils.ObjectFoldout(insArg, ins, () =>
-                         {
-                         });
-                     });
-                }
-
-                //DrawDoorList(doorRootArg, doorRoot, true);
-            });
-        }
-    }
 
     public void DrawPrefabInstanceList()
     {
@@ -1107,32 +1031,32 @@ public class BaseFoldoutEditor<T> : BaseEditor<T> where T : class
             doorRootListArg.DrawPageToolbar(rootList, (doorRoot, i) =>
             {
                 if (doorRoot == null) return;
-                var doorRootArg = editorArgs[doorRoot];
+                var doorRootArg = FoldoutEditorArgBuffer.editorArgs[doorRoot];
                 doorRootArg.level = 1;
                 doorRootArg.background = true;
                 doorRootArg.caption = $"[{i + 1:00}] {doorRoot.GetTitle()}";
                 doorRootArg.info = doorRoot.ToString();
                 //EditorUIUtils.ObjectFoldout(doorRootArg, doorRoot.gameObject, () =>
                 //{
-                    
+
                 //});
 
                 EditorUIUtils.ObjectFoldout(doorRootArg, doorRoot.gameObject, () =>
                 {
-                    if (GUILayout.Button("Share",GUILayout.Width(50)))
+                    if (GUILayout.Button("Share", GUILayout.Width(50)))
                     {
                         doorRoot.SetDoorShared();
                     }
                 });
 
-                DrawDoorList(doorRootArg, doorRoot.Doors,true);
+                DrawDoorList(doorRootArg, doorRoot.Doors, true);
             });
         }
     }
 
     public void DrawDoorList(FoldoutEditorArg doorRootArg, DoorInfoList doors, bool isSubList)
     {
-        if (isSubList==false)
+        if (isSubList == false)
         {
             doorRootArg.caption = $"Door List";
             doorRootArg.level = 0;
@@ -1145,12 +1069,12 @@ public class BaseFoldoutEditor<T> : BaseEditor<T> where T : class
             },
             () =>
             {
-            //if (GUILayout.Button("Update"))
-            //{
-            //    RemoveEditorArg(doorsRoot.doorRoots);
-            //    InitEditorArg(item.UpdateDoors());
-            //}
-        });
+                //if (GUILayout.Button("Update"))
+                //{
+                //    RemoveEditorArg(doorsRoot.doorRoots);
+                //    InitEditorArg(item.UpdateDoors());
+                //}
+            });
         }
 
 
@@ -1161,7 +1085,7 @@ public class BaseFoldoutEditor<T> : BaseEditor<T> where T : class
             InitEditorArg(doors);
             doorRootArg.DrawPageToolbar(doors, (door, i) =>
             {
-                var arg = editorArgs[door];
+                var arg = FoldoutEditorArgBuffer.editorArgs[door];
                 arg.caption = $"[{i + 1:00}] {door.GetTitle()}";
                 arg.info = door.ToString();
                 arg.level = 2;
@@ -1173,7 +1097,7 @@ public class BaseFoldoutEditor<T> : BaseEditor<T> where T : class
         }
     }
 
-   protected void DrawLODGroupList(FoldoutEditorArg<LODGroupDetails> lodGroupListArg, LODManager lodManager)
+    protected void DrawLODGroupList(FoldoutEditorArg<LODGroupDetails> lodGroupListArg, LODManager lodManager)
     {
         lodGroupListArg.caption = $"LOD List";
         EditorUIUtils.ToggleFoldout(lodGroupListArg, arg =>
@@ -1185,12 +1109,12 @@ public class BaseFoldoutEditor<T> : BaseEditor<T> where T : class
             }
             else if (arg.listFilterId == 2)
             {
-                lods = lods.Where(i => i.group.gameObject.activeInHierarchy==false).ToList();
+                lods = lods.Where(i => i.group.gameObject.activeInHierarchy == false).ToList();
             }
 
             if (Application.isPlaying)
             {
-                lods.Sort((a, b) => 
+                lods.Sort((a, b) =>
                 {
                     int r1 = a.currentInfo.currentLevel.CompareTo(b.currentInfo.currentLevel);
                     if (r1 == 0)
@@ -1201,7 +1125,7 @@ public class BaseFoldoutEditor<T> : BaseEditor<T> where T : class
                     //{
                     //    r1 = b.currentChild.renderers.CompareTo(a.currentInfo.currentPercentage);
                     //}
-                    return r1; 
+                    return r1;
                 });
             }
 
@@ -1252,7 +1176,7 @@ public class BaseFoldoutEditor<T> : BaseEditor<T> where T : class
             InitEditorArg(lods);
             lodGroupListArg.DrawPageToolbar(lods, (lodDetail, i) =>
             {
-                var arg = editorArgs[lodDetail];
+                var arg = FoldoutEditorArgBuffer.editorArgs[lodDetail];
                 if (lodDetail.group == null) return;
                 arg.caption = $"[{i:00}] {lodDetail.group.name}";
                 arg.level = 1;
@@ -1288,7 +1212,7 @@ public class BaseFoldoutEditor<T> : BaseEditor<T> where T : class
 
                         string btnName = $"L{i}[{vertexS}][{lodChild.vertexCount / lod0Vertex:P0}][{lodChild.screenRelativeTransitionHeight:F1}]";
 
-                        if(lodChild== lodDetail.currentChild)
+                        if (lodChild == lodDetail.currentChild)
                         {
                             btnName += "*";
                         }
@@ -1313,7 +1237,7 @@ public class BaseFoldoutEditor<T> : BaseEditor<T> where T : class
         }
         EditorUIUtils.ToggleFoldout(listArg, arg =>
         {
-            
+
             arg.caption = $"SharedMesh List ({list.Count})";
             arg.info = $"{MeshHelper.GetVertexCountS(list.sharedVertexCount)}/{MeshHelper.GetVertexCountS(list.totalVertexCount)}({list.sharedVertexCount / (float)list.totalVertexCount:P1})|{list.filterCount}";
             InitEditorArg(list);
@@ -1385,7 +1309,7 @@ public class BaseFoldoutEditor<T> : BaseEditor<T> where T : class
                 }
                 else
                 {
-                    var arg = editorArgs[node];
+                    var arg = FoldoutEditorArgBuffer.editorArgs[node];
                     arg.level = 1;
                     arg.isFoldout = node.GetCount() > 0;
                     arg.caption = $"[{i:00}] {node.GetName()} ({node.GetCount()})";
@@ -1407,7 +1331,7 @@ public class BaseFoldoutEditor<T> : BaseEditor<T> where T : class
                         var btnStyle = new GUIStyle(EditorStyles.miniButton);
                         btnStyle.margin = new RectOffset(0, 0, 0, 0);
                         btnStyle.padding = new RectOffset(0, 0, 0, 0);
-                        if (GUILayout.Button("S", btnStyle,GUILayout.Width(25)))
+                        if (GUILayout.Button("S", btnStyle, GUILayout.Width(25)))
                         {
                             EditorHelper.SelectObjects(node.GetGameObjects());
                         }
@@ -1415,11 +1339,11 @@ public class BaseFoldoutEditor<T> : BaseEditor<T> where T : class
                         //{
                         //    node.Destroy(1);
                         //}
-                    },()=>
-                    {
-                        node.Destroy();
-                        list.Remove(node);
-                    });
+                    }, () =>
+                     {
+                         node.Destroy();
+                         list.Remove(node);
+                     });
 
                     if (arg.isEnabled && arg.isExpanded)
                     {
@@ -1429,7 +1353,7 @@ public class BaseFoldoutEditor<T> : BaseEditor<T> where T : class
                         foreach (var mf in filters)
                         {
                             if (mf == null) continue;
-                            var mfArg = editorArgs[mf];
+                            var mfArg = FoldoutEditorArgBuffer.editorArgs[mf];
                             mfArg.isFoldout = false;
                             mfArg.level = 2;
                             if (mf.transform.parent == null)
@@ -1440,7 +1364,7 @@ public class BaseFoldoutEditor<T> : BaseEditor<T> where T : class
                             {
                                 mfArg.caption = mf.transform.parent.name + "> " + mf.name;
                             }
-                            
+
                             EditorUIUtils.ObjectFoldout(mfArg, mf.gameObject, () =>
                             {
 
@@ -1457,4 +1381,145 @@ public class BaseFoldoutEditor<T> : BaseEditor<T> where T : class
         }
     }
 
+    public static void DrawPrefabList(FoldoutEditorArg prefabListArg, System.Func<PrefabInfoList> funcGetList)
+    {
+        BaseFoldoutEditorHelper.DrawPrefabList(prefabListArg, funcGetList);
+    }
+}
+public static class FoldoutEditorArgBuffer
+{
+    public static Dictionary<System.Object, FoldoutEditorArg> editorArgs = new Dictionary<System.Object, FoldoutEditorArg>();
+
+    public static void InitEditorArg<T2>(List<T2> items)/* where T2 : System.Object*/
+    {
+        foreach (var item in items)
+        {
+            if (item == null) continue;
+            if (!editorArgs.ContainsKey(item))
+            {
+                editorArgs.Add(item, new FoldoutEditorArg());
+            }
+            else
+            {
+                if (editorArgs[item] == null)
+                {
+                    editorArgs[item] = new FoldoutEditorArg();
+                }
+            }
+        }
+    }
+
+    public static FoldoutEditorArg GetEditorArg<T2>(T2 item, FoldoutEditorArg newArg)/* where T2 : System.Object*/
+    {
+        if (newArg == null)
+        {
+            newArg = new FoldoutEditorArg();
+        }
+        if (!editorArgs.ContainsKey(item))
+        {
+            editorArgs.Add(item, newArg);
+        }
+        return editorArgs[item];
+    }
+
+    public static Dictionary<System.Object, FoldoutEditorArg> editorArgs_global = new Dictionary<System.Object, FoldoutEditorArg>();
+
+    public static FoldoutEditorArg GetGlobalEditorArg<T2>(T2 item, FoldoutEditorArg newArg)/* where T2 : System.Object*/
+    {
+        if (newArg == null)
+        {
+            newArg = new FoldoutEditorArg();
+        }
+        if (!editorArgs_global.ContainsKey(item))
+        {
+            editorArgs_global.Add(item, newArg);
+        }
+        return editorArgs_global[item];
+    }
+
+    public static void RemoveEditorArg<T2>(List<T2> items)/* where T2 : System.Object*/
+    {
+        foreach (var item in items)
+        {
+            if (item == null)
+            {
+
+                continue;
+            }
+            if (editorArgs.ContainsKey(item))
+            {
+                editorArgs.Remove(item);
+            }
+        }
+    }
+}
+
+public static class BaseFoldoutEditorHelper
+{
+    
+    public static void DrawPrefabList(FoldoutEditorArg prefabListArg, System.Func<PrefabInfoList> funcGetList)
+    {
+        //ObjectField(item.LocalTarget);
+        prefabListArg.caption = $"Prefab List";
+        prefabListArg.level = 0;
+        EditorUIUtils.ToggleFoldout(prefabListArg, arg =>
+        {
+            var prefabs = funcGetList();
+            int vCount = 0;
+            int vAllCount = 0;
+            int rCount = 0;
+            prefabs.ForEach(i =>
+            {
+                vCount += i.VertexCount;
+                vAllCount += i.VertexCount * (i.InstanceCount + 1);
+                rCount += (i.InstanceCount + 1);
+            });
+            arg.caption = $"Prefab List ({prefabs.Count})";
+            arg.info = $"r:{rCount}|{MeshHelper.GetVertexCountS(vCount)}/{MeshHelper.GetVertexCountS(vAllCount)}({(float)vCount / vAllCount:P1})";
+            FoldoutEditorArgBuffer.InitEditorArg(prefabs);
+        },
+        () =>
+        {
+            //if (GUILayout.Button("Update"))
+            //{
+            //    RemoveEditorArg(item.doorRoots);
+            //    InitEditorArg(item.UpdateDoors());
+            //}
+        });
+        if (prefabListArg.isEnabled && prefabListArg.isExpanded)
+        {
+            var prefabList = funcGetList();
+            FoldoutEditorArgBuffer.InitEditorArg(prefabList);
+            prefabListArg.DrawPageToolbar(prefabList, (prefabInfo, i) =>
+            {
+                var prefabInfoArg = FoldoutEditorArgBuffer.editorArgs[prefabInfo];
+                prefabInfoArg.level = 1;
+                prefabInfoArg.background = true;
+                prefabInfoArg.caption = $"[{i + 1:00}] {prefabInfo.GetTitle()}";
+                prefabInfoArg.info = prefabInfo.ToString();
+                EditorUIUtils.ObjectFoldout(prefabInfoArg, prefabInfo.Prefab, () =>
+                {
+                });
+
+                if (prefabInfoArg.isExpanded)
+                {
+                    FoldoutEditorArgBuffer.InitEditorArg(prefabInfo.Instances);
+                    prefabInfoArg.DrawPageToolbar(prefabInfo.Instances, (ins, j) =>
+                    {
+                        if (ins == null) return;
+                        var insArg = FoldoutEditorArgBuffer.editorArgs[ins];
+                        insArg.level = 2;
+                        insArg.background = true;
+                        insArg.caption = $"[{i + 1:00}] {ins.name}";
+                        //insArg.info = prefabInfo.ToString();
+                        EditorUIUtils.ObjectFoldout(insArg, ins, () =>
+                        {
+                        });
+                    });
+                }
+
+                //DrawDoorList(doorRootArg, doorRoot, true);
+            });
+        }
+    }
 }
