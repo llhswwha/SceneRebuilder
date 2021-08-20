@@ -645,6 +645,7 @@ public static class PrefabInfoListHelper
         for (int i = 0; i < list1.Count; i++)
         {
             var item1 = list1[i];
+            var p1 = new ProgressArg("GetPrefabInfos1", i, list1.Count, item1);
             if (item1.gameObject == null)
             {
                 Debug.LogError($"item1.gameObject == null item1:{item1}");
@@ -652,7 +653,7 @@ public static class PrefabInfoListHelper
             }
             list2.Remove(item1);
 
-            if (ProgressBarHelper.DisplayCancelableProgressBar("SetDoorShared1", i, list1.Count))
+            if (ProgressBarHelper.DisplayCancelableProgressBar(p1))
             {
                 break;
             }
@@ -685,18 +686,21 @@ public static class PrefabInfoListHelper
             bool isBreak = false;
             for (int j = 0; j < list2.Count; j++)
             {
+                var item2 = list2[j];
+                var p2 = new ProgressArg("GetPrefabInfos2", j, list2.Count, item2);
+                p1.AddSubProgress(p2);
                 if (copyItem1 == null)
                 {
                     copyItem1 = item1.Clone() as T;
                 }
                 count++;
-                if (ProgressBarHelper.DisplayCancelableProgressBar("SetDoorShared2", i, list1.Count, j, list2.Count))
+                if (ProgressBarHelper.DisplayCancelableProgressBar(p1))
                 {
                     isBreak = true;
                     break;
                 }
 
-                var item2 = list2[j];
+                
                 if (item2.gameObject == null)
                 {
                     Debug.LogError($"item2Go == null item2:{item2} item1:{item1}");

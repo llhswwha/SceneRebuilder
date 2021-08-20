@@ -45,7 +45,7 @@ public class BuildingModelInfo : SubSceneCreater
 
     public void CombineDoors()
     {
-        var rootList = DoorManager.UpdateDoors(this.gameObject);
+        var rootList = DoorManager.UpdateDoors(this.gameObject,null);
         Debug.Log($"CombineDoors roots:{rootList.Count} name:{this.name}");
         if (rootList.Count == 1) return;
         if (rootList.Count ==2)
@@ -104,7 +104,7 @@ public class BuildingModelInfo : SubSceneCreater
 
     public void DeleteOthersOfDoor()
     {
-        var rootList = DoorManager.UpdateDoors(this.gameObject);
+        var rootList = DoorManager.UpdateDoors(this.gameObject,null);
         rootList.SetParent(null);
 
         var children = this.GetChildren();

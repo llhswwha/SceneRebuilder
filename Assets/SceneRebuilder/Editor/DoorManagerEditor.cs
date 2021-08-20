@@ -36,7 +36,14 @@ public class DoorManagerEditor : BaseFoldoutEditor<DoorManager>
 
         if (GUILayout.Button("Update"))
         {
-            item.UpdateDoors();
+            item.UpdateDoors(p=> 
+            {
+                ProgressBarHelper.DisplayCancelableProgressBar(p);
+            });
+
+            sharedMeshListArg.tag = item.GetSharedMeshList();
+
+            ProgressBarHelper.ClearProgressBar();
         }
 
         GUILayout.BeginHorizontal();

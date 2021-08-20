@@ -951,12 +951,12 @@ public class BaseFoldoutEditor<T> : BaseEditor<T> where T : class
             //item.IsOnlyActive = EditorGUILayout.Toggle("Active", item.IsOnlyActive);
             item.IsOnlyActive = GUILayout.Toggle(item.IsOnlyActive, "Active");
             //item.IsOnlyCanSplit = EditorGUILayout.Toggle("CanSplit", item.IsOnlyCanSplit);
-            item.IsOnlyCanSplit = GUILayout.Toggle(item.IsOnlyCanSplit, "CanSplit");
-            if (GUILayout.Button("Split", GUILayout.Width(50)))
+            item.IsOnlyCanSplit = GUILayout.Toggle(item.IsOnlyCanSplit, "Split");
+            if (GUILayout.Button("Split", GUILayout.Width(40)))
             {
                 item.SplitAll();
             }
-            if (GUILayout.Button("Update", GUILayout.Width(70)))
+            if (GUILayout.Button("Update", GUILayout.Width(60)))
             {
                 RemoveEditorArg(item.GetDoorParts());
                 item.UpdateDoors();

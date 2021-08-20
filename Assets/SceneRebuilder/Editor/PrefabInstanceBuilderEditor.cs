@@ -18,6 +18,7 @@ public class PrefabInstanceBuilderEditor : BaseFoldoutEditor<PrefabInstanceBuild
 
     public static void DrawUI(PrefabInstanceBuilder item)
     {
+        if (item == null) return;
         DrawTargetRoot(item);
         DrawAlignTest(item);
         DrawAlignResult(item);

@@ -339,7 +339,7 @@ public class ProgressArg
 
     private string GetProgress()
     {
-        return $"{i}/{count} {progress:P1}";
+        return $"{i}/{count} {progress:P2}";
     }
 
     public override string ToString()

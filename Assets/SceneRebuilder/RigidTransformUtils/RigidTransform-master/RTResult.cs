@@ -170,7 +170,7 @@ public class RTResult:IRTResult
             {
                 tFrom.transform.parent = null;
                 
-                Debug.LogError($"ApplyMatrix01 tFrom.transform.parent != null from:{tFrom.name}");
+                Debug.LogError($"ApplyMatrix01 tFrom.transform.parent != null from:{tFrom.name} parent:{tFrom.transform.parent}");
             }
 
             tFrom.rotation = Quaternion.Euler(0, 0, 0);
