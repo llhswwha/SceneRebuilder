@@ -68,12 +68,6 @@ public static class RendererHelper
         // {
         //    render.enabled = false;//
         // }
-
-
-        //render.shadowCastingMode = UnityEngine.Rendering.ShadowCastingMode.ShadowsOnly;//��������,������Ӱ
-        //3.3w������Ӱ������
-        //shadowCastingMode��50ms,20FPS��Set Pass 70
-        //enabled��100FPS��Set Pass 78
     }
 
     public static Dictionary<Renderer, string> Renderer2Id = new Dictionary<Renderer, string>();

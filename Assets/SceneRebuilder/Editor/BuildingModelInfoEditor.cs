@@ -97,6 +97,7 @@ public class BuildingModelInfoEditor : BaseFoldoutEditor<BuildingModelInfo>
         NewButton("CreateByLOD", buttonWidth, state.CanCreateTrees, btnStyle, info.CreateTreesByLOD);
         NewButton("CreateNoLOD", buttonWidth, state.CanCreateTrees, btnStyle, info.CreateTreesByLOD);
         AreaTreeManager.Instance.isCombine = GUILayout.Toggle(AreaTreeManager.Instance.isCombine, "Combine");
+        PrefabInstanceBuilder.Instance.IsCopyTargetRoot = GUILayout.Toggle(PrefabInstanceBuilder.Instance.IsCopyTargetRoot, "Copy");
         //NewButton("GetTreeAreas", buttonWidth, state.CanCreateTrees, btnStyle, info.CreateTreesByLOD);
         EditorGUILayout.EndHorizontal();
 

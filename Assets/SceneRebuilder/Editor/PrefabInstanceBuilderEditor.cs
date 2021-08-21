@@ -198,7 +198,8 @@ public class PrefabInstanceBuilderEditor : BaseFoldoutEditor<PrefabInstanceBuild
         }
         if (GUILayout.Button("BigSmallRenderers"))
         {
-            item.GetBigSmallRenderers();
+            //item.GetBigSmallRenderers();
+            var bs = new BigSmallListInfo(item.TargetRoots);
         }
         if (GUILayout.Button("CombinedRenderers"))
         {

@@ -4,6 +4,7 @@ using UnityEngine;
 using System.Linq;
 using System;
 using MeshJobs;
+using static PrefabInstanceBuilder;
 #if UNITY_EDITOR
 using UnityEditor;
 #endif
@@ -761,13 +762,8 @@ public class BuildingModelInfo : SubSceneCreater
         //     Debug.LogError("GetSmallBigInfo JobSetting == null");
         //     return;
         // }
-
         RendererManager.Instance.SetDetailRenderers(this.GetComponentsInChildren<MeshRenderer>(true));
-
-        var meshFilters = OutPart0.GetComponentsInChildren<MeshFilter>(true);
-        List<MeshPoints> meshPoints = MeshPoints.GetMeshPoints(meshFilters);
-        var info=PrefabInstanceBuilder.GetBigSmallRenderers(meshPoints.ToArray(), AcRTAlignJobSetting.Instance.MaxModelLength);
-
+        var info=new BigSmallListInfo(OutPart0);
         Out0BigRendererCount = info.bigModels.Count;
         Out0BigVertextCount = info.sumVertex_Big;
         Out0SmallRendererCount = info.smallModels.Count;

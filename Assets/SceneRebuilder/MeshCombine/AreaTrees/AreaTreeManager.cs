@@ -50,7 +50,7 @@ public class AreaTreeManager : SingletonBehaviour<AreaTreeManager>
 
 
         if(prefabInstanceBuilder && prefabInstanceBuilder.TargetRoots==null){
-            prefabInstanceBuilder.TargetRoots=Target;
+            prefabInstanceBuilder.SetTarget(Target);
         }
         return Target;
     }
@@ -511,9 +511,11 @@ public class AreaTreeManager : SingletonBehaviour<AreaTreeManager>
 
         DateTime start = DateTime.Now;
 
-        prefabInstanceBuilder.IsCopyTargetRoot = this.IsCopy;
-        prefabInstanceBuilder.TargetRoots = target;
-        var bigSmallInfo=prefabInstanceBuilder.GetBigSmallRenderers();
+        //prefabInstanceBuilder.IsCopyTargetRoot = this.IsCopy;
+        //prefabInstanceBuilder.SetTarget(target);
+        //var bigSmallInfo=prefabInstanceBuilder.GetBigSmallRenderers();
+
+        var bigSmallInfo = new BigSmallListInfo(target);
         Debug.LogError($"CreateOne_BigSmall_Core bigSmallInfo:{bigSmallInfo}");
 
         ProgressArg p1 = new ProgressArg("CreateOne_BigSmall_Core", 0,2, "SamllTree");

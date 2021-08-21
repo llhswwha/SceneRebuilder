@@ -17,6 +17,15 @@ public class PrefabInstanceBuilder : SingletonBehaviour<PrefabInstanceBuilder>
     public AlignRotateMode mode;
 
     public GameObject TargetRoots;
+
+    public void SetTarget(GameObject root)
+    {
+        TargetRoots = root;
+
+        if(TargetRootsCopy!=null)
+            GameObject.DestroyImmediate(TargetRootsCopy);
+    }
+
     public GameObject TargetRootsCopy;
 
     public int TargetCount=0;
@@ -153,7 +162,7 @@ public class PrefabInstanceBuilder : SingletonBehaviour<PrefabInstanceBuilder>
     {
         #if UNITY_EDITOR
         if(TargetRoots==null&&transform.childCount==1){
-            TargetRoots=transform.GetChild(0).gameObject;
+            SetTarget(transform.GetChild(0).gameObject);
         }
         string path="Assets/Models/Prefabs/"+TargetRoots.name+".prefab";
         PrefabUtility.SaveAsPrefabAssetAndConnect(TargetRoots,path,InteractionMode.UserAction);
@@ -225,7 +234,7 @@ UnpackPrefab();
     public void UnpackPrefab()
     {
         if(TargetRoots==null&&transform.childCount==1){
-            TargetRoots=transform.GetChild(0).gameObject;
+            SetTarget(transform.GetChild(0).gameObject);
         }
 #if UNITY_EDITOR
         if(TargetRoots==null) return;
@@ -480,7 +489,7 @@ UnpackPrefab();
         {
             var modelRoot=GameObject.FindObjectOfType<ModelRoot>();
             if(modelRoot){
-                TargetRoots=modelRoot.gameObject;
+                SetTarget(modelRoot.gameObject);
             }
         }
         if(TargetRootsCopy)
@@ -490,37 +499,15 @@ UnpackPrefab();
         return TargetRoots;
     }
 
+    public MeshFilter[] meshFilters;
+
+    public void SetMeshFilters(MeshFilter[] mfs)
+    {
+        this.meshFilters = mfs;
+    }
+
     public MeshPoints[] GetMeshFilters()
     {
-        
-        // MeshFilter[] meshFilters=null;
-        // if(TargetRoots){
-        //     //meshFilters=TargetRoots.GetComponentsInChildren<MeshFilter>();
-            
-        //     if(IsCopyTargetRoot)
-        //     {
-        //         if(TargetRootsCopy!=null){
-        //             GameObject.DestroyImmediate(TargetRootsCopy);
-        //         }
-
-        //         TargetRoots.SetActive(false);
-        //         GameObject copy=MeshHelper.CopyGO(TargetRoots);
-        //         copy.SetActive(true);
-        //         meshFilters=copy.GetComponentsInChildren<MeshFilter>(true);
-        //         //ClearMeshFilters(meshFilters.ToList());
-        //         TargetRootsCopy=copy;
-        //     }
-        //     else{
-        //         meshFilters=TargetRoots.GetComponentsInChildren<MeshFilter>(true);
-        //         //ClearMeshFilters(meshFilters.ToList());
-        //     }
-            
-            
-        // }
-        // else{
-        //     meshFilters=GameObject.FindObjectsOfType<MeshFilter>();
-        // }
-        // return meshFilters;
         if(TargetRoots==null&&TargetRootsCopy==null)
         {
             GetTarget();
@@ -536,7 +523,6 @@ UnpackPrefab();
                 CopyTarget();
             }
         }
-
         MeshFilter[] meshFilters=null;
         if(TargetRootsCopy){
             var meshFilters1=TargetRootsCopy.GetComponentsInChildren<MeshFilter>(true);
@@ -555,7 +541,26 @@ UnpackPrefab();
         //    meshFilters=GameObject.FindObjectsOfType<MeshFilter>(true);
         //}
         List<MeshPoints> meshPoints = MeshPoints.GetMeshPoints(meshFilters);
+
+        Debug.LogError($"PrefabInstanceBuilder.GetMeshFilters meshFilters:{meshFilters.Length} TargetRootsCopy:[{GetGoName(TargetRootsCopy)}] TargetRoots:[{GetGoName(TargetRoots)}]");
+
         return meshPoints.ToArray() ;
+    }
+
+    public string GetGoName(GameObject go)
+    {
+        if (go == null)
+        {
+            return "NULL";
+        }
+        if(go.transform.parent!=null)
+        {
+            return go.transform.parent.name + ">" + go.name;
+        }
+        else
+        {
+            return go.name;
+        }
     }
 
     private void CopyTarget()
@@ -645,11 +650,8 @@ UnpackPrefab();
 
     public PrefabInfoList AcRTAlignJobs(GameObject target,bool isCopy)
     {
-        if (TargetRootsCopy != null)
-        {
-            GameObject.DestroyImmediate(TargetRootsCopy);
-        }
-        TargetRoots = target;
+
+        SetTarget(target);
         IsCopyTargetRoot = isCopy;
         //if (isCopy == false && TargetRootsCopy!=null)
         //{
@@ -676,11 +678,7 @@ UnpackPrefab();
 
     public PrefabInfoList AcRTAlignJobsEx(GameObject target, bool isCopy)
     {
-        if (TargetRootsCopy != null)
-        {
-            GameObject.DestroyImmediate(TargetRootsCopy);
-        }
-        TargetRoots = target;
+        SetTarget(target);
         IsCopyTargetRoot = isCopy;
         //if (isCopy == false && TargetRootsCopy != null)
         //{
@@ -764,7 +762,7 @@ UnpackPrefab();
 
     // public int MaxVertexCount=2400;
 
-    public AcRTAlignJobSetting JobSetting;
+    //public AcRTAlignJobSetting JobSetting;
 
     private void SetAcRTAlignJobSetting()
     {
@@ -775,10 +773,7 @@ UnpackPrefab();
         //  AcRTAlignJobContainer.IsSetParent=this.IsSetParent;
 
         //  AcRTAlignJobContainer.MaxVertexCount=this.MaxVertexCount;
-        if(JobSetting==null){
-            JobSetting=this.GetComponent<AcRTAlignJobSetting>();
-        }
-        JobSetting.SetAcRTAlignJobSetting();
+        AcRTAlignJobSetting.Instance.SetAcRTAlignJobSetting();
     }
 
     public List<GameObject> TestList=new List<GameObject>();
@@ -791,7 +786,7 @@ UnpackPrefab();
         foreach(var item in TestList){
             GameObject testRoot=GameObject.Instantiate(item);
             Debug.LogWarning("AcRTAlignJobsExTestList:"+testRoot.name);
-            TargetRoots=testRoot;
+            SetTarget(testRoot);
             AcRTAlignJobsEx();
             ClearMeshFilters(null);
             log+=AcRTAlignJobContainer.ReportLog+"\n";
@@ -894,128 +889,17 @@ break;
     //    return GetBigSmallRenderers(meshFilters,JobSetting.MaxModelLength);
     //}
 
-    public BigSmallListInfo GetBigSmallRenderers()
-    {
-        if(JobSetting==null){
-            JobSetting=this.GetComponent<AcRTAlignJobSetting>();
-        }
-        var meshFilters=GetMeshFilters();
-        return GetBigSmallRenderers(meshFilters,JobSetting.MaxModelLength);
-    }
+    //public BigSmallListInfo GetBigSmallRenderers()
+    //{
+    //    var meshFilters=GetMeshFilters();
+    //    return new BigSmallListInfo(meshFilters);
+    //}
 
-    public class BigSmallListInfo
-    {
-        public List<MeshRenderer> bigModels = new List<MeshRenderer>();
-        public List<MeshRenderer> smallModels = new List<MeshRenderer>();
-        public float sumVertex_Big = 0;
-        public float sumVertex_Small = 0;
-
-        public override string ToString()
-        {
-            return $"bigModels:{bigModels.Count} smallModels:{smallModels.Count} sumVertex_Big:{sumVertex_Big} sumVertex_Small:{sumVertex_Small}";
-        }
-    }
-
-    public static BigSmallListInfo GetBigSmallRenderers(MeshPoints[] meshFilters,float maxLength)
-    {
-        BigSmallListInfo info = new BigSmallListInfo();
-        DateTime start=DateTime.Now;
-        //var meshFilters=GetMeshFilters();
-        // float minCount=float.MaxValue;
-        // float maxCount=0;
-        // float sumCount=0;
-        // float avgCount=0;
-        // List<string> sizeList = new List<string>();
-        List<float> lengthList = new List<float>();
-        // List<MeshRenderer> bigModels=new List<MeshRenderer>();
-        // List<MeshRenderer> smallModels=new List<MeshRenderer>();
-        //foreach(MeshFilter mf in meshFilters)
-        int sumVertex_Big = 0;
-        int sumVertex_Small = 0;
-        for(int i=0;i<meshFilters.Length;i++)
-        {
-            var mf=meshFilters[i];
-            if (mf == null) continue;
-            if (mf.sharedMesh == null) continue;
-
-            float progress = (float)i / meshFilters.Length;
-            float percents = progress * 100;
-            
-            //if(ProgressBarHelper.DisplayCancelableProgressBar("GetBigSmallRenderers", $"{i}/{meshFilters.Length} {percents:F2}% of 100%", progress))
-            //{
-            //    //ProgressBarHelper.ClearProgressBar();
-            //    break;
-            //} 
-            Bounds bounds = mf.sharedMesh.bounds;
-            Vector3 scale = mf.transform.lossyScale;
-            scale = new Vector3(Mathf.Abs(scale.x), Mathf.Abs(scale.y), Mathf.Abs(scale.y));
-            Vector3 size=bounds.size;
-            // string strSize=$"({size.x},{size.y},{size.z})";
-            float length=size.x*scale.x;
-            if(size.y*scale.y>length){
-                length=size.y * scale.y;
-            }
-            if(size.z * scale.z > length){
-                length=size.z * scale.y;
-            }
-
-            if(!lengthList.Contains(length))
-            {
-                lengthList.Add(length);
-            }
-
-            // if(!sizeList.Contains(strSize))
-            // {
-            //     sizeList.Add(strSize);
-            // }
-
-            MeshRendererInfo rendererInfo=mf.GetComponent<MeshRendererInfo>();
-            if(rendererInfo!=null){
-                MeshRenderer mr=rendererInfo.meshRenderer;
-                if(rendererInfo.rendererType==MeshRendererType.Structure)
-                {
-                    info.bigModels.Add(mr);
-                    sumVertex_Big += mf.vertexCount;
-                }
-                else if(rendererInfo.rendererType==MeshRendererType.Detail)
-                {
-                    info.smallModels.Add(mr);
-                    sumVertex_Small += mf.vertexCount;
-                }
-                else
-                {
-                    if(length<maxLength)
-                    {
-                        info.smallModels.Add(mr);
-                        sumVertex_Small += mf.vertexCount;
-                    }
-                    else{
-                        info.bigModels.Add(mr);
-                        sumVertex_Big += mf.vertexCount;
-                    }
-                }
-            }
-            else{
-                MeshRenderer mr=mf.GetComponent<MeshRenderer>();
-                if(length<maxLength)
-                {
-                    info.smallModels.Add(mr);
-                    sumVertex_Small += mf.vertexCount;
-                }
-                else{
-                    info.bigModels.Add(mr);
-                    sumVertex_Big += mf.vertexCount;
-                }
-            }
-        }
-
-        //ProgressBarHelper.ClearProgressBar();
-        info.sumVertex_Small = sumVertex_Small/10000f;
-        info.sumVertex_Big = sumVertex_Big / 10000f;
-        Debug.LogWarning($"GetBigSmallRenderers maxLength:{maxLength},bigModels:{info.bigModels.Count}+smallModels:{info.smallModels.Count}=BS:{info.bigModels.Count+ info.smallModels.Count},Renderers:{meshFilters.Length},bigVertex:{info.sumVertex_Big},smallVertex:{info.sumVertex_Small},Time:{(DateTime.Now - start).TotalMilliseconds:F1}ms");
-        return info;
-    }
-
+    //public static BigSmallListInfo GetBigSmallRenderers(MeshPoints[] meshFilters,float maxLength)
+    //{
+    //    BigSmallListInfo info = new BigSmallListInfo(meshFilters, maxLength);
+    //    return info;
+    //}
     // public float MaxModelLength=1.2f;
 
     public void GetMeshSizeInfo()
@@ -1077,7 +961,7 @@ break;
             //     minCount=count;
             // }
 
-            if(length<JobSetting.MaxModelLength)
+            if(length< AcRTAlignJobSetting.Instance.MaxModelLength)
             {
                 smallModels.Add(mf);
             }
