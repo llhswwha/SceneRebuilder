@@ -786,7 +786,7 @@ public class MeshRendererInfoList:List<MeshRendererInfo>
         }
         if(list2.Count>0)
         {
-            Debug.Log($"FilterByVertexCount tag:{tag} vertexcount:{v} count0:{this.Count} count1:{list1.Count} count2:{list2.Count}");
+            Debug.LogWarning($"FilterByVertexCount tag:{tag} vertexcount:{v} count0:{this.Count} count1:{list1.Count} count2:{list2.Count}");
         }
         
         return new MeshRendererInfoList[]{ list1, list2 };
