@@ -253,7 +253,8 @@ public class ModelAreaTree : SubSceneCreater
     public void SetRenderers(IEnumerable<MeshRenderer> renderers)
     {
         TreeRenderers = new MeshRendererInfoList(renderers);
-        TreeRenderers.RemoveTypes(AreaTreeManager.Instance.FilterTypes, this.name);
+        //TreeRenderers.RemoveTypes(AreaTreeManager.Instance.FilterTypes, this.name);
+        AreaTreeManager.Instance.FilterTreeNodeRenders(TreeRenderers, this.name);
     }
 
     public void SetRenderers(GameObject renderersRoot)
