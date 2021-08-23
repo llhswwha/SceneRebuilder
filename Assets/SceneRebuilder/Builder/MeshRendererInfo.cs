@@ -334,6 +334,15 @@ public class MeshRendererInfo : MonoBehaviour,IComparable<MeshRendererInfo>
         Debug.Log("isDetail:"+isDetail);
     }
 
+    internal void HideRenderers()
+    {
+        foreach(var renderer in GetRenderers())
+        {
+            //renderer.gameObject.SetActive(false);
+            renderer.enabled = false;
+        }
+    }
+
     public bool IsChanged()
     {
         return position != this.transform.position;
@@ -481,6 +490,12 @@ public class MeshRendererInfo : MonoBehaviour,IComparable<MeshRendererInfo>
             this.transform.SetParent(centerGo.transform);
             centerGo.transform.SetParent(oldP);
         }
+    }
+
+    internal void SetVisible(bool isVisible)
+    {
+        meshRenderer.enabled = isVisible;
+        meshRenderer.gameObject.SetActive(isVisible);
     }
 
     [ContextMenu("TestCenterPivot")]
@@ -751,7 +766,41 @@ public class MeshRendererInfoList:List<MeshRendererInfo>
         {
             Debug.LogError($"FilterByVertexCount vertexcount:{v} count1:{c1} count2:{c2}");
         }
+    }
+
+    internal MeshRendererInfoList[] SplitListByVertexCount(float v,string tag)
+    {
+        MeshRendererInfoList list1 = new MeshRendererInfoList();
+        MeshRendererInfoList list2 = new MeshRendererInfoList();
+        for (int i = 0; i < this.Count; i++)
+        {
+            MeshRendererInfo info = this[i];
+            if (v>0 && info.vertexCount > v)
+            {
+                list2.Add(info);
+            }
+            else
+            {
+                list1.Add(info);
+            }
+        }
+        if(list2.Count>0)
+        {
+            Debug.Log($"FilterByVertexCount tag:{tag} vertexcount:{v} count0:{this.Count} count1:{list1.Count} count2:{list2.Count}");
+        }
         
+        return new MeshRendererInfoList[]{ list1, list2 };
+    }
+
+    internal void CloneTo(GameObject newParent)
+    {
+        for (int i = 0; i < this.Count; i++)
+        {
+            MeshRendererInfo info = this[i];
+            var cloneObj = MeshHelper.CopyGO(info.gameObject);
+            //cloneObj.name += "_Clone";
+            cloneObj.transform.SetParent(newParent.transform);
+        }
     }
 }
 

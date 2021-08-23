@@ -8,6 +8,8 @@ public class AreaTreeManagerEditor : BaseFoldoutEditor<AreaTreeManager>
 {
     public static void DrawUI(AreaTreeManager item)
     {
+        item.MaxMeshVertexCount=EditorGUILayout.IntField("MaxMeshVertexCount", item.MaxMeshVertexCount);
+        
         EditorGUILayout.BeginHorizontal();
         if (GUILayout.Button("ClearDictionary"))
         {

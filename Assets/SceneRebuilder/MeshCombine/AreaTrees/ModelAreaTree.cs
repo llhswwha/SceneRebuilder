@@ -201,8 +201,9 @@ public class ModelAreaTree : SubSceneCreater
             Debug.LogError("Tree.CombineMesh this.RootNode==null :" + this.name);
             return;
         }
-        var renderersNew=this.RootNode.GetComponentsInChildren<MeshRenderer>(true);
-        foreach(var render in renderersNew){
+        //var renderersNew=this.RootNode.GetComponentsInChildren<MeshRenderer>(true);
+        var renderersNew = GetTreeRendererers();
+        foreach (var render in renderersNew){
             if(render.enabled==true)
             {
                 newRenderCount++;
@@ -394,7 +395,8 @@ public class ModelAreaTree : SubSceneCreater
         AreaTreeNode node = rootCube.AddComponent<AreaTreeNode>();
         //DestoryNodes();
         this.RootNode = node;
-        this.TreeNodes.Add(node); node.Bounds = bounds;
+        this.TreeNodes.Add(node); 
+        node.Bounds = bounds;
         node.AddRenderers(renderers);
 
         node.CreateSubNodes(0, 0, this, GetCubePrefabId());
@@ -447,48 +449,32 @@ public class ModelAreaTree : SubSceneCreater
         if (trenderers != null && trenderers.Length > 0)
         {
             int count = 0;
-            foreach (var render in trenderers)
+            foreach (MeshRendererInfo render in trenderers)
             {
                 if (render == null) continue;
-                render.enabled = isVisible;
-                render.gameObject.SetActive(isVisible);
+                render.SetVisible(isVisible);
                 count++;
             }
-            Debug.Log($"ShowRenderers1 renderers:{count}/{trenderers.Length} tree:{this.name},\t{(DateTime.Now - start).ToString()}");
+            Debug.Log($"SetRenderersVisible isVisible:{isVisible} renderers:{count}/{trenderers.Length} tree:{this.name},\t{(DateTime.Now - start).ToString()}");
         }
-        //else if (target != null)
+
+        //else
         //{
-        //    var ts = AreaTreeHelper.GetAllTransforms(target.transform);
-        //    foreach (var t in ts)
+        //    if (TreeRenderers != null)
         //    {
-        //        t.gameObject.SetActive(true);
+        //        foreach (var render in TreeRenderers)
+        //        {
+        //            if (render) continue;
+        //            render.enabled = isVisible;
+        //            render.gameObject.SetActive(isVisible);
+        //        }
+        //        Debug.Log($"ShowRenderers3 renderers:{TreeRenderers.Length},\t{(DateTime.Now - start).ToString()}");
         //    }
-        //    var renderers = target.GetComponentsInChildren<MeshRenderer>();
-        //    foreach (var render in renderers)
+        //    else
         //    {
-        //        render.enabled = isVisible;
-        //        render.gameObject.SetActive(isVisible);
+        //        Debug.Log($"ShowRenderers4 renderers:0,\t{(DateTime.Now - start).ToString()}");
         //    }
-        //    TreeRenderers = renderers;
-        //    Debug.Log($"ShowRenderers2 renderers:{renderers.Length},\t{(DateTime.Now - start).ToString()}");
         //}
-        else
-        {
-            if (TreeRenderers != null)
-            {
-                foreach (var render in TreeRenderers)
-                {
-                    if (render) continue;
-                    render.enabled = isVisible;
-                    render.gameObject.SetActive(isVisible);
-                }
-                Debug.Log($"ShowRenderers3 renderers:{TreeRenderers.Length},\t{(DateTime.Now - start).ToString()}");
-            }
-            else
-            {
-                Debug.Log($"ShowRenderers4 renderers:0,\t{(DateTime.Now - start).ToString()}");
-            }
-        }
     }
 
     //[ContextMenu("1.AddColliders")]
@@ -563,7 +549,11 @@ public class ModelAreaTree : SubSceneCreater
                 item.Renderers = null;
             }
         }
-        Debug.LogWarning($"ModelAreaTree.GenerateMesh name:{this.name} time:{(DateTime.Now-start).ToString()}");
+
+        //InitRenderers();
+        //MoveRenderers();
+
+        Debug.LogWarning($"ModelAreaTree.GenerateMesh name:{this.name} renderers:{renderers.Length} time:{(DateTime.Now-start).ToString()}");
     }
 
     [ContextMenu("* GenerateTree")]

@@ -177,6 +177,18 @@ public class BuildingModelInfoEditor : BaseFoldoutEditor<BuildingModelInfo>
         {
             info.DeleteOthersOfDoor();
         });
+        if (GUILayout.Button("|", GUILayout.Width(10)))
+        {
+            
+        }
+        NewButton("MoveRenderers", buttonWidth, true, btnStyle, () =>
+        {
+            info.MoveRenderers();
+        });
+        NewButton("RecoverParent", buttonWidth, true, btnStyle, () =>
+        {
+            info.RecoverParent();
+        });
         EditorGUILayout.EndHorizontal();
 
         EditorGUILayout.BeginHorizontal();

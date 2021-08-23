@@ -328,13 +328,15 @@ public class AreaTreeNode : SubSceneCreater
     public bool IsRendererVisible = true;
 
     [ContextMenu("HideRenders")]
-    public void HideRenders()
+    public void HideRenders(MeshRendererInfoList renderers)
     {
         IsRendererVisible = false;
-        foreach (var r in Renderers)
+        foreach (MeshRendererInfo r in renderers)
         {
             if (r == null) continue;
-            r.enabled = false;
+            //r.enabled = false;
+            //r.HideRenderers();
+            r.SetVisible(false);
         }
     }
 
@@ -385,13 +387,15 @@ public class AreaTreeNode : SubSceneCreater
 
         InitRenderers();
 
-        CombineInner();
+        var renderers=CombineInner();
 
-        HideRenders();
+        HideRenders(renderers);
 
         renderersRoot.transform.SetParent(this.transform);
 
         //RecoverParent();
+
+        //MoveRenderers();
     }
 
     [ContextMenu("RecoverParent")]
@@ -433,11 +437,11 @@ public class AreaTreeNode : SubSceneCreater
         RecoverParent();
     }
 
-    private void CombineInner()
+    private MeshRendererInfoList CombineInner()
     {
         if(AreaTreeManager.Instance.IsByLOD)
         {
-            CombineInnerLOD();
+            return CombineInnerLOD();
         }
         else
         {
@@ -448,9 +452,12 @@ public class AreaTreeNode : SubSceneCreater
             //MeshRendererInfoList list=MeshRendererInfo.FindByTypes(Renderers, new List<MeshRendererType>() { MeshRendererType.None, MeshRendererType.Structure, MeshRendererType.Detail });
 
             var rendererInfos = new MeshRendererInfoList(Renderers);
-            rendererInfos.FilterByVertexCount(5*10000);
+            //rendererInfos.FilterByVertexCount(AreaTreeManager.Instance.MaxMeshVertexCount);
+            var list12 = rendererInfos.SplitListByVertexCount(AreaTreeManager.Instance.MaxMeshVertexCount,this.name);
 
-            combindResult = CombineRenderers(rendererInfos.GetAllRenderers().ToArray(), this.transform, this.name + "_Combined");
+            combindResult = CombineRenderers(list12[0].GetAllRenderers().ToArray(), this.transform, this.name + "_Combined");
+
+            list12[1].CloneTo(combindResult);
 
             //MeshCombineHelper.CombineEx(new MeshCombineArg(this.renderersRoot, Renderers.ToArray()), 1);
             ////combindResult = MeshCombineHelper.CombineEx(new MeshCombineArg(this.renderersRoot, Renderers.ToArray()), 0);
@@ -459,11 +466,12 @@ public class AreaTreeNode : SubSceneCreater
 
             CombinedRenderers = combindResult.GetComponentsInChildren<MeshRenderer>(true);
             //AddMeshCollider(combindResult);
-            this.renderersRoot.SetActive(false);
+            SetRenderersRootActive(false);
+            return rendererInfos;
         }
     }
 
-    private void CombineInnerLOD()
+    private MeshRendererInfoList CombineInnerLOD()
     {
         try
         {
@@ -497,12 +505,13 @@ public class AreaTreeNode : SubSceneCreater
             group.SetLODs(lods);
 
             CombinedRenderers = combindResult.GetComponentsInChildren<MeshRenderer>(true);
-            this.renderersRoot.SetActive(false);
+            SetRenderersRootActive(false);
         }
         catch(Exception ex)
         {
             Debug.LogError($"CombineInnerLOD name:{this.name} Exception:{ex}");
         }
+        return null;
     }
 
     private GameObject CombineRenderers(MeshRenderer[] renderers,Transform parent,string name)
@@ -600,7 +609,12 @@ public class AreaTreeNode : SubSceneCreater
         }
 
         combindResult.SetActive(isCombined);
-        renderersRoot.SetActive(!isCombined);
+        SetRenderersRootActive(!isCombined);
+    }
+
+    private void SetRenderersRootActive(bool isActive)
+    {
+        //renderersRoot.SetActive(isActive);
     }
 
     public void SwitchToCombined()

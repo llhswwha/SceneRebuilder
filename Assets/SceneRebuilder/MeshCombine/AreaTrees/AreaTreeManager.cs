@@ -365,7 +365,7 @@ public class AreaTreeManager : SingletonBehaviour<AreaTreeManager>
     public int LeafCount;
     public List<MeshRendererType> FilterTypes = new List<MeshRendererType>() { MeshRendererType.LOD, MeshRendererType.Static };
 
-    public int MaxMeshVertexCount = 20;//20w,
+    public int MaxMeshVertexCount = 50000;//20w,
 
 
 

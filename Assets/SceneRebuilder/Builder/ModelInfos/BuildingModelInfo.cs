@@ -441,7 +441,37 @@ public class BuildingModelInfo : SubSceneCreater
         }
         this.ShowRenderers();
     }
-    
+
+    [ContextMenu("MoveRenderers")]
+    public void MoveRenderers()
+    {
+        UpdateTrees();
+        foreach (var t in GetTrees())
+        {
+            t.MoveRenderers();
+        }
+    }
+
+    //[ContextMenu("InitRenderers")]
+    //public void InitRenderers()
+    //{
+    //    UpdateTrees();
+    //    foreach (var t in GetTrees())
+    //    {
+    //        t.InitRenderers();
+    //    }
+    //}
+
+    [ContextMenu("RecoverParent")]
+    public void RecoverParent()
+    {
+        IdDictionary.InitInfos();
+        foreach (var t in GetTrees())
+        {
+            t.RecoverParent();
+        }
+    }
+
 
     [ContextMenu("SaveTreeRendersId")]
     public override void SaveTreeRendersId()
@@ -713,7 +743,7 @@ public class BuildingModelInfo : SubSceneCreater
     public void InitInOut(bool isShowOut0Log=false)
     {
         DateTime start = DateTime.Now;
-        Debug.Log("InitInOut:"+this.name);
+        //Debug.Log("InitInOut:"+this.name);
 
         if (this.transform.childCount == 0)
         {
@@ -734,7 +764,7 @@ public class BuildingModelInfo : SubSceneCreater
 
         RendererId.InitIds(this.gameObject);
 
-         Debug.Log($"InitInOut time:{(DateTime.Now - start)}");
+         //Debug.Log($"InitInOut time:{(DateTime.Now - start)}");
     }
 
     [ContextMenu("CenterPivot")]

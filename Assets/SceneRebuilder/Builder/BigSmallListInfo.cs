@@ -151,6 +151,6 @@ public class BigSmallListInfo
             //ProgressBarHelper.ClearProgressBar();
             this.sumVertex_Small = sumVertex_Small / 10000f;
             this.sumVertex_Big = sumVertex_Big / 10000f;
-            Debug.LogWarning($"GetBigSmallRenderers maxLength:{maxLength},(bigModels:{this.bigModels.Count}+smallModels:{this.smallModels.Count}=BS:{this.bigModels.Count + this.smallModels.Count},Renderers:{meshFilters.Length}),(bigVertex:{this.sumVertex_Big},smallVertex:{this.sumVertex_Small}),Time:{(DateTime.Now - start).TotalMilliseconds:F1}ms");
+            //Debug.LogWarning($"GetBigSmallRenderers maxLength:{maxLength},(bigModels:{this.bigModels.Count}+smallModels:{this.smallModels.Count}=BS:{this.bigModels.Count + this.smallModels.Count},Renderers:{meshFilters.Length}),(bigVertex:{this.sumVertex_Big},smallVertex:{this.sumVertex_Small}),Time:{(DateTime.Now - start).TotalMilliseconds:F1}ms");
         }
     }

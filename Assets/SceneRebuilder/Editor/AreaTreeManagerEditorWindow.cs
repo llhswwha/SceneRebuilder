@@ -8,7 +8,7 @@ public class AreaTreeManagerEditorWindow : EditorWindow
     [MenuItem("Window/Tools/TreeManager")]
     public static void ShowWindow()
     {
-        var window = (AreaTreeManagerEditorWindow)EditorWindow.GetWindowWithRect(typeof(AreaTreeManagerEditorWindow), new Rect(0, 0, 600, 400), true, "TreeManager");
+        var window = (AreaTreeManagerEditorWindow)EditorWindow.GetWindowWithRect(typeof(AreaTreeManagerEditorWindow), new Rect(0, 0, 400, 200), true, "TreeManager");
         window.Show();
         window.Init();
     }
