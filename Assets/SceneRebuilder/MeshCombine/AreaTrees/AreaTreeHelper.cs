@@ -88,6 +88,7 @@ public static class AreaTreeHelper
         render2NodeDict.Clear();
         combined2NodeDict.Clear();
         renderId2NodeDict.Clear();
+        Debug.LogWarning($"ClearDict render2NodeDict:{AreaTreeHelper.render2NodeDict.Count}");
     }
 
     public static void RegisterRenderer(MeshRenderer render, AreaTreeNode newNode)

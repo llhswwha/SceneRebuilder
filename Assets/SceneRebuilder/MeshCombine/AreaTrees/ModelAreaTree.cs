@@ -512,7 +512,7 @@ public class ModelAreaTree : SubSceneCreater
     //}
 
     [ContextMenu("CreateDictionary")]
-    public void CreateDictionary()
+    public void CreateDictionary(bool showLog=false)
     {
         //Debug.LogError($"CreateDictionary Start");
         DateTime start=DateTime.Now;
@@ -529,7 +529,8 @@ public class ModelAreaTree : SubSceneCreater
             if (tn.gameObject == null) continue;
             tn.CreateDictionary();
         }
-        // Debug.LogWarning($"CreateDictionary tree:{this.name}, \trender2NodeDict:{AreaTreeHelper.render2NodeDict.Count}, \t{(DateTime.Now-start).TotalMilliseconds:F1}ms");
+        if(showLog)
+            Debug.LogWarning($"CreateDictionary tree:{this.name}, \trender2NodeDict:{AreaTreeHelper.render2NodeDict.Count}, \t{(DateTime.Now - start).TotalMilliseconds:F1}ms");
     }
     [ContextMenu("* GenerateMesh")]
     private void GenerateMesh()

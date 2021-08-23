@@ -3,11 +3,35 @@ using System.Collections.Generic;
 using UnityEditor;
 using UnityEngine;
 
-[CustomEditor(typeof(AreaTreeManager))]
-public class AreaTreeManagerEditorWindow : BaseFoldoutEditor<AreaTreeManager>
+public class AreaTreeManagerEditorWindow : EditorWindow
 {
-    public override void OnToolLayout(AreaTreeManager item)
+    [MenuItem("Window/Tools/TreeManager")]
+    public static void ShowWindow()
     {
-        base.OnToolLayout(item);
+        var window = (AreaTreeManagerEditorWindow)EditorWindow.GetWindowWithRect(typeof(AreaTreeManagerEditorWindow), new Rect(0, 0, 600, 400), true, "TreeManager");
+        window.Show();
+        window.Init();
     }
+
+    public AreaTreeManager target;
+
+    public void Init()
+    {
+        target = AreaTreeManager.Instance;
+        
+    }
+    private void OnGUI()
+    {
+        //MeshComparerEditor.DrawSetting(target);
+
+        AreaTreeManagerEditor.DrawUI(target);
+
+        EditorGUILayout.BeginHorizontal();
+        if (GUILayout.Button("SelectScripts"))
+        {
+            Selection.activeObject = target.gameObject;
+        }
+        EditorGUILayout.EndHorizontal();
+    }
+
 }

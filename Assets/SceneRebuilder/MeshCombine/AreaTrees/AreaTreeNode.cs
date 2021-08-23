@@ -447,7 +447,10 @@ public class AreaTreeNode : SubSceneCreater
             }
             //MeshRendererInfoList list=MeshRendererInfo.FindByTypes(Renderers, new List<MeshRendererType>() { MeshRendererType.None, MeshRendererType.Structure, MeshRendererType.Detail });
 
-            combindResult = CombineRenderers(Renderers.ToArray(), this.transform, this.name + "_Combined");
+            var rendererInfos = new MeshRendererInfoList(Renderers);
+            rendererInfos.FilterByVertexCount(5*10000);
+
+            combindResult = CombineRenderers(rendererInfos.GetAllRenderers().ToArray(), this.transform, this.name + "_Combined");
 
             //MeshCombineHelper.CombineEx(new MeshCombineArg(this.renderersRoot, Renderers.ToArray()), 1);
             ////combindResult = MeshCombineHelper.CombineEx(new MeshCombineArg(this.renderersRoot, Renderers.ToArray()), 0);
@@ -786,15 +789,17 @@ public class AreaTreeNode : SubSceneCreater
                 renderInfo = render.gameObject.AddComponent<MeshRendererInfo>();
                 renderInfo.Init();
             }
-            var pos = renderInfo.center;  //position not center
+            //var pos = renderInfo.center;  //position not center
 
-            foreach (AreaTreeNode node in nodes)
-            {
-                if (node.Bounds.Contains(pos))
-                {
-                    node.AddRenderer(render);
-                }
-            }
+            GetNodesByCenterPos(nodes, renderInfo);
+
+            //foreach (AreaTreeNode node in nodes)
+            //{
+            //    if (node.Bounds.Contains(pos))
+            //    {
+            //        node.AddRenderer(render);
+            //    }
+            //}
         }
 
         //RendererCount = renderers.Count;
@@ -837,6 +842,35 @@ public class AreaTreeNode : SubSceneCreater
         //bound.Contains()
 
         return nodes;
+    }
+
+    public List<AreaTreeNode> GetNodesByCenterPos(List<AreaTreeNode> nodes, MeshRendererInfo renderer)
+    {
+        List<AreaTreeNode> newNodes = new List<AreaTreeNode>();
+        foreach (AreaTreeNode node in nodes)
+        {
+            if (node.Bounds.Contains(renderer.center))
+            {
+                newNodes.Add(node);
+            }
+        }
+        if(newNodes.Count==1)
+        {
+            //Debug.LogError($"GetNodesByCenterPos newNodes.Count == 1:" + renderer);
+            newNodes[0].AddRenderer(renderer.meshRenderer);
+        }
+        else if (newNodes.Count == 0)
+        {
+            Debug.LogError($"GetNodesByCenterPos newNodes.Count == 0 renderer:{renderer}");
+        }
+        else //if(newNodes.Count > 1)
+        {
+            Debug.LogError($"GetNodesByCenterPos newNodes.Count > 1 renderer:{renderer} count:{newNodes.Count} node1:{newNodes[0]} node2:{newNodes[1]}");
+
+            newNodes[0].AddRenderer(renderer.meshRenderer);
+        }
+        
+        return newNodes;
     }
 
     //[ContextMenu("ClearDictionary")]

@@ -11,10 +11,12 @@ public class BoundsBoxManager : SingletonBehaviour<BoundsBoxManager>
 
     private void Start()
     {
+#if !UNITY_EDITOR
         if(IsHide)
             HideBoxes();
         //if(IsDestroy)
         //    DestroyBoxes();
+#endif
     }
 
     [ContextMenu("GetBoxes")]

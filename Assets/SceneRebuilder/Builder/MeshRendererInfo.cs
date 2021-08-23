@@ -731,7 +731,27 @@ public class MeshRendererInfoList:List<MeshRendererInfo>
         }
         int count2 = this.Count;
 
-        Debug.LogError($"MeshRenderInfoList.RemoveTypes[{logTag}] count1:{count1} count2:{count2} types:{list.Count}");
+        //Debug.LogError($"MeshRenderInfoList.RemoveTypes[{logTag}] count1:{count1} count2:{count2} types:{list.Count}");
+    }
+
+    internal void FilterByVertexCount(float v)
+    {
+        int c1 = this.Count;
+        for (int i = 0; i < this.Count; i++)
+        {
+            MeshRendererInfo info = this[i];
+            if (info.vertexCount > v)
+            {
+                this.RemoveAt(i);
+                i--;
+            }
+        }
+        int c2 = this.Count;
+        if (c1 != c2)
+        {
+            Debug.LogError($"FilterByVertexCount vertexcount:{v} count1:{c1} count2:{c2}");
+        }
+        
     }
 }
 

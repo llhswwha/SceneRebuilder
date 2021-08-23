@@ -516,7 +516,7 @@ public class AreaTreeManager : SingletonBehaviour<AreaTreeManager>
         //var bigSmallInfo=prefabInstanceBuilder.GetBigSmallRenderers();
 
         var bigSmallInfo = new BigSmallListInfo(target);
-        Debug.LogError($"CreateOne_BigSmall_Core bigSmallInfo:{bigSmallInfo}");
+        //Debug.LogError($"CreateOne_BigSmall_Core bigSmallInfo:{bigSmallInfo}");
 
         ProgressArg p1 = new ProgressArg("CreateOne_BigSmall_Core", 0,2, "SamllTree");
         if (progressChanged!=null)

@@ -30,7 +30,9 @@ public class ModelAreaTreeEditor : BaseFoldoutEditor<ModelAreaTree>
         bool isAllLoaded = item.IsSceneLoaded();
         int unloadedSceneCount = item.SceneList.GetUnloadedScenes().Count;
 
-        GUILayout.Label($"renderers:{item.GetRendererCount()},loaded:{isAllLoaded},scene:{sceneCount},unloaded:{unloadedSceneCount}");
+        GUILayout.Label($"renders:{item.GetRendererCount()} vertex:{item.VertexCount}w,nodes:{item.TreeNodes.Count} leafs:{item.TreeLeafs.Count}");
+
+        GUILayout.Label($"loaded:{isAllLoaded},scene:{sceneCount},unloaded:{unloadedSceneCount}");
 
         EditorGUILayout.BeginHorizontal();
         if (GUILayout.Button("ShowMeshes", contentStyle, GUILayout.Width(buttonWidth)))
@@ -59,6 +61,14 @@ public class ModelAreaTreeEditor : BaseFoldoutEditor<ModelAreaTree>
         EditorGUILayout.BeginHorizontal();
         NewButton("LoadScenes", buttonWidth, isAllLoaded == false && sceneCount > 0 && folderExists, item.EditorLoadNodeScenesEx);
         NewButton("UnloadScenes", buttonWidth, isAllLoaded == true && sceneCount > 0 && folderExists, item.UnLoadScenes);
+        EditorGUILayout.EndHorizontal();
+
+        EditorGUILayout.BeginHorizontal();
+        
+        NewButton("CreateDictionary", buttonWidth, true, ()=>
+        {
+            item.CreateDictionary(true);
+        });
         EditorGUILayout.EndHorizontal();
 
         DrawNodeList(nodeListArg,false, () =>

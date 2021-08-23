@@ -98,7 +98,7 @@ public static class IdDictionary
         IdDict.Clear();
         InitRenderers(root);
         InitIds(root);
-        Debug.Log($"IdDictionay.InitInfos idCount:{IdDict.Count},RendererCount:{RendererDict.Count} time:{(DateTime.Now - start)}");
+        Debug.Log($"IdDictionay.InitInfos root:[{root}] idCount:{IdDict.Count},RendererCount:{RendererDict.Count} time:{(DateTime.Now - start)}");
     }
 
     private static void InitRenderers(GameObject root = null)

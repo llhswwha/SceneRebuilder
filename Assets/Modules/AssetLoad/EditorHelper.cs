@@ -454,7 +454,7 @@ public static class EditorHelper
             return;
         }
         string pDir = getParentPath(path);
-        Debug.Log($"makeParentDirExist path:{path}\npDir:{pDir}");
+        //Debug.Log($"makeParentDirExist path:{path}\npDir:{pDir}");
         if (pDir == path)
         {
             Debug.LogError($"makeParentDirExist pDir == path");
