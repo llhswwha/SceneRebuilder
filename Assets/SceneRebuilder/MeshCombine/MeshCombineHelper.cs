@@ -82,6 +82,12 @@ public static class MeshCombineHelper
             obj.SetActive(false);
         }
 
+        var infos = goNew.GetComponentsInChildren<MeshRendererInfo>(true);
+        foreach(var info in infos)
+        {
+            info.rendererType = MeshRendererType.Splited;
+        }
+
         return goNew;
     }
 

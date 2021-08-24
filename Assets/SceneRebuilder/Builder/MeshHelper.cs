@@ -1158,16 +1158,18 @@ public static class MeshHelper
     public static Vector3[] GetMinMax(Vector3[] vs)
     {
         if(vs==null)return null;
-        Vector3[] minMax=new Vector3[4];
+        Vector3[] minMax=new Vector3[5];
         float minX=float.MaxValue;
         float minY=float.MaxValue;
         float minZ=float.MaxValue;
         float maxX=float.MinValue;
         float maxY=float.MinValue;
         float maxZ=float.MinValue;
+        Vector3 sum = Vector3.zero;
         for(int i=0;i<vs.Length;i++)
         {
             var p=vs[i];
+            sum += p;
             if(p.x<minX){
                 minX=p.x;
             }
@@ -1191,6 +1193,7 @@ public static class MeshHelper
         minMax[1]=new Vector3(maxX,maxY,maxZ);
         minMax[2]=minMax[1]-minMax[0];//size
         minMax[3]=(minMax[1]+minMax[0])/2;//center
+        minMax[4] = sum / vs.Length;//weight
         return minMax;
     }
 

@@ -861,26 +861,28 @@ public class DoorPartInfo
 
     internal void SetDoorPivot()
     {
-        if (DisToCenter > 0.2)
-        {
-            //Debug.LogWarning($"SetDoorPivot No1 name:{this.name} dis:{DisToCenter} pos:{transform.position} center:{this.Center}");
-            return;
-        }
-        if(transform.childCount==0 && MatCount>0)
+        //if (DisToCenter > 0.2)
+        //{
+        //    //Debug.LogWarning($"SetDoorPivot No1 name:{this.name} dis:{DisToCenter} pos:{transform.position} center:{this.Center}");
+        //    return;
+        //}
+        if(transform.childCount==0 && MatCount>1)
         {
             //Debug.LogWarning($"SetDoorPivot No2 name:{this.name} dis:{DisToCenter} pos:{transform.position} center:{this.Center}");
             Split();
-            Vector3 pivotPos2 = GetPivotPosByMeshDis();
-            MeshHelper.CenterPivot(this.transform, pivotPos2);
-            return;
         }
-        Vector3 pivotPos1 = GetPivotPosByChildren();
-        if (pivotPos1 != this.transform.position)
-        {
-            MeshHelper.CenterPivot(this.transform, pivotPos1);
-            Debug.Log($"SetDoorPivot Yes name:{this.name} dis:{DisToCenter} pos:{transform.position} center:{this.Center}");
-        }
-        else
+        SetPivot();
+    }
+
+    private void SetPivot()
+    {
+        //Vector3 pivotPos1 = GetPivotPosByChildren();
+        //if (pivotPos1 != this.transform.position)
+        //{
+        //    MeshHelper.CenterPivot(this.transform, pivotPos1);
+        //    Debug.Log($"SetDoorPivot Yes name:{this.name} dis:{DisToCenter} pos:{transform.position} center:{this.Center}");
+        //}
+        //else
         {
             //Debug.LogWarning($"SetDoorPivot No3 name:{this.name} dis:{DisToCenter} pos:{transform.position} center:{this.Center}");
             Vector3 pivotPos2 = GetPivotPosByMeshDis();
@@ -894,6 +896,7 @@ public class DoorPartInfo
         //var wVertices = MeshHelper.GetWorldVertexes(gameObject);
         MeshRendererInfoList list = new MeshRendererInfoList(gameObject);
         var maxRenderer = list[0];
+        var maxRendererCenter = maxRenderer.GetWeightCenterPos();
 
         Vector3 p1 = Center - new Vector3(size.x / 2, 0, 0);
         Vector3 p2 = Center + new Vector3(size.x / 2, 0, 0);
@@ -905,7 +908,7 @@ public class DoorPartInfo
         for (int i = 0; i < ps.Length; i++)
         {
             Vector3 p = ps[i];
-            var dis = Vector3.Distance(p, maxRenderer.center);
+            var dis = Vector3.Distance(p, maxRendererCenter);
             if (dis > maxDis)
             {
                 maxDis = dis;

@@ -366,6 +366,15 @@ public class MeshRendererInfo : MonoBehaviour,IComparable<MeshRendererInfo>
         InitPos();
     }
 
+    public Vector3 GetWeightCenterPos()
+    {
+        if(minMax.Length<4)
+        {
+            InitPos();
+        }
+        return minMax[4];
+    }
+
     protected void InitPos()
     {
         if (meshFilter != null)
@@ -455,11 +464,26 @@ public class MeshRendererInfo : MonoBehaviour,IComparable<MeshRendererInfo>
     public void ShowCenter()
     {
         Debug.Log("ShowCenter");
-        GameObject centerGo=GameObject.CreatePrimitive(PrimitiveType.Sphere);
-        centerGo.name=this.name+"_center";
-        centerGo.transform.position=center;
-        centerGo.transform.localScale=new Vector3(0.1f,0.1f,0.1f);
-        centerGo.transform.SetParent(this.transform);
+        //GameObject centerGo=GameObject.CreatePrimitive(PrimitiveType.Sphere);
+        //centerGo.name=this.name+"_center";
+        //centerGo.transform.position=center;
+        //centerGo.transform.localScale=new Vector3(0.1f,0.1f,0.1f);
+        //centerGo.transform.SetParent(this.transform);
+
+        CreatePoint(center, this.name + "_center");
+    }
+
+    [ContextMenu("ShowWeightCenter")]
+    public void ShowWeightCenter()
+    {
+        Debug.Log("ShowWeightCenter");
+        //GameObject centerGo=GameObject.CreatePrimitive(PrimitiveType.Sphere);
+        //centerGo.name=this.name+"_center";
+        //centerGo.transform.position=center;
+        //centerGo.transform.localScale=new Vector3(0.1f,0.1f,0.1f);
+        //centerGo.transform.SetParent(this.transform);
+
+        CreatePoint(minMax[4], this.name + "_weight");
     }
 
     [ContextMenu("CenterPivot")]
@@ -815,5 +839,6 @@ public enum MeshRendererType
     Static,
     LOD,
     CombinedPart,
-    CombinedRoot
+    CombinedRoot,
+    Splited
 }
