@@ -44,11 +44,16 @@ public class BuildingModelInfo : SubSceneCreater
         return true;
     }
 
-    public void CombineDoors()
+    public DoorsRootList CombineDoors()
     {
-        var rootList = DoorManager.UpdateDoors(this.gameObject,null);
+        this.Unpack();
+        var rootList = DoorManager.UpdateDoors(this.gameObject, null);
         Debug.Log($"CombineDoors roots:{rootList.Count} name:{this.name}");
-        if (rootList.Count == 1) return;
+        if (rootList.Count == 1)
+        {
+            rootList[0].transform.SetParent(this.transform);
+            return rootList;
+        }
         if (rootList.Count ==2)
         {
             DoorsRoot inDoors = null;
@@ -67,12 +72,12 @@ public class BuildingModelInfo : SubSceneCreater
             if(inDoors==null)
             {
                 Debug.LogError($"CombineDoors roots:{rootList.Count} name:{this.name} inDoors==null");
-                return;
+                return rootList;
             }
             if (outDoors == null)
             {
                 Debug.LogError($"CombineDoors roots:{rootList.Count} name:{this.name} outDoors==null");
-                return;
+                return rootList;
             }
             Debug.Log($"CombineDoors inDoors:{inDoors.name}({inDoors.transform.childCount}) outDoors:{outDoors.name}({outDoors.transform.childCount})");
             //for (int i=0;i<inDoors.transform.childCount;i++)
@@ -91,6 +96,7 @@ public class BuildingModelInfo : SubSceneCreater
             outDoors.transform.SetParent(this.transform);
         }
         Debug.LogError($"CombineDoors roots:{rootList.Count} name:{this.name}");
+        return rootList;
     }
 
     public Transform[] GetChildren()
@@ -210,7 +216,8 @@ public class BuildingModelInfo : SubSceneCreater
     public void UpdateDoors()
     {
         DoorManager.Instance.LocalTarget = this.gameObject;
-        doorRoots=DoorManager.Instance.UpdateDoors();
+        doorRoots = DoorManager.Instance.UpdateDoors();
+        //doorRoots=CombineDoors();
     }
 
     public string GetInfoText()
@@ -350,7 +357,11 @@ public class BuildingModelInfo : SubSceneCreater
         if (ModelPrefab != null)
         {
             GameObject prefabInstance = PrefabUtility.InstantiatePrefab(this.ModelPrefab,this.transform.parent) as GameObject;
-
+            if (prefabInstance == null)
+            {
+                Debug.LogError("EditorLoadPrefab prefabInstance == null:"+this.name);
+                return;
+            }
             BuildingModelInfo newInfo = prefabInstance.GetComponent<BuildingModelInfo>();
             newInfo.ModelPrefab = this.ModelPrefab;
 
@@ -387,7 +398,8 @@ public class BuildingModelInfo : SubSceneCreater
         this.DestroyScenes();
         this.ClearTrees();
 
-        UpdateDoors();
+        //UpdateDoors();
+        doorRoots = CombineDoors();
 
         ProgressArg p2 = new ProgressArg("ResaveScenes", 1, 2);
         OneKey_TreeNodeScene(sub=>
@@ -783,7 +795,7 @@ public class BuildingModelInfo : SubSceneCreater
     private void GetBigSmallInfo()
     {
         if(OutPart0==null){
-            Debug.LogError("GetSmallBigInfo OutPart0==null");
+            Debug.LogError($"GetSmallBigInfo OutPart0==null model:{this.name}");
             return;
         }
         // JobSetting =GameObject.FindObjectOfType<AcRTAlignJobSetting>(true);

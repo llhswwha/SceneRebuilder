@@ -168,24 +168,26 @@ public class ModelAreaTree : SubSceneCreater
     //    CombineMesh(null);
     //}
 
-    public void CombineMesh(Action<ProgressArg> progressChanged)
+    private void CombineMesh(Action<ProgressArg> progressChanged)
     {
-        if (TreeNodes.Count == 0)
+        //var nodes = TreeNodes;
+        var nodes = TreeLeafs;
+        if (nodes.Count == 0)
         {
-            Debug.LogError("Tree.CombineMesh TreeNodes.Count == 0 :" + this.name);
+            Debug.LogError("Tree.CombineMesh nodes.Count == 0 :" + this.name);
             return;
         }
         MeshCombinerSetting.Instance.SetSetting();
         //IsCombined=true;
         DateTime start=DateTime.Now;
         int renderCount=0;
-        for (int i = 0; i < TreeNodes.Count; i++)
+        for (int i = 0; i < nodes.Count; i++)
         {
-            AreaTreeNode node = TreeNodes[i];
+            AreaTreeNode node = nodes[i];
             if (node == null) continue;
             //float progress = (float)i / TreeNodes.Count;
 
-            var p = new ProgressArg("CombineMesh", i, TreeNodes.Count, node);
+            var p = new ProgressArg("CombineMesh", i, nodes.Count, node);
             if (progressChanged != null)
             {
                 progressChanged(p);
@@ -196,11 +198,11 @@ public class ModelAreaTree : SubSceneCreater
         }
 
         int newRenderCount=0;
-        if(this.RootNode==null)
-        {
-            Debug.LogError("Tree.CombineMesh this.RootNode==null :" + this.name);
-            return;
-        }
+        //if(this.RootNode==null)
+        //{
+        //    Debug.LogError("Tree.CombineMesh this.RootNode==null :" + this.name);
+        //    return;
+        //}
         //var renderersNew=this.RootNode.GetComponentsInChildren<MeshRenderer>(true);
         var renderersNew = GetTreeRendererers();
         foreach (var render in renderersNew){
@@ -212,7 +214,7 @@ public class ModelAreaTree : SubSceneCreater
 
         CombinedCount = newRenderCount;
 
-        Debug.LogWarning($"Tree.CombineMesh renderCount:{renderCount}->{newRenderCount},\t{(DateTime.Now-start).ToString()}");
+        Debug.LogWarning($"Tree.CombineMesh TreeRenderers:{TreeRenderers.Count} renderCount:{renderCount}->{newRenderCount},\t{(DateTime.Now-start).ToString()}");
     }
 
     public int CombinedCount = 0;
@@ -256,12 +258,14 @@ public class ModelAreaTree : SubSceneCreater
         TreeRenderers = new MeshRendererInfoList(renderers);
         //TreeRenderers.RemoveTypes(AreaTreeManager.Instance.FilterTypes, this.name);
         AreaTreeManager.Instance.FilterTreeNodeRenders(TreeRenderers, this.name);
+        Debug.Log($"SetRenderers TreeRenderers:{TreeRenderers.Count} this:{this.name}");
     }
 
     public void SetRenderers(GameObject renderersRoot)
     {
         var renderers = renderersRoot.GetComponentsInChildren<MeshRenderer>(true);
         SetRenderers(renderers);
+        Debug.Log($"SetRenderers root:{renderersRoot} renderers:{renderers.Length}");
 
         //TreeRenderers = new MeshRendererInfoList(renderersRoot);
         //TreeRenderers.RemoveTypes(AreaTreeManager.Instance.FilterTypes, this.name);
@@ -324,7 +328,7 @@ public class ModelAreaTree : SubSceneCreater
             //Debug.LogWarning($"CreateCells_Tree Start tree:{this.name} renderers:{renderers.Length} ");
             return;
         }
-        //Debug.Log($"CreateCells_Tree Start tree:{this.name} renderers:{renderers.Length} ");
+        Debug.Log($"CreateCells_Tree Start tree:{this.name} renderers:{renderers.Length} ");
         foreach(var render in renderers){
             if(render==null)continue;
             render.enabled=true;
@@ -363,7 +367,7 @@ public class ModelAreaTree : SubSceneCreater
 
         this.GetVertexCount();
 
-        Debug.LogWarning($"CreateCells_Tree End cellCount:{cellCount}/{allCount},\tavg:{nodeStatics.AvgCellRendererCount},\t{(DateTime.Now-start).TotalMilliseconds:F1}ms");
+        Debug.LogWarning($"CreateCells_Tree End tree:{this.name} cellCount:{cellCount}/{allCount},\tavg:{nodeStatics.AvgCellRendererCount},\t{(DateTime.Now-start).TotalMilliseconds:F1}ms");
     }
 
     [ContextMenu("2.CreateCells_Tree_LOD")]

@@ -204,6 +204,11 @@ public class DoorsRoot : MonoBehaviour
         Doors.Split();   
     }
 
+    internal void SetDoorPivot()
+    {
+        Doors.SetDoorPivot();
+    }
+
     public void AcRTAlignJobs(bool isCopy)
     {
         //MeshPoints[] meshPoints = Doors.GetMeshPoints();

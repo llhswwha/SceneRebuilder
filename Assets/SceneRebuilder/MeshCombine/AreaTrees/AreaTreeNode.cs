@@ -29,25 +29,27 @@ public class AreaTreeNode : SubSceneCreater
     public List<MeshRendererInfo> GetRendererInfos()
     {
         List<MeshRendererInfo> list = new List<MeshRendererInfo>();
-        foreach(var renderer in Renderers)
-        {
-            if (renderer == null) continue;
-            MeshRendererInfo info = MeshRendererInfo.GetInfo(renderer.gameObject);
-            list.Add(info);
-        }
+        if(Renderers!=null)
+            foreach(var renderer in Renderers)
+            {
+                if (renderer == null) continue;
+                MeshRendererInfo info = MeshRendererInfo.GetInfo(renderer.gameObject);
+                list.Add(info);
+            }
         return list;
     }
 
     public int GetRendererCount()
     {
         int i = 0;
-        foreach(var r in Renderers)
-        {
-            if (r != null)
+        if (Renderers != null)
+            foreach (var r in Renderers)
             {
-                i++;
+                if (r != null)
+                {
+                    i++;
+                }
             }
-        }
         return i;
     }
 
@@ -68,13 +70,16 @@ public class AreaTreeNode : SubSceneCreater
     [ContextMenu("SaveRenderersId")]
     public void SaveRenderersId()
     {
+        
         RenderersId.Clear();
-        foreach (var renderer in Renderers)
-        {
-            if (renderer == null) continue;
-            var id = RendererId.GetId(renderer);
-            RenderersId.Add(id.Id);
-        }
+
+        if (Renderers != null)
+            foreach (var renderer in Renderers)
+            {
+                if (renderer == null) continue;
+                var id = RendererId.GetId(renderer);
+                RenderersId.Add(id.Id);
+            }
 
         CombinedRenderersId.Clear();
         if(CombinedRenderers!=null)
@@ -660,7 +665,7 @@ public class AreaTreeNode : SubSceneCreater
         Bounds bounds = this.Bounds;
         var bs = bounds.size;
 
-        //Debug.LogError("CreateSubNodes size:"+bounds.size);
+        //Debug.Log($"CreateSubNodes tree:{tree.name} level:{level} index:{index} size:{bounds.size} count:{this.Renderers.Count}");
 
         Vector3 cellCount = new Vector3(1, 1, 2);
 
@@ -858,32 +863,48 @@ public class AreaTreeNode : SubSceneCreater
         return nodes;
     }
 
-    public List<AreaTreeNode> GetNodesByCenterPos(List<AreaTreeNode> nodes, MeshRendererInfo renderer)
+    public static List<AreaTreeNode> GetNodesByCenterPos(List<AreaTreeNode> nodes, MeshRendererInfo renderer)
+    {
+        return GetNodesByCenterPos(nodes, renderer, Vector3.zero, 0);
+    }
+
+    public static List<AreaTreeNode> GetNodesByCenterPos(List<AreaTreeNode> nodes, MeshRendererInfo renderer,Vector3 offset,int count)
     {
         List<AreaTreeNode> newNodes = new List<AreaTreeNode>();
         foreach (AreaTreeNode node in nodes)
         {
-            if (node.Bounds.Contains(renderer.center))
+            if (node.Bounds.Contains(renderer.center+ offset))
             {
                 newNodes.Add(node);
             }
         }
-        if(newNodes.Count==1)
+        if (newNodes.Count == 1)
         {
             //Debug.LogError($"GetNodesByCenterPos newNodes.Count == 1:" + renderer);
             newNodes[0].AddRenderer(renderer.meshRenderer);
         }
         else if (newNodes.Count == 0)
         {
-            Debug.LogError($"GetNodesByCenterPos newNodes.Count == 0 renderer:{renderer}");
+            Debug.LogWarning($"GetNodesByCenterPos1[{count}][{offset}] newNodes.Count == 0 renderer:{renderer} center:{renderer.center}");
+            if (count > 2)
+            {
+                return newNodes;
+            }
+            GetNodesByCenterPos(nodes, renderer, new Vector3(0.01f, 0.01f, 0.01f), count + 1);
         }
         else //if(newNodes.Count > 1)
         {
-            Debug.LogError($"GetNodesByCenterPos newNodes.Count > 1 renderer:{renderer} count:{newNodes.Count} node1:{newNodes[0]} node2:{newNodes[1]}");
-
-            newNodes[0].AddRenderer(renderer.meshRenderer);
+            Debug.LogWarning($"GetNodesByCenterPos2[{count}][{offset}] newNodes.Count > 1 renderer:{renderer} center:{renderer.center} count:{newNodes.Count} node1:{newNodes[0]}({newNodes[0].Bounds}) node2:{newNodes[1]}({newNodes[1].Bounds})");
+            if (count > 2)
+            {
+                newNodes[0].AddRenderer(renderer.meshRenderer);
+            }
+            else
+            {
+                GetNodesByCenterPos(nodes, renderer, new Vector3(0.01f, 0.01f, 0.01f), count + 1);
+            }
         }
-        
+
         return newNodes;
     }
 

@@ -58,7 +58,9 @@ public class SubScene_List : MonoBehaviour
     [ContextMenu("Clear")]
     internal void Clear()
     {
-        IdDictionary.InitInfos();
+        //IdDictionary.InitInfos();
+        var renderers = GetRenderers();
+        IdDictionary.InitRenderers(renderers);
 
         GetScenes();
         foreach (var scene in scenes)

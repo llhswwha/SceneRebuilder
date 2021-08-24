@@ -1130,6 +1130,7 @@ public static class MeshHelper
         foreach(var mf in meshFilters){
             if(mf==null) continue;
             Vector3[] vs=GetWorldVertexes(mf);
+            if (vs == null) continue;
             allVs.AddRange(vs);
         }
         return GetMinMax(allVs.ToArray());
@@ -1276,6 +1277,8 @@ public static class MeshHelper
     }
 
     public static Vector3[] GetWorldVertexes(MeshFilter meshFilter){
+        if (meshFilter == null) return null;
+        if (meshFilter.sharedMesh == null) return null;
         var vs2=meshFilter.sharedMesh.vertices;
         var vs22=MeshHelper.GetWorldVertexes(vs2,meshFilter.transform);
         return vs22;
@@ -1995,7 +1998,7 @@ public static class MeshHelper
         TotalCopyCount++;
 
         //var ids = go2Copy.GetComponentsInChildren<RendererId>();
-        RendererId.UpdateIds(go2Copy);
+        RendererId.NewIds(go2Copy);
 
         return go2Copy;
     }

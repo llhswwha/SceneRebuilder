@@ -89,6 +89,9 @@ public class BuildingModelInfoEditor : BaseFoldoutEditor<BuildingModelInfo>
             DoorManager.Instance.SplitDoors(info.gameObject);
         });
         NewButton("ClearParts", buttonWidth, state.partCount > 0, btnStyle, info.ClearInOut);
+        NewButton("CombineDoors", buttonWidth, state.partCount > 0, btnStyle, ()=> {
+            info.CombineDoors();
+        });
         EditorGUILayout.EndHorizontal();
 
         EditorGUILayout.BeginHorizontal();
@@ -113,33 +116,30 @@ public class BuildingModelInfoEditor : BaseFoldoutEditor<BuildingModelInfo>
         NewButton("DeleteFolder", buttonWidth, state.isAllLoaded == true && state.sceneCount > 0, btnStyle, info.DeleteScenesFolder);
         EditorGUILayout.EndHorizontal();
 
-        EditorGUILayout.BeginHorizontal();
-        //int unloadedSceneCount = info.SceneList.GetUnloadedScenes().Count;
-        NewButton("4.SavePrefab", buttonWidth, state.CanLoadScenes, btnStyle, () =>
-        {
-            info.EditorSavePrefab();
-        });
-        
-        if(NewButton("LoadPrefab", buttonWidth, info.ModelPrefab!=null, btnStyle, info.EditorLoadPrefab))
-        {
-            return;
-        }
-        GUILayout.Label("ID:" + info.gameObject.GetInstanceID());
-        info.ModelPrefab= BaseEditorHelper.ObjectField(info.ModelPrefab);
-
-        EditorGUILayout.EndHorizontal();
 
         EditorGUILayout.BeginHorizontal();
         //int unloadedSceneCount = info.SceneList.GetUnloadedScenes().Count;
-        NewButton("5.LoadScenes", buttonWidth, state.CanLoadScenes, btnStyle, () =>
+        NewButton("4.LoadScenes", buttonWidth, state.CanLoadScenes, btnStyle, () =>
         {
             info.EditorLoadNodeScenesEx();
         });
         NewButton("UnloadScenes", buttonWidth, state.CanUnloadScenes, btnStyle, info.UnLoadScenes);
+
+        NewButton("SavePrefab", buttonWidth, state.CanLoadScenes, btnStyle, () =>
+        {
+            info.EditorSavePrefab();
+        });
+
+        if (NewButton("LoadPrefab", buttonWidth, info.ModelPrefab != null, btnStyle, info.EditorLoadPrefab))
+        {
+            return;
+        }
+        GUILayout.Label("ID:" + info.gameObject.GetInstanceID());
+        info.ModelPrefab = BaseEditorHelper.ObjectField(info.ModelPrefab);
         EditorGUILayout.EndHorizontal();
 
         EditorGUILayout.BeginHorizontal();
-        NewButton("6.OneKey", buttonWidth, state.CanOneKey(), btnStyle, () => {
+        NewButton("5.OneKey", buttonWidth, state.CanOneKey(), btnStyle, () => {
             // info.InitInOut();
             // info.CreateTreesBSEx();
             // info.EditorCreateNodeScenes();

@@ -85,6 +85,10 @@ public class DoorManagerEditor : BaseFoldoutEditor<DoorManager>
         GUILayout.EndHorizontal();
 
         GUILayout.BeginHorizontal();
+        if (GUILayout.Button("SetDoorPivot"))
+        {
+            item.SetDoorPivot();
+        }
         if (GUILayout.Button("Split"))
         {
             item.Split();

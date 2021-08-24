@@ -746,7 +746,7 @@ public class MeshRendererInfoList:List<MeshRendererInfo>
         }
         int count2 = this.Count;
 
-        //Debug.LogError($"MeshRenderInfoList.RemoveTypes[{logTag}] count1:{count1} count2:{count2} types:{list.Count}");
+        Debug.Log($"MeshRenderInfoList.RemoveTypes[{logTag}] count1:{count1} count2:{count2} types:{list.Count}");
     }
 
     internal void FilterByVertexCount(float v)
@@ -786,7 +786,7 @@ public class MeshRendererInfoList:List<MeshRendererInfo>
         }
         if(list2.Count>0)
         {
-            Debug.LogWarning($"FilterByVertexCount tag:{tag} vertexcount:{v} count0:{this.Count} count1:{list1.Count} count2:{list2.Count}");
+            Debug.LogWarning($"SplitListByVertexCount tag:{tag} vertexcount:{v} count0:{this.Count} count1:{list1.Count} count2:{list2.Count}");
         }
         
         return new MeshRendererInfoList[]{ list1, list2 };
@@ -798,9 +798,10 @@ public class MeshRendererInfoList:List<MeshRendererInfo>
         {
             MeshRendererInfo info = this[i];
             var cloneObj = MeshHelper.CopyGO(info.gameObject);
-            //cloneObj.name += "_Clone";
+            cloneObj.name = info.gameObject.name+"_CombinedClone";
             cloneObj.transform.SetParent(newParent.transform);
         }
+        RendererId.InitIds(newParent);
     }
 }
 

@@ -20,7 +20,6 @@ public class RendererIdEditor : BaseEditor<RendererId>
     public override void OnToolLayout(RendererId item)
     {
         base.OnToolLayout(item);
-
         EditorGUILayout.BeginHorizontal();
         GUILayout.Label("Id:"+item.Id);
         GUILayout.Label("Children:"+item.childrenIds.Count);
@@ -68,7 +67,16 @@ public class RendererIdEditor : BaseEditor<RendererId>
         {
             item.NewId();
         }
-        if (GUILayout.Button("InitIds"))
+        if (GUILayout.Button("Init"))
+        {
+            item.Init();
+        }
+        if (GUILayout.Button("UpdateIds"))
+        {
+            //item.NewId();
+            RendererId.InitIds(item.gameObject,true);
+        }
+        if (GUILayout.Button("InitIdDict"))
         {
             IdDictionary.InitInfos();
         }
@@ -76,6 +84,9 @@ public class RendererIdEditor : BaseEditor<RendererId>
         {
             item.ClearIds();
         }
+        EditorGUILayout.EndHorizontal();
+
+        EditorGUILayout.BeginHorizontal();
         if (GUILayout.Button("ClearScripts"))
         {
             item.ClearScripts();
@@ -158,16 +169,20 @@ public class RendererIdEditor : BaseEditor<RendererId>
         }
         if (GUILayout.Button("CpDoor1"))
         {
-            DoorHelper.CopyDoorA(item.gameObject,false);
+            DoorHelper.CopyDoorA(item.gameObject,false, false);
         }
         if (GUILayout.Button("CpDoor2"))
         {
-            DoorHelper.CopyDoorA(item.gameObject,true);
+            DoorHelper.CopyDoorA(item.gameObject,true,false);
         }
 
         if (GUILayout.Button("Prepare"))
         {
             DoorHelper.Prepare(item.gameObject);
+        }
+        if (GUILayout.Button("PivotPart"))
+        {
+            DoorHelper.SetDoorPartPivot(item.gameObject);
         }
         EditorGUILayout.EndHorizontal();
     }

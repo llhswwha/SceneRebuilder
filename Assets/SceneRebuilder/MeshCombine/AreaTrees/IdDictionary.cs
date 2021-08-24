@@ -121,7 +121,7 @@ public static class IdDictionary
     {
         DateTime start = DateTime.Now;
 
-        RendererId.InitIds(root);
+        //RendererId.InitIds(root);
 
         RendererId[] ids = null;
         if (root == null)
@@ -174,7 +174,7 @@ public static class IdDictionary
 
     }
 
-    public static void InitRenderers(MeshRenderer[] renderers)
+    public static void InitRenderers(IEnumerable<MeshRenderer> renderers)
     {
         foreach (var renderer in renderers)
         {

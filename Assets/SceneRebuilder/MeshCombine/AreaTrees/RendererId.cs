@@ -204,7 +204,12 @@ public class RendererId
 
     public void SetParentId()
     {
-        parentId = GetId(this.transform.parent,0);
+        var newP= GetId(this.transform.parent, 0);
+        if (newP != parentId)
+        {
+            Debug.LogError($"SetParentId oldP:{parentId} newP:{newP} Id:{Id} name:{this.name}");
+        }
+        parentId = newP;
     }
 
     public bool IsParentChanged()
@@ -300,7 +305,7 @@ public class RendererId
         return id;
     }
 
-    public static RendererId[] UpdateIds(GameObject go)
+    public static RendererId[] NewIds(GameObject go)
     {
         RendererId[] ids = go.GetComponentsInChildren<RendererId>(true);
         foreach(var id in ids)
@@ -310,7 +315,7 @@ public class RendererId
         return ids;
     }
 
-    public static RendererId[] UpdateIds<T>(T go) where T : Component
+    public static RendererId[] NewIds<T>(T go) where T : Component
     {
         RendererId[] ids = go.GetComponentsInChildren<RendererId>(true);
         foreach (var id in ids)
@@ -350,15 +355,19 @@ public class RendererId
         return id;
     }
 
-    public static void InitIds(GameObject rootObj)
+    public static void InitIds(GameObject rootObj,bool showLog=false)
     {
         if (rootObj == null)
         {
             Debug.LogError("InitIds rootObj == null");
             return;
         }
-        MeshRenderer[] renderers=rootObj.GetComponentsInChildren<MeshRenderer>();
+        MeshRenderer[] renderers=rootObj.GetComponentsInChildren<MeshRenderer>(true);
         InitIds(renderers);
+        if (showLog)
+        {
+            Debug.Log($"InitIds rootObj:{rootObj} renderers:{renderers.Length}");
+        }
     }
 
     public static void InitIds<T>(T[] renderers) where T : Component
