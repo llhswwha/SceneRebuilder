@@ -870,34 +870,53 @@ public class DoorPartInfo
         {
             //Debug.LogWarning($"SetDoorPivot No2 name:{this.name} dis:{DisToCenter} pos:{transform.position} center:{this.Center}");
             Split();
-
+            Vector3 pivotPos2 = GetPivotPosByMeshDis();
+            MeshHelper.CenterPivot(this.transform, pivotPos2);
             return;
         }
-        Vector3 pivotPos = GetPivotPos();
-        if (pivotPos != this.transform.position)
+        Vector3 pivotPos1 = GetPivotPosByChildren();
+        if (pivotPos1 != this.transform.position)
         {
-            MeshHelper.CenterPivot(this.transform, pivotPos);
+            MeshHelper.CenterPivot(this.transform, pivotPos1);
             Debug.Log($"SetDoorPivot Yes name:{this.name} dis:{DisToCenter} pos:{transform.position} center:{this.Center}");
         }
         else
         {
             //Debug.LogWarning($"SetDoorPivot No3 name:{this.name} dis:{DisToCenter} pos:{transform.position} center:{this.Center}");
-            var size = minMax[2];
-            var wVertices = MeshHelper.GetWorldVertexes(gameObject);
-            Vector3 p1 = Center - new Vector3(size.x / 2, 0, 0);
-            float dis1=DistanceUtil.GetDistance()
-            Vector3 p2 = Center + new Vector3(size.x / 2, 0, 0);
-            Vector3 p3 = Center - new Vector3(0, 0, size.z / 2);
-            Vector3 p4 = Center + new Vector3(0, 0, size.z / 2);
-
-            CreatePoint(p1, $"p1:{p1}");
-            CreatePoint(p2, $"p1:{p2}");
-            CreatePoint(p3, $"p1:{p3}");
-            CreatePoint(p4, $"p1:{p4}");
+            Vector3 pivotPos2 = GetPivotPosByMeshDis();
+            MeshHelper.CenterPivot(this.transform, pivotPos2);
         }
     }
 
-    private void CreatePoint(Vector3 pos, string name)
+    public Vector3 GetPivotPosByMeshDis()
+    {
+        var size = minMax[2];
+        //var wVertices = MeshHelper.GetWorldVertexes(gameObject);
+        MeshRendererInfoList list = new MeshRendererInfoList(gameObject);
+        var maxRenderer = list[0];
+
+        Vector3 p1 = Center - new Vector3(size.x / 2, 0, 0);
+        Vector3 p2 = Center + new Vector3(size.x / 2, 0, 0);
+        Vector3 p3 = Center - new Vector3(0, 0, size.z / 2);
+        Vector3 p4 = Center + new Vector3(0, 0, size.z / 2);
+        Vector3[] ps = new Vector3[] { p1, p2, p3, p4 };
+        Vector3 pivot = ps[0];
+        float maxDis = 0;
+        for (int i = 0; i < ps.Length; i++)
+        {
+            Vector3 p = ps[i];
+            var dis = Vector3.Distance(p, maxRenderer.center);
+            if (dis > maxDis)
+            {
+                maxDis = dis;
+                pivot = p;
+            }
+            //CreatePoint(p, $"p{i + 1}:{p} dis:{dis}");
+        }
+        return pivot;
+    }
+
+        private void CreatePoint(Vector3 pos, string name)
     {
         GameObject centerGo = GameObject.CreatePrimitive(PrimitiveType.Sphere);
         centerGo.name = name;
@@ -906,7 +925,7 @@ public class DoorPartInfo
         centerGo.transform.SetParent(this.transform);
     }
 
-    public Vector3 GetPivotPos()
+    public Vector3 GetPivotPosByChildren()
     {
         List<Transform> children = new List<Transform>();
         Vector3 pivotPos = transform.GetChild(0).position;

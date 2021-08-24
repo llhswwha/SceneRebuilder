@@ -181,8 +181,10 @@ public class MeshRendererInfo : MonoBehaviour,IComparable<MeshRendererInfo>
 
    public static MeshRendererInfoList InitRenderers(GameObject go)
     {
-        MeshRenderer[] renderers = go.GetComponentsInChildren<MeshRenderer>(true);
-        MeshRendererInfoList list = new MeshRendererInfoList(renderers);
+        //MeshRenderer[] renderers = go.GetComponentsInChildren<MeshRenderer>(true);
+        //MeshRendererInfoList list = new MeshRendererInfoList(renderers);
+
+        MeshRendererInfoList list = new MeshRendererInfoList(go);
         return list;
     }
 
@@ -598,11 +600,11 @@ public class MeshRendererInfoList:List<MeshRendererInfo>
 
     }
 
-    //public MeshRendererInfoList(GameObject root)
-    //{
-    //    var renderers = root.GetComponentsInChildren<MeshRenderer>(true);
-    //    InitRenderers(renderers);
-    //}
+    public MeshRendererInfoList(GameObject root)
+    {
+        var renderers = root.GetComponentsInChildren<MeshRenderer>(true);
+        InitRenderers(renderers);
+    }
 
     public MeshRendererInfoList(IEnumerable<MeshRenderer> renderers)
     {
