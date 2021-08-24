@@ -866,7 +866,7 @@ public class DoorPartInfo
             //Debug.LogWarning($"SetDoorPivot No1 name:{this.name} dis:{DisToCenter} pos:{transform.position} center:{this.Center}");
             return;
         }
-        if(transform.childCount==0)
+        if(transform.childCount==0 && MatCount>0)
         {
             //Debug.LogWarning($"SetDoorPivot No2 name:{this.name} dis:{DisToCenter} pos:{transform.position} center:{this.Center}");
             Split();
