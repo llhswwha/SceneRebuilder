@@ -316,13 +316,26 @@ public class MeshRendererInfo : MonoBehaviour,IComparable<MeshRendererInfo>
         return (rendererType & rt) == rt;
     }
 
+    public bool IsRendererTypes(List<MeshRendererType> rts)
+    {
+        foreach(var rt in rts)
+        {
+            if(IsRendererType(rt))
+            {
+                return true;
+            }
+        }
+        return false;
+    }
+
     public static MeshRendererInfoList FindByTypes(IEnumerable<MeshRenderer> renderers,List<MeshRendererType> types)
     {
         MeshRendererInfoList list = new MeshRendererInfoList();
         foreach (var renderer in renderers)
         {
             var info = MeshRendererInfo.GetInfo(renderer.gameObject);
-            if (types.Contains(info.rendererType))
+            //if (types.Contains(info.rendererType))
+            info.IsRendererTypes(types);
             {
                 list.Add(info);
             }
@@ -585,7 +598,7 @@ public class MeshRendererInfo : MonoBehaviour,IComparable<MeshRendererInfo>
         //    return LodIds.Contains(lv);
         //}
 
-        if (rendererType == MeshRendererType.CombinedPart)
+        if (IsRendererType(MeshRendererType.CombinedPart))
         {
             return false;
         }
@@ -603,7 +616,7 @@ public class MeshRendererInfo : MonoBehaviour,IComparable<MeshRendererInfo>
     public bool IsLodNs(int[] lvs)
     {
         this.GetRenderers();
-        if (rendererType == MeshRendererType.CombinedPart)
+        if (IsRendererType(MeshRendererType.CombinedPart))
         {
             return false;
         }

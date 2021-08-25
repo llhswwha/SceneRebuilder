@@ -108,12 +108,12 @@ public class BigSmallListInfo
                 if (rendererInfo != null)
                 {
                     MeshRenderer mr = rendererInfo.meshRenderer;
-                    if (rendererInfo.rendererType == MeshRendererType.Structure)
+                    if (rendererInfo.IsRendererType(MeshRendererType.Structure))
                     {
                         this.bigModels.Add(mr);
                         sumVertex_Big += mf.vertexCount;
                     }
-                    else if (rendererInfo.rendererType == MeshRendererType.Detail)
+                    else if (rendererInfo.IsRendererType(MeshRendererType.Detail))
                     {
                         this.smallModels.Add(mr);
                         sumVertex_Small += mf.vertexCount;
