@@ -316,6 +316,21 @@ public class MeshRendererInfo : MonoBehaviour,IComparable<MeshRendererInfo>
         return (rendererType & rt) == rt;
     }
 
+    public List<MeshRendererType> GetRendererTypes()
+    {
+        List<MeshRendererType> result = new List<MeshRendererType>();
+        var types = Enum.GetValues(typeof(MeshRendererType));
+        foreach(MeshRendererType t in types)
+        {
+            //Debug.Log($"{t} {t.GetType()}");
+            if (IsRendererType(t))
+            {
+                result.Add(t);
+            }
+        }
+        return result;
+    }
+
     public bool IsRendererTypes(List<MeshRendererType> rts)
     {
         foreach(var rt in rts)
