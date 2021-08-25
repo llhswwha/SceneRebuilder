@@ -311,6 +311,11 @@ public class MeshRendererInfo : MonoBehaviour,IComparable<MeshRendererInfo>
 
     public MeshRendererType rendererType;
 
+    public bool IsRendererType(MeshRendererType rt)
+    {
+        return (rendererType & rt) == rt;
+    }
+
     public static MeshRendererInfoList FindByTypes(IEnumerable<MeshRenderer> renderers,List<MeshRendererType> types)
     {
         MeshRendererInfoList list = new MeshRendererInfoList();
@@ -756,6 +761,16 @@ public class MeshRendererInfoList:List<MeshRendererInfo>
         }
     }
 
+    internal void AddType(MeshRendererType rendererType)
+    {
+        foreach (var item in this)
+        {
+            Debug.Log($"AddType render:{item.name} old:{item.rendererType} add:{rendererType} new:{item.rendererType | rendererType}");
+            item.rendererType = item.rendererType | rendererType;
+            
+        }
+    }
+
     internal void RemoveTypes(List<MeshRendererType> list,string logTag)
     {
         if (this.Count == 0) return;
@@ -829,16 +844,25 @@ public class MeshRendererInfoList:List<MeshRendererInfo>
         }
         RendererId.InitIds(newParent);
     }
+
+    internal void SetRendererType(MeshRendererType rendererType)
+    {
+        for (int i = 0; i < this.Count; i++)
+        {
+            MeshRendererInfo info = this[i];
+            info.rendererType = rendererType;
+        }
+    }
 }
 
 public enum MeshRendererType
 {
-    None,
-    Structure,//(Big)
-    Detail,//(Small)
-    Static,
-    LOD,
-    CombinedPart,
-    CombinedRoot,
-    Splited
+    None=1,
+    Structure=2,//(Big)
+    Detail=4,//(Small)
+    Static=8,
+    LOD=16,
+    CombinedPart=32,
+    CombinedRoot=64,
+    Splited=128
 }
