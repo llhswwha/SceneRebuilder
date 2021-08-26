@@ -817,7 +817,6 @@ public class MeshNode : MonoBehaviour,IComparable<MeshNode>
         return go;
     }
 
-    [ContextMenu("ShowVertexes")]
     public void ShowVertexes()
     {
         RefreshInfo();
@@ -861,7 +860,6 @@ public class MeshNode : MonoBehaviour,IComparable<MeshNode>
         // Debug.Log("freatures:"+ freatures);
     }
 
-    [ContextMenu("ClearVertexes")]
     public void ClearVertexes()
     {
         foreach (var item in vertextObjects)
