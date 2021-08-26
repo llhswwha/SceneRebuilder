@@ -40,13 +40,13 @@ public static class MeshCombineHelper
         if (obj == null)
         {
             Debug.LogError("SplitByMaterials obj == null");
-            return null;
+            return obj;
         }
         MeshRenderer renderer = obj.GetComponent<MeshRenderer>();
         if (renderer == null)
         {
-            Debug.LogError("SplitByMaterials renderer == null :"+obj);
-            return null;
+            Debug.LogWarning("SplitByMaterials renderer == null :"+obj);
+            return obj;
         }
         if (renderer.sharedMaterials.Length == 1) return obj;
         //SplitByMaterials：

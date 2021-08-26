@@ -331,6 +331,7 @@ namespace MeshJobs
                 //return true;
                 RTResult result=new RTResult();
                 result.Mode= AlignMode.Scale;
+                result.NewVecties = newVs2;
                 result.Distance=dis2;
                 result.IsZero=true;
                 result.TransformationMatrix=matrix4World2;

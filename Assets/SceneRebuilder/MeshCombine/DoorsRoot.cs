@@ -228,7 +228,7 @@ public class DoorsRoot : MonoBehaviour
         EditorHelper.UnpackPrefab(this.gameObject);
         Init();
         Debug.Log($"SetDoorShared root:{this.name}");
-        prefabs = DoorHelper.SetDoorShared(Doors);
+        prefabs = DoorHelper.SetDoorShared(Doors,DoorManager.Instance.isAlignDoor);
     }
 
     

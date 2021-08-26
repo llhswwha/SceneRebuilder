@@ -100,7 +100,11 @@ public class RendererIdEditor : BaseEditor<RendererId>
         {
             EditorHelper.UnpackPrefab(item.gameObject);
         }
-
+        if (GUILayout.Button("GetSize"))
+        {
+            var minMax = MeshHelper.GetMinMax(item.gameObject);
+            Debug.Log("size:"+minMax[2]);
+        }
         EditorGUILayout.EndHorizontal();
 
         EditorGUILayout.BeginHorizontal();
@@ -154,6 +158,14 @@ public class RendererIdEditor : BaseEditor<RendererId>
             //MeshCombineHelper.CombineEx(new MeshCombineArg(item.gameObject), MeshCombineMode.OneMesh);
             MeshCombiner.Instance.CombineToOne(item.gameObject);
         }
+        if (GUILayout.Button("PivotPart1"))
+        {
+            DoorHelper.SetDoorPartPivot(item.gameObject, false);
+        }
+        if (GUILayout.Button("PivotPart2"))
+        {
+            DoorHelper.SetDoorPartPivot(item.gameObject, true);
+        }
         EditorGUILayout.EndHorizontal();
 
         EditorGUILayout.BeginHorizontal();
@@ -180,10 +192,7 @@ public class RendererIdEditor : BaseEditor<RendererId>
         {
             DoorHelper.Prepare(item.gameObject);
         }
-        if (GUILayout.Button("PivotPart"))
-        {
-            DoorHelper.SetDoorPartPivot(item.gameObject);
-        }
+
         EditorGUILayout.EndHorizontal();
     }
 

@@ -401,7 +401,7 @@ public class MeshRendererInfo : MonoBehaviour,IComparable<MeshRendererInfo>
 
     public Vector3 GetWeightCenterPos()
     {
-        if(minMax.Length<4)
+        if(minMax.Length<5)
         {
             InitPos();
         }
@@ -417,13 +417,7 @@ public class MeshRendererInfo : MonoBehaviour,IComparable<MeshRendererInfo>
                 vertexCount = meshFilter.sharedMesh.vertexCount;
                 //minMax = MeshHelper.GetMinMax(meshFilter);
                 minMax = MeshHelper.GetMinMax(GetMeshFilters());
-                if (minMax != null && minMax.Length > 3)
-                {
-                    center = minMax[3];
-                    size = minMax[2];
-                    disToCenter = Vector3.Distance(center, position);
-                    diam = Vector3.Distance(minMax[0], minMax[1]);
-                }
+                SetMinMax();
             }
             else
             {
@@ -432,7 +426,10 @@ public class MeshRendererInfo : MonoBehaviour,IComparable<MeshRendererInfo>
         }
         else
         {
-            Debug.LogError($"MeshRendererInfo.Init() meshFilter==null:" + this.name);
+            //Debug.LogError($"MeshRendererInfo.Init() meshFilter==null:" + this.name);
+            var filters = gameObject.GetComponentsInChildren<MeshFilter>(true);
+            minMax = MeshHelper.GetMinMax(filters);
+            SetMinMax();
         }
         // if(rendererType!=MeshRendererType.Detail)
         // {
@@ -451,6 +448,17 @@ public class MeshRendererInfo : MonoBehaviour,IComparable<MeshRendererInfo>
             {
                 this.rendererType = MeshRendererType.CombinedPart;
             }
+        }
+    }
+
+    private void SetMinMax()
+    {
+        if (minMax != null && minMax.Length > 3)
+        {
+            center = minMax[3];
+            size = minMax[2];
+            disToCenter = Vector3.Distance(center, position);
+            diam = Vector3.Distance(minMax[0], minMax[1]);
         }
     }
 
@@ -793,7 +801,7 @@ public class MeshRendererInfoList:List<MeshRendererInfo>
     {
         foreach (var item in this)
         {
-            Debug.Log($"AddType render:{item.name} old:{item.rendererType} add:{rendererType} new:{item.rendererType | rendererType}");
+            //Debug.Log($"AddType render:{item.name} old:{item.rendererType} add:{rendererType} new:{item.rendererType | rendererType}");
             item.rendererType = item.rendererType | rendererType;
             
         }

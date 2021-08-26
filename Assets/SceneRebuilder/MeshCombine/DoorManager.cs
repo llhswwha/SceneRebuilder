@@ -106,10 +106,12 @@ public class DoorManager : SingletonBehaviour<DoorManager>
 
     public PrefabInfoList prefabs;
 
+    public bool isAlignDoor = false;
+
     public void GetPrefabs()
     {
         var doors = doorRoots.GetDoors();
-        prefabs = DoorHelper.SetDoorShared(doors);
+        prefabs = DoorHelper.SetDoorShared(doors, isAlignDoor);
     }
 
     public void Split()
@@ -252,9 +254,13 @@ public class DoorManager : SingletonBehaviour<DoorManager>
                     {
                         if (door.gameObject && door.gameObject.activeInHierarchy == false) continue;
                     }
+                    //if (IsOnlyCanSplit)
+                    //{
+                    //    if (door.SubMeshCount <= 1) continue;
+                    //}
                     if (IsOnlyCanSplit)
                     {
-                        if (door.SubMeshCount <= 1) continue;
+                        if (door.MatCount != 1) continue;
                     }
                     doorParts.AddEx(door);
 
@@ -340,9 +346,9 @@ public static class DoorHelper
     //    }
     //}
 
-    public static PrefabInfoList SetDoorShared(DoorInfoList doors)
+    public static PrefabInfoList SetDoorShared(DoorInfoList doors,bool align)
     {
-        return PrefabInfoListHelper.GetPrefabInfos(doors,false);
+        return PrefabInfoListHelper.GetPrefabInfos(doors, align);
     }
 
     public static void CopyDoorA(GameObject gameObject,bool align,bool isDestroy=true)
@@ -493,10 +499,10 @@ public static class DoorHelper
         doorInfo.PreparePrefab();
     }
 
-    public static void SetDoorPartPivot(GameObject gameObject)
+    public static void SetDoorPartPivot(GameObject gameObject, bool isForce = false)
     {
         DoorInfo doorInfo = new DoorInfo(gameObject);
-        doorInfo.SetDoorPartPivot();
+        doorInfo.SetDoorPartPivot(isForce);
     }
 }
 

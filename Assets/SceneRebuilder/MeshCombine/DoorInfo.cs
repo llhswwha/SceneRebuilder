@@ -224,6 +224,8 @@ public class DoorPartInfo
 
     public Vector3 Center;
 
+    public Vector3 Size;
+
     public Vector3[] minMax;
 
     public float DisToCenter;
@@ -307,6 +309,7 @@ public class DoorPartInfo
         {
             minMax = MeshHelper.GetMinMax(mf);
             Center = minMax[3];
+            Size = minMax[2];
             DisToCenter = Vector3.Distance(Pos, Center);
             OffToCenter = Center - Pos;
             VertexCount = mf.sharedMesh.vertexCount;
@@ -314,10 +317,11 @@ public class DoorPartInfo
         }
         else
         {
-            var filters = go.GetComponentsInChildren<MeshFilter>();
+            var filters = go.GetComponentsInChildren<MeshFilter>(true);
 
             minMax = MeshHelper.GetMinMax(filters);
             Center = minMax[3];
+            Size = minMax[2];
             DisToCenter = Vector3.Distance(Pos, Center);
             OffToCenter = Center - Pos;
 
@@ -327,6 +331,7 @@ public class DoorPartInfo
                 if (mf2.sharedMesh == null) continue;
                 VertexCount += mf2.sharedMesh.vertexCount;
             }
+            SubMeshCount = filters.Length;
         }
         
 
@@ -343,6 +348,8 @@ public class DoorPartInfo
         else
         {
             //Debug.LogWarning("DoorPartInfo.ctor MeshRenderer == null:" + go);
+            var renderers = go.GetComponentsInChildren<MeshRenderer>(true);
+            MatCount = renderers.Length;
         }
 
         var meshRenderers = MeshRendererInfo.InitRenderers(go);
@@ -356,42 +363,55 @@ public class DoorPartInfo
     public override string ToString()
     {
         //return $"mat:{MatCount},mesh:{SubMeshCount},v:{VertexCount},dis:{DisToCenter:F1},off:({OffToCenter.x:F2},{OffToCenter.y:F2},{OffToCenter.z:F2})";
-        return $"mat:{MatCount},mesh:{SubMeshCount},v:{VertexCount},dis:{DisToCenter:F2}";
+        return $"mat:{MatCount},mesh:{SubMeshCount},v:{VertexCount},dis:{DisToCenter:F2},size:{Size}";
     }
 
     internal void SetLOD()
     {
+        if (this.gameObject == null)
+        {
+            Debug.LogError("DoorPartInfo.SetDoorLOD this.gameObject == null door:" + this);
+            return;
+        }
         LODHelper.SetDoorLOD(this.gameObject);
     }
 
-    internal void SetDoorPivot()
+    internal void SetDoorPivot(bool isForce=false)
     {
-        //if (DisToCenter > 0.2)
-        //{
-        //    Debug.LogWarning($"SetDoorPivot No1 name:{this.name} dis:{DisToCenter} pos:{transform.position} center:{this.Center}");
-        //    return;
-        //}
-        if (transform.childCount==0 && MatCount>1)
+        if (DisToCenter > 0.2 && isForce==false)
         {
-            Debug.LogWarning($"SetDoorPivot No2 name:{this.name} dis:{DisToCenter} pos:{transform.position} center:{this.Center}");
-            Split();
+            Debug.LogWarning($"SetDoorPivot No1 name:{this.name} dis:{DisToCenter:F4} pos:{transform.position} center:{this.Center}");
+            return;
+        }
+        if (transform.childCount==0)
+        {
+            if(MatCount > 1)
+            {
+                Debug.LogWarning($"SetDoorPivot Yes0 name:{this.name} dis:{DisToCenter:F4} pos:{transform.position} center:{this.Center}");
+                Split();
+            }
+            else
+            {
+                Debug.LogWarning($"SetDoorPivot No3 name:{this.name} dis:{DisToCenter:F4} pos:{transform.position} center:{this.Center}");
+                return;
+            }
         }
         SetPivot();
     }
 
     private void SetPivot()
     {
-        //Vector3 pivotPos1 = GetPivotPosByChildren();
-        //if (pivotPos1 != this.transform.position)
-        //{
-        //    MeshHelper.CenterPivot(this.transform, pivotPos1);
-        //    Debug.Log($"SetDoorPivot Yes name:{this.name} dis:{DisToCenter} pos:{transform.position} center:{this.Center}");
-        //}
-        //else
+        Vector3 pivotPos1 = GetPivotPosByChildren();
+        if (pivotPos1 != this.transform.position)
         {
-            Debug.LogWarning($"SetDoorPivot No3 name:{this.name} dis:{DisToCenter} pos:{transform.position} center:{this.Center}");
+            MeshHelper.CenterPivot(this.transform, pivotPos1);
+            Debug.Log($"SetDoorPivot Yes1 name:{this.name} dis:{DisToCenter:F4} pos:{transform.position} center:{this.Center}");
+        }
+        else
+        {
+            Debug.LogWarning($"SetDoorPivot Yes2 name:{this.name} dis:{DisToCenter:F4} pos:{transform.position} center:{this.Center}");
             Vector3 pivotPos2 = GetPivotPosByMeshDis();
-            //MeshHelper.CenterPivot(this.transform, pivotPos2);
+            MeshHelper.CenterPivot(this.transform, pivotPos2);
         }
     }
 
@@ -419,7 +439,7 @@ public class DoorPartInfo
                 maxDis = dis;
                 pivot = p;
             }
-            CreatePoint(p, $"p{i + 1}:{p} dis:{dis}");
+            //CreatePoint(p, $"p{i + 1}:{p} dis:{dis}");
         }
         return pivot;
     }
@@ -684,7 +704,7 @@ public class DoorInfo: IPrefab<DoorInfo>
             {
                 var child = root.transform.GetChild(i);
                 MeshRendererInfo info = child.GetComponent<MeshRendererInfo>();
-                if (info != null && info.rendererType == MeshRendererType.Splited) continue;
+                if (info != null && info.IsRendererType(MeshRendererType.Splited)) continue;
                 DoorPartInfo doorPart = new DoorPartInfo(child.gameObject);
                 DoorParts.Add(doorPart);
                 vertexCount += doorPart.VertexCount;
@@ -719,7 +739,8 @@ public class DoorInfo: IPrefab<DoorInfo>
 
     public override string ToString()
     {
-        return $"{this.name}(v:{MeshHelper.GetVertexCountS(vertexCount)})";
+        //return $"{this.name}(v:{MeshHelper.GetVertexCountS(vertexCount)})";
+        return $"{this.name}(v:{vertexCount})";
     }
 
     public void Split()
@@ -731,8 +752,14 @@ public class DoorInfo: IPrefab<DoorInfo>
         }
         else
         {
-            foreach (var part in DoorParts)
+            for (int i = 0; i < DoorParts.Count; i++)
             {
+                DoorPartInfo part = DoorParts[i];
+                if (part.gameObject == null)
+                {
+                    Debug.LogError($"DoorInfo.Split part.gameObject == null door:{this.name} part:{part} id:{i}");
+                    continue;
+                }
                 part.Split();
             }
         }
@@ -741,17 +768,23 @@ public class DoorInfo: IPrefab<DoorInfo>
 
     public void SetLOD()
     {
-        foreach (var part in DoorParts)
+        for (int i = 0; i < DoorParts.Count; i++)
         {
+            DoorPartInfo part = DoorParts[i];
+            if (part.gameObject == null)
+            {
+                Debug.LogError($"DoorInfo.SetDoorLOD part.gameObject == null door:{this.name} part:{part} id:{i}");
+                continue;
+            }
             part.SetLOD();
         }
     }
 
-    internal void SetDoorPartPivot()
+    internal void SetDoorPartPivot(bool isForce = false)
     {
         foreach (var part in DoorParts)
         {
-            part.SetDoorPivot();
+            part.SetDoorPivot(isForce);
         }
     }
 

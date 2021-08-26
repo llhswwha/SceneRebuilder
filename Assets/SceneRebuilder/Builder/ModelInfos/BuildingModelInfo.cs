@@ -111,6 +111,7 @@ public class BuildingModelInfo : SubSceneCreater
 
     public void DeleteOthersOfDoor()
     {
+        Unpack();
         var rootList = DoorManager.UpdateDoors(this.gameObject,null);
         rootList.SetParent(null);
 

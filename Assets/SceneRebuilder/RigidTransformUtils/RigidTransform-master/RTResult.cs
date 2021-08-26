@@ -166,11 +166,12 @@ public class RTResult:IRTResult
         }
         else if (Mode == AlignMode.Rotate)
         {
-            if (tFrom.transform.parent != null)
+            if (tFrom.transform.parent != null && tFrom.transform.parent.name!="ZeroPoint")
             {
+                Transform oldP = tFrom.transform.parent;
                 tFrom.transform.parent = null;
                 
-                Debug.LogError($"ApplyMatrix01 tFrom.transform.parent != null from:{tFrom.name} parent:{tFrom.transform.parent}");
+                Debug.LogError($"ApplyMatrix01 tFrom.transform.parent != null from:{tFrom.name} parent:{oldP}");
             }
 
             tFrom.rotation = Quaternion.Euler(0, 0, 0);
@@ -179,13 +180,10 @@ public class RTResult:IRTResult
             tFrom.position = pos + Translation;
             //tFrom.rotation = Quaternion.LookRotation(TransformationMatrix.GetColumn(1), TransformationMatrix.GetColumn(2)) * qt;//测试钢架时这个是正确的
             tFrom.rotation = Quaternion.LookRotation(TransformationMatrix.GetColumn(2), TransformationMatrix.GetColumn(1)) * qt;//测试teaports时这个是正确的
-
             var vsNew = MeshHelper.GetWorldVertexes(tFrom.gameObject);
             var disNew = DistanceUtil.GetDistance(vsNew, NewVecties);
             if (disNew == 0)
             {
-                //ok
-                
             }
             else
             {
@@ -206,42 +204,55 @@ public class RTResult:IRTResult
                     Debug.LogError($"ApplyMatrix02 zero:{DistanceSetting.zeroM:F5},Distance:{this.Distance} newDis:{disNew},newDis2:{disNew2},\tMode:{Mode},\tfrom:{tFrom.name}");
                 }
             }
-
-            //
-
-            //var disNew = MeshHelper.GetVertexDistanceEx(tFrom, tTo, "测试结果", false);
-            //RTResult rT = this as RTResult;
-            //if (rT != null)
-            //{
-            //    Debug.LogError($"ApplyMatrix01 zero:{DistanceSetting.zeroDis:F5},dis:{disNew},\tMode:{rT.Mode},\tfrom:{tFrom.name},to:{tTo.name} rT==null");
-            //}
-            //else
-            //{
-            //    Debug.LogError($"ApplyMatrix02 zero:{DistanceSetting.zeroDis:F5},dis:{disNew},\tfrom:{tFrom.name},to:{tTo.name} rT==null");
-            //}
-            //if (tTo!=null)
-            //{
-
-            //    if (disNew > DistanceSetting.zeroDis)
-            //    {
-
-            //        if (rT != null)
-            //        {
-            //            Debug.LogError($"ApplyMatrix1 对齐成功 有错误 zero:{DistanceSetting.zeroDis:F5},dis:{disNew},Mode:{rT.Mode},from:{tFrom.name},to:{tTo.name} " + $" Trans:{rT.Translation.Vector3ToString()},Matrix:\n{rT.TransformationMatrix}");
-            //            //Debug.LogError($"Mode:{rT.Mode},Trans:{rT.Translation.Vector3ToString()},Matrix:\n{rT.TransformationMatrix}");
-            //        }
-            //        else
-            //        {
-            //            Debug.LogError($"ApplyMatrix2 对齐成功 有错误 zero:{DistanceSetting.zeroDis:F5},dis:{disNew},from:{tFrom.name},to:{tTo.name} rT==null");
-            //        }
-            //    }
-            //}
         }
         else if (Mode == AlignMode.Scale)
         {
+            //tFrom.position = pos + Translation;
+            //tFrom.rotation = Quaternion.LookRotation(TransformationMatrix.GetColumn(1), TransformationMatrix.GetColumn(2)) * qt;
+            //tFrom.localScale = Scale;
+
+            if (tFrom.transform.parent != null && tFrom.transform.parent.name != "ZeroPoint")
+            {
+                Transform oldP = tFrom.transform.parent;
+                tFrom.transform.parent = null;
+
+                Debug.LogError($"ApplyMatrix11 tFrom.transform.parent != null from:{tFrom.name} parent:{oldP}");
+            }
+
+            tFrom.rotation = Quaternion.Euler(0, 0, 0);
+            qt = tFrom.rotation;
+
             tFrom.position = pos + Translation;
-            tFrom.rotation = Quaternion.LookRotation(TransformationMatrix.GetColumn(1), TransformationMatrix.GetColumn(2)) * qt;
+            //tFrom.rotation = Quaternion.LookRotation(TransformationMatrix.GetColumn(1), TransformationMatrix.GetColumn(2)) * qt;//测试钢架时这个是正确的
+            tFrom.rotation = Quaternion.LookRotation(TransformationMatrix.GetColumn(2), TransformationMatrix.GetColumn(1)) * qt;//测试teaports时这个是正确的
             tFrom.localScale = Scale;
+
+            var vsNew = MeshHelper.GetWorldVertexes(tFrom.gameObject);
+            var disNew = DistanceUtil.GetDistance(vsNew, NewVecties);
+            if (disNew == 0)
+            {
+            }
+            else
+            {
+
+                Debug.LogError($"ApplyMatrix11 zero:{DistanceSetting.zeroM:F5},Distance:{this.Distance} newDis:{disNew},\tMode:{Mode},\tfrom:{tFrom.name}");
+                tFrom.position = pos + Translation;
+                tFrom.rotation = Quaternion.LookRotation(TransformationMatrix.GetColumn(1), TransformationMatrix.GetColumn(2)) * qt;//测试钢架时这个是正确的
+                tFrom.localScale = Scale;
+                //tFrom.rotation = Quaternion.LookRotation(TransformationMatrix.GetColumn(2), TransformationMatrix.GetColumn(1)) * qt;//测试teaports时这个是正确的
+
+                var vsNew2 = MeshHelper.GetWorldVertexes(tFrom.gameObject);
+                var disNew2 = DistanceUtil.GetDistance(vsNew2, NewVecties);
+
+                if (disNew2 == 0)
+                {
+                    //ok
+                }
+                else
+                {
+                    Debug.LogError($"ApplyMatrix12 zero:{DistanceSetting.zeroM:F5},Distance:{this.Distance} newDis:{disNew},newDis2:{disNew2},\tMode:{Mode},\tfrom:{tFrom.name}");
+                }
+            }
         }
     }
 

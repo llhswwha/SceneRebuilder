@@ -246,7 +246,7 @@ public class PrefabInfoListBags
             }
         }
 
-        Debug.LogError($"SetPrefabInfoList all:{PrefabInfoList.Count}={PrefabInfoList.GetInstanceCount()}\t list1:{PrefabInfoList1.Count}={PrefabInfoList1.GetInstanceCount()}\t list2:{PrefabInfoList2.Count}={PrefabInfoList2.GetInstanceCount()}\t list3:{PrefabInfoList3.Count}={PrefabInfoList3.GetInstanceCount()}\t list4:{PrefabInfoList4.Count}={PrefabInfoList4.GetInstanceCount()}\t list5:{PrefabInfoList5.Count}={PrefabInfoList5.GetInstanceCount()} \tlist6:{PrefabInfoList6.Count}={PrefabInfoList6.GetInstanceCount()},");
+        Debug.LogError($"SetPrefabInfoList all:{PrefabInfoList.Count}={PrefabInfoList.GetInstanceCount()}\t list1(1):{PrefabInfoList1.Count}={PrefabInfoList1.GetInstanceCount()}\t list2(2-4):{PrefabInfoList2.Count}={PrefabInfoList2.GetInstanceCount()}\t list3(5-9):{PrefabInfoList3.Count}={PrefabInfoList3.GetInstanceCount()}\t list4(10-49):{PrefabInfoList4.Count}={PrefabInfoList4.GetInstanceCount()}\t list5(50-99):{PrefabInfoList5.Count}={PrefabInfoList5.GetInstanceCount()} \tlist6(>=100):{PrefabInfoList6.Count}={PrefabInfoList6.GetInstanceCount()},");
     }
 
     public List<MeshRenderer> GetHiddenRenderers()
@@ -712,11 +712,12 @@ public static class PrefabInfoListHelper
                     continue;
                 }
 
-                //if(Math.Abs(copyItem1.GetVertexCount() - item2.GetVertexCount()) > 20)
-                //{
-                //    Debug.Log($"Math.Abs(copyItem1.GetVertexCount() - item2.GetVertexCount()) > 20 item2:{item2} item1:{item1}");
-                //    continue;
-                //}
+                int vertexCount12 = Math.Abs(copyItem1.GetVertexCount() - item2.GetVertexCount());
+                if (vertexCount12 > 100)
+                {
+                    //Debug.Log($"GetPrefabInfos[{i}/{list1.Count} {j}/{list2.Count}] vertexCount12 > 100  vertexCount12:{vertexCount12} door1:{item1.ToString()} door2:{item2.ToString()} ");
+                    continue;
+                }
 
                 //var copyDoor1 = MeshHelper.CopyGO(door1.DoorGo);
                 var t1 = copyItem1.transform;
@@ -762,7 +763,7 @@ public static class PrefabInfoListHelper
                         {
                             meshAlignCount++;
 
-                            Debug.LogError($"SetDoorShared2(Mesh Aligned)[{i}/{list1.Count} {j}/{list2.Count}] door1:{item1.ToString()} door2:{item2.ToString()} distance:{distance1} {distance1 < DistanceSetting.zeroM}");
+                            Debug.LogError($"SetDoorShared2(Mesh Aligned)[{i}/{list1.Count} {j}/{list2.Count}] vertexCount12:{vertexCount12} door1:{item1.ToString()} door2:{item2.ToString()} distance:{distance1} {distance1 < DistanceSetting.zeroM}");
                         }
                         else
                         {
@@ -827,7 +828,7 @@ public static class PrefabInfoListHelper
                     }
                     else
                     {
-                        Debug.LogWarning($"SetDoorShared7(Not1)[{i}/{list1.Count} {j}/{list2.Count}] door1:{item1.ToString()} door2:{item2.ToString()} distance1:{distance1} ги{distance1 < DistanceSetting.zeroM}) ");
+                        Debug.LogWarning($"SetDoorShared7(Not1)[{i}/{list1.Count} {j}/{list2.Count}] align:{align} vertexCount12:{vertexCount12} door1:{item1.ToString()} door2:{item2.ToString()} distance1:{distance1} ги{distance1 < DistanceSetting.zeroM}) ");
                     }
                 }
             }

@@ -665,28 +665,44 @@ namespace MeshJobs
 
                     var disNew = MeshHelper.GetVertexDistanceEx(mfFrom.transform, mfTo.transform, "测试结果", false);
 
-                    RTResult rT = result as RTResult;
-                    if (rT != null)
+                    if(disNew< DistanceSetting.zeroM)
                     {
-                        Debug.LogWarning($"对齐成功1 id:{id} zero:{DistanceSetting.zeroM:F5},dis:{result.Distance},disNew:{disNew},Mode:{rT.Mode},from:[{mfFrom.name}],to:[{mfTo.name}] " + $" Trans:{rT.Translation.Vector3ToString()},Matrix:\n{rT.TransformationMatrix}");
-                        //Debug.LogError($"Mode:{rT.Mode},Trans:{rT.Translation.Vector3ToString()},Matrix:\n{rT.TransformationMatrix}");
+                        RTResult rT = result as RTResult;
+                        if (rT != null)
+                        {
+                            Debug.Log($"对齐成功1 id:{id} zero:{DistanceSetting.zeroM:F5},dis:{result.Distance},disNew:{disNew},Mode:{rT.Mode},from:[{mfFrom.name}({mfFrom.vertexCount})],to:[{mfTo.name}({mfTo.vertexCount})] " + $" Trans:{rT.Translation.Vector3ToString()},Matrix:\n{rT.TransformationMatrix}");
+                            //Debug.LogError($"Mode:{rT.Mode},Trans:{rT.Translation.Vector3ToString()},Matrix:\n{rT.TransformationMatrix}");
+                        }
+                        else
+                        {
+                            Debug.Log($"对齐成功2 id:{id}  zero:{DistanceSetting.zeroM:F5},dis:{result.Distance},disNew:{disNew},from:[{mfFrom.name}({mfFrom.vertexCount})],to:[{mfTo.name}({mfTo.vertexCount})] rT==null");
+                        }
                     }
                     else
                     {
-                        Debug.LogWarning($"对齐成功2 id:{id}  zero:{DistanceSetting.zeroM:F5},dis:{result.Distance},disNew:{disNew},from:[{mfFrom.name}],to:[{mfTo.name}] rT==null");
+                        RTResult rT = result as RTResult;
+                        if (rT != null)
+                        {
+                            Debug.LogError($"对齐失败3 id:{id} zero:{DistanceSetting.zeroM:F5},dis:{result.Distance},disNew:{disNew},Mode:{rT.Mode},from:[{mfFrom.name}({mfFrom.vertexCount})],to:[{mfTo.name}({mfTo.vertexCount})] " + $" Trans:{rT.Translation.Vector3ToString()},Matrix:\n{rT.TransformationMatrix}");
+                            //Debug.LogError($"Mode:{rT.Mode},Trans:{rT.Translation.Vector3ToString()},Matrix:\n{rT.TransformationMatrix}");
+                        }
+                        else
+                        {
+                            Debug.LogError($"对齐失败4 id:{id}  zero:{DistanceSetting.zeroM:F5},dis:{result.Distance},disNew:{disNew},from:[{mfFrom.name}({mfFrom.vertexCount})],to:[{mfTo.name}({mfTo.vertexCount})] rT==null");
+                        }
                     }
                     return true;
                 }
                 else
                 {
-                    Debug.LogError($"对齐失败2 {mfFrom.name} -> {mfTo.name} 距离:{result.Distance} zeroM:{DistanceSetting.zeroM} zeroP:{DistanceSetting.zeroP}");
+                    Debug.LogError($"对齐失败2 {mfFrom.name}({mfFrom.vertexCount}) -> {mfTo.name}({mfTo.vertexCount}) 距离:{result.Distance} zeroM:{DistanceSetting.zeroM} zeroP:{DistanceSetting.zeroP}");
                     return false;
                 }
 
             }
             else
             {
-                Debug.LogError($"对齐失败1 id:{id} {mfFrom.name} -> {mfTo.name} zeroM:{DistanceSetting.zeroM} zeroP:{DistanceSetting.zeroP}");
+                Debug.LogError($"对齐失败1 id:{id} {mfFrom.name}({mfFrom.vertexCount}) -> {mfTo.name}({mfTo.vertexCount}) zeroM:{DistanceSetting.zeroM} zeroP:{DistanceSetting.zeroP}");
                 return false;
             }
             //return result;
