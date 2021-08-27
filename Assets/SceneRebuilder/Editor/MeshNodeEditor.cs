@@ -84,6 +84,17 @@ public class MeshNodeEditor : BaseFoldoutEditor<MeshNode>
         }
         EditorGUILayout.EndHorizontal();
 
+        EditorGUILayout.BeginHorizontal();
+        if (GUILayout.Button("ShowVertexes"))
+        {
+            item.ShowVertexes();
+        }
+        if (GUILayout.Button("ClearVertexes"))
+        {
+            item.ClearVertexes();
+        }
+        EditorGUILayout.EndHorizontal();
+
         var subms = item.GetMeshNodes();
         if (subms.Count > 0)
         {

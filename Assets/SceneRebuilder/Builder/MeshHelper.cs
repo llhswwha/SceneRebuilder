@@ -33,6 +33,7 @@ public static class MeshHelper
 
         for (int i = 0; i < emptyList.Count; i++)
         {
+            EditorHelper.UnpackPrefab(emptyList[i].gameObject);
             GameObject.DestroyImmediate(emptyList[i].gameObject);
         }
 
