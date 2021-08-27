@@ -139,22 +139,22 @@ public class CombinedMesh{
             Mesh ms = msold;
             if (isCenterPivot)
             {
-                ms = CloneMesh(mf);
-                //CenterPivot
-                var vs = ms.vertices;
-                var subMesh = ms.GetSubMesh(info.GetMeshIndex(i));
-                var subMeshBounds = subMesh.bounds;
-                Debug.LogError($"InnerDoCombine id:{id} i:{i} count:{count} name:{mf.name} subMeshIndex:{info.GetMeshIndex(i)},bounds:{subMeshBounds}");
-                Vector3 off = -subMeshBounds.center;
-                for (int j = 0; j < subMesh.vertexCount; j++)
-                {
-                    vs[subMesh.firstVertex + j] += off;
-                }
-                if (count == 1)
-                {
-                    info.offset = off;
-                }
-                ms.vertices = vs;
+                //ms = CloneMesh(mf);
+                ////CenterPivot
+                //var vs = ms.vertices;
+                //var subMesh = ms.GetSubMesh(info.GetMeshIndex(i));
+                //var subMeshBounds = subMesh.bounds;
+                //Debug.LogError($"InnerDoCombine id:{id} i:{i} count:{count} name:{mf.name} subMeshIndex:{info.GetMeshIndex(i)},bounds:{subMeshBounds}");
+                //Vector3 off = -subMeshBounds.center;
+                //for (int j = 0; j < subMesh.vertexCount; j++)
+                //{
+                //    vs[subMesh.firstVertex + j] += off;
+                //}
+                //if (count == 1)
+                //{
+                //    info.offset = off;
+                //}
+                //ms.vertices = vs;
             }
 
             combines[i].mesh=ms;
@@ -374,28 +374,36 @@ public class CombinedMesh{
             target.name=source.name+"_Combined_N";
         }
         if(meshPartList.Count==1){
-            this.SetRendererAndFilter(target,meshPartList[0]);
+            var meshPart0 = meshPartList[0];
+
+            target.transform.position = meshPart0.mesh.bounds.center;
+
+            this.SetRendererAndFilter(target, meshPart0);
             if(enableCollider)
-                this.SetCollider(target,meshPartList[0]);
-            offset = meshPartList[0].offset;
+                this.SetCollider(target,meshPart0);
+            offset = meshPart0.offset;
         }
-        else{
-            for(int i=0;i<meshPartList.Count;i++){
-                var info=meshPartList[i];
+        else
+        {
+            for (int i = 0; i < meshPartList.Count; i++)
+            {
+                var info = meshPartList[i];
                 if (info == null) continue;
-                GameObject subObj=new GameObject();
+                GameObject subObj = new GameObject();
                 //subObj.name = i + "_" + info.mesh.name;
                 subObj.name = info.mesh.name;
                 subObj.transform.SetParent(target.transform);
 
-                this.SetRendererAndFilter(subObj,info);
-                if(enableCollider)
-                    this.SetCollider(subObj,info);
+                this.SetRendererAndFilter(subObj, info);
+                if (enableCollider)
+                    this.SetCollider(subObj, info);
             }
         }
-        
-        target.transform.position=source.transform.position- offset;//坐标一致,不设置的话，就是按照新的target的坐标来
+
+        target.transform.position = source.transform.position - offset;//坐标一致,不设置的话，就是按照新的target的坐标来
         //target.transform.position=Vector3.zero;
+        //target.transform.position = source.transform.position;
+        ////target.transform.position = Vector3.zero;
         target.transform.localRotation=source.transform.localRotation;//坐标一致,不设置的话，就是按照新的target的坐标来
         target.transform.localScale=source.transform.localScale;//坐标一致,不设置的话，就是按照新的target的坐标来
 
@@ -412,6 +420,7 @@ public class CombinedMesh{
 
         //MeshCombineHelper.CenterPivot(target.transform,minMax[3]);
 
+        //Debug.LogError($"CreateNewGo target:{target.name}({target.transform.position}) source:{source.name}({source.transform.position})");
         return target;
     }
 

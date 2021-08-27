@@ -101,16 +101,23 @@ public static class MeshCombineHelper
     {
         DateTime start=DateTime.Now;
         GameObject goNew=new GameObject();
+
+        MeshRenderer[] renderers = arg.GetRenderers();
+        var minMax = MeshHelper.GetMinMax(renderers);
+
         goNew.name=arg.name+"_Combined_M";
+
         if (arg.source != null)
         {
+            arg.source.transform.position= minMax[3];
             goNew.transform.position = arg.source.transform.position;
         }
-        MeshRenderer[] renderers = arg.GetRenderers();
+       
 
         // MeshFilter[] mfList =go.GetComponentsInChildren<MeshFilter>(true);
         // var minMax=MeshHelper.GetMinMax(mfList);
         // goNew.transform.position=minMax[3];
+        goNew.transform.position=minMax[3];
 
         //int count=0;
         SubMeshList mfList =new SubMeshList();
@@ -132,6 +139,7 @@ public static class MeshCombineHelper
                 matGo.name=arg.prefix+material.name;
                 combinedMesh.meshPartList[0].mesh.name = matGo.name;
                 matGo.transform.SetParent(goNew.transform);
+                //matGo.transform.position = Vector3.zero;
             }
             else{
                 Debug.LogWarning($"CombineMaterials vs==0 material:{material},list:{list.Count}");

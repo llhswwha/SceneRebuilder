@@ -256,9 +256,24 @@ public class AreaTreeNodeShowManager : MonoBehaviour
 
     public bool IsUpdateTreeNodeByDistance = false;
 
+    /// <summary>
+    /// 剖切模式，不动态显示||隐藏模型   防止剖切某一层楼，其他模型突然显示出来 by wk
+    /// </summary>
+    /// <returns></returns>
+    private bool IsCorssSectionMode()
+    {
+        if(crossSectionSystem.Instance)
+        {
+            return crossSectionSystem.Instance.IsModeActive;
+        }
+        else
+        {
+            return false;
+        }       
+    }
     public void Update()
     {
-        if (IsUpdateTreeNodeByDistance)
+        if (IsUpdateTreeNodeByDistance&&!IsCorssSectionMode())
         {
             DateTime start = DateTime.Now;
 

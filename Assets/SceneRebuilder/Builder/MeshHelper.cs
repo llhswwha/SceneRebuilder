@@ -1136,6 +1136,20 @@ public static class MeshHelper
         return GetMinMax(allVs.ToArray());
     }
 
+    public static Vector3[] GetMinMax(IEnumerable<MeshRenderer> meshRenderers)
+    {
+        if (meshRenderers == null) return null;
+        List<Vector3> allVs = new List<Vector3>();
+        foreach (var mf in meshRenderers)
+        {
+            if (mf == null) continue;
+            Vector3[] vs = GetWorldVertexes(mf);
+            if (vs == null) continue;
+            allVs.AddRange(vs);
+        }
+        return GetMinMax(allVs.ToArray());
+    }
+
     public static Vector3[] GetMinMax(GameObject go)
     {
         MeshFilter[] meshFilters = go.GetComponentsInChildren<MeshFilter>(true);
@@ -1197,6 +1211,19 @@ public static class MeshHelper
         return minMax;
     }
 
+    public static Vector3[] GetWorldVertexes<T>(T go) where T :Component
+    {
+        MeshFilter meshFilter = go.GetComponent<MeshFilter>();
+        if (meshFilter != null)
+        {
+            return GetWorldVertexes(meshFilter.sharedMesh, go.transform);
+        }
+        else
+        {
+            return GetChildrenWorldVertexes(go);
+        }
+    }
+
     public static Vector3[] GetWorldVertexes(GameObject go){
         MeshFilter meshFilter=go.GetComponent<MeshFilter>();
         if (meshFilter != null)
@@ -1220,7 +1247,7 @@ public static class MeshHelper
         return GetWorldVertexes(vs,t1);
     }
 
-    public static Vector3[] GetChildrenWorldVertexes(GameObject t1)
+    public static Vector3[] GetChildrenWorldVertexes<T>(T t1) where T :Component
     {
         List<Vector3> vertexes = new List<Vector3>();
         var meshFilters = t1.GetComponentsInChildren<MeshFilter>();
@@ -1231,6 +1258,19 @@ public static class MeshHelper
             vertexes.AddRange(vs);
         }
         return vertexes.ToArray() ;
+    }
+
+    public static Vector3[] GetChildrenWorldVertexes(GameObject t1)
+    {
+        List<Vector3> vertexes = new List<Vector3>();
+        var meshFilters = t1.GetComponentsInChildren<MeshFilter>();
+        foreach (var mf in meshFilters)
+        {
+            if (mf.sharedMesh == null) continue;
+            var vs = GetWorldVertexes(mf.sharedMesh, mf.transform);
+            vertexes.AddRange(vs);
+        }
+        return vertexes.ToArray();
     }
 
     public static Vector3[] GetChildrenVertexes(GameObject t1)

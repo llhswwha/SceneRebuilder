@@ -492,6 +492,26 @@ public class MeshRendererInfo : MonoBehaviour,IComparable<MeshRendererInfo>
         centerGo.transform.SetParent(this.transform);
     }
 
+    [ContextMenu("ShowBounds2")]
+    public void ShowBounds2()
+    {
+        var bounds = WorldSpaceTransitions.SectionSetup.GetBounds(this.gameObject);
+
+        Debug.Log("ShowBounds");
+        CreatePoint(bounds.min, "min");
+        CreatePoint(bounds.max, "max");
+        //CreatePoint(minMax[2], "size");
+        CreatePoint(bounds.center, "center");
+
+        GameObject centerGo = GameObject.CreatePrimitive(PrimitiveType.Cube);
+        centerGo.name = this.name + "_Bounds";
+        centerGo.transform.position = bounds.center;
+        centerGo.transform.localScale = bounds.size;
+        centerGo.transform.SetParent(this.transform);
+    }
+
+   
+
     private void CreatePoint(Vector3 pos,string name)
     {
         GameObject centerGo=GameObject.CreatePrimitive(PrimitiveType.Sphere);
