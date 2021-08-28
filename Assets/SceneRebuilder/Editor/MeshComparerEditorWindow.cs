@@ -3,14 +3,12 @@ using System.Collections.Generic;
 using UnityEditor;
 using UnityEngine;
 
-public class MeshComparerEditorWindow : EditorWindow
+public class MeshComparerEditorWindow : EditorWindow, IBaseEditorWindow
 {
     [MenuItem("Window/Tools/MeshComparer")]
     public static void ShowWindow()
     {
-        MeshComparerEditorWindow window = (MeshComparerEditorWindow)EditorWindow.GetWindowWithRect(typeof(MeshComparerEditorWindow), new Rect(0, 0, 550, 230), true, "MeshComparer");
-        window.Show();
-        window.Init();
+        BaseEditorWindow.ShowWindow<MeshComparerEditorWindow>(550, 230, "MeshComparer");
     }
 
     public MeshComparer target;

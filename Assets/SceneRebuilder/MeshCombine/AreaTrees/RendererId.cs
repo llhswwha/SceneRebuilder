@@ -93,9 +93,10 @@ public class RendererId
         //transform.position = Vector3.zero;
 
         var renderers = this.GetComponentsInChildren<MeshRenderer>(true);
-        foreach(var renderer in renderers)
+        for (int i = 0; i < renderers.Length; i++)
         {
-            renderer.transform.position= Vector3.zero;
+            MeshRenderer renderer = renderers[i];
+            renderer.transform.position= new Vector3(0.1f,0,0)*i;
         }
     }
 

@@ -3,25 +3,25 @@ using System.Collections.Generic;
 using UnityEditor;
 using UnityEngine;
 
-public class AreaTreeManagerEditorWindow : EditorWindow, IBaseEditorWindow
+public class MeshAlignmentManagerEditorWindow : EditorWindow, IBaseEditorWindow
 {
-    [MenuItem("Window/Tools/TreeManager")]
+    [MenuItem("Window/Tools/MeshAlignment")]
     public static void ShowWindow()
     {
-        BaseEditorWindow.ShowWindow<AreaTreeManagerEditorWindow>(400,200, "TreeManager");
+        BaseEditorWindow.ShowWindow<MeshAlignmentManagerEditorWindow>(500, 150, "MeshAlignment");
     }
 
-    public AreaTreeManager target;
+    public MeshAlignmentManager target;
 
     public void Init()
     {
-        target = AreaTreeManager.Instance;
+        target = MeshAlignmentManager.Instance;
     }
     private void OnGUI()
     {
         //MeshComparerEditor.DrawSetting(target);
 
-        AreaTreeManagerEditor.DrawUI(target);
+        MeshAlignmentManagerEditor.DrawUI(target);
 
         EditorGUILayout.BeginHorizontal();
         if (GUILayout.Button("SelectScripts"))
@@ -30,5 +30,4 @@ public class AreaTreeManagerEditorWindow : EditorWindow, IBaseEditorWindow
         }
         EditorGUILayout.EndHorizontal();
     }
-
 }

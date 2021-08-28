@@ -1,3 +1,4 @@
+using System;
 using System.Collections;
 using System.Collections.Generic;
 using UnityEditor;
@@ -9,10 +10,18 @@ public class MeshCombinerEditor : BaseEditor<MeshCombiner>
     public override void OnToolLayout(MeshCombiner item)
     {
         base.OnToolLayout(item);
+        MeshCombinerEditor.DrawUI(item);
+        if (GUILayout.Button("Window"))
+        {
+            MeshCombinerEditorWindow.ShowWindow();
+        }
+    }
 
+    internal static void DrawUI(MeshCombiner item)
+    {
         EditorGUILayout.BeginHorizontal();
         GUILayout.Label("Source", GUILayout.Width(60));
-        var newSource= EditorGUILayout.ObjectField(item.sourceRoot, typeof(GameObject)) as GameObject;
+        var newSource = BaseEditorHelper.ObjectField(item.sourceRoot);
         item.SetSourceRoot(newSource);
 
         item.sourceType = (MeshCombineSourceType)EditorGUILayout.EnumPopup(item.sourceType, GUILayout.Width(80));
@@ -46,7 +55,7 @@ public class MeshCombinerEditor : BaseEditor<MeshCombiner>
         EditorGUILayout.BeginHorizontal();
         if (GUILayout.Button("Split"))
         {
-            MeshCombineHelper.SplitByMaterials(item.sourceRoot,false);
+            MeshCombineHelper.SplitByMaterials(item.sourceRoot, false);
         }
         if (GUILayout.Button("Combine"))
         {

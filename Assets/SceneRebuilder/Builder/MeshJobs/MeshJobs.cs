@@ -695,14 +695,14 @@ namespace MeshJobs
                 }
                 else
                 {
-                    Debug.LogError($"对齐失败2 {mfFrom.name}({mfFrom.vertexCount}) -> {mfTo.name}({mfTo.vertexCount}) 距离:{result.Distance} zeroM:{DistanceSetting.zeroM} zeroP:{DistanceSetting.zeroP}");
+                    Debug.LogError($"对齐失败2 {mfFrom.name}({mfFrom.vertexCount}) -> {mfTo.name}({mfTo.vertexCount}) 距离:{result.Distance} zeroM:{DistanceSetting.zeroM:F5} zeroP:{DistanceSetting.zeroP:F5}");
                     return false;
                 }
 
             }
             else
             {
-                Debug.LogError($"对齐失败1 id:{id} {mfFrom.name}({mfFrom.vertexCount}) -> {mfTo.name}({mfTo.vertexCount}) zeroM:{DistanceSetting.zeroM} zeroP:{DistanceSetting.zeroP}");
+                Debug.LogError($"对齐失败1(result==null) id:{id} {mfFrom.name}({mfFrom.vertexCount}) -> {mfTo.name}({mfTo.vertexCount}) 距离:{result.Distance} zeroM:{DistanceSetting.zeroM:F5} zeroP:{DistanceSetting.zeroP:F5}");
                 return false;
             }
             //return result;
@@ -1074,12 +1074,12 @@ namespace MeshJobs
                     else
                     {
                         newTargets.Add(arg.mfTo);
-                        Debug.LogError($"对齐失败(无结果数据) {arg.mfFrom} -> {arg.mfTo}");
+                        Debug.LogError($"对齐失败(无结果数据) k:[{k}] id:[{id}] {arg.mfFrom} -> {arg.mfTo}");
                     }
                 }
                 int count1 = meshFilters.Length;
                 int count2 = newTargets.Count;//还剩多少模型没处理
-                Debug.LogError($"完成一轮[{loopCount}]:{count1-count2}={count1}->{count2},PrefabCount:{prefabInfoList.Count}");
+                Debug.LogWarning($"完成一轮[{loopCount}]:{count1-count2}={count1}->{count2},PrefabCount:{prefabInfoList.Count}");
                 meshFilters = newTargets.ToArray();//下一轮
                 if (meshFilters.Length == 0)
                 {

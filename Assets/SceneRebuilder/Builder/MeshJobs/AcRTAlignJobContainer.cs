@@ -147,6 +147,8 @@ public class AcRTAlignJobContainer
             }
         }
         AlignJobCount = jobList.Length;
+        AcRTAlignJob.AlignJobCount = AlignJobCount;
+
         jobCountDetails += jobList.Length + ";";
         AcRTAlignJobResult.InitCount(jobId);
 
@@ -304,14 +306,14 @@ public class AcRTAlignJobContainer
         loopStartMeshFilterCount = mfld.GetMeshFilterCount();
         string countDetail=mfld.GetGroupCountDetails();
         int maxJobCount=mfld.GetMaxJobCount();
-        loopInitLog=$"MeshGroupList:{mfld.GetMeshFiltersList().Count}\tMeshCount:{loopStartMeshFilterCount}\tmaxJobCount:{maxJobCount}\tcountDetail:{countDetail}";
+        loopInitLog=$"InitLoopData GroupList:{mfld.GetMeshFiltersList().Count} Mesh:{loopStartMeshFilterCount} maxJob:{maxJobCount} countDetail:{countDetail}";
 
         AcRTAlignJobResult.CleanResults();
         AcRtAlignJobArg.CleanArgs();
         AcRTAlignJobPrefab.Clear();
         AcRTDistanceJobHelper.Reset();
         AcRTAlignJobExResult.disJobCount = 0;
-
+        AcRTAlignJob.ResetLoopData();
 
     }
 
@@ -413,6 +415,18 @@ public class AcRTAlignJobContainer
 
             var result = AcRTAlignJobResult.GetResult(id);
             AcRTAlignJobPrefab pref = AcRTAlignJobPrefab.GetItem(id);
+
+            //RTResult rT1 = result as RTResult;
+            //if (rT1 != null)
+            //{
+            //    Debug.Log($"DoAlignJobResult[{k}] zero:{DistanceSetting.zeroM:F5},dis:{result.Distance},Mode:{rT1.Mode},from:{arg.mfFrom.name},to:{arg.mfTo} " + $" Trans:{rT1.Translation.Vector3ToString()},Matrix:\n{rT1.TransformationMatrix}");
+            //}
+            //else
+            //{
+            //    Debug.Log($"DoAlignJobResult[{k}] zero:{DistanceSetting.zeroM:F5},dis:{result.Distance},from:{arg.mfFrom.name},to:{arg.mfTo} ");
+            //}
+
+
             if (result != null)
             {
                 //可以改成这里创建模型，并变换，原来的模型不动。
@@ -444,12 +458,12 @@ public class AcRTAlignJobContainer
                             RTResult rT = result as RTResult;
                             if (rT != null)
                             {
-                                Debug.LogError($"对齐成功 有错误[{errorCount}] zero:{DistanceSetting.zeroM:F5},dis:{disNew},Mode:{rT.Mode},from:{arg.mfFrom.name},to:{arg.mfTo} " + $" Trans:{rT.Translation.Vector3ToString()},Matrix:\n{rT.TransformationMatrix}");
+                                Debug.LogError($"对齐成功 有错误[{errorCount}] zero:{DistanceSetting.zeroM:F5},disNew:{disNew},Mode:{rT.Mode},from:{arg.mfFrom.name},to:{arg.mfTo} " + $" Trans:{rT.Translation.Vector3ToString()},Matrix:\n{rT.TransformationMatrix}");
                                 //Debug.LogError($"Mode:{rT.Mode},Trans:{rT.Translation.Vector3ToString()},Matrix:\n{rT.TransformationMatrix}");
                             }
                             else
                             {
-                                Debug.LogError($"对齐成功 有错误[{errorCount}] zero:{DistanceSetting.zeroM:F5},dis:{disNew},from:{arg.mfFrom.name},to:{arg.mfTo} rT==null" );
+                                Debug.LogError($"对齐成功 有错误[{errorCount}] zero:{DistanceSetting.zeroM:F5},disNew:{disNew},from:{arg.mfFrom.name},to:{arg.mfTo} rT==null" );
                             }
 
                             newGo.name += "_Error";
@@ -462,11 +476,33 @@ public class AcRTAlignJobContainer
                             //GameObject.DestroyImmediate(arg.mfTo.gameObject);//测试用，留下有问题的
                             //GameObject.DestroyImmediate(newGo);//测试用，留下有问题的
 
+                            RTResult rT = result as RTResult;
+                            if (rT != null)
+                            {
+                                Debug.Log($"对齐成功11 zero:{DistanceSetting.zeroM:F5},disNew:{disNew},Mode:{rT.Mode},from:{arg.mfFrom.name},to:{arg.mfTo} " + $" Trans:{rT.Translation.Vector3ToString()},Matrix:\n{rT.TransformationMatrix}");
+                                //Debug.LogError($"Mode:{rT.Mode},Trans:{rT.Translation.Vector3ToString()},Matrix:\n{rT.TransformationMatrix}");
+                            }
+                            else
+                            {
+                                Debug.Log($"对齐成功12 zero:{DistanceSetting.zeroM:F5},disNew:{disNew},from:{arg.mfFrom.name},to:{arg.mfTo} rT==null");
+                            }
+
                             GameObject.DestroyImmediate(arg.mfTo.gameObject);
                         }
                     }
                     else
                     {
+                        RTResult rT = result as RTResult;
+                        if (rT != null)
+                        {
+                            Debug.Log($"对齐成功01 zero:{DistanceSetting.zeroM:F5},dis:{rT.Distance},Mode:{rT.Mode},from:{arg.mfFrom.name},to:{arg.mfTo} " + $" Trans:{rT.Translation.Vector3ToString()},Matrix:\n{rT.TransformationMatrix}");
+                            //Debug.LogError($"Mode:{rT.Mode},Trans:{rT.Translation.Vector3ToString()},Matrix:\n{rT.TransformationMatrix}");
+                        }
+                        else
+                        {
+                            Debug.Log($"对齐成功02 zero:{DistanceSetting.zeroM:F5},dis:{rT.Distance},from:{arg.mfFrom.name},to:{arg.mfTo} rT==null");
+                        }
+
                         GameObject.DestroyImmediate(arg.mfTo.gameObject);
                     }
                     
@@ -488,14 +524,14 @@ public class AcRTAlignJobContainer
                     pref.RemoveMeshFilter(arg.mfFrom);
                     //newTargets.Add(arg.mfTo);
 
-                    //Debug.LogWarning($"对齐失败(距离太大2) 距离:{result.Distance}, {arg.mfFrom.name} -> {arg.mfTo.name}");
+                    Debug.LogWarning($"对齐失败(距离太大2) 距离:{result.Distance}, {arg.mfFrom.name} -> {arg.mfTo.name}");
                 }
             }
             else
             {
                 pref.RemoveMeshFilter(arg.mfFrom);
                 //newTargets.Add(arg.mfTo);
-                //Debug.LogWarning($"对齐失败(无结果数据 或者 角度不对其) id={id} {arg.mfFrom.name} -> {arg.mfTo.name}");
+                Debug.LogWarning($"对齐失败(无结果数据 或者 角度不对其) id={id} {arg.mfFrom.name} -> {arg.mfTo.name}");
             }
         }
         
@@ -516,7 +552,7 @@ public class AcRTAlignJobContainer
 
     private int lastProgressCount = 0;
 
-    private bool ShowProgressAndLog()
+    private bool ShowProgressAndLog(bool isLoopEnd)
     {
         bool r=false;
         if (mfld.Count == 0)
@@ -525,23 +561,38 @@ public class AcRTAlignJobContainer
         }
         int mfCount = mfld.GetMeshFilterCount();
         int progressCount = targetCount - mfCount;
-        if(lastProgressCount== progressCount)
+
+        if (isLoopEnd)
         {
-            Debug.LogError("出错退出");
-            r = true;//结束
+            if (lastProgressCount == progressCount)
+            {
+                Debug.LogError("出错退出");
+                r = true;//结束
+            }
         }
+
         lastProgressCount = progressCount;
-        float progress1 = (float)progressCount / targetCount;
-        if (ProgressBarHelper.DisplayCancelableProgressBar("CompleteAllPage", $"AcRTAlignJobContainer:{progressCount}/{targetCount} {progress1 * 100:F2}% of 100% ", progress1))
+        //float progress1 = (float)progressCount / targetCount;
+
+        ProgressArg progressArg = new ProgressArg($"AcRTAlignJobContainer loop:[{loopCount}]", progressCount, targetCount);
+        //AcRTAlignJob.progressArg = progressArg;
+        JobHandleList.progressArg = progressArg;
+
+        if (ProgressBarHelper.DisplayCancelableProgressBar(progressArg))
         {
             //isCancel = true;//取消处理
             r= true;
         }
-        int loopTime = (int)(DateTime.Now - loopStartTime).TotalMilliseconds;
-        Debug.LogWarning($"完成一轮[{loopCount}][{loopTime}ms]:\t{loopStartMeshFilterCount - mfCount}={loopStartMeshFilterCount}->{mfCount},PrefabCount:{prefabInfoList.Count}(+{prefabInfoList.Count - lastPrafabCount}), AlignJob:{AlignJobCount}, DisJob:{AcRTAlignJobExResult.disJobCount} |\t" + loopInitLog);
+
+        if (isLoopEnd)
+        {
+            int loopTime = (int)(DateTime.Now - loopStartTime).TotalMilliseconds;
+            Debug.LogWarning($"完成一轮[{loopCount}][{loopTime}ms]:\t{loopStartMeshFilterCount - mfCount}={loopStartMeshFilterCount}->{mfCount},Prefab:{prefabInfoList.Count}(+{prefabInfoList.Count - lastPrafabCount}), AlignJob:{AlignJobCount}, DisJob:{AcRTAlignJobExResult.disJobCount} | " + loopInitLog);
+            loopTimes += loopTime + ";";
+        }
+
         lastPrafabCount = prefabInfoList.Count;
 
-        loopTimes += loopTime + ";";
         return r;
     }
 
@@ -561,6 +612,8 @@ public class AcRTAlignJobContainer
         errorCount = 0;
         for (int kk = 0; kk < mfCount; kk++)
         {
+            ShowProgressAndLog(false);
+
             loopStartTime = DateTime.Now;
             loopCount++;
 
@@ -595,7 +648,7 @@ public class AcRTAlignJobContainer
             DoAlignJobResult();//处理Jobs的结果
             totalTime4+=(DateTime.Now-tmpT).TotalMilliseconds;
             
-            if(ShowProgressAndLog())
+            if(ShowProgressAndLog(true))
             {
                 break;//结束
             }
@@ -605,11 +658,11 @@ public class AcRTAlignJobContainer
 
         var usedTime=DateTime.Now - start;
         Debug.Log($"AcRTAlignJobContainer.GetJobs Target:{targetCount},Prefab:{prefabInfoList.Count},Job:{totalJobCount}({jobCountDetails}),Loop:{loopCount},Time:{usedTime.TotalSeconds:F2}s({loopTimes})");
-        string testLogItem=$"{targetCount}\t{prefabInfoList.Count}\t{totalJobCount}\t{loopCount}\t{usedTime.TotalSeconds:F1}\t{usedTime.ToString()}\t{AcRTAlignJob.totalFoundCount}\t{AcRTAlignJob.totalNoFoundCount}\t{AcRTAlignJob.totalFoundTime:F0}\t{AcRTAlignJob.totalNoFoundTime:F0}\t{AcRTAlignJob.AngleCount}\t{AcRTAlignJob.ScaleCount}\t{AcRTAlignJob.RTCount}\t{AcRTAlignJob.ICPCount}";
+        string testLogItem=$"{targetCount}\t{prefabInfoList.Count}\t{totalJobCount}\t{loopCount}\t{usedTime.TotalSeconds:F1}\t{usedTime.ToString()}\tFoundCount:{AcRTAlignJob.totalFoundCount}\tNoFoundCount:{AcRTAlignJob.totalNoFoundCount}\tFoundTime:{AcRTAlignJob.totalFoundTime:F0}\tNoFoundTime:{AcRTAlignJob.totalNoFoundTime:F0}\tAngle:{AcRTAlignJob.AngleCount}\tScale:{AcRTAlignJob.ScaleCount}\tRT:{AcRTAlignJob.RTCount}\tICP:{AcRTAlignJob.ICPCount}";
 
         Debug.Log($"FoundCount:{AcRTAlignJob.totalFoundCount},NoFoundCount:{AcRTAlignJob.totalNoFoundCount},FoundTime:{AcRTAlignJob.totalFoundTime:F0},NoFoundTime:{AcRTAlignJob.totalNoFoundTime:F0}");
         Debug.Log($"{prefabInfoList.Count}\t{totalJobCount}\t{loopCount}\t{usedTime.TotalSeconds:F1}\t{AcRTAlignJob.totalFoundCount}\t{AcRTAlignJob.totalNoFoundCount}\t{AcRTAlignJob.totalFoundTime:F0}\t{AcRTAlignJob.totalNoFoundTime:F0}");
-        Debug.LogWarning($"{AcRTAlignJobHelper.vsDictWorld.Count},{AcRTAlignJobHelper.tpDict.Count}");
+        Debug.LogWarning($"vsDictWorld:{AcRTAlignJobHelper.vsDictWorld.Count},tpDict:{AcRTAlignJobHelper.tpDict.Count}");
 
         AcRTAlignJobHelper.Clear();
 
@@ -632,6 +685,8 @@ public class AcRTAlignJobContainer
 
         for (int kk = 0; kk < mfCount; kk++)
         {
+            ShowProgressAndLog(false);
+
             loopStartTime = DateTime.Now;
             loopCount++;
 
@@ -673,7 +728,7 @@ public class AcRTAlignJobContainer
             //4.执行Jos
             DoDistanceJobResultEx();//处理Jobs的结果
             totalTime5 += (DateTime.Now - tmpT).TotalMilliseconds;
-            if (ShowProgressAndLog())
+            if (ShowProgressAndLog(true))
             {
                 break;//结束
             }

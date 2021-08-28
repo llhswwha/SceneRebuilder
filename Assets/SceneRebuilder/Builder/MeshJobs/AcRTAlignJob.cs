@@ -293,6 +293,8 @@ namespace MeshJobs
             ScaleCount=0;
             RTCount=0;
             ICPCount=0;
+
+            jobCount = 0;
         }
 
         // public Vector3[] ApplyMatrix(Vector3[] vs1,Matrix4x4 matrix4World,Vector3 trans)
@@ -347,8 +349,33 @@ namespace MeshJobs
             }
         }
 
-        public static void SetStatisticsInfo(double t,bool isFoundZero,int foundType)
+        public static void ResetLoopData()
         {
+            loopStartTime = DateTime.Now;
+            loopJobCount = 0;
+        }
+
+        public static DateTime loopStartTime;
+
+        public static int loopJobCount = 0;
+
+        public static int AlignJobCount = 0;
+
+        public static int jobCount = 0;
+
+        //public static ProgressArg progressArg;
+
+
+        public static void SetStatisticsInfo(double t,bool isFoundZero,int foundType,float dis=0)
+        {
+            jobCount++;
+            loopJobCount++;
+
+            //ProgressArg subProgress = new ProgressArg("LoopJob", loopJobCount, AlignJobCount);
+            //progressArg.AddSubProgress(subProgress);
+            ////ProgressBarHelper.DisplayCancelableProgressBar(progressArg);
+
+            //Debug.Log($"SetStatisticsInfo[{jobCount}][{loopJobCount}/{AlignJobCount}][{(DateTime.Now- loopStartTime).TotalMilliseconds:F1}] isFoundZero:{isFoundZero} foundType:{foundType} t:{t} dis:{dis}");
             //double t = (DateTime.Now - start).TotalMilliseconds;
             if (isFoundZero)
             {
@@ -377,7 +404,7 @@ namespace MeshJobs
 
         public void Execute()
         {
-            //DateTime start = DateTime.Now;
+            DateTime start = DateTime.Now;
 
             int count = 0;
 
@@ -446,7 +473,7 @@ namespace MeshJobs
                                 AcRTAlignJobResult.SetResult(Id, result);
 
                                 //AngleCount++;
-                                //SetStatisticsInfo((DateTime.Now - start).TotalMilliseconds,true,1);
+                                SetStatisticsInfo((DateTime.Now - start).TotalMilliseconds,true,1);
                                 return;
                             }
                             else if(dis<0.5f && IsTryAngles_Scale)//比例
@@ -460,42 +487,42 @@ namespace MeshJobs
                                 {
                                     AcRTAlignJobResult.SetResult(Id, r2);
                                     //ScaleCount++;
-                                    //SetStatisticsInfo((DateTime.Now - start).TotalMilliseconds,true,2);
+                                    SetStatisticsInfo((DateTime.Now - start).TotalMilliseconds,true,2);
                                     return;
                                 } 
                                 r2 = CreateNewScaleGoMatrix(localMatrix,vsFromL,vsToW,angle,new Vector3(scaleNN.y,scaleNN.x,scaleNN.z),trans,newVs2);
                                 if(r2.IsZero)
                                 {
                                     AcRTAlignJobResult.SetResult(Id, r2);
-                                    //SetStatisticsInfo((DateTime.Now - start).TotalMilliseconds,true,2);
+                                    SetStatisticsInfo((DateTime.Now - start).TotalMilliseconds,true,2);
                                     return;
                                 } 
                                 r2 = CreateNewScaleGoMatrix(localMatrix,vsFromL,vsToW,angle,new Vector3(scaleNN.z,scaleNN.y,scaleNN.x),trans,newVs2);
                                 if(r2.IsZero)
                                 {
                                     AcRTAlignJobResult.SetResult(Id, r2);
-                                    //SetStatisticsInfo((DateTime.Now - start).TotalMilliseconds,true,2);
+                                    SetStatisticsInfo((DateTime.Now - start).TotalMilliseconds,true,2);
                                     return;
                                 } 
                                 r2 = CreateNewScaleGoMatrix(localMatrix,vsFromL,vsToW,angle,new Vector3(scaleNN.z,scaleNN.x,scaleNN.y),trans,newVs2);
                                 if(r2.IsZero)
                                 {
                                     AcRTAlignJobResult.SetResult(Id, r2);
-                                    //SetStatisticsInfo((DateTime.Now - start).TotalMilliseconds,true,2);
+                                    SetStatisticsInfo((DateTime.Now - start).TotalMilliseconds,true,2);
                                     return;
                                 } 
                                 r2 = CreateNewScaleGoMatrix(localMatrix,vsFromL,vsToW,angle,new Vector3(scaleNN.x,scaleNN.z,scaleNN.y),trans,newVs2);
                                 if(r2.IsZero)
                                 {
                                     AcRTAlignJobResult.SetResult(Id, r2);
-                                    //SetStatisticsInfo((DateTime.Now - start).TotalMilliseconds,true,2);
+                                    SetStatisticsInfo((DateTime.Now - start).TotalMilliseconds,true,2);
                                     return;
                                 } 
                                 r2 = CreateNewScaleGoMatrix(localMatrix,vsFromL,vsToW,angle,new Vector3(scaleNN.y,scaleNN.z,scaleNN.x),trans,newVs2);
                                 if(r2.IsZero)
                                 {
                                     AcRTAlignJobResult.SetResult(Id, r2);
-                                    //SetStatisticsInfo((DateTime.Now - start).TotalMilliseconds,true,2);
+                                    SetStatisticsInfo((DateTime.Now - start).TotalMilliseconds,true,2);
                                     return;
                                 } 
                             }
@@ -577,7 +604,8 @@ namespace MeshJobs
                 //break;
             }
 
-            if(minDis<DistanceSetting.ICPMinDis && minDis>DistanceSetting.zeroM){
+            if(minDis<DistanceSetting.ICPMinDis && minDis>DistanceSetting.zeroM)
+            {
                 // if(minDis<DistanceSetting.ICPMinDis)
                 {
                     //Debug.LogError("minDis>DistanceSetting.zeroDis:"+minDis+">"+DistanceSetting.zeroDis+" and <"+DistanceSetting.ICPMinDis);
@@ -614,7 +642,7 @@ namespace MeshJobs
                         //ICPCount++;
                         AcRTAlignJobResult.SetResult(Id, rList);
 
-                        //SetStatisticsInfo((DateTime.Now - start).TotalMilliseconds,isFoundZero,4);
+                        SetStatisticsInfo((DateTime.Now - start).TotalMilliseconds,isFoundZero,4);
 
                         // double t = (DateTime.Now - start).TotalMilliseconds;
                         // if (isFoundZero)
@@ -637,7 +665,15 @@ namespace MeshJobs
                 //if(minDis<AcRTAlignJobResult.MinDis)
                 {
                     // RTCount++;
-                    //SetStatisticsInfo((DateTime.Now - start).TotalMilliseconds,isFoundZero,3);
+                    if (minRT != null)
+                    {
+                        SetStatisticsInfo((DateTime.Now - start).TotalMilliseconds, isFoundZero, 3, minRT.Distance);
+                    }
+                    else
+                    {
+                        SetStatisticsInfo((DateTime.Now - start).TotalMilliseconds, isFoundZero, 3);
+                    }
+                    
                     AcRTAlignJobResult.SetResult(Id, minRT);
                     //Debug.LogWarning(string.Format("IsFoundZero:{0},Distance:{1}",isFoundZero,minDis));
                     // if (isFoundZero)
@@ -657,6 +693,8 @@ namespace MeshJobs
 
             //tpsFrom.Dispose();
             //tpsTo.Dispose();
+
+            
         }
 
 

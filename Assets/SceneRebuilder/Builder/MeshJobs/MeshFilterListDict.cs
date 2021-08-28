@@ -18,29 +18,35 @@ public class MeshFilterListDict
 
      public bool IsConbined=false;
 
-     public static int CombineDistance=3;
+     public static int CombineDistance=0;
 
     public List<MeshFilterList> GetMeshFiltersList()
     {
         if(IsConbined==false)
         {
             IsConbined=true;
-            Debug.LogError("GetMeshFiltersList1:"+list.Count);
+            Debug.Log($"GetMeshFiltersList Start: {list.Count}");
             list.Sort();
             for(int i=0;i<list.Count-1;i++)
             {
                 var a=list[i];
                 var b=list[i+1];
-                if(a.MatId==b.MatId && b.vertexCount-a.vertexCount<=CombineDistance)//合并vertexCount相近的列表
+                //if(a.MatId==b.MatId && b.vertexCount-a.vertexCount<=CombineDistance)//合并vertexCount相近的列表
+                //{
+                //    a.AddRang(b);
+                //    list.RemoveAt(i+1);
+                //    i--;
+                //    Debug.Log($"mat:{a.MatId} a:{a.vertexCount} b:{b.vertexCount} d:{b.vertexCount - a.vertexCount} dis:{CombineDistance}");
+                //}
+                if (a.MatId == b.MatId && b.vertexCount - a.vertexCount <= CombineDistance)//合并vertexCount相近的列表
                 {
                     a.AddRang(b);
-                    list.RemoveAt(i+1);
+                    list.RemoveAt(i + 1);
                     i--;
+                    Debug.Log($"mat:{a.MatId} a:{a.vertexCount} b:{b.vertexCount} d:{b.vertexCount - a.vertexCount} dis:{CombineDistance}");
                 }
             }
-            Debug.LogError("GetMeshFiltersList2:"+list.Count);
-
-            Debug.Log("Detail:"+GetGroupCountDetails());
+            Debug.Log($"GetMeshFiltersList End: {list.Count} |Detail:{GetGroupCountDetails()} | CombineDistance:{CombineDistance}");
         }
         return list;
     }
@@ -71,8 +77,8 @@ public class MeshFilterListDict
         for(int i=0;i<meshPoints.Length;i++)
         {
             var mf=meshPoints[i];
-            var vCount = mf.vertexCount;
-
+            //var vCount = mf.vertexCount;
+            var vCount = Mathf.RoundToInt(mf.vertexCount/100f);
             // if(vCount>AcRTAlignJobContainer.MaxVertexCount)//排除点数特别多的，不然会卡住
             // {
             //     continue;
@@ -100,7 +106,7 @@ public class MeshFilterListDict
             mfl.Add(mf);
         }
 
-        Debug.LogError($"MeshFilterListDict meshPoints:{meshPoints.Length} dict:{dict.Count} ");
+        Debug.Log($"MeshFilterListDict meshPoints:{meshPoints.Length} dict:{dict.Count} ");
 
         // for (int i = 0; i < meshCounts.Length; i++)
         // {

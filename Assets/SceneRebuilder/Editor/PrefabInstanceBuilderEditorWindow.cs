@@ -4,14 +4,12 @@ using System.Collections.Generic;
 using UnityEditor;
 using UnityEngine;
 
-public class PrefabInstanceBuilderEditorWindow : EditorWindow
+public class PrefabInstanceBuilderEditorWindow : EditorWindow, IBaseEditorWindow
 {
     [MenuItem("Window/Tools/PrefabBuilder")]
     public static void ShowWindow()
     {
-        var window = (PrefabInstanceBuilderEditorWindow)EditorWindow.GetWindowWithRect(typeof(PrefabInstanceBuilderEditorWindow), new Rect(0, 0, 600, 400), true, "PrefabBuilder");
-        window.Show();
-        window.Init();
+        BaseEditorWindow.ShowWindow<PrefabInstanceBuilderEditorWindow>(600, 400, "PrefabBuilder");
     }
 
     public PrefabInstanceBuilder target;

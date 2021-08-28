@@ -284,7 +284,7 @@ UnpackPrefab();
             render.enabled=true;
             render.gameObject.SetActive(true);
         }
-        Debug.LogError($"ShowRenderers renderers:{renderers.Length},\t{(DateTime.Now-start).ToString()}");
+        Debug.Log($"ShowRenderers renderers:{renderers.Length},\t{(DateTime.Now-start).ToString()}");
     }
 
     public int maxLoopCount=0;
@@ -689,11 +689,12 @@ UnpackPrefab();
 
     public PrefabInfoList AcRTAlignJobsEx(MeshPoints[] meshPoints)
     {
+        Debug.Log($"AcRTAlignJobsEx Start {meshPoints.Length}");
         SetAcRTAlignJobSetting();
         SetDistanceSettings();
         UnpackPrefab();
         CleanNodes();
-        Debug.Log("AcRTAlignJobsEx");
+
         SetPrefabInfoList(MeshJobHelper.NewAcRTAlignJobsEx(meshPoints, JobSize));
         return PrefabInfoList;
     }

@@ -1,4 +1,5 @@
 using CodeStage.AdvancedFPSCounter.Editor.UI;
+using System;
 using System.Collections;
 using System.Collections.Generic;
 using UnityEditor;
@@ -10,7 +11,15 @@ public class MeshReplaceEditor : BaseEditor<MeshReplace>
     public override void OnToolLayout(MeshReplace item)
     {
         base.OnToolLayout(item);
+        MeshReplaceEditor.DrawUI(item);
+        if (GUILayout.Button("Window"))
+        {
+            MeshReplaceEditorWindow.ShowWindow();
+        }
+    }
 
+    internal static void DrawUI(MeshReplace item)
+    {
         EditorGUILayout.BeginHorizontal();
         if (GUILayout.Button("Replace"))
         {
@@ -42,34 +51,85 @@ public class MeshReplaceEditor : BaseEditor<MeshReplace>
         EditorGUILayout.EndHorizontal();
 
         EditorUIUtils.SetupStyles();
+
+        EditorUIUtils.Separator(5);
+        EditorGUILayout.BeginHorizontal();
+        GUILayout.Label($"Items:({item.Items.Count})", GUILayout.Width(60));
+        if (GUILayout.Button("+"))
+        {
+            item.Items.Add(new MeshReplaceItem());
+            //MeshReplaceEditorWindow.ShowWindow();
+        }
+        if (GUILayout.Button("-"))
+        {
+            item.Items.RemoveAt(item.Items.Count - 1);
+        }
+        EditorGUILayout.EndHorizontal();
+
         foreach (var subItem in item.Items)
         {
             if (subItem == null) continue;
-            
-            EditorUIUtils.Separator(5);
-            EditorGUILayout.BeginHorizontal();
-            GUILayout.Label("Prefab", GUILayout.Width(50));
 
-            if(subItem.prefab!=null)
+            EditorUIUtils.Separator(1);
+
+            EditorGUILayout.BeginHorizontal();
+            GUILayout.Label("Prefab", GUILayout.Width(60));
+            if (GUILayout.Button("+|", GUILayout.Width(20)))
+            {
+                Debug.Log("+" + Selection.activeObject);
+                subItem.prefab = Selection.activeObject as GameObject;
+            }
+            if (subItem.prefab != null)
+            {
                 if (GUILayout.Button(subItem.prefab.name))
                 {
                     EditorHelper.SelectObject(subItem.prefab);
                 }
+                if (GUILayout.Button("-", GUILayout.Width(20)))
+                {
+                    Debug.Log("-" + subItem.prefab);
+                    subItem.prefab = null;
+                }
+            }
+
             EditorGUILayout.EndHorizontal();
 
             EditorGUILayout.BeginHorizontal();
-            GUILayout.Label("Targets", GUILayout.Width(50));
-            foreach (var target in subItem.targetList)
+            GUILayout.Label($"Target({subItem.targetList.Count})", GUILayout.Width(60));
+
+            if (GUILayout.Button("+|", GUILayout.Width(20)))
             {
-                if (target == null) continue;
+                Debug.Log("+" + Selection.activeObject);
+                //subItem.targetList.Add(Selection.activeObject as GameObject);
+                
+                foreach(GameObject obj in Selection.objects)
+                {
+                    subItem.targetList.Add(obj);
+                }
+            }
+
+            for (int i = 0; i < subItem.targetList.Count; i++)
+            {
+                GameObject target = subItem.targetList[i];
+                if (target == null)
+                {
+                    subItem.targetList.RemoveAt(i);
+                    i--;
+                    continue;
+                }
                 if (GUILayout.Button(target.name))
                 {
                     EditorHelper.SelectObject(target);
                 }
+                if (GUILayout.Button("-", GUILayout.Width(20)))
+                {
+                    Debug.Log("-" + target);
+                    subItem.targetList.RemoveAt(i);
+                    i--;
+                }
             }
+            
             EditorGUILayout.EndHorizontal();
         }
-
-        
     }
 }

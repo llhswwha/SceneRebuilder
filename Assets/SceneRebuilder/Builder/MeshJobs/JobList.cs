@@ -99,7 +99,9 @@ using System;
             JobHandle.CompleteAll(handles);
         }
 
-        public void CompleteAllPage()
+    public static ProgressArg progressArg;
+
+    public void CompleteAllPage()
         {
             int count=pages.Count;
             if(count==1){
@@ -108,13 +110,31 @@ using System;
             }
             for(int i=0;i<count;i++)
             {
-                float progress = (float)i / count;
-                float percents = progress * 100;
-                if(ProgressBarHelper.DisplayCancelableProgressBar("CompleteAllPage", $"{name}:{i}/{count} {percents:F1}%", progress))
+            //float progress = (float)i / count;
+            //float percents = progress * 100;
+
+            ProgressArg subProgress = new ProgressArg("CompleteAllPage", i, count, name);
+            if (progressArg != null)
+            {
+                progressArg.AddSubProgress(subProgress);
+                if (ProgressBarHelper.DisplayCancelableProgressBar(progressArg))
                 {
                     break;
                 }
-                var page=pages[i];
+            }
+            else
+            {
+                if (ProgressBarHelper.DisplayCancelableProgressBar(subProgress))
+                {
+                    break;
+                }
+            }
+
+            //if (ProgressBarHelper.DisplayCancelableProgressBar("CompleteAllPage", $"{name}:{i}/{count} {percents:F1}%", progress))
+            //    {
+            //        break;
+            //    }
+            var page=pages[i];
                 JobHandle.CompleteAll(page);
             }
             ProgressBarHelper.ClearProgressBar();

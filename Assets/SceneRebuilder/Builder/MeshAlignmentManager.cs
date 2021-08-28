@@ -2,7 +2,7 @@ using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 
-public class MeshAlignmentManager : MonoBehaviour
+public class MeshAlignmentManager : SingletonBehaviour<MeshAlignmentManager>
 {
     public TransfromAlignSetting transfromReplaceSetting;
 

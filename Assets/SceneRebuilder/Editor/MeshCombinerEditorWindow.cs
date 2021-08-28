@@ -3,25 +3,24 @@ using System.Collections.Generic;
 using UnityEditor;
 using UnityEngine;
 
-public class AreaTreeManagerEditorWindow : EditorWindow, IBaseEditorWindow
+public class MeshCombinerEditorWindow : EditorWindow, IBaseEditorWindow
 {
-    [MenuItem("Window/Tools/TreeManager")]
+    [MenuItem("Window/Tools/MeshCombiner")]
     public static void ShowWindow()
     {
-        BaseEditorWindow.ShowWindow<AreaTreeManagerEditorWindow>(400,200, "TreeManager");
+        BaseEditorWindow.ShowWindow<MeshCombinerEditorWindow>(500, 150, "MeshCombiner");
     }
 
-    public AreaTreeManager target;
+    public MeshCombiner target;
 
     public void Init()
     {
-        target = AreaTreeManager.Instance;
+        target = MeshCombiner.Instance;
     }
+
     private void OnGUI()
     {
-        //MeshComparerEditor.DrawSetting(target);
-
-        AreaTreeManagerEditor.DrawUI(target);
+        MeshCombinerEditor.DrawUI(target);
 
         EditorGUILayout.BeginHorizontal();
         if (GUILayout.Button("SelectScripts"))
@@ -30,5 +29,4 @@ public class AreaTreeManagerEditorWindow : EditorWindow, IBaseEditorWindow
         }
         EditorGUILayout.EndHorizontal();
     }
-
 }

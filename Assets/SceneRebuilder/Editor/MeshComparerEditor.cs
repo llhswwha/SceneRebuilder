@@ -29,10 +29,11 @@ public class MeshComparerEditor : BaseEditor<MeshComparer>
 
         EditorGUILayout.BeginHorizontal();
         item.goFrom = BaseEditorHelper.ObjectField(">",20, item.goFrom);
-        
         item.goFromCopy = BaseEditorHelper.ObjectField(">", 20, item.goFromCopy, 100);
+        EditorGUILayout.EndHorizontal();
+
+        EditorGUILayout.BeginHorizontal();
         item.goTo = BaseEditorHelper.ObjectField(">", 20, item.goTo);
-        
         EditorGUILayout.EndHorizontal();
 
         EditorGUILayout.BeginHorizontal();

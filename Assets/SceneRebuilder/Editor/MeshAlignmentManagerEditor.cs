@@ -1,3 +1,4 @@
+using System;
 using System.Collections;
 using System.Collections.Generic;
 using UnityEditor;
@@ -14,6 +15,16 @@ public class MeshAlignmentManagerEditor : BaseEditor<MeshAlignmentManager>
     {
         base.OnToolLayout(item);
 
+        MeshAlignmentManagerEditor.DrawUI(item);
+
+        if (GUILayout.Button("Window"))
+        {
+            MeshAlignmentManagerEditorWindow.ShowWindow();
+        }
+    }
+
+    internal static void DrawUI(MeshAlignmentManager item)
+    {
         //GUILayout.BeginHorizontal();
         //GUILayout.Label("SourceR", GUILayout.Width(60));
         //item.SourceRoot = EditorGUILayout.ObjectField(item.SourceRoot, typeof(GameObject)) as GameObject;
@@ -21,20 +32,32 @@ public class MeshAlignmentManagerEditor : BaseEditor<MeshAlignmentManager>
         //item.TargetRoot = EditorGUILayout.ObjectField(item.TargetRoot, typeof(GameObject)) as GameObject;
         //GUILayout.EndHorizontal();
 
+        //GUILayout.BeginHorizontal();
+        //GUILayout.Label("SourceR", GUILayout.Width(60));
+        //item.SourceRoot = BaseEditorHelper.ObjectField(item.SourceRoot);
+        //GUILayout.Label("Source", GUILayout.Width(60));
+        //item.Source = BaseEditorHelper.ObjectField(item.Source);
+        //GUILayout.Label("Target", GUILayout.Width(60));
+        //item.Target = BaseEditorHelper.ObjectField(item.Target);
+        //GUILayout.EndHorizontal();
+
         GUILayout.BeginHorizontal();
         GUILayout.Label("SourceR", GUILayout.Width(60));
-        item.SourceRoot = EditorGUILayout.ObjectField(item.SourceRoot, typeof(GameObject)) as GameObject;
-        GUILayout.Label("Source", GUILayout.Width(60));
-        item.Source = EditorGUILayout.ObjectField(item.Source, typeof(GameObject)) as GameObject;
-        GUILayout.Label("Target", GUILayout.Width(60));
-        item.Target = EditorGUILayout.ObjectField(item.Target, typeof(GameObject)) as GameObject;
+        item.SourceRoot = BaseEditorHelper.ObjectField(item.SourceRoot);
         GUILayout.EndHorizontal();
 
-       
-
+        GUILayout.BeginHorizontal();
+        GUILayout.Label("Source", GUILayout.Width(60));
+        item.Source = BaseEditorHelper.ObjectField(item.Source);
+        GUILayout.EndHorizontal();
 
         GUILayout.BeginHorizontal();
-        if(item.Target!=null && item.Source!=null)
+        GUILayout.Label("Target", GUILayout.Width(60));
+        item.Target = BaseEditorHelper.ObjectField(item.Target);
+        GUILayout.EndHorizontal();
+
+        GUILayout.BeginHorizontal();
+        if (item.Target != null && item.Source != null)
         {
             Vector3 offset = item.Target.transform.position - item.Source.transform.position;
             GUILayout.Label($"offset:({offset.x},{offset.y},{offset.z})");
@@ -43,11 +66,11 @@ public class MeshAlignmentManagerEditor : BaseEditor<MeshAlignmentManager>
         {
             GUILayout.Label($"offset:(NULL)");
         }
-        
+
         item.transfromReplaceSetting.SetPosX = GUILayout.Toggle(item.transfromReplaceSetting.SetPosX, "X", GUILayout.Width(40));
         item.transfromReplaceSetting.SetPosY = GUILayout.Toggle(item.transfromReplaceSetting.SetPosY, "Y", GUILayout.Width(40));
         item.transfromReplaceSetting.SetPosZ = GUILayout.Toggle(item.transfromReplaceSetting.SetPosZ, "Z", GUILayout.Width(40));
-        item.transfromReplaceSetting.Align = (TransfromAlignMode)EditorGUILayout.EnumPopup(item.transfromReplaceSetting.Align,GUILayout.Width(80));
+        item.transfromReplaceSetting.Align = (TransfromAlignMode)EditorGUILayout.EnumPopup(item.transfromReplaceSetting.Align, GUILayout.Width(80));
         GUILayout.EndHorizontal();
 
         GUILayout.BeginHorizontal();

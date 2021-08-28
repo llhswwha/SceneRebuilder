@@ -249,6 +249,10 @@ namespace CodeStage.AdvancedFPSCounter.Editor.UI
 
 		public static void Separator(int padding = 0)
 		{
+            if (line == null)
+            {
+                SetupStyles();
+            }
 			if (padding != 0) GUILayout.Space(padding);
 
 			var position = EditorGUILayout.GetControlRect(false, 1f);

@@ -2,7 +2,7 @@
 using System.Collections.Generic;
 using UnityEngine;
 
-public class MeshReplace : MonoBehaviour
+public class MeshReplace : SingletonBehaviour<MeshReplace>
 {
 
     //public GameObject prefab;
