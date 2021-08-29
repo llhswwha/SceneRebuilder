@@ -227,7 +227,9 @@ public class LODManager : SingletonBehaviour<LODManager>
         {
             var minDis = item.dis;
             var render_lod1 = item.renderer_lod1;
+            if (render_lod1 == null) continue;
             var render_lod0 = item.renderer_lod0;
+            if (render_lod0 == null) continue;
             var vertexCount0 = item.vertexCount0;
             var vertexCount1 = item.vertexCount1;
             if (minDis <= zeroDistance)
@@ -720,18 +722,20 @@ public class LODManager : SingletonBehaviour<LODManager>
         LODGroup group = lod0.GetComponent<LODGroup>();
         if (group != null)
         {
-            LOD[] lods = group.GetLODs();
-            LOD[] lodsNew = LODHelper.CreateLODs(LODLevels_3);
-            for (int i = 0; i < lods.Length && i < lodsNew.Length; i++)
-            {
-                lodsNew[i].renderers = lods[i].renderers;
-            }
-            List<Renderer> renderers = new List<Renderer>();
-            if (lodsNew[lodsNew.Length - 1].renderers != null)
-                renderers.AddRange(lodsNew[lodsNew.Length - 1].renderers);
-            renderers.AddRange(lod2.GetRenderers());
-            lodsNew[lodsNew.Length - 1].renderers = renderers.ToArray();
-            group.SetLODs(lodsNew);
+            //LOD[] lods = group.GetLODs();
+            //LOD[] lodsNew = LODHelper.CreateLODs(LODLevels_3);
+            //for (int i = 0; i < lods.Length && i < lodsNew.Length; i++)
+            //{
+            //    lodsNew[i].renderers = lods[i].renderers;
+            //}
+            //List<Renderer> renderers = new List<Renderer>();
+            //if (lodsNew[lodsNew.Length - 1].renderers != null)
+            //    renderers.AddRange(lodsNew[lodsNew.Length - 1].renderers);
+            //renderers.AddRange(lod2.GetRenderers());
+            //lodsNew[lodsNew.Length - 1].renderers = renderers.ToArray();
+            //group.SetLODs(lodsNew);
+
+            AddLOD3(group, lod2.GetRenderers(), LODLevels_3);
         }
         else
         {
@@ -753,18 +757,20 @@ public class LODManager : SingletonBehaviour<LODManager>
         LODGroup group = lod0.GetComponent<LODGroup>();
         if (group != null)
         {
-            LOD[] lods = group.GetLODs();
-            LOD[] lodsNew = LODHelper.CreateLODs(LODLevels_2);
-            for (int i = 0; i < lods.Length && i < lodsNew.Length; i++)
-            {
-                lodsNew[i].renderers = lods[i].renderers;
-            }
-            List<Renderer> renderers = new List<Renderer>();
-            if(lodsNew[lodsNew.Length - 1].renderers!=null)
-                renderers.AddRange(lodsNew[lodsNew.Length - 1].renderers);
-            renderers.AddRange(lod2.GetRenderers());
-            lodsNew[lodsNew.Length - 1].renderers = renderers.ToArray();
-            group.SetLODs(lodsNew);
+            //LOD[] lods = group.GetLODs();
+            //LOD[] lodsNew = LODHelper.CreateLODs(LODLevels_2);
+            //for (int i = 0; i < lods.Length && i < lodsNew.Length; i++)
+            //{
+            //    lodsNew[i].renderers = lods[i].renderers;
+            //}
+            //List<Renderer> renderers = new List<Renderer>();
+            //if(lodsNew[lodsNew.Length - 1].renderers!=null)
+            //    renderers.AddRange(lodsNew[lodsNew.Length - 1].renderers);
+            //renderers.AddRange(lod2.GetRenderers());
+            //lodsNew[lodsNew.Length - 1].renderers = renderers.ToArray();
+            //group.SetLODs(lodsNew);
+
+            AddLOD2(group, lod2.GetRenderers(), LODLevels_2);
         }
         else
         {
@@ -772,6 +778,37 @@ public class LODManager : SingletonBehaviour<LODManager>
             LOD[] lods = GetLODs3(lod0.GetRenderers(), lod0.GetRenderers(), lod2.GetRenderers());
             group.SetLODs(lods);
         }
+    }
+
+    public void AddLOD2<T>(LODGroup group, IEnumerable<T> lod2Renderers,float[] lvs) where T : Renderer
+    {
+        LOD[] lods = group.GetLODs();
+        LOD[] lodsNew = LODHelper.CreateLODs(lvs);
+        for (int i = 0; i < lods.Length && i < lodsNew.Length; i++)
+        {
+            lodsNew[i].renderers = lods[i].renderers;
+        }
+        List<Renderer> renderers = new List<Renderer>();
+        if (lodsNew[lodsNew.Length - 1].renderers != null)
+            renderers.AddRange(lodsNew[lodsNew.Length - 1].renderers);
+        renderers.AddRange(lod2Renderers);
+        lodsNew[lodsNew.Length - 1].renderers = renderers.ToArray();
+        group.SetLODs(lodsNew);
+    }
+    public void AddLOD3<T>(LODGroup group, IEnumerable<T> lod3Renderers, float[] lvs) where T : Renderer
+    {
+        LOD[] lods = group.GetLODs();
+        LOD[] lodsNew = LODHelper.CreateLODs(lvs);
+        for (int i = 0; i < lods.Length && i < lodsNew.Length; i++)
+        {
+            lodsNew[i].renderers = lods[i].renderers;
+        }
+        List<Renderer> renderers = new List<Renderer>();
+        if (lodsNew[lodsNew.Length - 1].renderers != null)
+            renderers.AddRange(lodsNew[lodsNew.Length - 1].renderers);
+        renderers.AddRange(lod3Renderers);
+        lodsNew[lodsNew.Length - 1].renderers = renderers.ToArray();
+        group.SetLODs(lodsNew);
     }
 
     public float[] LODLevels_1 = new float[] { 0.5f, 0.02f };
@@ -1134,6 +1171,19 @@ public class LODManager : SingletonBehaviour<LODManager>
             var info=LODGroupInfo.Init(group.gameObject);
             infos[i] = info;
         }
+        Debug.Log($"InitGroupInfos LocalTarget:{LocalTarget} includeInactive:{includeInactive} groups:{groups.Length} infos:{infos.Length}");
+        return infos;
+    }
+
+    public LODGroupInfo[] SetMats()
+    {
+        LODGroupInfo[] infos = InitGroupInfos();
+        for (int i = 0; i < infos.Length; i++)
+        {
+            LODGroupInfo info = infos[i];
+            info.SetMaterial();
+        }
+        Debug.Log($"SetMaterial LocalTarget:{LocalTarget} includeInactive:{includeInactive} infos:{infos.Length}");
         return infos;
     }
 
@@ -1178,6 +1228,40 @@ public class LODManager : SingletonBehaviour<LODManager>
 
     public string lodInfoText = "";
 
+    public Camera lodCamera = null;
+
+    private void GetLodCamera()
+    {
+        if (lodCamera == null)
+        {
+            lodCamera = Camera.main;
+        }
+        if (lodCamera == null)
+        {
+            var cs= GameObject.FindObjectsOfType<Camera>();
+            foreach(var c in cs)
+            {
+                if(c.name.Contains("RTE"))
+                {
+                    continue;
+                }
+                lodCamera = c;
+            }
+        }
+        if (lodCamera != null && lodCamera.gameObject.activeInHierarchy == false)
+        {
+            var cs = GameObject.FindObjectsOfType<Camera>();
+            foreach (var c in cs)
+            {
+                if (c.name.Contains("RTE"))
+                {
+                    continue;
+                }
+                lodCamera = c;
+            }
+        }
+    }
+
     public string GetRuntimeLODDetailSubThread(bool isForce)
     {
         DateTime now = DateTime.Now;
@@ -1185,8 +1269,11 @@ public class LODManager : SingletonBehaviour<LODManager>
         {
             lodDetails = LODGroupDetails.GetSceneLodGroupInfo(LocalTarget, includeInactive);
         }
-        Camera cam = GameObject.FindObjectOfType<Camera>();
-        CameraData camData = new CameraData(cam, LODSceneView.GameView);
+
+        GetLodCamera();
+        if (lodCamera == null) return "lodCamera==null";
+
+        CameraData camData = new CameraData(lodCamera, LODSceneView.GameView);
 
         if (IsThreadBusy == false)
         {
@@ -1210,7 +1297,7 @@ public class LODManager : SingletonBehaviour<LODManager>
             }, "GetRuntimeLODDetail");
         }
         lodInfoTime = (DateTime.Now - now).TotalMilliseconds;
-        string result = $"time:{lodInfoTime:F2}ms {lodInfoText}";
+        string result = $"t:{lodInfoTime:F2}ms c:{lodCamera.name} {lodInfoText}";
         return result;
     }
 
@@ -1221,8 +1308,9 @@ public class LODManager : SingletonBehaviour<LODManager>
         {
             lodDetails = LODGroupDetails.GetSceneLodGroupInfo(LocalTarget, includeInactive);
         }
-        Camera cam = GameObject.FindObjectOfType<Camera>();
-        CameraData camData = new CameraData(cam, LODSceneView.GameView);
+        GetLodCamera();
+        if (lodCamera == null) return "lodCamera==null";
+        CameraData camData = new CameraData(lodCamera, LODSceneView.GameView);
         foreach (var lod in lodDetails)
         {
             lod.UpdatePoint();
@@ -1230,7 +1318,7 @@ public class LODManager : SingletonBehaviour<LODManager>
         int[] infos = LODGroupDetails.CaculateGroupInfo(lodDetails, LODSceneView.GameView, LODSortType.Vertex, camData);
         lodInfoText = GetLODGroupInfoText(infos);
         lodInfoTime = (DateTime.Now - now).TotalMilliseconds;
-        string result = $"time:{lodInfoTime:F2}ms {lodInfoText}";
+        string result = $"t:{lodInfoTime:F2}ms c:{lodCamera.name} {lodInfoText}";
         return result;
     }
 

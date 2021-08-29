@@ -30,6 +30,14 @@ public class LODGroupInfoEditor : BaseFoldoutEditor<LODGroupInfo>
         {
             item.SetLODs();
         }
+        if (GUILayout.Button("AddLODN"))
+        {
+            item.AddLODN();
+        }
+        if (GUILayout.Button("AddBox"))
+        {
+            item.AddBox();
+        }
         if (GUILayout.Button("SetMats"))
         {
             item.SetMaterial();

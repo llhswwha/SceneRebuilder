@@ -69,7 +69,8 @@ public class LODInfo
 
     public Material[] GetMats()
     {
-        return renderers[0].sharedMaterials;
+        MeshRendererInfoList rendererInfos = new MeshRendererInfoList(renderers);
+        return rendererInfos[0].meshRenderer.sharedMaterials;
     }
 
     public void SetMats(Material[] matsNew)

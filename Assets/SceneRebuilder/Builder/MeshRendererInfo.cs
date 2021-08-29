@@ -691,12 +691,12 @@ public class MeshRendererInfoList:List<MeshRendererInfo>
         InitRenderers(renderers);
     }
 
-    public MeshRendererInfoList(IEnumerable<MeshRenderer> renderers)
+    public MeshRendererInfoList(IEnumerable<Renderer> renderers)
     {
         InitRenderers(renderers);
     }
 
-    private void InitRenderers(IEnumerable<MeshRenderer> renderers)
+    private void InitRenderers(IEnumerable<Renderer> renderers)
     {
         foreach (var renderer in renderers)
         {
@@ -908,6 +908,17 @@ public class MeshRendererInfoList:List<MeshRendererInfo>
             MeshRendererInfo info = this[i];
             info.rendererType = rendererType;
         }
+    }
+
+    internal List<Renderer> GetBoundsRenderers()
+    {
+        List<Renderer> renderers = new List<Renderer>();
+        for (int i = 0; i < this.Count; i++)
+        {
+            MeshRendererInfo info = this[i];
+            renderers.Add(info.GetBoundsRenderer());
+        }
+        return renderers;
     }
 }
 

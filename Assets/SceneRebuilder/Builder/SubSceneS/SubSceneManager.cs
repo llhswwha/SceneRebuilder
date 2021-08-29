@@ -346,11 +346,13 @@ public class SubSceneManager : SingletonBehaviour<SubSceneManager>
     //    SetBuildings(subScenes);
     //}
 
+    public bool includeInactive = false;
+
     [ContextMenu("SetBuildings_All")]
     public void SetBuildings_All()
     {
         //UpdateScenes();
-        subScenes = GameObject.FindObjectsOfType<SubScene_Base>(true);
+        subScenes = GameObject.FindObjectsOfType<SubScene_Base>(includeInactive);
         SetBuildings(subScenes);
     }
 
@@ -401,7 +403,7 @@ public class SubSceneManager : SingletonBehaviour<SubSceneManager>
 
     public void UpdateScenes()
     {
-        subScenes = GameObject.FindObjectsOfType<SubScene_Base>(true);
+        subScenes = GameObject.FindObjectsOfType<SubScene_Base>(includeInactive);
     }
 
 
@@ -540,7 +542,7 @@ public class SubSceneManager : SingletonBehaviour<SubSceneManager>
     [ContextMenu("SetSetting")]
     public void SetSetting()
     {
-        subScenes = GameObject.FindObjectsOfType<SubScene_Base>(true);
+        subScenes = GameObject.FindObjectsOfType<SubScene_Base>(includeInactive);
         foreach (var item in subScenes)
         {
             item.IsSetParent = this.IsSetParent;
@@ -846,7 +848,7 @@ public class SubSceneManager : SingletonBehaviour<SubSceneManager>
         {
             item.Clear();
         }
-        var ss = GameObject.FindObjectsOfType<SubScene_Base>(true);
+        var ss = GameObject.FindObjectsOfType<SubScene_Base>(includeInactive);
         foreach (var item in ss)
         {
             //item.LoadScene();

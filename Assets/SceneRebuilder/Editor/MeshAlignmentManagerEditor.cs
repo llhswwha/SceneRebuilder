@@ -25,6 +25,7 @@ public class MeshAlignmentManagerEditor : BaseEditor<MeshAlignmentManager>
 
     internal static void DrawUI(MeshAlignmentManager item)
     {
+        if (item == null) return;
         //GUILayout.BeginHorizontal();
         //GUILayout.Label("SourceR", GUILayout.Width(60));
         //item.SourceRoot = EditorGUILayout.ObjectField(item.SourceRoot, typeof(GameObject)) as GameObject;

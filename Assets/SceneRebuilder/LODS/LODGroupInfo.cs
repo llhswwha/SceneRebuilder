@@ -47,8 +47,6 @@ public class LODGroupInfo : MonoBehaviour
             lodInfo.vertextCount = vc;
         }
         lodCount = LODGroup.lodCount;
-
-        
     }
 
     [ContextMenu("SetLODs")]
@@ -64,6 +62,92 @@ public class LODGroupInfo : MonoBehaviour
             lods.Add(lod);
         }
         LODGroup.SetLODs(lods.ToArray());
+    }
+
+    public List<Renderer> GetLODRenderers()
+    {
+        List<Renderer> renderers = new List<Renderer>();
+        LODGroup = gameObject.GetComponent<LODGroup>();
+        LOD[] lods = LODGroup.GetLODs();
+        for (int i = 0; i < lods.Length; i++)
+        {
+            LOD lod = lods[i];
+            foreach (var r in lod.renderers)
+            {
+                if (r == null) continue;
+                if (!renderers.Contains(r))
+                {
+                    renderers.Add(r);
+                }
+            }
+        }
+        return renderers;
+    }
+
+    public Renderer[] GetLastRenderers()
+    {
+        LODGroup = gameObject.GetComponent<LODGroup>();
+        LOD[] lods = LODGroup.GetLODs();
+        return lods[lods.Length - 1].renderers;
+    }
+
+    public List<Renderer> GetNewRenderers()
+    {
+        List<Renderer> newRenderers = new List<Renderer>();
+        Renderer[] renderers = this.gameObject.GetComponentsInChildren<Renderer>(true);
+        List<Renderer> lodRenderers = GetLODRenderers();
+        foreach(var r in renderers)
+        {
+            if(!lodRenderers.Contains(r))
+            {
+                newRenderers.Add(r);
+            }
+        }
+        return newRenderers;
+    }
+
+    [ContextMenu("AddLODN")]
+    public void AddLODN()
+    {
+        List<Renderer> newRenderers = GetNewRenderers();
+        Debug.Log($"AddLODN newRenderers:{newRenderers.Count} lodCount:{lodCount}");
+        if (newRenderers.Count > 0)
+        {
+            if(lodCount==2)
+            {
+                LODManager.Instance.AddLOD2(LODGroup, newRenderers, new float[] { 0.7f, 0.1f, 0.01f });
+            }
+            else if (lodCount == 3)
+            {
+                LODManager.Instance.AddLOD3(LODGroup, newRenderers, new float[] { 0.7f, 0.3f, 0.1f, 0.01f });
+            }
+        }
+
+        GetLODs();
+        SetMaterial();
+    }
+
+    [ContextMenu("AddBox")]
+    public void AddBox()
+    {
+        var lastRenderers=GetLastRenderers();
+        MeshRendererInfoList rendererInfos = new MeshRendererInfoList(lastRenderers);
+        List<Renderer> boxRenderers = rendererInfos.GetBoundsRenderers();
+        Debug.Log($"AddBox lastRenderers:{lastRenderers.Length} boxRenderers:{boxRenderers.Count} lodCount:{lodCount}");
+        if (lastRenderers.Length > 0)
+        {
+            if (lodCount == 2)
+            {
+                LODManager.Instance.AddLOD2(LODGroup, boxRenderers, new float[] { 0.7f, 0.1f, 0.01f });
+            }
+            else if (lodCount == 3)
+            {
+                LODManager.Instance.AddLOD3(LODGroup, boxRenderers, new float[] { 0.7f, 0.3f,0.1f, 0.01f });
+            }
+        }
+
+        GetLODs();
+        SetMaterial();
     }
 
     public float[] ls = new float[] { 0.6f, 0.2f,0.1f,0.01f};

@@ -262,11 +262,11 @@ public class AreaTreeNodeShowManager : MonoBehaviour
     /// <returns></returns>
     private bool IsCorssSectionMode()
     {
-        //if(crossSectionSystem.Instance)
-        //{
-        //    return crossSectionSystem.Instance.IsModeActive;
-        //}
-        //else
+        if (crossSectionSystem.Instance)
+        {
+            return crossSectionSystem.Instance.IsModeActive;
+        }
+        else
         {
             return false;
         }       

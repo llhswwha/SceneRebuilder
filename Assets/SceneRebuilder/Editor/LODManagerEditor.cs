@@ -52,6 +52,7 @@ public class LODManagerEditor : BaseFoldoutEditor<LODManager>
 
         EditorGUILayout.BeginHorizontal();
         lodManager.LocalTarget=ObjectField(lodManager.LocalTarget, GUILayout.Width(100));
+        lodManager.lodCamera = ObjectField(lodManager.lodCamera, GUILayout.Width(100));
         if (GUILayout.Button("Update LODs"))
         {
             string detail = lodManager.GetRuntimeLODDetail(true);
@@ -81,11 +82,18 @@ public class LODManagerEditor : BaseFoldoutEditor<LODManager>
 
         DrawLODGroupList(lodGroupListArg, lodManager);
 
-
+        EditorGUILayout.BeginHorizontal();
+        lodManager.includeInactive = GUILayout.Toggle(lodManager.includeInactive, "includeInactive", GUILayout.Width(100));
         if (GUILayout.Button("InitGroupInfos"))
         {
             lodManager.InitGroupInfos();
         }
+        if (GUILayout.Button("SetMats"))
+        {
+            lodManager.SetMats();
+        }
+        EditorGUILayout.EndHorizontal();
+
         if (GUILayout.Button("SaveLOD0s"))
         {
             lodManager.SaveLOD0s();
