@@ -1097,7 +1097,7 @@ public class BaseFoldoutEditor<T> : BaseEditor<T> where T : class
         }
     }
 
-    protected void DrawLODGroupList(FoldoutEditorArg<LODGroupDetails> lodGroupListArg, LODManager lodManager)
+    protected static void DrawLODGroupList(FoldoutEditorArg<LODGroupDetails> lodGroupListArg, LODManager lodManager)
     {
         lodGroupListArg.caption = $"LOD List";
         EditorUIUtils.ToggleFoldout(lodGroupListArg, arg =>

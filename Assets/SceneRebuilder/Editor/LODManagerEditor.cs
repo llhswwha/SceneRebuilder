@@ -8,11 +8,11 @@ using UnityEngine;
 [CustomEditor(typeof(LODManager))]
 public class LODManagerEditor : BaseFoldoutEditor<LODManager>
 {
-    FoldoutEditorArg<LODTwoRenderers> twoListArg = new FoldoutEditorArg<LODTwoRenderers>();
+    static FoldoutEditorArg<LODTwoRenderers> twoListArg = new FoldoutEditorArg<LODTwoRenderers>();
 
-    FoldoutEditorArg<LODGroupDetails> lodGroupListArg = new FoldoutEditorArg<LODGroupDetails>();
+    static FoldoutEditorArg<LODGroupDetails> lodGroupListArg = new FoldoutEditorArg<LODGroupDetails>();
 
-    private string searchKey = "";
+    private static string searchKey = "";
 
     public override void OnEnable()
     {
@@ -21,10 +21,8 @@ public class LODManagerEditor : BaseFoldoutEditor<LODManager>
         targetT.ClearTwoList();
     }
 
-    public override void OnToolLayout(LODManager lodManager)
+    public static void DrawUI(LODManager lodManager)
     {
-        base.OnToolLayout(lodManager);
-
         //if (GUILayout.Button("CheckLODPositions"))
         //{
         //    item.CheckLODPositions();
@@ -51,8 +49,8 @@ public class LODManagerEditor : BaseFoldoutEditor<LODManager>
         EditorUIUtils.Separator(5);
 
         EditorGUILayout.BeginHorizontal();
-        lodManager.LocalTarget=ObjectField(lodManager.LocalTarget, GUILayout.Width(100));
-        lodManager.lodCamera = ObjectField(lodManager.lodCamera, GUILayout.Width(100));
+        lodManager.LocalTarget = BaseEditorHelper.ObjectField(lodManager.LocalTarget, GUILayout.Width(100));
+        lodManager.lodCamera = BaseEditorHelper.ObjectField(lodManager.lodCamera, GUILayout.Width(100));
         if (GUILayout.Button("Update LODs"))
         {
             string detail = lodManager.GetRuntimeLODDetail(true);
@@ -191,7 +189,7 @@ public class LODManagerEditor : BaseFoldoutEditor<LODManager>
         twoListArg.caption = $"TwoObject List";
         EditorUIUtils.ToggleFoldout(twoListArg, arg =>
         {
-            var list = targetT.twoList;
+            var list = lodManager.twoList;
             if (!string.IsNullOrEmpty(searchKey))
             {
                 //list = list.Where(i => i != null && i.renderer_lod1 != null && i.renderer_lod1.name.Contains(searchKey)).ToList();
@@ -200,7 +198,7 @@ public class LODManagerEditor : BaseFoldoutEditor<LODManager>
             twoListArg.Items = list;
             int v0 = 0;
             int v1 = 0;
-            list.ForEach(i => { v0 += i.vertexCount0;v1 += i.vertexCount1; });
+            list.ForEach(i => { v0 += i.vertexCount0; v1 += i.vertexCount1; });
             arg.caption = $"TwoObject List ({list.Count})";
             arg.info = $"(r0:{lodManager.LODRendererCount0},v0:{MeshHelper.GetVertexCountS(v0)})(r1:{lodManager.LODRendererCount1},v1:{MeshHelper.GetVertexCountS(v1)})";
             InitEditorArg(list);
@@ -212,7 +210,7 @@ public class LODManagerEditor : BaseFoldoutEditor<LODManager>
             //    RemoveEditorArg(item.GetDoors());
             //    InitEditorArg(item.UpdateDoors());
             //}
-            searchKey=GUILayout.TextField(searchKey);
+            searchKey = GUILayout.TextField(searchKey);
         });
         if (twoListArg.isEnabled && twoListArg.isExpanded)
         {
@@ -302,6 +300,13 @@ public class LODManagerEditor : BaseFoldoutEditor<LODManager>
                 });
             });
         }
+    }
+
+    public override void OnToolLayout(LODManager lodManager)
+    {
+        base.OnToolLayout(lodManager);
+
+        
 
     }
 }
