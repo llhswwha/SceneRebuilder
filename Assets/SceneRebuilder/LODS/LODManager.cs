@@ -393,13 +393,16 @@ public class LODManager : SingletonBehaviour<LODManager>
 
     public void DeleteSame()
     {
+        int count = 0;
         foreach (var item in twoList)
         {
-            if (item.dis < zeroDistance && item.isSameName)
+            if (item.dis < zeroDistance && item.isSameName && item.vertexCount0<=item.vertexCount1)
             {
                 GameObject.DestroyImmediate(item.renderer_lod1.gameObject);
+                count++;
             }
         }
+        Debug.Log($"DeleteSame count:{count}");
     }
 
     public void Replace()
@@ -1115,6 +1118,7 @@ public class LODManager : SingletonBehaviour<LODManager>
                     //Debug.Log($"renderer:{r},parent:{r.transform.parent.name},path:{r.transform.GetPathToRoot()},rendererInfo:{rendererInfo}");
                     rendererInfo.LodIds.Add(i);
                     renderers.Remove(r);
+                    rendererInfo.AddType(MeshRendererType.LOD);
                 }
                 //break;
             }
@@ -1819,7 +1823,7 @@ public class LODTwoRenderers
     public string GetCaption()
     {
         if (this.renderer_lod1 == null || this.renderer_lod0 == null) return "";
-        return $"[{this.renderer_lod1.name == this.renderer_lod0.name}] {this.renderer_lod1.name}({this.vertexCount1}) <{this.dis:F5}|{this.meshDis:F5}> {this.renderer_lod0.name}({this.vertexCount0})";
+        return $"[{this.renderer_lod1.name == this.renderer_lod0.name}] [{(float)this.vertexCount1/ this.vertexCount0:F2}] {this.renderer_lod1.name}({this.vertexCount1}) <{this.dis:F5}|{this.meshDis:F5}> {this.renderer_lod0.name}({this.vertexCount0})";
     }
 
     public void Replace()

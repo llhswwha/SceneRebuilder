@@ -23,6 +23,7 @@ public class LODManagerEditor : BaseFoldoutEditor<LODManager>
 
     public static void DrawUI(LODManager lodManager)
     {
+        if (lodManager == null) return;
         //if (GUILayout.Button("CheckLODPositions"))
         //{
         //    item.CheckLODPositions();
@@ -306,7 +307,11 @@ public class LODManagerEditor : BaseFoldoutEditor<LODManager>
     {
         base.OnToolLayout(lodManager);
 
-        
+        DrawUI(lodManager);
 
+        if (GUILayout.Button("Window"))
+        {
+            LODManagerEditorWindow.ShowWindow();
+        }
     }
 }

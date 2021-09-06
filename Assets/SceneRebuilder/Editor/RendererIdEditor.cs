@@ -105,6 +105,17 @@ public class RendererIdEditor : BaseEditor<RendererId>
             var minMax = MeshHelper.GetMinMax(item.gameObject);
             Debug.Log("size:"+minMax[2]);
         }
+        if (GUILayout.Button("RemoveNew"))
+        {
+            var renderers = item.GetComponentsInChildren<MeshRenderer>();
+            foreach(var renderer in renderers)
+            {
+                if(renderer.name.EndsWith("_New"))
+                {
+                    renderer.name = renderer.name.Replace("_New","");
+                }
+            }
+        }
         EditorGUILayout.EndHorizontal();
 
         EditorGUILayout.BeginHorizontal();

@@ -8,7 +8,7 @@ public class LODManagerEditorWindow : EditorWindow, IBaseEditorWindow
     [MenuItem("Window/Tools/LODManager")]
     public static void ShowWindow()
     {
-        BaseEditorWindow.ShowWindow<LODManagerEditorWindow>(500, 150, "LODManager");
+        BaseEditorWindow.ShowWindow<LODManagerEditorWindow>(700, 550, "LODManager");
     }
 
     public LODManager target;
@@ -20,7 +20,10 @@ public class LODManagerEditorWindow : EditorWindow, IBaseEditorWindow
     private void OnGUI()
     {
         //MeshComparerEditor.DrawSetting(target);
-
+        if (target == null)
+        {
+            Init();
+        }
         LODManagerEditor.DrawUI(target);
 
         EditorGUILayout.BeginHorizontal();
