@@ -1,4 +1,5 @@
-﻿using System.Collections;
+﻿using System;
+using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 
@@ -29,12 +30,27 @@ public class MeshReplace : SingletonBehaviour<MeshReplace>
     [ContextMenu("Replace")]
     public void Replace()
     {
+        DateTime start = DateTime.Now;
+        int count = 0;
         ClearNewGos();
-        foreach (var item in Items)
+        for (int i = 0; i < Items.Count; i++)
         {
-            item.Replace(isDestoryOriginal, isHiddenOriginal, transfromReplaceSetting);
+            MeshReplaceItem item = Items[i];
+            ProgressArg p1 = new ProgressArg("Replace", i, Items.Count, item);
+            if (ProgressBarHelper.DisplayCancelableProgressBar(p1))
+            {
+                break;
+            }
+            bool r=item.Replace(isDestoryOriginal, isHiddenOriginal, transfromReplaceSetting,p1);
+            if (r == false)
+            {
+                break;
+            }
+            count += item.Count;
         }
         SelectNewGos();
+        ProgressBarHelper.ClearProgressBar();
+        Debug.Log($"Replace count:{count} time:{(DateTime.Now-start).ToString()}");
     }
 
 

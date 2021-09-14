@@ -73,6 +73,23 @@ public class LODInfo
         return rendererInfos[0].meshRenderer.sharedMaterials;
     }
 
+    public void Rename(string newName)
+    {
+        if (renderers.Length > 1)
+        {
+            for (int i1 = 0; i1 < renderers.Length; i1++)
+            {
+                Renderer renderer = renderers[i1];
+                renderer.name = newName + "_" + i1;
+            }
+        }
+        else
+        {
+            renderers[0].name = newName;
+        }
+        
+    }
+
     public void SetMats(Material[] matsNew)
     {
         foreach (var renderer in renderers)

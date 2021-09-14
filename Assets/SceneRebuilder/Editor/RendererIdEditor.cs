@@ -107,7 +107,7 @@ public class RendererIdEditor : BaseEditor<RendererId>
         }
         if (GUILayout.Button("RemoveNew"))
         {
-            var renderers = item.GetComponentsInChildren<MeshRenderer>();
+            var renderers = item.GetComponentsInChildren<Transform>();
             foreach(var renderer in renderers)
             {
                 if(renderer.name.EndsWith("_New"))
@@ -204,6 +204,18 @@ public class RendererIdEditor : BaseEditor<RendererId>
             DoorHelper.Prepare(item.gameObject);
         }
 
+        EditorGUILayout.EndHorizontal();
+
+        EditorGUILayout.BeginHorizontal();
+        if (GUILayout.Button("SetAsDetails"))
+        {
+            var meshRendererInfos = MeshRendererInfo.InitRenderers(item.gameObject);
+            foreach (MeshRendererInfo info in meshRendererInfos)
+            {
+                info.AddType(MeshRendererType.Detail);
+            }
+            Debug.Log($"SetAsDetails renderers:{meshRendererInfos.Length}");
+        }
         EditorGUILayout.EndHorizontal();
     }
 

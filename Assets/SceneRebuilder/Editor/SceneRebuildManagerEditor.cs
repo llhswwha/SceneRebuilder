@@ -5,6 +5,7 @@ using UnityEngine;
 // using System;
 using CodeStage.AdvancedFPSCounter.Editor.UI;
 using System.Linq;
+using System;
 
 [CustomEditor(typeof(SceneRebuildManager))]
 public class SceneRebuildManagerEditor : BaseFoldoutEditor<SceneRebuildManager>
@@ -88,6 +89,7 @@ public class SceneRebuildManagerEditor : BaseFoldoutEditor<SceneRebuildManager>
         EditorGUILayout.BeginHorizontal();
         NewButton("5.SetBuildings", buttonWidth, true, item.SetBuildings);
         NewButton("ClearBuildings", buttonWidth, true, item.ClearBuildings);
+        NewButton("CheckSceneIndex", buttonWidth, true, SubSceneManager.Instance.CheckSceneIndex);
         SubSceneManager.Instance.includeInactive = GUILayout.Toggle(SubSceneManager.Instance.includeInactive, "includeInactive");
         EditorGUILayout.EndHorizontal();
 

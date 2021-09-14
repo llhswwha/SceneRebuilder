@@ -42,9 +42,21 @@ public class LODGroupInfoEditor : BaseFoldoutEditor<LODGroupInfo>
         {
             item.SetMaterial();
         }
+        if (GUILayout.Button("Rename"))
+        {
+            item.Rename();
+        }
         EditorGUILayout.EndHorizontal();
 
-        EditorGUILayout.ObjectField(item.scene, typeof(SubScene_Base));
+        //EditorGUILayout.ObjectField(item.scene, typeof(SubScene_Base));
+        if (item.scene == null)
+        {
+            GUILayout.Label($"Scene:NULL");
+        }
+        else
+        {
+            GUILayout.Label($"Scene:{item.scene.sceneName}");
+        }
 
         EditorGUILayout.BeginHorizontal();
         if (GUILayout.Button("Uniform"))

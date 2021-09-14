@@ -38,6 +38,8 @@ public class MeshAlignmentManager : SingletonBehaviour<MeshAlignmentManager>
         Recover();
         Init();
         MeshHelper.Align(Source, Target, transfromReplaceSetting);
+        float dis = MeshHelper.GetVertexDistanceEx(Source, Target);
+        Debug.Log($"DoAlign dis:{dis} Source:{Source} Target:{Target}");
     }
 
     [ContextMenu("DoAlignRoot")]

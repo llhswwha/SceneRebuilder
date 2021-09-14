@@ -21,7 +21,10 @@ public class MeshReplaceEditorWindow : EditorWindow, IBaseEditorWindow
     private void OnGUI()
     {
         //MeshComparerEditor.DrawSetting(target);
-
+        if (target == null)
+        {
+            Init();
+        }
         MeshReplaceEditor.DrawUI(target);
         //var pos = this.position;
         //pos.height = 100+ target.Items.Count*100;

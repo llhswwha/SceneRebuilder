@@ -20,6 +20,10 @@ public class MeshAlignmentManagerEditorWindow : EditorWindow, IBaseEditorWindow
     private void OnGUI()
     {
         //MeshComparerEditor.DrawSetting(target);
+        if (target == null)
+        {
+            Init();
+        }
 
         MeshAlignmentManagerEditor.DrawUI(target);
 

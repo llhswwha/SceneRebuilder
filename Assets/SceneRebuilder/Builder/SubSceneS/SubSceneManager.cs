@@ -346,7 +346,28 @@ public class SubSceneManager : SingletonBehaviour<SubSceneManager>
     //    SetBuildings(subScenes);
     //}
 
-    public bool includeInactive = false;
+    public void CheckSceneIndex()
+    {
+        DateTime start = DateTime.Now;
+        var alls = GameObject.FindObjectsOfType<SubScene_Base>(includeInactive);
+        foreach (var s in alls)
+        {
+            if (s.sceneArg.index <= 0)
+            {
+                BuildingModelInfo modelInfo = s.GetComponentInParent<BuildingModelInfo>();
+                if (modelInfo != null)
+                {
+                    Debug.LogError($"SubSceneShowManager.CheckSceneIndex index<=0 sName:{modelInfo.name}->{s.name} index:{s.sceneArg.index}");
+                }
+                else
+                {
+                    Debug.LogError($"SubSceneShowManager.CheckSceneIndex index<=0 sName:NULL->{s.name} index:{s.sceneArg.index}");
+                }
+
+            }
+        }
+        Debug.Log($"CheckSceneIndex Time:{(DateTime.Now - start).ToString()}");
+    }
 
     [ContextMenu("SetBuildings_All")]
     public void SetBuildings_All()
@@ -399,8 +420,11 @@ public class SubSceneManager : SingletonBehaviour<SubSceneManager>
 
     public bool IsOpenSubScene = false;
 
+
+
 #endif
 
+    public bool includeInactive = false;
     public void UpdateScenes()
     {
         subScenes = GameObject.FindObjectsOfType<SubScene_Base>(includeInactive);
@@ -486,7 +510,7 @@ public class SubSceneManager : SingletonBehaviour<SubSceneManager>
                     {
                         if (finishedCallback != null)
                         {
-                            loadProgress.SetInfo(null, 1, true);
+                            loadProgress.SetInfo(s, 1, true);
                             finishedCallback(loadProgress);
                         }
                         WriteLog("LoadScenesByBag",$"count:{scenes.Length},\t time:{(DateTime.Now - start).ToString()}");

@@ -316,7 +316,7 @@ public class MeshRendererInfo : MonoBehaviour,IComparable<MeshRendererInfo>
         return (rendererType & rt) == rt;
     }
 
-    internal void AddType(MeshRendererType rendererType)
+    public void AddType(MeshRendererType rendererType)
     {
         this.rendererType = this.rendererType | rendererType;
     }
@@ -685,6 +685,16 @@ public class MeshRendererInfo : MonoBehaviour,IComparable<MeshRendererInfo>
 [Serializable]
 public class MeshRendererInfoList:List<MeshRendererInfo>
 {
+    public string GetInfoString()
+    {
+        string infoT = "";
+        foreach (var item in this)
+        {
+            infoT += $"{item.meshRenderer.name};";
+        }
+        return infoT;
+    }
+
     public MeshRendererInfoList()
     {
 
@@ -836,10 +846,17 @@ public class MeshRendererInfoList:List<MeshRendererInfo>
         if (this.Count == 0) return;
         if (list==null || list.Count== 0) return;
         int count1 = this.Count;
-        
+
+        //string types = "";
+        //foreach(var i in list)
+        //{
+        //    types += i + ";";
+        //}
         for(int i = 0; i < this.Count; i++)
         {
-            if(list.Contains(this[i].rendererType))
+            var info = this[i];
+            //Debug.Log($"info:{info} type:{info.rendererType} int:{(int)(info.rendererType)}");
+            if(list.Contains(info.rendererType))
             {
                 this.RemoveAt(i);
                 i--;
@@ -847,7 +864,7 @@ public class MeshRendererInfoList:List<MeshRendererInfo>
         }
         int count2 = this.Count;
 
-        Debug.Log($"MeshRenderInfoList.RemoveTypes[{logTag}] count1:{count1} count2:{count2} types:{list.Count}");
+        //Debug.Log($"MeshRenderInfoList.RemoveTypes[{logTag}] count1:{count1} count2:{count2} types:{list.Count}|{types}");
     }
 
     internal void FilterByVertexCount(float v)

@@ -44,6 +44,10 @@ public class LODManagerEditor : BaseFoldoutEditor<LODManager>
         {
             lodManager.UniformLOD0();
         }
+        if (GUILayout.Button("ClearScenes"))
+        {
+            lodManager.ClearScenes();
+        }
 
         EditorGUILayout.EndHorizontal();
 
@@ -161,6 +165,10 @@ public class LODManagerEditor : BaseFoldoutEditor<LODManager>
         if (GUILayout.Button("AppendLod3"))
         {
             lodManager.AppendLod3ToGroup();
+        }
+        if (GUILayout.Button("ReplaceLOD1"))
+        {
+            lodManager.ReplaceLOD1();
         }
         EditorGUILayout.EndHorizontal();
 

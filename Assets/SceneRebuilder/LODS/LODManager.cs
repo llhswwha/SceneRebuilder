@@ -51,7 +51,8 @@ public class LODManager : SingletonBehaviour<LODManager>
     // Start is called before the first frame update
     void Start()
     {
-        
+        LocalTarget = null;
+        lodDetails = null;
     }
 
     public void CreateLOD(GameObject go)
@@ -146,83 +147,25 @@ public class LODManager : SingletonBehaviour<LODManager>
             render_lod1.transform.SetParent(render_lod0.transform);
             render_lod1.name += "_LOD" + lodLevel;
 
+            LODGroup group = null;
             if (lodLevel == 1)
             {
-                AddLOD1(render_lod0, render_lod1);
+                group=AddLOD1(render_lod0, render_lod1);
             }
             else if (lodLevel == 2)
             {
-                AddLOD2(render_lod0, render_lod1);
+                group = AddLOD2(render_lod0, render_lod1);
             }
             else if (lodLevel == 3)
             {
-                AddLOD3(render_lod0, render_lod1);
+                group = AddLOD3(render_lod0, render_lod1);
             }
-
+            LODGroupInfo.Init(group.gameObject);
         }
     }
 #if UNITY_EDITOR
     private void AppendLodInner(int lodLevel)
     {
-        //twoList.Clear();
-        //EditorHelper.UnpackPrefab(GroupRoot, PrefabUnpackMode.OutermostRoot);
-        //EditorHelper.UnpackPrefab(LODnRoot, PrefabUnpackMode.OutermostRoot);
-        //DateTime start = DateTime.Now;
-        //var renderers_2 = MeshRendererInfo.GetInfos(LODnRoot);//  LODnRoot.GetComponentsInChildren<MeshRenderer>(true);
-        //var renderers_0 = MeshRendererInfo.GetLodNs(GroupRoot,-1,0);
-
-        //LODRendererCount0 = renderers_0.Count;
-        //LODRendererCount1 = renderers_2.Length;
-
-        //list_lod0 = new List<MeshRendererInfo>();
-        //list_lod0.AddRange(renderers_0);
-        ////renderers_0.ToList().ForEach(i => { ts.Add(i.transform); });
-        //for (int i = 0; i < renderers_2.Length; i++)
-        //{
-        //    MeshRendererInfo render_lod1 = renderers_2[i];
-
-        //    float progress = (float)i / renderers_2.Length;
-        //    ProgressBarHelper.DisplayCancelableProgressBar("CombineLOD0AndLOD1", $"{i}/{renderers_2.Length} {progress:P1} MeshRenderer:{render_lod1.name}", progress);
-
-        //    var min = GetMinDisTransform<MeshRendererInfo>(list_lod0, render_lod1.transform, compareMode);
-        //    float minDis = min.dis;
-        //    MeshRendererInfo render_lod0 = min.target;
-
-        //    //MeshFilter filter1 = render_lod1.GetComponent<MeshFilter>();
-        //    //MeshFilter filter0 = render_lod0.GetComponent<MeshFilter>();
-        //    int vertexCount0 = render_lod0.GetMinLODVertexCount();
-        //    int vertexCount1 = render_lod1.GetMinLODVertexCount();
-        //    if (minDis <= zeroDistance)
-        //    {
-        //        LODTwoRenderers lODTwoRenderers = new LODTwoRenderers(render_lod0, render_lod1, minDis, min.meshDis, vertexCount0, vertexCount1);
-        //        twoList.Add(lODTwoRenderers);
-        //        if (DoCreateGroup)
-        //        {
-        //            Debug.Log($"GetDistance1 \tLOD3:{render_lod1.name}({vertexCount1}) \tLOD0:{render_lod0.name}({vertexCount0}) \tDistance:{minDis} \t{(float)vertexCount1 / vertexCount0:P2}");
-        //            CreateGroup(lODTwoRenderers, lodLevel);
-        //        }
-        //    }
-        //    else
-        //    {
-        //        Debug.LogWarning($"GetDistance1 \tLOD3:{render_lod1.name}({vertexCount1}) \tLOD0:{render_lod0.name}({vertexCount0}) \tDistance:{minDis} \t{(float)vertexCount1 / vertexCount0:P2}");
-
-        //        twoList.Add(new LODTwoRenderers(render_lod0, render_lod1, minDis, min.meshDis, vertexCount0, vertexCount1));
-        //    }
-        //}
-        //ProgressBarHelper.ClearProgressBar();
-
-        //twoList.Sort((a, b) =>
-        //{
-        //    return b.dis.CompareTo(a.dis);
-        //});
-
-        //RemoveEmpty(LODnRoot.transform);
-        //RemoveEmpty(LODnRoot.transform);
-
-        //SetRenderersLODInfo();
-
-        //Debug.LogError($"AppendLod3ToGroup count1:{renderers_2.Length} count0:{renderers_0.Count} time:{(DateTime.Now - start)}");
-
         foreach (var item in twoList)
         {
             var minDis = item.dis;
@@ -244,6 +187,36 @@ public class LODManager : SingletonBehaviour<LODManager>
             {
                 Debug.LogWarning($"GetDistance1 \tLOD3:{render_lod1.name}({vertexCount1}) \tLOD0:{render_lod0.name}({vertexCount0}) \tDistance:{minDis} \t{(float)vertexCount1 / vertexCount0:P2}");
             }
+        }
+    }
+
+    public void ReplaceLOD1()
+    {
+        foreach (var item in twoList)
+        {
+            var minDis = item.dis;
+            var render_lod1 = item.renderer_lod1;
+            if (render_lod1 == null) continue;
+            var render_lod0 = item.renderer_lod0;
+            if (render_lod0 == null) continue;
+            //var vertexCount0 = item.vertexCount0;
+            //var vertexCount1 = item.vertexCount1;
+            //if (minDis <= zeroDistance)
+            //{
+            //    if (DoCreateGroup)
+            //    {
+            //        Debug.Log($"GetDistance1 \tLOD3:{render_lod1.name}({vertexCount1}) \tLOD0:{render_lod0.name}({vertexCount0}) \tDistance:{minDis} \t{(float)vertexCount1 / vertexCount0:P2}");
+            //        CreateGroup(item, lodLevel);
+            //    }
+            //}
+            //else
+            //{
+            //    Debug.LogWarning($"GetDistance1 \tLOD3:{render_lod1.name}({vertexCount1}) \tLOD0:{render_lod0.name}({vertexCount0}) \tDistance:{minDis} \t{(float)vertexCount1 / vertexCount0:P2}");
+            //}
+
+            render_lod1.transform.SetParent(render_lod0.transform.parent);
+            GameObject.DestroyImmediate(render_lod0.gameObject);
+            render_lod1.name += "_New";
         }
     }
 
@@ -719,7 +692,7 @@ public class LODManager : SingletonBehaviour<LODManager>
     //    return twoList;
     //}
 
-    public void AddLOD3(MeshRendererInfo lod0, MeshRendererInfo lod2)
+    public LODGroup AddLOD3(MeshRendererInfo lod0, MeshRendererInfo lod2)
     {
         lod2.transform.SetParent(lod0.transform);
         LODGroup group = lod0.GetComponent<LODGroup>();
@@ -752,9 +725,10 @@ public class LODManager : SingletonBehaviour<LODManager>
             LOD[] lods = GetLODs4(lod0.GetRenderers(), lod0.GetRenderers(), lod2.GetRenderers(), lod2.GetRenderers());
             group.SetLODs(lods);
         }
+        return group;
     }
 
-    public void AddLOD2(MeshRendererInfo lod0, MeshRendererInfo lod2)
+    public LODGroup AddLOD2(MeshRendererInfo lod0, MeshRendererInfo lod2)
     {
         lod2.transform.SetParent(lod0.transform);
         LODGroup group = lod0.GetComponent<LODGroup>();
@@ -781,6 +755,7 @@ public class LODManager : SingletonBehaviour<LODManager>
             LOD[] lods = GetLODs3(lod0.GetRenderers(), lod0.GetRenderers(), lod2.GetRenderers());
             group.SetLODs(lods);
         }
+        return group;
     }
 
     public void AddLOD2<T>(LODGroup group, IEnumerable<T> lod2Renderers,float[] lvs) where T : Renderer
@@ -862,7 +837,7 @@ public class LODManager : SingletonBehaviour<LODManager>
         }
     }
 
-    public void AddLOD1(MeshRendererInfo lod0, MeshRendererInfo lod1)
+    public LODGroup AddLOD1(MeshRendererInfo lod0, MeshRendererInfo lod1)
     {
         LODGroup lODGroup = lod0.GetComponent<LODGroup>();
         if (lODGroup == null)
@@ -871,6 +846,7 @@ public class LODManager : SingletonBehaviour<LODManager>
         }
         LOD[] lods= GetLODs2(lod0.GetRenderers(), lod1.GetRenderers());
         lODGroup.SetLODs(lods);
+        return lODGroup;
     }
 
     public LOD[] GetLODs2(MeshRenderer[] renderers0,MeshRenderer[] renderers1)
@@ -918,6 +894,19 @@ public class LODManager : SingletonBehaviour<LODManager>
         }
         Debug.LogError($"UniformLOD0 lodGroups:{lodGroups.Length} time:{(DateTime.Now - start)}");
     }
+
+    public void ClearScenes()
+    {
+        DateTime start = DateTime.Now;
+        var lodGroups = InitGroupInfos();
+        foreach (var group in lodGroups)
+        {
+            group.ClearOtherScenes();
+        }
+        Debug.LogError($"ClearScenes lodGroups:{lodGroups.Length} time:{(DateTime.Now - start)}");
+    }
+
+    
 
     public void ChangeLODsRelativeHeight()
     {
@@ -1442,13 +1431,26 @@ public class LODManager : SingletonBehaviour<LODManager>
         }
         if (sceneList.Count > 0)
         {
-            Debug.LogError($"GetRuntimeLODDetail lod0List:{lod0List.Count} sceneList:{sceneList.Count}");
+            Debug.LogError($"GetRuntimeLODDetail lod0List:{lod0List.Count} sceneList:{sceneList.Count} scene2Group:{scene2Group.Count}");
             SubSceneManager.Instance.LoadScenesEx(sceneList.ToArray(), (p) =>
             {
                 if (p.scene != null)
                 {
-                    LODGroupInfo group = scene2Group[p.scene];
-                    group.SetLOD0FromScene();
+                    Debug.LogError($"GetRuntimeLODDetail scene:{p.scene.name} sceneName:scene:{p.scene.sceneName}");
+                    if (scene2Group.ContainsKey(p.scene))
+                    {
+                        LODGroupInfo group = scene2Group[p.scene];
+                        group.SetLOD0FromScene();
+                    }
+                    else
+                    {
+                        Debug.LogError($"GetRuntimeLODDetail scene2Group.ContainsKey(p.scene) == false scene:{p.scene.name} sceneParent:{p.scene.gameObject.transform.parent.name}");
+                    }
+                   
+                }
+                else
+                {
+                    Debug.LogError($"GetRuntimeLODDetail p.scene == null");
                 }
 
             });
@@ -1477,8 +1479,11 @@ public static class LODHelper
         if (root == null) return null;
         ClearGroupInfo(root);
         MeshRendererInfoList infoList = MeshRendererInfo.InitRenderers(root);
+        
         LODGroup groupNew = root.AddComponent<LODGroup>();
-        var lods = LODManager.Instance.GetLODsN(infoList.GetRenderersArray());
+        MeshRenderer[][] meshRenderersArray = infoList.GetRenderersArray();
+        var lods = LODManager.Instance.GetLODsN(meshRenderersArray);
+        Debug.Log($"CreateLODs root:{root} list:{infoList.Count}|{infoList.GetInfoString()},meshRenderers:{meshRenderersArray.Length} lods:{lods.Length}");
         groupNew.SetLODs(lods);
         LODGroupInfo.Init(root);
         return groupNew;
@@ -1599,7 +1604,7 @@ public static class LODHelper
         lods[0] = new LOD(lvs[0], renderers0);
         lods[1] = new LOD(lvs[1], renderers1);
         lods[2] = new LOD(lvs[2], renderers2);
-        lods[3] = new LOD(lvs[3], renderers2);
+        lods[3] = new LOD(lvs[3], renderers3);
         return lods;
     }
 

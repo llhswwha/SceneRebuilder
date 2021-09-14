@@ -28,7 +28,7 @@ public class LODGroupInfo : MonoBehaviour
         LODGroup = gameObject.GetComponent<LODGroup>();
         if (LODGroup == null)
         {
-            Debug.LogError("LODGroupInfo.GetLODs LODGroup == null");
+            Debug.LogError("LODGroupInfo.GetLODs LODGroup == null:"+this.name);
             return;
         }
         LOD[] lods = LODGroup.GetLODs();
@@ -202,7 +202,23 @@ public class LODGroupInfo : MonoBehaviour
             Debug.LogError("LODGroupInfo.EditorCreateScene LODGroup == null:"+this);
             return;
         }
+        if (scene != null)
+        {
+            GameObject.DestroyImmediate(scene);
+        }
         scene =LODHelper.SaveLOD0(null, this.LODGroup);
+    }
+
+    public void ClearOtherScenes()
+    {
+        var scenes = this.GetComponents<SubScene_Base>();
+        foreach(var s in scenes)
+        {
+            if (s != this.scene)
+            {
+                GameObject.DestroyImmediate(s);
+            }
+        }
     }
 
     public void EditorLoadScene()
@@ -240,7 +256,9 @@ public class LODGroupInfo : MonoBehaviour
     public void SetLOD0FromScene()
     {
         var lods = LODGroup.GetLODs();
-        lods[0].renderers = scene.GetSceneRenderers().ToArray();
+        var sceneRenderers = scene.GetSceneRenderers().ToArray();
+        Debug.Log($"SetLOD0FromScene sceneRenderers:{sceneRenderers.Length} scene:{scene.sceneName}");
+        lods[0].renderers = sceneRenderers;
         LODGroup.SetLODs(lods);
     }
 
@@ -266,6 +284,15 @@ public class LODGroupInfo : MonoBehaviour
         for(int i = 1; i < LodInfos.Count; i++)
         {
             LodInfos[i].SetMats(mats);
+        }
+    }
+
+    public void Rename()
+    {
+        GetLODs();
+        for (int i = 0; i < LodInfos.Count; i++)
+        {
+            LodInfos[i].Rename($"{this.name}_LOD{i}");
         }
     }
 

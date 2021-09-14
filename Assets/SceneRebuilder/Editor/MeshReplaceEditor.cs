@@ -20,6 +20,7 @@ public class MeshReplaceEditor : BaseEditor<MeshReplace>
 
     internal static void DrawUI(MeshReplace item)
     {
+        if (item == null) return;
         EditorGUILayout.BeginHorizontal();
         if (GUILayout.Button("Replace"))
         {
@@ -73,7 +74,7 @@ public class MeshReplaceEditor : BaseEditor<MeshReplace>
             EditorUIUtils.Separator(1);
 
             EditorGUILayout.BeginHorizontal();
-            GUILayout.Label("Prefab", GUILayout.Width(60));
+            GUILayout.Label("Prefab", GUILayout.Width(75));
             if (GUILayout.Button("+|", GUILayout.Width(20)))
             {
                 Debug.Log("+" + Selection.activeObject);
@@ -95,7 +96,7 @@ public class MeshReplaceEditor : BaseEditor<MeshReplace>
             EditorGUILayout.EndHorizontal();
 
             EditorGUILayout.BeginHorizontal();
-            GUILayout.Label($"Target({subItem.targetList.Count})", GUILayout.Width(60));
+            GUILayout.Label($"Target({subItem.targetList.Count})", GUILayout.Width(75));
 
             if (GUILayout.Button("+|", GUILayout.Width(20)))
             {
@@ -106,6 +107,27 @@ public class MeshReplaceEditor : BaseEditor<MeshReplace>
                 {
                     subItem.targetList.Add(obj);
                 }
+            }
+            if (GUILayout.Button("+S|", GUILayout.Width(30)))
+            {
+                Debug.Log("+" + Selection.activeObject);
+                //subItem.targetList.Add(Selection.activeObject as GameObject);
+
+                foreach (GameObject obj in Selection.objects)
+                {
+                    for(int i=0;i<obj.transform.childCount;i++)
+                    {
+                        var child = obj.transform.GetChild(i);
+                        subItem.targetList.Add(child.gameObject);
+                    }
+                    //subItem.targetList.Add(obj);
+                }
+            }
+
+            if (GUILayout.Button("C|", GUILayout.Width(30)))
+            {
+                Debug.Log("C" + subItem.targetList.Count);
+                subItem.targetList.Clear();
             }
 
             for (int i = 0; i < subItem.targetList.Count; i++)

@@ -73,11 +73,11 @@ public class MeshCombiner : SingletonBehaviour<MeshCombiner>
 
     public void ClearResult()
     {
-        foreach (var result in resultList)
-        {
-            if (result == null) continue;
-            GameObject.DestroyImmediate(result);
-        }
+        //foreach (var result in resultList)
+        //{
+        //    if (result == null) continue;
+        //    GameObject.DestroyImmediate(result);
+        //}
         resultList = new List<GameObject>();
         foreach(var combineArg in combineArgs)
         {

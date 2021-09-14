@@ -352,22 +352,31 @@ public class SubSceneShowManager : SingletonBehaviour<SubSceneShowManager>
 
         BuildingModelManager.Instance.ShowDetail();
 
-        CheckSceneIndex();
+        SubSceneManager.Instance.CheckSceneIndex();
 
         //IdDictionary.InitInfos();
     }
 
-    private void CheckSceneIndex()
-    {
-        DateTime start = DateTime.Now;
-        var alls=GameObject.FindObjectsOfType<SubScene_Base>(true);
-        foreach(var s in alls){
-            if(s.sceneArg.index<=0){
-                Debug.LogError($"SubSceneShowManager.CheckSceneIndex index<=0 sName:{s.name} index:{s.sceneArg.index}");
-            }
-        }
-        Debug.Log($"CheckSceneIndex Time:{(DateTime.Now - start).ToString()}");
-    }
+    //public static void CheckSceneIndex()
+    //{
+    //    DateTime start = DateTime.Now;
+    //    var alls=GameObject.FindObjectsOfType<SubScene_Base>(true);
+    //    foreach(var s in alls){
+    //        if(s.sceneArg.index<=0){
+    //            BuildingModelInfo modelInfo = s.GetComponentInParent<BuildingModelInfo>();
+    //            if (modelInfo != null)
+    //            {
+    //                Debug.LogError($"SubSceneShowManager.CheckSceneIndex index<=0 sName:{modelInfo.name}->{s.name} index:{s.sceneArg.index}");
+    //            }
+    //            else
+    //            {
+    //                Debug.LogError($"SubSceneShowManager.CheckSceneIndex index<=0 sName:NULL->{s.name} index:{s.sceneArg.index}");
+    //            }
+                
+    //        }
+    //    }
+    //    Debug.Log($"CheckSceneIndex Time:{(DateTime.Now - start).ToString()}");
+    //}
 
     public float DisOfVisible = 1600;//40
     public float DisOfLoad = 2500;//50
