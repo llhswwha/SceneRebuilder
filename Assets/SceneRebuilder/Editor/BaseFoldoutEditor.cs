@@ -226,7 +226,6 @@ public class BaseFoldoutEditor<T> : BaseEditor<T> where T : class
         () =>
         {
             //SceneRebuildEditorWindow.ShowWindow();
-
             if (GUILayout.Button("Win", GUILayout.Width(35)))
             {
                 SceneRebuildEditorWindow.ShowWindow();
@@ -235,9 +234,6 @@ public class BaseFoldoutEditor<T> : BaseEditor<T> where T : class
 
         if (foldoutArg.isExpanded && foldoutArg.isEnabled)
         {
-
-
-
             if (listToolbarEvent != null) listToolbarEvent();
 
             System.DateTime start = System.DateTime.Now;
@@ -1485,6 +1481,25 @@ public static class FoldoutEditorArgBuffer
         }
     }
 
+    public static void InitEditorArg<T2>(List<T2> items, FoldoutEditorArg newArg)/* where T2 : System.Object*/
+    {
+        foreach (var item in items)
+        {
+            if (item == null) continue;
+            if (!editorArgs.ContainsKey(item))
+            {
+                editorArgs.Add(item, newArg.Clone());
+            }
+            else
+            {
+                if (editorArgs[item] == null)
+                {
+                    editorArgs[item] = newArg.Clone();
+                }
+            }
+        }
+    }
+
     public static FoldoutEditorArg GetEditorArg<T2>(T2 item, FoldoutEditorArg newArg)/* where T2 : System.Object*/
     {
         if (newArg == null)
@@ -1528,6 +1543,8 @@ public static class FoldoutEditorArgBuffer
             }
         }
     }
+
+
 }
 
 public static class BaseFoldoutEditorHelper
@@ -1595,6 +1612,104 @@ public static class BaseFoldoutEditorHelper
                 }
 
                 //DrawDoorList(doorRootArg, doorRoot, true);
+            });
+        }
+    }
+
+    public static void DrawTransformList(List<Transform> transList, FoldoutEditorArg<Transform> listArg, System.Action updateAction, string listName)
+    {
+        listArg.caption = $"{listName}";
+        listArg.level = 0;
+        EditorUIUtils.ToggleFoldout(listArg, arg =>
+        {
+            var list1 = transList;
+            int count = list1.Count;
+            arg.caption = $"{listName} ({list1.Count})";
+            //arg.info = $"d:{count}|{doors.VertexCount_Show / 10000f:F0}/{doors.VertexCount / 10000f:F0}";
+            //InitEditorArg(list1);
+            FoldoutEditorArgBuffer.InitEditorArg(list1);
+        },
+        () =>
+        {
+            if (updateAction != null)
+            {
+                if (GUILayout.Button("Update"))
+                {
+                    //item.GetAllModelTransform();
+                    updateAction();
+                }
+            }
+
+            //if (GUILayout.Button("Compare"))
+            //{
+            //    item.CompareModelVueInfo_Model2Vue();
+            //}
+        });
+        if (listArg.isEnabled && listArg.isExpanded)
+        {
+            var list1 = transList;
+            //InitEditorArg(list1);
+            FoldoutEditorArgBuffer.InitEditorArg(list1);
+            listArg.DrawPageToolbar(list1, (listItem, i) =>
+            {
+                if (listItem == null) return;
+                var itemArg = FoldoutEditorArgBuffer.editorArgs[listItem];
+                itemArg.level = 1;
+                itemArg.background = true;
+                itemArg.caption = $"[{i + 1:00}] {listItem.name}";
+                //doorRootArg.info = $"{listItem.Distance}|{listItem.MId}|{listItem.MName}";
+                EditorUIUtils.ObjectFoldout(itemArg, listItem.gameObject, () =>
+                {
+                });
+            });
+        }
+    }
+
+    public static void DrawGameObjectList(List<GameObject> transList, FoldoutEditorArg<GameObject> listArg, System.Action updateAction, string listName)
+    {
+        listArg.caption = $"{listName}";
+        listArg.level = 0;
+        EditorUIUtils.ToggleFoldout(listArg, arg =>
+        {
+            var list1 = transList;
+            int count = list1.Count;
+            arg.caption = $"{listName} ({list1.Count})";
+            //arg.info = $"d:{count}|{doors.VertexCount_Show / 10000f:F0}/{doors.VertexCount / 10000f:F0}";
+            //InitEditorArg(list1);
+            FoldoutEditorArgBuffer.InitEditorArg(list1);
+        },
+        () =>
+        {
+            if (updateAction != null)
+            {
+                if (GUILayout.Button("Update"))
+                {
+                    //item.GetAllModelTransform();
+                    updateAction();
+                }
+            }
+
+            //if (GUILayout.Button("Compare"))
+            //{
+            //    item.CompareModelVueInfo_Model2Vue();
+            //}
+        });
+        if (listArg.isEnabled && listArg.isExpanded)
+        {
+            var list1 = transList;
+            //InitEditorArg(list1);
+            FoldoutEditorArgBuffer.InitEditorArg(list1);
+            listArg.DrawPageToolbar(list1, (listItem, i) =>
+            {
+                if (listItem == null) return;
+                var itemArg = FoldoutEditorArgBuffer.editorArgs[listItem];
+                itemArg.level = 1;
+                itemArg.background = true;
+                itemArg.caption = $"[{i + 1:00}] {listItem.name}";
+                //doorRootArg.info = $"{listItem.Distance}|{listItem.MId}|{listItem.MName}";
+                EditorUIUtils.ObjectFoldout(itemArg, listItem.gameObject, () =>
+                {
+                });
             });
         }
     }

@@ -28,6 +28,17 @@ public class LODManagerEditor : BaseFoldoutEditor<LODManager>
         //{
         //    item.CheckLODPositions();
         //}
+        EditorGUILayout.BeginHorizontal();
+
+        GUILayout.Label("Levels:");
+        Vector2 l1 = EditorGUILayout.Vector2Field("Levels1", lodManager.GetLevels1());
+        lodManager.SetLevels1(l1);
+        Vector3 l2 = EditorGUILayout.Vector3Field("Levels2", lodManager.GetLevels2());
+        lodManager.SetLevels2(l2);
+        Vector4 l3 = EditorGUILayout.Vector4Field("Levels3", lodManager.GetLevels3());
+        lodManager.SetLevels3(l3);
+
+        EditorGUILayout.EndHorizontal();
 
         EditorGUILayout.BeginHorizontal();
         if (GUILayout.Button("SetRenderersLODInfo"))
@@ -94,6 +105,11 @@ public class LODManagerEditor : BaseFoldoutEditor<LODManager>
         if (GUILayout.Button("SetMats"))
         {
             lodManager.SetMats();
+        }
+
+        if (GUILayout.Button("CheckScene"))
+        {
+            lodManager.CheckLOD0Scenes();
         }
         EditorGUILayout.EndHorizontal();
 
@@ -166,10 +182,7 @@ public class LODManagerEditor : BaseFoldoutEditor<LODManager>
         {
             lodManager.AppendLod3ToGroup();
         }
-        if (GUILayout.Button("ReplaceLOD1"))
-        {
-            lodManager.ReplaceLOD1();
-        }
+
         EditorGUILayout.EndHorizontal();
 
         EditorGUILayout.BeginHorizontal();
@@ -181,9 +194,21 @@ public class LODManagerEditor : BaseFoldoutEditor<LODManager>
         {
             lodManager.DeleteSame();
         }
-        if (GUILayout.Button("Replace"))
+        if (GUILayout.Button("DeleteFilter"))
         {
-            lodManager.SetAppendLod3Color();
+            lodManager.DeleteFilter(searchKey);
+        }
+        //if (GUILayout.Button("Replace"))
+        //{
+        //    lodManager.Replace();
+        //}
+        if (GUILayout.Button("ReplaceFilter"))
+        {
+            lodManager.ReplaceFilter(searchKey);
+        }
+        if (GUILayout.Button("ReplaceLOD1"))
+        {
+            lodManager.ReplaceLOD1();
         }
         if (GUILayout.Button("SetName0"))
         {

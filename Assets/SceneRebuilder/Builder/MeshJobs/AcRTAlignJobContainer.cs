@@ -629,6 +629,11 @@ public class AcRTAlignJobContainer
             totalTime2+=(DateTime.Now-tmpT).TotalMilliseconds;
 
             tmpT = DateTime.Now;
+
+            Debug.LogError($"jobList:{jobList.Jobs.Count}");
+
+            //break;
+
             //3.执行Jos
             jobList.CompleteAllPage();
             //foreach (var job in jobList.Jobs)
@@ -652,6 +657,8 @@ public class AcRTAlignJobContainer
             {
                 break;//结束
             }
+
+            break;
         }
 
         ProgressBarHelper.ClearProgressBar();

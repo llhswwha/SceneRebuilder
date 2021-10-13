@@ -672,17 +672,30 @@ public class EditorTool : MonoBehaviour
             }
 
             string sPath = AssetDatabase.GetAssetPath(assetObj);
-            ModelImporter importer = (ModelImporter)ModelImporter.GetAtPath(sPath);
-
-            Debug.Log($"[{i}] {assetObj} \t{sPath} \t{importer} \t{importer.isReadable} \t{importer.materialLocation}");
-
-            if (importer.isReadable==false || importer.materialLocation== ModelImporterMaterialLocation.InPrefab)
+            var atImporter= ModelImporter.GetAtPath(sPath);
+            if (atImporter == null)
             {
-                importer.isReadable = true;
-                //importer.
-                importer.materialLocation = ModelImporterMaterialLocation.External;
-                AssetDatabase.ImportAsset(sPath);  //这句不加，面板上数字会变，但是实际大小不会变
+                Debug.LogError($"atImporter == null");
             }
+            else if(atImporter is ModelImporter)
+            {
+                ModelImporter modelImporter = (ModelImporter)atImporter;
+
+                Debug.Log($"[{i}] {assetObj} \t{sPath} \t{modelImporter} \t{modelImporter.isReadable} \t{modelImporter.materialLocation}");
+
+                if (modelImporter.isReadable == false || modelImporter.materialLocation == ModelImporterMaterialLocation.InPrefab)
+                {
+                    modelImporter.isReadable = true;
+                    //importer.
+                    modelImporter.materialLocation = ModelImporterMaterialLocation.External;
+                    AssetDatabase.ImportAsset(sPath);  //这句不加，面板上数字会变，但是实际大小不会变
+                }
+            }
+            else
+            {
+                Debug.LogError($"atImporter:{atImporter.GetType()} path:{sPath} obj:{assetObj}");
+            }
+            
         }
         EditorUtility.ClearProgressBar();
         Debug.Log($"SetChangeModelSelection {(DateTime.Now-start).ToString()}");

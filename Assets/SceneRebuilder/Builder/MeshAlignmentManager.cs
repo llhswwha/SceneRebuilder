@@ -32,6 +32,14 @@ public class MeshAlignmentManager : SingletonBehaviour<MeshAlignmentManager>
         //tdTargetRoot = new TransformData(TargetRoot);
     }
 
+    public void DoAlign(GameObject source,GameObject target)
+    {
+        this.Source = source;
+        this.Target = target;
+        Init();
+        DoAlign();
+    }
+
     [ContextMenu("DoAlign")]
     public void DoAlign()
     {

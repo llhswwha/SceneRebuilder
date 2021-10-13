@@ -48,6 +48,11 @@ using System;
             HandleList.CompleteAllPage();
         }
 
+    public void CompletePageN(int n)
+    {
+
+    }
+
     public void Dispose()
     {
         HandleList.Dispos();
@@ -110,9 +115,6 @@ using System;
             }
             for(int i=0;i<count;i++)
             {
-            //float progress = (float)i / count;
-            //float percents = progress * 100;
-
             ProgressArg subProgress = new ProgressArg("CompleteAllPage", i, count, name);
             if (progressArg != null)
             {

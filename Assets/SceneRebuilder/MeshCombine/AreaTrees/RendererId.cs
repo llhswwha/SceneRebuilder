@@ -20,6 +20,11 @@ public class RendererId
 
     public List<string> childrenIds = new List<string>();
 
+    public override string ToString()
+    {
+        return $"RendererId Id:{Id} parentId:{parentId} insId:{insId} mr:{mr}";
+    }
+
     [ContextMenu("Init")]
     public void Init()
     {
@@ -252,8 +257,23 @@ public class RendererId
         return pGo;
     }
 
-    [ContextMenu("GetParentEx")]
-    public void GetParentEx()
+    [ContextMenu("GetCurrentParent")]
+    public GameObject GetCurrentParent()
+    {
+        if (this.transform.parent == null) return null;
+        var pId_current= GetId(this.transform.parent, 0);
+        if(pId_current== parentId)
+        {
+            return this.transform.parent.gameObject;
+        }
+        else
+        {
+            return null;
+        }
+    }
+
+    [ContextMenu("FindParent")]
+    public void FindParent()
     {
         GameObject pGo=IdDictionary.GetGoEx(parentId);
         Debug.LogError($"RendererId.GetParentEx name:{this.name} Id:{this.Id} parentId:{this.parentId} pGo:{pGo}");

@@ -920,6 +920,10 @@ public class AreaTreeNode : SubSceneCreater
     [ContextMenu("CreateDictionary")]
     public void CreateDictionary()
     {
+        if (RenderersId.Count==0)
+        {
+            SaveRenderersId();
+        }
         // Debug.Log($"CreateDictionary StartCount:{AreaTreeHelper.render2NodeDict.Count},Renderers:{Renderers.Count} Count:{GetRendererCount()}");
         if (this.Nodes.Count == 0)
         {

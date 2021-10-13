@@ -241,6 +241,7 @@ public class SubSceneShowManager : SingletonBehaviour<SubSceneShowManager>
 
     private void LoadStartScens_Innder<T>(List<T> scenes,Action<SceneLoadProgress> onComplete = null) where T :SubScene_Base
     {
+        Debug.Log($"LoadStartScens_Innder scenes:{scenes.Count} onComplete:{onComplete}");
         if (scenes.Count > 0)
         {
             AreaTreeNodeShowManager.Instance.IsUpdateTreeNodeByDistance = false;
@@ -250,6 +251,10 @@ public class SubSceneShowManager : SingletonBehaviour<SubSceneShowManager>
                 AreaTreeNodeShowManager.Instance.IsUpdateTreeNodeByDistance = IsUpdateTreeNodeByDistance;
                 if (onComplete != null) onComplete(p);
             });
+        }
+        else
+        {
+            onComplete(new SceneLoadProgress(null, 1, true));
         }
     }
 

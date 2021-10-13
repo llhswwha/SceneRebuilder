@@ -15,14 +15,14 @@ public class RendererIdEditor : BaseEditor<RendererId>
         //    IdDictionary.InitInfos();
         //    parent = targetT.GetParent();
         //}
-        
+        parent = targetT.GetCurrentParent();
     }
     public override void OnToolLayout(RendererId item)
     {
         base.OnToolLayout(item);
         EditorGUILayout.BeginHorizontal();
-        GUILayout.Label("Id:"+item.Id);
-        GUILayout.Label("Children:"+item.childrenIds.Count);
+        GUILayout.Label("Id:" + item.Id);
+        GUILayout.Label("Children:" + item.childrenIds.Count);
         if (parent != null)
         {
             if (GUILayout.Button(parent.name))
@@ -60,6 +60,11 @@ public class RendererIdEditor : BaseEditor<RendererId>
         {
             item.ShowRenderers();
         }
+        if (GUILayout.Button("NullParent"))
+        {
+            EditorHelper.UnpackPrefab(item.gameObject);
+            item.gameObject.transform.SetParent(null);
+        }
         EditorGUILayout.EndHorizontal();
 
         EditorGUILayout.BeginHorizontal();
@@ -74,7 +79,7 @@ public class RendererIdEditor : BaseEditor<RendererId>
         if (GUILayout.Button("UpdateIds"))
         {
             //item.NewId();
-            RendererId.InitIds(item.gameObject,true);
+            RendererId.InitIds(item.gameObject, true);
         }
         if (GUILayout.Button("InitIdDict"))
         {
@@ -95,7 +100,7 @@ public class RendererIdEditor : BaseEditor<RendererId>
         {
             item.ClearLODs();
         }
-        
+
         if (GUILayout.Button("Unpack"))
         {
             EditorHelper.UnpackPrefab(item.gameObject);
@@ -103,22 +108,52 @@ public class RendererIdEditor : BaseEditor<RendererId>
         if (GUILayout.Button("GetSize"))
         {
             var minMax = MeshHelper.GetMinMax(item.gameObject);
-            Debug.Log("size:"+minMax[2]);
+            Debug.Log("size:" + minMax[2]);
         }
         if (GUILayout.Button("RemoveNew"))
         {
             var renderers = item.GetComponentsInChildren<Transform>();
-            foreach(var renderer in renderers)
+            foreach (var renderer in renderers)
             {
-                if(renderer.name.EndsWith("_New"))
+                if (renderer.name.EndsWith("_New"))
                 {
-                    renderer.name = renderer.name.Replace("_New","");
+                    renderer.name = renderer.name.Replace("_New", "");
                 }
             }
         }
         EditorGUILayout.EndHorizontal();
 
         EditorGUILayout.BeginHorizontal();
+        if (GUILayout.Button("IsGroup"))
+        {
+            bool result = MeshHelper.IsEmptyGroup(item.transform);
+            Debug.Log($"IsEmptyGroup {result}");
+        }
+        if (GUILayout.Button("IsSameName"))
+        {
+            bool result = MeshHelper.IsSameNameGroup(item.transform);
+            Debug.Log($"IsSame {result}");
+        }
+        if (GUILayout.Button("IsEmpty"))
+        {
+            bool result = MeshHelper.IsEmptyObject(item.transform);
+            Debug.Log($"IsEmpty {result}");
+        }
+        if (GUILayout.Button("IsEmptyChild"))
+        {
+            bool result = MeshHelper.IsEmptyChildObject(item.transform);
+            Debug.Log($"IsEmptyChild {result}");
+        }
+        if (GUILayout.Button("IsDetail"))
+        {
+            bool result1 = RendererManager.Instance.IsDetail(item.gameObject);
+            bool result2 = RendererManager.Instance.IsDetail2(item.gameObject);
+            Debug.Log($"IsDetail result1:{result1},result2:{result2}");
+        }
+        EditorGUILayout.EndHorizontal();
+
+        EditorGUILayout.BeginHorizontal();
+
         if (GUILayout.Button("RmEmpty"))
         {
             MeshHelper.RemoveEmptyObjects(item.gameObject);
@@ -147,8 +182,8 @@ public class RendererIdEditor : BaseEditor<RendererId>
         if (GUILayout.Button("Copy_Split"))
         {
             var newGo1 = MeshHelper.CopyGO(item.gameObject);
-           
-            var newGo1Split=MeshCombineHelper.SplitByMaterials(newGo1,true);
+
+            var newGo1Split = MeshCombineHelper.SplitByMaterials(newGo1, true);
             newGo1Split.name += "_Center";
             float dis1 = MeshHelper.GetVertexDistanceEx(item.gameObject.transform, newGo1Split.transform);
 
@@ -162,7 +197,7 @@ public class RendererIdEditor : BaseEditor<RendererId>
         }
         if (GUILayout.Button("Split"))
         {
-            MeshCombineHelper.SplitByMaterials(item.gameObject,false);
+            MeshCombineHelper.SplitByMaterials(item.gameObject, false);
         }
         if (GUILayout.Button("Combine"))
         {
@@ -186,17 +221,17 @@ public class RendererIdEditor : BaseEditor<RendererId>
         }
         if (GUILayout.Button("DoorLOD"))
         {
-            var obj=LODHelper.SetDoorLOD(item.gameObject);
+            var obj = LODHelper.SetDoorLOD(item.gameObject);
             EditorHelper.SelectObject(obj);
 
         }
         if (GUILayout.Button("CpDoor1"))
         {
-            DoorHelper.CopyDoorA(item.gameObject,false, false);
+            DoorHelper.CopyDoorA(item.gameObject, false, false);
         }
         if (GUILayout.Button("CpDoor2"))
         {
-            DoorHelper.CopyDoorA(item.gameObject,true,false);
+            DoorHelper.CopyDoorA(item.gameObject, true, false);
         }
 
         if (GUILayout.Button("Prepare"))
@@ -217,6 +252,149 @@ public class RendererIdEditor : BaseEditor<RendererId>
             Debug.Log($"SetAsDetails renderers:{meshRendererInfos.Length}");
         }
         EditorGUILayout.EndHorizontal();
+
+        EditorGUILayout.BeginHorizontal();
+        if (GUILayout.Button("HideWalls"))
+        {
+            SetObjectsActive(item.gameObject, "Walls", false);
+        }
+        if (GUILayout.Button("ShowWalls"))
+        {
+            SetObjectsActive(item.gameObject, "Walls", true);
+        }
+        if (GUILayout.Button("UpdateCollider"))
+        {
+            BoxCollider boxCollider = item.gameObject.GetComponent<BoxCollider>();
+            if (boxCollider != null)
+            {
+                GameObject.DestroyImmediate(boxCollider);
+            }
+            ColliderHelper.CreateBoxCollider(item.gameObject, false);
+        }
+        EditorGUILayout.EndHorizontal();
+
+        EditorGUILayout.BeginHorizontal();
+        if (GUILayout.Button("FindDwfGo"))
+        {
+            GameObject goDwf = FindDwfGo(item.gameObject);
+        }
+        if (GUILayout.Button("AlignDwf"))
+        {
+            GameObject goDwf = FindDwfGo(item.gameObject);
+            if (goDwf == null) return;
+
+            EditorHelper.UnpackPrefab(item.gameObject);
+            EditorHelper.UnpackPrefab(goDwf.gameObject);
+
+            goDwf.transform.rotation = Quaternion.Euler(-90, 0, -90);
+            MeshAlignmentManager.Instance.DoAlign(goDwf, item.gameObject);
+        }
+        if (GUILayout.Button("FindGeometry"))
+        {
+            GameObject goDwf = FindDwfGo(item.gameObject);
+            if (goDwf == null) return;
+
+            List<Transform> geoList = FindGeometries(item.gameObject);
+
+           var ts2 = goDwf.GetComponentsInChildren<Transform>(true);
+            for (int i = 0; i < geoList.Count; i++)
+            {
+                Transform geo = geoList[i];
+                List<Transform> result = FindListByName(ts2, geo.name);
+                if (result.Count == 1)
+                {
+                    //result[0].SetParent(geo.parent);
+                }
+            }
+        }
+        if (GUILayout.Button("SetParent"))
+        {
+            GameObject goDwf = FindDwfGo(item.gameObject);
+            if (goDwf == null) return;
+
+            EditorHelper.UnpackPrefab(item.gameObject);
+            EditorHelper.UnpackPrefab(goDwf.gameObject);
+
+            List<Transform> geoList = FindGeometries(item.gameObject);
+
+            var ts2 = goDwf.GetComponentsInChildren<Transform>(true);
+            for (int i = 0; i < geoList.Count; i++)
+            {
+                Transform geo = geoList[i];
+                List<Transform> result = FindListByName(ts2, geo.name);
+                if (result.Count == 1)
+                {
+                    result[0].SetParent(geo.parent);
+                    GameObject.DestroyImmediate(geo.gameObject);
+                }
+            }
+        }
+        EditorGUILayout.EndHorizontal();
     }
 
+    public static List<Transform> FindListByName(Transform[] ts2,string name)
+    {
+        List<Transform> result = new List<Transform>();
+        foreach (var t2 in ts2)
+        {
+            if (t2.name == name)
+            {
+                result.Add(t2);
+            }
+        }
+        if (result.Count == 1)
+        {
+            Debug.Log($"FindListByName name:{name} result:{result[0]}");
+        }
+        else
+        {
+            Debug.LogError($"FindListByName result.Count != 1 name:{name}");
+        }
+        return result;
+    }
+
+    public static List<Transform> FindGeometries(GameObject go)
+    {
+        List<Transform> geoList = new List<Transform>();
+        var ts1 = go.GetComponentsInChildren<Transform>(true);
+        foreach (var t in ts1)
+        {
+            if (t.name.StartsWith("Geometry"))
+            {
+                var p = t.parent;
+                if (p.childCount == 1)
+                {
+                    geoList.Add(p);
+                }
+                else
+                {
+                    Debug.LogError($"p.childCount != 1 p:{p.name}");
+                }
+            }
+        }
+
+        Debug.Log($"geoList:{geoList.Count}");
+        return geoList;
+    }
+
+    public static GameObject FindDwfGo(GameObject go)
+    {
+        string dwfName = go.name + "_dwf";
+        GameObject goDwf = GameObject.Find(dwfName);
+        Debug.Log($"FindDwfGo dwfName:{dwfName} goDwf:{goDwf}");
+        return goDwf;
+    }
+
+
+    public static void SetObjectsActive(GameObject go,string key,bool isActive)
+    {
+        Transform[] ts = go.GetComponentsInChildren<Transform>(true);
+        foreach (Transform t in ts)
+        {
+            if (t.name.Contains(key))
+            {
+                t.gameObject.SetActive(isActive);
+            }
+        }
+    }
 }

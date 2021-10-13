@@ -40,7 +40,57 @@ public static class MeshHelper
         Debug.Log($"empty:{emptyList.Count},all:{ts.Length}");
     }
 
-    public static List<Type> typesOfEmptyObject = new List<Type>() {typeof(Transform),typeof(RendererId),typeof(MeshNode),typeof(MeshRendererInfo),typeof(LODGroup) };
+    public static List<Type> typesOfEmptyObject = new List<Type>() {typeof(Transform),typeof(RendererId),typeof(MeshNode),typeof(MeshRendererInfo), typeof(MeshRendererInfoEx), typeof(SubScene_Single), typeof(BoxCollider)/*, typeof(BIMModelInfo), typeof(NavisModelRoot)*/ };
+
+    public static List<Type> typesOfEmptyChildObject = new List<Type>() { typeof(Transform), typeof(RendererId), typeof(MeshNode), typeof(MeshRendererInfo), typeof(MeshRendererInfoEx), typeof(LODGroup), typeof(LODGroupInfo), typeof(SubScene_Single), typeof(BoxCollider)/*, typeof(BIMModelInfo), typeof(NavisModelRoot)*/ };
+
+    public static bool IsSameNameGroup(Transform t)
+    {
+        if (t.childCount == 0) return false;
+        if (IsEmptyObject(t) == false) return false;
+        for (int i = 0; i < t.childCount; i++)
+        {
+            var child = t.GetChild(i);
+            if (!child.name.StartsWith(t.name)) return false;
+        }
+        return true;
+    }
+
+    public static bool IsEmptyLODSubGroup(Transform t)
+    {
+        if (t.childCount == 0) return false;
+        if (IsEmptyObject(t) == false) return false;
+        for (int i = 0; i < t.childCount; i++)
+        {
+            var child = t.GetChild(i);
+            MeshRendererInfo info = child.GetComponent<MeshRendererInfo>();
+            if (info != null)
+            {
+                if (info.IsRendererType(MeshRendererType.LOD)==false)
+                {
+                    return false;
+                }
+            }
+        }
+        Debug.Log($"IsEmptyLODSubGroup {t}");
+        return true;
+    }
+
+    public static bool IsEmptyGroup(Transform t)
+    {
+        if (t.childCount == 0) return false;
+        if (IsEmptyObject(t) == false) return false;
+        for (int i = 0; i < t.childCount; i++)
+        {
+            var child = t.GetChild(i);
+            if (IsEmptyChildObject(child) == false)
+            {
+                return false;
+            }
+        }
+        Debug.Log($"IsChildrenAllEmpty {t}");
+        return true;
+    }
 
     public static bool IsEmptyObject(Transform t)
     {
@@ -51,6 +101,19 @@ public static class MeshHelper
         {
             var type = c.GetType();
             if (typesOfEmptyObject.Contains(type) == false) return false;
+        }
+        return r;
+    }
+
+    public static bool IsEmptyChildObject(Transform t)
+    {
+        var components = t.GetComponents<Component>();
+        if (components.Length == 1) return true;
+        bool r = true;
+        foreach (var c in components)
+        {
+            var type = c.GetType();
+            if (typesOfEmptyChildObject.Contains(type) == false) return false;
         }
         return r;
     }

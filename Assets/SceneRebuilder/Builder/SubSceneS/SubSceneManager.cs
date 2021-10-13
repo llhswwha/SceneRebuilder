@@ -346,28 +346,7 @@ public class SubSceneManager : SingletonBehaviour<SubSceneManager>
     //    SetBuildings(subScenes);
     //}
 
-    public void CheckSceneIndex()
-    {
-        DateTime start = DateTime.Now;
-        var alls = GameObject.FindObjectsOfType<SubScene_Base>(includeInactive);
-        foreach (var s in alls)
-        {
-            if (s.sceneArg.index <= 0)
-            {
-                BuildingModelInfo modelInfo = s.GetComponentInParent<BuildingModelInfo>();
-                if (modelInfo != null)
-                {
-                    Debug.LogError($"SubSceneShowManager.CheckSceneIndex index<=0 sName:{modelInfo.name}->{s.name} index:{s.sceneArg.index}");
-                }
-                else
-                {
-                    Debug.LogError($"SubSceneShowManager.CheckSceneIndex index<=0 sName:NULL->{s.name} index:{s.sceneArg.index}");
-                }
-
-            }
-        }
-        Debug.Log($"CheckSceneIndex Time:{(DateTime.Now - start).ToString()}");
-    }
+   
 
     [ContextMenu("SetBuildings_All")]
     public void SetBuildings_All()
@@ -423,6 +402,29 @@ public class SubSceneManager : SingletonBehaviour<SubSceneManager>
 
 
 #endif
+
+    public void CheckSceneIndex()
+    {
+        DateTime start = DateTime.Now;
+        var alls = GameObject.FindObjectsOfType<SubScene_Base>(includeInactive);
+        foreach (var s in alls)
+        {
+            if (s.sceneArg.index <= 0)
+            {
+                BuildingModelInfo modelInfo = s.GetComponentInParent<BuildingModelInfo>();
+                if (modelInfo != null)
+                {
+                    Debug.LogError($"SubSceneShowManager.CheckSceneIndex index<=0 sName:{modelInfo.name}->{s.name} index:{s.sceneArg.index}");
+                }
+                else
+                {
+                    Debug.LogError($"SubSceneShowManager.CheckSceneIndex index<=0 sName:NULL->{s.name} index:{s.sceneArg.index}");
+                }
+
+            }
+        }
+        Debug.Log($"CheckSceneIndex Time:{(DateTime.Now - start).ToString()}");
+    }
 
     public bool includeInactive = false;
     public void UpdateScenes()

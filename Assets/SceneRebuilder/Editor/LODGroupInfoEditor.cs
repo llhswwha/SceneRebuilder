@@ -13,6 +13,7 @@ public class LODGroupInfoEditor : BaseFoldoutEditor<LODGroupInfo>
     {
         base.OnEnable();
         targetT.GetLODs();
+        targetT.CheckLOD0Scenes();
 
         lodListArg = new FoldoutEditorArg(true,true,true,true,true);
     }
@@ -134,17 +135,33 @@ public class LODGroupInfoEditor : BaseFoldoutEditor<LODGroupInfo>
         {
             var lods = item.LodInfos;
             InitEditorArg(lods);
-            lodListArg.DrawPageToolbar(lods, (lod, i) =>
+
+            //lodListArg.DrawPageToolbar(lods, (lod, i) =>
+            //{
+            //    var arg = editorArgs[lod];
+            //    arg.caption = $"[{i:00}] {lod.GetName()}";
+            //    arg.info = $"{lod.vertextCount}";
+            //    var renderer = lod.GetRenderer();
+            //    EditorUIUtils.ObjectFoldout(arg, renderer, () =>
+            //    {
+            //        lod.screenRelativeTransitionHeight = EditorGUILayout.FloatField(lod.screenRelativeTransitionHeight, GUILayout.Width(40));
+            //    });
+            //});
+
+            for (int i = 0; i < lods.Count; i++)
             {
+                LODInfo lod = lods[i];
                 var arg = editorArgs[lod];
-                arg.caption = $"[{i:00}] {lod.GetName()}";
-                arg.info = $"{lod.vertextCount}";
+                arg.caption = $"[LOD_{i:00}] {lod.GetName()}";
+                arg.info = $"{MeshHelper.GetVertexCountS(lod.vertextCount)}";
                 var renderer = lod.GetRenderer();
                 EditorUIUtils.ObjectFoldout(arg, renderer, () =>
                 {
-                    lod.screenRelativeTransitionHeight=EditorGUILayout.FloatField(lod.screenRelativeTransitionHeight,GUILayout.Width(50));
+                    lod.screenRelativeTransitionHeight = EditorGUILayout.FloatField(lod.screenRelativeTransitionHeight, GUILayout.Width(40));
                 });
-            });
+            }
+
+            
         }
     }
 }

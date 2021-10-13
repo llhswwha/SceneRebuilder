@@ -270,9 +270,6 @@ public class RendererManager : SingletonBehaviour<RendererManager>
 
     public bool IsDetail(GameObject go)
     {
-        // List<string> detailNames=new List<string>(){
-        //     //"90 Degree Direction Change"
-        //     };
         foreach(var dn in DetailNames){
             var parent=go.transform.parent;
             if(go.name.Contains(dn) || 
@@ -285,7 +282,21 @@ public class RendererManager : SingletonBehaviour<RendererManager>
         return false;
     }
 
-   
+    public bool IsDetail2(GameObject go)
+    {
+        Debug.Log($"IsDetail2 go:{go.name}");
+        foreach (var dn in DetailNames)
+        {
+            Debug.Log($"dn:{dn} contains:{go.name.Contains(dn)}");
+            if (go.name.Contains(dn))
+            {
+                return true;
+            }
+        }
+        return false;
+    }
+
+
     public void SetDetailRenderers(MeshRenderer[] renderers)
     {
         var rendererInfos=InitRenderers_Inner(renderers);

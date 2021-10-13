@@ -821,4 +821,12 @@ public class AreaTreeManager : SingletonBehaviour<AreaTreeManager>
         }
         Debug.Log($"CheckNodeName tree:{Trees.Count} errorCount:{count} time:{(DateTime.Now - start).ToString()}");
     }
+
+    public string TestId = "";
+
+    public void FindId()
+    {
+        IdDictionary.InitInfos();
+        IdDictionary.GetGo(TestId);
+    }
 }

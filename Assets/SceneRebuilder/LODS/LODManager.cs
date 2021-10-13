@@ -190,34 +190,20 @@ public class LODManager : SingletonBehaviour<LODManager>
         }
     }
 
-    public void ReplaceLOD1()
+    public void DeleteFilter(string searchKey)
     {
-        foreach (var item in twoList)
+        int count = 0;
+        var list=twoList.Where(i => i.GetCaption().Contains(searchKey)).ToList();
+        foreach (var item in list)
         {
-            var minDis = item.dis;
-            var render_lod1 = item.renderer_lod1;
-            if (render_lod1 == null) continue;
-            var render_lod0 = item.renderer_lod0;
-            if (render_lod0 == null) continue;
-            //var vertexCount0 = item.vertexCount0;
-            //var vertexCount1 = item.vertexCount1;
-            //if (minDis <= zeroDistance)
-            //{
-            //    if (DoCreateGroup)
-            //    {
-            //        Debug.Log($"GetDistance1 \tLOD3:{render_lod1.name}({vertexCount1}) \tLOD0:{render_lod0.name}({vertexCount0}) \tDistance:{minDis} \t{(float)vertexCount1 / vertexCount0:P2}");
-            //        CreateGroup(item, lodLevel);
-            //    }
-            //}
-            //else
-            //{
-            //    Debug.LogWarning($"GetDistance1 \tLOD3:{render_lod1.name}({vertexCount1}) \tLOD0:{render_lod0.name}({vertexCount0}) \tDistance:{minDis} \t{(float)vertexCount1 / vertexCount0:P2}");
-            //}
-
-            render_lod1.transform.SetParent(render_lod0.transform.parent);
-            GameObject.DestroyImmediate(render_lod0.gameObject);
-            render_lod1.name += "_New";
+            if(item.dis < zeroDistance)
+            {
+                GameObject.DestroyImmediate(item.renderer_lod1.gameObject);
+                count++;
+            }
+            
         }
+        Debug.Log($"DeleteFilter count:{count}/{list.Count}");
     }
 
     public void CheckLOD0()
@@ -384,6 +370,48 @@ public class LODManager : SingletonBehaviour<LODManager>
         {
             if (item.dis < zeroDistance)
             {
+                item.Replace();
+            }
+        }
+    }
+
+    public void ReplaceFilter(string searchKey)
+    {
+        int count = 0;
+        var list = twoList.Where(i => i.GetCaption().Contains(searchKey)).ToList();
+        foreach (var item in list)
+        {
+            if (item.dis < zeroDistance)
+            {
+                //GameObject.DestroyImmediate(item.renderer_lod1.gameObject);
+                //count++;
+
+                item.Replace();
+            }
+        }
+        Debug.Log($"ReplaceFilter count:{count}/{list.Count}");
+    }
+
+    public void ReplaceLOD1()
+    {
+        foreach (var item in twoList)
+        {
+            if (item.dis < zeroDistance)
+            {
+                ////var minDis = item.dis;
+                //var render_lod1 = item.renderer_lod1;
+                //if (render_lod1 == null) continue;
+                //var render_lod0 = item.renderer_lod0;
+                //if (render_lod0 == null) continue;
+
+                //var lod1 = item.renderer_lod1.meshRenderer;
+                //var lod0 = item.renderer_lod0.meshRenderer;
+                //lod1.sharedMaterials = lod0.sharedMaterials;
+
+                //render_lod1.transform.SetParent(render_lod0.transform.parent);
+                //GameObject.DestroyImmediate(render_lod0.gameObject);
+                ////render_lod1.name += "_New";
+
                 item.Replace();
             }
         }
@@ -793,6 +821,35 @@ public class LODManager : SingletonBehaviour<LODManager>
     public float[] LODLevels_2 = new float[] { 0.7f, 0.3f, 0.02f };
     public float[] LODLevels_3 = new float[] { 0.7f, 0.3f, 0.1f, 0.02f };
 
+    public Vector2 GetLevels1()
+    {
+        return new Vector2(LODLevels_1[0], LODLevels_1[1]);
+    }
+
+    public Vector3 GetLevels2()
+    {
+        return new Vector3(LODLevels_2[0], LODLevels_2[1], LODLevels_2[2]);
+    }
+    public Vector4 GetLevels3()
+    {
+        return new Vector4(LODLevels_3[0], LODLevels_3[1], LODLevels_3[2], LODLevels_3[3]);
+    }
+
+    public void SetLevels1(Vector2 v)
+    {
+        LODLevels_1 = new float[] { v.x, v.y };
+    }
+
+    public void SetLevels2(Vector3 v)
+    {
+        LODLevels_2 = new float[] { v.x, v.y,v.z };
+    }
+
+    public void SetLevels3(Vector4 v)
+    {
+        LODLevels_3 = new float[] { v.x, v.y,v.z,v.w };
+    }
+
     public float[] DoorLODLevels_2 = new float[] { 0.6f, 0.1f, 0.01f };
 
     public LOD[] CreateLODS(int count)
@@ -911,20 +968,23 @@ public class LODManager : SingletonBehaviour<LODManager>
     public void ChangeLODsRelativeHeight()
     {
         var lodGroups = LODHelper.GetLODGroups(LocalTarget, includeInactive);
-        foreach (LODGroup group in lodGroups)
+        for (int i = 0; i < lodGroups.Length; i++)
         {
+            LODGroup group = lodGroups[i];
             var lods = group.GetLODs();
-            Debug.Log($" group:{group.name} count:{lods.Length}");
+
             if (lods.Length == 2)
             {
                 lods[0].screenRelativeTransitionHeight = LODLevels_1[0];
                 lods[1].screenRelativeTransitionHeight = LODLevels_1[1];
+                Debug.Log($"[{i}] group:{group.name} count:{lods.Length} level1:{GetLevels1()}");
             }
             else if(lods.Length == 3)
             {
                 lods[0].screenRelativeTransitionHeight = LODLevels_2[0];
                 lods[1].screenRelativeTransitionHeight = LODLevels_2[1];
                 lods[2].screenRelativeTransitionHeight = LODLevels_2[2];
+                Debug.Log($"[{i}] group:{group.name} count:{lods.Length} level2:{GetLevels2()}");
             }
             else if (lods.Length == 4)
             {
@@ -932,6 +992,7 @@ public class LODManager : SingletonBehaviour<LODManager>
                 lods[1].screenRelativeTransitionHeight = LODLevels_3[1];
                 lods[2].screenRelativeTransitionHeight = LODLevels_3[2];
                 lods[3].screenRelativeTransitionHeight = LODLevels_3[3];
+                Debug.Log($"[{i}] group:{group.name} count:{lods.Length} level3:{GetLevels3()}");
             }
             group.SetLODs(lods);
         }
@@ -1082,11 +1143,15 @@ public class LODManager : SingletonBehaviour<LODManager>
             rendererInfo.LodIds.Clear();
         }
 
-        var rendererInfos1 = GroupRoot.GetComponentsInChildren<MeshRendererInfo>(true);
-        foreach (var renderer in rendererInfos1)
+        if (GroupRoot)
         {
-            renderer.Init();
+            var rendererInfos1 = GroupRoot.GetComponentsInChildren<MeshRendererInfo>(true);
+            foreach (var renderer in rendererInfos1)
+            {
+                renderer.Init();
+            }
         }
+
 
         for (int i1 = 0; i1 < lodGroups.Length; i1++)
         {
@@ -1177,6 +1242,18 @@ public class LODManager : SingletonBehaviour<LODManager>
             info.SetMaterial();
         }
         Debug.Log($"SetMaterial LocalTarget:{LocalTarget} includeInactive:{includeInactive} infos:{infos.Length}");
+        return infos;
+    }
+
+    public LODGroupInfo[] CheckLOD0Scenes()
+    {
+        LODGroupInfo[] infos = InitGroupInfos();
+        for (int i = 0; i < infos.Length; i++)
+        {
+            LODGroupInfo info = infos[i];
+            info.CheckLOD0Scenes();
+        }
+        Debug.Log($"CheckLOD0Scenes LocalTarget:{LocalTarget} includeInactive:{includeInactive} infos:{infos.Length}");
         return infos;
     }
 
@@ -1431,12 +1508,12 @@ public class LODManager : SingletonBehaviour<LODManager>
         }
         if (sceneList.Count > 0)
         {
-            Debug.LogError($"GetRuntimeLODDetail lod0List:{lod0List.Count} sceneList:{sceneList.Count} scene2Group:{scene2Group.Count}");
+            //Debug.LogError($"GetRuntimeLODDetail lod0List:{lod0List.Count} sceneList:{sceneList.Count} scene2Group:{scene2Group.Count}");
             SubSceneManager.Instance.LoadScenesEx(sceneList.ToArray(), (p) =>
             {
                 if (p.scene != null)
                 {
-                    Debug.LogError($"GetRuntimeLODDetail scene:{p.scene.name} sceneName:scene:{p.scene.sceneName}");
+                    //Debug.LogError($"GetRuntimeLODDetail scene:{p.scene.name} sceneName:scene:{p.scene.sceneName}");
                     if (scene2Group.ContainsKey(p.scene))
                     {
                         LODGroupInfo group = scene2Group[p.scene];
@@ -1478,6 +1555,9 @@ public static class LODHelper
     {
         if (root == null) return null;
         ClearGroupInfo(root);
+
+        MeshHelper.CenterPivot(root);
+
         MeshRendererInfoList infoList = MeshRendererInfo.InitRenderers(root);
         
         LODGroup groupNew = root.AddComponent<LODGroup>();
@@ -1827,18 +1907,63 @@ public class LODTwoRenderers
 
     public string GetCaption()
     {
-        if (this.renderer_lod1 == null || this.renderer_lod0 == null) return "";
-        return $"[{this.renderer_lod1.name == this.renderer_lod0.name}] [{(float)this.vertexCount1/ this.vertexCount0:F2}] {this.renderer_lod1.name}({this.vertexCount1}) <{this.dis:F5}|{this.meshDis:F5}> {this.renderer_lod0.name}({this.vertexCount0})";
+        if (renderer_lod1 == null || renderer_lod0 == null) return "";
+        bool isSameName = renderer_lod1.name == renderer_lod0.name;
+        bool isSameSize = renderer_lod1.size.ToString() == renderer_lod0.size.ToString();
+        if (isSameSize == false)
+        {
+
+        }
+        float p10 = (float)vertexCount1 / vertexCount0;
+        string lod1 = $"{renderer_lod1.name}({vertexCount1})[{renderer_lod1.size}]";
+        string lod0 = $"{renderer_lod0.name}({vertexCount0})[{renderer_lod0.size}]";
+        if (isSameName)
+        {
+            if (isSameSize)
+            {
+                return $"[T1 T2] [{p10:F2}] LOD1:{lod1} <{dis:F5}|{meshDis:F5}> LOD0:===({vertexCount0})[{renderer_lod0.size}]";
+            }
+            else
+            {
+                return $"[T1 F2] [{p10:F2}] LOD1:{lod1} <{dis:F5}|{meshDis:F5}> LOD0:===({vertexCount0})[{renderer_lod0.size}]";
+            }
+            
+        }
+        else
+        {
+            if (isSameSize)
+            {
+                return $"[F1 T2] [{p10:F2}] LOD1:{lod1} <{dis:F5}|{meshDis:F5}> LOD0:{lod0}";
+            }
+            else
+            {
+                return $"[F1 F2] [{p10:F2}] LOD1:{lod1} <{dis:F5}|{meshDis:F5}> LOD0:{lod0}";
+            }
+            //return $"[F] [{p10:F2}] LOD1:{lod1} <{dis:F5}|{meshDis:F5}> LOD0:{lod0}";
+        }
     }
 
     public void Replace()
     {
-        var lod1 = renderer_lod1.meshRenderer;
-        var lod0 = renderer_lod0.meshRenderer;
-        lod1.transform.parent = lod0.transform;
-        //copy scripts
-        lod0.gameObject.SetActive(false);
+        //var lod1 = renderer_lod1.meshRenderer;
+        //var lod0 = renderer_lod0.meshRenderer;
+        //lod1.sharedMaterials = lod0.sharedMaterials;
+        //lod1.transform.parent = lod0.transform;
+        ////copy scripts
+        ////lod0.gameObject.SetActive(false);
         //GameObject.DestroyImmediate(lod0.gameObject);
+
+        var render_lod1 = this.renderer_lod1;
+        if (render_lod1 == null) return;
+        var render_lod0 = this.renderer_lod0;
+        if (render_lod0 == null) return;
+
+        var lod1 = this.renderer_lod1.meshRenderer;
+        var lod0 = this.renderer_lod0.meshRenderer;
+        lod1.sharedMaterials = lod0.sharedMaterials;
+
+        render_lod1.transform.SetParent(render_lod0.transform.parent);
+        GameObject.DestroyImmediate(render_lod0.gameObject);
     }
 
     public void SetColor()

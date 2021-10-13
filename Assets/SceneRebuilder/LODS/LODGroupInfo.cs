@@ -20,6 +20,33 @@ public class LODGroupInfo : MonoBehaviour
         
     }
 
+    public void CheckLOD0Scenes()
+    {
+        if(this.scene!=null)
+        {
+            var scenes = gameObject.GetComponents<SubScene_Base>();
+            foreach (var s in scenes)
+            {
+                if (this.scene != s)
+                {
+                    GameObject.DestroyImmediate(s);
+                }
+            }
+        }
+        else
+        {
+            var scenes = gameObject.GetComponents<SubScene_Base>();
+            if (scenes.Length == 1)
+            {
+                this.scene = scenes[0];
+            }
+            else
+            {
+                Debug.LogError($"CheckLOD0Scenes {this.name} scenes:{scenes.Length}");
+            }
+        }
+    }
+
     [ContextMenu("GetLODs")]
     public void GetLODs()
     {
@@ -209,17 +236,7 @@ public class LODGroupInfo : MonoBehaviour
         scene =LODHelper.SaveLOD0(null, this.LODGroup);
     }
 
-    public void ClearOtherScenes()
-    {
-        var scenes = this.GetComponents<SubScene_Base>();
-        foreach(var s in scenes)
-        {
-            if (s != this.scene)
-            {
-                GameObject.DestroyImmediate(s);
-            }
-        }
-    }
+
 
     public void EditorLoadScene()
     {
@@ -227,8 +244,22 @@ public class LODGroupInfo : MonoBehaviour
         GetScene();
         scene.EditorLoadScene();
         SetLOD0FromScene();
+
+        GetLODs();
     }
 #endif
+
+    public void ClearOtherScenes()
+    {
+        var scenes = this.GetComponents<SubScene_Base>();
+        foreach (var s in scenes)
+        {
+            if (s != this.scene)
+            {
+                GameObject.DestroyImmediate(s);
+            }
+        }
+    }
 
     public void UnloadScene()
     {
