@@ -8,6 +8,22 @@ namespace CodeStage.AdvancedFPSCounter.Editor.UI
 	[System.Serializable]
 	public class FoldoutEditorArg
     {
+        public FoldoutEditorArg Clone()
+        {
+            FoldoutEditorArg arg = new FoldoutEditorArg();
+            arg.isFoldout = this.isFoldout;
+            arg.isEnabled = this.isEnabled;
+            arg.isSelected = this.isSelected;
+            arg.isExpanded = this.isExpanded;
+            arg.isToggle = this.isToggle;
+            arg.caption = this.caption;
+            arg.info = this.info;
+            arg.bold = this.bold;
+            arg.separator = this.separator;
+            arg.background = this.background;
+            return arg;
+        }
+
         public bool isFoldout = true;
         public bool isEnabled=false;
         public bool isSelected = false;
@@ -37,6 +53,8 @@ namespace CodeStage.AdvancedFPSCounter.Editor.UI
         public int level = 0;
 
         public object tag = null;
+
+
 
         public FoldoutEditorArg()
         {
@@ -479,7 +497,7 @@ namespace CodeStage.AdvancedFPSCounter.Editor.UI
             //GUILayout.Space(level * 10);
         }
 
-        public static bool ObjectFoldout(FoldoutEditorArg arg,Object obj = null, System.Action itemToolbarEvent = null, System.Action destroyAction = null)
+        public static bool ObjectFoldout(FoldoutEditorArg arg,object obj = null, System.Action itemToolbarEvent = null, System.Action destroyAction = null)
         {
             if (arg.separator) Separator(5);
 
@@ -500,19 +518,22 @@ namespace CodeStage.AdvancedFPSCounter.Editor.UI
             if (obj != null && obj is GameObject)
             {
                 GameObject go = obj as GameObject;
-                EditorGUIUtility.labelWidth = 1;
-                //EditorGUILayout.PropertyField(toggle, GUIContent.none, GUILayout.ExpandWidth(false));
-
-                GUILayout.Space(10* arg.level);
-                //BeforeSpace(arg.level);
-
-                EditorGUILayout.Toggle(go.activeInHierarchy, GUILayout.Width(15));//go.activeInHierarchy
-                bool isOn = EditorGUILayout.Toggle(go.activeSelf, GUILayout.Width(15));//go.activeSelf
-                if (isOn != go.activeSelf)
+                if (go != null)
                 {
-                    go.SetActive(isOn);
+                    EditorGUIUtility.labelWidth = 1;
+                    //EditorGUILayout.PropertyField(toggle, GUIContent.none, GUILayout.ExpandWidth(false));
+
+                    GUILayout.Space(10 * arg.level);
+                    //BeforeSpace(arg.level);
+
+                    EditorGUILayout.Toggle(go.activeInHierarchy, GUILayout.Width(15));//go.activeInHierarchy
+                    bool isOn = EditorGUILayout.Toggle(go.activeSelf, GUILayout.Width(15));//go.activeSelf
+                    if (isOn != go.activeSelf)
+                    {
+                        go.SetActive(isOn);
+                    }
+                    EditorGUIUtility.labelWidth = currentLabelWidth;
                 }
-                EditorGUIUtility.labelWidth = currentLabelWidth;
             }
 
 
@@ -563,8 +584,10 @@ namespace CodeStage.AdvancedFPSCounter.Editor.UI
                         Component component = obj as Component;
                         component.gameObject.SetActive(true);
                     }
-                    Selection.activeObject = obj;
-                    EditorGUIUtility.PingObject(obj);
+                    Object oobj = obj as Object;
+                    Selection.activeObject = oobj;
+                    EditorGUIUtility.PingObject(oobj);
+
                     EditorApplication.ExecuteMenuItem("Edit/Frame Selected");
                     arg.isSelected = true;
                 }
@@ -578,7 +601,9 @@ namespace CodeStage.AdvancedFPSCounter.Editor.UI
                     {
                         if (obj is GameObject)
                         {
-                            GameObject.DestroyImmediate(obj);
+                            var go = obj as GameObject;
+                            UnpackPrefab(go);
+                            GameObject.DestroyImmediate(go);
                         }
                         else
                         {
@@ -592,6 +617,23 @@ namespace CodeStage.AdvancedFPSCounter.Editor.UI
             EditorGUIUtility.labelWidth = currentLabelWidth;
             GUILayout.EndHorizontal();
             return arg.isExpanded;
+        }
+
+        public static void UnpackPrefab(GameObject go)
+        {
+#if UNITY_EDITOR
+            UnpackPrefab(go, PrefabUnpackMode.Completely);
+#endif
+        }
+
+        public static void UnpackPrefab(GameObject go, PrefabUnpackMode unpackMode)
+        {
+            if (go == null) return;
+            GameObject root = PrefabUtility.GetOutermostPrefabInstanceRoot(go);
+            if (root != null)
+            {
+                PrefabUtility.UnpackPrefabInstance(root, unpackMode, InteractionMode.UserAction);
+            }
         }
 
         public static bool ObjectFoldout(bool isExpanded, string caption,string info, bool bold = true, bool separator = true, bool background = true,GameObject obj=null,System.Action itemToolbarEvent=null)
