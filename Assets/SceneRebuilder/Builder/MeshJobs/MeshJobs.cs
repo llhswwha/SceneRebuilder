@@ -933,6 +933,11 @@ namespace MeshJobs
 
         public static PrefabInfoList NewAcRTAlignJobsEx(MeshPoints[] meshFilters, int size)
         {
+            int vc = 0;
+            foreach(var mf in meshFilters)
+            {
+                vc += mf.vertexCount;
+            }
             DateTime start = DateTime.Now;
             Debug.Log("NewAcRTAlignJobsEx:"+meshFilters.Length);
 
@@ -949,7 +954,7 @@ namespace MeshJobs
 
             RestoreParent(parentDict);
 
-            Debug.Log($"NewAcRTAlignJobsEx meshFilters:{meshFilters.Length},Time:{(DateTime.Now - start).TotalMilliseconds:F1}ms");
+            Debug.LogError($"NewAcRTAlignJobsEx meshFilters:{meshFilters.Length},vertexCount:{MeshHelper.GetVertexCountS(vc)} Time:{(DateTime.Now - start).TotalSeconds:F1}s");
             return preafbs;
         }
 

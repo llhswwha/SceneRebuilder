@@ -30,7 +30,7 @@ public class RTResultList:List<RTResult>,IRTResult
 
 public enum AlignMode
 {
-    RT,Rotate,Scale
+    RT,Rotate,Scale,ICP
 }
 
 [Serializable]

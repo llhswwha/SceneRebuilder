@@ -51,6 +51,7 @@ public class SharedMeshInfoList : List<SharedMeshInfo>
         {
             meshFilters = root.GetComponentsInChildren<MeshFilter>(true);
         }
+        Debug.Log($"InitByRoot root:{root} meshFilters:{meshFilters.Length}");
 
         InitMeshFilters(meshFilters);
     }
@@ -67,14 +68,15 @@ public class SharedMeshInfoList : List<SharedMeshInfo>
 
     private void InitMeshFilters(MeshFilter[] mfs)
     {
+        DateTime start = DateTime.Now;
         this.meshFilters.AddRange(mfs);
         Debug.Log($"SharedMeshInfo.InitMeshFilters meshFilters:{mfs.Length}");
         Dictionary<Mesh, SharedMeshInfo> meshDict = new Dictionary<Mesh, SharedMeshInfo>();
         for (int i = 0; i < mfs.Length; i++)
         {
-            float progress = (float)i / mfs.Length;
-            ProgressBarHelper.DisplayProgressBar("InitMeshFilters", $"Progress {i}/{mfs.Length} {progress:P1}", progress);
             MeshFilter mf = mfs[i];
+            if (mf == null) continue;
+            ProgressBarHelper.DisplayProgressBar(new ProgressArg("InitMeshFilters", i, mfs.Length, mf.name));
             var mesh = mf.sharedMesh;
             if (mesh == null) continue;
             if (!meshDict.ContainsKey(mesh))
@@ -84,9 +86,11 @@ public class SharedMeshInfoList : List<SharedMeshInfo>
             SharedMeshInfo sharedMeshInfo = meshDict[mesh];
             sharedMeshInfo.AddMeshFilter(mf);
         }
+        Debug.Log($"SharedMeshInfo.InitMeshFilters time1:{(DateTime.Now-start).TotalMilliseconds}ms");
 
-        Init(meshDict.Values);
+        AddList(meshDict.Values.ToList());
 
+        Debug.Log($"SharedMeshInfo.InitMeshFilters time2:{(DateTime.Now - start).TotalMilliseconds}ms");
         ProgressBarHelper.ClearProgressBar();
     }
 
@@ -95,14 +99,27 @@ public class SharedMeshInfoList : List<SharedMeshInfo>
     //    Init(items);
     //}
 
-    private void Init(ICollection<SharedMeshInfo> items)
+    private void AddList(ICollection<SharedMeshInfo> items)
     {
         foreach (var item in items)
         {
             this.AddEx(item);
         }
-        
-        
+        SortByType(0);
+
+    }
+
+    private void AddList(List<SharedMeshInfo> items)
+    {
+        for (int i = 0; i < items.Count; i++)
+        {
+            SharedMeshInfo item = items[i];
+            ProgressBarHelper.DisplayProgressBar(new ProgressArg("AddList", i, items.Count, item.GetName()));
+            this.AddEx(item);
+            //SortByType(0);
+        }
+        SortByType(0);
+
     }
 
     public override string ToString()
@@ -117,7 +134,7 @@ public class SharedMeshInfoList : List<SharedMeshInfo>
         filterCount += item.GetCount();
         totalVertexCount += item.GetAllVertexCount();
 
-        SortByType(0);
+        //SortByType(0);
     }
 
     //public void GetPrefabs()
@@ -148,6 +165,10 @@ public class SharedMeshInfoList : List<SharedMeshInfo>
                 {
                     r1 = b.meshFilters.Count.CompareTo(a.meshFilters.Count);
                 }
+                if (r1 == 0)
+                {
+                    r1 = a.GetName().CompareTo(b.GetName());
+                }
                 return r1;
             });
         }
@@ -161,6 +182,10 @@ public class SharedMeshInfoList : List<SharedMeshInfo>
                 //{
                 //    r1 = b.vertexCount.CompareTo(a.vertexCount);
                 //}
+                if (r1 == 0)
+                {
+                    r1 = a.GetName().CompareTo(b.GetName());
+                }
                 return r1;
             });
         }
@@ -173,6 +198,10 @@ public class SharedMeshInfoList : List<SharedMeshInfo>
                 if (r1 == 0)
                 {
                     r1 = b.vertexCount.CompareTo(a.vertexCount);
+                }
+                if (r1 == 0)
+                {
+                    r1 = a.GetName().CompareTo(b.GetName());
                 }
                 return r1;
             });
@@ -294,6 +323,10 @@ public class SharedMeshInfo:IPrefab<SharedMeshInfo>
 
     public string GetName()
     {
+        if (mesh == null)
+        {
+            return "";
+        }
         return mesh.name;
     }
 
