@@ -282,8 +282,9 @@ public class LODManager : SingletonBehaviour<LODManager>
 
         RemoveEmpty(LODnRoot.transform);
         RemoveEmpty(LODnRoot.transform);
+        RemoveEmpty(LODnRoot.transform);
 
-        SetRenderersLODInfo();
+        //SetRenderersLODInfo();
 
         Debug.LogError($"AppendLod3ToGroup count1:{renderers_2.Length} count0:{renderers_0.Count} time:{(DateTime.Now - start)}");
     }
@@ -369,7 +370,7 @@ public class LODManager : SingletonBehaviour<LODManager>
     {
         if (LODnRoot == null)
         {
-            Debug.LogError($"GetNewLODn LODnRoot == null");
+            //Debug.LogError($"GetNewLODn LODnRoot == null");
             return 0;
         }
         string name = LODnRoot.name;

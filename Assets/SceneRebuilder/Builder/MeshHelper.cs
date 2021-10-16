@@ -269,121 +269,26 @@ public static class MeshHelper
         var offset = Vector3.zero;
         if (transfromAlignSetting.Align == TransfromAlignMode.Pivot)
         {
-            //if (transfromAlignSetting.SetPosX)
-            //{
-            //    pos.x = target.transform.position.x;
-            //}
-            //if (transfromAlignSetting.SetPosY)
-            //{
-            //    pos.y = target.transform.position.y;
-            //}
-            //if (transfromAlignSetting.SetPosZ)
-            //{
-            //    pos.z = target.transform.position.z;
-            //}
-
-            //pos = GetNewPos(pos, source.transform.position, target.transform.position, transfromAlignSetting);
-
             offset= GetPosOffset(source.transform.position, target.transform.position, transfromAlignSetting);
         }
         else if (transfromAlignSetting.Align == TransfromAlignMode.Min)
         {
-            //var dis = minMax_TO[0] - minMax_From[0];
-            //if (transfromAlignSetting.SetPosX)
-            //{
-            //    pos.x += dis.x;
-            //}
-            //if (transfromAlignSetting.SetPosY)
-            //{
-            //    pos.y += dis.y;
-            //}
-            //if (transfromAlignSetting.SetPosZ)
-            //{
-            //    pos.z += dis.z;
-            //}
-
-            //pos = GetNewPos(pos, minMax_From[0], minMax_TO[0], transfromAlignSetting);
-
             offset = GetPosOffset(minMax_From[0], minMax_TO[0], transfromAlignSetting);
         }
         else if (transfromAlignSetting.Align == TransfromAlignMode.Max)
         {
-            //var dis = minMax_TO[1] - minMax_From[1];
-            //if (transfromAlignSetting.SetPosX)
-            //{
-            //    pos.x += dis.x;
-            //}
-            //if (transfromAlignSetting.SetPosY)
-            //{
-            //    pos.y += dis.y;
-            //}
-            //if (transfromAlignSetting.SetPosZ)
-            //{
-            //    pos.z += dis.z;
-            //}
-
-            //pos = GetNewPos(pos, minMax_From[1], minMax_TO[1], transfromAlignSetting);
-
             offset = GetPosOffset(minMax_From[1], minMax_TO[1], transfromAlignSetting);
         }
         else if (transfromAlignSetting.Align == TransfromAlignMode.Center)
         {
-            //var dis = minMax_TO[3] - minMax_From[3];
-            //if (transfromAlignSetting.SetPosX)
-            //{
-            //    pos.x += dis.x;
-            //}
-            //if (transfromAlignSetting.SetPosY)
-            //{
-            //    pos.y += dis.y;
-            //}
-            //if (transfromAlignSetting.SetPosZ)
-            //{
-            //    pos.z += dis.z;
-            //}
-
-            //pos = GetNewPos(pos, minMax_From[3], minMax_TO[3], transfromAlignSetting);
-
             offset = GetPosOffset(minMax_From[3], minMax_TO[3], transfromAlignSetting);
         }
         else if (transfromAlignSetting.Align == TransfromAlignMode.MinMax)
         {
-            //var dis = minMax_TO[1] - minMax_From[0];
-            //if (transfromAlignSetting.SetPosX)
-            //{
-            //    pos.x += dis.x;
-            //}
-            //if (transfromAlignSetting.SetPosY)
-            //{
-            //    pos.y += dis.y;
-            //}
-            //if (transfromAlignSetting.SetPosZ)
-            //{
-            //    pos.z += dis.z;
-            //}
-
-            //pos = GetNewPos(pos, minMax_From[0], minMax_TO[1], transfromAlignSetting);
-
             offset = GetPosOffset(minMax_From[0], minMax_TO[1], transfromAlignSetting);
         }
         else if (transfromAlignSetting.Align == TransfromAlignMode.MaxMin)
         {
-            //var dis = minMax_TO[0] - minMax_From[1];
-            //if (transfromAlignSetting.SetPosX)
-            //{
-            //    pos.x += dis.x;
-            //}
-            //if (transfromAlignSetting.SetPosY)
-            //{
-            //    pos.y += dis.y;
-            //}
-            //if (transfromAlignSetting.SetPosZ)
-            //{
-            //    pos.z += dis.z;
-            //}
-
-            //pos = GetNewPos(pos, minMax_From[1], minMax_TO[0], transfromAlignSetting);
-
             offset = GetPosOffset(minMax_From[1], minMax_TO[0], transfromAlignSetting);
         }
         source.transform.position += offset;

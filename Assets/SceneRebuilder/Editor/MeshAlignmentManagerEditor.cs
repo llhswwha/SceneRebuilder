@@ -43,8 +43,13 @@ public class MeshAlignmentManagerEditor : BaseEditor<MeshAlignmentManager>
         //GUILayout.EndHorizontal();
 
         GUILayout.BeginHorizontal();
-        GUILayout.Label("SourceR", GUILayout.Width(60));
-        GameObject go1= BaseEditorHelper.ObjectField(item.SourceRoot);
+        //GUILayout.Label("SourceR", GUILayout.Width(60));
+        if (GUILayout.Button("S", GUILayout.Width(30)))
+        {
+            item.SourceRoot = Selection.activeGameObject;
+        }
+        GameObject go1= BaseEditorHelper.ObjectField("SourceR",60,item.SourceRoot);
+
         if (go1 != item.SourceRoot)
         {
             item.SourceRoot = go1;
@@ -53,8 +58,12 @@ public class MeshAlignmentManagerEditor : BaseEditor<MeshAlignmentManager>
         GUILayout.EndHorizontal();
 
         GUILayout.BeginHorizontal();
-        GUILayout.Label("Source", GUILayout.Width(60));
-        GameObject go2 = BaseEditorHelper.ObjectField(item.Source);
+        //GUILayout.Label("Source", GUILayout.Width(60));
+        if (GUILayout.Button("S", GUILayout.Width(30)))
+        {
+            item.Source = Selection.activeGameObject;
+        }
+        GameObject go2 = BaseEditorHelper.ObjectField("Source",60,item.Source);
         if (go2 != item.Source)
         {
             item.Source = go2;
@@ -63,8 +72,12 @@ public class MeshAlignmentManagerEditor : BaseEditor<MeshAlignmentManager>
         GUILayout.EndHorizontal();
 
         GUILayout.BeginHorizontal();
-        GUILayout.Label("Target", GUILayout.Width(60));
-        GameObject go3 = BaseEditorHelper.ObjectField(item.Target);
+        if (GUILayout.Button("S", GUILayout.Width(30)))
+        {
+            item.Target = Selection.activeGameObject;
+        }
+        //GUILayout.Label("Target", GUILayout.Width(60));
+        GameObject go3 = BaseEditorHelper.ObjectField("Target",60,item.Target);
         if(go3!= item.Target)
         {
             item.Target = go3;
@@ -103,9 +116,19 @@ public class MeshAlignmentManagerEditor : BaseEditor<MeshAlignmentManager>
         {
             item.DoAlign();
         }
+
         if (GUILayout.Button("AlignRoot"))
         {
             item.DoAlignRoot();
+        }
+        GUILayout.EndHorizontal();
+
+        GUILayout.BeginHorizontal();
+        item.Zero = EditorGUILayout.FloatField(item.Zero);
+        item.IsDestroy = GUILayout.Toggle(item.IsDestroy, "IsDestroy", GUILayout.Width(100));
+        if (GUILayout.Button("Copy&Align", GUILayout.Width(120)))
+        {
+            item.CopyAndAlign();
         }
         GUILayout.EndHorizontal();
     }

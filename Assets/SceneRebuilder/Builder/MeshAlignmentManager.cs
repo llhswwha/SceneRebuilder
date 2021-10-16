@@ -42,14 +42,41 @@ public class MeshAlignmentManager : SingletonBehaviour<MeshAlignmentManager>
         DoAlign();
     }
 
+    public float Zero = 0.00005f;
+
+    public bool IsDestroy = false;
+
+    [ContextMenu("CopyAndAlign")]
+    public void CopyAndAlign()
+    {
+        if (Source == null)
+        {
+            Debug.LogError("CopyAndAlign Source == null");
+            return;
+        }
+        GameObject goNew=MeshHelper.CopyGO(Source);
+        Source = goNew;
+        float dis = DoAlign();
+
+        Target.SetActive(false);
+        Source.name = Target.name;
+
+        if (IsDestroy && dis < Zero)
+        {
+            EditorHelper.UnpackPrefab(Target);
+            GameObject.DestroyImmediate(Target);
+        }
+    }
+
     [ContextMenu("DoAlign")]
-    public void DoAlign()
+    public float DoAlign()
     {
         Recover();
         Init();
         MeshHelper.Align(Source, Target, transfromReplaceSetting);
         float dis = MeshHelper.GetVertexDistanceEx(Source, Target);
         Debug.Log($"DoAlign dis:{dis} Source:{Source} Target:{Target}");
+        return dis;
     }
 
     [ContextMenu("DoAlignRoot")]
