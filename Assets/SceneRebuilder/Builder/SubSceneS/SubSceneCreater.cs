@@ -337,6 +337,11 @@ public class ProgressArg
         }
     }
 
+    public bool IsFinished()
+    {
+        return this.progress >= 1;
+    }
+
     private string GetProgress()
     {
         return $"{i}/{count} {progress:P2}";

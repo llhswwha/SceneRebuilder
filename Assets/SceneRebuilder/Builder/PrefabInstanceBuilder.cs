@@ -1415,6 +1415,16 @@ break;
         {
             foreach(var mf in item.GetMeshFilters())
             {
+                if (mf == null)
+                {
+                    Debug.LogError($"GetPrefabInfos mf == null item:{item} mf:{mf}");
+                    continue;
+                }
+                if (mf.gameObject == null)
+                {
+                    Debug.LogError($"GetPrefabInfos mf.gameObject == null item:{item} mf:{mf}");
+                    continue;
+                }
                 meshFilters.Add(new MeshPoints(mf.gameObject));
             }
             //meshFilters.AddRange();

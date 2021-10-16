@@ -1223,10 +1223,11 @@ public class BaseFoldoutEditor<T> : BaseEditor<T> where T : class
         }
     }
 
-    protected void DrawSharedMeshListEx(FoldoutEditorArg listArg, System.Func<SharedMeshInfoList> funcGetList)
+    protected bool DrawSharedMeshListEx(FoldoutEditorArg listArg, System.Func<SharedMeshInfoList> funcGetList)
     {
+        bool isUpate = false;
         listArg.caption = $"SharedMesh List";
-        var list = listArg.tag as SharedMeshInfoList;
+        SharedMeshInfoList list = listArg.tag as SharedMeshInfoList;
         if (list == null)
         {
             list = new SharedMeshInfoList();
@@ -1251,11 +1252,17 @@ public class BaseFoldoutEditor<T> : BaseEditor<T> where T : class
                     listArg.tag = funcGetList();
                 }
             }
+            PrefabInstanceBuilder.Instance.JobSize=EditorGUILayout.IntField(PrefabInstanceBuilder.Instance.JobSize, GUILayout.Width(50));
             if (GUILayout.Button("Prefabs", btnStyle, GUILayout.Width(66)))
             {
+                SharedMeshInfoList list2= funcGetList();
                 //list.GetPrefabs();
+                listArg.tag = list2;
 
-                PrefabInstanceBuilder.Instance.GetPrefabInfos(list, true);
+                PrefabInstanceBuilder.Instance.GetPrefabInfos(list2, true);
+
+                listArg.tag = funcGetList();
+                isUpate = true;
             }
             //if (GUILayout.Button("X1", btnStyle, GUILayout.Width(25)))
             //{
@@ -1279,6 +1286,7 @@ public class BaseFoldoutEditor<T> : BaseEditor<T> where T : class
             //}
         });
         DrawSharedMeshList(listArg);
+        return isUpate;
     }
 
     protected void DrawSharedMeshList(FoldoutEditorArg listArg)

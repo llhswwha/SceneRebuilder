@@ -14,13 +14,23 @@ using System;
 
         public List<T> Jobs=new List<T>();
 
+        
+
         public int Length{
             get{
                 return Jobs.Count;
             }
         }
 
-        public JobList(string name,int size)
+    public int Count
+    {
+        get
+        {
+            return Jobs.Count;
+        }
+    }
+
+    public JobList(string name,int size)
         {
             HandleList=new JobHandleList(name,size);
         }
@@ -107,14 +117,16 @@ using System;
     public static ProgressArg progressArg;
 
     public void CompleteAllPage()
+    {
+        int count = pages.Count;
+        if (count == 1)
         {
-            int count=pages.Count;
-            if(count==1){
-                CompleteAll();
-                return;
-            }
-            for(int i=0;i<count;i++)
-            {
+            CompleteAll();
+            return;
+        }
+        for (int i = 0; i < count; i++)
+        {
+            //Debug.LogError($"CompleteAllPage {i}/{count}");
             ProgressArg subProgress = new ProgressArg("CompleteAllPage", i, count, name);
             if (progressArg != null)
             {
@@ -136,11 +148,11 @@ using System;
             //    {
             //        break;
             //    }
-            var page=pages[i];
-                JobHandle.CompleteAll(page);
-            }
-            ProgressBarHelper.ClearProgressBar();
+            var page = pages[i];
+            JobHandle.CompleteAll(page);
         }
+        //ProgressBarHelper.ClearProgressBar();
+    }
 
     public void Dispos()
     {

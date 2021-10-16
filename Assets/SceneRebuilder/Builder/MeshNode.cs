@@ -188,7 +188,7 @@ public class MeshNode : MonoBehaviour,IComparable<MeshNode>
         VertexCount += mn.GetVertexCount();
         if (level == 0)
         {
-            Debug.Log($"AddSubMeshInfo {mn}|{VertexCount}|{mn.GetVertexCount()}");
+            //Debug.Log($"AddSubMeshInfo {mn}|{VertexCount}|{mn.GetVertexCount()}");
         }
     }
 
