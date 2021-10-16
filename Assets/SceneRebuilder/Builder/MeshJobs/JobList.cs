@@ -127,7 +127,7 @@ using System;
         for (int i = 0; i < count; i++)
         {
             //Debug.LogError($"CompleteAllPage {i}/{count}");
-            ProgressArg subProgress = new ProgressArg("CompleteAllPage", i, count, name);
+            ProgressArg subProgress = new ProgressArg("DoJobs...", i, count, name);
             if (progressArg != null)
             {
                 progressArg.AddSubProgress(subProgress);

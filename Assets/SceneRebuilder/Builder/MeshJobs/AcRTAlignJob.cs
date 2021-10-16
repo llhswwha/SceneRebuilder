@@ -372,7 +372,7 @@ namespace MeshJobs
 
 
 
-        public static void SetStatisticsInfo(int id,double t,bool isFoundZero, AlignMode foundType,float dis)
+        public static void SetStatisticsInfo(int id,double t,bool isFoundZero, AlignMode foundType,float dis,string info="")
         {
             jobCount++;
             loopJobCount++;
@@ -381,7 +381,9 @@ namespace MeshJobs
             //progressArg.AddSubProgress(subProgress);
             ////ProgressBarHelper.DisplayCancelableProgressBar(progressArg);
 
-            Debug.Log($"SetStatisticsInfo[{id}][{jobCount}][{loopJobCount}/{AlignJobCount}][{(DateTime.Now - loopStartTime).TotalMilliseconds:F1}] isFoundZero:{isFoundZero} foundType:{foundType} t:{t:F1}ms dis:{dis}");
+            
+            //Debug.Log($"SetStatisticsInfo[{id}][{jobCount}][{loopJobCount}/{AlignJobCount}][{(DateTime.Now - loopStartTime).TotalMilliseconds:F1}] isFoundZero:{isFoundZero} foundType:{foundType} t:{t:F1}ms dis:{dis} info:{info}");
+            
             //double t = (DateTime.Now - start).TotalMilliseconds;
             if (isFoundZero)
             {
@@ -702,7 +704,11 @@ namespace MeshJobs
                     }
                     else
                     {
-                        SetStatisticsInfo(Id,(DateTime.Now - start).TotalMilliseconds, isFoundZero, AlignMode.RT, minDis);
+                        //RT里面所有的点的GetLongShortAngle相差比较大
+                        //string info = $"([From Id:{vsFromId} tps:{tpsFrom.Length} go:{MeshPoints.dictId2Go[vsFromId]} angle:{tpsFrom[0].GetLongShortAngle()}] [To Id:{vsToId} tps:{tpsTo.Length} go:{MeshPoints.dictId2Go[vsToId]} angle:{tpsTo[0].GetLongShortAngle()}] MaxAngle:{MaxAngle})";
+                        string info = "";
+                        SetStatisticsInfo(Id,(DateTime.Now - start).TotalMilliseconds, isFoundZero, AlignMode.RT, minDis
+                            , info);
                     }
                     
                     AcRTAlignJobResult.SetResult(Id, minRT);

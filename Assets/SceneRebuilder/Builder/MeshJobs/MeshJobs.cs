@@ -39,6 +39,8 @@ namespace MeshJobs
 
         public Mesh sharedMesh;
 
+        public static Dictionary<int, string> dictId2Go = new Dictionary<int, string>();
+
         public MeshPoints(GameObject root)
         {
             if (root == null)
@@ -66,6 +68,10 @@ namespace MeshJobs
                 InstanceId = root.GetInstanceID();
                 size = MeshHelper.GetMinMax(vertices)[2];
             }
+
+            if(!dictId2Go.ContainsKey(InstanceId))
+                dictId2Go.Add(InstanceId, root.name);
+
             vertexCount = vertices.Length;
         }
 

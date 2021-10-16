@@ -575,7 +575,7 @@ public class AcRTAlignJobContainer
         lastProgressCount = progressCount;
         //float progress1 = (float)progressCount / targetCount;
 
-        ProgressArg progressArg = new ProgressArg($"AcRTAlignJobContainer loop:[{loopCount}]", progressCount, targetCount);
+        ProgressArg progressArg = new ProgressArg($"AcRTAlignJob loop:[{loopCount}]", progressCount, targetCount);
         //AcRTAlignJob.progressArg = progressArg;
         JobHandleList.progressArg = progressArg;
 
