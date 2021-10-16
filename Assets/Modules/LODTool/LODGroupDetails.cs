@@ -5,8 +5,34 @@ using System.Collections.Generic;
 using UnityEngine;
 
 [Serializable]
-public class LODGroupDetails
+public class LODGroupDetails:IComparable<LODGroupDetails>
 {
+    private LODGroupInfo groupInfo;
+
+    public string GetCaption()
+    {
+        if (groupInfo == null)
+        {
+            groupInfo = group.GetComponent<LODGroupInfo>();
+
+        }
+        if (this.group.transform.parent != null)
+        {
+            return $"{this.group.transform.parent.name}->{this.group.name} [{MeshHelper.GetVertexCountS(childs[0].vertexCount)}][{groupInfo.IsSceneCreatable()}]";
+        }
+        else
+        {
+            return $"{this.group.name} [{MeshHelper.GetVertexCountS(childs[0].vertexCount)}][{groupInfo.IsSceneCreatable()}]";
+        }
+        
+    }
+    public int CompareTo(LODGroupDetails other)
+    {
+        //return other.group.gameObject.name.CompareTo(this.group.gameObject.name);
+        //return this.group.gameObject.name.CompareTo(other.group.gameObject.name);
+        return other.childs[0].vertexCount.CompareTo(this.childs[0].vertexCount);
+    }
+
     public LODGroupData group;
     public List<LODChildInfo> childs;
 
@@ -142,6 +168,9 @@ public class LODGroupDetails
             LODGroupDetails detail = new LODGroupDetails(item);
             lodInfos.Add(detail);
         }
+
+        lodInfos.Sort();
+
         return lodInfos;
     }
     public static int[] CaculateGroupInfo(List<LODGroupDetails> lodInfos, LODSceneView viewType, LODSortType sortType, Camera cam)
@@ -198,6 +227,8 @@ public class LODGroupDetails
         //Debug.Log($"CaculateGroupInfo完成，耗时{(DateTime.Now-now).TotalSeconds.ToString("f1")}s allVertexCount:{allVertexCount/10000f:F1}, allMeshCount:{allMeshCount}");
         return new int[2]{allVertexCount,allMeshCount};
     }
+
+
 }
 
 public class CameraData
