@@ -1101,11 +1101,15 @@ public class BaseFoldoutEditor<T> : BaseEditor<T> where T : class
             var lods = lodManager.lodDetails;
             if (arg.listFilterId == 1)
             {
-                lods = lods.Where(i => i.group.gameObject.activeInHierarchy).ToList();
+                lods = lods.Where(i => i.group != null && i.group.gameObject.activeInHierarchy).ToList();
             }
             else if (arg.listFilterId == 2)
             {
-                lods = lods.Where(i => i.group.gameObject.activeInHierarchy == false).ToList();
+                lods = lods.Where(i => i.group != null && i.group.gameObject.activeInHierarchy == false).ToList();
+            }
+            else if (arg.listFilterId == 3)
+            {
+                lods = lods.Where(i => i.group!=null && i.group.gameObject.name.Contains("_Door")==false).ToList();
             }
 
             if (Application.isPlaying)
@@ -1164,7 +1168,7 @@ public class BaseFoldoutEditor<T> : BaseEditor<T> where T : class
         },
         () =>
         {
-            lodGroupListArg.DrawFilterList(100, 0, "All", "Active", "InActive");
+            lodGroupListArg.DrawFilterList(100, 0, "All", "Active", "InActive","NotDoor");
         });
         if (lodGroupListArg.isEnabled && lodGroupListArg.isExpanded)
         {
@@ -1174,7 +1178,7 @@ public class BaseFoldoutEditor<T> : BaseEditor<T> where T : class
             {
                 var arg = FoldoutEditorArgBuffer.editorArgs[lodDetail];
                 if (lodDetail.group == null) return;
-                arg.caption = $"[{i:00}] {lodDetail.group.name}";
+                arg.caption = $"[{i:00}] {lodDetail.GetCaption()}";
                 arg.level = 1;
                 //arg.info = door.ToString();
                 EditorUIUtils.ObjectFoldout(arg, lodDetail.group.gameObject, () =>

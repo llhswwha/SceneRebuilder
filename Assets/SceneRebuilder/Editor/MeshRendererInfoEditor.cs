@@ -1,3 +1,4 @@
+using System;
 using System.Collections;
 using System.Collections.Generic;
 using UnityEditor;
@@ -40,6 +41,22 @@ public class MeshRendererInfoEditor : BaseFoldoutEditor<MeshRendererInfo>
         EditorGUILayout.EndHorizontal();
 
         EditorGUILayout.BeginHorizontal();
+        if (GUILayout.Button("Init"))
+        {
+            DateTime start = DateTime.Now;
+            item.Init();
+            Debug.Log($"Init {(DateTime.Now - start).TotalMilliseconds}ms");
+        }
+        if (GUILayout.Button("GetMinMax"))
+        {
+            DateTime start = DateTime.Now;
+            Vector3[] minMax = MeshRendererInfo.GetMinMax(item.gameObject);
+            foreach(var v in minMax)
+            {
+                Debug.Log($"v:{v}");
+            }
+            Debug.Log($"GetMinMax {(DateTime.Now - start).TotalMilliseconds}ms");
+        }
         if (GUILayout.Button("ShowBounds"))
         {
             item.ShowBounds();
