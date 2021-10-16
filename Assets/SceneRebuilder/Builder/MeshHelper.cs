@@ -2702,7 +2702,7 @@ public class TransfromAlignSetting
     public bool SetPosition = true;
     public bool SetScale = true;
     public bool SetRotation = true;
-    public TransfromAlignMode Align;
+    public TransfromAlignMode Align = TransfromAlignMode.Max;
     public bool SetPosX = true;
     public bool SetPosY = true;
     public bool SetPosZ = true;

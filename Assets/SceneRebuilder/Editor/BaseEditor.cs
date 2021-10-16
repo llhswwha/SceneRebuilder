@@ -16,10 +16,10 @@ public class BaseEditor<T> : Editor where T:class
 
     public void NewButton(string text, int width, bool isEnable, Action clickEvent)
     {
-        NewButton(text, width, isEnable, contentStyle, clickEvent);
+        NewEnabledButton(text, width, isEnable, contentStyle, clickEvent);
     }
 
-    public static bool NewButton(string text,int width,bool isEnable, GUIStyle style, Action clickEvent)
+    public static bool NewEnabledButton(string text,int width,bool isEnable, GUIStyle style, Action clickEvent)
     {
         EditorGUI.BeginDisabledGroup(!isEnable || clickEvent == null);
         bool isClick = GUILayout.Button(text, style, GUILayout.Width(width));
@@ -112,6 +112,15 @@ public static class BaseEditorHelper
     public static TO ObjectField<TO>(string label, TO obj, params GUILayoutOption[] options) where TO : UnityEngine.Object
     {
         if (GUILayout.Button(label))
+        {
+            EditorHelper.SelectObject(obj);
+        }
+        return EditorGUILayout.ObjectField(obj, typeof(TO), true, options) as TO;
+    }
+
+    public static TO ObjectField<TO>(string label, float width,TO obj, params GUILayoutOption[] options) where TO : UnityEngine.Object
+    {
+        if (GUILayout.Button(label,GUILayout.Width(width)))
         {
             EditorHelper.SelectObject(obj);
         }

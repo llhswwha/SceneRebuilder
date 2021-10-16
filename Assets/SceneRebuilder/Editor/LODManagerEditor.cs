@@ -8,9 +8,9 @@ using UnityEngine;
 [CustomEditor(typeof(LODManager))]
 public class LODManagerEditor : BaseFoldoutEditor<LODManager>
 {
-    static FoldoutEditorArg<LODTwoRenderers> twoListArg = new FoldoutEditorArg<LODTwoRenderers>();
+    static FoldoutEditorArg<LODTwoRenderers> twoListArg = new FoldoutEditorArg<LODTwoRenderers>(true,false);
 
-    static FoldoutEditorArg<LODGroupDetails> lodGroupListArg = new FoldoutEditorArg<LODGroupDetails>();
+    static FoldoutEditorArg<LODGroupDetails> lodGroupListArg = new FoldoutEditorArg<LODGroupDetails>(true, false);
 
     private static string searchKey = "";
 
@@ -28,49 +28,16 @@ public class LODManagerEditor : BaseFoldoutEditor<LODManager>
         //{
         //    item.CheckLODPositions();
         //}
-        EditorGUILayout.BeginHorizontal();
-
-        GUILayout.Label("Levels:");
-        Vector2 l1 = EditorGUILayout.Vector2Field("Levels1", lodManager.GetLevels1());
-        lodManager.SetLevels1(l1);
-        Vector3 l2 = EditorGUILayout.Vector3Field("Levels2", lodManager.GetLevels2());
-        lodManager.SetLevels2(l2);
-        Vector4 l3 = EditorGUILayout.Vector4Field("Levels3", lodManager.GetLevels3());
-        lodManager.SetLevels3(l3);
-
-        EditorGUILayout.EndHorizontal();
 
         EditorGUILayout.BeginHorizontal();
-        if (GUILayout.Button("SetRenderersLODInfo"))
-        {
-            lodManager.SetRenderersLODInfo();
-        }
-
-        if (GUILayout.Button("ChangeLODsRelativeHeight"))
-        {
-            lodManager.ChangeLODsRelativeHeight();
-        }
-
-        if (GUILayout.Button("UniformLOD0"))
-        {
-            lodManager.UniformLOD0();
-        }
-        if (GUILayout.Button("ClearScenes"))
-        {
-            lodManager.ClearScenes();
-        }
-
-        EditorGUILayout.EndHorizontal();
-
-        EditorUIUtils.Separator(5);
-
-        EditorGUILayout.BeginHorizontal();
-        lodManager.LocalTarget = BaseEditorHelper.ObjectField(lodManager.LocalTarget, GUILayout.Width(100));
-        lodManager.lodCamera = BaseEditorHelper.ObjectField(lodManager.lodCamera, GUILayout.Width(100));
+        lodManager.LocalTarget = BaseEditorHelper.ObjectField("LODRoot:", 100,lodManager.LocalTarget);
+        lodManager.lodCamera = BaseEditorHelper.ObjectField("Camera:",100,lodManager.lodCamera);
         if (GUILayout.Button("Update LODs"))
         {
-            string detail = lodManager.GetRuntimeLODDetail(true);
-            Debug.Log($"lod detail:{detail}");
+            lodManager.UpdateLODs();
+       
+            lodGroupListArg.isEnabled = true;
+            lodGroupListArg.isExpanded = true;
         }
         //if (GUILayout.Button("Delete LODs",GUILayout.Width(100)))
         //{
@@ -97,42 +64,121 @@ public class LODManagerEditor : BaseFoldoutEditor<LODManager>
         DrawLODGroupList(lodGroupListArg, lodManager);
 
         EditorGUILayout.BeginHorizontal();
-        lodManager.includeInactive = GUILayout.Toggle(lodManager.includeInactive, "includeInactive", GUILayout.Width(100));
+        lodManager.includeInactive = GUILayout.Toggle(lodManager.includeInactive, "Inactive", GUILayout.Width(100));
+        if (GUILayout.Button("SetRenderersInfo"))
+        {
+            lodManager.SetRenderersLODInfo();
+            lodManager.UpdateLODs();
+        }
+
+        if (GUILayout.Button("UniformLOD0"))
+        {
+            lodManager.UniformLOD0();
+            lodManager.UpdateLODs();
+        }
         if (GUILayout.Button("InitGroupInfos"))
         {
-            lodManager.InitGroupInfos();
+            lodManager.InitGroupInfos(true);
+            lodManager.UpdateLODs();
         }
         if (GUILayout.Button("SetMats"))
         {
             lodManager.SetMats();
+            lodManager.UpdateLODs();
         }
 
-        if (GUILayout.Button("CheckScene"))
-        {
-            lodManager.CheckLOD0Scenes();
-        }
         EditorGUILayout.EndHorizontal();
 
+        EditorGUILayout.BeginHorizontal();
         if (GUILayout.Button("SaveLOD0s"))
         {
             lodManager.SaveLOD0s();
         }
+        if (GUILayout.Button("CheckScene"))
+        {
+            lodManager.CheckLOD0Scenes();
+        }
+        if (GUILayout.Button("ClearScenes"))
+        {
+            lodManager.ClearScenes();
+        }
+        EditorGUILayout.EndHorizontal();
 
         EditorUIUtils.Separator(5);
 
         EditorGUILayout.BeginHorizontal();
-        GUILayout.Label("ZeroDistance:");
+
+        GUILayout.Label("Levels:");
+        Vector2 l1 = EditorGUILayout.Vector2Field("Levels1", lodManager.GetLevels1());
+        lodManager.SetLevels1(l1);
+        Vector3 l2 = EditorGUILayout.Vector3Field("Levels2", lodManager.GetLevels2());
+        lodManager.SetLevels2(l2);
+        Vector4 l3 = EditorGUILayout.Vector4Field("Levels3", lodManager.GetLevels3());
+        lodManager.SetLevels3(l3);
+        if (GUILayout.Button("ChangeRelativeHeight"))
+        {
+            lodManager.ChangeLODsRelativeHeight();
+            lodManager.UpdateLODs();
+        }
+
+        EditorGUILayout.EndHorizontal();
+
+        EditorUIUtils.Separator(5);
+
+        EditorGUILayout.BeginHorizontal();
+        GUILayout.Label("ZeroDistance:",GUILayout.Width(100));
         lodManager.zeroDistance = EditorGUILayout.FloatField(lodManager.zeroDistance);
+        GUILayout.Label("CompareMode:", GUILayout.Width(100));
         lodManager.compareMode = (LODCompareMode)EditorGUILayout.EnumPopup(lodManager.compareMode);
         lodManager.DoCreateGroup = GUILayout.Toggle(lodManager.DoCreateGroup, "CreateGroup");
         EditorGUILayout.EndHorizontal();
 
         EditorGUILayout.BeginHorizontal();
 
-        GUILayout.Label("Group:");
-        lodManager.GroupRoot = EditorGUILayout.ObjectField(lodManager.GroupRoot, typeof(GameObject)) as GameObject;
-        GUILayout.Label("LOD:");
-        lodManager.LODnRoot = EditorGUILayout.ObjectField(lodManager.LODnRoot, typeof(GameObject)) as GameObject;
+        //GUILayout.Label("Root:");
+        //lodManager.GroupRoot = BaseEditorHelper.ObjectField(lodManager.GroupRoot);
+
+        GameObject go1= BaseEditorHelper.ObjectField("Root:",55, lodManager.GroupRoot);
+        if(go1!= lodManager.GroupRoot)
+        {
+            lodManager.GroupRoot = go1;
+            lodManager.twoList.Clear();
+        }
+
+        //GUILayout.Label("NewLOD:");
+        //lodManager.LODnRoot = BaseEditorHelper.ObjectField(lodManager.LODnRoot);
+
+        GameObject go2 = BaseEditorHelper.ObjectField("NewLOD:", 70, lodManager.LODnRoot);
+        if (go2 != lodManager.LODnRoot)
+        {
+            lodManager.LODnRoot = go2;
+            lodManager.twoList.Clear();
+        }
+
+        if (GUILayout.Button("Compare",GUILayout.Width(80)))
+        {
+            lodManager.CompareTwoRoot();
+            twoListArg.isEnabled = true;
+            twoListArg.isExpanded = true;
+        }
+
+        if (GUILayout.Button("TestCompare", GUILayout.Width(80)))
+        {
+            lodManager.TestCompareTwoRoot();
+            twoListArg.isEnabled = true;
+            twoListArg.isExpanded = true;
+        }
+
+        GUIStyle btnStyle = new GUIStyle(EditorStyles.miniButton);
+        int lodN = lodManager.GetNewLODn();
+        NewEnabledButton("AddLOD_"+ lodN, 80, lodManager.twoList.Count>0, btnStyle, ()=> {
+            lodManager.AppendLodNToGroup(lodN);
+        });
+
+        //if (GUILayout.Button("AddLOD"))
+        //{
+        //    lodManager.AppendLodNToGroup();
+        //}
 
         EditorGUILayout.EndHorizontal();
 
@@ -162,26 +208,24 @@ public class LODManagerEditor : BaseFoldoutEditor<LODManager>
         EditorGUILayout.EndHorizontal();
 
         EditorGUILayout.BeginHorizontal();
-        if (GUILayout.Button("Compare"))
+
+        if (GUILayout.Button("AddLod1"))
         {
-            lodManager.CompareTwoRoot();
+            lodManager.AppendLod1ToGroup();
+        }
+        if (GUILayout.Button("AddLod2"))
+        {
+            lodManager.AppendLod2ToGroup();
+        }
+        if (GUILayout.Button("AddLod3"))
+        {
+            lodManager.AppendLod3ToGroup();
         }
         if (GUILayout.Button("CheckLOD0"))
         {
             lodManager.CheckLOD0();
         }
-        if (GUILayout.Button("AppendLod1"))
-        {
-            lodManager.AppendLod1ToGroup();
-        }
-        if (GUILayout.Button("AppendLod2"))
-        {
-            lodManager.AppendLod2ToGroup();
-        }
-        if (GUILayout.Button("AppendLod3"))
-        {
-            lodManager.AppendLod3ToGroup();
-        }
+
 
         EditorGUILayout.EndHorizontal();
 

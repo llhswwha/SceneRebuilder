@@ -4,7 +4,7 @@ using UnityEngine;
 
 public class MeshAlignmentManager : SingletonBehaviour<MeshAlignmentManager>
 {
-    public TransfromAlignSetting transfromReplaceSetting;
+    public TransfromAlignSetting transfromReplaceSetting = new TransfromAlignSetting();
 
     public GameObject Source;
 
@@ -25,10 +25,12 @@ public class MeshAlignmentManager : SingletonBehaviour<MeshAlignmentManager>
     [ContextMenu("Init")]
     public void Init()
     {
-        tdSource = new TransformData(Source);
-        tdTarget = new TransformData(Target);
-
-        tdSourceRoot = new TransformData(SourceRoot);
+        if(Source!=null)
+            tdSource = new TransformData(Source);
+        if(Target!=null)
+            tdTarget = new TransformData(Target);
+        if(SourceRoot!=null)
+            tdSourceRoot = new TransformData(SourceRoot);
         //tdTargetRoot = new TransformData(TargetRoot);
     }
 

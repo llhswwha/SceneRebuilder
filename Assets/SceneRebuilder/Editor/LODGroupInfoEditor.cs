@@ -96,7 +96,7 @@ public class LODGroupInfoEditor : BaseFoldoutEditor<LODGroupInfo>
             //{
             //    item.UnloadScene();
             //}
-            NewButton("CreateScene", buttonWidth, item.IsSceneCreatable(), contentStyle, ()=>
+            NewEnabledButton("CreateScene", buttonWidth, item.IsSceneCreatable(), contentStyle, ()=>
             {
                 item.EditorCreateScene();
                 EditorHelper.ClearOtherScenes();
@@ -106,8 +106,8 @@ public class LODGroupInfoEditor : BaseFoldoutEditor<LODGroupInfo>
             {
                 return;
             }
-            NewButton("LoadScene", buttonWidth, item.IsSceneCreatable() == false, contentStyle, item.EditorLoadScene);
-            NewButton("UnloadScene", buttonWidth, item.IsSceneCreatable(), contentStyle, item.UnloadScene);
+            NewEnabledButton("LoadScene", buttonWidth, item.IsSceneCreatable() == false, contentStyle, item.EditorLoadScene);
+            NewEnabledButton("UnloadScene", buttonWidth, item.IsSceneCreatable(), contentStyle, item.UnloadScene);
         }
  
         if (GUILayout.Button("SelectScene"))

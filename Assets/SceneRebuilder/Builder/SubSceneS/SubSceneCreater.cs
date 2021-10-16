@@ -380,7 +380,7 @@ public class ProgressArg
     {
         if (subP == null)
         {
-            return $"T1{title}";
+            return $"[T1][{title}]";
         }
         else
         {
@@ -391,19 +391,19 @@ public class ProgressArg
 
             if (subP.subP == null)
             {
-                return $"T2[{title}]>[{subP.title}]";
+                return $"[T2][{title}]>[{subP.title}]";
             }
             else
             {
                 
                 if (subP.subP.subP == null)
                 {
-                    return $"T3[{title}]>[{subP.title}]>[{subP.subP.title}]";
+                    return $"[T3][{title}]>[{subP.title}]>[{subP.subP.title}]";
                 }
                 else
                 {
                     
-                    return $"T3[{title}]>[{subP.title}]>[{subP.subP.title}]>[{subP.subP.subP.title}]";
+                    return $"[T3][{title}]>[{subP.title}]>[{subP.subP.title}]>[{subP.subP.subP.title}]";
                 }
             }
         }

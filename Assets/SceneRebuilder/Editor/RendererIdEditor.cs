@@ -60,10 +60,16 @@ public class RendererIdEditor : BaseEditor<RendererId>
         {
             item.ShowRenderers();
         }
-        if (GUILayout.Button("NullParent"))
+        if (GUILayout.Button("RootParent"))
         {
             EditorHelper.UnpackPrefab(item.gameObject);
             item.gameObject.transform.SetParent(null);
+        }
+        if (GUILayout.Button("UpParent"))
+        {
+            EditorHelper.UnpackPrefab(item.gameObject);
+            if(item.gameObject.transform.parent!=null)
+                item.gameObject.transform.SetParent(item.gameObject.transform.parent.parent);
         }
         EditorGUILayout.EndHorizontal();
 
@@ -215,6 +221,16 @@ public class RendererIdEditor : BaseEditor<RendererId>
         EditorGUILayout.EndHorizontal();
 
         EditorGUILayout.BeginHorizontal();
+        if (GUILayout.Button("MoveLODs"))
+        {
+            //LODHelper.SetChildrenLODName(item.gameObject);
+            Transform lodRoot = LODHelper.GetFloorLODsRoot(item.transform);
+            item.transform.SetParent(lodRoot);
+        }
+        if (GUILayout.Button("SetLODName"))
+        {
+            LODHelper.SetChildrenLODName(item.gameObject);
+        }
         if (GUILayout.Button("SetLOD"))
         {
             LODHelper.CreateLODs(item.gameObject);
@@ -288,6 +304,8 @@ public class RendererIdEditor : BaseEditor<RendererId>
 
             goDwf.transform.rotation = Quaternion.Euler(-90, 0, -90);
             MeshAlignmentManager.Instance.DoAlign(goDwf, item.gameObject);
+
+            MeshHelper.CenterPivot(item.gameObject);
         }
         if (GUILayout.Button("FindGeometry"))
         {

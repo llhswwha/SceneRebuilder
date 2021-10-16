@@ -715,6 +715,7 @@ public class MeshRendererInfoList:List<MeshRendererInfo>
     {
         foreach (var renderer in renderers)
         {
+            if (renderer == null) continue;
             var info = MeshRendererInfo.GetInfo(renderer.gameObject);
             this.Add(info);
         }

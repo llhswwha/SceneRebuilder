@@ -125,7 +125,7 @@ public class LODManager : SingletonBehaviour<LODManager>
         CreateGroup(twoRenderers, lodLevel);
     }
 
-    private void CreateGroup(LODTwoRenderers twoRenderers, int lodLevel)
+    private LODGroup CreateGroup(LODTwoRenderers twoRenderers, int lodLevel)
     {
         var render_lod0 = twoRenderers.renderer_lod0;
         var render_lod1 = twoRenderers.renderer_lod1;
@@ -145,7 +145,8 @@ public class LODManager : SingletonBehaviour<LODManager>
         {
 
             render_lod1.transform.SetParent(render_lod0.transform);
-            render_lod1.name += "_LOD" + lodLevel;
+            string nName = LODHelper.GetOriginalName(render_lod1.name);
+            render_lod1.name = nName+"_LOD" + lodLevel;
 
             LODGroup group = null;
             if (lodLevel == 1)
@@ -154,6 +155,7 @@ public class LODManager : SingletonBehaviour<LODManager>
             }
             else if (lodLevel == 2)
             {
+                //group = render_lod0.GetComponentInParent<LODGroup>();
                 group = AddLOD2(render_lod0, render_lod1);
             }
             else if (lodLevel == 3)
@@ -161,11 +163,20 @@ public class LODManager : SingletonBehaviour<LODManager>
                 group = AddLOD3(render_lod0, render_lod1);
             }
             LODGroupInfo.Init(group.gameObject);
+            var groupNew=LODHelper.UniformLOD0(group);
+            LODHelper.SetRenderersLODInfo(groupNew, null);
+
+            LODGroupInfo groupInfo = groupNew.GetComponent<LODGroupInfo>();
+            groupInfo.SetMaterial();
+
+            LODHelper.MoveToFloorLODsRoot(groupNew.transform);
+            return group;
         }
     }
 #if UNITY_EDITOR
     private void AppendLodInner(int lodLevel)
     {
+        Debug.Log($"LODManager.AppendLodInner lodLevel:{lodLevel}");
         foreach (var item in twoList)
         {
             var minDis = item.dis;
@@ -180,7 +191,7 @@ public class LODManager : SingletonBehaviour<LODManager>
                 if (DoCreateGroup)
                 {
                     Debug.Log($"GetDistance1 \tLOD3:{render_lod1.name}({vertexCount1}) \tLOD0:{render_lod0.name}({vertexCount0}) \tDistance:{minDis} \t{(float)vertexCount1 / vertexCount0:P2}");
-                    CreateGroup(item, lodLevel);
+                    LODGroup group=CreateGroup(item, lodLevel);
                 }
             }
             else
@@ -234,7 +245,8 @@ public class LODManager : SingletonBehaviour<LODManager>
         EditorHelper.UnpackPrefab(GroupRoot, PrefabUnpackMode.OutermostRoot);
         EditorHelper.UnpackPrefab(LODnRoot, PrefabUnpackMode.OutermostRoot);
         DateTime start = DateTime.Now;
-        var renderers_2 = MeshRendererInfo.InitRenderers(LODnRoot);//  LODnRoot.GetComponentsInChildren<MeshRenderer>(true);
+        //var renderers_2 = MeshRendererInfo.InitRenderers(LODnRoot);//  LODnRoot.GetComponentsInChildren<MeshRenderer>(true);
+        var renderers_2 = MeshRendererInfo.GetLodNs(LODnRoot, -1, 0); //  LODnRoot.GetComponentsInChildren<MeshRenderer>(true);
         var renderers_0 = MeshRendererInfo.GetLodNs(GroupRoot, -1, 0);
 
         LODRendererCount0 = renderers_0.Count;
@@ -274,6 +286,125 @@ public class LODManager : SingletonBehaviour<LODManager>
         SetRenderersLODInfo();
 
         Debug.LogError($"AppendLod3ToGroup count1:{renderers_2.Length} count0:{renderers_0.Count} time:{(DateTime.Now - start)}");
+    }
+
+    public void TestCompareTwoRoot()
+    {
+        twoList.Clear();
+        EditorHelper.UnpackPrefab(GroupRoot, PrefabUnpackMode.OutermostRoot);
+        EditorHelper.UnpackPrefab(LODnRoot, PrefabUnpackMode.OutermostRoot);
+        DateTime start = DateTime.Now;
+        //var renderers_2 = MeshRendererInfo.InitRenderers(LODnRoot);//  LODnRoot.GetComponentsInChildren<MeshRenderer>(true);
+        var renderers_2 = MeshRendererInfo.GetLodNs(LODnRoot, -1, 0);
+        var renderers_0 = MeshRendererInfo.GetLodNs(GroupRoot, -1, 0);
+
+        LODRendererCount0 = renderers_0.Count;
+        LODRendererCount1 = renderers_2.Length;
+
+        list_lod0 = new List<MeshRendererInfo>();
+        list_lod0.AddRange(renderers_0);
+        //renderers_0.ToList().ForEach(i => { ts.Add(i.transform); });
+
+        List<MeshRendererInfo> ts = list_lod0;
+        List<MeshRendererInfo> ts0 = ts;
+        var mode = compareMode;
+
+        for (int i = 0; i < renderers_2.Length && i<10; i++)
+        {
+            MeshRendererInfo render_lod1 = renderers_2[i];
+
+            float progress = (float)i / renderers_2.Length;
+            ProgressBarHelper.DisplayCancelableProgressBar("CombineLOD0AndLOD1", $"{i}/{renderers_2.Length} {progress:P1} MeshRenderer:{render_lod1.name}", progress);
+
+            Transform t = render_lod1.transform;
+
+            //=============
+            var ts2 = ts.FindAll(i => i.name == t.name);
+            Debug.Log($"t:{t.name},ts:{ts.Count} ts2:{ts2.Count}");
+
+            if (ts2.Count > 0)
+            {
+                ts = ts2;
+            }
+
+            var min = GetMinDisTransformInner(ts, t, mode);
+
+            Debug.Log($"min1:{min}");
+
+            if (min.dis > 0.01f && mode != LODCompareMode.Name)
+            {
+                min = GetMinDisTransformInner(ts0, t, mode);
+                Debug.Log($"min2:{min}");
+            }
+            //=============
+
+            //var min = GetMinDisTransform<MeshRendererInfo>(list_lod0, render_lod1.transform, compareMode);
+            float minDis = min.dis;
+            MeshRendererInfo render_lod0 = min.target;
+
+            //MeshFilter filter1 = render_lod1.GetComponent<MeshFilter>();
+            //MeshFilter filter0 = render_lod0.GetComponent<MeshFilter>();
+            int vertexCount0 = render_lod0.GetMinLODVertexCount();
+            int vertexCount1 = render_lod1.GetMinLODVertexCount();
+            LODTwoRenderers lODTwoRenderers = new LODTwoRenderers(render_lod0, render_lod1, minDis, min.meshDis, vertexCount0, vertexCount1);
+            twoList.Add(lODTwoRenderers);
+            //break;
+        }
+        ProgressBarHelper.ClearProgressBar();
+
+        twoList.Sort((a, b) =>
+        {
+            return b.dis.CompareTo(a.dis);
+        });
+
+        RemoveEmpty(LODnRoot.transform);
+        RemoveEmpty(LODnRoot.transform);
+
+        //SetRenderersLODInfo();
+
+        Debug.LogError($"AppendLod3ToGroup count1:{renderers_2.Length} count0:{renderers_0.Count} time:{(DateTime.Now - start)}");
+    }
+
+    public int GetNewLODn()
+    {
+        if (LODnRoot == null)
+        {
+            Debug.LogError($"GetNewLODn LODnRoot == null");
+            return 0;
+        }
+        string name = LODnRoot.name;
+        string[] parts = name.Split('_');
+        if (parts.Length == 2)
+        {
+            try
+            {
+                string lodN = parts[1].Replace("LOD", "");
+                int lod = int.Parse(lodN);
+                return lod;
+            }
+            catch (Exception ex)
+            {
+                Debug.LogError($"GetNewLODn LODnRoot:{LODnRoot.name} Exception:{ex}");
+                return 0;
+            }
+        }
+        else
+        {
+            Debug.LogError($"GetNewLODn LODnRoot:{LODnRoot.name} parts.Length != 2 ");
+            return 0;
+        }
+    }
+
+    [ContextMenu("AppendLodNToGroup")]
+    public void AppendLodNToGroup()
+    {
+        int n = GetNewLODn();
+        AppendLodInner(n);
+    }
+
+    public void AppendLodNToGroup(int n)
+    {
+        AppendLodInner(n);
     }
 
     [ContextMenu("AppendLod1ToGroup")]
@@ -758,28 +889,24 @@ public class LODManager : SingletonBehaviour<LODManager>
 
     public LODGroup AddLOD2(MeshRendererInfo lod0, MeshRendererInfo lod2)
     {
-        lod2.transform.SetParent(lod0.transform);
-        LODGroup group = lod0.GetComponent<LODGroup>();
+        LODGroup group = null;
+        if (lod0.IsRendererType(MeshRendererType.LOD))
+        {
+            group = lod0.GetComponentInParent<LODGroup>();
+        }
+        if (group == null)
+        {
+            group = lod0.GetComponent<LODGroup>();
+        }
         if (group != null)
         {
-            //LOD[] lods = group.GetLODs();
-            //LOD[] lodsNew = LODHelper.CreateLODs(LODLevels_2);
-            //for (int i = 0; i < lods.Length && i < lodsNew.Length; i++)
-            //{
-            //    lodsNew[i].renderers = lods[i].renderers;
-            //}
-            //List<Renderer> renderers = new List<Renderer>();
-            //if(lodsNew[lodsNew.Length - 1].renderers!=null)
-            //    renderers.AddRange(lodsNew[lodsNew.Length - 1].renderers);
-            //renderers.AddRange(lod2.GetRenderers());
-            //lodsNew[lodsNew.Length - 1].renderers = renderers.ToArray();
-            //group.SetLODs(lodsNew);
-
+            lod2.transform.SetParent(group.transform);
             AddLOD2(group, lod2.GetRenderers(), LODLevels_2);
         }
         else
         {
             group = lod0.gameObject.AddComponent<LODGroup>();
+            lod2.transform.SetParent(group.transform);
             LOD[] lods = GetLODs3(lod0.GetRenderers(), lod0.GetRenderers(), lod2.GetRenderers());
             group.SetLODs(lods);
         }
@@ -955,7 +1082,7 @@ public class LODManager : SingletonBehaviour<LODManager>
     public void ClearScenes()
     {
         DateTime start = DateTime.Now;
-        var lodGroups = InitGroupInfos();
+        var lodGroups = InitGroupInfos(false);
         foreach (var group in lodGroups)
         {
             group.ClearOtherScenes();
@@ -967,7 +1094,7 @@ public class LODManager : SingletonBehaviour<LODManager>
 
     public void ChangeLODsRelativeHeight()
     {
-        var lodGroups = LODHelper.GetLODGroups(LocalTarget, includeInactive);
+        var lodGroups = LODHelper.GetLODGroups(LocalTarget, false);
         for (int i = 0; i < lodGroups.Length; i++)
         {
             LODGroup group = lodGroups[i];
@@ -1132,12 +1259,12 @@ public class LODManager : SingletonBehaviour<LODManager>
         List<MeshRendererInfo> meshRendererInfos = new List<MeshRendererInfo>();
         DateTime start = DateTime.Now;
         var lodGroups = GameObject.FindObjectsOfType<LODGroup>(true);
-        var renderers = GameObject.FindObjectsOfType<Renderer>(true).ToList();
+        List<Renderer> renderers = GameObject.FindObjectsOfType<Renderer>(true).ToList();
 
-
-
-        foreach (var renderer in renderers)
+        for (int i = 0; i < renderers.Count; i++)
         {
+            Renderer renderer = renderers[i];
+            ProgressBarHelper.DisplayCancelableProgressBar(new ProgressArg("SetRenderersLODInfo1", i, renderers.Count, renderer.name));
             MeshRendererInfo rendererInfo = MeshRendererInfo.GetInfo(renderer.gameObject);
             rendererInfo.Init();
             rendererInfo.LodIds.Clear();
@@ -1146,47 +1273,25 @@ public class LODManager : SingletonBehaviour<LODManager>
         if (GroupRoot)
         {
             var rendererInfos1 = GroupRoot.GetComponentsInChildren<MeshRendererInfo>(true);
-            foreach (var renderer in rendererInfos1)
+            for (int i = 0; i < rendererInfos1.Length; i++)
             {
+                MeshRendererInfo renderer = rendererInfos1[i];
+                ProgressBarHelper.DisplayCancelableProgressBar(new ProgressArg("SetRenderersLODInfo2", i, rendererInfos1.Length, renderer.name));
                 renderer.Init();
             }
         }
 
-
         for (int i1 = 0; i1 < lodGroups.Length; i1++)
         {
             LODGroup group = lodGroups[i1];
-            float progress = (float)i1 / lodGroups.Length;
-
-            ProgressBarHelper.DisplayCancelableProgressBar("SetRenderersLODInfo", $"{i1}/{lodGroups.Length} {progress:P1} group:{group}", progress);
-
-            LOD[] lods = group.GetLODs();
-            for (int i = 0; i < lods.Length; i++)
-            {
-                LOD lod = lods[i];
-                //LODInfo lodInfo = new LODInfo(lod);
-                foreach (var r in lod.renderers)
-                {
-                    if (r == null) continue;
-                    MeshRendererInfo rendererInfo = MeshRendererInfo.GetInfo(r.gameObject);
-                    //Debug.Log($"renderer:{r},parent:{r.transform.parent.name},path:{r.transform.GetPathToRoot()},rendererInfo:{rendererInfo}");
-                    rendererInfo.LodIds.Add(i);
-                    renderers.Remove(r);
-                    rendererInfo.AddType(MeshRendererType.LOD);
-                }
-                //break;
-            }
-            //break;
+            ProgressBarHelper.DisplayCancelableProgressBar(new ProgressArg("SetRenderersLODInfo3",i1, lodGroups.Length, group.name));
+            LODHelper.SetRenderersLODInfo(group, renderers);
         }
-        //foreach (var r in renderers)
-        //{
-        //    MeshRendererInfo rendererInfo = MeshRendererInfo.GetInfo(r.gameObject);
-        //    rendererInfo.LodId = -1;
-        //}
         ProgressBarHelper.ClearProgressBar();
         Debug.LogError($"SetRenderersLODInfo lods:{lodGroups.Length} count:{renderers.Count} time:{(DateTime.Now - start)}");
         return meshRendererInfos;
     }
+
 
     public List<LODGroupInfo> lODGroupInfos = new List<LODGroupInfo>();
 
@@ -1219,35 +1324,40 @@ public class LODManager : SingletonBehaviour<LODManager>
 
     public bool includeInactive = false;
 
-    public LODGroupInfo[] InitGroupInfos()
+    public LODGroupInfo[] InitGroupInfos(bool isInactive)
     {
-        LODGroup[] groups = LODHelper.GetLODGroups(LocalTarget, includeInactive);
+        LODGroup[] groups = LODHelper.GetLODGroups(LocalTarget, isInactive);
         LODGroupInfo[] infos = new LODGroupInfo[groups.Length];
         for (int i = 0; i < groups.Length; i++)
         {
             LODGroup group = groups[i];
+
+            ProgressBarHelper.DisplayCancelableProgressBar(new ProgressArg("InitGroupInfos", i, groups.Length, group.name));
             var info=LODGroupInfo.Init(group.gameObject);
             infos[i] = info;
         }
-        Debug.Log($"InitGroupInfos LocalTarget:{LocalTarget} includeInactive:{includeInactive} groups:{groups.Length} infos:{infos.Length}");
+        ProgressBarHelper.ClearProgressBar();
+        Debug.Log($"InitGroupInfos LocalTarget:{LocalTarget} includeInactive:{isInactive} groups:{groups.Length} infos:{infos.Length}");
         return infos;
     }
 
     public LODGroupInfo[] SetMats()
     {
-        LODGroupInfo[] infos = InitGroupInfos();
+        LODGroupInfo[] infos = InitGroupInfos(false);
         for (int i = 0; i < infos.Length; i++)
         {
             LODGroupInfo info = infos[i];
+            ProgressBarHelper.DisplayCancelableProgressBar(new ProgressArg("SetMats", i, infos.Length, info.name));
             info.SetMaterial();
         }
+        ProgressBarHelper.ClearProgressBar();
         Debug.Log($"SetMaterial LocalTarget:{LocalTarget} includeInactive:{includeInactive} infos:{infos.Length}");
         return infos;
     }
 
     public LODGroupInfo[] CheckLOD0Scenes()
     {
-        LODGroupInfo[] infos = InitGroupInfos();
+        LODGroupInfo[] infos = InitGroupInfos(false);
         for (int i = 0; i < infos.Length; i++)
         {
             LODGroupInfo info = infos[i];
@@ -1271,7 +1381,7 @@ public class LODManager : SingletonBehaviour<LODManager>
         //    info.GetScene();
         //}
 
-        LODGroupInfo[] infos = InitGroupInfos();
+        LODGroupInfo[] infos = InitGroupInfos(false);
         for(int i = 0; i < infos.Length; i++)
         {
             var info = infos[i];
@@ -1332,12 +1442,18 @@ public class LODManager : SingletonBehaviour<LODManager>
         }
     }
 
-    public string GetRuntimeLODDetailSubThread(bool isForce)
+    [ContextMenu("SortLODDetails")]
+    public void SortLODDetails()
+    {
+        lodDetails.Sort();
+    }
+
+    public string GetRuntimeLODDetailSubThread(bool isForce, bool isInactive)
     {
         DateTime now = DateTime.Now;
         if (lodDetails == null || lodDetails.Count == 0 || isForce)
         {
-            lodDetails = LODGroupDetails.GetSceneLodGroupInfo(LocalTarget, includeInactive);
+            lodDetails = LODGroupDetails.GetSceneLodGroupInfo(LocalTarget, isInactive);
         }
 
         GetLodCamera();
@@ -1371,12 +1487,12 @@ public class LODManager : SingletonBehaviour<LODManager>
         return result;
     }
 
-    public string GetRuntimeLODDetailMainThread(bool isForce)
+    public string GetRuntimeLODDetailMainThread(bool isForce, bool isInactive)
     {
         DateTime now = DateTime.Now;
         if (lodDetails == null || lodDetails.Count == 0 || isForce)
         {
-            lodDetails = LODGroupDetails.GetSceneLodGroupInfo(LocalTarget, includeInactive);
+            lodDetails = LODGroupDetails.GetSceneLodGroupInfo(LocalTarget, isInactive);
         }
         GetLodCamera();
         if (lodCamera == null) return "lodCamera==null";
@@ -1454,18 +1570,32 @@ public class LODManager : SingletonBehaviour<LODManager>
         return infoText;
     }
 
+    public void UpdateLODs()
+    {
+        includeInactive = true;
+        string detail = GetRuntimeLODDetail(true,true);
+             Debug.Log($"lod detail:{detail}");
+        SortLODDetails();
+    }
 
     [ContextMenu("GetRuntimeLODDetail")]
     public string GetRuntimeLODDetail(bool isForce)
     {
+        return GetRuntimeLODDetail(isForce, includeInactive);
+    }
+
+
+    [ContextMenu("GetRuntimeLODDetail")]
+    public string GetRuntimeLODDetail(bool isForce,bool isInactive)
+    {
         string detail = "";
         if (IsUseThread)
         {
-            detail= GetRuntimeLODDetailSubThread(isForce);
+            detail= GetRuntimeLODDetailSubThread(isForce, isInactive);
         }
         else
         {
-            detail = GetRuntimeLODDetailMainThread(isForce);
+            detail = GetRuntimeLODDetailMainThread(isForce, isInactive);
         }
         //Debug.Log(detail);
         return detail;
@@ -1551,6 +1681,111 @@ public enum LODCompareMode
 
 public static class LODHelper
 {
+    public static void SetRenderersLODInfo(LODGroup group, List<Renderer> renderers)
+    {
+        LOD[] lods = group.GetLODs();
+        for (int i = 0; i < lods.Length; i++)
+        {
+            LOD lod = lods[i];
+            //LODInfo lodInfo = new LODInfo(lod);
+            foreach (var r in lod.renderers)
+            {
+                if (r == null) continue;
+                MeshRendererInfo rendererInfo = MeshRendererInfo.GetInfo(r.gameObject);
+                //Debug.Log($"renderer:{r},parent:{r.transform.parent.name},path:{r.transform.GetPathToRoot()},rendererInfo:{rendererInfo}");
+                rendererInfo.LodIds.Add(i);
+                if (renderers != null)
+                    renderers.Remove(r);
+                rendererInfo.AddType(MeshRendererType.LOD);
+            }
+            //break;
+        }
+    }
+
+    public static void MoveToFloorLODsRoot(Transform source)
+    {
+        MoveToFloorLODsRoot(source, source);
+    }
+
+    public static void MoveToFloorLODsRoot(Transform source, Transform target)
+    {
+        Transform lodRoot = GetFloorLODsRoot(target);
+        source.SetParent(lodRoot);
+    }
+
+    public static Transform GetFloorLODsRoot(Transform parent)
+    {
+        BuildingModelInfo floor = parent.GetComponentInParent<BuildingModelInfo>();
+        for (int i = 0; i < floor.transform.childCount; i++)
+        {
+            var child = floor.transform.GetChild(i);
+            if (child.name == "LODs")
+            {
+                child.name = floor.name + "_LODs";
+                return child;
+            }
+        }
+        for (int i = 0; i < floor.transform.childCount; i++)
+        {
+            var child = floor.transform.GetChild(i);
+            if (child.name == floor.name + "_LODs")
+            {
+                return child;
+            }
+        }
+        GameObject go = new GameObject(floor.name + "_LODs");
+        go.transform.position = floor.transform.position;
+        go.transform.SetParent(floor.transform);
+        return go.transform;
+    }
+
+    public static List<string> LODNames = new List<string>() { "_LOD0" , "_LOD1", "_LOD2", "_LOD3", "_LOD4" };
+
+    public static void SetChildrenLODName(GameObject go)
+    {
+        string name = go.name;
+        string[] parts = name.Split('_');
+        if (parts.Length == 2)
+        {
+            string lod = parts[1];
+            if(lod.Contains("LOD"))
+            {
+                for (int i = 0; i < go.transform.childCount; i++)
+                {
+                    var child = go.transform.GetChild(i);
+                    string cName = GetOriginalName(child.name);
+                    child.name = cName + "_" + lod;
+                }
+            }
+            else
+            {
+                for (int i = 0; i < go.transform.childCount; i++)
+                {
+                    var child = go.transform.GetChild(i);
+                    string cName = child.name;
+                    cName = cName.Replace("lod1", "_LOD1");
+                    cName = cName.Replace("lod2", "_LOD2");
+                    cName = cName.Replace("lod3", "_LOD3");
+                    child.name = cName;
+                }
+            }
+        }
+        else
+        {
+            Debug.LogError($"SetChildrenLODName Not LOD go:{go.name}");
+        }
+    }
+
+    public static string GetOriginalName(string lodName)
+    {
+        string cName = lodName;
+        foreach (var lodN in LODNames)
+        {
+            cName = cName.Replace(lodN, "");
+        }
+        return cName;
+    }
+
     public static LODGroup CreateLODs(GameObject root)
     {
         if (root == null) return null;
@@ -1826,8 +2061,8 @@ public static class LODHelper
 #if UNITY_EDITOR
         EditorHelper.UnpackPrefab(group.gameObject);
 #endif
-
-        GameObject newGroupGo = new GameObject(renderer.name);
+        string origName = LODHelper.GetOriginalName(renderer.name);
+        GameObject newGroupGo = new GameObject(origName);
         newGroupGo.transform.position = group.transform.position;
         newGroupGo.transform.parent = group.transform.parent;
 
@@ -1846,7 +2081,7 @@ public static class LODHelper
 
         RendererId.ChangeChildrenParent(group.transform,newGroupGo.transform);
 
-        renderer.name += "_LOD0";
+        renderer.name = origName+"_LOD0";
         LOD[] lods = group.GetLODs();
         //LOD[] lodsNew = new LOD[lods.Length];
         //for(int i=0;i<lods.Length;i++)
@@ -1864,7 +2099,10 @@ public static class LODHelper
 
         LODGroup newGroup = newGroupGo.AddComponent<LODGroup>();
         newGroup.SetLODs(lods);
-        LODGroupInfo groupInfoNew=newGroupGo.AddComponent<LODGroupInfo>();
+        //LODGroupInfo groupInfoNew=newGroupGo.AddComponent<LODGroupInfo>();
+
+        LODGroupInfo groupInfoNew=LODGroupInfo.Init(newGroup.gameObject);
+
 
         //MeshRendererInfo info = MeshRendererInfo.GetInfo(group.gameObject);
         //info.Init();
@@ -1883,7 +2121,9 @@ public static class LODHelper
 public class LODTwoRenderers
 {
     public MeshRendererInfo renderer_lod0;
+    public string renderer_lod0_name;
     public MeshRendererInfo renderer_lod1;
+    public string renderer_lod1_name;
     public float dis;
 
     public float meshDis;
@@ -1896,36 +2136,45 @@ public class LODTwoRenderers
     public LODTwoRenderers(MeshRendererInfo lod0, MeshRendererInfo lod1, float d, float meshD, int vertexCount0, int vertexCount1)
     {
         renderer_lod0 = lod0;
+        renderer_lod0_name = renderer_lod0.name;
         renderer_lod1 = lod1;
+        renderer_lod1_name = renderer_lod1.name;
         dis = d;
         meshDis = meshD;
         this.vertexCount0 = vertexCount0;
         this.vertexCount1 = vertexCount1;
 
-        this.isSameName = renderer_lod0.name == renderer_lod1.name;
+        //if(renderer_lod0_name.Contains("LOD")&& renderer_lod1_name.Contains("LOD"))
+        {
+            renderer_lod0_name = LODHelper.GetOriginalName(renderer_lod0_name);
+            renderer_lod1_name = LODHelper.GetOriginalName(renderer_lod1_name);
+        }
+
+        this.isSameName = renderer_lod0_name == renderer_lod1_name;
     }
 
     public string GetCaption()
     {
         if (renderer_lod1 == null || renderer_lod0 == null) return "";
-        bool isSameName = renderer_lod1.name == renderer_lod0.name;
+        bool isSameName = renderer_lod1_name == renderer_lod0_name;
         bool isSameSize = renderer_lod1.size.ToString() == renderer_lod0.size.ToString();
         if (isSameSize == false)
         {
 
         }
         float p10 = (float)vertexCount1 / vertexCount0;
-        string lod1 = $"{renderer_lod1.name}({vertexCount1})[{renderer_lod1.size}]";
-        string lod0 = $"{renderer_lod0.name}({vertexCount0})[{renderer_lod0.size}]";
+        string lod1 = $"{renderer_lod1_name}({vertexCount1})[{renderer_lod1.size}]";
+        string lod0 = $"{renderer_lod0_name}({vertexCount0})[{renderer_lod0.size}]";
+        string disCompare = $"<{dis:F5}|{meshDis:F5}>";
         if (isSameName)
         {
             if (isSameSize)
             {
-                return $"[T1 T2] [{p10:F2}] LOD1:{lod1} <{dis:F5}|{meshDis:F5}> LOD0:===({vertexCount0})[{renderer_lod0.size}]";
+                return $"[T1 T2] [{p10:P0}] {disCompare} L1:{lod1} || L0:===({vertexCount0}) [==]";
             }
             else
             {
-                return $"[T1 F2] [{p10:F2}] LOD1:{lod1} <{dis:F5}|{meshDis:F5}> LOD0:===({vertexCount0})[{renderer_lod0.size}]";
+                return $"[T1 F2] [{p10:P0}] {disCompare} L1:{lod1} || L0:===({vertexCount0})[{renderer_lod0.size}]";
             }
             
         }
@@ -1933,11 +2182,11 @@ public class LODTwoRenderers
         {
             if (isSameSize)
             {
-                return $"[F1 T2] [{p10:F2}] LOD1:{lod1} <{dis:F5}|{meshDis:F5}> LOD0:{lod0}";
+                return $"[F1 T2] [{p10:P0}] {disCompare} L1:{lod1} || L0:{lod0} [==]";
             }
             else
             {
-                return $"[F1 F2] [{p10:F2}] LOD1:{lod1} <{dis:F5}|{meshDis:F5}> LOD0:{lod0}";
+                return $"[F1 F2] [{p10:P0}] {disCompare} L1:{lod1} || L0:{lod0}";
             }
             //return $"[F] [{p10:F2}] LOD1:{lod1} <{dis:F5}|{meshDis:F5}> LOD0:{lod0}";
         }
@@ -1957,13 +2206,31 @@ public class LODTwoRenderers
         if (render_lod1 == null) return;
         var render_lod0 = this.renderer_lod0;
         if (render_lod0 == null) return;
-
-        var lod1 = this.renderer_lod1.meshRenderer;
         var lod0 = this.renderer_lod0.meshRenderer;
-        lod1.sharedMaterials = lod0.sharedMaterials;
 
-        render_lod1.transform.SetParent(render_lod0.transform.parent);
-        GameObject.DestroyImmediate(render_lod0.gameObject);
+        if (renderer_lod1.IsRendererType(MeshRendererType.LOD))
+        {
+            LODGroup group = renderer_lod1.GetComponentInParent<LODGroup>();
+            var renderers = group.GetComponentsInChildren<MeshRenderer>(true);
+            foreach(var render in renderers)
+            {
+                render.sharedMaterials = lod0.sharedMaterials;
+            }
+
+            Transform lodRoot = LODHelper.GetFloorLODsRoot(render_lod0.transform);
+            group.transform.SetParent(lodRoot);
+
+            GameObject.DestroyImmediate(render_lod0.gameObject);
+        }
+        else
+        {
+            var lod1 = this.renderer_lod1.meshRenderer;
+            
+            lod1.sharedMaterials = lod0.sharedMaterials;
+
+            render_lod1.transform.SetParent(render_lod0.transform.parent);
+            GameObject.DestroyImmediate(render_lod0.gameObject);
+        }
     }
 
     public void SetColor()

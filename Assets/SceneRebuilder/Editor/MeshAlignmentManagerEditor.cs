@@ -44,17 +44,33 @@ public class MeshAlignmentManagerEditor : BaseEditor<MeshAlignmentManager>
 
         GUILayout.BeginHorizontal();
         GUILayout.Label("SourceR", GUILayout.Width(60));
-        item.SourceRoot = BaseEditorHelper.ObjectField(item.SourceRoot);
+        GameObject go1= BaseEditorHelper.ObjectField(item.SourceRoot);
+        if (go1 != item.SourceRoot)
+        {
+            item.SourceRoot = go1;
+            item.Init();
+        }
         GUILayout.EndHorizontal();
 
         GUILayout.BeginHorizontal();
         GUILayout.Label("Source", GUILayout.Width(60));
-        item.Source = BaseEditorHelper.ObjectField(item.Source);
+        GameObject go2 = BaseEditorHelper.ObjectField(item.Source);
+        if (go2 != item.Source)
+        {
+            item.Source = go2;
+            item.Init();
+        }
         GUILayout.EndHorizontal();
 
         GUILayout.BeginHorizontal();
         GUILayout.Label("Target", GUILayout.Width(60));
-        item.Target = BaseEditorHelper.ObjectField(item.Target);
+        GameObject go3 = BaseEditorHelper.ObjectField(item.Target);
+        if(go3!= item.Target)
+        {
+            item.Target = go3;
+            item.Init();
+        }
+        
         GUILayout.EndHorizontal();
 
         GUILayout.BeginHorizontal();
