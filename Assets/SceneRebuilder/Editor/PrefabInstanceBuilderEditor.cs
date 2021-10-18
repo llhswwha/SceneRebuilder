@@ -49,10 +49,10 @@ public class PrefabInstanceBuilderEditor : BaseFoldoutEditor<PrefabInstanceBuild
         {
             item.RTAlignJobs();
         }
-        if (GUILayout.Button("RTAlignJobs"))
-        {
-            item.RTAlignJobs();
-        }
+        //if (GUILayout.Button("RTAlignJobs"))
+        //{
+        //    item.RTAlignJobs();
+        //}
         if (GUILayout.Button("* AcRTAlignJobs"))
         {
             item.AcRTAlignJobs();

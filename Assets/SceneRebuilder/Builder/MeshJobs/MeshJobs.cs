@@ -960,7 +960,7 @@ namespace MeshJobs
 
             RestoreParent(parentDict);
 
-            Debug.LogError($"NewAcRTAlignJobsEx meshFilters:{meshFilters.Length},vertexCount:{MeshHelper.GetVertexCountS(vc)} Time:{(DateTime.Now - start).TotalSeconds:F1}s");
+            Debug.LogError($"NewAcRTAlignJobsEx meshFilters:{meshFilters.Length},vertexCount:{MeshHelper.GetVertexCountS(vc)} Time:{(DateTime.Now - start)}s");
             return preafbs;
         }
 
@@ -1079,13 +1079,13 @@ namespace MeshJobs
                         else
                         {
                             newTargets.Add(arg.mfTo);
-                            Debug.LogWarning($"对齐失败(距离太大) {arg.mfFrom} -> {arg.mfTo} 距离:{result.Distance}");
+                            Debug.LogWarning($"对齐失败(距离太大) {arg} 距离:{result.Distance}");
                         }
                     }
                     else
                     {
                         newTargets.Add(arg.mfTo);
-                        Debug.LogError($"对齐失败(无结果数据) k:[{k}] id:[{id}] {arg.mfFrom} -> {arg.mfTo}");
+                        Debug.LogError($"对齐失败(无结果数据) k:[{k}] id:[{id}] {arg}");
                     }
                 }
                 int count1 = meshFilters.Length;
@@ -1098,18 +1098,26 @@ namespace MeshJobs
                 }
 
                 int progressCount=targetCount-count2;
-                float progress1 = (float)progressCount / targetCount;
-                if (ProgressBarHelper.DisplayCancelableProgressBar("CompleteAllPage", $"NewMeshAlignJobs:{progressCount}/{targetCount} {progress1 * 100:F2}% of 100% ", progress1))
+                //float progress1 = (float)progressCount / targetCount;
+                ProgressArg arg1 = new ProgressArg("NewMeshAlignJobs", progressCount, targetCount);
+                JobHandleList.progressArg = arg1;
+
+                //if (ProgressBarHelper.DisplayCancelableProgressBar("CompleteAllPage", $"NewMeshAlignJobs:{progressCount}/{targetCount} {progress1 * 100:F2}% of 100% ", progress1))
+                //{
+                //   //isCancel = true;//取消处理
+                //    break;
+                //}
+                if (ProgressBarHelper.DisplayCancelableProgressBar(arg1))
                 {
-                   //isCancel = true;//取消处理
+                    //isCancel = true;//取消处理
                     break;
                 }
             }
 
             ProgressBarHelper.ClearProgressBar();
 
-            Debug.Log($"NewMeshAlignJobs TargetCount:{targetCount},PrefabCount:{prefabInfoList.Count},JobCount:{totalJobCount}({jobCountDetails}),LoopCount:{loopCount},Time:{(DateTime.Now - start).TotalSeconds:F2}s");
-            Debug.Log($"{prefabInfoList.Count}\t{totalJobCount}\t{loopCount}\t{(DateTime.Now - start).TotalSeconds:F2}s");
+            Debug.LogError($"NewMeshAlignJobs TargetCount:{targetCount},PrefabCount:{prefabInfoList.Count},JobCount:{totalJobCount}({jobCountDetails}),LoopCount:{loopCount},Time:{(DateTime.Now - start).TotalSeconds:F2}s");
+            Debug.LogError($"{prefabInfoList.Count}\t{totalJobCount}\t{loopCount}\t{(DateTime.Now - start)}");
             MeshAlignJobContainer.PrintTime();
             prefabInfoList.Sort();
 
