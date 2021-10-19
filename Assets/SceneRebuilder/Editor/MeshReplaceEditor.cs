@@ -1,4 +1,5 @@
 using CodeStage.AdvancedFPSCounter.Editor.UI;
+using MeshJobs;
 using System;
 using System.Collections;
 using System.Collections.Generic;
@@ -6,7 +7,7 @@ using UnityEditor;
 using UnityEngine;
 
 [CustomEditor(typeof(MeshReplace))]
-public class MeshReplaceEditor : BaseEditor<MeshReplace>
+public class MeshReplaceEditor : BaseFoldoutEditor<MeshReplace>
 {
     public override void OnToolLayout(MeshReplace item)
     {
@@ -18,10 +19,25 @@ public class MeshReplaceEditor : BaseEditor<MeshReplace>
         }
     }
 
+    public static Dictionary<MeshReplaceItem,FoldoutEditorArg<MeshReplaceTarget>> targetListArgs = new Dictionary<MeshReplaceItem, FoldoutEditorArg<MeshReplaceTarget>>();
+
+    public static FoldoutEditorArg<MeshReplaceTarget> GetTargetListArg(MeshReplaceItem item)
+    {
+        if (!targetListArgs.ContainsKey(item))
+        {
+            targetListArgs.Add(item, new FoldoutEditorArg<MeshReplaceTarget>(true,false));
+        }
+        return targetListArgs[item];
+    }
+
     internal static void DrawUI(MeshReplace item)
     {
         if (item == null) return;
         EditorGUILayout.BeginHorizontal();
+        if (GUILayout.Button("Compare"))
+        {
+            item.Compare();
+        }
         if (GUILayout.Button("Replace"))
         {
             item.Replace();
@@ -79,10 +95,12 @@ public class MeshReplaceEditor : BaseEditor<MeshReplace>
             {
                 Debug.Log("+" + Selection.activeObject);
                 subItem.prefab = Selection.activeObject as GameObject;
+                MeshPoints ps = new MeshPoints(subItem.prefab);
+                subItem.prefabVertexCount = ps.vertexCount;
             }
             if (subItem.prefab != null)
             {
-                if (GUILayout.Button(subItem.prefab.name))
+                if (GUILayout.Button($"{subItem.prefab.name}[{subItem.prefabVertexCount}]"))
                 {
                     EditorHelper.SelectObject(subItem.prefab);
                 }
@@ -95,63 +113,103 @@ public class MeshReplaceEditor : BaseEditor<MeshReplace>
 
             EditorGUILayout.EndHorizontal();
 
-            EditorGUILayout.BeginHorizontal();
-            GUILayout.Label($"Target({subItem.targetList.Count})", GUILayout.Width(75));
+            //EditorGUILayout.BeginHorizontal();
+            //GUILayout.Label($"Target({subItem.targetList.Count})", GUILayout.Width(75));
 
-            if (GUILayout.Button("+|", GUILayout.Width(20)))
-            {
-                Debug.Log("+" + Selection.activeObject);
-                //subItem.targetList.Add(Selection.activeObject as GameObject);
-                
-                foreach(GameObject obj in Selection.objects)
-                {
-                    subItem.targetList.Add(obj);
-                }
-            }
-            if (GUILayout.Button("+S|", GUILayout.Width(30)))
-            {
-                Debug.Log("+" + Selection.activeObject);
-                //subItem.targetList.Add(Selection.activeObject as GameObject);
-
-                foreach (GameObject obj in Selection.objects)
-                {
-                    for(int i=0;i<obj.transform.childCount;i++)
-                    {
-                        var child = obj.transform.GetChild(i);
-                        subItem.targetList.Add(child.gameObject);
-                    }
-                    //subItem.targetList.Add(obj);
-                }
-            }
-
-            if (GUILayout.Button("C|", GUILayout.Width(30)))
-            {
-                Debug.Log("C" + subItem.targetList.Count);
-                subItem.targetList.Clear();
-            }
-
-            for (int i = 0; i < subItem.targetList.Count; i++)
-            {
-                GameObject target = subItem.targetList[i];
-                if (target == null)
-                {
-                    subItem.targetList.RemoveAt(i);
-                    i--;
-                    continue;
-                }
-                if (GUILayout.Button(target.name))
-                {
-                    EditorHelper.SelectObject(target);
-                }
-                if (GUILayout.Button("-", GUILayout.Width(20)))
-                {
-                    Debug.Log("-" + target);
-                    subItem.targetList.RemoveAt(i);
-                    i--;
-                }
-            }
             
-            EditorGUILayout.EndHorizontal();
+            //for (int i = 0; i < subItem.targetList.Count; i++)
+            //{
+            //    GameObject target = subItem.targetList[i];
+            //    if (target == null)
+            //    {
+            //        subItem.targetList.RemoveAt(i);
+            //        i--;
+            //        continue;
+            //    }
+            //    if (GUILayout.Button(target.name))
+            //    {
+            //        EditorHelper.SelectObject(target);
+            //    }
+            //    if (GUILayout.Button("-", GUILayout.Width(20)))
+            //    {
+            //        Debug.Log("-" + target);
+            //        subItem.targetList.RemoveAt(i);
+            //        i--;
+            //    }
+            //}
+            //EditorGUILayout.EndHorizontal();
+
+            var targetListArg = GetTargetListArg(subItem);
+            BaseFoldoutEditorHelper.DrawObjectList<MeshReplaceTarget>("Target", subItem.targetList, targetListArg, ()=>
+            {
+                if (GUILayout.Button("+Selection", GUILayout.Width(80)))
+                {
+                    Debug.Log("AddSelection +activeObject:" + Selection.activeObject);
+                    //subItem.targetList.Add(Selection.activeObject as GameObject);
+
+                    foreach (GameObject obj in Selection.objects)
+                    {
+                        Debug.Log("+object:" + obj);
+                        subItem.AddTarget(obj);
+                    }
+                    subItem.targetList.Sort();
+                    Debug.Log("subItem.targetList:" + subItem.targetList.Count);
+                }
+                if (GUILayout.Button("+Children", GUILayout.Width(80)))
+                {
+                    Debug.Log("AddSelection Children +activeObject:" + Selection.activeObject);
+                    //subItem.targetList.Add(Selection.activeObject as GameObject);
+
+                    foreach (GameObject obj in Selection.objects)
+                    {
+
+                        for (int i = 0; i < obj.transform.childCount; i++)
+                        {
+                            var child = obj.transform.GetChild(i);
+                            Debug.Log("+child:" + child);
+                            subItem.AddTarget(child.gameObject);
+                        }
+                        //subItem.targetList.Add(obj);
+                    }
+                    subItem.targetList.Sort();
+                    Debug.Log("subItem.targetList:" + subItem.targetList.Count);
+                }
+
+                if (GUILayout.Button("+AllRenderers", GUILayout.Width(100)))
+                {
+                    Debug.Log("AddSelection Children +activeObject:" + Selection.activeObject);
+                    //subItem.targetList.Add(Selection.activeObject as GameObject);
+
+                    foreach (GameObject obj in Selection.objects)
+                    {
+                        var renderers = obj.GetComponentsInChildren<MeshRenderer>(true);
+                        for (int i = 0; i < renderers.Length; i++)
+                        {
+                            var child = renderers[i];
+                            Debug.Log("+child:" + child);
+                            subItem.AddTarget(child.gameObject);
+                        }
+                        //subItem.targetList.Add(obj);
+                    }
+                    subItem.targetList.Sort();
+                    Debug.Log("subItem.targetList:" + subItem.targetList.Count);
+                }
+
+                if (GUILayout.Button("Clear", GUILayout.Width(50)))
+                {
+                    Debug.Log("R" + subItem.targetList.Count);
+                    subItem.targetList.Clear();
+                }
+
+            }, (obj)=>
+            {
+                GUILayout.Label(obj.dis.ToString("F5"), GUILayout.Width(100));
+
+            },(obj)=>
+            {
+                Debug.Log("-" + obj);
+                subItem.targetList.Remove(obj);
+            });
         }
     }
 }

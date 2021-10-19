@@ -1559,6 +1559,8 @@ public static class FoldoutEditorArgBuffer
 
 }
 
+
+
 public static class BaseFoldoutEditorHelper
 {
     
@@ -1677,7 +1679,8 @@ public static class BaseFoldoutEditorHelper
         }
     }
 
-    public static void DrawGameObjectList(List<GameObject> transList, FoldoutEditorArg<GameObject> listArg, System.Action updateAction, string listName)
+    public static void DrawGameObjectList(string listName, List<GameObject> transList, FoldoutEditorArg<GameObject> listArg
+        , System.Action toolbarEvent,System.Action<GameObject> itemToolbarEvent = null, System.Action<GameObject> itemdestroyAction = null)
     {
         listArg.caption = $"{listName}";
         listArg.level = 0;
@@ -1690,22 +1693,24 @@ public static class BaseFoldoutEditorHelper
             //InitEditorArg(list1);
             FoldoutEditorArgBuffer.InitEditorArg(list1);
         },
-        () =>
-        {
-            if (updateAction != null)
-            {
-                if (GUILayout.Button("Update"))
-                {
-                    //item.GetAllModelTransform();
-                    updateAction();
-                }
-            }
+        //() =>
+        //{
+        //    //if (updateAction != null)
+        //    //{
+        //    //    if (GUILayout.Button("Update"))
+        //    //    {
+        //    //        //item.GetAllModelTransform();
+        //    //        updateAction();
+        //    //    }
+        //    //}
 
-            //if (GUILayout.Button("Compare"))
-            //{
-            //    item.CompareModelVueInfo_Model2Vue();
-            //}
-        });
+        //    //if (GUILayout.Button("Compare"))
+        //    //{
+        //    //    item.CompareModelVueInfo_Model2Vue();
+        //    //}
+        //}
+
+        toolbarEvent);
         if (listArg.isEnabled && listArg.isExpanded)
         {
             var list1 = transList;
@@ -1719,8 +1724,80 @@ public static class BaseFoldoutEditorHelper
                 itemArg.background = true;
                 itemArg.caption = $"[{i + 1:00}] {listItem.name}";
                 //doorRootArg.info = $"{listItem.Distance}|{listItem.MId}|{listItem.MName}";
-                EditorUIUtils.ObjectFoldout(itemArg, listItem.gameObject, () =>
+                EditorUIUtils.ObjectFoldout(itemArg, listItem, ()=>
                 {
+                    if (itemToolbarEvent != null)
+                    {
+                        itemToolbarEvent(listItem);
+                    }
+                },()=>
+                {
+                    if (itemdestroyAction != null)
+                    {
+                        itemdestroyAction(listItem);
+                    }
+                });
+            });
+        }
+    }
+
+    public static void DrawObjectList<T>(string listName, List<T> transList, FoldoutEditorArg<T> listArg
+        , System.Action toolbarEvent, System.Action<T> itemToolbarEvent = null, System.Action<T> itemdestroyAction = null) where T:IGameObject
+    {
+        listArg.caption = $"{listName}";
+        listArg.level = 0;
+        EditorUIUtils.ToggleFoldout(listArg, arg =>
+        {
+            var list1 = transList;
+            int count = list1.Count;
+            arg.caption = $"{listName} ({list1.Count})";
+            //arg.info = $"d:{count}|{doors.VertexCount_Show / 10000f:F0}/{doors.VertexCount / 10000f:F0}";
+            //InitEditorArg(list1);
+            FoldoutEditorArgBuffer.InitEditorArg(list1);
+        },
+        //() =>
+        //{
+        //    //if (updateAction != null)
+        //    //{
+        //    //    if (GUILayout.Button("Update"))
+        //    //    {
+        //    //        //item.GetAllModelTransform();
+        //    //        updateAction();
+        //    //    }
+        //    //}
+
+        //    //if (GUILayout.Button("Compare"))
+        //    //{
+        //    //    item.CompareModelVueInfo_Model2Vue();
+        //    //}
+        //}
+
+        toolbarEvent);
+        if (listArg.isEnabled && listArg.isExpanded)
+        {
+            var list1 = transList;
+            //InitEditorArg(list1);
+            FoldoutEditorArgBuffer.InitEditorArg(list1);
+            listArg.DrawPageToolbar(list1, (listItem, i) =>
+            {
+                if (listItem == null) return;
+                var itemArg = FoldoutEditorArgBuffer.editorArgs[listItem];
+                itemArg.level = 1;
+                itemArg.background = true;
+                itemArg.caption = $"[{i + 1:00}] {listItem.GetName()}";
+                //doorRootArg.info = $"{listItem.Distance}|{listItem.MId}|{listItem.MName}";
+                EditorUIUtils.ObjectFoldout(itemArg, listItem.GetGameObject(), () =>
+                {
+                    if (itemToolbarEvent != null)
+                    {
+                        itemToolbarEvent(listItem);
+                    }
+                }, () =>
+                {
+                    if (itemdestroyAction != null)
+                    {
+                        itemdestroyAction(listItem);
+                    }
                 });
             });
         }

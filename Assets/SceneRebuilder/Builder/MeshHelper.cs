@@ -2,6 +2,7 @@ using MeshJobs;
 using System;
 using System.Collections;
 using System.Collections.Generic;
+using Unity.ComnLib.Utils;
 #if UNITY_EDITOR
 using UnityEditor;
 #endif
@@ -855,19 +856,22 @@ public static class MeshHelper
         public bool isResetRotation=false;
         public string progress = "";
 
+        public bool isLocal = false;//局部坐标
+
         public bool showLog=false;
 
-        public DistanceArgs(Transform t1,Transform t2,string progress,bool showLog)
+        public DistanceArgs(Transform t1,Transform t2,string progress,bool showLog,bool local=false)
         {
             this.t1=t1;
             this.t2=t2;
             this.progress=progress;
             this.showLog=showLog;
+            this.isLocal = local;
         }
     }
 
 
-    public static float GetVertexDistanceEx(Transform t1,Transform t2,string progress="",bool showLog=false)
+    public static float GetVertexDistanceEx(Transform t1,Transform t2,string progress="",bool showLog=false, bool local = false)
     {
         if (t1 == null)
         {
@@ -879,10 +883,10 @@ public static class MeshHelper
             Debug.LogError($"GetVertexDistanceEx t2==null");
             return float.MaxValue;
         }
-        return GetVertexDistanceEx(new DistanceArgs(t1,t2,progress,showLog));
+        return GetVertexDistanceEx(new DistanceArgs(t1,t2,progress,showLog, local));
     }
 
-    public static float GetVertexDistanceEx(GameObject g1, GameObject g2, string progress = "", bool showLog = false)
+    public static float GetVertexDistanceEx(GameObject g1, GameObject g2, string progress = "", bool showLog = false,bool local=false)
     {
         if (g1 == null)
         {
@@ -894,7 +898,7 @@ public static class MeshHelper
             Debug.LogError($"GetVertexDistanceEx g2==null");
             return float.MaxValue;
         }
-        return GetVertexDistanceEx(new DistanceArgs(g1.transform, g2.transform, progress, showLog));
+        return GetVertexDistanceEx(new DistanceArgs(g1.transform, g2.transform, progress, showLog, local));
     }
 
     public static float GetAvgVertexDistanceEx(Transform t1, Transform t2, string progress = "", bool showLog = false)
@@ -1036,8 +1040,19 @@ public static class MeshHelper
         {
             Mesh mesh1 = mf1.sharedMesh;
             Mesh mesh2 = mf2.sharedMesh;
-            Vector3[] points1 = GetWorldVertexes(mesh1, t1);
-            Vector3[] points2 = GetWorldVertexes(mesh2, t2);
+            //Vector3[] points1 = GetWorldVertexes(mesh1, t1);
+            //Vector3[] points2 = GetWorldVertexes(mesh2, t2);
+
+            Vector3[] points1 = mesh1.vertices;
+            if (arg.isLocal == false)
+            {
+                points1 = GetWorldVertexes(points1, t1);
+            }
+            Vector3[] points2 = mesh2.vertices;
+            if (arg.isLocal == false)
+            {
+                points2 = GetWorldVertexes(points2, t2);
+            }
             dis = DistanceUtil.GetDistance(points1, points2, arg.showLog);
         }
 
@@ -2502,12 +2517,146 @@ public enum AlignRotateMode
     ShortQuat,LongQuat,ShortAngle,LongAngle,AvgAngle
 }
 
+public interface IGameObject
+{
+    public GameObject GetGameObject();
+
+    public string GetName();
+}
+
+[System.Serializable]
+public class MeshReplaceTarget: IGameObject,IComparable<MeshReplaceTarget>
+{
+    public GameObject gameObject;
+
+    public int vertexCount = 0;
+
+    public void DestroyImmediate()
+    {
+#if UNITY_EDITOR
+        EditorHelper.UnpackPrefab(gameObject);
+        GameObject.DestroyImmediate(gameObject);
+#endif
+    }
+
+    public float dis;
+
+    public GameObject newGo;
+
+    public string name
+    {
+        get
+        {
+            if (gameObject == null) return "";
+            return gameObject.name;
+        }
+    }
+
+    public Transform transform
+    {
+        get
+        {
+            if (gameObject == null) return null;
+            return gameObject.transform;
+        }
+    }
+
+    public MeshReplaceTarget(GameObject go)
+    {
+        this.gameObject = go;
+
+        MeshPoints ps = new MeshPoints(go);
+
+        this.vertexCount = ps.vertexCount;
+    }
+
+    public void SetActive(bool isActive)
+    {
+        if (gameObject)
+        {
+            gameObject.SetActive(isActive);
+        }
+    }
+
+    public GameObject GetGameObject()
+    {
+        return gameObject;
+    }
+
+    public string GetName()
+    {
+        return $"{name}[{vertexCount}]";
+    }
+
+    public int CompareTo(MeshReplaceTarget other)
+    {
+        int r = other.vertexCount.CompareTo(this.vertexCount);
+        if (r == 0)
+        {
+            r = this.name.CompareTo(other.name);
+        }
+        return r;
+    }
+}
+
 [System.Serializable]
 public class MeshReplaceItem
 {
     public GameObject prefab;
-    public List<GameObject> targetList = new List<GameObject>();
-    public List<GameObject> targetListNew = new List<GameObject>();
+
+    public int prefabVertexCount = 0;
+    //public List<float> targetDistance = new List<float>();
+    //public List<GameObject> targetList = new List<GameObject>();
+    //public List<GameObject> targetListNew = new List<GameObject>();
+
+    public List<MeshReplaceTarget> targetList = new List<MeshReplaceTarget>();
+
+    public void AddTarget(GameObject go)
+    {
+        foreach(var target in targetList)
+        {
+            if (target.gameObject == go)
+            {
+                return;
+            }
+        }
+        targetList.Add(new MeshReplaceTarget(go));
+    }
+
+    public void Compare(ProgressArg p1)
+    {
+        if (prefab == null)
+        {
+            Debug.LogError($"MeshReplaceItem.Compare prefab == null");
+            return;
+        }
+        //targetListNew.Clear();
+        //targetDistance.Clear();
+        for (int i = 0; i < targetList.Count; i++)
+        {
+            var target = targetList[i];
+            var p2 = new ProgressArg("ReplaceItem", i, targetList.Count, target);
+            p1.AddSubProgress(p2);
+            if (ProgressBarHelper.DisplayCancelableProgressBar(p1))
+            {
+                return;
+            }
+            if (target == null) continue;
+            if (target.gameObject == prefab) continue;
+            //Debug.Log($"Compare prefab:{prefab} target:{target}");
+            float dis = MeshHelper.GetVertexDistanceEx(prefab.transform, target.transform,"",false,true);
+            if (dis > 0.0001f)
+            {
+                Debug.LogError($"Replace[{i}][{p1.progress:P2}] prefab:{prefab.name} target:{target.name} dis:{dis}");
+            }
+            else
+            {
+                Debug.Log($"Replace[{i}][{p1.progress:P2}] prefab:{prefab.name} target:{target.name} dis:{dis}");
+            }
+            //targetDistance.Add(dis);
+            target.dis = dis;
+        }
+    }
 
     public int Count
     {
@@ -2526,10 +2675,13 @@ public class MeshReplaceItem
         }
         //MeshHelper.ReplaceByPrefab(target, prefab);
         //StartCoroutine(MeshHelper.ReplaceByPrefabEx(target, prefab,"", "",isDestoryOriginal));
-        targetListNew.Clear();
+
+        //targetListNew.Clear();
+        //targetDistance.Clear();
+
         for (int i = 0; i < targetList.Count; i++)
         {
-            GameObject target = targetList[i];
+            var target = targetList[i];
             var p2 = new ProgressArg("ReplaceItem", i, targetList.Count, target);
             p1.AddSubProgress(p2);
             if (ProgressBarHelper.DisplayCancelableProgressBar(p1))
@@ -2537,20 +2689,22 @@ public class MeshReplaceItem
                 return false;
             }
             if (target == null) continue;
-            if (target == prefab) continue;
-            GameObject newGo = MeshHelper.ReplaceGameObject(target, prefab, isDestoryOriginal, transfromReplaceSetting);
-            float dis = MeshHelper.GetVertexDistanceEx(newGo, target);
+            if (target.gameObject == prefab) continue;
+            GameObject newGo = MeshHelper.ReplaceGameObject(target.gameObject, prefab, isDestoryOriginal, transfromReplaceSetting);
+            float dis = MeshHelper.GetVertexDistanceEx(newGo, target.gameObject);
             if (dis > 0.0001f)
             {
-                Debug.LogWarning($"Replace[{i}][{p1.progress:P2}] prefab:{prefab.name} target:{target.name} dis:{dis}");
+                Debug.LogError($"Replace[{i}][{p1.progress:P2}] prefab:{prefab.name} target:{target.name} dis:{dis}");
             }
-            //else
-            //{
-            //    Debug.Log($"Replace[{i}][{p1.progress:P2}] prefab:{prefab.name} target:{target.name} dis:{dis}");
-            //}
-            
+            else
+            {
+                Debug.Log($"Replace[{i}][{p1.progress:P2}] prefab:{prefab.name} target:{target.name} dis:{dis}");
+            }
+            //targetDistance.Add(dis);
+            target.dis = dis;
+            target.newGo = newGo;
 
-            targetListNew.Add(newGo);
+            //targetListNew.Add(newGo);
             if(isHidden)
                 target.SetActive(false);
         }
@@ -2559,18 +2713,19 @@ public class MeshReplaceItem
 
     public void ClearNewGos()
     {
-        foreach (var go in targetListNew)
-        {
-            if (go == null) continue;
-            GameObject.DestroyImmediate(go);
-        }
-        targetListNew.Clear();
+        //foreach (var go in targetListNew)
+        //{
+        //    if (go == null) continue;
+        //    GameObject.DestroyImmediate(go);
+        //}
+        //targetListNew.Clear();
 
         foreach (var target in targetList)
         {
             if (target == null) continue;
             target.SetActive(true);
         }
+        //targetDistance.Clear();
     }
 
     public void ApplyNewGos()
@@ -2578,25 +2733,23 @@ public class MeshReplaceItem
         foreach (var target in targetList)
         {
             if (target == null) continue;
-#if UNITY_EDITOR
-            EditorHelper.UnpackPrefab(target);
-            GameObject.DestroyImmediate(target);
-#endif
+            target.DestroyImmediate();
         }
-        foreach (var target in targetListNew)
+        foreach (var target in targetList)
         {
-            if (target == null) continue;
-            target.name = target.name.Replace("_New", "");
+            GameObject targetNew = target.newGo;
+            if (targetNew == null) continue;
+            targetNew.name = targetNew.name.Replace("_New", "");
 
-            MeshRendererInfo info = target.GetComponent<MeshRendererInfo>();
+            MeshRendererInfo info = targetNew.GetComponent<MeshRendererInfo>();
             if (info)
             {
                 GameObject.DestroyImmediate(info);
             }
         }
         targetList.Clear();
-        targetList.AddRange(targetListNew);
-        targetListNew.Clear();
+        //targetList.AddRange(targetListNew);
+        //targetListNew.Clear();
     }
 }
 

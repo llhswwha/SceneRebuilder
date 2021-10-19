@@ -532,7 +532,7 @@ public class AcRTAlignJobContainer
             {
                 pref.RemoveMeshFilter(arg.mfFrom);
                 //newTargets.Add(arg.mfTo);
-                Debug.LogWarning($"对齐失败(无结果数据 或者 角度不对其) id={id} {arg}");
+                //Debug.LogWarning($"对齐失败(无结果数据 或者 角度不对其) id={id} {arg}");
             }
         }
         
