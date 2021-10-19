@@ -27,6 +27,26 @@ public class MeshReplace : SingletonBehaviour<MeshReplace>
     }
 
 #if UNITY_EDITOR
+
+    [ContextMenu("Compare")]
+    public void Compare()
+    {
+        DateTime start = DateTime.Now;
+        int count = 0;
+        for (int i = 0; i < Items.Count; i++)
+        {
+            MeshReplaceItem item = Items[i];
+            ProgressArg p1 = new ProgressArg("Replace", i, Items.Count, item);
+            if (ProgressBarHelper.DisplayCancelableProgressBar(p1))
+            {
+                break;
+            }
+            item.Compare(p1);
+        }
+        ProgressBarHelper.ClearProgressBar();
+        Debug.Log($"Compare count:{count} time:{(DateTime.Now - start).ToString()}");
+    }
+
     [ContextMenu("Replace")]
     public void Replace()
     {
@@ -60,7 +80,11 @@ public class MeshReplace : SingletonBehaviour<MeshReplace>
         List<GameObject> newGos = new List<GameObject>();
         foreach (var item in Items)
         {
-            newGos.AddRange(item.targetListNew);
+            //newGos.AddRange(item.targetListNew);
+            foreach(var target in item.targetList)
+            {
+                newGos.Add(target.newGo);
+            }
         }
         EditorHelper.SelectObjects(newGos);
     }
@@ -82,7 +106,11 @@ public class MeshReplace : SingletonBehaviour<MeshReplace>
         List<GameObject> newGos = new List<GameObject>();
         foreach (var item in Items)
         {
-            newGos.AddRange(item.targetList);
+            //newGos.AddRange(item.targetList);
+            foreach (var target in item.targetList)
+            {
+                newGos.Add(target.gameObject);
+            }
         }
         EditorHelper.SelectObjects(newGos);
     }
