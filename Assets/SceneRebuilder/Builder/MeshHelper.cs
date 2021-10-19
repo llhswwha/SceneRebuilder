@@ -1608,9 +1608,9 @@ public static class MeshHelper
             {
                 //按照距离最近的角度设置
                 meshData1.SetMinMaxId((MinMaxId)minMaxId1);
-                node1.ShowDebugDetail(true);
+                node1.ShowLongShortDebugDetail(true);
                 meshData2.SetMinMaxId((MinMaxId)minMaxId2);
-                node2.ShowDebugDetail(true);
+                node2.ShowLongShortDebugDetail(true);
                 AlignResult result2=AlignMeshNode_Core(node1,node2,tryCount,isShowDetail,isShowLog);
                 result2.IsZero=result2.IsRelativeZero;//没找到绝对的，使用相对的
                 //Debug.LogError($"AlignMeshNode2 [IsFoundZero:{IsFoundZero}] try:{tryCount};Time:{(DateTime.Now-start).TotalMilliseconds}ms,Result:{result2}");

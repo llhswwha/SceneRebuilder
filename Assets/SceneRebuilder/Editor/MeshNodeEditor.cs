@@ -95,6 +95,30 @@ public class MeshNodeEditor : BaseFoldoutEditor<MeshNode>
         }
         EditorGUILayout.EndHorizontal();
 
+        EditorGUILayout.BeginHorizontal();
+
+        
+        if (GUILayout.Button("TestGetVertexCenterInfo"))
+        {
+            item.TestGetVertexCenterInfo();
+        }
+
+        if (GUILayout.Button("ShowLongShortDebugDetail"))
+        {
+            item.ShowLongShortDebugDetail(true);
+        }
+
+        if (GUILayout.Button("ShowAllMaxPoints"))
+        {
+            item.ShowAllMaxPoints();
+        }
+        if (GUILayout.Button("ShowAllMinPoints"))
+        {
+            item.ShowAllMinPoints();
+        }
+
+        EditorGUILayout.EndHorizontal();
+
         var subms = item.GetMeshNodes();
         if (subms.Count > 0)
         {

@@ -76,7 +76,8 @@ namespace MeshJobs
         public ThreePoint[] GetThreePoints(MeshPoints mf)
         {
             Transform t = mf.transform;
-            ThreePointJobResult resultFrom = ThreePointJobResultList.Instance.GetThreePointResult(mf);
+            //ThreePointJobResult resultFrom = ThreePointJobResultList.Instance.GetThreePointResult(mf);
+            ThreePointJobResult resultFrom = this.GetThreePointResult(mf);
             resultFrom.localToWorldMatrix = t.localToWorldMatrix;
             var tpsFrom = resultFrom.GetThreePoints(t.localToWorldMatrix);
             return tpsFrom;
@@ -473,16 +474,18 @@ namespace MeshJobs
 
         public ThreePoint[] tps;
 
+        public static int MaxPointCount = 3;
+
         public ThreePoint[] GetThreePoints(Matrix4x4 matrix)
         {
             var meshData = this;
             int count = meshData.maxPList.Length * meshData.minPList.Length;
             int id = 0;
             ThreePoint[] ids = new ThreePoint[count];
-            for (int i = 0; i < meshData.maxPList.Length; i++)
+            for (int i = 0; i < meshData.maxPList.Length && i< MaxPointCount; i++)
             {
                 var max = meshData.maxPList[i];
-                for (int j = 0; j < meshData.minPList.Length; j++)
+                for (int j = 0; j < meshData.minPList.Length && j < MaxPointCount; j++)
                 {
                     var min = meshData.minPList[j];
                     ids[id] = new ThreePoint(center, min, max, j, i, matrix);
@@ -806,9 +809,10 @@ namespace MeshJobs
 
             //Result.Print();
 
-            // if(this.maxPList.Length>1||this.minPList.Length>1){
-            //     Debug.LogWarning(string.Format("模型中心可能是对称的，存在多个最远点和最近点! maxDis:{0},minDis:{1}",this.maxPList.Length,this.minPList.Length));
-            // }
+            if (this.maxPList.Length > 1 || this.minPList.Length > 1)
+            {
+                Debug.LogError(string.Format("模型中心可能是对称的，存在多个最远点和最近点! maxDis:{0},minDis:{1}", this.maxPList.Length, this.minPList.Length));
+            }
 
             //Debug.Log(string.Format("ThreePointJob[{0}] vertexCount:{1}",InvokeCount,vertexCount));
 

@@ -10,15 +10,17 @@ using System;
 
 namespace MeshJobs
 {
+    [Serializable]
     public class MeshPoints
     {
         public static List<MeshPoints> GetMeshPoints(MeshFilter[] meshFilters)
         {
             List<MeshPoints> meshPoints = new List<MeshPoints>();
-            foreach (var mf in meshFilters)
-            {
-                meshPoints.Add(new MeshPoints(mf.gameObject));
-            }
+            if(meshFilters!=null)
+                foreach (var mf in meshFilters)
+                {
+                    meshPoints.Add(new MeshPoints(mf.gameObject));
+                }
             return meshPoints;
         }
 
@@ -708,7 +710,7 @@ namespace MeshJobs
             }
             else
             {
-                Debug.LogError($"对齐失败1(result==null) id:{id} {mfFrom.name}({mfFrom.vertexCount}) -> {mfTo.name}({mfTo.vertexCount}) 距离:{result.Distance} zeroM:{DistanceSetting.zeroM:F5} zeroP:{DistanceSetting.zeroP:F5}");
+                Debug.LogError($"对齐失败1(result==null) id:{id} {mfFrom.name}({mfFrom.vertexCount}) -> {mfTo.name}({mfTo.vertexCount}) result==null zeroM:{DistanceSetting.zeroM:F5} zeroP:{DistanceSetting.zeroP:F5}");
                 return false;
             }
             //return result;
@@ -831,8 +833,7 @@ namespace MeshJobs
                             pref.AddInstance(newGo);
                             
                             result.ApplyMatrix(newGo.transform, arg.mfTo.transform); //变换模型
-
-                            GameObject.DestroyImmediate(arg.mfTo.gameObject);
+                            arg.DestroyToObject();
                         }
                         else
                         {
@@ -1011,6 +1012,8 @@ namespace MeshJobs
             int loopCount = 0;
             string jobCountDetails = "";
 
+            List<AcRtAlignJobArg> allArg = new List<AcRtAlignJobArg>();
+
             for (int j = 0; j < targetCount; j++)
             {
                 loopCount++;
@@ -1048,11 +1051,12 @@ namespace MeshJobs
                 AcRTAlignJobResult.InitCount(jobId);
                 jobList.CompleteAllPage();//计算
 
-
+                
                 for (int k = 0; k < jobIds.Count; k++)
                 {
                     int id = jobIds[k];
                     AcRtAlignJobArg arg = AcRtAlignJobArg.LoadArg(id);
+                    allArg.Add(arg);
                     var result = AcRTAlignJobResult.GetResult(id);
                     if (result!=null)
                     {
@@ -1074,12 +1078,12 @@ namespace MeshJobs
                             
                             result.ApplyMatrix(newGo.transform, arg.mfTo.transform); //变换模型
 
-                            GameObject.DestroyImmediate(arg.mfTo.gameObject);
+                            arg.DestroyToObject();
                         }
                         else
                         {
                             newTargets.Add(arg.mfTo);
-                            Debug.LogWarning($"对齐失败(距离太大) {arg} 距离:{result.Distance}");
+                            Debug.LogWarning($"对齐失败(距离太大) {arg}");
                         }
                     }
                     else
@@ -1088,6 +1092,7 @@ namespace MeshJobs
                         Debug.LogError($"对齐失败(无结果数据) k:[{k}] id:[{id}] {arg}");
                     }
                 }
+
                 int count1 = meshFilters.Length;
                 int count2 = newTargets.Count;//还剩多少模型没处理
                 Debug.LogWarning($"完成一轮[{loopCount}]:{count1-count2}={count1}->{count2},PrefabCount:{prefabInfoList.Count}");
@@ -1101,22 +1106,26 @@ namespace MeshJobs
                 //float progress1 = (float)progressCount / targetCount;
                 ProgressArg arg1 = new ProgressArg("NewMeshAlignJobs", progressCount, targetCount);
                 JobHandleList.progressArg = arg1;
-
-                //if (ProgressBarHelper.DisplayCancelableProgressBar("CompleteAllPage", $"NewMeshAlignJobs:{progressCount}/{targetCount} {progress1 * 100:F2}% of 100% ", progress1))
-                //{
-                //   //isCancel = true;//取消处理
-                //    break;
-                //}
                 if (ProgressBarHelper.DisplayCancelableProgressBar(arg1))
                 {
-                    //isCancel = true;//取消处理
+                    Debug.LogError("Break Jobs!!");
                     break;
                 }
             }
 
             ProgressBarHelper.ClearProgressBar();
 
-            Debug.LogError($"NewMeshAlignJobs TargetCount:{targetCount},PrefabCount:{prefabInfoList.Count},JobCount:{totalJobCount}({jobCountDetails}),LoopCount:{loopCount},Time:{(DateTime.Now - start).TotalSeconds:F2}s");
+            double allT = 0;
+            allArg.Sort();
+            for (int i = 0; i < allArg.Count && i<10; i++)
+            {
+                AcRtAlignJobArg arg = allArg[i];
+                Debug.LogError($"arg[{i}]:{arg}");
+                allT += arg.Time;
+            }
+            Debug.LogError($"allT:{allT} t:{(DateTime.Now - start)}");
+
+            Debug.LogError($"NewMeshAlignJobs Time:{(DateTime.Now - start)} TargetCount:{targetCount},PrefabCount:{prefabInfoList.Count},JobCount:{totalJobCount}({jobCountDetails}),LoopCount:{loopCount}");
             Debug.LogError($"{prefabInfoList.Count}\t{totalJobCount}\t{loopCount}\t{(DateTime.Now - start)}");
             MeshAlignJobContainer.PrintTime();
             prefabInfoList.Sort();

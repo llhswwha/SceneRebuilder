@@ -30,6 +30,17 @@ public class MeshComparer : SingletonBehaviour<MeshComparer>
 
     public GameObject goFromCopy;
 
+    public void SetArg(AcRtAlignJobArg arg)
+    {
+       goFrom = arg.mfFrom.gameObject;
+       goTo = arg.mfTo.gameObject;
+        if (goTo == null)
+        {
+            goTo = GameObject.Find(arg.mfTo.name + "_New");
+        }
+       Debug.LogError($"MeshComparer.SetArg goFrom:{goFrom.name}({goFrom}) goTo:{goTo.name}({goTo})");
+    }
+
     public void SetGos(GameObject from,GameObject to)
     {
         goFrom = from;

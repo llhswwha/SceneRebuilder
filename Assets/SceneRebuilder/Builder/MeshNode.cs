@@ -621,7 +621,33 @@ public class MeshNode : MonoBehaviour,IComparable<MeshNode>
         CreateNormalPlane(log);
     }
 
-    public void ShowDebugDetail(bool isClear = true)
+    public void ShowAllMinMaxPoints()
+    {
+        ShowAllMaxPoints();
+        ShowAllMinPoints();
+    }
+
+    public void ShowAllMaxPoints()
+    {
+        for (int i = 0; i < meshData.maxPList.Count; i++)
+        {
+            var p = meshData.maxPList[i];
+            var maxP = meshData.TransformPoint(p);
+            CreateWorldPoint(maxP, $"[maxP][{i}]({maxP.x},{maxP.y},{maxP.z})");
+        }
+    }
+
+    public void ShowAllMinPoints()
+    {
+        for (int i = 0; i < meshData.minPList.Count; i++)
+        {
+            var p = meshData.minPList[i];
+            var maxP = meshData.TransformPoint(p);
+            CreateWorldPoint(maxP, $"[minP][{i}]({maxP.x},{maxP.y},{maxP.z})");
+        }
+    }
+
+    public void ShowLongShortDebugDetail(bool isClear = true)
     {
         if (isClear)
             ClearChildren();
@@ -704,7 +730,7 @@ public class MeshNode : MonoBehaviour,IComparable<MeshNode>
 
         if(showDebugDetails)
         {
-            ShowDebugDetail();
+            ShowLongShortDebugDetail();
         }
 
         // if(showDebugDetails==false)

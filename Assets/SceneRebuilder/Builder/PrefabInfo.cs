@@ -41,7 +41,7 @@ public class PrefabInfo:IComparable<PrefabInfo>
 
     public override string ToString()
     {
-        return $"{this.VertexCount}";
+        return $"{this.VertexCount}*{Instances.Count}={this.VertexCount* Instances.Count}|{this.MeshFilter.size}";
     }
 
     public GameObject Prefab;

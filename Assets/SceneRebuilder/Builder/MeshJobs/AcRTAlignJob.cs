@@ -27,16 +27,21 @@ namespace MeshJobs
 
         public static IRTResult[] rs;
 
-        public static void SetResult(int id, IRTResult r)
+        public static void SetResult(int id, IRTResult r, double t)
         {
+            AcRtAlignJobArg arg = AcRtAlignJobArg.LoadArg(id);
+            arg.Result = r;
+            arg.Time = t;
             //  Debug.LogError("AcRTAlignJobResult SetResult:"+id+","+r);
 
-            if(rs==null){
+
+            if (rs==null){
                 rs=new IRTResult[10];
             }
             if (r != null)
             {
                 r.id = id;
+                //r.Time = t;
             }
             // else{
             //     Debug.LogError("SetResult r==null:"+id);
@@ -141,13 +146,35 @@ namespace MeshJobs
         //public static float MinDis=0.1f;
     }
 
-    public class AcRtAlignJobArg
+    public class AcRtAlignJobArg:IComparable<AcRtAlignJobArg>
     {
         public int id;
 
         public MeshPoints mfFrom;
 
         public MeshPoints mfTo;
+
+        public void DestroyToObject()
+        {
+
+            GameObject go = mfTo.gameObject;
+
+            if (mfTo.name == "Z2 2")
+            {
+                Debug.LogError($"DestroyToObject mfTo:{go}");
+            }
+
+            if (go == null)
+            {
+                Debug.LogError("DestroyToObject mfTo.gameObject == null");
+                return;
+            }
+
+            EditorHelper.UnpackPrefab(go);
+            GameObject.DestroyImmediate(go);
+        }
+
+        public double Time = 0;
 
         public AcRtAlignJobArg(int i, MeshPoints from, MeshPoints to)
         {
@@ -182,8 +209,27 @@ namespace MeshJobs
 
         public override string ToString()
         {
-            return $"from:{this.mfFrom.name}[{this.mfFrom.vertexCount}],to:{this.mfTo}[{this.mfTo.vertexCount}]";
+            string argTxt = $"【{Log}】【time:{Time:F1}ms】【from:{this.mfFrom.name}[v:{this.mfFrom.vertexCount}],to:{this.mfTo.name}[v:{this.mfTo.vertexCount}]】";
+            if (Result != null)
+            {
+                return $"{argTxt} 距离:{Result.Distance}";
+            }
+            return argTxt;
         }
+
+        public string Log = "";
+
+        public int CompareTo(AcRtAlignJobArg other)
+        {
+            int r = other.Time.CompareTo(this.Time);
+            if(r==0)
+            {
+                r = this.id.CompareTo(other.id);
+            }
+            return r;
+        }
+
+        public IRTResult Result;
     }
 
     public class AcRTAlignJobPrefab
@@ -273,6 +319,10 @@ namespace MeshJobs
         public static bool IsTryAngles= true;
 
         public static bool IsTryAngles_Scale=true;
+
+        public static bool IsTryRT = true;
+
+        public static bool IsTryICP = true;
 
         public void Dispose()
         {
@@ -502,10 +552,11 @@ namespace MeshJobs
 
                                 //RTResult rt = RTResult.ApplyAngleMatrix(trans, matrix4World, newVs2.ToArray(), goNew.transform);
 
-                                AcRTAlignJobResult.SetResult(Id, result);
+                                double t = (DateTime.Now - start).TotalMilliseconds;
+                                AcRTAlignJobResult.SetResult(Id, result, t);
 
                                 //AngleCount++;
-                                SetStatisticsInfo(Id,(DateTime.Now - start).TotalMilliseconds,true, result.Mode, dis);
+                                SetStatisticsInfo(Id, t, true, result.Mode, dis);
                                 return;
                             }
                             else if(dis<0.5f && IsTryAngles_Scale)//比例
@@ -517,44 +568,49 @@ namespace MeshJobs
                                 RTResult r2 = CreateNewScaleGoMatrix(localMatrix,vsFromL,vsToW,angle,new Vector3(scaleNN.x,scaleNN.y,scaleNN.z),trans,newVs2);
                                 if(r2.IsZero)
                                 {
-                                    AcRTAlignJobResult.SetResult(Id, r2);
-                                    //ScaleCount++;
-                                    SetStatisticsInfo(Id,(DateTime.Now - start).TotalMilliseconds,true, r2.Mode, dis);
+                                    double t = (DateTime.Now - start).TotalMilliseconds;
+                                    AcRTAlignJobResult.SetResult(Id, r2,t);
+                                    SetStatisticsInfo(Id,t,true, r2.Mode, dis);
                                     return;
                                 } 
                                 r2 = CreateNewScaleGoMatrix(localMatrix,vsFromL,vsToW,angle,new Vector3(scaleNN.y,scaleNN.x,scaleNN.z),trans,newVs2);
                                 if(r2.IsZero)
                                 {
-                                    AcRTAlignJobResult.SetResult(Id, r2);
-                                    SetStatisticsInfo(Id,(DateTime.Now - start).TotalMilliseconds,true, r2.Mode, dis);
+                                    double t = (DateTime.Now - start).TotalMilliseconds;
+                                    AcRTAlignJobResult.SetResult(Id, r2, t);
+                                    SetStatisticsInfo(Id, t, true, r2.Mode, dis);
                                     return;
                                 } 
                                 r2 = CreateNewScaleGoMatrix(localMatrix,vsFromL,vsToW,angle,new Vector3(scaleNN.z,scaleNN.y,scaleNN.x),trans,newVs2);
                                 if(r2.IsZero)
                                 {
-                                    AcRTAlignJobResult.SetResult(Id, r2);
-                                    SetStatisticsInfo(Id,(DateTime.Now - start).TotalMilliseconds,true, r2.Mode, dis);
+                                    double t = (DateTime.Now - start).TotalMilliseconds;
+                                    AcRTAlignJobResult.SetResult(Id, r2, t);
+                                    SetStatisticsInfo(Id, t, true, r2.Mode, dis);
                                     return;
                                 } 
                                 r2 = CreateNewScaleGoMatrix(localMatrix,vsFromL,vsToW,angle,new Vector3(scaleNN.z,scaleNN.x,scaleNN.y),trans,newVs2);
                                 if(r2.IsZero)
                                 {
-                                    AcRTAlignJobResult.SetResult(Id, r2);
-                                    SetStatisticsInfo(Id,(DateTime.Now - start).TotalMilliseconds,true, r2.Mode, dis);
+                                    double t = (DateTime.Now - start).TotalMilliseconds;
+                                    AcRTAlignJobResult.SetResult(Id, r2, t);
+                                    SetStatisticsInfo(Id, t, true, r2.Mode, dis);
                                     return;
                                 } 
                                 r2 = CreateNewScaleGoMatrix(localMatrix,vsFromL,vsToW,angle,new Vector3(scaleNN.x,scaleNN.z,scaleNN.y),trans,newVs2);
                                 if(r2.IsZero)
                                 {
-                                    AcRTAlignJobResult.SetResult(Id, r2);
-                                    SetStatisticsInfo(Id,(DateTime.Now - start).TotalMilliseconds,true, r2.Mode, dis);
+                                    double t = (DateTime.Now - start).TotalMilliseconds;
+                                    AcRTAlignJobResult.SetResult(Id, r2, t);
+                                    SetStatisticsInfo(Id, t, true, r2.Mode, dis);
                                     return;
                                 } 
                                 r2 = CreateNewScaleGoMatrix(localMatrix,vsFromL,vsToW,angle,new Vector3(scaleNN.y,scaleNN.z,scaleNN.x),trans,newVs2);
                                 if(r2.IsZero)
                                 {
-                                    AcRTAlignJobResult.SetResult(Id, r2);
-                                    SetStatisticsInfo(Id,(DateTime.Now - start).TotalMilliseconds,true, r2.Mode, dis);
+                                    double t = (DateTime.Now - start).TotalMilliseconds;
+                                    AcRTAlignJobResult.SetResult(Id, r2, t);
+                                    SetStatisticsInfo(Id, t, true, r2.Mode, dis);
                                     return;
                                 } 
                             }
@@ -566,129 +622,84 @@ namespace MeshJobs
                     }
                 }
             }
-            
 
-            //二、长短轴，RT
-            for (int l = 0; l < tpsFrom.Length; l++)
+            if(IsTryRT)
             {
-                var tpFrom = tpsFrom[l];
-                for (int k = 0; k < tpsTo.Length; k++)
+                //二、长短轴，RT
+                for (int l = 0; l < tpsFrom.Length; l++)
                 {
-                    var tpTo = tpsTo[k];
-                    count++;
-                    //var matrix=GetRTMatrix(tpFrom,tpTo);//核心,基于脚本的
-
-                    var angle1 = tpFrom.GetLongShortAngle();
-                    var angle2 = tpTo.GetLongShortAngle();
-                    var angle22 = math.abs(angle1 - angle2);
-
-                    if (angle22 > MaxAngle)
+                    var tpFrom = tpsFrom[l];
+                    for (int k = 0; k < tpsTo.Length; k++)
                     {
-                        continue;//下一个了，角度都不对其
-                    }
-
-                    //DateTime tmpT = DateTime.Now;
-                    var rt = AcRigidTransform.GetRTMatrixS(tpFrom, tpTo);//核心，静态函数的
-                    //totalTime1 += (DateTime.Now - tmpT).TotalMilliseconds;
-
-                    //tmpT = DateTime.Now;
-                   
-
-                    var vsNew = rt.ApplyPoints(vsFromW);
-                    //totalTime2 += (DateTime.Now - tmpT).TotalMilliseconds;
-
-                    //tmpT = DateTime.Now;
-                    
-                    var dis = DistanceUtil.GetDistance(vsToW, vsNew, false);
-
-                    //Debug.Log(string.Format("AcRTAlignJob[{6}][{4}][{5}] angle1:{0}\tangle2:{1}\tangle1_2:{2}\tdistance:{3}",angle1,angle2,angle22,dis,l,k,count));
-
-                    //float4x4 float4X4=new float4x4();
-
-                    //var dis= MathematicsDistance.GetDistance(vsTo.ToArray(),vsNew);
-
-                    //totalTime3 += (DateTime.Now - tmpT).TotalMilliseconds;
-
-                    //7420,2777,15732
-                    //8427,3447,16070
-
-                    rt.Distance = dis;
-                    if (dis < minDis)
-                    {
-                        minDis = dis;
-                        minRT = rt;
-                        minVS=vsNew;
-                    }
-
-                    //Debug.LogError($">>>AcRTAlignJob [{l},{k}]\tIsZero:{rt.IsZero},\tIsReflection:{rt.IsReflection},\tdis:{dis}");
-                    if (dis == 0)
-                    {
-                        isFoundZero = true;
-                        //break;
-                    }
-
-                    AcRTAlignJobExResult.disJobCount++;
-                }
-                if (isFoundZero)
-                {
-                    //break;
-                }
-                //break;
-            }
-
-            //三、ICP
-            if(minDis<DistanceSetting.ICPMinDis && minDis>DistanceSetting.zeroM)
-            {
-                // if(minDis<DistanceSetting.ICPMinDis)
-                {
-                    //Debug.LogError("minDis>DistanceSetting.zeroDis:"+minDis+">"+DistanceSetting.zeroDis+" and <"+DistanceSetting.ICPMinDis);
-                    RTResultList rList=new RTResultList();
-                    rList.Add(minRT);
-                    var vsFromStart=minVS;
-                    string log="";
-
-                    //int equalCount = 0;
-                     for(int i=0;i<DistanceSetting.ICPMaxCount;i++)
-                    {
-                        //DateTime start1=DateTime.Now;
-                        var vsFromCP1 = DistanceUtil.GetClosedPoints(vsToW, vsFromStart.ToList());
-                        var r1 = AcRigidTransform.ApplyTransformationN(vsFromCP1, vsToW);
-                        rList.Add(r1);
-                        var vsFromNew1 = r1.ApplyPoints(vsFromStart);
-                        //var dis2 = DistanceUtil.GetDistance(vsFromNew1, vsToW,i==DistanceSetting.ICPMaxCount-1);
-                        var dis2 = DistanceUtil.GetDistance(vsFromNew1, vsToW);
-                        //Debug.LogError($"icp[{i+1}] dis:{dis2}, Time:{(DateTime.Now-start1).TotalMilliseconds}ms");
-                        log+=string.Format("{0:F5}; ",dis2);
-                        vsFromStart=vsFromNew1;
-                        r1.Distance=dis2;
-                        rList.Distance=dis2;
-                        if(dis2<=DistanceSetting.zeroM)
+                        var tpTo = tpsTo[k];
+                        count++;
+                        //var matrix=GetRTMatrix(tpFrom,tpTo);//核心,基于脚本的
+                        var angle1 = tpFrom.GetLongShortAngle();
+                        var angle2 = tpTo.GetLongShortAngle();
+                        var angle22 = math.abs(angle1 - angle2);
+                        if (angle22 > MaxAngle) continue;//下一个了，角度都不对其
+                        var rt = AcRigidTransform.GetRTMatrixS(tpFrom, tpTo);//核心，静态函数的
+                        var vsNew = rt.ApplyPoints(vsFromW);
+                        var dis = DistanceUtil.GetDistance(vsToW, vsNew, false);
+                        //Debug.Log(string.Format("AcRTAlignJob[{6}][{4}][{5}] angle1:{0}\tangle2:{1}\tangle1_2:{2}\tdistance:{3}",angle1,angle2,angle22,dis,l,k,count));
+                        rt.Distance = dis;
+                        if (dis < minDis)
                         {
-                            isFoundZero=true;
-                            break;
+                            minDis = dis;
+                            minRT = rt;
+                            minVS = vsNew;
                         }
+                        //Debug.LogError($">>>AcRTAlignJob [{l},{k}]\tIsZero:{rt.IsZero},\tIsReflection:{rt.IsReflection},\tdis:{dis}");
+                        if (dis == 0)
+                        {
+                            isFoundZero = true;//break;
+                        }
+                        AcRTAlignJobExResult.disJobCount++;
                     }
+                    //if (isFoundZero) break;
+                }
+            }
+            
+            if(IsTryICP)
+            {
+                //三、ICP
+                if (minDis < DistanceSetting.ICPMinDis && minDis > DistanceSetting.zeroM)
+                {
+                    // if(minDis<DistanceSetting.ICPMinDis)
+                    {
+                        //Debug.LogError("minDis>DistanceSetting.zeroDis:"+minDis+">"+DistanceSetting.zeroDis+" and <"+DistanceSetting.ICPMinDis);
+                        RTResultList rList = new RTResultList();
+                        rList.Add(minRT);
+                        var vsFromStart = minVS;
+                        string log = "";
+                        for (int i = 0; i < DistanceSetting.ICPMaxCount; i++)
+                        {
+                            var vsFromCP1 = DistanceUtil.GetClosedPoints(vsToW, vsFromStart.ToList());
+                            var r1 = AcRigidTransform.ApplyTransformationN(vsFromCP1, vsToW);
+                            rList.Add(r1);
+                            var vsFromNew1 = r1.ApplyPoints(vsFromStart);
+                            var dis2 = DistanceUtil.GetDistance(vsFromNew1, vsToW);
+                            log += string.Format("{0:F5}; ", dis2);
+                            vsFromStart = vsFromNew1;
+                            r1.Distance = dis2;
+                            rList.Distance = dis2;
+                            if (dis2 <= DistanceSetting.zeroM)
+                            {
+                                isFoundZero = true;
+                                break;
+                            }
+                        }
 
-                    Debug.LogError($"ICP({DistanceSetting.zeroM:F4},{DistanceSetting.ICPMinDis:F2}) IsFoundZero:[{isFoundZero}],\tstartDis:{minDis},\tendDis:{rList.Distance},\tlog:{log}");
-                    
-                    if(rList.Distance<minRT.Distance){ //ICP算法处理后更加匹配了
-                        //ICPCount++;
-                        AcRTAlignJobResult.SetResult(Id, rList);
-
-                        SetStatisticsInfo(Id,(DateTime.Now - start).TotalMilliseconds,isFoundZero, AlignMode.ICP, rList.Distance);
-
-                        // double t = (DateTime.Now - start).TotalMilliseconds;
-                        // if (isFoundZero)
-                        // {
-                        //     totalFoundCount++;
-                        //     totalFoundTime += t;
-                        // }
-                        // else
-                        // {
-                        //     totalNoFoundCount++;
-                        //     totalNoFoundTime += t;
-                        // }
-                        return;
+                        Debug.LogError($"ICP({DistanceSetting.zeroM:F4},{DistanceSetting.ICPMinDis:F2}) IsFoundZero:[{isFoundZero}],\tstartDis:{minDis},\tendDis:{rList.Distance},\tlog:{log}");
+                        if (rList.Distance < minRT.Distance)
+                        { 
+                            //ICP算法处理后更加匹配了
+                            double t = (DateTime.Now - start).TotalMilliseconds;
+                            //ICPCount++;
+                            AcRTAlignJobResult.SetResult(Id, rList, t);
+                            SetStatisticsInfo(Id, t, isFoundZero, AlignMode.ICP, rList.Distance);
+                            return;
+                        }
                     }
                 }
             }
@@ -697,21 +708,22 @@ namespace MeshJobs
                 //double t = (DateTime.Now - start).TotalMilliseconds;
                 //if(minDis<AcRTAlignJobResult.MinDis)
                 {
+                    double t = (DateTime.Now - start).TotalMilliseconds;
                     // RTCount++;
                     if (minRT != null)
                     {
-                        SetStatisticsInfo(Id,(DateTime.Now - start).TotalMilliseconds, isFoundZero, AlignMode.RT, minRT.Distance);
+                        SetStatisticsInfo(Id, t, isFoundZero, AlignMode.RT, minRT.Distance);
                     }
                     else
                     {
                         //RT里面所有的点的GetLongShortAngle相差比较大
                         //string info = $"([From Id:{vsFromId} tps:{tpsFrom.Length} go:{MeshPoints.dictId2Go[vsFromId]} angle:{tpsFrom[0].GetLongShortAngle()}] [To Id:{vsToId} tps:{tpsTo.Length} go:{MeshPoints.dictId2Go[vsToId]} angle:{tpsTo[0].GetLongShortAngle()}] MaxAngle:{MaxAngle})";
                         string info = "";
-                        SetStatisticsInfo(Id,(DateTime.Now - start).TotalMilliseconds, isFoundZero, AlignMode.RT, minDis
+                        SetStatisticsInfo(Id, t, isFoundZero, AlignMode.RT, minDis
                             , info);
                     }
                     
-                    AcRTAlignJobResult.SetResult(Id, minRT);
+                    AcRTAlignJobResult.SetResult(Id, minRT, t);
                     //Debug.LogWarning(string.Format("IsFoundZero:{0},Distance:{1}",isFoundZero,minDis));
                     // if (isFoundZero)
                     // {

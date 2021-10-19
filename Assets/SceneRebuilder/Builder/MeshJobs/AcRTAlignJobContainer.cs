@@ -317,41 +317,41 @@ public class AcRTAlignJobContainer
 
     }
 
-    public void DoDistanceJobResult()
-    {
-        for (int rid = 0; rid < resultId; rid++)
-        {
-            var disResult = AcRTDistanceJobHelper.results[rid];
-            var jobId = disResult.minId;
-            //int id = jobIds[k];
-            AcRtAlignJobArg arg = AcRtAlignJobArg.LoadArg(rid);
+    //public void DoDistanceJobResult()
+    //{
+    //    for (int rid = 0; rid < resultId; rid++)
+    //    {
+    //        var disResult = AcRTDistanceJobHelper.results[rid];
+    //        var jobId = disResult.minId;
+    //        //int id = jobIds[k];
+    //        AcRtAlignJobArg arg = AcRtAlignJobArg.LoadArg(rid);
 
-            AcRTAlignJobPrefab pref = AcRTAlignJobPrefab.GetItem(rid);
+    //        AcRTAlignJobPrefab pref = AcRTAlignJobPrefab.GetItem(rid);
 
-                if (disResult.min < 0.01f)
-                {
-                    pref.RemoveMeshFilter(arg.mfFrom);
-                    pref.RemoveMeshFilter(arg.mfTo);
+    //            if (disResult.min < 0.01f)
+    //            {
+    //                pref.RemoveMeshFilter(arg.mfFrom);
+    //                pref.RemoveMeshFilter(arg.mfTo);
 
-                    //Debug.Log($"对齐成功 {arg.mfFrom.name} -> {arg.mfTo.name} 距离:{result.Distance}");
-                    GameObject newGo = MeshHelper.CopyGO(pref.PrefabInfo.Prefab);
-                    newGo.name = arg.mfTo.name + "_New";
-                    pref.AddInstance(newGo);
+    //                //Debug.Log($"对齐成功 {arg.mfFrom.name} -> {arg.mfTo.name} 距离:{result.Distance}");
+    //                GameObject newGo = MeshHelper.CopyGO(pref.PrefabInfo.Prefab);
+    //                newGo.name = arg.mfTo.name + "_New";
+    //                pref.AddInstance(newGo);
                     
-                    disResult.rt.ApplyMatrix(newGo.transform, arg.mfTo.transform); //变换模型
+    //                disResult.rt.ApplyMatrix(newGo.transform, arg.mfTo.transform); //变换模型
 
-                    GameObject.DestroyImmediate(arg.mfTo.gameObject);
-                }
-                else
-                {
-                    pref.RemoveMeshFilter(arg.mfFrom);
-                    //newTargets.Add(arg.mfTo);
+    //                GameObject.DestroyImmediate(arg.mfTo.gameObject);
+    //            }
+    //            else
+    //            {
+    //                pref.RemoveMeshFilter(arg.mfFrom);
+    //                //newTargets.Add(arg.mfTo);
 
-                    //Debug.LogWarning($"对齐失败(距离太大) {arg.mfFrom.name} -> {arg.mfTo.name} 距离:{result.Distance}");
-                }
-        }
-        mfld.RemoveEmpty();//删除
-    }
+    //                //Debug.LogWarning($"对齐失败(距离太大) {arg.mfFrom.name} -> {arg.mfTo.name} 距离:{result.Distance}");
+    //            }
+    //    }
+    //    mfld.RemoveEmpty();//删除
+    //}
 
     public void DoDistanceJobResultEx()
     {
@@ -378,7 +378,7 @@ public class AcRTAlignJobContainer
                 
                 disResult.rt.ApplyMatrix(newGo.transform, arg.mfTo.transform); //变换模型
 
-                GameObject.DestroyImmediate(arg.mfTo.gameObject);
+                arg.DestroyToObject();
             }
             else
             {
@@ -405,6 +405,8 @@ public class AcRTAlignJobContainer
 
     int errorCount = 0;
 
+    List<AcRtAlignJobArg> allArg = new List<AcRtAlignJobArg>();
+
     public void DoAlignJobResult()
     {
         
@@ -412,20 +414,10 @@ public class AcRTAlignJobContainer
         {
             int id = jobIds[k];
             AcRtAlignJobArg arg = AcRtAlignJobArg.LoadArg(id);
+            allArg.Add(arg);
 
             var result = AcRTAlignJobResult.GetResult(id);
             AcRTAlignJobPrefab pref = AcRTAlignJobPrefab.GetItem(id);
-
-            //RTResult rT1 = result as RTResult;
-            //if (rT1 != null)
-            //{
-            //    Debug.Log($"DoAlignJobResult[{k}] zero:{DistanceSetting.zeroM:F5},dis:{result.Distance},Mode:{rT1.Mode},from:{arg.mfFrom.name},to:{arg.mfTo} " + $" Trans:{rT1.Translation.Vector3ToString()},Matrix:\n{rT1.TransformationMatrix}");
-            //}
-            //else
-            //{
-            //    Debug.Log($"DoAlignJobResult[{k}] zero:{DistanceSetting.zeroM:F5},dis:{result.Distance},from:{arg.mfFrom.name},to:{arg.mfTo} ");
-            //}
-
 
             if (result != null)
             {
@@ -456,14 +448,17 @@ public class AcRTAlignJobContainer
                         {
                             errorCount++;
                             RTResult rT = result as RTResult;
+
+                            arg.Log = $"对齐成功 有错误[{errorCount}] zero:{DistanceSetting.zeroM:F5},disNew:{disNew}";
+
                             if (rT != null)
                             {
-                                Debug.LogError($"对齐成功 有错误[{errorCount}] zero:{DistanceSetting.zeroM:F5},disNew:{disNew},Mode:{rT.Mode},{arg} " + $" Trans:{rT.Translation.Vector3ToString()},Matrix:\n{rT.TransformationMatrix}");
+                                Debug.LogError($"{arg},Mode:{rT.Mode} " + $" Trans:{rT.Translation.Vector3ToString()},Matrix:\n{rT.TransformationMatrix}");
                                 //Debug.LogError($"Mode:{rT.Mode},Trans:{rT.Translation.Vector3ToString()},Matrix:\n{rT.TransformationMatrix}");
                             }
                             else
                             {
-                                Debug.LogError($"对齐成功 有错误[{errorCount}] zero:{DistanceSetting.zeroM:F5},disNew:{disNew},{arg} rT==null" );
+                                Debug.LogError($"{arg} rT==null" );
                             }
 
                             newGo.name += "_Error";
@@ -479,16 +474,17 @@ public class AcRTAlignJobContainer
                             RTResult rT = result as RTResult;
                             if (rT != null)
                             {
-                                Debug.Log($"对齐成功11 zero:{DistanceSetting.zeroM:F5},disNew:{disNew},Mode:{rT.Mode},{arg} " + $" Trans:{rT.Translation.Vector3ToString()},Matrix:\n{rT.TransformationMatrix}");
+                                arg.Log = $"对齐成功11 zero:{DistanceSetting.zeroM:F5},disNew:{disNew},Mode:{rT.Mode}";
+                                Debug.Log($"{arg} " + $" Trans:{rT.Translation.Vector3ToString()},Matrix:\n{rT.TransformationMatrix}");
                                 //Debug.LogError($"Mode:{rT.Mode},Trans:{rT.Translation.Vector3ToString()},Matrix:\n{rT.TransformationMatrix}");
                             }
                             else
                             {
-                                Debug.Log($"对齐成功12 zero:{DistanceSetting.zeroM:F5},disNew:{disNew},{arg} rT==null");
+                                arg.Log = $"对齐成功12 zero:{DistanceSetting.zeroM:F5},disNew:{disNew}";
+                                Debug.Log($"{arg} rT==null");
                             }
 
-                            EditorHelper.UnpackPrefab(arg.mfTo.gameObject);
-                            GameObject.DestroyImmediate(arg.mfTo.gameObject);
+                            arg.DestroyToObject();
                         }
                     }
                     else
@@ -496,15 +492,16 @@ public class AcRTAlignJobContainer
                         RTResult rT = result as RTResult;
                         if (rT != null)
                         {
-                            Debug.Log($"对齐成功01 zero:{DistanceSetting.zeroM:F5},dis:{rT.Distance},Mode:{rT.Mode},{arg} " + $" Trans:{rT.Translation.Vector3ToString()},Matrix:\n{rT.TransformationMatrix}");
+                            arg.Log = $"对齐成功01 zero:{DistanceSetting.zeroM:F5},dis:{rT.Distance},Mode:{rT.Mode}";
+                            Debug.Log($"{arg} " + $" Trans:{rT.Translation.Vector3ToString()},Matrix:\n{rT.TransformationMatrix}");
                             //Debug.LogError($"Mode:{rT.Mode},Trans:{rT.Translation.Vector3ToString()},Matrix:\n{rT.TransformationMatrix}");
                         }
                         else
                         {
-                            Debug.Log($"对齐成功02 zero:{DistanceSetting.zeroM:F5},dis:{rT.Distance},{arg} rT==null");
+                            arg.Log = $"对齐成功02 zero:{DistanceSetting.zeroM:F5},dis:{rT.Distance}";
+                            Debug.Log($"{arg} rT==null");
                         }
-
-                        GameObject.DestroyImmediate(arg.mfTo.gameObject);
+                        arg.DestroyToObject();
                     }
                     
                 }
@@ -512,8 +509,8 @@ public class AcRTAlignJobContainer
                 {
                     pref.RemoveMeshFilter(arg.mfFrom);
                     //newTargets.Add(arg.mfTo);
-
-                    Debug.LogWarning($"对齐失败(距离太大1) 距离:{result.Distance}, {arg}");
+                    arg.Log = $"对齐失败(距离太大1) 距离:{result.Distance:F4}";
+                    //Debug.LogWarning($"{arg}");
                     if(IsSetParent){
                         arg.mfTo.transform.SetParent(arg.mfFrom.transform);//关联相似的模型用于测试，测试好了要关闭。
                     }
@@ -524,8 +521,8 @@ public class AcRTAlignJobContainer
 
                     pref.RemoveMeshFilter(arg.mfFrom);
                     //newTargets.Add(arg.mfTo);
-
-                    Debug.LogWarning($"对齐失败(距离太大2) 距离:{result.Distance}, {arg}");
+                    arg.Log = $"对齐失败(距离太大2) 距离:{result.Distance:F4}";
+                    //Debug.LogWarning($"{arg}");
                 }
             }
             else
@@ -667,6 +664,18 @@ public class AcRTAlignJobContainer
 
             //break;
         }
+
+        double allT = 0;
+        allArg.Sort();
+
+        MeshComparer.Instance.SetArg(allArg[0]);
+        for (int i = 0; i < allArg.Count && i < 10; i++)
+        {
+            AcRtAlignJobArg arg = allArg[i];
+            Debug.LogError($"arg[{i}]:{arg}");
+            allT += arg.Time;
+        }
+        Debug.LogError($"GetPrefabs allArg:{allArg.Count} allT:{allT} t:{(DateTime.Now - start)}");
 
         ProgressBarHelper.ClearProgressBar();
 

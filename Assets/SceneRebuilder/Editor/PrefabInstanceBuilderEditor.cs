@@ -28,9 +28,25 @@ public class PrefabInstanceBuilderEditor : BaseFoldoutEditor<PrefabInstanceBuild
     public static void DrawTargetRoot(PrefabInstanceBuilder item)
     {
         GUILayout.BeginHorizontal();
-        item.TargetRoots = BaseEditorHelper.ObjectField(item.TargetRoots);
+        GameObject targetNew= BaseEditorHelper.ObjectField(item.TargetRoots);
+        if(item.TargetRoots!=targetNew)
+        {
+            item.TargetRoots = targetNew;
+            if(item.IsCopyTargetRoot==true && item.TargetRootsCopy!=null)
+            {
+                GameObject.DestroyImmediate(item.TargetRootsCopy);
+            }
+        }
+        
         item.IsCopyTargetRoot = GUILayout.Toggle(item.IsCopyTargetRoot, "IsCopy");
         item.TargetRootsCopy = BaseEditorHelper.ObjectField(item.TargetRootsCopy);
+        if (GUILayout.Button("X",GUILayout.Width(30)))
+        {
+            if (item.TargetRootsCopy != null)
+            {
+                GameObject.DestroyImmediate(item.TargetRootsCopy);
+            }
+        }
         if (GUILayout.Button("GetMeshFilters"))
         {
             item.GetMeshFilters();
@@ -41,6 +57,22 @@ public class PrefabInstanceBuilderEditor : BaseFoldoutEditor<PrefabInstanceBuild
     public static void DrawAlignTest(PrefabInstanceBuilder item)
     {
         GUILayout.BeginHorizontal();
+        GUILayout.Label("JobSize:", GUILayout.Width(60));
+        item.JobSize = EditorGUILayout.IntField(item.JobSize, GUILayout.Width(60));
+
+        AcRTAlignJobSetting setting = AcRTAlignJobSetting.Instance;
+        setting.IsSetParent = GUILayout.Toggle(setting.IsSetParent, "Parent", GUILayout.Width(60));
+
+        GUILayout.Label("TryModes:", GUILayout.Width(80));
+        setting.IsTryAngles = GUILayout.Toggle(setting.IsTryAngles, "Angle",GUILayout.Width(60));
+        setting.IsTryAngles_Scale = GUILayout.Toggle(setting.IsTryAngles_Scale, "Scale", GUILayout.Width(50));
+        setting.IsTryRT = GUILayout.Toggle(setting.IsTryRT, "RT", GUILayout.Width(40));
+        setting.IsTryICP = GUILayout.Toggle(setting.IsTryICP, "ICP", GUILayout.Width(100));
+        
+        GUILayout.EndHorizontal();
+
+        GUILayout.BeginHorizontal();
+        
         if (GUILayout.Button("MeshAlignJobs"))
         {
             item.MeshAlignJobs();
