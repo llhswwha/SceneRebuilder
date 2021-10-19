@@ -594,10 +594,16 @@ public class AcRigidTransform : MonoBehaviour {
         var vsFrom=MeshHelper.GetWorldVertexes(mfFrom);
         var vsTo=MeshHelper.GetWorldVertexes(mfTo);
         bool isFound=false;
-        Debug.Log($"RTAlign tpsFrom:{tpsFrom.Length} tpsTo:{tpsTo.Length}");
+        int tpsCount = tpsFrom.Length * tpsTo.Length;
+        Debug.LogError($"RTAlign tpsFrom:{tpsFrom.Length} tpsTo:{tpsTo.Length} tpsCount:{tpsCount}");
         for(int l=0;l<tpsFrom.Length;l++)
         {
             var tpFrom=tpsFrom[l];
+            //ProgressArg p1 = new ProgressArg("RTAlign", l, tpsFrom.Length);
+            //if (ProgressBarHelper.DisplayCancelableProgressBar(p1))
+            //{
+            //    break;
+            //}
             for(int k=0;k<tpsTo.Length;k++)
             {
                 var tpTo=tpsTo[k];
@@ -612,7 +618,14 @@ public class AcRigidTransform : MonoBehaviour {
                     minDis=dis;
                     minRT=rt;
                 }
-                Debug.Log($">>>RTAlignOneCore [{count}][{l},{k}]\tdis:{dis},\tIsZero:{rt.IsZero},\tIsReflection:{rt.IsReflection}\n{rt.TransformationMatrix}");
+
+                ProgressArg p1 = new ProgressArg("RTAlign", count, tpsCount);
+                if (ProgressBarHelper.DisplayCancelableProgressBar(p1))
+                {
+                    break;
+                }
+
+                //Debug.Log($">>>RTAlignOneCore [{count}/{tpsCount}][{l}/{tpsFrom.Length},{k}/{tpsTo.Length}]\tdis:{dis},\tIsZero:{rt.IsZero},\tIsReflection:{rt.IsReflection}\n{rt.TransformationMatrix}");
                 if(dis==0)
                 {
                     Debug.LogError($"RTAlignOneCore2 Time:{(DateTime.Now-start).TotalMilliseconds}ms");
@@ -627,8 +640,9 @@ public class AcRigidTransform : MonoBehaviour {
             }
             //break;
         }
+        ProgressBarHelper.ClearProgressBar();
 
-        if(isFound==false){
+        if (isFound==false){
             var vsNew=minRT.ApplyPoints(vsFrom);
             minRT.ApplyMatrix(tFrom, tTo);
             var gos=MeshHelper.ShowVertexes(vsNew,0.005f,tFrom);//0.1,0.005
@@ -639,7 +653,7 @@ public class AcRigidTransform : MonoBehaviour {
         //     minRT.ApplyMatrix(tFrom);
         // }
 
-         Debug.LogError($"RTAlignOneCore Count:{count},Time:{(DateTime.Now-start).TotalMilliseconds}ms,minDis:{minDis}");
+         Debug.LogError($"RTAlignOneCore Count:{count},Time:{(DateTime.Now-start).TotalMilliseconds:F1}ms,minDis:{minDis}");
     }
 
     public static AcRigidTransform acRigidTransform;

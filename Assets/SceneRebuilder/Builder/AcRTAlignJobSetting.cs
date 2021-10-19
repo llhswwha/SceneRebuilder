@@ -12,6 +12,10 @@ public class AcRTAlignJobSetting : SingletonBehaviour<AcRTAlignJobSetting>
 
     public bool IsTryAngles_Scale=true;
 
+    public bool IsTryRT = true;
+
+    public bool IsTryICP = true;
+
     public bool IsCheckResult=false;
 
     public bool IsSetParent=false;
@@ -23,7 +27,9 @@ public class AcRTAlignJobSetting : SingletonBehaviour<AcRTAlignJobSetting>
     {
          AcRTAlignJob.IsTryAngles=this.IsTryAngles;
          AcRTAlignJob.IsTryAngles_Scale=this.IsTryAngles_Scale;
-         AcRTAlignJobContainer.IsCheckResult=this.IsCheckResult;
+        AcRTAlignJob.IsTryRT = this.IsTryRT;
+        AcRTAlignJob.IsTryICP = this.IsTryICP;
+        AcRTAlignJobContainer.IsCheckResult=this.IsCheckResult;
 
          AcRTAlignJobContainer.IsSetParent=this.IsSetParent;
 

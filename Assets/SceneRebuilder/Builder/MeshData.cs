@@ -162,8 +162,13 @@ public class MeshData
     public Vector3 GetCenterP()
     {
         if(IsWorld)return center;
-        if(t==null) t=_obj.transform;
-        return t.TransformPoint(center);
+        return TransformPoint(center);
+    }
+
+    public Vector3 TransformPoint(Vector3 p)
+    {
+        if (t == null) t = _obj.transform;
+        return t.TransformPoint(p);
     }
 
     public Vector3 GetLongLine()
@@ -209,33 +214,45 @@ public class MeshData
 
     public Vector3 GetMaxP(int i)
     {
+        if (maxPList.Count == 0)
+        {
+            Debug.LogError($"MeshData.GetMaxP maxPList.Count == 0 i:{i} Count:{maxPList.Count}");
+            return Vector3.zero;
+        }
+        if(i<0||i>maxPList.Count)
+        {
+            Debug.LogError($"MeshData.GetMaxP i<0||i>maxPList.Count i:{i} Count:{maxPList.Count}");
+            return Vector3.zero;
+        }
         var p=maxPList[i];
         if(IsWorld)return p;
-        if(t==null) t=_obj.transform;
-        return t.TransformPoint(p);
+        return TransformPoint(p);
     }
 
     public Vector3 GetMinP(int i)
     {
+        if (maxPList.Count == 0)
+        {
+            Debug.LogError($"MeshData.GetMinP maxPList.Count == 0 i:{i} Count:{maxPList.Count}");
+            return Vector3.zero;
+        }
+        if (i < 0 || i > maxPList.Count)
+        {
+            Debug.LogError($"MeshData.GetMinP i<0||i>maxPList.Count i:{i} Count:{maxPList.Count}");
+            return Vector3.zero;
+        }
         var p=minPList[i];
         if(IsWorld)return p;
-        if(t==null) t=_obj.transform;
-        return t.TransformPoint(p);
+        return TransformPoint(p);
     }
 
     public Vector3 GetMaxP()
     {
-        // if(IsWorld)return maxP;
-        // if(t==null) t=_obj.transform;
-        // return t.TransformPoint(maxP);
         return GetMaxP(maxPId);
     }
 
     public Vector3 GetMinP()
     {
-        // if(IsWorld)return minP;
-        // if(t==null) t=_obj.transform;
-        // return t.TransformPoint(minP);
         return GetMinP(minPId);
     }
 
@@ -334,14 +351,8 @@ public class MeshData
 
         //Debug.LogWarning($"GetVertexCenterInfo vertexCount:{this.vertexCount},time:{(DateTime.Now-start).TotalMilliseconds}ms,center:{center},maxP:{maxP},minP:{minP},maxDis:{maxDis},minDis:{minDis},{maxPList.Count},{minPList.Count};centerOffset:{centerOffset}||[{name}]");
         if(maxPList.Count>1||minPList.Count>1){
-            Debug.LogError($"模型中心可能是对称的，存在多个最远点和最近点 {maxPList.Count},{minPList.Count}");
+            Debug.LogError($"模型中心可能是对称的，存在多个最远点和最近点 {maxPList.Count} * {minPList.Count} = {maxPList.Count * minPList.Count} maxDis:{maxDis} minDis:{minDis}");
         }
-        
-
-        // centerW=_obj.transform.TransformPoint(center);
-        // maxPW=_obj.transform.TransformPoint(maxP);
-        // minPW=_obj.transform.TransformPoint(minP);
-        // Debug.Log($"[{name}],centerW:{centerW},maxPW:{maxPW},minPW:{minPW}");
     }
 
     public List<MinMaxId> allMinMax = new List<MinMaxId>();

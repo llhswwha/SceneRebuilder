@@ -10,6 +10,7 @@ public interface IRTResult
 {
     int id {get;set;}
     float Distance {get;set;}
+    //double Time { get; set; }
     void ApplyMatrix(Transform tFrom,Transform tTo);
 }
 
@@ -17,6 +18,8 @@ public class RTResultList:List<RTResult>,IRTResult
 {
     public int id {get;set;}
     public float Distance {get;set;}
+    //public double Time { get; set; }
+
     public void ApplyMatrix(Transform tFrom, Transform tTo)
     {
         for(int i=0;i<this.Count;i++)
@@ -65,6 +68,8 @@ public class RTResult:IRTResult
         }
     }
 
+    //public double Time { get; set; }
+
     // private List<RTResult> SubResults=null;
 
     // public void AddSub(RTResult subR){
@@ -75,7 +80,7 @@ public class RTResult:IRTResult
     //     SubResults.Add(subR);
     // }
 
-     public void SetRT(Matrix3x3 r,UnityEngine.Vector3 t)
+    public void SetRT(Matrix3x3 r,UnityEngine.Vector3 t)
     {
         this.R=r;
         this.Translation=t;
