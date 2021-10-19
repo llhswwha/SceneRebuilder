@@ -20,6 +20,7 @@ public class PrefabInstanceBuilder : SingletonBehaviour<PrefabInstanceBuilder>
 
     public void SetTarget(GameObject root)
     {
+        Debug.Log($"PrefabInstanceBuilder.SetTarget root:{root}");
         TargetRoots = root;
 
         if(TargetRootsCopy!=null)

@@ -1227,7 +1227,7 @@ public class BaseFoldoutEditor<T> : BaseEditor<T> where T : class
         }
     }
 
-    protected bool DrawSharedMeshListEx(FoldoutEditorArg listArg, System.Func<SharedMeshInfoList> funcGetList)
+    protected bool DrawSharedMeshListEx(FoldoutEditorArg listArg, System.Func<SharedMeshInfoList> funcGetList,GameObject go=null)
     {
         bool isUpate = false;
         listArg.caption = $"SharedMesh List";
@@ -1238,9 +1238,9 @@ public class BaseFoldoutEditor<T> : BaseEditor<T> where T : class
         }
         EditorUIUtils.ToggleFoldout(listArg, arg =>
         {
-
-            arg.caption = $"SharedMesh List ({list.Count})";
-            arg.info = $"{MeshHelper.GetVertexCountS(list.sharedVertexCount)}/{MeshHelper.GetVertexCountS(list.totalVertexCount)}({list.sharedVertexCount / (float)list.totalVertexCount:P1})|{list.filterCount}";
+            string info = $"{MeshHelper.GetVertexCountS(list.sharedVertexCount)}/{MeshHelper.GetVertexCountS(list.totalVertexCount)}({list.sharedVertexCount / (float)list.totalVertexCount:P1})|{list.filterCount}";
+            arg.caption = $"SharedMesh List ({list.Count})\t{info}";
+            //arg.info = info;
             InitEditorArg(list);
         },
         () =>
@@ -1257,7 +1257,7 @@ public class BaseFoldoutEditor<T> : BaseEditor<T> where T : class
                 }
             }
             PrefabInstanceBuilder.Instance.JobSize=EditorGUILayout.IntField(PrefabInstanceBuilder.Instance.JobSize, GUILayout.Width(50));
-            if (GUILayout.Button("Prefabs", btnStyle, GUILayout.Width(66)))
+            if (GUILayout.Button("Pre1", btnStyle, GUILayout.Width(40)))
             {
                 SharedMeshInfoList list2= funcGetList();
                 //list.GetPrefabs();
@@ -1268,6 +1268,20 @@ public class BaseFoldoutEditor<T> : BaseEditor<T> where T : class
                 listArg.tag = funcGetList();
                 isUpate = true;
             }
+
+            if (GUILayout.Button("Pre2", btnStyle, GUILayout.Width(40)))
+            {
+                //SharedMeshInfoList list2 = funcGetList();
+                ////list.GetPrefabs();
+                //listArg.tag = list2;
+
+                PrefabInstanceBuilder.Instance.AcRTAlignJobsEx(go, true);
+
+                //listArg.tag = funcGetList();
+
+                isUpate = true;
+            }
+
             //if (GUILayout.Button("X1", btnStyle, GUILayout.Width(25)))
             //{
             //    list.Destroy(1);

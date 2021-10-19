@@ -138,10 +138,11 @@ public class MeshNodeEditor : BaseFoldoutEditor<MeshNode>
             //{
             //    sharedMeshListArg.tag = item.GetSharedMeshList();
             //}
-            bool isUpdate=DrawSharedMeshListEx(sharedMeshListArg,()=> item.GetSharedMeshList());
+            GameObject go = item.gameObject;
+            bool isUpdate=DrawSharedMeshListEx(sharedMeshListArg,()=> item.GetSharedMeshList(),go);
             if (isUpdate)
             {
-                MeshNode.InitNodes(item.gameObject);
+                MeshNode.InitNodes(go);
                 //sharedMeshListArg.tag = item.GetSharedMeshList();
             }
         }
