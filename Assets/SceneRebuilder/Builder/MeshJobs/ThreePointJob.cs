@@ -613,8 +613,12 @@ namespace MeshJobs
         }
     }
 
+    
+
     public static class TreePointJobHelper
     {
+        public static bool IsShowProgress = true;
+
         public static JobList<ThreePointJob> CreateThreePointJobs(MeshPoints[] meshFilters, int size)
         {
             //DateTime start = DateTime.Now;
@@ -625,12 +629,17 @@ namespace MeshJobs
 
             for (int i = 0; i < count; i++)
             {
-                float progress = (float)i / count;
-                float percents = progress * 100;
-                if (ProgressBarHelper.DisplayCancelableProgressBar("CompleteAllPage", $"CreateThreePointJobs:{i}/{count} {percents:F1}%", progress))
-                {
-                    break;
+                //float progress = (float)i / count;
+                //float percents = progress * 100;
+
+                if (IsShowProgress) {
+                    ProgressArg p1 = ProgressArg.New("ThreePointJob", i, count, null, JobHandleList.testProgressArg);
+                    if (ProgressBarHelper.DisplayCancelableProgressBar(p1))
+                    {
+                        break;
+                    }
                 }
+
 
                 MeshPoints filter = meshFilters[i];
 
@@ -642,7 +651,8 @@ namespace MeshJobs
                 job1.InitVertex(filter.vertices);
                 handles.Add(job1);
             }
-            ProgressBarHelper.ClearProgressBar();
+            if(IsShowProgress)
+                ProgressBarHelper.ClearProgressBar();
             //Debug.Log($"CreateThreePointJobs Time:{(DateTime.Now - start).TotalMilliseconds}ms");
             return handles;
         }
@@ -809,9 +819,14 @@ namespace MeshJobs
 
             //Result.Print();
 
-            if (this.maxPList.Length > 1 || this.minPList.Length > 1)
+            //if (this.maxPList.Length > 1 || this.minPList.Length > 1)
+            //{
+            //    Debug.LogError(string.Format("存在多个最远点和最近点! maxDis:{0},minDis:{1}", this.maxPList.Length, this.minPList.Length));
+            //}
+
+            if (maxPList.Length > 10 || minPList.Length > 10 || minPList.Length* maxPList.Length>64)
             {
-                Debug.LogError(string.Format("模型中心可能是对称的，存在多个最远点和最近点! maxDis:{0},minDis:{1}", this.maxPList.Length, this.minPList.Length));
+                Debug.LogError($"[ThreePointJob] 存在大量最远点和最近点! id:{id} goId:{goId}  maxDis:{maxPList.Length},minDis:{minPList.Length}");
             }
 
             //Debug.Log(string.Format("ThreePointJob[{0}] vertexCount:{1}",InvokeCount,vertexCount));

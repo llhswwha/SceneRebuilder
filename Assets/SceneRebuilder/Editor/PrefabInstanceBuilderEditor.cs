@@ -1,4 +1,6 @@
 using CodeStage.AdvancedFPSCounter.Editor.UI;
+using MeshJobs;
+using System;
 using System.Collections;
 using System.Collections.Generic;
 using UnityEditor;
@@ -61,9 +63,12 @@ public class PrefabInstanceBuilderEditor : BaseFoldoutEditor<PrefabInstanceBuild
         item.JobSize = EditorGUILayout.IntField(item.JobSize, GUILayout.Width(60));
 
         AcRTAlignJobSetting setting = AcRTAlignJobSetting.Instance;
+
+        GUILayout.Label("MinSize:", GUILayout.Width(60));
+        setting.CompareSizeMinValue = EditorGUILayout.FloatField(setting.CompareSizeMinValue, GUILayout.Width(50));
         setting.IsSetParent = GUILayout.Toggle(setting.IsSetParent, "Parent", GUILayout.Width(60));
 
-        GUILayout.Label("TryModes:", GUILayout.Width(80));
+        GUILayout.Label("TryModes:", GUILayout.Width(60));
         setting.IsTryAngles = GUILayout.Toggle(setting.IsTryAngles, "Angle",GUILayout.Width(60));
         setting.IsTryAngles_Scale = GUILayout.Toggle(setting.IsTryAngles_Scale, "Scale", GUILayout.Width(50));
         setting.IsTryRT = GUILayout.Toggle(setting.IsTryRT, "RT", GUILayout.Width(40));
@@ -92,6 +97,47 @@ public class PrefabInstanceBuilderEditor : BaseFoldoutEditor<PrefabInstanceBuild
         if (GUILayout.Button("* AcRTAlignJobsEx"))
         {
             item.AcRTAlignJobsEx();
+        }
+
+        if (GUILayout.Button("* TestList"))
+        {
+            //TreePointJobHelper.IsShowProgress = false;
+
+            //float[] minSize = new float[] { 1.01f, 1.05f, 1.1f, 1.25f, 1.5f, 2, 3, 0 };
+            float[] minSize = new float[] { 1.001f, 1.005f,1.01f, 1.05f, 1.1f, 1.25f,1.5f,2f };
+            string log = "";
+            DateTime start0 = DateTime.Now;
+            for (int i = 0; i < minSize.Length; i++)
+            {
+                float s = minSize[i];
+
+                ProgressArg p1 = new ProgressArg("TestList", i, minSize.Length, s);
+                JobHandleList.testProgressArg = p1;
+                //if (ProgressBarHelper.DisplayCancelableProgressBar(p1))
+                //{
+                //    break;
+                //}
+
+                DateTime start = DateTime.Now;
+                setting.CompareSizeMinValue = s;
+                if (item.TargetRootsCopy != null)
+                {
+                    GameObject.DestroyImmediate(item.TargetRootsCopy);
+                }
+                var prefabs=item.AcRTAlignJobsEx();
+               
+                if (prefabs == null)
+                {
+                    Debug.LogError("prefabs == null");
+                    break;
+                }
+                log += $"{item.TargetRoots.transform.parent.name}\t{item.TargetRoots.name}\t{AcRTAlignJobContainer.Last.targetCount}\t{item.PrefabInfoList.Count}\t{s}\t{DateTime.Now - start}\t{AcRTAlignJobContainer.Last.totalJobCount}\n";
+            }
+            JobHandleList.testProgressArg = null;
+            //TreePointJobHelper.IsShowProgress = true;
+            ProgressBarHelper.ClearProgressBar();
+
+            Debug.LogError($"time:{DateTime.Now - start0}\n{log}");
         }
 
         GUILayout.EndHorizontal();

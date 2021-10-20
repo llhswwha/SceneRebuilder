@@ -9,6 +9,7 @@ using UnityEngine.Jobs;
 using System;
 using static MeshJobs.MeshJobHelper;
 using System.Linq;
+using System.Text;
 
 namespace MeshJobs
 {
@@ -207,9 +208,16 @@ namespace MeshJobs
             Dicts.Clear();
         }
 
+        public bool AlignResult = false;
+
         public override string ToString()
         {
-            string argTxt = $"【{Log}】【time:{Time:F1}ms】【from:{this.mfFrom.name}[v:{this.mfFrom.vertexCount}],to:{this.mfTo.name}[v:{this.mfTo.vertexCount}]】";
+            //bool isSameSize = MeshHelper.IsSameSize(this.mfFrom, this.mfTo);
+            //float sizeCompare = MeshHelper.CompareSize(mfFrom, mfTo);
+            //string argTxt = $"【time:{Time:F0}】【{AlignResult}】【{sizeCompare:F3}】【{Log}】【from:{mfFrom.name}[v:{mfFrom.vertexCount}]{mfFrom.size},to:{mfTo.name}[v:{mfTo.vertexCount}]{mfTo.size}】";
+
+            string argTxt = $"【time:{Time:F0}】【{AlignResult}】【{MeshHelper.CompareSize_Debug(mfFrom, mfTo)}】【{Log}】【from:{mfFrom.name}[v:{mfFrom.vertexCount}]{mfFrom.size},to:{mfTo.name}[v:{mfTo.vertexCount}]{mfTo.size}】";
+
             if (Result != null)
             {
                 return $"{argTxt} 距离:{Result.Distance}";
@@ -474,16 +482,7 @@ namespace MeshJobs
         {
             ProgressIndex++;
 
-            //ProgressArg subProgress = new ProgressArg("AcRTAlignJob", ProgressIndex, ProgressMax, null);
-            //if (JobHandleList.progressArg != null)
-            //{
-            //    JobHandleList.progressArg.AddSubProgress(subProgress);
-            //    //if (ProgressBarHelper.DisplayCancelableProgressBar(JobHandleList.progressArg))
-            //    //{
-            //    //    IsCancel = true;
-            //    //}
-            //    Debug.LogError(JobHandleList.progressArg);
-            //}
+            //Debug.LogError($"！！！！！！ IsTryAngles:{IsTryAngles} IsTryAngles_Scale:{IsTryAngles_Scale}");
 
             DateTime start = DateTime.Now;
 
@@ -511,6 +510,43 @@ namespace MeshJobs
 
                 Vector3[] newVs2=new Vector3[vsFromL.Length];
                 //NativeArray<Vector3> newVs2=new NativeArray<Vector3>(vsFromL.Length,Allocator.Temp);
+
+                if (IsTryAngles_Scale == false)
+                {
+                    //StringBuilder sbScaleLog = new StringBuilder();
+                    //List<float> sizeFrom=MeshHelper.GetSizeList(vsFromW,vsFromId);
+                    //List<float> sizeTo = MeshHelper.GetSizeList(vsToW, vsToId);
+                    //List<float> scaleList = new List<float>();
+                    //for(int i=0;i<3;i++)
+                    //{
+                    //    float sizeScale = sizeTo[i] / sizeFrom[i];
+                    //    if(scaleList.Contains(sizeScale))
+                    //    {
+                    //        continue;
+                    //    }
+                    //    sbScaleLog.Append($"sizeScale[{i}]:{sizeScale}({sizeTo[i]}/{sizeFrom[i]});\t");
+                    //    scaleList.Add(sizeScale);
+                    //}
+
+                    //if (scaleList.Count == 1)
+                    //{
+                    //    //
+                    //}
+
+                    //scaleList.Sort();
+
+                    //for (int i = 0; i < scaleList.Count; i++)
+                    //{
+                    //    float scale = scaleList[i];
+                    //    sbScaleLog.Append($"scale[{i}]:{scale};\t");
+                    //}
+                    //var scaleMin = scaleList.First();
+                    //var scaleMax = scaleList.Last();
+                    //float scale_scale = scaleMax / scaleMin;
+                    //sbScaleLog.AppendLine($"scale_scale:{scale_scale}");
+
+                    //Debug.LogError($"sbScaleLog:{sbScaleLog}");
+                }
 
                 for(int i=0;i<4;i++)
                 {

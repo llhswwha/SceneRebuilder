@@ -318,7 +318,21 @@ public class ProgressArg
     //    this.tag = t;
     //}
 
-    public ProgressArg(string title,int i, int count, object t = null)
+    public static ProgressArg New(string title, int i, int count, object t = null, ProgressArg p0 = null)
+    {
+        ProgressArg subProgress = new ProgressArg(title, i, count, t);
+        if (p0 != null)
+        {
+            p0.AddSubProgress(subProgress);
+            return p0;
+        }
+        else
+        {
+            return subProgress;
+        }
+    }
+
+    public ProgressArg(string title,int i, int count, object t = null, ProgressArg p0=null)
     {
         this.title = title;
         this.i = i;
