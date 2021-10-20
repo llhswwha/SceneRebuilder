@@ -52,10 +52,14 @@ public class RendererIdEditor : BaseEditor<RendererId>
         {
             MeshHelper.CenterPivot(item.gameObject);
         }
-        if (GUILayout.Button("CenterMesh"))
+        if(GUILayout.Button("ZeroParent"))
         {
-            //MeshHelper.CenterMesh(item.gameObject);
+            MeshHelper.ZeroParent(item.gameObject);
         }
+        //if (GUILayout.Button("CenterMesh"))
+        //{
+        //    //MeshHelper.CenterMesh(item.gameObject);
+        //}
         if (GUILayout.Button("ShowRenderers"))
         {
             item.ShowRenderers();
@@ -287,6 +291,57 @@ public class RendererIdEditor : BaseEditor<RendererId>
             }
             ColliderHelper.CreateBoxCollider(item.gameObject, false);
         }
+        if(GUILayout.Button("AddPreName"))
+        {
+            string pName = item.gameObject.name+"_";
+            for(int i=0;i<item.transform.childCount;i++)
+            {
+                var child = item.transform.GetChild(i);
+                if (child.name.StartsWith(pName)) continue;
+                child.name = $"{pName}{child.name}";
+            }
+        }
+        if(GUILayout.Button("ReGroup"))
+        {
+            string pName = item.gameObject.name+"_";
+            Dictionary<string, List<Transform>> beforeNames = new Dictionary<string, List<Transform>>();
+            Dictionary<string, List<Transform>> afterNames = new Dictionary<string, List<Transform>>();
+            for(int i=0;i<item.transform.childCount;i++)
+            {
+                var child = item.transform.GetChild(i);
+                string cName = child.name;
+                if (cName.Contains("_") == false)
+                {
+
+                    continue;
+                }
+                string[] parts = cName.Split('_');
+                string n1 = parts[0];
+                string n2 = parts[1];
+                if(!beforeNames.ContainsKey(n1))
+                {
+                    beforeNames.Add(n1,new List<Transform>());
+                }
+                beforeNames[n1].Add(child);
+
+                if (!afterNames.ContainsKey(n2))
+                {
+                    afterNames.Add(n2,new List<Transform>());
+                }
+                afterNames[n2].Add(child);
+            }
+            foreach(var n in afterNames.Keys)
+            {
+                GameObject go = new GameObject(n);
+                var list = afterNames[n];
+                go.transform.SetParent(item.gameObject.transform);
+                foreach(var child in list)
+                {
+                    child.SetParent(go.transform);
+                }
+            }
+        }
+
         EditorGUILayout.EndHorizontal();
 
         EditorGUILayout.BeginHorizontal();
