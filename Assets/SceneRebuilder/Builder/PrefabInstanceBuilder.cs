@@ -748,10 +748,16 @@ UnpackPrefab();
     }
 
 
-    public void SetPrefabInfoList(PrefabInfoList list){
+    public bool SetPrefabInfoList(PrefabInfoList list){
+
         //PrefabInfoList.Clear();
         PrefabInfoList = list;
+        if (list == null)
+        {
+            return false;
+        }
         PrefabInfoListBags.SetPrefabInfoList(list, InsCountList);
+        return true;
     }
 
     // public bool IsTryAngles=true;

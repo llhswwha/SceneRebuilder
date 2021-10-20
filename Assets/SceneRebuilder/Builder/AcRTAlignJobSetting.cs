@@ -22,6 +22,8 @@ public class AcRTAlignJobSetting : SingletonBehaviour<AcRTAlignJobSetting>
 
     public float MaxVertexCount=10;
 
+    public float CompareSizeMinValue = 1.5f;
+
     [ContextMenu("SetAcRTAlignJobSetting")]
     public void SetAcRTAlignJobSetting()
     {
@@ -30,7 +32,7 @@ public class AcRTAlignJobSetting : SingletonBehaviour<AcRTAlignJobSetting>
         AcRTAlignJob.IsTryRT = this.IsTryRT;
         AcRTAlignJob.IsTryICP = this.IsTryICP;
         AcRTAlignJobContainer.IsCheckResult=this.IsCheckResult;
-
+        AcRTAlignJobContainer.CompareSizeMinValue = this.CompareSizeMinValue;
          AcRTAlignJobContainer.IsSetParent=this.IsSetParent;
 
          AcRTAlignJobContainer.MaxVertexCount=(int)(this.MaxVertexCount*10000);

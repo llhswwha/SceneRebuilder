@@ -2,6 +2,8 @@ using MeshJobs;
 using System;
 using System.Collections;
 using System.Collections.Generic;
+using System.Linq;
+using System.Text;
 using Unity.ComnLib.Utils;
 #if UNITY_EDITOR
 using UnityEditor;
@@ -1193,6 +1195,120 @@ public static class MeshHelper
         if(meshFilter==null)return null;
         Vector3[] vs=GetWorldVertexes(meshFilter);
         return GetMinMax(vs);
+    }
+
+    //public static Dictionary<int, List<float>> SizeListBuffer = new Dictionary<int, List<float>>();
+
+    public static List<float> GetSizeList(Vector3[] vs,int id)
+    {
+        //if (SizeListBuffer.ContainsKey(id))
+        //{
+        //    return SizeListBuffer[id];
+        //}
+        var minMax = GetMinMax(vs);
+        var size = minMax[2];
+        List<float> sizeList = new List<float>() { size.x, size.y, size.z };
+        sizeList.Sort();
+
+        //SizeListBuffer.Add(id, sizeList);
+
+        return sizeList;
+    }
+
+    public static float CompareSize(MeshPoints ps1, MeshPoints ps2)
+    {
+        StringBuilder sbScaleLog = new StringBuilder();
+        List<float> sizeFrom = ps1.GetSizeList();
+        List<float> sizeTo = ps2.GetSizeList();
+        List<float> scaleList = new List<float>();
+        for (int i = 0; i < 3; i++)
+        {
+            float sizeScale = sizeTo[i] / sizeFrom[i];
+            if (scaleList.Contains(sizeScale))
+            {
+                continue;
+            }
+            sbScaleLog.Append($"sizeScale[{i}]:{sizeScale}({sizeTo[i]}/{sizeFrom[i]});\t");
+            scaleList.Add(sizeScale);
+        }
+
+        if (scaleList.Count == 1)
+        {
+            //
+        }
+
+        scaleList.Sort();
+
+        float sum = 0;
+        float avg = 0;
+        for (int i = 0; i < scaleList.Count; i++)
+        {
+            float scale = scaleList[i];
+            sbScaleLog.Append($"scale[{i}]:{scale};\t");
+            sum += scale;
+        }
+        avg = sum / scaleList.Count;
+
+        var scaleMin = scaleList.First();
+        var scaleMax = scaleList.Last();
+        float scale_scale = scaleMax / scaleMin;
+        sbScaleLog.AppendLine($"scale_scale:{scale_scale}");
+        //bool isSame = scale_scale < 1.01;
+
+        //Debug.LogError($"IsSameSize ps1:{ps1.name} ps2:{ps2.name} result:{isSame} ss:{scale_scale} log:{sbScaleLog}");
+        return scale_scale;
+    }
+
+    public static string CompareSize_Debug(MeshPoints ps1, MeshPoints ps2)
+    {
+        StringBuilder sbScaleLog = new StringBuilder();
+        List<float> sizeFrom = ps1.GetSizeList();
+        List<float> sizeTo = ps2.GetSizeList();
+        List<float> scaleList = new List<float>();
+        for (int i = 0; i < 3; i++)
+        {
+            float sizeScale = sizeTo[i] / sizeFrom[i];
+            if (scaleList.Contains(sizeScale))
+            {
+                continue;
+            }
+            sbScaleLog.Append($"sizeScale[{i}]:{sizeScale}({sizeTo[i]}/{sizeFrom[i]});\t");
+            scaleList.Add(sizeScale);
+        }
+
+        if (scaleList.Count == 1)
+        {
+            //
+        }
+
+        scaleList.Sort();
+
+        string txt = "";
+        float sum = 0;
+        float avg = 0;
+        for (int i = 0; i < scaleList.Count; i++)
+        {
+            float scale = scaleList[i];
+            sbScaleLog.Append($"scale[{i}]:{scale};\t");
+            sum += scale;
+            txt += scale + ";";
+        }
+        avg = sum / scaleList.Count;
+
+        var scaleMin = scaleList.First();
+        var scaleMax = scaleList.Last();
+        float scale_scale = scaleMax / scaleMin;
+        sbScaleLog.AppendLine($"scale_scale:{scale_scale}");
+        //bool isSame = scale_scale < 1.01;
+
+        //Debug.LogError($"IsSameSize ps1:{ps1.name} ps2:{ps2.name} result:{isSame} ss:{scale_scale} log:{sbScaleLog}");
+        return $"avg:{avg} max/min:{scale_scale} list:{txt}";
+    }
+
+    public static bool IsSameSize(MeshPoints ps1,MeshPoints ps2)
+    {
+        float ss = CompareSize(ps1, ps2);
+        return ss < 1.05;
     }
 
     public static Vector3[] GetMinMax(Vector3[] vs)

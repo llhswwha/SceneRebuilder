@@ -1586,18 +1586,22 @@ public static class BaseFoldoutEditorHelper
         EditorUIUtils.ToggleFoldout(prefabListArg, arg =>
         {
             var prefabs = funcGetList();
-            int vCount = 0;
-            int vAllCount = 0;
-            int rCount = 0;
-            prefabs.ForEach(i =>
+            if (prefabs != null)
             {
-                vCount += i.VertexCount;
-                vAllCount += i.VertexCount * (i.InstanceCount + 1);
-                rCount += (i.InstanceCount + 1);
-            });
-            arg.caption = $"Prefab List ({prefabs.Count})";
-            arg.info = $"r:{rCount}|{MeshHelper.GetVertexCountS(vCount)}/{MeshHelper.GetVertexCountS(vAllCount)}({(float)vCount / vAllCount:P1})";
-            FoldoutEditorArgBuffer.InitEditorArg(prefabs);
+                int vCount = 0;
+                int vAllCount = 0;
+                int rCount = 0;
+                prefabs.ForEach(i =>
+                {
+                    vCount += i.VertexCount;
+                    vAllCount += i.VertexCount * (i.InstanceCount + 1);
+                    rCount += (i.InstanceCount + 1);
+                });
+                arg.caption = $"Prefab List ({prefabs.Count})";
+                arg.info = $"r:{rCount}|{MeshHelper.GetVertexCountS(vCount)}/{MeshHelper.GetVertexCountS(vAllCount)}({(float)vCount / vAllCount:P1})";
+                FoldoutEditorArgBuffer.InitEditorArg(prefabs);
+            }
+
         },
         () =>
         {

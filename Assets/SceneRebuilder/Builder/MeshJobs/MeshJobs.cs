@@ -7,12 +7,18 @@ using Unity.Collections;
 using Unity.Mathematics;
 using UnityEngine.Jobs;
 using System;
+using System.Linq;
 
 namespace MeshJobs
 {
     [Serializable]
     public class MeshPoints
     {
+        public bool IsSameSize(MeshPoints other)
+        {
+            return false;
+        }
+
         public static List<MeshPoints> GetMeshPoints(MeshFilter[] meshFilters)
         {
             List<MeshPoints> meshPoints = new List<MeshPoints>();
@@ -22,6 +28,18 @@ namespace MeshJobs
                     meshPoints.Add(new MeshPoints(mf.gameObject));
                 }
             return meshPoints;
+        }
+
+        private List<float> sizeList = null;
+
+        public List<float> GetSizeList()
+        {
+            if (sizeList == null)
+            {
+                sizeList = new List<float>() { size.x, size.y, size.z };
+                sizeList.Sort();
+            }
+            return sizeList;
         }
 
         public Vector3[] vertices;
@@ -703,7 +721,7 @@ namespace MeshJobs
                 }
                 else
                 {
-                    Debug.LogError($"对齐失败2 {mfFrom.name}({mfFrom.vertexCount}) -> {mfTo.name}({mfTo.vertexCount}) 距离:{result.Distance} zeroM:{DistanceSetting.zeroM:F5} zeroP:{DistanceSetting.zeroP:F5}");
+                    Debug.LogError($"对齐失败2 {mfFrom.name}({mfFrom.vertexCount})({mfFrom.size}) -> {mfTo.name}({mfTo.vertexCount})({mfTo.size}) 距离:{result.Distance} zeroM:{DistanceSetting.zeroM:F5} zeroP:{DistanceSetting.zeroP:F5}");
                     return false;
                 }
 
@@ -962,6 +980,12 @@ namespace MeshJobs
             RestoreParent(parentDict);
 
             Debug.LogError($"NewAcRTAlignJobsEx meshFilters:{meshFilters.Length},vertexCount:{MeshHelper.GetVertexCountS(vc)} Time:{(DateTime.Now - start)}s");
+
+            if (jobContainer.IsBreak)
+            {
+                Debug.LogError("Job Break!!");
+                return null;
+            }
             return preafbs;
         }
 
@@ -1105,7 +1129,7 @@ namespace MeshJobs
                 int progressCount=targetCount-count2;
                 //float progress1 = (float)progressCount / targetCount;
                 ProgressArg arg1 = new ProgressArg("NewMeshAlignJobs", progressCount, targetCount);
-                JobHandleList.progressArg = arg1;
+                JobHandleList.SetJobProgress(arg1);
                 if (ProgressBarHelper.DisplayCancelableProgressBar(arg1))
                 {
                     Debug.LogError("Break Jobs!!");
