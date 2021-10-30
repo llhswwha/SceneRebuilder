@@ -1,0 +1,491 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!1 &5714013504726517108
+GameObject:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  serializedVersion: 6
+  m_Component:
+  - component: {fileID: 5714013504726517106}
+  - component: {fileID: 5714013504726517107}
+  m_Layer: 0
+  m_Name: SamplePipe1
+  m_TagString: Untagged
+  m_Icon: {fileID: 0}
+  m_NavMeshLayer: 0
+  m_StaticEditorFlags: 0
+  m_IsActive: 1
+--- !u!4 &5714013504726517106
+Transform:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 5714013504726517108}
+  m_LocalRotation: {x: -0, y: -0, z: -0, w: 1}
+  m_LocalPosition: {x: 4.379011, y: 3.2016287, z: -12.076363}
+  m_LocalScale: {x: 1, y: 1, z: 1}
+  m_Children: []
+  m_Father: {fileID: 2317906555817050808}
+  m_RootOrder: 0
+  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
+--- !u!114 &5714013504726517107
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 5714013504726517108}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 173e16e941149d143881c6b515015836, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  points:
+  - {x: 0, y: 0, z: 0}
+  - {x: 0, y: 2, z: 0}
+  - {x: 5, y: 3, z: 0}
+  - {x: 3, y: 3, z: 4}
+  - {x: 2, y: 0, z: 3}
+  - {x: 1, y: 5, z: 4}
+  pipeRadius: 0.2
+  elbowRadius: 0.5
+  pipeSegments: 12
+  elbowSegments: 8
+  pipeMaterial: {fileID: 2100000, guid: 5a39d4e4c1b1d484d93be45b0ff880a4, type: 2}
+  flatShading: 0
+  avoidStrangling: 1
+  generateEndCaps: 0
+  generateElbows: 1
+  generateOnStart: 1
+  makeDoubleSided: 0
+  colinearThreshold: 0.001
+--- !u!1 &5714013505012644753
+GameObject:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  serializedVersion: 6
+  m_Component:
+  - component: {fileID: 5714013505012644767}
+  - component: {fileID: 5714013505012644752}
+  m_Layer: 0
+  m_Name: SamplePipe2
+  m_TagString: Untagged
+  m_Icon: {fileID: 0}
+  m_NavMeshLayer: 0
+  m_StaticEditorFlags: 0
+  m_IsActive: 1
+--- !u!4 &5714013505012644767
+Transform:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 5714013505012644753}
+  m_LocalRotation: {x: -0, y: -0, z: -0, w: 1}
+  m_LocalPosition: {x: 4.379011, y: 3.2016287, z: -12.076363}
+  m_LocalScale: {x: 1, y: 1, z: 1}
+  m_Children: []
+  m_Father: {fileID: 2317906555817050808}
+  m_RootOrder: 1
+  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
+--- !u!114 &5714013505012644752
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 5714013505012644753}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 173e16e941149d143881c6b515015836, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  points:
+  - {x: 5, y: 0, z: 5}
+  - {x: 5, y: 3, z: 5}
+  - {x: 5, y: 3, z: 7}
+  - {x: 5, y: 3, z: 10}
+  - {x: 5, y: 0, z: 10}
+  pipeRadius: 0.5
+  elbowRadius: 1
+  pipeSegments: 12
+  elbowSegments: 8
+  pipeMaterial: {fileID: 2100000, guid: 3a2aff380c3cb7c4993dfc549f8dc7c9, type: 2}
+  flatShading: 1
+  avoidStrangling: 1
+  generateEndCaps: 0
+  generateElbows: 1
+  generateOnStart: 1
+  makeDoubleSided: 0
+  colinearThreshold: 0.001
+--- !u!1 &5714013505324299539
+GameObject:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  serializedVersion: 6
+  m_Component:
+  - component: {fileID: 5714013505324299536}
+  - component: {fileID: 5714013505324299537}
+  - component: {fileID: 5714013505324299538}
+  m_Layer: 0
+  m_Name: RandomPipe2
+  m_TagString: Untagged
+  m_Icon: {fileID: 0}
+  m_NavMeshLayer: 0
+  m_StaticEditorFlags: 0
+  m_IsActive: 1
+--- !u!4 &5714013505324299536
+Transform:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 5714013505324299539}
+  m_LocalRotation: {x: -0, y: -0, z: -0, w: 1}
+  m_LocalPosition: {x: 4.379011, y: 3.2016287, z: -12.076363}
+  m_LocalScale: {x: 1, y: 1, z: 1}
+  m_Children: []
+  m_Father: {fileID: 2317906555817050808}
+  m_RootOrder: 6
+  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
+--- !u!114 &5714013505324299537
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 5714013505324299539}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 173e16e941149d143881c6b515015836, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  points: []
+  pipeRadius: 0.05
+  elbowRadius: 0.2
+  pipeSegments: 8
+  elbowSegments: 6
+  pipeMaterial: {fileID: 2100000, guid: 3a2aff380c3cb7c4993dfc549f8dc7c9, type: 2}
+  flatShading: 1
+  avoidStrangling: 1
+  generateEndCaps: 0
+  generateElbows: 0
+  generateOnStart: 0
+  makeDoubleSided: 0
+  colinearThreshold: 0.001
+--- !u!114 &5714013505324299538
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 5714013505324299539}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 396937c5dfd76b14da0e2107d925d5f8, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  numberOfPoints: 15
+  range: 5
+--- !u!1 &5714013505451793022
+GameObject:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  serializedVersion: 6
+  m_Component:
+  - component: {fileID: 5714013505451793019}
+  - component: {fileID: 5714013505451793020}
+  - component: {fileID: 5714013505451793021}
+  m_Layer: 0
+  m_Name: RandomPipe1
+  m_TagString: Untagged
+  m_Icon: {fileID: 0}
+  m_NavMeshLayer: 0
+  m_StaticEditorFlags: 0
+  m_IsActive: 1
+--- !u!4 &5714013505451793019
+Transform:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 5714013505451793022}
+  m_LocalRotation: {x: -0, y: -0, z: -0, w: 1}
+  m_LocalPosition: {x: 4.379011, y: 3.2016287, z: -12.076363}
+  m_LocalScale: {x: 1, y: 1, z: 1}
+  m_Children: []
+  m_Father: {fileID: 2317906555817050808}
+  m_RootOrder: 5
+  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
+--- !u!114 &5714013505451793020
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 5714013505451793022}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 173e16e941149d143881c6b515015836, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  points: []
+  pipeRadius: 0.05
+  elbowRadius: 0.2
+  pipeSegments: 8
+  elbowSegments: 6
+  pipeMaterial: {fileID: 2100000, guid: 2bfc4f99913af0f49983b96c399294fb, type: 2}
+  flatShading: 0
+  avoidStrangling: 1
+  generateEndCaps: 0
+  generateElbows: 1
+  generateOnStart: 0
+  makeDoubleSided: 0
+  colinearThreshold: 0.001
+--- !u!114 &5714013505451793021
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 5714013505451793022}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 396937c5dfd76b14da0e2107d925d5f8, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  numberOfPoints: 15
+  range: 5
+--- !u!1 &5714013505565933844
+GameObject:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  serializedVersion: 6
+  m_Component:
+  - component: {fileID: 5714013505565933842}
+  - component: {fileID: 5714013505565933843}
+  m_Layer: 0
+  m_Name: SamplePipe3
+  m_TagString: Untagged
+  m_Icon: {fileID: 0}
+  m_NavMeshLayer: 0
+  m_StaticEditorFlags: 0
+  m_IsActive: 1
+--- !u!4 &5714013505565933842
+Transform:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 5714013505565933844}
+  m_LocalRotation: {x: -0, y: -0, z: -0, w: 1}
+  m_LocalPosition: {x: 9.379011, y: 1.2016287, z: -12.076363}
+  m_LocalScale: {x: 1, y: 1, z: 1}
+  m_Children: []
+  m_Father: {fileID: 2317906555817050808}
+  m_RootOrder: 2
+  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
+--- !u!114 &5714013505565933843
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 5714013505565933844}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 173e16e941149d143881c6b515015836, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  points:
+  - {x: 0, y: 0, z: 0}
+  - {x: 0, y: 2, z: 0}
+  - {x: 2, y: 2, z: 0}
+  - {x: 2, y: 2, z: 2}
+  - {x: 2, y: 4, z: 2}
+  - {x: 4, y: 4, z: 2}
+  - {x: 4, y: 4, z: 4}
+  - {x: 4, y: 6, z: 4}
+  - {x: 6, y: 6, z: 4}
+  - {x: 6, y: 6, z: 6}
+  - {x: 6, y: 8, z: 6}
+  - {x: 8, y: 8, z: 6}
+  - {x: 8, y: 8, z: 8}
+  pipeRadius: 0.1
+  elbowRadius: 0.4
+  pipeSegments: 8
+  elbowSegments: 6
+  pipeMaterial: {fileID: 2100000, guid: 017b37ee0723e1e449ddfee308ea9d58, type: 2}
+  flatShading: 0
+  avoidStrangling: 1
+  generateEndCaps: 0
+  generateElbows: 1
+  generateOnStart: 1
+  makeDoubleSided: 0
+  colinearThreshold: 0.001
+--- !u!1 &5714013505773214422
+GameObject:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  serializedVersion: 6
+  m_Component:
+  - component: {fileID: 5714013505773214420}
+  - component: {fileID: 5714013505773214421}
+  m_Layer: 0
+  m_Name: SamplePipe5
+  m_TagString: Untagged
+  m_Icon: {fileID: 0}
+  m_NavMeshLayer: 0
+  m_StaticEditorFlags: 0
+  m_IsActive: 1
+--- !u!4 &5714013505773214420
+Transform:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 5714013505773214422}
+  m_LocalRotation: {x: -0, y: -0, z: -0, w: 1}
+  m_LocalPosition: {x: 9.379011, y: 1.2016287, z: -4.0763626}
+  m_LocalScale: {x: 1, y: 1, z: 1}
+  m_Children: []
+  m_Father: {fileID: 2317906555817050808}
+  m_RootOrder: 4
+  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
+--- !u!114 &5714013505773214421
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 5714013505773214422}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 173e16e941149d143881c6b515015836, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  points:
+  - {x: 3, y: 6, z: 5}
+  - {x: 27, y: 6, z: 44}
+  pipeRadius: 1.5
+  elbowRadius: 1.5
+  pipeSegments: 12
+  elbowSegments: 6
+  pipeMaterial: {fileID: 2100000, guid: 0d845978bd61a8d47b9341af7732622c, type: 2}
+  flatShading: 1
+  avoidStrangling: 1
+  generateEndCaps: 0
+  generateElbows: 0
+  generateOnStart: 1
+  makeDoubleSided: 1
+  colinearThreshold: 0.001
+--- !u!1 &5714013505826180874
+GameObject:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  serializedVersion: 6
+  m_Component:
+  - component: {fileID: 5714013505826180872}
+  - component: {fileID: 5714013505826180873}
+  m_Layer: 0
+  m_Name: SamplePipe4
+  m_TagString: Untagged
+  m_Icon: {fileID: 0}
+  m_NavMeshLayer: 0
+  m_StaticEditorFlags: 0
+  m_IsActive: 1
+--- !u!4 &5714013505826180872
+Transform:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 5714013505826180874}
+  m_LocalRotation: {x: -0, y: -0, z: -0, w: 1}
+  m_LocalPosition: {x: 9.379011, y: 1.2016287, z: -4.0763626}
+  m_LocalScale: {x: 1, y: 1, z: 1}
+  m_Children: []
+  m_Father: {fileID: 2317906555817050808}
+  m_RootOrder: 3
+  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
+--- !u!114 &5714013505826180873
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 5714013505826180874}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 173e16e941149d143881c6b515015836, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  points:
+  - {x: 0, y: 0, z: 0}
+  - {x: 0, y: 0, z: 5}
+  - {x: -3, y: 5, z: 5}
+  - {x: -5, y: 2, z: 5}
+  pipeRadius: 0.7
+  elbowRadius: 1.5
+  pipeSegments: 12
+  elbowSegments: 6
+  pipeMaterial: {fileID: 2100000, guid: 017b37ee0723e1e449ddfee308ea9d58, type: 2}
+  flatShading: 0
+  avoidStrangling: 1
+  generateEndCaps: 1
+  generateElbows: 1
+  generateOnStart: 1
+  makeDoubleSided: 0
+  colinearThreshold: 0.001
+--- !u!1 &6936187329983731514
+GameObject:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  serializedVersion: 6
+  m_Component:
+  - component: {fileID: 2317906555817050808}
+  m_Layer: 0
+  m_Name: SamplePipe
+  m_TagString: Untagged
+  m_Icon: {fileID: 0}
+  m_NavMeshLayer: 0
+  m_StaticEditorFlags: 0
+  m_IsActive: 1
+--- !u!4 &2317906555817050808
+Transform:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 6936187329983731514}
+  m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
+  m_LocalPosition: {x: -4.379011, y: -3.2016287, z: 12.076363}
+  m_LocalScale: {x: 1, y: 1, z: 1}
+  m_Children:
+  - {fileID: 5714013504726517106}
+  - {fileID: 5714013505012644767}
+  - {fileID: 5714013505565933842}
+  - {fileID: 5714013505826180872}
+  - {fileID: 5714013505773214420}
+  - {fileID: 5714013505451793019}
+  - {fileID: 5714013505324299536}
+  m_Father: {fileID: 0}
+  m_RootOrder: 0
+  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}

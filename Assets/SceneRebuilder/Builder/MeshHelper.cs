@@ -79,23 +79,33 @@ public static class MeshHelper
         return true;
     }
 
-    public static bool IsEmptyGroup(Transform t)
+    public static bool IsEmptyGroup(Transform t,bool isDebug)
     {
-        if (t.childCount == 0) return false;
-        if (IsEmptyObject(t) == false) return false;
+        if(isDebug)Debug.Log($"IsChildrenAllEmpty {t}");
+
+        if (t.childCount == 0)
+        {
+            if (isDebug) Debug.Log($"t.childCount == 0");
+            return false;
+        }
+        if (IsEmptyObject(t) == false)
+        {
+            if (isDebug) Debug.Log($"IsEmptyObject(t) == false");
+            return false;
+        }
         for (int i = 0; i < t.childCount; i++)
         {
             var child = t.GetChild(i);
             if (IsEmptyChildObject(child) == false)
             {
+                if (isDebug) Debug.Log($"IsEmptyChildObject(child) == false child:{child} i:{i}");
                 return false;
             }
         }
-        Debug.Log($"IsChildrenAllEmpty {t}");
         return true;
     }
 
-    public static bool IsEmptyObject(Transform t)
+    public static bool IsEmptyObject(Transform t,bool isLog=false)
     {
         var components = t.GetComponents<Component>();
         if (components.Length == 1) return true;
@@ -103,7 +113,14 @@ public static class MeshHelper
         foreach(var c in components)
         {
             var type = c.GetType();
-            if (typesOfEmptyObject.Contains(type) == false) return false;
+            if (typesOfEmptyObject.Contains(type) == false)
+            {
+                if (isLog)
+                {
+                    Debug.LogError($"IsEmptyObject type:{type}");
+                }
+                return false;
+            }
         }
         return r;
     }

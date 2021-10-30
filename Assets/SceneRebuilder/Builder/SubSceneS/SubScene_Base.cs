@@ -472,7 +472,7 @@ public class SubScene_Base : MonoBehaviour
     [ContextMenu("LoadSceneAsync")]
     public void TestLoadSceneAsync()
     {
-        StartCoroutine(LoadSceneAsyncCoroutine(null));
+        SubSceneManager.Instance.StartCoroutine(LoadSceneAsyncCoroutine(null));
     }
 
     //[ContextMenu("LoadSceneAsync")]
@@ -488,7 +488,7 @@ public class SubScene_Base : MonoBehaviour
             return;
         }
 
-        //StartCoroutine(EditorHelper.LoadSceneAsync(GetSceneName(), progress=>
+        //SubSceneManager.Instance.StartCoroutine(EditorHelper.LoadSceneAsync(GetSceneName(), progress=>
         //{
         //    loadProgress = progress;
         //    Debug.Log("progress:"+ progress);
@@ -512,16 +512,16 @@ public class SubScene_Base : MonoBehaviour
             HideBoundsBox();
             this.gameObject.SetActive(true);
         }
-        if (this.gameObject.activeInHierarchy == true)
-        {
-            StartCoroutine(LoadSceneAsyncCoroutine(callback));
-        }
-        else{
-            if(callback!=null){
-                callback(false,this);
-            }
-             Debug.LogError("[SubScene_Base.LoadSceneAsync]this.gameObject.activeInHierarchy == false :" + name);
-        }
+        //if (this.gameObject.activeInHierarchy == true)
+        //{
+            SubSceneManager.Instance.StartCoroutine(LoadSceneAsyncCoroutine(callback));
+        //}
+        //else{
+        //    if(callback!=null){
+        //        callback(false,this);
+        //    }
+        //     Debug.LogError("[SubScene_Base.LoadSceneAsync]this.gameObject.activeInHierarchy == false :" + name);
+        //}
     }
     [ContextMenu("UnLoadSceneAsync2")]
     public void TestUnLoadSceneAsync()
@@ -540,7 +540,7 @@ public class SubScene_Base : MonoBehaviour
         }
         //DestoryGosImmediate();
         UnLoadGos();
-        StartCoroutine(EditorHelper.UnLoadSceneAsync(GetSceneArg(), progress =>
+        SubSceneManager.Instance.StartCoroutine(EditorHelper.UnLoadSceneAsync(GetSceneArg(), progress =>
         {
             loadProgress = progress;
             Debug.Log("progress:" + progress);

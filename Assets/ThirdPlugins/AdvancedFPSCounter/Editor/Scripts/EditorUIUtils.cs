@@ -143,7 +143,7 @@ namespace CodeStage.AdvancedFPSCounter.Editor.UI
 			}
             EditorGUILayout.LabelField("PageIndex:",GUILayout.Width(100));
             pageId_selected = EditorGUILayout.IntPopup( pageId_selected, pageId_names, pageId_sizes);
-            EditorGUILayout.LabelField("/"+pageCount, GUILayout.Width(30));
+            EditorGUILayout.LabelField("/"+pageCount, GUILayout.Width(50));
         }
 
 		public void DrawPageToolbar(int count)

@@ -63,6 +63,52 @@ MonoBehaviour:
   maxTestCount: 1
   JobSize: 10000
   MaxICPCount: 5
+--- !u!1 &1811392824063205521
+GameObject:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  serializedVersion: 6
+  m_Component:
+  - component: {fileID: 8393683814702682353}
+  - component: {fileID: 5664626751036557637}
+  m_Layer: 0
+  m_Name: MeshReplace
+  m_TagString: Untagged
+  m_Icon: {fileID: 0}
+  m_NavMeshLayer: 0
+  m_StaticEditorFlags: 0
+  m_IsActive: 1
+--- !u!4 &8393683814702682353
+Transform:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1811392824063205521}
+  m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
+  m_LocalPosition: {x: 0, y: 0, z: 0}
+  m_LocalScale: {x: 1, y: 1, z: 1}
+  m_Children: []
+  m_Father: {fileID: 4998335353989864117}
+  m_RootOrder: 1
+  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
+--- !u!114 &5664626751036557637
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1811392824063205521}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: eff245cc7c610c94f8bd7029c39baec5, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  prefab: {fileID: 0}
+  target: {fileID: 0}
+  isDestoryOriginal: 1
 --- !u!1 &2077698398223865096
 GameObject:
   m_ObjectHideFlags: 0
@@ -93,6 +139,8 @@ Transform:
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_Children:
   - {fileID: 7601942615265780418}
+  - {fileID: 8393683814702682353}
+  - {fileID: 6298165648418949738}
   m_Father: {fileID: 0}
   m_RootOrder: 0
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
@@ -17803,7 +17851,7 @@ MonoBehaviour:
   TryRotateAngleCount: 20
   centerOffset: {x: 0.0005, y: 0.001, z: 0.0015}
   testModelOff: {x: 1, y: 1, z: 1}
-  IsCopyTargetRoot: 1
+  IsCopyTargetRoot: 0
   PosMode: 0
   RandomRadius: 10
   maxLoopCount: 0
@@ -17844,4 +17892,56 @@ MonoBehaviour:
   IsCheckResult: 1
   IsSetParent: 0
   MaxVertexCount: 2400
-  MaxModelLength: 0.8
+  MaxModelLength: 1
+--- !u!1 &8041577567458830336
+GameObject:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  serializedVersion: 6
+  m_Component:
+  - component: {fileID: 6298165648418949738}
+  - component: {fileID: 2295114559696679280}
+  m_Layer: 0
+  m_Name: MeshPrefab
+  m_TagString: Untagged
+  m_Icon: {fileID: 0}
+  m_NavMeshLayer: 0
+  m_StaticEditorFlags: 0
+  m_IsActive: 1
+--- !u!4 &6298165648418949738
+Transform:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 8041577567458830336}
+  m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
+  m_LocalPosition: {x: 0, y: 0, z: 0}
+  m_LocalScale: {x: 1, y: 1, z: 1}
+  m_Children: []
+  m_Father: {fileID: 4998335353989864117}
+  m_RootOrder: 2
+  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
+--- !u!114 &2295114559696679280
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 8041577567458830336}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 0123e488918d95b48915830afeb64d6c, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  Prefab: {fileID: 0}
+  Instance: {fileID: 0}
+  TargetScene: {fileID: 0}
+  TargetItems: []
+  TypeItems: []
+  meshNode: {fileID: 0}
+  MeshTypeName: 
+  nodes: []
+  TargetCount: 0

@@ -1319,7 +1319,7 @@ public class LODManager : SingletonBehaviour<LODManager>
         return lODGroupInfos;
     }
 
-    public List<LODGroupDetails> lodDetails;
+    public List<LODGroupDetails> lodDetails = new List<LODGroupDetails>();
 
     public GameObject LocalTarget;
 
