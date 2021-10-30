@@ -7,5 +7,5 @@ using UnityEngine.SceneManagement;
 
 public class BuildingController : MonoBehaviour {
 
-   
+    public string NodeName;
 }

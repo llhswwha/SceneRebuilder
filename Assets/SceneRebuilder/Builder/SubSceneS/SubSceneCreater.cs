@@ -332,7 +332,7 @@ public class ProgressArg
         }
     }
 
-    public ProgressArg(string title,int i, int count, object t = null, ProgressArg p0=null)
+    public ProgressArg(string title,int i, int count, object t = null)
     {
         this.title = title;
         this.i = i;

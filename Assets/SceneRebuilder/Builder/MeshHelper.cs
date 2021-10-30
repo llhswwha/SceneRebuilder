@@ -79,23 +79,33 @@ public static class MeshHelper
         return true;
     }
 
-    public static bool IsEmptyGroup(Transform t)
+    public static bool IsEmptyGroup(Transform t,bool isDebug)
     {
-        if (t.childCount == 0) return false;
-        if (IsEmptyObject(t) == false) return false;
+        if(isDebug)Debug.Log($"IsChildrenAllEmpty {t}");
+
+        if (t.childCount == 0)
+        {
+            if (isDebug) Debug.Log($"t.childCount == 0");
+            return false;
+        }
+        if (IsEmptyObject(t) == false)
+        {
+            if (isDebug) Debug.Log($"IsEmptyObject(t) == false");
+            return false;
+        }
         for (int i = 0; i < t.childCount; i++)
         {
             var child = t.GetChild(i);
             if (IsEmptyChildObject(child) == false)
             {
+                if (isDebug) Debug.Log($"IsEmptyChildObject(child) == false child:{child} i:{i}");
                 return false;
             }
         }
-        Debug.Log($"IsChildrenAllEmpty {t}");
         return true;
     }
 
-    public static bool IsEmptyObject(Transform t)
+    public static bool IsEmptyObject(Transform t,bool isLog=false)
     {
         var components = t.GetComponents<Component>();
         if (components.Length == 1) return true;
@@ -103,7 +113,14 @@ public static class MeshHelper
         foreach(var c in components)
         {
             var type = c.GetType();
-            if (typesOfEmptyObject.Contains(type) == false) return false;
+            if (typesOfEmptyObject.Contains(type) == false)
+            {
+                if (isLog)
+                {
+                    Debug.LogError($"IsEmptyObject type:{type}");
+                }
+                return false;
+            }
         }
         return r;
     }
@@ -1116,6 +1133,26 @@ public static class MeshHelper
 
     public static void CenterPivot(Transform t,Vector3 center)
     {
+        //List<Transform> children=new List<Transform>();
+        //for(int i=0;i<t.childCount;i++)
+        //{
+        //    children.Add(t.GetChild(i));
+        //}
+        //foreach(var child in children){
+        //    child.SetParent(null);
+        //}
+        //t.position=center;
+
+        //foreach(var child in children){
+        //    child.SetParent(t);
+        //}
+        SetParentTransfrom(t, () =>
+        {
+            t.position = center;
+        });
+    }
+    public static void SetParentTransfrom(Transform t,Action setTranfromActoin)
+    {
         List<Transform> children=new List<Transform>();
         for(int i=0;i<t.childCount;i++)
         {
@@ -1124,7 +1161,10 @@ public static class MeshHelper
         foreach(var child in children){
             child.SetParent(null);
         }
-        t.position=center;
+        if (setTranfromActoin != null)
+        {
+            setTranfromActoin();
+        }
 
         foreach(var child in children){
             child.SetParent(t);
@@ -1146,6 +1186,15 @@ public static class MeshHelper
         CenterPivot(go.transform,minMax[3]);
         return minMax;
     }
+
+    public static void ZeroParent(GameObject go)
+    {
+        SetParentTransfrom(go.transform, () =>
+        {
+            go.transform.position = Vector3.zero;
+        });
+    }
+
     //public static Vector3[] GetMinMax(MeshFilter meshFilter)
     //{
     //    return GetMinMax(new MeshFilter[] { meshFilter });
