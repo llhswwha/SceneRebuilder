@@ -688,6 +688,8 @@ UnpackPrefab();
         return AcRTAlignJobsEx();
     }
 
+    public float[] TestMinSizeList = new float[] { 1.001f, 1.005f, 1.01f, 1.025f, 1.05f, 1.1f, 1.25f, 1.5f };
+
     public PrefabInfoList AcRTAlignJobsEx(MeshPoints[] meshPoints)
     {
         Debug.Log($"AcRTAlignJobsEx Start {meshPoints.Length}");

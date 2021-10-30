@@ -104,7 +104,7 @@ public class PrefabInstanceBuilderEditor : BaseFoldoutEditor<PrefabInstanceBuild
             //TreePointJobHelper.IsShowProgress = false;
 
             //float[] minSize = new float[] { 1.01f, 1.05f, 1.1f, 1.25f, 1.5f, 2, 3, 0 };
-            float[] minSize = new float[] { 1.001f, 1.005f,1.01f, 1.05f, 1.1f, 1.25f,1.5f,2f };
+            float[] minSize = item.TestMinSizeList;
             string log = "";
             DateTime start0 = DateTime.Now;
             for (int i = 0; i < minSize.Length; i++)
