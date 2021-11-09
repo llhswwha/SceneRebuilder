@@ -285,8 +285,8 @@ namespace Base.Common
             {
                 //Console.WriteLine(ex);
                 ExceptionText = ex.ToString();
-                if (EnableLog)
-                    Log.Error("SerializeHelper.Deserialize", "Xml:" + LastXml + "\n" + ex);
+                //if (EnableLog)
+                //    Log.Error("SerializeHelper.Deserialize", "Xml:" + LastXml + "\n" + ex);
                 CloseStream(fs);
                 return CreateDefault<T>();
                 //return default(T);
@@ -380,10 +380,10 @@ namespace Base.Common
         /// <returns></returns>
         public static T LoadFromText<T>(string text, Encoding encoding, bool checkValid = true, bool showLog = true)
         {
-            if (showLog && EnableLog)
-            {
-                Log.Info("SerializeHelper.LoadFromText Start", string.Format("Length:{0},Type:{1}", text.Length, typeof(T)));
-            }
+            //if (showLog && EnableLog)
+            //{
+            //    Log.Info("SerializeHelper.LoadFromText Start", string.Format("Length:{0},Type:{1}", text.Length, typeof(T)));
+            //}
 
             T result = default(T);
             if (string.IsNullOrEmpty(text)) return result;
@@ -415,18 +415,18 @@ namespace Base.Common
                     catch (Exception ex)
                     {
                         ExceptionText = ex.ToString();
-                        if (EnableLog)
-                            Log.Error("SerializeHelper.LoadFromText", ex);
+                        //if (EnableLog)
+                        //    Log.Error("SerializeHelper.LoadFromText", ex);
                         result = default(T);
                     }
                 }
                 byte[] buffer = encoding.GetBytes(text);
                 result = DeserializeXml<T>(buffer);
             });
-            if (showLog && EnableLog)
-            {
-                Log.Info("SerializeHelper.LoadFromText End", string.Format("Length:{0},Time:{1}ms,Type:{2}", text.Length, time.TotalMilliseconds, typeof(T)));
-            }
+            //if (showLog && EnableLog)
+            //{
+            //    Log.Info("SerializeHelper.LoadFromText End", string.Format("Length:{0},Time:{1}ms,Type:{2}", text.Length, time.TotalMilliseconds, typeof(T)));
+            //}
             return result;
         }
 
