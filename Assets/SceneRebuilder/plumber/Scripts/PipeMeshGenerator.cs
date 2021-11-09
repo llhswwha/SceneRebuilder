@@ -106,10 +106,10 @@ public class PipeMeshGenerator : MonoBehaviour {
         RenderPipe();
     }
 
-    public void ShowPoints()
-    {
-        PointHelper.ShowPoints(points, new Vector3(0.05f, 0.05f, 0.05f),this.transform);
-    }
+    //public void ShowPoints()
+    //{
+    //    PointHelper.ShowPoints(points, new Vector3(0.05f, 0.05f, 0.05f),this.transform);
+    //}
 
     
 

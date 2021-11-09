@@ -97,13 +97,18 @@ public class PipeModel : MonoBehaviour
         OBBCollider oBBCollider = this.gameObject.GetComponent<OBBCollider>();
         if (oBBCollider == null)
         {
-            var v = mf.sharedMesh.vertices[i];
-            PointHelper.ShowPoint(v, new Vector3(0.01f, 0.01f, 0.01f), this.transform);
-            var m = mf.sharedMesh.normals[i];
-            if(!sharedNormals.Contains(m))
-            {
-                sharedNormals.Add(m);
-            }
+            //var mf = this.gameObject.GetComponent<MeshFilter>();
+            //for(int i=0;i<mf.sharedMesh.vertices.Length;i++)
+            //{
+            //    var v = mf.sharedMesh.vertices[i];
+            //    PointHelper.ShowPoint(v, new Vector3(0.01f, 0.01f, 0.01f), this.transform);
+            //    var m = mf.sharedMesh.normals[i];
+            //    //if (!sharedNormals.Contains(m))
+            //    //{
+            //    //    sharedNormals.Add(m);
+            //    //}
+            //}
+            
         }
         oBBCollider.ShowObbInfo();
         OBB = oBBCollider.OBB;
