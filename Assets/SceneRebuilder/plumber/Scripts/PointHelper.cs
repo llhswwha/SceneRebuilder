@@ -2,14 +2,16 @@ using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 
-public static class VertexHelper
+public static class PointHelper
 {
-    public static void ShowPoints(IEnumerable<Vector3> ps, Vector3 scale, Transform t)
+    public static List<GameObject> ShowPoints(IEnumerable<Vector3> ps, Vector3 scale, Transform t)
     {
+        List<GameObject> gos = new List<GameObject>();
         foreach (var p in ps)
         {
-            ShowPoint(p, scale, t);
+            gos.Add(ShowPoint(p, scale, t));
         }
+        return gos;
     }
 
     public static GameObject ShowPoint(Vector3 p, Vector3 scale, Transform t)

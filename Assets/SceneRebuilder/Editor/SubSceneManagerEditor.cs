@@ -48,7 +48,12 @@ public class SubSceneManagerEditor : BaseFoldoutEditor<SubSceneManager>
         if (GUILayout.Button("DeleteInActiveScenes"))
         {
             item.DeleteInActiveScenes();
-            sceneFileListArg1.Items = item.GetSceneFilesEx();
+            //sceneFileListArg1.Items = item.GetSceneFilesEx();
+        }
+
+        if (GUILayout.Button("RefreshAsset"))
+        {
+            EditorHelper.RefreshAssets();
         }
 
         if (sceneFileListArg1.Items != null)

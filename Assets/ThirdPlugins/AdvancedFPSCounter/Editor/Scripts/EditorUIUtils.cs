@@ -36,8 +36,8 @@ namespace CodeStage.AdvancedFPSCounter.Editor.UI
 		public bool background = false;
 
 		public int pageSize_selected = 10;
-        public string[] pageSize_names = new string[] {"5", "10", "15","20","50","100","200","500","1000","2000"};
-        public int[] pageSize_sizes = {5, 10, 15,20,50,100,200,500,1000,2000};
+        public string[] pageSize_names = new string[] {"5", "10", "15","20", "30", "40", "50","100","200","500","1000","2000"};
+        public int[] pageSize_sizes = {5, 10, 15,20,30,40,50,100,200,500,1000,2000};
 		public int pageId_selected=1;
 		public string[] pageId_names=null;
         public int[] pageId_sizes =null;
@@ -144,6 +144,64 @@ namespace CodeStage.AdvancedFPSCounter.Editor.UI
             EditorGUILayout.LabelField("PageIndex:",GUILayout.Width(100));
             pageId_selected = EditorGUILayout.IntPopup( pageId_selected, pageId_names, pageId_sizes);
             EditorGUILayout.LabelField("/"+pageCount, GUILayout.Width(50));
+
+            if (GUILayout.Button("|<<", GUILayout.Width(30)))
+            {
+                pageId_selected = 1;
+            }
+            if (GUILayout.Button("10<", GUILayout.Width(40)))
+            {
+                pageId_selected-=10;
+                if (pageId_selected < 1)
+                {
+                    pageId_selected = 1;
+                }
+            }
+            if (GUILayout.Button("5<", GUILayout.Width(30)))
+            {
+                pageId_selected-=5;
+                if (pageId_selected < 1)
+                {
+                    pageId_selected = 1;
+                }
+            }
+            if (GUILayout.Button("<", GUILayout.Width(30)))
+            {
+                pageId_selected--;
+                if (pageId_selected < 1)
+                {
+                    pageId_selected = 1;
+                }
+            }
+            if (GUILayout.Button(">", GUILayout.Width(30)))
+            {
+                pageId_selected++;
+                if (pageId_selected > pageCount)
+                {
+                    pageId_selected = pageCount;
+                }
+            }
+            if (GUILayout.Button(">5", GUILayout.Width(30)))
+            {
+                pageId_selected+=5;
+                if (pageId_selected > pageCount)
+                {
+                    pageId_selected = pageCount;
+                }
+            }
+            if (GUILayout.Button(">10", GUILayout.Width(40)))
+            {
+                pageId_selected += 10;
+                if (pageId_selected > pageCount)
+                {
+                    pageId_selected = pageCount;
+                }
+            }
+
+            if (GUILayout.Button(">>|", GUILayout.Width(30)))
+            {
+                pageId_selected = pageCount;
+            }
         }
 
 		public void DrawPageToolbar(int count)
@@ -542,8 +600,13 @@ namespace CodeStage.AdvancedFPSCounter.Editor.UI
             {
                 
                 var rect = EditorGUILayout.GetControlRect(GUILayout.Width(100));
-                // rect.
-                arg.isExpanded = EditorGUI.Foldout(rect, arg.isExpanded, arg.caption, true, (arg.bold || arg.isSelected) ? richBoldFoldout : EditorStyles.foldout);
+                SetupStyles();
+                GUIStyle style = (arg.bold || arg.isSelected) ? richBoldFoldout : EditorStyles.foldout;
+                arg.isExpanded = EditorGUI.Foldout(rect, 
+                    arg.isExpanded, 
+                    arg.caption, 
+                    true,
+                    style);
             }
             else
             {

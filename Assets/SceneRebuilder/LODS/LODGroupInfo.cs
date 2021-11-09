@@ -50,30 +50,57 @@ public class LODGroupInfo : MonoBehaviour
     [ContextMenu("GetLODs")]
     public void GetLODs()
     {
+        var allVertexCount=GetLODsInner();
+
+        if (allVertexCount == 0)
+        {
+            Debug.LogError($"GetLODs Error 1 allVertexCount == 0");
+            LODHelper.CreateLODs(this.gameObject);
+            this.GetLODsInner();
+
+            if (allVertexCount == 0)
+            {
+                Debug.LogError($"GetLODs Error 2 allVertexCount == 0");
+            }
+        }
+    }
+
+    private int GetLODsInner()
+    {
+        int allVertexCount = 0;
+
         LodInfos.Clear();
         //lodVertexCount.Clear();
         LODGroup = gameObject.GetComponent<LODGroup>();
         if (LODGroup == null)
         {
-            Debug.LogError("LODGroupInfo.GetLODs LODGroup == null:"+this.name);
-            return;
+            Debug.LogError("LODGroupInfo.GetLODs LODGroup == null:" + this.name);
+            return allVertexCount;
         }
         LOD[] lods = LODGroup.GetLODs();
+        
         for (int i = 0; i < lods.Length; i++)
         {
             LOD lod = lods[i];
-            LODInfo lodInfo = new LODInfo(lod,i);
+            LODInfo lodInfo = new LODInfo(lod, i);
             LodInfos.Add(lodInfo);
-            int vc=0;
-            foreach(var r in lod.renderers){
+            int vc = 0;
+            foreach (var r in lod.renderers)
+            {
                 if (r == null) continue;
-                MeshFilter meshFilter=r.GetComponent<MeshFilter>();
-                vc+=meshFilter.sharedMesh.vertexCount;
+                MeshFilter meshFilter = r.GetComponent<MeshFilter>();
+                vc += meshFilter.sharedMesh.vertexCount;
             }
             //lodVertexCount.Add(vc);
             lodInfo.vertextCount = vc;
+            if (lodInfo.vertextCount == 0)
+            {
+                Debug.LogError($"lodInfo.vertextCount == 0 i:{i}");
+            }
+            allVertexCount += vc;
         }
         lodCount = LODGroup.lodCount;
+        return allVertexCount;
     }
 
     [ContextMenu("SetLODs")]
@@ -91,15 +118,35 @@ public class LODGroupInfo : MonoBehaviour
         LODGroup.SetLODs(lods.ToArray());
     }
 
-    public List<Renderer> GetLODRenderers()
+    public List<MeshRenderer> GetLODRenderers()
     {
-        List<Renderer> renderers = new List<Renderer>();
+        List<MeshRenderer> renderers = new List<MeshRenderer>();
         LODGroup = gameObject.GetComponent<LODGroup>();
         LOD[] lods = LODGroup.GetLODs();
         for (int i = 0; i < lods.Length; i++)
         {
             LOD lod = lods[i];
-            foreach (var r in lod.renderers)
+            foreach (MeshRenderer r in lod.renderers)
+            {
+                if (r == null) continue;
+                if (!renderers.Contains(r))
+                {
+                    renderers.Add(r);
+                }
+            }
+        }
+        return renderers;
+    }
+
+    public List<MeshRenderer> GetLODRenderers(int i)
+    {
+        List<MeshRenderer> renderers = new List<MeshRenderer>();
+        LODGroup = gameObject.GetComponent<LODGroup>();
+        LOD[] lods = LODGroup.GetLODs();
+        //for (int i = 0; i < lods.Length; i++)
+        {
+            LOD lod = lods[i];
+            foreach (MeshRenderer r in lod.renderers)
             {
                 if (r == null) continue;
                 if (!renderers.Contains(r))
@@ -118,11 +165,11 @@ public class LODGroupInfo : MonoBehaviour
         return lods[lods.Length - 1].renderers;
     }
 
-    public List<Renderer> GetNewRenderers()
+    public List<MeshRenderer> GetNewRenderers()
     {
-        List<Renderer> newRenderers = new List<Renderer>();
-        Renderer[] renderers = this.gameObject.GetComponentsInChildren<Renderer>(true);
-        List<Renderer> lodRenderers = GetLODRenderers();
+        List<MeshRenderer> newRenderers = new List<MeshRenderer>();
+        MeshRenderer[] renderers = this.gameObject.GetComponentsInChildren<MeshRenderer>(true);
+        List<MeshRenderer> lodRenderers = GetLODRenderers();
         foreach(var r in renderers)
         {
             if(!lodRenderers.Contains(r))
@@ -136,7 +183,7 @@ public class LODGroupInfo : MonoBehaviour
     [ContextMenu("AddLODN")]
     public void AddLODN()
     {
-        List<Renderer> newRenderers = GetNewRenderers();
+        List<MeshRenderer> newRenderers = GetNewRenderers();
         Debug.Log($"AddLODN newRenderers:{newRenderers.Count} lodCount:{lodCount}");
         if (newRenderers.Count > 0)
         {
@@ -242,6 +289,7 @@ public class LODGroupInfo : MonoBehaviour
     {
         IdDictionary.InitInfos();
         GetScene();
+        if (scene == null) return;
         scene.EditorLoadScene();
         SetLOD0FromScene();
 

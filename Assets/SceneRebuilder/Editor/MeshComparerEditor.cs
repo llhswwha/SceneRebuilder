@@ -80,6 +80,8 @@ public class MeshComparerEditor : BaseEditor<MeshComparer>
         if (GUILayout.Button("Dis12"))
         {
             item.GetDistance12();
+
+
         }
         if (GUILayout.Button("Dis12C"))
         {

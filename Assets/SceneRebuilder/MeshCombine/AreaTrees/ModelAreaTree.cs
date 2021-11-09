@@ -253,7 +253,15 @@ public class ModelAreaTree : SubSceneCreater
     [SerializeField]
     private MeshRendererInfoList TreeRenderers;
 
-    public void SetRenderers(IEnumerable<MeshRenderer> renderers)
+    public void SetRenderers(List<MeshRenderer> renderers)
+    {
+        TreeRenderers = new MeshRendererInfoList(renderers);
+        //TreeRenderers.RemoveTypes(AreaTreeManager.Instance.FilterTypes, this.name);
+        AreaTreeManager.Instance.FilterTreeNodeRenders(TreeRenderers, this.name);
+        Debug.Log($"SetRenderers TreeRenderers:{TreeRenderers.Count} this:{this.name}");
+    }
+
+    public void SetRenderers(MeshRenderer[] renderers)
     {
         TreeRenderers = new MeshRendererInfoList(renderers);
         //TreeRenderers.RemoveTypes(AreaTreeManager.Instance.FilterTypes, this.name);

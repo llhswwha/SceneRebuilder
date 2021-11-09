@@ -450,6 +450,7 @@ public class BuildingModelInfo : SubSceneCreater
         foreach (var t in GetTrees())
         {
             t.RecoverParentEx();
+            EditorHelper.UnpackPrefab(t.gameObject);
             GameObject.DestroyImmediate(t.gameObject);
         }
         this.ShowRenderers();
@@ -887,11 +888,24 @@ public class BuildingModelInfo : SubSceneCreater
 
     public List<ModelAreaTree> GetTreeList()
     {
+        TreeNodeCount = 0;
+
         if (trees == null)
         {
             trees= this.GetComponentsInChildren<ModelAreaTree>(true);
         }
         return trees.Where(i=>i!=null).ToList();
+    }
+
+    private int TreeNodeCount = 0;
+
+    public int GetTreeNodeCount()
+    {
+        if (TreeNodeCount==0)
+        {
+            GetNodeList();
+        }
+        return TreeNodeCount;
     }
 
     public List<AreaTreeNode> GetNodeList()
@@ -902,6 +916,7 @@ public class BuildingModelInfo : SubSceneCreater
             if (t == null) continue;
             nodes.AddRange(t.TreeLeafs);
         }
+        TreeNodeCount = nodes.Count;
         return nodes;
     }
 

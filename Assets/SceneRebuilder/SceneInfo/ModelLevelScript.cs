@@ -6,6 +6,7 @@ using UnityEngine;
 
 public class ModelLevelScript : MonoBehaviour
 {
+    [System.NonSerialized]
     public ModelLevelInfo Info;
 
     public Vector3 OrigPos;

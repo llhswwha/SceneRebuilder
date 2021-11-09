@@ -9,13 +9,23 @@ public class LODGroupDetails:IComparable<LODGroupDetails>
 {
     private LODGroupInfo groupInfo;
 
-    public string GetCaption()
+    private void InitLODGroupInfo()
     {
         if (groupInfo == null)
         {
             groupInfo = group.GetComponent<LODGroupInfo>();
 
         }
+        if (groupInfo == null)
+        {
+            groupInfo = group.gameObject.AddComponent<LODGroupInfo>();
+            groupInfo.GetLODs();
+        }
+    }
+
+    public string GetCaption()
+    {
+        InitLODGroupInfo();
         if (this.group.transform.parent != null)
         {
             return $"{this.group.transform.parent.name}->{this.group.name} [{MeshHelper.GetVertexCountS(childs[0].vertexCount)}][{groupInfo.IsSceneCreatable()}]";
@@ -45,6 +55,18 @@ public class LODGroupDetails:IComparable<LODGroupDetails>
     public void UpdatePoint()
     {
         group.UpdatePoint();
+    }
+
+    public List<MeshRenderer> GetAllRenderers()
+    {
+        InitLODGroupInfo();
+        return groupInfo.GetLODRenderers();
+    }
+
+    public List<MeshRenderer> GetLODRenderers(int i)
+    {
+        InitLODGroupInfo();
+        return groupInfo.GetLODRenderers(i);
     }
 
     public LODGroupDetails(LODGroup groupT)

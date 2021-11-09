@@ -2,6 +2,7 @@ using System;
 using System.Collections;
 using System.Collections.Generic;
 using System.Linq;
+using UnityEditor;
 using UnityEngine;
 
 public class MeshRendererInfo : MonoBehaviour,IComparable<MeshRendererInfo>
@@ -32,6 +33,17 @@ public class MeshRendererInfo : MonoBehaviour,IComparable<MeshRendererInfo>
     public MeshFilter meshFilter;
 
     public MeshRenderer meshRenderer;
+
+    //public string assetPath;
+    //public string assetName;
+
+
+    public string GetAssetPath()
+    {
+        var assetPath = AssetDatabase.GetAssetPath(meshFilter.sharedMesh);
+        //assetName = assetPath.Substring(assetPath.LastIndexOf('/') + 1);
+        return assetPath;
+    }
 
     public Vector3[] minMax;
 
@@ -105,6 +117,16 @@ public class MeshRendererInfo : MonoBehaviour,IComparable<MeshRendererInfo>
         var filters = GetMeshFilters();
         foreach(var filter in filters)
         {
+            if (filter == null)
+            {
+                Debug.LogError($"MeshRendererInfo.GetVertexCount filter == null this:{this.name}");
+                continue;
+            }
+            if (filter.sharedMesh == null)
+            {
+                Debug.LogError($"MeshRendererInfo.GetVertexCount filter:{filter}");
+                continue;
+            }
             count += filter.sharedMesh.vertexCount;
         }
         return count;
@@ -164,18 +186,42 @@ public class MeshRendererInfo : MonoBehaviour,IComparable<MeshRendererInfo>
         return info.minMax;
     }
 
-    public static MeshRendererInfo GetInfo(GameObject go)
+    public static MeshRendererInfo GetInfo(MeshRenderer go, bool isUpdateId, bool isForceUpdate = false)
+    {
+        return GetInfo(go.gameObject, isUpdateId, isForceUpdate);
+    }
+
+        public static MeshRendererInfo GetInfo(GameObject go,bool isUpdateId,bool isForceUpdate=false)
     {
         //Debug.Log($"MeshRendererInfo go:{go}");
         MeshRendererInfo info = go.GetComponent<MeshRendererInfo>();
+        
         //Debug.Log($"info:{info} go==null:{go == null}");
         if (info == null)
         {
-            info = go.AddComponent<MeshRendererInfo>();
-            info.Init();
+            MeshRenderer renderer = go.GetComponent<MeshRenderer>();
+            if (renderer != null)
+            {
+                info = go.AddComponent<MeshRendererInfo>();
+                info.Init();
+            }
+            else
+            {
+                info = go.AddComponent<MeshRendererInfoEx>();
+                info.Init();
+            }
+            
             //Debug.Log($"AddComponent info:{info} info==null:{info == null}");
         }
-        RendererId.UpdateId(go);
+        else
+        {
+            if (isForceUpdate)
+            {
+                info.Init();
+            }
+        }
+        if(isUpdateId)
+            RendererId.UpdateId(go);
         return info;
     }
 
@@ -234,7 +280,7 @@ public class MeshRendererInfo : MonoBehaviour,IComparable<MeshRendererInfo>
                 }
             }
 
-            var info = MeshRendererInfo.GetInfo(renderer.gameObject);
+            var info = MeshRendererInfo.GetInfo(renderer.gameObject,true);
             if (info.IsLodN(lv))
             {
                 list.Add(info);
@@ -293,7 +339,7 @@ public class MeshRendererInfo : MonoBehaviour,IComparable<MeshRendererInfo>
         int max = 6;
         foreach (var renderer in renderers)
         {
-            var info = MeshRendererInfo.GetInfo(renderer.gameObject);
+            var info = MeshRendererInfo.GetInfo(renderer.gameObject,true);
             for(int i=0;i< max; i++)
             {
                 if (info.IsLodN(i))//0,1,2,3
@@ -321,7 +367,7 @@ public class MeshRendererInfo : MonoBehaviour,IComparable<MeshRendererInfo>
         this.rendererType = this.rendererType | rendererType;
     }
 
-        public List<MeshRendererType> GetRendererTypes()
+    public List<MeshRendererType> GetRendererTypes()
     {
         List<MeshRendererType> result = new List<MeshRendererType>();
         var types = Enum.GetValues(typeof(MeshRendererType));
@@ -331,6 +377,21 @@ public class MeshRendererInfo : MonoBehaviour,IComparable<MeshRendererInfo>
             if (IsRendererType(t))
             {
                 result.Add(t);
+            }
+        }
+        return result;
+    }
+
+    public string GetRendererTypesS()
+    {
+        string result = "";
+        var types = Enum.GetValues(typeof(MeshRendererType));
+        foreach (MeshRendererType t in types)
+        {
+            //Debug.Log($"{t} {t.GetType()}");
+            if (IsRendererType(t))
+            {
+                result+=t+";";
             }
         }
         return result;
@@ -353,7 +414,7 @@ public class MeshRendererInfo : MonoBehaviour,IComparable<MeshRendererInfo>
         MeshRendererInfoList list = new MeshRendererInfoList();
         foreach (var renderer in renderers)
         {
-            var info = MeshRendererInfo.GetInfo(renderer.gameObject);
+            var info = MeshRendererInfo.GetInfo(renderer.gameObject,true);
             //if (types.Contains(info.rendererType))
             info.IsRendererTypes(types);
             {
@@ -402,6 +463,8 @@ public class MeshRendererInfo : MonoBehaviour,IComparable<MeshRendererInfo>
         //if(meshFilter==null)
         //    meshFilter = GetMeshFilters()[0];
         InitPos();
+
+        //GetAssetInfo();
     }
 
     public Vector3 GetWeightCenterPos()
@@ -451,7 +514,8 @@ public class MeshRendererInfo : MonoBehaviour,IComparable<MeshRendererInfo>
             MeshRendererInfoEx parentInfo = transform.parent.GetComponent<MeshRendererInfoEx>();
             if (parentInfo != null)
             {
-                this.rendererType = MeshRendererType.CombinedPart;
+                //this.rendererType = MeshRendererType.CombinedPart;
+                this.AddType(MeshRendererType.CombinedPart);
             }
         }
     }
@@ -700,26 +764,78 @@ public class MeshRendererInfoList:List<MeshRendererInfo>
 
     }
 
-    public MeshRendererInfoList(GameObject root)
+    public MeshRendererInfoList(GameObject root, bool isForceUpdate = false)
     {
         var renderers = root.GetComponentsInChildren<MeshRenderer>(true);
-        InitRenderers(renderers);
+        InitRenderers(renderers, isForceUpdate);
     }
 
-    public MeshRendererInfoList(IEnumerable<Renderer> renderers)
+    public MeshRendererInfoList(List<MeshRenderer> renderers, bool isForceUpdate = false)
     {
-        InitRenderers(renderers);
+        InitRenderers(renderers, isForceUpdate);
     }
 
-    private void InitRenderers(IEnumerable<Renderer> renderers)
+    public MeshRendererInfoList(MeshRenderer[] renderers, bool isForceUpdate = false)
     {
-        foreach (var renderer in renderers)
+        InitRenderers(renderers, isForceUpdate);
+    }
+
+    public Dictionary<string, MeshRendererInfoList> GetAssetPaths()
+    {
+        Dictionary<string, MeshRendererInfoList> dic = new Dictionary<string, MeshRendererInfoList>();
+        foreach(var render in this)
         {
+            var path = render.GetAssetPath();
+            //if (string.IsNullOrEmpty(path))
+            //{
+            //    Debug.LogError("path==null:" + render.name);
+            //    continue;
+            //}
+            if (!dic.ContainsKey(path))
+            {
+                dic.Add(path, new MeshRendererInfoList());
+            }
+            dic[path].Add(render);
+        }
+        return dic;
+    }
+
+    public MeshRendererInfoList(List<Renderer> renderers, bool isForceUpdate = false)
+    {
+        InitRenderers(renderers, isForceUpdate);
+    }
+
+    public MeshRendererInfoList(Renderer[] renderers, bool isForceUpdate = false)
+    {
+        InitRenderers(renderers, isForceUpdate);
+    }
+
+    private void InitRenderers<T>(List<T> renderers, bool isForceUpdate = false) where T :Renderer
+    {
+        for (int i = 0; i < renderers.Count; i++)
+        {
+            T renderer = renderers[i];
+            ProgressBarHelper.DisplayCancelableProgressBar("InitRenderers", i, renderers.Count, renderer);
             if (renderer == null) continue;
-            var info = MeshRendererInfo.GetInfo(renderer.gameObject);
+            var info = MeshRendererInfo.GetInfo(renderer.gameObject, true,isForceUpdate);
             this.Add(info);
         }
         this.Sort();
+        ProgressBarHelper.ClearProgressBar();
+    }
+
+    private void InitRenderers<T>(T[] renderers, bool isForceUpdate = false) where T : Renderer
+    {
+        for (int i = 0; i < renderers.Length; i++)
+        {
+            T renderer = renderers[i];
+            ProgressBarHelper.DisplayCancelableProgressBar("InitRenderers", i, renderers.Length, renderer);
+            if (renderer == null) continue;
+            var info = MeshRendererInfo.GetInfo(renderer.gameObject, true,isForceUpdate);
+            this.Add(info);
+        }
+        this.Sort();
+        ProgressBarHelper.ClearProgressBar();
     }
 
     public List<MeshRenderer> GetRenderers()
@@ -941,6 +1057,82 @@ public class MeshRendererInfoList:List<MeshRendererInfo>
             renderers.Add(info.GetBoundsRenderer());
         }
         return renderers;
+    }
+
+    internal MeshRendererInfoList GetLODs(params int[] lvs)
+    {
+        MeshRendererInfoList list = new MeshRendererInfoList();
+        foreach (var info in this)
+        {
+            if (info.IsLodNs(lvs))
+            {
+                list.Add(info);
+            }
+        }
+        return list;
+    }
+
+    //public static MeshRendererInfoList GetLodNs(MeshRendererInfo[] infos, params int[] lvs)
+    //{
+    //    MeshRendererInfoList list = new MeshRendererInfoList();
+    //    foreach (var info in infos)
+    //    {
+    //        if (info.IsLodNs(lvs))
+    //        {
+    //            list.Add(info);
+    //        }
+    //    }
+    //    return list;
+    //}
+
+    internal void RemoveLODs()
+    {
+        throw new NotImplementedException();
+    }
+
+    internal MeshRendererInfoList FilterRenderersByFile(List<string> filterFiles)
+    {
+        var modelFiles = this.GetAssetPaths();
+        var modelFilePaths = modelFiles.Keys.ToList();
+        modelFilePaths.Sort();
+        MeshRendererInfoList list = new MeshRendererInfoList();
+        foreach(var key in modelFiles.Keys)
+        {
+            if(IsFilter(key,filterFiles))
+            {
+                continue;
+            }
+            list.AddRange(modelFiles[key]);
+        }
+        return list;
+    }
+
+    private bool IsFilter(string fileName, List<string> filterKeys)
+    {
+        if (string.IsNullOrEmpty(fileName)) return false;
+        foreach (var f in filterKeys)
+        {
+            if (fileName.Contains(f))
+            {
+                return true;
+            }
+        }
+        return false;
+    }
+
+    private float vertexCount = 0;
+
+    public float GetVertexCount()
+    {
+        if (vertexCount > 0)
+        {
+            return vertexCount;
+        }
+        foreach(var item in this)
+        {
+            vertexCount += (int)item.vertexCount;
+        }
+        return vertexCount;
     }
 }
 

@@ -291,7 +291,7 @@ public class BaseFoldoutEditor<T> : BaseEditor<T> where T : class
                 arg.isExpanded = EditorUIUtils.ObjectFoldout(arg.isExpanded,
                 $"[{i + 1:00}] {b.name} {b.GetInfoText()}",
                 //$"[{i + 1:00}] {b.name} ",
-                $"[{b.Out0BigVertextCount:F0}+{b.Out0SmallVertextCount:F0}+{b.Out1VertextCount:F0}+{b.InVertextCount:F0}={b.AllVertextCount:F0}][{b.AllRendererCount}]",
+                $"[{b.Out0BigVertextCount:F0}+{b.Out0SmallVertextCount:F0}+{b.Out1VertextCount:F0}+{b.InVertextCount:F0}={b.AllVertextCount:F0}][{b.AllRendererCount}][{b.GetTreeNodeCount()}]",
                 false, false, true, b.gameObject,
                 () =>
                 {
@@ -323,12 +323,21 @@ public class BaseFoldoutEditor<T> : BaseEditor<T> where T : class
             //trees = item.GetTrees().Where(t => t.VertexCount > 0).ToList();
             trees = funcGetList();
             //Debug.Log($"Init TreeList1 count:{trees.Count} time:{(System.DateTime.Now - start).TotalMilliseconds:F1}ms ");
+            
+            //trees.Sort((a, b) =>
+            //{
+            //    if (b == null) return -1;
+            //    if (a == null) return 1;
+            //    return b.VertexCount.CompareTo(a.VertexCount);
+            //});
+
             trees.Sort((a, b) =>
             {
                 if (b == null) return -1;
                 if (a == null) return 1;
-                return b.VertexCount.CompareTo(a.VertexCount);
+                return b.TreeLeafs.Count.CompareTo(a.TreeLeafs.Count);
             });
+
             //Debug.Log($"Init TreeList2 count:{trees.Count} time:{(System.DateTime.Now - start).TotalMilliseconds:F1}ms ");
 
             trees.ForEach(b =>
@@ -348,9 +357,10 @@ public class BaseFoldoutEditor<T> : BaseEditor<T> where T : class
         },
         () =>
         {
-            if (GUILayout.Button("------", GUILayout.Width(60)))
+            if (GUILayout.Button("Update", GUILayout.Width(60)))
             {
                 //TreeNodeManagerEditorWindow.ShowWindow();
+                funcGetList();
             }
         });
         if (foldoutArg.isExpanded && foldoutArg.isEnabled)
@@ -527,7 +537,12 @@ public class BaseFoldoutEditor<T> : BaseEditor<T> where T : class
             int sumRendererCount = 0;
             scenes.Sort((a, b) =>
             {
-                return b.vertexCount.CompareTo(a.vertexCount);
+                var r = b.IsLoaded.CompareTo(a.IsLoaded);
+                if (r == 0)
+                {
+                    r= b.vertexCount.CompareTo(a.vertexCount);
+                }
+                return r;
             });
             scenes.ForEach(b =>
             {
@@ -568,7 +583,7 @@ public class BaseFoldoutEditor<T> : BaseEditor<T> where T : class
                     arg.caption = $"[{i + 1:00}] {modelInfo.name}>{scene.name}";
                 }
 
-                arg.info = $"[{scene.vertexCount:F0}w][{scene.rendererCount}]";
+                arg.info = $"[{scene.vertexCount:F0}w][{scene.rendererCount}][{scene.IsLoaded}]";
                 EditorUIUtils.ObjectFoldout(arg, scene.gameObject, null);
                 //if (arg.isExpanded)
                 //{
@@ -1114,6 +1129,7 @@ public class BaseFoldoutEditor<T> : BaseEditor<T> where T : class
 
             if (Application.isPlaying)
             {
+                if (lods == null) return;
                 lods.Sort((a, b) =>
                 {
                     int r1 = a.currentInfo.currentLevel.CompareTo(b.currentInfo.currentLevel);

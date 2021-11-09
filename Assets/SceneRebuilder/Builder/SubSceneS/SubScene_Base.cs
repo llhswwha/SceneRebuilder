@@ -30,6 +30,10 @@ public class SubScene_Base : MonoBehaviour
 
     public bool GetIsLoaded()
     {
+        if (scene != null)
+        {
+            return scene.isLoaded;
+        }
         return IsLoaded;
     }
 
@@ -406,7 +410,7 @@ public class SubScene_Base : MonoBehaviour
     {
         if (IsLoading || IsLoaded)
         {
-            Debug.LogWarning($"[SubScene_Base.LoadSceneAsyncCoroutine] scene:{GetSceneName()}, IsLoading:{IsLoading} || IsLoaded:{IsLoaded}");
+            Debug.LogWarning($"[SubScene_Base.LoadSceneAsyncCoroutine] scene:{GetSceneName()}, IsLoading:{IsLoading} || IsLoaded:{IsLoaded} path:{sceneArg.path}");
             if (callback != null)
             {
                 callback(false,this);
@@ -480,7 +484,7 @@ public class SubScene_Base : MonoBehaviour
     {
         if (IsLoading || IsLoaded)
         {
-            Debug.LogWarning($"[SubScene_Base.LoadSceneAsync] scene:{GetSceneName()}, IsLoading:{IsLoading} || IsLoaded:{IsLoaded}");
+            Debug.LogWarning($"[SubScene_Base.LoadSceneAsync] scene:{GetSceneName()}, IsLoading:{IsLoading} || IsLoaded:{IsLoaded} index:{sceneArg.index} path:{sceneArg.path} ");
             if (callback != null)
             {
                 callback(false,this);
