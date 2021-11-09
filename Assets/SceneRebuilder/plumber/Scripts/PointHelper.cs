@@ -2,7 +2,7 @@ using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 
-public static class VertexHelper
+public static class PointHelper
 {
     public static void ShowPoints(IEnumerable<Vector3> ps, Vector3 scale, Transform t)
     {

@@ -91,7 +91,7 @@ public class PipeMeshGenerator : MonoBehaviour {
 
     public void ShowPoints()
     {
-        VertexHelper.ShowPoints(points, new Vector3(0.05f, 0.05f, 0.05f),this.transform);
+        PointHelper.ShowPoints(points, new Vector3(0.05f, 0.05f, 0.05f),this.transform);
     }
 
     
@@ -222,7 +222,7 @@ public class PipeMeshGenerator : MonoBehaviour {
 
             //var ms1 = GeneratePipeMesh(arg1.vertices, false);
 
-            GameObject p1= VertexHelper.ShowPoint(start, new Vector3(0.05f, 0.05f, 0.05f), this.transform);
+            GameObject p1= PointHelper.ShowPoint(start, new Vector3(0.05f, 0.05f, 0.05f), this.transform);
             Welds.Add(p1);
 
             //GameObject go = new GameObject();
@@ -233,7 +233,7 @@ public class PipeMeshGenerator : MonoBehaviour {
 
             GameObject go = CreateWeldGo(start, direction);
 
-            VertexHelper.ShowPoints(arg1.vertices, new Vector3(0.05f, 0.05f, 0.05f), go.transform);
+            PointHelper.ShowPoints(arg1.vertices, new Vector3(0.05f, 0.05f, 0.05f), go.transform);
 
             //float size = pipeRadius;
             float size = Vector3.Distance(arg1.vertices[0], arg1.vertices[1])/2;

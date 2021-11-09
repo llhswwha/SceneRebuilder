@@ -38,7 +38,7 @@ public class PipeModel : MonoBehaviour
         for (int i=0;i<mf.sharedMesh.vertices.Length;i++)
         {
             var v = mf.sharedMesh.vertices[i];
-            VertexHelper.ShowPoint(v, new Vector3(0.01f, 0.01f, 0.01f), this.transform);
+            PointHelper.ShowPoint(v, new Vector3(0.01f, 0.01f, 0.01f), this.transform);
             var m = mf.sharedMesh.normals[i];
             if(!sharedNormals.Contains(m))
             {
