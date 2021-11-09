@@ -536,6 +536,13 @@ public class MeshComparer : SingletonBehaviour<MeshComparer>
         SetDistanceSetting();
         distance=MeshHelper.GetVertexDistanceEx(goTo.transform,goFrom.transform,"GetDistance12", ShowLog);
         Debug.Log($"GetDistance12 distance:{distance} 用时:{(DateTime.Now - start).TotalMilliseconds:F2}ms log:{DistanceUtil.DisLog}");
+
+        float dis1 = Vector3.Distance(goTo.transform.position, goFrom.transform.position);
+        float dis2 = MeshHelper.GetCenterDistance(goTo.gameObject, goFrom.gameObject);
+        float dis3 = MeshHelper.GetAvgVertexDistanceEx(goTo.transform, goFrom.transform);
+        Debug.Log($"Debug lod0:{goTo.name} lod1:{goFrom.name} dis1:{dis1} dis2:{dis2} dis3:{dis3}");
+        //var min = lodManager.GetMinInfo(goFrom.transform);
+        //Debug.Log($"dis:{min.dis} meshDis:{min.meshDis} target:{min.target}");
     }
 
     private void SetDistanceSetting()

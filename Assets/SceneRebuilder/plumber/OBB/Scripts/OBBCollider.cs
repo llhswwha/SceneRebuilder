@@ -33,6 +33,38 @@ public class OBBCollider : MonoBehaviour
         DrawWireCube();
     }
 
+    //public void CreatePipe()
+    //{
+    //    GameObject pipeNew = new GameObject(this.name + "_NewPipe");
+    //    pipeNew.transform.position = this.transform.position;
+    //    pipeNew.transform.SetParent(this.transform.parent);
+
+    //    PipeMeshGenerator pipe = pipeNew.GetComponent<PipeMeshGenerator>();
+    //    if (pipe == null)
+    //    {
+    //        pipe = pipeNew.AddComponent<PipeMeshGenerator>();
+    //    }
+    //    pipe.points = new List<Vector3>() { StartPoint, EndPoint };
+    //    pipe.pipeRadius = OBB.Extent.x;
+    //    pipe.RenderPipe();
+    //}
+
+    //public void CreateWeld()
+    //{
+    //    GameObject pipeNew = new GameObject(this.name + "_NewWeld");
+    //    pipeNew.transform.position = this.transform.position;
+    //    pipeNew.transform.SetParent(this.transform.parent);
+
+    //    PipeMeshGenerator pipe = pipeNew.GetComponent<PipeMeshGenerator>();
+    //    if (pipe == null)
+    //    {
+    //        pipe = pipeNew.AddComponent<PipeMeshGenerator>();
+    //    }
+    //    pipe.points = new List<Vector3>() { StartPoint, EndPoint };
+    //    pipe.pipeRadius = OBB.Extent.x;
+    //    pipe.RenderPipe();
+    //}
+
     private void GetObb()
     {
         DateTime start=DateTime.Now;
@@ -159,17 +191,54 @@ public class OBBCollider : MonoBehaviour
         CreatePoint(OBB.Up,"Up");
         CreatePoint(OBB.Forward,"Forward");
 
-        Vector3 v1 = CreateLine(Vector3.zero,OBB.Right* AxixLength, "Zero-Right");
-        Vector3 v2 = CreateLine(Vector3.zero,OBB.Up* AxixLength, "Zero-Up");
-        Vector3 v3 = CreateLine(Vector3.zero,OBB.Forward* AxixLength, "Zero-Forward");
+        //Vector3 v1 = CreateLine(Vector3.zero,OBB.Right* AxixLength, "Zero-Right");
+        //Vector3 v2 = CreateLine(Vector3.zero,OBB.Up* AxixLength, "Zero-Up");
+        //Vector3 v3 = CreateLine(Vector3.zero,OBB.Forward* AxixLength, "Zero-Forward");
+
+        Vector3 v1 = CreateLine(Vector3.zero, OBB.Right * OBB.Extent.x, "Zero-Right");
+        Vector3 v2 = CreateLine(Vector3.zero, OBB.Up * OBB.Extent.y, "Zero-Up");
+        Vector3 v3 = CreateLine(Vector3.zero, OBB.Forward * OBB.Extent.z, "Zero-Forward");
+
+
         Debug.Log("v1 dot v2:"+Vector3.Dot(v1,v2));
         Debug.Log("v1 dot v3:"+Vector3.Dot(v1,v3));
         Debug.Log("v2 dot v3:"+Vector3.Dot(v2,v3));
 
-        // collider=this.gameObject.AddComponent<BoxCollider>();
-        // collider.center=OBB.Center;
-        // collider.size=OBB.Extent;
+        ShowPipePoints();
     }
+
+    private void ShowPipePoints()
+    {
+        var StartPoint = OBB.Up * OBB.Extent.y;
+        var EndPoint = -OBB.Up * OBB.Extent.y;
+
+        CreatePoint(StartPoint, "StartPoint");
+        CreatePoint(EndPoint, "EndPoint");
+
+        var P1 = OBB.Right * OBB.Extent.x;
+        var P2 = -OBB.Forward * OBB.Extent.z;
+        var P3 = -OBB.Right * OBB.Extent.x;
+        var P4 = OBB.Forward * OBB.Extent.z;
+
+        CreatePoint(P1, "P1");
+        CreatePoint(P2, "P2");
+        CreatePoint(P3, "P3");
+        CreatePoint(P4, "P4");
+
+        float p = 1.414213562373f;
+        CreatePoint(P1 * p, "P11");
+        CreatePoint(P2 * p, "P22");
+        CreatePoint(P3 * p, "P33");
+        CreatePoint(P4 * p, "P44");
+    }
+
+    //public Vector3 StartPoint = Vector3.zero;
+    //public Vector3 EndPoint = Vector3.zero;
+
+    //public Vector3 P1 = Vector3.zero;
+    //public Vector3 P2 = Vector3.zero;
+    //public Vector3 P3 = Vector3.zero;
+    //public Vector3 P4 = Vector3.zero;
 
     public float AxixLength = 1;
 

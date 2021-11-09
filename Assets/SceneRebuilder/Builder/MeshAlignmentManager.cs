@@ -90,11 +90,13 @@ public class MeshAlignmentManager : SingletonBehaviour<MeshAlignmentManager>
     [ContextMenu("Recover")]
     public void Recover()
     {
-        tdSourceRoot.Recover();
+        if(tdSourceRoot!=null)
+            tdSourceRoot.Recover();
         //tdTargetRoot.Recover();
-
-        tdSource.Recover();
-        tdTarget.Recover();
+        if (tdSource != null)
+            tdSource.Recover();
+        if (tdTarget != null)
+            tdTarget.Recover();
 
     }
 }

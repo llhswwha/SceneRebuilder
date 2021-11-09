@@ -76,6 +76,7 @@
     <Compile Include="Assets\ThirdPlugins\MGS-Camera-master\MGS-Camera\Editor\BaseEditor.cs" />
     <Compile Include="Assets\ThirdPlugins\MGS-Camera-master\MGS-CommonCode\Editor\GenericEditor.cs" />
     <Compile Include="Assets\SceneRebuilder\Editor\LODManagerEditorWindow.cs" />
+    <Compile Include="Assets\SceneRebuilder\plumber\Editor\PipeBuilderEditor.cs" />
     <Compile Include="Assets\Modules\UI\ModelModify\Scripts\NavisPlugins\Editor\InitNavisFileInfoByModelEditor.cs" />
     <Compile Include="Assets\ThirdPlugins\MGS-Camera-master\MGS-Camera\Editor\MouseTranslateEditor.cs" />
     <Compile Include="Assets\SceneRebuilder\RevitTool\Scripts\Editor\EditorTool.cs" />
@@ -90,6 +91,7 @@
     <Compile Include="Assets\ThirdPlugins\MeshProfiler\Editor\MPGUIStyles.cs" />
     <Compile Include="Assets\ThirdPlugins\MeshProfiler\Editor\MeshProfiler.cs" />
     <Compile Include="Assets\HDRPAsset\TutorialInfo\Scripts\Editor\ReadmeEditor.cs" />
+    <Compile Include="Assets\SceneRebuilder\ModelUpdate\Editor\ModelUpdateManagerEditorWindow.cs" />
     <Compile Include="Assets\SceneRebuilder\Editor\SubSceneManagerEditorWindow.cs" />
     <Compile Include="Assets\Modules\LODTool\Editor\ModelLODWindow.cs" />
     <Compile Include="Assets\SceneRebuilder\Editor\MeshCombinerEditorWindow.cs" />
@@ -116,7 +118,6 @@
     <Compile Include="Assets\ThirdPlugins\Performance Tools\SuperLevelOptimizer\Scripts\Editor\SuperLevelOptimizerEditor.cs" />
     <Compile Include="Assets\ThirdPlugins\Ultimate Game Tools\MeshSimplify\Editor\MeshSimplifyEditor.cs" />
     <Compile Include="Assets\ThirdPlugins\Performance Tools\SuperLevelOptimizer\Scripts\Editor\MeshCombiner.cs" />
-    <Compile Include="Assets\ThirdPlugins\MeshProfiler\Editor\MeshElement.cs" />
     <Compile Include="Assets\ThirdPlugins\Performance Tools\AdvancedCullingSystem\Core\ChunksMasterCore\Editor\ChunksMasterEditorWindow.cs" />
     <Compile Include="Assets\ThirdPlugins\Performance Tools\AdvancedCullingSystem\Core\StaticCullingCore\Editor\StaticCullingEditorWindow.cs" />
     <Compile Include="Assets\Modules\UI\ModelModify\Scripts\NavisPlugins\Editor\InitNavisFileInfoByModelWindow.cs" />
@@ -127,11 +128,13 @@
     <Compile Include="Assets\SceneRebuilder\Editor\MeshComparerEditor.cs" />
     <Compile Include="Assets\SceneRebuilder\Editor\SubSceneManagerEditor.cs" />
     <Compile Include="Assets\SceneRebuilder\MeshCombine\AreaTrees\Editor\ModelAreaTreeEditorInitializer.cs" />
+    <Compile Include="Assets\SceneRebuilder\ModelUpdate\Editor\ModelUpdateManagerEditor.cs" />
     <Compile Include="Assets\ThirdPlugins\Performance Tools\AdvancedRenderSystem\Core\Scripts\Editor\AdvancedRenderSystemEditor.cs" />
     <Compile Include="Assets\SceneRebuilder\Editor\EditorWindow1.cs" />
     <Compile Include="Assets\SceneRebuilder\Editor\MyHierarchyEditorInitializer.cs" />
     <Compile Include="Assets\SceneRebuilder\RevitTool\Scripts\Editor\MeshCompareWindow.cs" />
     <Compile Include="Assets\ThirdPlugins\MGS-Camera-master\MGS-Camera\Editor\AlignMarkEditor.cs" />
+    <Compile Include="Assets\SceneRebuilder\plumber\Editor\PipeModelEditor.cs" />
     <Compile Include="Assets\SceneRebuilder\Editor\MeshAlignmentManagerEditorWindow.cs" />
     <Compile Include="Assets\ThirdPlugins\MGS-Camera-master\MGS-Camera\Editor\AroundCameraEditor.cs" />
     <Compile Include="Assets\SceneRebuilder\MeshDebugger\Editor\IMGizmo.cs" />
@@ -139,6 +142,7 @@
     <Compile Include="Assets\SceneRebuilder\Editor\BuildingModelInfoListEditor.cs" />
     <Compile Include="Assets\SceneRebuilder\Editor\RendererIdEditor.cs" />
     <Compile Include="Assets\SceneRebuilder\Editor\BaseEditorWindow.cs" />
+    <Compile Include="Assets\SceneRebuilder\plumber\OBB\Scripts\Editor\OBBColliderEditor.cs" />
     <Compile Include="Assets\SceneRebuilder\Editor\MeshManagerEditorWindow.cs" />
     <Compile Include="Assets\SceneRebuilder\Editor\BaseEditor.cs" />
     <Compile Include="Assets\ThirdPlugins\Performance Tools\AdvancedRenderSystem\Core\Scripts\Editor\AdvancedRenderSystemEditorWindow.cs" />
@@ -146,6 +150,7 @@
     <Compile Include="Assets\ThirdPlugins\Performance Tools\AdvancedCullingSystem\Core\DynamicCullingCore\Editor\DynamicCullingEditor.cs" />
     <Compile Include="Assets\SceneRebuilder\Editor\AreaTreeManagerEditorWindow.cs" />
     <Compile Include="Assets\SceneRebuilder\Editor\ListManagerEditorWindow.cs" />
+    <Compile Include="Assets\SceneRebuilder\plumber\Editor\PipeMeshGeneratorEditor.cs" />
     <Compile Include="Assets\SceneRebuilder\RigidTransformUtils\Editor\RigidTransformTests.cs" />
     <Compile Include="Assets\SceneRebuilder\Editor\TreeNodeManagerEditorWindow.cs" />
     <Compile Include="Assets\ThirdPlugins\Ultimate Game Tools\AutomaticLOD\Editor\AutomaticLODEditor.cs" />
@@ -153,7 +158,6 @@
     <Compile Include="Assets\SceneRebuilder\Editor\RendererManagerEditor.cs" />
     <Compile Include="Assets\Modules\UI\ModelModify\Scripts\ModelInfoRegister\Editor\SmartModelInfoTool.cs" />
     <Compile Include="Assets\SceneRebuilder\Editor\FloorBoxManagerEditor.cs" />
-    <Compile Include="Assets\SceneRebuilder\plumber\Editor\PipeMeshGeneratorEditor.cs" />
   </ItemGroup>
   <ItemGroup>
     <Reference Include="UnityEngine">

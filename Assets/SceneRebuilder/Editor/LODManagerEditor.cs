@@ -4,6 +4,7 @@ using System.Collections.Generic;
 using System.Linq;
 using UnityEditor;
 using UnityEngine;
+using static MeshHelper;
 
 [CustomEditor(typeof(LODManager))]
 public class LODManagerEditor : BaseFoldoutEditor<LODManager>
@@ -94,6 +95,10 @@ public class LODManagerEditor : BaseFoldoutEditor<LODManager>
         {
             lodManager.SaveLOD0s();
         }
+        if (GUILayout.Button("LoadLOD0s"))
+        {
+            lodManager.LoadLOD0s();
+        }
         if (GUILayout.Button("CheckScene"))
         {
             lodManager.CheckLOD0Scenes();
@@ -162,12 +167,12 @@ public class LODManagerEditor : BaseFoldoutEditor<LODManager>
             twoListArg.isExpanded = true;
         }
 
-        if (GUILayout.Button("TestCompare", GUILayout.Width(80)))
-        {
-            lodManager.TestCompareTwoRoot();
-            twoListArg.isEnabled = true;
-            twoListArg.isExpanded = true;
-        }
+        //if (GUILayout.Button("TestCompare", GUILayout.Width(80)))
+        //{
+        //    lodManager.TestCompareTwoRoot();
+        //    twoListArg.isEnabled = true;
+        //    twoListArg.isExpanded = true;
+        //}
 
         GUIStyle btnStyle = new GUIStyle(EditorStyles.miniButton);
         int lodN = lodManager.GetNewLODn();
@@ -264,6 +269,11 @@ public class LODManagerEditor : BaseFoldoutEditor<LODManager>
         }
         EditorGUILayout.EndHorizontal();
 
+        DrawListCompareResult(lodManager);
+    }
+
+    public static void DrawListCompareResult(LODManager lodManager)
+    {
         twoListArg.caption = $"TwoObject List";
         EditorUIUtils.ToggleFoldout(twoListArg, arg =>
         {
@@ -271,14 +281,14 @@ public class LODManagerEditor : BaseFoldoutEditor<LODManager>
             if (!string.IsNullOrEmpty(searchKey))
             {
                 //list = list.Where(i => i != null && i.renderer_lod1 != null && i.renderer_lod1.name.Contains(searchKey)).ToList();
-                list = list.Where(i => i.GetCaption().Contains(searchKey)).ToList();
+                list = list.FindList(searchKey);
             }
             twoListArg.Items = list;
             int v0 = 0;
             int v1 = 0;
             list.ForEach(i => { v0 += i.vertexCount0; v1 += i.vertexCount1; });
             arg.caption = $"TwoObject List ({list.Count})";
-            arg.info = $"(r0:{lodManager.LODRendererCount0},v0:{MeshHelper.GetVertexCountS(v0)})(r1:{lodManager.LODRendererCount1},v1:{MeshHelper.GetVertexCountS(v1)})";
+            arg.info = $"(r0:{list.LODRendererCount0},v0:{MeshHelper.GetVertexCountS(v0)})(r1:{list.LODRendererCount1},v1:{MeshHelper.GetVertexCountS(v1)})";
             InitEditorArg(list);
         },
         () =>
@@ -308,26 +318,26 @@ public class LODManagerEditor : BaseFoldoutEditor<LODManager>
             //    list = list.Where(i => i.isSameName).ToList();
             //}
             InitEditorArg(list);
-            twoListArg.DrawPageToolbar(list, (item, i) =>
+            twoListArg.DrawPageToolbar(list, (System.Action<LODTwoRenderers, int>)((item, i) =>
             {
                 //var door = item;
-                if (item.renderer_lod1 == null)
+                if (item.renderer_new == null)
                 {
                     return;
                 }
                 var arg = editorArgs[item];
-                arg.caption = $"[{i:00}] {item.GetCaption()}";
+                arg.caption = $"[{i:00}] {item.GetLODCaption()}";
                 //arg.info = door.ToString();
-                EditorUIUtils.ObjectFoldout(arg, item.renderer_lod1.gameObject, () =>
+                EditorUIUtils.ObjectFoldout(arg, item.renderer_new.gameObject, () =>
                 {
                     if (GUILayout.Button("Debug", GUILayout.Width(50)))
                     {
                         //lodManager.AddLOD2(item.renderer_lod0, item.renderer_lod1);
-                        float dis1 = Vector3.Distance(item.renderer_lod0.transform.position, item.renderer_lod1.transform.position);
-                        float dis2 = LODManager.GetCenterDistance(item.renderer_lod0.gameObject, item.renderer_lod1.gameObject);
-                        float dis3 = MeshHelper.GetAvgVertexDistanceEx(item.renderer_lod0.transform, item.renderer_lod1.transform);
-                        Debug.Log($"Debug lod0:{item.renderer_lod0.name} lod1:{item.renderer_lod1.name} dis1:{dis1} dis2:{dis2} dis3:{dis3}");
-                        var min = lodManager.GetMinInfo(item.renderer_lod1.transform);
+                        float dis1 = Vector3.Distance(item.renderer_old.transform.position, item.renderer_new.transform.position);
+                        float dis2 = MeshHelper.GetCenterDistance(item.renderer_old.gameObject, item.renderer_new.gameObject);
+                        float dis3 = MeshHelper.GetAvgVertexDistanceEx(item.renderer_old.transform, item.renderer_new.transform);
+                        Debug.Log($"Debug lod0:{item.renderer_old.name} lod1:{item.renderer_new.name} dis1:{dis1} dis2:{dis2} dis3:{dis3}");
+                        var min = lodManager.GetMinInfo(item.renderer_new.transform);
                         Debug.Log($"dis:{min.dis} meshDis:{min.meshDis} target:{min.target}");
                     }
                     //if (GUILayout.Button("Add1", GUILayout.Width(40)))
@@ -367,8 +377,8 @@ public class LODManagerEditor : BaseFoldoutEditor<LODManager>
                     //}
                     if (GUILayout.Button("LOD0", GUILayout.Width(45)))
                     {
-                        Debug.Log($"v1:{item.renderer_lod0.GetMinLODVertexCount()} v2:{item.vertexCount0}");
-                        EditorHelper.SelectObject(item.renderer_lod0.GetMinLODGo());
+                        Debug.Log($"v1:{item.renderer_old.GetMinLODVertexCount()} v2:{item.vertexCount0}");
+                        EditorHelper.SelectObject(item.renderer_old.GetMinLODGo());
                     }
                     //if (GUILayout.Button("0&1", GUILayout.Width(50)))
                     //{
@@ -376,7 +386,7 @@ public class LODManagerEditor : BaseFoldoutEditor<LODManager>
                     //}
 
                 });
-            });
+            }));
         }
     }
 

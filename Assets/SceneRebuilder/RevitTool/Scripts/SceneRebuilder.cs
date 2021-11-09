@@ -309,6 +309,8 @@ public class SceneRebuilder : MonoBehaviour
         string txt = Encoding.UTF8.GetString(bytes);
         return txt;
     }
+
+    [System.NonSerialized]
     public NodeInfo nodeInfo;
 
     public Dictionary<string, GameObject> resourcePrefabs = new Dictionary<string, GameObject>();

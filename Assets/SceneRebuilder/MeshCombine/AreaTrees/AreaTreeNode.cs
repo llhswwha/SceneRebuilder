@@ -34,7 +34,7 @@ public class AreaTreeNode : SubSceneCreater
             foreach(var renderer in Renderers)
             {
                 if (renderer == null) continue;
-                MeshRendererInfo info = MeshRendererInfo.GetInfo(renderer.gameObject);
+                MeshRendererInfo info = MeshRendererInfo.GetInfo(renderer.gameObject,true);
                 list.Add(info);
             }
         return list;
@@ -302,10 +302,12 @@ public class AreaTreeNode : SubSceneCreater
             if (go.transform.parent != renderersRoot.transform)
             {
                 // RendererParents.Add(go.transform.parent);
+                EditorHelper.UnpackPrefab(go);
                 go.transform.SetParent(renderersRoot.transform);
             }
         }
 
+        EditorHelper.UnpackPrefab(renderersRoot);
         renderersRoot.transform.SetParent(this.transform);
 
         return ids;

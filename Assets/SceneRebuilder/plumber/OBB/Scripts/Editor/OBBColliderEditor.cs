@@ -17,6 +17,14 @@ public class OBBColliderEditor : Editor
         {
             targetT.ClearChildren();
         }
+        //if (GUILayout.Button("CreatePipe"))
+        //{
+        //    targetT.CreatePipe();
+        //}
+        //if (GUILayout.Button("CreateWeld"))
+        //{
+        //    targetT.CreateWeld();
+        //}
         base.OnInspectorGUI();
     }
 }

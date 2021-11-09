@@ -3,6 +3,7 @@ using System.Collections;
 using System.Collections.Generic;
 using System.IO;
 using System.Linq;
+using System.Text;
 #if UNITY_EDITOR
 using UnityEditor;
 using UnityEditor.SceneManagement;
@@ -427,9 +428,10 @@ public class SubSceneManager : SingletonBehaviour<SubSceneManager>
     }
 
     public bool includeInactive = false;
-    public void UpdateScenes()
+    public SubScene_Base[] UpdateScenes()
     {
         subScenes = GameObject.FindObjectsOfType<SubScene_Base>(includeInactive);
+        return subScenes;
     }
 
 
@@ -725,6 +727,8 @@ public class SubSceneManager : SingletonBehaviour<SubSceneManager>
 
         public float fileLength = 0;
 
+        public GameObject go;
+
         public SceneFile(SubScene_Base item)
         {
             var arg = item.GetSceneArg();
@@ -740,6 +744,8 @@ public class SubSceneManager : SingletonBehaviour<SubSceneManager>
             fileLength = fileInfo.Length / (1024f * 1024f);
 
             sceneFilePath = fileInfo.FullName;
+
+            go = item.gameObject;
         }
 
         public SceneFile(FileInfo item)
@@ -784,12 +790,17 @@ public class SubSceneManager : SingletonBehaviour<SubSceneManager>
         }
     }
 
+    
+
     public List<SceneFile> GetActiveSceneFiles()
     {
         List<SceneFile> sceneFiles1 = new List<SceneFile>();
-        var scenes = GetScenes();
-        foreach (var scene in scenes)
+        //var scenes = GetScenes();
+        var scenes = UpdateScenes();
+        for (int i = 0; i < scenes.Length; i++)
         {
+            SubScene_Base scene = scenes[i];
+            ProgressBarHelper.DisplayCancelableProgressBar(new ProgressArg("GetActiveSceneFiles", i, scenes.Length, scene));
             SceneFile sceneFile = new SceneFile(scene);
             sceneFiles1.Add(sceneFile);
         }
@@ -810,17 +821,24 @@ public class SubSceneManager : SingletonBehaviour<SubSceneManager>
         return sceneFiles2;
     }
 
+    public List<GameObject> ErrorSceneGos = new List<GameObject>();
+
     public List<SceneFile> GetSceneFilesEx()
     {
+        ErrorSceneGos = new List<GameObject>();
         List<SceneFile> sceneFiles = new List<SceneFile>();
         List<SceneFile> sceneFiles1 = GetActiveSceneFiles();
         Dictionary<string, SceneFile> dict = new Dictionary<string, SceneFile>();
-        foreach(var scene in sceneFiles1)
+        for (int i = 0; i < sceneFiles1.Count; i++)
         {
-            if(dict.ContainsKey(scene.sceneFilePath))
+            SceneFile scene = sceneFiles1[i];
+            ProgressBarHelper.DisplayCancelableProgressBar(new ProgressArg("GetSceneFilesEx1", i, sceneFiles1.Count, scene));
+            if (dict.ContainsKey(scene.sceneFilePath))
             {
                 SceneFile scene2=dict[scene.sceneFilePath];
-                Debug.LogError($"dict.ContainsKey scene1:{scene2} scene2:{scene} path:{scene.sceneFilePath}");
+                Debug.LogError($"dict.ContainsKey1 scene1:{scene2.go} scene2:{scene.go} path:{scene.sceneFilePath}");
+
+                ErrorSceneGos.Add(scene2.go);
             }
             else{
                 dict.Add(scene.sceneFilePath, scene);
@@ -828,20 +846,35 @@ public class SubSceneManager : SingletonBehaviour<SubSceneManager>
             
         }
         List<SceneFile> sceneFiles2 = GetAllSceneFiles();
-        foreach(var scene in sceneFiles2)
+        for (int i = 0; i < sceneFiles2.Count; i++)
         {
+            SceneFile scene = sceneFiles2[i];
+            ProgressBarHelper.DisplayCancelableProgressBar(new ProgressArg("GetSceneFilesEx2", i, sceneFiles1.Count, scene));
             scene.isActive = dict.ContainsKey(scene.sceneFilePath);
         }
 
+        ProgressBarHelper.ClearProgressBar();
+        Debug.LogError($"sceneFiles1:{sceneFiles1.Count} dict:{dict.Count} sceneFiles2:{sceneFiles2.Count}");
         return sceneFiles2;
     }
+
+    public int maxDeleteCount = 100;
 
     public void DeleteInActiveScenes()
     {
 #if UNITY_EDITOR
+        DateTime start = DateTime.Now;
+
         float fileLength = 0;
         List<SceneFile> sceneFiles = GetSceneFilesEx();
         int count = 0;
+        int maxCount = sceneFiles.Count;
+        //if(maxDeleteCount>0&& maxDeleteCount<maxCount)
+        //{
+        //    maxCount = maxDeleteCount;
+        //}
+
+        StringBuilder deleteFilePaths = new StringBuilder();
         for (int i = 0; i < sceneFiles.Count; i++)
         {
             float progress = (float)i / sceneFiles.Count;
@@ -850,19 +883,30 @@ public class SubSceneManager : SingletonBehaviour<SubSceneManager>
                 break;
             }
             SceneFile scene = sceneFiles[i];
-            if (scene.isActive==false)
+            if (scene.isActive == false)
             {
-                scene.DeleteAsset();
+                //scene.DeleteAsset();
                 fileLength += scene.fileLength;
                 count++;
+                if(count> maxDeleteCount)
+                {
+                    break;
+                }
+
+                deleteFilePaths.AppendLine(scene.sceneFilePath);
             }
         }
 
-        Debug.Log($"DeleteInActiveScenes all:{sceneFiles.Count} remove:{count} size:{fileLength}");
+        Debug.Log($"DeleteInActiveScenes time:{DateTime.Now-start} all:{sceneFiles.Count} remove:{count} size:{fileLength}");
 
-        EditorHelper.RefreshAssets();
-#endif
+        //EditorHelper.RefreshAssets();
+
         ProgressBarHelper.ClearProgressBar();
+        string path = Application.dataPath + "/DeleteScenes.txt";
+        FileInfo fileInfo = new FileInfo(path);
+        Debug.Log($"path:{fileInfo.FullName} content:\n{deleteFilePaths.ToString()}");
+        File.WriteAllText(fileInfo.FullName, deleteFilePaths.ToString());
+#endif
     }
 
     [ContextMenu("ClearScenes")]

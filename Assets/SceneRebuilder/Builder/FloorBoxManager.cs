@@ -152,6 +152,10 @@ public class FloorBoxManager : SingletonBehaviour<FloorBoxManager>
         {
             r.SetParent(Sources.name,IsIn);
         }
+        foreach (var r in List2)
+        {
+            r.SetParent(Sources.name, IsIn);
+        }
     }
 
     [ContextMenu("SetParentEx")]
@@ -248,6 +252,7 @@ public class TransformFloorParent
         {
             this.floors.Add(f.transform);
         }
+        floor = floors[0];
     }
 
     public TransformFloorParent(Transform g, List<GameObject> fs)
@@ -258,6 +263,7 @@ public class TransformFloorParent
         {
             this.floors.Add(f.transform);
         }
+        floor = floors[0];
     }
 
     public string GetFloors()
@@ -304,6 +310,7 @@ public class TransformFloorParent
             if(child.name==pName)
             {
                 p = child;
+                EditorHelper.UnpackPrefab(go.gameObject);
                 go.SetParent(child);
                 return;
             }
@@ -314,6 +321,7 @@ public class TransformFloorParent
         newP.transform.SetParent(fP);
         //p = newP.transform;
 
+        EditorHelper.UnpackPrefab(go.gameObject);
         go.SetParent(newP.transform);
     }
 }

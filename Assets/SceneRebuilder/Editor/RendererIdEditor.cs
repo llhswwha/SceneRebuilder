@@ -122,17 +122,7 @@ public class RendererIdEditor : BaseEditor<RendererId>
         }
         if (GUILayout.Button("RemoveNew"))
         {
-            int count = 0;
-            var renderers = item.GetComponentsInChildren<Transform>();
-            foreach (var renderer in renderers)
-            {
-                if (renderer.name.EndsWith("_New"))
-                {
-                    renderer.name = renderer.name.Replace("_New", "");
-                    count++;
-                }
-            }
-            Debug.Log($"RemoveNew count:{count} renderers:{renderers.Length}");
+            MeshHelper.RemoveNew(item.gameObject);
         }
         EditorGUILayout.EndHorizontal();
 
@@ -408,11 +398,13 @@ public class RendererIdEditor : BaseEditor<RendererId>
 
             EditorHelper.UnpackPrefab(item.gameObject);
             EditorHelper.UnpackPrefab(goDwf.gameObject);
+            MeshHelper.CenterPivot(item.gameObject);
+            MeshHelper.CenterPivot(goDwf.gameObject);
 
             goDwf.transform.rotation = Quaternion.Euler(-90, 0, -90);
             MeshAlignmentManager.Instance.DoAlign(goDwf, item.gameObject);
 
-            MeshHelper.CenterPivot(item.gameObject);
+            
         }
         if (GUILayout.Button("FindGeometry"))
         {
@@ -473,7 +465,7 @@ public class RendererIdEditor : BaseEditor<RendererId>
         }
         else
         {
-            Debug.LogError($"FindListByName result.Count != 1 name:{name}");
+            Debug.LogError($"FindListByName result.Count != 1 result:{result.Count} name:{name} ");
         }
         return result;
     }
@@ -493,7 +485,8 @@ public class RendererIdEditor : BaseEditor<RendererId>
                 }
                 else
                 {
-                    Debug.LogError($"p.childCount != 1 p:{p.name}");
+                    Debug.LogWarning($"p.childCount != 1 p:{p.name}");
+                    t.name = p.name;
                 }
             }
         }

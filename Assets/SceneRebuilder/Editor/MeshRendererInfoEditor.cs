@@ -70,5 +70,12 @@ public class MeshRendererInfoEditor : BaseFoldoutEditor<MeshRendererInfo>
             item.ShowWeightCenter();
         }
         EditorGUILayout.EndHorizontal();
+
+        EditorGUILayout.BeginHorizontal();
+        if (GUILayout.Button("GetAssetPath"))
+        {
+            Debug.Log(item.GetAssetPath());
+        }
+        EditorGUILayout.EndHorizontal();
     }
 }

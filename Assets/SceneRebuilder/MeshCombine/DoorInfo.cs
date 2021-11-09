@@ -525,25 +525,44 @@ public class DoorInfoList : List<DoorInfo>
 
     public List<MeshFilter> GetMeshFilters()
     {
-        List<MeshFilter> meshFilters = new List<MeshFilter>();
+        return GetComponents<MeshFilter>();
+    }
+    public List<MeshRenderer> GetMeshRenderers()
+    {
+        return GetComponents<MeshRenderer>();
+    }
+
+    public List<GameObject> GetGameObjects()
+    {
+        List<GameObject> gos = new List<GameObject>();
+        foreach (var door in this)
+        {
+            gos.Add(door.gameObject);
+        }
+        return gos;
+    }
+
+    public List<T> GetComponents<T>() where T :Component
+    {
+        List<T> components = new List<T>();
         for (int i = 0; i < this.Count; i++)
         {
             DoorInfo info = this[i];
             if (info == null) continue;
             if (info.gameObject == null) continue;
-            var mfs = info.gameObject.GetComponentsInChildren<MeshFilter>(true);
+            var mfs = info.gameObject.GetComponentsInChildren<T>(true);
             //Debug.Log($"[{i}/{this.Count}]GetMeshFilters meshFilters:{meshFilters.Count} go:{info.gameObject} mfs:{mfs.Length}");
             //meshFilters.AddRange(mfs);
             foreach(var mf in mfs)
             {
-                if (!meshFilters.Contains(mf))
+                if (!components.Contains(mf))
                 {
-                    meshFilters.Add(mf);
+                    components.Add(mf);
                 }
             }
             
         }
-        return meshFilters;
+        return components;
     }
 
     public MeshPoints[] GetFilterMeshPoints()

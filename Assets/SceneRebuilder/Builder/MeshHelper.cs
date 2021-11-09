@@ -202,11 +202,23 @@ public static class MeshHelper
         }
         else if (f >= 1)
         {
-            return $"{f:F1}";
+            return $"{f:F2}";
         }
         else if (vertexCount >= 1000)
         {
             return $"{f:F2}";
+        }
+        //else if (vertexCount >= 100)
+        //{
+        //    return $"{f:F3}";
+        //}
+        //else if (vertexCount >= 10)
+        //{
+        //    return $"{f:F3}";
+        //}
+        else if (vertexCount == 0)
+        {
+            return "0";
         }
         else
         {
@@ -973,9 +985,9 @@ public static class MeshHelper
         {
             Mesh mesh1 = mf1.sharedMesh;
             Mesh mesh2 = mf2.sharedMesh;
-            if (mesh1 == null || mesh1 == null)
+            if (mesh1 == null || mesh2 == null)
             {
-                Debug.LogError($"GetAvgVertexDistanceEx mesh1 == null || mesh1 == null mesh1:{mesh1} mesh2:{mesh2}");
+                Debug.LogError($"GetAvgVertexDistanceEx mesh1 == null || mesh2 == null mesh1:{mesh1} mesh2:{mesh2}");
                 return float.MaxValue;
             }
             else
@@ -1012,6 +1024,98 @@ public static class MeshHelper
         InvokeGetVertexDistanceExCount++;
 
         return dis;
+    }
+
+    [Serializable]
+    public class MinDisTarget<T> where T : Component
+    {
+        public float dis = float.MaxValue;
+        public float meshDis = float.MaxValue;
+        public T target = null;
+        public MinDisTarget(float dis, float meshDis, T t)
+        {
+            this.dis = dis;
+            target = t;
+            this.meshDis = meshDis;
+        }
+    }
+
+    public static float GetCenterDistance(GameObject go1, GameObject go2)
+    {
+        MeshRendererInfo info0 = MeshRendererInfo.GetInfo(go1,false);
+        MeshRendererInfo info1 = MeshRendererInfo.GetInfo(go2, false);
+        float distance = Vector3.Distance(info0.center, info1.center);
+        return distance;
+    }
+    public static float GetMinDistance(GameObject go1, GameObject go2)
+    {
+        MeshRendererInfo info0 = MeshRendererInfo.GetInfo(go1, false);
+        MeshRendererInfo info1 = MeshRendererInfo.GetInfo(go2, false);
+        float distance = Vector3.Distance(info0.minMax[0], info1.minMax[0]);
+        return distance;
+    }
+
+    public static float GetMaxDistance(GameObject go1, GameObject go2)
+    {
+        MeshRendererInfo info0 = MeshRendererInfo.GetInfo(go1, false);
+        MeshRendererInfo info1 = MeshRendererInfo.GetInfo(go2, false);
+        float distance = Vector3.Distance(info0.minMax[1], info1.minMax[1]);
+        return distance;
+    }
+
+    public static float GetBoundsDistance(GameObject go1, GameObject go2)
+    {
+        MeshRendererInfo info0 = MeshRendererInfo.GetInfo(go1, false);
+        MeshRendererInfo info1 = MeshRendererInfo.GetInfo(go2, false);
+        float distance1 = Vector3.Distance(info0.center, info1.center);
+        float distance2 = Vector3.Distance(info0.minMax[0], info1.minMax[0]);
+        float distance3 = Vector3.Distance(info0.minMax[1], info1.minMax[1]);
+        float distance = distance1 + distance2 + distance3;
+        return distance;
+    }
+
+    public enum LODCompareMode
+    {
+        Name,NameWithPos, NameWithCenter, NameWithMin, NameWithMax, NameWithBounds, NameWithMesh, Pos, Center, Min, Max,Bounds, Mesh
+    }
+
+    public static float GetDistance<T>(T item, Transform t, LODCompareMode mode) where T : Component
+    {
+        if (mode == LODCompareMode.NameWithPos || mode == LODCompareMode.Pos)
+        {
+            float distance = Vector3.Distance(item.transform.position, t.position);
+            return distance;
+        }
+        else if (mode == LODCompareMode.NameWithCenter || mode == LODCompareMode.Center)
+        {
+            float distance = GetCenterDistance(item.gameObject, t.gameObject);
+            return distance;
+        }
+        else if (mode == LODCompareMode.NameWithMin || mode == LODCompareMode.Min)
+        {
+            float distance = GetMinDistance(item.gameObject, t.gameObject);
+            return distance;
+        }
+        else if (mode == LODCompareMode.NameWithMax || mode == LODCompareMode.Max)
+        {
+            float distance = GetMaxDistance(item.gameObject, t.gameObject);
+            return distance;
+        }
+        else if (mode == LODCompareMode.NameWithBounds || mode == LODCompareMode.Bounds)
+        {
+            float distance = GetBoundsDistance(item.gameObject, t.gameObject);
+            return distance;
+        }
+        else if (mode == LODCompareMode.NameWithMesh || mode == LODCompareMode.Mesh)
+        {
+            float distance = MeshHelper.GetAvgVertexDistanceEx(item.transform, t);
+            return distance;
+        }
+        else
+        {
+            float distance = GetCenterDistance(item.gameObject, t.gameObject);
+            return distance;
+        }
     }
 
     public static int InvokeGetVertexDistanceExCount=0;
@@ -1231,6 +1335,21 @@ public static class MeshHelper
     {
         MeshFilter[] meshFilters = go.GetComponentsInChildren<MeshFilter>(true);
         return GetMinMax(meshFilters);
+    }
+
+    public static void RemoveNew(GameObject go)
+    {
+        int count = 0;
+        var renderers = go.GetComponentsInChildren<Transform>();
+        foreach (var renderer in renderers)
+        {
+            if (renderer.name.EndsWith("_New"))
+            {
+                renderer.name = renderer.name.Replace("_New", "");
+                count++;
+            }
+        }
+        Debug.Log($"RemoveNew count:{count} renderers:{renderers.Length}");
     }
 
     public static Vector3[] GetMinMax<T>(T t) where T :Component

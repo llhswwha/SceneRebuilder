@@ -58,6 +58,7 @@
   <ItemGroup>
     <Compile Include="Assets\SceneRebuilder\MeshCombine\AreaTrees\RendererId.cs" />
     <Compile Include="Assets\ThirdPlugins\MGS-Camera-master\MGS-Camera\Scripts\Around\AlignMark.cs" />
+    <Compile Include="Assets\SceneRebuilder\plumber\OBB\MathGeoLib\LCG.cs" />
     <Compile Include="Assets\SceneRebuilder\MeshDebugger\Scripts\MeshInfo.cs" />
     <Compile Include="Assets\ThirdPlugins\Performance Tools\AdvancedCullingSystem\Core\DynamicCullingCore\DynamicCullingJobs\CreateRayCommandsJob.cs" />
     <Compile Include="Assets\ThirdPlugins\AssetBundleMagic\Scripts\Util\VersionData.cs" />
@@ -88,6 +89,7 @@
     <Compile Include="Assets\SceneRebuilder\MeshCombine\MaterialKey.cs" />
     <Compile Include="Assets\SceneRebuilder\MeshCombine\DoorInfo.cs" />
     <Compile Include="Assets\SceneRebuilder\RigidTransformUtils\RigidTransform-master\AcRTPoints.cs" />
+    <Compile Include="Assets\SceneRebuilder\plumber\Scripts\Math3D.cs" />
     <Compile Include="Assets\SceneRebuilder\Builder\MeshPivotManager.cs" />
     <Compile Include="Assets\UnityCommon\TimeCounter.cs" />
     <Compile Include="Assets\Modules\LODTool\LODValueInfo.cs" />
@@ -103,13 +105,16 @@
     <Compile Include="Assets\UnityCommon\Helpers\ColliderHelper.cs" />
     <Compile Include="Assets\UnityCommon\Materials\TransparentMaterialManager.cs" />
     <Compile Include="Assets\ThirdPlugins\Performance Tools\AdvancedCullingSystem\Test\StaticCullingTestReporter.cs" />
+    <Compile Include="Assets\SceneRebuilder\ModelUpdate\ModelUpdateManager.cs" />
     <Compile Include="Assets\SceneRebuilder\RevitTool\Scripts\Tools\QuaternionRotation.cs" />
     <Compile Include="Assets\SceneRebuilder\RevitTool\Scripts\CameraModeManager.cs" />
     <Compile Include="Assets\SceneRebuilder\Builder\MeshRotateBuffer.cs" />
     <Compile Include="Assets\ThirdPlugins\Performance Tools\AdvancedCullingSystem\Core\DynamicCullingCore\DynamicCullingJobs\ComputeResultsJob.cs" />
+    <Compile Include="Assets\SceneRebuilder\plumber\Scripts\PointHelper.cs" />
     <Compile Include="Assets\ThirdPlugins\Performance Tools\SuperLevelOptimizer\Scripts\SuperLevelOptimizer.cs" />
     <Compile Include="Assets\SceneRebuilder\Builder\AlignResultComponent.cs" />
     <Compile Include="Assets\SceneRebuilder\Builder\SubSceneS\SubSceneManager.cs" />
+    <Compile Include="Assets\SceneRebuilder\plumber\Scripts\PipeBuilder.cs" />
     <Compile Include="Assets\ThirdPlugins\Performance Tools\AdvancedRenderSystem\Example\Scripts\ApplicationClose.cs" />
     <Compile Include="Assets\UnityCommon\Utils\GameObjectMaterial.cs" />
     <Compile Include="Assets\SceneRebuilder\RevitInfo\ElementGroupType.cs" />
@@ -117,7 +122,9 @@
     <Compile Include="Assets\ThirdPlugins\Ultimate Game Tools\AutomaticLOD\Data\Environment\Water\Water\Scripts\PlanarReflection.cs" />
     <Compile Include="Assets\SceneRebuilder\Builder\MeshJobs\MeshFilterList.cs" />
     <Compile Include="Assets\SceneRebuilder\Builder\SubSceneS\SubSceneShowManagerUI.cs" />
+    <Compile Include="Assets\SceneRebuilder\plumber\Scripts\RandomPipe.cs" />
     <Compile Include="Assets\Modules\UI\ModelModify\Scripts\NavisPlugins\BimNodeHelper_AreaNode.cs" />
+    <Compile Include="Assets\SceneRebuilder\plumber\Scripts\TorusMeshGenerator.cs" />
     <Compile Include="Assets\UnityCommon\Extensions\ObjectExtension.cs" />
     <Compile Include="Assets\SceneRebuilder\Builder\ModelInfos\BuildingModelShowManagerUI.cs" />
     <Compile Include="Assets\SceneRebuilder\Builder\SubSceneS\SceneModelInfo.cs" />
@@ -132,6 +139,7 @@
     <Compile Include="Assets\ThirdPlugins\Performance Tools\AdvancedRenderSystem\Example\Scripts\Joystick.cs" />
     <Compile Include="Assets\ThirdPlugins\Performance Tools\AdvancedCullingSystem\Example\Scripts\FrustumCullingVisualization.cs" />
     <Compile Include="Assets\ThirdPlugins\Performance Tools\AdvancedRenderSystem\Core\Scripts\TexturesManager.cs" />
+    <Compile Include="Assets\SceneRebuilder\plumber\OBB\MathGeoLib\Line3.cs" />
     <Compile Include="Assets\ThirdPlugins\MantisLODEditor\Common\Mantis_Mesh.cs" />
     <Compile Include="Assets\SceneRebuilder\Builder\MeshComparer.cs" />
     <Compile Include="Assets\ThirdPlugins\AssetBundleMagic\Scripts\ChunkManager.cs" />
@@ -141,9 +149,9 @@
     <Compile Include="Assets\SceneRebuilder\RevitInfo\ElementInfoList.cs" />
     <Compile Include="Assets\SceneRebuilder\MeshCombine\MeshCombiner.cs" />
     <Compile Include="Assets\SceneRebuilder\Builder\SubSceneS\ObjectActiveItemUI.cs" />
-    <Compile Include="Assets\Models\SuQianDiXing\SetCameraHeight.cs" />
     <Compile Include="Assets\SceneRebuilder\SceneInfo\ModelBuildingInfo.cs" />
     <Compile Include="Assets\ThirdPlugins\MantisLODEditor\Runtime\ProgressiveMeshRuntime.cs" />
+    <Compile Include="Assets\SceneRebuilder\plumber\Scripts\PipeMeshGenerator.cs" />
     <Compile Include="Assets\SceneRebuilder\Builder\RotateTest.cs" />
     <Compile Include="Assets\SceneRebuilder\Builder\GlobalMaterialManagerUI.cs" />
     <Compile Include="Assets\SceneRebuilder\RevitTool\Scripts\UI\ECSTestUI.cs" />
@@ -195,6 +203,8 @@
     <Compile Include="Assets\ThirdPlugins\Ultimate Game Tools\AutomaticLOD\Data\Environment\Water\Water\Scripts\GerstnerDisplace.cs" />
     <Compile Include="Assets\SceneRebuilder\Builder\ModelInfos\BuildingModelShowManager.cs" />
     <Compile Include="Assets\SceneRebuilder\LODS\LODInfo.cs" />
+    <Compile Include="Assets\SceneRebuilder\plumber\OBB\Scripts\OBBCollider.cs" />
+    <Compile Include="Assets\SceneRebuilder\plumber\OBB\MathGeoLib\Ray.cs" />
     <Compile Include="Assets\M_Plugins\U3D\Camera\TheThirdPersonCamera.cs" />
     <Compile Include="Assets\ThirdPlugins\AssetBundleMagic\Scenes\Scripts\ImageTestGame.cs" />
     <Compile Include="Assets\ThirdPlugins\AssetBundleMagic\Scripts\Util\SerializableDictionary.cs" />
@@ -225,11 +235,12 @@
     <Compile Include="Assets\SceneRebuilder\Builder\MeshJobs\MathematicsDistance.cs" />
     <Compile Include="Assets\SceneRebuilder\Builder\MeshSize.cs" />
     <Compile Include="Assets\SceneRebuilder\Builder\PrefabInstanceBuilder.cs" />
-    <Compile Include="Assets\Models\PersonModels\Scripts\PersonMoveController.cs" />
+    <Compile Include="Assets\SceneRebuilder\plumber\OBB\MathGeoLib\OrientedBoundingBoxExtensions.cs" />
     <Compile Include="Assets\SceneRebuilder\SceneInfo\TransformInfo.cs" />
     <Compile Include="Assets\UnityCommon\Log.cs" />
     <Compile Include="Assets\SceneRebuilder\RigidTransformUtils\Scripts\TransformExtensions.cs" />
     <Compile Include="Assets\SceneRebuilder\RigidTransformUtils\Scripts\Vector3Extensions.cs" />
+    <Compile Include="Assets\SceneRebuilder\plumber\Scripts\PipeModel.cs" />
     <Compile Include="Assets\ThirdPlugins\MGS-Camera-master\MGS-CommonCode\UI\HelpInfo.cs" />
     <Compile Include="Assets\SceneRebuilder\Builder\GlobalMaterialManager.cs" />
     <Compile Include="Assets\ThirdPlugins\Performance Tools\AdvancedRenderSystem\Core\Scripts\Billboards\BillboardOfGroup.cs" />
@@ -244,15 +255,16 @@
     <Compile Include="Assets\SceneRebuilder\ModelScanner\Scripts\ModelScannerDebugUI.cs" />
     <Compile Include="Assets\Modules\UI\FacilityDevInfo\Scripts\FacilityDevController.cs" />
     <Compile Include="Assets\Modules\UI\ModelModify\Scripts\NavisPlugins\InitNavisFileInfoByModelSetting.cs" />
+    <Compile Include="Assets\SceneRebuilder\plumber\OBB\Scripts\UpdateBoxColliderHelp.cs" />
     <Compile Include="Assets\SceneRebuilder\MeshCombine\AreaTrees\AreaTreeHelper.cs" />
     <Compile Include="Assets\SceneRebuilder\Builder\MeshJobs\MeshFilterListDict.cs" />
     <Compile Include="Assets\SceneRebuilder\Builder\BigSmallListInfo.cs" />
     <Compile Include="Assets\SceneRebuilder\MeshCombine\AreaTrees\RendererManager.cs" />
-    <Compile Include="Assets\Models\PersonModels\Scripts\PersonAnimationController.cs" />
     <Compile Include="Assets\ThirdPlugins\Performance Tools\AdvancedCullingSystem\Core\LayersHelper.cs" />
     <Compile Include="Assets\ThirdPlugins\Performance Tools\AdvancedCullingSystem\Core\ACSInfo.cs" />
     <Compile Include="Assets\ThirdPlugins\Performance Tools\AdvancedCullingSystem\Test\StaticCullingManager.cs" />
     <Compile Include="Assets\Modules\UI\ModelModify\Scripts\NavisPlugins\VueFileInfoList.cs" />
+    <Compile Include="Assets\ThirdPlugins\MeshProfiler\MeshElement.cs" />
     <Compile Include="Assets\Modules\AssetLoad\Scripts\CopyComponent.cs" />
     <Compile Include="Assets\Modules\UI\ModelModify\Scripts\NavisPlugins\InitNavisFileInfoByModel.cs" />
     <Compile Include="Assets\Modules\LODTool\LODChildInfo.cs" />
@@ -264,7 +276,6 @@
     <Compile Include="Assets\SceneRebuilder\Builder\MeshJobs\JobList.cs" />
     <Compile Include="Assets\SceneRebuilder\ModelScanner\Scripts\SubModelController.cs" />
     <Compile Include="Assets\SceneRebuilder\Builder\RTTEst.cs" />
-    <Compile Include="Assets\Modules\UI\ModelModify\Scripts\NavisPlugins\BIMDevDetail.cs" />
     <Compile Include="Assets\ThirdPlugins\Performance Tools\AdvancedCullingSystem\Core\ChunkMark.cs" />
     <Compile Include="Assets\ThirdPlugins\Performance Tools\AdvancedCullingSystem\Test\StaticCullingManagerUI.cs" />
     <Compile Include="Assets\SceneRebuilder\ECS\Test\Scripts\VelocityScript.cs" />
@@ -285,16 +296,20 @@
     <Compile Include="Assets\ThirdPlugins\Performance Tools\AdvancedCullingSystem\Core\BaseCulling.cs" />
     <Compile Include="Assets\SceneRebuilder\Others\Scripts\RuntimeProfilerScripts\FileManager.cs" />
     <Compile Include="Assets\Modules\FactoryController\BuildingFloorTweening.cs" />
+    <Compile Include="Assets\SceneRebuilder\plumber\OBB\MathGeoLib\Matrix3X4.cs" />
     <Compile Include="Assets\SceneRebuilder\Builder\SubSceneS\SubScene_In.cs" />
     <Compile Include="Assets\ThirdPlugins\Performance Tools\AdvancedCullingSystem\Core\StaticCullingCore\BinaryTreeDataComponent.cs" />
     <Compile Include="Assets\ThirdPlugins\Performance Tools\AdvancedCullingSystem\Core\ProgressBarHelper.cs" />
+    <Compile Include="Assets\SceneRebuilder\plumber\OBB\MathGeoLib\Vector3.cs" />
     <Compile Include="Assets\ThirdPlugins\Performance Tools\AdvancedRenderSystem\Core\Scripts\AdvancedRenderSystem.cs" />
+    <Compile Include="Assets\SceneRebuilder\SceneAssets\SceneAssetsManager.cs" />
     <Compile Include="Assets\SceneRebuilder\ECS\Pong\Scripts\GameManager.cs" />
     <Compile Include="Assets\ThirdPlugins\MGS-Camera-master\MGS-Camera\Scripts\Around\MouseFocus.cs" />
     <Compile Include="Assets\ThirdPlugins\MantisLODEditor\Common\MantisLODEditorProfessional.cs" />
     <Compile Include="Assets\ThirdPlugins\Performance Tools\AdvancedCullingSystem\Example\Scripts\CameraController.cs" />
     <Compile Include="Assets\SceneRebuilder\Builder\MeshJobs\MeshJobs.cs" />
     <Compile Include="Assets\SceneRebuilder\SceneInfo\NodeInfo.cs" />
+    <Compile Include="Assets\SceneRebuilder\plumber\Scripts\WeldMeshGenerator.cs" />
     <Compile Include="Assets\ThirdPlugins\Performance Tools\AdvancedRenderSystem\Example\Scripts\DesktopCameraController.cs" />
     <Compile Include="Assets\ThirdPlugins\Performance Tools\AdvancedRenderSystem\Example\Scripts\MobileCameraController.cs" />
     <Compile Include="Assets\SceneRebuilder\Builder\MeshJobs\MeshDistanceJob.cs" />
@@ -322,7 +337,6 @@
     <Compile Include="Assets\SceneRebuilder\Builder\SubSceneS\SubScene_Base.cs" />
     <Compile Include="Assets\UnityCommon\Extensions\ObjectSize.cs" />
     <Compile Include="Assets\UnityCommon\Utils\UIFinder.cs" />
-    <Compile Include="Assets\Modules\UI\ModelModify\Scripts\ModelInfoRegister\BIMDevDetailManager.cs" />
     <Compile Include="Assets\HDRPAsset\TutorialInfo\Scripts\Readme.cs" />
     <Compile Include="Assets\UnityCommon\Helpers\ComponentHelper.cs" />
     <Compile Include="Assets\SceneRebuilder\MeshCombine\AreaTrees\AreaTreeNodeStatics.cs" />
@@ -344,6 +358,7 @@
     <Compile Include="Assets\SceneRebuilder\MeshCombine\CombinedMeshInfo.cs" />
     <Compile Include="Assets\SceneRebuilder\Builder\BoundsBoxManager.cs" />
     <Compile Include="Assets\SceneRebuilder\Builder\SubSceneS\SubScene_Part.cs" />
+    <Compile Include="Assets\SceneRebuilder\plumber\OBB\MathGeoLib\Plane.cs" />
     <Compile Include="Assets\SceneRebuilder\RevitInfo\XYZInfo.cs" />
     <Compile Include="Assets\SceneRebuilder\ModelScanner\Scripts\ModelManager.cs" />
     <Compile Include="Assets\SceneRebuilder\ModelScanner\Scripts\Classes\DistanceInfo.cs" />
@@ -387,7 +402,9 @@
     <Compile Include="Assets\ThirdPlugins\Performance Tools\AdvancedCullingSystem\Core\StaticCullingCore\CullingSetting.cs" />
     <Compile Include="Assets\ThirdPlugins\Ultimate Game Tools\AutomaticLOD\Data\Environment\Water\Water\Scripts\MeshContainer.cs" />
     <Compile Include="Assets\ThirdPlugins\Performance Tools\AdvancedRenderSystem\Core\Scripts\Billboards\BaseBillboard.cs" />
+    <Compile Include="Assets\SceneRebuilder\plumber\OBB\MathGeoLib\OrientedBoundingBox.cs" />
     <Compile Include="Assets\SceneRebuilder\SceneInfo\ModelBuildingsScript.cs" />
+    <Compile Include="Assets\SceneRebuilder\plumber\Scripts\MeshGeneratorHelper.cs" />
     <Compile Include="Assets\SceneRebuilder\ECS\Pong\Scripts\Data Components\PaddleInputData.cs" />
     <Compile Include="Assets\UnityCommon\Utils\AssetbundleParams.cs" />
     <Compile Include="Assets\ThirdPlugins\Performance Tools\SuperLevelOptimizer\Scripts\SLO_CombinedMark.cs" />
@@ -413,6 +430,7 @@
     <Compile Include="Assets\Modules\AssetLoad\EditorHelper.cs" />
     <Compile Include="Assets\SceneRebuilder\Builder\MeshType.cs" />
     <Compile Include="Assets\UnityCommon\Infos\GameObjectInfo.cs" />
+    <Compile Include="Assets\SceneRebuilder\plumber\OBB\Scripts\OBBRect.cs" />
     <Compile Include="Assets\ThirdPlugins\Ultimate Game Tools\AutomaticLOD\Data\Scripts\LODPreview.cs" />
     <Compile Include="Assets\ThirdPlugins\Performance Tools\AdvancedCullingSystem\Core\CasterUtility.cs" />
     <Compile Include="Assets\SceneRebuilder\MeshCombine\DoorsRoot.cs" />
@@ -456,6 +474,7 @@
     <Compile Include="Assets\UnityCommon\Helpers\TransparentHelper.cs" />
     <Compile Include="Assets\SceneRebuilder\Builder\MeshJobs\AcRTAlignJobContainer.cs" />
     <Compile Include="Assets\ThirdPlugins\Ultimate Game Tools\AutomaticLOD\Scripts\AutomaticLODHelper.cs" />
+    <Compile Include="Assets\SceneRebuilder\plumber\OBB\MathGeoLib\Line.cs" />
     <Compile Include="Assets\ThirdPlugins\MGS-Camera-master\MGS-Camera\Scripts\Reference\ReferenceDefine.cs" />
     <Compile Include="Assets\Modules\UI\ModelModify\Scripts\NavisPlugins\PropertyCategoryInfo.cs" />
     <Compile Include="Assets\Modules\AssetLoad\Scripts\CreateAssetScene.cs" />
@@ -464,9 +483,9 @@
     <Compile Include="Assets\SceneRebuilder\Builder\Transforms\TransformData.cs" />
     <Compile Include="Assets\Modules\UI\ModelModify\Scripts\NavisPlugins\BimNodeHelper_PhysicalTopology.cs" />
     <Compile Include="Assets\Modules\UI\ModelModify\Scripts\NavisPlugins\VueFileInfo.cs" />
-    <Compile Include="Assets\SceneRebuilder\plumber\Scripts\RandomPipe.cs" />
-    <Compile Include="Assets\SceneRebuilder\plumber\Scripts\Math3D.cs" />
-    <Compile Include="Assets\SceneRebuilder\plumber\Scripts\PipeMeshGenerator.cs" />
+    <Compile Include="Assets\SceneRebuilder\Builder\RendererUpdateInfo.cs" />
+    <Compile Include="Assets\Modules\UI\ModelModify\Scripts\NavisPlugins\BIMDevDetail.cs" />
+    <Compile Include="Assets\Modules\UI\ModelModify\Scripts\ModelInfoRegister\BIMDevDetailManager.cs" />
   </ItemGroup>
   <ItemGroup>
      <None Include="Assets\SceneRebuilder\RigidTransformUtils\RigidTransform-master\Plugins\Accord.Math.dll" />
@@ -503,6 +522,7 @@
      <None Include="Assets\SceneRebuilder\Materials\Shaders\SpecularColorFrag.shader" />
      <None Include="Assets\SceneRebuilder\MeshDebugger\Shaders\InternalLineColorful.shader" />
      <None Include="Assets\ThirdPlugins\Performance Tools\SuperLevelOptimizer\Documentation\Readme.txt" />
+     <None Include="Assets\SceneRebuilder\plumber\OBB\Plugins\MathGeoLib.Exports.dll" />
      <None Include="Assets\ThirdPlugins\MeshProfiler\Plugins\EPPlus.XML" />
      <None Include="Assets\SceneRebuilder\Materials\Shaders\ColorShaderVertex.shader" />
     <Reference Include="UnityEngine">

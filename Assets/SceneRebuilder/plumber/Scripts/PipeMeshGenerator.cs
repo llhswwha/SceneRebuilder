@@ -5,7 +5,24 @@ using UnityEngine;
 public class PipeMeshGenerator : MonoBehaviour {
 
     // see README.md file for more information about the following parameters
-    public List<Vector3> points;
+    public List<Vector3> points = new List<Vector3>();
+
+    public List<GameObject> pointsT = new List<GameObject>();
+
+    public void GetPointsFromTransforms()
+    {
+        points.Clear();
+        foreach(var go in pointsT)
+        {
+            points.Add(go.transform.localPosition);
+        }
+    }
+
+    public void ShowPoints()
+    {
+        pointsT = PointHelper.ShowPoints(points, new Vector3(0.05f, 0.05f, 0.05f), this.transform);
+    }
+
     public float pipeRadius = 0.2f;
     public float elbowRadius = 0.5f;
     [Range(3, 32)]
@@ -268,7 +285,8 @@ public class PipeMeshGenerator : MonoBehaviour {
         }
         weldGenerator.elbowRadius = size;
         //weldGenerator.pipeRadius = size / 5;
-        weldGenerator.pipeRadius = size / 6;
+        //weldGenerator.pipeRadius = size / 10;
+        weldGenerator.pipeRadius = weldRadius;
         weldGenerator.pipeSegments = 12;
         weldGenerator.IsLinkEndStart = true;
     }
@@ -323,6 +341,7 @@ public class PipeMeshGenerator : MonoBehaviour {
                 // connect them to make the cylinder
                 GenerateCircleAtPoint(vertices, normals, initialPoint, direction);
                 GenerateCircleAtPoint(vertices, normals, endPoint, direction);
+
                 if (gWeld && i < ps.Count - 2)
                 {
                     GenerateWeld(vertices, normals, initialPoint, direction);
@@ -356,6 +375,7 @@ public class PipeMeshGenerator : MonoBehaviour {
                 }
                 // generate two circles with "pipeSegments" sides each and then
                 // connect them to make the cylinder
+
                 GenerateCircleAtPoint(vertices, normals, initialPoint, direction);
                 GenerateCircleAtPoint(vertices, normals, endPoint, direction);
 
@@ -582,8 +602,16 @@ public class PipeMeshGenerator : MonoBehaviour {
         // corresponding to the segments point1-point2 and point2-point3
         Vector3 offset1 = (point2 - point1).normalized * elbowRadius;
         Vector3 offset2 = (point3 - point2).normalized * elbowRadius;
-        Vector3 startPoint = point2 - offset1;
-        Vector3 endPoint = point2 + offset2;
+
+        Vector3 startPoint0 = point2 - offset1;
+        Vector3 endPoint0 = point2 + offset2;
+
+        
+
+        Vector3 startPoint = point2 - offset1*0.85f;
+        Vector3 endPoint = point2 + offset2*0.85f;
+
+        //GenerateCircleAtPoint(vertices, normals, startPoint0, (startPoint - startPoint0)*0.5f);
 
         // auxiliary vectors to calculate lines parallel to the edge of each
         // cylinder, so the point where they meet can be the center of the elbow
@@ -629,10 +657,11 @@ public class PipeMeshGenerator : MonoBehaviour {
                 // as the how the previous segmented ended
                 direction = point2 - startPoint;
             }
-
+            Debug.LogError($"GenerateElbow[{i}] circleCenter:{circleCenter} direction:{direction} lastPoint:{lastPoint}");
             GenerateCircleAtPoint(vertices, normals, circleCenter, direction);
 
-            if (i > 0) {
+            if (i > 0)
+            {
                 MakeElbowTriangles(points,vertices, triangles, i, index);
             }
         }

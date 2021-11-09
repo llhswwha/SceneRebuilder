@@ -267,7 +267,10 @@ public class BuildingModelManager : SingletonBehaviour<BuildingModelManager>
                 }
             }
         }
-
+        //trees.Sort((a, b) =>
+        //{
+        //    return b.TreeLeafs.Count.CompareTo(a.TreeLeafs.Count);
+        //});
         return trees;
     }
 

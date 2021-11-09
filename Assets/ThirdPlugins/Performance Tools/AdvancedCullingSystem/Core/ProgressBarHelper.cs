@@ -71,6 +71,11 @@ public class ProgressBarHelper : MonoBehaviour
         return DisplayCancelableProgressBar(p.GetTitle(), $":{p}", p.progress);
     }
 
+    public static bool DisplayCancelableProgressBar(string title, int i1, int count1,object t=null)
+    {
+        return DisplayCancelableProgressBar(new ProgressArg(title,i1,count1,t));
+    }
+
     public static bool DisplayCancelableProgressBar(string title, int i1, int count1, int i2, int count2)
     {
 

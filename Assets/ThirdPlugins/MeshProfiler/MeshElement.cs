@@ -4,14 +4,17 @@ using UnityEngine;
 using UnityEditor;
 using UnityEngine.Profiling;
 using System.Text;
+using System;
 
 namespace MeshProfilerNS
 {
+    [Serializable]
     public class ListItemElementValues
     {
 
     }
 
+    [Serializable]
     public class ListItemElement<T> where T : ListItemElementValues ,new()
     {
         public string name;
@@ -52,8 +55,13 @@ namespace MeshProfilerNS
         }
     }
 
+
+
+    [Serializable]
     public class MeshElement : ListItemElement<MeshValues>
     {
+        public static bool IsShowProgress = false;
+
         //public string name;
         //public string assetPath;
         //public bool isGroup = false;
@@ -117,10 +125,18 @@ namespace MeshProfilerNS
                 rootMeshValue.parentName = name;
                 for (int i = 0; i < filters.Count; i++)
                 {
-                    if (filters[i].sharedMesh != null)
+                    MeshFilter mf = filters[i];
+                    if (IsShowProgress)
                     {
-                        MeshValues value = new MeshValues(filters[i].sharedMesh);
-                        value.obj=filters[i].gameObject;
+                        if(ProgressBarHelper.DisplayCancelableProgressBar(new ProgressArg("RefleshProps", i, filters.Count, mf)))
+                        {
+                            break;
+                        }
+                    }
+                    if (mf.sharedMesh != null)
+                    {
+                        MeshValues value = new MeshValues(mf.sharedMesh);
+                        value.obj= mf.gameObject;
                         value.parentName = name;
                         childList.Add(value);
                         rootMeshValue += value;
@@ -131,6 +147,8 @@ namespace MeshProfilerNS
                     rootMeshValue.mesh = filters[0].sharedMesh;
                 }
                 isGroup = childList.Count > 1;
+
+                if (IsShowProgress) ProgressBarHelper.ClearProgressBar();
             }
             else
             {
@@ -184,6 +202,7 @@ namespace MeshProfilerNS
     }
 
 
+    [Serializable]
     public class MeshValues : ListItemElementValues
     {
         public GameObject obj = null;
