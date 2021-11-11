@@ -13,10 +13,16 @@ public class PipeMeshGeneratorEditor : Editor {
 		if (GUILayout.Button("Generate Pipe")) {
 			myTarget.RenderPipe();
 		}
+		GUILayout.BeginHorizontal();
 		if (GUILayout.Button("ShowPoints"))
 		{
 			myTarget.ShowPoints();
 		}
+		if (GUILayout.Button("ShowPoints2"))
+		{
+			myTarget.ShowPoints2();
+		}
+		GUILayout.EndHorizontal();
 		//GetPointsFromTransforms
 		if (GUILayout.Button("GetPointsFromTransforms"))
 		{

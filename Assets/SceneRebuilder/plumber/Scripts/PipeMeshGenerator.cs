@@ -23,6 +23,11 @@ public class PipeMeshGenerator : MonoBehaviour {
         pointsT = PointHelper.ShowPoints(points, new Vector3(0.05f, 0.05f, 0.05f), this.transform);
     }
 
+    public void ShowPoints2()
+    {
+        pointsT = PointHelper.ShowPoints(points2, new Vector3(0.05f, 0.05f, 0.05f), this.transform);
+    }
+
     public float pipeRadius = 0.2f;
     public float elbowRadius = 0.5f;
     [Range(3, 32)]
@@ -291,9 +296,12 @@ public class PipeMeshGenerator : MonoBehaviour {
         weldGenerator.IsLinkEndStart = true;
     }
 
+    public List<Vector3> points2 = new List<Vector3>();
+
     Mesh GeneratePipeMesh(List<Vector3> ps,bool gWeld) {
 
         RemoveColinearPoints(ps);
+        points2 = new List<Vector3>(ps);
 
         Mesh m = new Mesh();
         m.name = "UnityPlumber Pipe";
@@ -413,6 +421,7 @@ public class PipeMeshGenerator : MonoBehaviour {
     }
 
     void RemoveColinearPoints(List<Vector3> points) {
+        int count1 = points.Count;
         List<int> pointsToRemove = new List<int>();
         for (int i = 0; i < points.Count - 2; i++) {
             Vector3 point1 = points[i];
@@ -434,6 +443,8 @@ public class PipeMeshGenerator : MonoBehaviour {
         foreach (int idx in pointsToRemove) {
             points.RemoveAt(idx);
         }
+        int count2 = points.Count;
+        Debug.LogError($"RemoveColinearPoints {count1}->{count2}");
     }
 
     List<Vector3> GenerateCircleAtPoint(List<Vector3> vertices, List<Vector3> normals, Vector3 center, Vector3 direction) {
@@ -603,13 +614,13 @@ public class PipeMeshGenerator : MonoBehaviour {
         Vector3 offset1 = (point2 - point1).normalized * elbowRadius;
         Vector3 offset2 = (point3 - point2).normalized * elbowRadius;
 
-        Vector3 startPoint0 = point2 - offset1;
-        Vector3 endPoint0 = point2 + offset2;
+        Vector3 startPoint = point2 - offset1;
+        Vector3 endPoint = point2 + offset2;
 
         
 
-        Vector3 startPoint = point2 - offset1*0.85f;
-        Vector3 endPoint = point2 + offset2*0.85f;
+        //startPoint = point2 - offset1*0.85f;
+        //endPoint = point2 + offset2*0.85f;
 
         //GenerateCircleAtPoint(vertices, normals, startPoint0, (startPoint - startPoint0)*0.5f);
 
@@ -657,7 +668,7 @@ public class PipeMeshGenerator : MonoBehaviour {
                 // as the how the previous segmented ended
                 direction = point2 - startPoint;
             }
-            Debug.LogError($"GenerateElbow[{i}] circleCenter:{circleCenter} direction:{direction} lastPoint:{lastPoint}");
+            //Debug.LogError($"GenerateElbow[{i}] circleCenter:{circleCenter} direction:{direction} lastPoint:{lastPoint}");
             GenerateCircleAtPoint(vertices, normals, circleCenter, direction);
 
             if (i > 0)

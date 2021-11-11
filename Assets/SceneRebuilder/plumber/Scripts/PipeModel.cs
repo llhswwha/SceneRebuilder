@@ -97,6 +97,8 @@ public class PipeModel : MonoBehaviour
         OBBCollider oBBCollider = this.gameObject.GetComponent<OBBCollider>();
         if (oBBCollider == null)
         {
+            oBBCollider = this.gameObject.AddComponent<OBBCollider>();
+
             //var mf = this.gameObject.GetComponent<MeshFilter>();
             //for(int i=0;i<mf.sharedMesh.vertices.Length;i++)
             //{
@@ -108,7 +110,7 @@ public class PipeModel : MonoBehaviour
             //    //    sharedNormals.Add(m);
             //    //}
             //}
-            
+
         }
         oBBCollider.ShowObbInfo();
         OBB = oBBCollider.OBB;
@@ -137,6 +139,8 @@ public class PipeModel : MonoBehaviour
         //RendererPipe();
     }
 
+    public bool generateWeld = false;
+
     public GameObject RendererPipe(Material pMat,Material wMat)
     {
         GameObject pipeNew = new GameObject(this.name + "_NewPipe");
@@ -153,7 +157,7 @@ public class PipeModel : MonoBehaviour
         pipe.pipeMaterial = pMat;
         pipe.weldMaterial = wMat;
         pipe.weldRadius = this.weldRadius;
-        pipe.generateWeld = true;
+        pipe.generateWeld = generateWeld;
         pipe.pipeRadius = PipeRadius;
         pipe.RenderPipe();
         return pipeNew;

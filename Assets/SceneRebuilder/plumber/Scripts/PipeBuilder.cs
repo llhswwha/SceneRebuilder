@@ -74,6 +74,8 @@ public class PipeBuilder : MonoBehaviour
         //return pipeNew;
     }
 
+    public bool generateWeld = false;
+
     private GameObject RendererOnePipe()
     {
         points = new List<Vector3>();
@@ -220,7 +222,7 @@ public class PipeBuilder : MonoBehaviour
         pipe.weldMaterial = WeldMaterial;
         pipe.weldRadius = this.weldRadius;
         pipe.elbowRadius = elbowRadius;
-        pipe.generateWeld = true;
+        pipe.generateWeld = generateWeld;
         pipe.avoidStrangling = true;
         pipe.pipeRadius = PipeModels[0].PipeRadius;
         pipe.RenderPipe();
@@ -259,6 +261,7 @@ public class PipeBuilder : MonoBehaviour
             {
                 pipeModel = p.AddComponent<PipeModel>();
             }
+            pipeModel.generateWeld = this.generateWeld;
             pipeModel.GetPipeInfo();
             PipeModels.Add(pipeModel);
 
