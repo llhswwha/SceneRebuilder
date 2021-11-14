@@ -24,6 +24,17 @@ public class MeshRendererInfo : MonoBehaviour,IComparable<MeshRendererInfo>
         return diam;
     }
 
+    public string GetMats()
+    {
+        string ms="";
+        var rs=GetRenderers();
+        foreach(var r in rs)
+        {
+            ms+=r.sharedMaterial.name+";";
+        }
+        return ms;
+    }
+
     public Vector3 size;
 
     public float vertexCount;
@@ -40,9 +51,15 @@ public class MeshRendererInfo : MonoBehaviour,IComparable<MeshRendererInfo>
 
     public string GetAssetPath()
     {
+
+        #if UNITY_EDITOR
         var assetPath = AssetDatabase.GetAssetPath(meshFilter.sharedMesh);
         //assetName = assetPath.Substring(assetPath.LastIndexOf('/') + 1);
         return assetPath;
+        #else
+        return "";
+        #endif
+    
     }
 
     public Vector3[] minMax;

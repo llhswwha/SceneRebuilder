@@ -35,6 +35,7 @@ public class SubSceneManager : SingletonBehaviour<SubSceneManager>
 
     public List<SubScene_Base> GetScenes()
     {
+        if (subScenes == null) return new List<SubScene_Base>();
         return subScenes.ToList().Where(s => s != null).ToList();
     }
 

@@ -95,6 +95,16 @@ public class ModelUpdateManager : SingletonBehaviour<ModelUpdateManager>
         return lodFiltedList2;
     }
 
+    public void ClearUpdates()
+    {
+        var infos = Model_Old.GetComponentsInChildren<RendererUpdateInfo>(true);
+        foreach(var info in infos)
+        {
+            GameObject.DestroyImmediate(info);
+        }
+        Debug.LogError($"ClearUpdates infos:{infos.Length}");
+    }
+
     public void GetModelRenders()
     {
         ModelRenders_Old_All = Model_Old.GetComponentsInChildren<MeshRenderer>(isIncludeInactive);
@@ -171,12 +181,12 @@ public class ModelUpdateManager : SingletonBehaviour<ModelUpdateManager>
         list2.Sort();
         ModelRendersWaiting_New = new LODTwoRenderersList("New",list2);
 
-        //1.找到现有模型中的 门，设备(LOD)，墙壁，其他
-        //2.找到这些模型对应的新模型
-        //3.删除新模型中的门、设备(LOD)，墙壁，对应的模型，墙壁有点特殊，可能是分层了的。
-        //4.找到其他模型对应的新模型，判断对应的模型是否发生了变化，删除没有发生变化的，替换发生了变化的。
-        //剩下来的 新模型，就是要新增的，新增的模型要分层，要找到所在的楼层。
-        //没有找到的 老模型，就是要删除的。
+        //1.锟揭碉拷锟斤拷锟斤拷模锟斤拷锟叫碉拷 锟脚ｏ拷锟借备(LOD)锟斤拷墙锟节ｏ拷锟斤拷锟斤拷
+        //2.锟揭碉拷锟斤拷些模锟酵讹拷应锟斤拷锟斤拷模锟斤拷
+        //3.删锟斤拷锟斤拷模锟斤拷锟叫碉拷锟脚★拷锟借备(LOD)锟斤拷墙锟节ｏ拷锟斤拷应锟斤拷模锟酵ｏ拷墙锟斤拷锟叫碉拷锟斤拷锟解，锟斤拷锟斤拷锟角分诧拷锟剿的★拷
+        //4.锟揭碉拷锟斤拷锟斤拷模锟酵讹拷应锟斤拷锟斤拷模锟酵ｏ拷锟叫断讹拷应锟斤拷模锟斤拷锟角凤拷锟斤拷锟剿变化锟斤拷删锟斤拷没锟叫凤拷锟斤拷锟戒化锟侥ｏ拷锟芥换锟斤拷锟斤拷锟剿变化锟侥★拷
+        //剩锟斤拷锟斤拷锟斤拷 锟斤拷模锟酵ｏ拷锟斤拷锟斤拷要锟斤拷锟斤拷锟侥ｏ拷锟斤拷锟斤拷锟斤拷模锟斤拷要锟街层，要锟揭碉拷锟斤拷锟节碉拷楼锟姐。
+        //没锟斤拷锟揭碉拷锟斤拷 锟斤拷模锟酵ｏ拷锟斤拷锟斤拷要删锟斤拷锟侥★拷
 
         var findList2= ModelRendersWaiting_New.FindRenderers("MemberPart");
         ModelRendersWaiting_MemberPart = findList2[0];
@@ -246,9 +256,9 @@ public class ModelUpdateManager : SingletonBehaviour<ModelUpdateManager>
         Debug.LogError($"DeleteNew count:{count}");
     }
 
-    public List<GameObject> NewAdded = new List<GameObject>();//新增
-    public List<GameObject> OldDeleted = new List<GameObject>();//修改
-    public List<GameObject> NotChanged = new List<GameObject>();//删除
+    public List<GameObject> NewAdded = new List<GameObject>();//锟斤拷锟斤拷
+    public List<GameObject> OldDeleted = new List<GameObject>();//锟睫革拷
+    public List<GameObject> NotChanged = new List<GameObject>();//删锟斤拷
 
     public float zeroDistance = 0.0002f;
 
@@ -279,8 +289,10 @@ public class ModelUpdateManager : SingletonBehaviour<ModelUpdateManager>
         Debug.LogError("CompareModels");
 
         twoList.Clear();
+        #if UNITY_EDITOR
         EditorHelper.UnpackPrefab(Model_Old, PrefabUnpackMode.OutermostRoot);
         EditorHelper.UnpackPrefab(Model_New, PrefabUnpackMode.OutermostRoot);
+        #endif
 
         MeshHelper.RemoveNew(Model_Old);
 
@@ -346,21 +358,21 @@ public class ModelUpdateManager : SingletonBehaviour<ModelUpdateManager>
 
 
     /// <summary>
-    /// 删除New里面的部分Old不会发生变化的模型
+    /// 删锟斤拷New锟斤拷锟斤拷牟锟斤拷锟絆ld锟斤拷锟结发锟斤拷锟戒化锟斤拷模锟斤拷
     /// </summary>
     public void RemoveNewRepeatedModels()
     {
-        //LOD对应的模型
-        //门对应的模型
-        //墙壁对应的模型
+        //LOD锟斤拷应锟斤拷模锟斤拷
+        //锟脚讹拷应锟斤拷模锟斤拷
+        //墙锟节讹拷应锟斤拷模锟斤拷
     }
 
     public void UpdateModel()
     {
 
-        //2.修改
-        //1.新增 4.分层
-        //3.删除
+        //2.锟睫革拷
+        //1.锟斤拷锟斤拷 4.锟街诧拷
+        //3.删锟斤拷
         //
     }
 

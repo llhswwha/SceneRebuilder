@@ -170,7 +170,7 @@ public class SharedMeshMaterialList : List<SharedMeshMaterial>
     {
         this.Sort((a, b) =>
         {
-            return a.matInfo.mat.name.CompareTo(b.matInfo.mat.name);
+            return b.matInfo.mat.name.CompareTo(a.matInfo.mat.name);
         });
     }
 
@@ -186,7 +186,7 @@ public class SharedMeshMaterialList : List<SharedMeshMaterial>
     {
         this.Sort((a, b) =>
         {
-            return a.matInfo.key.CompareTo(b.matInfo.key);
+            return b.matInfo.key.CompareTo(a.matInfo.key);
         });
     }
 
@@ -217,6 +217,7 @@ public class SharedMeshMaterialList : List<SharedMeshMaterial>
 
             }
         }
+        meshMaterials.SortByMat();
         return meshMaterials;
     }
 }

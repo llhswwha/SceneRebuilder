@@ -117,18 +117,21 @@ public class GlobalMaterialManager : SingletonBehaviour<GlobalMaterialManager>
 
     public void GetSharedMaterials()
     {
+        MeshRenderer[] allRenderers=null;
         if (LocalTarget == null)
         {
-            var allRenderers = GameObject.FindObjectsOfType<MeshRenderer>(true);
+            allRenderers = GameObject.FindObjectsOfType<MeshRenderer>(true);
 
             meshMaterialList = SharedMeshMaterialList.GetMeshMaterialList(allRenderers);
         }
         else
         {
-            var allRenderers = LocalTarget.GetComponentsInChildren<MeshRenderer>(true);
+            allRenderers = LocalTarget.GetComponentsInChildren<MeshRenderer>(true);
 
             meshMaterialList = SharedMeshMaterialList.GetMeshMaterialList(allRenderers);
         }
+
+        Debug.LogError($"GetSharedMaterials LocalTarget:{LocalTarget} allRenderers:{allRenderers.Length} meshMaterialList:{meshMaterialList.Count}");
     }
 
     [ContextMenu("InitMaterials")]
@@ -233,4 +236,52 @@ public class GlobalMaterialManager : SingletonBehaviour<GlobalMaterialManager>
         CombinedMaterials=mats.Keys.ToList();
         Debug.LogError($"GetCombineMaterial {(DateTime.Now - start).ToString()},mats:{mats.Count},count:{allRenderers.Length}");
     }
+
+    public GameObject SetTargetRoot;
+
+    public Material SetTargetMaterial;
+
+    public void DoChangeMaterial()
+    {
+
+    }
+
+    public string RendererNames="";
+
+    public void SetChildrenMaterial()
+    {
+        var allRenderers=GameObject.FindObjectsOfType<MeshRenderer>().ToList();
+        var dic=new Dictionary<string,MeshRenderer>();
+        RendererNames="";
+        foreach(var r in allRenderers){
+            if(dic.ContainsKey(r.name)){
+
+            }
+            else{
+                dic.Add(r.name,r);
+                RendererNames+=r.name+"\n";
+            }
+        }
+        Debug.Log("Names:\n"+RendererNames);
+        for(int i=0;i<SetTargetRoot.transform.childCount;i++)
+        {
+            var child=SetTargetRoot.transform.GetChild(i);
+            var rRoot=allRenderers.Find(i=>i.name==child.name);
+            Debug.Log($"SetChildrenMaterial[{i}] child:{child.name} rRoot:{rRoot}");
+            if(rRoot==null){
+                Debug.LogError("rRoot==null :"+child.name);
+            }
+            else{
+                var chidrenRenderer=child.GetComponentsInChildren<MeshRenderer>(true);
+                foreach(var r in chidrenRenderer)
+                {
+                    r.sharedMaterial=rRoot.sharedMaterial;
+                }
+            }
+        }
+
+        Debug.LogError($"SetChildrenMaterial allRenderers:{allRenderers.Count}");
+    }
+
+    public List<Material> MaterialLib=new List<Material>();
 }

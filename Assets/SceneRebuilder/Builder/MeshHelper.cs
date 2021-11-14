@@ -1076,7 +1076,7 @@ public static class MeshHelper
 
     public enum LODCompareMode
     {
-        Name,NameWithPos, NameWithCenter, NameWithMin, NameWithMax, NameWithBounds, NameWithMesh, Pos, Center, Min, Max,Bounds, Mesh
+        Name,NameWithPos, NameWithCenter, NameWithMin, NameWithMax, NameWithBounds, NameWithMesh,NameWithSharedMesh, Pos, Center, Min, Max,Bounds, Mesh,SharedMesh
     }
 
     public static float GetDistance<T>(T item, Transform t, LODCompareMode mode) where T : Component
@@ -1110,6 +1110,20 @@ public static class MeshHelper
         {
             float distance = MeshHelper.GetAvgVertexDistanceEx(item.transform, t);
             return distance;
+        }
+        else if (mode == LODCompareMode.NameWithSharedMesh || mode == LODCompareMode.SharedMesh)
+        {
+            MeshFilter mf1=t.GetComponent<MeshFilter>();
+            MeshFilter mf2=item.transform.GetComponent<MeshFilter>();
+            if(mf1==null||mf2==null){
+                return 100;
+            }
+            if(mf1.sharedMesh==mf2.sharedMesh){
+                return 0;
+            }
+            else{
+                return 50;
+            }
         }
         else
         {

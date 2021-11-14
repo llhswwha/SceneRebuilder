@@ -19,5 +19,7 @@ public enum UpdateChangedMode
     NewAdd,
     NewChanged,//
     NewSame,//MeshDis==0
-    NewDelete//新的模型和老的一样，删除新的模型
+    NewDelete,//新的模型和老的一样，删除新的模型
+    MatNew,
+    MatOld
 }

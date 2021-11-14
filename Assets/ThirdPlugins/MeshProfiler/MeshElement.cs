@@ -114,8 +114,10 @@ namespace MeshProfilerNS
 
                 if (isAsset)
                 {
+                    #if UNITY_EDITOR
                     assetPath = AssetDatabase.GetAssetPath(filters[0].sharedMesh);
                     name = assetPath.Substring(assetPath.LastIndexOf('/') + 1);
+                    #endif
                 }
                 else
                 {
@@ -174,8 +176,10 @@ namespace MeshProfilerNS
 
                 if (isAsset)
                 {
+                    #if UNITY_EDITOR
                     assetPath = AssetDatabase.GetAssetPath(skins[0].sharedMesh);
                     name = assetPath.Substring(assetPath.LastIndexOf('/') + 1);
+                    #endif
                 }
                 else
                 {

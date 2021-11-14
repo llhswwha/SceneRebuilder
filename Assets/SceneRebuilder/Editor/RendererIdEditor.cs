@@ -17,6 +17,18 @@ public class RendererIdEditor : BaseEditor<RendererId>
         //}
         parent = targetT.GetCurrentParent();
     }
+
+    public static void AddPreName(Transform p)
+    {
+        string pName = p.name + "_";
+        for (int i = 0; i < p.childCount; i++)
+        {
+            var child = p.GetChild(i);
+            if (child.name.StartsWith(pName)) continue;
+            child.name = $"{pName}{child.name}";
+        }
+    }
+
     public override void OnToolLayout(RendererId item)
     {
         base.OnToolLayout(item);
@@ -98,6 +110,15 @@ public class RendererIdEditor : BaseEditor<RendererId>
         if (GUILayout.Button("ClearIds"))
         {
             item.ClearIds();
+        }
+         if (GUILayout.Button("ClearUps"))
+        {
+            //item.ClearIds();
+             var ids = item.gameObject.GetComponentsInChildren<RendererUpdateInfo>(true);
+            foreach(var id in ids)
+            {
+                GameObject.DestroyImmediate(id);
+            }
         }
         EditorGUILayout.EndHorizontal();
 
@@ -275,6 +296,10 @@ public class RendererIdEditor : BaseEditor<RendererId>
         {
             SetObjectsActive(item.gameObject, "Walls", true);
         }
+        if (GUILayout.Button("RemovePipe"))
+        {
+            DestroyObject(item.gameObject, new List<string>() { "HH_","CC_","JQ_","JG_","SG_"});
+        }
         if (GUILayout.Button("UpdateCollider"))
         {
             BoxCollider boxCollider = item.gameObject.GetComponent<BoxCollider>();
@@ -286,15 +311,48 @@ public class RendererIdEditor : BaseEditor<RendererId>
         }
         if(GUILayout.Button("AddPreName"))
         {
-            string pName = item.gameObject.name+"_";
-            for(int i=0;i<item.transform.childCount;i++)
+
+
+            AddPreName(item.transform);
+        }
+        if (GUILayout.Button("AddPreNames"))
+        {
+            //string pName = item.gameObject.name + "_";
+            for (int i = 0; i < item.transform.childCount; i++)
             {
                 var child = item.transform.GetChild(i);
-                if (child.name.StartsWith(pName)) continue;
-                child.name = $"{pName}{child.name}";
+                AddPreName(child);
             }
         }
-        if(GUILayout.Button("ReGroup1"))
+        if (GUILayout.Button("RemoveChildren"))
+        {
+            List<Transform> list1 = new List<Transform>();
+            for (int i = 0; i < item.transform.childCount; i++)
+            {
+                var child = item.transform.GetChild(i);
+                list1.Add(child);
+                
+            }
+
+            for (int i = 0; i < list1.Count; i++)
+            {
+                var child = list1[i];
+                EditorHelper.UnpackPrefab(child.gameObject);
+
+                List<Transform> list2 = new List<Transform>();
+                for (int j = 0; j < child.childCount; j++)
+                {
+                    list2.Add(child.GetChild(j));
+                }
+                foreach(var t in list2)
+                {
+                    t.SetParent(item.transform);
+                }
+                GameObject.DestroyImmediate(child);
+                //i--;
+            }
+        }
+        if (GUILayout.Button("ReGroup1"))
         {
             string pName = item.gameObject.name+"_";
             Dictionary<string, List<Transform>> beforeNames = new Dictionary<string, List<Transform>>();
@@ -514,5 +572,33 @@ public class RendererIdEditor : BaseEditor<RendererId>
                 t.gameObject.SetActive(isActive);
             }
         }
+    }
+
+    public static void DestroyObject(GameObject go, List<string> keys)
+    {
+        Transform[] ts = go.GetComponentsInChildren<Transform>(true);
+        int count = 0;
+        foreach (Transform t in ts)
+        {
+            if (t == null) continue;
+            if (IsStartWith(t.name, keys))
+            {
+                GameObject.DestroyImmediate(t.gameObject);
+                count++;
+            }
+        }
+        Debug.LogError($"DestroyObject count:{count}");
+    }
+
+    private static bool IsStartWith(string name, List<string> keys)
+    {
+        foreach (var key in keys)
+        {
+            if (name.StartsWith(key))
+            {
+                return true;
+            }
+        }
+        return false;
     }
 }

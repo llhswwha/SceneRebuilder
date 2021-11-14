@@ -238,7 +238,7 @@ public class BaseFoldoutEditor<T> : BaseEditor<T> where T : class
 
             System.DateTime start = System.DateTime.Now;
             //foldoutArg.DrawPageToolbar(buildings.Count);
-            int id = foldoutArg.DrawPageToolbarWithSort(buildings.Count, 100, 1, "All", "Out0B", "Out0S", "Out1", "In");
+            int id = foldoutArg.DrawPageToolbarWithSort(buildings.Count, 100, 1, "All", "Out0B", "Out0S", "Out1", "In","Renderer","ShowRenderer");
 
             //int id = foldoutArg.DrawSortTypeList(100, 1, "All", "Out0B", "Out0S", "Out1", "In");
             //if (id != -1)
@@ -279,6 +279,12 @@ public class BaseFoldoutEditor<T> : BaseEditor<T> where T : class
                 buildings.Sort((a, b) =>
                 {
                     return b.InVertextCount.CompareTo(a.InVertextCount);
+                });
+            }
+            else if(id==5){
+                buildings.Sort((a, b) =>
+                {
+                    return b.AllRendererCount.CompareTo(a.AllRendererCount);
                 });
             }
 
@@ -859,7 +865,7 @@ public class BaseFoldoutEditor<T> : BaseEditor<T> where T : class
         }
     }
 
-    public void DrawMatList(GlobalMaterialManager item, FoldoutEditorArg matListArg)
+    public static void DrawMatList(GlobalMaterialManager item, FoldoutEditorArg matListArg)
     {
         //if (GUILayout.Button("InitMaterials"))
         //{

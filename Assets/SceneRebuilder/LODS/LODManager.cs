@@ -2322,6 +2322,47 @@ public class LODTwoRenderersList:List<LODTwoRenderers>
         this.RemoveUpdated();
     }
 
+    public void TestInitSharedMesh()
+    {
+        List<MeshRendererInfo>  list_lod0 = new List<MeshRendererInfo>();
+        if (targetList == null)
+        {
+            Debug.LogError("targetList == null:"+this.ListName);
+            return;
+        }
+        list_lod0.AddRange(targetList.GetRendererInfosOld());
+        InitSharedMesh(list_lod0);
+    }
+
+    public void InitSharedMesh(List<MeshRendererInfo>  list_lod0)
+    {
+            sharedMeshDict.Clear();
+            foreach(var t in list_lod0)
+            {
+                MeshFilter meshFilter=t.meshFilter;
+                if(meshFilter!=null){
+                    var mesh=meshFilter.sharedMesh;
+                    if(mesh==null)continue;
+                    if(!sharedMeshDict.ContainsKey(mesh))
+                    {
+                        // if(t.name.Contains("_New")||sharedMeshDict[mesh].name.Contains("_New")
+                        // ||t.name.Contains("_Bounds")||sharedMeshDict[mesh].name.Contains("_Bounds")){
+                            
+                        // }
+                        // else{
+                        //     //Debug.LogError($"Same SharedMesh t1:{sharedMeshDict[mesh]} t2:{meshFilter}");
+                        // }
+                        sharedMeshDict.Add(mesh,new List<MeshRendererInfo>());
+                    }
+                    // else{
+                    //     sharedMeshDict.Add(mesh,t);
+                    // }
+                    sharedMeshDict[mesh].Add(t);
+                }
+            }
+            Debug.LogError($"InitSharedMesh list_lod0:{list_lod0.Count} sharedMeshDict:{sharedMeshDict.Count}");
+    }
+
     internal void Compare()
     {
         //this.renderers_2 = renderers_2;
@@ -2338,6 +2379,11 @@ public class LODTwoRenderersList:List<LODTwoRenderers>
         }
         list_lod0.AddRange(targetList.GetRendererInfosOld());
         //renderers_0.ToList().ForEach(i => { ts.Add(i.transform); });
+
+        if(compareMode==LODCompareMode.SharedMesh||compareMode==LODCompareMode.NameWithSharedMesh)
+        {
+           InitSharedMesh(list_lod0);
+        }
 
         int maxCount = this.Count;
         if (MaxCompareCount > 0 && MaxCompareCount < maxCount)
@@ -2369,28 +2415,63 @@ public class LODTwoRenderersList:List<LODTwoRenderers>
         Debug.LogError($"LODTwoRenderersList.Compare count1:{targetList.Count} count0:{this.Count} time:{(DateTime.Now - start)}");
     }
 
+    public static Dictionary<Mesh,List<MeshRendererInfo>> sharedMeshDict=new Dictionary<Mesh, List<MeshRendererInfo>>();
+
     public MinDisTarget<MeshRendererInfo> CompareOne(LODTwoRenderers item, List<MeshRendererInfo> list_lod0, ProgressArg p1)
     {
         MeshRendererInfo oldRenderer = item.renderer_old;
         if (oldRenderer == null) return null; 
 
-        MinDisTarget<MeshRendererInfo> min = GetMinDisTransform<MeshRendererInfo>(list_lod0, oldRenderer.transform, compareMode, p1);
-        float minDis = min.dis;
-        MeshRendererInfo newRenderer = min.target;
-        if (newRenderer == null)
+        if(compareMode==LODCompareMode.SharedMesh||compareMode==LODCompareMode.NameWithSharedMesh)
         {
-            Debug.LogError("render_lod0 == null");
-            return null; ;
+           var mf=oldRenderer.meshFilter;
+           if(mf==null){
+
+           }
+           var mesh=mf.sharedMesh;
+           if(sharedMeshDict.ContainsKey(mesh))
+           {
+                List<MeshRendererInfo> list=sharedMeshDict[mesh];
+                if(list.Count==1)
+                {
+                    var newInfo=list[0] as MeshRendererInfo;
+                    MinDisTarget<MeshRendererInfo> min2=new MinDisTarget<MeshRendererInfo>(0,0,newInfo);
+                    item.SetMinDisTarget(min2);
+                    return min2;
+                }
+                else
+                {
+                    MinDisTarget<MeshRendererInfo> min2 = GetMinDisTransform<MeshRendererInfo>(list, oldRenderer.transform, LODCompareMode.NameWithCenter, p1);
+                    item.SetMinDisTarget(min2);
+                    return min2;
+                }
+           }
+           else{
+               MinDisTarget<MeshRendererInfo> min2=new MinDisTarget<MeshRendererInfo>(50,50,null);
+                item.SetMinDisTarget(min2);
+               return min2;
+           }
+
         }
+        MinDisTarget<MeshRendererInfo> min = GetMinDisTransform<MeshRendererInfo>(list_lod0, oldRenderer.transform, compareMode, p1);
+        
+        // float minDis = min.dis;
+        // MeshRendererInfo newRenderer = min.target;
+        // if (newRenderer == null)
+        // {
+        //     Debug.LogError("render_lod0 == null");
+        //     return null; ;
+        // }
+        // //MeshFilter filter1 = render_lod1.GetComponent<MeshFilter>();
+        // //MeshFilter filter0 = render_lod0.GetComponent<MeshFilter>();
+        // int vertexCount0 = newRenderer.GetMinLODVertexCount();
+        // int vertexCount1 = oldRenderer.GetMinLODVertexCount();
+        // //LODTwoRenderers lODTwoRenderers = new LODTwoRenderers(render_lod0, render_lod1, minDis, min.meshDis, vertexCount0, vertexCount1);
+        // //this.Add(lODTwoRenderers);
 
-        //MeshFilter filter1 = render_lod1.GetComponent<MeshFilter>();
-        //MeshFilter filter0 = render_lod0.GetComponent<MeshFilter>();
-        int vertexCount0 = newRenderer.GetMinLODVertexCount();
-        int vertexCount1 = oldRenderer.GetMinLODVertexCount();
-        //LODTwoRenderers lODTwoRenderers = new LODTwoRenderers(render_lod0, render_lod1, minDis, min.meshDis, vertexCount0, vertexCount1);
-        //this.Add(lODTwoRenderers);
+        // item.SetLOD1(newRenderer, minDis, min.meshDis, vertexCount0, vertexCount1);
 
-        item.SetLOD1(newRenderer, minDis, min.meshDis, vertexCount0, vertexCount1);
+        item.SetMinDisTarget(min);
         return min;
     }
 
@@ -2408,6 +2489,8 @@ public class LODTwoRenderersList:List<LODTwoRenderers>
         }
     }
 
+    
+
     public static MinDisTarget<T> GetMinDisTransform<T>(List<T> ts, Transform t, LODCompareMode mode, ProgressArg p1) where T : Component
     {
         //1.Find SameName
@@ -2420,12 +2503,13 @@ public class LODTwoRenderersList:List<LODTwoRenderers>
             || mode == LODCompareMode.NameWithMin
             || mode == LODCompareMode.NameWithMax
             || mode == LODCompareMode.NameWithMesh
-            || mode == LODCompareMode.NameWithBounds)
+            || mode == LODCompareMode.NameWithBounds
+            || mode == LODCompareMode.NameWithSharedMesh)
         {
 
             var ts2 = ts.FindAll(i => i!=null && i.name == t.name);
 
-            Debug.LogError($"GetMinDisTransform mode={mode} t:{t.name} ts:{ts.Count} ts2:{ts2.Count}");
+            // Debug.LogError($"GetMinDisTransform mode={mode} t:{t.name} ts:{ts.Count} ts2:{ts2.Count}");
 
             //string tn = t.name;
             //if(tn.Contains(" "))
@@ -2469,6 +2553,8 @@ public class LODTwoRenderersList:List<LODTwoRenderers>
         List<T> minTExList = new List<T>();
 
         Debug.LogError($"GetMinDisTransformInner mode={mode} t:{t.name} ts:{ts.Count}");
+
+
 
         for (int i = 0; i < ts.Count; i++)
         {
@@ -2617,6 +2703,17 @@ public class LODTwoRenderersList:List<LODTwoRenderers>
         }
     }
 
+    public void DeleteOld()
+    {
+        foreach (var item in this)
+        {
+            if (item.dis < zeroDistance)
+            {
+                item.SetUpdateState(UpdateChangedMode.OldDelete);//
+            }
+        }
+    }
+
     public void DeleteSame()
     {
         foreach (var item in this)
@@ -2638,6 +2735,32 @@ public class LODTwoRenderersList:List<LODTwoRenderers>
             }
         }
     }
+
+    public void ReplaceMaterialNew()
+    {
+        foreach (var item in this)
+        {
+            if (item.dis < zeroDistance)
+            {
+                item.SetUpdateState(UpdateChangedMode.MatNew);
+                item.ReplaceMaterialNew();
+            }
+        }
+    }
+
+     public void ReplaceMaterialOld()
+    {
+        foreach (var item in this)
+        {
+            if (item.dis < zeroDistance)
+            {
+                item.SetUpdateState(UpdateChangedMode.MatOld);
+                item.ReplaceMaterialOld();
+            }
+        }
+    }
+
+    
 
     public void ReplaceOld()
     {
@@ -2760,8 +2883,8 @@ public class LODTwoRenderers
     public string renderer_new_name = "";
     public int vertexCount1;
 
-    public float dis;
-    public float meshDis;
+    public float dis=1000f;
+    public float meshDis=1000f;
 
     public bool isSameName = false;
 
@@ -2772,6 +2895,25 @@ public class LODTwoRenderers
         //this.vertexCount0 = vertexCount0;
         SetLOD0(lod0);
         SetLOD1(lod1, d, meshD, vertexCount0, vertexCount1);
+    }
+
+    public void SetMinDisTarget(MinDisTarget<MeshRendererInfo> min)
+    {
+        float minDis = min.dis;
+        MeshRendererInfo newRenderer = min.target;
+        if (newRenderer == null)
+        {
+            Debug.LogError("render_lod0 == null");
+            return; ;
+        }
+        //MeshFilter filter1 = render_lod1.GetComponent<MeshFilter>();
+        //MeshFilter filter0 = render_lod0.GetComponent<MeshFilter>();
+        int vertexCount0 = newRenderer.GetMinLODVertexCount();
+        int vertexCount1 = renderer_old.GetMinLODVertexCount();
+        //LODTwoRenderers lODTwoRenderers = new LODTwoRenderers(render_lod0, render_lod1, minDis, min.meshDis, vertexCount0, vertexCount1);
+        //this.Add(lODTwoRenderers);
+
+        this.SetLOD1(newRenderer, minDis, min.meshDis, vertexCount0, vertexCount1);
     }
 
     public void SetLOD1(MeshRendererInfo lod1, float d, float meshD, int vertexCount0, int vertexCount1)
@@ -2818,38 +2960,8 @@ public class LODTwoRenderers
         this.vertexCount0 = (int)lod0.GetVertexCount();
     }
 
-    public string GetCompareCaption(bool isShowSize)
+    private string GetDisCompareStr()
     {
-        if (renderer_old == null) return "";
-        string logName = renderer_old_name;
-        if (logName.Length > 20)
-        {
-            logName = logName.Substring(0, 20) + "...";
-        }
-        string lod0 = $"\"{logName}\" ({MeshHelper.GetVertexCountS(vertexCount0)}w)";
-        if (isShowSize)
-        {
-            lod0 += $"({renderer_old.size})";
-        }
-        //string lod0 = $"\"{logName}\" ({MeshHelper.GetVertexCountS(vertexCount0)}w)";
-        if (renderer_new == null)
-        {
-            return $"{lod0}| ({renderer_old.GetRendererTypesS()})({renderer_old.GetLODIds()})"; ;
-        }
-        bool isSameName = renderer_new_name == renderer_old_name;
-        bool isSameSize = renderer_new.size.ToString() == renderer_old.size.ToString();
-        if (isSameSize == false)
-        {
-
-        }
-        float p10 = (float)vertexCount1 / vertexCount0;
-        string lod1 = $"{renderer_new_name}({MeshHelper.GetVertexCountS(vertexCount1)}w)";
-        if (isShowSize)
-        {
-            lod1 += $"({renderer_new.size})";
-        }
-        //string lod1 = $"{renderer_new_name}({MeshHelper.GetVertexCountS(vertexCount1)}w)";
-
         string dis1 = dis.ToString("F5");
         if (dis >= 1)
         {
@@ -2879,15 +2991,53 @@ public class LODTwoRenderers
         }
 
         string disCompare = $"<{dis1}|{meshDis1}>";
+        return disCompare;
+    }
+
+    public string GetCompareCaption(bool isShowSize)
+    {
+        if (renderer_old == null) return "";
+        string logName = renderer_old_name;
+        if (logName.Length > 20)
+        {
+            logName = logName.Substring(0, 20) + "...";
+        }
+        var mat0=renderer_old.GetMats();
+        string lod0 = $"\"{logName}\" ({MeshHelper.GetVertexCountS(vertexCount0)}w)[{mat0}]";
+        if (isShowSize)
+        {
+            lod0 += $"({renderer_old.size})";
+        }
+        string disCompare=GetDisCompareStr();
+        //string lod0 = $"\"{logName}\" ({MeshHelper.GetVertexCountS(vertexCount0)}w)";
+        if (renderer_new == null)
+        {
+            return $"{disCompare} {lod0}| ({renderer_old.GetRendererTypesS()})({renderer_old.GetLODIds()})"; ;
+        }
+        bool isSameName = renderer_new_name == renderer_old_name;
+        bool isSameSize = renderer_new.size.ToString() == renderer_old.size.ToString();
+        if (isSameSize == false)
+        {
+
+        }
+        float p10 = (float)vertexCount1 / vertexCount0;
+        var mat1=renderer_new.GetMats();
+        string lod1 = $"{renderer_new_name}({MeshHelper.GetVertexCountS(vertexCount1)}w)[{mat1}]";
+        if (isShowSize)
+        {
+            lod1 += $"({renderer_new.size})";
+        }
+        //string lod1 = $"{renderer_new_name}({MeshHelper.GetVertexCountS(vertexCount1)}w)";
+
         if (isSameName)
         {
             if (isSameSize)
             {
-                return $"[T1 T2] [{UpdateMode}][{p10:P0}] {disCompare} {lod0} >> New:===({MeshHelper.GetVertexCountS(vertexCount0)}w) [==]";
+                return $"[T1 T2] [{UpdateMode}][{p10:P0}] {disCompare} {lod0} >> New: [{mat1}] ===({MeshHelper.GetVertexCountS(vertexCount0)}w) [==]";
             }
             else
             {
-                return $"[T1 F2] [{UpdateMode}][{p10:P0}] {disCompare} {lod0} >> New:===({MeshHelper.GetVertexCountS(vertexCount0)}w)[{renderer_old.size}]";
+                return $"[T1 F2] [{UpdateMode}][{p10:P0}] {disCompare} {lod0} >> New: [{mat1}] ===({MeshHelper.GetVertexCountS(vertexCount0)}w)[{renderer_old.size}]";
             }
 
         }
@@ -3106,6 +3256,20 @@ public class LODTwoRenderers
 
     internal void ClearNew()
     {
+        var updateInfo1 = this.renderer_old.gameObject.GetComponent<RendererUpdateInfo>();
+        if (updateInfo1 != null)
+        {
+            GameObject.DestroyImmediate(updateInfo1);
+        }
+
+        if(this.renderer_new!=null){
+            var updateInfo2 = this.renderer_new.gameObject.GetComponent<RendererUpdateInfo>();
+            if (updateInfo2 == null)
+            {
+                GameObject.DestroyImmediate(updateInfo2);
+            }
+        }
+
         renderer_new = null;
         renderer_new_name = "";
         this.vertexCount1 = 0;
@@ -3140,23 +3304,35 @@ public class LODTwoRenderers
         if(UpdateMode== UpdateChangedMode.OldDelete)
         {
             if (this.renderer_old != null && this.renderer_old.gameObject != null)
+            {
+                EditorHelper.UnpackPrefab(this.renderer_old.gameObject);
                 GameObject.DestroyImmediate(this.renderer_old.gameObject);
+            }
         }
         if (UpdateMode == UpdateChangedMode.NewDelete)
         {
             if(this.renderer_new!=null&& this.renderer_new.gameObject!=null)
+            {
+                EditorHelper.UnpackPrefab(this.renderer_new.gameObject);
                 GameObject.DestroyImmediate(this.renderer_new.gameObject);
+            }
         }
         if (UpdateMode == UpdateChangedMode.NewSame)
         {
             if (this.renderer_new != null && this.renderer_new.gameObject != null)
+            {
+                EditorHelper.UnpackPrefab(this.renderer_new.gameObject);
                 GameObject.DestroyImmediate(this.renderer_new.gameObject);
+            }
         }
         if (UpdateMode == UpdateChangedMode.NewChanged)
         {
             renderer_new.transform.SetParent(renderer_old.transform.parent);
             if (this.renderer_old != null && this.renderer_old.gameObject != null)
+            {
+                EditorHelper.UnpackPrefab(this.renderer_old.gameObject);
                 GameObject.DestroyImmediate(this.renderer_old.gameObject);
+            }
 
             //var render_lod1 = this.renderer_new;
             //if (render_lod1 == null) return;
@@ -3194,5 +3370,20 @@ public class LODTwoRenderers
     {
         this.renderer_old.name = this.renderer_new.name;
         this.renderer_old_name = this.renderer_new_name;
+    }
+
+    public void ReplaceMaterialNew()
+    {
+        var renderNew = this.renderer_new.meshRenderer;
+        var renderOld = this.renderer_old.meshRenderer;
+        if (renderOld == null) return;
+        renderNew.sharedMaterials=renderOld.sharedMaterials;
+    }
+
+    public void ReplaceMaterialOld()
+    {
+        var renderNew = this.renderer_new.meshRenderer;
+        var renderOld = this.renderer_old.meshRenderer;
+        renderOld.sharedMaterials=renderNew.sharedMaterials;
     }
 }

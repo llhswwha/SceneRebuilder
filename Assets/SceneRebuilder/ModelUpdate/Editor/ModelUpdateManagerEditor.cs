@@ -63,6 +63,10 @@ public class ModelUpdateManagerEditor : BaseFoldoutEditor<ModelUpdateManager>
         {
             item.GetModelRenders();
         }
+        if (GUILayout.Button("ClearUpdates"))
+        {
+            item.ClearUpdates();
+        }
         GUILayout.Label("MaxCount:", GUILayout.Width(100));
         item.MaxCompareCount = EditorGUILayout.IntField(item.MaxCompareCount);
         if (GUILayout.Button("CompareRenders"))
@@ -171,6 +175,10 @@ public class ModelUpdateManagerEditor : BaseFoldoutEditor<ModelUpdateManager>
             {
                 twoList.CompareList(lodManager.MaxCompareCount, lodManager.compareMode);
             }
+            if (GUILayout.Button("Test", GUILayout.Width(50)))
+            {
+                twoList.TestInitSharedMesh();
+            }
             if (GUILayout.Button("Clear", GUILayout.Width(45)))
             {
                 twoList.ClearNew();
@@ -184,7 +192,11 @@ public class ModelUpdateManagerEditor : BaseFoldoutEditor<ModelUpdateManager>
             {
                 twoList.DeleteNew();
             }
-            if (GUILayout.Button("DelSame", GUILayout.Width(60)))
+            if (GUILayout.Button("DelOld", GUILayout.Width(60)))
+            {
+                twoList.DeleteOld();
+            }
+            if (GUILayout.Button("DelSame", GUILayout.Width(65)))
             {
                 twoList.DeleteSame();
             }
@@ -195,6 +207,14 @@ public class ModelUpdateManagerEditor : BaseFoldoutEditor<ModelUpdateManager>
             if (GUILayout.Button("RenaNew", GUILayout.Width(65)))
             {
                 twoList.RenameNew();
+            }
+            if (GUILayout.Button("MatNew", GUILayout.Width(65)))
+            {
+                twoList.ReplaceMaterialNew();
+            }
+            if (GUILayout.Button("MatOld", GUILayout.Width(65)))
+            {
+                twoList.ReplaceMaterialOld();
             }
             //if (GUILayout.Button("AliOld", GUILayout.Width(50)))
             //{
