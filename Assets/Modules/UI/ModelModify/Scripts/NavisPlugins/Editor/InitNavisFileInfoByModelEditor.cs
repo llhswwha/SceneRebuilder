@@ -43,6 +43,10 @@ public class InitNavisFileInfoByModelEditor : BaseFoldoutEditor<InitNavisFileInf
         {
             item.GetCompareList();
         }
+        if (GUILayout.Button("ClearRendererId"))
+        {
+            item.ClearRendererId();
+        }
         EditorGUILayout.EndHorizontal();
 
         EditorGUILayout.BeginHorizontal();

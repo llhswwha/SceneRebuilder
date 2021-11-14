@@ -10,13 +10,18 @@ public class NavisModelRoot : MonoBehaviour
 {
     public string ModelName = "";
 
+    [NonSerialized]
     public ModelItemInfo Model;
 
+    [NonSerialized]
     public List<ModelItemInfo> allModels = new List<ModelItemInfo>();
 
+    [NonSerialized]
     public List<ModelItemInfo> allModels_noDrawable = new List<ModelItemInfo>();
 
+    [NonSerialized]
     public List<ModelItemInfo> allModels_zero = new List<ModelItemInfo>();
+
 
     public List<Transform> transformList = new List<Transform>();
 
@@ -45,6 +50,15 @@ public class NavisModelRoot : MonoBehaviour
 
     NavisFileInfo navisFile;
 
+    public void SetOnlySelfModel()
+    {
+        navisFile = InitNavisFileInfoByModel.GetNavisFileInfoEx();
+        Model = navisFile.Models.Find(i => i.Name == ModelName);
+        navisFile.Models.Clear();
+        navisFile.Models.Add(Model);
+        SaveXml();
+    }
+
     [ContextMenu("LoadModels")]
     public void LoadModels()
     {
@@ -61,21 +75,61 @@ public class NavisModelRoot : MonoBehaviour
         transformList = InitNavisFileInfoByModel.Instance.FilterList(transformList);
 
         navisFile = InitNavisFileInfoByModel.GetNavisFileInfoEx();
+
+        int rendererIdCount = 0;
+        var all = navisFile.GetAllItems();
+        Dictionary<string,ModelItemInfo> rId = new Dictionary<string, ModelItemInfo>();
+        for (int i = 0; i < all.Count; i++)
+        {
+            ModelItemInfo item = all[i];
+
+
+            ProgressArg p1 = new ProgressArg("LoadModels", i, all.Count, item.Name);
+            //InitNavisFileInfoByModel.Instance.progressArg = p1;
+            ProgressBarHelper.DisplayCancelableProgressBar(p1);
+
+            if (!string.IsNullOrEmpty(item.RenderId))
+            {
+                rendererIdCount++; 
+                
+                if (!rId.ContainsKey(item.RenderId))
+                {
+                    rId.Add(item.RenderId, item);
+                }
+                else
+                {
+                    var old = rId[item.RenderId];
+                    Debug.LogError($"old:{old.Name} new:{item.Name} rendererId:{item.RenderId} rendererName:{item.RenderName}");
+                }
+            }
+
+
+        }
+
         Model = navisFile.Models.Find(i => i.Name == ModelName);
         if (Model == null)
         {
-            Debug.LogError($"Model == null ModelName:{ModelName}");
+            Model = navisFile.Models.Find(i => i.Name.Contains(ModelName));
+            Debug.Log($"Model == null 1 ModelName:{ModelName} Model:{Model} Models:{navisFile.Models.Count}");
+            //return;
+        }
+
+        if (Model == null)
+        {
+            //Model = navisFile.Models.Find(i => i.Name.Contains(ModelName));
+            Debug.LogError($"Model == null ModelName:{ModelName} Model:{Model} Models:{navisFile.Models.Count}");
             return;
         }
+
         List<ModelItemInfo> list = Model.GetAllItems();
 
         allModels.Clear();
         allModels_noDrawable.Clear();
         allModels_zero.Clear();
 
-        foreach (ModelItemInfo child in list)
+        for (int i = 0; i < list.Count; i++)
         {
-
+            ModelItemInfo child = list[i];
             if (child.X == 0 && child.Z == 0 && child.Y == 0)
             {
                 if (child.Drawable == false)
@@ -109,7 +163,9 @@ public class NavisModelRoot : MonoBehaviour
         allModels_noDrawable.Sort();
         allModels_zero.Sort();
 
-        Debug.Log($"LoadModels time:{DateTime.Now - start}");
+        ProgressBarHelper.ClearProgressBar();
+
+        Debug.Log($"LoadModels time:{DateTime.Now - start} rendererIdCount:{rendererIdCount}");
     }
 
     [ContextMenu("CreateTree")]
@@ -127,26 +183,57 @@ public class NavisModelRoot : MonoBehaviour
         RootNodes =CreateTree(Model, this.transform);
 
         //List<ModelItemInfo> bimInfos02 = new List<ModelItemInfo>();
-        foreach (var child in noFoundBimInfos01)
+        for (int i = 0; i < noFoundBimInfos01.Count; i++)
         {
+            ModelItemInfo child = noFoundBimInfos01[i];
             GameObject go = child.Tag as GameObject;
+
+            ProgressArg p1 = new ProgressArg("CreateTree2", i, noFoundBimInfos01.Count, child.Name);
+            InitNavisFileInfoByModel.Instance.progressArg = p1;
+
+            if (InitNavisFileInfoByModel.Instance.IsProgressBreak)
+            {
+                return;
+                //break;
+            }
             if (FindModelGameObjectEx(child, go, false) == false)
             {
-                go.name = "[*Model*] " + child.Name;
-                noFoundBimInfos02.Add(child);
-                Debug.LogError($"[Model Not Found 3] {child.ToString()}");
+                if (child.X == 0 && child.Z == 0 && child.Y == 0)
+                {
+                    go.name = "[*Model*31] " + child.Name;
+                    noFoundBimInfos02.Add(child);
+                    //Debug.LogError($"[Model Not Found 3] {child.ToString()}");
+                }
+                else
+                {
+                    go.name = "[*Model*32] " + child.Name;
+                    noFoundBimInfos03.Add(child);
+                    //Debug.LogError($"[Model Not Found 3] {child.ToString()}");
+                }
+                
+            }
+            else
+            {
+                //noFoundBimInfos02.Add(child);
+                noFoundBimInfos01.RemoveAt(i);
+                i--;
             }
         }
 
-        foreach (var child in allModels_noDrawable)
+        for (int i = 0; i < allModels_noDrawable.Count; i++)
         {
+            ModelItemInfo child = allModels_noDrawable[i];
             GameObject go = child.Tag as GameObject;
+
+            ProgressArg p1 = new ProgressArg("CreateTree3", i, allModels_noDrawable.Count, child.Name);
+            InitNavisFileInfoByModel.Instance.progressArg = p1;
+
             if (go == null) continue;
             if (FindModelGameObjectEx(child, go, true) == false)
             {
-                go.name = "[*Model*] " + child.Name;
-                noFoundBimInfos03.Add(child);
-                Debug.LogError($"[Model Not Found 4] {child.ToString()}");
+                go.name = "[*Model*4] " + child.Name;
+                noFoundBimInfos04.Add(child);
+                //Debug.LogError($"[Model Not Found 4] {child.ToString()}");
             }
         }
 
@@ -201,6 +288,7 @@ public class NavisModelRoot : MonoBehaviour
         noFoundBimInfos01.Clear();
         noFoundBimInfos02.Clear();
         noFoundBimInfos03.Clear();
+        noFoundBimInfos04.Clear();
 
         foundBimInfos1.Clear();
         foundBimInfos2.Clear();
@@ -210,12 +298,19 @@ public class NavisModelRoot : MonoBehaviour
 
     //public List<GameObject> bimModels = new List<GameObject>();
     //public List<GameObject> bimInfos0_name = new List<GameObject>();
+    [NonSerialized]
     public List<ModelItemInfo> noFoundBimInfos01 = new List<ModelItemInfo>();
+    [NonSerialized]
     public List<ModelItemInfo> noFoundBimInfos02 = new List<ModelItemInfo>();
+    [NonSerialized]
     public List<ModelItemInfo> noFoundBimInfos03 = new List<ModelItemInfo>();
-
+    [NonSerialized]
+    public List<ModelItemInfo> noFoundBimInfos04 = new List<ModelItemInfo>();
+    [NonSerialized]
     public List<BIMModelInfo> foundBimInfos1 = new List<BIMModelInfo>();
+    [NonSerialized]
     public List<BIMModelInfo> foundBimInfos2 = new List<BIMModelInfo>();
+    [NonSerialized]
     public List<BIMModelInfo> foundBimInfos3 = new List<BIMModelInfo>();
 
     private int TreeNodeCount = 0;
@@ -240,7 +335,7 @@ public class NavisModelRoot : MonoBehaviour
     public List<GameObject> CreateTree(ModelItemInfo rootModel,Transform parent)
     {
         List<GameObject> goList = new List<GameObject>();
-        if(rootModel.Children!=null)
+        if(rootModel!=null && rootModel.Children!=null)
         for (int i = 0; i < rootModel.Children.Count; i++)
         {
             ModelItemInfo child = (ModelItemInfo)rootModel.Children[i];
@@ -249,12 +344,12 @@ public class NavisModelRoot : MonoBehaviour
 
             ProgressArg p1 = new ProgressArg("CreateTree", TreeNodeIndex, TreeNodeCount, child.Name);
             InitNavisFileInfoByModel.Instance.progressArg = p1;
-            if (ProgressBarHelper.DisplayCancelableProgressBar(p1))
-            {
-                break;
-            }
+                //if (ProgressBarHelper.DisplayCancelableProgressBar(p1))
+                //{
+                //    break;
+                //}
 
-            GameObject go = new GameObject($"{child.Name}");
+                GameObject go = new GameObject($"{child.Name}");
             var pos = new Vector3(child.X, child.Z, child.Y);
             go.transform.position = pos;
             go.transform.SetParent(parent);
@@ -273,12 +368,12 @@ public class NavisModelRoot : MonoBehaviour
                     go.name = "[Model] " + child.Name;
                     if (FindModelGameObjectEx(child, go, true) == false)
                     {
-                        go.name = "[*Model*] " + child.Name;
+                        go.name = "[*Model*2] " + child.Name;
                         noFoundBimInfos01.Add(child);
-                        Debug.LogError($"[Model Not Found 2] {child.ToString()}");
+                        //Debug.LogError($"[Model Not Found 2] {child.ToString()}");
 
                         var list = InitNavisFileInfoByModel.FindSameNameList(transformList, child.Name);
-                        Debug.LogError($"TestFindModelByName name:{child.Name} list:{list.Count}");
+                        //Debug.LogError($"TestFindModelByName name:{child.Name} list:{list.Count}");
                     }
                 }
                 else
@@ -291,9 +386,9 @@ public class NavisModelRoot : MonoBehaviour
                 go.name = "[Model] " + child.Name;
                 if(FindModelGameObjectEx(child, go, true) == false)
                 {
-                    go.name = "[*Model*] " + child.Name;
+                    go.name = "[*Model*1] " + child.Name;
                     noFoundBimInfos01.Add(child);
-                    Debug.LogError($"[Model Not Found 1] {child.ToString()}");
+                    //Debug.LogError($"[Model Not Found 1] {child.ToString()}");
                 }
             }
 

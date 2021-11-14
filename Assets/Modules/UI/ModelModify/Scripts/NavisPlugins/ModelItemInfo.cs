@@ -61,6 +61,9 @@ namespace NavisPlugins.Infos
         [XmlAttribute]
         public string RenderId { get; set; }
 
+        [XmlAttribute]
+        public string RenderName { get; set; }
+
         public void SetVisible(int v)
         {
             Visible = v;

@@ -10,6 +10,26 @@ public class InitNavisFileInfoByModelSetting : SingletonBehaviour<InitNavisFileI
 
     public List<GameObject> initInfoBuildings = new List<GameObject>();
 
+    [ContextMenu("UpdateBuildings")]
+    public void UpdateBuildings()
+    {
+        //initInfoBuildings.Clear();
+        var bs1 = this.initInfoBuildings;
+        this.initInfoBuildings.Clear();
+        foreach (var b in bs1)
+        {
+            if (b == null) continue;
+            this.initInfoBuildings.Add(b.gameObject);
+        }
+
+        BuildingController[] bs = GameObject.FindObjectsOfType<BuildingController>(true);
+        foreach (var b in bs)
+        {
+            if (this.initInfoBuildings.Contains(b.gameObject)) continue;
+            this.initInfoBuildings.Add(b.gameObject);
+        }
+    }
+
     public bool enableDistance2 = false;
 
     public bool enableDistance3 = false;

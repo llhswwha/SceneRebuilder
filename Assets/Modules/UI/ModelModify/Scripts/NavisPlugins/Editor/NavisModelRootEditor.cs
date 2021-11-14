@@ -13,6 +13,7 @@ public class NavisModelRootEditor : BaseFoldoutEditor<NavisModelRoot>
     static FoldoutEditorArg<ModelItemInfo> bimListArg01 = new FoldoutEditorArg<ModelItemInfo>(true,false);
     static FoldoutEditorArg<ModelItemInfo> bimListArg02 = new FoldoutEditorArg<ModelItemInfo>(true, false);
     static FoldoutEditorArg<ModelItemInfo> bimListArg03 = new FoldoutEditorArg<ModelItemInfo>(true, false);
+    static FoldoutEditorArg<ModelItemInfo> bimListArg04 = new FoldoutEditorArg<ModelItemInfo>(true, false);
 
     static FoldoutEditorArg<BIMModelInfo> bimListArg0 = new FoldoutEditorArg<BIMModelInfo>(true, false);
     static FoldoutEditorArg<BIMModelInfo> bimListArg1 = new FoldoutEditorArg<BIMModelInfo>(true, false);
@@ -36,6 +37,10 @@ public class NavisModelRootEditor : BaseFoldoutEditor<NavisModelRoot>
         if (item == null) return;
         EditorGUILayout.BeginHorizontal();
         //item.IsSameName = GUILayout.Toggle(item.IsSameName, "SameName");
+        if (GUILayout.Button("OnlySelf"))
+        {
+            item.SetOnlySelfModel();
+        }
         if (GUILayout.Button("LoadModels"))
         {
             item.LoadModels();
@@ -70,9 +75,10 @@ public class NavisModelRootEditor : BaseFoldoutEditor<NavisModelRoot>
         DrawVueModelList(item.allModels_noDrawable, modelListArg2, "Model(NoDrawable) List");
         DrawVueModelList(item.allModels_zero, modelListArg3, "Model(Zero) List");
 
-        DrawVueModelList(item.noFoundBimInfos01, bimListArg01, "No Found Bim List01");
-        DrawVueModelList(item.noFoundBimInfos02, bimListArg02, "No Found Bim List02");
-        DrawVueModelList(item.noFoundBimInfos03, bimListArg03, "No Found Bim List03");
+        DrawVueModelList(item.noFoundBimInfos01, bimListArg01, "No Found Bim List01(All)");
+        DrawVueModelList(item.noFoundBimInfos02, bimListArg02, "No Found Bim List02(Zero)");
+        DrawVueModelList(item.noFoundBimInfos03, bimListArg03, "No Found Bim List03(NotAero)");
+        DrawVueModelList(item.noFoundBimInfos04, bimListArg04, "No Found Bim List04(NotDrawable)");
 
         DrawBimList(item.foundBimInfos1, bimListArg1, $"Found Bim List1({InitNavisFileInfoByModelSetting.Instance.MinDistance1})");
         DrawBimList(item.foundBimInfos2, bimListArg2, $"Found Bim List2({InitNavisFileInfoByModelSetting.Instance.MinDistance2})");
@@ -160,7 +166,7 @@ public class NavisModelRootEditor : BaseFoldoutEditor<NavisModelRoot>
                 var doorRootArg = FoldoutEditorArgBuffer.editorArgs[listItem];
                 doorRootArg.level = 1;
                 doorRootArg.background = true;
-                doorRootArg.caption = $"[{i + 1:00}] {listItem.Name}|{listItem.Id}";
+                doorRootArg.caption = $"[{i + 1:00}] {listItem.Name}|{listItem.Id}|{listItem.Type}";
                 //doorRootArg.info = $"({listItem.AreaId}|{listItem.AreaName})({listItem.Id}|{listItem.UId}|{listItem.RenderId})";
                 doorRootArg.info = $"({listItem.AreaId}|{listItem.AreaName})({listItem.X},{listItem.Y},{listItem.Z})({!string.IsNullOrEmpty(listItem.UId)}|{!string.IsNullOrEmpty(listItem.RenderId)})";
                 EditorUIUtils.ObjectFoldout(doorRootArg, listItem.Tag as GameObject, () =>

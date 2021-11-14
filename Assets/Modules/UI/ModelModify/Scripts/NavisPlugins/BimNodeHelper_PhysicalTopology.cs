@@ -26,6 +26,15 @@ public static class BimNodeHelper_PhysicalTopology
         return null;
     }
 
+    public static ModelItemInfo GetModel(DevInfo node)
+    {
+        if (dev2Model.ContainsKey(node))
+        {
+            return dev2Model[node];
+        }
+        return null;
+    }
+
     public static bool IsDebug = false;
 
     public static void InitBimModel(PhysicalTopology root)

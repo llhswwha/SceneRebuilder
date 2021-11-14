@@ -17,9 +17,15 @@ public class InitNavisFileInfoByModel : SingletonBehaviour<InitNavisFileInfoByMo
     void Start()
     {
         string path = GetNavisFilePath();
+        string path2 = GetNavisFilePath_New();
         ThreadManager.Run(() =>
         {
+            //InitNavisFileInfoByModel.GetNavisFileInfoEx_New();
+
+            InitNavisFileInfoByModel.GetNavisFileInfoEx(path2);
+
             InitNavisFileInfoByModel.GetNavisFileInfoEx(path);
+            
         }, () => { },
         "");
     }
@@ -191,13 +197,23 @@ public class InitNavisFileInfoByModel : SingletonBehaviour<InitNavisFileInfoByMo
 
     public void UpdateBuildings()
     {
-        //initInfoBuildings.Clear();
-        BuildingController[] bs = GameObject.FindObjectsOfType<BuildingController>(true);
-        foreach (var b in bs)
-        {
-            if (InitNavisFileInfoByModelSetting.Instance.initInfoBuildings.Contains(b.gameObject)) continue;
-            InitNavisFileInfoByModelSetting.Instance.initInfoBuildings.Add(b.gameObject);
-        }
+        ////initInfoBuildings.Clear();
+        //var bs1 = InitNavisFileInfoByModelSetting.Instance.initInfoBuildings;
+        //InitNavisFileInfoByModelSetting.Instance.initInfoBuildings.Clear();
+        //foreach (var b in bs1)
+        //{
+        //    if (b == null) continue;
+        //    InitNavisFileInfoByModelSetting.Instance.initInfoBuildings.Add(b.gameObject);
+        //}
+
+        //BuildingController[] bs = GameObject.FindObjectsOfType<BuildingController>(true);
+        //foreach (var b in bs)
+        //{
+        //    if (InitNavisFileInfoByModelSetting.Instance.initInfoBuildings.Contains(b.gameObject)) continue;
+        //    InitNavisFileInfoByModelSetting.Instance.initInfoBuildings.Add(b.gameObject);
+        //}
+
+        InitNavisFileInfoByModelSetting.Instance.UpdateBuildings();
     }
 
     /*
@@ -377,6 +393,7 @@ public class InitNavisFileInfoByModel : SingletonBehaviour<InitNavisFileInfoByMo
         ModelItemInfo info = new ModelItemInfo();
         info.UId = bimInfo.Guid;
         info.RenderId = bimInfo.RenderId;
+        info.RenderName = bimInfo.name;
         info.Name = childT.name;
         info.X = bimInfo.Position1.x;
         info.Y = bimInfo.Position1.y;
@@ -488,14 +505,34 @@ public class InitNavisFileInfoByModel : SingletonBehaviour<InitNavisFileInfoByMo
         return file;
     }
 
+    public static NavisFileInfo file_new = null;//专业目录树
+
+    public static NavisFileInfo GetNavisFileInfoEx_New()
+    {
+        Debug.Log($"GetNavisFileInfoEx_New [file:{file_new}]");
+        if (file_new == null)
+        {
+            file_new = GetNavisFileInfo_New();
+        }
+        return file_new;
+    }
+
+    public static Dictionary<string, NavisFileInfo> files = new Dictionary<string, NavisFileInfo>();
+
     public static NavisFileInfo GetNavisFileInfoEx(string path)
     {
-        Debug.Log($"GetNavisFileInfoEx [file:{file}]");
-        if (file == null)
+        NavisFileInfo navFile = null;
+        if (!files.ContainsKey(path))
         {
-            file = GetNavisFileInfo(path);
+            navFile = GetNavisFileInfo(path);
+            files.Add(path, navFile);
         }
-        return file;
+        else
+        {
+            navFile = files[path];
+        }
+        Debug.Log($"GetNavisFileInfoEx [file:{navFile}]");
+        return navFile;
     }
 
     public static NavisFileInfo GetNavisFileInfo(string path)
@@ -519,10 +556,28 @@ public class InitNavisFileInfoByModel : SingletonBehaviour<InitNavisFileInfoByMo
         return path;
     }
 
+    /// <summary>
+    /// 专业目录树
+    /// </summary>
+    /// <returns></returns>
+
+
     public static NavisFileInfo GetNavisFileInfo()
     {
         string path = GetNavisFilePath();
         return GetNavisFileInfo(path);
+    }
+
+    public static NavisFileInfo GetNavisFileInfo_New()
+    {
+        string path = GetNavisFilePath_New();
+        return GetNavisFileInfoEx(path);
+    }
+    public static string GetNavisFilePath_New()
+    {
+        string fileName = "\\..\\NavisFileInfo_New.xml";
+        string path = Application.dataPath + fileName;
+        return path;
     }
 
     private int posFindCount;
@@ -656,6 +711,30 @@ public class InitNavisFileInfoByModel : SingletonBehaviour<InitNavisFileInfoByMo
         this.GetAllModelTransform();
     }
 
+    [ContextMenu("ClearRendererId")]
+    public void ClearRendererId()
+    {
+        DateTime start = DateTime.Now;
+
+        this.GetVueModels(false);
+
+        int rendererIdCount = 0;
+        var all = navisFile.GetAllItems();
+        foreach (var item in all)
+        {
+            if (!string.IsNullOrEmpty(item.RenderId))
+            {
+                rendererIdCount++;
+            }
+            item.RenderId =null;
+            item.RenderName = null;
+        }
+
+        SaveNavisFile();
+
+        Debug.Log($"ClearRendererId time:{DateTime.Now - start} rendererIdCount:{rendererIdCount}");
+    }
+
     private Dictionary<string, GameObject> buildingNames = new Dictionary<string, GameObject>();
 
     public void InitBuildingNames()
@@ -777,6 +856,7 @@ public class InitNavisFileInfoByModel : SingletonBehaviour<InitNavisFileInfoByMo
                 vueM.AreaId = 0;
                 vueM.AreaName = null;
                 vueM.RenderId = null;
+                vueM.RenderName = null;
             }
         }
         Debug.Log($"GetVueModels time:{(DateTime.Now - recordTime)} list1:{list1.Count} list2:{list2.Count}");
@@ -855,7 +935,7 @@ vueDict.Add(item.UId, item);
             {
                 ModelItemInfo model = vueDict[bim.Guid];
                 model.RenderId = bim.RenderId;
-
+                model.RenderName = bim.name;
                 DepNode dep = bim.GetComponentInParent<DepNode>();
                 if (dep != null)
                 {
@@ -1208,6 +1288,7 @@ vueDict.Add(item.UId, item);
         {
             bimT.RenderId = renderId.Id;
             infoT.RenderId = renderId.Id;
+            infoT.RenderName = renderId.name;
         }
 
         DepNode dep = child.GetComponentInParent<DepNode>();
@@ -1228,7 +1309,7 @@ vueDict.Add(item.UId, item);
         }
         else
         {
-            infoT.AreaName = "NoneDep";
+            infoT.AreaName = "";
         }
         if (IsDestroyNoFoundBim && isFound == false)
         {
@@ -1277,9 +1358,9 @@ vueDict.Add(item.UId, item);
                 if (bim != null)
                 {
                     bim.Distance = dis;
-                    bim.Model = item;
-                    bim.MName = item.Name;
-                    bim.MId = item.Id;
+                    bim.SetModelInfo(item);
+                    //bim.MName = item.Name;
+                    //bim.MId = item.Id;
                 }
                 return item;
             }
@@ -1287,9 +1368,10 @@ vueDict.Add(item.UId, item);
         if (bim != null)
         {
             bim.Distance = minDis;
-            bim.Model = minModel;
-            bim.MName = minModel.Name;
-            bim.MId = minModel.Id;
+            bim.SetModelInfo(minModel);
+            //bim.Model = minModel;
+            //bim.MName = minModel.Name;
+            //bim.MId = minModel.Id;
         }
         return minModel;
     }
@@ -1325,6 +1407,7 @@ vueDict.Add(item.UId, item);
         {
             bimT.RenderId = renderId.Id;
             child.RenderId = renderId.Id;
+            child.RenderName = renderId.name;
         }
 
         DepNode dep = bimT.GetComponentInParent<DepNode>();
@@ -1345,8 +1428,9 @@ vueDict.Add(item.UId, item);
         }
         else
         {
-            child.AreaName = "NoneDep";
+            child.AreaName = "";
         }
+
         if (IsDestroyNoFoundBim && isFound == false)
         {
             if (bimT.GetComponent<BIMModelInfo>() != null)
@@ -1359,11 +1443,17 @@ vueDict.Add(item.UId, item);
 
     private static BIMModelInfo AddBimModelInfo(Transform item, ModelItemInfo objT, float dis)
     {
+        if (item == null)
+        {
+            Debug.LogError($"AddBimModelInfo item == null objT:{objT}");
+            return null;
+        }
         BIMModelInfo bim = item.gameObject.AddMissingComponent<BIMModelInfo>();
         bim.Distance = dis;
-        bim.Model = objT;
-        bim.MName = objT.Name;
-        bim.MId = objT.Id;
+        bim.SetModelInfo(objT);
+        //bim.Model = objT;
+        //bim.MName = objT.Name;
+        //bim.MId = objT.Id;
         //bim.IsFound = true;
         //bim.IsFound = bim.Distance < minD;
         return bim;
@@ -1389,6 +1479,8 @@ vueDict.Add(item.UId, item);
         return sameNameList;
     }
 
+    public bool IsProgressBreak = false;
+
     private BIMModelInfo TryGetModelInfoByPos_Vue2Model(List<Transform> modelDicT, ModelItemInfo objT, float minD, bool isSameName)
     {
         float minDis = float.MaxValue;
@@ -1397,22 +1489,44 @@ vueDict.Add(item.UId, item);
 
         if (isSameName)
         {
-            List<Transform> sameNameList = FindSameNameList(modelDicT, objT.Name);
-            if (sameNameList.Count == 1)
             {
-                Transform item = sameNameList[0];
-                float dis = Vector3.Distance(posInfo, item.position);
-                BIMModelInfo bim = AddBimModelInfo(item, objT, dis);
-                bim.IsFound = true;
-                return bim;
+                List<Transform> sameNameList = FindSameNameList(modelDicT, objT.UId);
+                if (sameNameList.Count == 1)
+                {
+                    Transform item = sameNameList[0];
+                    float dis = Vector3.Distance(posInfo, item.position);
+                    BIMModelInfo bim = AddBimModelInfo(item, objT, dis);
+                    bim.IsFound = true;
+                    return bim;
+                }
+                if (sameNameList.Count > 0)
+                {
+                    modelDicT = sameNameList;
+                }
+                //else
+                //{
+                //    return null;
+                //}
             }
-            if (sameNameList.Count > 0)
+
             {
-                modelDicT = sameNameList;
-            }
-            else
-            {
-                return null;
+                List<Transform> sameNameList = FindSameNameList(modelDicT, objT.Name);
+                if (sameNameList.Count == 1)
+                {
+                    Transform item = sameNameList[0];
+                    float dis = Vector3.Distance(posInfo, item.position);
+                    BIMModelInfo bim = AddBimModelInfo(item, objT, dis);
+                    bim.IsFound = true;
+                    return bim;
+                }
+                if (sameNameList.Count > 0)
+                {
+                    modelDicT = sameNameList;
+                }
+                else
+                {
+                    return null;
+                }
             }
         }
 
@@ -1428,6 +1542,7 @@ vueDict.Add(item.UId, item);
             
             if (ProgressBarHelper.DisplayCancelableProgressBar(p3))
             {
+                IsProgressBreak = true;
                 ProgressBarHelper.ClearProgressBar();
                 return null;
                 //break;
@@ -1443,17 +1558,24 @@ vueDict.Add(item.UId, item);
             {
                 BIMModelInfo bim = AddBimModelInfo(item, objT, dis);
                 bim.IsFound = bim.Distance < minD;
+                //ProgressBarHelper.ClearProgressBar();
                 return bim;
             }
+        }
+
+        if (minModel == null)
+        {
+            return null;
         }
 
         {
             BIMModelInfo bim = AddBimModelInfo(minModel, objT, minDis);
             bim.IsFound = bim.Distance < minD;
+            //ProgressBarHelper.ClearProgressBar();
             return bim;
         }
 
-        ProgressBarHelper.ClearProgressBar();
+        
     }
     #endregion
 
@@ -1464,6 +1586,10 @@ vueDict.Add(item.UId, item);
     }
 
     public static ModelItemInfo GetModel(PhysicalTopology node)
+    {
+        return BimNodeHelper_PhysicalTopology.GetModel(node);
+    }
+    public static ModelItemInfo GetModel(DevInfo node)
     {
         return BimNodeHelper_PhysicalTopology.GetModel(node);
     }

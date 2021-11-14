@@ -44,7 +44,20 @@ public class BIMModelInfo : MonoBehaviour,IComparable<BIMModelInfo>
 
     public GameObject RepeatObj;
 
-    public ModelItemInfo Model;
+    [NonSerialized]
+    private ModelItemInfo Model;
+
+    public void SetModelInfo(ModelItemInfo model)
+    {
+        this.Model = model;
+        this.MName = model.Name;
+        this.MId = model.Id;
+    }
+
+    public ModelItemInfo GetModelInfo()
+    {
+        return Model;
+    }
 
     public bool IsFound = false;
 
