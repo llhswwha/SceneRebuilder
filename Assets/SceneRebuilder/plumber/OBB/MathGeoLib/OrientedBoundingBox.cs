@@ -393,7 +393,32 @@ namespace MathGeoLib
             return points;
         }
 
-        
+        public Vector3S[] BoxPlaneCenterPoints()
+        {
+            var p0 = this.CornerPoint(0);
+            var p1 = this.CornerPoint(1);
+            var p2 = this.CornerPoint(2);
+            var p3 = this.CornerPoint(3);
+            var p4 = this.CornerPoint(4);
+            var p5 = this.CornerPoint(5);
+            var p6 = this.CornerPoint(6);
+            var p7 = this.CornerPoint(7);
+
+            var pc1 = (p0 + p1 + p2 + p3) / 4;
+            var pc2 = (p4 + p5 + p6 + p7) / 4;
+            var pc3 = (p0 + p1 + p4 + p5) / 4;
+            var pc4 = (p2 + p3 + p6 + p7) / 4;
+            var pc5 = (p0 + p4 + p3 + p7) / 4;
+            var pc6 = (p1 + p5 + p2 + p6) / 4;
+
+            var points = new[]
+            {
+                pc1,pc2,pc3,pc4,pc5,pc6
+            };
+            return points;
+        }
+
+
         public Vector3S[] CornerPoints()
         {
             var p0 = this.CornerPoint(0);
