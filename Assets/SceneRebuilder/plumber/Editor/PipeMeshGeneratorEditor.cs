@@ -14,6 +14,10 @@ public class PipeMeshGeneratorEditor : Editor {
 			myTarget.RenderPipe();
 		}
 		GUILayout.BeginHorizontal();
+		if (GUILayout.Button("CleanChildren"))
+		{
+			myTarget.CleanChildren();
+		}
 		if (GUILayout.Button("ShowPoints"))
 		{
 			myTarget.ShowPoints();
@@ -23,11 +27,18 @@ public class PipeMeshGeneratorEditor : Editor {
 			myTarget.ShowPoints2();
 		}
 		GUILayout.EndHorizontal();
+
+		GUILayout.BeginHorizontal();
 		//GetPointsFromTransforms
 		if (GUILayout.Button("GetPointsFromTransforms"))
 		{
 			myTarget.GetPointsFromTransforms();
 		}
+		if (GUILayout.Button("TestRemoveColinearPoints"))
+		{
+			myTarget.TestRemoveColinearPoints();
+		}
+		GUILayout.EndHorizontal();
 
 		GUILayout.BeginHorizontal();
 		if (GUILayout.Button("Torus XZ"))

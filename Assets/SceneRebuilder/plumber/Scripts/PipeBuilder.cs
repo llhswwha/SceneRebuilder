@@ -177,8 +177,16 @@ public class PipeBuilder : MonoBehaviour
             if(i==0)
                 elbowRadius = Vector3.Distance(closestPointLine1, P2);
 
+            var P2_1 = P2 + (closestPointLine2 - P2) * 0.1f;
+
+            points.Add(P2_1);
+
             //points.Add(closestPointLine1);
             points.Add(closestPointLine2);
+
+            var P3_1 = P3 + (closestPointLine2 - P3) * 0.1f;
+
+            points.Add(P3_1);
 
             points.Add(P3);
             points.Add(P4);

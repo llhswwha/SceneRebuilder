@@ -385,5 +385,120 @@ public class RendererManager : SingletonBehaviour<RendererManager>
         return sharedMeshes;
     }
 
-    //public  
+    public static List<MeshRenderer> FindRenderers(GameObject go, string key)
+    {
+        //List<Transform> findList = new List<Transform>();
+        //Transform[] ts = null;
+        //if (go == null)
+        //{
+        //    ts = GameObject.FindObjectsOfType<Transform>();
+        //}
+        //else
+        //{
+        //    ts = go.GetComponentsInChildren<Transform>(true);
+        //}
+
+        //foreach (Transform t in ts)
+        //{
+        //    if (t.name.ToLower().Contains(key))
+        //    {
+        //        findList.Add(t);
+        //    }
+        //}
+        //List<MeshRenderer> renderers = new List<MeshRenderer>();
+        //foreach (var t in findList)
+        //{
+        //    MeshRenderer[] rs = t.GetComponentsInChildren<MeshRenderer>(true);
+        //    foreach (var r in rs)
+        //    {
+        //        if (r.name.Contains("Bounds")) continue;
+        //        if (!renderers.Contains(r))
+        //            renderers.Add(r);
+        //    }
+        //    //renderers.AddRange(rs);
+        //}
+        //return renderers;
+        return FindComponents<MeshRenderer>(go, key);
+    }
+
+    public static List<T> FindComponents<T>(GameObject go, string key) where T : Component
+    {
+        List<Transform> findList = new List<Transform>();
+        Transform[] ts = null;
+        if (go == null)
+        {
+            ts = GameObject.FindObjectsOfType<Transform>();
+        }
+        else
+        {
+            ts = go.GetComponentsInChildren<Transform>(true);
+        }
+
+        foreach (Transform t in ts)
+        {
+            if (t.name.ToLower().Contains(key))
+            {
+                findList.Add(t);
+            }
+        }
+        List<T> renderers = new List<T>();
+        foreach (var t in findList)
+        {
+            T[] rs = t.GetComponentsInChildren<T>(true);
+            foreach (var r in rs)
+            {
+                if (r.name.Contains("Bounds")) continue;
+                if (!renderers.Contains(r))
+                    renderers.Add(r);
+            }
+            //renderers.AddRange(rs);
+        }
+        return renderers;
+    }
+
+    //public static List<MeshRenderer> FindRenderers(MeshRenderer[] rs, string key)
+    //{
+    //    //List<MeshRenderer> renderers = new List<MeshRenderer>();
+    //    //foreach (var r in rs)
+    //    //{
+    //    //    //if (r.name.Contains("Bounds")) continue;
+    //    //    if (r.name.ToLower().Contains(key))
+    //    //    {
+    //    //        if (!renderers.Contains(r))
+    //    //            renderers.Add(r);
+    //    //    }
+    //    //}
+    //    //return renderers;
+
+    //    return FindComponents<MeshRenderer>(rs,key);
+    //}
+
+    //public static List<MeshRenderer> FindRenderers(string key)
+    //{
+    //    //MeshRenderer[] rs = GameObject.FindObjectsOfType<MeshRenderer>(true);
+    //    //return FindRenderers(rs, key);
+    //    return FindComponents<MeshRenderer>(key);
+    //}
+
+    //public static List<T> FindComponents<T>(T[] rs, string key) where T :Component
+    //{
+    //    List<T> renderers = new List<T>();
+    //    foreach (var r in rs)
+    //    {
+    //        //if (r.name.Contains("Bounds")) continue;
+    //        if (r.name.ToLower().Contains(key))
+    //        {
+    //            //if (!renderers.Contains(r))
+    //                renderers.Add(r);
+    //        }
+    //    }
+    //    return renderers;
+    //}
+
+    //public static List<T> FindComponents<T>(string key) where T : Component
+    //{
+    //    T[] rs = GameObject.FindObjectsOfType<T>(true);
+    //    Debug.Log($"FindComponents key:{key} rs:{rs.Length}");
+    //    return FindComponents(rs, key);
+    //}
 }

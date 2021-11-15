@@ -4,10 +4,30 @@ using UnityEngine;
 
 public class PipeMeshGenerator : MonoBehaviour {
 
+    public class PipeLineInfo
+    {
+        public Vector3 P1;
+        public Vector3 P2;
+
+        public bool generateElbows;
+
+        public PipeLineInfo(Vector3 s,Vector3 e,bool g)
+        {
+            this.P1 = s;
+            this.P2 = e;
+            this.generateElbows = g;
+        }
+    }
+
     // see README.md file for more information about the following parameters
     public List<Vector3> points = new List<Vector3>();
 
+    public List<Vector3> points2 = new List<Vector3>();
+
     public List<GameObject> pointsT = new List<GameObject>();
+
+    public List<PipeLineInfo> lines = new List<PipeLineInfo>();
+
 
     public void GetPointsFromTransforms()
     {
@@ -15,6 +35,19 @@ public class PipeMeshGenerator : MonoBehaviour {
         foreach(var go in pointsT)
         {
             points.Add(go.transform.localPosition);
+        }
+    }
+
+    public void CleanChildren()
+    {
+        List<GameObject> go = new List<GameObject>();
+        for(int i = 0; i < transform.childCount; i++)
+        {
+            go.Add(transform.GetChild(i).gameObject);
+        }
+        foreach(var item in go)
+        {
+            GameObject.DestroyImmediate(item);
         }
     }
 
@@ -41,7 +74,8 @@ public class PipeMeshGenerator : MonoBehaviour {
     public bool generateElbows = true;
     public bool generateOnStart;
     public bool makeDoubleSided;
-    public float colinearThreshold = 0.001f;
+    //public float colinearThreshold = 0.001f;
+    public float colinearThreshold = 0.002f;
 
     public bool IsLinkEndStart = false;
 
@@ -296,11 +330,21 @@ public class PipeMeshGenerator : MonoBehaviour {
         weldGenerator.IsLinkEndStart = true;
     }
 
-    public List<Vector3> points2 = new List<Vector3>();
+    [ContextMenu("TestRemoveColinearPoints")]
+    public void TestRemoveColinearPoints()
+    {
+        List<Vector3> ps = new List<Vector3>(points);
+        RemoveColinearPoints(ps);
+        points2 = new List<Vector3>(ps);
+    }
+
+    public bool IsRemoveColinearPoints = true;
+
 
     Mesh GeneratePipeMesh(List<Vector3> ps,bool gWeld) {
 
-        RemoveColinearPoints(ps);
+        if(IsRemoveColinearPoints)
+            RemoveColinearPoints(ps);
         points2 = new List<Vector3>(ps);
 
         Mesh m = new Mesh();
@@ -434,9 +478,12 @@ public class PipeMeshGenerator : MonoBehaviour {
             // check if their directions are roughly the same by
             // comparing the distance between the direction vectors
             // with the threshold
-            if (Vector3.Distance(dir1.normalized, dir2.normalized) < colinearThreshold) {
+            float dis = Vector3.Distance(dir1.normalized, dir2.normalized);
+            if (dis < colinearThreshold) {
                 pointsToRemove.Add(i + 1);
             }
+
+            Debug.Log($"RemoveColinearPoints[{i}] dis:{dis} 【{dis < colinearThreshold}】 point1:{point1} point2:{point2} point3:{point3} dir1:{dir1} dir2:{dir2}");
         }
 
         pointsToRemove.Reverse();

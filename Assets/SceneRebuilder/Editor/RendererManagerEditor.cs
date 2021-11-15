@@ -8,7 +8,9 @@ using CodeStage.AdvancedFPSCounter.Editor.UI;
 [CustomEditor(typeof(RendererManager))]
 public class RendererManagerEditor : BaseFoldoutEditor<RendererManager>
 {
-    FoldoutEditorArg sharedMeshListArg = new FoldoutEditorArg();
+    FoldoutEditorArg sharedMeshListArg = new FoldoutEditorArg(true,false);
+
+    FoldoutEditorArg weldingRendererListArg = new FoldoutEditorArg(true, false);
 
     public override void OnEnable()
     {
@@ -62,5 +64,7 @@ public class RendererManagerEditor : BaseFoldoutEditor<RendererManager>
         //    sharedMeshListArg.tag = item.GetSharedMeshList();
         //}
         DrawSharedMeshListEx(sharedMeshListArg,()=> item.GetSharedMeshList());
+
+        DrawObjectList
     }
 }
