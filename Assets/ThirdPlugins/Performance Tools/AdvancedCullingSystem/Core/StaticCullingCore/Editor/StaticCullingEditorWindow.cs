@@ -100,7 +100,7 @@ namespace AdvancedCullingSystem.StaticCullingCore
 
 
         [MenuItem("Tools/NGSTools/Advanced Culling System/Static Culling")]
-        private static void CreateWindow()
+        public static void CreateCullingWindow()
         {
             var window = GetWindow<StaticCullingEditorWindow>(false, "Static Culling", true);
 

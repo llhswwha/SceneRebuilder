@@ -121,7 +121,7 @@ namespace CodeStage.AdvancedFPSCounter.Editor.UI
 
         public int DrawPageSizeList()
 		{
-            EditorGUILayout.LabelField("PageSize:", GUILayout.Width(80));
+            EditorGUILayout.LabelField("PSize:", GUILayout.Width(40));
             pageSize_selected = EditorGUILayout.IntPopup(pageSize_selected, pageSize_names, pageSize_sizes);
             
             //EditorGUILayout.Popup("Size", 0, pageSize_names);
@@ -141,15 +141,27 @@ namespace CodeStage.AdvancedFPSCounter.Editor.UI
 				}
 				pageId_selected=1;
 			}
-            EditorGUILayout.LabelField("PageIndex:",GUILayout.Width(100));
+            EditorGUILayout.LabelField("PIndex:",GUILayout.Width(45));
             pageId_selected = EditorGUILayout.IntPopup( pageId_selected, pageId_names, pageId_sizes);
-            EditorGUILayout.LabelField("/"+pageCount, GUILayout.Width(50));
+            if (pageCount < 100)
+            {
+                EditorGUILayout.LabelField("/" + pageCount, GUILayout.Width(30));
+            }
+            else
+            {
+                EditorGUILayout.LabelField("/" + pageCount, GUILayout.Width(50));
+            }
+            
 
-            if (GUILayout.Button("|<<", GUILayout.Width(30)))
+            var btnStyle = new GUIStyle(EditorStyles.miniButton);
+            btnStyle.margin = new RectOffset(0, 0, 0, 0);
+            btnStyle.padding = new RectOffset(0, 0, 0, 0);
+
+            if (GUILayout.Button("|<", btnStyle,GUILayout.Width(25)))
             {
                 pageId_selected = 1;
             }
-            if (GUILayout.Button("10<", GUILayout.Width(40)))
+            if (GUILayout.Button("10", btnStyle, GUILayout.Width(22)))
             {
                 pageId_selected-=10;
                 if (pageId_selected < 1)
@@ -157,7 +169,7 @@ namespace CodeStage.AdvancedFPSCounter.Editor.UI
                     pageId_selected = 1;
                 }
             }
-            if (GUILayout.Button("5<", GUILayout.Width(30)))
+            if (GUILayout.Button("5", btnStyle, GUILayout.Width(18)))
             {
                 pageId_selected-=5;
                 if (pageId_selected < 1)
@@ -165,7 +177,7 @@ namespace CodeStage.AdvancedFPSCounter.Editor.UI
                     pageId_selected = 1;
                 }
             }
-            if (GUILayout.Button("<", GUILayout.Width(30)))
+            if (GUILayout.Button("<", btnStyle, GUILayout.Width(18)))
             {
                 pageId_selected--;
                 if (pageId_selected < 1)
@@ -173,7 +185,7 @@ namespace CodeStage.AdvancedFPSCounter.Editor.UI
                     pageId_selected = 1;
                 }
             }
-            if (GUILayout.Button(">", GUILayout.Width(30)))
+            if (GUILayout.Button(">", btnStyle, GUILayout.Width(18)))
             {
                 pageId_selected++;
                 if (pageId_selected > pageCount)
@@ -181,7 +193,7 @@ namespace CodeStage.AdvancedFPSCounter.Editor.UI
                     pageId_selected = pageCount;
                 }
             }
-            if (GUILayout.Button(">5", GUILayout.Width(30)))
+            if (GUILayout.Button("5", btnStyle, GUILayout.Width(18)))
             {
                 pageId_selected+=5;
                 if (pageId_selected > pageCount)
@@ -189,7 +201,7 @@ namespace CodeStage.AdvancedFPSCounter.Editor.UI
                     pageId_selected = pageCount;
                 }
             }
-            if (GUILayout.Button(">10", GUILayout.Width(40)))
+            if (GUILayout.Button("10", btnStyle, GUILayout.Width(22)))
             {
                 pageId_selected += 10;
                 if (pageId_selected > pageCount)
@@ -198,7 +210,7 @@ namespace CodeStage.AdvancedFPSCounter.Editor.UI
                 }
             }
 
-            if (GUILayout.Button(">>|", GUILayout.Width(30)))
+            if (GUILayout.Button(">|", btnStyle, GUILayout.Width(25)))
             {
                 pageId_selected = pageCount;
             }

@@ -97,6 +97,16 @@ public class MeshRendererInfo : MonoBehaviour,IComparable<MeshRendererInfo>
         return renderer;
     }
 
+    public void AddCollider()
+    {
+        MeshCollider meshCollider = this.gameObject.GetComponent<MeshCollider>();
+        if (meshCollider == null)
+        {
+            meshCollider = this.gameObject.AddComponent<MeshCollider>();
+        }
+        meshCollider.enabled = true;
+    }
+
 
     //public static GameObject CreateBoundsCube(Bounds bounds, string n, Transform parent, int prefabId)
     //{
@@ -1150,6 +1160,14 @@ public class MeshRendererInfoList:List<MeshRendererInfo>
             vertexCount += (int)item.vertexCount;
         }
         return vertexCount;
+    }
+
+    public void AddCollider()
+    {
+        foreach(var render in this)
+        {
+            render.AddCollider();
+        }
     }
 }
 

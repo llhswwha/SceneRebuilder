@@ -19,7 +19,6 @@ public class SceneRebuildManagerEditor : BaseFoldoutEditor<SceneRebuildManager>
 
     private FoldoutEditorArg sceneListArg=new FoldoutEditorArg();
 
-    private FoldoutEditorArg<MeshFilter> meshListArg=new FoldoutEditorArg<MeshFilter>();
 
     private FoldoutEditorArg<MeshRendererInfo> meshinfoListArg = new FoldoutEditorArg<MeshRendererInfo>();
 
@@ -164,7 +163,7 @@ public class SceneRebuildManagerEditor : BaseFoldoutEditor<SceneRebuildManager>
         //Debug.Log($"SceneRebuildManagerEditor2 time:{(System.DateTime.Now - startT).TotalMilliseconds:F1}ms ");
         //DrawMeshList(meshListArg, GetMeshList);
 
-        DrawMeshListEx(meshinfoListArg, GetMeshInfoList);
+        DrawMeshRendererInfoListEx(meshinfoListArg, GetMeshInfoList);
 
         //Debug.Log($"SceneRebuildManagerEditor1 time:{(System.DateTime.Now - startT).TotalMilliseconds:F1}ms ");
         DrawMatList(GlobalMaterialManager.Instance, matListArg);

@@ -10,9 +10,10 @@ using AdvancedCullingSystem.StaticCullingCore;
 
 namespace AdvancedCullingSystem.DynamicCullingCore
 {
-    public class DynamicCulling : MonoBehaviour
+    public class DynamicCulling :SingletonBehaviour<DynamicCulling>
+        //: MonoBehaviour
     {
-        public static DynamicCulling Instance { get; private set; }
+        //public static DynamicCulling Instance { get; private set; }
 
         [SerializeField] private List<Camera> _cameras = new List<Camera>();
         [SerializeField] private List<MeshRenderer> _startRenderers = new List<MeshRenderer>();
@@ -20,6 +21,11 @@ namespace AdvancedCullingSystem.DynamicCullingCore
         [SerializeField] private float _objectsLifetime = 1.5f;
         [SerializeField] private int UnitSize = 4;
         [SerializeField] private int FieldOfView = 61;
+
+        public List<MeshRenderer> GetStartRenderers()
+        {
+            return _startRenderers;
+        }
 
         //[SerializeField]
         //[HideInInspector]
@@ -125,7 +131,7 @@ namespace AdvancedCullingSystem.DynamicCullingCore
 
         private void Awake()
         {
-            Instance = this;
+            //Instance = this;
 
             _rayDirs= Core.CasterUtility.CreateRayDirsArray(_jobsPerFrame, UnitSize, FieldOfView); //创建射线方向，基于Halton序列
 
@@ -945,7 +951,26 @@ namespace AdvancedCullingSystem.DynamicCullingCore
         {
             // foreach (var renderer in FindObjectsOfType<MeshRenderer>().Where(r => r.enabled))
             //     OnEditorAddStartRenderer(renderer);
-            foreach (var renderer in FindObjectsOfType<MeshRenderer>())
+
+            //foreach (var renderer in FindObjectsOfType<MeshRenderer>())
+            //    OnEditorAddStartRenderer(renderer);
+
+            OnEditorAddStartRenderers(FindObjectsOfType<MeshRenderer>());
+        }
+
+        public void OnEditorAddStartRenderers(MeshRenderer[] renderers)
+        {
+            // foreach (var renderer in FindObjectsOfType<MeshRenderer>().Where(r => r.enabled))
+            //     OnEditorAddStartRenderer(renderer);
+            foreach (var renderer in renderers)
+                OnEditorAddStartRenderer(renderer);
+        }
+
+        public void OnEditorAddStartRenderers(List<MeshRenderer> renderers)
+        {
+            // foreach (var renderer in FindObjectsOfType<MeshRenderer>().Where(r => r.enabled))
+            //     OnEditorAddStartRenderer(renderer);
+            foreach (var renderer in renderers)
                 OnEditorAddStartRenderer(renderer);
         }
 

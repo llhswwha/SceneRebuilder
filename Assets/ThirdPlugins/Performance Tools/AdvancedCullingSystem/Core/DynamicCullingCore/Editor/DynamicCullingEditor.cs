@@ -1,11 +1,14 @@
 ﻿using System;
 using UnityEngine;
 using UnityEditor;
+using CodeStage.AdvancedFPSCounter.Editor.UI;
 
 namespace AdvancedCullingSystem.DynamicCullingCore
 {
     [CustomEditor(typeof(DynamicCulling))]
-    public class DynamicCullingEditor : Editor
+    public class DynamicCullingEditor 
+        //: Editor
+        : BaseFoldoutEditor<DynamicCulling>
     {
         protected new DynamicCulling target
         {
@@ -32,7 +35,7 @@ namespace AdvancedCullingSystem.DynamicCullingCore
 
 
         [MenuItem("Tools/NGSTools/Advanced Culling System/Dynamic Culling")]
-        private static void Create()
+        public static DynamicCulling CreateCullingInstance()
         {
             LayersHelper.CreateLayer(ACSInfo.CullingLayerName);
 
@@ -42,6 +45,20 @@ namespace AdvancedCullingSystem.DynamicCullingCore
                 culling = new GameObject("Dynamic Culling").AddComponent<DynamicCulling>();
 
             Selection.activeGameObject = culling.gameObject;
+            return culling;
+        }
+
+        public static DynamicCulling CreateCullingInstance(GameObject root)
+        {
+            LayersHelper.CreateLayer(ACSInfo.CullingLayerName);
+
+            DynamicCulling culling = FindObjectOfType<DynamicCulling>();
+
+            if (culling == null)
+                culling = root.AddComponent<DynamicCulling>();
+
+            Selection.activeGameObject = culling.gameObject;
+            return culling;
         }
 
         private void OnEnable()
@@ -97,17 +114,45 @@ namespace AdvancedCullingSystem.DynamicCullingCore
                 if (GUILayout.Button("Remove Selected Renderers")) target.OnEditorRemoveSelectedStartRenderers();
             }
 
-            GUILayout.Label(_startRenderersProperty.arraySize == 0 ? "No renderers assigned" : "Renderers :"+ _startRenderersProperty.arraySize);
+            //GUILayout.Label(_startRenderersProperty.arraySize == 0 ? "No renderers assigned" : "Renderers :"+ _startRenderersProperty.arraySize);
 
             _renderersScroll = EditorGUILayout.BeginScrollView(_renderersScroll);
 
-            for (int i = 0; i < _startRenderersProperty.arraySize && i<25; i++)
-                EditorGUILayout.ObjectField(_startRenderersProperty.GetArrayElementAtIndex(i), typeof(MeshRenderer));
+            //for (int i = 0; i < _startRenderersProperty.arraySize && i<25; i++)
+            //    EditorGUILayout.ObjectField(_startRenderersProperty.GetArrayElementAtIndex(i), typeof(MeshRenderer));
 
+            DrawRendererList(rendererListFoldoutArg, target);
             EditorGUILayout.EndScrollView();
             EditorGUILayout.Space();
 
         }
+
+        private void DrawRendererList(FoldoutEditorArg foldoutArg, DynamicCulling target)
+        {
+            foldoutArg.caption = $"Renderer List";
+            var renderers= target.GetStartRenderers();
+            EditorUIUtils.ToggleFoldout(foldoutArg,
+            (arg) =>
+            {
+                System.DateTime start = System.DateTime.Now;
+                var nodes = renderers;
+                InitEditorArg(nodes);
+                arg.caption = $"Renderer List({nodes.Count})";
+                var time = System.DateTime.Now - start;
+        },
+           null);
+            if (foldoutArg.isExpanded && foldoutArg.isEnabled)
+            {
+                foldoutArg.DrawPageToolbar(renderers, (r, i) =>
+                {
+                    var arg = FoldoutEditorArgBuffer.editorArgs[r];
+                    arg.caption = r.name;
+                    EditorUIUtils.ObjectFoldout(arg, r.gameObject, null);
+                });
+            }
+        }
+
+        FoldoutEditorArg rendererListFoldoutArg = new FoldoutEditorArg(true, false);
 
         private void OccludersGUI()
         {

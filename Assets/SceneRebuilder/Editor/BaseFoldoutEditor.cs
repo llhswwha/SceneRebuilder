@@ -601,7 +601,7 @@ public class BaseFoldoutEditor<T> : BaseEditor<T> where T : class
         }
     }
 
-    private List<MeshFilter> InitMeshList(FoldoutEditorArg<MeshFilter> arg, System.Func<List<MeshFilter>> funcGetList)
+    private List<MeshFilter> InitMeshFilterList(FoldoutEditorArg<MeshFilter> arg, System.Func<List<MeshFilter>> funcGetList)
     {
         System.DateTime start = System.DateTime.Now;
         float sumVertexCount = 0;
@@ -636,7 +636,7 @@ public class BaseFoldoutEditor<T> : BaseEditor<T> where T : class
         arg.Items = meshes;
         return meshes;
     }
-    public void DrawMeshList(FoldoutEditorArg<MeshFilter> foldoutArg, System.Func<List<MeshFilter>> funcGetList)
+    public void DrawMeshFilterList(FoldoutEditorArg<MeshFilter> foldoutArg, System.Func<List<MeshFilter>> funcGetList)
     {
         if (string.IsNullOrEmpty(foldoutArg.caption)) foldoutArg.caption = $"Mesh List";
         List<MeshFilter> meshFilters = foldoutArg.Items;
@@ -646,7 +646,7 @@ public class BaseFoldoutEditor<T> : BaseEditor<T> where T : class
 
             if (meshFilters.Count == 0)
             {
-                meshFilters = InitMeshList(arg as FoldoutEditorArg<MeshFilter>, funcGetList);
+                meshFilters = InitMeshFilterList(arg as FoldoutEditorArg<MeshFilter>, funcGetList);
             }
             //else
             //{
@@ -658,7 +658,7 @@ public class BaseFoldoutEditor<T> : BaseEditor<T> where T : class
             if (GUILayout.Button("Update", GUILayout.Width(60)))
             {
                 foldoutArg.Items.Clear();
-                meshFilters = InitMeshList(foldoutArg, funcGetList);
+                meshFilters = InitMeshFilterList(foldoutArg, funcGetList);
             }
             if (GUILayout.Button("Win", GUILayout.Width(35)))
             {
@@ -718,7 +718,7 @@ public class BaseFoldoutEditor<T> : BaseEditor<T> where T : class
         }
     }
 
-    private List<MeshRendererInfo> InitMeshListEx(FoldoutEditorArg<MeshRendererInfo> arg, System.Func<List<MeshRendererInfo>> funcGetList)
+    private List<MeshRendererInfo> InitMeshRendererInfoListEx(FoldoutEditorArg<MeshRendererInfo> arg, System.Func<List<MeshRendererInfo>> funcGetList)
     {
         System.DateTime start = System.DateTime.Now;
         float sumVertexCount = 0;
@@ -774,7 +774,7 @@ public class BaseFoldoutEditor<T> : BaseEditor<T> where T : class
         return meshes;
     }
 
-    public void DrawMeshListEx(FoldoutEditorArg<MeshRendererInfo> foldoutArg, System.Func<List<MeshRendererInfo>> funcGetList)
+    public void DrawMeshRendererInfoListEx(FoldoutEditorArg<MeshRendererInfo> foldoutArg, System.Func<List<MeshRendererInfo>> funcGetList)
     {
         if (string.IsNullOrEmpty(foldoutArg.caption)) foldoutArg.caption = $"Mesh Info List";
         List<MeshRendererInfo> meshFilters = foldoutArg.Items;
@@ -784,7 +784,7 @@ public class BaseFoldoutEditor<T> : BaseEditor<T> where T : class
 
             if (meshFilters.Count == 0)
             {
-                meshFilters = InitMeshListEx(arg as FoldoutEditorArg<MeshRendererInfo>, funcGetList);
+                meshFilters = InitMeshRendererInfoListEx(arg as FoldoutEditorArg<MeshRendererInfo>, funcGetList);
             }
             //else
             //{
@@ -798,7 +798,7 @@ public class BaseFoldoutEditor<T> : BaseEditor<T> where T : class
             if (GUILayout.Button("Update", GUILayout.Width(60)))
             {
                 foldoutArg.Items.Clear();
-                meshFilters = InitMeshListEx(foldoutArg, funcGetList);
+                meshFilters = InitMeshRendererInfoListEx(foldoutArg, funcGetList);
             }
             if (GUILayout.Button("Win", GUILayout.Width(35)))
             {
@@ -827,11 +827,15 @@ public class BaseFoldoutEditor<T> : BaseEditor<T> where T : class
                 }
                 var arg = FoldoutEditorArgBuffer.editorArgs[mesh];
                 BuildingModelInfo[] bs = mesh.GetComponentsInParent<BuildingModelInfo>(true);
-                if (bs.Length == 0)
+                //if (bs.Length == 0)
+                //{
+                //    Debug.LogError($"Show MeshList buildings.Length==0"); continue;
+                //}
+                BuildingModelInfo building = null;
+                if (bs.Length > 0)
                 {
-                    Debug.LogError($"Show MeshList buildings.Length==0"); continue;
+                    building = bs[0];
                 }
-                BuildingModelInfo building = bs[0];
                 if (mesh == null)
                 {
                     Debug.LogError($"Show MeshList mesh==null"); continue;
@@ -844,15 +848,23 @@ public class BaseFoldoutEditor<T> : BaseEditor<T> where T : class
                 {
                     Debug.LogError($"Show MeshList arg==null"); continue;
                 }
-                if (building == null)
+                //if (building == null)
+                //{
+                //    Debug.LogError($"Show MeshList building==null"); continue;
+                //}
+                string parentName = "";
+                if (mesh.transform.parent != null)
                 {
-                    Debug.LogError($"Show MeshList building==null"); continue;
+                    //Debug.LogError($"Show MeshList mesh.transform.parent==null"); continue;
+
+                    parentName = mesh.transform.parent.name;
                 }
-                if (mesh.transform.parent == null)
+                string buildingName = "";
+                if (building != null)
                 {
-                    Debug.LogError($"Show MeshList mesh.transform.parent==null"); continue;
+                    buildingName = building.name;
                 }
-                arg.caption = $"[{i + 1:00}] {building.name}>>{mesh.transform.parent.name}>{mesh.name}";
+                arg.caption = $"[{i + 1:00}] {buildingName}>>{parentName}>{mesh.name}";
                 arg.info = $"[{mesh.vertexCount / 10000f:F1}w][{mesh.GetDiam():F1}](LOD[{mesh.GetLODIds()}])";
                 EditorUIUtils.ObjectFoldout(arg, mesh.gameObject, null);
                 //if (arg.isExpanded)

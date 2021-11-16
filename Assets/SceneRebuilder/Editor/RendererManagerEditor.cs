@@ -63,8 +63,9 @@ public class RendererManagerEditor : BaseFoldoutEditor<RendererManager>
         //{
         //    sharedMeshListArg.tag = item.GetSharedMeshList();
         //}
+
         DrawSharedMeshListEx(sharedMeshListArg,()=> item.GetSharedMeshList());
 
-        DrawObjectList
+        //DrawObjectList
     }
 }

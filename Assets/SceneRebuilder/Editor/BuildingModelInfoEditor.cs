@@ -279,7 +279,7 @@ public class BuildingModelInfoEditor : BaseFoldoutEditor<BuildingModelInfo>
             return item.GetSceneList();
         });
 
-        DrawMeshList(meshListArg, () =>
+        DrawMeshFilterList(meshListArg, () =>
         {
            List<MeshFilter> meshes = new List<MeshFilter>();
            if(item.InPart)
@@ -292,7 +292,7 @@ public class BuildingModelInfoEditor : BaseFoldoutEditor<BuildingModelInfo>
            return meshes;
         });
 
-        DrawMeshListEx(meshinfoListArg, () =>
+        DrawMeshRendererInfoListEx(meshinfoListArg, () =>
         {
             MeshRendererInfo.InitRenderers(item.gameObject);
 
