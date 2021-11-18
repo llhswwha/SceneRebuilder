@@ -11,6 +11,10 @@ using UnityEngine;
 
 public class InitNavisFileInfoByModel : SingletonBehaviour<InitNavisFileInfoByModel>
 {
+    public bool IsShowAll = false;
+
+    public bool IsFindClosedFloor = true;
+
     public GameObject factory;
     public bool AddFactoryToXml;
     // Start is called before the first frame update
@@ -287,7 +291,7 @@ public class InitNavisFileInfoByModel : SingletonBehaviour<InitNavisFileInfoByMo
                     findCount++;
                     ModelItemInfo infoT = modelDicT[child.name];
                     bimT.Guid = infoT.UId;
-                    bimT.Position1 = new Vector3(infoT.X, infoT.Y, infoT.Z);
+                    bimT.Position1 = infoT.GetPositon();
                     RendererId renderId = child.GetComponent<RendererId>();
                     if (renderId)
                     {
@@ -351,7 +355,7 @@ public class InitNavisFileInfoByModel : SingletonBehaviour<InitNavisFileInfoByMo
         {
             foreach (ModelItemInfo child in navisT.Children)
             {
-                if (child.X == 0 && child.Y == 0 && child.Z == 0)
+                if (child.IsZero())
                 {
                     continue;
                 }
@@ -461,7 +465,7 @@ public class InitNavisFileInfoByModel : SingletonBehaviour<InitNavisFileInfoByMo
         Debug.Log("models.Find,CostTime:" + (DateTime.Now - recordTime).TotalSeconds);
         if (modelxxx != null)
         {
-            Vector3 modelInfoPos = new Vector3(modelxxx.X, modelxxx.Z, modelxxx.Y);
+            Vector3 modelInfoPos = modelxxx.GetPositon();
             Debug.LogFormat("modelInfoPos:{0}  UnityModelPos:{1} offset:{2}"
                 , modelInfoPos, modelTest.transform.position, Vector3.Distance(modelInfoPos, modelTest.transform.position));
         }
@@ -844,7 +848,7 @@ public class InitNavisFileInfoByModel : SingletonBehaviour<InitNavisFileInfoByMo
         List<ModelItemInfo> list2 = new List<ModelItemInfo>();
         foreach (var item in list1)
         {
-            if (item.X == 0 && item.Y == 0 && item.Z == 0) continue;
+            if (item.IsZero()) continue;
             list2.Add(item);
 
         }
@@ -939,7 +943,19 @@ vueDict.Add(item.UId, item);
                 DepNode dep = bim.GetComponentInParent<DepNode>();
                 if (dep != null)
                 {
-                    model.AreaName = dep.NodeName;
+                    var depName = dep.NodeName;
+                    if (dep.ChildNodes!=null && dep.ChildNodes.Count>0)
+                    {
+                        depName = dep.ChildNodes[0].NodeName;
+                    }
+                    model.AreaName = depName;
+                    //model.GetPath();
+
+                    var subModels = model.GetAllChildren();
+                    foreach(var sub in subModels)
+                    {
+                        sub.AreaName = depName;
+                    }
                 }
                 else
                 {
@@ -952,6 +968,9 @@ vueDict.Add(item.UId, item);
             }
             
         }
+
+
+        Debug.LogError($"BindBimInfo vueDict:{vueDict.Count} bims:{bims.Length}");
 
         ProgressBarHelper.ClearProgressBar();
 
@@ -1282,7 +1301,7 @@ vueDict.Add(item.UId, item);
         }
 
         bimT.Guid = infoT.UId;
-        bimT.Position1 = new Vector3(infoT.X, infoT.Z, infoT.Y);
+        bimT.Position1 = infoT.GetPositon();
         RendererId renderId = child.GetComponent<RendererId>();
         if (renderId)
         {
@@ -1311,6 +1330,8 @@ vueDict.Add(item.UId, item);
         {
             infoT.AreaName = "";
         }
+
+
         if (IsDestroyNoFoundBim && isFound == false)
         {
             if (child.GetComponent<BIMModelInfo>() != null)
@@ -1345,7 +1366,7 @@ vueDict.Add(item.UId, item);
         ModelItemInfo minModel = null;
         foreach (var item in modelDicT)
         {
-            Vector3 posInfo = new Vector3(item.X, item.Z, item.Y);
+            Vector3 posInfo = item.GetPositon();
             float dis = Vector3.Distance(posInfo, GetCenter(objT));
 
             if (dis < minDis)
@@ -1401,7 +1422,7 @@ vueDict.Add(item.UId, item);
             bimT.Guid = child.Name;
         }
 
-        bimT.Position1 = new Vector3(child.X, child.Z, child.Y);
+        bimT.Position1 = child.GetPositon();
         RendererId renderId = bimT.GetComponent<RendererId>();
         if (renderId)
         {
@@ -1485,7 +1506,7 @@ vueDict.Add(item.UId, item);
     {
         float minDis = float.MaxValue;
         Transform minModel = null;
-        Vector3 posInfo = new Vector3(objT.X, objT.Z, objT.Y);
+        Vector3 posInfo = objT.GetPositon();
 
         if (isSameName)
         {

@@ -1,7 +1,7 @@
 ﻿using Mogoson.CameraExtension;
 //using RTEditor;
-//using System.Collections;
-//using System.Collections.Generic;
+using System.Collections;
+using System.Collections.Generic;
 using UnityEngine;
 //using Y_UIFramework;
 using NavisPlugins.Infos;
@@ -31,10 +31,62 @@ public class BIMModelInfo : MonoBehaviour,IComparable<BIMModelInfo>
 
     public static BIMModelInfo currentFocusModel;
 
+    public static List<BIMModelInfo> currentFocusModels = new List<BIMModelInfo>();
+
     public string Guid;
     public string RenderId;
     public string MName;
     public string MId;
+
+    private string areaName = "";
+
+    [ContextMenu("TestGetArea")]
+    public void TestGetArea()
+    {
+        areaName = "";
+        //GetArea();
+
+        if (string.IsNullOrEmpty(areaName))
+        {
+            var depNode = this.GetComponentInParent<DepNode>();
+            Debug.LogError($"depNode:{depNode}");
+            if (depNode != null)
+            {
+                areaName = depNode.name;
+            }
+            else
+            {
+                areaName = "NULL";
+            }
+        }
+
+        Debug.LogError($"areaName:{areaName}");
+    }
+
+    public string GetArea()
+    {
+        if (string.IsNullOrEmpty(areaName) || areaName=="NULL")
+        {
+            var depNode = this.GetComponentInParent<DepNode>();
+            if (depNode != null)
+            {
+                if (string.IsNullOrEmpty(depNode.NodeName))
+                {
+                    areaName = depNode.name;
+                }
+                else
+                {
+                    areaName = depNode.NodeName;
+                }
+            }
+            else
+            {
+                areaName = "NULL";
+            }
+        }
+
+        return areaName;
+    }
 
     public Vector3 Position1;
 
@@ -42,16 +94,26 @@ public class BIMModelInfo : MonoBehaviour,IComparable<BIMModelInfo>
 
     public float Distance=0;
 
+    public float GetDistance()
+    {
+        this.Distance = Vector3.Distance(this.Position1, this.Position2);
+        return this.Distance;
+    }
+
     public GameObject RepeatObj;
 
     [NonSerialized]
-    private ModelItemInfo Model;
+    public ModelItemInfo Model;
 
     public void SetModelInfo(ModelItemInfo model)
     {
         this.Model = model;
         this.MName = model.Name;
         this.MId = model.Id;
+        this.Guid = model.UId;
+        this.Position1 = transform.position;
+        this.Position2 = model.GetPositon();
+        this.GetDistance();
     }
 
     public ModelItemInfo GetModelInfo()
@@ -101,28 +163,39 @@ public class BIMModelInfo : MonoBehaviour,IComparable<BIMModelInfo>
     }
     #region 模型聚焦
     private Vector2 moveRange=new Vector2(10,10);
-    
-    public void FocusOn()
+
+    public static void FocusOnDevs(List<BIMModelInfo> bims)
     {
-        Debug.Log("BIMModelInfo.FocusOn:"+this);
-        bool isFoucsBimModel = false ;
-        if(currentFocusModel!=null&&currentFocusModel!=this)
+
+    }
+
+    public static void BeginMultiFocus()
+    {
+        foreach(var dev in currentFocusModels)
         {
-            currentFocusModel.FocusOff();
-            isFoucsBimModel = true;
+            dev.FocusOff();
         }
+        currentFocusModels.Clear();
+    }
 
-        currentFocusModel = this;
+    public void MultiFocusOn()
+    {
+        currentFocusModels.Add(this);
+        FocusOnInner(true);
+    }
 
-        //if(RTEManager.Instance.IsToolBarVisible)
+    private void FocusOnInner(bool isFoucsBimModel)
+    {
+        //if (RTEManager.Instance.IsToolBarVisible)
         //{
         //    RTEManager.Instance.FocusGO(currentFocusModel.gameObject);
         //}
-        //else{
+        //else
+        //{
         //    CameraSceneManager manager = CameraSceneManager.Instance;
         //    if (manager)
         //    {
-        //        if (isFoucsBimModel) SetAngleFoucs(manager.GetCurrentAlign());
+        //        if (isFoucsBimModel) SetFocusAlignArg(manager.GetCurrentAlign());
         //        AlignTarget target = GetTargetInfo(gameObject);
 
         //        CameraSceneManager.Instance.zoomCoefficient = 0.05f;
@@ -136,12 +209,30 @@ public class BIMModelInfo : MonoBehaviour,IComparable<BIMModelInfo>
         //            MessageCenter.SendMsg(MsgType.ModelSystemTreePanelMsg.TypeName, MsgType.ModelSystemTreePanelMsg.SetBackButtonState, true);
         //        });
         //    }
-        //    else{
+        //    else
+        //    {
         //        Debug.LogError("manager==null");
         //    }
         //}
+    }
 
-        
+
+    public void FocusOn()
+    {
+        Debug.Log("BIMModelInfo.FocusOn:"+this);
+        bool isFoucsBimModel = false ;
+        if(currentFocusModel!=null&&currentFocusModel!=this)
+        {
+            currentFocusModel.FocusOff();
+            isFoucsBimModel = true;
+        }
+
+        currentFocusModel = this;
+
+
+        FocusOnInner(isFoucsBimModel);
+
+
     }
     /// <summary>
     /// 选中当前物体
@@ -166,11 +257,16 @@ public class BIMModelInfo : MonoBehaviour,IComparable<BIMModelInfo>
     /// </summary>
     public void HighlightOn()
     {
+        //Debug.LogError("HighlightOn:" + this);
+
         ////if (gameObject == null||transform.GetComponent<Renderer>()==null) return;
-        ////var renderers = transform.GetComponentsInChildren<Renderer>(true);
-        ////foreach(var renderer in renderers)
+
+        ////if(transform.getcomp)
+
+        //var renderers = transform.GetComponentsInChildren<Renderer>(true);
+        //foreach (var renderer in renderers)
         //{
-        //    var h = gameObject.AddMissingComponent<HightlightModuleBase>();
+        //    var h = renderer.gameObject.AddMissingComponent<HightlightModuleBase>();
         //    Color colorConstant = Color.green;
         //    gameObject.SetActive(true);
         //    h.ConstantOnImmediate(colorConstant);
@@ -197,7 +293,7 @@ public class BIMModelInfo : MonoBehaviour,IComparable<BIMModelInfo>
     protected Range angleRange = new Range(5, 90);
     protected Range disRange = new Range(1f, 200);
 
-    private void SetAngleFoucs(AlignTarget targetT)
+    private void SetFocusAlignArg(AlignTarget targetT)
     {
         angleFocus = targetT.angles;
         camDistance = targetT.distance;
@@ -209,11 +305,21 @@ public class BIMModelInfo : MonoBehaviour,IComparable<BIMModelInfo>
     /// </summary>
     /// <param name="obj"></param>
     /// <returns></returns>
-    protected virtual AlignTarget GetTargetInfo(GameObject obj)
+    protected AlignTarget GetTargetInfo(GameObject obj)
     {
+        MeshRendererInfo info = MeshRendererInfo.GetInfo(this.gameObject,false);
+
+        camDistance = info.diam * 2.2f;
+        angleFocus = new Vector2(45, 45);
+
         //angleFocus = new Vector2(15, transform.eulerAngles.y);
         AlignTarget alignTargetTemp = new AlignTarget(obj.transform, angleFocus,
                                camDistance, angleRange, disRange);
+
+
+
+        Debug.LogError($"SetFocusAlignArg bim:{this.name} (targetT {alignTargetTemp}) diam:{info.diam} size:{info.size}");
+
         return alignTargetTemp;
     }
     #endregion
@@ -229,5 +335,21 @@ public class BIMModelInfo : MonoBehaviour,IComparable<BIMModelInfo>
     public int CompareTo(BIMModelInfo other)
     {
         return other.Distance.CompareTo(this.Distance);
+    }
+
+    internal ModelItemInfo FindClosedModel(List<ModelItemInfo> models)
+    {
+        float minDis = float.MaxValue;
+        ModelItemInfo minModel = null;
+        foreach(var model in models)
+        {
+            float dis = Vector3.Distance(model.GetPositon(), this.transform.position);
+            if (minDis > dis)
+            {
+                minDis = dis;
+                minModel = model;
+            }
+        }
+        return minModel;
     }
 }

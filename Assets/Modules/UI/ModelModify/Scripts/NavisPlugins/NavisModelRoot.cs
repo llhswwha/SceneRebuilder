@@ -5,6 +5,7 @@ using UnityEngine;
 using System.Linq;
 using System;
 using Base.Common;
+using System.Text;
 
 public class NavisModelRoot : MonoBehaviour
 {
@@ -12,6 +13,9 @@ public class NavisModelRoot : MonoBehaviour
 
     [NonSerialized]
     public ModelItemInfo Model;
+
+    [NonSerialized]
+    public Dictionary<string,List<ModelItemInfo>> repeatModels = new Dictionary<string,List<ModelItemInfo>>();
 
     [NonSerialized]
     public List<ModelItemInfo> allModels = new List<ModelItemInfo>();
@@ -29,6 +33,12 @@ public class NavisModelRoot : MonoBehaviour
 
     public List<BIMModelInfo> bimInfos = new List<BIMModelInfo>();
 
+    public Dictionary<string,List<BIMModelInfo>> bimAreas = new Dictionary<string, List<BIMModelInfo>>();
+
+    private Dictionary<string, BIMModelInfo> rendererId2Bim = new Dictionary<string, BIMModelInfo>();
+
+    private Dictionary<string, BIMModelInfo> guid2Bim = new Dictionary<string, BIMModelInfo>();
+
     public string TestModelName = "H¼¶Ö÷±ä1";
 
     [ContextMenu("TestFindModelByName")]
@@ -38,12 +48,112 @@ public class NavisModelRoot : MonoBehaviour
         Debug.Log($"TestFindModelByName name:{TestModelName} list:{list.Count}");
     }
 
+    public List<BIMModelInfo> errorBims = new List<BIMModelInfo>();
+
     [ContextMenu("GetBims")]
-    public void GetBims()
+    public void GetBims(NavisFileInfo file)
     {
         bimInfos = new List<BIMModelInfo>();
         bimInfos.AddRange(this.GetComponentsInChildren<BIMModelInfo>(true));
         bimInfos.Sort();
+
+        errorBims.Clear();
+        bimAreas.Clear();
+        rendererId2Bim.Clear();
+        guid2Bim.Clear();
+        for (int i = 0; i < bimInfos.Count; i++)
+        {
+            BIMModelInfo bim = bimInfos[i];
+            ProgressBarHelper.DisplayCancelableProgressBar("GetBims", i, bimInfos.Count, bim);
+
+            var area = bim.GetArea();
+
+            if(!string.IsNullOrEmpty(area))
+            {
+                if (!bimAreas.ContainsKey(area))
+                {
+                    bimAreas.Add(area, new List<BIMModelInfo>());
+                }
+                bimAreas[area].Add(bim);
+            }
+
+            if (!string.IsNullOrEmpty(bim.RenderId))
+            {
+                    if (!rendererId2Bim.ContainsKey(bim.RenderId))
+                    {
+                        rendererId2Bim.Add(bim.RenderId, bim);
+                    }
+                    else
+                    {
+                        Debug.LogError($"GetBims[{i}/{bimInfos.Count}] rendererId2Bim.ContainsKey(bim.RenderId) bim:{bim} rendererID:{bim.RenderId}");
+                    }
+             }
+            else
+            {
+                Debug.LogError($"GetBims[{i}/{bimInfos.Count}] string.IsNullOrEmpty(bim.RenderId) bim:{bim}");
+            }
+
+            if (!string.IsNullOrEmpty(bim.Guid))
+            {
+                if (!guid2Bim.ContainsKey(bim.Guid))
+                {
+                    guid2Bim.Add(bim.Guid, bim);
+                }
+                else
+                {
+                    Debug.LogError($"GetBims[{i}/{bimInfos.Count}] guid2Bim.ContainsKey(bim.Guid) bim:{bim} UID:{bim.Guid} Name:{bim.name} MName:{bim.MName} Distance:{bim.Distance}");
+                    errorBims.Add(bim);
+                }
+            }
+            else
+            {
+                Debug.LogError($"GetBims[{i}/{bimInfos.Count}] string.IsNullOrEmpty(bim.RenderId) bim:{bim}");
+            }
+
+            //ModelItemInfo model= file.GetModelBy
+        }
+
+        var bimsList2 = new List<BIMModelInfo>(bimInfos);
+        var models = file.GetAllItems();
+        int foundCount = 0;
+
+        foreach(var model in models)
+        {
+            //if (string.IsNullOrEmpty(model.RenderId)) continue;
+
+            var bim = GetBIMModel(model);
+            if (bim != null)
+            {
+                bim.Model = model;
+                //bim.SetModelInfo(model);
+
+                bimsList2.Remove(bim);
+
+                foundCount++;
+            }
+            else
+            {
+                
+            }
+        }
+
+        StringBuilder sb = new StringBuilder();
+        for (int i = 0; i < bimsList2.Count; i++)
+        {
+            BIMModelInfo bim = bimsList2[i];
+            //Debug.LogError($"Not Found Model[{i}/{bimsList2.Count}]:{bim}");
+
+            sb.AppendLine($"Not Found Model[{i}/{bimsList2.Count}]:{bim}");
+        }
+
+        Debug.LogError($"GetBims bimCount:{bimInfos.Count} rendererId2Bim:{rendererId2Bim.Count} foundCount:{foundCount} notFoundCount:{bimsList2.Count}\n{sb}");
+
+        ProgressBarHelper.ClearProgressBar();
+
+        foreach(string key in bimAreas.Keys)
+        {
+            Debug.LogError($"BimAreas area:{key} bims:{bimAreas[key].Count}");
+        }
 
         Debug.LogError($"GetBims infos:{bimInfos.Count}");
     }
@@ -59,6 +169,8 @@ public class NavisModelRoot : MonoBehaviour
         SaveXml();
     }
 
+    public List<BIMModelInfo> errorBIMs = new List<BIMModelInfo>();
+
     [ContextMenu("LoadModels")]
     public void LoadModels()
     {
@@ -68,6 +180,9 @@ public class NavisModelRoot : MonoBehaviour
             ModelName = this.name;
         }
 
+        errorBIMs.Clear();
+
+
         ClearResult();
 
         transformList = this.GetComponentsInChildren<Transform>(true).ToList();
@@ -75,36 +190,6 @@ public class NavisModelRoot : MonoBehaviour
         transformList = InitNavisFileInfoByModel.Instance.FilterList(transformList);
 
         navisFile = InitNavisFileInfoByModel.GetNavisFileInfoEx();
-
-        int rendererIdCount = 0;
-        var all = navisFile.GetAllItems();
-        Dictionary<string,ModelItemInfo> rId = new Dictionary<string, ModelItemInfo>();
-        for (int i = 0; i < all.Count; i++)
-        {
-            ModelItemInfo item = all[i];
-
-
-            ProgressArg p1 = new ProgressArg("LoadModels", i, all.Count, item.Name);
-            //InitNavisFileInfoByModel.Instance.progressArg = p1;
-            ProgressBarHelper.DisplayCancelableProgressBar(p1);
-
-            if (!string.IsNullOrEmpty(item.RenderId))
-            {
-                rendererIdCount++; 
-                
-                if (!rId.ContainsKey(item.RenderId))
-                {
-                    rId.Add(item.RenderId, item);
-                }
-                else
-                {
-                    var old = rId[item.RenderId];
-                    Debug.LogError($"old:{old.Name} new:{item.Name} rendererId:{item.RenderId} rendererName:{item.RenderName}");
-                }
-            }
-
-
-        }
 
         Model = navisFile.Models.Find(i => i.Name == ModelName);
         if (Model == null)
@@ -118,7 +203,88 @@ public class NavisModelRoot : MonoBehaviour
         {
             //Model = navisFile.Models.Find(i => i.Name.Contains(ModelName));
             Debug.LogError($"Model == null ModelName:{ModelName} Model:{Model} Models:{navisFile.Models.Count}");
+            ProgressBarHelper.ClearProgressBar();
             return;
+        }
+
+        
+
+        int rendererIdCount = 0;
+        var all = navisFile.GetAllItems();
+        var rs = new Dictionary<string, List<ModelItemInfo>>();
+
+        var rs2 = new Dictionary<string, List<ModelItemInfo>>();
+        for (int i = 0; i < all.Count; i++)
+        {
+            ModelItemInfo item = all[i];
+
+            ProgressArg p1 = new ProgressArg("LoadModels", i, all.Count, item.Name);
+            //InitNavisFileInfoByModel.Instance.progressArg = p1;
+            ProgressBarHelper.DisplayCancelableProgressBar(p1);
+
+            if (!string.IsNullOrEmpty(item.RenderId))
+            {
+                rendererIdCount++; 
+                
+                if (!rs.ContainsKey(item.RenderId))
+                {
+                    rs.Add(item.RenderId, new List<ModelItemInfo>());
+                }
+
+                rs[item.RenderId].Add(item);
+            }
+
+            if (!string.IsNullOrEmpty(item.UId))
+            {
+                rendererIdCount++;
+
+                if (!rs2.ContainsKey(item.UId))
+                {
+                    rs2.Add(item.UId, new List<ModelItemInfo>());
+                }
+
+                rs2[item.UId].Add(item);
+            }
+        }
+
+        GetBims(navisFile);
+        repeatModels = new Dictionary<string, List<ModelItemInfo>>();
+        foreach (var r in rs.Keys)
+        {
+            var ms = rs[r];
+            if (ms.Count > 1)
+            {
+                if (rendererId2Bim.ContainsKey(r))
+                {
+                    var bim = rendererId2Bim[r];
+                    Debug.LogError($"repeatModels rendererId:{r} list:{ms.Count} bim:{bim}");
+                }
+                else
+                {
+                    Debug.LogError($"repeatModels rendererId:{r} list:{ms.Count} bim:NULL");
+                }
+                //repeatModels.AddRange(ms);
+                repeatModels.Add(r, ms);
+            }
+        }
+
+        foreach (var r in rs2.Keys)
+        {
+            var ms = rs2[r];
+            if (ms.Count > 1)
+            {
+                if (guid2Bim.ContainsKey(r))
+                {
+                    var bim = guid2Bim[r];
+                    Debug.LogError($"repeatModels UID:{r} list:{ms.Count} bim:{bim}");
+                }
+                else
+                {
+                    Debug.LogError($"repeatModels UID:{r} list:{ms.Count} bim:NULL");
+                }
+                //repeatModels.AddRange(ms);
+                repeatModels.Add(r, ms);
+            }
         }
 
         List<ModelItemInfo> list = Model.GetAllItems();
@@ -166,6 +332,40 @@ public class NavisModelRoot : MonoBehaviour
         ProgressBarHelper.ClearProgressBar();
 
         Debug.Log($"LoadModels time:{DateTime.Now - start} rendererIdCount:{rendererIdCount}");
+    }
+
+    private BIMModelInfo GetBIMModelByRendererId(string r)
+    {
+        //if (bimInfos.Count == 0)
+        //{
+        //    GetBims(null);
+        //}
+        if (rendererId2Bim.ContainsKey(r))
+        {
+            var bim = rendererId2Bim[r];
+            return bim;
+        }
+        else
+        {
+            return null;
+        }
+    }
+
+    private BIMModelInfo GetBIMModel(ModelItemInfo model)
+    {
+        if (model == null) return null;
+        if (!string.IsNullOrEmpty(model.UId) &&guid2Bim.ContainsKey(model.UId))
+        {
+            var bim = guid2Bim[model.UId];
+            return bim;
+        }
+        if (!string.IsNullOrEmpty(model.RenderId) && rendererId2Bim.ContainsKey(model.RenderId))
+        {
+            var bim = rendererId2Bim[model.RenderId];
+            return bim;
+        }
+
+        return null;
     }
 
     [ContextMenu("CreateTree")]
@@ -279,6 +479,37 @@ public class NavisModelRoot : MonoBehaviour
             GameObject.DestroyImmediate(node);
         }
         RootNodes.Clear();
+    }
+
+    public void RemoveRepeated()
+    {
+        StringBuilder sb = new StringBuilder();
+        foreach(var rendererId in repeatModels.Keys)
+        {
+            var models = repeatModels[rendererId];
+            var bim = GetBIMModelByRendererId(rendererId);
+            if (bim != null)
+            {
+                var closedModel = bim.FindClosedModel(models);
+                bim.SetModelInfo(closedModel);
+                models.Remove(closedModel);
+            }
+            for (int i = 0; i < models.Count; i++)
+            {
+                ModelItemInfo model = models[i];
+                model.RenderId = "";
+                model.RenderName = "";
+                model.AreaName = "";
+                sb.AppendLine($"id:{rendererId} model:{model.Name} uid:{model.UId}");
+
+                if (i > 0 && i % 100 == 0)
+                {
+                    Debug.LogError($"RemoveRepeated: "+ sb);
+                    sb = new StringBuilder();
+                }
+            }
+        }
+        SaveXml();
     }
 
     [ContextMenu("ClearResult")]

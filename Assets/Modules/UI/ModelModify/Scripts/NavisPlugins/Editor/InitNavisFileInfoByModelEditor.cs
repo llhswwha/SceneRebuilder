@@ -47,6 +47,10 @@ public class InitNavisFileInfoByModelEditor : BaseFoldoutEditor<InitNavisFileInf
         {
             item.ClearRendererId();
         }
+        //if (GUILayout.Button("ClearBIM"))
+        //{
+        //    item.ClearRendererId();
+        //}
         EditorGUILayout.EndHorizontal();
 
         EditorGUILayout.BeginHorizontal();
@@ -156,9 +160,9 @@ EditorGUILayout.EndHorizontal();
             {
                 item.GetBims();
             }
-            if (GUILayout.Button("Compare"))
+            if (GUILayout.Button("RemoveNotFound"))
             {
-                item.CompareModelVueInfo_Model2Vue();
+                item.RemoveNotFound();
             }
         });
         if (listArg.isEnabled && listArg.isExpanded)

@@ -585,24 +585,32 @@ namespace CodeStage.AdvancedFPSCounter.Editor.UI
 
            
 
-            if (obj != null && obj is GameObject)
+            if (obj != null)
             {
                 GameObject go = obj as GameObject;
-                if (go != null)
+                if (obj is Component)
                 {
-                    EditorGUIUtility.labelWidth = 1;
-                    //EditorGUILayout.PropertyField(toggle, GUIContent.none, GUILayout.ExpandWidth(false));
-
-                    GUILayout.Space(10 * arg.level);
-                    //BeforeSpace(arg.level);
-
-                    EditorGUILayout.Toggle(go.activeInHierarchy, GUILayout.Width(15));//go.activeInHierarchy
-                    bool isOn = EditorGUILayout.Toggle(go.activeSelf, GUILayout.Width(15));//go.activeSelf
-                    if (isOn != go.activeSelf)
+                    Component component = obj as Component;
+                    go = component.gameObject;
+                }
+                //if (obj is GameObject)
+                {
+                    if (go != null)
                     {
-                        go.SetActive(isOn);
+                        EditorGUIUtility.labelWidth = 1;
+                        //EditorGUILayout.PropertyField(toggle, GUIContent.none, GUILayout.ExpandWidth(false));
+
+                        GUILayout.Space(10 * arg.level);
+                        //BeforeSpace(arg.level);
+
+                        EditorGUILayout.Toggle(go.activeInHierarchy, GUILayout.Width(15));//go.activeInHierarchy
+                        bool isOn = EditorGUILayout.Toggle(go.activeSelf, GUILayout.Width(15));//go.activeSelf
+                        if (isOn != go.activeSelf)
+                        {
+                            go.SetActive(isOn);
+                        }
+                        EditorGUIUtility.labelWidth = currentLabelWidth;
                     }
-                    EditorGUIUtility.labelWidth = currentLabelWidth;
                 }
             }
 
@@ -679,6 +687,11 @@ namespace CodeStage.AdvancedFPSCounter.Editor.UI
                             var go = obj as GameObject;
                             UnpackPrefab(go);
                             GameObject.DestroyImmediate(go);
+                        }
+                        else if (obj is Component)
+                        {
+                            Component component = obj as Component;
+                            GameObject.DestroyImmediate(component);
                         }
                         else
                         {

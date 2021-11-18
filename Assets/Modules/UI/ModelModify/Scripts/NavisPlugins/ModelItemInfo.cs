@@ -33,6 +33,16 @@ namespace NavisPlugins.Infos
         [XmlAttribute]
         public float Z { get; set; }
 
+        public Vector3 GetPositon()
+        {
+            return new Vector3(X, Z, Y);
+        }
+
+        public bool IsZero()
+        {
+            return X == 0 && Y == 0 && Z == 0;
+        }
+
         // [XmlAttribute]
         // public string ClassName { get; set; }
 
@@ -174,6 +184,19 @@ namespace NavisPlugins.Infos
             List<ModelItemInfo> list = new List<ModelItemInfo>();
             list.Add(this);
             if(Children!=null)
+                foreach (var child in Children)
+                {
+                    var subList = child.GetAllItems();
+                    list.AddRange(subList);
+                }
+            return list;
+        }
+
+        internal List<ModelItemInfo> GetAllChildren()
+        {
+            List<ModelItemInfo> list = new List<ModelItemInfo>();
+            //list.Add(this);
+            if (Children != null)
                 foreach (var child in Children)
                 {
                     var subList = child.GetAllItems();

@@ -31,8 +31,20 @@ public class MeshRendererInfoEx : MeshRendererInfo
     {
         //Debug.Log("Init");
         position = this.transform.position;
-        meshRenderer = GetRenderers()[0];
-        meshFilter = GetMeshFilters()[0];
+        var rs = GetRenderers();
+        if(rs.Length>0)
+            meshRenderer = GetRenderers()[0];
+        else
+        {
+            Debug.LogError("[MeshRendererInfoEx.Init] No Renderers:" + this);
+        }
+        var mfs = GetMeshFilters();
+        if(mfs.Length>0)
+            meshFilter = mfs[0];
+        else
+        {
+
+        }
 
         InitPos();
     }

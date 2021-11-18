@@ -19,13 +19,16 @@ public class NavisModelRootEditor : BaseFoldoutEditor<NavisModelRoot>
     static FoldoutEditorArg<BIMModelInfo> bimListArg1 = new FoldoutEditorArg<BIMModelInfo>(true, false);
     static FoldoutEditorArg<BIMModelInfo> bimListArg2 = new FoldoutEditorArg<BIMModelInfo>(true, false);
     static FoldoutEditorArg<BIMModelInfo> bimListArg3 = new FoldoutEditorArg<BIMModelInfo>(true, false);
-
+    static FoldoutEditorArg<ModelItemInfo> modelListArg0 = new FoldoutEditorArg<ModelItemInfo>(true, false);
     static FoldoutEditorArg<ModelItemInfo> modelListArg1 = new FoldoutEditorArg<ModelItemInfo>(true, false);
     static FoldoutEditorArg<ModelItemInfo> modelListArg2 = new FoldoutEditorArg<ModelItemInfo>(true, false);
     static FoldoutEditorArg<ModelItemInfo> modelListArg3 = new FoldoutEditorArg<ModelItemInfo>(true, false);
 
     static FoldoutEditorArg<Transform> transListArg = new FoldoutEditorArg<Transform>(true, false);
 
+    static FoldoutEditorArg bimAreasArg = new FoldoutEditorArg(true, false);
+
+    static FoldoutEditorArg repeatedModelsArg = new FoldoutEditorArg(true, false);
 
     public override void OnEnable()
     {
@@ -35,6 +38,7 @@ public class NavisModelRootEditor : BaseFoldoutEditor<NavisModelRoot>
     public static void DrawUI(NavisModelRoot item)
     {
         if (item == null) return;
+        item.ModelName = EditorGUILayout.TextField(item.ModelName);
         EditorGUILayout.BeginHorizontal();
         //item.IsSameName = GUILayout.Toggle(item.IsSameName, "SameName");
         if (GUILayout.Button("OnlySelf"))
@@ -49,6 +53,9 @@ public class NavisModelRootEditor : BaseFoldoutEditor<NavisModelRoot>
         {
             item.CreateTree();
         }
+        EditorGUILayout.EndHorizontal();
+
+        EditorGUILayout.BeginHorizontal();
         if (GUILayout.Button("ClearResult"))
         {
             item.ClearResult();
@@ -65,11 +72,19 @@ public class NavisModelRootEditor : BaseFoldoutEditor<NavisModelRoot>
         {
             item.TestFindModelByName();
         }
+        if (GUILayout.Button("RemoveRepeated"))
+        {
+            item.RemoveRepeated();
+        }
         EditorGUILayout.EndHorizontal();
 
         DrawBimList(item, bimListArg0, "Bim List");
 
         BaseFoldoutEditorHelper.DrawTransformList(item.transformList, transListArg, null, "Transform List");
+
+        DrawBimAreas(item);
+        //DrawVueModelList(item.repeatModels, modelListArg0, "Model List(RepeatedRenderer)");
+        DrawRepeatedModels(item);
 
         DrawVueModelList(item.allModels, modelListArg1, "Model List");
         DrawVueModelList(item.allModels_noDrawable, modelListArg2, "Model(NoDrawable) List");
@@ -83,6 +98,113 @@ public class NavisModelRootEditor : BaseFoldoutEditor<NavisModelRoot>
         DrawBimList(item.foundBimInfos1, bimListArg1, $"Found Bim List1({InitNavisFileInfoByModelSetting.Instance.MinDistance1})");
         DrawBimList(item.foundBimInfos2, bimListArg2, $"Found Bim List2({InitNavisFileInfoByModelSetting.Instance.MinDistance2})");
         DrawBimList(item.foundBimInfos3, bimListArg3, $"Found Bim List3({InitNavisFileInfoByModelSetting.Instance.MinDistance3})");
+    }
+
+    private static void DrawRepeatedModels(NavisModelRoot item)
+    {
+        var listArg = repeatedModelsArg;
+        string name = "RepeatedModels";
+        listArg.caption = $"{name}";
+        listArg.level = 0;
+        EditorUIUtils.ToggleFoldout(listArg, arg =>
+        {
+            var doors = item.repeatModels;
+            int count = doors.Count;
+            arg.caption = $"{name} ({doors.Count})";
+            //arg.info = $"d:{count}|{doors.VertexCount_Show / 10000f:F0}/{doors.VertexCount / 10000f:F0}";
+            InitEditorArg(doors.Keys.ToList());
+        }, null);
+        if (listArg.isEnabled && listArg.isExpanded)
+        {
+            var list1 = item.repeatModels;
+            InitEditorArg(list1.Keys.ToList());
+            listArg.DrawPageToolbar(list1.Keys.ToList(), (listItem, i) =>
+            {
+                if (listItem == null) return;
+
+                var list2 = item.repeatModels[listItem];
+                var doorRootArg = FoldoutEditorArgBuffer.editorArgs[listItem];
+                doorRootArg.level = 1;
+                doorRootArg.background = true;
+                doorRootArg.caption = $"[{i}]{listItem}({list2.Count})";
+
+                EditorUIUtils.ToggleFoldout(doorRootArg, null, () =>
+                {
+                });
+
+                if (doorRootArg.isEnabled && doorRootArg.isExpanded)
+                {
+                    InitEditorArg(list2);
+                    doorRootArg.DrawPageToolbar(list2, (listItem2, i2) =>
+                    {
+                        if (listItem2 == null) return;
+                        var doorRootArg2 = FoldoutEditorArgBuffer.editorArgs[listItem2];
+                        doorRootArg2.level = 2;
+                        doorRootArg2.background = true;
+                        doorRootArg2.caption = $"[{i2}]{listItem2.Name}" ;
+                        //doorRootArg2.info = listItem2.ToString();
+
+                        EditorUIUtils.ObjectFoldout(doorRootArg2, listItem2, () =>
+                        {
+                        });
+                    });
+                }
+            });
+        }
+    }
+
+    private static void DrawBimAreas(NavisModelRoot item)
+    {
+        //bimAreasArg
+        var listArg = bimAreasArg;
+        string name = "BIM Areas";
+        listArg.caption = $"{name}";
+        listArg.level = 0;
+        EditorUIUtils.ToggleFoldout(listArg, arg =>
+        {
+            var doors = item.bimAreas;
+            int count = doors.Count;
+            arg.caption = $"{name} ({doors.Count})";
+            //arg.info = $"d:{count}|{doors.VertexCount_Show / 10000f:F0}/{doors.VertexCount / 10000f:F0}";
+            InitEditorArg(doors.Keys.ToList());
+        },null);
+        if (listArg.isEnabled && listArg.isExpanded)
+        {
+            var list1 = item.bimAreas;
+            InitEditorArg(list1.Keys.ToList());
+            listArg.DrawPageToolbar(list1.Keys.ToList(), (listItem, i) =>
+            {
+                if (listItem == null) return;
+
+                var list2 = item.bimAreas[listItem];
+                var doorRootArg = FoldoutEditorArgBuffer.editorArgs[listItem];
+                doorRootArg.level = 1;
+                doorRootArg.background = true;
+                doorRootArg.caption = $"[{i}]{listItem}({list2.Count})";
+                
+                EditorUIUtils.ToggleFoldout(doorRootArg, null, () =>
+                {
+                });
+
+                if (doorRootArg.isEnabled && doorRootArg.isExpanded)
+                {
+                    InitEditorArg(list2);
+                    listArg.DrawPageToolbar(list2, (listItem2, i2) =>
+                    {
+                        if (listItem2 == null) return;
+                        var doorRootArg2 = FoldoutEditorArgBuffer.editorArgs[listItem2];
+                        doorRootArg2.level = 2;
+                        doorRootArg2.background = true;
+                        doorRootArg2.caption = $"[{i2}]{listItem2.name}";
+                        doorRootArg2.info = listItem2.ToString();
+
+                        EditorUIUtils.ObjectFoldout(doorRootArg2, listItem2, () =>
+                        {
+                        });
+                    });
+                }
+            });
+        }
     }
 
     private static void DrawBimList(NavisModelRoot item, FoldoutEditorArg<BIMModelInfo> listArg, string name)
@@ -99,9 +221,13 @@ public class NavisModelRootEditor : BaseFoldoutEditor<NavisModelRoot>
         },
         () =>
         {
+            if (GUILayout.Button("RemoveNotFound"))
+            {
+                item.GetBims(null);
+            }
             if (GUILayout.Button("Update"))
             {
-                item.GetBims();
+                item.GetBims(null);
             }
             //if (GUILayout.Button("Compare"))
             //{
@@ -118,7 +244,7 @@ public class NavisModelRootEditor : BaseFoldoutEditor<NavisModelRoot>
                 var doorRootArg = FoldoutEditorArgBuffer.editorArgs[listItem];
                 doorRootArg.level = 1;
                 doorRootArg.background = true;
-                doorRootArg.caption = $"[{i + 1:00}] {listItem.name}";
+                doorRootArg.caption = $"[{i + 1:00}] [{listItem.IsFound}] {listItem.name}";
                 doorRootArg.info = listItem.GetItemText();
                 EditorUIUtils.ObjectFoldout(doorRootArg, listItem.gameObject, () =>
                 {

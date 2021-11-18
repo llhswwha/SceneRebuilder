@@ -308,11 +308,14 @@ public class SmartModelInfoTool : MonoBehaviour
         }
         modelInfo.CurrentModel=child.gameObject;
         BIMModelInfo infoT = child.gameObject.AddMissingComponent<BIMModelInfo>();
-        infoT.Guid = modelInfo.Id;
-        infoT.MName = modelInfo.Name;
-        infoT.Position1=child.position;
-        infoT.Position2=new Vector3(modelInfo.X,modelInfo.Z,modelInfo.Y);
-        infoT.Distance=Vector3.Distance(infoT.Position1,infoT.Position2);
+        infoT.SetModelInfo(modelInfo);
+
+        //infoT.Guid = modelInfo.Id;
+        //infoT.MName = modelInfo.Name;
+        //infoT.Position1=child.position;
+        //infoT.Position2 = modelInfo.GetPositon();
+        //infoT.GetDistance();
+
         if(infoT.Distance>posOffset*4){
             Debug.LogError(string.Format("SetBIMModelInfo 距离过大 选择最新:Id:{0}| Name:{1}| Obj:{2}| Distance:{3}",
                                         modelInfo.Id,modelInfo.Name,child.name,infoT.Distance));
