@@ -162,7 +162,7 @@ EditorGUILayout.EndHorizontal();
             }
             if (GUILayout.Button("RemoveNotFound"))
             {
-                item.RemoveNotFound();
+                //item.RemoveNotFound();
             }
         });
         if (listArg.isEnabled && listArg.isExpanded)
