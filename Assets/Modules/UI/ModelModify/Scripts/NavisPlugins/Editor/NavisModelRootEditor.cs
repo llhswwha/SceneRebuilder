@@ -19,16 +19,44 @@ public class NavisModelRootEditor : BaseFoldoutEditor<NavisModelRoot>
     static FoldoutEditorArg<BIMModelInfo> bimListArg1 = new FoldoutEditorArg<BIMModelInfo>(true, false);
     static FoldoutEditorArg<BIMModelInfo> bimListArg2 = new FoldoutEditorArg<BIMModelInfo>(true, false);
     static FoldoutEditorArg<BIMModelInfo> bimListArg3 = new FoldoutEditorArg<BIMModelInfo>(true, false);
-    static FoldoutEditorArg<ModelItemInfo> modelListArg0 = new FoldoutEditorArg<ModelItemInfo>(true, false);
-    static FoldoutEditorArg<ModelItemInfo> modelListArg1 = new FoldoutEditorArg<ModelItemInfo>(true, false);
-    static FoldoutEditorArg<ModelItemInfo> modelListArg2 = new FoldoutEditorArg<ModelItemInfo>(true, false);
-    static FoldoutEditorArg<ModelItemInfo> modelListArg3 = new FoldoutEditorArg<ModelItemInfo>(true, false);
+    static FoldoutEditorArg<ModelItemInfo> modelListArg_all = new FoldoutEditorArg<ModelItemInfo>(true, false);
+    static FoldoutEditorArg<ModelItemInfo> modelListArg_uid = new FoldoutEditorArg<ModelItemInfo>(true, false);
+    static FoldoutEditorArg<ModelItemInfo> modelListArg_nouid = new FoldoutEditorArg<ModelItemInfo>(true, false);
+    static FoldoutEditorArg<ModelItemInfo> modelListArg_drawable_zero = new FoldoutEditorArg<ModelItemInfo>(true, false);
+    static FoldoutEditorArg<ModelItemInfo> modelListArg_drawable_nozero = new FoldoutEditorArg<ModelItemInfo>(true, false);
+    static FoldoutEditorArg<ModelItemInfo> modelListArg_nodrawable_nozero = new FoldoutEditorArg<ModelItemInfo>(true, false);
+    static FoldoutEditorArg<ModelItemInfo> modelListArg_noDrawable_zero = new FoldoutEditorArg<ModelItemInfo>(true, false);
 
     static FoldoutEditorArg<Transform> transListArg = new FoldoutEditorArg<Transform>(true, false);
 
     static FoldoutEditorArg bimAreasArg = new FoldoutEditorArg(true, false);
 
-    static FoldoutEditorArg repeatedModelsArg = new FoldoutEditorArg(true, false);
+    static FoldoutEditorArg repeatedModelsArg1 = new FoldoutEditorArg(true, false);
+
+    static FoldoutEditorArg repeatedModelsArg2 = new FoldoutEditorArg(true, false);
+
+    private static void DrawVueModelListEx(NavisModelRoot item)
+    {
+        EditorUIUtils.Separator(5);
+        DrawRepeatedModels("RepeatedModels(RendererId)", repeatedModelsArg1, item, item.ModelDict.repeatModelsByRendererId);
+        DrawRepeatedModels("RepeatedModels(Uid)", repeatedModelsArg2, item, item.ModelDict.repeatModelsByUId);
+        EditorUIUtils.Separator(5);
+        DrawVueModelList(item.allModels, modelListArg_all, "Model List(All)");
+        DrawVueModelList(item.allModels_uid, modelListArg_uid, "Model List(UID)");
+        DrawVueModelList(item.allModels_noUid, modelListArg_nouid, "Model List(NoUID)");
+
+        DrawVueModelList(item.allModels_drawable_zero, modelListArg_drawable_zero, "Model List(Drawable&Zero)");
+        DrawVueModelList(item.allModels_drawable_nozero, modelListArg_drawable_nozero, "Model List(Drawable&NoZero)");
+        DrawVueModelList(item.allModels_noDrawable_nozero, modelListArg_nodrawable_nozero, "Model List(NoDrawable&NoZero)");
+        DrawVueModelList(item.allModels_noDrawable_zero, modelListArg_noDrawable_zero, "Model List(NoDrawable&Zero)");
+        EditorUIUtils.Separator(5);
+
+        DrawVueModelList(item.noFoundBimInfos01, bimListArg01, "No Found Bim List01(All)");
+        DrawVueModelList(item.noFoundBimInfos02, bimListArg02, "No Found Bim List02(Zero)");
+        DrawVueModelList(item.noFoundBimInfos03, bimListArg03, "No Found Bim List03(NotAero)");
+        DrawVueModelList(item.noFoundBimInfos04, bimListArg04, "No Found Bim List04(NotDrawable)");
+        EditorUIUtils.Separator(5);
+    }
 
     public override void OnEnable()
     {
@@ -38,13 +66,13 @@ public class NavisModelRootEditor : BaseFoldoutEditor<NavisModelRoot>
     public static void DrawUI(NavisModelRoot item)
     {
         if (item == null) return;
-        item.ModelName = EditorGUILayout.TextField(item.ModelName);
+        EditorGUILayout.BeginHorizontal();
+        //GUILayout
+        item.ModelName = EditorGUILayout.TextField("ModelName", item.ModelName);
+        EditorGUILayout.EndHorizontal();
         EditorGUILayout.BeginHorizontal();
         //item.IsSameName = GUILayout.Toggle(item.IsSameName, "SameName");
-        if (GUILayout.Button("OnlySelf"))
-        {
-            item.SetOnlySelfModel();
-        }
+
         if (GUILayout.Button("LoadModels"))
         {
             item.LoadModels();
@@ -64,10 +92,7 @@ public class NavisModelRootEditor : BaseFoldoutEditor<NavisModelRoot>
         {
             item.SaveXml();
         }
-        if (GUILayout.Button("DestroyBims"))
-        {
-            InitNavisFileInfoByModel.DestoryNavisInfo(item.gameObject);
-        }
+
         if (GUILayout.Button("TestFind"))
         {
             item.TestFindModelByName();
@@ -75,6 +100,10 @@ public class NavisModelRootEditor : BaseFoldoutEditor<NavisModelRoot>
         if (GUILayout.Button("RemoveRepeated"))
         {
             item.RemoveRepeated();
+        }
+        if (GUILayout.Button("OnlySelf"))
+        {
+            item.SetOnlySelfModel();
         }
         EditorGUILayout.EndHorizontal();
 
@@ -84,31 +113,25 @@ public class NavisModelRootEditor : BaseFoldoutEditor<NavisModelRoot>
 
         DrawBimAreas(item);
         //DrawVueModelList(item.repeatModels, modelListArg0, "Model List(RepeatedRenderer)");
-        DrawRepeatedModels(item);
 
-        DrawVueModelList(item.allModels, modelListArg1, "Model List");
-        DrawVueModelList(item.allModels_noDrawable, modelListArg2, "Model(NoDrawable) List");
-        DrawVueModelList(item.allModels_zero, modelListArg3, "Model(Zero) List");
-
-        DrawVueModelList(item.noFoundBimInfos01, bimListArg01, "No Found Bim List01(All)");
-        DrawVueModelList(item.noFoundBimInfos02, bimListArg02, "No Found Bim List02(Zero)");
-        DrawVueModelList(item.noFoundBimInfos03, bimListArg03, "No Found Bim List03(NotAero)");
-        DrawVueModelList(item.noFoundBimInfos04, bimListArg04, "No Found Bim List04(NotDrawable)");
+        DrawVueModelListEx(item);
 
         DrawBimList(item.foundBimInfos1, bimListArg1, $"Found Bim List1({InitNavisFileInfoByModelSetting.Instance.MinDistance1})");
         DrawBimList(item.foundBimInfos2, bimListArg2, $"Found Bim List2({InitNavisFileInfoByModelSetting.Instance.MinDistance2})");
         DrawBimList(item.foundBimInfos3, bimListArg3, $"Found Bim List3({InitNavisFileInfoByModelSetting.Instance.MinDistance3})");
     }
 
-    private static void DrawRepeatedModels(NavisModelRoot item)
+
+
+    private static void DrawRepeatedModels(string name, FoldoutEditorArg listArg,NavisModelRoot item, Dictionary<string, List<ModelItemInfo>> dictList)
     {
-        var listArg = repeatedModelsArg;
-        string name = "RepeatedModels";
+        //var listArg = repeatedModelsArg;
+        //string name = "RepeatedModels";
         listArg.caption = $"{name}";
         listArg.level = 0;
         EditorUIUtils.ToggleFoldout(listArg, arg =>
         {
-            var doors = item.repeatModels;
+            var doors = dictList;
             int count = doors.Count;
             arg.caption = $"{name} ({doors.Count})";
             //arg.info = $"d:{count}|{doors.VertexCount_Show / 10000f:F0}/{doors.VertexCount / 10000f:F0}";
@@ -116,13 +139,13 @@ public class NavisModelRootEditor : BaseFoldoutEditor<NavisModelRoot>
         }, null);
         if (listArg.isEnabled && listArg.isExpanded)
         {
-            var list1 = item.repeatModels;
+            var list1 = dictList;
             InitEditorArg(list1.Keys.ToList());
             listArg.DrawPageToolbar(list1.Keys.ToList(), (listItem, i) =>
             {
                 if (listItem == null) return;
 
-                var list2 = item.repeatModels[listItem];
+                var list2 = list1[listItem];
                 var doorRootArg = FoldoutEditorArgBuffer.editorArgs[listItem];
                 doorRootArg.level = 1;
                 doorRootArg.background = true;
@@ -141,7 +164,7 @@ public class NavisModelRootEditor : BaseFoldoutEditor<NavisModelRoot>
                         var doorRootArg2 = FoldoutEditorArgBuffer.editorArgs[listItem2];
                         doorRootArg2.level = 2;
                         doorRootArg2.background = true;
-                        doorRootArg2.caption = $"[{i2}]{listItem2.Name}" ;
+                        doorRootArg2.caption = $"[{i2}]{listItem2.Name}|{listItem2.Id}|{listItem2.GetPath()}" ;
                         //doorRootArg2.info = listItem2.ToString();
 
                         EditorUIUtils.ObjectFoldout(doorRootArg2, listItem2, () =>
@@ -162,7 +185,7 @@ public class NavisModelRootEditor : BaseFoldoutEditor<NavisModelRoot>
         listArg.level = 0;
         EditorUIUtils.ToggleFoldout(listArg, arg =>
         {
-            var doors = item.bimAreas;
+            var doors = item.BimDict.bimAreas;
             int count = doors.Count;
             arg.caption = $"{name} ({doors.Count})";
             //arg.info = $"d:{count}|{doors.VertexCount_Show / 10000f:F0}/{doors.VertexCount / 10000f:F0}";
@@ -170,13 +193,13 @@ public class NavisModelRootEditor : BaseFoldoutEditor<NavisModelRoot>
         },null);
         if (listArg.isEnabled && listArg.isExpanded)
         {
-            var list1 = item.bimAreas;
+            var list1 = item.BimDict.bimAreas;
             InitEditorArg(list1.Keys.ToList());
             listArg.DrawPageToolbar(list1.Keys.ToList(), (listItem, i) =>
             {
                 if (listItem == null) return;
 
-                var list2 = item.bimAreas[listItem];
+                var list2 = list1[listItem];
                 var doorRootArg = FoldoutEditorArgBuffer.editorArgs[listItem];
                 doorRootArg.level = 1;
                 doorRootArg.background = true;
@@ -221,11 +244,16 @@ public class NavisModelRootEditor : BaseFoldoutEditor<NavisModelRoot>
         },
         () =>
         {
-            if (GUILayout.Button("RemoveNotFound"))
+
+            if (GUILayout.Button("Clear"))
+            {
+                InitNavisFileInfoByModel.DestoryNavisInfo(item.gameObject);
+            }
+            if (GUILayout.Button("Update"))
             {
                 item.GetBims(null);
             }
-            if (GUILayout.Button("Update"))
+            if (GUILayout.Button("RemoveNotFound"))
             {
                 item.GetBims(null);
             }

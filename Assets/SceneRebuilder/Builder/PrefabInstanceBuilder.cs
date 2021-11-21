@@ -598,7 +598,7 @@ UnpackPrefab();
         return meshRenderers;
     }
 
-    public int JobSize=40000;
+    public int JobSize = 100;//40000;
 
     public bool SetParentNull=true;
 

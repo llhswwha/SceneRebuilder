@@ -121,7 +121,7 @@ namespace CodeStage.AdvancedFPSCounter.Editor.UI
 
         public int DrawPageSizeList()
 		{
-            EditorGUILayout.LabelField("PSize:", GUILayout.Width(40));
+            EditorGUILayout.LabelField("Size", GUILayout.Width(30));
             pageSize_selected = EditorGUILayout.IntPopup(pageSize_selected, pageSize_names, pageSize_sizes);
             
             //EditorGUILayout.Popup("Size", 0, pageSize_names);
@@ -141,7 +141,7 @@ namespace CodeStage.AdvancedFPSCounter.Editor.UI
 				}
 				pageId_selected=1;
 			}
-            EditorGUILayout.LabelField("PIndex:",GUILayout.Width(45));
+            EditorGUILayout.LabelField("Id",GUILayout.Width(20));
             pageId_selected = EditorGUILayout.IntPopup( pageId_selected, pageId_names, pageId_sizes);
             if (pageCount < 100)
             {
@@ -667,12 +667,21 @@ namespace CodeStage.AdvancedFPSCounter.Editor.UI
                         Component component = obj as Component;
                         component.gameObject.SetActive(true);
                     }
-                    Object oobj = obj as Object;
-                    Selection.activeObject = oobj;
-                    EditorGUIUtility.PingObject(oobj);
+                    else
+                    {
+                        Debug.LogError(obj+"");
+                    }
 
-                    EditorApplication.ExecuteMenuItem("Edit/Frame Selected");
-                    arg.isSelected = true;
+                    if(obj is GameObject || obj is Component)
+                    {
+                        Object oobj = obj as Object;
+                        Selection.activeObject = oobj;
+                        EditorGUIUtility.PingObject(oobj);
+
+                        EditorApplication.ExecuteMenuItem("Edit/Frame Selected");
+                        arg.isSelected = true;
+                    }
+                   
                 }
                 if (GUILayout.Button("X", btnStyle, GUILayout.Width(20)))
                 {

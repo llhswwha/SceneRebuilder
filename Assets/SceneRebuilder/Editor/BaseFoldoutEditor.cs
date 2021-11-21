@@ -1303,18 +1303,18 @@ public class BaseFoldoutEditor<T> : BaseEditor<T> where T : class
                 isUpate = true;
             }
 
-            if (GUILayout.Button("Pre2", btnStyle, GUILayout.Width(40)))
-            {
-                //SharedMeshInfoList list2 = funcGetList();
-                ////list.GetPrefabs();
-                //listArg.tag = list2;
+            //if (GUILayout.Button("Pre_Copy", btnStyle, GUILayout.Width(40)))
+            //{
+            //    //SharedMeshInfoList list2 = funcGetList();
+            //    ////list.GetPrefabs();
+            //    //listArg.tag = list2;
 
-                PrefabInstanceBuilder.Instance.AcRTAlignJobsEx(go, true);
+            //    PrefabInstanceBuilder.Instance.AcRTAlignJobsEx(go, true);
 
-                //listArg.tag = funcGetList();
+            //    //listArg.tag = funcGetList();
 
-                isUpate = true;
-            }
+            //    isUpate = true;
+            //}
 
             //if (GUILayout.Button("X1", btnStyle, GUILayout.Width(25)))
             //{

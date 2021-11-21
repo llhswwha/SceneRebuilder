@@ -74,6 +74,11 @@ public class InitNavisFileInfoByModel : SingletonBehaviour<InitNavisFileInfoByMo
         Debug.LogError($"GetBims infos:{bimInfos.Count}");
     }
 
+    public void RemoveNotFound()
+    {
+
+    }
+
     int sumChild = 0;
     [ContextMenu("InitNavisFileInfoWithDetail")]
     public void InitNavisFileInfoWithDetail()

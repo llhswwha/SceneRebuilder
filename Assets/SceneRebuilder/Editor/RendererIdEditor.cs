@@ -18,16 +18,7 @@ public class RendererIdEditor : BaseEditor<RendererId>
         parent = targetT.GetCurrentParent();
     }
 
-    public static void AddPreName(Transform p)
-    {
-        string pName = p.name + "_";
-        for (int i = 0; i < p.childCount; i++)
-        {
-            var child = p.GetChild(i);
-            if (child.name.StartsWith(pName)) continue;
-            child.name = $"{pName}{child.name}";
-        }
-    }
+
 
     public override void OnToolLayout(RendererId item)
     {
@@ -309,139 +300,41 @@ public class RendererIdEditor : BaseEditor<RendererId>
             }
             ColliderHelper.CreateBoxCollider(item.gameObject, false);
         }
-        if(GUILayout.Button("AddPreName"))
+        
+
+        EditorGUILayout.EndHorizontal();
+
+        EditorGUILayout.BeginHorizontal();
+        if (GUILayout.Button("AddPreName"))
         {
 
 
-            AddPreName(item.transform);
+            TransformHelper.AddPreName(item.transform);
         }
         if (GUILayout.Button("AddPreNames"))
         {
             //string pName = item.gameObject.name + "_";
-            for (int i = 0; i < item.transform.childCount; i++)
-            {
-                var child = item.transform.GetChild(i);
-                AddPreName(child);
-            }
+            TransformHelper.AddPreNames(item.transform);
         }
         if (GUILayout.Button("RemoveChildren"))
         {
-            List<Transform> list1 = new List<Transform>();
-            for (int i = 0; i < item.transform.childCount; i++)
-            {
-                var child = item.transform.GetChild(i);
-                list1.Add(child);
-                
-            }
-
-            for (int i = 0; i < list1.Count; i++)
-            {
-                var child = list1[i];
-                EditorHelper.UnpackPrefab(child.gameObject);
-
-                List<Transform> list2 = new List<Transform>();
-                for (int j = 0; j < child.childCount; j++)
-                {
-                    list2.Add(child.GetChild(j));
-                }
-                foreach(var t in list2)
-                {
-                    t.SetParent(item.transform);
-                }
-                GameObject.DestroyImmediate(child);
-                //i--;
-            }
+            TransformHelper.RemoveChildren(item.transform);
         }
-        if (GUILayout.Button("ReGroup1"))
+        //if (GUILayout.Button("ReGroup1_After"))
+        //{
+        //    TransformHelper.ReGroup1_After(item.transform);
+        //}
+
+        if (GUILayout.Button("ReGroup_Before"))
         {
-            string pName = item.gameObject.name+"_";
-            Dictionary<string, List<Transform>> beforeNames = new Dictionary<string, List<Transform>>();
-            Dictionary<string, List<Transform>> afterNames = new Dictionary<string, List<Transform>>();
-            for(int i=0;i<item.transform.childCount;i++)
-            {
-                var child = item.transform.GetChild(i);
-                string cName = child.name;
-                if (cName.Contains("_") == false)
-                {
 
-                    continue;
-                }
-                string[] parts = cName.Split('_');
-                string n1 = parts[0];
-                string n2 = parts[1];
-                if(!beforeNames.ContainsKey(n1))
-                {
-                    beforeNames.Add(n1,new List<Transform>());
-                }
-                beforeNames[n1].Add(child);
-
-                if (!afterNames.ContainsKey(n2))
-                {
-                    afterNames.Add(n2,new List<Transform>());
-                }
-                afterNames[n2].Add(child);
-            }
-            foreach(var n in afterNames.Keys)
-            {
-                GameObject go = new GameObject(n);
-                var list = afterNames[n];
-                go.transform.SetParent(item.gameObject.transform);
-                foreach(var child in list)
-                {
-                    child.SetParent(go.transform);
-                }
-            }
+            TransformHelper.ReGroupBefore(item.transform);
         }
-
-        if (GUILayout.Button("ReGroup2"))
+        if (GUILayout.Button("ReGroup_After"))
         {
-            EditorHelper.UnpackPrefab(item.gameObject);
 
-            string pName = item.gameObject.name + "_";
-            Dictionary<string, List<Transform>> beforeNames = new Dictionary<string, List<Transform>>();
-            Dictionary<string, List<Transform>> afterNames = new Dictionary<string, List<Transform>>();
-            for(int j=0;j<item.transform.childCount;j++)
-            {
-                var child0= item.transform.GetChild(j);
-                for (int i = 0; i < child0.childCount; i++)
-                {
-                    var child = child0.GetChild(i);
-                    string cName = child.name;
-                    if (cName.Contains("_") == false)
-                    {
-
-                        continue;
-                    }
-                    string[] parts = cName.Split('_');
-                    string n1 = parts[0];
-                    string n2 = parts[1];
-                    if (!beforeNames.ContainsKey(n1))
-                    {
-                        beforeNames.Add(n1, new List<Transform>());
-                    }
-                    beforeNames[n1].Add(child);
-
-                    if (!afterNames.ContainsKey(n2))
-                    {
-                        afterNames.Add(n2, new List<Transform>());
-                    }
-                    afterNames[n2].Add(child);
-                }
-            }
-            
-            foreach (var n in beforeNames.Keys)
-            {
-                GameObject go = new GameObject(n);
-                var list = beforeNames[n];
-                go.transform.SetParent(item.gameObject.transform);
-                foreach (var child in list)
-                {
-                    child.SetParent(go.transform);
-                    Debug.Log($"parent:{go.name} child:{child}");
-                }
-            }
+            TransformHelper.ReGroupAfter(item.transform);
         }
-
         EditorGUILayout.EndHorizontal();
 
         EditorGUILayout.BeginHorizontal();

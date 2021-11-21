@@ -66,7 +66,7 @@ public class PrefabInstanceBuilderEditor : BaseFoldoutEditor<PrefabInstanceBuild
 
         GUILayout.Label("MinSize:", GUILayout.Width(60));
         setting.CompareSizeMinValue = EditorGUILayout.FloatField(setting.CompareSizeMinValue, GUILayout.Width(50));
-        setting.IsSetParent = GUILayout.Toggle(setting.IsSetParent, "Parent", GUILayout.Width(60));
+        setting.IsSetParent = GUILayout.Toggle(setting.IsSetParent, "Parent", GUILayout.Width(60));//关联相似的模型用于测试，测试好了要关闭。
 
         GUILayout.Label("TryModes:", GUILayout.Width(60));
         setting.IsTryAngles = GUILayout.Toggle(setting.IsTryAngles, "Angle",GUILayout.Width(60));

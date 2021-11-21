@@ -10,13 +10,13 @@ public class AcRTAlignJobSetting : SingletonBehaviour<AcRTAlignJobSetting>
 {
     public bool IsTryAngles=true;
 
-    public bool IsTryAngles_Scale=true;
+    public bool IsTryAngles_Scale= false;
 
-    public bool IsTryRT = true;
+    public bool IsTryRT = false;
 
-    public bool IsTryICP = true;
+    public bool IsTryICP = false;
 
-    public bool IsCheckResult=false;
+    public bool IsCheckResult=true;
 
     public bool IsSetParent=false;
 
