@@ -19,7 +19,7 @@ public class TransformDictionary
         int allCount = list.Count;
         int uidCount = 0;
         List<string> uids = new List<string>();
-        List<string> names = new List<string>();
+        List<string> noUIds = new List<string>();
         foreach (var t in list)
         {
             string n = t.name;
@@ -32,7 +32,18 @@ public class TransformDictionary
             if (!nameListDict.ContainsKey(n))
             {
                 nameListDict.Add(n, new List<Transform>());
-                names.Add(n);
+
+
+                //names.Add(n);
+
+                if (IsUID(n))
+                {
+                    uids.Add(n); 
+                }
+                else
+                {
+                    noUIds.Add(n);
+                }
             }
             nameListDict[n].Add(t);
 
@@ -48,7 +59,11 @@ public class TransformDictionary
                 }
                 uidListDict[n].Add(t);
 
-                uids.Add(n);
+                
+            }
+            else
+            {
+
             }
         }
 
@@ -59,14 +74,16 @@ public class TransformDictionary
             txt += uid + ";\t";
         }
 
-        names.Sort();
+        noUIds.Sort();
         string txt2 = "";
-        foreach (var name in names)
+        foreach (var name in noUIds)
         {
             txt2 += name + ";\t";
         }
 
-        Debug.LogError($"TransformDictionary allCount:{allCount} nameCount:{nameListDict.Count} uidCount:{uidCount}\n uids:{txt}\n names:{txt2}");
+        Debug.LogError($"TransformDictionary allCount:{allCount} nameCount:{nameListDict.Count} uidCount:{uidCount}");
+        Debug.LogError($"uids:{txt}");
+        Debug.LogError($"noUIds:{txt2}");
     }
 
     public void CheckUidRepeated()
@@ -95,17 +112,37 @@ public class TransformDictionary
         Debug.LogError($"CheckUidRepeated repeatedCount:{repeatedCount} repeatedUid:{txt}");
     }
 
+    public static bool IsKKS(string n)
+    {
+
+        //if(n.Contains("_"))
+    }
+
     public static bool IsUID(string n)
     {
-        //            <ItemInfo Id="H级主厂房.nwc_6_433" Name="H级精处理再生系统设备管道" UId="0027-20014-345476504420876800" X="-180.3085" Y="143.6485" Z="7.421375" Type="P3DEquipment" Drawable="true" Visible="0" AreaId="0">
+        //            <ItemInfo Id="H级主厂房.nwc_6_433" Name="H级精处理再生系统设备管道" UId="0028-140039-306069491919619191" X="-180.3085" Y="143.6485" Z="7.421375" Type="P3DEquipment" Drawable="true" Visible="0" AreaId="0">
 
         var length = n.Length;
         bool result = false;
-        if (length == 29)
+        if (length == 30)
         {
-            result = true;
+            string[] parts = n.Split('-');
+            if (parts.Length == 3)
+            {
+                if (parts[0].Length == 4 && parts[1].Length == 6 && parts[2].Length == 18)
+                {
+                    result = true;
+                }
+                else
+                {
+                    Debug.LogError($"IsUID s:{n} length:{length} {parts[0].Length},{parts[1].Length},{parts[2].Length}");
+                }
+            }
+            else
+            {
+                Debug.LogError($"IsUID s:{n} length:{length} parts.Length != 3");
+            }
         }
-        //Debug.Log($"IsUID s:{n} length:{length} result:{result}");
         return result;
     }
 
