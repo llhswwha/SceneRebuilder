@@ -55,19 +55,19 @@ public class NavisModelRoot : MonoBehaviour
     [ContextMenu("TestFindModelByName")]
     public void TestFindModelByName()
     {
-        var list=InitNavisFileInfoByModel.FindSameNameList(transformList, TestModelName);
+        var list= TransformHelper.FindSameNameList(transformList, TestModelName);
         Debug.Log($"TestFindModelByName name:{TestModelName} list:{list.Count}");
     }
 
     public BIMModelInfoDictionary BimDict = new BIMModelInfoDictionary();
 
     [ContextMenu("GetBims")]
-    public void GetBims(NavisFileInfo file)
+    public void GetBims(List<ModelItemInfo> models)
     {
         BimDict = new BIMModelInfoDictionary(this.GetComponentsInChildren<BIMModelInfo>(true));
         bimInfos = BimDict.bimInfos;
 
-        var models = file.GetAllItems();
+        //var models = file.GetAllItems();
         BimDict.CheckDict(models);
     }
 
@@ -82,32 +82,21 @@ public class NavisModelRoot : MonoBehaviour
         SaveXml();
     }
 
-    public List<BIMModelInfo> errorBIMs = new List<BIMModelInfo>();
-
     public ModelItemInfoDictionary ModelDict = new ModelItemInfoDictionary();
 
     public TransformDictionary TransformDict = new TransformDictionary();
 
-    [ContextMenu("LoadModels")]
-    public void LoadModels()
+    private void GetTransformList()
     {
-        DateTime start = DateTime.Now;
-        if(string.IsNullOrEmpty(ModelName))
-        {
-            ModelName = this.name;
-        }
-
-        errorBIMs.Clear();
-
-
-        ClearResult();
-
         transformList = this.GetComponentsInChildren<Transform>(true).ToList();
 
         transformList = InitNavisFileInfoByModel.Instance.FilterList(transformList);
 
         TransformDict = new TransformDictionary(transformList);
+    }
 
+    private bool GetModelRoot()
+    {
         navisFile = InitNavisFileInfoByModel.GetNavisFileInfoEx();
 
         ModelRoot = navisFile.Models.Find(i => i.Name == ModelName);
@@ -123,56 +112,13 @@ public class NavisModelRoot : MonoBehaviour
             //Model = navisFile.Models.Find(i => i.Name.Contains(ModelName));
             Debug.LogError($"Model == null ModelName:{ModelName} Model:{ModelRoot} Models:{navisFile.Models.Count}");
             ProgressBarHelper.ClearProgressBar();
-            return;
+            return false;
         }
+        return true;
+    }
 
-        
-
-        
-        var all = navisFile.GetAllItems();
-        ModelDict = new ModelItemInfoDictionary(all);
-
-        GetBims(navisFile);
-        //repeatModelsByRendererId = new Dictionary<string, List<ModelItemInfo>>();
-        //foreach (var r in renderId2Model.Keys)
-        //{
-        //    var ms = renderId2Model[r];
-        //    if (ms.Count > 1)
-        //    {
-        //        if (rendererId2Bim.ContainsKey(r))
-        //        {
-        //            var bim = rendererId2Bim[r];
-        //            Debug.LogError($"repeatModels rendererId:{r} list:{ms.Count} bim:{bim}");
-        //        }
-        //        else
-        //        {
-        //            Debug.LogError($"repeatModels rendererId:{r} list:{ms.Count} bim:NULL");
-        //        }
-        //        //repeatModels.AddRange(ms);
-        //        repeatModelsByRendererId.Add(r, ms);
-        //    }
-        //}
-
-        //repeatModelsByUId = new Dictionary<string, List<ModelItemInfo>>();
-        //foreach (var r in uid2Model.Keys)
-        //{
-        //    var ms = uid2Model[r];
-        //    if (ms.Count > 1)
-        //    {
-        //        if (guid2Bim.ContainsKey(r))
-        //        {
-        //            var bim = guid2Bim[r];
-        //            Debug.LogError($"repeatModels UID:{r} list:{ms.Count} bim:{bim}");
-        //        }
-        //        else
-        //        {
-        //            Debug.LogError($"repeatModels UID:{r} list:{ms.Count} bim:NULL");
-        //        }
-        //        //repeatModels.AddRange(ms);
-        //        repeatModelsByUId.Add(r, ms);
-        //    }
-        //}
-
+    private void GetModelLists()
+    {
         allModels = ModelRoot.GetAllItems();
 
         allModels_drawable_nozero.Clear();
@@ -206,7 +152,7 @@ public class NavisModelRoot : MonoBehaviour
             //    }
             //    else
             //    {
-                    
+
             //    }
             //}
 
@@ -252,10 +198,55 @@ public class NavisModelRoot : MonoBehaviour
         allModels_drawable_nozero.Sort();
         allModels_noDrawable_nozero.Sort();
         allModels_noDrawable_zero.Sort();
+    }
+
+    [ContextMenu("LoadModels")]
+    public void LoadModels()
+    {
+        DateTime start = DateTime.Now;
+
+        ClearResult();
+
+        if (string.IsNullOrEmpty(ModelName))
+        {
+            ModelName = this.name;
+        }
+
+        if (GetModelRoot() == false) return;
+ 
+        GetTransformList();//1.Transform
+        
+        var models = navisFile.GetAllItems();
+        ModelDict = new ModelItemInfoDictionary(models);
+
+        GetBims(models);//2.BIMinfo
+
+        GetModelLists();//3.ModelInfo
 
         ProgressBarHelper.ClearProgressBar();
 
         Debug.Log($"LoadModels time:{DateTime.Now - start} rendererIdCount:{ModelDict.rendererIdCount} UidCount:{ModelDict.UidCount}");
+    }
+
+    public string TestUIdString = "0027-20014-345476504420876800";
+
+    [ContextMenu("TestIsUId")]
+    public void TestIsUId()
+    {
+        //string s = "0027-20014-345476504420876800";
+        string s = TestUIdString;
+        bool isUid= TransformDictionary.IsUID(s);
+        Debug.Log($"TestIsUId s:{s} isUid:{isUid} length:{s.Length}");
+    }
+
+    public void FindObjectByUID()
+    {
+        foreach(var uidModel in allModels_uid)
+        {
+            TransformDict.FindObjectByUID(uidModel.UId);
+        }
+
+        Debug.LogError($"FindObjectByUID allModels_uid:{allModels_uid.Count}");
     }
 
     public void RemoveRepeated()
@@ -420,6 +411,8 @@ public class NavisModelRoot : MonoBehaviour
         foundBimInfos2.Clear();
         foundBimInfos3.Clear();
         //bimInfos0_name.Clear();
+
+        transformList.Clear();
     }
 
     //public List<GameObject> bimModels = new List<GameObject>();
@@ -498,7 +491,7 @@ public class NavisModelRoot : MonoBehaviour
                         noFoundBimInfos01.Add(child);
                         //Debug.LogError($"[Model Not Found 2] {child.ToString()}");
 
-                        var list = InitNavisFileInfoByModel.FindSameNameList(transformList, child.Name);
+                        var list = TransformHelper.FindSameNameList(transformList, child.Name);
                         //Debug.LogError($"TestFindModelByName name:{child.Name} list:{list.Count}");
                     }
                 }

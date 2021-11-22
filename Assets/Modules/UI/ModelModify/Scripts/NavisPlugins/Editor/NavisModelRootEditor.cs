@@ -77,6 +77,11 @@ public class NavisModelRootEditor : BaseFoldoutEditor<NavisModelRoot>
         {
             item.LoadModels();
         }
+        if (GUILayout.Button("FindObjectByUID"))
+        {
+            item.FindObjectByUID();
+        }
+
         if (GUILayout.Button("CreateTree"))
         {
             item.CreateTree();

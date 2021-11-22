@@ -61,12 +61,12 @@ public class BIMModelInfoDictionary
                 }
                 else
                 {
-                    Debug.LogError($"GetBims[{i}/{bimInfos.Count}] rendererId2Bim.ContainsKey(bim.RenderId) bim:{bim} rendererID:{bim.RenderId}");
+                    //Debug.LogError($"GetBims[{i}/{bimInfos.Count}] rendererId2Bim.ContainsKey(bim.RenderId) bim:{bim} rendererID:{bim.RenderId}");
                 }
             }
             else
             {
-                Debug.LogError($"GetBims[{i}/{bimInfos.Count}] string.IsNullOrEmpty(bim.RenderId) bim:{bim}");
+                //Debug.LogError($"GetBims[{i}/{bimInfos.Count}] string.IsNullOrEmpty(bim.RenderId) bim:{bim}");
             }
 
             if (!string.IsNullOrEmpty(bim.Guid))
@@ -88,6 +88,12 @@ public class BIMModelInfoDictionary
 
             //ModelItemInfo model= file.GetModelBy
         }
+
+        //foreach(var rendererId in rendererId2Bim.Keys)
+        //{
+        //    var list = rendererId2Bim[rendererId];
+        //    if(list.)
+        //}
     }
 
     public void CheckDict(List<ModelItemInfo> models)
@@ -96,6 +102,7 @@ public class BIMModelInfoDictionary
         //var models = file.GetAllItems();
         int foundCount = 0;
 
+        if(models!=null)
         foreach (var model in models)
         {
             //if (string.IsNullOrEmpty(model.RenderId)) continue;

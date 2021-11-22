@@ -1485,25 +1485,7 @@ vueDict.Add(item.UId, item);
         return bim;
     }
 
-    public static List<Transform> FindSameNameList(List<Transform> modelDicT, string n)
-    {
-        List<Transform> sameNameList = new List<Transform>();
-        string n2 = n + " ";
-        string n3 = n + "_";
-        foreach (Transform item in modelDicT)
-        {
-            if (item == null) continue;
-            //if (item.name.StartsWith(n))
-            //{
-            //    sameNameList.Add(item);
-            //}
-            if (item.name == n || item.name.StartsWith(n2) || item.name.StartsWith(n3))
-            {
-                sameNameList.Add(item);
-            }
-        }
-        return sameNameList;
-    }
+
 
     public bool IsProgressBreak = false;
 
@@ -1516,7 +1498,7 @@ vueDict.Add(item.UId, item);
         if (isSameName)
         {
             {
-                List<Transform> sameNameList = FindSameNameList(modelDicT, objT.UId);
+                List<Transform> sameNameList = TransformHelper.FindSameNameList(modelDicT, objT.UId);
                 if (sameNameList.Count == 1)
                 {
                     Transform item = sameNameList[0];
@@ -1536,7 +1518,7 @@ vueDict.Add(item.UId, item);
             }
 
             {
-                List<Transform> sameNameList = FindSameNameList(modelDicT, objT.Name);
+                List<Transform> sameNameList = TransformHelper.FindSameNameList(modelDicT, objT.Name);
                 if (sameNameList.Count == 1)
                 {
                     Transform item = sameNameList[0];

@@ -4,6 +4,26 @@ using UnityEngine;
 
 public static class TransformHelper
 {
+    public static List<Transform> FindSameNameList(List<Transform> modelDicT, string n)
+    {
+        List<Transform> sameNameList = new List<Transform>();
+        string n2 = n + " ";
+        string n3 = n + "_";
+        foreach (Transform item in modelDicT)
+        {
+            if (item == null) continue;
+            //if (item.name.StartsWith(n))
+            //{
+            //    sameNameList.Add(item);
+            //}
+            if (item.name == n || item.name.StartsWith(n2) || item.name.StartsWith(n3))
+            {
+                sameNameList.Add(item);
+            }
+        }
+        return sameNameList;
+    }
+
     public static void AddPreName(Transform p)
     {
         string pName = p.name + "_";
