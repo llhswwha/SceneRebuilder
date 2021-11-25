@@ -9,6 +9,7 @@ using UnityEngine;
 [CustomEditor(typeof(NavisModelRoot))]
 public class NavisModelRootEditor : BaseFoldoutEditor<NavisModelRoot>
 {
+    static FoldoutEditorArg<ModelItemInfo> targetListArg = new FoldoutEditorArg<ModelItemInfo>(true, false);
 
     static FoldoutEditorArg<ModelItemInfo> bimListArg01 = new FoldoutEditorArg<ModelItemInfo>(true,false);
     static FoldoutEditorArg<ModelItemInfo> bimListArg02 = new FoldoutEditorArg<ModelItemInfo>(true, false);
@@ -28,6 +29,7 @@ public class NavisModelRootEditor : BaseFoldoutEditor<NavisModelRoot>
     static FoldoutEditorArg<ModelItemInfo> modelListArg_noDrawable_zero = new FoldoutEditorArg<ModelItemInfo>(true, false);
 
     static FoldoutEditorArg<Transform> transListArg = new FoldoutEditorArg<Transform>(true, false);
+    static FoldoutEditorArg<Transform> transListArg2 = new FoldoutEditorArg<Transform>(true, false);
 
     static FoldoutEditorArg bimAreasArg = new FoldoutEditorArg(true, false);
 
@@ -40,15 +42,20 @@ public class NavisModelRootEditor : BaseFoldoutEditor<NavisModelRoot>
         EditorUIUtils.Separator(5);
         DrawRepeatedModels("RepeatedModels(RendererId)", repeatedModelsArg1, item, item.ModelDict.repeatModelsByRendererId);
         DrawRepeatedModels("RepeatedModels(Uid)", repeatedModelsArg2, item, item.ModelDict.repeatModelsByUId);
-        EditorUIUtils.Separator(5);
-        DrawVueModelList(item.allModels, modelListArg_all, "Model List(All)");
-        DrawVueModelList(item.allModels_uid, modelListArg_uid, "Model List(UID)");
-        DrawVueModelList(item.allModels_noUid, modelListArg_nouid, "Model List(NoUID)");
+        
+        if (item.ModelList != null)
+        {
+            EditorUIUtils.Separator(5);
+            DrawVueModelList(item.ModelList.allModels, modelListArg_all, "Model List(All)");
+            DrawVueModelList(item.ModelList.allModels_uid, modelListArg_uid, "Model List(UID)");
+            DrawVueModelList(item.ModelList.allModels_noUid, modelListArg_nouid, "Model List(NoUID)");
 
-        DrawVueModelList(item.allModels_drawable_zero, modelListArg_drawable_zero, "Model List(Drawable&Zero)");
-        DrawVueModelList(item.allModels_drawable_nozero, modelListArg_drawable_nozero, "Model List(Drawable&NoZero)");
-        DrawVueModelList(item.allModels_noDrawable_nozero, modelListArg_nodrawable_nozero, "Model List(NoDrawable&NoZero)");
-        DrawVueModelList(item.allModels_noDrawable_zero, modelListArg_noDrawable_zero, "Model List(NoDrawable&Zero)");
+            DrawVueModelList(item.ModelList.allModels_drawable_zero, modelListArg_drawable_zero, "Model List(Drawable&Zero)");
+            DrawVueModelList(item.ModelList.allModels_drawable_nozero, modelListArg_drawable_nozero, "Model List(Drawable&NoZero)");
+            DrawVueModelList(item.ModelList.allModels_noDrawable_nozero, modelListArg_nodrawable_nozero, "Model List(NoDrawable&NoZero)");
+            DrawVueModelList(item.ModelList.allModels_noDrawable_zero, modelListArg_noDrawable_zero, "Model List(NoDrawable&Zero)");
+        }
+
         EditorUIUtils.Separator(5);
 
         DrawVueModelList(item.noFoundBimInfos01, bimListArg01, "No Found Bim List01(All)");
@@ -66,20 +73,54 @@ public class NavisModelRootEditor : BaseFoldoutEditor<NavisModelRoot>
     public static void DrawUI(NavisModelRoot item)
     {
         if (item == null) return;
+
+        if (GUILayout.Button("BindBimInfo"))
+        {
+            item.BindBimInfo(null);
+        }
+
         EditorGUILayout.BeginHorizontal();
         //GUILayout
         item.ModelName = EditorGUILayout.TextField("ModelName", item.ModelName);
+        item.includeInactive = EditorGUILayout.Toggle("includeInactive",item.includeInactive);
         EditorGUILayout.EndHorizontal();
+
+        EditorGUILayout.BeginHorizontal();
+        item.TargetRoot = BaseEditorHelper.ObjectField(item.TargetRoot);
+        if (GUILayout.Button("FindRelativeTargets"))
+        {
+            item.FindRelativeTargets();
+        }
+        if (GUILayout.Button("HidePipes"))
+        {
+            item.HidePipes();
+        }
+        if (GUILayout.Button("ShowPipes"))
+        {
+            item.ShowPipes();
+        }
+        if (GUILayout.Button("ShowAll"))
+        {
+            TransformHelper.ShowAll(item.gameObject);
+        }
+        EditorGUILayout.EndHorizontal();
+
+        BaseFoldoutEditor<GameObject>.DrawObjectList(targetListArg, "Targets", item.Targets, null, null, null);
+
         EditorGUILayout.BeginHorizontal();
         //item.IsSameName = GUILayout.Toggle(item.IsSameName, "SameName");
 
         if (GUILayout.Button("LoadModels"))
         {
-            item.LoadModels();
+            item.LoadModels(null);
         }
         if (GUILayout.Button("FindObjectByUID"))
         {
             item.FindObjectByUID();
+        }
+        if (GUILayout.Button("FindObjectByPos"))
+        {
+            item.FindObjectByPos(null);
         }
 
         if (GUILayout.Button("CreateTree"))
@@ -114,7 +155,9 @@ public class NavisModelRootEditor : BaseFoldoutEditor<NavisModelRoot>
 
         DrawBimList(item, bimListArg0, "Bim List");
 
-        BaseFoldoutEditorHelper.DrawTransformList(item.transformList, transListArg, null, "Transform List");
+        BaseFoldoutEditorHelper.DrawTransformList(item.transformList, transListArg, null, "Transform List(All)");
+        if(item.TransformDict!=null)
+            BaseFoldoutEditorHelper.DrawTransformList(item.TransformDict.list, transListArg2, null, "Transform List(Current)");
 
         DrawBimAreas(item);
         //DrawVueModelList(item.repeatModels, modelListArg0, "Model List(RepeatedRenderer)");
@@ -239,13 +282,18 @@ public class NavisModelRootEditor : BaseFoldoutEditor<NavisModelRoot>
     {
         listArg.caption = $"{name}";
         listArg.level = 0;
+        var list1= item.bimInfos;
         EditorUIUtils.ToggleFoldout(listArg, arg =>
         {
-            var doors = item.bimInfos;
-            int count = doors.Count;
-            arg.caption = $"{name} ({doors.Count})";
+            //var doors = item.bimInfos;
+            int count = list1.Count;
+            if (!string.IsNullOrEmpty(listArg.searchKey))
+            {
+                list1 = list1.FindAll(i => i.name.Contains(listArg.searchKey)||i.MName.Contains(listArg.searchKey));
+            }
+            arg.caption = $"{name} ({list1.Count})";
             //arg.info = $"d:{count}|{doors.VertexCount_Show / 10000f:F0}/{doors.VertexCount / 10000f:F0}";
-            InitEditorArg(doors);
+            InitEditorArg(list1);
         },
         () =>
         {
@@ -253,23 +301,26 @@ public class NavisModelRootEditor : BaseFoldoutEditor<NavisModelRoot>
             if (GUILayout.Button("Clear"))
             {
                 InitNavisFileInfoByModel.DestoryNavisInfo(item.gameObject);
+                item.GetBims(null,null);
             }
             if (GUILayout.Button("Update"))
             {
-                item.GetBims(null);
+                item.GetBims(null, null);
             }
             if (GUILayout.Button("RemoveNotFound"))
             {
-                item.GetBims(null);
+                item.GetBims(null, null);
             }
             //if (GUILayout.Button("Compare"))
             //{
             //    item.CompareModelVueInfo_Model2Vue();
             //}
+
+            listArg.searchKey = GUILayout.TextField(listArg.searchKey, GUILayout.Width(100));
         });
         if (listArg.isEnabled && listArg.isExpanded)
         {
-            var list1 = item.bimInfos;
+            //var list1 = item.bimInfos;
             InitEditorArg(list1);
             listArg.DrawPageToolbar(list1, (listItem, i) =>
             {
@@ -290,9 +341,17 @@ public class NavisModelRootEditor : BaseFoldoutEditor<NavisModelRoot>
     {
         listArg.caption = $"{nameList}";
         listArg.level = 0;
+
+        List<ModelItemInfo> list1 = models;
+        if (list1 == null) return;
+
         EditorUIUtils.ToggleFoldout(listArg, arg =>
         {
-            var list1 = models;
+            //var list1 = models;
+            if (!string.IsNullOrEmpty(listArg.searchKey))
+            {
+                list1 = list1.FindAll(i => i.Name.Contains(listArg.searchKey));
+            }
             int count = list1.Count;
             arg.caption = $"{nameList} ({list1.Count})";
             //arg.info = $"d:{count}|{doors.VertexCount_Show / 10000f:F0}/{doors.VertexCount / 10000f:F0}";
@@ -314,10 +373,12 @@ public class NavisModelRootEditor : BaseFoldoutEditor<NavisModelRoot>
             //{
             //    item.GetVueModels(true);
             //}
+
+            listArg.searchKey = GUILayout.TextField(listArg.searchKey, GUILayout.Width(100));
         });
         if (listArg.isEnabled && listArg.isExpanded)
         {
-            var list1 = models;
+            //var list1 = models;
             InitEditorArg(list1);
             listArg.DrawPageToolbar(list1, (listItem, i) =>
             {
@@ -343,6 +404,7 @@ public class NavisModelRootEditor : BaseFoldoutEditor<NavisModelRoot>
     {
         listArg.caption = $"{name}";
         listArg.level = 0;
+        if (bimInfos == null) return;
         EditorUIUtils.ToggleFoldout(listArg, arg =>
         {
             var doors = bimInfos;

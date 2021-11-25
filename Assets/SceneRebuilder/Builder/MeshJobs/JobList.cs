@@ -116,9 +116,9 @@ using System;
 
     public static ProgressArg testProgressArg;
 
-    private static ProgressArg jobProgressArg;
+    private static IProgressArg jobProgressArg;
 
-    public static void SetJobProgress(ProgressArg arg)
+    public static void SetJobProgress(IProgressArg arg)
     {
         //if (testProgressArg != null)
         //{
@@ -144,7 +144,7 @@ using System;
         for (int i = 0; i < count; i++)
         {
             //Debug.LogError($"CompleteAllPage {i}/{count}");
-            ProgressArg subProgress = ProgressArg.New("DoJobs...", i, count, name, jobProgressArg);
+            var subProgress = ProgressArg.New("DoJobs...", i, count, name, jobProgressArg);
             //if (jobProgressArg != null)
             //{
             //    jobProgressArg.AddSubProgress(subProgress);

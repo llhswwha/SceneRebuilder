@@ -1,9 +1,84 @@
 using System.Collections;
 using System.Collections.Generic;
+using System.Linq;
 using UnityEngine;
 
 public static class TransformHelper
 {
+    public static List<Transform> FindTransforms(Transform root,string key)
+    {
+        List<Transform> list = new List<Transform>();
+        var childrens = root.GetComponentsInChildren<Transform>(true);
+        foreach(var child in childrens)
+        {
+            if (child.name.Contains(key))
+            {
+                list.Add(child);
+            }
+        }
+        return list;
+    }
+
+    public static List<Transform> FindAllTransforms(Transform root, string key)
+    {
+        Dictionary<Transform, Transform> dict = new Dictionary<Transform, Transform>();
+        List<Transform> list = FindTransforms(root, key);
+        foreach(var item in list)
+        {
+            var ts = item.GetComponentsInChildren<Transform>(true);
+            foreach(var t in ts)
+            {
+                if (!dict.ContainsKey(t))
+                {
+                    dict.Add(t, t);
+                }
+            }
+        }
+        return dict.Keys.ToList();
+    }
+
+    public static List<GameObject> FindGameObjects(Transform root, string key)
+    {
+        List<GameObject> list = new List<GameObject>();
+        var childrens = root.GetComponentsInChildren<Transform>(true);
+        foreach (var child in childrens)
+        {
+            if (child.name.Contains(key))
+            {
+                list.Add(child.gameObject);
+            }
+        }
+        return list;
+    }
+
+
+
+    public static List<GameObject> FindGameObjects(Transform root, List<string> keys)
+    {
+        List<GameObject> list = new List<GameObject>();
+        var childrens = root.GetComponentsInChildren<Transform>(true);
+        foreach (var child in childrens)
+        {
+            if (IsContainsKeys(child.name,keys))
+            {
+                list.Add(child.gameObject);
+            }
+        }
+        return list;
+    }
+
+    public static bool IsContainsKeys(string name, List<string> keys)
+    {
+        foreach(var key in keys)
+        {
+            if (name.Contains(key))
+            {
+                return true;
+            }
+        }
+        return false;
+    }
+
     public static List<Transform> FindSameNameList(List<Transform> modelDicT, string n)
     {
         List<Transform> sameNameList = new List<Transform>();
@@ -124,6 +199,15 @@ public static class TransformHelper
         GetBeforeAfterList(root, beforeNames, afterNames);
 
         ReGroupByDict(root, beforeNames);
+    }
+
+    public static void ShowAll(GameObject root)
+    {
+        var ts = root.GetComponentsInChildren<Transform>(true);
+        foreach (var t in ts)
+        {
+            t.gameObject.SetActive(true);
+        }
     }
 
     public static void ReGroupByDict(Transform root,Dictionary<string, List<Transform>> dict)

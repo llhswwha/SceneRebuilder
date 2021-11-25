@@ -34,6 +34,7 @@ namespace CodeStage.AdvancedFPSCounter.Editor.UI
 		public bool bold = false; 
 		public bool separator = false; 
 		public bool background = false;
+        public string searchKey = "";
 
 		public int pageSize_selected = 10;
         public string[] pageSize_names = new string[] {"5", "10", "15","20", "30", "40", "50","100","200","500","1000","2000"};
@@ -569,6 +570,11 @@ namespace CodeStage.AdvancedFPSCounter.Editor.UI
 
         public static bool ObjectFoldout(FoldoutEditorArg arg,object obj = null, System.Action itemToolbarEvent = null, System.Action destroyAction = null)
         {
+            if (panelWithBackground == null)
+            {
+                SetupStyles();
+            }
+
             if (arg.separator) Separator(5);
 
             if (arg.background)

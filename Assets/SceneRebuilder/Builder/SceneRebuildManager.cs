@@ -7,7 +7,7 @@ using System.Linq;
 using UnityEditor;
 using UnityEditor.SceneManagement;
 
-public class SceneRebuildManager : MonoBehaviour
+public class SceneRebuildManager : SingletonBehaviour<SceneRebuildManager>
 {
     public void Start()
     {

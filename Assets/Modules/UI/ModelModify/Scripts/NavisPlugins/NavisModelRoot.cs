@@ -16,26 +16,9 @@ public class NavisModelRoot : MonoBehaviour
 
 
 
-    [NonSerialized]
-    public List<ModelItemInfo> allModels = new List<ModelItemInfo>();
 
-    [NonSerialized]
-    public List<ModelItemInfo> allModels_uid = new List<ModelItemInfo>();
 
-    [NonSerialized]
-    public List<ModelItemInfo> allModels_noUid = new List<ModelItemInfo>();
 
-    [NonSerialized]
-    public List<ModelItemInfo> allModels_drawable_nozero = new List<ModelItemInfo>();
-
-    [NonSerialized]
-    public List<ModelItemInfo> allModels_drawable_zero = new List<ModelItemInfo>();
-
-    [NonSerialized]
-    public List<ModelItemInfo> allModels_noDrawable_nozero = new List<ModelItemInfo>();
-
-    [NonSerialized]
-    public List<ModelItemInfo> allModels_noDrawable_zero = new List<ModelItemInfo>();
 
 
     public List<Transform> transformList = new List<Transform>();
@@ -62,9 +45,9 @@ public class NavisModelRoot : MonoBehaviour
     public BIMModelInfoDictionary BimDict = new BIMModelInfoDictionary();
 
     [ContextMenu("GetBims")]
-    public void GetBims(List<ModelItemInfo> models)
+    public void GetBims(List<ModelItemInfo> models,ProgressArgEx p0)
     {
-        BimDict = new BIMModelInfoDictionary(this.GetComponentsInChildren<BIMModelInfo>(true));
+        BimDict = new BIMModelInfoDictionary(this.GetComponentsInChildren<BIMModelInfo>(true), p0);
         bimInfos = BimDict.bimInfos;
 
         //var models = file.GetAllItems();
@@ -86,11 +69,91 @@ public class NavisModelRoot : MonoBehaviour
 
     public TransformDictionary TransformDict = new TransformDictionary();
 
-    private void GetTransformList()
-    {
-        transformList = this.GetComponentsInChildren<Transform>(true).ToList();
+    public bool includeInactive = true;
 
-        transformList = InitNavisFileInfoByModel.Instance.FilterList(transformList);
+    //public List<string> OnlyFBXFiles = new List<string>();
+
+    //public List<string> ExceptionFBXFiles = new List<string>();
+
+    public List<GameObject> Targets = new List<GameObject>();
+
+    public GameObject TargetRoot = new GameObject();
+
+    [ContextMenu("FindRelativeTargets")]
+    public void FindRelativeTargets()
+    {
+        string key = ModelName + "_";
+        var list=TransformHelper.FindGameObjects(TargetRoot.transform, key);
+        foreach(var item in list)
+        {
+            if (!Targets.Contains(item))
+            {
+                Targets.Add(item);
+            }
+        }
+    }
+
+    [ContextMenu("HidePipes")]
+    public void HidePipes()
+    {
+        var list = TransformHelper.FindGameObjects(this.transform,new List<string>() {"HH_","JG_","SG_","JQ_" });
+        foreach (var item in list)
+        {
+            item.SetActive(false);
+        }
+    }
+
+    [ContextMenu("ShowPipes")]
+    public void ShowPipes()
+    {
+        var list = TransformHelper.FindGameObjects(this.transform, new List<string>() { "HH_", "JG_", "SG_", "JQ_" });
+        foreach (var item in list)
+        {
+            item.SetActive(true);
+        }
+    }
+
+    private void GetTransformList(ProgressArgEx p0)
+    {
+        if (!Targets.Contains(this.gameObject))
+        {
+            Targets.Add(this.gameObject);
+        }
+
+        Dictionary<Transform, Transform> transformDict = new Dictionary<Transform, Transform>();
+        foreach (var target in Targets)
+        {
+            var list = target.GetComponentsInChildren<Transform>(includeInactive).ToList();
+            foreach(var item in list)
+            {
+                if (item.gameObject.activeInHierarchy == false && includeInactive == false) continue;
+                if (!transformDict.ContainsKey(item))
+                {
+                    //transformList.Add(item);
+                    transformDict.Add(item, item);
+                }
+            }
+            var combinedList = TransformHelper.FindAllTransforms(target.transform, "_Combined");
+            foreach(var item in combinedList)
+            {
+                if (transformDict.ContainsKey(item))
+                {
+                    transformDict.Remove(item);
+                }
+            }
+            Debug.Log($"GetTransformList target:{target} list:{list.Count} combinedList:{combinedList.Count} transformList:{transformList.Count} includeInactive:{includeInactive}");
+            //transformList.AddRange(list);
+        }
+        transformList = transformDict.Keys.ToList();
+        //transformList = this.GetComponentsInChildren<Transform>(true).ToList();
+        transformList.Remove(this.transform);
+
+        Debug.Log($"GetTransformList transformList1:{transformList.Count}");
+
+        transformList = InitNavisFileInfoByModel.Instance.FilterList(transformList,p0);
+        transformList.Sort((a, b) => { return a.name.CompareTo(b.name); });
+
+        Debug.Log($"GetTransformList transformList2:{transformList.Count}");
 
         TransformDict = new TransformDictionary(transformList);
     }
@@ -117,91 +180,119 @@ public class NavisModelRoot : MonoBehaviour
         return true;
     }
 
-    private void GetModelLists()
+    //private void GetModelLists()
+    //{
+    //    allModels = ModelRoot.GetAllItems();
+
+    //    allModels_drawable_nozero.Clear();
+    //    allModels_drawable_zero.Clear();
+    //    allModels_noDrawable_nozero.Clear();
+    //    allModels_noDrawable_zero.Clear();
+
+    //    //allModels.Clear();
+    //    allModels_uid.Clear();
+    //    allModels_noUid.Clear();
+
+    //    for (int i = 0; i < allModels.Count; i++)
+    //    {
+    //        ModelItemInfo child = allModels[i];
+    //        //if (child.IsZero())
+    //        //{
+    //        //    if (child.Drawable == false)
+    //        //    {
+    //        //        allModels_zero.Add(child);
+    //        //    }
+    //        //    else
+    //        //    {
+    //        //        allModels_drawable.Add(child);
+    //        //    }
+    //        //}
+    //        //else
+    //        //{
+    //        //    if (child.Drawable == false)
+    //        //    {
+    //        //        allModels_noDrawable.Add(child);
+    //        //    }
+    //        //    else
+    //        //    {
+
+    //        //    }
+    //        //}
+
+    //        if (child.Drawable == true)
+    //        {
+    //            //allModels_drawable.Add(child);
+    //            if (child.IsZero())
+    //            {
+    //                allModels_drawable_zero.Add(child);
+    //            }
+    //            else
+    //            {
+    //                allModels_drawable_nozero.Add(child);
+    //            }
+    //        }
+    //        else
+    //        {
+    //            if (child.IsZero())
+    //            {
+    //                allModels_noDrawable_zero.Add(child);
+    //            }
+    //            else
+    //            {
+    //                allModels_noDrawable_nozero.Add(child);
+    //            }
+    //        }
+
+    //        if (!string.IsNullOrEmpty(child.UId))
+    //        {
+    //            allModels_uid.Add(child);
+    //        }
+    //        else
+    //        {
+    //            allModels_noUid.Add(child);
+    //        }
+    //    }
+
+    //    allModels.Sort();
+    //    allModels_uid.Sort();
+    //    allModels_noUid.Sort();
+
+    //    allModels_drawable_zero.Sort();
+    //    allModels_drawable_nozero.Sort();
+    //    allModels_noDrawable_nozero.Sort();
+    //    allModels_noDrawable_zero.Sort();
+    //}
+
+    [ContextMenu("BindBimInfo")]
+    public void BindBimInfo(ProgressArg p0)
     {
-        allModels = ModelRoot.GetAllItems();
+        DateTime start = DateTime.Now;
 
-        allModels_drawable_nozero.Clear();
-        allModels_drawable_zero.Clear();
-        allModels_noDrawable_nozero.Clear();
-        allModels_noDrawable_zero.Clear();
+        var p1 = ProgressArg.New("BindBimInfo", 0, 3, "LoadModels", p0);
+        ProgressBarHelper.DisplayCancelableProgressBar(p1,true);
+        LoadModels(p1);
 
-        //allModels.Clear();
-        allModels_uid.Clear();
-        allModels_noUid.Clear();
+        var p2 = ProgressArg.New("BindBimInfo", 1, 3, "FindObjectByUID", p0);
+        ProgressBarHelper.DisplayCancelableProgressBar(p2, true);
+        FindObjectByUID();
 
-        for (int i = 0; i < allModels.Count; i++)
+        var p3 = ProgressArg.New("BindBimInfo", 2, 3, "FindObjectByPos", p0);
+        ProgressBarHelper.DisplayCancelableProgressBar(p3, true);
+        FindObjectByPos(p3);
+
+        Debug.LogError($"[{this.name}]BindBimInfo time:{DateTime.Now-start}");
+
+        var p4 = ProgressArg.New("BindBimInfo", 3, 3, this.name, p0);
+        ProgressBarHelper.DisplayCancelableProgressBar(p4, true);
+
+        if (p0 == null)
         {
-            ModelItemInfo child = allModels[i];
-            //if (child.IsZero())
-            //{
-            //    if (child.Drawable == false)
-            //    {
-            //        allModels_zero.Add(child);
-            //    }
-            //    else
-            //    {
-            //        allModels_drawable.Add(child);
-            //    }
-            //}
-            //else
-            //{
-            //    if (child.Drawable == false)
-            //    {
-            //        allModels_noDrawable.Add(child);
-            //    }
-            //    else
-            //    {
-
-            //    }
-            //}
-
-            if (child.Drawable == true)
-            {
-                //allModels_drawable.Add(child);
-                if (child.IsZero())
-                {
-                    allModels_drawable_zero.Add(child);
-                }
-                else
-                {
-                    allModels_drawable_nozero.Add(child);
-                }
-            }
-            else
-            {
-                if (child.IsZero())
-                {
-                    allModels_noDrawable_zero.Add(child);
-                }
-                else
-                {
-                    allModels_noDrawable_nozero.Add(child);
-                }
-            }
-
-            if (!string.IsNullOrEmpty(child.UId))
-            {
-                allModels_uid.Add(child);
-            }
-            else
-            {
-                allModels_noUid.Add(child);
-            }
+            ProgressBarHelper.ClearProgressBar();
         }
-
-        allModels.Sort();
-        allModels_uid.Sort();
-        allModels_noUid.Sort();
-
-        allModels_drawable_zero.Sort();
-        allModels_drawable_nozero.Sort();
-        allModels_noDrawable_nozero.Sort();
-        allModels_noDrawable_zero.Sort();
     }
 
     [ContextMenu("LoadModels")]
-    public void LoadModels()
+    public void LoadModels(IProgressArg p0)
     {
         DateTime start = DateTime.Now;
 
@@ -212,21 +303,48 @@ public class NavisModelRoot : MonoBehaviour
             ModelName = this.name;
         }
 
+        bool enableProgress = true;
+
+        //1
+        var p1 = ProgressArg.New("LoadModels", 0, 5, "GetModelRoot", p0);
+        ProgressBarHelper.DisplayCancelableProgressBar(p1, enableProgress);
         if (GetModelRoot() == false) return;
- 
-        GetTransformList();//1.Transform
-        
-        var models = navisFile.GetAllItems();
-        ModelDict = new ModelItemInfoDictionary(models);
 
-        GetBims(models);//2.BIMinfo
+        var p2 = ProgressArg.New("LoadModels", 1, 5, "GetTransformList", p0);
+        ProgressBarHelper.DisplayCancelableProgressBar(p2, enableProgress);
+        //2
+        GetTransformList(p2);
 
-        GetModelLists();//3.ModelInfo
+        var p3 = ProgressArg.New("LoadModels", 2, 5, "ModelItemInfoDictionary", p0);
+        ProgressBarHelper.DisplayCancelableProgressBar(p3, enableProgress);
+        //3
+        //var allModels = navisFile.GetAllItems();
+        var allModels = navisFile.GetAllModelInfos();
+        var currentModels = ModelRoot.GetChildrenModels();
+        ModelDict = new ModelItemInfoDictionary(currentModels, p3);
 
-        ProgressBarHelper.ClearProgressBar();
+        var p4 = ProgressArg.New("LoadModels", 3, 5, "GetBims", p0);
+        ProgressBarHelper.DisplayCancelableProgressBar(p4, enableProgress);
+        //4
+        GetBims(allModels,p4);//2.BIMinfo
 
-        Debug.Log($"LoadModels time:{DateTime.Now - start} rendererIdCount:{ModelDict.rendererIdCount} UidCount:{ModelDict.UidCount}");
+        //GetModelLists();//3.ModelInfo
+
+        var p5 = ProgressArg.New("LoadModels", 4, 5, "ModelItemInfoListEx", p0);
+        ProgressBarHelper.DisplayCancelableProgressBar(p5, enableProgress);
+        //5
+        ModelList = new ModelItemInfoListEx(currentModels);
+
+        var p6 = ProgressArg.New("LoadModels", 5, 5, "ModelItemInfoListEx", p0);
+        ProgressBarHelper.DisplayCancelableProgressBar(p6, enableProgress);
+
+        if(p0==null)
+            ProgressBarHelper.ClearProgressBar();
+
+        Debug.Log($"[{this.name}][LoadModels] time:{DateTime.Now - start} rendererIdCount:{ModelDict.rendererIdCount} UidCount:{ModelDict.UidCount}");
     }
+
+    public ModelItemInfoListEx ModelList = null;
 
     public string TestUIdString = "0027-20014-345476504420876800";
 
@@ -236,17 +354,188 @@ public class NavisModelRoot : MonoBehaviour
         //string s = "0027-20014-345476504420876800";
         string s = TestUIdString;
         bool isUid= TransformDictionary.IsUID(s);
-        Debug.Log($"TestIsUId s:{s} isUid:{isUid} length:{s.Length}");
+        Debug.Log($"[{this.name}]TestIsUId s:{s} isUid:{isUid} length:{s.Length}");
     }
+
+    [ContextMenu("FindObjectByUID")]
+    public void TestFindObjectByUID()
+    {
+        //string s = "0027-20014-345476504420876800";
+        string s = TestUIdString;
+        var transform = TransformDict.FindObjectByUID(s);
+        Debug.Log($"[{this.name}]TestIsUId s:{s} transform:{transform}");
+    }
+
+
 
     public void FindObjectByUID()
     {
-        foreach(var uidModel in allModels_uid)
+        if (MinDistance == 0)
         {
-            TransformDict.FindObjectByUID(uidModel.UId);
+            MinDistance = 0.00015f;
+        }
+        if (ModelList == null)
+        {
+            Debug.LogError($"FindObjectByUID ModelList == null");
+            return;
+        }
+        DateTime start = DateTime.Now;
+        List<ModelItemInfo> allModels_uid_found = new List<ModelItemInfo>();
+        List<ModelItemInfo> allModels_uid_nofound = new List<ModelItemInfo>();
+
+        foreach (var uidModel in ModelList.allModels_uid)
+        {
+            var transform=TransformDict.FindObjectByUID(uidModel.UId);
+            if (transform != null)
+            {
+                float dis = uidModel.GetDistance(transform);
+                if (dis > MinDistance )
+                {
+                    allModels_uid_nofound.Add(uidModel);
+                    
+                    Debug.LogError($"[FindObjectByUID][{dis}][{MinDistance}]{uidModel.ShowDistance(transform)}");
+                }
+                else
+                {
+                    allModels_uid_found.Add(uidModel);
+                    TransformDict.RemoveTransform(transform);
+                    BIMModelInfo.SetModelInfo(transform, uidModel);
+                }
+            }
+            else
+            {
+                allModels_uid_nofound.Add(uidModel);
+            }
         }
 
-        Debug.LogError($"FindObjectByUID allModels_uid:{allModels_uid.Count}");
+        TransformDict.InitDict();
+
+        Debug.LogError($"[{this.name}][FindObjectByUID] time:{DateTime.Now-start} allModels_uid:{ModelList.allModels_uid.Count},found:{allModels_uid_found.Count} nofound:{allModels_uid_nofound.Count}");
+
+        //allModels_uid = allModels_uid_nofound;
+
+        ModelList.SetList(allModels_uid_nofound);
+    }
+
+    public float MinDistance = 0.00015f;
+
+    public void FindObjectByPos(ProgressArgEx p0)
+    {
+        if (MinDistance == 0)
+        {
+            MinDistance = 0.00015f;
+        }
+
+        DateTime start = DateTime.Now;
+
+        List<ModelItemInfo> allModels_uid_found1 = new List<ModelItemInfo>();
+        List<ModelItemInfo> allModels_uid_found2 = new List<ModelItemInfo>();
+        List<ModelItemInfo> allModels_uid_nofound1 = new List<ModelItemInfo>();
+        List<ModelItemInfo> allModels_uid_nofound2 = new List<ModelItemInfo>();
+
+        List<ModelItemInfo> models = new List<ModelItemInfo>();
+        models.AddRange(ModelList.allModels_drawable_nozero);
+        //models.AddRange(ModelList.allModels_noDrawable_nozero);
+
+        var p01 = ProgressArg.New("FindObjectByPos", 0,2, "ModelItemInfoDictionary",p0);
+        var modelDict = new ModelItemInfoDictionary(models, p01);
+        //var modelDict = new ModelItemInfoDictionary(models, null);
+
+        var p02 = ProgressArg.New("FindObjectByPos", 1, 2, "FindModels", p0);
+        for (int i = 0; i < models.Count; i++)
+        {
+            ModelItemInfo uidModel = models[i];
+            var p1 = ProgressArg.New("FindModels", i, models.Count, uidModel.Name, p02);
+            ProgressBarHelper.DisplayCancelableProgressBar(p1);
+
+            var transform = TransformDict.FindObjectByPos(uidModel);
+            if (transform != null)
+            {
+                float dis = uidModel.GetDistance(transform);
+                bool isSameName = uidModel.IsSameName(transform);
+
+                var model = modelDict.FindModelByPos(transform);
+                if (model == uidModel)
+                {
+                    if (dis > MinDistance || isSameName == false)
+                    {
+                        allModels_uid_found2.Add(uidModel);
+                        Debug.LogError($"[FindObjectByPos1][{isSameName}]{uidModel.ShowDistance(transform)}");
+                    }
+                    else
+                    {
+                        allModels_uid_found1.Add(uidModel);
+
+                        TransformDict.RemoveTransform(transform);
+                        BIMModelInfo.SetModelInfo(transform, uidModel);
+                    }
+                }
+                else
+                {
+                    var ms = modelDict.FindModelsByPos(transform);
+
+                    if (model != null)
+                    {
+                        allModels_uid_found2.Add(uidModel);
+                        Debug.LogError($"[FindObjectByPos2][{isSameName}][{ms.Count}]({uidModel.ShowDistance(transform)}) - ({model.ShowDistance(transform)})");
+                    }
+                    else
+                    {
+                        allModels_uid_nofound2.Add(uidModel);
+                        Debug.LogError($"[FindObjectByPos3][{isSameName}][{ms.Count}]({uidModel.ShowDistance(transform)})");
+                        foreach(var m in ms)
+                        {
+                            Debug.Log($"m:{m.ShowDistance(transform)}");
+                        }
+                    }
+                }
+            }
+            else
+            {
+                allModels_uid_nofound1.Add(uidModel);
+            }
+        }
+
+        //foreach (var uidModel in ModelList.allModels_noDrawable_nozero)
+        //{
+        //    var transform = TransformDict.FindObjectByPos(uidModel);
+        //    if (transform != null)
+        //    {
+        //        var model = ModelDict.FindModelByPos(transform);
+        //        if (model == uidModel)
+        //        {
+        //            allModels_uid_found1.Add(uidModel);
+        //        }
+        //        else
+        //        {
+        //            allModels_uid_found2.Add(uidModel);
+        //        }
+        //    }
+        //    else
+        //    {
+        //        allModels_uid_nofound1.Add(uidModel);
+        //    }
+        //}
+        int notFoundCount = allModels_uid_nofound1.Count+ allModels_uid_nofound2.Count+ allModels_uid_found2.Count;
+
+        Debug.LogError($"[{this.name}][FindObjectByPos] time:{DateTime.Now - start} allModels_uid:{ModelList.allModels_uid.Count}," +
+            $"found1:{allModels_uid_found1.Count} ,found2:{allModels_uid_found2.Count} ,nofound1:{allModels_uid_nofound1.Count}, nofound2:{allModels_uid_nofound2.Count}");
+
+        //allModels_uid = allModels_uid_nofound;
+        allModels_uid_nofound1.AddRange(allModels_uid_found2);
+        allModels_uid_nofound1.AddRange(allModels_uid_nofound2);
+        
+
+        allModels_uid_nofound1.AddRange(ModelList.allModels_noDrawable_nozero);
+
+        allModels_uid_nofound1.AddRange(ModelList.allModels_drawable_zero);
+        allModels_uid_nofound1.AddRange(ModelList.allModels_noDrawable_zero);
+
+        ModelList.SetList(allModels_uid_nofound1);
+        if (p0 == null)
+        {
+            ProgressBarHelper.ClearProgressBar();
+        }
     }
 
     public void RemoveRepeated()
@@ -306,12 +595,12 @@ public class NavisModelRoot : MonoBehaviour
             }
         }
 
-        for (int i = 0; i < allModels_noDrawable_nozero.Count; i++)
+        for (int i = 0; i < ModelList.allModels_noDrawable_nozero.Count; i++)
         {
-            ModelItemInfo child = allModels_noDrawable_nozero[i];
+            ModelItemInfo child = ModelList.allModels_noDrawable_nozero[i];
             GameObject go = child.Tag as GameObject;
 
-            ProgressArg p1 = new ProgressArg("CreateTree3", i, allModels_noDrawable_nozero.Count, child.Name);
+            ProgressArg p1 = new ProgressArg("CreateTree3", i, ModelList.allModels_noDrawable_nozero.Count, child.Name);
             InitNavisFileInfoByModel.Instance.progressArg = p1;
 
             if (go == null) continue;
@@ -402,15 +691,22 @@ public class NavisModelRoot : MonoBehaviour
     public void ClearResult()
     {
         ClearRootNodes();
-        noFoundBimInfos01.Clear();
-        noFoundBimInfos02.Clear();
-        noFoundBimInfos03.Clear();
-        noFoundBimInfos04.Clear();
+        //noFoundBimInfos01.Clear();
+        //noFoundBimInfos02.Clear();
+        //noFoundBimInfos03.Clear();
+        //noFoundBimInfos04.Clear();
 
-        foundBimInfos1.Clear();
-        foundBimInfos2.Clear();
-        foundBimInfos3.Clear();
-        //bimInfos0_name.Clear();
+        //foundBimInfos1.Clear();
+        //foundBimInfos2.Clear();
+        //foundBimInfos3.Clear();
+
+        noFoundBimInfos01 = new List<ModelItemInfo>();
+        noFoundBimInfos02 = new List<ModelItemInfo>();
+        noFoundBimInfos03 = new List<ModelItemInfo>();
+        noFoundBimInfos04 = new List<ModelItemInfo>();
+        foundBimInfos1 = new List<BIMModelInfo>();
+        foundBimInfos2 = new List<BIMModelInfo>();
+        foundBimInfos3 = new List<BIMModelInfo>();
 
         transformList.Clear();
     }

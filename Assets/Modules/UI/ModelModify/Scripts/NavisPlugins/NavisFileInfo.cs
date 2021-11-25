@@ -47,26 +47,27 @@ namespace NavisPlugins.Infos
             {
                 foreach (var item in this.Models)
                 {
-                    models.AddRange(GetChildItemInfo(item, item));
+                    //models.AddRange(GetChildItemInfo(item, item));
+                    models.AddRange(item.GetChildrenModels());
                 }
             }
             return models;
         }
 
-        private static List<ModelItemInfo> GetChildItemInfo(ModelItemInfo navisT, ModelItemInfo root)
-        {
-            List<ModelItemInfo> models = new List<ModelItemInfo>();
-            if (navisT.Children != null)
-            {
-                models.AddRange(navisT.Children);
-                foreach (var item in navisT.Children)
-                {
-                    item.SetParent(navisT, root);
-                    models.AddRange(GetChildItemInfo(item, root));
-                }
-            }
-            return models;
-        }
+        //private static List<ModelItemInfo> GetChildItemInfo(ModelItemInfo navisT, ModelItemInfo root)
+        //{
+        //    List<ModelItemInfo> models = new List<ModelItemInfo>();
+        //    if (navisT.Children != null)
+        //    {
+        //        models.AddRange(navisT.Children);
+        //        foreach (var item in navisT.Children)
+        //        {
+        //            item.SetParent(navisT, root);
+        //            models.AddRange(GetChildItemInfo(item, root));
+        //        }
+        //    }
+        //    return models;
+        //}
 
         public void SetPropertiesExist(bool isSaveProperties)
         {

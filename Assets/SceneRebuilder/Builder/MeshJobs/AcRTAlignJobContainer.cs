@@ -587,7 +587,7 @@ public class AcRTAlignJobContainer
         lastProgressCount = progressCount;
         //float progress1 = (float)progressCount / targetCount;
 
-        ProgressArg progressArg = ProgressArg.New($"AcRTAlignJob loop:[{loopCount}]", progressCount, targetCount, loopCount, JobHandleList.testProgressArg);
+        var progressArg = ProgressArg.New($"AcRTAlignJob loop:[{loopCount}]", progressCount, targetCount, loopCount, JobHandleList.testProgressArg);
         //AcRTAlignJob.progressArg = progressArg;
         JobHandleList.SetJobProgress(progressArg);
 

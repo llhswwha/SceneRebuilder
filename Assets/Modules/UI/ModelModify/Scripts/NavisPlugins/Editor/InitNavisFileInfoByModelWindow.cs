@@ -18,6 +18,7 @@ public class InitNavisFileInfoByModelWindow :  EditorWindow, IBaseEditorWindow
         target = InitNavisFileInfoByModel.Instance;
     }
 
+
     private void OnGUI()
     {
         //MeshComparerEditor.DrawSetting(target);

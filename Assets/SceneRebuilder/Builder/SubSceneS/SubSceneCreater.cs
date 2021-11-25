@@ -289,10 +289,105 @@ public class SubSceneCreater : MonoBehaviour
 
 }
 
-public class ProgressArg
+public class ProgressArgEx : List<ProgressArg>, IProgressArg
 {
+    public ProgressArgEx()
+    {
+
+    }
+
+    public ProgressArgEx(ProgressArg arg)
+    {
+        this.Add(arg);
+    }
+
+    public float GetProgress()
+    {
+        return this[0].GetProgress();
+    }
+
+    public string GetTitle()
+    {
+        return this[0].GetTitle();
+    }
+
+    public override string ToString()
+    {
+        if (this.Count > 0)
+        {
+            return this[0].ToString();
+        }
+        else
+        {
+            return base.ToString();
+        }
+    }
+
+    internal void AddSubProgress(ProgressArg subProgress)
+    {
+        foreach (var item in this)
+        {
+            if (item == subProgress)
+            {
+                Debug.LogError("ExistProgress:" + subProgress);
+                return;
+            }
+        }
+        this.Last().AddSubProgress(subProgress);
+        this.Add(subProgress);
+    }
+
+    public IProgressArg Clone()
+    {
+        ProgressArgEx list = new ProgressArgEx();
+        list.AddRange(this);
+        return list;
+    }
+}
+
+public interface IProgressArg
+{
+    public string GetTitle();
+
+    public float GetProgress();
+
+    public IProgressArg Clone();
+}
+
+public class ProgressArg: IProgressArg
+{
+    public IProgressArg Clone()
+    {
+        ProgressArg arg = new ProgressArg();
+        arg.title = this.title;
+        //arg.progress = this.progress;
+        arg.i = this.i;
+        arg.count = this.count;
+        arg.tag = this.tag;
+        if (this.subP != null)
+        {
+            //arg.subP = this.subP.Clone();
+            arg.subP = this.subP;
+        }
+        return arg;
+    }
+
     public string title = "";
     public float progress;
+
+    public float GetProgress()
+    {
+        //float progress = i / count;
+        if (subP == null)
+        {
+            return progress;
+        }
+        else
+        {
+            return (i + subP.GetProgress()) / count;
+        }
+        //return progress;
+    }
     public int i;
     public int count;
     public object tag;
@@ -318,18 +413,44 @@ public class ProgressArg
     //    this.tag = t;
     //}
 
-    public static ProgressArg New(string title, int i, int count, object t = null, ProgressArg p0 = null)
+    public static ProgressArgEx New(string title, int i, int count, object t = null, IProgressArg pp = null)
     {
         ProgressArg subProgress = new ProgressArg(title, i, count, t);
-        if (p0 != null)
+
+        if (pp == null)
         {
-            p0.AddSubProgress(subProgress);
-            return p0;
+            ProgressArgEx list = new ProgressArgEx(subProgress);
+            return list;
         }
         else
         {
-            return subProgress;
+            IProgressArg cloneP = pp.Clone();
+            if (cloneP is ProgressArgEx)
+            {
+                ProgressArgEx list = cloneP as ProgressArgEx;
+                //list.Last().AddSubProgress(subProgress);
+                //list.Add(subProgress);
+                list.AddSubProgress(subProgress);
+                return list;
+            }
+            else
+            {
+                //ProgressArg p0 = (pp as ProgressArg).Clone();
+                ProgressArg p0 = (cloneP as ProgressArg);
+                ProgressArgEx list = new ProgressArgEx();
+                p0.AddSubProgress(subProgress);
+                //return p0;
+                list.Add(p0);
+                list.Add(subProgress);
+                return list;
+            }
         }
+        
+    }
+
+    public ProgressArg()
+    {
+
     }
 
     public ProgressArg(string title,int i, int count, object t = null)
@@ -356,84 +477,116 @@ public class ProgressArg
         return this.progress >= 1;
     }
 
-    private string GetProgress()
+    private string GetProgressText()
     {
-        return $"{i}/{count} {progress:P2}";
+        return $"{i}/{count} {GetProgress():P2}";
     }
 
     public override string ToString()
     {
-        if (subP == null)
-        {
-            return $"P1:{GetProgress()} ({tag})";
-        }
-        else
-        {
-            //"{i1}/{count1} {i2}/{count2} {progress1:P1}"
-            //return $"Progress2 [{i}/{count} > {subP.i}/{subP.count}] [{progress:P1} > {subP.progress:P1}]";
+        //if (subP == null)
+        //{
+        //    return $"P1:{GetProgressText()} ({tag})";
+        //}
+        //else
+        //{
+        //    var subP2 = subP.subP;
+        //    if (subP2 == null)
+        //    {
+        //        return $"P2:[{GetProgressText()}]>[{subP.GetProgressText()}] ({tag}>{subP.tag})";
+        //    }
+        //    else
+        //    {
+        //        //return $"P3[{GetProgress()}]>[{subP.GetProgress()}]>[{subP.subP.GetProgress()}] ({tag}>{subP.tag}>{subP.subP.tag})";
+        //        var subP3 = subP2.subP;
+        //        if (subP3 == null)
+        //        {
+        //            return $"P3:[{GetProgressText()}]>[{subP.GetProgressText()}]>[{subP2.GetProgressText()}] ({tag}>{subP.tag}>{subP2.tag})";
+        //        }
+        //        else
+        //        {
+        //            return $"P4:[{GetProgressText()}]>[{subP.GetProgressText()}]>[{subP2.GetProgressText()}]>[{subP3.GetProgressText()}] ({tag}>{subP.tag}>{subP2.tag}>{subP3.tag})";
+        //        }
+        //    }
+        //}
 
-            //return $"P2[{GetProgress()}]>[{subP.GetProgress()}] ({tag}>{subP.tag})";
-            var subP2 = subP.subP;
-            if (subP2 == null)
+        int count = 1;
+        ProgressArg sub = this.subP;
+        string totalProgress = $"[{this.GetProgressText()}]";
+        string totalTag = this.tag + "";
+        while (sub != null)
+        {
+            count++;
+            totalProgress += $">[{sub.GetProgressText()}]";
+            totalTag+= ">"+sub.tag;
+            sub = sub.subP;
+            if (count > 5)
             {
-                return $"P2:[{GetProgress()}]>[{subP.GetProgress()}] ({tag}>{subP.tag})";
-            }
-            else
-            {
-                //return $"P3[{GetProgress()}]>[{subP.GetProgress()}]>[{subP.subP.GetProgress()}] ({tag}>{subP.tag}>{subP.subP.tag})";
-                var subP3 = subP2.subP;
-                if (subP3 == null)
-                {
-                    return $"P3:[{GetProgress()}]>[{subP.GetProgress()}]>[{subP2.GetProgress()}] ({tag}>{subP.tag}>{subP2.tag})";
-                }
-                else
-                {
-                    return $"P4:[{GetProgress()}]>[{subP.GetProgress()}]>[{subP2.GetProgress()}]>[{subP3.GetProgress()}] ({tag}>{subP.tag}>{subP2.tag}>{subP3.tag})";
-                }
+                break;
             }
         }
-        
+        return $"[T{count}]{totalProgress}({totalTag})";
+
     }
 
     public string GetTitle()
     {
-        if (subP == null)
+        int count = 1;
+        ProgressArg sub = this.subP;
+        string totalTitle= $"[{title}]";
+        while (sub != null)
         {
-            return $"[T1][{title}]";
-        }
-        else
-        {
-            //"{i1}/{count1} {i2}/{count2} {progress1:P1}"
-            //return $"Progress2 [{i}/{count} > {subP.i}/{subP.count}] [{progress:P1} > {subP.progress:P1}]";
-
-            //return $"P2[{GetProgress()}]>[{subP.GetProgress()}] ({tag}>{subP.tag})";
-
-            if (subP.subP == null)
+            count++;
+            totalTitle += $">[{sub.title}]";
+            sub = sub.subP;
+            if (count > 5)
             {
-                return $"[T2][{title}]>[{subP.title}]";
+                break;
             }
-            else
-            {
+        }
+        return $"[T{count}]{totalTitle}";
+
+        //if (subP == null)
+        //{
+        //    return $"[T1][{title}]";
+        //}
+        //else
+        //{
+        //    if (subP.subP == null)
+        //    {
+        //        return $"[T2][{title}]>[{subP.title}]";
+        //    }
+        //    else
+        //    {
                 
-                if (subP.subP.subP == null)
-                {
-                    return $"[T3][{title}]>[{subP.title}]>[{subP.subP.title}]";
-                }
-                else
-                {
+        //        if (subP.subP.subP == null)
+        //        {
+        //            return $"[T3][{title}]>[{subP.title}]>[{subP.subP.title}]";
+        //        }
+        //        else
+        //        {
                     
-                    return $"[T3][{title}]>[{subP.title}]>[{subP.subP.title}]>[{subP.subP.subP.title}]";
-                }
-            }
-        }
+        //            return $"[T4][{title}]>[{subP.title}]>[{subP.subP.title}]>[{subP.subP.subP.title}]";
+        //        }
+        //    }
+        //}
     }
 
     public ProgressArg subP;
 
+    public ProgressArg parent;
+
     internal void AddSubProgress(ProgressArg p)
     {
+        if (p == this)
+        {
+            Debug.LogError("AddSubProgress subProgress==this:"+this);
+            return;
+        }
+        p.parent = this;
         subP = p;
-        this.progress = (i + p.progress) / count;
+
+        //this.progress = (i + p.progress) / count;
     }
 }
 

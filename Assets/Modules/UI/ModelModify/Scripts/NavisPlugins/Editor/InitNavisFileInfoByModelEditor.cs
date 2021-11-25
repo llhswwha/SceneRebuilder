@@ -10,6 +10,8 @@ using UnityEngine;
 [CustomEditor(typeof(InitNavisFileInfoByModel))]
 public class InitNavisFileInfoByModelEditor : BaseFoldoutEditor<InitNavisFileInfoByModel>
 {
+    static FoldoutEditorArg<NavisModelRoot> rootListARg = new FoldoutEditorArg<NavisModelRoot>(true, false);
+
     static FoldoutEditorArg<BIMModelInfo> bimListArg = new FoldoutEditorArg<BIMModelInfo>(true,false);
 
     static FoldoutEditorArg<ModelItemInfo> vueRootListArg = new FoldoutEditorArg<ModelItemInfo>(true, false);
@@ -102,7 +104,11 @@ EditorGUILayout.EndHorizontal();
 
         DrawBimList(item, bimListArg, "BimInfo List");
         //Debug.Log($"InitNavisFileInfoByModelEditor t5:{DateTime.Now - start}"); 
+
+        //NavisModelRootListEditor.DrawModelRootList(item, rootListARg);
     }
+
+    
 
     private static void DrawBuildingList(InitNavisFileInfoByModel item)
     {
@@ -148,11 +154,11 @@ EditorGUILayout.EndHorizontal();
         listArg.level = 0;
         EditorUIUtils.ToggleFoldout(listArg, arg =>
         {
-            var doors = item.bimInfos;
-            int count = doors.Count;
-            arg.caption = $"{name} ({doors.Count})";
+            var list = item.bimInfos;
+            int count = list.Count;
+            arg.caption = $"{name} ({list.Count})";
             //arg.info = $"d:{count}|{doors.VertexCount_Show / 10000f:F0}/{doors.VertexCount / 10000f:F0}";
-            InitEditorArg(doors);
+            InitEditorArg(list);
         },
         () =>
         {
@@ -172,12 +178,12 @@ EditorGUILayout.EndHorizontal();
             listArg.DrawPageToolbar(list1, (listItem, i) =>
             {
                 if (listItem == null) return;
-                var doorRootArg = FoldoutEditorArgBuffer.editorArgs[listItem];
-                doorRootArg.level = 1;
-                doorRootArg.background = true;
-                doorRootArg.caption = $"[{i + 1:00}] {listItem.name}";
-                doorRootArg.info = listItem.GetItemText();
-                EditorUIUtils.ObjectFoldout(doorRootArg, listItem.gameObject, () =>
+                var listItemArg = FoldoutEditorArgBuffer.editorArgs[listItem];
+                listItemArg.level = 1;
+                listItemArg.background = true;
+                listItemArg.caption = $"[{i + 1:00}] {listItem.name}";
+                listItemArg.info = listItem.GetItemText();
+                EditorUIUtils.ObjectFoldout(listItemArg, listItem.gameObject, () =>
                 {
                 });
             });
@@ -306,7 +312,6 @@ EditorGUILayout.EndHorizontal();
         {
             InitNavisFileInfoByModelWindow.ShowWindow();
         }
-        
     }
 
     //public override void OnInspectorGUI()

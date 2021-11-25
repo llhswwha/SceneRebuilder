@@ -179,6 +179,28 @@ namespace NavisPlugins.Infos
              return _parent;
          }
 
+        public List<ModelItemInfo> GetChildrenModels()
+        {
+            return GetChildItemInfo(this);
+        }
+
+        public List<ModelItemInfo> GetChildItemInfo(ModelItemInfo root)
+        {
+            List<ModelItemInfo> models = new List<ModelItemInfo>();
+            if (this.Children != null)
+            {
+                models.AddRange(this.Children);
+                foreach (var item in this.Children)
+                {
+                    item.SetParent(this, root);
+                    models.AddRange(item.GetChildItemInfo(root));
+                }
+            }
+            return models;
+        }
+
+        
+
         internal List<ModelItemInfo> GetAllItems()
         {
             List<ModelItemInfo> list = new List<ModelItemInfo>();
@@ -230,6 +252,171 @@ namespace NavisPlugins.Infos
             return GetNodeName();
 
             //return Name;
+        }
+
+        public string ShowDistance(Transform transform)
+        {
+            var p1 = this.GetPositon();
+            var p2 = transform.position;
+            var dis = Vector3.Distance(p1, p2);
+            bool isSameName = this.IsSameName(transform);
+            //Debug.Log($"ShowDistance distance:{dis} \tmodel:{this.Name}({p1}) tansform:{transform.name}({p2})");
+            return $"ShowDistance distance:{dis} isSameName:{isSameName} \tmodel:{this.Name}{p1}{this.UId} transform:{transform.name}{p2}";
+        }
+
+        public float GetDistance(Transform transform)
+        {
+            var p1 = this.GetPositon();
+            var p2 = transform.position;
+            var dis = Vector3.Distance(p1, p2);
+            return dis;
+        }
+
+        public bool IsSameName(Transform transform)
+        {
+            string n = this.Name.Replace(" ","_");
+            string n2 = n + " ";
+            string n3 = n + "_";
+
+            if (transform.name == n || transform.name.StartsWith(n2) || transform.name.StartsWith(n3))
+            {
+                return true;
+            }
+            else
+            {
+                if(_parent.Children.Count==1)
+                {
+                    return _parent.IsSameName(transform);
+                }
+                else
+                {
+                    return false;
+                }
+            }
+        }
+    }
+
+    public class ModelItemInfoListEx
+    {
+        [NonSerialized]
+        public List<ModelItemInfo> allModels = new List<ModelItemInfo>();
+
+        [NonSerialized]
+        public List<ModelItemInfo> allModels_uid = new List<ModelItemInfo>();
+
+        [NonSerialized]
+        public List<ModelItemInfo> allModels_noUid = new List<ModelItemInfo>();
+
+        [NonSerialized]
+        public List<ModelItemInfo> allModels_drawable_nozero = new List<ModelItemInfo>();
+
+        [NonSerialized]
+        public List<ModelItemInfo> allModels_drawable_zero = new List<ModelItemInfo>();
+
+        [NonSerialized]
+        public List<ModelItemInfo> allModels_noDrawable_nozero = new List<ModelItemInfo>();
+
+        [NonSerialized]
+        public List<ModelItemInfo> allModels_noDrawable_zero = new List<ModelItemInfo>();
+
+        public ModelItemInfoListEx()
+        {
+
+        }
+
+        public ModelItemInfoListEx(List<ModelItemInfo> items)
+        {
+            SetList(items);
+        }
+
+        public void SetList(List<ModelItemInfo> items)
+        {
+            allModels.Clear();
+            allModels.AddRange(items);
+            GetModelLists();
+        }
+
+        private void GetModelLists()
+        {
+            //allModels = ModelRoot.GetAllItems();
+
+            allModels_drawable_nozero.Clear();
+            allModels_drawable_zero.Clear();
+            allModels_noDrawable_nozero.Clear();
+            allModels_noDrawable_zero.Clear();
+
+            //allModels.Clear();
+            allModels_uid.Clear();
+            allModels_noUid.Clear();
+
+            for (int i = 0; i < allModels.Count; i++)
+            {
+                ModelItemInfo child = allModels[i];
+                //if (child.IsZero())
+                //{
+                //    if (child.Drawable == false)
+                //    {
+                //        allModels_zero.Add(child);
+                //    }
+                //    else
+                //    {
+                //        allModels_drawable.Add(child);
+                //    }
+                //}
+                //else
+                //{
+                //    if (child.Drawable == false)
+                //    {
+                //        allModels_noDrawable.Add(child);
+                //    }
+                //    else
+                //    {
+
+                //    }
+                //}
+
+                if (child.Drawable == true)
+                {
+                    //allModels_drawable.Add(child);
+                    if (child.IsZero())
+                    {
+                        allModels_drawable_zero.Add(child);
+                    }
+                    else
+                    {
+                        allModels_drawable_nozero.Add(child);
+                    }
+                }
+                else
+                {
+                    if (child.IsZero())
+                    {
+                        allModels_noDrawable_zero.Add(child);
+                    }
+                    else
+                    {
+                        allModels_noDrawable_nozero.Add(child);
+                    }
+                }
+
+                if (!string.IsNullOrEmpty(child.UId))
+                {
+                    allModels_uid.Add(child);
+                }
+                else
+                {
+                    allModels_noUid.Add(child);
+                }
+            }
+
+            allModels.Sort();
+            allModels_uid.Sort();
+            allModels_noUid.Sort();
+
+            allModels_drawable_zero.Sort();
+            allModels_drawable_nozero.Sort();
+            allModels_noDrawable_nozero.Sort();
+            allModels_noDrawable_zero.Sort();
         }
     }
 }

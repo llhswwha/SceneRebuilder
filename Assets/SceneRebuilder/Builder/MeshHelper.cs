@@ -43,7 +43,7 @@ public static class MeshHelper
         Debug.Log($"empty:{emptyList.Count},all:{ts.Length}");
     }
 
-    public static List<Type> typesOfEmptyObject = new List<Type>() {typeof(Transform),typeof(RendererId),typeof(MeshNode),typeof(MeshRendererInfo), typeof(MeshRendererInfoEx), typeof(SubScene_Single), typeof(BoxCollider)/*, typeof(BIMModelInfo), typeof(NavisModelRoot)*/ };
+    public static List<Type> typesOfEmptyObject = new List<Type>() {typeof(Transform),typeof(RendererId),typeof(MeshNode),typeof(MeshRendererInfo), typeof(MeshRendererInfoEx), typeof(SubScene_Single), typeof(BoxCollider), typeof(BIMModelInfo), typeof(NavisModelRoot) };
 
     public static List<Type> typesOfEmptyChildObject = new List<Type>() { typeof(Transform), typeof(RendererId), typeof(MeshNode), typeof(MeshRendererInfo), typeof(MeshRendererInfoEx), typeof(LODGroup), typeof(LODGroupInfo), typeof(SubScene_Single), typeof(BoxCollider)/*, typeof(BIMModelInfo), typeof(NavisModelRoot)*/ };
 
@@ -75,7 +75,7 @@ public static class MeshHelper
                 }
             }
         }
-        Debug.Log($"IsEmptyLODSubGroup {t}");
+        //Debug.Log($"IsEmptyLODSubGroup {t}");
         return true;
     }
 

@@ -456,7 +456,75 @@ public class BaseFoldoutEditor<T> : BaseEditor<T> where T : class
         return nodes;
     }
 
-    public void DrawObjectList<T1>(FoldoutEditorArg foldoutArg, string title, System.Func<List<T1>> funcGetList, System.Action<FoldoutEditorArg, T1, int> drawItemAction, System.Action<T1> toolBarAction, System.Action<FoldoutEditorArg, T1, int> drawSubListAction)
+    public static void DrawObjectList<T1>(FoldoutEditorArg foldoutArg, string title, List<T1> list,
+        System.Action<FoldoutEditorArg, T1, int> drawItemAction, System.Action<T1> toolBarAction, System.Action<FoldoutEditorArg, T1, int> drawSubListAction)
+    {
+        //List<T1> list = new List<T1>();
+        foldoutArg.caption = title;
+        EditorUIUtils.ToggleFoldout(foldoutArg, (arg) =>
+        {
+            System.DateTime start = System.DateTime.Now;
+            //scenes = item.scenes.ToList();
+            //list = funcGetList();
+            InitEditorArg(list);
+            arg.caption = $"{title}({list.Count})";
+        }, () =>
+        {
+            if(GUILayout.Button("Clear"))
+            {
+                list.Clear();
+            }
+        });
+        if (foldoutArg.isExpanded && foldoutArg.isEnabled)
+        {
+            System.DateTime start = System.DateTime.Now;
+            foldoutArg.DrawPageToolbar(list.Count);
+            int c = 0;
+            for (int i = foldoutArg.GetStartId(); i < list.Count && i < foldoutArg.GetEndId(); i++)
+            {
+                c++;
+                var item = list[i];
+                var arg = FoldoutEditorArgBuffer.editorArgs[item];
+                arg.level = 1;
+                arg.caption = $"[{i:00}] {item.ToString()}";
+                arg.isFoldout = false;
+                arg.isEnabled = true;
+
+                Object obj = arg.tag as Object;
+                if (item is Object)
+                {
+                    obj = item as Object;
+                    arg.caption = obj.name;
+                }
+
+                if (drawItemAction != null)
+                {
+                    drawItemAction(arg, item, i);
+                }
+
+                EditorUIUtils.ObjectFoldout(arg, obj, () =>
+                {
+                    if (toolBarAction != null)
+                    {
+                        toolBarAction(item);
+                    }
+                });
+                if (arg.isEnabled && arg.isExpanded)
+                {
+                    if (drawSubListAction != null)
+                    {
+                        drawSubListAction(arg, item, i);
+                    }
+                }
+
+            }
+            var time = System.DateTime.Now - start;
+            //Debug.Log($"Show SceneList count:{c} time:{time.TotalMilliseconds:F1}ms ");
+        }
+    }
+
+    public static void DrawObjectList<T1>(FoldoutEditorArg foldoutArg, string title, System.Func<List<T1>> funcGetList,
+        System.Action<FoldoutEditorArg, T1, int> drawItemAction, System.Action<T1> toolBarAction, System.Action<FoldoutEditorArg, T1, int> drawSubListAction)
     {
         List<T1> list = new List<T1>();
         foldoutArg.caption = title;
@@ -718,7 +786,7 @@ public class BaseFoldoutEditor<T> : BaseEditor<T> where T : class
         }
     }
 
-    private List<MeshRendererInfo> InitMeshRendererInfoListEx(FoldoutEditorArg<MeshRendererInfo> arg, System.Func<List<MeshRendererInfo>> funcGetList)
+    private List<MeshRendererInfo> InitMeshRendererInfoListEx(FoldoutEditorArg<MeshRendererInfo> arg, List<MeshRendererInfo> list)
     {
         System.DateTime start = System.DateTime.Now;
         float sumVertexCount = 0;
@@ -726,7 +794,7 @@ public class BaseFoldoutEditor<T> : BaseEditor<T> where T : class
         int sumRendererCount = 0;
         int sumRendererCountVisible = 0;
         //List<MeshFilter> meshes = GameObject.FindObjectsOfType<MeshFilter>(true).Where(m => m != null && m.sharedMesh != null && m.sharedMesh.name != "Cube").ToList();
-        List<MeshRendererInfo> meshes = funcGetList();
+        List<MeshRendererInfo> meshes = list;
         meshes.Sort((a, b) =>
         {
             return b.vertexCount.CompareTo(a.vertexCount);
@@ -774,7 +842,7 @@ public class BaseFoldoutEditor<T> : BaseEditor<T> where T : class
         return meshes;
     }
 
-    public void DrawMeshRendererInfoListEx(FoldoutEditorArg<MeshRendererInfo> foldoutArg, System.Func<List<MeshRendererInfo>> funcGetList)
+    public void DrawMeshRendererInfoListEx(FoldoutEditorArg<MeshRendererInfo> foldoutArg, List<MeshRendererInfo> list,System.Func<List<MeshRendererInfo>> funcGetList)
     {
         if (string.IsNullOrEmpty(foldoutArg.caption)) foldoutArg.caption = $"Mesh Info List";
         List<MeshRendererInfo> meshFilters = foldoutArg.Items;
@@ -784,7 +852,7 @@ public class BaseFoldoutEditor<T> : BaseEditor<T> where T : class
 
             if (meshFilters.Count == 0)
             {
-                meshFilters = InitMeshRendererInfoListEx(arg as FoldoutEditorArg<MeshRendererInfo>, funcGetList);
+                meshFilters = InitMeshRendererInfoListEx(arg as FoldoutEditorArg<MeshRendererInfo>, list);
             }
             //else
             //{
@@ -798,7 +866,7 @@ public class BaseFoldoutEditor<T> : BaseEditor<T> where T : class
             if (GUILayout.Button("Update", GUILayout.Width(60)))
             {
                 foldoutArg.Items.Clear();
-                meshFilters = InitMeshRendererInfoListEx(foldoutArg, funcGetList);
+                meshFilters = InitMeshRendererInfoListEx(foldoutArg, funcGetList());
             }
             if (GUILayout.Button("Win", GUILayout.Width(35)))
             {
@@ -1684,11 +1752,18 @@ public static class BaseFoldoutEditorHelper
 
     public static void DrawTransformList(List<Transform> transList, FoldoutEditorArg<Transform> listArg, System.Action updateAction, string listName)
     {
+        if (transList == null) return;
         listArg.caption = $"{listName}";
         listArg.level = 0;
+        List<Transform> list1 = transList;
         EditorUIUtils.ToggleFoldout(listArg, arg =>
         {
-            var list1 = transList;
+            //var list1 = transList;
+            if (!string.IsNullOrEmpty(listArg.searchKey))
+            {
+                list1 = list1.FindAll(i => i.name.Contains(listArg.searchKey));
+            }
+            //listArg.lis
             int count = list1.Count;
             arg.caption = $"{listName} ({list1.Count})";
             //arg.info = $"d:{count}|{doors.VertexCount_Show / 10000f:F0}/{doors.VertexCount / 10000f:F0}";
@@ -1706,6 +1781,8 @@ public static class BaseFoldoutEditorHelper
                 }
             }
 
+            listArg.searchKey = GUILayout.TextField(listArg.searchKey, GUILayout.Width(100));
+
             //if (GUILayout.Button("Compare"))
             //{
             //    item.CompareModelVueInfo_Model2Vue();
@@ -1713,7 +1790,7 @@ public static class BaseFoldoutEditorHelper
         });
         if (listArg.isEnabled && listArg.isExpanded)
         {
-            var list1 = transList;
+            //var list1 = transList;
             //InitEditorArg(list1);
             FoldoutEditorArgBuffer.InitEditorArg(list1);
             listArg.DrawPageToolbar(list1, (listItem, i) =>

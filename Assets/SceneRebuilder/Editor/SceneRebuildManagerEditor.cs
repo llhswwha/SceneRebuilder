@@ -163,7 +163,7 @@ public class SceneRebuildManagerEditor : BaseFoldoutEditor<SceneRebuildManager>
         //Debug.Log($"SceneRebuildManagerEditor2 time:{(System.DateTime.Now - startT).TotalMilliseconds:F1}ms ");
         //DrawMeshList(meshListArg, GetMeshList);
 
-        DrawMeshRendererInfoListEx(meshinfoListArg, GetMeshInfoList);
+        DrawMeshRendererInfoListEx(meshinfoListArg, GetMeshInfoList(),GetMeshInfoList);
 
         //Debug.Log($"SceneRebuildManagerEditor1 time:{(System.DateTime.Now - startT).TotalMilliseconds:F1}ms ");
         DrawMatList(GlobalMaterialManager.Instance, matListArg);

@@ -45,6 +45,6 @@ public class WeldingManagerEditor : BaseFoldoutEditor<WeldingManager>
         DrawSharedMeshListEx(sharedMeshListArg, () => item.GetWeldings());
 
 
-        DrawMeshRendererInfoListEx(meshinfoListArg, item.GetMeshInfoList);
+        DrawMeshRendererInfoListEx(meshinfoListArg, item.GetMeshInfoList(),item.GetMeshInfoList);
     }
 }

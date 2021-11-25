@@ -16,9 +16,9 @@ public class BIMModelInfoDictionary
 
     public List<BIMModelInfo> bimInfos = new List<BIMModelInfo>();
 
-    public BIMModelInfoDictionary(BIMModelInfo[] bims)
+    public BIMModelInfoDictionary(BIMModelInfo[] bims, ProgressArgEx p0)
     {
-        InitDict(bims);
+        InitDict(bims, p0);
     }
 
     public BIMModelInfoDictionary()
@@ -26,7 +26,7 @@ public class BIMModelInfoDictionary
 
     }
 
-    private void InitDict(BIMModelInfo[] bims)
+    private void InitDict(BIMModelInfo[] bims,ProgressArgEx p0)
     {
         bimInfos = new List<BIMModelInfo>();
         //bimInfos.AddRange(this.GetComponentsInChildren<BIMModelInfo>(true));
@@ -40,7 +40,8 @@ public class BIMModelInfoDictionary
         for (int i = 0; i < bimInfos.Count; i++)
         {
             BIMModelInfo bim = bimInfos[i];
-            ProgressBarHelper.DisplayCancelableProgressBar("GetBims", i, bimInfos.Count, bim);
+            var p1 = ProgressArg.New("GetBims", i, bimInfos.Count, bim, p0);
+            ProgressBarHelper.DisplayCancelableProgressBar(p1);
 
             var area = bim.GetArea();
 
@@ -132,16 +133,16 @@ public class BIMModelInfoDictionary
             sb.AppendLine($"Not Found Model[{i}/{bimsList2.Count}]:{bim}");
         }
 
-        Debug.LogError($"GetBims bimCount:{bimInfos.Count} rendererId2Bim:{rendererId2Bim.Count} guid2Bim:{guid2Bim.Count}  foundCount:{foundCount} notFoundCount:{bimsList2.Count}\n{sb}");
+        Debug.LogError($"[CheckDict] GetBims bimCount:{bimInfos.Count} rendererId2Bim:{rendererId2Bim.Count} guid2Bim:{guid2Bim.Count}  foundCount:{foundCount} notFoundCount:{bimsList2.Count}\n{sb}");
 
-        ProgressBarHelper.ClearProgressBar();
+        //ProgressBarHelper.ClearProgressBar();
 
         foreach (string key in bimAreas.Keys)
         {
-            Debug.LogError($"BimAreas area:{key} bims:{bimAreas[key].Count}");
+            Debug.Log($"[CheckDict] BimAreas area:{key} bims:{bimAreas[key].Count}");
         }
 
-        Debug.LogError($"GetBims infos:{bimInfos.Count}");
+        //Debug.LogError($"[CheckDict] GetBims infos:{bimInfos.Count}");
     }
 
     public BIMModelInfo GetBIMModelByRendererId(string r)

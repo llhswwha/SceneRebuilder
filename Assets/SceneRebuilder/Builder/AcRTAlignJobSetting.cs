@@ -22,7 +22,7 @@ public class AcRTAlignJobSetting : SingletonBehaviour<AcRTAlignJobSetting>
 
     public float MaxVertexCount=10;
 
-    public float CompareSizeMinValue = 1.5f;
+    public float CompareSizeMinValue = 1.1f;
 
     [ContextMenu("SetAcRTAlignJobSetting")]
     public void SetAcRTAlignJobSetting()

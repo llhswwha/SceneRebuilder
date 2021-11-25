@@ -32,7 +32,12 @@ public class BuildingModelInfoEditor : BaseFoldoutEditor<BuildingModelInfo>
     {
         base.OnEnable();
 
-        treeListArg = new FoldoutEditorArg(true, false,true,true,false);
+        //EnableFunction();
+    }
+
+    private void EnableFunction()
+    {
+        treeListArg = new FoldoutEditorArg(true, false, true, true, false);
         nodeListArg = new FoldoutEditorArg(true, false, true, true, false);
         sceneListArg = new FoldoutEditorArg(true, false, true, true, false);
 
@@ -53,6 +58,7 @@ public class BuildingModelInfoEditor : BaseFoldoutEditor<BuildingModelInfo>
 
         targetT.UpdateSceneList();
     }
+
     public static void DrawToolbar(BuildingModelInfo info, GUIStyle btnStyle, int buttonWidth)
     {
         BuildingModelState state = info.GetState();
@@ -79,7 +85,8 @@ public class BuildingModelInfoEditor : BaseFoldoutEditor<BuildingModelInfo>
 
 
         EditorGUILayout.BeginHorizontal();
-        NewEnabledButton("1.GetInfo", buttonWidth, state.CanGetInfo(), btnStyle, () => {
+        NewEnabledButton("1.GetInfo", buttonWidth, state.CanGetInfo(), btnStyle, () =>
+        {
             info.InitInOut(true);
         });
         int btnW1 = 90;
@@ -89,7 +96,8 @@ public class BuildingModelInfoEditor : BaseFoldoutEditor<BuildingModelInfo>
             DoorManager.Instance.SplitDoors(info.gameObject);
         });
         NewEnabledButton("ClearParts", buttonWidth, state.partCount > 0, btnStyle, info.ClearInOut);
-        NewEnabledButton("CombineDoors", buttonWidth, state.partCount > 0, btnStyle, ()=> {
+        NewEnabledButton("CombineDoors", buttonWidth, state.partCount > 0, btnStyle, () =>
+        {
             info.CombineDoors();
         });
         EditorGUILayout.EndHorizontal();
@@ -139,17 +147,20 @@ public class BuildingModelInfoEditor : BaseFoldoutEditor<BuildingModelInfo>
         EditorGUILayout.EndHorizontal();
 
         EditorGUILayout.BeginHorizontal();
-        NewEnabledButton("5.OneKey", buttonWidth, state.CanOneKey(), btnStyle, () => {
+        NewEnabledButton("5.OneKey", buttonWidth, state.CanOneKey(), btnStyle, () =>
+        {
             // info.InitInOut();
             // info.CreateTreesBSEx();
             // info.EditorCreateNodeScenes();
             info.OneKey_TreeNodeScene();
 
         });
-        NewEnabledButton("Reset", buttonWidth, state.CanReset(), btnStyle, () => {
+        NewEnabledButton("Reset", buttonWidth, state.CanReset(), btnStyle, () =>
+        {
             info.ResetModel(null);
         });
-        NewEnabledButton("SetBuildings", buttonWidth, true, btnStyle, () => {
+        NewEnabledButton("SetBuildings", buttonWidth, true, btnStyle, () =>
+        {
             SubSceneManager.Instance.SetBuildings_All();
         });
         EditorGUILayout.EndHorizontal();
@@ -179,7 +190,7 @@ public class BuildingModelInfoEditor : BaseFoldoutEditor<BuildingModelInfo>
         });
         if (GUILayout.Button("|", GUILayout.Width(10)))
         {
-            
+
         }
         NewEnabledButton("MoveRenderers", buttonWidth, true, btnStyle, () =>
         {
@@ -248,12 +259,17 @@ public class BuildingModelInfoEditor : BaseFoldoutEditor<BuildingModelInfo>
 
         EditorGUILayout.EndHorizontal();
 
-        
+
     }
 
     public override void OnToolLayout(BuildingModelInfo item)
     {
         if (item == null) return;
+        if (GUILayout.Button("EnableFunction"))
+        {
+            EnableFunction();
+        }
+
         base.OnToolLayout(item);
         if (item == null) return;
 
@@ -270,10 +286,10 @@ public class BuildingModelInfoEditor : BaseFoldoutEditor<BuildingModelInfo>
         {
             return item.GetTreeList();
         });
-        List<AreaTreeNode> nodes = DrawNodeList(nodeListArg,true, () =>
-        {
-            return item.GetNodeList();
-        });
+        List<AreaTreeNode> nodes = DrawNodeList(nodeListArg, true, () =>
+         {
+             return item.GetNodeList();
+         });
         DrawSceneList(sceneListArg, () =>
         {
             return item.GetSceneList();
@@ -281,30 +297,21 @@ public class BuildingModelInfoEditor : BaseFoldoutEditor<BuildingModelInfo>
 
         DrawMeshFilterList(meshListArg, () =>
         {
-           List<MeshFilter> meshes = new List<MeshFilter>();
-           if(item.InPart)
-               meshes.AddRange(item.InPart.GetComponentsInChildren<MeshFilter>(true));
-           if (item.OutPart0)
-               meshes.AddRange(item.OutPart0.GetComponentsInChildren<MeshFilter>(true));
-           if (item.OutPart1)
-               meshes.AddRange(item.OutPart1.GetComponentsInChildren<MeshFilter>(true));
-           meshes=meshes.Where(m => m != null && m.sharedMesh != null && m.sharedMesh.name != "Cube").ToList();
-           return meshes;
-        });
-
-        DrawMeshRendererInfoListEx(meshinfoListArg, () =>
-        {
-            MeshRendererInfo.InitRenderers(item.gameObject);
-
-            List<MeshRendererInfo> meshes = new List<MeshRendererInfo>();
+            List<MeshFilter> meshes = new List<MeshFilter>();
             if (item.InPart)
-                meshes.AddRange(item.InPart.GetComponentsInChildren<MeshRendererInfo>(true));
+                meshes.AddRange(item.InPart.GetComponentsInChildren<MeshFilter>(true));
             if (item.OutPart0)
-                meshes.AddRange(item.OutPart0.GetComponentsInChildren<MeshRendererInfo>(true));
+                meshes.AddRange(item.OutPart0.GetComponentsInChildren<MeshFilter>(true));
             if (item.OutPart1)
-                meshes.AddRange(item.OutPart1.GetComponentsInChildren<MeshRendererInfo>(true));
+                meshes.AddRange(item.OutPart1.GetComponentsInChildren<MeshFilter>(true));
             meshes = meshes.Where(m => m != null && m.sharedMesh != null && m.sharedMesh.name != "Cube").ToList();
             return meshes;
+        });
+
+        DrawMeshRendererInfoListEx(meshinfoListArg, item.GetMeshRenderers(false),
+            () =>
+        {
+            return item.GetMeshRenderers(true);
         });
 
         GlobalMaterialManager.Instance.LocalTarget = item.gameObject;

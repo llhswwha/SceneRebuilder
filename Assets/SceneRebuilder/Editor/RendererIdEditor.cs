@@ -63,10 +63,7 @@ public class RendererIdEditor : BaseEditor<RendererId>
         //{
         //    //MeshHelper.CenterMesh(item.gameObject);
         //}
-        if (GUILayout.Button("ShowRenderers"))
-        {
-            item.ShowRenderers();
-        }
+
         if (GUILayout.Button("RootParent"))
         {
             EditorHelper.UnpackPrefab(item.gameObject);
@@ -81,6 +78,14 @@ public class RendererIdEditor : BaseEditor<RendererId>
         EditorGUILayout.EndHorizontal();
 
         EditorGUILayout.BeginHorizontal();
+        if (GUILayout.Button("ShowRenderers"))
+        {
+            item.ShowRenderers();
+        }
+        if (GUILayout.Button("ShowAll"))
+        {
+            TransformHelper.ShowAll(item.gameObject);
+        }
         if (GUILayout.Button("NewId"))
         {
             item.NewId();

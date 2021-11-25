@@ -11,6 +11,25 @@ using UnityEngine;
 
 public class InitNavisFileInfoByModel : SingletonBehaviour<InitNavisFileInfoByModel>
 {
+    //public List<NavisModelRoot> ModelRoots = new List<NavisModelRoot>();
+
+    //[ContextMenu("GetModelRoots")]
+    //public void GetModelRootObjects()
+    //{
+    //    ModelRoots = GameObject.FindObjectsOfType<NavisModelRoot>(true).ToList();
+
+    //}
+
+    //[ContextMenu("RootsBindBim")]
+    //public void RootsBindBim()
+    //{
+    //    for(int i = 0; i < ModelRoots.Count; i++)
+    //    {
+    //        var root = ModelRoots[i];
+    //        root.BindBimInfo();
+    //    }
+    //}
+
     public bool IsShowAll = false;
 
     public bool IsFindClosedFloor = true;
@@ -1102,20 +1121,22 @@ vueDict.Add(item.UId, item);
         }
     }
 
-    public List<Transform> FilterList(List<Transform> list1)
+    public List<Transform> FilterList(List<Transform> list1, ProgressArgEx p0)
     {
         List<Transform> all = new List<Transform>();
         for (int i1 = 0; i1 < list1.Count; i1++)
         {
             Transform t = list1[i1];
-            ProgressBarHelper.DisplayCancelableProgressBar(new ProgressArg("GetAllChildren", i1, list1.Count, t.name));
+            var p1 = ProgressArg.New("FilterList", i1, list1.Count, t.name, p0);
+            ProgressBarHelper.DisplayCancelableProgressBar(p1);
             if (IsFiltered(t))
             {
                 continue;
             }
             all.Add(t);
         }
-        ProgressBarHelper.ClearProgressBar();
+        if(p0==null)
+            ProgressBarHelper.ClearProgressBar();
         return all;
     }
 
@@ -1142,6 +1163,7 @@ vueDict.Add(item.UId, item);
         {
             return true;
         }
+        if (t.GetComponent<MeshRenderer>() == null && t.GetComponent<LODGroup>() == null) return true;
         if (MeshHelper.IsEmptyGroup(t,false)) return true;
         if (MeshHelper.IsSameNameGroup(t)) return true;
         if (MeshHelper.IsEmptyLODSubGroup(t)) return true;
@@ -1210,7 +1232,7 @@ vueDict.Add(item.UId, item);
         //    all.Add(t);
         //}
 
-        all = FilterList(list1);
+        all = FilterList(list1,null);
 
         ProgressBarHelper.ClearProgressBar();
         Debug.Log($"GetAllChildren all:{all.Count}");

@@ -29,13 +29,13 @@ public class ModelItemInfoDictionary
     {
     }
 
-        public ModelItemInfoDictionary(List<ModelItemInfo> all)
+        public ModelItemInfoDictionary(List<ModelItemInfo> all, ProgressArgEx p0)
     {
-        InitDict(all);
+        InitDict(all, p0);
         GetRepeatedModels();
     }
 
-    private void InitDict(List<ModelItemInfo> all)
+    private void InitDict(List<ModelItemInfo> all, ProgressArgEx p0)
     {
         renderId2Model = new Dictionary<string, List<ModelItemInfo>>();
         uid2Model = new Dictionary<string, List<ModelItemInfo>>();
@@ -44,7 +44,7 @@ public class ModelItemInfoDictionary
         {
             ModelItemInfo item = all[i];
 
-            ProgressArg p1 = new ProgressArg("LoadModels", i, all.Count, item.Name);
+            var p1 = ProgressArg.New("ModelItemInfoDictionary", i, all.Count, item.Name, p0);
             //InitNavisFileInfoByModel.Instance.progressArg = p1;
             ProgressBarHelper.DisplayCancelableProgressBar(p1);
 
@@ -71,8 +71,18 @@ public class ModelItemInfoDictionary
 
                 uid2Model[item.UId].Add(item);
             }
+
+            var pos = item.GetPositon();
+            positionDictionaryList.Add(pos, item);
         }
+
+        positionDictionaryList.ShowCount("ModelItemDictionary");
+
+        if(p0==null)
+            ProgressBarHelper.ClearProgressBar();
     }
+
+    public PositionDictionaryList<ModelItemInfo> positionDictionaryList = new PositionDictionaryList<ModelItemInfo>();
 
     public void GetRepeatedModels()
     {
@@ -146,5 +156,94 @@ public class ModelItemInfoDictionary
             }
         }
         //SaveXml();
+    }
+
+    internal ModelItemInfo FindModelByPosAndName(Transform transform)
+    {
+        var ms = this.FindModelsByPos(transform);
+        if (ms.Count == 1)
+        {
+            return ms[0];
+        }
+        else
+        {
+            int sameNameCount = 0;
+            ModelItemInfo sameNameModel = null;
+            foreach(var m in ms)
+            {
+                if (m.IsSameName(transform))
+                {
+                    sameNameModel = m;
+                    sameNameCount++;
+                }
+            }
+            if (sameNameCount == 1)
+            {
+                return sameNameModel;
+            }
+            else
+            {
+                return null;
+            }
+        }
+    }
+
+        internal ModelItemInfo FindModelByPos(Transform t)
+    {
+        Vector3 pos = t.position;
+        int listId = 0;
+        var model = positionDictionaryList.GetItem(pos, out listId);
+
+        //if (model != null)
+        //{
+        //    if (listId == 0)
+        //    {
+
+        //    }
+        //    else if (listId == 1 || listId == 2)
+        //    {
+        //        Debug.Log($"[FindModelByPos][{listId}] {model.ShowDistance(t)}");
+        //    }
+        //    else if (listId == 3 || listId == 4 || listId == 5)
+        //    {
+        //        Debug.LogWarning($"[FindModelByPos][{listId}] {model.ShowDistance(t)}");
+        //    }
+        //    else
+        //    {
+        //        Debug.LogError($"[FindModelByPos][{listId}] {model.ShowDistance(t)}");
+        //    }
+        //}
+        return model;
+    }
+
+    internal List<ModelItemInfo> FindModelsByPos(Transform t)
+    {
+        Vector3 pos = t.position;
+        int listId = 0;
+        var models = positionDictionaryList.GetItems(pos, out listId);
+        if (models == null)
+        {
+            models = new List<ModelItemInfo>();
+        }
+        //if (model != null)
+        //{
+        //    if (listId == 0)
+        //    {
+
+        //    }
+        //    else if (listId == 1 || listId == 2)
+        //    {
+        //        Debug.Log($"[FindModelByPos][{listId}] {model.ShowDistance(t)}");
+        //    }
+        //    else if (listId == 3 || listId == 4 || listId == 5)
+        //    {
+        //        Debug.LogWarning($"[FindModelByPos][{listId}] {model.ShowDistance(t)}");
+        //    }
+        //    else
+        //    {
+        //        Debug.LogError($"[FindModelByPos][{listId}] {model.ShowDistance(t)}");
+        //    }
+        //}
+        return models;
     }
 }

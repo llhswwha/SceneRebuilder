@@ -105,6 +105,14 @@ public class BIMModelInfo : MonoBehaviour,IComparable<BIMModelInfo>
     [NonSerialized]
     public ModelItemInfo Model;
 
+    public static void SetModelInfo(Transform transform, ModelItemInfo model)
+    {
+        BIMModelInfo bim = transform.gameObject.GetComponent<BIMModelInfo>();
+        if(bim==null)
+            bim = transform.gameObject.AddComponent<BIMModelInfo>();
+        bim.SetModelInfo(model);
+    }
+
     public void SetModelInfo(ModelItemInfo model)
     {
         this.Model = model;
@@ -114,6 +122,10 @@ public class BIMModelInfo : MonoBehaviour,IComparable<BIMModelInfo>
         this.Position1 = transform.position;
         this.Position2 = model.GetPositon();
         this.GetDistance();
+
+        this.RenderId = RendererId.GetId(this.gameObject,0);
+        model.RenderId = this.RenderId;
+        model.RenderName = this.name;
     }
 
     public ModelItemInfo GetModelInfo()
@@ -337,13 +349,18 @@ public class BIMModelInfo : MonoBehaviour,IComparable<BIMModelInfo>
         return other.Distance.CompareTo(this.Distance);
     }
 
-    internal ModelItemInfo FindClosedModel(List<ModelItemInfo> models)
+    public ModelItemInfo FindClosedModel(List<ModelItemInfo> models)
+    {
+        return FindClosedModel(models, this.transform.position);
+    }
+
+    public static ModelItemInfo FindClosedModel(List<ModelItemInfo> models,Vector3 pos)
     {
         float minDis = float.MaxValue;
         ModelItemInfo minModel = null;
         foreach(var model in models)
         {
-            float dis = Vector3.Distance(model.GetPositon(), this.transform.position);
+            float dis = Vector3.Distance(model.GetPositon(), pos);
             if (minDis > dis)
             {
                 minDis = dis;

@@ -270,6 +270,33 @@ public class BuildingModelInfo : SubSceneCreater
         return p;
     }
 
+    private List<MeshRendererInfo> MeshRenderers = null;
+
+    public List<MeshRendererInfo> GetMeshRenderers(bool isUpdate)
+    {
+        if (MeshRenderers==null || isUpdate)
+        {
+            MeshRendererInfo.InitRenderers(this.gameObject);
+            MeshRenderers = new List<MeshRendererInfo>();
+            if (InPart == null && OutPart0 == null && OutPart1 == null)
+            {
+                MeshRenderers.AddRange(this.GetComponentsInChildren<MeshRendererInfo>(true));
+            }
+            else
+            {
+                if (InPart)
+                    MeshRenderers.AddRange(InPart.GetComponentsInChildren<MeshRendererInfo>(true));
+                if (OutPart0)
+                    MeshRenderers.AddRange(OutPart0.GetComponentsInChildren<MeshRendererInfo>(true));
+                if (OutPart1)
+                    MeshRenderers.AddRange(OutPart1.GetComponentsInChildren<MeshRendererInfo>(true));
+            }
+
+            MeshRenderers = MeshRenderers.Where(m => m != null && m.sharedMesh != null && m.sharedMesh.name != "Cube").ToList();
+        }
+        return MeshRenderers;
+    }
+
     public GameObject InPart;
 
     public GameObject OutPart0;

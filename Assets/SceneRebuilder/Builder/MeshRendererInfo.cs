@@ -839,10 +839,11 @@ public class MeshRendererInfoList:List<MeshRendererInfo>
 
     private void InitRenderers<T>(List<T> renderers, bool isForceUpdate = false) where T :Renderer
     {
+        Debug.Log($"InitRenderers_List renderers:{renderers.Count}");
         for (int i = 0; i < renderers.Count; i++)
         {
             T renderer = renderers[i];
-            ProgressBarHelper.DisplayCancelableProgressBar("InitRenderers", i, renderers.Count, renderer);
+            ProgressBarHelper.DisplayCancelableProgressBar("InitRenderers_List", i, renderers.Count, renderer);
             if (renderer == null) continue;
             var info = MeshRendererInfo.GetInfo(renderer.gameObject, true,isForceUpdate);
             this.Add(info);
@@ -853,10 +854,11 @@ public class MeshRendererInfoList:List<MeshRendererInfo>
 
     private void InitRenderers<T>(T[] renderers, bool isForceUpdate = false) where T : Renderer
     {
+        Debug.Log($"InitRenderers_Array renderers:{renderers.Length}");
         for (int i = 0; i < renderers.Length; i++)
         {
             T renderer = renderers[i];
-            ProgressBarHelper.DisplayCancelableProgressBar("InitRenderers", i, renderers.Length, renderer);
+            ProgressBarHelper.DisplayCancelableProgressBar("InitRenderers_Array", i, renderers.Length, renderer);
             if (renderer == null) continue;
             var info = MeshRendererInfo.GetInfo(renderer.gameObject, true,isForceUpdate);
             this.Add(info);

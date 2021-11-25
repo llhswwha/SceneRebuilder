@@ -633,7 +633,7 @@ namespace MeshJobs
                 //float percents = progress * 100;
 
                 if (IsShowProgress) {
-                    ProgressArg p1 = ProgressArg.New("ThreePointJob", i, count, null, JobHandleList.testProgressArg);
+                    var p1 = ProgressArg.New("ThreePointJob", i, count, null, JobHandleList.testProgressArg);
                     if (ProgressBarHelper.DisplayCancelableProgressBar(p1))
                     {
                         break;
