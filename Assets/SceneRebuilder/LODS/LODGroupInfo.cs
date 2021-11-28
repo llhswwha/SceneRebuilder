@@ -89,6 +89,14 @@ public class LODGroupInfo : MonoBehaviour
             {
                 if (r == null) continue;
                 MeshFilter meshFilter = r.GetComponent<MeshFilter>();
+                if (meshFilter == null)
+                {
+                    continue;
+                }
+                if (meshFilter.sharedMesh == null)
+                {
+                    continue;
+                }
                 vc += meshFilter.sharedMesh.vertexCount;
             }
             //lodVertexCount.Add(vc);

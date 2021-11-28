@@ -2313,6 +2313,18 @@ public class LODTwoRenderersList:List<LODTwoRenderers>
     int MaxCompareCount;
     LODCompareMode compareMode;
 
+    public string GetTargetListInfo()
+    {
+        if (targetList == null)
+        {
+            return "NULL";
+        }
+        else
+        {
+            return $"{targetList.ListName}({targetList.Count})";
+        }
+    }
+
     public void SetTargetList(LODTwoRenderersList targetList, int MaxCompareCount, LODCompareMode compareMode)
     {
         this.targetList = targetList;
@@ -2657,6 +2669,8 @@ public class LODTwoRenderersList:List<LODTwoRenderers>
 
     public string searchKey { get; set; }
 
+    public string searchKeyInput { get; set; }
+
     public bool isShowSize = true;
 
     public void DeleteNewOld()
@@ -2690,39 +2704,54 @@ public class LODTwoRenderersList:List<LODTwoRenderers>
 
     public void DeleteNew()
     {
-        foreach (var item in this)
-        {
-            if (item.dis < zeroDistance)
-            {
-                item.SetUpdateState(UpdateChangedMode.NewDelete);//
-            }
-            //else
-            //{
-            //    item.SetUpdateState(UpdateChangedMode.OldDelete);
-            //}
-        }
+        //foreach (var item in this)
+        //{
+        //    if (item.dis < zeroDistance)
+        //    {
+        //        item.SetUpdateState(UpdateChangedMode.NewDelete);//
+        //    }
+        //    //else
+        //    //{
+        //    //    item.SetUpdateState(UpdateChangedMode.OldDelete);
+        //    //}
+        //}
+
+        SetUpdateState(UpdateChangedMode.NewDelete);
     }
 
     public void DeleteOld()
+    {
+        //foreach (var item in this)
+        //{
+        //    if (item.dis < zeroDistance)
+        //    {
+        //        item.SetUpdateState(UpdateChangedMode.OldDelete);//
+        //    }
+        //}
+        SetUpdateState(UpdateChangedMode.OldDelete);
+    }
+
+     public void SetUpdateState(UpdateChangedMode updateMode)
     {
         foreach (var item in this)
         {
             if (item.dis < zeroDistance)
             {
-                item.SetUpdateState(UpdateChangedMode.OldDelete);//
+                item.SetUpdateState(updateMode);//
             }
         }
     }
 
     public void DeleteSame()
     {
-        foreach (var item in this)
-        {
-            if (item.meshDis == 0)
-            {
-                item.SetUpdateState(UpdateChangedMode.NewSame);
-            }
-        }
+        //foreach (var item in this)
+        //{
+        //    if (item.meshDis == 0)
+        //    {
+        //        item.SetUpdateState(UpdateChangedMode.NewSame);
+        //    }
+        //}
+        SetUpdateState(UpdateChangedMode.NewSame);
     }
 
     public void RenameNew()
@@ -2775,6 +2804,30 @@ public class LODTwoRenderersList:List<LODTwoRenderers>
             {
                 item.SetUpdateState(UpdateChangedMode.NewChanged);//
             }
+            //else
+            //{
+            //    item.SetUpdateState(UpdateChangedMode.OldDelete);
+            //}
+            //else
+            //{
+            //    item.SetUpdateState(UpdateChangedMode.OldDelete);
+            //}
+        }
+    }
+
+    public void ReplaceNew()
+    {
+        foreach (var item in this)
+        {
+            if (item.meshDis == 0)
+            {
+                //item.SetUpdateState(UpdateChangedMode.NewDelete);
+                item.SetUpdateState(UpdateChangedMode.NewChanged);//
+            }
+            else if (item.dis < zeroDistance)
+            {
+                item.SetUpdateState(UpdateChangedMode.NewChanged);//
+            }
             else
             {
                 item.SetUpdateState(UpdateChangedMode.OldDelete);
@@ -2811,8 +2864,8 @@ public class LODTwoRenderersList:List<LODTwoRenderers>
 
     internal LODTwoRenderersList[] FindRenderers(string v)
     {
-        LODTwoRenderersList list1 = new LODTwoRenderersList();
-        LODTwoRenderersList list2 = new LODTwoRenderersList();
+        LODTwoRenderersList list1 = new LODTwoRenderersList(this.ListName+"_1");
+        LODTwoRenderersList list2 = new LODTwoRenderersList(this.ListName + "_2");
         foreach (var item in this)
         {
             if (item == null)

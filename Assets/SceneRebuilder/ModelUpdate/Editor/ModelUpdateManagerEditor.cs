@@ -59,6 +59,7 @@ public class ModelUpdateManagerEditor : BaseFoldoutEditor<ModelUpdateManager>
 
         GUILayout.BeginHorizontal();
         item.isIncludeInactive = GUILayout.Toggle(item.isIncludeInactive, "isIncludeInactive");
+        item.IsFilterByFiles = GUILayout.Toggle(item.IsFilterByFiles, "IsFilterByFiles");
         if (GUILayout.Button("GetRenders"))
         {
             item.GetModelRenders();
@@ -161,58 +162,79 @@ public class ModelUpdateManagerEditor : BaseFoldoutEditor<ModelUpdateManager>
             int v0 = 0;
             int v1 = 0;
             list.ForEach(i => { v0 += i.vertexCount0; v1 += i.vertexCount1; });
-            arg.caption = $"{name} ({list.Count})";
+            arg.caption = $"{name} ({list.Count})->{twoList.GetTargetListInfo()}";
             arg.info = $"({list.LODRendererCount0}|{MeshHelper.GetVertexCountS(v0)})({list.LODRendererCount1}|{MeshHelper.GetVertexCountS(v1)})";
             InitEditorArg(list);
         },
         () =>
         {
-            twoList.searchKey = GUILayout.TextField(twoList.searchKey,GUILayout.Width(50));
-            GUILayout.Label("Size", GUILayout.Width(30));
-            twoList.isShowSize = EditorGUILayout.Toggle("Size",twoList.isShowSize,GUILayout.Width(20));
             
-            if (GUILayout.Button("Comp", GUILayout.Width(50)))
+
+            twoList.searchKeyInput = GUILayout.TextField(twoList.searchKeyInput, GUILayout.Width(100));
+            if (GUILayout.Button("Search"))
+            {
+                //RemoveEditorArg(item.GetDoors());
+                //InitEditorArg(item.UpdateDoors());
+
+                twoList.searchKey = twoList.searchKeyInput;
+                Debug.Log("Search:"+ twoList.searchKey);
+            }
+
+        });
+        if (listArg.isEnabled && listArg.isExpanded)
+        {
+            GUILayout.BeginHorizontal();
+            GUILayout.Label("Size", GUILayout.Width(30));
+            twoList.isShowSize = EditorGUILayout.Toggle(twoList.isShowSize, GUILayout.Width(50));
+            var btnStyle = new GUIStyle(EditorStyles.miniButton);
+            btnStyle.margin = new RectOffset(0, 0, 0, 0);
+            btnStyle.padding = new RectOffset(0, 0, 0, 0);
+            if (GUILayout.Button("Comp", btnStyle, GUILayout.Width(45)))
             {
                 twoList.CompareList(lodManager.MaxCompareCount, lodManager.compareMode);
             }
-            if (GUILayout.Button("Test", GUILayout.Width(50)))
+            if (GUILayout.Button("Test", btnStyle, GUILayout.Width(40)))
             {
                 twoList.TestInitSharedMesh();
             }
-            if (GUILayout.Button("Clear", GUILayout.Width(45)))
+            if (GUILayout.Button("Clear", btnStyle, GUILayout.Width(40)))
             {
                 twoList.ClearNew();
             }
-            twoList.zeroDistance = EditorGUILayout.FloatField(twoList.zeroDistance, GUILayout.Width(50));
-            if (GUILayout.Button("DelNewOld", GUILayout.Width(80)))
+            twoList.zeroDistance = EditorGUILayout.FloatField(twoList.zeroDistance, GUILayout.Width(45));
+            if (GUILayout.Button("DelNewOld", btnStyle, GUILayout.Width(75)))
             {
                 twoList.DeleteNewOld();
             }
-            if (GUILayout.Button("DelNew", GUILayout.Width(60)))
+            if (GUILayout.Button("DelNew", btnStyle, GUILayout.Width(55)))
             {
                 twoList.DeleteNew();
             }
-            if (GUILayout.Button("DelOld", GUILayout.Width(60)))
+            if (GUILayout.Button("DelOld", btnStyle, GUILayout.Width(55)))
             {
                 twoList.DeleteOld();
             }
-            if (GUILayout.Button("DelSame", GUILayout.Width(65)))
+            if (GUILayout.Button("DelSame", btnStyle, GUILayout.Width(60)))
             {
                 twoList.DeleteSame();
             }
-            if (GUILayout.Button("RepOld", GUILayout.Width(55)))
+            if (GUILayout.Button("RepOld", btnStyle, GUILayout.Width(50)))
             {
                 twoList.ReplaceOld();
             }
-            if (GUILayout.Button("RenaNew", GUILayout.Width(65)))
+            if (GUILayout.Button("RepNew", btnStyle, GUILayout.Width(50)))
+            {
+                twoList.ReplaceNew();
+            }
+            if (GUILayout.Button("RenaNew", btnStyle, GUILayout.Width(60)))
             {
                 twoList.RenameNew();
             }
-            if (GUILayout.Button("MatNew", GUILayout.Width(65)))
+            if (GUILayout.Button("MatNew", btnStyle, GUILayout.Width(60)))
             {
                 twoList.ReplaceMaterialNew();
             }
-            if (GUILayout.Button("MatOld", GUILayout.Width(65)))
+            if (GUILayout.Button("MatOld", btnStyle, GUILayout.Width(60)))
             {
                 twoList.ReplaceMaterialOld();
             }
@@ -220,13 +242,12 @@ public class ModelUpdateManagerEditor : BaseFoldoutEditor<ModelUpdateManager>
             //{
             //    twoList.AlignOld();
             //}
-            if (GUILayout.Button("Upda", GUILayout.Width(50)))
+            if (GUILayout.Button("Upda", btnStyle, GUILayout.Width(45)))
             {
                 twoList.DoUpdate();
             }
-        });
-        if (listArg.isEnabled && listArg.isExpanded)
-        {
+            GUILayout.EndHorizontal();
+
             var list = listArg.Items;
             InitEditorArg(list);
             listArg.DrawPageToolbar(list, (Action<LODTwoRenderers, int>)((item, i) =>

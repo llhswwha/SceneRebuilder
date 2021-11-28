@@ -31,6 +31,11 @@ public class BuildingModelInfoList : MonoBehaviour
         buildings.ForEachEx("InitBuildings", i => i.InitInOut(true));
     }
 
+    public static void ShowRenderers(List<BuildingModelInfo> buildings)
+    {
+        buildings.ForEachEx("ShowRenderers", i => i.ShowRenderers());
+    }
+
 #if UNITY_EDITOR
     public static void SavePrefabs(BuildingModelInfo[] buildings)
     {

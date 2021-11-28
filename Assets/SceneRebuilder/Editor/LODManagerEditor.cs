@@ -15,6 +15,8 @@ public class LODManagerEditor : BaseFoldoutEditor<LODManager>
 
     private static string searchKey = "";
 
+    private static string searchKeyTxt = "";
+
     public override void OnEnable()
     {
         base.OnEnable();
@@ -298,7 +300,14 @@ public class LODManagerEditor : BaseFoldoutEditor<LODManager>
             //    RemoveEditorArg(item.GetDoors());
             //    InitEditorArg(item.UpdateDoors());
             //}
-            searchKey = GUILayout.TextField(searchKey);
+            searchKeyTxt = GUILayout.TextField(searchKeyTxt);
+            if (GUILayout.Button("Search"))
+            {
+                //RemoveEditorArg(item.GetDoors());
+                //InitEditorArg(item.UpdateDoors());
+
+                searchKey = searchKeyTxt;
+            }
         });
         if (twoListArg.isEnabled && twoListArg.isExpanded)
         {

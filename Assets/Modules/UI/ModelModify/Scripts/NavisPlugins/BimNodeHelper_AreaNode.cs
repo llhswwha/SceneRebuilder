@@ -184,14 +184,14 @@ public static class BimNodeHelper_AreaNode
         }
         int startId = 1;
         string[] parts = path.Split('\\');
-        if (parts[0] == "HH" || parts[0] == "JQ" || parts[0] == "JG" || parts[0] == "SG")
-        {
-            startId = 0;
-        }
-        else
-        {
+        //if (parts[0] == "HH" || parts[0] == "JQ" || parts[0] == "JG" || parts[0] == "SG")
+        //{
+        //    startId = 0;
+        //}
+        //else
+        //{
 
-        }
+        //}
         AreaNode pathParentNode = GetPathNodeByName(area, parts, startId);
         path2Node.Add(fullPath, pathParentNode);
         return pathParentNode;

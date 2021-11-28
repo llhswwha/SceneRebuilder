@@ -27,6 +27,11 @@ public class BuildingModelInfoListEditor : BaseFoldoutEditor<BuildingModelInfoLi
         {
             BuildingModelManager.Instance.InitBuildings(item.Buildings.ToList());
         });
+        NewButton("ShowRenderers", buttonWidth, true, () =>
+        {
+            //BuildingModelManager.Instance.InitBuildings(item.Buildings.ToList());
+            BuildingModelInfoList.ShowRenderers(item.Buildings.ToList());
+        });
         // NewButton("ListWindow:" + count, buttonWidth, true, () =>
         //      {
         //          SceneRebuildEditorWindow.ShowWindow();
