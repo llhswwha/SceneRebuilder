@@ -6,8 +6,8 @@ using System.Collections.Generic;
 using UnityEditor;
 using UnityEngine;
 
-[CustomEditor(typeof(WeldingManager))]
-public class WeldingManagerEditor : BaseFoldoutEditor<WeldingManager>
+[CustomEditor(typeof(WeldingMeshManager))]
+public class WeldingMeshManagerEditor : BaseFoldoutEditor<WeldingMeshManager>
 {
     private FoldoutEditorArg sharedMeshListArg = new FoldoutEditorArg();
     private FoldoutEditorArg<MeshRendererInfo> meshinfoListArg = new FoldoutEditorArg<MeshRendererInfo>();
@@ -21,7 +21,7 @@ public class WeldingManagerEditor : BaseFoldoutEditor<WeldingManager>
 
     private bool isCopyTarget = true;
 
-    public override void OnToolLayout(WeldingManager item)
+    public override void OnToolLayout(WeldingMeshManager item)
     {
         if (GUILayout.Button("GetWeldings"))
         {
