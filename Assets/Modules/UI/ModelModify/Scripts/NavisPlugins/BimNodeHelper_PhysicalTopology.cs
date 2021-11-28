@@ -1,4 +1,4 @@
-using Assets.M_Plugins.Helpers.Utils;
+//using Assets.M_Plugins.Helpers.Utils;
 using Base.Common;
 using Location.WCFServiceReferences.LocationServices;
 using NavisPlugins.Infos;
@@ -133,7 +133,7 @@ public static class BimNodeHelper_PhysicalTopology
 
             count = models.Count;
             var nodes = GetAllChildren(root);
-            AreaDevTreeHelper.CreateDevTypeNodes(nodes);
+            //AreaDevTreeHelper.CreateDevTypeNodes(nodes);
             Debug.LogError($"InitBimModel root:{root.Name} nodes:{nodes.Count} models:{models.Count} time:{(DateTime.Now - start).TotalMilliseconds}ms");
 
             mCount = 10000;
@@ -218,32 +218,32 @@ public static class BimNodeHelper_PhysicalTopology
 
     private static PhysicalTopology GetFloorArea(ModelItemInfo model, PhysicalTopology area)
     {
-        DepNode bc = RoomFactory.Instance.GetDepNodeById(area.Id);
-        if (bc != null)
-        {
-            Vector3 pos = model.GetPositon();
-            if (bc.ChildNodes != null && bc.ChildNodes.Count > 0)
-            {
-                //area = bc.ChildNodes[0].TopoNode;
-                if (InitNavisFileInfoByModel.Instance.IsFindClosedFloor)
-                {
+        //DepNode bc = RoomFactory.Instance.GetDepNodeById(area.Id);
+        //if (bc != null)
+        //{
+        //    Vector3 pos = model.GetPositon();
+        //    if (bc.ChildNodes != null && bc.ChildNodes.Count > 0)
+        //    {
+        //        //area = bc.ChildNodes[0].TopoNode;
+        //        if (InitNavisFileInfoByModel.Instance.IsFindClosedFloor)
+        //        {
 
-                    area = bc.GetClosedDepNode(pos).TopoNode;
-                }
-                else
-                {
-                    area = bc.ChildNodes[0].TopoNode;
-                }
+        //            area = bc.GetClosedDepNode(pos).TopoNode;
+        //        }
+        //        else
+        //        {
+        //            area = bc.ChildNodes[0].TopoNode;
+        //        }
 
-            }
-        }
-        else
-        {
-            if (area.Children != null && area.Children.Length > 0)
-            {
-                area = area.Children[0];
-            }
-        }
+        //    }
+        //}
+        //else
+        //{
+        //    if (area.Children != null && area.Children.Length > 0)
+        //    {
+        //        area = area.Children[0];
+        //    }
+        //}
 
         return area;
     }
@@ -291,13 +291,13 @@ public static class BimNodeHelper_PhysicalTopology
         List<BIMModelInfo> bims = new List<BIMModelInfo>();
         foreach(var info in models)
         {
-            var modelT = RoomFactory.Instance.FindBIMModelByInfo(info);
-            if(modelT!=null)
-                bims.Add(modelT);
-            else
-            {
-                Debug.LogError($"BimNodeHelper_PhysicalTopology.FocusDevs modelT==null info:{info}");
-            }
+            //var modelT = RoomFactory.Instance.FindBIMModelByInfo(info);
+            //if(modelT!=null)
+            //    bims.Add(modelT);
+            //else
+            //{
+            //    Debug.LogError($"BimNodeHelper_PhysicalTopology.FocusDevs modelT==null info:{info}");
+            //}
         }
 
         if (bims.Count > 0)
@@ -345,7 +345,7 @@ public static class BimNodeHelper_PhysicalTopology
         else
         {
             DevInfo devInfo = CreateDevInfoEx(parent, model);
-            AreaDevTreeHelper.AddDevNode(pathParentNode, devInfo);
+            //AreaDevTreeHelper.AddDevNode(pathParentNode, devInfo);
         }
 
         //}
@@ -361,15 +361,15 @@ public static class BimNodeHelper_PhysicalTopology
         
 
         DevInfo devInfo = null;
-        if (RoomFactory.Instance.clientDevList.ContainsKey(model.UId))
-        {
-            devInfo = RoomFactory.Instance.clientDevList[model.UId];
-        }
-        else
-        {
-            devInfo = CreateDevInfo(parent, model);
-            RoomFactory.Instance.AddClientDev(devInfo);
-        }
+        //if (RoomFactory.Instance.clientDevList.ContainsKey(model.UId))
+        //{
+        //    devInfo = RoomFactory.Instance.clientDevList[model.UId];
+        //}
+        //else
+        //{
+        //    devInfo = CreateDevInfo(parent, model);
+        //    RoomFactory.Instance.AddClientDev(devInfo);
+        //}
         return devInfo;
     }
 
@@ -460,10 +460,10 @@ public static class BimNodeHelper_PhysicalTopology
         }
         //Debug.LogError($"CreateChild GetPathNodeByName2 area:{area.Name} index:{index} pathPart:{pathParts[index]} pathParts:{pathParts.Length}");
         PhysicalTopology node = FindChild(area, pathParts[index]);
-        if (node == null)
-        {
-            node= AreaDevTreeHelper.AddGroupNode(area, pathParts[index]);
-        }
+        //if (node == null)
+        //{
+        //    node= AreaDevTreeHelper.AddGroupNode(area, pathParts[index]);
+        //}
         PhysicalTopology result = node;
         if (index < pathParts.Length - 2)
         {
