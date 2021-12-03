@@ -188,7 +188,40 @@ public class ModelItemInfoDictionary
         }
     }
 
-        internal ModelItemInfo FindModelByPos(Transform t)
+    internal List<ModelItemInfo> FindModelsByPosAndName(Transform transform)
+    {
+        var ms = this.FindModelsByPos(transform);
+        if (ms.Count == 1)
+        {
+            return ms;
+        }
+        else
+        {
+            List<ModelItemInfo> sameNameModels = new List<ModelItemInfo>();
+            foreach (var m in ms)
+            {
+                if (m.IsSameName(transform))
+                {
+                    sameNameModels.Add(m);
+                }
+            }
+            if (sameNameModels.Count == 0)
+            {
+                return ms;
+            }
+            else if (sameNameModels.Count == 1)
+            {
+                return sameNameModels;
+            }
+            else
+            {
+                //return ms;
+                return sameNameModels;
+            }
+        }
+    }
+
+    internal ModelItemInfo FindModelByPos(Transform t)
     {
         Vector3 pos = t.position;
         int listId = 0;

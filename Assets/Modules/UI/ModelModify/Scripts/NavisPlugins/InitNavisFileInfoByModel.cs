@@ -65,7 +65,15 @@ public class InitNavisFileInfoByModel : SingletonBehaviour<InitNavisFileInfoByMo
 
     public static void DestoryNavisInfo(GameObject root)
     {
-        BIMModelInfo[] infos = root.GetComponentsInChildren<BIMModelInfo>();
+        BIMModelInfo[] infos = null;
+        if (root != null)
+        {
+            infos = root.GetComponentsInChildren<BIMModelInfo>(true);
+        }
+        else
+        {
+            infos = GameObject.FindObjectsOfType<BIMModelInfo>(true);
+        }
         if (infos != null)
         {
             for (int i = infos.Length - 1; i >= 0; i--)
@@ -1142,6 +1150,10 @@ vueDict.Add(item.UId, item);
 
     public bool IsFiltered(Transform t)
     {
+        if(t.name== "HorPumpBB1Asm-1-0002")
+        {
+            Debug.LogError("HorPumpBB1Asm-1-0002");
+        }
         if (IsFiltered(t.name))
         {
             return true;
@@ -1163,7 +1175,7 @@ vueDict.Add(item.UId, item);
         {
             return true;
         }
-        if (t.GetComponent<MeshRenderer>() == null && t.GetComponent<LODGroup>() == null) return true;
+        //if (t.GetComponent<MeshRenderer>() == null && t.GetComponent<LODGroup>() == null) return true;
         if (MeshHelper.IsEmptyGroup(t,false)) return true;
         if (MeshHelper.IsSameNameGroup(t)) return true;
         if (MeshHelper.IsEmptyLODSubGroup(t)) return true;

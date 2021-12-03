@@ -7,11 +7,24 @@ using UnityEngine;
 
 public class TransformDictionary 
 {
-    public List<Transform> list = new List<Transform>();
+    //public List<Transform> list = new List<Transform>();
+
+    public Dictionary<Transform,Transform> dict = new Dictionary<Transform, Transform>();
 
     public TransformDictionary(List<Transform> lst)
     {
-        this.list.AddRange(lst);
+        //this.list.AddRange(lst);
+        foreach(var item in lst)
+        {
+            if(!dict.ContainsKey(item))
+            {
+                dict.Add(item, item);
+            }
+            else
+            {
+                Debug.LogError("TransformDictionary.Init Repeated Item:"+item);
+            }
+        }
         InitDict();
         GetTransformNames();
         CheckUidRepeated();
@@ -25,6 +38,7 @@ public class TransformDictionary
         uidDict = new Dictionary<string, Transform>();
 
         positionDictionaryList = new PositionDictionaryList<Transform>();
+
         InitNameDict();
         InitPosDict();
     }
@@ -37,7 +51,7 @@ public class TransformDictionary
 
         Dictionary<string, List<Transform>> nameDict = new Dictionary<string, List<Transform>>();
 
-        foreach (var t in list)
+        foreach (var t in dict.Keys)
         {
             string n = t.name;
             if (n.Contains("_New"))
@@ -66,7 +80,10 @@ public class TransformDictionary
                         !n.Contains("Flange-") &&
                         !n.Contains("Undefined") &&
                         !n.Contains("MemberPartPrismatic") &&
-                        !n.Contains("Undefined"))
+                        !n.Contains("Undefined") &&
+                        !n.Contains("原水预处理加药设备安装") &&
+                        !n.Contains("原水预处理污泥脱水设备安装图")
+                        )
                         otherNames.Add(n);
                 }
             }
@@ -101,7 +118,7 @@ public class TransformDictionary
 
     private void InitPosDict()
     {
-        foreach (var t in list)
+        foreach (var t in dict.Keys)
         {
             var pos = t.position;
             positionDictionaryList.Add(pos, t);
@@ -111,15 +128,20 @@ public class TransformDictionary
 
     private void InitNameDict()
     {
-        int allCount = list.Count;
+        int allCount = dict.Count;
         int uidCount = 0;
-        foreach (var t in list)
+        foreach (var t in dict.Keys)
         {
             string n = t.name;
             if(n.Contains("_New"))
             {
                 n = n.Replace("_New", "");
                 t.name = n;
+            }
+
+            if (n == "HorPumpBB1Asm-1-0002")
+            {
+                Debug.Log("HorPumpBB1Asm-1-0002");
             }
 
             nameListDict.AddItem(n, t);
@@ -235,12 +257,12 @@ public class TransformDictionary
                 }
                 else
                 {
-                    Debug.LogError($"IsUID s:{n} length:{length} {parts[0].Length},{parts[1].Length},{parts[2].Length}");
+                    Debug.LogWarning($"IsUID NotUID s:{n} length:{length} {parts[0].Length},{parts[1].Length},{parts[2].Length}");
                 }
             }
             else
             {
-                Debug.LogError($"IsUID s:{n} length:{length} parts.Length != 3");
+                Debug.LogWarning($"IsUID NotUID s:{n} length:{length} parts.Length != 3");
             }
         }
         return result;
@@ -273,6 +295,16 @@ public class TransformDictionary
             }
         }
         return null;
+    }
+
+    public List<Transform> GetTransformsByName(string n)
+    {
+        if (nameListDict.ContainsKey(n))
+        {
+            var list = nameListDict[n];
+            return list;
+        }
+        return new List<Transform>();
     }
 
     public Transform GetTransformByUid(string n)
@@ -311,20 +343,32 @@ public class TransformDictionary
         return null;
     }
 
+    public List<Transform> RemovedItems = new List<Transform>();
+
     internal void RemoveTransform(Transform transform)
     {
-        list.Remove(transform);
+        //list.Remove(transform);
+
         //string n = transform.name;
 
-    }
-
-    public List<Transform> GetTransformsByName(string n)
-    {
-        if (nameListDict.ContainsKey(n))
+        if (dict.ContainsKey(transform))
         {
-            return nameListDict[n];
+            dict.Remove(transform);
+            RemovedItems.Add(transform);
+            positionDictionaryList.Remove(transform.position, transform);
         }
-        return null;
+        else
+        {
+            if (RemovedItems.Contains(transform))
+            {
+                Debug.LogError("TransformDictionary.RemoveTransform Already Removed :" + transform);
+            }
+            else
+            {
+                Debug.LogError("TransformDictionary.RemoveTransform Not Contains :" + transform);
+            }
+            
+        }
     }
 
     internal Transform FindObjectByUID(string uId)
@@ -337,28 +381,69 @@ public class TransformDictionary
         Vector3 pos = model.GetPositon();
         int listId = 0;
         var t=positionDictionaryList.GetItem(pos, out listId);
-
-        //if (t != null)
-        //{
-        //    if (listId == 0)
-        //    {
-
-        //    }
-        //    else if (listId == 1 || listId == 2)
-        //    {
-        //        Debug.Log($"[FindObjectByPos][{listId}] {model.ShowDistance(t)}");
-        //    }
-        //    else if (listId == 3 || listId == 4 || listId == 5)
-        //    {
-        //        Debug.LogWarning($"[FindObjectByPos][{listId}] {model.ShowDistance(t)}");
-        //    }
-        //    else
-        //    {
-        //        Debug.LogError($"[FindObjectByPos][{listId}] {model.ShowDistance(t)}");
-        //    }
-        //}
-
         return t;
+    }
+
+    internal List<Transform> FindModelsByPosAndName(ModelItemInfo model)
+    {
+        Vector3 pos = model.GetPositon();
+        int listId = 0;
+        //var t = positionDictionaryList.GetItem(pos, out listId);
+        //return t;
+
+        var ms = positionDictionaryList.GetItems(pos, out listId);
+        if (ms == null) return null;
+        if (ms.Count == 0) return null;
+
+        if (ms.Count == 1)
+        {
+            return ms;
+        }
+        else
+        {
+            List<Transform> sameNameList = new List<Transform>();
+            foreach (var m in ms)
+            {
+                if (model.IsSameName(m))
+                {
+                    sameNameList.Add(m);
+                }
+            }
+            if (sameNameList.Count == 0)
+            {
+                return ms;
+            }
+            else if (sameNameList.Count == 1)
+            {
+                return sameNameList;
+            }
+            else
+            {
+
+                //List<Transform> sameParentNameList = new List<Transform>();
+                //foreach (var m in sameNameList)
+                //{
+                //    string tParentName = m.parent.name;
+                //    string mParentName = model.GetParent().Name;
+                //    if (tParentName== mParentName)
+                //    {
+                //        sameParentNameList.Add(m);
+                //    }
+                //}
+                //if (sameParentNameList.Count == 1)
+                //{
+                //    return sameParentNameList[0];
+                //}
+                //else
+                //{
+                //    return null;
+                //}
+
+                //return ms;
+
+                return sameNameList;
+            }
+        }
     }
 }
 
@@ -371,6 +456,25 @@ public class DictionaryList1ToN<T>: Dictionary<string, List<T>> where T :class
             this.Add(key, new List<T>());
         }
         this[key].Add(item);
+    }
+
+    public void RemoveItem(string key,T item)
+    {
+        var items = GetItems(key);
+        if (items != null)
+        {
+            int count1 = items.Count;
+            items.Remove(item);
+            int count2 = items.Count;
+            if (count1 == count2)
+            {
+                Debug.LogError($"DictionaryList1ToN RemoveItem NotContainsItem key:{key} item:{item}");
+            }
+        }
+        else
+        {
+            Debug.LogError($"DictionaryList1ToN RemoveItem NotContainsKey key:{key} item:{item}");
+        }
     }
 
     public T GetItem(string key)
@@ -517,6 +621,30 @@ public class PositionDictionaryList<T> where T : class
 
         listId = 0;
         return null;
+    }
+
+    public void Remove(Vector3 pos,T t)
+    {
+        var posT1 = $"({pos.x},{pos.y},{pos.z})";
+        posListDict.RemoveItem(posT1, t);
+
+        var posT2 = $"({pos.x.ToString("F6")},{pos.y.ToString("F6")},{pos.z.ToString("F6")})";
+        posListDict2.RemoveItem(posT2, t);
+
+        var posT3 = $"({pos.x.ToString("F5")},{pos.y.ToString("F5")},{pos.z.ToString("F5")})";
+        posListDict3.RemoveItem(posT3, t);
+
+        var posT4 = $"({pos.x.ToString("F4")},{pos.y.ToString("F4")},{pos.z.ToString("F4")})";
+        posListDict4.RemoveItem(posT4, t);
+
+        var posT5 = $"({pos.x.ToString("F3")},{pos.y.ToString("F3")},{pos.z.ToString("F3")})";
+        posListDict5.RemoveItem(posT5, t);
+
+        var posT6 = $"({pos.x.ToString("F2")},{pos.y.ToString("F2")},{pos.z.ToString("F2")})";
+        posListDict6.RemoveItem(posT6, t);
+
+        var posT7 = $"({pos.x.ToString("F1")},{pos.y.ToString("F1")},{pos.z.ToString("F1")})";
+        posListDict7.RemoveItem(posT7, t);
     }
 
     internal void Add(Vector3 pos, T t)

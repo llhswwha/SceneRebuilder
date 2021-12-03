@@ -63,10 +63,17 @@ public static class MeshHelper
     {
         if (t.childCount == 0) return false;
         if (IsEmptyObject(t) == false) return false;
+        //bool isAllNoMeshRenderInfo = true;
+        MeshRendererInfo[] rs = t.GetComponentsInChildren<MeshRendererInfo>(true);
+        if(rs.Length==0)
+        {
+            return false;
+        }
         for (int i = 0; i < t.childCount; i++)
         {
             var child = t.GetChild(i);
-            MeshRendererInfo info = child.GetComponent<MeshRendererInfo>();
+            //MeshRendererInfo info = child.GetComponent<MeshRendererInfo>();
+            MeshRendererInfo info = MeshRendererInfo.GetInfo(child.gameObject, false);
             if (info != null)
             {
                 if (info.IsRendererType(MeshRendererType.LOD)==false)
@@ -1271,6 +1278,10 @@ public static class MeshHelper
     }
     public static void SetParentTransfrom(Transform t,Action setTranfromActoin)
     {
+#if UNITY_EDITOR
+        EditorHelper.UnpackPrefab(t.gameObject);
+#endif
+
         List<Transform> children=new List<Transform>();
         for(int i=0;i<t.childCount;i++)
         {

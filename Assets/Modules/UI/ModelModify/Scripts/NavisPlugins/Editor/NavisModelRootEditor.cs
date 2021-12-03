@@ -74,10 +74,13 @@ public class NavisModelRootEditor : BaseFoldoutEditor<NavisModelRoot>
     {
         if (item == null) return;
 
+        EditorGUILayout.BeginHorizontal();
+        item.MinDistance = EditorGUILayout.FloatField(item.MinDistance, GUILayout.Width(70));
         if (GUILayout.Button("BindBimInfo"))
         {
             item.BindBimInfo(null);
         }
+        EditorGUILayout.EndHorizontal();
 
         EditorGUILayout.BeginHorizontal();
         //GUILayout
@@ -157,7 +160,7 @@ public class NavisModelRootEditor : BaseFoldoutEditor<NavisModelRoot>
 
         BaseFoldoutEditorHelper.DrawTransformList(item.transformList, transListArg, null, "Transform List(All)");
         if(item.TransformDict!=null)
-            BaseFoldoutEditorHelper.DrawTransformList(item.TransformDict.list, transListArg2, null, "Transform List(Current)");
+            BaseFoldoutEditorHelper.DrawTransformList(item.TransformDict.dict.Keys.ToList(), transListArg2, null, "Transform List(Current)");
 
         DrawBimAreas(item);
         //DrawVueModelList(item.repeatModels, modelListArg0, "Model List(RepeatedRenderer)");
@@ -298,17 +301,24 @@ public class NavisModelRootEditor : BaseFoldoutEditor<NavisModelRoot>
         () =>
         {
 
-            if (GUILayout.Button("Clear"))
-            {
-                InitNavisFileInfoByModel.DestoryNavisInfo(item.gameObject);
-                item.GetBims(null,null);
-            }
+           
+
             if (GUILayout.Button("Update"))
             {
                 item.GetBims(null, null);
             }
             if (GUILayout.Button("RemoveNotFound"))
             {
+                item.GetBims(null, null);
+            }
+            if (GUILayout.Button("Clear"))
+            {
+                InitNavisFileInfoByModel.DestoryNavisInfo(item.gameObject);
+                item.GetBims(null, null);
+            }
+            if (GUILayout.Button("ClearAll"))
+            {
+                InitNavisFileInfoByModel.DestoryNavisInfo(null);
                 item.GetBims(null, null);
             }
             //if (GUILayout.Button("Compare"))

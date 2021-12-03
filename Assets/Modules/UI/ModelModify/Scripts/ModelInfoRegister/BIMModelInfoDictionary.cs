@@ -16,14 +16,21 @@ public class BIMModelInfoDictionary
 
     public List<BIMModelInfo> bimInfos = new List<BIMModelInfo>();
 
+
+
+    public BIMModelInfoDictionary()
+    {
+
+    }
+
     public BIMModelInfoDictionary(BIMModelInfo[] bims, ProgressArgEx p0)
     {
         InitDict(bims, p0);
     }
 
-    public BIMModelInfoDictionary()
+    public BIMModelInfoDictionary(List<BIMModelInfo> bims, ProgressArgEx p0)
     {
-
+        InitDict(bims.ToArray(), p0);
     }
 
     private void InitDict(BIMModelInfo[] bims,ProgressArgEx p0)
@@ -133,7 +140,7 @@ public class BIMModelInfoDictionary
             sb.AppendLine($"Not Found Model[{i}/{bimsList2.Count}]:{bim}");
         }
 
-        Debug.LogError($"[CheckDict] GetBims bimCount:{bimInfos.Count} rendererId2Bim:{rendererId2Bim.Count} guid2Bim:{guid2Bim.Count}  foundCount:{foundCount} notFoundCount:{bimsList2.Count}\n{sb}");
+        Debug.LogWarning($"[CheckDict] GetBims bimCount:{bimInfos.Count} rendererId2Bim:{rendererId2Bim.Count} guid2Bim:{guid2Bim.Count}  foundCount:{foundCount} notFoundCount:{bimsList2.Count}\n{sb}");
 
         //ProgressBarHelper.ClearProgressBar();
 

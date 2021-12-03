@@ -243,7 +243,8 @@ namespace NavisPlugins.Infos
             {
                 count = Children.Count;
             }
-            return string.Format("[{8}][{9}]id:{0}|name:{1}|{2}|({3},{4},{5})|[uid:{6}][rid:{7}]", Id, Name, count, X, Y, Z, UId, RenderId,Drawable,Type);
+            //return string.Format("[{8}][{9}]id:{0}|name:{1}|{2}|({3},{4},{5})|[uid:{6}][rid:{7}]", Id, Name, count, X, Y, Z, UId, RenderId,Drawable,Type);
+            return $"[{Drawable}][{Type}]id:{Id}|name:{Name}|{count}|({X},{Y},{Z})|[uid:{UId}][rid:{RenderId}]";
         }
 
 
@@ -261,7 +262,8 @@ namespace NavisPlugins.Infos
             var dis = Vector3.Distance(p1, p2);
             bool isSameName = this.IsSameName(transform);
             //Debug.Log($"ShowDistance distance:{dis} \tmodel:{this.Name}({p1}) tansform:{transform.name}({p2})");
-            return $"ShowDistance distance:{dis} isSameName:{isSameName} \tmodel:{this.Name}{p1}{this.UId} transform:{transform.name}{p2}";
+            //return $"ShowDistance distance:{dis} isSameName:{isSameName} \tmodel:{this.Name}{p1}{this.UId} transform:{transform.name}{p2}";
+            return $"dis:{dis} same:{isSameName} \tmodel:{this.Name}{p1}{this.UId} transform:{transform.name}{p2}";
         }
 
         public float GetDistance(Transform transform)

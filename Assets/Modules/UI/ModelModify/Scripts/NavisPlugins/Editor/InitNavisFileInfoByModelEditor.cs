@@ -162,6 +162,11 @@ EditorGUILayout.EndHorizontal();
         },
         () =>
         {
+            if (GUILayout.Button("Clear"))
+            {
+                InitNavisFileInfoByModel.DestoryNavisInfo(null);
+                item.GetBims();
+            }
             if (GUILayout.Button("Update"))
             {
                 item.GetBims();
