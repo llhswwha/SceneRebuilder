@@ -90,10 +90,21 @@ public class NavisModelRootEditor : BaseFoldoutEditor<NavisModelRoot>
 
         EditorGUILayout.BeginHorizontal();
         item.TargetRoot = BaseEditorHelper.ObjectField(item.TargetRoot);
-        if (GUILayout.Button("FindRelativeTargets"))
+        if (GUILayout.Button("FindRelatives"))
         {
             item.FindRelativeTargets();
         }
+        if (GUILayout.Button("Move"))
+        {
+            item.MoveRelativeTargets();
+        }
+        if (GUILayout.Button("Recover"))
+        {
+            item.RecoverRelativeTargets();
+        }
+        EditorGUILayout.EndHorizontal();
+
+        EditorGUILayout.BeginHorizontal();
         if (GUILayout.Button("HidePipes"))
         {
             item.HidePipes();
@@ -321,8 +332,9 @@ public class NavisModelRootEditor : BaseFoldoutEditor<NavisModelRoot>
             }
             if (GUILayout.Button("Clear"))
             {
-                InitNavisFileInfoByModel.DestoryNavisInfo(item.gameObject);
-                item.GetBims(null, null);
+                //InitNavisFileInfoByModel.DestoryNavisInfo(item.gameObject);
+                //item.GetBims(null, null);
+                item.ClearBimInfos();
             }
             if (GUILayout.Button("ClearAll"))
             {

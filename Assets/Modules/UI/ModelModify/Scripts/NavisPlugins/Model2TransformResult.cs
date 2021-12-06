@@ -242,9 +242,11 @@ public class Model2TransformResult
         }
     }
 
+    public int notFoundCount;
+
     public void SetModelList(ModelItemInfoListEx ModelList)
     {
-        int notFoundCount = allModels_uid_nofound1.Count + allModels_uid_nofound2.Count + allModels_uid_found2.Count;
+        notFoundCount = allModels_uid_nofound1.Count + allModels_uid_nofound2.Count + allModels_uid_found2.Count;
 
         //allModels_uid = allModels_uid_nofound;
         allModels_uid_AllNotFound.AddRange(allModels_uid_nofound1);

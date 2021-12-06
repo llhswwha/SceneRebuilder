@@ -211,7 +211,11 @@ public class RendererId
     public void SetParentId()
     {
         var newP= GetId(this.transform.parent, 0);
-        if (newP != parentId)
+        if(string.IsNullOrEmpty(parentId))
+        {
+            Debug.LogError($"SetParentId oldP:NULL newP:{newP} Id:{Id} name:{this.name}");
+        }
+        else if(newP != parentId)
         {
             Debug.LogError($"SetParentId oldP:{parentId} newP:{newP} Id:{Id} name:{this.name}");
         }
@@ -257,6 +261,19 @@ public class RendererId
         return pGo;
     }
 
+    public void RecoverParent()
+    {
+        GameObject p = GetParent();
+        if (p != null)
+        {
+            this.transform.SetParent(p.transform);
+        }
+        else
+        {
+            Debug.LogError($"RecoverParent parentId:{parentId} this:{this} currentParent:{this.transform.parent}");
+        }
+    }
+
     [ContextMenu("GetCurrentParent")]
     public GameObject GetCurrentParent()
     {
@@ -279,7 +296,7 @@ public class RendererId
         Debug.LogError($"RendererId.GetParentEx name:{this.name} Id:{this.Id} parentId:{this.parentId} pGo:{pGo}");
     }
 
-    public static string GetId(GameObject go,int level)
+    public static string GetId(GameObject go,int level=0)
     {
         if (go == null) return "";
         RendererId id = go.GetComponent<RendererId>();
@@ -289,6 +306,18 @@ public class RendererId
             id.Init(go, level+1);
         }
         return id.Id;
+    }
+
+    public static RendererId GetRId(GameObject go, int level=0)
+    {
+        if (go == null) return null;
+        RendererId id = go.GetComponent<RendererId>();
+        if (id == null)
+        {
+            id = go.gameObject.AddComponent<RendererId>();
+            id.Init(go, level + 1);
+        }
+        return id;
     }
 
     public static string GetId<T>(T t,int level) where T : Component
@@ -303,6 +332,18 @@ public class RendererId
         return id.Id;
     }
 
+    public static RendererId GetRId<T>(T t, int level=0) where T : Component
+    {
+        if (t == null || level >= 2) return null;
+        RendererId id = t.GetComponent<RendererId>();
+        if (id == null)
+        {
+            id = t.gameObject.AddComponent<RendererId>();
+            id.Init(t.gameObject, level + 1);
+        }
+        return id;
+    }
+
     public static RendererId GetId<T>(T r) where T : Component
     {
         RendererId id = r.GetComponent<RendererId>();
@@ -311,6 +352,18 @@ public class RendererId
             id = r.gameObject.AddComponent<RendererId>();
             id.Init(r);
         }
+        return id;
+    }
+
+    public static RendererId InitId(GameObject r)
+    {
+        RendererId id = r.GetComponent<RendererId>();
+        if (id == null)
+        {
+            id = r.gameObject.AddComponent<RendererId>();
+            id.Init();
+        }
+        id.SetParentId();
         return id;
     }
 

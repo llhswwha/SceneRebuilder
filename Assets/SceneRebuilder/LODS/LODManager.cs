@@ -2564,7 +2564,7 @@ public class LODTwoRenderersList:List<LODTwoRenderers>
         List<T> minTList = new List<T>();
         List<T> minTExList = new List<T>();
 
-        Debug.LogError($"GetMinDisTransformInner mode={mode} t:{t.name} ts:{ts.Count}");
+        //Debug.LogError($"GetMinDisTransformInner mode={mode} t:{t.name} ts:{ts.Count}");
 
 
 

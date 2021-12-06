@@ -30,7 +30,16 @@ public class MeshRendererInfo : MonoBehaviour,IComparable<MeshRendererInfo>
         var rs=GetRenderers();
         foreach(var r in rs)
         {
-            ms+=r.sharedMaterial.name+";";
+            if (r == null)
+            {
+                continue;
+            }
+            if (r.sharedMaterial == null)
+            {
+                ms +="NullMat;";
+                continue;
+            }
+            ms += r.sharedMaterial.name + ";";
         }
         return ms;
     }
@@ -1119,7 +1128,7 @@ public class MeshRendererInfoList:List<MeshRendererInfo>
         throw new NotImplementedException();
     }
 
-    internal MeshRendererInfoList FilterRenderersByFile(List<string> filterFiles)
+    internal MeshRendererInfoList FilterRenderersByFile(List<string> filterFiles,bool isEnableFilter)
     {
         var modelFiles = this.GetAssetPaths();
         var modelFilePaths = modelFiles.Keys.ToList();
@@ -1127,7 +1136,7 @@ public class MeshRendererInfoList:List<MeshRendererInfo>
         MeshRendererInfoList list = new MeshRendererInfoList();
         foreach(var key in modelFiles.Keys)
         {
-            if(IsFilter(key,filterFiles))
+            if(isEnableFilter && IsFilter(key,filterFiles))
             {
                 continue;
             }

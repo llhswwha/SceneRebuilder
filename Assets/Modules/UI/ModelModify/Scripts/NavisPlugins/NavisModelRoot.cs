@@ -55,6 +55,17 @@ public class NavisModelRoot : MonoBehaviour
         return list;
     }
 
+    public void ClearBimInfos()
+    {
+        var bims = GetTargetBIMs();
+        foreach(var bim in bims)
+        {
+            GameObject.DestroyImmediate(bim);
+        }
+        Debug.LogError($"ClearBimInfos bims:{bims.Count}");
+        GetBims(null, null);
+    }
+
     [ContextMenu("GetBims")]
     public void GetBims(List<ModelItemInfo> models,ProgressArgEx p0)
     {
@@ -106,6 +117,32 @@ public class NavisModelRoot : MonoBehaviour
             {
                 Targets.Add(item);
             }
+        }
+    }
+
+    public void MoveRelativeTargets()
+    {
+        foreach (var item in Targets)
+        {
+            if (item == this) continue;
+            //RendererId rId = RendererId.GetRId(item);
+            //rId.Init();
+
+            //RendererId rId = RendererId.GetRId(item);
+            //rId.Init();
+            RendererId.InitId(item);
+            item.transform.SetParent(this.transform);
+        }
+    }
+
+    public void RecoverRelativeTargets()
+    {
+        IdDictionary.InitInfos();
+        foreach (var item in Targets)
+        {
+            if (item == this) continue;
+            RendererId rId = RendererId.GetRId(item);
+            rId.RecoverParent();
         }
     }
 
@@ -511,7 +548,16 @@ public class NavisModelRoot : MonoBehaviour
             result.CheckResult(model1,transforms1);
         }
         result.SetModelList(ModelList);
-        Debug.LogError($"[{this.name}][FindObjectByPos] time:{DateTime.Now - start} allModels_uid:{ModelList.allModels_uid.Count}," + result.ToString());
+
+        if (result.notFoundCount == 0)
+        {
+            Debug.Log($"-----------¡¾³É¹¦£º{result.notFoundCount}¡¿[{this.name}][FindObjectByPos] time:{DateTime.Now - start} allModels_uid:{ModelList.allModels_uid.Count}," + result.ToString());
+        }
+        else
+        {
+            Debug.LogWarning($"-----------¡¾Ê§°Ü£º{result.notFoundCount}¡¿[{this.name}][FindObjectByPos]  time:{DateTime.Now - start} allModels_uid:{ModelList.allModels_uid.Count}," + result.ToString());
+        }
+
         if (p0 == null)
         {
             ProgressBarHelper.ClearProgressBar();

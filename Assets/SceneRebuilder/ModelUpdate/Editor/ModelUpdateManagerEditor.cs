@@ -11,7 +11,7 @@ public class ModelUpdateManagerEditor : BaseFoldoutEditor<ModelUpdateManager>
 {
     static FoldoutEditorArg<LODTwoRenderers> twoListArg = new FoldoutEditorArg<LODTwoRenderers>(true, false);
     //private static string searchKey = "";
-
+    private static FoldoutEditorArg<LODTwoRenderers> modelListOldArg_All = new FoldoutEditorArg<LODTwoRenderers>(true, false);
     private static FoldoutEditorArg<LODTwoRenderers> modelListOldArg = new FoldoutEditorArg<LODTwoRenderers>(true, false);
     private static FoldoutEditorArg<LODTwoRenderers> modelListOldArg_Door = new FoldoutEditorArg<LODTwoRenderers>(true, false);
     private static FoldoutEditorArg<LODTwoRenderers> modelListOldArg_LodDevs = new FoldoutEditorArg<LODTwoRenderers>(true, false);
@@ -91,6 +91,8 @@ public class ModelUpdateManagerEditor : BaseFoldoutEditor<ModelUpdateManager>
         GUILayout.EndHorizontal();
         //DrawRendererInfoList("Models_Old", item.ModelRendersWaiting_Old, modelListOldArg);
 
+        
+        DrawListCompareResult("Models_Old(All)", item, item.ModelRendersWaiting_Old_All, modelListOldArg_All);
         DrawListCompareResult("Models_Old", item, item.ModelRendersWaiting_Old, modelListOldArg);
         DrawListCompareResult("Models_Old_Door", item, item.ModelRendersWaiting_Old_Door, modelListOldArg_Door);
         DrawListCompareResult("Models_Old_Dev(LOD)", item, item.ModelRendersWaiting_Old_LodDevs, modelListOldArg_LodDevs);
@@ -257,7 +259,7 @@ public class ModelUpdateManagerEditor : BaseFoldoutEditor<ModelUpdateManager>
                 //    return;
                 //}
                 var arg = editorArgs[item];
-                arg.caption = $"[{i:00}] {item.GetCompareCaption(twoList.isShowSize)}";
+                arg.caption = $"[{i+1:00}] {item.GetCompareCaption(twoList.isShowSize)}";
                 //arg.info = door.ToString();
 
                 arg.bold = false;
