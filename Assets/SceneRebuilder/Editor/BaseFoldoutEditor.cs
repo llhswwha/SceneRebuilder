@@ -1750,6 +1750,15 @@ public static class BaseFoldoutEditorHelper
         }
     }
 
+    public static void DrawSearchInput<T>(FoldoutEditorArg<T> listArg)
+    {
+        listArg.searchKey = GUILayout.TextField(listArg.searchKey, GUILayout.Width(200));
+        if (GUILayout.Button("X", GUILayout.Width(20)))
+        {
+            listArg.searchKey = "";
+        }
+    }
+
     public static void DrawTransformList(List<Transform> transList, FoldoutEditorArg<Transform> listArg, System.Action updateAction, string listName)
     {
         if (transList == null) return;
@@ -1781,7 +1790,13 @@ public static class BaseFoldoutEditorHelper
                 }
             }
 
-            listArg.searchKey = GUILayout.TextField(listArg.searchKey, GUILayout.Width(100));
+            //listArg.searchKey = GUILayout.TextField(listArg.searchKey, GUILayout.Width(200));
+            //if (GUILayout.Button("X", GUILayout.Width(20)))
+            //{
+            //    listArg.searchKey = "";
+            //}
+
+            DrawSearchInput(listArg);
 
             //if (GUILayout.Button("Compare"))
             //{

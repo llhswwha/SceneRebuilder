@@ -44,14 +44,30 @@ public class NavisModelRoot : MonoBehaviour
 
     public BIMModelInfoDictionary BimDict = new BIMModelInfoDictionary();
 
+    public List<BIMModelInfo> GetTargetBIMs()
+    {
+        List<BIMModelInfo> list = new List<BIMModelInfo>();
+        foreach (var target in Targets)
+        {
+            if (target == null) continue;
+            list.AddRange(target.GetComponentsInChildren<BIMModelInfo>(true));
+        }
+        return list;
+    }
+
     [ContextMenu("GetBims")]
     public void GetBims(List<ModelItemInfo> models,ProgressArgEx p0)
     {
-        BimDict = new BIMModelInfoDictionary(this.GetComponentsInChildren<BIMModelInfo>(true), p0);
+        BimDict = new BIMModelInfoDictionary(GetTargetBIMs(), p0);
         bimInfos = BimDict.bimInfos;
 
         //var models = file.GetAllItems();
         BimDict.CheckDict(models);
+
+        if (p0 == null)
+        {
+            ProgressBarHelper.ClearProgressBar();
+        }
     }
 
     NavisFileInfo navisFile;
@@ -366,14 +382,23 @@ public class NavisModelRoot : MonoBehaviour
         Debug.Log($"[{this.name}]TestIsUId s:{s} transform:{transform}");
     }
 
+    public float GetMinDistance()
+    {
+        //if (MinDistance == 0)
+        //{
+        //    MinDistance = DefaultMinDinstance;
+        //}
+        if (MinDistance < DefaultMinDinstance)
+        {
+            MinDistance = DefaultMinDinstance;
+        }
+        return MinDistance;
+    }
 
 
     public void FindObjectByUID()
     {
-        if (MinDistance == 0)
-        {
-            MinDistance = 0.00015f;
-        }
+        GetMinDistance();
         if (ModelList == null)
         {
             Debug.LogError($"FindObjectByUID ModelList == null");
@@ -417,121 +442,111 @@ public class NavisModelRoot : MonoBehaviour
         ModelList.SetList(allModels_uid_nofound);
     }
 
-    public float MinDistance = 0.00015f;
+    public static float DefaultMinDinstance = 0.0002f;
 
-    public void FindObjectByPos(ProgressArgEx p0)
+    public float MinDistance = DefaultMinDinstance;
+
+    public void FindObjectByModel(ModelItemInfo model1)
     {
-        if (MinDistance == 0)
-        {
-            MinDistance = 0.00015f;
-        }
+        GetMinDistance();
 
         DateTime start = DateTime.Now;
 
-        List<ModelItemInfo> allModels_uid_found1 = new List<ModelItemInfo>();
-        List<ModelItemInfo> allModels_uid_found2 = new List<ModelItemInfo>();
-        List<ModelItemInfo> allModels_uid_nofound1 = new List<ModelItemInfo>();
-        List<ModelItemInfo> allModels_uid_nofound2 = new List<ModelItemInfo>();
 
-        List<ModelItemInfo> models = new List<ModelItemInfo>();
-        models.AddRange(ModelList.allModels_drawable_nozero);
+
+        List<ModelItemInfo> models1 = new List<ModelItemInfo>();
+        models1.AddRange(ModelList.allModels_drawable_nozero);
         //models.AddRange(ModelList.allModels_noDrawable_nozero);
 
-        var p01 = ProgressArg.New("FindObjectByPos", 0,2, "ModelItemInfoDictionary",p0);
-        var modelDict = new ModelItemInfoDictionary(models, p01);
+        //var p01 = ProgressArg.New("FindObjectByPos", 0, 2, "ModelItemInfoDictionary", p0);
+        ModelItemInfoDictionary modelDict = new ModelItemInfoDictionary(models1, null);
         //var modelDict = new ModelItemInfoDictionary(models, null);
 
-        var p02 = ProgressArg.New("FindObjectByPos", 1, 2, "FindModels", p0);
-        for (int i = 0; i < models.Count; i++)
+        Model2TransformResult result = new Model2TransformResult(models1, modelDict, TransformDict, MinDistance);
+
+        //var p02 = ProgressArg.New("FindObjectByPos", 1, 2, "FindModels", p0);
+        //for (int i = 0; i < models1.Count; i++)
         {
-            ModelItemInfo uidModel = models[i];
-            var p1 = ProgressArg.New("FindModels", i, models.Count, uidModel.Name, p02);
+            //ModelItemInfo model1 = models1[i];
+            //var p1 = ProgressArg.New("FindModels", i, models1.Count, model1.Name, p02);
+            //ProgressBarHelper.DisplayCancelableProgressBar(p1);
+
+            //var transform = TransformDict.FindObjectByPos(uidModel);
+            List<Transform> transforms1 = TransformDict.FindModelsByPosAndName(model1);
+            result.CheckResult(model1, transforms1);
+        }
+        result.SetModelList(ModelList);
+        Debug.LogError($"[{this.name}][FindObjectByPos] time:{DateTime.Now - start} allModels_uid:{ModelList.allModels_uid.Count}," + result.ToString());
+        //if (p0 == null)
+        {
+            ProgressBarHelper.ClearProgressBar();
+        }
+    }
+
+    public void FindObjectByPos(ProgressArgEx p0)
+    {
+        GetMinDistance();
+
+        DateTime start = DateTime.Now;
+        List<ModelItemInfo> models1 = new List<ModelItemInfo>();
+        models1.AddRange(ModelList.allModels_drawable_nozero);
+
+        //models1.AddRange(ModelList.allModels_noDrawable_nozero);
+
+        var p01 = ProgressArg.New("FindObjectByPos", 0,2, "ModelItemInfoDictionary",p0);
+        ModelItemInfoDictionary modelDict = new ModelItemInfoDictionary(models1, p01);
+        //var modelDict = new ModelItemInfoDictionary(models, null);
+
+        Model2TransformResult result = new Model2TransformResult(models1, modelDict, TransformDict, MinDistance);
+
+        var p02 = ProgressArg.New("FindObjectByPos", 1, 2, "FindModels", p0);
+        for (int i = 0; i < models1.Count; i++)
+        {
+            ModelItemInfo model1 = models1[i];
+            var p1 = ProgressArg.New("FindModels", i, models1.Count, model1.Name, p02);
             ProgressBarHelper.DisplayCancelableProgressBar(p1);
 
-            var transform = TransformDict.FindObjectByPos(uidModel);
-            if (transform != null)
-            {
-                float dis = uidModel.GetDistance(transform);
-                bool isSameName = uidModel.IsSameName(transform);
-
-                var model = modelDict.FindModelByPos(transform);
-                if (model == uidModel)
-                {
-                    if (dis > MinDistance || isSameName == false)
-                    {
-                        allModels_uid_found2.Add(uidModel);
-                        Debug.LogError($"[FindObjectByPos1][{isSameName}]{uidModel.ShowDistance(transform)}");
-                    }
-                    else
-                    {
-                        allModels_uid_found1.Add(uidModel);
-
-                        TransformDict.RemoveTransform(transform);
-                        BIMModelInfo.SetModelInfo(transform, uidModel);
-                    }
-                }
-                else
-                {
-                    var ms = modelDict.FindModelsByPos(transform);
-
-                    if (model != null)
-                    {
-                        allModels_uid_found2.Add(uidModel);
-                        Debug.LogError($"[FindObjectByPos2][{isSameName}][{ms.Count}]({uidModel.ShowDistance(transform)}) - ({model.ShowDistance(transform)})");
-                    }
-                    else
-                    {
-                        allModels_uid_nofound2.Add(uidModel);
-                        Debug.LogError($"[FindObjectByPos3][{isSameName}][{ms.Count}]({uidModel.ShowDistance(transform)})");
-                        foreach(var m in ms)
-                        {
-                            Debug.Log($"m:{m.ShowDistance(transform)}");
-                        }
-                    }
-                }
-            }
-            else
-            {
-                allModels_uid_nofound1.Add(uidModel);
-            }
+            //var transform = TransformDict.FindObjectByPos(uidModel);
+            List<Transform> transforms1 = TransformDict.FindModelsByPosAndName(model1);
+            result.CheckResult(model1,transforms1);
         }
+        result.SetModelList(ModelList);
+        Debug.LogError($"[{this.name}][FindObjectByPos] time:{DateTime.Now - start} allModels_uid:{ModelList.allModels_uid.Count}," + result.ToString());
+        if (p0 == null)
+        {
+            ProgressBarHelper.ClearProgressBar();
+        }
+    }
 
-        //foreach (var uidModel in ModelList.allModels_noDrawable_nozero)
-        //{
-        //    var transform = TransformDict.FindObjectByPos(uidModel);
-        //    if (transform != null)
-        //    {
-        //        var model = ModelDict.FindModelByPos(transform);
-        //        if (model == uidModel)
-        //        {
-        //            allModels_uid_found1.Add(uidModel);
-        //        }
-        //        else
-        //        {
-        //            allModels_uid_found2.Add(uidModel);
-        //        }
-        //    }
-        //    else
-        //    {
-        //        allModels_uid_nofound1.Add(uidModel);
-        //    }
-        //}
-        int notFoundCount = allModels_uid_nofound1.Count+ allModels_uid_nofound2.Count+ allModels_uid_found2.Count;
+    public void FindObjectByPos2(ProgressArgEx p0)
+    {
+        GetMinDistance();
 
-        Debug.LogError($"[{this.name}][FindObjectByPos] time:{DateTime.Now - start} allModels_uid:{ModelList.allModels_uid.Count}," +
-            $"found1:{allModels_uid_found1.Count} ,found2:{allModels_uid_found2.Count} ,nofound1:{allModels_uid_nofound1.Count}, nofound2:{allModels_uid_nofound2.Count}");
+        DateTime start = DateTime.Now;
+        List<ModelItemInfo> models1 = new List<ModelItemInfo>();
+        //models1.AddRange(ModelList.allModels_drawable_nozero);
 
-        //allModels_uid = allModels_uid_nofound;
-        allModels_uid_nofound1.AddRange(allModels_uid_found2);
-        allModels_uid_nofound1.AddRange(allModels_uid_nofound2);
-        
+        models1.AddRange(ModelList.allModels_noDrawable_nozero);
 
-        allModels_uid_nofound1.AddRange(ModelList.allModels_noDrawable_nozero);
+        var p01 = ProgressArg.New("FindObjectByPos", 0, 2, "ModelItemInfoDictionary", p0);
+        ModelItemInfoDictionary modelDict = new ModelItemInfoDictionary(models1, p01);
+        //var modelDict = new ModelItemInfoDictionary(models, null);
 
-        allModels_uid_nofound1.AddRange(ModelList.allModels_drawable_zero);
-        allModels_uid_nofound1.AddRange(ModelList.allModels_noDrawable_zero);
+        Model2TransformResult result = new Model2TransformResult(models1, modelDict, TransformDict, MinDistance);
 
-        ModelList.SetList(allModels_uid_nofound1);
+        var p02 = ProgressArg.New("FindObjectByPos", 1, 2, "FindModels", p0);
+        for (int i = 0; i < models1.Count; i++)
+        {
+            ModelItemInfo model1 = models1[i];
+            var p1 = ProgressArg.New("FindModels", i, models1.Count, model1.Name, p02);
+            ProgressBarHelper.DisplayCancelableProgressBar(p1);
+
+            //var transform = TransformDict.FindObjectByPos(uidModel);
+            List<Transform> transforms1 = TransformDict.FindModelsByPosAndName(model1);
+            result.CheckResult(model1, transforms1);
+        }
+        result.SetModelList(ModelList);
+        Debug.LogError($"[{this.name}][FindObjectByPos] time:{DateTime.Now - start} allModels_uid:{ModelList.allModels_uid.Count}," + result.ToString());
         if (p0 == null)
         {
             ProgressBarHelper.ClearProgressBar();
@@ -541,6 +556,15 @@ public class NavisModelRoot : MonoBehaviour
     public void RemoveRepeated()
     {
         this.ModelDict.RemoveRepeatedModelInfo(this.BimDict);
+    }
+
+
+    public void ClearRendererId()
+    {
+        //this.ModelDict.ClearRendererId();
+
+        int count=navisFile.ClearRendererId();
+        Debug.LogError($"ClearRendererId count:{count}");
     }
 
     [ContextMenu("CreateTree")]

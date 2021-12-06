@@ -35,8 +35,11 @@ public class ModelItemInfoDictionary
         GetRepeatedModels();
     }
 
+    List<ModelItemInfo> all;
+
     private void InitDict(List<ModelItemInfo> all, ProgressArgEx p0)
     {
+        this.all = all;
         renderId2Model = new Dictionary<string, List<ModelItemInfo>>();
         uid2Model = new Dictionary<string, List<ModelItemInfo>>();
 
@@ -125,6 +128,23 @@ public class ModelItemInfoDictionary
                 repeatModelsByUId.Add(r, ms);
             }
         }
+    }
+
+    public void ClearRendererId()
+    {
+        int count = 0;
+        for (int i = 0; i < all.Count; i++)
+        {
+            ModelItemInfo item = all[i];
+            if(!string.IsNullOrEmpty(item.RenderId))
+            {
+                count++;
+            }
+            item.RenderId = null;
+            item.RenderName = null;
+            item.AreaName = null;
+        }
+        Debug.LogError($"ClearRendererId count:{count}");
     }
 
     public void RemoveRepeatedModelInfo(BIMModelInfoDictionary bimDict)

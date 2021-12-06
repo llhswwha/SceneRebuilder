@@ -46,22 +46,22 @@ public class NavisModelRootEditor : BaseFoldoutEditor<NavisModelRoot>
         if (item.ModelList != null)
         {
             EditorUIUtils.Separator(5);
-            DrawVueModelList(item.ModelList.allModels, modelListArg_all, "Model List(All)");
-            DrawVueModelList(item.ModelList.allModels_uid, modelListArg_uid, "Model List(UID)");
-            DrawVueModelList(item.ModelList.allModels_noUid, modelListArg_nouid, "Model List(NoUID)");
+            DrawVueModelList(item,item.ModelList.allModels, modelListArg_all, "Model List(All)");
+            DrawVueModelList(item, item.ModelList.allModels_uid, modelListArg_uid, "Model List(UID)");
+            DrawVueModelList(item, item.ModelList.allModels_noUid, modelListArg_nouid, "Model List(NoUID)");
 
-            DrawVueModelList(item.ModelList.allModels_drawable_zero, modelListArg_drawable_zero, "Model List(Drawable&Zero)");
-            DrawVueModelList(item.ModelList.allModels_drawable_nozero, modelListArg_drawable_nozero, "Model List(Drawable&NoZero)");
-            DrawVueModelList(item.ModelList.allModels_noDrawable_nozero, modelListArg_nodrawable_nozero, "Model List(NoDrawable&NoZero)");
-            DrawVueModelList(item.ModelList.allModels_noDrawable_zero, modelListArg_noDrawable_zero, "Model List(NoDrawable&Zero)");
+            DrawVueModelList(item, item.ModelList.allModels_drawable_zero, modelListArg_drawable_zero, "Model List(Drawable&Zero)");
+            DrawVueModelList(item, item.ModelList.allModels_drawable_nozero, modelListArg_drawable_nozero, "Model List(Drawable&NoZero)");
+            DrawVueModelList(item, item.ModelList.allModels_noDrawable_nozero, modelListArg_nodrawable_nozero, "Model List(NoDrawable&NoZero)");
+            DrawVueModelList(item, item.ModelList.allModels_noDrawable_zero, modelListArg_noDrawable_zero, "Model List(NoDrawable&Zero)");
         }
 
         EditorUIUtils.Separator(5);
 
-        DrawVueModelList(item.noFoundBimInfos01, bimListArg01, "No Found Bim List01(All)");
-        DrawVueModelList(item.noFoundBimInfos02, bimListArg02, "No Found Bim List02(Zero)");
-        DrawVueModelList(item.noFoundBimInfos03, bimListArg03, "No Found Bim List03(NotAero)");
-        DrawVueModelList(item.noFoundBimInfos04, bimListArg04, "No Found Bim List04(NotDrawable)");
+        DrawVueModelList(item, item.noFoundBimInfos01, bimListArg01, "No Found Bim List01(All)");
+        DrawVueModelList(item, item.noFoundBimInfos02, bimListArg02, "No Found Bim List02(Zero)");
+        DrawVueModelList(item, item.noFoundBimInfos03, bimListArg03, "No Found Bim List03(NotAero)");
+        DrawVueModelList(item, item.noFoundBimInfos04, bimListArg04, "No Found Bim List04(NotDrawable)");
         EditorUIUtils.Separator(5);
     }
 
@@ -125,6 +125,10 @@ public class NavisModelRootEditor : BaseFoldoutEditor<NavisModelRoot>
         {
             item.FindObjectByPos(null);
         }
+        if (GUILayout.Button("FindObjectByPos2"))
+        {
+            item.FindObjectByPos2(null);
+        }
 
         if (GUILayout.Button("CreateTree"))
         {
@@ -149,6 +153,10 @@ public class NavisModelRootEditor : BaseFoldoutEditor<NavisModelRoot>
         if (GUILayout.Button("RemoveRepeated"))
         {
             item.RemoveRepeated();
+        }
+        if (GUILayout.Button("ClearRendererId"))
+        {
+            item.ClearRendererId();
         }
         if (GUILayout.Button("OnlySelf"))
         {
@@ -326,7 +334,13 @@ public class NavisModelRootEditor : BaseFoldoutEditor<NavisModelRoot>
             //    item.CompareModelVueInfo_Model2Vue();
             //}
 
-            listArg.searchKey = GUILayout.TextField(listArg.searchKey, GUILayout.Width(100));
+            //listArg.searchKey = GUILayout.TextField(listArg.searchKey, GUILayout.Width(300));
+            //if (GUILayout.Button("X", GUILayout.Width(20)))
+            //{
+            //    listArg.searchKey = "";
+            //}
+
+            BaseFoldoutEditorHelper.DrawSearchInput(listArg);
         });
         if (listArg.isEnabled && listArg.isExpanded)
         {
@@ -347,7 +361,7 @@ public class NavisModelRootEditor : BaseFoldoutEditor<NavisModelRoot>
         }
     }
 
-    private static void DrawVueModelList(List<ModelItemInfo> models, FoldoutEditorArg<ModelItemInfo> listArg,string nameList)
+    private static void DrawVueModelList(NavisModelRoot root,List<ModelItemInfo> models, FoldoutEditorArg<ModelItemInfo> listArg,string nameList)
     {
         listArg.caption = $"{nameList}";
         listArg.level = 0;
@@ -384,7 +398,13 @@ public class NavisModelRootEditor : BaseFoldoutEditor<NavisModelRoot>
             //    item.GetVueModels(true);
             //}
 
-            listArg.searchKey = GUILayout.TextField(listArg.searchKey, GUILayout.Width(100));
+            //listArg.searchKey = GUILayout.TextField(listArg.searchKey, GUILayout.Width(300));
+            //if (GUILayout.Button("X", GUILayout.Width(20)))
+            //{
+            //    listArg.searchKey = "";
+            //}
+
+            BaseFoldoutEditorHelper.DrawSearchInput(listArg);
         });
         if (listArg.isEnabled && listArg.isExpanded)
         {
@@ -404,6 +424,10 @@ public class NavisModelRootEditor : BaseFoldoutEditor<NavisModelRoot>
                     if (GUILayout.Button("Id",GUILayout.Width(30)))
                     {
                         Debug.Log($"name:{listItem.Name}, id:{listItem.Id}, uid:{listItem.UId}, rid:{listItem.RenderId}");
+                    }
+                    if (GUILayout.Button("Find", GUILayout.Width(50)))
+                    {
+                        root.FindObjectByModel(listItem);
                     }
                 });
             });

@@ -87,5 +87,22 @@ namespace NavisPlugins.Infos
                 }
             }
         }
+
+        internal int ClearRendererId()
+        {
+            int count = 0;
+            var all = GetAllModelInfos();
+            foreach(var item in all)
+            {
+                if (!string.IsNullOrEmpty(item.RenderId))
+                {
+                    item.RenderId = null;
+                    item.RenderName = null;
+                    item.AreaName = null;
+                    count++;
+                }
+            }
+            return count;
+        }
     }
 }

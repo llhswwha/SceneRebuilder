@@ -8,6 +8,8 @@ Assets/AssetStoreTools*
 # Assets/ThirdPlugins/
 Assets/Models
 Assets/Art
+Assets/HDRPAsset/Scenes/SampleScene
+Assets/Scenes/
 SceneRebuilder Scripts backup
 Logs/
 Bin/

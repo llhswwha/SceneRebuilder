@@ -1176,8 +1176,8 @@ vueDict.Add(item.UId, item);
             return true;
         }
         //if (t.GetComponent<MeshRenderer>() == null && t.GetComponent<LODGroup>() == null) return true;
-        if (MeshHelper.IsEmptyGroup(t,false)) return true;
-        if (MeshHelper.IsSameNameGroup(t)) return true;
+        if (MeshHelper.IsEmptyGroup(t, false)) return true;
+        //if (MeshHelper.IsSameNameGroup(t)) return true;
         if (MeshHelper.IsEmptyLODSubGroup(t)) return true;
         return false;
     }

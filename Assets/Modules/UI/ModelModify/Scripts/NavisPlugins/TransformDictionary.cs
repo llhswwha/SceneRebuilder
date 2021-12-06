@@ -82,7 +82,8 @@ public class TransformDictionary
                         !n.Contains("MemberPartPrismatic") &&
                         !n.Contains("Undefined") &&
                         !n.Contains("原水预处理加药设备安装") &&
-                        !n.Contains("原水预处理污泥脱水设备安装图")
+                        !n.Contains("原水预处理污泥脱水设备安装图") && 
+                        !n.Contains("3203原水预处理反应沉淀池")
                         )
                         otherNames.Add(n);
                 }
@@ -451,11 +452,18 @@ public class DictionaryList1ToN<T>: Dictionary<string, List<T>> where T :class
 {
     public void AddItem(string key, T item)
     {
+       
         if (!this.ContainsKey(key))
         {
             this.Add(key, new List<T>());
         }
-        this[key].Add(item);
+        var list = this[key];
+        list.Add(item);
+
+        //if (item.ToString().Contains("SG0000-Undefined 102") || item.ToString().Contains("FD0000-Undefined 105"))
+        //{
+        //    Debug.LogError($"AddItem item:{item},key:{key} count:{list.Count}");
+        //}
     }
 
     public void RemoveItem(string key,T item)
@@ -470,11 +478,21 @@ public class DictionaryList1ToN<T>: Dictionary<string, List<T>> where T :class
             {
                 Debug.LogError($"DictionaryList1ToN RemoveItem NotContainsItem key:{key} item:{item}");
             }
+
+            if (count2 == 0)
+            {
+                this.Remove(key);
+            }
         }
         else
         {
             Debug.LogError($"DictionaryList1ToN RemoveItem NotContainsKey key:{key} item:{item}");
         }
+
+        //if (item.ToString().Contains("SG0000-Undefined 102") || item.ToString().Contains("FD0000-Undefined 105"))
+        //{
+        //    Debug.LogError($"RemoveItem item:{item},key:{key} count:{items.Count}");
+        //}
     }
 
     public T GetItem(string key)
@@ -649,6 +667,7 @@ public class PositionDictionaryList<T> where T : class
 
     internal void Add(Vector3 pos, T t)
     {
+
         var posT1 = $"({pos.x},{pos.y},{pos.z})";
         posListDict.AddItem(posT1, t);
 
