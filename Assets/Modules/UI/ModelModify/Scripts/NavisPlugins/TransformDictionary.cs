@@ -139,6 +139,11 @@ public class TransformDictionary
                 n = n.Replace("_New", "");
                 t.name = n;
             }
+            if(n.Contains(" "))
+            {
+                int id = n.LastIndexOf(" ");
+                n = n.Substring(0, id);
+            }
 
             if (n == "HorPumpBB1Asm-1-0002")
             {
@@ -275,6 +280,7 @@ public class TransformDictionary
     }
 
     public DictionaryList1ToN<Transform> nameListDict = new DictionaryList1ToN<Transform>();
+    public DictionaryList1ToN<Transform> nameListDict2 = new DictionaryList1ToN<Transform>();
     public DictionaryList1ToN<Transform> uidListDict = new DictionaryList1ToN<Transform>();
     public Dictionary<string, Transform> nameDict = new Dictionary<string, Transform>();
     public Dictionary<string, Transform> uidDict = new Dictionary<string, Transform>();
@@ -283,19 +289,29 @@ public class TransformDictionary
 
     public Transform GetTransformByName(string n)
     {
-        if (nameListDict.ContainsKey(n))
+        //if (nameListDict.ContainsKey(n))
+        //{
+        //    var list = nameListDict[n];
+        //    if (list.Count == 1)
+        //    {
+        //        return list[0];
+        //    }
+        //    else
+        //    {
+        //        return null;
+        //    }
+        //}
+        //return null;
+
+        var list = GetTransformsByName(n);
+        if (list.Count == 1)
         {
-            var list = nameListDict[n];
-            if (list.Count == 1)
-            {
-                return list[0];
-            }
-            else
-            {
-                return null;
-            }
+            return list[0];
         }
-        return null;
+        else
+        {
+            return null;
+        }
     }
 
     public List<Transform> GetTransformsByName(string n)
@@ -305,6 +321,18 @@ public class TransformDictionary
             var list = nameListDict[n];
             return list;
         }
+
+        if(n.Contains(" ")||n.Contains("*"))
+        {
+            string n2 = n.Replace(" ", "_");
+            n2 = n2.Replace("*", "_x_");
+            if (nameListDict.ContainsKey(n2))
+            {
+                var list = nameListDict[n2];
+                return list;
+            }
+        }
+
         return new List<Transform>();
     }
 

@@ -347,11 +347,11 @@ public class ProgressArgEx : List<ProgressArg>, IProgressArg
 
 public interface IProgressArg
 {
-    public string GetTitle();
+    string GetTitle();
 
-    public float GetProgress();
+    float GetProgress();
 
-    public IProgressArg Clone();
+    IProgressArg Clone();
 }
 
 public class ProgressArg: IProgressArg

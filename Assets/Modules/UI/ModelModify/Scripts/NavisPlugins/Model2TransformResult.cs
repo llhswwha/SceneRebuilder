@@ -39,12 +39,54 @@ public class Model2TransformResult
             }
             allModels_uid_nofound1.Add(model1);
 
-            DebugLogError($"[Rute2_1][没找到Transform][{model1.ToString()})");
             var ms = TransformDict.GetTransformsByName(model1.Name);
-            for (int i1 = 0; i1 < ms.Count; i1++)
+            
+
+            if (ms.Count == 0)
             {
-                var m = ms[i1];
-                DebugLogError($"[Rute2_1][{i1 + 1}/{ms.Count}] m:{model1.ShowDistance(m)}");
+                DebugLogError($"【{ms.Count}】[Rute1_1_1][没找到Transform][{MinDistance}][{model1.ToString()})");
+                //遍历全部模型
+            }
+            else if (ms.Count == 1)
+            {
+                var transf = ms[0];
+                float dis = model1.GetDistance(transf);
+                if (dis <= MinDistance)
+                {
+                    allModels_uid_found1.Add(model1);
+                    TransformDict.RemoveTransform(transf);
+                    BIMModelInfo.SetModelInfo(transf, model1);
+                    DebugErrorLog = "";
+                }
+                else
+                {
+                    DebugLogError($"【{ms.Count}】[Rute1_1_2][没找到Transform][{MinDistance}] m:{model1.ShowDistance(transf)}");
+                    //减少难度
+                }
+            }
+            else
+            {
+
+
+                var transf = model1.FindClosedTransform(ms);
+                float dis = model1.GetDistance(transf);
+                if (dis <= MinDistance)
+                {
+                    allModels_uid_found1.Add(model1);
+                    TransformDict.RemoveTransform(transf);
+                    BIMModelInfo.SetModelInfo(transf, model1);
+                    DebugErrorLog = "";
+                }
+                else
+                {
+                    DebugLogError($"【{ms.Count}】[Rute1_1_3][没找到Transform][{MinDistance}] m:{model1.ShowDistance(transf)}");
+                    for (int i1 = 0; i1 < ms.Count; i1++)
+                    {
+                        var m = ms[i1];
+                        DebugLogError($"[Rute1_1_3][{i1 + 1}/{ms.Count}] m:{model1.ShowDistance(m)}");
+                        //遍历这些模型
+                    }
+                }
             }
         }
         else if (transforms1.Count == 1)//2.找到一个 1-1-N 找到匹配的那一个1-1-1
@@ -127,12 +169,24 @@ public class Model2TransformResult
             bool isSameName = model1.IsSameName(transf);
             var ms = modelDict.FindModelsByPos(transf);
             //allModels_uid_nofound2.Add(model1);
+
             DebugLogError($"{logTag}[Rute2_1][没找到Model2][{ms.Count}][{isSameName}]({model1.ShowDistance(transf)})");
-            for (int i1 = 0; i1 < ms.Count; i1++)
-            {
-                ModelItemInfo m = ms[i1];
-                DebugLogError($"{logTag}[Rute2_1][{i1 + 1}/{ms.Count}] m:{m.ShowDistance(transf)}");
-            }
+            //if (ms.Count == 0)
+            //{
+
+            //}
+            //else if (ms.Count == 1)
+            //{
+
+            //}
+            //else
+            //{
+            //    for (int i1 = 0; i1 < ms.Count; i1++)
+            //    {
+            //        ModelItemInfo m = ms[i1];
+            //        DebugLogError($"{logTag}[Rute2_1][{i1 + 1}/{ms.Count}] m:{m.ShowDistance(transf)}");
+            //    }
+            //}
             return -1;
         }
         else if (models2.Count == 1) //2.2 找到一个
@@ -216,7 +270,7 @@ public class Model2TransformResult
             else if (isSameName == false) //2.2.1.2 判断名称是否相同_不同名，不同名也可以考虑作为找到了的
             {
                 //allModels_uid_found2.Add(model1);
-                DebugLogError($"{logTag}[Rute12][不同名][{MinDistance}][{isSameName}]{model1.ShowDistance(transf)}");
+                DebugLogError($"{logTag}[Rute12][不同名][{MinDistance}][{isSameName}:{model1.Name} <> {transf.name}]{model1.ShowDistance(transf)}");
                 return false;
             }
             else //2.2.1.3 【找到了】

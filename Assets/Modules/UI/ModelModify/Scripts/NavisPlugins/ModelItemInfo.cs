@@ -274,25 +274,122 @@ namespace NavisPlugins.Infos
             return dis;
         }
 
+        public Transform FindClosedTransform(List<Transform> ts)
+        {
+            return FindClosedTransform(ts, this.GetPositon());
+        }
+
+        public static Transform FindClosedTransform(List<Transform> ts, Vector3 pos)
+        {
+            float minDis = float.MaxValue;
+            Transform minModel = null;
+            foreach (var t in ts)
+            {
+                float dis = Vector3.Distance(t.position, pos);
+                if (minDis > dis)
+                {
+                    minDis = dis;
+                    minModel = t;
+                }
+            }
+            return minModel;
+        }
+
+        private string compareName11 = "";
+        private string compareName12 = "";
+        private string compareName13 = "";
+
+        private string compareName21 = "";
+        private string compareName22 = "";
+        private string compareName23 = "";
+
+        private string compareName31 = "";
+        private string compareName32 = "";
+        private string compareName33 = "";
+
+        private string compareName41 = "";
+        private string compareName42 = "";
+        private string compareName43 = "";
+
+        //private bool IsSameNameSelf()
+        //{
+
+        //}
+
         public bool IsSameName(Transform transform)
         {
-            string n = this.Name.Replace(" ","_");
-            string n2 = n + " ";
-            string n3 = n + "_";
+            if (string.IsNullOrEmpty(compareName11))
+            {
+                compareName11 = this.Name.Replace(" ", "_");
+                compareName12 = compareName11 + " ";
+                compareName13 = compareName11 + "_";
 
-            if (transform.name == n || transform.name.StartsWith(n2) || transform.name.StartsWith(n3))
+                compareName21 = compareName11.Replace("*", "_x_");
+                compareName22 = compareName21 + " ";
+                compareName23 = compareName21 + "_";
+
+                if (!string.IsNullOrEmpty(this.Description))
+                {
+                    compareName31 = this.Description.Replace(" ", "_");
+                    compareName32 = compareName31 + " ";
+                    compareName33 = compareName31 + "_";
+
+                    compareName41 = compareName31.Replace("*", "_x_");
+                    compareName42 = compareName41 + " ";
+                    compareName43 = compareName41 + "_";
+                }
+            }
+
+            if (transform.name == this.Name )
+            {
+                return true;
+            }
+            else if(transform.name == compareName11 || transform.name.StartsWith(compareName12) || transform.name.StartsWith(compareName13))
+            {
+                return true;
+            }
+            else if (transform.name == compareName21 || transform.name.StartsWith(compareName22) || transform.name.StartsWith(compareName23))
             {
                 return true;
             }
             else
             {
-                if(_parent.Children.Count==1)
+                if (!string.IsNullOrEmpty(this.Description))
                 {
-                    return _parent.IsSameName(transform);
+                    if (transform.name == this.Description)
+                    {
+                        return true;
+                    }
+                    else if (transform.name == compareName31 || transform.name.StartsWith(compareName32) || transform.name.StartsWith(compareName33))
+                    {
+                        return true;
+                    }
+                    else if (transform.name == compareName41 || transform.name.StartsWith(compareName42) || transform.name.StartsWith(compareName43))
+                    {
+                        return true;
+                    }
+                    else
+                    {
+                        if (_parent.Children.Count == 1)
+                        {
+                            return _parent.IsSameName(transform);
+                        }
+                        else
+                        {
+                            return false;
+                        }
+                    }
                 }
                 else
                 {
-                    return false;
+                    if (_parent.Children.Count == 1)
+                    {
+                        return _parent.IsSameName(transform);
+                    }
+                    else
+                    {
+                        return false;
+                    }
                 }
             }
         }
