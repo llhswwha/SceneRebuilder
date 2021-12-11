@@ -1723,7 +1723,7 @@ public static class BaseFoldoutEditorHelper
         });
     }
 
-    public static void DrawMeshAssetPaths(Dictionary<string, MeshRendererInfoList> pathDict, FoldoutEditorArg listArg)
+    public static void DrawMeshAssetPaths(MeshRendererAssetInfoDict pathDict, FoldoutEditorArg listArg)
     {
         //var pathDict = item.assetPaths;
         var paths = pathDict.Keys.ToList();
@@ -1737,12 +1737,22 @@ public static class BaseFoldoutEditorHelper
         },
             () =>
             {
-
+                var btnStyle = new GUIStyle(EditorStyles.miniButton);
+                btnStyle.margin = new RectOffset(0, 0, 0, 0);
+                btnStyle.padding = new RectOffset(0, 0, 0, 0);
+                if (GUILayout.Button("Name", btnStyle, GUILayout.Width(40)))
+                {
+                    pathDict.SortByPath();
+                }
+                if (GUILayout.Button("Vertex", btnStyle, GUILayout.Width(40)))
+                {
+                    pathDict.SortByVertex();
+                }
             });
 
         if (listArg.isEnabled && listArg.isExpanded && pathDict.Count > 0)
         {
-            paths.Sort();
+            
             FoldoutEditorArgBuffer.InitEditorArg(paths);
             //listArg.level = 2;
             listArg.DrawPageToolbar(paths, (path, i) =>

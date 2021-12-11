@@ -163,7 +163,7 @@ public class MeshNodeEditor : BaseFoldoutEditor<MeshNode>
 
     private void DrawMeshAssetPaths(FoldoutEditorArg listArg, MeshNode item)
     {
-        var pathDict = item.assetPaths;
+        MeshRendererAssetInfoDict pathDict = item.assetPaths;
         BaseFoldoutEditorHelper.DrawMeshAssetPaths(pathDict, listArg);
     }
 

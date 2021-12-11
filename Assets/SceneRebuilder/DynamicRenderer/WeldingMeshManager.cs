@@ -42,6 +42,8 @@ public class WeldingMeshManager : MonoBehaviour
 
     public void SetDymicCulling()
     {
+#if UNITY_EDITOR
         DynamicCulling.Instance.OnEditorAddStartRenderers(WeldingRenderers.GetAllRenderers());
+#endif
     }
 }

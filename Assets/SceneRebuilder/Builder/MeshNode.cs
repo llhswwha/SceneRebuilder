@@ -942,12 +942,12 @@ public class MeshNode : MonoBehaviour,IComparable<MeshNode>
         return meshNode;
     }
 
-    public Dictionary<string, MeshRendererInfoList> assetPaths = new Dictionary<string, MeshRendererInfoList>();
+    public MeshRendererAssetInfoDict assetPaths = new MeshRendererAssetInfoDict();
 
-    public Dictionary<string, MeshRendererInfoList> GetAssetPaths()
+    public MeshRendererAssetInfoDict GetAssetPaths()
     {
         MeshRendererInfoList list = new MeshRendererInfoList(gameObject);
-        var paths = list.GetAssetPaths();
+        MeshRendererAssetInfoDict paths = list.GetAssetPaths();
         assetPaths = paths;
         return paths;
     }

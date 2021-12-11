@@ -816,23 +816,16 @@ public class MeshRendererInfoList:List<MeshRendererInfo>
         InitRenderers(renderers, isForceUpdate);
     }
 
-    public Dictionary<string, MeshRendererInfoList> GetAssetPaths()
+   
+
+    public MeshRendererAssetInfoDict GetAssetPaths()
     {
-        Dictionary<string, MeshRendererInfoList> dic = new Dictionary<string, MeshRendererInfoList>();
+        MeshRendererAssetInfoDict dic = new MeshRendererAssetInfoDict();
         foreach(var render in this)
         {
-            var path = render.GetAssetPath();
-            //if (string.IsNullOrEmpty(path))
-            //{
-            //    Debug.LogError("path==null:" + render.name);
-            //    continue;
-            //}
-            if (!dic.ContainsKey(path))
-            {
-                dic.Add(path, new MeshRendererInfoList());
-            }
-            dic[path].Add(render);
+            dic.AddRenderer(render);
         }
+        dic.SortByPath();
         return dic;
     }
 
@@ -1186,6 +1179,64 @@ public class MeshRendererInfoList:List<MeshRendererInfo>
     public void SetLODInfo()
     {
 
+    }
+}
+
+public class MeshRendererAssetInfo : MeshRendererInfoList
+{
+    public string FilePath;
+    public UnityEngine.Object AssetOjb;
+    //public MeshRendererInfoList List;
+
+    public MeshRendererAssetInfo(string path)
+    {
+        FilePath = path;
+    }
+}
+
+public class MeshRendererAssetInfoDict : Dictionary<string, MeshRendererAssetInfo>
+{
+    public void SortByPath()
+    {
+        var paths = this.Keys.ToList();
+        paths.Sort();
+        List<MeshRendererAssetInfo> list = new List<MeshRendererAssetInfo>();
+        foreach (var path in paths)
+        {
+            list.Add(this[path]);
+        }
+        SetList(list);
+    }
+
+    private void SetList(List<MeshRendererAssetInfo> list)
+    {
+        this.Clear();
+        foreach (var item in list)
+        {
+            this.Add(item.FilePath, item);
+        }
+    }
+
+    public void SortByVertex()
+    {
+        List<MeshRendererAssetInfo> list = this.Values.ToList();
+        list.Sort((a, b) => { return b.GetVertexCount().CompareTo(a.GetVertexCount()); });
+        SetList(list);
+    }
+
+    public void AddRenderer(MeshRendererInfo render)
+    {
+        var path = render.GetAssetPath();
+        //if (string.IsNullOrEmpty(path))
+        //{
+        //    Debug.LogError("path==null:" + render.name);
+        //    continue;
+        //}
+        if (!this.ContainsKey(path))
+        {
+            this.Add(path, new MeshRendererAssetInfo(path));
+        }
+        this[path].Add(render);
     }
 }
 
