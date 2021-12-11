@@ -28,6 +28,7 @@ public class NavisModelRootEditor : BaseFoldoutEditor<NavisModelRoot>
     static FoldoutEditorArg<ModelItemInfo> modelListArg_nodrawable_nozero = new FoldoutEditorArg<ModelItemInfo>(true, false);
     static FoldoutEditorArg<ModelItemInfo> modelListArg_noDrawable_zero = new FoldoutEditorArg<ModelItemInfo>(true, false);
 
+    static FoldoutEditorArg<Transform> transListArg_All = new FoldoutEditorArg<Transform>(true, false);
     static FoldoutEditorArg<Transform> transListArg = new FoldoutEditorArg<Transform>(true, false);
     static FoldoutEditorArg<Transform> transListArg2 = new FoldoutEditorArg<Transform>(true, false);
 
@@ -68,6 +69,7 @@ public class NavisModelRootEditor : BaseFoldoutEditor<NavisModelRoot>
     public override void OnEnable()
     {
         base.OnEnable();
+        InitNavisFileInfoByModelSetting.Instance.AddDoorABFilter();
     }
 
     public static void DrawUI(NavisModelRoot item)
@@ -84,9 +86,12 @@ public class NavisModelRootEditor : BaseFoldoutEditor<NavisModelRoot>
 
         EditorGUILayout.BeginHorizontal();
         //GUILayout
-        item.ModelName = EditorGUILayout.TextField("ModelName", item.ModelName);
-        item.includeInactive = EditorGUILayout.Toggle("Inactive",item.includeInactive);
-        item.IsIncludeStructure = EditorGUILayout.Toggle("Structure", item.IsIncludeStructure);
+        GUILayout.Label("ModelName", GUILayout.Width(80));
+        item.ModelName = EditorGUILayout.TextField(item.ModelName,GUILayout.Width(120));
+        GUILayout.Label("Inactive", GUILayout.Width(60));
+        item.includeInactive = EditorGUILayout.Toggle(item.includeInactive, GUILayout.Width(20));
+        GUILayout.Label("Structure", GUILayout.Width(60));
+        InitNavisFileInfoByModelSetting.Instance.IsIncludeStructure = EditorGUILayout.Toggle(InitNavisFileInfoByModelSetting.Instance.IsIncludeStructure, GUILayout.Width(20));
         EditorGUILayout.EndHorizontal();
 
         EditorGUILayout.BeginHorizontal();
@@ -182,8 +187,8 @@ public class NavisModelRootEditor : BaseFoldoutEditor<NavisModelRoot>
         EditorGUILayout.EndHorizontal();
 
         DrawBimList(item, bimListArg0, "Bim List");
-
-        BaseFoldoutEditorHelper.DrawTransformList(item.transformList, transListArg, null, "Transform List(All)");
+        BaseFoldoutEditorHelper.DrawTransformList(item.transformListAll, transListArg_All, null, "Transform List(All)");
+        BaseFoldoutEditorHelper.DrawTransformList(item.transformList, transListArg, null, "Transform List(Fiterd)");
         if(item.TransformDict!=null)
             BaseFoldoutEditorHelper.DrawTransformList(item.TransformDict.dict.Keys.ToList(), transListArg2, null, "Transform List(Current)");
 

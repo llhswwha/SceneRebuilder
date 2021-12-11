@@ -1180,6 +1180,13 @@ public class MeshRendererInfoList:List<MeshRendererInfo>
             render.AddCollider();
         }
     }
+
+    ///lodManager.SetRenderersLODInfo();
+    ///
+    public void SetLODInfo()
+    {
+
+    }
 }
 
 public enum MeshRendererType

@@ -842,6 +842,7 @@ public class BaseFoldoutEditor<T> : BaseEditor<T> where T : class
         return meshes;
     }
 
+
     public void DrawMeshRendererInfoListEx(FoldoutEditorArg<MeshRendererInfo> foldoutArg, List<MeshRendererInfo> list,System.Func<List<MeshRendererInfo>> funcGetList)
     {
         if (string.IsNullOrEmpty(foldoutArg.caption)) foldoutArg.caption = $"Mesh Info List";
@@ -1679,7 +1680,110 @@ public static class FoldoutEditorArgBuffer
 
 public static class BaseFoldoutEditorHelper
 {
-    
+    public static void DrawRendererInfoList(string name, MeshRendererInfoList list, FoldoutEditorArg arg)
+    {
+        arg.caption = name;
+        EditorUIUtils.ToggleFoldout(arg, arg =>
+        {
+            arg.caption = $"{name} ({list.Count})";
+            arg.info = $"{MeshHelper.GetVertexCountS((int)list.GetVertexCount())}";
+            FoldoutEditorArgBuffer.InitEditorArg(list);
+        },
+        () =>
+        {
+            //searchKey = GUILayout.TextField(searchKey);
+        });
+        if (arg.isEnabled && arg.isExpanded)
+        {
+            DrawMeshRendererInfoList(list, arg);
+        }
+    }
+
+    private static void DrawMeshRendererInfoList(MeshRendererInfoList list, FoldoutEditorArg arg)
+    {
+        arg.DrawPageToolbar(list, (item, i) =>
+        {
+            if (item == null) return;
+            var subArg = FoldoutEditorArgBuffer.editorArgs[item];
+            subArg.caption = $"[{i:00}] {item.name}";
+            subArg.info = $"{MeshHelper.GetVertexCountS((int)item.vertexCount)}|{item.rendererType}|{item.GetLODIds()}";
+            EditorUIUtils.ObjectFoldout(subArg, item.gameObject, () =>
+            {
+                //if (GUILayout.Button("Align", GUILayout.Width(60)))
+                //{
+                //    item.Align();
+                //}
+                //if (GUILayout.Button("Old", GUILayout.Width(45)))
+                //{
+                //    Debug.Log($"v1:{item.renderer_lod0.GetMinLODVertexCount()} v2:{item.vertexCount0}");
+                //    EditorHelper.SelectObject(item.renderer_lod0.GetMinLODGo());
+                //}
+            });
+        });
+    }
+
+    public static void DrawMeshAssetPaths(Dictionary<string, MeshRendererInfoList> pathDict, FoldoutEditorArg listArg)
+    {
+        //var pathDict = item.assetPaths;
+        var paths = pathDict.Keys.ToList();
+        //listArg.level = 4;
+        listArg.caption = $"AssetPath List";
+        EditorUIUtils.ToggleFoldout(listArg, arg =>
+        {
+            arg.caption = $"AssetPath List ({pathDict.Count})";
+            //arg.info = $"({sv / 10000f:F0}){txt}";
+            FoldoutEditorArgBuffer.InitEditorArg(paths);
+        },
+            () =>
+            {
+                if (GUILayout.Button("Clone"))
+                {
+
+                }
+                if (GUILayout.Button("Hide"))
+                {
+
+                }
+                if (GUILayout.Button("Show"))
+                {
+
+                }
+                if (GUILayout.Button("HideOthers"))
+                {
+
+                }
+            });
+
+        if (listArg.isEnabled && listArg.isExpanded && pathDict.Count > 0)
+        {
+            paths.Sort();
+            FoldoutEditorArgBuffer.InitEditorArg(paths);
+            //listArg.level = 2;
+            listArg.DrawPageToolbar(paths, (path, i) =>
+            {
+                var list = pathDict[path];
+                FoldoutEditorArgBuffer.InitEditorArg(list);
+                var arg = FoldoutEditorArgBuffer.editorArgs[path];
+                arg.isFoldout = list.Count > 0;
+                arg.level = 3;
+                arg.caption = $"[{i:00}] {path} ({list.Count})";
+                arg.info = $"{MeshHelper.GetVertexCountS((int)list.GetVertexCount())}";
+                arg.isEnabled = true;
+
+                EditorUIUtils.ObjectFoldout(arg, null, () =>
+                {
+
+                });
+
+                if (arg.isEnabled && arg.isExpanded && list.Count > 0)
+                {
+                    DrawMeshRendererInfoList(list, arg);
+                }
+            });
+        }
+    }
+
+
     public static void DrawPrefabList(FoldoutEditorArg prefabListArg, System.Func<PrefabInfoList> funcGetList)
     {
         //ObjectField(item.LocalTarget);

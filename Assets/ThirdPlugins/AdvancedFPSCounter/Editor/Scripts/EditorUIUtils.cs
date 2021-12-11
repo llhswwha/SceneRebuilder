@@ -589,7 +589,7 @@ namespace CodeStage.AdvancedFPSCounter.Editor.UI
             var currentLabelWidth = EditorGUIUtility.labelWidth;
 
 
-           
+            GUILayout.Space(10 * arg.level);
 
             if (obj != null)
             {
@@ -606,7 +606,7 @@ namespace CodeStage.AdvancedFPSCounter.Editor.UI
                         EditorGUIUtility.labelWidth = 1;
                         //EditorGUILayout.PropertyField(toggle, GUIContent.none, GUILayout.ExpandWidth(false));
 
-                        GUILayout.Space(10 * arg.level);
+                        //GUILayout.Space(10 * arg.level);
                         //BeforeSpace(arg.level);
 
                         EditorGUILayout.Toggle(go.activeInHierarchy, GUILayout.Width(15));//go.activeInHierarchy

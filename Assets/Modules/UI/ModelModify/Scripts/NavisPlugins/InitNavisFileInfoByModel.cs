@@ -1107,105 +1107,125 @@ vueDict.Add(item.UId, item);
         return nodeFoundModelList;
     }
 
-    public List<string> FilterNames1 = new List<string>() { "In", "Out0", "Out1", "LOD", "LODs" };
+    //public List<string> FilterNames1 = new List<string>() { "In", "Out0", "Out1", "LOD", "LODs" };
 
-    public List<string> FilterNames2 = new List<string>() { "_F1", "_F2", "_F3", "_F4", "_F5", "_F6" };
+    //public List<string> FilterNames2 = new List<string>() { "_F1", "_F2", "_F3", "_F4", "_F5", "_F6" };
 
-    public List<string> FilterNames3 = new List<string>() { "合成部分" };
+    //public List<string> FilterNames3 = new List<string>() { "合成部分" };
 
-    [ContextMenu("AddDoorABFilter")]
-    public void AddDoorABFilter()
-    {
-        for (int i = 0; i < 20; i++)
-        {
-            if (!FilterNames2.Contains($"_Door{i + 1}A"))
-            {
-                FilterNames2.Add($"_Door{i + 1}A");
-            }
-            if (!FilterNames2.Contains($"_Door{i + 1}B"))
-            {
-                FilterNames2.Add($"_Door{i + 1}B");
-            }
-        }
-    }
+    //[ContextMenu("AddDoorABFilter")]
+    //public void AddDoorABFilter()
+    //{
+    //    for (int i = 0; i < 20; i++)
+    //    {
+    //        if (!FilterNames2.Contains($"_Door{i + 1}A"))
+    //        {
+    //            FilterNames2.Add($"_Door{i + 1}A");
+    //        }
+    //        if (!FilterNames2.Contains($"_Door{i + 1}B"))
+    //        {
+    //            FilterNames2.Add($"_Door{i + 1}B");
+    //        }
+    //    }
+    //}
 
-    public List<Transform> FilterList(List<Transform> list1, ProgressArgEx p0)
-    {
-        List<Transform> all = new List<Transform>();
-        for (int i1 = 0; i1 < list1.Count; i1++)
-        {
-            Transform t = list1[i1];
-            var p1 = ProgressArg.New("FilterList", i1, list1.Count, t.name, p0);
-            ProgressBarHelper.DisplayCancelableProgressBar(p1);
-            if (IsFiltered(t))
-            {
-                continue;
-            }
-            all.Add(t);
-        }
-        if(p0==null)
-            ProgressBarHelper.ClearProgressBar();
-        return all;
-    }
+    //public List<Transform> FilterList(List<Transform> list1, ProgressArgEx p0)
+    //{
+    //    List<Transform> all = new List<Transform>();
+    //    for (int i1 = 0; i1 < list1.Count; i1++)
+    //    {
+    //        Transform t = list1[i1];
+    //        var p1 = ProgressArg.New("FilterList", i1, list1.Count, t.name, p0);
+    //        ProgressBarHelper.DisplayCancelableProgressBar(p1);
+    //        if (InitNavisFileInfoByModelSetting.Instance.IsFiltered(t))
+    //        {
+    //            continue;
+    //        }
+    //        if(IsIncludeStructure && IsStructrue(t.name))
+    //        {
+    //            continue;
+    //        }
+    //        all.Add(t);
+    //    }
+    //    if(p0==null)
+    //        ProgressBarHelper.ClearProgressBar();
+    //    return all;
+    //}
 
-    public bool IsFiltered(Transform t)
-    {
-        if(t.name== "HorPumpBB1Asm-1-0002")
-        {
-            Debug.LogError("HorPumpBB1Asm-1-0002");
-        }
-        if (IsFiltered(t.name))
-        {
-            return true;
-        }
-        MeshRendererInfo info = t.GetComponent<MeshRendererInfo>();
-        if (info != null)
-        {
-            //if (info.IsRendererType(MeshRendererType.LOD) && !info.IsLodN(0))
-            //{
-            //    return true;
-            //}
+    //public bool IsIncludeStructure = true;//是否包括建筑结构
 
-            if (info.IsRendererType(MeshRendererType.LOD))
-            {
-                if (info.GetComponent<LODGroup>() == null) return true;
-            }
-        }
-        if (t.childCount == 0 && t.GetComponent<MeshRenderer>() == null)
-        {
-            return true;
-        }
-        //if (t.GetComponent<MeshRenderer>() == null && t.GetComponent<LODGroup>() == null) return true;
-        if (MeshHelper.IsEmptyGroup(t, false)) return true;
-        //if (MeshHelper.IsSameNameGroup(t)) return true;
-        if (MeshHelper.IsEmptyLODSubGroup(t)) return true;
-        return false;
-    }
+    //public List<string> structureNameList = new List<string>() { "MemberPartPrismatic", "PHC600AB", "Slab-", "WallPart-" };
+
+    //public bool IsStructrue(string n)
+    //{
+    //    foreach (var key in structureNameList)
+    //    {
+    //        if (n.StartsWith(key))
+    //        {
+    //            return true;
+    //        }
+    //    }
+    //    return false;
+    //}
+
+    //public bool IsFiltered(Transform t)
+    //{
+    //    if(t.name== "HorPumpBB1Asm-1-0002")
+    //    {
+    //        Debug.LogError("HorPumpBB1Asm-1-0002");
+    //    }
+    //    if (InitNavisFileInfoByModelSetting.Instance.IsFiltered(t.name))
+    //    {
+    //        return true;
+    //    }
+    //    MeshRendererInfo info = t.GetComponent<MeshRendererInfo>();
+    //    if (info != null)
+    //    {
+    //        //if (info.IsRendererType(MeshRendererType.LOD) && !info.IsLodN(0))
+    //        //{
+    //        //    return true;
+    //        //}
+
+    //        if (info.IsRendererType(MeshRendererType.LOD))
+    //        {
+    //            if (info.GetComponent<LODGroup>() == null) return true;
+    //        }
+    //    }
+    //    if (t.childCount == 0 && t.GetComponent<MeshRenderer>() == null)
+    //    {
+    //        return true;
+    //    }
+    //    //if (t.GetComponent<MeshRenderer>() == null && t.GetComponent<LODGroup>() == null) return true;
+    //    if (MeshHelper.IsEmptyGroup(t, false)) return true;
+    //    //if (MeshHelper.IsSameNameGroup(t)) return true;
+    //    if (MeshHelper.IsEmptyLODSubGroup(t)) return true;
+    //    return false;
+    //}
 
 
 
-    private bool IsFiltered(string n)
-    {
-        if (FilterNames1.Contains(n))
-        {
-            return true;
-        }
-        foreach (var f in FilterNames2)
-        {
-            if (n.EndsWith(f))
-            {
-                return true;
-            }
-        }
-        foreach (var f in FilterNames3)
-        {
-            if (n.Contains(f))
-            {
-                return true;
-            }
-        }
-        return false;
-    }
+    //private bool IsFiltered(string n)
+    //{
+    //    if (FilterNames1.Contains(n))
+    //    {
+    //        return true;
+    //    }
+    //    foreach (var f in FilterNames2)
+    //    {
+    //        if (n.EndsWith(f))
+    //        {
+    //            return true;
+    //        }
+    //    }
+    //    foreach (var f in FilterNames3)
+    //    {
+    //        if (n.Contains(f))
+    //        {
+    //            return true;
+    //        }
+    //    }
+    //    return false;
+    //}
 
     private List<Transform> models = new List<Transform>();
 
@@ -1244,7 +1264,7 @@ vueDict.Add(item.UId, item);
         //    all.Add(t);
         //}
 
-        all = FilterList(list1,null);
+        all = InitNavisFileInfoByModelSetting.Instance.FilterList(list1,null);
 
         ProgressBarHelper.ClearProgressBar();
         Debug.Log($"GetAllChildren all:{all.Count}");

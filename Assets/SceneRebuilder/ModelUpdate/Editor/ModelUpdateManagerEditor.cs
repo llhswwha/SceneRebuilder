@@ -113,42 +113,7 @@ public class ModelUpdateManagerEditor : BaseFoldoutEditor<ModelUpdateManager>
     }
 
 
-    public static void DrawRendererInfoList(string name,MeshRendererInfoList list, FoldoutEditorArg<MeshRendererInfoList> arg)
-    {
-        arg.caption = name;
-        EditorUIUtils.ToggleFoldout(arg, arg =>
-        {
-            arg.caption = $"{name} ({list.Count})";
-            arg.info = $"{MeshHelper.GetVertexCountS((int)list.GetVertexCount())}";
-            InitEditorArg(list);
-        },
-        () =>
-        {
-            //searchKey = GUILayout.TextField(searchKey);
-        });
-        if (arg.isEnabled && arg.isExpanded)
-        {
-            arg.DrawPageToolbar(list, (item, i) =>
-            {
-                if (item == null) return;
-                var arg = editorArgs[item];
-                arg.caption = $"[{i:00}] {item.name}";
-                arg.info = $"{MeshHelper.GetVertexCountS((int)item.vertexCount)}|{item.rendererType}|{item.GetLODIds()}";
-                EditorUIUtils.ObjectFoldout(arg, item.gameObject, () =>
-                {
-                    //if (GUILayout.Button("Align", GUILayout.Width(60)))
-                    //{
-                    //    item.Align();
-                    //}
-                    //if (GUILayout.Button("Old", GUILayout.Width(45)))
-                    //{
-                    //    Debug.Log($"v1:{item.renderer_lod0.GetMinLODVertexCount()} v2:{item.vertexCount0}");
-                    //    EditorHelper.SelectObject(item.renderer_lod0.GetMinLODGo());
-                    //}
-                });
-            });
-        }
-    }
+    
 
     public static void DrawListCompareResult(string name,ModelUpdateManager lodManager, LODTwoRenderersList twoList, FoldoutEditorArg<LODTwoRenderers> listArg)
     {

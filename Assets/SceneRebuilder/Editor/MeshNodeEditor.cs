@@ -2,6 +2,7 @@ using CodeStage.AdvancedFPSCounter.Editor.UI;
 using System;
 using System.Collections;
 using System.Collections.Generic;
+using System.Linq;
 using UnityEditor;
 using UnityEngine;
 
@@ -12,14 +13,17 @@ public class MeshNodeEditor : BaseFoldoutEditor<MeshNode>
 
     FoldoutEditorArg sharedMeshListArg = new FoldoutEditorArg();
 
+    FoldoutEditorArg assetPathListArg = new FoldoutEditorArg();
+
     private int rendererCount = 0;
 
     public override void OnEnable()
     {
         base.OnEnable();
         meshnodeListArg = new FoldoutEditorArg(true,true,true,true,true);
-        sharedMeshListArg = new FoldoutEditorArg(true, true, true, true, true);
+        sharedMeshListArg = new FoldoutEditorArg(true, false, true, true, true);
         sharedMeshListArg.tag = targetT.sharedMeshInfos;
+        assetPathListArg = new FoldoutEditorArg(true, true, true, true, true);
         rendererCount = targetT.gameObject.GetComponentsInChildren<MeshRenderer>(true).Length;
     }
 
@@ -35,9 +39,6 @@ public class MeshNodeEditor : BaseFoldoutEditor<MeshNode>
         {
             GUILayout.Label($"vertex:{MeshHelper.GetVertexCountS(item.VertexCount)},renderers:{rendererCount}({item.sharedMeshInfos})");
         }
-        
-
-        
 
         EditorGUILayout.BeginHorizontal();
         if (GUILayout.Button("UpdateList"))
@@ -45,6 +46,14 @@ public class MeshNodeEditor : BaseFoldoutEditor<MeshNode>
             MeshNode.InitNodes(item.gameObject);
             sharedMeshListArg.tag = item.GetSharedMeshList();
         }
+        if (GUILayout.Button("GetAssets"))
+        {
+            item.GetAssetPaths();
+        }
+        EditorGUILayout.EndHorizontal();
+
+
+        EditorGUILayout.BeginHorizontal();
         if (GUILayout.Button("ShowShared"))
         {
             item.GetChildrenSharedMeshInfo();
@@ -132,6 +141,7 @@ public class MeshNodeEditor : BaseFoldoutEditor<MeshNode>
             () =>
             {
             });
+
             DrawMeshNodeList(meshnodeListArg, item, 0);
 
             //if (sharedMeshListArg.tag == null)
@@ -145,7 +155,16 @@ public class MeshNodeEditor : BaseFoldoutEditor<MeshNode>
                 MeshNode.InitNodes(go);
                 //sharedMeshListArg.tag = item.GetSharedMeshList();
             }
+
+            DrawMeshAssetPaths(assetPathListArg, item);
         }
+
+    }
+
+    private void DrawMeshAssetPaths(FoldoutEditorArg listArg, MeshNode item)
+    {
+        var pathDict = item.assetPaths;
+        BaseFoldoutEditorHelper.DrawMeshAssetPaths(pathDict, listArg);
     }
 
 

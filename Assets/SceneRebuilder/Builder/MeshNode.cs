@@ -941,6 +941,16 @@ public class MeshNode : MonoBehaviour,IComparable<MeshNode>
         Debug.Log($"MeshNode.Init count:{meshNodes.Length} time:{(DateTime.Now - start)}");
         return meshNode;
     }
+
+    public Dictionary<string, MeshRendererInfoList> assetPaths = new Dictionary<string, MeshRendererInfoList>();
+
+    public Dictionary<string, MeshRendererInfoList> GetAssetPaths()
+    {
+        MeshRendererInfoList list = new MeshRendererInfoList(gameObject);
+        var paths = list.GetAssetPaths();
+        assetPaths = paths;
+        return paths;
+    }
 }
 
 

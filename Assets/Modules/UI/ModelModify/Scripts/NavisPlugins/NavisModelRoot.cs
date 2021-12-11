@@ -19,7 +19,7 @@ public class NavisModelRoot : MonoBehaviour
 
 
 
-
+    public List<Transform> transformListAll = new List<Transform>();
 
     public List<Transform> transformList = new List<Transform>();
 
@@ -197,18 +197,23 @@ public class NavisModelRoot : MonoBehaviour
             Debug.Log($"GetTransformList target:{target} list:{list.Count} combinedList:{combinedList.Count} transformList:{transformList.Count} includeInactive:{includeInactive}");
             //transformList.AddRange(list);
         }
-        transformList = transformDict.Keys.ToList();
+        transformListAll = transformDict.Keys.ToList();
         //transformList = this.GetComponentsInChildren<Transform>(true).ToList();
-        transformList.Remove(this.transform);
+        transformListAll.Remove(this.transform);
 
-        Debug.Log($"GetTransformList transformList1:{transformList.Count}");
+        Debug.Log($"GetTransformList transformList1:{transformListAll.Count}");
 
-        transformList = InitNavisFileInfoByModel.Instance.FilterList(transformList,p0);
+        transformList = InitNavisFileInfoByModelSetting.Instance.FilterList(transformListAll, p0);
         transformList.Sort((a, b) => { return a.name.CompareTo(b.name); });
 
         Debug.Log($"GetTransformList transformList2:{transformList.Count}");
 
         TransformDict = new TransformDictionary(transformList);
+    }
+
+    private void FilterStructure()
+    {
+
     }
 
     private bool GetModelRoot()
@@ -374,6 +379,7 @@ public class NavisModelRoot : MonoBehaviour
         //var allModels = navisFile.GetAllItems();
         var allModels = navisFile.GetAllModelInfos();
         var currentModels = ModelRoot.GetChildrenModels();
+        currentModels = InitNavisFileInfoByModelSetting.Instance.FilterList(currentModels,null);
         ModelDict = new ModelItemInfoDictionary(currentModels, p3);
 
         var p4 = ProgressArg.New("LoadModels", 3, 5, "GetBims", p0);
@@ -519,7 +525,7 @@ public class NavisModelRoot : MonoBehaviour
         }
     }
 
-    public bool IsIncludeStructure = true;//是否包括建筑结构
+    //public bool IsIncludeStructure = true;//是否包括建筑结构
 
     public string TestName1 = "610 空侧交流油泵进油口 GB/T 9119 PN16 DN100";
     public string TestName2 = "610_空侧交流油泵进油口_GB__T_9119_PN16_DN100";
