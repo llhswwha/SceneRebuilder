@@ -318,6 +318,66 @@ namespace NavisPlugins.Infos
 
         public bool IsSameName(Transform transform)
         {
+            InitCompareNames();
+
+            //if (transform.name == this.Name )
+            //{
+            //    return true;
+            //}
+            //else if(transform.name == compareName11 || transform.name.StartsWith(compareName12) || transform.name.StartsWith(compareName13))
+            //{
+            //    return true;
+            //}
+            //else if (transform.name == compareName21 || transform.name.StartsWith(compareName22) || transform.name.StartsWith(compareName23))
+            //{
+            //    return true;
+            //}
+            //else
+            //{
+            //    if (!string.IsNullOrEmpty(this.Description))
+            //    {
+            //        if (transform.name == this.Description)
+            //        {
+            //            return true;
+            //        }
+            //        else if (transform.name == compareName31 || transform.name.StartsWith(compareName32) || transform.name.StartsWith(compareName33))
+            //        {
+            //            return true;
+            //        }
+            //        else if (transform.name == compareName41 || transform.name.StartsWith(compareName42) || transform.name.StartsWith(compareName43))
+            //        {
+            //            return true;
+            //        }
+            //        else
+            //        {
+            //            if (_parent.Children.Count == 1)
+            //            {
+            //                return _parent.IsSameName(transform);
+            //            }
+            //            else
+            //            {
+            //                return false;
+            //            }
+            //        }
+            //    }
+            //    else
+            //    {
+            //        if (_parent.Children.Count == 1)
+            //        {
+            //            return _parent.IsSameName(transform);
+            //        }
+            //        else
+            //        {
+            //            return false;
+            //        }
+            //    }
+            //}
+
+            return IsSameName(transform.name);
+        }
+
+        private void InitCompareNames()
+        {
             if (string.IsNullOrEmpty(compareName11))
             {
                 compareName11 = this.Name.Replace(" ", "_");
@@ -325,6 +385,8 @@ namespace NavisPlugins.Infos
                 compareName13 = compareName11 + "_";
 
                 compareName21 = compareName11.Replace("*", "_x_");
+                compareName21 = compareName21.Replace("\\", "__");
+                compareName21 = compareName21.Replace("/", "__");//[610 空侧交流油泵进油口 GB/T 9119 PN16 DN100][610_空侧交流油泵进油口_GB__T_9119_PN16_DN100]
                 compareName22 = compareName21 + " ";
                 compareName23 = compareName21 + "_";
 
@@ -335,20 +397,27 @@ namespace NavisPlugins.Infos
                     compareName33 = compareName31 + "_";
 
                     compareName41 = compareName31.Replace("*", "_x_");
+                    compareName41 = compareName41.Replace("\\", "__");
+                    compareName41 = compareName41.Replace("/", "__");
                     compareName42 = compareName41 + " ";
                     compareName43 = compareName41 + "_";
                 }
             }
+        }
 
-            if (transform.name == this.Name )
+        public bool IsSameName(string transformName)
+        {
+            InitCompareNames();
+
+            if (transformName == this.Name)
             {
                 return true;
             }
-            else if(transform.name == compareName11 || transform.name.StartsWith(compareName12) || transform.name.StartsWith(compareName13))
+            else if (transformName == compareName11 || transformName.StartsWith(compareName12) || transformName.StartsWith(compareName13))
             {
                 return true;
             }
-            else if (transform.name == compareName21 || transform.name.StartsWith(compareName22) || transform.name.StartsWith(compareName23))
+            else if (transformName == compareName21 || transformName.StartsWith(compareName22) || transformName.StartsWith(compareName23))
             {
                 return true;
             }
@@ -356,23 +425,23 @@ namespace NavisPlugins.Infos
             {
                 if (!string.IsNullOrEmpty(this.Description))
                 {
-                    if (transform.name == this.Description)
+                    if (transformName == this.Description)
                     {
                         return true;
                     }
-                    else if (transform.name == compareName31 || transform.name.StartsWith(compareName32) || transform.name.StartsWith(compareName33))
+                    else if (transformName == compareName31 || transformName.StartsWith(compareName32) || transformName.StartsWith(compareName33))
                     {
                         return true;
                     }
-                    else if (transform.name == compareName41 || transform.name.StartsWith(compareName42) || transform.name.StartsWith(compareName43))
+                    else if (transformName == compareName41 || transformName.StartsWith(compareName42) || transformName.StartsWith(compareName43))
                     {
                         return true;
                     }
                     else
                     {
-                        if (_parent.Children.Count == 1)
+                        if (_parent!=null && _parent.Children.Count == 1)
                         {
-                            return _parent.IsSameName(transform);
+                            return _parent.IsSameName(transformName);
                         }
                         else
                         {
@@ -382,9 +451,9 @@ namespace NavisPlugins.Infos
                 }
                 else
                 {
-                    if (_parent.Children.Count == 1)
+                    if (_parent != null && _parent.Children.Count == 1)
                     {
-                        return _parent.IsSameName(transform);
+                        return _parent.IsSameName(transformName);
                     }
                     else
                     {
@@ -392,6 +461,15 @@ namespace NavisPlugins.Infos
                     }
                 }
             }
+        }
+
+        public static bool IsSameNameOfModel2Transform(string modelName,string transformName)
+        {
+            ModelItemInfo temp = new ModelItemInfo();
+            temp.Name = modelName;
+            bool r= temp.IsSameName(transformName);
+            Debug.LogError($"IsSameNameOfModel2Transform [{r}]{modelName} <> {transformName}");
+            return r;
         }
     }
 

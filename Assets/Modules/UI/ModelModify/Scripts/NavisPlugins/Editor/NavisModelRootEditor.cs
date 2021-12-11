@@ -75,7 +75,7 @@ public class NavisModelRootEditor : BaseFoldoutEditor<NavisModelRoot>
         if (item == null) return;
 
         EditorGUILayout.BeginHorizontal();
-        item.MinDistance = EditorGUILayout.FloatField(item.MinDistance, GUILayout.Width(70));
+        item.MinDistanceLv1 = EditorGUILayout.FloatField(item.MinDistanceLv1, GUILayout.Width(70));
         if (GUILayout.Button("BindBimInfo"))
         {
             item.BindBimInfo(null);
@@ -85,7 +85,8 @@ public class NavisModelRootEditor : BaseFoldoutEditor<NavisModelRoot>
         EditorGUILayout.BeginHorizontal();
         //GUILayout
         item.ModelName = EditorGUILayout.TextField("ModelName", item.ModelName);
-        item.includeInactive = EditorGUILayout.Toggle("includeInactive",item.includeInactive);
+        item.includeInactive = EditorGUILayout.Toggle("Inactive",item.includeInactive);
+        item.IsIncludeStructure = EditorGUILayout.Toggle("Structure", item.IsIncludeStructure);
         EditorGUILayout.EndHorizontal();
 
         EditorGUILayout.BeginHorizontal();
@@ -128,17 +129,22 @@ public class NavisModelRootEditor : BaseFoldoutEditor<NavisModelRoot>
         {
             item.LoadModels(null);
         }
-        if (GUILayout.Button("FindObjectByUID"))
+        if (GUILayout.Button("FindByUID"))
         {
             item.FindObjectByUID();
         }
-        if (GUILayout.Button("FindObjectByPos"))
+        if (GUILayout.Button("FindByPos"))
         {
-            item.FindObjectByPos(null);
+            //item.FindObjectByPos(true,null);
+            item.FindObjectByPos1234(true, null);
         }
-        if (GUILayout.Button("FindObjectByPos2"))
+        if (GUILayout.Button("FindByPos(NoLog)"))
         {
-            item.FindObjectByPos2(null);
+            item.FindObjectByPos1234(false, null);
+        }
+        if (GUILayout.Button("FindByPos2(NoNo)"))
+        {
+            item.FindObjectByPos_NoDrawableAndNoZero(null);
         }
 
         if (GUILayout.Button("CreateTree"))

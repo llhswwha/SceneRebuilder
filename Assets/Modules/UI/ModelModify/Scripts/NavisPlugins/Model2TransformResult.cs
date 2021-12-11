@@ -40,8 +40,6 @@ public class Model2TransformResult
             allModels_uid_nofound1.Add(model1);
 
             var ms = TransformDict.GetTransformsByName(model1.Name);
-            
-
             if (ms.Count == 0)
             {
                 DebugLogError($"【{ms.Count}】[Rute1_1_1][没找到Transform][{MinDistance}][{model1.ToString()})");
@@ -53,15 +51,12 @@ public class Model2TransformResult
                 float dis = model1.GetDistance(transf);
                 if (dis <= MinDistance)
                 {
-                    allModels_uid_found1.Add(model1);
-                    TransformDict.RemoveTransform(transf);
-                    BIMModelInfo.SetModelInfo(transf, model1);
-                    DebugErrorLog = "";
+                    AddFounded1(model1, transf);
                 }
                 else
                 {
                     DebugLogError($"【{ms.Count}】[Rute1_1_2][没找到Transform][{MinDistance}] m:{model1.ShowDistance(transf)}");
-                    //减少难度
+                    //减少难度111
                 }
             }
             else
@@ -72,10 +67,7 @@ public class Model2TransformResult
                 float dis = model1.GetDistance(transf);
                 if (dis <= MinDistance)
                 {
-                    allModels_uid_found1.Add(model1);
-                    TransformDict.RemoveTransform(transf);
-                    BIMModelInfo.SetModelInfo(transf, model1);
-                    DebugErrorLog = "";
+                    AddFounded1(model1, transf);
                 }
                 else
                 {
@@ -96,10 +88,7 @@ public class Model2TransformResult
             int r1 = CheckTransform(model1, transf, $"[{model1.Name}]【1-1-N】");
             if (r1 == 1) //2.1.找到1-1-1
             {
-                allModels_uid_found1.Add(model1);
-                TransformDict.RemoveTransform(transf);
-                BIMModelInfo.SetModelInfo(transf, model1);
-                DebugErrorLog = "";
+                AddFounded1(model1, transf);
             }
             else if (r1 == 0)//2.2.找到1-1-N
             {
@@ -153,9 +142,21 @@ public class Model2TransformResult
 
         if (!string.IsNullOrEmpty(DebugErrorLog))
         {
-            Debug.LogError(DebugErrorLog);
+            if (CheckArg.IsShowLog)
+            {
+                Debug.LogError(DebugErrorLog);
+            }
+            
             DebugErrorLog = "";
         }
+    }
+
+    private void AddFounded1(ModelItemInfo model1, Transform transf)
+    {
+        allModels_uid_found1.Add(model1);
+        TransformDict.RemoveTransform(transf);
+        BIMModelInfo.SetModelInfo(transf, model1);
+        DebugErrorLog = "";
     }
 
     public string DebugErrorLog = "";
@@ -242,6 +243,8 @@ public class Model2TransformResult
         //Debug.LogError(log);
     }
 
+    //public bool IsFindByName1 = false;
+
     private bool CheckModel2(ModelItemInfo model1, Transform transf, ModelItemInfo model2, string logTag)
     {
         float dis = model1.GetDistance(transf);
@@ -251,26 +254,57 @@ public class Model2TransformResult
         {
             if (dis > MinDistance) //2.2.1.1 判断距离_距离太远
             {
-                if (isSameName && dis < MinDistance * 2) //2.2.1.1.1 2倍的距离也凑合吧，【找到了】
+                if (isSameName) //2.2.1.1.1 同名-
                 {
-                    //allModels_uid_found1.Add(model1);
+                    if (dis < MinDistance * 2) // [2.2.1.1.1_1] 2倍的距离也凑合吧，【找到了】
+                    {
+                        //0.0002
+                        //allModels_uid_found1.Add(model1);
+                        //TransformDict.RemoveTransform(transf);
+                        //BIMModelInfo.SetModelInfo(transf, model1);
+                        return true;
+                    }
+                    else //[2.2.1.1.1_2]
+                    {
+                        if (CheckArg.IsFindByName1) //考虑名称了
+                        {
+                            var ms = TransformDict.GetTransformsByName(model1.Name);
+                            if (ms.Count == 1)//
+                            {
+                                return true; //只有1个
+                            }
+                            else if (ms.Count == 0)//不可能
+                            {
+                                DebugLogError($"{logTag}[Rute1_2.2.1.1.1_21][距离太远][{MinDistance}][{isSameName}]{model1.ShowDistance(transf)}");
+                                return false;
+                            }
+                            else //
+                            {
+                                DebugLogError($"{logTag}[Rute1_2.2.1.1.1_22][距离太远][{MinDistance}][{isSameName}]{model1.ShowDistance(transf)}");
+                                return false;
+                            }
+                        }
+                        else
+                        {
 
-                    //TransformDict.RemoveTransform(transf);
-                    //BIMModelInfo.SetModelInfo(transf, model1);
-                    return true;
+                            DebugLogError($"{logTag}[Rute1_2.2.1.1.1_3][距离太远][{MinDistance}][{isSameName}]{model1.ShowDistance(transf)}");
+                            return false;
+                        }
+                    }
                 }
-                else
+                else //2.2.1.1.2 距离远又不同名
                 {
+
                     //allModels_uid_found2.Add(model1);
-                    DebugLogError($"{logTag}[Rute11][距离太远][{MinDistance}][{isSameName}]{model1.ShowDistance(transf)}");
+                    DebugLogError($"{logTag}[Rute1_2_1][距离太远][{MinDistance}][{isSameName}]{model1.ShowDistance(transf)}");
                     return false;
                 }
-
             }
             else if (isSameName == false) //2.2.1.2 判断名称是否相同_不同名，不同名也可以考虑作为找到了的
             {
+                //最终可以考虑下不同名但是距离很近的
                 //allModels_uid_found2.Add(model1);
-                DebugLogError($"{logTag}[Rute12][不同名][{MinDistance}][{isSameName}:{model1.Name} <> {transf.name}]{model1.ShowDistance(transf)}");
+                DebugLogError($"{logTag}[Rute12][不同名-但是距离很近][{MinDistance}][{isSameName}:{model1.Name} <> {transf.name}]{model1.ShowDistance(transf)}");
                 return false;
             }
             else //2.2.1.3 【找到了】
@@ -298,6 +332,10 @@ public class Model2TransformResult
 
     public int notFoundCount;
 
+    //public bool IsShowLog { get; internal set; }
+
+    public CheckResultArg CheckArg = new CheckResultArg();
+
     public void SetModelList(ModelItemInfoListEx ModelList)
     {
         notFoundCount = allModels_uid_nofound1.Count + allModels_uid_nofound2.Count + allModels_uid_found2.Count;
@@ -319,5 +357,23 @@ public class Model2TransformResult
     public override string ToString()
     {
         return $"found1:{allModels_uid_found1.Count} ,found2:{allModels_uid_found2.Count} ,nofound1:{allModels_uid_nofound1.Count}, nofound2:{allModels_uid_nofound2.Count} allNoFound:{allModels_uid_AllNotFound.Count}";
+    }
+}
+
+public class CheckResultArg
+{
+    public bool IsShowLog = true;
+
+    public bool IsFindByName1 = false;
+
+    public CheckResultArg()
+    {
+
+    }
+
+    public CheckResultArg(bool isShowLog,bool isFindByName1)
+    {
+        this.IsShowLog = isShowLog;
+        this.IsFindByName1 = isFindByName1;
     }
 }

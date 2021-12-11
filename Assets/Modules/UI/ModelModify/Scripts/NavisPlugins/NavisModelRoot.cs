@@ -331,7 +331,7 @@ public class NavisModelRoot : MonoBehaviour
 
         var p3 = ProgressArg.New("BindBimInfo", 2, 3, "FindObjectByPos", p0);
         ProgressBarHelper.DisplayCancelableProgressBar(p3, true);
-        FindObjectByPos(p3);
+        FindObjectByPos_NoDrawableAndNoZero(p3);
 
         Debug.LogError($"[{this.name}]BindBimInfo time:{DateTime.Now-start}");
 
@@ -425,11 +425,17 @@ public class NavisModelRoot : MonoBehaviour
         //{
         //    MinDistance = DefaultMinDinstance;
         //}
-        if (MinDistance < DefaultMinDinstance)
+        if (MinDistanceLv1 < DefaultMinDinstance)
         {
-            MinDistance = DefaultMinDinstance;
+            MinDistanceLv1 = DefaultMinDinstance;
+
+            //MinDistanceLv2 = DefaultMinDinstance * 3;
+
+            //MinDistanceLv3 = DefaultMinDinstance * 10;
+
+            //MinDistanceLv4 = DefaultMinDinstance * 50;
         }
-        return MinDistance;
+        return MinDistanceLv1;
     }
 
 
@@ -451,11 +457,11 @@ public class NavisModelRoot : MonoBehaviour
             if (transform != null)
             {
                 float dis = uidModel.GetDistance(transform);
-                if (dis > MinDistance )
+                if (dis > MinDistanceLv1 )
                 {
                     allModels_uid_nofound.Add(uidModel);
                     
-                    Debug.LogError($"[FindObjectByUID][{dis}][{MinDistance}]{uidModel.ShowDistance(transform)}");
+                    Debug.LogError($"[FindObjectByUID][{dis}][{MinDistanceLv1}]{uidModel.ShowDistance(transform)}");
                 }
                 else
                 {
@@ -479,9 +485,49 @@ public class NavisModelRoot : MonoBehaviour
         ModelList.SetList(allModels_uid_nofound);
     }
 
-    public static float DefaultMinDinstance = 0.0002f;
+    public static float DefaultMinDinstance = 0.0003f;
 
-    public float MinDistance = DefaultMinDinstance;
+    public float MinDistanceLv1 = DefaultMinDinstance;
+
+    //public float MinDistanceLv2 = DefaultMinDinstance * 3;
+
+    public float MinDistanceLv2
+    {
+        get
+        {
+            return DefaultMinDinstance * 3;
+        }
+    }
+
+    //public float MinDistanceLv3 = DefaultMinDinstance * 10;
+
+    public float MinDistanceLv3
+    {
+        get
+        {
+            return DefaultMinDinstance * 10;
+        }
+    }
+
+    //public float MinDistanceLv4 = DefaultMinDinstance * 50;
+
+    public float MinDistanceLv4
+    {
+        get
+        {
+            return DefaultMinDinstance * 50;
+        }
+    }
+
+    public bool IsIncludeStructure = true;//是否包括建筑结构
+
+    public string TestName1 = "610 空侧交流油泵进油口 GB/T 9119 PN16 DN100";
+    public string TestName2 = "610_空侧交流油泵进油口_GB__T_9119_PN16_DN100";
+    [ContextMenu("TestIsSameName")]
+    public void TestIsSameName()
+    {
+        ModelItemInfo.IsSameNameOfModel2Transform(TestName1, TestName2);
+    }
 
     public void FindObjectByModel(ModelItemInfo model1)
     {
@@ -499,7 +545,7 @@ public class NavisModelRoot : MonoBehaviour
         ModelItemInfoDictionary modelDict = new ModelItemInfoDictionary(models1, null);
         //var modelDict = new ModelItemInfoDictionary(models, null);
 
-        Model2TransformResult result = new Model2TransformResult(models1, modelDict, TransformDict, MinDistance);
+        Model2TransformResult result = new Model2TransformResult(models1, modelDict, TransformDict, MinDistanceLv1);
 
         //var p02 = ProgressArg.New("FindObjectByPos", 1, 2, "FindModels", p0);
         //for (int i = 0; i < models1.Count; i++)
@@ -520,7 +566,16 @@ public class NavisModelRoot : MonoBehaviour
         }
     }
 
-    public void FindObjectByPos(ProgressArgEx p0)
+    public void FindObjectByPos1234(bool isShowLog, ProgressArgEx p0)
+    {
+        FindObjectByPos(new CheckResultArg(false,false), MinDistanceLv1, p0);
+        FindObjectByPos(new CheckResultArg(false, false), MinDistanceLv2, p0);
+        FindObjectByPos(new CheckResultArg(false, false), MinDistanceLv3, p0);
+        FindObjectByPos(new CheckResultArg(false, false), MinDistanceLv4, p0);
+        FindObjectByPos(new CheckResultArg(isShowLog, true), MinDistanceLv4, p0);
+    }
+
+     public void FindObjectByPos(CheckResultArg arg,float minDis,ProgressArgEx p0)
     {
         GetMinDistance();
 
@@ -534,8 +589,8 @@ public class NavisModelRoot : MonoBehaviour
         ModelItemInfoDictionary modelDict = new ModelItemInfoDictionary(models1, p01);
         //var modelDict = new ModelItemInfoDictionary(models, null);
 
-        Model2TransformResult result = new Model2TransformResult(models1, modelDict, TransformDict, MinDistance);
-
+        Model2TransformResult result = new Model2TransformResult(models1, modelDict, TransformDict, minDis);
+        result.CheckArg = arg;
         var p02 = ProgressArg.New("FindObjectByPos", 1, 2, "FindModels", p0);
         for (int i = 0; i < models1.Count; i++)
         {
@@ -564,7 +619,7 @@ public class NavisModelRoot : MonoBehaviour
         }
     }
 
-    public void FindObjectByPos2(ProgressArgEx p0)
+    public void FindObjectByPos_NoDrawableAndNoZero(ProgressArgEx p0)
     {
         GetMinDistance();
 
@@ -578,7 +633,7 @@ public class NavisModelRoot : MonoBehaviour
         ModelItemInfoDictionary modelDict = new ModelItemInfoDictionary(models1, p01);
         //var modelDict = new ModelItemInfoDictionary(models, null);
 
-        Model2TransformResult result = new Model2TransformResult(models1, modelDict, TransformDict, MinDistance);
+        Model2TransformResult result = new Model2TransformResult(models1, modelDict, TransformDict, MinDistanceLv1);
 
         var p02 = ProgressArg.New("FindObjectByPos", 1, 2, "FindModels", p0);
         for (int i = 0; i < models1.Count; i++)
