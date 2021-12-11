@@ -1705,6 +1705,7 @@ public static class BaseFoldoutEditorHelper
         {
             if (item == null) return;
             var subArg = FoldoutEditorArgBuffer.editorArgs[item];
+            subArg.level = arg.level + 1;
             subArg.caption = $"[{i:00}] {item.name}";
             subArg.info = $"{MeshHelper.GetVertexCountS((int)item.vertexCount)}|{item.rendererType}|{item.GetLODIds()}";
             EditorUIUtils.ObjectFoldout(subArg, item.gameObject, () =>
@@ -1736,22 +1737,7 @@ public static class BaseFoldoutEditorHelper
         },
             () =>
             {
-                if (GUILayout.Button("Clone"))
-                {
 
-                }
-                if (GUILayout.Button("Hide"))
-                {
-
-                }
-                if (GUILayout.Button("Show"))
-                {
-
-                }
-                if (GUILayout.Button("HideOthers"))
-                {
-
-                }
             });
 
         if (listArg.isEnabled && listArg.isExpanded && pathDict.Count > 0)
@@ -1765,14 +1751,43 @@ public static class BaseFoldoutEditorHelper
                 FoldoutEditorArgBuffer.InitEditorArg(list);
                 var arg = FoldoutEditorArgBuffer.editorArgs[path];
                 arg.isFoldout = list.Count > 0;
-                arg.level = 3;
+                arg.level = 2;
                 arg.caption = $"[{i:00}] {path} ({list.Count})";
                 arg.info = $"{MeshHelper.GetVertexCountS((int)list.GetVertexCount())}";
                 arg.isEnabled = true;
 
                 EditorUIUtils.ObjectFoldout(arg, null, () =>
                 {
+                    var btnStyle = new GUIStyle(EditorStyles.miniButton);
+                    btnStyle.margin = new RectOffset(0, 0, 0, 0);
+                    btnStyle.padding = new RectOffset(0, 0, 0, 0);
+                    if (GUILayout.Button(">", btnStyle, GUILayout.Width(20)))
+                    {
+                        var asset=AssetDatabase.LoadAssetAtPath<Object>(path);
 
+                        EditorHelper.SelectObject(asset);
+
+                        //Selection.activeObject = asset;
+                        //EditorGUIUtility.PingObject(asset);
+                        //EditorApplication.ExecuteMenuItem("Edit/Frame Selected");
+                    }
+
+                    if (GUILayout.Button("Clone", btnStyle, GUILayout.Width(40)))
+                    {
+
+                    }
+                    if (GUILayout.Button("Hide", btnStyle, GUILayout.Width(40)))
+                    {
+
+                    }
+                    if (GUILayout.Button("Show", btnStyle, GUILayout.Width(40)))
+                    {
+
+                    }
+                    if (GUILayout.Button("HideOthers", btnStyle, GUILayout.Width(70)))
+                    {
+
+                    }
                 });
 
                 if (arg.isEnabled && arg.isExpanded && list.Count > 0)

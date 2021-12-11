@@ -663,6 +663,8 @@ namespace CodeStage.AdvancedFPSCounter.Editor.UI
                 btnStyle.padding = new RectOffset(0, 0, 0, 0);
                 if (GUILayout.Button(">", btnStyle, GUILayout.Width(20)))
                 {
+
+
                     if(obj is GameObject)
                     {
                         GameObject go = obj as GameObject;
@@ -673,12 +675,16 @@ namespace CodeStage.AdvancedFPSCounter.Editor.UI
                         Component component = obj as Component;
                         component.gameObject.SetActive(true);
                     }
+                    //else if (obj is Mesh)
+                    //{
+                    //    Mesh component = obj as Mesh;  
+                    //}
                     else
                     {
                         Debug.LogError(obj+"");
                     }
 
-                    if(obj is GameObject || obj is Component)
+                    if(obj is GameObject || obj is Component || obj is Object)
                     {
                         Object oobj = obj as Object;
                         Selection.activeObject = oobj;
@@ -716,6 +722,16 @@ namespace CodeStage.AdvancedFPSCounter.Editor.UI
                     
                     
                 }
+            }
+            else
+            {
+                //var btnStyle = new GUIStyle(EditorStyles.miniButton);
+                //btnStyle.margin = new RectOffset(0, 0, 0, 0);
+                //btnStyle.padding = new RectOffset(0, 0, 0, 0);
+                //if (GUILayout.Button(">", btnStyle, GUILayout.Width(20)))
+                //{
+                    
+                //}
             }
             EditorGUIUtility.labelWidth = currentLabelWidth;
             GUILayout.EndHorizontal();
