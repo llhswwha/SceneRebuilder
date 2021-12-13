@@ -7,7 +7,7 @@ using UnityEngine;
 [CustomEditor(typeof(NavisModelRootList))]
 public class NavisModelRootListEditor : BaseFoldoutEditor<NavisModelRootList>
 {
-    static FoldoutEditorArg<NavisModelRoot> rootListARg = new FoldoutEditorArg<NavisModelRoot>(true, false);
+    static FoldoutEditorArg<NavisModelRoot> rootListARg = new FoldoutEditorArg<NavisModelRoot>(true, true);
 
     public static void DrawUI(NavisModelRootList item)
     {
@@ -69,10 +69,17 @@ public class NavisModelRootListEditor : BaseFoldoutEditor<NavisModelRootList>
                 var listItemArg = FoldoutEditorArgBuffer.editorArgs[listItem];
                 listItemArg.level = 1;
                 listItemArg.background = true;
-                listItemArg.caption = $"[{i + 1:00}] {listItem.name}(ts:{listItem.transformList.Count})(ms:{listItem.ModelDict.Count})(bim:{listItem.bimInfos.Count})(noFound:{listItem.model2TransformResult.notFoundCount})";
-                //doorRootArg.info = listItem.GetItemText();
+                listItemArg.caption = $"[{i + 1:00}] {listItem.name}";
+                listItemArg.info = $"(ts:{listItem.transformList.Count})(ms:{listItem.ModelDict.Count})(bim:{listItem.bimInfos.Count})(noFound:{listItem.model2TransformResult.notFoundCount})";
                 EditorUIUtils.ObjectFoldout(listItemArg, listItem, () =>
                 {
+                    var btnStyle = new GUIStyle(EditorStyles.miniButton);
+                    btnStyle.margin = new RectOffset(0, 0, 0, 0);
+                    btnStyle.padding = new RectOffset(0, 0, 0, 0);
+                    if (GUILayout.Button("Bind", btnStyle,GUILayout.Width(50)))
+                    {
+                        listItem.BindBimInfo();
+                    }
                 });
             });
         }

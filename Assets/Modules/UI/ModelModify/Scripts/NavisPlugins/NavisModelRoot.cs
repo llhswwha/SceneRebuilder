@@ -59,7 +59,7 @@ public class NavisModelRoot : MonoBehaviour
         {
             GameObject.DestroyImmediate(bim);
         }
-        Debug.LogError($"ClearBimInfos bims:{bims.Count}");
+        Debug.Log($"ClearBimInfos bims:{bims.Count}");
         GetBims(null, null);
     }
 
@@ -319,7 +319,7 @@ public class NavisModelRoot : MonoBehaviour
     //}
 
     [ContextMenu("BindBimInfo")]
-    public void BindBimInfo(ProgressArg p0)
+    public void BindBimInfo(ProgressArg p0=null)
     {
         DateTime start = DateTime.Now;
 

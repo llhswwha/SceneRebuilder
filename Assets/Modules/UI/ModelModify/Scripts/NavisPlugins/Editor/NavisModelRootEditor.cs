@@ -358,6 +358,11 @@ public class NavisModelRootEditor : BaseFoldoutEditor<NavisModelRoot>
             {
                 item.GetBims(null, null);
             }
+            
+        });
+        if (listArg.isEnabled && listArg.isExpanded)
+        {
+            GUILayout.BeginHorizontal();
             if (GUILayout.Button("RemoveNotFound"))
             {
                 item.GetBims(null, null);
@@ -385,9 +390,8 @@ public class NavisModelRootEditor : BaseFoldoutEditor<NavisModelRoot>
             //}
 
             BaseFoldoutEditorHelper.DrawSearchInput(listArg);
-        });
-        if (listArg.isEnabled && listArg.isExpanded)
-        {
+            GUILayout.EndHorizontal();
+
             //var list1 = item.bimInfos;
             InitEditorArg(list1);
             listArg.DrawPageToolbar(list1, (listItem, i) =>

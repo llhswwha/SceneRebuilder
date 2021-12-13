@@ -43,7 +43,7 @@ public class ModelMeshManager : MonoBehaviour
         GetPrefix(TestName);
     }
 
-    private string GetPrefix(string n)
+    public static string GetPrefix(string n)
     {
         //var n = item.name;
         int id = 0;
