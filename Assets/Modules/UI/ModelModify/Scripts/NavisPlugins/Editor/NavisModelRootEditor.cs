@@ -151,6 +151,9 @@ public class NavisModelRootEditor : BaseFoldoutEditor<NavisModelRoot>
             //item.FindObjectByPos(true,null);
             item.FindObjectByPos(null);
         }
+
+        
+
         //if (GUILayout.Button("FindByPos(NoLog)"))
         //{
         //    item.FindObjectByPos1234(false, null);
@@ -160,6 +163,35 @@ public class NavisModelRootEditor : BaseFoldoutEditor<NavisModelRoot>
             item.FindObjectByPos_NoDrawableAndNoZero(null);
         }
 
+        EditorGUILayout.EndHorizontal();
+
+        EditorGUILayout.BeginHorizontal();
+        GUILayout.Label("Name1", GUILayout.Width(40));
+        item.checkResultArg.IsFindByName1 = EditorGUILayout.Toggle(item.checkResultArg.IsFindByName1, GUILayout.Width(20));
+        GUILayout.Label("Name2", GUILayout.Width(40));
+        item.checkResultArg.IsFindByName2 = EditorGUILayout.Toggle(item.checkResultArg.IsFindByName2, GUILayout.Width(20));
+        GUILayout.Label("Closed", GUILayout.Width(40));
+        item.checkResultArg.IsFindClosed = EditorGUILayout.Toggle(item.checkResultArg.IsFindClosed, GUILayout.Width(20));
+        if (GUILayout.Button("Pos1"))
+        {
+            item.TestFindObjectByPos(item.MinDistanceLv1);
+        }
+        if (GUILayout.Button("Pos2"))
+        {
+            item.TestFindObjectByPos(item.MinDistanceLv2);
+        }
+        if (GUILayout.Button("Pos3"))
+        {
+            item.TestFindObjectByPos(item.MinDistanceLv3);
+        }
+        if (GUILayout.Button("Pos4"))
+        {
+            item.TestFindObjectByPos(item.MinDistanceLv4);
+        }
+        if (GUILayout.Button("Pos5"))
+        {
+            item.TestFindObjectByPos(item.MinDistanceLv5);
+        }
         EditorGUILayout.EndHorizontal();
 
         EditorGUILayout.BeginHorizontal();

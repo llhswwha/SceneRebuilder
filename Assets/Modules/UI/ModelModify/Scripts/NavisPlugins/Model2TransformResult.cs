@@ -20,6 +20,9 @@ public class Model2TransformResult
     [NonSerialized]
     float MinDistance;
 
+    [NonSerialized]
+    float MaxDistance;
+
     //[NonSerialized]
     public List<ModelItemInfo> allModels_uid_found1 = new List<ModelItemInfo>();
     //[NonSerialized]
@@ -50,6 +53,7 @@ public class Model2TransformResult
         this.modelDict = modelDict;
         this.TransformDict = TransformDict;
         this.MinDistance = MinDistance;
+        this.MaxDistance = MinDistance * 10;
     }
 
     public CheckResultArg CheckArg = new CheckResultArg();
@@ -77,7 +81,7 @@ public class Model2TransformResult
                 }
                 else
                 {
-                    DebugLogError($"【{ms.Count}】[Rute1_1_1][没找到同名的Transform][Name:{model1.Name}][{MinDistance}][{model1.ShowDistance(closedT)})");
+                    DebugLogError($"【{ms.Count}】[Rute1_1_1][没找到同名的Transform][{MinDistance}][Name:{model1.Name}][Path:{model1.GetPath()}][{model1.ShowDistance(closedT)})]");
                 }
             }
             else if (ms.Count == 1)
@@ -92,7 +96,7 @@ public class Model2TransformResult
                 {
                     
                     //减少难度111
-                    if (CheckArg.IsFindByName2)
+                    if (CheckArg.IsFindByName2 && dis< MaxDistance)
                     {
                         AddFounded1(model1, transf, BIMFoundType.ByName);
                     }
@@ -313,7 +317,7 @@ public class Model2TransformResult
                         if (CheckArg.IsFindByName1) //考虑名称了
                         {
                             var ms = TransformDict.GetTransformsByName(model1.Name);
-                            if (ms.Count == 1)//
+                            if (ms.Count == 1 && dis< MaxDistance)//
                             {
                                 return true; //只有1个
                             }
@@ -398,6 +402,7 @@ public class Model2TransformResult
     }
 }
 
+[Serializable]
 public class CheckResultArg
 {
     public bool IsShowLog = true;
