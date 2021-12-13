@@ -12,6 +12,10 @@ public class BIMModelInfo : MonoBehaviour,IComparable<BIMModelInfo>
     // private float InnerGlowStrength = 1.3f;
     // private float InnerGlowWidth = 1.3f;
 
+    private GameObject FollowUI;
+
+
+
     public string GetItemText()
     {
         if (this.name==this.MName)
@@ -140,6 +144,7 @@ public class BIMModelInfo : MonoBehaviour,IComparable<BIMModelInfo>
 
     public enum BIMFoundType
     {
+        None,
         ByUID,
         ByPos111,
         ByPos1NN,

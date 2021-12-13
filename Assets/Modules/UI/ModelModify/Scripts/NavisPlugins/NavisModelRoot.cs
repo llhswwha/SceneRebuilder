@@ -14,11 +14,6 @@ public class NavisModelRoot : MonoBehaviour
     [NonSerialized]
     public ModelItemInfo ModelRoot;
 
-
-
-
-
-
     public List<Transform> transformListAll = new List<Transform>();
 
     public List<Transform> transformList = new List<Transform>();
@@ -26,6 +21,8 @@ public class NavisModelRoot : MonoBehaviour
     public List<GameObject> RootNodes = new List<GameObject>();
 
     public List<BIMModelInfo> bimInfos = new List<BIMModelInfo>();
+
+    public BIMModelInfoDictionary BimDict = new BIMModelInfoDictionary();
 
     //public Dictionary<string,List<BIMModelInfo>> bimAreas = new Dictionary<string, List<BIMModelInfo>>();
 
@@ -42,7 +39,7 @@ public class NavisModelRoot : MonoBehaviour
         Debug.Log($"TestFindModelByName name:{TestModelName} list:{list.Count}");
     }
 
-    public BIMModelInfoDictionary BimDict = new BIMModelInfoDictionary();
+   
 
     public List<BIMModelInfo> GetTargetBIMs()
     {
@@ -552,7 +549,7 @@ public class NavisModelRoot : MonoBehaviour
         ModelItemInfo.IsSameNameOfModel2Transform(TestName1, TestName2);
     }
 
-    public void FindObjectByModel(ModelItemInfo model1)
+    public void TestFindObjectByModel(ModelItemInfo model1)
     {
         GetMinDistance();
 
@@ -714,6 +711,8 @@ public class NavisModelRoot : MonoBehaviour
             Debug.LogWarning(ResultLog + result.ToString());
         }
 
+        model2TransformResult = result;
+
         if (p0 == null)
         {
             ProgressBarHelper.ClearProgressBar();
@@ -721,6 +720,8 @@ public class NavisModelRoot : MonoBehaviour
     }
 
     public string ResultLog = "";
+
+    public Model2TransformResult model2TransformResult = new Model2TransformResult();
 
     public void FindObjectByPos_NoDrawableAndNoZero(ProgressArgEx p0)
     {
@@ -736,7 +737,7 @@ public class NavisModelRoot : MonoBehaviour
         ModelItemInfoDictionary modelDict = new ModelItemInfoDictionary(models1, p01);
         //var modelDict = new ModelItemInfoDictionary(models, null);
 
-        Model2TransformResult result = new Model2TransformResult(models1, modelDict, TransformDict, MinDistanceLv1);
+        model2TransformResult = new Model2TransformResult(models1, modelDict, TransformDict, MinDistanceLv1);
 
         var p02 = ProgressArg.New("FindObjectByPos", 1, 2, "FindModels", p0);
         for (int i = 0; i < models1.Count; i++)
@@ -747,10 +748,10 @@ public class NavisModelRoot : MonoBehaviour
 
             //var transform = TransformDict.FindObjectByPos(uidModel);
             List<Transform> transforms1 = TransformDict.FindModelsByPosAndName(model1);
-            result.CheckResult(model1, transforms1);
+            model2TransformResult.CheckResult(model1, transforms1);
         }
-        result.SetModelList(ModelList);
-        Debug.LogError($"[{this.name}][FindObjectByPos] time:{DateTime.Now - start} allModels_uid:{ModelList.allModels_uid.Count}," + result.ToString());
+        model2TransformResult.SetModelList(ModelList);
+        Debug.LogError($"[{this.name}][FindObjectByPos] time:{DateTime.Now - start} allModels_uid:{ModelList.allModels_uid.Count}," + model2TransformResult.ToString());
         if (p0 == null)
         {
             ProgressBarHelper.ClearProgressBar();

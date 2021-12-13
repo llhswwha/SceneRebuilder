@@ -7,6 +7,7 @@ using System;
 using Base.Common;
 using System.Text;
 
+[Serializable]
 public class ModelItemInfoDictionary
 {
     [NonSerialized]
@@ -35,7 +36,15 @@ public class ModelItemInfoDictionary
         GetRepeatedModels();
     }
 
-    List<ModelItemInfo> all;
+    public List<ModelItemInfo> all = new List<ModelItemInfo>();
+
+    public int Count
+    {
+        get
+        {
+            return all.Count;
+        }
+    }
 
     private void InitDict(List<ModelItemInfo> all, ProgressArgEx p0)
     {

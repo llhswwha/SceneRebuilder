@@ -69,7 +69,7 @@ public class NavisModelRootListEditor : BaseFoldoutEditor<NavisModelRootList>
                 var listItemArg = FoldoutEditorArgBuffer.editorArgs[listItem];
                 listItemArg.level = 1;
                 listItemArg.background = true;
-                listItemArg.caption = $"[{i + 1:00}] {listItem.name}";
+                listItemArg.caption = $"[{i + 1:00}] {listItem.name}(ts:{listItem.transformList.Count})(ms:{listItem.ModelDict.Count})(bim:{listItem.bimInfos.Count})(noFound:{listItem.model2TransformResult.notFoundCount})";
                 //doorRootArg.info = listItem.GetItemText();
                 EditorUIUtils.ObjectFoldout(listItemArg, listItem, () =>
                 {

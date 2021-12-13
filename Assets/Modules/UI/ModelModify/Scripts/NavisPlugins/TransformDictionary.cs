@@ -12,6 +12,14 @@ public class TransformDictionary
 
     public Dictionary<Transform,Transform> dict = new Dictionary<Transform, Transform>();
 
+    public DictionaryList1ToN<Transform> nameListDict = new DictionaryList1ToN<Transform>();
+    public DictionaryList1ToN<Transform> nameListDict2 = new DictionaryList1ToN<Transform>();
+    public DictionaryList1ToN<Transform> uidListDict = new DictionaryList1ToN<Transform>();
+    public Dictionary<string, Transform> nameDict = new Dictionary<string, Transform>();
+    public Dictionary<string, Transform> uidDict = new Dictionary<string, Transform>();
+
+    public PositionDictionaryList<Transform> positionDictionaryList = new PositionDictionaryList<Transform>();
+
     public List<Transform> ToList()
     {
         return dict.Keys.ToList();
@@ -282,14 +290,6 @@ public class TransformDictionary
     {
 
     }
-
-    public DictionaryList1ToN<Transform> nameListDict = new DictionaryList1ToN<Transform>();
-    public DictionaryList1ToN<Transform> nameListDict2 = new DictionaryList1ToN<Transform>();
-    public DictionaryList1ToN<Transform> uidListDict = new DictionaryList1ToN<Transform>();
-    public Dictionary<string, Transform> nameDict = new Dictionary<string, Transform>();
-    public Dictionary<string, Transform> uidDict = new Dictionary<string, Transform>();
-
-    public PositionDictionaryList<Transform> positionDictionaryList = new PositionDictionaryList<Transform>();
 
     public Transform GetTransformByName(string n)
     {

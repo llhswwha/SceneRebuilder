@@ -5,6 +5,7 @@ using System.Collections.Generic;
 using System.Linq;
 using UnityEditor;
 using UnityEngine;
+using static BIMModelInfo;
 
 [CustomEditor(typeof(NavisModelRoot))]
 public class NavisModelRootEditor : BaseFoldoutEditor<NavisModelRoot>
@@ -337,8 +338,21 @@ public class NavisModelRootEditor : BaseFoldoutEditor<NavisModelRoot>
         },
         () =>
         {
+            if (listArg.tag == null)
+            {
+                listArg.tag = BIMFoundType.None;
+            }
+            BIMFoundType foundType = (BIMFoundType)listArg.tag;
+            foundType=(BIMFoundType)EditorGUILayout.EnumPopup(foundType);
+            listArg.tag = foundType;
+            if(foundType!= BIMFoundType.None)
+            {
+                list1 = list1.FindAll(a=>a.FoundType==foundType);
+            }
+            else
+            {
 
-           
+            }
 
             if (GUILayout.Button("Update"))
             {
@@ -382,7 +396,7 @@ public class NavisModelRootEditor : BaseFoldoutEditor<NavisModelRoot>
                 var doorRootArg = FoldoutEditorArgBuffer.editorArgs[listItem];
                 doorRootArg.level = 1;
                 doorRootArg.background = true;
-                doorRootArg.caption = $"[{i + 1:00}] [{listItem.IsFound}] {listItem.name}";
+                doorRootArg.caption = $"[{i + 1:00}] [{listItem.IsFound}][{listItem.FoundType}] {listItem.name}";
                 doorRootArg.info = listItem.GetItemText();
                 EditorUIUtils.ObjectFoldout(doorRootArg, listItem.gameObject, () =>
                 {
@@ -457,7 +471,7 @@ public class NavisModelRootEditor : BaseFoldoutEditor<NavisModelRoot>
                     }
                     if (GUILayout.Button("Find", GUILayout.Width(50)))
                     {
-                        root.FindObjectByModel(listItem);
+                        root.TestFindObjectByModel(listItem);
                     }
                 });
             });

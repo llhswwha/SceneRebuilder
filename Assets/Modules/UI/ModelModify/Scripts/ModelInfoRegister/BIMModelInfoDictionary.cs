@@ -1,22 +1,24 @@
 using NavisPlugins.Infos;
+using System;
 using System.Collections;
 using System.Collections.Generic;
 using System.Text;
 using UnityEngine;
 
+[Serializable]
 public class BIMModelInfoDictionary 
 {
+    [NonSerialized]
     public Dictionary<string, List<BIMModelInfo>> bimAreas = new Dictionary<string, List<BIMModelInfo>>();
 
+    [NonSerialized]
     private Dictionary<string, BIMModelInfo> rendererId2Bim = new Dictionary<string, BIMModelInfo>();
-
+    [NonSerialized]
     private Dictionary<string, BIMModelInfo> guid2Bim = new Dictionary<string, BIMModelInfo>();
 
     public List<BIMModelInfo> errorBims = new List<BIMModelInfo>();
 
     public List<BIMModelInfo> bimInfos = new List<BIMModelInfo>();
-
-
 
     public BIMModelInfoDictionary()
     {

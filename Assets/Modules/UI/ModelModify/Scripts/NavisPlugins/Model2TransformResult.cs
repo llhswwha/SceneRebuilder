@@ -8,12 +8,41 @@ using Base.Common;
 using System.Text;
 using static BIMModelInfo;
 
+[Serializable]
 public class Model2TransformResult
 {
+    [NonSerialized]
     List<ModelItemInfo> models1;
+    [NonSerialized]
     ModelItemInfoDictionary modelDict;
+    [NonSerialized]
     TransformDictionary TransformDict;
+    [NonSerialized]
     float MinDistance;
+
+    //[NonSerialized]
+    public List<ModelItemInfo> allModels_uid_found1 = new List<ModelItemInfo>();
+    //[NonSerialized]
+    public List<ModelItemInfo> allModels_uid_found2 = new List<ModelItemInfo>();
+    //[NonSerialized]
+    public List<ModelItemInfo> allModels_uid_nofound1 = new List<ModelItemInfo>();
+    //[NonSerialized]
+    public List<ModelItemInfo> allModels_uid_nofound2 = new List<ModelItemInfo>();
+    public int notFoundCount;
+
+    [NonSerialized]
+    private List<ModelItemInfo> allModels_uid_AllNotFound = new List<ModelItemInfo>();
+    //[NonSerialized]
+
+    //[NonSerialized]
+    public string DebugErrorLog = "";
+
+    //public bool IsShowLog { get; internal set; }
+
+    public Model2TransformResult()
+    {
+
+    }
 
     public Model2TransformResult(List<ModelItemInfo> models1, ModelItemInfoDictionary modelDict, TransformDictionary TransformDict, float MinDistance)
     {
@@ -23,12 +52,7 @@ public class Model2TransformResult
         this.MinDistance = MinDistance;
     }
 
-    public List<ModelItemInfo> allModels_uid_found1 = new List<ModelItemInfo>();
-    public List<ModelItemInfo> allModels_uid_found2 = new List<ModelItemInfo>();
-    public List<ModelItemInfo> allModels_uid_nofound1 = new List<ModelItemInfo>();
-    public List<ModelItemInfo> allModels_uid_nofound2 = new List<ModelItemInfo>();
-
-    public List<ModelItemInfo> allModels_uid_AllNotFound = new List<ModelItemInfo>();
+    public CheckResultArg CheckArg = new CheckResultArg();
 
     public void CheckResult(ModelItemInfo model1, List<Transform> transforms1)
     {
@@ -180,7 +204,6 @@ public class Model2TransformResult
         DebugErrorLog = "";
     }
 
-    public string DebugErrorLog = "";
 
     private int CheckTransform(ModelItemInfo model1, Transform transf, string logTag)
     {
@@ -350,12 +373,6 @@ public class Model2TransformResult
             return false;
         }
     }
-
-    public int notFoundCount;
-
-    //public bool IsShowLog { get; internal set; }
-
-    public CheckResultArg CheckArg = new CheckResultArg();
 
     public void SetModelList(ModelItemInfoListEx ModelList)
     {
