@@ -52,7 +52,7 @@ public class NavisModelRootEditor : BaseFoldoutEditor<NavisModelRoot>
             DrawVueModelList(item, item.ModelList.allModels_noUid, modelListArg_nouid, "Model List(NoUID)");
 
             DrawVueModelList(item, item.ModelList.allModels_drawable_zero, modelListArg_drawable_zero, "Model List(Drawable&Zero)");
-            DrawVueModelList(item, item.ModelList.allModels_drawable_nozero, modelListArg_drawable_nozero, "Model List(Drawable&NoZero)");
+            DrawVueModelList(item, item.ModelList.allModels_drawable_nozero, modelListArg_drawable_nozero, "** Model List(Drawable&NoZero) **");
             DrawVueModelList(item, item.ModelList.allModels_noDrawable_nozero, modelListArg_nodrawable_nozero, "Model List(NoDrawable&NoZero)");
             DrawVueModelList(item, item.ModelList.allModels_noDrawable_zero, modelListArg_noDrawable_zero, "Model List(NoDrawable&Zero)");
         }
@@ -84,12 +84,15 @@ public class NavisModelRootEditor : BaseFoldoutEditor<NavisModelRoot>
         }
         EditorGUILayout.EndHorizontal();
 
+        GUILayout.Label(item.ResultLog);
+
         EditorGUILayout.BeginHorizontal();
         //GUILayout
         GUILayout.Label("ModelName", GUILayout.Width(80));
         item.ModelName = EditorGUILayout.TextField(item.ModelName,GUILayout.Width(120));
         GUILayout.Label("Inactive", GUILayout.Width(60));
         item.includeInactive = EditorGUILayout.Toggle(item.includeInactive, GUILayout.Width(20));
+        
         GUILayout.Label("Structure", GUILayout.Width(60));
         InitNavisFileInfoByModelSetting.Instance.IsIncludeStructure = EditorGUILayout.Toggle(InitNavisFileInfoByModelSetting.Instance.IsIncludeStructure, GUILayout.Width(20));
         EditorGUILayout.EndHorizontal();
@@ -138,27 +141,31 @@ public class NavisModelRootEditor : BaseFoldoutEditor<NavisModelRoot>
         {
             item.FindObjectByUID();
         }
+        GUILayout.Label("Log", GUILayout.Width(40));
+        item.IsShowLog = EditorGUILayout.Toggle(item.IsShowLog, GUILayout.Width(20));
+        GUILayout.Label("Level", GUILayout.Width(60));
+        item.FindPosLevel = EditorGUILayout.IntField(item.FindPosLevel, GUILayout.Width(50));
         if (GUILayout.Button("FindByPos"))
         {
             //item.FindObjectByPos(true,null);
-            item.FindObjectByPos1234(true, null);
+            item.FindObjectByPos(null);
         }
-        if (GUILayout.Button("FindByPos(NoLog)"))
-        {
-            item.FindObjectByPos1234(false, null);
-        }
+        //if (GUILayout.Button("FindByPos(NoLog)"))
+        //{
+        //    item.FindObjectByPos1234(false, null);
+        //}
         if (GUILayout.Button("FindByPos2(NoNo)"))
         {
             item.FindObjectByPos_NoDrawableAndNoZero(null);
         }
 
+        EditorGUILayout.EndHorizontal();
+
+        EditorGUILayout.BeginHorizontal();
         if (GUILayout.Button("CreateTree"))
         {
             item.CreateTree();
         }
-        EditorGUILayout.EndHorizontal();
-
-        EditorGUILayout.BeginHorizontal();
         if (GUILayout.Button("ClearResult"))
         {
             item.ClearResult();
@@ -188,7 +195,7 @@ public class NavisModelRootEditor : BaseFoldoutEditor<NavisModelRoot>
 
         DrawBimList(item, bimListArg0, "Bim List");
         BaseFoldoutEditorHelper.DrawTransformList(item.transformListAll, transListArg_All, null, "Transform List(All)");
-        BaseFoldoutEditorHelper.DrawTransformList(item.transformList, transListArg, null, "Transform List(Fiterd)");
+        BaseFoldoutEditorHelper.DrawTransformList(item.transformList, transListArg, null, "** Transform List(Fiterd) **");
         if(item.TransformDict!=null)
             BaseFoldoutEditorHelper.DrawTransformList(item.TransformDict.dict.Keys.ToList(), transListArg2, null, "Transform List(Current)");
 

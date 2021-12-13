@@ -105,12 +105,13 @@ public class BIMModelInfo : MonoBehaviour,IComparable<BIMModelInfo>
     [NonSerialized]
     public ModelItemInfo Model;
 
-    public static void SetModelInfo(Transform transform, ModelItemInfo model)
+    public static BIMModelInfo SetModelInfo(Transform transform, ModelItemInfo model)
     {
         BIMModelInfo bim = transform.gameObject.GetComponent<BIMModelInfo>();
         if(bim==null)
             bim = transform.gameObject.AddComponent<BIMModelInfo>();
         bim.SetModelInfo(model);
+        return bim;
     }
 
     public void SetModelInfo(ModelItemInfo model)
@@ -134,6 +135,18 @@ public class BIMModelInfo : MonoBehaviour,IComparable<BIMModelInfo>
     }
 
     public bool IsFound = false;
+
+    public BIMFoundType FoundType = 0;
+
+    public enum BIMFoundType
+    {
+        ByUID,
+        ByPos111,
+        ByPos1NN,
+        ByName,
+        ByNameAndClosed,
+        ByClosed
+    }
 
     private void Start()
     {

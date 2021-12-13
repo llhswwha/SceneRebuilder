@@ -6,6 +6,7 @@ using System.Linq;
 using System;
 using Base.Common;
 using System.Text;
+using static BIMModelInfo;
 
 public class Model2TransformResult
 {
@@ -42,8 +43,18 @@ public class Model2TransformResult
             var ms = TransformDict.GetTransformsByName(model1.Name);
             if (ms.Count == 0)
             {
-                DebugLogError($"【{ms.Count}】[Rute1_1_1][没找到Transform][{MinDistance}][{model1.ToString()})");
+                var closedT = model1.FindClosedTransform(TransformDict.ToList());
+                
                 //遍历全部模型
+
+                if (CheckArg.IsFindClosed)
+                {
+                    AddFounded1(model1, closedT, BIMFoundType.ByClosed);
+                }
+                else
+                {
+                    DebugLogError($"【{ms.Count}】[Rute1_1_1][没找到同名的Transform][Name:{model1.Name}][{MinDistance}][{model1.ShowDistance(closedT)})");
+                }
             }
             else if (ms.Count == 1)
             {
@@ -51,23 +62,29 @@ public class Model2TransformResult
                 float dis = model1.GetDistance(transf);
                 if (dis <= MinDistance)
                 {
-                    AddFounded1(model1, transf);
+                    AddFounded1(model1, transf, BIMFoundType.ByName);
                 }
                 else
                 {
-                    DebugLogError($"【{ms.Count}】[Rute1_1_2][没找到Transform][{MinDistance}] m:{model1.ShowDistance(transf)}");
+                    
                     //减少难度111
+                    if (CheckArg.IsFindByName2)
+                    {
+                        AddFounded1(model1, transf, BIMFoundType.ByName);
+                    }
+                    else 
+                    { 
+                        DebugLogError($"【{ms.Count}】[Rute1_1_2][没找到Transform][{MinDistance}] m:{model1.ShowDistance(transf)}");
+                    }
                 }
             }
             else
             {
-
-
                 var transf = model1.FindClosedTransform(ms);
                 float dis = model1.GetDistance(transf);
                 if (dis <= MinDistance)
                 {
-                    AddFounded1(model1, transf);
+                    AddFounded1(model1, transf,BIMFoundType.ByNameAndClosed);
                 }
                 else
                 {
@@ -85,10 +102,14 @@ public class Model2TransformResult
         {
             var transf = transforms1[0];
             //var model = modelDict.FindModelByPos(transform);
+            if (model1.Name.Contains("污油侧进油口"))
+            {
+
+            }
             int r1 = CheckTransform(model1, transf, $"[{model1.Name}]【1-1-N】");
             if (r1 == 1) //2.1.找到1-1-1
             {
-                AddFounded1(model1, transf);
+                AddFounded1(model1, transf, BIMFoundType.ByPos111);
             }
             else if (r1 == 0)//2.2.找到1-1-N
             {
@@ -111,9 +132,7 @@ public class Model2TransformResult
                     result = r1;
 
                     //3.1.找到1-1-1
-                    allModels_uid_found1.Add(model1);
-                    TransformDict.RemoveTransform(transf);
-                    BIMModelInfo.SetModelInfo(transf, model1);
+                    AddFounded1(model1, transf, BIMFoundType.ByPos1NN);
 
                     DebugErrorLog = "";
                     break;
@@ -151,11 +170,13 @@ public class Model2TransformResult
         }
     }
 
-    private void AddFounded1(ModelItemInfo model1, Transform transf)
+    private void AddFounded1(ModelItemInfo model1, Transform transf, BIMFoundType foundType)
     {
+        //foundType：1(findByPos) 2.(findbyName) 3.(findbyClosed)
         allModels_uid_found1.Add(model1);
         TransformDict.RemoveTransform(transf);
-        BIMModelInfo.SetModelInfo(transf, model1);
+        BIMModelInfo bim=BIMModelInfo.SetModelInfo(transf, model1);
+        bim.FoundType = foundType;
         DebugErrorLog = "";
     }
 
@@ -364,16 +385,22 @@ public class CheckResultArg
 {
     public bool IsShowLog = true;
 
-    public bool IsFindByName1 = false;
+    public bool IsFindByName1 = false;//1-1-N
+
+    public bool IsFindByName2 = false;
+
+    public bool IsFindClosed = false;
 
     public CheckResultArg()
     {
 
     }
 
-    public CheckResultArg(bool isShowLog,bool isFindByName1)
+    public CheckResultArg(bool isShowLog,bool isFindByName1, bool isFindByName2, bool isFindClosed)
     {
         this.IsShowLog = isShowLog;
         this.IsFindByName1 = isFindByName1;
-    }
+        this.IsFindByName2 = isFindByName2;
+        this.IsFindClosed = isFindClosed;
+}
 }

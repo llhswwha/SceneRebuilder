@@ -50,7 +50,7 @@ public class NavisModelRoot : MonoBehaviour
         foreach (var target in Targets)
         {
             if (target == null) continue;
-            list.AddRange(target.GetComponentsInChildren<BIMModelInfo>(true));
+            list.AddRange(target.GetComponentsInChildren<BIMModelInfo>(includeInactive));
         }
         return list;
     }
@@ -336,7 +336,7 @@ public class NavisModelRoot : MonoBehaviour
 
         var p3 = ProgressArg.New("BindBimInfo", 2, 3, "FindObjectByPos", p0);
         ProgressBarHelper.DisplayCancelableProgressBar(p3, true);
-        FindObjectByPos_NoDrawableAndNoZero(p3);
+        FindObjectByPos(p3);
 
         Debug.LogError($"[{this.name}]BindBimInfo time:{DateTime.Now-start}");
 
@@ -352,6 +352,12 @@ public class NavisModelRoot : MonoBehaviour
     [ContextMenu("LoadModels")]
     public void LoadModels(IProgressArg p0)
     {
+        if (FindPosLevel == 0)
+        {
+            FindPosLevel = FindPosLevelDefault;
+            IsShowLog = true;
+        }
+
         DateTime start = DateTime.Now;
 
         ClearResult();
@@ -359,7 +365,10 @@ public class NavisModelRoot : MonoBehaviour
         if (string.IsNullOrEmpty(ModelName))
         {
             ModelName = this.name;
+            int id = ModelName.IndexOf("_");
+            ModelName = ModelName.Substring(id+1);
         }
+        
 
         bool enableProgress = true;
 
@@ -491,7 +500,7 @@ public class NavisModelRoot : MonoBehaviour
         ModelList.SetList(allModels_uid_nofound);
     }
 
-    public static float DefaultMinDinstance = 0.0003f;
+    public static float DefaultMinDinstance = 0.0002f;
 
     public float MinDistanceLv1 = DefaultMinDinstance;
 
@@ -501,7 +510,7 @@ public class NavisModelRoot : MonoBehaviour
     {
         get
         {
-            return DefaultMinDinstance * 3;
+            return MinDistanceLv1 * 3;
         }
     }
 
@@ -511,7 +520,7 @@ public class NavisModelRoot : MonoBehaviour
     {
         get
         {
-            return DefaultMinDinstance * 10;
+            return MinDistanceLv1 * 10;
         }
     }
 
@@ -521,7 +530,15 @@ public class NavisModelRoot : MonoBehaviour
     {
         get
         {
-            return DefaultMinDinstance * 50;
+            return MinDistanceLv1 * 50;
+        }
+    }
+
+    public float MinDistanceLv5
+    {
+        get
+        {
+            return MinDistanceLv1 * 100;
         }
     }
 
@@ -572,16 +589,92 @@ public class NavisModelRoot : MonoBehaviour
         }
     }
 
-    public void FindObjectByPos1234(bool isShowLog, ProgressArgEx p0)
+
+    public bool IsShowLog = true;
+
+    public int FindPosLevel = 5;
+
+    public static int FindPosLevelDefault = 1;
+
+    public void FindObjectByPos(ProgressArgEx po)
     {
-        FindObjectByPos(new CheckResultArg(false,false), MinDistanceLv1, p0);
-        FindObjectByPos(new CheckResultArg(false, false), MinDistanceLv2, p0);
-        FindObjectByPos(new CheckResultArg(false, false), MinDistanceLv3, p0);
-        FindObjectByPos(new CheckResultArg(false, false), MinDistanceLv4, p0);
-        FindObjectByPos(new CheckResultArg(isShowLog, true), MinDistanceLv4, p0);
+        Debug.Log("FindObjectByPos:" + IsShowLog + "|" + FindPosLevel);
+        if (FindPosLevel == 1)
+        {
+            FindObjectByPos1(IsShowLog, po);
+        }
+        else if (FindPosLevel == 2)
+        {
+            FindObjectByPos12(IsShowLog, po);
+        }
+        else if (FindPosLevel == 3)
+        {
+            FindObjectByPos123(IsShowLog, po);
+        }
+        else if (FindPosLevel == 4)
+        {
+            FindObjectByPos1234(IsShowLog, po);
+        }
+        else if (FindPosLevel == 5)
+        {
+            FindObjectByPos12345(IsShowLog, po);
+        }
+        else if (FindPosLevel == 6)
+        {
+            FindObjectByPos123456(IsShowLog, po);
+        }
+    }
+    public void FindObjectByPos1(bool isShowLog, ProgressArgEx p0)
+    {
+        FindObjectByPos(new CheckResultArg(isShowLog, false, false, false), MinDistanceLv1, p0);
+    }
+    public void FindObjectByPos12(bool isShowLog, ProgressArgEx p0)
+    {
+        FindObjectByPos(new CheckResultArg(false, false, false, false), MinDistanceLv1, p0);
+        FindObjectByPos(new CheckResultArg(isShowLog, false, false, false), MinDistanceLv2, p0);
+    }
+    public void FindObjectByPos123(bool isShowLog, ProgressArgEx p0)
+    {
+        FindObjectByPos(new CheckResultArg(false, false, false, false), MinDistanceLv1, p0);
+        FindObjectByPos(new CheckResultArg(false, false, false, false), MinDistanceLv2, p0);
+        FindObjectByPos(new CheckResultArg(false, false, false, false), MinDistanceLv3, p0);
+        FindObjectByPos(new CheckResultArg(isShowLog, true, false, false), MinDistanceLv3, p0);
+        //FindObjectByPos(new CheckResultArg(false, true, true), MinDistanceLv5, p0);
     }
 
-     public void FindObjectByPos(CheckResultArg arg,float minDis,ProgressArgEx p0)
+    public void FindObjectByPos1234(bool isShowLog, ProgressArgEx p0)
+    {
+        FindObjectByPos(new CheckResultArg(false,false,false,false), MinDistanceLv1, p0);
+        FindObjectByPos(new CheckResultArg(false, false, false, false), MinDistanceLv2, p0);
+        FindObjectByPos(new CheckResultArg(false, false, false, false), MinDistanceLv3, p0);
+        FindObjectByPos(new CheckResultArg(false, false, false, false), MinDistanceLv4, p0);
+        FindObjectByPos(new CheckResultArg(isShowLog, true, false, false), MinDistanceLv4, p0);
+        //FindObjectByPos(new CheckResultArg(false, true, true), MinDistanceLv5, p0);
+    }
+    public void FindObjectByPos12345(bool isShowLog, ProgressArgEx p0)
+    {
+        FindObjectByPos(new CheckResultArg(false,false,false, false), MinDistanceLv1, p0);
+        FindObjectByPos(new CheckResultArg(false, false, false, false), MinDistanceLv2, p0);
+        FindObjectByPos(new CheckResultArg(false, false, false, false), MinDistanceLv3, p0);
+        FindObjectByPos(new CheckResultArg(false, false, false, false), MinDistanceLv4, p0);
+        FindObjectByPos(new CheckResultArg(false, false, false, false), MinDistanceLv5, p0);
+        FindObjectByPos(new CheckResultArg(isShowLog, true, false, false), MinDistanceLv5, p0);
+        FindObjectByPos(new CheckResultArg(false, true, true, false), MinDistanceLv5, p0);
+    } 
+    public void FindObjectByPos123456(bool isShowLog, ProgressArgEx p0)
+    {
+        FindObjectByPos(new CheckResultArg(false,false,false, false), MinDistanceLv1, p0);
+        FindObjectByPos(new CheckResultArg(false, false, false, false), MinDistanceLv2, p0);
+        FindObjectByPos(new CheckResultArg(false, false, false, false), MinDistanceLv3, p0);
+        FindObjectByPos(new CheckResultArg(false, false, false, false), MinDistanceLv4, p0);
+        FindObjectByPos(new CheckResultArg(false, false, false, false), MinDistanceLv5, p0);
+        FindObjectByPos(new CheckResultArg(false, true, false, false), MinDistanceLv5, p0);
+        FindObjectByPos(new CheckResultArg(isShowLog, true, true, false), MinDistanceLv5, p0);
+    }
+
+
+
+    public void FindObjectByPos(CheckResultArg arg,float minDis,ProgressArgEx p0)
     {
         GetMinDistance();
 
@@ -612,11 +705,13 @@ public class NavisModelRoot : MonoBehaviour
 
         if (result.notFoundCount == 0)
         {
-            Debug.Log($"-----------【成功：{result.notFoundCount}】[{this.name}][FindObjectByPos] time:{DateTime.Now - start} allModels_uid:{ModelList.allModels_uid.Count}," + result.ToString());
+            ResultLog = $"-----------【成功：{result.notFoundCount}】[{this.name}][FindObjectByPos] time:{DateTime.Now - start} allModels_uid:{ModelList.allModels_uid.Count},";
+            Debug.Log(ResultLog + result.ToString());
         }
         else
         {
-            Debug.LogWarning($"-----------【失败：{result.notFoundCount}】[{this.name}][FindObjectByPos]  time:{DateTime.Now - start} allModels_uid:{ModelList.allModels_uid.Count}," + result.ToString());
+            ResultLog = $"-----------【失败：{result.notFoundCount}】[{this.name}][FindObjectByPos]  time:{DateTime.Now - start} allModels_uid:{ModelList.allModels_uid.Count},";
+            Debug.LogWarning(ResultLog + result.ToString());
         }
 
         if (p0 == null)
@@ -624,6 +719,8 @@ public class NavisModelRoot : MonoBehaviour
             ProgressBarHelper.ClearProgressBar();
         }
     }
+
+    public string ResultLog = "";
 
     public void FindObjectByPos_NoDrawableAndNoZero(ProgressArgEx p0)
     {

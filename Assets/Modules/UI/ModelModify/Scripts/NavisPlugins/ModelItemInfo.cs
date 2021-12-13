@@ -15,8 +15,23 @@ namespace NavisPlugins.Infos
         [XmlAttribute]
         public string Id { get; set; }
 
+        private string _name = "";
+
+        ////[XmlAttribute("DName")]
+        //[XmlIgnore]
         [XmlAttribute]
-        public string Name { get; set; }
+        public string Name
+        {
+            get
+            {
+                return _name;
+            }
+            set
+            {
+                _name = value.Trim();
+                _name = _name.Replace("\r\n", "  ");
+            }
+        }
 
         [XmlAttribute]
         public string Description { get; set; }

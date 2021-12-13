@@ -1250,7 +1250,7 @@ vueDict.Add(item.UId, item);
             GameObject item = InitNavisFileInfoByModelSetting.Instance.initInfoBuildings[i];
             if (item == null) continue;
             if (item.activeInHierarchy == false) continue;
-            Transform[] ts = item.GetComponentsInChildren<Transform>();
+            Transform[] ts = item.GetComponentsInChildren<Transform>(true);
             list1.AddRange(ts);
         }
         //for (int i1 = 0; i1 < list1.Count; i1++)

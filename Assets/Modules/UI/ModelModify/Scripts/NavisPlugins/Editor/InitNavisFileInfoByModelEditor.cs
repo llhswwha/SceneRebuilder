@@ -257,6 +257,7 @@ EditorGUILayout.EndHorizontal();
         EditorUIUtils.ToggleFoldout(vueAllListArg, arg =>
         {
             var list1 = item.GetVueAllModels();
+            if (list1 == null) return;
             int count = list1.Count;
             arg.caption = $"VueAllModel List ({list1.Count})";
             //arg.info = $"d:{count}|{doors.VertexCount_Show / 10000f:F0}/{doors.VertexCount / 10000f:F0}";

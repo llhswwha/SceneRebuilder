@@ -2,6 +2,7 @@ using NavisPlugins.Infos;
 using System;
 using System.Collections;
 using System.Collections.Generic;
+using System.Linq;
 using System.Text.RegularExpressions;
 using UnityEngine;
 
@@ -10,6 +11,11 @@ public class TransformDictionary
     //public List<Transform> list = new List<Transform>();
 
     public Dictionary<Transform,Transform> dict = new Dictionary<Transform, Transform>();
+
+    public List<Transform> ToList()
+    {
+        return dict.Keys.ToList();
+    }
 
     public TransformDictionary(List<Transform> lst)
     {
@@ -139,18 +145,16 @@ public class TransformDictionary
                 n = n.Replace("_New", "");
                 t.name = n;
             }
-            if(n.Contains(" "))
+            if (n.Contains(" "))
             {
                 int id = n.LastIndexOf(" ");
                 n = n.Substring(0, id);
             }
 
-            if (n == "HorPumpBB1Asm-1-0002")
-            {
-                Debug.Log("HorPumpBB1Asm-1-0002");
-            }
+            string prefix = ModelMeshManager.GetPrefix(n);
 
             nameListDict.AddItem(n, t);
+            nameListDict2.AddItem(prefix, t);
 
             if (IsUID(n))
             {
@@ -385,16 +389,30 @@ public class TransformDictionary
             dict.Remove(transform);
             RemovedItems.Add(transform);
             positionDictionaryList.Remove(transform.position, transform);
+
+            string n = transform.name;
+            if(n.Contains(" "))
+            {
+                int id = n.LastIndexOf(" ");
+                n = n.Substring(0, id);
+            }
+            string prefix = ModelMeshManager.GetPrefix(n);
+            nameListDict.RemoveItem(n, transform);
+            nameListDict2.RemoveItem(prefix, transform);
+            if (IsUID(n))
+            {
+                uidListDict.RemoveItem(n, transform);
+            }
         }
         else
         {
             if (RemovedItems.Contains(transform))
             {
-                Debug.LogError("TransformDictionary.RemoveTransform Already Removed :" + transform);
+                Debug.LogWarning("TransformDictionary.RemoveTransform Already Removed :" + transform);
             }
             else
             {
-                Debug.LogError("TransformDictionary.RemoveTransform Not Contains :" + transform);
+                Debug.LogWarning("TransformDictionary.RemoveTransform Not Contains :" + transform);
             }
             
         }
