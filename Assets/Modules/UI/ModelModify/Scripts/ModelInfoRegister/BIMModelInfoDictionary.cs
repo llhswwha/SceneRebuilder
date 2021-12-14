@@ -87,16 +87,42 @@ public class BIMModelInfoDictionary
                 }
                 else
                 {
-                    Debug.LogError($"GetBims[{i}/{bimInfos.Count}] guid2Bim.ContainsKey(bim.Guid) bim:{bim} UID:{bim.Guid} Name:{bim.name} MName:{bim.MName} Distance:{bim.Distance}");
+                    //var bim2 = guid2Bim[bim.Guid];
+                    //Debug.LogError($"GetBims[{i}/{bimInfos.Count}] guid2Bim.ContainsKey(bim.Guid) id:{bim.Guid} bimNew:¡¾{bim}¡¿ bimOld:¡¾{bim2}¡¿");
                     errorBims.Add(bim);
                 }
             }
             else
             {
-                Debug.LogError($"GetBims[{i}/{bimInfos.Count}] string.IsNullOrEmpty(bim.RenderId) bim:{bim}");
+                //Debug.LogError($"GetBims[{i}/{bimInfos.Count}] string.IsNullOrEmpty(bim.RenderId) bim:{bim}");
+                errorBims.Add(bim);
             }
 
             //ModelItemInfo model= file.GetModelBy
+        }
+
+        StringBuilder errorInfo = new StringBuilder();
+        for (int i = 0; i < errorBims.Count; i++)
+        {
+            BIMModelInfo bim = errorBims[i];
+            if (string.IsNullOrEmpty(bim.Guid))
+            {
+                errorInfo.AppendLine($"GetBims[{i}/{errorBims.Count}] string.IsNullOrEmpty(bim.RenderId) bim:{bim}");
+            }
+            else
+            {
+                var bim2 = guid2Bim[bim.Guid];
+                errorInfo.AppendLine($"GetBims[{i}/{errorBims.Count}] guid2Bim.ContainsKey(bim.Guid) id:{bim.Guid} bimNew:¡¾{bim}¡¿ bimOld:¡¾{bim2}¡¿");
+            }
+        }
+        string errorInfoTxt = errorInfo.ToString();
+        if (!string.IsNullOrEmpty(errorInfoTxt))
+        {
+            Debug.LogError(errorInfoTxt);
+        }
+        else
+        {
+            Debug.Log("GetBims No Error");
         }
 
         //foreach(var rendererId in rendererId2Bim.Keys)
@@ -106,32 +132,32 @@ public class BIMModelInfoDictionary
         //}
     }
 
-    public void CheckDict(List<ModelItemInfo> models)
+    public void CheckDict(List<ModelItemInfo> checkModelList)
     {
-        var bimsList2 = new List<BIMModelInfo>(bimInfos);
+        var bimsList2 = new List<BIMModelInfo>(bimInfos);//SubModelList In A Building
         //var models = file.GetAllItems();
         int foundCount = 0;
 
-        if(models!=null)
-        foreach (var model in models)
-        {
-            //if (string.IsNullOrEmpty(model.RenderId)) continue;
-
-            var bim = GetBIMModel(model);
-            if (bim != null)
+        if(checkModelList!=null)
+            foreach (var model in checkModelList)
             {
-                bim.Model = model;
-                //bim.SetModelInfo(model);
+                //if (string.IsNullOrEmpty(model.RenderId)) continue;
 
-                bimsList2.Remove(bim);
+                var bim = GetBIMModel(model);
+                if (bim != null)
+                {
+                    bim.Model = model;
+                    //bim.SetModelInfo(model);
 
-                foundCount++;
+                    bimsList2.Remove(bim);
+
+                    foundCount++;
+                }
+                else
+                {
+
+                }
             }
-            else
-            {
-
-            }
-        }
 
         StringBuilder sb = new StringBuilder();
         for (int i = 0; i < bimsList2.Count; i++)

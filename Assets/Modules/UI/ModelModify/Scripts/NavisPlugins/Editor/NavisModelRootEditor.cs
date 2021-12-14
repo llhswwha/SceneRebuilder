@@ -166,11 +166,11 @@ public class NavisModelRootEditor : BaseFoldoutEditor<NavisModelRoot>
         EditorGUILayout.EndHorizontal();
 
         EditorGUILayout.BeginHorizontal();
-        GUILayout.Label("Name1", GUILayout.Width(40));
+        GUILayout.Label("Name1", GUILayout.Width(50));
         item.checkResultArg.IsFindByName1 = EditorGUILayout.Toggle(item.checkResultArg.IsFindByName1, GUILayout.Width(20));
-        GUILayout.Label("Name2", GUILayout.Width(40));
+        GUILayout.Label("Name2", GUILayout.Width(50));
         item.checkResultArg.IsFindByName2 = EditorGUILayout.Toggle(item.checkResultArg.IsFindByName2, GUILayout.Width(20));
-        GUILayout.Label("Closed", GUILayout.Width(40));
+        GUILayout.Label("Closed", GUILayout.Width(50));
         item.checkResultArg.IsFindClosed = EditorGUILayout.Toggle(item.checkResultArg.IsFindClosed, GUILayout.Width(20));
         if (GUILayout.Button("Pos1"))
         {
@@ -370,45 +370,47 @@ public class NavisModelRootEditor : BaseFoldoutEditor<NavisModelRoot>
         },
         () =>
         {
+            if (GUILayout.Button("Update",GUILayout.Width(70)))
+            {
+                item.RefreshBIMList();
+            }
+            if (GUILayout.Button("Clear", GUILayout.Width(70)))
+            {
+                //InitNavisFileInfoByModel.DestoryNavisInfo(item.gameObject);
+                //item.GetBims(null, null);
+                item.ClearBimInfos();
+            }
+            if (GUILayout.Button("ClearAll", GUILayout.Width(80)))
+            {
+                InitNavisFileInfoByModel.DestoryNavisInfo(null);
+                item.RefreshBIMList();
+            }
+
+        });
+        if (listArg.isEnabled && listArg.isExpanded)
+        {
+            GUILayout.BeginHorizontal();
+
+            //FilterBy BIMFoundType
             if (listArg.tag == null)
             {
                 listArg.tag = BIMFoundType.None;
             }
             BIMFoundType foundType = (BIMFoundType)listArg.tag;
-            foundType=(BIMFoundType)EditorGUILayout.EnumPopup(foundType);
+            foundType = (BIMFoundType)EditorGUILayout.EnumPopup(foundType);
             listArg.tag = foundType;
-            if(foundType!= BIMFoundType.None)
+            if (foundType != BIMFoundType.None)
             {
-                list1 = list1.FindAll(a=>a.FoundType==foundType);
+                list1 = list1.FindAll(a => a.FoundType == foundType);
             }
             else
             {
 
             }
 
-            if (GUILayout.Button("Update"))
-            {
-                item.GetBims(null, null);
-            }
-            
-        });
-        if (listArg.isEnabled && listArg.isExpanded)
-        {
-            GUILayout.BeginHorizontal();
             if (GUILayout.Button("RemoveNotFound"))
             {
-                item.GetBims(null, null);
-            }
-            if (GUILayout.Button("Clear"))
-            {
-                //InitNavisFileInfoByModel.DestoryNavisInfo(item.gameObject);
-                //item.GetBims(null, null);
-                item.ClearBimInfos();
-            }
-            if (GUILayout.Button("ClearAll"))
-            {
-                InitNavisFileInfoByModel.DestoryNavisInfo(null);
-                item.GetBims(null, null);
+                item.RefreshBIMList();
             }
             //if (GUILayout.Button("Compare"))
             //{

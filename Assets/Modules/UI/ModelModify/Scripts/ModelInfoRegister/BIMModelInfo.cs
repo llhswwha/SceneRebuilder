@@ -20,17 +20,35 @@ public class BIMModelInfo : MonoBehaviour,IComparable<BIMModelInfo>
     {
         if (this.name==this.MName)
         {
-            return $"{this.Distance:F5}|{this.MId}|====";
+            return $"{this.Distance:F5}|{this.MId}|====1";
         }
-        else if(this.name.StartsWith(this.MName))
+        if (this.name == this.MName.Replace(" ", "_"))
         {
-            return $"{this.Distance:F5}|{this.MId}|==";
+            return $"{this.Distance:F5}|{this.MId}|====2";
+        }
+        else if (this.name.StartsWith(this.MName))
+        {
+            return $"{this.Distance:F5}|{this.MId}|==1";
+        }
+        else if (this.name.StartsWith(this.MName.Replace(" ","_")))
+        {
+            return $"{this.Distance:F5}|{this.MId}|==2";
         }
         else
         {
             return $"{this.Distance:F5}|{this.MId}|{this.MName}";
         }
         
+    }
+
+    //public string GetBIMInfoText()
+    //{
+    //    return $"{this} UID:{this.Guid} Name:{this.name} MName:{this.MName} Distance:{this.Distance} Type:{this.FoundType}";
+    //}
+
+    public override string ToString()
+    {
+        return $"UID:{this.Guid} Name:{this.name} MName:{this.MName} Distance:{this.Distance} Type:{this.FoundType}";
     }
 
     public static BIMModelInfo currentFocusModel;

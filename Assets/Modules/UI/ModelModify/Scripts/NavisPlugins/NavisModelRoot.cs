@@ -60,17 +60,26 @@ public class NavisModelRoot : MonoBehaviour
             GameObject.DestroyImmediate(bim);
         }
         Debug.Log($"ClearBimInfos bims:{bims.Count}");
-        GetBims(null, null);
+        RefreshBIMList();
+    }
+
+    public void RefreshBIMList(bool isCheckModel=true)
+    {
+        List<ModelItemInfo> allModels = null;
+        if (isCheckModel && navisFile!=null)
+            allModels = navisFile.GetAllModelInfos();
+        GetBims(allModels, null);
     }
 
     [ContextMenu("GetBims")]
-    public void GetBims(List<ModelItemInfo> models,ProgressArgEx p0)
+    public void GetBims(List<ModelItemInfo> checkModelList,ProgressArgEx p0)
     {
-        BimDict = new BIMModelInfoDictionary(GetTargetBIMs(), p0);
-        bimInfos = BimDict.bimInfos;
+        var bimList = GetTargetBIMs();
+        BimDict = new BIMModelInfoDictionary(bimList, p0);
+        bimInfos = BimDict.bimInfos; //==bimList
 
         //var models = file.GetAllItems();
-        BimDict.CheckDict(models);
+        BimDict.CheckDict(checkModelList);
 
         if (p0 == null)
         {
@@ -340,6 +349,8 @@ public class NavisModelRoot : MonoBehaviour
         var p4 = ProgressArg.New("BindBimInfo", 3, 3, this.name, p0);
         ProgressBarHelper.DisplayCancelableProgressBar(p4, true);
 
+        RefreshBIMList();
+
         if (p0 == null)
         {
             ProgressBarHelper.ClearProgressBar();
@@ -383,14 +394,16 @@ public class NavisModelRoot : MonoBehaviour
         ProgressBarHelper.DisplayCancelableProgressBar(p3, enableProgress);
         //3
         //var allModels = navisFile.GetAllItems();
-        var allModels = navisFile.GetAllModelInfos();
+       
         var currentModels = ModelRoot.GetChildrenModels();
         currentModels = InitNavisFileInfoByModelSetting.Instance.FilterList(currentModels,null);
         ModelDict = new ModelItemInfoDictionary(currentModels, p3);
 
         var p4 = ProgressArg.New("LoadModels", 3, 5, "GetBims", p0);
         ProgressBarHelper.DisplayCancelableProgressBar(p4, enableProgress);
+
         //4
+        var allModels = navisFile.GetAllModelInfos();
         GetBims(allModels,p4);//2.BIMinfo
 
         //GetModelLists();//3.ModelInfo
@@ -429,6 +442,8 @@ public class NavisModelRoot : MonoBehaviour
         string s = TestUIdString;
         var transform = TransformDict.FindObjectByUID(s);
         Debug.Log($"[{this.name}]TestIsUId s:{s} transform:{transform}");
+
+        
     }
 
     public float GetMinDistance()
@@ -674,7 +689,9 @@ public class NavisModelRoot : MonoBehaviour
 
     public void TestFindObjectByPos(float minDis)
     {
+        LoadModels(null);
         FindObjectByPos(new CheckResultArg(true, checkResultArg.IsFindByName1, checkResultArg.IsFindByName2, checkResultArg.IsFindClosed), minDis, null);
+        RefreshBIMList();
     }
 
 

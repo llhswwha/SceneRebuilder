@@ -3,6 +3,7 @@ using System;
 using System.Collections;
 using System.Collections.Generic;
 using System.Linq;
+using System.Text;
 using System.Text.RegularExpressions;
 using UnityEngine;
 
@@ -65,6 +66,7 @@ public class TransformDictionary
 
         Dictionary<string, List<Transform>> nameDict = new Dictionary<string, List<Transform>>();
 
+        StringBuilder errorInfo = new StringBuilder();
         foreach (var t in dict.Keys)
         {
             string n = t.name;
@@ -79,7 +81,7 @@ public class TransformDictionary
                 nameDict.Add(n, new List<Transform>());
                 //names.Add(n);
 
-                if (IsUID(n))
+                if (IsUID(n, errorInfo))
                 {
                     uids.Add(n);
                 }
@@ -104,6 +106,11 @@ public class TransformDictionary
             }
             nameDict[n].Add(t);
 
+        }
+
+        if (errorInfo.Length > 0)
+        {
+            Debug.LogWarning(errorInfo.ToString());
         }
 
         uids.Sort();
@@ -145,6 +152,8 @@ public class TransformDictionary
     {
         int allCount = dict.Count;
         int uidCount = 0;
+
+        StringBuilder errorInfo = new StringBuilder();
         foreach (var t in dict.Keys)
         {
             string n = t.name;
@@ -164,11 +173,15 @@ public class TransformDictionary
             nameListDict.AddItem(n, t);
             nameListDict2.AddItem(prefix, t);
 
-            if (IsUID(n))
+            if (IsUID(n, errorInfo))
             {
                 uidCount++;
                 uidListDict.AddItem(n, t);
             }
+        }
+        if (errorInfo.Length > 0)
+        {
+            Debug.LogWarning(errorInfo.ToString());
         }
         Debug.Log($"TransformDictionary allCount:{allCount} nameCount:{nameListDict.Count} uidCount:{uidCount}");
     }
@@ -258,7 +271,7 @@ public class TransformDictionary
         return IsNumAndUpperEnCh(s);
     }
 
-    public static bool IsUID(string n)
+    public static bool IsUID(string n, StringBuilder errorInfo=null)
     {
         //            <ItemInfo Id="H级主厂房.nwc_6_433" Name="H级精处理再生系统设备管道" UId="0028-140039-306069491919619191" X="-180.3085" Y="143.6485" Z="7.421375" Type="P3DEquipment" Drawable="true" Visible="0" AreaId="0">
 
@@ -275,12 +288,28 @@ public class TransformDictionary
                 }
                 else
                 {
-                    Debug.LogWarning($"IsUID NotUID s:{n} length:{length} {parts[0].Length},{parts[1].Length},{parts[2].Length}");
+                    string error = $"IsUID NotUID s:{n} length:{length} {parts[0].Length},{parts[1].Length},{parts[2].Length}";
+                    if (errorInfo != null)
+                    {
+                        errorInfo.AppendLine(error);
+                    }
+                    else
+                    {
+                        Debug.LogWarning(error);
+                    }
                 }
             }
             else
             {
-                Debug.LogWarning($"IsUID NotUID s:{n} length:{length} parts.Length != 3");
+                string error = $"IsUID NotUID s:{n} length:{length} parts.Length != 3";
+                if (errorInfo != null)
+                {
+                    errorInfo.AppendLine(error);
+                }
+                else
+                {
+                    Debug.LogWarning(error);
+                }
             }
         }
         return result;

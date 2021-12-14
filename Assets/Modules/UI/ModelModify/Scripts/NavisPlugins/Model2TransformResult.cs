@@ -72,12 +72,24 @@ public class Model2TransformResult
             if (ms.Count == 0)
             {
                 var closedT = model1.FindClosedTransform(TransformDict.ToList());
-                
-                //遍历全部模型
 
+                //遍历全部模型
+                
                 if (CheckArg.IsFindClosed)
                 {
-                    AddFounded1(model1, closedT, BIMFoundType.ByClosed);
+                    float dis = model1.GetDistance(closedT);
+                    if (dis < MinDistance)
+                    {
+                        AddFounded1(model1, closedT, BIMFoundType.ByClosed);
+                    }
+                    else if (dis < MaxDistance)
+                    {
+                        AddFounded1(model1, closedT, BIMFoundType.ByClosed);
+                    }
+                    else
+                    {
+                        DebugLogError($"【{ms.Count}】[Rute1_1_3][没找到同名的Transform&&Closed距离太远][{MinDistance}][Name:{model1.Name}][Path:{model1.GetPath()}][{model1.ShowDistance(closedT)})]");
+                    }
                 }
                 else
                 {
@@ -398,7 +410,8 @@ public class Model2TransformResult
 
     public override string ToString()
     {
-        return $"found1:{allModels_uid_found1.Count} ,found2:{allModels_uid_found2.Count} ,nofound1:{allModels_uid_nofound1.Count}, nofound2:{allModels_uid_nofound2.Count} allNoFound:{allModels_uid_AllNotFound.Count}";
+        //return $"found1:{allModels_uid_found1.Count} ,found2:{allModels_uid_found2.Count} ,nofound1:{allModels_uid_nofound1.Count}, nofound2:{allModels_uid_nofound2.Count} allNoFound:{allModels_uid_AllNotFound.Count}";
+        return $"找到:{allModels_uid_found1.Count} ,可能找到:{allModels_uid_found2.Count} ,没找到:{allModels_uid_nofound1.Count}, 可能没找到:{allModels_uid_nofound2.Count} 全部没找到:{notFoundCount} 全部未关联:{allModels_uid_AllNotFound.Count}";
     }
 }
 
