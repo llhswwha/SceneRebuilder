@@ -638,19 +638,19 @@ public class NavisModelRoot : MonoBehaviour
     }
     public void FindObjectByPos1(bool isShowLog, ProgressArgEx p0)
     {
-        FindObjectByPos(new CheckResultArg(isShowLog, false, false, false), MinDistanceLv1, p0);
+        FindObjectByPos(new CheckResultArg(isShowLog, checkResultArg.IsFindByName1, checkResultArg.IsFindByName2, checkResultArg.IsFindClosed, checkResultArg.IsUseFound2), MinDistanceLv1, p0);
     }
     public void FindObjectByPos12(bool isShowLog, ProgressArgEx p0)
     {
-        FindObjectByPos(new CheckResultArg(false, false, false, false), MinDistanceLv1, p0);
-        FindObjectByPos(new CheckResultArg(isShowLog, false, false, false), MinDistanceLv2, p0);
+        FindObjectByPos(new CheckResultArg(false, false, false, false, false), MinDistanceLv1, p0);
+        FindObjectByPos(new CheckResultArg(isShowLog, checkResultArg.IsFindByName1, checkResultArg.IsFindByName2, checkResultArg.IsFindClosed, checkResultArg.IsUseFound2), MinDistanceLv2, p0);
     }
     public void FindObjectByPos123(bool isShowLog, ProgressArgEx p0)
     {
-        FindObjectByPos(new CheckResultArg(false, false, false, false), MinDistanceLv1, p0);
-        FindObjectByPos(new CheckResultArg(false, false, false, false), MinDistanceLv2, p0);
-        FindObjectByPos(new CheckResultArg(false, false, false, false), MinDistanceLv3, p0);
-        FindObjectByPos(new CheckResultArg(isShowLog, true, false, false), MinDistanceLv3, p0);
+        FindObjectByPos(new CheckResultArg(false, false, false, false, false), MinDistanceLv1, p0);
+        FindObjectByPos(new CheckResultArg(false, false, false, false, false), MinDistanceLv2, p0);
+        FindObjectByPos(new CheckResultArg(false, false, false, false, false), MinDistanceLv3, p0);
+        FindObjectByPos(new CheckResultArg(isShowLog, checkResultArg.IsFindByName1, checkResultArg.IsFindByName2, checkResultArg.IsFindClosed, checkResultArg.IsUseFound2), MinDistanceLv3, p0);
         //FindObjectByPos(new CheckResultArg(false, true, true), MinDistanceLv5, p0);
     }
 
@@ -658,39 +658,39 @@ public class NavisModelRoot : MonoBehaviour
 
     public void FindObjectByPos1234(bool isShowLog, ProgressArgEx p0)
     {
-        FindObjectByPos(new CheckResultArg(false,false,false,false), MinDistanceLv1, p0);
-        FindObjectByPos(new CheckResultArg(false, false, false, false), MinDistanceLv2, p0);
-        FindObjectByPos(new CheckResultArg(false, false, false, false), MinDistanceLv3, p0);
-        FindObjectByPos(new CheckResultArg(false, false, false, false), MinDistanceLv4, p0);
-        FindObjectByPos(new CheckResultArg(isShowLog, checkResultArg.IsFindByName1, checkResultArg.IsFindByName2, checkResultArg.IsFindClosed), MinDistanceLv4, p0);
+        FindObjectByPos(new CheckResultArg(false,false,false,false, false), MinDistanceLv1, p0);
+        FindObjectByPos(new CheckResultArg(false, false, false, false, false), MinDistanceLv2, p0);
+        FindObjectByPos(new CheckResultArg(false, false, false, false, false), MinDistanceLv3, p0);
+        FindObjectByPos(new CheckResultArg(false, false, false, false, false), MinDistanceLv4, p0);
+        FindObjectByPos(new CheckResultArg(isShowLog, checkResultArg.IsFindByName1, checkResultArg.IsFindByName2, checkResultArg.IsFindClosed, checkResultArg.IsUseFound2), MinDistanceLv4, p0);
         //FindObjectByPos(new CheckResultArg(false, true, true), MinDistanceLv5, p0);
     }
     public void FindObjectByPos12345(bool isShowLog, ProgressArgEx p0)
     {
-        FindObjectByPos(new CheckResultArg(false,false,false, false), MinDistanceLv1, p0);
-        FindObjectByPos(new CheckResultArg(false, false, false, false), MinDistanceLv2, p0);
-        FindObjectByPos(new CheckResultArg(false, false, false, false), MinDistanceLv3, p0);
-        FindObjectByPos(new CheckResultArg(false, false, false, false), MinDistanceLv4, p0);
-        FindObjectByPos(new CheckResultArg(false, false, false, false), MinDistanceLv5, p0);
-        FindObjectByPos(new CheckResultArg(isShowLog, true, false, false), MinDistanceLv5, p0);
-        FindObjectByPos(new CheckResultArg(false, true, true, false), MinDistanceLv5, p0);
+        FindObjectByPos(new CheckResultArg(false,false,false, false, false), MinDistanceLv1, p0);
+        FindObjectByPos(new CheckResultArg(false, false, false, false, false), MinDistanceLv2, p0);
+        FindObjectByPos(new CheckResultArg(false, false, false, false, false), MinDistanceLv3, p0);
+        FindObjectByPos(new CheckResultArg(false, false, false, false, false), MinDistanceLv4, p0);
+        FindObjectByPos(new CheckResultArg(false, false, false, false, false), MinDistanceLv5, p0);
+        FindObjectByPos(new CheckResultArg(isShowLog, checkResultArg.IsFindByName1, checkResultArg.IsFindByName2, checkResultArg.IsFindClosed, checkResultArg.IsUseFound2), MinDistanceLv5, p0);
+        //FindObjectByPos(new CheckResultArg(false, true, true, false, false), MinDistanceLv5, p0);
     } 
     public void FindObjectByPos123456(bool isShowLog, ProgressArgEx p0)
     {
-        FindObjectByPos(new CheckResultArg(false,false,false, false), MinDistanceLv1, p0);
-        FindObjectByPos(new CheckResultArg(false, false, false, false), MinDistanceLv2, p0);
-        FindObjectByPos(new CheckResultArg(false, false, false, false), MinDistanceLv3, p0);
-        FindObjectByPos(new CheckResultArg(false, false, false, false), MinDistanceLv4, p0);
-        FindObjectByPos(new CheckResultArg(false, false, false, false), MinDistanceLv5, p0);
-        FindObjectByPos(new CheckResultArg(false, true, false, false), MinDistanceLv5, p0);
-        FindObjectByPos(new CheckResultArg(isShowLog, true, true, false), MinDistanceLv5, p0);
+        FindObjectByPos(new CheckResultArg(false,false,false, false, false), MinDistanceLv1, p0);
+        FindObjectByPos(new CheckResultArg(false, false, false, false, false), MinDistanceLv2, p0);
+        FindObjectByPos(new CheckResultArg(false, false, false, false, false), MinDistanceLv3, p0);
+        FindObjectByPos(new CheckResultArg(false, false, false, false, false), MinDistanceLv4, p0);
+        FindObjectByPos(new CheckResultArg(false, false, false, false, false), MinDistanceLv5, p0);
+        FindObjectByPos(new CheckResultArg(false, true, false, false, false), MinDistanceLv5, p0);
+        FindObjectByPos(new CheckResultArg(isShowLog, checkResultArg.IsFindByName1, checkResultArg.IsFindByName2, checkResultArg.IsFindClosed, checkResultArg.IsUseFound2), MinDistanceLv5, p0);
     }
 
 
     public void TestFindObjectByPos(float minDis)
     {
         LoadModels(null);
-        FindObjectByPos(new CheckResultArg(true, checkResultArg.IsFindByName1, checkResultArg.IsFindByName2, checkResultArg.IsFindClosed), minDis, null);
+        FindObjectByPos(new CheckResultArg(true, checkResultArg.IsFindByName1, checkResultArg.IsFindByName2, checkResultArg.IsFindClosed, checkResultArg.IsUseFound2), minDis, null);
         RefreshBIMList();
     }
 

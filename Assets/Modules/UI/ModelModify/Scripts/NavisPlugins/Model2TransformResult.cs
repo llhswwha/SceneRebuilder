@@ -153,7 +153,15 @@ public class Model2TransformResult
             }
             else if (r1 == 0)//2.2.找到1-1-N
             {
-                allModels_uid_found2.Add(model1);
+                if (CheckArg.IsUseFound2)
+                {
+                    AddFounded1(model1, transf, BIMFoundType.ByPos1NN);
+                }
+                else
+                {
+                    allModels_uid_found2.Add(model1);
+                }
+                
             }
             else //-1 ，2.3.找到 1-1-0
             {
@@ -192,6 +200,15 @@ public class Model2TransformResult
             else if (result == 0)//3.2.找到1-1-N
             {
                 allModels_uid_found2.Add(model1);
+
+                //if (CheckArg.IsUseFound2)
+                //{
+                //    AddFounded1(model1, transf, BIMFoundType.ByPos1NN);
+                //}
+                //else
+                //{
+                //    allModels_uid_found2.Add(model1);
+                //}
             }
             else //-1 ，3.3.找到 1-1-0
             {
@@ -426,16 +443,19 @@ public class CheckResultArg
 
     public bool IsFindClosed = false;
 
+    public bool IsUseFound2 = false;
+
     public CheckResultArg()
     {
 
     }
 
-    public CheckResultArg(bool isShowLog,bool isFindByName1, bool isFindByName2, bool isFindClosed)
+    public CheckResultArg(bool isShowLog,bool isFindByName1, bool isFindByName2, bool isFindClosed,bool isUseFound2)
     {
         this.IsShowLog = isShowLog;
         this.IsFindByName1 = isFindByName1;
         this.IsFindByName2 = isFindByName2;
         this.IsFindClosed = isFindClosed;
+        this.IsUseFound2 = isUseFound2;
 }
 }

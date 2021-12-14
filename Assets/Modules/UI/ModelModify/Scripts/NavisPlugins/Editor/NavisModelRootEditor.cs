@@ -151,9 +151,6 @@ public class NavisModelRootEditor : BaseFoldoutEditor<NavisModelRoot>
             //item.FindObjectByPos(true,null);
             item.FindObjectByPos(null);
         }
-
-        
-
         //if (GUILayout.Button("FindByPos(NoLog)"))
         //{
         //    item.FindObjectByPos1234(false, null);
@@ -172,6 +169,8 @@ public class NavisModelRootEditor : BaseFoldoutEditor<NavisModelRoot>
         item.checkResultArg.IsFindByName2 = EditorGUILayout.Toggle(item.checkResultArg.IsFindByName2, GUILayout.Width(20));
         GUILayout.Label("Closed", GUILayout.Width(50));
         item.checkResultArg.IsFindClosed = EditorGUILayout.Toggle(item.checkResultArg.IsFindClosed, GUILayout.Width(20));
+        GUILayout.Label("Found2", GUILayout.Width(50));
+        item.checkResultArg.IsUseFound2 = EditorGUILayout.Toggle(item.checkResultArg.IsUseFound2, GUILayout.Width(20));
         if (GUILayout.Button("Pos1"))
         {
             item.TestFindObjectByPos(item.MinDistanceLv1);
