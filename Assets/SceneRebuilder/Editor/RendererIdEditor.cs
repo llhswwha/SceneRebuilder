@@ -23,6 +23,11 @@ public class RendererIdEditor : BaseEditor<RendererId>
     public override void OnToolLayout(RendererId item)
     {
         base.OnToolLayout(item);
+        if (GUILayout.Button("Select"))
+        {
+            EditorHelper.SelectObject(item.gameObject);
+        }
+
         EditorGUILayout.BeginHorizontal();
         GUILayout.Label("Id:" + item.Id);
         GUILayout.Label("Children:" + item.childrenIds.Count);
@@ -451,21 +456,21 @@ public class RendererIdEditor : BaseEditor<RendererId>
         GameObject goDwf = FindDwfGo(fbxObj);
         if (goDwf == null) return;
 
-        List<Transform> geoList1 = FindGeometriesParents(fbxObj);
+        List<Transform> geoParentList1 = FindGeometriesParents(fbxObj);
         List<Transform> curParentList = FindCurvesParents(fbxObj);
-        geoList1 = curParentList;
+        geoParentList1 = curParentList;
 
         List<Transform> geoList2 = FindGeometriesParents(goDwf);
-        Debug.LogError($"geoList1:{geoList1.Count},geoList2:{geoList2.Count} curParentList:{curParentList.Count}");
+        Debug.LogError($"geoList1:{geoParentList1.Count},geoList2:{geoList2.Count} curParentList:{curParentList.Count}");
 
         GameObject geoRoot3 = null;
         GameObject geoRoot4 = null;
         if (isReplace == false)
         {
             GameObject geoRoot1 = new GameObject("Geometry1");
-            for (int i = 0; i < geoList1.Count; i++)
+            for (int i = 0; i < geoParentList1.Count; i++)
             {
-                Transform t1 = geoList1[i];
+                Transform t1 = geoParentList1[i];
                 var t1Clone = MeshHelper.CopyGO(t1);
                 t1Clone.SetParent(geoRoot1.transform);
             }
@@ -484,20 +489,19 @@ public class RendererIdEditor : BaseEditor<RendererId>
 
         
 
-        for (int i = 0; i < geoList1.Count; i++)
+        for (int i = 0; i < geoParentList1.Count; i++)
         {
-            Transform geo = geoList1[i];
-            List<Transform> result = FindListByName(geoList2, geo.name);
+            Transform geoParent = geoParentList1[i];
+            List<Transform> result = FindListByName(geoList2, geoParent.name);
             if (result.Count == 1)
             {
                 Transform t2 = result[0];
-                geoList1.RemoveAt(i); i--;
+                geoParentList1.RemoveAt(i); i--;
                 geoList2.Remove(t2);
 
                 Transform geo2 = FindChild(t2, "geometry");
-
                 Transform t1Clone = MeshHelper.CopyGO(geo2);
-                t1Clone.name = geo.name + "_New";
+                t1Clone.name = geoParent.name + "_New";
 
                 if (isReplace == false)
                 {
@@ -505,8 +509,18 @@ public class RendererIdEditor : BaseEditor<RendererId>
                 }
                 else
                 {
-                    t1Clone.SetParent(geo.parent);
-                    GameObject.DestroyImmediate(geo.gameObject);
+                    if (geoParent.childCount == 1)
+                    {
+                        t1Clone.SetParent(geoParent.parent);
+                        GameObject.DestroyImmediate(geoParent.gameObject);
+                    }
+                    else
+                    {
+                        Transform geo1 = FindChild(geoParent, "geometry");
+                        t1Clone.SetParent(geoParent);
+                        GameObject.DestroyImmediate(geo1.gameObject);
+                    }
+                    
                 }
 
             }
@@ -521,14 +535,14 @@ public class RendererIdEditor : BaseEditor<RendererId>
         }
 
         var ts2 = goDwf.GetComponentsInChildren<Transform>(true);
-        for (int i = 0; i < geoList1.Count; i++)
+        for (int i = 0; i < geoParentList1.Count; i++)
         {
-            Transform geo = geoList1[i];
-            List<Transform> result = FindListByName(ts2, geo.name);
+            Transform geoParent = geoParentList1[i];
+            List<Transform> result = FindListByName(ts2, geoParent.name);
             if (result.Count == 1)
             {
                 Transform t1Clone = MeshHelper.CopyGO(result[0]);
-                t1Clone.name = geo.name + "_New";
+                t1Clone.name = geoParent.name + "_New";
 
                 if (isReplace == false)
                 {
@@ -536,8 +550,20 @@ public class RendererIdEditor : BaseEditor<RendererId>
                 }
                 else
                 {
-                    t1Clone.SetParent(geo.parent);
-                    GameObject.DestroyImmediate(geo.gameObject);
+                    //t1Clone.SetParent(geoParent.parent);
+                    //GameObject.DestroyImmediate(geoParent.gameObject);
+
+                    if (geoParent.childCount == 1)
+                    {
+                        t1Clone.SetParent(geoParent.parent);
+                        GameObject.DestroyImmediate(geoParent.gameObject);
+                    }
+                    else
+                    {
+                        Transform geo1 = FindChild(geoParent, "geometry");
+                        t1Clone.SetParent(geoParent);
+                        GameObject.DestroyImmediate(geo1.gameObject);
+                    }
                 }
             }
             else if (result.Count == 0)
@@ -593,14 +619,22 @@ public class RendererIdEditor : BaseEditor<RendererId>
 
     public static Transform FindChild(Transform t,string key)
     {
-        for(int i=0;i<t.childCount;i++)
+        List<Transform> list = FindChildren(t, key);
+        return list[0];
+    }
+
+    public static List<Transform> FindChildren(Transform t, string key)
+    {
+        List<Transform> children = new List<Transform>();
+        for (int i = 0; i < t.childCount; i++)
         {
             if (t.GetChild(i).name.ToLower().StartsWith(key))
             {
-                return t.GetChild(i);
+                //return t.GetChild(i);
+                children.Add(t.GetChild(i));
             }
         }
-        return null;
+        return children;
     }
 
     public static List<Transform> FindTransforms(GameObject go,string key)

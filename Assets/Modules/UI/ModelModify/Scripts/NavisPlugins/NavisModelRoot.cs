@@ -366,6 +366,8 @@ public class NavisModelRoot : MonoBehaviour
             IsShowLog = true;
         }
 
+        GetMinDistance();
+
         DateTime start = DateTime.Now;
 
         ClearResult();
@@ -697,8 +699,6 @@ public class NavisModelRoot : MonoBehaviour
 
     public void FindObjectByPos(CheckResultArg arg,float minDis,ProgressArgEx p0)
     {
-        GetMinDistance();
-
         DateTime start = DateTime.Now;
         List<ModelItemInfo> models1 = new List<ModelItemInfo>();
         models1.AddRange(ModelList.allModels_drawable_nozero);

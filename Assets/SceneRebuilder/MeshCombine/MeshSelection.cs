@@ -36,6 +36,29 @@ public class MeshSelection : MonoBehaviour
         });
     }
 
+    public static void SelectObjectsByRIdList(List<string>idList,Action<Dictionary<string,GameObject>>callback)
+    {
+        Dictionary<string, GameObject> dicT = new Dictionary<string, GameObject>();
+        if(idList==null||idList.Count==0)
+        {
+            if (callback != null) callback(dicT);
+            return;
+        }
+        for(int i=0;i<idList.Count;i++)
+        {
+            string rid = idList[i];
+            SelectObjectByRId(rid, obj=> 
+            {
+                if (obj!=null&&!dicT.ContainsKey(rid)) dicT.Add(rid,obj);
+
+                if(i==idList.Count-1)
+                {
+                    if (callback != null) callback(dicT);
+                }
+            });
+        }
+    }
+
     public static void SelectObjectByRId(string id,Action<GameObject> callback)
     {
         //Debug.Log($"SelectObjectByRId rId:{rId}");
@@ -117,6 +140,15 @@ public class MeshSelection : MonoBehaviour
     private static void SelectObjectByRId(string id, Action<GameObject> callback, DateTime start, List<AreaTreeNode> nodes)
     {
         var scenes = SubSceneHelper.GetScenes(nodes);
+        if(scenes==null||scenes.Count==0)
+        {
+            Debug.LogError($"SelectObjectByRId go==null id:{id}");
+            if (callback != null)
+            {
+                callback(null);
+            }
+            return;
+        }
         Debug.Log($"SelectObjectByRId nodes:{nodes.Count} scenes:{scenes.Count} scene1:{scenes[0]} id:{id} ");
         SubSceneShowManager.Instance.LoadScenes(scenes, p =>
         {

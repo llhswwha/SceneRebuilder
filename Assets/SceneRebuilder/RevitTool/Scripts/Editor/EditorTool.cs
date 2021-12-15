@@ -10,7 +10,12 @@ using Object = UnityEngine.Object;
 
 public class EditorTool : MonoBehaviour
 {
-    [MenuItem("EditorTool/Models/Delete")]
+    [MenuItem("EditorTool/FocusSelection")]
+    private static void FocusSelection()
+    {
+        EditorHelper.SelectObject(Selection.activeGameObject);
+    }
+        [MenuItem("EditorTool/Models/Delete")]
     private static void Delete()
     {
         print("Delete");

@@ -114,7 +114,7 @@ public class Model2TransformResult
                     }
                     else 
                     { 
-                        DebugLogError($"【{ms.Count}】[Rute1_1_2][没找到Transform][{MinDistance}] m:{model1.ShowDistance(transf)}");
+                        DebugLogError($"【{ms.Count}】[Rute1_1_2][没找到Transform][{MinDistance}][m:{model1.ShowDistance(transf)}][path:{model1.GetPath()}]");
                     }
                 }
             }
@@ -128,7 +128,7 @@ public class Model2TransformResult
                 }
                 else
                 {
-                    DebugLogError($"【{ms.Count}】[Rute1_1_3][没找到Transform][{MinDistance}] m:{model1.ShowDistance(transf)}");
+                    DebugLogError($"【{ms.Count}】[Rute1_1_3][没找到Transform][{MinDistance}][m:{model1.ShowDistance(transf)}][path:{model1.GetPath()}]");
                     for (int i1 = 0; i1 < ms.Count; i1++)
                     {
                         var m = ms[i1];
