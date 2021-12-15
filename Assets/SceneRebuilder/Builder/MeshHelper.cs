@@ -2352,7 +2352,11 @@ public static class MeshHelper
 
         return go2Copy;
     }
-
+    public static Transform CopyGO(this Transform go2, bool isDebug = false)
+    {
+        var goNew = CopyGO(go2.gameObject);
+        return goNew.transform;
+    }
     public static GameObject CopyGO(this GameObject go2,bool isDebug=false)
     {
         DateTime start=DateTime.Now;

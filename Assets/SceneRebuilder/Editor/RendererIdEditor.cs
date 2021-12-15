@@ -364,43 +364,31 @@ public class RendererIdEditor : BaseEditor<RendererId>
         }
         if (GUILayout.Button("FindGeometry"))
         {
-            GameObject goDwf = FindDwfGo(item.gameObject);
-            if (goDwf == null) return;
-
-            List<Transform> geoList = FindGeometries(item.gameObject);
-
-           var ts2 = goDwf.GetComponentsInChildren<Transform>(true);
-            for (int i = 0; i < geoList.Count; i++)
-            {
-                Transform geo = geoList[i];
-                List<Transform> result = FindListByName(ts2, geo.name);
-                if (result.Count == 1)
-                {
-                    //result[0].SetParent(geo.parent);
-                }
-            }
+            FindGeometriesAndReplace(item.gameObject, false);
         }
         if (GUILayout.Button("SetParent"))
         {
-            GameObject goDwf = FindDwfGo(item.gameObject);
-            if (goDwf == null) return;
+            //GameObject goDwf = FindDwfGo(item.gameObject);
+            //if (goDwf == null) return;
 
-            EditorHelper.UnpackPrefab(item.gameObject);
-            EditorHelper.UnpackPrefab(goDwf.gameObject);
+            //EditorHelper.UnpackPrefab(item.gameObject);
+            //EditorHelper.UnpackPrefab(goDwf.gameObject);
 
-            List<Transform> geoList = FindGeometries(item.gameObject);
+            //List<Transform> geoList = FindGeometriesParents(item.gameObject);
 
-            var ts2 = goDwf.GetComponentsInChildren<Transform>(true);
-            for (int i = 0; i < geoList.Count; i++)
-            {
-                Transform geo = geoList[i];
-                List<Transform> result = FindListByName(ts2, geo.name);
-                if (result.Count == 1)
-                {
-                    result[0].SetParent(geo.parent);
-                    GameObject.DestroyImmediate(geo.gameObject);
-                }
-            }
+            //var ts2 = goDwf.GetComponentsInChildren<Transform>(true);
+            //for (int i = 0; i < geoList.Count; i++)
+            //{
+            //    Transform geo = geoList[i];
+            //    List<Transform> result = FindListByName(ts2, geo.name);
+            //    if (result.Count == 1)
+            //    {
+            //        result[0].SetParent(geo.parent);
+            //        GameObject.DestroyImmediate(geo.gameObject);
+            //    }
+            //}
+
+            FindGeometriesAndReplace(item.gameObject, true);
         }
         EditorGUILayout.EndHorizontal();
     }
@@ -419,36 +407,235 @@ public class RendererIdEditor : BaseEditor<RendererId>
         {
             Debug.Log($"FindListByName name:{name} result:{result[0]}");
         }
+        else if(result.Count == 0)
+        {
+            if (!name.StartsWith("0028-240050-"))
+            {
+                Debug.LogError($"FindListByName result.Count != 1 result:{result.Count} name:{name} ");
+            }
+        }
         else
         {
-            Debug.LogError($"FindListByName result.Count != 1 result:{result.Count} name:{name} ");
+            Debug.LogWarning($"FindListByName name:{name} result:{result.Count}_{result[0]}");
         }
         return result;
     }
 
-    public static List<Transform> FindGeometries(GameObject go)
+    public static List<Transform> FindListByName(List<Transform> ts2, string name)
     {
-        List<Transform> geoList = new List<Transform>();
-        var ts1 = go.GetComponentsInChildren<Transform>(true);
-        foreach (var t in ts1)
+        List<Transform> result = new List<Transform>();
+        foreach (var t2 in ts2)
         {
-            if (t.name.StartsWith("Geometry"))
+            if (t2.name == name)
             {
-                var p = t.parent;
-                if (p.childCount == 1)
+                result.Add(t2);
+            }
+        }
+        if (result.Count == 1)
+        {
+            Debug.Log($"FindListByName name:{name} result:{result[0]}");
+        }
+        else if (result.Count == 0)
+        {
+            Debug.LogError($"FindListByName result.Count != 1 result:{result.Count} name:{name} ");
+        }
+        else
+        {
+            Debug.LogWarning($"FindListByName name:{name} result:{result.Count}_{result[0]}");
+        }
+        return result;
+    }
+
+    private static void FindGeometriesAndReplace(GameObject fbxObj,bool isReplace)
+    {
+        GameObject goDwf = FindDwfGo(fbxObj);
+        if (goDwf == null) return;
+
+        List<Transform> geoList1 = FindGeometriesParents(fbxObj);
+        List<Transform> curParentList = FindCurvesParents(fbxObj);
+        geoList1 = curParentList;
+
+        List<Transform> geoList2 = FindGeometriesParents(goDwf);
+        Debug.LogError($"geoList1:{geoList1.Count},geoList2:{geoList2.Count} curParentList:{curParentList.Count}");
+
+        GameObject geoRoot3 = null;
+        GameObject geoRoot4 = null;
+        if (isReplace == false)
+        {
+            GameObject geoRoot1 = new GameObject("Geometry1");
+            for (int i = 0; i < geoList1.Count; i++)
+            {
+                Transform t1 = geoList1[i];
+                var t1Clone = MeshHelper.CopyGO(t1);
+                t1Clone.SetParent(geoRoot1.transform);
+            }
+
+            GameObject geoRoot2 = new GameObject("Geometry2");
+            for (int i = 0; i < geoList2.Count; i++)
+            {
+                Transform t1 = geoList2[i];
+                Transform t1Clone = MeshHelper.CopyGO(t1);
+                t1Clone.SetParent(geoRoot2.transform);
+            }
+
+            geoRoot3 = new GameObject("Geometry3");
+            geoRoot4 = new GameObject("Geometry4");
+        }
+
+        
+
+        for (int i = 0; i < geoList1.Count; i++)
+        {
+            Transform geo = geoList1[i];
+            List<Transform> result = FindListByName(geoList2, geo.name);
+            if (result.Count == 1)
+            {
+                Transform t2 = result[0];
+                geoList1.RemoveAt(i); i--;
+                geoList2.Remove(t2);
+
+                Transform geo2 = FindChild(t2, "geometry");
+
+                Transform t1Clone = MeshHelper.CopyGO(geo2);
+                t1Clone.name = geo.name + "_New";
+
+                if (isReplace == false)
                 {
-                    geoList.Add(p);
+                    t1Clone.SetParent(geoRoot3.transform);
                 }
                 else
                 {
-                    Debug.LogWarning($"p.childCount != 1 p:{p.name}");
-                    t.name = p.name;
+                    t1Clone.SetParent(geo.parent);
+                    GameObject.DestroyImmediate(geo.gameObject);
                 }
+
+            }
+            else if (result.Count == 0)
+            {
+                //result[0].SetParent(geo.parent);
+            }
+            else
+            {
+
             }
         }
 
-        Debug.Log($"geoList:{geoList.Count}");
-        return geoList;
+        var ts2 = goDwf.GetComponentsInChildren<Transform>(true);
+        for (int i = 0; i < geoList1.Count; i++)
+        {
+            Transform geo = geoList1[i];
+            List<Transform> result = FindListByName(ts2, geo.name);
+            if (result.Count == 1)
+            {
+                Transform t1Clone = MeshHelper.CopyGO(result[0]);
+                t1Clone.name = geo.name + "_New";
+
+                if (isReplace == false)
+                {
+                    t1Clone.SetParent(geoRoot4.transform);
+                }
+                else
+                {
+                    t1Clone.SetParent(geo.parent);
+                    GameObject.DestroyImmediate(geo.gameObject);
+                }
+            }
+            else if (result.Count == 0)
+            {
+                //result[0].SetParent(geo.parent);
+            }
+            else
+            {
+            }
+        }
+    }
+
+    public static List<Transform> FindGeometriesParents(GameObject go)
+    {
+        List<Transform> geoList = FindTransforms(go, "Geometry");
+        List<Transform> parents = new List<Transform>();
+        foreach (var item in geoList)
+        {
+            var parent = item.parent;
+            if (!parents.Contains(parent))
+            {
+                parents.Add(parent);
+            }
+        }
+        return parents;
+    }
+
+    //public static List<Transform> FindCurve(GameObject go)
+    //{
+    //    List<Transform> geoList = FindTransforms(go, "curve");
+    //    return geoList;
+    //}
+
+    public static List<Transform> FindCurvesParents(GameObject go)
+    {
+        List<Transform> geoList = FindTransforms(go, "curve");
+
+        List<Transform> parents = new List<Transform>();
+        foreach(var item in geoList)
+        {
+            var parent = item.parent;
+            if (parent.name.Contains("Geometry"))
+            {
+                parent = parent.parent;
+            }
+            if (!parents.Contains(parent))
+            {
+                parents.Add(parent);
+            }
+        }
+        return parents;
+    }
+
+    public static Transform FindChild(Transform t,string key)
+    {
+        for(int i=0;i<t.childCount;i++)
+        {
+            if (t.GetChild(i).name.ToLower().StartsWith(key))
+            {
+                return t.GetChild(i);
+            }
+        }
+        return null;
+    }
+
+    public static List<Transform> FindTransforms(GameObject go,string key)
+    {
+        List<Transform> list1 = new List<Transform>();
+        List<Transform> list2 = new List<Transform>();
+        var ts1 = go.GetComponentsInChildren<Transform>(true);
+        foreach (var t in ts1)
+        {
+            string n = t.name;
+            if (n.StartsWith(key))
+            //if (t.name.ToLower().StartsWith(key))
+            {
+                //var p = t.parent;
+
+                list1.Add(t);
+
+                //if (p.childCount == 1)
+                //{
+                //    geoList.Add(p);
+                //}
+                //else
+                //{
+                //    Debug.LogWarning($"p.childCount != 1 p:{p.name}");
+                //    t.name = p.name;
+                //}
+            }
+            else
+            {
+                list2.Add(t);
+            }
+        }
+
+        Debug.Log($"FindTransforms key:{key} count:{list1.Count} count2:{list2.Count} all:{ts1.Length}");
+        return list1;
     }
 
     public static GameObject FindDwfGo(GameObject go)
