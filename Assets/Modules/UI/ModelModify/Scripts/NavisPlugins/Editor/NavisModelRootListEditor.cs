@@ -23,7 +23,15 @@ public class NavisModelRootListEditor : BaseFoldoutEditor<NavisModelRootList>
 
         GUILayout.BeginHorizontal();
         item.Root1 = BaseEditorHelper.ObjectField("Root1:", 100, item.Root1);
+        if (GUILayout.Button("Bind1"))
+        {
+            item.Root1.BindBimInfo();
+        }
         item.Root2 = BaseEditorHelper.ObjectField("Root2:", 100, item.Root2);
+        if (GUILayout.Button("Bind2"))
+        {
+            item.Root2.BindBimInfo();
+        }
         if (GUILayout.Button("Compare"))
         {
             item.CompareModelByBIM();
