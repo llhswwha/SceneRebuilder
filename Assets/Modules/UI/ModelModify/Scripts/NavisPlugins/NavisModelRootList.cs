@@ -42,4 +42,32 @@ public class NavisModelRootList : SingletonBehaviour<NavisModelRootList>
         ProgressBarHelper.ClearProgressBar();
         currentProgress = null;
     }
+
+    public NavisModelRoot Root1;
+
+    public NavisModelRoot Root2;
+
+    public void UpdateModelByBIM()
+    {
+        if (Root1 == null || Root2 == null)
+        {
+            Debug.LogError($"Root1 == null || Root2 == null Root1:{Root1} Root2:{Root2}");
+            return;
+        }
+        if (Root1.ModelName != Root2.ModelName)
+        {
+            Debug.LogError($"Root1.ModelName != Root2.ModelName Root1:{Root1.ModelName} Root2:{Root2.ModelName}");
+            return;
+        }
+
+        var notFoundTransforms1 = Root1.GetCurrentTransformList();
+        var notFoundModels1 = Root1.ModelList.allModels_drawable_nozero;
+        var bimList1 = Root1.bimInfos;
+        var bimList2 = Root2.bimInfos;
+
+        ModelUpdateManager.Instance.SetOldNewModel(Root1.gameObject, Root2.gameObject);
+
+        LODTwoRenderersList ModelRendersWaiting_Old_BIM = new LODTwoRenderersList("BIM_Old");
+        LODTwoRenderersList ModelRendersWaiting_New_BIM = new LODTwoRenderersList("BIM_New");
+    }
 }

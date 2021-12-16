@@ -231,7 +231,7 @@ public class NavisModelRootEditor : BaseFoldoutEditor<NavisModelRoot>
         BaseFoldoutEditorHelper.DrawTransformList(item.transformListAll, transListArg_All, null, "Transform List(All)");
         BaseFoldoutEditorHelper.DrawTransformList(item.transformList, transListArg, null, "** Transform List(Fiterd) **");
         if(item.TransformDict!=null)
-            BaseFoldoutEditorHelper.DrawTransformList(item.TransformDict.dict.Keys.ToList(), transListArg2, null, "Transform List(Current)");
+            BaseFoldoutEditorHelper.DrawTransformList(item.GetCurrentTransformList(), transListArg2, null, "Transform List(Current)");
 
         DrawBimAreas(item);
         //DrawVueModelList(item.repeatModels, modelListArg0, "Model List(RepeatedRenderer)");

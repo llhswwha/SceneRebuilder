@@ -2188,9 +2188,27 @@ public class LODTwoRenderersList:List<LODTwoRenderers>
     public LODTwoRenderersList(string name, List<GameObject> list)
     {
         this.ListName = name;
+        InitList(list);
+    }
+
+    public void InitList(List<GameObject> list)
+    {
         Init(list);
         InitDict();
     }
+
+    public void InitList<T>(List<T> list) where T :Component
+    {
+        Init(list);
+        InitDict();
+    }
+
+    //public LODTwoRenderersList<T>(string name, List<T> list) where T :Component
+    //{
+    //    this.ListName = name;
+    //    Init(list);
+    //    InitDict();
+    //}
 
     private void Init(MeshRendererInfoList list)
     {
@@ -2206,6 +2224,15 @@ public class LODTwoRenderersList:List<LODTwoRenderers>
         foreach (var item in list)
         {
             LODTwoRenderers t = new LODTwoRenderers(item);
+            this.Add(t);
+        }
+    }
+
+    private void Init<T>(List<T> list) where T :Component
+    {
+        foreach (var item in list)
+        {
+            LODTwoRenderers t = new LODTwoRenderers(item.gameObject);
             this.Add(t);
         }
     }

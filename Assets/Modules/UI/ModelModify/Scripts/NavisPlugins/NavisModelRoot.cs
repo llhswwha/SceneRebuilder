@@ -102,6 +102,11 @@ public class NavisModelRoot : MonoBehaviour
 
     public TransformDictionary TransformDict = new TransformDictionary();
 
+    public List<Transform> GetCurrentTransformList()
+    {
+        return TransformDict.ToList();
+    }
+
     public bool includeInactive = true;
 
     //public List<string> OnlyFBXFiles = new List<string>();

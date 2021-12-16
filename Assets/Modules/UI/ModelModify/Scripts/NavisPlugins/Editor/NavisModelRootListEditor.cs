@@ -17,6 +17,11 @@ public class NavisModelRootListEditor : BaseFoldoutEditor<NavisModelRootList>
             SceneRebuildManager.Instance.LoadScenes();
         }
         DrawModelRootList(item, rootListARg);
+
+        GUILayout.BeginHorizontal();
+        item.Root1 = BaseEditorHelper.ObjectField("Root1:", 100, item.Root1);
+        item.Root2 = BaseEditorHelper.ObjectField("Root2:", 100, item.Root2);
+        GUILayout.EndHorizontal();
     }
 
     public override void OnToolLayout(NavisModelRootList item)

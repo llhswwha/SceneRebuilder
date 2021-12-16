@@ -171,11 +171,12 @@ public class BIMModelInfoDictionary
         Debug.LogWarning($"[CheckDict] GetBims bimCount:{bimInfos.Count} rendererId2Bim:{rendererId2Bim.Count} guid2Bim:{guid2Bim.Count}  foundCount:{foundCount} notFoundCount:{bimsList2.Count}\n{sb}");
 
         //ProgressBarHelper.ClearProgressBar();
-
+        StringBuilder txt = new StringBuilder();
         foreach (string key in bimAreas.Keys)
         {
-            Debug.Log($"[CheckDict] BimAreas area:{key} bims:{bimAreas[key].Count}");
+            txt.AppendLine($"area:{key} bims:{bimAreas[key].Count}");
         }
+        Debug.Log($"[CheckDict] BimAreas({bimAreas.Keys.Count}) :\n{txt}");
 
         //Debug.LogError($"[CheckDict] GetBims infos:{bimInfos.Count}");
     }
