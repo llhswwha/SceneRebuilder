@@ -9,6 +9,9 @@ public class NavisModelRootListEditor : BaseFoldoutEditor<NavisModelRootList>
 {
     static FoldoutEditorArg<NavisModelRoot> rootListARg = new FoldoutEditorArg<NavisModelRoot>(true, true);
 
+    private static FoldoutEditorArg<LODTwoRenderers> bimListArg_Old = new FoldoutEditorArg<LODTwoRenderers>(true, false);
+    private static FoldoutEditorArg<LODTwoRenderers> bimListArg_New = new FoldoutEditorArg<LODTwoRenderers>(true, false);
+
     public static void DrawUI(NavisModelRootList item)
     {
         if (item == null) return;
@@ -21,6 +24,12 @@ public class NavisModelRootListEditor : BaseFoldoutEditor<NavisModelRootList>
         GUILayout.BeginHorizontal();
         item.Root1 = BaseEditorHelper.ObjectField("Root1:", 100, item.Root1);
         item.Root2 = BaseEditorHelper.ObjectField("Root2:", 100, item.Root2);
+        if (GUILayout.Button("Compare"))
+        {
+            item.CompareModelByBIM();
+            ModelUpdateManagerEditor.DrawListCompareResult("BIM List(OLD)", item.ModelRendersWaiting_Old_BIM, bimListArg_Old);
+            ModelUpdateManagerEditor.DrawListCompareResult("BIM List(NEW)", item.ModelRendersWaiting_New_BIM, bimListArg_New);
+        }
         GUILayout.EndHorizontal();
     }
 

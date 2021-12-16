@@ -47,7 +47,11 @@ public class NavisModelRootList : SingletonBehaviour<NavisModelRootList>
 
     public NavisModelRoot Root2;
 
-    public void UpdateModelByBIM()
+    public LODTwoRenderersList ModelRendersWaiting_Old_BIM;
+
+    public LODTwoRenderersList ModelRendersWaiting_New_BIM;
+
+    public void CompareModelByBIM()
     {
         if (Root1 == null || Root2 == null)
         {
@@ -65,9 +69,13 @@ public class NavisModelRootList : SingletonBehaviour<NavisModelRootList>
         var bimList1 = Root1.bimInfos;
         var bimList2 = Root2.bimInfos;
 
-        ModelUpdateManager.Instance.SetOldNewModel(Root1.gameObject, Root2.gameObject);
+        ModelUpdateManager updater = ModelUpdateManager.Instance;
+        //updater.SetOldNewModel(Root1.gameObject, Root2.gameObject);
 
-        LODTwoRenderersList ModelRendersWaiting_Old_BIM = new LODTwoRenderersList("BIM_Old");
-        LODTwoRenderersList ModelRendersWaiting_New_BIM = new LODTwoRenderersList("BIM_New");
+        ModelRendersWaiting_Old_BIM = new LODTwoRenderersList("BIM_Old");
+        ModelRendersWaiting_New_BIM = new LODTwoRenderersList("BIM_New");
+        updater.SetTargetList(ModelRendersWaiting_Old_BIM, ModelRendersWaiting_New_BIM);
+
+
     }
 }

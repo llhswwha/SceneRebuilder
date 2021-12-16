@@ -92,30 +92,30 @@ public class ModelUpdateManagerEditor : BaseFoldoutEditor<ModelUpdateManager>
         //DrawRendererInfoList("Models_Old", item.ModelRendersWaiting_Old, modelListOldArg);
 
         
-        DrawListCompareResult("Models_Old(All)", item, item.ModelRendersWaiting_Old_All, modelListOldArg_All);
-        DrawListCompareResult("Models_Old", item, item.ModelRendersWaiting_Old, modelListOldArg);
-        DrawListCompareResult("Models_Old_Door", item, item.ModelRendersWaiting_Old_Door, modelListOldArg_Door);
-        DrawListCompareResult("Models_Old_Dev(LOD)", item, item.ModelRendersWaiting_Old_LodDevs, modelListOldArg_LodDevs);
-        DrawListCompareResult("Models_Old_Wall", item, item.ModelRendersWaiting_Old_Walls, modelListOldArg_Wall);
-        DrawListCompareResult("Models_Old_MemberPart", item, item.ModelRendersWaiting_Old_MemberPart, modelListOldArg_MemberPart);
-        DrawListCompareResult("Models_Old_Welding", item, item.ModelRendersWaiting_Old_Welding, modelListOldArg_Welding);
-        DrawListCompareResult("Models_Old_Piping", item, item.ModelRendersWaiting_Old_Piping, modelListOldArg_Piping);
-        DrawListCompareResult("Models_Old_Other", item, item.ModelRendersWaiting_Old_Others, modelListOldArg_Others);
+        DrawListCompareResult("Models_Old(All)",  item.ModelRendersWaiting_Old_All, modelListOldArg_All);
+        DrawListCompareResult("Models_Old",  item.ModelRendersWaiting_Old, modelListOldArg);
+        DrawListCompareResult("Models_Old_Door",  item.ModelRendersWaiting_Old_Door, modelListOldArg_Door);
+        DrawListCompareResult("Models_Old_Dev(LOD)",  item.ModelRendersWaiting_Old_LodDevs, modelListOldArg_LodDevs);
+        DrawListCompareResult("Models_Old_Wall",  item.ModelRendersWaiting_Old_Walls, modelListOldArg_Wall);
+        DrawListCompareResult("Models_Old_MemberPart",  item.ModelRendersWaiting_Old_MemberPart, modelListOldArg_MemberPart);
+        DrawListCompareResult("Models_Old_Welding", item.ModelRendersWaiting_Old_Welding, modelListOldArg_Welding);
+        DrawListCompareResult("Models_Old_Piping", item.ModelRendersWaiting_Old_Piping, modelListOldArg_Piping);
+        DrawListCompareResult("Models_Old_Other", item.ModelRendersWaiting_Old_Others, modelListOldArg_Others);
         EditorUIUtils.Separator(5);
-        DrawListCompareResult("Models_New", item, item.ModelRendersWaiting_New, modelListNewArg);
-        DrawListCompareResult("Models_New_MemberPart", item, item.ModelRendersWaiting_MemberPart, modelListNewArg_MemberPart);
-        DrawListCompareResult("Models_New_WallPart", item, item.ModelRendersWaiting_WallPart, modelListNewArg_WallPart);
-        DrawListCompareResult("Models_New_Welding", item, item.ModelRendersWaiting_Welding, modelListNewArg_Welding);
-        DrawListCompareResult("Models_New_Piping", item, item.ModelRendersWaiting_Piping, modelListNewArg_Piping);
-        DrawListCompareResult("Models_New_Others", item, item.ModelRendersWaiting_NewOthers, modelListNewArg_Others);
+        DrawListCompareResult("Models_New", item.ModelRendersWaiting_New, modelListNewArg);
+        DrawListCompareResult("Models_New_MemberPart", item.ModelRendersWaiting_MemberPart, modelListNewArg_MemberPart);
+        DrawListCompareResult("Models_New_WallPart", item.ModelRendersWaiting_WallPart, modelListNewArg_WallPart);
+        DrawListCompareResult("Models_New_Welding", item.ModelRendersWaiting_Welding, modelListNewArg_Welding);
+        DrawListCompareResult("Models_New_Piping", item.ModelRendersWaiting_Piping, modelListNewArg_Piping);
+        DrawListCompareResult("Models_New_Others", item.ModelRendersWaiting_NewOthers, modelListNewArg_Others);
         EditorUIUtils.Separator(5);
-        DrawListCompareResult("CompareResultList", item, item.twoList, twoListArg);
+        DrawListCompareResult("CompareResultList", item.twoList, twoListArg);
     }
 
 
     
 
-    public static void DrawListCompareResult(string name,ModelUpdateManager lodManager, LODTwoRenderersList twoList, FoldoutEditorArg<LODTwoRenderers> listArg)
+    public static void DrawListCompareResult(string name, LODTwoRenderersList twoList, FoldoutEditorArg<LODTwoRenderers> listArg)
     {
         listArg.caption = name;
         EditorUIUtils.ToggleFoldout(listArg, arg =>
@@ -158,7 +158,8 @@ public class ModelUpdateManagerEditor : BaseFoldoutEditor<ModelUpdateManager>
             btnStyle.padding = new RectOffset(0, 0, 0, 0);
             if (GUILayout.Button("Comp", btnStyle, GUILayout.Width(45)))
             {
-                twoList.CompareList(lodManager.MaxCompareCount, lodManager.compareMode);
+                //twoList.CompareList(lodManager.MaxCompareCount, lodManager.compareMode);
+                ModelUpdateManager.Instance.CompareList(twoList);
             }
             if (GUILayout.Button("Test", btnStyle, GUILayout.Width(40)))
             {
@@ -238,7 +239,7 @@ public class ModelUpdateManagerEditor : BaseFoldoutEditor<ModelUpdateManager>
                     item.UpdateMode = (UpdateChangedMode)EditorGUILayout.EnumPopup(item.UpdateMode, GUILayout.Width(90));
                     if (GUILayout.Button("Debug", GUILayout.Width(50)))
                     {
-                        twoList.CompareOne(item, lodManager.compareMode);
+                        twoList.CompareOne(item, ModelUpdateManager.Instance.compareMode);
 
                         //lodManager.AddLOD2(item.renderer_lod0, item.renderer_lod1);
                         if (item.renderer_new != null)
@@ -251,7 +252,7 @@ public class ModelUpdateManagerEditor : BaseFoldoutEditor<ModelUpdateManager>
                             Debug.Log($"Debug lod0:{item.renderer_old.name} lod1:{item.renderer_new.name} dis1:{dis1} dis2:{dis2} dis3:{dis3} dis4:{dis4} dis5:{dis5}");
                            
                         }
-                        var min = twoList.GetMinInfo(item.renderer_old.transform, lodManager.compareMode);
+                        var min = twoList.GetMinInfo(item.renderer_old.transform, ModelUpdateManager.Instance.compareMode);
                         Debug.Log($"dis:{min.dis} meshDis:{min.meshDis} target:{min.target}");
                     }
                     if (GUILayout.Button("Align", GUILayout.Width(40)))
