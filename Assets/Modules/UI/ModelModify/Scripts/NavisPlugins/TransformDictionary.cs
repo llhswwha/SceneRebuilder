@@ -523,14 +523,19 @@ public class TransformDictionary
     }
 }
 
-public class DictionaryList1ToN<T>: Dictionary<string, List<T>> where T :class
+public class DictionaryList1ToN<T>: DictionaryList1ToN<string, T> where T :class
 {
-    public void AddItem(string key, T item)
+    
+}
+
+public class DictionaryList1ToN<T1,T2> : Dictionary<T1, List<T2>> where T2 : class
+{
+    public void AddItem(T1 key, T2 item)
     {
-       
+
         if (!this.ContainsKey(key))
         {
-            this.Add(key, new List<T>());
+            this.Add(key, new List<T2>());
         }
         var list = this[key];
         list.Add(item);
@@ -541,7 +546,7 @@ public class DictionaryList1ToN<T>: Dictionary<string, List<T>> where T :class
         //}
     }
 
-    public void RemoveItem(string key,T item)
+    public void RemoveItem(T1 key, T2 item)
     {
         var items = GetItems(key);
         if (items != null)
@@ -570,7 +575,7 @@ public class DictionaryList1ToN<T>: Dictionary<string, List<T>> where T :class
         //}
     }
 
-    public T GetItem(string key)
+    public T2 GetItem(T1 key)
     {
         if (this.ContainsKey(key))
         {
@@ -587,7 +592,7 @@ public class DictionaryList1ToN<T>: Dictionary<string, List<T>> where T :class
         return null;
     }
 
-    public List<T> GetItems(string key)
+    public List<T2> GetItems(T1 key)
     {
         if (this.ContainsKey(key))
         {

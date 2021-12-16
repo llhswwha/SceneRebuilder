@@ -11,6 +11,10 @@ public class NavisModelRootListEditor : BaseFoldoutEditor<NavisModelRootList>
 
     private static FoldoutEditorArg<LODTwoRenderers> bimListArg_Old = new FoldoutEditorArg<LODTwoRenderers>(true, false);
     private static FoldoutEditorArg<LODTwoRenderers> bimListArg_New = new FoldoutEditorArg<LODTwoRenderers>(true, false);
+    private static FoldoutEditorArg<LODTwoRenderers> transformListArg1 = new FoldoutEditorArg<LODTwoRenderers>(true, false);
+    private static FoldoutEditorArg<LODTwoRenderers> transformListArg2 = new FoldoutEditorArg<LODTwoRenderers>(true, false);
+    private static FoldoutEditorArg<LODTwoRenderers> NoConnectedBimsListArg = new FoldoutEditorArg<LODTwoRenderers>(true, false);
+    private static FoldoutEditorArg<LODTwoRenderers> NoConnectedTransformListArg = new FoldoutEditorArg<LODTwoRenderers>(true, false);
 
     public static void DrawUI(NavisModelRootList item)
     {
@@ -47,7 +51,11 @@ public class NavisModelRootListEditor : BaseFoldoutEditor<NavisModelRootList>
         GUILayout.EndHorizontal();
 
         ModelUpdateManagerEditor.DrawListCompareResult("BIM List(OLD)", item.ModelRendersWaiting_Old_BIM, bimListArg_Old);
-        //ModelUpdateManagerEditor.DrawListCompareResult("BIM List(NEW)", item.ModelRendersWaiting_New_BIM, bimListArg_New);
+        ModelUpdateManagerEditor.DrawListCompareResult("ModelRenders1", item.ModelRenders1, transformListArg1);
+        ModelUpdateManagerEditor.DrawListCompareResult("ModelRenders2", item.ModelRenders2, transformListArg2);
+
+        ModelUpdateManagerEditor.DrawListCompareResult("NoConnectedBims", item.ModelRendersNoConnectedBims, NoConnectedBimsListArg);
+        ModelUpdateManagerEditor.DrawListCompareResult("NoConnectedTransform", item.ModelRendersNoConnectedTransform, NoConnectedTransformListArg);
     }
 
     public override void OnToolLayout(NavisModelRootList item)

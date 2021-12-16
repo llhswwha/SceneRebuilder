@@ -18,6 +18,8 @@ public class NavisModelRoot : MonoBehaviour
 
     public List<Transform> transformList = new List<Transform>();
 
+    public List<Transform> transformListCurrent = new List<Transform>();
+
     public List<GameObject> RootNodes = new List<GameObject>();
 
     public BIMModelInfoList bimInfos = new BIMModelInfoList();
@@ -105,7 +107,12 @@ public class NavisModelRoot : MonoBehaviour
 
     public List<Transform> GetCurrentTransformList()
     {
-        return TransformDict.ToList();
+        var list1= TransformDict.ToList();
+        if (list1.Count > 0)
+        {
+            transformListCurrent = list1;
+        }
+        return transformListCurrent;
     }
 
     public bool includeInactive = true;

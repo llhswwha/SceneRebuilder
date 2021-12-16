@@ -391,6 +391,11 @@ public class BIMModelInfo : MonoBehaviour,IComparable<BIMModelInfo>
         return FindClosedModel(models, this.transform.position);
     }
 
+    public Transform FindClosedTransform(List<Transform> ts)
+    {
+        return TransformHelper.FindClosedTransform(ts, this.transform.position);
+    }
+
     public static ModelItemInfo FindClosedModel(List<ModelItemInfo> models,Vector3 pos)
     {
         float minDis = float.MaxValue;

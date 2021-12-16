@@ -2140,7 +2140,7 @@ public class LODTwoRenderersList:List<LODTwoRenderers>
             }
             if (dict.ContainsKey(item.renderer_old.meshRenderer))
             {
-                Debug.LogWarning($"InitDict dict.ContainsKey(item.renderer_lod0.meshRenderer) item:{item.renderer_old_name}");
+                Debug.LogWarning($"InitDict dict.ContainsKey(item.renderer_lod0.meshRenderer) item:{item.renderer_old_name} oldItem:{dict[item.renderer_old.meshRenderer]}");
             }
             else
             {

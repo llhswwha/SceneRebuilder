@@ -21,6 +21,22 @@ public static class TransformHelper
         return minModel;
     }
 
+    public static T FindClosedTransform<T>(List<T> ts, Vector3 pos) where T :Component
+    {
+        float minDis = float.MaxValue;
+        T minModel = null;
+        foreach (var t in ts)
+        {
+            float dis = Vector3.Distance(t.transform.position, pos);
+            if (minDis > dis)
+            {
+                minDis = dis;
+                minModel = t;
+            }
+        }
+        return minModel;
+    }
+
     public static string GetPrefix(string n)
     {
         //var n = item.name;
