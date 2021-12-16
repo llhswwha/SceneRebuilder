@@ -363,7 +363,7 @@ public class NavisModelRootEditor : BaseFoldoutEditor<NavisModelRoot>
             int count = list1.Count;
             if (!string.IsNullOrEmpty(listArg.searchKey))
             {
-                list1 = list1.FindAll(i => i.name.Contains(listArg.searchKey)||i.MName.Contains(listArg.searchKey));
+                list1 = list1.FindList(listArg.searchKey);
             }
             arg.caption = $"{name} ({list1.Count})";
             //arg.info = $"d:{count}|{doors.VertexCount_Show / 10000f:F0}/{doors.VertexCount / 10000f:F0}";
@@ -402,7 +402,7 @@ public class NavisModelRootEditor : BaseFoldoutEditor<NavisModelRoot>
             listArg.tag = foundType;
             if (foundType != BIMFoundType.None)
             {
-                list1 = list1.FindAll(a => a.FoundType == foundType);
+                list1 = list1.FindListByType(foundType);
             }
             else
             {

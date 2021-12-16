@@ -2603,53 +2603,54 @@ public class LODTwoRenderersList:List<LODTwoRenderers>
                 Debug.LogError($"GetMinDisTransformInner item == null item:{item}");
                 continue;
             }
-            MeshRendererInfo info0 = MeshRendererInfo.GetInfo(t.gameObject, false);
-            MeshRendererInfo info1 = MeshRendererInfo.GetInfo(item.gameObject, false);
-            float v0 = info0.GetVertexCount();
-            float v1 = info1.GetVertexCount();
-            float vp = v0 / v1;
-            //if (v0 > 100 && (vp > MaxVertexCountPower || vp < 1f / MaxVertexCountPower)) 
-            //{
-            //    float distance1 = GetDistance(item, t, mode);
-            //    Debug.LogError($"GetMinDisTransformInner[{i}] mode={mode} t:{t.name} item:{item.name} distance:{distance1} v0:{v0} v1:{v1} vp:{vp}");
-            //    continue;
-            //}
 
-            //float distance = Vector3.Distance(item.transform.position, t.position);
+            //MeshRendererInfo info0 = MeshRendererInfo.GetInfo(t.gameObject, false);
+            //MeshRendererInfo info1 = MeshRendererInfo.GetInfo(item.gameObject, false);
+            //float v0 = info0.GetVertexCount();
+            //float v1 = info1.GetVertexCount();
+            //float vp = v0 / v1;
+            ////if (v0 > 100 && (vp > MaxVertexCountPower || vp < 1f / MaxVertexCountPower)) 
+            ////{
+            ////    float distance1 = GetDistance(item, t, mode);
+            ////    Debug.LogError($"GetMinDisTransformInner[{i}] mode={mode} t:{t.name} item:{item.name} distance:{distance1} v0:{v0} v1:{v1} vp:{vp}");
+            ////    continue;
+            ////}
 
-            //float distance = GetCenterDistance(item.gameObject, t.gameObject);
+            ////float distance = Vector3.Distance(item.transform.position, t.position);
+
+            ////float distance = GetCenterDistance(item.gameObject, t.gameObject);
 
             float distance = GetDistance(item, t, mode);
 
-            //Debug.Log($"GetMinDisTransformInner[{i}] mode={mode} t:{t.name} item:{item.name} distance:{distance} v0:{v0} v1:{v1} vp:{vp}");
+            ////Debug.Log($"GetMinDisTransformInner[{i}] mode={mode} t:{t.name} item:{item.name} distance:{distance} v0:{v0} v1:{v1} vp:{vp}");
 
-            //if (distance < 1)
-            //{
-            //    float distance2 = MeshHelper.GetAvgVertexDistanceEx(item.transform, t);
-            //    if (distance2 < minDisOfMesh)
-            //    {
-            //        minDisOfMesh = distance2;
-            //        minTExList = new List<T>() { item };
-            //    }
-            //    else if (distance2 == minDisOfMesh)
-            //    {
-            //        minTExList.Add(item);
-            //    }
-            //}
+            ////if (distance < 1)
+            ////{
+            ////    float distance2 = MeshHelper.GetAvgVertexDistanceEx(item.transform, t);
+            ////    if (distance2 < minDisOfMesh)
+            ////    {
+            ////        minDisOfMesh = distance2;
+            ////        minTExList = new List<T>() { item };
+            ////    }
+            ////    else if (distance2 == minDisOfMesh)
+            ////    {
+            ////        minTExList.Add(item);
+            ////    }
+            ////}
 
-            //if (p1 != null)
-            //{
-            //    ProgressArg p2 = new ProgressArg("GetDistance", i, ts.Count, item.name);
-            //    p1.AddSubProgress(p2);
-            //    ProgressBarHelper.DisplayCancelableProgressBar(p1);
-            //}
+            ////if (p1 != null)
+            ////{
+            ////    ProgressArg p2 = new ProgressArg("GetDistance", i, ts.Count, item.name);
+            ////    p1.AddSubProgress(p2);
+            ////    ProgressBarHelper.DisplayCancelableProgressBar(p1);
+            ////}
 
-            //float distance = distance2;
+            ////float distance = distance2;
             if (distance < minDis)
             {
                 minDis = distance;
                 minTList = new List<T>() { item };
-                //minDisOfMesh = MeshHelper.GetAvgVertexDistanceEx(item.transform, t);
+                ////minDisOfMesh = MeshHelper.GetAvgVertexDistanceEx(item.transform, t);
                 minDisOfMesh = MeshHelper.GetVertexDistanceEx(item.transform, t);
             }
             else if (distance == minDisOfMesh)
@@ -2667,12 +2668,12 @@ public class LODTwoRenderersList:List<LODTwoRenderers>
                 minTEx = minTExList[0];
             }
 
-            //float distance3 = MeshHelper.GetAvgVertexDistanceEx(minT.transform, t);
-            //if (distance3 < minDisOfMesh)
-            //{
-            //    minDisOfMesh = distance3;
-            //    minTEx = minT;
-            //}
+            ////float distance3 = MeshHelper.GetAvgVertexDistanceEx(minT.transform, t);
+            ////if (distance3 < minDisOfMesh)
+            ////{
+            ////    minDisOfMesh = distance3;
+            ////    minTEx = minT;
+            ////}
 
             if (minTEx == null)
             {
@@ -2994,6 +2995,16 @@ public class LODTwoRenderers
         //this.Add(lODTwoRenderers);
 
         this.SetLOD1(newRenderer, minDis, min.meshDis, vertexCount0, vertexCount1);
+    }
+
+    public void SetLOD1(GameObject obj2)
+    {
+        MeshRendererInfo newRenderer = MeshRendererInfo.GetInfo(obj2,false);
+        int vertexCount0 = newRenderer.GetMinLODVertexCount();
+        int vertexCount1 = renderer_old.GetMinLODVertexCount();
+        float minDis = Vector3.Distance(obj2.transform.position, renderer_old.transform.position);
+        float meshDis = MeshHelper.GetVertexDistanceEx(obj2, renderer_old.gameObject);
+        this.SetLOD1(newRenderer, minDis, meshDis, vertexCount0, vertexCount1);
     }
 
     public void SetLOD1(MeshRendererInfo lod1, float d, float meshD, int vertexCount0, int vertexCount1)

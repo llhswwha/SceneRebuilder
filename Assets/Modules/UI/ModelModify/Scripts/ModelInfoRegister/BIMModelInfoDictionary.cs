@@ -16,9 +16,9 @@ public class BIMModelInfoDictionary
     [NonSerialized]
     private Dictionary<string, BIMModelInfo> guid2Bim = new Dictionary<string, BIMModelInfo>();
 
-    public List<BIMModelInfo> errorBims = new List<BIMModelInfo>();
+    public BIMModelInfoList errorBims = new BIMModelInfoList();
 
-    public List<BIMModelInfo> bimInfos = new List<BIMModelInfo>();
+    public BIMModelInfoList bimInfos = new BIMModelInfoList();
 
     public BIMModelInfoDictionary()
     {
@@ -37,7 +37,7 @@ public class BIMModelInfoDictionary
 
     private void InitDict(BIMModelInfo[] bims,ProgressArgEx p0)
     {
-        bimInfos = new List<BIMModelInfo>();
+        bimInfos = new BIMModelInfoList();
         //bimInfos.AddRange(this.GetComponentsInChildren<BIMModelInfo>(true));
         bimInfos.AddRange(bims);
         bimInfos.Sort();
@@ -200,18 +200,25 @@ public class BIMModelInfoDictionary
 
     public BIMModelInfo GetBIMModel(ModelItemInfo model)
     {
-        if (model == null) return null;
-        if (!string.IsNullOrEmpty(model.UId) && guid2Bim.ContainsKey(model.UId))
-        {
-            var bim = guid2Bim[model.UId];
-            return bim;
-        }
+        BIMModelInfo result = null;
+        if (model == null) return result;
+        result = GetBIMModelByGuid(model.UId);
+        if (result != null) return result;
         if (!string.IsNullOrEmpty(model.RenderId) && rendererId2Bim.ContainsKey(model.RenderId))
         {
             var bim = rendererId2Bim[model.RenderId];
             return bim;
         }
+        return null;
+    }
 
+    public BIMModelInfo GetBIMModelByGuid(string guid)
+    {
+        if (!string.IsNullOrEmpty(guid) && guid2Bim.ContainsKey(guid))
+        {
+            var bim = guid2Bim[guid];
+            return bim;
+        }
         return null;
     }
 }

@@ -20,7 +20,7 @@ public class NavisModelRoot : MonoBehaviour
 
     public List<GameObject> RootNodes = new List<GameObject>();
 
-    public List<BIMModelInfo> bimInfos = new List<BIMModelInfo>();
+    public BIMModelInfoList bimInfos = new BIMModelInfoList();
 
     public BIMModelInfoDictionary BimDict = new BIMModelInfoDictionary();
 
@@ -72,7 +72,7 @@ public class NavisModelRoot : MonoBehaviour
     }
 
     [ContextMenu("GetBims")]
-    public void GetBims(List<ModelItemInfo> checkModelList, ProgressArgEx p0)
+    public BIMModelInfoList GetBims(List<ModelItemInfo> checkModelList, ProgressArgEx p0)
     {
         var bimList = GetTargetBIMs();
         BimDict = new BIMModelInfoDictionary(bimList, p0);
@@ -85,6 +85,7 @@ public class NavisModelRoot : MonoBehaviour
         {
             ProgressBarHelper.ClearProgressBar();
         }
+        return bimInfos;
     }
 
     NavisFileInfo navisFile;
@@ -220,11 +221,6 @@ public class NavisModelRoot : MonoBehaviour
         Debug.Log($"GetTransformList transformList2:{transformList.Count}");
 
         TransformDict = new TransformDictionary(transformList);
-    }
-
-    private void FilterStructure()
-    {
-
     }
 
     private bool GetModelRoot()
@@ -560,8 +556,6 @@ public class NavisModelRoot : MonoBehaviour
             return MinDistanceLv1 * 100;
         }
     }
-
-    //public bool IsIncludeStructure = true;//是否包括建筑结构
 
     public string TestName1 = "610 空侧交流油泵进油口 GB/T 9119 PN16 DN100";
     public string TestName2 = "610_空侧交流油泵进油口_GB__T_9119_PN16_DN100";

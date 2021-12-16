@@ -117,6 +117,7 @@ public class ModelUpdateManagerEditor : BaseFoldoutEditor<ModelUpdateManager>
 
     public static void DrawListCompareResult(string name, LODTwoRenderersList twoList, FoldoutEditorArg<LODTwoRenderers> listArg)
     {
+        if (twoList == null) return;
         listArg.caption = name;
         EditorUIUtils.ToggleFoldout(listArg, arg =>
         {

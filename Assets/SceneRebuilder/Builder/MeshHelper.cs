@@ -839,7 +839,7 @@ public static class MeshHelper
     /// <param name="t1"></param>
     /// <param name="t2"></param>
     /// <returns></returns>
-    public static float GetVertexDistance(Transform t1, Transform t2,bool isFroce=false)
+    private static float GetVertexDistance(Transform t1, Transform t2,bool isFroce=false)
     {
         MeshFilter mf1 = t1.GetComponent<MeshFilter>();
         MeshFilter mf2 = t2.GetComponent<MeshFilter>();

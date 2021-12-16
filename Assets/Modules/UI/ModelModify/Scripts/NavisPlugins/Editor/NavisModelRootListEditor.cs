@@ -32,13 +32,22 @@ public class NavisModelRootListEditor : BaseFoldoutEditor<NavisModelRootList>
         {
             item.Root2.BindBimInfo();
         }
-        if (GUILayout.Button("Compare"))
+        if (GUILayout.Button("Compare0"))
         {
-            item.CompareModelByBIM();
-            ModelUpdateManagerEditor.DrawListCompareResult("BIM List(OLD)", item.ModelRendersWaiting_Old_BIM, bimListArg_Old);
-            ModelUpdateManagerEditor.DrawListCompareResult("BIM List(NEW)", item.ModelRendersWaiting_New_BIM, bimListArg_New);
+            item.CompareModelByBIM_Position();
+        }
+        if (GUILayout.Button("Compare1"))
+        {
+            item.CompareModelByBIM(true);
+        }
+        if (GUILayout.Button("Compare2"))
+        {
+            item.CompareModelByBIM(false);
         }
         GUILayout.EndHorizontal();
+
+        ModelUpdateManagerEditor.DrawListCompareResult("BIM List(OLD)", item.ModelRendersWaiting_Old_BIM, bimListArg_Old);
+        //ModelUpdateManagerEditor.DrawListCompareResult("BIM List(NEW)", item.ModelRendersWaiting_New_BIM, bimListArg_New);
     }
 
     public override void OnToolLayout(NavisModelRootList item)
