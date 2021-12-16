@@ -168,7 +168,7 @@ public class TransformDictionary
                 n = n.Substring(0, id);
             }
 
-            string prefix = ModelMeshManager.GetPrefix(n);
+            string prefix = TransformHelper.GetPrefix(n);
 
             nameListDict.AddItem(n, t);
             nameListDict2.AddItem(prefix, t);
@@ -425,7 +425,7 @@ public class TransformDictionary
                 int id = n.LastIndexOf(" ");
                 n = n.Substring(0, id);
             }
-            string prefix = ModelMeshManager.GetPrefix(n);
+            string prefix = TransformHelper.GetPrefix(n);
             nameListDict.RemoveItem(n, transform);
             nameListDict2.RemoveItem(prefix, transform);
             if (IsUID(n))

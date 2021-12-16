@@ -5,6 +5,160 @@ using UnityEngine;
 
 public static class TransformHelper
 {
+    public static Transform FindClosedTransform(List<Transform> ts, Vector3 pos)
+    {
+        float minDis = float.MaxValue;
+        Transform minModel = null;
+        foreach (var t in ts)
+        {
+            float dis = Vector3.Distance(t.position, pos);
+            if (minDis > dis)
+            {
+                minDis = dis;
+                minModel = t;
+            }
+        }
+        return minModel;
+    }
+
+    public static string GetPrefix(string n)
+    {
+        //var n = item.name;
+        int id = 0;
+        int id1 = n.LastIndexOf(' ');
+        //int id2 = n.LastIndexOf('-');
+        int id3 = n.LastIndexOf('_');
+        //12-3 2
+        if (id1 > id)
+        {
+            id = id1;
+        }
+        //if (id2 > id)
+        //{
+        //    id = id2;
+        //}
+        if (id3 > id)
+        {
+            id = id3;
+        }
+        //if (id == 0 && n.Length>9)
+        //{
+        //    id = 9;//？？？
+        //}
+        //最后一个是数字或者英文字母的情况，最后是多个数字的情况
+        string pre = n;
+        string after = "";
+        if (id > 0)
+        {
+            pre = n.Substring(0, id);
+            after = n.Substring(id + 1);
+            //ModelClassDict_Auto.AddModel(pre, item);
+        }
+        //Debug.LogError($"GetPrefix name:{n} id1:{id1} id2:{id2} id3:{id3} id:{id} pre:{pre} after:{after}");
+        return pre;
+    }
+
+    public static bool IsSameName(string name,string name2)
+    {
+        string pre1 = GetPrefix(name);
+        string pre2 = GetPrefix(name2);
+        return pre1 == pre2;
+    }
+
+    //public static List<Transform> FindClosedTransform(List<Transform> ts2, string name)
+    //{
+    //    List<Transform> result = new List<Transform>();
+    //    foreach (var t2 in ts2)
+    //    {
+    //        if (IsSameName(t2.name, name))
+    //        {
+    //            result.Add(t2);
+    //        }
+    //    }
+    //    if (result.Count == 1)
+    //    {
+    //        Debug.Log($"FindListByName name:{name} result:{result[0]}");
+    //    }
+    //    else if (result.Count == 0)
+    //    {
+    //        Debug.LogError($"FindListByName result.Count != 1 result:{result.Count} name:{name} ");
+    //    }
+    //    else
+    //    {
+    //        Debug.LogWarning($"FindListByName name:{name} result:{result.Count}_{result[0]}");
+    //    }
+    //    return result;
+    //}
+
+    public static List<Transform> FindListByName(List<Transform> ts2, string name)
+    {
+        List<Transform> result = new List<Transform>();
+        foreach (var t2 in ts2)
+        {
+            if (IsSameName(t2.name,name))
+            {
+                result.Add(t2);
+            }
+        }
+        if (result.Count == 1)
+        {
+            Debug.Log($"FindListByName name:{name} result:{result[0]}");
+        }
+        else if (result.Count == 0)
+        {
+            Debug.LogError($"FindListByName result.Count != 1 result:{result.Count} name:{name} ");
+        }
+        else
+        {
+            Debug.LogWarning($"FindListByName name:{name} result:{result.Count}_{result[0]}");
+        }
+        return result;
+    }
+
+    public static Transform FindByNameAndPosition(List<Transform> ts2, string name,Vector3 pos)
+    {
+        List<Transform> result = new List<Transform>();
+        foreach (var t2 in ts2)
+        {
+            if (IsSameName(t2.name, name))
+            {
+                result.Add(t2);
+            }
+        }
+        Transform closedTransform = FindClosedTransform(result, pos);
+        //float dis1 = Vector3.Distance(closedTransform.position, pos);
+        return closedTransform;
+    }
+
+    public static List<Transform> FindListByName(Transform[] ts2, string name)
+    {
+        List<Transform> result = new List<Transform>();
+        foreach (var t2 in ts2)
+        {
+            if (IsSameName(t2.name, name))
+            {
+                result.Add(t2);
+            }
+        }
+        if (result.Count == 1)
+        {
+            Debug.Log($"FindListByName name:{name} result:{result[0]}");
+        }
+        else if (result.Count == 0)
+        {
+            if (!name.StartsWith("0028-240050-"))
+            {
+                Debug.LogError($"FindListByName result.Count != 1 result:{result.Count} name:{name} ");
+            }
+        }
+        else
+        {
+            Debug.LogWarning($"FindListByName name:{name} result:{result.Count}_{result[0]}");
+        }
+        return result;
+    }
+
+
     public static List<Transform> FindTransforms(Transform root,string key)
     {
         List<Transform> list = new List<Transform>();

@@ -278,7 +278,12 @@ namespace NavisPlugins.Infos
             bool isSameName = this.IsSameName(transform);
             //Debug.Log($"ShowDistance distance:{dis} \tmodel:{this.Name}({p1}) tansform:{transform.name}({p2})");
             //return $"ShowDistance distance:{dis} isSameName:{isSameName} \tmodel:{this.Name}{p1}{this.UId} transform:{transform.name}{p2}";
-            return $"dis:{dis} same:{isSameName} \tmodel:{this.Name}{p1}{this.UId} transform:{transform.name}{p2}";
+            string transName = transform.name;
+            if (transform.parent != null)
+            {
+                transName = transform.parent.name + "\\" + transName;
+            }
+            return $"dis:{dis} same:{isSameName} \tmodel:{this.Name}{p1}{this.UId} transform:{transName}{p2}";
         }
 
         public float GetDistance(Transform transform)
@@ -291,23 +296,7 @@ namespace NavisPlugins.Infos
 
         public Transform FindClosedTransform(List<Transform> ts)
         {
-            return FindClosedTransform(ts, this.GetPositon());
-        }
-
-        public static Transform FindClosedTransform(List<Transform> ts, Vector3 pos)
-        {
-            float minDis = float.MaxValue;
-            Transform minModel = null;
-            foreach (var t in ts)
-            {
-                float dis = Vector3.Distance(t.position, pos);
-                if (minDis > dis)
-                {
-                    minDis = dis;
-                    minModel = t;
-                }
-            }
-            return minModel;
+            return TransformHelper.FindClosedTransform(ts, this.GetPositon());
         }
 
         private string compareName11 = "";

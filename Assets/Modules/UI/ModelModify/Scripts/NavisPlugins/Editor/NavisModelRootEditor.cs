@@ -167,6 +167,8 @@ public class NavisModelRootEditor : BaseFoldoutEditor<NavisModelRoot>
         item.checkResultArg.IsFindByName1 = EditorGUILayout.Toggle(item.checkResultArg.IsFindByName1, GUILayout.Width(20));
         GUILayout.Label("Name2", GUILayout.Width(50));
         item.checkResultArg.IsFindByName2 = EditorGUILayout.Toggle(item.checkResultArg.IsFindByName2, GUILayout.Width(20));
+        GUILayout.Label("Name3", GUILayout.Width(50));
+        item.checkResultArg.IsFindByName3 = EditorGUILayout.Toggle(item.checkResultArg.IsFindByName3, GUILayout.Width(20));
         GUILayout.Label("Closed", GUILayout.Width(50));
         item.checkResultArg.IsFindClosed = EditorGUILayout.Toggle(item.checkResultArg.IsFindClosed, GUILayout.Width(20));
         GUILayout.Label("Found2", GUILayout.Width(50));

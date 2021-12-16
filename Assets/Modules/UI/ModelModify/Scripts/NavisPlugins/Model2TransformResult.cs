@@ -66,7 +66,7 @@ public class Model2TransformResult
             {
                 Debug.Log("HorPumpBB1Asm-1-0002");
             }
-            allModels_uid_nofound1.Add(model1);
+            //allModels_uid_nofound1.Add(model1);
 
             var ms = TransformDict.GetTransformsByName(model1.Name);
             if (ms.Count == 0)
@@ -88,12 +88,14 @@ public class Model2TransformResult
                     }
                     else
                     {
-                        DebugLogError($"【{ms.Count}】[Rute1_1_3][没找到同名的Transform&&Closed距离太远][{MinDistance}][Name:{model1.Name}][Path:{model1.GetPath()}][{model1.ShowDistance(closedT)})]");
+                        DebugLogError($"【{ms.Count}】[Rute1_1_3][没找到同名的Transform&&Closed距离太远][{MinDistance}-{MaxDistance}][Name:{model1.Name}][Path:{model1.GetPath()}][{model1.ShowDistance(closedT)})]");
+                        allModels_uid_nofound1.Add(model1);
                     }
                 }
                 else
                 {
-                    DebugLogError($"【{ms.Count}】[Rute1_1_1][没找到同名的Transform][{MinDistance}][Name:{model1.Name}][Path:{model1.GetPath()}][{model1.ShowDistance(closedT)})]");
+                    DebugLogError($"【{ms.Count}】[Rute1_1_1][没找到同名的Transform][{MinDistance}-{MaxDistance}][Name:{model1.Name}][Path:{model1.GetPath()}][{model1.ShowDistance(closedT)})]");
+                    allModels_uid_nofound1.Add(model1);
                 }
             }
             else if (ms.Count == 1)
@@ -106,15 +108,19 @@ public class Model2TransformResult
                 }
                 else
                 {
+                    if (CheckArg.IsFindByName3)//不管了，名称相同就行
+                    {
+                        AddFounded1(model1, transf, BIMFoundType.ByName);
+                    }
                     
-                    //减少难度111
-                    if (CheckArg.IsFindByName2 && dis< MaxDistance)
+                    else if (CheckArg.IsFindByName2 && dis< MaxDistance)//减少难度111
                     {
                         AddFounded1(model1, transf, BIMFoundType.ByName);
                     }
                     else 
                     { 
-                        DebugLogError($"【{ms.Count}】[Rute1_1_2][没找到Transform][{MinDistance}][m:{model1.ShowDistance(transf)}][path:{model1.GetPath()}]");
+                        DebugLogError($"【{ms.Count}】[Rute1_1_2][没找到Transform][{MinDistance}-{MaxDistance}][m:{model1.ShowDistance(transf)}][path:{model1.GetPath()}]");
+                        allModels_uid_nofound1.Add(model1);
                     }
                 }
             }
@@ -135,6 +141,7 @@ public class Model2TransformResult
                         DebugLogError($"[Rute1_1_3][{i1 + 1}/{ms.Count}] m:{model1.ShowDistance(m)}");
                         //遍历这些模型
                     }
+                    allModels_uid_nofound1.Add(model1);
                 }
             }
         }
@@ -441,21 +448,39 @@ public class CheckResultArg
 
     public bool IsFindByName2 = false;
 
+    public bool IsFindByName3 = false;
+
     public bool IsFindClosed = false;
 
     public bool IsUseFound2 = false;
 
     public CheckResultArg()
     {
-
+        Init(false, false, false, false, false, false);
     }
 
-    public CheckResultArg(bool isShowLog,bool isFindByName1, bool isFindByName2, bool isFindClosed,bool isUseFound2)
+    public CheckResultArg(bool isShowLog, bool isFindByName1, bool isFindByName2, bool isFindByName3, bool isFindClosed, bool isUseFound2)
+    {
+        Init(isShowLog, isFindByName1, isFindByName2, isFindByName3, isFindClosed, isUseFound2);
+    }
+
+    private void Init(bool isShowLog, bool isFindByName1, bool isFindByName2, bool isFindByName3, bool isFindClosed, bool isUseFound2)
     {
         this.IsShowLog = isShowLog;
         this.IsFindByName1 = isFindByName1;
         this.IsFindByName2 = isFindByName2;
+        this.IsFindByName3 = isFindByName3;
         this.IsFindClosed = isFindClosed;
         this.IsUseFound2 = isUseFound2;
-}
+    }
+
+    public CheckResultArg(bool isShowLog, CheckResultArg arg)
+    {
+        this.IsShowLog = isShowLog;
+        this.IsFindByName1 = arg.IsFindByName1;
+        this.IsFindByName2 = arg.IsFindByName2;
+        this.IsFindByName3 = arg.IsFindByName3;
+        this.IsFindClosed = arg.IsFindClosed;
+        this.IsUseFound2 = arg.IsUseFound2;
+    }
 }

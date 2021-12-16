@@ -35,11 +35,11 @@ public class NavisModelRoot : MonoBehaviour
     [ContextMenu("TestFindModelByName")]
     public void TestFindModelByName()
     {
-        var list= TransformHelper.FindSameNameList(transformList, TestModelName);
+        var list = TransformHelper.FindSameNameList(transformList, TestModelName);
         Debug.Log($"TestFindModelByName name:{TestModelName} list:{list.Count}");
     }
 
-   
+
 
     public List<BIMModelInfo> GetTargetBIMs()
     {
@@ -55,7 +55,7 @@ public class NavisModelRoot : MonoBehaviour
     public void ClearBimInfos()
     {
         var bims = GetTargetBIMs();
-        foreach(var bim in bims)
+        foreach (var bim in bims)
         {
             GameObject.DestroyImmediate(bim);
         }
@@ -63,16 +63,16 @@ public class NavisModelRoot : MonoBehaviour
         RefreshBIMList();
     }
 
-    public void RefreshBIMList(bool isCheckModel=true)
+    public void RefreshBIMList(bool isCheckModel = true)
     {
         List<ModelItemInfo> allModels = null;
-        if (isCheckModel && navisFile!=null)
+        if (isCheckModel && navisFile != null)
             allModels = navisFile.GetAllModelInfos();
         GetBims(allModels, null);
     }
 
     [ContextMenu("GetBims")]
-    public void GetBims(List<ModelItemInfo> checkModelList,ProgressArgEx p0)
+    public void GetBims(List<ModelItemInfo> checkModelList, ProgressArgEx p0)
     {
         var bimList = GetTargetBIMs();
         BimDict = new BIMModelInfoDictionary(bimList, p0);
@@ -116,8 +116,8 @@ public class NavisModelRoot : MonoBehaviour
     public void FindRelativeTargets()
     {
         string key = ModelName + "_";
-        var list=TransformHelper.FindGameObjects(TargetRoot.transform, key);
-        foreach(var item in list)
+        var list = TransformHelper.FindGameObjects(TargetRoot.transform, key);
+        foreach (var item in list)
         {
             if (!Targets.Contains(item))
             {
@@ -155,7 +155,7 @@ public class NavisModelRoot : MonoBehaviour
     [ContextMenu("HidePipes")]
     public void HidePipes()
     {
-        var list = TransformHelper.FindGameObjects(this.transform,new List<string>() {"HH_","JG_","SG_","JQ_" });
+        var list = TransformHelper.FindGameObjects(this.transform, new List<string>() { "HH_", "JG_", "SG_", "JQ_" });
         foreach (var item in list)
         {
             item.SetActive(false);
@@ -183,7 +183,7 @@ public class NavisModelRoot : MonoBehaviour
         foreach (var target in Targets)
         {
             var list = target.GetComponentsInChildren<Transform>(includeInactive).ToList();
-            foreach(var item in list)
+            foreach (var item in list)
             {
                 if (item.gameObject.activeInHierarchy == false && includeInactive == false) continue;
                 if (!transformDict.ContainsKey(item))
@@ -193,7 +193,7 @@ public class NavisModelRoot : MonoBehaviour
                 }
             }
             var combinedList = TransformHelper.FindAllTransforms(target.transform, "_Combined");
-            foreach(var item in combinedList)
+            foreach (var item in combinedList)
             {
                 if (transformDict.ContainsKey(item))
                 {
@@ -328,12 +328,12 @@ public class NavisModelRoot : MonoBehaviour
     //}
 
     [ContextMenu("BindBimInfo")]
-    public void BindBimInfo(ProgressArg p0=null)
+    public void BindBimInfo(ProgressArg p0 = null)
     {
         DateTime start = DateTime.Now;
 
         var p1 = ProgressArg.New("BindBimInfo", 0, 3, "LoadModels", p0);
-        ProgressBarHelper.DisplayCancelableProgressBar(p1,true);
+        ProgressBarHelper.DisplayCancelableProgressBar(p1, true);
         LoadModels(p1);
 
         var p2 = ProgressArg.New("BindBimInfo", 1, 3, "FindObjectByUID", p0);
@@ -344,7 +344,7 @@ public class NavisModelRoot : MonoBehaviour
         ProgressBarHelper.DisplayCancelableProgressBar(p3, true);
         FindObjectByPos(p3);
 
-        Debug.LogError($"[{this.name}]BindBimInfo time:{DateTime.Now-start}");
+        Debug.LogError($"[{this.name}]BindBimInfo time:{DateTime.Now - start}");
 
         var p4 = ProgressArg.New("BindBimInfo", 3, 3, this.name, p0);
         ProgressBarHelper.DisplayCancelableProgressBar(p4, true);
@@ -376,9 +376,9 @@ public class NavisModelRoot : MonoBehaviour
         {
             ModelName = this.name;
             int id = ModelName.IndexOf("_");
-            ModelName = ModelName.Substring(id+1);
+            ModelName = ModelName.Substring(id + 1);
         }
-        
+
 
         bool enableProgress = true;
 
@@ -396,9 +396,9 @@ public class NavisModelRoot : MonoBehaviour
         ProgressBarHelper.DisplayCancelableProgressBar(p3, enableProgress);
         //3
         //var allModels = navisFile.GetAllItems();
-       
+
         var currentModels = ModelRoot.GetChildrenModels();
-        currentModels = InitNavisFileInfoByModelSetting.Instance.FilterList(currentModels,null);
+        currentModels = InitNavisFileInfoByModelSetting.Instance.FilterList(currentModels, null);
         ModelDict = new ModelItemInfoDictionary(currentModels, p3);
 
         var p4 = ProgressArg.New("LoadModels", 3, 5, "GetBims", p0);
@@ -406,7 +406,7 @@ public class NavisModelRoot : MonoBehaviour
 
         //4
         var allModels = navisFile.GetAllModelInfos();
-        GetBims(allModels,p4);//2.BIMinfo
+        GetBims(allModels, p4);//2.BIMinfo
 
         //GetModelLists();//3.ModelInfo
 
@@ -418,7 +418,7 @@ public class NavisModelRoot : MonoBehaviour
         var p6 = ProgressArg.New("LoadModels", 5, 5, "ModelItemInfoListEx", p0);
         ProgressBarHelper.DisplayCancelableProgressBar(p6, enableProgress);
 
-        if(p0==null)
+        if (p0 == null)
             ProgressBarHelper.ClearProgressBar();
 
         Debug.Log($"[{this.name}][LoadModels] time:{DateTime.Now - start} rendererIdCount:{ModelDict.rendererIdCount} UidCount:{ModelDict.UidCount}");
@@ -433,7 +433,7 @@ public class NavisModelRoot : MonoBehaviour
     {
         //string s = "0027-20014-345476504420876800";
         string s = TestUIdString;
-        bool isUid= TransformDictionary.IsUID(s);
+        bool isUid = TransformDictionary.IsUID(s);
         Debug.Log($"[{this.name}]TestIsUId s:{s} isUid:{isUid} length:{s.Length}");
     }
 
@@ -445,7 +445,7 @@ public class NavisModelRoot : MonoBehaviour
         var transform = TransformDict.FindObjectByUID(s);
         Debug.Log($"[{this.name}]TestIsUId s:{s} transform:{transform}");
 
-        
+
     }
 
     public float GetMinDistance()
@@ -482,14 +482,14 @@ public class NavisModelRoot : MonoBehaviour
 
         foreach (var uidModel in ModelList.allModels_uid)
         {
-            var transform=TransformDict.FindObjectByUID(uidModel.UId);
+            var transform = TransformDict.FindObjectByUID(uidModel.UId);
             if (transform != null)
             {
                 float dis = uidModel.GetDistance(transform);
-                if (dis > MinDistanceLv1 )
+                if (dis > MinDistanceLv1)
                 {
                     allModels_uid_nofound.Add(uidModel);
-                    
+
                     Debug.LogError($"[FindObjectByUID][{dis}][{MinDistanceLv1}]{uidModel.ShowDistance(transform)}");
                 }
                 else
@@ -507,7 +507,7 @@ public class NavisModelRoot : MonoBehaviour
 
         TransformDict.InitDict();
 
-        Debug.LogError($"[{this.name}][FindObjectByUID] time:{DateTime.Now-start} allModels_uid:{ModelList.allModels_uid.Count},found:{allModels_uid_found.Count} nofound:{allModels_uid_nofound.Count}");
+        Debug.LogError($"[{this.name}][FindObjectByUID] time:{DateTime.Now - start} allModels_uid:{ModelList.allModels_uid.Count},found:{allModels_uid_found.Count} nofound:{allModels_uid_nofound.Count}");
 
         //allModels_uid = allModels_uid_nofound;
 
@@ -637,22 +637,23 @@ public class NavisModelRoot : MonoBehaviour
         {
             FindObjectByPos123456(IsShowLog, po);
         }
+        RefreshBIMList();
     }
     public void FindObjectByPos1(bool isShowLog, ProgressArgEx p0)
     {
-        FindObjectByPos(new CheckResultArg(isShowLog, checkResultArg.IsFindByName1, checkResultArg.IsFindByName2, checkResultArg.IsFindClosed, checkResultArg.IsUseFound2), MinDistanceLv1, p0);
+        FindObjectByPos(new CheckResultArg(isShowLog, checkResultArg), MinDistanceLv1, p0);
     }
     public void FindObjectByPos12(bool isShowLog, ProgressArgEx p0)
     {
-        FindObjectByPos(new CheckResultArg(false, false, false, false, false), MinDistanceLv1, p0);
-        FindObjectByPos(new CheckResultArg(isShowLog, checkResultArg.IsFindByName1, checkResultArg.IsFindByName2, checkResultArg.IsFindClosed, checkResultArg.IsUseFound2), MinDistanceLv2, p0);
+        FindObjectByPos(new CheckResultArg(), MinDistanceLv1, p0);
+        FindObjectByPos(new CheckResultArg(isShowLog, checkResultArg), MinDistanceLv2, p0);
     }
     public void FindObjectByPos123(bool isShowLog, ProgressArgEx p0)
     {
-        FindObjectByPos(new CheckResultArg(false, false, false, false, false), MinDistanceLv1, p0);
-        FindObjectByPos(new CheckResultArg(false, false, false, false, false), MinDistanceLv2, p0);
-        FindObjectByPos(new CheckResultArg(false, false, false, false, false), MinDistanceLv3, p0);
-        FindObjectByPos(new CheckResultArg(isShowLog, checkResultArg.IsFindByName1, checkResultArg.IsFindByName2, checkResultArg.IsFindClosed, checkResultArg.IsUseFound2), MinDistanceLv3, p0);
+        FindObjectByPos(new CheckResultArg(), MinDistanceLv1, p0);
+        FindObjectByPos(new CheckResultArg(), MinDistanceLv2, p0);
+        FindObjectByPos(new CheckResultArg(), MinDistanceLv3, p0);
+        FindObjectByPos(new CheckResultArg(isShowLog, checkResultArg), MinDistanceLv3, p0);
         //FindObjectByPos(new CheckResultArg(false, true, true), MinDistanceLv5, p0);
     }
 
@@ -660,44 +661,44 @@ public class NavisModelRoot : MonoBehaviour
 
     public void FindObjectByPos1234(bool isShowLog, ProgressArgEx p0)
     {
-        FindObjectByPos(new CheckResultArg(false,false,false,false, false), MinDistanceLv1, p0);
-        FindObjectByPos(new CheckResultArg(false, false, false, false, false), MinDistanceLv2, p0);
-        FindObjectByPos(new CheckResultArg(false, false, false, false, false), MinDistanceLv3, p0);
-        FindObjectByPos(new CheckResultArg(false, false, false, false, false), MinDistanceLv4, p0);
-        FindObjectByPos(new CheckResultArg(isShowLog, checkResultArg.IsFindByName1, checkResultArg.IsFindByName2, checkResultArg.IsFindClosed, checkResultArg.IsUseFound2), MinDistanceLv4, p0);
+        FindObjectByPos(new CheckResultArg(), MinDistanceLv1, p0);
+        FindObjectByPos(new CheckResultArg(), MinDistanceLv2, p0);
+        FindObjectByPos(new CheckResultArg(), MinDistanceLv3, p0);
+        FindObjectByPos(new CheckResultArg(), MinDistanceLv4, p0);
+        FindObjectByPos(new CheckResultArg(isShowLog, checkResultArg), MinDistanceLv4, p0);
         //FindObjectByPos(new CheckResultArg(false, true, true), MinDistanceLv5, p0);
     }
     public void FindObjectByPos12345(bool isShowLog, ProgressArgEx p0)
     {
-        FindObjectByPos(new CheckResultArg(false,false,false, false, false), MinDistanceLv1, p0);
-        FindObjectByPos(new CheckResultArg(false, false, false, false, false), MinDistanceLv2, p0);
-        FindObjectByPos(new CheckResultArg(false, false, false, false, false), MinDistanceLv3, p0);
-        FindObjectByPos(new CheckResultArg(false, false, false, false, false), MinDistanceLv4, p0);
-        FindObjectByPos(new CheckResultArg(false, false, false, false, false), MinDistanceLv5, p0);
-        FindObjectByPos(new CheckResultArg(isShowLog, checkResultArg.IsFindByName1, checkResultArg.IsFindByName2, checkResultArg.IsFindClosed, checkResultArg.IsUseFound2), MinDistanceLv5, p0);
+        FindObjectByPos(new CheckResultArg(), MinDistanceLv1, p0);
+        FindObjectByPos(new CheckResultArg(), MinDistanceLv2, p0);
+        FindObjectByPos(new CheckResultArg(), MinDistanceLv3, p0);
+        FindObjectByPos(new CheckResultArg(), MinDistanceLv4, p0);
+        FindObjectByPos(new CheckResultArg(), MinDistanceLv5, p0);
+        FindObjectByPos(new CheckResultArg(isShowLog, checkResultArg), MinDistanceLv5, p0);
         //FindObjectByPos(new CheckResultArg(false, true, true, false, false), MinDistanceLv5, p0);
-    } 
+    }
     public void FindObjectByPos123456(bool isShowLog, ProgressArgEx p0)
     {
-        FindObjectByPos(new CheckResultArg(false,false,false, false, false), MinDistanceLv1, p0);
-        FindObjectByPos(new CheckResultArg(false, false, false, false, false), MinDistanceLv2, p0);
-        FindObjectByPos(new CheckResultArg(false, false, false, false, false), MinDistanceLv3, p0);
-        FindObjectByPos(new CheckResultArg(false, false, false, false, false), MinDistanceLv4, p0);
-        FindObjectByPos(new CheckResultArg(false, false, false, false, false), MinDistanceLv5, p0);
-        FindObjectByPos(new CheckResultArg(false, true, false, false, false), MinDistanceLv5, p0);
-        FindObjectByPos(new CheckResultArg(isShowLog, checkResultArg.IsFindByName1, checkResultArg.IsFindByName2, checkResultArg.IsFindClosed, checkResultArg.IsUseFound2), MinDistanceLv5, p0);
+        FindObjectByPos(new CheckResultArg(), MinDistanceLv1, p0);
+        FindObjectByPos(new CheckResultArg(), MinDistanceLv2, p0);
+        FindObjectByPos(new CheckResultArg(), MinDistanceLv3, p0);
+        FindObjectByPos(new CheckResultArg(), MinDistanceLv4, p0);
+        FindObjectByPos(new CheckResultArg(), MinDistanceLv5, p0);
+        FindObjectByPos(new CheckResultArg(false, true, false, false, false, false), MinDistanceLv5, p0);
+        FindObjectByPos(new CheckResultArg(isShowLog, checkResultArg), MinDistanceLv5, p0);
     }
 
 
     public void TestFindObjectByPos(float minDis)
     {
         LoadModels(null);
-        FindObjectByPos(new CheckResultArg(true, checkResultArg.IsFindByName1, checkResultArg.IsFindByName2, checkResultArg.IsFindClosed, checkResultArg.IsUseFound2), minDis, null);
+        FindObjectByPos(new CheckResultArg(true, checkResultArg), minDis, null);
         RefreshBIMList();
     }
 
 
-    public void FindObjectByPos(CheckResultArg arg,float minDis,ProgressArgEx p0)
+    public void FindObjectByPos(CheckResultArg arg, float minDis, ProgressArgEx p0)
     {
         DateTime start = DateTime.Now;
         List<ModelItemInfo> models1 = new List<ModelItemInfo>();
@@ -705,7 +706,7 @@ public class NavisModelRoot : MonoBehaviour
 
         //models1.AddRange(ModelList.allModels_noDrawable_nozero);
 
-        var p01 = ProgressArg.New("FindObjectByPos", 0,2, "ModelItemInfoDictionary",p0);
+        var p01 = ProgressArg.New("FindObjectByPos", 0, 2, "ModelItemInfoDictionary", p0);
         ModelItemInfoDictionary modelDict = new ModelItemInfoDictionary(models1, p01);
         //var modelDict = new ModelItemInfoDictionary(models, null);
 
@@ -720,7 +721,7 @@ public class NavisModelRoot : MonoBehaviour
 
             //var transform = TransformDict.FindObjectByPos(uidModel);
             List<Transform> transforms1 = TransformDict.FindModelsByPosAndName(model1);
-            result.CheckResult(model1,transforms1);
+            result.CheckResult(model1, transforms1);
         }
         result.SetModelList(ModelList);
 
@@ -792,7 +793,7 @@ public class NavisModelRoot : MonoBehaviour
     {
         //this.ModelDict.ClearRendererId();
 
-        int count=navisFile.ClearRendererId();
+        int count = navisFile.ClearRendererId();
         Debug.LogError($"ClearRendererId count:{count}");
     }
 
@@ -808,7 +809,7 @@ public class NavisModelRoot : MonoBehaviour
         InitCreateTree(ModelRoot);
         Debug.LogError($"CreateTree TreeNodeCount:{TreeNodeCount}");
 
-        RootNodes =CreateTree(ModelRoot, this.transform);
+        RootNodes = CreateTree(ModelRoot, this.transform);
 
         //List<ModelItemInfo> bimInfos02 = new List<ModelItemInfo>();
         for (int i = 0; i < noFoundBimInfos01.Count; i++)
@@ -838,7 +839,7 @@ public class NavisModelRoot : MonoBehaviour
                     noFoundBimInfos03.Add(child);
                     //Debug.LogError($"[Model Not Found 3] {child.ToString()}");
                 }
-                
+
             }
             else
             {
@@ -875,7 +876,7 @@ public class NavisModelRoot : MonoBehaviour
 
         SaveXml();
 
-        Debug.Log($"CreateTree time:{DateTime.Now-start}");
+        Debug.Log($"CreateTree time:{DateTime.Now - start}");
     }
 
     public void SaveXml()
@@ -992,76 +993,76 @@ public class NavisModelRoot : MonoBehaviour
             Debug.LogError("InitCreateTree rootModel == null");
             return;
         }
-        if(rootModel.Children!=null)
-        foreach (ModelItemInfo child in rootModel.Children)
-        {
-            TreeNodeCount++;
-            InitCreateTree(child);
-        }
+        if (rootModel.Children != null)
+            foreach (ModelItemInfo child in rootModel.Children)
+            {
+                TreeNodeCount++;
+                InitCreateTree(child);
+            }
     }
 
-    public List<GameObject> CreateTree(ModelItemInfo rootModel,Transform parent)
+    public List<GameObject> CreateTree(ModelItemInfo rootModel, Transform parent)
     {
         List<GameObject> goList = new List<GameObject>();
-        if(rootModel!=null && rootModel.Children!=null)
-        for (int i = 0; i < rootModel.Children.Count; i++)
-        {
-            ModelItemInfo child = (ModelItemInfo)rootModel.Children[i];
-            child.Name = child.Name.Replace(" ", "_");
-            TreeNodeIndex++;
+        if (rootModel != null && rootModel.Children != null)
+            for (int i = 0; i < rootModel.Children.Count; i++)
+            {
+                ModelItemInfo child = (ModelItemInfo)rootModel.Children[i];
+                child.Name = child.Name.Replace(" ", "_");
+                TreeNodeIndex++;
 
-            ProgressArg p1 = new ProgressArg("CreateTree", TreeNodeIndex, TreeNodeCount, child.Name);
-            InitNavisFileInfoByModel.Instance.progressArg = p1;
+                ProgressArg p1 = new ProgressArg("CreateTree", TreeNodeIndex, TreeNodeCount, child.Name);
+                InitNavisFileInfoByModel.Instance.progressArg = p1;
                 //if (ProgressBarHelper.DisplayCancelableProgressBar(p1))
                 //{
                 //    break;
                 //}
 
                 GameObject go = new GameObject($"{child.Name}");
-            var pos = new Vector3(child.X, child.Z, child.Y);
-            go.transform.position = pos;
-            go.transform.SetParent(parent);
-            goList.Add(go);
+                var pos = new Vector3(child.X, child.Z, child.Y);
+                go.transform.position = pos;
+                go.transform.SetParent(parent);
+                goList.Add(go);
 
-            CreateTree(child, go.transform);
+                CreateTree(child, go.transform);
 
-            if (child.Drawable == false)
-            {
-                go.name = "[Group1] " + child.Name;
-            }
-            else if (child.X==0 && child.Z==0 && child.Y == 0)
-            {
-                if (child.Drawable)
+                if (child.Drawable == false)
                 {
-                    go.name = "[Model] " + child.Name;
-                    if (FindModelGameObjectEx(child, go, true) == false)
+                    go.name = "[Group1] " + child.Name;
+                }
+                else if (child.X == 0 && child.Z == 0 && child.Y == 0)
+                {
+                    if (child.Drawable)
                     {
-                        go.name = "[*Model*2] " + child.Name;
-                        noFoundBimInfos01.Add(child);
-                        //Debug.LogError($"[Model Not Found 2] {child.ToString()}");
+                        go.name = "[Model] " + child.Name;
+                        if (FindModelGameObjectEx(child, go, true) == false)
+                        {
+                            go.name = "[*Model*2] " + child.Name;
+                            noFoundBimInfos01.Add(child);
+                            //Debug.LogError($"[Model Not Found 2] {child.ToString()}");
 
-                        var list = TransformHelper.FindSameNameList(transformList, child.Name);
-                        //Debug.LogError($"TestFindModelByName name:{child.Name} list:{list.Count}");
+                            var list = TransformHelper.FindSameNameList(transformList, child.Name);
+                            //Debug.LogError($"TestFindModelByName name:{child.Name} list:{list.Count}");
+                        }
+                    }
+                    else
+                    {
+                        go.name = "[Group2] " + child.Name;
                     }
                 }
                 else
                 {
-                    go.name = "[Group2] " + child.Name;
+                    go.name = "[Model] " + child.Name;
+                    if (FindModelGameObjectEx(child, go, true) == false)
+                    {
+                        go.name = "[*Model*1] " + child.Name;
+                        noFoundBimInfos01.Add(child);
+                        //Debug.LogError($"[Model Not Found 1] {child.ToString()}");
+                    }
                 }
-            }
-            else
-            {
-                go.name = "[Model] " + child.Name;
-                if(FindModelGameObjectEx(child, go, true) == false)
-                {
-                    go.name = "[*Model*1] " + child.Name;
-                    noFoundBimInfos01.Add(child);
-                    //Debug.LogError($"[Model Not Found 1] {child.ToString()}");
-                }
-            }
 
-            child.Tag = go;
-        }
+                child.Tag = go;
+            }
 
         return goList;
     }
@@ -1110,7 +1111,7 @@ public class NavisModelRoot : MonoBehaviour
 
     //public bool IsSameName = true;
 
-    private BIMModelInfo FindModelGameObject1(ModelItemInfo child,bool isSameName)
+    private BIMModelInfo FindModelGameObject1(ModelItemInfo child, bool isSameName)
     {
         return InitNavisFileInfoByModel.Instance.InitBIMModelInfoByPos_Vue2Model(child, transformList, InitNavisFileInfoByModelSetting.Instance.MinDistance1, isSameName);
     }

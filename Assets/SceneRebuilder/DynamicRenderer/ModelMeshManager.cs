@@ -40,45 +40,10 @@ public class ModelMeshManager : MonoBehaviour
     [ContextMenu("TestGetPrefix")]
     private void TestGetPrefix()
     {
-        GetPrefix(TestName);
+        TransformHelper.GetPrefix(TestName);
     }
 
-    public static string GetPrefix(string n)
-    {
-        //var n = item.name;
-        int id = 0;
-        int id1 = n.LastIndexOf(' ');
-        int id2 = n.LastIndexOf('-');
-        int id3 = n.LastIndexOf('_');
-        //12-3 2
-        if (id1 > id)
-        {
-            id = id1;
-        }
-        if (id2 > id)
-        {
-            id = id2;
-        }
-        if (id3 > id)
-        {
-            id = id3;
-        }
-        //if (id == 0 && n.Length>9)
-        //{
-        //    id = 9;//？？？
-        //}
-        //最后一个是数字或者英文字母的情况，最后是多个数字的情况
-        string pre = n;
-        string after = "";
-        if (id > 0)
-        {
-            pre = n.Substring(0, id);
-            after = n.Substring(id + 1);
-            //ModelClassDict_Auto.AddModel(pre, item);
-        }
-        //Debug.LogError($"GetPrefix name:{n} id1:{id1} id2:{id2} id3:{id3} id:{id} pre:{pre} after:{after}");
-        return pre;
-    }
+    
 
     [ContextMenu("GetPrefixNames")]
     public void GetPrefixNames()
@@ -88,7 +53,7 @@ public class ModelMeshManager : MonoBehaviour
         foreach(var item in list)
         {
             var n = item.name;
-            string pre = GetPrefix(n);
+            string pre = TransformHelper.GetPrefix(n);
             ModelClassDict_Auto.AddModel(pre, item);
 
             //int id = 0;
