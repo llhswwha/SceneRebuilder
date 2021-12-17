@@ -29,6 +29,8 @@ public class NavisModelRootEditor : BaseFoldoutEditor<NavisModelRoot>
     static FoldoutEditorArg<ModelItemInfo> modelListArg_nodrawable_nozero = new FoldoutEditorArg<ModelItemInfo>(true, false);
     static FoldoutEditorArg<ModelItemInfo> modelListArg_noDrawable_zero = new FoldoutEditorArg<ModelItemInfo>(true, false);
 
+    static FoldoutEditorArg<ModelItemInfo> modelListArg_found2 = new FoldoutEditorArg<ModelItemInfo>(true, false);
+
     static FoldoutEditorArg<Transform> transListArg_All = new FoldoutEditorArg<Transform>(true, false);
     static FoldoutEditorArg<Transform> transListArg = new FoldoutEditorArg<Transform>(true, false);
     static FoldoutEditorArg<Transform> transListArg2 = new FoldoutEditorArg<Transform>(true, false);
@@ -56,6 +58,8 @@ public class NavisModelRootEditor : BaseFoldoutEditor<NavisModelRoot>
             DrawVueModelList(item, item.ModelList.allModels_drawable_nozero, modelListArg_drawable_nozero, "** Model List(Drawable&NoZero) **");
             DrawVueModelList(item, item.ModelList.allModels_noDrawable_nozero, modelListArg_nodrawable_nozero, "Model List(NoDrawable&NoZero)");
             DrawVueModelList(item, item.ModelList.allModels_noDrawable_zero, modelListArg_noDrawable_zero, "Model List(NoDrawable&Zero)");
+
+            DrawVueModelList(item, item.model2TransformResult.allModels_uid_found2, modelListArg_found2, "Model List(Found2)");
         }
 
         EditorUIUtils.Separator(5);
@@ -163,12 +167,14 @@ public class NavisModelRootEditor : BaseFoldoutEditor<NavisModelRoot>
         EditorGUILayout.EndHorizontal();
 
         EditorGUILayout.BeginHorizontal();
-        GUILayout.Label("Name1", GUILayout.Width(50));
-        item.checkResultArg.IsFindByName1 = EditorGUILayout.Toggle(item.checkResultArg.IsFindByName1, GUILayout.Width(20));
-        GUILayout.Label("Name2", GUILayout.Width(50));
-        item.checkResultArg.IsFindByName2 = EditorGUILayout.Toggle(item.checkResultArg.IsFindByName2, GUILayout.Width(20));
-        GUILayout.Label("Name3", GUILayout.Width(50));
-        item.checkResultArg.IsFindByName3 = EditorGUILayout.Toggle(item.checkResultArg.IsFindByName3, GUILayout.Width(20));
+        GUILayout.Label("Find>Name", GUILayout.Width(70));
+        item.checkResultArg.IsByNameAfterFindModel = EditorGUILayout.Toggle(item.checkResultArg.IsByNameAfterFindModel, GUILayout.Width(20));
+        GUILayout.Label("NotFind>Name", GUILayout.Width(80));
+        item.checkResultArg.IsByNameAfterNotFindModel = EditorGUILayout.Toggle(item.checkResultArg.IsByNameAfterNotFindModel, GUILayout.Width(20));
+        GUILayout.Label("MoreDis", GUILayout.Width(60));
+        item.checkResultArg.IsMoreDistance = EditorGUILayout.Toggle(item.checkResultArg.IsMoreDistance, GUILayout.Width(20));
+        GUILayout.Label("OnlyName", GUILayout.Width(60));
+        item.checkResultArg.IsOnlyName = EditorGUILayout.Toggle(item.checkResultArg.IsOnlyName, GUILayout.Width(20));
         GUILayout.Label("Closed", GUILayout.Width(50));
         item.checkResultArg.IsFindClosed = EditorGUILayout.Toggle(item.checkResultArg.IsFindClosed, GUILayout.Width(20));
         GUILayout.Label("Found2", GUILayout.Width(50));

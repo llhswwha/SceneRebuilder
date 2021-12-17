@@ -94,6 +94,29 @@ public class ModelItemInfoDictionary
             ProgressBarHelper.ClearProgressBar();
     }
 
+    public ModelItemInfo GetModelByUID(string uid)
+    {
+        if (uid2Model.ContainsKey(uid))
+        {
+            var lst = uid2Model[uid];
+            if (lst.Count == 0)
+            {
+                return lst[0];
+            }
+            else
+            {
+                return null;
+            }
+            
+        }
+        return null;
+    }
+
+    //public ModelItemInfo GetModelByRendererId()
+    //{
+
+    //}
+
     public PositionDictionaryList<ModelItemInfo> positionDictionaryList = new PositionDictionaryList<ModelItemInfo>();
 
     public void GetRepeatedModels()

@@ -108,19 +108,41 @@ public class Model2TransformResult
                 }
                 else
                 {
-                    if (CheckArg.IsFindByName3)//不管了，名称相同就行
+                    if (CheckArg.IsOnlyName)//不管了，名称相同就行
                     {
                         AddFounded1(model1, transf, BIMFoundType.ByName);
                     }
-                    
-                    else if (CheckArg.IsFindByName2 && dis< MaxDistance)//减少难度111
+                    else if (CheckArg.IsByNameAfterNotFindModel)//减少难度111
                     {
-                        AddFounded1(model1, transf, BIMFoundType.ByName);
+                        if(dis<MaxDistance)
+                        {
+                            AddFounded1(model1, transf, BIMFoundType.ByName);
+                        }
+                        else if(InitNavisFileInfoByModelSetting.Instance.IsStructrue(transf.name) && dis<MaxDistance*20)
+                        {
+                            AddFounded1(model1, transf, BIMFoundType.ByName);
+                        }
+                        else
+                        {
+                            if(model1.Name== "罗茨风机B")
+                            {
+
+                            }
+                            if (CheckArg.IsMoreDistance && dis < MaxDistance * 20)
+                            {
+                                AddFounded1(model1, transf, BIMFoundType.ByName);
+                            }
+                            else
+                            {
+                                DebugLogError($"【{ms.Count}】[Rute1_1_22][没找到Transform][{MinDistance}-{MaxDistance}-{MaxDistance * 20}({CheckArg.IsMoreDistance})][m:{model1.ShowDistance(transf)}][path:{model1.GetPath()}]");
+                            }
+                        }
+                        
                     }
                     else 
                     { 
-                        DebugLogError($"【{ms.Count}】[Rute1_1_2][没找到Transform][{MinDistance}-{MaxDistance}][m:{model1.ShowDistance(transf)}][path:{model1.GetPath()}]");
-                        allModels_uid_nofound1.Add(model1);
+                        DebugLogError($"【{ms.Count}】[Rute1_1_21][没找到Transform][{MinDistance}-{MaxDistance}][m:{model1.ShowDistance(transf)}][path:{model1.GetPath()}]");
+
                     }
                 }
             }
@@ -134,14 +156,56 @@ public class Model2TransformResult
                 }
                 else
                 {
-                    DebugLogError($"【{ms.Count}】[Rute1_1_3][没找到Transform][{MinDistance}][m:{model1.ShowDistance(transf)}][path:{model1.GetPath()}]");
-                    for (int i1 = 0; i1 < ms.Count; i1++)
+                    //DebugLogError($"【{ms.Count}】[Rute1_1_3][没找到Transform][{MinDistance}][m:{model1.ShowDistance(transf)}][path:{model1.GetPath()}]");
+                    //for (int i1 = 0; i1 < ms.Count; i1++)
+                    //{
+                    //    var m = ms[i1];
+                    //    DebugLogError($"[Rute1_1_3][{i1 + 1}/{ms.Count}] m:{model1.ShowDistance(m)}");
+                    //    //遍历这些模型
+                    //}
+
+                    if (CheckArg.IsOnlyName)//不管了，名称相同就行
                     {
-                        var m = ms[i1];
-                        DebugLogError($"[Rute1_1_3][{i1 + 1}/{ms.Count}] m:{model1.ShowDistance(m)}");
-                        //遍历这些模型
+                        AddFounded1(model1, transf, BIMFoundType.ByName);
                     }
-                    allModels_uid_nofound1.Add(model1);
+                    else if (CheckArg.IsByNameAfterNotFindModel)//减少难度111
+                    {
+                        if (dis < MaxDistance)
+                        {
+                            AddFounded1(model1, transf, BIMFoundType.ByName);
+                        }
+                        else if (InitNavisFileInfoByModelSetting.Instance.IsStructrue(transf.name) && dis < MaxDistance * 20)
+                        {
+                            AddFounded1(model1, transf, BIMFoundType.ByName);
+                        }
+                        else
+                        {
+                            if(CheckArg.IsMoreDistance && dis<MaxDistance*20)
+                            {
+                                AddFounded1(model1, transf, BIMFoundType.ByName);
+                            }
+                            else
+                            {
+                                DebugLogError($"【{ms.Count}】[Rute1_1_32][没找到Transform][{MinDistance}-{MaxDistance}-{MaxDistance * 20}][m:{model1.ShowDistance(transf)}][path:{model1.GetPath()}]");
+                                for (int i1 = 0; i1 < ms.Count; i1++)
+                                {
+                                    var m = ms[i1];
+                                    DebugLogError($"[Rute1_1_32][{i1 + 1}/{ms.Count}] m:{model1.ShowDistance(m)}");
+                                    //遍历这些模型
+                                }
+                            }
+                        }
+                    }
+                    else
+                    {
+                        DebugLogError($"【{ms.Count}】[Rute1_1_31][没找到Transform][{MinDistance}-{MaxDistance}][m:{model1.ShowDistance(transf)}][path:{model1.GetPath()}]");
+                        for (int i1 = 0; i1 < ms.Count; i1++)
+                        {
+                            var m = ms[i1];
+                            DebugLogError($"[Rute1_1_31][{i1 + 1}/{ms.Count}] m:{model1.ShowDistance(m)}");
+                            //遍历这些模型
+                        }
+                    }
                 }
             }
         }
@@ -194,10 +258,20 @@ public class Model2TransformResult
                 }
                 else
                 {
-                    if (r1 > result)
+                    if (CheckArg.IsUseFound2 && result == 0)
                     {
-                        result = r1;
+                        AddFounded1(model1, transf, BIMFoundType.ByPos1NN);
                     }
+                    else
+                    {
+                        if (r1 > result)
+                        {
+                            result = r1;
+                        }
+                        //allModels_uid_found2.Add(model1);
+                    }
+
+
                 }
             }
             if (result == 1)
@@ -206,7 +280,8 @@ public class Model2TransformResult
             }
             else if (result == 0)//3.2.找到1-1-N
             {
-                allModels_uid_found2.Add(model1);
+                if(CheckArg.IsUseFound2==false)
+                    allModels_uid_found2.Add(model1);
 
                 //if (CheckArg.IsUseFound2)
                 //{
@@ -350,21 +425,40 @@ public class Model2TransformResult
                     }
                     else //[2.2.1.1.1_2]
                     {
-                        if (CheckArg.IsFindByName1) //考虑名称了
+                        if (CheckArg.IsByNameAfterFindModel) //考虑名称了
                         {
                             var ms = TransformDict.GetTransformsByName(model1.Name);
-                            if (ms.Count == 1 && dis< MaxDistance)//
+                            if (ms.Count == 1)//
                             {
-                                return true; //只有1个
+                                if (dis < MaxDistance)
+                                {
+                                    return true; //只有1个
+                                }
+                                else if (InitNavisFileInfoByModelSetting.Instance.IsStructrue(transf.name) && dis < MaxDistance * 20)
+                                {
+                                    return true; //只有1个
+                                }
+                                else
+                                {
+                                    if(CheckArg.IsMoreDistance && dis< MaxDistance * 20)
+                                    {
+                                        return true; //只有1个
+                                    }
+                                    else
+                                    {
+                                        DebugLogError($"{logTag}[Rute1_2.2.1.1.1_21][距离太远][{MinDistance}-{MaxDistance}][{isSameName}]{model1.ShowDistance(transf)}");
+                                        return false;
+                                    }
+                                }
                             }
                             else if (ms.Count == 0)//不可能
                             {
-                                DebugLogError($"{logTag}[Rute1_2.2.1.1.1_21][距离太远][{MinDistance}][{isSameName}]{model1.ShowDistance(transf)}");
+                                DebugLogError($"{logTag}[Rute1_2.2.1.1.1_20][距离太远][{MinDistance}-{MaxDistance}][{isSameName}]{model1.ShowDistance(transf)}");
                                 return false;
                             }
                             else //
                             {
-                                DebugLogError($"{logTag}[Rute1_2.2.1.1.1_22][距离太远][{MinDistance}][{isSameName}]{model1.ShowDistance(transf)}");
+                                DebugLogError($"{logTag}[Rute1_2.2.1.1.1_22][距离太远][{MinDistance}-{MaxDistance}][{isSameName}]{model1.ShowDistance(transf)}");
                                 return false;
                             }
                         }
@@ -444,11 +538,13 @@ public class CheckResultArg
 {
     public bool IsShowLog = true;
 
-    public bool IsFindByName1 = false;//1-1-N
+    public bool IsByNameAfterFindModel = false;//1-1-N，Position找到多个，或者找到的哪一个的距离太远后，考虑其他同名的
 
-    public bool IsFindByName2 = false;
+    public bool IsMoreDistance = false;//1-1-N，Position找到多个，或者找到的哪一个的距离太远后，考虑其他同名的
 
-    public bool IsFindByName3 = false;
+    public bool IsByNameAfterNotFindModel = false;//Position没找到后，考虑名称。减少难度111和建筑结构更加减少难度
+
+    public bool IsOnlyName = false;//名称相同就行
 
     public bool IsFindClosed = false;
 
@@ -456,20 +552,21 @@ public class CheckResultArg
 
     public CheckResultArg()
     {
-        Init(false, false, false, false, false, false);
+        Init(false, false, false,false, false, false, false);
     }
 
-    public CheckResultArg(bool isShowLog, bool isFindByName1, bool isFindByName2, bool isFindByName3, bool isFindClosed, bool isUseFound2)
+    public CheckResultArg(bool isShowLog, bool isFindByName1, bool isFindByName2, bool isMoreDistance, bool isOnlyName, bool isFindClosed, bool isUseFound2)
     {
-        Init(isShowLog, isFindByName1, isFindByName2, isFindByName3, isFindClosed, isUseFound2);
+        Init(isShowLog, isFindByName1, isFindByName2, isMoreDistance, isOnlyName, isFindClosed, isUseFound2);
     }
 
-    private void Init(bool isShowLog, bool isFindByName1, bool isFindByName2, bool isFindByName3, bool isFindClosed, bool isUseFound2)
+    private void Init(bool isShowLog, bool isFindByName1, bool isFindByName2, bool isMoreDistance, bool isOnlyName, bool isFindClosed, bool isUseFound2)
     {
         this.IsShowLog = isShowLog;
-        this.IsFindByName1 = isFindByName1;
-        this.IsFindByName2 = isFindByName2;
-        this.IsFindByName3 = isFindByName3;
+        this.IsByNameAfterFindModel = isFindByName1;
+        this.IsByNameAfterNotFindModel = isFindByName2;
+        this.IsMoreDistance = isMoreDistance;
+        this.IsOnlyName = isOnlyName;
         this.IsFindClosed = isFindClosed;
         this.IsUseFound2 = isUseFound2;
     }
@@ -477,9 +574,10 @@ public class CheckResultArg
     public CheckResultArg(bool isShowLog, CheckResultArg arg)
     {
         this.IsShowLog = isShowLog;
-        this.IsFindByName1 = arg.IsFindByName1;
-        this.IsFindByName2 = arg.IsFindByName2;
-        this.IsFindByName3 = arg.IsFindByName3;
+        this.IsByNameAfterFindModel = arg.IsByNameAfterFindModel;
+        this.IsByNameAfterNotFindModel = arg.IsByNameAfterNotFindModel;
+        this.IsOnlyName = arg.IsOnlyName;
+        this.IsMoreDistance = arg.IsMoreDistance;
         this.IsFindClosed = arg.IsFindClosed;
         this.IsUseFound2 = arg.IsUseFound2;
     }

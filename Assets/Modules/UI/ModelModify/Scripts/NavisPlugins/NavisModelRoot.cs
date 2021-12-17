@@ -691,7 +691,7 @@ public class NavisModelRoot : MonoBehaviour
         FindObjectByPos(new CheckResultArg(), MinDistanceLv3, p0);
         FindObjectByPos(new CheckResultArg(), MinDistanceLv4, p0);
         FindObjectByPos(new CheckResultArg(), MinDistanceLv5, p0);
-        FindObjectByPos(new CheckResultArg(false, true, false, false, false, false), MinDistanceLv5, p0);
+        FindObjectByPos(new CheckResultArg(false, true, false, false,false, false, false), MinDistanceLv5, p0);
         FindObjectByPos(new CheckResultArg(isShowLog, checkResultArg), MinDistanceLv5, p0);
     }
 

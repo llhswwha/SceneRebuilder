@@ -2232,6 +2232,8 @@ public class LODTwoRenderersList:List<LODTwoRenderers>
     {
         foreach (var item in list)
         {
+            if (item == null) continue;
+            if (item.gameObject == null) continue;
             LODTwoRenderers t = new LODTwoRenderers(item.gameObject);
             this.Add(t);
         }
