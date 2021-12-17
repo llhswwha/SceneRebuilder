@@ -72,12 +72,13 @@ public class Model2TransformResult
             if (ms.Count == 0)
             {
                 var closedT = model1.FindClosedTransform(TransformDict.ToList());
+                float dis = model1.GetDistance(closedT);
 
                 //遍历全部模型
-                
+
                 if (CheckArg.IsFindClosed)
                 {
-                    float dis = model1.GetDistance(closedT);
+                    
                     if (dis < MinDistance)
                     {
                         AddFounded1(model1, closedT, BIMFoundType.ByClosed);
@@ -88,13 +89,13 @@ public class Model2TransformResult
                     }
                     else
                     {
-                        DebugLogError($"【{ms.Count}】[Rute1_1_3][没找到同名的Transform&&Closed距离太远][{MinDistance}-{MaxDistance}][Name:{model1.Name}][Path:{model1.GetPath()}][{model1.ShowDistance(closedT)})]");
+                        DebugLogError($"【{ms.Count}】[Rute1_1_3][没找到同名的Transform&&Closed距离太远][{MinDistance}-{MaxDistance}|{dis}][{dis},{closedT}][Name:{model1.Name}][Path:{model1.GetPath()}][{model1.ShowDistance(closedT)})]");
                         allModels_uid_nofound1.Add(model1);
                     }
                 }
                 else
                 {
-                    DebugLogError($"【{ms.Count}】[Rute1_1_1][没找到同名的Transform][{MinDistance}-{MaxDistance}][Name:{model1.Name}][Path:{model1.GetPath()}][{model1.ShowDistance(closedT)})]");
+                    DebugLogError($"【{ms.Count}】[Rute1_1_1][没找到同名的Transform][{MinDistance}-{MaxDistance}][{dis},{closedT}][Name:{model1.Name}][Path:{model1.GetPath()}][{model1.ShowDistance(closedT)})]");
                     allModels_uid_nofound1.Add(model1);
                 }
             }

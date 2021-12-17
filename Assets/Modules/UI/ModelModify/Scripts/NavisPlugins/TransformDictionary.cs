@@ -277,6 +277,8 @@ public class TransformDictionary
 
         var length = n.Length;
         bool result = false;
+
+        if (n.StartsWith("PIPE_GEN_DBLPLATE_DN2400")) return false;
         if (length == 30)
         {
             string[] parts = n.Split('-');
