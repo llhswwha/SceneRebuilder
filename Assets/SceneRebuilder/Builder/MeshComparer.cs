@@ -20,7 +20,7 @@ public class MeshComparer : SingletonBehaviour<MeshComparer>
 
     //public float zeroM=0.0004f;//PointZero
 
-    public DisSetting disSetting;
+    public DisSetting disSetting = new DisSetting();
 
     public bool IsWorld=false;
 
