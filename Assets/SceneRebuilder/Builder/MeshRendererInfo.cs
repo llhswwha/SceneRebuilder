@@ -752,10 +752,10 @@ public class MeshRendererInfo : MonoBehaviour,IComparable<MeshRendererInfo>
         //    return LodIds.Contains(lv);
         //}
 
-        if (IsRendererType(MeshRendererType.CombinedPart))
-        {
-            return false;
-        }
+        //if (IsRendererType(MeshRendererType.CombinedPart))
+        //{
+        //    return false;
+        //}
 
         if (lv == -1)
         {
@@ -767,13 +767,37 @@ public class MeshRendererInfo : MonoBehaviour,IComparable<MeshRendererInfo>
         }
     }
 
+    [ContextMenu("TestIsLod00")]
+    public bool TestIsLod00()
+    {
+        bool r = IsLodNs(new int[] { 0, -1 });
+        Debug.LogError($"TestIsLod00 r:{r}");
+        return r;
+    }
+
+    [ContextMenu("TestIsLod01")]
+    public bool TestIsLod01()
+    {
+        bool r = IsLodNs(new int[] { 0 });
+        Debug.LogError($"TestIsLod00 r:{r}");
+        return r;
+    }
+
+    [ContextMenu("TestIsLod02")]
+    public bool TestIsLod02()
+    {
+        bool r = IsLodNs(new int[] { -1 });
+        Debug.LogError($"TestIsLod00 r:{r}");
+        return r;
+    }
+
     public bool IsLodNs(int[] lvs)
     {
         this.GetRenderers();
-        if (IsRendererType(MeshRendererType.CombinedPart))
-        {
-            return false;
-        }
+        //if (IsRendererType(MeshRendererType.CombinedPart))
+        //{
+        //    return false;
+        //}
         foreach(int lv in lvs)
         {
             if (IsLodN(lv)) return true;

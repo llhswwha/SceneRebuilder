@@ -191,17 +191,19 @@ public class NavisModelRootEditor : BaseFoldoutEditor<NavisModelRoot>
         EditorGUILayout.EndHorizontal();
 
         EditorGUILayout.BeginHorizontal();
-        GUILayout.Label("Find>Name", GUILayout.Width(70));
+        GUILayout.Label("Find>Name", GUILayout.Width(80));
         item.checkResultArg.IsByNameAfterFindModel = EditorGUILayout.Toggle(item.checkResultArg.IsByNameAfterFindModel, GUILayout.Width(20));
-        GUILayout.Label("NotFind>Name", GUILayout.Width(80));
+        GUILayout.Label("NotFind>Name", GUILayout.Width(90));
         item.checkResultArg.IsByNameAfterNotFindModel = EditorGUILayout.Toggle(item.checkResultArg.IsByNameAfterNotFindModel, GUILayout.Width(20));
-        GUILayout.Label("MoreDis", GUILayout.Width(60));
+        GUILayout.Label("MoreDis", GUILayout.Width(65));
         item.checkResultArg.IsMoreDistance = EditorGUILayout.Toggle(item.checkResultArg.IsMoreDistance, GUILayout.Width(20));
-        GUILayout.Label("OnlyName", GUILayout.Width(60));
+        GUILayout.Label("OnlyName", GUILayout.Width(65));
         item.checkResultArg.IsOnlyName = EditorGUILayout.Toggle(item.checkResultArg.IsOnlyName, GUILayout.Width(20));
-        GUILayout.Label("Closed", GUILayout.Width(50));
-        item.checkResultArg.IsFindClosed = EditorGUILayout.Toggle(item.checkResultArg.IsFindClosed, GUILayout.Width(20));
-        GUILayout.Label("Found2", GUILayout.Width(50));
+        GUILayout.Label("Closed1", GUILayout.Width(60));
+        item.checkResultArg.IsFindClosed1 = EditorGUILayout.Toggle(item.checkResultArg.IsFindClosed1, GUILayout.Width(20));
+        GUILayout.Label("Closed2", GUILayout.Width(60));
+        item.checkResultArg.IsFindClosed2 = EditorGUILayout.Toggle(item.checkResultArg.IsFindClosed2, GUILayout.Width(20));
+        GUILayout.Label("Found2", GUILayout.Width(60));
         item.checkResultArg.IsUseFound2 = EditorGUILayout.Toggle(item.checkResultArg.IsUseFound2, GUILayout.Width(20));
         if (GUILayout.Button("Pos1"))
         {

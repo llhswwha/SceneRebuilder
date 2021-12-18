@@ -802,26 +802,26 @@ public class NavisModelRoot : MonoBehaviour
         FindObjectByPos(new CheckResultArg(), MinDistanceLv3, p0);
         FindObjectByPos(new CheckResultArg(), MinDistanceLv4, p0);
         FindObjectByPos(new CheckResultArg(), MinDistanceLv5, p0);
-        FindObjectByPos(new CheckResultArg(false, true, false, false,false, false, false), MinDistanceLv5, p0);
+        FindObjectByPos(new CheckResultArg(false, true, false, false,false,false, false, false), MinDistanceLv5, p0);
         FindObjectByPos(new CheckResultArg(isShowLog, checkResultArg), MinDistanceLv5, p0);
     }
 
     public void FindObjectByPos_OneKey1(bool isShowLog, ProgressArgEx p0)
     {
-        FindObjectByPos(new CheckResultArg(false, false, false, false, false, false, false), MinDistanceLv1, p0);
-        FindObjectByPos(new CheckResultArg(false, false, false, false, false, false, true), MinDistanceLv1, p0);
-        FindObjectByPos(new CheckResultArg(false, true, false, false, false, false, true), MinDistanceLv1, p0);
-        FindObjectByPos(new CheckResultArg(false, true, true, false, false, false, true), MinDistanceLv1, p0);
-        FindObjectByPos(new CheckResultArg(isShowLog, true, true, true, false, false, true), MinDistanceLv1, p0);
+        FindObjectByPos(new CheckResultArg(false, false, false, false,false, false, false, false), MinDistanceLv1, p0);
+        FindObjectByPos(new CheckResultArg(false, false, false, false,false, false, false, true), MinDistanceLv1, p0);
+        FindObjectByPos(new CheckResultArg(false, true, false, false, false, false, false, true), MinDistanceLv1, p0);
+        FindObjectByPos(new CheckResultArg(false, true, true, false,false, false, false, true), MinDistanceLv1, p0);
+        FindObjectByPos(new CheckResultArg(isShowLog, true, true, true, false,false, false, true), MinDistanceLv1, p0);
     }
 
     public void FindObjectByPos_OneKey2(bool isShowLog, ProgressArgEx p0)
     {
-        FindObjectByPos(new CheckResultArg(false, false, false, false, false, false, false), MinDistanceLv2, p0);
-        FindObjectByPos(new CheckResultArg(false, false, false, false, false, false, true), MinDistanceLv2, p0);
-        FindObjectByPos(new CheckResultArg(false, true, false, false, false, false, true), MinDistanceLv2, p0);
-        FindObjectByPos(new CheckResultArg(false, true, true, false, false, false, true), MinDistanceLv2, p0);
-        FindObjectByPos(new CheckResultArg(isShowLog, true, true, true, false, false, true), MinDistanceLv2, p0);
+        FindObjectByPos(new CheckResultArg(false, false, false, false, false,false, false, false), MinDistanceLv2, p0);
+        FindObjectByPos(new CheckResultArg(false, false, false, false, false,false, false, true), MinDistanceLv2, p0);
+        FindObjectByPos(new CheckResultArg(false, true, false, false, false,false, false, true), MinDistanceLv2, p0);
+        FindObjectByPos(new CheckResultArg(false, true, true, false, false,false, false, true), MinDistanceLv2, p0);
+        FindObjectByPos(new CheckResultArg(isShowLog, true, true, true, false,false, false, true), MinDistanceLv2, p0);
     }
 
 

@@ -121,7 +121,7 @@ public class Model2TransformResult
 
                 //遍历全部模型
 
-                if (CheckArg.IsFindClosed)
+                if (CheckArg.IsFindClosed1)
                 {
                     
                     if (dis < MinDistance)
@@ -137,6 +137,7 @@ public class Model2TransformResult
                         DebugLogError($"【{ms.Count}】[Rute1_1_3][没找到同名的Transform&&Closed距离太远][{MinDistance}-{MaxDistance}|{dis}][{dis},{closedT}][Name:{model1.Name}][Path:{model1.GetPath()}][{model1.ShowDistance(closedT)})]");
                         allModels_uid_nofound1.Add(model1);
                     }
+                    
                 }
                 else
                 {
@@ -543,10 +544,19 @@ public class Model2TransformResult
             }
             else if (isSameName == false) //2.2.1.2 判断名称是否相同_不同名，不同名也可以考虑作为找到了的
             {
-                //最终可以考虑下不同名但是距离很近的
+                if (CheckArg.IsFindClosed2)
+                {
+
+                    return true;
+                }
+                else
+                {
+//最终可以考虑下不同名但是距离很近的
                 //allModels_uid_found2.Add(model1);
                 DebugLogError($"{logTag}[Rute12][不同名-但是距离很近][{MinDistance}][{isSameName}:{model1.Name} <> {transf.name}]{model1.ShowDistance(transf)}");
                 return false;
+                }
+                
             }
             else //2.2.1.3 【找到了】
             {
@@ -609,28 +619,30 @@ public class CheckResultArg
 
     public bool IsOnlyName = false;//名称相同就行
 
-    public bool IsFindClosed = false;
+    public bool IsFindClosed1 = false;
+
+    public bool IsFindClosed2 = false;
 
     public bool IsUseFound2 = false;
 
     public CheckResultArg()
     {
-        Init(false, false, false,false, false, false, false);
+        Init(false, false, false,false, false,false, false, false);
     }
 
-    public CheckResultArg(bool isShowLog, bool isFindByName1, bool isFindByName2, bool isMoreDistance, bool isOnlyName, bool isFindClosed, bool isUseFound2)
+    public CheckResultArg(bool isShowLog, bool isFindByName1, bool isFindByName2, bool isMoreDistance, bool isOnlyName, bool isFindClosed1,bool isFindClosed2, bool isUseFound2)
     {
-        Init(isShowLog, isFindByName1, isFindByName2, isMoreDistance, isOnlyName, isFindClosed, isUseFound2);
+        Init(isShowLog, isFindByName1, isFindByName2, isMoreDistance, isOnlyName, isFindClosed1,isFindClosed2, isUseFound2);
     }
 
-    private void Init(bool isShowLog, bool isFindByName1, bool isFindByName2, bool isMoreDistance, bool isOnlyName, bool isFindClosed, bool isUseFound2)
+    private void Init(bool isShowLog, bool isFindByName1, bool isFindByName2, bool isMoreDistance, bool isOnlyName, bool isFindClosed1,bool isFindClosed2, bool isUseFound2)
     {
         this.IsShowLog = isShowLog;
         this.IsByNameAfterFindModel = isFindByName1;
         this.IsByNameAfterNotFindModel = isFindByName2;
         this.IsMoreDistance = isMoreDistance;
         this.IsOnlyName = isOnlyName;
-        this.IsFindClosed = isFindClosed;
+        this.IsFindClosed1 = isFindClosed1;this.IsFindClosed2 = isFindClosed2;
         this.IsUseFound2 = isUseFound2;
     }
 
@@ -641,7 +653,7 @@ public class CheckResultArg
         this.IsByNameAfterNotFindModel = arg.IsByNameAfterNotFindModel;
         this.IsOnlyName = arg.IsOnlyName;
         this.IsMoreDistance = arg.IsMoreDistance;
-        this.IsFindClosed = arg.IsFindClosed;
+        this.IsFindClosed1 = arg.IsFindClosed1;this.IsFindClosed2 = arg.IsFindClosed2;
         this.IsUseFound2 = arg.IsUseFound2;
     }
 }
