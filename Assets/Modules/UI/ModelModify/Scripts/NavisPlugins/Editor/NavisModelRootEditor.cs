@@ -29,7 +29,12 @@ public class NavisModelRootEditor : BaseFoldoutEditor<NavisModelRoot>
     static FoldoutEditorArg<ModelItemInfo> modelListArg_nodrawable_nozero = new FoldoutEditorArg<ModelItemInfo>(true, false);
     static FoldoutEditorArg<ModelItemInfo> modelListArg_noDrawable_zero = new FoldoutEditorArg<ModelItemInfo>(true, false);
 
-    static FoldoutEditorArg<ModelItemInfo> modelListArg_found2 = new FoldoutEditorArg<ModelItemInfo>(true, false);
+    static FoldoutEditorArg<ModelItemInfo> modelResultListArg_all = new FoldoutEditorArg<ModelItemInfo>(true, false);
+    static FoldoutEditorArg<ModelItemInfo> modelResultListArg_found1 = new FoldoutEditorArg<ModelItemInfo>(true, false);
+    static FoldoutEditorArg<ModelItemInfo> modelResultListArg_found2 = new FoldoutEditorArg<ModelItemInfo>(true, false);
+    static FoldoutEditorArg<ModelItemInfo> modelResultListArg_nofound1 = new FoldoutEditorArg<ModelItemInfo>(true, false);
+    static FoldoutEditorArg<ModelItemInfo> modelResultListArg_nofound2 = new FoldoutEditorArg<ModelItemInfo>(true, false);
+    static FoldoutEditorArg<ModelItemInfo> modelResultListArg_exception = new FoldoutEditorArg<ModelItemInfo>(true, false);
 
     static FoldoutEditorArg<Transform> transListArg_All = new FoldoutEditorArg<Transform>(true, false);
     static FoldoutEditorArg<Transform> transListArg = new FoldoutEditorArg<Transform>(true, false);
@@ -50,7 +55,8 @@ public class NavisModelRootEditor : BaseFoldoutEditor<NavisModelRoot>
         if (item.ModelList != null)
         {
             EditorUIUtils.Separator(5);
-            DrawVueModelList(item,item.ModelList.allModels, modelListArg_all, "Model List(All)");
+            DrawVueModelList(item,item.ModelListAll.allModels, modelListArg_all, "Model List(All)");
+
             DrawVueModelList(item, item.ModelList.allModels_uid, modelListArg_uid, "Model List(UID)");
             DrawVueModelList(item, item.ModelList.allModels_noUid, modelListArg_nouid, "Model List(NoUID)");
 
@@ -59,7 +65,13 @@ public class NavisModelRootEditor : BaseFoldoutEditor<NavisModelRoot>
             DrawVueModelList(item, item.ModelList.allModels_noDrawable_nozero, modelListArg_nodrawable_nozero, "Model List(NoDrawable&NoZero)");
             DrawVueModelList(item, item.ModelList.allModels_noDrawable_zero, modelListArg_noDrawable_zero, "Model List(NoDrawable&Zero)");
 
-            DrawVueModelList(item, item.model2TransformResult.allModels_uid_found2, modelListArg_found2, "Model List(Found2)");
+            EditorUIUtils.Separator(5);
+            DrawVueModelList(item, item.model2TransformResult.allModels_uid_all, modelResultListArg_all, "Model List(All)");
+            DrawVueModelList(item, item.model2TransformResult.allModels_uid_found1, modelResultListArg_found1, "Model List(Found1)");
+            DrawVueModelList(item, item.model2TransformResult.allModels_uid_found2, modelResultListArg_found2, "Model List(Found2)");
+            DrawVueModelList(item, item.model2TransformResult.allModels_uid_nofound1, modelResultListArg_nofound1, "Model List(noFound1)");
+            DrawVueModelList(item, item.model2TransformResult.allModels_uid_nofound2, modelResultListArg_nofound2, "Model List(noFound2)");
+            DrawVueModelList(item, item.model2TransformResult.allModels_uid_exception, modelResultListArg_exception, "Model List(Exception)");
         }
 
         EditorUIUtils.Separator(5);
@@ -86,6 +98,18 @@ public class NavisModelRootEditor : BaseFoldoutEditor<NavisModelRoot>
         if (GUILayout.Button("BindBimInfo"))
         {
             item.BindBimInfo(null);
+        }
+        if (GUILayout.Button("OneKey1"))
+        {
+            item.BindBimInfoEx1(null);
+        }
+        if (GUILayout.Button("OneKey2"))
+        {
+            item.BindBimInfoEx2(null);
+        }
+        if (GUILayout.Button("OneKey12"))
+        {
+            item.BindBimInfoEx12(null);
         }
         EditorGUILayout.EndHorizontal();
 
@@ -441,7 +465,7 @@ public class NavisModelRootEditor : BaseFoldoutEditor<NavisModelRoot>
                 var doorRootArg = FoldoutEditorArgBuffer.editorArgs[listItem];
                 doorRootArg.level = 1;
                 doorRootArg.background = true;
-                doorRootArg.caption = $"[{i + 1:00}] [{listItem.IsFound}][{listItem.FoundType}] {listItem.name}";
+                doorRootArg.caption = $"[{i + 1:00}] [{listItem.IsFound}][{listItem.FoundType}] {listItem.name}>{listItem.MName}({listItem.MId})";
                 doorRootArg.info = listItem.GetItemText();
                 EditorUIUtils.ObjectFoldout(doorRootArg, listItem.gameObject, () =>
                 {
@@ -505,14 +529,33 @@ public class NavisModelRootEditor : BaseFoldoutEditor<NavisModelRoot>
                 var doorRootArg = FoldoutEditorArgBuffer.editorArgs[listItem];
                 doorRootArg.level = 1;
                 doorRootArg.background = true;
-                doorRootArg.caption = $"[{i + 1:00}] {listItem.Name}|{listItem.Id}|{listItem.Type}";
+                string itemName = listItem.Name;
+                var p = listItem.GetParent();
+                if (p != null)
+                {
+                    itemName = p.Name + "\\" + itemName;
+                    if (p.GetParent() != null)
+                    {
+                        itemName = p.GetParent().Name + "\\" + itemName;
+                    }
+                }
+                
+                doorRootArg.caption = $"[{i + 1:00}] {itemName}|{listItem.Id}|{listItem.Type}";
                 //doorRootArg.info = $"({listItem.AreaId}|{listItem.AreaName})({listItem.Id}|{listItem.UId}|{listItem.RenderId})";
                 doorRootArg.info = $"({listItem.AreaId}|{listItem.AreaName})({listItem.X},{listItem.Y},{listItem.Z})({!string.IsNullOrEmpty(listItem.UId)}|{!string.IsNullOrEmpty(listItem.RenderId)})";
                 EditorUIUtils.ObjectFoldout(doorRootArg, listItem.Tag as GameObject, () =>
                 {
                     if (GUILayout.Button("Id",GUILayout.Width(30)))
                     {
-                        Debug.Log($"name:{listItem.Name}, id:{listItem.Id}, uid:{listItem.UId}, rid:{listItem.RenderId}");
+                        Debug.Log($"name:{listItem.Name}, id:{listItem.Id}, uid:{listItem.UId}, rid:{listItem.RenderId},path:{listItem.GetPath()}");
+                    }
+                    if (GUILayout.Button("Pos", GUILayout.Width(30)))
+                    {
+                        Vector3 pos = listItem.GetPositon();
+                        GameObject posObj = GameObject.CreatePrimitive(PrimitiveType.Sphere);
+                        posObj.transform.localScale = new Vector3(0.1f, 0.1f, 0.1f);
+                        posObj.transform.position = pos;
+                        posObj.name = listItem.Name+ "_Pos";
                     }
                     if (GUILayout.Button("Find", GUILayout.Width(50)))
                     {

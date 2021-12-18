@@ -8,6 +8,7 @@ public class MeshComparerEditor : BaseEditor<MeshComparer>
 {
     public static void DrawSetting(MeshComparer item)
     {
+        if (item == null) return;
         EditorGUILayout.BeginHorizontal();
         item.step = (AlignDebugStep)EditorGUILayout.EnumPopup(item.step);
         item.mode = (AlignRotateMode)EditorGUILayout.EnumPopup(item.mode);

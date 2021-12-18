@@ -540,7 +540,7 @@ public class MeshComparer : SingletonBehaviour<MeshComparer>
         float dis1 = Vector3.Distance(goTo.transform.position, goFrom.transform.position);
         float dis2 = MeshHelper.GetCenterDistance(goTo.gameObject, goFrom.gameObject);
         float dis3 = MeshHelper.GetAvgVertexDistanceEx(goTo.transform, goFrom.transform);
-        Debug.Log($"Debug lod0:{goTo.name} lod1:{goFrom.name} dis1:{dis1} dis2:{dis2} dis3:{dis3}");
+        Debug.Log($"Debug goTo:{goTo.name} goFrom:{goFrom.name} dis1(Transform):{dis1} dis2(Center):{dis2} dis3(AvgVertex):{dis3}");
         //var min = lodManager.GetMinInfo(goFrom.transform);
         //Debug.Log($"dis:{min.dis} meshDis:{min.meshDis} target:{min.target}");
     }

@@ -143,7 +143,8 @@ public class BIMModelInfo : MonoBehaviour,IComparable<BIMModelInfo>
         this.MName = model.Name;
         this.MId = model.Id;
         this.Guid = model.UId;
-        this.Position1 = transform.position;
+        //this.Position1 = transform.position;
+        this.Position1 = MeshRendererInfo.GetCenterPos(transform.gameObject);
         this.Position2 = model.GetPositon();
         this.GetDistance();
 

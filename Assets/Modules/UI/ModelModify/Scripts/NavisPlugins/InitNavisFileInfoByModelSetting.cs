@@ -1,4 +1,5 @@
 using NavisPlugins.Infos;
+using System;
 using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
@@ -67,6 +68,8 @@ public class InitNavisFileInfoByModelSetting : SingletonBehaviour<InitNavisFileI
     public static List<string> structureNameList2_Default = new List<string>() {  "楼梯", "转角井" };
 
     public List<string> structureNameList2 = new List<string>(structureNameList2_Default);
+
+    public List<string> filterModelParent = new List<string>() {"窗" };//一幢大楼的窗户被我们按楼层拆掉了。
 
     [ContextMenu("AddDoorABFilter")]
     public void AddDoorABFilter()
@@ -177,7 +180,7 @@ public class InitNavisFileInfoByModelSetting : SingletonBehaviour<InitNavisFileI
             return true;
         }
         //if (t.GetComponent<MeshRenderer>() == null && t.GetComponent<LODGroup>() == null) return true;
-        if (MeshHelper.IsEmptyGroup(t, false)) return true;
+        //if (MeshHelper.IsEmptyGroup(t, false)) return true;
         //if (MeshHelper.IsSameNameGroup(t)) return true;
         if (MeshHelper.IsEmptyLODSubGroup(t)) return true;
         return false;
@@ -191,6 +194,10 @@ public class InitNavisFileInfoByModelSetting : SingletonBehaviour<InitNavisFileI
             ModelItemInfo t = list1[i1];
             var p1 = ProgressArg.New("FilterList", i1, list1.Count, t.Name, p0);
             ProgressBarHelper.DisplayCancelableProgressBar(p1);
+            if(t.Name== "1B_F1_Door4")
+            {
+
+            }
             if (IsFilteredName(t.Name))
             {
                 continue;
@@ -206,6 +213,10 @@ public class InitNavisFileInfoByModelSetting : SingletonBehaviour<InitNavisFileI
         return all;
     }
 
+    public string DebugFilterModelName = "#3机密封油供油装置";
+
+    public string DebugFilterTransformName = "1B_F1_Door4";
+
     public List<Transform> FilterList(List<Transform> list1, ProgressArgEx p0)
     {
         List<Transform> all = new List<Transform>();
@@ -214,7 +225,7 @@ public class InitNavisFileInfoByModelSetting : SingletonBehaviour<InitNavisFileI
             Transform t = list1[i1];
             var p1 = ProgressArg.New("FilterList", i1, list1.Count, t.name, p0);
             ProgressBarHelper.DisplayCancelableProgressBar(p1);
-            if(t.name== "开式水出口b")
+            if (t.name == DebugFilterTransformName)
             {
 
             }
@@ -253,5 +264,50 @@ public class InitNavisFileInfoByModelSetting : SingletonBehaviour<InitNavisFileI
             }
         }
         return false;
+    }
+
+    public List<ModelCheckExceptionalCase> ExceptionalCases = new List<ModelCheckExceptionalCase>();
+
+    public bool CheckExceptialCases(ModelItemInfo model1,Transform closedT,float dis)
+    {
+        if (ExceptionalCases.Count == 0)
+        {
+            ExceptionalCases.Add(new ModelCheckExceptionalCase("门;窗", "door", 0.3f));
+        }
+        foreach(var eCase in ExceptionalCases)
+        {
+            //if (model1.GetParent().Name == eCase.ModelParentName && closedT.name.ToLower().Contains(eCase.TranformName))
+            if (eCase.ModelParentName.Contains(model1.GetParent().Name)  && closedT.name.ToLower().Contains(eCase.TranformName)) //门，或者窗，门可能放到窗的里面
+            {
+                if (dis < eCase.MinDistance)
+                {
+                    //AddFounded1(model1, closedT, BIMFoundType.ByClosed);
+                    return true;
+                }
+                else
+                {
+                    Debug.LogError($"[CheckExceptialCases][门模型的距离太远了][{dis},{closedT}][Name:{model1.Name}][Path:{model1.GetPath()}][{model1.ShowDistance(closedT)})]");
+                }
+            }
+        }
+        return false;
+
+    }
+
+    [Serializable]
+    public class ModelCheckExceptionalCase
+    {
+        public string ModelParentName;
+
+        public string TranformName;
+
+        public float MinDistance;
+
+        public ModelCheckExceptionalCase(string n1,string n2,float dis)
+        {
+            this.ModelParentName = n1;
+            this.TranformName = n2;
+            this.MinDistance = dis;
+        }
     }
 }

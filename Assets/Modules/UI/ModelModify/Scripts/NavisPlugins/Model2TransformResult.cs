@@ -23,6 +23,11 @@ public class Model2TransformResult
     [NonSerialized]
     float MaxDistance;
 
+    [NonSerialized]
+    float MoreMaxDistance;
+
+
+    public List<ModelItemInfo> allModels_uid_all = new List<ModelItemInfo>();
     //[NonSerialized]
     public List<ModelItemInfo> allModels_uid_found1 = new List<ModelItemInfo>();
     //[NonSerialized]
@@ -31,6 +36,8 @@ public class Model2TransformResult
     public List<ModelItemInfo> allModels_uid_nofound1 = new List<ModelItemInfo>();
     //[NonSerialized]
     public List<ModelItemInfo> allModels_uid_nofound2 = new List<ModelItemInfo>();
+
+    public List<ModelItemInfo> allModels_uid_exception = new List<ModelItemInfo>();
     public int notFoundCount;
 
     [NonSerialized]
@@ -54,25 +61,63 @@ public class Model2TransformResult
         this.TransformDict = TransformDict;
         this.MinDistance = MinDistance;
         this.MaxDistance = MinDistance * 10;
+        this.MoreMaxDistance = this.MaxDistance * 20;
     }
 
     public CheckResultArg CheckArg = new CheckResultArg();
 
+    public bool isCenterPos = true;
+
     public void CheckResult(ModelItemInfo model1, List<Transform> transforms1)
     {
+        allModels_uid_all.Add(model1);
+
+        if (model1.Name == InitNavisFileInfoByModelSetting.Instance.DebugFilterModelName)
+        {
+            Debug.Log(InitNavisFileInfoByModelSetting.Instance.DebugFilterModelName);
+        }
+
         if (transforms1 == null || transforms1.Count == 0)//1.没找到
         {
-            if(model1.Name== "HorPumpBB1Asm-1-0002")
-            {
-                Debug.Log("HorPumpBB1Asm-1-0002");
-            }
+
             //allModels_uid_nofound1.Add(model1);
 
             var ms = TransformDict.GetTransformsByName(model1.Name);
             if (ms.Count == 0)
             {
-                var closedT = model1.FindClosedTransform(TransformDict.ToList());
-                float dis = model1.GetDistance(closedT);
+                //bool isCenterPos = true;
+                var closedT = model1.FindClosedTransform(TransformDict.ToList(), isCenterPos);
+                if (closedT == null)
+                {
+                    DebugLogError($"【{ms.Count}】[Rute1_1_5][closedT == null][{MinDistance}-{MaxDistance}][{closedT}][Name:{model1.Name}][Path:{model1.GetPath()}][{model1.ShowDistance(closedT)})]");
+                    return;
+                }
+                float dis = model1.GetDistance(closedT, isCenterPos);
+                //if (model1.GetParent().Name == "门" )
+                //{
+                //    if(closedT.name.ToLower().Contains("door"))
+                //    {
+                //        if (dis < 0.3)
+                //        {
+                //            //AddFounded1(model1, closedT, BIMFoundType.ByClosed);
+                //        }
+                //        else
+                //        {
+                //            DebugLogError($"【{ms.Count}】[Rute1_1_4][门模型的距离太远了][{MinDistance}-{MaxDistance}][{dis},{closedT}][Name:{model1.Name}][Path:{model1.GetPath()}][{model1.ShowDistance(closedT)})]");
+                //        }
+                //    }
+                //    else
+                //    {
+                //        DebugLogError($"【{ms.Count}】[Rute1_1_5][找到的不是门][{MinDistance}-{MaxDistance}][{dis},{closedT}][Name:{model1.Name}][Path:{model1.GetPath()}][{model1.ShowDistance(closedT)})]");
+                //    }
+                   
+                //}
+
+                if (InitNavisFileInfoByModelSetting.Instance.CheckExceptialCases(model1, closedT, dis))
+                {
+                    AddFounded1(model1, closedT, BIMFoundType.ByClosed);
+                    return;
+                }
 
                 //遍历全部模型
 
@@ -95,14 +140,23 @@ public class Model2TransformResult
                 }
                 else
                 {
-                    DebugLogError($"【{ms.Count}】[Rute1_1_1][没找到同名的Transform][{MinDistance}-{MaxDistance}][{dis},{closedT}][Name:{model1.Name}][Path:{model1.GetPath()}][{model1.ShowDistance(closedT)})]");
-                    allModels_uid_nofound1.Add(model1);
+                    if(model1.GetParentName()=="窗")
+                    {
+                        //不用打印了
+                        allModels_uid_exception.Add(model1);//窗户找不到是很正常的
+                    }
+                    else
+                    {
+                        DebugLogError($"【{ms.Count}】[Rute1_1_1][没找到同名的Transform][{MinDistance}-{MaxDistance}][{dis},{closedT}][Name:{model1.Name}][Path:{model1.GetPath()}][{model1.ShowDistance(closedT)})]");
+                        allModels_uid_nofound1.Add(model1);
+                    }
+                    
                 }
             }
             else if (ms.Count == 1)
             {
                 var transf = ms[0];
-                float dis = model1.GetDistance(transf);
+                float dis = model1.GetDistance(transf, isCenterPos);
                 if (dis <= MinDistance)
                 {
                     AddFounded1(model1, transf, BIMFoundType.ByName);
@@ -119,7 +173,7 @@ public class Model2TransformResult
                         {
                             AddFounded1(model1, transf, BIMFoundType.ByName);
                         }
-                        else if(InitNavisFileInfoByModelSetting.Instance.IsStructrue(transf.name) && dis<MaxDistance*20)
+                        else if(InitNavisFileInfoByModelSetting.Instance.IsStructrue(transf.name) && dis< MoreMaxDistance)
                         {
                             AddFounded1(model1, transf, BIMFoundType.ByName);
                         }
@@ -129,28 +183,29 @@ public class Model2TransformResult
                             {
 
                             }
-                            if (CheckArg.IsMoreDistance && dis < MaxDistance * 20)
+                            if (CheckArg.IsMoreDistance && dis < MoreMaxDistance)
                             {
                                 AddFounded1(model1, transf, BIMFoundType.ByName);
                             }
                             else
                             {
-                                DebugLogError($"【{ms.Count}】[Rute1_1_22][没找到Transform][{MinDistance}-{MaxDistance}-{MaxDistance * 20}({CheckArg.IsMoreDistance})][m:{model1.ShowDistance(transf)}][path:{model1.GetPath()}]");
+                                DebugLogError($"【{ms.Count}】[Rute1_1_22][没找到Transform][{MinDistance}-{MaxDistance}-{MoreMaxDistance}]({CheckArg.IsMoreDistance})][m:{model1.ShowDistance(transf)}][path:{model1.GetPath()}]");
+                                allModels_uid_nofound1.Add(model1);
                             }
                         }
                         
                     }
                     else 
                     { 
-                        DebugLogError($"【{ms.Count}】[Rute1_1_21][没找到Transform][{MinDistance}-{MaxDistance}][m:{model1.ShowDistance(transf)}][path:{model1.GetPath()}]");
-
+                        DebugLogError($"【{ms.Count}】[Rute1_1_21][没找到Transform][{MinDistance}-{MaxDistance}-{MoreMaxDistance}][m:{model1.ShowDistance(transf)}][path:{model1.GetPath()}]");
+                        allModels_uid_nofound1.Add(model1);
                     }
                 }
             }
             else
             {
-                var transf = model1.FindClosedTransform(ms);
-                float dis = model1.GetDistance(transf);
+                var transf = model1.FindClosedTransform(ms, isCenterPos);
+                float dis = model1.GetDistance(transf, isCenterPos);
                 if (dis <= MinDistance)
                 {
                     AddFounded1(model1, transf,BIMFoundType.ByNameAndClosed);
@@ -175,37 +230,44 @@ public class Model2TransformResult
                         {
                             AddFounded1(model1, transf, BIMFoundType.ByName);
                         }
-                        else if (InitNavisFileInfoByModelSetting.Instance.IsStructrue(transf.name) && dis < MaxDistance * 20)
+                        else if (InitNavisFileInfoByModelSetting.Instance.IsStructrue(transf.name) && dis < MoreMaxDistance)
                         {
                             AddFounded1(model1, transf, BIMFoundType.ByName);
                         }
                         else
                         {
-                            if(CheckArg.IsMoreDistance && dis<MaxDistance*20)
+                            if(CheckArg.IsMoreDistance && dis< MoreMaxDistance)
                             {
                                 AddFounded1(model1, transf, BIMFoundType.ByName);
                             }
                             else
                             {
-                                DebugLogError($"【{ms.Count}】[Rute1_1_32][没找到Transform][{MinDistance}-{MaxDistance}-{MaxDistance * 20}][m:{model1.ShowDistance(transf)}][path:{model1.GetPath()}]");
+                                DebugLogError($"【{ms.Count}】[Rute1_1_32][没找到Transform][{MinDistance}-{MaxDistance}-{MoreMaxDistance}][m:{model1.ShowDistance(transf)}][path:{model1.GetPath()}]");
                                 for (int i1 = 0; i1 < ms.Count; i1++)
                                 {
                                     var m = ms[i1];
-                                    DebugLogError($"[Rute1_1_32][{i1 + 1}/{ms.Count}] m:{model1.ShowDistance(m)}");
+                                    MeshRenderer renderer = m.GetComponent<MeshRenderer>();
+                                    bool isRenderer = renderer != null;
+                                    DebugLogError($"[Rute1_1_32][{i1 + 1}/{ms.Count}][renderer:{isRenderer}] m:{model1.ShowDistance(m)}");
                                     //遍历这些模型
                                 }
+                                allModels_uid_nofound1.Add(model1);
                             }
                         }
                     }
                     else
                     {
-                        DebugLogError($"【{ms.Count}】[Rute1_1_31][没找到Transform][{MinDistance}-{MaxDistance}][m:{model1.ShowDistance(transf)}][path:{model1.GetPath()}]");
+                        DebugLogError($"【{ms.Count}】[Rute1_1_31][没找到Transform][{MinDistance}-{MaxDistance}-{MoreMaxDistance}][m:{model1.ShowDistance(transf)}][path:{model1.GetPath()}]");
                         for (int i1 = 0; i1 < ms.Count; i1++)
                         {
                             var m = ms[i1];
-                            DebugLogError($"[Rute1_1_31][{i1 + 1}/{ms.Count}] m:{model1.ShowDistance(m)}");
+                            MeshRenderer renderer = m.GetComponent<MeshRenderer>();
+                            bool isRenderer = renderer != null;
+                            DebugLogError($"[Rute1_1_31][{i1 + 1}/{ms.Count}][renderer:{isRenderer}] m:{model1.ShowDistance(m)}");
                             //遍历这些模型
+
                         }
+                        allModels_uid_nofound1.Add(model1);
                     }
                 }
             }
@@ -407,7 +469,7 @@ public class Model2TransformResult
 
     private bool CheckModel2(ModelItemInfo model1, Transform transf, ModelItemInfo model2, string logTag)
     {
-        float dis = model1.GetDistance(transf);
+        float dis = model1.GetDistance(transf, isCenterPos);
         bool isSameName = model1.IsSameName(transf);
 
         if (model2 == model1)   //2.2.1 最理想的 Model1找到Transform1,Transform1找到的Model2就是Model1

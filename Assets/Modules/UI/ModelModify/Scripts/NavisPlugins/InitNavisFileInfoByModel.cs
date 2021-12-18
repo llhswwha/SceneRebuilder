@@ -978,7 +978,21 @@ vueDict.Add(item.UId, item);
                     var depName = dep.NodeName;
                     if (dep.ChildNodes!=null && dep.ChildNodes.Count>0)
                     {
-                        depName = dep.ChildNodes[0].NodeName;
+                        //if (dep.ChildNodes[0] != null)
+                        //{
+                        //    depName = dep.ChildNodes[0].NodeName;
+                        //}
+                        //else
+                        //{
+
+                        //}
+
+                        foreach(var child in dep.ChildNodes)
+                        {
+                            if (child == null) continue;
+                            depName = child.NodeName;
+                            break;
+                        }
                     }
                     model.AreaName = depName;
                     //model.GetPath();

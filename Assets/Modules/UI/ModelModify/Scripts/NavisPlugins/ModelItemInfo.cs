@@ -194,6 +194,18 @@ namespace NavisPlugins.Infos
              return _parent;
          }
 
+        public string GetParentName()
+        {
+            if (_parent != null)
+            {
+                return _parent.Name;
+            }
+            else
+            {
+                return "";
+            }
+        }
+
         public List<ModelItemInfo> GetChildrenModels()
         {
             return GetChildItemInfo(this);
@@ -273,30 +285,40 @@ namespace NavisPlugins.Infos
         public string ShowDistance(Transform transform)
         {
             var p1 = this.GetPositon();
-            var p2 = transform.position;
-            var dis = Vector3.Distance(p1, p2);
-            bool isSameName = this.IsSameName(transform);
-            //Debug.Log($"ShowDistance distance:{dis} \tmodel:{this.Name}({p1}) tansform:{transform.name}({p2})");
-            //return $"ShowDistance distance:{dis} isSameName:{isSameName} \tmodel:{this.Name}{p1}{this.UId} transform:{transform.name}{p2}";
+
+            if (transform == null)
+            {
+                return $"model:{this.Name}{p1}{this.UId}";
+            }
             string transName = transform.name;
             if (transform.parent != null)
             {
                 transName = transform.parent.name + "\\" + transName;
             }
+            var p2 = transform.position;
+            var dis = Vector3.Distance(p1, p2);
+            bool isSameName = this.IsSameName(transform);
+            //Debug.Log($"ShowDistance distance:{dis} \tmodel:{this.Name}({p1}) tansform:{transform.name}({p2})");
+            //return $"ShowDistance distance:{dis} isSameName:{isSameName} \tmodel:{this.Name}{p1}{this.UId} transform:{transform.name}{p2}";
+
             return $"dis:{dis} same:{isSameName} \tmodel:{this.Name}{p1}{this.UId} transform:{transName}{p2}";
         }
 
-        public float GetDistance(Transform transform)
+        public float GetDistance(Transform transform,bool isCenter)
         {
             var p1 = this.GetPositon();
             var p2 = transform.position;
+            if (isCenter)
+            {
+                p2=MeshRendererInfo.GetCenterPos(transform.gameObject);
+            }
             var dis = Vector3.Distance(p1, p2);
             return dis;
         }
 
-        public Transform FindClosedTransform(List<Transform> ts)
+        public Transform FindClosedTransform(List<Transform> ts, bool isUseCenter)
         {
-            return TransformHelper.FindClosedTransform(ts, this.GetPositon());
+            return TransformHelper.FindClosedTransform(ts, this.GetPositon(), isUseCenter);
         }
 
         private string compareName11 = "";

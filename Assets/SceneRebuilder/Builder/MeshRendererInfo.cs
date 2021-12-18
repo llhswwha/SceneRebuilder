@@ -227,6 +227,12 @@ public class MeshRendererInfo : MonoBehaviour,IComparable<MeshRendererInfo>
         return GetInfo(go.gameObject, isUpdateId, isForceUpdate);
     }
 
+    public static Vector3 GetCenterPos(GameObject go)
+    {
+        MeshRendererInfo info = GetInfo(go, false);
+        return info.center;
+    }
+
         public static MeshRendererInfo GetInfo(GameObject go,bool isUpdateId,bool isForceUpdate=false)
     {
         //Debug.Log($"MeshRendererInfo go:{go}");

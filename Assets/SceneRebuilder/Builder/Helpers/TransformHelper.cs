@@ -5,13 +5,20 @@ using UnityEngine;
 
 public static class TransformHelper
 {
-    public static Transform FindClosedTransform(List<Transform> ts, Vector3 pos)
+    public static Transform FindClosedTransform(List<Transform> ts, Vector3 pos, bool isUseCenter=false)
     {
         float minDis = float.MaxValue;
         Transform minModel = null;
         foreach (var t in ts)
         {
-            float dis = Vector3.Distance(t.position, pos);
+            //float dis = Vector3.Distance(t.position, pos);
+            Vector3 posT = t.transform.position;
+            if (isUseCenter)
+            {
+                MeshRendererInfo info0 = MeshRendererInfo.GetInfo(t.gameObject, false);
+                posT = info0.center;
+            }
+            float dis = Vector3.Distance(posT, pos);
             if (minDis > dis)
             {
                 minDis = dis;
@@ -21,13 +28,19 @@ public static class TransformHelper
         return minModel;
     }
 
-    public static T FindClosedTransform<T>(List<T> ts, Vector3 pos) where T :Component
+    public static T FindClosedTransform<T>(List<T> ts, Vector3 pos,bool isUseCenter = false) where T :Component
     {
         float minDis = float.MaxValue;
         T minModel = null;
         foreach (var t in ts)
         {
-            float dis = Vector3.Distance(t.transform.position, pos);
+            Vector3 posT = t.transform.position;
+            if (isUseCenter)
+            {
+                MeshRendererInfo info0 = MeshRendererInfo.GetInfo(t.gameObject, false);
+                posT = info0.center;
+            }
+            float dis = Vector3.Distance(posT, pos);
             if (minDis > dis)
             {
                 minDis = dis;

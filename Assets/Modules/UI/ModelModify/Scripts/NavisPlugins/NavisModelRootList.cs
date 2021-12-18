@@ -11,7 +11,15 @@ public class NavisModelRootList : SingletonBehaviour<NavisModelRootList>
     public void GetModelRootObjects()
     {
         ModelRoots = GameObject.FindObjectsOfType<NavisModelRoot>(true).ToList();
-
+        //ModelRoots.Sort((a, b) => { return a.bimInfos.Count.CompareTo(b.bimInfos.Count); });
+        foreach(var root in ModelRoots)
+        {
+            if (root.resultCount.GetSumCount() == 0)
+            {
+                root.SetResultCount();
+            }
+        }
+        ModelRoots.Sort((a, b) => { return a.resultCount.NotFoundCount.CompareTo(b.resultCount.NotFoundCount); });
     }
 
 

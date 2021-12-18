@@ -179,7 +179,7 @@ public class ModelItemInfoDictionary
         Debug.LogError($"ClearRendererId count:{count}");
     }
 
-    public void RemoveRepeatedModelInfo(BIMModelInfoDictionary bimDict)
+    public int RemoveRepeatedModelInfo(BIMModelInfoDictionary bimDict)
     {
         StringBuilder sb = new StringBuilder();
         foreach (var rendererId in repeatModelsByRendererId.Keys)
@@ -207,6 +207,7 @@ public class ModelItemInfoDictionary
                 }
             }
         }
+        return repeatModelsByRendererId.Keys.Count;
         //SaveXml();
     }
 

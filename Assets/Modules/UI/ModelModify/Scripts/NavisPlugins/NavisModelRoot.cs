@@ -34,6 +34,33 @@ public class NavisModelRoot : MonoBehaviour
 
     public string TestModelName = "H级主变1";
 
+    public class ResultCount
+    {
+        public int TransformCount;
+
+        public int ModelCount;
+
+        public int BimCount;
+
+        public int NotFoundCount;
+
+        public int GetSumCount()
+        {
+            return TransformCount + ModelCount + BimCount + NotFoundCount;
+        }
+    }
+
+    public void SetResultCount()
+    {
+        //$"(ts:{listItem.transformList.Count})(ms:{listItem.ModelDict.Count})(bim:{listItem.bimInfos.Count})(noFound:{listItem.model2TransformResult.notFoundCount})";
+        resultCount.TransformCount = this.transformList.Count;
+        resultCount.ModelCount = this.ModelDict.Count;
+        resultCount.BimCount = this.bimInfos.Count;
+        resultCount.NotFoundCount = this.model2TransformResult.notFoundCount;
+    }
+
+    public ResultCount resultCount = new ResultCount();
+
     [ContextMenu("TestFindModelByName")]
     public void TestFindModelByName()
     {
@@ -352,18 +379,92 @@ public class NavisModelRoot : MonoBehaviour
         ProgressBarHelper.DisplayCancelableProgressBar(p3, true);
         FindObjectByPos(p3);
 
+        var p4 = ProgressArg.New("BindBimInfo", 3, 3, this.name, p0);
+        ProgressBarHelper.DisplayCancelableProgressBar(p4, true);
+
+        //RefreshBIMList();
+        //SetResultCount();
+
+        if (p0 == null)
+        {
+            ProgressBarHelper.ClearProgressBar();
+        }
+
         Debug.LogError($"[{this.name}]BindBimInfo time:{DateTime.Now - start}");
+    }
+
+
+    public void BindBimInfoExInner(Action findByPosAction,ProgressArgEx p0 = null)
+    {
+        ClearBimInfos();
+
+        var p1 = ProgressArg.New("BindBimInfo", 0, 3, "LoadModels", p0);
+        ProgressBarHelper.DisplayCancelableProgressBar(p1, true);
+        LoadModels(p1);
+
+        var p2 = ProgressArg.New("BindBimInfo", 1, 3, "FindObjectByUID", p0);
+        ProgressBarHelper.DisplayCancelableProgressBar(p2, true);
+        FindObjectByUID();
+
+        var p3 = ProgressArg.New("BindBimInfo", 2, 3, "FindObjectByPos", p0);
+        ProgressBarHelper.DisplayCancelableProgressBar(p3, true);
+        if (findByPosAction != null)
+        {
+            findByPosAction();
+        }
 
         var p4 = ProgressArg.New("BindBimInfo", 3, 3, this.name, p0);
         ProgressBarHelper.DisplayCancelableProgressBar(p4, true);
 
         RefreshBIMList();
+        SetResultCount();
 
         if (p0 == null)
         {
             ProgressBarHelper.ClearProgressBar();
         }
     }
+
+    [ContextMenu("BindBimInfoEx1")]
+    public void BindBimInfoEx1(ProgressArgEx p0 = null)
+    {
+        DateTime start = DateTime.Now;
+
+        BindBimInfoExInner(() =>
+        {
+            FindObjectByPos_OneKey1(IsShowLog, p0);
+        }, p0);
+
+        Debug.LogError($"[{this.name}]BindBimInfoEx1 time:{DateTime.Now - start}");
+    }
+
+    [ContextMenu("BindBimInfoEx2")]
+    public void BindBimInfoEx2(ProgressArgEx p0 = null)
+    {
+        DateTime start = DateTime.Now;
+
+        BindBimInfoExInner(() =>
+        {
+            FindObjectByPos_OneKey2(IsShowLog, p0);
+        }, p0);
+
+        Debug.LogError($"[{this.name}]BindBimInfoEx2 time:{DateTime.Now - start}");
+    }
+
+    [ContextMenu("BindBimInfoEx12")]
+    public void BindBimInfoEx12(ProgressArgEx p0 = null)
+    {
+        DateTime start = DateTime.Now;
+
+        BindBimInfoExInner(() =>
+        {
+            FindObjectByPos_OneKey1(IsShowLog, p0);
+            FindObjectByPos_OneKey2(IsShowLog, p0);
+        }, p0);
+
+        Debug.LogError($"[{this.name}]BindBimInfoEx12 time:{DateTime.Now - start}");
+    }
+
 
     [ContextMenu("LoadModels")]
     public void LoadModels(IProgressArg p0)
@@ -421,6 +522,7 @@ public class NavisModelRoot : MonoBehaviour
         var p5 = ProgressArg.New("LoadModels", 4, 5, "ModelItemInfoListEx", p0);
         ProgressBarHelper.DisplayCancelableProgressBar(p5, enableProgress);
         //5
+        ModelListAll = new ModelItemInfoListEx(currentModels);
         ModelList = new ModelItemInfoListEx(currentModels);
 
         var p6 = ProgressArg.New("LoadModels", 5, 5, "ModelItemInfoListEx", p0);
@@ -430,7 +532,11 @@ public class NavisModelRoot : MonoBehaviour
             ProgressBarHelper.ClearProgressBar();
 
         Debug.Log($"[{this.name}][LoadModels] time:{DateTime.Now - start} rendererIdCount:{ModelDict.rendererIdCount} UidCount:{ModelDict.UidCount}");
+
+        SetResultCount();
     }
+
+    public ModelItemInfoListEx ModelListAll = null;
 
     public ModelItemInfoListEx ModelList = null;
 
@@ -493,7 +599,7 @@ public class NavisModelRoot : MonoBehaviour
             var transform = TransformDict.FindObjectByUID(uidModel.UId);
             if (transform != null)
             {
-                float dis = uidModel.GetDistance(transform);
+                float dis = uidModel.GetDistance(transform,true);
                 if (dis > MinDistanceLv1)
                 {
                     allModels_uid_nofound.Add(uidModel);
@@ -600,6 +706,10 @@ public class NavisModelRoot : MonoBehaviour
             //var transform = TransformDict.FindObjectByPos(uidModel);
             List<Transform> transforms1 = TransformDict.FindModelsByPosAndName(model1);
             result.CheckResult(model1, transforms1);
+
+            var closedT = model1.FindClosedTransform(TransformDict.ToList(), true);
+            float dis = model1.GetDistance(closedT,true);
+            Debug.Log($"[没找到同名的Transform&&Closed距离太远][{dis},{closedT}][Name:{model1.Name}][Path:{model1.GetPath()}][{model1.ShowDistance(closedT)})]");
         }
         result.SetModelList(ModelList);
         Debug.LogError($"[{this.name}][FindObjectByPos] time:{DateTime.Now - start} allModels_uid:{ModelList.allModels_uid.Count}," + result.ToString());
@@ -644,6 +754,7 @@ public class NavisModelRoot : MonoBehaviour
             FindObjectByPos123456(IsShowLog, po);
         }
         RefreshBIMList();
+        SetResultCount();
     }
     public void FindObjectByPos1(bool isShowLog, ProgressArgEx p0)
     {
@@ -695,6 +806,24 @@ public class NavisModelRoot : MonoBehaviour
         FindObjectByPos(new CheckResultArg(isShowLog, checkResultArg), MinDistanceLv5, p0);
     }
 
+    public void FindObjectByPos_OneKey1(bool isShowLog, ProgressArgEx p0)
+    {
+        FindObjectByPos(new CheckResultArg(false, false, false, false, false, false, false), MinDistanceLv1, p0);
+        FindObjectByPos(new CheckResultArg(false, false, false, false, false, false, true), MinDistanceLv1, p0);
+        FindObjectByPos(new CheckResultArg(false, true, false, false, false, false, true), MinDistanceLv1, p0);
+        FindObjectByPos(new CheckResultArg(false, true, true, false, false, false, true), MinDistanceLv1, p0);
+        FindObjectByPos(new CheckResultArg(isShowLog, true, true, true, false, false, true), MinDistanceLv1, p0);
+    }
+
+    public void FindObjectByPos_OneKey2(bool isShowLog, ProgressArgEx p0)
+    {
+        FindObjectByPos(new CheckResultArg(false, false, false, false, false, false, false), MinDistanceLv2, p0);
+        FindObjectByPos(new CheckResultArg(false, false, false, false, false, false, true), MinDistanceLv2, p0);
+        FindObjectByPos(new CheckResultArg(false, true, false, false, false, false, true), MinDistanceLv2, p0);
+        FindObjectByPos(new CheckResultArg(false, true, true, false, false, false, true), MinDistanceLv2, p0);
+        FindObjectByPos(new CheckResultArg(isShowLog, true, true, true, false, false, true), MinDistanceLv2, p0);
+    }
+
 
     public void TestFindObjectByPos(float minDis)
     {
@@ -703,26 +832,32 @@ public class NavisModelRoot : MonoBehaviour
         RefreshBIMList();
     }
 
+    //List<ModelItemInfo> modelsListCurrent = new List<ModelItemInfo>();
 
     public void FindObjectByPos(CheckResultArg arg, float minDis, ProgressArgEx p0)
     {
+        if (ModelList == null)
+        {
+            LoadModels(null);
+        }
+
         DateTime start = DateTime.Now;
-        List<ModelItemInfo> models1 = new List<ModelItemInfo>();
-        models1.AddRange(ModelList.allModels_drawable_nozero);
+        List<ModelItemInfo>  modelsListCurrent = new List<ModelItemInfo>();
+        modelsListCurrent.AddRange(ModelList.allModels_drawable_nozero);
 
         //models1.AddRange(ModelList.allModels_noDrawable_nozero);
 
         var p01 = ProgressArg.New("FindObjectByPos", 0, 2, "ModelItemInfoDictionary", p0);
-        ModelItemInfoDictionary modelDict = new ModelItemInfoDictionary(models1, p01);
+        ModelItemInfoDictionary modelDict = new ModelItemInfoDictionary(modelsListCurrent, p01);
         //var modelDict = new ModelItemInfoDictionary(models, null);
 
-        Model2TransformResult result = new Model2TransformResult(models1, modelDict, TransformDict, minDis);
+        Model2TransformResult result = new Model2TransformResult(modelsListCurrent, modelDict, TransformDict, minDis);
         result.CheckArg = arg;
         var p02 = ProgressArg.New("FindObjectByPos", 1, 2, "FindModels", p0);
-        for (int i = 0; i < models1.Count; i++)
+        for (int i = 0; i < modelsListCurrent.Count; i++)
         {
-            ModelItemInfo model1 = models1[i];
-            var p1 = ProgressArg.New("FindModels", i, models1.Count, model1.Name, p02);
+            ModelItemInfo model1 = modelsListCurrent[i];
+            var p1 = ProgressArg.New("FindModels", i, modelsListCurrent.Count, model1.Name, p02);
             ProgressBarHelper.DisplayCancelableProgressBar(p1);
 
             //var transform = TransformDict.FindObjectByPos(uidModel);
@@ -791,7 +926,8 @@ public class NavisModelRoot : MonoBehaviour
 
     public void RemoveRepeated()
     {
-        this.ModelDict.RemoveRepeatedModelInfo(this.BimDict);
+        int count = this.ModelDict.RemoveRepeatedModelInfo(this.BimDict);
+        Debug.LogError($"RemoveRepeated count:{count}");
     }
 
 
@@ -969,6 +1105,8 @@ public class NavisModelRoot : MonoBehaviour
         foundBimInfos3 = new List<BIMModelInfo>();
 
         transformList.Clear();
+
+        model2TransformResult = new Model2TransformResult();
     }
 
     //public List<GameObject> bimModels = new List<GameObject>();

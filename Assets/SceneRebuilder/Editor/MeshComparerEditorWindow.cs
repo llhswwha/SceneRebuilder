@@ -21,6 +21,10 @@ public class MeshComparerEditorWindow : EditorWindow, IBaseEditorWindow
     private void OnGUI()
     {
         //MeshComparerEditor.DrawSetting(target);
+        if (target == null)
+        {
+            Init();
+        }
 
         MeshComparerEditor.DrawUI(target);
 

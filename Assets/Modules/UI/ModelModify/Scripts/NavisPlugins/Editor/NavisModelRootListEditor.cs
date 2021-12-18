@@ -109,7 +109,9 @@ public class NavisModelRootListEditor : BaseFoldoutEditor<NavisModelRootList>
                 listItemArg.level = 1;
                 listItemArg.background = true;
                 listItemArg.caption = $"[{i + 1:00}] {listItem.name}";
-                listItemArg.info = $"(ts:{listItem.transformList.Count})(ms:{listItem.ModelDict.Count})(bim:{listItem.bimInfos.Count})(noFound:{listItem.model2TransformResult.notFoundCount})";
+                //listItemArg.info = $"(ts:{listItem.transformList.Count})(ms:{listItem.ModelDict.Count})(bim:{listItem.bimInfos.Count})(noFound:{listItem.model2TransformResult.notFoundCount})";
+                var countInfo = listItem.resultCount;
+                listItemArg.info = $"(ts:{countInfo.TransformCount})(ms:{countInfo.ModelCount})(bim:{countInfo.BimCount})(noFound:{countInfo.NotFoundCount})";
                 EditorUIUtils.ObjectFoldout(listItemArg, listItem, () =>
                 {
                     var btnStyle = new GUIStyle(EditorStyles.miniButton);

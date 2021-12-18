@@ -49,7 +49,8 @@ public class BIMModelInfoList : List<BIMModelInfo>
 
     public BIMModelInfoList FindList(string key)
     {
-        var list1 = this.FindAll(i => i.name.Contains(key) || i.MName.Contains(key));
+        //doorRootArg.caption = $"[{i + 1:00}] [{listItem.IsFound}][{listItem.FoundType}] {listItem.name}>{listItem.MName}({listItem.MId})"
+        var list1 = this.FindAll(i => i.name.Contains(key) || i.MName.Contains(key) || i.MId.Contains(key));
         return new BIMModelInfoList(list1);
     }
 
