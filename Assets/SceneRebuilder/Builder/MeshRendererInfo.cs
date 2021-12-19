@@ -829,6 +829,12 @@ public class MeshRendererInfoList:List<MeshRendererInfo>
     {
 
     }
+    public MeshRendererInfoList(List<MeshRendererInfo> list)
+    {
+        this.AddRange(list);
+    }
+
+
 
     public MeshRendererInfoList(GameObject root, bool isForceUpdate = false)
     {

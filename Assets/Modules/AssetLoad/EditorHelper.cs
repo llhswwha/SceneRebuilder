@@ -56,11 +56,19 @@ public static class EditorHelper
         Debug.LogError($"ForEachEx2 {actionName} Buildings:{buildings.Length},Time:{(System.DateTime.Now - start).TotalMilliseconds}ms");
     }
 
+    
+
     public static void UnpackPrefab(GameObject go)
     {
 #if UNITY_EDITOR
         UnpackPrefab(go, PrefabUnpackMode.Completely);
 #endif
+    }
+    
+    public static void Destroy(GameObject go)
+    {
+        UnpackPrefab(go);
+        GameObject.DestroyImmediate(go);
     }
 
 

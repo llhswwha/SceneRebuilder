@@ -2703,6 +2703,8 @@ public class LODTwoRenderersList:List<LODTwoRenderers>
 
     public bool isShowSize = true;
 
+    public bool isMaterial = true;
+
     public void DeleteNewOld()
     {
         foreach(var item in this)
@@ -3087,7 +3089,7 @@ public class LODTwoRenderers
         return disCompare;
     }
 
-    public string GetCompareCaption(bool isShowSize)
+    public string GetCompareCaption(bool isShowSize,bool isShowMaterial)
     {
         if (renderer_old == null) return "";
         string logName = renderer_old_name;
@@ -3096,6 +3098,10 @@ public class LODTwoRenderers
             logName = logName.Substring(0, 20) + "...";
         }
         var mat0=renderer_old.GetMats();
+        if (isShowMaterial==false)
+        {
+            mat0 = "mat0";
+        }
         string lod0 = $"\"{logName}\" ({MeshHelper.GetVertexCountS(vertexCount0)}w)[{mat0}]";
         if (isShowSize)
         {
@@ -3115,6 +3121,10 @@ public class LODTwoRenderers
         }
         float p10 = (float)vertexCount1 / vertexCount0;
         var mat1=renderer_new.GetMats();
+        if (isShowMaterial == false)
+        {
+            mat1 = "mat1";
+        }
         string lod1 = $"{renderer_new_name}({MeshHelper.GetVertexCountS(vertexCount1)}w)[{mat1}]";
         if (isShowSize)
         {
@@ -3124,15 +3134,43 @@ public class LODTwoRenderers
 
         if (isSameName)
         {
+            string result = "";
             if (isSameSize)
             {
-                return $"[T1 T2] [{UpdateMode}][{p10:P0}] {disCompare} {lod0} >> New: [{mat1}] ===({MeshHelper.GetVertexCountS(vertexCount0)}w) [==]";
+                result = "[T1 T2] ";
+                //return $"[T1 T2] [{UpdateMode}][{p10:P0}] {disCompare} {lod0} >> New: [{mat1}] ===({MeshHelper.GetVertexCountS(vertexCount0)}w) [==]";
             }
             else
             {
-                return $"[T1 F2] [{UpdateMode}][{p10:P0}] {disCompare} {lod0} >> New: [{mat1}] ===({MeshHelper.GetVertexCountS(vertexCount0)}w)[{renderer_old.size}]";
+                result = "[T1 F2] ";
+                if (isShowSize)
+                {
+
+                }
+                //return $"[T1 F2] [{UpdateMode}][{p10:P0}] {disCompare} {lod0} >> New: [{mat1}] ===({MeshHelper.GetVertexCountS(vertexCount0)}w)[{renderer_old.size}]";
             }
 
+            result += $"[{UpdateMode}][{p10:P0}] {disCompare} {lod0} >> New: [{mat1}] ===({MeshHelper.GetVertexCountS(vertexCount0)}w)";
+
+            if (isSameSize)
+            {
+                result += "[==]";
+                //return $"[T1 T2] [{UpdateMode}][{p10:P0}] {disCompare} {lod0} >> New: [{mat1}] ===({MeshHelper.GetVertexCountS(vertexCount0)}w) [==]";
+            }
+            else
+            {
+
+                if (isShowSize)
+                {
+                    result += $"[{renderer_old.size}]";
+
+                }
+                else
+                {
+                    result += $"[S]";
+                }
+            }
+            return result;
         }
         else
         {

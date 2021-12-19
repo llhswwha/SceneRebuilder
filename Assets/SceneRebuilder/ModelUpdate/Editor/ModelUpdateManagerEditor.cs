@@ -151,9 +151,13 @@ public class ModelUpdateManagerEditor : BaseFoldoutEditor<ModelUpdateManager>
         });
         if (listArg.isEnabled && listArg.isExpanded)
         {
+            var list = listArg.Items;
+
             GUILayout.BeginHorizontal();
-            GUILayout.Label("Size", GUILayout.Width(30));
+            GUILayout.Label("Size", GUILayout.Width(35));
             twoList.isShowSize = EditorGUILayout.Toggle(twoList.isShowSize, GUILayout.Width(50));
+            GUILayout.Label("Material", GUILayout.Width(40));
+            twoList.isMaterial = EditorGUILayout.Toggle(twoList.isMaterial, GUILayout.Width(50));
             var btnStyle = new GUIStyle(EditorStyles.miniButton);
             btnStyle.margin = new RectOffset(0, 0, 0, 0);
             btnStyle.padding = new RectOffset(0, 0, 0, 0);
@@ -170,7 +174,39 @@ public class ModelUpdateManagerEditor : BaseFoldoutEditor<ModelUpdateManager>
             {
                 twoList.ClearNew();
             }
-            twoList.zeroDistance = EditorGUILayout.FloatField(twoList.zeroDistance, GUILayout.Width(45));
+            twoList.zeroDistance = EditorGUILayout.FloatField(twoList.zeroDistance, GUILayout.Width(55));
+            int countLessZero = 0;
+            int countGreaterZero = 0;
+            foreach (var item in list)
+            {
+                if(item.dis< twoList.zeroDistance)
+                {
+                    countLessZero++;
+                }
+                else
+                {
+                    countGreaterZero++;
+                }
+            }
+
+            if (GUILayout.Button($"{countLessZero}+{countGreaterZero}", btnStyle, GUILayout.Width(100)))
+            {
+                //twoList.ClearNew();
+                if (countLessZero > 0)
+                {
+listArg.pageId_selected = countGreaterZero / listArg.pageCount;
+                Debug.LogError($"{countGreaterZero}/{listArg.pageCount}={listArg.pageId_selected}");
+                }
+                else
+                {
+
+                }
+                
+            }
+
+            GUILayout.EndHorizontal();
+
+            GUILayout.BeginHorizontal();
             if (GUILayout.Button("DelNewOld", btnStyle, GUILayout.Width(75)))
             {
                 twoList.DeleteNewOld();
@@ -217,7 +253,7 @@ public class ModelUpdateManagerEditor : BaseFoldoutEditor<ModelUpdateManager>
             }
             GUILayout.EndHorizontal();
 
-            var list = listArg.Items;
+            
             InitEditorArg(list);
             listArg.DrawPageToolbar(list, (Action<LODTwoRenderers, int>)((item, i) =>
             {
@@ -226,7 +262,7 @@ public class ModelUpdateManagerEditor : BaseFoldoutEditor<ModelUpdateManager>
                 //    return;
                 //}
                 var arg = editorArgs[item];
-                arg.caption = $"[{i+1:00}] {item.GetCompareCaption(twoList.isShowSize)}";
+                arg.caption = $"[{i+1:00}] {item.GetCompareCaption(twoList.isShowSize, twoList.isMaterial)}";
                 //arg.info = door.ToString();
 
                 arg.bold = false;

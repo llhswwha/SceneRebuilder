@@ -124,6 +124,8 @@ public class NavisModelRootEditor : BaseFoldoutEditor<NavisModelRoot>
         
         GUILayout.Label("Structure", GUILayout.Width(60));
         InitNavisFileInfoByModelSetting.Instance.IsIncludeStructure = EditorGUILayout.Toggle(InitNavisFileInfoByModelSetting.Instance.IsIncludeStructure, GUILayout.Width(20));
+        GUILayout.Label("FilterBIM", GUILayout.Width(60));
+        item.IsFilterBIM = EditorGUILayout.Toggle(item.IsFilterBIM, GUILayout.Width(20));
         EditorGUILayout.EndHorizontal();
 
         EditorGUILayout.BeginHorizontal();

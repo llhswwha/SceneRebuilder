@@ -144,11 +144,14 @@ public class NavisModelRoot : MonoBehaviour
 
     public bool includeInactive = true;
 
+    public bool IsFilterBIM = false;
+
     //public List<string> OnlyFBXFiles = new List<string>();
 
     //public List<string> ExceptionFBXFiles = new List<string>();
 
-    public List<GameObject> Targets = new List<GameObject>();
+    public List<GameObject> Targets = new List<GameObject>(); 
+    public List<GameObject> NotIncludeTargets = new List<GameObject>();
 
     public GameObject TargetRoot = new GameObject();
 
@@ -225,6 +228,7 @@ public class NavisModelRoot : MonoBehaviour
             var list = target.GetComponentsInChildren<Transform>(includeInactive).ToList();
             foreach (var item in list)
             {
+                if (IsFilterBIM && item.GetComponent<BIMModelInfo>() != null) continue;
                 if (item.gameObject.activeInHierarchy == false && includeInactive == false) continue;
                 if (!transformDict.ContainsKey(item))
                 {
@@ -243,6 +247,19 @@ public class NavisModelRoot : MonoBehaviour
             Debug.Log($"GetTransformList target:{target} list:{list.Count} combinedList:{combinedList.Count} transformList:{transformList.Count} includeInactive:{includeInactive}");
             //transformList.AddRange(list);
         }
+
+        foreach(var notIncludeTarget in NotIncludeTargets)
+        {
+            var list = notIncludeTarget.GetComponentsInChildren<Transform>(true);
+            foreach(var t  in list)
+            {
+                if (transformDict.ContainsKey(t))
+                {
+                    transformDict.Remove(t);
+                }
+            }
+        }
+
         transformListAll = transformDict.Keys.ToList();
         //transformList = this.GetComponentsInChildren<Transform>(true).ToList();
         transformListAll.Remove(this.transform);
@@ -508,7 +525,7 @@ public class NavisModelRoot : MonoBehaviour
 
         var currentModels = ModelRoot.GetChildrenModels();
         currentModels = InitNavisFileInfoByModelSetting.Instance.FilterList(currentModels, null);
-        ModelDict = new ModelItemInfoDictionary(currentModels, p3);
+        
 
         var p4 = ProgressArg.New("LoadModels", 3, 5, "GetBims", p0);
         ProgressBarHelper.DisplayCancelableProgressBar(p4, enableProgress);
@@ -516,6 +533,26 @@ public class NavisModelRoot : MonoBehaviour
         //4
         var allModels = navisFile.GetAllModelInfos();
         GetBims(allModels, p4);//2.BIMinfo
+
+        List<ModelItemInfo> tempList = new List<ModelItemInfo>();
+        if (IsFilterBIM)
+        {
+            int filteredCount = 0;
+            for (int i = 0; i < currentModels.Count; i++)
+            {
+                ModelItemInfo item = currentModels[i];
+                var bim=BimDict.GetBIMModelByGuid(item.UId);
+                if (bim != null)
+                {
+                    currentModels.RemoveAt(i);
+                    i--;
+                    filteredCount++;
+                }
+            }
+            Debug.LogError($"FilterBIM bimCount:{BimDict.bimInfos.Count} filteredCount:{filteredCount}");
+        }
+
+        ModelDict = new ModelItemInfoDictionary(currentModels, p3);
 
         //GetModelLists();//3.ModelInfo
 

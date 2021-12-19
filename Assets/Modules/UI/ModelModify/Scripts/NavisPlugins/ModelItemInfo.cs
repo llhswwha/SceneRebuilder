@@ -295,13 +295,14 @@ namespace NavisPlugins.Infos
             {
                 transName = transform.parent.name + "\\" + transName;
             }
-            var p2 = transform.position;
+            //var p2 = transform.position;
+            var p2 = MeshRendererInfo.GetCenterPos(transform.gameObject);
             var dis = Vector3.Distance(p1, p2);
             bool isSameName = this.IsSameName(transform);
             //Debug.Log($"ShowDistance distance:{dis} \tmodel:{this.Name}({p1}) tansform:{transform.name}({p2})");
             //return $"ShowDistance distance:{dis} isSameName:{isSameName} \tmodel:{this.Name}{p1}{this.UId} transform:{transform.name}{p2}";
 
-            return $"dis:{dis} same:{isSameName} \tmodel:{this.Name}{p1}{this.UId} transform:{transName}{p2}";
+            return $"dis:{dis} disVector:{(p2-p1)} same:{isSameName} \tmodel:{this.Name}{p1}{this.UId} transform:{transName}{p2}";
         }
 
         public float GetDistance(Transform transform,bool isCenter)

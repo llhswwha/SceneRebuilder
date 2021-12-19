@@ -52,7 +52,7 @@ public class InitNavisFileInfoByModelSetting : SingletonBehaviour<InitNavisFileI
 
     public static List<string> FilterNames2_Default = new List<string>() { "_F1", "_F2", "_F3", "_F4", "_F5", "_F6", "_F7",
         "LODs","LOD0","LOD1", "LOD2", "LOD3", "LOD4","_boli","_Metal032_2K_","_door","_Door1A","_Door1B",
-    "_Doors","_Floors","_Others","_Pillars","_Windows","_Devs","_Frames","Stairs","_Walls","_Welding"};
+    "_Doors","_Floors","_Others","_Pillars","_Windows","_Devs","_F111111¡¤rames","Stairs","_Walls","_Welding"};
 
     public List<string> FilterNames2 = new List<string>(FilterNames2_Default);
 
@@ -61,11 +61,11 @@ public class InitNavisFileInfoByModelSetting : SingletonBehaviour<InitNavisFileI
     public List<string> FilterNames3 = new List<string>(FilterNames3_Default);
 
 
-    public static List<string> structureNameList1_Default = new List<string>() { "MemberPartPrismatic", "PHC600AB", "Slab", "WallPart", "Stair", "Â¥ÌÝ", "×ª½Ç¾®", "TMTHandrail" };
+    public static List<string> structureNameList1_Default = new List<string>() { "MemberPartPrismatic", "PHC600AB","PHC6µÄ¡¤100AB", "Slab", "WallPart", "Stair", "Â¥ÌÝ", "×ª½Ç¾®", "TMTHandrail", "VVAirDistribAssemAsm","CTJ01","CTJ02","CTJ03","CTJ04","CTJ05","CTJ06" };
 
     public List<string> structureNameList1 = new List<string>(structureNameList1_Default);
 
-    public static List<string> structureNameList2_Default = new List<string>() {  "Â¥ÌÝ", "×ª½Ç¾®" };
+    public static List<string> structureNameList2_Default = new List<string>() {  "Â¥ÌÝ", "×ª½Ç¾®" ,"PHC600AB", "PHC500AB", };
 
     public List<string> structureNameList2 = new List<string>(structureNameList2_Default);
 
@@ -152,7 +152,7 @@ public class InitNavisFileInfoByModelSetting : SingletonBehaviour<InitNavisFileI
         return false;
     }
 
-    public bool IsFiltered(Transform t)
+    public bool IsFiltered<T>(T t) where T :Component
     {
         if (t.name == "HorPumpBB1Asm-1-0002")
         {
@@ -175,14 +175,14 @@ public class InitNavisFileInfoByModelSetting : SingletonBehaviour<InitNavisFileI
             //    if (info.GetComponent<LODGroup>() == null) return true;
             //}
         }
-        if (t.childCount == 0 && t.GetComponent<MeshRenderer>() == null)
+        if (t.transform.childCount == 0 && t.GetComponent<MeshRenderer>() == null)
         {
             return true;
         }
         //if (t.GetComponent<MeshRenderer>() == null && t.GetComponent<LODGroup>() == null) return true;
         //if (MeshHelper.IsEmptyGroup(t, false)) return true;
         //if (MeshHelper.IsSameNameGroup(t)) return true;
-        if (MeshHelper.IsEmptyLODSubGroup(t)) return true;
+        if (MeshHelper.IsEmptyLODSubGroup(t.transform)) return true;
         return false;
     }
 
@@ -217,12 +217,12 @@ public class InitNavisFileInfoByModelSetting : SingletonBehaviour<InitNavisFileI
 
     public string DebugFilterTransformName = "1B_F1_Door4";
 
-    public List<Transform> FilterList(List<Transform> list1, ProgressArgEx p0)
+    public List<T> FilterList<T>(List<T> list1, ProgressArgEx p0) where T :Component
     {
-        List<Transform> all = new List<Transform>();
+        List<T> all = new List<T>();
         for (int i1 = 0; i1 < list1.Count; i1++)
         {
-            Transform t = list1[i1];
+            T t = list1[i1];
             var p1 = ProgressArg.New("FilterList", i1, list1.Count, t.name, p0);
             ProgressBarHelper.DisplayCancelableProgressBar(p1);
             if (t.name == DebugFilterTransformName)
@@ -245,6 +245,8 @@ public class InitNavisFileInfoByModelSetting : SingletonBehaviour<InitNavisFileI
     }
 
     public bool IsIncludeStructure = true;//ÊÇ·ñ°üÀ¨½¨Öþ½á¹¹
+
+    //public bool IsFilterBIM = false;
 
 
     public bool IsStructrue(string n)
@@ -272,7 +274,7 @@ public class InitNavisFileInfoByModelSetting : SingletonBehaviour<InitNavisFileI
     {
         if (ExceptionalCases.Count == 0)
         {
-            ExceptionalCases.Add(new ModelCheckExceptionalCase("ÃÅ;´°", "door", 0.3f));
+            ExceptionalCases.Add(new ModelCheckExceptionalCase("ÃÅ;´°", "door", 0.6f));
         }
         foreach(var eCase in ExceptionalCases)
         {

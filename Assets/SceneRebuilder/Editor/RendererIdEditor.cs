@@ -533,7 +533,7 @@ public class RendererIdEditor : BaseEditor<RendererId>
                     {
                         t1Clone.name = geoParent.name + "_New";
                         t1Clone.SetParent(geoParent.parent);
-                        GameObject.DestroyImmediate(geoParent.gameObject);
+                        EditorHelper.Destroy(geoParent.gameObject);
                     }
                     else
                     {
