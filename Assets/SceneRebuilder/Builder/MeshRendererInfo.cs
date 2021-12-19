@@ -61,7 +61,8 @@ public class MeshRendererInfo : MonoBehaviour,IComparable<MeshRendererInfo>
     public string GetAssetPath()
     {
 
-        #if UNITY_EDITOR
+#if UNITY_EDITOR
+        if (meshFilter == null || meshFilter.sharedMesh == null) return "";
         var assetPath = AssetDatabase.GetAssetPath(meshFilter.sharedMesh);
         //assetName = assetPath.Substring(assetPath.LastIndexOf('/') + 1);
         return assetPath;

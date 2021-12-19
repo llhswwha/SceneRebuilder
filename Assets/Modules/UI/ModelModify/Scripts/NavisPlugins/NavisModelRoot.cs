@@ -34,6 +34,7 @@ public class NavisModelRoot : MonoBehaviour
 
     public string TestModelName = "H¼¶Ö÷±ä1";
 
+    [Serializable]
     public class ResultCount
     {
         public int TransformCount;

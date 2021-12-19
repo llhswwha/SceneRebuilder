@@ -61,7 +61,7 @@ public class InitNavisFileInfoByModelSetting : SingletonBehaviour<InitNavisFileI
     public List<string> FilterNames3 = new List<string>(FilterNames3_Default);
 
 
-    public static List<string> structureNameList1_Default = new List<string>() { "MemberPartPrismatic", "PHC600AB","PHC6的·100AB", "Slab", "WallPart", "Stair", "楼梯", "转角井", "TMTHandrail", "VVAirDistribAssemAsm","CTJ01","CTJ02","CTJ03","CTJ04","CTJ05","CTJ06" };
+    public static List<string> structureNameList1_Default = new List<string>() { "MemberPartPrismatic", "PHC600AB","PHC6的·100AB", "Slab", "WallPart", "Stair", "楼梯", "转角井", "TMTHandrail", "VVAirDistribAssemAsm","CTJ01","CTJ02","CTJ03","CTJ04","CTJ05","CTJ06","照明设备" };
 
     public List<string> structureNameList1 = new List<string>(structureNameList1_Default);
 

@@ -477,6 +477,10 @@ public class RendererIdEditor : BaseEditor<RendererId>
 
                 Transform geo2 = FindChild(t2, "geometry");
                 Transform t1Clone = MeshHelper.CopyGO(geo2);
+
+                float dis = Vector3.Distance(geo2.position, geo1.position);
+                Debug.Log($"Find1 dis:{dis}\tgeo1:{geo1} geo2:{geo2}"); 
+
                 
 
                 if (isReplace == false)
@@ -501,12 +505,6 @@ public class RendererIdEditor : BaseEditor<RendererId>
 
                 }
             }
-            //else
-            //{
-            //    Debug.LogError($"No Found name:{geoParent.name} pos:{geo1.position}");
-            //}
-
-
         }
 
         var ts2 = goDwf.GetComponentsInChildren<Transform>(true).ToList(); ;
@@ -518,7 +516,9 @@ public class RendererIdEditor : BaseEditor<RendererId>
             if (t2 != null)
             {
                 Transform t1Clone = MeshHelper.CopyGO(t2);
-                
+
+                float dis = Vector3.Distance(t2.position, geo1.position);
+                Debug.Log($"Find1 dis:{dis}\tgeo1:{geo1} geo2:{t2}");
 
                 if (isReplace == false)
                 {
