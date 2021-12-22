@@ -50,12 +50,14 @@ public class PipeMeshGenerator : MonoBehaviour {
             GameObject.DestroyImmediate(item);
         }
     }
-
+    
+    [ContextMenu("ShowPoints")]
     public void ShowPoints()
     {
         pointsT = PointHelper.ShowPoints(points, new Vector3(0.05f, 0.05f, 0.05f), this.transform);
     }
 
+    [ContextMenu("ShowPoints2")]
     public void ShowPoints2()
     {
         pointsT = PointHelper.ShowPoints(points2, new Vector3(0.05f, 0.05f, 0.05f), this.transform);
@@ -340,6 +342,11 @@ public class PipeMeshGenerator : MonoBehaviour {
 
     public bool IsRemoveColinearPoints = true;
 
+    public class ElbowInfo
+    {
+        Vector3 initialPoint;
+        Vector3 endPoint;
+    }
 
     Mesh GeneratePipeMesh(List<Vector3> ps,bool gWeld) {
 

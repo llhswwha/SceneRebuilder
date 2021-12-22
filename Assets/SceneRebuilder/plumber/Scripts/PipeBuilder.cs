@@ -64,19 +64,28 @@ public class PipeBuilder : MonoBehaviour
 
     public List<Vector3> points;
 
-    public void CreateOnePipe()
+    public PipeMeshGenerator CreateOnePipe()
     {
         GetPipeInfos();
-
         ClearOldGos();
-        NewPipeGos.Add(RendererOnePipe());
-
+        var newPipe = RendererOnePipe();
+        NewPipeGos.Add(newPipe.gameObject);
+        newPipe.transform.SetParent(this.transform);
         //return pipeNew;
+        return newPipe;
+    }
+
+    public void TestCreateOnePipe()
+    {
+        var newPipe = CreateOnePipe();
+        newPipe.ShowPoints();
     }
 
     public bool generateWeld = false;
 
-    private GameObject RendererOnePipe()
+    public float ElbowOffset = 0.1f;
+
+    private PipeMeshGenerator RendererOnePipe()
     {
         points = new List<Vector3>();
         
@@ -134,7 +143,7 @@ public class PipeBuilder : MonoBehaviour
             if (i == 0)
             {
                 points.Add(P1);
-                points.Add(P2);
+                //points.Add(P2);
 
                 //Vector3 line1 = P2 - P1;
                 //Vector3 P21 = P1 + line1*1.05f;
@@ -177,18 +186,18 @@ public class PipeBuilder : MonoBehaviour
             if(i==0)
                 elbowRadius = Vector3.Distance(closestPointLine1, P2);
 
-            var P2_1 = P2 + (closestPointLine2 - P2) * 0.1f;
+            var P2_1 = P2 + (closestPointLine2 - P2) * ElbowOffset;
 
             points.Add(P2_1);
 
             //points.Add(closestPointLine1);
             points.Add(closestPointLine2);
 
-            var P3_1 = P3 + (closestPointLine2 - P3) * 0.1f;
+            var P3_1 = P3 + (closestPointLine2 - P3) * ElbowOffset;
 
             points.Add(P3_1);
 
-            points.Add(P3);
+            //points.Add(P3);
             points.Add(P4);
 
             ////NewPipeGos.Add(go.RendererPipe(this.PipeMaterial, this.WeldMaterial));
@@ -235,7 +244,7 @@ public class PipeBuilder : MonoBehaviour
         pipe.pipeRadius = PipeModels[0].PipeRadius;
         pipe.RenderPipe();
 
-        return pipeNew;
+        return pipe;
     }
 
     public void RendererPipes()

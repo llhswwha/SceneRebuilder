@@ -9,6 +9,7 @@ public class PipeBuilderEditor : Editor
     public override void OnInspectorGUI()
     {
         PipeBuilder targetT = target as PipeBuilder;
+        GUILayout.BeginHorizontal();
         if (GUILayout.Button("ShowOBB"))
         {
             targetT.ShowOBB();
@@ -17,6 +18,9 @@ public class PipeBuilderEditor : Editor
         {
             targetT.ClearChildren();
         }
+        GUILayout.EndHorizontal();
+
+        GUILayout.BeginHorizontal();
         if (GUILayout.Button("CreateEachPipes"))
         {
             targetT.CreateEachPipes();
@@ -25,6 +29,15 @@ public class PipeBuilderEditor : Editor
         {
             targetT.CreateOnePipe();
         }
+        GUILayout.EndHorizontal();
+
+        GUILayout.BeginHorizontal();
+        if (GUILayout.Button("TestCreateOnePipe"))
+        {
+            targetT.TestCreateOnePipe();
+        }
+        GUILayout.EndHorizontal();
+
         //if (GUILayout.Button("CreateWeld"))
         //{
         //    targetT.CreateWeld();

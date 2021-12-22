@@ -7,10 +7,16 @@ using UnityEngine;
 public class PipeMeshGeneratorEditor : Editor {
 
 	public override void OnInspectorGUI() {
+		DrawToolBar();
 		DrawDefaultInspector();
-		PipeMeshGenerator myTarget = (PipeMeshGenerator) target;
+	}
 
-		if (GUILayout.Button("Generate Pipe")) {
+	private void DrawToolBar()
+    {
+		PipeMeshGenerator myTarget = (PipeMeshGenerator)target;
+
+		if (GUILayout.Button("Generate Pipe"))
+		{
 			myTarget.RenderPipe();
 		}
 		GUILayout.BeginHorizontal();
