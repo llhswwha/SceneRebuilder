@@ -208,4 +208,13 @@ public class ModelClassDict<T>
         list.Sort();
         return list;
     }
+
+    public ModelClass<T> GetList(string key)
+    {
+        if (Dict.ContainsKey(key))
+        {
+            return Dict[key];
+        }
+        return null;
+    }
 }

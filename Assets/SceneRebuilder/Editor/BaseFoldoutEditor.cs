@@ -494,7 +494,14 @@ public class BaseFoldoutEditor<T> : BaseEditor<T> where T : class
                 if (item is Object)
                 {
                     obj = item as Object;
-                    arg.caption = obj.name;
+                    if (obj != null)
+                    {
+                        arg.caption = obj.name;
+                    }
+                    else
+                    {
+                        arg.caption = "NULL";
+                    }
                 }
 
                 if (drawItemAction != null)
@@ -958,6 +965,8 @@ public class BaseFoldoutEditor<T> : BaseEditor<T> where T : class
         matListArg.caption = $"Material List";
         EditorUIUtils.ToggleFoldout(matListArg, arg =>
         {
+            if (arg == null) return;
+            if (item.meshMaterialList == null) return;
             arg.caption = $"Material List ({item.meshMaterialList.Count})";
             arg.info = $"Renderers:{item.meshMaterialList.RendererCount}";
             InitEditorArg(item.meshMaterialList);

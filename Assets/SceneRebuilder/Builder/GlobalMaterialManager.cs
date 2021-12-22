@@ -26,7 +26,7 @@ public class GlobalMaterialManager : SingletonBehaviour<GlobalMaterialManager>
     //     }
     // }
 
-    public SharedMeshMaterialList meshMaterialList;
+    public SharedMeshMaterialList meshMaterialList = new SharedMeshMaterialList();
 
     public List<Material> Materials=new List<Material>();
 

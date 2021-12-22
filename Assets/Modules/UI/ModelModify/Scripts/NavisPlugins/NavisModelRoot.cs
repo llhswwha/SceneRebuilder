@@ -264,6 +264,7 @@ public class NavisModelRoot : MonoBehaviour
         Dictionary<Transform, Transform> transformDict = new Dictionary<Transform, Transform>();
         foreach (var target in Targets)
         {
+            if (target == null) continue;
             var list = target.GetComponentsInChildren<Transform>(includeInactive).ToList();
             foreach (var item in list)
             {
