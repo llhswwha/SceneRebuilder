@@ -153,6 +153,14 @@ public class NavisModelRootEditor : BaseFoldoutEditor<NavisModelRoot>
         {
             item.ShowPipes();
         }
+        if (GUILayout.Button("RemovePipes"))
+        {
+            item.RemovePipes();
+        }
+        if (GUILayout.Button("RecoverPipes"))
+        {
+            item.RecoverPipes();
+        }
         if (GUILayout.Button("ShowAll"))
         {
             TransformHelper.ShowAll(item.gameObject);

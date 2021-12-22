@@ -1183,21 +1183,39 @@ public static class MeshHelper
         else
         {
             Mesh mesh1 = mf1.sharedMesh;
+            if (mesh1 == null)
+            {
+                Debug.LogError("mf1.sharedMesh==null:"+mf1);
+            }
             Mesh mesh2 = mf2.sharedMesh;
-            //Vector3[] points1 = GetWorldVertexes(mesh1, t1);
-            //Vector3[] points2 = GetWorldVertexes(mesh2, t2);
+            if (mesh2 == null)
+            {
+                Debug.LogError("mf2.sharedMesh==null:" + mf2);
+            }
 
-            Vector3[] points1 = mesh1.vertices;
-            if (arg.isLocal == false)
+            if (mesh1 == null || mesh2 == null)
             {
-                points1 = GetWorldVertexes(points1, t1);
+                Vector3[] points1 = GetChildrenWorldVertexes(t1.gameObject);
+                Vector3[] points2 = GetChildrenWorldVertexes(t2.gameObject);
+                dis = DistanceUtil.GetDistance(points1, points2, arg.showLog);
             }
-            Vector3[] points2 = mesh2.vertices;
-            if (arg.isLocal == false)
+            else
             {
-                points2 = GetWorldVertexes(points2, t2);
+                //Vector3[] points1 = GetWorldVertexes(mesh1, t1);
+                //Vector3[] points2 = GetWorldVertexes(mesh2, t2);
+
+                Vector3[] points1 = mesh1.vertices;
+                if (arg.isLocal == false)
+                {
+                    points1 = GetWorldVertexes(points1, t1);
+                }
+                Vector3[] points2 = mesh2.vertices;
+                if (arg.isLocal == false)
+                {
+                    points2 = GetWorldVertexes(points2, t2);
+                }
+                dis = DistanceUtil.GetDistance(points1, points2, arg.showLog);
             }
-            dis = DistanceUtil.GetDistance(points1, points2, arg.showLog);
         }
 
         if(arg.isResetPos)

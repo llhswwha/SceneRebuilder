@@ -342,9 +342,9 @@ public class AreaTreeManager : SingletonBehaviour<AreaTreeManager>
 
     //public int MaxRenderCount = 50;
 
-    public AreaTreeNodeSetting nodeSetting;
+    public AreaTreeNodeSetting nodeSetting = new AreaTreeNodeSetting();
 
-    public AreaTreeNodeStatics nodeStatics;
+    public AreaTreeNodeStatics nodeStatics = new AreaTreeNodeStatics();
 
     public bool isCombine = false;
 

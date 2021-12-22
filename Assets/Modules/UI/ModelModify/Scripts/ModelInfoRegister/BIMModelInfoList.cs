@@ -20,6 +20,7 @@ public class BIMModelInfoList : List<BIMModelInfo>
         Dictionary<string, BIMModelInfo> dict = new Dictionary<string, BIMModelInfo>();
         foreach (var item in this)
         {
+            if (item == null) continue;
             if (dict.ContainsKey(item.Guid))
             {
                 Debug.LogError($"dict.ContainsKey(item.Guid) guid:{item.Guid}");
@@ -33,6 +34,7 @@ public class BIMModelInfoList : List<BIMModelInfo>
         List<BIMModelInfo> result = new List<BIMModelInfo>();
         foreach (BIMModelInfo item in list2)
         {
+            if (item == null) continue;
             if (dict.ContainsKey(item.Guid))
             {
                 BIMModelInfo item1 = dict[item.Guid];
@@ -49,8 +51,9 @@ public class BIMModelInfoList : List<BIMModelInfo>
 
     public BIMModelInfoList FindList(string key)
     {
+        if(string.IsNullOrEmpty(key))  return new BIMModelInfoList(this);
         //doorRootArg.caption = $"[{i + 1:00}] [{listItem.IsFound}][{listItem.FoundType}] {listItem.name}>{listItem.MName}({listItem.MId})"
-        var list1 = this.FindAll(i => i.name.Contains(key) || i.MName.Contains(key) || i.MId.Contains(key));
+        var list1 = this.FindAll(i => i!=null && i.name.Contains(key) || i.MName.Contains(key) || i.MId.Contains(key));
         return new BIMModelInfoList(list1);
     }
 

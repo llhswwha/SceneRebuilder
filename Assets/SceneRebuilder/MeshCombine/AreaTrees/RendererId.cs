@@ -213,7 +213,7 @@ public class RendererId
         var newP= GetId(this.transform.parent, 0);
         if(string.IsNullOrEmpty(parentId))
         {
-            Debug.LogError($"SetParentId oldP:NULL newP:{newP} Id:{Id} name:{this.name}");
+            Debug.Log($"SetParentId oldP:NULL newP:{newP} Id:{Id} name:{this.name} 12");
         }
         else if(newP != parentId)
         {

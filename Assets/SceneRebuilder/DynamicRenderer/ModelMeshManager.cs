@@ -19,6 +19,10 @@ public class ModelMeshManager : MonoBehaviour
     [ContextMenu("GetAllRenderers")]
     public List<MeshRenderer> GetAllRenderers()
     {
+        if (TargetRoots.Count == 0)
+        {
+            Debug.LogError("GetAllRenderers TargetRoots.Count == 0");
+        }
         List<MeshRenderer> meshRenderers = new List<MeshRenderer>();
         foreach(var target in TargetRoots)
         {
@@ -35,7 +39,47 @@ public class ModelMeshManager : MonoBehaviour
 
     public List<string> PrefixNames = new List<string>();
 
+    public static List<string> DefindPrefixNames_Default = new List<string>() { "20LDB10AA" };
+
+    public List<string> DefinedPrefixNames = new List<string>() ;
+
     public string TestName = "";
+
+    public void InitPrefixNames()
+    {
+        foreach(var n in DefindPrefixNames_Default)
+        {
+            if (!DefinedPrefixNames.Contains(n))
+            {
+                DefinedPrefixNames.Add(n);
+            }
+        }
+
+        Debug.Log("InitPrefixNames");
+    }
+
+    public string GetPrefix(string n)
+    {
+        foreach (var pre in DefinedPrefixNames)
+        {
+            if (n.StartsWith(pre))
+            {
+                return pre;
+            }
+        }
+        string pre2= TransformHelper.GetPrefix(n, PrefixDividers);
+        string[] parts = pre2.Split('-');
+        if(parts.Length>=4)
+        {
+            string pr = parts[0];
+            for(int i=1;i<4;i++)
+            {
+                pr += "-" + parts[i];
+            }
+            return pr;
+        }
+        return pre2;
+    }
 
     [ContextMenu("TestGetPrefix")]
     private void TestGetPrefix()
@@ -43,7 +87,7 @@ public class ModelMeshManager : MonoBehaviour
         TransformHelper.GetPrefix(TestName);
     }
 
-    
+    public char[] PrefixDividers = new char[] { ' ', '_','-' };
 
     [ContextMenu("GetPrefixNames")]
     public void GetPrefixNames()
@@ -53,45 +97,10 @@ public class ModelMeshManager : MonoBehaviour
         foreach(var item in list)
         {
             var n = item.name;
-            string pre = TransformHelper.GetPrefix(n);
+
+            string pre = GetPrefix(n);
             ModelClassDict_Auto.AddModel(pre, item);
-
-            //int id = 0;
-            //int id1 = n.LastIndexOf(' ');
-            //int id2 = n.LastIndexOf('-');
-            //int id3 = n.LastIndexOf('-');
-            ////12-3 2
-            //if (id1 > id)
-            //{
-            //    id = id1;
-            //}
-            //if (id2 > id)
-            //{
-            //    id = id2;
-            //}
-            //if (id3 > id)
-            //{
-            //    id = id3;
-            //}
-            ////if (id == 0 && n.Length>9)
-            ////{
-            ////    id = 9;//？？？
-            ////}
-
-            ////最后一个是数字或者英文字母的情况，最后是多个数字的情况
-            //if(id>0)
-            //{
-            //    string pre = n.Substring(0, id+1);
-            //    string after = n.Substring(id + 1);
-            //    ModelClassDict_Auto.AddModel(pre, item);
-            //}
-            //else 
-            //{
-            //    //otherNames.Add(n);
-            //    ModelClassDict_Auto.AddModel(n, item);
-            //}
         }
-        
 
         ModelClassDict_Auto.PrintList();
 

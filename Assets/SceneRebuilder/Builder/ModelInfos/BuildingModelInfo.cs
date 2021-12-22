@@ -15,14 +15,28 @@ public class BuildingModelInfo : SubSceneCreater
         return this.name;
     }
 
+    [ContextMenu("GetTreeCount")]
     public BuildingModelState GetState()
     {
         return new BuildingModelState(this);
     }
 
+    [ContextMenu("TestGetState")]
+    private void TestGetState()
+    {
+        Debug.Log(GetState());
+    }
+
+    [ContextMenu("TestGetTreeCount")]
+    private void TestGetTreeCount()
+    {
+        Debug.Log(GetTreeCount());
+    }
+
+    [ContextMenu("GetTreeCount")]
     public int GetTreeCount()
     {
-        if (trees == null) return 0;
+        //if (trees == null) return 0;
         int i = 0;
         foreach(var t in GetTrees())
         {

@@ -2821,7 +2821,18 @@ public class LODTwoRenderersList:List<LODTwoRenderers>
         }
     }
 
-    
+    public void ResetUpdateState()
+    {
+        foreach (var item in this)
+        {
+            //if (item.dis < zeroDistance)
+            {
+                item.SetUpdateState(UpdateChangedMode.None);
+                item.ReplaceMaterialOld();
+            }
+        }
+    }
+
 
     public void ReplaceOld()
     {

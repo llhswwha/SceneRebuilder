@@ -154,7 +154,15 @@ public class NavisModelRoot : MonoBehaviour
     public List<GameObject> Targets = new List<GameObject>(); 
     public List<GameObject> NotIncludeTargets = new List<GameObject>();
 
-    public GameObject TargetRoot = new GameObject();
+    public GameObject TargetRoot;
+
+    public void Awake()
+    {
+        if (TargetRoot == null)
+        {
+            TargetRoot = new GameObject("TargetRoot");
+        }
+    }
 
     [ContextMenu("FindRelativeTargets")]
     public void FindRelativeTargets()
@@ -206,6 +214,36 @@ public class NavisModelRoot : MonoBehaviour
         }
     }
 
+    public void RemovePipes()
+    {
+        GameObject rootPipe = new GameObject("RemovePipes");
+        var list = TransformHelper.FindGameObjects(this.transform, new List<string>() { "HH_", "JG_", "SG_", "JQ_" });
+        foreach (var item in list)
+        {
+            RendererId rId = RendererId.GetRId(item);
+            rId.SetParentId();
+            item.transform.SetParent(rootPipe.transform);
+        }
+    }
+
+    public void RecoverPipes()
+    {
+        GameObject rootPipe = GameObject.Find("RemovePipes");
+        IdDictionary.InitInfos();
+        List<Transform> pipes = new List<Transform>();
+        for(int i = 0; i < rootPipe.transform.childCount; i++)
+        {
+            pipes.Add(rootPipe.transform.GetChild(i));
+        }
+
+        foreach (var item in pipes)
+        {
+            if (item == this) continue;
+            RendererId rId = RendererId.GetRId(item);
+            rId.RecoverParent();
+        }
+    }
+
     [ContextMenu("ShowPipes")]
     public void ShowPipes()
     {
@@ -231,28 +269,38 @@ public class NavisModelRoot : MonoBehaviour
             {
                 if (IsFilterBIM && item.GetComponent<BIMModelInfo>() != null) continue;
                 if (item.gameObject.activeInHierarchy == false && includeInactive == false) continue;
+                if (item.name.StartsWith("Node_")) continue;//RootNode,_InTree
                 if (!transformDict.ContainsKey(item))
                 {
                     //transformList.Add(item);
                     transformDict.Add(item, item);
                 }
+                
             }
             var combinedList = TransformHelper.FindAllTransforms(target.transform, "_Combined");
             foreach (var item in combinedList)
             {
-                if (transformDict.ContainsKey(item))
+                var subTransList = item.GetComponentsInChildren<Transform>(true);
+                foreach (var t in subTransList)
                 {
-                    transformDict.Remove(item);
+                    if (transformDict.ContainsKey(t))
+                    {
+                        transformDict.Remove(t);
+                    }
                 }
+                //if (transformDict.ContainsKey(item))
+                //{
+                //    transformDict.Remove(item);
+                //}
             }
-            Debug.Log($"GetTransformList target:{target} list:{list.Count} combinedList:{combinedList.Count} transformList:{transformList.Count} includeInactive:{includeInactive}");
+            Debug.Log($"GetTransformList target:{target} list:{list.Count} combinedList:{combinedList.Count} transformList:{transformDict.Count} includeInactive:{includeInactive}");
             //transformList.AddRange(list);
         }
 
         foreach(var notIncludeTarget in NotIncludeTargets)
         {
-            var list = notIncludeTarget.GetComponentsInChildren<Transform>(true);
-            foreach(var t  in list)
+            var subTransList = notIncludeTarget.GetComponentsInChildren<Transform>(true);
+            foreach(var t  in subTransList)
             {
                 if (transformDict.ContainsKey(t))
                 {
@@ -632,8 +680,9 @@ public class NavisModelRoot : MonoBehaviour
         List<ModelItemInfo> allModels_uid_found = new List<ModelItemInfo>();
         List<ModelItemInfo> allModels_uid_nofound = new List<ModelItemInfo>();
 
-        foreach (var uidModel in ModelList.allModels_uid)
-        {
+        //foreach (var uidModel in ModelList.allModels_uid)
+        foreach (var uidModel in ModelList.allModels_drawable_nozero)
+            {
             var transform = TransformDict.FindObjectByUID(uidModel.UId);
             if (transform != null)
             {
@@ -849,8 +898,8 @@ public class NavisModelRoot : MonoBehaviour
         FindObjectByPos(new CheckResultArg(false, false, false, false,false, false, false, false), MinDistanceLv1, p0);
         FindObjectByPos(new CheckResultArg(false, false, false, false,false, false, false, true), MinDistanceLv1, p0);
         FindObjectByPos(new CheckResultArg(false, true, false, false, false, false, false, true), MinDistanceLv1, p0);
-        FindObjectByPos(new CheckResultArg(false, true, true, false,false, false, false, true), MinDistanceLv1, p0);
-        FindObjectByPos(new CheckResultArg(isShowLog, true, true, true, false,false, false, true), MinDistanceLv1, p0);
+        FindObjectByPos(new CheckResultArg(false, true, true, false, false, false, false, true), MinDistanceLv1, p0);
+        FindObjectByPos(new CheckResultArg(isShowLog, true, true, true, false, false, false, true), MinDistanceLv1, p0);
     }
 
     public void FindObjectByPos_OneKey2(bool isShowLog, ProgressArgEx p0)

@@ -44,6 +44,10 @@ public class RendererIdEditor : BaseEditor<RendererId>
             if (GUILayout.Button(targetT.parentId))
             {
                 //EditorHelper.SelectObject(parent);
+                Debug.LogError(targetT.parentId);
+                IdDictionary.InitInfos();
+                var p = IdDictionary.GetGo(targetT.parentId);
+                Debug.LogError(p);
             }
         }
         EditorGUILayout.EndHorizontal();

@@ -193,14 +193,29 @@ public static class AreaTreeHelper
 
     public static GameObject CreateBoundsCube(Bounds bounds,string n,Transform parent,int prefabId)
     {
-        // Debug.Log($"CreateBoundsCube bounds:{bounds} name:{n} parent:{parent}");
         InitCubePrefab();
 
-        if(CubePrefabs==null||CubePrefabs.Count==0){
-            var cubePrefab=GameObject.CreatePrimitive(PrimitiveType.Cube);
-            cubePrefab.SetActive(false);
+        Debug.Log($"CreateBoundsCube bounds:{bounds} name:{n} parent:{parent} prefabId:{prefabId} CubePrefabs:{CubePrefabs}");
+        GameObject prefab = null;
+        if (CubePrefabs==null||CubePrefabs.Count==0 || prefabId>= CubePrefabs.Count || prefabId<0)
+        {
+            prefab = GameObject.CreatePrimitive(PrimitiveType.Cube);
+            prefab.SetActive(false);
         }
-        GameObject cube=GameObject.Instantiate(CubePrefabs[prefabId]);
+        else
+        {
+            prefab = CubePrefabs[prefabId];
+        }
+        //Debug.Log($"CubePrefabs:{CubePrefabs.Count}");
+        //for (int i = 0; i < CubePrefabs.Count; i++)
+        //{
+        //    GameObject cprefab = CubePrefabs[i];
+        //    Debug.Log($"[{i}]cprefab:{cprefab}");
+        //}
+
+        
+
+        GameObject cube=GameObject.Instantiate(prefab);
         cube.AddComponent<BoundsBox>();
         cube.SetActive(true);
         cube.name=n;

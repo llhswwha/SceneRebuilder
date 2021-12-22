@@ -26,6 +26,7 @@ public class NavisModelRootListEditor : BaseFoldoutEditor<NavisModelRootList>
         DrawModelRootList(item, rootListARg);
 
         GUILayout.BeginHorizontal();
+        
         item.Root1 = BaseEditorHelper.ObjectField("Root1:", 100, item.Root1);
         if (GUILayout.Button("Bind1"))
         {
@@ -36,15 +37,18 @@ public class NavisModelRootListEditor : BaseFoldoutEditor<NavisModelRootList>
         {
             item.Root2.BindBimInfo();
         }
-        if (GUILayout.Button("Compare0"))
+        GUILayout.EndHorizontal();
+
+        GUILayout.BeginHorizontal();
+        if (GUILayout.Button("CompareByPos"))
         {
             item.CompareModelByBIM_Position();
         }
-        if (GUILayout.Button("Compare1"))
+        if (GUILayout.Button("CompareAddStructure"))
         {
             item.CompareModelByBIM(true);
         }
-        if (GUILayout.Button("Compare2"))
+        if (GUILayout.Button("CompareNoStructure"))
         {
             item.CompareModelByBIM(false);
         }

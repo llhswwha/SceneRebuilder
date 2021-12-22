@@ -14,12 +14,13 @@ public class NavisModelRootList : SingletonBehaviour<NavisModelRootList>
         //ModelRoots.Sort((a, b) => { return a.bimInfos.Count.CompareTo(b.bimInfos.Count); });
         foreach(var root in ModelRoots)
         {
+            root.RefreshBIMList();
             if (root.resultCount.GetSumCount() == 0)
             {
                 root.SetResultCount();
             }
         }
-        ModelRoots.Sort((a, b) => { return a.resultCount.NotFoundCount.CompareTo(b.resultCount.NotFoundCount); });
+        ModelRoots.Sort((a, b) => { return b.resultCount.NotFoundCount.CompareTo(a.resultCount.NotFoundCount); });
     }
 
 
@@ -89,6 +90,9 @@ public class NavisModelRootList : SingletonBehaviour<NavisModelRootList>
         //updater.SetOldNewModel(Root1.gameObject, Root2.gameObject);
         BIMModelInfoList bimListNoConnected = new BIMModelInfoList(bimListAll);
 
+        LODTwoRenderersList ModelRendersWaiting_New_BIM_All = new LODTwoRenderersList("BIM_New_All");
+        ModelRendersWaiting_New_BIM_All.InitList(bimListAll);
+
         ModelRendersWaiting_Old_BIM = new LODTwoRenderersList("BIM_Old");
         foreach (var bimOfPart in bimListPart)
         {
@@ -110,8 +114,8 @@ public class NavisModelRootList : SingletonBehaviour<NavisModelRootList>
             ModelRendersWaiting_Old_BIM.Add(twoRenderers);
         }
         Debug.LogError($"CompareModelByBIM bimListPart:{bimListPart.Count} bimDictAll:{bimListAll.Count} bimListNoConnected:{bimListNoConnected.Count}");
+        ModelUpdateManager.Instance.SetTargetList(ModelRendersWaiting_Old_BIM, ModelRendersWaiting_New_BIM_All);
 
-        
 
         ModelRendersNoConnectedBims = new LODTwoRenderersList("bimListNoConnected");
         ModelRendersNoConnectedBims.InitList(bimListNoConnected);
@@ -246,8 +250,8 @@ public class NavisModelRootList : SingletonBehaviour<NavisModelRootList>
         var bimList1 = Root1.GetBims(null, null);
         var bimList2 = Root2.GetBims(null, null);
         BIMModelInfoDictionary dict2 = new BIMModelInfoDictionary(bimList2, null);
-        //var bimList3 = bimList2.FindSameList(bimList1);
-        List<BIMModelInfo> bimList3 = new List<BIMModelInfo>();
+        var bimList3 = bimList2.FindSameList(bimList1);
+        //List<BIMModelInfo> bimList3 = new List<BIMModelInfo>();
         ModelUpdateManager updater = ModelUpdateManager.Instance;
         //updater.SetOldNewModel(Root1.gameObject, Root2.gameObject);
 

@@ -49,32 +49,44 @@ public static class TransformHelper
         }
         return minModel;
     }
-
     public static string GetPrefix(string n)
+    {
+        return GetPrefix(n, new char[] { ' ', '_' });
+    }
+
+    public static string GetPrefix(string n, char[] dividers)
     {
         //var n = item.name;
         int id = 0;
-        int id1 = n.LastIndexOf(' ');
-        //int id2 = n.LastIndexOf('-');
-        int id3 = n.LastIndexOf('_');
-        //12-3 2
-        if (id1 > id)
+        foreach(var c in dividers)
         {
-            id = id1;
+            int id1 = n.LastIndexOf(c);
+            if (id1 > id)
+            {
+                id = id1;
+            }
         }
-        //if (id2 > id)
+        //int id1 = n.LastIndexOf(' ');
+        ////int id2 = n.LastIndexOf('-');
+        //int id3 = n.LastIndexOf('_');
+        ////12-3 2
+        //if (id1 > id)
         //{
-        //    id = id2;
+        //    id = id1;
         //}
-        if (id3 > id)
-        {
-            id = id3;
-        }
-        //if (id == 0 && n.Length>9)
+        ////if (id2 > id)
+        ////{
+        ////    id = id2;
+        ////}
+        //if (id3 > id)
         //{
-        //    id = 9;//？？？
+        //    id = id3;
         //}
-        //最后一个是数字或者英文字母的情况，最后是多个数字的情况
+        ////if (id == 0 && n.Length>9)
+        ////{
+        ////    id = 9;//？？？
+        ////}
+        ////最后一个是数字或者英文字母的情况，最后是多个数字的情况
         string pre = n;
         string after = "";
         if (id > 0)
