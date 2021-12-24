@@ -196,6 +196,10 @@ public class OBBCollider : MonoBehaviour
 
     public void ShowOBBBox()
     {
+        GameObject go0 = new GameObject("OBBCollider_OBBBox");
+        go0.transform.SetParent(this.transform);
+        go0.transform.position = Vector3.zero;
+
         GameObject go=GameObject.CreatePrimitive(PrimitiveType.Cube);
         go.name=this.name+"_ObbBox";
         obbGo=go;
@@ -210,16 +214,18 @@ public class OBBCollider : MonoBehaviour
         //对齐轴方向
 
         go.transform.localPosition=OBB.Center;
+        go.transform.SetParent(go0.transform);
+
 
         var p1 = this.transform.TransformPoint(OBB.Center);
 
-        CreatePoint(Vector3.zero,"Zero");
+        CreatePoint(Vector3.zero,"Zero", go0.transform);
         //var center = OBB.Center;
         var center = p1;
-        CreatePoint(center, "Center");
-        CreatePoint(center + OBB.Right,"Right");
-        CreatePoint(center + OBB.Up,"Up");
-        CreatePoint(center + OBB.Forward,"Forward");
+        CreatePoint(center, "Center", go0.transform);
+        CreatePoint(center + OBB.Right,"Right", go0.transform); ;
+        CreatePoint(center + OBB.Up,"Up", go0.transform); ;
+        CreatePoint(center + OBB.Forward,"Forward", go0.transform);
 
         //Vector3 v1 = CreateLine(Vector3.zero,OBB.Right* AxixLength, "Zero-Right");
         //Vector3 v2 = CreateLine(Vector3.zero,OBB.Up* AxixLength, "Zero-Up");
@@ -229,9 +235,9 @@ public class OBBCollider : MonoBehaviour
         //Vector3 v2 = CreateLine(Vector3.zero, OBB.Up * OBB.Extent.y, "Zero-Up");
         //Vector3 v3 = CreateLine(Vector3.zero, OBB.Forward * OBB.Extent.z, "Zero-Forward");
 
-        Vector3 v1 = CreateLine(center, center + OBB.Right, "Center-Right");
-        Vector3 v2 = CreateLine(center, center + OBB.Up, "Center-Up");
-        Vector3 v3 = CreateLine(center, center + OBB.Forward, "Center-Forward");
+        Vector3 v1 = CreateLine(center, center + OBB.Right, "Center-Right", go0.transform);
+        Vector3 v2 = CreateLine(center, center + OBB.Up, "Center-Up", go0.transform);
+        Vector3 v3 = CreateLine(center, center + OBB.Forward, "Center-Forward", go0.transform);
 
         Debug.Log("v1 dot v2:"+Vector3.Dot(v1,v2));
         Debug.Log("v1 dot v3:"+Vector3.Dot(v1,v3));
@@ -242,27 +248,31 @@ public class OBBCollider : MonoBehaviour
 
     public void ShowPipePoints()
     {
+        GameObject go = new GameObject("OBBCollider_PipePoints");
+        go.transform.SetParent(this.transform);
+        go.transform.localPosition = Vector3.zero;
+
         var StartPoint = OBB.Up * OBB.Extent.y;
         var EndPoint = -OBB.Up * OBB.Extent.y;
 
-        CreatePoint(StartPoint, "StartPoint");
-        CreatePoint(EndPoint, "EndPoint");
+        CreatePoint(StartPoint, "StartPoint",go.transform);
+        CreatePoint(EndPoint, "EndPoint", go.transform);
 
         var P1 = OBB.Right * OBB.Extent.x;
         var P2 = -OBB.Forward * OBB.Extent.z;
         var P3 = -OBB.Right * OBB.Extent.x;
         var P4 = OBB.Forward * OBB.Extent.z;
 
-        CreatePoint(P1, "P1");
-        CreatePoint(P2, "P2");
-        CreatePoint(P3, "P3");
-        CreatePoint(P4, "P4");
+        CreatePoint(P1, "P1", go.transform);
+        CreatePoint(P2, "P2", go.transform);
+        CreatePoint(P3, "P3", go.transform);
+        CreatePoint(P4, "P4", go.transform);
 
         float p = 1.414213562373f;
-        CreatePoint(P1 * p, "P11");
-        CreatePoint(P2 * p, "P22");
-        CreatePoint(P3 * p, "P33");
-        CreatePoint(P4 * p, "P44");
+        CreatePoint(P1 * p, "P11", go.transform);
+        CreatePoint(P2 * p, "P22", go.transform);
+        CreatePoint(P3 * p, "P33", go.transform);
+        CreatePoint(P4 * p, "P44", go.transform);
     }
 
     //public Vector3 StartPoint = Vector3.zero;
@@ -275,14 +285,22 @@ public class OBBCollider : MonoBehaviour
 
     public float AxixLength = 1;
 
-    private void CreatePoint(Vector3S p,string n)
+    private void CreatePointS(Vector3S p,string n)
     {
         var lp = p.GetVector3();
         var wp = this.transform.TransformPoint(lp);
         CreatePoint(wp,n);
     }
 
-    private void CreatePoint(Vector3 p,string n)
+    private void CreatePointS(Vector3S p, string n,Transform pt)
+    {
+        var lp = p.GetVector3();
+        var wp = this.transform.TransformPoint(lp);
+        var pObj=CreatePoint(wp, n);
+        pObj.transform.SetParent(pt);
+    }
+
+    private GameObject CreatePoint(Vector3 p,string n)
     {
         GameObject g1=GameObject.CreatePrimitive(PrimitiveType.Sphere);
 
@@ -293,16 +311,35 @@ public class OBBCollider : MonoBehaviour
         g1.name=n;
 
         g1.transform.SetParent(this.transform);
+        return g1;
     }
 
-    private Vector3 CreateLine(Vector3S p1,Vector3S p2,string n)
+    private void CreatePoint(Vector3 p, string n,Transform pT)
     {
-        return CreateLine(transform.TransformPoint(p1.GetVector3()),transform.TransformPoint(p2.GetVector3()),n);
+        GameObject g1 = GameObject.CreatePrimitive(PrimitiveType.Sphere);
+
+        //g1.transform.SetParent(this.transform);
+        //g1.transform.localPosition=p;
+        g1.transform.position = p;
+        g1.transform.localScale = new Vector3(lineSize, lineSize, lineSize);
+        g1.name = n;
+
+        g1.transform.SetParent(pT);
+    }
+
+    private Vector3 CreateLineS(Vector3S p1,Vector3S p2,string n)
+    {
+        return CreateLine(transform.TransformPoint(p1.GetVector3()),transform.TransformPoint(p2.GetVector3()),n, null);
+    }
+
+    private Vector3 CreateLineS(Vector3S p1, Vector3S p2, string n, Transform pt)
+    {
+        return CreateLine(transform.TransformPoint(p1.GetVector3()), transform.TransformPoint(p2.GetVector3()), n, pt);
     }
 
     public float lineSize = 0.01f;
 
-    private Vector3 CreateLine(Vector3 p1,Vector3 p2,string n)
+    private Vector3 CreateLine(Vector3 p1,Vector3 p2,string n,Transform pt=null)
     {
         GameObject g1=GameObject.CreatePrimitive(PrimitiveType.Cube);
         //g1.transform.SetParent(this.transform);
@@ -313,6 +350,8 @@ public class OBBCollider : MonoBehaviour
         g1.transform.localScale=scale;
         g1.name=n;
         g1.transform.SetParent(this.transform);
+        if(pt!=null)
+            g1.transform.SetParent(pt);
         return p2-p1;
     }
 
@@ -343,12 +382,16 @@ public class OBBCollider : MonoBehaviour
     public void DrawWireCube()
     {
 
+        GameObject go = new GameObject("OBBCollider_WireCube");
+        go.transform.SetParent(this.transform);
+        go.transform.position = Vector3.zero;
+
         var points1=OBB.CornerPoints();
 
         for(int i=0;i<points1.Length;i++)
         {
 
-            CreatePoint(points1[i],"p_"+i);
+            CreatePointS(points1[i],"p_"+i, go.transform);
         }
 
         var points2=OBB.CornerBoxPoints();
@@ -364,10 +407,10 @@ public class OBBCollider : MonoBehaviour
         {
             if(i<points2.Length-1)
             {
-                CreateLine(points2[i],points2[i+1],"line_"+i);
+                CreateLineS(points2[i],points2[i+1],"line_"+i, go.transform);
 
                 Vector3S lineCenter = (points2[i] + points2[i + 1]) / 2;
-                CreatePoint(lineCenter, "lineCenter_" + i);
+                CreatePointS(lineCenter, "lineCenter_" + i, go.transform);
                 lineCenterList.Add(lineCenter);
 
                 float length = points2[i].GetDistance(points2[i + 1]);
@@ -392,9 +435,9 @@ public class OBBCollider : MonoBehaviour
         //    // }
         //}
 
-        CreateLine(points1[2], points1[3],"line_23");
-        CreateLine(points1[6], points1[7],"line_67");
-        CreateLine(points1[4], points1[5],"line_45");
+        CreateLineS(points1[2], points1[3],"line_23", go.transform);
+        CreateLineS(points1[6], points1[7],"line_67", go.transform);
+        CreateLineS(points1[4], points1[5],"line_45", go.transform);
     }
 
     private void OnSceneGUI()

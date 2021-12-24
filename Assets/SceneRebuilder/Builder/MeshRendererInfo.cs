@@ -169,6 +169,12 @@ public class MeshRendererInfo : MonoBehaviour,IComparable<MeshRendererInfo>
         return count;
     }
 
+    public Vector3[] GetVertices()
+    {
+        if (this.meshFilter == null) return null;
+        return this.meshFilter.sharedMesh.vertices;
+    }
+
     public int GetMinLODVertexCount()
     {
         LODGroup group = this.GetComponent<LODGroup>();
@@ -221,6 +227,16 @@ public class MeshRendererInfo : MonoBehaviour,IComparable<MeshRendererInfo>
             }
         }
         return info.minMax;
+    }
+
+    public static MeshRendererInfo GetInfo(MeshRenderer go)
+    {
+        return GetInfo(go.gameObject, false, false);
+    }
+
+    public static MeshRendererInfo GetInfo(GameObject go)
+    {
+        return GetInfo(go, false, false);
     }
 
     public static MeshRendererInfo GetInfo(MeshRenderer go, bool isUpdateId, bool isForceUpdate = false)

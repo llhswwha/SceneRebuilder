@@ -25,8 +25,14 @@ public class PipeBuilderEditor : Editor
         {
             targetT.CreateEachPipes();
         }
-        if (GUILayout.Button("CreateOnePipe"))
+        if (GUILayout.Button("CreateOnePipe1"))
         {
+            targetT.UseOnlyEndPoint = false;
+            targetT.CreateOnePipe();
+        }
+        if (GUILayout.Button("CreateOnePipe2"))
+        {
+            targetT.UseOnlyEndPoint = true;
             targetT.CreateOnePipe();
         }
         GUILayout.EndHorizontal();

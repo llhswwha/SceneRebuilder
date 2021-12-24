@@ -530,7 +530,7 @@ public class DictionaryList1ToN<T>: DictionaryList1ToN<string, T> where T :class
     
 }
 
-public class DictionaryList1ToN<T1,T2> : Dictionary<T1, List<T2>> where T2 : class
+public class DictionaryList1ToN<T1,T2> : Dictionary<T1, List<T2>> //where T2 : class
 {
     public void AddItem(T1 key, T2 item)
     {
@@ -588,10 +588,10 @@ public class DictionaryList1ToN<T1,T2> : Dictionary<T1, List<T2>> where T2 : cla
             }
             else
             {
-                return null;
+                return default(T2);
             }
         }
-        return null;
+        return default(T2);
     }
 
     public List<T2> GetItems(T1 key)

@@ -73,7 +73,7 @@ public class PipeModel : MonoBehaviour
 
     public OrientedBoundingBox OBB;
 
-    private void CreatePoint(Vector3 p, string n)
+    private GameObject CreateLocalPoint(Vector3 p, string n)
     {
         GameObject g1 = GameObject.CreatePrimitive(PrimitiveType.Sphere);
 
@@ -81,6 +81,15 @@ public class PipeModel : MonoBehaviour
         g1.transform.localPosition = p;
         g1.transform.localScale = new Vector3(lineSize, lineSize, lineSize);
         g1.name = n;
+        return g1;
+    }
+
+    private GameObject CreateLocalPoint(Vector3 p, string n,Transform pT)
+    {
+        GameObject g1 = CreateLocalPoint(p, n);
+
+        g1.transform.SetParent(pT);
+        return g1;
     }
 
     //private Vector3 CreateLine(Vector3S p1, Vector3S p2, string n)
@@ -92,6 +101,8 @@ public class PipeModel : MonoBehaviour
 
     public void GetPipeInfo()
     {
+
+
         ClearChildren();
 
         OBBCollider oBBCollider = this.gameObject.GetComponent<OBBCollider>();
@@ -118,18 +129,50 @@ public class PipeModel : MonoBehaviour
         StartPoint = OBB.Up * OBB.Extent.y;
         EndPoint = -OBB.Up * OBB.Extent.y;
 
-        CreatePoint(StartPoint, "StartPoint");
-        CreatePoint(EndPoint, "EndPoint");
+        GameObject go = new GameObject("PipeModel_PipeInfo");
+        go.transform.SetParent(this.transform);
+        go.transform.position = Vector3.zero;
+
+        CreateLocalPoint(StartPoint, "StartPoint1", go.transform);
+        CreateLocalPoint(EndPoint, "EndPoint1", go.transform);
 
         P1 = OBB.Right * OBB.Extent.x;
         P2 = -OBB.Forward * OBB.Extent.z;
         P3 = -OBB.Right * OBB.Extent.x;
         P4 = OBB.Forward * OBB.Extent.z;
 
-        CreatePoint(P1, "P1");
-        CreatePoint(P2, "P2");
+        //CreateLocalPoint(P1, "P1", go.transform);
+        //CreateLocalPoint(P2, "P2", go.transform);
+        //CreateLocalPoint(P3, "P3", go.transform);
+        //CreateLocalPoint(P4, "P4", go.transform);
 
-        PipeRadius= OBB.Extent.x;
+        PipeRadius = OBB.Extent.x;
+
+        var rendererInfo = MeshRendererInfo.GetInfo(this.gameObject);
+        Vector3[] vs = rendererInfo.GetVertices();
+        CreateLocalPoint(P1, $"P1_{GetPoint2VerticesInfo(vs,P1)}",go.transform);
+        CreateLocalPoint(P2, $"P2_{GetPoint2VerticesInfo(vs,P2)}", go.transform);
+        CreateLocalPoint(P3, $"P3_{GetPoint2VerticesInfo(vs,P3)}", go.transform);
+        CreateLocalPoint(P4, $"P4_{GetPoint2VerticesInfo(vs,P4)}", go.transform);
+    }
+
+    private string GetPoint2VerticesInfo(Vector3[] vs,Vector3 p)
+    {
+        DictionaryList1ToN<float, Vector3> dict1 = new DictionaryList1ToN<float, Vector3>();
+        DictionaryList1ToN<string, Vector3> dict14 = new DictionaryList1ToN<string, Vector3>();
+        DictionaryList1ToN<string, Vector3> dict15 = new DictionaryList1ToN<string, Vector3>();
+        for (int i = 0; i < vs.Length; i++)
+        {
+            Vector3 v = vs[i];
+            float dis = Vector3.Distance(v, p);
+            string sDis4 = dis.ToString("F4");
+            string sDis5 = dis.ToString("F5");
+            dict1.AddItem(dis, v);
+            Debug.Log($"GetPoint2VerticesInfo p:{p} dis[{i + 1}]:{dis} sDis4:{sDis4} sDis5:{sDis5} v:{v} ");
+            dict14.AddItem(sDis4, v);
+            dict15.AddItem(sDis5, v);
+        }
+        return $"{dict1.Count}_{dict14.Count}_{dict15.Count}";
     }
 
     public void CreatePipe()
@@ -165,6 +208,10 @@ public class PipeModel : MonoBehaviour
 
     public void CreateWeld()
     {
+        GameObject go = new GameObject("WeldPoints");
+        go.transform.SetParent(this.transform);
+        go.transform.position = Vector3.zero;
+
         ClearChildren();
 
         OBBCollider oBBCollider = this.gameObject.GetComponent<OBBCollider>();
@@ -178,24 +225,24 @@ public class PipeModel : MonoBehaviour
         StartPoint = OBB.Up * OBB.Extent.y;
         EndPoint = -OBB.Up * OBB.Extent.y;
 
-        CreatePoint(StartPoint, "StartPoint");
-        CreatePoint(EndPoint, "EndPoint");
+        CreateLocalPoint(StartPoint, "StartPoint2", go.transform);
+        CreateLocalPoint(EndPoint, "EndPoint2", go.transform);
 
         P1 = OBB.Right * OBB.Extent.x ;
         P2 = -OBB.Forward * OBB.Extent.z;
         P3 = -OBB.Right * OBB.Extent.x;
         P4 = OBB.Forward * OBB.Extent.z;
 
-        CreatePoint(P1, "P1");
-        CreatePoint(P2, "P2");
-        CreatePoint(P3, "P3");
-        CreatePoint(P4, "P4");
+        CreateLocalPoint(P1, "P1", go.transform);
+        CreateLocalPoint(P2, "P2", go.transform);
+        CreateLocalPoint(P3, "P3", go.transform);
+        CreateLocalPoint(P4, "P4", go.transform);
 
         float p = 1.414213562373f;
-        CreatePoint(P1 * p, "P11");
-        CreatePoint(P2 * p, "P22");
-        CreatePoint(P3 * p, "P33");
-        CreatePoint(P4 * p, "P44");
+        CreateLocalPoint(P1 * p, "P11", go.transform);
+        CreateLocalPoint(P2 * p, "P22", go.transform);
+        CreateLocalPoint(P3 * p, "P33", go.transform);
+        CreateLocalPoint(P4 * p, "P44", go.transform);
 
         GameObject pipeNew = new GameObject(this.name + "_NewWeld");
         pipeNew.transform.position = this.transform.position + Offset;
@@ -252,6 +299,7 @@ public class PipeModel : MonoBehaviour
         Transform[] children = gameObject.GetComponentsInChildren<Transform>(true);
         foreach(var child in children)
         {
+            if (child == null) continue;
             if (child.gameObject == this.gameObject) continue;
             GameObject.DestroyImmediate(child.gameObject);
         }

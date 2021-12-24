@@ -1,4 +1,5 @@
 using MathGeoLib;
+using System;
 using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
@@ -85,27 +86,193 @@ public class PipeBuilder : MonoBehaviour
 
     public float ElbowOffset = 0.1f;
 
+    public PipeCreateArgs PipeArgs = new PipeCreateArgs();
+
+    public bool UseOnlyEndPoint = false;
+
     private PipeMeshGenerator RendererOnePipe()
     {
-        points = new List<Vector3>();
-        
-        Vector3 p11;
-        Vector3 p12;
-        Vector3 p21;
-        Vector3 p22;
+        PipeArgs = new PipeCreateArgs(PipeModels);
+        points = PipeArgs.GetLocalPoints(UseOnlyEndPoint);
 
-        Vector3 P1;
-        Vector3 P2;
-        Vector3 P3;
-        Vector3 P4;
-        Vector3 P5;
+        GameObject pipeNew = new GameObject(this.name + "_NewPipe");
+        //pipeNew.transform.position = this.transform.position + Offset;
+        //pipeNew.transform.position = Vector3.zero;
+        pipeNew.transform.position = PipeArgs.centerP;
+        pipeNew.transform.SetParent(this.transform.parent);
 
-        float elbowRadius = 0;
-
-        for (int i = 0; i < PipeModels.Count-1; i++)
+        PipeMeshGenerator pipe = pipeNew.GetComponent<PipeMeshGenerator>();
+        if (pipe == null)
         {
-            PipeModel pm1 = PipeModels[i];
-            PipeModel pm2 = PipeModels[i+1];
+            pipe = pipeNew.AddComponent<PipeMeshGenerator>();
+        }
+        pipe.points = points;
+        pipe.pipeSegments = pipeSegments;
+        pipe.pipeMaterial = PipeMaterial;
+        pipe.weldMaterial = WeldMaterial;
+        pipe.weldRadius = this.weldRadius;
+        pipe.elbowRadius = PipeArgs.elbowRadius;
+        pipe.generateWeld = generateWeld;
+        pipe.avoidStrangling = true;
+        pipe.pipeRadius = PipeModels[0].PipeRadius;
+        pipe.RenderPipe();
+        return pipe;
+    }
+
+    [Serializable]
+    public class PipeCreateArgs
+    {
+        public List<PipeCreateArg> PipeArgs = new List<PipeCreateArg>();
+        public float elbowRadius_Sum = 0;
+        public float elbowRadius = 0;
+
+        private List<PipeModel> PipeModels;
+
+        public PipeCreateArgs()
+        {
+
+        }
+
+        public PipeCreateArgs(List<PipeModel> PipeModels)
+        {
+            this.PipeModels = PipeModels;
+        }
+
+        public void AddArg(PipeCreateArg arg)
+        {
+            this.PipeArgs.Add(arg);
+            elbowRadius_Sum += arg.elbowRadius;
+
+        }
+
+        internal List<Vector3> GetPoints(bool useOnlyEndPoint)
+        {
+            List<Vector3> points = new List<Vector3>();
+            PipeArgs = new List<PipeCreateArg>();
+
+            if (PipeModels.Count == 1)
+            {
+                PipeModel pm1 = PipeModels[0];
+                points.Add(pm1.GetStartPoint());
+                points.Add(pm1.GetEndPoint());
+            }
+            else
+            {
+                for (int i = 0; i < PipeModels.Count - 1; i++)
+                {
+                    PipeModel pm1 = PipeModels[i];
+                    PipeModel pm2 = PipeModels[i + 1];
+                    PipeCreateArg pipeArg = new PipeCreateArg(pm1, pm2);
+                    var ps = pipeArg.GetPoints();
+
+                    if (useOnlyEndPoint)
+                    {
+                        if (i == 0)
+                        {
+                            points.Add(ps[0]);
+                            points.Add(ps[2]);
+                        }
+                        else if (i == PipeModels.Count - 2)
+                        {
+                            points.Add(ps[2]);
+                            points.Add(ps[4]);
+                        }
+                        else
+                        {
+                            points.Add(ps[2]);
+                        }
+                    }
+                    else
+                    {
+                        if (i == 0)
+                        {
+                            points.AddRange(ps);
+                        }
+                        //else if (i == PipeModels.Count - 2)
+                        //{
+                        //    points.Add(ps[2]);
+                        //    points.Add(ps[3]);
+                        //    points.Add(ps[4]);
+                        //}
+                        else
+                        {
+                            points.Add(ps[2]);
+                            points.Add(ps[3]);
+                            points.Add(ps[4]);
+                        }
+                    }
+
+                    AddArg(pipeArg);
+                }
+                elbowRadius = elbowRadius_Sum / PipeArgs.Count;
+            }
+
+            
+           
+
+            return points;
+        }
+
+        public Vector3 sumP = Vector3.zero;
+        public Vector3 centerP = Vector3.zero;
+
+        public List<Vector3> GetLocalPoints(bool useOnlyEndPoint)
+        {
+            List<Vector3> points = GetPoints(useOnlyEndPoint);
+            sumP = Vector3.zero;
+            for (int i = 0; i < points.Count; i++)
+            {
+                sumP += points[i];
+            }
+
+            centerP = sumP / (points.Count);
+            for (int i = 0; i < points.Count; i++)
+            {
+                Vector3 p = points[i];
+                points[i] = p - centerP;
+            }
+
+            return points;
+        }
+    }
+
+    [Serializable]
+    public class PipeCreateArg
+    {
+        public Vector3 P1;
+        public Vector3 P2;
+        public Vector3 P3;
+        public Vector3 P4;
+        public Vector3 P5;
+
+        PipeModel pm1;
+        PipeModel pm2;
+
+        public PipeCreateArg(PipeModel pm1, PipeModel pm2)
+        {
+            this.pm1 = pm1;
+            this.pm2 = pm2;
+        }
+
+        public List<Vector3> points = new List<Vector3>();
+        public float elbowRadius = 0;
+
+        public List<Vector3> GetPoints()
+        {
+            points = new List<Vector3>();
+
+            Vector3 p11;
+            Vector3 p12;
+            Vector3 p21;
+            Vector3 p22;
+
+            //Vector3 P1;
+            //Vector3 P2;
+            //Vector3 P3;
+            //Vector3 P4;
+            //Vector3 P5;
+
+
 
             p11 = pm1.GetStartPoint();
             p12 = pm1.GetEndPoint();
@@ -115,7 +282,7 @@ public class PipeBuilder : MonoBehaviour
 
             Vector3 linePoint1 = Vector3.zero;
             Vector3 lineVec1 = Vector3.zero;
-            
+
 
             float dis11 = Vector3.Distance(p11, p21) + Vector3.Distance(p11, p22);
             float dis12 = Vector3.Distance(p12, p21) + Vector3.Distance(p12, p22);
@@ -140,10 +307,11 @@ public class PipeBuilder : MonoBehaviour
                 P2 = p11;
             }
 
-            if (i == 0)
+            //if (i == 0)
             {
                 points.Add(P1);
-                //points.Add(P2);
+
+                points.Add(P2);
 
                 //Vector3 line1 = P2 - P1;
                 //Vector3 P21 = P1 + line1*1.05f;
@@ -151,7 +319,7 @@ public class PipeBuilder : MonoBehaviour
                 //points.Add(P21);
             }
 
-            
+
 
             Vector3 linePoint2 = Vector3.zero;
             Vector3 lineVec2 = Vector3.zero;
@@ -179,25 +347,23 @@ public class PipeBuilder : MonoBehaviour
                 P4 = p22;
             }
 
-            Vector3 closestPointLine1 = Vector3.zero;
-            Vector3 closestPointLine2 = Vector3.zero;
             Math3D.ClosestPointsOnTwoLines(out closestPointLine1, out closestPointLine2, linePoint1, lineVec1, linePoint2, lineVec2);
+            distanceOfTwoClosetPoint = Vector3.Distance(closestPointLine1, closestPointLine2);
+            Vector3 closetPoint12 = (closestPointLine1 + closestPointLine2) / 2;
 
-            if(i==0)
-                elbowRadius = Vector3.Distance(closestPointLine1, P2);
+            //if (i == 0)
+            elbowRadius = Vector3.Distance(closetPoint12, P2);
 
-            var P2_1 = P2 + (closestPointLine2 - P2) * ElbowOffset;
+            //var P2_1 = P2 + (closetPoint12 - P2) * ElbowOffset;
 
-            points.Add(P2_1);
+            //points.Add(P2_1);
 
             //points.Add(closestPointLine1);
-            points.Add(closestPointLine2);
+            points.Add(closetPoint12);
 
-            var P3_1 = P3 + (closestPointLine2 - P3) * ElbowOffset;
+            //var P3_1 = P3 + (closetPoint12 - P3) * ElbowOffset;
 
-            points.Add(P3_1);
-
-            //points.Add(P3);
+            points.Add(P3);
             points.Add(P4);
 
             ////NewPipeGos.Add(go.RendererPipe(this.PipeMaterial, this.WeldMaterial));
@@ -206,45 +372,12 @@ public class PipeBuilder : MonoBehaviour
 
             //sumP += p11;
             //sumP += p12;
+            return points;
         }
-
-
-        Vector3 sumP = Vector3.zero;
-        for (int i = 0; i < points.Count; i++)
-        {
-            sumP += points[i];
-        }
-
-        Vector3 centerP = sumP / (PipeModels.Count * 2);
-        for (int i = 0; i < points.Count; i++)
-        {
-            Vector3 p = points[i];
-            points[i] = p - centerP;
-        }
-
-        GameObject pipeNew = new GameObject(this.name + "_NewPipe");
-        //pipeNew.transform.position = this.transform.position + Offset;
-        //pipeNew.transform.position = Vector3.zero;
-        pipeNew.transform.position = centerP;
-        pipeNew.transform.SetParent(this.transform.parent);
-
-        PipeMeshGenerator pipe = pipeNew.GetComponent<PipeMeshGenerator>();
-        if (pipe == null)
-        {
-            pipe = pipeNew.AddComponent<PipeMeshGenerator>();
-        }
-        pipe.points = points;
-        pipe.pipeSegments = pipeSegments;
-        pipe.pipeMaterial = PipeMaterial;
-        pipe.weldMaterial = WeldMaterial;
-        pipe.weldRadius = this.weldRadius;
-        pipe.elbowRadius = elbowRadius;
-        pipe.generateWeld = generateWeld;
-        pipe.avoidStrangling = true;
-        pipe.pipeRadius = PipeModels[0].PipeRadius;
-        pipe.RenderPipe();
-
-        return pipe;
+        public Vector3 closetPoint12 = Vector3.zero;
+        public Vector3 closestPointLine1 = Vector3.zero;
+        public Vector3 closestPointLine2 = Vector3.zero;
+        public float distanceOfTwoClosetPoint = 0;
     }
 
     public void RendererPipes()
