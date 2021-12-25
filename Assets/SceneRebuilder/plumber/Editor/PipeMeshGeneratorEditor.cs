@@ -15,10 +15,17 @@ public class PipeMeshGeneratorEditor : Editor {
     {
 		PipeMeshGenerator myTarget = (PipeMeshGenerator)target;
 
-		if (GUILayout.Button("Generate Pipe"))
+		GUILayout.BeginHorizontal();
+		if (GUILayout.Button("Generate Pipe(Points)"))
 		{
 			myTarget.RenderPipe();
 		}
+		if (GUILayout.Button("Generate Pipe(Transform)"))
+		{
+			myTarget.RenderPipeFromTransforms();
+		}
+		GUILayout.EndHorizontal();
+
 		GUILayout.BeginHorizontal();
 		if (GUILayout.Button("CleanChildren"))
 		{

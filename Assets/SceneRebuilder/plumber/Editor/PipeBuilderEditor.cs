@@ -25,16 +25,24 @@ public class PipeBuilderEditor : Editor
         {
             targetT.CreateEachPipes();
         }
-        if (GUILayout.Button("CreateOnePipe1"))
+        targetT.UseOnlyEndPoint = GUILayout.Toggle(targetT.UseOnlyEndPoint, "OnlyEndPoint");
+        targetT.IsGenerateElbowBeforeAfter = GUILayout.Toggle(targetT.IsGenerateElbowBeforeAfter, "ElbowBeforeAfter");
+        if (GUILayout.Button("CreateOnePipe"))
         {
-            targetT.UseOnlyEndPoint = false;
             targetT.CreateOnePipe();
         }
-        if (GUILayout.Button("CreateOnePipe2"))
-        {
-            targetT.UseOnlyEndPoint = true;
-            targetT.CreateOnePipe();
-        }
+
+        //if (GUILayout.Button("CreateOnePipe1"))
+        //{
+        //    targetT.UseOnlyEndPoint = false;
+        //    targetT.CreateOnePipe();
+        //}
+        //if (GUILayout.Button("CreateOnePipe2"))
+        //{
+        //    targetT.UseOnlyEndPoint = true;
+        //    targetT.CreateOnePipe();
+        //}
+
         GUILayout.EndHorizontal();
 
         GUILayout.BeginHorizontal();

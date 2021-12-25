@@ -176,8 +176,18 @@ public class PipeMeshGenerator : MonoBehaviour {
     //{
     //    PointHelper.ShowPoints(points, new Vector3(0.05f, 0.05f, 0.05f),this.transform);
     //}
+    public void RenderPipeFromTransforms()
+    {
+        points = new List<Vector3>();
+        foreach(var t in pointsT)
+        {
+            if (t == null) continue;
+            points.Add(t.transform.position-this.transform.position);
+        }
+        RenderPipe();
+    }
 
-    
+
 
     public void RenderPipe() {
 

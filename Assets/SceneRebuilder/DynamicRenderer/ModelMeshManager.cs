@@ -4,7 +4,7 @@ using System.Linq;
 using System.Text;
 using UnityEngine;
 
-public class ModelMeshManager : MonoBehaviour
+public class ModelMeshManager : SingletonBehaviour<ModelMeshManager>
 {
     public List<string> StartWithNames = new List<string>();
 
@@ -90,8 +90,9 @@ public class ModelMeshManager : MonoBehaviour
     public char[] PrefixDividers = new char[] { ' ', '_','-' };
 
     [ContextMenu("GetPrefixNames")]
-    public void GetPrefixNames()
+    public ModelClassDict<MeshRenderer> GetPrefixNames()
     {
+        ModelClassDict_Auto = new ModelClassDict<MeshRenderer>();
         List<string> otherNames = new List<string>();
         var list = GetAllRenderers();
         foreach(var item in list)
@@ -110,6 +111,13 @@ public class ModelMeshManager : MonoBehaviour
         Debug.LogError($"otherNames:{sb}");
 
         PrefixNames = ModelClassDict_Auto.GetKeys();
+        return ModelClassDict_Auto;
+    }
+
+    public ModelClassDict<MeshRenderer> GetPrefixNames(GameObject target)
+    {
+        TargetRoots = new List<GameObject>() { target };
+        return GetPrefixNames();
     }
 
     [ContextMenu("GetModels")]

@@ -88,6 +88,8 @@ public class PipeBuilder : MonoBehaviour
 
     public PipeCreateArgs PipeArgs = new PipeCreateArgs();
 
+    public bool IsGenerateElbowBeforeAfter = true;
+
     public bool UseOnlyEndPoint = false;
 
     private PipeMeshGenerator RendererOnePipe()
@@ -112,6 +114,7 @@ public class PipeBuilder : MonoBehaviour
         pipe.weldMaterial = WeldMaterial;
         pipe.weldRadius = this.weldRadius;
         pipe.elbowRadius = PipeArgs.elbowRadius;
+        pipe.IsGenerateElbowBeforeAfter = IsGenerateElbowBeforeAfter;
         pipe.generateWeld = generateWeld;
         pipe.avoidStrangling = true;
         pipe.pipeRadius = PipeModels[0].PipeRadius;
