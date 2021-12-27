@@ -19,15 +19,20 @@ public class ModelMeshManager : SingletonBehaviour<ModelMeshManager>
     [ContextMenu("GetAllRenderers")]
     public List<MeshRenderer> GetAllRenderers()
     {
+        return GetAllComponents<MeshRenderer>();
+    }
+
+    public List<T> GetAllComponents<T>() where T :Component
+    {
         if (TargetRoots.Count == 0)
         {
             Debug.LogError("GetAllRenderers TargetRoots.Count == 0");
         }
-        List<MeshRenderer> meshRenderers = new List<MeshRenderer>();
-        foreach(var target in TargetRoots)
+        List<T> meshRenderers = new List<T>();
+        foreach (var target in TargetRoots)
         {
             if (target == null) continue;
-            var rs = target.GetComponentsInChildren<MeshRenderer>(includeInactive);
+            var rs = target.GetComponentsInChildren<T>(includeInactive);
             meshRenderers.AddRange(rs);
         }
         return meshRenderers;
@@ -92,26 +97,38 @@ public class ModelMeshManager : SingletonBehaviour<ModelMeshManager>
     [ContextMenu("GetPrefixNames")]
     public ModelClassDict<MeshRenderer> GetPrefixNames()
     {
-        ModelClassDict_Auto = new ModelClassDict<MeshRenderer>();
+        ModelClassDict_Auto = GetPrefixNames<MeshRenderer>();
+        return ModelClassDict_Auto;
+    }
+
+    public ModelClassDict<T> GetPrefixNames<T>() where T :Component
+    {
+        var modelClassDict = new ModelClassDict<T>();
         List<string> otherNames = new List<string>();
-        var list = GetAllRenderers();
-        foreach(var item in list)
+        var list = GetAllComponents<T>();
+        foreach (var item in list)
         {
             var n = item.name;
 
             string pre = GetPrefix(n);
-            ModelClassDict_Auto.AddModel(pre, item);
+            modelClassDict.AddModel(pre, item);
         }
 
-        ModelClassDict_Auto.PrintList();
+        modelClassDict.PrintList();
 
         otherNames.Sort();
         StringBuilder sb = new StringBuilder();
         otherNames.ForEach(i => sb.AppendLine(i));
         Debug.LogError($"otherNames:{sb}");
 
-        PrefixNames = ModelClassDict_Auto.GetKeys();
-        return ModelClassDict_Auto;
+        PrefixNames = modelClassDict.GetKeys();
+        return modelClassDict;
+    }
+
+    public ModelClassDict<T> GetPrefixNames<T>(GameObject target) where T : Component
+    {
+        TargetRoots = new List<GameObject>() { target };
+        return GetPrefixNames<T>();
     }
 
     public ModelClassDict<MeshRenderer> GetPrefixNames(GameObject target)

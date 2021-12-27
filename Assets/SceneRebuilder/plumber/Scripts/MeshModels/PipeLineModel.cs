@@ -8,7 +8,7 @@ using UnityEngine;
 /// <summary>
 /// PipeLineModel
 /// </summary>
-public class PipeModel : MonoBehaviour
+public class PipeLineModel : MonoBehaviour
 {
     //public Vector3 startP;
 
@@ -29,15 +29,19 @@ public class PipeModel : MonoBehaviour
         }
     }
 
-    //public Material PipeMaterial;
+    ////public Material PipeMaterial;
 
-    //public Material WeldMaterial;
+    ////public Material WeldMaterial;
 
-    public int pipeSegments = 24;
+    //public int pipeSegments = 24;
 
-    public float weldRadius = 0.005f;
+    //public float weldRadius = 0.005f;
 
-    public Vector3 Offset = Vector3.zero;
+    //public Vector3 Offset = Vector3.zero;
+
+
+    public PipeGenerateArg generateArg = new PipeGenerateArg();
+
 
     //private void ShowPipePoints()
     //{
@@ -55,21 +59,22 @@ public class PipeModel : MonoBehaviour
     //    CreatePoint(P2, "P2");
     //}
 
-    public Vector3 StartPoint = Vector3.zero;
-    public Vector3 EndPoint = Vector3.zero;
+    public PipeLineInfo LineInfo = new PipeLineInfo();
 
     public Vector3 GetStartPoint()
     {
         //return StartPoint + this.transform.position;
         //return StartPoint;
-        return this.transform.TransformPoint(StartPoint);
+        LineInfo.transform = this.transform;
+        return LineInfo.GetStartPoint();
     }
 
     public Vector3 GetEndPoint()
     {
         //return EndPoint + this.transform.position;
         //return EndPoint;
-        return this.transform.TransformPoint(EndPoint);
+        LineInfo.transform = this.transform;
+        return LineInfo.GetEndPoint();
     }
 
     public float PipeRadius = 0;
@@ -139,8 +144,8 @@ public class PipeModel : MonoBehaviour
         oBBCollider.ShowObbInfo();
         OBB = oBBCollider.OBB;
 
-        StartPoint = OBB.Up * OBB.Extent.y;
-        EndPoint = -OBB.Up * OBB.Extent.y;
+        Vector3 startPoint = OBB.Up * OBB.Extent.y;
+        Vector3 endPoint = -OBB.Up * OBB.Extent.y;
 
         GameObject go = new GameObject("PipeModel_PipeInfo");
         go.transform.SetParent(this.transform);
@@ -176,30 +181,33 @@ public class PipeModel : MonoBehaviour
 
         planeCenterPointInfos.Sort();
 
-        StartPoint = planeCenterPointInfos[0].GetCenter();
-        EndPoint = planeCenterPointInfos[1].GetCenter();
+        startPoint = planeCenterPointInfos[0].GetCenter();
+        endPoint = planeCenterPointInfos[1].GetCenter();
 
-        EndPoints = new List<Vector3>() { StartPoint, EndPoint };
+        EndPoints = new List<Vector3>() { startPoint, endPoint };
 
-        CreateLocalPoint(StartPoint, "StartPoint1", go.transform);
-        CreateLocalPoint(EndPoint, "EndPoint1", go.transform);
+        CreateLocalPoint(startPoint, "StartPoint1", go.transform);
+        CreateLocalPoint(endPoint, "EndPoint1", go.transform);
 
         PipeRadius = OBB.Extent.x;
 
-        if(StartPoint== P1 || EndPoint==P1)
+        if(startPoint == P1 || endPoint == P1)
         {
             PipeRadius = (OBB.Extent.z + OBB.Extent.y) / 2;
         }
-        if (StartPoint == P2 || EndPoint == P2)
+        if (startPoint == P2 || endPoint == P2)
         {
             PipeRadius = (OBB.Extent.x + OBB.Extent.y) / 2;
         }
-        if (StartPoint == P5 || EndPoint == P5)
+        if (startPoint == P5 || endPoint == P5)
         {
             PipeRadius = (OBB.Extent.x + OBB.Extent.z) / 2;
         }
 
-        PipeLength = Vector3.Distance(StartPoint, EndPoint);
+        PipeLength = Vector3.Distance(startPoint, endPoint);
+
+        LineInfo.StartPoint = startPoint;
+        LineInfo.EndPoint = endPoint;
     }
 
     public List<Vector3> EndPoints = new List<Vector3>();
@@ -393,12 +401,10 @@ public class PipeModel : MonoBehaviour
         //RendererPipe();
     }
 
-    public bool generateWeld = false;
-
-    public GameObject RendererPipe(Material pMat,Material wMat)
+    public GameObject RendererPipe(PipeGenerateArg arg)
     {
         GameObject pipeNew = new GameObject(this.name + "_NewPipe");
-        pipeNew.transform.position = this.transform.position + Offset;
+        pipeNew.transform.position = this.transform.position + arg.Offset;
         pipeNew.transform.SetParent(this.transform.parent);
 
         PipeMeshGenerator pipe = pipeNew.GetComponent<PipeMeshGenerator>();
@@ -406,13 +412,14 @@ public class PipeModel : MonoBehaviour
         {
             pipe = pipeNew.AddComponent<PipeMeshGenerator>();
         }
-        pipe.points = new List<Vector3>() { StartPoint, EndPoint };
-        pipe.pipeSegments = pipeSegments;
-        pipe.pipeMaterial = pMat;
-        pipe.weldMaterial = wMat;
-        pipe.weldRadius = this.weldRadius;
-        pipe.generateWeld = generateWeld;
+        pipe.points = new List<Vector3>() { LineInfo.StartPoint, LineInfo.EndPoint };
+        pipe.pipeSegments = arg.pipeSegments;
+        pipe.pipeMaterial = arg.PipeMaterial;
+        pipe.weldMaterial = arg.WeldMaterial;
+        pipe.weldRadius = arg.weldRadius;
+        pipe.generateWeld = arg.generateWeld;
         pipe.pipeRadius = PipeRadius;
+        pipe.IsGenerateEndWeld = true;
         pipe.RenderPipe();
         return pipeNew;
     }
@@ -433,11 +440,11 @@ public class PipeModel : MonoBehaviour
         }
         OBB = oBBCollider.OBB;
 
-        StartPoint = OBB.Up * OBB.Extent.y;
-        EndPoint = -OBB.Up * OBB.Extent.y;
+        Vector3 startPoint = OBB.Up * OBB.Extent.y;
+        Vector3 endPoint = -OBB.Up * OBB.Extent.y;
 
-        CreateLocalPoint(StartPoint, "StartPoint2", go.transform);
-        CreateLocalPoint(EndPoint, "EndPoint2", go.transform);
+        CreateLocalPoint(startPoint, "StartPoint2", go.transform);
+        CreateLocalPoint(endPoint, "EndPoint2", go.transform);
 
         P1 = OBB.Right * OBB.Extent.x ;
         P2 = -OBB.Forward * OBB.Extent.z;
@@ -456,7 +463,7 @@ public class PipeModel : MonoBehaviour
         CreateLocalPoint(P4 * p, "P44", go.transform);
 
         GameObject pipeNew = new GameObject(this.name + "_NewWeld");
-        pipeNew.transform.position = this.transform.position + Offset;
+        pipeNew.transform.position = this.transform.position + generateArg.Offset;
         pipeNew.transform.SetParent(this.transform.parent);
 
         PipeMeshGenerator pipe = pipeNew.GetComponent<PipeMeshGenerator>();
@@ -465,14 +472,14 @@ public class PipeModel : MonoBehaviour
             pipe = pipeNew.AddComponent<PipeMeshGenerator>();
         }
         pipe.points = new List<Vector3>() { P1, P2, P3, P4 };
-        pipe.pipeSegments = pipeSegments;
+        pipe.pipeSegments = generateArg.pipeSegments;
         //pipe.pipeMaterial = this.PipeMaterial;
         //pipe.weldMaterial = this.WeldMaterial;
-        pipe.weldRadius = this.weldRadius;
+        pipe.weldRadius = generateArg.weldRadius;
         pipe.elbowRadius = Vector3.Distance(P1, P2)/2;
         pipe.IsLinkEndStart = true;
         pipe.generateWeld = false;
-        pipe.pipeRadius = this.weldRadius;
+        pipe.pipeRadius = generateArg.weldRadius;
         pipe.RenderPipe();
     }
 
@@ -507,12 +514,6 @@ public class PipeModel : MonoBehaviour
     [ContextMenu("ClearChildren")]
     public void ClearChildren()
     {
-        Transform[] children = gameObject.GetComponentsInChildren<Transform>(true);
-        foreach(var child in children)
-        {
-            if (child == null) continue;
-            if (child.gameObject == this.gameObject) continue;
-            GameObject.DestroyImmediate(child.gameObject);
-        }
+        TransformHelper.ClearChildren(gameObject);
     }
 }

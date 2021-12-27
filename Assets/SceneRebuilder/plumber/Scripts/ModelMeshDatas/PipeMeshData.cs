@@ -4,5 +4,5 @@ using UnityEngine;
 
 public class PipeMeshData
 {
-    public List<CircleMeshArg> Circles = new List<CircleMeshArg>();
+    public List<CircleMeshData> Circles = new List<CircleMeshData>();
 }

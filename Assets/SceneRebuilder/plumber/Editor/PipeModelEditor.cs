@@ -3,12 +3,12 @@ using System.Collections.Generic;
 using UnityEditor;
 using UnityEngine;
 
-[CustomEditor(typeof(PipeModel))]
+[CustomEditor(typeof(PipeLineModel))]
 public class PipeModelEditor : Editor
 {
     public override void OnInspectorGUI()
     {
-        PipeModel targetT = target as PipeModel;
+        PipeLineModel targetT = target as PipeLineModel;
         if (GUILayout.Button("ShowOBB"))
         {
             targetT.ShowOBB();

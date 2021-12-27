@@ -530,14 +530,45 @@ public class DictionaryList1ToN<T>: DictionaryList1ToN<string, T> where T :class
     
 }
 
+public class Key2List<T1,T2>:IComparable<Key2List<T1, T2>>
+{
+    public T1 Key;
+    public List<T2> List;
+
+    public int Count
+    {
+        get
+        {
+            if (List == null) return -1;
+            return List.Count;
+        }
+    }
+
+    public Key2List(T1 key ,List<T2> list)
+    {
+        this.Key = key;
+        this.List = list;
+        //this.Count = list.Count;
+    }
+
+    public int CompareTo(Key2List<T1, T2> other)
+    {
+        return other.Count.CompareTo(this.Count);
+    }
+}
+
 public class DictionaryList1ToN<T1,T2> : Dictionary<T1, List<T2>> //where T2 : class
 {
+    public List<Key2List<T1,T2>> Key2Lists = new List<Key2List<T1, T2>>();
+
     public void AddItem(T1 key, T2 item)
     {
 
         if (!this.ContainsKey(key))
         {
-            this.Add(key, new List<T2>());
+            List<T2> list0 = new List<T2>();
+            this.Add(key, list0);
+            Key2Lists.Add(new Key2List<T1, T2>(key, list0));
         }
         var list = this[key];
         list.Add(item);
@@ -602,6 +633,18 @@ public class DictionaryList1ToN<T1,T2> : Dictionary<T1, List<T2>> //where T2 : c
             return list;
         }
         return null;
+    }
+
+    public List<Key2List<T1, T2>> GetListSortByCount()
+    {
+        Key2Lists.Sort();
+        //List<T1> keys = new List<T1>();
+        //foreach(var item in Key2Lists)
+        //{
+        //    keys.Add(item.Key);
+        //}
+        //return keys;
+        return Key2Lists;
     }
 }
 

@@ -99,6 +99,21 @@ public static class TransformHelper
         return pre;
     }
 
+    internal static GameObject ShowLocalPoint(Vector3 point, float pointScale, Transform transform1, Transform transform2)
+    {
+        GameObject objPoint = GameObject.CreatePrimitive(PrimitiveType.Sphere);
+        //objPoint.name = $"Point[{i + 1}][{j + 1}]({p.Point})";
+        //objPoint.name = $"Point[{j + 1}]({p.Point})";
+        objPoint.name = $"Point({point.x},{point.y},{point.z})";
+        objPoint.transform.SetParent(transform1);
+        objPoint.transform.localPosition = point;
+        objPoint.transform.localScale = new Vector3(pointScale, pointScale, pointScale);
+
+        if(transform2!=null)
+            objPoint.transform.SetParent(transform2);
+        return objPoint;
+    }
+
     public static bool IsSameName(string name,string name2)
     {
         string pre1 = GetPrefix(name);
@@ -472,6 +487,17 @@ public static class TransformHelper
                 }
                 afterNames[n2].Add(child);
             }
+        }
+    }
+
+    internal static void ClearChildren(GameObject root)
+    {
+        Transform[] children = root.GetComponentsInChildren<Transform>(true);
+        foreach (var child in children)
+        {
+            if (child == null) continue;
+            if (child.gameObject == root) continue;
+            GameObject.DestroyImmediate(child.gameObject);
         }
     }
 }
