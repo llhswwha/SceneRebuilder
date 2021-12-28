@@ -9,16 +9,22 @@ public class PipeFactoryEditor : Editor
     public override void OnInspectorGUI()
     {
         PipeFactory targetT = target as PipeFactory;
+
         GUILayout.BeginHorizontal();
         if (GUILayout.Button("GetPipeParts"))
         {
             targetT.GetPipeParts();
         }
-        if (GUILayout.Button("OnlyShowPipe"))
+        if (GUILayout.Button("GeneratePipe(Each)"))
         {
-            targetT.OnlyShowPipe();
+            targetT.GenerateEachPipes();
+        }
+        if (GUILayout.Button("GeneratePipe(One)"))
+        {
+            targetT.GenerateEachPipes();
         }
         GUILayout.EndHorizontal();
+
         GUILayout.BeginHorizontal();
         if (GUILayout.Button("ShowAll"))
         {
@@ -28,12 +34,12 @@ public class PipeFactoryEditor : Editor
         {
             targetT.HidAll();
         }
+        if (GUILayout.Button("OnlyShowPipe"))
+        {
+            targetT.OnlyShowPipe();
+        }
         GUILayout.EndHorizontal();
 
-        if (GUILayout.Button("GeneratePipe"))
-        {
-            targetT.GeneratePipe();
-        }
         base.OnInspectorGUI();
     }
 }

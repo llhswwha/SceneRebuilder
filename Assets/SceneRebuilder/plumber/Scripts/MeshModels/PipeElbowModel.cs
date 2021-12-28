@@ -1,10 +1,11 @@
+using System;
 using System.Collections;
 using System.Collections.Generic;
 using System.Linq;
 using UnityEngine;
 using static PipeBuilder;
 
-public class PipeElbowModel : MonoBehaviour
+public class PipeElbowModel : PipeModelBase
 {
     public Vector3 GetStartPoint()
     {
@@ -18,40 +19,31 @@ public class PipeElbowModel : MonoBehaviour
 
     public MeshTriangles meshTriangles = new MeshTriangles();
 
-    public Vector3 FindClosedPoint(Vector3 p,List<Vector3> list)
-    {
-        float minDis = float.MaxValue;
-        Vector3 minP = Vector3.zero;
-        foreach(var item in list)
-        {
-            float dis = Vector3.Distance(item, p);
-            if (dis < minDis)
-            {
-                minDis = dis;
-                minP = item;
-            }
-        }
-        return minP;
-    }
+
+
+    public List<PointDistance> distanceList;
 
     // Start is called before the first frame update
     [ContextMenu("GetElbowInfo")]
     public void GetElbowInfo()
     {
+        DateTime start = DateTime.Now;
         ClearChildren();
         Mesh mesh = this.GetComponent<MeshFilter>().sharedMesh;
         meshTriangles = new MeshTriangles(mesh);
-        Debug.Log($"GetElbowInfo mesh vertexCount:{mesh.vertexCount} triangles:{mesh.triangles.Length}");
+        //Debug.Log($"GetElbowInfo mesh vertexCount:{mesh.vertexCount} triangles:{mesh.triangles.Length}");
         List<Vector3> points = meshTriangles.GetKeyPointsById(sharedMinCount, minRepeatPointDistance);
         if (points.Count < 4)
         {
             Debug.LogError("GetKeyPointsById points.Count < 4 :" + points.Count);
             return;
         }
-        List<PointDistance> distanceList = new List<PointDistance>();
+
+        var centerOfPoints = MeshHelper.GetCenterOfList(points);
+        distanceList = new List<PointDistance>();
         foreach (var p in points)
         {
-            distanceList.Add(new PointDistance(p, meshTriangles.center));
+            distanceList.Add(new PointDistance(p, centerOfPoints));
         }
         distanceList.Sort();
 
@@ -60,9 +52,9 @@ public class PipeElbowModel : MonoBehaviour
         points.Remove(EndPointIn1);
         points.Remove(EndPointIn2);
 
-        EndPointOut1 = FindClosedPoint(EndPointIn1, points);
+        EndPointOut1 = MeshHelper.FindClosedPoint(EndPointIn1, points);
         points.Remove(EndPointOut1);
-        EndPointOut2 = FindClosedPoint(EndPointIn2, points);
+        EndPointOut2 = MeshHelper.FindClosedPoint(EndPointIn2, points);
         points.Remove(EndPointOut2);
 
         Line1 = new PipeLineInfo(EndPointOut1, EndPointIn1,null);
@@ -74,15 +66,13 @@ public class PipeElbowModel : MonoBehaviour
         TransformHelper.ShowLocalPoint(EndPointIn2, PointScale, this.transform, null).name = "InPoint2";
 
         GetPipeRadius();
+        Debug.Log($">>>GetElbowInfo time:{DateTime.Now - start}");
     }
 
     public void GetPipeRadius()
     {
         PipeRadius = meshTriangles.GetPipeRadius(sharedMinCount);
     }
-
-    public float PipeRadius = 0;
-
 
     public void ShowKeyPoints()
     {
@@ -129,15 +119,15 @@ public class PipeElbowModel : MonoBehaviour
 
     public void CreateElbow()
     {
-        RendererPipe(generateArg,true);
+        RendererPipe(generateArg,true,"_New");
     }
 
-    public GameObject RendererPipe(PipeGenerateArg arg,bool generateEndCaps)
+    public GameObject RendererPipe(PipeGenerateArg arg,bool generateEndCaps,string newAfterName)
     {
         PipeCreateArg pipeArg = new PipeCreateArg(Line1, Line2);
         var ps = pipeArg.GetGeneratePoints(0, 2, false);
 
-        GameObject pipeNew = new GameObject(this.name + "_NewPipe");
+        GameObject pipeNew = new GameObject(this.name + newAfterName);
         pipeNew.transform.position = this.transform.position + arg.Offset;
         pipeNew.transform.SetParent(this.transform.parent);
 

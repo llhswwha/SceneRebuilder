@@ -255,7 +255,7 @@ public class PipeMeshGenerator : MonoBehaviour {
         MeshRenderer mr = currentMeshRenderer != null ? currentMeshRenderer : gameObject.AddComponent<MeshRenderer>();
         mr.materials = new Material[1] { pipeMaterial };
 
-        Debug.LogError($"vertexCount:{mesh.vertexCount} gameObject:{gameObject.name}");
+        //Debug.LogError($"vertexCount:{mesh.vertexCount} gameObject:{gameObject.name}");
     }
 
     public List<Vector3> GetPoints()
@@ -626,7 +626,7 @@ public class PipeMeshGenerator : MonoBehaviour {
                 pointsToRemove.Add(i + 1);
             }
 
-            Debug.Log($"RemoveColinearPoints[{i}] dis:{dis} 【{dis < colinearThreshold}】 point1:{point1} point2:{point2} point3:{point3} dir1:{dir1} dir2:{dir2}");
+            //Debug.Log($"RemoveColinearPoints[{i}] dis:{dis} 【{dis < colinearThreshold}】 point1:{point1} point2:{point2} point3:{point3} dir1:{dir1} dir2:{dir2}");
         }
 
         pointsToRemove.Reverse();
@@ -634,7 +634,7 @@ public class PipeMeshGenerator : MonoBehaviour {
             points.RemoveAt(idx);
         }
         int count2 = points.Count;
-        Debug.LogError($"RemoveColinearPoints {count1}->{count2}");
+        //Debug.LogError($"RemoveColinearPoints {count1}->{count2}");
     }
 
     CircleMeshData GenerateCircleAtPoint(List<Vector3> vertices, List<Vector3> normals, Vector3 center, Vector3 direction,string circleName) {

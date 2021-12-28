@@ -181,7 +181,7 @@ public class MeshTriangles
                     float dis = Distance2List(point, KeyPoints);
                     if(dis> minDis)
                     {
-                        Debug.Log($"dis:{dis} point:{point} KeyPoints:{KeyPoints.Count}");
+                        //Debug.Log($"dis:{dis} point:{point} KeyPoints:{KeyPoints.Count}");
                         KeyPoints.Add(point);
                     }
                 }
@@ -214,13 +214,13 @@ public class MeshTriangles
                     radius += r;
                 }
                 radius /= triangles.Count;
-                Debug.Log($"point:{point} radius:{radius}");
+                //Debug.Log($"point:{point} radius:{radius}");
                 avgRadius += radius;
                 count++;
             }
         }
         avgRadius /= count;
-        Debug.Log($"GetPipeRadius avgRadius:{avgRadius}");
+        //Debug.Log($"GetPipeRadius avgRadius:{avgRadius}");
         return avgRadius;
     }
 
@@ -240,16 +240,21 @@ public class MeshTriangles
 
     public void ShowKeyPointsById(Transform root, float pointScale)
     {
-        TransformHelper.ShowLocalPoint(center, pointScale * 5, root, null);
-        TransformHelper.ShowLocalPoint(mesh.bounds.center, pointScale * 5, root, null);
+        TransformHelper.ShowLocalPoint(center, pointScale * 5, root, null).name="MeshCenter";
+        TransformHelper.ShowLocalPoint(mesh.bounds.center, pointScale * 5, root, null).name = "BoundsCenter";
 
         List<Vector3> points = GetKeyPointsById(36,0);
         Debug.Log($"GetKeyPoints KeyPoints:{points.Count}");
         GameObject keyPointsObj = CreateSubTestObj($"KeyPoints:{points.Count}", root);
+        var centerOfPoints = MeshHelper.GetCenterOfList(points);
+        TransformHelper.ShowLocalPoint(centerOfPoints, pointScale * 5, root, null).name = "KeysCenter";
+
         foreach (var point in points)
         {
             TransformHelper.ShowLocalPoint(point, pointScale * 5, root, keyPointsObj.transform);
         }
+
+        
 
         //points.Sort((a, b) => { })
     }

@@ -4,6 +4,9 @@ using UnityEngine;
 using MathGeoLib;
 using System;
 using Vector3=UnityEngine.Vector3;
+using System.Linq;
+using System.Text;
+
 public class OBBCollider : MonoBehaviour
 {
     // Start is called before the first frame update
@@ -67,35 +70,170 @@ public class OBBCollider : MonoBehaviour
     //    pipe.RenderPipe();
     //}
 
+    public void TestGetObb()
+    {
+        DateTime start = DateTime.Now;
+        List<Vector3> ps1 = new List<Vector3>();
+        List<Vector3S> ps2 = new List<Vector3S>();
+        MeshFilter meshFilter = this.GetComponent<MeshFilter>();
+
+        var vs = meshFilter.sharedMesh.vertices;
+        var count = vs.Length;
+        for (int i = 0; i < count && i < TestObbPointCount; i++)
+        {
+            Vector3 p = vs[i];
+            ps2.Add(new Vector3S(p.x, p.y, p.z));
+            ps1.Add(p);
+        }
+        //Debug.Log("ps:"+ps.Count);
+        OBB = OrientedBoundingBox.BruteEnclosing(ps2.ToArray());
+        Debug.Log($"GetObb ps:{ps2.Count} go:{gameObject.name} time:{(DateTime.Now - start).TotalMilliseconds}ms OBB:{OBB} Center:{OBB.Center} Extent:{OBB.Extent}");
+        if (OBB.Extent == Vector3.positiveInfinity || OBB.Extent == Vector3.negativeInfinity || float.IsInfinity(OBB.Extent.x))
+        {
+            Debug.LogError($"GetObb Error Extent:{OBB.Extent} ps_Last:{ps2.Last()}");
+            var errorP = ps1.Last();
+            CreateLocalPoint(errorP, $"ErrorPoint({errorP.x},{errorP.y},{errorP.z})");
+
+            GetObbEx();
+        }
+    }
+
+    public int TestObbPointCount = int.MaxValue;
+
     public void GetObb()
     {
         DateTime start=DateTime.Now;
-        List<Vector3S> ps=new List<Vector3S>();
+        List<Vector3> ps1= new List<Vector3>();
+        List<Vector3S> ps2=new List<Vector3S>();
         MeshFilter meshFilter=this.GetComponent<MeshFilter>();
         
         var vs=meshFilter.sharedMesh.vertices;
         var count=vs.Length;
-        for(int i=0;i<count;i++)
+        for(int i=0;i<count; i++)
         {
             Vector3 p=vs[i];
-            ps.Add(new Vector3S(p.x,p.y,p.z));
+            ps2.Add(new Vector3S(p.x,p.y,p.z));
+            ps1.Add(p);
         }
-        Debug.Log("ps:"+ps.Count);
-        OBB=OrientedBoundingBox.BruteEnclosing(ps.ToArray());
-        Debug.Log("GetObb:"+(DateTime.Now-start).TotalMilliseconds+"ms");
+        //Debug.Log("ps:"+ps.Count);
+        OBB=OrientedBoundingBox.BruteEnclosing(ps2.ToArray());
+        Debug.Log($"GetObb ps:{ps2.Count} go:{gameObject.name} time:{(DateTime.Now - start).TotalMilliseconds}ms OBB:{OBB} Center:{OBB.Center} Extent:{OBB.Extent}");
+        if(OBB.Extent==Vector3.positiveInfinity || OBB.Extent == Vector3.negativeInfinity || float.IsInfinity(OBB.Extent.x))
+        {
+            Debug.LogError($"GetObb Error Extent:{OBB.Extent} ps_Last:{ps2.Last()}");
+            var errorP = ps1.Last();
+            CreateLocalPoint(errorP, $"ErrorPoint({errorP.x},{errorP.y},{errorP.z})");
+            //OBB = null;
+            GetObbEx();
+            IsObbError = true;
+        }
     }
+
+    public void GetObbEx()
+    {
+        DateTime start = DateTime.Now;
+        List<Vector3> ps1 = new List<Vector3>();
+        List<Vector3S> ps21 = new List<Vector3S>();
+        List<Vector3S> ps22 = new List<Vector3S>();
+        MeshFilter meshFilter = this.GetComponent<MeshFilter>();
+
+        var vs = meshFilter.sharedMesh.vertices;
+        var count = vs.Length;
+
+        StringBuilder sb = new StringBuilder();
+        for (int i = 0; i < count && i < TestObbPointCount; i++)
+        {
+            Vector3 p = vs[i];
+
+            if(ProgressBarHelper.DisplayCancelableProgressBar(new ProgressArg("GetObbEx", i, count, p)))
+            {
+                ProgressBarHelper.ClearProgressBar();
+                return;
+            }
+
+            ps21.Add(new Vector3S(p.x, p.y, p.z));
+
+            if (i > 2)
+            {
+                OBB = OrientedBoundingBox.BruteEnclosing(ps21.ToArray());
+                if (float.IsInfinity(OBB.Extent.x))
+                {
+                    //Debug.LogWarning($"GetObb Error[{i}/{count},{TestObbPointCount}] ps22:{ps22.Count}  ps21:{ps21.Count} Extent:{OBB.Extent} ps_Last:{ps21.Last()}");
+                    sb.AppendLine($"GetObb go:{gameObject.name} Error[{i}/{count},{TestObbPointCount}] ps22:{ps22.Count}  ps21:{ps21.Count} Extent:{OBB.Extent} ps_Last:{ps21.Last()}");
+                    ps21 = new List<Vector3S>(ps22);
+                }
+                else
+                {
+                    ps22.Add(new Vector3S(p.x, p.y, p.z));
+                }
+                ps1.Add(p);
+            }
+            else
+            {
+                ps22.Add(new Vector3S(p.x, p.y, p.z));
+            }
+
+        }
+        //Debug.Log("ps:"+ps.Count);
+        OBB = OrientedBoundingBox.BruteEnclosing(ps22.ToArray());
+        if (sb.Length > 0)
+        {
+            Debug.LogWarning(sb.ToString());
+        }
+        Debug.Log($"GetObb go:{gameObject.name} ps:{ps22.Count}  time:{(DateTime.Now - start).TotalMilliseconds}ms OBB:{OBB} Center:{OBB.Center} Extent:{OBB.Extent}");
+        if (OBB.Extent == Vector3.positiveInfinity || OBB.Extent == Vector3.negativeInfinity || float.IsInfinity(OBB.Extent.x))
+        {
+            Debug.LogError($"GetObb Error Extent:{OBB.Extent} ps_Last:{ps22.Last()}");
+            var errorP = ps1.Last();
+            CreateLocalPoint(errorP, $"ErrorPoint({errorP.x},{errorP.y},{errorP.z})");
+        }
+        ProgressBarHelper.ClearProgressBar();
+    }
+
+    public bool IsObbError = false;
 
     public void ShowMeshVertices()
     {
         MeshFilter meshFilter = this.GetComponent<MeshFilter>();
         var vs = meshFilter.sharedMesh.vertices;
         var count = vs.Length;
-        for (int i = 0; i < count; i++)
+        Debug.Log($"ShowMeshVertices vs:{count}");
+
+        List<Vector3> list = new List<Vector3>(vs);
+        list.Sort((a,b)=> { 
+            int r = a.x.CompareTo(b.x);
+            if (r == 0)
+            {
+                r = a.y.CompareTo(b.y);
+            }
+            if (r == 0)
+            {
+                r = a.z.CompareTo(b.z);
+            }
+            return r;
+        });
+
+        DictionaryList1ToN<Vector3, Vector3> pointDict = new DictionaryList1ToN<Vector3, Vector3>();
+
+        for (int i = 0; i < list.Count; i++)
         {
-            Vector3 p = vs[i];
-            CreatePoint(p, p.ToString());
+            Vector3 p = list[i];
+            //GameObject obj=CreateLocalPoint(p, p.ToString());
+            //obj.name = $"[{i + 1}_{count}]_({p.x},{p.y},{p.z})";
+
+            pointDict.AddItem(p,p);
         }
-        
+
+        Debug.Log($"ShowMeshVertices pointDict:{pointDict.Count}");
+        int k = 0;
+        int count2 = pointDict.Keys.Count;
+        foreach (var p in pointDict.Keys)
+        {
+            k++;
+            GameObject obj = CreateLocalPoint(p, p.ToString());
+            obj.name = $"[{k}_{count2}]_({p.x},{p.y},{p.z})";
+        }
+
     }
 
     public void ShowSharedMeshVertices()
@@ -239,9 +377,9 @@ public class OBBCollider : MonoBehaviour
         Vector3 v2 = CreateLine(center, center + OBB.Up, "Center-Up", go0.transform);
         Vector3 v3 = CreateLine(center, center + OBB.Forward, "Center-Forward", go0.transform);
 
-        Debug.Log("v1 dot v2:"+Vector3.Dot(v1,v2));
-        Debug.Log("v1 dot v3:"+Vector3.Dot(v1,v3));
-        Debug.Log("v2 dot v3:"+Vector3.Dot(v2,v3));
+        //Debug.Log("v1 dot v2:"+Vector3.Dot(v1,v2));
+        //Debug.Log("v1 dot v3:"+Vector3.Dot(v1,v3));
+        //Debug.Log("v2 dot v3:"+Vector3.Dot(v2,v3));
 
         //ShowPipePoints();
     }
@@ -311,6 +449,20 @@ public class OBBCollider : MonoBehaviour
         g1.name=n;
 
         g1.transform.SetParent(this.transform);
+        return g1;
+    }
+
+    private GameObject CreateLocalPoint(Vector3 p, string n)
+    {
+        GameObject g1 = GameObject.CreatePrimitive(PrimitiveType.Sphere);
+
+        g1.transform.SetParent(this.transform);
+        g1.transform.localPosition=p;
+        //g1.transform.position = p;
+        g1.transform.localScale = new Vector3(lineSize, lineSize, lineSize);
+        g1.name = n;
+
+        //g1.transform.SetParent(this.transform);
         return g1;
     }
 

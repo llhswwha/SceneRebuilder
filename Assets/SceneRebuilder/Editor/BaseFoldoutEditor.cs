@@ -1689,6 +1689,28 @@ public static class FoldoutEditorArgBuffer
 
 public static class BaseFoldoutEditorHelper
 {
+    //public static void DrawMeshRendererList(List<MeshRenderer> list, FoldoutEditorArg arg)
+    //{
+    //    if (arg.isEnabled && arg.isExpanded)
+    //    {
+    //        DrawMeshRendererList(list, arg);
+    //    }
+    //}
+    public static void DrawMeshRendererList(List<MeshRenderer> list, FoldoutEditorArg arg)
+    {
+        arg.DrawPageToolbar(list, (item, i) =>
+        {
+            if (item == null) return;
+            var subArg = FoldoutEditorArgBuffer.editorArgs[item];
+            subArg.level = arg.level + 1;
+            subArg.caption = $"[{i:00}] {item.name}";
+            EditorUIUtils.ObjectFoldout(subArg, item.gameObject, () =>
+            {
+                
+            });
+        });
+    }
+
     public static void DrawRendererInfoList(string name, MeshRendererInfoList list, FoldoutEditorArg arg)
     {
         arg.caption = name;

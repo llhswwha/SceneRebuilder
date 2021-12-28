@@ -106,6 +106,7 @@ public class ModelMeshManager : SingletonBehaviour<ModelMeshManager>
         var modelClassDict = new ModelClassDict<T>();
         List<string> otherNames = new List<string>();
         var list = GetAllComponents<T>();
+        Debug.Log($"GetPrefixNames list:{list.Count}");
         foreach (var item in list)
         {
             var n = item.name;
@@ -213,7 +214,7 @@ public class ModelClassDict<T>
     {
         if (!Dict.ContainsKey(name))
         {
-            Dict.Add(name, new ModelClass<T>(name, item));
+            Dict.Add(name, new ModelClass<T>(name));
         }
         Dict[name].Add(item);
     }

@@ -4,7 +4,10 @@ using UnityEngine;
 
 public class PipeModelBase : MonoBehaviour
 {
-    public Material PipeMaterial;
+    public float PipeRadius = 0;
 
-    public Material WeldMaterial;
+    public override string ToString()
+    {
+        return $"radius:{PipeRadius}";
+    }
 }

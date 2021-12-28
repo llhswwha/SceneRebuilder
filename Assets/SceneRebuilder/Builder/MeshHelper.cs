@@ -12,6 +12,33 @@ using UnityEngine;
 
 public static class MeshHelper
 {
+
+    public static Vector3 GetCenterOfList(List<Vector3> list)
+    {
+        Vector3 center = Vector3.zero;
+        foreach (var item in list)
+        {
+            center += item;
+        }
+        center /= list.Count;
+        return center;
+    }
+    public static Vector3 FindClosedPoint(Vector3 p, List<Vector3> list)
+    {
+        float minDis = float.MaxValue;
+        Vector3 minP = Vector3.zero;
+        foreach (var item in list)
+        {
+            float dis = Vector3.Distance(item, p);
+            if (dis < minDis)
+            {
+                minDis = dis;
+                minP = item;
+            }
+        }
+        return minP;
+    }
+
     //public static GameObject InstantiatePrefabFromSceneGo()
     //{
 

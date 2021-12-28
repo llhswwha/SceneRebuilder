@@ -68,6 +68,8 @@ public class ModelMeshManagerEditor : BaseFoldoutEditor<ModelMeshManager>
                 if (arg.isEnabled && arg.isExpanded && list.Count > 0)
                 {
                     //DrawMeshRendererInfoList(list, arg);
+
+                    BaseFoldoutEditorHelper.DrawMeshRendererList(list, arg);
                 }
             });
         }

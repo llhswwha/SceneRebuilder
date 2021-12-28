@@ -8,13 +8,8 @@ using UnityEngine;
 /// <summary>
 /// PipeLineModel
 /// </summary>
-public class PipeLineModel : MonoBehaviour
+public class PipeLineModel : PipeModelBase
 {
-    //public Vector3 startP;
-
-    //public Vector3 endP;
-
-    //public float radius;
 
     public void ShowOBB()
     {
@@ -29,35 +24,7 @@ public class PipeLineModel : MonoBehaviour
         }
     }
 
-    ////public Material PipeMaterial;
-
-    ////public Material WeldMaterial;
-
-    //public int pipeSegments = 24;
-
-    //public float weldRadius = 0.005f;
-
-    //public Vector3 Offset = Vector3.zero;
-
-
     public PipeGenerateArg generateArg = new PipeGenerateArg();
-
-
-    //private void ShowPipePoints()
-    //{
-    //    StartPoint = OBB.Up * OBB.Extent.y;
-    //    EndPoint = -OBB.Up * OBB.Extent.y;
-
-    //    CreatePoint(StartPoint, "StartPoint");
-    //    CreatePoint(EndPoint, "EndPoint");
-
-    //    P1 = OBB.Right * OBB.Extent.x;
-    //    P2 = -OBB.Forward * OBB.Extent.z;
-    //    P3 = -OBB.Right * OBB.Extent.x;
-    //    P4 = OBB.Forward * OBB.Extent.z;
-    //    CreatePoint(P1, "P1");
-    //    CreatePoint(P2, "P2");
-    //}
 
     public PipeLineInfo LineInfo = new PipeLineInfo();
 
@@ -77,7 +44,6 @@ public class PipeLineModel : MonoBehaviour
         return LineInfo.GetEndPoint();
     }
 
-    public float PipeRadius = 0;
     public float PipeLength = 0;
 
     public float SizeX = 0;
@@ -144,8 +110,10 @@ public class PipeLineModel : MonoBehaviour
         oBBCollider.ShowObbInfo();
         OBB = oBBCollider.OBB;
 
-        Vector3 startPoint = OBB.Up * OBB.Extent.y;
-        Vector3 endPoint = -OBB.Up * OBB.Extent.y;
+        Vector3 ObbExtent = OBB.Extent;
+
+        Vector3 startPoint = OBB.Up * ObbExtent.y;
+        Vector3 endPoint = -OBB.Up * ObbExtent.y;
 
         GameObject go = new GameObject("PipeModel_PipeInfo");
         go.transform.SetParent(this.transform);
@@ -154,12 +122,14 @@ public class PipeLineModel : MonoBehaviour
         //CreateLocalPoint(StartPoint, "StartPoint1", go.transform);
         //CreateLocalPoint(EndPoint, "EndPoint1", go.transform);
 
-        P1 = OBB.Right * OBB.Extent.x;
-        P2 = -OBB.Forward * OBB.Extent.z;
-        P3 = -OBB.Right * OBB.Extent.x;
-        P4 = OBB.Forward * OBB.Extent.z;
-        P5 = OBB.Up * OBB.Extent.y;
-        P6 = -OBB.Up * OBB.Extent.y;
+        P1 = OBB.Right * ObbExtent.x;
+        P2 = -OBB.Forward * ObbExtent.z;
+        P3 = -OBB.Right * ObbExtent.x;
+        P4 = OBB.Forward * ObbExtent.z;
+        P5 = OBB.Up * ObbExtent.y;
+        P6 = -OBB.Up * ObbExtent.y;
+
+        List<Vector3> extentPoints = new List<Vector3>() { P1, P2, P3, P4, P5, P6 };
 
         //CreateLocalPoint(P1, "P1", go.transform);
         //CreateLocalPoint(P2, "P2", go.transform);
@@ -176,33 +146,43 @@ public class PipeLineModel : MonoBehaviour
         CreateLocalPoint(P2, $"P2_{GetPoint2VerticesInfo(vs,P2, false)}", go.transform);
         CreateLocalPoint(P3, $"P3_{GetPoint2VerticesInfo(vs,P3, false)}", go.transform);
         CreateLocalPoint(P4, $"P4_{GetPoint2VerticesInfo(vs,P4, false)}", go.transform);
-        CreateLocalPoint(P5, $"P5_{GetPoint2VerticesInfo(vs, P5, true)}", go.transform);
+        CreateLocalPoint(P5, $"P5_{GetPoint2VerticesInfo(vs, P5, false)}", go.transform);
         CreateLocalPoint(P6, $"P6_{GetPoint2VerticesInfo(vs, P6, false)}", go.transform);
 
         planeCenterPointInfos.Sort();
 
-        startPoint = planeCenterPointInfos[0].GetCenter();
-        endPoint = planeCenterPointInfos[1].GetCenter();
+        var startCircle= planeCenterPointInfos[0].GetCircleInfo();
+        startPoint = startCircle.Center;
+        var endCircle= planeCenterPointInfos[1].GetCircleInfo();
+        endPoint = endCircle.Center;
 
         EndPoints = new List<Vector3>() { startPoint, endPoint };
 
         CreateLocalPoint(startPoint, "StartPoint1", go.transform);
         CreateLocalPoint(endPoint, "EndPoint1", go.transform);
 
-        PipeRadius = OBB.Extent.x;
+        PipeRadius = (startCircle.Radius + endCircle.Radius) / 2;
 
-        if(startPoint == P1 || endPoint == P1)
-        {
-            PipeRadius = (OBB.Extent.z + OBB.Extent.y) / 2;
-        }
-        if (startPoint == P2 || endPoint == P2)
-        {
-            PipeRadius = (OBB.Extent.x + OBB.Extent.y) / 2;
-        }
-        if (startPoint == P5 || endPoint == P5)
-        {
-            PipeRadius = (OBB.Extent.x + OBB.Extent.z) / 2;
-        }
+        //PipeRadius = ObbExtent.x;
+
+        //var startClosedPoint = MeshHelper.FindClosedPoint(startPoint, extentPoints);
+        //var endClosedPoint = MeshHelper.FindClosedPoint(endPoint, extentPoints);
+        //if (startClosedPoint == P1 || endClosedPoint == P1)
+        //{
+        //    PipeRadius = (ObbExtent.z + ObbExtent.y) / 2;
+        //}
+        //else if (startClosedPoint == P2 || endClosedPoint == P2)
+        //{
+        //    PipeRadius = (ObbExtent.x + ObbExtent.y) / 2;
+        //}
+        //else if (startClosedPoint == P5 || endClosedPoint == P5)
+        //{
+        //    PipeRadius = (ObbExtent.x + ObbExtent.z) / 2;
+        //}
+        //else
+        //{
+        //    Debug.LogError("PipeRadius Error!");
+        //}
 
         PipeLength = Vector3.Distance(startPoint, endPoint);
 
@@ -268,7 +248,7 @@ public class PipeLineModel : MonoBehaviour
 
             if (Count0 == 1)
             {
-                Count1 = int.MaxValue;
+                Count0 = int.MaxValue;
             }
             if (Count1 == 1)
             {
@@ -345,6 +325,80 @@ public class PipeLineModel : MonoBehaviour
             }
         }
 
+        public CircleInfo GetCircleInfo()
+        {
+            if (Count5 == 2)
+            {
+                return GetCircleInfo(dict15);
+            }
+            else if (Count4 == 2)
+            {
+                return GetCircleInfo(dict14);
+            }
+            else if (Count3 == 2)
+            {
+                return GetCircleInfo(dict13);
+            }
+            else if (Count2 == 2)
+            {
+                return GetCircleInfo(dict12);
+            }
+            else if (Count1 == 2)
+            {
+                return GetCircleInfo(dict11);
+            }
+            else if (Count0 == 2)
+            {
+                return GetCircleInfo(dict10);
+            }
+            else
+            {
+                //return GetCenter(dict15);
+                //return Point;
+
+                return new CircleInfo(Point, 0);
+            }
+        }
+
+        private CircleInfo GetCircleInfo(DictionaryList1ToN<string, Vector3> dict)
+        {
+            var keys = dict.Keys.ToList();
+            keys.Sort();
+            string firstKey = keys[0];
+            var vs = dict[firstKey];
+            Vector3 sum = Vector3.zero;
+            foreach (var v in vs)
+            {
+                sum += v;
+            }
+            Vector3 center = sum / vs.Count;
+            float radiusSum = 0;
+            foreach (var v in vs)
+            {
+                radiusSum += Vector3.Distance(v, center);
+            }
+            float radius= radiusSum / vs.Count;
+            return new CircleInfo(center, radius);
+        }
+
+        public class CircleInfo
+        {
+            public Vector3 Center;
+
+            public float Radius;
+
+            public CircleInfo()
+            {
+
+            }
+
+            public CircleInfo(Vector3 c, float r)
+            {
+                this.Center = c;
+                this.Radius = r;
+            }
+        }
+
         public override string ToString()
         {
             return ResultInfo;
@@ -352,7 +406,15 @@ public class PipeLineModel : MonoBehaviour
 
         public int CompareTo(PlaneCenterPointInfo other)
         {
-            int r = this.Count2.CompareTo(other.Count2);
+            int r = this.Count0.CompareTo(other.Count0);
+            if (r == 0)
+            {
+                r = this.Count1.CompareTo(other.Count1);
+            }
+            if (r == 0)
+            {
+                r = this.Count2.CompareTo(other.Count2);
+            }
             if (r == 0)
             {
                 r = this.Count3.CompareTo(other.Count3);
@@ -401,9 +463,9 @@ public class PipeLineModel : MonoBehaviour
         //RendererPipe();
     }
 
-    public GameObject RendererPipe(PipeGenerateArg arg)
+    public GameObject RendererPipe(PipeGenerateArg arg,string afterName)
     {
-        GameObject pipeNew = new GameObject(this.name + "_NewPipe");
+        GameObject pipeNew = new GameObject(this.name + afterName);
         pipeNew.transform.position = this.transform.position + arg.Offset;
         pipeNew.transform.SetParent(this.transform.parent);
 
@@ -440,16 +502,18 @@ public class PipeLineModel : MonoBehaviour
         }
         OBB = oBBCollider.OBB;
 
-        Vector3 startPoint = OBB.Up * OBB.Extent.y;
-        Vector3 endPoint = -OBB.Up * OBB.Extent.y;
+        Vector3 ObbExtent = OBB.Extent;
+
+        Vector3 startPoint = OBB.Up * ObbExtent.y;
+        Vector3 endPoint = -OBB.Up * ObbExtent.y;
 
         CreateLocalPoint(startPoint, "StartPoint2", go.transform);
         CreateLocalPoint(endPoint, "EndPoint2", go.transform);
 
-        P1 = OBB.Right * OBB.Extent.x ;
-        P2 = -OBB.Forward * OBB.Extent.z;
-        P3 = -OBB.Right * OBB.Extent.x;
-        P4 = OBB.Forward * OBB.Extent.z;
+        P1 = OBB.Right * ObbExtent.x ;
+        P2 = -OBB.Forward * ObbExtent.z;
+        P3 = -OBB.Right * ObbExtent.x;
+        P4 = OBB.Forward * ObbExtent.z;
 
         CreateLocalPoint(P1, "P1", go.transform);
         CreateLocalPoint(P2, "P2", go.transform);

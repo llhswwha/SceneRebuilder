@@ -50,6 +50,17 @@ public class PipeFactory : MonoBehaviour
             pipe.ClearChildren();
         }
 
+        PipeMeshGenerator[] pipes = Target.GetComponentsInChildren<PipeMeshGenerator>(true);
+        foreach (var pipe in pipes)
+        {
+            GameObject.DestroyImmediate(pipe.gameObject);
+        }
+
+        if (newBuilder != null)
+        {
+            newBuilder.ClearOldGos();
+        }
+
         ModelClassDict<Transform> modelClassList =ModelMeshManager.Instance.GetPrefixNames<Transform>(Target);
         var keys = modelClassList.GetKeys();
         foreach(var key in keys)
@@ -80,6 +91,8 @@ public class PipeFactory : MonoBehaviour
                 PipeOthers.AddRange(list);
             }
         }
+
+        ShowAll();
     }
 
     [ContextMenu("ShowAll")]
@@ -118,16 +131,35 @@ public class PipeFactory : MonoBehaviour
         SetListVisible(PipeLines, true);
     }
 
-    [ContextMenu("GeneratePipe")]
-    public void GeneratePipe()
-    {
-        GameObject builder = new GameObject("Builder");
-        builder.transform.position = this.transform.position;
-        builder.transform.SetParent(this.transform);
-        PipeBuilder newBuilder=builder.AddComponent<PipeBuilder>();
-        newBuilder.PipeModelGos = PipeLines;
-        newBuilder.PipeElbowsGos = PipeElbows;
-        newBuilder.CreateEachPipes();
+    public PipeBuilder newBuilder;
 
+    [ContextMenu("GenerateEachPipes")]
+    public void GenerateEachPipes()
+    {
+        if (newBuilder == null)
+        {
+            GameObject builder = new GameObject("Builder");
+            builder.transform.position = this.transform.position;
+            builder.transform.SetParent(this.transform);
+            newBuilder = builder.AddComponent<PipeBuilder>();
+        }
+        newBuilder.NewObjName = "_New";
+        newBuilder.generateArg = generateArg;
+        newBuilder.PipeLineGos = PipeLines;
+        newBuilder.PipeElbowsGos = PipeElbows;
+
+        var newPipes=newBuilder.CreateEachPipes();
+
+        //GameObject targetNew = new GameObject();
+        //targetNew.name = Target.name + "_New";
+        //targetNew.transform.position = Target.transform.position;
+        //targetNew.transform.SetParent(Target.transform.parent);
+        //foreach(var pipe in newPipes)
+        //{
+        //    pipe.SetParent(targetNew.transform);
+        //}
+        //targetNew.transform.SetParent(newBuilder.transform);
     }
+
+    public PipeGenerateArg generateArg = new PipeGenerateArg();
 }
