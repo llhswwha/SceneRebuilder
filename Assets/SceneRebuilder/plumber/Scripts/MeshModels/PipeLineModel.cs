@@ -24,7 +24,7 @@ public class PipeLineModel : PipeModelBase
         }
     }
 
-    public PipeGenerateArg generateArg = new PipeGenerateArg();
+
 
     public PipeLineInfo LineInfo = new PipeLineInfo();
 
@@ -97,7 +97,7 @@ public class PipeLineModel : PipeModelBase
 
 
 
-    public void GetPipeInfo()
+    public override void GetModelInfo()
     {
         ClearChildren();
 
@@ -143,65 +143,73 @@ public class PipeLineModel : PipeModelBase
         P6 = -OBB.Up * ObbExtent.y;
         Size = new Vector3(ObbExtent.x, ObbExtent.y, ObbExtent.z);
 
-        if (SizeFloat == 4)
-        {
-            sizeX = Size.x.ToString("F4");
-            sizeY = Size.y.ToString("F4");
-            sizeZ = Size.z.ToString("F4");
-        }
-        if (SizeFloat == 5)
-        {
-            sizeX = Size.x.ToString("F5");
-            sizeY = Size.y.ToString("F5");
-            sizeZ = Size.z.ToString("F5");
-        }
-        if (SizeFloat == 6)
-        {
-            sizeX = Size.x.ToString("F6");
-            sizeY = Size.y.ToString("F6");
-            sizeZ = Size.z.ToString("F6");
-        }
-
-        if (sizeX == sizeY)
-        {
-
-        }
-        if (sizeX == sizeZ)
-        {
-
-        }
-        if (sizeY == sizeZ)
-        {
-
-        }
-
-
-        List<Vector3> extentPoints = new List<Vector3>() { P1, P2, P3, P4, P5, P6 };
-
-        //CreateLocalPoint(P1, "P1", go.transform);
-        //CreateLocalPoint(P2, "P2", go.transform);
-        //CreateLocalPoint(P3, "P3", go.transform);
-        //CreateLocalPoint(P4, "P4", go.transform);
-      
-
         var rendererInfo = MeshRendererInfo.GetInfo(this.gameObject);
         Vector3[] vs = rendererInfo.GetVertices();
         this.VertexCount = vs.Length;
 
+        List<Vector3> extentPoints = new List<Vector3>() { P1, P2, P3, P4, P5, P6 };
         planeCenterPointInfos = new List<PlaneCenterPointInfo>();
-
-        CreateLocalPoint(P1, $"P1_{GetPoint2VerticesInfo(vs,P1,false)}",go.transform);
-        CreateLocalPoint(P2, $"P2_{GetPoint2VerticesInfo(vs,P2, false)}", go.transform);
-        CreateLocalPoint(P3, $"P3_{GetPoint2VerticesInfo(vs,P3, false)}", go.transform);
-        CreateLocalPoint(P4, $"P4_{GetPoint2VerticesInfo(vs,P4, false)}", go.transform);
+        CreateLocalPoint(P1, $"P1_{GetPoint2VerticesInfo(vs, P1, false)}", go.transform);
+        CreateLocalPoint(P2, $"P2_{GetPoint2VerticesInfo(vs, P2, false)}", go.transform);
+        CreateLocalPoint(P3, $"P3_{GetPoint2VerticesInfo(vs, P3, false)}", go.transform);
+        CreateLocalPoint(P4, $"P4_{GetPoint2VerticesInfo(vs, P4, false)}", go.transform);
         CreateLocalPoint(P5, $"P5_{GetPoint2VerticesInfo(vs, P5, false)}", go.transform);
         CreateLocalPoint(P6, $"P6_{GetPoint2VerticesInfo(vs, P6, false)}", go.transform);
-
         planeCenterPointInfos.Sort();
 
-        var startCircle= planeCenterPointInfos[0].GetCircleInfo();
+
+        PlaneCenterPointInfo planeCenterPointInfo1 ;
+        PlaneCenterPointInfo planeCenterPointInfo2;
+
+        float minDisOfSize = 0.0001f;
+        if (Mathf.Abs(Size.x-Size.y)<= minDisOfSize && Mathf.Abs(Size.x-Size.z) > minDisOfSize)
+        {
+            startPoint = P2;
+            endPoint = P4;
+
+            planeCenterPointInfo1 = new PlaneCenterPointInfo(vs, startPoint, false);
+            planeCenterPointInfo2 = new PlaneCenterPointInfo(vs, endPoint, false);
+        }
+        else if (Mathf.Abs(Size.x - Size.z) <= minDisOfSize && Mathf.Abs(Size.x - Size.y) > minDisOfSize)
+        {
+            startPoint = P5;
+            endPoint = P6;
+
+            planeCenterPointInfo1 = new PlaneCenterPointInfo(vs, startPoint, false);
+            planeCenterPointInfo2 = new PlaneCenterPointInfo(vs, endPoint, false);
+        }
+        else  if (Mathf.Abs(Size.y - Size.z) <= minDisOfSize && Mathf.Abs(Size.y - Size.x) > minDisOfSize)
+        {
+            startPoint = P1;
+            endPoint = P3;
+
+            planeCenterPointInfo1 = new PlaneCenterPointInfo(vs, startPoint, false);
+            planeCenterPointInfo2 = new PlaneCenterPointInfo(vs, endPoint, false);
+        }
+        else
+        {
+            planeCenterPointInfo1 = planeCenterPointInfos[0];
+            planeCenterPointInfo2 = planeCenterPointInfos[1];
+
+            //var startCircle = planeCenterPointInfos[0].GetCircleInfo();
+            //startPoint = startCircle.Center;
+            //var endCircle = planeCenterPointInfos[1].GetCircleInfo();
+            //endPoint = endCircle.Center;
+
+            //EndPoints = new List<Vector3>() { startPoint, endPoint };
+
+            //CreateLocalPoint(startPoint, "StartPoint1", go.transform);
+            //CreateLocalPoint(endPoint, "EndPoint1", go.transform);
+
+            //PipeRadius = (startCircle.Radius + endCircle.Radius) / 2;
+            //PipeLength = Vector3.Distance(startPoint, endPoint);
+            //LineInfo.StartPoint = startPoint;
+            //LineInfo.EndPoint = endPoint;
+        }
+
+        var startCircle = planeCenterPointInfo1.GetCircleInfo();
         startPoint = startCircle.Center;
-        var endCircle= planeCenterPointInfos[1].GetCircleInfo();
+        var endCircle = planeCenterPointInfo2.GetCircleInfo();
         endPoint = endCircle.Center;
 
         EndPoints = new List<Vector3>() { startPoint, endPoint };
@@ -209,33 +217,14 @@ public class PipeLineModel : PipeModelBase
         CreateLocalPoint(startPoint, "StartPoint1", go.transform);
         CreateLocalPoint(endPoint, "EndPoint1", go.transform);
 
+        PipeRadius1 = startCircle.Radius;
+        PipeRadius2 = endCircle.Radius;
+
         PipeRadius = (startCircle.Radius + endCircle.Radius) / 2;
-
-        //PipeRadius = ObbExtent.x;
-
-        //var startClosedPoint = MeshHelper.FindClosedPoint(startPoint, extentPoints);
-        //var endClosedPoint = MeshHelper.FindClosedPoint(endPoint, extentPoints);
-        //if (startClosedPoint == P1 || endClosedPoint == P1)
-        //{
-        //    PipeRadius = (ObbExtent.z + ObbExtent.y) / 2;
-        //}
-        //else if (startClosedPoint == P2 || endClosedPoint == P2)
-        //{
-        //    PipeRadius = (ObbExtent.x + ObbExtent.y) / 2;
-        //}
-        //else if (startClosedPoint == P5 || endClosedPoint == P5)
-        //{
-        //    PipeRadius = (ObbExtent.x + ObbExtent.z) / 2;
-        //}
-        //else
-        //{
-        //    Debug.LogError("PipeRadius Error!");
-        //}
-
         PipeLength = Vector3.Distance(startPoint, endPoint);
-
         LineInfo.StartPoint = startPoint;
         LineInfo.EndPoint = endPoint;
+
     }
 
     public List<Vector3> EndPoints = new List<Vector3>();
@@ -506,12 +495,12 @@ public class PipeLineModel : PipeModelBase
 
     public void CreatePipe()
     {
-        GetPipeInfo();
+        GetModelInfo();
 
         //RendererPipe();
     }
 
-    public GameObject RendererPipe(PipeGenerateArg arg,string afterName)
+    public override GameObject RendererModel(PipeGenerateArg arg,string afterName)
     {
         GameObject pipeNew = new GameObject(this.name + afterName);
         pipeNew.transform.position = this.transform.position + arg.Offset;
@@ -523,15 +512,10 @@ public class PipeLineModel : PipeModelBase
             pipe = pipeNew.AddComponent<PipeMeshGenerator>();
         }
         pipe.points = new List<Vector3>() { LineInfo.StartPoint, LineInfo.EndPoint };
-
-        pipe.pipeSegments = arg.pipeSegments;
-        pipe.pipeMaterial = arg.pipeMaterial;
-        pipe.weldMaterial = arg.weldMaterial;
-        pipe.weldRadius = arg.weldRadius;
-        pipe.generateWeld = arg.generateWeld;
-        pipe.elbowSegments = arg.elbowSegments;
-
+        arg.SetArg(pipe);
         pipe.pipeRadius = PipeRadius;
+        pipe.pipeRadius1 = PipeRadius;
+        pipe.pipeRadius2 = PipeRadius;
         pipe.IsGenerateEndWeld = true;
         pipe.RenderPipe();
         return pipeNew;

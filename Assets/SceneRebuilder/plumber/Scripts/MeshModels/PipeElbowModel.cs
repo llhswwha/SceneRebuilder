@@ -25,7 +25,7 @@ public class PipeElbowModel : PipeModelBase
 
     // Start is called before the first frame update
     [ContextMenu("GetElbowInfo")]
-    public void GetElbowInfo()
+    public override void GetModelInfo()
     {
         DateTime start = DateTime.Now;
         ClearChildren();
@@ -120,10 +120,10 @@ public class PipeElbowModel : PipeModelBase
 
     public void CreateElbow()
     {
-        RendererPipe(generateArg,true,"_New");
+        RendererModel(generateArg,"_New");
     }
 
-    public GameObject RendererPipe(PipeGenerateArg arg,bool generateEndCaps,string newAfterName)
+    public override GameObject RendererModel(PipeGenerateArg arg,string newAfterName)
     {
         PipeCreateArg pipeArg = new PipeCreateArg(Line1, Line2);
         var ps = pipeArg.GetGeneratePoints(0, 2, false);
@@ -139,17 +139,13 @@ public class PipeElbowModel : PipeModelBase
         }
         //pipe.points = new List<Vector3>() { EndPointOut1, EndPointIn1, EndPointIn2, EndPointOut2 };
         pipe.points = ps;
-        pipe.pipeSegments = arg.pipeSegments;
-        pipe.elbowSegments = arg.elbowSegments;
-        pipe.pipeMaterial = arg.pipeMaterial;
-        pipe.weldMaterial = arg.weldMaterial;
-        pipe.weldRadius = arg.weldRadius;
+        arg.SetArg(pipe);
+
         //pipe.generateWeld = arg.generateWeld;
         pipe.generateWeld = false;
         pipe.pipeRadius = PipeRadius;
         pipe.elbowRadius = pipeArg.elbowRadius;
         pipe.avoidStrangling = true;
-        pipe.generateEndCaps = generateEndCaps;
         pipe.RenderPipe();
         return pipeNew;
     }
@@ -183,5 +179,10 @@ public class PipeElbowModel : PipeModelBase
     public void ClearChildren()
     {
         TransformHelper.ClearChildren(gameObject);
+    }
+
+    public void OnDestroy()
+    {
+        Debug.Log($"OnDestroy {this.name}");
     }
 }

@@ -1617,7 +1617,9 @@ public class BaseFoldoutEditor<T> : BaseEditor<T> where T : class
             InitEditorArg(list);
             listArg.DrawPageToolbar(list, (listItem, i) =>
             {
+                if (listItem == null) return;
                 var arg = FoldoutEditorArgBuffer.editorArgs[listItem];
+                if (arg == null) return;
                 arg.caption = $"[{i + 1:00}] {listItem.name}";
                 arg.info = listItem.ToString();
                 arg.level = 2;

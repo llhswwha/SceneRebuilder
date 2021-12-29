@@ -18,5 +18,21 @@ public class PipeGenerateArg
 
     public bool generateWeld = false;
 
+    public bool makeDoubleSided = false;
+
     public Vector3 Offset = Vector3.zero;
+
+    public bool generateEndCaps = false;
+
+    public void SetArg(PipeMeshGenerator pipe)
+    {
+        pipe.pipeSegments = this.pipeSegments;
+        pipe.pipeMaterial = this.pipeMaterial;
+        pipe.weldMaterial = this.weldMaterial;
+        pipe.weldRadius = this.weldRadius;
+        pipe.generateWeld = this.generateWeld;
+        pipe.elbowSegments = this.elbowSegments;
+        pipe.makeDoubleSided = this.makeDoubleSided;
+        pipe.generateEndCaps = this.generateEndCaps;
+    }
 }

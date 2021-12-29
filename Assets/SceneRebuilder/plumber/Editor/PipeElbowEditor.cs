@@ -12,7 +12,7 @@ public class PipeElbowEditor : Editor
         GUILayout.BeginHorizontal();
         if (GUILayout.Button("GetElbowInfo"))
         {
-            targetT.GetElbowInfo();
+            targetT.GetModelInfo();
         }
         if (GUILayout.Button("CreateElbow"))
         {

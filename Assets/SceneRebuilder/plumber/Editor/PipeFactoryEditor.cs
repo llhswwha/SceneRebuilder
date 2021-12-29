@@ -38,10 +38,10 @@ public class PipeFactoryEditor : BaseFoldoutEditor<PipeFactory>
 
     string[] elbowSegmentsValuesStr = null;
 
-
-    public override void OnInspectorGUI()
+    public override void OnToolLayout(PipeFactory targetT)
     {
-        PipeFactory targetT = target as PipeFactory;
+        base.OnToolLayout(targetT);
+
         GUILayout.BeginHorizontal();
         GUILayout.Label("generateWeld");
         targetT.generateArg.generateWeld = EditorGUILayout.Toggle(targetT.generateArg.generateWeld);
@@ -67,7 +67,7 @@ public class PipeFactoryEditor : BaseFoldoutEditor<PipeFactory>
         targetT.generateArg.elbowSegments = EditorGUILayout.IntPopup(targetT.generateArg.elbowSegments, elbowSegmentsValuesStr, elbowSegmentsValues);
 
         GUILayout.Label("Info:");
-        GUILayout.Label(targetT.GetResultInfo(),GUILayout.Width(300));
+        GUILayout.Label(targetT.GetResultInfo(), GUILayout.Width(300));
 
         GUILayout.EndHorizontal();
 
@@ -88,7 +88,7 @@ public class PipeFactoryEditor : BaseFoldoutEditor<PipeFactory>
         }
         if (GUILayout.Button("3.GeneratePipe(One)"))
         {
-            
+
         }
         GUILayout.EndHorizontal();
 
@@ -100,10 +100,10 @@ public class PipeFactoryEditor : BaseFoldoutEditor<PipeFactory>
         }
         if (GUILayout.Button("OneKey_GeneratePipe(One)"))
         {
-            
+
         }
         GUILayout.EndHorizontal();
-        
+
         GUILayout.BeginHorizontal();
         if (GUILayout.Button("ClearDebugObjs"))
         {
@@ -131,7 +131,5 @@ public class PipeFactoryEditor : BaseFoldoutEditor<PipeFactory>
         GUILayout.EndHorizontal();
 
         DrawPipeModelsList(targetT.GetPipeModels(), pipeModelListArg);
-
-        base.OnInspectorGUI();
     }
 }

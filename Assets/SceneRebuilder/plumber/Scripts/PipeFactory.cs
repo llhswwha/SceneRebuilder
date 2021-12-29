@@ -41,18 +41,21 @@ public class PipeFactory : MonoBehaviour
         PipeLineModel[] pipeLines = Target.GetComponentsInChildren<PipeLineModel>(true);
         foreach (var pipe in pipeLines)
         {
+            if (pipe == null) continue;
             pipe.ClearChildren();
         }
 
         PipeElbowModel[] pipeElbows = Target.GetComponentsInChildren<PipeElbowModel>(true);
         foreach (var pipe in pipeElbows)
         {
+            if (pipe == null) continue;
             pipe.ClearChildren();
         }
 
         PipeMeshGenerator[] pipes = Target.GetComponentsInChildren<PipeMeshGenerator>(true);
         foreach (var pipe in pipes)
         {
+            if (pipe == null) continue;
             GameObject.DestroyImmediate(pipe.gameObject);
         }
     }
@@ -72,38 +75,65 @@ public class PipeFactory : MonoBehaviour
 
         ClearGeneratedObjs();
 
-        ModelClassDict<Transform> modelClassList =ModelMeshManager.Instance.GetPrefixNames<Transform>(Target);
+        GetModelClass();
+
+        ShowAll();
+    }
+
+    public void AddList(List<Transform> list,List<Transform> newList)
+    {
+        foreach (var item in newList)
+        {
+            if (item.GetComponent<MeshRenderer>() == null) continue;
+            list.Add(item);
+        }
+        //list.AddRange(newList);
+    }
+
+    private void GetModelClass()
+    {
+        ModelClassDict<Transform> modelClassList = ModelMeshManager.Instance.GetPrefixNames<Transform>(Target);
         var keys = modelClassList.GetKeys();
-        foreach(var key in keys)
+        foreach (var key in keys)
         {
             var list = modelClassList.GetList(key);
             if (key.Contains("Pipe"))
             {
-                PipeLines.AddRange(list);
+                //foreach(var item in list)
+                //{
+                //    if (item.GetComponent<MeshRenderer>() == null) continue;
+                //    PipeLines.Add(item);
+                //}
+                //PipeLines.AddRange(list);
+
+                AddList(PipeLines, list);
             }
             else if (key.Contains("Degree_Direction_Change"))
             {
-                PipeElbows.AddRange(list);
+                //PipeElbows.AddRange(list);
+                AddList(PipeElbows, list);
             }
             else if (key.Contains("Tee"))
             {
-                PipeTees.AddRange(list);
+                //PipeTees.AddRange(list);
+                AddList(PipeTees, list);
             }
             else if (key.Contains("Reducer"))
             {
-                PipeReducers.AddRange(list);
+                //PipeReducers.AddRange(list);
+                AddList(PipeReducers, list);
             }
             else if (key.Contains("Flange"))
             {
-                PipeFlanges.AddRange(list);
+                //PipeFlanges.AddRange(list);
+                AddList(PipeFlanges, list);
             }
             else
             {
-                PipeOthers.AddRange(list);
+                //PipeOthers.AddRange(list);
+                AddList(PipeOthers, list);
             }
         }
-
-        ShowAll();
     }
 
     public string ResultInfo = "";

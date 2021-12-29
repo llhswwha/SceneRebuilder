@@ -5,7 +5,12 @@ using UnityEngine;
 
 public class PipeModelBase : MonoBehaviour,IComparable<PipeModelBase>
 {
+    public PipeGenerateArg generateArg = new PipeGenerateArg();
+
     public float PipeRadius = 0;
+
+    public float PipeRadius1 = 0;
+    public float PipeRadius2 = 0;
 
     public bool IsObbSuccess = true;
 
@@ -34,5 +39,15 @@ public class PipeModelBase : MonoBehaviour,IComparable<PipeModelBase>
     public override string ToString()
     {
         return $"type:{this.GetType().Name} radius:{PipeRadius:F5}| v:{VertexCount}|obb:{IsObbSuccess}";
+    }
+
+    public virtual void GetModelInfo()
+    {
+
+    }
+
+    public virtual GameObject RendererModel(PipeGenerateArg arg, string afterName)
+    {
+        return null;
     }
 }

@@ -82,6 +82,10 @@ public class PipeMeshGenerator : MonoBehaviour {
     }
 
     public float pipeRadius = 0.2f;
+
+    public float pipeRadius1 = 0;
+    public float pipeRadius2 = 0;
+
     public float elbowRadius = 0.5f;
     [Range(3, 32)]
     public int pipeSegments = 8;
@@ -210,31 +214,8 @@ public class PipeMeshGenerator : MonoBehaviour {
 
     private void RenderPipe(List<Vector3> ps)
     {
-
-        // remove any colinear points, as creating elbows between them
-        // would result in a torus of infinite radius, which is generally
-        // frowned upon. also, it helps in keeping the triangle count low. :)
-        //RemoveColinearPoints(ps);
         Mesh mesh = GeneratePipeMesh(ps, generateWeld);
-
-        //// add mesh filter if not present
-        //MeshFilter currentMeshFilter = GetComponent<MeshFilter>();
-        //MeshFilter mf = currentMeshFilter != null ? currentMeshFilter : gameObject.AddComponent<MeshFilter>();
-        //Mesh mesh = GeneratePipeMesh(ps);
-
-        //if (flatShading)
-        //    mesh = MakeFlatShading(mesh);
-        //if (makeDoubleSided)
-        //    mesh = MakeDoubleSided(mesh);
-        //mf.mesh = mesh;
-
-        //// add mesh renderer if not present
-        //MeshRenderer currentMeshRenderer = GetComponent<MeshRenderer>();
-        //MeshRenderer mr = currentMeshRenderer != null ? currentMeshRenderer : gameObject.AddComponent<MeshRenderer>();
-        //mr.materials = new Material[1] { pipeMaterial };
         SetMeshRenderers(mesh);
-
-        //Debug.LogError($"vertexCount:{mesh.vertexCount}");
     }
 
     private void SetMeshRenderers(Mesh mesh)
@@ -289,6 +270,11 @@ public class PipeMeshGenerator : MonoBehaviour {
 
     GameObject GenerateWeld(List<Vector3> vertices, List<Vector3> normals, Vector3 start, Vector3 direction)
     {
+        return GenerateWeld(vertices, normals, start, direction, pipeRadius);
+    }
+
+    GameObject GenerateWeld(List<Vector3> vertices, List<Vector3> normals, Vector3 start, Vector3 direction,float radius)
+    {
         if (IsWeldSeperated)
         {
             //GameObject go = new GameObject();
@@ -300,7 +286,7 @@ public class PipeMeshGenerator : MonoBehaviour {
 
             GameObject go = CreateWeldGo(start, direction);
 
-            float size = pipeRadius;
+            float size = radius;
             PipeMeshGenerator weldGenerator = go.AddComponent<PipeMeshGenerator>();
             SetPipeMeshGenerator(weldGenerator, size);
             weldGenerator.RenderTorusXZ();
@@ -310,7 +296,7 @@ public class PipeMeshGenerator : MonoBehaviour {
         }
         else
         {
-            CircleMeshArg arg1 = MeshGeneratorHelper.GenerateCircleAtPoint(Vector3.zero, direction, 4, pipeRadius* 1.414213562373f);
+            CircleMeshArg arg1 = MeshGeneratorHelper.GenerateCircleAtPoint(Vector3.zero, direction, 4, radius * 1.414213562373f);
             ////Debug.LogError($"Generate[{i}] start:{initialPoint} end:{endPoint} direction:{direction} gWeld:{gWeld} ps1:{ps1.Count}");
 
             //var ms1 = GeneratePipeMesh(arg1.vertices, false);
@@ -639,6 +625,50 @@ public class PipeMeshGenerator : MonoBehaviour {
 
     CircleMeshData GenerateCircleAtPoint(List<Vector3> vertices, List<Vector3> normals, Vector3 center, Vector3 direction,string circleName) {
 
+        //List<Vector3> newVertics = new List<Vector3>();
+        //// 'direction' is the normal to the plane that contains the circle
+
+        //// define a couple of utility variables to build circles
+        //float twoPi = Mathf.PI * 2;
+        //float radiansPerSegment = twoPi / pipeSegments;
+
+        //// generate two axes that define the plane with normal 'direction'
+        //// we use a plane to determine which direction we are moving in order
+        //// to ensure we are always using a left-hand coordinate system
+        //// otherwise, the triangles will be built in the wrong order and
+        //// all normals will end up inverted!
+        //Plane p = new Plane(Vector3.forward, Vector3.zero);
+        //Vector3 xAxis = Vector3.up;
+        //Vector3 yAxis = Vector3.right;
+        //if (p.GetSide(direction)) {
+        //    yAxis = Vector3.left;
+        //}
+
+        //// build left-hand coordinate system, with orthogonal and normalized axes
+        //Vector3.OrthoNormalize(ref direction, ref xAxis, ref yAxis);
+
+        //for (int i = 0; i < pipeSegments; i++) {
+        //    Vector3 currentVertex =
+        //        center +
+        //        (pipeRadius * Mathf.Cos(radiansPerSegment * i) * xAxis) +
+        //        (pipeRadius * Mathf.Sin(radiansPerSegment * i) * yAxis);
+        //    vertices.Add(currentVertex);
+        //    newVertics.Add(currentVertex);
+        //    normals.Add((currentVertex - center).normalized);
+        //}
+
+        //CircleMeshData circleData = new CircleMeshData(center, direction, newVertics, circleName);
+        //circleData.SetAxis(xAxis, yAxis);
+        //CircleDatas.Add(circleData);
+
+        //return circleData;
+
+        return GenerateCircleAtPoint(vertices, normals, center, direction, pipeRadius, circleName);
+    }
+
+    CircleMeshData GenerateCircleAtPoint(List<Vector3> vertices, List<Vector3> normals, Vector3 center, Vector3 direction, float radius,string circleName)
+    {
+
         List<Vector3> newVertics = new List<Vector3>();
         // 'direction' is the normal to the plane that contains the circle
 
@@ -654,18 +684,20 @@ public class PipeMeshGenerator : MonoBehaviour {
         Plane p = new Plane(Vector3.forward, Vector3.zero);
         Vector3 xAxis = Vector3.up;
         Vector3 yAxis = Vector3.right;
-        if (p.GetSide(direction)) {
+        if (p.GetSide(direction))
+        {
             yAxis = Vector3.left;
         }
 
         // build left-hand coordinate system, with orthogonal and normalized axes
         Vector3.OrthoNormalize(ref direction, ref xAxis, ref yAxis);
 
-        for (int i = 0; i < pipeSegments; i++) {
+        for (int i = 0; i < pipeSegments; i++)
+        {
             Vector3 currentVertex =
                 center +
-                (pipeRadius * Mathf.Cos(radiansPerSegment * i) * xAxis) +
-                (pipeRadius * Mathf.Sin(radiansPerSegment * i) * yAxis);
+                (radius * Mathf.Cos(radiansPerSegment * i) * xAxis) +
+                (radius * Mathf.Sin(radiansPerSegment * i) * yAxis);
             vertices.Add(currentVertex);
             newVertics.Add(currentVertex);
             normals.Add((currentVertex - center).normalized);
