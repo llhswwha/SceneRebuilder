@@ -240,7 +240,7 @@ public class PipeBuilder : MonoBehaviour
         PipeModels = new List<PipeModelBase>();
         GetPipeLineInfos();
         GetPipeElbowInfos();
-        PipeModels.Sort((a, b) => b.PipeRadius.CompareTo(a.PipeRadius));
+        PipeModels.Sort();
         Debug.LogError($">>GetPipeInfos time:{DateTime.Now- start}");
     }
 
@@ -294,7 +294,7 @@ public class PipeBuilder : MonoBehaviour
         }
         Debug.LogError($">>>GetPipeElbowInfos time:{DateTime.Now - start2}");
 
-        PipeModels.Sort((a, b) => b.PipeRadius.CompareTo(a.PipeRadius));
+        PipeModels.Sort();
 
         Debug.LogError($">>GetPipeInfos time:{DateTime.Now - start}");
     }

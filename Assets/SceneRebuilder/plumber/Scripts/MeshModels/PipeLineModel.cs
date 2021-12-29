@@ -108,6 +108,7 @@ public class PipeLineModel : PipeModelBase
 
         }
         oBBCollider.ShowObbInfo();
+        IsObbSuccess = oBBCollider.IsObbError == false;
         OBB = oBBCollider.OBB;
 
         Vector3 ObbExtent = OBB.Extent;
@@ -139,6 +140,7 @@ public class PipeLineModel : PipeModelBase
 
         var rendererInfo = MeshRendererInfo.GetInfo(this.gameObject);
         Vector3[] vs = rendererInfo.GetVertices();
+        this.VertexCount = vs.Length;
 
         planeCenterPointInfos = new List<PlaneCenterPointInfo>();
 

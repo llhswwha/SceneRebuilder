@@ -30,6 +30,7 @@ public class PipeElbowModel : PipeModelBase
         DateTime start = DateTime.Now;
         ClearChildren();
         Mesh mesh = this.GetComponent<MeshFilter>().sharedMesh;
+        this.VertexCount = mesh.vertexCount;
         meshTriangles = new MeshTriangles(mesh);
         //Debug.Log($"GetElbowInfo mesh vertexCount:{mesh.vertexCount} triangles:{mesh.triangles.Length}");
         List<Vector3> points = meshTriangles.GetKeyPointsById(sharedMinCount, minRepeatPointDistance);
