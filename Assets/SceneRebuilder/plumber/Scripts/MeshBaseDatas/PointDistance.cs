@@ -21,3 +21,42 @@ public class PointDistance :IComparable<PointDistance>
         return this.Distance.CompareTo(other.Distance);
     }
 }
+
+[Serializable]
+public class PointDistanceEx : IComparable<PointDistanceEx>
+{
+    public MeshPoint P1;
+    public Vector3 P2;
+    public float Distance = 0;
+    public PointDistanceEx(MeshPoint p1, Vector3 p2)
+    {
+        this.P1 = p1;
+        this.P2 = p2;
+        this.Distance = Vector3.Distance(p1.Point, p2);
+    }
+
+    public int CompareTo(PointDistanceEx other)
+    {
+        return this.Distance.CompareTo(other.Distance);
+    }
+}
+
+[Serializable]
+public class PlanePointDistance : IComparable<PlanePointDistance>
+{
+    public SharedMeshTriangles P1;
+    public Vector3 P2;
+    public float Distance = 0;
+    public PlanePointDistance(SharedMeshTriangles p1, Vector3 p2)
+    {
+        this.P1 = p1;
+        this.P2 = p2;
+        this.Distance = Vector3.Distance(p1.Point, p2);
+    }
+
+    public int CompareTo(PlanePointDistance other)
+    {
+        return this.Distance.CompareTo(other.Distance);
+    }
+}
+

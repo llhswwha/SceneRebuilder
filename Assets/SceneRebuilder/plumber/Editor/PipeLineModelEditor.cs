@@ -4,11 +4,12 @@ using UnityEditor;
 using UnityEngine;
 
 [CustomEditor(typeof(PipeLineModel))]
-public class PipeModelEditor : Editor
+public class PipeLineModelEditor : Editor
 {
     public override void OnInspectorGUI()
     {
         PipeLineModel targetT = target as PipeLineModel;
+        GUILayout.BeginHorizontal();
         if (GUILayout.Button("ShowOBB"))
         {
             targetT.ShowOBB();
@@ -17,14 +18,23 @@ public class PipeModelEditor : Editor
         {
             targetT.ClearChildren();
         }
-        if (GUILayout.Button("CreatePipe"))
+        GUILayout.EndHorizontal();
+
+        GUILayout.BeginHorizontal();
+        if (GUILayout.Button("GetModelInfo"))
         {
-            targetT.CreatePipe();
+            targetT.GetModelInfo();
+        }
+        if (GUILayout.Button("RendererModel"))
+        {
+            targetT.RendererModel();
         }
         if (GUILayout.Button("CreateWeld"))
         {
             targetT.CreateWeld();
         }
+        GUILayout.EndHorizontal();
+
         base.OnInspectorGUI();
     }
 }

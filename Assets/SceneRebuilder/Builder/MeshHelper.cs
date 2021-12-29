@@ -23,6 +23,17 @@ public static class MeshHelper
         center /= list.Count;
         return center;
     }
+
+    public static Vector3 GetCenterOfList(MeshPointList list)
+    {
+        return list.GetCenter();
+    }
+
+    public static Vector3 GetCenterOfList(SharedMeshTrianglesList list)
+    {
+        return list.GetCenter();
+    }
+
     public static Vector3 FindClosedPoint(Vector3 p, List<Vector3> list)
     {
         float minDis = float.MaxValue;

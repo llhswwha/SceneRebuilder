@@ -50,4 +50,11 @@ public class PipeModelBase : MonoBehaviour,IComparable<PipeModelBase>
     {
         return null;
     }
+
+
+    [ContextMenu("ClearChildren")]
+    public void ClearChildren()
+    {
+        TransformHelper.ClearChildren(gameObject);
+    }
 }

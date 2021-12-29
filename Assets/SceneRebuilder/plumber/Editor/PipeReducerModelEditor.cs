@@ -3,20 +3,23 @@ using System.Collections.Generic;
 using UnityEditor;
 using UnityEngine;
 
-[CustomEditor(typeof(PipeElbowModel))]
-public class PipeElbowEditor : Editor
+[CustomEditor(typeof(PipeReducerModel))]
+public class PipeReducerModelEditor 
+    //: PipeLineModelEditor
+    //:PipeElbowModelEditor
+    : Editor
 {
     public override void OnInspectorGUI()
     {
-        PipeElbowModel targetT = target as PipeElbowModel;
+        PipeReducerModel targetT = target as PipeReducerModel;
         GUILayout.BeginHorizontal();
-        if (GUILayout.Button("GetElbowInfo"))
+        if (GUILayout.Button("GetModelInfo"))
         {
             targetT.GetModelInfo();
         }
-        if (GUILayout.Button("CreateElbow"))
+        if (GUILayout.Button("RendererModel"))
         {
-            targetT.CreateElbow();
+            targetT.RendererModel();
         }
         GUILayout.EndHorizontal();
 
@@ -43,7 +46,7 @@ public class PipeElbowEditor : Editor
         {
             targetT.ClearChildren();
         }
-        
+
         base.OnInspectorGUI();
     }
 }

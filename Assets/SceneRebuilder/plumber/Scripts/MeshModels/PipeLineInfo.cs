@@ -6,8 +6,8 @@ using UnityEngine;
 [Serializable]
 public class PipeLineInfo
 {
-    public Vector3 StartPoint = Vector3.zero;
-    public Vector3 EndPoint = Vector3.zero;
+    public Vector4 StartPoint = Vector3.zero;
+    public Vector4 EndPoint = Vector3.zero;
 
     public Transform transform;
 
@@ -16,26 +16,30 @@ public class PipeLineInfo
 
     }
 
-    public PipeLineInfo(Vector3 p1,Vector3 p2,Transform t)
+    public PipeLineInfo(Vector4 p1,Vector4 p2,Transform t)
     {
         this.StartPoint = p1;
         this.EndPoint = p2;
         this.transform = t;
     }
 
-    public Vector3 GetStartPoint()
+    public Vector4 GetStartPoint()
     {
         //return StartPoint + this.transform.position;
         //return StartPoint;
         if (this.transform == null) return StartPoint;
-        return this.transform.TransformPoint(StartPoint);
+        Vector4 p = this.transform.TransformPoint(StartPoint);
+        p.w = StartPoint.w;
+        return p;
     }
 
-    public Vector3 GetEndPoint()
+    public Vector4 GetEndPoint()
     {
         //return EndPoint + this.transform.position;
         //return EndPoint;
         if (this.transform == null) return EndPoint;
-        return this.transform.TransformPoint(EndPoint);
+        Vector4 p= this.transform.TransformPoint(EndPoint);
+        p.w = EndPoint.w;
+        return p;
     }
 }

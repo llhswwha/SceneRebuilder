@@ -493,11 +493,11 @@ public class PipeLineModel : PipeModelBase
         return planeCenterPointInfo;
     }
 
-    public void CreatePipe()
+    public void RendererModel()
     {
         GetModelInfo();
 
-        //RendererPipe();
+        RendererModel(this.generateArg,"_New");
     }
 
     public override GameObject RendererModel(PipeGenerateArg arg,string afterName)
@@ -609,10 +609,4 @@ public class PipeLineModel : PipeModelBase
     //        }
     //    }
     //}
-
-    [ContextMenu("ClearChildren")]
-    public void ClearChildren()
-    {
-        TransformHelper.ClearChildren(gameObject);
-    }
 }

@@ -34,3 +34,63 @@ public class MeshPoint
         return Id.ToString();
     }
 }
+
+public class MeshPlane
+{
+
+}
+
+public class MeshPointList:List<MeshPoint>
+{
+    public new bool Contains(MeshPoint mp)
+    {
+        foreach(var item in this)
+        {
+            if (item.Id == mp.Id)
+            {
+                return true;
+            }
+        }
+        return false;
+    }
+
+    public bool Contains(Vector3 p)
+    {
+        foreach (var item in this)
+        {
+            if (item.Point==p)
+            {
+                return true;
+            }
+        }
+        return false;
+    }
+
+    public int Remove(Vector3 p)
+    {
+        MeshPointList list = this;
+        int removeCount = 0;
+        for (int i = 0; i < list.Count; i++)
+        {
+            MeshPoint item = list[i];
+            if (item.Point == p)
+            {
+                this.RemoveAt(i);
+                i--;
+                removeCount++;
+            }
+        }
+        return removeCount;
+    }
+
+    public Vector3 GetCenter()
+    {
+        Vector3 center = Vector3.zero;
+        foreach (var item in this)
+        {
+            center += item.Point;
+        }
+        center /= this.Count;
+        return center;
+    }
+}

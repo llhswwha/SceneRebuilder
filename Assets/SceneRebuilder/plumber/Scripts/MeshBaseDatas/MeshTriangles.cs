@@ -6,7 +6,7 @@ using UnityEngine;
 [Serializable]
 public class MeshTriangles
 {
-    public List<MeshTriangle> Triangles = new List<MeshTriangle>();
+    public MeshTriangleList Triangles = new MeshTriangleList();
 
     public int Count
     {
@@ -112,7 +112,7 @@ public class MeshTriangles
         }
     }
 
-    List<Key2List<int, MeshTriangle>> sharedPointsById = null;
+    public List<Key2List<int, MeshTriangle>> sharedPointsById = null;
 
     public List<Key2List<int, MeshTriangle>> FindSharedPointsById()
     {
@@ -165,6 +165,20 @@ public class MeshTriangles
         return objTriangles;
     }
 
+    public List<MeshTriangle> GetTriangles(int pointId)
+    {
+        List<Key2List<int, MeshTriangle>> sharedPoints1 = this.FindSharedPointsById();
+        var triangles = sharedPoints1[pointId].List;
+        return triangles;
+    }
+
+    public float GetRadius(int pointId)
+    {
+        var triangles = GetTriangles(pointId);
+        float radius = GetTrianglesRadius(triangles, pointId);
+        return radius;
+    }
+
     public List<Vector3> GetKeyPointsById(int minCount,float minDis)
     {
         List<Vector3> KeyPoints = new List<Vector3>();
@@ -187,12 +201,54 @@ public class MeshTriangles
                 }
             }
         }
-
         if (KeyPoints.Count <2)
         {
             Debug.LogError($"GetKeyPoints KeyPoints:{KeyPoints.Count}");
         }
         return KeyPoints;
+    }
+
+    public SharedMeshTrianglesList GetKeyPointsByIdEx(int minCount, float minDis)
+    {
+        SharedMeshTrianglesList KeyPoints = new SharedMeshTrianglesList();
+        List<Key2List<int, MeshTriangle>> sharedPoints1 = this.FindSharedPointsById();
+        for (int i = 0; i < sharedPoints1.Count; i++)
+        {
+            int pointId = sharedPoints1[i].Key;
+            var triangles = sharedPoints1[i].List;
+            Vector3 point = mesh.vertices[pointId];
+            
+            if (triangles.Count >= minCount)
+            {
+                if (!KeyPoints.Contains(point))
+                {
+                    float dis = Distance2List(point, KeyPoints);
+                    if (dis > minDis)
+                    {
+                        Vector3 normal= mesh.normals[pointId];
+                        //Debug.Log($"dis:{dis} point:{point} KeyPoints:{KeyPoints.Count}");
+                        KeyPoints.Add(new SharedMeshTriangles(pointId,point,triangles));
+                    }
+                }
+            }
+        }
+        if (KeyPoints.Count < 2)
+        {
+            Debug.LogError($"GetKeyPoints KeyPoints:{KeyPoints.Count}");
+        }
+        return KeyPoints;
+    }
+
+    private float GetTrianglesRadius(List<MeshTriangle> triangles,int pointId)
+    {
+        float radius = 0;
+        foreach (MeshTriangle triangle in triangles)
+        {
+            float r = triangle.GetRadius(pointId);
+            radius += r;
+        }
+        radius /= triangles.Count;
+        return radius;
     }
 
     public float GetPipeRadius(int minCount)
@@ -207,13 +263,7 @@ public class MeshTriangles
             Vector3 point = mesh.vertices[pointId];
             if (triangles.Count >= minCount)
             {
-                float radius = 0;
-                foreach (MeshTriangle triangle in triangles)
-                {
-                    float r = triangle.GetRadius(pointId);
-                    radius += r;
-                }
-                radius /= triangles.Count;
+                float radius = GetTrianglesRadius(triangles, pointId);
                 //Debug.Log($"point:{point} radius:{radius}");
                 avgRadius += radius;
                 count++;
@@ -230,6 +280,36 @@ public class MeshTriangles
         foreach(var item in list)
         {
             float dis = Vector3.Distance(item, p);
+            if (dis < minDis)
+            {
+                minDis = dis;
+            }
+        }
+        return minDis;
+    }
+
+    public float Distance2List(Vector3 p, SharedMeshTrianglesList list)
+    {
+        float minDis = float.MaxValue;
+        foreach (var item in list)
+        {
+            float dis = Vector3.Distance(item.Point, p);
+            if (dis < minDis)
+            {
+                minDis = dis;
+            }
+        }
+        return minDis;
+    }
+
+    
+
+    public float Distance2List(Vector3 p, MeshPointList list)
+    {
+        float minDis = float.MaxValue;
+        foreach (var item in list)
+        {
+            float dis = Vector3.Distance(item.Point, p);
             if (dis < minDis)
             {
                 minDis = dis;

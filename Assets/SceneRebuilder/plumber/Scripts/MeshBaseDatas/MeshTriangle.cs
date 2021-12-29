@@ -133,6 +133,11 @@ public class MeshTriangle
     {
         float radius = 0;
         MeshPoint mp=GetPoint(pointId);
+        if (mp == null)
+        {
+            Debug.LogError($"GetRadius mp == null pointId:{pointId}");
+            return radius;
+        }
         foreach(var p in Points)
         {
             if (p == mp) continue;
@@ -140,5 +145,84 @@ public class MeshTriangle
         }
         radius /= 2;
         return radius;
+    }
+}
+
+public class MeshTriangleList:List< MeshTriangle >
+{
+    public float GetRadius(int pointId)
+    {
+        float radius = 0;
+        foreach (MeshTriangle triangle in this)
+        {
+            float r = triangle.GetRadius(pointId);
+            radius += r;
+        }
+        radius /= this.Count;
+        return radius;
+    }
+}
+
+
+public class SharedMeshTriangles
+{
+    public int PointId;
+
+    public Vector3 Point;
+
+    public MeshTriangleList Triangles = new MeshTriangleList();
+
+    public float GetRadiu()
+    {
+        return Triangles.GetRadius(PointId);
+    }
+
+    public SharedMeshTriangles(int id,Vector3 p,List<MeshTriangle> ts)
+    {
+        this.PointId = id;
+        this.Point = p;
+        this.Triangles.AddRange(ts);
+    }
+}
+
+public class SharedMeshTrianglesList : List<SharedMeshTriangles>
+{
+    public bool Contains(Vector3 p)
+    {
+        foreach (var item in this)
+        {
+            if (item.Point == p)
+            {
+                return true;
+            }
+        }
+        return false;
+    }
+
+    public int Remove(Vector3 p)
+    {
+        int removeCount = 0;
+        for (int i = 0; i < this.Count; i++)
+        {
+            SharedMeshTriangles item = this[i];
+            if (item.Point == p)
+            {
+                this.RemoveAt(i);
+                i--;
+                removeCount++;
+            }
+        }
+        return removeCount;
+    }
+
+    public Vector3 GetCenter()
+    {
+        Vector3 center = Vector3.zero;
+        foreach (var item in this)
+        {
+            center += item.Point;
+        }
+        center /= this.Count;
+        return center;
     }
 }

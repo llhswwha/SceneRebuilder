@@ -23,6 +23,8 @@ public class PipeElbowModel : PipeModelBase
 
     public List<PointDistance> distanceList;
 
+    public int MinKeyPointCount = 4;
+
     // Start is called before the first frame update
     [ContextMenu("GetElbowInfo")]
     public override void GetModelInfo()
@@ -34,9 +36,9 @@ public class PipeElbowModel : PipeModelBase
         meshTriangles = new MeshTriangles(mesh);
         //Debug.Log($"GetElbowInfo mesh vertexCount:{mesh.vertexCount} triangles:{mesh.triangles.Length}");
         List<Vector3> points = meshTriangles.GetKeyPointsById(sharedMinCount, minRepeatPointDistance);
-        if (points.Count < 4)
+        if (points.Count < MinKeyPointCount)
         {
-            Debug.LogError("GetKeyPointsById points.Count < 4 :" + points.Count);
+            Debug.LogError($"GetKeyPointsById points.Count < {MinKeyPointCount} count:{points.Count}");
             return;
         }
 
@@ -70,7 +72,7 @@ public class PipeElbowModel : PipeModelBase
         Debug.Log($">>>GetElbowInfo time:{DateTime.Now - start}");
     }
 
-    public void GetPipeRadius()
+    public virtual void GetPipeRadius()
     {
         PipeRadius = meshTriangles.GetPipeRadius(sharedMinCount);
     }
@@ -118,7 +120,7 @@ public class PipeElbowModel : PipeModelBase
 
     public PipeGenerateArg generateArg = new PipeGenerateArg();
 
-    public void CreateElbow()
+    public void RendererModel()
     {
         RendererModel(generateArg,"_New");
     }
@@ -174,12 +176,6 @@ public class PipeElbowModel : PipeModelBase
     }
 
     public float PointScale = 0.01f;
-
-    [ContextMenu("ClearChildren")]
-    public void ClearChildren()
-    {
-        TransformHelper.ClearChildren(gameObject);
-    }
 
     public void OnDestroy()
     {

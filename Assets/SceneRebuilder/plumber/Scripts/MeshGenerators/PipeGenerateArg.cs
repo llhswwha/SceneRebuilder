@@ -35,4 +35,16 @@ public class PipeGenerateArg
         pipe.makeDoubleSided = this.makeDoubleSided;
         pipe.generateEndCaps = this.generateEndCaps;
     }
+
+    public void SetArg(PipeMeshGeneratorEx pipe)
+    {
+        pipe.pipeSegments = this.pipeSegments;
+        pipe.pipeMaterial = this.pipeMaterial;
+        pipe.weldMaterial = this.weldMaterial;
+        pipe.weldRadius = this.weldRadius;
+        pipe.generateWeld = this.generateWeld;
+        pipe.elbowSegments = this.elbowSegments;
+        pipe.makeDoubleSided = this.makeDoubleSided;
+        pipe.generateEndCaps = this.generateEndCaps;
+    }
 }
