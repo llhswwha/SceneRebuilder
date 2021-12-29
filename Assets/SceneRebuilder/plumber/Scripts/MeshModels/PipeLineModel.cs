@@ -50,6 +50,8 @@ public class PipeLineModel : PipeModelBase
     public float SizeY = 0;
     public float SizeZ = 0;
 
+    public float PipeWidth = 0;
+
     public Vector3 P1 = Vector3.zero;
     public Vector3 P2 = Vector3.zero;
     public Vector3 P3 = Vector3.zero;
@@ -129,6 +131,9 @@ public class PipeLineModel : PipeModelBase
         P4 = OBB.Forward * ObbExtent.z;
         P5 = OBB.Up * ObbExtent.y;
         P6 = -OBB.Up * ObbExtent.y;
+        SizeX = ObbExtent.x;
+        SizeY= ObbExtent.y;
+        SizeZ= ObbExtent.z;
 
         List<Vector3> extentPoints = new List<Vector3>() { P1, P2, P3, P4, P5, P6 };
 
