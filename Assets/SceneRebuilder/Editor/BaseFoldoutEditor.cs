@@ -1595,6 +1595,40 @@ public class BaseFoldoutEditor<T> : BaseEditor<T> where T : class
     {
         BaseFoldoutEditorHelper.DrawPrefabList(prefabListArg, funcGetList);
     }
+
+    public static void DrawPipeModelsList(List<PipeModelBase> list, FoldoutEditorArg listArg)
+    {
+        listArg.caption = $"PipeModel List";
+        listArg.level = 0;
+        EditorUIUtils.ToggleFoldout(listArg, arg =>
+        {
+            //var doors = doorsRoot.Doors;
+            arg.caption = $"PipeModel List ({list.Count})";
+            InitEditorArg(list);
+        },
+        () =>
+        {
+        });
+
+        if (listArg.isExpanded && listArg.isEnabled)
+        {
+            listArg.level = 1;
+            //var doors = doorsRoot.Doors;
+            InitEditorArg(list);
+            listArg.DrawPageToolbar(list, (listItem, i) =>
+            {
+                var arg = FoldoutEditorArgBuffer.editorArgs[listItem];
+                arg.caption = $"[{i + 1:00}] {listItem.name}";
+                arg.info = listItem.ToString();
+                arg.level = 2;
+                EditorUIUtils.ObjectFoldout(arg, listItem.gameObject, () =>
+                {
+
+                });
+            });
+        }
+
+    }
 }
 public static class FoldoutEditorArgBuffer
 {
@@ -1682,7 +1716,7 @@ public static class FoldoutEditorArgBuffer
         }
     }
 
-
+    
 }
 
 

@@ -6,11 +6,13 @@ using UnityEngine;
 [Serializable]
 public class PipeGenerateArg 
 {
-    public Material PipeMaterial;
+    public Material pipeMaterial;
 
-    public Material WeldMaterial;
+    public Material weldMaterial;
 
     public int pipeSegments = 24;
+
+    public int elbowSegments = 6;
 
     public float weldRadius = 0.005f;
 

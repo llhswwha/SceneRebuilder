@@ -140,8 +140,9 @@ public class PipeElbowModel : PipeModelBase
         //pipe.points = new List<Vector3>() { EndPointOut1, EndPointIn1, EndPointIn2, EndPointOut2 };
         pipe.points = ps;
         pipe.pipeSegments = arg.pipeSegments;
-        pipe.pipeMaterial = arg.PipeMaterial;
-        pipe.weldMaterial = arg.WeldMaterial;
+        pipe.elbowSegments = arg.elbowSegments;
+        pipe.pipeMaterial = arg.pipeMaterial;
+        pipe.weldMaterial = arg.weldMaterial;
         pipe.weldRadius = arg.weldRadius;
         //pipe.generateWeld = arg.generateWeld;
         pipe.generateWeld = false;

@@ -1,3 +1,4 @@
+using System;
 using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
@@ -33,13 +34,12 @@ public class PipeFactory : MonoBehaviour
         PipeOthers = new List<Transform>();
     }
 
-    [ContextMenu("GetPipeParts")]
-    public void GetPipeParts()
+    public void ClearDebugObjs()
     {
         ClearList();
 
         PipeLineModel[] pipeLines = Target.GetComponentsInChildren<PipeLineModel>(true);
-        foreach(var pipe in pipeLines)
+        foreach (var pipe in pipeLines)
         {
             pipe.ClearChildren();
         }
@@ -55,11 +55,22 @@ public class PipeFactory : MonoBehaviour
         {
             GameObject.DestroyImmediate(pipe.gameObject);
         }
+    }
 
+    public void ClearGeneratedObjs()
+    {
         if (newBuilder != null)
         {
-            newBuilder.ClearOldGos();
+            newBuilder.ClearGeneratedObjs();
         }
+    }
+
+    [ContextMenu("GetPipeParts")]
+    public void GetPipeParts()
+    {
+        ClearDebugObjs();
+
+        ClearGeneratedObjs();
 
         ModelClassDict<Transform> modelClassList =ModelMeshManager.Instance.GetPrefixNames<Transform>(Target);
         var keys = modelClassList.GetKeys();
@@ -93,6 +104,13 @@ public class PipeFactory : MonoBehaviour
         }
 
         ShowAll();
+    }
+
+    public string ResultInfo = "";
+
+    public string GetResultInfo()
+    {
+        return ResultInfo;
     }
 
     [ContextMenu("ShowAll")]
@@ -133,8 +151,42 @@ public class PipeFactory : MonoBehaviour
 
     public PipeBuilder newBuilder;
 
-    [ContextMenu("GenerateEachPipes")]
-    public void GenerateEachPipes()
+    public List<PipeModelBase> GetPipeModels()
+    {
+        if (newBuilder == null) return new List<PipeModelBase>();
+        return newBuilder.PipeModels;
+    }
+
+    [ContextMenu("GetInfoAndCreateEachPipes")]
+    public void GetInfoAndCreateEachPipes()
+    {
+        InitPipeBuilder();
+        newBuilder.GetInfoAndCreateEachPipes();
+    }
+
+    [ContextMenu("GetPipeInfos")]
+    public void GetPipeInfos()
+    {
+        InitPipeBuilder();
+
+        newBuilder.ClearGeneratedObjs();
+        newBuilder.GetPipeInfosEx();
+
+        ProgressBarHelper.ClearProgressBar();
+    }
+
+    [ContextMenu("RendererEachPipes")]
+    public void RendererEachPipes()
+    {
+        //InitPipeBuilder();
+        newBuilder.NewObjName = "_New";
+        newBuilder.generateArg = generateArg;
+        newBuilder.RendererPipesEx();
+
+        ProgressBarHelper.ClearProgressBar();
+    }
+
+    private void InitPipeBuilder()
     {
         if (newBuilder == null)
         {
@@ -147,18 +199,27 @@ public class PipeFactory : MonoBehaviour
         newBuilder.generateArg = generateArg;
         newBuilder.PipeLineGos = PipeLines;
         newBuilder.PipeElbowsGos = PipeElbows;
+    }
 
-        var newPipes=newBuilder.CreateEachPipes();
+    GameObject targetNew;
 
-        //GameObject targetNew = new GameObject();
-        //targetNew.name = Target.name + "_New";
-        //targetNew.transform.position = Target.transform.position;
-        //targetNew.transform.SetParent(Target.transform.parent);
-        //foreach(var pipe in newPipes)
-        //{
-        //    pipe.SetParent(targetNew.transform);
-        //}
-        //targetNew.transform.SetParent(newBuilder.transform);
+    public void MovePipes()
+    {
+        var newPipes = newBuilder.NewPipeList;
+
+        targetNew = new GameObject();
+        targetNew.name = Target.name + "_New";
+        targetNew.transform.position = Target.transform.position;
+        targetNew.transform.SetParent(Target.transform.parent);
+        foreach (var pipe in newPipes)
+        {
+            if (pipe == null) continue;
+            pipe.SetParent(targetNew.transform);
+        }
+        targetNew.transform.SetParent(newBuilder.transform);
+
+        MeshNode meshNode= MeshNode.InitNodes(targetNew);
+        ResultInfo = meshNode.GetTitle();
     }
 
     public PipeGenerateArg generateArg = new PipeGenerateArg();

@@ -46,9 +46,17 @@ public class PipeLineModel : PipeModelBase
 
     public float PipeLength = 0;
 
-    public float SizeX = 0;
-    public float SizeY = 0;
-    public float SizeZ = 0;
+    //public float SizeX = 0;
+    //public float SizeY = 0;
+    //public float SizeZ = 0;
+
+    public Vector3 Size = Vector3.zero;
+
+    public string sizeX;
+    public string sizeY;
+    public string sizeZ;
+
+    public int SizeFloat = 4;
 
     public float PipeWidth = 0;
 
@@ -86,6 +94,8 @@ public class PipeLineModel : PipeModelBase
     //}
 
     public float lineSize = 0.01f;
+
+
 
     public void GetPipeInfo()
     {
@@ -131,9 +141,40 @@ public class PipeLineModel : PipeModelBase
         P4 = OBB.Forward * ObbExtent.z;
         P5 = OBB.Up * ObbExtent.y;
         P6 = -OBB.Up * ObbExtent.y;
-        SizeX = ObbExtent.x;
-        SizeY= ObbExtent.y;
-        SizeZ= ObbExtent.z;
+        Size = new Vector3(ObbExtent.x, ObbExtent.y, ObbExtent.z);
+
+        if (SizeFloat == 4)
+        {
+            sizeX = Size.x.ToString("F4");
+            sizeY = Size.y.ToString("F4");
+            sizeZ = Size.z.ToString("F4");
+        }
+        if (SizeFloat == 5)
+        {
+            sizeX = Size.x.ToString("F5");
+            sizeY = Size.y.ToString("F5");
+            sizeZ = Size.z.ToString("F5");
+        }
+        if (SizeFloat == 6)
+        {
+            sizeX = Size.x.ToString("F6");
+            sizeY = Size.y.ToString("F6");
+            sizeZ = Size.z.ToString("F6");
+        }
+
+        if (sizeX == sizeY)
+        {
+
+        }
+        if (sizeX == sizeZ)
+        {
+
+        }
+        if (sizeY == sizeZ)
+        {
+
+        }
+
 
         List<Vector3> extentPoints = new List<Vector3>() { P1, P2, P3, P4, P5, P6 };
 
@@ -482,11 +523,14 @@ public class PipeLineModel : PipeModelBase
             pipe = pipeNew.AddComponent<PipeMeshGenerator>();
         }
         pipe.points = new List<Vector3>() { LineInfo.StartPoint, LineInfo.EndPoint };
+
         pipe.pipeSegments = arg.pipeSegments;
-        pipe.pipeMaterial = arg.PipeMaterial;
-        pipe.weldMaterial = arg.WeldMaterial;
+        pipe.pipeMaterial = arg.pipeMaterial;
+        pipe.weldMaterial = arg.weldMaterial;
         pipe.weldRadius = arg.weldRadius;
         pipe.generateWeld = arg.generateWeld;
+        pipe.elbowSegments = arg.elbowSegments;
+
         pipe.pipeRadius = PipeRadius;
         pipe.IsGenerateEndWeld = true;
         pipe.RenderPipe();

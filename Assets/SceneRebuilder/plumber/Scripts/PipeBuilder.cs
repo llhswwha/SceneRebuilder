@@ -66,11 +66,11 @@ public class PipeBuilder : MonoBehaviour
 
     public float lineSize = 0.01f;
 
-    public List<Transform> CreateEachPipes()
+    public List<Transform> GetInfoAndCreateEachPipes()
     {
         DateTime start = DateTime.Now;
 
-        ClearOldGos();
+        ClearGeneratedObjs();
         //GetPipeInfos();
         GetPipeInfosEx();
 
@@ -85,7 +85,7 @@ public class PipeBuilder : MonoBehaviour
 
     public string NewObjName = "_New";
 
-    private void RendererPipesEx()
+    public void RendererPipesEx()
     {
         DateTime start = DateTime.Now;
         int count = PipeLines.Count + PipeElbows.Count;
@@ -142,7 +142,7 @@ public class PipeBuilder : MonoBehaviour
     public PipeMeshGenerator CreateOnePipe()
     {
         GetPipeInfos();
-        ClearOldGos();
+        ClearGeneratedObjs();
         var newPipe = RendererOnePipe();
         NewPipeList.Add(newPipe.transform);
         newPipe.transform.SetParent(this.transform);
@@ -182,8 +182,8 @@ public class PipeBuilder : MonoBehaviour
         }
         pipe.points = points;
         pipe.pipeSegments = generateArg.pipeSegments;
-        pipe.pipeMaterial = generateArg.PipeMaterial;
-        pipe.weldMaterial = generateArg.WeldMaterial;
+        pipe.pipeMaterial = generateArg.pipeMaterial;
+        pipe.weldMaterial = generateArg.weldMaterial;
         pipe.weldRadius = generateArg.weldRadius;
 
         pipe.elbowRadius = PipeArgs.elbowRadius;//Elbow
@@ -224,7 +224,7 @@ public class PipeBuilder : MonoBehaviour
     }
 
     [ContextMenu("ClearOldGos")]
-    public void ClearOldGos()
+    public void ClearGeneratedObjs()
     {
         foreach (Transform item in NewPipeList)
         {
