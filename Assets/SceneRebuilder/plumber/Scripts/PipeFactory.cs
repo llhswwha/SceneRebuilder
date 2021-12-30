@@ -78,6 +78,8 @@ public class PipeFactory : MonoBehaviour
         GetModelClass();
 
         ShowAll();
+
+        InitPipeBuilder();
     }
 
     public void AddList(List<Transform> list,List<Transform> newList)
@@ -134,6 +136,8 @@ public class PipeFactory : MonoBehaviour
                 AddList(PipeOthers, list);
             }
         }
+
+        Debug.Log($"GetModelClass keys:{keys.Count}");
     }
 
     public string ResultInfo = "";
@@ -229,6 +233,7 @@ public class PipeFactory : MonoBehaviour
         newBuilder.generateArg = generateArg;
         newBuilder.PipeLineGos = PipeLines;
         newBuilder.PipeElbowsGos = PipeElbows;
+        newBuilder.PipeReducerGos = PipeReducers;
     }
 
     GameObject targetNew;
