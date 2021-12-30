@@ -169,6 +169,7 @@ public class PipeLineModel : PipeModelBase
 
             planeCenterPointInfo1 = new PlaneCenterPointInfo(vs, startPoint, false);
             planeCenterPointInfo2 = new PlaneCenterPointInfo(vs, endPoint, false);
+            Debug.Log("Route1 P2 P4");
         }
         else if (Mathf.Abs(Size.x - Size.z) <= minDisOfSize && Mathf.Abs(Size.x - Size.y) > minDisOfSize)
         {
@@ -177,6 +178,7 @@ public class PipeLineModel : PipeModelBase
 
             planeCenterPointInfo1 = new PlaneCenterPointInfo(vs, startPoint, false);
             planeCenterPointInfo2 = new PlaneCenterPointInfo(vs, endPoint, false);
+            Debug.Log("Route2 P5 P6");
         }
         else  if (Mathf.Abs(Size.y - Size.z) <= minDisOfSize && Mathf.Abs(Size.y - Size.x) > minDisOfSize)
         {
@@ -185,9 +187,11 @@ public class PipeLineModel : PipeModelBase
 
             planeCenterPointInfo1 = new PlaneCenterPointInfo(vs, startPoint, false);
             planeCenterPointInfo2 = new PlaneCenterPointInfo(vs, endPoint, false);
+            Debug.Log("Route3 P1 P3");
         }
         else
         {
+            Debug.Log("Route4 P2 P4");
             planeCenterPointInfo1 = planeCenterPointInfos[0];
             planeCenterPointInfo2 = planeCenterPointInfos[1];
 
@@ -212,13 +216,25 @@ public class PipeLineModel : PipeModelBase
         var endCircle = planeCenterPointInfo2.GetCircleInfo();
         endPoint = endCircle.Center;
 
+        PipeRadius1 = startCircle.Radius;
+        PipeRadius2 = endCircle.Radius;
+
+        //”≈ªØ
+        //PlaneCenterPointInfo planeCenterPointInfo12 = new PlaneCenterPointInfo(vs, startCircle.Center, false);
+        //PlaneCenterPointInfo planeCenterPointInfo22 = new PlaneCenterPointInfo(vs, endCircle.Center, false);
+        //var startCircle2 = planeCenterPointInfo12.GetCircleInfo();
+        //startPoint = startCircle.Center;
+        //var endCircle2 = planeCenterPointInfo22.GetCircleInfo();
+        //endPoint = endCircle.Center;
+        //PipeRadius1 = startCircle2.Radius;
+        //PipeRadius2 = endCircle2.Radius;
+
         EndPoints = new List<Vector3>() { startPoint, endPoint };
 
         CreateLocalPoint(startPoint, "StartPoint1", go.transform);
         CreateLocalPoint(endPoint, "EndPoint1", go.transform);
 
-        PipeRadius1 = startCircle.Radius;
-        PipeRadius2 = endCircle.Radius;
+        
 
         PipeRadius = (startCircle.Radius + endCircle.Radius) / 2;
         PipeLength = Vector3.Distance(startPoint, endPoint);
@@ -313,54 +329,54 @@ public class PipeLineModel : PipeModelBase
                 Debug.LogError(ResultInfo);
         }
 
-        private Vector3 GetCenter(DictionaryList1ToN<string, Vector3>  dict)
-        {
-            var keys = dict.Keys.ToList();
-            keys.Sort();
-            string firstKey = keys[0];
-            var vs = dict[firstKey];
-            Vector3 sum = Vector3.zero;
-            foreach (var v in vs)
-            {
-                sum += v;
-            }
-            Vector3 center = sum / vs.Count;
-            return center;
-        }
+        //private Vector3 GetCenter(DictionaryList1ToN<string, Vector3>  dict)
+        //{
+        //    var keys = dict.Keys.ToList();
+        //    keys.Sort();
+        //    string firstKey = keys[0];
+        //    var vs = dict[firstKey];
+        //    Vector3 sum = Vector3.zero;
+        //    foreach (var v in vs)
+        //    {
+        //        sum += v;
+        //    }
+        //    Vector3 center = sum / vs.Count;
+        //    return center;
+        //}
 
-        public Vector3 GetCenter()
-        {
+        //public Vector3 GetCenter()
+        //{
 
-            if (Count5 == 2)
-            {
-                return GetCenter(dict15);
-            }
-            else if (Count4 == 2)
-            {
-                return GetCenter(dict14);
-            }
-            else if (Count3 == 2)
-            {
-                return GetCenter(dict13);
-            }
-            else if (Count2 == 2)
-            {
-                return GetCenter(dict12);
-            }
-            else if (Count1 == 2)
-            {
-                return GetCenter(dict11);
-            }
-            else if (Count0 == 2)
-            {
-                return GetCenter(dict10);
-            }
-            else
-            {
-                //return GetCenter(dict15);
-                return Point;
-            }
-        }
+        //    if (Count5 == 2)
+        //    {
+        //        return GetCenter(dict15);
+        //    }
+        //    else if (Count4 == 2)
+        //    {
+        //        return GetCenter(dict14);
+        //    }
+        //    else if (Count3 == 2)
+        //    {
+        //        return GetCenter(dict13);
+        //    }
+        //    else if (Count2 == 2)
+        //    {
+        //        return GetCenter(dict12);
+        //    }
+        //    else if (Count1 == 2)
+        //    {
+        //        return GetCenter(dict11);
+        //    }
+        //    else if (Count0 == 2)
+        //    {
+        //        return GetCenter(dict10);
+        //    }
+        //    else
+        //    {
+        //        //return GetCenter(dict15);
+        //        return Point;
+        //    }
+        //}
 
         public CircleInfo GetCircleInfo()
         {
@@ -390,10 +406,41 @@ public class PipeLineModel : PipeModelBase
             }
             else
             {
+                //Debug.LogWarning($"GetCircleInfo Warning {this.ToString()}");
+                //return new CircleInfo(Point, 0);
+
+                if (Count5 == 3)
+                {
+                    return GetCircleInfo(dict15);
+                }
+                else if (Count4 == 3)
+                {
+                    return GetCircleInfo(dict14);
+                }
+                else if (Count3 == 3)
+                {
+                    return GetCircleInfo(dict13);
+                }
+                else if (Count2 == 3)
+                {
+                    return GetCircleInfo(dict12);
+                }
+                else if (Count1 == 3)
+                {
+                    return GetCircleInfo(dict11);
+                }
+                else if (Count0 == 3)
+                {
+                    return GetCircleInfo(dict10);
+                }
+                else
+                {
+                    Debug.LogError($"GetCircleInfo Error {this.ToString()}");
+                    return new CircleInfo(Point, 0);
+                }
+
                 //return GetCenter(dict15);
                 //return Point;
-
-                return new CircleInfo(Point, 0);
             }
         }
 

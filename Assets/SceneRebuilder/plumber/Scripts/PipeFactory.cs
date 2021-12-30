@@ -234,6 +234,7 @@ public class PipeFactory : MonoBehaviour
         newBuilder.PipeLineGos = PipeLines;
         newBuilder.PipeElbowsGos = PipeElbows;
         newBuilder.PipeReducerGos = PipeReducers;
+        newBuilder.PipeFlangeGos = PipeFlanges;
     }
 
     GameObject targetNew;

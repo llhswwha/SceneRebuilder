@@ -39,8 +39,12 @@ public class PipeElbowModel : PipeModelBase
         if (points.Count < MinKeyPointCount)
         {
             IsGetInfoSuccess = false;
-            Debug.LogError($"GetKeyPointsById points.Count < {MinKeyPointCount} count:{points.Count}");
+            Debug.LogError($"GetKeyPointsById points.Count < {MinKeyPointCount} count:{points.Count} gameObject:{this.gameObject.name} sharedMinCount:{sharedMinCount} minRepeatPointDistance:{minRepeatPointDistance}");
             return;
+        }
+        else
+        {
+
         }
 
         var centerOfPoints = MeshHelper.GetCenterOfList(points);
@@ -70,6 +74,8 @@ public class PipeElbowModel : PipeModelBase
         TransformHelper.ShowLocalPoint(EndPointIn2, PointScale, this.transform, null).name = "InPoint2";
 
         GetPipeRadius();
+
+        IsGetInfoSuccess = true;
         Debug.Log($">>>GetElbowInfo time:{DateTime.Now - start}");
     }
 

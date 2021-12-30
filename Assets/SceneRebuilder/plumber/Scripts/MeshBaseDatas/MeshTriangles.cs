@@ -95,7 +95,7 @@ public class MeshTriangles
     {
         List<Key2List<Vector3, MeshTriangle>> sharedPoints2 = this.FindSharedPointsByPoint();
         Debug.LogError($"GetElbowInfo sharedPoints2:{sharedPoints2.Count}");
-        GameObject sharedPoints1Obj2 = CreateSubTestObj($"sharedPoints1:{sharedPoints2.Count}", root);
+        GameObject sharedPoints1Obj2 = CreateSubTestObj($"sharedPoints(Point):{sharedPoints2.Count}", root);
         for (int i = 0; i < sharedPoints2.Count; i++)
         {
             var point = sharedPoints2[i].Key;
@@ -108,7 +108,7 @@ public class MeshTriangles
                 GameObject objTriangle = t.ShowTriangle(root, trianglesObj2.transform, pointScale);
                 objTriangle.name = $"triangle[{i1 + 1}]";
             }
-            TransformHelper.ShowLocalPoint(point, pointScale * 10, root, trianglesObj2.transform);
+            TransformHelper.ShowLocalPoint(point, pointScale * 2, root, trianglesObj2.transform);
         }
     }
 
@@ -138,7 +138,7 @@ public class MeshTriangles
     {
         List<Key2List<int, MeshTriangle>> sharedPoints1 = this.FindSharedPointsById();
         Debug.LogError($"GetElbowInfo sharedPoints1:{sharedPoints1.Count}");
-        GameObject sharedPoints1Obj = CreateSubTestObj($"sharedPoints1:{sharedPoints1.Count}", root);
+        GameObject sharedPoints1Obj = CreateSubTestObj($"sharedPoints(Id):{sharedPoints1.Count}", root);
 
         for (int i = 0; i < sharedPoints1.Count; i++)
         {
@@ -153,7 +153,7 @@ public class MeshTriangles
                 objTriangle.name = $"triangle[{i1 + 1}]";
             }
             Vector3 point = mesh.vertices[pointId];
-            TransformHelper.ShowLocalPoint(point, pointScale * 10, root, trianglesObj.transform);
+            TransformHelper.ShowLocalPoint(point, pointScale * 2, root, trianglesObj.transform);
         }
     }
 

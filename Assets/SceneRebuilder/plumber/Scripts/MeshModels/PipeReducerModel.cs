@@ -3,9 +3,9 @@ using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 
-public class PipeReducerModel 
+public class PipeReducerModel
     //: PipeLineModel
-    :PipeElbowModel
+    : PipeElbowModel
     //: PipeModelBase
 {
     //public MeshTriangles meshTriangles;
@@ -27,12 +27,6 @@ public class PipeReducerModel
         meshTriangles = new MeshTriangles(mesh);
         //Debug.Log($"GetElbowInfo mesh vertexCount:{mesh.vertexCount} triangles:{mesh.triangles.Length}");
         SharedMeshTrianglesList points = meshTriangles.GetKeyPointsByIdEx(sharedMinCount, minRepeatPointDistance);
-        if (points.Count != 2)
-        {
-            IsGetInfoSuccess = false;
-            Debug.LogError($"GetKeyPointsById points.Count != 2 count:{points.Count} sharedMinCount:{sharedMinCount} minRepeatPointDistance:{minRepeatPointDistance}");
-            return;
-        }
 
         var centerOfPoints = MeshHelper.GetCenterOfList(points);
         distanceListEx = new List<PlanePointDistance>();
@@ -41,9 +35,24 @@ public class PipeReducerModel
             var p = points[i];
             distanceListEx.Add(new PlanePointDistance(p, centerOfPoints));
 
-            TransformHelper.ShowLocalPoint(p.Point, PointScale, this.transform, null).name = $"KeyPoint[{i+1}]";
+            //TransformHelper.ShowLocalPoint(p.Point, PointScale, this.transform, null).name = $"KeyPoint[{i + 1}]";
         }
         distanceListEx.Sort();
+
+        for (int i = 0; i < distanceListEx.Count; i++)
+        {
+            var p = distanceListEx[i];
+            TransformHelper.ShowLocalPoint(p.P1.Point, PointScale, this.transform, null).name = $"KeyPoint[{i + 1}]";
+        }
+
+        if (points.Count != 2)
+        {
+            IsGetInfoSuccess = false;
+            Debug.LogError($"GetKeyPointsById points.Count != 2 count:{points.Count} gameObject:{this.gameObject.name} sharedMinCount:{sharedMinCount} minRepeatPointDistance:{minRepeatPointDistance}");
+            return;
+        }
+
+
 
         SharedMeshTriangles startP = distanceListEx[0].P1;
         StartPoint = startP.Point;
@@ -75,6 +84,8 @@ public class PipeReducerModel
         TransformHelper.ShowLocalPoint(EndPoint, PointScale, this.transform, null).name = "EndPoint";
 
         GetPipeRadius();
+
+        IsGetInfoSuccess = true;
         Debug.Log($">>>GetElbowInfo time:{DateTime.Now - start} points:{points.Count}");
     }
     public override GameObject RendererModel(PipeGenerateArg arg, string afterName)
