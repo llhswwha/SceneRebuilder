@@ -9,6 +9,8 @@ public class PipeLineInfo
     public Vector4 StartPoint = Vector3.zero;
     public Vector4 EndPoint = Vector3.zero;
 
+    public Vector3 Direction;
+
     public Transform transform;
 
     public PipeLineInfo()
@@ -21,6 +23,13 @@ public class PipeLineInfo
         this.StartPoint = p1;
         this.EndPoint = p2;
         this.transform = t;
+    }
+    public PipeLineInfo(Vector4 p1, Vector4 p2, Transform t, Vector3 direction)
+    {
+        this.StartPoint = p1;
+        this.EndPoint = p2;
+        this.transform = t;
+        this.Direction = direction;
     }
 
     public Vector4 GetStartPoint()

@@ -95,9 +95,185 @@ public class PipeLineModel : PipeModelBase
 
     public float lineSize = 0.01f;
 
+    //public void ShowVerticesToPlaneInfos()
+    //{
 
+    //}
 
     public override void GetModelInfo()
+    {
+        ClearChildren();
+
+        OBBCollider oBBCollider = this.gameObject.GetComponent<OBBCollider>();
+        if (oBBCollider == null)
+        {
+            oBBCollider = this.gameObject.AddComponent<OBBCollider>();
+        }
+        oBBCollider.ShowObbInfo();
+        IsGetInfoSuccess = oBBCollider.IsObbError == false;
+        OBB = oBBCollider.OBB;
+
+        Vector3 ObbExtent = OBB.Extent;
+
+        Vector3 startPoint = OBB.Up * ObbExtent.y;
+        Vector3 endPoint = -OBB.Up * ObbExtent.y;
+
+        GameObject go = new GameObject("PipeModel_PlaneInfo");
+        go.transform.SetParent(this.transform);
+        go.transform.position = Vector3.zero;
+
+        //CreateLocalPoint(StartPoint, "StartPoint1", go.transform);
+        //CreateLocalPoint(EndPoint, "EndPoint1", go.transform);
+ var rendererInfo = MeshRendererInfo.GetInfo(this.gameObject);
+        Vector3[] vs = rendererInfo.GetVertices();
+        this.VertexCount = vs.Length;
+
+        PlaneInfo[] planeInfos = OBB.GetPlaneInfos();
+        verticesToPlaneInfos = new List<VerticesToPlaneInfo>();
+        for (int i = 0; i < planeInfos.Length; i++)
+        {
+            PlaneInfo plane = (PlaneInfo)planeInfos[i];
+            var v2p=GetVerticesToPlaneInfo(vs, plane, false);
+            oBBCollider.ShowPlaneInfo(plane, i, go, v2p.ToString());
+        }
+        verticesToPlaneInfos.Sort();
+
+        var startPlane = verticesToPlaneInfos[0];
+        var endPlane= verticesToPlaneInfos[1];
+
+
+        //P1 = OBB.Right * ObbExtent.x;
+        //P2 = -OBB.Forward * ObbExtent.z;
+        //P3 = -OBB.Right * ObbExtent.x;
+        //P4 = OBB.Forward * ObbExtent.z;
+        //P5 = OBB.Up * ObbExtent.y;
+        //P6 = -OBB.Up * ObbExtent.y;
+        //Size = new Vector3(ObbExtent.x, ObbExtent.y, ObbExtent.z);
+
+
+
+        //List<Vector3> extentPoints = new List<Vector3>() { P1, P2, P3, P4, P5, P6 };
+        //verticesToPointInfos = new List<VerticesToPointInfo>();
+        //CreateLocalPoint(P1, $"P1_{GetVerticesToPointInfo(vs, P1, false)}", go.transform);
+        //CreateLocalPoint(P2, $"P2_{GetVerticesToPointInfo(vs, P2, false)}", go.transform);
+        //CreateLocalPoint(P3, $"P3_{GetVerticesToPointInfo(vs, P3, false)}", go.transform);
+        //CreateLocalPoint(P4, $"P4_{GetVerticesToPointInfo(vs, P4, false)}", go.transform);
+        //CreateLocalPoint(P5, $"P5_{GetVerticesToPointInfo(vs, P5, false)}", go.transform);
+        //CreateLocalPoint(P6, $"P6_{GetVerticesToPointInfo(vs, P6, false)}", go.transform);
+        //verticesToPointInfos.Sort();
+
+
+        //VerticesToPointInfo planeCenterPointInfo1 ;
+        //VerticesToPointInfo planeCenterPointInfo2;
+
+        //float minDisOfSize = 0.0001f;
+        //if (Mathf.Abs(Size.x-Size.y)<= minDisOfSize && Mathf.Abs(Size.x-Size.z) > minDisOfSize)
+        //{
+        //    startPoint = P2;
+        //    endPoint = P4;
+
+        //    planeCenterPointInfo1 = new VerticesToPointInfo(vs, startPoint, false);
+        //    planeCenterPointInfo2 = new VerticesToPointInfo(vs, endPoint, false);
+        //    Debug.Log("Route1 P2 P4");
+        //}
+        //else if (Mathf.Abs(Size.x - Size.z) <= minDisOfSize && Mathf.Abs(Size.x - Size.y) > minDisOfSize)
+        //{
+        //    startPoint = P5;
+        //    endPoint = P6;
+
+        //    planeCenterPointInfo1 = new VerticesToPointInfo(vs, startPoint, false);
+        //    planeCenterPointInfo2 = new VerticesToPointInfo(vs, endPoint, false);
+        //    Debug.Log("Route2 P5 P6");
+        //}
+        //else  if (Mathf.Abs(Size.y - Size.z) <= minDisOfSize && Mathf.Abs(Size.y - Size.x) > minDisOfSize)
+        //{
+        //    startPoint = P1;
+        //    endPoint = P3;
+
+        //    planeCenterPointInfo1 = new VerticesToPointInfo(vs, startPoint, false);
+        //    planeCenterPointInfo2 = new VerticesToPointInfo(vs, endPoint, false);
+        //    Debug.Log("Route3 P1 P3");
+        //}
+        //else
+        //{
+        //    Debug.Log("Route4 NotEqual");
+        //    planeCenterPointInfo1 = verticesToPointInfos[0];
+        //    planeCenterPointInfo2 = verticesToPointInfos[1];
+
+        //    //var startCircle = planeCenterPointInfos[0].GetCircleInfo();
+        //    //startPoint = startCircle.Center;
+        //    //var endCircle = planeCenterPointInfos[1].GetCircleInfo();
+        //    //endPoint = endCircle.Center;
+
+        //    //EndPoints = new List<Vector3>() { startPoint, endPoint };
+
+        //    //CreateLocalPoint(startPoint, "StartPoint1", go.transform);
+        //    //CreateLocalPoint(endPoint, "EndPoint1", go.transform);
+
+        //    //PipeRadius = (startCircle.Radius + endCircle.Radius) / 2;
+        //    //PipeLength = Vector3.Distance(startPoint, endPoint);
+        //    //LineInfo.StartPoint = startPoint;
+        //    //LineInfo.EndPoint = endPoint;
+        //}
+
+        var startCircle = startPlane.GetCircleInfo();
+        if (startCircle == null)
+        {
+            Debug.LogError($"GetModelInfo startCircle == null gameObject:{this.gameObject.name}");
+            IsGetInfoSuccess = false;
+
+            CreateLocalPoint(startPlane.Point.planeCenter, "StartPoint1", go.transform);
+            CreateLocalPoint(endPlane.Point.planeCenter, "EndPoint1", go.transform);
+            return;
+        }
+        startPoint = startCircle.Center;
+        var endCircle = endPlane.GetCircleInfo();
+        if (endCircle == null)
+        {
+            Debug.LogError($"GetModelInfo endCircle == null gameObject:{this.gameObject.name}");
+            IsGetInfoSuccess = false;
+            CreateLocalPoint(startPlane.Point.planeCenter, "StartPoint2", go.transform);
+            CreateLocalPoint(endPlane.Point.planeCenter, "EndPoint2", go.transform);
+            return;
+        }
+        endPoint = endCircle.Center;
+
+        PipeRadius1 = startCircle.Radius;
+        PipeRadius2 = endCircle.Radius;
+
+        //”≈ªØ
+        //PlaneCenterPointInfo planeCenterPointInfo12 = new PlaneCenterPointInfo(vs, startCircle.Center, false);
+        //PlaneCenterPointInfo planeCenterPointInfo22 = new PlaneCenterPointInfo(vs, endCircle.Center, false);
+        //var startCircle2 = planeCenterPointInfo12.GetCircleInfo();
+        //startPoint = startCircle.Center;
+        //var endCircle2 = planeCenterPointInfo22.GetCircleInfo();
+        //endPoint = endCircle.Center;
+        //PipeRadius1 = startCircle2.Radius;
+        //PipeRadius2 = endCircle2.Radius;
+
+        EndPoints = new List<Vector3>() { startPoint, endPoint };
+
+        CreateLocalPoint(startPoint, "StartPoint1", go.transform);
+        CreateLocalPoint(endPoint, "EndPoint1", go.transform);
+
+        if (PipeRadius1 > PipeRadius2)
+        {
+            PipeRadius = PipeRadius1;
+        }
+        else
+        {
+            PipeRadius = PipeRadius2;
+        }
+
+        //PipeRadius = (startCircle.Radius + endCircle.Radius) / 2;
+
+
+        PipeLength = Vector3.Distance(startPoint, endPoint);
+        LineInfo.StartPoint = startPoint;
+        LineInfo.EndPoint = endPoint;
+
+    }
+    public void GetModelInfo_OLD()
     {
         ClearChildren();
 
@@ -135,6 +311,8 @@ public class PipeLineModel : PipeModelBase
         //CreateLocalPoint(StartPoint, "StartPoint1", go.transform);
         //CreateLocalPoint(EndPoint, "EndPoint1", go.transform);
 
+        //Plane plane1=OBB.FacePlane(1);
+
         P1 = OBB.Right * ObbExtent.x;
         P2 = -OBB.Forward * ObbExtent.z;
         P3 = -OBB.Right * ObbExtent.x;
@@ -148,18 +326,18 @@ public class PipeLineModel : PipeModelBase
         this.VertexCount = vs.Length;
 
         List<Vector3> extentPoints = new List<Vector3>() { P1, P2, P3, P4, P5, P6 };
-        planeCenterPointInfos = new List<PlaneCenterPointInfo>();
-        CreateLocalPoint(P1, $"P1_{GetPoint2VerticesInfo(vs, P1, false)}", go.transform);
-        CreateLocalPoint(P2, $"P2_{GetPoint2VerticesInfo(vs, P2, false)}", go.transform);
-        CreateLocalPoint(P3, $"P3_{GetPoint2VerticesInfo(vs, P3, false)}", go.transform);
-        CreateLocalPoint(P4, $"P4_{GetPoint2VerticesInfo(vs, P4, false)}", go.transform);
-        CreateLocalPoint(P5, $"P5_{GetPoint2VerticesInfo(vs, P5, false)}", go.transform);
-        CreateLocalPoint(P6, $"P6_{GetPoint2VerticesInfo(vs, P6, false)}", go.transform);
-        planeCenterPointInfos.Sort();
+        verticesToPointInfos = new List<VerticesToPointInfo>();
+        CreateLocalPoint(P1, $"P1_{GetVerticesToPointInfo(vs, P1, false)}", go.transform);
+        CreateLocalPoint(P2, $"P2_{GetVerticesToPointInfo(vs, P2, false)}", go.transform);
+        CreateLocalPoint(P3, $"P3_{GetVerticesToPointInfo(vs, P3, false)}", go.transform);
+        CreateLocalPoint(P4, $"P4_{GetVerticesToPointInfo(vs, P4, false)}", go.transform);
+        CreateLocalPoint(P5, $"P5_{GetVerticesToPointInfo(vs, P5, false)}", go.transform);
+        CreateLocalPoint(P6, $"P6_{GetVerticesToPointInfo(vs, P6, false)}", go.transform);
+        verticesToPointInfos.Sort();
 
 
-        PlaneCenterPointInfo planeCenterPointInfo1 ;
-        PlaneCenterPointInfo planeCenterPointInfo2;
+        VerticesToPointInfo planeCenterPointInfo1 ;
+        VerticesToPointInfo planeCenterPointInfo2;
 
         float minDisOfSize = 0.0001f;
         if (Mathf.Abs(Size.x-Size.y)<= minDisOfSize && Mathf.Abs(Size.x-Size.z) > minDisOfSize)
@@ -167,8 +345,8 @@ public class PipeLineModel : PipeModelBase
             startPoint = P2;
             endPoint = P4;
 
-            planeCenterPointInfo1 = new PlaneCenterPointInfo(vs, startPoint, false);
-            planeCenterPointInfo2 = new PlaneCenterPointInfo(vs, endPoint, false);
+            planeCenterPointInfo1 = new VerticesToPointInfo(vs, startPoint, false);
+            planeCenterPointInfo2 = new VerticesToPointInfo(vs, endPoint, false);
             Debug.Log("Route1 P2 P4");
         }
         else if (Mathf.Abs(Size.x - Size.z) <= minDisOfSize && Mathf.Abs(Size.x - Size.y) > minDisOfSize)
@@ -176,8 +354,8 @@ public class PipeLineModel : PipeModelBase
             startPoint = P5;
             endPoint = P6;
 
-            planeCenterPointInfo1 = new PlaneCenterPointInfo(vs, startPoint, false);
-            planeCenterPointInfo2 = new PlaneCenterPointInfo(vs, endPoint, false);
+            planeCenterPointInfo1 = new VerticesToPointInfo(vs, startPoint, false);
+            planeCenterPointInfo2 = new VerticesToPointInfo(vs, endPoint, false);
             Debug.Log("Route2 P5 P6");
         }
         else  if (Mathf.Abs(Size.y - Size.z) <= minDisOfSize && Mathf.Abs(Size.y - Size.x) > minDisOfSize)
@@ -185,15 +363,15 @@ public class PipeLineModel : PipeModelBase
             startPoint = P1;
             endPoint = P3;
 
-            planeCenterPointInfo1 = new PlaneCenterPointInfo(vs, startPoint, false);
-            planeCenterPointInfo2 = new PlaneCenterPointInfo(vs, endPoint, false);
+            planeCenterPointInfo1 = new VerticesToPointInfo(vs, startPoint, false);
+            planeCenterPointInfo2 = new VerticesToPointInfo(vs, endPoint, false);
             Debug.Log("Route3 P1 P3");
         }
         else
         {
-            Debug.Log("Route4 P2 P4");
-            planeCenterPointInfo1 = planeCenterPointInfos[0];
-            planeCenterPointInfo2 = planeCenterPointInfos[1];
+            Debug.Log("Route4 NotEqual");
+            planeCenterPointInfo1 = verticesToPointInfos[0];
+            planeCenterPointInfo2 = verticesToPointInfos[1];
 
             //var startCircle = planeCenterPointInfos[0].GetCircleInfo();
             //startPoint = startCircle.Center;
@@ -216,6 +394,9 @@ public class PipeLineModel : PipeModelBase
         {
             Debug.LogError($"GetModelInfo startCircle == null gameObject:{this.gameObject.name}");
             IsGetInfoSuccess = false;
+
+            CreateLocalPoint(planeCenterPointInfo1.Point, "StartPoint1", go.transform);
+            CreateLocalPoint(planeCenterPointInfo2.Point, "EndPoint1", go.transform);
             return;
         }
         startPoint = startCircle.Center;
@@ -224,6 +405,8 @@ public class PipeLineModel : PipeModelBase
         {
             Debug.LogError($"GetModelInfo endCircle == null gameObject:{this.gameObject.name}");
             IsGetInfoSuccess = false;
+            CreateLocalPoint(planeCenterPointInfo1.Point, "StartPoint2", go.transform);
+            CreateLocalPoint(planeCenterPointInfo2.Point, "EndPoint2", go.transform);
             return;
         }
         endPoint = endCircle.Center;
@@ -246,9 +429,18 @@ public class PipeLineModel : PipeModelBase
         CreateLocalPoint(startPoint, "StartPoint1", go.transform);
         CreateLocalPoint(endPoint, "EndPoint1", go.transform);
 
-        
+        if (PipeRadius1 > PipeRadius2)
+        {
+            PipeRadius = PipeRadius1;
+        }
+        else
+        {
+            PipeRadius = PipeRadius2;
+        }
 
-        PipeRadius = (startCircle.Radius + endCircle.Radius) / 2;
+        //PipeRadius = (startCircle.Radius + endCircle.Radius) / 2;
+
+
         PipeLength = Vector3.Distance(startPoint, endPoint);
         LineInfo.StartPoint = startPoint;
         LineInfo.EndPoint = endPoint;
@@ -257,300 +449,24 @@ public class PipeLineModel : PipeModelBase
 
     public List<Vector3> EndPoints = new List<Vector3>();
 
-    public class PlaneCenterPointInfo:IComparable<PlaneCenterPointInfo>
+
+
+    public List<VerticesToPointInfo> verticesToPointInfos = new List<VerticesToPointInfo>();
+
+    private VerticesToPointInfo GetVerticesToPointInfo(Vector3[] vs,Vector3 p,bool isShowLog)
     {
-        public Vector3 Point;
-
-        DictionaryList1ToN<float, Vector3> dict1 = new DictionaryList1ToN<float, Vector3>();
-        DictionaryList1ToN<string, Vector3> dict10 = new DictionaryList1ToN<string, Vector3>();
-        DictionaryList1ToN<string, Vector3> dict11 = new DictionaryList1ToN<string, Vector3>();
-        DictionaryList1ToN<string, Vector3> dict12 = new DictionaryList1ToN<string, Vector3>();
-        DictionaryList1ToN<string, Vector3> dict13 = new DictionaryList1ToN<string, Vector3>();
-        DictionaryList1ToN<string, Vector3> dict14 = new DictionaryList1ToN<string, Vector3>();
-        DictionaryList1ToN<string, Vector3> dict15 = new DictionaryList1ToN<string, Vector3>();
-
-        public string ResultInfo = "";
-
-        public int Count0;
-        public int Count1;
-        public int Count2;
-        public int Count3;
-        public int Count4;
-        public int Count5;
-
-        public PlaneCenterPointInfo(Vector3[] vs, Vector3 p,bool isShowLog)
-        {
-            Point = p;
-            for (int i = 0; i < vs.Length; i++)
-            {
-                Vector3 v = vs[i];
-                float dis = Vector3.Distance(v, p);
-                string sDis0 = dis.ToString("F0");
-                string sDis1 = dis.ToString("F1");
-                string sDis2 = dis.ToString("F2");
-                string sDis3 = dis.ToString("F3");
-                string sDis4 = dis.ToString("F4");
-                string sDis5 = dis.ToString("F5");
-                dict1.AddItem(dis, v);
-                if (isShowLog)
-                {
-                    Debug.Log($"Point2Vertices[{i + 1}] \tp:{p} \tdis:{dis} \tsDis0:{sDis0} \tsDis1:{sDis1} \tsDis2:{sDis2} \tsDis3:{sDis3} \tsDis4:{sDis4} \tsDis5:{sDis5} \tv:{v} ");
-                }
-                
-                dict14.AddItem(sDis4, v);
-                dict15.AddItem(sDis5, v);
-                dict13.AddItem(sDis3, v);
-                dict12.AddItem(sDis2, v);
-                dict11.AddItem(sDis1, v);
-                dict10.AddItem(sDis0, v);
-            }
-            Count0 = dict10.Count;
-            Count1 = dict11.Count;
-            Count2 = dict12.Count;
-            Count3 = dict13.Count;
-            Count4 = dict14.Count;
-            Count5 = dict15.Count;
-
-            if (Count0 == 1)
-            {
-                Count0 = int.MaxValue;
-            }
-            if (Count1 == 1)
-            {
-                Count1 = int.MaxValue;
-            }
-            if (Count2 == 1)
-            {
-                Count2 = int.MaxValue;
-            }
-            if (Count3 == 1)
-            {
-                Count3 = int.MaxValue;
-            }
-            if (Count4 == 1)
-            {
-                Count4 = int.MaxValue;
-            }
-            if (Count5 == 1)
-            {
-                Count5 = int.MaxValue;
-            }
-
-            ResultInfo =$"{dict10.Count}_{dict11.Count}_{dict12.Count}_{dict13.Count}_{dict14.Count}_{dict15.Count}_{dict1.Count}";
-            if (isShowLog)
-                Debug.LogError(ResultInfo);
-        }
-
-        //private Vector3 GetCenter(DictionaryList1ToN<string, Vector3>  dict)
-        //{
-        //    var keys = dict.Keys.ToList();
-        //    keys.Sort();
-        //    string firstKey = keys[0];
-        //    var vs = dict[firstKey];
-        //    Vector3 sum = Vector3.zero;
-        //    foreach (var v in vs)
-        //    {
-        //        sum += v;
-        //    }
-        //    Vector3 center = sum / vs.Count;
-        //    return center;
-        //}
-
-        //public Vector3 GetCenter()
-        //{
-
-        //    if (Count5 == 2)
-        //    {
-        //        return GetCenter(dict15);
-        //    }
-        //    else if (Count4 == 2)
-        //    {
-        //        return GetCenter(dict14);
-        //    }
-        //    else if (Count3 == 2)
-        //    {
-        //        return GetCenter(dict13);
-        //    }
-        //    else if (Count2 == 2)
-        //    {
-        //        return GetCenter(dict12);
-        //    }
-        //    else if (Count1 == 2)
-        //    {
-        //        return GetCenter(dict11);
-        //    }
-        //    else if (Count0 == 2)
-        //    {
-        //        return GetCenter(dict10);
-        //    }
-        //    else
-        //    {
-        //        //return GetCenter(dict15);
-        //        return Point;
-        //    }
-        //}
-
-        public CircleInfo GetCircleInfo()
-        {
-            if (Count5 == 2)
-            {
-                return GetCircleInfo(dict15);
-            }
-            else if (Count4 == 2)
-            {
-                return GetCircleInfo(dict14);
-            }
-            else if (Count3 == 2)
-            {
-                return GetCircleInfo(dict13);
-            }
-            //else if (Count2 == 2)
-            //{
-            //    return GetCircleInfo(dict12);
-            //}
-            //else if (Count1 == 2)
-            //{
-            //    return GetCircleInfo(dict11);
-            //}
-            //else if (Count0 == 2)
-            //{
-            //    return GetCircleInfo(dict10);
-            //}
-            else
-            {
-                //Debug.LogWarning($"GetCircleInfo Warning {this.ToString()}");
-                //return new CircleInfo(Point, 0);
-
-                if (Count5 == 3)
-                {
-                    return GetCircleInfo(dict15);
-                }
-                else if (Count4 == 3)
-                {
-                    return GetCircleInfo(dict14);
-                }
-                else if (Count3 == 3)
-                {
-                    return GetCircleInfo(dict13);
-                }
-                //else if (Count2 == 3)
-                //{
-                //    return GetCircleInfo(dict12);
-                //}
-                //else if (Count1 == 3)
-                //{
-                //    return GetCircleInfo(dict11);
-                //}
-                //else if (Count0 == 3)
-                //{
-                //    return GetCircleInfo(dict10);
-                //}
-                else
-                {
-                    //Debug.LogError($"GetCircleInfo Error {this.ToString()}");
-                    //return new CircleInfo(Point, 0);
-                    return null;
-                }
-
-                //return GetCenter(dict15);
-                //return Point;
-            }
-        }
-
-        private CircleInfo GetCircleInfo(DictionaryList1ToN<string, Vector3> dict)
-        {
-            var keys = dict.Keys.ToList();
-            keys.Sort();
-            string firstKey = keys[0];
-            var vs = dict[firstKey];
-            Vector3 sum = Vector3.zero;
-            foreach (var v in vs)
-            {
-                sum += v;
-            }
-            Vector3 center = sum / vs.Count;
-            float radiusSum = 0;
-            foreach (var v in vs)
-            {
-                radiusSum += Vector3.Distance(v, center);
-            }
-            float radius= radiusSum / vs.Count;
-            return new CircleInfo(center, radius);
-        }
-
-        public class CircleInfo
-        {
-            public Vector3 Center;
-
-            public float Radius;
-
-            public CircleInfo()
-            {
-
-            }
-
-            public CircleInfo(Vector3 c, float r)
-            {
-                this.Center = c;
-                this.Radius = r;
-            }
-        }
-
-        public override string ToString()
-        {
-            return ResultInfo;
-        }
-
-        public int CompareTo(PlaneCenterPointInfo other)
-        {
-            int r = this.Count0.CompareTo(other.Count0);
-            if (r == 0)
-            {
-                r = this.Count1.CompareTo(other.Count1);
-            }
-            if (r == 0)
-            {
-                r = this.Count2.CompareTo(other.Count2);
-            }
-            if (r == 0)
-            {
-                r = this.Count3.CompareTo(other.Count3);
-            }
-            if (r == 0)
-            {
-                r = this.Count4.CompareTo(other.Count4);
-            }
-            if (r == 0)
-            {
-                r = this.Count5.CompareTo(other.Count5);
-            }
-            return r;
-        }
+        VerticesToPointInfo verticesToPointInfo = new VerticesToPointInfo(vs, p, isShowLog);
+        verticesToPointInfos.Add(verticesToPointInfo);
+        return verticesToPointInfo;
     }
 
-    public List<PlaneCenterPointInfo> planeCenterPointInfos = new List<PlaneCenterPointInfo>();
+    public List<VerticesToPlaneInfo> verticesToPlaneInfos = new List<VerticesToPlaneInfo>();
 
-    private PlaneCenterPointInfo GetPoint2VerticesInfo(Vector3[] vs,Vector3 p,bool isShowLog)
+    private VerticesToPlaneInfo GetVerticesToPlaneInfo(Vector3[] vs, PlaneInfo p, bool isShowLog)
     {
-        //DictionaryList1ToN<float, Vector3> dict1 = new DictionaryList1ToN<float, Vector3>();
-        //DictionaryList1ToN<string, Vector3> dict13 = new DictionaryList1ToN<string, Vector3>();
-        //DictionaryList1ToN<string, Vector3> dict14 = new DictionaryList1ToN<string, Vector3>();
-        //DictionaryList1ToN<string, Vector3> dict15 = new DictionaryList1ToN<string, Vector3>();
-        //for (int i = 0; i < vs.Length; i++)
-        //{
-        //    Vector3 v = vs[i];
-        //    float dis = Vector3.Distance(v, p);
-        //    string sDis3 = dis.ToString("F3");
-        //    string sDis4 = dis.ToString("F4");
-        //    string sDis5 = dis.ToString("F5");
-        //    dict1.AddItem(dis, v);
-        //    Debug.Log($"GetPoint2VerticesInfo p:{p} dis[{i + 1}]:{dis} sDis3:{sDis3} sDis4:{sDis4} sDis5:{sDis5} v:{v} ");
-        //    dict14.AddItem(sDis4, v);
-        //    dict15.AddItem(sDis5, v);
-        //}
-        PlaneCenterPointInfo planeCenterPointInfo = new PlaneCenterPointInfo(vs, p, isShowLog);
-        planeCenterPointInfos.Add(planeCenterPointInfo);
-        return planeCenterPointInfo;
+        VerticesToPlaneInfo verticesToPlaneInfo = new VerticesToPlaneInfo(vs, p, isShowLog);
+        verticesToPlaneInfos.Add(verticesToPlaneInfo);
+        return verticesToPlaneInfo;
     }
 
     public void RendererModel()

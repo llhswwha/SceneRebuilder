@@ -528,6 +528,37 @@ public class OBBCollider : MonoBehaviour
         }
     }
 
+    [ContextMenu("ShowPlanes")]
+    public void ShowPlanes()
+    {
+        PlaneInfo[] planes=OBB.GetPlaneInfos();
+        GameObject go = new GameObject("Planes");
+        go.transform.SetParent(this.transform);
+        go.transform.position = Vector3.zero;
+
+        for(int i=0;i<planes.Length;i++)
+        {
+            var plane = planes[i];
+            ShowPlaneInfo(plane, i, go,"");
+        }
+    }
+
+    public void ShowPlaneInfo(PlaneInfo plane,int i,GameObject go,string info)
+    {
+        var point = plane.planePoint;
+        var normal = plane.planeNormal * 0.1f;
+        var normalPoint = (point + normal);
+        TransformHelper.ShowLocalPoint(point, lineSize, this.transform, go.transform).name = $"Plane[{i}]_Point:{point}";
+        TransformHelper.ShowLocalPoint(normalPoint, lineSize, this.transform, go.transform).name = $"Plane[{i}]_Normal:{normal}";
+        CreateLine(point, normalPoint, $"Plane[{i}]_Line:{normal}", go.transform);
+        GameObject planeObj = GameObject.CreatePrimitive(PrimitiveType.Quad);
+        planeObj.name = $"Plane[{i}] point:{point} normal:{normal}_"+ info;
+        planeObj.transform.SetParent(this.transform);
+        planeObj.transform.localPosition = point;
+        planeObj.transform.forward = normal;
+        planeObj.transform.SetParent(go.transform);
+    }
+
     public List<string> distances = new List<string>();
 
     [ContextMenu("DrawWireCube")]

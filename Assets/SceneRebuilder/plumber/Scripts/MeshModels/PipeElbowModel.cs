@@ -21,7 +21,7 @@ public class PipeElbowModel : PipeModelBase
 
 
 
-    public List<PointDistance> distanceList;
+    public List<PlanePointDistance> distanceList;
 
     public int MinKeyPointCount = 4;
 
@@ -35,48 +35,82 @@ public class PipeElbowModel : PipeModelBase
         this.VertexCount = mesh.vertexCount;
         meshTriangles = new MeshTriangles(mesh);
         //Debug.Log($"GetElbowInfo mesh vertexCount:{mesh.vertexCount} triangles:{mesh.triangles.Length}");
-        List<Vector3> points = meshTriangles.GetKeyPointsById(sharedMinCount, minRepeatPointDistance);
-        if (points.Count < MinKeyPointCount)
+        var points = meshTriangles.GetKeyPointsByIdEx(sharedMinCount, minRepeatPointDistance);
+        if (points.Count == 4)
         {
-            IsGetInfoSuccess = false;
-            Debug.LogError($"GetKeyPointsById points.Count < {MinKeyPointCount} count:{points.Count} gameObject:{this.gameObject.name} sharedMinCount:{sharedMinCount} minRepeatPointDistance:{minRepeatPointDistance}");
-            return;
+            var centerOfPoints = MeshHelper.GetCenterOfList(points);
+            distanceList = new List<PlanePointDistance>();
+            foreach (var p in points)
+            {
+                distanceList.Add(new PlanePointDistance(p, centerOfPoints));
+            }
+            distanceList.Sort();
+
+            EndPointIn1 = distanceList[0].P1.Point;
+            EndPointIn2 = distanceList[1].P1.Point;
+            points.Remove(EndPointIn1);
+            points.Remove(EndPointIn2);
+
+            EndPointOut1 = MeshHelper.FindClosedPoint(EndPointIn1, points);
+            points.Remove(EndPointOut1);
+            EndPointOut2 = MeshHelper.FindClosedPoint(EndPointIn2, points);
+            points.Remove(EndPointOut2);
+
+            Line1 = new PipeLineInfo(EndPointOut1, EndPointIn1, null);
+            Line2 = new PipeLineInfo(EndPointIn2, EndPointOut2, null);
+
+            TransformHelper.ShowLocalPoint(EndPointOut1, PointScale, this.transform, null).name = "OutPoint1";
+            TransformHelper.ShowLocalPoint(EndPointOut2, PointScale, this.transform, null).name = "OutPoint2";
+            TransformHelper.ShowLocalPoint(EndPointIn1, PointScale, this.transform, null).name = "InPoint1";
+            TransformHelper.ShowLocalPoint(EndPointIn2, PointScale, this.transform, null).name = "InPoint2";
+
+            GetPipeRadius();
+
+            IsGetInfoSuccess = true;
+            Debug.Log($">>>GetElbowInfo time:{DateTime.Now - start}");
+        }
+        else if (points.Count == 2)
+        {
+            var centerOfPoints = MeshHelper.GetCenterOfList(points);
+            distanceList = new List<PlanePointDistance>();
+            foreach (var p in points)
+            {
+                distanceList.Add(new PlanePointDistance(p, centerOfPoints));
+            }
+            distanceList.Sort();
+
+            EndPointIn1 = distanceList[0].P1.Point;
+            EndPointIn2 = distanceList[1].P1.Point;
+
+            var normal1 = mesh.normals[distanceList[0].P1.PointId];
+            var normal2 = mesh.normals[distanceList[1].P1.PointId];
+            points.Remove(EndPointIn1);
+            points.Remove(EndPointIn2);
+
+            EndPointOut1 = EndPointIn1;
+            EndPointOut2 = EndPointIn2;
+
+            Line1 = new PipeLineInfo(EndPointOut1, EndPointIn1, null,normal1);
+            Line2 = new PipeLineInfo(EndPointIn2, EndPointOut2, null,normal2);
+
+            TransformHelper.ShowLocalPoint(EndPointOut1, PointScale, this.transform, null).name = "OutPoint1";
+            TransformHelper.ShowLocalPoint(EndPointOut2, PointScale, this.transform, null).name = "OutPoint2";
+            //TransformHelper.ShowLocalPoint(EndPointIn1, PointScale, this.transform, null).name = "InPoint1";
+            //TransformHelper.ShowLocalPoint(EndPointIn2, PointScale, this.transform, null).name = "InPoint2";
+
+            GetPipeRadius();
+
+            IsGetInfoSuccess = true;
+            Debug.Log($">>>GetElbowInfo time:{DateTime.Now - start}");
         }
         else
         {
-
+            IsGetInfoSuccess = false;
+            Debug.LogError($"GetKeyPointsById points.Count Error count:{points.Count} gameObject:{this.gameObject.name} sharedMinCount:{sharedMinCount} minRepeatPointDistance:{minRepeatPointDistance}");
+            return;
         }
 
-        var centerOfPoints = MeshHelper.GetCenterOfList(points);
-        distanceList = new List<PointDistance>();
-        foreach (var p in points)
-        {
-            distanceList.Add(new PointDistance(p, centerOfPoints));
-        }
-        distanceList.Sort();
-
-        EndPointIn1 = distanceList[0].P1;
-        EndPointIn2 = distanceList[1].P1;
-        points.Remove(EndPointIn1);
-        points.Remove(EndPointIn2);
-
-        EndPointOut1 = MeshHelper.FindClosedPoint(EndPointIn1, points);
-        points.Remove(EndPointOut1);
-        EndPointOut2 = MeshHelper.FindClosedPoint(EndPointIn2, points);
-        points.Remove(EndPointOut2);
-
-        Line1 = new PipeLineInfo(EndPointOut1, EndPointIn1,null);
-        Line2 = new PipeLineInfo(EndPointIn2, EndPointOut2, null);
-
-        TransformHelper.ShowLocalPoint(EndPointOut1, PointScale, this.transform, null).name = "OutPoint1";
-        TransformHelper.ShowLocalPoint(EndPointOut2, PointScale, this.transform, null).name = "OutPoint2";
-        TransformHelper.ShowLocalPoint(EndPointIn1, PointScale, this.transform, null).name = "InPoint1";
-        TransformHelper.ShowLocalPoint(EndPointIn2, PointScale, this.transform, null).name = "InPoint2";
-
-        GetPipeRadius();
-
-        IsGetInfoSuccess = true;
-        Debug.Log($">>>GetElbowInfo time:{DateTime.Now - start}");
+        
     }
 
     public virtual void GetPipeRadius()

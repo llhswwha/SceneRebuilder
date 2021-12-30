@@ -49,6 +49,21 @@ public static class MeshHelper
         }
         return minP;
     }
+    public static Vector3 FindClosedPoint(Vector3 p, SharedMeshTrianglesList list)
+    {
+        float minDis = float.MaxValue;
+        Vector3 minP = Vector3.zero;
+        foreach (var item in list)
+        {
+            float dis = Vector3.Distance(item.Point, p);
+            if (dis < minDis)
+            {
+                minDis = dis;
+                minP = item.Point;
+            }
+        }
+        return minP;
+    }
 
     //public static GameObject InstantiatePrefabFromSceneGo()
     //{

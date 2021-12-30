@@ -1608,6 +1608,10 @@ public class BaseFoldoutEditor<T> : BaseEditor<T> where T : class
         },
         () =>
         {
+            if(GUILayout.Button("Sort",GUILayout.Width(60)))
+            {
+                list.Sort();
+            }
         });
 
         if (listArg.isExpanded && listArg.isEnabled)
