@@ -212,8 +212,20 @@ public class PipeLineModel : PipeModelBase
         }
 
         var startCircle = planeCenterPointInfo1.GetCircleInfo();
+        if (startCircle == null)
+        {
+            Debug.LogError($"GetModelInfo startCircle == null gameObject:{this.gameObject.name}");
+            IsGetInfoSuccess = false;
+            return;
+        }
         startPoint = startCircle.Center;
         var endCircle = planeCenterPointInfo2.GetCircleInfo();
+        if (endCircle == null)
+        {
+            Debug.LogError($"GetModelInfo endCircle == null gameObject:{this.gameObject.name}");
+            IsGetInfoSuccess = false;
+            return;
+        }
         endPoint = endCircle.Center;
 
         PipeRadius1 = startCircle.Radius;
@@ -392,18 +404,18 @@ public class PipeLineModel : PipeModelBase
             {
                 return GetCircleInfo(dict13);
             }
-            else if (Count2 == 2)
-            {
-                return GetCircleInfo(dict12);
-            }
-            else if (Count1 == 2)
-            {
-                return GetCircleInfo(dict11);
-            }
-            else if (Count0 == 2)
-            {
-                return GetCircleInfo(dict10);
-            }
+            //else if (Count2 == 2)
+            //{
+            //    return GetCircleInfo(dict12);
+            //}
+            //else if (Count1 == 2)
+            //{
+            //    return GetCircleInfo(dict11);
+            //}
+            //else if (Count0 == 2)
+            //{
+            //    return GetCircleInfo(dict10);
+            //}
             else
             {
                 //Debug.LogWarning($"GetCircleInfo Warning {this.ToString()}");
@@ -421,22 +433,23 @@ public class PipeLineModel : PipeModelBase
                 {
                     return GetCircleInfo(dict13);
                 }
-                else if (Count2 == 3)
-                {
-                    return GetCircleInfo(dict12);
-                }
-                else if (Count1 == 3)
-                {
-                    return GetCircleInfo(dict11);
-                }
-                else if (Count0 == 3)
-                {
-                    return GetCircleInfo(dict10);
-                }
+                //else if (Count2 == 3)
+                //{
+                //    return GetCircleInfo(dict12);
+                //}
+                //else if (Count1 == 3)
+                //{
+                //    return GetCircleInfo(dict11);
+                //}
+                //else if (Count0 == 3)
+                //{
+                //    return GetCircleInfo(dict10);
+                //}
                 else
                 {
-                    Debug.LogError($"GetCircleInfo Error {this.ToString()}");
-                    return new CircleInfo(Point, 0);
+                    //Debug.LogError($"GetCircleInfo Error {this.ToString()}");
+                    //return new CircleInfo(Point, 0);
+                    return null;
                 }
 
                 //return GetCenter(dict15);
