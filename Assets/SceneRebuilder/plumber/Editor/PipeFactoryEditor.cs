@@ -28,7 +28,7 @@ public class PipeFactoryEditor : BaseFoldoutEditor<PipeFactory>
 
     int defaultPipeSegments = 8;
 
-    int[] pipeSegmentsValues = new int[] { 4,6, 8,10,12, 16, 20, 24, 32,48,64 };
+    int[] pipeSegmentsValues = new int[] { 3,4,5,6,7, 8,10,12, 16, 20, 24, 32,48,64 };
 
     string[] pipeSegmentsValuesStr = null;
 
@@ -41,6 +41,10 @@ public class PipeFactoryEditor : BaseFoldoutEditor<PipeFactory>
     public override void OnToolLayout(PipeFactory targetT)
     {
         base.OnToolLayout(targetT);
+
+        GUILayout.BeginHorizontal();
+        targetT.Target = ObjectField("Target", targetT.Target);
+        GUILayout.EndHorizontal();
 
         GUILayout.BeginHorizontal();
         GUILayout.Label("generateWeld");

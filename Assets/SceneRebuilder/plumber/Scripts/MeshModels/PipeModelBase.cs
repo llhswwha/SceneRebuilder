@@ -38,7 +38,7 @@ public class PipeModelBase : MonoBehaviour,IComparable<PipeModelBase>
 
     public override string ToString()
     {
-        return $"type:{this.GetType().Name} radius:{PipeRadius:F5}| v:{VertexCount}|obb:{IsGetInfoSuccess}";
+        return $"type:{this.GetType().Name} radius:{PipeRadius:F5}| v:{VertexCount}|result:{IsGetInfoSuccess}";
     }
 
     public virtual void GetModelInfo()

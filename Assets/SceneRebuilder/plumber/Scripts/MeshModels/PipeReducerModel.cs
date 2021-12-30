@@ -94,6 +94,7 @@ public class PipeReducerModel
         pipe.pipeRadius1 = PipeRadius1;
         pipe.pipeRadius2 = PipeRadius2;
         pipe.IsGenerateEndWeld = true;
+        pipe.generateEndCaps = true;
         pipe.RenderPipe();
         return pipeNew;
     }

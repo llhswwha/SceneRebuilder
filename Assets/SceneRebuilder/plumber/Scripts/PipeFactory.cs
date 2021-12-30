@@ -240,6 +240,13 @@ public class PipeFactory : MonoBehaviour
 
     public void MovePipes()
     {
+        if (targetNew != null)
+        {
+            if (targetNew.transform.childCount == 0)
+            {
+                GameObject.DestroyImmediate(targetNew);
+            }
+        }
         var newPipes = newBuilder.NewPipeList;
 
         targetNew = new GameObject();
