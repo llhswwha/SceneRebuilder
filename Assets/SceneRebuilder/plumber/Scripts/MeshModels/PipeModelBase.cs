@@ -12,14 +12,14 @@ public class PipeModelBase : MonoBehaviour,IComparable<PipeModelBase>
     public float PipeRadius1 = 0;
     public float PipeRadius2 = 0;
 
-    public bool IsObbSuccess = true;
+    public bool IsGetInfoSuccess = true;
 
     public int VertexCount = 0;
 
     public int CompareTo(PipeModelBase other)
     {
-        if (this.IsObbSuccess == false) return -1;
-        if (other.IsObbSuccess == false) return 1;
+        if (this.IsGetInfoSuccess == false) return -1;
+        if (other.IsGetInfoSuccess == false) return 1;
 
         if (other.PipeRadius == 0) return 1;
         if (this.PipeRadius == 0) return -1;
@@ -38,7 +38,7 @@ public class PipeModelBase : MonoBehaviour,IComparable<PipeModelBase>
 
     public override string ToString()
     {
-        return $"type:{this.GetType().Name} radius:{PipeRadius:F5}| v:{VertexCount}|obb:{IsObbSuccess}";
+        return $"type:{this.GetType().Name} radius:{PipeRadius:F5}| v:{VertexCount}|obb:{IsGetInfoSuccess}";
     }
 
     public virtual void GetModelInfo()

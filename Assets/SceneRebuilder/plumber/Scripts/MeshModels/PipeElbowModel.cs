@@ -38,6 +38,7 @@ public class PipeElbowModel : PipeModelBase
         List<Vector3> points = meshTriangles.GetKeyPointsById(sharedMinCount, minRepeatPointDistance);
         if (points.Count < MinKeyPointCount)
         {
+            IsGetInfoSuccess = false;
             Debug.LogError($"GetKeyPointsById points.Count < {MinKeyPointCount} count:{points.Count}");
             return;
         }
@@ -163,7 +164,7 @@ public class PipeElbowModel : PipeModelBase
 
     public int sharedMinCount = 36;
 
-    public float minRepeatPointDistance = 0.00002f;
+    public float minRepeatPointDistance = 0.00005f;
 
     public Vector3 TestMeshOffset = new Vector3(0.1f, 0.1f,0.1f);
 

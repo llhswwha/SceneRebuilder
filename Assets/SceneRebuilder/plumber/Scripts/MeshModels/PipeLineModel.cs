@@ -120,7 +120,7 @@ public class PipeLineModel : PipeModelBase
 
         }
         oBBCollider.ShowObbInfo();
-        IsObbSuccess = oBBCollider.IsObbError == false;
+        IsGetInfoSuccess = oBBCollider.IsObbError == false;
         OBB = oBBCollider.OBB;
 
         Vector3 ObbExtent = OBB.Extent;

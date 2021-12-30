@@ -29,6 +29,7 @@ public class PipeReducerModel
         SharedMeshTrianglesList points = meshTriangles.GetKeyPointsByIdEx(sharedMinCount, minRepeatPointDistance);
         if (points.Count != 2)
         {
+            IsGetInfoSuccess = false;
             Debug.LogError($"GetKeyPointsById points.Count != 2 count:{points.Count} sharedMinCount:{sharedMinCount} minRepeatPointDistance:{minRepeatPointDistance}");
             return;
         }
