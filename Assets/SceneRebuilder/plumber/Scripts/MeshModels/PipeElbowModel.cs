@@ -25,6 +25,8 @@ public class PipeElbowModel : PipeModelBase
 
     public int MinKeyPointCount = 4;
 
+    public float PipeLineOffset = 0.05f;
+
     // Start is called before the first frame update
     [ContextMenu("GetElbowInfo")]
     public override void GetModelInfo()
@@ -79,26 +81,39 @@ public class PipeElbowModel : PipeModelBase
             }
             distanceList.Sort();
 
-            EndPointIn1 = distanceList[0].P1.Point;
-            EndPointIn2 = distanceList[1].P1.Point;
+            var endPoint1= distanceList[0].P1.Point;
+            var endPoint2= distanceList[1].P1.Point;
 
             var normal1 = mesh.normals[distanceList[0].P1.PointId];
             var normal2 = mesh.normals[distanceList[1].P1.PointId];
-            points.Remove(EndPointIn1);
-            points.Remove(EndPointIn2);
+            points.Remove(endPoint1);
+            points.Remove(endPoint2);
 
-            EndPointOut1 = EndPointIn1;
-            EndPointOut2 = EndPointIn2;
+            GetPipeRadius();
+            Vector3 crossPoint1;
+            Vector3 crossPoint2;
+            Math3D.ClosestPointsOnTwoLines(out crossPoint1, out crossPoint2, endPoint1, normal1, endPoint2, normal2);
+            Vector3 crossPoint12 = 0.5f * (crossPoint1 + crossPoint2);
 
-            Line1 = new PipeLineInfo(EndPointOut1, EndPointIn1, null,normal1);
-            Line2 = new PipeLineInfo(EndPointIn2, EndPointOut2, null,normal2);
+            //EndPointOut1 = EndPointIn1- normal1 * PipeRadius* PipeLineOffset;
+            //EndPointOut2 = EndPointIn2+ normal2 * PipeRadius * PipeLineOffset;
+            EndPointOut1 = endPoint1;
+            EndPointOut2 = endPoint2;
+
+            EndPointIn1 = endPoint1 + (crossPoint1-endPoint1).normalized * PipeRadius * PipeLineOffset;
+            EndPointIn2 = endPoint2 + (crossPoint2-endPoint2).normalized * PipeRadius * PipeLineOffset;
+
+            Line1 = new PipeLineInfo(EndPointOut1, EndPointIn1, null, normal1);
+            Line2 = new PipeLineInfo(EndPointIn2, EndPointOut2, null, normal2);
 
             TransformHelper.ShowLocalPoint(EndPointOut1, PointScale, this.transform, null).name = "OutPoint1";
             TransformHelper.ShowLocalPoint(EndPointOut2, PointScale, this.transform, null).name = "OutPoint2";
-            //TransformHelper.ShowLocalPoint(EndPointIn1, PointScale, this.transform, null).name = "InPoint1";
-            //TransformHelper.ShowLocalPoint(EndPointIn2, PointScale, this.transform, null).name = "InPoint2";
+            TransformHelper.ShowLocalPoint(EndPointIn1, PointScale, this.transform, null).name = "InPoint1";
+            TransformHelper.ShowLocalPoint(EndPointIn2, PointScale, this.transform, null).name = "InPoint2";
+            TransformHelper.ShowLocalPoint(crossPoint1, PointScale, this.transform, null).name = "crossPoint1";
+            TransformHelper.ShowLocalPoint(crossPoint2, PointScale, this.transform, null).name = "crossPoint2";
+            TransformHelper.ShowLocalPoint(crossPoint12, PointScale, this.transform, null).name = "crossPoint12";
 
-            GetPipeRadius();
 
             IsGetInfoSuccess = true;
             Debug.Log($">>>GetElbowInfo time:{DateTime.Now - start}");
@@ -158,9 +173,6 @@ public class PipeElbowModel : PipeModelBase
             t.ShowTriangle(this.transform, sharedPoints1Obj.transform, PointScale);
         }
     }
-
-    public PipeGenerateArg generateArg = new PipeGenerateArg();
-
     public void RendererModel()
     {
         RendererModel(generateArg,"_New");
