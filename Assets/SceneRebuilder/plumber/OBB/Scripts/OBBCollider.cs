@@ -539,24 +539,50 @@ public class OBBCollider : MonoBehaviour
         for(int i=0;i<planes.Length;i++)
         {
             var plane = planes[i];
-            ShowPlaneInfo(plane, i, go,"");
+            ShowPlaneInfo(plane, i, go,null);
         }
     }
 
-    public void ShowPlaneInfo(PlaneInfo plane,int i,GameObject go,string info)
+    public void ShowPlaneInfo(PlaneInfo plane,int i,GameObject go,VerticesToPlaneInfo v2p)
     {
+        GameObject planeObjRoot = new GameObject($"Plane[{i}]");
+        go.transform.SetParent(go.transform);
+        go.transform.position = Vector3.zero;
+
         var point = plane.planePoint;
         var normal = plane.planeNormal * 0.1f;
         var normalPoint = (point + normal);
-        TransformHelper.ShowLocalPoint(point, lineSize, this.transform, go.transform).name = $"Plane[{i}]_Point:{point}";
-        TransformHelper.ShowLocalPoint(normalPoint, lineSize, this.transform, go.transform).name = $"Plane[{i}]_Normal:{normal}";
-        CreateLine(point, normalPoint, $"Plane[{i}]_Line:{normal}", go.transform);
-        GameObject planeObj = GameObject.CreatePrimitive(PrimitiveType.Quad);
-        planeObj.name = $"Plane[{i}] point:{point} normal:{normal}_"+ info;
+        TransformHelper.ShowLocalPoint(point, lineSize, this.transform, planeObjRoot.transform).name = $"Point:{point}";
+        TransformHelper.ShowLocalPoint(normalPoint, lineSize, this.transform, planeObjRoot.transform).name = $"Normal:{normal}";
+        TransformHelper.ShowLocalPoint(plane.planeCenter, lineSize, this.transform, planeObjRoot.transform).name = $"Center:{plane.planeCenter}";
+
+        TransformHelper.ShowLocalPoint(plane.pointA, lineSize, this.transform, planeObjRoot.transform).name = $"pointA:{plane.pointA}";
+        TransformHelper.ShowLocalPoint(plane.pointB, lineSize, this.transform, planeObjRoot.transform).name = $"pointB:{plane.pointB}";
+        TransformHelper.ShowLocalPoint(plane.pointC, lineSize, this.transform, planeObjRoot.transform).name = $"pointC:{plane.pointC}";
+        TransformHelper.ShowLocalPoint(plane.pointD, lineSize, this.transform, planeObjRoot.transform).name = $"pointD:{plane.pointD}";
+
+        CreateLine(point, normalPoint, $"Line:{normal}", planeObjRoot.transform);
+
+        //GameObject planeObj = GameObject.CreatePrimitive(PrimitiveType.Quad);
+        GameObject planeObj = GameObject.CreatePrimitive(PrimitiveType.Cube);
+        string nameInfo= $"Plane[{i}]_Plane point:{point} normal:{normal} size:({plane.SizeX},{plane.SizeY})_";
+        if (v2p != null)
+        {
+            nameInfo+= v2p.ToString();
+        }
+        planeObj.name = nameInfo;
         planeObj.transform.SetParent(this.transform);
-        planeObj.transform.localPosition = point;
+        //planeObj.transform.localPosition = point;
+        planeObj.transform.localPosition = plane.planeCenter;
         planeObj.transform.forward = normal;
-        planeObj.transform.SetParent(go.transform);
+        //planeObj.transform.right = plane.Edge1;
+        //planeObj.transform.localScale = new Vector3(0.1f, 0.1f, 0.001f);
+
+        //planeObj.transform.localScale = new Vector3(plane.SizeX, plane.SizeY, 0.001f);
+        planeObj.transform.localScale = new Vector3(plane.Size, plane.Size, 0.001f);
+
+        planeObj.transform.SetParent(planeObjRoot.transform);
+
     }
 
     public List<string> distances = new List<string>();

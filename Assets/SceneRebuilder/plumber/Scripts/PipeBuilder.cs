@@ -95,7 +95,7 @@ public class PipeBuilder : MonoBehaviour
     public void RendererPipesEx()
     {
         DateTime start = DateTime.Now;
-        int count = PipeLines.Count + PipeElbows.Count + PipeReducers.Count;
+        int count = PipeLines.Count + PipeElbows.Count + PipeReducers.Count + PipeFlanges.Count;
         int id = 0;
 
         DateTime start1 = DateTime.Now;
@@ -286,7 +286,7 @@ public class PipeBuilder : MonoBehaviour
         DateTime start = DateTime.Now;
 
         PipeModels = new List<PipeModelBase>();
-        int count = PipeLineGos.Count + PipeElbowsGos.Count+PipeReducerGos.Count;
+        int count = PipeLineGos.Count + PipeElbowsGos.Count + PipeReducerGos.Count + PipeFlangeGos.Count;
         int id = 0;
 
         DateTime start1 = DateTime.Now;

@@ -37,7 +37,8 @@ public class PipeElbowModel : PipeModelBase
         this.VertexCount = mesh.vertexCount;
         meshTriangles = new MeshTriangles(mesh);
         //Debug.Log($"GetElbowInfo mesh vertexCount:{mesh.vertexCount} triangles:{mesh.triangles.Length}");
-        var points = meshTriangles.GetKeyPointsByIdEx(sharedMinCount, minRepeatPointDistance);
+        SharedMeshTrianglesList points = meshTriangles.GetKeyPointsByIdEx(sharedMinCount, minRepeatPointDistance);
+        points.RemoveNotCircle();
         if (points.Count == 4)
         {
             var centerOfPoints = MeshHelper.GetCenterOfList(points);
@@ -48,8 +49,8 @@ public class PipeElbowModel : PipeModelBase
             }
             distanceList.Sort();
 
-            EndPointIn1 = distanceList[0].P1.Point;
-            EndPointIn2 = distanceList[1].P1.Point;
+            EndPointIn1 = distanceList[0].Plane.GetCenter();
+            EndPointIn2 = distanceList[1].Plane.GetCenter();
             points.Remove(EndPointIn1);
             points.Remove(EndPointIn2);
 
@@ -81,15 +82,23 @@ public class PipeElbowModel : PipeModelBase
             }
             distanceList.Sort();
 
-            var endPoint1= distanceList[0].P1.Point;
-            var endPoint2= distanceList[1].P1.Point;
+            SharedMeshTriangles startPlane = distanceList[0].Plane;
+            SharedMeshTriangles endPlane = distanceList[1].Plane;
 
-            var normal1 = mesh.normals[distanceList[0].P1.PointId];
-            var normal2 = mesh.normals[distanceList[1].P1.PointId];
+            var endPoint1= startPlane.GetCenter();
+            var endPoint2= endPlane.GetCenter();
+
+            var normal1 = mesh.normals[startPlane.PointId];
+            var normal2 = mesh.normals[endPlane.PointId];
             points.Remove(endPoint1);
             points.Remove(endPoint2);
 
-            GetPipeRadius();
+            //GetPipeRadius();
+
+            PipeRadius1 = startPlane.GetRadius();
+            PipeRadius2 = endPlane.GetRadius();
+            PipeRadius = (PipeRadius1 + PipeRadius2) / 2;
+
             Vector3 crossPoint1;
             Vector3 crossPoint2;
             Math3D.ClosestPointsOnTwoLines(out crossPoint1, out crossPoint2, endPoint1, normal1, endPoint2, normal2);
@@ -149,8 +158,8 @@ public class PipeElbowModel : PipeModelBase
         meshTriangles = new MeshTriangles(mesh);
 
         Debug.Log($"GetElbowInfo mesh vertexCount:{mesh.vertexCount} triangles:{mesh.triangles.Length}");
-        meshTriangles.ShowSharedPointsById(this.transform, PointScale);
-        meshTriangles.ShowSharedPointsByPoint(this.transform, PointScale);
+        meshTriangles.ShowSharedPointsById(this.transform, PointScale,10);
+        meshTriangles.ShowSharedPointsByPoint(this.transform, PointScale,10);
     }
 
 

@@ -133,8 +133,20 @@ public class PipeLineModel : PipeModelBase
         for (int i = 0; i < planeInfos.Length; i++)
         {
             PlaneInfo plane = (PlaneInfo)planeInfos[i];
-            var v2p=GetVerticesToPlaneInfo(vs, plane, false);
-            oBBCollider.ShowPlaneInfo(plane, i, go, v2p.ToString());
+            VerticesToPlaneInfo v2p =GetVerticesToPlaneInfo(vs, plane, false);
+            oBBCollider.ShowPlaneInfo(plane, i, go, v2p);
+            if (v2p.IsCircle() == false)
+            {
+                continue;
+            }
+            verticesToPlaneInfos.Add(v2p);
+            
+        }
+        if (verticesToPlaneInfos.Count < 2)
+        {
+            IsGetInfoSuccess = false;
+            Debug.LogError($"GetModelInfo verticesToPlaneInfos.Count < 2 count:{verticesToPlaneInfos.Count},gameObject:{this.name}");
+            return;
         }
         verticesToPlaneInfos.Sort();
 
@@ -142,13 +154,13 @@ public class PipeLineModel : PipeModelBase
         var endPlane= verticesToPlaneInfos[1];
 
 
-        //P1 = OBB.Right * ObbExtent.x;
-        //P2 = -OBB.Forward * ObbExtent.z;
-        //P3 = -OBB.Right * ObbExtent.x;
-        //P4 = OBB.Forward * ObbExtent.z;
-        //P5 = OBB.Up * ObbExtent.y;
-        //P6 = -OBB.Up * ObbExtent.y;
-        //Size = new Vector3(ObbExtent.x, ObbExtent.y, ObbExtent.z);
+        P1 = OBB.Right * ObbExtent.x;
+        P2 = -OBB.Forward * ObbExtent.z;
+        P3 = -OBB.Right * ObbExtent.x;
+        P4 = OBB.Forward * ObbExtent.z;
+        P5 = OBB.Up * ObbExtent.y;
+        P6 = -OBB.Up * ObbExtent.y;
+        Size = new Vector3(ObbExtent.x, ObbExtent.y, ObbExtent.z);
 
 
 
@@ -167,7 +179,7 @@ public class PipeLineModel : PipeModelBase
         //VerticesToPointInfo planeCenterPointInfo2;
 
         //float minDisOfSize = 0.0001f;
-        //if (Mathf.Abs(Size.x-Size.y)<= minDisOfSize && Mathf.Abs(Size.x-Size.z) > minDisOfSize)
+        //if (Mathf.Abs(Size.x - Size.y) <= minDisOfSize && Mathf.Abs(Size.x - Size.z) > minDisOfSize)
         //{
         //    startPoint = P2;
         //    endPoint = P4;
@@ -185,7 +197,7 @@ public class PipeLineModel : PipeModelBase
         //    planeCenterPointInfo2 = new VerticesToPointInfo(vs, endPoint, false);
         //    Debug.Log("Route2 P5 P6");
         //}
-        //else  if (Mathf.Abs(Size.y - Size.z) <= minDisOfSize && Mathf.Abs(Size.y - Size.x) > minDisOfSize)
+        //else if (Mathf.Abs(Size.y - Size.z) <= minDisOfSize && Mathf.Abs(Size.y - Size.x) > minDisOfSize)
         //{
         //    startPoint = P1;
         //    endPoint = P3;
@@ -465,7 +477,7 @@ public class PipeLineModel : PipeModelBase
     private VerticesToPlaneInfo GetVerticesToPlaneInfo(Vector3[] vs, PlaneInfo p, bool isShowLog)
     {
         VerticesToPlaneInfo verticesToPlaneInfo = new VerticesToPlaneInfo(vs, p, isShowLog);
-        verticesToPlaneInfos.Add(verticesToPlaneInfo);
+        //verticesToPlaneInfos.Add(verticesToPlaneInfo);
         return verticesToPlaneInfo;
     }
 

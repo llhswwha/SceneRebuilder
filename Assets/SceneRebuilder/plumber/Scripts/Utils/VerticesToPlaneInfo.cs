@@ -31,7 +31,7 @@ public class VerticesToPlaneInfo : IComparable<VerticesToPlaneInfo>
         for (int i = 0; i < vs.Length; i++)
         {
             Vector3 v = vs[i];
-            float dis = Math3D.SignedDistancePlanePoint(p.planeNormal, p.planePoint, v);
+            float dis = Math.Abs(Math3D.SignedDistancePlanePoint(p.planeNormal, p.planePoint, v));
             string sDis0 = dis.ToString("F0");
             string sDis1 = dis.ToString("F1");
             string sDis2 = dis.ToString("F2");
@@ -83,7 +83,7 @@ public class VerticesToPlaneInfo : IComparable<VerticesToPlaneInfo>
             Count5 = int.MaxValue;
         }
 
-        ResultInfo = $"{dict10.Count}_{dict11.Count}_{dict12.Count}_{dict13.Count}_{dict14.Count}_{dict15.Count}_{dict1.Count}";
+        ResultInfo = $"{dict10.Count}_{dict11.Count}_{dict12.Count}_{dict13.Count}_{dict14.Count}_{dict15.Count}_{dict1.Count}_{this.IsCircle()}";
         if (isShowLog)
             Debug.LogError(ResultInfo);
     }
@@ -102,18 +102,18 @@ public class VerticesToPlaneInfo : IComparable<VerticesToPlaneInfo>
         {
             return GetCircleInfo(dict13);
         }
-        else if (Count2 == 2)
-        {
-            return GetCircleInfo(dict12);
-        }
-        else if (Count1 == 2)
-        {
-            return GetCircleInfo(dict11);
-        }
-        else if (Count0 == 2)
-        {
-            return GetCircleInfo(dict10);
-        }
+        //else if (Count2 == 2)
+        //{
+        //    return GetCircleInfo(dict12);
+        //}
+        //else if (Count1 == 2)
+        //{
+        //    return GetCircleInfo(dict11);
+        //}
+        //else if (Count0 == 2)
+        //{
+        //    return GetCircleInfo(dict10);
+        //}
         else
         {
             //Debug.LogWarning($"GetCircleInfo Warning {this.ToString()}");
@@ -131,10 +131,10 @@ public class VerticesToPlaneInfo : IComparable<VerticesToPlaneInfo>
             {
                 return GetCircleInfo(dict13);
             }
-            else if (Count2 == 3)
-            {
-                return GetCircleInfo(dict12);
-            }
+            //else if (Count2 == 3)
+            //{
+            //    return GetCircleInfo(dict12);
+            //}
             //else if (Count1 == 3)
             //{
             //    return GetCircleInfo(dict11);
@@ -157,10 +157,10 @@ public class VerticesToPlaneInfo : IComparable<VerticesToPlaneInfo>
                 {
                     return GetCircleInfo(dict13);
                 }
-                else if (Count2 <= 6)
-                {
-                    return GetCircleInfo(dict12);
-                }
+                //else if (Count2 <= 6)
+                //{
+                //    return GetCircleInfo(dict12);
+                //}
                 //Debug.LogError($"GetCircleInfo Error {this.ToString()}");
                 //return new CircleInfo(Point, 0);
                 return null;
@@ -169,6 +169,13 @@ public class VerticesToPlaneInfo : IComparable<VerticesToPlaneInfo>
             //return GetCenter(dict15);
             //return Point;
         }
+    }
+
+    internal bool IsCircle()
+    {
+        CircleInfo circle = GetCircleInfo();
+        if (circle == null) return false;
+        return circle.IsCircle;
     }
 
     private CircleInfo GetCircleInfo(DictionaryList1ToN<string, Vector3> dict)
@@ -180,21 +187,21 @@ public class VerticesToPlaneInfo : IComparable<VerticesToPlaneInfo>
 
 
 
-        Vector3 sum = Vector3.zero;
-        for (int i = 0; i < vs.Count; i++)
-        {
-            Vector3 v = vs[i];
-            sum += v;
-        }
-        Vector3 center = sum / vs.Count;
-        float radiusSum = 0;
-        for (int i = 0; i < vs.Count; i++)
-        {
-            Vector3 v = vs[i];
-            radiusSum += Vector3.Distance(v, center);
-        }
-        float radius = radiusSum / vs.Count;
-        return new CircleInfo(center, radius);
+        //Vector3 sum = Vector3.zero;
+        //for (int i = 0; i < vs.Count; i++)
+        //{
+        //    Vector3 v = vs[i];
+        //    sum += v;
+        //}
+        //Vector3 center = sum / vs.Count;
+        //float radiusSum = 0;
+        //for (int i = 0; i < vs.Count; i++)
+        //{
+        //    Vector3 v = vs[i];
+        //    radiusSum += Vector3.Distance(v, center);
+        //}
+        //float radius = radiusSum / vs.Count;
+        return new CircleInfo(vs);
     }
 
     public override string ToString()

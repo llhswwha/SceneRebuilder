@@ -55,11 +55,11 @@ public static class MeshHelper
         Vector3 minP = Vector3.zero;
         foreach (var item in list)
         {
-            float dis = Vector3.Distance(item.Point, p);
+            float dis = Vector3.Distance(item.GetCenter(), p);
             if (dis < minDis)
             {
                 minDis = dis;
-                minP = item.Point;
+                minP = item.GetCenter();
             }
         }
         return minP;

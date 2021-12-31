@@ -91,17 +91,20 @@ public class MeshTriangles
         return list;
     }
 
-    public void ShowSharedPointsByPoint(Transform root, float pointScale)
+    public void ShowSharedPointsByPoint(Transform root, float pointScale, int minCount)
     {
         List<Key2List<Vector3, MeshTriangle>> sharedPoints2 = this.FindSharedPointsByPoint();
         Debug.LogError($"GetElbowInfo sharedPoints2:{sharedPoints2.Count}");
         GameObject sharedPoints1Obj2 = CreateSubTestObj($"sharedPoints(Point):{sharedPoints2.Count}", root);
+        int id = 0;
         for (int i = 0; i < sharedPoints2.Count; i++)
         {
             var point = sharedPoints2[i].Key;
             var triangles = sharedPoints2[i].List;
+            if (triangles.Count < minCount) continue;
+            id++;
             Debug.Log($"GetElbowInfo sharedPoints2[{i + 1}/{sharedPoints2.Count}] point:{point} trianlges:{triangles.Count}");
-            GameObject trianglesObj2 = CreateSubTestObj($"triangles:{triangles.Count}", sharedPoints1Obj2.transform);
+            GameObject trianglesObj2 = CreateSubTestObj($"triangles[{id}]:{triangles.Count}", sharedPoints1Obj2.transform);
             for (int i1 = 0; i1 < triangles.Count; i1++)
             {
                 MeshTriangle t = triangles[i1];
@@ -134,18 +137,20 @@ public class MeshTriangles
         return sharedPointsById;
     }
 
-    public void ShowSharedPointsById(Transform root, float pointScale)
+    public void ShowSharedPointsById(Transform root, float pointScale,int minCount)
     {
         List<Key2List<int, MeshTriangle>> sharedPoints1 = this.FindSharedPointsById();
         Debug.LogError($"GetElbowInfo sharedPoints1:{sharedPoints1.Count}");
         GameObject sharedPoints1Obj = CreateSubTestObj($"sharedPoints(Id):{sharedPoints1.Count}", root);
-
+        int id = 0;
         for (int i = 0; i < sharedPoints1.Count; i++)
         {
             int pointId = sharedPoints1[i].Key;
             var triangles = sharedPoints1[i].List;
+            if (triangles.Count < minCount) continue;
+            id++;
             Debug.Log($"GetElbowInfo sharedPoints1[{i + 1}/{sharedPoints1.Count}] point:{pointId} trianlges:{triangles.Count}");
-            GameObject trianglesObj = CreateSubTestObj($"triangles[{i + 1}][id:{pointId}]({triangles.Count})", sharedPoints1Obj.transform);
+            GameObject trianglesObj = CreateSubTestObj($"triangles[{id}][id:{pointId}]({triangles.Count})", sharedPoints1Obj.transform);
             for (int i1 = 0; i1 < triangles.Count; i1++)
             {
                 MeshTriangle t = triangles[i1];
@@ -293,7 +298,7 @@ public class MeshTriangles
         float minDis = float.MaxValue;
         foreach (var item in list)
         {
-            float dis = Vector3.Distance(item.Point, p);
+            float dis = Vector3.Distance(item.GetCenter(), p);
             if (dis < minDis)
             {
                 minDis = dis;
@@ -320,18 +325,20 @@ public class MeshTriangles
 
     public void ShowKeyPointsById(Transform root, float pointScale)
     {
-        TransformHelper.ShowLocalPoint(center, pointScale * 5, root, null).name="MeshCenter";
-        TransformHelper.ShowLocalPoint(mesh.bounds.center, pointScale * 5, root, null).name = "BoundsCenter";
+        TransformHelper.ShowLocalPoint(center, pointScale, root, null).name="MeshCenter";
+        TransformHelper.ShowLocalPoint(mesh.bounds.center, pointScale, root, null).name = "BoundsCenter";
 
-        List<Vector3> points = GetKeyPointsById(36,0);
+        SharedMeshTrianglesList points = GetKeyPointsByIdEx(36,0);
         Debug.Log($"GetKeyPoints KeyPoints:{points.Count}");
         GameObject keyPointsObj = CreateSubTestObj($"KeyPoints:{points.Count}", root);
         var centerOfPoints = MeshHelper.GetCenterOfList(points);
-        TransformHelper.ShowLocalPoint(centerOfPoints, pointScale * 5, root, null).name = "KeysCenter";
+        TransformHelper.ShowLocalPoint(centerOfPoints, pointScale, root, null).name = "KeysCenter";
 
-        foreach (var point in points)
+        for (int i = 0; i < points.Count; i++)
         {
-            TransformHelper.ShowLocalPoint(point, pointScale * 5, root, keyPointsObj.transform);
+            SharedMeshTriangles point = points[i];
+            TransformHelper.ShowLocalPoint(point.Center, pointScale, root, keyPointsObj.transform).name=$"Key[{i+1}]_Center";
+            TransformHelper.ShowLocalPoint(point.Point, pointScale, root, keyPointsObj.transform).name = $"Key[{i + 1}]_Point_{point.IsCircle}_{point.DistanceToCenter}_{point.GetRadius()}";
         }
 
         

@@ -13,7 +13,7 @@ public class PipeReducerModel
     public Vector4 StartPoint = Vector3.zero;
     public Vector4 EndPoint = Vector3.zero;
 
-    public List<PlanePointDistance> distanceListEx;
+    //public List<PlanePointDistance> distanceListEx;
 
     public override void GetModelInfo()
     {
@@ -29,20 +29,20 @@ public class PipeReducerModel
         SharedMeshTrianglesList points = meshTriangles.GetKeyPointsByIdEx(sharedMinCount, minRepeatPointDistance);
 
         var centerOfPoints = MeshHelper.GetCenterOfList(points);
-        distanceListEx = new List<PlanePointDistance>();
+        distanceList = new List<PlanePointDistance>();
         for (int i = 0; i < points.Count; i++)
         {
             var p = points[i];
-            distanceListEx.Add(new PlanePointDistance(p, centerOfPoints));
+            distanceList.Add(new PlanePointDistance(p, centerOfPoints));
 
             //TransformHelper.ShowLocalPoint(p.Point, PointScale, this.transform, null).name = $"KeyPoint[{i + 1}]";
         }
-        distanceListEx.Sort();
+        distanceList.Sort();
 
-        for (int i = 0; i < distanceListEx.Count; i++)
+        for (int i = 0; i < distanceList.Count; i++)
         {
-            var p = distanceListEx[i];
-            TransformHelper.ShowLocalPoint(p.P1.Point, PointScale, this.transform, null).name = $"KeyPoint[{i + 1}]";
+            var p = distanceList[i];
+            TransformHelper.ShowLocalPoint(p.Plane.GetCenter(), PointScale, this.transform, null).name = $"KeyPoint[{i + 1}]";
         }
 
         if (points.Count != 2)
@@ -54,15 +54,15 @@ public class PipeReducerModel
 
 
 
-        SharedMeshTriangles startP = distanceListEx[0].P1;
-        StartPoint = startP.Point;
-        StartPoint.w = startP.GetRadiu();
+        SharedMeshTriangles startP = distanceList[0].Plane;
+        StartPoint = startP.GetCenter();
+        StartPoint.w = startP.GetRadius();
 
         PipeRadius1 = StartPoint.w;
 
-        SharedMeshTriangles endP = distanceListEx[1].P1;
-        EndPoint = endP.Point;
-        EndPoint.w = endP.GetRadiu();
+        SharedMeshTriangles endP = distanceList[1].Plane;
+        EndPoint = endP.GetCenter();
+        EndPoint.w = endP.GetRadius();
         PipeRadius2 = EndPoint.w;
 
         PipeRadius = (PipeRadius1 + PipeRadius2) / 2;

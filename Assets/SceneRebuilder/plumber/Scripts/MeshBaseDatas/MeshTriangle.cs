@@ -146,6 +146,36 @@ public class MeshTriangle
         radius /= 2;
         return radius;
     }
+
+    internal Vector3 GetCenter(int pointId)
+    {
+        MeshPoint mp = GetPoint(pointId);
+        if (mp == null)
+        {
+            Debug.LogError($"GetRadius mp == null pointId:{pointId}");
+            return Vector3.zero;
+        }
+        //int count = 0;
+        Vector3 sum = Vector3.zero;
+        foreach (var p in Points)
+        {
+            if (p == mp) continue;
+            sum += p.Point;
+        }
+        Vector3 center=sum / 2;
+        return center;
+    }
+
+    //internal float GetCenter()
+    //{
+    //    Vector3 sum = Vector3.zero;
+    //    foreach (var p in Points)
+    //    {
+    //        sum += p.Point;
+    //    }
+    //    Vector3 center = sum / 2;
+    //    return center;
+    //}
 }
 
 public class MeshTriangleList:List< MeshTriangle >
@@ -161,6 +191,36 @@ public class MeshTriangleList:List< MeshTriangle >
         radius /= this.Count;
         return radius;
     }
+
+    public Vector3 GetCenter(int pointId)
+    {
+        Vector3 center = Vector3.zero;
+        foreach (MeshTriangle triangle in this)
+        {
+            Vector3 r = triangle.GetCenter(pointId);
+            center += r;
+        }
+        center /= this.Count;
+        return center;
+    }
+
+    internal bool GetIsCircle(int pointId,float maxP)
+    {
+        List<float> radiusList = new List<float>();
+        float radius = 0;
+        foreach (MeshTriangle triangle in this)
+        {
+            float r = triangle.GetRadius(pointId);
+            radius += r;
+            radiusList.Add(r);
+        }
+        radiusList.Sort();
+        float min = radiusList[0];
+        float max = radiusList[radiusList.Count - 1];
+        float p = max / min;
+        Debug.Log($"GetIsCircle pointId:{pointId} min:{min} max:{max} p:{p} maxP:{maxP} result{p <= maxP}");
+        return p <= maxP;
+    }
 }
 
 
@@ -170,9 +230,21 @@ public class SharedMeshTriangles
 
     public Vector3 Point;
 
+    public Vector3 Center;
+
+    public float DistanceToCenter;
+
+    public bool IsCircle = true;
+
+
+    public Vector3 GetCenter()
+    {
+        return Center;
+    }
+
     public MeshTriangleList Triangles = new MeshTriangleList();
 
-    public float GetRadiu()
+    public float GetRadius()
     {
         return Triangles.GetRadius(PointId);
     }
@@ -182,6 +254,9 @@ public class SharedMeshTriangles
         this.PointId = id;
         this.Point = p;
         this.Triangles.AddRange(ts);
+        Center = Triangles.GetCenter(PointId);
+        IsCircle = Triangles.GetIsCircle(PointId,CircleInfo.IsCircleMaxP);
+        DistanceToCenter = Vector3.Distance(Point, Center);
     }
 }
 
@@ -191,7 +266,7 @@ public class SharedMeshTrianglesList : List<SharedMeshTriangles>
     {
         foreach (var item in this)
         {
-            if (item.Point == p)
+            if (item.GetCenter() == p)
             {
                 return true;
             }
@@ -205,7 +280,7 @@ public class SharedMeshTrianglesList : List<SharedMeshTriangles>
         for (int i = 0; i < this.Count; i++)
         {
             SharedMeshTriangles item = this[i];
-            if (item.Point == p)
+            if (item.GetCenter() == p)
             {
                 this.RemoveAt(i);
                 i--;
@@ -218,11 +293,24 @@ public class SharedMeshTrianglesList : List<SharedMeshTriangles>
     public Vector3 GetCenter()
     {
         Vector3 center = Vector3.zero;
-        foreach (var item in this)
+        foreach (SharedMeshTriangles item in this)
         {
-            center += item.Point;
+            //center += item.Point;
+            center += item.Center;
         }
         center /= this.Count;
         return center;
+    }
+
+    internal void RemoveNotCircle()
+    {
+        for (int i = 0; i < this.Count; i++)
+        {
+            SharedMeshTriangles item = this[i];
+            if (item.IsCircle==false)
+            {
+                this.RemoveAt(i);
+                i--;            }
+        }
     }
 }

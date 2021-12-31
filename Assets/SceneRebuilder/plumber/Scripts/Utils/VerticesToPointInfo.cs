@@ -229,21 +229,21 @@ public class VerticesToPointInfo : IComparable<VerticesToPointInfo>
 
 
 
-        Vector3 sum = Vector3.zero;
-        for (int i = 0; i < vs.Count; i++)
-        {
-            Vector3 v = vs[i];
-            sum += v;
-        }
-        Vector3 center = sum / vs.Count;
-        float radiusSum = 0;
-        for (int i = 0; i < vs.Count; i++)
-        {
-            Vector3 v = vs[i];
-            radiusSum += Vector3.Distance(v, center);
-        }
-        float radius = radiusSum / vs.Count;
-        return new CircleInfo(center, radius);
+        //Vector3 sum = Vector3.zero;
+        //for (int i = 0; i < vs.Count; i++)
+        //{
+        //    Vector3 v = vs[i];
+        //    sum += v;
+        //}
+        //Vector3 center = sum / vs.Count;
+        //float radiusSum = 0;
+        //for (int i = 0; i < vs.Count; i++)
+        //{
+        //    Vector3 v = vs[i];
+        //    radiusSum += Vector3.Distance(v, center);
+        //}
+        //float radius = radiusSum / vs.Count;
+        return new CircleInfo(vs);
     }
 
 

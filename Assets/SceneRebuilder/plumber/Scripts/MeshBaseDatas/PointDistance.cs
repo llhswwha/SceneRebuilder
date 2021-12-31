@@ -44,14 +44,14 @@ public class PointDistanceEx : IComparable<PointDistanceEx>
 [Serializable]
 public class PlanePointDistance : IComparable<PlanePointDistance>
 {
-    public SharedMeshTriangles P1;
+    public SharedMeshTriangles Plane;
     public Vector3 P2;
     public float Distance = 0;
     public PlanePointDistance(SharedMeshTriangles p1, Vector3 p2)
     {
-        this.P1 = p1;
+        this.Plane = p1;
         this.P2 = p2;
-        this.Distance = Vector3.Distance(p1.Point, p2);
+        this.Distance = Vector3.Distance(p1.GetCenter(), p2);
     }
 
     public int CompareTo(PlanePointDistance other)
