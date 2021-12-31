@@ -83,7 +83,7 @@ public class VerticesToPlaneInfo : IComparable<VerticesToPlaneInfo>
             Count5 = int.MaxValue;
         }
 
-        ResultInfo = $"{dict10.Count}_{dict11.Count}_{dict12.Count}_{dict13.Count}_{dict14.Count}_{dict15.Count}_{dict1.Count}_{this.IsCircle()}";
+        ResultInfo = $"{dict10.Count}_{dict11.Count}_{dict12.Count}_{dict13.Count}_{dict14.Count}_{dict15.Count}_{dict1.Count}_{this.GetCircleInfoString()}";
         if (isShowLog)
             Debug.LogError(ResultInfo);
     }
@@ -102,14 +102,14 @@ public class VerticesToPlaneInfo : IComparable<VerticesToPlaneInfo>
         {
             return GetCircleInfo(dict13);
         }
-        //else if (Count2 == 2)
-        //{
-        //    return GetCircleInfo(dict12);
-        //}
-        //else if (Count1 == 2)
-        //{
-        //    return GetCircleInfo(dict11);
-        //}
+        else if (Count2 == 2)
+        {
+            return GetCircleInfo(dict12);
+        }
+        else if (Count1 == 2)
+        {
+            return GetCircleInfo(dict11);
+        }
         //else if (Count0 == 2)
         //{
         //    return GetCircleInfo(dict10);
@@ -131,10 +131,10 @@ public class VerticesToPlaneInfo : IComparable<VerticesToPlaneInfo>
             {
                 return GetCircleInfo(dict13);
             }
-            //else if (Count2 == 3)
-            //{
-            //    return GetCircleInfo(dict12);
-            //}
+            else if (Count2 == 3)
+            {
+                return GetCircleInfo(dict12);
+            }
             //else if (Count1 == 3)
             //{
             //    return GetCircleInfo(dict11);
@@ -176,6 +176,21 @@ public class VerticesToPlaneInfo : IComparable<VerticesToPlaneInfo>
         CircleInfo circle = GetCircleInfo();
         if (circle == null) return false;
         return circle.IsCircle;
+    }
+
+    public string GetCircleInfoString()
+    {
+        string info = "";
+        CircleInfo circle = GetCircleInfo();
+        if (circle == null)
+        {
+            info="False";
+        }
+        else
+        {
+            info = $"{circle.IsCircle}({circle.CheckCircleP})";
+        }
+        return info;
     }
 
     private CircleInfo GetCircleInfo(DictionaryList1ToN<string, Vector3> dict)

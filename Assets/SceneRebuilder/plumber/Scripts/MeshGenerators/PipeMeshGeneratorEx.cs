@@ -5,6 +5,8 @@ using UnityEngine;
 
 public class PipeMeshGeneratorEx : MonoBehaviour
 {
+    public GameObject Target;
+
     // see README.md file for more information about the following parameters
     public List<Vector4> points = new List<Vector4>();
 

@@ -546,8 +546,8 @@ public class OBBCollider : MonoBehaviour
     public void ShowPlaneInfo(PlaneInfo plane,int i,GameObject go,VerticesToPlaneInfo v2p)
     {
         GameObject planeObjRoot = new GameObject($"Plane[{i}]");
-        go.transform.SetParent(go.transform);
-        go.transform.localPosition = Vector3.zero;
+        planeObjRoot.transform.SetParent(go.transform);
+        planeObjRoot.transform.localPosition = Vector3.zero;
 
         var point = plane.planePoint;
         var normal = plane.planeNormal * 0.1f;
@@ -565,11 +565,13 @@ public class OBBCollider : MonoBehaviour
 
         //GameObject planeObj = GameObject.CreatePrimitive(PrimitiveType.Quad);
         GameObject planeObj = GameObject.CreatePrimitive(PrimitiveType.Cube);
-        string nameInfo= $"Plane[{i}]_Plane point:{point} normal:{normal} size:({plane.SizeX},{plane.SizeY})_";
+        string nameInfo= $"Plane[{i}] size:({plane.SizeX},{plane.SizeY})_";
         if (v2p != null)
         {
             nameInfo+= v2p.ToString();
         }
+        planeObjRoot.name = nameInfo;
+
         planeObj.name = nameInfo;
         planeObj.transform.SetParent(this.transform);
         //planeObj.transform.localPosition = point;

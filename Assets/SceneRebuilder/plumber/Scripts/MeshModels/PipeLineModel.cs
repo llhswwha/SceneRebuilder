@@ -118,9 +118,9 @@ public class PipeLineModel : PipeModelBase
         Vector3 startPoint = OBB.Up * ObbExtent.y;
         Vector3 endPoint = -OBB.Up * ObbExtent.y;
 
-        GameObject go = new GameObject("PipeModel_PlaneInfo");
-        go.transform.SetParent(this.transform);
-        go.transform.localPosition = Vector3.zero;
+        GameObject planInfoRoot = new GameObject("PipeModel_PlaneInfo");
+        planInfoRoot.transform.SetParent(this.transform);
+        planInfoRoot.transform.localPosition = Vector3.zero;
 
         //CreateLocalPoint(StartPoint, "StartPoint1", go.transform);
         //CreateLocalPoint(EndPoint, "EndPoint1", go.transform);
@@ -129,12 +129,14 @@ public class PipeLineModel : PipeModelBase
         this.VertexCount = vs.Length;
 
         PlaneInfo[] planeInfos = OBB.GetPlaneInfos();
+        List<VerticesToPlaneInfo> verticesToPlaneInfos_All = new List<VerticesToPlaneInfo>();
         verticesToPlaneInfos = new List<VerticesToPlaneInfo>();
         for (int i = 0; i < planeInfos.Length; i++)
         {
             PlaneInfo plane = (PlaneInfo)planeInfos[i];
             VerticesToPlaneInfo v2p =GetVerticesToPlaneInfo(vs, plane, false);
-            oBBCollider.ShowPlaneInfo(plane, i, go, v2p);
+            verticesToPlaneInfos_All.Add(v2p);
+            oBBCollider.ShowPlaneInfo(plane, i, planInfoRoot, v2p);
             if (v2p.IsCircle() == false)
             {
                 continue;
@@ -142,16 +144,51 @@ public class PipeLineModel : PipeModelBase
             verticesToPlaneInfos.Add(v2p);
             
         }
-        if (verticesToPlaneInfos.Count < 2)
-        {
-            IsGetInfoSuccess = false;
-            Debug.LogError($"GetModelInfo verticesToPlaneInfos.Count < 2 count:{verticesToPlaneInfos.Count},gameObject:{this.name}");
-            return;
-        }
         verticesToPlaneInfos.Sort();
 
-        var startPlane = verticesToPlaneInfos[0];
-        var endPlane= verticesToPlaneInfos[1];
+        if (verticesToPlaneInfos.Count < 1)
+        {
+            IsGetInfoSuccess = false;
+            Debug.LogError($"GetModelInfo verticesToPlaneInfos.Count < 1 count:{verticesToPlaneInfos.Count},gameObject:{this.name}");
+            return;
+        }
+
+        VerticesToPlaneInfo startPlane = verticesToPlaneInfos[0];
+        VerticesToPlaneInfo endPlane = null;
+        if (verticesToPlaneInfos.Count >=2)
+        {
+            endPlane = verticesToPlaneInfos[1];
+            //判断是否是对称的平面，不是的话有问题。
+            //找出对称的两个平面
+        }
+        else
+        {
+            Debug.LogWarning($"GetModelInfo verticesToPlaneInfos.Count == 1 count:{verticesToPlaneInfos.Count},gameObject:{this.name}");
+            if (startPlane == verticesToPlaneInfos_All[0])
+            {
+                endPlane = verticesToPlaneInfos_All[1];
+            }
+            if (startPlane == verticesToPlaneInfos_All[1])
+            {
+                endPlane = verticesToPlaneInfos_All[0];
+            }
+            if (startPlane == verticesToPlaneInfos_All[2])
+            {
+                endPlane = verticesToPlaneInfos_All[3];
+            }
+            if (startPlane == verticesToPlaneInfos_All[3])
+            {
+                endPlane = verticesToPlaneInfos_All[2];
+            }
+            if (startPlane == verticesToPlaneInfos_All[4])
+            {
+                endPlane = verticesToPlaneInfos_All[5];
+            }
+            if (startPlane == verticesToPlaneInfos_All[5])
+            {
+                endPlane = verticesToPlaneInfos_All[4];
+            }
+        }
 
 
         P1 = OBB.Right * ObbExtent.x;
@@ -234,8 +271,8 @@ public class PipeLineModel : PipeModelBase
             Debug.LogError($"GetModelInfo startCircle == null gameObject:{this.gameObject.name}");
             IsGetInfoSuccess = false;
 
-            CreateLocalPoint(startPlane.Point.planeCenter, "StartPoint1", go.transform);
-            CreateLocalPoint(endPlane.Point.planeCenter, "EndPoint1", go.transform);
+            CreateLocalPoint(startPlane.Point.planeCenter, "StartPoint1", planInfoRoot.transform);
+            CreateLocalPoint(endPlane.Point.planeCenter, "EndPoint1", planInfoRoot.transform);
             return;
         }
         startPoint = startCircle.Center;
@@ -244,8 +281,8 @@ public class PipeLineModel : PipeModelBase
         {
             Debug.LogError($"GetModelInfo endCircle == null gameObject:{this.gameObject.name}");
             IsGetInfoSuccess = false;
-            CreateLocalPoint(startPlane.Point.planeCenter, "StartPoint2", go.transform);
-            CreateLocalPoint(endPlane.Point.planeCenter, "EndPoint2", go.transform);
+            CreateLocalPoint(startPlane.Point.planeCenter, "StartPoint2", planInfoRoot.transform);
+            CreateLocalPoint(endPlane.Point.planeCenter, "EndPoint2", planInfoRoot.transform);
             return;
         }
         endPoint = endCircle.Center;
@@ -265,8 +302,8 @@ public class PipeLineModel : PipeModelBase
 
         EndPoints = new List<Vector3>() { startPoint, endPoint };
 
-        CreateLocalPoint(startPoint, "StartPoint1", go.transform);
-        CreateLocalPoint(endPoint, "EndPoint1", go.transform);
+        CreateLocalPoint(startPoint, "StartPoint1", planInfoRoot.transform);
+        CreateLocalPoint(endPoint, "EndPoint1", planInfoRoot.transform);
 
         if (PipeRadius1 > PipeRadius2)
         {
@@ -499,6 +536,7 @@ public class PipeLineModel : PipeModelBase
         {
             pipe = pipeNew.AddComponent<PipeMeshGenerator>();
         }
+        pipe.Target = this.gam;
         pipe.points = new List<Vector3>() { LineInfo.StartPoint, LineInfo.EndPoint };
         arg.SetArg(pipe);
         pipe.pipeRadius = PipeRadius;

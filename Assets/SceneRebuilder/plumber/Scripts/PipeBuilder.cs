@@ -346,7 +346,7 @@ public class PipeBuilder : MonoBehaviour
             }
             //CreatePipe(p);
             PipeFlangeModel pipeModel = GetPipeModelInfo<PipeFlangeModel>(p);
-            PipeReducers.Add(pipeModel);
+            PipeFlanges.Add(pipeModel);
             PipeModels.Add(pipeModel);
             p.gameObject.SetActive(false);
         }

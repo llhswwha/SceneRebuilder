@@ -99,6 +99,7 @@ public class PipeReducerModel
         {
             pipe = pipeNew.AddComponent<PipeMeshGeneratorEx>();
         }
+        pipe.Target = this.gameObject;
         pipe.points = new List<Vector4>() { StartPoint, EndPoint };
         arg.SetArg(pipe);
         pipe.pipeRadius = PipeRadius;

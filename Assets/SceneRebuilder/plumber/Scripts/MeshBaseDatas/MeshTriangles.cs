@@ -298,7 +298,8 @@ public class MeshTriangles
         float minDis = float.MaxValue;
         foreach (var item in list)
         {
-            float dis = Vector3.Distance(item.GetCenter(), p);
+            //float dis = Vector3.Distance(item.GetCenter(), p);
+            float dis = Vector3.Distance(item.Point, p);
             if (dis < minDis)
             {
                 minDis = dis;
@@ -323,12 +324,13 @@ public class MeshTriangles
         return minDis;
     }
 
-    public void ShowKeyPointsById(Transform root, float pointScale)
+    public void ShowKeyPointsById(Transform root, float pointScale, int minCount, float minDis)
     {
         TransformHelper.ShowLocalPoint(center, pointScale, root, null).name="MeshCenter";
         TransformHelper.ShowLocalPoint(mesh.bounds.center, pointScale, root, null).name = "BoundsCenter";
 
-        SharedMeshTrianglesList points = GetKeyPointsByIdEx(36,0);
+        SharedMeshTrianglesList points = GetKeyPointsByIdEx(minCount, minDis);
+        //SharedMeshTrianglesList points = GetKeyPointsByIdEx(36, 0);
         Debug.Log($"GetKeyPoints KeyPoints:{points.Count}");
         GameObject keyPointsObj = CreateSubTestObj($"KeyPoints:{points.Count}", root);
         var centerOfPoints = MeshHelper.GetCenterOfList(points);

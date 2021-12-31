@@ -37,13 +37,17 @@ public class PipeElbowModel : PipeModelBase
         this.VertexCount = mesh.vertexCount;
         meshTriangles = new MeshTriangles(mesh);
         //Debug.Log($"GetElbowInfo mesh vertexCount:{mesh.vertexCount} triangles:{mesh.triangles.Length}");
-        SharedMeshTrianglesList points = meshTriangles.GetKeyPointsByIdEx(sharedMinCount, minRepeatPointDistance);
-        points.RemoveNotCircle();
-        if (points.Count == 4)
+        SharedMeshTrianglesList trianglesList = meshTriangles.GetKeyPointsByIdEx(sharedMinCount, minRepeatPointDistance);
+        foreach(SharedMeshTriangles triangles in trianglesList)
         {
-            var centerOfPoints = MeshHelper.GetCenterOfList(points);
+
+        }
+        trianglesList.RemoveNotCircle();
+        if (trianglesList.Count == 4)
+        {
+            var centerOfPoints = MeshHelper.GetCenterOfList(trianglesList);
             distanceList = new List<PlanePointDistance>();
-            foreach (var p in points)
+            foreach (var p in trianglesList)
             {
                 distanceList.Add(new PlanePointDistance(p, centerOfPoints));
             }
@@ -51,13 +55,13 @@ public class PipeElbowModel : PipeModelBase
 
             EndPointIn1 = distanceList[0].Plane.GetCenter();
             EndPointIn2 = distanceList[1].Plane.GetCenter();
-            points.Remove(EndPointIn1);
-            points.Remove(EndPointIn2);
+            trianglesList.Remove(EndPointIn1);
+            trianglesList.Remove(EndPointIn2);
 
-            EndPointOut1 = MeshHelper.FindClosedPoint(EndPointIn1, points);
-            points.Remove(EndPointOut1);
-            EndPointOut2 = MeshHelper.FindClosedPoint(EndPointIn2, points);
-            points.Remove(EndPointOut2);
+            EndPointOut1 = MeshHelper.FindClosedPoint(EndPointIn1, trianglesList);
+            trianglesList.Remove(EndPointOut1);
+            EndPointOut2 = MeshHelper.FindClosedPoint(EndPointIn2, trianglesList);
+            trianglesList.Remove(EndPointOut2);
 
             Line1 = new PipeLineInfo(EndPointOut1, EndPointIn1, null);
             Line2 = new PipeLineInfo(EndPointIn2, EndPointOut2, null);
@@ -72,11 +76,11 @@ public class PipeElbowModel : PipeModelBase
             IsGetInfoSuccess = true;
             Debug.Log($">>>GetElbowInfo time:{DateTime.Now - start}");
         }
-        else if (points.Count == 2)
+        else if (trianglesList.Count == 2)
         {
-            var centerOfPoints = MeshHelper.GetCenterOfList(points);
+            var centerOfPoints = MeshHelper.GetCenterOfList(trianglesList);
             distanceList = new List<PlanePointDistance>();
-            foreach (var p in points)
+            foreach (var p in trianglesList)
             {
                 distanceList.Add(new PlanePointDistance(p, centerOfPoints));
             }
@@ -90,8 +94,8 @@ public class PipeElbowModel : PipeModelBase
 
             var normal1 = mesh.normals[startPlane.PointId];
             var normal2 = mesh.normals[endPlane.PointId];
-            points.Remove(endPoint1);
-            points.Remove(endPoint2);
+            trianglesList.Remove(endPoint1);
+            trianglesList.Remove(endPoint2);
 
             //GetPipeRadius();
 
@@ -130,7 +134,7 @@ public class PipeElbowModel : PipeModelBase
         else
         {
             IsGetInfoSuccess = false;
-            Debug.LogError($"GetKeyPointsById points.Count Error count:{points.Count} gameObject:{this.gameObject.name} sharedMinCount:{sharedMinCount} minRepeatPointDistance:{minRepeatPointDistance}");
+            Debug.LogError($"GetKeyPointsById points.Count Error count:{trianglesList.Count} gameObject:{this.gameObject.name} sharedMinCount:{sharedMinCount} minRepeatPointDistance:{minRepeatPointDistance}");
             return;
         }
 
@@ -145,9 +149,12 @@ public class PipeElbowModel : PipeModelBase
     public void ShowKeyPoints()
     {
         ClearChildren();
+
+        GameObject trianglesObj = CreateSubTestObj($"KeyPoints", this.transform);
+
         Mesh mesh = this.GetComponent<MeshFilter>().sharedMesh;
         meshTriangles = new MeshTriangles(mesh);
-        meshTriangles.ShowKeyPointsById(this.transform, PointScale);
+        meshTriangles.ShowKeyPointsById(trianglesObj.transform, PointScale, sharedMinCount, minRepeatPointDistance);
     }
 
     public void ShowSharedPoints()
@@ -201,6 +208,7 @@ public class PipeElbowModel : PipeModelBase
         {
             pipe = pipeNew.AddComponent<PipeMeshGenerator>();
         }
+        pipe.Target = this.gameObject;
         //pipe.points = new List<Vector3>() { EndPointOut1, EndPointIn1, EndPointIn2, EndPointOut2 };
         pipe.points = ps;
         arg.SetArg(pipe);

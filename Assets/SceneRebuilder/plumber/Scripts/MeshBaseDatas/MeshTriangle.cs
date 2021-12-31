@@ -204,7 +204,25 @@ public class MeshTriangleList:List< MeshTriangle >
         return center;
     }
 
-    internal bool GetIsCircle(int pointId,float maxP)
+    //internal bool GetIsCircle(int pointId,float maxP)
+    //{
+    //    List<float> radiusList = new List<float>();
+    //    float radius = 0;
+    //    foreach (MeshTriangle triangle in this)
+    //    {
+    //        float r = triangle.GetRadius(pointId);
+    //        radius += r;
+    //        radiusList.Add(r);
+    //    }
+    //    radiusList.Sort();
+    //    float min = radiusList[0];
+    //    float max = radiusList[radiusList.Count - 1];
+    //    float p = max / min;
+    //    Debug.Log($"GetIsCircle pointId:{pointId} min:{min} max:{max} p:{p} maxP:{maxP} result{p <= maxP}");
+    //    return p <= maxP;
+    //}
+
+    internal float GetCircleCheckP(int pointId)
     {
         List<float> radiusList = new List<float>();
         float radius = 0;
@@ -218,8 +236,8 @@ public class MeshTriangleList:List< MeshTriangle >
         float min = radiusList[0];
         float max = radiusList[radiusList.Count - 1];
         float p = max / min;
-        Debug.Log($"GetIsCircle pointId:{pointId} min:{min} max:{max} p:{p} maxP:{maxP} result{p <= maxP}");
-        return p <= maxP;
+        Debug.Log($"GetCircleCheckP pointId:{pointId} min:{min} max:{max} p:{p}");
+        return p;
     }
 }
 
@@ -236,6 +254,8 @@ public class SharedMeshTriangles
 
     public bool IsCircle = true;
 
+    public float CircleCheckP = 0;
+
 
     public Vector3 GetCenter()
     {
@@ -249,13 +269,14 @@ public class SharedMeshTriangles
         return Triangles.GetRadius(PointId);
     }
 
-    public SharedMeshTriangles(int id,Vector3 p,List<MeshTriangle> ts)
+    public SharedMeshTriangles(int id, Vector3 p, List<MeshTriangle> ts)
     {
         this.PointId = id;
         this.Point = p;
         this.Triangles.AddRange(ts);
         Center = Triangles.GetCenter(PointId);
-        IsCircle = Triangles.GetIsCircle(PointId,CircleInfo.IsCircleMaxP);
+        CircleCheckP = Triangles.GetCircleCheckP(PointId);
+        IsCircle = CircleCheckP <= CircleInfo.IsCircleMaxP;
         DistanceToCenter = Vector3.Distance(Point, Center);
     }
 }
@@ -307,10 +328,11 @@ public class SharedMeshTrianglesList : List<SharedMeshTriangles>
         for (int i = 0; i < this.Count; i++)
         {
             SharedMeshTriangles item = this[i];
-            if (item.IsCircle==false)
+            if (item.IsCircle == false)
             {
                 this.RemoveAt(i);
-                i--;            }
+                i--;
+            }
         }
     }
 }

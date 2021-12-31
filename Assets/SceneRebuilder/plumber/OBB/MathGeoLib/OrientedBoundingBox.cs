@@ -447,12 +447,17 @@ namespace MathGeoLib
             var points = new PlaneInfo[]
             {
                 //pc1,pc2,pc3,pc4,pc5,pc6
-                new PlaneInfo(p0,p1,p2,p3),
-                new PlaneInfo(p4,p5,p6,p7),
-                new PlaneInfo(p0,p1,p4,p5),
-                new PlaneInfo(p2,p3,p6,p7),
-                new PlaneInfo(p0,p2,p4,p6),
-                new PlaneInfo(p1,p3,p5,p7)
+                new PlaneInfo(p0,p1,p3,p2),
+                //new PlaneInfo(p4,p5,p7,p6),
+                new PlaneInfo(p6,p7,p5,p4),
+
+                //new PlaneInfo(p0,p1,p5,p4),
+                new PlaneInfo(p4,p5,p1,p0),
+                new PlaneInfo(p2,p3,p7,p6),
+
+                new PlaneInfo(p0,p2,p6,p4),
+                //new PlaneInfo(p1,p3,p7,p5)
+                new PlaneInfo(p5,p7,p3,p1)
             };
             return points;
 
