@@ -534,7 +534,7 @@ public class OBBCollider : MonoBehaviour
         PlaneInfo[] planes=OBB.GetPlaneInfos();
         GameObject go = new GameObject("Planes");
         go.transform.SetParent(this.transform);
-        go.transform.position = Vector3.zero;
+        go.transform.localPosition = Vector3.zero;
 
         for(int i=0;i<planes.Length;i++)
         {
@@ -547,7 +547,7 @@ public class OBBCollider : MonoBehaviour
     {
         GameObject planeObjRoot = new GameObject($"Plane[{i}]");
         go.transform.SetParent(go.transform);
-        go.transform.position = Vector3.zero;
+        go.transform.localPosition = Vector3.zero;
 
         var point = plane.planePoint;
         var normal = plane.planeNormal * 0.1f;

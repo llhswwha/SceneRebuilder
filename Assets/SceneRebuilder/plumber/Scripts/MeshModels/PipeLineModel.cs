@@ -120,7 +120,7 @@ public class PipeLineModel : PipeModelBase
 
         GameObject go = new GameObject("PipeModel_PlaneInfo");
         go.transform.SetParent(this.transform);
-        go.transform.position = Vector3.zero;
+        go.transform.localPosition = Vector3.zero;
 
         //CreateLocalPoint(StartPoint, "StartPoint1", go.transform);
         //CreateLocalPoint(EndPoint, "EndPoint1", go.transform);
