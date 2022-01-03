@@ -220,6 +220,13 @@ public class PipeFactory : MonoBehaviour
         ProgressBarHelper.ClearProgressBar();
     }
 
+    [ContextMenu("CheckResults")]
+    public void CheckResults()
+    {
+        newBuilder.CheckResults();
+        ProgressBarHelper.ClearProgressBar();
+    }
+
     private void InitPipeBuilder()
     {
         if (newBuilder == null)

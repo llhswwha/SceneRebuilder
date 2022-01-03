@@ -28,13 +28,13 @@ public class PipeFactoryEditor : BaseFoldoutEditor<PipeFactory>
 
     int defaultPipeSegments = 8;
 
-    int[] pipeSegmentsValues = new int[] { 3,4,5,6,7, 8,10,12, 16, 20, 24, 32,48,64 };
+    int[] pipeSegmentsValues = new int[] { 3,4,5,6,7, 8,10,12, 16, 20, 24, 32,36,48,64 };
 
     string[] pipeSegmentsValuesStr = null;
 
     int defaultElbowSegments = 6;
 
-    int[] elbowSegmentsValues = new int[] { 3,4,5,6,7,8,9,10 };
+    int[] elbowSegmentsValues = new int[] { 3,4,5,6,7,8,9,10,11,12,13,14,15 };
 
     string[] elbowSegmentsValuesStr = null;
 
@@ -93,6 +93,10 @@ public class PipeFactoryEditor : BaseFoldoutEditor<PipeFactory>
         if (GUILayout.Button("3.GeneratePipe(One)"))
         {
 
+        }
+        if (GUILayout.Button("4.CheckResults"))
+        {
+            targetT.CheckResults();
         }
         GUILayout.EndHorizontal();
 

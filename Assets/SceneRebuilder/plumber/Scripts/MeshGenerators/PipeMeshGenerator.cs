@@ -21,7 +21,7 @@ public class PipeMeshGenerator : PipeMeshGeneratorBase
     //    }
     //}
 
-    public GameObject Target;
+  
 
     // see README.md file for more information about the following parameters
     public List<Vector3> points = new List<Vector3>();

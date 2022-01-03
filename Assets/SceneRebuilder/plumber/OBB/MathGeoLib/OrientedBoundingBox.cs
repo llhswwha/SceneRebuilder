@@ -486,10 +486,15 @@ namespace MathGeoLib
             var p6 = this.CornerPoint(6);
             var p7 = this.CornerPoint(7);
 
+            //var points = new[]
+            //{
+            //    p0, p1, p2, p3,
+            //    p4, p5, p6, p7
+            //};
             var points = new[]
-            {
-                p0, p1, p2, p3,
-                p4, p5, p6, p7
+           {
+                p0, p1, p3, p2,
+                p4, p5, p7, p6
             };
             return points;
         }
@@ -505,10 +510,15 @@ namespace MathGeoLib
             var p6 = this.CornerPoint(6);
             var p7 = this.CornerPoint(7);
 
+            //var points = new[]
+            //{
+            //    p0.GetVector3(), p1.GetVector3(), p2.GetVector3(), p3.GetVector3(),
+            //    p4.GetVector3(), p5.GetVector3(), p6.GetVector3(), p7.GetVector3()
+            //};
             var points = new[]
             {
-                p0.GetVector3(), p1.GetVector3(), p2.GetVector3(), p3.GetVector3(),
-                p4.GetVector3(), p5.GetVector3(), p6.GetVector3(), p7.GetVector3()
+                p0.GetVector3(), p1.GetVector3(), p3.GetVector3(), p2.GetVector3(),
+                p4.GetVector3(), p5.GetVector3(), p7.GetVector3(), p6.GetVector3()
             };
             return points;
         }

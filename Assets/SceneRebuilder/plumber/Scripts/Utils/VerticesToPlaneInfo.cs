@@ -25,31 +25,72 @@ public class VerticesToPlaneInfo : IComparable<VerticesToPlaneInfo>
     public int Count4;
     public int Count5;
 
+    public float maxDis = 0;
+    public float minDis = float.MaxValue;
+
     public VerticesToPlaneInfo(Vector3[] vs, PlaneInfo p, bool isShowLog)
     {
+       
         Point = p;
         for (int i = 0; i < vs.Length; i++)
         {
             Vector3 v = vs[i];
             float dis = Math.Abs(Math3D.SignedDistancePlanePoint(p.planeNormal, p.planePoint, v));
-            string sDis0 = dis.ToString("F0");
-            string sDis1 = dis.ToString("F1");
-            string sDis2 = dis.ToString("F2");
-            string sDis3 = dis.ToString("F3");
-            string sDis4 = dis.ToString("F4");
-            string sDis5 = dis.ToString("F5");
             dict1.AddItem(dis, v);
+
+            if (dis > maxDis)
+            {
+                maxDis = dis;
+            }
+            if (dis < minDis)
+            {
+                minDis = dis;
+            }
+            //float disToMax=
+            int dis10 = (int)dis * 10;
+            int dis100 = (int)dis * 100;
+            int dis1000 = (int)dis * 1000;
+
+            string sDis0 = dis.ToString("F0");
+            //if (sDis0 != "0")
+            {
+                dict10.AddItem(sDis0, v);
+            }
+
+            string sDis1 = dis.ToString("F1");
+            //if(sDis1!="0.0")
+            {
+                dict11.AddItem(sDis1, v);
+            }
+
+            string sDis2 = dis.ToString("F2");
+            //if (sDis2 != "0.00")
+            {
+                dict12.AddItem(sDis2, v);
+            }
+
+            string sDis3 = dis.ToString("F3");
+            //if (sDis3 != "0.000")
+            {
+                dict13.AddItem(sDis3, v);
+            }
+
+            string sDis4 = dis.ToString("F4");
+            //if (sDis4 != "0.0000")
+            {
+                dict14.AddItem(sDis4, v);
+            }
+
+            string sDis5 = dis.ToString("F5");
+            //if (sDis5 != "0.0000")
+            {
+                dict15.AddItem(sDis5, v);
+            }
+
             if (isShowLog)
             {
                 Debug.Log($"Point2Vertices[{i + 1}] \tp:{p} \tdis:{dis} \tsDis0:{sDis0} \tsDis1:{sDis1} \tsDis2:{sDis2} \tsDis3:{sDis3} \tsDis4:{sDis4} \tsDis5:{sDis5} \tv:{v} ");
             }
-
-            dict14.AddItem(sDis4, v);
-            dict15.AddItem(sDis5, v);
-            dict13.AddItem(sDis3, v);
-            dict12.AddItem(sDis2, v);
-            dict11.AddItem(sDis1, v);
-            dict10.AddItem(sDis0, v);
         }
         Count0 = dict10.Count;
         Count1 = dict11.Count;
@@ -58,32 +99,57 @@ public class VerticesToPlaneInfo : IComparable<VerticesToPlaneInfo>
         Count4 = dict14.Count;
         Count5 = dict15.Count;
 
-        if (Count0 == 1)
+        if (Count0 == 0)
         {
             Count0 = int.MaxValue;
         }
-        if (Count1 == 1)
+        if (Count1 == 0)
         {
             Count1 = int.MaxValue;
         }
-        if (Count2 == 1)
+        if (Count2 == 0)
         {
             Count2 = int.MaxValue;
         }
-        if (Count3 == 1)
+        if (Count3 == 0)
         {
             Count3 = int.MaxValue;
         }
-        if (Count4 == 1)
+        if (Count4 == 0)
         {
             Count4 = int.MaxValue;
         }
-        if (Count5 == 1)
+        if (Count5 == 0)
         {
             Count5 = int.MaxValue;
         }
 
-        ResultInfo = $"{dict10.Count}_{dict11.Count}_{dict12.Count}_{dict13.Count}_{dict14.Count}_{dict15.Count}_{dict1.Count}_{this.GetCircleInfoString()}";
+        if (Count0 == 1)
+        {
+            Count0 = int.MaxValue-1;
+        }
+        if (Count1 == 1)
+        {
+            Count1 = int.MaxValue - 1;
+        }
+        if (Count2 == 1)
+        {
+            Count2 = int.MaxValue - 1;
+        }
+        if (Count3 == 1)
+        {
+            Count3 = int.MaxValue - 1;
+        }
+        if (Count4 == 1)
+        {
+            Count4 = int.MaxValue - 1;
+        }
+        if (Count5 == 1)
+        {
+            Count5 = int.MaxValue - 1;
+        }
+
+        ResultInfo = $"{dict10.Count}_{dict11.Count}_{dict12.Count}_{dict13.Count}_{dict14.Count}_{dict15.Count}_{dict1.Count}_[{maxDis}]_{this.GetCircleInfoString()}";
         if (isShowLog)
             Debug.LogError(ResultInfo);
     }
@@ -102,11 +168,19 @@ public class VerticesToPlaneInfo : IComparable<VerticesToPlaneInfo>
         {
             return GetCircleInfo(dict13);
         }
-        else if (Count2 == 2)
+        //else if (Count2 == 2)
+        //{
+        //    return GetCircleInfo(dict12);
+        //}
+        //else if (Count1 == 2)
+        //{
+        //    return GetCircleInfo(dict11);
+        //}
+        else if (maxDis > 1f && Count2 == 2)
         {
             return GetCircleInfo(dict12);
         }
-        else if (Count1 == 2)
+        else if (maxDis > 1f && Count1 == 2)
         {
             return GetCircleInfo(dict11);
         }
@@ -197,10 +271,19 @@ public class VerticesToPlaneInfo : IComparable<VerticesToPlaneInfo>
     {
         var keys = dict.Keys.ToList();
         keys.Sort();
-        string firstKey = keys[0];
+        int id = 0;
+        string firstKey = keys[id];
         var vs = dict[firstKey];
-
-
+        var vs3 = new List<Vector3>();
+        vs3.AddRange(vs);
+        while (vs3.Count < 36 && id<keys.Count)//36 是 最小的园的顶点数量
+        {
+            id++;
+            string secondKey = keys[id];
+            var vs2 = dict[secondKey];
+            vs3.AddRange(vs2);
+        }
+        return new CircleInfo(vs3);
 
         //Vector3 sum = Vector3.zero;
         //for (int i = 0; i < vs.Count; i++)
@@ -216,7 +299,7 @@ public class VerticesToPlaneInfo : IComparable<VerticesToPlaneInfo>
         //    radiusSum += Vector3.Distance(v, center);
         //}
         //float radius = radiusSum / vs.Count;
-        return new CircleInfo(vs);
+        
     }
 
     public override string ToString()

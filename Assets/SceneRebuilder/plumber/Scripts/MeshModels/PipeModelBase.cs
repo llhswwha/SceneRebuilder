@@ -16,7 +16,13 @@ public class PipeModelBase : MonoBehaviour,IComparable<PipeModelBase>
 
     public int VertexCount = 0;
 
-    public float CheckDistance = 0;
+    public float ObbDistance = 0;
+
+    public float MeshDistance = 0;
+
+    public float SizeDistance = 0;
+
+    public float RTDistance = 0;
 
     private string GetCompareString()
     {
@@ -34,7 +40,10 @@ public class PipeModelBase : MonoBehaviour,IComparable<PipeModelBase>
         {
             radius = "9.99999";
         }
-        return $"{a}_{radius}_{this.GetType().Name}_{this.VertexCount}";
+        float dis = SizeDistance+ObbDistance + MeshDistance;
+
+        //return $"{ObbDistance:F5}_{MeshDistance:F5}_{a}_{radius:00000}_{this.GetType().Name}_{this.VertexCount}";
+        return $"{SizeDistance:F5}_{dis:F5}_{ObbDistance:F5}_{RTDistance:F5}_{MeshDistance:F5}_{a}_{radius:00000}_{this.GetType().Name}_{this.VertexCount}";
     }
 
     public int CompareTo(PipeModelBase other)
@@ -60,8 +69,8 @@ public class PipeModelBase : MonoBehaviour,IComparable<PipeModelBase>
 
     public override string ToString()
     {
-        return $"type:{this.GetType().Name} radius:{PipeRadius:F5}| v:{VertexCount}|result:{IsGetInfoSuccess} dis:{CheckDistance}";
-        //return GetCompareString();
+        //return $"T:[{this.GetType().Name}] [Size:{SizeDistance:F5} Mesh:{MeshDistance:F5} Obb:{ObbDistance:F5} ObbRT:{RTDistance:F5}] R:{PipeRadius:F5}| V:{VertexCount:00000}|{IsGetInfoSuccess} ";
+        return GetCompareString();
     }
 
     public virtual void GetModelInfo()
@@ -74,10 +83,59 @@ public class PipeModelBase : MonoBehaviour,IComparable<PipeModelBase>
         return null;
     }
 
+    public void CheckResult()
+    {
+        this.ObbDistance = OBBCollider.GetObbDistance(ResultGo,this.gameObject);
+        
+        this.MeshDistance = MeshHelper.GetVertexDistanceEx(ResultGo,this.gameObject);
+        this.SizeDistance = MeshHelper.GetSizeDistance(ResultGo, this.gameObject);
+        this.RTDistance= OBBCollider.GetObbRTDistance(ResultGo, this.gameObject);
+
+        if (SizeDistance > 0)
+        {
+            IsGetInfoSuccess = false;
+        }
+    }
+
+    public void ClearCheckDistance()
+    {
+        ObbDistance = 0;
+
+        MeshDistance = 0;
+
+        SizeDistance = 0;
+
+        RTDistance = 0;
+    }
+
+    //public void GetSizeDistance()
+    //{
+
+    //}
+
 
     [ContextMenu("ClearChildren")]
     public void ClearChildren()
     {
         TransformHelper.ClearChildren(gameObject);
+        ClearCheckDistance();
     }
+
+    public T GetGenerator<T>(PipeGenerateArg arg, string afterName) where T : PipeMeshGeneratorBase
+    {
+        GameObject pipeNew = new GameObject(this.name + afterName);
+        pipeNew.transform.position = this.transform.position + arg.Offset;
+        pipeNew.transform.SetParent(this.transform.parent);
+
+        T pipe = pipeNew.GetComponent<T>();
+        if (pipe == null)
+        {
+            pipe = pipeNew.AddComponent<T>();
+        }
+        pipe.Target = this.gameObject;
+        ResultGo = pipe.gameObject;
+        return pipe;
+    }
+
+    public GameObject ResultGo = null;
 }

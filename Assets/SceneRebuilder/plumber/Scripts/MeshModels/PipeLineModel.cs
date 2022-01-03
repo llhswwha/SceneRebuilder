@@ -12,7 +12,7 @@ public class PipeLineModel : PipeModelBase
 {
     public void ShowOBB()
     {
-        OBBCollider.ShowOBB(this.gameObject);
+        OBBCollider.ShowOBB(this.gameObject,true);
     }
 
     public PipeLineInfo LineInfo = new PipeLineInfo();
@@ -98,7 +98,7 @@ public class PipeLineModel : PipeModelBase
         {
             oBBCollider = this.gameObject.AddComponent<OBBCollider>();
         }
-        oBBCollider.ShowObbInfo();
+        oBBCollider.ShowObbInfo(true);
         IsGetInfoSuccess = oBBCollider.IsObbError == false;
         OBB = oBBCollider.OBB;
 
@@ -131,7 +131,7 @@ public class PipeLineModel : PipeModelBase
                 continue;
             }
             verticesToPlaneInfos.Add(v2p);
-            
+            var isC = v2p.IsCircle();
         }
         verticesToPlaneInfos.Sort();
 
@@ -149,34 +149,21 @@ public class PipeLineModel : PipeModelBase
             endPlane = verticesToPlaneInfos[1];
             //判断是否是对称的平面，不是的话有问题。
             //找出对称的两个平面
+            //var endPlane2 = GetEndPlane(startPlane, verticesToPlaneInfos);
+            //if (endPlane2 == null)
+            //{
+
+            //}
+            //if (endPlane2 != endPlane)
+            //{
+            //    IsGetInfoSuccess = false;
+            //    endPlane = endPlane2;
+            //}
         }
         else
         {
             Debug.LogWarning($"GetModelInfo verticesToPlaneInfos.Count == 1 count:{verticesToPlaneInfos.Count},gameObject:{this.name}");
-            if (startPlane == verticesToPlaneInfos_All[0])
-            {
-                endPlane = verticesToPlaneInfos_All[1];
-            }
-            if (startPlane == verticesToPlaneInfos_All[1])
-            {
-                endPlane = verticesToPlaneInfos_All[0];
-            }
-            if (startPlane == verticesToPlaneInfos_All[2])
-            {
-                endPlane = verticesToPlaneInfos_All[3];
-            }
-            if (startPlane == verticesToPlaneInfos_All[3])
-            {
-                endPlane = verticesToPlaneInfos_All[2];
-            }
-            if (startPlane == verticesToPlaneInfos_All[4])
-            {
-                endPlane = verticesToPlaneInfos_All[5];
-            }
-            if (startPlane == verticesToPlaneInfos_All[5])
-            {
-                endPlane = verticesToPlaneInfos_All[4];
-            }
+            endPlane = GetEndPlane(startPlane, verticesToPlaneInfos_All);
         }
 
 
@@ -254,24 +241,24 @@ public class PipeLineModel : PipeModelBase
         //    //LineInfo.EndPoint = endPoint;
         //}
 
-        var startCircle = startPlane.GetCircleInfo();
+        CircleInfo startCircle = startPlane.GetCircleInfo();
         if (startCircle == null)
         {
             Debug.LogError($"GetModelInfo startCircle == null gameObject:{this.gameObject.name}");
             IsGetInfoSuccess = false;
 
-            CreateLocalPoint(startPlane.Point.planeCenter, "StartPoint1", planInfoRoot.transform);
-            CreateLocalPoint(endPlane.Point.planeCenter, "EndPoint1", planInfoRoot.transform);
+            CreateLocalPoint(startPlane.Point.planeCenter, $"Error1_StartPoint1", planInfoRoot.transform);
+            CreateLocalPoint(endPlane.Point.planeCenter, "Error1_EndPoint1", planInfoRoot.transform);
             return;
         }
         startPoint = startCircle.Center;
-        var endCircle = endPlane.GetCircleInfo();
+        CircleInfo endCircle = endPlane.GetCircleInfo();
         if (endCircle == null)
         {
             Debug.LogError($"GetModelInfo endCircle == null gameObject:{this.gameObject.name}");
             IsGetInfoSuccess = false;
-            CreateLocalPoint(startPlane.Point.planeCenter, "StartPoint2", planInfoRoot.transform);
-            CreateLocalPoint(endPlane.Point.planeCenter, "EndPoint2", planInfoRoot.transform);
+            CreateLocalPoint(startPlane.Point.planeCenter, "Error3_StartPoint2", planInfoRoot.transform);
+            CreateLocalPoint(endPlane.Point.planeCenter, "Error3_EndPoint2", planInfoRoot.transform);
             return;
         }
         endPoint = endCircle.Center;
@@ -291,8 +278,8 @@ public class PipeLineModel : PipeModelBase
 
         EndPoints = new List<Vector3>() { startPoint, endPoint };
 
-        CreateLocalPoint(startPoint, "StartPoint1", planInfoRoot.transform);
-        CreateLocalPoint(endPoint, "EndPoint1", planInfoRoot.transform);
+        CreateLocalPoint(startPoint, $"StartPoint1_{startCircle.Radius}_{startCircle.Points.Count}", planInfoRoot.transform);
+        CreateLocalPoint(endPoint, $"EndPoint1_{endCircle.Radius}_{endCircle.Points.Count}", planInfoRoot.transform);
 
         if (PipeRadius1 > PipeRadius2)
         {
@@ -311,6 +298,37 @@ public class PipeLineModel : PipeModelBase
         LineInfo.EndPoint = endPoint;
 
     }
+
+    private VerticesToPlaneInfo GetEndPlane(VerticesToPlaneInfo startPlane,List<VerticesToPlaneInfo> verticesToPlaneInfos_All)
+    {
+        VerticesToPlaneInfo endPlane = null;
+        if (startPlane == verticesToPlaneInfos_All[0])
+        {
+            endPlane = verticesToPlaneInfos_All[1];
+        }
+        if (startPlane == verticesToPlaneInfos_All[1])
+        {
+            endPlane = verticesToPlaneInfos_All[0];
+        }
+        if (startPlane == verticesToPlaneInfos_All[2])
+        {
+            endPlane = verticesToPlaneInfos_All[3];
+        }
+        if (startPlane == verticesToPlaneInfos_All[3])
+        {
+            endPlane = verticesToPlaneInfos_All[2];
+        }
+        if (startPlane == verticesToPlaneInfos_All[4])
+        {
+            endPlane = verticesToPlaneInfos_All[5];
+        }
+        if (startPlane == verticesToPlaneInfos_All[5])
+        {
+            endPlane = verticesToPlaneInfos_All[4];
+        }
+        return endPlane;
+    }
+
     public void GetModelInfo_OLD()
     {
         ClearChildren();
@@ -333,7 +351,7 @@ public class PipeLineModel : PipeModelBase
             //}
 
         }
-        oBBCollider.ShowObbInfo();
+        oBBCollider.ShowObbInfo(true);
         IsGetInfoSuccess = oBBCollider.IsObbError == false;
         OBB = oBBCollider.OBB;
 
@@ -516,16 +534,18 @@ public class PipeLineModel : PipeModelBase
 
     public override GameObject RendererModel(PipeGenerateArg arg,string afterName)
     {
-        GameObject pipeNew = new GameObject(this.name + afterName);
-        pipeNew.transform.position = this.transform.position + arg.Offset;
-        pipeNew.transform.SetParent(this.transform.parent);
+        //GameObject pipeNew = new GameObject(this.name + afterName);
+        //pipeNew.transform.position = this.transform.position + arg.Offset;
+        //pipeNew.transform.SetParent(this.transform.parent);
 
-        PipeMeshGenerator pipe = pipeNew.GetComponent<PipeMeshGenerator>();
-        if (pipe == null)
-        {
-            pipe = pipeNew.AddComponent<PipeMeshGenerator>();
-        }
-        pipe.Target = this.gam;
+        //PipeMeshGenerator pipe = pipeNew.GetComponent<PipeMeshGenerator>();
+        //if (pipe == null)
+        //{
+        //    pipe = pipeNew.AddComponent<PipeMeshGenerator>();
+        //}
+        //pipe.Target = this.gameObject;
+
+        PipeMeshGenerator pipe = GetGenerator<PipeMeshGenerator>(arg, afterName);
         pipe.points = new List<Vector3>() { LineInfo.StartPoint, LineInfo.EndPoint };
         arg.SetArg(pipe);
         pipe.pipeRadius = PipeRadius;
@@ -533,9 +553,8 @@ public class PipeLineModel : PipeModelBase
         pipe.pipeRadius2 = PipeRadius;
         pipe.IsGenerateEndWeld = true;
         pipe.RenderPipe();
-
-        this.CheckDistance = OBBCollider.CompareObb(this.gameObject, pipeNew);
-        return pipeNew;
+        
+        return pipe.gameObject;
     }
 
     public void CreateWeld()
@@ -550,7 +569,7 @@ public class PipeLineModel : PipeModelBase
         if (oBBCollider == null)
         {
             oBBCollider = this.gameObject.AddComponent<OBBCollider>();
-            oBBCollider.ShowObbInfo();
+            oBBCollider.ShowObbInfo(true);
         }
         OBB = oBBCollider.OBB;
 

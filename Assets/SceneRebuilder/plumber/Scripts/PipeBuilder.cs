@@ -35,7 +35,7 @@ public class PipeBuilder : MonoBehaviour
         }
         if (oBB != null)
         {
-            oBB.ShowObbInfo();
+            oBB.ShowObbInfo(true);
         }
     }
 
@@ -84,10 +84,29 @@ public class PipeBuilder : MonoBehaviour
         //RendererPipes();
         RendererPipesEx();
 
+        CheckResults();
+
         Debug.LogError($">CreateEachPipes time:{DateTime.Now - start}");
 
         ProgressBarHelper.ClearProgressBar();
         return NewPipeList;
+    }
+
+    public void CheckResults()
+    {
+        DateTime start = DateTime.Now;
+        for (int i = 0; i < PipeModels.Count; i++)
+        {
+            PipeModelBase go = PipeModels[i];
+            if (go == null) continue;
+            if (ProgressBarHelper.DisplayCancelableProgressBar(new ProgressArg("CheckResults", i, PipeModels.Count, go)))
+            {
+                return;
+            }
+            go.CheckResult();
+        }
+
+        Debug.LogError($">>CheckResults time:{DateTime.Now - start}");
     }
 
     public string NewObjName = "_New";
@@ -95,68 +114,79 @@ public class PipeBuilder : MonoBehaviour
     public void RendererPipesEx()
     {
         DateTime start = DateTime.Now;
-        int count = PipeLines.Count + PipeElbows.Count + PipeReducers.Count + PipeFlanges.Count;
-        int id = 0;
+        //int count = PipeLines.Count + PipeElbows.Count + PipeReducers.Count + PipeFlanges.Count;
+        //int id = 0;
+        //DateTime start1 = DateTime.Now;
+        //for (int i = 0; i < PipeLines.Count; i++)
+        //{
+        //    id++;
+        //    PipeLineModel go = PipeLines[i];
+        //    if (go == null) continue;
+        //    if(ProgressBarHelper.DisplayCancelableProgressBar(new ProgressArg("RendererPipesEx1",id,count,go)))
+        //    {
+        //        return;
+        //    }
+        //    GameObject pipe = go.RendererModel(this.generateArg, NewObjName);
+        //    NewPipeList.Add(pipe.transform);
+        //}
+        //Debug.LogError($">>>RendererPipeLines time:{DateTime.Now - start1}");
 
-        DateTime start1 = DateTime.Now;
-        for (int i = 0; i < PipeLines.Count; i++)
+        //DateTime start12 = DateTime.Now;
+        //for (int i = 0; i < PipeReducers.Count; i++)
+        //{
+        //    id++;
+        //    PipeReducerModel go = PipeReducers[i];
+        //    if (go == null) continue;
+        //    if (ProgressBarHelper.DisplayCancelableProgressBar(new ProgressArg("RendererPipesEx2", id, count, go)))
+        //    {
+        //        return;
+        //    }
+        //    GameObject pipe = go.RendererModel(this.generateArg, NewObjName);
+        //    NewPipeList.Add(pipe.transform);
+        //}
+        //Debug.LogError($">>>RendererPipeReducers time:{DateTime.Now - start12}");
+
+        //DateTime start13 = DateTime.Now;
+        //for (int i = 0; i < PipeFlanges.Count; i++)
+        //{
+        //    id++;
+        //    PipeFlangeModel go = PipeFlanges[i];
+        //    if (go == null) continue;
+        //    if (ProgressBarHelper.DisplayCancelableProgressBar(new ProgressArg("RendererPipesEx3", id, count, go)))
+        //    {
+        //        return;
+        //    }
+        //    GameObject pipe = go.RendererModel(this.generateArg, NewObjName);
+        //    NewPipeList.Add(pipe.transform);
+        //}
+        //Debug.LogError($">>>RendererPipeFlanges time:{DateTime.Now - start13}");
+
+        //DateTime start2 = DateTime.Now;
+        //for (int i = 0; i < PipeElbows.Count; i++)
+        //{
+        //    id++;
+        //    PipeElbowModel go = PipeElbows[i];
+        //    if (go == null) continue;
+        //    if (ProgressBarHelper.DisplayCancelableProgressBar(new ProgressArg("RendererPipesEx4", id, count, go)))
+        //    {
+        //        return;
+        //    }
+        //    GameObject pipe = go.RendererModel(this.generateArg, NewObjName);
+        //    NewPipeList.Add(pipe.transform);
+        //}
+        //Debug.LogError($">>>RendererPipeElbows time:{DateTime.Now - start2}");
+
+        for (int i = 0; i < PipeModels.Count; i++)
         {
-            id++;
-            PipeLineModel go = PipeLines[i];
+            PipeModelBase go = PipeModels[i];
             if (go == null) continue;
-            if(ProgressBarHelper.DisplayCancelableProgressBar(new ProgressArg("RendererPipesEx1",id,count,go)))
+            if (ProgressBarHelper.DisplayCancelableProgressBar(new ProgressArg("RendererPipes", i, PipeModels.Count, go)))
             {
                 return;
             }
             GameObject pipe = go.RendererModel(this.generateArg, NewObjName);
             NewPipeList.Add(pipe.transform);
         }
-        Debug.LogError($">>>RendererPipeLines time:{DateTime.Now - start1}");
-
-        DateTime start12 = DateTime.Now;
-        for (int i = 0; i < PipeReducers.Count; i++)
-        {
-            id++;
-            PipeReducerModel go = PipeReducers[i];
-            if (go == null) continue;
-            if (ProgressBarHelper.DisplayCancelableProgressBar(new ProgressArg("RendererPipesEx2", id, count, go)))
-            {
-                return;
-            }
-            GameObject pipe = go.RendererModel(this.generateArg, NewObjName);
-            NewPipeList.Add(pipe.transform);
-        }
-        Debug.LogError($">>>RendererPipeReducers time:{DateTime.Now - start12}");
-
-        DateTime start13 = DateTime.Now;
-        for (int i = 0; i < PipeFlanges.Count; i++)
-        {
-            id++;
-            PipeFlangeModel go = PipeFlanges[i];
-            if (go == null) continue;
-            if (ProgressBarHelper.DisplayCancelableProgressBar(new ProgressArg("RendererPipesEx3", id, count, go)))
-            {
-                return;
-            }
-            GameObject pipe = go.RendererModel(this.generateArg, NewObjName);
-            NewPipeList.Add(pipe.transform);
-        }
-        Debug.LogError($">>>RendererPipeFlanges time:{DateTime.Now - start13}");
-
-        DateTime start2 = DateTime.Now;
-        for (int i = 0; i < PipeElbows.Count; i++)
-        {
-            id++;
-            PipeElbowModel go = PipeElbows[i];
-            if (go == null) continue;
-            if (ProgressBarHelper.DisplayCancelableProgressBar(new ProgressArg("RendererPipesEx4", id, count, go)))
-            {
-                return;
-            }
-            GameObject pipe = go.RendererModel(this.generateArg, NewObjName);
-            NewPipeList.Add(pipe.transform);
-        }
-        Debug.LogError($">>>RendererPipeElbows time:{DateTime.Now - start2}");
 
         Debug.LogError($">>RendererPipes time:{DateTime.Now - start}");
     }

@@ -90,16 +90,19 @@ public class PipeReducerModel
     }
     public override GameObject RendererModel(PipeGenerateArg arg, string afterName)
     {
-        GameObject pipeNew = new GameObject(this.name + afterName);
-        pipeNew.transform.position = this.transform.position + arg.Offset;
-        pipeNew.transform.SetParent(this.transform.parent);
+        //GameObject pipeNew = new GameObject(this.name + afterName);
+        //pipeNew.transform.position = this.transform.position + arg.Offset;
+        //pipeNew.transform.SetParent(this.transform.parent);
 
-        PipeMeshGeneratorEx pipe = pipeNew.GetComponent<PipeMeshGeneratorEx>();
-        if (pipe == null)
-        {
-            pipe = pipeNew.AddComponent<PipeMeshGeneratorEx>();
-        }
-        pipe.Target = this.gameObject;
+        //PipeMeshGeneratorEx pipe = pipeNew.GetComponent<PipeMeshGeneratorEx>();
+        //if (pipe == null)
+        //{
+        //    pipe = pipeNew.AddComponent<PipeMeshGeneratorEx>();
+        //}
+        //pipe.Target = this.gameObject;
+
+
+        PipeMeshGeneratorEx pipe = GetGenerator<PipeMeshGeneratorEx>(arg, afterName);
         pipe.points = new List<Vector4>() { StartPoint, EndPoint };
         arg.SetArg(pipe);
         pipe.pipeRadius = PipeRadius;
@@ -108,7 +111,8 @@ public class PipeReducerModel
         pipe.IsGenerateEndWeld = true;
         pipe.generateEndCaps = true;
         pipe.RenderPipe();
-        return pipeNew;
+
+        return pipe.gameObject;
     }
 
     public override void GetPipeRadius()

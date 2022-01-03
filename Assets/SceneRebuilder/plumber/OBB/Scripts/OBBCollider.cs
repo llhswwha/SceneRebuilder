@@ -19,26 +19,54 @@ public class OBBCollider : MonoBehaviour
         return oBB;
     }
 
-    public static OBBCollider ShowOBB(GameObject obj)
+    public static OBBCollider ShowOBB(GameObject obj, bool isGetObbEx)
     {
         OBBCollider oBB = GetOBB(obj);
         if (oBB != null)
         {
-            oBB.ShowObbInfo();
+            oBB.ShowObbInfo(isGetObbEx);
         }
         return oBB;
     }
 
-    public static float CompareObb(GameObject obj1,GameObject obj2)
+    public static OBBCollider ShowOBBNotUpdate(GameObject obj, bool isGetObbEx)
     {
-        OBBCollider oBBCollider1 = ShowOBB(obj1);
-        OBBCollider oBBCollider2 = ShowOBB(obj2);
+        OBBCollider oBB = obj.GetComponent<OBBCollider>();
+        if (oBB == null)
+        {
+            oBB = obj.AddComponent<OBBCollider>();
+            oBB.ShowObbInfo(isGetObbEx);
+        }
+        return oBB;
+    }
+
+    public static float GetObbDistance(GameObject result,GameObject original)
+    {
+        OBBCollider oBBCollider1 = ShowOBB(result,false);
+        OBBCollider oBBCollider2 = ShowOBBNotUpdate(original, false);
         OrientedBoundingBox obb1 = oBBCollider1.OBB; 
         OrientedBoundingBox obb2 = oBBCollider2.OBB;
+        if (obb1 == null || obb2 == null) return 11;
+        if (oBBCollider1.IsObbError || oBBCollider2.IsObbError) return 22;
         var vs1 = obb1.CornerPointsVector3();
         var vs2= obb2.CornerPointsVector3();
         //MeshHelper.GetVertexDistanceEx(vs1, vs2,)
         var dis = DistanceUtil.GetDistance(vs1, vs2);
+        return dis;
+    }
+
+    public static float GetObbRTDistance(GameObject result, GameObject original)
+    {
+        OBBCollider oBBCollider1 = ShowOBB(result, false);
+        OBBCollider oBBCollider2 = ShowOBBNotUpdate(original, false);
+        OrientedBoundingBox obb1 = oBBCollider1.OBB;
+        OrientedBoundingBox obb2 = oBBCollider2.OBB;
+        if (obb1 == null || obb2 == null) return 11;
+        if (oBBCollider1.IsObbError || oBBCollider2.IsObbError) return 22;
+        var vs1 = obb1.CornerPointsVector3();
+        var vs2 = obb2.CornerPointsVector3();
+        //MeshHelper.GetVertexDistanceEx(vs1, vs2,)
+        var dis = MeshHelper.GetRTDistance(vs1, vs2);
         return dis;
     }
 
@@ -58,17 +86,19 @@ public class OBBCollider : MonoBehaviour
     public OrientedBoundingBox OBB;
 
     [ContextMenu("ShowObbInfo")]
-    public void ShowObbInfo()
+    public bool ShowObbInfo(bool isGetObbEx)
     {
         ClearChildren();
 
-        GetObb();
+        if (GetObb(isGetObbEx) == null) return false ;
 
         ShowOBBBox();
 
         ShowPipePoints();
 
         DrawWireCube();
+
+        return true;
     }
 
     //public void CreatePipe()
@@ -133,37 +163,40 @@ public class OBBCollider : MonoBehaviour
 
     public int TestObbPointCount = int.MaxValue;
 
-    public OrientedBoundingBox GetObb()
+    public OrientedBoundingBox GetObb(bool isGetObbEx)
     {
-        DateTime start=DateTime.Now;
-        List<Vector3> ps1= new List<Vector3>();
-        List<Vector3S> ps2=new List<Vector3S>();
-        MeshFilter meshFilter=this.GetComponent<MeshFilter>();
-        
-        var vs=meshFilter.sharedMesh.vertices;
-        var count=vs.Length;
-        for(int i=0;i<count; i++)
+        DateTime start = DateTime.Now;
+        List<Vector3> ps1 = new List<Vector3>();
+        List<Vector3S> ps2 = new List<Vector3S>();
+        MeshFilter meshFilter = this.GetComponent<MeshFilter>();
+
+        var vs = meshFilter.sharedMesh.vertices;
+        var count = vs.Length;
+        for (int i = 0; i < count; i++)
         {
-            Vector3 p=vs[i];
-            ps2.Add(new Vector3S(p.x,p.y,p.z));
+            Vector3 p = vs[i];
+            ps2.Add(new Vector3S(p.x, p.y, p.z));
             ps1.Add(p);
         }
         //Debug.Log("ps:"+ps.Count);
-        OBB=OrientedBoundingBox.BruteEnclosing(ps2.ToArray());
+        OBB = OrientedBoundingBox.BruteEnclosing(ps2.ToArray());
         Debug.Log($"GetObb ps:{ps2.Count} go:{gameObject.name} time:{(DateTime.Now - start).TotalMilliseconds}ms OBB:{OBB} Center:{OBB.Center} Extent:{OBB.Extent}");
-        if(OBB.Extent==Vector3.positiveInfinity || OBB.Extent == Vector3.negativeInfinity || float.IsInfinity(OBB.Extent.x))
+        if (OBB.Extent == Vector3.positiveInfinity || OBB.Extent == Vector3.negativeInfinity || float.IsInfinity(OBB.Extent.x))
         {
             Debug.LogError($"GetObb Error Extent:{OBB.Extent} ps_Last:{ps2.Last()}");
             var errorP = ps1.Last();
             CreateLocalPoint(errorP, $"ErrorPoint({errorP.x},{errorP.y},{errorP.z})");
             //OBB = null;
-            GetObbEx();
+            if (isGetObbEx)
+            {
+                if (GetObbEx() == false) return null;
+            }
             IsObbError = true;
         }
         return OBB;
     }
 
-    public void GetObbEx()
+    public bool GetObbEx()
     {
         DateTime start = DateTime.Now;
         List<Vector3> ps1 = new List<Vector3>();
@@ -182,7 +215,7 @@ public class OBBCollider : MonoBehaviour
             if(ProgressBarHelper.DisplayCancelableProgressBar(new ProgressArg("GetObbEx", i, count, p)))
             {
                 ProgressBarHelper.ClearProgressBar();
-                return;
+                return false;
             }
 
             ps21.Add(new Vector3S(p.x, p.y, p.z));
@@ -222,6 +255,7 @@ public class OBBCollider : MonoBehaviour
             CreateLocalPoint(errorP, $"ErrorPoint({errorP.x},{errorP.y},{errorP.z})");
         }
         ProgressBarHelper.ClearProgressBar();
+        return true;
     }
 
     public bool IsObbError = false;

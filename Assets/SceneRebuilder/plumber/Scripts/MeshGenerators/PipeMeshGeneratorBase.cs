@@ -4,6 +4,8 @@ using UnityEngine;
 
 public class PipeMeshGeneratorBase : MonoBehaviour
 {
+    public GameObject Target;
+
     public float elbowRadius = 0.5f;
     [Range(3, 32)]
     public int pipeSegments = 8;
