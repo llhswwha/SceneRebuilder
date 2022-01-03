@@ -3,7 +3,7 @@ using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 
-public class PipeMeshGeneratorEx : MonoBehaviour
+public class PipeMeshGeneratorEx : PipeMeshGeneratorBase
 {
     public GameObject Target;
 
@@ -87,21 +87,6 @@ public class PipeMeshGeneratorEx : MonoBehaviour
 
     public float pipeRadius1 = 0;
     public float pipeRadius2 = 0;
-
-    public float elbowRadius = 0.5f;
-    [Range(3, 32)]
-    public int pipeSegments = 8;
-    [Range(3, 32)]
-    public int elbowSegments = 6;
-    public Material pipeMaterial;
-    public bool flatShading;
-    public bool avoidStrangling;
-    public bool generateEndCaps;
-    public bool generateElbows = true;
-    public bool generateOnStart;
-    public bool makeDoubleSided;
-    //public float colinearThreshold = 0.001f;
-    public float colinearThreshold = 0.002f;
 
     public bool IsLinkEndStart = false;
 
@@ -995,29 +980,5 @@ public class PipeMeshGeneratorEx : MonoBehaviour
         return elbowMeshData;
     }
 
-    void GenerateEndCaps(List<Vector4> points, List<Vector3> vertices, List<int> triangles, List<Vector3> normals)
-    {
-        // create the circular cap on each end of the pipe
-        int firstCircleOffset = 0;
-        int secondCircleOffset = (points.Count - 1) * pipeSegments * 2 - pipeSegments;
 
-        vertices.Add(points[0]); // center of first segment cap
-        int firstCircleCenter = vertices.Count - 1;
-        normals.Add(points[0] - points[1]);
-
-        vertices.Add(points[points.Count - 1]); // center of end segment cap
-        int secondCircleCenter = vertices.Count - 1;
-        normals.Add(points[points.Count - 1] - points[points.Count - 2]);
-
-        for (int i = 0; i < pipeSegments; i++)
-        {
-            triangles.Add(firstCircleCenter);
-            triangles.Add(firstCircleOffset + (i + 1) % pipeSegments);
-            triangles.Add(firstCircleOffset + i);
-
-            triangles.Add(secondCircleOffset + i);
-            triangles.Add(secondCircleOffset + (i + 1) % pipeSegments);
-            triangles.Add(secondCircleCenter);
-        }
-    }
 }
