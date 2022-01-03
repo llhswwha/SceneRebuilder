@@ -489,6 +489,25 @@ namespace MathGeoLib
             return points;
         }
 
+        public Vector3[] CornerPointsVector3()
+        {
+            var p0 = this.CornerPoint(0);
+            var p1 = this.CornerPoint(1);
+            var p2 = this.CornerPoint(2);
+            var p3 = this.CornerPoint(3);
+            var p4 = this.CornerPoint(4);
+            var p5 = this.CornerPoint(5);
+            var p6 = this.CornerPoint(6);
+            var p7 = this.CornerPoint(7);
+
+            var points = new[]
+            {
+                p0.GetVector3(), p1.GetVector3(), p2.GetVector3(), p3.GetVector3(),
+                p4.GetVector3(), p5.GetVector3(), p6.GetVector3(), p7.GetVector3()
+            };
+            return points;
+        }
+
         public void Enclose(Vector3S point)
         {
             NativeMethods.obb_enclose(this, point);

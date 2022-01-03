@@ -10,21 +10,10 @@ using UnityEngine;
 /// </summary>
 public class PipeLineModel : PipeModelBase
 {
-
     public void ShowOBB()
     {
-        OBBCollider oBB = this.gameObject.GetComponent<OBBCollider>();
-        if (oBB == null)
-        {
-            oBB = this.gameObject.AddComponent<OBBCollider>();
-        }
-        if (oBB != null)
-        {
-            oBB.ShowObbInfo();
-        }
+        OBBCollider.ShowOBB(this.gameObject);
     }
-
-
 
     public PipeLineInfo LineInfo = new PipeLineInfo();
 
@@ -506,6 +495,8 @@ public class PipeLineModel : PipeModelBase
         pipe.pipeRadius2 = PipeRadius;
         pipe.IsGenerateEndWeld = true;
         pipe.RenderPipe();
+
+        this.CheckDistance = OBBCollider.CompareObb(this.gameObject, pipeNew);
         return pipeNew;
     }
 

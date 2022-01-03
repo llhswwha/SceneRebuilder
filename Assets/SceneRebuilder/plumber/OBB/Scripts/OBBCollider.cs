@@ -9,6 +9,39 @@ using System.Text;
 
 public class OBBCollider : MonoBehaviour
 {
+    public static OBBCollider GetOBB(GameObject obj)
+    {
+        OBBCollider oBB = obj.GetComponent<OBBCollider>();
+        if (oBB == null)
+        {
+            oBB = obj.AddComponent<OBBCollider>();
+        }
+        return oBB;
+    }
+
+    public static OBBCollider ShowOBB(GameObject obj)
+    {
+        OBBCollider oBB = GetOBB(obj);
+        if (oBB != null)
+        {
+            oBB.ShowObbInfo();
+        }
+        return oBB;
+    }
+
+    public static float CompareObb(GameObject obj1,GameObject obj2)
+    {
+        OBBCollider oBBCollider1 = ShowOBB(obj1);
+        OBBCollider oBBCollider2 = ShowOBB(obj2);
+        OrientedBoundingBox obb1 = oBBCollider1.OBB; 
+        OrientedBoundingBox obb2 = oBBCollider2.OBB;
+        var vs1 = obb1.CornerPointsVector3();
+        var vs2= obb2.CornerPointsVector3();
+        //MeshHelper.GetVertexDistanceEx(vs1, vs2,)
+        var dis = DistanceUtil.GetDistance(vs1, vs2);
+        return dis;
+    }
+
     // Start is called before the first frame update
     void Start()
     {
@@ -100,7 +133,7 @@ public class OBBCollider : MonoBehaviour
 
     public int TestObbPointCount = int.MaxValue;
 
-    public void GetObb()
+    public OrientedBoundingBox GetObb()
     {
         DateTime start=DateTime.Now;
         List<Vector3> ps1= new List<Vector3>();
@@ -127,6 +160,7 @@ public class OBBCollider : MonoBehaviour
             GetObbEx();
             IsObbError = true;
         }
+        return OBB;
     }
 
     public void GetObbEx()
@@ -546,8 +580,8 @@ public class OBBCollider : MonoBehaviour
     public void ShowPlaneInfo(PlaneInfo plane,int i,GameObject go,VerticesToPlaneInfo v2p)
     {
         GameObject planeObjRoot = new GameObject($"Plane[{i}]");
-        go.transform.SetParent(go.transform);
-        go.transform.localPosition = Vector3.zero;
+        planeObjRoot.transform.SetParent(go.transform);
+        planeObjRoot.transform.localPosition = Vector3.zero;
 
         var point = plane.planePoint;
         var normal = plane.planeNormal * 0.1f;

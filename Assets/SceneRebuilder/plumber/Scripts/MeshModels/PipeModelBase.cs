@@ -16,6 +16,8 @@ public class PipeModelBase : MonoBehaviour,IComparable<PipeModelBase>
 
     public int VertexCount = 0;
 
+    public float CheckDistance = 0;
+
     private string GetCompareString()
     {
         string a = "1";
@@ -58,7 +60,7 @@ public class PipeModelBase : MonoBehaviour,IComparable<PipeModelBase>
 
     public override string ToString()
     {
-        return $"type:{this.GetType().Name} radius:{PipeRadius:F5}| v:{VertexCount}|result:{IsGetInfoSuccess}";
+        return $"type:{this.GetType().Name} radius:{PipeRadius:F5}| v:{VertexCount}|result:{IsGetInfoSuccess} dis:{CheckDistance}";
         //return GetCompareString();
     }
 
