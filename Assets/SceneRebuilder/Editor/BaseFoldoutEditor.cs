@@ -1684,14 +1684,16 @@ public class BaseFoldoutEditor<T> : BaseEditor<T> where T : class
                 arg.level = 2;
                 EditorUIUtils.ObjectFoldout(arg, listItem.go, () =>
                 {
-                    if (GUILayout.Button(listItem.EndModel1.name, GUILayout.Width(100)))
-                    {
-                        EditorHelper.SelectObject(listItem.EndModel1.gameObject);
-                    }
-                    if (GUILayout.Button(listItem.EndModel2.name, GUILayout.Width(100)))
-                    {
-                        EditorHelper.SelectObject(listItem.EndModel2.gameObject);
-                    }
+                    if(listItem.EndModel1!=null)
+                        if (GUILayout.Button(listItem.EndModel1.name, GUILayout.Width(100)))
+                        {
+                            EditorHelper.SelectObject(listItem.EndModel1.gameObject);
+                        }
+                    if(listItem.EndModel2!=null)
+                        if (GUILayout.Button(listItem.EndModel2.name, GUILayout.Width(100)))
+                        {
+                            EditorHelper.SelectObject(listItem.EndModel2.gameObject);
+                        }
                 });
                 var models = listItem.PipeModels;
                 DrawPipeModelsListInner(models, arg);

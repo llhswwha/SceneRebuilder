@@ -9,7 +9,7 @@ public class PipeFactoryEditor : BaseFoldoutEditor<PipeFactory>
 {
     static FoldoutEditorArg pipeModelListArg = new FoldoutEditorArg(true, true);
     static FoldoutEditorArg pipeRunListArg = new FoldoutEditorArg(true, true);
-
+    static FoldoutEditorArg specialElbowListArg = new FoldoutEditorArg(true, true);
     public override void OnEnable()
     {
         base.OnEnable();
@@ -145,6 +145,6 @@ public class PipeFactoryEditor : BaseFoldoutEditor<PipeFactory>
 
         DrawPipeModelsList(targetT.GetPipeModels(), pipeModelListArg, "PipeModel List");
         DrawPipeRunList(targetT.GetPipeRunList(), pipeRunListArg);
-        DrawPipeModelsList(targetT.GetPipeRunList().SpecialElbows, pipeModelListArg, "SpecialElbow List");
+        DrawPipeModelsList(targetT.GetPipeRunList().SpecialElbows, specialElbowListArg, "SpecialElbow List");
     }
 }

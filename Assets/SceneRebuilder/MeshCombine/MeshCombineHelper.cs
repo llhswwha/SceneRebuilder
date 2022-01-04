@@ -436,6 +436,15 @@ public static class MeshCombineHelper
         yield return target;
     }
 
+    public static GameObject Combine(GameObject root)
+    {
+        MeshCombineArg arg = new MeshCombineArg(root);
+        GameObject goNew= CombineEx(arg);
+        goNew.name = root.name;
+        GameObject.DestroyImmediate(root);
+        return goNew;
+    }
+
     public static GameObject CombineEx(MeshCombineArg arg, MeshCombineMode mode = MeshCombineMode.OneMesh)
     {
 #if UNITY_EDITOR
@@ -556,6 +565,14 @@ public class MeshCombineArg
         this.sourceName = sour.name;
         this.source = sour;
         this.renderers = rs;
+    }
+
+    public MeshCombineArg(List<GameObject> gameObjects)
+    {
+        //this.sourceName = sour.name;
+        //this.source = sour;
+        //this.renderers = rs;
+        //List<MeshRenderer>
     }
 
     public MeshRenderer[] renderers;

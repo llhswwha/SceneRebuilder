@@ -46,28 +46,43 @@ public class PipeTeeModel : PipeElbowModel
 
             SharedMeshTriangles teePlane2 = null;
 
-            float minNormalAngle = 0;
+            //float minNormalAngle = 0;
             for (int i = 0; i < trianglesList.Count; i++)
             {
                 SharedMeshTriangles plane = trianglesList[i];
                 var normalAngle = Vector3.Dot(teePlane1.Normal, plane.Normal);
+                Debug.Log($"go:{this.name} angle[{i}] normal1:{teePlane1.Normal} normal2:{plane.Normal} angle:{normalAngle}");
+                if (normalAngle + 1 <= 0.00001)//相反或者平行
+                {
+                    teePlane2 = plane;
+                    //break;
+                }
+                if (normalAngle - 1 <= 0.00001)
+                {
+                    teePlane2 = plane;
+                    //break;
+                }
+
                 
-                if (normalAngle + 1 <= 0.00001)
-                {
-                    teePlane2 = plane;
-                }
-                if (minNormalAngle > normalAngle)
-                {
-                    minNormalAngle = normalAngle;
-                    teePlane2 = plane;
 
-                    Debug.Log($"angle[{i}] normal1:{teePlane1.Normal} normal2:{plane.Normal} angle:{normalAngle}");
-                }
-                else
-                {
+                //if (minNormalAngle > normalAngle)
+                //{
+                //    minNormalAngle = normalAngle;
+                //    teePlane2 = plane;
+                //}
+                //else
+                //{
 
-                }
+                //}
             }
+
+            if (teePlane2 == null)
+            {
+                IsGetInfoSuccess = false;
+                Debug.LogError($"GetTeeModelInfo go:{this.name} teePlane2 == null");
+                return;
+            }
+
             TeeEndPoint = teePlane2.GetCenter4();
             trianglesList.Remove(teePlane2);
 
@@ -114,24 +129,45 @@ public class PipeTeeModel : PipeElbowModel
     {
         //return base.RendererModel(arg, afterName);
 
-        PipeMeshGeneratorEx pipe = GetGenerator<PipeMeshGeneratorEx>(arg, afterName);
-        PipeCreateArg pipeArg = new PipeCreateArg(Line1, Line2);
-        var ps = pipeArg.GetGeneratePoints(0, 2, false);
+        //PipeMeshGeneratorEx pipe = GetGenerator<PipeMeshGeneratorEx>(arg, afterName);
+        //PipeCreateArg pipeArg = new PipeCreateArg(Line1, Line2);
+        //var ps = pipeArg.GetGeneratePoints(0, 2, false);
+        ////pipe.points = new List<Vector3>() { EndPointOut1, EndPointIn1, EndPointIn2, EndPointOut2 };
+        //pipe.LineStep = 2;
+        //pipe.generateElbows = false;
 
-        //pipe.points = new List<Vector3>() { EndPointOut1, EndPointIn1, EndPointIn2, EndPointOut2 };
-        pipe.LineStep = 2;
+        //pipe.points = new List<Vector4>() { LineStartPoint, LineEndPoint, TeeStartPoint, TeeEndPoint };
+        //arg.SetArg(pipe);
+        //pipe.generateWeld = false;
+        //pipe.avoidStrangling = true;
+        //pipe.RenderPipe();
+        //return pipe.gameObject;
+
+        GameObject pipe1 = RenderPipeLine(arg, afterName, LineStartPoint, LineEndPoint);
+        GameObject pipe2= RenderPipeLine(arg, afterName, TeeStartPoint, TeeEndPoint);
+        GameObject pipeNew = GetPipeNewGo(arg, afterName);
+
+        pipe1.transform.SetParent(pipeNew.transform);
+        pipe2.transform.SetParent(pipeNew.transform);
+        GameObject target = MeshCombineHelper.Combine(pipeNew);
+        this.ResultGo = target;
+
+        ModelStartPoint = LineStartPoint;
+        ModelEndPoint = LineEndPoint;
+
+        return target;
+    }
+
+    public GameObject RenderPipeLine(PipeGenerateArg arg, string afterName,Vector4 startP,Vector4 endP)
+    {
+        PipeMeshGenerator pipe = GetGenerator<PipeMeshGenerator>(arg, afterName);
         pipe.generateElbows = false;
-
-        pipe.points = new List<Vector4>() { LineStartPoint, LineEndPoint, TeeStartPoint, TeeEndPoint };
+        pipe.points = new List<Vector3>() { startP, endP };
+        pipe.pipeRadius = (startP.w+endP.w)/2;
         arg.SetArg(pipe);
-
-        //pipe.generateWeld = arg.generateWeld;
         pipe.generateWeld = false;
-        pipe.pipeRadius = PipeRadius;
-        pipe.elbowRadius = pipeArg.elbowRadius;
         pipe.avoidStrangling = true;
         pipe.RenderPipe();
-
         return pipe.gameObject;
     }
 }

@@ -3,7 +3,7 @@ using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 
-public class PipeFactory : MonoBehaviour
+public class PipeFactory : SingletonBehaviour<PipeFactory>
 {
     public GameObject Target;
 
@@ -254,6 +254,7 @@ public class PipeFactory : MonoBehaviour
         newBuilder.PipeElbowsGos = PipeElbows;
         newBuilder.PipeReducerGos = PipeReducers;
         newBuilder.PipeFlangeGos = PipeFlanges;
+        newBuilder.PipeTeeGos = PipeTees;
     }
 
     GameObject targetNew;
@@ -301,6 +302,10 @@ public class PipeFactory : MonoBehaviour
         MeshNode meshNode= MeshNode.InitNodes(targetNew);
         ResultInfo = meshNode.GetTitle();
     }
+
+    public Material pipeMaterial;
+
+    public Material weldMaterial;
 
     public PipeGenerateArg generateArg = new PipeGenerateArg();
 }

@@ -209,6 +209,8 @@ public class PipeModelBase : MonoBehaviour,IComparable<PipeModelBase>
         return transform.TransformPoint(ModelEndPoint);
     }
 
+    public List<Vector4> ModelKeyPoints = new List<Vector4>();
+
     public PipeGenerateArg generateArg = new PipeGenerateArg();
 
     public float PipeRadius = 0;
@@ -327,9 +329,7 @@ public class PipeModelBase : MonoBehaviour,IComparable<PipeModelBase>
 
     public T GetGenerator<T>(PipeGenerateArg arg, string afterName) where T : PipeMeshGeneratorBase
     {
-        GameObject pipeNew = new GameObject(this.name + afterName);
-        pipeNew.transform.position = this.transform.position + arg.Offset;
-        pipeNew.transform.SetParent(this.transform.parent);
+        GameObject pipeNew = GetPipeNewGo(arg, afterName);
 
         T pipe = pipeNew.GetComponent<T>();
         if (pipe == null)
@@ -339,6 +339,14 @@ public class PipeModelBase : MonoBehaviour,IComparable<PipeModelBase>
         pipe.Target = this.gameObject;
         ResultGo = pipe.gameObject;
         return pipe;
+    }
+
+    public GameObject GetPipeNewGo(PipeGenerateArg arg, string afterName)
+    {
+        GameObject pipeNew = new GameObject(this.name + afterName);
+        pipeNew.transform.position = this.transform.position + arg.Offset;
+        pipeNew.transform.SetParent(this.transform.parent);
+        return pipeNew;
     }
 
     public GameObject ResultGo = null;
