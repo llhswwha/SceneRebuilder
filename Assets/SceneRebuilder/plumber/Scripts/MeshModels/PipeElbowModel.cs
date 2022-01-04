@@ -73,6 +73,11 @@ public class PipeElbowModel : PipeModelBase
 
             GetPipeRadius();
 
+            ModelStartPoint = EndPointOut1;
+            ModelStartPoint.w = PipeRadius;
+            ModelEndPoint = EndPointOut2;
+            ModelEndPoint.w = PipeRadius;
+
             IsGetInfoSuccess = true;
             Debug.Log($">>>GetElbowInfo time:{DateTime.Now - start}");
         }
@@ -127,6 +132,10 @@ public class PipeElbowModel : PipeModelBase
             TransformHelper.ShowLocalPoint(crossPoint2, PointScale, this.transform, null).name = "crossPoint2";
             TransformHelper.ShowLocalPoint(crossPoint12, PointScale, this.transform, null).name = "crossPoint12";
 
+            ModelStartPoint = EndPointOut1;
+            ModelStartPoint.w = PipeRadius;
+            ModelEndPoint = EndPointOut2;
+            ModelEndPoint.w = PipeRadius;
 
             IsGetInfoSuccess = true;
             Debug.Log($">>>GetElbowInfo time:{DateTime.Now - start}");
@@ -134,7 +143,7 @@ public class PipeElbowModel : PipeModelBase
         else
         {
             IsGetInfoSuccess = false;
-            Debug.LogError($"GetKeyPointsById points.Count Error count:{trianglesList.Count} gameObject:{this.gameObject.name} sharedMinCount:{sharedMinCount} minRepeatPointDistance:{minRepeatPointDistance}");
+            Debug.LogError($">>>GetElbowInfo GetModelInfo points.Count Error count:{trianglesList.Count} gameObject:{this.gameObject.name} sharedMinCount:{sharedMinCount} minRepeatPointDistance:{minRepeatPointDistance}");
             return;
         }
 
@@ -196,19 +205,21 @@ public class PipeElbowModel : PipeModelBase
 
     public override GameObject RendererModel(PipeGenerateArg arg,string newAfterName)
     {
+        //GameObject pipeNew = new GameObject(this.name + newAfterName);
+        //pipeNew.transform.position = this.transform.position + arg.Offset;
+        //pipeNew.transform.SetParent(this.transform.parent);
+
+        //PipeMeshGenerator pipe = pipeNew.GetComponent<PipeMeshGenerator>();
+        //if (pipe == null)
+        //{
+        //    pipe = pipeNew.AddComponent<PipeMeshGenerator>();
+        //}
+        //pipe.Target = this.gameObject;
+
+        PipeMeshGenerator pipe = GetGenerator<PipeMeshGenerator>(arg, newAfterName);
         PipeCreateArg pipeArg = new PipeCreateArg(Line1, Line2);
         var ps = pipeArg.GetGeneratePoints(0, 2, false);
 
-        GameObject pipeNew = new GameObject(this.name + newAfterName);
-        pipeNew.transform.position = this.transform.position + arg.Offset;
-        pipeNew.transform.SetParent(this.transform.parent);
-
-        PipeMeshGenerator pipe = pipeNew.GetComponent<PipeMeshGenerator>();
-        if (pipe == null)
-        {
-            pipe = pipeNew.AddComponent<PipeMeshGenerator>();
-        }
-        pipe.Target = this.gameObject;
         //pipe.points = new List<Vector3>() { EndPointOut1, EndPointIn1, EndPointIn2, EndPointOut2 };
         pipe.points = ps;
         arg.SetArg(pipe);
@@ -219,13 +230,24 @@ public class PipeElbowModel : PipeModelBase
         pipe.elbowRadius = pipeArg.elbowRadius;
         pipe.avoidStrangling = true;
         pipe.RenderPipe();
-        return pipeNew;
+
+        return pipe.gameObject;
     }
 
     public Vector3 EndPointIn1 = Vector3.zero;
     public Vector3 EndPointOut1 = Vector3.zero;
     public Vector3 EndPointIn2 = Vector3.zero;
     public Vector3 EndPointOut2= Vector3.zero;
+
+    public Vector3 GetEndPointIn1()
+    {
+        return this.transform.TransformPoint(EndPointIn1);
+    }
+
+    public Vector3 GetEndPointIn2()
+    {
+        return this.transform.TransformPoint(EndPointIn2);
+    }
 
     public PipeLineInfo Line1 = new PipeLineInfo();
 

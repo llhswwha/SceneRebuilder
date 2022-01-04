@@ -12,7 +12,7 @@ public class OBBColliderEditor : Editor
         GUILayout.BeginHorizontal();
         if(GUILayout.Button("ShowObbInfo"))
         {
-            targetT.ShowObbInfo();
+            targetT.ShowObbInfo(true);
         }
         if (GUILayout.Button("ClearChildren"))
         {
@@ -20,7 +20,7 @@ public class OBBColliderEditor : Editor
         }
         if (GUILayout.Button("GetObb"))
         {
-            targetT.GetObb();
+            targetT.GetObb(true);
         }
 
         //if (GUILayout.Button("CreatePipe"))

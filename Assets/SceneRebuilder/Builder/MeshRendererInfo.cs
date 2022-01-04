@@ -107,6 +107,11 @@ public class MeshRendererInfo : MonoBehaviour,IComparable<MeshRendererInfo>
         return renderer;
     }
 
+    public Vector3[] GetBoxCornerPonts()
+    {
+        return new Vector3[] { minMax[0], minMax[1] };
+    }
+
     public void AddCollider()
     {
         MeshCollider meshCollider = this.gameObject.GetComponent<MeshCollider>();

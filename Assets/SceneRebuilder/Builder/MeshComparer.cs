@@ -771,6 +771,8 @@ public class MeshComparer : SingletonBehaviour<MeshComparer>
 
     public int MaxICPCount=5;
 
+    
+
     public void TestICP()
     {
         SetDistanceSetting();
@@ -789,56 +791,9 @@ public class MeshComparer : SingletonBehaviour<MeshComparer>
         var vsFrom = MeshHelper.GetWorldVertexes(goFromCopy);
         //MeshHelper.ShowVertexes(vsFrom, pScale, "vsFrom");
         var vsTo = MeshHelper.GetWorldVertexes(goTo);
-        //MeshHelper.ShowVertexes(vsTo, pScale, "vsTo");
-        var dis1 = DistanceUtil.GetDistance(vsFrom, vsTo);
-        Debug.LogError("TestICP2 dis1:"+dis1);
+        GameObject goOld = goFromCopy;
 
-        GameObject goOld=goFromCopy;
-        RTResultList rList=new RTResultList();
-        for(int i=0;i<MaxICPCount;i++)
-        {
-            DateTime start1=DateTime.Now;
-            float progress = (float)i / MaxICPCount;
-            float percents = progress * 100;
-            if(ProgressBarHelper.DisplayCancelableProgressBar("TestICP2", $"{i}/{MaxICPCount} {percents:F2}% of 100%", progress))
-            {
-                break;
-            }
-
-            //DateTime start21=DateTime.Now;
-            //var psList=vsFrom.ToList();
-            //Debug.LogError($"Time0:{(DateTime.Now-start21).TotalMilliseconds}ms");
-
-            //DateTime start2=DateTime.Now;
-            var vsFromCP1 = DistanceUtil.GetClosedPoints(vsTo, vsFrom.ToList());
-            //Debug.LogError($"Time1:{(DateTime.Now-start2).TotalMilliseconds}ms");
-
-            //DateTime start3=DateTime.Now;
-            //MeshHelper.ShowVertexes(vsFromCP1, pScale, "vsFromCP_"+(i+1));
-            var r1 = AcRigidTransform.ApplyTransformationN(vsFromCP1, vsTo);
-            rList.Add(r1);
-            //Debug.LogError($"Time2:{(DateTime.Now-start3).TotalMilliseconds}ms");
-
-            var vsFromNew1 = r1.ApplyPoints(vsFrom);
-
-            //MeshHelper.ShowVertexes(vsFromNew1, pScale, "vsFromNew_"+(i+1));
-
-            // var goNew=MeshHelper.CopyGO(goOld);
-            // goNew.name="vsFromNew_"+(i+1);
-            // r1.ApplyMatrix(goNew.transform);
-            // goOld=goNew;
-            // MeshHelper.ShowVertexes(vsFromNew1, pScale, goNew.transform);
-
-            var dis2 = DistanceUtil.GetDistance(vsFromNew1, vsTo,i==MaxICPCount-1);
-            //Debug.LogError($"TestICP1 dis{i+1}:" + dis2);
-            Debug.LogError($"dis[{i+1}] dis:{dis2}, Time:{(DateTime.Now-start1).TotalMilliseconds}ms");
-            vsFrom=vsFromNew1;
-            if(dis2<=0.000001)
-            {
-                break;
-            }
-            
-        }
+        var rList = MeshHelper.GetRTResultList(vsFrom, vsTo, MaxICPCount, 0.000001f);
 
         rList.ApplyMatrix(goOld.transform, goTo.transform);
 

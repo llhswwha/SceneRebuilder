@@ -250,6 +250,8 @@ public class SharedMeshTriangles
 
     public Vector3 Center;
 
+    public Vector3 Normal;
+
     public float DistanceToCenter;
 
     public bool IsCircle = true;
@@ -262,6 +264,13 @@ public class SharedMeshTriangles
         return Center;
     }
 
+    public Vector4 GetCenter4()
+    {
+        Vector4 c = Center;
+        c.w = this.GetRadius();
+        return c;
+    }
+
     public MeshTriangleList Triangles = new MeshTriangleList();
 
     public float GetRadius()
@@ -269,10 +278,11 @@ public class SharedMeshTriangles
         return Triangles.GetRadius(PointId);
     }
 
-    public SharedMeshTriangles(int id, Vector3 p, List<MeshTriangle> ts)
+    public SharedMeshTriangles(int id, Vector3 p,Vector3 normal, List<MeshTriangle> ts)
     {
         this.PointId = id;
         this.Point = p;
+        this.Normal = normal;
         this.Triangles.AddRange(ts);
         Center = Triangles.GetCenter(PointId);
         CircleCheckP = Triangles.GetCircleCheckP(PointId);

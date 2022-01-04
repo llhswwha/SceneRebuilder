@@ -232,7 +232,7 @@ public class MeshTriangles
                     {
                         Vector3 normal= mesh.normals[pointId];
                         //Debug.Log($"dis:{dis} point:{point} KeyPoints:{KeyPoints.Count}");
-                        KeyPoints.Add(new SharedMeshTriangles(pointId,point,triangles));
+                        KeyPoints.Add(new SharedMeshTriangles(pointId,point, normal, triangles));
                     }
                 }
             }
@@ -339,7 +339,8 @@ public class MeshTriangles
         for (int i = 0; i < points.Count; i++)
         {
             SharedMeshTriangles point = points[i];
-            TransformHelper.ShowLocalPoint(point.Center, pointScale, root, keyPointsObj.transform).name=$"Key[{i+1}]_Center";
+            TransformHelper.ShowLocalPoint(point.Normal, pointScale, root, keyPointsObj.transform).name = $"Key[{i + 1}]_Normal_{point.Normal}";
+            TransformHelper.ShowLocalPoint(point.Center, pointScale, root, keyPointsObj.transform).name=$"Key[{i+1}]_Center_point.Center";
             TransformHelper.ShowLocalPoint(point.Point, pointScale, root, keyPointsObj.transform).name = $"Key[{i + 1}]_Point_{point.IsCircle}_{point.DistanceToCenter}_{point.GetRadius()}";
         }
 

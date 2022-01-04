@@ -992,6 +992,15 @@ public static class MeshHelper
         return GetVertexDistanceEx(new DistanceArgs(g1.transform, g2.transform, progress, showLog, local));
     }
 
+    public static float GetSizeDistance(GameObject g1, GameObject g2)
+    {
+        MeshRendererInfo r1 = MeshRendererInfo.GetInfo(g1);
+        MeshRendererInfo r2 = MeshRendererInfo.GetInfo(g2);
+        var vs1=r1.GetBoxCornerPonts();
+        var vs2 = r2.GetBoxCornerPonts();
+        return DistanceUtil.GetDistance(vs1, vs2);
+    }
+
     public static float GetAvgVertexDistanceEx(Transform t1, Transform t2, string progress = "", bool showLog = false)
     {
         if (t1 == null)
@@ -2586,6 +2595,75 @@ public static class MeshHelper
     {
         //return mf.sharedMesh.GetInstanceID();
         return mf.InstanceId;
+    }
+
+    public static RTResult GetRTResult(Vector3[] vsFrom, Vector3[] vsTo)
+    {
+        var r1 = AcRigidTransform.ApplyTransformationN(vsFrom, vsTo);
+        var vsFromNew1 = r1.ApplyPoints(vsFrom);
+        var dis2 = DistanceUtil.GetDistance(vsFromNew1, vsTo, false);
+        return r1;
+    }
+
+    public static float GetRTDistance(Vector3[] vsFrom, Vector3[] vsTo)
+    {
+        var r1 = AcRigidTransform.ApplyTransformationN(vsFrom, vsTo);
+        var vsFromNew1 = r1.ApplyPoints(vsFrom);
+        var dis2 = DistanceUtil.GetDistance(vsFromNew1, vsTo, false);
+        return dis2;
+    }
+
+    public static RTResultList GetRTResultList(Vector3[] vsFrom, Vector3[] vsTo, int maxCount,float minDis)
+    {
+        //MeshHelper.ShowVertexes(vsTo, pScale, "vsTo");
+        var dis1 = DistanceUtil.GetDistance(vsFrom, vsTo);
+        Debug.LogError("TestICP2 dis1:" + dis1);
+
+        RTResultList rList = new RTResultList();
+        for (int i = 0; i < maxCount; i++)
+        {
+            DateTime start1 = DateTime.Now;
+            float progress = (float)i / maxCount;
+            float percents = progress * 100;
+            if (ProgressBarHelper.DisplayCancelableProgressBar("TestICP2", $"{i}/{maxCount} {percents:F2}% of 100%", progress))
+            {
+                break;
+            }
+            //DateTime start21=DateTime.Now;
+            //var psList=vsFrom.ToList();
+            //Debug.LogError($"Time0:{(DateTime.Now-start21).TotalMilliseconds}ms");
+
+            //DateTime start2=DateTime.Now;
+            var vsFromCP1 = DistanceUtil.GetClosedPoints(vsTo, vsFrom.ToList());
+            //Debug.LogError($"Time1:{(DateTime.Now-start2).TotalMilliseconds}ms");
+
+            //DateTime start3=DateTime.Now;
+            //MeshHelper.ShowVertexes(vsFromCP1, pScale, "vsFromCP_"+(i+1));
+            var r1 = AcRigidTransform.ApplyTransformationN(vsFromCP1, vsTo);
+            rList.Add(r1);
+            //Debug.LogError($"Time2:{(DateTime.Now-start3).TotalMilliseconds}ms");
+
+            var vsFromNew1 = r1.ApplyPoints(vsFrom);
+
+            //MeshHelper.ShowVertexes(vsFromNew1, pScale, "vsFromNew_"+(i+1));
+
+            // var goNew=MeshHelper.CopyGO(goOld);
+            // goNew.name="vsFromNew_"+(i+1);
+            // r1.ApplyMatrix(goNew.transform);
+            // goOld=goNew;
+            // MeshHelper.ShowVertexes(vsFromNew1, pScale, goNew.transform);
+
+            var dis2 = DistanceUtil.GetDistance(vsFromNew1, vsTo, i == maxCount - 1);
+            //Debug.LogError($"TestICP1 dis{i+1}:" + dis2);
+            Debug.LogError($"dis[{i + 1}] dis:{dis2}, Time:{(DateTime.Now - start1).TotalMilliseconds}ms");
+            vsFrom = vsFromNew1;
+            //if (dis2 <= 0.000001)
+            if (dis2 <= minDis)
+            {
+                break;
+            }
+        }
+        return rList;
     }
 }
 

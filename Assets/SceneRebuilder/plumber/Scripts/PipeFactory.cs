@@ -191,6 +191,12 @@ public class PipeFactory : MonoBehaviour
         return newBuilder.PipeModels;
     }
 
+    public PipeRunList GetPipeRunList()
+    {
+        if (newBuilder == null) return new PipeRunList();
+        return newBuilder.pipeRunList;
+    }
+
     [ContextMenu("GetInfoAndCreateEachPipes")]
     public void GetInfoAndCreateEachPipes()
     {
@@ -209,6 +215,12 @@ public class PipeFactory : MonoBehaviour
         ProgressBarHelper.ClearProgressBar();
     }
 
+    [ContextMenu("CreatePipeRunList")]
+    public void CreatePipeRunList()
+    {
+        newBuilder.CreatePipeRunList();
+    }
+
     [ContextMenu("RendererEachPipes")]
     public void RendererEachPipes()
     {
@@ -217,6 +229,13 @@ public class PipeFactory : MonoBehaviour
         newBuilder.generateArg = generateArg;
         newBuilder.RendererPipesEx();
 
+        ProgressBarHelper.ClearProgressBar();
+    }
+
+    [ContextMenu("CheckResults")]
+    public void CheckResults()
+    {
+        newBuilder.CheckResults();
         ProgressBarHelper.ClearProgressBar();
     }
 
@@ -248,17 +267,35 @@ public class PipeFactory : MonoBehaviour
                 GameObject.DestroyImmediate(targetNew);
             }
         }
-        var newPipes = newBuilder.NewPipeList;
+        
 
         targetNew = new GameObject();
         targetNew.name = Target.name + "_New";
         targetNew.transform.position = Target.transform.position;
         targetNew.transform.SetParent(Target.transform.parent);
-        foreach (var pipe in newPipes)
+
+
+
+        if (newBuilder.pipeRunList != null)
         {
-            if (pipe == null) continue;
-            pipe.SetParent(targetNew.transform);
+            var runs = newBuilder.pipeRunList.PipeRunGos;
+            foreach (var run in runs)
+            {
+                if (run == null) continue;
+                run.transform.SetParent(targetNew.transform);
+            }
         }
+        else
+        {
+            var newPipes = newBuilder.NewPipeList;
+            foreach (var pipe in newPipes)
+            {
+                if (pipe == null) continue;
+                pipe.SetParent(targetNew.transform);
+            }
+        }
+
+
         targetNew.transform.SetParent(newBuilder.transform);
 
         MeshNode meshNode= MeshNode.InitNodes(targetNew);

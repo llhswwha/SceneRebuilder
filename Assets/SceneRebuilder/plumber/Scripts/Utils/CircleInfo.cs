@@ -5,7 +5,7 @@ using UnityEngine;
 
 public class CircleInfo
 {
-    public static float IsCircleMaxP = 1.01f;
+    public static float IsCircleMaxP = 1.2f;
 
     public List<Vector3> Points;
 

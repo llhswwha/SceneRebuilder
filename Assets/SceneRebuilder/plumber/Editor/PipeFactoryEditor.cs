@@ -8,6 +8,7 @@ using UnityEngine;
 public class PipeFactoryEditor : BaseFoldoutEditor<PipeFactory>
 {
     static FoldoutEditorArg pipeModelListArg = new FoldoutEditorArg(true, true);
+    static FoldoutEditorArg pipeRunListArg = new FoldoutEditorArg(true, true);
 
     public override void OnEnable()
     {
@@ -28,13 +29,13 @@ public class PipeFactoryEditor : BaseFoldoutEditor<PipeFactory>
 
     int defaultPipeSegments = 8;
 
-    int[] pipeSegmentsValues = new int[] { 3,4,5,6,7, 8,10,12, 16, 20, 24, 32,48,64 };
+    int[] pipeSegmentsValues = new int[] { 3,4,5,6,7, 8,10,12, 16, 20, 24, 32,36,48,64 };
 
     string[] pipeSegmentsValuesStr = null;
 
     int defaultElbowSegments = 6;
 
-    int[] elbowSegmentsValues = new int[] { 3,4,5,6,7,8,9,10 };
+    int[] elbowSegmentsValues = new int[] { 3,4,5,6,7,8,9,10,11,12,13,14,15 };
 
     string[] elbowSegmentsValuesStr = null;
 
@@ -76,23 +77,31 @@ public class PipeFactoryEditor : BaseFoldoutEditor<PipeFactory>
         GUILayout.EndHorizontal();
 
         GUILayout.BeginHorizontal();
-        if (GUILayout.Button("1.GetPipeParts"))
+        if (GUILayout.Button("1.GetParts"))
         {
             targetT.GetPipeParts();
         }
-        if (GUILayout.Button("2.GetPartInfos"))
+        if (GUILayout.Button("2.GetInfos"))
         {
             targetT.GetPipeInfos();
         }
-        if (GUILayout.Button("3.GeneratePipe(Each)"))
+        if (GUILayout.Button("3.Generate(Each)"))
         {
             targetT.ClearGeneratedObjs();
             targetT.RendererEachPipes();
             targetT.MovePipes();
         }
-        if (GUILayout.Button("3.GeneratePipe(One)"))
+        if (GUILayout.Button("3.Generate(One)"))
         {
 
+        }
+        if (GUILayout.Button("4.CreateRunList"))
+        {
+            targetT.CreatePipeRunList();
+        }
+        if (GUILayout.Button("5.CheckResults"))
+        {
+            targetT.CheckResults();
         }
         GUILayout.EndHorizontal();
 
@@ -134,6 +143,8 @@ public class PipeFactoryEditor : BaseFoldoutEditor<PipeFactory>
         }
         GUILayout.EndHorizontal();
 
-        DrawPipeModelsList(targetT.GetPipeModels(), pipeModelListArg);
+        DrawPipeModelsList(targetT.GetPipeModels(), pipeModelListArg, "PipeModel List");
+        DrawPipeRunList(targetT.GetPipeRunList(), pipeRunListArg);
+        DrawPipeModelsList(targetT.GetPipeRunList().SpecialElbows, pipeModelListArg, "SpecialElbow List");
     }
 }
