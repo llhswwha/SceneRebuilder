@@ -165,7 +165,7 @@ public class PipeRunList
 
     }
 
-    public PipeRunList(List<PipeModelBase> list, float minDis, bool isUniformRaidus, bool isShowLog)
+    public PipeRunList(List<PipeModelBase> list, float minDis, bool isShowLog, bool isUniformRaidus, float minRadiusDis)
     {
         DateTime start = DateTime.Now;
         List<PipeModelBase> models = new List<PipeModelBase>(list);
@@ -193,35 +193,39 @@ public class PipeRunList
                     return;
                 }
                 PipeModelBase model2 = models[j];
-                model1.ConnectedModel(model2, minDis, isShowLog);
-            }
-
-            if (model1.ConnectedModels.Count == 0)
-            {
-                if (model1.GetType() == typeof(PipeElbowModel))
+                int c1=model1.ConnectedModel(model2, minDis, isShowLog, isUniformRaidus, minRadiusDis);
+                if (c1 == 0)
                 {
-                    //Debug.LogWarning($"Not Found Connected Elbow:{model1.name}");
-                    PipeElbowModel elbow = model1 as PipeElbowModel;
-                    for (int j = i + 1; j < models.Count; j++)
-                    {
-                        ProgressArg p2 = new ProgressArg("InitPipeRunList 3", j - (i + 1), models.Count - (i + 1), model1);
-                        p1.AddSubProgress(p2);
-                        if (ProgressBarHelper.DisplayCancelableProgressBar(p1))
-                        {
-                            return;
-                        }
-                        PipeModelBase model2 = models[j];
-                        PipeModelBase.ConnectedModelEx(elbow, model2, minDis, isUniformRaidus);
-                    }
-
-                    if (model1.ConnectedModels.Count == 0)
-                    {
-                        Debug.LogError($"Not Found Connected Elbow:{model1.name}");
-                    }
-
-                    SpecialElbows.Add(elbow);
+                    model2.ConnectedModel(model1, minDis, isShowLog, isUniformRaidus, minRadiusDis);
                 }
             }
+
+            //if (model1.ConnectedModels.Count == 0)
+            //{
+            //    if (model1.GetType() == typeof(PipeElbowModel))
+            //    {
+            //        //Debug.LogWarning($"Not Found Connected Elbow:{model1.name}");
+            //        PipeElbowModel elbow = model1 as PipeElbowModel;
+            //        for (int j = i + 1; j < models.Count; j++)
+            //        {
+            //            ProgressArg p2 = new ProgressArg("InitPipeRunList 3", j - (i + 1), models.Count - (i + 1), model1);
+            //            p1.AddSubProgress(p2);
+            //            if (ProgressBarHelper.DisplayCancelableProgressBar(p1))
+            //            {
+            //                return;
+            //            }
+            //            PipeModelBase model2 = models[j];
+            //            PipeModelBase.ConnectedModelEx(elbow, model2, minDis, isUniformRaidus);
+            //        }
+
+            //        if (model1.ConnectedModels.Count == 0)
+            //        {
+            //            Debug.LogError($"Not Found Connected Elbow:{model1.name}");
+            //        }
+
+            //        SpecialElbows.Add(elbow);
+            //    }
+            //}
         }
 
         int count = 0;

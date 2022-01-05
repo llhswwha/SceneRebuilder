@@ -92,6 +92,8 @@ public class PipeFactory : SingletonBehaviour<PipeFactory>
         //list.AddRange(newList);
     }
 
+    public bool isUniformRaidus = false;
+
     private void GetModelClass()
     {
         ModelClassDict<Transform> modelClassList = ModelMeshManager.Instance.GetPrefixNames<Transform>(Target);
@@ -159,6 +161,7 @@ public class PipeFactory : SingletonBehaviour<PipeFactory>
         SetListVisible(PipeElbows, isVisible);
         SetListVisible(PipeReducers, isVisible);
         SetListVisible(PipeFlanges, isVisible);
+        SetListVisible(PipeTees, isVisible);
         SetListVisible(PipeOthers, isVisible);
     }
 
@@ -210,6 +213,8 @@ public class PipeFactory : SingletonBehaviour<PipeFactory>
         InitPipeBuilder();
 
         newBuilder.ClearGeneratedObjs();
+
+        newBuilder.isUniformRaidus = this.isUniformRaidus;
         newBuilder.GetPipeInfosEx();
 
         ProgressBarHelper.ClearProgressBar();
@@ -225,8 +230,12 @@ public class PipeFactory : SingletonBehaviour<PipeFactory>
     public void RendererEachPipes()
     {
         //InitPipeBuilder();
+        newBuilder.isUniformRaidus = this.isUniformRaidus;
+        //newBuilder.CreatePipeRunList();
+
         newBuilder.NewObjName = "_New";
         newBuilder.generateArg = generateArg;
+
         newBuilder.RendererPipesEx();
 
         ProgressBarHelper.ClearProgressBar();

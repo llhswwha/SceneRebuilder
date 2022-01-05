@@ -27,78 +27,146 @@ public class PipeModelBase : MonoBehaviour,IComparable<PipeModelBase>
         return false;
     }
 
-    public virtual int ConnectedModel(PipeModelBase model2, float minPointDis, bool isShowLog)
+    public virtual void SetUniformRadius(bool isUniformRaidus, Vector4 p2, int p1Id)
+    {
+        //if (isUniformRaidus)
+        //{
+        //    //p1.w = p2.w;//这个怎么保存回去呢？
+        //    this.SetRadius(p1Id, p2.w);
+        //    //this.PipeRadius = model2.PipeRadius;
+        //    this.generateArg.generateEndCaps = false;
+        //}
+        //else
+        //{
+        //    this.generateArg.generateEndCaps = true;
+        //}
+    }
+
+    public virtual int ConnectedModel(PipeModelBase model2, float minPointDis, bool isShowLog, bool isUniformRaidus, float minRadiusDis)
     {
         PipeModelBase model1 = this;
         int ConnectedCount = 0;
-        float dis11 = Vector3.Distance(model1.GetModelStartPoint(), model2.GetModelStartPoint());
-        float dis12 = Vector3.Distance(model1.GetModelStartPoint(), model2.GetModelEndPoint());
-        float dis21 = Vector3.Distance(model1.GetModelEndPoint(), model2.GetModelStartPoint());
-        float dis22 = Vector3.Distance(model1.GetModelEndPoint(), model2.GetModelEndPoint());
-        if (isShowLog)
+        var points1 = model1.GetModelKeyPoints();
+        var points2 = model2.GetModelKeyPoints();
+        for (int i = 0; i < points1.Count; i++)
         {
-            Debug.Log($"IsConnected model1:{model1.name} model2:{model2.name} dis11:{dis11} dis12:{dis12} dis21:{dis21} dis22:{dis22}");
+            Vector4 p1 = points1[i];
+            int cCount = 0;
+            for (int i1 = 0; i1 < points2.Count; i1++)
+            {
+                Vector4 p2 = points2[i1];
+                float dis12= Vector3.Distance(p1, p2);
+
+                if (isShowLog)
+                {
+                    Debug.Log($"IsConnected model1:{model1.name} model2:{model2.name} [{i},{i1}]  dis:{dis12} p1:{p1} p2:{p2}");
+                }
+
+                if (dis12 < minPointDis)
+                {
+                    if (Mathf.Abs(p1.w - p2.w) > minRadiusDis)
+                    {
+                        Debug.LogError($"Radius IsNot Equal model1:{model1.name} model2:{model2.name} [{i},{i1}]  dis:{dis12} p1:{p1} p2:{p2}");
+                    }
+                    model1.AddConnectedModel(model2);
+                    model2.AddConnectedModel(model1);
+                    cCount++;
+                    SetUniformRadius(isUniformRaidus, p2, i);
+
+                }
+            }
+            if(cCount== points2.Count)
+            {
+                Debug.LogError($"IsConnected Error1 cCount== points2.Count model1:{model1.name} model2:{model2.name} p1:{p1} points2:{points2.Count} cCount:{cCount}");
+                //return -1;
+            }
+            ConnectedCount += cCount;
         }
 
-
-        if (dis11 < minPointDis && dis12 < minPointDis)
-        {
-            //Error
-            Debug.LogError($"IsConnected Error1 dis11 < minDis && dis12 < minDis dis11:{dis11} dis12:{dis12} minDis:{minPointDis}");
-            return -1;
-        }
-        if (dis11 < minPointDis)
-        {
-            if (Mathf.Abs(model1.ModelStartPoint.w - model2.ModelStartPoint.w) > 0.00001)
-            {
-                Debug.LogError($"Radius IsNot Equal model1:{model1.name} model2:{model2.name} dis11:{dis11} dis12:{dis12} dis21:{dis21} dis22:{dis22}");
-            }
-            model1.AddConnectedModel(model2);
-            model2.AddConnectedModel(model1);
-            ConnectedCount++;
-        }
-        if (dis12 < minPointDis)
-        {
-            if (Mathf.Abs(model1.ModelStartPoint.w - model2.ModelEndPoint.w) > 0.00001)
-            {
-                Debug.LogError($"Radius IsNot Equal model1:{model1.name} model2:{model2.name} dis11:{dis11} dis12:{dis12} dis21:{dis21} dis22:{dis22}");
-            }
-            model1.AddConnectedModel(model2);
-            model2.AddConnectedModel(model1);
-            ConnectedCount++;
-        }
-
-        if (dis21 < minPointDis && dis22 < minPointDis)
-        {
-            //Error
-            Debug.LogError($"IsConnected Error2 dis21 < minDis && dis22 < minDis dis21:{dis21} dis22:{dis22} minDis:{minPointDis}");
-            return -1;
-        }
-        if (dis21 < minPointDis)
-        {
-            if (Mathf.Abs(model1.ModelEndPoint.w - model2.ModelStartPoint.w) > 0.00001)
-            {
-                Debug.LogError($"Radius IsNot Equal model1:{model1.name} model2:{model2.name} dis11:{dis11} dis12:{dis12} dis21:{dis21} dis22:{dis22}");
-            }
-            model1.AddConnectedModel(model2);
-            model2.AddConnectedModel(model1);
-            ConnectedCount++;
-        }
-        if (dis22 < minPointDis)
-        {
-            if (Mathf.Abs(model1.ModelEndPoint.w - model2.ModelEndPoint.w) > 0.00001)
-            {
-                Debug.LogError($"Radius IsNot Equal model1:{model1.name} model2:{model2.name} dis11:{dis11} dis12:{dis12} dis21:{dis21} dis22:{dis22}");
-            }
-            model1.AddConnectedModel(model2);
-            model2.AddConnectedModel(model1);
-            ConnectedCount++;
-        }
+        //float dis11 = Vector3.Distance(model1.GetModelStartPoint(), model2.GetModelStartPoint());
+        //float dis12 = Vector3.Distance(model1.GetModelStartPoint(), model2.GetModelEndPoint());
+        //float dis21 = Vector3.Distance(model1.GetModelEndPoint(), model2.GetModelStartPoint());
+        //float dis22 = Vector3.Distance(model1.GetModelEndPoint(), model2.GetModelEndPoint());
+        //if (isShowLog)
+        //{
+        //    Debug.Log($"IsConnected model1:{model1.name} model2:{model2.name} dis11:{dis11} dis12:{dis12} dis21:{dis21} dis22:{dis22}");
+        //}
 
         return ConnectedCount;
     }
 
-    public static int ConnectedModelEx(PipeElbowModel model1, PipeModelBase model2, float minPointDis,bool isUniformRaidus,float minRadiusDis=0.0001f)
+    //public virtual int ConnectedModel(PipeModelBase model2, float minPointDis, bool isShowLog)
+    //{
+    //    PipeModelBase model1 = this;
+    //    int ConnectedCount = 0;
+    //    float dis11 = Vector3.Distance(model1.GetModelStartPoint(), model2.GetModelStartPoint());
+    //    float dis12 = Vector3.Distance(model1.GetModelStartPoint(), model2.GetModelEndPoint());
+    //    float dis21 = Vector3.Distance(model1.GetModelEndPoint(), model2.GetModelStartPoint());
+    //    float dis22 = Vector3.Distance(model1.GetModelEndPoint(), model2.GetModelEndPoint());
+    //    if (isShowLog)
+    //    {
+    //        Debug.Log($"IsConnected model1:{model1.name} model2:{model2.name} dis11:{dis11} dis12:{dis12} dis21:{dis21} dis22:{dis22}");
+    //    }
+
+
+    //    if (dis11 < minPointDis && dis12 < minPointDis)
+    //    {
+    //        //Error
+    //        Debug.LogError($"IsConnected Error1 dis11 < minDis && dis12 < minDis dis11:{dis11} dis12:{dis12} minDis:{minPointDis}");
+    //        return -1;
+    //    }
+    //    if (dis11 < minPointDis)
+    //    {
+    //        if (Mathf.Abs(model1.ModelStartPoint.w - model2.ModelStartPoint.w) > 0.00001)
+    //        {
+    //            Debug.LogError($"Radius IsNot Equal model1:{model1.name} model2:{model2.name} dis11:{dis11} dis12:{dis12} dis21:{dis21} dis22:{dis22}");
+    //        }
+    //        model1.AddConnectedModel(model2);
+    //        model2.AddConnectedModel(model1);
+    //        ConnectedCount++;
+    //    }
+    //    if (dis12 < minPointDis)
+    //    {
+    //        if (Mathf.Abs(model1.ModelStartPoint.w - model2.ModelEndPoint.w) > 0.00001)
+    //        {
+    //            Debug.LogError($"Radius IsNot Equal model1:{model1.name} model2:{model2.name} dis11:{dis11} dis12:{dis12} dis21:{dis21} dis22:{dis22}");
+    //        }
+    //        model1.AddConnectedModel(model2);
+    //        model2.AddConnectedModel(model1);
+    //        ConnectedCount++;
+    //    }
+
+    //    if (dis21 < minPointDis && dis22 < minPointDis)
+    //    {
+    //        //Error
+    //        Debug.LogError($"IsConnected Error2 dis21 < minDis && dis22 < minDis dis21:{dis21} dis22:{dis22} minDis:{minPointDis}");
+    //        return -1;
+    //    }
+    //    if (dis21 < minPointDis)
+    //    {
+    //        if (Mathf.Abs(model1.ModelEndPoint.w - model2.ModelStartPoint.w) > 0.00001)
+    //        {
+    //            Debug.LogError($"Radius IsNot Equal model1:{model1.name} model2:{model2.name} dis11:{dis11} dis12:{dis12} dis21:{dis21} dis22:{dis22}");
+    //        }
+    //        model1.AddConnectedModel(model2);
+    //        model2.AddConnectedModel(model1);
+    //        ConnectedCount++;
+    //    }
+    //    if (dis22 < minPointDis)
+    //    {
+    //        if (Mathf.Abs(model1.ModelEndPoint.w - model2.ModelEndPoint.w) > 0.00001)
+    //        {
+    //            Debug.LogError($"Radius IsNot Equal model1:{model1.name} model2:{model2.name} dis11:{dis11} dis12:{dis12} dis21:{dis21} dis22:{dis22}");
+    //        }
+    //        model1.AddConnectedModel(model2);
+    //        model2.AddConnectedModel(model1);
+    //        ConnectedCount++;
+    //    }
+
+    //    return ConnectedCount;
+    //}
+
+    public static int ConnectedModelEx(PipeElbowModel model1, PipeModelBase model2, float minPointDis, bool isUniformRaidus, float minRadiusDis = 0.0001f)
     {
         int ConnectedCount = 0;
         float dis11 = Vector3.Distance(model1.GetEndPointIn1(), model2.GetModelStartPoint());
@@ -128,12 +196,12 @@ public class PipeModelBase : MonoBehaviour,IComparable<PipeModelBase>
                 {
                     model1.generateArg.generateEndCaps = true;
                 }
-                
+
             }
             model1.AddConnectedModel(model2);
             model2.AddConnectedModel(model1);
 
-           
+
             ConnectedCount++;
         }
         if (dis12 < minPointDis)
@@ -216,7 +284,7 @@ public class PipeModelBase : MonoBehaviour,IComparable<PipeModelBase>
     //    {
     //        Debug.Log($"IsConnected model1:{model1.name} model2:{model2.name} dis11:{dis11} dis12:{dis12} dis21:{dis21} dis22:{dis22}");
     //    }
-        
+
 
     //    if (dis11 < minPointDis && dis12 < minPointDis)
     //    {
@@ -277,21 +345,30 @@ public class PipeModelBase : MonoBehaviour,IComparable<PipeModelBase>
 
     public Vector4 ModelStartPoint;
 
-    public Vector3 GetModelStartPoint()
+    public Vector4 TransformPoint(Vector4 p1)
     {
-        return transform.TransformPoint(ModelStartPoint);
+        Vector4 p = transform.TransformPoint(p1);
+        p.w = p1.w;
+        return p;
+    }
+
+    public Vector4 GetModelStartPoint()
+    {
+        Vector4 p= this.TransformPoint(ModelStartPoint);
+        return p;
     }
 
     public Vector4 ModelEndPoint;
 
-    public Vector3 GetModelEndPoint()
+    public Vector4 GetModelEndPoint()
     {
-        return transform.TransformPoint(ModelEndPoint);
+        Vector4 p = this.TransformPoint(ModelEndPoint);
+        return p;
     }
 
-    public virtual List<Vector3> GetModelKeyPoints()
+    public virtual List<Vector4> GetModelKeyPoints()
     {
-        List<Vector3> list = new List<Vector3>();
+        List<Vector4> list = new List<Vector4>();
         list.Add(GetModelStartPoint());
         list.Add(GetModelEndPoint());
         return list;

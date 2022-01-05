@@ -51,6 +51,8 @@ public class PipeFactoryEditor : BaseFoldoutEditor<PipeFactory>
         GUILayout.BeginHorizontal();
         GUILayout.Label("generateWeld");
         targetT.generateArg.generateWeld = EditorGUILayout.Toggle(targetT.generateArg.generateWeld);
+        GUILayout.Label("UniformRaidus");
+        targetT.isUniformRaidus = EditorGUILayout.Toggle(targetT.isUniformRaidus);
         GUILayout.Label("pipeSegments");
 
         //int newPipeSegments = EditorGUILayout.IntField(targetT.generateArg.pipeSegments);
@@ -88,7 +90,9 @@ public class PipeFactoryEditor : BaseFoldoutEditor<PipeFactory>
         }
         if (GUILayout.Button("3.Generate(Each)"))
         {
+
             targetT.ClearGeneratedObjs();
+;
             targetT.RendererEachPipes();
             targetT.MovePipes();
         }

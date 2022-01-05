@@ -152,31 +152,16 @@ public class PipeTeeModel : PipeElbowModel
         return pipe.gameObject;
     }
 
-    public override int ConnectedModel(PipeModelBase model2, float minPointDis, bool isShowLog)
+    public override List<Vector4> GetModelKeyPoints()
     {
-        int cCount = base.ConnectedModel(model2, minPointDis, isShowLog);
-
-        var model1 = this;
-        Vector3 model1ToModel2SS = model1.GetModelStartPoint() - model2.GetModelStartPoint();
-        Vector3 model1ToModel2SE = model1.GetModelStartPoint() - model2.GetModelEndPoint();
-        Vector3 model1ToModel2ES = model1.GetModelEndPoint() - model2.GetModelStartPoint();
-        Vector3 model1ToModel2EE = model1.GetModelEndPoint() - model2.GetModelEndPoint();
-        float angleS = Vector3.Dot(model1ToModel2SS, model1ToModel2SE);
-        float angleE = Vector3.Dot(model1ToModel2ES, model1ToModel2EE);
-        if (angleS < 0)
-        {
-            model1.AddConnectedModel(model2);
-            model2.AddConnectedModel(model1);
-            cCount++;
-        }
-        if (angleE < 0)
-        {
-            model1.AddConnectedModel(model2);
-            model2.AddConnectedModel(model1);
-            cCount++;
-        }
-        Debug.Log($"PipeTee ConnectedModel count:{cCount} model1:{model1.name} model2:{model2.name} angleS:{angleS} angleE:{angleE}");
-
-        return cCount;
+        var list= base.GetModelKeyPoints();
+        list.Add(this.TransformPoint(TeeEndPoint));
+        return list;
     }
+
+    //public override int ConnectedModel(PipeModelBase model2, float minPointDis, bool isShowLog, bool isUniformRaidus, float minRadiusDis)
+    //{
+    //    int cCount = base.ConnectedModel(model2, minPointDis, isShowLog, isUniformRaidus, minRadiusDis);
+    //    return cCount;
+    //}
 }

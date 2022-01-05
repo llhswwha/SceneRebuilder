@@ -73,10 +73,12 @@ public class PipeElbowModel : PipeModelBase
 
             GetPipeRadius();
 
+            EndPointIn1.w = PipeRadius;
+            EndPointIn2.w = PipeRadius;
+            EndPointOut1.w = PipeRadius;
+            EndPointOut2.w = PipeRadius;
             ModelStartPoint = EndPointOut1;
-            ModelStartPoint.w = PipeRadius;
             ModelEndPoint = EndPointOut2;
-            ModelEndPoint.w = PipeRadius;
 
             IsGetInfoSuccess = true;
             Debug.Log($">>>GetElbowInfo time:{DateTime.Now - start}");
@@ -117,7 +119,6 @@ public class PipeElbowModel : PipeModelBase
             //EndPointOut2 = EndPointIn2+ normal2 * PipeRadius * PipeLineOffset;
             EndPointOut1 = endPoint1;
             EndPointOut2 = endPoint2;
-
             EndPointIn1 = endPoint1 + (crossPoint1-endPoint1).normalized * PipeRadius * PipeLineOffset;
             EndPointIn2 = endPoint2 + (crossPoint2-endPoint2).normalized * PipeRadius * PipeLineOffset;
 
@@ -132,10 +133,12 @@ public class PipeElbowModel : PipeModelBase
             TransformHelper.ShowLocalPoint(crossPoint2, PointScale, this.transform, null).name = "crossPoint2";
             TransformHelper.ShowLocalPoint(crossPoint12, PointScale, this.transform, null).name = "crossPoint12";
 
+            EndPointIn1.w = PipeRadius;
+            EndPointIn2.w = PipeRadius;
+            EndPointOut1.w = PipeRadius;
+            EndPointOut2.w = PipeRadius;
             ModelStartPoint = EndPointOut1;
-            ModelStartPoint.w = PipeRadius;
             ModelEndPoint = EndPointOut2;
-            ModelEndPoint.w = PipeRadius;
 
             IsGetInfoSuccess = true;
             Debug.Log($">>>GetElbowInfo time:{DateTime.Now - start}");
@@ -226,7 +229,8 @@ public class PipeElbowModel : PipeModelBase
 
         //pipe.generateWeld = arg.generateWeld;
         pipe.generateWeld = false;
-        pipe.pipeRadius = PipeRadius;
+        //pipe.pipeRadius = PipeRadius;
+        pipe.pipeRadius = (EndPointOut1.w+ EndPointOut2.w)/2;
         pipe.elbowRadius = pipeArg.elbowRadius;
         pipe.avoidStrangling = true;
         pipe.RenderPipe();
@@ -234,19 +238,19 @@ public class PipeElbowModel : PipeModelBase
         return pipe.gameObject;
     }
 
-    public Vector3 EndPointIn1 = Vector3.zero;
-    public Vector3 EndPointOut1 = Vector3.zero;
-    public Vector3 EndPointIn2 = Vector3.zero;
-    public Vector3 EndPointOut2= Vector3.zero;
+    public Vector4 EndPointIn1 = Vector3.zero;
+    public Vector4 EndPointOut1 = Vector3.zero;
+    public Vector4 EndPointIn2 = Vector3.zero;
+    public Vector4 EndPointOut2= Vector3.zero;
 
-    public Vector3 GetEndPointIn1()
+    public Vector4 GetEndPointIn1()
     {
-        return this.transform.TransformPoint(EndPointIn1);
+        return this.TransformPoint(EndPointIn1);
     }
 
-    public Vector3 GetEndPointIn2()
+    public Vector4 GetEndPointIn2()
     {
-        return this.transform.TransformPoint(EndPointIn2);
+        return this.TransformPoint(EndPointIn2);
     }
 
     public PipeLineInfo Line1 = new PipeLineInfo();
@@ -273,4 +277,94 @@ public class PipeElbowModel : PipeModelBase
     {
         Debug.Log($"OnDestroy {this.name}");
     }
+
+    public override List<Vector4> GetModelKeyPoints()
+    {
+        var list= base.GetModelKeyPoints();
+        list.Add(GetEndPointIn1());
+        list.Add(GetEndPointIn2());
+        return list;
+    }
+
+    private void SetRadius(int id,float r)
+    {
+        if (id == 0)
+        {
+            EndPointOut1.w = r;
+        }
+        if (id == 1)
+        {
+            EndPointOut2.w = r;
+        }
+        if (id == 2)
+        {
+            EndPointIn1.w = r;
+            EndPointOut1.w = r;
+        }
+        if (id == 3)
+        {
+            EndPointIn2.w = r;
+            EndPointOut2.w = r;
+        }
+    }
+
+    public override void SetUniformRadius(bool isUniformRaidus, Vector4 p2,int p1Id)
+    {
+        if (isUniformRaidus)
+        {
+            //p1.w = p2.w;//这个怎么保存回去呢？
+            this.SetRadius(p1Id, p2.w);
+            //this.PipeRadius = model2.PipeRadius;
+            this.generateArg.generateEndCaps = false;
+        }
+        else
+        {
+            this.generateArg.generateEndCaps = true;
+        }
+    }
+
+    //public override int ConnectedModel(PipeModelBase model2, float minPointDis, bool isShowLog, bool isUniformRaidus, float minRadiusDis)
+    //{
+    //    base.ConnectedModel()
+    //    var model1 = this;
+    //    int ConnectedCount = 0;
+    //    var points1 = model1.GetModelKeyPoints();
+    //    var points2 = model2.GetModelKeyPoints();
+    //    for (int i = 0; i < points1.Count; i++)
+    //    {
+    //        Vector4 p1 = points1[i];
+    //        int cCount = 0;
+    //        for (int i1 = 0; i1 < points2.Count; i1++)
+    //        {
+    //            Vector4 p2 = points2[i1];
+    //            float dis12 = Vector3.Distance(p1, p2);
+
+    //            if (isShowLog)
+    //            {
+    //                Debug.Log($"IsConnected model1:{model1.name} model2:{model2.name} [{i},{i1}]  dis:{dis12} p1:{p1} p2:{p2}");
+    //            }
+
+    //            if (dis12 < minPointDis)
+    //            {
+    //                if (Mathf.Abs(p1.w - p2.w) > minRadiusDis)
+    //                {
+    //                    Debug.LogError($"Radius IsNot Equal model1:{model1.name} model2:{model2.name} [{i},{i1}]  dis:{dis12} p1:{p1} p2:{p2}");
+    //                }
+    //                model1.AddConnectedModel(model2);
+    //                model2.AddConnectedModel(model1);
+    //                cCount++;
+
+                    
+    //            }
+    //        }
+    //        if (cCount == points2.Count)
+    //        {
+    //            Debug.LogError($"IsConnected Error1 cCount== points2.Count model1:{model1.name} model2:{model2.name} p1:{p1} points2:{points2.Count} cCount:{cCount}");
+    //            //return -1;
+    //        }
+    //        ConnectedCount += cCount;
+    //    }
+
+    //    return ConnectedCount;
+    //}
 }
