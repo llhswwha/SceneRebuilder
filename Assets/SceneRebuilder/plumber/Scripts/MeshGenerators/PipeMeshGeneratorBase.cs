@@ -45,9 +45,10 @@ public class PipeMeshGeneratorBase : MonoBehaviour
         //    triangles.Add(secondCircleOffset + (i + 1) % pipeSegments);
         //    triangles.Add(secondCircleCenter);
         //}
-        GameObject root = new GameObject("CapInfos");
-        root.transform.SetParent(this.transform);
-        root.transform.localPosition = Vector3.zero;
+
+        //GameObject root = new GameObject("CapInfos");
+        //root.transform.SetParent(this.transform);
+        //root.transform.localPosition = Vector3.zero;
 
         for (int i = 0; i < pipeSegments ; i++)
         {

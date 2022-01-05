@@ -515,4 +515,17 @@ public class PipeModelBase : MonoBehaviour,IComparable<PipeModelBase>
     }
 
     public GameObject ResultGo = null;
+
+    public GameObject RenderPipeLine(PipeGenerateArg arg, string afterName, Vector4 startP, Vector4 endP)
+    {
+        PipeMeshGenerator pipe = GetGenerator<PipeMeshGenerator>(arg, afterName);
+        pipe.generateElbows = false;
+        pipe.points = new List<Vector3>() { startP, endP };
+        pipe.pipeRadius = (startP.w + endP.w) / 2;
+        arg.SetArg(pipe);
+        pipe.generateWeld = false;
+        pipe.avoidStrangling = true;
+        pipe.RenderPipe();
+        return pipe.gameObject;
+    }
 }

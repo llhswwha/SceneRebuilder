@@ -98,8 +98,8 @@ public class PipeTeeModel : PipeElbowModel
             //EndPointOut2 = MeshHelper.FindClosedPoint(EndPointIn2, trianglesList);
             //trianglesList.Remove(EndPointOut2);
 
-            Line1 = new PipeLineInfo(TeeStartPoint, TeeEndPoint, null);
-            Line2 = new PipeLineInfo(LineStartPoint, LineEndPoint, null);
+            ElbowInfo.Line1 = new PipeLineInfo(TeeStartPoint, TeeEndPoint, null);
+            ElbowInfo.Line2 = new PipeLineInfo(LineStartPoint, LineEndPoint, null);
 
             TransformHelper.ShowLocalPoint(TeeStartPoint, PointScale, this.transform, null).name = $"TeeStartPoint_{TeeStartPoint.w}";
             TransformHelper.ShowLocalPoint(TeeEndPoint, PointScale, this.transform, null).name = $"TeeEndPoint_{TeeEndPoint.w}";
@@ -137,19 +137,6 @@ public class PipeTeeModel : PipeElbowModel
         PipeMeshGenerator pipeG=target.AddComponent<PipeMeshGenerator>();
         pipeG.Target = this.gameObject;
         return target;
-    }
-
-    public GameObject RenderPipeLine(PipeGenerateArg arg, string afterName,Vector4 startP,Vector4 endP)
-    {
-        PipeMeshGenerator pipe = GetGenerator<PipeMeshGenerator>(arg, afterName);
-        pipe.generateElbows = false;
-        pipe.points = new List<Vector3>() { startP, endP };
-        pipe.pipeRadius = (startP.w+endP.w)/2;
-        arg.SetArg(pipe);
-        pipe.generateWeld = false;
-        pipe.avoidStrangling = true;
-        pipe.RenderPipe();
-        return pipe.gameObject;
     }
 
     public override List<Vector4> GetModelKeyPoints()

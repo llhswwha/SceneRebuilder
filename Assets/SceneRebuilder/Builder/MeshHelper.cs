@@ -65,6 +65,22 @@ public static class MeshHelper
         return minP;
     }
 
+    public static SharedMeshTriangles FindClosedPlane(Vector3 p, SharedMeshTrianglesList list)
+    {
+        float minDis = float.MaxValue;
+        SharedMeshTriangles minP = null;
+        foreach (var item in list)
+        {
+            float dis = Vector3.Distance(item.GetCenter(), p);
+            if (dis < minDis)
+            {
+                minDis = dis;
+                minP = item;
+            }
+        }
+        return minP;
+    }
+
     //public static GameObject InstantiatePrefabFromSceneGo()
     //{
 

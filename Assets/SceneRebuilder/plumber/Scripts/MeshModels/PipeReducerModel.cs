@@ -73,7 +73,7 @@ public class PipeReducerModel
         //EndPointOut2 = MeshHelper.FindClosedPoint(EndPointIn2, points);
         //points.Remove(EndPointOut2);
 
-        Line1 = new PipeLineInfo(StartPoint, EndPoint, null);
+        ElbowInfo.Line1 = new PipeLineInfo(StartPoint, EndPoint, null);
         //Line2 = new PipeLineInfo(EndPointIn2, EndPointOut2, null);
 
         //TransformHelper.ShowLocalPoint(EndPointOut1, PointScale, this.transform, null).name = "OutPoint1";

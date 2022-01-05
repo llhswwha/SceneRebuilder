@@ -180,7 +180,7 @@ public class MeshTriangle
 
 public class MeshTriangleList:List< MeshTriangle >
 {
-    public float GetRadius(int pointId)
+    public float GetRadius1(int pointId)
     {
         float radius = 0;
         foreach (MeshTriangle triangle in this)
@@ -190,6 +190,41 @@ public class MeshTriangleList:List< MeshTriangle >
         }
         radius /= this.Count;
         return radius;
+    }
+
+    public float GetRadius2(int pointId)
+    {
+        //Vector3 center1 = GetCenter();
+        Vector3 center2 = GetCenter(pointId);
+        float radius = 0;
+        int count2 = 0;
+        foreach (MeshTriangle triangle in this)
+        {
+            foreach (var p in triangle.Points)
+            {
+                float r = Vector3.Distance(center2, p.Point);
+                radius += r;
+                count2++;
+            }
+        }
+        radius /= count2;
+        return radius;
+    }
+
+    public Vector3 GetCenter()
+    {
+        Vector3 center = Vector3.zero;
+        int count1 = 0;
+        foreach (MeshTriangle triangle in this)
+        {
+            foreach (var p in triangle.Points)
+            {
+                center += p.Point;
+                count1++;
+            }
+        }
+        center /= count1;
+        return center;
     }
 
     public Vector3 GetCenter(int pointId)
@@ -242,7 +277,7 @@ public class MeshTriangleList:List< MeshTriangle >
 }
 
 
-public class SharedMeshTriangles
+public class SharedMeshTriangles:IComparable<SharedMeshTriangles>
 {
     public int PointId;
 
@@ -252,11 +287,18 @@ public class SharedMeshTriangles
 
     public Vector3 Normal;
 
+    public float Radius = 0;
+
     public float DistanceToCenter;
 
     public bool IsCircle = true;
 
     public float CircleCheckP = 0;
+
+    public override string ToString()
+    {
+        return $"{PointId}_{Point}_{Center}_{Radius}";
+    }
 
 
     public Vector3 GetCenter()
@@ -275,7 +317,13 @@ public class SharedMeshTriangles
 
     public float GetRadius()
     {
-        return Triangles.GetRadius(PointId);
+        //return Triangles.GetRadius(PointId);
+        return Radius;
+    }
+
+    public int CompareTo(SharedMeshTriangles other)
+    {
+        return other.Radius.CompareTo(this.Radius);
     }
 
     public SharedMeshTriangles(int id, Vector3 p,Vector3 normal, List<MeshTriangle> ts)
@@ -285,8 +333,22 @@ public class SharedMeshTriangles
         this.Normal = normal;
         this.Triangles.AddRange(ts);
         Center = Triangles.GetCenter(PointId);
+        //Center = Triangles.GetCenter();
+        //Radius= Triangles.GetRadius(PointId);
         CircleCheckP = Triangles.GetCircleCheckP(PointId);
         IsCircle = CircleCheckP <= CircleInfo.IsCircleMaxP;
+
+        if (IsCircle)
+        {
+            Radius = Triangles.GetRadius1(PointId);
+        }
+        else
+        {
+            Radius = Triangles.GetRadius2(PointId);
+        }
+
+        //Radius = Triangles.GetRadius2(PointId);
+
         DistanceToCenter = Vector3.Distance(Point, Center);
     }
 }

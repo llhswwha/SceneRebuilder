@@ -414,7 +414,8 @@ public static class MeshCombineHelper
         goNew.transform.SetParent(target.transform);
         GameObject.DestroyImmediate(goNew);
         //Debug.LogError(string.Format("CombinedMesh 用时:{0}ms,数量:{1}",(DateTime.Now-start).TotalMilliseconds,count));
-        MeshHelper.CenterPivot(target.transform,combinedMesh.minMax[3]);
+        if(source.isCenterPivot)
+            MeshHelper.CenterPivot(target.transform,combinedMesh.minMax[3]);
         return target;
     }
 
