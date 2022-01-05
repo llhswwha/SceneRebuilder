@@ -1596,14 +1596,14 @@ public class BaseFoldoutEditor<T> : BaseEditor<T> where T : class
         BaseFoldoutEditorHelper.DrawPrefabList(prefabListArg, funcGetList);
     }
 
-    public static void DrawPipeModelsList(List<PipeModelBase> list, FoldoutEditorArg listArg)
+    public static void DrawPipeModelsList<T>(List<T> list, FoldoutEditorArg listArg,string listName) where T : PipeModelBase
     {
-        listArg.caption = $"PipeModel List";
+        listArg.caption = listName;
         listArg.level = 0;
         EditorUIUtils.ToggleFoldout(listArg, arg =>
         {
             //var doors = doorsRoot.Doors;
-            arg.caption = $"PipeModel List ({list.Count})";
+            arg.caption = $"{listName} ({list.Count})";
             InitEditorArg(list);
         },
         () =>
@@ -1614,7 +1614,13 @@ public class BaseFoldoutEditor<T> : BaseEditor<T> where T : class
             }
         });
 
-        if (listArg.isExpanded && listArg.isEnabled)
+        DrawPipeModelsListInner(list, listArg);
+
+    }
+
+    public static void DrawPipeModelsListInner<T>(List<T> list, FoldoutEditorArg listArg) where T : PipeModelBase
+    {
+        if (listArg.isExpanded)
         {
             listArg.level = 1;
             //var doors = doorsRoot.Doors;
@@ -1631,6 +1637,66 @@ public class BaseFoldoutEditor<T> : BaseEditor<T> where T : class
                 {
 
                 });
+            });
+        }
+
+    }
+
+    public static void DrawPipeRunList(PipeRunList runList, FoldoutEditorArg listArg)
+    {
+        var list = runList.PipeRuns;
+        listArg.caption = $"PipeRun List";
+        listArg.level = 0;
+        EditorUIUtils.ToggleFoldout(listArg, arg =>
+        {
+            //var doors = doorsRoot.Doors;
+            arg.caption = $"PipeRun List ({list.Count})";
+            InitEditorArg(list);
+        },
+        () =>
+        {
+            if (GUILayout.Button("SortByRadiusDis", GUILayout.Width(60)))
+            {
+                list.Sort();
+            }
+            if (GUILayout.Button("SortByCount", GUILayout.Width(60)))
+            {
+                list.Sort();
+            }
+            if (GUILayout.Button("SortByRadius", GUILayout.Width(60)))
+            {
+                list.Sort();
+            }
+        });
+
+        if (listArg.isExpanded && listArg.isEnabled)
+        {
+            listArg.level = 1;
+            //var doors = doorsRoot.Doors;
+            InitEditorArg(list);
+            listArg.DrawPageToolbar(list, (listItem, i) =>
+            {
+                if (listItem == null) return;
+                var arg = FoldoutEditorArgBuffer.editorArgs[listItem];
+                if (arg == null) return;
+                arg.caption = $"[{i + 1:00}] ({listItem.PipeModels.Count})";
+                arg.info = listItem.ToString();
+                arg.level = 2;
+                EditorUIUtils.ObjectFoldout(arg, listItem.go, () =>
+                {
+                    if(listItem.EndModel1!=null)
+                        if (GUILayout.Button(listItem.EndModel1.name, GUILayout.Width(100)))
+                        {
+                            EditorHelper.SelectObject(listItem.EndModel1.gameObject);
+                        }
+                    if(listItem.EndModel2!=null)
+                        if (GUILayout.Button(listItem.EndModel2.name, GUILayout.Width(100)))
+                        {
+                            EditorHelper.SelectObject(listItem.EndModel2.gameObject);
+                        }
+                });
+                var models = listItem.PipeModels;
+                DrawPipeModelsListInner(models, arg);
             });
         }
 

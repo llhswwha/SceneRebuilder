@@ -401,6 +401,8 @@ public class PipeMeshGeneratorEx : PipeMeshGeneratorBase
         }
     }
 
+    public int LineStep = 1;
+
     Mesh GeneratePipeMesh(List<Vector4> ps, bool gWeld)
     {
 

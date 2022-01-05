@@ -73,6 +73,11 @@ public class PipeElbowModel : PipeModelBase
 
             GetPipeRadius();
 
+            ModelStartPoint = EndPointOut1;
+            ModelStartPoint.w = PipeRadius;
+            ModelEndPoint = EndPointOut2;
+            ModelEndPoint.w = PipeRadius;
+
             IsGetInfoSuccess = true;
             Debug.Log($">>>GetElbowInfo time:{DateTime.Now - start}");
         }
@@ -127,6 +132,10 @@ public class PipeElbowModel : PipeModelBase
             TransformHelper.ShowLocalPoint(crossPoint2, PointScale, this.transform, null).name = "crossPoint2";
             TransformHelper.ShowLocalPoint(crossPoint12, PointScale, this.transform, null).name = "crossPoint12";
 
+            ModelStartPoint = EndPointOut1;
+            ModelStartPoint.w = PipeRadius;
+            ModelEndPoint = EndPointOut2;
+            ModelEndPoint.w = PipeRadius;
 
             IsGetInfoSuccess = true;
             Debug.Log($">>>GetElbowInfo time:{DateTime.Now - start}");
@@ -134,7 +143,7 @@ public class PipeElbowModel : PipeModelBase
         else
         {
             IsGetInfoSuccess = false;
-            Debug.LogError($"GetKeyPointsById points.Count Error count:{trianglesList.Count} gameObject:{this.gameObject.name} sharedMinCount:{sharedMinCount} minRepeatPointDistance:{minRepeatPointDistance}");
+            Debug.LogError($">>>GetElbowInfo GetModelInfo points.Count Error count:{trianglesList.Count} gameObject:{this.gameObject.name} sharedMinCount:{sharedMinCount} minRepeatPointDistance:{minRepeatPointDistance}");
             return;
         }
 
@@ -229,6 +238,16 @@ public class PipeElbowModel : PipeModelBase
     public Vector3 EndPointOut1 = Vector3.zero;
     public Vector3 EndPointIn2 = Vector3.zero;
     public Vector3 EndPointOut2= Vector3.zero;
+
+    public Vector3 GetEndPointIn1()
+    {
+        return this.transform.TransformPoint(EndPointIn1);
+    }
+
+    public Vector3 GetEndPointIn2()
+    {
+        return this.transform.TransformPoint(EndPointIn2);
+    }
 
     public PipeLineInfo Line1 = new PipeLineInfo();
 

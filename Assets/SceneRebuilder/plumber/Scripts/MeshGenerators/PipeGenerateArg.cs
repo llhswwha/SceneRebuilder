@@ -26,6 +26,15 @@ public class PipeGenerateArg
 
     public void SetArg(PipeMeshGenerator pipe)
     {
+        if (this.pipeMaterial == null)
+        {
+            this.pipeMaterial = PipeFactory.Instance.pipeMaterial;
+        }
+        if (this.weldMaterial == null)
+        {
+            this.weldMaterial = PipeFactory.Instance.weldMaterial;
+        }
+
         pipe.pipeSegments = this.pipeSegments;
         pipe.pipeMaterial = this.pipeMaterial;
         pipe.weldMaterial = this.weldMaterial;
@@ -38,6 +47,15 @@ public class PipeGenerateArg
 
     public void SetArg(PipeMeshGeneratorEx pipe)
     {
+        if (this.pipeMaterial == null)
+        {
+            this.pipeMaterial = PipeFactory.Instance.pipeMaterial;
+        }
+        if (this.weldMaterial == null)
+        {
+            this.weldMaterial = PipeFactory.Instance.weldMaterial;
+        }
+
         pipe.pipeSegments = this.pipeSegments;
         pipe.pipeMaterial = this.pipeMaterial;
         pipe.weldMaterial = this.weldMaterial;

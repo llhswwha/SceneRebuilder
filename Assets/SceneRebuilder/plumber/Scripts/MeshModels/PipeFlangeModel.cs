@@ -23,6 +23,9 @@ public class PipeFlangeModel : PipeReducerModel
         }
         StartPoint.w = PipeRadius;
         EndPoint.w = PipeRadius;
+
+        ModelStartPoint = StartPoint;
+        ModelEndPoint = EndPoint;
     }
     public override GameObject RendererModel(PipeGenerateArg arg, string afterName)
     {

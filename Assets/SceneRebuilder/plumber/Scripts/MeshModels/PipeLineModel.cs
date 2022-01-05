@@ -147,8 +147,8 @@ public class PipeLineModel : PipeModelBase
         if (verticesToPlaneInfos.Count >=2)
         {
             endPlane = verticesToPlaneInfos[1];
-            //ÅÐ¶ÏÊÇ·ñÊÇ¶Ô³ÆµÄÆ½Ãæ£¬²»ÊÇµÄ»°ÓÐÎÊÌâ¡£
-            //ÕÒ³ö¶Ô³ÆµÄÁ½¸öÆ½Ãæ
+            //ï¿½Ð¶ï¿½ï¿½Ç·ï¿½ï¿½Ç¶Ô³Æµï¿½Æ½ï¿½æ£¬ï¿½ï¿½ï¿½ÇµÄ»ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½â¡£
+            //ï¿½Ò³ï¿½ï¿½Ô³Æµï¿½ï¿½ï¿½ï¿½ï¿½Æ½ï¿½ï¿½
             //var endPlane2 = GetEndPlane(startPlane, verticesToPlaneInfos);
             //if (endPlane2 == null)
             //{
@@ -266,7 +266,7 @@ public class PipeLineModel : PipeModelBase
         PipeRadius1 = startCircle.Radius;
         PipeRadius2 = endCircle.Radius;
 
-        //ÓÅ»¯
+        //ï¿½Å»ï¿½
         //PlaneCenterPointInfo planeCenterPointInfo12 = new PlaneCenterPointInfo(vs, startCircle.Center, false);
         //PlaneCenterPointInfo planeCenterPointInfo22 = new PlaneCenterPointInfo(vs, endCircle.Center, false);
         //var startCircle2 = planeCenterPointInfo12.GetCircleInfo();
@@ -297,6 +297,10 @@ public class PipeLineModel : PipeModelBase
         LineInfo.StartPoint = startPoint;
         LineInfo.EndPoint = endPoint;
 
+        ModelStartPoint = startPoint;
+        ModelStartPoint.w = PipeRadius;
+        ModelEndPoint = endPoint;
+        ModelEndPoint.w = PipeRadius;
     }
 
     private VerticesToPlaneInfo GetEndPlane(VerticesToPlaneInfo startPlane,List<VerticesToPlaneInfo> verticesToPlaneInfos_All)
@@ -470,7 +474,7 @@ public class PipeLineModel : PipeModelBase
         PipeRadius1 = startCircle.Radius;
         PipeRadius2 = endCircle.Radius;
 
-        //ÓÅ»¯
+        //ï¿½Å»ï¿½
         //PlaneCenterPointInfo planeCenterPointInfo12 = new PlaneCenterPointInfo(vs, startCircle.Center, false);
         //PlaneCenterPointInfo planeCenterPointInfo22 = new PlaneCenterPointInfo(vs, endCircle.Center, false);
         //var startCircle2 = planeCenterPointInfo12.GetCircleInfo();

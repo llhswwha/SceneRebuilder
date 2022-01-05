@@ -55,14 +55,12 @@ public class PipeReducerModel
 
 
         SharedMeshTriangles startP = distanceList[0].Plane;
-        StartPoint = startP.GetCenter();
-        StartPoint.w = startP.GetRadius();
+        StartPoint = startP.GetCenter4();
 
         PipeRadius1 = StartPoint.w;
 
         SharedMeshTriangles endP = distanceList[1].Plane;
-        EndPoint = endP.GetCenter();
-        EndPoint.w = endP.GetRadius();
+        EndPoint = endP.GetCenter4();
         PipeRadius2 = EndPoint.w;
 
         PipeRadius = (PipeRadius1 + PipeRadius2) / 2;
@@ -86,6 +84,10 @@ public class PipeReducerModel
         GetPipeRadius();
 
         IsGetInfoSuccess = true;
+
+        ModelStartPoint = StartPoint;
+        ModelEndPoint = EndPoint;
+
         Debug.Log($">>>GetElbowInfo time:{DateTime.Now - start} points:{points.Count}");
     }
     public override GameObject RendererModel(PipeGenerateArg arg, string afterName)

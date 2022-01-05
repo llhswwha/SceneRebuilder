@@ -64,7 +64,7 @@ public class PipeBuilderEditor : BaseFoldoutEditor<PipeBuilder>
         //    targetT.CreateWeld();
         //}
 
-        DrawPipeModelsList(targetT.PipeModels, pipeModelListArg);
+        DrawPipeModelsList(targetT.PipeModels, pipeModelListArg,"PipeModel List");
       
         base.OnInspectorGUI();
     }
