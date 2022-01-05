@@ -28,8 +28,31 @@ public class PipeTeeModel : PipeElbowModel
         {
 
         }
-        trianglesList.RemoveNotCircle();
-        if (trianglesList.Count == 4)
+        //trianglesList.RemoveNotCircle();
+        if (trianglesList.Count == 7)
+        {
+            SharedMeshTrianglesList list1 = new SharedMeshTrianglesList();
+            SharedMeshTrianglesList list2 = new SharedMeshTrianglesList();
+            var plane1 = trianglesList[0];
+            list1.Add(plane1);
+            for (int i=1;i<trianglesList.Count;i++)
+            {
+                var plane = trianglesList[i];
+                float angle = Vector3.Dot(plane1.Normal, plane.Normal);
+                Debug.Log($"Tee GetModelInfo7 angle[{angle}] normal1:{plane1.Normal} normal2:{plane.Normal}");
+                if (Mathf.Abs(angle) < 0.001f)
+                {
+                    list2.Add(plane);
+                }
+                else
+                {
+                    list1.Add(plane);
+                }
+            }
+            Debug.Log($"Tee GetModelInfo7 list1:{list1.Count} list2:{list2.Count}");
+
+        }
+        else if (trianglesList.Count == 4)
         {
             var centerOfPoints = MeshHelper.GetCenterOfList(trianglesList);
             distanceList = new List<PlanePointDistance>();
@@ -62,18 +85,6 @@ public class PipeTeeModel : PipeElbowModel
                     teePlane2 = plane;
                     //break;
                 }
-
-                
-
-                //if (minNormalAngle > normalAngle)
-                //{
-                //    minNormalAngle = normalAngle;
-                //    teePlane2 = plane;
-                //}
-                //else
-                //{
-
-                //}
             }
 
             if (teePlane2 == null)

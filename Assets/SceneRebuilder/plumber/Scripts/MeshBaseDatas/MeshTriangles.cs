@@ -272,6 +272,38 @@ public class MeshTriangles
         return KeyPoints;
     }
 
+    //public SharedMeshTrianglesList GetKeyPointsByPointEx(int minCount, float minDis)
+    //{
+    //    SharedMeshTrianglesList KeyPoints = new SharedMeshTrianglesList();
+    //    List<Key2List<Vector3, MeshTriangle>> sharedPoints1 = this.FindSharedPointsByPoint();
+    //    for (int i = 0; i < sharedPoints1.Count; i++)
+    //    {
+    //        int pointId = sharedPoints1[i].Key;
+    //        var triangles = sharedPoints1[i].List;
+    //        Vector3 point = mesh.vertices[pointId];
+
+    //        if (triangles.Count >= minCount)
+    //        {
+    //            if (!KeyPoints.Contains(point))
+    //            {
+    //                float dis = Distance2List(point, KeyPoints);
+    //                if (dis > minDis)
+    //                {
+    //                    Vector3 normal = mesh.normals[pointId];
+    //                    //Debug.Log($"dis:{dis} point:{point} KeyPoints:{KeyPoints.Count}");
+    //                    KeyPoints.Add(new SharedMeshTriangles(pointId, point, normal, triangles));
+    //                }
+    //            }
+    //        }
+    //    }
+    //    if (KeyPoints.Count < 2)
+    //    {
+    //        Debug.LogError($"GetKeyPoints KeyPoints:{KeyPoints.Count}");
+    //    }
+    //    KeyPoints.Sort();
+    //    return KeyPoints;
+    //}
+
     private float GetTrianglesRadius(List<MeshTriangle> triangles,int pointId)
     {
         float radius = 0;
