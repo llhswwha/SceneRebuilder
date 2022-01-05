@@ -496,7 +496,7 @@ public class PipeBuilder : MonoBehaviour
 
     public void CreatePipeRunList()
     {
-        pipeRunList = new PipeRunList(PipeModels, minConnectedDistance, isUniformRaidus);
+        pipeRunList = new PipeRunList(PipeModels, minConnectedDistance, isUniformRaidus,false);
     }
 
     public float minConnectedDistance = 0.0001f;
@@ -504,6 +504,12 @@ public class PipeBuilder : MonoBehaviour
     public bool isUniformRaidus = false;
 
     public PipeRunList pipeRunList = new PipeRunList();
+
+    public PipeRunList TestModelIsConnected(List<PipeModelBase> models)
+    {
+        PipeRunList runList = new PipeRunList(models, minConnectedDistance, isUniformRaidus,true);
+        return runList;
+    }
 
     private void GetPipeElbowInfos()
     {

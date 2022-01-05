@@ -108,10 +108,8 @@ public class PipeTeeModel : PipeElbowModel
 
             //GetPipeRadius();
 
-            //ModelStartPoint = EndPointOut1;
-            //ModelStartPoint.w = PipeRadius;
-            //ModelEndPoint = EndPointOut2;
-            //ModelEndPoint.w = PipeRadius;
+            ModelStartPoint = LineStartPoint;
+            ModelEndPoint = LineEndPoint;
 
             IsGetInfoSuccess = true;
 
@@ -127,22 +125,6 @@ public class PipeTeeModel : PipeElbowModel
 
     public override GameObject RendererModel(PipeGenerateArg arg, string afterName)
     {
-        //return base.RendererModel(arg, afterName);
-
-        //PipeMeshGeneratorEx pipe = GetGenerator<PipeMeshGeneratorEx>(arg, afterName);
-        //PipeCreateArg pipeArg = new PipeCreateArg(Line1, Line2);
-        //var ps = pipeArg.GetGeneratePoints(0, 2, false);
-        ////pipe.points = new List<Vector3>() { EndPointOut1, EndPointIn1, EndPointIn2, EndPointOut2 };
-        //pipe.LineStep = 2;
-        //pipe.generateElbows = false;
-
-        //pipe.points = new List<Vector4>() { LineStartPoint, LineEndPoint, TeeStartPoint, TeeEndPoint };
-        //arg.SetArg(pipe);
-        //pipe.generateWeld = false;
-        //pipe.avoidStrangling = true;
-        //pipe.RenderPipe();
-        //return pipe.gameObject;
-
         GameObject pipe1 = RenderPipeLine(arg, afterName, LineStartPoint, LineEndPoint);
         GameObject pipe2= RenderPipeLine(arg, afterName, TeeStartPoint, TeeEndPoint);
         GameObject pipeNew = GetPipeNewGo(arg, afterName);
@@ -152,9 +134,8 @@ public class PipeTeeModel : PipeElbowModel
         GameObject target = MeshCombineHelper.Combine(pipeNew);
         this.ResultGo = target;
 
-        ModelStartPoint = LineStartPoint;
-        ModelEndPoint = LineEndPoint;
-
+        PipeMeshGenerator pipeG=target.AddComponent<PipeMeshGenerator>();
+        pipeG.Target = this.gameObject;
         return target;
     }
 
@@ -169,5 +150,33 @@ public class PipeTeeModel : PipeElbowModel
         pipe.avoidStrangling = true;
         pipe.RenderPipe();
         return pipe.gameObject;
+    }
+
+    public override int ConnectedModel(PipeModelBase model2, float minPointDis, bool isShowLog)
+    {
+        int cCount = base.ConnectedModel(model2, minPointDis, isShowLog);
+
+        var model1 = this;
+        Vector3 model1ToModel2SS = model1.GetModelStartPoint() - model2.GetModelStartPoint();
+        Vector3 model1ToModel2SE = model1.GetModelStartPoint() - model2.GetModelEndPoint();
+        Vector3 model1ToModel2ES = model1.GetModelEndPoint() - model2.GetModelStartPoint();
+        Vector3 model1ToModel2EE = model1.GetModelEndPoint() - model2.GetModelEndPoint();
+        float angleS = Vector3.Dot(model1ToModel2SS, model1ToModel2SE);
+        float angleE = Vector3.Dot(model1ToModel2ES, model1ToModel2EE);
+        if (angleS < 0)
+        {
+            model1.AddConnectedModel(model2);
+            model2.AddConnectedModel(model1);
+            cCount++;
+        }
+        if (angleE < 0)
+        {
+            model1.AddConnectedModel(model2);
+            model2.AddConnectedModel(model1);
+            cCount++;
+        }
+        Debug.Log($"PipeTee ConnectedModel count:{cCount} model1:{model1.name} model2:{model2.name} angleS:{angleS} angleE:{angleE}");
+
+        return cCount;
     }
 }

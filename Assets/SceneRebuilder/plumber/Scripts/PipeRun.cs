@@ -165,7 +165,7 @@ public class PipeRunList
 
     }
 
-    public PipeRunList(List<PipeModelBase> list, float minDis, bool isUniformRaidus)
+    public PipeRunList(List<PipeModelBase> list, float minDis, bool isUniformRaidus, bool isShowLog)
     {
         DateTime start = DateTime.Now;
         List<PipeModelBase> models = new List<PipeModelBase>(list);
@@ -193,7 +193,7 @@ public class PipeRunList
                     return;
                 }
                 PipeModelBase model2 = models[j];
-                PipeModelBase.IsConnected(model1, model2, minDis);
+                model1.ConnectedModel(model2, minDis, isShowLog);
             }
 
             if (model1.ConnectedModels.Count == 0)
@@ -211,7 +211,7 @@ public class PipeRunList
                             return;
                         }
                         PipeModelBase model2 = models[j];
-                        PipeModelBase.IsConnectedEx(elbow, model2, minDis, isUniformRaidus);
+                        PipeModelBase.ConnectedModelEx(elbow, model2, minDis, isUniformRaidus);
                     }
 
                     if (model1.ConnectedModels.Count == 0)

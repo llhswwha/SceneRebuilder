@@ -7,9 +7,10 @@ using UnityEngine;
 [CustomEditor(typeof(PipeFactory))]
 public class PipeFactoryEditor : BaseFoldoutEditor<PipeFactory>
 {
-    static FoldoutEditorArg pipeModelListArg = new FoldoutEditorArg(true, true);
-    static FoldoutEditorArg pipeRunListArg = new FoldoutEditorArg(true, true);
-    static FoldoutEditorArg specialElbowListArg = new FoldoutEditorArg(true, true);
+    static FoldoutEditorArg pipeModelListArg = new FoldoutEditorArg(true, false);
+    static FoldoutEditorArg pipeRunListArg = new FoldoutEditorArg(true, false);
+    static FoldoutEditorArg testpipeRunListArg = new FoldoutEditorArg(true, false);
+    static FoldoutEditorArg specialElbowListArg = new FoldoutEditorArg(true, false);
     public override void OnEnable()
     {
         base.OnEnable();
@@ -126,6 +127,10 @@ public class PipeFactoryEditor : BaseFoldoutEditor<PipeFactory>
         {
             targetT.MovePipes();
         }
+        if (GUILayout.Button("TestIsConnected"))
+        {
+            targetT.TestModelIsConnected();
+        }
         GUILayout.EndHorizontal();
 
         GUILayout.BeginHorizontal();
@@ -146,5 +151,6 @@ public class PipeFactoryEditor : BaseFoldoutEditor<PipeFactory>
         DrawPipeModelsList(targetT.GetPipeModels(), pipeModelListArg, "PipeModel List");
         DrawPipeRunList(targetT.GetPipeRunList(), pipeRunListArg);
         DrawPipeModelsList(targetT.GetPipeRunList().SpecialElbows, specialElbowListArg, "SpecialElbow List");
+        DrawPipeRunList(targetT.TestRunList, testpipeRunListArg);
     }
 }

@@ -308,4 +308,13 @@ public class PipeFactory : SingletonBehaviour<PipeFactory>
     public Material weldMaterial;
 
     public PipeGenerateArg generateArg = new PipeGenerateArg();
+
+    public List<PipeModelBase> RunTestModels = new List<PipeModelBase>();
+
+    public PipeRunList TestRunList = new PipeRunList();
+
+    public void TestModelIsConnected()
+    {
+        TestRunList=newBuilder.TestModelIsConnected(RunTestModels);
+    }
 }
