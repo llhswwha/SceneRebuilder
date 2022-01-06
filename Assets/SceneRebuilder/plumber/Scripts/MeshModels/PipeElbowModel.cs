@@ -27,7 +27,7 @@ public class PipeElbowModel : PipeModelBase
 
     public float PipeLineOffset = 0.05f;
 
-    private PipeElbowInfo GetElbow2(SharedMeshTrianglesList trianglesList, Mesh mesh)
+    private PipeElbowKeyPointInfo GetElbow2(SharedMeshTrianglesList trianglesList, Mesh mesh)
     {
         var centerOfPoints = MeshHelper.GetCenterOfList(trianglesList);
         distanceList = new List<PlanePointDistance>();
@@ -59,7 +59,7 @@ public class PipeElbowModel : PipeModelBase
         Math3D.ClosestPointsOnTwoLines(out crossPoint1, out crossPoint2, endPoint1, normal1, endPoint2, normal2);
         Vector3 crossPoint12 = 0.5f * (crossPoint1 + crossPoint2);
 
-        PipeElbowInfo info = new PipeElbowInfo();
+        PipeElbowKeyPointInfo info = new PipeElbowKeyPointInfo();
         //EndPointOut1 = EndPointIn1- normal1 * PipeRadius* PipeLineOffset;
         //EndPointOut2 = EndPointIn2+ normal2 * PipeRadius * PipeLineOffset;
         info.EndPointOut1 = endPoint1;
@@ -90,9 +90,11 @@ public class PipeElbowModel : PipeModelBase
         return info;
     }
 
-    private PipeElbowInfo GetElbow4(SharedMeshTrianglesList trianglesList)
+    protected PipeElbowKeyPlaneInfo GetElbow4Planes(SharedMeshTrianglesList list)
     {
-        PipeElbowInfo info = new PipeElbowInfo();
+        SharedMeshTrianglesList trianglesList = new SharedMeshTrianglesList(list);
+
+        PipeElbowKeyPlaneInfo info = new PipeElbowKeyPlaneInfo();
 
         var centerOfPoints = MeshHelper.GetCenterOfList(trianglesList);
         distanceList = new List<PlanePointDistance>();
@@ -104,39 +106,62 @@ public class PipeElbowModel : PipeModelBase
         SharedMeshTriangles endPointIn1Plane = distanceList[0].Plane;
         SharedMeshTriangles endPointIn2Plane = distanceList[1].Plane;
 
-        info.EndPointIn1 = endPointIn1Plane.GetCenter4();
-        info.EndPointIn2 = endPointIn2Plane.GetCenter4();
+        info.EndPointIn1 = endPointIn1Plane;
+        info.EndPointIn2 = endPointIn2Plane;
         trianglesList.Remove(info.EndPointIn1);
         trianglesList.Remove(info.EndPointIn2);
 
-        SharedMeshTriangles endPointOut1Plane= MeshHelper.FindClosedPlane(info.EndPointIn1, trianglesList);
-        info.EndPointOut1 = endPointOut1Plane.GetCenter4();
+        SharedMeshTriangles endPointOut1Plane = MeshHelper.FindClosedPlane(info.EndPointIn1.GetCenter4(), trianglesList);
+        info.EndPointOut1 = endPointOut1Plane;
         trianglesList.Remove(info.EndPointOut1);
-        SharedMeshTriangles endPointOut2Plane = MeshHelper.FindClosedPlane(info.EndPointIn2, trianglesList);
-        info.EndPointOut2 = endPointOut2Plane.GetCenter4();
+        SharedMeshTriangles endPointOut2Plane = MeshHelper.FindClosedPlane(info.EndPointIn2.GetCenter4(), trianglesList);
+        info.EndPointOut2 = endPointOut2Plane;
         trianglesList.Remove(info.EndPointOut2);
-
-        info.Line1 = new PipeLineInfo(info.EndPointOut1, info.EndPointIn1, null);
-        info.Line2 = new PipeLineInfo(info.EndPointIn2, info.EndPointOut2, null);
-
-        TransformHelper.ShowLocalPoint(info.EndPointOut1, PointScale, this.transform, null).name = "Elbow4_OutPoint1";
-        TransformHelper.ShowLocalPoint(info.EndPointOut2, PointScale, this.transform, null).name = "Elbow4_OutPoint2";
-        TransformHelper.ShowLocalPoint(info.EndPointIn1, PointScale, this.transform, null).name = "Elbow4_InPoint1";
-        TransformHelper.ShowLocalPoint(info.EndPointIn2, PointScale, this.transform, null).name = "Elbow4_InPoint2";
-
-        //GetPipeRadius();
-
-        //EndPointIn1.w = PipeRadius;
-        //EndPointIn2.w = PipeRadius;
-        //EndPointOut1.w = PipeRadius;
-        //EndPointOut2.w = PipeRadius;
-
-        //ModelStartPoint = info.EndPointOut1;
-        //ModelEndPoint = info.EndPointOut2;
-
-        //IsGetInfoSuccess = true;
-
         return info;
+    }
+
+    protected PipeElbowKeyPointInfo GetElbow4(SharedMeshTrianglesList list)
+    {
+        //SharedMeshTrianglesList trianglesList = new SharedMeshTrianglesList(list);
+
+        //Debug.Log($"GetElbow4 trianglesList:{trianglesList.Count}");
+
+        //PipeElbowKeyPointInfo info = new PipeElbowKeyPointInfo();
+
+        //var centerOfPoints = MeshHelper.GetCenterOfList(trianglesList);
+        //distanceList = new List<PlanePointDistance>();
+        //foreach (var p in trianglesList)
+        //{
+        //    distanceList.Add(new PlanePointDistance(p, centerOfPoints));
+        //}
+        //distanceList.Sort();
+        //SharedMeshTriangles endPointIn1Plane = distanceList[0].Plane;
+        //SharedMeshTriangles endPointIn2Plane = distanceList[1].Plane;
+
+        //info.EndPointIn1 = endPointIn1Plane.GetCenter4();
+        //info.EndPointIn2 = endPointIn2Plane.GetCenter4();
+        //trianglesList.Remove(info.EndPointIn1);
+        //trianglesList.Remove(info.EndPointIn2);
+
+        //SharedMeshTriangles endPointOut1Plane = MeshHelper.FindClosedPlane(info.EndPointIn1, trianglesList);
+        //info.EndPointOut1 = endPointOut1Plane.GetCenter4();
+        //trianglesList.Remove(info.EndPointOut1);
+        //SharedMeshTriangles endPointOut2Plane = MeshHelper.FindClosedPlane(info.EndPointIn2, trianglesList);
+        //info.EndPointOut2 = endPointOut2Plane.GetCenter4();
+        //trianglesList.Remove(info.EndPointOut2);
+
+        //info.Line1 = new PipeLineInfo(info.EndPointOut1, info.EndPointIn1, null);
+        //info.Line2 = new PipeLineInfo(info.EndPointIn2, info.EndPointOut2, null);
+
+        //TransformHelper.ShowLocalPoint(info.EndPointOut1, PointScale, this.transform, null).name = "Elbow4_OutPoint1";
+        //TransformHelper.ShowLocalPoint(info.EndPointOut2, PointScale, this.transform, null).name = "Elbow4_OutPoint2";
+        //TransformHelper.ShowLocalPoint(info.EndPointIn1, PointScale, this.transform, null).name = "Elbow4_InPoint1";
+        //TransformHelper.ShowLocalPoint(info.EndPointIn2, PointScale, this.transform, null).name = "Elbow4_InPoint2";
+        //return info;
+
+        PipeElbowKeyPlaneInfo keyPlanes = GetElbow4Planes(list);
+        PipeElbowKeyPointInfo info2 = keyPlanes.GetKeyPoints();
+        return info2;
     }
 
     private void GetElbow6(SharedMeshTrianglesList trianglesList, Mesh mesh)
@@ -154,15 +179,15 @@ public class PipeElbowModel : PipeModelBase
         planes4.Add(plane2);
         planes4.Add(plane3);
         planes4.Add(plane4);
-        ElbowInfo=GetElbow4(planes4);
-        ModelStartPoint = ElbowInfo.EndPointOut1;
-        ModelEndPoint = ElbowInfo.EndPointOut2;
+        KeyPointInfo=GetElbow4(planes4);
+        ModelStartPoint = KeyPointInfo.EndPointOut1;
+        ModelEndPoint = KeyPointInfo.EndPointOut2;
 
         SharedMeshTrianglesList planes2 = new SharedMeshTrianglesList();
         planes2.Add(plane5);
         planes2.Add(plane6);
 
-        InnerElbowInfo = GetElbow2(planes2, mesh);
+        InnerKeyPointInfo = GetElbow2(planes2, mesh);
     }
 
     public bool IsSpecial = false;
@@ -190,16 +215,16 @@ public class PipeElbowModel : PipeModelBase
         }
         else if(trianglesList.Count == 4)
         {
-            ElbowInfo = GetElbow4(trianglesList);
-            ModelStartPoint = ElbowInfo.EndPointOut1;
-            ModelEndPoint = ElbowInfo.EndPointOut2;
+            KeyPointInfo = GetElbow4(trianglesList);
+            ModelStartPoint = KeyPointInfo.EndPointOut1;
+            ModelEndPoint = KeyPointInfo.EndPointOut2;
             IsGetInfoSuccess = true;
         }
         else if (trianglesList.Count == 2)
         {
-            ElbowInfo = GetElbow2(trianglesList, mesh);
-            ModelStartPoint = ElbowInfo.EndPointOut1;
-            ModelEndPoint = ElbowInfo.EndPointOut2;
+            KeyPointInfo = GetElbow2(trianglesList, mesh);
+            ModelStartPoint = KeyPointInfo.EndPointOut1;
+            ModelEndPoint = KeyPointInfo.EndPointOut2;
             IsGetInfoSuccess = true;
         }
         else
@@ -238,7 +263,8 @@ public class PipeElbowModel : PipeModelBase
         Debug.Log($"GetElbowInfo mesh vertexCount:{mesh.vertexCount} triangles:{mesh.triangles.Length}");
         //meshTriangles.ShowSharedPointsById(this.transform, PointScale,10);
         meshTriangles.ShowSharedPointsByIdEx(this.transform, PointScale, 10, minRepeatPointDistance);
-        meshTriangles.ShowSharedPointsByPoint(this.transform, PointScale,10);
+        //meshTriangles.ShowSharedPointsByPoint(this.transform, PointScale,10);
+        meshTriangles.ShowSharedPointsByPointEx(this.transform, PointScale, 10, minRepeatPointDistance);
     }
 
 
@@ -272,12 +298,12 @@ public class PipeElbowModel : PipeModelBase
         {
             GameObject pipeNew = GetPipeNewGo(arg, afterName);
 
-            GameObject pipe1 = RenderPipeLine(arg, afterName, ElbowInfo.EndPointIn1, ElbowInfo.EndPointOut1);
-            GameObject pipe2 = RenderPipeLine(arg, afterName, ElbowInfo.EndPointIn2, ElbowInfo.EndPointOut2);
+            GameObject pipe1 = RenderPipeLine(arg, afterName, KeyPointInfo.EndPointIn1, KeyPointInfo.EndPointOut1);
+            GameObject pipe2 = RenderPipeLine(arg, afterName, KeyPointInfo.EndPointIn2, KeyPointInfo.EndPointOut2);
             pipe1.transform.SetParent(pipeNew.transform);
             pipe2.transform.SetParent(pipeNew.transform);
 
-            GameObject pipe3 = RenderElbow(arg, afterName, InnerElbowInfo);
+            GameObject pipe3 = RenderElbow(arg, afterName, InnerKeyPointInfo);
 
 
             
@@ -292,11 +318,11 @@ public class PipeElbowModel : PipeModelBase
         }
         else
         {
-            return RenderElbow(arg, afterName,ElbowInfo);
+            return RenderElbow(arg, afterName,KeyPointInfo);
         }
     }
 
-    private GameObject RenderElbow(PipeGenerateArg arg, string afterName, PipeElbowInfo info)
+    private GameObject RenderElbow(PipeGenerateArg arg, string afterName, PipeElbowKeyPointInfo info)
     {
         //GameObject pipeNew = new GameObject(this.name + newAfterName);
         //pipeNew.transform.position = this.transform.position + arg.Offset;
@@ -329,7 +355,40 @@ public class PipeElbowModel : PipeModelBase
     }
 
     [Serializable]
-    public class PipeElbowInfo
+    public class PipeElbowKeyPlaneInfo
+    {
+        public SharedMeshTriangles EndPointIn1;
+        public SharedMeshTriangles EndPointOut1;
+        public SharedMeshTriangles EndPointIn2;
+        public SharedMeshTriangles EndPointOut2;
+
+        internal PipeElbowKeyPointInfo GetKeyPoints()
+        {
+            var out1 = EndPointOut1.GetCenter4();
+            var in1 = EndPointIn1.GetCenter4();
+            var out2 = EndPointOut2.GetCenter4();
+            var in2 = EndPointIn2.GetCenter4();
+            PipeElbowKeyPointInfo points = new PipeElbowKeyPointInfo(out1, in1,
+                out2, in2);
+            return points;
+        }
+
+        public PipeElbowKeyPlaneInfo()
+        {
+
+        }
+
+        public PipeElbowKeyPlaneInfo(SharedMeshTriangles out1, SharedMeshTriangles in1, SharedMeshTriangles out2, SharedMeshTriangles in2)
+        {
+            EndPointOut1 = out1;
+            EndPointIn1 = in1;
+            EndPointOut2 = out2;
+            EndPointIn2 = in2;
+        }
+    }
+
+    [Serializable]
+    public class PipeElbowKeyPointInfo
     {
         public Vector4 EndPointIn1 = Vector3.zero;
         public Vector4 EndPointOut1 = Vector3.zero;
@@ -339,25 +398,44 @@ public class PipeElbowModel : PipeModelBase
         public PipeLineInfo Line1 = new PipeLineInfo();
 
         public PipeLineInfo Line2 = new PipeLineInfo();
+
+        public PipeElbowKeyPointInfo()
+        {
+
+        }
+
+        public PipeElbowKeyPointInfo(Vector4 out1,Vector4 in1,Vector4 out2, Vector4 in2)
+        {
+            EndPointOut1 = out1;
+            EndPointIn1 = in1;
+            EndPointOut2 = out2;
+            EndPointIn2 = in2;
+
+            Line1 = new PipeLineInfo(EndPointOut1, EndPointIn1, null);
+            Line2 = new PipeLineInfo(EndPointIn2, EndPointOut2, null);
+        }
     }
 
     //public Vector4 EndPointIn1 = Vector3.zero;
     //public Vector4 EndPointOut1 = Vector3.zero;
     //public Vector4 EndPointIn2 = Vector3.zero;
     //public Vector4 EndPointOut2 = Vector3.zero;
+    public PipeElbowKeyPlaneInfo KeyPlaneInfo;
 
-    public PipeElbowInfo ElbowInfo;
+    public PipeElbowKeyPointInfo KeyPointInfo;
 
-    public PipeElbowInfo InnerElbowInfo;
+    public PipeElbowKeyPointInfo InnerKeyPointInfo;
+
+    public PipeElbowKeyPlaneInfo InnerKeyPlaneInfo;
 
     public Vector4 GetEndPointIn1()
     {
-        return this.TransformPoint(ElbowInfo.EndPointIn1);
+        return this.TransformPoint(KeyPointInfo.EndPointIn1);
     }
 
     public Vector4 GetEndPointIn2()
     {
-        return this.TransformPoint(ElbowInfo.EndPointIn2);
+        return this.TransformPoint(KeyPointInfo.EndPointIn2);
     }
 
     //public PipeLineInfo Line1 = new PipeLineInfo();
@@ -397,21 +475,21 @@ public class PipeElbowModel : PipeModelBase
     {
         if (id == 0)
         {
-            ElbowInfo.EndPointOut1.w = r;
+            KeyPointInfo.EndPointOut1.w = r;
         }
         if (id == 1)
         {
-            ElbowInfo.EndPointOut2.w = r;
+            KeyPointInfo.EndPointOut2.w = r;
         }
         if (id == 2)
         {
-            ElbowInfo.EndPointIn1.w = r;
-            ElbowInfo.EndPointOut1.w = r;
+            KeyPointInfo.EndPointIn1.w = r;
+            KeyPointInfo.EndPointOut1.w = r;
         }
         if (id == 3)
         {
-            ElbowInfo.EndPointIn2.w = r;
-            ElbowInfo.EndPointOut2.w = r;
+            KeyPointInfo.EndPointIn2.w = r;
+            KeyPointInfo.EndPointOut2.w = r;
         }
     }
 

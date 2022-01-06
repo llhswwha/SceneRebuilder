@@ -189,6 +189,33 @@ public class MeshTriangles
         }
     }
 
+    public void ShowSharedPointsByPointEx(Transform root, float pointScale, int minCount, float minDis)
+    {
+        SharedMeshTrianglesList sharedPoints1 = this.GetKeyPointsByPointEx(minCount, minDis);
+        Debug.LogError($"GetElbowInfo sharedPoints2:{sharedPoints1.Count}");
+        GameObject sharedPoints1Obj = CreateSubTestObj($"sharedPoints(Point):{sharedPoints1.Count}", root);
+        int id = 0;
+        for (int i = 0; i < sharedPoints1.Count; i++)
+        {
+            SharedMeshTriangles plane = sharedPoints1[i];
+            int pointId = plane.PointId;
+            var triangles = plane.Triangles;
+            if (triangles.Count < minCount) continue;
+            id++;
+            Debug.Log($"GetElbowInfo sharedPoints1[{i + 1}/{sharedPoints1.Count}] point:{pointId} trianlges:{triangles.Count}");
+            GameObject trianglesObj = CreateSubTestObj($"triangles[{id}][id:{pointId}]({triangles.Count})_({plane.MinRadius}-{plane.Radius})", sharedPoints1Obj.transform);
+            for (int i1 = 0; i1 < triangles.Count; i1++)
+            {
+                MeshTriangle t = triangles[i1];
+                GameObject objTriangle = t.ShowTriangle(root, trianglesObj.transform, pointScale);
+                objTriangle.name = $"triangle[{i1 + 1}]";
+            }
+            Vector3 point = mesh.vertices[pointId];
+            TransformHelper.ShowLocalPoint(plane.Point, pointScale * 2, root, trianglesObj.transform).name = "Point";
+            TransformHelper.ShowLocalPoint(plane.Center, pointScale * 2, root, trianglesObj.transform).name = "Center";
+        }
+    }
+
     private GameObject CreateSubTestObj(string objName, Transform parent)
     {
         GameObject objTriangles = new GameObject(objName);
@@ -249,35 +276,35 @@ public class MeshTriangles
             int pointId = sharedPoints1[i].Key;
             var triangles = sharedPoints1[i].List;
             Vector3 point = mesh.vertices[pointId];
-            
-            if (triangles.Count >= minCount)
+            Vector3 normal = mesh.normals[pointId];
+
+            var item=KeyPoints.FindItemByPoint(point,minDis);
+            if (item == null)
             {
-                if (!KeyPoints.ContainsPoint(point))
-                {
-                    float dis = Distance2List(point, KeyPoints);
-                    if (dis > minDis)
-                    {
-                        Vector3 normal= mesh.normals[pointId];
-                        //Debug.Log($"dis:{dis} point:{point} KeyPoints:{KeyPoints.Count}");
-                        KeyPoints.Add(new SharedMeshTriangles(pointId,point, normal, triangles));
-                    }
-                    else
-                    {
-
-                    }
-                }
-                else
-                {
-
-                }
+                KeyPoints.Add(new SharedMeshTriangles(pointId, point, normal, triangles));
+            }
+            else
+            {
+                item.Triangles.AddRange(triangles);
             }
         }
-        if (KeyPoints.Count < 2)
+
+        SharedMeshTrianglesList KeyPoints2 = new SharedMeshTrianglesList();
+        foreach(var item in KeyPoints)
         {
-            Debug.LogError($"GetKeyPoints KeyPoints:{KeyPoints.Count}");
+            if (item.Triangles.Count >= minCount)
+            {
+                item.GetInfo();
+                KeyPoints2.Add(item);
+            }
         }
-        KeyPoints.Sort();
-        return KeyPoints;
+
+        if (KeyPoints2.Count < 2)
+        {
+            Debug.LogError($"GetKeyPoints KeyPoints:{KeyPoints2.Count}");
+        }
+        KeyPoints2.Sort();
+        return KeyPoints2;
     }
 
     public SharedMeshTrianglesList GetKeyPointsByIdEx(int minCount, float minDis)
