@@ -221,7 +221,17 @@ public class PipeTeeModel : PipeElbowModel
     public override List<Vector4> GetModelKeyPoints()
     {
         var list = base.GetModelKeyPoints();
-        list.Add(this.TransformPoint(TeeEndPoint));
+        if (IsSpecial)
+        {
+            list.Add(this.TransformPoint(KeyPointInfo.EndPointIn1));
+            list.Add(this.TransformPoint(KeyPointInfo.EndPointOut1));
+            list.Add(this.TransformPoint(KeyPointInfo.EndPointIn2));
+            list.Add(this.TransformPoint(KeyPointInfo.EndPointOut2));
+        }
+        else
+        {
+            list.Add(this.TransformPoint(TeeEndPoint));
+        }       
         return list;
     }
 

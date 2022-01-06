@@ -164,7 +164,7 @@ public class MeshTriangles
 
     public void ShowSharedPointsByIdEx(Transform root, float pointScale, int minCount, float minDis)
     {
-        SharedMeshTrianglesList sharedPoints1 = this.GetKeyPointsByIdEx(minCount,minDis);
+        SharedMeshTrianglesList sharedPoints1 = this.GetKeyPointsByPointEx(minCount,minDis);
         Debug.LogError($"GetElbowInfo sharedPoints1:{sharedPoints1.Count}");
         GameObject sharedPoints1Obj = CreateSubTestObj($"sharedPoints(Id):{sharedPoints1.Count}", root);
         int id = 0;
@@ -191,7 +191,8 @@ public class MeshTriangles
 
     public void ShowSharedPointsByPointEx(Transform root, float pointScale, int minCount, float minDis)
     {
-        SharedMeshTrianglesList sharedPoints1 = this.GetKeyPointsByPointEx(minCount, minDis);
+        //SharedMeshTrianglesList sharedPoints1 = this.GetKeyPointsByPointEx(minCount, minDis);
+        SharedMeshTrianglesList sharedPoints1 = this.GetKeyPointsByIdEx(minCount, minDis);
         Debug.LogError($"GetElbowInfo sharedPoints2:{sharedPoints1.Count}");
         GameObject sharedPoints1Obj = CreateSubTestObj($"sharedPoints(Point):{sharedPoints1.Count}", root);
         int id = 0;

@@ -246,12 +246,19 @@ public class MeshTriangleList:List< MeshTriangle >
     {
         Vector3 center = Vector3.zero;
         int count1 = 0;
+        List<Vector3> ps = new List<Vector3>();
+        List<int> psIds = new List<int>();
         foreach (MeshTriangle triangle in this)
         {
             foreach (var p in triangle.Points)
             {
-                center += p.Point;
-                count1++;
+                if (!ps.Contains(p.Point))
+                {
+                    center += p.Point;
+                    count1++;
+                    ps.Add(p.Point);
+                }
+                
             }
         }
         center /= count1;
@@ -376,24 +383,23 @@ public class SharedMeshTriangles:IComparable<SharedMeshTriangles>
 
     public void GetInfo()
     {
+        //Center = Triangles.GetCenter(PointId);
         Center = Triangles.GetCenter();
-        //Center = Triangles.GetCenter();
         //Radius= Triangles.GetRadius(PointId);
         CircleCheckP = Triangles.GetCircleCheckP(PointId);
         IsCircle = CircleCheckP <= CircleInfo.IsCircleMaxP;
 
-        if (IsCircle)
-        {
-            //Radius = Triangles.GetAvgRadius1(PointId);
+        //if (IsCircle)
+        //{
+        //    Radius = Triangles.GetAvgRadius1(PointId);
+        //}
+        //else
+        //{
+        //    Radius = Triangles.GetAvgRadius2(PointId);
+        //}
 
-            Radius = Triangles.GetMaxRadius(0.00001f);
-            MinRadius = Triangles.GetMinRadius(0.00001f);
-        }
-        else
-        {
-            Radius = Triangles.GetAvgRadius2(PointId);
-        }
-
+        Radius = Triangles.GetMaxRadius(0.00001f);
+        MinRadius = Triangles.GetMinRadius(0.00001f);
 
         //Radius = Triangles.GetRadius2(PointId);
 
@@ -450,10 +456,6 @@ public class SharedMeshTrianglesList : List<SharedMeshTriangles>
                 if (dis < minDis)
                 {
                     return item;
-                }
-                else
-                {
-                    
                 }
             }
         }

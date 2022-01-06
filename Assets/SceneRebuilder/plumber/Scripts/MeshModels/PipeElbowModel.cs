@@ -262,9 +262,9 @@ public class PipeElbowModel : PipeModelBase
 
         Debug.Log($"GetElbowInfo mesh vertexCount:{mesh.vertexCount} triangles:{mesh.triangles.Length}");
         //meshTriangles.ShowSharedPointsById(this.transform, PointScale,10);
-        meshTriangles.ShowSharedPointsByIdEx(this.transform, PointScale, 10, minRepeatPointDistance);
+        meshTriangles.ShowSharedPointsByIdEx(this.transform, PointScale, 20, minRepeatPointDistance);
         //meshTriangles.ShowSharedPointsByPoint(this.transform, PointScale,10);
-        meshTriangles.ShowSharedPointsByPointEx(this.transform, PointScale, 10, minRepeatPointDistance);
+        meshTriangles.ShowSharedPointsByPointEx(this.transform, PointScale, 20, minRepeatPointDistance);
     }
 
 
@@ -308,8 +308,8 @@ public class PipeElbowModel : PipeModelBase
 
             
             pipe3.transform.SetParent(pipeNew.transform);
-            //GameObject target = pipeNew;
-            GameObject target = MeshCombineHelper.Combine(pipeNew);
+            GameObject target = pipeNew;
+            //GameObject target = MeshCombineHelper.Combine(pipeNew);
             this.ResultGo = target;
 
             PipeMeshGenerator pipeG = target.AddComponent<PipeMeshGenerator>();
