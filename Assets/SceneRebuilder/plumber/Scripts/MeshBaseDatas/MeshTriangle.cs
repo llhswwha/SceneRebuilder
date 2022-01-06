@@ -355,7 +355,7 @@ public class SharedMeshTriangles:IComparable<SharedMeshTriangles>
 
 public class SharedMeshTrianglesList : List<SharedMeshTriangles>
 {
-    public bool Contains(Vector3 p)
+    public bool ContainsCenter(Vector3 p)
     {
         foreach (var item in this)
         {
@@ -365,6 +365,41 @@ public class SharedMeshTrianglesList : List<SharedMeshTriangles>
             }
         }
         return false;
+    }
+    public bool ContainsPoint(Vector3 p)
+    {
+        foreach (var item in this)
+        {
+            if (item.Center == p)
+            {
+                return true;
+            }
+        }
+        return false;
+    }
+
+    public SharedMeshTriangles FindItemByPoint(Vector3 p,float minDis)
+    {
+        foreach (var item in this)
+        {
+            if (item.Point == p)
+            {
+                return item;
+            }
+            else
+            {
+                float dis = Vector3.Distance(item.Point, p);
+                if (dis < minDis)
+                {
+                    return item;
+                }
+                else
+                {
+                    
+                }
+            }
+        }
+        return null;
     }
 
     public int Remove(Vector3 p)
