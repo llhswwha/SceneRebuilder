@@ -225,6 +225,33 @@ public class PipeFactory : SingletonBehaviour<PipeFactory>
         ProgressBarHelper.ClearProgressBar();
     }
 
+    [ContextMenu("GetObbInfJobs")]
+    public void GetObbInfosJob()
+    {
+        InitPipeBuilder();
+        newBuilder.GetObbInfosJob();
+    }
+
+    [ContextMenu("GetObbInfos")]
+    public void GetObbInfos()
+    {
+        InitPipeBuilder();
+        newBuilder.GetObbInfos();
+    }
+
+    [ContextMenu("GetPipeInfosJob")]
+    public void GetPipeInfosJob()
+    {
+        InitPipeBuilder();
+
+        newBuilder.ClearGeneratedObjs();
+
+        newBuilder.isUniformRaidus = this.isUniformRaidus;
+        newBuilder.GetPipeInfosEx();
+
+        ProgressBarHelper.ClearProgressBar();
+    }
+
     [ContextMenu("CreatePipeRunList")]
     public void CreatePipeRunList()
     {
@@ -264,12 +291,58 @@ public class PipeFactory : SingletonBehaviour<PipeFactory>
         }
         newBuilder.NewObjName = "_New";
         newBuilder.generateArg = generateArg;
-        newBuilder.PipeLineGos = PipeLines;
-        newBuilder.PipeElbowsGos = PipeElbows;
-        newBuilder.PipeReducerGos = PipeReducers;
-        newBuilder.PipeFlangeGos = PipeFlanges;
-        newBuilder.PipeTeeGos = PipeTees;
+        if (EnablePipeLine)
+        {
+            newBuilder.PipeLineGos = PipeLines;
+        }
+        else
+        {
+            newBuilder.PipeLineGos = new List<Transform>();
+        }
+        if(EnablePipeElbow)
+        {
+            newBuilder.PipeElbowGos = PipeElbows;
+        }
+        else
+        {
+            newBuilder.PipeElbowGos = new List<Transform>();
+        }
+
+        if (EnablePipeReducer)
+        {
+            newBuilder.PipeReducerGos = PipeReducers;
+        }
+        else
+        {
+            newBuilder.PipeReducerGos = new List<Transform>();
+        }
+        if (EnablePipeFlange)
+        {
+            newBuilder.PipeFlangeGos = PipeFlanges;
+        }
+        else
+        {
+            newBuilder.PipeFlangeGos = new List<Transform>();
+        }
+        if (EnablePipeTee)
+        {
+            newBuilder.PipeTeeGos = PipeTees;
+        }
+        else
+        {
+            newBuilder.PipeTeeGos = new List<Transform>();
+        }
     }
+
+    public bool EnablePipeLine = true;
+
+    public bool EnablePipeElbow = true;
+
+    public bool EnablePipeReducer = true;
+
+    public bool EnablePipeTee = true;
+
+    public bool EnablePipeFlange = true;
 
     GameObject targetNew;
 

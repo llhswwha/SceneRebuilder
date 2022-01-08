@@ -196,15 +196,15 @@ public class MeshTriangleList:List< MeshTriangle >
         return radius;
     }
 
-    public List<float> GetRadiusList(float minR)
+    public List<float> GetRadiusList(float minR,Vector3 center)
     {
-        Vector3 center2 = GetCenter();
+        //Vector3 center2 = GetCenter();
         List<float> radiusList = new List<float>();
         foreach (MeshTriangle triangle in this)
         {
             foreach (var p in triangle.Points)
             {
-                float r = Vector3.Distance(center2, p.Point);
+                float r = Vector3.Distance(center, p.Point);
                 if (r < minR)
                 {
                     continue;
@@ -216,14 +216,14 @@ public class MeshTriangleList:List< MeshTriangle >
         return radiusList;
     }
 
-    public float GetMaxRadius(float minR)
+    public float GetMaxRadius(float minR, Vector3 center)
     {
-        return GetRadiusList(minR).Last();
+        return GetRadiusList(minR, center).Last();
     }
 
-    public float GetMinRadius(float minR)
+    public float GetMinRadius(float minR, Vector3 center)
     {
-        return GetRadiusList(minR).First();
+        return GetRadiusList(minR, center).First();
     }
 
     public float GetAvgRadius2(int pointId)
@@ -249,23 +249,92 @@ public class MeshTriangleList:List< MeshTriangle >
     {
         Vector3 center = Vector3.zero;
         int count1 = 0;
-        List<Vector3> ps = new List<Vector3>();
-        List<int> psIds = new List<int>();
-        foreach (MeshTriangle triangle in this)
+        //PositionDictionaryList<Vector3> posDict = new PositionDictionaryList<Vector3>();
+        //List<Vector3> ps = new List<Vector3>();
+        //List<int> psIds = new List<int>();
+        //foreach (MeshTriangle triangle in this)
+        //{
+        //    foreach (var p in triangle.Points)
+        //    {
+        //        if (!ps.Contains(p.Point))
+        //        {
+        //            center += p.Point;
+        //            count1++;
+        //            ps.Add(p.Point);
+        //        }
+        //    }
+        //}
+
+       
+
+        List<Vector3> ps = GetPoints();
+
+        var minMax=MeshHelper.GetMinMax(ps.ToArray());
+        return minMax[3];
+
+        //foreach (var p in ps)
+        //{
+        //    center += p;
+        //    count1++;
+        //}
+
+        //center /= count1;
+        //return center;
+    }
+
+    PositionDictionaryList<Vector3> posDict = new PositionDictionaryList<Vector3>();
+
+    public void AddList(List<MeshTriangle> list)
+    {
+        this.AddRange(list);
+        posDict = null;
+    }
+
+    public List<Vector3> GetPoints()
+    {
+        if (InitPosDict())
         {
-            foreach (var p in triangle.Points)
-            {
-                if (!ps.Contains(p.Point))
-                {
-                    center += p.Point;
-                    count1++;
-                    ps.Add(p.Point);
-                }
-                
-            }
+            var ps= GetPosList();
+            //Debug.LogError($"MeshTriangles.GetPoints count:{this.Count} allPos:{this.Count * 2 + 1} ps:{ps.Count}");
+            return ps;
         }
-        center /= count1;
-        return center;
+        else
+        {
+            return GetPosList();
+        }
+        
+    }
+
+    private List<Vector3> GetPosList()
+    {
+        List<Vector3> ps = new List<Vector3>();
+        foreach (var key in posDict.posListDict2.Keys)
+        {
+            var pos = posDict.posListDict2[key][0];
+            ps.Add(pos);
+        }
+        //var ps = posDict.posListDict2.Keys.ToList();
+        //Debug.LogError($"MeshTriangles.GetPoints count:{this.Count} allPos:{this.Count * 2 + 1} ps:{ps.Count}");
+        return ps;
+    }
+
+    private bool InitPosDict()
+    {
+        if (posDict == null)
+        {
+            posDict = new PositionDictionaryList<Vector3>();
+
+            foreach (MeshTriangle triangle in this)
+            {
+                foreach (var p in triangle.Points)
+                {
+                    posDict.Add(p.Point, p.Point,2);
+                }
+            }
+            //posDict.ShowCount("MeshTriangles.InitPosDict");
+            return true;
+        }
+        return false;
     }
 
     public Vector3 GetCenter(int pointId)
@@ -318,273 +387,3 @@ public class MeshTriangleList:List< MeshTriangle >
     }
 }
 
-[Serializable]
-public class SharedMeshTriangles:IComparable<SharedMeshTriangles>
-{
-    public int PointId;
-
-    public Vector3 Point;
-
-    public Vector3 Center;
-
-    public Vector3 Normal;
-
-    public float Radius = 0;
-
-    public float MinRadius = 0;
-
-    public float DistanceToCenter;
-
-    public bool IsCircle = true;
-
-    public float CircleCheckP = 0;
-
-    public override string ToString()
-    {
-        return $"{PointId}_{Point}_{Center}_{Radius}";
-    }
-
-
-    public Vector3 GetCenter()
-    {
-        return Center;
-    }
-
-    public Vector4 GetCenter4()
-    {
-        Vector4 c = Center;
-        c.w = Radius;
-        return c;
-    }
-    public Vector4 GetMinCenter4()
-    {
-        Vector4 c = Center;
-        c.w = MinRadius;
-        return c;
-    }
-
-    public MeshTriangleList Triangles = new MeshTriangleList();
-
-    public float GetRadius()
-    {
-        //return Triangles.GetRadius(PointId);
-        return Radius;
-    }
-
-    public int CompareTo(SharedMeshTriangles other)
-    {
-        return other.Radius.CompareTo(this.Radius);
-    }
-
-    public SharedMeshTriangles(int id, Vector3 p,Vector3 normal, List<MeshTriangle> ts)
-    {
-        this.PointId = id;
-        this.Point = p;
-        this.Normal = normal;
-        this.Triangles.AddRange(ts);
-        GetInfo();
-    }
-
-    public void GetInfo()
-    {
-        //Center = Triangles.GetCenter(PointId);
-        Center = Triangles.GetCenter();
-        //Radius= Triangles.GetRadius(PointId);
-        CircleCheckP = Triangles.GetCircleCheckP(PointId);
-        IsCircle = CircleCheckP <= CircleInfo.IsCircleMaxP;
-
-        //if (IsCircle)
-        //{
-        //    Radius = Triangles.GetAvgRadius1(PointId);
-        //}
-        //else
-        //{
-        //    Radius = Triangles.GetAvgRadius2(PointId);
-        //}
-
-        Radius = Triangles.GetMaxRadius(0.00001f);
-        MinRadius = Triangles.GetMinRadius(0.00001f);
-
-        //Radius = Triangles.GetRadius2(PointId);
-
-        DistanceToCenter = Vector3.Distance(Point, Center);
-    }
-
-    public bool IsSamePoint(Vector3 p,float minDis)
-    {
-        if (this.Point == p)
-        {
-            return true;
-        }
-        else
-        {
-            float dis = Vector3.Distance(this.Point, p);
-            if (dis < minDis)
-            {
-                return true;
-            }
-        }
-
-        if (this.Center == p)
-        {
-            return true;
-        }
-        else
-        {
-            float dis = Vector3.Distance(this.Center, p);
-            if (dis < minDis)
-            {
-                return true;
-            }
-        }
-        return false;
-    }
-}
-
-public class SharedMeshTrianglesList : List<SharedMeshTriangles>
-{
-    public SharedMeshTrianglesList()
-    {
-
-    }
-
-    public SharedMeshTrianglesList(List<SharedMeshTriangles> list)
-    {
-        this.AddRange(list);
-    }
-
-    public bool ContainsCenter(Vector3 p)
-    {
-        foreach (var item in this)
-        {
-            if (item.GetCenter() == p)
-            {
-                return true;
-            }
-        }
-        return false;
-    }
-    public bool ContainsPoint(Vector3 p)
-    {
-        foreach (var item in this)
-        {
-            if (item.Center == p)
-            {
-                return true;
-            }
-        }
-        return false;
-    }
-
-    public SharedMeshTriangles FindItemByPoint(Vector3 p,float minDis)
-    {
-        foreach (var item in this)
-        {
-            if (item.IsSamePoint(p, minDis))
-            {
-                return item;
-            }
-        }
-        return null;
-    }
-
-    
-
-    public int Remove(Vector3 p)
-    {
-        int removeCount = 0;
-        for (int i = 0; i < this.Count; i++)
-        {
-            SharedMeshTriangles item = this[i];
-            if (item.GetCenter() == p)
-            {
-                this.RemoveAt(i);
-                i--;
-                removeCount++;
-            }
-        }
-        return removeCount;
-    }
-
-    public Vector3 GetCenter()
-    {
-        Vector3 center = Vector3.zero;
-        foreach (SharedMeshTriangles item in this)
-        {
-            //center += item.Point;
-            center += item.Center;
-        }
-        center /= this.Count;
-        return center;
-    }
-
-    internal void RemoveNotCircle()
-    {
-        for (int i = 0; i < this.Count; i++)
-        {
-            SharedMeshTriangles item = this[i];
-            if (item.IsCircle == false)
-            {
-                this.RemoveAt(i);
-                i--;
-            }
-        }
-    }
-
-    public List<SharedMeshTriangles> GetCircleList()
-    {
-        List<SharedMeshTriangles> list = new List<SharedMeshTriangles>();
-        for (int i = 0; i < this.Count; i++)
-        {
-            SharedMeshTriangles item = this[i];
-            if (item.IsCircle == true)
-            {
-                list.Add(item);
-            }
-        }
-        return list;
-    }
-
-    internal void CombineSameCenter(float minDis)
-    {
-        Debug.Log($"CombineSameCenter count:{this.Count} minDis:{minDis}");
-        //for (int i = 0; i < this.Count-1; i++)
-        //{
-        //    SharedMeshTriangles item1 = this[i];
-        //    for(int j=i+1;j<this.Count;j++)
-        //    {
-        //        SharedMeshTriangles item2 = this[j];
-        //        float dis = Vector3.Distance(item2.Center, item1.Center);
-        //        bool isSamePoint = item1.IsSamePoint(item2.Center, minDis);
-        //        Debug.Log($"Combine[{i},{j}] dis:{dis} isSamePoint:{isSamePoint}");
-        //        if (isSamePoint)
-        //        {
-        //            item1.Triangles.AddRange(item2.Triangles);
-        //            item1.GetInfo();
-        //            this.RemoveAt(j);
-        //            j--;
-        //        }
-        //    }
-        //}
-
-        var list1 = GetCircleList();
-        foreach (var item1 in list1)
-        {
-            for (int i = 0; i < this.Count; i++)
-            {
-                SharedMeshTriangles item2 = this[i];
-                if (item1 == item2) continue;
-                float dis = Vector3.Distance(item2.Center, item1.Center);
-                bool isSamePoint = item1.IsSamePoint(item2.Center, minDis);
-                Debug.Log($"Combine[{i}] dis:{dis} isSamePoint:{isSamePoint}");
-                //if (isSamePoint)
-                //{
-                //    item1.Triangles.AddRange(item2.Triangles);
-                //    //item1.GetInfo();
-                //    this.RemoveAt(i);
-                //    i--;
-                //}
-            }
-        }
-    }
-}

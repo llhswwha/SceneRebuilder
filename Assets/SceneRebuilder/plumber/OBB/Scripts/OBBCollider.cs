@@ -161,9 +161,17 @@ public class OBBCollider : MonoBehaviour
         }
     }
 
+
+
     public int TestObbPointCount = int.MaxValue;
 
-    public OrientedBoundingBox GetObb(bool isGetObbEx)
+    public ObbInfoJob GetObbJob(bool isGetObbEx)
+    {
+        ObbInfoJob job = new ObbInfoJob();
+        return job;
+    }
+
+        public OrientedBoundingBox GetObb(bool isGetObbEx)
     {
         DateTime start = DateTime.Now;
         List<Vector3> ps1 = new List<Vector3>();

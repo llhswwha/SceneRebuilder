@@ -525,7 +525,7 @@ public class TransformDictionary
     }
 }
 
-public class DictionaryList1ToN<T>: DictionaryList1ToN<string, T> where T :class
+public class DictionaryList1ToN<T>: DictionaryList1ToN<string, T>// where T :class
 {
     
 }
@@ -648,7 +648,7 @@ public class DictionaryList1ToN<T1,T2> : Dictionary<T1, List<T2>> //where T2 : c
     }
 }
 
-public class PositionDictionaryList<T> where T : class
+public class PositionDictionaryList<T> // where T : class
 {
     public DictionaryList1ToN<T> posListDict = new DictionaryList1ToN<T>();
     public DictionaryList1ToN<T> posListDict2 = new DictionaryList1ToN<T>();//6
@@ -661,6 +661,7 @@ public class PositionDictionaryList<T> where T : class
     public T GetItem(Vector3 pos,out int listId)
     {
         var posT1 = $"({pos.x},{pos.y},{pos.z})";
+        //var posT1 = $"({pos.x.ToString("F7")},{pos.y.ToString("F7")},{pos.z.ToString("F7")})";
         if (posListDict.ContainsKey(posT1))
         {
             listId = 1;
@@ -709,7 +710,7 @@ public class PositionDictionaryList<T> where T : class
         }
 
         listId = 0;
-        return null;
+        return default(T);
     }
 
     public List<T> GetItems(Vector3 pos, out int listId)
@@ -790,29 +791,45 @@ public class PositionDictionaryList<T> where T : class
         posListDict7.RemoveItem(posT7, t);
     }
 
-    internal void Add(Vector3 pos, T t)
+    internal void Add(Vector3 pos, T t,int level=7)
     {
 
         var posT1 = $"({pos.x},{pos.y},{pos.z})";
         posListDict.AddItem(posT1, t);
 
-        var posT2 = $"({pos.x.ToString("F6")},{pos.y.ToString("F6")},{pos.z.ToString("F6")})";
-        posListDict2.AddItem(posT2, t);
+        if (level > 1)
+        {
+            var posT2 = $"({pos.x.ToString("F6")},{pos.y.ToString("F6")},{pos.z.ToString("F6")})";
+            posListDict2.AddItem(posT2, t);
+        }
 
-        var posT3 = $"({pos.x.ToString("F5")},{pos.y.ToString("F5")},{pos.z.ToString("F5")})";
-        posListDict3.AddItem(posT3, t);
+        if (level >2)
+        {
+            var posT3 = $"({pos.x.ToString("F5")},{pos.y.ToString("F5")},{pos.z.ToString("F5")})";
+            posListDict3.AddItem(posT3, t);
+        }
 
-        var posT4 = $"({pos.x.ToString("F4")},{pos.y.ToString("F4")},{pos.z.ToString("F4")})";
-        posListDict4.AddItem(posT4, t);
+        if (level > 3)
+        {
+            var posT4 = $"({pos.x.ToString("F4")},{pos.y.ToString("F4")},{pos.z.ToString("F4")})";
+            posListDict4.AddItem(posT4, t);
+        }
 
-        var posT5 = $"({pos.x.ToString("F3")},{pos.y.ToString("F3")},{pos.z.ToString("F3")})";
-        posListDict5.AddItem(posT5, t);
-
-        var posT6 = $"({pos.x.ToString("F2")},{pos.y.ToString("F2")},{pos.z.ToString("F2")})";
-        posListDict6.AddItem(posT6, t);
-
-        var posT7 = $"({pos.x.ToString("F1")},{pos.y.ToString("F1")},{pos.z.ToString("F1")})";
-        posListDict7.AddItem(posT7, t);
+        if (level > 4)
+        {
+            var posT5 = $"({pos.x.ToString("F3")},{pos.y.ToString("F3")},{pos.z.ToString("F3")})";
+            posListDict5.AddItem(posT5, t);
+        }
+        if (level > 5)
+        {
+            var posT6 = $"({pos.x.ToString("F2")},{pos.y.ToString("F2")},{pos.z.ToString("F2")})";
+            posListDict6.AddItem(posT6, t);
+        }
+        if (level > 6)
+        {
+            var posT7 = $"({pos.x.ToString("F1")},{pos.y.ToString("F1")},{pos.z.ToString("F1")})";
+            posListDict7.AddItem(posT7, t);
+        }
     }
 
     public void ShowCount(string tag)

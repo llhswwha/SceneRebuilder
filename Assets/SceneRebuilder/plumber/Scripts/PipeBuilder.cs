@@ -2,6 +2,7 @@ using MathGeoLib;
 using System;
 using System.Collections;
 using System.Collections.Generic;
+using Unity.Collections;
 using UnityEngine;
 
 public class PipeBuilder : MonoBehaviour
@@ -10,7 +11,7 @@ public class PipeBuilder : MonoBehaviour
 
     public List<PipeLineModel> PipeLines = new List<PipeLineModel>();
 
-    public List<Transform> PipeElbowsGos = new List<Transform>();
+    public List<Transform> PipeElbowGos = new List<Transform>();
 
     public List<PipeElbowModel> PipeElbows = new List<PipeElbowModel>();
 
@@ -200,6 +201,79 @@ public class PipeBuilder : MonoBehaviour
         Debug.LogError($">>RendererPipes time:{DateTime.Now - start}");
     }
 
+    public List<Transform> GetAllPipeGos()
+    {
+        List<Transform> ts = new List<Transform>();
+        ts.AddRange(PipeLineGos);
+        ts.AddRange(PipeElbowGos);
+        ts.AddRange(PipeTeeGos);
+        ts.AddRange(PipeReducerGos);
+        ts.AddRange(PipeFlangeGos);
+        return ts;
+    }
+    private static void GetObbInfoJobs(List<Transform> gos)
+    {
+        DateTime startT = DateTime.Now;
+        JobList<ObbInfoJob> jobs = new JobList<ObbInfoJob>(10);
+        NativeArray<ObbData> result = new NativeArray<ObbData>(gos.Count,Allocator.Persistent);
+        ObbInfoJob.Result = result;
+        for (int i = 0; i < gos.Count; i++)
+        {
+            Transform go = gos[i];
+            var vs = OrientedBoundingBox.GetVerticesS(go.gameObject);
+            NativeArray<Vector3S> vsS = new NativeArray<Vector3S>(vs.ToArray(), Allocator.Persistent);
+            ObbInfoJob job = new ObbInfoJob()
+            {
+                id = i,
+                points = vsS
+            };
+            jobs.Add(job);
+        }
+        Debug.Log($"GetObbInfoJobs count:{gos.Count} result:{result.Length} time1:{(DateTime.Now - startT).TotalMilliseconds.ToString("F2")}");
+        jobs.CompleteAll();
+        
+        Debug.Log($"GetObbInfoJobs count:{gos.Count} result:{result.Length} time2:{(DateTime.Now - startT).TotalMilliseconds.ToString("F2")}");
+        for (int i = 0; i < result.Length; i++)
+        {
+            var r = result[i];
+            Debug.Log($"Job[{i}] result:{r}");
+        }
+        jobs.Dispose();
+    }
+
+    internal void GetObbInfosJob()
+    {
+        var ts = GetAllPipeGos();   
+        GetObbInfoJobs(ts);
+    }
+
+
+    internal void GetObbInfos()
+    {
+        var ts = GetAllPipeGos();
+        GetObbInfos(ts);
+    }
+
+    private static void GetObbInfos(List<Transform> gos)
+    {
+        DateTime startT = DateTime.Now;
+        for (int i = 0; i < gos.Count; i++)
+        {
+            Transform go = gos[i];
+            if (go == null) continue;
+            if (ProgressBarHelper.DisplayCancelableProgressBar(new ProgressArg("GetObbInfos", i, gos.Count, go)))
+            {
+                return;
+            }
+            OBBCollider obbC=go.gameObject.AddMissingComponent<OBBCollider>();
+            obbC.GetObb(false);
+        }
+        ProgressBarHelper.ClearProgressBar();
+        Debug.Log($"GetObbInfos count:{gos.Count} time:{(DateTime.Now - startT).TotalMilliseconds.ToString("F2")}");
+    }
+
+
+
     private void RendererPipes()
     {
         DateTime start = DateTime.Now;
@@ -334,7 +408,7 @@ public class PipeBuilder : MonoBehaviour
         DateTime start = DateTime.Now;
 
         PipeModels = new List<PipeModelBase>();
-        int count = PipeLineGos.Count + PipeElbowsGos.Count + PipeReducerGos.Count + PipeFlangeGos.Count+PipeTeeGos.Count;
+        int count = PipeLineGos.Count + PipeElbowGos.Count + PipeReducerGos.Count + PipeFlangeGos.Count+PipeTeeGos.Count;
         int id = 0;
 
         //DateTime start1 = DateTime.Now;
@@ -433,7 +507,7 @@ public class PipeBuilder : MonoBehaviour
         //}
         //Debug.LogError($">>>GetPipeElbowInfos time:{DateTime.Now - start2}");
 
-        PipeElbows = GetPipeModelInfos<PipeElbowModel>(PipeElbowsGos, id, count, "Elbow");
+        PipeElbows = GetPipeModelInfos<PipeElbowModel>(PipeElbowGos, id, count, "Elbow");
         id += PipeElbows.Count;
         PipeModels.AddRange(PipeElbows);
 
@@ -466,13 +540,14 @@ public class PipeBuilder : MonoBehaviour
 
         CreatePipeRunList();
 
-        Debug.LogError($">>GetPipeInfos time:{DateTime.Now - start}");
+        Debug.Log($">>GetPipeInfos time:{DateTime.Now - start} count:{PipeModels.Count}");
     }
 
     private List<T> GetPipeModelInfos<T>(List<Transform> gos,int id,int count,string tag) where T : PipeModelBase
     {
-        DateTime start14 = DateTime.Now;
         var models = new List<T>();
+        if (gos.Count == 0) return models;
+        DateTime start14 = DateTime.Now;
         for (int i = 0; i < gos.Count; i++)
         {
             id++;
@@ -490,7 +565,7 @@ public class PipeBuilder : MonoBehaviour
             //PipeModels.Add(pipeModel);
             //p.gameObject.SetActive(false);
         }
-        Debug.LogError($">>>GetPipeTeeModelInfos time:{DateTime.Now - start14}");
+        Debug.Log($">>>GetPipeModelInfos time:{DateTime.Now - start14}");
         return models;
     }
 
@@ -515,9 +590,9 @@ public class PipeBuilder : MonoBehaviour
     {
         DateTime start = DateTime.Now;
         PipeElbows = new List<PipeElbowModel>();
-        for (int i = 0; i < PipeElbowsGos.Count; i++)
+        for (int i = 0; i < PipeElbowGos.Count; i++)
         {
-            Transform p = PipeElbowsGos[i];
+            Transform p = PipeElbowGos[i];
             if (p == null) continue;
             MeshFilter mf = p.GetComponent<MeshFilter>();
             if (mf == null) continue;

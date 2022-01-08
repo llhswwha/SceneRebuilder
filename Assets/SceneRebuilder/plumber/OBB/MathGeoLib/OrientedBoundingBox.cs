@@ -41,7 +41,9 @@ namespace MathGeoLib
 
         public override string ToString()
         {
-            return $"{nameof(X)}: {X}, {nameof(Y)}: {Y}, {nameof(Z)}: {Z}";
+            //return $"({nameof(X)}: {X}, {nameof(Y)}: {Y}, {nameof(Z)}: {Z})";
+
+            return $"({X},{Y},{Z})";
         }
 
         public float GetDistance(Vector3S vector2)
@@ -86,7 +88,7 @@ namespace MathGeoLib
     {
         #region Native
 
-        private static class NativeMethods
+        public static class MathGeoLibNativeMethods
         {
 #if UNITY || UNITY_EDITOR
             private const string DllName = "MathGeoLib.Exports";
@@ -298,17 +300,17 @@ namespace MathGeoLib
 
         #region Static
 
-        public static int NumEdges => NativeMethods.obb_num_edges();
+        public static int NumEdges => MathGeoLibNativeMethods.obb_num_edges();
 
-        public static int NumFaces => NativeMethods.obb_num_faces();
+        public static int NumFaces => MathGeoLibNativeMethods.obb_num_faces();
 
-        public static int NumVertices => NativeMethods.obb_num_vertices();
+        public static int NumVertices => MathGeoLibNativeMethods.obb_num_vertices();
 
         public static OrientedBoundingBox OptimalEnclosing(Vector3S[] points)
         {
             var axis = new Vector3S[3];
 
-            NativeMethods.obb_optimal_enclosing(points, points.Length, out var center, out var extent, axis);
+            MathGeoLibNativeMethods.obb_optimal_enclosing(points, points.Length, out var center, out var extent, axis);
 
             var box = new OrientedBoundingBox(center, extent, axis[0], axis[1], axis[2]);
 
@@ -319,59 +321,74 @@ namespace MathGeoLib
         {
             var axis = new Vector3S[3];
 
-            NativeMethods.obb_brute_enclosing(points, points.Length, out var center, out var extent, axis);
+            MathGeoLibNativeMethods.obb_brute_enclosing(points, points.Length, out var center, out var extent, axis);
 
             var box = new OrientedBoundingBox(center, extent, axis[0], axis[1], axis[2]);
 
             return box;
         }
 
+        public static List<Vector3S> GetVerticesS(GameObject go)
+        {
+            List<Vector3S> ps2 = new List<Vector3S>();
+            MeshFilter meshFilter = go.GetComponent<MeshFilter>();
+            if (meshFilter == null || meshFilter.sharedMesh == null) return ps2;
+            var vs = meshFilter.sharedMesh.vertices;
+            var count = vs.Length;
+            for (int i = 0; i < count; i++)
+            {
+                Vector3 p = vs[i];
+                ps2.Add(new Vector3S(p.x, p.y, p.z));
+            }
+            return ps2;
+        }
+
         #endregion
 
         #region Instance
-        
-        public bool IsDegenerate => NativeMethods.obb_is_degenerate(this);
 
-        public bool IsFinite => NativeMethods.obb_is_finite(this);
+        public bool IsDegenerate => MathGeoLibNativeMethods.obb_is_degenerate(this);
+
+        public bool IsFinite => MathGeoLibNativeMethods.obb_is_finite(this);
 
         public bool Contains(Vector3S other)
         {
-            return NativeMethods.obb_contains_point(this, other);
+            return MathGeoLibNativeMethods.obb_contains_point(this, other);
         }
 
         public bool Contains(Line other)
         {
-            return NativeMethods.obb_contains_line_segment(this, other);
+            return MathGeoLibNativeMethods.obb_contains_line_segment(this, other);
         }
 
         public bool Contains(OrientedBoundingBox other)
         {
-            return NativeMethods.obb_contains_obb(this, other);
+            return MathGeoLibNativeMethods.obb_contains_obb(this, other);
         }
 
         public bool Intersects(OrientedBoundingBox other)
         {
-            return NativeMethods.obb_intersects_obb(this, other);
+            return MathGeoLibNativeMethods.obb_intersects_obb(this, other);
         }
 
         public bool Intersects(Ray other)
         {
-            return NativeMethods.obb_intersects_ray(this, other);
+            return MathGeoLibNativeMethods.obb_intersects_ray(this, other);
         }
 
         public bool Intersects(Plane other)
         {
-            return NativeMethods.obb_intersects_plane(this, other);
+            return MathGeoLibNativeMethods.obb_intersects_plane(this, other);
         }
 
         public bool Intersects(Line other)
         {
-            return NativeMethods.obb_intersects_line_segment(this, other);
+            return MathGeoLibNativeMethods.obb_intersects_line_segment(this, other);
         }
 
         public Vector3S CornerPoint(int index)
         {
-            NativeMethods.obb_corner_point(this, index, out var point);
+            MathGeoLibNativeMethods.obb_corner_point(this, index, out var point);
             return point;
         }
 
@@ -525,64 +542,64 @@ namespace MathGeoLib
 
         public void Enclose(Vector3S point)
         {
-            NativeMethods.obb_enclose(this, point);
+            MathGeoLibNativeMethods.obb_enclose(this, point);
         }
 
         public Vector3S FacePoint(int index, float u, float v)
         {
-            NativeMethods.obb_face_point(this, index, u, v, out var point);
+            MathGeoLibNativeMethods.obb_face_point(this, index, u, v, out var point);
             return point;
         }
 
         public Vector3S PointInside(float x, float y, float z)
         {
-            NativeMethods.obb_point_inside(this, x, y, z, out var point);
+            MathGeoLibNativeMethods.obb_point_inside(this, x, y, z, out var point);
             return point;
         }
 
         public void Scale(Vector3S center, Vector3S factor)
         {
-            NativeMethods.obb_scale(this, center, factor);
+            MathGeoLibNativeMethods.obb_scale(this, center, factor);
         }
 
         public void Translate(Vector3S offset)
         {
-            NativeMethods.obb_translate(this, offset);
+            MathGeoLibNativeMethods.obb_translate(this, offset);
         }
 
         public float Distance(Vector3S point)
         {
-            return NativeMethods.obb_distance(this, point);
+            return MathGeoLibNativeMethods.obb_distance(this, point);
         }
 
         public Vector3S PointOnEdge(int index, float u)
         {
-            NativeMethods.obb_point_on_edge(this, index, u, out var point);
+            MathGeoLibNativeMethods.obb_point_on_edge(this, index, u, out var point);
             return point;
         }
 
 
         public Line Edge(int index)
         {
-            NativeMethods.obb_edge(this, index, out var segment);
+            MathGeoLibNativeMethods.obb_edge(this, index, out var segment);
             return segment;
         }
 
         public Matrix3X4 WorldToLocal()
         {
-            NativeMethods.obb_world_to_local(this, out var local);
+            MathGeoLibNativeMethods.obb_world_to_local(this, out var local);
             return local;
         }
 
         public Matrix3X4 LocalToWorld()
         {
-            NativeMethods.obb_local_to_world(this, out var world);
+            MathGeoLibNativeMethods.obb_local_to_world(this, out var world);
             return world;
         }
 
         public Plane FacePlane(int index)
         {
-            NativeMethods.obb_face_plane(this, index, out var plane);
+            MathGeoLibNativeMethods.obb_face_plane(this, index, out var plane);
             return plane;
         }
 
@@ -593,7 +610,7 @@ namespace MathGeoLib
 
         public Vector3S RandomPointOnSurface(LCG rng)
         {
-            NativeMethods.obb_random_point_on_surface(this, rng, out var point);
+            MathGeoLibNativeMethods.obb_random_point_on_surface(this, rng, out var point);
             return point;
         }
 

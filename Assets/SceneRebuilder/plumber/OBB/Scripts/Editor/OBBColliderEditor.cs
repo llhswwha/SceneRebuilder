@@ -33,6 +33,13 @@ public class OBBColliderEditor : Editor
         //}
         GUILayout.EndHorizontal();
 
+        GUILayout.BeginHorizontal();
+        if (GUILayout.Button("GetObb(Job)"))
+        {
+            targetT.GetObb(true);
+        }
+        GUILayout.EndHorizontal();
+
 
         GUILayout.BeginHorizontal();
         if (GUILayout.Button("ShowOBBBox"))

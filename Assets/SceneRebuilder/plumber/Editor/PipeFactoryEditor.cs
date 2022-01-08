@@ -80,6 +80,19 @@ public class PipeFactoryEditor : BaseFoldoutEditor<PipeFactory>
         GUILayout.EndHorizontal();
 
         GUILayout.BeginHorizontal();
+        GUILayout.Label($"Line({targetT.PipeLines.Count})");
+        targetT.EnablePipeLine = EditorGUILayout.Toggle(targetT.EnablePipeLine);
+        GUILayout.Label($"Elbow({targetT.PipeElbows.Count})");
+        targetT.EnablePipeElbow = EditorGUILayout.Toggle(targetT.EnablePipeElbow);
+        GUILayout.Label($"Tee({targetT.PipeTees.Count})");
+        targetT.EnablePipeTee = EditorGUILayout.Toggle(targetT.EnablePipeTee);
+        GUILayout.Label($"Reducer({targetT.PipeReducers.Count})");
+        targetT.EnablePipeReducer = EditorGUILayout.Toggle(targetT.EnablePipeReducer);
+        GUILayout.Label($"Flange({targetT.PipeFlanges.Count})");
+        targetT.EnablePipeFlange = EditorGUILayout.Toggle(targetT.EnablePipeFlange);
+        GUILayout.EndHorizontal();
+
+        GUILayout.BeginHorizontal();
         if (GUILayout.Button("1.GetParts"))
         {
             targetT.GetPipeParts();
@@ -100,7 +113,20 @@ public class PipeFactoryEditor : BaseFoldoutEditor<PipeFactory>
         {
 
         }
+
         GUILayout.EndHorizontal();
+
+        GUILayout.BeginHorizontal();
+        if (GUILayout.Button("GetObbs"))
+        {
+            targetT.GetObbInfos();
+        }
+        if (GUILayout.Button("GetObbs(Job)"))
+        {
+            targetT.GetObbInfosJob();
+        }
+        GUILayout.EndHorizontal();
+
 
         GUILayout.BeginHorizontal();
 

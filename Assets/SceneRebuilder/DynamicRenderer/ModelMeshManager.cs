@@ -117,10 +117,14 @@ public class ModelMeshManager : SingletonBehaviour<ModelMeshManager>
 
         modelClassDict.PrintList();
 
-        otherNames.Sort();
-        StringBuilder sb = new StringBuilder();
-        otherNames.ForEach(i => sb.AppendLine(i));
-        Debug.LogError($"otherNames:{sb}");
+        if (otherNames.Count > 0)
+        {
+            otherNames.Sort();
+            StringBuilder sb = new StringBuilder();
+            otherNames.ForEach(i => sb.AppendLine(i));
+            Debug.Log($"otherNames:{sb}");
+        }
+        
 
         PrefixNames = modelClassDict.GetKeys();
         return modelClassDict;
