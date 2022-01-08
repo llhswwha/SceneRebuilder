@@ -43,7 +43,11 @@ public class PipeElbowModelEditor : Editor
         {
             targetT.ClearChildren();
         }
-        
+        if (GUILayout.Button("ClearGo"))
+        {
+            targetT.ClearGo();
+        }
+
         base.OnInspectorGUI();
     }
 }

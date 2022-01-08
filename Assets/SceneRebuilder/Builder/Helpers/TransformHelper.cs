@@ -114,6 +114,18 @@ public static class TransformHelper
         return objPoint;
     }
 
+    internal static GameObject ShowPoint(Vector3 point, float pointScale, Transform transform1)
+    {
+        GameObject objPoint = GameObject.CreatePrimitive(PrimitiveType.Sphere);
+        //objPoint.name = $"Point[{i + 1}][{j + 1}]({p.Point})";
+        //objPoint.name = $"Point[{j + 1}]({p.Point})";
+        objPoint.name = $"Point({point.x},{point.y},{point.z})";
+        objPoint.transform.position = point;
+        objPoint.transform.SetParent(transform1);
+        objPoint.transform.localScale = new Vector3(pointScale, pointScale, pointScale);
+        return objPoint;
+    }
+
     public static bool IsSameName(string name,string name2)
     {
         string pre1 = GetPrefix(name);

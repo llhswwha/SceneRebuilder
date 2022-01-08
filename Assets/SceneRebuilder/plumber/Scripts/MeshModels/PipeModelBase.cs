@@ -48,6 +48,20 @@ public class PipeModelBase : MonoBehaviour,IComparable<PipeModelBase>
         int ConnectedCount = 0;
         var points1 = model1.GetModelKeyPoints();
         var points2 = model2.GetModelKeyPoints();
+
+        if (isShowLog)
+        {
+            GameObject test = new GameObject("TestIsConnected");
+            for (int i = 0; i < points1.Count; i++)
+            {
+                TransformHelper.ShowPoint(points1[i],0.001f,test.transform).name = $"Point1[{i}]_{points1[i]}";
+            }
+            for (int i = 0; i < points2.Count; i++)
+            {
+                TransformHelper.ShowPoint(points2[i], 0.001f, test.transform).name = $"Point2[{i}]_{points2[i]}";
+            }
+        }
+
         for (int i = 0; i < points1.Count; i++)
         {
             Vector4 p1 = points1[i];
@@ -490,6 +504,15 @@ public class PipeModelBase : MonoBehaviour,IComparable<PipeModelBase>
     {
         TransformHelper.ClearChildren(gameObject);
         ClearCheckDistance();
+    }
+
+    [ContextMenu("ClearGo")]
+    public void ClearGo()
+    {
+        if (ResultGo != null)
+        {
+            GameObject.DestroyImmediate(ResultGo);
+        }
     }
 
     public T GetGenerator<T>(PipeGenerateArg arg, string afterName) where T : PipeMeshGeneratorBase

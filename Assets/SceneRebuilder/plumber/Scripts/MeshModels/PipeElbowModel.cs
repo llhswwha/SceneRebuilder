@@ -27,8 +27,9 @@ public class PipeElbowModel : PipeModelBase
 
     public float PipeLineOffset = 0.05f;
 
-    private PipeElbowKeyPointInfo GetElbow2(SharedMeshTrianglesList trianglesList, Mesh mesh)
+    private PipeElbowKeyPointInfo GetElbow2(SharedMeshTrianglesList list, Mesh mesh)
     {
+        SharedMeshTrianglesList trianglesList = new SharedMeshTrianglesList(list);
         var centerOfPoints = MeshHelper.GetCenterOfList(trianglesList);
         distanceList = new List<PlanePointDistance>();
         foreach (var p in trianglesList)
@@ -164,8 +165,9 @@ public class PipeElbowModel : PipeModelBase
         return info2;
     }
 
-    private void GetElbow6(SharedMeshTrianglesList trianglesList, Mesh mesh)
+    private void GetElbow6(SharedMeshTrianglesList list, Mesh mesh)
     {
+        SharedMeshTrianglesList trianglesList = new SharedMeshTrianglesList(list);
         SharedMeshTriangles plane1 = trianglesList[0];
         SharedMeshTriangles plane2 = trianglesList[1];
         SharedMeshTriangles plane3 = trianglesList[2];
@@ -202,13 +204,26 @@ public class PipeElbowModel : PipeModelBase
         this.VertexCount = mesh.vertexCount;
         meshTriangles = new MeshTriangles(mesh);
         //Debug.Log($"GetElbowInfo mesh vertexCount:{mesh.vertexCount} triangles:{mesh.triangles.Length}");
-        SharedMeshTrianglesList trianglesList = meshTriangles.GetKeyPointsByIdEx(sharedMinCount, minRepeatPointDistance);
-        foreach(SharedMeshTriangles triangles in trianglesList)
+        //SharedMeshTrianglesList trianglesList = meshTriangles.GetKeyPointsByIdEx(sharedMinCount, minRepeatPointDistance);
+        SharedMeshTrianglesList trianglesList = meshTriangles.GetKeyPointsByPointEx(sharedMinCount, minRepeatPointDistance);
+        foreach (SharedMeshTriangles triangles in trianglesList)
         {
 
         }
 
-        //trianglesList.RemoveNotCircle();
+        //if (trianglesList.Count > 6)
+        //{
+        //    trianglesList.RemoveNotCircle();
+        //}
+
+        //
+        //trianglesList.CombineSameCenter(minRepeatPointDistance);
+
+        if (trianglesList.Count == 3)
+        {
+            trianglesList.CombineSameCenter(0.002f);
+        }
+
         if (trianglesList.Count == 6)
         {
             GetElbow6(trianglesList, mesh);
@@ -234,7 +249,7 @@ public class PipeElbowModel : PipeModelBase
             return;
         }
 
-        Debug.Log($">>>GetElbowInfo time:{DateTime.Now - start}");
+        Debug.Log($">>>GetElbowInfo time:{DateTime.Now - start} trianglesList:{trianglesList.Count}");
     }
 
     public virtual void GetPipeRadius()
@@ -264,7 +279,7 @@ public class PipeElbowModel : PipeModelBase
         //meshTriangles.ShowSharedPointsById(this.transform, PointScale,10);
         meshTriangles.ShowSharedPointsByIdEx(this.transform, PointScale, 20, minRepeatPointDistance);
         //meshTriangles.ShowSharedPointsByPoint(this.transform, PointScale,10);
-        meshTriangles.ShowSharedPointsByPointEx(this.transform, PointScale, 20, minRepeatPointDistance);
+        meshTriangles.ShowSharedPointsByPointEx(this.transform, PointScale, sharedMinCount, minRepeatPointDistance);
     }
 
 
@@ -308,8 +323,8 @@ public class PipeElbowModel : PipeModelBase
 
             
             pipe3.transform.SetParent(pipeNew.transform);
-            GameObject target = pipeNew;
-            //GameObject target = MeshCombineHelper.Combine(pipeNew);
+            //GameObject target = pipeNew;
+            GameObject target = MeshCombineHelper.Combine(pipeNew);
             this.ResultGo = target;
 
             PipeMeshGenerator pipeG = target.AddComponent<PipeMeshGenerator>();
@@ -324,6 +339,11 @@ public class PipeElbowModel : PipeModelBase
 
     private GameObject RenderElbow(PipeGenerateArg arg, string afterName, PipeElbowKeyPointInfo info)
     {
+        if (info == null)
+        {
+            Debug.LogError($"RendererElbow info==null :{this.name}");
+            return null;
+        }
         //GameObject pipeNew = new GameObject(this.name + newAfterName);
         //pipeNew.transform.position = this.transform.position + arg.Offset;
         //pipeNew.transform.SetParent(this.transform.parent);
@@ -430,11 +450,21 @@ public class PipeElbowModel : PipeModelBase
 
     public Vector4 GetEndPointIn1()
     {
+        if (KeyPointInfo == null)
+        {
+            Debug.LogError($"GetEndPointIn1 KeyPointInfo == null :{this.name}");
+            return Vector4.zero;
+        }
         return this.TransformPoint(KeyPointInfo.EndPointIn1);
     }
 
     public Vector4 GetEndPointIn2()
     {
+        if (KeyPointInfo == null)
+        {
+            Debug.LogError($"GetEndPointIn2 KeyPointInfo == null :{this.name}");
+            return Vector4.zero;
+        }
         return this.TransformPoint(KeyPointInfo.EndPointIn2);
     }
 

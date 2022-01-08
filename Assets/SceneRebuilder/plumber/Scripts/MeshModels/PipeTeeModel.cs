@@ -223,10 +223,12 @@ public class PipeTeeModel : PipeElbowModel
         var list = base.GetModelKeyPoints();
         if (IsSpecial)
         {
-            list.Add(this.TransformPoint(KeyPointInfo.EndPointIn1));
-            list.Add(this.TransformPoint(KeyPointInfo.EndPointOut1));
-            list.Add(this.TransformPoint(KeyPointInfo.EndPointIn2));
-            list.Add(this.TransformPoint(KeyPointInfo.EndPointOut2));
+            //list.Add(this.TransformPoint(KeyPointInfo.EndPointIn1));
+            //list.Add(this.TransformPoint(KeyPointInfo.EndPointOut1));
+            //list.Add(this.TransformPoint(KeyPointInfo.EndPointIn2));
+            //list.Add(this.TransformPoint(KeyPointInfo.EndPointOut2));
+            list.Add(this.TransformPoint(InnerKeyPointInfo.EndPointIn1));
+            list.Add(this.TransformPoint(InnerKeyPointInfo.EndPointOut1));
         }
         else
         {

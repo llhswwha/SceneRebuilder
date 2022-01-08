@@ -90,6 +90,16 @@ public class PipeReducerModel
 
         Debug.Log($">>>GetElbowInfo time:{DateTime.Now - start} points:{points.Count}");
     }
+
+
+    public override List<Vector4> GetModelKeyPoints()
+    {
+        //return base.GetModelKeyPoints();
+        List<Vector4> list = new List<Vector4>();
+        list.Add(GetModelStartPoint());
+        list.Add(GetModelEndPoint());
+        return list;
+    }
     public override GameObject RendererModel(PipeGenerateArg arg, string afterName)
     {
         //GameObject pipeNew = new GameObject(this.name + afterName);

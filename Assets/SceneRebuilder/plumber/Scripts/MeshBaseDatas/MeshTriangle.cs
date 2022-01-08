@@ -136,7 +136,7 @@ public class MeshTriangle
         MeshPoint mp=GetPoint(pointId);
         if (mp == null)
         {
-            Debug.LogError($"GetRadius mp == null pointId:{pointId}");
+            //Debug.LogWarning($"GetRadius mp == null pointId:{pointId}");
             return radius;
         }
         foreach(var p in Points)
@@ -184,12 +184,15 @@ public class MeshTriangleList:List< MeshTriangle >
     public float GetAvgRadius1(int pointId)
     {
         float radius = 0;
+        int count = 0;
         foreach (MeshTriangle triangle in this)
         {
             float r = triangle.GetRadius(pointId);
+            if (r == 0) continue;
+            count++;
             radius += r;
         }
-        radius /= this.Count;
+        radius /= count;
         return radius;
     }
 
@@ -302,6 +305,7 @@ public class MeshTriangleList:List< MeshTriangle >
         foreach (MeshTriangle triangle in this)
         {
             float r = triangle.GetRadius(pointId);
+            if (r == 0) continue;
             radius += r;
             radiusList.Add(r);
         }
@@ -309,12 +313,12 @@ public class MeshTriangleList:List< MeshTriangle >
         float min = radiusList[0];
         float max = radiusList[radiusList.Count - 1];
         float p = max / min;
-        Debug.Log($"GetCircleCheckP pointId:{pointId} min:{min} max:{max} p:{p}");
+        //Debug.Log($"GetCircleCheckP pointId:{pointId} min:{min} max:{max} p:{p}");
         return p;
     }
 }
 
-
+[Serializable]
 public class SharedMeshTriangles:IComparable<SharedMeshTriangles>
 {
     public int PointId;
@@ -405,6 +409,36 @@ public class SharedMeshTriangles:IComparable<SharedMeshTriangles>
 
         DistanceToCenter = Vector3.Distance(Point, Center);
     }
+
+    public bool IsSamePoint(Vector3 p,float minDis)
+    {
+        if (this.Point == p)
+        {
+            return true;
+        }
+        else
+        {
+            float dis = Vector3.Distance(this.Point, p);
+            if (dis < minDis)
+            {
+                return true;
+            }
+        }
+
+        if (this.Center == p)
+        {
+            return true;
+        }
+        else
+        {
+            float dis = Vector3.Distance(this.Center, p);
+            if (dis < minDis)
+            {
+                return true;
+            }
+        }
+        return false;
+    }
 }
 
 public class SharedMeshTrianglesList : List<SharedMeshTriangles>
@@ -446,21 +480,15 @@ public class SharedMeshTrianglesList : List<SharedMeshTriangles>
     {
         foreach (var item in this)
         {
-            if (item.Point == p)
+            if (item.IsSamePoint(p, minDis))
             {
                 return item;
-            }
-            else
-            {
-                float dis = Vector3.Distance(item.Point, p);
-                if (dis < minDis)
-                {
-                    return item;
-                }
             }
         }
         return null;
     }
+
+    
 
     public int Remove(Vector3 p)
     {
@@ -499,6 +527,63 @@ public class SharedMeshTrianglesList : List<SharedMeshTriangles>
             {
                 this.RemoveAt(i);
                 i--;
+            }
+        }
+    }
+
+    public List<SharedMeshTriangles> GetCircleList()
+    {
+        List<SharedMeshTriangles> list = new List<SharedMeshTriangles>();
+        for (int i = 0; i < this.Count; i++)
+        {
+            SharedMeshTriangles item = this[i];
+            if (item.IsCircle == true)
+            {
+                list.Add(item);
+            }
+        }
+        return list;
+    }
+
+    internal void CombineSameCenter(float minDis)
+    {
+        Debug.Log($"CombineSameCenter count:{this.Count} minDis:{minDis}");
+        //for (int i = 0; i < this.Count-1; i++)
+        //{
+        //    SharedMeshTriangles item1 = this[i];
+        //    for(int j=i+1;j<this.Count;j++)
+        //    {
+        //        SharedMeshTriangles item2 = this[j];
+        //        float dis = Vector3.Distance(item2.Center, item1.Center);
+        //        bool isSamePoint = item1.IsSamePoint(item2.Center, minDis);
+        //        Debug.Log($"Combine[{i},{j}] dis:{dis} isSamePoint:{isSamePoint}");
+        //        if (isSamePoint)
+        //        {
+        //            item1.Triangles.AddRange(item2.Triangles);
+        //            item1.GetInfo();
+        //            this.RemoveAt(j);
+        //            j--;
+        //        }
+        //    }
+        //}
+
+        var list1 = GetCircleList();
+        foreach (var item1 in list1)
+        {
+            for (int i = 0; i < this.Count; i++)
+            {
+                SharedMeshTriangles item2 = this[i];
+                if (item1 == item2) continue;
+                float dis = Vector3.Distance(item2.Center, item1.Center);
+                bool isSamePoint = item1.IsSamePoint(item2.Center, minDis);
+                Debug.Log($"Combine[{i}] dis:{dis} isSamePoint:{isSamePoint}");
+                //if (isSamePoint)
+                //{
+                //    item1.Triangles.AddRange(item2.Triangles);
+                //    //item1.GetInfo();
+                //    this.RemoveAt(i);
+                //    i--;
+                //}
             }
         }
     }

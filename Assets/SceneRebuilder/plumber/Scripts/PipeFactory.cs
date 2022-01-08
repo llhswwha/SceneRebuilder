@@ -165,6 +165,11 @@ public class PipeFactory : SingletonBehaviour<PipeFactory>
         SetListVisible(PipeOthers, isVisible);
     }
 
+    public void SetOtherPrefabs()
+    {
+        throw new NotImplementedException();
+    }
+
     public void SetListVisible(List<Transform> renderers,bool isVisible)
     {
         foreach(var item in renderers)

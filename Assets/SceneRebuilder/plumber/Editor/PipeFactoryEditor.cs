@@ -100,6 +100,10 @@ public class PipeFactoryEditor : BaseFoldoutEditor<PipeFactory>
         {
 
         }
+        GUILayout.EndHorizontal();
+
+        GUILayout.BeginHorizontal();
+
         if (GUILayout.Button("4.CreateRunList"))
         {
             targetT.CreatePipeRunList();
@@ -107,6 +111,10 @@ public class PipeFactoryEditor : BaseFoldoutEditor<PipeFactory>
         if (GUILayout.Button("5.CheckResults"))
         {
             targetT.CheckResults();
+        }
+        if (GUILayout.Button("6.SetOtherPrefabs"))
+        {
+            targetT.SetOtherPrefabs();
         }
         GUILayout.EndHorizontal();
 

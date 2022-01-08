@@ -567,7 +567,7 @@ public class PipeBuilder : MonoBehaviour
         }
         catch (Exception ex)
         {
-            Debug.LogError(ex.ToString());
+            Debug.LogError($"PipeBuilder.GetPipeModelInfo pipe:{pipe.name}  Exception:{ex.ToString()}");
         }
 
         pipe.gameObject.SetActive(false);
