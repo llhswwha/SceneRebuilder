@@ -4,7 +4,7 @@ using System.Collections.Generic;
 using UnityEngine;
 
 [Serializable]
-public class MeshPoint
+public struct MeshPoint
 {
     public Vector3 Point;
 
@@ -12,10 +12,10 @@ public class MeshPoint
 
     public Vector3 Normal;
 
-    public MeshPoint()
-    {
+    //public MeshPoint()
+    //{
 
-    }
+    //}
 
     public MeshPoint(Vector3 p, int i,Vector3 n)
     {

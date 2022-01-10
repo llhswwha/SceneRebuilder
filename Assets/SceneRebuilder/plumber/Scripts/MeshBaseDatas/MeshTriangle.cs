@@ -5,22 +5,33 @@ using System.Linq;
 using UnityEngine;
 
 [Serializable]
-public class MeshTriangle 
+public struct MeshTriangle 
 {
-    public MeshPoint p1 = new MeshPoint();
-    public MeshPoint p2 = new MeshPoint();
-    public MeshPoint p3 = new MeshPoint();
+    public MeshPoint p1 ;
+    public MeshPoint p2 ;
+    public MeshPoint p3 ;
 
-    public Vector3 Center = Vector3.zero;
+    public Vector3 Center;
 
-    public List<MeshPoint> Points = new List<MeshPoint>();
-
-
-
-    public MeshTriangle()
+    public List<MeshPoint> GetPoints()
     {
-
+        var Points = new List<MeshPoint>();
+        Points.Add(p1);
+        Points.Add(p2);
+        Points.Add(p3);
+        return Points;
     }
+
+    //public MeshTriangle()
+    //{
+    //    p1 = new MeshPoint();
+    //    p2 = new MeshPoint();
+    //    p3 = new MeshPoint();
+
+    //    Center = Vector3.zero;
+
+    //    Points = new List<MeshPoint>();
+    //}
 
     public override string ToString()
     {
@@ -33,25 +44,21 @@ public class MeshTriangle
         this.p2 = p2;
         this.p3 = p3;
 
-        Points.Add(p1);
-        Points.Add(p2);
-        Points.Add(p3);
-
         Center = (p1.Point + p2.Point + p3.Point) / 3;
     }
 
     public MeshPoint GetPoint(int id)
     {
-        foreach(var p in Points)
+        foreach(var p in GetPoints())
         {
             if (p.Id == id) return p;
         }
-        return null; 
+        return new MeshPoint(); 
     }
 
     public bool ContainsPoint(MeshPoint mp)
     {
-        foreach(var p in Points)
+        foreach(var p in GetPoints())
         {
             if (p.Id == mp.Id)
             {
@@ -68,7 +75,7 @@ public class MeshTriangle
     public List<MeshPoint> FindSharedPoints(MeshTriangle other)
     {
         List<MeshPoint> ps = new List<MeshPoint>();
-        foreach (MeshPoint p1 in Points)
+        foreach (MeshPoint p1 in GetPoints())
         {
             if (other.ContainsPoint(p1))
             {
@@ -99,7 +106,7 @@ public class MeshTriangle
 
     public GameObject ShowTriangle(Transform root1, Transform root2, float pointScale)
     {
-        var points = this.Points;
+        var points = this.GetPoints();
         GameObject objTriangle = new GameObject($"triangle");
         objTriangle.transform.SetParent(root2);
         objTriangle.transform.localPosition = this.Center;
@@ -134,14 +141,14 @@ public class MeshTriangle
     {
         float radius = 0;
         MeshPoint mp=GetPoint(pointId);
-        if (mp == null)
+        if (mp.Id==0)
         {
             //Debug.LogWarning($"GetRadius mp == null pointId:{pointId}");
             return radius;
         }
-        foreach(var p in Points)
+        foreach(var p in GetPoints())
         {
-            if (p == mp) continue;
+            if (p.Id == mp.Id) continue;
             radius += Vector3.Distance(p.Point, mp.Point);
         }
         radius /= 2;
@@ -151,16 +158,16 @@ public class MeshTriangle
     internal Vector3 GetCenter(int pointId)
     {
         MeshPoint mp = GetPoint(pointId);
-        if (mp == null)
+        if (mp.Id == 0)
         {
             Debug.LogError($"GetRadius mp == null pointId:{pointId}");
             return Vector3.zero;
         }
         //int count = 0;
         Vector3 sum = Vector3.zero;
-        foreach (var p in Points)
+        foreach (var p in GetPoints())
         {
-            if (p == mp) continue;
+            if (p.Id == mp.Id) continue;
             sum += p.Point;
         }
         Vector3 center=sum / 2;
@@ -202,7 +209,7 @@ public class MeshTriangleList:List< MeshTriangle >
         List<float> radiusList = new List<float>();
         foreach (MeshTriangle triangle in this)
         {
-            foreach (var p in triangle.Points)
+            foreach (var p in triangle.GetPoints())
             {
                 float r = Vector3.Distance(center, p.Point);
                 if (r < minR)
@@ -234,7 +241,7 @@ public class MeshTriangleList:List< MeshTriangle >
         int count2 = 0;
         foreach (MeshTriangle triangle in this)
         {
-            foreach (var p in triangle.Points)
+            foreach (var p in triangle.GetPoints())
             {
                 float r = Vector3.Distance(center2, p.Point);
                 radius += r;
@@ -326,7 +333,7 @@ public class MeshTriangleList:List< MeshTriangle >
 
             foreach (MeshTriangle triangle in this)
             {
-                foreach (var p in triangle.Points)
+                foreach (var p in triangle.GetPoints())
                 {
                     posDict.Add(p.Point, p.Point,2);
                 }

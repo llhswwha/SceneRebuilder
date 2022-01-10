@@ -5,19 +5,30 @@ using System.Collections.Generic;
 using Unity.Collections;
 using Unity.Jobs;
 using UnityEngine;
+using static MathGeoLib.OrientedBoundingBox;
 
-public struct PipeLineInfoJob : IJob
+public struct PipeLineInfoJob : IJob, IDisposable
 {
-    public int Id;
+    public int id;
 
-    public OrientedBoundingBox OBB;
+    //public OrientedBoundingBox OBB;
 
     public NativeArray<Vector3>  points;
+
+    public PipeLineData lineData;
 
     public static NativeArray<PipeLineData> Result;
 
     public void Execute()
     {
+        Vector3[] vs = points.ToArray();
+
+        List<Vector3S> ps2 = OrientedBoundingBox.GetVerticesS(vs);
+        var axis = new Vector3S[3];
+        MathGeoLibNativeMethods.obb_optimal_enclosing(ps2.ToArray(), points.Length, out var center, out var extent, axis);
+        OrientedBoundingBox OBB = new OrientedBoundingBox(center, extent, axis[0], axis[1], axis[2]);
+
+
         DateTime start = DateTime.Now;
         Vector3 ObbExtent = OBB.Extent;
 
@@ -33,7 +44,7 @@ public struct PipeLineInfoJob : IJob
         //var rendererInfo = MeshRendererInfo.GetInfo(go.gameObject);
         //Vector3[] vs = rendererInfo.GetVertices();
 
-        Vector3[] vs = points.ToArray();
+        
         var VertexCount = vs.Length;
 
         //2.Planes
@@ -125,16 +136,27 @@ public struct PipeLineInfoJob : IJob
         }
 
         var PipeLength = Vector3.Distance(startPoint, endPoint);
-        PipeLineData LineInfo = new PipeLineData();
-        LineInfo.StartPoint = startPoint;
-        LineInfo.EndPoint = endPoint;
+        lineData = new PipeLineData();
+        lineData.StartPoint = startPoint;
+        lineData.StartPoint.w = PipeRadius;
+        lineData.EndPoint = endPoint;
+        lineData.EndPoint.w = PipeRadius;
 
         //Vector4 ModelStartPoint = startPoint;
         //ModelStartPoint.w = PipeRadius;
         //Vector4 ModelEndPoint = endPoint;
         //ModelEndPoint.w = PipeRadius;
 
-        Debug.Log($"PipeLineInfoJob[{Id}] time:{(DateTime.Now-start).TotalMilliseconds}");
+        if (Result.Length > id)
+        {
+            Result[id] = lineData;
+        }
+        else
+        {
+            Debug.LogWarning($"PipeLineInfoJob[{id}] Result.Length :{Result.Length }");
+        }
+
+        Debug.Log($"PipeLineInfoJob[{id}] time:{(DateTime.Now - start).TotalMilliseconds.ToString("F1")}ms lineData:{lineData}");
     }
 
     private static VerticesToPlaneInfo GetEndPlane(VerticesToPlaneInfo startPlane, List<VerticesToPlaneInfo> verticesToPlaneInfos_All)
@@ -166,12 +188,10 @@ public struct PipeLineInfoJob : IJob
         }
         return endPlane;
     }
+
+    public void Dispose()
+    {
+        points.Dispose();
+    }
 }
 
-public struct PipeLineData
-{
-    public Vector4 StartPoint;
-    public Vector4 EndPoint;
-
-    public Vector3 Direction;
-}

@@ -101,10 +101,15 @@ public class PipeLineModel : PipeModelBase
 
         PipeLineInfoJob job = new PipeLineInfoJob()
         {
-            Id = 0,points=new NativeArray<Vector3>(vs, Allocator.Persistent),
-            OBB=obbJob.box
+            id = 0,points=new NativeArray<Vector3>(vs, Allocator.TempJob),
         };
         job.Execute();
+
+        LineInfo = new PipeLineInfo(job.lineData,this.transform);
+
+        ClearChildren();
+        CreateLocalPoint(LineInfo.StartPoint, $"StartPoint1_{LineInfo.StartPoint.w}", this.transform);
+        CreateLocalPoint(LineInfo.EndPoint, $"EndPoint1_{LineInfo.EndPoint.w}", this.transform);
     }
 
     private static void GetKeyPoints(OrientedBoundingBox OBB,GameObject go)
@@ -276,7 +281,7 @@ public class PipeLineModel : PipeModelBase
         if (verticesToPlaneInfos.Count < 1)
         {
             IsGetInfoSuccess = false;
-            Debug.LogError($"GetModelInfo verticesToPlaneInfos.Count < 1 count:{verticesToPlaneInfos.Count},gameObject:{this.name}");
+            Debug.LogError($"PipeLine.GetModelInfo verticesToPlaneInfos.Count < 1 count:{verticesToPlaneInfos.Count},gameObject:{this.name}");
             return;
         }
 
@@ -288,7 +293,7 @@ public class PipeLineModel : PipeModelBase
         }
         else
         {
-            Debug.LogWarning($"GetModelInfo verticesToPlaneInfos.Count == 1 count:{verticesToPlaneInfos.Count},gameObject:{this.name}");
+            Debug.LogWarning($"PipeLine.GetModelInfo verticesToPlaneInfos.Count == 1 count:{verticesToPlaneInfos.Count},gameObject:{this.name}");
             endPlane = GetEndPlane(startPlane, verticesToPlaneInfos_All);
         }
 
@@ -304,7 +309,7 @@ public class PipeLineModel : PipeModelBase
         CircleInfo startCircle = startPlane.GetCircleInfo();
         if (startCircle == null)
         {
-            Debug.LogError($"GetModelInfo startCircle == null gameObject:{this.gameObject.name}");
+            Debug.LogError($"PipeLine.GetModelInfo startCircle == null gameObject:{this.gameObject.name}");
             IsGetInfoSuccess = false;
 
             CreateLocalPoint(startPlane.Point.planeCenter, $"Error1_StartPoint1", planInfoRoot.transform);
@@ -315,7 +320,7 @@ public class PipeLineModel : PipeModelBase
         CircleInfo endCircle = endPlane.GetCircleInfo();
         if (endCircle == null)
         {
-            Debug.LogError($"GetModelInfo endCircle == null gameObject:{this.gameObject.name}");
+            Debug.LogError($"PipeLine.GetModelInfo endCircle == null gameObject:{this.gameObject.name}");
             IsGetInfoSuccess = false;
             CreateLocalPoint(startPlane.Point.planeCenter, "Error3_StartPoint2", planInfoRoot.transform);
             CreateLocalPoint(endPlane.Point.planeCenter, "Error3_EndPoint2", planInfoRoot.transform);
@@ -348,6 +353,13 @@ public class PipeLineModel : PipeModelBase
         ModelStartPoint.w = PipeRadius;
         ModelEndPoint = endPoint;
         ModelEndPoint.w = PipeRadius;
+    }
+
+    public void SetLineData(PipeLineData data)
+    {
+        LineInfo = new PipeLineInfo(data, this.transform);
+        ModelStartPoint = LineInfo.StartPoint;
+        ModelEndPoint = LineInfo.EndPoint;
     }
 
     private static VerticesToPlaneInfo GetEndPlane(VerticesToPlaneInfo startPlane,List<VerticesToPlaneInfo> verticesToPlaneInfos_All)
@@ -578,7 +590,7 @@ public class PipeLineModel : PipeModelBase
 
     public void RendererModel()
     {
-        GetModelInfo();
+        //GetModelInfo();
 
         RendererModel(this.generateArg,"_New");
     }
@@ -599,9 +611,10 @@ public class PipeLineModel : PipeModelBase
         PipeMeshGenerator pipe = GetGenerator<PipeMeshGenerator>(arg, afterName);
         pipe.points = new List<Vector3>() { LineInfo.StartPoint, LineInfo.EndPoint };
         arg.SetArg(pipe);
-        pipe.pipeRadius = PipeRadius;
-        pipe.pipeRadius1 = PipeRadius;
-        pipe.pipeRadius2 = PipeRadius;
+        var radius = (LineInfo.StartPoint.w + LineInfo.EndPoint.w) / 2;
+        pipe.pipeRadius = radius;
+        pipe.pipeRadius1 = radius;
+        pipe.pipeRadius2 = radius;
         pipe.IsGenerateEndWeld = true;
         pipe.RenderPipe();
         

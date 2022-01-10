@@ -340,6 +340,20 @@ namespace MathGeoLib
             MeshFilter meshFilter = go.GetComponent<MeshFilter>();
             if (meshFilter == null || meshFilter.sharedMesh == null) return ps2;
             var vs = meshFilter.sharedMesh.vertices;
+
+            //var count = vs.Length;
+            //for (int i = 0; i < count; i++)
+            //{
+            //    Vector3 p = vs[i];
+            //    ps2.Add(new Vector3S(p.x, p.y, p.z));
+            //}
+            //return ps2;
+            return GetVerticesS(vs);
+        }
+
+        public static List<Vector3S> GetVerticesS(Vector3[] vs)
+        {
+            List<Vector3S> ps2 = new List<Vector3S>();
             var count = vs.Length;
             for (int i = 0; i < count; i++)
             {

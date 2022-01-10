@@ -262,7 +262,13 @@ public class PipeRunList
 
             for (int j=0; j < run.PipeModels.Count;j++)
             {
-                var resultObj = run.PipeModels[j].ResultGo;
+                var pipeModel = run.PipeModels[j];
+                if (pipeModel == null)
+                {
+                    Debug.LogError($"RenameResultBySortedId pipeModel == null j:{j} count:{run.PipeModels.Count}");
+                    continue;
+                }
+                var resultObj = pipeModel.ResultGo;
                 if (resultObj != null)
                 {
                     if (j == 0)

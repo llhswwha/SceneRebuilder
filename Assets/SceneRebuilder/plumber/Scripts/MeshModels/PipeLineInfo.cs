@@ -11,11 +11,20 @@ public class PipeLineInfo
 
     public Vector3 Direction;
 
+    //public PipeLineData=
+
     public Transform transform;
 
     public PipeLineInfo()
     {
 
+    }
+
+    public PipeLineInfo(PipeLineData data, Transform t)
+    {
+        this.StartPoint = data.StartPoint;
+        this.EndPoint = data.EndPoint;
+        this.transform = t;
     }
 
     public PipeLineInfo(Vector4 p1,Vector4 p2,Transform t)
@@ -50,6 +59,28 @@ public class PipeLineInfo
         Vector4 p= this.transform.TransformPoint(EndPoint);
         p.w = EndPoint.w;
         return p;
+    }
+}
+
+
+public struct PipeLineData
+{
+    public Vector4 StartPoint;
+    public Vector4 EndPoint;
+
+    public Vector3 Direction;
+
+    public override string ToString()
+    {
+        //return $"[{StartPoint}_{EndPoint}]";
+        return $"[({StartPoint.x},{StartPoint.y},{StartPoint.z},{StartPoint.w})_({EndPoint.x},{EndPoint.y},{EndPoint.z},{EndPoint.w})]";
+    }
+
+    public PipeLineData(Vector4 p1, Vector4 p2, Vector3 direction)
+    {
+        this.StartPoint = p1;
+        this.EndPoint = p2;
+        this.Direction = direction;
     }
 }
 

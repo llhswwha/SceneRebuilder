@@ -27,14 +27,19 @@ public class MeshTriangles
         return Triangles[id];
     }
 
-    public Mesh mesh;
+    public MeshStructure mesh;
 
     public Vector3 center = Vector3.zero;
 
     public MeshTriangles(Mesh mesh)
     {
+        Init(new MeshStructure(mesh));
+    }
+
+    private void Init(MeshStructure mesh)
+    {
         this.mesh = mesh;
-        int[] triangles = mesh.triangles;
+        var triangles = mesh.triangles;
         for (int i = 0; i < triangles.Length; i += 3)
         {
             int pi1 = triangles[i];
@@ -48,14 +53,19 @@ public class MeshTriangles
             Triangles.Add(triangle);
         }
 
-        for(int i = 0; i < mesh.vertexCount; i++)
+        for (int i = 0; i < mesh.vertexCount; i++)
         {
             center += mesh.vertices[i];
         }
         center /= mesh.vertexCount;
     }
 
-    private MeshPoint GetMeshPoint(Mesh mesh, int pi1)
+        public MeshTriangles(MeshStructure mesh)
+    {
+        Init(mesh);
+    }
+
+    private MeshPoint GetMeshPoint(MeshStructure mesh, int pi1)
     {
         Vector3 p1 = mesh.vertices[pi1];
         Vector3 n1 = mesh.normals[pi1];
@@ -81,7 +91,7 @@ public class MeshTriangles
         for (int i = 0; i < Triangles.Count; i++)
         {
             MeshTriangle t1 = Triangles[i];
-            var ps = t1.Points;
+            var ps = t1.GetPoints();
             foreach (var p in ps)
             {
                 sharedPoints.AddItem(p.Point, t1);
@@ -125,7 +135,7 @@ public class MeshTriangles
             for (int i = 0; i < Triangles.Count; i++)
             {
                 MeshTriangle t1 = Triangles[i];
-                var ps = t1.Points;
+                var ps = t1.GetPoints();
                 foreach (var p in ps)
                 {
                     sharedPoints.AddItem(p.Id, t1);
@@ -318,7 +328,7 @@ public class MeshTriangles
             }
         }
 
-        Debug.Log($"GetKeyPointsByPointEx minCount:{minCount} minDis:{minDis} sharedPoints1:{sharedPoints1.Count} KeyPoints:{KeyPoints.Count} KeyPoints2:{KeyPoints2.Count}");
+        //Debug.Log($"GetKeyPointsByPointEx minCount:{minCount} minDis:{minDis} sharedPoints1:{sharedPoints1.Count} KeyPoints:{KeyPoints.Count} KeyPoints2:{KeyPoints2.Count}");
 
         if (KeyPoints2.Count < 2)
         {
@@ -449,7 +459,7 @@ public class MeshTriangles
     public void ShowKeyPointsById(Transform root, float pointScale, int minCount, float minDis)
     {
         TransformHelper.ShowLocalPoint(center, pointScale, root, null).name="MeshCenter";
-        TransformHelper.ShowLocalPoint(mesh.bounds.center, pointScale, root, null).name = "BoundsCenter";
+        TransformHelper.ShowLocalPoint(mesh.boundCenter, pointScale, root, null).name = "BoundsCenter";
 
         //SharedMeshTrianglesList points = GetKeyPointsByIdEx(minCount, minDis);
 

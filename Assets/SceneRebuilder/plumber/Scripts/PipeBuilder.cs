@@ -377,7 +377,102 @@ public class PipeBuilder : MonoBehaviour
 
     public void GetPipeInfosJob()
     {
+        PipeModels.Clear();
+        PipeLines.Clear();
 
+        DateTime start = DateTime.Now;
+
+        //1.PipeLineJob
+        PipeLineInfoJob.Result = new NativeArray<PipeLineData>(PipeLineGos.Count, Allocator.Persistent);
+        JobList<PipeLineInfoJob> lineJobs=GetPipeInfosJob_Line(PipeLineGos,0);
+        lineJobs.CompleteAllPage();
+
+        for (int i = 0; i < PipeLineGos.Count; i++)
+        {
+            Transform t = PipeLineGos[i];
+            PipeLineModel pipeModel = GetPipeModelInfo<PipeLineModel>(t, false);
+            var lineData = PipeLineInfoJob.Result[i];
+            //Debug.Log($"LineModel[{i}] model:{pipeModel.name} lineData:{lineData}");
+            pipeModel.SetLineData(lineData);
+            PipeLines.Add(pipeModel);
+            PipeModels.Add(pipeModel);
+        }
+        foreach (var job in lineJobs.Jobs)
+        {
+            job.Dispose();
+        }
+        lineJobs.Dispose();
+        PipeLineInfoJob.Result.Dispose();
+
+        //2.PipeElbowJob
+        PipeElbowInfoJob.Result=new NativeArray<PipeElbowData>(PipeElbowGos.Count, Allocator.Persistent);
+        JobList<PipeElbowInfoJob> elbowJobs = GetPipeInfosJob_Elbow(PipeElbowGos, 0);
+        elbowJobs.CompleteAllPage();
+        for (int i = 0; i < PipeElbowGos.Count; i++)
+        {
+            Transform t = PipeElbowGos[i];
+            PipeElbowModel pipeModel = GetPipeModelInfo<PipeElbowModel>(t, false);
+            var lineData = PipeElbowInfoJob.Result[i];
+            //Debug.Log($"LineModel[{i}] model:{pipeModel.name} lineData:{lineData}");
+            pipeModel.SetElbowData(lineData);
+            PipeElbows.Add(pipeModel);
+            PipeModels.Add(pipeModel);
+        }
+        foreach (var job in elbowJobs.Jobs)
+        {
+            job.Dispose();
+        }
+        elbowJobs.Dispose();
+        PipeElbowInfoJob.Result.Dispose();
+
+
+        Debug.LogError($">>GetPipeInfosJob time:{DateTime.Now - start} lineJobs:{lineJobs.Count} elbowJobs:{elbowJobs.Count}");
+
+
+    }
+
+    public JobList<PipeLineInfoJob> GetPipeInfosJob_Line(List<Transform> ts,int offset)
+    {
+        int count = 0;
+        JobList<PipeLineInfoJob> jobs = new JobList<PipeLineInfoJob>(10);
+
+        for (int i = 0; i < ts.Count; i++)
+        {
+            Transform t = ts[i];
+            var rendererInfo = MeshRendererInfo.GetInfo(t.gameObject);
+            Vector3[] vs = rendererInfo.GetVertices();
+            //if (vs.Length == 0) continue;
+            count++;
+            PipeLineInfoJob job = new PipeLineInfoJob()
+            {
+                id = i+offset,
+                points = new NativeArray<Vector3>(vs, Allocator.TempJob),
+            };
+            jobs.Add(job);
+        }
+        return jobs;
+    }
+
+    public JobList<PipeElbowInfoJob> GetPipeInfosJob_Elbow(List<Transform> ts, int offset)
+    {
+        int count = 0;
+        JobList<PipeElbowInfoJob> jobs = new JobList<PipeElbowInfoJob>(10);
+
+        for (int i = 0; i < ts.Count; i++)
+        {
+            Transform t = ts[i];
+            Mesh mesh = t.GetComponent<MeshFilter>().sharedMesh;
+            MeshStructure meshS = new MeshStructure(mesh);
+            //if (vs.Length == 0) continue;
+            count++;
+            PipeElbowInfoJob job = new PipeElbowInfoJob()
+            {
+                id = i + offset,
+                mesh= meshS
+            };
+            jobs.Add(job);
+        }
+        return jobs;
     }
 
     public void GetPipeInfosEx()

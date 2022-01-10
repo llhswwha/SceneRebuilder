@@ -65,7 +65,7 @@ using System;
 
     public void Dispose()
     {
-        HandleList.Dispos();
+        HandleList.Dispose();
     }
     }
 
@@ -176,7 +176,7 @@ using System;
         //ProgressBarHelper.ClearProgressBar();
     }
 
-    public void Dispos()
+    public void Dispose()
     {
         int count = pages.Count;
         for (int i = 0; i < count; i++)

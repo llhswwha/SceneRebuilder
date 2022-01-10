@@ -38,18 +38,12 @@ public class PipeFactory : SingletonBehaviour<PipeFactory>
     {
         ClearList();
 
-        PipeLineModel[] pipeLines = Target.GetComponentsInChildren<PipeLineModel>(true);
-        foreach (var pipe in pipeLines)
+        PipeModelBase[] pipeModels = Target.GetComponentsInChildren<PipeModelBase>(true);
+        foreach (var pipe in pipeModels)
         {
             if (pipe == null) continue;
             pipe.ClearChildren();
-        }
-
-        PipeElbowModel[] pipeElbows = Target.GetComponentsInChildren<PipeElbowModel>(true);
-        foreach (var pipe in pipeElbows)
-        {
-            if (pipe == null) continue;
-            pipe.ClearChildren();
+            GameObject.DestroyImmediate(pipe);
         }
 
         PipeMeshGenerator[] pipes = Target.GetComponentsInChildren<PipeMeshGenerator>(true);
@@ -57,6 +51,13 @@ public class PipeFactory : SingletonBehaviour<PipeFactory>
         {
             if (pipe == null) continue;
             GameObject.DestroyImmediate(pipe.gameObject);
+        }
+
+        OBBCollider[] obbs = Target.GetComponentsInChildren<OBBCollider>(true);
+        foreach (var obb in obbs)
+        {
+            if (obb == null) continue;
+            GameObject.DestroyImmediate(obb);
         }
     }
 

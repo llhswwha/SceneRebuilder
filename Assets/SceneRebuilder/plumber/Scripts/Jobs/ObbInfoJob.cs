@@ -34,9 +34,16 @@ public struct ObbInfoJob : IJob
         //obbData.forward = axis[2];
         box = new OrientedBoundingBox(center, extent, axis[0], axis[1], axis[2]);
 
-        Debug.Log($"JobInfo {this.ToString()} time:{(DateTime.Now-startT).TotalMilliseconds.ToString("F1")}ms ");
+        Debug.Log($"JobInfo[{id}] {this.ToString()} time:{(DateTime.Now-startT).TotalMilliseconds.ToString("F1")}ms ");
 
-        Result[id]=box;
+        if (Result.Length > id)
+        {
+            Result[id] = box;
+        }
+        else
+        {
+            Debug.LogWarning($"JobInfo[{id}] Result.Length :{Result.Length }");
+        }
     }
 
     public override string ToString()
