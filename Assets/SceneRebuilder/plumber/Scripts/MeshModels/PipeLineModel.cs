@@ -3,6 +3,8 @@ using System;
 using System.Collections;
 using System.Collections.Generic;
 using System.Linq;
+using Unity.Collections;
+using Unity.Jobs;
 using UnityEngine;
 
 /// <summary>
@@ -89,6 +91,138 @@ public class PipeLineModel : PipeModelBase
 
     //}
 
+    public void GetModelInfoJob()
+    {
+        ObbInfoJob obbJob = ObbInfoJob.InitJob(this.gameObject, 1);
+        obbJob.Execute();
+
+        var rendererInfo = MeshRendererInfo.GetInfo(this.gameObject);
+        Vector3[] vs = rendererInfo.GetVertices();
+
+        PipeLineInfoJob job = new PipeLineInfoJob()
+        {
+            Id = 0,points=new NativeArray<Vector3>(vs, Allocator.Persistent),
+            OBB=obbJob.box
+        };
+        job.Execute();
+    }
+
+    private static void GetKeyPoints(OrientedBoundingBox OBB,GameObject go)
+    {
+        Vector3 ObbExtent = OBB.Extent;
+
+        Vector3 startPoint = OBB.Up * ObbExtent.y;
+        Vector3 endPoint = -OBB.Up * ObbExtent.y;
+
+        GameObject planInfoRoot = new GameObject("PipeModel_PlaneInfo");
+        planInfoRoot.transform.SetParent(go.transform);
+        planInfoRoot.transform.localPosition = Vector3.zero;
+
+        //CreateLocalPoint(StartPoint, "StartPoint1", go.transform);
+        //CreateLocalPoint(EndPoint, "EndPoint1", go.transform);
+        var rendererInfo = MeshRendererInfo.GetInfo(go.gameObject);
+        Vector3[] vs = rendererInfo.GetVertices();
+        var VertexCount = vs.Length;
+
+        //2.Planes
+        PlaneInfo[] planeInfos = OBB.GetPlaneInfos();
+        List<VerticesToPlaneInfo> verticesToPlaneInfos_All = new List<VerticesToPlaneInfo>();
+        var verticesToPlaneInfos = new List<VerticesToPlaneInfo>();
+        for (int i = 0; i < planeInfos.Length; i++)
+        {
+            PlaneInfo plane = (PlaneInfo)planeInfos[i];
+            //VerticesToPlaneInfo v2p =GetVerticesToPlaneInfo(vs, plane, false);
+            VerticesToPlaneInfo v2p = new VerticesToPlaneInfo(vs, plane, false);
+            verticesToPlaneInfos_All.Add(v2p);
+            //oBBCollider.ShowPlaneInfo(plane, i, planInfoRoot, v2p);
+            if (v2p.IsCircle() == false)
+            {
+                continue;
+            }
+            verticesToPlaneInfos.Add(v2p);
+            var isC = v2p.IsCircle();
+        }
+        verticesToPlaneInfos.Sort();
+
+        if (verticesToPlaneInfos.Count < 1)
+        {
+            //IsGetInfoSuccess = false;
+            Debug.LogError($"GetModelInfo verticesToPlaneInfos.Count < 1 count:{verticesToPlaneInfos.Count},gameObject:{go.name}");
+            return;
+        }
+
+        VerticesToPlaneInfo startPlane = verticesToPlaneInfos[0];
+        VerticesToPlaneInfo endPlane = null;
+        if (verticesToPlaneInfos.Count >= 2)
+        {
+            endPlane = verticesToPlaneInfos[1];
+        }
+        else
+        {
+            Debug.LogWarning($"GetModelInfo verticesToPlaneInfos.Count == 1 count:{verticesToPlaneInfos.Count},gameObject:{go.name}");
+            endPlane = GetEndPlane(startPlane, verticesToPlaneInfos_All);
+        }
+
+
+        var P1 = OBB.Right * ObbExtent.x;
+        var P2 = -OBB.Forward * ObbExtent.z;
+        var P3 = -OBB.Right * ObbExtent.x;
+        var P4 = OBB.Forward * ObbExtent.z;
+        var P5 = OBB.Up * ObbExtent.y;
+        var P6 = -OBB.Up * ObbExtent.y;
+        var Size = new Vector3(ObbExtent.x, ObbExtent.y, ObbExtent.z);
+
+        CircleInfo startCircle = startPlane.GetCircleInfo();
+        if (startCircle == null)
+        {
+            Debug.LogError($"GetModelInfo startCircle == null gameObject:{go.gameObject.name}");
+            //IsGetInfoSuccess = false;
+
+            //CreateLocalPoint(startPlane.Point.planeCenter, $"Error1_StartPoint1", planInfoRoot.transform);
+            //CreateLocalPoint(endPlane.Point.planeCenter, "Error1_EndPoint1", planInfoRoot.transform);
+            return;
+        }
+        startPoint = startCircle.Center;
+        CircleInfo endCircle = endPlane.GetCircleInfo();
+        if (endCircle == null)
+        {
+            Debug.LogError($"GetModelInfo endCircle == null gameObject:{go.gameObject.name}");
+            //IsGetInfoSuccess = false;
+            //CreateLocalPoint(startPlane.Point.planeCenter, "Error3_StartPoint2", planInfoRoot.transform);
+            //CreateLocalPoint(endPlane.Point.planeCenter, "Error3_EndPoint2", planInfoRoot.transform);
+            return;
+        }
+        endPoint = endCircle.Center;
+
+        var PipeRadius1 = startCircle.Radius;
+        var PipeRadius2 = endCircle.Radius;
+
+        var EndPoints = new List<Vector3>() { startPoint, endPoint };
+
+        //CreateLocalPoint(startPoint, $"StartPoint1_{startCircle.Radius}_{startCircle.Points.Count}", planInfoRoot.transform);
+        //CreateLocalPoint(endPoint, $"EndPoint1_{endCircle.Radius}_{endCircle.Points.Count}", planInfoRoot.transform);
+
+        var PipeRadius = 0f;
+        if (PipeRadius1 > PipeRadius2)
+        {
+            PipeRadius = PipeRadius1;
+        }
+        else
+        {
+            PipeRadius = PipeRadius2;
+        }
+
+        var PipeLength = Vector3.Distance(startPoint, endPoint);
+        PipeLineInfo LineInfo = new PipeLineInfo();
+        LineInfo.StartPoint = startPoint;
+        LineInfo.EndPoint = endPoint;
+
+        Vector4 ModelStartPoint = startPoint;
+        ModelStartPoint.w = PipeRadius;
+        Vector4 ModelEndPoint = endPoint;
+        ModelEndPoint.w = PipeRadius;
+    }
+
     public override void GetModelInfo()
     {
         ClearChildren();
@@ -101,6 +235,8 @@ public class PipeLineModel : PipeModelBase
         oBBCollider.ShowObbInfo(true);
         IsGetInfoSuccess = oBBCollider.IsObbError == false;
         OBB = oBBCollider.OBB;
+
+        //1.Obb
 
         Vector3 ObbExtent = OBB.Extent;
 
@@ -117,13 +253,15 @@ public class PipeLineModel : PipeModelBase
         Vector3[] vs = rendererInfo.GetVertices();
         this.VertexCount = vs.Length;
 
+        //2.Planes
         PlaneInfo[] planeInfos = OBB.GetPlaneInfos();
         List<VerticesToPlaneInfo> verticesToPlaneInfos_All = new List<VerticesToPlaneInfo>();
         verticesToPlaneInfos = new List<VerticesToPlaneInfo>();
         for (int i = 0; i < planeInfos.Length; i++)
         {
             PlaneInfo plane = (PlaneInfo)planeInfos[i];
-            VerticesToPlaneInfo v2p =GetVerticesToPlaneInfo(vs, plane, false);
+            //VerticesToPlaneInfo v2p =GetVerticesToPlaneInfo(vs, plane, false);
+            VerticesToPlaneInfo v2p = new VerticesToPlaneInfo(vs, plane, false);
             verticesToPlaneInfos_All.Add(v2p);
             oBBCollider.ShowPlaneInfo(plane, i, planInfoRoot, v2p);
             if (v2p.IsCircle() == false)
@@ -147,18 +285,6 @@ public class PipeLineModel : PipeModelBase
         if (verticesToPlaneInfos.Count >=2)
         {
             endPlane = verticesToPlaneInfos[1];
-            //�ж��Ƿ��ǶԳƵ�ƽ�棬���ǵĻ������⡣
-            //�ҳ��ԳƵ�����ƽ��
-            //var endPlane2 = GetEndPlane(startPlane, verticesToPlaneInfos);
-            //if (endPlane2 == null)
-            //{
-
-            //}
-            //if (endPlane2 != endPlane)
-            //{
-            //    IsGetInfoSuccess = false;
-            //    endPlane = endPlane2;
-            //}
         }
         else
         {
@@ -174,72 +300,6 @@ public class PipeLineModel : PipeModelBase
         P5 = OBB.Up * ObbExtent.y;
         P6 = -OBB.Up * ObbExtent.y;
         Size = new Vector3(ObbExtent.x, ObbExtent.y, ObbExtent.z);
-
-
-
-        //List<Vector3> extentPoints = new List<Vector3>() { P1, P2, P3, P4, P5, P6 };
-        //verticesToPointInfos = new List<VerticesToPointInfo>();
-        //CreateLocalPoint(P1, $"P1_{GetVerticesToPointInfo(vs, P1, false)}", go.transform);
-        //CreateLocalPoint(P2, $"P2_{GetVerticesToPointInfo(vs, P2, false)}", go.transform);
-        //CreateLocalPoint(P3, $"P3_{GetVerticesToPointInfo(vs, P3, false)}", go.transform);
-        //CreateLocalPoint(P4, $"P4_{GetVerticesToPointInfo(vs, P4, false)}", go.transform);
-        //CreateLocalPoint(P5, $"P5_{GetVerticesToPointInfo(vs, P5, false)}", go.transform);
-        //CreateLocalPoint(P6, $"P6_{GetVerticesToPointInfo(vs, P6, false)}", go.transform);
-        //verticesToPointInfos.Sort();
-
-
-        //VerticesToPointInfo planeCenterPointInfo1 ;
-        //VerticesToPointInfo planeCenterPointInfo2;
-
-        //float minDisOfSize = 0.0001f;
-        //if (Mathf.Abs(Size.x - Size.y) <= minDisOfSize && Mathf.Abs(Size.x - Size.z) > minDisOfSize)
-        //{
-        //    startPoint = P2;
-        //    endPoint = P4;
-
-        //    planeCenterPointInfo1 = new VerticesToPointInfo(vs, startPoint, false);
-        //    planeCenterPointInfo2 = new VerticesToPointInfo(vs, endPoint, false);
-        //    Debug.Log("Route1 P2 P4");
-        //}
-        //else if (Mathf.Abs(Size.x - Size.z) <= minDisOfSize && Mathf.Abs(Size.x - Size.y) > minDisOfSize)
-        //{
-        //    startPoint = P5;
-        //    endPoint = P6;
-
-        //    planeCenterPointInfo1 = new VerticesToPointInfo(vs, startPoint, false);
-        //    planeCenterPointInfo2 = new VerticesToPointInfo(vs, endPoint, false);
-        //    Debug.Log("Route2 P5 P6");
-        //}
-        //else if (Mathf.Abs(Size.y - Size.z) <= minDisOfSize && Mathf.Abs(Size.y - Size.x) > minDisOfSize)
-        //{
-        //    startPoint = P1;
-        //    endPoint = P3;
-
-        //    planeCenterPointInfo1 = new VerticesToPointInfo(vs, startPoint, false);
-        //    planeCenterPointInfo2 = new VerticesToPointInfo(vs, endPoint, false);
-        //    Debug.Log("Route3 P1 P3");
-        //}
-        //else
-        //{
-        //    Debug.Log("Route4 NotEqual");
-        //    planeCenterPointInfo1 = verticesToPointInfos[0];
-        //    planeCenterPointInfo2 = verticesToPointInfos[1];
-
-        //    //var startCircle = planeCenterPointInfos[0].GetCircleInfo();
-        //    //startPoint = startCircle.Center;
-        //    //var endCircle = planeCenterPointInfos[1].GetCircleInfo();
-        //    //endPoint = endCircle.Center;
-
-        //    //EndPoints = new List<Vector3>() { startPoint, endPoint };
-
-        //    //CreateLocalPoint(startPoint, "StartPoint1", go.transform);
-        //    //CreateLocalPoint(endPoint, "EndPoint1", go.transform);
-
-        //    //PipeRadius = (startCircle.Radius + endCircle.Radius) / 2;
-        //    //PipeLength = Vector3.Distance(startPoint, endPoint);
-        //    //LineInfo.StartPoint = startPoint;
-        //    //LineInfo.EndPoint = endPoint;
-        //}
 
         CircleInfo startCircle = startPlane.GetCircleInfo();
         if (startCircle == null)
@@ -266,16 +326,6 @@ public class PipeLineModel : PipeModelBase
         PipeRadius1 = startCircle.Radius;
         PipeRadius2 = endCircle.Radius;
 
-        //�Ż�
-        //PlaneCenterPointInfo planeCenterPointInfo12 = new PlaneCenterPointInfo(vs, startCircle.Center, false);
-        //PlaneCenterPointInfo planeCenterPointInfo22 = new PlaneCenterPointInfo(vs, endCircle.Center, false);
-        //var startCircle2 = planeCenterPointInfo12.GetCircleInfo();
-        //startPoint = startCircle.Center;
-        //var endCircle2 = planeCenterPointInfo22.GetCircleInfo();
-        //endPoint = endCircle.Center;
-        //PipeRadius1 = startCircle2.Radius;
-        //PipeRadius2 = endCircle2.Radius;
-
         EndPoints = new List<Vector3>() { startPoint, endPoint };
 
         CreateLocalPoint(startPoint, $"StartPoint1_{startCircle.Radius}_{startCircle.Points.Count}", planInfoRoot.transform);
@@ -290,9 +340,6 @@ public class PipeLineModel : PipeModelBase
             PipeRadius = PipeRadius2;
         }
 
-        //PipeRadius = (startCircle.Radius + endCircle.Radius) / 2;
-
-
         PipeLength = Vector3.Distance(startPoint, endPoint);
         LineInfo.StartPoint = startPoint;
         LineInfo.EndPoint = endPoint;
@@ -303,7 +350,7 @@ public class PipeLineModel : PipeModelBase
         ModelEndPoint.w = PipeRadius;
     }
 
-    private VerticesToPlaneInfo GetEndPlane(VerticesToPlaneInfo startPlane,List<VerticesToPlaneInfo> verticesToPlaneInfos_All)
+    private static VerticesToPlaneInfo GetEndPlane(VerticesToPlaneInfo startPlane,List<VerticesToPlaneInfo> verticesToPlaneInfos_All)
     {
         VerticesToPlaneInfo endPlane = null;
         if (startPlane == verticesToPlaneInfos_All[0])
@@ -522,12 +569,12 @@ public class PipeLineModel : PipeModelBase
 
     public List<VerticesToPlaneInfo> verticesToPlaneInfos = new List<VerticesToPlaneInfo>();
 
-    private VerticesToPlaneInfo GetVerticesToPlaneInfo(Vector3[] vs, PlaneInfo p, bool isShowLog)
-    {
-        VerticesToPlaneInfo verticesToPlaneInfo = new VerticesToPlaneInfo(vs, p, isShowLog);
-        //verticesToPlaneInfos.Add(verticesToPlaneInfo);
-        return verticesToPlaneInfo;
-    }
+    //private VerticesToPlaneInfo GetVerticesToPlaneInfo(Vector3[] vs, PlaneInfo p, bool isShowLog)
+    //{
+    //    VerticesToPlaneInfo verticesToPlaneInfo = new VerticesToPlaneInfo(vs, p, isShowLog);
+    //    //verticesToPlaneInfos.Add(verticesToPlaneInfo);
+    //    return verticesToPlaneInfo;
+    //}
 
     public void RendererModel()
     {

@@ -125,6 +125,10 @@ public class PipeFactoryEditor : BaseFoldoutEditor<PipeFactory>
         {
             targetT.GetObbInfosJob();
         }
+        if (GUILayout.Button("GetInfos(Job)"))
+        {
+            targetT.GetPipeInfosJob();
+        }
         GUILayout.EndHorizontal();
 
 

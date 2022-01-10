@@ -211,40 +211,12 @@ public class PipeBuilder : MonoBehaviour
         ts.AddRange(PipeFlangeGos);
         return ts;
     }
-    private static void GetObbInfoJobs(List<Transform> gos)
-    {
-        DateTime startT = DateTime.Now;
-        JobList<ObbInfoJob> jobs = new JobList<ObbInfoJob>(10);
-        NativeArray<ObbData> result = new NativeArray<ObbData>(gos.Count,Allocator.Persistent);
-        ObbInfoJob.Result = result;
-        for (int i = 0; i < gos.Count; i++)
-        {
-            Transform go = gos[i];
-            var vs = OrientedBoundingBox.GetVerticesS(go.gameObject);
-            NativeArray<Vector3S> vsS = new NativeArray<Vector3S>(vs.ToArray(), Allocator.Persistent);
-            ObbInfoJob job = new ObbInfoJob()
-            {
-                id = i,
-                points = vsS
-            };
-            jobs.Add(job);
-        }
-        Debug.Log($"GetObbInfoJobs count:{gos.Count} result:{result.Length} time1:{(DateTime.Now - startT).TotalMilliseconds.ToString("F2")}");
-        jobs.CompleteAll();
-        
-        Debug.Log($"GetObbInfoJobs count:{gos.Count} result:{result.Length} time2:{(DateTime.Now - startT).TotalMilliseconds.ToString("F2")}");
-        for (int i = 0; i < result.Length; i++)
-        {
-            var r = result[i];
-            Debug.Log($"Job[{i}] result:{r}");
-        }
-        jobs.Dispose();
-    }
+    
 
     internal void GetObbInfosJob()
     {
         var ts = GetAllPipeGos();   
-        GetObbInfoJobs(ts);
+        ObbInfoJob.GetObbInfoJobs(ts);
     }
 
 
@@ -403,6 +375,11 @@ public class PipeBuilder : MonoBehaviour
         Debug.LogError($">>GetPipeInfos time:{DateTime.Now- start}");
     }
 
+    public void GetPipeInfosJob()
+    {
+
+    }
+
     public void GetPipeInfosEx()
     {
         DateTime start = DateTime.Now;
@@ -411,126 +388,21 @@ public class PipeBuilder : MonoBehaviour
         int count = PipeLineGos.Count + PipeElbowGos.Count + PipeReducerGos.Count + PipeFlangeGos.Count+PipeTeeGos.Count;
         int id = 0;
 
-        //DateTime start1 = DateTime.Now;
-        //PipeLines = new List<PipeLineModel>();
-        //for (int i = 0; i < PipeLineGos.Count; i++)
-        //{
-        //    id++;
-        //    Transform p = PipeLineGos[i];
-        //    if (p == null) continue;
-        //    MeshFilter mf = p.GetComponent<MeshFilter>();
-        //    if (mf == null) continue;
-        //    if(ProgressBarHelper.DisplayCancelableProgressBar(new ProgressArg("GetPipeInfosEx1",id,count,p)))
-        //    {
-        //        return;
-        //    }
-        //    //CreatePipe(p);
-        //    PipeLineModel pipeModel = GetPipeModelInfo<PipeLineModel>(p);
-        //    PipeLines.Add(pipeModel);
-        //    PipeModels.Add(pipeModel);
-        //    p.gameObject.SetActive(false);
-        //}
-        //Debug.LogError($">>>GetPipeLineModelInfos time:{DateTime.Now - start1}");
-
         PipeLines = GetPipeModelInfos<PipeLineModel>(PipeLineGos, id, count, "Line");
         id += PipeLines.Count;
         PipeModels.AddRange(PipeLines);
-
-        //DateTime start12 = DateTime.Now;
-        //PipeReducers = new List<PipeReducerModel>();
-        //for (int i = 0; i < PipeReducerGos.Count; i++)
-        //{
-        //    id++;
-        //    Transform p = PipeReducerGos[i];
-        //    if (p == null) continue;
-        //    MeshFilter mf = p.GetComponent<MeshFilter>();
-        //    if (mf == null) continue;
-        //    if (ProgressBarHelper.DisplayCancelableProgressBar(new ProgressArg("GetPipeInfosEx2", id, count, p)))
-        //    {
-        //        return;
-        //    }
-        //    //CreatePipe(p);
-        //    PipeReducerModel pipeModel = GetPipeModelInfo<PipeReducerModel>(p);
-        //    PipeReducers.Add(pipeModel);
-        //    PipeModels.Add(pipeModel);
-        //    p.gameObject.SetActive(false);
-        //}
-        //Debug.LogError($">>>GetPipeReducerModelInfos time:{DateTime.Now - start12}");
 
         PipeReducers = GetPipeModelInfos<PipeReducerModel>(PipeReducerGos, id, count, "Reducer");
         id += PipeReducers.Count;
         PipeModels.AddRange(PipeReducers);
 
-        //DateTime start13 = DateTime.Now;
-        //PipeFlanges = new List<PipeFlangeModel>();
-        //for (int i = 0; i < PipeFlangeGos.Count; i++)
-        //{
-        //    id++;
-        //    Transform p = PipeFlangeGos[i];
-        //    if (p == null) continue;
-        //    MeshFilter mf = p.GetComponent<MeshFilter>();
-        //    if (mf == null) continue;
-        //    if (ProgressBarHelper.DisplayCancelableProgressBar(new ProgressArg("GetPipeInfosEx3", id, count, p)))
-        //    {
-        //        return;
-        //    }
-        //    //CreatePipe(p);
-        //    PipeFlangeModel pipeModel = GetPipeModelInfo<PipeFlangeModel>(p);
-        //    PipeFlanges.Add(pipeModel);
-        //    PipeModels.Add(pipeModel);
-        //    p.gameObject.SetActive(false);
-        //}
-        //Debug.LogError($">>>GetPipeFlangeModelInfos time:{DateTime.Now - start13}");
-
         PipeFlanges = GetPipeModelInfos<PipeFlangeModel>(PipeFlangeGos, id, count, "Flange");
         id += PipeFlanges.Count;
         PipeModels.AddRange(PipeFlanges);
 
-        //DateTime start2 = DateTime.Now;
-        //PipeElbows = new List<PipeElbowModel>();
-        //for (int i = 0; i < PipeElbowsGos.Count; i++)
-        //{
-        //    id++;
-        //    Transform p = PipeElbowsGos[i];
-        //    if (p == null) continue;
-        //    MeshFilter mf = p.GetComponent<MeshFilter>();
-        //    if (mf == null) continue;
-        //    if (ProgressBarHelper.DisplayCancelableProgressBar(new ProgressArg("GetPipeInfosEx4", id, count, p)))
-        //    {
-        //        return;
-        //    }
-        //    //CreatePipe(p);
-        //    PipeElbowModel pipeModel = GetPipeModelInfo<PipeElbowModel>(p);
-        //    PipeElbows.Add(pipeModel);
-        //    PipeModels.Add(pipeModel);
-        //    p.gameObject.SetActive(false);
-        //}
-        //Debug.LogError($">>>GetPipeElbowInfos time:{DateTime.Now - start2}");
-
         PipeElbows = GetPipeModelInfos<PipeElbowModel>(PipeElbowGos, id, count, "Elbow");
         id += PipeElbows.Count;
         PipeModels.AddRange(PipeElbows);
-
-        //DateTime start14 = DateTime.Now;
-        //PipeTees = new List<PipeTeeModel>();
-        //for (int i = 0; i < PipeTeeGos.Count; i++)
-        //{
-        //    id++;
-        //    Transform p = PipeTeeGos[i];
-        //    if (p == null) continue;
-        //    MeshFilter mf = p.GetComponent<MeshFilter>();
-        //    if (mf == null) continue;
-        //    if (ProgressBarHelper.DisplayCancelableProgressBar(new ProgressArg("GetPipeInfosEx3", id, count, p)))
-        //    {
-        //        return;
-        //    }
-        //    //CreatePipe(p);
-        //    PipeTeeModel pipeModel = GetPipeModelInfo<PipeTeeModel>(p);
-        //    PipeTees.Add(pipeModel);
-        //    PipeModels.Add(pipeModel);
-        //    p.gameObject.SetActive(false);
-        //}
-        //Debug.LogError($">>>GetPipeTeeModelInfos time:{DateTime.Now - start14}");
 
         PipeTees = GetPipeModelInfos<PipeTeeModel>(PipeTeeGos, id, count, "Tee");
         id += PipeTees.Count;
@@ -560,7 +432,7 @@ public class PipeBuilder : MonoBehaviour
                 return models;
             }
             //CreatePipe(p);
-            T pipeModel = GetPipeModelInfo<T>(p);
+            T pipeModel = GetPipeModelInfo<T>(p,true);
             models.Add(pipeModel);
             //PipeModels.Add(pipeModel);
             //p.gameObject.SetActive(false);
@@ -596,7 +468,7 @@ public class PipeBuilder : MonoBehaviour
             if (p == null) continue;
             MeshFilter mf = p.GetComponent<MeshFilter>();
             if (mf == null) continue;
-            PipeElbowModel pipeModel = GetPipeModelInfo<PipeElbowModel>(p);
+            PipeElbowModel pipeModel = GetPipeModelInfo<PipeElbowModel>(p,true);
             PipeElbows.Add(pipeModel);
             PipeModels.Add(pipeModel);
             p.gameObject.SetActive(false);
@@ -628,7 +500,7 @@ public class PipeBuilder : MonoBehaviour
     //    return pipeModel;
     //}
 
-    private T GetPipeModelInfo<T>(Transform pipe) where T :PipeModelBase
+    private T GetPipeModelInfo<T>(Transform pipe,bool isGetInfo) where T :PipeModelBase
     {
         T pipeModel = pipe.GetComponent<T>();
         if (pipeModel == null)
@@ -636,14 +508,19 @@ public class PipeBuilder : MonoBehaviour
             pipeModel = pipe.gameObject.AddComponent<T>();
         }
         pipeModel.generateArg = this.generateArg;
-        try
+
+        if (isGetInfo)
         {
-            pipeModel.GetModelInfo();
+            try
+            {
+                pipeModel.GetModelInfo();
+            }
+            catch (Exception ex)
+            {
+                Debug.LogError($"PipeBuilder.GetPipeModelInfo pipe:{pipe.name}  Exception:{ex.ToString()}");
+            }
         }
-        catch (Exception ex)
-        {
-            Debug.LogError($"PipeBuilder.GetPipeModelInfo pipe:{pipe.name}  Exception:{ex.ToString()}");
-        }
+        
 
         pipe.gameObject.SetActive(false);
 
@@ -661,7 +538,7 @@ public class PipeBuilder : MonoBehaviour
             if (p == null) continue;
             MeshFilter mf = p.GetComponent<MeshFilter>();
             if (mf == null) continue;
-            PipeLineModel pipeModel = GetPipeModelInfo<PipeLineModel>(p);
+            PipeLineModel pipeModel = GetPipeModelInfo<PipeLineModel>(p,true);
             PipeLines.Add(pipeModel);
             PipeModels.Add(pipeModel);
             p.gameObject.SetActive(false);

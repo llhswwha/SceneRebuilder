@@ -247,7 +247,7 @@ public class PipeFactory : SingletonBehaviour<PipeFactory>
         newBuilder.ClearGeneratedObjs();
 
         newBuilder.isUniformRaidus = this.isUniformRaidus;
-        newBuilder.GetPipeInfosEx();
+        newBuilder.GetPipeInfosJob();
 
         ProgressBarHelper.ClearProgressBar();
     }

@@ -84,7 +84,7 @@ namespace MathGeoLib
     [PublicAPI]
     [Serializable]
     [StructLayout(LayoutKind.Sequential)]
-    public sealed class OrientedBoundingBox
+    public struct OrientedBoundingBox
     {
         #region Native
 
@@ -272,11 +272,17 @@ namespace MathGeoLib
 
         #region Constructors
 
-        [PublicAPI]
-        public OrientedBoundingBox()
-        {
-            // for serialization
-        }
+        //[PublicAPI]
+        //public OrientedBoundingBox()
+        //{
+        //    // for serialization
+
+        //    Center = Vector3.zero;
+        //    Extent =  Vector3.zero;
+        //    Right =Vector3.zero;
+        //    Up = Vector3.zero;
+        //    Forward = Vector3.zero;
+        //}
 
         public OrientedBoundingBox(Vector3 center, Vector3 extent, Vector3 right, Vector3 up, Vector3 forward)
         {
@@ -605,7 +611,7 @@ namespace MathGeoLib
 
         public override string ToString()
         {
-            return $"{nameof(Center)}: {Center}, {nameof(Extent)}: {Extent}";
+            return $"{nameof(Center)}: {Center}, {nameof(Extent)}: {Extent} Forward:{Forward}";
         }
 
         public Vector3S RandomPointOnSurface(LCG rng)

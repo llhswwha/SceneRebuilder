@@ -14,9 +14,11 @@ public struct ObbInfoJob : IJob
     public int id;
     public NativeArray<Vector3S> points;
 
-    public ObbData obbData;
+    //public ObbData obbData;
 
-    public static NativeArray<ObbData> Result;
+    public OrientedBoundingBox box;
+
+    public static NativeArray<OrientedBoundingBox> Result;
 
     public void Execute()
     {
@@ -25,21 +27,57 @@ public struct ObbInfoJob : IJob
         var ps = points.ToArray();
         MathGeoLibNativeMethods.obb_optimal_enclosing(points.ToArray(), points.Length, out var center, out var extent, axis);
 
-        obbData.center = center;
-        obbData.extent = extent;
-        obbData.right = axis[0];
-        obbData.up = axis[1];
-        obbData.forward = axis[2];
-        //box = new OrientedBoundingBox(center, extent, axis[0], axis[1], axis[2]);
+        //obbData.center = center;
+        //obbData.extent = extent;
+        //obbData.right = axis[0];
+        //obbData.up = axis[1];
+        //obbData.forward = axis[2];
+        box = new OrientedBoundingBox(center, extent, axis[0], axis[1], axis[2]);
 
         Debug.Log($"JobInfo {this.ToString()} time:{(DateTime.Now-startT).TotalMilliseconds.ToString("F1")}ms ");
 
-        Result[id]=obbData;
+        Result[id]=box;
     }
 
     public override string ToString()
     {
-        return $"[{id}] points:{points.Length} obb:[{obbData}]";
+        return $"[{id}] points:{points.Length} obb:[{box}]";
+    }
+
+    public static ObbInfoJob InitJob(GameObject go,int i)
+    {
+        var vs = OrientedBoundingBox.GetVerticesS(go);
+        NativeArray<Vector3S> vsS = new NativeArray<Vector3S>(vs.ToArray(), Allocator.Persistent);
+        ObbInfoJob job = new ObbInfoJob()
+        {
+            id = i,
+            points = vsS
+        };
+        return job;
+    }
+
+    public static void GetObbInfoJobs(List<Transform> gos)
+    {
+        DateTime startT = DateTime.Now;
+        JobList<ObbInfoJob> jobs = new JobList<ObbInfoJob>(10);
+        NativeArray<OrientedBoundingBox> result = new NativeArray<OrientedBoundingBox>(gos.Count, Allocator.Persistent);
+        ObbInfoJob.Result = result;
+        for (int i = 0; i < gos.Count; i++)
+        {
+            Transform go = gos[i];
+            ObbInfoJob job = ObbInfoJob.InitJob(go.gameObject, i);
+            jobs.Add(job);
+        }
+        Debug.Log($"GetObbInfoJobs count:{gos.Count} result:{result.Length} time1:{(DateTime.Now - startT).TotalMilliseconds.ToString("F2")}");
+        jobs.CompleteAll();
+
+        Debug.Log($"GetObbInfoJobs count:{gos.Count} result:{result.Length} time2:{(DateTime.Now - startT).TotalMilliseconds.ToString("F2")}");
+        //for (int i = 0; i < result.Length; i++)
+        //{
+        //    var r = result[i];
+        //    Debug.Log($"Job[{i}] result:{r}");
+        //}
+        jobs.Dispose();
     }
 }
 

@@ -10,6 +10,14 @@ public class PipeLineModelEditor : Editor
     {
         PipeLineModel targetT = target as PipeLineModel;
         GUILayout.BeginHorizontal();
+        //BaseEditorHelper.ObjectField(targetT.ResultGo);
+        if (GUILayout.Button("ResultGo"))
+        {
+            EditorHelper.SelectObject(targetT.ResultGo);
+        }
+        GUILayout.EndHorizontal();
+
+        GUILayout.BeginHorizontal();
         if (GUILayout.Button("ShowOBB"))
         {
             targetT.ShowOBB();

@@ -46,7 +46,7 @@ public class OBBCollider : MonoBehaviour
         OBBCollider oBBCollider2 = ShowOBBNotUpdate(original, false);
         OrientedBoundingBox obb1 = oBBCollider1.OBB; 
         OrientedBoundingBox obb2 = oBBCollider2.OBB;
-        if (obb1 == null || obb2 == null) return 11;
+        //if (obb1 == null || obb2 == null) return 11;
         if (oBBCollider1.IsObbError || oBBCollider2.IsObbError) return 22;
         var vs1 = obb1.CornerPointsVector3();
         var vs2= obb2.CornerPointsVector3();
@@ -61,7 +61,7 @@ public class OBBCollider : MonoBehaviour
         OBBCollider oBBCollider2 = ShowOBBNotUpdate(original, false);
         OrientedBoundingBox obb1 = oBBCollider1.OBB;
         OrientedBoundingBox obb2 = oBBCollider2.OBB;
-        if (obb1 == null || obb2 == null) return 11;
+        //if (obb1 == null || obb2 == null) return 11;
         if (oBBCollider1.IsObbError || oBBCollider2.IsObbError) return 22;
         var vs1 = obb1.CornerPointsVector3();
         var vs2 = obb2.CornerPointsVector3();
@@ -89,8 +89,8 @@ public class OBBCollider : MonoBehaviour
     public bool ShowObbInfo(bool isGetObbEx)
     {
         ClearChildren();
-
-        if (GetObb(isGetObbEx) == null) return false ;
+        GetObb(isGetObbEx);
+        //if (GetObb(isGetObbEx) == null) return false ;
 
         ShowOBBBox();
 
@@ -191,13 +191,13 @@ public class OBBCollider : MonoBehaviour
         Debug.Log($"GetObb ps:{ps2.Count} go:{gameObject.name} time:{(DateTime.Now - start).TotalMilliseconds}ms OBB:{OBB} Center:{OBB.Center} Extent:{OBB.Extent}");
         if (OBB.Extent == Vector3.positiveInfinity || OBB.Extent == Vector3.negativeInfinity || float.IsInfinity(OBB.Extent.x))
         {
-            Debug.LogError($"GetObb Error Extent:{OBB.Extent} ps_Last:{ps2.Last()}");
+            Debug.LogError($"GetObb Error gameObject:{this.name} Extent:{OBB.Extent} ps_Last:{ps2.Last()}");
             var errorP = ps1.Last();
             CreateLocalPoint(errorP, $"ErrorPoint({errorP.x},{errorP.y},{errorP.z})");
             //OBB = null;
             if (isGetObbEx)
             {
-                if (GetObbEx() == false) return null;
+                if (GetObbEx() == false) return new OrientedBoundingBox();
             }
             IsObbError = true;
         }
