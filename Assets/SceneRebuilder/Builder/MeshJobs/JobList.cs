@@ -65,6 +65,14 @@ using System;
 
     public void Dispose()
     {
+        foreach(var job in Jobs)
+        {
+            IDisposable dis = job as IDisposable;
+            if (dis != null)
+            {
+                dis.Dispose();
+            }
+        }
         HandleList.Dispose();
     }
     }
@@ -109,7 +117,15 @@ using System;
             }
         }
 
-        public void CompleteAll()
+    public void Add(JobHandleList list)
+    {
+        foreach(var item in list.handles)
+        {
+            this.Add(item);
+        }
+    }
+
+    public void CompleteAll()
         {
             JobHandle.CompleteAll(handles);
         }

@@ -2,12 +2,14 @@ using MathGeoLib;
 using System;
 using System.Collections;
 using System.Collections.Generic;
+using System.Linq;
+using System.Text;
 using Unity.Collections;
 using Unity.Jobs;
 using UnityEngine;
 using static MathGeoLib.OrientedBoundingBox;
 
-public struct PipeLineInfoJob : IJob, IDisposable
+public struct PipeLineInfoJob : IPipeJob
 {
     public int id;
 
@@ -19,15 +21,90 @@ public struct PipeLineInfoJob : IJob, IDisposable
 
     public static NativeArray<PipeLineData> Result;
 
+    public OrientedBoundingBox GetObbEx()
+    {
+        DateTime start = DateTime.Now;
+        List<Vector3> ps1 = new List<Vector3>();
+        List<Vector3S> ps21 = new List<Vector3S>();
+        List<Vector3S> ps22 = new List<Vector3S>();
+
+        var vs = points.ToArray();
+        var count = vs.Length;
+
+        StringBuilder sb = new StringBuilder();
+        for (int i = 0; i < count ; i++)
+        {
+            Vector3 p = vs[i];
+
+            //if (ProgressBarHelper.DisplayCancelableProgressBar(new ProgressArg("GetObbEx", i, count, p)))
+            //{
+            //    ProgressBarHelper.ClearProgressBar();
+            //    return false;
+            //}
+
+            ps21.Add(new Vector3S(p.x, p.y, p.z));
+
+            if (i > 2)
+            {
+                var obb = OrientedBoundingBox.BruteEnclosing(ps21.ToArray());
+                if (float.IsInfinity(obb.Extent.x))
+                {
+                    //Debug.LogWarning($"GetObb Error[{i}/{count},{TestObbPointCount}] ps22:{ps22.Count}  ps21:{ps21.Count} Extent:{OBB.Extent} ps_Last:{ps21.Last()}");
+                    sb.AppendLine($"GetObb go:{id} Error[{i}/{count}] ps22:{ps22.Count}  ps21:{ps21.Count} Extent:{obb.Extent} ps_Last:{ps21.Last()}");
+                    ps21 = new List<Vector3S>(ps22);
+                }
+                else
+                {
+                    ps22.Add(new Vector3S(p.x, p.y, p.z));
+                }
+                ps1.Add(p);
+            }
+            else
+            {
+                ps22.Add(new Vector3S(p.x, p.y, p.z));
+            }
+
+        }
+        //Debug.Log("ps:"+ps.Count);
+        var OBB = OrientedBoundingBox.BruteEnclosing(ps22.ToArray());
+        if (sb.Length > 0)
+        {
+            Debug.LogWarning(sb.ToString());
+        }
+        Debug.Log($"GetObbEx go:{id} ps:{ps22.Count}  time:{(DateTime.Now - start).TotalMilliseconds}ms OBB:{OBB} Center:{OBB.Center} Extent:{OBB.Extent}");
+        if (OBB.Extent == Vector3.positiveInfinity || OBB.Extent == Vector3.negativeInfinity || float.IsInfinity(OBB.Extent.x))
+        {
+            Debug.LogError($"GetObbEx Error Extent:{OBB.Extent} ps_Last:{ps22.Last()}");
+            //var errorP = ps1.Last();
+            //CreateLocalPoint(errorP, $"ErrorPoint({errorP.x},{errorP.y},{errorP.z})");
+        }
+        //ProgressBarHelper.ClearProgressBar();
+        return OBB;
+    }
+
     public void Execute()
     {
+        lineData = new PipeLineData();
+
         Vector3[] vs = points.ToArray();
 
         List<Vector3S> ps2 = OrientedBoundingBox.GetVerticesS(vs);
         var axis = new Vector3S[3];
         MathGeoLibNativeMethods.obb_optimal_enclosing(ps2.ToArray(), points.Length, out var center, out var extent, axis);
         OrientedBoundingBox OBB = new OrientedBoundingBox(center, extent, axis[0], axis[1], axis[2]);
-
+        if (OBB.Extent == Vector3.positiveInfinity || OBB.Extent == Vector3.negativeInfinity || float.IsInfinity(OBB.Extent.x))
+        {
+            Debug.LogError($"GetModelInfo GetObb Error gameObject:{id} Extent:{OBB.Extent} ps_Last:{ps2.Last()}");
+            //var errorP = ps1.Last();
+            //CreateLocalPoint(errorP, $"ErrorPoint({errorP.x},{errorP.y},{errorP.z})");
+            //OBB = null;
+            //if (isGetObbEx)
+            //{
+            //    if (GetObbEx() == false) return new OrientedBoundingBox();
+            //}
+            OBB = GetObbEx();
+            lineData.IsObbError = true;
+        }
 
         DateTime start = DateTime.Now;
         Vector3 ObbExtent = OBB.Extent;
@@ -136,7 +213,7 @@ public struct PipeLineInfoJob : IJob, IDisposable
         }
 
         var PipeLength = Vector3.Distance(startPoint, endPoint);
-        lineData = new PipeLineData();
+        
         lineData.StartPoint = startPoint;
         lineData.StartPoint.w = PipeRadius;
         lineData.EndPoint = endPoint;

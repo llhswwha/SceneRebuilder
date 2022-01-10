@@ -6,7 +6,7 @@ using Unity.Jobs;
 using UnityEngine;
 using static PipeElbowModel;
 
-public struct PipeElbowInfoJob : IJob,IDisposable
+public struct PipeElbowInfoJob : IPipeJob
 {
     public static int sharedMinCount = 36;
     public static float minRepeatPointDistance = 0.00005f;

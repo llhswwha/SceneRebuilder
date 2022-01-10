@@ -70,6 +70,10 @@ public struct PipeLineData
 
     public Vector3 Direction;
 
+    public bool IsGetInfoSuccess;
+
+    public bool IsObbError;
+
     public override string ToString()
     {
         //return $"[{StartPoint}_{EndPoint}]";
@@ -81,6 +85,8 @@ public struct PipeLineData
         this.StartPoint = p1;
         this.EndPoint = p2;
         this.Direction = direction;
+        this.IsGetInfoSuccess = true;
+        this.IsObbError = false;
     }
 }
 

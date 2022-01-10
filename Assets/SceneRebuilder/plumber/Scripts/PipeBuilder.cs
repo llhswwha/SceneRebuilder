@@ -375,21 +375,13 @@ public class PipeBuilder : MonoBehaviour
         Debug.LogError($">>GetPipeInfos time:{DateTime.Now- start}");
     }
 
-    public void GetPipeInfosJob()
+    public int JobSize = 20;
+
+    private void SetJobResultData_Line(JobList<PipeLineInfoJob> lineJobs, List<Transform> ts)
     {
-        PipeModels.Clear();
-        PipeLines.Clear();
-
-        DateTime start = DateTime.Now;
-
-        //1.PipeLineJob
-        PipeLineInfoJob.Result = new NativeArray<PipeLineData>(PipeLineGos.Count, Allocator.Persistent);
-        JobList<PipeLineInfoJob> lineJobs=GetPipeInfosJob_Line(PipeLineGos,0);
-        lineJobs.CompleteAllPage();
-
-        for (int i = 0; i < PipeLineGos.Count; i++)
+        for (int i = 0; i < ts.Count; i++)
         {
-            Transform t = PipeLineGos[i];
+            Transform t = ts[i];
             PipeLineModel pipeModel = GetPipeModelInfo<PipeLineModel>(t, false);
             var lineData = PipeLineInfoJob.Result[i];
             //Debug.Log($"LineModel[{i}] model:{pipeModel.name} lineData:{lineData}");
@@ -397,20 +389,15 @@ public class PipeBuilder : MonoBehaviour
             PipeLines.Add(pipeModel);
             PipeModels.Add(pipeModel);
         }
-        foreach (var job in lineJobs.Jobs)
-        {
-            job.Dispose();
-        }
         lineJobs.Dispose();
         PipeLineInfoJob.Result.Dispose();
+    }
 
-        //2.PipeElbowJob
-        PipeElbowInfoJob.Result=new NativeArray<PipeElbowData>(PipeElbowGos.Count, Allocator.Persistent);
-        JobList<PipeElbowInfoJob> elbowJobs = GetPipeInfosJob_Elbow(PipeElbowGos, 0);
-        elbowJobs.CompleteAllPage();
-        for (int i = 0; i < PipeElbowGos.Count; i++)
+    private void SetJobResultData_Elbow(JobList<PipeElbowInfoJob> elbowJobs, List<Transform> ts)
+    {
+        for (int i = 0; i < ts.Count; i++)
         {
-            Transform t = PipeElbowGos[i];
+            Transform t = ts[i];
             PipeElbowModel pipeModel = GetPipeModelInfo<PipeElbowModel>(t, false);
             var lineData = PipeElbowInfoJob.Result[i];
             //Debug.Log($"LineModel[{i}] model:{pipeModel.name} lineData:{lineData}");
@@ -418,13 +405,38 @@ public class PipeBuilder : MonoBehaviour
             PipeElbows.Add(pipeModel);
             PipeModels.Add(pipeModel);
         }
-        foreach (var job in elbowJobs.Jobs)
-        {
-            job.Dispose();
-        }
         elbowJobs.Dispose();
         PipeElbowInfoJob.Result.Dispose();
+    }
 
+    public void GetPipeInfosJob()
+    {
+        PipeModels.Clear();
+        PipeLines.Clear();
+
+        DateTime start = DateTime.Now;
+
+        JobHandleList pipeJobs = new JobHandleList("PipeJobs", JobSize);
+
+        //1.PipeLineJob
+        PipeLineInfoJob.Result = new NativeArray<PipeLineData>(PipeLineGos.Count, Allocator.Persistent);
+        JobList<PipeLineInfoJob> lineJobs=GetPipeInfosJob_Line(PipeLineGos,0);
+
+        //2.PipeElbowJob
+        PipeElbowInfoJob.Result=new NativeArray<PipeElbowData>(PipeElbowGos.Count, Allocator.Persistent);
+        JobList<PipeElbowInfoJob> elbowJobs = GetPipeInfosJob_Elbow(PipeElbowGos, 0);
+
+        //lineJobs.CompleteAllPage();
+        //elbowJobs.CompleteAllPage();
+
+        pipeJobs.Add(lineJobs.HandleList);
+        pipeJobs.Add(elbowJobs.HandleList);
+        pipeJobs.CompleteAllPage();
+
+        SetJobResultData_Line(lineJobs, PipeLineGos);
+        SetJobResultData_Elbow(elbowJobs, PipeElbowGos);
+
+        pipeJobs.Dispose();
 
         Debug.LogError($">>GetPipeInfosJob time:{DateTime.Now - start} lineJobs:{lineJobs.Count} elbowJobs:{elbowJobs.Count}");
 

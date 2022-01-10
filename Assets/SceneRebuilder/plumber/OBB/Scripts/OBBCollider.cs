@@ -255,10 +255,10 @@ public class OBBCollider : MonoBehaviour
         {
             Debug.LogWarning(sb.ToString());
         }
-        Debug.Log($"GetObb go:{gameObject.name} ps:{ps22.Count}  time:{(DateTime.Now - start).TotalMilliseconds}ms OBB:{OBB} Center:{OBB.Center} Extent:{OBB.Extent}");
+        Debug.Log($"GetObbEx go:{gameObject.name} ps:{ps22.Count}  time:{(DateTime.Now - start).TotalMilliseconds}ms OBB:{OBB} Center:{OBB.Center} Extent:{OBB.Extent}");
         if (OBB.Extent == Vector3.positiveInfinity || OBB.Extent == Vector3.negativeInfinity || float.IsInfinity(OBB.Extent.x))
         {
-            Debug.LogError($"GetObb Error Extent:{OBB.Extent} ps_Last:{ps22.Last()}");
+            Debug.LogError($"GetObbEx Error Extent:{OBB.Extent} ps_Last:{ps22.Last()}");
             var errorP = ps1.Last();
             CreateLocalPoint(errorP, $"ErrorPoint({errorP.x},{errorP.y},{errorP.z})");
         }
