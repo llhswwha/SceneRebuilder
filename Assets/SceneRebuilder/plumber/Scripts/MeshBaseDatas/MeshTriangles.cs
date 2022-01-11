@@ -183,7 +183,7 @@ public class MeshTriangles
         {
             SharedMeshTriangles plane = sharedPoints1[i];
             int pointId = plane.PointId;
-            var triangles = plane.Triangles;
+            var triangles = plane.GetAllTriangles();
             if (triangles.Count < minCount) continue;
             id++;
             //Debug.Log($"GetElbowInfo sharedPoints1[{i + 1}/{sharedPoints1.Count}] point:{pointId} trianlges:{triangles.Count}");
@@ -211,7 +211,7 @@ public class MeshTriangles
         {
             SharedMeshTriangles plane = sharedPoints1[i];
             int pointId = plane.PointId;
-            var triangles = plane.GetTriangles();
+            var triangles = plane.GetAllTriangles();
             if (triangles.Count < minCount) continue;
             id++;
             Debug.Log($"GetElbowInfo sharedPoints1[{i + 1}/{sharedPoints1.Count}] point:{pointId} trianlges:{triangles.Count}");
@@ -307,21 +307,21 @@ public class MeshTriangles
 
 
 
-            var item = KeyPoints.FindItemByPoint(point, minDis);
+            SharedMeshTriangles? item = KeyPoints.FindItemByPoint(point, minDis);
             if (item == null)
             {
                 KeyPoints.Add(new SharedMeshTriangles(pointId, point, normal, triangles));
             }
             else
             {
-                item.AddOtherTriangles(triangles);
+                ((SharedMeshTriangles)item).AddOtherTriangles(triangles);
             }
         }
 
         SharedMeshTrianglesList KeyPoints2 = new SharedMeshTrianglesList();
         foreach(var item in KeyPoints)
         {
-            if (item.Triangles.Count >= minCount)
+            if (item.GetAllTriangles().Count >= minCount)
             {
                 item.GetInfo();
                 KeyPoints2.Add(item);

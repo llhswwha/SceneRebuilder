@@ -387,7 +387,11 @@ public class PipeMeshGenerator : PipeMeshGeneratorBase
     }
 
     Mesh GeneratePipeMesh(List<Vector3> ps,bool gWeld) {
-
+        if (pipeRadius == 0)
+        {
+            Debug.LogError($"GeneratePipeMesh ps:{ps.Count} pipeRadius:{pipeRadius} gameObject:{this.name}");
+        }
+        
         if(IsRemoveColinearPoints)
             RemoveColinearPoints(ps);
         points2 = new List<Vector3>(ps);
@@ -644,7 +648,7 @@ public class PipeMeshGenerator : PipeMeshGeneratorBase
 
     CircleMeshData GenerateCircleAtPoint(List<Vector3> vertices, List<Vector3> normals, Vector3 center, Vector3 direction, float radius,string circleName)
     {
-
+        
         List<Vector3> newVertics = new List<Vector3>();
         // 'direction' is the normal to the plane that contains the circle
 
@@ -677,12 +681,15 @@ public class PipeMeshGenerator : PipeMeshGeneratorBase
             vertices.Add(currentVertex);
             newVertics.Add(currentVertex);
             normals.Add((currentVertex - center).normalized);
+
+            //ShowPoint(currentVertex, $"p:{vertices.Count}", this.transform);
         }
 
         CircleMeshData circleData = new CircleMeshData(center, direction, newVertics, circleName);
         circleData.SetAxis(xAxis, yAxis);
         CircleDatas.Add(circleData);
 
+        Debug.Log($"GenerateCircleAtPoint center:{center} direction:{direction} radius:{radius} vertices:{vertices.Count} newVertics:{newVertics.Count}");
         return circleData;
     }
 

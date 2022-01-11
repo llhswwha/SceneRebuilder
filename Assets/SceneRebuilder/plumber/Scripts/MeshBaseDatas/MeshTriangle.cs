@@ -188,6 +188,16 @@ public struct MeshTriangle
 
 public class MeshTriangleList:List< MeshTriangle >
 {
+    public MeshTriangleList()
+    {
+
+    }
+
+    public MeshTriangleList(List<MeshTriangle> list)
+    {
+        this.AddRange(list);
+    }
+
     public float GetAvgRadius1(int pointId)
     {
         float radius = 0;

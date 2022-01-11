@@ -91,35 +91,35 @@ public class PipeElbowModel : PipeModelBase
         return info;
     }
 
-    protected PipeElbowKeyPlaneInfo GetElbow4Planes(SharedMeshTrianglesList list)
-    {
-        SharedMeshTrianglesList trianglesList = new SharedMeshTrianglesList(list);
+    //protected PipeElbowKeyPlaneInfo GetElbow4Planes(SharedMeshTrianglesList list)
+    //{
+    //    SharedMeshTrianglesList trianglesList = new SharedMeshTrianglesList(list);
 
-        PipeElbowKeyPlaneInfo info = new PipeElbowKeyPlaneInfo();
+    //    PipeElbowKeyPlaneInfo info = new PipeElbowKeyPlaneInfo();
 
-        var centerOfPoints = MeshHelper.GetCenterOfList(trianglesList);
-        distanceList = new List<PlanePointDistance>();
-        foreach (var p in trianglesList)
-        {
-            distanceList.Add(new PlanePointDistance(p, centerOfPoints));
-        }
-        distanceList.Sort();
-        SharedMeshTriangles endPointIn1Plane = distanceList[0].Plane;
-        SharedMeshTriangles endPointIn2Plane = distanceList[1].Plane;
+    //    var centerOfPoints = MeshHelper.GetCenterOfList(trianglesList);
+    //    distanceList = new List<PlanePointDistance>();
+    //    foreach (var p in trianglesList)
+    //    {
+    //        distanceList.Add(new PlanePointDistance(p, centerOfPoints));
+    //    }
+    //    distanceList.Sort();
+    //    SharedMeshTriangles endPointIn1Plane = distanceList[0].Plane;
+    //    SharedMeshTriangles endPointIn2Plane = distanceList[1].Plane;
 
-        info.EndPointIn1 = endPointIn1Plane;
-        info.EndPointIn2 = endPointIn2Plane;
-        trianglesList.Remove(info.EndPointIn1);
-        trianglesList.Remove(info.EndPointIn2);
+    //    info.EndPointIn1 = endPointIn1Plane;
+    //    info.EndPointIn2 = endPointIn2Plane;
+    //    trianglesList.Remove(info.EndPointIn1);
+    //    trianglesList.Remove(info.EndPointIn2);
 
-        SharedMeshTriangles endPointOut1Plane = MeshHelper.FindClosedPlane(info.EndPointIn1.GetCenter4(), trianglesList);
-        info.EndPointOut1 = endPointOut1Plane;
-        trianglesList.Remove(info.EndPointOut1);
-        SharedMeshTriangles endPointOut2Plane = MeshHelper.FindClosedPlane(info.EndPointIn2.GetCenter4(), trianglesList);
-        info.EndPointOut2 = endPointOut2Plane;
-        trianglesList.Remove(info.EndPointOut2);
-        return info;
-    }
+    //    SharedMeshTriangles endPointOut1Plane = MeshHelper.FindClosedPlane(info.EndPointIn1.GetCenter4(), trianglesList);
+    //    info.EndPointOut1 = endPointOut1Plane;
+    //    trianglesList.Remove(info.EndPointOut1);
+    //    SharedMeshTriangles endPointOut2Plane = MeshHelper.FindClosedPlane(info.EndPointIn2.GetCenter4(), trianglesList);
+    //    info.EndPointOut2 = endPointOut2Plane;
+    //    trianglesList.Remove(info.EndPointOut2);
+    //    return info;
+    //}
 
     protected PipeElbowKeyPointInfo GetElbow4(SharedMeshTrianglesList list)
     {
@@ -161,7 +161,7 @@ public class PipeElbowModel : PipeModelBase
         //ShowKeyPoints(info, "Elbow4_");
         //return info;
 
-        PipeElbowKeyPlaneInfo keyPlanes = GetElbow4Planes(list);
+        PipeElbowKeyPlaneInfo keyPlanes = PipeElbowKeyPlaneInfo.GetElbow4Planes(list);
         PipeElbowKeyPointInfo info2 = keyPlanes.GetKeyPoints();
         ShowKeyPoints(info2, "Elbow4_");
         return info2;
@@ -319,7 +319,7 @@ public class PipeElbowModel : PipeModelBase
         }
     }
 
-    internal void SetElbowData(PipeElbowData lineData)
+    internal void SetModelData(PipeElbowData lineData)
     {
         this.IsSpecial = lineData.IsSpecial;
         this.IsGetInfoSuccess = lineData.IsGetInfoSuccess;

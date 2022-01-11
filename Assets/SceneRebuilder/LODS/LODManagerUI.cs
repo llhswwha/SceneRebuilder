@@ -32,12 +32,13 @@ public class LODManagerUI : MonoBehaviour
         //yield return null;
     }
 
-    //// Update is called once per frame
-    //void Update()
-    //{
-    //    if(toggleIsUpdate.isOn)
-    //        GetLODInfo();
-    //}
+    [ContextMenu("GetLODInfo")]
+    public void GetLODInfo()
+    {
+        txtLog.text=LODManager.GetRuntimeLODDetail(false);
+        //Debug.Log("LODManagerUI.GetLODInfo");
+    }
+
 
     [ContextMenu("SetLODMatColor")]
     public void SetLODMatColor()
@@ -67,12 +68,5 @@ public class LODManagerUI : MonoBehaviour
     public void InactiveLOD()
     {
         LODManager.SetLODActive(false);
-    }
-
-    [ContextMenu("GetLODInfo")]
-    public void GetLODInfo()
-    {
-        txtLog.text=LODManager.GetRuntimeLODDetail(false);
-        //Debug.Log("LODManagerUI.GetLODInfo");
     }
 }

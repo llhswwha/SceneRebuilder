@@ -5,10 +5,10 @@ using UnityEngine;
 
 public class PipeTeeModel : PipeElbowModel
 {
-    public Vector4 LineStartPoint = Vector3.zero;
-    public Vector4 LineEndPoint = Vector3.zero;
-    public Vector4 TeeStartPoint = Vector3.zero;
-    public Vector4 TeeEndPoint = Vector3.zero;
+    //public Vector4 LineStartPoint = Vector3.zero;
+    //public Vector4 LineEndPoint = Vector3.zero;
+    //public Vector4 TeeStartPoint = Vector3.zero;
+    //public Vector4 TeeEndPoint = Vector3.zero;
 
     //public List<PlanePointDistance> distanceListEx;
 
@@ -84,8 +84,7 @@ public class PipeTeeModel : PipeElbowModel
         }
 
         SharedMeshTrianglesList list;
-
-        KeyPlaneInfo = GetElbow4Planes(list4);
+        KeyPlaneInfo = PipeElbowKeyPlaneInfo.GetElbow4Planes(list4);
         KeyPointInfo = KeyPlaneInfo.GetKeyPoints();
 
         //KeyPointInfo = GetElbow4(list4);
@@ -113,10 +112,10 @@ public class PipeTeeModel : PipeElbowModel
 
         SharedMeshTriangles teePlane1 = distanceList[0].Plane;
 
-        TeeStartPoint = teePlane1.GetCenter4();
+        var TeeStartPoint = teePlane1.GetCenter4();
         trianglesList.Remove(teePlane1);
 
-        SharedMeshTriangles teePlane2 = null;
+        SharedMeshTriangles? teePlane2 = null;
 
         //float minNormalAngle = 0;
         for (int i = 0; i < trianglesList.Count; i++)
@@ -143,11 +142,11 @@ public class PipeTeeModel : PipeElbowModel
             return;
         }
 
-        TeeEndPoint = teePlane2.GetCenter4();
-        trianglesList.Remove(teePlane2);
+        var TeeEndPoint = ((SharedMeshTriangles)teePlane2).GetCenter4();
+        trianglesList.Remove(((SharedMeshTriangles)teePlane2));
 
-        LineStartPoint = trianglesList[0].GetCenter4();
-        LineEndPoint = trianglesList[1].GetCenter4();
+        var LineStartPoint = trianglesList[0].GetCenter4();
+        var LineEndPoint = trianglesList[1].GetCenter4();
 
         //EndPointIn2 = distanceList[1].Plane.GetCenter();
         //trianglesList.Remove(EndPointIn1);
@@ -157,9 +156,11 @@ public class PipeTeeModel : PipeElbowModel
         //trianglesList.Remove(EndPointOut1);
         //EndPointOut2 = MeshHelper.FindClosedPoint(EndPointIn2, trianglesList);
         //trianglesList.Remove(EndPointOut2);
+        
+        //KeyPointInfo.Line1 = new PipeLineInfo(TeeStartPoint, TeeEndPoint, null);
+        //KeyPointInfo.Line2 = new PipeLineInfo(LineStartPoint, LineEndPoint, null);
 
-        KeyPointInfo.Line1 = new PipeLineInfo(TeeStartPoint, TeeEndPoint, null);
-        KeyPointInfo.Line2 = new PipeLineInfo(LineStartPoint, LineEndPoint, null);
+        KeyPointInfo = new PipeElbowKeyPointInfo(TeeStartPoint, TeeEndPoint, LineStartPoint, LineEndPoint);
 
         TransformHelper.ShowLocalPoint(TeeStartPoint, PointScale, this.transform, null).name = $"TeeStartPoint_{TeeStartPoint.w}";
         TransformHelper.ShowLocalPoint(TeeEndPoint, PointScale, this.transform, null).name = $"TeeEndPoint_{TeeEndPoint.w}";
@@ -170,6 +171,17 @@ public class PipeTeeModel : PipeElbowModel
 
         ModelStartPoint = LineStartPoint;
         ModelEndPoint = LineEndPoint;
+    }
+
+    internal void SetModelData(PipeTeeData lineData)
+    {
+        this.IsSpecial = lineData.IsSpecial;
+        this.IsGetInfoSuccess = lineData.IsGetInfoSuccess;
+        this.KeyPointInfo = new PipeElbowKeyPointInfo(lineData.KeyPointInfo);
+        this.InnerKeyPointInfo = new PipeElbowKeyPointInfo(lineData.InnerKeyPointInfo);
+
+        this.KeyPlaneInfo = new PipeElbowKeyPlaneInfo(lineData.KeyPlaneInfo);
+        this.InnerKeyPlaneInfo = new PipeElbowKeyPlaneInfo(lineData.InnerKeyPlaneInfo);
     }
 
     public override GameObject RendererModel(PipeGenerateArg arg, string afterName)
@@ -203,8 +215,8 @@ public class PipeTeeModel : PipeElbowModel
         }
         else
         {
-            GameObject pipe1 = RenderPipeLine(arg, afterName, LineStartPoint, LineEndPoint);
-            GameObject pipe2 = RenderPipeLine(arg, afterName, TeeStartPoint, TeeEndPoint);
+            GameObject pipe1 = RenderPipeLine(arg, afterName, KeyPointInfo.Line1.StartPoint, KeyPointInfo.Line1.EndPoint);
+            GameObject pipe2 = RenderPipeLine(arg, afterName, KeyPointInfo.Line2.StartPoint, KeyPointInfo.Line2.EndPoint);
             GameObject pipeNew = GetPipeNewGo(arg, afterName);
 
             pipe1.transform.SetParent(pipeNew.transform);
@@ -232,7 +244,8 @@ public class PipeTeeModel : PipeElbowModel
         }
         else
         {
-            list.Add(this.TransformPoint(TeeEndPoint));
+            list.Add(this.TransformPoint(KeyPointInfo.Line1.EndPoint));
+            list.Add(this.TransformPoint(KeyPointInfo.Line1.StartPoint));
         }       
         return list;
     }

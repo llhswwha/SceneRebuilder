@@ -245,8 +245,8 @@ public class PipeLineModel : PipeModelBase
 
         Vector3 ObbExtent = OBB.Extent;
 
-        Vector3 startPoint = OBB.Up * ObbExtent.y;
-        Vector3 endPoint = -OBB.Up * ObbExtent.y;
+        Vector4 startPoint = OBB.Up * ObbExtent.y;
+        Vector4 endPoint = -OBB.Up * ObbExtent.y;
 
         GameObject planInfoRoot = new GameObject("PipeModel_PlaneInfo");
         planInfoRoot.transform.SetParent(this.transform);
@@ -316,7 +316,7 @@ public class PipeLineModel : PipeModelBase
             CreateLocalPoint(endPlane.Point.planeCenter, "Error1_EndPoint1", planInfoRoot.transform);
             return;
         }
-        startPoint = startCircle.Center;
+        startPoint = startCircle.GetCenter4();
         CircleInfo endCircle = endPlane.GetCircleInfo();
         if (endCircle == null)
         {
@@ -326,7 +326,7 @@ public class PipeLineModel : PipeModelBase
             CreateLocalPoint(endPlane.Point.planeCenter, "Error3_EndPoint2", planInfoRoot.transform);
             return;
         }
-        endPoint = endCircle.Center;
+        endPoint = endCircle.GetCenter4();
 
         PipeRadius1 = startCircle.Radius;
         PipeRadius2 = endCircle.Radius;

@@ -17,6 +17,13 @@ public class CircleInfo
 
     public float CheckCircleP = 0;
 
+    public Vector4 GetCenter4()
+    {
+        Vector4 c = Center;
+        c.w = Radius;
+        return c;
+    }
+
     public CircleInfo()
     {
 

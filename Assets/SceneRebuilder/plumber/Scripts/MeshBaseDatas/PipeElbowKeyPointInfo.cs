@@ -65,4 +65,9 @@ public struct PipeElbowKeyPointData
 
         Line2 = new PipeLineData();
     }
+
+    public override string ToString()
+    {
+        return $"{EndPointIn1}_{EndPointOut1}_{EndPointIn2}_{EndPointOut2}";
+    }
 }

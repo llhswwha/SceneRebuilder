@@ -401,12 +401,28 @@ public class PipeBuilder : MonoBehaviour
             PipeElbowModel pipeModel = GetPipeModelInfo<PipeElbowModel>(t, false);
             var lineData = PipeElbowInfoJob.Result[i];
             //Debug.Log($"LineModel[{i}] model:{pipeModel.name} lineData:{lineData}");
-            pipeModel.SetElbowData(lineData);
+            pipeModel.SetModelData(lineData);
             PipeElbows.Add(pipeModel);
             PipeModels.Add(pipeModel);
         }
         elbowJobs.Dispose();
         PipeElbowInfoJob.Result.Dispose();
+    }
+
+    private void SetJobResultData_Tee(JobList<PipeTeeInfoJob> elbowJobs, List<Transform> ts)
+    {
+        for (int i = 0; i < ts.Count; i++)
+        {
+            Transform t = ts[i];
+            PipeTeeModel pipeModel = GetPipeModelInfo<PipeTeeModel>(t, false);
+            var lineData = PipeTeeInfoJob.Result[i];
+            //Debug.Log($"LineModel[{i}] model:{pipeModel.name} lineData:{lineData}");
+            pipeModel.SetModelData(lineData);
+            PipeElbows.Add(pipeModel);
+            PipeModels.Add(pipeModel);
+        }
+        elbowJobs.Dispose();
+        PipeTeeInfoJob.Result.Dispose();
     }
 
     public void GetPipeInfosJob()
@@ -426,15 +442,20 @@ public class PipeBuilder : MonoBehaviour
         PipeElbowInfoJob.Result=new NativeArray<PipeElbowData>(PipeElbowGos.Count, Allocator.Persistent);
         JobList<PipeElbowInfoJob> elbowJobs = GetPipeInfosJob_Elbow(PipeElbowGos, 0);
 
+        PipeTeeInfoJob.Result = new NativeArray<PipeTeeData>(PipeTeeGos.Count, Allocator.Persistent);
+        JobList<PipeTeeInfoJob> teeJobs = GetPipeInfosJob_Tee(PipeTeeGos, 0);
+
         //lineJobs.CompleteAllPage();
         //elbowJobs.CompleteAllPage();
 
         pipeJobs.Add(lineJobs.HandleList);
         pipeJobs.Add(elbowJobs.HandleList);
+        pipeJobs.Add(teeJobs.HandleList);
         pipeJobs.CompleteAllPage();
 
         SetJobResultData_Line(lineJobs, PipeLineGos);
         SetJobResultData_Elbow(elbowJobs, PipeElbowGos);
+        SetJobResultData_Tee(teeJobs, PipeTeeGos);
 
         pipeJobs.Dispose();
 
@@ -446,7 +467,7 @@ public class PipeBuilder : MonoBehaviour
     public JobList<PipeLineInfoJob> GetPipeInfosJob_Line(List<Transform> ts,int offset)
     {
         int count = 0;
-        JobList<PipeLineInfoJob> jobs = new JobList<PipeLineInfoJob>(10);
+        JobList<PipeLineInfoJob> jobs = new JobList<PipeLineInfoJob>(JobSize);
 
         for (int i = 0; i < ts.Count; i++)
         {
@@ -468,7 +489,7 @@ public class PipeBuilder : MonoBehaviour
     public JobList<PipeElbowInfoJob> GetPipeInfosJob_Elbow(List<Transform> ts, int offset)
     {
         int count = 0;
-        JobList<PipeElbowInfoJob> jobs = new JobList<PipeElbowInfoJob>(10);
+        JobList<PipeElbowInfoJob> jobs = new JobList<PipeElbowInfoJob>(JobSize);
 
         for (int i = 0; i < ts.Count; i++)
         {
@@ -481,6 +502,28 @@ public class PipeBuilder : MonoBehaviour
             {
                 id = i + offset,
                 mesh= meshS
+            };
+            jobs.Add(job);
+        }
+        return jobs;
+    }
+
+    public JobList<PipeTeeInfoJob> GetPipeInfosJob_Tee(List<Transform> ts, int offset)
+    {
+        int count = 0;
+        JobList<PipeTeeInfoJob> jobs = new JobList<PipeTeeInfoJob>(JobSize);
+
+        for (int i = 0; i < ts.Count; i++)
+        {
+            Transform t = ts[i];
+            Mesh mesh = t.GetComponent<MeshFilter>().sharedMesh;
+            MeshStructure meshS = new MeshStructure(mesh);
+            //if (vs.Length == 0) continue;
+            count++;
+            PipeTeeInfoJob job = new PipeTeeInfoJob()
+            {
+                id = i + offset,
+                mesh = meshS
             };
             jobs.Add(job);
         }
