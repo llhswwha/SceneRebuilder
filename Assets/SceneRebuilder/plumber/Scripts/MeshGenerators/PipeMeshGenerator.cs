@@ -482,8 +482,8 @@ public class PipeMeshGenerator : PipeMeshGeneratorBase
                 // generate two circles with "pipeSegments" sides each and then
                 // connect them to make the cylinder
 
-                CircleMeshData circle1 = GenerateCircleAtPoint(vertices, normals, initialPoint, direction, $"Pipe[{i}]_start");
-                CircleMeshData circle2 = GenerateCircleAtPoint(vertices, normals, endPoint, direction, $"Pipe[{i}]_end");
+                CircleMeshData circle1 = GenerateCircleAtPoint(vertices, normals, initialPoint, direction, $"Pipe({this.name})[{i}]_start");
+                CircleMeshData circle2 = GenerateCircleAtPoint(vertices, normals, endPoint, direction, $"Pipe({this.name})[{i}]_end");
                 MakeCylinderTriangles(triangles, i);
                 CylinderMeshData cylinderMeshData = new CylinderMeshData(circle1, circle2);
                 PipeDatas.Add(cylinderMeshData);
@@ -646,52 +646,7 @@ public class PipeMeshGenerator : PipeMeshGeneratorBase
         return GenerateCircleAtPoint(vertices, normals, center, direction, pipeRadius, circleName);
     }
 
-    CircleMeshData GenerateCircleAtPoint(List<Vector3> vertices, List<Vector3> normals, Vector3 center, Vector3 direction, float radius,string circleName)
-    {
-        
-        List<Vector3> newVertics = new List<Vector3>();
-        // 'direction' is the normal to the plane that contains the circle
-
-        // define a couple of utility variables to build circles
-        float twoPi = Mathf.PI * 2;
-        float radiansPerSegment = twoPi / pipeSegments;
-
-        // generate two axes that define the plane with normal 'direction'
-        // we use a plane to determine which direction we are moving in order
-        // to ensure we are always using a left-hand coordinate system
-        // otherwise, the triangles will be built in the wrong order and
-        // all normals will end up inverted!
-        Plane p = new Plane(Vector3.forward, Vector3.zero);
-        Vector3 xAxis = Vector3.up;
-        Vector3 yAxis = Vector3.right;
-        if (p.GetSide(direction))
-        {
-            yAxis = Vector3.left;
-        }
-
-        // build left-hand coordinate system, with orthogonal and normalized axes
-        Vector3.OrthoNormalize(ref direction, ref xAxis, ref yAxis);
-
-        for (int i = 0; i < pipeSegments; i++)
-        {
-            Vector3 currentVertex =
-                center +
-                (radius * Mathf.Cos(radiansPerSegment * i) * xAxis) +
-                (radius * Mathf.Sin(radiansPerSegment * i) * yAxis);
-            vertices.Add(currentVertex);
-            newVertics.Add(currentVertex);
-            normals.Add((currentVertex - center).normalized);
-
-            //ShowPoint(currentVertex, $"p:{vertices.Count}", this.transform);
-        }
-
-        CircleMeshData circleData = new CircleMeshData(center, direction, newVertics, circleName);
-        circleData.SetAxis(xAxis, yAxis);
-        CircleDatas.Add(circleData);
-
-        Debug.Log($"GenerateCircleAtPoint center:{center} direction:{direction} radius:{radius} vertices:{vertices.Count} newVertics:{newVertics.Count}");
-        return circleData;
-    }
+   
 
     public List<CircleMeshData> CircleDatas = new List<CircleMeshData>();
 

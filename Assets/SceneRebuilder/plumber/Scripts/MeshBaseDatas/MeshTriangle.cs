@@ -337,7 +337,7 @@ public class MeshTriangleList:List< MeshTriangle >
 
     private bool InitPosDict()
     {
-        if (posDict == null)
+        if (posDict == null || posDict.posListDict.Count==0)
         {
             posDict = new PositionDictionaryList<Vector3>();
 

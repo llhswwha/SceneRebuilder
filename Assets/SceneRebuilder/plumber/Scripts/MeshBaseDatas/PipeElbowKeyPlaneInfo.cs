@@ -63,13 +63,8 @@ public struct PipeElbowKeyPlaneInfo
 
         PipeElbowKeyPlaneInfo info = new PipeElbowKeyPlaneInfo();
 
-        var centerOfPoints = MeshHelper.GetCenterOfList(trianglesList);
-        var distanceList = new List<PlanePointDistance>();
-        foreach (var p in trianglesList)
-        {
-            distanceList.Add(new PlanePointDistance(p, centerOfPoints));
-        }
-        distanceList.Sort();
+        var distanceList = trianglesList.GetPlanePointDistanceList();
+
         SharedMeshTriangles endPointIn1Plane = distanceList[0].Plane;
         SharedMeshTriangles endPointIn2Plane = distanceList[1].Plane;
 

@@ -213,6 +213,33 @@ public struct SharedMeshTrianglesData
 
 public class SharedMeshTrianglesList : List<SharedMeshTriangles>
 {
+    public static int sharedMinCount = 36;
+    public static float minRepeatPointDistance = 0.00005f;
+
+    public static SharedMeshTrianglesList GetList(MeshStructure mesh)
+    {
+        var meshTriangles = new MeshTriangles(mesh);
+        //Debug.Log($"GetElbowInfo mesh vertexCount:{mesh.vertexCount} triangles:{mesh.triangles.Length}");
+        SharedMeshTrianglesList trianglesList = meshTriangles.GetKeyPointsByIdEx(sharedMinCount, minRepeatPointDistance);
+        foreach (SharedMeshTriangles triangles in trianglesList)
+        {
+
+        }
+        return trianglesList;
+    }
+
+    public static SharedMeshTrianglesList GetList(Mesh mesh)
+    {
+        var meshTriangles = new MeshTriangles(mesh);
+        //Debug.Log($"GetElbowInfo mesh vertexCount:{mesh.vertexCount} triangles:{mesh.triangles.Length}");
+        SharedMeshTrianglesList trianglesList = meshTriangles.GetKeyPointsByIdEx(sharedMinCount, minRepeatPointDistance);
+        foreach (SharedMeshTriangles triangles in trianglesList)
+        {
+
+        }
+        return trianglesList;
+    }
+
     public SharedMeshTrianglesList()
     {
 
@@ -313,6 +340,18 @@ public class SharedMeshTrianglesList : List<SharedMeshTriangles>
             }
         }
         return list;
+    }
+
+    public List<PlanePointDistance> GetPlanePointDistanceList()
+    {
+        var centerOfPoints = MeshHelper.GetCenterOfList(this);
+        var distanceList = new List<PlanePointDistance>();
+        foreach (var p in this)
+        {
+            distanceList.Add(new PlanePointDistance(p, centerOfPoints));
+        }
+        distanceList.Sort();
+        return distanceList;
     }
 
     internal void CombineSameCenter(float minDis)

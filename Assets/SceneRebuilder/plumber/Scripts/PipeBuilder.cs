@@ -424,11 +424,45 @@ public class PipeBuilder : MonoBehaviour
         elbowJobs.Dispose();
         PipeTeeInfoJob.Result.Dispose();
     }
+    private void SetJobResultData_Flange(JobList<PipeFlangeInfoJob> elbowJobs, List<Transform> ts)
+    {
+        for (int i = 0; i < ts.Count; i++)
+        {
+            Transform t = ts[i];
+            PipeFlangeModel pipeModel = GetPipeModelInfo<PipeFlangeModel>(t, false);
+            var lineData = PipeFlangeInfoJob.Result[i];
+            //Debug.Log($"LineModel[{i}] model:{pipeModel.name} lineData:{lineData}");
+            pipeModel.SetModelData(lineData);
+            PipeFlanges.Add(pipeModel);
+            PipeModels.Add(pipeModel);
+        }
+        elbowJobs.Dispose();
+        PipeFlangeInfoJob.Result.Dispose();
+    }
+
+    private void SetJobResultData_Reducer(JobList<PipeReducerInfoJob> elbowJobs, List<Transform> ts)
+    {
+        for (int i = 0; i < ts.Count; i++)
+        {
+            Transform t = ts[i];
+            PipeReducerModel pipeModel = GetPipeModelInfo<PipeReducerModel>(t, false);
+            var lineData = PipeReducerInfoJob.Result[i];
+            //Debug.Log($"LineModel[{i}] model:{pipeModel.name} lineData:{lineData}");
+            pipeModel.SetModelData(lineData);
+            PipeReducers.Add(pipeModel);
+            PipeModels.Add(pipeModel);
+        }
+        elbowJobs.Dispose();
+        PipeReducerInfoJob.Result.Dispose();
+    }
 
     public void GetPipeInfosJob()
     {
         PipeModels.Clear();
         PipeLines.Clear();
+        PipeTees.Clear();
+        PipeReducers.Clear();
+        PipeFlanges.Clear();
 
         DateTime start = DateTime.Now;
 
@@ -445,21 +479,32 @@ public class PipeBuilder : MonoBehaviour
         PipeTeeInfoJob.Result = new NativeArray<PipeTeeData>(PipeTeeGos.Count, Allocator.Persistent);
         JobList<PipeTeeInfoJob> teeJobs = GetPipeInfosJob_Tee(PipeTeeGos, 0);
 
+        PipeReducerInfoJob.Result = new NativeArray<PipeReducerData>(PipeReducerGos.Count, Allocator.Persistent);
+        JobList<PipeReducerInfoJob> reducerJobs = GetPipeInfosJob_Reducer(PipeReducerGos, 0);
+
+        PipeFlangeInfoJob.Result = new NativeArray<PipeReducerData>(PipeFlangeGos.Count, Allocator.Persistent);
+        JobList<PipeFlangeInfoJob> flangeJobs = GetPipeInfosJob_Flange(PipeFlangeGos, 0);
+
+
         //lineJobs.CompleteAllPage();
         //elbowJobs.CompleteAllPage();
 
         pipeJobs.Add(lineJobs.HandleList);
         pipeJobs.Add(elbowJobs.HandleList);
         pipeJobs.Add(teeJobs.HandleList);
+        pipeJobs.Add(reducerJobs.HandleList);
+        pipeJobs.Add(flangeJobs.HandleList);
         pipeJobs.CompleteAllPage();
 
         SetJobResultData_Line(lineJobs, PipeLineGos);
         SetJobResultData_Elbow(elbowJobs, PipeElbowGos);
         SetJobResultData_Tee(teeJobs, PipeTeeGos);
+        SetJobResultData_Reducer(reducerJobs, PipeReducerGos);
+        SetJobResultData_Flange(flangeJobs, PipeFlangeGos);
 
         pipeJobs.Dispose();
 
-        Debug.LogError($">>GetPipeInfosJob time:{DateTime.Now - start} lineJobs:{lineJobs.Count} elbowJobs:{elbowJobs.Count}");
+        Debug.LogError($">>GetPipeInfosJob time:{DateTime.Now - start} lineJobs:{lineJobs.Count} elbowJobs:{elbowJobs.Count} teeJobs:{teeJobs.Count} reducerJobs:{reducerJobs.Count}");
 
 
     }
@@ -502,6 +547,50 @@ public class PipeBuilder : MonoBehaviour
             {
                 id = i + offset,
                 mesh= meshS
+            };
+            jobs.Add(job);
+        }
+        return jobs;
+    }
+
+    public JobList<PipeFlangeInfoJob> GetPipeInfosJob_Flange(List<Transform> ts, int offset)
+    {
+        int count = 0;
+        JobList<PipeFlangeInfoJob> jobs = new JobList<PipeFlangeInfoJob>(JobSize);
+
+        for (int i = 0; i < ts.Count; i++)
+        {
+            Transform t = ts[i];
+            Mesh mesh = t.GetComponent<MeshFilter>().sharedMesh;
+            MeshStructure meshS = new MeshStructure(mesh);
+            //if (vs.Length == 0) continue;
+            count++;
+            PipeFlangeInfoJob job = new PipeFlangeInfoJob()
+            {
+                id = i + offset,
+                mesh = meshS
+            };
+            jobs.Add(job);
+        }
+        return jobs;
+    }
+
+    public JobList<PipeReducerInfoJob> GetPipeInfosJob_Reducer(List<Transform> ts, int offset)
+    {
+        int count = 0;
+        JobList<PipeReducerInfoJob> jobs = new JobList<PipeReducerInfoJob>(JobSize);
+
+        for (int i = 0; i < ts.Count; i++)
+        {
+            Transform t = ts[i];
+            Mesh mesh = t.GetComponent<MeshFilter>().sharedMesh;
+            MeshStructure meshS = new MeshStructure(mesh);
+            //if (vs.Length == 0) continue;
+            count++;
+            PipeReducerInfoJob job = new PipeReducerInfoJob()
+            {
+                id = i + offset,
+                mesh = meshS
             };
             jobs.Add(job);
         }

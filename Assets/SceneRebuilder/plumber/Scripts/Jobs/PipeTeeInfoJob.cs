@@ -120,13 +120,7 @@ public struct PipeTeeInfoJob : IPipeJob
     {
         PipeTeeData data = new PipeTeeData();
 
-        var centerOfPoints = MeshHelper.GetCenterOfList(trianglesList);
-        var distanceList = new List<PlanePointDistance>();
-        foreach (var p in trianglesList)
-        {
-            distanceList.Add(new PlanePointDistance(p, centerOfPoints));
-        }
-        distanceList.Sort();
+        var distanceList = trianglesList.GetPlanePointDistanceList();
 
         SharedMeshTriangles teePlane1 = distanceList[0].Plane;
 

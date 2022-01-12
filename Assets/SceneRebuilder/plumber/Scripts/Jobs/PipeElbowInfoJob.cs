@@ -114,13 +114,7 @@ public struct PipeElbowInfoJob : IPipeJob
     private PipeElbowKeyPointData GetElbow2(SharedMeshTrianglesList list, MeshStructure mesh)
     {
         SharedMeshTrianglesList trianglesList = new SharedMeshTrianglesList(list);
-        var centerOfPoints = MeshHelper.GetCenterOfList(trianglesList);
-        var distanceList = new List<PlanePointDistance>();
-        foreach (var p in trianglesList)
-        {
-            distanceList.Add(new PlanePointDistance(p, centerOfPoints));
-        }
-        distanceList.Sort();
+        var distanceList = trianglesList.GetPlanePointDistanceList();
 
         SharedMeshTriangles startPlane = distanceList[0].Plane;
         SharedMeshTriangles endPlane = distanceList[1].Plane;

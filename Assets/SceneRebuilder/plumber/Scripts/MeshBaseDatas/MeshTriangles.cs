@@ -16,6 +16,11 @@ public class MeshTriangles
         }
     }
 
+    public void Dispose()
+    {
+        mesh.Dispose();
+    }
+
     public MeshTriangles()
     {
 
@@ -341,6 +346,15 @@ public class MeshTriangles
         return KeyPoints2;
     }
 
+    public static int sharedMinCount = 36;
+    public static float minRepeatPointDistance = 0.00005f;
+    public static float PipeLineOffset = 0.05f;
+
+    public SharedMeshTrianglesList GetKeyPointsByIdEx()
+    {
+        return GetKeyPointsByIdEx(sharedMinCount, minRepeatPointDistance);
+    }
+
     public SharedMeshTrianglesList GetKeyPointsByIdEx(int minCount, float minDis)
     {
         SharedMeshTrianglesList KeyPoints = new SharedMeshTrianglesList();
@@ -461,9 +475,8 @@ public class MeshTriangles
         TransformHelper.ShowLocalPoint(center, pointScale, root, null).name="MeshCenter";
         TransformHelper.ShowLocalPoint(mesh.boundCenter, pointScale, root, null).name = "BoundsCenter";
 
-        //SharedMeshTrianglesList points = GetKeyPointsByIdEx(minCount, minDis);
-
-        SharedMeshTrianglesList points = GetKeyPointsByPointEx(minCount, minDis);
+        SharedMeshTrianglesList points = GetKeyPointsByIdEx(minCount, minDis);
+        //SharedMeshTrianglesList points = GetKeyPointsByPointEx(minCount, minDis);
         Debug.Log($"GetKeyPoints KeyPoints1:{points.Count}");
         if (points.Count > 6)
         {

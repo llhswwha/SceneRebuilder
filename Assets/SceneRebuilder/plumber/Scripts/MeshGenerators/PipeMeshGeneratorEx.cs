@@ -5,7 +5,7 @@ using UnityEngine;
 
 public class PipeMeshGeneratorEx : PipeMeshGeneratorBase
 {
-    public GameObject Target;
+    //public GameObject Target;
 
     // see README.md file for more information about the following parameters
     public List<Vector4> points = new List<Vector4>();
@@ -478,26 +478,36 @@ public class PipeMeshGeneratorEx : PipeMeshGeneratorBase
             {
                 Vector4 initialPoint = ps[i];
                 Vector4 endPoint = ps[i + 1];
-                Vector4 direction = (ps[i + 1] - ps[i]).normalized;
+                Vector3 direction = (ps[i + 1] - ps[i]).normalized;
+                Vector3 initialPoint3 = ps[i];
+                Vector3 endPoint3 = ps[i + 1];
+                Vector3 direction3 = (endPoint3 - initialPoint3).normalized;
+                direction = direction3;
+
+                //ShowPoint(initialPoint, $"initialPoint:{initialPoint}", this.transform);
+                //ShowPoint(endPoint, $"endPoint:{endPoint}", this.transform);
+                //ShowPoint(direction, $"direction:{direction}", this.transform);
 
                 if (i > 0 && generateElbows)
                 {
                     // leave space for the elbow that will connect to the previous
                     // segment, except on the very first segment
-                    initialPoint = initialPoint + direction * elbowRadius;
+                    initialPoint3 = initialPoint3 + direction * elbowRadius;
                 }
 
                 if (i < ps.Count - 2 && generateElbows)
                 {
                     // leave space for the elbow that will connect to the next
                     // segment, except on the last segment
-                    endPoint = endPoint - direction * elbowRadius;
+                    endPoint3 = endPoint3 - direction * elbowRadius;
                 }
                 // generate two circles with "pipeSegments" sides each and then
                 // connect them to make the cylinder
-
-                CircleMeshData circle1 = GenerateCircleAtPoint(vertices, normals, initialPoint, direction, $"Pipe[{i}]_start");
-                CircleMeshData circle2 = GenerateCircleAtPoint(vertices, normals, endPoint, direction, $"Pipe[{i}]_end");
+                //direction3 = new Vector3(1, 0, 0);
+                //CircleMeshData circle1 = GenerateCircleAtPoint(vertices, normals, initialPoint, direction, $"Pipe[{i}]_start");
+                CircleMeshData circle1 = GenerateCircleAtPoint(vertices, normals, initialPoint3, direction3, initialPoint.w, $"Pipe[{i}]_start");
+                //CircleMeshData circle2 = GenerateCircleAtPoint(vertices, normals, endPoint, direction, $"Pipe[{i}]_end");
+                CircleMeshData circle2 = GenerateCircleAtPoint(vertices, normals, endPoint3, direction3, endPoint.w, $"Pipe[{i}]_end");
                 MakeCylinderTriangles(triangles, i);
                 CylinderMeshData cylinderMeshData = new CylinderMeshData(circle1, circle2);
                 PipeDatas.Add(cylinderMeshData);
@@ -666,51 +676,50 @@ public class PipeMeshGeneratorEx : PipeMeshGeneratorBase
         return GenerateCircleAtPoint(vertices, normals, center, direction, center.w, circleName);
     }
 
-    CircleMeshData GenerateCircleAtPoint(List<Vector3> vertices, List<Vector3> normals, Vector3 center, Vector3 direction, float radius, string circleName)
-    {
+    //CircleMeshData GenerateCircleAtPoint(List<Vector3> vertices, List<Vector3> normals, Vector3 center, Vector3 direction, float radius, string circleName)
+    //{
 
-        List<Vector3> newVertics = new List<Vector3>();
-        // 'direction' is the normal to the plane that contains the circle
+    //    List<Vector3> newVertics = new List<Vector3>();
+    //    // 'direction' is the normal to the plane that contains the circle
 
-        // define a couple of utility variables to build circles
-        float twoPi = Mathf.PI * 2;
-        float radiansPerSegment = twoPi / pipeSegments;
+    //    // define a couple of utility variables to build circles
+    //    float twoPi = Mathf.PI * 2;
+    //    float radiansPerSegment = twoPi / pipeSegments;
 
-        // generate two axes that define the plane with normal 'direction'
-        // we use a plane to determine which direction we are moving in order
-        // to ensure we are always using a left-hand coordinate system
-        // otherwise, the triangles will be built in the wrong order and
-        // all normals will end up inverted!
-        Plane p = new Plane(Vector3.forward, Vector3.zero);
-        Vector3 xAxis = Vector3.up;
-        Vector3 yAxis = Vector3.right;
-        if (p.GetSide(direction))
-        {
-            yAxis = Vector3.left;
-        }
+    //    // generate two axes that define the plane with normal 'direction'
+    //    // we use a plane to determine which direction we are moving in order
+    //    // to ensure we are always using a left-hand coordinate system
+    //    // otherwise, the triangles will be built in the wrong order and
+    //    // all normals will end up inverted!
+    //    Plane p = new Plane(Vector3.forward, Vector3.zero);
+    //    Vector3 xAxis = Vector3.up;
+    //    Vector3 yAxis = Vector3.right;
+    //    if (p.GetSide(direction))
+    //    {
+    //        yAxis = Vector3.left;
+    //    }
 
-        // build left-hand coordinate system, with orthogonal and normalized axes
-        Vector3.OrthoNormalize(ref direction, ref xAxis, ref yAxis);
+    //    // build left-hand coordinate system, with orthogonal and normalized axes
+    //    Vector3.OrthoNormalize(ref direction, ref xAxis, ref yAxis);
 
-        for (int i = 0; i < pipeSegments; i++)
-        {
-            Vector3 currentVertex =
-                center +
-                (radius * Mathf.Cos(radiansPerSegment * i) * xAxis) +
-                (radius * Mathf.Sin(radiansPerSegment * i) * yAxis);
-            vertices.Add(currentVertex);
-            newVertics.Add(currentVertex);
-            normals.Add((currentVertex - center).normalized);
-        }
+    //    for (int i = 0; i < pipeSegments; i++)
+    //    {
+    //        Vector3 currentVertex =
+    //            center +
+    //            (radius * Mathf.Cos(radiansPerSegment * i) * xAxis) +
+    //            (radius * Mathf.Sin(radiansPerSegment * i) * yAxis);
+    //        vertices.Add(currentVertex);
+    //        newVertics.Add(currentVertex);
+    //        normals.Add((currentVertex - center).normalized);
+    //    }
 
-        CircleMeshData circleData = new CircleMeshData(center, direction, newVertics, circleName);
-        circleData.SetAxis(xAxis, yAxis);
-        CircleDatas.Add(circleData);
+    //    CircleMeshData circleData = new CircleMeshData(center, direction, newVertics, circleName);
+    //    circleData.SetAxis(xAxis, yAxis);
+    //    CircleDatas.Add(circleData);
 
-        return circleData;
-    }
+    //    return circleData;
+    //}
 
-    public List<CircleMeshData> CircleDatas = new List<CircleMeshData>();
 
     void MakeCylinderTriangles(List<int> triangles, int segmentIdx)
     {

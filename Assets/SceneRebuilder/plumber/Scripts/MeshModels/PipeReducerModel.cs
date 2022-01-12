@@ -26,18 +26,9 @@ public class PipeReducerModel
         this.VertexCount = mesh.vertexCount;
         meshTriangles = new MeshTriangles(mesh);
         //Debug.Log($"GetElbowInfo mesh vertexCount:{mesh.vertexCount} triangles:{mesh.triangles.Length}");
-        SharedMeshTrianglesList points = meshTriangles.GetKeyPointsByIdEx(sharedMinCount, minRepeatPointDistance);
+        SharedMeshTrianglesList trianglesList = meshTriangles.GetKeyPointsByIdEx(sharedMinCount, minRepeatPointDistance);
 
-        var centerOfPoints = MeshHelper.GetCenterOfList(points);
-        distanceList = new List<PlanePointDistance>();
-        for (int i = 0; i < points.Count; i++)
-        {
-            var p = points[i];
-            distanceList.Add(new PlanePointDistance(p, centerOfPoints));
-
-            //TransformHelper.ShowLocalPoint(p.Point, PointScale, this.transform, null).name = $"KeyPoint[{i + 1}]";
-        }
-        distanceList.Sort();
+        distanceList = trianglesList.GetPlanePointDistanceList();
 
         for (int i = 0; i < distanceList.Count; i++)
         {
@@ -45,10 +36,10 @@ public class PipeReducerModel
             TransformHelper.ShowLocalPoint(p.Plane.GetCenter(), PointScale, this.transform, null).name = $"KeyPoint[{i + 1}]";
         }
 
-        if (points.Count != 2)
+        if (trianglesList.Count != 2)
         {
             IsGetInfoSuccess = false;
-            Debug.LogError($"GetKeyPointsById points.Count != 2 count:{points.Count} gameObject:{this.gameObject.name} sharedMinCount:{sharedMinCount} minRepeatPointDistance:{minRepeatPointDistance}");
+            Debug.LogError($"GetKeyPointsById points.Count != 2 count:{trianglesList.Count} gameObject:{this.gameObject.name} sharedMinCount:{sharedMinCount} minRepeatPointDistance:{minRepeatPointDistance}");
             return;
         }
 
@@ -65,15 +56,15 @@ public class PipeReducerModel
 
         PipeRadius = (PipeRadius1 + PipeRadius2) / 2;
 
-        points.Remove(StartPoint);
-        points.Remove(EndPoint);
+        trianglesList.Remove(StartPoint);
+        trianglesList.Remove(EndPoint);
 
         //EndPointOut1 = MeshHelper.FindClosedPoint(EndPointIn1, points);
         //points.Remove(EndPointOut1);
         //EndPointOut2 = MeshHelper.FindClosedPoint(EndPointIn2, points);
         //points.Remove(EndPointOut2);
-
-        KeyPointInfo.Line1 = new PipeLineInfo(StartPoint, EndPoint, null);
+        //KeyPointInfo = new PipeElbowKeyPointInfo();
+        //KeyPointInfo.Line1 = new PipeLineInfo(StartPoint, EndPoint, null);
         //Line2 = new PipeLineInfo(EndPointIn2, EndPointOut2, null);
 
         //TransformHelper.ShowLocalPoint(EndPointOut1, PointScale, this.transform, null).name = "OutPoint1";
@@ -88,7 +79,9 @@ public class PipeReducerModel
         ModelStartPoint = StartPoint;
         ModelEndPoint = EndPoint;
 
-        Debug.Log($">>>GetElbowInfo time:{DateTime.Now - start} points:{points.Count}");
+        meshTriangles.Dispose();
+
+        Debug.Log($">>>GetReducerInfo time:{DateTime.Now - start} points:{trianglesList.Count} meshTriangles:{meshTriangles.Count} trianglesList:{trianglesList.Count} distanceList:{distanceList.Count}");
     }
 
 
@@ -100,22 +93,23 @@ public class PipeReducerModel
         list.Add(GetModelEndPoint());
         return list;
     }
+
+
+    internal void SetModelData(PipeReducerData lineData)
+    {
+        this.IsSpecial = lineData.IsSpecial;
+        this.IsGetInfoSuccess = lineData.IsGetInfoSuccess;
+        this.StartPoint = lineData.StartPoint;
+        this.EndPoint = lineData.EndPoint;
+    }
+
     public override GameObject RendererModel(PipeGenerateArg arg, string afterName)
     {
-        //GameObject pipeNew = new GameObject(this.name + afterName);
-        //pipeNew.transform.position = this.transform.position + arg.Offset;
-        //pipeNew.transform.SetParent(this.transform.parent);
-
-        //PipeMeshGeneratorEx pipe = pipeNew.GetComponent<PipeMeshGeneratorEx>();
-        //if (pipe == null)
-        //{
-        //    pipe = pipeNew.AddComponent<PipeMeshGeneratorEx>();
-        //}
-        //pipe.Target = this.gameObject;
-
-
         PipeMeshGeneratorEx pipe = GetGenerator<PipeMeshGeneratorEx>(arg, afterName);
         pipe.points = new List<Vector4>() { StartPoint, EndPoint };
+
+        //PipeMeshGenerator pipe = GetGenerator<PipeMeshGenerator>(arg, afterName);
+        //pipe.points = new List<Vector3>() { StartPoint, EndPoint };
         arg.SetArg(pipe);
         pipe.pipeRadius = PipeRadius;
         pipe.pipeRadius1 = PipeRadius1;

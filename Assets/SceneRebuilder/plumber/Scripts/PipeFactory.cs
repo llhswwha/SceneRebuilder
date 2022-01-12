@@ -46,7 +46,7 @@ public class PipeFactory : SingletonBehaviour<PipeFactory>
             GameObject.DestroyImmediate(pipe);
         }
 
-        PipeMeshGenerator[] pipes = Target.GetComponentsInChildren<PipeMeshGenerator>(true);
+        PipeMeshGeneratorBase[] pipes = Target.GetComponentsInChildren<PipeMeshGeneratorBase>(true);
         foreach (var pipe in pipes)
         {
             if (pipe == null) continue;

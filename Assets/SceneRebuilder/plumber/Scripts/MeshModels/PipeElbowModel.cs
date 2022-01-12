@@ -30,13 +30,8 @@ public class PipeElbowModel : PipeModelBase
     private PipeElbowKeyPointInfo GetElbow2(SharedMeshTrianglesList list, Mesh mesh)
     {
         SharedMeshTrianglesList trianglesList = new SharedMeshTrianglesList(list);
-        var centerOfPoints = MeshHelper.GetCenterOfList(trianglesList);
-        distanceList = new List<PlanePointDistance>();
-        foreach (var p in trianglesList)
-        {
-            distanceList.Add(new PlanePointDistance(p, centerOfPoints));
-        }
-        distanceList.Sort();
+
+        distanceList = trianglesList.GetPlanePointDistanceList();
 
         SharedMeshTriangles startPlane = distanceList[0].Plane;
         SharedMeshTriangles endPlane = distanceList[1].Plane;
@@ -213,7 +208,7 @@ public class PipeElbowModel : PipeModelBase
         Mesh mesh = this.GetComponent<MeshFilter>().sharedMesh;
         this.VertexCount = mesh.vertexCount;
         MeshStructure meshS = new MeshStructure(mesh);
-        meshTriangles = new MeshTriangles(meshS);
+        var meshTriangles = new MeshTriangles(meshS);
         //Debug.Log($">>>GetElbowInfo_{this.name} time1:{(DateTime.Now - start).TotalMilliseconds} meshTriangles:{meshTriangles.Count}");
 
         //Debug.Log($"GetElbowInfo mesh vertexCount:{mesh.vertexCount} triangles:{mesh.triangles.Length}");
@@ -282,6 +277,7 @@ public class PipeElbowModel : PipeModelBase
         Mesh mesh = this.GetComponent<MeshFilter>().sharedMesh;
         meshTriangles = new MeshTriangles(mesh);
         meshTriangles.ShowKeyPointsById(trianglesObj.transform, PointScale, sharedMinCount, minRepeatPointDistance);
+        meshTriangles.Dispose();
     }
 
     public void ShowSharedPoints()
@@ -296,6 +292,7 @@ public class PipeElbowModel : PipeModelBase
         //meshTriangles.ShowSharedPointsByIdEx(this.transform, PointScale, 20, minRepeatPointDistance);
         //meshTriangles.ShowSharedPointsByPoint(this.transform, PointScale,10);
         meshTriangles.ShowSharedPointsByPointEx(this.transform, PointScale, sharedMinCount, minRepeatPointDistance);
+        meshTriangles.Dispose();
     }
 
 
@@ -317,6 +314,7 @@ public class PipeElbowModel : PipeModelBase
             GameObject sharedPoints1Obj = CreateSubTestObj($"trialge:{t}", this.transform);
             t.ShowTriangle(this.transform, sharedPoints1Obj.transform, PointScale);
         }
+        meshTriangles.Dispose();
     }
 
     internal void SetModelData(PipeElbowData lineData)
@@ -326,6 +324,7 @@ public class PipeElbowModel : PipeModelBase
         this.KeyPointInfo = new PipeElbowKeyPointInfo(lineData.KeyPointInfo);
         this.InnerKeyPointInfo = new PipeElbowKeyPointInfo(lineData.InnerKeyPointInfo);
     }
+
 
     public void RendererModel()
     {

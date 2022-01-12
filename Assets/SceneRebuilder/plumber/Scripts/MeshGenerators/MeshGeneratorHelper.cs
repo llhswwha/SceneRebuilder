@@ -57,7 +57,7 @@ public class CircleMeshArg
         }
 
         // build left-hand coordinate system, with orthogonal and normalized axes
-        Vector3.OrthoNormalize(ref direction, ref xAxis, ref yAxis);
+        PipeMeshGeneratorBase.OrthoNormalize(ref direction, ref xAxis, ref yAxis);
 
         for (int i = 0; i < pipeSegments; i++)
         {

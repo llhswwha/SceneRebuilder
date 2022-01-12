@@ -102,13 +102,8 @@ public class PipeTeeModel : PipeElbowModel
 
     private void GetTeeInfo4(SharedMeshTrianglesList trianglesList)
     {
-        var centerOfPoints = MeshHelper.GetCenterOfList(trianglesList);
-        distanceList = new List<PlanePointDistance>();
-        foreach (var p in trianglesList)
-        {
-            distanceList.Add(new PlanePointDistance(p, centerOfPoints));
-        }
-        distanceList.Sort();
+
+        distanceList = trianglesList.GetPlanePointDistanceList();
 
         SharedMeshTriangles teePlane1 = distanceList[0].Plane;
 

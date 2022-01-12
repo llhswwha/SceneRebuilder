@@ -162,4 +162,83 @@ public class PipeMeshGeneratorBase : MonoBehaviour
         var psObjs = PointHelper.ShowPoints(ps, new Vector3(PointScale, PointScale, PointScale), go.transform);
         return psObjs;
     }
+
+    public static void OrthoNormalize(ref Vector3 direction, ref Vector3 tangent, ref Vector3 binormal)
+    {
+        Plane p = new Plane(Vector3.forward, Vector3.zero);
+        Vector3 xAxis1 = Vector3.up;
+        Vector3 yAxis1 = Vector3.right;
+        if (p.GetSide(direction))
+        {
+            yAxis1 = Vector3.left;
+        }
+
+        Vector3 xAxis2 = Vector3.up;
+        Vector3 yAxis2 = Vector3.right;
+        if (p.GetSide(direction))
+        {
+            yAxis2 = Vector3.left;
+        }
+
+        // build left-hand coordinate system, with orthogonal and normalized axes
+        Vector3.OrthoNormalize(ref direction, ref xAxis1, ref yAxis1);
+        Vector3.OrthoNormalize(ref direction, ref yAxis2, ref xAxis2);
+        //[{Vector3.Dot(direction, xAxis)},{Vector3.Dot(direction, yAxis)},{Vector3.Dot(xAxis, yAxis)}]
+        if (Vector3.Dot(direction, xAxis1) > 0.00001f || Vector3.Dot(direction, yAxis1) > 0.00001f || Vector3.Dot(xAxis1, yAxis1) > 0.00001f)
+        {
+            Debug.LogWarning($"OrthoNormalize Error! direction:({direction.x},{direction.y},{direction.z}) xAxis:({xAxis1.x},{xAxis1.y},{xAxis1.z}) yAxis:({yAxis1.x},{yAxis1.y},{yAxis1.z}) [{Vector3.Dot(direction, xAxis1)},{Vector3.Dot(direction, yAxis1)},{Vector3.Dot(xAxis1, yAxis1)}]");
+            //Debug.Log($"direction1:({direction.x},{direction.y},{direction.z}) xAxis:({xAxis1.x},{xAxis1.y},{xAxis1.z}) yAxis:({yAxis1.x},{yAxis1.y},{yAxis1.z}) [{Vector3.Dot(direction, xAxis1)},{Vector3.Dot(direction, yAxis1)},{Vector3.Dot(xAxis1, yAxis1)}]");
+            //Debug.Log($"direction2:({direction.x},{direction.y},{direction.z}) xAxis:({xAxis2.x},{xAxis2.y},{xAxis2.z}) yAxis:({yAxis2.x},{yAxis2.y},{yAxis2.z}) [{Vector3.Dot(direction, xAxis2)},{Vector3.Dot(direction, yAxis2)},{Vector3.Dot(xAxis2, yAxis2)}]");
+
+            xAxis1 = yAxis2;
+            yAxis1 = xAxis2;
+        }
+
+        tangent = xAxis1;
+        binormal = yAxis1;
+    }
+
+    protected CircleMeshData GenerateCircleAtPoint(List<Vector3> vertices, List<Vector3> normals, Vector3 center, Vector3 direction, float radius, string circleName)
+    {
+
+        List<Vector3> newVertics = new List<Vector3>();
+        // 'direction' is the normal to the plane that contains the circle
+
+        // define a couple of utility variables to build circles
+        float twoPi = Mathf.PI * 2;
+        float radiansPerSegment = twoPi / pipeSegments;
+
+        // generate two axes that define the plane with normal 'direction'
+        // we use a plane to determine which direction we are moving in order
+        // to ensure we are always using a left-hand coordinate system
+        // otherwise, the triangles will be built in the wrong order and
+        // all normals will end up inverted!
+        Vector3 xAxis1 = Vector3.up;
+        Vector3 yAxis1 = Vector3.right;
+        OrthoNormalize(ref direction, ref xAxis1, ref yAxis1);
+
+        for (int i = 0; i < pipeSegments; i++)
+        {
+            Vector3 currentVertex =
+                center +
+                (radius * Mathf.Cos(radiansPerSegment * i) * xAxis1) +
+                (radius * Mathf.Sin(radiansPerSegment * i) * yAxis1);
+            vertices.Add(currentVertex);
+            newVertics.Add(currentVertex);
+            normals.Add((currentVertex - center).normalized);
+
+            //ShowPoint(currentVertex, $"p:{vertices.Count}", this.transform);
+        }
+
+        CircleMeshData circleData = new CircleMeshData(center, direction, newVertics, circleName);
+        circleData.SetAxis(xAxis1, yAxis1);
+        CircleDatas.Add(circleData);
+
+        //Debug.Log($"GenerateCircleAtPoint[{circleName}] center:{center} radius:{radius} vertices:{vertices.Count} newVertics:{newVertics.Count}");
+        var dr = direction.normalized;
+        return circleData;
+    }
+
+
+    public List<CircleMeshData> CircleDatas = new List<CircleMeshData>();
 }
