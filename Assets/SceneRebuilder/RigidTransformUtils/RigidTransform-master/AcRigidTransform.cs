@@ -177,6 +177,7 @@ public class AcRigidTransform : MonoBehaviour {
 
     public static RTResult ApplyTransformationN(UnityEngine.Vector3[] ps1, UnityEngine.Vector3[] ps2)
     {
+        //Debug.Log($"ApplyTransformationN ps1:{ps1.Length} ps2:{ps2.Length}");
         AcRTPoints points = new AcRTPoints(ps1, ps2);
         return ApplyTransformationN(points);
     }

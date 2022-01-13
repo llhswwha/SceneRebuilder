@@ -22,6 +22,8 @@ public struct MeshStructure
 
     public Vector3 boundCenter;
 
+    public bool isDisposed;
+
     public MeshStructure(Mesh mesh)
     {
         this.vertices = new NativeArray<Vector3>( mesh.vertices,Allocator.Persistent);
@@ -29,10 +31,13 @@ public struct MeshStructure
         this.triangles = new NativeArray<int>(mesh.triangles, Allocator.Persistent);
         this.vertexCount = mesh.vertexCount;
         this.boundCenter = mesh.bounds.center;
+        isDisposed = false;
     }
 
     public void Dispose()
     {
+        if (isDisposed) return;
+        isDisposed = true;
         vertices.Dispose();
         normals.Dispose();
         triangles.Dispose();

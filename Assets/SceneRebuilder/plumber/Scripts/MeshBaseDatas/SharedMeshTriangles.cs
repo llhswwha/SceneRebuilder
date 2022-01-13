@@ -82,6 +82,17 @@ public class SharedMeshTriangles : IComparable<SharedMeshTriangles>
         DistanceToCenter = Vector3.Distance(Point, Center);
     }
 
+    public List<Vector3> points;
+
+    public List<Vector3> GetPoints()
+    {
+        if (points == null||points.Count==0)
+        {
+            points= AllTriangles.GetPoints();
+        }
+        return points;
+    }
+
     public override string ToString()
     {
         return $"{PointId}_{Point}_{Center}_{Radius}";
@@ -117,6 +128,7 @@ public class SharedMeshTriangles : IComparable<SharedMeshTriangles>
 
     public void AddOtherTriangles(List<MeshTriangle> list)
     {
+        points = null;
         this.AllTriangles.AddList(list);
     }
 
@@ -356,44 +368,88 @@ public class SharedMeshTrianglesList : List<SharedMeshTriangles>
 
     internal void CombineSameCenter(float minDis)
     {
-        Debug.Log($"CombineSameCenter count:{this.Count} minDis:{minDis}");
-        //for (int i = 0; i < this.Count-1; i++)
-        //{
-        //    SharedMeshTriangles item1 = this[i];
-        //    for(int j=i+1;j<this.Count;j++)
-        //    {
-        //        SharedMeshTriangles item2 = this[j];
-        //        float dis = Vector3.Distance(item2.Center, item1.Center);
-        //        bool isSamePoint = item1.IsSamePoint(item2.Center, minDis);
-        //        Debug.Log($"Combine[{i},{j}] dis:{dis} isSamePoint:{isSamePoint}");
-        //        if (isSamePoint)
-        //        {
-        //            item1.Triangles.AddRange(item2.Triangles);
-        //            item1.GetInfo();
-        //            this.RemoveAt(j);
-        //            j--;
-        //        }
-        //    }
-        //}
-
         var list1 = GetCircleList();
-        foreach (var item1 in list1)
+        for (int i1 = 0; i1 < list1.Count; i1++)
         {
+            SharedMeshTriangles item1 = list1[i1];
             for (int i = 0; i < this.Count; i++)
             {
                 SharedMeshTriangles item2 = this[i];
                 if (item1.PointId == item2.PointId) continue;
                 float dis = Vector3.Distance(item2.Center, item1.Center);
                 bool isSamePoint = item1.IsSamePoint(item2.Center, minDis);
-                Debug.Log($"Combine[{i}] dis:{dis} isSamePoint:{isSamePoint}");
-                //if (isSamePoint)
-                //{
-                //    item1.Triangles.AddRange(item2.Triangles);
-                //    //item1.GetInfo();
-                //    this.RemoveAt(i);
-                //    i--;
-                //}
+                
+                if (isSamePoint)
+                {
+                    item1.AddOtherTriangles(item2.GetAllTriangles());
+                    //item1.GetInfo();
+                    this.RemoveAt(i);
+                    i--;
+
+                    if (list1.Contains(item2))
+                    {
+                        list1.Remove(item2);
+                    }
+
+                    //Debug.Log($"Combine[{i1}][{i}] dis:{dis} isSamePoint:{isSamePoint} count:{this.Count}");
+                }
             }
         }
+    }
+
+    internal void CombineSameMesh(float minDis)
+    {
+        var list1 = GetCircleList();
+        for (int i1 = 0; i1 < list1.Count; i1++)
+        {
+            SharedMeshTriangles item1 = list1[i1];
+            var ps1 = item1.GetPoints();
+            for (int i = 0; i < this.Count; i++)
+            {
+                SharedMeshTriangles item2 = this[i];
+                if (item1.PointId == item2.PointId) continue;
+                var ps2 = item2.GetPoints();
+                if (ps1.Count != ps2.Count) continue;
+                float dis = DistanceUtil.GetDistance(ps1, ps2, false);
+                bool isSame = dis < minDis;
+                //Debug.Log($"Combine[{i1}][{i}] dis:{dis} isSame:{isSame}");
+                if (isSame)
+                {
+                    //item1.AddOtherTriangles(item2.GetAllTriangles());
+                    //item1.GetInfo();
+                    this.RemoveAt(i);
+                    i--;
+                    if (list1.Contains(item2))
+                    {
+                        list1.Remove(item2);
+                    }
+                }
+            }
+        }
+    }
+
+    public SharedMeshTriangles? FindSameDirectionPlane(SharedMeshTriangles teePlane1,object name)
+    {
+        SharedMeshTriangles? teePlane2 = null;
+
+        //float minNormalAngle = 0;
+        for (int i = 0; i < this.Count; i++)
+        {
+            SharedMeshTriangles plane = this[i];
+            var normalAngle = Vector3.Dot(teePlane1.Normal, plane.Normal);
+            //Debug.Log($"FindSameDirectionPlane go:{name} angle[{i}] normal1:{teePlane1.Normal} normal2:{plane.Normal} angle:{normalAngle}");
+            if (Mathf.Abs(normalAngle + 1) <= 0.00001)//相反或者平行
+            {
+                teePlane2 = plane;
+                //break;
+            }
+            if (Mathf.Abs(normalAngle - 1) <= 0.00001)
+            {
+                teePlane2 = plane;
+                //break;
+            }
+        }
+
+        return teePlane2;
     }
 }

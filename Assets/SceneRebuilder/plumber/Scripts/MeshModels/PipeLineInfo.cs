@@ -6,10 +6,13 @@ using UnityEngine;
 [Serializable]
 public class PipeLineInfo
 {
-    public Vector4 StartPoint = Vector3.zero;
-    public Vector4 EndPoint = Vector3.zero;
+    //public Vector4 StartPoint = Vector3.zero;
+    //public Vector4 EndPoint = Vector3.zero;
 
-    public Vector3 Direction;
+    public Vector4 StartPoint { get; private set; }
+    public Vector4 EndPoint { get; private set; }
+
+    public Vector3 Direction { get; private set; }
 
     //public PipeLineData=
 
@@ -25,13 +28,15 @@ public class PipeLineInfo
         this.StartPoint = data.StartPoint;
         this.EndPoint = data.EndPoint;
         this.transform = t;
+        Direction = StartPoint - EndPoint;
     }
 
-    public PipeLineInfo(Vector4 p1,Vector4 p2,Transform t)
+    public PipeLineInfo(Vector4 p1,Vector4 p2,Transform t=null)
     {
         this.StartPoint = p1;
         this.EndPoint = p2;
         this.transform = t;
+        Direction = StartPoint - EndPoint;
     }
     public PipeLineInfo(Vector4 p1, Vector4 p2, Transform t, Vector3 direction)
     {

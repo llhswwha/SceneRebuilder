@@ -1,6 +1,8 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Linq;
 using System.Runtime.InteropServices;
+using System.Text;
 using JetBrains.Annotations;
 // #if UNITY || UNITY_EDITOR
 using UnityEngine;
@@ -267,6 +269,11 @@ namespace MathGeoLib
         public Vector3 Right;
         public Vector3 Up;
         public Vector3 Forward;
+
+        public bool IsInfinity()
+        {
+            return this.Extent == Vector3.positiveInfinity || this.Extent == Vector3.negativeInfinity || float.IsInfinity(this.Extent.x);
+        }
         
         #endregion
 
@@ -351,6 +358,22 @@ namespace MathGeoLib
             return GetVerticesS(vs);
         }
 
+        public static Vector3[] GetVertices(GameObject go)
+        {
+            MeshFilter meshFilter = go.GetComponent<MeshFilter>();
+            if (meshFilter == null || meshFilter.sharedMesh == null) return null;
+            var vs = meshFilter.sharedMesh.vertices;
+
+            //var count = vs.Length;
+            //for (int i = 0; i < count; i++)
+            //{
+            //    Vector3 p = vs[i];
+            //    ps2.Add(new Vector3S(p.x, p.y, p.z));
+            //}
+            //return ps2;
+            return vs;
+        }
+
         public static List<Vector3S> GetVerticesS(Vector3[] vs)
         {
             List<Vector3S> ps2 = new List<Vector3S>();
@@ -361,6 +384,89 @@ namespace MathGeoLib
                 ps2.Add(new Vector3S(p.x, p.y, p.z));
             }
             return ps2;
+        }
+
+        private static OrientedBoundingBox GetObbEx(Vector3[] vs, object name)
+        {
+            DateTime start = DateTime.Now;
+            List<Vector3> ps1 = new List<Vector3>();
+            List<Vector3S> ps21 = new List<Vector3S>();
+            List<Vector3S> ps22 = new List<Vector3S>();
+
+            //var vs = ps.ToArray();
+            var count = vs.Length;
+
+            StringBuilder sb = new StringBuilder();
+            for (int i = 0; i < count; i++)
+            {
+                Vector3 p = vs[i];
+
+                //if (ProgressBarHelper.DisplayCancelableProgressBar(new ProgressArg("GetObbEx", i, count, p)))
+                //{
+                //    ProgressBarHelper.ClearProgressBar();
+                //    return false;
+                //}
+
+                ps21.Add(new Vector3S(p.x, p.y, p.z));
+
+                if (i > 2)
+                {
+                    var obb = OrientedBoundingBox.BruteEnclosing(ps21.ToArray());
+                    if (float.IsInfinity(obb.Extent.x))
+                    {
+                        //Debug.LogWarning($"GetObb Error[{i}/{count},{TestObbPointCount}] ps22:{ps22.Count}  ps21:{ps21.Count} Extent:{OBB.Extent} ps_Last:{ps21.Last()}");
+                        sb.AppendLine($"GetObb go:{name} Error[{i}/{count}] ps22:{ps22.Count}  ps21:{ps21.Count} Extent:{obb.Extent} ps_Last:{ps21.Last()}");
+                        ps21 = new List<Vector3S>(ps22);
+                    }
+                    else
+                    {
+                        ps22.Add(new Vector3S(p.x, p.y, p.z));
+                    }
+                    ps1.Add(p);
+                }
+                else
+                {
+                    ps22.Add(new Vector3S(p.x, p.y, p.z));
+                }
+
+            }
+            //Debug.Log("ps:"+ps.Count);
+            var OBB = OrientedBoundingBox.BruteEnclosing(ps22.ToArray());
+            if (sb.Length > 0)
+            {
+                Debug.LogWarning(sb.ToString());
+            }
+            Debug.Log($"GetObbEx go:{name} ps:{ps22.Count}  time:{(DateTime.Now - start).TotalMilliseconds}ms OBB:{OBB} Center:{OBB.Center} Extent:{OBB.Extent}");
+            if (OBB.IsInfinity())
+            {
+                Debug.LogError($"GetObbEx Error Extent:{OBB.Extent} ps_Last:{ps22.Last()}");
+                //var errorP = ps1.Last();
+                //CreateLocalPoint(errorP, $"ErrorPoint({errorP.x},{errorP.y},{errorP.z})");
+            }
+            //ProgressBarHelper.ClearProgressBar();
+            return OBB;
+        }
+
+        public static OrientedBoundingBox GetObb(Vector3[] vs, object name,bool isGetObbEx)
+        {
+            List<Vector3S> ps2 = OrientedBoundingBox.GetVerticesS(vs);
+            var axis = new Vector3S[3];
+            MathGeoLibNativeMethods.obb_optimal_enclosing(ps2.ToArray(), ps2.Count, out var center, out var extent, axis);
+            OrientedBoundingBox OBB = new OrientedBoundingBox(center, extent, axis[0], axis[1], axis[2]);
+            if (OBB.IsInfinity())
+            {
+                Debug.LogError($"GetModelInfo GetObb Error gameObject:{name} Extent:{OBB.Extent} ps_Last:{ps2.Last()}");
+                //var errorP = ps1.Last();
+                //CreateLocalPoint(errorP, $"ErrorPoint({errorP.x},{errorP.y},{errorP.z})");
+                //OBB = null;
+                if (isGetObbEx)
+                {
+                    OBB = GetObbEx(vs, name);
+                }
+                
+                //lineData.IsObbError = true;
+            }
+            return OBB;
         }
 
         #endregion

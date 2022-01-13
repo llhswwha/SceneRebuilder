@@ -648,7 +648,7 @@ public class PipeMeshGenerator : PipeMeshGeneratorBase
 
    
 
-    public List<CircleMeshData> CircleDatas = new List<CircleMeshData>();
+    //public List<CircleMeshData> CircleDatas = new List<CircleMeshData>();
 
     void MakeCylinderTriangles(List<int> triangles, int segmentIdx) {
         // connect the two circles corresponding to segment segmentIdx of the pipe

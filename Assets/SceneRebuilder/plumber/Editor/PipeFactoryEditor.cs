@@ -116,20 +116,7 @@ public class PipeFactoryEditor : BaseFoldoutEditor<PipeFactory>
 
         GUILayout.EndHorizontal();
 
-        GUILayout.BeginHorizontal();
-        if (GUILayout.Button("GetObbs"))
-        {
-            targetT.GetObbInfos();
-        }
-        if (GUILayout.Button("GetObbs(Job)"))
-        {
-            targetT.GetObbInfosJob();
-        }
-        if (GUILayout.Button("GetInfos(Job)"))
-        {
-            targetT.GetPipeInfosJob();
-        }
-        GUILayout.EndHorizontal();
+
 
 
         GUILayout.BeginHorizontal();
@@ -149,6 +136,26 @@ public class PipeFactoryEditor : BaseFoldoutEditor<PipeFactory>
         GUILayout.EndHorizontal();
 
         GUILayout.BeginHorizontal();
+        if (GUILayout.Button("GetObbs"))
+        {
+            targetT.GetObbInfos();
+        }
+        if (GUILayout.Button("GetObbs(Job)"))
+        {
+            targetT.GetObbInfosJob();
+        }
+        if (GUILayout.Button("GetInfos(Job)"))
+        {
+            targetT.GetPipeInfosJob();
+        }
+        if (GUILayout.Button("CheckResults(Job)"))
+        {
+            targetT.CheckResultsJob();
+           
+        }
+        GUILayout.EndHorizontal();
+
+        GUILayout.BeginHorizontal();
         if (GUILayout.Button("OneKey_GeneratePipe(Each)"))
         {
             targetT.GetPipeParts();
@@ -159,6 +166,8 @@ public class PipeFactoryEditor : BaseFoldoutEditor<PipeFactory>
 
         }
         GUILayout.EndHorizontal();
+
+
 
         GUILayout.BeginHorizontal();
         if (GUILayout.Button("ClearDebugObjs"))

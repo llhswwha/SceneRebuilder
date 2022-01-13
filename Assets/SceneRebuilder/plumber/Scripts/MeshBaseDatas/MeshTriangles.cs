@@ -364,25 +364,35 @@ public class MeshTriangles
             int pointId = sharedPoints1[i].Key;
             var triangles = sharedPoints1[i].List;
             Vector3 point = mesh.vertices[pointId];
+            Vector3 normal = mesh.normals[pointId];
+
 
             if (triangles.Count >= minCount)
             {
-                if (!KeyPoints.ContainsCenter(point))
-                {
-                    float dis = Distance2List(point, KeyPoints);
-                    if (dis > minDis)
-                    {
-                        Vector3 normal = mesh.normals[pointId];
-                        //Debug.Log($"dis:{dis} point:{point} KeyPoints:{KeyPoints.Count}");
-                        KeyPoints.Add(new SharedMeshTriangles(pointId, point, normal, triangles));
-                    }
-                }
+                //if (!KeyPoints.ContainsCenter(point))
+                //{
+                //    float dis = Distance2List(point, KeyPoints);
+                //    if (dis > minDis)
+                //    {
+
+                //        //Debug.Log($"dis:{dis} point:{point} KeyPoints:{KeyPoints.Count}");
+                //        KeyPoints.Add(new SharedMeshTriangles(pointId, point, normal, triangles));
+                //    }
+                //}
+                SharedMeshTriangles plane = new SharedMeshTriangles(pointId, point, normal, triangles);
+                KeyPoints.Add(plane);
             }
+
+            //KeyPoints.Add(plane);
         }
+
+        KeyPoints.CombineSameMesh(minDis);
+
         if (KeyPoints.Count < 2)
         {
             Debug.LogError($"GetKeyPoints KeyPoints:{KeyPoints.Count}");
         }
+        
         KeyPoints.Sort();
         return KeyPoints;
     }

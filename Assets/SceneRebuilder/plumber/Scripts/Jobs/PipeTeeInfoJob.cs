@@ -127,25 +127,27 @@ public struct PipeTeeInfoJob : IPipeJob
         var TeeStartPoint = teePlane1.GetCenter4();
         trianglesList.Remove(teePlane1);
 
-        SharedMeshTriangles? teePlane2 = null;
+        //SharedMeshTriangles? teePlane2 = null;
 
-        //float minNormalAngle = 0;
-        for (int i = 0; i < trianglesList.Count; i++)
-        {
-            SharedMeshTriangles plane = trianglesList[i];
-            var normalAngle = Vector3.Dot(teePlane1.Normal, plane.Normal);
-            Debug.Log($"go:{id} angle[{i}] normal1:{teePlane1.Normal} normal2:{plane.Normal} angle:{normalAngle}");
-            if (normalAngle + 1 <= 0.00001)//相反或者平行
-            {
-                teePlane2 = plane;
-                //break;
-            }
-            if (normalAngle - 1 <= 0.00001)
-            {
-                teePlane2 = plane;
-                //break;
-            }
-        }
+        ////float minNormalAngle = 0;
+        //for (int i = 0; i < trianglesList.Count; i++)
+        //{
+        //    SharedMeshTriangles plane = trianglesList[i];
+        //    var normalAngle = Vector3.Dot(teePlane1.Normal, plane.Normal);
+        //    Debug.Log($"go:{id} angle[{i}] normal1:{teePlane1.Normal} normal2:{plane.Normal} angle:{normalAngle}");
+        //    if (Mathf.Abs(normalAngle + 1) <= 0.00001)//相反或者平行
+        //    {
+        //        teePlane2 = plane;
+        //        //break;
+        //    }
+        //    if (Mathf.Abs(normalAngle - 1) <= 0.00001)
+        //    {
+        //        teePlane2 = plane;
+        //        //break;
+        //    }
+        //}
+
+        SharedMeshTriangles? teePlane2 = trianglesList.FindSameDirectionPlane(teePlane1,id);
 
         if (teePlane2 == null)
         {

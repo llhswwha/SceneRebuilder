@@ -101,6 +101,9 @@ public class PipeReducerModel
         this.IsGetInfoSuccess = lineData.IsGetInfoSuccess;
         this.StartPoint = lineData.StartPoint;
         this.EndPoint = lineData.EndPoint;
+
+        ModelStartPoint = StartPoint;
+        ModelEndPoint = EndPoint;
     }
 
     public override GameObject RendererModel(PipeGenerateArg arg, string afterName)

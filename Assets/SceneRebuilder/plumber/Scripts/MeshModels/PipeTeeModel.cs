@@ -46,6 +46,7 @@ public class PipeTeeModel : PipeElbowModel
             Debug.LogError($">>>GetTeeInfo points.Count Error count:{trianglesList.Count} gameObject:{this.gameObject.name} sharedMinCount:{sharedMinCount} minRepeatPointDistance:{minRepeatPointDistance}");
             return;
         }
+        meshTriangles.Dispose();
         Debug.Log($">>>GetTeeInfo time:{DateTime.Now - start}");
     }
     private void GetTeeInfo7(SharedMeshTrianglesList trianglesList)
@@ -58,7 +59,7 @@ public class PipeTeeModel : PipeElbowModel
         {
             var plane = trianglesList[i];
             float angle = Vector3.Dot(plane1.Normal, plane.Normal);
-            Debug.Log($"Tee GetModelInfo7 angle[{angle}] normal1:{plane1.Normal} normal2:{plane.Normal}");
+            //Debug.Log($"Tee GetModelInfo7 angle[{angle}] normal1:{plane1.Normal} normal2:{plane.Normal}");
             if (Mathf.Abs(angle) < 0.001f)
             {
                 list12.Add(plane);
@@ -110,25 +111,27 @@ public class PipeTeeModel : PipeElbowModel
         var TeeStartPoint = teePlane1.GetCenter4();
         trianglesList.Remove(teePlane1);
 
-        SharedMeshTriangles? teePlane2 = null;
+        //SharedMeshTriangles? teePlane2 = null;
 
-        //float minNormalAngle = 0;
-        for (int i = 0; i < trianglesList.Count; i++)
-        {
-            SharedMeshTriangles plane = trianglesList[i];
-            var normalAngle = Vector3.Dot(teePlane1.Normal, plane.Normal);
-            Debug.Log($"go:{this.name} angle[{i}] normal1:{teePlane1.Normal} normal2:{plane.Normal} angle:{normalAngle}");
-            if (normalAngle + 1 <= 0.00001)//相反或者平行
-            {
-                teePlane2 = plane;
-                //break;
-            }
-            if (normalAngle - 1 <= 0.00001)
-            {
-                teePlane2 = plane;
-                //break;
-            }
-        }
+        ////float minNormalAngle = 0;
+        //for (int i = 0; i < trianglesList.Count; i++)
+        //{
+        //    SharedMeshTriangles plane = trianglesList[i];
+        //    var normalAngle = Vector3.Dot(teePlane1.Normal, plane.Normal);
+        //    Debug.Log($"GetTeeInfo4 go:{this.name} angle[{i}] normal1:{teePlane1.Normal} normal2:{plane.Normal} angle:{normalAngle} ({normalAngle + 1},{normalAngle - 1})");
+        //    if (Mathf.Abs(normalAngle + 1) <= 0.00001)//相反或者平行
+        //    {
+        //        teePlane2 = plane;
+        //        //break;
+        //    }
+        //    if (Mathf.Abs(normalAngle - 1) <= 0.00001)
+        //    {
+        //        teePlane2 = plane;
+        //        //break;
+        //    }
+        //}
+
+        SharedMeshTriangles? teePlane2 = trianglesList.FindSameDirectionPlane(teePlane1, this.name);
 
         if (teePlane2 == null)
         {
@@ -157,8 +160,8 @@ public class PipeTeeModel : PipeElbowModel
 
         KeyPointInfo = new PipeElbowKeyPointInfo(TeeStartPoint, TeeEndPoint, LineStartPoint, LineEndPoint);
 
-        TransformHelper.ShowLocalPoint(TeeStartPoint, PointScale, this.transform, null).name = $"TeeStartPoint_{TeeStartPoint.w}";
-        TransformHelper.ShowLocalPoint(TeeEndPoint, PointScale, this.transform, null).name = $"TeeEndPoint_{TeeEndPoint.w}";
+        TransformHelper.ShowLocalPoint(TeeStartPoint, PointScale, this.transform, null).name = $"TeeStartPoint_{TeeStartPoint.w}_{teePlane1.Normal}";
+        TransformHelper.ShowLocalPoint(TeeEndPoint, PointScale, this.transform, null).name = $"TeeEndPoint_{TeeEndPoint.w}_{((SharedMeshTriangles)teePlane2).Normal}";
         TransformHelper.ShowLocalPoint(LineStartPoint, PointScale, this.transform, null).name = $"LineStartPoint_{LineStartPoint.w}";
         TransformHelper.ShowLocalPoint(LineEndPoint, PointScale, this.transform, null).name = $"LineEndPoint_{LineEndPoint.w}";
 
@@ -177,6 +180,9 @@ public class PipeTeeModel : PipeElbowModel
 
         this.KeyPlaneInfo = new PipeElbowKeyPlaneInfo(lineData.KeyPlaneInfo);
         this.InnerKeyPlaneInfo = new PipeElbowKeyPlaneInfo(lineData.InnerKeyPlaneInfo);
+
+        ModelStartPoint = KeyPointInfo.EndPointOut1;
+        ModelEndPoint = KeyPointInfo.EndPointOut2;
     }
 
     public override GameObject RendererModel(PipeGenerateArg arg, string afterName)

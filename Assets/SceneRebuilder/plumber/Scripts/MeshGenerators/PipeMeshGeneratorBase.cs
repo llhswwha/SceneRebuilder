@@ -106,7 +106,7 @@ public class PipeMeshGeneratorBase : MonoBehaviour
 
     protected void GenerateEndCaps(List<Vector4> points4, List<Vector3> vertices, List<int> triangles, List<Vector3> normals)
     {
-        Debug.Log($"GenerateEndCaps 4 points:{points4.Count} vertices:{vertices.Count} triangles:{triangles.Count}" );
+        //Debug.Log($"GenerateEndCaps 4 points:{points4.Count} vertices:{vertices.Count} triangles:{triangles.Count}" );
         //// create the circular cap on each end of the pipe
         //int firstCircleOffset = 0;
         //int secondCircleOffset = (points.Count - 1) * pipeSegments * 2 - pipeSegments;
@@ -163,7 +163,7 @@ public class PipeMeshGeneratorBase : MonoBehaviour
         return psObjs;
     }
 
-    public static void OrthoNormalize(ref Vector3 direction, ref Vector3 tangent, ref Vector3 binormal)
+    public static void OrthoNormalize(ref Vector3 direction, ref Vector3 tangent, ref Vector3 binormal,string name)
     {
         Plane p = new Plane(Vector3.forward, Vector3.zero);
         Vector3 xAxis1 = Vector3.up;
@@ -184,11 +184,11 @@ public class PipeMeshGeneratorBase : MonoBehaviour
         Vector3.OrthoNormalize(ref direction, ref xAxis1, ref yAxis1);
         Vector3.OrthoNormalize(ref direction, ref yAxis2, ref xAxis2);
         //[{Vector3.Dot(direction, xAxis)},{Vector3.Dot(direction, yAxis)},{Vector3.Dot(xAxis, yAxis)}]
-        if (Vector3.Dot(direction, xAxis1) > 0.00001f || Vector3.Dot(direction, yAxis1) > 0.00001f || Vector3.Dot(xAxis1, yAxis1) > 0.00001f)
+        if (Vector3.Dot(direction, xAxis1) > 0.00005f || Vector3.Dot(direction, yAxis1) > 0.00005f || Vector3.Dot(xAxis1, yAxis1) > 0.00005f)
         {
-            Debug.LogWarning($"OrthoNormalize Error! direction:({direction.x},{direction.y},{direction.z}) xAxis:({xAxis1.x},{xAxis1.y},{xAxis1.z}) yAxis:({yAxis1.x},{yAxis1.y},{yAxis1.z}) [{Vector3.Dot(direction, xAxis1)},{Vector3.Dot(direction, yAxis1)},{Vector3.Dot(xAxis1, yAxis1)}]");
-            //Debug.Log($"direction1:({direction.x},{direction.y},{direction.z}) xAxis:({xAxis1.x},{xAxis1.y},{xAxis1.z}) yAxis:({yAxis1.x},{yAxis1.y},{yAxis1.z}) [{Vector3.Dot(direction, xAxis1)},{Vector3.Dot(direction, yAxis1)},{Vector3.Dot(xAxis1, yAxis1)}]");
-            //Debug.Log($"direction2:({direction.x},{direction.y},{direction.z}) xAxis:({xAxis2.x},{xAxis2.y},{xAxis2.z}) yAxis:({yAxis2.x},{yAxis2.y},{yAxis2.z}) [{Vector3.Dot(direction, xAxis2)},{Vector3.Dot(direction, yAxis2)},{Vector3.Dot(xAxis2, yAxis2)}]");
+            Debug.LogWarning($"OrthoNormalize Error! gameObject:{name} direction:({direction.x},{direction.y},{direction.z}) xAxis:({xAxis1.x},{xAxis1.y},{xAxis1.z}) yAxis:({yAxis1.x},{yAxis1.y},{yAxis1.z}) [{Vector3.Dot(direction, xAxis1)},{Vector3.Dot(direction, yAxis1)},{Vector3.Dot(xAxis1, yAxis1)}]");
+            Debug.Log($"gameObject:{name} direction1:({direction.x},{direction.y},{direction.z}) xAxis:({xAxis1.x},{xAxis1.y},{xAxis1.z}) yAxis:({yAxis1.x},{yAxis1.y},{yAxis1.z}) [{Vector3.Dot(direction, xAxis1)},{Vector3.Dot(direction, yAxis1)},{Vector3.Dot(xAxis1, yAxis1)}]");
+            Debug.Log($"gameObject:{name} direction2:({direction.x},{direction.y},{direction.z}) xAxis:({xAxis2.x},{xAxis2.y},{xAxis2.z}) yAxis:({yAxis2.x},{yAxis2.y},{yAxis2.z}) [{Vector3.Dot(direction, xAxis2)},{Vector3.Dot(direction, yAxis2)},{Vector3.Dot(xAxis2, yAxis2)}]");
 
             xAxis1 = yAxis2;
             yAxis1 = xAxis2;
@@ -215,7 +215,7 @@ public class PipeMeshGeneratorBase : MonoBehaviour
         // all normals will end up inverted!
         Vector3 xAxis1 = Vector3.up;
         Vector3 yAxis1 = Vector3.right;
-        OrthoNormalize(ref direction, ref xAxis1, ref yAxis1);
+        OrthoNormalize(ref direction, ref xAxis1, ref yAxis1,this.name);
 
         for (int i = 0; i < pipeSegments; i++)
         {

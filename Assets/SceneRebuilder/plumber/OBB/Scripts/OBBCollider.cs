@@ -48,8 +48,13 @@ public class OBBCollider : MonoBehaviour
         OrientedBoundingBox obb2 = oBBCollider2.OBB;
         //if (obb1 == null || obb2 == null) return 11;
         if (oBBCollider1.IsObbError || oBBCollider2.IsObbError) return 22;
+        return GetObbDistance(obb1, obb2);
+    }
+
+    public static float GetObbDistance(OrientedBoundingBox obb1, OrientedBoundingBox obb2)
+    {
         var vs1 = obb1.CornerPointsVector3();
-        var vs2= obb2.CornerPointsVector3();
+        var vs2 = obb2.CornerPointsVector3();
         //MeshHelper.GetVertexDistanceEx(vs1, vs2,)
         var dis = DistanceUtil.GetDistance(vs1, vs2);
         return dis;
@@ -135,32 +140,10 @@ public class OBBCollider : MonoBehaviour
 
     public void TestGetObb()
     {
-        DateTime start = DateTime.Now;
-        List<Vector3> ps1 = new List<Vector3>();
-        List<Vector3S> ps2 = new List<Vector3S>();
         MeshFilter meshFilter = this.GetComponent<MeshFilter>();
-
         var vs = meshFilter.sharedMesh.vertices;
-        var count = vs.Length;
-        for (int i = 0; i < count && i < TestObbPointCount; i++)
-        {
-            Vector3 p = vs[i];
-            ps2.Add(new Vector3S(p.x, p.y, p.z));
-            ps1.Add(p);
-        }
-        //Debug.Log("ps:"+ps.Count);
-        OBB = OrientedBoundingBox.BruteEnclosing(ps2.ToArray());
-        Debug.Log($"GetObb ps:{ps2.Count} go:{gameObject.name} time:{(DateTime.Now - start).TotalMilliseconds}ms OBB:{OBB} Center:{OBB.Center} Extent:{OBB.Extent}");
-        if (OBB.Extent == Vector3.positiveInfinity || OBB.Extent == Vector3.negativeInfinity || float.IsInfinity(OBB.Extent.x))
-        {
-            Debug.LogError($"GetObb Error Extent:{OBB.Extent} ps_Last:{ps2.Last()}");
-            var errorP = ps1.Last();
-            CreateLocalPoint(errorP, $"ErrorPoint({errorP.x},{errorP.y},{errorP.z})");
-
-            GetObbEx();
-        }
+        OBB = OrientedBoundingBox.GetObb(vs, this.name,true);
     }
-
 
 
     public int TestObbPointCount = int.MaxValue;
@@ -188,8 +171,8 @@ public class OBBCollider : MonoBehaviour
         }
         //Debug.Log("ps:"+ps.Count);
         OBB = OrientedBoundingBox.BruteEnclosing(ps2.ToArray());
-        Debug.Log($"GetObb ps:{ps2.Count} go:{gameObject.name} time:{(DateTime.Now - start).TotalMilliseconds}ms OBB:{OBB} Center:{OBB.Center} Extent:{OBB.Extent}");
-        if (OBB.Extent == Vector3.positiveInfinity || OBB.Extent == Vector3.negativeInfinity || float.IsInfinity(OBB.Extent.x))
+        //Debug.Log($"GetObb ps:{ps2.Count} go:{gameObject.name} time:{(DateTime.Now - start).TotalMilliseconds}ms OBB:{OBB} Center:{OBB.Center} Extent:{OBB.Extent}");
+        if (OBB.IsInfinity())
         {
             Debug.LogError($"GetObb Error gameObject:{this.name} Extent:{OBB.Extent} ps_Last:{ps2.Last()}");
             var errorP = ps1.Last();
@@ -256,7 +239,7 @@ public class OBBCollider : MonoBehaviour
             Debug.LogWarning(sb.ToString());
         }
         Debug.Log($"GetObbEx go:{gameObject.name} ps:{ps22.Count}  time:{(DateTime.Now - start).TotalMilliseconds}ms OBB:{OBB} Center:{OBB.Center} Extent:{OBB.Extent}");
-        if (OBB.Extent == Vector3.positiveInfinity || OBB.Extent == Vector3.negativeInfinity || float.IsInfinity(OBB.Extent.x))
+        if (OBB.IsInfinity())
         {
             Debug.LogError($"GetObbEx Error Extent:{OBB.Extent} ps_Last:{ps22.Last()}");
             var errorP = ps1.Last();

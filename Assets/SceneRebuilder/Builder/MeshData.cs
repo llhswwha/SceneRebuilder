@@ -101,7 +101,7 @@ public class MeshData
                 //Info.Update();
             }
             else{
-                Debug.Log($"MeshData.ctor msFilter==null obj:{obj}");
+                //Debug.Log($"MeshData.ctor msFilter==null obj:{obj}");
             }
         }
         catch (Exception ex)

@@ -110,6 +110,50 @@ public class PipeBuilder : MonoBehaviour
             }
             go.CheckResult();
         }
+        PipeModels.Sort();
+        Debug.LogError($">>CheckResults time:{DateTime.Now - start}");
+    }
+
+    public void CheckResultsJob()
+    {
+        DateTime start = DateTime.Now;
+
+        PipeModelCheckJob.Result = new NativeArray<PipeModelCheckResult>(PipeModels.Count, Allocator.Persistent);
+
+        JobList<PipeModelCheckJob> jobs = new JobList<PipeModelCheckJob>(JobSize);
+        for (int i = 0; i < PipeModels.Count; i++)
+        {
+            PipeModelBase go = PipeModels[i];
+            if (go.ResultGo == null)
+            {
+                Debug.LogError($"CheckResultsJob go.ResultGo == null go:{go.name}");
+                return;
+            }
+            Vector3[] vs1 = OrientedBoundingBox.GetVertices(go.gameObject);
+            Vector3[] vs2 = OrientedBoundingBox.GetVertices(go.ResultGo);
+            MeshRendererInfo r1 = MeshRendererInfo.GetInfo(go.gameObject);
+            MeshRendererInfo r2 = MeshRendererInfo.GetInfo(go.ResultGo);
+            Vector3[] cs1 = r1.GetBoxCornerPonts();
+            Vector3[] cs2 = r2.GetBoxCornerPonts();
+            jobs.Add(new PipeModelCheckJob()
+            {
+                id = i,
+                points1 = new NativeArray<Vector3>(vs1, Allocator.Persistent),
+                points2 = new NativeArray<Vector3>(vs2, Allocator.Persistent),
+                connerPoints1= new NativeArray<Vector3>(cs1, Allocator.Persistent),
+                connerPoints2 = new NativeArray<Vector3>(cs2, Allocator.Persistent)
+            });
+        }
+        jobs.CompleteAllPage();
+        for (int i = 0; i < PipeModels.Count; i++)
+        {
+            PipeModelBase go = PipeModels[i];
+            go.GetCheckResult(PipeModelCheckJob.Result[i]);
+        }
+        jobs.Dispose();
+        PipeModelCheckJob.Result.Dispose();
+
+        PipeModels.Sort();
 
         Debug.LogError($">>CheckResults time:{DateTime.Now - start}");
     }
@@ -379,6 +423,12 @@ public class PipeBuilder : MonoBehaviour
 
     private void SetJobResultData_Line(JobList<PipeLineInfoJob> lineJobs, List<Transform> ts)
     {
+        Debug.Log($"SetJobResultData_Line lineJobs:{lineJobs.Count} ts:{ts.Count}");
+        if(lineJobs.Count!= ts.Count)
+        {
+            Debug.LogError($"SetJobResultData_Line lineJobs.Count!= ts.Count lineJobs:{lineJobs.Count} ts:{ts.Count}");
+            return;
+        }
         for (int i = 0; i < ts.Count; i++)
         {
             Transform t = ts[i];
@@ -395,6 +445,12 @@ public class PipeBuilder : MonoBehaviour
 
     private void SetJobResultData_Elbow(JobList<PipeElbowInfoJob> elbowJobs, List<Transform> ts)
     {
+        Debug.Log($"SetJobResultData_Elbow lineJobs:{elbowJobs.Count} ts:{ts.Count}");
+        if (elbowJobs.Count != ts.Count)
+        {
+            Debug.LogError($"SetJobResultData_Elbow lineJobs.Count!= ts.Count lineJobs:{elbowJobs.Count} ts:{ts.Count}");
+            return;
+        }
         for (int i = 0; i < ts.Count; i++)
         {
             Transform t = ts[i];
@@ -411,6 +467,12 @@ public class PipeBuilder : MonoBehaviour
 
     private void SetJobResultData_Tee(JobList<PipeTeeInfoJob> elbowJobs, List<Transform> ts)
     {
+        Debug.Log($"SetJobResultData_Tee lineJobs:{elbowJobs.Count} ts:{ts.Count}");
+        if (elbowJobs.Count != ts.Count)
+        {
+            Debug.LogError($"SetJobResultData_Tee lineJobs.Count!= ts.Count lineJobs:{elbowJobs.Count} ts:{ts.Count}");
+            return;
+        }
         for (int i = 0; i < ts.Count; i++)
         {
             Transform t = ts[i];
@@ -426,6 +488,12 @@ public class PipeBuilder : MonoBehaviour
     }
     private void SetJobResultData_Flange(JobList<PipeFlangeInfoJob> elbowJobs, List<Transform> ts)
     {
+        Debug.Log($"SetJobResultData_Flange lineJobs:{elbowJobs.Count} ts:{ts.Count}");
+        if (elbowJobs.Count != ts.Count)
+        {
+            Debug.LogError($"SetJobResultData_Flange lineJobs.Count!= ts.Count lineJobs:{elbowJobs.Count} ts:{ts.Count}");
+            return;
+        }
         for (int i = 0; i < ts.Count; i++)
         {
             Transform t = ts[i];
@@ -442,6 +510,12 @@ public class PipeBuilder : MonoBehaviour
 
     private void SetJobResultData_Reducer(JobList<PipeReducerInfoJob> elbowJobs, List<Transform> ts)
     {
+        Debug.Log($"SetJobResultData_Reducer lineJobs:{elbowJobs.Count} ts:{ts.Count}");
+        if (elbowJobs.Count != ts.Count)
+        {
+            Debug.LogError($"SetJobResultData_Reducer lineJobs.Count!= ts.Count lineJobs:{elbowJobs.Count} ts:{ts.Count}");
+            return;
+        }
         for (int i = 0; i < ts.Count; i++)
         {
             Transform t = ts[i];
@@ -506,7 +580,7 @@ public class PipeBuilder : MonoBehaviour
 
         Debug.LogError($">>GetPipeInfosJob time:{DateTime.Now - start} lineJobs:{lineJobs.Count} elbowJobs:{elbowJobs.Count} teeJobs:{teeJobs.Count} reducerJobs:{reducerJobs.Count}");
 
-
+        CreatePipeRunList();
     }
 
     public JobList<PipeLineInfoJob> GetPipeInfosJob_Line(List<Transform> ts,int offset)
@@ -649,9 +723,11 @@ public class PipeBuilder : MonoBehaviour
 
         PipeModels.Sort();
 
+        Debug.LogError($">>GetPipeInfos time:{DateTime.Now - start} count:{PipeModels.Count}");
+
         CreatePipeRunList();
 
-        Debug.Log($">>GetPipeInfos time:{DateTime.Now - start} count:{PipeModels.Count}");
+        
     }
 
     private List<T> GetPipeModelInfos<T>(List<Transform> gos,int id,int count,string tag) where T : PipeModelBase
@@ -682,6 +758,7 @@ public class PipeBuilder : MonoBehaviour
 
     public void CreatePipeRunList()
     {
+        Debug.Log($"CreatePipeRunList PipeModels:{PipeModels.Count}");
         pipeRunList = new PipeRunList(PipeModels, minConnectedDistance, false,isUniformRaidus,0.0001f);
     }
 
@@ -745,6 +822,7 @@ public class PipeBuilder : MonoBehaviour
         if (pipeModel == null)
         {
             pipeModel = pipe.gameObject.AddComponent<T>();
+            pipeModel.VertexCount = (int)MeshRendererInfo.GetInfo(pipe.gameObject).vertexCount;
         }
         pipeModel.generateArg = this.generateArg;
 

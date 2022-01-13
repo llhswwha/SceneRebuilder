@@ -396,6 +396,11 @@ public class MeshTriangleList:List< MeshTriangle >
             radiusList.Add(r);
         }
         radiusList.Sort();
+        if (radiusList.Count == 0)
+        {
+            Debug.LogError($"GetCircleCheckP radiusList.Count == 0 count:{this.Count}");
+            return 0;
+        }
         float min = radiusList[0];
         float max = radiusList[radiusList.Count - 1];
         float p = max / min;

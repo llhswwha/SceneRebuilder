@@ -12,7 +12,7 @@ using static MathGeoLib.OrientedBoundingBox;
 public struct ObbInfoJob : IJob
 {
     public int id;
-    public NativeArray<Vector3S> points;
+    public NativeArray<Vector3> points;
 
     //public ObbData obbData;
 
@@ -23,18 +23,8 @@ public struct ObbInfoJob : IJob
     public void Execute()
     {
         DateTime startT = DateTime.Now;
-        var axis = new Vector3S[3];
         var ps = points.ToArray();
-        MathGeoLibNativeMethods.obb_optimal_enclosing(points.ToArray(), points.Length, out var center, out var extent, axis);
-
-        //obbData.center = center;
-        //obbData.extent = extent;
-        //obbData.right = axis[0];
-        //obbData.up = axis[1];
-        //obbData.forward = axis[2];
-        box = new OrientedBoundingBox(center, extent, axis[0], axis[1], axis[2]);
-
-        Debug.Log($"JobInfo[{id}] {this.ToString()} time:{(DateTime.Now-startT).TotalMilliseconds.ToString("F1")}ms ");
+        box = OrientedBoundingBox.GetObb(ps, id,true);
 
         if (Result.Length > id)
         {
@@ -53,8 +43,8 @@ public struct ObbInfoJob : IJob
 
     public static ObbInfoJob InitJob(GameObject go,int i)
     {
-        var vs = OrientedBoundingBox.GetVerticesS(go);
-        NativeArray<Vector3S> vsS = new NativeArray<Vector3S>(vs.ToArray(), Allocator.Persistent);
+        var vs = OrientedBoundingBox.GetVertices(go);
+        NativeArray<Vector3> vsS = new NativeArray<Vector3>(vs, Allocator.Persistent);
         ObbInfoJob job = new ObbInfoJob()
         {
             id = i,

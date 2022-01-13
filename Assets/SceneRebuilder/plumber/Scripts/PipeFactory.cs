@@ -281,6 +281,13 @@ public class PipeFactory : SingletonBehaviour<PipeFactory>
         ProgressBarHelper.ClearProgressBar();
     }
 
+    [ContextMenu("CheckResultsJob")]
+    public void CheckResultsJob()
+    {
+        newBuilder.CheckResultsJob();
+        ProgressBarHelper.ClearProgressBar();
+    }
+
     private void InitPipeBuilder()
     {
         if (newBuilder == null)

@@ -218,9 +218,9 @@ public class PipeLineModel : PipeModelBase
         }
 
         var PipeLength = Vector3.Distance(startPoint, endPoint);
-        PipeLineInfo LineInfo = new PipeLineInfo();
-        LineInfo.StartPoint = startPoint;
-        LineInfo.EndPoint = endPoint;
+        PipeLineInfo LineInfo = new PipeLineInfo(startPoint, endPoint);
+        //LineInfo.StartPoint = startPoint;
+        //LineInfo.EndPoint = endPoint;
 
         Vector4 ModelStartPoint = startPoint;
         ModelStartPoint.w = PipeRadius;
@@ -346,8 +346,9 @@ public class PipeLineModel : PipeModelBase
         }
 
         PipeLength = Vector3.Distance(startPoint, endPoint);
-        LineInfo.StartPoint = startPoint;
-        LineInfo.EndPoint = endPoint;
+        //LineInfo.StartPoint = startPoint;
+        //LineInfo.EndPoint = endPoint;
+        LineInfo = new PipeLineInfo(startPoint, endPoint, this.transform);
 
         ModelStartPoint = startPoint;
         ModelStartPoint.w = PipeRadius;
@@ -561,9 +562,10 @@ public class PipeLineModel : PipeModelBase
 
 
         PipeLength = Vector3.Distance(startPoint, endPoint);
-        LineInfo.StartPoint = startPoint;
-        LineInfo.EndPoint = endPoint;
+        //LineInfo.StartPoint = startPoint;
+        //LineInfo.EndPoint = endPoint;
 
+        LineInfo = new PipeLineInfo(startPoint, endPoint, this.transform);
     }
 
     public List<Vector3> EndPoints = new List<Vector3>();
@@ -619,6 +621,31 @@ public class PipeLineModel : PipeModelBase
         pipe.RenderPipe();
         
         return pipe.gameObject;
+    }
+
+    public override void AddConnectedModel(PipeModelBase other)
+    {
+        if(other is PipeLineModel)
+        {
+            PipeLineModel pipeLine2 = other as PipeLineModel;
+            var dir1 = this.LineInfo.Direction;
+            var dir2 = pipeLine2.LineInfo.Direction;
+            float dot = Vector3.Dot(dir1, dir2);
+            float angle2= Vector3.Angle(dir1, dir2);
+            
+            if(angle2<0.00001f|| Mathf.Abs(angle2 - 180) < 0.00001f)
+            {
+                base.AddConnectedModel(other);
+            }
+            else
+            {
+                Debug.LogWarning($"AddConnectedModel pipeLine1:{this.name} pipeLine2:{pipeLine2.name} dot:{dot} angle2:{angle2} dir1:{dir1} dir2:{dir2}");
+            }
+        }
+        else
+        {
+            base.AddConnectedModel(other);
+        }
     }
 
     public void CreateWeld()
@@ -709,4 +736,6 @@ public class PipeLineModel : PipeModelBase
     //        }
     //    }
     //}
+
+    
 }

@@ -7,7 +7,7 @@ public class PipeModelBase : MonoBehaviour,IComparable<PipeModelBase>
 {
     public List<PipeModelBase> ConnectedModels = new List<PipeModelBase>();
 
-    public void AddConnectedModel(PipeModelBase other)
+    public virtual void AddConnectedModel(PipeModelBase other)
     {
         if (!ConnectedModels.Contains(other))
         {
@@ -17,7 +17,7 @@ public class PipeModelBase : MonoBehaviour,IComparable<PipeModelBase>
         {
             if (this.GetType() != typeof(PipeTeeModel))
             {
-                Debug.LogError($"AddConnectedModel ConnectedModels.Count > 3 model:{this}");
+                Debug.LogError($"AddConnectedModel ConnectedModels.Count > 3 count:{ConnectedModels.Count} model:{this.name}");
             }
         }
     }
@@ -80,7 +80,14 @@ public class PipeModelBase : MonoBehaviour,IComparable<PipeModelBase>
                 {
                     if (Mathf.Abs(p1.w - p2.w) > minRadiusDis)
                     {
-                        Debug.LogError($"Radius IsNot Equal model1:{model1.name} model2:{model2.name} [{i},{i1}]  dis:{dis12} p1:{p1} p2:{p2}");
+                        if(model1.IsSpecial || model2.IsSpecial)
+                        {
+                            
+                        }
+                        else
+                        {
+                            Debug.LogError($"Radius IsNot Equal model1:{model1.name} model2:{model2.name} [{i},{i1}]  dis:{dis12} p1R:{p1.w} p2R:{p2.w}");
+                        }
                     }
                     model1.AddConnectedModel(model2);
                     model2.AddConnectedModel(model1);
@@ -401,13 +408,19 @@ public class PipeModelBase : MonoBehaviour,IComparable<PipeModelBase>
 
     public int VertexCount = 0;
 
-    public float ObbDistance = 0;
+    //public float ObbDistance = 0;
 
-    public float MeshDistance = 0;
+    //public float MeshDistance = 0;
 
-    public float SizeDistance = 0;
+    //public float SizeDistance = 0;
 
-    public float RTDistance = 0;
+    //public float RTDistance = 0;
+
+    public PipeModelCheckResult mcResult;
+
+    public bool IsSpecial = false;
+
+
 
     private string GetCompareString()
     {
@@ -425,10 +438,13 @@ public class PipeModelBase : MonoBehaviour,IComparable<PipeModelBase>
         {
             radius = "9.99999";
         }
-        float dis = SizeDistance+ObbDistance + MeshDistance;
+        //float dis = mcResult.SizeDistance + mcResult.ObbDistance + mcResult.MeshDistance;
+
+        ////return $"{ObbDistance:F5}_{MeshDistance:F5}_{a}_{radius:00000}_{this.GetType().Name}_{this.VertexCount}";
+        //return $"{mcResult.SizeDistance:F5}_[{dis:F5}]_{mcResult.ObbDistance:F5}_{mcResult.RTDistance:F5}_{mcResult.MeshDistance:F5}_{a}_{radius:00000}_{this.GetType().Name}_{this.VertexCount}";
 
         //return $"{ObbDistance:F5}_{MeshDistance:F5}_{a}_{radius:00000}_{this.GetType().Name}_{this.VertexCount}";
-        return $"{SizeDistance:F5}_{dis:F5}_{ObbDistance:F5}_{RTDistance:F5}_{MeshDistance:F5}_{a}_{radius:00000}_{this.GetType().Name}_{this.VertexCount}";
+        return $"{mcResult}_{a}_{radius:00000}_{this.GetType().Name}_{this.VertexCount}";
     }
 
     public int CompareTo(PipeModelBase other)
@@ -470,13 +486,22 @@ public class PipeModelBase : MonoBehaviour,IComparable<PipeModelBase>
 
     public void CheckResult()
     {
-        this.ObbDistance = OBBCollider.GetObbDistance(ResultGo,this.gameObject);
-        
-        this.MeshDistance = MeshHelper.GetVertexDistanceEx(ResultGo,this.gameObject);
-        this.SizeDistance = MeshHelper.GetSizeDistance(ResultGo, this.gameObject);
-        this.RTDistance= OBBCollider.GetObbRTDistance(ResultGo, this.gameObject);
+        mcResult.ObbDistance = OBBCollider.GetObbDistance(ResultGo,this.gameObject);
 
-        if (SizeDistance > 0)
+        mcResult.MeshDistance = MeshHelper.GetVertexDistanceEx(ResultGo,this.gameObject);
+        mcResult.SizeDistance = MeshHelper.GetSizeDistance(ResultGo, this.gameObject);
+        mcResult.RTDistance= OBBCollider.GetObbRTDistance(ResultGo, this.gameObject);
+
+        if (mcResult.SizeDistance > 0.1f)
+        {
+            IsGetInfoSuccess = false;
+        }
+    }
+
+    public void GetCheckResult(PipeModelCheckResult r)
+    {
+        mcResult = r;
+        if (mcResult.SizeDistance > 0.1f)
         {
             IsGetInfoSuccess = false;
         }
@@ -484,13 +509,7 @@ public class PipeModelBase : MonoBehaviour,IComparable<PipeModelBase>
 
     public void ClearCheckDistance()
     {
-        ObbDistance = 0;
-
-        MeshDistance = 0;
-
-        SizeDistance = 0;
-
-        RTDistance = 0;
+        mcResult = new PipeModelCheckResult();
     }
 
     //public void GetSizeDistance()
@@ -550,5 +569,24 @@ public class PipeModelBase : MonoBehaviour,IComparable<PipeModelBase>
         pipe.avoidStrangling = true;
         pipe.RenderPipe();
         return pipe.gameObject;
+    }
+}
+
+public struct PipeModelCheckResult
+{
+    public float ObbDistance;
+
+    public float MeshDistance;
+
+    public float SizeDistance;
+
+    public float RTDistance;
+
+    public override string ToString()
+    {
+        float dis = SizeDistance + ObbDistance + MeshDistance;
+
+        //return $"{ObbDistance:F5}_{MeshDistance:F5}_{a}_{radius:00000}_{this.GetType().Name}_{this.VertexCount}";
+        return $"(s:{SizeDistance:F5}_[d:{dis:F5}]_o:{ObbDistance:F5}_r:{RTDistance:F5}_m:{MeshDistance:F5})";
     }
 }

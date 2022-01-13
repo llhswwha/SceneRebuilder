@@ -173,12 +173,15 @@ public class PipeRunList
         for (int i = 0; i < models.Count; i++)
         {
             PipeModelBase model1 = models[i];
+            if (model1 == null) continue;
             model1.ConnectedModels.Clear();
         }
 
+        int connectCount = 0;
         for (int i=0;i<models.Count;i++)
         {
             PipeModelBase model1 = models[i];
+            if (model1 == null) continue;
             ProgressArg p1 = new ProgressArg("InitPipeRunList 1", i, models.Count, model1);
             if (ProgressBarHelper.DisplayCancelableProgressBar(p1))
             {
@@ -198,6 +201,7 @@ public class PipeRunList
                 {
                     model2.ConnectedModel(model1, minDis, isShowLog, isUniformRaidus, minRadiusDis);
                 }
+                connectCount++;
             }
 
             //if (model1.ConnectedModels.Count == 0)
@@ -245,7 +249,7 @@ public class PipeRunList
 
         PipeRuns.Sort();
 
-        Debug.Log($"PipeRunList time:{DateTime.Now-start} models:{models.Count} minDis:{minDis} runs:{PipeRuns.Count}");
+        Debug.Log($"PipeRunList time:{DateTime.Now-start} models:{models.Count} minDis:{minDis} runs:{PipeRuns.Count} connectCount:{connectCount}");
 
         ProgressBarHelper.ClearProgressBar();
     }
