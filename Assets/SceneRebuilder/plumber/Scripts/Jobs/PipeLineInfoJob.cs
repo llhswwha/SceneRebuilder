@@ -20,6 +20,8 @@ public struct PipeLineInfoJob : IPipeJob
 
     public static NativeArray<PipeLineData> Result;
 
+    public static NativeList<int> ErrorIds;
+
 
     public void Execute()
     {
@@ -68,8 +70,9 @@ public struct PipeLineInfoJob : IPipeJob
 
         if (verticesToPlaneInfos.Count < 1)
         {
-            //IsGetInfoSuccess = false;
-            Debug.LogError($"GetModelInfo verticesToPlaneInfos.Count < 1 count:{verticesToPlaneInfos.Count}");
+            lineData.IsGetInfoSuccess = false;
+            Debug.LogError($"GetModelInfo verticesToPlaneInfos.Count < 1 count:{verticesToPlaneInfos.Count} gameObject:{id}");
+            ErrorIds.Add(this.id);
             return;
         }
 
@@ -81,7 +84,8 @@ public struct PipeLineInfoJob : IPipeJob
         }
         else
         {
-            Debug.LogWarning($"GetModelInfo verticesToPlaneInfos.Count == 1 count:{verticesToPlaneInfos.Count}");
+            Debug.LogWarning($"GetModelInfo verticesToPlaneInfos.Count == 1 count:{verticesToPlaneInfos.Count} gameObject:{id}");
+            ErrorIds.Add(this.id);
             endPlane = GetEndPlane(startPlane, verticesToPlaneInfos_All);
         }
 
@@ -98,7 +102,7 @@ public struct PipeLineInfoJob : IPipeJob
         if (startCircle == null)
         {
             Debug.LogError($"GetModelInfo startCircle == null ");
-            //IsGetInfoSuccess = false;
+            lineData.IsGetInfoSuccess = false;
 
             //CreateLocalPoint(startPlane.Point.planeCenter, $"Error1_StartPoint1", planInfoRoot.transform);
             //CreateLocalPoint(endPlane.Point.planeCenter, "Error1_EndPoint1", planInfoRoot.transform);
@@ -109,7 +113,7 @@ public struct PipeLineInfoJob : IPipeJob
         if (endCircle == null)
         {
             Debug.LogError($"GetModelInfo endCircle == null ");
-            //IsGetInfoSuccess = false;
+            lineData.IsGetInfoSuccess = false;
             //CreateLocalPoint(startPlane.Point.planeCenter, "Error3_StartPoint2", planInfoRoot.transform);
             //CreateLocalPoint(endPlane.Point.planeCenter, "Error3_EndPoint2", planInfoRoot.transform);
             return;
@@ -154,6 +158,8 @@ public struct PipeLineInfoJob : IPipeJob
         {
             Debug.LogWarning($"PipeLineInfoJob[{id}] Result.Length :{Result.Length }");
         }
+
+        lineData.IsGetInfoSuccess = true;
 
         Debug.Log($"PipeLineInfoJob[{id}] time:{(DateTime.Now - start).TotalMilliseconds.ToString("F1")}ms lineData:{lineData}");
     }

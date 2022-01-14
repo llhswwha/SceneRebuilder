@@ -181,33 +181,65 @@ public class PipeTeeModel : PipeElbowModel
         this.KeyPlaneInfo = new PipeElbowKeyPlaneInfo(lineData.KeyPlaneInfo);
         this.InnerKeyPlaneInfo = new PipeElbowKeyPlaneInfo(lineData.InnerKeyPlaneInfo);
 
+        var p11 = KeyPlaneInfo.EndPointIn1.GetMinCenter4();
+        var p12 = KeyPlaneInfo.EndPointIn2.GetMinCenter4();
+
+        var p21 = lineData.KeyPlaneInfo.EndPointIn1.GetCenter4();
+        var p22 = lineData.KeyPlaneInfo.EndPointIn2.GetCenter4();
+
         ModelStartPoint = KeyPointInfo.EndPointOut1;
         ModelEndPoint = KeyPointInfo.EndPointOut2;
+
+        Debug.Log($"Tee.SetModelData p11:{Vector4String(p11)} p12:{Vector4String(p12)} p21:{Vector4String(p21)} p22:{Vector4String(p22)}");
     }
 
     public override GameObject RendererModel(PipeGenerateArg arg, string afterName)
     {
+        if (IsGetInfoSuccess==false)
+        {
+            this.gameObject.SetActive(true);
+            return null;
+        }
+
         if (IsSpecial) 
         {
             GameObject pipeNew = GetPipeNewGo(arg, afterName);
+            if (KeyPointInfo == null)
+            {
+                Debug.LogError($"Tee.RendererModel KeyPointInfo == null gameObject:{this.name}");
+                return pipeNew;
+            }
 
-            GameObject pipe11 = RenderPipeLine(arg, afterName, KeyPointInfo.EndPointIn1, KeyPointInfo.EndPointOut1);
-            GameObject pipe12 = RenderPipeLine(arg, afterName, KeyPointInfo.EndPointIn2, KeyPointInfo.EndPointOut2);
+            if (KeyPlaneInfo.EndPointIn1 == null)
+            {
+                Debug.LogError($"Tee.RendererModel KeyPlaneInfo.EndPointIn1 == null gameObject:{this.name}");
+                return pipeNew;
+            }
+
+            if (KeyPlaneInfo.EndPointIn2 == null)
+            {
+                Debug.LogError($"Tee.RendererModel KeyPlaneInfo.EndPointIn2 == null gameObject:{this.name}");
+                return pipeNew;
+            }
+
+
+            GameObject pipe11 = RenderPipeLine(arg, afterName+"_1", KeyPointInfo.EndPointIn1, KeyPointInfo.EndPointOut1);
+            GameObject pipe12 = RenderPipeLine(arg, afterName + "_2", KeyPointInfo.EndPointIn2, KeyPointInfo.EndPointOut2);
             pipe11.transform.SetParent(pipeNew.transform);
             pipe12.transform.SetParent(pipeNew.transform);
-            GameObject pipe13 = RenderPipeLine(arg, afterName, KeyPlaneInfo.EndPointIn1.GetMinCenter4(), KeyPlaneInfo.EndPointIn2.GetMinCenter4());
+            GameObject pipe13 = RenderPipeLine(arg, afterName + "_3", KeyPlaneInfo.EndPointIn1.GetMinCenter4(), KeyPlaneInfo.EndPointIn2.GetMinCenter4());
             pipe13.transform.SetParent(pipeNew.transform);
 
-            GameObject pipe21 = RenderPipeLine(arg, afterName, InnerKeyPointInfo.EndPointIn1, InnerKeyPointInfo.EndPointOut1);
+            GameObject pipe21 = RenderPipeLine(arg, afterName + "_4", InnerKeyPointInfo.EndPointIn1, InnerKeyPointInfo.EndPointOut1);
             pipe21.transform.SetParent(pipeNew.transform);
-            GameObject pipe22 = RenderPipeLine(arg, afterName, InnerKeyPlaneInfo.EndPointIn1.GetMinCenter4(), InnerKeyPlaneInfo.EndPointIn2.GetMinCenter4());
+            GameObject pipe22 = RenderPipeLine(arg, afterName + "_5", InnerKeyPlaneInfo.EndPointIn1.GetMinCenter4(), InnerKeyPlaneInfo.EndPointIn2.GetMinCenter4());
             pipe22.transform.SetParent(pipeNew.transform);
 
             //GameObject pipe3 = RenderElbow(arg, afterName, InnerElbowInfo);
             //pipe3.transform.SetParent(pipeNew.transform);
 
-            //GameObject target = pipeNew;
-            GameObject target = MeshCombineHelper.Combine(pipeNew);
+            GameObject target = pipeNew;
+            target = MeshCombineHelper.Combine(pipeNew);
             this.ResultGo = target;
 
             PipeMeshGenerator pipeG = target.AddComponent<PipeMeshGenerator>();

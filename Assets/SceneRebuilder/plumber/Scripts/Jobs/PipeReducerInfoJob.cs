@@ -19,11 +19,13 @@ public struct PipeReducerInfoJob : IPipeJob
 
     public static NativeArray<PipeReducerData> Result;
 
+    public static NativeList<int> ErrorIds;
+
     public void Execute()
     {
         
         DateTime start = DateTime.Now;
-        PipeReducerData data = GetReducerData(ref mesh,id, sharedMinCount, minRepeatPointDistance);
+        PipeReducerData data = GetReducerData(ref mesh,id, sharedMinCount, minRepeatPointDistance,false, ErrorIds);
 
         //PipeReducerData data = new PipeReducerData();
         //var meshTriangles = new MeshTriangles(mesh);
@@ -62,16 +64,21 @@ public struct PipeReducerInfoJob : IPipeJob
         Debug.Log($">>>GetReducerInfo time:{DateTime.Now - start} data:{data}");
     }
 
-    public static PipeReducerData GetReducerData(ref MeshStructure mesh,int id, int minCount, float minDis)
+    public static PipeReducerData GetReducerData(ref MeshStructure mesh,int id, int minCount, float minDis,bool isCombineCenter, NativeList<int> errorIds)
     {
         PipeReducerData data = new PipeReducerData();
         var meshTriangles = new MeshTriangles(mesh);
         SharedMeshTrianglesList points = meshTriangles.GetKeyPointsByIdEx(minCount, minDis);
+        if (isCombineCenter)
+        {
+            points.CombineSameCenter(minDis);
+        }
         var distanceList = points.GetPlanePointDistanceList();
         if (points.Count != 2)
         {
             data.IsGetInfoSuccess = false;
-            Debug.LogError($"GetKeyPointsById points.Count != 2 count:{points.Count} gameObject:{id}");
+            Debug.LogError($"PipeReducerInfoJob GetKeyPointsById points.Count != 2 count:{points.Count} gameObject:{id}");
+            errorIds.Add(id);
             return data;
         }
         SharedMeshTriangles startP = distanceList[0].Plane;

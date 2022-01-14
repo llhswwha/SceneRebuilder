@@ -7,6 +7,8 @@ public class CircleInfo
 {
     public static float IsCircleMaxP = 1.2f;
 
+    public static float MinDistanceToCenter = 0.0001f;
+
     public List<Vector3> Points;
 
     public Vector3 Center;

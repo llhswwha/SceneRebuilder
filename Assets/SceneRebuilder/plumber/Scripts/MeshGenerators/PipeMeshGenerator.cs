@@ -387,9 +387,13 @@ public class PipeMeshGenerator : PipeMeshGeneratorBase
     }
 
     Mesh GeneratePipeMesh(List<Vector3> ps,bool gWeld) {
+        Mesh m = new Mesh();
+        m.name = "UnityPlumber Pipe";
+
         if (pipeRadius == 0)
         {
             Debug.LogError($"GeneratePipeMesh ps:{ps.Count} pipeRadius:{pipeRadius} gameObject:{this.name}");
+            return m;
         }
         
         if(IsRemoveColinearPoints)
@@ -399,8 +403,7 @@ public class PipeMeshGenerator : PipeMeshGeneratorBase
         PipeDatas = new List<CylinderMeshData>();
         ElbowDatas = new List<ElbowMeshData>();
 
-        Mesh m = new Mesh();
-        m.name = "UnityPlumber Pipe";
+        
         List<Vector3> vertices = new List<Vector3>();
         List<int> triangles = new List<int>();
         List<Vector3> normals = new List<Vector3>();
@@ -421,30 +424,32 @@ public class PipeMeshGenerator : PipeMeshGeneratorBase
             {
                 Vector3 initialPoint = ps[i];
                 Vector3 endPoint = ps[i + 1];
-                Vector3 direction = (ps[i + 1] - ps[i]).normalized;
-                //Debug.LogError($"Generate[{i}] start:{initialPoint} end:{endPoint} direction:{direction} ");
-                //if (i == ps.Count - 2)
-                //{
-                //    break;
-                //}
+                Vector3 dir = ps[i + 1] - ps[i];
+
+                Vector3 directionN = (dir).normalized;
+                float dirD = dir.magnitude;
+                if (dirD < 0.000001)
+                {
+                    Debug.LogError($"gameObject:{this.name} initialPoint:{initialPoint} endPoint:{endPoint} dir:{dir} dirD:{dirD}");
+                }
 
                 if (generateElbows)
                 {
                     // leave space for the elbow that will connect to the previous
                     // segment, except on the very first segment
-                    initialPoint = initialPoint + direction * elbowRadius;
+                    initialPoint = initialPoint + directionN * elbowRadius;
                 }
 
                 if (i < ps.Count - 1 && generateElbows)
                 {
                     // leave space for the elbow that will connect to the next
                     // segment, except on the last segment
-                    endPoint = endPoint - direction * elbowRadius;
+                    endPoint = endPoint - directionN * elbowRadius;
                 }
                 // generate two circles with "pipeSegments" sides each and then
                 // connect them to make the cylinder
-                CircleMeshData circle1 = GenerateCircleAtPoint(vertices, normals, initialPoint, direction,$"Pipe[{i}]_start");
-                CircleMeshData circle2 = GenerateCircleAtPoint(vertices, normals, endPoint, direction, $"Pipe[{i}]_end");
+                CircleMeshData circle1 = GenerateCircleAtPoint(vertices, normals, initialPoint, directionN,$"Pipe[{i}]_start");
+                CircleMeshData circle2 = GenerateCircleAtPoint(vertices, normals, endPoint, directionN, $"Pipe[{i}]_end");
                 MakeCylinderTriangles(triangles, i);
 
                 CylinderMeshData cylinderMeshData = new CylinderMeshData(circle1, circle2);
@@ -452,8 +457,8 @@ public class PipeMeshGenerator : PipeMeshGeneratorBase
 
                 if (gWeld && i < ps.Count - 2)
                 {
-                    GenerateWeld(vertices, normals, initialPoint, direction);
-                    GenerateWeld(vertices, normals, endPoint, direction);
+                    GenerateWeld(vertices, normals, initialPoint, directionN);
+                    GenerateWeld(vertices, normals, endPoint, directionN);
                 }
             }
         }
@@ -464,26 +469,33 @@ public class PipeMeshGenerator : PipeMeshGeneratorBase
             {
                 Vector3 initialPoint = ps[i];
                 Vector3 endPoint = ps[i + 1];
-                Vector3 direction = (ps[i + 1] - ps[i]).normalized;
+                Vector3 dir = ps[i + 1] - ps[i];
+                float dirD = dir.magnitude;
+                Vector3 directionN = (dir).normalized;
+                if (dirD < 0.000001)
+                {
+                    Debug.LogError($"gameObject:{this.name} initialPoint:{initialPoint} endPoint:{endPoint} dir:{dir} dirD:{dirD}");
+                }
+               
 
                 if (i > 0 && generateElbows)
                 {
                     // leave space for the elbow that will connect to the previous
                     // segment, except on the very first segment
-                    initialPoint = initialPoint + direction * elbowRadius;
+                    initialPoint = initialPoint + directionN * elbowRadius;
                 }
 
                 if (i < ps.Count - 2 && generateElbows)
                 {
                     // leave space for the elbow that will connect to the next
                     // segment, except on the last segment
-                    endPoint = endPoint - direction * elbowRadius;
+                    endPoint = endPoint - directionN * elbowRadius;
                 }
                 // generate two circles with "pipeSegments" sides each and then
                 // connect them to make the cylinder
 
-                CircleMeshData circle1 = GenerateCircleAtPoint(vertices, normals, initialPoint, direction, $"Pipe({this.name})[{i}]_start");
-                CircleMeshData circle2 = GenerateCircleAtPoint(vertices, normals, endPoint, direction, $"Pipe({this.name})[{i}]_end");
+                CircleMeshData circle1 = GenerateCircleAtPoint(vertices, normals, initialPoint, directionN, $"Pipe({this.name})[{i}]_start");
+                CircleMeshData circle2 = GenerateCircleAtPoint(vertices, normals, endPoint, directionN, $"Pipe({this.name})[{i}]_end");
                 MakeCylinderTriangles(triangles, i);
                 CylinderMeshData cylinderMeshData = new CylinderMeshData(circle1, circle2);
                 PipeDatas.Add(cylinderMeshData);
@@ -494,22 +506,22 @@ public class PipeMeshGenerator : PipeMeshGeneratorBase
                     {
                         if (i == 0)
                         {
-                            GenerateWeld(vertices, normals, endPoint, direction);
+                            GenerateWeld(vertices, normals, endPoint, directionN);
                         }
                         else if (i == ps.Count - 2)
                         {
-                            GenerateWeld(vertices, normals, initialPoint, direction);
+                            GenerateWeld(vertices, normals, initialPoint, directionN);
                         }
                         else
                         {
-                            GenerateWeld(vertices, normals, initialPoint, direction);
-                            GenerateWeld(vertices, normals, endPoint, direction);
+                            GenerateWeld(vertices, normals, initialPoint, directionN);
+                            GenerateWeld(vertices, normals, endPoint, directionN);
                         }
                     }
                     else
                     {
-                        GenerateWeld(vertices, normals, initialPoint, direction);
-                        GenerateWeld(vertices, normals, endPoint, direction);
+                        GenerateWeld(vertices, normals, initialPoint, directionN);
+                        GenerateWeld(vertices, normals, endPoint, directionN);
                     }
                 }
             }

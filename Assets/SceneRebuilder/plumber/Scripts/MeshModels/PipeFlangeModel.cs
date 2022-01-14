@@ -6,14 +6,65 @@ using UnityEngine;
 public class PipeFlangeModel : PipeReducerModel
 {
     private float defaultMinRepeatPointDistance=0.0002f;
+
+    public override SharedMeshTrianglesList GetSharedMeshTrianglesList(MeshTriangles meshTriangles)
+    {
+        SharedMeshTrianglesList list= base.GetSharedMeshTrianglesList(meshTriangles);
+        list.CombineSameCenter(defaultMinRepeatPointDistance);
+        return list;
+    }
+
     public override void GetModelInfo()
     {
         if (minRepeatPointDistance < defaultMinRepeatPointDistance)
         {
             minRepeatPointDistance = defaultMinRepeatPointDistance;
         }
-        base.GetModelInfo();
-        if(PipeRadius1> PipeRadius2)
+        base.GetModelInfo();//->GetSharedMeshTrianglesList
+        //if (PipeRadius1> PipeRadius2)
+        //{
+        //    PipeRadius = PipeRadius1;
+        //}
+        //else
+        //{
+        //    PipeRadius = PipeRadius2;
+        //}
+        //StartPoint.w = PipeRadius;
+        //EndPoint.w = PipeRadius;
+
+        ModelStartPoint = StartPoint;
+        ModelEndPoint = EndPoint;
+    }
+
+    protected override bool GetModelInfo3(SharedMeshTrianglesList trianglesList)
+    {
+        IsSpecial = true;
+        trianglesList.Sort((a, b) => { return (b.Radius+b.MinRadius).CompareTo((a.Radius+a.MinRadius)); });
+
+        //meshTriangles.ShowSharedMeshTrianglesList(this.transform, PointScale, 15, trianglesList);
+
+        SharedMeshTrianglesList list2 = new SharedMeshTrianglesList();
+        list2.Add(trianglesList[0]);
+        list2.Add(trianglesList[1]);
+        //list2.Sort((a, b) => { return b.TriangleCount.CompareTo(a.TriangleCount); });
+
+        KeyPointInfo = new PipeElbowKeyPointInfo(list2[0].GetCenter4(), list2[1].GetCenter4(), list2[1].GetMinCenter4(), trianglesList[2].GetCenter4());
+
+        ModelStartPoint = list2[0].GetCenter4();
+        ModelEndPoint = trianglesList[2].GetCenter4();
+
+        ShowKeyPoints(KeyPointInfo, "Flange3");
+        return true;
+    }
+
+    protected override void SetRadius()
+    {
+        PipeRadius1 = StartPoint.w;
+        PipeRadius2 = EndPoint.w;
+        //PipeRadius = (PipeRadius1 + PipeRadius2) / 2;
+
+
+        if (PipeRadius1 > PipeRadius2)
         {
             PipeRadius = PipeRadius1;
         }
@@ -21,15 +72,35 @@ public class PipeFlangeModel : PipeReducerModel
         {
             PipeRadius = PipeRadius2;
         }
-        StartPoint.w = PipeRadius;
-        EndPoint.w = PipeRadius;
-
-        ModelStartPoint = StartPoint;
-        ModelEndPoint = EndPoint;
     }
+
     public override GameObject RendererModel(PipeGenerateArg arg, string afterName)
     {
-        return base.RendererModel(arg, afterName);
+        if (IsSpecial)
+        {
+            GameObject pipeNew = GetPipeNewGo(arg, afterName);
+            GameObject pipe11 = RenderPipeLine(arg, afterName + "_1", KeyPointInfo.EndPointIn1, KeyPointInfo.EndPointOut1);
+            GameObject pipe12 = RenderPipeLine(arg, afterName + "_2", KeyPointInfo.EndPointOut2, KeyPointInfo.EndPointIn2);
+            pipe11.transform.SetParent(pipeNew.transform);
+            pipe12.transform.SetParent(pipeNew.transform);
+
+            GameObject target = pipeNew;
+            target = MeshCombineHelper.Combine(pipeNew);
+            this.ResultGo = target;
+
+            PipeMeshGenerator pipeG = target.AddComponent<PipeMeshGenerator>();
+            pipeG.Target = this.gameObject;
+            return target;
+        }
+        else
+        {
+
+            StartPoint.w = PipeRadius;
+            EndPoint.w = PipeRadius;
+
+            return base.RendererModel(arg, afterName);
+        }
+
     }
 
     public override int ConnectedModel(PipeModelBase model2, float minPointDis, bool isShowLog, bool isUniformRaidus, float minRadiusDis)

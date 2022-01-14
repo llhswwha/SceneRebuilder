@@ -186,9 +186,10 @@ public class PipeMeshGeneratorBase : MonoBehaviour
         //[{Vector3.Dot(direction, xAxis)},{Vector3.Dot(direction, yAxis)},{Vector3.Dot(xAxis, yAxis)}]
         if (Vector3.Dot(direction, xAxis1) > 0.00005f || Vector3.Dot(direction, yAxis1) > 0.00005f || Vector3.Dot(xAxis1, yAxis1) > 0.00005f)
         {
-            Debug.LogWarning($"OrthoNormalize Error! gameObject:{name} direction:({direction.x},{direction.y},{direction.z}) xAxis:({xAxis1.x},{xAxis1.y},{xAxis1.z}) yAxis:({yAxis1.x},{yAxis1.y},{yAxis1.z}) [{Vector3.Dot(direction, xAxis1)},{Vector3.Dot(direction, yAxis1)},{Vector3.Dot(xAxis1, yAxis1)}]");
-            Debug.Log($"gameObject:{name} direction1:({direction.x},{direction.y},{direction.z}) xAxis:({xAxis1.x},{xAxis1.y},{xAxis1.z}) yAxis:({yAxis1.x},{yAxis1.y},{yAxis1.z}) [{Vector3.Dot(direction, xAxis1)},{Vector3.Dot(direction, yAxis1)},{Vector3.Dot(xAxis1, yAxis1)}]");
-            Debug.Log($"gameObject:{name} direction2:({direction.x},{direction.y},{direction.z}) xAxis:({xAxis2.x},{xAxis2.y},{xAxis2.z}) yAxis:({yAxis2.x},{yAxis2.y},{yAxis2.z}) [{Vector3.Dot(direction, xAxis2)},{Vector3.Dot(direction, yAxis2)},{Vector3.Dot(xAxis2, yAxis2)}]");
+            string errorLog = $"OrthoNormalize Error! gameObject:{name} direction:({direction.x},{direction.y},{direction.z}) xAxis:({xAxis1.x},{xAxis1.y},{xAxis1.z}) yAxis:({yAxis1.x},{yAxis1.y},{yAxis1.z}) [{Vector3.Dot(direction, xAxis1)},{Vector3.Dot(direction, yAxis1)},{Vector3.Dot(xAxis1, yAxis1)}]";
+            errorLog += $"\ngameObject:{name} direction1:({direction.x},{direction.y},{direction.z}) xAxis:({xAxis1.x},{xAxis1.y},{xAxis1.z}) yAxis:({yAxis1.x},{yAxis1.y},{yAxis1.z}) [{Vector3.Dot(direction, xAxis1)},{Vector3.Dot(direction, yAxis1)},{Vector3.Dot(xAxis1, yAxis1)}]";
+            errorLog += $"\ngameObject:{name} direction2:({direction.x},{direction.y},{direction.z}) xAxis:({xAxis2.x},{xAxis2.y},{xAxis2.z}) yAxis:({yAxis2.x},{yAxis2.y},{yAxis2.z}) [{Vector3.Dot(direction, xAxis2)},{Vector3.Dot(direction, yAxis2)},{Vector3.Dot(xAxis2, yAxis2)}]";
+            Debug.LogWarning(errorLog);
 
             xAxis1 = yAxis2;
             yAxis1 = xAxis2;

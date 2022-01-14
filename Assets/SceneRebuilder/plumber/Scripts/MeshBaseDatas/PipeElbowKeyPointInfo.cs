@@ -68,6 +68,6 @@ public struct PipeElbowKeyPointData
 
     public override string ToString()
     {
-        return $"{EndPointIn1}_{EndPointOut1}_{EndPointIn2}_{EndPointOut2}";
+        return $"[({EndPointIn1.x.ToString("F3")},{EndPointIn1.y.ToString("F3")},{EndPointIn1.z.ToString("F3")},{EndPointIn1.w.ToString("F3")})_{EndPointOut1}_{EndPointIn2}_{EndPointOut2}]";
     }
 }

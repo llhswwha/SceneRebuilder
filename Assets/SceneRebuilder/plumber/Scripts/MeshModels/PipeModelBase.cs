@@ -22,6 +22,11 @@ public class PipeModelBase : MonoBehaviour,IComparable<PipeModelBase>
         }
     }
 
+    public static string Vector4String(Vector4 v)
+    {
+        return $"({v.x.ToString("F3")},{v.y.ToString("F3")},{v.z.ToString("F3")},{v.w.ToString("F3")})";
+    }
+
     public virtual bool IsConnected(Vector3 keyPoint)
     {
         return false;

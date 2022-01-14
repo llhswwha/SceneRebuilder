@@ -3,13 +3,18 @@ using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 
-//[Serializable]
+[Serializable]
 public struct PipeElbowKeyPlaneInfo
 {
     public SharedMeshTriangles EndPointIn1;
     public SharedMeshTriangles EndPointOut1;
     public SharedMeshTriangles EndPointIn2;
     public SharedMeshTriangles EndPointOut2;
+
+    public override string ToString()
+    {
+        return $"[Int1:{EndPointIn1} Out1:{EndPointOut1} In2:{EndPointIn2} Out2:{EndPointOut2}]";
+    }
 
     internal PipeElbowKeyPointInfo GetKeyPoints()
     {
@@ -52,9 +57,9 @@ public struct PipeElbowKeyPlaneInfo
     public PipeElbowKeyPlaneInfo(PipeElbowKeyPlaneData data)
     {
         EndPointOut1 = new SharedMeshTriangles(data.EndPointOut1);
-        EndPointIn1 = new SharedMeshTriangles(data.EndPointOut1);
-        EndPointOut2 = new SharedMeshTriangles(data.EndPointOut1);
-        EndPointIn2 = new SharedMeshTriangles(data.EndPointOut1);
+        EndPointIn1 = new SharedMeshTriangles(data.EndPointIn1);
+        EndPointOut2 = new SharedMeshTriangles(data.EndPointOut2);
+        EndPointIn2 = new SharedMeshTriangles(data.EndPointIn2);
     }
 
     public static PipeElbowKeyPlaneInfo GetElbow4Planes(SharedMeshTrianglesList list)
@@ -89,6 +94,19 @@ public struct PipeElbowKeyPlaneData
     public SharedMeshTrianglesData EndPointOut1;
     public SharedMeshTrianglesData EndPointIn2;
     public SharedMeshTrianglesData EndPointOut2;
+
+    public override string ToString()
+    {
+        return $"[Int1:{EndPointIn1} Out1:{EndPointOut1} In2:{EndPointIn2} Out2:{EndPointOut2}]";
+    }
+
+    public PipeElbowKeyPlaneData(PipeElbowKeyPlaneInfo info)
+    {
+        EndPointOut1 = new SharedMeshTrianglesData(info.EndPointOut1);
+        EndPointIn1 = new SharedMeshTrianglesData(info.EndPointIn1);
+        EndPointOut2 = new SharedMeshTrianglesData(info.EndPointOut2);
+        EndPointIn2 = new SharedMeshTrianglesData(info.EndPointIn2);
+    }
 
     public PipeElbowKeyPlaneData(SharedMeshTriangles out1, SharedMeshTriangles in1, SharedMeshTriangles out2, SharedMeshTriangles in2)
     {

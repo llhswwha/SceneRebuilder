@@ -71,7 +71,7 @@ public struct PipeTeeInfoJob : IPipeJob
         {
             var plane = trianglesList[i];
             float angle = Vector3.Dot(plane1.Normal, plane.Normal);
-            Debug.Log($"Tee GetModelInfo7 angle[{angle}] normal1:{plane1.Normal} normal2:{plane.Normal}");
+            //Debug.Log($"Tee GetModelInfo7 angle[{angle}] normal1:{plane1.Normal} normal2:{plane.Normal}");
             if (Mathf.Abs(angle) < 0.001f)
             {
                 list12.Add(plane);
@@ -81,7 +81,7 @@ public struct PipeTeeInfoJob : IPipeJob
                 list11.Add(plane);
             }
         }
-        Debug.Log($"Tee GetModelInfo7 list1:{list11.Count} list2:{list12.Count}");
+        
 
         SharedMeshTrianglesList list4;
         SharedMeshTrianglesList list3;
@@ -100,7 +100,7 @@ public struct PipeTeeInfoJob : IPipeJob
 
         var KeyPlaneInfo = PipeElbowKeyPlaneInfo.GetElbow4Planes(list4);
         data.KeyPointInfo = KeyPlaneInfo.GetKeyPointsData();
-
+        data.KeyPlaneInfo = new PipeElbowKeyPlaneData(KeyPlaneInfo);
         //KeyPointInfo = GetElbow4(list4);
 
         //ModelStartPoint = KeyPointInfo.EndPointOut1;
@@ -113,6 +113,8 @@ public struct PipeTeeInfoJob : IPipeJob
 
 
         data.IsSpecial = true;
+
+        Debug.Log($"Tee GetModelInfo7 list1:{list11.Count} list2:{list12.Count} KeyPlaneInfo:{KeyPlaneInfo} InnerKeyPlaneInfo:{data.InnerKeyPlaneInfo}");
         return data;
     }
 
@@ -212,6 +214,6 @@ public struct PipeTeeData
 
     public override string ToString()
     {
-        return $"TeeData IsSpecial:{IsSpecial} IsGetInfoSuccess:{IsGetInfoSuccess} KeyPointInfo:{KeyPointInfo}";
+        return $"TeeData IsSpecial:{IsSpecial} IsGetInfoSuccess:{IsGetInfoSuccess} KeyPointInfo:{KeyPointInfo} InnerKeyPointInfo:{InnerKeyPointInfo} KeyPlaneInfo:{KeyPlaneInfo} InnerKeyPlaneInfo:{InnerKeyPlaneInfo}";
     }
 }

@@ -361,6 +361,9 @@ public class PipeLineModel : PipeModelBase
         LineInfo = new PipeLineInfo(data, this.transform);
         ModelStartPoint = LineInfo.StartPoint;
         ModelEndPoint = LineInfo.EndPoint;
+
+        //this.IsObbError = data.IsObbError;
+        this.IsGetInfoSuccess = data.IsGetInfoSuccess;
     }
 
     private static VerticesToPlaneInfo GetEndPlane(VerticesToPlaneInfo startPlane,List<VerticesToPlaneInfo> verticesToPlaneInfos_All)
@@ -597,8 +600,13 @@ public class PipeLineModel : PipeModelBase
         RendererModel(this.generateArg,"_New");
     }
 
-    public override GameObject RendererModel(PipeGenerateArg arg,string afterName)
+    public override GameObject RendererModel(PipeGenerateArg arg, string afterName)
     {
+        if (IsGetInfoSuccess == false)
+        {
+            this.gameObject.SetActive(true);
+            return null;
+        }
         //GameObject pipeNew = new GameObject(this.name + afterName);
         //pipeNew.transform.position = this.transform.position + arg.Offset;
         //pipeNew.transform.SetParent(this.transform.parent);
@@ -619,12 +627,16 @@ public class PipeLineModel : PipeModelBase
         pipe.pipeRadius2 = radius;
         pipe.IsGenerateEndWeld = true;
         pipe.RenderPipe();
-        
+
         return pipe.gameObject;
     }
 
     public override void AddConnectedModel(PipeModelBase other)
     {
+        //if (this.ConnectedModels.Contains(other))
+        //{
+        //    return;
+        //}
         if(other is PipeLineModel)
         {
             PipeLineModel pipeLine2 = other as PipeLineModel;
@@ -637,9 +649,14 @@ public class PipeLineModel : PipeModelBase
             {
                 base.AddConnectedModel(other);
             }
+            else if(angle2 < 1f || Mathf.Abs(angle2 - 180) < 1f)
+            {
+                Debug.LogWarning($"AddConnectedModel Warning1 pipeLine1:{this.name} pipeLine2:{pipeLine2.name} dot:{dot} angle2:{angle2} dir1:{dir1} dir2:{dir2}");
+                base.AddConnectedModel(other);
+            }
             else
             {
-                Debug.LogWarning($"AddConnectedModel pipeLine1:{this.name} pipeLine2:{pipeLine2.name} dot:{dot} angle2:{angle2} dir1:{dir1} dir2:{dir2}");
+                Debug.LogWarning($"AddConnectedModel Warning2 pipeLine1:{this.name} pipeLine2:{pipeLine2.name} dot:{dot} angle2:{angle2} dir1:{dir1} dir2:{dir2}");
             }
         }
         else

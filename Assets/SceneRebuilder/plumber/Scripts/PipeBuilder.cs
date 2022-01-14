@@ -234,7 +234,10 @@ public class PipeBuilder : MonoBehaviour
                 return;
             }
             GameObject pipe = go.RendererModel(this.generateArg, NewObjName);
-            NewPipeList.Add(pipe.transform);
+            if (pipe != null)
+            {
+                NewPipeList.Add(pipe.transform);
+            }
         }
 
         if (pipeRunList != null)
@@ -544,6 +547,7 @@ public class PipeBuilder : MonoBehaviour
 
         //1.PipeLineJob
         PipeLineInfoJob.Result = new NativeArray<PipeLineData>(PipeLineGos.Count, Allocator.Persistent);
+        PipeLineInfoJob.ErrorIds = new NativeList<int>(Allocator.Persistent);
         JobList<PipeLineInfoJob> lineJobs=GetPipeInfosJob_Line(PipeLineGos,0);
 
         //2.PipeElbowJob
@@ -554,9 +558,11 @@ public class PipeBuilder : MonoBehaviour
         JobList<PipeTeeInfoJob> teeJobs = GetPipeInfosJob_Tee(PipeTeeGos, 0);
 
         PipeReducerInfoJob.Result = new NativeArray<PipeReducerData>(PipeReducerGos.Count, Allocator.Persistent);
+        PipeReducerInfoJob.ErrorIds = new NativeList<int>(Allocator.Persistent);
         JobList<PipeReducerInfoJob> reducerJobs = GetPipeInfosJob_Reducer(PipeReducerGos, 0);
 
         PipeFlangeInfoJob.Result = new NativeArray<PipeReducerData>(PipeFlangeGos.Count, Allocator.Persistent);
+        PipeFlangeInfoJob.ErrorIds = new NativeList<int>(Allocator.Persistent);
         JobList<PipeFlangeInfoJob> flangeJobs = GetPipeInfosJob_Flange(PipeFlangeGos, 0);
 
 
@@ -577,6 +583,32 @@ public class PipeBuilder : MonoBehaviour
         SetJobResultData_Flange(flangeJobs, PipeFlangeGos);
 
         pipeJobs.Dispose();
+
+
+        for(int i=0;i< PipeLineInfoJob.ErrorIds.Length; i++)
+        {
+            int id = PipeLineInfoJob.ErrorIds[i];
+            var go = PipeLines[id];
+            Debug.LogError($"ErrorLine id:{id} name:{go.name} v:{go.VertexCount} r:{go.IsGetInfoSuccess}");
+        }
+
+        for (int i = 0; i < PipeReducerInfoJob.ErrorIds.Length; i++)
+        {
+            int id = PipeReducerInfoJob.ErrorIds[i];
+            var go = PipeReducers[id];
+            Debug.LogError($"ErrorReducer id:{id} name:{go.name} v:{go.VertexCount} r:{go.IsGetInfoSuccess}");
+        }
+
+        for (int i = 0; i < PipeFlangeInfoJob.ErrorIds.Length; i++)
+        {
+            int id = PipeFlangeInfoJob.ErrorIds[i];
+            var go = PipeFlanges[id];
+            Debug.LogError($"ErrorFlange id:{id} name:{go.name} v:{go.VertexCount} r:{go.IsGetInfoSuccess}");
+        }
+
+        PipeLineInfoJob.ErrorIds.Dispose();
+        PipeReducerInfoJob.ErrorIds.Dispose();
+        PipeFlangeInfoJob.ErrorIds.Dispose();
 
         Debug.LogError($">>GetPipeInfosJob time:{DateTime.Now - start} lineJobs:{lineJobs.Count} elbowJobs:{elbowJobs.Count} teeJobs:{teeJobs.Count} reducerJobs:{reducerJobs.Count}");
 

@@ -162,7 +162,7 @@ public class PipeElbowModel : PipeModelBase
         return info2;
     }
 
-    private void ShowKeyPoints(PipeElbowKeyPointInfo info,string tag)
+    protected void ShowKeyPoints(PipeElbowKeyPointInfo info,string tag)
     {
         TransformHelper.ShowLocalPoint(info.EndPointOut1, PointScale, this.transform, null).name = tag+"OutPoint1";
         TransformHelper.ShowLocalPoint(info.EndPointOut2, PointScale, this.transform, null).name = tag + "OutPoint2";
@@ -170,7 +170,7 @@ public class PipeElbowModel : PipeModelBase
         TransformHelper.ShowLocalPoint(info.EndPointIn2, PointScale, this.transform, null).name = tag + "InPoint2";
     }
 
-    private void GetElbow6(SharedMeshTrianglesList list, Mesh mesh)
+    protected void GetElbow6(SharedMeshTrianglesList list, Mesh mesh)
     {
         SharedMeshTrianglesList trianglesList = new SharedMeshTrianglesList(list);
         SharedMeshTriangles plane1 = trianglesList[0];
@@ -197,6 +197,16 @@ public class PipeElbowModel : PipeModelBase
         InnerKeyPointInfo = GetElbow2(planes2, mesh);
     }
 
+    public virtual SharedMeshTrianglesList GetSharedMeshTrianglesList(MeshTriangles meshTriangles)
+    {
+        //SharedMeshTrianglesList trianglesList = meshTriangles.GetKeyPointsByPointEx(sharedMinCount, minRepeatPointDistance);
+        SharedMeshTrianglesList trianglesList = meshTriangles.GetKeyPointsByIdEx(sharedMinCount, minRepeatPointDistance);
+        foreach (SharedMeshTriangles triangles in trianglesList)
+        {
+
+        }
+        return trianglesList;
+    }
 
     // Start is called before the first frame update
     [ContextMenu("GetElbowInfo")]
@@ -207,16 +217,11 @@ public class PipeElbowModel : PipeModelBase
         Mesh mesh = this.GetComponent<MeshFilter>().sharedMesh;
         this.VertexCount = mesh.vertexCount;
         //MeshStructure meshS = new MeshStructure(mesh);
-        var meshTriangles = new MeshTriangles(mesh);
+        meshTriangles = new MeshTriangles(mesh);
         //Debug.Log($">>>GetElbowInfo_{this.name} time1:{(DateTime.Now - start).TotalMilliseconds} meshTriangles:{meshTriangles.Count}");
 
         //Debug.Log($"GetElbowInfo mesh vertexCount:{mesh.vertexCount} triangles:{mesh.triangles.Length}");
-        SharedMeshTrianglesList trianglesList = meshTriangles.GetKeyPointsByIdEx(sharedMinCount, minRepeatPointDistance);
-        //SharedMeshTrianglesList trianglesList = meshTriangles.GetKeyPointsByPointEx(sharedMinCount, minRepeatPointDistance);
-        foreach (SharedMeshTriangles triangles in trianglesList)
-        {
-
-        }
+        SharedMeshTrianglesList trianglesList = GetSharedMeshTrianglesList(meshTriangles);
         //Debug.Log($">>>GetElbowInfo_{this.name} time2:{(DateTime.Now - start).TotalMilliseconds} trianglesList:{trianglesList.Count}");
 
         //if (trianglesList.Count > 6)
@@ -337,8 +342,14 @@ public class PipeElbowModel : PipeModelBase
         RendererModel(generateArg,"_New");
     }
 
-    public override GameObject RendererModel(PipeGenerateArg arg,string afterName)
+    public override GameObject RendererModel(PipeGenerateArg arg, string afterName)
     {
+        if (IsGetInfoSuccess == false)
+        {
+            this.gameObject.SetActive(true);
+            return null;
+        }
+
         if (IsSpecial)
         {
             GameObject pipeNew = GetPipeNewGo(arg, afterName);
@@ -351,7 +362,7 @@ public class PipeElbowModel : PipeModelBase
             GameObject pipe3 = RenderElbow(arg, afterName, InnerKeyPointInfo);
 
 
-            
+
             pipe3.transform.SetParent(pipeNew.transform);
             //GameObject target = pipeNew;
             GameObject target = MeshCombineHelper.Combine(pipeNew);
@@ -363,7 +374,7 @@ public class PipeElbowModel : PipeModelBase
         }
         else
         {
-            return RenderElbow(arg, afterName,KeyPointInfo);
+            return RenderElbow(arg, afterName, KeyPointInfo);
         }
     }
 

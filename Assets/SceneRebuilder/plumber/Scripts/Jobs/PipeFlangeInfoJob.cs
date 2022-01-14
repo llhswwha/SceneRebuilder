@@ -19,10 +19,12 @@ public struct PipeFlangeInfoJob : IPipeJob
     public static int sharedMinCount = 36;
     public static float minRepeatPointDistance = 0.0002f;
 
+    public static NativeList<int> ErrorIds;
+
     public void Execute()
     {
         DateTime start = DateTime.Now;
-        PipeReducerData data = PipeReducerInfoJob.GetReducerData(ref mesh, id, sharedMinCount, minRepeatPointDistance);
+        PipeReducerData data = PipeReducerInfoJob.GetReducerData(ref mesh, id, sharedMinCount, minRepeatPointDistance,true, ErrorIds);
 
         //PipeReducerData data = new PipeReducerData();
         //var meshTriangles = new MeshTriangles(mesh);

@@ -243,6 +243,12 @@ public class MeshTriangleList:List< MeshTriangle >
         return GetRadiusList(minR, center).First();
     }
 
+    public float[] GetMinMaxRadius(float minR, Vector3 center)
+    {
+        var list = GetRadiusList(minR, center);
+        return new float[2] { list.First(), list.Last() };
+    }
+
     public float GetAvgRadius2(int pointId)
     {
         //Vector3 center1 = GetCenter();
