@@ -179,6 +179,20 @@ public class PipeFactory : SingletonBehaviour<PipeFactory>
         }
     }
 
+    public GameObject OthersRoot = null;
+
+    public void MoveOthers()
+    {
+
+    }
+
+    public void PrefabOthers()
+    {
+        //this.PipeOthers;
+        //MeshRendererInfoList list=new MeshRendererInfoList(this.PipeOthers)
+        ModelClassDict<Transform> modelClassList = ModelMeshManager.Instance.GetPrefixNames<Transform>(Target);
+    }
+
     [ContextMenu("HidAll")]
     public void HidAll()
     {
@@ -254,7 +268,7 @@ public class PipeFactory : SingletonBehaviour<PipeFactory>
     }
 
     [ContextMenu("CreatePipeRunList")]
-    public void CreatePipeRunList()
+    public void CreateRunList()
     {
         newBuilder.CreatePipeRunList();
     }

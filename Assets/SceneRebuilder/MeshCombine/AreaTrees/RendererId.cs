@@ -355,6 +355,46 @@ public class RendererId
         return id;
     }
 
+    public static Transform MoveTargetsParent(List<GameObject> targets,Transform newParent,string newParentName="NewP")
+    {
+        if (newParent == null)
+        {
+            newParent = new GameObject(newParentName).transform;
+        }
+        foreach (GameObject item in targets)
+        {
+            if (item == newParent.gameObject) continue;
+            RendererId.InitId(item);
+            item.transform.SetParent(newParent);
+        }
+        return newParent;
+    }
+
+    public static void MoveTargetsParent(List<Transform> targets, Transform newParent, string newParentName = "NewP")
+    {
+        if (newParent == null)
+        {
+            newParent = new GameObject(newParentName).transform;
+        }
+        foreach (Transform item in targets)
+        {
+            if (item == newParent) continue;
+            RendererId.InitId(item);
+            item.transform.SetParent(newParent);
+        }
+    }
+
+    public static void RecoverTargetsParent(List<GameObject> targets, Transform newParent)
+    {
+        IdDictionary.InitInfos();
+        foreach (var item in targets)
+        {
+            if (item == newParent.gameObject) continue;
+            RendererId rId = RendererId.GetRId(item);
+            rId.RecoverParent();
+        }
+    }
+
     public static RendererId InitId(GameObject r)
     {
         RendererId id = r.GetComponent<RendererId>();

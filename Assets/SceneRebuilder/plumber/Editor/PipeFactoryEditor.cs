@@ -116,14 +116,26 @@ public class PipeFactoryEditor : BaseFoldoutEditor<PipeFactory>
 
         GUILayout.EndHorizontal();
 
-
-
+        GUILayout.BeginHorizontal();
+        if (GUILayout.Button("MoveOthers"))
+        {
+            targetT.PrefabOthers();
+        }
+        if (GUILayout.Button("RecoverOthers"))
+        {
+            targetT.PrefabOthers();
+        }
+        if (GUILayout.Button("5.PrefabOthers"))
+        {
+            targetT.PrefabOthers();
+        }
+        GUILayout.EndHorizontal();
 
         GUILayout.BeginHorizontal();
 
         if (GUILayout.Button("4.CreateRunList"))
         {
-            targetT.CreatePipeRunList();
+            targetT.CreateRunList();
         }
         if (GUILayout.Button("5.CheckResults"))
         {

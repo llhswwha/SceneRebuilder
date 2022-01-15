@@ -180,28 +180,31 @@ public class NavisModelRoot : MonoBehaviour
 
     public void MoveRelativeTargets()
     {
-        foreach (var item in Targets)
-        {
-            if (item == this) continue;
-            //RendererId rId = RendererId.GetRId(item);
-            //rId.Init();
+        //foreach (var item in Targets)
+        //{
+        //    if (item == this) continue;
+        //    //RendererId rId = RendererId.GetRId(item);
+        //    //rId.Init();
 
-            //RendererId rId = RendererId.GetRId(item);
-            //rId.Init();
-            RendererId.InitId(item);
-            item.transform.SetParent(this.transform);
-        }
+        //    //RendererId rId = RendererId.GetRId(item);
+        //    //rId.Init();
+        //    RendererId.InitId(item);
+        //    item.transform.SetParent(this.transform);
+        //}
+
+        RendererId.MoveTargetsParent(Targets, this.transform);
     }
 
     public void RecoverRelativeTargets()
     {
-        IdDictionary.InitInfos();
-        foreach (var item in Targets)
-        {
-            if (item == this) continue;
-            RendererId rId = RendererId.GetRId(item);
-            rId.RecoverParent();
-        }
+        //IdDictionary.InitInfos();
+        //foreach (var item in Targets)
+        //{
+        //    if (item == this) continue;
+        //    RendererId rId = RendererId.GetRId(item);
+        //    rId.RecoverParent();
+        //}
+        RendererId.RecoverTargetsParent(Targets, null);
     }
 
     [ContextMenu("HidePipes")]
