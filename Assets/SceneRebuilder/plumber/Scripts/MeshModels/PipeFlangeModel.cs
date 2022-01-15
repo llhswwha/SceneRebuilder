@@ -38,23 +38,25 @@ public class PipeFlangeModel : PipeReducerModel
 
     protected override bool GetModelInfo3(SharedMeshTrianglesList trianglesList)
     {
-        IsSpecial = true;
-        trianglesList.Sort((a, b) => { return (b.Radius+b.MinRadius).CompareTo((a.Radius+a.MinRadius)); });
+            IsSpecial = true;
+            trianglesList.Sort((a, b) => { return (b.Radius+b.MinRadius).CompareTo((a.Radius+a.MinRadius)); });
 
-        //meshTriangles.ShowSharedMeshTrianglesList(this.transform, PointScale, 15, trianglesList);
+            //meshTriangles.ShowSharedMeshTrianglesList(this.transform, PointScale, 15, trianglesList);
 
-        SharedMeshTrianglesList list2 = new SharedMeshTrianglesList();
-        list2.Add(trianglesList[0]);
-        list2.Add(trianglesList[1]);
-        //list2.Sort((a, b) => { return b.TriangleCount.CompareTo(a.TriangleCount); });
+            SharedMeshTrianglesList list2 = new SharedMeshTrianglesList();
+            list2.Add(trianglesList[0]);
+            list2.Add(trianglesList[1]);
+            //list2.Sort((a, b) => { return b.TriangleCount.CompareTo(a.TriangleCount); });
 
-        KeyPointInfo = new PipeElbowKeyPointInfo(list2[0].GetCenter4(), list2[1].GetCenter4(), list2[1].GetMinCenter4(), trianglesList[2].GetCenter4());
+            KeyPointInfo = new PipeElbowKeyPointInfo(list2[0].GetCenter4(), list2[1].GetCenter4(), list2[1].GetMinCenter4(), trianglesList[2].GetCenter4());
 
-        ModelStartPoint = list2[0].GetCenter4();
-        ModelEndPoint = trianglesList[2].GetCenter4();
+            StartPoint= list2[0].GetCenter4();
+            EndPoint= trianglesList[2].GetCenter4();
+            ModelStartPoint = StartPoint;
+            ModelEndPoint = EndPoint;
 
-        ShowKeyPoints(KeyPointInfo, "Flange3");
-        return true;
+            ShowKeyPoints(KeyPointInfo, "Flange3");
+            return true;
     }
 
     protected override void SetRadius()
@@ -109,13 +111,19 @@ public class PipeFlangeModel : PipeReducerModel
 
         PipeModelBase model1 = this;
         var keyPoints = model2.GetModelKeyPoints();
-        foreach(var p in keyPoints)
+        var msp = this.GetModelStartPoint();
+        var mep = this.GetModelEndPoint();
+        TransformHelper.ShowPoint(msp, PointScale, this.transform).name=$"{this.name}_StartPoint_{Vector3String(msp)}_{Vector3String(ModelStartPoint)}";
+        TransformHelper.ShowPoint(mep, PointScale, this.transform).name = $"{this.name}_EndPoint_{Vector3String(mep)}_{Vector3String(ModelEndPoint)}";
+        for (int i = 0; i < keyPoints.Count; i++)
         {
-            Vector3 model1ToModel2S = this.GetModelStartPoint() - p;
-            Vector3 model1ToModel2E = this.GetModelEndPoint() - p;
+            Vector4 p = keyPoints[i];
+            TransformHelper.ShowPoint(p, PointScale, model2.transform).name = $"{model2.name}_Point[{i}]_{Vector3String(p)}";
+            Vector3 model1ToModel2S = msp - p;
+            Vector3 model1ToModel2E = mep - p;
             float angle = Vector3.Dot(model1ToModel2S, model1ToModel2E);
             if (isShowLog)
-                Debug.Log($"PipeFlange ConnectedModel count:{cCount} model1:{model1.name} model2:{model2.name} angleS:{angle} p:{p}");
+                Debug.Log($"PipeFlange ConnectedModel count:{cCount} model1:{model1.name} model2:{model2.name} angleS:{angle} p:{p} model1ToModel2S:{Vector3String(model1ToModel2S)} model1ToModel2E:{Vector3String(model1ToModel2E)}");
             if (angle < 0)
             {
                 model1.AddConnectedModel(model2);

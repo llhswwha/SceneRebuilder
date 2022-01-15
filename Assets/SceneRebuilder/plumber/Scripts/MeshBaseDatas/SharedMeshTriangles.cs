@@ -461,6 +461,47 @@ public class SharedMeshTrianglesList : List<SharedMeshTriangles>
         }
     }
 
+    public void CombineSameCircle(float minDis)
+    {
+        var list1 = GetCircleList();
+        if (list1.Count < 1)
+        {
+            Debug.LogError($"CombineSameCircle minDis:{minDis} CircleList:{list1.Count}");
+        }
+        //Debug.Log($"CombineSameCenter minDis:{minDis} CircleList:{list1.Count}");
+        for (int i1 = 0; i1 < list1.Count; i1++)
+        {
+            SharedMeshTriangles item1 = list1[i1];
+            for (int i = 0; i < this.Count; i++)
+            {
+                SharedMeshTriangles item2 = this[i];
+                if (item1.PointId == item2.PointId) continue;
+                float centerDist = Vector3.Distance(item2.Center, item1.Center);
+                float rDis = Mathf.Abs(item2.Radius - item1.Radius);
+                bool isSamePoint = item1.IsSamePoint(item2.Center, minDis);
+
+                if (isSamePoint)
+                {
+                    item1.AddOtherTriangles(item2.GetAllTriangles());
+                    if (list1.Contains(item2))
+                    {
+                        list1.Remove(item2);
+                    }
+
+                    //Debug.Log($"CombineSameCenter Combine[{i1}][{i}] centerDist:{centerDist} isSamePoint:{isSamePoint} count:{this.Count} item1R:{item1.Radius} item2R:{item2.Radius} rDis:{rDis}");
+
+                    this.RemoveAt(i);
+                    i--;
+                }
+            }
+        }
+
+        foreach (var item in this)
+        {
+            item.GetInfo();
+        }
+    }
+
     public SharedMeshTriangles? FindSameDirectionPlane(SharedMeshTriangles teePlane1,object name)
     {
         SharedMeshTriangles? teePlane2 = null;

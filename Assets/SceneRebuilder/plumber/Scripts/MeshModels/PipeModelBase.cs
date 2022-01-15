@@ -27,6 +27,11 @@ public class PipeModelBase : MonoBehaviour,IComparable<PipeModelBase>
         return $"({v.x.ToString("F3")},{v.y.ToString("F3")},{v.z.ToString("F3")},{v.w.ToString("F3")})";
     }
 
+    public static string Vector3String(Vector3 v)
+    {
+        return $"({v.x.ToString("F3")},{v.y.ToString("F3")},{v.z.ToString("F3")})";
+    }
+
     public virtual bool IsConnected(Vector3 keyPoint)
     {
         return false;
@@ -410,6 +415,17 @@ public class PipeModelBase : MonoBehaviour,IComparable<PipeModelBase>
     public float PipeRadius2 = 0;
 
     public bool IsGetInfoSuccess = true;
+    protected bool RendererErrorModel()
+    {
+        if (IsGetInfoSuccess == false)
+        {
+            Debug.LogError($"RendererErrorModel IsGetInfoSuccess == false gameObject:{this.name}");
+            //this.gameObject.SetActive(true);
+            //return true;
+            return false;
+        }
+        return false;
+    }
 
     public int VertexCount = 0;
 

@@ -149,6 +149,7 @@ public struct PipeLineInfoJob : IPipeJob
         //ModelStartPoint.w = PipeRadius;
         //Vector4 ModelEndPoint = endPoint;
         //ModelEndPoint.w = PipeRadius;
+        lineData.IsGetInfoSuccess = true;
 
         if (Result.Length > id)
         {
@@ -159,7 +160,7 @@ public struct PipeLineInfoJob : IPipeJob
             Debug.LogWarning($"PipeLineInfoJob[{id}] Result.Length :{Result.Length }");
         }
 
-        lineData.IsGetInfoSuccess = true;
+        
 
         Debug.Log($"PipeLineInfoJob[{id}] time:{(DateTime.Now - start).TotalMilliseconds.ToString("F1")}ms lineData:{lineData}");
     }

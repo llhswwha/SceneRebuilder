@@ -238,7 +238,7 @@ public class OBBCollider : MonoBehaviour
         {
             Debug.LogWarning(sb.ToString());
         }
-        Debug.Log($"GetObbEx go:{gameObject.name} ps:{ps22.Count}  time:{(DateTime.Now - start).TotalMilliseconds}ms OBB:{OBB} Center:{OBB.Center} Extent:{OBB.Extent}");
+        Debug.Log($"GetObbEx go:{gameObject.name} ps:{ps22.Count}/{vs.Length}  time:{(DateTime.Now - start).TotalMilliseconds}ms OBB:{OBB} Center:{OBB.Center} Extent:{OBB.Extent}");
         if (OBB.IsInfinity())
         {
             Debug.LogError($"GetObbEx Error Extent:{OBB.Extent} ps_Last:{ps22.Last()}");

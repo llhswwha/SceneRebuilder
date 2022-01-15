@@ -64,39 +64,107 @@ public struct PipeReducerInfoJob : IPipeJob
         Debug.Log($">>>GetReducerInfo time:{DateTime.Now - start} data:{data}");
     }
 
-    public static PipeReducerData GetReducerData(ref MeshStructure mesh,int id, int minCount, float minDis,bool isCombineCenter, NativeList<int> errorIds)
+    public static PipeReducerData GetReducerData(ref MeshStructure mesh,int id, int minCount, float minDis,bool isFlange, NativeList<int> errorIds)
     {
         PipeReducerData data = new PipeReducerData();
         var meshTriangles = new MeshTriangles(mesh);
-        SharedMeshTrianglesList points = meshTriangles.GetKeyPointsByIdEx(minCount, minDis);
-        if (isCombineCenter)
+        SharedMeshTrianglesList trianglesList = meshTriangles.GetKeyPointsByIdEx(minCount, minDis);
+        if (isFlange)
         {
-            points.CombineSameCenter(minDis);
+            trianglesList.CombineSameCenter(minDis);
         }
-        var distanceList = points.GetPlanePointDistanceList();
-        if (points.Count != 2)
+        var distanceList = trianglesList.GetPlanePointDistanceList();
+        //if (points.Count != 2)
+        //{
+        //    data.IsGetInfoSuccess = false;
+        //    Debug.LogError($"PipeReducerInfoJob GetKeyPointsById points.Count != 2 count:{points.Count} gameObject:{id}");
+        //    errorIds.Add(id);
+        //    return data;
+        //}
+        //SharedMeshTriangles startP = distanceList[0].Plane;
+        //data.StartPoint = startP.GetCenter4();
+
+        //var PipeRadius1 = data.StartPoint.w;
+
+        //SharedMeshTriangles endP = distanceList[1].Plane;
+        //data.EndPoint = endP.GetCenter4();
+        //var PipeRadius2 = data.EndPoint.w;
+
+        //var PipeRadius = (PipeRadius1 + PipeRadius2) / 2;
+
+        //points.Remove(data.StartPoint);
+        //points.Remove(data.EndPoint);
+
+        //data.IsGetInfoSuccess = true;
+        //return data;
+
+        if (trianglesList.Count == 3)
+        {
+
+            if (isFlange)
+            {
+                data.IsSpecial = true;
+                trianglesList.Sort((a, b) => { return (b.Radius + b.MinRadius).CompareTo((a.Radius + a.MinRadius)); });
+
+                //meshTriangles.ShowSharedMeshTrianglesList(this.transform, PointScale, 15, trianglesList);
+
+                SharedMeshTrianglesList list2 = new SharedMeshTrianglesList();
+                list2.Add(trianglesList[0]);
+                list2.Add(trianglesList[1]);
+                //list2.Sort((a, b) => { return b.TriangleCount.CompareTo(a.TriangleCount); });
+
+                data.KeyPointInfo = new PipeElbowKeyPointData(list2[0].GetCenter4(), list2[1].GetCenter4(), list2[1].GetMinCenter4(), trianglesList[2].GetCenter4());
+
+                data.StartPoint = list2[0].GetCenter4();
+                data.EndPoint = trianglesList[2].GetCenter4();
+                //ModelStartPoint = StartPoint;
+                //ModelEndPoint = EndPoint;
+
+                //ShowKeyPoints(KeyPointInfo, "Flange3");
+                //return true;
+                return data;
+            }
+            else
+            {
+                data.IsGetInfoSuccess = false;
+                Debug.LogError($"GetKeyPointsById points.Count != 2 count:{trianglesList.Count} gameObject:{id} sharedMinCount:{sharedMinCount} minRepeatPointDistance:{minRepeatPointDistance}");
+                return data;
+            }
+        }
+        else if (trianglesList.Count == 2)
+        {
+            SharedMeshTriangles startP = distanceList[0].Plane;
+            data.StartPoint = startP.GetCenter4();
+
+            var PipeRadius1 = data.StartPoint.w;
+
+            SharedMeshTriangles endP = distanceList[1].Plane;
+            data.EndPoint = endP.GetCenter4();
+            var PipeRadius2 = data.EndPoint.w;
+
+            var PipeRadius = (PipeRadius1 + PipeRadius2) / 2;
+
+            trianglesList.Remove(data.StartPoint);
+            trianglesList.Remove(data.EndPoint);
+
+            //TransformHelper.ShowLocalPoint(data.StartPoint, data.PointScale, this.transform, null).name = "StartPoint";
+            //TransformHelper.ShowLocalPoint(data.EndPoint, data.PointScale, this.transform, null).name = "EndPoint";
+
+            //GetPipeRadius();
+
+            data.IsGetInfoSuccess = true;
+
+            //ModelStartPoint = StartPoint;
+            //ModelEndPoint = EndPoint;
+            return data;
+        }
+        else
         {
             data.IsGetInfoSuccess = false;
-            Debug.LogError($"PipeReducerInfoJob GetKeyPointsById points.Count != 2 count:{points.Count} gameObject:{id}");
+            Debug.LogError($"GetKeyPointsById points.Count != 2 count:{trianglesList.Count} gameObject:{id} sharedMinCount:{sharedMinCount} minRepeatPointDistance:{minRepeatPointDistance}");
             errorIds.Add(id);
             return data;
         }
-        SharedMeshTriangles startP = distanceList[0].Plane;
-        data.StartPoint = startP.GetCenter4();
-
-        var PipeRadius1 = data.StartPoint.w;
-
-        SharedMeshTriangles endP = distanceList[1].Plane;
-        data.EndPoint = endP.GetCenter4();
-        var PipeRadius2 = data.EndPoint.w;
-
-        var PipeRadius = (PipeRadius1 + PipeRadius2) / 2;
-
-        points.Remove(data.StartPoint);
-        points.Remove(data.EndPoint);
-
-        data.IsGetInfoSuccess = true;
-        return data;
     }
 }
 
@@ -108,6 +176,8 @@ public struct PipeReducerData
     public bool IsSpecial;
 
     public bool IsGetInfoSuccess;
+
+    public PipeElbowKeyPointData KeyPointInfo;
 
     public override string ToString()
     {

@@ -245,7 +245,7 @@ public class PipeBuilder : MonoBehaviour
             pipeRunList.RenameResultBySortedId();
         }
 
-        Debug.LogError($">>RendererPipes time:{DateTime.Now - start}");
+        Debug.LogWarning($">>RendererPipes time:{DateTime.Now - start}");
     }
 
     public List<Transform> GetAllPipeGos()
@@ -610,7 +610,7 @@ public class PipeBuilder : MonoBehaviour
         PipeReducerInfoJob.ErrorIds.Dispose();
         PipeFlangeInfoJob.ErrorIds.Dispose();
 
-        Debug.LogError($">>GetPipeInfosJob time:{DateTime.Now - start} lineJobs:{lineJobs.Count} elbowJobs:{elbowJobs.Count} teeJobs:{teeJobs.Count} reducerJobs:{reducerJobs.Count}");
+        Debug.LogWarning($">>GetPipeInfosJob time:{DateTime.Now - start} lineJobs:{lineJobs.Count} elbowJobs:{elbowJobs.Count} teeJobs:{teeJobs.Count} reducerJobs:{reducerJobs.Count}");
 
         CreatePipeRunList();
     }

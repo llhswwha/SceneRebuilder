@@ -249,7 +249,7 @@ public class PipeRunList
 
         PipeRuns.Sort();
 
-        Debug.Log($"PipeRunList time:{DateTime.Now-start} models:{models.Count} minDis:{minDis} runs:{PipeRuns.Count} connectCount:{connectCount}");
+        Debug.LogWarning($"PipeRunList time:{DateTime.Now-start} models:{models.Count} minDis:{minDis} runs:{PipeRuns.Count} connectCount:{connectCount}");
 
         ProgressBarHelper.ClearProgressBar();
     }

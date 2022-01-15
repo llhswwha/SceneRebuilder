@@ -398,6 +398,7 @@ public class MeshTriangles
         }
 
         KeyPoints.CombineSameMesh(minDis);
+        KeyPoints.CombineSameCircle(minDis);
 
         if (KeyPoints.Count < 2)
         {

@@ -195,9 +195,8 @@ public class PipeTeeModel : PipeElbowModel
 
     public override GameObject RendererModel(PipeGenerateArg arg, string afterName)
     {
-        if (IsGetInfoSuccess==false)
+        if (RendererErrorModel())
         {
-            this.gameObject.SetActive(true);
             return null;
         }
 

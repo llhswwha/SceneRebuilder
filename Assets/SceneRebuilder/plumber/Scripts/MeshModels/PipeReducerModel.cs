@@ -114,6 +114,7 @@ public class PipeReducerModel
         this.IsGetInfoSuccess = lineData.IsGetInfoSuccess;
         this.StartPoint = lineData.StartPoint;
         this.EndPoint = lineData.EndPoint;
+        this.KeyPointInfo = new PipeElbowKeyPointInfo(lineData.KeyPointInfo);
 
         ModelStartPoint = StartPoint;
         ModelEndPoint = EndPoint;
@@ -130,9 +131,8 @@ public class PipeReducerModel
 
     public override GameObject RendererModel(PipeGenerateArg arg, string afterName)
     {
-        if (IsGetInfoSuccess == false)
+        if (RendererErrorModel())
         {
-            this.gameObject.SetActive(true);
             return null;
         }
 

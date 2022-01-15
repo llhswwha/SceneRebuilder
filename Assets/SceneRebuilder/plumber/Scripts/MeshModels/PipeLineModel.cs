@@ -364,6 +364,8 @@ public class PipeLineModel : PipeModelBase
 
         //this.IsObbError = data.IsObbError;
         this.IsGetInfoSuccess = data.IsGetInfoSuccess;
+
+        Debug.Log($"SetLineData data:{data}");
     }
 
     private static VerticesToPlaneInfo GetEndPlane(VerticesToPlaneInfo startPlane,List<VerticesToPlaneInfo> verticesToPlaneInfos_All)
@@ -602,11 +604,11 @@ public class PipeLineModel : PipeModelBase
 
     public override GameObject RendererModel(PipeGenerateArg arg, string afterName)
     {
-        if (IsGetInfoSuccess == false)
+        if (RendererErrorModel())
         {
-            this.gameObject.SetActive(true);
             return null;
         }
+
         //GameObject pipeNew = new GameObject(this.name + afterName);
         //pipeNew.transform.position = this.transform.position + arg.Offset;
         //pipeNew.transform.SetParent(this.transform.parent);

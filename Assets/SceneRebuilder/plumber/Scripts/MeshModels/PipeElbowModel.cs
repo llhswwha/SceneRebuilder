@@ -342,11 +342,12 @@ public class PipeElbowModel : PipeModelBase
         RendererModel(generateArg,"_New");
     }
 
+
+
     public override GameObject RendererModel(PipeGenerateArg arg, string afterName)
     {
-        if (IsGetInfoSuccess == false)
+        if (RendererErrorModel())
         {
-            this.gameObject.SetActive(true);
             return null;
         }
 

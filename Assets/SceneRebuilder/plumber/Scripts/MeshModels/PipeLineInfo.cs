@@ -82,7 +82,7 @@ public struct PipeLineData
     public override string ToString()
     {
         //return $"[{StartPoint}_{EndPoint}]";
-        return $"[({StartPoint.x},{StartPoint.y},{StartPoint.z},{StartPoint.w})_({EndPoint.x},{EndPoint.y},{EndPoint.z},{EndPoint.w})]";
+        return $"[IsGetInfoSuccess:{IsGetInfoSuccess}_({StartPoint.x},{StartPoint.y},{StartPoint.z},{StartPoint.w})_({EndPoint.x},{EndPoint.y},{EndPoint.z},{EndPoint.w})]";
     }
 
     public PipeLineData(Vector4 p1, Vector4 p2, Vector3 direction)
