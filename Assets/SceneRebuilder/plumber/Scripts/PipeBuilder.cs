@@ -755,7 +755,7 @@ public class PipeBuilder : MonoBehaviour
 
         PipeModels.Sort();
 
-        Debug.LogError($">>GetPipeInfos time:{DateTime.Now - start} count:{PipeModels.Count}");
+        Debug.LogWarning($">>GetPipeInfos ¡¾time:{DateTime.Now - start}¡¿ count:{PipeModels.Count}");
 
         CreatePipeRunList();
 

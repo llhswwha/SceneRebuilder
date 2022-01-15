@@ -130,7 +130,7 @@ public class PipeRun:IComparable<PipeRun>
     {
         if (EndModels.Count == 0)
         {
-            Debug.Log($"SortFromEnd EndModels.Count == 0");
+            Debug.LogError($"GetSortedRun EndModels.Count == 0");
             return null;
         }
         PipeRun sortedRun = new PipeRun(EndModels[0]);
@@ -243,8 +243,16 @@ public class PipeRunList
             {
                 models.Remove(runModel);
             }
-            PipeRun run2 = run.GetSortedRun();
-            PipeRuns.Add(run2);
+            PipeRun sortedRun = run.GetSortedRun();
+            if (sortedRun == null)
+            {
+                Debug.LogError($"GetSortedRun sortedRun == null EndModels:{run.EndModels.Count} InitModels:{run.InitModels.Count} TeeModels:{run.TeeModels.Count}");
+            }
+            else
+            {
+                PipeRuns.Add(sortedRun);
+            }
+
         }
 
         PipeRuns.Sort();
@@ -260,6 +268,16 @@ public class PipeRunList
         for(int i=0;i<PipeRuns.Count;i++)
         {
             PipeRun run = PipeRuns[i];
+            if (run == null)
+            {
+                Debug.LogWarning($"RenameResultBySortedId[{i}] run == null");
+                continue;
+            }
+            if (run.PipeModels == null)
+            {
+                Debug.LogWarning($"RenameResultBySortedId[{i}] run.PipeModels == null");
+                continue;
+            }
             GameObject go = new GameObject($"PipeRun_{i:000}({run.PipeModels.Count})");
             PipeRunGos.Add(go);
             run.go = go;

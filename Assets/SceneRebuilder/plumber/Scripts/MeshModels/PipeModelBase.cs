@@ -83,7 +83,7 @@ public class PipeModelBase : MonoBehaviour,IComparable<PipeModelBase>
 
                 if (isShowLog)
                 {
-                    Debug.Log($"IsConnected model1:{model1.name} model2:{model2.name} [{i},{i1}]  dis:{dis12} p1:{p1} p2:{p2}");
+                    Debug.Log($"ConnectedModel model1:{model1.name} model2:{model2.name} [{i},{i1}]  dis:{dis12} p1:{p1} p2:{p2}");
                 }
 
                 if (dis12 < minPointDis)
@@ -96,7 +96,7 @@ public class PipeModelBase : MonoBehaviour,IComparable<PipeModelBase>
                         }
                         else
                         {
-                            Debug.LogError($"Radius IsNot Equal model1:{model1.name} model2:{model2.name} [{i},{i1}]  dis:{dis12} p1R:{p1.w} p2R:{p2.w}");
+                            Debug.Log($"ConnectedModel Radius IsNot Equal model1:{model1.name} model2:{model2.name} [{i},{i1}]  dis:{dis12} p1R:{p1.w} p2R:{p2.w}");
                         }
                     }
                     model1.AddConnectedModel(model2);
@@ -108,7 +108,7 @@ public class PipeModelBase : MonoBehaviour,IComparable<PipeModelBase>
             }
             if(cCount== points2.Count)
             {
-                Debug.LogError($"IsConnected Error1 cCount== points2.Count model1:{model1.name} model2:{model2.name} p1:{p1} points2:{points2.Count} cCount:{cCount}");
+                Debug.LogError($"ConnectedModel Error1 cCount== points2.Count model1:{model1.name} model2:{model2.name} p1:{p1} points2:{points2.Count} cCount:{cCount}");
                 //return -1;
             }
             ConnectedCount += cCount;
