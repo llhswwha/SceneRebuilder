@@ -496,10 +496,10 @@ public class SharedMeshTrianglesList : List<SharedMeshTriangles>
             }
         }
 
-        foreach (var item in this)
-        {
-            item.GetInfo();
-        }
+        //foreach (var item in this)
+        //{
+        //    item.GetInfo();
+        //}
     }
 
     public SharedMeshTriangles? FindSameDirectionPlane(SharedMeshTriangles teePlane1,object name)

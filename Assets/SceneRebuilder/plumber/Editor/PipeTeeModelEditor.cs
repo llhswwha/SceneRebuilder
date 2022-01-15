@@ -33,10 +33,6 @@ public class PipeTeeModelEditor : Editor
         {
             targetT.ShowKeyPoints();
         }
-        if (GUILayout.Button("GetPipeRadius"))
-        {
-            targetT.GetPipeRadius();
-        }
         GUILayout.EndHorizontal();
 
         if (GUILayout.Button("ClearChildren"))

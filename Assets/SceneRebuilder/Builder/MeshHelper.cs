@@ -2485,8 +2485,10 @@ public static class MeshHelper
         TotalCopyTime+=t;
         TotalCopyCount++;
 
-        //var ids = go2Copy.GetComponentsInChildren<RendererId>();
-        RendererId.NewIds(go2Copy);
+        ////var ids = go2Copy.GetComponentsInChildren<RendererId>();
+        //RendererId.NewIds(go2Copy);
+
+        //EditorHelper.CopyAllComponents(go2, go2Copy);
 
         return go2Copy;
     }

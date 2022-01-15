@@ -272,10 +272,10 @@ public class PipeElbowModel : PipeModelBase
         Debug.Log($">>>GetElbowInfo_{this.name} time:{(DateTime.Now - start).TotalMilliseconds} trianglesList:{trianglesList.Count}");
     }
 
-    public virtual void GetPipeRadius()
-    {
-        PipeRadius = meshTriangles.GetPipeRadius(sharedMinCount);
-    }
+    //public virtual void GetPipeRadius()
+    //{
+    //    PipeRadius = meshTriangles.GetPipeRadius(sharedMinCount);
+    //}
 
     public void ShowKeyPoints()
     {

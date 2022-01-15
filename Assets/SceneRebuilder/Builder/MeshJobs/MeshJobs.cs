@@ -19,13 +19,49 @@ namespace MeshJobs
             return false;
         }
 
-        public static List<MeshPoints> GetMeshPoints(MeshFilter[] meshFilters)
+        //public static List<MeshPoints> GetMeshPoints(MeshFilter[] meshFilters)
+        //{
+        //    List<MeshPoints> meshPoints = new List<MeshPoints>();
+        //    if(meshFilters!=null)
+        //        foreach (var mf in meshFilters)
+        //        {
+        //            meshPoints.Add(new MeshPoints(mf.gameObject));
+        //        }
+        //    return meshPoints;
+        //}
+
+        public static List<MeshPoints> GetMeshPoints(GameObject root)
+        {
+            var mfs = root.GetComponentsInChildren<MeshFilter>(true);
+            return GetMeshPoints(mfs);
+        }
+
+        public static List<MeshPoints> GetMeshPoints<T>(T[] meshFilters) where T :Component
         {
             List<MeshPoints> meshPoints = new List<MeshPoints>();
-            if(meshFilters!=null)
+            if (meshFilters != null)
                 foreach (var mf in meshFilters)
                 {
-                    meshPoints.Add(new MeshPoints(mf.gameObject));
+                    MeshPoints mps = new MeshPoints(mf.gameObject);
+                    if (mps.vertexCount > 0)
+                    {
+                        meshPoints.Add(mps);
+                    }
+                }
+            return meshPoints;
+        }
+
+        public static List<MeshPoints> GetMeshPoints<T>(List<T> meshFilters) where T : Component
+        {
+            List<MeshPoints> meshPoints = new List<MeshPoints>();
+            if (meshFilters != null)
+                foreach (var mf in meshFilters)
+                {
+                    MeshPoints mps = new MeshPoints(mf.gameObject);
+                    if (mps.vertexCount > 0)
+                    {
+                        meshPoints.Add(mps);
+                    }
                 }
             return meshPoints;
         }

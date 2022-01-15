@@ -1443,4 +1443,16 @@ break;
         //return prefabList;
         return AcRTAlignJobsEx(meshFilters.ToArray());
     }
+
+    public PrefabInfoList GetPrefabsOfList<T>(List<T> list, bool align) where T : Component
+    {
+        List<MeshPoints> meshFilters = MeshPoints.GetMeshPoints(list);
+        return AcRTAlignJobsEx(meshFilters.ToArray());
+    }
+
+    public PrefabInfoList GetPrefabsOfList(GameObject root, bool align)
+    {
+        List<MeshPoints> meshFilters = MeshPoints.GetMeshPoints(root);
+        return AcRTAlignJobsEx(meshFilters.ToArray());
+    }
 }

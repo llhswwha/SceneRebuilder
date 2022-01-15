@@ -424,28 +424,28 @@ public class MeshTriangles
         return radius;
     }
 
-    public float GetPipeRadius(int minCount)
-    {
-        float avgRadius = 0;
-        int count = 0;
-        List<Key2List<int, MeshTriangle>> sharedPoints1 = this.FindSharedPointsById();
-        for (int i = 0; i < sharedPoints1.Count; i++)
-        {
-            int pointId = sharedPoints1[i].Key;
-            var triangles = sharedPoints1[i].List;
-            Vector3 point = mesh.vertices[pointId];
-            if (triangles.Count >= minCount)
-            {
-                float radius = GetTrianglesRadius(triangles, pointId);
-                //Debug.Log($"point:{point} radius:{radius}");
-                avgRadius += radius;
-                count++;
-            }
-        }
-        avgRadius /= count;
-        //Debug.Log($"GetPipeRadius avgRadius:{avgRadius}");
-        return avgRadius;
-    }
+    //public float GetPipeRadius(int minCount)
+    //{
+    //    float avgRadius = 0;
+    //    int count = 0;
+    //    List<Key2List<int, MeshTriangle>> sharedPoints1 = this.FindSharedPointsById();
+    //    for (int i = 0; i < sharedPoints1.Count; i++)
+    //    {
+    //        int pointId = sharedPoints1[i].Key;
+    //        var triangles = sharedPoints1[i].List;
+    //        Vector3 point = mesh.vertices[pointId];
+    //        if (triangles.Count >= minCount)
+    //        {
+    //            float radius = GetTrianglesRadius(triangles, pointId);
+    //            //Debug.Log($"point:{point} radius:{radius}");
+    //            avgRadius += radius;
+    //            count++;
+    //        }
+    //    }
+    //    avgRadius /= count;
+    //    //Debug.Log($"GetPipeRadius avgRadius:{avgRadius}");
+    //    return avgRadius;
+    //}
 
     public float Distance2List(Vector3 p,List<Vector3> list)
     {

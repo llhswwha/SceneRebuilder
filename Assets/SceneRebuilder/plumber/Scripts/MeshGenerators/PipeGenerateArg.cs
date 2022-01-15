@@ -45,6 +45,8 @@ public class PipeGenerateArg
         pipe.generateEndCaps = this.generateEndCaps;
     }
 
+
+
     public void SetArg(PipeMeshGeneratorEx pipe)
     {
         if (this.pipeMaterial == null)

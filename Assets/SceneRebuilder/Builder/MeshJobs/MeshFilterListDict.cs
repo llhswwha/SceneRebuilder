@@ -38,7 +38,15 @@ public class MeshFilterListDict
                 //    i--;
                 //    Debug.Log($"mat:{a.MatId} a:{a.vertexCount} b:{b.vertexCount} d:{b.vertexCount - a.vertexCount} dis:{CombineDistance}");
                 //}
-                if (a.MatId == b.MatId && b.vertexCount - a.vertexCount <= CombineDistance)//合并vertexCount相近的列表
+                //if (a.MatId == b.MatId && b.vertexCount - a.vertexCount <= CombineDistance)//合并vertexCount相近的列表
+                //{
+                //    a.AddRang(b);
+                //    list.RemoveAt(i + 1);
+                //    i--;
+                //    Debug.Log($"mat:{a.MatId} a:{a.vertexCount} b:{b.vertexCount} d:{b.vertexCount - a.vertexCount} dis:{CombineDistance}");
+                //}
+
+                if (b.vertexCount - a.vertexCount <= CombineDistance)//合并vertexCount相近的列表
                 {
                     a.AddRang(b);
                     list.RemoveAt(i + 1);
@@ -87,8 +95,9 @@ public class MeshFilterListDict
             var matId = mf.GetMatId();
             //Debug.Log($"MeshFilterListDict [{i}] points:{mf.name} mat:{matId}");
 
-            string key=vCount+"_"+matId;
-            if(!dict.ContainsKey(key)){
+            //string key=vCount+"_"+matId;
+            string key = vCount + "_";
+            if (!dict.ContainsKey(key)){
                 //Debug.LogError("MeshFilterListDict key:"+key);
 
                 MeshFilterList mflNew = new MeshFilterList();

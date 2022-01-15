@@ -113,12 +113,12 @@ public class PipeFlangeModel : PipeReducerModel
         var keyPoints = model2.GetModelKeyPoints();
         var msp = this.GetModelStartPoint();
         var mep = this.GetModelEndPoint();
-        TransformHelper.ShowPoint(msp, PointScale, this.transform).name=$"{this.name}_StartPoint_{Vector3String(msp)}_{Vector3String(ModelStartPoint)}";
-        TransformHelper.ShowPoint(mep, PointScale, this.transform).name = $"{this.name}_EndPoint_{Vector3String(mep)}_{Vector3String(ModelEndPoint)}";
+        //TransformHelper.ShowPoint(msp, PointScale, this.transform).name=$"{this.name}_StartPoint_{Vector3String(msp)}_{Vector3String(ModelStartPoint)}";
+        //TransformHelper.ShowPoint(mep, PointScale, this.transform).name = $"{this.name}_EndPoint_{Vector3String(mep)}_{Vector3String(ModelEndPoint)}";
         for (int i = 0; i < keyPoints.Count; i++)
         {
             Vector4 p = keyPoints[i];
-            TransformHelper.ShowPoint(p, PointScale, model2.transform).name = $"{model2.name}_Point[{i}]_{Vector3String(p)}";
+            //TransformHelper.ShowPoint(p, PointScale, model2.transform).name = $"{model2.name}_Point[{i}]_{Vector3String(p)}";
             Vector3 model1ToModel2S = msp - p;
             Vector3 model1ToModel2E = mep - p;
             float angle = Vector3.Dot(model1ToModel2S, model1ToModel2E);

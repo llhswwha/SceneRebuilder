@@ -38,7 +38,17 @@ public class MeshComparer : SingletonBehaviour<MeshComparer>
         {
             goTo = GameObject.Find(arg.mfTo.name + "_New");
         }
-       Debug.LogError($"MeshComparer.SetArg goFrom:{goFrom.name}({goFrom}) goTo:{goTo.name}({goTo})");
+        if (goFrom == null)
+        {
+            Debug.LogError($"MeshComparer.SetArg goFrom == null name:{arg.mfFrom.name}");
+            return;
+        }
+        if (goTo == null)
+        {
+            Debug.LogError($"MeshComparer.SetArg goTo == null name:{arg.mfTo.name}");
+            return;
+        }
+        Debug.LogError($"MeshComparer.SetArg goFrom:{goFrom.name}({goFrom}) goTo:{goTo.name}({goTo})");
     }
 
     public void SetGos(GameObject from,GameObject to)

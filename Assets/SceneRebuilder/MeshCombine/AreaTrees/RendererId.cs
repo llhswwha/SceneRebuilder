@@ -370,7 +370,7 @@ public class RendererId
         return newParent;
     }
 
-    public static void MoveTargetsParent(List<Transform> targets, Transform newParent, string newParentName = "NewP")
+    public static Transform MoveTargetsParent(List<Transform> targets, Transform newParent, string newParentName = "NewP")
     {
         if (newParent == null)
         {
@@ -382,6 +382,7 @@ public class RendererId
             RendererId.InitId(item);
             item.transform.SetParent(newParent);
         }
+        return newParent;
     }
 
     public static void RecoverTargetsParent(List<GameObject> targets, Transform newParent)
@@ -390,6 +391,17 @@ public class RendererId
         foreach (var item in targets)
         {
             if (item == newParent.gameObject) continue;
+            RendererId rId = RendererId.GetRId(item);
+            rId.RecoverParent();
+        }
+    }
+
+    public static void RecoverTargetsParent(List<Transform> targets, Transform newParent)
+    {
+        IdDictionary.InitInfos();
+        foreach (Transform item in targets)
+        {
+            if (item == newParent) continue;
             RendererId rId = RendererId.GetRId(item);
             rId.RecoverParent();
         }
@@ -409,6 +421,7 @@ public class RendererId
 
     public static RendererId InitId<T>(T r) where T :Component
     {
+        if (r == null) return null;
         RendererId id = r.GetComponent<RendererId>();
         if (id == null)
         {

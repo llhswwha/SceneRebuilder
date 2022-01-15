@@ -93,6 +93,42 @@ public class PipeFactoryEditor : BaseFoldoutEditor<PipeFactory>
         GUILayout.EndHorizontal();
 
         GUILayout.BeginHorizontal();
+        GUILayout.Label($"IsCreatePipeRuns");
+        targetT.IsCreatePipeRuns = EditorGUILayout.Toggle(targetT.IsCreatePipeRuns);
+        GUILayout.Label($"MoveToFactory");
+        targetT.IsMoveResultToFactory = EditorGUILayout.Toggle(targetT.IsMoveResultToFactory);
+        GUILayout.Label($"SaveMaterials");
+        targetT.IsSaveMaterials = EditorGUILayout.Toggle(targetT.IsSaveMaterials);
+        GUILayout.Label($"IsCopyComponents");
+        targetT.IsCopyComponents = EditorGUILayout.Toggle(targetT.IsCopyComponents);
+        GUILayout.Label($"IsReplaceOld");
+        targetT.IsReplaceOld = EditorGUILayout.Toggle(targetT.IsReplaceOld);
+        GUILayout.EndHorizontal();
+
+        //public bool IsMoveResultToFactory = true;
+        //public bool IsSaveMaterials = true;
+        //public bool IsSaveComponents = true;
+
+        GUILayout.BeginHorizontal();
+        if (GUILayout.Button("OneKey"))
+        {
+            targetT.GetPipeParts();
+            targetT.GetPipeInfosJob();
+            targetT.ClearGeneratedObjs();
+            targetT.RendererEachPipes();
+            targetT.MovePipes();
+        }
+        if (GUILayout.Button("OneKey(Job)"))
+        {
+            targetT.GetPipeParts();
+            targetT.GetPipeInfos();
+            targetT.ClearGeneratedObjs();
+            targetT.RendererEachPipes();
+            targetT.MovePipes();
+        }
+        GUILayout.EndHorizontal();
+
+        GUILayout.BeginHorizontal();
         if (GUILayout.Button("1.GetParts"))
         {
             targetT.GetPipeParts();
@@ -101,53 +137,53 @@ public class PipeFactoryEditor : BaseFoldoutEditor<PipeFactory>
         {
             targetT.GetPipeInfos();
         }
-        if (GUILayout.Button("3.Generate(Each)"))
+        if (GUILayout.Button("3.Generate"))
         {
-
             targetT.ClearGeneratedObjs();
-;
             targetT.RendererEachPipes();
             targetT.MovePipes();
         }
-        if (GUILayout.Button("3.Generate(One)"))
+        if (GUILayout.Button("4.PrefabOthers"))
         {
-
+            targetT.PrefabOthers();
         }
-
+        if (GUILayout.Button("5.CreateRuns"))
+        {
+            targetT.CreateRunList();
+        }
+        if (GUILayout.Button("6.CheckResults"))
+        {
+            targetT.CheckResults();
+        }
+        if (GUILayout.Button("7.ReplaceOld"))
+        {
+            targetT.ReplaceOld();
+        }
         GUILayout.EndHorizontal();
 
         GUILayout.BeginHorizontal();
         if (GUILayout.Button("MoveOthers"))
         {
-            targetT.PrefabOthers();
+            targetT.MoveOthersParent();
         }
         if (GUILayout.Button("RecoverOthers"))
         {
-            targetT.PrefabOthers();
+            targetT.RecoverOthersParent();
         }
-        if (GUILayout.Button("5.PrefabOthers"))
-        {
-            targetT.PrefabOthers();
-        }
+
         GUILayout.EndHorizontal();
 
-        GUILayout.BeginHorizontal();
-
-        if (GUILayout.Button("4.CreateRunList"))
-        {
-            targetT.CreateRunList();
-        }
-        if (GUILayout.Button("5.CheckResults"))
-        {
-            targetT.CheckResults();
-        }
-        if (GUILayout.Button("6.SetOtherPrefabs"))
-        {
-            targetT.SetOtherPrefabs();
-        }
-        GUILayout.EndHorizontal();
 
         GUILayout.BeginHorizontal();
+        if (GUILayout.Button("GetInfos(Job)"))
+        {
+            targetT.GetPipeInfosJob();
+        }
+        if (GUILayout.Button("CheckResults(Job)"))
+        {
+            targetT.CheckResultsJob();
+        }
+
         if (GUILayout.Button("GetObbs"))
         {
             targetT.GetObbInfos();
@@ -156,28 +192,19 @@ public class PipeFactoryEditor : BaseFoldoutEditor<PipeFactory>
         {
             targetT.GetObbInfosJob();
         }
-        if (GUILayout.Button("GetInfos(Job)"))
-        {
-            targetT.GetPipeInfosJob();
-        }
-        if (GUILayout.Button("CheckResults(Job)"))
-        {
-            targetT.CheckResultsJob();
-           
-        }
         GUILayout.EndHorizontal();
 
-        GUILayout.BeginHorizontal();
-        if (GUILayout.Button("OneKey_GeneratePipe(Each)"))
-        {
-            targetT.GetPipeParts();
-            targetT.GetInfoAndCreateEachPipes();
-        }
-        if (GUILayout.Button("OneKey_GeneratePipe(One)"))
-        {
+        //GUILayout.BeginHorizontal();
+        //if (GUILayout.Button("OneKey_GeneratePipe(Each)"))
+        //{
+        //    targetT.GetPipeParts();
+        //    targetT.GetInfoAndCreateEachPipes();
+        //}
+        //if (GUILayout.Button("OneKey_GeneratePipe(One)"))
+        //{
 
-        }
-        GUILayout.EndHorizontal();
+        //}
+        //GUILayout.EndHorizontal();
 
 
 

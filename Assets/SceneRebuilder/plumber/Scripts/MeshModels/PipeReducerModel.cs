@@ -73,7 +73,7 @@ public class PipeReducerModel
             TransformHelper.ShowLocalPoint(StartPoint, PointScale, this.transform, null).name = "StartPoint";
             TransformHelper.ShowLocalPoint(EndPoint, PointScale, this.transform, null).name = "EndPoint";
 
-            GetPipeRadius();
+            //GetPipeRadius();
 
             IsGetInfoSuccess = true;
 
@@ -153,8 +153,8 @@ public class PipeReducerModel
     }
 
 
-    public override void GetPipeRadius()
-    {
-        PipeRadius = meshTriangles.GetPipeRadius(sharedMinCount);
-    }
+    //public override void GetPipeRadius()
+    //{
+    //    PipeRadius = meshTriangles.GetPipeRadius(sharedMinCount);
+    //}
 }

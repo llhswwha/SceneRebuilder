@@ -166,11 +166,6 @@ public class PipeFactory : SingletonBehaviour<PipeFactory>
         SetListVisible(PipeOthers, isVisible);
     }
 
-    public void SetOtherPrefabs()
-    {
-        throw new NotImplementedException();
-    }
-
     public void SetListVisible(List<Transform> renderers,bool isVisible)
     {
         foreach(var item in renderers)
@@ -179,18 +174,35 @@ public class PipeFactory : SingletonBehaviour<PipeFactory>
         }
     }
 
-    public GameObject OthersRoot = null;
+    public Transform OthersRoot = null;
 
-    public void MoveOthers()
+    public void MoveOthersParent()
     {
+        OthersRoot = RendererId.MoveTargetsParent(PipeOthers, OthersRoot, "PipeOther");
+        OthersRoot.transform.SetParent(this.transform);
+    }
 
+    public void RecoverOthersParent()
+    {
+        RendererId.RecoverTargetsParent(PipeOthers, null);
     }
 
     public void PrefabOthers()
     {
+        DateTime start = DateTime.Now;
+        MoveOthersParent();
         //this.PipeOthers;
         //MeshRendererInfoList list=new MeshRendererInfoList(this.PipeOthers)
-        ModelClassDict<Transform> modelClassList = ModelMeshManager.Instance.GetPrefixNames<Transform>(Target);
+        ModelClassDict<Transform> modelClassList = ModelMeshManager.Instance.GetPrefixNames<Transform>(OthersRoot.gameObject);
+        var keys = modelClassList.GetKeys();
+
+        
+
+        var prefabs=PrefabInstanceBuilder.Instance.GetPrefabsOfList(OthersRoot.gameObject, true);
+
+        Debug.Log($"PrefabOthers time:{DateTime.Now-start} others:{this.PipeOthers.Count} keys:{keys.Count} prefabs:{prefabs.Count}");
+
+        RecoverOthersParent();
     }
 
     [ContextMenu("HidAll")]
@@ -225,6 +237,11 @@ public class PipeFactory : SingletonBehaviour<PipeFactory>
     {
         InitPipeBuilder();
         newBuilder.GetInfoAndCreateEachPipes();
+    }
+
+    public void ReplaceOld()
+    {
+        throw new NotImplementedException();
     }
 
     [ContextMenu("GetPipeInfos")]
@@ -270,6 +287,7 @@ public class PipeFactory : SingletonBehaviour<PipeFactory>
     [ContextMenu("CreatePipeRunList")]
     public void CreateRunList()
     {
+        newBuilder.IsCreatePipeRuns = true;
         newBuilder.CreatePipeRunList();
     }
 
@@ -278,6 +296,9 @@ public class PipeFactory : SingletonBehaviour<PipeFactory>
     {
         //InitPipeBuilder();
         newBuilder.isUniformRaidus = this.isUniformRaidus;
+        newBuilder.IsCreatePipeRuns = this.IsCreatePipeRuns;
+        newBuilder.IsSaveMaterials = this.IsSaveMaterials;
+        newBuilder.IsCopyComponents = this.IsCopyComponents;
         //newBuilder.CreatePipeRunList();
 
         newBuilder.NewObjName = "_New";
@@ -313,6 +334,8 @@ public class PipeFactory : SingletonBehaviour<PipeFactory>
         }
         newBuilder.NewObjName = "_New";
         newBuilder.generateArg = generateArg;
+        newBuilder.IsCreatePipeRuns = this.IsCreatePipeRuns;
+
         if (EnablePipeLine)
         {
             newBuilder.PipeLineGos = PipeLines;
@@ -368,8 +391,20 @@ public class PipeFactory : SingletonBehaviour<PipeFactory>
 
     GameObject targetNew;
 
+    public bool IsMoveResultToFactory = true;
+
+    public bool IsSaveMaterials = true;
+
+    public bool IsCopyComponents = true;
+
+    public bool IsCreatePipeRuns = true;
+
+    public bool IsReplaceOld = false;
+
     public void MovePipes()
     {
+        if (IsMoveResultToFactory == false) return;
+
         if (targetNew != null)
         {
             if (targetNew.transform.childCount == 0)
@@ -377,22 +412,31 @@ public class PipeFactory : SingletonBehaviour<PipeFactory>
                 GameObject.DestroyImmediate(targetNew);
             }
         }
-        
 
         targetNew = new GameObject();
         targetNew.name = Target.name + "_New";
         targetNew.transform.position = Target.transform.position;
         targetNew.transform.SetParent(Target.transform.parent);
 
-
-
-        if (newBuilder.pipeRunList != null)
+        if (IsCreatePipeRuns)
         {
-            var runs = newBuilder.pipeRunList.PipeRunGos;
-            foreach (var run in runs)
+            if (newBuilder.pipeRunList != null)
             {
-                if (run == null) continue;
-                run.transform.SetParent(targetNew.transform);
+                var runs = newBuilder.pipeRunList.PipeRunGos;
+                foreach (var run in runs)
+                {
+                    if (run == null) continue;
+                    run.transform.SetParent(targetNew.transform);
+                }
+            }
+            else
+            {
+                var newPipes = newBuilder.NewPipeList;
+                foreach (var pipe in newPipes)
+                {
+                    if (pipe == null) continue;
+                    pipe.SetParent(targetNew.transform);
+                }
             }
         }
         else

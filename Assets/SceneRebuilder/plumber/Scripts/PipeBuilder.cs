@@ -160,71 +160,16 @@ public class PipeBuilder : MonoBehaviour
 
     public string NewObjName = "_New";
 
+    public bool IsCreatePipeRuns = false;
+
+    public bool IsSaveMaterials = true;
+
+    public bool IsCopyComponents = true;
+
     public void RendererPipesEx()
     {
         DateTime start = DateTime.Now;
-        //int count = PipeLines.Count + PipeElbows.Count + PipeReducers.Count + PipeFlanges.Count;
-        //int id = 0;
-        //DateTime start1 = DateTime.Now;
-        //for (int i = 0; i < PipeLines.Count; i++)
-        //{
-        //    id++;
-        //    PipeLineModel go = PipeLines[i];
-        //    if (go == null) continue;
-        //    if(ProgressBarHelper.DisplayCancelableProgressBar(new ProgressArg("RendererPipesEx1",id,count,go)))
-        //    {
-        //        return;
-        //    }
-        //    GameObject pipe = go.RendererModel(this.generateArg, NewObjName);
-        //    NewPipeList.Add(pipe.transform);
-        //}
-        //Debug.LogError($">>>RendererPipeLines time:{DateTime.Now - start1}");
-
-        //DateTime start12 = DateTime.Now;
-        //for (int i = 0; i < PipeReducers.Count; i++)
-        //{
-        //    id++;
-        //    PipeReducerModel go = PipeReducers[i];
-        //    if (go == null) continue;
-        //    if (ProgressBarHelper.DisplayCancelableProgressBar(new ProgressArg("RendererPipesEx2", id, count, go)))
-        //    {
-        //        return;
-        //    }
-        //    GameObject pipe = go.RendererModel(this.generateArg, NewObjName);
-        //    NewPipeList.Add(pipe.transform);
-        //}
-        //Debug.LogError($">>>RendererPipeReducers time:{DateTime.Now - start12}");
-
-        //DateTime start13 = DateTime.Now;
-        //for (int i = 0; i < PipeFlanges.Count; i++)
-        //{
-        //    id++;
-        //    PipeFlangeModel go = PipeFlanges[i];
-        //    if (go == null) continue;
-        //    if (ProgressBarHelper.DisplayCancelableProgressBar(new ProgressArg("RendererPipesEx3", id, count, go)))
-        //    {
-        //        return;
-        //    }
-        //    GameObject pipe = go.RendererModel(this.generateArg, NewObjName);
-        //    NewPipeList.Add(pipe.transform);
-        //}
-        //Debug.LogError($">>>RendererPipeFlanges time:{DateTime.Now - start13}");
-
-        //DateTime start2 = DateTime.Now;
-        //for (int i = 0; i < PipeElbows.Count; i++)
-        //{
-        //    id++;
-        //    PipeElbowModel go = PipeElbows[i];
-        //    if (go == null) continue;
-        //    if (ProgressBarHelper.DisplayCancelableProgressBar(new ProgressArg("RendererPipesEx4", id, count, go)))
-        //    {
-        //        return;
-        //    }
-        //    GameObject pipe = go.RendererModel(this.generateArg, NewObjName);
-        //    NewPipeList.Add(pipe.transform);
-        //}
-        //Debug.LogError($">>>RendererPipeElbows time:{DateTime.Now - start2}");
-
+        
         for (int i = 0; i < PipeModels.Count; i++)
         {
             PipeModelBase go = PipeModels[i];
@@ -238,9 +183,24 @@ public class PipeBuilder : MonoBehaviour
             {
                 NewPipeList.Add(pipe.transform);
             }
+
+            if (IsSaveMaterials)
+            {
+                MeshRenderer mf1 = go.GetComponent<MeshRenderer>();
+                MeshRenderer mf2 = pipe.GetComponent<MeshRenderer>();
+                if (mf1 != null && mf2 != null)
+                {
+                    mf2.sharedMaterials = mf1.sharedMaterials;
+                }
+            }
+
+            if (IsCopyComponents)
+            {
+                EditorHelper.CopyAllComponents(go.gameObject, pipe);
+            }
         }
 
-        if (pipeRunList != null)
+        if (IsCreatePipeRuns && pipeRunList != null)
         {
             pipeRunList.RenameResultBySortedId();
         }
@@ -790,6 +750,7 @@ public class PipeBuilder : MonoBehaviour
 
     public void CreatePipeRunList()
     {
+        if (IsCreatePipeRuns == false) return;
         Debug.Log($"CreatePipeRunList PipeModels:{PipeModels.Count}");
         pipeRunList = new PipeRunList(PipeModels, minConnectedDistance, false,isUniformRaidus,0.0001f);
     }

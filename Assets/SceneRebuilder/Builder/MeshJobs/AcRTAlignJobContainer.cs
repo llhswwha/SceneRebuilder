@@ -379,7 +379,8 @@ public class AcRTAlignJobContainer
 
                 //Debug.Log($"对齐成功 {arg.mfFrom.name} -> {arg.mfTo.name} 距离:{result.Distance}");
                 GameObject newGo = MeshHelper.CopyGO(pref.PrefabInfo.Prefab);
-                newGo.name = arg.mfTo.name + "_New";
+                //newGo.name = arg.mfTo.name + "_New2";
+                SetNewGoProperties(newGo, arg.mfTo);
                 pref.AddInstance(newGo);
                 AcRTAlignJobHelper.RemoveDict(MeshHelper.GetInstanceID(arg.mfTo));//模型都删除了，把缓存的顶点数据也删除
                 
@@ -402,6 +403,29 @@ public class AcRTAlignJobContainer
         }
          RemoveNewPrefabMeshFilter();
         mfld.RemoveEmpty();//删除
+    }
+
+    private void SetNewGoProperties(GameObject newGo, MeshPoints oldGo )
+    {
+        newGo.name = oldGo.name + "_New";
+        EditorHelper.CopyAllComponents(oldGo.gameObject, newGo);
+
+        MeshRenderer mf1 = newGo.GetComponent<MeshRenderer>();
+        if (mf1 == null)
+        {
+            Debug.LogError("SetNewGoProperties mf1 == null");
+        }
+        MeshRenderer mf2 = oldGo.gameObject.GetComponent<MeshRenderer>();
+        if (mf2 == null)
+        {
+            Debug.LogError("SetNewGoProperties mf2 == null");
+        }
+        if (mf1 != null && mf2 != null)
+        {
+            mf2.sharedMaterials = mf1.sharedMaterials;
+        }
+
+        Debug.Log($"SetNewGoProperties mat1:{mf1.sharedMaterial} mat2:{mf2.sharedMaterial} ");
     }
 
     public static bool IsCheckResult=false;
@@ -445,7 +469,8 @@ public class AcRTAlignJobContainer
                         parentDict.Add(newGo.transform, oldTransformParent);
                     }
 
-                    newGo.name = arg.mfTo.name + "_New";
+                    //newGo.name = arg.mfTo.name + "_New";
+                    SetNewGoProperties(newGo, arg.mfTo);
                     pref.AddInstance(newGo);
                     AcRTAlignJobHelper.RemoveDict(MeshHelper.GetInstanceID(arg.mfTo));
                     
@@ -686,17 +711,25 @@ public class AcRTAlignJobContainer
             //break;
         }
 
-        double allT = 0;
-        allArg.Sort();
-
-        MeshComparer.Instance.SetArg(allArg[0]);
-        for (int i = 0; i < allArg.Count && i < 10; i++)
+        if (allArg.Count > 0)
         {
-            AcRtAlignJobArg arg = allArg[i];
-            Debug.LogError($"arg[{i}]:{arg}");
-            allT += arg.Time;
+            double allT = 0;
+            allArg.Sort();
+
+            MeshComparer.Instance.SetArg(allArg[0]);
+            for (int i = 0; i < allArg.Count && i < 10; i++)
+            {
+                AcRtAlignJobArg arg = allArg[i];
+                Debug.Log($"GetPrefabs arg[{i}]:{arg}");
+                allT += arg.Time;
+            }
+            Debug.Log($"GetPrefabs allArg:{allArg.Count} allT:{allT} t:{(DateTime.Now - start)}");
         }
-        Debug.LogError($"GetPrefabs allArg:{allArg.Count} allT:{allT} t:{(DateTime.Now - start)}");
+        else
+        {
+            Debug.LogError($"GetPrefabs allArg.Count == 0 allArg:{allArg.Count}");
+        }
+
 
         ProgressBarHelper.ClearProgressBar();
 

@@ -558,7 +558,7 @@ public static class EditorHelper
     }
 
     #region CopyComponent
-    public static T CopyComponent<T>(GameObject fromObj, GameObject targetObj) where T : Component
+    private static T CopyComponent<T>(GameObject fromObj, GameObject targetObj) where T : Component
     {
         T component = fromObj.GetComponent<T>();
         if (component != null)
@@ -569,6 +569,7 @@ public static class EditorHelper
         }
         return null;
     }
+
 
     public static List<T> CopyComponents<T>(GameObject fromObj, GameObject targetObj) where T : Component
     {
@@ -596,6 +597,63 @@ public static class EditorHelper
             componentsNew.Add(newComponent);
         }
         return componentsNew;
+    }
+
+    public static void RemoveAllComponents(GameObject targetObj)
+    {
+        Component[] components = targetObj.GetComponentsInChildren<Component>();
+        foreach (var component in components)
+        {
+            if (component is MonoBehaviour)
+            {
+                GameObject.DestroyImmediate(component);
+            }
+            if (component is Collider)
+            {
+                GameObject.DestroyImmediate(component);
+
+            }
+        }
+    }
+
+    public static void CopyAllComponents(GameObject fromObj, GameObject targetObj)
+    {
+        RemoveAllComponents(targetObj);
+        Component[] components = fromObj.GetComponentsInChildren<Component>();
+        foreach (var component in components)
+        {
+            //var cName1 = component.name;
+            //var cName2 = cName1 + "_Simple";
+            //var targetObjNew = targetObj.transform.GetChildByName(cName1);
+            //if (targetObjNew == null)
+            //{
+            //    if (targetObj.name == cName1 || targetObj.name == cName2)
+            //    {
+            //        targetObjNew = targetObj.transform;
+            //    }
+            //    else
+            //    {
+            //        Debug.LogError("CopyMonoBehaviours. targetObjNew == null : " + component.name);
+            //        continue;
+            //    }
+            //}
+            if(component is MonoBehaviour)
+            {
+                CopyComponent(targetObj, component);
+            }
+            if (component is Collider)
+            {
+                if(component is MeshCollider)
+                {
+                    targetObj.AddComponent<MeshCollider>();
+                }
+                else
+                {
+                    CopyComponent(targetObj, component);
+                }
+                
+            }
+        }
     }
 
     public static void CopyComponent(GameObject targetObject, Component newComponent)

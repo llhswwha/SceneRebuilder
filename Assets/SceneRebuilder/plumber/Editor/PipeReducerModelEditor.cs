@@ -36,10 +36,6 @@ public class PipeReducerModelEditor
         {
             targetT.ShowKeyPoints();
         }
-        if (GUILayout.Button("GetPipeRadius"))
-        {
-            targetT.GetPipeRadius();
-        }
         GUILayout.EndHorizontal();
 
         if (GUILayout.Button("ClearChildren"))
