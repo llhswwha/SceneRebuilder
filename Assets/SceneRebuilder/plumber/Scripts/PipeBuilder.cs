@@ -58,6 +58,12 @@ public class PipeBuilder : MonoBehaviour
 
     public PipeGenerateArg generateArg = new PipeGenerateArg();
 
+    public PipeGenerateArg GetPipeGenerateArg()
+    {
+        //return generateArg.Clone();
+        return generateArg;
+    }
+
     //public Vector3 StartPoint = Vector3.zero;
     //public Vector3 EndPoint = Vector3.zero;
 
@@ -198,7 +204,7 @@ public class PipeBuilder : MonoBehaviour
             {
                 return;
             }
-            GameObject pipe = go.RendererModel(this.generateArg, NewObjName);
+            GameObject pipe = go.RendererModel(this.GetPipeGenerateArg(), NewObjName);
             if (pipe != null)
             {
                 NewPipeList.Add(pipe.transform);
@@ -228,7 +234,83 @@ public class PipeBuilder : MonoBehaviour
             pipeRunList.RenameResultBySortedId();
         }
 
+        if(generateArg.generateWeld)
+        {
+            CombineGeneratedWelds();
+        }
+        
+
         Debug.LogWarning($">>RendererPipes time:{DateTime.Now - start}");
+    }
+
+    public float minWeldDis = 0.0001f;
+    public float maxWeldDis = 0.05f;
+
+    private void CombineGeneratedWelds()
+    {
+        DateTime time = DateTime.Now;
+        List<Transform> elbowWelds = GetWelds(PipeElbows);
+        List<Transform> elbowWelds2 = new List<Transform>(elbowWelds);
+        int count1 = elbowWelds.Count;
+        CombineGeneratedWelds(elbowWelds2, elbowWelds, minWeldDis);
+        int count2 = elbowWelds.Count;
+
+        List<Transform> pipeElbows = GetWelds(PipeLines);
+        int count3 = pipeElbows.Count;
+        CombineGeneratedWelds(pipeElbows, elbowWelds, minWeldDis);
+        int count4 = pipeElbows.Count;
+
+        Debug.Log($"CombineGeneratedWelds time:{DateTime.Now-time} elbowWelds1:{count1} elbowWelds2:{count2} elbowWelds3:{elbowWelds.Count} pipeElbows1:{count3} pipeElbows2:{count4}");
+    }
+
+    private void CombineGeneratedWelds(List<Transform> elbows1, List<Transform> elbows2,float minWeldDis)
+    {
+        
+        for (int i = 0; i < elbows1.Count; i++)
+        {
+            var w = elbows1[i];
+            if (w == null) continue;
+            var closedW = TransformHelper.FindClosedComponentEx(elbows2, w, false);
+            var w2 = closedW.t;
+            if (closedW.dis < minWeldDis)
+            {
+                elbows2.Remove(w2);
+                //elbows1.Remove(w2);
+                //elbows1.RemoveAt(i); i--;
+                
+                Debug.Log($"[{i}] w:{w.name} w2:{w2.name} {w==w2} dis:{closedW.dis} min:{minWeldDis}");
+
+                GameObject.DestroyImmediate(w2.gameObject);
+            }
+        }
+    }
+
+    internal List<Transform> GetWelds<T>(List<T> pipeModels) where T :PipeModelBase
+    {
+        List<Transform> ts = new List<Transform>();
+        foreach (var model in pipeModels)
+        {
+            if (model == null) continue;
+            if (model.ResultGo == null) continue;
+            var g = model.ResultGo.GetComponent<PipeMeshGeneratorBase>();
+            ts.AddRange(g.Childrens);
+        }
+        return ts;
+    }
+
+    internal List<Transform> GetWelds()
+    {
+        List<Transform> ts = new List<Transform>();
+        foreach (var g in PipeGenerators)
+        {
+            //ts.AddRange(g.Childrens);
+            foreach(var c in g.Childrens)
+            {
+                if (c == null) continue;
+                ts.Add(c);
+            }
+        }
+        return ts;
     }
 
     public List<Transform> GetAllPipeGos()
@@ -356,7 +438,7 @@ public class PipeBuilder : MonoBehaviour
         for (int i = 0; i < PipeLines.Count; i++)
         {
             PipeLineModel go = PipeLines[i];
-            GameObject pipe = go.RendererModel(this.generateArg, NewObjName);
+            GameObject pipe = go.RendererModel(this.GetPipeGenerateArg(), NewObjName);
             NewPipeList.Add(pipe.transform);
         }
         Debug.LogError($">>>RendererPipeLines time:{DateTime.Now - start}");
@@ -369,7 +451,7 @@ public class PipeBuilder : MonoBehaviour
         for (int i = 0; i < PipeElbows.Count; i++)
         {
             PipeElbowModel go = PipeElbows[i];
-            GameObject pipe = go.RendererModel(this.generateArg,NewObjName);
+            GameObject pipe = go.RendererModel(this.GetPipeGenerateArg(), NewObjName);
             NewPipeList.Add(pipe.transform);
         }
         Debug.LogError($">>>RendererPipeElbows time:{DateTime.Now - start}");

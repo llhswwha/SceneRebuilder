@@ -190,6 +190,7 @@ public class PipeMeshGenerator : PipeMeshGeneratorBase
 
     private void RenderPipe(List<Vector3> ps)
     {
+        Childrens.Clear();
         Mesh mesh = GeneratePipeMesh(ps, generateWeld);
         SetMeshRenderers(mesh);
     }
@@ -249,6 +250,7 @@ public class PipeMeshGenerator : PipeMeshGeneratorBase
         return GenerateWeld(vertices, normals, start, direction, pipeRadius);
     }
 
+
     GameObject GenerateWeld(List<Vector3> vertices, List<Vector3> normals, Vector3 start, Vector3 direction,float radius)
     {
         if (IsWeldSeperated)
@@ -268,6 +270,8 @@ public class PipeMeshGenerator : PipeMeshGeneratorBase
             weldGenerator.RenderTorusXZ();
             //weldGenerator.ShowPoints();
             go.transform.up = direction;
+            go.transform.localScale = new Vector3(1, 2, 1);
+            Childrens.Add(go.transform);
             return go;
         }
         else
@@ -502,15 +506,34 @@ public class PipeMeshGenerator : PipeMeshGeneratorBase
 
                 if (gWeld && i < ps.Count - 1)
                 {
-                    if (IsGenerateEndWeld == false)
+                    if(IsElbow)
                     {
                         if (i == 0)
                         {
-                            GenerateWeld(vertices, normals, endPoint, directionN);
+                            GenerateWeld(vertices, normals, initialPoint, directionN);
                         }
                         else if (i == ps.Count - 2)
                         {
-                            GenerateWeld(vertices, normals, initialPoint, directionN);
+                            GenerateWeld(vertices, normals, endPoint, directionN);
+                        }
+                    }
+                    else
+                    {
+                        if (IsGenerateEndWeld == false)
+                        {
+                            if (i == 0)
+                            {
+                                GenerateWeld(vertices, normals, endPoint, directionN);
+                            }
+                            else if (i == ps.Count - 2)
+                            {
+                                GenerateWeld(vertices, normals, initialPoint, directionN);
+                            }
+                            else
+                            {
+                                GenerateWeld(vertices, normals, initialPoint, directionN);
+                                GenerateWeld(vertices, normals, endPoint, directionN);
+                            }
                         }
                         else
                         {
@@ -518,11 +541,7 @@ public class PipeMeshGenerator : PipeMeshGeneratorBase
                             GenerateWeld(vertices, normals, endPoint, directionN);
                         }
                     }
-                    else
-                    {
-                        GenerateWeld(vertices, normals, initialPoint, directionN);
-                        GenerateWeld(vertices, normals, endPoint, directionN);
-                    }
+ 
                 }
             }
         }
@@ -578,6 +597,8 @@ public class PipeMeshGenerator : PipeMeshGeneratorBase
     }
 
     public bool IsGenerateEndWeld = false;
+
+    public bool IsElbow = false;
 
     public bool IsGenerateElbowBeforeAfter = false;
 

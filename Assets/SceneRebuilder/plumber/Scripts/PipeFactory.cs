@@ -1,6 +1,7 @@
 using System;
 using System.Collections;
 using System.Collections.Generic;
+using System.Linq;
 using UnityEngine;
 
 public class PipeFactory : SingletonBehaviour<PipeFactory>
@@ -115,7 +116,7 @@ public class PipeFactory : SingletonBehaviour<PipeFactory>
 
         if(IsReplaceOld)
         {
-            this.ReplaceOld();
+            this.ReplacePipes();
         }
         
         var pres1=this.PrefabPipes();
@@ -227,6 +228,93 @@ public class PipeFactory : SingletonBehaviour<PipeFactory>
         SetAllVisible(true);
     }
 
+    public GameObject WeldRootTarget;
+
+    private void Replace(Transform w,Transform w2)
+    {
+        w.name = w2.name;
+        //w.transform.SetParent(w2.parent);
+        w2.gameObject.SetActive(false);
+        GameObject.DestroyImmediate(w2.gameObject);
+    }
+
+    public float minWeldDis = 0.0001f;
+    public float maxWeldDis = 0.05f;
+
+    public void ReplaceWelds()
+    {
+        DateTime start = DateTime.Now;
+        if (WeldRootTarget == null)
+        {
+            WeldRootTarget = Target;
+        }
+        var welds = WeldRootTarget.GetComponentsInChildren<MeshRenderer>(true);
+        int allWeldsCount = welds.Length;
+        List<Transform> weldList = new List<Transform>();
+        foreach(var w in welds)
+        {
+            weldList.Add(w.transform);
+        }
+        var weldsNew = newBuilder.GetWelds();
+        int newWeldsCount = weldsNew.Count;
+
+        for(int i=0;i<weldsNew.Count;i++)
+        {
+            var w = weldsNew[i];
+            if (w == null) continue;
+            var closedW = TransformHelper.FindClosedComponentEx(weldList, w, false);
+            var w2 = closedW.t;
+            if (closedW.dis < minWeldDis)
+            {
+                //Debug.Log($"ReplaceWelds1 closedW[{i}] [w:{w.parent.name}/{w.name}] [closedW:{closedW}]");
+                Replace(w, w2);
+                weldList.Remove(w2);
+                weldsNew.RemoveAt(i);i--;
+            }
+            else if (closedW.dis < maxWeldDis)
+            {
+                Debug.Log($"ReplaceWelds1 closedW[{i}] [w:{w.parent.name}/{w.name}] [closedW:{closedW}]");
+            }
+            else
+            {
+                //Debug.LogError($"ReplaceWelds1 closedW[{i}] [w:{w.parent.name}/{w.name}] [closedW:{closedW}]");
+            }
+        }
+
+        int destroyCount = 0;
+        for (int i = 0; i < weldsNew.Count; i++)
+        {
+            var w = weldsNew[i];
+            if (w == null) continue;
+            var closedW = TransformHelper.FindClosedComponentEx(weldList, w, false);
+            var w2 = closedW.t;
+            if (closedW.dis < minWeldDis)
+            {
+                //Debug.Log($"ReplaceWelds2 closedW[{i}] [w:{w.parent.name}/{w.name}] [closedW:{closedW}]");
+                //weldList.Remove(closedW.t);
+            }
+            else if (closedW.dis < maxWeldDis)
+            {
+                //Debug.LogWarning($"ReplaceWelds2 closedW[{i}] [w:{w.parent.name}/{w.name}] [closedW:{closedW}]");
+                w.position = closedW.t.position;
+                Replace(w, w2);
+
+                weldList.Remove(closedW.t);
+                weldsNew.RemoveAt(i); i--;
+            }
+            else
+            {
+                Debug.LogWarning($"ReplaceWelds2 closedW[{i}] [w:{w.parent.name}/{w.name}] [closedW:{closedW}]");
+                GameObject.DestroyImmediate(w.gameObject);
+                weldsNew.RemoveAt(i); i--;
+
+                destroyCount++;
+            }
+        }
+
+        Debug.Log($"ReplaceWelds time:{DateTime.Now-start} AllWelds:{allWeldsCount} NewWelds:{newWeldsCount} LastWelds:{weldList.Count} destroyCount:{destroyCount}");
+    }
+
     public void SetAllVisible(bool isVisible)
     {
         SetListVisible(PipeLines, isVisible);
@@ -330,7 +418,7 @@ public class PipeFactory : SingletonBehaviour<PipeFactory>
         newBuilder.GetInfoAndCreateEachPipes();
     }
 
-    public void ReplaceOld()
+    public void ReplacePipes()
     {
         newBuilder.ReplaceOld();
         
@@ -395,7 +483,11 @@ public class PipeFactory : SingletonBehaviour<PipeFactory>
         newBuilder.IsCreatePipeRuns = this.IsCreatePipeRuns;
         newBuilder.IsSaveMaterials = this.IsSaveMaterials;
         newBuilder.IsCopyComponents = this.IsCopyComponents;
-        //newBuilder.CreatePipeRunList();
+
+        newBuilder.minWeldDis = this.minWeldDis;
+        newBuilder.maxWeldDis = this.maxWeldDis;
+
+    //newBuilder.CreatePipeRunList();
 
         newBuilder.NewObjName = "_New";
         newBuilder.generateArg = generateArg;

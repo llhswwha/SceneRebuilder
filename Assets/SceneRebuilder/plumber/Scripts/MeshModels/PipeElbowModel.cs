@@ -346,6 +346,7 @@ public class PipeElbowModel : PipeModelBase
 
     public override GameObject RendererModel(PipeGenerateArg arg, string afterName)
     {
+        arg = arg.Clone();
         if (RendererErrorModel())
         {
             return null;
@@ -406,8 +407,10 @@ public class PipeElbowModel : PipeModelBase
         arg.SetArg(pipe);
 
         //pipe.generateWeld = arg.generateWeld;
-        pipe.generateWeld = false;
+        //pipe.generateWeld = false;
         //pipe.pipeRadius = PipeRadius;
+        pipe.IsGenerateEndWeld = true;
+        pipe.IsElbow = true;
         pipe.pipeRadius = (info.EndPointOut1.w + info.EndPointOut2.w) / 2;
         pipe.elbowRadius = pipeArg.elbowRadius;
         pipe.avoidStrangling = true;

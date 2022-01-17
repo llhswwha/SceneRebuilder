@@ -147,6 +147,7 @@ public class PipeReducerModel
         pipe.pipeRadius2 = PipeRadius2;
         pipe.IsGenerateEndWeld = true;
         pipe.generateEndCaps = true;
+        pipe.generateWeld = false;
         pipe.RenderPipe();
 
         return pipe.gameObject;

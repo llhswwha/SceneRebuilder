@@ -76,8 +76,10 @@ public class PipeFlangeModel : PipeReducerModel
         }
     }
 
-    public override GameObject RendererModel(PipeGenerateArg arg, string afterName)
+    public override GameObject RendererModel(PipeGenerateArg arg0, string afterName)
     {
+        PipeGenerateArg arg = arg0.Clone();
+        arg.generateWeld = false;
         if (IsSpecial)
         {
             GameObject pipeNew = GetPipeNewGo(arg, afterName);

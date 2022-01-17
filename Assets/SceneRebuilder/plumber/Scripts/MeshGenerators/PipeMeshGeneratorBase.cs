@@ -4,6 +4,10 @@ using UnityEngine;
 
 public class PipeMeshGeneratorBase : MonoBehaviour
 {
+
+
+    public List<Transform> Childrens = new List<Transform>();
+
     public GameObject Target;
 
     public float elbowRadius = 0.5f;

@@ -205,7 +205,7 @@ public class NavisModelRootList : SingletonBehaviour<NavisModelRootList>
             }
             else
             {
-                var closedBim = TransformHelper.FindClosedTransform(list, t.position);
+                var closedBim = TransformHelper.FindClosedComponent(list, t.position);
                 //bimListNoConnected.Remove(closedBim);
                 bimListNoConnected_11.Add(closedBim);
 

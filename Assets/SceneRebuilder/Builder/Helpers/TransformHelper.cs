@@ -5,7 +5,7 @@ using UnityEngine;
 
 public static class TransformHelper
 {
-    public static Transform FindClosedTransform(List<Transform> ts, Vector3 pos, bool isUseCenter=false)
+    public static Transform FindClosedTransform(IEnumerable<Transform> ts, Vector3 pos, bool isUseCenter=false)
     {
         float minDis = float.MaxValue;
         Transform minModel = null;
@@ -28,7 +28,7 @@ public static class TransformHelper
         return minModel;
     }
 
-    public static T FindClosedTransform<T>(List<T> ts, Vector3 pos,bool isUseCenter = false) where T :Component
+    public static T FindClosedComponent<T>(IEnumerable<T> ts, Vector3 pos,bool isUseCenter = false) where T :Component
     {
         float minDis = float.MaxValue;
         T minModel = null;
@@ -49,6 +49,50 @@ public static class TransformHelper
         }
         return minModel;
     }
+
+    public class ClosedTransform
+    {
+        public Transform t;
+
+        public float dis;
+
+        public ClosedTransform(Transform t,float d)
+        {
+            this.t = t;
+            this.dis = d;
+        }
+
+        public override string ToString()
+        {
+            return $"t:{t.name} dis:{dis}";
+        }
+    }
+
+    public static ClosedTransform FindClosedComponentEx<T>(IEnumerable<T> ts, Transform target, bool isUseCenter = false) where T : Component
+    {
+        float minDis = float.MaxValue;
+        Transform minModel = null;
+        var pos = target.position;
+        foreach (var t in ts)
+        {
+            if (t == null) continue;
+            if (t.transform == target) continue;
+            Vector3 posT = t.transform.position;
+            if (isUseCenter)
+            {
+                MeshRendererInfo info0 = MeshRendererInfo.GetInfo(t.gameObject, false);
+                posT = info0.center;
+            }
+            float dis = Vector3.Distance(posT, pos);
+            if (minDis > dis)
+            {
+                minDis = dis;
+                minModel = t.transform;
+            }
+        }
+        return new ClosedTransform(minModel,minDis);
+    }
+
     public static string GetPrefix(string n)
     {
         return GetPrefix(n, new char[] { ' ', '_' });

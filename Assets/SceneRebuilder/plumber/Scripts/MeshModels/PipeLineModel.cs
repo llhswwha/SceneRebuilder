@@ -354,6 +354,8 @@ public class PipeLineModel : PipeModelBase
         ModelStartPoint.w = PipeRadius;
         ModelEndPoint = endPoint;
         ModelEndPoint.w = PipeRadius;
+
+        PipeLength = Vector3.Distance(startPoint, endPoint);
     }
 
     public void SetLineData(PipeLineData data)
@@ -629,7 +631,16 @@ public class PipeLineModel : PipeModelBase
         pipe.pipeRadius2 = radius;
         pipe.IsGenerateEndWeld = true;
         pipe.generateEndCaps = false;
+
+        if (radius < 0.01)
+        {
+            //pipe.weldRadius = 0.003f;
+            pipe.weldRadius = arg.weldRadius * 0.6f;
+        }
+
         pipe.RenderPipe();
+
+
 
         return pipe.gameObject;
     }

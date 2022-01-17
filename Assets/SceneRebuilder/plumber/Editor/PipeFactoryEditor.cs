@@ -141,9 +141,13 @@ public class PipeFactoryEditor : BaseFoldoutEditor<PipeFactory>
         {
             targetT.CheckResults();
         }
-        if (GUILayout.Button("5.Replace"))
+        if (GUILayout.Button("5.ReplacePipes"))
         {
-            targetT.ReplaceOld();
+            targetT.ReplacePipes();
+        }
+        if (GUILayout.Button("5.ReplaceWelds"))
+        {
+            targetT.ReplaceWelds();
         }
         if (GUILayout.Button("6.PrefabPipes"))
         {
@@ -155,19 +159,6 @@ public class PipeFactoryEditor : BaseFoldoutEditor<PipeFactory>
         }
 
         GUILayout.EndHorizontal();
-
-        GUILayout.BeginHorizontal();
-        if (GUILayout.Button("MoveOthers"))
-        {
-            targetT.MoveOthersParent();
-        }
-        if (GUILayout.Button("RecoverOthers"))
-        {
-            targetT.RecoverOthersParent();
-        }
-
-        GUILayout.EndHorizontal();
-
 
         GUILayout.BeginHorizontal();
         if (GUILayout.Button("GetInfos(Job)"))
@@ -234,6 +225,14 @@ public class PipeFactoryEditor : BaseFoldoutEditor<PipeFactory>
         if (GUILayout.Button("OnlyShowPipe"))
         {
             targetT.OnlyShowPipe();
+        }
+        if (GUILayout.Button("MoveOthers"))
+        {
+            targetT.MoveOthersParent();
+        }
+        if (GUILayout.Button("RecoverOthers"))
+        {
+            targetT.RecoverOthersParent();
         }
         GUILayout.EndHorizontal();
 

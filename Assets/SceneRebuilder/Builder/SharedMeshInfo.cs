@@ -70,7 +70,7 @@ public class SharedMeshInfoList : List<SharedMeshInfo>
     {
         DateTime start = DateTime.Now;
         this.meshFilters.AddRange(mfs);
-        Debug.Log($"SharedMeshInfo.InitMeshFilters meshFilters:{mfs.Length}");
+        //Debug.Log($"SharedMeshInfo.InitMeshFilters meshFilters:{mfs.Length}");
         Dictionary<Mesh, SharedMeshInfo> meshDict = new Dictionary<Mesh, SharedMeshInfo>();
         for (int i = 0; i < mfs.Length; i++)
         {
@@ -86,11 +86,11 @@ public class SharedMeshInfoList : List<SharedMeshInfo>
             SharedMeshInfo sharedMeshInfo = meshDict[mesh];
             sharedMeshInfo.AddMeshFilter(mf);
         }
-        Debug.Log($"SharedMeshInfo.InitMeshFilters time1:{(DateTime.Now-start).TotalMilliseconds}ms");
+        //Debug.Log($"SharedMeshInfo.InitMeshFilters time1:{(DateTime.Now-start).TotalMilliseconds}ms");
 
         AddList(meshDict.Values.ToList());
 
-        Debug.Log($"SharedMeshInfo.InitMeshFilters time2:{(DateTime.Now - start).TotalMilliseconds}ms");
+        //Debug.Log($"SharedMeshInfo.InitMeshFilters time2:{(DateTime.Now - start).TotalMilliseconds}ms");
         ProgressBarHelper.ClearProgressBar();
     }
 
