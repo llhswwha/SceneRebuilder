@@ -826,7 +826,7 @@ namespace MeshJobs
 
             if (maxPList.Length > 10 || minPList.Length > 10 || minPList.Length* maxPList.Length>64)
             {
-                Debug.LogError($"[ThreePointJob] 存在大量最远点和最近点! id:{id} goId:{goId}  maxDis:{maxPList.Length},minDis:{minPList.Length}");
+                Debug.LogWarning($"[ThreePointJob] 存在大量最远点和最近点! id:{id} goId:{goId}  maxDis:{maxPList.Length},minDis:{minPList.Length}");
             }
 
             //Debug.Log(string.Format("ThreePointJob[{0}] vertexCount:{1}",InvokeCount,vertexCount));

@@ -193,6 +193,8 @@ public class PipeTeeModel : PipeElbowModel
         Debug.Log($"Tee.SetModelData p11:{Vector4String(p11)} p12:{Vector4String(p12)} p21:{Vector4String(p21)} p22:{Vector4String(p22)}");
     }
 
+    public bool IsCombineResult = true;
+
     public override GameObject RendererModel(PipeGenerateArg arg, string afterName)
     {
         if (RendererErrorModel())
@@ -238,7 +240,11 @@ public class PipeTeeModel : PipeElbowModel
             //pipe3.transform.SetParent(pipeNew.transform);
 
             GameObject target = pipeNew;
-            target = MeshCombineHelper.Combine(pipeNew);
+            if (IsCombineResult)
+            {
+                target = MeshCombineHelper.Combine(pipeNew);
+            }
+            
             this.ResultGo = target;
 
             PipeMeshGenerator pipeG = target.AddComponent<PipeMeshGenerator>();
@@ -253,7 +259,11 @@ public class PipeTeeModel : PipeElbowModel
 
             pipe1.transform.SetParent(pipeNew.transform);
             pipe2.transform.SetParent(pipeNew.transform);
-            GameObject target = MeshCombineHelper.Combine(pipeNew);
+            GameObject target = pipeNew;
+            if (IsCombineResult)
+            {
+                target = MeshCombineHelper.Combine(pipeNew);
+            }
             this.ResultGo = target;
 
             PipeMeshGenerator pipeG = target.AddComponent<PipeMeshGenerator>();

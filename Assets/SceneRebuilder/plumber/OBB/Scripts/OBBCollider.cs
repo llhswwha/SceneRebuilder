@@ -494,11 +494,13 @@ public class OBBCollider : MonoBehaviour
         var lp = p.GetVector3();
         var wp = this.transform.TransformPoint(lp);
         var pObj=CreatePoint(wp, n);
-        pObj.transform.SetParent(pt);
+        if(pObj)
+            pObj.transform.SetParent(pt);
     }
 
     private GameObject CreatePoint(Vector3 p,string n)
     {
+        if (float.IsNaN(p.x)) return null;
         GameObject g1=GameObject.CreatePrimitive(PrimitiveType.Sphere);
 
         //g1.transform.SetParent(this.transform);

@@ -69,6 +69,65 @@ public class PipeFactory : SingletonBehaviour<PipeFactory>
         }
     }
 
+
+
+    public void OneKey(bool isJob)
+    {
+        DateTime start = DateTime.Now;
+
+        MeshNode meshNode = MeshNode.InitNodes(Target);
+        meshNode.GetSharedMeshList();
+        TargetInfo = meshNode.GetVertexInfo();
+        TargetVertexCount = meshNode.VertexCount;
+
+        this.GetPipeParts();
+
+        if (isJob)
+        {
+            this.GetPipeInfosJob();
+        }
+        else
+        {
+            this.GetPipeInfos();
+        }
+
+        this.ClearGeneratedObjs();
+        this.RendererEachPipes();
+
+        if (IsCheckResult)
+        {
+            if (isJob)
+            {
+                this.CheckResultsJob();
+            }
+            else
+            {
+                this.CheckResults();
+            }
+        }
+
+
+        this.MovePipes();
+
+        if(IsReplaceOld)
+        {
+            this.ReplaceOld();
+        }
+        
+        var pres1=this.PrefabPipes();
+        var pres2 = this.PrefabOthers();
+
+        //ResultInfo=ShowTargetInfo(Target);
+
+        MeshNode meshNode2 = MeshNode.InitNodes(Target);
+        SharedMeshInfoList sInfo=meshNode2.GetSharedMeshList();
+        ResultInfo = meshNode2.GetVertexInfo();
+        ResultVertexCount = meshNode2.VertexCount;
+        SharedResultVertexCountCount = sInfo.sharedVertexCount;
+
+        Debug.LogError($"OneKey time:{DateTime.Now-start} Models:{newBuilder.PipeModels.Count+this.PipeOthers.Count}({newBuilder.PipeModels.Count}+{this.PipeOthers.Count}) Prefabs:{pres1.Count+pres2.Count}({pres1.Count}+{pres2.Count}) [TargetInfo:{TargetInfo} -> ResultInfo:{ResultInfo}]({ResultVertexCount/TargetVertexCount:P2},{SharedResultVertexCountCount / TargetVertexCount:P2})");
+    }
+
     [ContextMenu("GetPipeParts")]
     public void GetPipeParts()
     {
@@ -143,7 +202,15 @@ public class PipeFactory : SingletonBehaviour<PipeFactory>
         Debug.Log($"GetModelClass keys:{keys.Count}");
     }
 
+    public float ResultVertexCount = 0;
+
+    public float SharedResultVertexCountCount = 0;
+
     public string ResultInfo = "";
+
+    public float TargetVertexCount = 0;
+
+    public string TargetInfo = "";
 
     public string GetResultInfo()
     {
@@ -187,22 +254,42 @@ public class PipeFactory : SingletonBehaviour<PipeFactory>
         RendererId.RecoverTargetsParent(PipeOthers, null);
     }
 
-    public void PrefabOthers()
+    public PrefabInfoList PrefabPipes()
     {
         DateTime start = DateTime.Now;
-        MoveOthersParent();
-        //this.PipeOthers;
-        //MeshRendererInfoList list=new MeshRendererInfoList(this.PipeOthers)
-        ModelClassDict<Transform> modelClassList = ModelMeshManager.Instance.GetPrefixNames<Transform>(OthersRoot.gameObject);
-        var keys = modelClassList.GetKeys();
+        //MoveOthersParent();
+        ////this.PipeOthers;
+        ////MeshRendererInfoList list=new MeshRendererInfoList(this.PipeOthers)
+        //ModelClassDict<Transform> modelClassList = ModelMeshManager.Instance.GetPrefixNames<Transform>(OthersRoot.gameObject);
+        //var keys = modelClassList.GetKeys();
 
-        
+        PrefabInfoList prefabs = PrefabInstanceBuilder.Instance.GetPrefabsOfList(newBuilder.PipeGenerators, true);
 
-        var prefabs=PrefabInstanceBuilder.Instance.GetPrefabsOfList(OthersRoot.gameObject, true);
+        Debug.Log($"PrefabPipes time:{DateTime.Now - start} Pipes:{newBuilder.PipeGenerators.Count} prefabs:{prefabs.Count}");
 
-        Debug.Log($"PrefabOthers time:{DateTime.Now-start} others:{this.PipeOthers.Count} keys:{keys.Count} prefabs:{prefabs.Count}");
+        //RecoverOthersParent();
+        return prefabs;
+    }
 
-        RecoverOthersParent();
+    public PrefabInfoList PrefabOthers()
+    {
+        DateTime start = DateTime.Now;
+        //MoveOthersParent();
+        ////this.PipeOthers;
+        ////MeshRendererInfoList list=new MeshRendererInfoList(this.PipeOthers)
+        //ModelClassDict<Transform> modelClassList = ModelMeshManager.Instance.GetPrefixNames<Transform>(OthersRoot.gameObject);
+        //var keys = modelClassList.GetKeys();
+
+
+
+        PrefabInfoList prefabs =PrefabInstanceBuilder.Instance.GetPrefabsOfList(PipeOthers, true);
+        PipeOthers.Clear();
+        PipeOthers.AddRange(prefabs.GetComponents<Transform>());
+
+        Debug.Log($"PrefabOthers time:{DateTime.Now-start} others:{this.PipeOthers.Count} prefabs:{prefabs.Count}");
+
+        //RecoverOthersParent();
+        return prefabs;
     }
 
     [ContextMenu("HidAll")]
@@ -241,7 +328,12 @@ public class PipeFactory : SingletonBehaviour<PipeFactory>
 
     public void ReplaceOld()
     {
-        throw new NotImplementedException();
+        newBuilder.ReplaceOld();
+        
+        if (targetNew)
+        {
+            GameObject.DestroyImmediate(targetNew);
+        }
     }
 
     [ContextMenu("GetPipeInfos")]
@@ -397,9 +489,11 @@ public class PipeFactory : SingletonBehaviour<PipeFactory>
 
     public bool IsCopyComponents = true;
 
-    public bool IsCreatePipeRuns = true;
+    public bool IsCreatePipeRuns = false;
 
-    public bool IsReplaceOld = false;
+    public bool IsReplaceOld = true;
+
+    public bool IsCheckResult = false;
 
     public void MovePipes()
     {
@@ -452,8 +546,14 @@ public class PipeFactory : SingletonBehaviour<PipeFactory>
 
         targetNew.transform.SetParent(newBuilder.transform);
 
-        MeshNode meshNode= MeshNode.InitNodes(targetNew);
-        ResultInfo = meshNode.GetTitle();
+        ResultInfo=ShowTargetInfo(targetNew);
+    }
+
+    private string ShowTargetInfo(GameObject t)
+    {
+        MeshNode meshNode = MeshNode.InitNodes(t);
+        meshNode.GetSharedMeshList();
+        return meshNode.GetVertexInfo();
     }
 
     public Material pipeMaterial;

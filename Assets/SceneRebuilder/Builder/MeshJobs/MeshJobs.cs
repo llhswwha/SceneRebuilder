@@ -57,6 +57,7 @@ namespace MeshJobs
             if (meshFilters != null)
                 foreach (var mf in meshFilters)
                 {
+                    if (mf == null) continue;
                     MeshPoints mps = new MeshPoints(mf.gameObject);
                     if (mps.vertexCount > 0)
                     {

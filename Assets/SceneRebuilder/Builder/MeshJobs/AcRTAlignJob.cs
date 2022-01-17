@@ -172,8 +172,8 @@ namespace MeshJobs
             }
             go.SetActive(false);
 
-            //EditorHelper.UnpackPrefab(go);
-            //GameObject.DestroyImmediate(go);
+            EditorHelper.UnpackPrefab(go);
+            GameObject.DestroyImmediate(go);
         }
 
         public double Time = 0;

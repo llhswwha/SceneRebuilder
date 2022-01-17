@@ -408,7 +408,7 @@ public class AcRTAlignJobContainer
     private void SetNewGoProperties(GameObject newGo, MeshPoints oldGo )
     {
         newGo.name = oldGo.name + "_New";
-        EditorHelper.CopyAllComponents(oldGo.gameObject, newGo);
+        EditorHelper.CopyAllComponents(oldGo.gameObject, newGo,true,null);
 
         MeshRenderer mf1 = newGo.GetComponent<MeshRenderer>();
         if (mf1 == null)
@@ -422,15 +422,15 @@ public class AcRTAlignJobContainer
         }
         if (mf1 != null && mf2 != null)
         {
-            mf2.sharedMaterials = mf1.sharedMaterials;
+            mf1.sharedMaterials = mf2.sharedMaterials;
         }
 
-        Debug.Log($"SetNewGoProperties mat1:{mf1.sharedMaterial} mat2:{mf2.sharedMaterial} ");
+        Debug.Log($"SetNewGoProperties mat1:{mf1.sharedMaterial} mat2:{mf2.sharedMaterial} mat3:{oldGo.GetMatId()}");
     }
 
     public static bool IsCheckResult=false;
 
-    public static bool IsSetParent=false;
+    public static bool IsSetParent=true;
 
     public static int MaxVertexCount=2400;
 
@@ -698,7 +698,7 @@ public class AcRTAlignJobContainer
             tmpT = DateTime.Now;
             //4.执行Jos
             DoAlignJobResult();//处理Jobs的结果
-            totalTime4+=(DateTime.Now-tmpT).TotalMilliseconds;
+            totalTime4 +=(DateTime.Now-tmpT).TotalMilliseconds;
 
             
 

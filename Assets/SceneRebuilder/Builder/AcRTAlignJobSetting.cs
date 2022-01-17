@@ -18,7 +18,7 @@ public class AcRTAlignJobSetting : SingletonBehaviour<AcRTAlignJobSetting>
 
     public bool IsCheckResult=true;
 
-    public bool IsSetParent=false;
+    public bool IsSetParent=true;
 
     public float MaxVertexCount=10;
 

@@ -93,15 +93,17 @@ public class PipeFactoryEditor : BaseFoldoutEditor<PipeFactory>
         GUILayout.EndHorizontal();
 
         GUILayout.BeginHorizontal();
-        GUILayout.Label($"IsCreatePipeRuns");
+        GUILayout.Label($"CreatePipeRuns");
         targetT.IsCreatePipeRuns = EditorGUILayout.Toggle(targetT.IsCreatePipeRuns);
         GUILayout.Label($"MoveToFactory");
         targetT.IsMoveResultToFactory = EditorGUILayout.Toggle(targetT.IsMoveResultToFactory);
         GUILayout.Label($"SaveMaterials");
         targetT.IsSaveMaterials = EditorGUILayout.Toggle(targetT.IsSaveMaterials);
-        GUILayout.Label($"IsCopyComponents");
+        GUILayout.Label($"CopyComponents");
         targetT.IsCopyComponents = EditorGUILayout.Toggle(targetT.IsCopyComponents);
-        GUILayout.Label($"IsReplaceOld");
+        GUILayout.Label($"CheckResult");
+        targetT.IsCheckResult = EditorGUILayout.Toggle(targetT.IsCheckResult);
+        GUILayout.Label($"ReplaceOld");
         targetT.IsReplaceOld = EditorGUILayout.Toggle(targetT.IsReplaceOld);
         GUILayout.EndHorizontal();
 
@@ -112,19 +114,11 @@ public class PipeFactoryEditor : BaseFoldoutEditor<PipeFactory>
         GUILayout.BeginHorizontal();
         if (GUILayout.Button("OneKey"))
         {
-            targetT.GetPipeParts();
-            targetT.GetPipeInfosJob();
-            targetT.ClearGeneratedObjs();
-            targetT.RendererEachPipes();
-            targetT.MovePipes();
+            targetT.OneKey(false);
         }
         if (GUILayout.Button("OneKey(Job)"))
         {
-            targetT.GetPipeParts();
-            targetT.GetPipeInfos();
-            targetT.ClearGeneratedObjs();
-            targetT.RendererEachPipes();
-            targetT.MovePipes();
+            targetT.OneKey(true);
         }
         GUILayout.EndHorizontal();
 
@@ -143,22 +137,23 @@ public class PipeFactoryEditor : BaseFoldoutEditor<PipeFactory>
             targetT.RendererEachPipes();
             targetT.MovePipes();
         }
-        if (GUILayout.Button("4.PrefabOthers"))
-        {
-            targetT.PrefabOthers();
-        }
-        if (GUILayout.Button("5.CreateRuns"))
-        {
-            targetT.CreateRunList();
-        }
-        if (GUILayout.Button("6.CheckResults"))
+        if (GUILayout.Button("4.CheckResults"))
         {
             targetT.CheckResults();
         }
-        if (GUILayout.Button("7.ReplaceOld"))
+        if (GUILayout.Button("5.Replace"))
         {
             targetT.ReplaceOld();
         }
+        if (GUILayout.Button("6.PrefabPipes"))
+        {
+            targetT.PrefabPipes();
+        }
+        if (GUILayout.Button("7.PrefabOthers"))
+        {
+            targetT.PrefabOthers();
+        }
+
         GUILayout.EndHorizontal();
 
         GUILayout.BeginHorizontal();
@@ -217,9 +212,13 @@ public class PipeFactoryEditor : BaseFoldoutEditor<PipeFactory>
         {
             targetT.MovePipes();
         }
-        if (GUILayout.Button("TestIsConnected"))
+        if (GUILayout.Button("TestRun"))
         {
             targetT.TestModelIsConnected();
+        }
+        if (GUILayout.Button("CreateRuns"))
+        {
+            targetT.CreateRunList();
         }
         GUILayout.EndHorizontal();
 

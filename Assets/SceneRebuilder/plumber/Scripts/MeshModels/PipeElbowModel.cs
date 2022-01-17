@@ -466,8 +466,6 @@ public class PipeElbowModel : PipeModelBase
         return objTriangles;
     }
 
-    public float PointScale = 0.001f;
-
     public void OnDestroy()
     {
         Debug.Log($"OnDestroy {this.name}");

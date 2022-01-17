@@ -628,6 +628,7 @@ public class PipeLineModel : PipeModelBase
         pipe.pipeRadius1 = radius;
         pipe.pipeRadius2 = radius;
         pipe.IsGenerateEndWeld = true;
+        pipe.generateEndCaps = false;
         pipe.RenderPipe();
 
         return pipe.gameObject;

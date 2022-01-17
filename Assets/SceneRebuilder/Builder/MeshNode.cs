@@ -9,8 +9,17 @@ public class MeshNode : MonoBehaviour,IComparable<MeshNode>
     public int rendererCount = 0;
     public string GetTitle()
     {
-        
+
         return $"vertex:{MeshHelper.GetVertexCountS(VertexCount)}({MeshHelper.GetVertexCountS(meshData.vertexCount)}|{meshData.vertexCount / (float)VertexCount:P1}),renderers:{rendererCount}({rendererCount})";
+
+        ////return $"vertex:{MeshHelper.GetVertexCountS(VertexCount)}({MeshHelper.GetVertexCountS(meshData.vertexCount)}|{meshData.vertexCount / (float)VertexCount:P1}),renderers:{rendererCount}({sharedMeshInfos})";
+
+        //return $"vertex:{MeshHelper.GetVertexCountS(VertexCount)},renderers:{rendererCount}({sharedMeshInfos})";
+    }
+
+    public string GetVertexInfo()
+    {
+        return $"v:{MeshHelper.GetVertexCountS(VertexCount)},r:{rendererCount}({sharedMeshInfos})";
     }
 
     public string GetName()

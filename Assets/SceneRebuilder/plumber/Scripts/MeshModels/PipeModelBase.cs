@@ -5,6 +5,8 @@ using UnityEngine;
 
 public class PipeModelBase : MonoBehaviour,IComparable<PipeModelBase>
 {
+    public float PointScale = 0.001f;
+
     public List<PipeModelBase> ConnectedModels = new List<PipeModelBase>();
 
     public virtual void AddConnectedModel(PipeModelBase other)
@@ -517,6 +519,8 @@ public class PipeModelBase : MonoBehaviour,IComparable<PipeModelBase>
         {
             IsGetInfoSuccess = false;
         }
+
+        TransformHelper.ClearChildren(ResultGo);
     }
 
     public void GetCheckResult(PipeModelCheckResult r)

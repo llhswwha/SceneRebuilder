@@ -553,29 +553,61 @@ public static class PrefabInfoListHelper
 
     public static List<MeshRenderer> GetRenderers(this PrefabInfoList list)
     {
-        List<MeshRenderer> renderers = new List<MeshRenderer>();
+        //List<MeshRenderer> renderers = new List<MeshRenderer>();
+        //for (int i = 0; i < list.Count; i++)
+        //{
+        //    var prefabInfo=list[i];
+        //    if(prefabInfo==null)
+        //    {
+        //        Debug.LogError($"[{i}] prefabInfo==null");
+        //        continue;
+        //    }
+        //    if(prefabInfo.Prefab==null)
+        //    {
+        //        Debug.LogError($"[{i}] prefabInfo.Prefab==null {prefabInfo}");
+        //        continue;
+        //    }
+        //    var prefabRenderer=prefabInfo.Prefab.GetComponent<MeshRenderer>();
+        //    renderers.Add(prefabRenderer);
+        //    var insList = prefabInfo.GetInstances();
+        //    if(insList==null)continue;
+        //    for (int j=0;j< insList.Count; j++)
+        //    {
+        //        if(insList[j]==null)continue;
+        //        MeshRenderer renderer=insList[j].GetComponent<MeshRenderer>();
+        //        if(renderer==null)continue;
+        //        renderers.Add(renderer);
+        //    }
+        //}
+        //return renderers;
+        return GetComponents<MeshRenderer>(list);
+    }
+
+    public static List<T> GetComponents<T>(this PrefabInfoList list) where T :Component
+    {
+        List<T> renderers = new List<T>();
         for (int i = 0; i < list.Count; i++)
         {
-            var prefabInfo=list[i];
-            if(prefabInfo==null)
+            var prefabInfo = list[i];
+            if (prefabInfo == null)
             {
                 Debug.LogError($"[{i}] prefabInfo==null");
                 continue;
             }
-            if(prefabInfo.Prefab==null)
+            if (prefabInfo.Prefab == null)
             {
                 Debug.LogError($"[{i}] prefabInfo.Prefab==null {prefabInfo}");
                 continue;
             }
-            var prefabRenderer=prefabInfo.Prefab.GetComponent<MeshRenderer>();
+            var prefabRenderer = prefabInfo.Prefab.GetComponent<T>();
             renderers.Add(prefabRenderer);
             var insList = prefabInfo.GetInstances();
-            if(insList==null)continue;
-            for (int j=0;j< insList.Count; j++)
+            if (insList == null) continue;
+            for (int j = 0; j < insList.Count; j++)
             {
-                if(insList[j]==null)continue;
-                MeshRenderer renderer=insList[j].GetComponent<MeshRenderer>();
-                if(renderer==null)continue;
+                if (insList[j] == null) continue;
+                T renderer = insList[j].GetComponent<T>();
+                if (renderer == null) continue;
                 renderers.Add(renderer);
             }
         }

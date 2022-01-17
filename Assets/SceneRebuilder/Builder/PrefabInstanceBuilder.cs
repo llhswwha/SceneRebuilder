@@ -43,7 +43,7 @@ public class PrefabInstanceBuilder : SingletonBehaviour<PrefabInstanceBuilder>
 
     //public float ICPMinDis = 0.2f;
 
-    public DisSetting disSetting;
+    public DisSetting disSetting = new DisSetting();
 
     public List<GameObject> TargetList=new List<GameObject>();
 

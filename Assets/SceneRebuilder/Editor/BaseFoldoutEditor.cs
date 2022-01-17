@@ -1612,6 +1612,10 @@ public class BaseFoldoutEditor<T> : BaseEditor<T> where T : class
             {
                 list.Sort();
             }
+            if (GUILayout.Button("Clear", GUILayout.Width(60)))
+            {
+                list.Clear();
+            }
         });
 
         DrawPipeModelsListInner(list, listArg);

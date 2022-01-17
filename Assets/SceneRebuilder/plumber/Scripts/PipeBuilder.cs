@@ -29,6 +29,8 @@ public class PipeBuilder : MonoBehaviour
 
     public List<PipeModelBase> PipeModels = new List<PipeModelBase>();
 
+    public List<PipeMeshGeneratorBase> PipeGenerators = new List<PipeMeshGeneratorBase>();
+
     public List<Transform> NewPipeList = new List<Transform>();
 
     public void ShowOBB()
@@ -166,10 +168,65 @@ public class PipeBuilder : MonoBehaviour
 
     public bool IsCopyComponents = true;
 
+    public void ReplaceOld()
+    {
+        DateTime start = DateTime.Now;
+        List<PipeModelBase> newModels = new List<PipeModelBase>();
+        for (int i = 0; i < PipeModels.Count; i++)
+        {
+            PipeModelBase model = PipeModels[i];
+            if (model == null) continue;
+            GameObject newGo = model.ResultGo;
+            if (newGo == null)
+            {
+                Debug.LogError($"ReplaceOld newGo == null go:{model.name}");
+                newModels.Add(model);
+                continue;
+            }
+            if (newGo == model.gameObject)
+            {
+                newModels.Add(model);
+                continue;
+            }
+
+            //if (IsSaveMaterials)
+            //{
+            //    MeshRenderer mf1 = model.GetComponent<MeshRenderer>();
+            //    MeshRenderer mf2 = newGo.GetComponent<MeshRenderer>();
+            //    if (mf1 != null && mf2 != null)
+            //    {
+            //        mf2.sharedMaterials = mf1.sharedMaterials;
+            //    }
+            //}
+
+            //if (IsCopyComponents)
+            //{
+            //    EditorHelper.CopyAllComponents(model.gameObject, newGo, false, typeof(PipeModelBase));
+            //}
+
+            newGo.transform.SetParent(model.transform.parent);
+            newGo.name = model.name;
+            model.gameObject.SetActive(false);
+
+            TransformHelper.ClearChildren(model.gameObject);
+            EditorHelper.RemoveAllComponents(model.gameObject,typeof(PipeModelBase));
+            //GameObject.DestroyImmediate(model.gameObject);
+
+            //PipeModelBase modelNew = newGo.GetComponent<PipeModelBase>();
+            //newModels.Add(modelNew);
+        }
+
+        //PipeModels.Clear();
+
+        //PipeModels = newModels;
+
+        Debug.LogWarning($">>ReplaceOld time:{DateTime.Now - start}");
+    }
+
     public void RendererPipesEx()
     {
         DateTime start = DateTime.Now;
-        
+        PipeGenerators.Clear();
         for (int i = 0; i < PipeModels.Count; i++)
         {
             PipeModelBase go = PipeModels[i];
@@ -196,8 +253,11 @@ public class PipeBuilder : MonoBehaviour
 
             if (IsCopyComponents)
             {
-                EditorHelper.CopyAllComponents(go.gameObject, pipe);
+                EditorHelper.CopyAllComponents(go.gameObject, pipe, false, typeof(PipeModelBase));
             }
+
+            var generator = pipe.GetComponent<PipeMeshGeneratorBase>();
+            PipeGenerators.Add(generator);
         }
 
         if (IsCreatePipeRuns && pipeRunList != null)

@@ -51,7 +51,7 @@ public class PipeMeshGeneratorEx : PipeMeshGeneratorBase
         pointsT = ShowPoints(points2);
     }
 
-    public float PointScale = 0.01f;
+    //public float PointScale = 0.01f;
 
     public List<GameObject> ShowPoints(List<Vector4> ps)
     {
