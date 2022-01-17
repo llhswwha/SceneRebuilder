@@ -5,6 +5,58 @@ using UnityEngine;
 
 public class PipeModelBase : MonoBehaviour,IComparable<PipeModelBase>
 {
+    public void ReplaceOld()
+    {
+        PipeModelBase model = this;
+        if (model == null) return;
+        GameObject newGo = model.ResultGo;
+        if (newGo == null)
+        {
+            Debug.LogError($"ReplaceOld newGo == null go:{model.name}");
+            return;
+        }
+        if (newGo == model.gameObject)
+        {
+            return;
+        }
+
+        if (IsGetInfoSuccess == false)
+        {
+            Debug.LogError("ReplaceOld IsGetInfoSuccess == false");
+            GameObject.DestroyImmediate(newGo);
+            TransformHelper.ClearChildren(model.gameObject);
+            model.gameObject.SetActive(true);
+            return;
+        }
+
+        //if (IsSaveMaterials)
+        //{
+        //    MeshRenderer mf1 = model.GetComponent<MeshRenderer>();
+        //    MeshRenderer mf2 = newGo.GetComponent<MeshRenderer>();
+        //    if (mf1 != null && mf2 != null)
+        //    {
+        //        mf2.sharedMaterials = mf1.sharedMaterials;
+        //    }
+        //}
+
+        //if (IsCopyComponents)
+        //{
+        //    EditorHelper.CopyAllComponents(model.gameObject, newGo, false, typeof(PipeModelBase));
+        //}
+
+        newGo.transform.SetParent(model.transform.parent);
+        newGo.name = model.name;
+        model.gameObject.SetActive(false);
+
+        TransformHelper.ClearChildren(model.gameObject);
+        EditorHelper.RemoveAllComponents(model.gameObject, typeof(PipeModelBase));
+        //GameObject.DestroyImmediate(model.gameObject);
+
+        //PipeModelBase modelNew = newGo.GetComponent<PipeModelBase>();
+        //newModels.Add(modelNew);
+    }
+
+
     public float PointScale = 0.001f;
 
     public List<PipeModelBase> ConnectedModels = new List<PipeModelBase>();
@@ -417,6 +469,8 @@ public class PipeModelBase : MonoBehaviour,IComparable<PipeModelBase>
     public float PipeRadius2 = 0;
 
     public bool IsGetInfoSuccess = true;
+    public bool IsObbError = false;
+
     protected bool RendererErrorModel()
     {
         if (IsGetInfoSuccess == false)

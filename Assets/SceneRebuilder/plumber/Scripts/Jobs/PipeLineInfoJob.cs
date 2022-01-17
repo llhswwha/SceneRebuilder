@@ -29,6 +29,14 @@ public struct PipeLineInfoJob : IPipeJob
 
         Vector3[] vs = points.ToArray();
         OrientedBoundingBox OBB = OrientedBoundingBox.GetObb(vs, id,true);
+        if (OBB.IsInfinity())
+        {
+            lineData.IsObbError = true;
+        }
+        else
+        {
+            lineData.IsObbError = false;
+        }
 
         DateTime start = DateTime.Now;
         Vector3 ObbExtent = OBB.Extent;

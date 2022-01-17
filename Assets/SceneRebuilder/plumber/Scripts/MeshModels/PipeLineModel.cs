@@ -238,7 +238,7 @@ public class PipeLineModel : PipeModelBase
             oBBCollider = this.gameObject.AddComponent<OBBCollider>();
         }
         oBBCollider.ShowObbInfo(true);
-        IsGetInfoSuccess = oBBCollider.IsObbError == false;
+        IsObbError = oBBCollider.IsObbError;
         OBB = oBBCollider.OBB;
 
         //1.Obb
@@ -364,7 +364,7 @@ public class PipeLineModel : PipeModelBase
 
         //this.IsObbError = data.IsObbError;
         this.IsGetInfoSuccess = data.IsGetInfoSuccess;
-
+        this.IsObbError = data.IsObbError;
         Debug.Log($"SetLineData data:{data}");
     }
 

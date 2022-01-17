@@ -37,7 +37,11 @@ public class PipeFactory : SingletonBehaviour<PipeFactory>
     public void ClearDebugObjs()
     {
         ClearList();
-
+        if (Target == null)
+        {
+            Debug.LogError("ClearDebugObjs Target == null");
+            return;
+        }
         PipeModelBase[] pipeModels = Target.GetComponentsInChildren<PipeModelBase>(true);
         foreach (var pipe in pipeModels)
         {

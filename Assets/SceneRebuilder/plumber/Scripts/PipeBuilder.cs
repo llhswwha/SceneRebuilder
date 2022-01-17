@@ -176,44 +176,7 @@ public class PipeBuilder : MonoBehaviour
         {
             PipeModelBase model = PipeModels[i];
             if (model == null) continue;
-            GameObject newGo = model.ResultGo;
-            if (newGo == null)
-            {
-                Debug.LogError($"ReplaceOld newGo == null go:{model.name}");
-                newModels.Add(model);
-                continue;
-            }
-            if (newGo == model.gameObject)
-            {
-                newModels.Add(model);
-                continue;
-            }
-
-            //if (IsSaveMaterials)
-            //{
-            //    MeshRenderer mf1 = model.GetComponent<MeshRenderer>();
-            //    MeshRenderer mf2 = newGo.GetComponent<MeshRenderer>();
-            //    if (mf1 != null && mf2 != null)
-            //    {
-            //        mf2.sharedMaterials = mf1.sharedMaterials;
-            //    }
-            //}
-
-            //if (IsCopyComponents)
-            //{
-            //    EditorHelper.CopyAllComponents(model.gameObject, newGo, false, typeof(PipeModelBase));
-            //}
-
-            newGo.transform.SetParent(model.transform.parent);
-            newGo.name = model.name;
-            model.gameObject.SetActive(false);
-
-            TransformHelper.ClearChildren(model.gameObject);
-            EditorHelper.RemoveAllComponents(model.gameObject,typeof(PipeModelBase));
-            //GameObject.DestroyImmediate(model.gameObject);
-
-            //PipeModelBase modelNew = newGo.GetComponent<PipeModelBase>();
-            //newModels.Add(modelNew);
+            model.ReplaceOld();
         }
 
         //PipeModels.Clear();
