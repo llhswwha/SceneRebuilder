@@ -90,21 +90,25 @@ public class PipeFactoryEditor : BaseFoldoutEditor<PipeFactory>
         targetT.EnablePipeReducer = EditorGUILayout.Toggle(targetT.EnablePipeReducer);
         GUILayout.Label($"Flange({targetT.PipeFlanges.Count})");
         targetT.EnablePipeFlange = EditorGUILayout.Toggle(targetT.EnablePipeFlange);
+        GUILayout.Label($"Welds({targetT.PipeWelds.Count})");
+        GUILayout.Label($"Others({targetT.PipeOthers.Count})");
         GUILayout.EndHorizontal();
 
         GUILayout.BeginHorizontal();
-        GUILayout.Label($"CreatePipeRuns");
+        GUILayout.Label($"CreateRuns");
         targetT.IsCreatePipeRuns = EditorGUILayout.Toggle(targetT.IsCreatePipeRuns);
-        GUILayout.Label($"MoveToFactory");
+        GUILayout.Label($"MoveToFac");
         targetT.IsMoveResultToFactory = EditorGUILayout.Toggle(targetT.IsMoveResultToFactory);
-        GUILayout.Label($"SaveMaterials");
+        GUILayout.Label($"SaveMats");
         targetT.IsSaveMaterials = EditorGUILayout.Toggle(targetT.IsSaveMaterials);
-        GUILayout.Label($"CopyComponents");
+        GUILayout.Label($"CopyComps");
         targetT.IsCopyComponents = EditorGUILayout.Toggle(targetT.IsCopyComponents);
         GUILayout.Label($"CheckResult");
         targetT.IsCheckResult = EditorGUILayout.Toggle(targetT.IsCheckResult);
         GUILayout.Label($"ReplaceOld");
         targetT.IsReplaceOld = EditorGUILayout.Toggle(targetT.IsReplaceOld);
+        GUILayout.Label($"PrefabGos");
+        targetT.IsPrefabGos = EditorGUILayout.Toggle(targetT.IsPrefabGos);
         GUILayout.EndHorizontal();
 
         //public bool IsMoveResultToFactory = true;

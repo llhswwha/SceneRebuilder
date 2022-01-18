@@ -432,6 +432,7 @@ public class SharedMeshTrianglesList : List<SharedMeshTriangles>
 
     internal void CombineSameMesh(float minDis)
     {
+        int count1 = this.Count;
         var list1 = GetCircleList();
         for (int i1 = 0; i1 < list1.Count; i1++)
         {
@@ -459,10 +460,13 @@ public class SharedMeshTrianglesList : List<SharedMeshTriangles>
                 }
             }
         }
+        int count2 = this.Count;
+        Debug.Log($"CombineSameMesh count1:{count1} count2:{count2}");
     }
 
     public void CombineSameCircle(float minDis)
     {
+        int count1 = this.Count;
         var list1 = GetCircleList();
         if (list1.Count < 1)
         {
@@ -480,7 +484,7 @@ public class SharedMeshTrianglesList : List<SharedMeshTriangles>
                 float rDis = Mathf.Abs(item2.Radius - item1.Radius);
                 bool isSamePoint = item1.IsSamePoint(item2.Center, minDis);
 
-                if (isSamePoint)
+                if (isSamePoint && rDis < minDis * 10)
                 {
                     item1.AddOtherTriangles(item2.GetAllTriangles());
                     if (list1.Contains(item2))
@@ -488,7 +492,7 @@ public class SharedMeshTrianglesList : List<SharedMeshTriangles>
                         list1.Remove(item2);
                     }
 
-                    //Debug.Log($"CombineSameCenter Combine[{i1}][{i}] centerDist:{centerDist} isSamePoint:{isSamePoint} count:{this.Count} item1R:{item1.Radius} item2R:{item2.Radius} rDis:{rDis}");
+                    Debug.Log($"CombineSameCenter Combine[{i1}][{i}] centerDist:{centerDist} isSamePoint:{isSamePoint} count:{this.Count} item1R:{item1.Radius} item2R:{item2.Radius} rDis:{rDis} minDis:{minDis}");
 
                     this.RemoveAt(i);
                     i--;
@@ -500,6 +504,9 @@ public class SharedMeshTrianglesList : List<SharedMeshTriangles>
         //{
         //    item.GetInfo();
         //}
+
+        int count2 = this.Count;
+        Debug.Log($"CombineSameCircle count1:{count1} count2:{count2}");
     }
 
     public SharedMeshTriangles? FindSameDirectionPlane(SharedMeshTriangles teePlane1,object name)

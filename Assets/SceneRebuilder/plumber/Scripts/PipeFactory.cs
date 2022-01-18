@@ -123,9 +123,17 @@ public class PipeFactory : SingletonBehaviour<PipeFactory>
             this.ReplacePipes();
             this.ReplaceWelds();
         }
-        
-        var pres1=this.PrefabPipes();
-        var pres2 = this.PrefabOthers();
+
+        PrefabInfoList pres1 = new PrefabInfoList();
+        PrefabInfoList pres2 = new PrefabInfoList();
+        PrefabInfoList pres3 = new PrefabInfoList();
+        if (IsPrefabGos)
+        {
+            pres1 = this.PrefabPipes();
+            pres2 = this.PrefabOthers();
+            pres3 = this.PrefabWelds();
+        }
+ 
 
         //ResultInfo=ShowTargetInfo(Target);
 
@@ -135,7 +143,7 @@ public class PipeFactory : SingletonBehaviour<PipeFactory>
         ResultVertexCount = meshNode2.VertexCount;
         SharedResultVertexCountCount = sInfo.sharedVertexCount;
 
-        Debug.LogError($"OneKey time:{DateTime.Now-start} Models:{newBuilder.PipeModels.Count+this.PipeOthers.Count}({newBuilder.PipeModels.Count}+{this.PipeOthers.Count}) Prefabs:{pres1.Count+pres2.Count}({pres1.Count}+{pres2.Count}) [TargetInfo:{TargetInfo} -> ResultInfo:{ResultInfo}]({ResultVertexCount/TargetVertexCount:P2},{SharedResultVertexCountCount / TargetVertexCount:P2})");
+        Debug.LogError($"OneKey time:{DateTime.Now-start} Models:{newBuilder.PipeModels.Count+PipeOthers.Count+PipeWelds.Count}({newBuilder.PipeModels.Count}+{PipeOthers.Count}+{PipeWelds.Count}) Prefabs:{pres1.Count+pres2.Count+ pres3.Count}({pres1.Count}+{pres2.Count}+{pres3.Count}) [TargetInfo:{TargetInfo} -> ResultInfo:{ResultInfo}]({ResultVertexCount/TargetVertexCount:P2},{SharedResultVertexCountCount / TargetVertexCount:P2})");
     }
 
     [ContextMenu("GetPipeParts")]
@@ -628,6 +636,8 @@ public class PipeFactory : SingletonBehaviour<PipeFactory>
     public bool IsCreatePipeRuns = false;
 
     public bool IsReplaceOld = true;
+
+    public bool IsPrefabGos = true;
 
     public bool IsCheckResult = false;
 

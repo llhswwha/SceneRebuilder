@@ -296,7 +296,7 @@ public class PipeElbowModel : PipeModelBase
         Mesh mesh = this.GetComponent<MeshFilter>().sharedMesh;
         meshTriangles = new MeshTriangles(mesh);
 
-        Debug.Log($"GetElbowInfo mesh vertexCount:{mesh.vertexCount} triangles:{mesh.triangles.Length}");
+        Debug.Log($"ShowSharedPoints mesh vertexCount:{mesh.vertexCount} triangles:{mesh.triangles.Length}");
         //meshTriangles.ShowSharedPointsById(this.transform, PointScale,10);
         meshTriangles.ShowSharedPointsByIdEx(this.transform, PointScale, 15, minRepeatPointDistance);
         //meshTriangles.ShowSharedPointsByPoint(this.transform, PointScale,10);
