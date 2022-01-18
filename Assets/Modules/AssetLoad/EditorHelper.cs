@@ -1,6 +1,5 @@
 ﻿//using Base.Common;
 using Jacovone.AssetBundleMagic;
-//using System;
 using System.Collections;
 using System.Collections.Generic;
 using System.IO;
@@ -599,11 +598,23 @@ public static class EditorHelper
         return componentsNew;
     }
 
-    public static void RemoveAllComponents(GameObject targetObj)
+    public static void RemoveAllComponents(GameObject targetObj, params System.Type[] notRemoveComponents)
     {
-        Component[] components = targetObj.GetComponentsInChildren<Component>();
+        Component[] components = targetObj.GetComponents<Component>();
         foreach (var component in components)
         {
+            if (component is Transform) continue;
+            if (IsType(component.GetType(), notRemoveComponents)) continue;
+            GameObject.DestroyImmediate(component);
+        }
+    }
+
+    public static void RemoveComponents(GameObject targetObj, params System.Type[] notRemoveComponents)
+    {
+        Component[] components = targetObj.GetComponents<Component>();
+        foreach (var component in components)
+        {
+            if (IsType(component.GetType(), notRemoveComponents)) continue;
             if (component is MonoBehaviour)
             {
                 GameObject.DestroyImmediate(component);
@@ -616,34 +627,38 @@ public static class EditorHelper
         }
     }
 
-    public static void CopyAllComponents(GameObject fromObj, GameObject targetObj)
+    private static bool IsType(System.Type type1, System.Type[] typeList)
     {
-        RemoveAllComponents(targetObj);
-        Component[] components = fromObj.GetComponentsInChildren<Component>();
+        if (typeList == null) return false;
+        foreach (var t in typeList)
+        {
+            if (t.IsAssignableFrom(type1))
+            {
+                return true;
+            }
+        }
+        return false;
+    }
+
+    public static void CopyAllComponents(GameObject fromObj, GameObject targetObj, bool isClearAllOldComponents, params System.Type[] notCopyComponents)
+    {
+        if (isClearAllOldComponents)
+        {
+            RemoveComponents(targetObj,null);
+        }
+
+        Component[] components = fromObj.GetComponents<Component>();
         foreach (var component in components)
         {
-            //var cName1 = component.name;
-            //var cName2 = cName1 + "_Simple";
-            //var targetObjNew = targetObj.transform.GetChildByName(cName1);
-            //if (targetObjNew == null)
-            //{
-            //    if (targetObj.name == cName1 || targetObj.name == cName2)
-            //    {
-            //        targetObjNew = targetObj.transform;
-            //    }
-            //    else
-            //    {
-            //        Debug.LogError("CopyMonoBehaviours. targetObjNew == null : " + component.name);
-            //        continue;
-            //    }
-            //}
-            if(component is MonoBehaviour)
+            if (IsType(component.GetType(), notCopyComponents)) continue;
+
+            if (component is MonoBehaviour)
             {
                 CopyComponent(targetObj, component);
             }
             if (component is Collider)
             {
-                if(component is MeshCollider)
+                if (component is MeshCollider)
                 {
                     targetObj.AddComponent<MeshCollider>();
                 }
@@ -651,7 +666,7 @@ public static class EditorHelper
                 {
                     CopyComponent(targetObj, component);
                 }
-                
+
             }
         }
     }
