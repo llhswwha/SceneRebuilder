@@ -244,6 +244,7 @@ public class PipeElbowModel : PipeModelBase
         if (trianglesList.Count == 6)
         {
             GetElbow6(trianglesList, mesh);
+            IsGetInfoSuccess = true;
         }
         else if(trianglesList.Count == 4)
         {
@@ -347,6 +348,7 @@ public class PipeElbowModel : PipeModelBase
     public override GameObject RendererModel(PipeGenerateArg arg, string afterName)
     {
         arg = arg.Clone();
+        
         if (RendererErrorModel())
         {
             return null;
@@ -354,6 +356,7 @@ public class PipeElbowModel : PipeModelBase
 
         if (IsSpecial)
         {
+            arg.generateWeld = false;
             GameObject pipeNew = GetPipeNewGo(arg, afterName);
 
             GameObject pipe1 = RenderPipeLine(arg, afterName, KeyPointInfo.EndPointIn1, KeyPointInfo.EndPointOut1);

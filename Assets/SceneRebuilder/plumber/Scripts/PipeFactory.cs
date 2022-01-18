@@ -143,7 +143,7 @@ public class PipeFactory : SingletonBehaviour<PipeFactory>
         ResultVertexCount = meshNode2.VertexCount;
         SharedResultVertexCountCount = sInfo.sharedVertexCount;
 
-        Debug.LogError($"OneKey time:{DateTime.Now-start} Models:{newBuilder.PipeModels.Count+PipeOthers.Count+PipeWelds.Count}({newBuilder.PipeModels.Count}+{PipeOthers.Count}+{PipeWelds.Count}) Prefabs:{pres1.Count+pres2.Count+ pres3.Count}({pres1.Count}+{pres2.Count}+{pres3.Count}) [TargetInfo:{TargetInfo} -> ResultInfo:{ResultInfo}]({ResultVertexCount/TargetVertexCount:P2},{SharedResultVertexCountCount / TargetVertexCount:P2})");
+        Debug.LogError($"OneKey time:{DateTime.Now-start} Models:{newBuilder.PipeModels.Count+PipeOthers.Count+PipeWelds.Count}({newBuilder.PipeModels.Count}+{PipeOthers.Count}+{PipeWelds.Count}) Prefabs:{pres1.Count+pres2.Count+ pres3.Count}({pres1.Count}+{pres2.Count}+{pres3.Count}) TargetInfo:{TargetInfo} -> ResultInfo:{ResultInfo} ({ResultVertexCount/TargetVertexCount:P2},{SharedResultVertexCountCount / TargetVertexCount:P2})");
     }
 
     [ContextMenu("GetPipeParts")]

@@ -1016,7 +1016,7 @@ namespace MeshJobs
 
             RestoreParent(parentDict);
 
-            Debug.LogError($"NewAcRTAlignJobsEx meshFilters:{meshFilters.Length},vertexCount:{MeshHelper.GetVertexCountS(vc)} Time:{(DateTime.Now - start)}s");
+            Debug.LogWarning($"NewAcRTAlignJobsEx meshFilters:{meshFilters.Length},vertexCount:{MeshHelper.GetVertexCountS(vc)} Time:{(DateTime.Now - start)}s");
 
             if (jobContainer.IsBreak)
             {

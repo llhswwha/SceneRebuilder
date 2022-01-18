@@ -206,6 +206,8 @@ public class PipeTeeModel : PipeElbowModel
 
         if (IsSpecial) 
         {
+            arg.generateWeld = false;
+
             GameObject pipeNew = GetPipeNewGo(arg, afterName);
             if (KeyPointInfo == null)
             {

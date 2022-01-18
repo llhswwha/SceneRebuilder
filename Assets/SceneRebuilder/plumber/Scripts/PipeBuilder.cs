@@ -511,10 +511,25 @@ public class PipeBuilder : MonoBehaviour
             //Debug.Log($"LineModel[{i}] model:{pipeModel.name} lineData:{lineData}");
             pipeModel.SetLineData(lineData);
             PipeLines.Add(pipeModel);
-            PipeModels.Add(pipeModel);
+            AddPipeModel(pipeModel);
         }
         lineJobs.Dispose();
         PipeLineInfoJob.Result.Dispose();
+    }
+
+    public void AddPipeModel(PipeModelBase model)
+    {
+        if (model == null)
+        {
+            Debug.LogError($"AddPipeModel model == null");
+            return;
+        }
+        PipeModels.Add(model);
+    }
+
+    public void AddPipeModelRange<T>(List<T> models) where T : PipeModelBase
+    {
+        PipeModels.AddRange(models);
     }
 
     private void SetJobResultData_Elbow(JobList<PipeElbowInfoJob> elbowJobs, List<Transform> ts)
@@ -533,7 +548,7 @@ public class PipeBuilder : MonoBehaviour
             //Debug.Log($"LineModel[{i}] model:{pipeModel.name} lineData:{lineData}");
             pipeModel.SetModelData(lineData);
             PipeElbows.Add(pipeModel);
-            PipeModels.Add(pipeModel);
+            AddPipeModel(pipeModel);
         }
         elbowJobs.Dispose();
         PipeElbowInfoJob.Result.Dispose();
@@ -555,7 +570,7 @@ public class PipeBuilder : MonoBehaviour
             //Debug.Log($"LineModel[{i}] model:{pipeModel.name} lineData:{lineData}");
             pipeModel.SetModelData(lineData);
             PipeElbows.Add(pipeModel);
-            PipeModels.Add(pipeModel);
+            AddPipeModel(pipeModel);
         }
         elbowJobs.Dispose();
         PipeTeeInfoJob.Result.Dispose();
@@ -576,7 +591,7 @@ public class PipeBuilder : MonoBehaviour
             //Debug.Log($"LineModel[{i}] model:{pipeModel.name} lineData:{lineData}");
             pipeModel.SetModelData(lineData);
             PipeFlanges.Add(pipeModel);
-            PipeModels.Add(pipeModel);
+            AddPipeModel(pipeModel);
         }
         elbowJobs.Dispose();
         PipeFlangeInfoJob.Result.Dispose();
@@ -598,19 +613,26 @@ public class PipeBuilder : MonoBehaviour
             //Debug.Log($"LineModel[{i}] model:{pipeModel.name} lineData:{lineData}");
             pipeModel.SetModelData(lineData);
             PipeReducers.Add(pipeModel);
-            PipeModels.Add(pipeModel);
+            AddPipeModel(pipeModel);
         }
         elbowJobs.Dispose();
         PipeReducerInfoJob.Result.Dispose();
     }
 
-    public void GetPipeInfosJob()
+    public void ClearModels()
     {
         PipeModels.Clear();
+        PipeElbows.Clear();
         PipeLines.Clear();
         PipeTees.Clear();
         PipeReducers.Clear();
         PipeFlanges.Clear();
+        PipeGenerators.Clear();
+    }
+
+    public void GetPipeInfosJob()
+    {
+        ClearModels();
 
         DateTime start = DateTime.Now;
 
@@ -806,23 +828,23 @@ public class PipeBuilder : MonoBehaviour
 
         PipeLines = GetPipeModelInfos<PipeLineModel>(PipeLineGos, id, count, "Line");
         id += PipeLines.Count;
-        PipeModels.AddRange(PipeLines);
+        AddPipeModelRange(PipeLines);
 
         PipeReducers = GetPipeModelInfos<PipeReducerModel>(PipeReducerGos, id, count, "Reducer");
         id += PipeReducers.Count;
-        PipeModels.AddRange(PipeReducers);
+        AddPipeModelRange(PipeReducers);
 
         PipeFlanges = GetPipeModelInfos<PipeFlangeModel>(PipeFlangeGos, id, count, "Flange");
         id += PipeFlanges.Count;
-        PipeModels.AddRange(PipeFlanges);
+        AddPipeModelRange(PipeFlanges);
 
         PipeElbows = GetPipeModelInfos<PipeElbowModel>(PipeElbowGos, id, count, "Elbow");
         id += PipeElbows.Count;
-        PipeModels.AddRange(PipeElbows);
+        AddPipeModelRange(PipeElbows);
 
         PipeTees = GetPipeModelInfos<PipeTeeModel>(PipeTeeGos, id, count, "Tee");
         id += PipeTees.Count;
-        PipeModels.AddRange(PipeTees);
+        AddPipeModelRange(PipeTees);
 
         PipeModels.Sort();
 
@@ -852,7 +874,7 @@ public class PipeBuilder : MonoBehaviour
             //CreatePipe(p);
             T pipeModel = GetPipeModelInfo<T>(p,true);
             models.Add(pipeModel);
-            //PipeModels.Add(pipeModel);
+            //AddPipeModel(pipeModel);
             //p.gameObject.SetActive(false);
         }
         Debug.Log($">>>GetPipeModelInfos time:{DateTime.Now - start14}");
@@ -890,7 +912,7 @@ public class PipeBuilder : MonoBehaviour
             if (mf == null) continue;
             PipeElbowModel pipeModel = GetPipeModelInfo<PipeElbowModel>(p,true);
             PipeElbows.Add(pipeModel);
-            PipeModels.Add(pipeModel);
+            AddPipeModel(pipeModel);
             p.gameObject.SetActive(false);
         }
         Debug.LogError($">>>GetPipeElbowInfos time:{DateTime.Now - start}");
@@ -961,7 +983,7 @@ public class PipeBuilder : MonoBehaviour
             if (mf == null) continue;
             PipeLineModel pipeModel = GetPipeModelInfo<PipeLineModel>(p,true);
             PipeLines.Add(pipeModel);
-            PipeModels.Add(pipeModel);
+            AddPipeModel(pipeModel);
             p.gameObject.SetActive(false);
         }
         Debug.LogError($">>>GetPipeModelInfos time:{DateTime.Now - start}");

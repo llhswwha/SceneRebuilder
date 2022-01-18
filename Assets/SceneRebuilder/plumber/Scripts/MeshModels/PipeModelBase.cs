@@ -22,7 +22,7 @@ public class PipeModelBase : MonoBehaviour,IComparable<PipeModelBase>
 
         if (IsGetInfoSuccess == false)
         {
-            Debug.LogError("ReplaceOld IsGetInfoSuccess == false");
+            Debug.LogError("ReplaceOld IsGetInfoSuccess == false :"+ model);
             GameObject.DestroyImmediate(newGo);
             TransformHelper.ClearChildren(model.gameObject);
             model.gameObject.SetActive(true);
@@ -521,7 +521,7 @@ public class PipeModelBase : MonoBehaviour,IComparable<PipeModelBase>
         //return $"{mcResult.SizeDistance:F5}_[{dis:F5}]_{mcResult.ObbDistance:F5}_{mcResult.RTDistance:F5}_{mcResult.MeshDistance:F5}_{a}_{radius:00000}_{this.GetType().Name}_{this.VertexCount}";
 
         //return $"{ObbDistance:F5}_{MeshDistance:F5}_{a}_{radius:00000}_{this.GetType().Name}_{this.VertexCount}";
-        return $"{mcResult}_{a}_{radius:00000}_{this.GetType().Name}_{this.VertexCount}";
+        return $"{mcResult}_{a}_{radius:00000}_{this.GetType().Name}_{this.VertexCount}_{this.name}";
     }
 
     public int CompareTo(PipeModelBase other)

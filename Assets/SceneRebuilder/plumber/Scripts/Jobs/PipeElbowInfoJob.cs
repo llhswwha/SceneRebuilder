@@ -47,6 +47,7 @@ public struct PipeElbowInfoJob : IPipeJob
         if (trianglesList.Count == 6)
         {
             data = GetElbow6(trianglesList, mesh);
+            data.IsGetInfoSuccess = true;
         }
         else if (trianglesList.Count == 4)
         {
