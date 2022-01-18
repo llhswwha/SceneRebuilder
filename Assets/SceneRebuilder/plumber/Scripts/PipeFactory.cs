@@ -18,6 +18,8 @@ public class PipeFactory : SingletonBehaviour<PipeFactory>
 
     public List<Transform> PipeFlanges = new List<Transform>();
 
+    public List<Transform> PipeWelds = new List<Transform>();
+
     public List<Transform> PipeOthers = new List<Transform>();
 
     private void ClearList()
@@ -33,6 +35,8 @@ public class PipeFactory : SingletonBehaviour<PipeFactory>
         PipeFlanges = new List<Transform>();
 
         PipeOthers = new List<Transform>();
+
+        PipeWelds = new List<Transform>();
     }
 
     public void ClearDebugObjs()
@@ -117,6 +121,7 @@ public class PipeFactory : SingletonBehaviour<PipeFactory>
         if(IsReplaceOld)
         {
             this.ReplacePipes();
+            this.ReplaceWelds();
         }
         
         var pres1=this.PrefabPipes();
@@ -161,6 +166,22 @@ public class PipeFactory : SingletonBehaviour<PipeFactory>
 
     private void GetModelClass()
     {
+        if (WeldRootTarget == null)
+        {
+            WeldRootTarget = new GameObject("WeldRootTarget");
+        }
+
+        var welds = TransformHelper.FindGameObjects(Target.transform, "Welding");
+        foreach(var w in welds)
+        {
+            if(!w.name.Contains("_"))
+                w.name = w.transform.parent.name + "_" + w.name;
+            w.transform.SetParent(null);
+            w.transform.SetParent(WeldRootTarget.transform);
+        }
+
+        PipeWelds = GetWelds();
+
         ModelClassDict<Transform> modelClassList = ModelMeshManager.Instance.GetPrefixNames<Transform>(Target);
         var keys = modelClassList.GetKeys();
         foreach (var key in keys)
@@ -204,7 +225,13 @@ public class PipeFactory : SingletonBehaviour<PipeFactory>
             }
         }
 
+        //WeldRootTarget.transform.SetParent(Target.transform);
+        foreach (var w in welds)
+        {
+            w.transform.SetParent(Target.transform);
+        }
         Debug.Log($"GetModelClass keys:{keys.Count}");
+
     }
 
     public float ResultVertexCount = 0;
@@ -241,6 +268,18 @@ public class PipeFactory : SingletonBehaviour<PipeFactory>
     public float minWeldDis = 0.0001f;
     public float maxWeldDis = 0.05f;
 
+    public List<Transform> GetWelds()
+    {
+        var welds = WeldRootTarget.GetComponentsInChildren<MeshRenderer>(true);
+        int allWeldsCount = welds.Length;
+        List<Transform> weldList = new List<Transform>();
+        foreach (var w in welds)
+        {
+            weldList.Add(w.transform);
+        }
+        return weldList;
+    }
+
     public void ReplaceWelds()
     {
         DateTime start = DateTime.Now;
@@ -248,13 +287,16 @@ public class PipeFactory : SingletonBehaviour<PipeFactory>
         {
             WeldRootTarget = Target;
         }
-        var welds = WeldRootTarget.GetComponentsInChildren<MeshRenderer>(true);
-        int allWeldsCount = welds.Length;
-        List<Transform> weldList = new List<Transform>();
-        foreach(var w in welds)
-        {
-            weldList.Add(w.transform);
-        }
+        //var welds = WeldRootTarget.GetComponentsInChildren<MeshRenderer>(true);
+        //int allWeldsCount = welds.Length;
+        //List<Transform> weldList = new List<Transform>();
+        //foreach(var w in welds)
+        //{
+        //    weldList.Add(w.transform);
+        //}
+        //List<Transform> weldList = this.GetWelds();
+        List<Transform> weldList = PipeWelds;
+        int allWeldsCount = weldList.Count;
         var weldsNew = newBuilder.GetWelds();
         int newWeldsCount = weldsNew.Count;
 
@@ -312,7 +354,15 @@ public class PipeFactory : SingletonBehaviour<PipeFactory>
             }
         }
 
-        Debug.Log($"ReplaceWelds time:{DateTime.Now-start} AllWelds:{allWeldsCount} NewWelds:{newWeldsCount} LastWelds:{weldList.Count} destroyCount:{destroyCount}");
+        
+        if (weldList.Count > 0)
+        {
+            Debug.LogError($"ReplaceWelds time:{DateTime.Now - start} AllWelds:{allWeldsCount} NewWelds:{newWeldsCount} LastWelds:{weldList.Count} destroyCount:{destroyCount}");
+        }
+        else
+        {
+            Debug.Log($"ReplaceWelds time:{DateTime.Now - start} AllWelds:{allWeldsCount} NewWelds:{newWeldsCount} LastWelds:{weldList.Count} destroyCount:{destroyCount}");
+        }
     }
 
     public void SetAllVisible(bool isVisible)
@@ -349,37 +399,27 @@ public class PipeFactory : SingletonBehaviour<PipeFactory>
     public PrefabInfoList PrefabPipes()
     {
         DateTime start = DateTime.Now;
-        //MoveOthersParent();
-        ////this.PipeOthers;
-        ////MeshRendererInfoList list=new MeshRendererInfoList(this.PipeOthers)
-        //ModelClassDict<Transform> modelClassList = ModelMeshManager.Instance.GetPrefixNames<Transform>(OthersRoot.gameObject);
-        //var keys = modelClassList.GetKeys();
-
-        PrefabInfoList prefabs = PrefabInstanceBuilder.Instance.GetPrefabsOfList(newBuilder.PipeGenerators, true);
-
+       PrefabInfoList prefabs = PrefabInstanceBuilder.Instance.GetPrefabsOfList(newBuilder.PipeGenerators, true);
         Debug.Log($"PrefabPipes time:{DateTime.Now - start} Pipes:{newBuilder.PipeGenerators.Count} prefabs:{prefabs.Count}");
+        return prefabs;
+    }
 
-        //RecoverOthersParent();
+    public PrefabInfoList PrefabWelds()
+    {
+        DateTime start = DateTime.Now;
+        var welds = newBuilder.GetWelds();
+        PrefabInfoList prefabs = PrefabInstanceBuilder.Instance.GetPrefabsOfList(welds, true);
+        Debug.Log($"PrefabWelds time:{DateTime.Now - start} Welds:{welds.Count} prefabs:{prefabs.Count}");
         return prefabs;
     }
 
     public PrefabInfoList PrefabOthers()
     {
         DateTime start = DateTime.Now;
-        //MoveOthersParent();
-        ////this.PipeOthers;
-        ////MeshRendererInfoList list=new MeshRendererInfoList(this.PipeOthers)
-        //ModelClassDict<Transform> modelClassList = ModelMeshManager.Instance.GetPrefixNames<Transform>(OthersRoot.gameObject);
-        //var keys = modelClassList.GetKeys();
-
-
-
         PrefabInfoList prefabs =PrefabInstanceBuilder.Instance.GetPrefabsOfList(PipeOthers, true);
         PipeOthers.Clear();
         PipeOthers.AddRange(prefabs.GetComponents<Transform>());
-
-        Debug.Log($"PrefabOthers time:{DateTime.Now-start} others:{this.PipeOthers.Count} prefabs:{prefabs.Count}");
-
+        Debug.Log($"PrefabOthers time:{DateTime.Now-start} Others:{this.PipeOthers.Count} prefabs:{prefabs.Count}");
         //RecoverOthersParent();
         return prefabs;
     }

@@ -64,6 +64,10 @@ public static class TransformHelper
 
         public override string ToString()
         {
+            if (t == null)
+            {
+                return $"t:NULL dis:{dis}";
+            }
             return $"t:{t.name} dis:{dis}";
         }
     }

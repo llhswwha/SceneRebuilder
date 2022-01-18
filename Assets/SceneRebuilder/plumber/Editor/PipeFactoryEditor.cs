@@ -141,23 +141,30 @@ public class PipeFactoryEditor : BaseFoldoutEditor<PipeFactory>
         {
             targetT.CheckResults();
         }
+        
+        GUILayout.EndHorizontal();
+
+        GUILayout.BeginHorizontal();
         if (GUILayout.Button("5.ReplacePipes"))
         {
             targetT.ReplacePipes();
         }
-        if (GUILayout.Button("5.ReplaceWelds"))
+        if (GUILayout.Button("6.ReplaceWelds"))
         {
             targetT.ReplaceWelds();
         }
-        if (GUILayout.Button("6.PrefabPipes"))
+        if (GUILayout.Button("7.PrefabPipes"))
         {
             targetT.PrefabPipes();
         }
-        if (GUILayout.Button("7.PrefabOthers"))
+        if (GUILayout.Button("8.PrefabOthers"))
         {
             targetT.PrefabOthers();
         }
-
+        if (GUILayout.Button("9.PrefabWelds"))
+        {
+            targetT.PrefabWelds();
+        }
         GUILayout.EndHorizontal();
 
         GUILayout.BeginHorizontal();

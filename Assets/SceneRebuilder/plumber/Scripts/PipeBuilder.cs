@@ -260,6 +260,12 @@ public class PipeBuilder : MonoBehaviour
         CombineGeneratedWelds(pipeElbows, elbowWelds, minWeldDis);
         int count4 = pipeElbows.Count;
 
+        List<Transform> teeElbows = GetWelds(PipeTees);
+        CombineGeneratedWelds(pipeElbows, teeElbows, minWeldDis);
+
+        List<Transform> reducerElbows = GetWelds(PipeReducers);
+        CombineGeneratedWelds(pipeElbows, reducerElbows, minWeldDis);
+
         Debug.Log($"CombineGeneratedWelds time:{DateTime.Now-time} elbowWelds1:{count1} elbowWelds2:{count2} elbowWelds3:{elbowWelds.Count} pipeElbows1:{count3} pipeElbows2:{count4}");
     }
 
@@ -654,21 +660,21 @@ public class PipeBuilder : MonoBehaviour
         {
             int id = PipeLineInfoJob.ErrorIds[i];
             var go = PipeLines[id];
-            Debug.LogError($"ErrorLine id:{id} name:{go.name} v:{go.VertexCount} r:{go.IsGetInfoSuccess}");
+            Debug.LogError($"GetPipeInfosJob ErrorLine id:{id} name:{go.name} v:{go.VertexCount} r:{go.IsGetInfoSuccess}");
         }
 
         for (int i = 0; i < PipeReducerInfoJob.ErrorIds.Length; i++)
         {
             int id = PipeReducerInfoJob.ErrorIds[i];
             var go = PipeReducers[id];
-            Debug.LogError($"ErrorReducer id:{id} name:{go.name} v:{go.VertexCount} r:{go.IsGetInfoSuccess}");
+            Debug.LogError($"GetPipeInfosJob ErrorReducer id:{id} name:{go.name} v:{go.VertexCount} r:{go.IsGetInfoSuccess}");
         }
 
         for (int i = 0; i < PipeFlangeInfoJob.ErrorIds.Length; i++)
         {
             int id = PipeFlangeInfoJob.ErrorIds[i];
             var go = PipeFlanges[id];
-            Debug.LogError($"ErrorFlange id:{id} name:{go.name} v:{go.VertexCount} r:{go.IsGetInfoSuccess}");
+            Debug.LogError($"GetPipeInfosJob ErrorFlange id:{id} name:{go.name} v:{go.VertexCount} r:{go.IsGetInfoSuccess}");
         }
 
         PipeLineInfoJob.ErrorIds.Dispose();

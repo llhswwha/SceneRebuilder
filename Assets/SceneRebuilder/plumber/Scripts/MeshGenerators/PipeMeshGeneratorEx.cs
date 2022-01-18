@@ -92,11 +92,7 @@ public class PipeMeshGeneratorEx : PipeMeshGeneratorBase
 
     //public List<Vector3> points_raw;
 
-    public bool generateWeld = false;
 
-    public float weldRadius = 0.1f;
-
-    public Material weldMaterial;
 
     void Start()
     {
@@ -244,105 +240,105 @@ public class PipeMeshGeneratorEx : PipeMeshGeneratorBase
         Debug.LogError($"vertexCount:{mf.mesh.vertexCount}");
     }
 
-    public List<GameObject> Welds = new List<GameObject>();
+    //public List<GameObject> Welds = new List<GameObject>();
 
-    public bool IsWeldSeperated = true;
+    //public bool IsWeldSeperated = true;
 
-    private GameObject CreateWeldGo(Vector3 start, Vector3 direction)
-    {
-        GameObject go = new GameObject();
-        go.name = $"Weld start:{start} direction:{direction}";
-        go.transform.SetParent(this.transform);
-        //go.transform.localPosition = Vector3.zero;
-        go.transform.localPosition = start;
-        Welds.Add(go);
-        return go;
-    }
+    //private GameObject CreateWeldGo(Vector3 start, Vector3 direction)
+    //{
+    //    GameObject go = new GameObject();
+    //    go.name = $"Weld start:{start} direction:{direction}";
+    //    go.transform.SetParent(this.transform);
+    //    //go.transform.localPosition = Vector3.zero;
+    //    go.transform.localPosition = start;
+    //    Welds.Add(go);
+    //    return go;
+    //}
 
     GameObject GenerateWeld(List<Vector3> vertices, List<Vector3> normals, Vector4 start, Vector3 direction)
     {
         return GenerateWeld(vertices, normals, start, direction, start.w);
     }
 
-    GameObject GenerateWeld(List<Vector3> vertices, List<Vector3> normals, Vector3 start, Vector3 direction, float radius)
-    {
-        if (IsWeldSeperated)
-        {
-            //GameObject go = new GameObject();
-            //go.name = $"Weld start:{start} direction:{direction}";
-            //go.transform.SetParent(this.transform);
-            ////go.transform.localPosition = Vector3.zero;
-            //go.transform.localPosition = start;
-            //Welds.Add(go);
+    //protected GameObject GenerateWeld(List<Vector3> vertices, List<Vector3> normals, Vector3 start, Vector3 direction, float radius)
+    //{
+    //    if (IsWeldSeperated)
+    //    {
+    //        //GameObject go = new GameObject();
+    //        //go.name = $"Weld start:{start} direction:{direction}";
+    //        //go.transform.SetParent(this.transform);
+    //        ////go.transform.localPosition = Vector3.zero;
+    //        //go.transform.localPosition = start;
+    //        //Welds.Add(go);
 
-            GameObject go = CreateWeldGo(start, direction);
+    //        GameObject go = CreateWeldGo(start, direction);
 
-            float size = radius;
-            PipeMeshGenerator weldGenerator = go.AddComponent<PipeMeshGenerator>();
-            SetPipeMeshGenerator(weldGenerator, size);
-            weldGenerator.RenderTorusXZ();
-            //weldGenerator.ShowPoints();
-            go.transform.up = direction;
-            return go;
-        }
-        else
-        {
-            CircleMeshArg arg1 = MeshGeneratorHelper.GenerateCircleAtPoint(Vector3.zero, direction, 4, radius * 1.414213562373f);
-            ////Debug.LogError($"Generate[{i}] start:{initialPoint} end:{endPoint} direction:{direction} gWeld:{gWeld} ps1:{ps1.Count}");
+    //        float size = radius;
+    //        PipeMeshGenerator weldGenerator = go.AddComponent<PipeMeshGenerator>();
+    //        SetPipeMeshGenerator(weldGenerator, size);
+    //        weldGenerator.RenderTorusXZ();
+    //        //weldGenerator.ShowPoints();
+    //        go.transform.up = direction;
+    //        return go;
+    //    }
+    //    else
+    //    {
+    //        CircleMeshArg arg1 = MeshGeneratorHelper.GenerateCircleAtPoint(Vector3.zero, direction, 4, radius * 1.414213562373f);
+    //        ////Debug.LogError($"Generate[{i}] start:{initialPoint} end:{endPoint} direction:{direction} gWeld:{gWeld} ps1:{ps1.Count}");
 
-            //var ms1 = GeneratePipeMesh(arg1.vertices, false);
+    //        //var ms1 = GeneratePipeMesh(arg1.vertices, false);
 
-            GameObject p1 = PointHelper.ShowPoint(start, new Vector3(0.05f, 0.05f, 0.05f), this.transform);
-            Welds.Add(p1);
+    //        GameObject p1 = PointHelper.ShowPoint(start, new Vector3(0.05f, 0.05f, 0.05f), this.transform);
+    //        Welds.Add(p1);
 
-            //GameObject go = new GameObject();
-            //go.name = $"Weld start:{start} direction:{direction}";
-            //go.transform.SetParent(this.transform);
-            //go.transform.localPosition = start;
-            //Welds.Add(go);
+    //        //GameObject go = new GameObject();
+    //        //go.name = $"Weld start:{start} direction:{direction}";
+    //        //go.transform.SetParent(this.transform);
+    //        //go.transform.localPosition = start;
+    //        //Welds.Add(go);
 
-            GameObject go = CreateWeldGo(start, direction);
+    //        GameObject go = CreateWeldGo(start, direction);
 
-            PointHelper.ShowPoints(arg1.vertices, new Vector3(0.05f, 0.05f, 0.05f), go.transform);
+    //        PointHelper.ShowPoints(arg1.vertices, new Vector3(0.05f, 0.05f, 0.05f), go.transform);
 
-            //float size = pipeRadius;
-            float size = Vector3.Distance(arg1.vertices[0], arg1.vertices[1]) / 2;
+    //        //float size = pipeRadius;
+    //        float size = Vector3.Distance(arg1.vertices[0], arg1.vertices[1]) / 2;
 
-            PipeMeshGenerator weldGenerator = go.AddComponent<PipeMeshGenerator>();
-            SetPipeMeshGenerator(weldGenerator, size);
-            weldGenerator.points = arg1.vertices;
-            weldGenerator.RenderPipe();
+    //        PipeMeshGenerator weldGenerator = go.AddComponent<PipeMeshGenerator>();
+    //        SetPipeMeshGenerator(weldGenerator, size);
+    //        weldGenerator.points = arg1.vertices;
+    //        weldGenerator.RenderPipe();
 
-            //Debug.LogError($"arg1.vertices:{arg1.vertices.Count}| ms1.vertexCount:{ms1.vertexCount}");
-            //for (int j = 0; j < ms1.vertexCount; j++)
-            //{
-            //    //vertices.Add(ms1.vertices[j]);
-            //    //normals.Add(ms1.normals[j]);
-            //    //ShowPoints(ms1.vertices, new Vector3(0.05f, 0.05f, 0.05f));
-            //}
-            return go;
+    //        //Debug.LogError($"arg1.vertices:{arg1.vertices.Count}| ms1.vertexCount:{ms1.vertexCount}");
+    //        //for (int j = 0; j < ms1.vertexCount; j++)
+    //        //{
+    //        //    //vertices.Add(ms1.vertices[j]);
+    //        //    //normals.Add(ms1.normals[j]);
+    //        //    //ShowPoints(ms1.vertices, new Vector3(0.05f, 0.05f, 0.05f));
+    //        //}
+    //        return go;
 
-        }
-    }
+    //    }
+    //}
 
-    private void SetPipeMeshGenerator(PipeMeshGenerator weldGenerator, float size)
-    {
-        weldGenerator.generateOnStart = false;
-        //weldGenerator.points = arg1.vertices;
-        weldGenerator.pipeMaterial = this.weldMaterial;
-        weldGenerator.flatShading = this.flatShading;
-        weldGenerator.avoidStrangling = this.avoidStrangling;
-        if (weldGenerator.pipeMaterial == null)
-        {
-            weldGenerator.pipeMaterial = this.pipeMaterial;
-        }
-        weldGenerator.elbowRadius = size;
-        //weldGenerator.pipeRadius = size / 5;
-        //weldGenerator.pipeRadius = size / 10;
-        weldGenerator.pipeRadius = weldRadius;
-        weldGenerator.pipeSegments = 12;
-        weldGenerator.IsLinkEndStart = true;
-    }
+    //private void SetPipeMeshGenerator(PipeMeshGenerator weldGenerator, float size)
+    //{
+    //    weldGenerator.generateOnStart = false;
+    //    //weldGenerator.points = arg1.vertices;
+    //    weldGenerator.pipeMaterial = this.weldMaterial;
+    //    weldGenerator.flatShading = this.flatShading;
+    //    weldGenerator.avoidStrangling = this.avoidStrangling;
+    //    if (weldGenerator.pipeMaterial == null)
+    //    {
+    //        weldGenerator.pipeMaterial = this.pipeMaterial;
+    //    }
+    //    weldGenerator.elbowRadius = size;
+    //    //weldGenerator.pipeRadius = size / 5;
+    //    //weldGenerator.pipeRadius = size / 10;
+    //    weldGenerator.pipeRadius = weldRadius;
+    //    weldGenerator.pipeSegments = 12;
+    //    weldGenerator.IsLinkEndStart = true;
+    //}
 
     [ContextMenu("TestRemoveColinearPoints")]
     public void TestRemoveColinearPoints()

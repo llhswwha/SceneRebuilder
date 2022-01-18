@@ -256,9 +256,9 @@ public class PipeTeeModel : PipeElbowModel
         }
         else
         {
-            arg.IsGenerateEndWeld = true;
-            GameObject pipe1 = RenderPipeLine(arg, afterName, KeyPointInfo.Line1.StartPoint, KeyPointInfo.Line1.EndPoint);
             arg.IsGenerateEndWeld = false;
+            GameObject pipe1 = RenderPipeLine(arg, afterName, KeyPointInfo.Line1.StartPoint, KeyPointInfo.Line1.EndPoint);
+            arg.IsGenerateEndWeld = true;
             GameObject pipe2 = RenderPipeLine(arg, afterName, KeyPointInfo.Line2.StartPoint, KeyPointInfo.Line2.EndPoint);
             GameObject pipeNew = GetPipeNewGo(arg, afterName);
 
@@ -268,12 +268,34 @@ public class PipeTeeModel : PipeElbowModel
 
             if (IsCombineResult)
             {
+                List<Transform> welds = new List<Transform>();
+                for(int i=0;i<pipe1.transform.childCount;i++)
+                {
+                    welds.Add(pipe1.transform.GetChild(i));
+                }
+                for (int i = 0; i < pipe2.transform.childCount; i++)
+                {
+                    welds.Add(pipe2.transform.GetChild(i));
+                }
+                foreach(var t in welds)
+                {
+                    t.SetParent(null);
+                }
                 target = MeshCombineHelper.Combine(pipeNew);
+                
+                foreach (var t in welds)
+                {
+                    t.SetParent(target.transform);
+                }
             }
             this.ResultGo = target;
 
             PipeMeshGenerator pipeG = target.AddComponent<PipeMeshGenerator>();
             pipeG.Target = this.gameObject;
+            for (int i = 0; i < target.transform.childCount; i++)
+            {
+                pipeG.Childrens.Add(target.transform.GetChild(i));
+            }
             return target;
         }
     }

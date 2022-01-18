@@ -147,7 +147,14 @@ public class PipeReducerModel
         pipe.pipeRadius2 = PipeRadius2;
         pipe.IsGenerateEndWeld = true;
         pipe.generateEndCaps = true;
-        pipe.generateWeld = false;
+        //pipe.generateWeld = false;
+
+        if (PipeRadius1 < 0.025 || PipeRadius2 < 0.025)
+        {
+            //pipe.weldRadius = 0.003f;
+            pipe.weldRadius = arg.weldRadius * 0.6f;
+        }
+
         pipe.RenderPipe();
 
         return pipe.gameObject;
