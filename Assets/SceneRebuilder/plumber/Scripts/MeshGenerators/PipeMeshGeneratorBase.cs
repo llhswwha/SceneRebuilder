@@ -29,6 +29,8 @@ public class PipeMeshGeneratorBase : MonoBehaviour
 
     public float weldRadius = 0.1f;
 
+    public int weldSegments = 12;
+
     public Material weldMaterial;
 
     public List<GameObject> Welds = new List<GameObject>();
@@ -61,8 +63,22 @@ public class PipeMeshGeneratorBase : MonoBehaviour
         //weldGenerator.pipeRadius = size / 5;
         //weldGenerator.pipeRadius = size / 10;
         weldGenerator.pipeRadius = weldRadius;
-        weldGenerator.pipeSegments = 12;
+        weldGenerator.pipeSegments = weldSegments;
         weldGenerator.IsLinkEndStart = true;
+    }
+
+    public List<PipeWeldArg> WeldArgs = new List<PipeWeldArg>();
+
+    public void ClearWelds()
+    {
+        foreach (var weld in Welds)
+        {
+            if (weld == null) continue;
+            GameObject.DestroyImmediate(weld.gameObject);
+        }
+        Welds.Clear();
+
+        WeldArgs.Clear();
     }
 
     protected GameObject GenerateWeld(List<Vector3> vertices, List<Vector3> normals, Vector3 start, Vector3 direction, float radius)

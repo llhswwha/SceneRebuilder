@@ -417,12 +417,7 @@ public class PipeMeshGeneratorEx : PipeMeshGeneratorBase
 
         //List<Vector3> ps = GetPoints();
 
-        foreach (var weld in Welds)
-        {
-            if (weld == null) continue;
-            GameObject.DestroyImmediate(weld.gameObject);
-        }
-        Welds.Clear();
+        ClearWelds();
 
         if (IsLinkEndStart)
         {

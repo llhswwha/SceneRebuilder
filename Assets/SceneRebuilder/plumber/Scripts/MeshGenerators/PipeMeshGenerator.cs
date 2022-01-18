@@ -301,6 +301,8 @@ public class PipeMeshGenerator : PipeMeshGeneratorBase
         }
     }
 
+
+
     Mesh GeneratePipeMesh(List<Vector3> ps,bool gWeld) {
         Mesh m = new Mesh();
         m.name = "UnityPlumber Pipe";
@@ -325,12 +327,7 @@ public class PipeMeshGenerator : PipeMeshGeneratorBase
 
         //List<Vector3> ps = GetPoints();
 
-        foreach(var weld in Welds)
-        {
-            if (weld == null) continue;
-            GameObject.DestroyImmediate(weld.gameObject);
-        }
-        Welds.Clear();
+        ClearWelds();
 
         if (IsLinkEndStart)
         {

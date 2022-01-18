@@ -132,6 +132,11 @@ public class PipeFactory : SingletonBehaviour<PipeFactory>
             pres1 = this.PrefabPipes();
             pres2 = this.PrefabOthers();
             pres3 = this.PrefabWelds();
+
+            AllPrefabs = new PrefabInfoList();
+            AllPrefabs.AddRange(pres1);
+            AllPrefabs.AddRange(pres2);
+            AllPrefabs.AddRange(pres3);
         }
  
 
@@ -146,6 +151,8 @@ public class PipeFactory : SingletonBehaviour<PipeFactory>
         Debug.LogError($"OneKey time:{DateTime.Now-start} Models:{newBuilder.PipeModels.Count+PipeOthers.Count+PipeWelds.Count}({newBuilder.PipeModels.Count}+{PipeOthers.Count}+{PipeWelds.Count}) Prefabs:{pres1.Count+pres2.Count+ pres3.Count}({pres1.Count}+{pres2.Count}+{pres3.Count}) TargetInfo:{TargetInfo} -> ResultInfo:{ResultInfo} ({ResultVertexCount/TargetVertexCount:P2},{SharedResultVertexCountCount / TargetVertexCount:P2})");
     }
 
+    public PrefabInfoList AllPrefabs = new PrefabInfoList();
+
     [ContextMenu("GetPipeParts")]
     public void GetPipeParts()
     {
@@ -158,6 +165,17 @@ public class PipeFactory : SingletonBehaviour<PipeFactory>
         ShowAll();
 
         InitPipeBuilder();
+    }
+
+    public void ShowAllPrefabs()
+    {
+        GameObject allPrefabs = new GameObject("AllPrefabs");
+        foreach(PrefabInfo pres in AllPrefabs)
+        {
+            GameObject go = GameObject.Instantiate(pres.Prefab);
+            go.transform.SetParent(allPrefabs.transform);
+            go.transform.position = Vector3.zero;
+        }
     }
 
     public void AddList(List<Transform> list,List<Transform> newList)

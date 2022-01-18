@@ -206,6 +206,10 @@ public class PipeFactoryEditor : BaseFoldoutEditor<PipeFactory>
 
 
         GUILayout.BeginHorizontal();
+        if (GUILayout.Button("ShowPrefabs"))
+        {
+            targetT.ShowAllPrefabs();
+        }
         if (GUILayout.Button("ClearDebugObjs"))
         {
             targetT.ClearDebugObjs();

@@ -309,6 +309,7 @@ public class PipeBuilder : MonoBehaviour
         List<Transform> ts = new List<Transform>();
         foreach (var g in PipeGenerators)
         {
+            if (g == null) continue;
             //ts.AddRange(g.Childrens);
             foreach(var c in g.Childrens)
             {
