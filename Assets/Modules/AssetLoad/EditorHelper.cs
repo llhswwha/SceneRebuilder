@@ -598,48 +598,6 @@ public static class EditorHelper
         return componentsNew;
     }
 
-    public static void RemoveAllComponents(GameObject targetObj, params System.Type[] notRemoveComponents)
-    {
-        Component[] components = targetObj.GetComponents<Component>();
-        foreach (var component in components)
-        {
-            if (component is Transform) continue;
-            if (IsType(component.GetType(), notRemoveComponents)) continue;
-            GameObject.DestroyImmediate(component);
-        }
-    }
-
-    public static void RemoveComponents(GameObject targetObj, params System.Type[] notRemoveComponents)
-    {
-        Component[] components = targetObj.GetComponents<Component>();
-        foreach (var component in components)
-        {
-            if (IsType(component.GetType(), notRemoveComponents)) continue;
-            if (component is MonoBehaviour)
-            {
-                GameObject.DestroyImmediate(component);
-            }
-            if (component is Collider)
-            {
-                GameObject.DestroyImmediate(component);
-
-            }
-        }
-    }
-
-    private static bool IsType(System.Type type1, System.Type[] typeList)
-    {
-        if (typeList == null) return false;
-        foreach (var t in typeList)
-        {
-            if (t.IsAssignableFrom(type1))
-            {
-                return true;
-            }
-        }
-        return false;
-    }
-
     public static void CopyAllComponents(GameObject fromObj, GameObject targetObj, bool isClearAllOldComponents, params System.Type[] notCopyComponents)
     {
         if (isClearAllOldComponents)
@@ -701,6 +659,48 @@ public static class EditorHelper
     #endregion
 
 #endif
+
+    public static bool IsType(System.Type type1, System.Type[] typeList)
+    {
+        if (typeList == null) return false;
+        foreach (var t in typeList)
+        {
+            if (t.IsAssignableFrom(type1))
+            {
+                return true;
+            }
+        }
+        return false;
+    }
+
+    public static void RemoveAllComponents(GameObject targetObj, params System.Type[] notRemoveComponents)
+    {
+        Component[] components = targetObj.GetComponents<Component>();
+        foreach (var component in components)
+        {
+            if (component is Transform) continue;
+            if (IsType(component.GetType(), notRemoveComponents)) continue;
+            GameObject.DestroyImmediate(component);
+        }
+    }
+
+    public static void RemoveComponents(GameObject targetObj, params System.Type[] notRemoveComponents)
+    {
+        Component[] components = targetObj.GetComponents<Component>();
+        foreach (var component in components)
+        {
+            if (IsType(component.GetType(), notRemoveComponents)) continue;
+            if (component is MonoBehaviour)
+            {
+                GameObject.DestroyImmediate(component);
+            }
+            if (component is Collider)
+            {
+                GameObject.DestroyImmediate(component);
+
+            }
+        }
+    }
 
     public static Scene GetSceneByBuildIndex(SceneLoadArg arg)
     {

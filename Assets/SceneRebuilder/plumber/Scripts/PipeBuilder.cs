@@ -223,7 +223,9 @@ public class PipeBuilder : MonoBehaviour
 
             if (IsCopyComponents)
             {
+#if UNITY_EDITOR
                 EditorHelper.CopyAllComponents(go.gameObject, pipe, false, typeof(PipeModelBase));
+#endif
             }
 
             var generator = pipe.GetComponent<PipeMeshGeneratorBase>();
