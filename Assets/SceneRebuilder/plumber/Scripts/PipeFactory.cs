@@ -115,14 +115,7 @@ public class PipeFactory : SingletonBehaviour<PipeFactory>
             }
         }
 
-
         this.MovePipes();
-
-        if(IsReplaceOld)
-        {
-            this.ReplacePipes();
-            this.ReplaceWelds();
-        }
 
         PrefabInfoList pres1 = new PrefabInfoList();
         PrefabInfoList pres2 = new PrefabInfoList();
@@ -138,7 +131,13 @@ public class PipeFactory : SingletonBehaviour<PipeFactory>
             AllPrefabs.AddRange(pres2);
             AllPrefabs.AddRange(pres3);
         }
- 
+
+        if (IsReplaceOld)
+        {
+            this.ReplacePipes();
+            this.ReplaceWelds();
+        }
+
 
         //ResultInfo=ShowTargetInfo(Target);
 
@@ -202,6 +201,7 @@ public class PipeFactory : SingletonBehaviour<PipeFactory>
         {
             if(!w.name.Contains("_"))
                 w.name = w.transform.parent.name + "_" + w.name;
+            EditorHelper.UnpackPrefab(w.gameObject);
             w.transform.SetParent(null);
             w.transform.SetParent(WeldRootTarget.transform);
         }
@@ -426,9 +426,10 @@ public class PipeFactory : SingletonBehaviour<PipeFactory>
     public PrefabInfoList PrefabPipes()
     {
         DateTime start = DateTime.Now;
-       PrefabInfoList prefabs = PrefabInstanceBuilder.Instance.GetPrefabsOfList(newBuilder.PipeGenerators, true);
-        Debug.Log($"PrefabPipes time:{DateTime.Now - start} Pipes:{newBuilder.PipeGenerators.Count} prefabs:{prefabs.Count}");
-        newBuilder.RefreshGenerators();
+        PrefabInfoList prefabs = PrefabInstanceBuilder.Instance.GetPrefabsOfList(newBuilder.PipeGenerators, true);
+        var gs = newBuilder.RefreshGenerators();
+        newBuilder.RefreshPipeModels(Target);
+        Debug.Log($"PrefabPipes time:{DateTime.Now - start} Pipes:{newBuilder.PipeGenerators.Count} Pipes2:{gs.Count} prefabs:{prefabs.Count}");
         return prefabs;
     }
 
@@ -437,10 +438,10 @@ public class PipeFactory : SingletonBehaviour<PipeFactory>
         DateTime start = DateTime.Now;
         newBuilder.CombineGeneratedWelds();
         var welds = newBuilder.GetWelds();
-        return new PrefabInfoList();
-        //PrefabInfoList prefabs = PrefabInstanceBuilder.Instance.GetPrefabsOfList(welds, true);
-        //Debug.Log($"PrefabWelds time:{DateTime.Now - start} Welds:{welds.Count} prefabs:{prefabs.Count}");
-        //return prefabs;
+        //return new PrefabInfoList();
+        PrefabInfoList prefabs = PrefabInstanceBuilder.Instance.GetPrefabsOfList(welds, true);
+        Debug.Log($"PrefabWelds time:{DateTime.Now - start} Welds:{welds.Count} prefabs:{prefabs.Count}");
+        return prefabs;
     }
 
     public PrefabInfoList PrefabOthers()

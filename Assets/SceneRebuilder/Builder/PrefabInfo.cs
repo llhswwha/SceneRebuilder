@@ -329,6 +329,20 @@ public class PrefabInfoListBags
 [Serializable]
 public class PrefabInfoList: List<PrefabInfo>
 {
+    //List<PrefabInfo> Items = new List<PrefabInfo>();
+    //public int Count
+    //{
+    //    get
+    //    {
+    //        return Items.Count;
+    //    }
+    //}
+
+    //public void Clear()
+    //{
+    //    Items.Clear();
+    //}
+
     public PrefabInfoList()
     {
         

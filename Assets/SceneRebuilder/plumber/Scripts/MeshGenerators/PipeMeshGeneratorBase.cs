@@ -6,7 +6,18 @@ public class PipeMeshGeneratorBase : MonoBehaviour
 {
 
 
-    public List<Transform> Childrens = new List<Transform>();
+    public List<Transform> Childrens
+    {
+        get
+        {
+            List<Transform> ts = new List<Transform>();
+            for(int i = 0; i < this.transform.childCount; i++)
+            {
+                ts.Add(this.transform.GetChild(i));
+            }
+            return ts;
+        }
+    }
 
     public GameObject Target;
 
@@ -101,7 +112,7 @@ public class PipeMeshGeneratorBase : MonoBehaviour
             //weldGenerator.ShowPoints();
             go.transform.up = direction;
             go.transform.localScale = new Vector3(1, 2, 1);
-            Childrens.Add(go.transform);
+            //Childrens.Add(go.transform);
             return go;
         }
         else

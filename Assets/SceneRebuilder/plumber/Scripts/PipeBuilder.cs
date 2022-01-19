@@ -2,6 +2,7 @@ using MathGeoLib;
 using System;
 using System.Collections;
 using System.Collections.Generic;
+using System.Linq;
 using Unity.Collections;
 using UnityEngine;
 
@@ -437,9 +438,31 @@ public class PipeBuilder : MonoBehaviour
         return pipe;
     }
 
-    internal void RefreshGenerators()
+    internal List<PipeMeshGeneratorBase> RefreshGenerators()
     {
-        throw new NotImplementedException();
+        var gs= this.GetComponentsInChildren<PipeMeshGeneratorBase>(true).ToList();
+        PipeGenerators.Clear();
+        foreach(var pipe in gs)
+        {
+            var target = pipe.Target;
+            if (target == null) continue;
+            PipeGenerators.Add(pipe);
+            PipeModelBase model = target.GetComponent<PipeModelBase>();
+            if (model)
+            {
+                model.ResultGo = pipe.gameObject;
+            }
+        }
+        return PipeGenerators;
+    }
+
+    public void RefreshPipeModels(GameObject root)
+    {
+        PipeLines= root.GetComponentsInChildren<PipeLineModel>(true).ToList();
+        PipeElbows = root.GetComponentsInChildren<PipeElbowModel>(true).ToList();
+        PipeTees = root.GetComponentsInChildren<PipeTeeModel>(true).ToList();
+        PipeReducers = root.GetComponentsInChildren<PipeReducerModel>(true).ToList();
+        PipeFlanges = root.GetComponentsInChildren<PipeFlangeModel>(true).ToList();
     }
 
     public void RendererPipeLines()
