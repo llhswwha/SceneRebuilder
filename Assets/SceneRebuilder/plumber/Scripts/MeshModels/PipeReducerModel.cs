@@ -45,7 +45,7 @@ public class PipeReducerModel
         //    return;
         //}
 
-        if(trianglesList.Count == 3)
+        if(trianglesList.Count >= 3)
         {
             if(GetModelInfo3(trianglesList) ==false)
             {

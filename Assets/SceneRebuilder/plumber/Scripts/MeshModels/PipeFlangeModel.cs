@@ -38,6 +38,11 @@ public class PipeFlangeModel : PipeReducerModel
 
     protected override bool GetModelInfo3(SharedMeshTrianglesList trianglesList)
     {
+        if (trianglesList.Count > 3)
+        {
+            trianglesList.CombineSameCenter(minRepeatPointDistance);
+        }
+
             IsSpecial = true;
             trianglesList.Sort((a, b) => { return (b.Radius+b.MinRadius).CompareTo((a.Radius+a.MinRadius)); });
 
