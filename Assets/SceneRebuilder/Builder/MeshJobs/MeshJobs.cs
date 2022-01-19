@@ -1167,6 +1167,9 @@ namespace MeshJobs
                 //float progress1 = (float)progressCount / targetCount;
                 ProgressArg arg1 = new ProgressArg("NewMeshAlignJobs", progressCount, targetCount);
                 JobHandleList.SetJobProgress(arg1);
+
+                jobList.Dispose();//new
+
                 if (ProgressBarHelper.DisplayCancelableProgressBar(arg1))
                 {
                     Debug.LogError("Break Jobs!!");

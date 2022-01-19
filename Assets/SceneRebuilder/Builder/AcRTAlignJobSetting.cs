@@ -8,6 +8,8 @@ using System.IO;
 
 public class AcRTAlignJobSetting : SingletonBehaviour<AcRTAlignJobSetting>
 {
+    //public bool IsTrySameAngle = false;
+
     public bool IsTryAngles=true;
 
     public bool IsTryAngles_Scale= false;
@@ -27,7 +29,8 @@ public class AcRTAlignJobSetting : SingletonBehaviour<AcRTAlignJobSetting>
     [ContextMenu("SetAcRTAlignJobSetting")]
     public void SetAcRTAlignJobSetting()
     {
-         AcRTAlignJob.IsTryAngles=this.IsTryAngles;
+        //AcRTAlignJob.IsTrySameAngle = this.IsTrySameAngle;
+        AcRTAlignJob.IsTryAngles=this.IsTryAngles;
          AcRTAlignJob.IsTryAngles_Scale=this.IsTryAngles_Scale;
         AcRTAlignJob.IsTryRT = this.IsTryRT;
         AcRTAlignJob.IsTryICP = this.IsTryICP;

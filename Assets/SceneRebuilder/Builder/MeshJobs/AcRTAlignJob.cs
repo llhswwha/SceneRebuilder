@@ -325,6 +325,8 @@ namespace MeshJobs
 
         public static int ICPCount=0;
 
+        public static bool IsTrySameAngle = false;
+
         public static bool IsTryAngles= true;
 
         public static bool IsTryAngles_Scale=true;
@@ -490,7 +492,7 @@ namespace MeshJobs
             int count = 0;
 
             float minDis = float.MaxValue;
-            RTResult minRT = null;
+            IRTResult minRT = null;
             Vector3[] minVS=null;
             bool isFoundZero = false;
 
@@ -500,6 +502,24 @@ namespace MeshJobs
             var vsFromW = AcRTAlignJobHelper.vsDictWorld[vsFromId];
             var vsFromL=AcRTAlignJobHelper.vsDictLocal[vsFromId];
             var vsToW = AcRTAlignJobHelper.vsDictWorld[vsToId];
+            var vsToL = AcRTAlignJobHelper.vsDictLocal[vsToId];
+
+            if (IsTrySameAngle)
+            {
+                
+                var disLocal = DistanceUtil.GetDistance(vsFromL, vsToL);
+
+                if (disLocal <= DistanceSetting.zeroM)
+                {
+                    //var disWorld = DistanceUtil.GetDistance(vsFromW, vsToW);
+                    //Debug.Log($"AcRTAlignJob SameAngleResult disLocal:{disLocal} disWorld:{disWorld} 用时:{(DateTime.Now - start).TotalMilliseconds:F2}ms");
+
+                    double t = (DateTime.Now - start).TotalMilliseconds;
+                    minRT = new SameAngleResult();
+                    AcRTAlignJobResult.SetResult(Id, minRT, t);
+                    return;
+                }
+            }            
 
             var scale1=AcRTAlignJobHelper.scaleDict[vsToId];
 
@@ -706,7 +726,7 @@ namespace MeshJobs
                     {
                         //Debug.LogError("minDis>DistanceSetting.zeroDis:"+minDis+">"+DistanceSetting.zeroDis+" and <"+DistanceSetting.ICPMinDis);
                         RTResultList rList = new RTResultList();
-                        rList.Add(minRT);
+                        rList.Add(minRT as RTResult);
                         var vsFromStart = minVS;
                         string log = "";
                         for (int i = 0; i < DistanceSetting.ICPMaxCount; i++)

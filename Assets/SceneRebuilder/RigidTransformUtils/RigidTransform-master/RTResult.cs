@@ -33,7 +33,20 @@ public class RTResultList:List<RTResult>,IRTResult
 
 public enum AlignMode
 {
-    RT,Rotate,Scale,ICP
+    RT,Rotate,Scale,ICP,SameAngle
+}
+
+[Serializable]
+public class SameAngleResult : IRTResult
+{
+    public int id { get; set; }
+    public float Distance { get; set; }
+
+    public void ApplyMatrix(Transform tFrom, Transform tTo)
+    {
+        tFrom.transform.position = tTo.transform.position;
+        tFrom.transform.rotation = tTo.transform.rotation;
+    }
 }
 
 [Serializable]
