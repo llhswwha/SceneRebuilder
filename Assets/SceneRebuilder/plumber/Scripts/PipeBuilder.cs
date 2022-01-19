@@ -437,6 +437,10 @@ public class PipeBuilder : MonoBehaviour
         return pipe;
     }
 
+    internal void RefreshGenerators()
+    {
+        throw new NotImplementedException();
+    }
 
     public void RendererPipeLines()
     {

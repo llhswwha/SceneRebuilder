@@ -428,6 +428,7 @@ public class PipeFactory : SingletonBehaviour<PipeFactory>
         DateTime start = DateTime.Now;
        PrefabInfoList prefabs = PrefabInstanceBuilder.Instance.GetPrefabsOfList(newBuilder.PipeGenerators, true);
         Debug.Log($"PrefabPipes time:{DateTime.Now - start} Pipes:{newBuilder.PipeGenerators.Count} prefabs:{prefabs.Count}");
+        newBuilder.RefreshGenerators();
         return prefabs;
     }
 

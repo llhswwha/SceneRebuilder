@@ -202,6 +202,7 @@ public class PipeMeshGeneratorEx : PipeMeshGeneratorBase
     private void RenderPipe(List<Vector4> ps)
     {
         Mesh mesh = GeneratePipeMesh(ps, generateWeld);
+        mesh.name = this.name;
         SetMeshRenderers(mesh);
     }
 

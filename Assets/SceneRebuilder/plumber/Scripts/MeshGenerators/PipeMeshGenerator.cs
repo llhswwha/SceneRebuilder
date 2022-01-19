@@ -211,6 +211,7 @@ public class PipeMeshGenerator : PipeMeshGeneratorBase
     {
         Childrens.Clear();
         Mesh mesh = GeneratePipeMesh(ps, generateWeld);
+        mesh.name = this.name;
         SetMeshRenderers(mesh);
     }
 
