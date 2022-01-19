@@ -1,3 +1,4 @@
+using MeshJobs;
 using System;
 using System.Collections;
 using System.Collections.Generic;
@@ -172,6 +173,8 @@ public class PipeFactory : SingletonBehaviour<PipeFactory>
         foreach(PrefabInfo pres in AllPrefabs)
         {
             GameObject go = GameObject.Instantiate(pres.Prefab);
+            TransformHelper.ClearChildren(go);
+            //EditorHelper.RemoveAllComponents(go);
             go.transform.SetParent(allPrefabs.transform);
             go.transform.position = Vector3.zero;
         }
@@ -433,14 +436,20 @@ public class PipeFactory : SingletonBehaviour<PipeFactory>
         return prefabs;
     }
 
+    public bool IsTrySameAngle = true;
+
     public PrefabInfoList PrefabWelds()
     {
+        AcRTAlignJob.IsTrySameAngle = IsTrySameAngle;
+
         DateTime start = DateTime.Now;
         newBuilder.CombineGeneratedWelds();
         var welds = newBuilder.GetWelds();
         //return new PrefabInfoList();
         PrefabInfoList prefabs = PrefabInstanceBuilder.Instance.GetPrefabsOfList(welds, true);
         Debug.Log($"PrefabWelds time:{DateTime.Now - start} Welds:{welds.Count} prefabs:{prefabs.Count}");
+
+        AcRTAlignJob.IsTrySameAngle = false;
         return prefabs;
     }
 

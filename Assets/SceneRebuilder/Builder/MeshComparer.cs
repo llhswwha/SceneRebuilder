@@ -545,7 +545,16 @@ public class MeshComparer : SingletonBehaviour<MeshComparer>
         DateTime start = DateTime.Now;
         SetDistanceSetting();
         distance=MeshHelper.GetVertexDistanceEx(goTo.transform,goFrom.transform,"GetDistance12", ShowLog);
-        Debug.Log($"GetDistance12 distance:{distance} 用时:{(DateTime.Now - start).TotalMilliseconds:F2}ms log:{DistanceUtil.DisLog}");
+
+        var mfFrom = new MeshPoints(goFrom);
+        var mfTo = new MeshPoints(goTo);
+
+        var disLocal = DistanceUtil.GetDistance(mfFrom.vertices, mfTo.vertices);
+        var disWorld = DistanceUtil.GetDistance(mfFrom.GetWorldVertexes(), mfTo.GetWorldVertexes());
+
+        Debug.Log($"GetDistance12 distance:{distance} disLocal:{disLocal} disWorld:{disWorld} 用时:{(DateTime.Now - start).TotalMilliseconds:F2}ms log:{DistanceUtil.DisLog}");
+
+        
 
         float dis1 = Vector3.Distance(goTo.transform.position, goFrom.transform.position);
         float dis2 = MeshHelper.GetCenterDistance(goTo.gameObject, goFrom.gameObject);

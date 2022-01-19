@@ -2,18 +2,18 @@
 using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.UI;
-public class MeshCombinerSetting : MonoBehaviour
+public class MeshCombinerSetting : SingletonBehaviour<MeshCombinerSetting>
 {
-    private static MeshCombinerSetting _instance;
-    public static MeshCombinerSetting Instance
-    {
-        get{
-            if(_instance==null){
-                _instance=GameObject.FindObjectOfType<MeshCombinerSetting>();
-            }
-            return _instance;
-        }
-    }
+    //private static MeshCombinerSetting _instance;
+    //public static MeshCombinerSetting Instance
+    //{
+    //    get{
+    //        if(_instance==null){
+    //            _instance=GameObject.FindObjectOfType<MeshCombinerSetting>();
+    //        }
+    //        return _instance;
+    //    }
+    //}
 
     public float MaxVertex=10;
 

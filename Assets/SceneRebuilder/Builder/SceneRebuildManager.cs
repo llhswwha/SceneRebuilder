@@ -25,23 +25,39 @@ public class SceneRebuildManager : SingletonBehaviour<SceneRebuildManager>
     [ContextMenu("InitBuildings")]
     public void InitBuildings()
     {
+        if (buildingModelManager == null)
+        {
+            buildingModelManager = BuildingModelManager.Instance;
+        }
         buildingModelManager.InitBuildings();
     }
 
     [ContextMenu("CombineBuildings")]
     public void CombineBuildings()
     {
+        if (buildingModelManager == null)
+        {
+            buildingModelManager = BuildingModelManager.Instance;
+        }
         buildingModelManager.CombineAll();//Model -> CombinedToTree
     }
 
     [ContextMenu("ClearTrees")]
     public void ClearTrees()
     {
+        if (buildingModelManager == null)
+        {
+            buildingModelManager = BuildingModelManager.Instance;
+        }
         buildingModelManager.ClearTrees();//Model -> CombinedToTree
     }
 
     public List<BuildingModelInfo> GetBuildings()
     {
+        if (buildingModelManager == null)
+        {
+            buildingModelManager = BuildingModelManager.Instance;
+        }
         return buildingModelManager.Buildings;
     }
 
@@ -49,6 +65,10 @@ public class SceneRebuildManager : SingletonBehaviour<SceneRebuildManager>
     {
         //if (areaTreeManager == null) areaTreeManager = GameObject.FindObjectOfType<AreaTreeManager>();
         //return areaTreeManager.Trees;
+        if (buildingModelManager == null)
+        {
+            buildingModelManager = BuildingModelManager.Instance;
+        }
         return buildingModelManager.GetTrees();
     }
 
@@ -69,6 +89,10 @@ public class SceneRebuildManager : SingletonBehaviour<SceneRebuildManager>
 
     public List<SubScene_Base> GetScenes()
     {
+        if (subSceneManager == null)
+        {
+            subSceneManager = SubSceneManager.Instance;
+        }
         return subSceneManager.GetScenes();
     }
 
@@ -78,14 +102,29 @@ public class SceneRebuildManager : SingletonBehaviour<SceneRebuildManager>
         //areaTreeManager.UpdateTrees();
 
         //buildingModelManager.UpdateBuildings();
-        
-        buildingModelManager.UpdateTrees();//.UpdateBuildings();
-        subSceneManager.UpdateScenes();
+
+        if (buildingModelManager == null)
+        {
+            buildingModelManager = BuildingModelManager.Instance;
+        }
+        if (subSceneManager == null)
+        {
+            subSceneManager = SubSceneManager.Instance;
+        }
+
+        //if (buildingModelManager)
+            buildingModelManager.UpdateTrees();//.UpdateBuildings();
+        //if(subSceneManager)
+            subSceneManager.UpdateScenes();
     }
 
     [ContextMenu("SaveScenes")]
     public void SaveScenes()
     {
+        if (subSceneManager == null)
+        {
+            subSceneManager = SubSceneManager.Instance;
+        }
         subSceneManager.contentType = SceneContentType.TreeNode;
         subSceneManager.EditorCreateBuildingScenes(); // CombinedTree To Scene
     }
@@ -127,6 +166,10 @@ public class SceneRebuildManager : SingletonBehaviour<SceneRebuildManager>
         //SaveScenes();
         //SetBuildings();
         //Debug.LogError($"OneKey_Save Time:{(DateTime.Now - start).ToString()}");
+        if (buildingModelManager == null)
+        {
+            buildingModelManager = BuildingModelManager.Instance;
+        }
         buildingModelManager.OneKey_Save();
        
     }
@@ -134,18 +177,30 @@ public class SceneRebuildManager : SingletonBehaviour<SceneRebuildManager>
     [ContextMenu("OneKey_Reset")]
     public void OneKey_Reset()
     {
+        if (buildingModelManager == null)
+        {
+            buildingModelManager = BuildingModelManager.Instance;
+        }
         buildingModelManager.OneKey_Reset();
     }
 
     [ContextMenu("OneKey_Save")]
     public void OneKey_Resave()
     {
+        if (buildingModelManager == null)
+        {
+            buildingModelManager = BuildingModelManager.Instance;
+        }
         buildingModelManager.OneKey_Resave();
     }
 
     [ContextMenu("LoadScenes")]
     public void LoadScenes()
     {
+        if (subSceneManager == null)
+        {
+            subSceneManager = SubSceneManager.Instance;
+        }
         subSceneManager.contentType = SceneContentType.TreeNode;
         subSceneManager.EditorLoadScenes();
     }
@@ -153,6 +208,10 @@ public class SceneRebuildManager : SingletonBehaviour<SceneRebuildManager>
     [ContextMenu("ClearBuildings")]
     public void ClearBuildings()
     {
+        if (subSceneManager == null)
+        {
+            subSceneManager = SubSceneManager.Instance;
+        }
         subSceneManager.ClearBuildings();
     }
 

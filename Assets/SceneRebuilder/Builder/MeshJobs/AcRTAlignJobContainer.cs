@@ -408,7 +408,9 @@ public class AcRTAlignJobContainer
     private void SetNewGoProperties(GameObject newGo, MeshPoints oldGo )
     {
         newGo.name = oldGo.name + "_New";
+#if UNITY_EDITOR
         EditorHelper.CopyAllComponents(oldGo.gameObject, newGo,true,null);
+#endif
 
         MeshRenderer mf1 = newGo.GetComponent<MeshRenderer>();
         if (mf1 == null)
