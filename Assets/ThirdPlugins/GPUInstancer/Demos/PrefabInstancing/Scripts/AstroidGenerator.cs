@@ -89,7 +89,9 @@ namespace GPUInstancer
             {
                 for (int i = 0; i < Mathf.FloorToInt((float)count / columnSize); i++)
                 {
-                    asteroidInstances.Add(InstantiateInCircle(center, h));
+                    var instance = InstantiateInCircle(center, h);
+                    if (instance == null) continue;
+                    asteroidInstances.Add(instance);
                 }
             }
 
@@ -97,7 +99,9 @@ namespace GPUInstancer
             {
                 for (int i = 0; i < count - (Mathf.FloorToInt((float)count / columnSize) * firstPassColumnSize); i++)
                 {
-                    asteroidInstances.Add(InstantiateInCircle(center, columnSize));
+                    var instance = InstantiateInCircle(center, columnSize);
+                    if (instance == null) continue;
+                    asteroidInstances.Add(instance);
                 }
             }
             Debug.Log("Instantiated " + instantiatedCount + " objects.");
@@ -148,7 +152,15 @@ namespace GPUInstancer
         {
             SetRandomPosInCircle(center, column - Mathf.FloorToInt(columnSize / 2f), Random.Range(RadiusRange.x, RadiusRange.y));
             allocatedRot = Quaternion.FromToRotation(Vector3.forward, center - allocatedPos);
-            allocatedGO = Instantiate(asteroidObjects[Random.Range(0, asteroidObjects.Count)], allocatedPos, allocatedRot);
+            int id = Random.Range(0, asteroidObjects.Count);
+            var prefab = asteroidObjects[id];
+            
+            if (prefab == null)
+            {
+                Debug.Log($"InstantiateInCircle asteroidObjects:{asteroidObjects.Count} prefab:{prefab} id:{id}");
+                return null;
+            }
+            allocatedGO = Instantiate(prefab, allocatedPos, allocatedRot);
             allocatedGO.transform.parent = goParent.transform;
 
             allocatedLocalEulerRot.x = Random.Range(-180f, 180f);
