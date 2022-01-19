@@ -78,12 +78,14 @@ public class RendererIdEditor : BaseEditor<RendererId>
         {
             EditorHelper.UnpackPrefab(item.gameObject);
             item.gameObject.transform.SetParent(null);
+            EditorHelper.SelectObject(item.gameObject);
         }
         if (GUILayout.Button("UpParent"))
         {
             EditorHelper.UnpackPrefab(item.gameObject);
             if(item.gameObject.transform.parent!=null)
                 item.gameObject.transform.SetParent(item.gameObject.transform.parent.parent);
+            EditorHelper.SelectObject(item.gameObject);
         }
         EditorGUILayout.EndHorizontal();
 

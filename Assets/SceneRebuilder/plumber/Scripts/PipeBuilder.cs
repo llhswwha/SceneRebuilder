@@ -234,10 +234,7 @@ public class PipeBuilder : MonoBehaviour
             pipeRunList.RenameResultBySortedId();
         }
 
-        if(generateArg.generateWeld)
-        {
-            CombineGeneratedWelds();
-        }
+        //CombineGeneratedWelds();
         
 
         Debug.LogWarning($">>RendererPipes time:{DateTime.Now - start}");
@@ -246,8 +243,9 @@ public class PipeBuilder : MonoBehaviour
     public float minWeldDis = 0.0001f;
     public float maxWeldDis = 0.05f;
 
-    private void CombineGeneratedWelds()
+    public void CombineGeneratedWelds()
     {
+        if (generateArg.generateWeld == false) return;
         DateTime time = DateTime.Now;
         List<Transform> elbowWelds = GetWelds(PipeElbows);
         List<Transform> elbowWelds2 = new List<Transform>(elbowWelds);
@@ -266,7 +264,9 @@ public class PipeBuilder : MonoBehaviour
         List<Transform> reducerElbows = GetWelds(PipeReducers);
         CombineGeneratedWelds(pipeElbows, reducerElbows, minWeldDis);
 
-        Debug.Log($"CombineGeneratedWelds time:{DateTime.Now-time} elbowWelds1:{count1} elbowWelds2:{count2} elbowWelds3:{elbowWelds.Count} pipeElbows1:{count3} pipeElbows2:{count4}");
+        List<Transform> elbowWelds4 = GetWelds(PipeElbows);
+
+        Debug.Log($"CombineGeneratedWelds time:{DateTime.Now-time} elbowWelds1:{count1} elbowWelds2:{count2} elbowWelds3:{elbowWelds.Count} elbowWelds4:{elbowWelds4.Count} pipeElbows2:{count4}");
     }
 
     private void CombineGeneratedWelds(List<Transform> elbows1, List<Transform> elbows2,float minWeldDis)

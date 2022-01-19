@@ -323,6 +323,7 @@ public class PipeFactory : SingletonBehaviour<PipeFactory>
         //List<Transform> weldList = this.GetWelds();
         List<Transform> weldList = PipeWelds;
         int allWeldsCount = weldList.Count;
+        if (allWeldsCount == 0) return;
         var weldsNew = newBuilder.GetWelds();
         int newWeldsCount = weldsNew.Count;
 
@@ -433,10 +434,12 @@ public class PipeFactory : SingletonBehaviour<PipeFactory>
     public PrefabInfoList PrefabWelds()
     {
         DateTime start = DateTime.Now;
+        newBuilder.CombineGeneratedWelds();
         var welds = newBuilder.GetWelds();
-        PrefabInfoList prefabs = PrefabInstanceBuilder.Instance.GetPrefabsOfList(welds, true);
-        Debug.Log($"PrefabWelds time:{DateTime.Now - start} Welds:{welds.Count} prefabs:{prefabs.Count}");
-        return prefabs;
+        return new PrefabInfoList();
+        //PrefabInfoList prefabs = PrefabInstanceBuilder.Instance.GetPrefabsOfList(welds, true);
+        //Debug.Log($"PrefabWelds time:{DateTime.Now - start} Welds:{welds.Count} prefabs:{prefabs.Count}");
+        //return prefabs;
     }
 
     public PrefabInfoList PrefabOthers()

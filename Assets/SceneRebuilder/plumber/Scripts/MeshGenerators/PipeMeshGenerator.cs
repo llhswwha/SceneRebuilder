@@ -58,7 +58,26 @@ public class PipeMeshGenerator : PipeMeshGeneratorBase
     [ContextMenu("ShowPoints")]
     public void ShowPoints()
     {
-        pointsT = ShowPoints(points);
+        var ps = GetPoints();
+        pointsT = ShowPoints(ps);
+    }
+
+    [ContextMenu("ShowTransformPoints")]
+    public void ShowTransformPoints()
+    {
+        var ps = GetTransformPoints(points);
+        pointsT = ShowPoints(ps);
+    }
+
+    public List<Vector3> GetTransformPoints(List<Vector3> ps0)
+    {
+        List<Vector3> ps = new List<Vector3>();
+        foreach(var p in ps0)
+        {
+            var pNew = this.transform.TransformPoint(p)-this.transform.position;
+            ps.Add(pNew);
+        }
+        return ps;
     }
 
     [ContextMenu("ShowPoints2")]
@@ -218,9 +237,10 @@ public class PipeMeshGenerator : PipeMeshGeneratorBase
 
     public List<Vector3> GetPoints()
     {
-        List<Vector3> ps = new List<Vector3>();
-        ps.AddRange(points);
-        return ps;
+        //List<Vector3> ps = new List<Vector3>();
+        //ps.AddRange(points);
+        //return ps;
+        return GetTransformPoints(points);
     }
 
     [ContextMenu("GetVertexCount")]

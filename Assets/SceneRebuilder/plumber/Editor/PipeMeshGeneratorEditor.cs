@@ -39,7 +39,11 @@ public class PipeMeshGeneratorEditor : Editor {
 		{
 			myTarget.ShowPoints2();
 		}
-		GUILayout.EndHorizontal();
+        if (GUILayout.Button("ShowPoints(T)"))
+        {
+            myTarget.ShowTransformPoints();
+        }
+        GUILayout.EndHorizontal();
 
 		GUILayout.BeginHorizontal();
 		if (GUILayout.Button("ShowCircles"))
