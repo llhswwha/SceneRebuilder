@@ -83,15 +83,29 @@ public class PipeMeshGeneratorEx : PipeMeshGeneratorBase
         return psObjs;
     }
 
-    public float pipeRadius = 0.2f;
+    //public float pipeRadius = 0.2f;
 
-    public float pipeRadius1 = 0;
-    public float pipeRadius2 = 0;
+    //public float pipeRadius1 = 0;
+    //public float pipeRadius2 = 0;
 
     public bool IsLinkEndStart = false;
 
     //public List<Vector3> points_raw;
 
+    public override void SetRadiusUniform(int pt)
+    {
+        elbowRadius = GetRadiusValue(elbowRadius, pt);
+        pipeRadius1 = GetRadiusValue(pipeRadius1, pt);
+        pipeRadius2 = GetRadiusValue(pipeRadius2, pt);
+        pipeRadius = GetRadiusValue(pipeRadius, pt);
+
+        for (int i = 0; i < points.Count; i++)
+        {
+            Vector4 p = points[i];
+            p.w = GetRadiusValue(p.w, pt);
+            points[i] = p;
+        }
+    }
 
 
     void Start()
@@ -180,6 +194,10 @@ public class PipeMeshGeneratorEx : PipeMeshGeneratorBase
 
     public void RenderPipe()
     {
+        if (uniformRadiusP > 0)
+        {
+            SetRadiusUniform(uniformRadiusP);
+        }
 
         List<Vector4> ps = GetPoints();
         if (IsLinkEndStart)

@@ -34,15 +34,18 @@ public struct PipeTeeInfoJob : IPipeJob
         {
             data=GetTeeInfo7(trianglesList);
             data.IsGetInfoSuccess = true;
+            data.KeyPointCount = 7;
 
         }
         else if (trianglesList.Count == 4)
         {
             data=GetTeeInfo4(trianglesList);
             data.IsGetInfoSuccess = true;
+            data.KeyPointCount = 4;
         }
         else
         {
+            data.KeyPointCount = trianglesList.Count;
             data.IsGetInfoSuccess = false;
             Debug.LogError($">>>GetTeeInfo points.Count Error count:{trianglesList.Count} gameObject:{id} sharedMinCount:{sharedMinCount} minRepeatPointDistance:{minRepeatPointDistance}");
             return;
@@ -211,6 +214,8 @@ public struct PipeTeeData
     public bool IsSpecial;
 
     public bool IsGetInfoSuccess;
+
+    public int KeyPointCount;
 
     public override string ToString()
     {

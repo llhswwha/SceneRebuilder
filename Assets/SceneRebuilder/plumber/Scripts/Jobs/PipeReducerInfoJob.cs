@@ -97,7 +97,7 @@ public struct PipeReducerInfoJob : IPipeJob
 
         //data.IsGetInfoSuccess = true;
         //return data;
-
+        data.KeyPointCount = trianglesList.Count;
         if (trianglesList.Count == 3)
         {
 
@@ -176,6 +176,7 @@ public struct PipeReducerData
     public bool IsSpecial;
 
     public bool IsGetInfoSuccess;
+    public int KeyPointCount;
 
     public PipeElbowKeyPointData KeyPointInfo;
 

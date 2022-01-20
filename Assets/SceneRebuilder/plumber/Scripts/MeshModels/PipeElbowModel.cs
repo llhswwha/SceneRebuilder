@@ -245,6 +245,7 @@ public class PipeElbowModel : PipeModelBase
         {
             GetElbow6(trianglesList, mesh);
             IsGetInfoSuccess = true;
+            KeyPointCount = 6;
         }
         else if(trianglesList.Count == 4)
         {
@@ -252,6 +253,7 @@ public class PipeElbowModel : PipeModelBase
             ModelStartPoint = KeyPointInfo.EndPointOut1;
             ModelEndPoint = KeyPointInfo.EndPointOut2;
             IsGetInfoSuccess = true;
+            KeyPointCount = 4;
         }
         else if (trianglesList.Count == 2)
         {
@@ -259,9 +261,11 @@ public class PipeElbowModel : PipeModelBase
             ModelStartPoint = KeyPointInfo.EndPointOut1;
             ModelEndPoint = KeyPointInfo.EndPointOut2;
             IsGetInfoSuccess = true;
+            KeyPointCount = 2;
         }
         else
         {
+            KeyPointCount = trianglesList.Count;
             IsGetInfoSuccess = false;
             Debug.LogError($">>>GetElbowInfo GetModelInfo points.Count Error count:{trianglesList.Count} gameObject:{this.gameObject.name} sharedMinCount:{sharedMinCount} minRepeatPointDistance:{minRepeatPointDistance}");
             return;
@@ -335,6 +339,7 @@ public class PipeElbowModel : PipeModelBase
         this.InnerKeyPointInfo = new PipeElbowKeyPointInfo(lineData.InnerKeyPointInfo);
         ModelStartPoint = KeyPointInfo.EndPointOut1;
         ModelEndPoint = KeyPointInfo.EndPointOut2;
+        this.KeyPointCount = lineData.KeyPointCount;
     }
 
 

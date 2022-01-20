@@ -47,7 +47,8 @@ public class PipeReducerModel
 
         if(trianglesList.Count >= 3)
         {
-            if(GetModelInfo3(trianglesList) ==false)
+            KeyPointCount = trianglesList.Count;
+            if (GetModelInfo3(trianglesList) ==false)
             {
                 IsGetInfoSuccess = false;
                 Debug.LogError($"GetKeyPointsById points.Count != 2 count:{trianglesList.Count} gameObject:{this.gameObject.name} sharedMinCount:{sharedMinCount} minRepeatPointDistance:{minRepeatPointDistance}");
@@ -79,9 +80,11 @@ public class PipeReducerModel
 
             ModelStartPoint = StartPoint;
             ModelEndPoint = EndPoint;
+            KeyPointCount = 2;
         }
         else
         {
+            KeyPointCount = trianglesList.Count;
             IsGetInfoSuccess = false;
             Debug.LogError($"GetKeyPointsById points.Count != 2 count:{trianglesList.Count} gameObject:{this.gameObject.name} sharedMinCount:{sharedMinCount} minRepeatPointDistance:{minRepeatPointDistance}");
             return;
@@ -112,6 +115,7 @@ public class PipeReducerModel
     {
         this.IsSpecial = lineData.IsSpecial;
         this.IsGetInfoSuccess = lineData.IsGetInfoSuccess;
+        this.KeyPointCount = lineData.KeyPointCount;
         this.StartPoint = lineData.StartPoint;
         this.EndPoint = lineData.EndPoint;
         this.KeyPointInfo = new PipeElbowKeyPointInfo(lineData.KeyPointInfo);

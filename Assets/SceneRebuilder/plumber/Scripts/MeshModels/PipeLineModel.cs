@@ -37,9 +37,26 @@ public class PipeLineModel : PipeModelBase
 
     public float PipeLength = 0;
 
+
     public override string GetPipeArgString()
     {
-        return $"Radius:{PipeRadius}({PipeRadius1},{PipeRadius2}) Length:{PipeLength}";
+        if (PipeRadius == 0)
+        {
+            SetRadius();
+        }
+        PipeRadius = GetRadiusValue(PipeRadius);
+        PipeRadius1 = GetRadiusValue(PipeRadius1);
+        PipeRadius2 = GetRadiusValue(PipeRadius2);
+
+        if (PipeLength == 0)
+        {
+            PipeLength = Vector3.Distance(ModelStartPoint, ModelEndPoint);
+        }
+        if (KeyPointCount == 0)
+        {
+            KeyPointCount = 2;
+        }
+        return $"Radius:{PipeRadius}({PipeRadius1},{PipeRadius1}) Length:{PipeLength}  Keys:{KeyPointCount}";
     }
 
     //public float SizeX = 0;
@@ -361,6 +378,7 @@ public class PipeLineModel : PipeModelBase
         ModelEndPoint.w = PipeRadius;
 
         PipeLength = Vector3.Distance(startPoint, endPoint);
+        KeyPointCount = 2;
     }
 
     public void SetLineData(PipeLineData data)
@@ -368,12 +386,17 @@ public class PipeLineModel : PipeModelBase
         LineInfo = new PipeLineInfo(data, this.transform);
         ModelStartPoint = LineInfo.StartPoint;
         ModelEndPoint = LineInfo.EndPoint;
+        SetRadius();
+        PipeLength = Vector3.Distance(ModelStartPoint, ModelEndPoint);
+        KeyPointCount = 2;
 
         //this.IsObbError = data.IsObbError;
         this.IsGetInfoSuccess = data.IsGetInfoSuccess;
         this.IsObbError = data.IsObbError;
         Debug.Log($"SetLineData data:{data}");
     }
+
+
 
     private static VerticesToPlaneInfo GetEndPlane(VerticesToPlaneInfo startPlane,List<VerticesToPlaneInfo> verticesToPlaneInfos_All)
     {

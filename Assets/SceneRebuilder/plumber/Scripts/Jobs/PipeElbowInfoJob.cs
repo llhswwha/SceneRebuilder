@@ -48,6 +48,7 @@ public struct PipeElbowInfoJob : IPipeJob
         {
             data = GetElbow6(trianglesList, mesh);
             data.IsGetInfoSuccess = true;
+            data.KeyPointCount = 6;
         }
         else if (trianglesList.Count == 4)
         {
@@ -56,6 +57,7 @@ public struct PipeElbowInfoJob : IPipeJob
             //ModelStartPoint = KeyPointInfo.EndPointOut1;
             //ModelEndPoint = KeyPointInfo.EndPointOut2;
             data.IsGetInfoSuccess = true;
+            data.KeyPointCount = 4;
         }
         else if (trianglesList.Count == 2)
         {
@@ -64,10 +66,13 @@ public struct PipeElbowInfoJob : IPipeJob
             //ModelStartPoint = KeyPointInfo.EndPointOut1;
             //ModelEndPoint = KeyPointInfo.EndPointOut2;
             data.IsGetInfoSuccess = true;
+            data.KeyPointCount = 2;
         }
         else
         {
+
             data = new PipeElbowData();
+            data.KeyPointCount = trianglesList.Count;
             data.IsGetInfoSuccess = false;
             Debug.LogError($">>>PipeElbowInfoJob[{id}] GetModelInfo points.Count Error count:{trianglesList.Count} sharedMinCount:{sharedMinCount} minRepeatPointDistance:{minRepeatPointDistance}");
         }
@@ -228,4 +233,6 @@ public struct PipeElbowData
     public bool IsSpecial;
 
     public bool IsGetInfoSuccess;
+
+    public int KeyPointCount;
 }

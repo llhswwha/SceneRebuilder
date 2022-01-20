@@ -82,6 +82,25 @@ public class PipeMeshGeneratorEditor : Editor {
 			myTarget.RenderTorusXY();
 		}
 		GUILayout.EndHorizontal();
-	}
+
+        GUILayout.BeginHorizontal();
+        if (GUILayout.Button("SetRadius5"))
+        {
+            myTarget.SetRadiusUniform(5);
+        }
+        if (GUILayout.Button("SetRadius4"))
+        {
+            myTarget.SetRadiusUniform(4);
+        }
+        if (GUILayout.Button("SetRadius3"))
+        {
+            myTarget.SetRadiusUniform(3);
+        }
+        if (GUILayout.Button("SetRadius2"))
+        {
+            myTarget.SetRadiusUniform(2);
+        }
+        GUILayout.EndHorizontal();
+    }
 
 }

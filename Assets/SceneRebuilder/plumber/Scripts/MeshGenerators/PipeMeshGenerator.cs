@@ -89,10 +89,18 @@ public class PipeMeshGenerator : PipeMeshGeneratorBase
 
     
 
-    public float pipeRadius1 = 0;
-    public float pipeRadius2 = 0;
+    //public float pipeRadius1 = 0;
+    //public float pipeRadius2 = 0;
 
-    public float pipeRadius = 0.2f;
+    //public float pipeRadius = 0.2f;
+
+    public override void SetRadiusUniform(int pt)
+    {
+        elbowRadius = GetRadiusValue(elbowRadius, pt);
+        pipeRadius1 = GetRadiusValue(pipeRadius1, pt);
+        pipeRadius2 = GetRadiusValue(pipeRadius2, pt);
+        pipeRadius = GetRadiusValue(pipeRadius, pt);
+    }
 
 
 
@@ -189,6 +197,11 @@ public class PipeMeshGenerator : PipeMeshGeneratorBase
 
 
     public void RenderPipe() {
+
+        if (uniformRadiusP > 0)
+        {
+            SetRadiusUniform(uniformRadiusP);
+        }
 
         List<Vector3> ps = GetPoints();
         if (IsLinkEndStart)

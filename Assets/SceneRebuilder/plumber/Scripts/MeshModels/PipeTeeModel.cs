@@ -33,15 +33,18 @@ public class PipeTeeModel : PipeElbowModel
         {
             GetTeeInfo7(trianglesList);
             IsGetInfoSuccess = true;
+            KeyPointCount = 7;
 
         }
         else if (trianglesList.Count == 4)
         {
             GetTeeInfo4(trianglesList);
             IsGetInfoSuccess = true;
+            KeyPointCount = 4;
         }
         else
         {
+            KeyPointCount = trianglesList.Count;
             IsGetInfoSuccess = false;
             Debug.LogError($">>>GetTeeInfo points.Count Error count:{trianglesList.Count} gameObject:{this.gameObject.name} sharedMinCount:{sharedMinCount} minRepeatPointDistance:{minRepeatPointDistance}");
             return;
@@ -175,6 +178,7 @@ public class PipeTeeModel : PipeElbowModel
     {
         this.IsSpecial = lineData.IsSpecial;
         this.IsGetInfoSuccess = lineData.IsGetInfoSuccess;
+        this.KeyPointCount = lineData.KeyPointCount;
         this.KeyPointInfo = new PipeElbowKeyPointInfo(lineData.KeyPointInfo);
         this.InnerKeyPointInfo = new PipeElbowKeyPointInfo(lineData.InnerKeyPointInfo);
 

@@ -152,7 +152,7 @@ public class PipeFactory : SingletonBehaviour<PipeFactory>
         ResultVertexCount = meshNode2.VertexCount;
         SharedResultVertexCountCount = sInfo.sharedVertexCount;
 
-        Debug.LogError($"OneKey target:{Target.name} arg:({generateArg}) time:{DateTime.Now-start} Models:{newBuilder.PipeModels.Count+PipeOthers.Count+ weldsCount}={newBuilder.PipeModels.Count}+{PipeOthers.Count}+{weldsCount}({PipeWelds.Count}) Prefabs:{pres1.Count+pres2.Count+ pres3.Count}({pres1.Count}+{pres2.Count}+{pres3.Count}) TargetInfo:{TargetInfo} -> ResultInfo:{ResultInfo} ({ResultVertexCount/TargetVertexCount:P2},{SharedResultVertexCountCount / TargetVertexCount:P2})");
+        Debug.LogError($"OneKey target:{Target.name} arg:({generateArg}) time:{DateTime.Now-start} Models:{newBuilder.PipeModels.Count+PipeOthers.Count+ weldsCount}={newBuilder.PipeModels.Count}+{PipeOthers.Count}+{weldsCount}({PipeWelds.Count})) Prefabs:{pres1.Count+pres2.Count+ pres3.Count}({pres1.Count}+{pres2.Count}+{pres3.Count}) TargetInfo:{TargetInfo} -> ResultInfo:{ResultInfo} ({ResultVertexCount/TargetVertexCount:P2},{SharedResultVertexCountCount / TargetVertexCount:P2})");
     }
 
     public PrefabInfoList AllPrefabs = new PrefabInfoList();

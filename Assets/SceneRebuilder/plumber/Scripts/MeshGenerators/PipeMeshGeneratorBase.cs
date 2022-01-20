@@ -4,7 +4,12 @@ using UnityEngine;
 
 public class PipeMeshGeneratorBase : MonoBehaviour
 {
+    public float pipeRadius1 = 0;
+    public float pipeRadius2 = 0;
 
+    public float pipeRadius = 0.2f;
+
+    public int uniformRadiusP = 6;//º¸·ìµÄÍä¹Ü¶ÎÊý n*4
 
     public List<Transform> Childrens
     {
@@ -53,6 +58,11 @@ public class PipeMeshGeneratorBase : MonoBehaviour
 
     public bool IsWeldSeperated = true;
 
+    public virtual void SetRadiusUniform(int pt)
+    {
+        elbowRadius = GetRadiusValue(elbowRadius, pt);
+    }
+
     private GameObject CreateWeldGo(Vector3 start, Vector3 direction)
     {
         GameObject go = new GameObject();
@@ -96,6 +106,14 @@ public class PipeMeshGeneratorBase : MonoBehaviour
         Welds.Clear();
 
         WeldArgs.Clear();
+    }
+
+    public static float GetRadiusValue(float v,int pt)
+    {
+        float p = Mathf.Pow(10,pt);
+        int a = Mathf.RoundToInt(v * p);
+        float b = a / p;
+        return b;
     }
 
     protected GameObject GenerateWeld(List<Vector3> vertices, List<Vector3> normals, Vector3 start, Vector3 direction, float radius)

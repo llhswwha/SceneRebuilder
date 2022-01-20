@@ -497,9 +497,34 @@ public class PipeModelBase : MonoBehaviour,IComparable<PipeModelBase>
 
     public bool IsSpecial = false;
 
+    public void SetRadius()
+    {
+        //if (PipeRadius == 0)
+        {
+            PipeRadius1 = ModelStartPoint.w;
+            PipeRadius2 = ModelStartPoint.w;
+            PipeRadius = (PipeRadius1 + PipeRadius2) / 2;
+        }
+    }
+
+    public static float GetRadiusValue(float v)
+    {
+        float p = 10000;
+        int a = (int)(v * p);
+        float b = a / p;
+        return b;
+    }
+
+
+    public int KeyPointCount = 0;
+
     public virtual string GetPipeArgString()
     {
-        return $"Radius:{PipeRadius}({PipeRadius1},{PipeRadius2})";
+        if (PipeRadius == 0)
+        {
+            SetRadius();
+        }
+        return $"Radius:{PipeRadius}({PipeRadius1},{PipeRadius2}) Keys:{KeyPointCount}";
     }
 
     public string GetCompareString()
