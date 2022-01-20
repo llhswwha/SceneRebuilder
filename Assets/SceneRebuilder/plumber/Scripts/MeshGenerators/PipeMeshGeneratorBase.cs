@@ -24,8 +24,15 @@ public class PipeMeshGeneratorBase : MonoBehaviour
     public float elbowRadius = 0.5f;
     [Range(3, 32)]
     public int pipeSegments = 8;
-    [Range(3, 32)]
+    [Range(1, 32)]
     public int elbowSegments = 6;
+
+    [Range(3, 32)]
+    public int weldPipeSegments = 12;//焊缝的管道面数
+
+    [Range(1, 32)]
+    public int weldElbowSegments = 6;//焊缝的弯管段数 n*4
+
     public Material pipeMaterial;
     public bool flatShading;
     public bool avoidStrangling;
@@ -39,8 +46,6 @@ public class PipeMeshGeneratorBase : MonoBehaviour
     public bool generateWeld = false;
 
     public float weldRadius = 0.1f;
-
-    public int weldSegments = 12;
 
     public Material weldMaterial;
 
@@ -74,7 +79,8 @@ public class PipeMeshGeneratorBase : MonoBehaviour
         //weldGenerator.pipeRadius = size / 5;
         //weldGenerator.pipeRadius = size / 10;
         weldGenerator.pipeRadius = weldRadius;
-        weldGenerator.pipeSegments = weldSegments;
+        weldGenerator.pipeSegments = weldPipeSegments;
+        weldGenerator.elbowSegments = weldElbowSegments;
         weldGenerator.IsLinkEndStart = true;
     }
 

@@ -26,6 +26,17 @@ public class AcRTAlignJobSetting : SingletonBehaviour<AcRTAlignJobSetting>
 
     public float CompareSizeMinValue = 1.1f;
 
+    public void SetDefault()
+    {
+        IsTryAngles = true;
+
+        IsTryAngles_Scale = false;
+
+        IsTryRT = false;
+
+        IsTryICP = false;
+    }
+
     [ContextMenu("SetAcRTAlignJobSetting")]
     public void SetAcRTAlignJobSetting()
     {

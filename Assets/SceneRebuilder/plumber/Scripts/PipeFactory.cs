@@ -123,6 +123,8 @@ public class PipeFactory : SingletonBehaviour<PipeFactory>
         PrefabInfoList pres3 = new PrefabInfoList();
         if (IsPrefabGos)
         {
+
+            //AcRTAlignJobSetting.Instance.SetDefault();
             pres1 = this.PrefabPipes();
             pres2 = this.PrefabOthers();
             pres3 = this.PrefabWelds();
@@ -148,7 +150,7 @@ public class PipeFactory : SingletonBehaviour<PipeFactory>
         ResultVertexCount = meshNode2.VertexCount;
         SharedResultVertexCountCount = sInfo.sharedVertexCount;
 
-        Debug.LogError($"OneKey time:{DateTime.Now-start} Models:{newBuilder.PipeModels.Count+PipeOthers.Count+PipeWelds.Count}({newBuilder.PipeModels.Count}+{PipeOthers.Count}+{PipeWelds.Count}) Prefabs:{pres1.Count+pres2.Count+ pres3.Count}({pres1.Count}+{pres2.Count}+{pres3.Count}) TargetInfo:{TargetInfo} -> ResultInfo:{ResultInfo} ({ResultVertexCount/TargetVertexCount:P2},{SharedResultVertexCountCount / TargetVertexCount:P2})");
+        Debug.LogError($"OneKey target:{Target.name} arg:({generateArg}) time:{DateTime.Now-start} Models:{newBuilder.PipeModels.Count+PipeOthers.Count+PipeWelds.Count}({newBuilder.PipeModels.Count}+{PipeOthers.Count}+{PipeWelds.Count}) Prefabs:{pres1.Count+pres2.Count+ pres3.Count}({pres1.Count}+{pres2.Count}+{pres3.Count}) TargetInfo:{TargetInfo} -> ResultInfo:{ResultInfo} ({ResultVertexCount/TargetVertexCount:P2},{SharedResultVertexCountCount / TargetVertexCount:P2})");
     }
 
     public PrefabInfoList AllPrefabs = new PrefabInfoList();
@@ -428,6 +430,8 @@ public class PipeFactory : SingletonBehaviour<PipeFactory>
 
     public PrefabInfoList PrefabPipes()
     {
+        AcRTAlignJobSetting.Instance.SetDefault();
+
         DateTime start = DateTime.Now;
         PrefabInfoList prefabs = PrefabInstanceBuilder.Instance.GetPrefabsOfList(newBuilder.PipeGenerators, true);
         var gs = newBuilder.RefreshGenerators();
@@ -440,6 +444,7 @@ public class PipeFactory : SingletonBehaviour<PipeFactory>
 
     public PrefabInfoList PrefabWelds()
     {
+        AcRTAlignJobSetting.Instance.SetDefault();
         AcRTAlignJob.IsTrySameAngle = IsTrySameAngle;
 
         DateTime start = DateTime.Now;
@@ -455,6 +460,7 @@ public class PipeFactory : SingletonBehaviour<PipeFactory>
 
     public PrefabInfoList PrefabOthers()
     {
+        AcRTAlignJobSetting.Instance.SetDefault();
         DateTime start = DateTime.Now;
         PrefabInfoList prefabs =PrefabInstanceBuilder.Instance.GetPrefabsOfList(PipeOthers, true);
         PipeOthers.Clear();
@@ -575,6 +581,8 @@ public class PipeFactory : SingletonBehaviour<PipeFactory>
         newBuilder.RendererPipesEx();
 
         ProgressBarHelper.ClearProgressBar();
+
+        ResultInfo= ShowTargetInfo(newBuilder.gameObject);
     }
 
     [ContextMenu("CheckResults")]
@@ -739,6 +747,8 @@ public class PipeFactory : SingletonBehaviour<PipeFactory>
     public Material weldMaterial;
 
     public PipeGenerateArg generateArg = new PipeGenerateArg();
+
+    public int MinPipeSegments = 16;
 
     public List<PipeModelBase> RunTestModels = new List<PipeModelBase>();
 

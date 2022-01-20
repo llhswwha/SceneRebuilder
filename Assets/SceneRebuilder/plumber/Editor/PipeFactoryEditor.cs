@@ -15,30 +15,44 @@ public class PipeFactoryEditor : BaseFoldoutEditor<PipeFactory>
     {
         base.OnEnable();
 
-        pipeSegmentsValuesStr = new string[pipeSegmentsValues.Length];
-        for (int i = 0; i < pipeSegmentsValues.Length; i++)
-        {
-            pipeSegmentsValuesStr[i] = pipeSegmentsValues[i].ToString();
-        }
+        pipeSegmentsValuesStr = GetIntArrayStrings(pipeSegmentsValues);
+        elbowSegmentsValuesStr = GetIntArrayStrings(elbowSegmentsValues);
 
-        elbowSegmentsValuesStr = new string[elbowSegmentsValues.Length];
-        for (int i = 0; i < elbowSegmentsValues.Length; i++)
-        {
-            elbowSegmentsValuesStr[i] = elbowSegmentsValues[i].ToString();
-        }
+        pipeSegmentsValuesStr_weld = GetIntArrayStrings(pipeSegmentsValues_weld);
+        elbowSegmentsValuesStr_weld = GetIntArrayStrings(elbowSegmentsValues_weld);
+
+        minPipeSegmentsValuesStr = GetIntArrayStrings(minPipeSegmentsValues);
     }
 
-    int defaultPipeSegments = 8;
+    public static string[] GetIntArrayStrings(int[] list)
+    {
+        string[] sList = new string[list.Length];
+        for (int i = 0; i < list.Length; i++)
+        {
+            sList[i] = list[i].ToString();
+        }
+        return sList;
+    }
 
     int[] pipeSegmentsValues = new int[] { 3,4,5,6,7, 8,10,12, 16, 20, 24, 32,36,48,64 };
 
     string[] pipeSegmentsValuesStr = null;
 
-    int defaultElbowSegments = 6;
-
-    int[] elbowSegmentsValues = new int[] { 3,4,5,6,7,8,9,10,11,12,13,14,15 };
+    int[] elbowSegmentsValues = new int[] { 3,4,5,6,7,8,9,10,11,12,13,14,15, 16 };
 
     string[] elbowSegmentsValuesStr = null;
+
+    int[] pipeSegmentsValues_weld = new int[] { 3, 4, 5, 6, 7, 8, 10, 12, 16, 20, 24, 32, 36, 48, 64 };
+
+    string[] pipeSegmentsValuesStr_weld = null;
+
+    int[] elbowSegmentsValues_weld = new int[] { 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15, 16 };
+
+    string[] elbowSegmentsValuesStr_weld = null;
+
+    int[] minPipeSegmentsValues = new int[] { 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15,16 };
+
+    string[] minPipeSegmentsValuesStr = null;
 
     public override void OnToolLayout(PipeFactory targetT)
     {
@@ -46,36 +60,27 @@ public class PipeFactoryEditor : BaseFoldoutEditor<PipeFactory>
 
         GUILayout.BeginHorizontal();
         targetT.Target = ObjectField("Target", targetT.Target);
+        GUILayout.Label("Info:");
+        GUILayout.Label(targetT.GetResultInfo(), GUILayout.Width(300));
         GUILayout.EndHorizontal();
 
         GUILayout.BeginHorizontal();
-        GUILayout.Label("generateWeld");
+        GUILayout.Label("创建焊缝");
         targetT.generateArg.generateWeld = EditorGUILayout.Toggle(targetT.generateArg.generateWeld);
-        GUILayout.Label("UniformRaidus");
+        GUILayout.Label("统一半径");
         targetT.isUniformRaidus = EditorGUILayout.Toggle(targetT.isUniformRaidus);
-        GUILayout.Label("pipeSegments");
-
-        //int newPipeSegments = EditorGUILayout.IntField(targetT.generateArg.pipeSegments);
-        //if (newPipeSegments != targetT.generateArg.pipeSegments)
-        //{
-        //    targetT.generateArg.pipeSegments = newPipeSegments;
-        //}
-
-        //defaultPipeSegments= EditorGUILayout.IntPopup(defaultPipeSegments, pipeSegmentsValuesStr, pipeSegmentsValues);
-        //Debug.Log("defaultPipeSegments:"+ defaultPipeSegments);
-        //targetT.generateArg.pipeSegments = defaultPipeSegments;
-
-        //defaultPipeSegments = EditorGUILayout.IntPopup(defaultPipeSegments, pipeSegmentsValuesStr, pipeSegmentsValues);
-        //Debug.Log("defaultPipeSegments:" + defaultPipeSegments);
+        GUILayout.Label("管道边数");
         targetT.generateArg.pipeSegments = EditorGUILayout.IntPopup(targetT.generateArg.pipeSegments, pipeSegmentsValuesStr, pipeSegmentsValues);
-
-        GUILayout.Label("elbowSegments");
-        //targetT.generateArg.elbowSegments = EditorGUILayout.IntField(targetT.generateArg.elbowSegments);
-
+        GUILayout.Label("弯管段数");
         targetT.generateArg.elbowSegments = EditorGUILayout.IntPopup(targetT.generateArg.elbowSegments, elbowSegmentsValuesStr, elbowSegmentsValues);
+        GUILayout.Label("焊缝边数");
+        targetT.generateArg.weldPipeSegments = EditorGUILayout.IntPopup(targetT.generateArg.weldPipeSegments, pipeSegmentsValuesStr_weld, pipeSegmentsValues_weld);
+        GUILayout.Label("焊缝段数");
+        targetT.generateArg.weldElbowSegments = EditorGUILayout.IntPopup(targetT.generateArg.weldElbowSegments, elbowSegmentsValuesStr_weld, elbowSegmentsValues_weld);
+        GUILayout.Label("最小边数");
+        targetT.MinPipeSegments = EditorGUILayout.IntPopup(targetT.MinPipeSegments, minPipeSegmentsValuesStr, minPipeSegmentsValues);
 
-        GUILayout.Label("Info:");
-        GUILayout.Label(targetT.GetResultInfo(), GUILayout.Width(300));
+
 
         GUILayout.EndHorizontal();
 
