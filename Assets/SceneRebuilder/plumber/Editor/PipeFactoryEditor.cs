@@ -178,6 +178,10 @@ public class PipeFactoryEditor : BaseFoldoutEditor<PipeFactory>
         {
             targetT.PrefabOthers();
         }
+        if (GUILayout.Button("9.CombineWelds"))
+        {
+            targetT.CombineGeneratedWelds();
+        }
         if (GUILayout.Button("9.PrefabWelds"))
         {
             targetT.PrefabWelds();
