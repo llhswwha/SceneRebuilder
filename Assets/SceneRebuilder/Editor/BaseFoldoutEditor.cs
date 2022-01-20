@@ -20,14 +20,19 @@ public class BaseFoldoutEditor<T> : BaseEditor<T> where T : class
         FoldoutEditorArgBuffer.InitEditorArg<T2>(items);
     }
 
-    public static FoldoutEditorArg GetEditorArg<T2>(T2 item, FoldoutEditorArg newArg)/* where T2 : System.Object*/
+    public static void InitEditorArgEx<T2,TA>(List<T2> items) where TA : FoldoutEditorArg, new()
     {
-        return FoldoutEditorArgBuffer.GetEditorArg<T2>(item, newArg);
+        FoldoutEditorArgBuffer.InitEditorArg<T2,TA>(items);
+    }
+
+    public static FoldoutEditorArg GetEditorArg<T2, TA>(T2 item, TA newArg) where TA : FoldoutEditorArg, new()
+    {
+        return FoldoutEditorArgBuffer.GetEditorArg<T2,TA>(item, newArg);
     }
 
     //public static Dictionary<System.Object, FoldoutEditorArg> editorArgs_global = new Dictionary<System.Object, FoldoutEditorArg>();
 
-    public static FoldoutEditorArg GetGlobalEditorArg<T2>(T2 item, FoldoutEditorArg newArg)/* where T2 : System.Object*/
+    public static FoldoutEditorArg GetGlobalEditorArg<T2,TA>(T2 item, TA newArg) where TA : FoldoutEditorArg, new()
     {
         //if (newArg == null)
         //{
@@ -39,7 +44,7 @@ public class BaseFoldoutEditor<T> : BaseEditor<T> where T : class
         //}
         //return editorArgs_global[item];
 
-        return FoldoutEditorArgBuffer.GetGlobalEditorArg<T2>(item, newArg);
+        return FoldoutEditorArgBuffer.GetGlobalEditorArg<T2, TA>(item, newArg);
     }
 
     public static void RemoveEditorArg<T2>(List<T2> items)/* where T2 : System.Object*/
@@ -1596,7 +1601,7 @@ public class BaseFoldoutEditor<T> : BaseEditor<T> where T : class
         BaseFoldoutEditorHelper.DrawPrefabList(prefabListArg, funcGetList);
     }
 
-    public static void DrawPipeModelsList<T>(List<T> list, FoldoutEditorArg listArg,string listName) where T : PipeModelBase
+    public static void DrawPipeModelsList<T>(List<T> list, PipeModelFoldoutEditorArg listArg,string listName) where T : PipeModelBase
     {
         listArg.caption = listName;
         listArg.level = 0;
@@ -1616,13 +1621,17 @@ public class BaseFoldoutEditor<T> : BaseEditor<T> where T : class
             {
                 list.Clear();
             }
+            GUILayout.Label("PipeArg");
+            listArg.ShowPipeArg= EditorGUILayout.Toggle(listArg.ShowPipeArg);
+            GUILayout.Label("CheckResult");
+            listArg.ShowCheckResult = EditorGUILayout.Toggle(listArg.ShowCheckResult);
         });
 
         DrawPipeModelsListInner(list, listArg);
 
     }
 
-    public static void DrawPipeModelsListInner<T>(List<T> list, FoldoutEditorArg listArg) where T : PipeModelBase
+    public static void DrawPipeModelsListInner<T>(List<T> list, PipeModelFoldoutEditorArg listArg) where T : PipeModelBase
     {
         if (listArg.isExpanded)
         {
@@ -1635,7 +1644,15 @@ public class BaseFoldoutEditor<T> : BaseEditor<T> where T : class
                 var arg = FoldoutEditorArgBuffer.editorArgs[listItem];
                 if (arg == null) return;
                 arg.caption = $"[{i + 1:00}] {listItem.name}";
-                arg.info = listItem.ToString();
+                if (listArg.ShowPipeArg)
+                {
+                    arg.info = listItem.GetPipeArgString(); 
+                }
+                else
+                {
+                    arg.info = listItem.GetCompareString();
+                }
+                
                 arg.level = 2;
                 EditorUIUtils.ObjectFoldout(arg, listItem.gameObject, () =>
                 {
@@ -1655,7 +1672,7 @@ public class BaseFoldoutEditor<T> : BaseEditor<T> where T : class
         {
             //var doors = doorsRoot.Doors;
             arg.caption = $"PipeRun List ({list.Count})";
-            InitEditorArg(list);
+            InitEditorArgEx<PipeRun,PipeModelFoldoutEditorArg>(list);
         },
         () =>
         {
@@ -1677,11 +1694,11 @@ public class BaseFoldoutEditor<T> : BaseEditor<T> where T : class
         {
             listArg.level = 1;
             //var doors = doorsRoot.Doors;
-            InitEditorArg(list);
+            InitEditorArgEx<PipeRun, PipeModelFoldoutEditorArg>(list);
             listArg.DrawPageToolbar(list, (listItem, i) =>
             {
                 if (listItem == null) return;
-                var arg = FoldoutEditorArgBuffer.editorArgs[listItem];
+                var arg = FoldoutEditorArgBuffer.editorArgs[listItem] as PipeModelFoldoutEditorArg;
                 if (arg == null) return;
                 arg.caption = $"[{i + 1:00}] ({listItem.PipeModels.Count})";
                 arg.info = listItem.ToString();
@@ -1710,7 +1727,7 @@ public static class FoldoutEditorArgBuffer
 {
     public static Dictionary<System.Object, FoldoutEditorArg> editorArgs = new Dictionary<System.Object, FoldoutEditorArg>();
 
-    public static void InitEditorArg<T2>(List<T2> items)/* where T2 : System.Object*/
+    public static void InitEditorArg<T2>(List<T2> items)
     {
         foreach (var item in items)
         {
@@ -1724,6 +1741,25 @@ public static class FoldoutEditorArgBuffer
                 if (editorArgs[item] == null)
                 {
                     editorArgs[item] = new FoldoutEditorArg();
+                }
+            }
+        }
+    }
+
+    public static void InitEditorArg<T2, TA>(List<T2> items) where TA : FoldoutEditorArg, new()
+    {
+        foreach (var item in items)
+        {
+            if (item == null) continue;
+            if (!editorArgs.ContainsKey(item))
+            {
+                editorArgs.Add(item, new TA());
+            }
+            else
+            {
+                if (editorArgs[item] == null)
+                {
+                    editorArgs[item] = new TA();
                 }
             }
         }
@@ -1748,11 +1784,11 @@ public static class FoldoutEditorArgBuffer
         }
     }
 
-    public static FoldoutEditorArg GetEditorArg<T2>(T2 item, FoldoutEditorArg newArg)/* where T2 : System.Object*/
+    public static FoldoutEditorArg GetEditorArg<T2, TA>(T2 item, TA newArg) where TA : FoldoutEditorArg, new()
     {
         if (newArg == null)
         {
-            newArg = new FoldoutEditorArg();
+            newArg = new TA();
         }
         if (!editorArgs.ContainsKey(item))
         {
@@ -1763,11 +1799,11 @@ public static class FoldoutEditorArgBuffer
 
     public static Dictionary<System.Object, FoldoutEditorArg> editorArgs_global = new Dictionary<System.Object, FoldoutEditorArg>();
 
-    public static FoldoutEditorArg GetGlobalEditorArg<T2>(T2 item, FoldoutEditorArg newArg)/* where T2 : System.Object*/
+    public static FoldoutEditorArg GetGlobalEditorArg<T2,TA>(T2 item, TA newArg) where TA: FoldoutEditorArg ,new()
     {
         if (newArg == null)
         {
-            newArg = new FoldoutEditorArg();
+            newArg = new TA();
         }
         if (!editorArgs_global.ContainsKey(item))
         {
@@ -1821,7 +1857,7 @@ public static class BaseFoldoutEditorHelper
         });
     }
 
-    public static void DrawRendererInfoList(string name, MeshRendererInfoList list, FoldoutEditorArg arg)
+    public static void DrawRendererInfoList<TA>(string name, MeshRendererInfoList list, TA arg) where TA : FoldoutEditorArg, new()
     {
         arg.caption = name;
         EditorUIUtils.ToggleFoldout(arg, arg =>

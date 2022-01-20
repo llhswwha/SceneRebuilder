@@ -10,11 +10,11 @@ public class PipeGenerateArg
 
     public Material weldMaterial;
 
-    public int pipeSegments = 16;
+    public int pipeSegments = 12;
 
     public int elbowSegments = 6;
 
-    public int weldPipeSegments = 12;//焊缝的管道面数
+    public int weldPipeSegments = 6;//焊缝的管道面数
 
     public int weldElbowSegments = 6;//焊缝的弯管段数 n*4
 

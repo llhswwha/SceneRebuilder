@@ -497,9 +497,12 @@ public class PipeModelBase : MonoBehaviour,IComparable<PipeModelBase>
 
     public bool IsSpecial = false;
 
+    public virtual string GetPipeArgString()
+    {
+        return $"Radius:{PipeRadius}({PipeRadius1},{PipeRadius2})";
+    }
 
-
-    private string GetCompareString()
+    public string GetCompareString()
     {
         string a = "1";
         if (IsGetInfoSuccess)
@@ -521,7 +524,7 @@ public class PipeModelBase : MonoBehaviour,IComparable<PipeModelBase>
         //return $"{mcResult.SizeDistance:F5}_[{dis:F5}]_{mcResult.ObbDistance:F5}_{mcResult.RTDistance:F5}_{mcResult.MeshDistance:F5}_{a}_{radius:00000}_{this.GetType().Name}_{this.VertexCount}";
 
         //return $"{ObbDistance:F5}_{MeshDistance:F5}_{a}_{radius:00000}_{this.GetType().Name}_{this.VertexCount}";
-        return $"{mcResult}_{a}_{radius:00000}_{this.GetType().Name}_{this.VertexCount}_{this.name}";
+        return $"{mcResult}_{a}_{radius:00000}_{this.GetType().Name}_{this.VertexCount}";
     }
 
     public int CompareTo(PipeModelBase other)
@@ -547,8 +550,8 @@ public class PipeModelBase : MonoBehaviour,IComparable<PipeModelBase>
 
     public override string ToString()
     {
-        //return $"T:[{this.GetType().Name}] [Size:{SizeDistance:F5} Mesh:{MeshDistance:F5} Obb:{ObbDistance:F5} ObbRT:{RTDistance:F5}] R:{PipeRadius:F5}| V:{VertexCount:00000}|{IsGetInfoSuccess} ";
-        return GetCompareString();
+        return $"T:[{this.GetType().Name}] [{mcResult}] R:{PipeRadius:F5}| V:{VertexCount:00000}|{IsGetInfoSuccess} ";
+        //return GetCompareString();
     }
 
     public virtual void GetModelInfo()

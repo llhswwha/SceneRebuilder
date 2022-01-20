@@ -37,6 +37,11 @@ public class PipeLineModel : PipeModelBase
 
     public float PipeLength = 0;
 
+    public override string GetPipeArgString()
+    {
+        return $"Radius:{PipeRadius}({PipeRadius1},{PipeRadius2}) Length:{PipeLength}";
+    }
+
     //public float SizeX = 0;
     //public float SizeY = 0;
     //public float SizeZ = 0;

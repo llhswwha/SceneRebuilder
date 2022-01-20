@@ -7,7 +7,7 @@ using UnityEngine;
 [CustomEditor(typeof(PipeBuilder))]
 public class PipeBuilderEditor : BaseFoldoutEditor<PipeBuilder>
 {
-    static FoldoutEditorArg pipeModelListArg = new FoldoutEditorArg(true,true);
+    static PipeModelFoldoutEditorArg pipeModelListArg = new PipeModelFoldoutEditorArg(true,true);
 
     public override void OnInspectorGUI()
     {
@@ -70,4 +70,28 @@ public class PipeBuilderEditor : BaseFoldoutEditor<PipeBuilder>
     }
 
     
+}
+
+public class PipeModelFoldoutEditorArg: FoldoutEditorArg
+{
+    public PipeModelFoldoutEditorArg():base()
+    {
+
+    }
+
+    public PipeModelFoldoutEditorArg(bool isEnabled, bool isExpanded) : base(isEnabled, isExpanded)
+    {
+    }
+
+    public PipeModelFoldoutEditorArg(bool isEnabled, bool isExpanded, bool isToggle) : base(isEnabled, isExpanded, isToggle)
+    {
+    }
+
+    public PipeModelFoldoutEditorArg(bool isEnabled, bool isExpanded, bool isToggle, bool separator, bool background) : base(isEnabled, isExpanded, isToggle,separator,background)
+    {
+    }
+
+    public bool ShowCheckResult = false;
+
+    public bool ShowPipeArg = true;
 }

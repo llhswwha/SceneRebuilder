@@ -7,10 +7,10 @@ using UnityEngine;
 [CustomEditor(typeof(PipeFactory))]
 public class PipeFactoryEditor : BaseFoldoutEditor<PipeFactory>
 {
-    static FoldoutEditorArg pipeModelListArg = new FoldoutEditorArg(true, false);
+    static PipeModelFoldoutEditorArg pipeModelListArg = new PipeModelFoldoutEditorArg(true, false);
     static FoldoutEditorArg pipeRunListArg = new FoldoutEditorArg(true, false);
     static FoldoutEditorArg testpipeRunListArg = new FoldoutEditorArg(true, false);
-    static FoldoutEditorArg specialElbowListArg = new FoldoutEditorArg(true, false);
+    static PipeModelFoldoutEditorArg specialElbowListArg = new PipeModelFoldoutEditorArg(true, false);
     public override void OnEnable()
     {
         base.OnEnable();

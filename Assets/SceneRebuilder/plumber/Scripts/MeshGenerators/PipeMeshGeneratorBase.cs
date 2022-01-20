@@ -23,12 +23,12 @@ public class PipeMeshGeneratorBase : MonoBehaviour
 
     public float elbowRadius = 0.5f;
     [Range(3, 32)]
-    public int pipeSegments = 8;
+    public int pipeSegments = 12;
     [Range(1, 32)]
     public int elbowSegments = 6;
 
     [Range(3, 32)]
-    public int weldPipeSegments = 12;//焊缝的管道面数
+    public int weldPipeSegments = 6;//焊缝的管道面数
 
     [Range(1, 32)]
     public int weldElbowSegments = 6;//焊缝的弯管段数 n*4
