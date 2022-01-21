@@ -600,13 +600,6 @@ public class PipeMeshGeneratorEx : PipeMeshGeneratorBase
         return m;
     }
 
-    public bool IsGenerateEndWeld = false;
-
-    public bool IsGenerateElbowBeforeAfter = false;
-
-    public bool IsGenerateElbowsMain = true;
-
-    public bool IsDebugElbow = false;
 
     void RemoveColinearPoints(List<Vector4> points)
     {

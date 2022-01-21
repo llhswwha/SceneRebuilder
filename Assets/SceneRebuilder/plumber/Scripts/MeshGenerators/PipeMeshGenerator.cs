@@ -538,15 +538,15 @@ public class PipeMeshGenerator : PipeMeshGeneratorBase
         return m;
     }
 
-    public bool IsGenerateEndWeld = false;
+    //public bool IsGenerateEndWeld = false;
 
-    public bool IsElbow = false;
+    //public bool IsElbow = false;
 
-    public bool IsGenerateElbowBeforeAfter = false;
+    //public bool IsGenerateElbowBeforeAfter = false;
 
-    public bool IsGenerateElbowsMain = true;
+    //public bool IsGenerateElbowsMain = true;
 
-    public bool IsDebugElbow = false;
+    //public bool IsDebugElbow = false;
 
     void RemoveColinearPoints(List<Vector3> points) {
         int count1 = points.Count;

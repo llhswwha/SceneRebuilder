@@ -156,7 +156,7 @@ public class PipeReducerModel
         if (PipeRadius1 < 0.025 || PipeRadius2 < 0.025)
         {
             //pipe.weldRadius = 0.003f;
-            pipe.weldRadius = arg.weldRadius * 0.6f;
+            pipe.weldPipeRadius = arg.weldRadius * 0.6f;
         }
 
         pipe.RenderPipe();

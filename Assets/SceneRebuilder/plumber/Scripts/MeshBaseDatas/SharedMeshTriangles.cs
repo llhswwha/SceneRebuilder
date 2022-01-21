@@ -137,6 +137,13 @@ public class SharedMeshTriangles : IComparable<SharedMeshTriangles>
         return c;
     }
 
+    public Vector4 GetCenter4WithOff(Vector3 offset)
+    {
+        Vector4 c = Center + offset;
+        c.w = Radius;
+        return c;
+    }
+
     public Vector4 GetCenter4WithPower(float offset)
     {
         Vector4 c = Center;

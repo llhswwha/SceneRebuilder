@@ -293,7 +293,7 @@ public class MeshTriangles
         MeshTriangles meshTriangles2 = new MeshTriangles(ts);
         meshTriangles2.ShowTriangles(root, pointScale);
 
-        SharedMeshTrianglesList sharedPoints2 = meshTriangles2.GetSharedMeshTrianglesListByPoint(0, minDis);
+        SharedMeshTrianglesList sharedPoints2 = meshTriangles2.GetSharedMeshTrianglesListByPoint(minCount, minDis);
         //sharedPoints2.CombineSamePoint(minDis);
         if (sharedPoints2.Count != 1)
         {
@@ -307,7 +307,7 @@ public class MeshTriangles
 
         sharedPoints2.Add(circle1);
         sharedPoints2.Add(circle2);
-        ShowSharedMeshTrianglesList(root, pointScale, 0, sharedPoints2, false);
+        ShowSharedMeshTrianglesList(root, pointScale, 0, sharedPoints2, true);
     }
 
     public SharedMeshTrianglesList GetWeldoletKeyPoints(int minCount, float minDis)
@@ -332,12 +332,21 @@ public class MeshTriangles
 
         SharedMeshTrianglesList sharedPoints2 = meshTriangles2.GetSharedMeshTrianglesListByPoint(minCount, minDis);
         //sharedPoints2.CombineSamePoint(minDis);
-        if (sharedPoints2.Count != 1)
+        if (sharedPoints2.Count > 2)
         {
-            Debug.LogError($"GetWeldoletKeyPoints sharedPoints2.Count != 1 :{sharedPoints2.Count}");
+            Debug.LogError($"GetWeldoletKeyPoints sharedPoints2.Count > 2 :{sharedPoints2.Count}");
         }
-        sharedPoints2.Add(circle1);
-        sharedPoints2.Add(circle2);
+        if (circle1.Radius > circle2.Radius)
+        {
+            sharedPoints2.Add(circle1);
+            sharedPoints2.Add(circle2);
+        }
+        else
+        {
+            sharedPoints2.Add(circle2);
+            sharedPoints2.Add(circle1);
+        }
+        
         //ShowSharedMeshTrianglesList(root, pointScale, 0, sharedPoints2, false);
 
         Debug.Log($"GetWeldoletKeyPoints minDis:{minDis} sharedPoints2:{sharedPoints2.Count}");

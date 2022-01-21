@@ -34,6 +34,8 @@ public class PipeGenerateArg
 
     public int uniformRadiusP = 0;
 
+    public float weldCircleRadius = 0;
+
     public override string ToString()
     {
         return $"{pipeSegments}_{elbowSegments}_{weldPipeSegments}_{weldElbowSegments}";
@@ -56,7 +58,7 @@ public class PipeGenerateArg
         pipe.pipeSegments = this.pipeSegments;
         pipe.pipeMaterial = this.pipeMaterial;
         pipe.weldMaterial = this.weldMaterial;
-        pipe.weldRadius = this.weldRadius;
+        pipe.weldPipeRadius = this.weldRadius;
         pipe.generateWeld = this.generateWeld;
         pipe.elbowSegments = this.elbowSegments;
         pipe.makeDoubleSided = this.makeDoubleSided;
@@ -67,8 +69,9 @@ public class PipeGenerateArg
         pipe.uniformRadiusP = this.uniformRadiusP;
         pipe.StartCapOffset = this.StartCapOffset;
         pipe.EndCapOffset = this.EndCapOffset;
-
-}
+        pipe.IsGenerateEndWeld = this.IsGenerateEndWeld;
+        pipe.weldCircleRadius = this.weldCircleRadius;
+    }
 
     public void SetArg(PipeMeshGeneratorEx pipe)
     {
@@ -84,7 +87,7 @@ public class PipeGenerateArg
         pipe.pipeSegments = this.pipeSegments;
         pipe.pipeMaterial = this.pipeMaterial;
         pipe.weldMaterial = this.weldMaterial;
-        pipe.weldRadius = this.weldRadius;
+        pipe.weldPipeRadius = this.weldRadius;
         pipe.generateWeld = this.generateWeld;
         pipe.elbowSegments = this.elbowSegments;
         pipe.makeDoubleSided = this.makeDoubleSided;
@@ -94,6 +97,8 @@ public class PipeGenerateArg
         pipe.uniformRadiusP = this.uniformRadiusP;
         pipe.StartCapOffset = this.StartCapOffset;
         pipe.EndCapOffset = this.EndCapOffset;
+        pipe.IsGenerateEndWeld = this.IsGenerateEndWeld;
+        pipe.weldCircleRadius = this.weldCircleRadius;
     }
 
     public PipeGenerateArg Clone()
@@ -113,6 +118,8 @@ public class PipeGenerateArg
         pipe.uniformRadiusP = this.uniformRadiusP;
         pipe.StartCapOffset = this.StartCapOffset;
         pipe.EndCapOffset = this.EndCapOffset;
+        pipe.IsGenerateEndWeld = this.IsGenerateEndWeld;
+        pipe.weldCircleRadius = this.weldCircleRadius;
         return pipe;
     }
 

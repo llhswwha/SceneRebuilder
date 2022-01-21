@@ -663,7 +663,7 @@ public class PipeLineModel : PipeModelBase
         if (radius < 0.01)
         {
             //pipe.weldRadius = 0.003f;
-            pipe.weldRadius = arg.weldRadius * 0.6f;
+            pipe.weldPipeRadius = arg.weldRadius * 0.6f;
         }
 
         pipe.RenderPipe();
@@ -760,7 +760,7 @@ public class PipeLineModel : PipeModelBase
         pipe.pipeSegments = generateArg.pipeSegments;
         //pipe.pipeMaterial = this.PipeMaterial;
         //pipe.weldMaterial = this.WeldMaterial;
-        pipe.weldRadius = generateArg.weldRadius;
+        pipe.weldPipeRadius = generateArg.weldRadius;
         pipe.elbowRadius = Vector3.Distance(P1, P2)/2;
         pipe.IsLinkEndStart = true;
         pipe.generateWeld = false;

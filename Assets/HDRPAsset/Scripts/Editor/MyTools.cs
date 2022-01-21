@@ -165,6 +165,61 @@ public class MyTools
         }
     }
 
+    [MenuItem("Tools/Transform/SetParentNull")]
+    public static void SetParentNull()
+    {
+        var allT = GameObject.FindObjectsOfType<Transform>();
+        foreach (var obj in Selection.gameObjects)
+        {
+            obj.transform.SetParent(null);
+        }
+    }
+
+    [MenuItem("Tools/Transform/Reset")]
+    public static void Reset()
+    {
+        var allT = GameObject.FindObjectsOfType<Transform>();
+        foreach (var obj in Selection.gameObjects)
+        {
+            //obj.transform.SetParent(null);
+            obj.transform.position = Vector3.zero;
+        }
+    }
+
+    [MenuItem("Tools/Transform/LayoutX10")]
+    public static void LayoutX10()
+    {
+        var allT = GameObject.FindObjectsOfType<Transform>();
+        for (int i = 0; i < Selection.gameObjects.Length; i++)
+        {
+            GameObject obj = Selection.gameObjects[i];
+            //obj.transform.SetParent(null);
+            obj.transform.position = Vector3.zero+i*Vector3.forward*1f;
+        }
+    }
+    [MenuItem("Tools/Transform/LayoutX05")]
+    public static void LayoutX05()
+    {
+        var allT = GameObject.FindObjectsOfType<Transform>();
+        for (int i = 0; i < Selection.gameObjects.Length; i++)
+        {
+            GameObject obj = Selection.gameObjects[i];
+            //obj.transform.SetParent(null);
+            obj.transform.position = Vector3.zero + i * Vector3.forward * 0.5f;
+        }
+    }
+    [MenuItem("Tools/Transform/LayoutX01")]
+    public static void LayoutX01()
+    {
+        var allT = GameObject.FindObjectsOfType<Transform>();
+        for (int i = 0; i < Selection.gameObjects.Length; i++)
+        {
+            GameObject obj = Selection.gameObjects[i];
+            //obj.transform.SetParent(null);
+            obj.transform.position = Vector3.zero + i * Vector3.forward * 0.1f;
+        }
+    }
+
     [MenuItem("Tools/Renderers/ShowSelection")]
     public static void ShowSelectionRenderers()
     {

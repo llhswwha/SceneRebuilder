@@ -52,7 +52,19 @@ public class PipeMeshGeneratorBase : MonoBehaviour
 
     public bool generateWeld = false;
 
-    public float weldRadius = 0.1f;
+    public float weldPipeRadius = 0.1f;
+
+    public float weldCircleRadius = 0;
+
+    public bool IsElbow = false;
+
+    public bool IsGenerateEndWeld = false;
+
+    public bool IsGenerateElbowBeforeAfter = false;
+
+    public bool IsGenerateElbowsMain = true;
+
+    public bool IsDebugElbow = false;
 
     public Material weldMaterial;
 
@@ -90,7 +102,7 @@ public class PipeMeshGeneratorBase : MonoBehaviour
         weldGenerator.elbowRadius = size;
         //weldGenerator.pipeRadius = size / 5;
         //weldGenerator.pipeRadius = size / 10;
-        weldGenerator.pipeRadius = weldRadius;
+        weldGenerator.pipeRadius = weldPipeRadius;
         weldGenerator.pipeSegments = weldPipeSegments;
         weldGenerator.elbowSegments = weldElbowSegments;
         weldGenerator.IsLinkEndStart = true;
@@ -132,6 +144,10 @@ public class PipeMeshGeneratorBase : MonoBehaviour
             GameObject go = CreateWeldGo(start, direction);
 
             float size = radius;
+            if (weldCircleRadius > 0)
+            {
+                size = weldCircleRadius;
+            }
             PipeMeshGenerator weldGenerator = go.AddComponent<PipeMeshGenerator>();
             SetPipeMeshGenerator(weldGenerator, size);
             weldGenerator.RenderTorusXZ();

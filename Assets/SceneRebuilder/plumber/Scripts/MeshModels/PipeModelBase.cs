@@ -669,10 +669,22 @@ public class PipeModelBase : MonoBehaviour,IComparable<PipeModelBase>
     public GameObject RenderPipeLine(PipeGenerateArg arg, string afterName, Vector4 startP, Vector4 endP)
     {
         //arg = arg.Clone();
-        PipeMeshGenerator pipe = GetGenerator<PipeMeshGenerator>(arg, afterName);
+        //PipeMeshGenerator pipe = GetGenerator<PipeMeshGenerator>(arg, afterName);
+        //pipe.generateElbows = false;
+        //pipe.points = new List<Vector3>() { startP, endP };
+        //pipe.pipeRadius = (startP.w + endP.w) / 2;
+        //arg.SetArg(pipe);
+        ////pipe.generateWeld = gWeld;
+        ////pipe.IsGenerateEndWeld = true;
+        //pipe.avoidStrangling = true;
+        //pipe.RenderPipe();
+        //return pipe.gameObject;
+
+        //arg = arg.Clone();
+        PipeMeshGeneratorEx pipe = GetGenerator<PipeMeshGeneratorEx>(arg, afterName);
         pipe.generateElbows = false;
-        pipe.points = new List<Vector3>() { startP, endP };
-        pipe.pipeRadius = (startP.w + endP.w) / 2;
+        pipe.points = new List<Vector4>() { startP, endP };
+        //pipe.pipeRadius = (startP.w + endP.w) / 2;
         arg.SetArg(pipe);
         //pipe.generateWeld = gWeld;
         //pipe.IsGenerateEndWeld = true;

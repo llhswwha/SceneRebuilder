@@ -440,7 +440,7 @@ public class PipeBuilder : MonoBehaviour
         pipe.pipeSegments = generateArg.pipeSegments;
         pipe.pipeMaterial = generateArg.pipeMaterial;
         pipe.weldMaterial = generateArg.weldMaterial;
-        pipe.weldRadius = generateArg.weldRadius;
+        pipe.weldPipeRadius = generateArg.weldRadius;
 
         pipe.elbowRadius = PipeArgs.elbowRadius;//Elbow
         pipe.IsGenerateElbowBeforeAfter = IsGenerateElbowBeforeAfter;
@@ -917,7 +917,7 @@ public class PipeBuilder : MonoBehaviour
         DateTime start = DateTime.Now;
 
         PipeModels = new List<PipeModelBase>();
-        int count = PipeLineGos.Count + PipeElbowGos.Count + PipeReducerGos.Count + PipeFlangeGos.Count+PipeTeeGos.Count;
+        int count = PipeLineGos.Count + PipeElbowGos.Count + PipeReducerGos.Count + PipeFlangeGos.Count+PipeTeeGos.Count+PipeWeldoletGos.Count;
         int id = 0;
 
         PipeLines = GetPipeModelInfos<PipeLineModel>(PipeLineGos, id, count, "Line");

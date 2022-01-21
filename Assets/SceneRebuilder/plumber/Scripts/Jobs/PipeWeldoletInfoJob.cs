@@ -36,15 +36,39 @@ public struct PipeWeldoletInfoJob : IPipeJob
         MeshTriangles meshTriangles = new MeshTriangles(mesh);
         SharedMeshTrianglesList keyPoints = meshTriangles.GetWeldoletKeyPoints(minCount, minDis);
         data.KeyPointCount = keyPoints.Count;
-        if (keyPoints.Count == 3)
+        if (keyPoints.Count == 3 || keyPoints.Count == 4)
         {
-            var circle1 = keyPoints[0];//Center
-            var circle2 = keyPoints[1];//Circle
-            var circle3 = keyPoints[2];//Right
+            var centerC = keyPoints[0];//Center
+            var circleC = keyPoints[keyPoints.Count - 2];//Circle
+            var rightC = keyPoints[keyPoints.Count-1];//Right
 
-            circle1.SetCenterWithOutPoint(minRepeatPointDistance);
+            centerC.SetCenterWithOutPoint(minRepeatPointDistance);
 
-            var p1 = circle1.GetCenter4WithPower(0.99f);
+            Vector3 v1 = circleC.Center - rightC.Center;
+
+            float centerDistance1 = Vector3.Distance(centerC.Center, circleC.Center);
+            float centerDistance2 = Vector3.Distance(rightC.Center, circleC.Center);
+            float centerOffset1 = circleC.Radius - centerDistance1;
+            float centerOffset2 = centerDistance2 - circleC.Radius;
+            //var p1 = circleCenter.GetCenter4();
+            var p3 = rightC.GetCenter4();
+            var p1 = rightC.GetCenter4WithOff(centerOffset2* v1.normalized);
+
+            Debug.Log($"Weldolet radisu:{circleC.Radius} centerDistance1:{centerDistance1} centerDistance2:{centerDistance2} centerOffset1:{centerOffset1} :{centerOffset2}");
+
+            //TransformHelper.ShowLocalPoint(p1, PointScale, this.transform, null);
+            //TransformHelper.ShowLocalPoint(p3, PointScale, this.transform, null);
+
+            data.KeyPointInfo = new PipeElbowKeyPointData(p3, p1, circleC.GetCenter4WithOff(circleWidth), circleC.GetCenter4WithOff(-circleWidth));
+
+            data.IsGetInfoSuccess = true;
+        }
+        else if (keyPoints.Count == 2)
+        {
+            var circle2 = keyPoints[0];//Circle
+            var circle3 = keyPoints[1];//Right
+
+            var p1 = circle3.GetCenter4WithOff(CircleWidth);
             var p3 = circle3.GetCenter4WithPower(0.99f);
 
             //TransformHelper.ShowLocalPoint(p1, PointScale, this.transform, null);
@@ -56,10 +80,11 @@ public struct PipeWeldoletInfoJob : IPipeJob
         }
         else
         {
+            Debug.LogError($"PipeWeldoletInfoJob.GetModelData[{name}] keyPoints.Count Error time:{(DateTime.Now - start).TotalMilliseconds.ToString("F1")}ms VertexCount:{VertexCount} meshTriangles:{meshTriangles.Count} data:{data}");
             data.IsGetInfoSuccess = false;
         }
 
-        Debug.Log($"PipeWeldoletInfoJob.GetModelData[{name}] time:{(DateTime.Now - start).TotalMilliseconds.ToString("F1")}ms VertexCount:{VertexCount} meshTriangles:{meshTriangles.Count}");
+        Debug.Log($"PipeWeldoletInfoJob.GetModelData[{name}] time:{(DateTime.Now - start).TotalMilliseconds.ToString("F1")}ms VertexCount:{VertexCount} meshTriangles:{meshTriangles.Count} data:{data}");
 
         return data;
     }
@@ -99,4 +124,9 @@ public struct PipeWeldoletData
     public bool IsGetInfoSuccess;
 
     public int KeyPointCount;
+
+    public override string ToString()
+    {
+        return $"PipeWeldoletData KeyPointCount:{KeyPointCount} IsGetInfoSuccess:{IsGetInfoSuccess} ";
+    }
 }
