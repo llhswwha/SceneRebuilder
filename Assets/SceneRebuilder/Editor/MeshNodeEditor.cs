@@ -148,6 +148,7 @@ public class MeshNodeEditor : BaseFoldoutEditor<MeshNode>
             //{
             //    sharedMeshListArg.tag = item.GetSharedMeshList();
             //}
+            if (item == null) return;
             GameObject go = item.gameObject;
             bool isUpdate=DrawSharedMeshListEx(sharedMeshListArg,()=> item.GetSharedMeshList(),go);
             if (isUpdate)

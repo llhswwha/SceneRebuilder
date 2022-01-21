@@ -3011,6 +3011,44 @@ public static class DistanceUtil
         return result;
     }
 
+    public static float GetMinDistance(Vector3 p1, Vector3[] points)
+    {
+        float distance = float.MaxValue;
+        Vector3 result = Vector3.zero;
+        int index = 0;
+        for (int i = 0; i < points.Length; i++)
+        {
+            Vector3 p2 = points[i];
+            float dis = Vector3.Distance(p1, p2);
+            if (dis < distance)
+            {
+                distance = dis;
+                result = p2;
+                index = i;
+            }
+        }
+        return distance;
+    }
+
+    public static float GetMinDistance(Vector3 p1, List<Vector3> points)
+    {
+        float distance = float.MaxValue;
+        Vector3 result = Vector3.zero;
+        int index = 0;
+        for (int i = 0; i < points.Count; i++)
+        {
+            Vector3 p2 = points[i];
+            float dis = Vector3.Distance(p1, p2);
+            if (dis < distance)
+            {
+                distance = dis;
+                result = p2;
+                index = i;
+            }
+        }
+        return distance;
+    }
+
     public static Vector3 GetMinDistancePoint(Vector3 p1, List<Vector3> points,bool isRemove=false)
     {
         //DateTime start = DateTime.Now;

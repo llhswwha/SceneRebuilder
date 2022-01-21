@@ -5,6 +5,7 @@ using UnityEngine;
 
 public class PipeModelBase : MonoBehaviour,IComparable<PipeModelBase>
 {
+    [ContextMenu("ReplaceOld")]
     public void ReplaceOld()
     {
         PipeModelBase model = this;
@@ -22,7 +23,7 @@ public class PipeModelBase : MonoBehaviour,IComparable<PipeModelBase>
 
         if (IsGetInfoSuccess == false)
         {
-            Debug.LogError("ReplaceOld IsGetInfoSuccess == false :"+ model);
+            Debug.LogError($"ReplaceOld IsGetInfoSuccess == false go:{model.name}");
             GameObject.DestroyImmediate(newGo);
             TransformHelper.ClearChildren(model.gameObject);
             model.gameObject.SetActive(true);

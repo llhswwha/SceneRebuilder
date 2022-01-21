@@ -68,7 +68,7 @@ public struct PipeReducerInfoJob : IPipeJob
     {
         PipeReducerData data = new PipeReducerData();
         var meshTriangles = new MeshTriangles(mesh);
-        SharedMeshTrianglesList trianglesList = meshTriangles.GetKeyPointsByIdEx(minCount, minDis);
+        SharedMeshTrianglesList trianglesList = meshTriangles.GetSharedMeshTrianglesListById(minCount, minDis);
         if (isFlange)
         {
             trianglesList.CombineSameCenter(minDis);

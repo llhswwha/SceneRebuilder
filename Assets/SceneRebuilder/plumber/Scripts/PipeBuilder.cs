@@ -28,6 +28,10 @@ public class PipeBuilder : MonoBehaviour
 
     public List<PipeTeeModel> PipeTees = new List<PipeTeeModel>();
 
+    public List<Transform> PipeWeldoletGos = new List<Transform>();
+
+    public List<PipeWeldoletModel> PipeWeldolets = new List<PipeWeldoletModel>();
+
     public List<PipeModelBase> PipeModels = new List<PipeModelBase>();
 
     public List<PipeMeshGeneratorBase> PipeGenerators = new List<PipeMeshGeneratorBase>();
@@ -206,6 +210,11 @@ public class PipeBuilder : MonoBehaviour
                 return;
             }
             GameObject pipe = go.RendererModel(this.GetPipeGenerateArg(), NewObjName);
+            if (pipe == null)
+            {
+                Debug.LogError($"RendererPipesEx pipe == null go:{go.name}");
+                continue;
+            }
             if (pipe != null)
             {
                 NewPipeList.Add(pipe.transform);
@@ -266,6 +275,9 @@ public class PipeBuilder : MonoBehaviour
 
         List<Transform> reducerElbows = GetWelds(PipeReducers);
         CombineGeneratedWelds(pipeElbows, reducerElbows, minWeldDis);
+
+        List<Transform> weldoletElbows = GetWelds(PipeWeldolets);
+        CombineGeneratedWelds(pipeElbows, weldoletElbows, minWeldDis);
 
         List<Transform> elbowWelds4 = GetWelds(PipeElbows);
 
@@ -465,6 +477,7 @@ public class PipeBuilder : MonoBehaviour
         PipeTees = root.GetComponentsInChildren<PipeTeeModel>(true).ToList();
         PipeReducers = root.GetComponentsInChildren<PipeReducerModel>(true).ToList();
         PipeFlanges = root.GetComponentsInChildren<PipeFlangeModel>(true).ToList();
+        PipeWeldolets = root.GetComponentsInChildren<PipeWeldoletModel>(true).ToList();
     }
 
     public void RendererPipeLines()
@@ -605,6 +618,29 @@ public class PipeBuilder : MonoBehaviour
         elbowJobs.Dispose();
         PipeTeeInfoJob.Result.Dispose();
     }
+
+    private void SetJobResultData_Weldolet(JobList<PipeWeldoletInfoJob> elbowJobs, List<Transform> ts)
+    {
+        Debug.Log($"SetJobResultData_Weldolet lineJobs:{elbowJobs.Count} ts:{ts.Count}");
+        if (elbowJobs.Count != ts.Count)
+        {
+            Debug.LogError($"SetJobResultData_Weldolet lineJobs.Count!= ts.Count lineJobs:{elbowJobs.Count} ts:{ts.Count}");
+            return;
+        }
+        for (int i = 0; i < ts.Count; i++)
+        {
+            Transform t = ts[i];
+            PipeWeldoletModel pipeModel = GetPipeModelInfo<PipeWeldoletModel>(t, false);
+            var lineData = PipeWeldoletInfoJob.Result[i];
+            //Debug.Log($"LineModel[{i}] model:{pipeModel.name} lineData:{lineData}");
+            pipeModel.SetModelData(lineData);
+            PipeWeldolets.Add(pipeModel);
+            AddPipeModel(pipeModel);
+        }
+        elbowJobs.Dispose();
+        PipeWeldoletInfoJob.Result.Dispose();
+    }
+
     private void SetJobResultData_Flange(JobList<PipeFlangeInfoJob> elbowJobs, List<Transform> ts)
     {
         Debug.Log($"SetJobResultData_Flange lineJobs:{elbowJobs.Count} ts:{ts.Count}");
@@ -658,6 +694,7 @@ public class PipeBuilder : MonoBehaviour
         PipeReducers.Clear();
         PipeFlanges.Clear();
         PipeGenerators.Clear();
+        PipeWeldolets.Clear();
     }
 
     public void GetPipeInfosJob()
@@ -688,6 +725,9 @@ public class PipeBuilder : MonoBehaviour
         PipeFlangeInfoJob.ErrorIds = new NativeList<int>(Allocator.Persistent);
         JobList<PipeFlangeInfoJob> flangeJobs = GetPipeInfosJob_Flange(PipeFlangeGos, 0);
 
+        PipeWeldoletInfoJob.Result = new NativeArray<PipeWeldoletData>(PipeWeldoletGos.Count, Allocator.Persistent);
+        JobList<PipeWeldoletInfoJob> weldoletJobs = GetPipeInfosJob_Weldolet(PipeWeldoletGos, 0);
+
 
         //lineJobs.CompleteAllPage();
         //elbowJobs.CompleteAllPage();
@@ -697,6 +737,7 @@ public class PipeBuilder : MonoBehaviour
         pipeJobs.Add(teeJobs.HandleList);
         pipeJobs.Add(reducerJobs.HandleList);
         pipeJobs.Add(flangeJobs.HandleList);
+        pipeJobs.Add(weldoletJobs.HandleList);
         pipeJobs.CompleteAllPage();
 
         SetJobResultData_Line(lineJobs, PipeLineGos);
@@ -704,6 +745,7 @@ public class PipeBuilder : MonoBehaviour
         SetJobResultData_Tee(teeJobs, PipeTeeGos);
         SetJobResultData_Reducer(reducerJobs, PipeReducerGos);
         SetJobResultData_Flange(flangeJobs, PipeFlangeGos);
+        SetJobResultData_Weldolet(weldoletJobs, PipeWeldoletGos);
 
         pipeJobs.Dispose();
 
@@ -776,6 +818,28 @@ public class PipeBuilder : MonoBehaviour
             {
                 id = i + offset,
                 mesh= meshS
+            };
+            jobs.Add(job);
+        }
+        return jobs;
+    }
+
+    public JobList<PipeWeldoletInfoJob> GetPipeInfosJob_Weldolet(List<Transform> ts, int offset)
+    {
+        int count = 0;
+        JobList<PipeWeldoletInfoJob> jobs = new JobList<PipeWeldoletInfoJob>(JobSize);
+
+        for (int i = 0; i < ts.Count; i++)
+        {
+            Transform t = ts[i];
+            Mesh mesh = t.GetComponent<MeshFilter>().sharedMesh;
+            MeshStructure meshS = new MeshStructure(mesh);
+            //if (vs.Length == 0) continue;
+            count++;
+            PipeWeldoletInfoJob job = new PipeWeldoletInfoJob()
+            {
+                id = i + offset,
+                mesh = meshS
             };
             jobs.Add(job);
         }
@@ -875,6 +939,10 @@ public class PipeBuilder : MonoBehaviour
         PipeTees = GetPipeModelInfos<PipeTeeModel>(PipeTeeGos, id, count, "Tee");
         id += PipeTees.Count;
         AddPipeModelRange(PipeTees);
+
+        PipeWeldolets = GetPipeModelInfos<PipeWeldoletModel>(PipeWeldoletGos, id, count, "Weldolet");
+        id += PipeWeldolets.Count;
+        AddPipeModelRange(PipeWeldolets);
 
         PipeModels.Sort();
 

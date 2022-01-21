@@ -197,6 +197,17 @@ public class PipeTeeModel : PipeElbowModel
         Debug.Log($"Tee.SetModelData p11:{Vector4String(p11)} p12:{Vector4String(p12)} p21:{Vector4String(p21)} p22:{Vector4String(p22)}");
     }
 
+    internal void SetModelData(PipeWeldoletData lineData)
+    {
+        //this.IsSpecial = lineData.IsSpecial;
+        this.IsGetInfoSuccess = lineData.IsGetInfoSuccess;
+        this.KeyPointCount = lineData.KeyPointCount;
+        this.KeyPointInfo = new PipeElbowKeyPointInfo(lineData.KeyPointInfo);
+        ModelStartPoint = KeyPointInfo.EndPointOut1;
+        ModelEndPoint = KeyPointInfo.EndPointIn1;
+
+    }
+
     public bool IsCombineResult = true;
 
     public override GameObject RendererModel(PipeGenerateArg arg, string afterName)
@@ -304,6 +315,44 @@ public class PipeTeeModel : PipeElbowModel
             }
             return target;
         }
+    }
+
+    public GameObject CombineTarget(PipeGenerateArg arg,GameObject pipeNew)
+    {
+        GameObject target = pipeNew;
+        if (IsCombineResult)
+        {
+            List<Transform> welds = new List<Transform>();
+            //for (int i = 0; i < pipe1.transform.childCount; i++)
+            //{
+            //    welds.Add(pipe1.transform.GetChild(i));
+            //}
+            //for (int i = 0; i < pipe2.transform.childCount; i++)
+            //{
+            //    welds.Add(pipe2.transform.GetChild(i));
+            //}
+
+            for (int i = 0; i < pipeNew.transform.childCount; i++)
+            {
+                var pipe = pipeNew.transform.GetChild(i);
+                for (int j = 0; j < pipe.childCount; j++)
+                {
+                    welds.Add(pipe.transform.GetChild(j));
+                }
+            }
+
+            foreach (var t in welds)
+            {
+                t.SetParent(null);
+            }
+            target = MeshCombineHelper.Combine(pipeNew);
+
+            foreach (var t in welds)
+            {
+                t.SetParent(target.transform);
+            }
+        }
+        return target;
     }
 
     public override List<Vector4> GetModelKeyPoints()

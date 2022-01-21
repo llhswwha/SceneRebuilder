@@ -103,6 +103,8 @@ public class PipeFactoryEditor : BaseFoldoutEditor<PipeFactory>
         targetT.EnablePipeReducer = EditorGUILayout.Toggle(targetT.EnablePipeReducer);
         GUILayout.Label($"Flange({targetT.PipeFlanges.Count})");
         targetT.EnablePipeFlange = EditorGUILayout.Toggle(targetT.EnablePipeFlange);
+        GUILayout.Label($"Weldolet({targetT.PipeWeldolets.Count})");
+        targetT.EnablePipeWeldolet = EditorGUILayout.Toggle(targetT.EnablePipeWeldolet);
         GUILayout.Label($"Welds({targetT.PipeWelds.Count})");
         GUILayout.Label($"Others({targetT.PipeOthers.Count})");
         GUILayout.EndHorizontal();

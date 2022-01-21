@@ -13,6 +13,8 @@ public struct MeshTriangle
 
     public Vector3 Center;
 
+    public string Id;
+
     public List<MeshPoint> GetPoints()
     {
         var Points = new List<MeshPoint>();
@@ -43,6 +45,13 @@ public struct MeshTriangle
         this.p1 = p1;
         this.p2 = p2;
         this.p3 = p3;
+
+        List<int> ids = new List<int>();
+        ids.Add(p1.Id);
+        ids.Add(p2.Id);
+        ids.Add(p3.Id);
+        ids.Sort();
+        this.Id = $"{ids[0]}_{ids[1]}_{ids[2]}";
 
         Center = (p1.Point + p2.Point + p3.Point) / 3;
     }
@@ -184,6 +193,20 @@ public struct MeshTriangle
     //    Vector3 center = sum / 2;
     //    return center;
     //}
+
+    public float GetDistanceOfPoints(Vector3 p)
+    {
+        float min = float.MaxValue;
+        foreach(var mp in GetPoints())
+        {
+            float dis = Vector3.Distance(mp.Point, p);
+            if (dis < min)
+            {
+                min = dis;
+            }
+        }
+        return min;
+    }
 }
 
 public class MeshTriangleList:List< MeshTriangle >
@@ -233,6 +256,31 @@ public class MeshTriangleList:List< MeshTriangle >
         return radiusList;
     }
 
+    public List<float> GetRadiusList(float minR, Vector3 center,Vector3 point,float minDis)
+    {
+        //Vector3 center2 = GetCenter();
+        List<float> radiusList = new List<float>();
+        foreach (MeshTriangle triangle in this)
+        {
+            foreach (var p in triangle.GetPoints())
+            {
+                float dis = Vector3.Distance(p.Point, point);
+                if (dis < minDis)
+                {
+                    continue;
+                }
+                float r = Vector3.Distance(center, p.Point);
+                if (r < minR)
+                {
+                    continue;
+                }
+                radiusList.Add(r);
+            }
+        }
+        radiusList.Sort();
+        return radiusList;
+    }
+
     public float GetMaxRadius(float minR, Vector3 center)
     {
         return GetRadiusList(minR, center).Last();
@@ -246,6 +294,12 @@ public class MeshTriangleList:List< MeshTriangle >
     public float[] GetMinMaxRadius(float minR, Vector3 center)
     {
         var list = GetRadiusList(minR, center);
+        return new float[2] { list.First(), list.Last() };
+    }
+
+    public float[] GetMinMaxRadius(float minR, Vector3 center,Vector3 point,float minDis)
+    {
+        var list = GetRadiusList(minR, center,point,minDis);
         return new float[2] { list.First(), list.Last() };
     }
 
@@ -303,6 +357,25 @@ public class MeshTriangleList:List< MeshTriangle >
 
         //center /= count1;
         //return center;
+    }
+
+    public Vector3 GetCenter(Vector3 point,float minDis)
+    {
+        Vector3 center = Vector3.zero;
+        int count1 = 0;
+        List<Vector3> ps = GetPoints();
+        for(int i = 0; i < ps.Count; i++)
+        {
+            Vector3 p = ps[i];
+            float dis = Vector3.Distance(point, p);
+            if (dis < minDis)
+            {
+                ps.RemoveAt(i);
+                i--;
+            }
+        }
+        var minMax = MeshHelper.GetMinMax(ps.ToArray());
+        return minMax[3];
     }
 
     PositionDictionaryList<Vector3> posDict = new PositionDictionaryList<Vector3>();

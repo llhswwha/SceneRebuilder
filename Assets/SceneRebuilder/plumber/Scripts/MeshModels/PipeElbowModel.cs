@@ -200,7 +200,7 @@ public class PipeElbowModel : PipeModelBase
     public virtual SharedMeshTrianglesList GetSharedMeshTrianglesList(MeshTriangles meshTriangles)
     {
         //SharedMeshTrianglesList trianglesList = meshTriangles.GetKeyPointsByPointEx(sharedMinCount, minRepeatPointDistance);
-        SharedMeshTrianglesList trianglesList = meshTriangles.GetKeyPointsByIdEx(sharedMinCount, minRepeatPointDistance);
+        SharedMeshTrianglesList trianglesList = meshTriangles.GetSharedMeshTrianglesListById(sharedMinCount, minRepeatPointDistance);
         foreach (SharedMeshTriangles triangles in trianglesList)
         {
 
@@ -302,10 +302,10 @@ public class PipeElbowModel : PipeModelBase
         meshTriangles = new MeshTriangles(mesh);
 
         Debug.Log($"ShowSharedPoints mesh vertexCount:{mesh.vertexCount} triangles:{mesh.triangles.Length}");
-        //meshTriangles.ShowSharedPointsById(this.transform, PointScale,10);
+        //meshTriangles.ShowSharedPointsById(this.transform, PointScale, 10);
         meshTriangles.ShowSharedPointsByIdEx(this.transform, PointScale, 15, minRepeatPointDistance);
-        //meshTriangles.ShowSharedPointsByPoint(this.transform, PointScale,10);
-        //meshTriangles.ShowSharedPointsByPointEx(this.transform, PointScale, sharedMinCount, minRepeatPointDistance);
+        //meshTriangles.ShowSharedPointsByPoint(this.transform, PointScale, 10);
+        meshTriangles.ShowSharedPointsByPointExEx(this.transform, PointScale, sharedMinCount, minRepeatPointDistance);
         meshTriangles.Dispose();
     }
 
@@ -316,18 +316,20 @@ public class PipeElbowModel : PipeModelBase
 
         Mesh mesh = this.GetComponent<MeshFilter>().sharedMesh;
         meshTriangles = new MeshTriangles(mesh);
+        
 
         Debug.Log($"GetElbowInfo mesh vertexCount:{mesh.vertexCount} triangles:{mesh.triangles.Length}");
+        meshTriangles.ShowTriangles(this.transform, PointScale);
 
-        Debug.Log($"GetElbowInfo trialges:{meshTriangles.Count}");
-        for (int i = 0; i < meshTriangles.Count; i++)
-        {
-            var t = meshTriangles.GetTriangle(i);
-            
-            Debug.Log($"GetElbowInfo[{i + 1}/{meshTriangles.Count}] trialge:{t}");
-            GameObject sharedPoints1Obj = CreateSubTestObj($"trialge:{t}", this.transform);
-            t.ShowTriangle(this.transform, sharedPoints1Obj.transform, PointScale);
-        }
+        //Debug.Log($"GetElbowInfo trialges:{meshTriangles.Count}");
+        //for (int i = 0; i < meshTriangles.Count; i++)
+        //{
+        //    var t = meshTriangles.GetTriangle(i);
+
+        //    Debug.Log($"GetElbowInfo[{i + 1}/{meshTriangles.Count}] trialge:{t}");
+        //    GameObject sharedPoints1Obj = CreateSubTestObj($"trialge:{t}", this.transform);
+        //    t.ShowTriangle(this.transform, sharedPoints1Obj.transform, PointScale);
+        //}
         meshTriangles.Dispose();
     }
 

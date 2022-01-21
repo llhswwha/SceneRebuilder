@@ -25,7 +25,7 @@ public struct PipeElbowInfoJob : IPipeJob
         MeshTriangles meshTriangles = new MeshTriangles(mesh);
         //Debug.Log($"PipeElbowInfoJob[{id}] time1:{(DateTime.Now - start).TotalMilliseconds.ToString("F1")}ms meshTriangles:{meshTriangles.Count}");
         //Debug.Log($"GetElbowInfo mesh vertexCount:{mesh.vertexCount} triangles:{mesh.triangles.Length}");
-        SharedMeshTrianglesList trianglesList = meshTriangles.GetKeyPointsByIdEx(sharedMinCount, minRepeatPointDistance);
+        SharedMeshTrianglesList trianglesList = meshTriangles.GetSharedMeshTrianglesListById(sharedMinCount, minRepeatPointDistance);
         //SharedMeshTrianglesList trianglesList = meshTriangles.GetKeyPointsByPointEx(sharedMinCount, minRepeatPointDistance);
         foreach (SharedMeshTriangles triangles in trianglesList)
         {

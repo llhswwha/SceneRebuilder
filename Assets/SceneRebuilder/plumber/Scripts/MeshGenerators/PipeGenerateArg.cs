@@ -26,6 +26,10 @@ public class PipeGenerateArg
 
     public bool generateEndCaps = false;
 
+    public float StartCapOffset = 0;
+
+    public float EndCapOffset = 0;
+
     public bool IsGenerateEndWeld = true;
 
     public int uniformRadiusP = 0;
@@ -61,10 +65,10 @@ public class PipeGenerateArg
         pipe.weldPipeSegments = this.weldPipeSegments;
         pipe.weldElbowSegments = this.weldElbowSegments;
         pipe.uniformRadiusP = this.uniformRadiusP;
-        
+        pipe.StartCapOffset = this.StartCapOffset;
+        pipe.EndCapOffset = this.EndCapOffset;
 
-
-    }
+}
 
     public void SetArg(PipeMeshGeneratorEx pipe)
     {
@@ -88,6 +92,8 @@ public class PipeGenerateArg
         pipe.weldPipeSegments = this.weldPipeSegments;
         pipe.weldElbowSegments = this.weldElbowSegments;
         pipe.uniformRadiusP = this.uniformRadiusP;
+        pipe.StartCapOffset = this.StartCapOffset;
+        pipe.EndCapOffset = this.EndCapOffset;
     }
 
     public PipeGenerateArg Clone()
@@ -105,6 +111,8 @@ public class PipeGenerateArg
         pipe.weldPipeSegments = this.weldPipeSegments;
         pipe.weldElbowSegments = this.weldElbowSegments;
         pipe.uniformRadiusP = this.uniformRadiusP;
+        pipe.StartCapOffset = this.StartCapOffset;
+        pipe.EndCapOffset = this.EndCapOffset;
         return pipe;
     }
 

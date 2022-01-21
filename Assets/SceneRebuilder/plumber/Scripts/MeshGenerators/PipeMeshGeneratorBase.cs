@@ -42,6 +42,8 @@ public class PipeMeshGeneratorBase : MonoBehaviour
     public bool flatShading;
     public bool avoidStrangling;
     public bool generateEndCaps;
+    public float StartCapOffset = 0;
+    public float EndCapOffset = 0;
     public bool generateElbows = true;
     public bool generateOnStart;
     public bool makeDoubleSided;
@@ -181,14 +183,20 @@ public class PipeMeshGeneratorBase : MonoBehaviour
 
     protected void GenerateEndCaps(List<Vector3> points, List<Vector3> vertices, List<int> triangles, List<Vector3> normals)
     {
+        //Debug.Log($"GenerateEndCaps EndCapOffset:{EndCapOffset} StartCapOffset:{StartCapOffset}");
         // create the circular cap on each end of the pipe
         int firstCircleOffset = 0;
         int secondCircleOffset = (points.Count - 1) * pipeSegments * 2 - pipeSegments;
 
-        vertices.Add(points[0]); // center of first segment cap
-        int firstCircleCenter = vertices.Count - 1;
         var firstCircleNormal = points[0] - points[1];
+        vertices.Add(points[0] + firstCircleNormal.normalized * StartCapOffset); // center of first segment cap
+        int firstCircleCenter = vertices.Count - 1;
+        
+        //vertices.Add(points[0]); // center of first segment cap
         normals.Add(firstCircleNormal);
+        //vertices.Add(points[0]); // center of first segment cap
+
+        //vertices.Add(points[0]- firstCircleNormal.normalized*StartCapOffset); // center of first segment cap
 
         //vertices.Add(points[points.Count - 1]); // center of end segment cap
         //int secondCircleCenter = vertices.Count - 1;
@@ -232,11 +240,12 @@ public class PipeMeshGeneratorBase : MonoBehaviour
 
 
         }
-
-        vertices.Add(points[points.Count - 1]); // center of end segment cap
-        int secondCircleCenter = vertices.Count - 1;
         Vector3 sencondCircleNormal = points[points.Count - 1] - points[points.Count - 2];
+        vertices.Add(points[points.Count - 1] + sencondCircleNormal.normalized * EndCapOffset); // center of end segment cap
+        int secondCircleCenter = vertices.Count - 1;
+        
         normals.Add(sencondCircleNormal);
+        //vertices.Add(points[points.Count - 1] + sencondCircleNormal.normalized * EndCapOffset); // center of end segment cap
 
         for (int i = 0; i < pipeSegments; i++)
         {

@@ -19,6 +19,8 @@ public class PipeFactory : SingletonBehaviour<PipeFactory>
 
     public List<Transform> PipeFlanges = new List<Transform>();
 
+    public List<Transform> PipeWeldolets = new List<Transform>();
+
     public List<Transform> PipeWelds = new List<Transform>();
 
     public List<Transform> PipeOthers = new List<Transform>();
@@ -38,6 +40,8 @@ public class PipeFactory : SingletonBehaviour<PipeFactory>
         PipeOthers = new List<Transform>();
 
         PipeWelds = new List<Transform>();
+
+        PipeWeldolets = new List<Transform>();
     }
 
     public void ClearDebugObjs()
@@ -227,6 +231,12 @@ public class PipeFactory : SingletonBehaviour<PipeFactory>
             WeldRootTarget = new GameObject("WeldRootTarget");
         }
 
+        if (Target == null)
+        {
+            Debug.LogError("GetModelClass Target == null");
+            return;
+        }
+
         var welds = TransformHelper.FindGameObjects(Target.transform, "Welding");
         foreach(var w in welds)
         {
@@ -264,6 +274,11 @@ public class PipeFactory : SingletonBehaviour<PipeFactory>
             {
                 //PipeTees.AddRange(list);
                 AddList(PipeTees, list);
+            }
+            else if (key.Contains("Weldolet"))
+            {
+                //PipeTees.AddRange(list);
+                AddList(PipeWeldolets, list);
             }
             else if (key.Contains("Reducer"))
             {
@@ -433,6 +448,7 @@ public class PipeFactory : SingletonBehaviour<PipeFactory>
         SetListVisible(PipeFlanges, isVisible);
         SetListVisible(PipeTees, isVisible);
         SetListVisible(PipeOthers, isVisible);
+        SetListVisible(PipeWeldolets, isVisible);
     }
 
     public void SetListVisible(List<Transform> renderers,bool isVisible)
@@ -686,6 +702,15 @@ public class PipeFactory : SingletonBehaviour<PipeFactory>
         {
             newBuilder.PipeTeeGos = new List<Transform>();
         }
+
+        if (EnablePipeWeldolet)
+        {
+            newBuilder.PipeWeldoletGos = PipeWeldolets;
+        }
+        else
+        {
+            newBuilder.PipeWeldoletGos = new List<Transform>();
+        }
     }
 
     public bool EnablePipeLine = true;
@@ -697,6 +722,8 @@ public class PipeFactory : SingletonBehaviour<PipeFactory>
     public bool EnablePipeTee = true;
 
     public bool EnablePipeFlange = true;
+
+    public bool EnablePipeWeldolet = true;
 
     GameObject targetNew;
 

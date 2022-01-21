@@ -41,6 +41,21 @@ public class MeshTriangles
         Init(new MeshStructure(mesh));
     }
 
+    public void ShowTriangles(Transform transform,float pointScale)
+    {
+        GameObject tsRoot = CreateSubTestObj($"Triangles({this.Count})", transform);
+        var meshTriangles = this;
+        Debug.Log($"GetElbowInfo trialges:{meshTriangles.Count}");
+        for (int i = 0; i < meshTriangles.Count; i++)
+        {
+            var t = meshTriangles.GetTriangle(i);
+
+            //Debug.Log($"ShowTriangles[{i + 1}/{meshTriangles.Count}] trialge:{t}");
+            GameObject sharedPoints1Obj = CreateSubTestObj($"trialge:{t}", tsRoot.transform);
+            t.ShowTriangle(tsRoot.transform, sharedPoints1Obj.transform, pointScale);
+        }
+    }
+
     private void Init(MeshStructure mesh)
     {
         this.mesh = mesh;
@@ -70,6 +85,16 @@ public class MeshTriangles
         Init(mesh);
     }
 
+    public MeshTriangles(List<MeshTriangle> triangles)
+    {
+        foreach(var tri in triangles)
+        {
+            if (Triangles.Contains(tri)) continue;
+            Triangles.Add(tri);
+        }
+        
+    }
+
     private MeshPoint GetMeshPoint(MeshStructure mesh, int pi1)
     {
         Vector3 p1 = mesh.vertices[pi1];
@@ -81,17 +106,6 @@ public class MeshTriangles
 
     public List<Key2List<Vector3, MeshTriangle>> FindSharedPointsByPoint()
     {
-        //List<Vector3> sharedPoints = new List<Vector3>();
-        //for (int i = 0; i < Triangles.Count; i++)
-        //{
-        //    MeshTriangle t1 = Triangles[i];
-        //    for(int j=1;j<Triangles.Count;j++)
-        //    {
-        //        MeshTriangle t2 = Triangles[j];
-        //        List<Vector3> ps = t1.FindSharedPoints(t2);
-        //    }
-        //}
-
         DictionaryList1ToN<Vector3, MeshTriangle> sharedPoints = new DictionaryList1ToN<Vector3, MeshTriangle>();
         for (int i = 0; i < Triangles.Count; i++)
         {
@@ -104,6 +118,132 @@ public class MeshTriangles
         }
         List<Key2List<Vector3, MeshTriangle>> list = sharedPoints.GetListSortByCount();
         return list;
+    }
+
+    public List<Vector3> GetPoints()
+    {
+        List<Vector3> points = new List<Vector3>();
+        for (int i = 0; i < Triangles.Count; i++)
+        {
+            MeshTriangle t1 = Triangles[i];
+            var ps = t1.GetPoints();
+            foreach (var p in ps)
+            {
+                if (points.Contains(p.Point)) continue;
+                points.Add(p.Point);
+            }
+        }
+        return points;
+    }
+
+    public List<Vector3> GetPoints(float minDis)
+    {
+        List<Vector3> points = new List<Vector3>();
+        for (int i = 0; i < Triangles.Count; i++)
+        {
+            if (i == 0)
+            {
+                MeshTriangle t1 = Triangles[i];
+                var ps = t1.GetPoints();
+                foreach (var p in ps)
+                {
+                    //if (points.Contains(p.Point)) continue;
+                    points.Add(p.Point);
+                }
+            }
+            else
+            {
+                MeshTriangle t1 = Triangles[i];
+                var ps = t1.GetPoints();
+                foreach (var p in ps)
+                {
+                    float dis = DistanceUtil.GetMinDistance(p.Point, points);
+                    if (dis >= minDis)
+                    {
+                        points.Add(p.Point);
+                    }
+                    //
+                }
+            }
+        }
+        return points;
+    }
+
+    public List<Key2List<Vector3, MeshTriangle>> FindSharedPointsByPoint(float minDis)
+    {
+        DictionaryList1ToN<Vector3, MeshTriangle> sharedPoints = new DictionaryList1ToN<Vector3, MeshTriangle>();
+
+        var points = this.GetPoints(minDis);
+        for (int i1 = 0; i1 < points.Count; i1++)
+        {
+            Vector3 point = points[i1];
+            for (int i = 0; i < Triangles.Count; i++)
+            {
+                MeshTriangle t1 = Triangles[i];
+                //var ps = t1.GetPoints();
+                //foreach (var p in ps)
+                //{
+                //    float dis = Vector3.Distance(p.Point, point);
+                //    if (dis < minDis)
+                //    {
+                //        sharedPoints.AddItem(p.Point, t1);
+                //        break;
+                //    }
+                //}
+                float dis = t1.GetDistanceOfPoints(point);
+                //Debug.Log($"¡¾{dis<minDis}¡¿FindSharedPointsByPoint p[{i1}][{i}] t1:{t1.Id} dis:{dis} minDis:{minDis}");
+                if(dis < minDis)
+                {
+                    sharedPoints.AddItem(point, t1);
+                }
+                
+            }
+            //break;
+        }
+
+        List<Key2List<Vector3, MeshTriangle>> list = sharedPoints.GetListSortByCount();
+        return list;
+    }
+
+    public List<Key2List<string, MeshTriangle>> FindSharedPointsByPoint(int pt)
+    {
+        PositionDictionaryList<MeshTriangle> posDict = new PositionDictionaryList<MeshTriangle>();
+
+        DictionaryList1ToN<Vector3, MeshTriangle> sharedPoints = new DictionaryList1ToN<Vector3, MeshTriangle>();
+        for (int i = 0; i < Triangles.Count; i++)
+        {
+            MeshTriangle t1 = Triangles[i];
+            var ps = t1.GetPoints();
+            foreach (var p in ps)
+            {
+                posDict.Add(p.Point, t1);
+                sharedPoints.AddItem(p.Point, t1);
+            }
+        }
+        List<Key2List<string, MeshTriangle>> list1 = null;
+        if (pt == 6)
+        {
+            list1 = posDict.posListDict2.GetListSortByCount();
+        }
+        else if (pt == 5)
+        {
+            list1 = posDict.posListDict3.GetListSortByCount();
+        }
+        else if (pt == 4)
+        {
+            list1 = posDict.posListDict4.GetListSortByCount();
+        }
+        else if (pt == 3)
+        {
+            list1 = posDict.posListDict5.GetListSortByCount();
+        }
+        else
+        {
+            list1 = posDict.posListDict.GetListSortByCount();
+        }
+
+        //List<Key2List<Vector3, MeshTriangle>> list = sharedPoints.GetListSortByCount();
+        return list1;
     }
 
     public void ShowSharedPointsByPoint(Transform root, float pointScale, int minCount)
@@ -128,6 +268,80 @@ public class MeshTriangles
             }
             TransformHelper.ShowLocalPoint(point, pointScale * 2, root, trianglesObj2.transform);
         }
+
+        List<Key2List<string, MeshTriangle>> sharedPointsEx = this.FindSharedPointsByPoint(4);
+
+    }
+
+    public void ShowSharedPointsByPointExEx(Transform root, float pointScale, int minCount,float minDis)
+    {
+        Debug.Log($"ShowSharedPointsByPointExEx minDis:{minDis}");
+        //SharedMeshTrianglesList sharedPoints1 = this.GetKeyPointsByPointEx(minCount,minDis);
+        SharedMeshTrianglesList sharedPoints1 = this.GetSharedMeshTrianglesListById(0, minDis);
+        sharedPoints1.SortByCount();
+
+        sharedPoints1.RemoveSamePoints(minDis);
+
+        var circle1 = sharedPoints1[0];
+        sharedPoints1.RemoveAt(0);
+        var circle2 = sharedPoints1[0];
+        sharedPoints1.RemoveAt(0);
+
+        sharedPoints1.CombineSamePoint(minDis);
+
+        var ts=sharedPoints1.GetAllTriangles();
+        MeshTriangles meshTriangles2 = new MeshTriangles(ts);
+        meshTriangles2.ShowTriangles(root, pointScale);
+
+        SharedMeshTrianglesList sharedPoints2 = meshTriangles2.GetSharedMeshTrianglesListByPoint(0, minDis);
+        //sharedPoints2.CombineSamePoint(minDis);
+        if (sharedPoints2.Count != 1)
+        {
+            Debug.LogError($"ShowSharedPointsByPointExEx sharedPoints2.Count != 1 :{sharedPoints2.Count}");
+        }
+
+        if(sharedPoints2.Count>0)
+        {
+            sharedPoints2[0].SetCenterWithOutPoint(minDis);
+        }
+
+        sharedPoints2.Add(circle1);
+        sharedPoints2.Add(circle2);
+        ShowSharedMeshTrianglesList(root, pointScale, 0, sharedPoints2, false);
+    }
+
+    public SharedMeshTrianglesList GetWeldoletKeyPoints(int minCount, float minDis)
+    {
+        
+        //SharedMeshTrianglesList sharedPoints1 = this.GetKeyPointsByPointEx(minCount,minDis);
+        SharedMeshTrianglesList sharedPoints1 = this.GetSharedMeshTrianglesListById(0, minDis);
+        sharedPoints1.SortByCount();
+
+        sharedPoints1.RemoveSamePoints(minDis);
+
+        var circle1 = sharedPoints1[0];
+        sharedPoints1.RemoveAt(0);
+        var circle2 = sharedPoints1[0];
+        sharedPoints1.RemoveAt(0);
+
+        sharedPoints1.CombineSamePoint(minDis);
+
+        var ts = sharedPoints1.GetAllTriangles();
+        MeshTriangles meshTriangles2 = new MeshTriangles(ts);
+        //meshTriangles2.ShowTriangles(root, pointScale);
+
+        SharedMeshTrianglesList sharedPoints2 = meshTriangles2.GetSharedMeshTrianglesListByPoint(minCount, minDis);
+        //sharedPoints2.CombineSamePoint(minDis);
+        if (sharedPoints2.Count != 1)
+        {
+            Debug.LogError($"GetWeldoletKeyPoints sharedPoints2.Count != 1 :{sharedPoints2.Count}");
+        }
+        sharedPoints2.Add(circle1);
+        sharedPoints2.Add(circle2);
+        //ShowSharedMeshTrianglesList(root, pointScale, 0, sharedPoints2, false);
+
+        Debug.Log($"GetWeldoletKeyPoints minDis:{minDis} sharedPoints2:{sharedPoints2.Count}");
+        return sharedPoints2;
     }
 
     public List<Key2List<int, MeshTriangle>> sharedPointsById = null;
@@ -180,15 +394,16 @@ public class MeshTriangles
     public void ShowSharedPointsByIdEx(Transform root, float pointScale, int minCount, float minDis)
     {
         //SharedMeshTrianglesList sharedPoints1 = this.GetKeyPointsByPointEx(minCount,minDis);
-        SharedMeshTrianglesList sharedPoints1 = this.GetKeyPointsByIdEx(minCount, minDis);
-        ShowSharedMeshTrianglesList(root, pointScale, minCount, sharedPoints1);
+        SharedMeshTrianglesList sharedPoints1 = this.GetSharedMeshTrianglesListById(minCount, minDis);
+        ShowSharedMeshTrianglesList(root, pointScale, minCount, sharedPoints1,true);
     }
 
-    public void ShowSharedMeshTrianglesList(Transform root, float pointScale, int minCount, SharedMeshTrianglesList sharedPoints1)
+    public void ShowSharedMeshTrianglesList(Transform root, float pointScale, int minCount, SharedMeshTrianglesList sharedPoints1, bool isShowCenter)
     {
         //Debug.Log($"ShowSharedMeshTrianglesList sharedPoints1:{sharedPoints1.Count}");
         GameObject sharedPoints1Obj = CreateSubTestObj($"sharedPoints(Id):{sharedPoints1.Count}", root);
         int id = 0;
+        //sharedPoints1.Sort((a, b) => { return b.TriangleCount.CompareTo(a.TriangleCount); });
         for (int i = 0; i < sharedPoints1.Count; i++)
         {
             SharedMeshTriangles plane = sharedPoints1[i];
@@ -196,11 +411,11 @@ public class MeshTriangles
             if (triangles.Count < minCount) continue;
 
             id++;
-            ShowSharedMeshTrianglesList(root, pointScale, sharedPoints1Obj, id, plane, triangles);
+            ShowSharedMeshTrianglesList(root, pointScale, sharedPoints1Obj, id, plane, triangles, isShowCenter);
         }
     }
 
-    private void ShowSharedMeshTrianglesList(Transform root, float pointScale, GameObject sharedPoints1Obj, int id, SharedMeshTriangles plane, MeshTriangleList triangles)
+    private void ShowSharedMeshTrianglesList(Transform root, float pointScale, GameObject sharedPoints1Obj, int id, SharedMeshTriangles plane, MeshTriangleList triangles,bool isShowCenter)
     {
         int pointId = plane.PointId;
         //Debug.Log($"GetElbowInfo sharedPoints1[{i + 1}/{sharedPoints1.Count}] point:{pointId} trianlges:{triangles.Count}");
@@ -209,11 +424,12 @@ public class MeshTriangles
         {
             MeshTriangle t = triangles[i1];
             GameObject objTriangle = t.ShowTriangle(root, trianglesObj.transform, pointScale);
-            objTriangle.name = $"triangle[{i1 + 1}]";
+            objTriangle.name = $"triangle[{i1 + 1}]({t.Id})";
         }
         Vector3 point = mesh.vertices[pointId];
         TransformHelper.ShowLocalPoint(plane.Point, pointScale * 2, root, trianglesObj.transform).name = "Point";
-        TransformHelper.ShowLocalPoint(plane.Center, pointScale * 2, root, trianglesObj.transform).name = "Center";
+        if(isShowCenter)
+            TransformHelper.ShowLocalPoint(plane.Center, pointScale * 2, root, trianglesObj.transform).name = "Center";
     }
 
     public void ShowSharedPointsByPointEx(Transform root, float pointScale, int minCount, float minDis)
@@ -361,12 +577,12 @@ public class MeshTriangles
     public static float minRepeatPointDistance = 0.00005f;
     public static float PipeLineOffset = 0.05f;
 
-    public SharedMeshTrianglesList GetKeyPointsByIdEx()
+    public SharedMeshTrianglesList GetSharedMeshTrianglesListById()
     {
-        return GetKeyPointsByIdEx(sharedMinCount, minRepeatPointDistance);
+        return GetSharedMeshTrianglesListById(sharedMinCount, minRepeatPointDistance);
     }
 
-    public SharedMeshTrianglesList GetKeyPointsByIdEx(int minCount, float minDis)
+    public SharedMeshTrianglesList GetSharedMeshTrianglesListById(int minCount, float minDis)
     {
         SharedMeshTrianglesList KeyPoints = new SharedMeshTrianglesList();
         List<Key2List<int, MeshTriangle>> sharedPoints1 = this.FindSharedPointsById();
@@ -376,24 +592,11 @@ public class MeshTriangles
             var triangles = sharedPoints1[i].List;
             Vector3 point = mesh.vertices[pointId];
             Vector3 normal = mesh.normals[pointId];
-
-
             if (triangles.Count >= minCount)
             {
-                //if (!KeyPoints.ContainsCenter(point))
-                //{
-                //    float dis = Distance2List(point, KeyPoints);
-                //    if (dis > minDis)
-                //    {
-
-                //        //Debug.Log($"dis:{dis} point:{point} KeyPoints:{KeyPoints.Count}");
-                //        KeyPoints.Add(new SharedMeshTriangles(pointId, point, normal, triangles));
-                //    }
-                //}
                 SharedMeshTriangles plane = new SharedMeshTriangles(pointId, point, normal, triangles);
                 KeyPoints.Add(plane);
             }
-
             //KeyPoints.Add(plane);
         }
 
@@ -405,6 +608,37 @@ public class MeshTriangles
             Debug.LogError($"GetKeyPoints KeyPoints:{KeyPoints.Count}");
         }
         
+        KeyPoints.Sort();
+        return KeyPoints;
+    }
+
+    public SharedMeshTrianglesList GetSharedMeshTrianglesListByPoint(int minCount, float minDis)
+    {
+        SharedMeshTrianglesList KeyPoints = new SharedMeshTrianglesList();
+        List<Key2List<Vector3, MeshTriangle>> sharedPoints1 = this.FindSharedPointsByPoint(minDis);
+        for (int i = 0; i < sharedPoints1.Count; i++)
+        {
+            Vector3 point = sharedPoints1[i].Key;
+            var triangles = sharedPoints1[i].List;
+            //Vector3 point = mesh.vertices[pointId];
+            Vector3 normal = triangles[0].p1.Normal;
+            int pointId = triangles[0].p1.Id;
+            if (triangles.Count >= minCount)
+            {
+                SharedMeshTriangles plane = new SharedMeshTriangles(pointId, point, normal, triangles);
+                KeyPoints.Add(plane);
+            }
+            //KeyPoints.Add(plane);
+        }
+
+        KeyPoints.CombineSameMesh(minDis);
+        KeyPoints.CombineSameCircle(minDis);
+
+        if (KeyPoints.Count < 2)
+        {
+            Debug.LogError($"GetKeyPoints KeyPoints:{KeyPoints.Count}");
+        }
+
         KeyPoints.Sort();
         return KeyPoints;
     }
@@ -497,7 +731,7 @@ public class MeshTriangles
         TransformHelper.ShowLocalPoint(center, pointScale, root, null).name="MeshCenter";
         TransformHelper.ShowLocalPoint(mesh.boundCenter, pointScale, root, null).name = "BoundsCenter";
 
-        SharedMeshTrianglesList points = GetKeyPointsByIdEx(minCount, minDis);
+        SharedMeshTrianglesList points = GetSharedMeshTrianglesListById(minCount, minDis);
         //SharedMeshTrianglesList points = GetKeyPointsByPointEx(minCount, minDis);
         Debug.Log($"GetKeyPoints KeyPoints1:{points.Count}");
         if (points.Count > 6)
