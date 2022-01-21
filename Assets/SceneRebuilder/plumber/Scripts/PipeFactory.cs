@@ -162,6 +162,10 @@ public class PipeFactory : SingletonBehaviour<PipeFactory>
             AllPrefabs.AddRange(pres2);
             AllPrefabs.AddRange(pres3);
         }
+        else
+        {
+            this.CombineGeneratedWelds();
+        }
 
         int lastWeldCount = 0;
         if (IsReplaceOld)
