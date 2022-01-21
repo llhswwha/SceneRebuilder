@@ -654,7 +654,7 @@ public class SharedMeshTrianglesList : List<SharedMeshTriangles>
         //}
 
         int count2 = this.Count;
-        Debug.Log($"CombineSameCircle count1:{count1} count2:{count2}");
+        //Debug.Log($"CombineSameCircle count1:{count1} count2:{count2}");
     }
 
     public SharedMeshTriangles? FindSameDirectionPlane(SharedMeshTriangles teePlane1,object name)

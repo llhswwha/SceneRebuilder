@@ -97,12 +97,16 @@ public struct PipeReducerInfoJob : IPipeJob
 
         //data.IsGetInfoSuccess = true;
         //return data;
+
+        Debug.LogError($"GetReducerData count:{trianglesList.Count} gameObject:{id} sharedMinCount:{sharedMinCount} minRepeatPointDistance:{minRepeatPointDistance} isFlange:{isFlange}");
+
         data.KeyPointCount = trianglesList.Count;
         if (trianglesList.Count == 3)
         {
 
             if (isFlange)
             {
+                data.IsGetInfoSuccess = true;
                 data.IsSpecial = true;
                 trianglesList.Sort((a, b) => { return (b.Radius + b.MinRadius).CompareTo((a.Radius + a.MinRadius)); });
 

@@ -61,6 +61,7 @@ public class PipeFlangeModel : PipeReducerModel
             ModelEndPoint = EndPoint;
 
             ShowKeyPoints(KeyPointInfo, "Flange3");
+        IsGetInfoSuccess = true;
             return true;
     }
 
