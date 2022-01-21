@@ -377,7 +377,8 @@ public class PipeElbowModel : PipeModelBase
 
             pipe3.transform.SetParent(pipeNew.transform);
             //GameObject target = pipeNew;
-            GameObject target = MeshCombineHelper.Combine(pipeNew);
+            //GameObject target = MeshCombineHelper.Combine(pipeNew);
+            GameObject target = CombineTarget(arg, pipeNew);
             this.ResultGo = target;
 
             PipeMeshGenerator pipeG = target.AddComponent<PipeMeshGenerator>();
@@ -388,6 +389,46 @@ public class PipeElbowModel : PipeModelBase
         {
             return RenderElbow(arg, afterName, KeyPointInfo);
         }
+    }
+
+    public bool IsCombineResult = true;
+
+    public GameObject CombineTarget(PipeGenerateArg arg, GameObject pipeNew)
+    {
+        GameObject target = pipeNew;
+        if (IsCombineResult)
+        {
+            List<Transform> welds = new List<Transform>();
+            //for (int i = 0; i < pipe1.transform.childCount; i++)
+            //{
+            //    welds.Add(pipe1.transform.GetChild(i));
+            //}
+            //for (int i = 0; i < pipe2.transform.childCount; i++)
+            //{
+            //    welds.Add(pipe2.transform.GetChild(i));
+            //}
+
+            for (int i = 0; i < pipeNew.transform.childCount; i++)
+            {
+                var pipe = pipeNew.transform.GetChild(i);
+                for (int j = 0; j < pipe.childCount; j++)
+                {
+                    welds.Add(pipe.transform.GetChild(j));
+                }
+            }
+
+            foreach (var t in welds)
+            {
+                t.SetParent(null);
+            }
+            target = MeshCombineHelper.Combine(pipeNew);
+
+            foreach (var t in welds)
+            {
+                t.SetParent(target.transform);
+            }
+        }
+        return target;
     }
 
     private GameObject RenderElbow(PipeGenerateArg arg, string afterName, PipeElbowKeyPointInfo info)

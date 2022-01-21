@@ -84,17 +84,30 @@ public class PipeFlangeModel : PipeReducerModel
     public override GameObject RendererModel(PipeGenerateArg arg0, string afterName)
     {
         PipeGenerateArg arg = arg0.Clone();
-        arg.generateWeld = false;
+
+        if (this.ResultGo)
+        {
+            GameObject.DestroyImmediate(ResultGo);
+        }
+
         if (IsSpecial)
         {
             GameObject pipeNew = GetPipeNewGo(arg, afterName);
+            arg.generateWeld = false;
             GameObject pipe11 = RenderPipeLine(arg, afterName + "_1", KeyPointInfo.EndPointIn1, KeyPointInfo.EndPointOut1);
+
+            if (KeyPointInfo.EndPointOut2.w < 0.03)
+            {
+                //pipe.weldRadius = 0.003f;
+                arg.weldRadius = arg.weldRadius * 0.6f;
+            }
+            arg.generateWeld = arg0.generateWeld;
+            arg.IsGenerateEndWeld = false;
             GameObject pipe12 = RenderPipeLine(arg, afterName + "_2", KeyPointInfo.EndPointOut2, KeyPointInfo.EndPointIn2);
             pipe11.transform.SetParent(pipeNew.transform);
             pipe12.transform.SetParent(pipeNew.transform);
 
-            GameObject target = pipeNew;
-            target = MeshCombineHelper.Combine(pipeNew);
+            GameObject target = CombineTarget(arg, pipeNew);
             this.ResultGo = target;
 
             PipeMeshGenerator pipeG = target.AddComponent<PipeMeshGenerator>();
