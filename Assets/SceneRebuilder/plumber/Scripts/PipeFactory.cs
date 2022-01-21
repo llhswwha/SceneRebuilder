@@ -173,6 +173,10 @@ public class PipeFactory : SingletonBehaviour<PipeFactory>
             this.ReplacePipes();
             List<Transform> weldList=this.ReplaceWelds();
             lastWeldCount = weldList.Count;
+            if (lastWeldCount > 0)
+            {
+                PrefabInstanceBuilder.Instance.GetPrefabsOfList(weldList, true);
+            }
         }
 
 
