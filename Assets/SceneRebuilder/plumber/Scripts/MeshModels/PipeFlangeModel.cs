@@ -84,12 +84,12 @@ public class PipeFlangeModel : PipeReducerModel
 
     public override GameObject RendererModel(PipeGenerateArg arg0, string afterName)
     {
-        PipeGenerateArg arg = arg0.Clone();
-
-        if (this.ResultGo)
+        if (RendererErrorModel())
         {
-            GameObject.DestroyImmediate(ResultGo);
+            return null;
         }
+
+        PipeGenerateArg arg = arg0.Clone();
 
         if (IsSpecial)
         {

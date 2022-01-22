@@ -79,11 +79,6 @@ public class PipeWeldoletModel : PipeTeeModel
 
         if (KeyPointInfo!=null)
         {
-            if (this.ResultGo)
-            {
-                GameObject.DestroyImmediate(ResultGo);
-            }
-
             var arg = arg0.Clone();
             arg.generateEndCaps=true;
 

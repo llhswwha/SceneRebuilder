@@ -222,12 +222,21 @@ public class PipeFactoryEditor : BaseFoldoutEditor<PipeFactory>
         //}
         //GUILayout.EndHorizontal();
 
-
+        GUILayout.BeginHorizontal();
+        if (GUILayout.Button("ClearGeneratorsMesh"))
+        {
+            targetT.ClearGeneratorsMesh();
+        }
+        if (GUILayout.Button("ResetGeneratorsMesh"))
+        {
+            targetT.ResetGeneratorsMesh();
+        }
+        GUILayout.EndHorizontal();
 
         GUILayout.BeginHorizontal();
         if (GUILayout.Button("ShowPrefabs"))
         {
-            targetT.ShowAllPrefabs();
+            targetT.ShowPrefabs();
         }
         if (GUILayout.Button("ClearDebugObjs"))
         {

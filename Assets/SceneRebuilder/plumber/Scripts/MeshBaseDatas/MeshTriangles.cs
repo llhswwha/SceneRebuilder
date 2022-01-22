@@ -45,13 +45,13 @@ public class MeshTriangles
     {
         GameObject tsRoot = CreateSubTestObj($"Triangles({this.Count})", transform);
         var meshTriangles = this;
-        Debug.Log($"GetElbowInfo trialges:{meshTriangles.Count}");
+        Debug.Log($"ShowTriangles trialges:{meshTriangles.Count}");
         for (int i = 0; i < meshTriangles.Count; i++)
         {
             var t = meshTriangles.GetTriangle(i);
 
             //Debug.Log($"ShowTriangles[{i + 1}/{meshTriangles.Count}] trialge:{t}");
-            GameObject sharedPoints1Obj = CreateSubTestObj($"trialge:{t}", tsRoot.transform);
+            GameObject sharedPoints1Obj = CreateSubTestObj($"trialge[{i+1}]:{t}", tsRoot.transform);
             t.ShowTriangle(tsRoot.transform, sharedPoints1Obj.transform, pointScale);
         }
     }

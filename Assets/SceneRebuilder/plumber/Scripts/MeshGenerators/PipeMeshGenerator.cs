@@ -72,9 +72,12 @@ public class PipeMeshGenerator : PipeMeshGeneratorBase
     public List<Vector3> GetTransformPoints(List<Vector3> ps0)
     {
         List<Vector3> ps = new List<Vector3>();
-        foreach(var p in ps0)
+        var t = this.transform;
+        var pos = t.position;
+        foreach (var p in ps0)
         {
-            var pNew = this.transform.TransformPoint(p)-this.transform.position;
+            
+            var pNew = t.TransformPoint(p)- pos;
             ps.Add(pNew);
         }
         return ps;
@@ -196,7 +199,7 @@ public class PipeMeshGenerator : PipeMeshGeneratorBase
 
 
 
-    public void RenderPipe() {
+    public override void RenderPipe() {
 
         if (uniformRadiusP > 0)
         {

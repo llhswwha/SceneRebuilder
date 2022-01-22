@@ -4,6 +4,10 @@ using UnityEngine;
 
 public class PipeMeshGeneratorBase : MonoBehaviour
 {
+    public virtual void RenderPipe()
+    {
+    }
+
     public float pipeRadius1 = 0;
     public float pipeRadius2 = 0;
 

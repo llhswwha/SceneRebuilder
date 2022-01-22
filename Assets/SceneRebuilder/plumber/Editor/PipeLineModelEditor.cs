@@ -4,38 +4,18 @@ using UnityEditor;
 using UnityEngine;
 
 [CustomEditor(typeof(PipeLineModel))]
-public class PipeLineModelEditor : Editor
+public class PipeLineModelEditor : PipeModelBaseEditor
 {
     public override void OnInspectorGUI()
     {
         PipeLineModel targetT = target as PipeLineModel;
+        base.DrawBaseModelToolBar(targetT);
+
         GUILayout.BeginHorizontal();
-        if (GUILayout.Button("ResultGo"))
-        {
-            EditorHelper.SelectObject(targetT.ResultGo);
-        }
         if (GUILayout.Button("ShowOBB"))
         {
             targetT.ShowOBB();
         }
-        if (GUILayout.Button("ClearChildren"))
-        {
-            targetT.ClearChildren();
-        }
-        GUILayout.EndHorizontal();
-
-        GUILayout.BeginHorizontal();
-        if (GUILayout.Button("GetModelInfo"))
-        {
-            targetT.GetModelInfo();
-        }
-        if (GUILayout.Button("RendererModel"))
-        {
-            targetT.RendererModel();
-        }
-        GUILayout.EndHorizontal();
-
-        GUILayout.BeginHorizontal();
         if (GUILayout.Button("GetModelInfo(Job)"))
         {
             targetT.GetModelInfoJob();

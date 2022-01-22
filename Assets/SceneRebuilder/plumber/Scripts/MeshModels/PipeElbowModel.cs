@@ -282,56 +282,7 @@ public class PipeElbowModel : PipeModelBase
     //    PipeRadius = meshTriangles.GetPipeRadius(sharedMinCount);
     //}
 
-    public void ShowKeyPoints()
-    {
-        ClearChildren();
-
-        GameObject trianglesObj = CreateSubTestObj($"KeyPoints", this.transform);
-
-        Mesh mesh = this.GetComponent<MeshFilter>().sharedMesh;
-        meshTriangles = new MeshTriangles(mesh);
-        meshTriangles.ShowKeyPointsById(trianglesObj.transform, PointScale, sharedMinCount, minRepeatPointDistance);
-        meshTriangles.Dispose();
-    }
-
-    public void ShowSharedPoints()
-    {
-        ClearChildren();
-
-        Mesh mesh = this.GetComponent<MeshFilter>().sharedMesh;
-        meshTriangles = new MeshTriangles(mesh);
-
-        Debug.Log($"ShowSharedPoints mesh vertexCount:{mesh.vertexCount} triangles:{mesh.triangles.Length}");
-        //meshTriangles.ShowSharedPointsById(this.transform, PointScale, 10);
-        meshTriangles.ShowSharedPointsByIdEx(this.transform, PointScale, 15, minRepeatPointDistance);
-        //meshTriangles.ShowSharedPointsByPoint(this.transform, PointScale, 10);
-        meshTriangles.ShowSharedPointsByPointExEx(this.transform, PointScale, sharedMinCount, minRepeatPointDistance);
-        meshTriangles.Dispose();
-    }
-
-
-    public void ShowTriangles()
-    {
-        ClearChildren();
-
-        Mesh mesh = this.GetComponent<MeshFilter>().sharedMesh;
-        meshTriangles = new MeshTriangles(mesh);
-        
-
-        Debug.Log($"GetElbowInfo mesh vertexCount:{mesh.vertexCount} triangles:{mesh.triangles.Length}");
-        meshTriangles.ShowTriangles(this.transform, PointScale);
-
-        //Debug.Log($"GetElbowInfo trialges:{meshTriangles.Count}");
-        //for (int i = 0; i < meshTriangles.Count; i++)
-        //{
-        //    var t = meshTriangles.GetTriangle(i);
-
-        //    Debug.Log($"GetElbowInfo[{i + 1}/{meshTriangles.Count}] trialge:{t}");
-        //    GameObject sharedPoints1Obj = CreateSubTestObj($"trialge:{t}", this.transform);
-        //    t.ShowTriangle(this.transform, sharedPoints1Obj.transform, PointScale);
-        //}
-        meshTriangles.Dispose();
-    }
+    
 
     internal void SetModelData(PipeElbowData lineData)
     {
@@ -345,10 +296,7 @@ public class PipeElbowModel : PipeModelBase
     }
 
 
-    public void RendererModel()
-    {
-        RendererModel(generateArg,"_New");
-    }
+
 
 
 
@@ -360,6 +308,8 @@ public class PipeElbowModel : PipeModelBase
         {
             return null;
         }
+
+
 
         if (IsSpecial)
         {
@@ -506,19 +456,11 @@ public class PipeElbowModel : PipeModelBase
 
     //public PipeLineInfo Line2 = new PipeLineInfo();
 
-    public int sharedMinCount = 36;
 
-    public float minRepeatPointDistance = 0.00005f;
 
     public Vector3 TestMeshOffset = new Vector3(0.1f, 0.1f,0.1f);
 
-    private GameObject CreateSubTestObj(string objName,Transform parent)
-    {
-        GameObject objTriangles = new GameObject(objName);
-        objTriangles.transform.SetParent(parent);
-        objTriangles.transform.localPosition = Vector3.zero;
-        return objTriangles;
-    }
+
 
     public void OnDestroy()
     {

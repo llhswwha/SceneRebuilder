@@ -5,6 +5,69 @@ using UnityEngine;
 
 public class PipeModelBase : MonoBehaviour,IComparable<PipeModelBase>
 {
+    public int sharedMinCount = 36;
+
+    public float minRepeatPointDistance = 0.00005f;
+
+    private GameObject CreateSubTestObj(string objName, Transform parent)
+    {
+        GameObject objTriangles = new GameObject(objName);
+        objTriangles.transform.SetParent(parent);
+        objTriangles.transform.localPosition = Vector3.zero;
+        return objTriangles;
+    }
+
+    public void DebugShowKeyPoints()
+    {
+        ClearChildren();
+
+        GameObject trianglesObj = CreateSubTestObj($"KeyPoints", this.transform);
+
+        Mesh mesh = this.GetComponent<MeshFilter>().sharedMesh;
+        MeshTriangles meshTriangles = new MeshTriangles(mesh);
+        meshTriangles.ShowKeyPointsById(trianglesObj.transform, PointScale, sharedMinCount, minRepeatPointDistance);
+        meshTriangles.Dispose();
+    }
+
+    public void DebugShowSharedPoints()
+    {
+        ClearChildren();
+
+        Mesh mesh = this.GetComponent<MeshFilter>().sharedMesh;
+        MeshTriangles meshTriangles = new MeshTriangles(mesh);
+
+        Debug.Log($"ShowSharedPoints mesh vertexCount:{mesh.vertexCount} triangles:{mesh.triangles.Length}");
+        //meshTriangles.ShowSharedPointsById(this.transform, PointScale, 10);
+        meshTriangles.ShowSharedPointsByIdEx(this.transform, PointScale, 15, minRepeatPointDistance);
+        //meshTriangles.ShowSharedPointsByPoint(this.transform, PointScale, 10);
+        meshTriangles.ShowSharedPointsByPointExEx(this.transform, PointScale, sharedMinCount, minRepeatPointDistance);
+        meshTriangles.Dispose();
+    }
+
+
+    public void DebugShowTriangles()
+    {
+        ClearChildren();
+
+        Mesh mesh = this.GetComponent<MeshFilter>().sharedMesh;
+        MeshTriangles meshTriangles = new MeshTriangles(mesh);
+
+
+        Debug.Log($"GetElbowInfo mesh vertexCount:{mesh.vertexCount} triangles:{mesh.triangles.Length}");
+        meshTriangles.ShowTriangles(this.transform, PointScale);
+
+        //Debug.Log($"GetElbowInfo trialges:{meshTriangles.Count}");
+        //for (int i = 0; i < meshTriangles.Count; i++)
+        //{
+        //    var t = meshTriangles.GetTriangle(i);
+
+        //    Debug.Log($"GetElbowInfo[{i + 1}/{meshTriangles.Count}] trialge:{t}");
+        //    GameObject sharedPoints1Obj = CreateSubTestObj($"trialge:{t}", this.transform);
+        //    t.ShowTriangle(this.transform, sharedPoints1Obj.transform, PointScale);
+        //}
+        meshTriangles.Dispose();
+    }
+
     [ContextMenu("ReplaceOld")]
     public void ReplaceOld()
     {
@@ -474,6 +537,7 @@ public class PipeModelBase : MonoBehaviour,IComparable<PipeModelBase>
 
     protected bool RendererErrorModel()
     {
+        ClearGo();
         if (IsGetInfoSuccess == false)
         {
             Debug.LogError($"RendererErrorModel IsGetInfoSuccess == false gameObject:{this.name}");
@@ -583,6 +647,11 @@ public class PipeModelBase : MonoBehaviour,IComparable<PipeModelBase>
     public virtual void GetModelInfo()
     {
 
+    }
+
+    public void RendererModel()
+    {
+        RendererModel(generateArg, "_New");
     }
 
     public virtual GameObject RendererModel(PipeGenerateArg arg, string afterName)

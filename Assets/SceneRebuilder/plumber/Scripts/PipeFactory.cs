@@ -207,7 +207,7 @@ public class PipeFactory : SingletonBehaviour<PipeFactory>
         InitPipeBuilder();
     }
 
-    public void ShowAllPrefabs()
+    public void ShowPrefabs()
     {
         GameObject allPrefabs = new GameObject("AllPrefabs");
         foreach(PrefabInfo pres in AllPrefabs)
@@ -312,6 +312,50 @@ public class PipeFactory : SingletonBehaviour<PipeFactory>
         }
         Debug.Log($"GetModelClass keys:{keys.Count}");
 
+    }
+
+    public void ResetGeneratorsMesh()
+    {
+        DateTime start = DateTime.Now;
+        var gs = GetPipeMeshGenerators();
+        for (int i = 0; i < gs.Count; i++)
+        {
+            PipeMeshGeneratorBase g = gs[i];
+            g.RenderPipe();
+            if (ProgressBarHelper.DisplayCancelableProgressBar("Reset", i + 1, gs.Count))
+            {
+                break;
+            }
+        }
+        ProgressBarHelper.ClearProgressBar();
+        Debug.Log($"ResetGeneratorsMesh gs:{gs.Count} time:{DateTime.Now-start}");
+    }
+
+    public void ClearGeneratorsMesh()
+    {
+        DateTime start = DateTime.Now;
+        var gs = GetPipeMeshGenerators();
+        for (int i = 0; i < gs.Count; i++)
+        {
+            PipeMeshGeneratorBase g = gs[i];
+            EditorHelper.RemoveAllComponents(g.gameObject, typeof(PipeMeshGeneratorBase));
+            if (ProgressBarHelper.DisplayCancelableProgressBar("Clear", i + 1, gs.Count))
+            {
+                break;
+            }
+        }
+        ProgressBarHelper.ClearProgressBar();
+        Debug.Log($"ClearGeneratorsMesh gs:{gs.Count} time:{DateTime.Now - start}");
+    }
+
+    public List<PipeMeshGeneratorBase> GetPipeMeshGenerators()
+    {
+        List<PipeMeshGeneratorBase> gs = new List<PipeMeshGeneratorBase>();
+        if (Target)
+            gs.AddRange(Target.GetComponentsInChildren<PipeMeshGeneratorBase>(true));
+        if (newBuilder)
+            gs.AddRange(newBuilder.GetComponentsInChildren<PipeMeshGeneratorBase>(true));
+        return gs;
     }
 
     public float ResultVertexCount = 0;

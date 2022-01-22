@@ -192,7 +192,7 @@ public class PipeMeshGeneratorEx : PipeMeshGeneratorBase
 
 
 
-    public void RenderPipe()
+    public override void RenderPipe()
     {
         if (uniformRadiusP > 0)
         {
