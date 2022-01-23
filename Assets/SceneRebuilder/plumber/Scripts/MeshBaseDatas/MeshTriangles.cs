@@ -43,9 +43,9 @@ public class MeshTriangles
 
     public void ShowTriangles(Transform transform,float pointScale)
     {
-        GameObject tsRoot = CreateSubTestObj($"Triangles({this.Count})", transform);
+        GameObject tsRoot = CreateSubTestObj($"Triangles({this.Count}_{mesh.vertexCount})", transform);
         var meshTriangles = this;
-        Debug.Log($"ShowTriangles trialges:{meshTriangles.Count}");
+        Debug.Log($"ShowTriangles trialges:{meshTriangles.Count}_{mesh.vertexCount}");
         for (int i = 0; i < meshTriangles.Count; i++)
         {
             var t = meshTriangles.GetTriangle(i);
@@ -307,7 +307,7 @@ public class MeshTriangles
 
         sharedPoints2.Add(circle1);
         sharedPoints2.Add(circle2);
-        ShowSharedMeshTrianglesList(root, pointScale, 0, sharedPoints2, true);
+        ShowSharedMeshTrianglesList(root, pointScale, 0,int.MaxValue, sharedPoints2, true);
     }
 
     public SharedMeshTrianglesList GetWeldoletKeyPoints(int minCount, float minDis)
@@ -400,28 +400,62 @@ public class MeshTriangles
         }
     }
 
-    public void ShowSharedPointsByIdEx(Transform root, float pointScale, int minCount, float minDis)
+    public void ShowCirclesById(Transform root, float pointScale, int minCount, int maxCount, float minDis)
     {
-        //SharedMeshTrianglesList sharedPoints1 = this.GetKeyPointsByPointEx(minCount,minDis);
         SharedMeshTrianglesList sharedPoints1 = this.GetSharedMeshTrianglesListById(minCount, minDis);
-        ShowSharedMeshTrianglesList(root, pointScale, minCount, sharedPoints1,true);
-    }
-
-    public void ShowSharedMeshTrianglesList(Transform root, float pointScale, int minCount, SharedMeshTrianglesList sharedPoints1, bool isShowCenter)
-    {
+        sharedPoints1.SortByCount();
         //Debug.Log($"ShowSharedMeshTrianglesList sharedPoints1:{sharedPoints1.Count}");
-        GameObject sharedPoints1Obj = CreateSubTestObj($"sharedPoints(Id):{sharedPoints1.Count}", root);
-        int id = 0;
+        GameObject sharedPoints1Obj = CreateSubTestObj($"sharedPoints(Id)_({minCount}_{maxCount}):{sharedPoints1.Count}", root);
+        int count = 0;
         //sharedPoints1.Sort((a, b) => { return b.TriangleCount.CompareTo(a.TriangleCount); });
         for (int i = 0; i < sharedPoints1.Count; i++)
         {
             SharedMeshTriangles plane = sharedPoints1[i];
             var triangles = plane.GetAllTriangles();
-            if (triangles.Count < minCount) continue;
+            //plane.GetLines();
+            count++;
+            ShowSharedMeshTrianglesList(root, pointScale, sharedPoints1Obj, count, plane, triangles, true);
+            //break;
 
-            id++;
-            ShowSharedMeshTrianglesList(root, pointScale, sharedPoints1Obj, id, plane, triangles, isShowCenter);
+            //if (triangles.Count == 3)
+            //{
+            //}
+            //else if (triangles.Count == 6)
+            //{
+
+            //}
+            //else
+            //{
+
+            //}
         }
+        sharedPoints1Obj.name = $"sharedPoints(Id)_({minCount}_{maxCount}):{count}";
+    }
+
+    public void ShowSharedPointsByIdEx(Transform root, float pointScale, int minCount, int maxCount, float minDis)
+    {
+        //SharedMeshTrianglesList sharedPoints1 = this.GetKeyPointsByPointEx(minCount,minDis);
+        SharedMeshTrianglesList sharedPoints1 = this.GetSharedMeshTrianglesListById(minCount, minDis);
+        ShowSharedMeshTrianglesList(root, pointScale, minCount, maxCount, sharedPoints1,true);
+    }
+
+    public void ShowSharedMeshTrianglesList(Transform root, float pointScale, int minCount,int maxCount, SharedMeshTrianglesList sharedPoints1, bool isShowCenter)
+    {
+        sharedPoints1.SortByCount();
+        //Debug.Log($"ShowSharedMeshTrianglesList sharedPoints1:{sharedPoints1.Count}");
+        GameObject sharedPoints1Obj = CreateSubTestObj($"sharedPoints(Id)_({minCount}_{maxCount}):{sharedPoints1.Count}", root);
+        int count = 0;
+        //sharedPoints1.Sort((a, b) => { return b.TriangleCount.CompareTo(a.TriangleCount); });
+        for (int i = 0; i < sharedPoints1.Count; i++)
+        {
+            SharedMeshTriangles plane = sharedPoints1[i];
+            var triangles = plane.GetAllTriangles();
+            if (triangles.Count < minCount || triangles.Count>maxCount) continue;
+
+            count++;
+            ShowSharedMeshTrianglesList(root, pointScale, sharedPoints1Obj, count, plane, triangles, isShowCenter);
+        }
+        sharedPoints1Obj.name = $"sharedPoints(Id)_({minCount}_{maxCount}):{count}";
     }
 
     private void ShowSharedMeshTrianglesList(Transform root, float pointScale, GameObject sharedPoints1Obj, int id, SharedMeshTriangles plane, MeshTriangleList triangles,bool isShowCenter)

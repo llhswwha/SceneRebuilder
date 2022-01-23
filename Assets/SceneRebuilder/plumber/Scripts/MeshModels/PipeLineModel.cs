@@ -56,7 +56,7 @@ public class PipeLineModel : PipeModelBase
         {
             KeyPointCount = 2;
         }
-        return $"Radius:{PipeRadius}({PipeRadius1},{PipeRadius1}) Length:{PipeLength}  Keys:{KeyPointCount}";
+        return $"Radius:{PipeRadius}({PipeRadius1},{PipeRadius1}) Length:{PipeLength}  Keys:{KeyPointCount} V:{VertexCount}";
     }
 
     //public float SizeX = 0;

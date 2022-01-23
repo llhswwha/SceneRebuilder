@@ -26,6 +26,14 @@ public class SharedMeshTriangles : IComparable<SharedMeshTriangles>
 
     public float TriangleCount = 0;
 
+    public void GetLines()
+    {
+        var ps1 = GetPoints();
+        var ps2 = GetMeshPoints();
+        
+        Debug.Log($"GetLines ps1:{ps1.Count} ps2:{ps2.Count}");
+    }
+
     public SharedMeshTriangles(int id, Vector3 p, Vector3 normal, List<MeshTriangle> ts)
     {
         this.Center = Vector3.zero;
@@ -110,6 +118,16 @@ public class SharedMeshTriangles : IComparable<SharedMeshTriangles>
             points= AllTriangles.GetPoints();
         }
         return points;
+    }
+
+    public List<MeshPoint> meshPoints;
+    public List<MeshPoint> GetMeshPoints()
+    {
+        if (meshPoints == null || meshPoints.Count == 0)
+        {
+            meshPoints = AllTriangles.GetMeshPoints();
+        }
+        return meshPoints;
     }
 
     public override string ToString()

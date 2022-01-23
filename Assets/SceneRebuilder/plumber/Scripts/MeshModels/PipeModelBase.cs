@@ -38,9 +38,14 @@ public class PipeModelBase : MonoBehaviour,IComparable<PipeModelBase>
 
         Debug.Log($"ShowSharedPoints mesh vertexCount:{mesh.vertexCount} triangles:{mesh.triangles.Length}");
         //meshTriangles.ShowSharedPointsById(this.transform, PointScale, 10);
-        meshTriangles.ShowSharedPointsByIdEx(this.transform, PointScale, 15, minRepeatPointDistance);
+
+        //meshTriangles.ShowSharedPointsByIdEx(this.transform, PointScale, 15,int.MaxValue, minRepeatPointDistance);
+        //meshTriangles.ShowSharedPointsByIdEx(this.transform, PointScale, 0, int.MaxValue, minRepeatPointDistance);
+        //meshTriangles.ShowSharedPointsByIdEx(this.transform, PointScale, 0,3, minRepeatPointDistance);
+
+        meshTriangles.ShowCirclesById(this.transform, PointScale, 0, 3, minRepeatPointDistance);
         //meshTriangles.ShowSharedPointsByPoint(this.transform, PointScale, 10);
-        meshTriangles.ShowSharedPointsByPointExEx(this.transform, PointScale, sharedMinCount, minRepeatPointDistance);
+        //meshTriangles.ShowSharedPointsByPointExEx(this.transform, PointScale, sharedMinCount, minRepeatPointDistance);
         meshTriangles.Dispose();
     }
 
@@ -589,7 +594,7 @@ public class PipeModelBase : MonoBehaviour,IComparable<PipeModelBase>
         {
             SetRadius();
         }
-        return $"Radius:{PipeRadius}({PipeRadius1},{PipeRadius2}) Keys:{KeyPointCount}";
+        return $"Radius:{PipeRadius}({PipeRadius1},{PipeRadius2}) Keys:{KeyPointCount} V:{VertexCount}";
     }
 
     public string GetCompareString()

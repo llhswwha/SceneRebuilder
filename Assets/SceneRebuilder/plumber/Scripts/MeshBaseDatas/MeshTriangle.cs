@@ -380,6 +380,8 @@ public class MeshTriangleList:List< MeshTriangle >
 
     PositionDictionaryList<Vector3> posDict = new PositionDictionaryList<Vector3>();
 
+    DictionaryList1ToN<int,MeshPoint> idDict = new DictionaryList1ToN<int, MeshPoint>();
+
     public void AddList(List<MeshTriangle> list)
     {
         this.AddRange(list);
@@ -398,7 +400,20 @@ public class MeshTriangleList:List< MeshTriangle >
         {
             return GetPosList();
         }
-        
+    }
+
+    public List<MeshPoint> GetMeshPoints()
+    {
+        if (InitIdDict())
+        {
+            var ps = GetPosListById();
+            //Debug.LogError($"MeshTriangles.GetPoints count:{this.Count} allPos:{this.Count * 2 + 1} ps:{ps.Count}");
+            return ps;
+        }
+        else
+        {
+            return GetPosListById();
+        }
     }
 
     private List<Vector3> GetPosList()
@@ -407,6 +422,19 @@ public class MeshTriangleList:List< MeshTriangle >
         foreach (var key in posDict.posListDict2.Keys)
         {
             var pos = posDict.posListDict2[key][0];
+            ps.Add(pos);
+        }
+        //var ps = posDict.posListDict2.Keys.ToList();
+        //Debug.LogError($"MeshTriangles.GetPoints count:{this.Count} allPos:{this.Count * 2 + 1} ps:{ps.Count}");
+        return ps;
+    }
+
+    private List<MeshPoint> GetPosListById()
+    {
+        List<MeshPoint> ps = new List<MeshPoint>();
+        foreach (var key in idDict.Keys)
+        {
+            var pos = idDict[key][0];
             ps.Add(pos);
         }
         //var ps = posDict.posListDict2.Keys.ToList();
@@ -425,6 +453,29 @@ public class MeshTriangleList:List< MeshTriangle >
                 foreach (var p in triangle.GetPoints())
                 {
                     posDict.Add(p.Point, p.Point,2);
+                }
+            }
+            //posDict.ShowCount("MeshTriangles.InitPosDict");
+            return true;
+        }
+        return false;
+    }
+
+    private bool InitIdDict()
+    {
+        if (idDict == null || idDict.Count == 0)
+        {
+            idDict = new DictionaryList1ToN<int, MeshPoint>();
+
+            MeshTriangleList list = this;
+            for (int i = 0; i < list.Count; i++)
+            {
+                MeshTriangle triangle = list[i];
+                var ps = triangle.GetPoints();
+                foreach (var p in ps)
+                {
+                    idDict.AddItem(p.Id, p);
+                    Debug.Log($"InitIdDict[{i+1}] p:{p} count:{idDict.Count}");
                 }
             }
             //posDict.ShowCount("MeshTriangles.InitPosDict");
