@@ -65,7 +65,7 @@ public class InitNavisFileInfoByModelSetting : SingletonBehaviour<InitNavisFileI
 
     public List<string> structureNameList1 = new List<string>(structureNameList1_Default);
 
-    public static List<string> structureNameList2_Default = new List<string>() {  "楼梯", "转角井" ,"PHC600AB", "PHC500AB","Slab" };
+    public static List<string> structureNameList2_Default = new List<string>() {  "楼梯", "转角井" ,"PHC600AB", "PHC500AB","Slab", "LadderBWithSafetyHoop", "LadderBWithoutSafetyHoop","Loadhook","风机基础","电机基础" };
 
     public List<string> structureNameList2 = new List<string>(structureNameList2_Default);
 

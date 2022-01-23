@@ -58,6 +58,13 @@ public class BIMModelInfo : MonoBehaviour,IComparable<BIMModelInfo>
 
     public string Guid;
     public string RenderId;
+    //public void GetRendererId()
+    //{
+    //    if (string.IsNullOrEmpty(RenderId))
+    //    {
+    //        RenderId = RendererId.GetId(this.gameObject);
+    //    }
+    //}
     public string MName;
     public string MId;
 
@@ -175,8 +182,10 @@ public class BIMModelInfo : MonoBehaviour,IComparable<BIMModelInfo>
 
     private void Start()
     {
-        if (transform.GetComponent<Collider>() != null)
+        Collider collider = transform.GetComponent<Collider>();
+        if (collider != null)
         {
+            if (!collider.enabled) collider.enabled = true;
             DoubleClickEventTrigger_u3d trigger = DoubleClickEventTrigger_u3d.Get(gameObject);
             trigger.onClick += OnClick;
             trigger.onDoubleClick += OnDoubleClick;
@@ -191,6 +200,12 @@ public class BIMModelInfo : MonoBehaviour,IComparable<BIMModelInfo>
         //    MessageCenter.SendMsg(MsgType.ModelSystemTreePanelMsg.TypeName, MsgType.ModelSystemTreePanelMsg.SelectNodeWithoutFocus, gameObject);
         //}           
     }
+
+    //private bool IsInEditMode()
+    //{
+    //    return DevKKSModelPanel.IsEditMode || ObjectAddListPanel.IsEditMode;
+    //}
+
     public void OnDoubleClick()
     {
 
@@ -198,11 +213,13 @@ public class BIMModelInfo : MonoBehaviour,IComparable<BIMModelInfo>
     [ContextMenu("GetRenderId")]
     public void GetRenderId()
     {
-        RendererId renderIdT = transform.GetComponent<RendererId>();
-        if (renderIdT)
-        {
-            RenderId = renderIdT.Id;
-        }
+        //RendererId renderIdT = transform.GetComponent<RendererId>();
+        //if (renderIdT)
+        //{
+        //    RenderId = renderIdT.Id;
+        //}
+
+        RenderId = RendererId.GetId(this.gameObject);
     }
     void SaveToRoomFactory()
     {

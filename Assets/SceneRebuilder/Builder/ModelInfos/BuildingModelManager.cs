@@ -147,6 +147,7 @@ public class BuildingModelManager : SingletonBehaviour<BuildingModelManager>
         ClearCount();
         foreach (var b in Buildings)
         {
+            if (b == null) continue;
             InVertextCount += b.InVertextCount;
             Out0VertextCount += b.Out0VertextCount;
             Out1VertextCount += b.Out1VertextCount;

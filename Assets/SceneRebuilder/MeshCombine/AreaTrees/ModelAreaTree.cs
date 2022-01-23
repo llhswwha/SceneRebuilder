@@ -810,7 +810,9 @@ public class ModelAreaTree : SubSceneCreater
         foreach(var render in renderers)
         {
             MeshFilter mf = render.GetComponent<MeshFilter>();
-            VertexCount += mf.sharedMesh.vertexCount;
+            if (mf == null) continue;
+            if(mf.sharedMesh!=null)
+                VertexCount += mf.sharedMesh.vertexCount;
         }
         VertexCount = VertexCount / 10000;
         //Debug.Log($"ModelAreaTree.GetVertexCount tree:{this.name} VertexCount:{VertexCount} time:{(DateTime.Now - start).TotalMilliseconds}ms");

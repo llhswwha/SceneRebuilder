@@ -1000,7 +1000,9 @@ public class AreaTreeNode : SubSceneCreater
     public void ShowNodes()
     {
         if (IsNodeVisible == true) return;
+#if UNITY_EDITOR
         Debug.Log("ShowNodes:" + this.name);
+#endif
         IsNodeVisible = true;
         this.gameObject.SetActive(true);
         foreach (AreaTreeNode node in Nodes)

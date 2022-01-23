@@ -1,5 +1,6 @@
 ﻿//using Base.Common;
 using Jacovone.AssetBundleMagic;
+//using System;
 using System.Collections;
 using System.Collections.Generic;
 using System.IO;
@@ -148,6 +149,14 @@ public static class EditorHelper
         makeParentDirExist(dir+"/");
 
         string assetName = go.name + go.GetInstanceID();
+        assetName = assetName.Replace("/", "_");//文件名中不能有/
+        assetName = assetName.Replace("\\", "_");//文件名中不能有/
+        assetName = assetName.Replace(":", "_");//文件名中不能有/
+        assetName = assetName.Replace("*", "_");//文件名中不能有/
+        assetName = assetName.Replace("?", "_");//文件名中不能有/
+        assetName = assetName.Replace("<", "_");//文件名中不能有/
+        assetName = assetName.Replace(">", "_");//文件名中不能有/
+        assetName = assetName.Replace("|", "_");//文件名中不能有/
 
         string meshPath = dir + "/" + assetName + ".asset";
         if (meshFilters.Length == 0)
@@ -557,7 +566,7 @@ public static class EditorHelper
     }
 
     #region CopyComponent
-    private static T CopyComponent<T>(GameObject fromObj, GameObject targetObj) where T : Component
+    public static T CopyComponent<T>(GameObject fromObj, GameObject targetObj) where T : Component
     {
         T component = fromObj.GetComponent<T>();
         if (component != null)

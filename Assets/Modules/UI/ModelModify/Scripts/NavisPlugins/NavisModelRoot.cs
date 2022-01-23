@@ -32,7 +32,7 @@ public class NavisModelRoot : MonoBehaviour
 
     //private Dictionary<string, BIMModelInfo> guid2Bim = new Dictionary<string, BIMModelInfo>();
 
-    public string TestModelName = "H¼¶Ö÷±ä1";
+    public string TestModelName = "J0CYT18-8";
 
     [Serializable]
     public class ResultCount
@@ -232,7 +232,7 @@ public class NavisModelRoot : MonoBehaviour
     public void RecoverPipes()
     {
         GameObject rootPipe = GameObject.Find("RemovePipes");
-        IdDictionary.InitInfos();
+        IdDictionary.InitInfos(this.gameObject,false);
         List<Transform> pipes = new List<Transform>();
         for(int i = 0; i < rootPipe.transform.childCount; i++)
         {
@@ -332,6 +332,12 @@ public class NavisModelRoot : MonoBehaviour
         navisFile = InitNavisFileInfoByModel.GetNavisFileInfoEx();
 
         ModelRoot = navisFile.Models.Find(i => i.Name == ModelName);
+        if (ModelRoot == null)
+        {
+            ModelRoot = navisFile.Models.Find(i => i.Name.Contains("-"+ModelName));
+            Debug.Log($"Model == null 1 ModelName:{ModelName} Model:{ModelRoot} Models:{navisFile.Models.Count}");
+            //return;
+        }
         if (ModelRoot == null)
         {
             ModelRoot = navisFile.Models.Find(i => i.Name.Contains(ModelName));
@@ -571,11 +577,12 @@ public class NavisModelRoot : MonoBehaviour
         //2
         GetTransformList(p2);
 
-        var p3 = ProgressArg.New("LoadModels", 2, 5, "ModelItemInfoDictionary", p0);
+        var p3 = ProgressArg.New("LoadModels", 2, 5, "ModelItemInfoDictionary1", p0);
         ProgressBarHelper.DisplayCancelableProgressBar(p3, enableProgress);
         //3
         //var allModels = navisFile.GetAllItems();
 
+        //ModelRootName = ModelRoot.Name;
         var currentModels = ModelRoot.GetChildrenModels();
         currentModels = InitNavisFileInfoByModelSetting.Instance.FilterList(currentModels, null);
         
@@ -614,6 +621,13 @@ public class NavisModelRoot : MonoBehaviour
         //5
         ModelListAll = new ModelItemInfoListEx(currentModels);
         ModelList = new ModelItemInfoListEx(currentModels);
+        foreach(var item in ModelList.allModels)
+        {
+            if (item.Name == TestModelName)
+            {
+                Debug.LogError($"TestModelName {TestModelName}");
+            }
+        }
 
         var p6 = ProgressArg.New("LoadModels", 5, 5, "ModelItemInfoListEx", p0);
         ProgressBarHelper.DisplayCancelableProgressBar(p6, enableProgress);

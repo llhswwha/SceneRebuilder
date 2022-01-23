@@ -64,9 +64,13 @@ public class ModelUpdateManagerEditor : BaseFoldoutEditor<ModelUpdateManager>
         {
             item.GetModelRenders();
         }
-        if (GUILayout.Button("ClearUpdates"))
+        if (GUILayout.Button("ClearUpdatesOld"))
         {
-            item.ClearUpdates();
+            item.ClearUpdatesOld();
+        }
+        if (GUILayout.Button("ClearUpdatesNew"))
+        {
+            item.ClearUpdatesNew();
         }
         GUILayout.Label("MaxCount:", GUILayout.Width(100));
         item.MaxCompareCount = EditorGUILayout.IntField(item.MaxCompareCount);
@@ -242,6 +246,10 @@ listArg.pageId_selected = countGreaterZero / listArg.pageCount;
             if (GUILayout.Button("MatOld", btnStyle, GUILayout.Width(60)))
             {
                 twoList.ReplaceMaterialOld();
+            }
+            if (GUILayout.Button("Reset", btnStyle, GUILayout.Width(60)))
+            {
+                twoList.ResetUpdateState();
             }
             //if (GUILayout.Button("AliOld", GUILayout.Width(50)))
             //{

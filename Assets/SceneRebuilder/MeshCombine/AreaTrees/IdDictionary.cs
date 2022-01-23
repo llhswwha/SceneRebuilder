@@ -91,33 +91,33 @@ public static class IdDictionary
         }
     }
 
-    public static void InitInfos(GameObject root = null)
+    public static void InitInfos(GameObject root = null, bool includeInactive = true)
     {
         DateTime start = DateTime.Now;
         RendererDict.Clear();
         IdDict.Clear();
-        InitRenderers(root);
-        InitIds(root);
+        InitRenderers(root, includeInactive);
+        InitIds(root, includeInactive);
         Debug.Log($"IdDictionay.InitInfos root:[{root}] idCount:{IdDict.Count},RendererCount:{RendererDict.Count} time:{(DateTime.Now - start)}");
     }
 
-    private static void InitRenderers(GameObject root = null)
+    private static void InitRenderers(GameObject root = null,bool includeInactive=true)
     {
         DateTime start = DateTime.Now;
         MeshRenderer[] renderers = null;
         if (root == null)
         {
-            renderers = GameObject.FindObjectsOfType<MeshRenderer>(true);
+            renderers = GameObject.FindObjectsOfType<MeshRenderer>(includeInactive);
         }
         else
         {
-            renderers = root.GetComponentsInChildren<MeshRenderer>(true);
+            renderers = root.GetComponentsInChildren<MeshRenderer>(includeInactive);
         }
         InitRenderers(renderers);
         //Debug.Log($"IdDictionay.InitRenderers count:{renderers.Length},Dict:{RendererDict.Count} time:{(DateTime.Now - start)}");
     }
 
-    private static RendererId[] InitIds(GameObject root=null)
+    private static RendererId[] InitIds(GameObject root=null, bool includeInactive = true)
     {
         DateTime start = DateTime.Now;
 
@@ -126,11 +126,11 @@ public static class IdDictionary
         RendererId[] ids = null;
         if (root == null)
         {
-            ids = GameObject.FindObjectsOfType<RendererId>(true);
+            ids = GameObject.FindObjectsOfType<RendererId>(includeInactive);
         }
         else
         {
-            ids = root.GetComponentsInChildren<RendererId>(true);
+            ids = root.GetComponentsInChildren<RendererId>(includeInactive);
         }
         foreach (var id in ids)
         {

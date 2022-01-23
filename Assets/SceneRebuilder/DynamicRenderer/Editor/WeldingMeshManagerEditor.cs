@@ -33,13 +33,13 @@ public class WeldingMeshManagerEditor : BaseFoldoutEditor<WeldingMeshManager>
         }
         if (GUILayout.Button("StaticCulling"))
         {
-            StaticCullingEditorWindow.CreateCullingWindow();
-            item.SetStaticCulling();
+            //StaticCullingEditorWindow.CreateCullingWindow();
+            //item.SetStaticCulling();
         }
         if (GUILayout.Button("DymicCulling"))
         {
-            DynamicCulling culling = DynamicCullingEditor.CreateCullingInstance(item.gameObject);
-            item.SetDymicCulling();
+            //DynamicCulling culling = DynamicCullingEditor.CreateCullingInstance(item.gameObject);
+            //item.SetDymicCulling();
         }
 
         DrawSharedMeshListEx(sharedMeshListArg, () => item.GetWeldings());

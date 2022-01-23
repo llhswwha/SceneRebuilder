@@ -943,6 +943,11 @@ public class InitNavisFileInfoByModel : SingletonBehaviour<InitNavisFileInfoByMo
     {
         navisFile = GetNavisFileInfo();
         var vueItems = navisFile.GetAllItems();
+        if (vueItems.Count == 0)
+        {
+            Debug.LogError("BindBimInfo vueItems.Count == 0");
+            return;
+        }
         Dictionary<string, ModelItemInfo> vueDict = new Dictionary<string, ModelItemInfo>();
         for (int i = 0; i < vueItems.Count; i++)
         {
@@ -958,12 +963,20 @@ vueDict.Add(item.UId, item);
             {
                 Debug.LogError($"BindBimInfo1 vueDict.ContainsKey(item.UId) item:{item} UId:{item.UId}");
             }
-            
+            if(item.Name== "F级高厂变")
+            {
+                Debug.LogError("F级高厂变 Model");
+            }
         }
         var bims = GameObject.FindObjectsOfType<BIMModelInfo>(true);
         for (int i = 0; i < bims.Length; i++)
         {
             BIMModelInfo bim = bims[i];
+            bim.GetRenderId();
+            if (bim.name == "F级高厂变")
+            {
+                Debug.LogError("F级高厂变 BIM");
+            }
             ProgressArg p1 = new ProgressArg("BindBimInfo2", i, vueItems.Count, bim.name);
             ProgressBarHelper.DisplayCancelableProgressBar(p1);
 

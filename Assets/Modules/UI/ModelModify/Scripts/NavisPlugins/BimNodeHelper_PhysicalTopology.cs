@@ -96,9 +96,9 @@ public static class BimNodeHelper_PhysicalTopology
         //    return dev2Model[node];
         //}
 
+        if (node == null) return null;
 
-
-        if (dev2Model_id.ContainsKey(node.DevID))
+        if (!string.IsNullOrEmpty(node.DevID)&&dev2Model_id.ContainsKey(node.DevID))
         {
             return dev2Model_id[node.DevID];
         }

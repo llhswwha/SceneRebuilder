@@ -480,10 +480,20 @@ public class SubSceneManager : SingletonBehaviour<SubSceneManager>
         }
     }
 
+    public bool IsFilterLoadedScene = true;
+
     IEnumerator LoadScenesByBag<T>(T[] scenes, Action<SceneLoadProgress> finishedCallback) where T : SubScene_Base
     {
         var start = DateTime.Now;
-        WattingForLoadedAll.AddRange(scenes);
+        //WattingForLoadedAll.AddRange(scenes);
+        int totalScenesCount = 0;
+        foreach (var scene in scenes)
+        {
+            if (IsFilterLoadedScene && scene.IsLoaded) continue;
+            WattingForLoadedAll.Add(scene);
+            totalScenesCount++;
+        }
+
         int count = 0;
         SceneLoadProgress loadProgress = new SceneLoadProgress();
         if (WattingForLoadedAll.Count == 0)
@@ -494,44 +504,95 @@ public class SubSceneManager : SingletonBehaviour<SubSceneManager>
                 finishedCallback(loadProgress);
             }
         }
-        while (WattingForLoadedAll.Count>0)
+        bool isFinishedCallBack = false;
+        DateTime startLoadTime = DateTime.Now;
+        SubScene_Base lastScene = null;
+        while (WattingForLoadedAll.Count > 0 && WattingForLoadedCurrent.Count > 0)
         {
-            if(WattingForLoadedCurrent.Count< LoadingSceneMaxCount)
+            try
             {
-                var scene = WattingForLoadedAll[0];
-                WattingForLoadedAll.RemoveAt(0);
-                WattingForLoadedCurrent.Add(scene);
-                //Debug.Log($"LoadScenesByBag Start scene:{scene.GetSceneName()},currentList:{WattingForLoadedCurrent.Count} allList:{WattingForLoadedAll.Count}");
-                scene.LoadSceneAsync((b, s) =>
+                if (WattingForLoadedCurrent.Count < LoadingSceneMaxCount)
                 {
-                    WattingForLoadedCurrent.Remove(s);
-                    //Debug.Log($"LoadScenesByBag End scene:{s.GetSceneName()},currentList:{WattingForLoadedCurrent.Count} allList:{WattingForLoadedAll.Count}");
+                    startLoadTime = DateTime.Now;
 
-                    count++;
-                    var progress = (count + 0.0f) / scenes.Length;
-                    WriteLog("LoadScenesByBag",$"count:{scenes.Length} index:{count} progress:{progress:F3} time:{(DateTime.Now - start).ToString()}");
-                    OnProgressChanged(progress);
-                    if (count == scenes.Length)
+                    var scene = WattingForLoadedAll[0];
+                    lastScene = scene;
+                    WattingForLoadedAll.RemoveAt(0);
+                    WattingForLoadedCurrent.Add(scene);
+#if UNITY_EDITOR
+                    Debug.Log($"LoadScenesByBag Start scene:{scene.GetSceneName()},currentList:{WattingForLoadedCurrent.Count} allList:{WattingForLoadedAll.Count}");
+#endif
+                    scene.LoadSceneAsync((b, s) =>
                     {
-                        if (finishedCallback != null)
+                    //WattingForLoadedAll.RemoveAt(0);
+                    WattingForLoadedCurrent.Remove(s);
+#if UNITY_EDITOR
+                        Debug.Log($"LoadScenesByBag End scene:{s.GetSceneName()},currentList:{WattingForLoadedCurrent.Count} allList:{WattingForLoadedAll.Count}");
+#endif
+
+                        count++;
+                        var progress = (count + 0.0f) / totalScenesCount;
+                        WriteLog("LoadScenesByBag", $"count:{totalScenesCount} index:{count} progress:{progress:F3} time:{(DateTime.Now - start).ToString()}");
+                        OnProgressChanged(progress);
+                        if (count == totalScenesCount)
                         {
-                            loadProgress.SetInfo(s, 1, true);
-                            finishedCallback(loadProgress);
+                            if (isFinishedCallBack == false)
+                            {
+                                isFinishedCallBack = true;
+                                if (finishedCallback != null)
+                                {
+                                    loadProgress.SetInfo(s, 1, true);
+                                    finishedCallback(loadProgress);
+                                }
+                                WriteLog("LoadScenesByBag", $"Finished1 count:{totalScenesCount},\t time:{(DateTime.Now - start).ToString()}");
+                                OnAllLoaded();
+                            }
+                            else
+                            {
+                                WriteLog("LoadScenesByBag", $"Finished12(Error)!!! count:{totalScenesCount},\t time:{(DateTime.Now - start).ToString()}");
+                            }
+
                         }
-                        WriteLog("LoadScenesByBag",$"count:{scenes.Length},\t time:{(DateTime.Now - start).ToString()}");
-                        OnAllLoaded();
-                    }
-                    else
-                    {
-                        if (finishedCallback != null)
+                        else
                         {
-                            loadProgress.SetInfo(s, progress, false);
-                            finishedCallback(loadProgress);
+                            if (finishedCallback != null)
+                            {
+                                loadProgress.SetInfo(s, progress, false);
+                                finishedCallback(loadProgress);
+                            }
                         }
-                    }
-                });
+                    });
+                }
+                else
+                {
+                    float time = (float)(DateTime.Now - startLoadTime).TotalMilliseconds;
+#if UNITY_EDITOR
+                    Debug.Log($"LoadScenesByBag Waiting time:{time}ms count:{count} totalCount:{totalScenesCount}");
+#endif
+
+                    //Debug.Log($"LoadScenesByBag Waiting time:{time} scene:{lastScene.GetSceneName()},currentList:{WattingForLoadedCurrent.Count} allList:{WattingForLoadedAll.Count}");
+
+
+                }
+
+            }
+            catch (Exception ex)
+            {
+                Debug.LogError($"LoadScenesByTag Exception:{ex}");
             }
             yield return new WaitForSeconds(0.02f);
+        }
+
+        if (isFinishedCallBack == false)
+        {
+            isFinishedCallBack = true;
+            if (finishedCallback != null)
+            {
+                loadProgress.SetInfo(lastScene, 1, true);
+                finishedCallback(loadProgress);
+            }
+            WriteLog("LoadScenesByBag", $"Finished2 count:{count} totalScenesCount:{totalScenesCount},\t time:{(DateTime.Now - start).ToString()}");
+            OnAllLoaded();
         }
        
         Debug.Log($"[SubSceneManager.LoadScenesByBag] Finished currentList:{WattingForLoadedCurrent.Count} allList:{WattingForLoadedAll.Count} time:{(DateTime.Now - start).ToString()}");

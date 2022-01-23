@@ -185,6 +185,8 @@ public static class MeshHelper
     {
         var components = t.GetComponents<Component>();
         if (components.Length == 1) return true;
+        if (t.GetComponent<MeshRenderer>() != null && t.GetComponent<MeshFilter>() == null) return true;
+
         bool r = true;
         foreach(var c in components)
         {
@@ -2485,10 +2487,8 @@ public static class MeshHelper
         TotalCopyTime+=t;
         TotalCopyCount++;
 
-        ////var ids = go2Copy.GetComponentsInChildren<RendererId>();
-        //RendererId.NewIds(go2Copy);
-
-        //EditorHelper.CopyAllComponents(go2, go2Copy);
+        //var ids = go2Copy.GetComponentsInChildren<RendererId>();
+        RendererId.NewIds(go2Copy);
 
         return go2Copy;
     }

@@ -1021,11 +1021,16 @@ T minTEx = null;
     {
         DateTime start = DateTime.Now;
         var lodGroups = LODHelper.GetLODGroups(LocalTarget, includeInactive);
+        int count = 0;
         foreach (LODGroup group in lodGroups)
         {
-            LODHelper.UniformLOD0(group);
+            var gN=LODHelper.UniformLOD0(group);
+            if (gN != group)
+            {
+                count++;
+            }
         }
-        Debug.LogError($"UniformLOD0 lodGroups:{lodGroups.Length} time:{(DateTime.Now - start)}");
+        Debug.LogError($"UniformLOD0 lodGroups:{lodGroups.Length} time:{(DateTime.Now - start)} count:{count}");
     }
 
     public void ClearScenes()
@@ -2092,6 +2097,43 @@ public static class LODHelper
 
 #if UNITY_EDITOR
         EditorHelper.SelectObject(newGroupGo);
+#endif
+
+#if UNITY_EDITOR
+
+        BIMModelInfo bim = newGroupGo.GetComponentInChildren<BIMModelInfo>();
+        if (bim)
+        {
+            EditorHelper.CopyComponent(newGroupGo, bim);
+            EditorHelper.CopyComponent<RendererId>(newGroupGo, bim.gameObject);
+            GameObject.DestroyImmediate(bim);
+        }
+
+        var lod1Go = groupInfoNew.LodInfos[1].GetRenderer().gameObject;
+        EditorHelper.CopyComponent<MeshCollider>(newGroupGo, lod1Go);
+
+        MeshCollider mc = newGroupGo.GetComponent<MeshCollider>();
+        if (mc == null)
+        {
+            mc=newGroupGo.AddComponent<MeshCollider>();
+            mc.sharedMesh = lod1Go.GetComponent<MeshFilter>().sharedMesh;
+        }
+
+        Collider[] colliders = newGroupGo.GetComponentsInChildren<Collider>();
+        foreach (var c in colliders)
+        {
+            if (c.gameObject == newGroupGo) continue;
+            GameObject.DestroyImmediate(c);
+        }
+
+        RendererId[] rids = newGroupGo.GetComponentsInChildren<RendererId>();
+        foreach (var c in rids)
+        {
+            if (c.gameObject == newGroupGo) continue;
+            GameObject.DestroyImmediate(c);
+        }
+
+
 #endif
         return newGroup;
     }

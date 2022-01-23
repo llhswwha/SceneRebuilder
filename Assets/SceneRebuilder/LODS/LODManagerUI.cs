@@ -1,3 +1,4 @@
+using System;
 using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
@@ -32,13 +33,12 @@ public class LODManagerUI : MonoBehaviour
         //yield return null;
     }
 
-    [ContextMenu("GetLODInfo")]
-    public void GetLODInfo()
-    {
-        txtLog.text=LODManager.GetRuntimeLODDetail(false);
-        //Debug.Log("LODManagerUI.GetLODInfo");
-    }
-
+    //// Update is called once per frame
+    //void Update()
+    //{
+    //    if(toggleIsUpdate.isOn)
+    //        GetLODInfo();
+    //}
 
     [ContextMenu("SetLODMatColor")]
     public void SetLODMatColor()
@@ -68,5 +68,19 @@ public class LODManagerUI : MonoBehaviour
     public void InactiveLOD()
     {
         LODManager.SetLODActive(false);
+    }
+
+    [ContextMenu("GetLODInfo")]
+    public void GetLODInfo()
+    {
+        try
+        {
+            txtLog.text = LODManager.GetRuntimeLODDetail(false);
+        }catch(Exception e)
+        {
+            Debug.LogError("LODManagerUI.Exception:"+e.ToString()+" "+e.StackTrace);
+        }
+        
+        //Debug.Log("LODManagerUI.GetLODInfo");
     }
 }
