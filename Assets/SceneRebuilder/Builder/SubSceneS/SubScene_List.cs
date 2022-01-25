@@ -115,9 +115,9 @@ public class SubScene_List : MonoBehaviour
         return isLoaded;
     }
 
-    public List<SubScene_Base> GetUnloadedScenes()
+    public SubSceneBag GetUnloadedScenes()
     {
-        List<SubScene_Base> unloadscenes = new List<SubScene_Base>();
+        SubSceneBag unloadscenes = new SubSceneBag();
         foreach (var scene in scenes)
         {
             if (scene == null) continue;

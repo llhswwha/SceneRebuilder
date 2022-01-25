@@ -1153,7 +1153,7 @@ public class AreaTreeNode : SubSceneCreater
         //var scenes = CreatePartScene(contentType);
         //EditorCreateScenes(scenes, null);
 
-        List<SubScene_Base> scenes = new List<SubScene_Base>();
+        SubSceneBag scenes = new SubSceneBag();
 
         if(tree==null){
             

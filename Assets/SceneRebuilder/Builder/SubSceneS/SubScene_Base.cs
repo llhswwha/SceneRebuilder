@@ -964,4 +964,46 @@ public class SubScene_Base : MonoBehaviour
     }
 }
 
+public class SubSceneBag:List<SubScene_Base>
+{
+    public SubSceneBag(SubScene_Base[] scenes)
+    {
+        var list = scenes.ToList().Where(s => s != null).ToList();
+        this.AddRange(list);
+    }
 
+    public SubSceneBag()
+    {
+
+    }
+
+    //public SubSceneList ToList()
+    //{
+    //    var list=this.ToList().Where(s => s != null).ToList();
+    //}
+}
+
+public class SubSceneBagList:List<SubSceneBag>
+{
+    public SubSceneBag GetAllScenes()
+    {
+        SubSceneBag bag = new SubSceneBag();
+        foreach(var item in this)
+        {
+            bag.AddRange(item);
+        }
+        return bag;
+    }
+
+    public SubScene_Base[] GetAllScenesArray()
+    {
+        return GetAllScenes().ToArray();
+    }
+}
+
+
+
+public class SubSceneList<T> : List<T> where T : SubScene_Base
+{
+
+}

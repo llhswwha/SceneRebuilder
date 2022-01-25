@@ -12,9 +12,9 @@ using UnityEditor.SceneManagement;
 public static class SubSceneHelper
 {
 
-    public static List<SubScene_Base> GetScenes<T>(List<T> list) where T :Component
+    public static SubSceneBag GetScenes<T>(List<T> list) where T :Component
     {
-        List<SubScene_Base> scenes = new List<SubScene_Base>();
+        SubSceneBag scenes = new SubSceneBag();
         for (int i = 0; i < list.Count; i++)
         {
             var item = list[i];

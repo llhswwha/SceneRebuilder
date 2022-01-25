@@ -220,6 +220,8 @@ public class PipeBuilder : MonoBehaviour
                 NewPipeList.Add(pipe.transform);
             }
 
+            var generator = pipe.GetComponent<PipeMeshGeneratorBase>();
+
             if (IsSaveMaterials)
             {
                 MeshRenderer mf1 = go.GetComponent<MeshRenderer>();
@@ -228,6 +230,9 @@ public class PipeBuilder : MonoBehaviour
                 {
                     mf2.sharedMaterials = mf1.sharedMaterials;
                 }
+
+                generator.pipeMaterial = mf1.sharedMaterial;
+                go.generateArg.pipeMaterial = mf1.sharedMaterial;
             }
 
             if (IsCopyComponents)
@@ -237,7 +242,7 @@ public class PipeBuilder : MonoBehaviour
 #endif
             }
 
-            var generator = pipe.GetComponent<PipeMeshGeneratorBase>();
+            
             PipeGenerators.Add(generator);
         }
 

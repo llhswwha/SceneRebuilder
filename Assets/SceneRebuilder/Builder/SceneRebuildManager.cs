@@ -87,7 +87,7 @@ public class SceneRebuildManager : SingletonBehaviour<SceneRebuildManager>
         //return GameObject.FindObjectsOfType<AreaTreeNode>(true).Where(n => n.IsLeaf).ToList();
     }
 
-    public List<SubScene_Base> GetScenes()
+    public SubSceneBag GetScenes()
     {
         if (subSceneManager == null)
         {

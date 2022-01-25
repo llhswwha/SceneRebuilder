@@ -108,7 +108,7 @@ public class SubSceneCreater : MonoBehaviour
 
     }
 
-    public void EditorCreateScenes(List<SubScene_Base> scenes, Action<ProgressArg> progressChanged)
+    public void EditorCreateScenes(SubSceneBag scenes, Action<ProgressArg> progressChanged)
     {
         //int count = scenes.Count;
         ////Debug.Log("EditorCreateScenes:" + count);
@@ -161,7 +161,7 @@ public class SubSceneCreater : MonoBehaviour
         EditorLoadScenes(scenes,progressChanged);
     }
 
-    public static void EditorLoadScenes(List<SubScene_Base> scenes, Action<ProgressArg> progressChanged)
+    public static void EditorLoadScenes(SubSceneBag scenes, Action<ProgressArg> progressChanged)
     {
         EditorLoadScenes(scenes.ToArray(), progressChanged);
     }
@@ -202,9 +202,9 @@ public class SubSceneCreater : MonoBehaviour
 
 #endif
 
-    protected List<SubScene_Base> GetSubScenesOfTypes(List<SceneContentType> types)
+    protected SubSceneBag GetSubScenesOfTypes(List<SceneContentType> types)
     {
-        List<SubScene_Base> list = new List<SubScene_Base>();
+        SubSceneBag list = new SubSceneBag();
         var scenes = SubScene_List.GetBaseScenes(gameObject);
         for (int i = 0; i < scenes.Length; i++)
         {

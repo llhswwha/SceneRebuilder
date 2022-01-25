@@ -88,6 +88,7 @@ public class PipeFactory : SingletonBehaviour<PipeFactory>
     public void OneKey(bool isJob)
     {
         DateTime start = DateTime.Now;
+        Target.SetActive(true);
 
         MeshNode meshNode = MeshNode.InitNodes(Target);
         meshNode.GetSharedMeshList();

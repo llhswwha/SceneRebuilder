@@ -2000,9 +2000,9 @@ public static class LODHelper
         return scene;
     }
 
-    public static List<SubScene_Base> SaveLOD0s(GameObject dirRoot, LODGroup[] groups)
+    public static SubSceneBag SaveLOD0s(GameObject dirRoot, LODGroup[] groups)
     {
-        List<SubScene_Base> scenes = new List<SubScene_Base>();
+        SubSceneBag scenes = new SubSceneBag();
         for (int i = 0; i < groups.Length; i++)
         {
             var group = groups[i];

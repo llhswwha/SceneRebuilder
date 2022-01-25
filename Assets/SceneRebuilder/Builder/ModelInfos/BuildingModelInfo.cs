@@ -113,6 +113,59 @@ public class BuildingModelInfo : SubSceneCreater
         return rootList;
     }
 
+    internal SubSceneBag GetSubScenes(BuildingSceneLoadItem floorLoadSetting)
+    {
+        SubSceneBag bag = new SubSceneBag();
+        var trees = GetTreeList();
+        foreach(var tree in trees)
+        {
+            if (tree.name.Contains("_Out0_"))
+            {
+                if (floorLoadSetting.Out0Combined)
+                {
+                    var allScenes = tree.GetComponentsInChildren<SubScene_Out0>(true);
+                    bag.AddRange(allScenes);
+                }
+                if (floorLoadSetting.Out0Renderers)
+                {
+                    var allScenes = tree.GetComponentsInChildren<SubScene_In>(true);
+                    bag.AddRange(allScenes);
+                }
+
+            }
+            if (tree.name.Contains("_InTree"))
+            {
+                if (floorLoadSetting.InCombined)
+                {
+                    var allScenes = tree.GetComponentsInChildren<SubScene_Out0>(true);
+                    bag.AddRange(allScenes);
+                }
+                if (floorLoadSetting.InRenderers)
+                {
+                    var allScenes = tree.GetComponentsInChildren<SubScene_In>(true);
+                    bag.AddRange(allScenes);
+                }
+            }
+            if (tree.name.Contains("_OutTree1"))
+            {
+                if (floorLoadSetting.Out1Combined)
+                {
+                    var allScenes = tree.GetComponentsInChildren<SubScene_Out0>(true);
+                    bag.AddRange(allScenes);
+                }
+
+                if (floorLoadSetting.Out1Renderers)
+                {
+                    var allScenes = tree.GetComponentsInChildren<SubScene_In>(true);
+                    bag.AddRange(allScenes);
+                }
+            }
+        }
+
+        Debug.Log($"GetSubScenes Model:{this.name} trees:{trees.Count} bag:{bag.Count} setting:{floorLoadSetting}");
+        return bag;
+    }
+
     public Transform[] GetChildren()
     {
         List<Transform> ts = new List<Transform>();
@@ -351,7 +404,7 @@ public class BuildingModelInfo : SubSceneCreater
         {
             nodes.AddRange(tree.TreeLeafs);
         }
-        var scenes=new List<SubScene_Base>();
+        var scenes=new SubSceneBag();
         for(int i=0;i<nodes.Count;i++){
             var node=nodes[i];
             var rendererScene=node.GetRendererScene();
@@ -1521,7 +1574,7 @@ public class BuildingModelInfo : SubSceneCreater
 
         InitInOut(false);
 
-        List<SubScene_Base> scenes = new List<SubScene_Base>();
+        SubSceneBag scenes = new SubSceneBag();
         scenes.AddRange(CreatePartScene(SceneContentType.Tree));
         scenes.AddRange(CreatePartScene(SceneContentType.Part));
         EditorCreateScenes(scenes, progressChanged);
@@ -1535,9 +1588,9 @@ public class BuildingModelInfo : SubSceneCreater
 
    
 
-    public List<SubScene_Base> CreatePartScene(SceneContentType contentType)
+    public SubSceneBag CreatePartScene(SceneContentType contentType)
     {
-        List<SubScene_Base> scenes = new List<SubScene_Base>();
+        SubSceneBag scenes = new SubSceneBag();
         AreaTreeHelper.InitCubePrefab();
         if (contentType == SceneContentType.Single)
         {
@@ -1557,12 +1610,12 @@ public class BuildingModelInfo : SubSceneCreater
         return scenes;
     }
 
-    internal List<SubScene_Base> EditorCreatePartScenesEx(string dir, bool isOverride, SceneContentType contentType)
+    internal SubSceneBag EditorCreatePartScenesEx(string dir, bool isOverride, SceneContentType contentType)
     {
         //DestroyOldBounds();
         DestroyOldPartScenes(contentType);
 
-        List<SubScene_Base> senes = new List<SubScene_Base>();
+        SubSceneBag senes = new SubSceneBag();
         UpdateTrees();
         if (InPart)
         {

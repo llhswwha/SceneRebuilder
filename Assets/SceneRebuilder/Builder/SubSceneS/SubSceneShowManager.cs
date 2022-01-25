@@ -20,8 +20,8 @@ public class SubSceneShowManager : SingletonBehaviour<SubSceneShowManager>
     //public List<SubScene_Out0> scenes_Out0_TreeNode = new List<SubScene_Out0>();
     public List<SubScene_Out0> scenes_Out0_TreeNode_Hidden = new List<SubScene_Out0>();
     public List<SubScene_Out0> scenes_Out0_TreeNode_Shown = new List<SubScene_Out0>();
-    public List<SubScene_Base> scenes_TreeNode_Hidden = new List<SubScene_Base>();
-    public List<SubScene_Base> scenes_TreeNode_Shown = new List<SubScene_Base>();
+    public SubSceneBag scenes_TreeNode_Hidden = new SubSceneBag();
+    public SubSceneBag scenes_TreeNode_Shown = new SubSceneBag();
     public Camera[] cameras;
 
     [ContextMenu("GetSceneCountInfoEx")]
@@ -600,7 +600,7 @@ public class SubSceneShowManager : SingletonBehaviour<SubSceneShowManager>
 
         if (IsUpdateDistance)
         {
-            List<SubScene_Base> subScenes = new List<SubScene_Base>();
+            SubSceneBag subScenes = new SubSceneBag();
             //foreach (var scene in scenes_In)
             //{
             //    subScenes.Add(scene);
