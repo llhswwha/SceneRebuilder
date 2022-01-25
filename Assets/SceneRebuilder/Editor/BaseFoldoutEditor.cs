@@ -1373,6 +1373,7 @@ public class BaseFoldoutEditor<T> : BaseEditor<T> where T : class
                     listArg.tag = funcGetList();
                 }
             }
+
             PrefabInstanceBuilder.Instance.JobSize=EditorGUILayout.IntField(PrefabInstanceBuilder.Instance.JobSize, GUILayout.Width(50));
             if (GUILayout.Button("Pre1", btnStyle, GUILayout.Width(40)))
             {
@@ -1381,6 +1382,17 @@ public class BaseFoldoutEditor<T> : BaseEditor<T> where T : class
                 listArg.tag = list2;
 
                 PrefabInstanceBuilder.Instance.GetPrefabInfos(list2, true);
+
+                listArg.tag = funcGetList();
+                isUpate = true;
+            }
+            if (GUILayout.Button("One", btnStyle, GUILayout.Width(40)))
+            {
+                SharedMeshInfoList list2 = funcGetList();
+                //list.GetPrefabs();
+                listArg.tag = list2;
+
+                list2.DeleteToOne();
 
                 listArg.tag = funcGetList();
                 isUpate = true;

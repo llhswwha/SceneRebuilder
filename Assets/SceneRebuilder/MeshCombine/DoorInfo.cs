@@ -312,8 +312,15 @@ public class DoorPartInfo
             Size = minMax[2];
             DisToCenter = Vector3.Distance(Pos, Center);
             OffToCenter = Center - Pos;
-            VertexCount = mf.sharedMesh.vertexCount;
-            SubMeshCount = mf.sharedMesh.subMeshCount;
+            if (mf.sharedMesh == null)
+            {
+                Debug.LogError($"DoorPartInfo mf.sharedMesh == null mf2:{mf}");
+            }
+            else
+            {
+                VertexCount = mf.sharedMesh.vertexCount;
+                SubMeshCount = mf.sharedMesh.subMeshCount;
+            } 
         }
         else
         {
@@ -328,7 +335,13 @@ public class DoorPartInfo
             foreach (var mf2 in filters)
             {
                 if (mf2 == null) continue;
-                if (mf2.sharedMesh == null) continue;
+                if (mf2.sharedMesh == null)
+                {
+                    BuildingController b = go.GetComponentInParent<BuildingController>();
+                    FloorController f = go.GetComponentInParent<FloorController>();
+                    Debug.LogError($"DoorPartInfo mf2.sharedMesh == null mf2:{mf2} building:{b} floor:{f}");
+                    break;
+                }
                 VertexCount += mf2.sharedMesh.vertexCount;
             }
             SubMeshCount = filters.Length;

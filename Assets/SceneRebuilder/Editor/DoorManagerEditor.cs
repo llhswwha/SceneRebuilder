@@ -124,7 +124,11 @@ public class DoorManagerEditor : BaseFoldoutEditor<DoorManager>
         GUILayout.EndHorizontal();
 
         EditorUIUtils.Separator(5);
-
+        if (GUILayout.Button("RecoverDoors"))
+        {
+            item.RecoverDoors();
+        }
+        item.OldTarget = ObjectField(item.OldTarget);
         item.LocalTarget = ObjectField(item.LocalTarget);
 
         DrawDoorsRootList(doorRootListArg, item);

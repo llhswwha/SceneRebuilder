@@ -507,15 +507,17 @@ public class SubSceneManager : SingletonBehaviour<SubSceneManager>
         bool isFinishedCallBack = false;
         DateTime startLoadTime = DateTime.Now;
         SubScene_Base lastScene = null;
-        Debug.Log($"LoadScenesByBag WattingForLoadedAll:{WattingForLoadedAll.Count} WattingForLoadedCurrent:{WattingForLoadedCurrent.Count} LoadingSceneMaxCount:{LoadingSceneMaxCount} bool isLoadScene:{WattingForLoadedCurrent.Count < LoadingSceneMaxCount}");
-        while (WattingForLoadedAll.Count > 0 || WattingForLoadedCurrent.Count > 0)
+        Debug.Log($"LoadScenesByBag WattingForLoadedAll:{WattingForLoadedAll.Count} WattingForLoadedCurrent:{WattingForLoadedCurrent.Count} LoadingSceneMaxCount:{LoadingSceneMaxCount} bool isLoadScene  :{WattingForLoadedCurrent.Count < LoadingSceneMaxCount}");
+        while (WattingForLoadedAll.Count > 0 && WattingForLoadedCurrent.Count > 0)
+        //while (WattingForLoadedAll.Count > 0 || WattingForLoadedCurrent.Count > 0)
         {
             //Debug.Log($"LoadScenesByBag0 WattingForLoadedAll:{WattingForLoadedAll.Count} WattingForLoadedCurrent:{WattingForLoadedCurrent.Count} LoadingSceneMaxCount:{LoadingSceneMaxCount} bool isLoadScene:{WattingForLoadedCurrent.Count < LoadingSceneMaxCount}");
 
             try
             {
-                if (WattingForLoadedCurrent.Count < LoadingSceneMaxCount && WattingForLoadedAll.Count>0)
-                {
+                if (WattingForLoadedCurrent.Count < LoadingSceneMaxCount)
+                    //if (WattingForLoadedCurrent.Count < LoadingSceneMaxCount && WattingForLoadedAll.Count > 0)
+                 {
                     startLoadTime = DateTime.Now;
                     //Debug.Log($"LoadScenesByBag1 WattingForLoadedAll:{WattingForLoadedAll.Count} WattingForLoadedCurrent:{WattingForLoadedCurrent.Count} LoadingSceneMaxCount:{LoadingSceneMaxCount} bool isLoadScene:{WattingForLoadedCurrent.Count < LoadingSceneMaxCount}");
 

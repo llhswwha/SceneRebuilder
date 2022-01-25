@@ -145,11 +145,11 @@ public class SharedMeshInfoList : List<SharedMeshInfo>
     //    PrefabInfoListHelper.GetPrefabInfos(this,true);
     //}
 
-    public void Destroy(int v)
+    public void DestroyFromStartId(int v)
     {
         foreach(var item in this)
         {
-            item.Destroy(v);
+            item.DestroyFromStartId(v);
         }
     }
 
@@ -213,6 +213,14 @@ public class SharedMeshInfoList : List<SharedMeshInfo>
 
         
     }
+
+    public void DeleteToOne()
+    {
+        foreach(SharedMeshInfo item in this)
+        {
+            item.DeleteToOne();
+        }
+    }
 }
 
 [Serializable]
@@ -259,9 +267,9 @@ public class SharedMeshInfo:IPrefab<SharedMeshInfo>
         }
     }
 
-    public void Destroy(int id)
+    public void DestroyFromStartId(int startId)
     {
-        for (int i = id; i < meshFilters.Count; i++)
+        for (int i = startId; i < meshFilters.Count; i++)
         {
             MeshFilter mf = meshFilters[i];
             if (mf == null)
@@ -380,5 +388,10 @@ public class SharedMeshInfo:IPrefab<SharedMeshInfo>
         SharedMeshInfo info = new SharedMeshInfo(goNew);
         return info;
         
+    }
+
+    internal void DeleteToOne()
+    {
+        DestroyFromStartId(1);
     }
 }
