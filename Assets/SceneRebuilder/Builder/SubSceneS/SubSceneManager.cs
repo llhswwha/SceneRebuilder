@@ -507,18 +507,25 @@ public class SubSceneManager : SingletonBehaviour<SubSceneManager>
         bool isFinishedCallBack = false;
         DateTime startLoadTime = DateTime.Now;
         SubScene_Base lastScene = null;
-        while (WattingForLoadedAll.Count > 0 && WattingForLoadedCurrent.Count > 0)
+        Debug.Log($"LoadScenesByBag WattingForLoadedAll:{WattingForLoadedAll.Count} WattingForLoadedCurrent:{WattingForLoadedCurrent.Count} LoadingSceneMaxCount:{LoadingSceneMaxCount} bool isLoadScene:{WattingForLoadedCurrent.Count < LoadingSceneMaxCount}");
+        while (WattingForLoadedAll.Count > 0 || WattingForLoadedCurrent.Count > 0)
         {
+            //Debug.Log($"LoadScenesByBag0 WattingForLoadedAll:{WattingForLoadedAll.Count} WattingForLoadedCurrent:{WattingForLoadedCurrent.Count} LoadingSceneMaxCount:{LoadingSceneMaxCount} bool isLoadScene:{WattingForLoadedCurrent.Count < LoadingSceneMaxCount}");
+
             try
             {
-                if (WattingForLoadedCurrent.Count < LoadingSceneMaxCount)
+                if (WattingForLoadedCurrent.Count < LoadingSceneMaxCount && WattingForLoadedAll.Count>0)
                 {
                     startLoadTime = DateTime.Now;
+                    //Debug.Log($"LoadScenesByBag1 WattingForLoadedAll:{WattingForLoadedAll.Count} WattingForLoadedCurrent:{WattingForLoadedCurrent.Count} LoadingSceneMaxCount:{LoadingSceneMaxCount} bool isLoadScene:{WattingForLoadedCurrent.Count < LoadingSceneMaxCount}");
 
                     var scene = WattingForLoadedAll[0];
                     lastScene = scene;
                     WattingForLoadedAll.RemoveAt(0);
                     WattingForLoadedCurrent.Add(scene);
+
+                    //Debug.Log($"LoadScenesByBag2 WattingForLoadedAll:{WattingForLoadedAll.Count} WattingForLoadedCurrent:{WattingForLoadedCurrent.Count} LoadingSceneMaxCount:{LoadingSceneMaxCount} bool isLoadScene:{WattingForLoadedCurrent.Count < LoadingSceneMaxCount}");
+
 #if UNITY_EDITOR
                     Debug.Log($"LoadScenesByBag Start scene:{scene.GetSceneName()},currentList:{WattingForLoadedCurrent.Count} allList:{WattingForLoadedAll.Count}");
 #endif

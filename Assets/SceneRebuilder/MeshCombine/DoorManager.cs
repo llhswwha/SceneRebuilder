@@ -20,8 +20,31 @@ public class DoorManager : SingletonBehaviour<DoorManager>
     //         return _instance;
     //     }
     // }
+    public GameObject OldTarget = null;
 
     public GameObject LocalTarget = null;
+
+    public void RecoverDoors()
+    {
+        EditorHelper.UnpackPrefab(OldTarget);
+        EditorHelper.UnpackPrefab(LocalTarget);
+        var doorRoots0 = UpdateDoors(OldTarget, null);
+        var doorRoots1 = UpdateDoors(LocalTarget, null);
+        foreach(var door0 in doorRoots0)
+        {
+            var door1 = doorRoots1.Find(i => i!=null && i.name == door0.name);
+            if (door1)
+            {
+                door0.transform.SetParent(door1.transform.parent);
+                GameObject.DestroyImmediate(door1.gameObject);
+            }
+            else
+            {
+                Debug.LogError($"RecoverDoors door1==null door0:{door0.name}");
+            }
+            
+        }
+    }
 
     public bool IsOnlyActive = false;
 

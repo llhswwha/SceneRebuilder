@@ -5,7 +5,7 @@ using UnityEngine;
 using System.Linq;
 using UnityEngine.SceneManagement;
 
-public class BuildingController : MonoBehaviour {
+public class BuildingController : DepNode {
 
-    public string NodeName;
+    //public string NodeName;
 }
