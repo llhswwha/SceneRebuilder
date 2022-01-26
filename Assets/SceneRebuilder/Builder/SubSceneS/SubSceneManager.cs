@@ -33,10 +33,10 @@ public class SubSceneManager : SingletonBehaviour<SubSceneManager>
 
     public SubScene_Base[] subScenes;
 
-    public List<SubScene_Base> GetScenes()
+    public SubSceneBag GetScenes()
     {
-        if (subScenes == null) return new List<SubScene_Base>();
-        return subScenes.ToList().Where(s => s != null).ToList();
+        if (subScenes == null) return new SubSceneBag();
+        return new SubSceneBag(subScenes);
     }
 
     public string RootDir = "SubScenes";

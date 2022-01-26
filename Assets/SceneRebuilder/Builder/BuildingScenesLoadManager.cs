@@ -192,20 +192,33 @@ public class BuildingScenesLoadManager : MonoBehaviour
         //string xml=XmlSerializableHelper.
     }
 
-    public string TestXmlFilePath = "d:\\BuildingSceneLoadSetting.xml";
+    //public string XmlFilePath = "d:\\BuildingSceneLoadSetting.xml";
+
+#if UNITY_WEBGL
+        public static string XmlFilePath = "\\BuildingSceneLoadSetting.XML";
+#else
+    public static string XmlFilePath = "\\..\\BuildingSceneLoadSetting.XML";
+#endif
+
+    public string GetXmlFilePath()
+    {
+        string path = Application.dataPath + XmlFilePath;
+        return path;
+    }
 
     [ContextMenu("SaveXml")]
     public void SaveXml()
     {
         string xml = SerializeHelper.GetXmlText(Setting);
         Debug.Log($"SaveXml xml:{xml}");
-        File.WriteAllText(TestXmlFilePath, xml);
+        File.WriteAllText(GetXmlFilePath(), xml);
     }
 
     [ContextMenu("LoadXml")]
     public void LoadXml()
     {
-        string xml=File.ReadAllText(TestXmlFilePath);
+        
+        string xml=File.ReadAllText(GetXmlFilePath());
         Debug.Log($"LoadXml xml:{xml}");
         BuildingSceneLoadSetting setting = SerializeHelper.LoadFromText<BuildingSceneLoadSetting>(xml);
         Setting = setting;
