@@ -656,6 +656,15 @@ public class PipeModelBase : MonoBehaviour,IComparable<PipeModelBase>
 
     public void RendererModel()
     {
+        MeshRenderer r = this.GetComponent<MeshRenderer>();
+        if (generateArg.pipeMaterial == null)
+        {
+            generateArg.pipeMaterial = r.sharedMaterial;
+        }
+        if (generateArg.weldMaterial == null)
+        {
+            generateArg.weldMaterial = r.sharedMaterial;
+        }
         RendererModel(generateArg, "_New");
     }
 

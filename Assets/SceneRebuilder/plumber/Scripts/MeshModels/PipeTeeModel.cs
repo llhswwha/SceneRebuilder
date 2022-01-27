@@ -28,29 +28,29 @@ public class PipeTeeModel : PipeElbowModel
         {
 
         }
+
+        KeyPointCount = trianglesList.Count;
         //trianglesList.RemoveNotCircle();
         if (trianglesList.Count == 7)
         {
             GetTeeInfo7(trianglesList);
             IsGetInfoSuccess = true;
-            KeyPointCount = 7;
 
         }
         else if (trianglesList.Count == 4)
         {
             GetTeeInfo4(trianglesList);
             IsGetInfoSuccess = true;
-            KeyPointCount = 4;
         }
         else
         {
-            KeyPointCount = trianglesList.Count;
+            
             IsGetInfoSuccess = false;
             Debug.LogError($">>>GetTeeInfo points.Count Error count:{trianglesList.Count} gameObject:{this.gameObject.name} sharedMinCount:{sharedMinCount} minRepeatPointDistance:{minRepeatPointDistance}");
             return;
         }
         meshTriangles.Dispose();
-        Debug.Log($">>>GetTeeInfo time:{DateTime.Now - start}");
+        Debug.Log($">>>GetTeeInfo time:{DateTime.Now - start} IsGetInfoSuccess:{IsGetInfoSuccess} KeyPointCount:{KeyPointCount}");
     }
     private void GetTeeInfo7(SharedMeshTrianglesList trianglesList)
     {
