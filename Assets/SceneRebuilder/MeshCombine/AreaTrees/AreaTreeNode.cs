@@ -999,37 +999,59 @@ public class AreaTreeNode : SubSceneCreater
     [ContextMenu("ShowNodes")]
     public void ShowNodes()
     {
-        if (IsNodeVisible == true) return;
+        try
+        {
+            if (IsNodeVisible == true) return;
 #if UNITY_EDITOR
-        Debug.Log("ShowNodes:" + this.name);
+            Debug.Log("ShowNodes:" + this.name);
 #endif
-        IsNodeVisible = true;
-        this.gameObject.SetActive(true);
-        foreach (AreaTreeNode node in Nodes)
-        {
-            if (node == null) continue;
-            node.ShowNodes();
-        }
-        if(CombinedRenderers==null)
-        {
-            Debug.LogError("AreaTreeNode.ShowNodes CombinedRenderers==null ："+ this.name+"|"+tree);
-        }
-        else{
-            if(scene_combined==null){
-                scene_combined=combindResult.GetComponent<SubScene_Base>();
-            }
-            if(scene_combined!=null && scene_combined.IsLoaded)
+            IsNodeVisible = true;
+            if(this.gameObject==null)
             {
-                foreach (var render in CombinedRenderers)
+                Debug.LogError("AreaTreeNode.ShowNodes this.gameObject==null ：" + this.name + "|" + tree);
+                return;
+            }
+            this.gameObject.SetActive(true);
+            foreach (AreaTreeNode node in Nodes)
+            {
+                if (node == null) continue;
+                node.ShowNodes();
+            }
+            if (CombinedRenderers == null)
+            {
+                Debug.LogError("AreaTreeNode.ShowNodes CombinedRenderers==null ：" + this.name + "|" + tree);
+            }
+            else
+            {
+                if (scene_combined == null)
                 {
-                    if(render==null){
-                        Debug.LogError("AreaTreeNode.ShowNodes CombinedRenderers render==null ："+ this.name+"|"+tree);
-                        continue;
+                    scene_combined = combindResult.GetComponent<SubScene_Base>();
+                }
+                if (scene_combined != null && scene_combined.IsLoaded)
+                {
+                    foreach (var render in CombinedRenderers)
+                    {
+                        if (render == null)
+                        {
+                            Debug.LogError("AreaTreeNode.ShowNodes CombinedRenderers render==null ：" + this.name + "|" + tree);
+                            continue;
+                        }
+                        if (render.gameObject == null)
+                        {
+                            Debug.LogError("AreaTreeNode.ShowNodes render.gameObject == null ：" + this.name + "|" + tree);
+                            continue;
+                        }
+                        render.gameObject.SetActive(true);
                     }
-                    render.gameObject.SetActive(true);
                 }
             }
         }
+        catch (Exception ex)
+        {
+
+            Debug.LogError($"AreaTreeNode.ShowNodes gameObject:{this.name} Exception:{ex}");
+        }
+        
     }
 
     public bool IsNodeVisible = true;
@@ -1038,6 +1060,10 @@ public class AreaTreeNode : SubSceneCreater
 
     public SubScene_Base GetCombinedScene()
     {
+        if (combindResult == null)
+        {
+            return scene_combined;
+        }
         if(scene_combined==null){
             scene_combined=combindResult.GetComponent<SubScene_Base>();
         }
@@ -1046,7 +1072,11 @@ public class AreaTreeNode : SubSceneCreater
 
     public SubScene_Base GetRendererScene()
     {
-        if(scene_combined==null){
+        if (combindResult == null)
+        {
+            return scene_combined.LinkedScene;
+        }
+        if (scene_combined==null){
             scene_combined=combindResult.GetComponent<SubScene_Base>();
         }
         return scene_combined.LinkedScene;
@@ -1055,37 +1085,45 @@ public class AreaTreeNode : SubSceneCreater
     [ContextMenu("HideNodes")]
     public void HideNodes()
     {
-        if (IsNodeVisible == false) return;
-        //Debug.Log("HideNodes:" + this.name);
-        IsNodeVisible = false;
-
-        // this.gameObject.SetActive(false);
-
-        for (int i = 0; i < Nodes.Count; i++)
+        try
         {
-            AreaTreeNode node = Nodes[i];
-            //if (node == null) continue;
-            if (node == null)
+            if (IsNodeVisible == false) return;
+            //Debug.Log("HideNodes:" + this.name);
+            IsNodeVisible = false;
+
+            // this.gameObject.SetActive(false);
+
+            for (int i = 0; i < Nodes.Count; i++)
             {
-                Debug.LogError($"HideNodes[{i}] node == null:" + this.name+"|"+tree);
-                continue;
-            }
-            node.HideNodes();
-        }
-        var scene1=GetCombinedScene();
-        if(scene1!=null && scene1.IsLoaded)
-        {
-            for (int i = 0; i < CombinedRenderers.Length; i++)
-            {
-                MeshRenderer render = CombinedRenderers[i];
-                if (render == null)
+                AreaTreeNode node = Nodes[i];
+                //if (node == null) continue;
+                if (node == null)
                 {
-                    Debug.LogError($"HideNodes[{i}] render == null:"+this.name+"|"+tree);
+                    Debug.LogError($"HideNodes[{i}] node == null:" + this.name + "|" + tree);
                     continue;
                 }
-                render.gameObject.SetActive(false);
+                node.HideNodes();
+            }
+            var scene1 = GetCombinedScene();
+            if (scene1 != null && scene1.IsLoaded)
+            {
+                for (int i = 0; i < CombinedRenderers.Length; i++)
+                {
+                    MeshRenderer render = CombinedRenderers[i];
+                    if (render == null)
+                    {
+                        Debug.LogError($"HideNodes[{i}] render == null:" + this.name + "|" + tree);
+                        continue;
+                    }
+                    render.gameObject.SetActive(false);
+                }
             }
         }
+        catch (Exception ex)
+        {
+            Debug.LogError($"AreaTreeNode.HideNode Exception gameObject:{this.name} ex:{ex}");
+        }
+        
     }
 
     Mesh meshAsset = null;
@@ -1153,7 +1191,7 @@ public class AreaTreeNode : SubSceneCreater
         //var scenes = CreatePartScene(contentType);
         //EditorCreateScenes(scenes, null);
 
-        SubSceneBag scenes = new SubSceneBag();
+        var scenes = new SubSceneBag();
 
         if(tree==null){
             

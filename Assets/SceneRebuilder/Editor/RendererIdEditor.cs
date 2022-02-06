@@ -28,7 +28,23 @@ public class RendererIdEditor : BaseEditor<RendererId>
         {
             EditorHelper.SelectObject(item.gameObject);
         }
-
+        if (GUILayout.Button("SelectParent"))
+        {
+            EditorHelper.SelectObject(item.transform.parent);
+        }
+        if (GUILayout.Button("SelectParent2"))
+        {
+            var p = item.transform.parent;
+            if (p == null)
+            {
+                EditorHelper.SelectObject(p);
+            }
+            else
+            {
+                EditorHelper.SelectObject(p.parent);
+            }
+            
+        }
         EditorGUILayout.BeginHorizontal();
         GUILayout.Label("Id:" + item.Id);
         GUILayout.Label("Children:" + item.childrenIds.Count);

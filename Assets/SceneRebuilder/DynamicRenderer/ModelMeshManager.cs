@@ -228,7 +228,7 @@ public class ModelClassDict<T>
         foreach(var key in GetKeys())
         {
             var list = Dict[key];
-            Debug.Log($"ModelClassDict PrintList key:{key} list:{list.Count}");
+            //Debug.Log($"ModelClassDict PrintList key:{key} list:{list.Count}");
         }
     }
 

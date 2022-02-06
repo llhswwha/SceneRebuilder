@@ -50,7 +50,7 @@ public class PipeTeeModel : PipeElbowModel
             return;
         }
         meshTriangles.Dispose();
-        Debug.Log($">>>GetTeeInfo time:{DateTime.Now - start} IsGetInfoSuccess:{IsGetInfoSuccess} KeyPointCount:{KeyPointCount}");
+        Debug.Log($">>>GetTeeInfo  time:{DateTime.Now - start} IsGetInfoSuccess:{IsGetInfoSuccess} KeyPointCount:{KeyPointCount}");
     }
     private void GetTeeInfo7(SharedMeshTrianglesList trianglesList)
     {

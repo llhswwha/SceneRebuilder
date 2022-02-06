@@ -41,6 +41,13 @@ namespace MathGeoLib
             Z = z;
         }
 
+        public Vector3S(Vector3 v)
+        {
+            X = v.x;
+            Y = v.y;
+            Z = v.z;
+        }
+
         public override string ToString()
         {
             //return $"({nameof(X)}: {X}, {nameof(Y)}: {Y}, {nameof(Z)}: {Z})";
@@ -664,6 +671,11 @@ namespace MathGeoLib
                 p4.GetVector3(), p5.GetVector3(), p7.GetVector3(), p6.GetVector3()
             };
             return points;
+        }
+
+        public void Enclose(Vector3 point)
+        {
+            MathGeoLibNativeMethods.obb_enclose(this, new Vector3S(point));
         }
 
         public void Enclose(Vector3S point)
