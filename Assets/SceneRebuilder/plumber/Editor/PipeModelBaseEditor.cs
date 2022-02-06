@@ -2,21 +2,41 @@ using System.Collections;
 using System.Collections.Generic;
 using UnityEditor;
 using UnityEngine;
+using static PipeFactoryEditor;
 
 public class PipeModelBaseEditor : Editor
 {
-    
+    public PipeGenerateArgEditorValues generateArgEditorValues;
+
     public void DrawBaseModelToolBar(PipeModelBase targetT)
     {
         GUILayout.BeginHorizontal();
-        if (GUILayout.Button("GetModelInfo"))
+
+        if (generateArgEditorValues == null)
+        {
+            generateArgEditorValues = new PipeGenerateArgEditorValues();
+        }
+        DrawGenerateArg(targetT.generateArg, generateArgEditorValues);
+        GUILayout.EndHorizontal();
+
+        GUILayout.BeginHorizontal();
+        if (GUILayout.Button("GetInfo"))
         {
             targetT.GetModelInfo();
         }
-        if (GUILayout.Button("RendererModel"))
+        if (GUILayout.Button("Renderer"))
         {
             targetT.RendererModel();
         }
+        //if (GUILayout.Button("RendererLOD3"))
+        //{
+        //    targetT.RendererModelLOD(3);
+        //}
+        if (GUILayout.Button("RendererLOD4"))
+        {
+            targetT.RendererModelLOD(4);
+        }
+
         if (GUILayout.Button("Replace"))
         {
             targetT.ReplaceOld();

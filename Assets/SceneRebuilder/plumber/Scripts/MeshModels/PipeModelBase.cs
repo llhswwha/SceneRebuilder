@@ -668,6 +668,161 @@ public class PipeModelBase : MonoBehaviour,IComparable<PipeModelBase>
         RendererModel(generateArg, "_New");
     }
 
+    private static int[] PipeSegmentsLOD4 = new int[] { 24, 12, 8, 6 };
+
+    //private int[] PipeSegmentsLOD3 = new int[] { 36, 12, 6 };
+
+    private static int[] ElbowSegmentsLOD4 = new int[] { 8, 6, 5, 4 };
+
+    //private int[] ElbowSegmentsLOD3 = new int[] { 8, 4, 2 };
+
+    //private float[] LODLevels_2 = new float[] { 0.5f, 0.2f, 0.001f };
+
+    private static float[] LODLevels_3 = new float[] { 0.5f, 0.2f, 0.05f, 0.001f };
+
+    public List<Transform> PipeWelds = new List<Transform>();
+
+    public void SetModelLOD(Transform parent,int[] pipeSegmentsLODs, int[] elbowSegmentsLODs)
+    {
+        bool generateWeld = generateArg.generateWeld;
+        List<Transform> welds = new List<Transform>();
+        for (int i = 0; i < pipeSegmentsLODs.Length; i++)
+        {
+            if (i == 0)
+            {
+                generateArg.generateWeld = generateWeld;
+            }
+            else
+            {
+                generateArg.generateWeld = false;
+            }
+            generateArg.pipeSegments = pipeSegmentsLODs[i];
+            generateArg.elbowSegments = elbowSegmentsLODs[i];
+            RendererModel(generateArg, "_LOD"+ i);
+            GameObject lod0 = ResultGo;
+            lod0.transform.SetParent(parent);
+
+            
+
+            if (i == 0)
+            {
+                List<Transform> children = new List<Transform>();
+                for (int j=0;j< lod0.transform.childCount;j++)
+                {
+                    children.Add(lod0.transform.GetChild(j));
+                }
+                foreach(var item in children)
+                {
+                    item.SetParent(null);
+                }
+                PipeWelds = new List<Transform>(children);
+
+
+            }
+            else
+            {
+                
+            }
+
+            ResultGo = null;
+        }
+        generateArg.generateWeld = generateWeld;
+
+        //LODManager.Instance.LODLevels_2 = LODLevels_2;
+        LODManager.Instance.LODLevels_3 = LODLevels_3;
+
+        //generateArg.pipeSegments = PipeSegmentsLOD4[1];
+        //RendererModel(generateArg, "_LOD1");
+        //GameObject lod1 = ResultGo;
+        //lod1.transform.SetParent(parent);
+        //ResultGo = null;
+
+        //generateArg.pipeSegments = PipeSegmentsLOD4[2];
+        //RendererModel(generateArg, "_LOD2");
+        //GameObject lod2 = ResultGo;
+        //lod2.transform.SetParent(parent);
+        //ResultGo = null;
+
+        //generateArg.pipeSegments = PipeSegmentsLOD4[3];
+        //RendererModel(generateArg, "_LOD3");
+        //GameObject lod3 = ResultGo;
+        //lod3.transform.SetParent(parent);
+        //ResultGo = null;
+
+        //LODManager.Instance.LODLevels_2 = LODLevels_2;
+        //LODManager.Instance.LODLevels_3 = LODLevels_3;
+    }
+
+    //public void RendererModelLOD3(Transform parent)
+    //{
+    //    generateArg.pipeSegments = 36;
+    //    RendererModel(generateArg, "_LOD0");
+    //    GameObject lod0 = ResultGo;
+    //    lod0.transform.SetParent(parent);
+    //    ResultGo = null;
+
+    //    generateArg.pipeSegments = 12;
+    //    RendererModel(generateArg, "_LOD2");
+    //    GameObject lod1 = ResultGo;
+    //    lod1.transform.SetParent(parent);
+    //    ResultGo = null;
+
+    //    generateArg.pipeSegments = 6;
+    //    RendererModel(generateArg, "_LOD3");
+    //    GameObject lod2 = ResultGo;
+    //    lod2.transform.SetParent(parent);
+    //    ResultGo = null;
+
+    //    generateArg.pipeSegments = 3;
+    //    RendererModel(generateArg, "_LOD4");
+    //    GameObject lod3 = ResultGo;
+    //    lod3.transform.SetParent(parent);
+    //    ResultGo = null;
+
+    //    //LODManager.Instance.LODLevels_2 = LODLevels_2;
+    //    LODManager.Instance.LODLevels_3 = LODLevels_3;
+    //}
+
+    public void RendererModelLOD(int lodCount)
+    {
+        MeshRenderer r = this.GetComponent<MeshRenderer>();
+        if (generateArg.pipeMaterial == null)
+        {
+            generateArg.pipeMaterial = r.sharedMaterial;
+        }
+        if (generateArg.weldMaterial == null)
+        {
+            generateArg.weldMaterial = r.sharedMaterial;
+        }
+
+        GameObject lodGroup = new GameObject(this.name);
+        lodGroup.transform.position = this.transform.position;
+        lodGroup.transform.SetParent(this.transform.parent);
+
+        //if (lodCount==4)
+        {
+            SetModelLOD(lodGroup.transform, PipeSegmentsLOD4, ElbowSegmentsLOD4);
+        }
+        //if (lodCount == 3)
+        //{
+        //    SetModelLOD(lodGroup.transform, PipeSegmentsLOD3, ElbowSegmentsLOD3);
+        //}
+
+        LODGroupInfo groupInfo=LODHelper.CreateLODs(lodGroup);
+        ResultGo = lodGroup;
+
+        foreach(var item in PipeWelds)
+        {
+            item.SetParent(lodGroup.transform);
+        }
+
+        groupInfo.AddRenderers(0, PipeWelds);
+
+        //LODHelper.CreateLODs(ResultGo);
+
+        //lodGroup.AddComponent<RendererId>();
+    }
+
     public virtual GameObject RendererModel(PipeGenerateArg arg, string afterName)
     {
         return null;

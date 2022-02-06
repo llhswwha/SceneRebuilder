@@ -966,6 +966,7 @@ T minTEx = null;
         else
         {
             //return LODHelper.CreateLODs(LODLevels_3);
+            Debug.LogError($"GetLODsN count error:{count}");
             return null;
         }
     }
@@ -1771,7 +1772,7 @@ public static class LODHelper
         return cName;
     }
 
-    public static LODGroup CreateLODs(GameObject root)
+    public static LODGroupInfo CreateLODs(GameObject root)
     {
         if (root == null) return null;
         ClearGroupInfo(root);
@@ -1780,13 +1781,29 @@ public static class LODHelper
 
         MeshRendererInfoList infoList = MeshRendererInfo.InitRenderers(root);
         
-        LODGroup groupNew = root.AddComponent<LODGroup>();
+        
         MeshRenderer[][] meshRenderersArray = infoList.GetRenderersArray();
         var lods = LODManager.Instance.GetLODsN(meshRenderersArray);
+        if (infoList == null)
+        {
+            Debug.LogError($"CreateLODs root:{root} infoList == null");
+            return null;
+        }
+        if (meshRenderersArray == null)
+        {
+            Debug.LogError($"CreateLODs root:{root} meshRenderersArray == null");
+            return null;
+        }
+        if (lods == null)
+        {
+            Debug.LogError($"CreateLODs root:{root} lods == null meshRenderersArray:{meshRenderersArray.Length}");
+            return null;
+        }
         Debug.Log($"CreateLODs root:{root} list:{infoList.Count}|{infoList.GetInfoString()},meshRenderers:{meshRenderersArray.Length} lods:{lods.Length}");
+        LODGroup groupNew = root.AddComponent<LODGroup>();
         groupNew.SetLODs(lods);
-        LODGroupInfo.Init(root);
-        return groupNew;
+        LODGroupInfo groupInfo=LODGroupInfo.Init(root);
+        return groupInfo;
     }
 
     private static void ClearGroupInfo(GameObject go)

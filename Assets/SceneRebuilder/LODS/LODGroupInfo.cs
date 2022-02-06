@@ -1,4 +1,5 @@
-﻿using System.Collections;
+﻿using System;
+using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 
@@ -42,7 +43,7 @@ public class LODGroupInfo : MonoBehaviour
             }
             else
             {
-                Debug.LogError($"CheckLOD0Scenes {this.name} scenes:{scenes.Length}");
+                Debug.LogWarning($"CheckLOD0Scenes {this.name} scenes:{scenes.Length}");
             }
         }
     }
@@ -398,5 +399,18 @@ public class LODGroupInfo : MonoBehaviour
         }
         info.GetScene();
         return info;
+    }
+
+    internal void AddRenderers(int v, List<Transform> pipeWelds)
+    {
+        var lods = LODGroup.GetLODs();
+        List<Renderer> renderers = new List<Renderer>(lods[v].renderers);
+        foreach(var item in pipeWelds)
+        {
+            Renderer renderer = item.GetComponent<Renderer>();
+            renderers.Add(renderer);
+        }
+        lods[v].renderers = renderers.ToArray();
+        LODGroup.SetLODs(lods);
     }
 }
