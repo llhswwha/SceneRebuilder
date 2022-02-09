@@ -20,6 +20,13 @@ public struct TransformInfo //: ScriptableObject
         return info;
     }
 
+    public TransformInfo(Transform t)
+    {
+        pos = new Point3Info(t.position);
+        rotation = new Point3Info(t.rotation.eulerAngles);
+        scale = new Point3Info(t.lossyScale);
+    }
+
     public void Init()
     {
         pos = new Point3Info();

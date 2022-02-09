@@ -24,6 +24,8 @@ public class PipeModelBaseEditor : Editor
         {
             targetT.GetModelInfo();
         }
+        GUILayout.Label("RenderOnStart", GUILayout.Width(90));
+        targetT.IsRendererOnStart = EditorGUILayout.Toggle(targetT.IsRendererOnStart,GUILayout.Width(15));
         if (GUILayout.Button("Renderer"))
         {
             targetT.RendererModel();
@@ -40,6 +42,11 @@ public class PipeModelBaseEditor : Editor
         if (GUILayout.Button("Replace"))
         {
             targetT.ReplaceOld();
+        }
+        if (GUILayout.Button("RemoveComponents"))
+        {
+            targetT.RemoveAllComponents();
+            //targetT.gameObject.SetActive(true);
         }
         GUILayout.EndHorizontal();
 
@@ -62,6 +69,10 @@ public class PipeModelBaseEditor : Editor
         if (GUILayout.Button("ClearChildren"))
         {
             targetT.ClearChildren();
+        }
+        if (GUILayout.Button("ClearDebugInfo"))
+        {
+            targetT.ClearDebugInfoGos();
         }
         if (GUILayout.Button("ClearGo"))
         {

@@ -90,10 +90,20 @@ public class OBBCollider : MonoBehaviour
 
     public OrientedBoundingBox OBB;
 
+    public void ClearDebugInfoGos()
+    {
+        DebugInfoRoot[] debugRoots = this.GetComponentsInChildren<DebugInfoRoot>(true);
+        foreach(var item in debugRoots)
+        {
+            GameObject.DestroyImmediate(item.gameObject);
+        }
+    }
+
     [ContextMenu("ShowObbInfo")]
     public bool ShowObbInfo(bool isGetObbEx)
     {
-        ClearChildren();
+        //ClearChildren();
+        ClearDebugInfoGos();
         GetObb(isGetObbEx);
         //if (GetObb(isGetObbEx) == null) return false ;
 
@@ -390,12 +400,22 @@ public class OBBCollider : MonoBehaviour
         obbGo.transform.position-=pos;
     }
 
+    //public List<GameObject> DebugInfoRootGos = new List<GameObject>();
+
+    public GameObject CreateDebugInfoRoot(string goName)
+    {
+        GameObject go0 = new GameObject(goName);
+        go0.AddComponent<DebugInfoRoot>();
+        go0.transform.SetParent(this.transform);
+        go0.transform.localPosition = Vector3.zero;
+        //DebugInfoRootGos.Add(go0);
+        return go0;
+    }
+
 
     public void ShowOBBBox()
     {
-        GameObject go0 = new GameObject("OBBCollider_OBBBox");
-        go0.transform.SetParent(this.transform);
-        go0.transform.position = Vector3.zero;
+        GameObject go0 = CreateDebugInfoRoot("OBBCollider_OBBBox");
 
         GameObject go=GameObject.CreatePrimitive(PrimitiveType.Cube);
         go.name=this.name+"_ObbBox";
@@ -416,7 +436,7 @@ public class OBBCollider : MonoBehaviour
 
         var p1 = this.transform.TransformPoint(OBB.Center);
 
-        CreatePoint(Vector3.zero,"Zero", go0.transform);
+        //CreatePoint(Vector3.zero,"Zero", go0.transform);
         //var center = OBB.Center;
         var center = p1;
         CreatePoint(center, "Center", go0.transform);
@@ -445,31 +465,29 @@ public class OBBCollider : MonoBehaviour
 
     public void ShowPipePoints()
     {
-        GameObject go = new GameObject("OBBCollider_PipePoints");
-        go.transform.SetParent(this.transform);
-        go.transform.localPosition = Vector3.zero;
+        GameObject go = CreateDebugInfoRoot("OBBCollider_PipePoints");
 
         var StartPoint = OBB.Up * OBB.Extent.y;
         var EndPoint = -OBB.Up * OBB.Extent.y;
 
-        CreatePoint(StartPoint, "StartPoint",go.transform);
-        CreatePoint(EndPoint, "EndPoint", go.transform);
+        CreateLocalPoint(StartPoint, "StartPoint",go.transform);
+        CreateLocalPoint(EndPoint, "EndPoint", go.transform);
 
         var P1 = OBB.Right * OBB.Extent.x;
         var P2 = -OBB.Forward * OBB.Extent.z;
         var P3 = -OBB.Right * OBB.Extent.x;
         var P4 = OBB.Forward * OBB.Extent.z;
 
-        CreatePoint(P1, "P1", go.transform);
-        CreatePoint(P2, "P2", go.transform);
-        CreatePoint(P3, "P3", go.transform);
-        CreatePoint(P4, "P4", go.transform);
+        CreateLocalPoint(P1, "P1", go.transform);
+        CreateLocalPoint(P2, "P2", go.transform);
+        CreateLocalPoint(P3, "P3", go.transform);
+        CreateLocalPoint(P4, "P4", go.transform);
 
         float p = 1.414213562373f;
-        CreatePoint(P1 * p, "P11", go.transform);
-        CreatePoint(P2 * p, "P22", go.transform);
-        CreatePoint(P3 * p, "P33", go.transform);
-        CreatePoint(P4 * p, "P44", go.transform);
+        CreateLocalPoint(P1 * p, "P11", go.transform);
+        CreateLocalPoint(P2 * p, "P22", go.transform);
+        CreateLocalPoint(P3 * p, "P33", go.transform);
+        CreateLocalPoint(P4 * p, "P44", go.transform);
     }
 
     //public Vector3 StartPoint = Vector3.zero;
@@ -515,12 +533,22 @@ public class OBBCollider : MonoBehaviour
 
     private GameObject CreateLocalPoint(Vector3 p, string n)
     {
+        return CreateLocalPoint(p, n, this.transform, lineSize);
+    }
+
+    private GameObject CreateLocalPoint(Vector3 p, string n, Transform pT)
+    {
+        return CreateLocalPoint(p, n, pT, lineSize);
+    }
+
+    public static GameObject CreateLocalPoint(Vector3 p, string n, Transform pT,float scale)
+    {
         GameObject g1 = GameObject.CreatePrimitive(PrimitiveType.Sphere);
 
-        g1.transform.SetParent(this.transform);
-        g1.transform.localPosition=p;
+        g1.transform.SetParent(pT);
+        g1.transform.localPosition = p;
         //g1.transform.position = p;
-        g1.transform.localScale = new Vector3(lineSize, lineSize, lineSize);
+        g1.transform.localScale = new Vector3(scale, scale, scale);
         g1.name = n;
 
         //g1.transform.SetParent(this.transform);
@@ -622,7 +650,7 @@ public class OBBCollider : MonoBehaviour
         TransformHelper.ShowLocalPoint(plane.pointC, lineSize, this.transform, planeObjRoot.transform).name = $"pointC:{plane.pointC}";
         TransformHelper.ShowLocalPoint(plane.pointD, lineSize, this.transform, planeObjRoot.transform).name = $"pointD:{plane.pointD}";
 
-        CreateLine(point, normalPoint, $"Line:{normal}", planeObjRoot.transform);
+        CreateLine(transform.TransformPoint(point), transform.TransformPoint(normalPoint), $"NormalLine:{normal}", planeObjRoot.transform);
 
         //GameObject planeObj = GameObject.CreatePrimitive(PrimitiveType.Quad);
         GameObject planeObj = GameObject.CreatePrimitive(PrimitiveType.Cube);
@@ -654,9 +682,7 @@ public class OBBCollider : MonoBehaviour
     public void DrawWireCube()
     {
 
-        GameObject go = new GameObject("OBBCollider_WireCube");
-        go.transform.SetParent(this.transform);
-        go.transform.position = Vector3.zero;
+        GameObject go = CreateDebugInfoRoot("OBBCollider_WireCube");
 
         var points1=OBB.CornerPoints();
 

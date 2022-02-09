@@ -519,6 +519,7 @@ public class MeshTriangles
     private GameObject CreateSubTestObj(string objName, Transform parent)
     {
         GameObject objTriangles = new GameObject(objName);
+        objTriangles.AddComponent<DebugInfoRoot>();
         objTriangles.transform.SetParent(parent);
         objTriangles.transform.localPosition = Vector3.zero;
         return objTriangles;

@@ -15,7 +15,7 @@ public class PipeFactoryEditor : BaseFoldoutEditor<PipeFactory>
     {
         base.OnEnable();
 
-       
+        minPipeSegmentsValuesStr = GetIntArrayStrings(minPipeSegmentsValues);
     }
 
     public class PipeGenerateArgEditorValues
@@ -100,6 +100,10 @@ public class PipeFactoryEditor : BaseFoldoutEditor<PipeFactory>
 
         GUILayout.BeginHorizontal();
         targetT.Target = ObjectField("Target", targetT.Target);
+        GUILayout.Label("RenderOnStart", GUILayout.Width(90));
+        targetT.IsRendererOnStart = EditorGUILayout.Toggle(targetT.IsRendererOnStart, GUILayout.Width(15));
+        GUILayout.Label("LoadXmlOnStart", GUILayout.Width(90));
+        targetT.IsLoadXmlOnStart = EditorGUILayout.Toggle(targetT.IsLoadXmlOnStart, GUILayout.Width(15));
         GUILayout.Label("Info:");
         GUILayout.Label(targetT.GetResultInfo(), GUILayout.Width(300));
         GUILayout.EndHorizontal();
@@ -174,17 +178,36 @@ public class PipeFactoryEditor : BaseFoldoutEditor<PipeFactory>
         {
             targetT.GetPipeInfos();
         }
+
         if (GUILayout.Button("3.Generate"))
         {
-            targetT.ClearGeneratedObjs();
-            targetT.RendererEachPipes();
-            targetT.MovePipes();
+            targetT.RendererEachPipesEx();
         }
+
         if (GUILayout.Button("4.CheckResults"))
         {
             targetT.CheckResults();
         }
         
+        GUILayout.EndHorizontal();
+
+        GUILayout.BeginHorizontal();
+        if (GUILayout.Button("SaveXml"))
+        {
+            targetT.SaveSceneDataXml();
+        }
+        if (GUILayout.Button("RemoveComponents"))
+        {
+            targetT.RemoveComponents();
+        }
+        if (GUILayout.Button("LoadXml"))
+        {
+            targetT.LoadSceneDataXml();
+        }
+        if (GUILayout.Button("ClearResult"))
+        {
+            targetT.ClearGeneratedObjs();
+        }
         GUILayout.EndHorizontal();
 
         GUILayout.BeginHorizontal();

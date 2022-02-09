@@ -121,7 +121,7 @@ public struct PipeElbowInfoJob : IPipeJob
         return data;
     }
 
-    private PipeElbowKeyPointData GetElbow2(SharedMeshTrianglesList list, MeshStructure mesh)
+    private PipeModelKeyPointData4 GetElbow2(SharedMeshTrianglesList list, MeshStructure mesh)
     {
         SharedMeshTrianglesList trianglesList = new SharedMeshTrianglesList(list);
         var distanceList = trianglesList.GetPlanePointDistanceList();
@@ -148,7 +148,7 @@ public struct PipeElbowInfoJob : IPipeJob
         Math3D.ClosestPointsOnTwoLines(out crossPoint1, out crossPoint2, endPoint1, normal1, endPoint2, normal2);
         Vector3 crossPoint12 = 0.5f * (crossPoint1 + crossPoint2);
 
-        PipeElbowKeyPointData info = new PipeElbowKeyPointData();
+        PipeModelKeyPointData4 info = new PipeModelKeyPointData4();
         //EndPointOut1 = EndPointIn1- normal1 * PipeRadius* PipeLineOffset;
         //EndPointOut2 = EndPointIn2+ normal2 * PipeRadius * PipeLineOffset;
         info.EndPointOut1 = endPoint1;
@@ -160,8 +160,8 @@ public struct PipeElbowInfoJob : IPipeJob
         info.EndPointOut1.w = PipeRadius;
         info.EndPointOut2.w = PipeRadius;
 
-        info.Line1 = new PipeLineData(info.EndPointOut1, info.EndPointIn1, normal1);
-        info.Line2 = new PipeLineData(info.EndPointIn2, info.EndPointOut2, normal2);
+        //info.Line1 = new PipeLineData(info.EndPointOut1, info.EndPointIn1, normal1);
+        //info.Line2 = new PipeLineData(info.EndPointIn2, info.EndPointOut2, normal2);
 
         //TransformHelper.ShowLocalPoint(info.EndPointOut1, PointScale, this.transform, null).name = "Elbow2_OutPoint1";
         //TransformHelper.ShowLocalPoint(info.EndPointOut2, PointScale, this.transform, null).name = "Elbow2_OutPoint2";
@@ -209,9 +209,9 @@ public struct PipeElbowInfoJob : IPipeJob
     //    return info;
     //}
 
-    private PipeElbowKeyPointData GetElbow4(SharedMeshTrianglesList list)
+    private PipeModelKeyPointData4 GetElbow4(SharedMeshTrianglesList list)
     {
-        PipeElbowKeyPlaneInfo keyPlanes = PipeElbowKeyPlaneInfo.GetElbow4Planes(list);
+        PipeModelKeyPlaneInfo4 keyPlanes = PipeModelKeyPlaneInfo4.GetElbow4Planes(list);
         var info2 = keyPlanes.GetKeyPointsData();
         //ShowKeyPoints(info2, "Elbow4_");
         return info2;
@@ -226,9 +226,9 @@ public struct PipeElbowInfoJob : IPipeJob
 public struct PipeElbowData
 {
 
-    public PipeElbowKeyPointData KeyPointInfo;
+    public PipeModelKeyPointData4 KeyPointInfo;
 
-    public PipeElbowKeyPointData InnerKeyPointInfo;
+    public PipeModelKeyPointData4 InnerKeyPointInfo;
 
     public bool IsSpecial;
 

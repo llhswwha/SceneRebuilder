@@ -1,3 +1,4 @@
+using Base.Common;
 using MathGeoLib;
 using System;
 using System.Collections;
@@ -230,9 +231,12 @@ public class PipeBuilder : MonoBehaviour
                 {
                     mf2.sharedMaterials = mf1.sharedMaterials;
                 }
-
-                generator.pipeMaterial = mf1.sharedMaterial;
-                go.generateArg.pipeMaterial = mf1.sharedMaterial;
+                if (mf1 != null)
+                {
+                    generator.pipeMaterial = mf1.sharedMaterial;
+                    go.generateArg.pipeMaterial = mf1.sharedMaterial;
+                }
+                
             }
 
             if (IsCopyComponents)
@@ -557,7 +561,7 @@ public class PipeBuilder : MonoBehaviour
             PipeLineModel pipeModel = GetPipeModelInfo<PipeLineModel>(t, false);
             var lineData = PipeLineInfoJob.Result[i];
             //Debug.Log($"LineModel[{i}] model:{pipeModel.name} lineData:{lineData}");
-            pipeModel.SetLineData(lineData);
+            pipeModel.SetModelData(lineData);
             PipeLines.Add(pipeModel);
             AddPipeModel(pipeModel);
         }
@@ -915,6 +919,79 @@ public class PipeBuilder : MonoBehaviour
             jobs.Add(job);
         }
         return jobs;
+    }
+
+    public void SaveSceneDataXml(string targetName)
+    {
+        SceneSaveData data = new SceneSaveData();
+        string newModelInfo = "\\..\\SceneSaveData_"+ targetName+".xml";
+        string path = Application.dataPath + newModelInfo;
+        foreach(PipeLineModel model in PipeLines)
+        {
+            data.AddData(model.GetSaveData());
+        }
+        foreach (PipeElbowModel model in PipeElbows)
+        {
+            data.AddData(model.GetSaveData());
+        }
+        SerializeHelper.Save(data, path);
+        Debug.Log($"SaveSceneDataXml path:{newModelInfo}");
+    }
+
+    public void LoadSceneDataXml(string targetName)
+    {
+        string newModelInfo = "\\..\\SceneSaveData_" + targetName + ".xml";
+        string path = Application.dataPath + newModelInfo;
+        SceneSaveData data = SerializeHelper.LoadFromFile<SceneSaveData>(path);
+        LoadSceneData(data);
+        RendererPipesEx();
+        ProgressBarHelper.ClearProgressBar();
+        Debug.Log($"LoadSceneDataXml path:{newModelInfo} data:{data}");
+    }
+
+    public void LoadSceneData(SceneSaveData sceneData)
+    {
+        IdDictionary.InitInfos();
+        foreach(PipeLineSaveData item in sceneData.PipeLines)
+        {
+            GameObject go=IdDictionary.GetGo(item.Id);
+            if (go == null)
+            {
+                Debug.LogError($"GenerateFromSceneData go == null item:{item}");
+                continue;
+            }
+            PipeLineModel model = go.GetComponent<PipeLineModel>();
+            if (model == null)
+            {
+                Debug.LogError($"GenerateFromSceneData model == null go:{go}");
+                continue;
+            }
+            model.SetSaveData(item);
+        }
+        foreach (PipeElbowSaveData item in sceneData.PipeElbows)
+        {
+            GameObject go = IdDictionary.GetGo(item.Id);
+            if (go == null)
+            {
+                Debug.LogError($"GenerateFromSceneData go == null item:{item}");
+                continue;
+            }
+            PipeElbowModel model = go.GetComponent<PipeElbowModel>();
+            if (model == null)
+            {
+                Debug.LogError($"GenerateFromSceneData model == null go:{go}");
+                continue;
+            }
+            model.SetSaveData(item);
+        }
+    }
+
+    public void RemoveComponents()
+    {
+        foreach(var item in PipeModels)
+        {
+            item.RemoveAllComponents();
+        }
     }
 
     public void GetPipeInfosEx()

@@ -56,7 +56,8 @@ public class PipeFactory : SingletonBehaviour<PipeFactory>
         foreach (var pipe in pipeModels)
         {
             if (pipe == null) continue;
-            pipe.ClearChildren();
+            //pipe.ClearChildren();
+            pipe.ClearDebugInfoGos();
             GameObject.DestroyImmediate(pipe);
         }
 
@@ -629,6 +630,22 @@ public class PipeFactory : SingletonBehaviour<PipeFactory>
         ProgressBarHelper.ClearProgressBar();
     }
 
+    public void SaveSceneDataXml()
+    {
+        newBuilder.SaveSceneDataXml(this.Target.name);
+    }
+
+    public void LoadSceneDataXml()
+    {
+        newBuilder.LoadSceneDataXml(this.Target.name);
+        
+    }
+
+    public void RemoveComponents()
+    {
+        newBuilder.RemoveComponents();
+    }
+
     [ContextMenu("GetObbInfJobs")]
     public void GetObbInfosJob()
     {
@@ -661,6 +678,30 @@ public class PipeFactory : SingletonBehaviour<PipeFactory>
     {
         newBuilder.IsCreatePipeRuns = true;
         newBuilder.CreatePipeRunList();
+    }
+
+    public bool IsRendererOnStart = false;
+
+    public bool IsLoadXmlOnStart = false;
+
+    void Start()
+    {
+        if(IsLoadXmlOnStart)
+        {
+            LoadSceneDataXml();
+        }
+        else if(IsRendererOnStart)
+        {
+            RendererEachPipesEx();
+        }
+    }
+
+    [ContextMenu("RendererEachPipesEx")]
+    public void RendererEachPipesEx()
+    {
+        ClearGeneratedObjs();
+        RendererEachPipes();
+        MovePipes();
     }
 
     [ContextMenu("RendererEachPipes")]

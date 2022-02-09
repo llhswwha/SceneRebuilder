@@ -1,6 +1,7 @@
 using System;
 using System.Collections;
 using System.Collections.Generic;
+using System.Xml.Serialization;
 using UnityEngine;
 
 [Serializable]
@@ -9,13 +10,13 @@ public class PipeLineInfo
     //public Vector4 StartPoint = Vector3.zero;
     //public Vector4 EndPoint = Vector3.zero;
 
-    public Vector4 StartPoint { get; private set; }
-    public Vector4 EndPoint { get; private set; }
+    public Vector4 StartPoint;
+    public Vector4 EndPoint;
 
-    public Vector3 Direction { get; private set; }
+    public Vector3 Direction;
 
     //public PipeLineData=
-
+    [XmlIgnore]
     public Transform transform;
 
     public PipeLineInfo()
@@ -28,7 +29,8 @@ public class PipeLineInfo
         this.StartPoint = data.StartPoint;
         this.EndPoint = data.EndPoint;
         this.transform = t;
-        Direction = StartPoint - EndPoint;
+        //Direction = StartPoint - EndPoint;
+        Direction = data.Direction;
     }
 
     public PipeLineInfo(Vector4 p1,Vector4 p2,Transform t=null)

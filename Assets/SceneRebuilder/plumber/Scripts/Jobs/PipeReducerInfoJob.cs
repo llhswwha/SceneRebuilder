@@ -117,7 +117,7 @@ public struct PipeReducerInfoJob : IPipeJob
                 list2.Add(trianglesList[1]);
                 //list2.Sort((a, b) => { return b.TriangleCount.CompareTo(a.TriangleCount); });
 
-                data.KeyPointInfo = new PipeElbowKeyPointData(list2[0].GetCenter4(), list2[1].GetCenter4(), list2[1].GetMinCenter4(), trianglesList[2].GetCenter4());
+                data.KeyPointInfo = new PipeModelKeyPointData4(list2[0].GetCenter4(), list2[1].GetCenter4(), list2[1].GetMinCenter4(), trianglesList[2].GetCenter4());
 
                 data.StartPoint = list2[0].GetCenter4();
                 data.EndPoint = trianglesList[2].GetCenter4();
@@ -182,7 +182,7 @@ public struct PipeReducerData
     public bool IsGetInfoSuccess;
     public int KeyPointCount;
 
-    public PipeElbowKeyPointData KeyPointInfo;
+    public PipeModelKeyPointData4 KeyPointInfo;
 
     public override string ToString()
     {

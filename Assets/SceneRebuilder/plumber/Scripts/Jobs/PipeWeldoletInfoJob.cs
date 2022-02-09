@@ -59,7 +59,7 @@ public struct PipeWeldoletInfoJob : IPipeJob
             //TransformHelper.ShowLocalPoint(p1, PointScale, this.transform, null);
             //TransformHelper.ShowLocalPoint(p3, PointScale, this.transform, null);
 
-            data.KeyPointInfo = new PipeElbowKeyPointData(p3, p1, circleC.GetCenter4WithOff(circleWidth), circleC.GetCenter4WithOff(-circleWidth));
+            data.KeyPointInfo = new PipeModelKeyPointData4(p3, p1, circleC.GetCenter4WithOff(circleWidth), circleC.GetCenter4WithOff(-circleWidth));
 
             data.IsGetInfoSuccess = true;
         }
@@ -74,7 +74,7 @@ public struct PipeWeldoletInfoJob : IPipeJob
             //TransformHelper.ShowLocalPoint(p1, PointScale, this.transform, null);
             //TransformHelper.ShowLocalPoint(p3, PointScale, this.transform, null);
 
-            data.KeyPointInfo = new PipeElbowKeyPointData(p3, p1, circle2.GetCenter4WithOff(circleWidth), circle2.GetCenter4WithOff(-circleWidth));
+            data.KeyPointInfo = new PipeModelKeyPointData4(p3, p1, circle2.GetCenter4WithOff(circleWidth), circle2.GetCenter4WithOff(-circleWidth));
 
             data.IsGetInfoSuccess = true;
         }
@@ -115,7 +115,7 @@ public struct PipeWeldoletInfoJob : IPipeJob
 public struct PipeWeldoletData
 {
 
-    public PipeElbowKeyPointData KeyPointInfo;
+    public PipeModelKeyPointData4 KeyPointInfo;
 
     //public PipeElbowKeyPointData InnerKeyPointInfo;
 

@@ -4,7 +4,7 @@ using System.Collections.Generic;
 using UnityEngine;
 
 [Serializable]
-public struct PipeElbowKeyPlaneInfo
+public struct PipeModelKeyPlaneInfo4
 {
     public SharedMeshTriangles EndPointIn1;
     public SharedMeshTriangles EndPointOut1;
@@ -16,24 +16,24 @@ public struct PipeElbowKeyPlaneInfo
         return $"[Int1:{EndPointIn1} Out1:{EndPointOut1} In2:{EndPointIn2} Out2:{EndPointOut2}]";
     }
 
-    internal PipeElbowKeyPointInfo GetKeyPoints()
+    internal PipeModelKeyPointInfo4 GetKeyPoints()
     {
         var out1 = EndPointOut1.GetCenter4();
         var in1 = EndPointIn1.GetCenter4();
         var out2 = EndPointOut2.GetCenter4();
         var in2 = EndPointIn2.GetCenter4();
-        PipeElbowKeyPointInfo points = new PipeElbowKeyPointInfo(out1, in1,
+        PipeModelKeyPointInfo4 points = new PipeModelKeyPointInfo4(out1, in1,
             out2, in2);
         return points;
     }
 
-    internal PipeElbowKeyPointData GetKeyPointsData()
+    internal PipeModelKeyPointData4 GetKeyPointsData()
     {
         var out1 = EndPointOut1.GetCenter4();
         var in1 = EndPointIn1.GetCenter4();
         var out2 = EndPointOut2.GetCenter4();
         var in2 = EndPointIn2.GetCenter4();
-        PipeElbowKeyPointData points = new PipeElbowKeyPointData(out1, in1,
+        PipeModelKeyPointData4 points = new PipeModelKeyPointData4(out1, in1,
             out2, in2);
         return points;
     }
@@ -46,7 +46,7 @@ public struct PipeElbowKeyPlaneInfo
     //    EndPointOut2 = new SharedMeshTriangles();
     //}
 
-    public PipeElbowKeyPlaneInfo(SharedMeshTriangles out1, SharedMeshTriangles in1, SharedMeshTriangles out2, SharedMeshTriangles in2)
+    public PipeModelKeyPlaneInfo4(SharedMeshTriangles out1, SharedMeshTriangles in1, SharedMeshTriangles out2, SharedMeshTriangles in2)
     {
         EndPointOut1 = out1;
         EndPointIn1 = in1;
@@ -54,7 +54,7 @@ public struct PipeElbowKeyPlaneInfo
         EndPointIn2 = in2;
     }
 
-    public PipeElbowKeyPlaneInfo(PipeElbowKeyPlaneData data)
+    public PipeModelKeyPlaneInfo4(PipeElbowKeyPlaneData data)
     {
         EndPointOut1 = new SharedMeshTriangles(data.EndPointOut1);
         EndPointIn1 = new SharedMeshTriangles(data.EndPointIn1);
@@ -62,11 +62,11 @@ public struct PipeElbowKeyPlaneInfo
         EndPointIn2 = new SharedMeshTriangles(data.EndPointIn2);
     }
 
-    public static PipeElbowKeyPlaneInfo GetElbow4Planes(SharedMeshTrianglesList list)
+    public static PipeModelKeyPlaneInfo4 GetElbow4Planes(SharedMeshTrianglesList list)
     {
         SharedMeshTrianglesList trianglesList = new SharedMeshTrianglesList(list);
 
-        PipeElbowKeyPlaneInfo info = new PipeElbowKeyPlaneInfo();
+        PipeModelKeyPlaneInfo4 info = new PipeModelKeyPlaneInfo4();
 
         var distanceList = trianglesList.GetPlanePointDistanceList();
 
@@ -100,7 +100,7 @@ public struct PipeElbowKeyPlaneData
         return $"[Int1:{EndPointIn1} Out1:{EndPointOut1} In2:{EndPointIn2} Out2:{EndPointOut2}]";
     }
 
-    public PipeElbowKeyPlaneData(PipeElbowKeyPlaneInfo info)
+    public PipeElbowKeyPlaneData(PipeModelKeyPlaneInfo4 info)
     {
         EndPointOut1 = new SharedMeshTrianglesData(info.EndPointOut1);
         EndPointIn1 = new SharedMeshTrianglesData(info.EndPointIn1);
@@ -116,13 +116,13 @@ public struct PipeElbowKeyPlaneData
         EndPointIn2 = new SharedMeshTrianglesData(in2);
     }
 
-    internal PipeElbowKeyPointData GetKeyPointsData()
+    internal PipeModelKeyPointData4 GetKeyPointsData()
     {
         var out1 = EndPointOut1.GetCenter4();
         var in1 = EndPointIn1.GetCenter4();
         var out2 = EndPointOut2.GetCenter4();
         var in2 = EndPointIn2.GetCenter4();
-        PipeElbowKeyPointData points = new PipeElbowKeyPointData(out1, in1,
+        PipeModelKeyPointData4 points = new PipeModelKeyPointData4(out1, in1,
             out2, in2);
         return points;
     }

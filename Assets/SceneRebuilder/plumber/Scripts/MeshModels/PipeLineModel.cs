@@ -129,130 +129,136 @@ public class PipeLineModel : PipeModelBase
 
         LineInfo = new PipeLineInfo(job.lineData,this.transform);
 
-        ClearChildren();
-        CreateLocalPoint(LineInfo.StartPoint, $"StartPoint1_{LineInfo.StartPoint.w}", this.transform);
-        CreateLocalPoint(LineInfo.EndPoint, $"EndPoint1_{LineInfo.EndPoint.w}", this.transform);
+        //ClearChildren();
+        ClearDebugInfoGos();
+        var keyPoints = CreateKeyPointsGo();
+        CreateLocalPoint(LineInfo.StartPoint, $"StartPoint1_{LineInfo.StartPoint.w}", keyPoints.transform);
+        CreateLocalPoint(LineInfo.EndPoint, $"EndPoint1_{LineInfo.EndPoint.w}", keyPoints.transform);
     }
 
-    private static void GetKeyPoints(OrientedBoundingBox OBB,GameObject go)
-    {
-        Vector3 ObbExtent = OBB.Extent;
+    //private static void GetKeyPoints(OrientedBoundingBox OBB,GameObject go)
+    //{
+    //    Vector3 ObbExtent = OBB.Extent;
 
-        Vector3 startPoint = OBB.Up * ObbExtent.y;
-        Vector3 endPoint = -OBB.Up * ObbExtent.y;
+    //    Vector3 startPoint = OBB.Up * ObbExtent.y;
+    //    Vector3 endPoint = -OBB.Up * ObbExtent.y;
 
-        GameObject planInfoRoot = new GameObject("PipeModel_PlaneInfo");
-        planInfoRoot.transform.SetParent(go.transform);
-        planInfoRoot.transform.localPosition = Vector3.zero;
+    //    GameObject planInfoRoot = new GameObject("PipeModel_PlaneInfo");
+    //    planInfoRoot.transform.SetParent(go.transform);
+    //    planInfoRoot.transform.localPosition = Vector3.zero;
 
-        //CreateLocalPoint(StartPoint, "StartPoint1", go.transform);
-        //CreateLocalPoint(EndPoint, "EndPoint1", go.transform);
-        var rendererInfo = MeshRendererInfo.GetInfo(go.gameObject);
-        Vector3[] vs = rendererInfo.GetVertices();
-        var VertexCount = vs.Length;
+    //    //CreateLocalPoint(StartPoint, "StartPoint1", go.transform);
+    //    //CreateLocalPoint(EndPoint, "EndPoint1", go.transform);
+    //    var rendererInfo = MeshRendererInfo.GetInfo(go.gameObject);
+    //    Vector3[] vs = rendererInfo.GetVertices();
+    //    var VertexCount = vs.Length;
 
-        //2.Planes
-        PlaneInfo[] planeInfos = OBB.GetPlaneInfos();
-        List<VerticesToPlaneInfo> verticesToPlaneInfos_All = new List<VerticesToPlaneInfo>();
-        var verticesToPlaneInfos = new List<VerticesToPlaneInfo>();
-        for (int i = 0; i < planeInfos.Length; i++)
-        {
-            PlaneInfo plane = (PlaneInfo)planeInfos[i];
-            //VerticesToPlaneInfo v2p =GetVerticesToPlaneInfo(vs, plane, false);
-            VerticesToPlaneInfo v2p = new VerticesToPlaneInfo(vs, plane, false);
-            verticesToPlaneInfos_All.Add(v2p);
-            //oBBCollider.ShowPlaneInfo(plane, i, planInfoRoot, v2p);
-            if (v2p.IsCircle() == false)
-            {
-                continue;
-            }
-            verticesToPlaneInfos.Add(v2p);
-            var isC = v2p.IsCircle();
-        }
-        verticesToPlaneInfos.Sort();
+    //    //2.Planes
+    //    PlaneInfo[] planeInfos = OBB.GetPlaneInfos();
+    //    List<VerticesToPlaneInfo> verticesToPlaneInfos_All = new List<VerticesToPlaneInfo>();
+    //    var verticesToPlaneInfos = new List<VerticesToPlaneInfo>();
+    //    for (int i = 0; i < planeInfos.Length; i++)
+    //    {
+    //        PlaneInfo plane = (PlaneInfo)planeInfos[i];
+    //        //VerticesToPlaneInfo v2p =GetVerticesToPlaneInfo(vs, plane, false);
+    //        VerticesToPlaneInfo v2p = new VerticesToPlaneInfo(vs, plane, false);
+    //        verticesToPlaneInfos_All.Add(v2p);
+    //        //oBBCollider.ShowPlaneInfo(plane, i, planInfoRoot, v2p);
+    //        if (v2p.IsCircle() == false)
+    //        {
+    //            continue;
+    //        }
+    //        verticesToPlaneInfos.Add(v2p);
+    //        var isC = v2p.IsCircle();
+    //    }
+    //    verticesToPlaneInfos.Sort();
 
-        if (verticesToPlaneInfos.Count < 1)
-        {
-            //IsGetInfoSuccess = false;
-            Debug.LogError($"GetModelInfo verticesToPlaneInfos.Count < 1 count:{verticesToPlaneInfos.Count},gameObject:{go.name}");
-            return;
-        }
+    //    if (verticesToPlaneInfos.Count < 1)
+    //    {
+    //        //IsGetInfoSuccess = false;
+    //        Debug.LogError($"GetModelInfo verticesToPlaneInfos.Count < 1 count:{verticesToPlaneInfos.Count},gameObject:{go.name}");
+    //        return;
+    //    }
 
-        VerticesToPlaneInfo startPlane = verticesToPlaneInfos[0];
-        VerticesToPlaneInfo endPlane = null;
-        if (verticesToPlaneInfos.Count >= 2)
-        {
-            endPlane = verticesToPlaneInfos[1];
-        }
-        else
-        {
-            Debug.LogWarning($"GetModelInfo verticesToPlaneInfos.Count == 1 count:{verticesToPlaneInfos.Count},gameObject:{go.name}");
-            endPlane = GetEndPlane(startPlane, verticesToPlaneInfos_All);
-        }
+    //    VerticesToPlaneInfo startPlane = verticesToPlaneInfos[0];
+    //    VerticesToPlaneInfo endPlane = null;
+    //    if (verticesToPlaneInfos.Count >= 2)
+    //    {
+    //        endPlane = verticesToPlaneInfos[1];
+    //    }
+    //    else
+    //    {
+    //        Debug.LogWarning($"GetModelInfo verticesToPlaneInfos.Count == 1 count:{verticesToPlaneInfos.Count},gameObject:{go.name}");
+    //        endPlane = GetEndPlane(startPlane, verticesToPlaneInfos_All);
+    //    }
 
 
-        var P1 = OBB.Right * ObbExtent.x;
-        var P2 = -OBB.Forward * ObbExtent.z;
-        var P3 = -OBB.Right * ObbExtent.x;
-        var P4 = OBB.Forward * ObbExtent.z;
-        var P5 = OBB.Up * ObbExtent.y;
-        var P6 = -OBB.Up * ObbExtent.y;
-        var Size = new Vector3(ObbExtent.x, ObbExtent.y, ObbExtent.z);
+    //    var P1 = OBB.Right * ObbExtent.x;
+    //    var P2 = -OBB.Forward * ObbExtent.z;
+    //    var P3 = -OBB.Right * ObbExtent.x;
+    //    var P4 = OBB.Forward * ObbExtent.z;
+    //    var P5 = OBB.Up * ObbExtent.y;
+    //    var P6 = -OBB.Up * ObbExtent.y;
+    //    var Size = new Vector3(ObbExtent.x, ObbExtent.y, ObbExtent.z);
 
-        CircleInfo startCircle = startPlane.GetCircleInfo();
-        if (startCircle == null)
-        {
-            Debug.LogError($"GetModelInfo startCircle == null gameObject:{go.gameObject.name}");
-            //IsGetInfoSuccess = false;
+    //    CircleInfo startCircle = startPlane.GetCircleInfo();
+    //    if (startCircle == null)
+    //    {
+    //        Debug.LogError($"GetModelInfo startCircle == null gameObject:{go.gameObject.name}");
+    //        //IsGetInfoSuccess = false;
 
-            //CreateLocalPoint(startPlane.Point.planeCenter, $"Error1_StartPoint1", planInfoRoot.transform);
-            //CreateLocalPoint(endPlane.Point.planeCenter, "Error1_EndPoint1", planInfoRoot.transform);
-            return;
-        }
-        startPoint = startCircle.Center;
-        CircleInfo endCircle = endPlane.GetCircleInfo();
-        if (endCircle == null)
-        {
-            Debug.LogError($"GetModelInfo endCircle == null gameObject:{go.gameObject.name}");
-            //IsGetInfoSuccess = false;
-            //CreateLocalPoint(startPlane.Point.planeCenter, "Error3_StartPoint2", planInfoRoot.transform);
-            //CreateLocalPoint(endPlane.Point.planeCenter, "Error3_EndPoint2", planInfoRoot.transform);
-            return;
-        }
-        endPoint = endCircle.Center;
+    //        //CreateLocalPoint(startPlane.Point.planeCenter, $"Error1_StartPoint1", planInfoRoot.transform);
+    //        //CreateLocalPoint(endPlane.Point.planeCenter, "Error1_EndPoint1", planInfoRoot.transform);
+    //        return;
+    //    }
+    //    startPoint = startCircle.Center;
+    //    CircleInfo endCircle = endPlane.GetCircleInfo();
+    //    if (endCircle == null)
+    //    {
+    //        Debug.LogError($"GetModelInfo endCircle == null gameObject:{go.gameObject.name}");
+    //        //IsGetInfoSuccess = false;
+    //        //CreateLocalPoint(startPlane.Point.planeCenter, "Error3_StartPoint2", planInfoRoot.transform);
+    //        //CreateLocalPoint(endPlane.Point.planeCenter, "Error3_EndPoint2", planInfoRoot.transform);
+    //        return;
+    //    }
+    //    endPoint = endCircle.Center;
 
-        var PipeRadius1 = startCircle.Radius;
-        var PipeRadius2 = endCircle.Radius;
+    //    var PipeRadius1 = startCircle.Radius;
+    //    var PipeRadius2 = endCircle.Radius;
 
-        var EndPoints = new List<Vector3>() { startPoint, endPoint };
+    //    var EndPoints = new List<Vector3>() { startPoint, endPoint };
 
-        //CreateLocalPoint(startPoint, $"StartPoint1_{startCircle.Radius}_{startCircle.Points.Count}", planInfoRoot.transform);
-        //CreateLocalPoint(endPoint, $"EndPoint1_{endCircle.Radius}_{endCircle.Points.Count}", planInfoRoot.transform);
+    //    //CreateLocalPoint(startPoint, $"StartPoint1_{startCircle.Radius}_{startCircle.Points.Count}", planInfoRoot.transform);
+    //    //CreateLocalPoint(endPoint, $"EndPoint1_{endCircle.Radius}_{endCircle.Points.Count}", planInfoRoot.transform);
 
-        var PipeRadius = 0f;
-        if (PipeRadius1 > PipeRadius2)
-        {
-            PipeRadius = PipeRadius1;
-        }
-        else
-        {
-            PipeRadius = PipeRadius2;
-        }
+    //    var PipeRadius = 0f;
+    //    if (PipeRadius1 > PipeRadius2)
+    //    {
+    //        PipeRadius = PipeRadius1;
+    //    }
+    //    else
+    //    {
+    //        PipeRadius = PipeRadius2;
+    //    }
 
-        var PipeLength = Vector3.Distance(startPoint, endPoint);
-        PipeLineInfo LineInfo = new PipeLineInfo(startPoint, endPoint);
-        //LineInfo.StartPoint = startPoint;
-        //LineInfo.EndPoint = endPoint;
+    //    var PipeLength = Vector3.Distance(startPoint, endPoint);
+    //    PipeLineInfo LineInfo = new PipeLineInfo(startPoint, endPoint);
+    //    //LineInfo.StartPoint = startPoint;
+    //    //LineInfo.EndPoint = endPoint;
 
-        Vector4 ModelStartPoint = startPoint;
-        ModelStartPoint.w = PipeRadius;
-        Vector4 ModelEndPoint = endPoint;
-        ModelEndPoint.w = PipeRadius;
-    }
+    //    Vector4 ModelStartPoint = startPoint;
+    //    ModelStartPoint.w = PipeRadius;
+    //    Vector4 ModelEndPoint = endPoint;
+    //    ModelEndPoint.w = PipeRadius;
+    //}
+
+
 
     public override void GetModelInfo()
     {
-        ClearChildren();
+        //ClearChildren();
+
+        ClearDebugInfoGos();
 
         OBBCollider oBBCollider = this.gameObject.GetComponent<OBBCollider>();
         if (oBBCollider == null)
@@ -271,6 +277,7 @@ public class PipeLineModel : PipeModelBase
         Vector4 endPoint = -OBB.Up * ObbExtent.y;
 
         GameObject planInfoRoot = new GameObject("PipeModel_PlaneInfo");
+        planInfoRoot.AddComponent<DebugInfoRoot>();
         planInfoRoot.transform.SetParent(this.transform);
         planInfoRoot.transform.localPosition = Vector3.zero;
 
@@ -381,8 +388,12 @@ public class PipeLineModel : PipeModelBase
         KeyPointCount = 2;
     }
 
-    public void SetLineData(PipeLineData data)
+    public PipeLineData ModelData ;
+
+    public void SetModelData(PipeLineData data)
     {
+        ModelData = data;
+
         LineInfo = new PipeLineInfo(data, this.transform);
         ModelStartPoint = LineInfo.StartPoint;
         ModelEndPoint = LineInfo.EndPoint;
@@ -394,6 +405,31 @@ public class PipeLineModel : PipeModelBase
         this.IsGetInfoSuccess = data.IsGetInfoSuccess;
         this.IsObbError = data.IsObbError;
         Debug.Log($"SetLineData data:{data}");
+    }
+
+    public PipeLineData GetModelData()
+    {
+        ModelData.StartPoint = LineInfo.StartPoint;
+        ModelData.EndPoint = LineInfo.EndPoint;
+        ModelData.Direction = LineInfo.Direction;
+        ModelData.IsGetInfoSuccess = IsGetInfoSuccess;
+        ModelData.IsObbError = IsObbError;
+        return ModelData;
+    }
+
+    public PipeLineSaveData GetSaveData()
+    {
+        PipeLineSaveData data = new PipeLineSaveData();
+        InitSaveData(data);
+        data.Data = GetModelData();
+        LineInfo = null;
+        return data;
+    }
+
+    public void SetSaveData(PipeLineSaveData data)
+    {
+        //this.LineInfo = data.Info;
+        SetModelData(data.Data);
     }
 
 
@@ -430,8 +466,8 @@ public class PipeLineModel : PipeModelBase
 
     public void GetModelInfo_OLD()
     {
-        ClearChildren();
-
+        //ClearChildren();
+        ClearDebugInfoGos();
         OBBCollider oBBCollider = this.gameObject.GetComponent<OBBCollider>();
         if (oBBCollider == null)
         {
@@ -625,12 +661,12 @@ public class PipeLineModel : PipeModelBase
     //    return verticesToPlaneInfo;
     //}
 
-    public void RendererModel()
-    {
-        //GetModelInfo();
+    //public void RendererModel()
+    //{
+    //    //GetModelInfo();
 
-        RendererModel(this.generateArg,"_New");
-    }
+    //    RendererModel(this.generateArg,"_New");
+    //}
 
     public override GameObject RendererModel(PipeGenerateArg arg, string afterName)
     {
@@ -709,11 +745,12 @@ public class PipeLineModel : PipeModelBase
 
     public void CreateWeld()
     {
-        GameObject go = new GameObject("WeldPoints");
-        go.transform.SetParent(this.transform);
-        go.transform.position = Vector3.zero;
+        GameObject go = CreateDebugInfoRoot("WeldPoints");
+        //go.transform.SetParent(this.transform);
+        //go.transform.position = Vector3.zero;
 
-        ClearChildren();
+        //ClearChildren();
+        ClearDebugInfoGos();
 
         OBBCollider oBBCollider = this.gameObject.GetComponent<OBBCollider>();
         if (oBBCollider == null)

@@ -5,6 +5,27 @@ using UnityEngine;
 
 public class PipeModelBase : MonoBehaviour,IComparable<PipeModelBase>
 {
+    void Awake()
+    {
+        Debug.Log($"PipeModelBase.Awake go:{this.name}");
+    }
+
+    //void Start()
+    //{
+    //    Debug.Log($"PipeModelBase.Start go:{this.name}");
+    //}
+
+    public bool IsRendererOnStart = false;
+
+    void Start()
+    {
+        if (IsRendererOnStart)
+        {
+            //RendererEachPipesEx();
+            RendererModel();
+        }
+    }
+
     public int sharedMinCount = 36;
 
     public float minRepeatPointDistance = 0.00005f;
@@ -12,6 +33,7 @@ public class PipeModelBase : MonoBehaviour,IComparable<PipeModelBase>
     private GameObject CreateSubTestObj(string objName, Transform parent)
     {
         GameObject objTriangles = new GameObject(objName);
+        objTriangles.AddComponent<DebugInfoRoot>();
         objTriangles.transform.SetParent(parent);
         objTriangles.transform.localPosition = Vector3.zero;
         return objTriangles;
@@ -19,8 +41,8 @@ public class PipeModelBase : MonoBehaviour,IComparable<PipeModelBase>
 
     public void DebugShowKeyPoints()
     {
-        ClearChildren();
-
+        //ClearChildren();
+        ClearDebugInfoGos();
         GameObject trianglesObj = CreateSubTestObj($"KeyPoints", this.transform);
 
         Mesh mesh = this.GetComponent<MeshFilter>().sharedMesh;
@@ -31,8 +53,8 @@ public class PipeModelBase : MonoBehaviour,IComparable<PipeModelBase>
 
     public void DebugShowSharedPoints()
     {
-        ClearChildren();
-
+        //ClearChildren();
+        ClearDebugInfoGos();
         Mesh mesh = this.GetComponent<MeshFilter>().sharedMesh;
         MeshTriangles meshTriangles = new MeshTriangles(mesh);
 
@@ -52,7 +74,8 @@ public class PipeModelBase : MonoBehaviour,IComparable<PipeModelBase>
 
     public void DebugShowTriangles()
     {
-        ClearChildren();
+        //ClearChildren();
+        ClearDebugInfoGos();
 
         Mesh mesh = this.GetComponent<MeshFilter>().sharedMesh;
         MeshTriangles meshTriangles = new MeshTriangles(mesh);
@@ -117,12 +140,20 @@ public class PipeModelBase : MonoBehaviour,IComparable<PipeModelBase>
         newGo.name = model.name;
         model.gameObject.SetActive(false);
 
-        TransformHelper.ClearChildren(model.gameObject);
-        EditorHelper.RemoveAllComponents(model.gameObject, typeof(PipeModelBase));
+        //TransformHelper.ClearChildren(model.gameObject);
+        //ClearDebugInfoGos();
+        RemoveAllComponents();
         //GameObject.DestroyImmediate(model.gameObject);
 
         //PipeModelBase modelNew = newGo.GetComponent<PipeModelBase>();
         //newModels.Add(modelNew);
+    }
+
+    public void RemoveAllComponents()
+    {
+        ClearDebugInfoGos();
+        EditorHelper.RemoveAllComponents(this.gameObject, typeof(PipeModelBase), typeof(RendererId));
+        gameObject.SetActive(true);
     }
 
 
@@ -249,77 +280,6 @@ public class PipeModelBase : MonoBehaviour,IComparable<PipeModelBase>
         return ConnectedCount;
     }
 
-    //public virtual int ConnectedModel(PipeModelBase model2, float minPointDis, bool isShowLog)
-    //{
-    //    PipeModelBase model1 = this;
-    //    int ConnectedCount = 0;
-    //    float dis11 = Vector3.Distance(model1.GetModelStartPoint(), model2.GetModelStartPoint());
-    //    float dis12 = Vector3.Distance(model1.GetModelStartPoint(), model2.GetModelEndPoint());
-    //    float dis21 = Vector3.Distance(model1.GetModelEndPoint(), model2.GetModelStartPoint());
-    //    float dis22 = Vector3.Distance(model1.GetModelEndPoint(), model2.GetModelEndPoint());
-    //    if (isShowLog)
-    //    {
-    //        Debug.Log($"IsConnected model1:{model1.name} model2:{model2.name} dis11:{dis11} dis12:{dis12} dis21:{dis21} dis22:{dis22}");
-    //    }
-
-
-    //    if (dis11 < minPointDis && dis12 < minPointDis)
-    //    {
-    //        //Error
-    //        Debug.LogError($"IsConnected Error1 dis11 < minDis && dis12 < minDis dis11:{dis11} dis12:{dis12} minDis:{minPointDis}");
-    //        return -1;
-    //    }
-    //    if (dis11 < minPointDis)
-    //    {
-    //        if (Mathf.Abs(model1.ModelStartPoint.w - model2.ModelStartPoint.w) > 0.00001)
-    //        {
-    //            Debug.LogError($"Radius IsNot Equal model1:{model1.name} model2:{model2.name} dis11:{dis11} dis12:{dis12} dis21:{dis21} dis22:{dis22}");
-    //        }
-    //        model1.AddConnectedModel(model2);
-    //        model2.AddConnectedModel(model1);
-    //        ConnectedCount++;
-    //    }
-    //    if (dis12 < minPointDis)
-    //    {
-    //        if (Mathf.Abs(model1.ModelStartPoint.w - model2.ModelEndPoint.w) > 0.00001)
-    //        {
-    //            Debug.LogError($"Radius IsNot Equal model1:{model1.name} model2:{model2.name} dis11:{dis11} dis12:{dis12} dis21:{dis21} dis22:{dis22}");
-    //        }
-    //        model1.AddConnectedModel(model2);
-    //        model2.AddConnectedModel(model1);
-    //        ConnectedCount++;
-    //    }
-
-    //    if (dis21 < minPointDis && dis22 < minPointDis)
-    //    {
-    //        //Error
-    //        Debug.LogError($"IsConnected Error2 dis21 < minDis && dis22 < minDis dis21:{dis21} dis22:{dis22} minDis:{minPointDis}");
-    //        return -1;
-    //    }
-    //    if (dis21 < minPointDis)
-    //    {
-    //        if (Mathf.Abs(model1.ModelEndPoint.w - model2.ModelStartPoint.w) > 0.00001)
-    //        {
-    //            Debug.LogError($"Radius IsNot Equal model1:{model1.name} model2:{model2.name} dis11:{dis11} dis12:{dis12} dis21:{dis21} dis22:{dis22}");
-    //        }
-    //        model1.AddConnectedModel(model2);
-    //        model2.AddConnectedModel(model1);
-    //        ConnectedCount++;
-    //    }
-    //    if (dis22 < minPointDis)
-    //    {
-    //        if (Mathf.Abs(model1.ModelEndPoint.w - model2.ModelEndPoint.w) > 0.00001)
-    //        {
-    //            Debug.LogError($"Radius IsNot Equal model1:{model1.name} model2:{model2.name} dis11:{dis11} dis12:{dis12} dis21:{dis21} dis22:{dis22}");
-    //        }
-    //        model1.AddConnectedModel(model2);
-    //        model2.AddConnectedModel(model1);
-    //        ConnectedCount++;
-    //    }
-
-    //    return ConnectedCount;
-    //}
-
     public static int ConnectedModelEx(PipeElbowModel model1, PipeModelBase model2, float minPointDis, bool isUniformRaidus, float minRadiusDis = 0.0001f)
     {
         int ConnectedCount = 0;
@@ -427,76 +387,6 @@ public class PipeModelBase : MonoBehaviour,IComparable<PipeModelBase>
     }
 
 
-    //public static int ConnectedModel(PipeModelBase model1, PipeModelBase model2, float minPointDis,bool isShowLog)
-    //{
-    //    int ConnectedCount = 0;
-    //    float dis11 = Vector3.Distance(model1.GetModelStartPoint(), model2.GetModelStartPoint());
-    //    float dis12 = Vector3.Distance(model1.GetModelStartPoint(), model2.GetModelEndPoint());
-    //    float dis21 = Vector3.Distance(model1.GetModelEndPoint(), model2.GetModelStartPoint());
-    //    float dis22 = Vector3.Distance(model1.GetModelEndPoint(), model2.GetModelEndPoint());
-    //    if (isShowLog)
-    //    {
-    //        Debug.Log($"IsConnected model1:{model1.name} model2:{model2.name} dis11:{dis11} dis12:{dis12} dis21:{dis21} dis22:{dis22}");
-    //    }
-
-
-    //    if (dis11 < minPointDis && dis12 < minPointDis)
-    //    {
-    //        //Error
-    //        Debug.LogError($"IsConnected Error1 dis11 < minDis && dis12 < minDis dis11:{dis11} dis12:{dis12} minDis:{minPointDis}");
-    //        return -1;
-    //    }
-    //    if (dis11 < minPointDis)
-    //    {
-    //        if(Mathf.Abs(model1.ModelStartPoint.w- model2.ModelStartPoint.w)>0.00001)
-    //        {
-    //            Debug.LogError($"Radius IsNot Equal model1:{model1.name} model2:{model2.name} dis11:{dis11} dis12:{dis12} dis21:{dis21} dis22:{dis22}");
-    //        }
-    //        model1.AddConnectedModel(model2);
-    //        model2.AddConnectedModel(model1);
-    //        ConnectedCount++;
-    //    }
-    //    if (dis12 < minPointDis)
-    //    {
-    //        if (Mathf.Abs(model1.ModelStartPoint.w - model2.ModelEndPoint.w) > 0.00001)
-    //        {
-    //            Debug.LogError($"Radius IsNot Equal model1:{model1.name} model2:{model2.name} dis11:{dis11} dis12:{dis12} dis21:{dis21} dis22:{dis22}");
-    //        }
-    //        model1.AddConnectedModel(model2);
-    //        model2.AddConnectedModel(model1);
-    //        ConnectedCount++;
-    //    }
-
-    //    if (dis21 < minPointDis && dis22 < minPointDis)
-    //    {
-    //        //Error
-    //        Debug.LogError($"IsConnected Error2 dis21 < minDis && dis22 < minDis dis21:{dis21} dis22:{dis22} minDis:{minPointDis}");
-    //        return -1;
-    //    }
-    //    if (dis21 < minPointDis)
-    //    {
-    //        if (Mathf.Abs(model1.ModelEndPoint.w - model2.ModelStartPoint.w) > 0.00001)
-    //        {
-    //            Debug.LogError($"Radius IsNot Equal model1:{model1.name} model2:{model2.name} dis11:{dis11} dis12:{dis12} dis21:{dis21} dis22:{dis22}");
-    //        }
-    //        model1.AddConnectedModel(model2);
-    //        model2.AddConnectedModel(model1);
-    //        ConnectedCount++;
-    //    }
-    //    if (dis22 < minPointDis)
-    //    {
-    //        if (Mathf.Abs(model1.ModelEndPoint.w - model2.ModelEndPoint.w) > 0.00001)
-    //        {
-    //            Debug.LogError($"Radius IsNot Equal model1:{model1.name} model2:{model2.name} dis11:{dis11} dis12:{dis12} dis21:{dis21} dis22:{dis22}");
-    //        }
-    //        model1.AddConnectedModel(model2);
-    //        model2.AddConnectedModel(model1);
-    //        ConnectedCount++;
-    //    }
-
-    //    return ConnectedCount;
-    //}
-
     public Vector4 ModelStartPoint;
 
     public Vector4 TransformPoint(Vector4 p1)
@@ -566,6 +456,8 @@ public class PipeModelBase : MonoBehaviour,IComparable<PipeModelBase>
     public PipeModelCheckResult mcResult;
 
     public bool IsSpecial = false;
+
+    //public bool IsModelDataInited = false;
 
     public void SetRadius()
     {
@@ -880,6 +772,30 @@ public class PipeModelBase : MonoBehaviour,IComparable<PipeModelBase>
         }
     }
 
+    public void ClearDebugInfoGos()
+    {
+        DebugInfoRoot[] debugRoots = this.GetComponentsInChildren<DebugInfoRoot>(true);
+        foreach (var item in debugRoots)
+        {
+            GameObject.DestroyImmediate(item.gameObject);
+        }
+    }
+
+    public GameObject CreateDebugInfoRoot(string goName)
+    {
+        GameObject go0 = new GameObject(goName);
+        go0.AddComponent<DebugInfoRoot>();
+        go0.transform.SetParent(this.transform);
+        go0.transform.localPosition = Vector3.zero;
+        //DebugInfoRootGos.Add(go0);
+        return go0;
+    }
+
+    public GameObject CreateKeyPointsGo()
+    {
+        return CreateDebugInfoRoot("KeyPoints");
+    }
+
     public T GetGenerator<T>(PipeGenerateArg arg, string afterName) where T : PipeMeshGeneratorBase
     {
         GameObject pipeNew = GetPipeNewGo(arg, afterName);
@@ -929,6 +845,25 @@ public class PipeModelBase : MonoBehaviour,IComparable<PipeModelBase>
         pipe.avoidStrangling = true;
         pipe.RenderPipe();
         return pipe.gameObject;
+    }
+
+    public void InitSaveData(PipeModelSaveData data)
+    {
+        data.Name = this.name;
+        data.Id = RendererId.GetId(this.gameObject);
+        data.Path = GetPath();
+        data.Transform = new TransformInfo(this.transform);
+        //this.LineInfo = data.Info;
+    }
+    public List<string> GetPath()
+    {
+        var ts = gameObject.GetComponentsInParent<Transform>();
+        List<string> path = new List<string>();
+        for (int i = 0; i < ts.Length; i++)
+        {
+            path.Add(ts[i].name);
+        }
+        return path;
     }
 }
 

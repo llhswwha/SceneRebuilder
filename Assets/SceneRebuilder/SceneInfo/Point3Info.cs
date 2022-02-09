@@ -1,11 +1,15 @@
 ﻿using System;
+using System.Xml.Serialization;
 using UnityEngine;
 
 [Serializable]
 public struct Point3Info//:ScriptableObject
 {
+    [XmlAttribute]
     public float x;
+    [XmlAttribute]
     public float y;
+    [XmlAttribute]
     public float z;
 
     public Point3Info(float x,float y,float z)
@@ -13,6 +17,13 @@ public struct Point3Info//:ScriptableObject
         this.x = x;
         this.y = y;
         this.z = z;
+    }
+
+    public Point3Info(Vector3 v)
+    {
+        this.x = v.x;
+        this.y = v.y;
+        this.z = v.z;
     }
 
     //public static float Power = 1000f;

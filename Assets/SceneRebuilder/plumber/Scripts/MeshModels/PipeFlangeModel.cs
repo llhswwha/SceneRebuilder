@@ -53,7 +53,7 @@ public class PipeFlangeModel : PipeReducerModel
             list2.Add(trianglesList[1]);
             //list2.Sort((a, b) => { return b.TriangleCount.CompareTo(a.TriangleCount); });
 
-            KeyPointInfo = new PipeElbowKeyPointInfo(list2[0].GetCenter4(), list2[1].GetCenter4(), list2[1].GetMinCenter4(), trianglesList[2].GetCenter4());
+            KeyPointInfo = new PipeModelKeyPointInfo4(list2[0].GetCenter4(), list2[1].GetCenter4(), list2[1].GetMinCenter4(), trianglesList[2].GetCenter4());
 
             StartPoint= list2[0].GetCenter4();
             EndPoint= trianglesList[2].GetCenter4();

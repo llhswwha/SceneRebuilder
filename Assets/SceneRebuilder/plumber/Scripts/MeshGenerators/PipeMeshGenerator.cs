@@ -379,7 +379,7 @@ public class PipeMeshGenerator : PipeMeshGeneratorBase
                 float dirD = dir.magnitude;
                 if (dirD < 0.000001)
                 {
-                    Debug.LogError($"gameObject:{this.name} initialPoint:{initialPoint} endPoint:{endPoint} dir:{dir} dirD:{dirD}");
+                    Debug.LogError($"【GeneratePipeMesh dirD < 0.000001】 gameObject:{this.name} initialPoint:{initialPoint} endPoint:{endPoint} dir:{dir} dirD:{dirD}");
                 }
 
                 if (generateElbows)

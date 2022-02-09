@@ -23,7 +23,8 @@ public class PipeReducerModel
         //base.GetModelInfo();
 
         DateTime start = DateTime.Now;
-        ClearChildren();
+        //ClearChildren();
+        ClearDebugInfoGos();
         Mesh mesh = this.GetComponent<MeshFilter>().sharedMesh;
         this.VertexCount = mesh.vertexCount;
         meshTriangles = new MeshTriangles(mesh);
@@ -31,11 +32,11 @@ public class PipeReducerModel
         SharedMeshTrianglesList trianglesList = GetSharedMeshTrianglesList(meshTriangles);
 
         distanceList = trianglesList.GetPlanePointDistanceList();
-
+        GameObject keyPoints = CreateKeyPointsGo();
         for (int i = 0; i < distanceList.Count; i++)
         {
             var p = distanceList[i];
-            TransformHelper.ShowLocalPoint(p.Plane.GetCenter(), PointScale, this.transform, null).name = $"KeyPoint[{i + 1}]";
+            TransformHelper.ShowLocalPoint(p.Plane.GetCenter(), PointScale, keyPoints.transform, null).name = $"KeyPoint[{i + 1}]";
         }
 
         //if (trianglesList.Count != 2)
@@ -71,8 +72,8 @@ public class PipeReducerModel
             trianglesList.Remove(StartPoint);
             trianglesList.Remove(EndPoint);
 
-            TransformHelper.ShowLocalPoint(StartPoint, PointScale, this.transform, null).name = "StartPoint";
-            TransformHelper.ShowLocalPoint(EndPoint, PointScale, this.transform, null).name = "EndPoint";
+            TransformHelper.ShowLocalPoint(StartPoint, PointScale, keyPoints.transform, null).name = "StartPoint";
+            TransformHelper.ShowLocalPoint(EndPoint, PointScale, keyPoints.transform, null).name = "EndPoint";
 
             //GetPipeRadius();
 
@@ -118,7 +119,7 @@ public class PipeReducerModel
         this.KeyPointCount = lineData.KeyPointCount;
         this.StartPoint = lineData.StartPoint;
         this.EndPoint = lineData.EndPoint;
-        this.KeyPointInfo = new PipeElbowKeyPointInfo(lineData.KeyPointInfo);
+        this.KeyPointInfo = new PipeModelKeyPointInfo4(lineData.KeyPointInfo);
 
         ModelStartPoint = StartPoint;
         ModelEndPoint = EndPoint;

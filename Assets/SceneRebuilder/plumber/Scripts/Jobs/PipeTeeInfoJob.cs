@@ -101,7 +101,7 @@ public struct PipeTeeInfoJob : IPipeJob
 
         SharedMeshTrianglesList list;
 
-        var KeyPlaneInfo = PipeElbowKeyPlaneInfo.GetElbow4Planes(list4);
+        var KeyPlaneInfo = PipeModelKeyPlaneInfo4.GetElbow4Planes(list4);
         data.KeyPointInfo = KeyPlaneInfo.GetKeyPointsData();
         data.KeyPlaneInfo = new PipeElbowKeyPlaneData(KeyPlaneInfo);
         //KeyPointInfo = GetElbow4(list4);
@@ -179,7 +179,7 @@ public struct PipeTeeInfoJob : IPipeJob
         //KeyPointInfo.Line1 = new PipeLineInfo(TeeStartPoint, TeeEndPoint, null);
         //KeyPointInfo.Line2 = new PipeLineInfo(LineStartPoint, LineEndPoint, null);
 
-        data.KeyPointInfo = new PipeElbowKeyPointData(TeeStartPoint, TeeEndPoint, LineStartPoint, LineEndPoint);
+        data.KeyPointInfo = new PipeModelKeyPointData4(TeeStartPoint, TeeEndPoint, LineStartPoint, LineEndPoint);
 
         //TransformHelper.ShowLocalPoint(TeeStartPoint, PointScale, this.transform, null).name = $"TeeStartPoint_{TeeStartPoint.w}";
         //TransformHelper.ShowLocalPoint(TeeEndPoint, PointScale, this.transform, null).name = $"TeeEndPoint_{TeeEndPoint.w}";
@@ -204,9 +204,9 @@ public struct PipeTeeData
 {
 
 
-    public PipeElbowKeyPointData KeyPointInfo;
+    public PipeModelKeyPointData4 KeyPointInfo;
 
-    public PipeElbowKeyPointData InnerKeyPointInfo;
+    public PipeModelKeyPointData4 InnerKeyPointInfo;
 
     public PipeElbowKeyPlaneData KeyPlaneInfo;
     public PipeElbowKeyPlaneData InnerKeyPlaneInfo;

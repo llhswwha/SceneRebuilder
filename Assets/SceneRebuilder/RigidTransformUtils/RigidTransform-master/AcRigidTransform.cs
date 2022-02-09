@@ -55,8 +55,12 @@ public class AcRigidTransform : MonoBehaviour {
     private Quaternion InitQT;
 
     void Start () {
-        InitPosition = TestObject.transform.position;
-        InitQT = TestObject.transform.rotation;        
+        if (TestObject)
+        {
+            InitPosition = TestObject.transform.position;
+            InitQT = TestObject.transform.rotation;
+        }
+           
     }
    
 
