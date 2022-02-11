@@ -308,6 +308,16 @@ public class RendererId
         return id.Id;
     }
 
+    //public static string GetId(Component go, int level = 0)
+    //{
+    //    return GetId(go.gameObject, level);
+    //}
+
+    //public static string GetId(Transform go, int level = 0)
+    //{
+    //    return GetId(go.gameObject, level);
+    //}
+
     public static RendererId GetRId(GameObject go, int level=0)
     {
         if (go == null) return null;
@@ -331,6 +341,16 @@ public class RendererId
         }
         return id.Id;
     }
+    public static string GetId<T>(T r) where T : Component
+    {
+        RendererId id = r.GetComponent<RendererId>();
+        if (id == null)
+        {
+            id = r.gameObject.AddComponent<RendererId>();
+            id.Init(r);
+        }
+        return id.Id;
+    }
 
     public static RendererId GetRId<T>(T t, int level=0) where T : Component
     {
@@ -344,16 +364,7 @@ public class RendererId
         return id;
     }
 
-    public static RendererId GetId<T>(T r) where T : Component
-    {
-        RendererId id = r.GetComponent<RendererId>();
-        if (id == null)
-        {
-            id = r.gameObject.AddComponent<RendererId>();
-            id.Init(r);
-        }
-        return id;
-    }
+
 
     public static Transform MoveTargetsParent(List<GameObject> targets,Transform newParent,string newParentName="NewP")
     {

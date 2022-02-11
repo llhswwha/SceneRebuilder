@@ -61,6 +61,50 @@ public class PipeWeldoletModel : PipeTeeModel
         meshTriangles.Dispose();
     }
 
+    internal void SetModelData(PipeWeldoletData lineData)
+    {
+        ModelData = lineData;
+        //this.IsSpecial = lineData.IsSpecial;
+        this.IsGetInfoSuccess = lineData.IsGetInfoSuccess;
+        this.KeyPointCount = lineData.KeyPointCount;
+        this.KeyPointInfo = new PipeModelKeyPointInfo4(lineData.KeyPointInfo);
+        ModelStartPoint = KeyPointInfo.EndPointOut1;
+        ModelEndPoint = KeyPointInfo.EndPointIn1;
+
+    }
+
+    public new PipeWeldoletData ModelData;
+
+    public new PipeWeldoletData GetModelData()
+    {
+        ModelData.KeyPointInfo = new PipeModelKeyPointData4(KeyPointInfo);
+        //ModelData.InnerKeyPointInfo = new PipeModelKeyPointData4(InnerKeyPointInfo);
+        //ModelData.KeyPlaneInfo = new PipeModelKeyPlaneData4(KeyPlaneInfo);
+        //ModelData.InnerKeyPlaneInfo = new PipeModelKeyPlaneData4(InnerKeyPlaneInfo);
+        ModelData.IsGetInfoSuccess = IsGetInfoSuccess;
+        //ModelData.IsSpecial = IsSpecial;
+        ModelData.KeyPointCount = KeyPointCount;
+        return ModelData;
+    }
+
+    public new PipeWeldoletSaveData GetSaveData()
+    {
+        PipeWeldoletSaveData data = new PipeWeldoletSaveData();
+        InitSaveData(data);
+        data.Data = GetModelData();
+        //KeyPointInfo = null;
+        //InnerKeyPointInfo = null;
+        ////KeyPlaneInfo = null;
+        return data;
+    }
+
+    public override void SetSaveData(PipeModelSaveData data)
+    {
+        //this.LineInfo = data.Info;
+        SetModelData((data as PipeWeldoletSaveData).Data);
+        //PipeFactory.Instance.RendererModelFromXml(this, data);
+    }
+
     public override GameObject RendererModel(PipeGenerateArg arg0, string afterName)
     {
         if (RendererErrorModel())
@@ -116,6 +160,8 @@ public class PipeWeldoletModel : PipeTeeModel
 
             GameObject target = CombineTarget(arg,pipeNew);
 
+            target = CopyMeshComponentsEx(target);
+
             this.ResultGo = target;
 
             PipeMeshGenerator pipeG = target.AddComponent<PipeMeshGenerator>();
@@ -128,4 +174,6 @@ public class PipeWeldoletModel : PipeTeeModel
         }
         
     }
+
+
 }

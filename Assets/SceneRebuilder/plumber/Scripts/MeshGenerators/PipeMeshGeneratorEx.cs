@@ -26,18 +26,18 @@ public class PipeMeshGeneratorEx : PipeMeshGeneratorBase
         }
     }
 
-    public void CleanChildren()
-    {
-        List<GameObject> go = new List<GameObject>();
-        for (int i = 0; i < transform.childCount; i++)
-        {
-            go.Add(transform.GetChild(i).gameObject);
-        }
-        foreach (var item in go)
-        {
-            GameObject.DestroyImmediate(item);
-        }
-    }
+    //public void CleanChildren()
+    //{
+    //    List<GameObject> go = new List<GameObject>();
+    //    for (int i = 0; i < transform.childCount; i++)
+    //    {
+    //        go.Add(transform.GetChild(i).gameObject);
+    //    }
+    //    foreach (var item in go)
+    //    {
+    //        GameObject.DestroyImmediate(item);
+    //    }
+    //}
 
     [ContextMenu("ShowPoints")]
     public void ShowPoints()
@@ -742,73 +742,6 @@ public class PipeMeshGeneratorEx : PipeMeshGeneratorBase
 
 
 
-    void MakeElbowTriangles(List<Vector4> points, List<Vector3> vertices, List<int> triangles, int segmentIdx, int elbowIdx)
-    {
-        // connect the two circles corresponding to segment segmentIdx of an
-        // elbow with index elbowIdx
-        int offset = (points.Count - 1) * pipeSegments * 2; // all vertices of cylinders
-        if (IsGenerateElbowBeforeAfter)
-        {
-            offset = (points.Count - 1 + (points.Count - 2) * 2) * pipeSegments * 2; // all vertices of cylinders
-        }
-
-        offset += elbowIdx * (elbowSegments + 1) * pipeSegments; // all vertices of previous elbows
-        offset += segmentIdx * pipeSegments; // the current segment of the current elbow
-
-        // algorithm to avoid elbows strangling under dramatic
-        // direction changes... we basically map vertices to the
-        // one closest in the previous segment
-        Dictionary<int, int> mapping = new Dictionary<int, int>();
-        if (avoidStrangling)
-        {
-            List<Vector3> thisRingVertices = new List<Vector3>();
-            List<Vector3> lastRingVertices = new List<Vector3>();
-
-            for (int i = 0; i < pipeSegments; i++)
-            {
-                lastRingVertices.Add(vertices[offset + i - pipeSegments]);
-            }
-
-            for (int i = 0; i < pipeSegments; i++)
-            {
-                // find the closest one for each vertex of the previous segment
-                Vector3 minDistVertex = Vector3.zero;
-                float minDist = Mathf.Infinity;
-                for (int j = 0; j < pipeSegments; j++)
-                {
-                    Vector3 currentVertex = vertices[offset + j];
-                    float distance = Vector3.Distance(lastRingVertices[i], currentVertex);
-                    if (distance < minDist)
-                    {
-                        minDist = distance;
-                        minDistVertex = currentVertex;
-                    }
-                }
-                thisRingVertices.Add(minDistVertex);
-                mapping.Add(i, vertices.IndexOf(minDistVertex));
-            }
-        }
-        else
-        {
-            // keep current vertex order (do nothing)
-            for (int i = 0; i < pipeSegments; i++)
-            {
-                mapping.Add(i, offset + i);
-            }
-        }
-
-        // build triangles for the elbow segment
-        for (int i = 0; i < pipeSegments; i++)
-        {
-            triangles.Add(mapping[i]);
-            triangles.Add(offset + i - pipeSegments);
-            triangles.Add(mapping[(i + 1) % pipeSegments]);
-
-            triangles.Add(offset + i - pipeSegments);
-            triangles.Add(offset + (i + 1) % pipeSegments - pipeSegments);
-            triangles.Add(mapping[(i + 1) % pipeSegments]);
-        }
-    }
 
     Mesh MakeFlatShading(Mesh mesh)
     {

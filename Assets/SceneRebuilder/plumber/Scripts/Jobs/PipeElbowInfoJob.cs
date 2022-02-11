@@ -1,6 +1,7 @@
 using System;
 using System.Collections;
 using System.Collections.Generic;
+using System.Xml.Serialization;
 using Unity.Collections;
 using Unity.Jobs;
 using UnityEngine;
@@ -230,9 +231,12 @@ public struct PipeElbowData
 
     public PipeModelKeyPointData4 InnerKeyPointInfo;
 
+    [XmlAttribute]
     public bool IsSpecial;
 
+    [XmlAttribute]
     public bool IsGetInfoSuccess;
 
+    [XmlAttribute]
     public int KeyPointCount;
 }

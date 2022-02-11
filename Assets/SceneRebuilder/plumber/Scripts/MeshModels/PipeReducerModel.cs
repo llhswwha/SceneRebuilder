@@ -111,9 +111,13 @@ public class PipeReducerModel
         return list;
     }
 
+    public new PipeReducerData ModelData;
+
 
     internal void SetModelData(PipeReducerData lineData)
     {
+        ModelData = lineData;
+
         this.IsSpecial = lineData.IsSpecial;
         this.IsGetInfoSuccess = lineData.IsGetInfoSuccess;
         this.KeyPointCount = lineData.KeyPointCount;
@@ -125,6 +129,35 @@ public class PipeReducerModel
         ModelEndPoint = EndPoint;
 
         SetRadius();
+    }
+
+    public new PipeReducerData GetModelData()
+    {
+        ModelData.KeyPointInfo = new PipeModelKeyPointData4(KeyPointInfo);
+        ModelData.StartPoint = this.StartPoint;
+        ModelData.EndPoint = this.EndPoint;
+        ModelData.IsGetInfoSuccess = IsGetInfoSuccess;
+        ModelData.IsSpecial = IsSpecial;
+        ModelData.KeyPointCount = KeyPointCount;
+        return ModelData;
+    }
+
+    public new PipeReducerSaveData GetSaveData()
+    {
+        PipeReducerSaveData data = new PipeReducerSaveData();
+        InitSaveData(data);
+        data.Data = GetModelData();
+        //KeyPointInfo = null;
+        //InnerKeyPointInfo = null;
+        ////KeyPlaneInfo = null;
+        return data;
+    }
+
+    public override void SetSaveData(PipeModelSaveData data)
+    {
+        //this.LineInfo = data.Info;
+        SetModelData((data as PipeReducerSaveData).Data);
+        //PipeFactory.Instance.RendererModelFromXml(this, data);
     }
 
     protected virtual void SetRadius()
@@ -141,7 +174,7 @@ public class PipeReducerModel
             return null;
         }
 
-        PipeMeshGeneratorEx pipe = GetGenerator<PipeMeshGeneratorEx>(arg, afterName);
+        PipeMeshGeneratorEx pipe = GetGenerator<PipeMeshGeneratorEx>(arg, afterName,false);
         pipe.points = new List<Vector4>() { StartPoint, EndPoint };
 
         //PipeMeshGenerator pipe = GetGenerator<PipeMeshGenerator>(arg, afterName);

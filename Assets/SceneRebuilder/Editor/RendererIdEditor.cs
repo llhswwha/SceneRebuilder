@@ -24,6 +24,8 @@ public class RendererIdEditor : BaseEditor<RendererId>
     public override void OnToolLayout(RendererId item)
     {
         base.OnToolLayout(item);
+
+        EditorGUILayout.BeginHorizontal();
         if (GUILayout.Button("Select"))
         {
             EditorHelper.SelectObject(item.gameObject);
@@ -45,6 +47,8 @@ public class RendererIdEditor : BaseEditor<RendererId>
             }
             
         }
+        EditorGUILayout.EndHorizontal();
+
         EditorGUILayout.BeginHorizontal();
         GUILayout.Label("Id:" + item.Id);
         GUILayout.Label("Children:" + item.childrenIds.Count);

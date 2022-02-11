@@ -77,8 +77,10 @@ public struct PipeLineData
 
     public Vector3 Direction;
 
+    [XmlAttribute]
     public bool IsGetInfoSuccess;
 
+    [XmlAttribute]
     public bool IsObbError;
 
     public override string ToString()

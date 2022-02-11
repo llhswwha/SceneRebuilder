@@ -78,7 +78,7 @@ public class AreaTreeNode : SubSceneCreater
             foreach (var renderer in Renderers)
             {
                 if (renderer == null) continue;
-                var id = RendererId.GetId(renderer);
+                var id = RendererId.GetRId(renderer);
                 RenderersId.Add(id.Id);
             }
 
@@ -87,7 +87,7 @@ public class AreaTreeNode : SubSceneCreater
             foreach (var renderer in CombinedRenderers)
             {
                 if (renderer == null) continue;
-                var id = RendererId.GetId(renderer);
+                var id = RendererId.GetRId(renderer);
                 CombinedRenderersId.Add(id.Id);
             }
     }
@@ -268,7 +268,7 @@ public class AreaTreeNode : SubSceneCreater
             if (render == null) continue;
             GameObject go = render.gameObject;
             //newRenderers.Add(render);
-            var rId=RendererId.GetId(render);
+            var rId=RendererId.GetRId(render);
             MeshCollider collider = go.GetComponent<MeshCollider>();
             if (collider)
                 collider.enabled = false;

@@ -3,7 +3,7 @@ using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 
-public class PipeModelBase : MonoBehaviour,IComparable<PipeModelBase>
+public class PipeModelBase : PipeModelComponent, IComparable<PipeModelBase>
 {
     void Awake()
     {
@@ -77,23 +77,25 @@ public class PipeModelBase : MonoBehaviour,IComparable<PipeModelBase>
         //ClearChildren();
         ClearDebugInfoGos();
 
-        Mesh mesh = this.GetComponent<MeshFilter>().sharedMesh;
-        MeshTriangles meshTriangles = new MeshTriangles(mesh);
+        //Mesh mesh = this.GetComponent<MeshFilter>().sharedMesh;
+        //MeshTriangles meshTriangles = new MeshTriangles(mesh);
 
 
-        Debug.Log($"GetElbowInfo mesh vertexCount:{mesh.vertexCount} triangles:{mesh.triangles.Length}");
-        meshTriangles.ShowTriangles(this.transform, PointScale);
+        //Debug.Log($"GetElbowInfo mesh vertexCount:{mesh.vertexCount} triangles:{mesh.triangles.Length}");
+        //meshTriangles.ShowTriangles(this.transform, PointScale);
 
-        //Debug.Log($"GetElbowInfo trialges:{meshTriangles.Count}");
-        //for (int i = 0; i < meshTriangles.Count; i++)
-        //{
-        //    var t = meshTriangles.GetTriangle(i);
+        ////Debug.Log($"GetElbowInfo trialges:{meshTriangles.Count}");
+        ////for (int i = 0; i < meshTriangles.Count; i++)
+        ////{
+        ////    var t = meshTriangles.GetTriangle(i);
 
-        //    Debug.Log($"GetElbowInfo[{i + 1}/{meshTriangles.Count}] trialge:{t}");
-        //    GameObject sharedPoints1Obj = CreateSubTestObj($"trialge:{t}", this.transform);
-        //    t.ShowTriangle(this.transform, sharedPoints1Obj.transform, PointScale);
-        //}
-        meshTriangles.Dispose();
+        ////    Debug.Log($"GetElbowInfo[{i + 1}/{meshTriangles.Count}] trialge:{t}");
+        ////    GameObject sharedPoints1Obj = CreateSubTestObj($"trialge:{t}", this.transform);
+        ////    t.ShowTriangle(this.transform, sharedPoints1Obj.transform, PointScale);
+        ////}
+        //meshTriangles.Dispose();
+
+        MeshTriangles.DebugShowTriangles(this.gameObject, PointScale);
     }
 
     [ContextMenu("ReplaceOld")]
@@ -151,6 +153,7 @@ public class PipeModelBase : MonoBehaviour,IComparable<PipeModelBase>
 
     public void RemoveAllComponents()
     {
+        if (IsGetInfoSuccess == false) return;
         ClearDebugInfoGos();
         EditorHelper.RemoveAllComponents(this.gameObject, typeof(PipeModelBase), typeof(RendererId));
         gameObject.SetActive(true);
@@ -420,7 +423,6 @@ public class PipeModelBase : MonoBehaviour,IComparable<PipeModelBase>
 
     public List<Vector4> ModelKeyPoints = new List<Vector4>();
 
-    public PipeGenerateArg generateArg = new PipeGenerateArg();
 
     public float PipeRadius = 0;
 
@@ -541,24 +543,31 @@ public class PipeModelBase : MonoBehaviour,IComparable<PipeModelBase>
         //return GetCompareString();
     }
 
-    public virtual void GetModelInfo()
-    {
+    //public virtual void GetModelInfo()
+    //{
 
-    }
+    //}
 
-    public void RendererModel()
-    {
-        MeshRenderer r = this.GetComponent<MeshRenderer>();
-        if (generateArg.pipeMaterial == null)
-        {
-            generateArg.pipeMaterial = r.sharedMaterial;
-        }
-        if (generateArg.weldMaterial == null)
-        {
-            generateArg.weldMaterial = r.sharedMaterial;
-        }
-        RendererModel(generateArg, "_New");
-    }
+
+    //public override void RendererModel()
+    //{
+    //    MeshRenderer r = this.GetComponent<MeshRenderer>();
+    //    if (generateArg.pipeMaterial == null)
+    //    {
+    //        generateArg.pipeMaterial = r.sharedMaterial;
+    //    }
+    //    if (generateArg.weldMaterial == null)
+    //    {
+    //        generateArg.weldMaterial = r.sharedMaterial;
+    //    }
+    //    RendererModel(generateArg, "_New");
+    //}
+
+
+    //public virtual GameObject RendererModel(PipeGenerateArg arg, string afterName)
+    //{
+    //    return null;
+    //}
 
     private static int[] PipeSegmentsLOD4 = new int[] { 24, 12, 8, 6 };
 
@@ -715,9 +724,19 @@ public class PipeModelBase : MonoBehaviour,IComparable<PipeModelBase>
         //lodGroup.AddComponent<RendererId>();
     }
 
-    public virtual GameObject RendererModel(PipeGenerateArg arg, string afterName)
+    public override void InitSaveData(PipeModelSaveData data)
     {
-        return null;
+        base.InitSaveData(data);
+
+        data.PipeWelds = GetWeldsSaveData();
+    }
+
+
+    public virtual void SetSaveData(PipeModelSaveData data)
+    {
+        //this.LineInfo = data.Info;
+        //SetModelData(data.Data);
+        Debug.LogError("SetSaveData Not Override:"+ data);
     }
 
     public void CheckResult()
@@ -763,12 +782,18 @@ public class PipeModelBase : MonoBehaviour,IComparable<PipeModelBase>
         ClearCheckDistance();
     }
 
-    [ContextMenu("ClearGo")]
-    public void ClearGo()
+    public void DestroyMeshComponent()
     {
-        if (ResultGo != null)
+        MeshRenderer renderer = this.GetComponent<MeshRenderer>();
+        if (renderer)
         {
-            GameObject.DestroyImmediate(ResultGo);
+            GameObject.DestroyImmediate(renderer);
+        }
+
+        MeshFilter filter = this.GetComponent<MeshFilter>();
+        if (filter)
+        {
+            GameObject.DestroyImmediate(filter);
         }
     }
 
@@ -777,6 +802,7 @@ public class PipeModelBase : MonoBehaviour,IComparable<PipeModelBase>
         DebugInfoRoot[] debugRoots = this.GetComponentsInChildren<DebugInfoRoot>(true);
         foreach (var item in debugRoots)
         {
+            if (item == null) continue;
             GameObject.DestroyImmediate(item.gameObject);
         }
     }
@@ -796,9 +822,28 @@ public class PipeModelBase : MonoBehaviour,IComparable<PipeModelBase>
         return CreateDebugInfoRoot("KeyPoints");
     }
 
-    public T GetGenerator<T>(PipeGenerateArg arg, string afterName) where T : PipeMeshGeneratorBase
+    //public bool IsNewGo = true;
+
+    public T GetGenerator<T>(PipeGenerateArg arg, string afterName,bool isNewGo) where T : PipeMeshGeneratorBase
     {
-        GameObject pipeNew = GetPipeNewGo(arg, afterName);
+        GameObject pipeNew = null;
+        
+        if (isNewGo == true)
+        {
+            pipeNew = GetPipeNewGo(arg, afterName);
+        }
+        else
+        {
+            MeshRenderer renderer = this.GetComponent<MeshRenderer>();
+            if (renderer == null)
+            {
+                pipeNew = this.gameObject;
+            }
+            else
+            {
+                pipeNew = GetPipeNewGo(arg, afterName);
+            }
+        }
 
         T pipe = pipeNew.GetComponent<T>();
         if (pipe == null)
@@ -818,9 +863,9 @@ public class PipeModelBase : MonoBehaviour,IComparable<PipeModelBase>
         return pipeNew;
     }
 
-    public GameObject ResultGo = null;
 
-    public GameObject RenderPipeLine(PipeGenerateArg arg, string afterName, Vector4 startP, Vector4 endP)
+
+    public GameObject RenderPipeLine(PipeGenerateArg arg, string afterName, Vector4 startP, Vector4 endP, bool isNewGo=true)
     {
         //arg = arg.Clone();
         //PipeMeshGenerator pipe = GetGenerator<PipeMeshGenerator>(arg, afterName);
@@ -835,7 +880,7 @@ public class PipeModelBase : MonoBehaviour,IComparable<PipeModelBase>
         //return pipe.gameObject;
 
         //arg = arg.Clone();
-        PipeMeshGeneratorEx pipe = GetGenerator<PipeMeshGeneratorEx>(arg, afterName);
+        PipeMeshGeneratorEx pipe = GetGenerator<PipeMeshGeneratorEx>(arg, afterName, isNewGo);
         pipe.generateElbows = false;
         pipe.points = new List<Vector4>() { startP, endP };
         //pipe.pipeRadius = (startP.w + endP.w) / 2;
@@ -847,14 +892,10 @@ public class PipeModelBase : MonoBehaviour,IComparable<PipeModelBase>
         return pipe.gameObject;
     }
 
-    public void InitSaveData(PipeModelSaveData data)
-    {
-        data.Name = this.name;
-        data.Id = RendererId.GetId(this.gameObject);
-        data.Path = GetPath();
-        data.Transform = new TransformInfo(this.transform);
-        //this.LineInfo = data.Info;
-    }
+
+
+
+
     public List<string> GetPath()
     {
         var ts = gameObject.GetComponentsInParent<Transform>();
@@ -864,6 +905,38 @@ public class PipeModelBase : MonoBehaviour,IComparable<PipeModelBase>
             path.Add(ts[i].name);
         }
         return path;
+    }
+
+    public GameObject CopyMeshComponentsEx(GameObject target)
+    {
+        MeshRenderer meshRenderer = this.GetComponent<MeshRenderer>();
+        if (meshRenderer == null)
+        {
+            CopyMeshComponents(target, this.gameObject);
+            List<Transform> children = new List<Transform>();
+            for (int i = 0; i < target.transform.childCount; i++)
+            {
+                children.Add(target.transform.GetChild(i));
+            }
+            foreach (var child in children)
+            {
+                child.SetParent(this.transform);
+            }
+            GameObject.DestroyImmediate(target);
+            target = this.gameObject;
+        }
+        return target;
+    }
+
+    public static void CopyMeshComponents(GameObject source, GameObject target)
+    {
+        MeshRenderer meshRenderer1 = source.GetComponent<MeshRenderer>();
+        MeshRenderer meshRenderer2 = target.AddComponent<MeshRenderer>();
+        meshRenderer2.sharedMaterials = meshRenderer1.sharedMaterials;
+
+        MeshFilter meshFilter1 = source.GetComponent<MeshFilter>();
+        MeshFilter meshFilter2 = target.AddComponent<MeshFilter>();
+        meshFilter2.sharedMesh = meshFilter1.sharedMesh;
     }
 }
 

@@ -404,7 +404,7 @@ public class PipeLineModel : PipeModelBase
         //this.IsObbError = data.IsObbError;
         this.IsGetInfoSuccess = data.IsGetInfoSuccess;
         this.IsObbError = data.IsObbError;
-        Debug.Log($"SetLineData data:{data}");
+        //Debug.Log($"SetLineData data:{data}");
     }
 
     public PipeLineData GetModelData()
@@ -422,14 +422,15 @@ public class PipeLineModel : PipeModelBase
         PipeLineSaveData data = new PipeLineSaveData();
         InitSaveData(data);
         data.Data = GetModelData();
-        LineInfo = null;
+        //LineInfo = null;
         return data;
     }
 
-    public void SetSaveData(PipeLineSaveData data)
+    public override void SetSaveData(PipeModelSaveData data)
     {
         //this.LineInfo = data.Info;
-        SetModelData(data.Data);
+        SetModelData((data as PipeLineSaveData).Data);
+        //PipeFactory.Instance.RendererModelFromXml(this,data);
     }
 
 
@@ -686,7 +687,20 @@ public class PipeLineModel : PipeModelBase
         //}
         //pipe.Target = this.gameObject;
 
-        PipeMeshGenerator pipe = GetGenerator<PipeMeshGenerator>(arg, afterName);
+        if (LineInfo == null)
+        {
+            Debug.LogError("PipeLineModel.RendererModel LineInfo == null");
+            return null;
+        }
+
+        PipeMeshGenerator pipe = GetGenerator<PipeMeshGenerator>(arg, afterName,false);
+
+        if (pipe == null)
+        {
+            Debug.LogError("PipeLineModel.RendererModel pipe == null");
+            return null;
+        }
+
         pipe.points = new List<Vector3>() { LineInfo.StartPoint, LineInfo.EndPoint };
         arg.SetArg(pipe);
         var radius = (LineInfo.StartPoint.w + LineInfo.EndPoint.w) / 2;

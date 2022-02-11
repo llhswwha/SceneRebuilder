@@ -1,6 +1,7 @@
 using System;
 using System.Collections;
 using System.Collections.Generic;
+using System.Xml.Serialization;
 using Unity.Collections;
 using UnityEngine;
 
@@ -54,7 +55,7 @@ public struct PipeWeldoletInfoJob : IPipeJob
             var p3 = rightC.GetCenter4();
             var p1 = rightC.GetCenter4WithOff(centerOffset2* v1.normalized);
 
-            Debug.Log($"Weldolet radisu:{circleC.Radius} centerDistance1:{centerDistance1} centerDistance2:{centerDistance2} centerOffset1:{centerOffset1} :{centerOffset2}");
+            Debug.Log($"Weldolet.GetModelData radisu:{circleC.Radius} centerDistance1:{centerDistance1} centerDistance2:{centerDistance2} centerOffset1:{centerOffset1} :{centerOffset2}");
 
             //TransformHelper.ShowLocalPoint(p1, PointScale, this.transform, null);
             //TransformHelper.ShowLocalPoint(p3, PointScale, this.transform, null);
@@ -121,8 +122,10 @@ public struct PipeWeldoletData
 
     //public bool IsSpecial;
 
+    [XmlAttribute]
     public bool IsGetInfoSuccess;
 
+    [XmlAttribute]
     public int KeyPointCount;
 
     public override string ToString()

@@ -1,4 +1,5 @@
 using CodeStage.AdvancedFPSCounter.Editor.UI;
+using System;
 using System.Collections;
 using System.Collections.Generic;
 using UnityEditor;
@@ -53,6 +54,10 @@ public class PipeBuilderEditor : BaseFoldoutEditor<PipeBuilder>
         GUILayout.EndHorizontal();
 
         GUILayout.BeginHorizontal();
+        if (GUILayout.Button("FindPipeModels"))
+        {
+            targetT.FindPipeModels(null);
+        }
         if (GUILayout.Button("TestCreateOnePipe"))
         {
             targetT.TestCreateOnePipe();
@@ -94,4 +99,26 @@ public class PipeModelFoldoutEditorArg: FoldoutEditorArg
     public bool ShowCheckResult = false;
 
     public bool ShowPipeArg = true;
+
+    public bool OnlySpecial = false;
+
+    internal List<TM> FilterList<TM>(List<TM> list) where TM : PipeModelBase
+    {
+        List<TM> list2 = new List<TM>();
+        if (OnlySpecial)
+        {
+            foreach(var item in list)
+            {
+                if (item.IsSpecial)
+                {
+                    list2.Add(item);
+                }
+            }
+        }
+        else
+        {
+            list2 = list;
+        }
+        return list2;
+    }
 }

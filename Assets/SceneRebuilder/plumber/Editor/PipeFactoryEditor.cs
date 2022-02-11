@@ -200,6 +200,14 @@ public class PipeFactoryEditor : BaseFoldoutEditor<PipeFactory>
         {
             targetT.RemoveComponents();
         }
+        if (GUILayout.Button("RemoveModels"))
+        {
+            targetT.RemovePipeModels();
+        }
+        if (GUILayout.Button("FindPipeModels"))
+        {
+            targetT.FindPipeModels();
+        }
         if (GUILayout.Button("LoadXml"))
         {
             targetT.LoadSceneDataXml();

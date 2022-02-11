@@ -24,7 +24,7 @@ public struct TransformInfo //: ScriptableObject
     {
         pos = new Point3Info(t.position);
         rotation = new Point3Info(t.rotation.eulerAngles);
-        scale = new Point3Info(t.lossyScale);
+        scale = new Point3Info(t.localScale);
     }
 
     public void Init()
@@ -32,5 +32,12 @@ public struct TransformInfo //: ScriptableObject
         pos = new Point3Info();
         rotation = new Point3Info();
         scale = new Point3Info(1,1,1);
+    }
+
+    internal void SetTransform(Transform transform)
+    {
+        transform.position = pos.ToVector3();
+        transform.rotation = Quaternion.Euler(rotation.ToVector3());
+        transform.localScale = scale.ToVector3();
     }
 }

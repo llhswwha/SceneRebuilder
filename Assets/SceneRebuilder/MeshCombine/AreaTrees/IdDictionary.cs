@@ -183,7 +183,7 @@ public static class IdDictionary
                 Debug.LogError($"renderer==null");
                 continue;
             }
-            RendererId id = RendererId.GetId(renderer);
+            RendererId id = RendererId.GetRId(renderer);
             SetRendererId(id, renderer);
         }
     }
@@ -211,7 +211,7 @@ public static class IdDictionary
         //Debug.Log($"RendererDictionay.InitRenderers tag:{tag} objs:{objs.Count()},idCount:{idCount} count1:{count1} count2:{count2} add:{count2-count1} time:{(DateTime.Now - start)}");
     }
 
-    public static GameObject GetGo(string id,string goName="")
+    public static GameObject GetGo(string id,string goName="", bool showLog = true)
     {
         //if(string.IsNullOrEmpty(id)){
         //    Debug.LogError($"RendererDictionay.GetGo IsNullOrEmpty !!! ,Dict:{IdDict.Count}");
@@ -229,7 +229,7 @@ public static class IdDictionary
         //}
         //Debug.LogError($"RendererDictionay.GetGo go not found id:{id},\tgoName:{goName},\tDict:{IdDict.Count}");
         //return null;
-        RendererId rId = GetId(id, goName);
+        RendererId rId = GetId(id, goName, showLog);
         if (rId != null)
         {
             return rId.gameObject;
@@ -240,7 +240,7 @@ public static class IdDictionary
         }
     }
 
-    public static RendererId GetId(string id, string goName = "")
+    public static RendererId GetId(string id, string goName = "",bool showLog=true)
     {
         if (string.IsNullOrEmpty(id))
         {
@@ -257,7 +257,8 @@ public static class IdDictionary
             }
             return go;
         }
-        Debug.LogError($"RendererDictionay.GetGo go not found id:{id},\tgoName:{goName},\tDict:{IdDict.Count}");
+        if(showLog)
+            Debug.LogError($"RendererDictionay.GetGo go not found id:{id},\tgoName:{goName},\tDict:{IdDict.Count}");
         return null;
     }
 

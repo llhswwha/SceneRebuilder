@@ -56,6 +56,27 @@ public class MeshTriangles
         }
     }
 
+    public static void DebugShowTriangles(GameObject target,float PointScale)
+    {
+        Mesh mesh = target.GetComponent<MeshFilter>().sharedMesh;
+        MeshTriangles meshTriangles = new MeshTriangles(mesh);
+
+
+        Debug.Log($"GetElbowInfo mesh vertexCount:{mesh.vertexCount} triangles:{mesh.triangles.Length}");
+        meshTriangles.ShowTriangles(target.transform, PointScale);
+
+        //Debug.Log($"GetElbowInfo trialges:{meshTriangles.Count}");
+        //for (int i = 0; i < meshTriangles.Count; i++)
+        //{
+        //    var t = meshTriangles.GetTriangle(i);
+
+        //    Debug.Log($"GetElbowInfo[{i + 1}/{meshTriangles.Count}] trialge:{t}");
+        //    GameObject sharedPoints1Obj = CreateSubTestObj($"trialge:{t}", this.transform);
+        //    t.ShowTriangle(this.transform, sharedPoints1Obj.transform, PointScale);
+        //}
+        meshTriangles.Dispose();
+    }
+
     private void Init(MeshStructure mesh)
     {
         this.mesh = mesh;
@@ -349,7 +370,7 @@ public class MeshTriangles
         
         //ShowSharedMeshTrianglesList(root, pointScale, 0, sharedPoints2, false);
 
-        Debug.Log($"GetWeldoletKeyPoints minDis:{minDis} sharedPoints2:{sharedPoints2.Count}");
+        Debug.Log($"GetWeldoletKeyPoints minDis:{minDis} sharedPoints1:{sharedPoints1.Count} sharedPoints2:{sharedPoints2.Count}");
         return sharedPoints2;
     }
 
@@ -674,14 +695,14 @@ public class MeshTriangles
             }
             //KeyPoints.Add(plane);
         }
-
+        Debug.Log($"GetSharedMeshTrianglesListByPoint minCount:{minCount} minDis:{minDis} sharedPoints1£º{sharedPoints1.Count} KeyPoints:{KeyPoints.Count}");
         KeyPoints.CombineSameMesh(minDis);
         KeyPoints.CombineSameCircle(minDis);
 
-        if (KeyPoints.Count < 2)
-        {
-            Debug.LogError($"GetKeyPoints KeyPoints:{KeyPoints.Count}");
-        }
+        //if (KeyPoints.Count < 2)
+        //{
+        //    Debug.LogError($"GetSharedMeshTrianglesListByPoint KeyPoints.Count < 2 KeyPoints:{KeyPoints.Count}");
+        //}
 
         KeyPoints.Sort();
         return KeyPoints;

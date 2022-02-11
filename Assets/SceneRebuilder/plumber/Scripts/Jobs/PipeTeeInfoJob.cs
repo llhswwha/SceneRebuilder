@@ -1,6 +1,7 @@
 using System;
 using System.Collections;
 using System.Collections.Generic;
+using System.Xml.Serialization;
 using Unity.Collections;
 using UnityEngine;
 
@@ -103,7 +104,7 @@ public struct PipeTeeInfoJob : IPipeJob
 
         var KeyPlaneInfo = PipeModelKeyPlaneInfo4.GetElbow4Planes(list4);
         data.KeyPointInfo = KeyPlaneInfo.GetKeyPointsData();
-        data.KeyPlaneInfo = new PipeElbowKeyPlaneData(KeyPlaneInfo);
+        data.KeyPlaneInfo = new PipeModelKeyPlaneData4(KeyPlaneInfo);
         //KeyPointInfo = GetElbow4(list4);
 
         //ModelStartPoint = KeyPointInfo.EndPointOut1;
@@ -111,7 +112,7 @@ public struct PipeTeeInfoJob : IPipeJob
 
         list3.Sort((a, b) => { return a.Radius.CompareTo(b.Radius); });
 
-        data.InnerKeyPlaneInfo = new PipeElbowKeyPlaneData(list3[1], list3[2], list3[0], list3[0]);
+        data.InnerKeyPlaneInfo = new PipeModelKeyPlaneData4(list3[1], list3[2], list3[0], list3[0]);
         data.InnerKeyPointInfo = data.InnerKeyPlaneInfo.GetKeyPointsData();
 
 
@@ -208,13 +209,16 @@ public struct PipeTeeData
 
     public PipeModelKeyPointData4 InnerKeyPointInfo;
 
-    public PipeElbowKeyPlaneData KeyPlaneInfo;
-    public PipeElbowKeyPlaneData InnerKeyPlaneInfo;
+    public PipeModelKeyPlaneData4 KeyPlaneInfo;
+    public PipeModelKeyPlaneData4 InnerKeyPlaneInfo;
 
+    [XmlAttribute]
     public bool IsSpecial;
 
+    [XmlAttribute]
     public bool IsGetInfoSuccess;
 
+    [XmlAttribute]
     public int KeyPointCount;
 
     public override string ToString()

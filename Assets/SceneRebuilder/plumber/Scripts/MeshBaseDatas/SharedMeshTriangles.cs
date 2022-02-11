@@ -1,11 +1,13 @@
 using System;
 using System.Collections;
 using System.Collections.Generic;
+using System.Xml.Serialization;
 using UnityEngine;
 
 [Serializable]
 public class SharedMeshTriangles : IComparable<SharedMeshTriangles>
 {
+    [XmlAttribute]
     public int PointId;
 
     public Vector3 Point;
@@ -14,16 +16,22 @@ public class SharedMeshTriangles : IComparable<SharedMeshTriangles>
 
     public Vector3 Normal;
 
+    [XmlAttribute]
     public float Radius;
 
+    [XmlAttribute]
     public float MinRadius;
 
+    [XmlAttribute]
     public float DistanceToCenter;
 
+    [XmlAttribute]
     public bool IsCircle;
 
+    [XmlAttribute]
     public float CircleCheckP;
 
+    [XmlAttribute]
     public float TriangleCount = 0;
 
     public void GetLines()
@@ -32,6 +40,11 @@ public class SharedMeshTriangles : IComparable<SharedMeshTriangles>
         var ps2 = GetMeshPoints();
         
         Debug.Log($"GetLines ps1:{ps1.Count} ps2:{ps2.Count}");
+    }
+
+    public SharedMeshTriangles()
+    {
+
     }
 
     public SharedMeshTriangles(int id, Vector3 p, Vector3 normal, List<MeshTriangle> ts)
@@ -256,6 +269,7 @@ public class SharedMeshTriangles : IComparable<SharedMeshTriangles>
 
 public struct SharedMeshTrianglesData
 {
+    [XmlAttribute]
     public int PointId;
 
     public Vector3 Point;
@@ -264,16 +278,22 @@ public struct SharedMeshTrianglesData
 
     public Vector3 Normal;
 
+    [XmlAttribute]
     public float Radius;
 
+    [XmlAttribute]
     public float MinRadius;
 
+    [XmlAttribute]
     public float DistanceToCenter;
 
+    [XmlAttribute]
     public bool IsCircle;
 
+    [XmlAttribute]
     public float CircleCheckP;
 
+    [XmlAttribute]
     public float TriangleCount;
 
     public override string ToString()
@@ -283,6 +303,10 @@ public struct SharedMeshTrianglesData
 
     public SharedMeshTrianglesData(SharedMeshTriangles d)
     {
+        if (d == null)
+        {
+            d = new SharedMeshTriangles();
+        }
         this.PointId = d.PointId;
         this.Point = d.Point;
         this.Center = d.Center;
@@ -460,6 +484,7 @@ public class SharedMeshTrianglesList : List<SharedMeshTriangles>
 
     internal void RemoveSamePoints(float minDis)
     {
+        int count1 = this.Count;
         var list1 = new List<SharedMeshTriangles>(this);
         //if (list1.Count < 1)
         //{
@@ -494,10 +519,13 @@ public class SharedMeshTrianglesList : List<SharedMeshTriangles>
             }
         }
 
+
         //foreach (var item in this)
         //{
         //    item.GetInfo();
         //}
+        int count2 = this.Count;
+        //Debug.Log($"RemoveSamePoints count1:{count1} count2:{count2}");
     }
 
     internal List<MeshTriangle> GetAllTriangles()
@@ -518,6 +546,8 @@ public class SharedMeshTrianglesList : List<SharedMeshTriangles>
 
     internal void CombineSamePoint(float minDis)
     {
+        int count1 = this.Count;
+
         var list1 = new List<SharedMeshTriangles>(this);
         //if (list1.Count < 1)
         //{
@@ -558,10 +588,15 @@ public class SharedMeshTrianglesList : List<SharedMeshTriangles>
         {
             item.GetInfo();
         }
+
+        int count2 = this.Count;
+        //Debug.Log($"CombineSamePoint count1:{count1} count2:{count2}");
     }
 
     internal void CombineSameCenter(float minDis)
     {
+        int count1 = this.Count;
+
         var list1 = GetCircleList();
         if (list1.Count < 1)
         {
@@ -601,6 +636,9 @@ public class SharedMeshTrianglesList : List<SharedMeshTriangles>
         {
             item.GetInfo();
         }
+
+        int count2 = this.Count;
+        //Debug.Log($"CombineSameCenter count1:{count1} count2:{count2}");
     }
 
     internal void CombineSameMesh(float minDis)
@@ -634,7 +672,7 @@ public class SharedMeshTrianglesList : List<SharedMeshTriangles>
             }
         }
         int count2 = this.Count;
-        Debug.Log($"CombineSameMesh count1:{count1} count2:{count2}");
+        //Debug.Log($"CombineSameMesh count1:{count1} count2:{count2}");
     }
 
     public void CombineSameCircle(float minDis)
@@ -643,7 +681,7 @@ public class SharedMeshTrianglesList : List<SharedMeshTriangles>
         var list1 = GetCircleList();
         if (list1.Count < 1)
         {
-            Debug.LogError($"CombineSameCircle minDis:{minDis} CircleList:{list1.Count}");
+            Debug.LogWarning($"CombineSameCircle minDis:{minDis} CircleList:{list1.Count}");
         }
         //Debug.Log($"CombineSameCenter minDis:{minDis} CircleList:{list1.Count}");
         for (int i1 = 0; i1 < list1.Count; i1++)

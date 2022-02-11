@@ -1,39 +1,55 @@
 using System;
 using System.Collections;
 using System.Collections.Generic;
+using System.Xml.Serialization;
 using UnityEngine;
 
 [Serializable]
 public class PipeGenerateArg 
 {
+    [XmlIgnore]
     public Material pipeMaterial;
 
+    [XmlIgnore]
     public Material weldMaterial;
 
+    [XmlAttribute]
     public int pipeSegments = 12;
 
+    [XmlAttribute]
     public int elbowSegments = 6;
 
+    [XmlAttribute]
     public int weldPipeSegments = 6;//焊缝的管道面数
 
+    [XmlAttribute]
     public int weldElbowSegments = 6;//焊缝的弯管段数 n*4
 
+    [XmlAttribute]
     public float weldRadius = 0.005f;
 
-    public bool generateWeld = false;
+    [XmlAttribute]
+    public bool generateWeld = true;
 
+    [XmlAttribute]
     public bool makeDoubleSided = false;
 
+    [XmlAttribute]
     public bool generateEndCaps = false;
 
+    [XmlAttribute]
     public float StartCapOffset = 0;
 
+    [XmlAttribute]
     public float EndCapOffset = 0;
 
+    [XmlAttribute]
     public bool IsGenerateEndWeld = true;
 
+    [XmlAttribute]
     public int uniformRadiusP = 0;
 
+    [XmlAttribute]
     public float weldCircleRadius = 0;
 
     public override string ToString()

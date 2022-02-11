@@ -116,6 +116,6 @@ QualitySettings:
     excludedTargetPlatforms: []
   m_PerPlatformDefaultQuality:
     PS4: 1
-    Standalone: 1
+    Standalone: 2
     Windows Store Apps: 1
     XboxOne: 1

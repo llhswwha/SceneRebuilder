@@ -632,19 +632,30 @@ public class PipeFactory : SingletonBehaviour<PipeFactory>
 
     public void SaveSceneDataXml()
     {
-        newBuilder.SaveSceneDataXml(this.Target.name);
+        newBuilder.SaveSceneDataXml(this.Target.name,generateArg);
     }
 
     public void LoadSceneDataXml()
     {
-        newBuilder.LoadSceneDataXml(this.Target.name);
+        generateArg2 = null;
+        newBuilder.LoadSceneDataXml(this.Target.name, this.Target.transform);
         
     }
 
     public void RemoveComponents()
     {
-        newBuilder.RemoveComponents();
+        newBuilder.RemoveComponents(this.Target);
     }
+
+    public void RemovePipeModels()
+    {
+        newBuilder.RemovePipeModels(this.Target);
+    }
+    public void FindPipeModels()
+    {
+        newBuilder.FindPipeModels(this.Target);
+    }
+    
 
     [ContextMenu("GetObbInfJobs")]
     public void GetObbInfosJob()
@@ -718,7 +729,7 @@ public class PipeFactory : SingletonBehaviour<PipeFactory>
 
     //newBuilder.CreatePipeRunList();
 
-        newBuilder.NewObjName = "_New";
+        newBuilder.NewObjName = NewObjName;
         newBuilder.generateArg = generateArg;
 
         newBuilder.RendererPipesEx();
@@ -751,7 +762,8 @@ public class PipeFactory : SingletonBehaviour<PipeFactory>
             builder.transform.SetParent(this.transform);
             newBuilder = builder.AddComponent<PipeBuilder>();
         }
-        newBuilder.NewObjName = "_New";
+        newBuilder.Target = this.Target;
+        newBuilder.NewObjName = NewObjName;
         newBuilder.generateArg = generateArg;
         newBuilder.IsCreatePipeRuns = this.IsCreatePipeRuns;
 
@@ -900,7 +912,54 @@ public class PipeFactory : SingletonBehaviour<PipeFactory>
 
     public Material weldMaterial;
 
+    public string NewObjName = "_New";
+
     public PipeGenerateArg generateArg = new PipeGenerateArg();
+
+    public PipeGenerateArg generateArg2 = new PipeGenerateArg();
+
+    public PipeGenerateArg GetLoadXmlArg()
+    {
+        if (generateArg2 == null)
+        {
+            generateArg2= generateArg.Clone();
+        }
+        PipeGenerateArg arg = generateArg2;
+        arg.generateWeld = false;
+        return arg;
+    }
+
+    public void RendererModelFromXml(PipeModelBase pipeModel, PipeModelSaveData data)
+    {
+        pipeModel.RendererModel(GetLoadXmlArg(), NewObjName);
+        RendererWeldsFromXml(pipeModel, data);
+    }
+
+    private void RendererWeldsFromXml(PipeModelBase pipeModel,PipeModelSaveData data)
+    {
+        if (data.PipeWelds != null)
+        {
+            foreach (var item in data.PipeWelds)
+            {
+                GameObject go = new GameObject(item.Name);
+                PipeWeldModel model = go.AddComponent<PipeWeldModel>();
+
+                //PipeModels.Add(model);
+
+                model.SetSaveData(item);
+                //model.RendererModel(GetLoadXmlArg(), NewObjName);
+
+                RendererId rId = RendererId.GetRId(go);
+                rId.Id = item.Id;
+                go.transform.SetParent(pipeModel.transform);
+
+                ////item.Transform.SetTransform(go.transform);
+                //item.SetTransformInfo(go.transform);
+
+                model.RendererModel(GetLoadXmlArg(), NewObjName);
+            }
+        }
+    }
 
     public int MinPipeSegments = 16;
 

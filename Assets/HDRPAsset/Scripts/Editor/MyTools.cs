@@ -4,6 +4,20 @@ using System.Collections.Generic;
 
 public class MyTools
 {
+    [MenuItem("Tools/RendererId/Clear")]
+    public static void RendererId_Clear()
+    {
+        foreach (var obj in Selection.gameObjects)
+        {
+            var ids = obj.GetComponentsInChildren<RendererId>(true);
+            foreach(var id in ids)
+            {
+                GameObject.DestroyImmediate(id);
+            }
+            Debug.Log($"RendererId_Clear ids:{ids.Length}");
+        }
+    }
+
     [MenuItem("Tools/Transform/X10")]
     public static void TransformX10()
     {

@@ -1,6 +1,7 @@
 using System;
 using System.Collections;
 using System.Collections.Generic;
+using System.Xml.Serialization;
 using Unity.Collections;
 using UnityEngine;
 
@@ -177,9 +178,13 @@ public struct PipeReducerData
     public Vector4 StartPoint;
     public Vector4 EndPoint ;
 
+    [XmlAttribute]
     public bool IsSpecial;
 
+    [XmlAttribute]
     public bool IsGetInfoSuccess;
+
+    [XmlAttribute]
     public int KeyPointCount;
 
     public PipeModelKeyPointData4 KeyPointInfo;

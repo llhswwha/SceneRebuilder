@@ -1613,10 +1613,11 @@ public class BaseFoldoutEditor<T> : BaseEditor<T> where T : class
         BaseFoldoutEditorHelper.DrawPrefabList(prefabListArg, funcGetList);
     }
 
-    public static void DrawPipeModelsList<T>(List<T> list, PipeModelFoldoutEditorArg listArg,string listName) where T : PipeModelBase
+    public static void DrawPipeModelsList<TM>(List<TM> list, PipeModelFoldoutEditorArg listArg,string listName) where TM : PipeModelBase
     {
         listArg.caption = listName;
         listArg.level = 0;
+        list = listArg.FilterList(list);
         EditorUIUtils.ToggleFoldout(listArg, arg =>
         {
             //var doors = doorsRoot.Doors;
@@ -1629,6 +1630,7 @@ public class BaseFoldoutEditor<T> : BaseEditor<T> where T : class
             {
                 list.Sort();
             }
+            listArg.OnlySpecial = GUILayout.Toggle(listArg.OnlySpecial, "OnlySpecial", GUILayout.Width(60));
             if (GUILayout.Button("Clear", GUILayout.Width(60)))
             {
                 list.Clear();

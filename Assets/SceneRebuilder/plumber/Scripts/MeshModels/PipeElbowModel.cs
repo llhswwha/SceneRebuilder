@@ -70,13 +70,15 @@ public class PipeElbowModel : PipeModelBase
         //info.Line1 = new PipeLineInfo(info.EndPointOut1, info.EndPointIn1, null, normal1);
         //info.Line2 = new PipeLineInfo(info.EndPointIn2, info.EndPointOut2, null, normal2);
 
-        TransformHelper.ShowLocalPoint(info.EndPointOut1, PointScale, this.transform, null).name = "Elbow2_OutPoint1";
-        TransformHelper.ShowLocalPoint(info.EndPointOut2, PointScale, this.transform, null).name = "Elbow2_OutPoint2";
-        TransformHelper.ShowLocalPoint(info.EndPointIn1, PointScale, this.transform, null).name = "Elbow2_InPoint1";
-        TransformHelper.ShowLocalPoint(info.EndPointIn2, PointScale, this.transform, null).name = "Elbow2_InPoint2";
-        TransformHelper.ShowLocalPoint(crossPoint1, PointScale, this.transform, null).name = "Elbow2_crossPoint1";
-        TransformHelper.ShowLocalPoint(crossPoint2, PointScale, this.transform, null).name = "Elbow2_crossPoint2";
-        TransformHelper.ShowLocalPoint(crossPoint12, PointScale, this.transform, null).name = "Elbow2_crossPoint12";
+        var keyPoints = CreateKeyPointsGo();
+
+        TransformHelper.ShowLocalPoint(info.EndPointOut1, PointScale, keyPoints.transform, null).name = "Elbow2_OutPoint1";
+        TransformHelper.ShowLocalPoint(info.EndPointOut2, PointScale, keyPoints.transform, null).name = "Elbow2_OutPoint2";
+        TransformHelper.ShowLocalPoint(info.EndPointIn1, PointScale, keyPoints.transform, null).name = "Elbow2_InPoint1";
+        TransformHelper.ShowLocalPoint(info.EndPointIn2, PointScale, keyPoints.transform, null).name = "Elbow2_InPoint2";
+        TransformHelper.ShowLocalPoint(crossPoint1, PointScale, keyPoints.transform, null).name = "Elbow2_crossPoint1";
+        TransformHelper.ShowLocalPoint(crossPoint2, PointScale, keyPoints.transform, null).name = "Elbow2_crossPoint2";
+        TransformHelper.ShowLocalPoint(crossPoint12, PointScale, keyPoints.transform, null).name = "Elbow2_crossPoint12";
 
         //ModelStartPoint = info.EndPointOut1;
         //ModelEndPoint = info.EndPointOut2;
@@ -308,6 +310,7 @@ public class PipeElbowModel : PipeModelBase
         ModelData.InnerKeyPointInfo = new PipeModelKeyPointData4(InnerKeyPointInfo);
         ModelData.IsGetInfoSuccess = IsGetInfoSuccess;
         ModelData.IsSpecial = IsSpecial;
+        ModelData.KeyPointCount = KeyPointCount;
         return ModelData;
     }
 
@@ -316,21 +319,26 @@ public class PipeElbowModel : PipeModelBase
         PipeElbowSaveData data = new PipeElbowSaveData();
         InitSaveData(data);
         data.Data = GetModelData();
-        KeyPointInfo = null;
-        InnerKeyPointInfo = null;
+        //KeyPointInfo = null;
+        //InnerKeyPointInfo = null;
         return data;
     }
 
 
-
-
-
-
-    public void SetSaveData(PipeElbowSaveData data)
+    public override void SetSaveData(PipeModelSaveData data)
     {
         //this.LineInfo = data.Info;
-        SetModelData(data.Data);
+        SetModelData((data as PipeElbowSaveData).Data);
+        //PipeFactory.Instance.RendererModelFromXml(this, data);
     }
+
+
+
+    //public void SetSaveData(PipeElbowSaveData data)
+    //{
+    //    //this.LineInfo = data.Info;
+    //    SetModelData(data.Data);
+    //}
 
 
 
@@ -350,12 +358,15 @@ public class PipeElbowModel : PipeModelBase
             arg.generateWeld = false;
             GameObject pipeNew = GetPipeNewGo(arg, afterName);
 
-            GameObject pipe1 = RenderPipeLine(arg, afterName, KeyPointInfo.EndPointIn1, KeyPointInfo.EndPointOut1);
-            GameObject pipe2 = RenderPipeLine(arg, afterName, KeyPointInfo.EndPointIn2, KeyPointInfo.EndPointOut2);
+            var lineArg = arg.Clone();
+            if(lineArg.pipeSegments<36)
+                lineArg.pipeSegments = 36;
+            GameObject pipe1 = RenderPipeLine(lineArg, afterName, KeyPointInfo.EndPointIn1, KeyPointInfo.EndPointOut1);
+            GameObject pipe2 = RenderPipeLine(lineArg, afterName, KeyPointInfo.EndPointIn2, KeyPointInfo.EndPointOut2);
             pipe1.transform.SetParent(pipeNew.transform);
             pipe2.transform.SetParent(pipeNew.transform);
 
-            GameObject pipe3 = RenderElbow(arg, afterName, InnerKeyPointInfo);
+            GameObject pipe3 = RenderElbow(arg, afterName, InnerKeyPointInfo,true);
 
 
 
@@ -371,7 +382,7 @@ public class PipeElbowModel : PipeModelBase
         }
         else
         {
-            return RenderElbow(arg, afterName, KeyPointInfo);
+            return RenderElbow(arg, afterName, KeyPointInfo,false);
         }
     }
 
@@ -415,7 +426,7 @@ public class PipeElbowModel : PipeModelBase
         return target;
     }
 
-    private GameObject RenderElbow(PipeGenerateArg arg, string afterName, PipeModelKeyPointInfo4 info)
+    private GameObject RenderElbow(PipeGenerateArg arg, string afterName, PipeModelKeyPointInfo4 info, bool isNewGo)
     {
         if (info == null)
         {
@@ -433,7 +444,7 @@ public class PipeElbowModel : PipeModelBase
         //}
         //pipe.Target = this.gameObject;
 
-        PipeMeshGenerator pipe = GetGenerator<PipeMeshGenerator>(arg, afterName);
+        PipeMeshGenerator pipe = GetGenerator<PipeMeshGenerator>(arg, afterName, isNewGo);
         PipeCreateArg pipeArg = new PipeCreateArg(info.GetLine1(), info.GetLine2());
         var ps = pipeArg.GetGeneratePoints(0, 2, false);
 

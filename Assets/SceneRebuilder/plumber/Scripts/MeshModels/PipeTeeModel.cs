@@ -177,6 +177,8 @@ public class PipeTeeModel : PipeElbowModel
         ModelEndPoint = LineEndPoint;
     }
 
+    public new PipeTeeData ModelData;
+
     internal void SetModelData(PipeTeeData lineData)
     {
         this.IsSpecial = lineData.IsSpecial;
@@ -197,19 +199,46 @@ public class PipeTeeModel : PipeElbowModel
         ModelStartPoint = KeyPointInfo.EndPointOut1;
         ModelEndPoint = KeyPointInfo.EndPointOut2;
 
-        Debug.Log($"Tee.SetModelData p11:{Vector4String(p11)} p12:{Vector4String(p12)} p21:{Vector4String(p21)} p22:{Vector4String(p22)}");
+        //Debug.Log($"Tee.SetModelData p11:{Vector4String(p11)} p12:{Vector4String(p12)} p21:{Vector4String(p21)} p22:{Vector4String(p22)}");
     }
 
-    internal void SetModelData(PipeWeldoletData lineData)
+    public new PipeTeeData GetModelData()
     {
-        //this.IsSpecial = lineData.IsSpecial;
-        this.IsGetInfoSuccess = lineData.IsGetInfoSuccess;
-        this.KeyPointCount = lineData.KeyPointCount;
-        this.KeyPointInfo = new PipeModelKeyPointInfo4(lineData.KeyPointInfo);
-        ModelStartPoint = KeyPointInfo.EndPointOut1;
-        ModelEndPoint = KeyPointInfo.EndPointIn1;
-
+        ModelData.KeyPointInfo = new PipeModelKeyPointData4(KeyPointInfo);
+        ModelData.InnerKeyPointInfo = new PipeModelKeyPointData4(InnerKeyPointInfo);
+        ModelData.KeyPlaneInfo = new PipeModelKeyPlaneData4(KeyPlaneInfo);
+        ModelData.InnerKeyPlaneInfo = new PipeModelKeyPlaneData4(InnerKeyPlaneInfo);
+        ModelData.IsGetInfoSuccess = IsGetInfoSuccess;
+        ModelData.IsSpecial = IsSpecial;
+        ModelData.KeyPointCount = KeyPointCount;
+        return ModelData;
     }
+
+    public new PipeTeeSaveData GetSaveData()
+    {
+        PipeTeeSaveData data = new PipeTeeSaveData();
+        InitSaveData(data);
+        data.Data = GetModelData();
+        //KeyPointInfo = null;
+        //InnerKeyPointInfo = null;
+        ////KeyPlaneInfo = null;
+        return data;
+    }
+
+    //public void SetSaveData(PipeTeeSaveData data)
+    //{
+    //    //this.LineInfo = data.Info;
+    //    SetModelData(data.Data);
+    //}
+
+    public override void SetSaveData(PipeModelSaveData data)
+    {
+        //this.LineInfo = data.Info;
+        SetModelData((data as PipeTeeSaveData).Data);
+        //PipeFactory.Instance.RendererModelFromXml(this, data);
+    }
+
+
 
 
 
@@ -245,15 +274,19 @@ public class PipeTeeModel : PipeElbowModel
                 return pipeNew;
             }
 
+            var lineArg = arg.Clone();
+            if (lineArg.pipeSegments < 36)
+                lineArg.pipeSegments = 36;
+            lineArg.generateEndCaps = true;
 
-            GameObject pipe11 = RenderPipeLine(arg, afterName+"_1", KeyPointInfo.EndPointIn1, KeyPointInfo.EndPointOut1);
-            GameObject pipe12 = RenderPipeLine(arg, afterName + "_2", KeyPointInfo.EndPointIn2, KeyPointInfo.EndPointOut2);
+            GameObject pipe11 = RenderPipeLine(lineArg, afterName+"_1", KeyPointInfo.EndPointIn1, KeyPointInfo.EndPointOut1);
+            GameObject pipe12 = RenderPipeLine(lineArg, afterName + "_2", KeyPointInfo.EndPointIn2, KeyPointInfo.EndPointOut2);
             pipe11.transform.SetParent(pipeNew.transform);
             pipe12.transform.SetParent(pipeNew.transform);
             GameObject pipe13 = RenderPipeLine(arg, afterName + "_3", KeyPlaneInfo.EndPointIn1.GetMinCenter4(), KeyPlaneInfo.EndPointIn2.GetMinCenter4());
             pipe13.transform.SetParent(pipeNew.transform);
 
-            GameObject pipe21 = RenderPipeLine(arg, afterName + "_4", InnerKeyPointInfo.EndPointIn1, InnerKeyPointInfo.EndPointOut1);
+            GameObject pipe21 = RenderPipeLine(lineArg, afterName + "_4", InnerKeyPointInfo.EndPointIn1, InnerKeyPointInfo.EndPointOut1);
             pipe21.transform.SetParent(pipeNew.transform);
             GameObject pipe22 = RenderPipeLine(arg, afterName + "_5", InnerKeyPlaneInfo.EndPointIn1.GetMinCenter4(), InnerKeyPlaneInfo.EndPointIn2.GetMinCenter4());
             pipe22.transform.SetParent(pipeNew.transform);
@@ -268,6 +301,10 @@ public class PipeTeeModel : PipeElbowModel
                 target = MeshCombineHelper.Combine(pipeNew);
             }
             
+           
+
+            target = CopyMeshComponentsEx(target);
+
             this.ResultGo = target;
 
             PipeMeshGenerator pipeG = target.AddComponent<PipeMeshGenerator>();
@@ -308,17 +345,33 @@ public class PipeTeeModel : PipeElbowModel
                     t.SetParent(target.transform);
                 }
             }
-            this.ResultGo = target;
+            
+            target = CopyMeshComponentsEx(target);
 
-            PipeMeshGenerator pipeG = target.AddComponent<PipeMeshGenerator>();
-            pipeG.Target = this.gameObject;
-            for (int i = 0; i < target.transform.childCount; i++)
+            this.ResultGo = target;
+            //else
             {
-                pipeG.Childrens.Add(target.transform.GetChild(i));
+                PipeMeshGenerator pipeG = target.AddComponent<PipeMeshGenerator>();
+                if (this == null)
+                {
+                    Debug.LogError("PipeTeeModel this == null");
+                }
+                if (this.gameObject == null)
+                {
+                    Debug.LogError("PipeTeeModel gameObject == null");
+                }
+                pipeG.Target = this.gameObject;
+                for (int i = 0; i < target.transform.childCount; i++)
+                {
+                    pipeG.Childrens.Add(target.transform.GetChild(i));
+                }
             }
+            
             return target;
         }
     }
+
+   
 
     
 
@@ -347,4 +400,9 @@ public class PipeTeeModel : PipeElbowModel
     //    int cCount = base.ConnectedModel(model2, minPointDis, isShowLog, isUniformRaidus, minRadiusDis);
     //    return cCount;
     //}
+
+    public new void OnDestroy()
+    {
+        Debug.LogError("PipeTeeModel.OnDestroy:"+this);
+    }
 }

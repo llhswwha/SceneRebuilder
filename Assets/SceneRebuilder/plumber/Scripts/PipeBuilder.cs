@@ -6,9 +6,12 @@ using System.Collections.Generic;
 using System.Linq;
 using Unity.Collections;
 using UnityEngine;
+using UnityEngine.SceneManagement;
 
 public class PipeBuilder : MonoBehaviour
 {
+    public GameObject Target;
+
     public List<Transform> PipeLineGos = new List<Transform>();
 
     public List<PipeLineModel> PipeLines = new List<PipeLineModel>();
@@ -202,6 +205,7 @@ public class PipeBuilder : MonoBehaviour
     {
         DateTime start = DateTime.Now;
         PipeGenerators.Clear();
+        PipeGenerateArg gArg = this.GetPipeGenerateArg();
         for (int i = 0; i < PipeModels.Count; i++)
         {
             PipeModelBase go = PipeModels[i];
@@ -210,7 +214,7 @@ public class PipeBuilder : MonoBehaviour
             {
                 return;
             }
-            GameObject pipe = go.RendererModel(this.GetPipeGenerateArg(), NewObjName);
+            GameObject pipe = go.RendererModel(gArg, NewObjName);
             if (pipe == null)
             {
                 Debug.LogError($"RendererPipesEx pipe == null go:{go.name}");
@@ -481,12 +485,70 @@ public class PipeBuilder : MonoBehaviour
 
     public void RefreshPipeModels(GameObject root)
     {
-        PipeLines= root.GetComponentsInChildren<PipeLineModel>(true).ToList();
-        PipeElbows = root.GetComponentsInChildren<PipeElbowModel>(true).ToList();
-        PipeTees = root.GetComponentsInChildren<PipeTeeModel>(true).ToList();
-        PipeReducers = root.GetComponentsInChildren<PipeReducerModel>(true).ToList();
-        PipeFlanges = root.GetComponentsInChildren<PipeFlangeModel>(true).ToList();
-        PipeWeldolets = root.GetComponentsInChildren<PipeWeldoletModel>(true).ToList();
+        var ps = root.GetComponentsInChildren<PipeModelBase>(true);
+        PipeModels = new List<PipeModelBase>(ps);
+
+        PipeLines.Clear();
+        PipeElbows.Clear();
+        PipeTees.Clear();
+        PipeReducers.Clear();
+        PipeFlanges.Clear();
+        PipeWeldolets.Clear();
+
+        foreach (var model in PipeModels)
+        {
+            if(model is PipeWeldoletModel)
+            {
+                PipeWeldolets.Add(model as PipeWeldoletModel);
+            }
+            else if (model is PipeTeeModel)
+            {
+                PipeTees.Add(model as PipeTeeModel);
+            }
+            else if (model is PipeFlangeModel)
+            {
+                PipeFlanges.Add(model as PipeFlangeModel);
+            }
+            else if (model is PipeReducerModel)
+            {
+                PipeReducers.Add(model as PipeReducerModel);
+            }
+
+
+            else if (model is PipeLineModel)
+            {
+                PipeLines.Add(model as PipeLineModel);
+            }
+            else if (model is PipeElbowModel)
+            {
+                PipeElbows.Add(model as PipeElbowModel);
+            }
+        }
+
+        Debug.Log($"RefreshPipeModels root:{root} PipeModels:{PipeModels.Count} ");
+
+        //PipeLines = root.GetComponentsInChildren<PipeLineModel>(true).ToList();
+        //PipeElbows = root.GetComponentsInChildren<PipeElbowModel>(true).ToList();
+        //PipeTees = root.GetComponentsInChildren<PipeTeeModel>(true).ToList();
+        //PipeReducers = root.GetComponentsInChildren<PipeReducerModel>(true).ToList();
+        //PipeFlanges = root.GetComponentsInChildren<PipeFlangeModel>(true).ToList();
+        //PipeWeldolets = root.GetComponentsInChildren<PipeWeldoletModel>(true).ToList();
+
+        //PipeModels = new List<PipeModelBase>();
+        //PipeModels.AddRange(PipeLines);
+        //PipeModels.AddRange(PipeElbows);
+        //PipeModels.AddRange(PipeTees);
+        //PipeModels.AddRange(PipeReducers);
+        //PipeModels.AddRange(PipeFlanges);
+        //PipeModels.AddRange(PipeWeldolets);
+    }
+
+    public void RemovePipeModels<T>(List<T> models) where T :PipeModelBase
+    {
+        foreach(var m in models)
+        {
+            PipeModels.Remove(m);
+        }
     }
 
     public void RendererPipeLines()
@@ -525,6 +587,8 @@ public class PipeBuilder : MonoBehaviour
         }
         NewPipeList.Clear();
 
+
+
         if (pipeRunList != null)
         {
             foreach (GameObject item in pipeRunList.PipeRunGos)
@@ -533,6 +597,24 @@ public class PipeBuilder : MonoBehaviour
                 GameObject.DestroyImmediate(item);
             }
         }
+
+        foreach(PipeModelBase model in PipeModels)
+        {
+            if (model == null) continue;
+            model.ClearGo();
+        }
+
+        if (Target)
+        {
+            var gs = Target.GetComponentsInChildren<PipeMeshGeneratorBase>(true);
+            foreach (var g in gs)
+            {
+                if (g == null) continue;
+                GameObject.DestroyImmediate(g.gameObject);
+            }
+            Debug.Log($"ClearGeneratedObjs gs:{gs.Length}");
+        }
+        
     }
 
     public void GetPipeInfos()
@@ -621,7 +703,7 @@ public class PipeBuilder : MonoBehaviour
             var lineData = PipeTeeInfoJob.Result[i];
             //Debug.Log($"LineModel[{i}] model:{pipeModel.name} lineData:{lineData}");
             pipeModel.SetModelData(lineData);
-            PipeElbows.Add(pipeModel);
+            PipeTees.Add(pipeModel);
             AddPipeModel(pipeModel);
         }
         elbowJobs.Dispose();
@@ -921,77 +1003,227 @@ public class PipeBuilder : MonoBehaviour
         return jobs;
     }
 
-    public void SaveSceneDataXml(string targetName)
+    public void SaveSceneDataXml(string targetName, PipeGenerateArg arg)
     {
         SceneSaveData data = new SceneSaveData();
+        data.Arg = arg;
         string newModelInfo = "\\..\\SceneSaveData_"+ targetName+".xml";
         string path = Application.dataPath + newModelInfo;
         foreach(PipeLineModel model in PipeLines)
         {
-            data.AddData(model.GetSaveData());
+            data.AddData_PipeLine(model.GetSaveData());
         }
         foreach (PipeElbowModel model in PipeElbows)
         {
-            data.AddData(model.GetSaveData());
+            data.AddData_PipeElbow(model.GetSaveData());
+        }
+        foreach (PipeTeeModel model in PipeTees)
+        {
+            data.AddData_PipeTee(model.GetSaveData());
+        }
+        foreach (PipeReducerModel model in PipeReducers)
+        {
+            data.AddData_PipeReducer(model.GetSaveData());
+        }
+        foreach (PipeFlangeModel model in PipeFlanges)
+        {
+            data.AddData_PipeFlange(model.GetSaveData());
+        }
+        foreach (PipeWeldoletModel model in PipeWeldolets)
+        {
+            data.AddData_PipeWeldolet(model.GetSaveData());
         }
         SerializeHelper.Save(data, path);
         Debug.Log($"SaveSceneDataXml path:{newModelInfo}");
     }
 
-    public void LoadSceneDataXml(string targetName)
+    public void LoadSceneDataXml(string targetName, Transform target)
     {
         string newModelInfo = "\\..\\SceneSaveData_" + targetName + ".xml";
         string path = Application.dataPath + newModelInfo;
         SceneSaveData data = SerializeHelper.LoadFromFile<SceneSaveData>(path);
-        LoadSceneData(data);
-        RendererPipesEx();
+        LoadSceneData(data, target);
+        //RendererPipesEx();
+        FindPipeModels(target.gameObject);
         ProgressBarHelper.ClearProgressBar();
         Debug.Log($"LoadSceneDataXml path:{newModelInfo} data:{data}");
     }
 
-    public void LoadSceneData(SceneSaveData sceneData)
+    //private GameObject InitModelGo(PipeLineSaveData item)
+    //{
+    //    GameObject go = new GameObject(item.Name);
+    //    PipeLineModel model = go.GetComponent<PipeLineModel>();
+    //    model.SetSaveData(item);
+    //    return go;
+    //}
+
+    private GameObject InitModelGo<TD, TM>(TD item, Transform target)
+        where TD : PipeModelSaveData
+        where TM : PipeModelBase
+    {
+        GameObject go = new GameObject(item.Name);
+        TM model = go.AddComponent<TM>();
+
+        PipeModels.Add(model);
+
+        model.SetSaveData(item);
+        //PipeFactory.Instance.RendererModelFromXml(model, item);
+
+        RendererId rId = RendererId.GetRId(go);
+        rId.Id = item.Id;
+
+        GameObject parent = IdDictionary.GetGo(item.PId, item.Name, true);
+        if (parent == null)
+        {
+            Debug.LogWarning($"InitModelGo parent == null item:{item}");
+            go.transform.SetParent(target);
+        }
+        else
+        {
+            go.transform.SetParent(parent.transform);
+        }
+
+
+        //item.Transform.SetTransform(go.transform);
+        item.SetTransformInfo(go.transform);
+        //SetPath(item, go.transform);
+
+        PipeFactory.Instance.RendererModelFromXml(model, item);
+        return go;
+    }
+
+    //internal void SetPath(PipeModelSaveData data,Transform transform)
+    //{
+    //    var path = data.Path;
+    //    var rootGos=SceneManager.GetActiveScene().GetRootGameObjects();
+    //    var pathName = path[0];
+    //    foreach(var go in rootGos)
+    //    {
+
+    //    }
+    //}
+
+    private GameObject LoadSceneData<TD, TM>(TD item, Transform target)
+        where TD : PipeModelSaveData
+        where TM : PipeModelBase
+    {
+        GameObject go = IdDictionary.GetGo(item.Id,item.Name,false);
+        if (go == null)
+        {
+            //Debug.LogWarning($"LoadSceneData go == null item:{item}");
+            go = InitModelGo<TD, TM>(item, target);
+        }
+        else
+        {
+            TM model = go.GetComponent<TM>();
+            if (model == null)
+            {
+                Debug.LogError($"GenerateFromSceneData model == null go:{go}");
+                return null;
+            }
+            else
+            {
+                model.SetSaveData(item);
+                PipeFactory.Instance.RendererModelFromXml(model, item);
+            }
+        }
+        return go;
+    }
+
+    public void LoadSceneData(SceneSaveData sceneData,Transform target)
     {
         IdDictionary.InitInfos();
         foreach(PipeLineSaveData item in sceneData.PipeLines)
         {
-            GameObject go=IdDictionary.GetGo(item.Id);
-            if (go == null)
-            {
-                Debug.LogError($"GenerateFromSceneData go == null item:{item}");
-                continue;
-            }
-            PipeLineModel model = go.GetComponent<PipeLineModel>();
-            if (model == null)
-            {
-                Debug.LogError($"GenerateFromSceneData model == null go:{go}");
-                continue;
-            }
-            model.SetSaveData(item);
+            LoadSceneData<PipeLineSaveData,PipeLineModel>(item, target);
         }
         foreach (PipeElbowSaveData item in sceneData.PipeElbows)
         {
-            GameObject go = IdDictionary.GetGo(item.Id);
-            if (go == null)
-            {
-                Debug.LogError($"GenerateFromSceneData go == null item:{item}");
-                continue;
-            }
-            PipeElbowModel model = go.GetComponent<PipeElbowModel>();
-            if (model == null)
-            {
-                Debug.LogError($"GenerateFromSceneData model == null go:{go}");
-                continue;
-            }
-            model.SetSaveData(item);
+            LoadSceneData<PipeElbowSaveData, PipeElbowModel>(item, target);
+        }
+        foreach (PipeTeeSaveData item in sceneData.PipeTees)
+        {
+            LoadSceneData<PipeTeeSaveData, PipeTeeModel>(item, target);
+        }
+        foreach (PipeReducerSaveData item in sceneData.PipeReducers)
+        {
+            LoadSceneData<PipeReducerSaveData, PipeReducerModel>(item, target);
+        }
+        foreach (PipeFlangeSaveData item in sceneData.PipeFlanges)
+        {
+            LoadSceneData<PipeFlangeSaveData, PipeFlangeModel>(item, target);
+        }
+        foreach (PipeWeldoletSaveData item in sceneData.PipeWeldolets)
+        {
+            LoadSceneData<PipeWeldoletSaveData, PipeWeldoletModel>(item, target);
         }
     }
 
-    public void RemoveComponents()
+    public void RemoveComponents(GameObject target)
     {
         foreach(var item in PipeModels)
         {
+            if (item == null) continue;
             item.RemoveAllComponents();
         }
+
+        //var models = target.GetComponentsInChildren<PipeModelBase>(true);
+        //foreach (var item in models)
+        //{
+        //    if (item == null) continue;
+        //    item.RemoveAllComponents();
+        //}
+    }
+
+    public void RemovePipeModels(GameObject target)
+    {
+        foreach (var item in PipeModels)
+        {
+            if (item == null) continue;
+            if (item.IsGetInfoSuccess == false)
+            {
+                GameObject.DestroyImmediate(item);
+            }
+            else
+            {
+                GameObject.DestroyImmediate(item.gameObject);
+            }
+        }
+
+        var models = target.GetComponentsInChildren<PipeModelBase>(true);
+        foreach (var item in models)
+        {
+            if (item == null) continue;
+            if (item.IsGetInfoSuccess == false)
+            {
+                GameObject.DestroyImmediate(item);
+            }
+            else
+            {
+                GameObject.DestroyImmediate(item.gameObject);
+            }
+        }
+    }
+
+    public List<PipeModelBase> FindPipeModels(GameObject target)
+    {
+        if (target == null)
+        {
+            target = Target;
+        }
+        RefreshPipeModels(target);
+
+        //var ps = target.GetComponentsInChildren<PipeModelBase>(true);
+        //PipeModels = new List<PipeModelBase>(ps);
+
+        //RemovePipeModels(PipeLines);
+        //RemovePipeModels(PipeElbows);
+        //RemovePipeModels(PipeTees);
+        //RemovePipeModels(PipeReducers);
+        //RemovePipeModels(PipeFlanges);
+        //RemovePipeModels(PipeWeldolets);
+
+        return PipeModels;
     }
 
     public void GetPipeInfosEx()

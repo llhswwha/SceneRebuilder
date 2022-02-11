@@ -26,6 +26,11 @@ public struct Point3Info//:ScriptableObject
         this.z = v.z;
     }
 
+    public Vector3 ToVector3()
+    {
+        return new Vector3(x,y,z);
+    }
+
     //public static float Power = 1000f;
 
     public static float Power = 1000f;

@@ -91,10 +91,15 @@ public class PipeFlangeModel : PipeReducerModel
 
         PipeGenerateArg arg = arg0.Clone();
 
+        if(arg.pipeSegments<36)
+            arg.pipeSegments = 36;
+
+        arg.generateWeld = false;
+
         if (IsSpecial)
         {
             GameObject pipeNew = GetPipeNewGo(arg, afterName);
-            arg.generateWeld = false;
+            
             GameObject pipe11 = RenderPipeLine(arg, afterName + "_1", KeyPointInfo.EndPointIn1, KeyPointInfo.EndPointOut1);
 
             if (KeyPointInfo.EndPointOut2.w < 0.03)
@@ -104,11 +109,24 @@ public class PipeFlangeModel : PipeReducerModel
             }
             arg.generateWeld = arg0.generateWeld;
             arg.IsGenerateEndWeld = false;
+            
+            float r1 = KeyPointInfo.EndPointIn2.w;
+            float r2 = KeyPointInfo.EndPointOut2.w;
+            float r = r1;
+            if (r2 < r)
+            {
+                r = r2;
+            }
+            KeyPointInfo.EndPointIn2.w = r;
+            KeyPointInfo.EndPointOut2.w = r;
             GameObject pipe12 = RenderPipeLine(arg, afterName + "_2", KeyPointInfo.EndPointOut2, KeyPointInfo.EndPointIn2);
+
+            //GameObject pipe12 = RenderPipeLine(arg, afterName + "_2", KeyPointInfo.EndPointIn2, KeyPointInfo.EndPointOut2);
             pipe11.transform.SetParent(pipeNew.transform);
             pipe12.transform.SetParent(pipeNew.transform);
 
             GameObject target = CombineTarget(arg, pipeNew);
+            target = CopyMeshComponentsEx(target);
             this.ResultGo = target;
 
             PipeMeshGenerator pipeG = target.AddComponent<PipeMeshGenerator>();
@@ -124,6 +142,37 @@ public class PipeFlangeModel : PipeReducerModel
             return base.RendererModel(arg, afterName);
         }
 
+    }
+
+    //public new PipeFlangeSaveData ModelData;
+
+    public new PipeReducerData GetModelData()
+    {
+        ModelData.KeyPointInfo = new PipeModelKeyPointData4(KeyPointInfo);
+        ModelData.StartPoint = this.StartPoint;
+        ModelData.EndPoint = this.EndPoint;
+        ModelData.IsGetInfoSuccess = IsGetInfoSuccess;
+        ModelData.IsSpecial = IsSpecial;
+        ModelData.KeyPointCount = KeyPointCount;
+        return ModelData;
+    }
+
+    public new PipeFlangeSaveData GetSaveData()
+    {
+        PipeFlangeSaveData data = new PipeFlangeSaveData();
+        InitSaveData(data);
+        data.Data = GetModelData();
+        //KeyPointInfo = null;
+        //InnerKeyPointInfo = null;
+        ////KeyPlaneInfo = null;
+        return data;
+    }
+
+    public override void SetSaveData(PipeModelSaveData data)
+    {
+        //this.LineInfo = data.Info;
+        SetModelData((data as PipeFlangeSaveData).Data);
+        //PipeFactory.Instance.RendererModelFromXml(this, data);
     }
 
     public override int ConnectedModel(PipeModelBase model2, float minPointDis, bool isShowLog, bool isUniformRaidus, float minRadiusDis)
