@@ -54,7 +54,7 @@ public class MeshModelSaveData
 
     public override string ToString()
     {
-        return $"Name:{Name} Id:{Id} PId:{PId}";
+        return $"Name:{Name} Id:{Id} PId:{PId} prefabId:{prefabId} isPrefab:{isPrefab}";
     }
 
     public MeshModelSaveData()
@@ -97,7 +97,17 @@ public class MeshModelSaveData
         }
         else
         {
+            if (ins.PrefabGo==null)
+            {
+                Debug.LogError($"MeshModelSaveData.InitPrefabInfo ins.PrefabGo==null go:{go}");
+                return;
+            }
             prefabId = RendererId.GetId(ins.PrefabGo);
+            if (string.IsNullOrEmpty(prefabId))
+            {
+                Debug.LogError($"MeshModelSaveData.InitPrefabInfo string.IsNullOrEmpty(prefabId) go:{go}");
+                return;
+            }
             isPrefab = ins.IsPrefab;
         }
     }

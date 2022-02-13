@@ -73,6 +73,14 @@ public class SceneSaveData
     internal void AddData_PipeLine(PipeLineSaveData pipeLineSaveData)
     {
         PipeLines.Add(pipeLineSaveData);
+        //if(pipeLineSaveData.PipeWelds!=null)
+        //    foreach(var item in pipeLineSaveData.PipeWelds)
+        //    {
+        //        if(item.Name== "HH-J-0GMA-11-006 9")
+        //        {
+        //            Debug.LogError($"AddData_PipeLine item:{item}");
+        //        }
+        //    }
     }
 
     internal void AddData_PipeElbow(PipeElbowSaveData pipeLineSaveData)
