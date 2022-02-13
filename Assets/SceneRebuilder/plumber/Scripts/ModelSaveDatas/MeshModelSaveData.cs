@@ -27,6 +27,17 @@ public class MeshModelSaveData
 
     public List<PipeWeldSaveData> PipeWelds = new List<PipeWeldSaveData>();
 
+    [XmlAttribute]
+    public string prefabId;
+
+    [XmlAttribute]
+    public bool isPrefab;
+
+    public virtual bool IsSuccess()
+    {
+        return true;
+    }
+
     public void GetTransformInfo(Transform t)
     {
         pos = t.position;
@@ -58,11 +69,36 @@ public class MeshModelSaveData
 
     public void Init(GameObject go)
     {
+        if (go == null)
+        {
+            Debug.LogError($"MeshModelSaveData.Init go==null");
+        }
         Name = go.name;
         Id = RendererId.GetId(go);
         //data.Path = GetPath();
         PId = RendererId.GetId(go.transform.parent);
         //data.Transform = new TransformInfo(this.transform);
         GetTransformInfo(go.transform);
+
+        
+    }
+
+    public void InitPrefabInfo(GameObject go)
+    {
+        if (go == null)
+        {
+            Debug.LogError($"MeshModelSaveData.InitPrefabInfo go==null Name:{this.Name}");
+            return;
+        }
+        MeshPrefabInstance ins = go.GetComponent<MeshPrefabInstance>();
+        if (ins == null)
+        {
+            Debug.LogError($"MeshModelSaveData.InitPrefabInfo ins==null go:{go}");
+        }
+        else
+        {
+            prefabId = RendererId.GetId(ins.PrefabGo);
+            isPrefab = ins.IsPrefab;
+        }
     }
 }

@@ -30,6 +30,12 @@ public static class IdDictionary
     //    return IdDict.Values.ToList();
     //}
 
+    public static void SetId(GameObject go)
+    {
+        RendererId id = go.GetComponent<RendererId>();
+        SetId(id);
+    }
+
     public static void SetId(RendererId id)
     {
         //try

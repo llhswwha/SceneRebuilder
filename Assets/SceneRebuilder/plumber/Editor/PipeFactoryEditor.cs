@@ -196,6 +196,25 @@ public class PipeFactoryEditor : BaseFoldoutEditor<PipeFactory>
         {
             targetT.SaveSceneDataXml();
         }
+
+        if (GUILayout.Button("FindPipeModels"))
+        {
+            targetT.FindPipeModels();
+        }
+        if (GUILayout.Button("LoadXml"))
+        {
+            targetT.LoadSceneDataXml();
+        }
+        if (GUILayout.Button("ClearXml"))
+        {
+            targetT.ClearGeneratedObjs();
+            targetT.RemoveComponents();
+            targetT.RemovePipeModels();
+            targetT.RemoveMeshes();
+        }
+        GUILayout.EndHorizontal();
+
+        GUILayout.BeginHorizontal();
         if (GUILayout.Button("RemComps"))
         {
             targetT.RemoveComponents();
@@ -207,14 +226,6 @@ public class PipeFactoryEditor : BaseFoldoutEditor<PipeFactory>
         if (GUILayout.Button("RemMeshes"))
         {
             targetT.RemoveMeshes();
-        }
-        if (GUILayout.Button("FindPipeModels"))
-        {
-            targetT.FindPipeModels();
-        }
-        if (GUILayout.Button("LoadXml"))
-        {
-            targetT.LoadSceneDataXml();
         }
         if (GUILayout.Button("ClearResult"))
         {

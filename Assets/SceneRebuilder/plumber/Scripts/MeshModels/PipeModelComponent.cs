@@ -47,7 +47,14 @@ public class PipeModelComponent : MonoBehaviour
 
         ////data.PipeWelds = GetWeldsSaveData();
 
-        data.Init(this.gameObject);
+        //data.Init(this.gameObject);
+        if (this.ResultGo == null)
+        {
+            Debug.LogWarning($"GetWeldsSaveData this.ResultGo == null type:{this.GetType()} gameObject:{this.gameObject}");
+            return;
+        }
+        data.Init(this.ResultGo);
+        data.InitPrefabInfo(this.ResultGo);
     }
 
     public List<PipeWeldSaveData> GetWeldsSaveData()

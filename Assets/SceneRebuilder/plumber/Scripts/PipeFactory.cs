@@ -938,33 +938,127 @@ public class PipeFactory : SingletonBehaviour<PipeFactory>
     public void RendererModelFromXml(PipeModelBase pipeModel, MeshModelSaveData data)
     {
         pipeModel.RendererModel(GetLoadXmlArg(), NewObjName);
-        RendererWeldsFromXml(pipeModel, data);
+        //RendererWeldsFromXml(pipeModel, data);
     }
 
-    private void RendererWeldsFromXml(PipeModelBase pipeModel,MeshModelSaveData data)
+    public void RendererWeldsFromXml(List<PipeWeldSaveData> welds, Transform parent)
     {
-        if (data.PipeWelds != null)
+        if (welds != null)
         {
-            foreach (var item in data.PipeWelds)
+            foreach (var weldData in welds)
             {
-                GameObject go = new GameObject(item.Name);
-                PipeWeldModel model = go.AddComponent<PipeWeldModel>();
-
-                //PipeModels.Add(model);
-
-                model.SetSaveData(item);
-                //model.RendererModel(GetLoadXmlArg(), NewObjName);
-
-                RendererId rId = RendererId.GetRId(go);
-                rId.Id = item.Id;
-                go.transform.SetParent(pipeModel.transform);
-
-                ////item.Transform.SetTransform(go.transform);
-                //item.SetTransformInfo(go.transform);
-
-                model.RendererModel(GetLoadXmlArg(), NewObjName);
+                if (weldData.isPrefab)
+                {
+                    CreateWeldGo(weldData, parent);
+                }
+            }
+            foreach (var weldData in welds)
+            {
+                if (weldData.isPrefab==false)
+                {
+                    CopyWeldGo(weldData, parent);
+                }
             }
         }
+    }
+
+    private GameObject CopyWeldGo(PipeWeldSaveData item, Transform parent)
+    {
+        GameObject go = new GameObject(item.Name);
+        PipeWeldModel model = go.AddComponent<PipeWeldModel>();
+
+        //PipeModels.Add(model);
+
+        model.SetSaveData(item);
+        //model.RendererModel(GetLoadXmlArg(), NewObjName);
+
+        RendererId rId = RendererId.GetRId(go);
+        rId.Id = item.Id;
+        if (parent == null)
+        {
+            var pGo = IdDictionary.GetGo(item.PId);
+            if (pGo != null)
+            {
+                parent = pGo.transform;
+            }
+            else
+            {
+                Debug.LogError($"CopyWeldGo pGo==null pId:{item.PId} name:{item.Name}");
+            }
+        }
+        go.transform.SetParent(parent);
+
+        ////item.Transform.SetTransform(go.transform);
+        item.SetTransformInfo(go.transform);
+
+        //GameObject weldNew = model.RendererModel(GetLoadXmlArg(), NewObjName);
+
+        GameObject prefabGo = IdDictionary.GetGo(item.prefabId, item.Name, false);
+        if (prefabGo == null)
+        {
+            Debug.LogError($"CopyWeldGo prefabGo == null Name:{item.Name} prefabId:{item.prefabId}");
+            return null;
+        }
+        MeshFilter mf = prefabGo.GetComponent<MeshFilter>();
+        if (prefabGo == null)
+        {
+            Debug.LogError($"CopyWeldGo MeshFilter == null Name:{item.Name} prefabId:{item.prefabId}");
+            return null;
+        }
+        Mesh ms = mf.sharedMesh;
+        if (prefabGo == null)
+        {
+            Debug.LogError($"CopyWeldGo sharedMesh == null Name:{item.Name} prefabId:{item.prefabId}");
+            return null;
+        }
+        MeshFilter mf2 = go.AddMissingComponent<MeshFilter>();
+        mf2.sharedMesh = ms;
+
+        MeshRenderer mr2 = go.AddMissingComponent<MeshRenderer>();
+        if (item is PipeWeldSaveData)
+        {
+            mr2.sharedMaterial = this.generateArg.weldMaterial;
+        }
+        else
+        {
+            mr2.sharedMaterial = this.generateArg.pipeMaterial;
+        }
+
+        go.name = item.Name;
+
+        IdDictionary.SetId(go);
+        return go;
+    }
+
+    private GameObject CreateWeldGo(PipeWeldSaveData weldData,Transform parent)
+    {
+        GameObject go = new GameObject(weldData.Name);
+        PipeWeldModel model = go.AddComponent<PipeWeldModel>();
+
+        //PipeModels.Add(model);
+
+        model.SetSaveData(weldData);
+        //model.RendererModel(GetLoadXmlArg(), NewObjName);
+
+        RendererId rId = RendererId.GetRId(go);
+        rId.Id = weldData.Id;
+        if (parent == null)
+        {
+            var pGo = IdDictionary.GetGo(weldData.PId);
+            if (pGo != null)
+            {
+                parent = pGo.transform;
+            }
+        }
+        go.transform.SetParent(parent);
+
+        ////item.Transform.SetTransform(go.transform);
+        //item.SetTransformInfo(go.transform);
+
+        GameObject weldNew = model.RendererModel(GetLoadXmlArg(), NewObjName);
+        weldNew.name = weldData.Name;
+        IdDictionary.SetId(go);
+        return go;
     }
 
     public int MinPipeSegments = 16;

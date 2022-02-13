@@ -17,12 +17,14 @@ public class PipeWeldModel : PipeModelComponent
 
     public PipeWeldSaveData GetSaveData()
     {
-        PipeWeldSaveData data = new PipeWeldSaveData();
-        InitSaveData(data);
         if (ResultGo == null)
         {
             ResultGo = this.gameObject;
         }
+
+        PipeWeldSaveData data = new PipeWeldSaveData();
+        InitSaveData(data);
+
         if (ResultGo != null)
         {
             WeldData.start = ResultGo.transform.position;

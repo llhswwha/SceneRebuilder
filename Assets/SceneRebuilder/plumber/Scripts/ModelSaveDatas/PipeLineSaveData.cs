@@ -9,5 +9,8 @@ public class PipeLineSaveData : MeshModelSaveData
 {
     public PipeLineData Data;
 
-
+    public override bool IsSuccess()
+    {
+        return Data.IsGetInfoSuccess;
+    }
 }

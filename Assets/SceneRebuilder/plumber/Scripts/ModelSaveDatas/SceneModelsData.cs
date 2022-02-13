@@ -22,7 +22,53 @@ public class SceneSaveData
 
     public List<MeshPrefabSaveData> MeshPrefabs = new List<MeshPrefabSaveData>();
 
+    internal List<PipeWeldSaveData> GetWelds()
+    {
+        List<PipeWeldSaveData> welds = new List<PipeWeldSaveData>();
+        foreach (var item in PipeLines)
+        {
+            if (item.PipeWelds == null) continue;
+            welds.AddRange(item.PipeWelds);
+        }
+        foreach (var item in PipeElbows)
+        {
+            if (item.PipeWelds == null) continue;
+            welds.AddRange(item.PipeWelds);
+        }
+        foreach (var item in PipeTees)
+        {
+            if (item.PipeWelds == null) continue;
+            welds.AddRange(item.PipeWelds);
+        }
+        foreach (var item in PipeReducers)
+        {
+            if (item.PipeWelds == null) continue;
+            welds.AddRange(item.PipeWelds);
+        }
+        foreach (var item in PipeFlanges)
+        {
+            if (item.PipeWelds == null) continue;
+            welds.AddRange(item.PipeWelds);
+        }
+        foreach (var item in PipeWeldolets)
+        {
+            if (item.PipeWelds == null) continue;
+            welds.AddRange(item.PipeWelds);
+        }
+        return welds;
+    }
+
+    public int GetPipeModelCount()
+    {
+        return PipeLines.Count + PipeElbows.Count + PipeTees.Count + PipeReducers.Count + PipeFlanges.Count + PipeWeldolets.Count;
+    }
+
     private Dictionary<GameObject,MeshPrefabSaveData> MeshPrefabDict = new Dictionary<GameObject, MeshPrefabSaveData>();
+
+    public string GetCountString()
+    {
+        return $" Prefabs:{MeshPrefabs.Count} Line:{PipeLines.Count} Elbow:{PipeElbows.Count} Tee:{PipeTees.Count} Reducer:{PipeReducers.Count} Flange:{PipeFlanges.Count} Weldolet:{PipeWeldolets.Count}";
+    }
 
     internal void AddData_PipeLine(PipeLineSaveData pipeLineSaveData)
     {
@@ -79,4 +125,6 @@ public class SceneSaveData
     {
         return $"SaveData Lines:{PipeLines.Count} Elbows:{PipeElbows.Count}";
     }
+
+    
 }
