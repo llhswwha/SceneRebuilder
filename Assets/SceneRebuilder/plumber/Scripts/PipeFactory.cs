@@ -442,7 +442,7 @@ public class PipeFactory : SingletonBehaviour<PipeFactory>
             }
             else if (closedW.dis < maxWeldDis)
             {
-                Debug.Log($"ReplaceWelds1 closedW[{i}] [w:{w.parent.name}/{w.name}] [closedW:{closedW}]");
+                //Debug.Log($"ReplaceWelds1 closedW[{i}] [w:{w.parent.name}/{w.name}] [closedW:{closedW}]");
             }
             else
             {
@@ -450,6 +450,7 @@ public class PipeFactory : SingletonBehaviour<PipeFactory>
             }
         }
 
+        List<Mesh> DestroyiedMeshs = new List<Mesh>();
         int destroyCount = 0;
         for (int i = 0; i < weldsNew.Count; i++)
         {
@@ -473,12 +474,24 @@ public class PipeFactory : SingletonBehaviour<PipeFactory>
             }
             else
             {
-                Debug.LogWarning($"ReplaceWelds2 closedW[{i}] [w:{w.parent.name}/{w.name}] [closedW:{closedW}]");
+                MeshPrefabInstance ins = w.GetComponent<MeshPrefabInstance>();
+                if (ins.IsPrefab)
+                {
+                    MeshFilter mf = w.GetComponent<MeshFilter>();
+                    DestroyiedMeshs.Add(mf.sharedMesh);
+                }
+                //Debug.LogWarning($"ReplaceWelds2 closedW[{i}] [w:{w.parent.name}/{w.name}] [closedW:{closedW}]");
                 GameObject.DestroyImmediate(w.gameObject);
+                //PrefabInfoManager.Instance.DestroyPrefab(w.gameObject);
                 weldsNew.RemoveAt(i); i--;
 
                 destroyCount++;
             }
+        }
+
+        if (DestroyiedMeshs.Count > 0)
+        {
+            Debug.LogError($"ReplaceWelds DestroyiedMeshs:{DestroyiedMeshs.Count}");
         }
 
         
@@ -490,8 +503,45 @@ public class PipeFactory : SingletonBehaviour<PipeFactory>
         {
             Debug.Log($"ReplaceWelds time:{DateTime.Now - start} AllWelds:{allWeldsCount} NewWelds:{newWeldsCount} LastWelds:{weldList.Count} destroyCount:{destroyCount}");
         }
+        UpdataPrefabInstanceInfo();
+
+        //var instances = Target.GetComponentsInChildren<MeshPrefabInstance>(true);
+        //foreach(var ins in instances)
+        //{
+
+        //}
+        SharedMeshInfoList sharedMeshInfos1 = new SharedMeshInfoList(Target);
+        //Debug.LogError($"sharedMeshInfos1 :{sharedMeshInfos1.Count}");
+        foreach(var mesh in DestroyiedMeshs)
+        {
+            SharedMeshInfo info = sharedMeshInfos1.FindByMesh(mesh);
+            if (info == null)
+            {
+                //Debug.LogError($"sharedMeshInfos1 info==null mesh:{mesh}");
+                continue;
+            }
+            info.AddInstanceInfo();
+        }
+
+        SharedMeshInfoList sharedMeshInfos2 = new SharedMeshInfoList(newBuilder.gameObject);
+        //Debug.LogError($"sharedMeshInfos2 :{sharedMeshInfos2.Count}");
+        foreach (var mesh in DestroyiedMeshs)
+        {
+            SharedMeshInfo info = sharedMeshInfos2.FindByMesh(mesh);
+            if (info == null)
+            {
+                //Debug.LogError($"sharedMeshInfos2 info==null mesh:{mesh}");
+                continue;
+            }
+            info.AddInstanceInfo();
+        }
 
         return weldList;
+    }
+
+    public void UpdataPrefabInstanceInfo()
+    {
+
     }
 
     public void SetAllVisible(bool isVisible)

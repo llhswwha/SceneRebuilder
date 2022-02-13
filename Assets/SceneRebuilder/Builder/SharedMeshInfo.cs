@@ -275,6 +275,18 @@ public class SharedMeshInfoList : List<SharedMeshInfo>
         }
         ProgressBarHelper.ClearProgressBar();
     }
+
+    internal SharedMeshInfo FindByMesh(Mesh mesh)
+    {
+        foreach(var item in this)
+        {
+            if (item.mesh == mesh)
+            {
+                return item;
+            }
+        }
+        return null;
+    }
 }
 
 [Serializable]

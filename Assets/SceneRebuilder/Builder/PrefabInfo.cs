@@ -15,11 +15,30 @@ public class PrefabInfo:IComparable<PrefabInfo>
             return;
         }
         Init(new MeshPoints(prefab));
+
+        //PrefabInfoManager.Instance.AddPrefabInfo(this);
     }
 
     public PrefabInfo(MeshPoints mf)
     {
         Init(mf);
+
+        //PrefabInfoManager.Instance.AddPrefabInfo(this);
+    }
+
+    internal void DestroyPrefab()
+    {
+        GameObject.DestroyImmediate(this.Prefab);
+        this.Prefab=Instances[0];
+        Instances.RemoveAt(0);
+
+        MeshInstances[0].IsPrefab = true;
+        MeshInstances.RemoveAt(0);
+
+        foreach (var item in MeshInstances)
+        {
+            item.PrefabGo = this.Prefab;
+        }
     }
 
     private void Init(MeshPoints mf)
@@ -32,11 +51,14 @@ public class PrefabInfo:IComparable<PrefabInfo>
         AddInstanceComponent(this.Prefab, true);
     }
 
+    public List<MeshPrefabInstance> MeshInstances = new List<MeshPrefabInstance>();
+
     private void AddInstanceComponent(GameObject go,bool isPrefab)
     {
         MeshPrefabInstance instance = go.AddMissingComponent<MeshPrefabInstance>();
         instance.IsPrefab = isPrefab;
         instance.PrefabGo = this.Prefab;
+        MeshInstances.Add(instance);
     }
 
     public string GetTitle()
@@ -547,6 +569,18 @@ public class PrefabInfoList: List<PrefabInfo>
     public void SortByInstanceCount()
     {
         this.Sort((a, b) => b.InstanceCount.CompareTo(a.InstanceCount));
+    }
+
+    internal PrefabInfo FindItem(GameObject go)
+    {
+        foreach(var item in this)
+        {
+            if (item.Prefab == go)
+            {
+                return item;
+            }
+        }
+        return null;
     }
 }
 

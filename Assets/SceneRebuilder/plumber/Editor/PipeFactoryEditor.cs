@@ -148,10 +148,11 @@ public class PipeFactoryEditor : BaseFoldoutEditor<PipeFactory>
         targetT.IsCopyComponents = EditorGUILayout.Toggle(targetT.IsCopyComponents);
         GUILayout.Label($"CheckResult");
         targetT.IsCheckResult = EditorGUILayout.Toggle(targetT.IsCheckResult);
-        GUILayout.Label($"ReplaceOld");
-        targetT.IsReplaceOld = EditorGUILayout.Toggle(targetT.IsReplaceOld);
         GUILayout.Label($"PrefabGos");
         targetT.IsPrefabGos = EditorGUILayout.Toggle(targetT.IsPrefabGos);
+        GUILayout.Label($"ReplaceOld");
+        targetT.IsReplaceOld = EditorGUILayout.Toggle(targetT.IsReplaceOld);
+
         GUILayout.EndHorizontal();
 
         //public bool IsMoveResultToFactory = true;

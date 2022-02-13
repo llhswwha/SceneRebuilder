@@ -85,7 +85,7 @@ public struct PipeWeldoletInfoJob : IPipeJob
             data.IsGetInfoSuccess = false;
         }
 
-        Debug.Log($"PipeWeldoletInfoJob.GetModelData[{name}] time:{(DateTime.Now - start).TotalMilliseconds.ToString("F1")}ms VertexCount:{VertexCount} meshTriangles:{meshTriangles.Count} data:{data}");
+        //Debug.Log($"PipeWeldoletInfoJob.GetModelData[{name}] time:{(DateTime.Now - start).TotalMilliseconds.ToString("F1")}ms VertexCount:{VertexCount} meshTriangles:{meshTriangles.Count} data:{data}");
 
         return data;
     }

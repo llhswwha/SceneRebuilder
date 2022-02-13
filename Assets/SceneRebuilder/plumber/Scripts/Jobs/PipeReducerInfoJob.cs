@@ -62,7 +62,7 @@ public struct PipeReducerInfoJob : IPipeJob
         {
             Debug.LogWarning($"GetReducerInfo[{id}] Result.Length :{Result.Length }");
         }
-        Debug.Log($">>>GetReducerInfo time:{DateTime.Now - start} data:{data}");
+        //Debug.Log($">>>GetReducerInfo time:{DateTime.Now - start} data:{data}");
     }
 
     public static PipeReducerData GetReducerData(ref MeshStructure mesh,int id, int minCount, float minDis,bool isFlange, NativeList<int> errorIds)

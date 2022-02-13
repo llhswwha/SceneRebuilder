@@ -87,7 +87,7 @@ public struct PipeElbowInfoJob : IPipeJob
             Debug.LogWarning($"PipeElbowInfoJob[{id}] Result.Length :{Result.Length }");
         }
 
-        Debug.Log($"PipeElbowInfoJob[{id}] time:{(DateTime.Now - start).TotalMilliseconds.ToString("F1")}ms VertexCount:{VertexCount} meshTriangles:{meshTriangles.Count} trianglesList:{trianglesList.Count}");
+        //Debug.Log($"PipeElbowInfoJob[{id}] time:{(DateTime.Now - start).TotalMilliseconds.ToString("F1")}ms VertexCount:{VertexCount} meshTriangles:{meshTriangles.Count} trianglesList:{trianglesList.Count}");
 
     }
 

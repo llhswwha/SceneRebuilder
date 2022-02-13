@@ -61,7 +61,7 @@ public struct PipeTeeInfoJob : IPipeJob
             Debug.LogWarning($"PipeElbowInfoJob[{id}] Result.Length :{Result.Length }");
         }
 
-        Debug.Log($">>>GetTeeInfo time:{DateTime.Now - start} data:{data}");
+        //Debug.Log($">>>GetTeeInfo time:{DateTime.Now - start} data:{data}");
     }
 
     private PipeTeeData GetTeeInfo7(SharedMeshTrianglesList trianglesList)

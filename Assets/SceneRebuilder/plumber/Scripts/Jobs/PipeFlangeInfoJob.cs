@@ -60,6 +60,6 @@ public struct PipeFlangeInfoJob : IPipeJob
         {
             Debug.LogWarning($"GetReducerInfo[{id}] Result.Length :{Result.Length }");
         }
-        Debug.Log($">>>PipeFlangeInfoJob time:{DateTime.Now - start} data:{data}");
+        //Debug.Log($">>>PipeFlangeInfoJob time:{DateTime.Now - start} data:{data}");
     }
 }

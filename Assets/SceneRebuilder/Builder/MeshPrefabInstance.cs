@@ -11,6 +11,10 @@ public class MeshPrefabInstance : MonoBehaviour, IGameObject
 
     public List<MeshPrefabInstance> FindInstances()
     {
+        if (this.PrefabGo == null)
+        {
+            Debug.LogError("MeshPrefabInstance.FindInstances this.PrefabGo == null");
+        }
         List<MeshPrefabInstance> instances = new List<MeshPrefabInstance>();
         var insList = GameObject.FindObjectsOfType<MeshPrefabInstance>();
         foreach(var item in insList)
@@ -58,5 +62,11 @@ public class MeshPrefabInstance : MonoBehaviour, IGameObject
         //GameObject.DestroyImmediate(mf);
         //MeshRenderer mr = gameObject.GetComponent<MeshRenderer>();
         //GameObject.DestroyImmediate(mr);
+    }
+
+    public Mesh GetMesh()
+    {
+        MeshFilter mf = gameObject.GetComponent<MeshFilter>();
+        return mf.sharedMesh;
     }
 }
