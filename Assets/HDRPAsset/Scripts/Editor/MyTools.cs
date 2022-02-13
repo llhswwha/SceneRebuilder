@@ -4,18 +4,105 @@ using System.Collections.Generic;
 
 public class MyTools
 {
-    [MenuItem("Tools/RendererId/Clear")]
-    public static void RendererId_Clear()
+    public static void ClearComponents<T>(GameObject obj) where T :Component
+    {
+        var ids = obj.GetComponentsInChildren<T>(true);
+        foreach (var id in ids)
+        {
+            GameObject.DestroyImmediate(id);
+        }
+        Debug.Log($"ClearComponents[{typeof(T)}] ids:{ids.Length}");
+    }
+
+    public static void ClearComponents<T>() where T : Component
     {
         foreach (var obj in Selection.gameObjects)
         {
-            var ids = obj.GetComponentsInChildren<RendererId>(true);
-            foreach(var id in ids)
-            {
-                GameObject.DestroyImmediate(id);
-            }
-            Debug.Log($"RendererId_Clear ids:{ids.Length}");
+            ClearComponents<T>(obj);
         }
+    }
+
+    [MenuItem("Tools/Clear/ClearRId")]
+    public static void ClearRendererId()
+    {
+        ClearComponents<RendererId>();
+    }
+
+    [MenuItem("Tools/Clear/ClearMeshNode")]
+    public static void ClearMeshNode()
+    {
+        ClearComponents<MeshNode>();
+    }
+
+    [MenuItem("Tools/Clear/ClearRendererInfo")]
+    public static void ClearRendererInfo()
+    {
+        ClearComponents<MeshRendererInfo>();
+    }
+
+    [MenuItem("Tools/Clear/ClearGenerators")]
+    public static void ClearGenerators()
+    {
+        ClearComponents<PipeMeshGeneratorBase>();
+    }
+
+    [MenuItem("Tools/Clear/ClearGeneratorArgs")]
+    public static void ClearGeneratorArgs()
+    {
+        foreach (var obj in Selection.gameObjects)
+        {
+            var ids = obj.GetComponentsInChildren<PipeModelComponent>(true);
+            foreach (var id in ids)
+            {
+                //GameObject.DestroyImmediate(id);
+                id.generateArg = null;
+            }
+            Debug.Log($"ClearGeneratorArgs ids:{ids.Length}");
+        }
+    }
+
+    [MenuItem("Tools/Clear/ClearPipeModels")]
+    public static void ClearPipeModels()
+    {
+        ClearComponents<PipeModelComponent>();
+    }
+
+    [MenuItem("Tools/Clear/ClearMeshComponents")]
+    public static void ClearMeshComponents()
+    {
+        ClearComponents<MeshFilter>();
+        ClearComponents<MeshRenderer>();
+    }
+
+
+    [MenuItem("Tools/Clear/ClearMesh")]
+    public static void ClearMesh()
+    {
+        foreach (var obj in Selection.gameObjects)
+        {
+            var ids = obj.GetComponentsInChildren<MeshFilter>(true);
+            foreach (var id in ids)
+            {
+                id.sharedMesh = null;
+            }
+            Debug.Log($"ClearMesh       ids:{ids.Length}");
+        }
+    }
+
+
+    [MenuItem("Tools/Others/ClearScripts")]
+    public static void ClearScripts()
+    {
+        ClearComponents<MonoBehaviour>();
+        //foreach (var obj in Selection.gameObjects)
+        //{
+        //    var ids = obj.GetComponentsInChildren<MonoBehaviour>(true);
+        //    foreach (var id in ids)
+        //    {
+        //        GameObject.DestroyImmediate(id);
+        //    }
+        //    Debug.Log($"ClearScripts       ids:{ids.Length}");
+        //}
     }
 
     [MenuItem("Tools/Transform/X10")]

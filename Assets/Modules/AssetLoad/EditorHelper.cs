@@ -109,6 +109,74 @@ public static class EditorHelper
         return "Assets/Models/MeshAssets";
     }
 
+    //public static string GetMeshPath(GameObject go)
+    //{
+    //    MeshFilter mf = go.GetComponent<MeshFilter>();
+    //    if (mf == null) return "";
+    //    string path = UnityEditor.AssetDatabase.GetAssetPath(mf.sharedMesh);
+    //    return path;
+    //}
+
+    public static string SaveMeshAssetResource(GameObject go)
+    {
+        MeshFilter mf = go.GetComponent<MeshFilter>();
+        return SaveMeshAssetResource(mf);
+    }
+
+        public static string SaveMeshAssetResource(MeshFilter meshFilter)
+    {
+        ////Mesh mesh = meshFilter.sharedMesh;
+        //if (UnityEditor.AssetDatabase.Contains(meshFilter.sharedMesh))
+        //{
+        //    string path = UnityEditor.AssetDatabase.GetAssetPath(meshFilter.sharedMesh);
+        //    string parentDir = EditorHelper.getParentPath(path);
+        //    Debug.Log($"SaveMeshAsset sharedMesh:{meshFilter.sharedMesh}\npath:{path}\nparentDir:{parentDir}");
+        //    //isAllCreated = false;
+        //    //return false;
+        //    //return parentDir + "/MeshAssets";
+        //    return path;
+        //}
+        //else
+        //{
+        //    string dir= "Assets/Models/MeshAssets/Prefabs";
+
+        //    string assetName = $"{meshFilter.sharedMesh.name}_{meshFilter.sharedMesh.GetInstanceID()}";
+
+        //    Debug.Log($"SaveMeshAsset sharedMesh:{meshFilter.sharedMesh}\nassetName:{assetName}");
+
+        //    SaveMeshAsset(dir, assetName, meshFilter);
+
+        //    string path = UnityEditor.AssetDatabase.GetAssetPath(meshFilter.sharedMesh);
+        //    return path;
+        //}
+
+        if (meshFilter == null)
+        {
+            Debug.LogError("meshFilter == null");
+            return "";
+        }
+
+        if (meshFilter.sharedMesh == null)
+        {
+            Debug.LogError("meshFilter.sharedMesh == null:"+meshFilter);
+            return "";
+        }
+
+        //string dir = "Assets/Resources/MeshAssets/Prefabs";
+
+        //string assetName = $"{meshFilter.sharedMesh.name}_{meshFilter.sharedMesh.GetInstanceID()}";
+        string assetName = RendererId.GetId(meshFilter.gameObject);
+
+        Debug.Log($"SaveMeshAsset sharedMesh:{meshFilter.sharedMesh}\nassetName:{assetName}");
+
+        return SaveMeshAsset(resourcesMeshDir_Full, assetName,true, meshFilter);
+
+        //string path = UnityEditor.AssetDatabase.GetAssetPath(meshFilter.sharedMesh);
+        //return $"{dir}/{assetName}";
+    }
+
+    
+
     public static void SaveMeshAsset(GameObject source, GameObject go)
     {
         string dir = GetMeshAssetDir(source); ;
@@ -144,11 +212,17 @@ public static class EditorHelper
         return true;
     }
 
-    public static void SaveMeshAsset(string dir,GameObject go,MeshFilter[] meshFilters)
+    public static void SaveMeshAsset(string dir, GameObject go, params MeshFilter[] meshFilters)
+    {
+        string assetName = go.name + go.GetInstanceID();
+        SaveMeshAsset(dir, assetName,false, meshFilters);
+    }
+
+    public static string SaveMeshAsset(string dir, string assetName, bool isCreateNew,params MeshFilter[] meshFilters)
     {
         makeParentDirExist(dir+"/");
 
-        string assetName = go.name + go.GetInstanceID();
+        //string assetName = go.name + go.GetInstanceID();
         assetName = assetName.Replace("/", "_");//文件名中不能有/
         assetName = assetName.Replace("\\", "_");//文件名中不能有/
         assetName = assetName.Replace(":", "_");//文件名中不能有/
@@ -162,52 +236,107 @@ public static class EditorHelper
         if (meshFilters.Length == 0)
         {
             Debug.LogWarning($"SaveMeshAsset meshFilters.Length == 0 assetName:{assetName} meshFilters:{meshFilters.Length}");
-            return;
+            return meshPath;
         }
 
-        bool isAllCreated = IsAllMeshCreated(meshFilters);
-        if (isAllCreated)
+        if (isCreateNew == false)
         {
-            Debug.LogWarning($"SaveMeshAsset isAllCreated:{isAllCreated} assetName:{assetName} meshFilters:{meshFilters.Length}");
-            return;
+            bool isAllCreated = IsAllMeshCreated(meshFilters);
+            if (isAllCreated)
+            {
+                Debug.LogWarning($"SaveMeshAsset isAllCreated:{isAllCreated} assetName:{assetName} meshFilters:{meshFilters.Length}");
+                return meshPath;
+            }
         }
 
-        Mesh meshAsset = new Mesh();
-        //string assetName = tree.Target.name+"_"+gameObject.name + gameObject.GetInstanceID();
-
-        EditorHelper.SaveAsset(meshAsset, meshPath, false);
-
-        for (int i = 0; i < meshFilters.Length; i++)
+        if (meshFilters.Length ==1)
         {
-            MeshFilter meshFilter = meshFilters[i];
-            Debug.LogError("meshFilter.sharedMesh :" + meshFilter.sharedMesh);
+            MeshFilter meshFilter = meshFilters[0];
+            //Debug.LogError("meshFilter.sharedMesh :" + meshFilter.sharedMesh);
             if (meshFilter.sharedMesh == null)
             {
                 Debug.LogError("meshFilter.sharedMesh == null");
-                continue;
+                return meshPath;
             }
             Mesh mesh = meshFilter.sharedMesh;
-            EditorHelper.SaveAsset(mesh, meshPath, true);
+            if (isCreateNew)
+            {
+                //mesh = meshFilter.mesh;
+                mesh = GameObject.Instantiate(meshFilter.sharedMesh);
+                mesh.name = meshFilter.sharedMesh.name;
+            }
+            EditorHelper.SaveAsset(mesh, meshPath, false, isCreateNew);
         }
+        else
+        {
+            Mesh meshAsset = new Mesh();
+            //string assetName = tree.Target.name+"_"+gameObject.name + gameObject.GetInstanceID();
+
+            EditorHelper.SaveAsset(meshAsset, meshPath, false, isCreateNew);
+
+            for (int i = 0; i < meshFilters.Length; i++)
+            {
+                MeshFilter meshFilter = meshFilters[i];
+                //Debug.LogError("meshFilter.sharedMesh :" + meshFilter.sharedMesh);
+                if (meshFilter.sharedMesh == null)
+                {
+                    Debug.LogError("meshFilter.sharedMesh == null");
+                    continue;
+                }
+                Mesh mesh = meshFilter.sharedMesh;
+                if (isCreateNew)
+                {
+                    //mesh = meshFilter.mesh;
+                    mesh = GameObject.Instantiate(meshFilter.sharedMesh);
+                    mesh.name = meshFilter.sharedMesh.name;
+                }
+                EditorHelper.SaveAsset(mesh, meshPath, true, isCreateNew);
+            }
+        }
+
+        return meshPath;
     }
 
-    public static bool SaveAsset(Object assetObj, string strFile, bool bAssetAlreadyCreated)
+    public static bool SaveAsset(Object assetObj, string strFile, bool bAssetAlreadyCreated, bool isCreateNew)
     {
 #if UNITY_EDITOR
         if (bAssetAlreadyCreated == false && UnityEditor.AssetDatabase.Contains(assetObj) == false)
         {
-            Debug.Log($"CreateAsset:{strFile}");
+            Debug.Log($"CreateAsset1:{strFile}");
             UnityEditor.AssetDatabase.CreateAsset(assetObj, strFile);
             bAssetAlreadyCreated = true;
         }
         else
         {
-            if (UnityEditor.AssetDatabase.Contains(assetObj) == false)
+            if (isCreateNew == false)
             {
-                Debug.Log($"AddObjectToAsset:{strFile}");
-                UnityEditor.AssetDatabase.AddObjectToAsset(assetObj, strFile);
-                UnityEditor.AssetDatabase.ImportAsset(UnityEditor.AssetDatabase.GetAssetPath(assetObj));
+                if (UnityEditor.AssetDatabase.Contains(assetObj) == false)
+                {
+                    Debug.Log($"AddObjectToAsset1:{strFile}");
+                    UnityEditor.AssetDatabase.AddObjectToAsset(assetObj, strFile);
+                    UnityEditor.AssetDatabase.ImportAsset(UnityEditor.AssetDatabase.GetAssetPath(assetObj));
+                }
             }
+            else
+            {
+                if (bAssetAlreadyCreated == false)
+                {
+                    Debug.Log($"CreateAsset2:{strFile}");
+                    UnityEditor.AssetDatabase.CreateAsset(assetObj, strFile);
+                    bAssetAlreadyCreated = true;
+                }
+                else
+                {
+                    Debug.Log($"AddObjectToAsset2:{strFile}");
+                    UnityEditor.AssetDatabase.AddObjectToAsset(assetObj, strFile);
+                    UnityEditor.AssetDatabase.ImportAsset(UnityEditor.AssetDatabase.GetAssetPath(assetObj));
+                }
+                //if (UnityEditor.AssetDatabase.Contains(assetObj) == false)
+                {
+                    
+                }
+            }
+            
         }
 #endif
         return bAssetAlreadyCreated;
@@ -433,8 +562,14 @@ public static class EditorHelper
         if (obj == null)
         {
             Debug.LogError("GetMeshPath failed...obj==null");
+            return "";
         }
         var meshFilter = obj.GetComponentInChildren<MeshFilter>();
+        if (meshFilter == null)
+        {
+            Debug.LogError("GetMeshPath failed...meshFilter==null");
+            return "";
+        }
         var mesh = meshFilter.sharedMesh;
         var path = AssetDatabase.GetAssetPath(mesh);
         return path;
@@ -970,7 +1105,36 @@ public static class EditorHelper
         }
     }
 
-    
+    static string resourcesMeshDir_Full = "Assets/Resources/MeshAssets/Prefabs";
+
+    static string resourcesMeshDir = "MeshAssets/Prefabs";
+
+    public static Mesh LoadResoucesMesh(string id)
+    {
+        //string meshPath = resourcesMeshDir + "/" + id + ".asset";
+        string meshPath = resourcesMeshDir + "/" + id + "";
+        Object obj = Resources.Load(meshPath);
+        Mesh mesh = obj as Mesh;
+
+
+        if (mesh != null)
+        {
+            //Debug.Log($"LoadResoucesMesh id:{id} meshPath:{meshPath} obj:{obj} mesh:{mesh} vc:{mesh.vertices.Length}");
+        }
+        else
+        {
+            Debug.LogError($"LoadResoucesMesh id:{id} meshPath:{meshPath} obj:{obj} mesh:{mesh}");
+        }
+
+        //var objs = Resources.LoadAll(resourcesMeshDir);
+        //Debug.Log($"LoadResoucesMesh objs:{objs.Length}");
+        //for (int i = 0; i < objs.Length; i++)
+        //{
+        //    Debug.Log($"obj[{i}]:{objs[i]}");
+        //}
+
+        return mesh;
+    }
 
     #region makePrefab
 
