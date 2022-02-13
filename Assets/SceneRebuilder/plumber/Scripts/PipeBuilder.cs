@@ -1007,34 +1007,79 @@ public class PipeBuilder : MonoBehaviour
     {
         SceneSaveData data = new SceneSaveData();
         data.Arg = arg;
-        string newModelInfo = "\\..\\SceneSaveData_"+ targetName+".xml";
+        string newModelInfo = "\\..\\SceneSaveData_" + targetName + ".xml";
         string path = Application.dataPath + newModelInfo;
-        foreach(PipeLineModel model in PipeLines)
+        Dictionary<string, GameObject> pipeModelIds = new Dictionary<string, GameObject>();
+        foreach (PipeLineModel model in PipeLines)
         {
+            if (model == null) continue;
             data.AddData_PipeLine(model.GetSaveData());
+            pipeModelIds.Add(RendererId.GetId(model.gameObject), model.gameObject);
         }
         foreach (PipeElbowModel model in PipeElbows)
         {
+            if (model == null) continue;
             data.AddData_PipeElbow(model.GetSaveData());
+            pipeModelIds.Add(RendererId.GetId(model.gameObject), model.gameObject);
         }
         foreach (PipeTeeModel model in PipeTees)
         {
+            if (model == null) continue;
             data.AddData_PipeTee(model.GetSaveData());
+            pipeModelIds.Add(RendererId.GetId(model.gameObject), model.gameObject);
         }
         foreach (PipeReducerModel model in PipeReducers)
         {
+            if (model == null) continue;
             data.AddData_PipeReducer(model.GetSaveData());
+            pipeModelIds.Add(RendererId.GetId(model.gameObject), model.gameObject);
         }
         foreach (PipeFlangeModel model in PipeFlanges)
         {
+            if (model == null) continue;
             data.AddData_PipeFlange(model.GetSaveData());
+            pipeModelIds.Add(RendererId.GetId(model.gameObject), model.gameObject);
         }
         foreach (PipeWeldoletModel model in PipeWeldolets)
         {
+            if (model == null) continue;
             data.AddData_PipeWeldolet(model.GetSaveData());
+            pipeModelIds.Add(RendererId.GetId(model.gameObject), model.gameObject);
         }
+
+        SaveScenePrefabsDataXml(data, pipeModelIds);
+
         SerializeHelper.Save(data, path);
-        Debug.Log($"SaveSceneDataXml path:{newModelInfo}");
+        Debug.Log($"SaveSceneDataXml pipeModelIds:{pipeModelIds.Count} path:{newModelInfo}");
+    }
+
+    private void SaveScenePrefabsDataXml(SceneSaveData data, Dictionary<string, GameObject> pipeModelIds)
+    {
+        var instances0 = Target.GetComponentsInChildren<MeshPrefabInstance>(true).ToList();
+        var instances2 = new List<MeshPrefabInstance>();
+        for (int i = 0; i < instances0.Count; i++)
+        {
+            MeshPrefabInstance model = instances0[i];
+            if (model == null) continue;
+            string id = RendererId.GetId(model.gameObject);
+            if (pipeModelIds.ContainsKey(id)) continue;
+            PipeModelComponent pipeModel = model.GetComponent<PipeModelComponent>();
+            if (pipeModel != null) continue;
+            instances2.Add(model);
+        }
+
+        for (int i = 0; i < instances2.Count; i++)
+        {
+            MeshPrefabInstance model = instances2[i];
+            if (ProgressBarHelper.DisplayCancelableProgressBar(new ProgressArg("SaveMeshPrefabs", i, instances2.Count)))
+            {
+                break;
+            }
+            data.AddData_MeshInstance(model);
+        }
+
+        ProgressBarHelper.ClearProgressBar();
+        Debug.Log($"SaveScenePrefabsDataXml instances0:{instances0.Count} instances2:{instances2.Count} pipeModelIds:{pipeModelIds.Count}");
     }
 
     public void LoadSceneDataXml(string targetName, Transform target)
@@ -1058,7 +1103,7 @@ public class PipeBuilder : MonoBehaviour
     //}
 
     private GameObject InitModelGo<TD, TM>(TD item, Transform target)
-        where TD : PipeModelSaveData
+        where TD : MeshModelSaveData
         where TM : PipeModelBase
     {
         GameObject go = new GameObject(item.Name);
@@ -1104,7 +1149,7 @@ public class PipeBuilder : MonoBehaviour
     //}
 
     private GameObject LoadSceneData<TD, TM>(TD item, Transform target)
-        where TD : PipeModelSaveData
+        where TD : MeshModelSaveData
         where TM : PipeModelBase
     {
         GameObject go = IdDictionary.GetGo(item.Id,item.Name,false);
@@ -1157,6 +1202,35 @@ public class PipeBuilder : MonoBehaviour
         {
             LoadSceneData<PipeWeldoletSaveData, PipeWeldoletModel>(item, target);
         }
+        foreach(MeshPrefabSaveData item in sceneData.MeshPrefabs)
+        {
+            LoadMeshPrefabSaveData(item);
+        }
+    }
+
+    private void LoadMeshPrefabSaveData(MeshPrefabSaveData data)
+    {
+        var mesh = EditorHelper.LoadResoucesMesh(data.prefabId);
+        if (mesh == null)
+        {
+            Debug.LogError($"LoadMeshPrefabSaveData mesh == null id:{data.prefabId}");
+            return;
+        }
+        foreach(var item in data.Instances)
+        {
+            GameObject go = IdDictionary.GetGo(item.Id, item.Name, false);
+            if (go == null)
+            {
+                //Debug.LogWarning($"LoadSceneData go == null item:{item}");
+                //go = InitModelGo<TD, TM>(item, target);
+            }
+            else
+            {
+                MeshPrefabInstance model = go.AddMissingComponent<MeshPrefabInstance>();
+                model.LoadMesh(mesh);
+            }
+        }
+        
     }
 
     public void RemoveComponents(GameObject target)
@@ -1175,6 +1249,17 @@ public class PipeBuilder : MonoBehaviour
         //}
     }
 
+    public void RemoveMeshes(GameObject target)
+    {
+        var instances = target.GetComponentsInChildren<MeshPrefabInstance>(true);
+        foreach(var ins in instances)
+        {
+            var pipe = ins.GetComponent<PipeModelComponent>();
+            if (pipe != null) continue;
+            ins.RemomveMesh();
+        }
+    }
+
     public void RemovePipeModels(GameObject target)
     {
         foreach (var item in PipeModels)
@@ -1182,7 +1267,7 @@ public class PipeBuilder : MonoBehaviour
             if (item == null) continue;
             if (item.IsGetInfoSuccess == false)
             {
-                GameObject.DestroyImmediate(item);
+                //GameObject.DestroyImmediate(item);
             }
             else
             {
@@ -1196,7 +1281,7 @@ public class PipeBuilder : MonoBehaviour
             if (item == null) continue;
             if (item.IsGetInfoSuccess == false)
             {
-                GameObject.DestroyImmediate(item);
+                //GameObject.DestroyImmediate(item);
             }
             else
             {

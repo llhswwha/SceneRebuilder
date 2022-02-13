@@ -651,6 +651,12 @@ public class PipeFactory : SingletonBehaviour<PipeFactory>
     {
         newBuilder.RemovePipeModels(this.Target);
     }
+
+    public void RemoveMeshes()
+    {
+        newBuilder.RemoveMeshes(this.Target);
+    }
+
     public void FindPipeModels()
     {
         newBuilder.FindPipeModels(this.Target);
@@ -929,13 +935,13 @@ public class PipeFactory : SingletonBehaviour<PipeFactory>
         return arg;
     }
 
-    public void RendererModelFromXml(PipeModelBase pipeModel, PipeModelSaveData data)
+    public void RendererModelFromXml(PipeModelBase pipeModel, MeshModelSaveData data)
     {
         pipeModel.RendererModel(GetLoadXmlArg(), NewObjName);
         RendererWeldsFromXml(pipeModel, data);
     }
 
-    private void RendererWeldsFromXml(PipeModelBase pipeModel,PipeModelSaveData data)
+    private void RendererWeldsFromXml(PipeModelBase pipeModel,MeshModelSaveData data)
     {
         if (data.PipeWelds != null)
         {

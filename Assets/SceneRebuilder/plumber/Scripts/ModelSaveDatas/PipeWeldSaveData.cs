@@ -5,7 +5,7 @@ using System.Xml.Serialization;
 using UnityEngine;
 
 [Serializable]
-public class PipeWeldSaveData : PipeModelSaveData
+public class PipeWeldSaveData : MeshModelSaveData
 {
     public PipeWeldData Data;
 }

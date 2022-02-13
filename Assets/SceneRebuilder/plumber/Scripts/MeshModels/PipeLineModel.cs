@@ -426,7 +426,7 @@ public class PipeLineModel : PipeModelBase
         return data;
     }
 
-    public override void SetSaveData(PipeModelSaveData data)
+    public override void SetSaveData(MeshModelSaveData data)
     {
         //this.LineInfo = data.Info;
         SetModelData((data as PipeLineSaveData).Data);
@@ -671,6 +671,12 @@ public class PipeLineModel : PipeModelBase
 
     public override GameObject RendererModel(PipeGenerateArg arg, string afterName)
     {
+        if (IsGetInfoSuccess == false)
+        {
+            Debug.LogWarning($"PipeLineModel.RendererModel IsGetInfoSuccess == false model:{this.name}");
+            return null;
+        }
+
         if (RendererErrorModel())
         {
             return null;
@@ -689,15 +695,17 @@ public class PipeLineModel : PipeModelBase
 
         if (LineInfo == null)
         {
-            Debug.LogError("PipeLineModel.RendererModel LineInfo == null");
+            Debug.LogError($"PipeLineModel.RendererModel LineInfo == null model:{this.name}");
             return null;
         }
+
+
 
         PipeMeshGenerator pipe = GetGenerator<PipeMeshGenerator>(arg, afterName,false);
 
         if (pipe == null)
         {
-            Debug.LogError("PipeLineModel.RendererModel pipe == null");
+            Debug.LogError($"PipeLineModel.RendererModel pipe == null model:{this.name}");
             return null;
         }
 

@@ -196,13 +196,17 @@ public class PipeFactoryEditor : BaseFoldoutEditor<PipeFactory>
         {
             targetT.SaveSceneDataXml();
         }
-        if (GUILayout.Button("RemoveComponents"))
+        if (GUILayout.Button("RemComps"))
         {
             targetT.RemoveComponents();
         }
-        if (GUILayout.Button("RemoveModels"))
+        if (GUILayout.Button("RemModels"))
         {
             targetT.RemovePipeModels();
+        }
+        if (GUILayout.Button("RemMeshes"))
+        {
+            targetT.RemoveMeshes();
         }
         if (GUILayout.Button("FindPipeModels"))
         {

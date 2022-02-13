@@ -4,7 +4,7 @@ using System.Collections.Generic;
 using System.Xml.Serialization;
 using UnityEngine;
 
-public class PipeModelSaveData
+public class MeshModelSaveData
 {
     [XmlAttribute]
     public string Name;
@@ -46,5 +46,23 @@ public class PipeModelSaveData
         return $"Name:{Name} Id:{Id} PId:{PId}";
     }
 
+    public MeshModelSaveData()
+    {
 
+    }
+
+    public MeshModelSaveData(GameObject go)
+    {
+        Init(go);
+    }
+
+    public void Init(GameObject go)
+    {
+        Name = go.name;
+        Id = RendererId.GetId(go);
+        //data.Path = GetPath();
+        PId = RendererId.GetId(go.transform.parent);
+        //data.Transform = new TransformInfo(this.transform);
+        GetTransformInfo(go.transform);
+    }
 }

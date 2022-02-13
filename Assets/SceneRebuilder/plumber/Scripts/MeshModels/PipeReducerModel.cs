@@ -153,7 +153,7 @@ public class PipeReducerModel
         return data;
     }
 
-    public override void SetSaveData(PipeModelSaveData data)
+    public override void SetSaveData(MeshModelSaveData data)
     {
         //this.LineInfo = data.Info;
         SetModelData((data as PipeReducerSaveData).Data);

@@ -325,7 +325,7 @@ public class PipeElbowModel : PipeModelBase
     }
 
 
-    public override void SetSaveData(PipeModelSaveData data)
+    public override void SetSaveData(MeshModelSaveData data)
     {
         //this.LineInfo = data.Info;
         SetModelData((data as PipeElbowSaveData).Data);
@@ -374,6 +374,7 @@ public class PipeElbowModel : PipeModelBase
             //GameObject target = pipeNew;
             //GameObject target = MeshCombineHelper.Combine(pipeNew);
             GameObject target = CombineTarget(arg, pipeNew);
+            target = CopyMeshComponentsEx(target);
             this.ResultGo = target;
 
             PipeMeshGenerator pipeG = target.AddComponent<PipeMeshGenerator>();
@@ -507,10 +508,10 @@ public class PipeElbowModel : PipeModelBase
 
 
 
-    public void OnDestroy()
-    {
-        Debug.Log($"OnDestroy {this.name}");
-    }
+    //public void OnDestroy()
+    //{
+    //    Debug.Log($"OnDestroy {this.name}");
+    //}
 
     public override List<Vector4> GetModelKeyPoints()
     {

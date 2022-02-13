@@ -5,6 +5,12 @@ using UnityEngine.Rendering;
 
 public class PipeMeshGeneratorBase : MonoBehaviour
 {
+
+
+    public List<GameObject> pointsT = new List<GameObject>();
+
+    public List<PipeLineInfo> lines = new List<PipeLineInfo>();
+
     public virtual void RenderPipe()
     {
     }
@@ -386,6 +392,30 @@ public class PipeMeshGeneratorBase : MonoBehaviour
         return psObjs;
     }
 
+    public List<GameObject> ShowPoints(List<Vector4> ps, string n)
+    {
+        GameObject go = new GameObject(n);
+        go.transform.SetParent(this.transform);
+        go.transform.localPosition = Vector3.zero;
+        var psObjs = PointHelper.ShowPoints(ps, new Vector3(PointScale, PointScale, PointScale), go.transform);
+        return psObjs;
+    }
+
+    //public List<GameObject> ShowPoints(List<Vector3> ps)
+    //{
+    //    var psObjs = PointHelper.ShowPoints(ps, new Vector3(PointScale, PointScale, PointScale), this.transform);
+    //    return psObjs;
+    //}
+
+    //public List<GameObject> ShowPoints(List<Vector3> ps, string n)
+    //{
+    //    GameObject go = new GameObject(n);
+    //    go.transform.SetParent(this.transform);
+    //    go.transform.localPosition = Vector3.zero;
+    //    var psObjs = PointHelper.ShowPoints(ps, new Vector3(PointScale, PointScale, PointScale), go.transform);
+    //    return psObjs;
+    //}
+
     public static void OrthoNormalize(ref Vector3 direction, ref Vector3 tangent, ref Vector3 binormal,string name,int psCount)
     {
         Plane p = new Plane(Vector3.forward, Vector3.zero);
@@ -495,10 +525,11 @@ public class PipeMeshGeneratorBase : MonoBehaviour
 
             //ShowPoint(currentVertex, $"p:{vertices.Count}", this.transform);
         }
+        CircleMeshData circleData = null;
 
-        CircleMeshData circleData = new CircleMeshData(center, direction, newVertics, circleName);
-        circleData.SetAxis(xAxis1, yAxis1);
-        CircleDatas.Add(circleData);
+        //CircleMeshData circleData = new CircleMeshData(center, direction, newVertics, circleName);
+        //circleData.SetAxis(xAxis1, yAxis1);
+        //CircleDatas.Add(circleData);
 
         //Debug.Log($"GenerateCircleAtPoint[{circleName}] center:{center} radius:{radius} vertices:{vertices.Count} newVertics:{newVertics.Count}");
         var dr = direction.normalized;
@@ -506,7 +537,7 @@ public class PipeMeshGeneratorBase : MonoBehaviour
     }
 
 
-    public List<CircleMeshData> CircleDatas = new List<CircleMeshData>();
+    //public List<CircleMeshData> CircleDatas = new List<CircleMeshData>();
 
     public void MakeElbowTriangles(List<Vector3> points, List<Vector3> vertices, List<int> triangles, int segmentIdx, int elbowIdx)
     {

@@ -2,7 +2,7 @@ using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 
-public class PipeElbowSaveData : PipeModelSaveData
+public class PipeElbowSaveData : MeshModelSaveData
 {
     public PipeElbowData Data;
 }

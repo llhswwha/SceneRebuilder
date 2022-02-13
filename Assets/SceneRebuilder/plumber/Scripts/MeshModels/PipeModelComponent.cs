@@ -8,6 +8,8 @@ public class PipeModelComponent : MonoBehaviour
 
     public GameObject ResultGo = null;
 
+    public bool IsGetInfoSuccess = true;
+
     [ContextMenu("ClearGo")]
     public void ClearGo()
     {
@@ -33,26 +35,34 @@ public class PipeModelComponent : MonoBehaviour
         }
     }
 
-    public virtual void InitSaveData(PipeModelSaveData data)
+    public virtual void InitSaveData(MeshModelSaveData data)
     {
-        data.Name = this.name;
-        data.Id = RendererId.GetId(this.gameObject);
-        //data.Path = GetPath();
-        data.PId = RendererId.GetId(this.gameObject.transform.parent);
-        //data.Transform = new TransformInfo(this.transform);
-        data.GetTransformInfo(this.transform);
-        //this.LineInfo = data.Info;
+        //data.Name = this.name;
+        //data.Id = RendererId.GetId(this.gameObject);
+        ////data.Path = GetPath();
+        //data.PId = RendererId.GetId(this.gameObject.transform.parent);
+        ////data.Transform = new TransformInfo(this.transform);
+        //data.GetTransformInfo(this.transform);
+        ////this.LineInfo = data.Info;
 
-        //data.PipeWelds = GetWeldsSaveData();
+        ////data.PipeWelds = GetWeldsSaveData();
+
+        data.Init(this.gameObject);
     }
 
     public List<PipeWeldSaveData> GetWeldsSaveData()
     {
         List<PipeWeldSaveData> welds = new List<PipeWeldSaveData>();
+
+        if (IsGetInfoSuccess == false)
+        {
+            Debug.LogWarning($"GetWeldsSaveData IsGetInfoSuccess == false gameObject:{this.gameObject}");
+            return null;
+        }
         if (ResultGo==null)
         {
             Debug.LogError($"GetWeldsSaveData ResultGo==null gameObject:{this.gameObject}");
-            return welds;
+            return null;
         }
         PipeWeldModel[] weldModels = ResultGo.GetComponentsInChildren<PipeWeldModel>();
         foreach (var m in weldModels)

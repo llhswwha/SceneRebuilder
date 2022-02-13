@@ -28,6 +28,15 @@ public class PrefabInfo:IComparable<PrefabInfo>
         this.Prefab = mf.gameObject;
         this.VertexCount = mf.vertexCount;
         this.Size = mf.size;
+
+        AddInstanceComponent(this.Prefab, true);
+    }
+
+    private void AddInstanceComponent(GameObject go,bool isPrefab)
+    {
+        MeshPrefabInstance instance = go.AddMissingComponent<MeshPrefabInstance>();
+        instance.IsPrefab = isPrefab;
+        instance.PrefabGo = this.Prefab;
     }
 
     public string GetTitle()
@@ -102,6 +111,7 @@ public class PrefabInfo:IComparable<PrefabInfo>
     public void AddInstance(GameObject instance){
         Instances.Add(instance);
         //InstanceCount++;
+        AddInstanceComponent(instance, false);
     }
 
     public void AddInstance(GameObject instance, GameObject instanceNew)
@@ -109,6 +119,9 @@ public class PrefabInfo:IComparable<PrefabInfo>
         Instances.Add(instance);
         InstancesNew.Add(instanceNew);
         //InstanceCount++;
+
+        AddInstanceComponent(instance, false);
+        AddInstanceComponent(instanceNew, false);
     }
 
     public int CompareTo(PrefabInfo other)

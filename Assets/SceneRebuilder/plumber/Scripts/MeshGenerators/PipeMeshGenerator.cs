@@ -5,6 +5,9 @@ using UnityEngine;
 
 public class PipeMeshGenerator : PipeMeshGeneratorBase
 {
+    public List<Vector3> points = new List<Vector3>();
+
+    public List<Vector3> points2 = new List<Vector3>();
 
     //public class PipeLineInfo
     //{
@@ -21,16 +24,10 @@ public class PipeMeshGenerator : PipeMeshGeneratorBase
     //    }
     //}
 
-  
+
 
     // see README.md file for more information about the following parameters
-    public List<Vector3> points = new List<Vector3>();
 
-    public List<Vector3> points2 = new List<Vector3>();
-
-    public List<GameObject> pointsT = new List<GameObject>();
-
-    public List<PipeLineInfo> lines = new List<PipeLineInfo>();
 
 
     public void GetPointsFromTransforms()
@@ -79,7 +76,7 @@ public class PipeMeshGenerator : PipeMeshGeneratorBase
     }
 
 
-    
+
 
     //public float pipeRadius1 = 0;
     //public float pipeRadius2 = 0;
@@ -195,7 +192,8 @@ public class PipeMeshGenerator : PipeMeshGeneratorBase
             SetRadiusUniform(uniformRadiusP);
         }
 
-        List<Vector3> ps = GetPoints();
+        //List<Vector3> ps = GetPoints();
+        List<Vector3> ps = new List<Vector3>(points);
         if (IsLinkEndStart)
         {
             ps = new List<Vector3>();
@@ -274,8 +272,9 @@ public class PipeMeshGenerator : PipeMeshGeneratorBase
     public void TestRemoveColinearPoints()
     {
         List<Vector3> ps = new List<Vector3>(points);
-        RemoveColinearPoints(ps);
+        RemoveColinearPoints(ps,true);
         points2 = new List<Vector3>(ps);
+        ShowPoints2();
     }
 
     public bool IsRemoveColinearPoints = true;
@@ -286,46 +285,46 @@ public class PipeMeshGenerator : PipeMeshGeneratorBase
         Vector3 endPoint;
     }
 
-    public List<CylinderMeshData> PipeDatas = new List<CylinderMeshData>();
+    //public List<CylinderMeshData> PipeDatas = new List<CylinderMeshData>();
 
-    public List<ElbowMeshData> ElbowDatas = new List<ElbowMeshData>();
+    //public List<ElbowMeshData> ElbowDatas = new List<ElbowMeshData>();
 
-    [ContextMenu("ShowCirclePoints")]
-    public void ShowCirclePoints()
-    {
-        foreach(var pipe in PipeDatas)
-        {
-            foreach(var circle in pipe.Circles)
-            {
-                ShowPoints(circle.Vertices,circle.name);
-            }
-        }
-        foreach (var pipe in ElbowDatas)
-        {
-            foreach (var circle in pipe.Circles)
-            {
-                ShowPoints(circle.Vertices, circle.name);
-            }
-        }
-    }
+    //[ContextMenu("ShowCirclePoints")]
+    //public void ShowCirclePoints()
+    //{
+    //    foreach(var pipe in PipeDatas)
+    //    {
+    //        foreach(var circle in pipe.Circles)
+    //        {
+    //            ShowPoints(circle.Vertices,circle.name);
+    //        }
+    //    }
+    //    foreach (var pipe in ElbowDatas)
+    //    {
+    //        foreach (var circle in pipe.Circles)
+    //        {
+    //            ShowPoints(circle.Vertices, circle.name);
+    //        }
+    //    }
+    //}
 
-    public void ShowCirclePointsAll()
-    {
-        foreach (var pipe in PipeDatas)
-        {
-            foreach (var circle in pipe.Circles)
-            {
-                ShowPoints(circle.GetPoints(), circle.name);
-            }
-        }
-        foreach (var pipe in ElbowDatas)
-        {
-            foreach (var circle in pipe.Circles)
-            {
-                ShowPoints(circle.GetPoints(), circle.name);
-            }
-        }
-    }
+    //public void ShowCirclePointsAll()
+    //{
+    //    foreach (var pipe in PipeDatas)
+    //    {
+    //        foreach (var circle in pipe.Circles)
+    //        {
+    //            ShowPoints(circle.GetPoints(), circle.name);
+    //        }
+    //    }
+    //    foreach (var pipe in ElbowDatas)
+    //    {
+    //        foreach (var circle in pipe.Circles)
+    //        {
+    //            ShowPoints(circle.GetPoints(), circle.name);
+    //        }
+    //    }
+    //}
 
 
 
@@ -340,13 +339,13 @@ public class PipeMeshGenerator : PipeMeshGeneratorBase
         }
         
         if(IsRemoveColinearPoints)
-            RemoveColinearPoints(ps);
+            RemoveColinearPoints(ps,false);
         points2 = new List<Vector3>(ps);
-        CircleDatas = new List<CircleMeshData>();
-        PipeDatas = new List<CylinderMeshData>();
-        ElbowDatas = new List<ElbowMeshData>();
+        //CircleDatas = new List<CircleMeshData>();
+        //PipeDatas = new List<CylinderMeshData>();
+        //ElbowDatas = new List<ElbowMeshData>();
 
-        
+
         List<Vector3> vertices = new List<Vector3>();
         List<int> triangles = new List<int>();
         List<Vector3> normals = new List<Vector3>();
@@ -390,8 +389,8 @@ public class PipeMeshGenerator : PipeMeshGeneratorBase
                 CircleMeshData circle2 = GenerateCircleAtPoint(vertices, normals, endPoint, directionN, $"Pipe[{i}]_end", ps.Count);
                 MakeCylinderTriangles(triangles, i);
 
-                CylinderMeshData cylinderMeshData = new CylinderMeshData(circle1, circle2);
-                PipeDatas.Add(cylinderMeshData);
+                //CylinderMeshData cylinderMeshData = new CylinderMeshData(circle1, circle2);
+                //PipeDatas.Add(cylinderMeshData);
 
                 if (gWeld && i < ps.Count - 2)
                 {
@@ -435,8 +434,8 @@ public class PipeMeshGenerator : PipeMeshGeneratorBase
                 CircleMeshData circle1 = GenerateCircleAtPoint(vertices, normals, initialPoint, directionN, $"Pipe({this.name})[{i}]_start", ps.Count);
                 CircleMeshData circle2 = GenerateCircleAtPoint(vertices, normals, endPoint, directionN, $"Pipe({this.name})[{i}]_end", ps.Count);
                 MakeCylinderTriangles(triangles, i);
-                CylinderMeshData cylinderMeshData = new CylinderMeshData(circle1, circle2);
-                PipeDatas.Add(cylinderMeshData);
+                //CylinderMeshData cylinderMeshData = new CylinderMeshData(circle1, circle2);
+                //PipeDatas.Add(cylinderMeshData);
 
                 if (gWeld && i < ps.Count - 1)
                 {
@@ -505,7 +504,7 @@ public class PipeMeshGenerator : PipeMeshGeneratorBase
                     Vector3 point3 = ps[i + 2]; // next point
 
                     ElbowMeshData elbowMeshData=GenerateElbow(ps, i, vertices, normals, triangles, point1, point2, point3);
-                    ElbowDatas.Add(elbowMeshData);
+                    //ElbowDatas.Add(elbowMeshData);
 
                     if (IsDebugElbow)
                     {
@@ -540,7 +539,7 @@ public class PipeMeshGenerator : PipeMeshGeneratorBase
 
     //public bool IsDebugElbow = false;
 
-    void RemoveColinearPoints(List<Vector3> points) {
+    void RemoveColinearPoints(List<Vector3> points,bool isShowLog) {
         int count1 = points.Count;
         List<int> pointsToRemove = new List<int>();
         for (int i = 0; i < points.Count - 2; i++) {
@@ -559,7 +558,8 @@ public class PipeMeshGenerator : PipeMeshGeneratorBase
                 pointsToRemove.Add(i + 1);
             }
 
-            //Debug.Log($"RemoveColinearPoints[{i}] dis:{dis} 【{dis < colinearThreshold}】 point1:{point1} point2:{point2} point3:{point3} dir1:{dir1} dir2:{dir2}");
+            if(isShowLog)
+                Debug.Log($"RemoveColinearPoints[{i}] dis:{dis} 【{dis < colinearThreshold}】 point1:{point1} point2:{point2} point3:{point3} dir1:{dir1} dir2:{dir2}");
         }
 
         pointsToRemove.Reverse();
@@ -567,7 +567,12 @@ public class PipeMeshGenerator : PipeMeshGeneratorBase
             points.RemoveAt(idx);
         }
         int count2 = points.Count;
-        //Debug.LogError($"RemoveColinearPoints {count1}->{count2}");
+        if(count1==5 && count2 != 3)
+        {
+            Debug.LogError($"RemoveColinearPoints {count1}->{count2}");
+        }
+        if (isShowLog)
+            Debug.LogError($"RemoveColinearPoints {count1}->{count2}");
     }
 
     CircleMeshData GenerateCircleAtPoint(List<Vector3> vertices, List<Vector3> normals, Vector3 center, Vector3 direction,string circleName,int psCount) {
@@ -720,7 +725,7 @@ public class PipeMeshGenerator : PipeMeshGeneratorBase
         CircleMeshData cirlce11 = GenerateCircleAtPoint(vertices, normals, startPoint0, (point2 - point1).normalized, "Elbow_Start1", points.Count);
         CircleMeshData cirlce12 = GenerateCircleAtPoint(vertices, normals, startPoint1, (point2 - point1).normalized, "Elbow_Start2", points.Count);
         CylinderMeshData pipe1 = new CylinderMeshData(cirlce11, cirlce12);
-        PipeDatas.Add(pipe1);
+        //PipeDatas.Add(pipe1);
 
         //int index1 = (points.Count - 1) + (elbowIdx + 1) * 2-1;
         int index1 = (points.Count - 1) + (elbowIdx) * 2;
@@ -732,7 +737,7 @@ public class PipeMeshGenerator : PipeMeshGeneratorBase
         CircleMeshData cirlce22 = GenerateCircleAtPoint(vertices, normals, endPoint0, (point3 - point2).normalized, "Elbow_End2", points.Count);
         MakeCylinderTriangles(triangles, index1 + 1);
         CylinderMeshData pipe2 = new CylinderMeshData(cirlce21, cirlce22);
-        PipeDatas.Add(pipe2);
+        //PipeDatas.Add(pipe2);
     }
 
     ElbowMeshData GenerateElbow(List<Vector3> points,int index, List<Vector3> vertices, List<Vector3> normals, List<int> triangles, Vector3 point1, Vector3 point2, Vector3 point3) {

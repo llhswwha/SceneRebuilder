@@ -170,7 +170,12 @@ public class OBBCollider : MonoBehaviour
         List<Vector3> ps1 = new List<Vector3>();
         List<Vector3S> ps2 = new List<Vector3S>();
         MeshFilter meshFilter = this.GetComponent<MeshFilter>();
-
+        if (meshFilter.sharedMesh == null)
+        {
+            Debug.LogError("OBBCollider.GetObb meshFilter.sharedMesh == null");
+            IsObbError = true;
+            return new OrientedBoundingBox();
+        }
         var vs = meshFilter.sharedMesh.vertices;
         var count = vs.Length;
         for (int i = 0; i < count; i++)

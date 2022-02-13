@@ -1397,7 +1397,16 @@ public class BaseFoldoutEditor<T> : BaseEditor<T> where T : class
                 listArg.tag = funcGetList();
                 isUpate = true;
             }
-
+            if (GUILayout.Button("Info", btnStyle, GUILayout.Width(40)))
+            {
+                SharedMeshInfoList list2 = funcGetList();
+                list2.AddInstanceInfo();
+            }
+            if (GUILayout.Button("Save", btnStyle, GUILayout.Width(40)))
+            {
+                SharedMeshInfoList list2 = funcGetList();
+                list2.SaveMesh();
+            }
             //if (GUILayout.Button("Pre_Copy", btnStyle, GUILayout.Width(40)))
             //{
             //    //SharedMeshInfoList list2 = funcGetList();
@@ -1450,8 +1459,13 @@ public class BaseFoldoutEditor<T> : BaseEditor<T> where T : class
 
             InitEditorArg(list);
 
-            int sortType = listArg.DrawPageToolbarWithSort(list.Count, 100, 0, "SharedV", "AllV", "SharedCount");
+            int sortType = listArg.DrawPageToolbarWithSort(list.Count, 100, 0, "SharedV", "AllV", "SharedCount","Name");
             list.SortByType(sortType);
+
+            //listArg.DrawPageToolbar(list, (listItem, id) =>
+            //{
+
+            //});
 
             for (int i = listArg.GetStartId(); i < list.Count && i < listArg.GetEndId(); i++)
             {
@@ -1506,9 +1520,10 @@ public class BaseFoldoutEditor<T> : BaseEditor<T> where T : class
 
                         var filters = node.meshFilters;
                         InitEditorArg(filters);
-                        foreach (var mf in filters)
+
+                        arg.DrawPageToolbar(filters, (mf, id) =>
                         {
-                            if (mf == null) continue;
+                            if (mf == null) return;
                             var mfArg = FoldoutEditorArgBuffer.editorArgs[mf];
                             mfArg.isFoldout = false;
                             mfArg.level = 2;
@@ -1525,7 +1540,28 @@ public class BaseFoldoutEditor<T> : BaseEditor<T> where T : class
                             {
 
                             });
-                        }
+                        });
+
+                        //foreach (var mf in filters)
+                        //{
+                        //    if (mf == null) continue;
+                        //    var mfArg = FoldoutEditorArgBuffer.editorArgs[mf];
+                        //    mfArg.isFoldout = false;
+                        //    mfArg.level = 2;
+                        //    if (mf.transform.parent == null)
+                        //    {
+                        //        mfArg.caption = "[ROOT]> " + mf.name;
+                        //    }
+                        //    else
+                        //    {
+                        //        mfArg.caption = mf.transform.parent.name + "> " + mf.name;
+                        //    }
+
+                        //    EditorUIUtils.ObjectFoldout(mfArg, mf.gameObject, () =>
+                        //    {
+
+                        //    });
+                        //}
                     }
                 }
             }

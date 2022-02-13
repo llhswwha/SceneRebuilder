@@ -35,10 +35,10 @@ public class PipeMeshGeneratorEditor : Editor {
 		{
 			myTarget.ShowPoints();
 		}
-		if (GUILayout.Button("ShowPoints2"))
-		{
-			myTarget.ShowPoints2();
-		}
+        if (GUILayout.Button("ShowPoints2"))
+        {
+            myTarget.ShowPoints2();
+        }
         if (GUILayout.Button("ShowPoints(T)"))
         {
             myTarget.ShowTransformPoints();
@@ -49,16 +49,16 @@ public class PipeMeshGeneratorEditor : Editor {
         }
         GUILayout.EndHorizontal();
 
-		GUILayout.BeginHorizontal();
-		if (GUILayout.Button("ShowCircles"))
-		{
-			myTarget.ShowCirclePoints();
-		}
-		if (GUILayout.Button("ShowCirclesAll"))
-		{
-			myTarget.ShowCirclePointsAll();
-		}
-		GUILayout.EndHorizontal();
+		//GUILayout.BeginHorizontal();
+		//if (GUILayout.Button("ShowCircles"))
+		//{
+		//	myTarget.ShowCirclePoints();
+		//}
+		//if (GUILayout.Button("ShowCirclesAll"))
+		//{
+		//	myTarget.ShowCirclePointsAll();
+		//}
+		//GUILayout.EndHorizontal();
 
 		GUILayout.BeginHorizontal();
 		//GetPointsFromTransforms

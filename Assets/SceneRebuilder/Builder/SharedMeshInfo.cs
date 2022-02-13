@@ -207,11 +207,26 @@ public class SharedMeshInfoList : List<SharedMeshInfo>
             });
         }
 
+        if (sortType == 3)
+        {
+            this.Sort((a, b) =>
+            {
+                var r1 = a.GetName().CompareTo(b.GetName());
+                //var r1 = b.meshFilters.Count.CompareTo(a.meshFilters.Count);
+                if (r1 == 0)
+                {
+                    r1 = b.vertexCount.CompareTo(a.vertexCount);
+                }
+                if (r1 == 0)
+                {
+                    r1 = b.meshFilters.Count.CompareTo(a.meshFilters.Count);
+                }
+                return r1;
+            });
+        }
 
 
 
-
-        
     }
 
     public void DeleteToOne()
@@ -220,6 +235,45 @@ public class SharedMeshInfoList : List<SharedMeshInfo>
         {
             item.DeleteToOne();
         }
+    }
+
+    public void AddInstanceInfo()
+    {
+        SharedMeshInfoList list = this;
+        for (int i = 0; i < list.Count; i++)
+        {
+            SharedMeshInfo item = list[i];
+            if (ProgressBarHelper.DisplayCancelableProgressBar(new ProgressArg("AddInstanceInfo", i, list.Count, item)))
+            {
+                break;
+            }
+            item.AddInstanceInfo();
+        }
+        ProgressBarHelper.ClearProgressBar();
+    }
+
+    public void SaveMesh()
+    {
+        SharedMeshInfoList list = this;
+        Dictionary<string, SharedMeshInfo> dict = new Dictionary<string, SharedMeshInfo>();
+        for (int i = 0; i < list.Count; i++)
+        {
+            SharedMeshInfo item = list[i];
+            if(ProgressBarHelper.DisplayCancelableProgressBar(new ProgressArg("SaveMesh", i, list.Count, item)))
+            {
+                break;
+            }
+            string assetPath=item.SaveMesh();
+            if(dict.ContainsKey(assetPath))
+            {
+                Debug.LogError($"SaveMesh dict.ContainsKey(assetPath)! assetPath:{assetPath} item:{item}");
+            }
+            else
+            {
+                dict.Add(assetPath, item);
+            }
+        }
+        ProgressBarHelper.ClearProgressBar();
     }
 }
 
@@ -394,4 +448,131 @@ public class SharedMeshInfo:IPrefab<SharedMeshInfo>
     {
         DestroyFromStartId(1);
     }
+
+    private MeshFilter FindPrefab()
+    {
+        List<MeshFilter> prefabs = new List<MeshFilter>();
+
+        if (meshFilters.Count == 1)
+        {
+            prefabs.Add(meshFilters[0]);
+            return prefabs[0];
+        }
+
+        string meshName = mesh.name;
+
+        if (mesh.name.Contains("_New"))
+        {
+            meshName = meshName.Replace("_New", "");
+            meshName = meshName.Replace("_Combined_M_Combined0", "");
+            for (int i = 0; i < meshFilters.Count; i++)
+            {
+                MeshFilter mf = meshFilters[i];
+                if (mf == null)
+                {
+                    continue;
+                }
+                if (meshName == mf.name)
+                {
+                    //Debug.Log($"AddInfo[{mesh.name}][{i}][{mf}]");
+                    prefabs.Add(mf);
+                }
+            }
+        }
+        else
+        {
+            for (int i = 0; i < meshFilters.Count; i++)
+            {
+                MeshFilter mf = meshFilters[i];
+                if (mf == null)
+                {
+                    continue;
+                }
+                //if (mf.name == mesh.name)
+                //{
+                //    Debug.Log($"AddInfo[{mesh.name}][{i}][{mf}]");
+                //}
+                if (mf.name.Contains("_New"))
+                {
+
+                }
+                else
+                {
+                    prefabs.Add(mf);
+                }
+            }
+        }
+
+
+
+
+        if (prefabs.Count == 1)
+        {
+
+        }
+        else
+        {
+            if (prefabs.Count == 0)
+            {
+                Debug.LogError($"AddInfo[{mesh.name},{meshName}]prefabs:{prefabs.Count} all:{meshFilters.Count}");
+                return null;
+            }
+            else
+            {
+                Debug.LogWarning($"AddInfo[{mesh.name},{meshName}]prefabs:{prefabs.Count} all:{meshFilters.Count} go:{prefabs[0].gameObject.name}");
+            }
+            
+        }
+
+        if (prefabs.Count == meshFilters.Count)
+        {
+            return meshFilters[0];
+        }
+        else
+        {
+            return prefabs[0];
+        }
+        
+    }
+
+    internal void AddInstanceInfo()
+    {
+        var mf0=FindPrefab();
+
+        PrefabInfo prefab = new PrefabInfo(mf0.gameObject);
+
+        //MeshPrefabInstance instance = mf0.gameObject.AddMissingComponent<MeshPrefabInstance>();
+        //instance.IsPrefab = true;
+        //instance.PrefabGo = mf0.gameObject;
+
+        for (int i = 0; i < meshFilters.Count; i++)
+        {
+            MeshFilter mf = meshFilters[i];
+            if (mf == null)
+            {
+                continue;
+            }
+            if (mf == mf0)
+            {
+                continue;
+            }
+            prefab.AddInstance(mf.gameObject);
+        }
+    }
+
+
+
+    internal string SaveMesh()
+    {
+        var mf0 = FindPrefab();
+#if UNITY_EDITOR
+        string assetPath = EditorHelper.SaveMeshAssetResource(mf0);
+        //EditorHelper.SaveMeshAsset();
+        return assetPath;
+#else
+        return "";
+#endif
+
+    }
+
 }

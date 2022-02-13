@@ -98,7 +98,7 @@ public class PipeWeldoletModel : PipeTeeModel
         return data;
     }
 
-    public override void SetSaveData(PipeModelSaveData data)
+    public override void SetSaveData(MeshModelSaveData data)
     {
         //this.LineInfo = data.Info;
         SetModelData((data as PipeWeldoletSaveData).Data);

@@ -20,6 +20,10 @@ public class SceneSaveData
 
     public List<PipeWeldoletSaveData> PipeWeldolets = new List<PipeWeldoletSaveData>();
 
+    public List<MeshPrefabSaveData> MeshPrefabs = new List<MeshPrefabSaveData>();
+
+    private Dictionary<GameObject,MeshPrefabSaveData> MeshPrefabDict = new Dictionary<GameObject, MeshPrefabSaveData>();
+
     internal void AddData_PipeLine(PipeLineSaveData pipeLineSaveData)
     {
         PipeLines.Add(pipeLineSaveData);
@@ -48,6 +52,27 @@ public class SceneSaveData
     internal void AddData_PipeWeldolet(PipeWeldoletSaveData pipeLineSaveData)
     {
         PipeWeldolets.Add(pipeLineSaveData);
+    }
+
+    internal void AddData_MeshInstance(MeshPrefabInstance instance)
+    {
+        //PipeWeldolets.Add(pipeLineSaveData);
+        if (!MeshPrefabDict.ContainsKey(instance.PrefabGo))
+        {
+            MeshPrefabSaveData data = new MeshPrefabSaveData(instance);
+            MeshPrefabDict.Add(instance.PrefabGo, data);
+            MeshPrefabs.Add(data);
+
+            var mesh = EditorHelper.LoadResoucesMesh(data.prefabId);
+            if (mesh == null)
+            {
+#if UNITY_EDITOR
+                EditorHelper.SaveMeshAssetResource(instance.PrefabGo);
+#endif
+                Debug.LogWarning($"AddData_MeshInstance id:{data.prefabId} obj:{instance.gameObject} prefab:{instance.PrefabGo}");
+            }
+        }
+        MeshPrefabDict[instance.PrefabGo].AddInstance(instance);
     }
 
     public override string ToString()

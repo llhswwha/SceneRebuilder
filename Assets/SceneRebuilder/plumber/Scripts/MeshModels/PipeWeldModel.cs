@@ -8,7 +8,7 @@ public class PipeWeldModel : PipeModelComponent
 {
     public PipeWeldData WeldData;
 
-    public override void InitSaveData(PipeModelSaveData data)
+    public override void InitSaveData(MeshModelSaveData data)
     {
         base.InitSaveData(data);
 
@@ -19,7 +19,19 @@ public class PipeWeldModel : PipeModelComponent
     {
         PipeWeldSaveData data = new PipeWeldSaveData();
         InitSaveData(data);
-        WeldData.start = ResultGo.transform.position;
+        if (ResultGo == null)
+        {
+            ResultGo = this.gameObject;
+        }
+        if (ResultGo != null)
+        {
+            WeldData.start = ResultGo.transform.position;
+            WeldData.direction = ResultGo.transform.up;
+        }
+        else
+        {
+            Debug.LogError($"PipeWeldModel.GetSaveData ResultGo==null:{this.gameObject} parent:{this.transform.parent}");
+        }
         data.Data = WeldData;
         return data;
     }
@@ -45,7 +57,10 @@ public class PipeWeldModel : PipeModelComponent
         SetPipeMeshGenerator(weldGenerator, generateArg);
         weldGenerator.RenderTorusXZ();
         //weldGenerator.ShowPoints();
+        var p = go.transform.parent;
+        go.transform.SetParent(null);
         go.transform.up = WeldData.direction;
+        go.transform.SetParent(p);
         go.transform.localScale = new Vector3(1, 2, 1);
         //Childrens.Add(go.transform);
 

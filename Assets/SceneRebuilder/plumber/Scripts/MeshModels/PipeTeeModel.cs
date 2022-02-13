@@ -231,7 +231,7 @@ public class PipeTeeModel : PipeElbowModel
     //    SetModelData(data.Data);
     //}
 
-    public override void SetSaveData(PipeModelSaveData data)
+    public override void SetSaveData(MeshModelSaveData data)
     {
         //this.LineInfo = data.Info;
         SetModelData((data as PipeTeeSaveData).Data);
@@ -401,8 +401,8 @@ public class PipeTeeModel : PipeElbowModel
     //    return cCount;
     //}
 
-    public new void OnDestroy()
-    {
-        Debug.LogError("PipeTeeModel.OnDestroy:"+this);
-    }
+    //public new void OnDestroy()
+    //{
+    //    //Debug.LogError("PipeTeeModel.OnDestroy:"+this);
+    //}
 }

@@ -5,10 +5,10 @@ using UnityEngine;
 
 public class PipeModelBase : PipeModelComponent, IComparable<PipeModelBase>
 {
-    void Awake()
-    {
-        Debug.Log($"PipeModelBase.Awake go:{this.name}");
-    }
+    //void Awake()
+    //{
+    //    //Debug.Log($"PipeModelBase.Awake go:{this.name}");
+    //}
 
     //void Start()
     //{
@@ -17,14 +17,14 @@ public class PipeModelBase : PipeModelComponent, IComparable<PipeModelBase>
 
     public bool IsRendererOnStart = false;
 
-    void Start()
-    {
-        if (IsRendererOnStart)
-        {
-            //RendererEachPipesEx();
-            RendererModel();
-        }
-    }
+    //void Start()
+    //{
+    //    if (IsRendererOnStart)
+    //    {
+    //        //RendererEachPipesEx();
+    //        RendererModel();
+    //    }
+    //}
 
     public int sharedMinCount = 36;
 
@@ -429,7 +429,7 @@ public class PipeModelBase : PipeModelComponent, IComparable<PipeModelBase>
     public float PipeRadius1 = 0;
     public float PipeRadius2 = 0;
 
-    public bool IsGetInfoSuccess = true;
+
     public bool IsObbError = false;
 
     protected bool RendererErrorModel()
@@ -437,7 +437,7 @@ public class PipeModelBase : PipeModelComponent, IComparable<PipeModelBase>
         ClearGo();
         if (IsGetInfoSuccess == false)
         {
-            Debug.LogError($"RendererErrorModel IsGetInfoSuccess == false gameObject:{this.name}");
+            Debug.LogWarning($"RendererErrorModel IsGetInfoSuccess == false gameObject:{this.name}");
             //this.gameObject.SetActive(true);
             //return true;
             return false;
@@ -724,7 +724,7 @@ public class PipeModelBase : PipeModelComponent, IComparable<PipeModelBase>
         //lodGroup.AddComponent<RendererId>();
     }
 
-    public override void InitSaveData(PipeModelSaveData data)
+    public override void InitSaveData(MeshModelSaveData data)
     {
         base.InitSaveData(data);
 
@@ -732,7 +732,7 @@ public class PipeModelBase : PipeModelComponent, IComparable<PipeModelBase>
     }
 
 
-    public virtual void SetSaveData(PipeModelSaveData data)
+    public virtual void SetSaveData(MeshModelSaveData data)
     {
         //this.LineInfo = data.Info;
         //SetModelData(data.Data);

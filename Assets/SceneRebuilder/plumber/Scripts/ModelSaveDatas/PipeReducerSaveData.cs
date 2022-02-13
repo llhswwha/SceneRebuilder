@@ -2,7 +2,7 @@ using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 
-public class PipeReducerSaveData : PipeModelSaveData
+public class PipeReducerSaveData : MeshModelSaveData
 {
     public PipeReducerData Data;
 }
