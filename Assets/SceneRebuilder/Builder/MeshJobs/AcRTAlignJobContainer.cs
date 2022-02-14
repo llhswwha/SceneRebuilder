@@ -52,9 +52,10 @@ public class AcRTAlignJobContainer
         this.jobSize=size;
         this.mfCount = meshFilters.Length;
         this.targetCount = meshFilters.Length;
+        this.vertexCountOffset = vertexCountOffset;
 
         ResetStaticInfo();
-        this.vertexCountOffset = vertexCountOffset;
+        
     }
 
     int vertexCountOffset;

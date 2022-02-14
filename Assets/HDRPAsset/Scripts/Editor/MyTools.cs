@@ -38,6 +38,12 @@ public class MyTools
         ProgressBarHelper.ClearProgressBar();
     }
 
+    [MenuItem("Tools/Prefab/GetTargetGos")]
+    public static void GetTargetGos()
+    {
+        GetTargetGos(PrefabInstanceBuilder.Instance.vertexCountOffset);
+    }
+
     [MenuItem("Tools/Prefab/GetTargetGos(0)")]
     public static void GetTargetGos0()
     {

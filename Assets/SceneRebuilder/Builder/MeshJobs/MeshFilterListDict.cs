@@ -25,7 +25,7 @@ public class MeshFilterListDict
         if(IsConbined==false)
         {
             IsConbined=true;
-            Debug.Log($"GetMeshFiltersList Start: {list.Count}");
+            Debug.Log($"GetMeshFiltersList Start: {list.Count} VertexCountOffset:{VertexCountOffset}");
             list.Sort();
             for(int i=0;i<list.Count-1;i++)
             {
@@ -36,7 +36,7 @@ public class MeshFilterListDict
                     a.AddRang(b);
                     list.RemoveAt(i + 1);
                     i--;
-                    Debug.Log($"mat:{a.MatId} a:{a.vertexCount} b:{b.vertexCount} d:{b.vertexCount - a.vertexCount} dis:{VertexCountOffset}");
+                    Debug.Log($"GetMeshFiltersList mat:{a.MatId} a:{a.vertexCount} b:{b.vertexCount} d:{b.vertexCount - a.vertexCount} dis:{VertexCountOffset}");
                 }
             }
             Debug.Log($"GetMeshFiltersList End: {list.Count} |Detail:{GetGroupCountDetails()} | CombineDistance:{VertexCountOffset}");
@@ -62,7 +62,7 @@ public class MeshFilterListDict
     //     mfl.Add(mf);
     // }
 
-
+    int vertexCountPower = 1;
 
     public MeshFilterListDict(MeshPoints[] meshPoints,int vertexCountOffset)
     {
@@ -71,7 +71,7 @@ public class MeshFilterListDict
         {
             var mf=meshPoints[i];
             //var vCount = mf.vertexCount;
-            var vCount = Mathf.RoundToInt(mf.vertexCount/100f);
+            var vCount = Mathf.RoundToInt(mf.vertexCount/ vertexCountPower);
             // if(vCount>AcRTAlignJobContainer.MaxVertexCount)//排除点数特别多的，不然会卡住
             // {
             //     continue;
@@ -100,7 +100,7 @@ public class MeshFilterListDict
             mfl.Add(mf);
         }
 
-        Debug.Log($"MeshFilterListDict meshPoints:{meshPoints.Length} dict:{dict.Count} count:{dict}");
+        Debug.Log($"MeshFilterListDict meshPoints:{meshPoints.Length} dict:{dict.Count} count:{dict} vertexCountOffset:{vertexCountOffset}");
 
         // for (int i = 0; i < meshCounts.Length; i++)
         // {
