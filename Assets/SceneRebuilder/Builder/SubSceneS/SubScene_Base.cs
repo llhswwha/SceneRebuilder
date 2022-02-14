@@ -639,8 +639,14 @@ public class SubScene_Base : MonoBehaviour
     [ContextMenu("EditorCreateScene")]
     public void EditorCreateScene(bool isOnlyChildren)
     {
+
         SubSceneManager subSceneManager = SubSceneManager.Instance;
         string path = subSceneManager.GetScenePath(this.name, SceneContentType.Single,null);
+        if (IsLoaded == false)
+        {
+            Debug.LogWarning($"EditorCreateScene IsLoaded==false name:{this.name} path:{path}");
+            return;
+        }
         //if (sceneArg == null)
         //{
         //    sceneArg = new SubSceneArg();

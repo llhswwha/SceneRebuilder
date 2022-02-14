@@ -16,11 +16,54 @@ public class MyTools
             {
                 break;
             }
-            SubScene_Single subScene=obj.AddMissingComponent<SubScene_Single>();
+            SubScene_Single subScene=obj.GetComponent<SubScene_Single>();
+            if (subScene == null)
+            {
+                subScene = obj.AddComponent<SubScene_Single>();
+                subScene.IsLoaded = true;
+            }
             subScene.EditorCreateScene(true);
         }
         EditorHelper.RefreshAssets();
         ProgressBarHelper.ClearProgressBar();
+    }
+
+    [MenuItem("Tools/SubScene/CreateSubScenes(Children)")]
+    public static void CreateSubScenes_Children()
+    {
+        for (int i = 0; i < Selection.gameObjects.Length; i++)
+        {
+            GameObject go = Selection.gameObjects[i];
+            for(int j = 0; j < go.transform.childCount; j++)
+            {
+                GameObject subGo = go.transform.GetChild(j).gameObject;
+                if (ProgressBarHelper.DisplayCancelableProgressBar(new ProgressArg("CreateSubScenes", i, Selection.gameObjects.Length, subGo)))
+                {
+                    break;
+                }
+                SubScene_Single subScene = subGo.GetComponent<SubScene_Single>();
+                if (subScene == null)
+                {
+                    subScene = subGo.AddComponent<SubScene_Single>();
+                    subScene.IsLoaded = true;
+                }
+                subScene.EditorCreateScene(true);
+            }
+        }
+        EditorHelper.RefreshAssets();
+        ProgressBarHelper.ClearProgressBar();
+    }
+
+    [MenuItem("Tools/SubScene/Clear")]
+    public static void ClearSubScenes()
+    {
+        ClearComponents<SubScene_Single>();
+    }
+
+    [MenuItem("Tools/SubScene/ClearOtherScenes")]
+    public static void ClearOtherScenes()
+    {
+        EditorHelper.ClearOtherScenes();
     }
 
     #region ClearComponents
