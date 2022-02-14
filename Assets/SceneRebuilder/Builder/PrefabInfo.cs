@@ -582,6 +582,16 @@ public class PrefabInfoList: List<PrefabInfo>
         }
         return null;
     }
+
+    public float GetVertexCount()
+    {
+        float vc = 0;
+        foreach(var item in this)
+        {
+            vc += item.VertexCount;
+        }
+        return vc;
+    }
 }
 
 public interface IPrefab<T>

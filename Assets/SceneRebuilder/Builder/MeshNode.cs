@@ -941,6 +941,7 @@ public class MeshNode : MonoBehaviour,IComparable<MeshNode>
         {
             ProgressBarHelper.DisplayProgressBar(p);
         });
+        meshNode.GetSharedMeshList();
 
         var meshNodes = meshNode.GetComponentsInChildren<MeshNode>(true);
         ProgressBarHelper.ClearProgressBar();

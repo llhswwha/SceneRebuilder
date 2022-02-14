@@ -48,6 +48,11 @@ public class MeshPrefabInstance : MonoBehaviour, IGameObject
 
     public void LoadMesh(Mesh mesh)
     {
+        if (mesh == null)
+        {
+            Debug.LogError($"MeshPrefabInstance.LoadMesh mesh == null:{this.gameObject}");
+            return;
+        }
         MeshFilter mf = gameObject.AddMissingComponent<MeshFilter>();
         mf.sharedMesh = mesh;
 

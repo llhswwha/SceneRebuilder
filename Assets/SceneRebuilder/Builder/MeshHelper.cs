@@ -267,7 +267,7 @@ public static class MeshHelper
         Debug.Log($"ShowAllRenderers count:{allRenderers.Length} time:{(DateTime.Now - start)}");
     }
 
-    public static string GetVertexCountS(int vertexCount)
+    public static string GetVertexCountS(float vertexCount)
     {
         float f = vertexCount / 10000f;
         if (f >= 100)
