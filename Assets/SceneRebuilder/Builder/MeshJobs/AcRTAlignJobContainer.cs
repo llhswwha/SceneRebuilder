@@ -26,7 +26,7 @@ public class AcRTAlignJobContainer
 
     public Dictionary<Transform, Transform> parentDict = new Dictionary<Transform, Transform>();
 
-    public AcRTAlignJobContainer(MeshPoints[] meshFilters,int size)
+    public AcRTAlignJobContainer(MeshPoints[] meshFilters,int size, int vertexCountOffset)
     {
         Last = this;
         Debug.Log($"AcRTAlignJobContainer MeshPoints:{meshFilters.Length} MaxVertexCount:{AcRTAlignJobContainer.MaxVertexCount}");
@@ -54,7 +54,10 @@ public class AcRTAlignJobContainer
         this.targetCount = meshFilters.Length;
 
         ResetStaticInfo();
+        this.vertexCountOffset = vertexCountOffset;
     }
+
+    int vertexCountOffset;
 
     public void ResetStaticInfo()
     {
@@ -75,7 +78,7 @@ public class AcRTAlignJobContainer
         AcRTAlignJob.ResetTotalData();
         MeshAlignJobContainer.InitTime();
 
-        mfld = CreateMeshFilterListDict(meshFilters);
+        mfld = CreateMeshFilterListDict(meshFilters, vertexCountOffset);
     }
 
     public void ResetLoopInfo()
@@ -592,12 +595,12 @@ public class AcRTAlignJobContainer
 
     private int lastProgressCount = 0;
 
-    private bool ShowProgressAndLog(bool isLoopEnd,int jobCount,string tag)
+    private bool ShowProgressAndLog(bool isLoopEnd, int jobCount, string tag)
     {
-        bool r=false;
+        bool r = false;
         if (mfld.Count == 0)
         {
-            r= true;//结束
+            r = true;//结束
         }
         int mfCount = mfld.GetMeshFilterCount();
         int progressCount = targetCount - mfCount;
@@ -614,33 +617,46 @@ public class AcRTAlignJobContainer
         lastProgressCount = progressCount;
         //float progress1 = (float)progressCount / targetCount;
 
-        int loopTime = (int)(DateTime.Now - loopStartTime).TotalMilliseconds;
 
-        if (isLoopEnd)
+        double loopTime = (DateTime.Now - loopStartTime).TotalSeconds;
+        string time = loopTime.ToString();
+        if (loopTime < 1)
         {
-            
-            Debug.Log($"完成一轮[{loopCount}][{loopTime}ms]:\t{loopStartMeshFilterCount - mfCount}={loopStartMeshFilterCount}->{mfCount},Prefab:{prefabInfoList.Count}(+{prefabInfoList.Count - lastPrafabCount}), AlignJob:{AlignJobCount}, DisJob:{AcRTAlignJobExResult.disJobCount} | " + loopInitLog);
-            loopTimes += loopTime + ";";
-
-           
+            time = loopTime.ToString("F2");
+        }
+        else if (loopTime < 10)
+        {
+            time = loopTime.ToString("F1");
         }
         else
         {
-
+            time = loopTime.ToString("F0");
         }
-
-        string logInfo = $"t:{loopTime}ms ,P:{prefabInfoList.Count}(+{prefabInfoList.Count - lastPrafabCount})";
-
-        var progressArg = ProgressArg.New($"AcRTAlignJob({tag})", progressCount, targetCount, $"{loopCount}|j:{jobCount} d:{mfld.Count} {logInfo}", JobHandleList.testProgressArg);
-        //AcRTAlignJob.progressArg = progressArg;
-        JobHandleList.SetJobProgress(progressArg);
-
-        if (ProgressBarHelper.DisplayCancelableProgressBar(progressArg))
+        if (isLoopEnd)
         {
-            //isCancel = true;//取消处理
-            r = true;
-            IsBreak = true;
+
+            Debug.Log($"完成一轮[{loopCount}][{time}s]:\t{loopStartMeshFilterCount - mfCount}={loopStartMeshFilterCount}->{mfCount},Prefab:{prefabInfoList.Count}(+{prefabInfoList.Count - lastPrafabCount}), AlignJob:{AlignJobCount}, DisJob:{AcRTAlignJobExResult.disJobCount} | " + loopInitLog);
+            loopTimes += loopTime + ";";
+
+
         }
+        else
+        {
+            string logInfo = $"t:{time}ms ,P:{prefabInfoList.Count}(+{prefabInfoList.Count - lastPrafabCount})";
+
+            var progressArg = ProgressArg.New($"Align{tag}", progressCount, targetCount, $"{loopCount}|j:{jobCount} d:{mfld.Count} c:{mfCount} {logInfo}", JobHandleList.testProgressArg);
+            //AcRTAlignJob.progressArg = progressArg;
+            JobHandleList.SetJobProgress(progressArg);
+
+            if (ProgressBarHelper.DisplayCancelableProgressBar(progressArg))
+            {
+                //isCancel = true;//取消处理
+                r = true;
+                IsBreak = true;
+            }
+        }
+
+
 
         lastPrafabCount = prefabInfoList.Count;
 
@@ -837,9 +853,10 @@ public class AcRTAlignJobContainer
         return prefabInfoList;
     }
 
-    public static MeshFilterListDict CreateMeshFilterListDict(MeshPoints[] meshFilters){
+    public static MeshFilterListDict CreateMeshFilterListDict(MeshPoints[] meshFilters, int vertexCountOffset)
+    {
         DateTime start = DateTime.Now;
-        var mfld = new MeshFilterListDict(meshFilters);
+        var mfld = new MeshFilterListDict(meshFilters, vertexCountOffset);
         Debug.Log($"CreateMeshFilterListDict meshFilters:{meshFilters.Length},Time:{(DateTime.Now - start).TotalMilliseconds:F1}ms");
         return mfld;
     }

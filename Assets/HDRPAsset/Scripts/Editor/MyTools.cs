@@ -35,12 +35,40 @@ public class MyTools
             }
             MeshNode.InitNodes(obj);
         }
-        EditorHelper.RefreshAssets();
         ProgressBarHelper.ClearProgressBar();
     }
 
-    [MenuItem("Tools/Prefab/GetTargetGos")]
-    public static void GetTargetGos()
+    [MenuItem("Tools/Prefab/GetTargetGos(0)")]
+    public static void GetTargetGos0()
+    {
+        GetTargetGos(0);
+    }
+
+    [MenuItem("Tools/Prefab/GetTargetGos(5)")]
+    public static void GetTargetGos5()
+    {
+        GetTargetGos(5);
+    }
+
+    [MenuItem("Tools/Prefab/GetTargetGos(10)")]
+    public static void GetTargetGos10()
+    {
+        GetTargetGos(10);
+    }
+
+    [MenuItem("Tools/Prefab/GetTargetGos(50)")]
+    public static void GetTargetGos50()
+    {
+        GetTargetGos(50);
+    }
+
+    [MenuItem("Tools/Prefab/GetTargetGos(100)")]
+    public static void GetTargetGos100()
+    {
+        GetTargetGos(100);
+    }
+
+    public static void GetTargetGos(int vertexCountOffset)
     {
         for (int i = 0; i < Selection.gameObjects.Length; i++)
         {
@@ -49,10 +77,9 @@ public class MyTools
             {
                 break;
             }
-            var mps=PrefabInstanceBuilder.Instance.FilterMeshPoints(obj);
-            var dict=AcRTAlignJobContainer.CreateMeshFilterListDict(mps);
+            var mps = PrefabInstanceBuilder.Instance.FilterMeshPoints(obj);
+            var dict = AcRTAlignJobContainer.CreateMeshFilterListDict(mps, vertexCountOffset);
         }
-        EditorHelper.RefreshAssets();
         ProgressBarHelper.ClearProgressBar();
     }
 
@@ -69,7 +96,6 @@ public class MyTools
             PrefabInstanceBuilder.Instance.GetPrefabsOfList(obj);
             MeshNode.InitNodes(obj);
         }
-        EditorHelper.RefreshAssets();
         ProgressBarHelper.ClearProgressBar();
     }
     [MenuItem("Tools/Prefab/RemoveNew")]

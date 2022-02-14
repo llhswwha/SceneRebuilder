@@ -484,35 +484,10 @@ public class ProgressArg: IProgressArg
 
     public override string ToString()
     {
-        //if (subP == null)
-        //{
-        //    return $"P1:{GetProgressText()} ({tag})";
-        //}
-        //else
-        //{
-        //    var subP2 = subP.subP;
-        //    if (subP2 == null)
-        //    {
-        //        return $"P2:[{GetProgressText()}]>[{subP.GetProgressText()}] ({tag}>{subP.tag})";
-        //    }
-        //    else
-        //    {
-        //        //return $"P3[{GetProgress()}]>[{subP.GetProgress()}]>[{subP.subP.GetProgress()}] ({tag}>{subP.tag}>{subP.subP.tag})";
-        //        var subP3 = subP2.subP;
-        //        if (subP3 == null)
-        //        {
-        //            return $"P3:[{GetProgressText()}]>[{subP.GetProgressText()}]>[{subP2.GetProgressText()}] ({tag}>{subP.tag}>{subP2.tag})";
-        //        }
-        //        else
-        //        {
-        //            return $"P4:[{GetProgressText()}]>[{subP.GetProgressText()}]>[{subP2.GetProgressText()}]>[{subP3.GetProgressText()}] ({tag}>{subP.tag}>{subP2.tag}>{subP3.tag})";
-        //        }
-        //    }
-        //}
-
         int count = 1;
         ProgressArg sub = this.subP;
-        string totalProgress = $"[{this.GetProgressText()}]";
+        //string totalProgress = $"[{this.GetProgressText()}]";
+        string totalProgress = "";
         string totalTag = this.tag + "";
         while (sub != null)
         {
@@ -544,7 +519,7 @@ public class ProgressArg: IProgressArg
                 break;
             }
         }
-        return $"[T{count}]{totalTitle}";
+        return $"[T{count}][{GetProgressText()}]{totalTitle}";
 
         //if (subP == null)
         //{

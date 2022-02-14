@@ -725,6 +725,8 @@ UnpackPrefab();
         return FilterMeshPoints(meshFilters.ToArray());
     }
 
+    public int vertexCountOffset;
+
     public PrefabInfoList AcRTAlignJobsEx(MeshPoints[] meshPoints)
     {
         meshPoints = FilterMeshPoints(meshPoints);
@@ -735,7 +737,7 @@ UnpackPrefab();
         UnpackPrefab();
         CleanNodes();
 
-        SetPrefabInfoList(MeshJobHelper.NewAcRTAlignJobsEx(meshPoints, JobSize));
+        SetPrefabInfoList(MeshJobHelper.NewAcRTAlignJobsEx(meshPoints, JobSize, vertexCountOffset));
         return PrefabInfoList;
     }
 
@@ -849,7 +851,7 @@ UnpackPrefab();
         Debug.Log("AcRTAlignJobsEx2");
         var meshFilters = GetMeshFilters();
          PrefabInfoList.Clear();
-        PrefabInfoList = MeshJobHelper.NewAcRTAlignJobsEx2(meshFilters, JobSize);
+        PrefabInfoList = MeshJobHelper.NewAcRTAlignJobsEx2(meshFilters, JobSize, vertexCountOffset);
     }
 
     public AcRigidTransform acRigidTransform;

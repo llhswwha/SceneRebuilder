@@ -284,7 +284,7 @@ public static class MeshHelper
         }
         else if (vertexCount >= 1000)
         {
-            return $"{f:F2}";
+            return $"{f:F3}";
         }
         //else if (vertexCount >= 100)
         //{

@@ -18,7 +18,7 @@ public class MeshFilterListDict
 
      public bool IsConbined=false;
 
-     public static int CombineDistance=0;
+     public int VertexCountOffset=0;
 
     public List<MeshFilterList> GetMeshFiltersList()
     {
@@ -31,30 +31,15 @@ public class MeshFilterListDict
             {
                 var a=list[i];
                 var b=list[i+1];
-                //if(a.MatId==b.MatId && b.vertexCount-a.vertexCount<=CombineDistance)//合并vertexCount相近的列表
-                //{
-                //    a.AddRang(b);
-                //    list.RemoveAt(i+1);
-                //    i--;
-                //    Debug.Log($"mat:{a.MatId} a:{a.vertexCount} b:{b.vertexCount} d:{b.vertexCount - a.vertexCount} dis:{CombineDistance}");
-                //}
-                //if (a.MatId == b.MatId && b.vertexCount - a.vertexCount <= CombineDistance)//合并vertexCount相近的列表
-                //{
-                //    a.AddRang(b);
-                //    list.RemoveAt(i + 1);
-                //    i--;
-                //    Debug.Log($"mat:{a.MatId} a:{a.vertexCount} b:{b.vertexCount} d:{b.vertexCount - a.vertexCount} dis:{CombineDistance}");
-                //}
-
-                if (b.vertexCount - a.vertexCount <= CombineDistance)//合并vertexCount相近的列表
+                if (b.vertexCount - a.vertexCount <= VertexCountOffset)//合并vertexCount相近的列表
                 {
                     a.AddRang(b);
                     list.RemoveAt(i + 1);
                     i--;
-                    Debug.Log($"mat:{a.MatId} a:{a.vertexCount} b:{b.vertexCount} d:{b.vertexCount - a.vertexCount} dis:{CombineDistance}");
+                    Debug.Log($"mat:{a.MatId} a:{a.vertexCount} b:{b.vertexCount} d:{b.vertexCount - a.vertexCount} dis:{VertexCountOffset}");
                 }
             }
-            Debug.Log($"GetMeshFiltersList End: {list.Count} |Detail:{GetGroupCountDetails()} | CombineDistance:{CombineDistance}");
+            Debug.Log($"GetMeshFiltersList End: {list.Count} |Detail:{GetGroupCountDetails()} | CombineDistance:{VertexCountOffset}");
         }
         return list;
     }
@@ -79,7 +64,7 @@ public class MeshFilterListDict
 
 
 
-    public MeshFilterListDict(MeshPoints[] meshPoints)
+    public MeshFilterListDict(MeshPoints[] meshPoints,int vertexCountOffset)
     {
         int[] meshCounts = new int[meshPoints.Length];
         for(int i=0;i<meshPoints.Length;i++)
@@ -115,12 +100,14 @@ public class MeshFilterListDict
             mfl.Add(mf);
         }
 
-        Debug.Log($"MeshFilterListDict meshPoints:{meshPoints.Length} dict:{dict.Count} ");
+        Debug.Log($"MeshFilterListDict meshPoints:{meshPoints.Length} dict:{dict.Count} count:{dict}");
 
         // for (int i = 0; i < meshCounts.Length; i++)
         // {
         //     AddMeshFilter(meshCounts[i], meshFilters[i]);
         // }
+        this.VertexCountOffset = vertexCountOffset;
+        GetMeshFiltersList();
     }
 
     public void RemoveEmpty()

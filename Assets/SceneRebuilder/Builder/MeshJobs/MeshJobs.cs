@@ -818,15 +818,15 @@ namespace MeshJobs
             //return result;
         }
 
-        private static MeshFilterListDict CreateMeshFilterListDict(MeshPoints[] meshFilters)
+        private static MeshFilterListDict CreateMeshFilterListDict(MeshPoints[] meshFilters, int vertexCountOffset)
         {
             DateTime start = DateTime.Now;
-            var mfld = new MeshFilterListDict(meshFilters);
+            var mfld = new MeshFilterListDict(meshFilters, vertexCountOffset);
             Debug.Log($"CreateMeshFilterListDict meshFilters:{meshFilters.Length},Time:{(DateTime.Now - start).TotalMilliseconds:F1}ms");
             return mfld;
         }
 
-        public static PrefabInfoList NewAcRTAlignJobsEx_OLD(MeshPoints[] meshFilters, int size)
+        public static PrefabInfoList NewAcRTAlignJobsEx_OLD(MeshPoints[] meshFilters, int size, int vertexCountOffset)
         {
             Debug.Log("NewAcRTAlignJobsEx:"+meshFilters.Length);
 
@@ -855,7 +855,7 @@ namespace MeshJobs
             string jobCountDetails = "";
 
             int mfCount = meshFilters.Length;
-            var mfld = CreateMeshFilterListDict(meshFilters);
+            var mfld = CreateMeshFilterListDict(meshFilters, vertexCountOffset);
             string loopTimes="";
 
             for (int kk = 0; kk < mfCount; kk++)
@@ -1040,7 +1040,7 @@ namespace MeshJobs
             }
         }
 
-        public static PrefabInfoList NewAcRTAlignJobsEx(MeshPoints[] meshFilters, int size)
+        public static PrefabInfoList NewAcRTAlignJobsEx(MeshPoints[] meshFilters, int size, int vertexCountOffset)
         {
             float vc = 0;
             foreach(var mf in meshFilters)
@@ -1057,7 +1057,7 @@ namespace MeshJobs
             //2.获取基本对应点信息
             NewThreePointJobs(meshFilters, size);
             
-            AcRTAlignJobContainer jobContainer=new AcRTAlignJobContainer(meshFilters, size);
+            AcRTAlignJobContainer jobContainer=new AcRTAlignJobContainer(meshFilters, size, vertexCountOffset);
             jobContainer.parentDict = parentDict;
             PrefabInfoList preafbs =jobContainer.GetPrefabs();
 
@@ -1074,7 +1074,7 @@ namespace MeshJobs
             return preafbs;
         }
 
-        public static PrefabInfoList NewAcRTAlignJobsEx2(MeshPoints[] meshFilters, int size)
+        public static PrefabInfoList NewAcRTAlignJobsEx2(MeshPoints[] meshFilters, int size, int vertexCountOffset)
         {
             DateTime start = DateTime.Now;
             Debug.Log("NewAcRTAlignJobsEx:" + meshFilters.Length);
@@ -1085,7 +1085,7 @@ namespace MeshJobs
             //2.获取基本对应点信息
             NewThreePointJobs(meshFilters, size);
 
-            AcRTAlignJobContainer jobContainer = new AcRTAlignJobContainer(meshFilters, size);
+            AcRTAlignJobContainer jobContainer = new AcRTAlignJobContainer(meshFilters, size, vertexCountOffset);
             var preafbs = jobContainer.GetPrefabsEx();
 
             Debug.Log($"NewAcRTAlignJobsEx meshFilters:{meshFilters.Length},Time:{(DateTime.Now - start).TotalMilliseconds:F1}ms");
