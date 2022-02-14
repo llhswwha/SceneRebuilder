@@ -614,26 +614,32 @@ public class AcRTAlignJobContainer
         lastProgressCount = progressCount;
         //float progress1 = (float)progressCount / targetCount;
 
-
+        int loopTime = (int)(DateTime.Now - loopStartTime).TotalMilliseconds;
 
         if (isLoopEnd)
         {
-            int loopTime = (int)(DateTime.Now - loopStartTime).TotalMilliseconds;
+            
             Debug.Log($"完成一轮[{loopCount}][{loopTime}ms]:\t{loopStartMeshFilterCount - mfCount}={loopStartMeshFilterCount}->{mfCount},Prefab:{prefabInfoList.Count}(+{prefabInfoList.Count - lastPrafabCount}), AlignJob:{AlignJobCount}, DisJob:{AcRTAlignJobExResult.disJobCount} | " + loopInitLog);
             loopTimes += loopTime + ";";
 
-            string logInfo = $"t:{loopTime}ms ,P:{prefabInfoList.Count}(+{prefabInfoList.Count - lastPrafabCount})";
+           
+        }
+        else
+        {
 
-            var progressArg = ProgressArg.New($"AcRTAlignJob({tag})", progressCount, targetCount, $"{loopCount}|j:{jobCount} d:{mfld.Count} {logInfo}", JobHandleList.testProgressArg);
-            //AcRTAlignJob.progressArg = progressArg;
-            JobHandleList.SetJobProgress(progressArg);
+        }
 
-            if (ProgressBarHelper.DisplayCancelableProgressBar(progressArg))
-            {
-                //isCancel = true;//取消处理
-                r = true;
-                IsBreak = true;
-            }
+        string logInfo = $"t:{loopTime}ms ,P:{prefabInfoList.Count}(+{prefabInfoList.Count - lastPrafabCount})";
+
+        var progressArg = ProgressArg.New($"AcRTAlignJob({tag})", progressCount, targetCount, $"{loopCount}|j:{jobCount} d:{mfld.Count} {logInfo}", JobHandleList.testProgressArg);
+        //AcRTAlignJob.progressArg = progressArg;
+        JobHandleList.SetJobProgress(progressArg);
+
+        if (ProgressBarHelper.DisplayCancelableProgressBar(progressArg))
+        {
+            //isCancel = true;//取消处理
+            r = true;
+            IsBreak = true;
         }
 
         lastPrafabCount = prefabInfoList.Count;
