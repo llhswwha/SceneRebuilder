@@ -4,7 +4,83 @@ using System.Collections.Generic;
 
 public class MyTools
 {
-    
+    #region Mesh 
+    [MenuItem("Tools/Mesh/Combine")]
+    public static void CombineMesh()
+    {
+        MeshCombiner.Instance.CombineToOne(Selection.activeGameObject);
+    }
+    [MenuItem("Tools/Mesh/Split")]
+    public static void SplitMesh()
+    {
+        MeshCombineHelper.SplitByMaterials(Selection.activeGameObject, false);
+    }
+    #endregion
+
+    #region Prefab
+    [MenuItem("Tools/Prefab/SetSetting")]
+    public static void SetSetting()
+    {
+        EditorHelper.SelectObject(PrefabInstanceBuilder.Instance.gameObject);
+    }
+    [MenuItem("Tools/Prefab/InitMeshNodes")]
+    public static void InitMeshNodes()
+    {
+        for (int i = 0; i < Selection.gameObjects.Length; i++)
+        {
+            GameObject obj = Selection.gameObjects[i];
+            if (ProgressBarHelper.DisplayCancelableProgressBar(new ProgressArg("InitMeshNodes", i, Selection.gameObjects.Length, obj)))
+            {
+                break;
+            }
+            MeshNode.InitNodes(obj);
+        }
+        EditorHelper.RefreshAssets();
+        ProgressBarHelper.ClearProgressBar();
+    }
+
+    [MenuItem("Tools/Prefab/GetTargetGos")]
+    public static void GetTargetGos()
+    {
+        for (int i = 0; i < Selection.gameObjects.Length; i++)
+        {
+            GameObject obj = Selection.gameObjects[i];
+            if (ProgressBarHelper.DisplayCancelableProgressBar(new ProgressArg("GetPrefabInfos", i, Selection.gameObjects.Length, obj)))
+            {
+                break;
+            }
+            var mps=PrefabInstanceBuilder.Instance.FilterMeshPoints(obj);
+            var dict=AcRTAlignJobContainer.CreateMeshFilterListDict(mps);
+        }
+        EditorHelper.RefreshAssets();
+        ProgressBarHelper.ClearProgressBar();
+    }
+
+    [MenuItem("Tools/Prefab/GetPrefabInfos")]
+    public static void GetPrefabInfos()
+    {
+        for (int i = 0; i < Selection.gameObjects.Length; i++)
+        {
+            GameObject obj = Selection.gameObjects[i];
+            if (ProgressBarHelper.DisplayCancelableProgressBar(new ProgressArg("GetPrefabInfos", i, Selection.gameObjects.Length, obj)))
+            {
+                break;
+            }
+            PrefabInstanceBuilder.Instance.GetPrefabsOfList(obj);
+            MeshNode.InitNodes(obj);
+        }
+        EditorHelper.RefreshAssets();
+        ProgressBarHelper.ClearProgressBar();
+    }
+    [MenuItem("Tools/Prefab/RemoveNew")]
+    public static void RemoveNew()
+    {
+        MeshHelper.RemoveNew(Selection.activeGameObject);
+    }
+   
+    #endregion
+
+    #region SubScene
 
     [MenuItem("Tools/SubScene/CreateSubScenes")]
     public static void CreateSubScenes()
@@ -65,6 +141,23 @@ public class MyTools
     {
         EditorHelper.ClearOtherScenes();
     }
+
+    [MenuItem("Tools/SubScene/LoadSubScenes(All)")]
+    public static void LoadSubScenes_All()
+    {
+        SubScene_Single[] scenes = GameObject.FindObjectsOfType<SubScene_Single>();
+        for (int i = 0; i < scenes.Length; i++)
+        {
+            SubScene_Single scene = scenes[i];
+            if (ProgressBarHelper.DisplayCancelableProgressBar(new ProgressArg("LoadSubScenes_All", i, scenes.Length, scene)))
+            {
+                break;
+            }
+            scene.EditorLoadSceneEx();
+        }
+        ProgressBarHelper.ClearProgressBar();
+    }
+    #endregion
 
     #region ClearComponents
 
@@ -171,6 +264,32 @@ public class MyTools
     #endregion
 
     #region Transform
+
+    [MenuItem("Tools/Transform/SelectParent")]
+    public static void SelectParent()
+    {
+        GameObject go = Selection.activeGameObject;
+        EditorHelper.SelectObject(go.transform.parent);
+    }
+
+    [MenuItem("Tools/Transform/RootParent")]
+    public static void RootParent()
+    {
+        GameObject go = Selection.activeGameObject;
+        EditorHelper.UnpackPrefab(go);
+        go.transform.SetParent(null);
+        EditorHelper.SelectObject(go);
+    }
+
+    [MenuItem("Tools/Transform/UpParent")]
+    public static void UpParent()
+    {
+        GameObject go = Selection.activeGameObject;
+        EditorHelper.UnpackPrefab(go);
+        go.transform.SetParent(null);
+        EditorHelper.SelectObject(go);
+    }
+
     [MenuItem("Tools/Transform/X10")]
     public static void TransformX10()
     {

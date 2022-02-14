@@ -531,21 +531,28 @@ UnpackPrefab();
             if (meshFilters1.Length == 0 && meshFilters2.Length > 0)
             {
                 CopyTarget();
-                meshFilters1 = TargetRootsCopy.GetComponentsInChildren<MeshFilter>(true);
+                //meshFilters1 = TargetRootsCopy.GetComponentsInChildren<MeshFilter>(true);
+                return MeshPoints.GetMeshPointsEx(TargetRootsCopy).ToArray();
             }
-            meshFilters = meshFilters1;
+            //meshFilters = meshFilters1;
+            return MeshPoints.GetMeshPointsEx(TargetRoots).ToArray();
         }
         else if(TargetRoots){
-            meshFilters=TargetRoots.GetComponentsInChildren<MeshFilter>(true);
+            //meshFilters=TargetRoots.GetComponentsInChildren<MeshFilter>(true);
+            return MeshPoints.GetMeshPointsEx(TargetRoots).ToArray();
         }
-        //else{
-        //    meshFilters=GameObject.FindObjectsOfType<MeshFilter>(true);
-        //}
-        List<MeshPoints> meshPoints = MeshPoints.GetMeshPoints(meshFilters);
+        else
+        {
+            return null;
+        }
+        ////else{
+        ////    meshFilters=GameObject.FindObjectsOfType<MeshFilter>(true);
+        ////}
+        //List<MeshPoints> meshPoints = MeshPoints.GetMeshPoints(meshFilters);
 
-        Debug.LogError($"PrefabInstanceBuilder.GetMeshFilters meshFilters:{meshFilters.Length} TargetRootsCopy:[{GetGoName(TargetRootsCopy)}] TargetRoots:[{GetGoName(TargetRoots)}]");
+        //Debug.LogError($"PrefabInstanceBuilder.GetMeshFilters meshFilters:{meshFilters.Length} TargetRootsCopy:[{GetGoName(TargetRootsCopy)}] TargetRoots:[{GetGoName(TargetRoots)}]");
 
-        return meshPoints.ToArray() ;
+        //return meshPoints.ToArray() ;
     }
 
     public string GetGoName(GameObject go)
@@ -690,8 +697,38 @@ UnpackPrefab();
 
     public float[] TestMinSizeList = new float[] { 1.001f, 1.005f, 1.01f, 1.025f, 1.05f, 1.1f, 1.25f, 1.5f };
 
+    public int MaxVertexCount = 50000;
+
+    public MeshPoints[] FilterMeshPoints(MeshPoints[] meshPoints)
+    {
+        List<MeshPoints> list = new List<MeshPoints>();
+        foreach(var mp in meshPoints)
+        {
+            if (mp.name.Contains("_Combined_"))
+            {
+                Debug.LogWarning($"FilterMeshPoints1 name:{mp.name} vertexCount:{mp.vertexCount} MaxVertexCount:{MaxVertexCount}");
+                continue;
+            }
+            if(mp.vertexCount> MaxVertexCount)
+            {
+                Debug.LogWarning($"FilterMeshPoints2 name:{mp.name} vertexCount:{mp.vertexCount} MaxVertexCount:{MaxVertexCount}");
+                continue;
+            }
+            list.Add(mp);
+        }
+        return list.ToArray();
+    }
+
+    public MeshPoints[] FilterMeshPoints(GameObject root)
+    {
+        List<MeshPoints> meshFilters = MeshPoints.GetMeshPointsEx(root);
+        return FilterMeshPoints(meshFilters.ToArray());
+    }
+
     public PrefabInfoList AcRTAlignJobsEx(MeshPoints[] meshPoints)
     {
+        meshPoints = FilterMeshPoints(meshPoints);
+
         Debug.Log($"AcRTAlignJobsEx Start {meshPoints.Length}");
         SetAcRTAlignJobSetting();
         SetDistanceSettings();
@@ -1450,9 +1487,9 @@ break;
         return AcRTAlignJobsEx(meshFilters.ToArray());
     }
 
-    public PrefabInfoList GetPrefabsOfList(GameObject root, bool align)
+    public PrefabInfoList GetPrefabsOfList(GameObject root)
     {
-        List<MeshPoints> meshFilters = MeshPoints.GetMeshPoints(root);
+        List<MeshPoints> meshFilters = MeshPoints.GetMeshPointsEx(root);
         return AcRTAlignJobsEx(meshFilters.ToArray());
     }
 }

@@ -427,7 +427,7 @@ public class AcRTAlignJobContainer
             mf1.sharedMaterials = mf2.sharedMaterials;
         }
 
-        Debug.Log($"SetNewGoProperties mat1:{mf1.sharedMaterial} mat2:{mf2.sharedMaterial} mat3:{oldGo.GetMatId()}");
+        //Debug.Log($"SetNewGoProperties mat1:{mf1.sharedMaterial} mat2:{mf2.sharedMaterial} mat3:{oldGo.GetMatId()}");
     }
 
     public static bool IsCheckResult=false;
@@ -592,7 +592,7 @@ public class AcRTAlignJobContainer
 
     private int lastProgressCount = 0;
 
-    private bool ShowProgressAndLog(bool isLoopEnd)
+    private bool ShowProgressAndLog(bool isLoopEnd,int jobCount,string tag)
     {
         bool r=false;
         if (mfld.Count == 0)
@@ -614,22 +614,26 @@ public class AcRTAlignJobContainer
         lastProgressCount = progressCount;
         //float progress1 = (float)progressCount / targetCount;
 
-        var progressArg = ProgressArg.New($"AcRTAlignJob loop:[{loopCount}]", progressCount, targetCount, loopCount, JobHandleList.testProgressArg);
-        //AcRTAlignJob.progressArg = progressArg;
-        JobHandleList.SetJobProgress(progressArg);
 
-        if (ProgressBarHelper.DisplayCancelableProgressBar(progressArg))
-        {
-            //isCancel = true;//取消处理
-            r= true;
-            IsBreak = true;
-        }
 
         if (isLoopEnd)
         {
             int loopTime = (int)(DateTime.Now - loopStartTime).TotalMilliseconds;
             Debug.Log($"完成一轮[{loopCount}][{loopTime}ms]:\t{loopStartMeshFilterCount - mfCount}={loopStartMeshFilterCount}->{mfCount},Prefab:{prefabInfoList.Count}(+{prefabInfoList.Count - lastPrafabCount}), AlignJob:{AlignJobCount}, DisJob:{AcRTAlignJobExResult.disJobCount} | " + loopInitLog);
             loopTimes += loopTime + ";";
+
+            string logInfo = $"t:{loopTime}ms ,P:{prefabInfoList.Count}(+{prefabInfoList.Count - lastPrafabCount})";
+
+            var progressArg = ProgressArg.New($"AcRTAlignJob({tag})", progressCount, targetCount, $"{loopCount}|j:{jobCount} d:{mfld.Count} {logInfo}", JobHandleList.testProgressArg);
+            //AcRTAlignJob.progressArg = progressArg;
+            JobHandleList.SetJobProgress(progressArg);
+
+            if (ProgressBarHelper.DisplayCancelableProgressBar(progressArg))
+            {
+                //isCancel = true;//取消处理
+                r = true;
+                IsBreak = true;
+            }
         }
 
         lastPrafabCount = prefabInfoList.Count;
@@ -656,7 +660,7 @@ public class AcRTAlignJobContainer
         int allJobCount = 0;
         for (int kk = 0; kk < mfCount; kk++)
         {
-            ShowProgressAndLog(false);
+            ShowProgressAndLog(false,0, "");
 
             loopStartTime = DateTime.Now;
             loopCount++;
@@ -704,7 +708,7 @@ public class AcRTAlignJobContainer
 
             
 
-            if (ShowProgressAndLog(true))
+            if (ShowProgressAndLog(true, jobList.Length,""))
             {
                 //IsBreak = true;
                 break;//结束
@@ -763,7 +767,7 @@ public class AcRTAlignJobContainer
 
         for (int kk = 0; kk < mfCount; kk++)
         {
-            ShowProgressAndLog(false);
+            ShowProgressAndLog(false,0, "Ex");
 
             loopStartTime = DateTime.Now;
             loopCount++;
@@ -806,7 +810,7 @@ public class AcRTAlignJobContainer
             //4.执行Jos
             DoDistanceJobResultEx();//处理Jobs的结果
             totalTime5 += (DateTime.Now - tmpT).TotalMilliseconds;
-            if (ShowProgressAndLog(true))
+            if (ShowProgressAndLog(true, jobList.Count, "Ex"))
             {
                 break;//结束
             }
@@ -827,7 +831,7 @@ public class AcRTAlignJobContainer
         return prefabInfoList;
     }
 
-    private static MeshFilterListDict CreateMeshFilterListDict(MeshPoints[] meshFilters){
+    public static MeshFilterListDict CreateMeshFilterListDict(MeshPoints[] meshFilters){
         DateTime start = DateTime.Now;
         var mfld = new MeshFilterListDict(meshFilters);
         Debug.Log($"CreateMeshFilterListDict meshFilters:{meshFilters.Length},Time:{(DateTime.Now - start).TotalMilliseconds:F1}ms");

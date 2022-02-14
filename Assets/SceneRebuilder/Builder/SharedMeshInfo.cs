@@ -51,9 +51,11 @@ public class SharedMeshInfoList : List<SharedMeshInfo>
         {
             meshFilters = root.GetComponentsInChildren<MeshFilter>(true);
         }
-        Debug.Log($"InitByRoot root:{root} meshFilters:{meshFilters.Length}");
+        
 
         InitMeshFilters(meshFilters);
+
+        Debug.Log($"SharedMeshInfoList InitByRoot root:{root} meshFilters:{meshFilters.Length} meshCount:{this.Count}");
     }
 
     public SharedMeshInfoList(MeshFilter[] mfs)

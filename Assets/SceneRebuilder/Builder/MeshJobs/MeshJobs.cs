@@ -36,6 +36,33 @@ namespace MeshJobs
             return GetMeshPoints(mfs);
         }
 
+        public static List<MeshPoints> GetMeshPointsEx(GameObject root)
+        {
+            List<MeshPoints> list = new List<MeshPoints>();
+            GetMeshPointsEx(root.transform, list);
+            return list;
+        }
+
+        private static void GetMeshPointsEx(Transform root, List<MeshPoints> list)
+        {
+            for (int i = 0; i < root.childCount; i++)
+            {
+                Transform child = root.GetChild(i);
+                var lod = child.GetComponent<LODGroup>();
+                if (lod != null)
+                {
+                    continue;
+                }
+                MeshFilter mf = child.GetComponent<MeshFilter>();
+                if (mf != null)
+                {
+                    list.Add(new MeshPoints(mf));
+                }
+
+                GetMeshPointsEx(child, list);
+            }
+        }
+
         public static List<MeshPoints> GetMeshPoints<T>(T[] meshFilters) where T :Component
         {
             List<MeshPoints> meshPoints = new List<MeshPoints>();
@@ -98,7 +125,24 @@ namespace MeshJobs
 
         public static Dictionary<int, string> dictId2Go = new Dictionary<int, string>();
 
+        public MeshPoints(MeshFilter mf)
+        {
+            InitGo(mf.gameObject);
+            InitMesh(mf);
+        }
+
         public MeshPoints(GameObject root)
+        {
+            InitGoEx(root);
+        }
+
+        public void InitGoEx(GameObject root)
+        {
+            InitGo(root);
+            InitMesh(mf);
+        }
+
+        public void InitGo(GameObject root)
         {
             if (root == null)
             {
@@ -107,27 +151,30 @@ namespace MeshJobs
             this.name = root.name;
             this.transform = root.transform;
             this.gameObject = root;
-            this.mf = root.GetComponent<MeshFilter>();
-            if (mf != null && mf.sharedMesh!=null)
+        }
+
+        public void InitMesh(MeshFilter mf)
+        {
+            if (mf != null && mf.sharedMesh != null)
             {
                 sharedMesh = mf.sharedMesh;
                 vertices = sharedMesh.vertices;
                 //localVertices = mf.sharedMesh.vertices;
                 //InstanceId = sharedMesh.GetInstanceID();
-                InstanceId = root.GetInstanceID();
+                InstanceId = this.gameObject.GetInstanceID();
                 size = sharedMesh.bounds.size;
                 //worldVertices = MeshHelper.GetWorldVertexes(mf);
             }
             else
             {
-                vertices = MeshHelper.GetChildrenVertexes(root);
+                vertices = MeshHelper.GetChildrenVertexes(this.gameObject);
                 //worldVertices = MeshHelper.GetChildrenWorldVertexes(root);
-                InstanceId = root.GetInstanceID();
+                InstanceId = this.gameObject.GetInstanceID();
                 size = MeshHelper.GetMinMax(vertices)[2];
             }
 
-            if(!dictId2Go.ContainsKey(InstanceId))
-                dictId2Go.Add(InstanceId, root.name);
+            if (!dictId2Go.ContainsKey(InstanceId))
+                dictId2Go.Add(InstanceId, this.gameObject.name);
 
             vertexCount = vertices.Length;
         }
@@ -995,7 +1042,7 @@ namespace MeshJobs
 
         public static PrefabInfoList NewAcRTAlignJobsEx(MeshPoints[] meshFilters, int size)
         {
-            int vc = 0;
+            float vc = 0;
             foreach(var mf in meshFilters)
             {
                 vc += mf.vertexCount;
@@ -1012,11 +1059,12 @@ namespace MeshJobs
             
             AcRTAlignJobContainer jobContainer=new AcRTAlignJobContainer(meshFilters, size);
             jobContainer.parentDict = parentDict;
-            var preafbs=jobContainer.GetPrefabs();
+            PrefabInfoList preafbs =jobContainer.GetPrefabs();
 
             RestoreParent(parentDict);
 
-            Debug.LogWarning($"NewAcRTAlignJobsEx meshFilters:{meshFilters.Length},vertexCount:{MeshHelper.GetVertexCountS(vc)} Time:{(DateTime.Now - start)}s");
+            float vcAfter = preafbs.GetVertexCount();
+            Debug.LogWarning($"NewAcRTAlignJobsEx meshFilters:{meshFilters.Length},vertexCount:({MeshHelper.GetVertexCountS(vcAfter)}/{MeshHelper.GetVertexCountS(vc)}={vcAfter/vc:P2}) Time:{(DateTime.Now - start)}s");
 
             if (jobContainer.IsBreak)
             {
