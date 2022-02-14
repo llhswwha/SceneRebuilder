@@ -725,7 +725,7 @@ UnpackPrefab();
         return FilterMeshPoints(meshFilters.ToArray());
     }
 
-    public int vertexCountOffset;
+    public int vertexCountOffset = 10;
 
     public PrefabInfoList AcRTAlignJobsEx(MeshPoints[] meshPoints)
     {
