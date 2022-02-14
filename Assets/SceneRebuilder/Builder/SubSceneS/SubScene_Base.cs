@@ -637,7 +637,7 @@ public class SubScene_Base : MonoBehaviour
 #if UNITY_EDITOR
 
     [ContextMenu("EditorCreateScene")]
-    public void EditorCreateScene()
+    public void EditorCreateScene(bool isOnlyChildren)
     {
         SubSceneManager subSceneManager = SubSceneManager.Instance;
         string path = subSceneManager.GetScenePath(this.name, SceneContentType.Single,null);
@@ -649,7 +649,7 @@ public class SubScene_Base : MonoBehaviour
         //{
 
         //}
-        SubSceneHelper.EditorCreateScene(this.gameObject, path, subSceneManager.IsOverride, true,this);
+        SubSceneHelper.EditorCreateScene(this.gameObject, path, subSceneManager.IsOverride, true, isOnlyChildren,this);
     }
 
     [ContextMenu("EditorReLoadScene")]

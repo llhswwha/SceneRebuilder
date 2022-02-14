@@ -66,8 +66,8 @@ public static class SubSceneHelper
     public static Scene SaveChildrenToScene(string path, Transform target, bool isOverride)
     {
         SubSceneManager subSceneManager = GameObject.FindObjectOfType<SubSceneManager>();
-        var children = GetChildrenGos(target);
-        SubSceneArg arg = new SubSceneArg(path, isOverride, subSceneManager.IsOpenSubScene, children.ToArray());
+        //var children = GetChildrenGos(target);
+        SubSceneArg arg = new SubSceneArg(path, isOverride, subSceneManager.IsOpenSubScene,true, target.gameObject);
         return CreateScene(arg);
         //scenePath = path;
     }
@@ -94,12 +94,12 @@ public static class SubSceneHelper
         {
             path = SubSceneManager.Instance.GetScenePath($"{go.name}[{go.GetInstanceID()}]", contentType, dir);
         }
-        T scene= EditorCreateScene<T>(go, path, SubSceneManager.Instance.IsOverride, isSave);
+        T scene= EditorCreateScene<T>(go, path, SubSceneManager.Instance.IsOverride, isSave, false);
         scene.contentType = contentType;
         return scene;
     }
 
-    public static T EditorCreateScene<T>(GameObject go, string path, bool isOverride, bool isSave) where T : SubScene_Base
+    public static T EditorCreateScene<T>(GameObject go, string path, bool isOverride, bool isSave, bool isOnlyChildren) where T : SubScene_Base
     {
         //UpackPrefab_One(go);
 
@@ -112,10 +112,10 @@ public static class SubSceneHelper
         //ss.ShowBounds();
         //return ss;
 
-        return EditorCreateScene<T>(go, path, isOverride, isSave,null);
+        return EditorCreateScene<T>(go, path, isOverride, isSave, isOnlyChildren,null);
     }
 
-    public static T EditorCreateScene<T>(GameObject go, string path, bool isOverride, bool isSave, T ss) where T : SubScene_Base
+    public static T EditorCreateScene<T>(GameObject go, string path, bool isOverride, bool isSave, bool isOnlyChildren,T ss) where T : SubScene_Base
     {
         UpackPrefab_One(go);
 
@@ -128,7 +128,7 @@ public static class SubSceneHelper
 
         SubSceneManager subSceneManager = GameObject.FindObjectOfType<SubSceneManager>();
         if(ss.sceneArg==null|| ss.sceneArg.objs==null|| ss.sceneArg.objs.Count==0)
-            ss.sceneArg = new SubSceneArg(path, isOverride, subSceneManager.IsOpenSubScene, go);
+            ss.sceneArg = new SubSceneArg(path, isOverride, subSceneManager.IsOpenSubScene, isOnlyChildren, go);
 
         //ss.SetPath(path);
         ss.Init();

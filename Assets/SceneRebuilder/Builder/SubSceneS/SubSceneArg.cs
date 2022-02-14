@@ -16,13 +16,26 @@ public class SubSceneArg
     {
 
     }
-    public SubSceneArg(string path, bool isOveride, bool isOpen, params GameObject[] objs)
+    public SubSceneArg(string path, bool isOveride, bool isOpen, bool isOnlyChildren, params GameObject[] gos)
     {
         this.path = path;
         this.isOveride = isOveride;
         this.isOpen = isOpen;
         //this.objs = objs;
-        this.objs.AddRange(objs);
+        if (isOnlyChildren)
+        {
+            foreach(var go in gos)
+            {
+                for(int i=0;i< go.transform.childCount;i++)
+                {
+                    objs.Add(go.transform.GetChild(i).gameObject);
+                }
+            }
+        }
+        else
+        {
+            this.objs.AddRange(gos);
+        }
     }
 
     public string GetRalativePath()

@@ -4,7 +4,28 @@ using System.Collections.Generic;
 
 public class MyTools
 {
-    public static void ClearComponents<T>(GameObject obj) where T :Component
+    
+
+    [MenuItem("Tools/SubScene/CreateSubScenes")]
+    public static void CreateSubScenes()
+    {
+        for (int i = 0; i < Selection.gameObjects.Length; i++)
+        {
+            GameObject obj = Selection.gameObjects[i];
+            if(ProgressBarHelper.DisplayCancelableProgressBar(new ProgressArg("CreateSubScenes", i, Selection.gameObjects.Length, obj)))
+            {
+                break;
+            }
+            SubScene_Single subScene=obj.AddMissingComponent<SubScene_Single>();
+            subScene.EditorCreateScene(true);
+        }
+        EditorHelper.RefreshAssets();
+        ProgressBarHelper.ClearProgressBar();
+    }
+
+    #region ClearComponents
+
+    public static void ClearComponents<T>(GameObject obj) where T : Component
     {
         var ids = obj.GetComponentsInChildren<T>(true);
         foreach (var id in ids)
@@ -90,7 +111,7 @@ public class MyTools
     }
 
 
-    [MenuItem("Tools/Others/ClearScripts")]
+    [MenuItem("Tools/Clear/ClearScripts")]
     public static void ClearScripts()
     {
         ClearComponents<MonoBehaviour>();
@@ -104,7 +125,9 @@ public class MyTools
         //    Debug.Log($"ClearScripts       ids:{ids.Length}");
         //}
     }
+    #endregion
 
+    #region Transform
     [MenuItem("Tools/Transform/X10")]
     public static void TransformX10()
     {
@@ -320,6 +343,7 @@ public class MyTools
             obj.transform.position = Vector3.zero + i * Vector3.forward * 0.1f;
         }
     }
+    #endregion
 
     [MenuItem("Tools/Renderers/ShowSelection")]
     public static void ShowSelectionRenderers()

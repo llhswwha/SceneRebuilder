@@ -58,7 +58,12 @@ public class SubSceneEditor<T> : BaseEditor<T> where T : SubScene_Base
         {
             NewButton("Create", buttonWidth, item.IsLoaded == true, () =>
             {
-                item.EditorCreateScene();
+                item.EditorCreateScene(false);
+                EditorHelper.RefreshAssets();
+            });
+            NewButton("Create(Children)", buttonWidth, item.IsLoaded == true, () =>
+            {
+                item.EditorCreateScene(true);
                 EditorHelper.RefreshAssets();
             });
             NewButton("Load", buttonWidth, item.IsLoaded == false && isFileExist, () =>
