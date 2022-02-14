@@ -47,7 +47,7 @@ public class ModelAreaTreeEditor : BaseFoldoutEditor<ModelAreaTree>
         NewButton("SwToCombined", buttonWidth, true, item.SwitchToCombined);
         NewButton("SwToRenderers", buttonWidth, true, item.SwitchToRenderers);
         NewButton("MoveRenderers", buttonWidth, true, item.MoveRenderers);
-        NewButton("RecoverParent", buttonWidth, true, item.RecoverParentEx);
+        NewButton("RecoverParent", buttonWidth, true, ()=> { item.RecoverParentEx(null); });
         EditorGUILayout.EndHorizontal();
 
         EditorGUILayout.BeginHorizontal();

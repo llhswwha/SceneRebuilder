@@ -234,10 +234,10 @@ public class RendererId
     
 
     [ContextMenu("SetParent")]
-    public void SetParent()
+    public GameObject SetParent()
     {
         if(string.IsNullOrEmpty(parentId)){
-            return;//
+            return null;//
         }
         GameObject pGo=IdDictionary.GetGo(parentId);
         if(pGo!=null){
@@ -247,6 +247,7 @@ public class RendererId
         else{
             Debug.LogError($"RendererId.SetParent2 pGo==null name:{this.name} Id:{this.Id} parentId:{this.parentId}");
         }
+        return pGo;
     }
 
     [ContextMenu("GetParent")]

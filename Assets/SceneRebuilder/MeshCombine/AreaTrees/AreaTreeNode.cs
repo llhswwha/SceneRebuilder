@@ -407,9 +407,9 @@ public class AreaTreeNode : SubSceneCreater
     }
 
     [ContextMenu("RecoverParent")]
-    public void RecoverParent()
+    public bool RecoverParent(Transform parent = null)
     {
-        
+
         // if(Renderers.Count!= RendererParents.Count)
         // {
         //     Debug.LogError($"AreaTreeNode.RecoverParent [{this.name}][Renderers.Count && i<RendererParents.Count][{Renderers.Count}][{RendererParents.Count}]");
@@ -422,20 +422,32 @@ public class AreaTreeNode : SubSceneCreater
         //     Transform parent = RendererParents[i];
         //     render.transform.SetParent(parent);
         // }
-
+        bool flag = true;
         for (int i = 0; i < Renderers.Count; i++)
         {
             MeshRenderer render = Renderers[i];
             if (render == null) continue;
             RendererId rId=render.GetComponent<RendererId>();
             if(rId!=null){
-                rId.SetParent();
+                GameObject pGo=rId.SetParent();
+                if (pGo == null || pGo.name.Contains("_Renderers"))
+                {
+                    //Debug.LogWarning($"AreaTreeNode.RecoverParent pGo.name.Contains(_Renderers) pGo:{pGo} tree:{tree.name}");
+                    if(parent!=null)
+                        render.transform.SetParent(parent);
+                    flag = false;
+                }
+                else
+                {
+
+                }
             }
             else{
                 //Transform parent = tree.Target.transform;
                 render.transform.SetParent(tree.transform);
             }
         }
+        return flag;
     }
 
     public void RecoverParentEx()
