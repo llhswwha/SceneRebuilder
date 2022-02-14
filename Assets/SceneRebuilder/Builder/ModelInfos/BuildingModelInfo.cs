@@ -543,7 +543,7 @@ public class BuildingModelInfo : SubSceneCreater
         UpdateTrees();
         foreach (var t in GetTrees())
         {
-            t.RecoverParentEx();
+            t.RecoverParentEx(this.transform);
             EditorHelper.UnpackPrefab(t.gameObject);
             GameObject.DestroyImmediate(t.gameObject);
         }
@@ -576,7 +576,7 @@ public class BuildingModelInfo : SubSceneCreater
         IdDictionary.InitInfos();
         foreach (var t in GetTrees())
         {
-            t.RecoverParent();
+            t.RecoverParent(this.transform);
         }
     }
 

@@ -774,18 +774,26 @@ public class ModelAreaTree : SubSceneCreater
     }
 
     [ContextMenu("RecoverParent")]
-    public void RecoverParent()
+    public void RecoverParent(Transform parent)
     {
+        bool flag = true;
          foreach(var node in TreeLeafs){
-               node.RecoverParent();
+            if (node.RecoverParent(parent) == false)
+            {
+                flag = false;
+            }
+        }
+        if (flag == false)
+        {
+            Debug.LogWarning($"AreaTreeNode.RecoverParent pGo.name.Contains(_Renderers) flag == false tree:{this.name} parent:{parent}");
         }
     }
 
     [ContextMenu("RecoverParentEx")]
-    public void RecoverParentEx()
+    public void RecoverParentEx(Transform parent)
     {
         IdDictionary.InitInfos();
-        RecoverParent();
+        RecoverParent(parent);
     }
 
     //[ContextMenu("RecoverParent")]
