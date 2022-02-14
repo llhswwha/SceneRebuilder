@@ -2,7 +2,7 @@
 using UnityEditor;
 using System.Collections.Generic;
 
-public class MyTools
+public class MyEditorTools2
 {
     #region Mesh 
     [MenuItem("Tools/Mesh/Combine")]
