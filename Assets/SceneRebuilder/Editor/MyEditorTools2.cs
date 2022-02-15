@@ -44,7 +44,13 @@ public class MyEditorTools2
         GetTargetGos(PrefabInstanceBuilder.Instance.vertexCountOffset);
     }
 
-    [MenuItem("Tools/Prefab/GetTargetGos(0)")]
+    [MenuItem("Tools/Prefab/InitInstancesDict")]
+    public static void InitInstancesDict()
+    {
+        MeshPrefabInstance.InitInstancesDict();
+    }
+
+[MenuItem("Tools/Prefab/GetTargetGos(0)")]
     public static void GetTargetGos0()
     {
         GetTargetGos(0);

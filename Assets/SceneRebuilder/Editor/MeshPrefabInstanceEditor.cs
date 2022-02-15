@@ -14,7 +14,10 @@ public class MeshPrefabInstanceEditor : Editor
     public override void OnInspectorGUI()
     {
         MeshPrefabInstance myTarget = (MeshPrefabInstance)target;
-
+        if (GUILayout.Button("InitInstancesDict"))
+        {
+            MeshPrefabInstance.InitInstancesDict();
+        }
         if (GUILayout.Button("FindInstances"))
         {
             Instances=myTarget.FindInstances();

@@ -5,28 +5,75 @@ using UnityEngine;
 
 public class MeshPrefabInstance : MonoBehaviour, IGameObject
 {
+    public static Dictionary<GameObject, List<MeshPrefabInstance>> InstancesDict = new Dictionary<GameObject, List<MeshPrefabInstance>>();
+
+    public static void InitInstancesDict()
+    {
+        InstancesDict = new Dictionary<GameObject, List<MeshPrefabInstance>>();
+        var insList = GameObject.FindObjectsOfType<MeshPrefabInstance>();
+        foreach (var item in insList)
+        {
+            if (item == null) continue;
+            GameObject pre = item.PrefabGo;
+            if (pre == null) continue;
+            if (!InstancesDict.ContainsKey(pre))
+            {
+                InstancesDict.Add(pre, new List<MeshPrefabInstance>());
+            }
+            InstancesDict[pre].Add(item);
+        }
+        Debug.Log($"InitInstancesDict InstancesDict:{InstancesDict.Count} insList:{insList.Length}");
+    }
+
+    public static List<MeshPrefabInstance> FindInstances(MeshPrefabInstance go)
+    {
+        if (go.PrefabGo == null)
+        {
+            Debug.LogError($"MeshPrefabInstance.FindInstances this.PrefabGo == null go:{go}");
+        }
+
+        if(!InstancesDict.ContainsKey(go.PrefabGo))
+            InitInstancesDict();
+
+        List<MeshPrefabInstance> instances = new List<MeshPrefabInstance>();
+
+        if (InstancesDict.ContainsKey(go.PrefabGo))
+        {
+            var insList = InstancesDict[go.PrefabGo];
+            foreach (var item in insList)
+            {
+                if (item == go) continue;
+                if (item.PrefabGo == go.PrefabGo)
+                {
+                    instances.Add(item);
+                }
+            }
+            Debug.Log($"FindInstances instances:{instances.Count} insList:{insList.Count}");
+        }
+        else
+        {
+            var insList = GameObject.FindObjectsOfType<MeshPrefabInstance>();
+            foreach (var item in insList)
+            {
+                if (item == go) continue;
+                if (item.PrefabGo == go.PrefabGo)
+                {
+                    instances.Add(item);
+                }
+            }
+            Debug.Log($"FindInstances instances:{instances.Count} insList:{insList.Length}");
+        }
+       
+        return instances;
+    }
+
     public bool IsPrefab = false;
 
     public GameObject PrefabGo = null;
 
     public List<MeshPrefabInstance> FindInstances()
     {
-        if (this.PrefabGo == null)
-        {
-            Debug.LogError("MeshPrefabInstance.FindInstances this.PrefabGo == null");
-        }
-        List<MeshPrefabInstance> instances = new List<MeshPrefabInstance>();
-        var insList = GameObject.FindObjectsOfType<MeshPrefabInstance>();
-        foreach(var item in insList)
-        {
-            if (item == this) continue;
-            if (item.PrefabGo == this.PrefabGo)
-            {
-                instances.Add(item);
-            }
-        }
-        Debug.Log($"FindInstances instances:{instances.Count} insList:{insList.Length}");
-        return instances;
+        return FindInstances(this);
     }
 
     public GameObject GetGameObject()

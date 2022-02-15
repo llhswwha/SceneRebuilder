@@ -639,10 +639,6 @@ public class AcRTAlignJobContainer
             Debug.Log($"完成一轮[{loopCount}][{time}s]:\t{loopStartMeshFilterCount - mfCount}={loopStartMeshFilterCount}->{mfCount},Prefab:{prefabInfoList.Count}(+{prefabInfoList.Count - lastPrafabCount}), AlignJob:{AlignJobCount}, DisJob:{AcRTAlignJobExResult.disJobCount} | " + loopInitLog);
             loopTimes += loopTime + ";";
 
-
-        }
-        else
-        {
             string logInfo = $"t:{time}ms ,P:{prefabInfoList.Count}(+{prefabInfoList.Count - lastPrafabCount})";
 
             var progressArg = ProgressArg.New($"Align{tag}", progressCount, targetCount, $"{loopCount}|j:{jobCount} d:{mfld.Count} c:{mfCount} {logInfo}", JobHandleList.testProgressArg);
@@ -655,6 +651,10 @@ public class AcRTAlignJobContainer
                 r = true;
                 IsBreak = true;
             }
+        }
+        else
+        {
+            
         }
 
 
