@@ -38,6 +38,22 @@ public class ModelMeshManager : SingletonBehaviour<ModelMeshManager>
         return meshRenderers;
     }
 
+    public List<Transform> GetTransformsNoLOD()
+    {
+        if (TargetRoots.Count == 0)
+        {
+            Debug.LogError("GetAllRenderers TargetRoots.Count == 0");
+        }
+        List<Transform> meshRenderers = new List<Transform>();
+        foreach (var target in TargetRoots)
+        {
+            if (target == null) continue;
+            var rs = TransformHelper.GetChildrenNoLOD(target);
+            meshRenderers.AddRange(rs);
+        }
+        return meshRenderers;
+    }
+
     public ModelClassDict<MeshRenderer> ModelClassDict = new ModelClassDict<MeshRenderer>();
 
     public ModelClassDict<MeshRenderer> ModelClassDict_Auto = new ModelClassDict<MeshRenderer>();
@@ -130,10 +146,45 @@ public class ModelMeshManager : SingletonBehaviour<ModelMeshManager>
         return modelClassDict;
     }
 
+    public ModelClassDict<Transform> GetPrefixNamesNoLOD()
+    {
+        var modelClassDict = new ModelClassDict<Transform>();
+        List<string> otherNames = new List<string>();
+        var list = GetTransformsNoLOD();
+        Debug.Log($"GetPrefixNames list:{list.Count}");
+        foreach (var item in list)
+        {
+            var n = item.name;
+
+            string pre = GetPrefix(n);
+            modelClassDict.AddModel(pre, item);
+        }
+
+        modelClassDict.PrintList();
+
+        if (otherNames.Count > 0)
+        {
+            otherNames.Sort();
+            StringBuilder sb = new StringBuilder();
+            otherNames.ForEach(i => sb.AppendLine(i));
+            Debug.Log($"otherNames:{sb}");
+        }
+
+
+        PrefixNames = modelClassDict.GetKeys();
+        return modelClassDict;
+    }
+
     public ModelClassDict<T> GetPrefixNames<T>(GameObject target) where T : Component
     {
         TargetRoots = new List<GameObject>() { target };
         return GetPrefixNames<T>();
+    }
+
+    public ModelClassDict<Transform> GetPrefixNamesNoLod(GameObject target)
+    {
+        TargetRoots = new List<GameObject>() { target };
+        return GetPrefixNamesNoLOD();
     }
 
     public ModelClassDict<MeshRenderer> GetPrefixNames(GameObject target)

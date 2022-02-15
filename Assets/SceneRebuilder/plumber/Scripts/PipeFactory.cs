@@ -274,8 +274,10 @@ public class PipeFactory : SingletonBehaviour<PipeFactory>
 
         PipeWelds = GetWelds();
 
-        ModelClassDict<Transform> modelClassList = ModelMeshManager.Instance.GetPrefixNames<Transform>(Target);
+        ModelClassDict<Transform> modelClassList = ModelMeshManager.Instance.GetPrefixNamesNoLod(Target);
         var keys = modelClassList.GetKeys();
+
+        int maxVertexCount = PrefabInstanceBuilder.Instance.MaxVertexCount;
         foreach (var key in keys)
         {
             var list = modelClassList.GetList(key);
@@ -318,7 +320,24 @@ public class PipeFactory : SingletonBehaviour<PipeFactory>
             else
             {
                 //PipeOthers.AddRange(list);
-                AddList(PipeOthers, list);
+                //AddList(PipeOthers, list);
+               
+                foreach (var item in list)
+                {
+                    MeshFilter mf = item.GetComponent<MeshFilter>();
+                    if (mf == null) continue;
+                    //Debug.LogError($"Other:{item.name} mf:{mf.name} mesh:{mf.sharedMesh.name} maxVertexCount:{maxVertexCount} vertexCount:{mf.sharedMesh.vertexCount}");
+
+                    if (item.GetComponent<MeshRenderer>() == null) continue;
+
+                    
+                    if (mf.sharedMesh.vertexCount > maxVertexCount) continue;
+                    if (mf.name.Contains("_Combined_")) continue;
+                    if (mf.sharedMesh.name.Contains("_Combined_")) continue;
+
+                    Debug.LogError($"Other:{item.name} mf:{mf.name} mesh:{mf.sharedMesh.name} maxVertexCount:{maxVertexCount} vertexCount:{mf.sharedMesh.vertexCount}");
+                    PipeOthers.Add(item);
+                }
             }
         }
 
@@ -328,7 +347,7 @@ public class PipeFactory : SingletonBehaviour<PipeFactory>
             var wp = parentDict[w];
             w.transform.SetParent(wp);
         }
-        Debug.Log($"GetModelClass keys:{keys.Count}");
+        Debug.Log($"GetModelClass keys:{keys.Count} maxVertexCount:{maxVertexCount}");
 
     }
 

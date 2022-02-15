@@ -532,14 +532,14 @@ UnpackPrefab();
             {
                 CopyTarget();
                 //meshFilters1 = TargetRootsCopy.GetComponentsInChildren<MeshFilter>(true);
-                return MeshPoints.GetMeshPointsEx(TargetRootsCopy).ToArray();
+                return MeshPoints.GetMeshPointsNoLOD(TargetRootsCopy).ToArray();
             }
             //meshFilters = meshFilters1;
-            return MeshPoints.GetMeshPointsEx(TargetRoots).ToArray();
+            return MeshPoints.GetMeshPointsNoLOD(TargetRoots).ToArray();
         }
         else if(TargetRoots){
             //meshFilters=TargetRoots.GetComponentsInChildren<MeshFilter>(true);
-            return MeshPoints.GetMeshPointsEx(TargetRoots).ToArray();
+            return MeshPoints.GetMeshPointsNoLOD(TargetRoots).ToArray();
         }
         else
         {
@@ -706,10 +706,20 @@ UnpackPrefab();
         {
             if (mp.name.Contains("_Combined_"))
             {
-                Debug.LogWarning($"FilterMeshPoints1 name:{mp.name} vertexCount:{mp.vertexCount} MaxVertexCount:{MaxVertexCount}");
+                Debug.LogWarning($"FilterMeshPoints11 name:{mp.name} vertexCount:{mp.vertexCount} MaxVertexCount:{MaxVertexCount}");
                 continue;
             }
-            if(mp.vertexCount> MaxVertexCount)
+            if (mp.mf.name.Contains("_Combined_"))
+            {
+                Debug.LogWarning($"FilterMeshPoints12 name:{mp.name} vertexCount:{mp.vertexCount} MaxVertexCount:{MaxVertexCount}");
+                continue;
+            }
+            if (mp.mf.sharedMesh.name.Contains("_Combined_"))
+            {
+                Debug.LogWarning($"FilterMeshPoints13 name:{mp.name} vertexCount:{mp.vertexCount} MaxVertexCount:{MaxVertexCount}");
+                continue;
+            }
+            if (mp.vertexCount> MaxVertexCount)
             {
                 Debug.LogWarning($"FilterMeshPoints2 name:{mp.name} vertexCount:{mp.vertexCount} MaxVertexCount:{MaxVertexCount}");
                 continue;
@@ -721,7 +731,7 @@ UnpackPrefab();
 
     public MeshPoints[] FilterMeshPoints(GameObject root)
     {
-        List<MeshPoints> meshFilters = MeshPoints.GetMeshPointsEx(root);
+        List<MeshPoints> meshFilters = MeshPoints.GetMeshPointsNoLOD(root);
         return FilterMeshPoints(meshFilters.ToArray());
     }
 
@@ -1491,7 +1501,7 @@ break;
 
     public PrefabInfoList GetPrefabsOfList(GameObject root)
     {
-        List<MeshPoints> meshFilters = MeshPoints.GetMeshPointsEx(root);
+        List<MeshPoints> meshFilters = MeshPoints.GetMeshPointsNoLOD(root);
         return AcRTAlignJobsEx(meshFilters.ToArray());
     }
 }

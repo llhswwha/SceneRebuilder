@@ -9,7 +9,7 @@ public class PrefabInstanceBuilderEditorWindow : EditorWindow, IBaseEditorWindow
     [MenuItem("Window/Tools/PrefabBuilder")]
     public static void ShowWindow()
     {
-        BaseEditorWindow.ShowWindow<PrefabInstanceBuilderEditorWindow>(600, 400, "PrefabBuilder");
+        BaseEditorWindow.ShowWindow<PrefabInstanceBuilderEditorWindow>(700, 400, "PrefabBuilder");
     }
 
     public PrefabInstanceBuilder target;

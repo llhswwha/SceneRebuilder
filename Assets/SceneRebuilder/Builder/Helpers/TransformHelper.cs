@@ -5,6 +5,29 @@ using UnityEngine;
 
 public static class TransformHelper
 {
+    public static List<Transform> GetChildrenNoLOD(GameObject root)
+    {
+        List<Transform> list = new List<Transform>();
+        GetMeshPointsNoLOD(root.transform, list);
+        return list;
+    }
+
+    private static void GetMeshPointsNoLOD(Transform root, List<Transform> list)
+    {
+        for (int i = 0; i < root.childCount; i++)
+        {
+            Transform child = root.GetChild(i);
+            var lod = child.GetComponent<LODGroup>();
+            if (lod != null)
+            {
+                continue;
+            }
+            list.Add(child);
+
+            GetMeshPointsNoLOD(child, list);
+        }
+    }
+
     public static Transform FindClosedTransform(IEnumerable<Transform> ts, Vector3 pos, bool isUseCenter=false)
     {
         float minDis = float.MaxValue;

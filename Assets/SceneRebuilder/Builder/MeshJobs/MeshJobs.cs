@@ -36,14 +36,14 @@ namespace MeshJobs
             return GetMeshPoints(mfs);
         }
 
-        public static List<MeshPoints> GetMeshPointsEx(GameObject root)
+        public static List<MeshPoints> GetMeshPointsNoLOD(GameObject root)
         {
             List<MeshPoints> list = new List<MeshPoints>();
-            GetMeshPointsEx(root.transform, list);
+            GetMeshPointsNoLOD(root.transform, list);
             return list;
         }
 
-        private static void GetMeshPointsEx(Transform root, List<MeshPoints> list)
+        private static void GetMeshPointsNoLOD(Transform root, List<MeshPoints> list)
         {
             for (int i = 0; i < root.childCount; i++)
             {
@@ -59,7 +59,7 @@ namespace MeshJobs
                     list.Add(new MeshPoints(mf));
                 }
 
-                GetMeshPointsEx(child, list);
+                GetMeshPointsNoLOD(child, list);
             }
         }
 
