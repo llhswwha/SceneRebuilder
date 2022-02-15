@@ -10,6 +10,8 @@ public class PipeFactoryEditor : BaseFoldoutEditor<PipeFactory>
     static PipeModelFoldoutEditorArg pipeModelListArg = new PipeModelFoldoutEditorArg(true, false);
     static FoldoutEditorArg pipeRunListArg = new FoldoutEditorArg(true, false);
     static FoldoutEditorArg testpipeRunListArg = new FoldoutEditorArg(true, false);
+    static FoldoutEditorArg othersListArg = new FoldoutEditorArg(true, false);
+    static FoldoutEditorArg weldListArg = new FoldoutEditorArg(true, false);
     static PipeModelFoldoutEditorArg specialElbowListArg = new PipeModelFoldoutEditorArg(true, false);
     public override void OnEnable()
     {
@@ -168,6 +170,10 @@ public class PipeFactoryEditor : BaseFoldoutEditor<PipeFactory>
         {
             targetT.OneKey(true);
         }
+        if (GUILayout.Button("OneKeyEx(Job)"))
+        {
+            targetT.OneKeyEx(true);
+        }
         GUILayout.EndHorizontal();
 
         GUILayout.BeginHorizontal();
@@ -201,6 +207,10 @@ public class PipeFactoryEditor : BaseFoldoutEditor<PipeFactory>
         if (GUILayout.Button("FindPipeModels"))
         {
             targetT.FindPipeModels();
+        }
+        if (GUILayout.Button("FindPipeModels"))
+        {
+            targetT.ShowPipeModels();
         }
         if (GUILayout.Button("LoadXml"))
         {
@@ -354,5 +364,8 @@ public class PipeFactoryEditor : BaseFoldoutEditor<PipeFactory>
         DrawPipeRunList(targetT.GetPipeRunList(), pipeRunListArg);
         DrawPipeModelsList(targetT.GetPipeRunList().SpecialElbows, specialElbowListArg, "SpecialElbow List");
         DrawPipeRunList(targetT.TestRunList, testpipeRunListArg);
+
+        DrawObjectList(othersListArg, "Others", targetT.PipeOthers, null, null, null);
+        DrawObjectList(weldListArg, "Welds", targetT.PipeWelds, null, null, null);
     }
 }

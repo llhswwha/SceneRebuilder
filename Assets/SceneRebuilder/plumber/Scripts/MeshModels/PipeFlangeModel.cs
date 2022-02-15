@@ -82,6 +82,8 @@ public class PipeFlangeModel : PipeReducerModel
         }
     }
 
+    public int MinPipeSegments = 32;
+
     public override GameObject RendererModel(PipeGenerateArg arg0, string afterName)
     {
         if (RendererErrorModel())
@@ -91,15 +93,16 @@ public class PipeFlangeModel : PipeReducerModel
 
         PipeGenerateArg arg = arg0.Clone();
 
-        if(arg.pipeSegments<36)
-            arg.pipeSegments = 36;
+        if(arg.pipeSegments< MinPipeSegments)
+            arg.pipeSegments = MinPipeSegments;
 
         arg.generateWeld = false;
 
         if (IsSpecial)
         {
             GameObject pipeNew = GetPipeNewGo(arg, afterName);
-            
+
+            arg.generateEndCaps = true;
             GameObject pipe11 = RenderPipeLine(arg, afterName + "_1", KeyPointInfo.EndPointIn1, KeyPointInfo.EndPointOut1);
 
             if (KeyPointInfo.EndPointOut2.w < 0.03)
@@ -110,15 +113,17 @@ public class PipeFlangeModel : PipeReducerModel
             arg.generateWeld = arg0.generateWeld;
             arg.IsGenerateEndWeld = false;
             
-            float r1 = KeyPointInfo.EndPointIn2.w;
-            float r2 = KeyPointInfo.EndPointOut2.w;
-            float r = r1;
-            if (r2 < r)
-            {
-                r = r2;
-            }
-            KeyPointInfo.EndPointIn2.w = r;
-            KeyPointInfo.EndPointOut2.w = r;
+            
+            //float r1 = KeyPointInfo.EndPointIn2.w;
+            //float r2 = KeyPointInfo.EndPointOut2.w;
+            //float r = r1;
+            //if (r2 < r)
+            //{
+            //    r = r2;
+            //}
+            //KeyPointInfo.EndPointIn2.w = r;
+            //KeyPointInfo.EndPointOut2.w = r;
+
             GameObject pipe12 = RenderPipeLine(arg, afterName + "_2", KeyPointInfo.EndPointOut2, KeyPointInfo.EndPointIn2);
 
             //GameObject pipe12 = RenderPipeLine(arg, afterName + "_2", KeyPointInfo.EndPointIn2, KeyPointInfo.EndPointOut2);

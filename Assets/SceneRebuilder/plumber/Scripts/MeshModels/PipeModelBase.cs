@@ -26,7 +26,7 @@ public class PipeModelBase : PipeModelComponent, IComparable<PipeModelBase>
     //    }
     //}
 
-    public int sharedMinCount = 36;
+    public int sharedMinCount = 32;
 
     public float minRepeatPointDistance = 0.00005f;
 
@@ -106,7 +106,9 @@ public class PipeModelBase : PipeModelComponent, IComparable<PipeModelBase>
         GameObject newGo = model.ResultGo;
         if (newGo == null)
         {
-            Debug.LogError($"ReplaceOld newGo == null go:{model.name}");
+            model.ClearDebugInfoGos();
+            model.gameObject.SetActive(true);
+            Debug.LogWarning($"ReplaceOld newGo == null go:{model.name}");
             return;
         }
         if (newGo == model.gameObject)
@@ -116,9 +118,10 @@ public class PipeModelBase : PipeModelComponent, IComparable<PipeModelBase>
 
         if (IsGetInfoSuccess == false)
         {
-            Debug.LogError($"ReplaceOld IsGetInfoSuccess == false go:{model.name}");
+            Debug.LogWarning($"ReplaceOld IsGetInfoSuccess == false go:{model.name}");
             GameObject.DestroyImmediate(newGo);
-            TransformHelper.ClearChildren(model.gameObject);
+            //TransformHelper.ClearChildren(model.gameObject);
+            model.ClearDebugInfoGos();
             model.gameObject.SetActive(true);
             return;
         }
@@ -827,7 +830,7 @@ public class PipeModelBase : PipeModelComponent, IComparable<PipeModelBase>
     public T GetGenerator<T>(PipeGenerateArg arg, string afterName,bool isNewGo) where T : PipeMeshGeneratorBase
     {
         GameObject pipeNew = null;
-        
+
         if (isNewGo == true)
         {
             pipeNew = GetPipeNewGo(arg, afterName);
@@ -835,7 +838,8 @@ public class PipeModelBase : PipeModelComponent, IComparable<PipeModelBase>
         else
         {
             MeshRenderer renderer = this.GetComponent<MeshRenderer>();
-            if (renderer == null)
+            MeshFilter mf = this.GetComponent<MeshFilter>();
+            if (renderer == null || mf == null || mf.sharedMesh == null)
             {
                 pipeNew = this.gameObject;
             }
@@ -852,6 +856,7 @@ public class PipeModelBase : PipeModelComponent, IComparable<PipeModelBase>
         }
         pipe.Target = this.gameObject;
         ResultGo = pipe.gameObject;
+        ResultGo.SetActive(true);
         return pipe;
     }
 
@@ -937,6 +942,16 @@ public class PipeModelBase : PipeModelComponent, IComparable<PipeModelBase>
         MeshFilter meshFilter1 = source.GetComponent<MeshFilter>();
         MeshFilter meshFilter2 = target.AddComponent<MeshFilter>();
         meshFilter2.sharedMesh = meshFilter1.sharedMesh;
+    }
+
+    internal void RemomveMesh()
+    {
+        MeshFilter mf = gameObject.GetComponent<MeshFilter>();
+        mf.sharedMesh = null;
+
+        //GameObject.DestroyImmediate(mf);
+        //MeshRenderer mr = gameObject.GetComponent<MeshRenderer>();
+        //GameObject.DestroyImmediate(mr);
     }
 }
 

@@ -129,26 +129,6 @@ public class PipeFactory : SingletonBehaviour<PipeFactory>
         PrefabInfoList pres1 = new PrefabInfoList();
         PrefabInfoList pres2 = new PrefabInfoList();
         PrefabInfoList pres3 = new PrefabInfoList();
-        //if (IsPrefabGos)
-        //{
-
-        //    //AcRTAlignJobSetting.Instance.SetDefault();
-        //    pres1 = this.PrefabPipes();
-        //    pres2 = this.PrefabOthers();
-        //    this.CombineGeneratedWelds();
-        //    pres3 = this.PrefabWelds();
-
-        //    AllPrefabs = new PrefabInfoList();
-        //    AllPrefabs.AddRange(pres1);
-        //    AllPrefabs.AddRange(pres2);
-        //    AllPrefabs.AddRange(pres3);
-        //}
-
-        //if (IsReplaceOld)
-        //{
-        //    this.ReplacePipes();
-        //    this.ReplaceWelds();
-        //}
 
         if (IsPrefabGos)
         {
@@ -191,6 +171,96 @@ public class PipeFactory : SingletonBehaviour<PipeFactory>
         SharedResultVertexCountCount = sInfo.sharedVertexCount;
 
         Debug.LogError($"OneKey target:{Target.name} arg:({generateArg}) time:{DateTime.Now-start} Models:{newBuilder.PipeModels.Count+PipeOthers.Count+ weldsCount}={newBuilder.PipeModels.Count}+{PipeOthers.Count}+{weldsCount}({lastWeldCount})) Prefabs:{pres1.Count+pres2.Count+ pres3.Count}({pres1.Count}+{pres2.Count}+{pres3.Count}) TargetInfo:{TargetInfo} -> ResultInfo:{ResultInfo} ({ResultVertexCount/TargetVertexCount:P2},{SharedResultVertexCountCount / TargetVertexCount:P2})");
+    }
+
+    public void OneKeyEx(bool isJob)
+    {
+        DateTime start = DateTime.Now;
+        Target.SetActive(true);
+
+        MeshNode meshNode = MeshNode.InitNodes(Target);
+        meshNode.GetSharedMeshList();
+        TargetInfo = meshNode.GetVertexInfo();
+        TargetVertexCount = meshNode.VertexCount;
+
+        this.GetPipeParts();
+
+        int weldsCount = this.PipeWelds.Count;
+
+        if (isJob)
+        {
+            this.GetPipeInfosJob();
+        }
+        else
+        {
+            this.GetPipeInfos();
+        }
+
+        this.ClearGeneratedObjs();
+
+        this.RemoveMeshes();//++
+
+        this.RendererEachPipes();
+
+        if (IsCheckResult)
+        {
+            if (isJob)
+            {
+                this.CheckResultsJob();
+            }
+            else
+            {
+                this.CheckResults();
+            }
+        }
+
+        //this.MovePipes();//--
+
+        PrefabInfoList pres1 = new PrefabInfoList();
+        PrefabInfoList pres2 = new PrefabInfoList();
+        PrefabInfoList pres3 = new PrefabInfoList();
+
+        if (IsPrefabGos)
+        {
+
+            //AcRTAlignJobSetting.Instance.SetDefault();
+            pres1 = this.PrefabPipes();
+            pres2 = this.PrefabOthers();
+            this.CombineGeneratedWelds();
+            pres3 = this.PrefabWelds();
+
+            AllPrefabs = new PrefabInfoList();
+            AllPrefabs.AddRange(pres1);
+            AllPrefabs.AddRange(pres2);
+            AllPrefabs.AddRange(pres3);
+        }
+        else
+        {
+            this.CombineGeneratedWelds();
+        }
+
+        int lastWeldCount = 0;
+        if (IsReplaceOld)
+        {
+            //this.ReplacePipes();
+            List<Transform> weldList = this.ReplaceWelds();
+            lastWeldCount = weldList.Count;
+            if (lastWeldCount > 0)
+            {
+                PrefabInstanceBuilder.Instance.GetPrefabsOfList(weldList, true);
+            }
+        }
+
+
+        //ResultInfo=ShowTargetInfo(Target);
+
+        MeshNode meshNode2 = MeshNode.InitNodes(Target);
+        SharedMeshInfoList sInfo = meshNode2.GetSharedMeshList();
+        ResultInfo = meshNode2.GetVertexInfo();
+        ResultVertexCount = meshNode2.VertexCount;
+        SharedResultVertexCountCount = sInfo.sharedVertexCount;
+
+        Debug.LogError($"OneKey target:{Target.name} arg:({generateArg}) time:{DateTime.Now - start} Models:{newBuilder.PipeModels.Count + PipeOthers.Count + weldsCount}={newBuilder.PipeModels.Count}+{PipeOthers.Count}+{weldsCount}({lastWeldCount})) Prefabs:{pres1.Count + pres2.Count + pres3.Count}({pres1.Count}+{pres2.Count}+{pres3.Count}) TargetInfo:{TargetInfo} -> ResultInfo:{ResultInfo} ({ResultVertexCount / TargetVertexCount:P2},{SharedResultVertexCountCount / TargetVertexCount:P2})");
     }
 
     public PrefabInfoList AllPrefabs = new PrefabInfoList();
@@ -281,7 +351,7 @@ public class PipeFactory : SingletonBehaviour<PipeFactory>
         foreach (var key in keys)
         {
             var list = modelClassList.GetList(key);
-            if (key.Contains("Pipe"))
+            if (key.StartsWith("Pipe")) 
             {
                 //foreach(var item in list)
                 //{
@@ -292,12 +362,12 @@ public class PipeFactory : SingletonBehaviour<PipeFactory>
 
                 AddList(PipeLines, list);
             }
-            else if (key.Contains("Degree_Direction_Change"))
+            else if (key.Contains("Degree_Direction_Change") || key.StartsWith("ELBOW") || key.StartsWith("BEND"))
             {
                 //PipeElbows.AddRange(list);
                 AddList(PipeElbows, list);
             }
-            else if (key.Contains("Tee"))
+            else if (key.Contains("Tee") || key.StartsWith("TEE"))
             {
                 //PipeTees.AddRange(list);
                 AddList(PipeTees, list);
@@ -307,16 +377,18 @@ public class PipeFactory : SingletonBehaviour<PipeFactory>
                 //PipeTees.AddRange(list);
                 AddList(PipeWeldolets, list);
             }
-            else if (key.Contains("Reducer"))
+            else if (key.Contains("Reducer") || key.StartsWith("REDUCER"))//REDUCER
             {
                 //PipeReducers.AddRange(list);
                 AddList(PipeReducers, list);
             }
-            else if (key.Contains("Flange"))
+            else if (key.Contains("Flange") || key.StartsWith("Ô²Öù") || key.StartsWith("CYLINDER") || key.StartsWith("FLANGE") || key.StartsWith("OLET"))//FLANGE
             {
                 //PipeFlanges.AddRange(list);
                 AddList(PipeFlanges, list);
             }
+            //ATTACHMENT
+            //NOZZLE
             else
             {
                 //PipeOthers.AddRange(list);
@@ -335,7 +407,7 @@ public class PipeFactory : SingletonBehaviour<PipeFactory>
                     if (mf.name.Contains("_Combined_")) continue;
                     if (mf.sharedMesh.name.Contains("_Combined_")) continue;
 
-                    Debug.LogError($"Other:{item.name} mf:{mf.name} mesh:{mf.sharedMesh.name} maxVertexCount:{maxVertexCount} vertexCount:{mf.sharedMesh.vertexCount}");
+                    //Debug.LogError($"Other:{item.name} mf:{mf.name} mesh:{mf.sharedMesh.name} maxVertexCount:{maxVertexCount} vertexCount:{mf.sharedMesh.vertexCount}");
                     PipeOthers.Add(item);
                 }
             }
@@ -347,7 +419,7 @@ public class PipeFactory : SingletonBehaviour<PipeFactory>
             var wp = parentDict[w];
             w.transform.SetParent(wp);
         }
-        Debug.Log($"GetModelClass keys:{keys.Count} maxVertexCount:{maxVertexCount}");
+        Debug.Log($"GetModelClass keys:{keys.Count} maxVertexCount:{maxVertexCount} welds:{welds.Count}");
 
     }
 
@@ -459,7 +531,7 @@ public class PipeFactory : SingletonBehaviour<PipeFactory>
         List<Transform> weldList = new List<Transform>(PipeWelds);
         int allWeldsCount = weldList.Count;
         if (allWeldsCount == 0) return weldList;
-        var weldsNew = newBuilder.GetWelds();
+        var weldsNew = newBuilder.GetWelds(Target);
         int newWeldsCount = weldsNew.Count;
 
         for(int i=0;i<weldsNew.Count;i++)
@@ -510,7 +582,7 @@ public class PipeFactory : SingletonBehaviour<PipeFactory>
             else
             {
                 MeshPrefabInstance ins = w.GetComponent<MeshPrefabInstance>();
-                if (ins.IsPrefab)
+                if (ins!=null && ins.IsPrefab)
                 {
                     MeshFilter mf = w.GetComponent<MeshFilter>();
                     DestroyiedMeshs.Add(mf.sharedMesh);
@@ -617,7 +689,7 @@ public class PipeFactory : SingletonBehaviour<PipeFactory>
 
         DateTime start = DateTime.Now;
         PrefabInfoList prefabs = PrefabInstanceBuilder.Instance.GetPrefabsOfList(newBuilder.PipeGenerators, true);
-        var gs = newBuilder.RefreshGenerators();
+        var gs = newBuilder.RefreshGenerators(Target);
         newBuilder.RefreshPipeModels(Target);
         Debug.Log($"PrefabPipes time:{DateTime.Now - start} Pipes:{newBuilder.PipeGenerators.Count} Pipes2:{gs.Count} prefabs:{prefabs.Count}");
         return prefabs;
@@ -637,7 +709,7 @@ public class PipeFactory : SingletonBehaviour<PipeFactory>
 
         DateTime start = DateTime.Now;
         //newBuilder.CombineGeneratedWelds();
-        var welds = newBuilder.GetWelds();
+        var welds = newBuilder.GetWelds(Target);
         //return new PrefabInfoList();
         PrefabInfoList prefabs = PrefabInstanceBuilder.Instance.GetPrefabsOfList(welds, true);
         Debug.Log($"PrefabWelds time:{DateTime.Now - start} Welds:{welds.Count} prefabs:{prefabs.Count}");
@@ -746,7 +818,10 @@ public class PipeFactory : SingletonBehaviour<PipeFactory>
     {
         newBuilder.FindPipeModels(this.Target);
     }
-    
+    public void ShowPipeModels()
+    {
+        newBuilder.ShowPipeModels(this.Target);
+    }
 
     [ContextMenu("GetObbInfJobs")]
     public void GetObbInfosJob()
