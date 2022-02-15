@@ -247,12 +247,27 @@ public class PipeFactory : SingletonBehaviour<PipeFactory>
             return;
         }
 
+        Dictionary<GameObject, Transform> parentDict = new Dictionary<GameObject, Transform>();
+
         var welds = TransformHelper.FindGameObjects(Target.transform, "Welding");
         foreach(var w in welds)
         {
-            if(!w.name.Contains("_"))
-                w.name = w.transform.parent.name + "_" + w.name;
-            EditorHelper.UnpackPrefab(w.gameObject);
+            Transform wp = w.transform.parent;
+            if (!w.name.Contains("_"))
+            {
+
+                if(wp.name=="In"|| wp.name == "Out0"|| wp.name == "Out1")
+                {
+                    w.name = wp.transform.parent.name+"_"+wp.name + "_" + w.name;
+                }
+                else
+                {
+                    w.name = wp.name + "_" + w.name;
+                }
+            }
+                
+            EditorHelper.UnpackPrefab(w);
+            parentDict.Add(w, wp);
             w.transform.SetParent(null);
             w.transform.SetParent(WeldRootTarget.transform);
         }
@@ -310,7 +325,8 @@ public class PipeFactory : SingletonBehaviour<PipeFactory>
         //WeldRootTarget.transform.SetParent(Target.transform);
         foreach (var w in welds)
         {
-            w.transform.SetParent(Target.transform);
+            var wp = parentDict[w];
+            w.transform.SetParent(wp);
         }
         Debug.Log($"GetModelClass keys:{keys.Count}");
 
