@@ -195,6 +195,8 @@ public class PipeReducerModel
 
         pipe.RenderPipe();
 
+        pipe.transform.rotation = this.transform.rotation;
+
         return pipe.gameObject;
     }
 

@@ -391,6 +391,8 @@ public class PipeElbowModel : PipeModelBase
 
     public GameObject CombineTarget(PipeGenerateArg arg, GameObject pipeNew)
     {
+        pipeNew.transform.rotation = this.transform.rotation;
+
         GameObject target = pipeNew;
         if (IsCombineResult)
         {

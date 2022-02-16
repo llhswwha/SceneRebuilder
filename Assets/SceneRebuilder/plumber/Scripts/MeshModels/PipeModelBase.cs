@@ -864,7 +864,9 @@ public class PipeModelBase : PipeModelComponent, IComparable<PipeModelBase>
     {
         GameObject pipeNew = new GameObject(this.name + afterName);
         pipeNew.transform.position = this.transform.position + arg.Offset;
+        //pipeNew.transform.rotation = this.transform.rotation;
         pipeNew.transform.SetParent(this.transform.parent);
+        
         return pipeNew;
     }
 

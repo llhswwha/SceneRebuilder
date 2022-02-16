@@ -377,7 +377,7 @@ public class PipeFactory : SingletonBehaviour<PipeFactory>
                 //PipeTees.AddRange(list);
                 AddList(PipeWeldolets, list);
             }
-            else if (key.Contains("Reducer") || key.StartsWith("REDUCER"))//REDUCER
+            else if (key.Contains("Reducer") || key.StartsWith("REDUCER") || key.StartsWith("CONE"))//REDUCER CONE
             {
                 //PipeReducers.AddRange(list);
                 AddList(PipeReducers, list);

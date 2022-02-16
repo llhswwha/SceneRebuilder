@@ -334,28 +334,33 @@ public class PipeBuilder : MonoBehaviour
 
     internal List<Transform> GetWelds(GameObject target)
     {
-        if (PipeGenerators.Count == 0)
-        {
-            Debug.LogWarning($"PipeBuilder.GetWelds PipeGenerators.Count == 0");
-            RefreshGenerators(target);
-        }
+        int count1 = PipeGenerators.Count;
+
+        //if (PipeGenerators.Count == 0)
+        //{
+        //    //Debug.LogWarning($"PipeBuilder.GetWelds PipeGenerators.Count == 0");
+        //    RefreshGenerators(target);
+        //}
+
+        var gs1 = this.GetComponentsInChildren<PipeWeldModel>(true).ToList();
+        var gs2 = target.GetComponentsInChildren<PipeWeldModel>(true).ToList();
+        List<PipeWeldModel> gs = new List<PipeWeldModel>();
+        gs.AddRange(gs1);
+        gs.AddRange(gs2);
+
+        //int count2 = PipeGenerators.Count;
+
         if (PipeGenerators.Count == 0)
         {
             Debug.LogError($"PipeBuilder.GetWelds PipeGenerators.Count == 0");
         }
         List<Transform> ts = new List<Transform>();
-        foreach (var g in PipeGenerators)
+        foreach (var c in gs)
         {
-            if (g == null) continue;
-            //ts.AddRange(g.Childrens);
-            foreach(var c in g.Childrens)
-            {
-                if (c == null) continue;
-                PipeWeldModel weld = c.GetComponent<PipeWeldModel>();
-                if (weld == null) continue;
-                ts.Add(c);
-            }
+            if (c == null) continue;
+            ts.Add(c.transform);
         }
+        Debug.Log($"PipeBuilder.GetWelds ts:{ts.Count} PipeGenerators:{count1}");
         return ts;
     }
 

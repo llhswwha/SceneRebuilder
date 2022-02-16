@@ -130,6 +130,8 @@ public class PipeFlangeModel : PipeReducerModel
             pipe11.transform.SetParent(pipeNew.transform);
             pipe12.transform.SetParent(pipeNew.transform);
 
+
+
             GameObject target = CombineTarget(arg, pipeNew);
             target = CopyMeshComponentsEx(target);
             this.ResultGo = target;
