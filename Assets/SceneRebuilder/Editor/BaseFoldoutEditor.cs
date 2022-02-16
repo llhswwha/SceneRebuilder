@@ -1381,6 +1381,7 @@ public class BaseFoldoutEditor<T> : BaseEditor<T> where T : class
                 //list.GetPrefabs();
                 listArg.tag = list2;
 
+                AcRTAlignJobSetting.Instance.SetDefault();
                 PrefabInstanceBuilder.Instance.GetPrefabInfos(list2, true);
 
                 listArg.tag = funcGetList();

@@ -71,19 +71,38 @@ public class LODManager : SingletonBehaviour<LODManager>
         lodDetails = null;
     }
 
-    public void CreateLOD(GameObject go)
+    public void CreateBoxLOD(GameObject go)
     {
-        AutomaticLODHelper.CreateLOD(go, LODMaterials, LODLevels, lodVertexPercents, isDestroy, isSaveAsset);
+        CreateBoxLOD(go, LODLevels_1); 
     }
 
-    public void CreateLOD(GameObject go,Action<float> progressChanged)
+    public LODGroup CreateBoxLOD(GameObject go,float [] lvs)
     {
-        AutomaticLODHelper.CreateLOD(go, LODMaterials, LODLevels, lodVertexPercents, isDestroy, isSaveAsset, progressChanged);
+        GameObject goNew = new GameObject(go.name);
+        goNew.transform.position = go.transform.position;
+        goNew.transform.SetParent(go.transform.parent);
+        go.transform.SetParent(goNew.transform);
+
+        LODGroup lODGroup = goNew.AddMissingComponent<LODGroup>();
+        MeshRendererInfoEx rendererInfoEx = go.AddMissingComponent<MeshRendererInfoEx>();
+        LOD[] lods = GetLODs2(rendererInfoEx.GetRenderers(), null);
+        lODGroup.SetLODs(lods);
+        return lODGroup;
     }
 
-    public void CreateLOD(GameObject go, float percent,Action<float> progressChanged)
+    public void CreateAutoLOD(GameObject go)
     {
-        AutomaticLODHelper.CreateLOD(go, LODMaterials, new float[] { 0.5f}, new float[] { percent }, isDestroy, isSaveAsset, progressChanged);
+        AutomaticLODHelper.CreateAutoLOD(go, LODMaterials, LODLevels, lodVertexPercents, isDestroy, isSaveAsset);
+    }
+
+    public void CreateAutoLOD(GameObject go,Action<float> progressChanged)
+    {
+        AutomaticLODHelper.CreateAutoLOD(go, LODMaterials, LODLevels, lodVertexPercents, isDestroy, isSaveAsset, progressChanged);
+    }
+
+    public void CreateAutoLOD(GameObject go, float percent,Action<float> progressChanged)
+    {
+        AutomaticLODHelper.CreateAutoLOD(go, LODMaterials, new float[] { 0.5f}, new float[] { percent }, isDestroy, isSaveAsset, progressChanged);
     }
 
     public void RemoveLOD(GameObject go)
@@ -96,7 +115,7 @@ public class LODManager : SingletonBehaviour<LODManager>
     [ContextMenu("TestCreateLOD")]
     public void TestCreateLOD()
     {
-        CreateLOD(TestTarget);
+        CreateAutoLOD(TestTarget);
     }
 
     public float zeroDistance = 0.0002f;

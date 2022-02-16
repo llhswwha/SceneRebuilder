@@ -5,6 +5,31 @@ using System.Collections.Generic;
 public class MyEditorTools2
 {
     #region Mesh 
+    [MenuItem("Tools/LOD/SetSetting")]
+    public static void LODSetSetting()
+    {
+        EditorHelper.SelectObject(LODManager.Instance.gameObject);
+    }
+    [MenuItem("Tools/LOD/SetLODDev")]
+    public static void SetLODDev()
+    {
+        for (int i = 0; i < Selection.gameObjects.Length; i++)
+        {
+            GameObject obj = Selection.gameObjects[i];
+            ProgressArg pA = new ProgressArg("SetLODDev", i, Selection.gameObjects.Length, obj);
+            if (ProgressBarHelper.DisplayCancelableProgressBar(pA))
+            {
+                break;
+            }
+            LODManager.Instance.CreateBoxLOD(obj);
+        }
+        ProgressBarHelper.ClearProgressBar();
+        
+    }
+    #endregion
+
+
+    #region Mesh 
     [MenuItem("Tools/Mesh/Combine")]
     public static void CombineMesh()
     {
@@ -19,7 +44,7 @@ public class MyEditorTools2
 
     #region Prefab
     [MenuItem("Tools/Prefab/SetSetting")]
-    public static void SetSetting()
+    public static void PrefabSetSetting()
     {
         EditorHelper.SelectObject(PrefabInstanceBuilder.Instance.gameObject);
     }
@@ -98,6 +123,8 @@ public class MyEditorTools2
     [MenuItem("Tools/Prefab/GetPrefabInfos")]
     public static void GetPrefabInfos()
     {
+        AcRTAlignJobSetting.Instance.SetDefault();
+
         for (int i = 0; i < Selection.gameObjects.Length; i++)
         {
             GameObject obj = Selection.gameObjects[i];

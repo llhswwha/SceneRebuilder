@@ -1287,7 +1287,7 @@ break;
                 // lvs=null;
                 // lodVertexPercents=null;
 
-                AutomaticLODHelper.CreateLOD(go, LODMaterials, lvs,lodVertexPercents);
+                AutomaticLODHelper.CreateAutoLOD(go, LODMaterials, lvs,lodVertexPercents);
             }
 
             if (userGPUPrefab && prefabManager)
@@ -1384,7 +1384,7 @@ break;
 
            
             if (userLOD)
-                AutomaticLODHelper.CreateLOD(go, LODMaterials, lvs,lodVertexPercents);
+                AutomaticLODHelper.CreateAutoLOD(go, LODMaterials, lvs,lodVertexPercents);
 
             GameObject prefabAsset = PrefabUtility.SaveAsPrefabAssetAndConnect(go, path, InteractionMode.UserAction);
 

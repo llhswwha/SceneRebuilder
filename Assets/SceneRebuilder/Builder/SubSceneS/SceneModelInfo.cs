@@ -59,7 +59,7 @@ public class SceneModelInfo : MonoBehaviour
 
     public void CreateLOD(GameObject go)
     {
-        AutomaticLODHelper.CreateLOD(go, LODMaterials, LODLevels,null,false,false);
+        AutomaticLODHelper.CreateAutoLOD(go, LODMaterials, LODLevels,null,false,false);
     }
 
     [ContextMenu("ShowAll")]

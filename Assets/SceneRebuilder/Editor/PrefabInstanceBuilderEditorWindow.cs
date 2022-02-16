@@ -23,6 +23,10 @@ public class PrefabInstanceBuilderEditorWindow : EditorWindow, IBaseEditorWindow
     private void OnGUI()
     {
         //MeshComparerEditor.DrawSetting(target);
+        if (target == null)
+        {
+            Init();
+        }
 
         PrefabInstanceBuilderEditor.DrawUI(target);
 

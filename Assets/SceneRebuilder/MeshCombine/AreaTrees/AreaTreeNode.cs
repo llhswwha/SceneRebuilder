@@ -1438,7 +1438,7 @@ public class AreaTreeNode : SubSceneCreater
                 progressChanged(progress,false);
             }
             MeshRenderer renderer = renderers[i];
-            LODManager.Instance.CreateLOD(renderer.gameObject,p=> {
+            LODManager.Instance.CreateAutoLOD(renderer.gameObject,p=> {
                 float progress2 = (float)(i+p) / renderers.Length;
                 if (progressChanged != null)
                 {

@@ -232,7 +232,7 @@ public static class AutomaticLODHelper
         return aLOD;
     }
 
-    public static void CreateLOD(GameObject go, Material[] mats,float[] lvs,float[] lodVertexPercents,bool isDestroyScript=true,bool isSaveAsset=false, System.Action<float> progressChanged=null)
+    public static void CreateAutoLOD(GameObject go, Material[] mats,float[] lvs,float[] lodVertexPercents,bool isDestroyScript=true,bool isSaveAsset=false, System.Action<float> progressChanged=null)
     {
         System.DateTime start= System.DateTime.Now;
         if(lvs==null)

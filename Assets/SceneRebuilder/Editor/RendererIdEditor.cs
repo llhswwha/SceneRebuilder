@@ -222,10 +222,12 @@ public class RendererIdEditor : BaseEditor<RendererId>
         }
         if (GUILayout.Button("Align"))
         {
+            AcRTAlignJobSetting.Instance.SetDefault();
             PrefabInstanceBuilder.Instance.AcRTAlignJobs(item.gameObject, true);
         }
         if (GUILayout.Button("AlignEx"))
         {
+            AcRTAlignJobSetting.Instance.SetDefault();
             PrefabInstanceBuilder.Instance.AcRTAlignJobsEx(item.gameObject, true);
         }
         EditorGUILayout.EndHorizontal();

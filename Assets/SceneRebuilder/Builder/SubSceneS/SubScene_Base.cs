@@ -960,7 +960,7 @@ public class SubScene_Base : MonoBehaviour
         foreach(var renderer in renderers)
         {
             //AutomaticLODHelper.CreateLOD(renderer.gameObject, null, null, null, true, true);
-            LODManager.Instance.CreateLOD(renderer.gameObject);
+            LODManager.Instance.CreateAutoLOD(renderer.gameObject);
         }
     }
 

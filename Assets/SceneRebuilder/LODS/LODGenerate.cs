@@ -14,7 +14,7 @@ public class LODGenerate : MonoBehaviour
     {
         //AutomaticLODHelper.CreateLOD(this.gameObject, null, Lods,simplifiers,false);
 
-        LODManager.Instance.CreateLOD(this.gameObject,p=>
+        LODManager.Instance.CreateAutoLOD(this.gameObject,p=>
         {
             ProgressBarHelper.DisplayProgressBar("CreateLOD", $"{p:P}", p);
         });
@@ -52,7 +52,7 @@ public class LODGenerate : MonoBehaviour
 
     private void CreateLODN(float percent)
     {
-        LODManager.Instance.CreateLOD(this.gameObject, percent, p =>
+        LODManager.Instance.CreateAutoLOD(this.gameObject, percent, p =>
         {
             ProgressBarHelper.DisplayProgressBar($"CreateLODN({percent})", $"{p:P}", p);
         });
