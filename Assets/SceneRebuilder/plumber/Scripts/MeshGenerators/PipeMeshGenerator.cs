@@ -511,7 +511,7 @@ public class PipeMeshGenerator : PipeMeshGeneratorBase
                         GameObject debugGo = new GameObject($"Elbow_{i}");
                         debugGo.transform.SetParent(this.transform);
                         debugGo.transform.localPosition = Vector3.zero;
-                        PointHelper.ShowPoints(new Vector3[] { point1, point2, point3 }, new Vector3(0.05f, 0.05f, 0.05f), debugGo.transform);
+                        PointHelper.ShowPoints(new Vector3[] { point1, point2, point3 }, new Vector3(PointScale,PointScale,PointScale), debugGo.transform);
 
                         //
                     }
@@ -740,11 +740,21 @@ public class PipeMeshGenerator : PipeMeshGeneratorBase
         //PipeDatas.Add(pipe2);
     }
 
+    public static float ElbowOffsetCrossPower = 100;
+
     ElbowMeshData GenerateElbow(List<Vector3> points,int index, List<Vector3> vertices, List<Vector3> normals, List<int> triangles, Vector3 point1, Vector3 point2, Vector3 point3) {
+
+        //ShowPoint(point1, "point1", this.transform);
+        //ShowPoint(point2, "point2", this.transform);
+        //ShowPoint(point3, "point3", this.transform);
+
         // generates the elbow around the area of point2, connecting the cylinders
         // corresponding to the segments point1-point2 and point2-point3
-        Vector3 offset1 = (point2 - point1).normalized * elbowRadius;
-        Vector3 offset2 = (point3 - point2).normalized * elbowRadius;
+
+        Vector3 v21 = point2 - point1;
+        Vector3 v32 = point3 - point2;
+        Vector3 offset1 = v21.normalized * elbowRadius;
+        Vector3 offset2 = v32.normalized * elbowRadius;
 
         Vector3 startPoint = point2 - offset1;
         Vector3 endPoint = point2 + offset2;
@@ -760,16 +770,25 @@ public class PipeMeshGenerator : PipeMeshGeneratorBase
 
         // auxiliary vectors to calculate lines parallel to the edge of each
         // cylinder, so the point where they meet can be the center of the elbow
-        Vector3 perpendicularToBoth = Vector3.Cross(offset1, offset2);
-        Vector3 startDir = Vector3.Cross(perpendicularToBoth, offset1).normalized;
-        Vector3 endDir = Vector3.Cross(perpendicularToBoth, offset2).normalized;
+        Vector3 perpendicularToBoth = Vector3.Cross(offset1 * ElbowOffsetCrossPower, offset2 * ElbowOffsetCrossPower);//offset1太小时会导致错误。
+        Vector3 startDir = Vector3.Cross(perpendicularToBoth, offset1 * ElbowOffsetCrossPower).normalized;
+        Vector3 endDir = Vector3.Cross(perpendicularToBoth, offset2 * ElbowOffsetCrossPower).normalized;
 
         // calculate torus arc center as the place where two lines projecting
         // from the edges of each cylinder intersect
         Vector3 torusCenter1;
         Vector3 torusCenter2;
+
         Math3D.ClosestPointsOnTwoLines(out torusCenter1, out torusCenter2, startPoint, startDir, endPoint, endDir);
         Vector3 torusCenter = 0.5f * (torusCenter1 + torusCenter2);
+
+        //ShowPoint(startPoint, "startPoint1", this.transform);
+        //ShowPoint(startPoint+ startDir, "endPoint1", this.transform);
+        //ShowPoint(endPoint, "startPoint2", this.transform);
+        //ShowPoint(endPoint+ endDir, "endPoint2", this.transform);
+        //ShowPoint(torusCenter, "torusCenter", this.transform);
+        //ShowPoint(torusCenter1, "torusCenter1", this.transform);
+        //ShowPoint(torusCenter2, "torusCenter2", this.transform);
 
         // calculate actual torus radius based on the calculated center of the 
         // torus and the point where the arc starts
@@ -779,6 +798,16 @@ public class PipeMeshGenerator : PipeMeshGeneratorBase
         float radiansPerSegment = (angle * Mathf.Deg2Rad) / elbowSegments;
         Vector3 lastPoint = point2 - startPoint;
 
+        if (angle > 100)
+        {
+            Debug.LogWarning($"GenerateElbow go:{this.name} actualTorusRadius:{actualTorusRadius} angle:{angle} radiansPerSegment:{radiansPerSegment} v21:{v21.magnitude} elbowRadius:{elbowRadius} startDir:{startDir} endDir:{endDir}");
+        }
+        else
+        {
+            Debug.Log($"GenerateElbow go:{this.name} actualTorusRadius:{actualTorusRadius} angle:{angle} radiansPerSegment:{radiansPerSegment} v21:{v21.magnitude} elbowRadius:{elbowRadius} startDir:{startDir} endDir:{endDir}");
+        }
+
+        
 
         ElbowMeshData elbowMeshData = new ElbowMeshData();
         for (int i = 0; i <= elbowSegments; i++) {

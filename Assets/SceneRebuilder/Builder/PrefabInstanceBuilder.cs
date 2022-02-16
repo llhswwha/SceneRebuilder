@@ -706,22 +706,31 @@ UnpackPrefab();
         {
             if (mp.name.Contains("_Combined_"))
             {
-                Debug.LogWarning($"FilterMeshPoints11 name:{mp.name} vertexCount:{mp.vertexCount} MaxVertexCount:{MaxVertexCount}");
+                Debug.LogWarning($"FilterMeshPoints12 Contains(_Combined_) name:{mp.name} vertexCount:{mp.vertexCount} MaxVertexCount:{MaxVertexCount}");
                 continue;
             }
-            if (mp.mf.name.Contains("_Combined_"))
+            //if (mp.mf == null)
+            //{
+            //    Debug.LogWarning($"FilterMeshPoints11 mp.mf==null name:{mp.name} vertexCount:{mp.vertexCount} MaxVertexCount:{MaxVertexCount}");
+            //    continue;
+            //}
+            if (mp.mf != null)
             {
-                Debug.LogWarning($"FilterMeshPoints12 name:{mp.name} vertexCount:{mp.vertexCount} MaxVertexCount:{MaxVertexCount}");
-                continue;
+                if (mp.mf.name.Contains("_Combined_"))
+                {
+                    Debug.LogWarning($"FilterMeshPoints13 Contains(_Combined_) name:{mp.name} vertexCount:{mp.vertexCount} MaxVertexCount:{MaxVertexCount}");
+                    continue;
+                }
+                if (mp.mf.sharedMesh.name.Contains("_Combined_"))
+                {
+                    Debug.LogWarning($"FilterMeshPoints14 Contains(_Combined_) name:{mp.name} vertexCount:{mp.vertexCount} MaxVertexCount:{MaxVertexCount}");
+                    continue;
+                }
             }
-            if (mp.mf.sharedMesh.name.Contains("_Combined_"))
-            {
-                Debug.LogWarning($"FilterMeshPoints13 name:{mp.name} vertexCount:{mp.vertexCount} MaxVertexCount:{MaxVertexCount}");
-                continue;
-            }
+ 
             if (mp.vertexCount> MaxVertexCount)
             {
-                Debug.LogWarning($"FilterMeshPoints2 name:{mp.name} vertexCount:{mp.vertexCount} MaxVertexCount:{MaxVertexCount}");
+                Debug.LogWarning($"FilterMeshPoints2 vertexCount> MaxVertexCount name:{mp.name} vertexCount:{mp.vertexCount} MaxVertexCount:{MaxVertexCount}");
                 continue;
             }
             list.Add(mp);

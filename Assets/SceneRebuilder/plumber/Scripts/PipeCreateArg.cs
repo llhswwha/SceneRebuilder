@@ -27,84 +27,84 @@ public class PipeCreateArg
 
     public float elbowRadius = 0;
 
-    public List<Vector4> GetPoints4()
-    {
-        points4 = new List<Vector4>();
+    //public List<Vector4> GetPoints4()
+    //{
+    //    points4 = new List<Vector4>();
 
-        Vector4 p11;
-        Vector4 p12;
-        Vector4 p21;
-        Vector4 p22;
+    //    Vector4 p11;
+    //    Vector4 p12;
+    //    Vector4 p21;
+    //    Vector4 p22;
 
-        p11 = pm1.GetStartPoint();
-        p12 = pm1.GetEndPoint();
+    //    p11 = pm1.GetStartPoint();
+    //    p12 = pm1.GetEndPoint();
 
-        p21 = pm2.GetStartPoint();
-        p22 = pm2.GetEndPoint();
+    //    p21 = pm2.GetStartPoint();
+    //    p22 = pm2.GetEndPoint();
 
-        Vector3 linePoint1 = Vector3.zero;
-        Vector3 lineVec1 = Vector3.zero;
+    //    Vector3 linePoint1 = Vector3.zero;
+    //    Vector3 lineVec1 = Vector3.zero;
 
 
-        float dis11 = Vector3.Distance(p11, p21) + Vector3.Distance(p11, p22);
-        float dis12 = Vector3.Distance(p12, p21) + Vector3.Distance(p12, p22);
-        if (dis11 > dis12)
-        {
-            //points.Add(p11);
-            //points.Add(p12);
-            linePoint1 = p11;
-            lineVec1 = p12 - p11;
+    //    float dis11 = Vector3.Distance(p11, p21) + Vector3.Distance(p11, p22);
+    //    float dis12 = Vector3.Distance(p12, p21) + Vector3.Distance(p12, p22);
+    //    if (dis11 > dis12)
+    //    {
+    //        //points.Add(p11);
+    //        //points.Add(p12);
+    //        linePoint1 = p11;
+    //        lineVec1 = p12 - p11;
 
-            P1 = p11;
-            P2 = p12;
-        }
-        else
-        {
-            //points.Add(p12);
-            //points.Add(p11);
-            linePoint1 = p12;
-            lineVec1 = p11 - p12;
+    //        P1 = p11;
+    //        P2 = p12;
+    //    }
+    //    else
+    //    {
+    //        //points.Add(p12);
+    //        //points.Add(p11);
+    //        linePoint1 = p12;
+    //        lineVec1 = p11 - p12;
 
-            P1 = p12;
-            P2 = p11;
-        }
+    //        P1 = p12;
+    //        P2 = p11;
+    //    }
 
-        {
-            points4.Add(P1);
-            points4.Add(P2);
-        }
+    //    {
+    //        points4.Add(P1);
+    //        points4.Add(P2);
+    //    }
 
-        Vector3 linePoint2 = Vector3.zero;
-        Vector3 lineVec2 = Vector3.zero;
+    //    Vector3 linePoint2 = Vector3.zero;
+    //    Vector3 lineVec2 = Vector3.zero;
 
-        float dis21 = Vector3.Distance(p11, p21) + Vector3.Distance(p12, p21);
-        float dis22 = Vector3.Distance(p11, p22) + Vector3.Distance(p12, p22);
-        if (dis21 > dis22)
-        {
-            linePoint2 = p21;
-            lineVec2 = p22 - p21;
+    //    float dis21 = Vector3.Distance(p11, p21) + Vector3.Distance(p12, p21);
+    //    float dis22 = Vector3.Distance(p11, p22) + Vector3.Distance(p12, p22);
+    //    if (dis21 > dis22)
+    //    {
+    //        linePoint2 = p21;
+    //        lineVec2 = p22 - p21;
 
-            P3 = p22; ;
-            P4 = p21;
-        }
-        else
-        {
-            linePoint2 = p22;
-            lineVec2 = p21 - p22;
+    //        P3 = p22; ;
+    //        P4 = p21;
+    //    }
+    //    else
+    //    {
+    //        linePoint2 = p22;
+    //        lineVec2 = p21 - p22;
 
-            P3 = p21;
-            P4 = p22;
-        }
+    //        P3 = p21;
+    //        P4 = p22;
+    //    }
 
-        Math3D.ClosestPointsOnTwoLines(out closestPointLine1, out closestPointLine2, linePoint1, lineVec1, linePoint2, lineVec2);
-        distanceOfTwoClosetPoint = Vector3.Distance(closestPointLine1, closestPointLine2);
-        Vector3 closetPoint12 = (closestPointLine1 + closestPointLine2) / 2;
-        elbowRadius = Vector3.Distance(closetPoint12, P2);
-        points4.Add(closetPoint12);
-        points4.Add(P3);
-        points4.Add(P4);
-        return points4;
-    }
+    //    Math3D.ClosestPointsOnTwoLines(out closestPointLine1, out closestPointLine2, linePoint1, lineVec1, linePoint2, lineVec2);
+    //    distanceOfTwoClosetPoint = Vector3.Distance(closestPointLine1, closestPointLine2);
+    //    Vector3 closetPoint12 = (closestPointLine1 + closestPointLine2) / 2;
+    //    elbowRadius = Vector3.Distance(closetPoint12, P2);
+    //    points4.Add(closetPoint12);
+    //    points4.Add(P3);
+    //    points4.Add(P4);
+    //    return points4;
+    //}
 
     public List<Vector3> GetPoints()
     {

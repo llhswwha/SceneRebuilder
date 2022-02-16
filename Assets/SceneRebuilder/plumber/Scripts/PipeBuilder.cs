@@ -262,7 +262,7 @@ public class PipeBuilder : MonoBehaviour
         //CombineGeneratedWelds();
         
 
-        Debug.LogWarning($">>RendererPipes time:{DateTime.Now - start}");
+        Debug.LogWarning($">>RendererPipes time:{DateTime.Now - start} PipeGenerators:{PipeGenerators.Count} PipeModels:{PipeModels.Count}");
     }
 
     public float minWeldDis = 0.0001f;
@@ -332,19 +332,35 @@ public class PipeBuilder : MonoBehaviour
         return ts;
     }
 
-    internal List<Transform> GetWelds()
+    internal List<Transform> GetWelds(GameObject target)
     {
-        List<Transform> ts = new List<Transform>();
-        foreach (var g in PipeGenerators)
+        int count1 = PipeGenerators.Count;
+
+        //if (PipeGenerators.Count == 0)
+        //{
+        //    //Debug.LogWarning($"PipeBuilder.GetWelds PipeGenerators.Count == 0");
+        //    RefreshGenerators(target);
+        //}
+
+        var gs1 = this.GetComponentsInChildren<PipeWeldModel>(true).ToList();
+        var gs2 = target.GetComponentsInChildren<PipeWeldModel>(true).ToList();
+        List<PipeWeldModel> gs = new List<PipeWeldModel>();
+        gs.AddRange(gs1);
+        gs.AddRange(gs2);
+
+        //int count2 = PipeGenerators.Count;
+
+        if (PipeGenerators.Count == 0)
         {
-            if (g == null) continue;
-            //ts.AddRange(g.Childrens);
-            foreach(var c in g.Childrens)
-            {
-                if (c == null) continue;
-                ts.Add(c);
-            }
+            Debug.LogError($"PipeBuilder.GetWelds PipeGenerators.Count == 0");
         }
+        List<Transform> ts = new List<Transform>();
+        foreach (var c in gs)
+        {
+            if (c == null) continue;
+            ts.Add(c.transform);
+        }
+        Debug.Log($"PipeBuilder.GetWelds ts:{ts.Count} PipeGenerators:{count1}");
         return ts;
     }
 
@@ -465,16 +481,20 @@ public class PipeBuilder : MonoBehaviour
         return pipe;
     }
 
-    internal List<PipeMeshGeneratorBase> RefreshGenerators()
+    internal List<PipeMeshGeneratorBase> RefreshGenerators(GameObject target)
     {
-        var gs= this.GetComponentsInChildren<PipeMeshGeneratorBase>(true).ToList();
+        var gs1= this.GetComponentsInChildren<PipeMeshGeneratorBase>(true).ToList();
+        var gs2 = target.GetComponentsInChildren<PipeMeshGeneratorBase>(true).ToList();
+        List<PipeMeshGeneratorBase> gs = new List<PipeMeshGeneratorBase>();
+        gs.AddRange(gs1);
+        gs.AddRange(gs2);
         PipeGenerators.Clear();
         foreach(var pipe in gs)
         {
-            var target = pipe.Target;
-            if (target == null) continue;
+            var t = pipe.Target;
+            if (t == null) continue;
             PipeGenerators.Add(pipe);
-            PipeModelBase model = target.GetComponent<PipeModelBase>();
+            PipeModelBase model = t.GetComponent<PipeModelBase>();
             if (model)
             {
                 model.ResultGo = pipe.gameObject;
@@ -731,6 +751,8 @@ public class PipeBuilder : MonoBehaviour
         elbowJobs.Dispose();
         PipeWeldoletInfoJob.Result.Dispose();
     }
+
+
 
     private void SetJobResultData_Flange(JobList<PipeFlangeInfoJob> elbowJobs, List<Transform> ts)
     {
@@ -1420,6 +1442,19 @@ public class PipeBuilder : MonoBehaviour
             if (pipe != null) continue;
             ins.RemomveMesh();
         }
+
+        foreach (var item in PipeModels)
+        {
+            if (item == null) continue;
+            if (item.IsGetInfoSuccess == false)
+            {
+                //GameObject.DestroyImmediate(item);
+            }
+            else
+            {
+                item.RemomveMesh();
+            }
+        }
     }
 
     public void RemovePipeModels(GameObject target)
@@ -1471,6 +1506,23 @@ public class PipeBuilder : MonoBehaviour
         //RemovePipeModels(PipeWeldolets);
 
         return PipeModels;
+    }
+
+    internal void ShowPipeModels(GameObject target)
+    {
+        if (target == null)
+        {
+            target = Target;
+        }
+        RefreshPipeModels(target);
+        foreach(var model in PipeModels)
+        {
+            if (model.gameObject.activeSelf == false)
+            {
+                model.gameObject.SetActive(true);
+                model.ClearDebugInfoGos();
+            }
+        }
     }
 
     public void GetPipeInfosEx()

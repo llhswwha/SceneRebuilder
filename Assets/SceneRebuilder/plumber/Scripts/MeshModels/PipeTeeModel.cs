@@ -275,8 +275,8 @@ public class PipeTeeModel : PipeElbowModel
             }
 
             var lineArg = arg.Clone();
-            if (lineArg.pipeSegments < 36)
-                lineArg.pipeSegments = 36;
+            if (lineArg.pipeSegments < 32)
+                lineArg.pipeSegments = 32;
             lineArg.generateEndCaps = true;
 
             GameObject pipe11 = RenderPipeLine(lineArg, afterName+"_1", KeyPointInfo.EndPointIn1, KeyPointInfo.EndPointOut1);
@@ -296,10 +296,13 @@ public class PipeTeeModel : PipeElbowModel
 
             GameObject target = pipeNew;
 
-            if (IsCombineResult)
-            {
-                target = MeshCombineHelper.Combine(pipeNew);
-            }
+            //if (IsCombineResult)
+            //{
+            //    target = MeshCombineHelper.Combine(pipeNew);
+
+            //}
+
+            target=CombineTarget(arg, pipeNew);
             
            
 
@@ -314,6 +317,7 @@ public class PipeTeeModel : PipeElbowModel
         else
         {
             arg.IsGenerateEndWeld = false;
+            arg.generateEndCaps = true;
             GameObject pipe1 = RenderPipeLine(arg, afterName, KeyPointInfo.EndPointOut1, KeyPointInfo.EndPointIn1);
             arg.IsGenerateEndWeld = true;
             GameObject pipe2 = RenderPipeLine(arg, afterName, KeyPointInfo.EndPointIn2, KeyPointInfo.EndPointOut2);
@@ -323,29 +327,31 @@ public class PipeTeeModel : PipeElbowModel
             pipe2.transform.SetParent(pipeNew.transform);
             GameObject target = pipeNew;
 
-            if (IsCombineResult)
-            {
-                List<Transform> welds = new List<Transform>();
-                for(int i=0;i<pipe1.transform.childCount;i++)
-                {
-                    welds.Add(pipe1.transform.GetChild(i));
-                }
-                for (int i = 0; i < pipe2.transform.childCount; i++)
-                {
-                    welds.Add(pipe2.transform.GetChild(i));
-                }
-                foreach(var t in welds)
-                {
-                    t.SetParent(null);
-                }
-                target = MeshCombineHelper.Combine(pipeNew);
+            //if (IsCombineResult)
+            //{
+            //    List<Transform> welds = new List<Transform>();
+            //    for(int i=0;i<pipe1.transform.childCount;i++)
+            //    {
+            //        welds.Add(pipe1.transform.GetChild(i));
+            //    }
+            //    for (int i = 0; i < pipe2.transform.childCount; i++)
+            //    {
+            //        welds.Add(pipe2.transform.GetChild(i));
+            //    }
+            //    foreach(var t in welds)
+            //    {
+            //        t.SetParent(null);
+            //    }
+            //    target = MeshCombineHelper.Combine(pipeNew);
                 
-                foreach (var t in welds)
-                {
-                    t.SetParent(target.transform);
-                }
-            }
-            
+            //    foreach (var t in welds)
+            //    {
+            //        t.SetParent(target.transform);
+            //    }
+            //}
+
+            target = CombineTarget(arg, pipeNew);
+
             target = CopyMeshComponentsEx(target);
 
             this.ResultGo = target;

@@ -391,6 +391,8 @@ public class PipeElbowModel : PipeModelBase
 
     public GameObject CombineTarget(PipeGenerateArg arg, GameObject pipeNew)
     {
+        pipeNew.transform.rotation = this.transform.rotation;
+
         GameObject target = pipeNew;
         if (IsCombineResult)
         {
@@ -460,6 +462,20 @@ public class PipeElbowModel : PipeModelBase
         pipe.IsElbow = true;
         pipe.pipeRadius = (info.EndPointOut1.w + info.EndPointOut2.w) / 2;
         pipe.elbowRadius = pipeArg.elbowRadius;
+        //if (ps.Count == 5)
+        //{
+        //    pipe.elbowRadius = Vector3.Distance(ps[0], ps[2]);
+        //}
+        //else if (ps.Count == 3)
+        //{
+        //    pipe.elbowRadius = Vector3.Distance(ps[0], ps[1]);
+        //}
+        //else
+        //{
+        //    pipe.elbowRadius = pipeArg.elbowRadius;
+        //    Debug.LogError($"RenderElbow ps.Count Error :{ps.Count} go:{this.name}");
+        //}
+
         pipe.avoidStrangling = true;
         pipe.RenderPipe();
 
