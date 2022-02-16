@@ -748,9 +748,13 @@ UnpackPrefab();
 
     public PrefabInfoList AcRTAlignJobsEx(MeshPoints[] meshPoints)
     {
+        if(meshPoints==null|| meshPoints.Length == 0)
+        {
+            return PrefabInfoList;
+        }
         meshPoints = FilterMeshPoints(meshPoints);
 
-        Debug.Log($"AcRTAlignJobsEx Start {meshPoints.Length}");
+        //Debug.Log($"AcRTAlignJobsEx Start {meshPoints.Length}");
         SetAcRTAlignJobSetting();
         SetDistanceSettings();
         UnpackPrefab();
@@ -1502,10 +1506,13 @@ break;
         return AcRTAlignJobsEx(meshFilters.ToArray());
     }
 
-    public PrefabInfoList GetPrefabsOfList<T>(List<T> list, bool align) where T : Component
+    public PrefabInfoList GetPrefabsOfList<T>(List<T> list, bool align,string tag) where T : Component
     {
+        AcRTAlignJobContainer.CurrentLogTag = tag;
         List<MeshPoints> meshFilters = MeshPoints.GetMeshPoints(list);
-        return AcRTAlignJobsEx(meshFilters.ToArray());
+        PrefabInfoList preafabList= AcRTAlignJobsEx(meshFilters.ToArray());
+        AcRTAlignJobContainer.CurrentLogTag = "";
+        return preafabList;
     }
 
     public PrefabInfoList GetPrefabsOfList(GameObject root)

@@ -30,13 +30,9 @@ public class PipeModelBase : PipeModelComponent, IComparable<PipeModelBase>
 
     public float minRepeatPointDistance = 0.00005f;
 
-    private GameObject CreateSubTestObj(string objName, Transform parent)
+    public static GameObject CreateSubTestObj(string objName, Transform parent)
     {
-        GameObject objTriangles = new GameObject(objName);
-        objTriangles.AddComponent<DebugInfoRoot>();
-        objTriangles.transform.SetParent(parent);
-        objTriangles.transform.localPosition = Vector3.zero;
-        return objTriangles;
+        return TransformHelper.CreateSubTestObj(objName, parent);
     }
 
     public void DebugShowKeyPoints()
@@ -69,6 +65,19 @@ public class PipeModelBase : PipeModelComponent, IComparable<PipeModelBase>
         //meshTriangles.ShowSharedPointsByPoint(this.transform, PointScale, 10);
         //meshTriangles.ShowSharedPointsByPointExEx(this.transform, PointScale, sharedMinCount, minRepeatPointDistance);
         meshTriangles.Dispose();
+    }
+
+    public void DebugShowPointGroups()
+    {
+        ClearDebugInfoGos();
+        Mesh mesh = this.GetComponent<MeshFilter>().sharedMesh;
+        //MeshTriangles meshTriangles = new MeshTriangles(mesh);
+
+        //meshTriangles.ShowPointGroups(this.transform, PointScale, 0, 3, minRepeatPointDistance);
+        //meshTriangles.Dispose();
+
+        //MeshHelper.GetPointGroups();
+        
     }
 
 
@@ -827,6 +836,13 @@ public class PipeModelBase : PipeModelComponent, IComparable<PipeModelBase>
 
     //public bool IsNewGo = true;
 
+    public bool IsNoMesh()
+    {
+        MeshRenderer renderer = this.GetComponent<MeshRenderer>();
+        MeshFilter mf = this.GetComponent<MeshFilter>();
+        return renderer == null || mf == null || mf.sharedMesh == null;
+    }
+
     public T GetGenerator<T>(PipeGenerateArg arg, string afterName,bool isNewGo) where T : PipeMeshGeneratorBase
     {
         GameObject pipeNew = null;
@@ -837,9 +853,9 @@ public class PipeModelBase : PipeModelComponent, IComparable<PipeModelBase>
         }
         else
         {
-            MeshRenderer renderer = this.GetComponent<MeshRenderer>();
-            MeshFilter mf = this.GetComponent<MeshFilter>();
-            if (renderer == null || mf == null || mf.sharedMesh == null)
+            //MeshRenderer renderer = this.GetComponent<MeshRenderer>();
+            //MeshFilter mf = this.GetComponent<MeshFilter>();
+            if (IsNoMesh())
             {
                 pipeNew = this.gameObject;
             }
@@ -916,10 +932,10 @@ public class PipeModelBase : PipeModelComponent, IComparable<PipeModelBase>
 
     public GameObject CopyMeshComponentsEx(GameObject target)
     {
-        MeshRenderer meshRenderer = this.GetComponent<MeshRenderer>();
-        if (meshRenderer == null)
+        //MeshRenderer meshRenderer = this.GetComponent<MeshRenderer>();
+        if (IsNoMesh())
         {
-            CopyMeshComponents(target, this.gameObject);
+            MeshHelper.CopyMeshComponents(target, this.gameObject);
             List<Transform> children = new List<Transform>();
             for (int i = 0; i < target.transform.childCount; i++)
             {
@@ -931,20 +947,11 @@ public class PipeModelBase : PipeModelComponent, IComparable<PipeModelBase>
             }
             GameObject.DestroyImmediate(target);
             target = this.gameObject;
+            target.SetActive(true);
         }
         return target;
     }
 
-    public static void CopyMeshComponents(GameObject source, GameObject target)
-    {
-        MeshRenderer meshRenderer1 = source.GetComponent<MeshRenderer>();
-        MeshRenderer meshRenderer2 = target.AddComponent<MeshRenderer>();
-        meshRenderer2.sharedMaterials = meshRenderer1.sharedMaterials;
-
-        MeshFilter meshFilter1 = source.GetComponent<MeshFilter>();
-        MeshFilter meshFilter2 = target.AddComponent<MeshFilter>();
-        meshFilter2.sharedMesh = meshFilter1.sharedMesh;
-    }
 
     internal void RemomveMesh()
     {

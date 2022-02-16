@@ -42,6 +42,49 @@ public class PipeBuilder : MonoBehaviour
 
     public List<Transform> NewPipeList = new List<Transform>();
 
+    public List<Transform> GetModelResult_Line()
+    {
+        return GetModelResults(PipeLines);
+    }
+
+    public List<Transform> GetModelResult_Elbow()
+    {
+        return GetModelResults(PipeElbows);
+    }
+
+    public List<Transform> GetModelResult_Reducer()
+    {
+        return GetModelResults(PipeReducers);
+    }
+
+    public List<Transform> GetModelResult_Flange()
+    {
+        return GetModelResults(PipeFlanges);
+    }
+
+    public List<Transform> GetModelResult_Tee()
+    {
+        return GetModelResults(PipeTees);
+    }
+
+    public List<Transform> GetModelResult_Weldolet()
+    {
+        return GetModelResults(PipeWeldolets);
+    }
+
+    public List<Transform> GetModelResults<T>(List<T> models) where T : PipeModelBase
+    {
+        List<Transform> list = new List<Transform>();
+        foreach (var item in models)
+        {
+            if (item == null) continue;
+            if (item.ResultGo == null) continue;
+            list.Add(item.ResultGo.transform);
+        }
+        return list;
+    }
+
+
     public void ShowOBB()
     {
         OBBCollider oBB = this.gameObject.GetComponent<OBBCollider>();
@@ -229,18 +272,20 @@ public class PipeBuilder : MonoBehaviour
 
             if (IsSaveMaterials)
             {
-                MeshRenderer mf1 = go.GetComponent<MeshRenderer>();
-                MeshRenderer mf2 = pipe.GetComponent<MeshRenderer>();
-                if (mf1 != null && mf2 != null)
+                if (go.gameObject != pipe)
                 {
-                    mf2.sharedMaterials = mf1.sharedMaterials;
+                    MeshRenderer mf1 = go.GetComponent<MeshRenderer>();
+                    MeshRenderer mf2 = pipe.GetComponent<MeshRenderer>();
+                    if (mf1 != null && mf2 != null)
+                    {
+                        mf2.sharedMaterials = mf1.sharedMaterials;
+                    }
+                    if (mf1 != null)
+                    {
+                        generator.pipeMaterial = mf1.sharedMaterial;
+                        go.generateArg.pipeMaterial = mf1.sharedMaterial;
+                    }
                 }
-                if (mf1 != null)
-                {
-                    generator.pipeMaterial = mf1.sharedMaterial;
-                    go.generateArg.pipeMaterial = mf1.sharedMaterial;
-                }
-                
             }
 
             if (IsCopyComponents)
@@ -270,7 +315,11 @@ public class PipeBuilder : MonoBehaviour
 
     public void CombineGeneratedWelds()
     {
-        if (generateArg.generateWeld == false) return;
+        if (generateArg.generateWeld == false)
+        {
+            Debug.LogWarning($"CombineGeneratedWelds generateArg.generateWeld == false");
+            return;
+        }
         DateTime time = DateTime.Now;
         List<Transform> elbowWelds = GetWelds(PipeElbows);
         List<Transform> elbowWelds2 = new List<Transform>(elbowWelds);
@@ -312,7 +361,7 @@ public class PipeBuilder : MonoBehaviour
                 //elbows1.Remove(w2);
                 //elbows1.RemoveAt(i); i--;
                 
-                Debug.Log($"[{i}] w:{w.name} w2:{w2.name} {w==w2} dis:{closedW.dis} min:{minWeldDis}");
+                //Debug.Log($"[{i}] w:{w.name} w2:{w2.name} {w==w2} dis:{closedW.dis} min:{minWeldDis}");
 
                 GameObject.DestroyImmediate(w2.gameObject);
             }
@@ -924,6 +973,11 @@ public class PipeBuilder : MonoBehaviour
         {
             Transform t = ts[i];
             Mesh mesh = t.GetComponent<MeshFilter>().sharedMesh;
+            if (mesh == null)
+            {
+                Debug.LogError($"GetPipeInfosJob_Elbow mesh == null t:{t}");
+                continue;
+            }
             MeshStructure meshS = new MeshStructure(mesh);
             //if (vs.Length == 0) continue;
             count++;

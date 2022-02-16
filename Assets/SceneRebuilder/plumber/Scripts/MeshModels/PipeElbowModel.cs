@@ -361,6 +361,7 @@ public class PipeElbowModel : PipeModelBase
             var lineArg = arg.Clone();
             if(lineArg.pipeSegments<36)
                 lineArg.pipeSegments = 36;
+            lineArg.generateEndCaps = true;
             GameObject pipe1 = RenderPipeLine(lineArg, afterName, KeyPointInfo.EndPointIn1, KeyPointInfo.EndPointOut1);
             GameObject pipe2 = RenderPipeLine(lineArg, afterName, KeyPointInfo.EndPointIn2, KeyPointInfo.EndPointOut2);
             pipe1.transform.SetParent(pipeNew.transform);

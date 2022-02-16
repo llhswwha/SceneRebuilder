@@ -5,6 +5,32 @@ using UnityEngine;
 
 public static class TransformHelper
 {
+    public static GameObject CreateBoxLine(Vector3 p1, Vector3 p2, float size, string n, Transform pt)
+    {
+        GameObject g1 = GameObject.CreatePrimitive(PrimitiveType.Cube);
+        //g1.transform.SetParent(this.transform);
+        //g1.transform.localPosition=(p1+p2)/2;
+        g1.transform.position = (p1 + p2) / 2;
+        g1.transform.forward = p2 - p1;
+        Vector3 scale = new Vector3(size, size, Vector3.Distance(p2, p1));
+        g1.transform.localScale = scale;
+        g1.name = n;
+        //g1.transform.SetParent(this.transform);
+        if (pt != null)
+            g1.transform.SetParent(pt);
+        return g1;
+    }
+
+    public static GameObject CreateSubTestObj(string objName, Transform parent)
+    {
+        GameObject objTriangles = new GameObject(objName);
+        objTriangles.AddComponent<DebugInfoRoot>();
+        objTriangles.transform.SetParent(parent);
+        objTriangles.transform.localPosition = Vector3.zero;
+        objTriangles.transform.localRotation = Quaternion.identity;
+        return objTriangles;
+    }
+
     public static List<Transform> GetChildrenNoLOD(GameObject root)
     {
         List<Transform> list = new List<Transform>();

@@ -421,6 +421,22 @@ public class MeshTriangles
         }
     }
 
+//    public void ShowPointGroups(Transform root, float pointScale, int minCount, int maxCount, float minDis)
+//    {
+//        /*
+//         * 1 找到空间中某点p10，有kdTree找到离他最近的n个点，判断这n个点到p的距离。将距离小于阈值r的点p12,p13,p14....放在类Q里
+//2 在 Q(p10) 里找到一点p12,重复1
+
+//3 在 Q(p10,p12) 找到一点，重复1，找到p22,p23,p24....全部放进Q里
+
+//4 当 Q 再也不能有新点加入了，则完成搜索了
+//————————————————
+//版权声明：本文为CSDN博主「hxxjxw」的原创文章，遵循CC 4.0 BY-SA版权协议，转载请附上原文出处链接及本声明。
+//原文链接：https://blog.csdn.net/hxxjxw/article/details/112689489
+//         */
+
+//    }
+
     public void ShowCirclesById(Transform root, float pointScale, int minCount, int maxCount, float minDis)
     {
         SharedMeshTrianglesList sharedPoints1 = this.GetSharedMeshTrianglesListById(minCount, minDis);
@@ -539,11 +555,7 @@ public class MeshTriangles
 
     private GameObject CreateSubTestObj(string objName, Transform parent)
     {
-        GameObject objTriangles = new GameObject(objName);
-        objTriangles.AddComponent<DebugInfoRoot>();
-        objTriangles.transform.SetParent(parent);
-        objTriangles.transform.localPosition = Vector3.zero;
-        return objTriangles;
+        return TransformHelper.CreateSubTestObj(objName, parent);
     }
 
     public List<MeshTriangle> GetTriangles(int pointId)

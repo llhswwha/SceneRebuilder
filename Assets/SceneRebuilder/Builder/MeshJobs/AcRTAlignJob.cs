@@ -155,7 +155,7 @@ namespace MeshJobs
 
         public MeshPoints mfTo;
 
-        public void DestroyToObject()
+        public void ReplaceToObject(GameObject newGo)
         {
 
             GameObject go = mfTo.gameObject;
@@ -170,10 +170,17 @@ namespace MeshJobs
                 Debug.LogError("DestroyToObject mfTo.gameObject == null");
                 return;
             }
-            go.SetActive(false);
 
-            EditorHelper.UnpackPrefab(go);
-            GameObject.DestroyImmediate(go);
+            //go.SetActive(false);
+            //EditorHelper.UnpackPrefab(go);
+            //GameObject.DestroyImmediate(go);
+
+            go.name += "_New";
+            MeshHelper.CopyTransformMesh(newGo, go);
+
+            //newGo.SetActive(false);
+            GameObject.DestroyImmediate(newGo);
+
         }
 
         public double Time = 0;

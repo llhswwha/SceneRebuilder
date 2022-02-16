@@ -55,7 +55,7 @@ public class SharedMeshInfoList : List<SharedMeshInfo>
 
         InitMeshFilters(meshFilters);
 
-        Debug.Log($"SharedMeshInfoList InitByRoot root:{root} meshFilters:{meshFilters.Length} meshCount:{this.Count}");
+        //Debug.Log($"SharedMeshInfoList InitByRoot root:{root} meshFilters:{meshFilters.Length} meshCount:{this.Count}");
     }
 
     public SharedMeshInfoList(MeshFilter[] mfs)

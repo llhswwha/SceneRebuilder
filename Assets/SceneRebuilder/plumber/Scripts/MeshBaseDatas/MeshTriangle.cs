@@ -122,6 +122,8 @@ public struct MeshTriangle
         //objTriangle.transform.localPosition = TestMeshOffset;
         objTriangle.transform.localPosition = Vector3.zero;
 
+        objTriangle.transform.rotation = root1.transform.rotation;//++;
+
         MeshFilter mf = objTriangle.AddComponent<MeshFilter>();
         MeshRenderer mr = objTriangle.AddComponent<MeshRenderer>();
         mf.sharedMesh = this.GetTriangleMesh();

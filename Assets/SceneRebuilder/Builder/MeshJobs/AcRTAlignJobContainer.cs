@@ -8,6 +8,7 @@ using Unity.Mathematics;
 using UnityEngine.Jobs;
 using System;
 using MeshJobs;
+using System.Text;
 
 public class AcRTAlignJobContainer 
 {
@@ -29,7 +30,7 @@ public class AcRTAlignJobContainer
     public AcRTAlignJobContainer(MeshPoints[] meshFilters,int size, int vertexCountOffset)
     {
         Last = this;
-        Debug.Log($"AcRTAlignJobContainer MeshPoints:{meshFilters.Length} MaxVertexCount:{AcRTAlignJobContainer.MaxVertexCount}");
+        //Debug.Log($"AcRTAlignJobContainer MeshPoints:{meshFilters.Length} MaxVertexCount:{AcRTAlignJobContainer.MaxVertexCount}");
         if(AcRTAlignJobContainer.MaxVertexCount>0)
         {
             List<MeshPoints> mfs=new List<MeshPoints>();
@@ -384,13 +385,13 @@ public class AcRTAlignJobContainer
                 //Debug.Log($"对齐成功 {arg.mfFrom.name} -> {arg.mfTo.name} 距离:{result.Distance}");
                 GameObject newGo = MeshHelper.CopyGO(pref.PrefabInfo.Prefab);
                 //newGo.name = arg.mfTo.name + "_New2";
-                SetNewGoProperties(newGo, arg.mfTo);
+                AcRTAlignJobHelper.SetNewGoProperties(newGo, arg.mfTo);
                 pref.AddInstance(newGo);
                 AcRTAlignJobHelper.RemoveDict(MeshHelper.GetInstanceID(arg.mfTo));//模型都删除了，把缓存的顶点数据也删除
                 
                 disResult.rt.ApplyMatrix(newGo.transform, arg.mfTo.transform); //变换模型
 
-                arg.DestroyToObject();
+                arg.ReplaceToObject(newGo);
             }
             else
             {
@@ -409,30 +410,7 @@ public class AcRTAlignJobContainer
         mfld.RemoveEmpty();//删除
     }
 
-    private void SetNewGoProperties(GameObject newGo, MeshPoints oldGo )
-    {
-        newGo.name = oldGo.name + "_New";
-#if UNITY_EDITOR
-        EditorHelper.CopyAllComponents(oldGo.gameObject, newGo,true,null);
-#endif
-
-        MeshRenderer mf1 = newGo.GetComponent<MeshRenderer>();
-        if (mf1 == null)
-        {
-            Debug.LogError("SetNewGoProperties mf1 == null");
-        }
-        MeshRenderer mf2 = oldGo.gameObject.GetComponent<MeshRenderer>();
-        if (mf2 == null)
-        {
-            Debug.LogError("SetNewGoProperties mf2 == null");
-        }
-        if (mf1 != null && mf2 != null)
-        {
-            mf1.sharedMaterials = mf2.sharedMaterials;
-        }
-
-        //Debug.Log($"SetNewGoProperties mat1:{mf1.sharedMaterial} mat2:{mf2.sharedMaterial} mat3:{oldGo.GetMatId()}");
-    }
+   
 
     public static bool IsCheckResult=false;
 
@@ -446,9 +424,9 @@ public class AcRTAlignJobContainer
 
     List<AcRtAlignJobArg> allArg = new List<AcRtAlignJobArg>();
 
-    public void DoAlignJobResult()
+    public StringBuilder DoAlignJobResult()
     {
-        
+        StringBuilder sb = new StringBuilder();
         for (int k = 0; k < jobIds.Count; k++)
         {
             int id = jobIds[k];
@@ -476,7 +454,7 @@ public class AcRTAlignJobContainer
                     }
 
                     //newGo.name = arg.mfTo.name + "_New";
-                    SetNewGoProperties(newGo, arg.mfTo);
+                    AcRTAlignJobHelper.SetNewGoProperties(newGo, arg.mfTo);
                     pref.AddInstance(newGo);
                     AcRTAlignJobHelper.RemoveDict(MeshHelper.GetInstanceID(arg.mfTo));
                     
@@ -494,12 +472,12 @@ public class AcRTAlignJobContainer
 
                             if (rT != null)
                             {
-                                Debug.Log($"{arg},Mode:{rT.Mode} " + $" Trans:{rT.Translation.Vector3ToString()},Matrix:\n{rT.TransformationMatrix}");
+                                sb.AppendLine($"{arg},Mode:{rT.Mode} " + $" Trans:{rT.Translation.Vector3ToString()},Matrix:\n{rT.TransformationMatrix}");
                                 //Debug.LogError($"Mode:{rT.Mode},Trans:{rT.Translation.Vector3ToString()},Matrix:\n{rT.TransformationMatrix}");
                             }
                             else
                             {
-                                Debug.Log($"{arg} rT==null" );
+                                sb.AppendLine($"{arg} rT==null" );
                             }
 
                             newGo.name += "_Error";
@@ -521,10 +499,10 @@ public class AcRTAlignJobContainer
                             else
                             {
                                 arg.Log = $"对齐成功12 zero:{DistanceSetting.zeroM:F5},disNew:{disNew}";
-                                Debug.Log($"{arg} rT==null");
+                                sb.AppendLine($"{arg} rT==null");
                             }
                             
-                            arg.DestroyToObject();
+                            arg.ReplaceToObject(newGo);
                         }
                     }
                     else
@@ -534,16 +512,16 @@ public class AcRTAlignJobContainer
                         if (rT != null)
                         {
                             arg.Log = $"对齐成功01 zero:{DistanceSetting.zeroM:F5},dis:{rT.Distance},Mode:{rT.Mode}";
-                            Debug.Log($"{arg} " + $" Trans:{rT.Translation.Vector3ToString()},Matrix:\n{rT.TransformationMatrix}");
+                            sb.AppendLine($"{arg} " + $" Trans:{rT.Translation.Vector3ToString()},Matrix:\n{rT.TransformationMatrix}");
                             //Debug.LogError($"Mode:{rT.Mode},Trans:{rT.Translation.Vector3ToString()},Matrix:\n{rT.TransformationMatrix}");
                         }
                         else
                         {
                             arg.Log = $"对齐成功02 zero:{DistanceSetting.zeroM:F5},dis:{rT.Distance}";
-                            Debug.Log($"{arg} rT==null");
+                            sb.AppendLine($"{arg} rT==null");
                         }
                         
-                        arg.DestroyToObject();
+                        arg.ReplaceToObject(newGo);
                     }
                     
                 }
@@ -581,6 +559,14 @@ public class AcRTAlignJobContainer
         
         RemoveNewPrefabMeshFilter();
         mfld.RemoveEmpty();//删除
+
+        string log = sb.ToString();
+        if(!string.IsNullOrEmpty(log))
+        {
+            Debug.Log($"DoAlignJobResult \n{sb}");
+        }
+
+        return sb;
     }
 
     private void RemoveNewPrefabMeshFilter()
@@ -595,6 +581,8 @@ public class AcRTAlignJobContainer
     private int lastPrafabCount = 0;
 
     private int lastProgressCount = 0;
+
+    public static string CurrentLogTag = "";
 
     private bool ShowProgressAndLog(bool isLoopEnd, int jobCount, string tag)
     {
@@ -639,9 +627,9 @@ public class AcRTAlignJobContainer
             Debug.Log($"完成一轮[{loopCount}][{time}s]:\t{loopStartMeshFilterCount - mfCount}={loopStartMeshFilterCount}->{mfCount},Prefab:{prefabInfoList.Count}(+{prefabInfoList.Count - lastPrafabCount}), AlignJob:{AlignJobCount}, DisJob:{AcRTAlignJobExResult.disJobCount} | " + loopInitLog);
             loopTimes += loopTime + ";";
 
-            string logInfo = $"t:{time}ms ,P:{prefabInfoList.Count}(+{prefabInfoList.Count - lastPrafabCount})";
+            string logInfo = $"t:{time} ,P:{prefabInfoList.Count}(+{prefabInfoList.Count - lastPrafabCount})";
 
-            var progressArg = ProgressArg.New($"Align{tag}", progressCount, targetCount, $"{loopCount}|j:{jobCount} d:{mfld.Count} c:{mfCount} {logInfo}", JobHandleList.testProgressArg);
+            var progressArg = ProgressArg.New($"Align{tag}{CurrentLogTag}", progressCount, targetCount, $"{loopCount}|j:{jobCount} d:{mfld.Count} c:{mfCount} {logInfo}", JobHandleList.testProgressArg);
             //AcRTAlignJob.progressArg = progressArg;
             JobHandleList.SetJobProgress(progressArg);
 
@@ -745,30 +733,29 @@ public class AcRTAlignJobContainer
             double allT = 0;
             allArg.Sort();
 
+            StringBuilder sb = new StringBuilder();
             MeshComparer.Instance.SetArg(allArg[0]);
             for (int i = 0; i < allArg.Count && i < 10; i++)
             {
                 AcRtAlignJobArg arg = allArg[i];
-                Debug.Log($"GetPrefabs arg[{i}]:{arg}");
+                sb.AppendLine($"GetPrefabs arg[{i}]:{arg}");
                 allT += arg.Time;
             }
-            Debug.Log($"GetPrefabs allArg:{allArg.Count} allT:{allT} t:{(DateTime.Now - start)}");
+            Debug.Log($"GetPrefabs allArg:{allArg.Count} allT:{allT} t:{(DateTime.Now - start)} \n{sb}");
         }
         else
         {
             Debug.LogWarning($"GetPrefabs allArg.Count == 0 allArg:{allArg.Count}");
         }
 
-
         ProgressBarHelper.ClearProgressBar();
 
         var usedTime=DateTime.Now - start;
-        Debug.LogWarning($"AcRTAlignJobContainer.GetJobs usedTime:{usedTime} Target:{targetCount},Prefab:{prefabInfoList.Count},Job:{totalJobCount}({jobCountDetails}),Loop:{loopCount},Time:{usedTime.TotalSeconds:F2}s({loopTimes})");
+        Debug.Log($"【AcRTAlignJobContainer.GetPrefabs{CurrentLogTag}】 usedTime:{usedTime} Target:{targetCount},Prefab:{prefabInfoList.Count},Job:{totalJobCount}({jobCountDetails}),Loop:{loopCount},Time:{usedTime.TotalSeconds:F2}s({loopTimes})");
         string testLogItem=$"{targetCount}\t{prefabInfoList.Count}\t{totalJobCount}\t{loopCount}\t{usedTime.TotalSeconds:F1}\t{usedTime.ToString()}\tFoundCount:{AcRTAlignJob.totalFoundCount}\tNoFoundCount:{AcRTAlignJob.totalNoFoundCount}\tFoundTime:{AcRTAlignJob.totalFoundTime:F0}\tNoFoundTime:{AcRTAlignJob.totalNoFoundTime:F0}\tAngle:{AcRTAlignJob.AngleCount}\tScale:{AcRTAlignJob.ScaleCount}\tRT:{AcRTAlignJob.RTCount}\tICP:{AcRTAlignJob.ICPCount}";
 
-        Debug.Log($"FoundCount:{AcRTAlignJob.totalFoundCount},NoFoundCount:{AcRTAlignJob.totalNoFoundCount},FoundTime:{AcRTAlignJob.totalFoundTime:F0},NoFoundTime:{AcRTAlignJob.totalNoFoundTime:F0}");
-        Debug.Log($"{prefabInfoList.Count}\t{totalJobCount}\t{loopCount}\t{usedTime.TotalSeconds:F1}\t{AcRTAlignJob.totalFoundCount}\t{AcRTAlignJob.totalNoFoundCount}\t{AcRTAlignJob.totalFoundTime:F0}\t{AcRTAlignJob.totalNoFoundTime:F0}");
-        Debug.LogWarning($"vsDictWorld:{AcRTAlignJobHelper.vsDictWorld.Count},tpDict:{AcRTAlignJobHelper.tpDict.Count}");
+        //Debug.Log($"【AcRTAlignJobContainer.GetPrefabs{CurrentLogTag}】 FoundCount:{AcRTAlignJob.totalFoundCount},NoFoundCount:{AcRTAlignJob.totalNoFoundCount},FoundTime:{AcRTAlignJob.totalFoundTime:F0},NoFoundTime:{AcRTAlignJob.totalNoFoundTime:F0}");
+        //Debug.Log($"【AcRTAlignJobContainer.GetPrefabs{CurrentLogTag}】 vsDictWorld:{AcRTAlignJobHelper.vsDictWorld.Count},tpDict:{AcRTAlignJobHelper.tpDict.Count}");
         AcRTAlignJobHelper.Clear();
 
         MeshAlignJobContainer.PrintTime();
@@ -776,7 +763,7 @@ public class AcRTAlignJobContainer
 
         ReportLog=testLogItem;
 
-        Debug.LogWarning(testLogItem+$"\t{totalTime1:F0},{totalTime2:F0},{totalTime3:F0}({AcRTAlignJob.totalTime1:F0}={AcRigidTransform.totalTime1:F0}+{AcRigidTransform.totalTime2:F0},{AcRTAlignJob.totalTime2:F0},{AcRTAlignJob.totalTime3:F0}),{totalTime4:F0}");
+        Debug.Log(testLogItem+$"\t{totalTime1:F0},{totalTime2:F0},{totalTime3:F0}({AcRTAlignJob.totalTime1:F0}={AcRigidTransform.totalTime1:F0}+{AcRigidTransform.totalTime2:F0},{AcRTAlignJob.totalTime2:F0},{AcRTAlignJob.totalTime3:F0}),{totalTime4:F0}");
         //65	2377	25	3632.2	ms(14.0,84.0,3496.3,17.0)
         return prefabInfoList;
     }
@@ -858,7 +845,7 @@ public class AcRTAlignJobContainer
     {
         DateTime start = DateTime.Now;
         var mfld = new MeshFilterListDict(meshFilters, vertexCountOffset);
-        Debug.Log($"CreateMeshFilterListDict meshFilters:{meshFilters.Length},Time:{(DateTime.Now - start).TotalMilliseconds:F1}ms");
+        //Debug.Log($"CreateMeshFilterListDict meshFilters:{meshFilters.Length},Time:{(DateTime.Now - start).TotalMilliseconds:F1}ms");
         return mfld;
     }
 }

@@ -35,6 +35,13 @@ public class PipeLineModel : PipeModelBase
         return LineInfo.GetEndPoint();
     }
 
+    public void CreateBoxLine()
+    {
+        TransformHelper.CreateBoxLine(GetStartPoint(), GetEndPoint(), PipeRadius*2, this.name + "_BoxLine", this.transform.parent);
+    }
+
+    public static GameObject PipeLineUnitPrefab = null;
+
     public float PipeLength = 0;
 
 

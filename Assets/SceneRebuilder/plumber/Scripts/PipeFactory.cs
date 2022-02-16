@@ -85,173 +85,16 @@ public class PipeFactory : SingletonBehaviour<PipeFactory>
     }
 
 
-
-    public void OneKey(bool isJob)
+    private void GetTargetInfoBefore()
     {
-        DateTime start = DateTime.Now;
-        Target.SetActive(true);
-
         MeshNode meshNode = MeshNode.InitNodes(Target);
         meshNode.GetSharedMeshList();
         TargetInfo = meshNode.GetVertexInfo();
         TargetVertexCount = meshNode.VertexCount;
-
-        this.GetPipeParts();
-
-        int weldsCount = this.PipeWelds.Count;
-
-        if (isJob)
-        {
-            this.GetPipeInfosJob();
-        }
-        else
-        {
-            this.GetPipeInfos();
-        }
-
-        this.ClearGeneratedObjs();
-        this.RendererEachPipes();
-
-        if (IsCheckResult)
-        {
-            if (isJob)
-            {
-                this.CheckResultsJob();
-            }
-            else
-            {
-                this.CheckResults();
-            }
-        }
-
-        this.MovePipes();
-
-        PrefabInfoList pres1 = new PrefabInfoList();
-        PrefabInfoList pres2 = new PrefabInfoList();
-        PrefabInfoList pres3 = new PrefabInfoList();
-
-        if (IsPrefabGos)
-        {
-
-            //AcRTAlignJobSetting.Instance.SetDefault();
-            pres1 = this.PrefabPipes();
-            pres2 = this.PrefabOthers();
-            this.CombineGeneratedWelds();
-            pres3 = this.PrefabWelds();
-
-            AllPrefabs = new PrefabInfoList();
-            AllPrefabs.AddRange(pres1);
-            AllPrefabs.AddRange(pres2);
-            AllPrefabs.AddRange(pres3);
-        }
-        else
-        {
-            this.CombineGeneratedWelds();
-        }
-
-        int lastWeldCount = 0;
-        if (IsReplaceOld)
-        {
-            this.ReplacePipes();
-            List<Transform> weldList=this.ReplaceWelds();
-            lastWeldCount = weldList.Count;
-            if (lastWeldCount > 0)
-            {
-                PrefabInstanceBuilder.Instance.GetPrefabsOfList(weldList, true);
-            }
-        }
-
-
-        //ResultInfo=ShowTargetInfo(Target);
-
-        MeshNode meshNode2 = MeshNode.InitNodes(Target);
-        SharedMeshInfoList sInfo=meshNode2.GetSharedMeshList();
-        ResultInfo = meshNode2.GetVertexInfo();
-        ResultVertexCount = meshNode2.VertexCount;
-        SharedResultVertexCountCount = sInfo.sharedVertexCount;
-
-        Debug.LogError($"OneKey target:{Target.name} arg:({generateArg}) time:{DateTime.Now-start} Models:{newBuilder.PipeModels.Count+PipeOthers.Count+ weldsCount}={newBuilder.PipeModels.Count}+{PipeOthers.Count}+{weldsCount}({lastWeldCount})) Prefabs:{pres1.Count+pres2.Count+ pres3.Count}({pres1.Count}+{pres2.Count}+{pres3.Count}) TargetInfo:{TargetInfo} -> ResultInfo:{ResultInfo} ({ResultVertexCount/TargetVertexCount:P2},{SharedResultVertexCountCount / TargetVertexCount:P2})");
     }
 
-    public void OneKeyEx(bool isJob)
+    private void GetResultInfoAfter()
     {
-        DateTime start = DateTime.Now;
-        Target.SetActive(true);
-
-        MeshNode meshNode = MeshNode.InitNodes(Target);
-        meshNode.GetSharedMeshList();
-        TargetInfo = meshNode.GetVertexInfo();
-        TargetVertexCount = meshNode.VertexCount;
-
-        this.GetPipeParts();
-
-        int weldsCount = this.PipeWelds.Count;
-
-        if (isJob)
-        {
-            this.GetPipeInfosJob();
-        }
-        else
-        {
-            this.GetPipeInfos();
-        }
-
-        this.ClearGeneratedObjs();
-
-        this.RemoveMeshes();//++
-
-        this.RendererEachPipes();
-
-        if (IsCheckResult)
-        {
-            if (isJob)
-            {
-                this.CheckResultsJob();
-            }
-            else
-            {
-                this.CheckResults();
-            }
-        }
-
-        //this.MovePipes();//--
-
-        PrefabInfoList pres1 = new PrefabInfoList();
-        PrefabInfoList pres2 = new PrefabInfoList();
-        PrefabInfoList pres3 = new PrefabInfoList();
-
-        if (IsPrefabGos)
-        {
-
-            //AcRTAlignJobSetting.Instance.SetDefault();
-            pres1 = this.PrefabPipes();
-            pres2 = this.PrefabOthers();
-            this.CombineGeneratedWelds();
-            pres3 = this.PrefabWelds();
-
-            AllPrefabs = new PrefabInfoList();
-            AllPrefabs.AddRange(pres1);
-            AllPrefabs.AddRange(pres2);
-            AllPrefabs.AddRange(pres3);
-        }
-        else
-        {
-            this.CombineGeneratedWelds();
-        }
-
-        int lastWeldCount = 0;
-        if (IsReplaceOld)
-        {
-            //this.ReplacePipes();
-            List<Transform> weldList = this.ReplaceWelds();
-            lastWeldCount = weldList.Count;
-            if (lastWeldCount > 0)
-            {
-                PrefabInstanceBuilder.Instance.GetPrefabsOfList(weldList, true);
-            }
-        }
-
-
         //ResultInfo=ShowTargetInfo(Target);
 
         MeshNode meshNode2 = MeshNode.InitNodes(Target);
@@ -259,8 +102,174 @@ public class PipeFactory : SingletonBehaviour<PipeFactory>
         ResultInfo = meshNode2.GetVertexInfo();
         ResultVertexCount = meshNode2.VertexCount;
         SharedResultVertexCountCount = sInfo.sharedVertexCount;
+    }
 
-        Debug.LogError($"OneKey target:{Target.name} arg:({generateArg}) time:{DateTime.Now - start} Models:{newBuilder.PipeModels.Count + PipeOthers.Count + weldsCount}={newBuilder.PipeModels.Count}+{PipeOthers.Count}+{weldsCount}({lastWeldCount})) Prefabs:{pres1.Count + pres2.Count + pres3.Count}({pres1.Count}+{pres2.Count}+{pres3.Count}) TargetInfo:{TargetInfo} -> ResultInfo:{ResultInfo} ({ResultVertexCount / TargetVertexCount:P2},{SharedResultVertexCountCount / TargetVertexCount:P2})");
+    private int OneKey_GetPipeInfos(bool isJob)
+    {
+        Target.SetActive(true);
+
+        GetTargetInfoBefore();
+
+        this.GetPipeParts();
+
+        int weldsCount = this.PipeWelds.Count;
+
+        if (isJob)
+        {
+            this.GetPipeInfosJob();
+        }
+        else
+        {
+            this.GetPipeInfos();
+        }
+
+        return weldsCount;
+    }
+
+
+
+    private string AfterGeneratePipes(bool isMoveToBuilder,bool isPrefabGos)
+    {
+        if (isMoveToBuilder)
+            this.MovePipes();
+        string pefabLog = "";
+        if (isPrefabGos)
+        {
+            pefabLog = GetPrefabInfoList();
+        }
+        else
+        {
+            this.CombineGeneratedWelds();
+        }
+        return pefabLog;
+    }
+
+    public void OneKey(bool isJob)
+    {
+        //DateTime start = DateTime.Now;
+        //int weldsCount = OneKey_GetPipeInfos(isJob);
+        //OneKeyGeneratePipes(isJob, false);//not removeMesh
+        //string pefabLog = AfterGeneratePipes(true);
+        //int lastWeldCount = ReplaceOldPipeMesh(true);
+        //GetResultInfoAfter();
+        //Debug.LogError($"OneKey target:{Target.name} arg:({generateArg}) time:{DateTime.Now - start} Models:{newBuilder.PipeModels.Count + PipeOthers.Count + weldsCount}={newBuilder.PipeModels.Count}+{PipeOthers.Count}+{weldsCount}({lastWeldCount})) {pefabLog} TargetInfo:{TargetInfo} -> ResultInfo:{ResultInfo} ({ResultVertexCount / TargetVertexCount:P2},{SharedResultVertexCountCount / TargetVertexCount:P2})");
+
+        OneKeyCore(isJob, false, true);
+    }
+
+    public void OneKeyEx(bool isJob)
+    {
+        //DateTime start = DateTime.Now;
+        //int weldsCount = OneKey_GetPipeInfos(isJob);
+        //OneKeyGeneratePipes(isJob, true);//removeMesh
+        //string pefabLog = AfterGeneratePipes(false);//not move
+        //int lastWeldCount = ReplaceOldPipeMesh(false);
+        //GetResultInfoAfter();
+        //Debug.LogError($"OneKey target:{Target.name} arg:({generateArg}) time:{DateTime.Now - start} Models:{newBuilder.PipeModels.Count + PipeOthers.Count + weldsCount}={newBuilder.PipeModels.Count}+{PipeOthers.Count}+{weldsCount}({lastWeldCount})) {pefabLog} TargetInfo:{TargetInfo} -> ResultInfo:{ResultInfo} ({ResultVertexCount / TargetVertexCount:P2},{SharedResultVertexCountCount / TargetVertexCount:P2})");
+        OneKeyCore(isJob, true, false);
+    }
+
+    public void OneKeyCore(bool isJob, bool isRemoveMesh, bool isMoveToBuilder)
+    {
+        DateTime start = DateTime.Now;
+
+        DateTime start1 = DateTime.Now;
+        int weldsCount = OneKey_GetPipeInfos(isJob);
+        TimeSpan getInfoTime = DateTime.Now - start1;
+
+        DateTime start2 = DateTime.Now;
+        OneKeyGeneratePipes(isJob, isRemoveMesh);//removeMesh
+        TimeSpan generateTime = DateTime.Now - start2;
+
+        DateTime start3 = DateTime.Now;
+        string pefabLog = AfterGeneratePipes(isMoveToBuilder, IsPrefabGos);//not move
+        int lastWeldCount = ReplaceOldPipeMesh(false);
+        TimeSpan prefabTime = DateTime.Now - start3;
+
+        GetResultInfoAfter();
+        Debug.LogError($"OneKey target:{Target.name} time:{(DateTime.Now - start).ToString(timeFormat)}({getInfoTime.ToString(timeFormat)}+{generateTime.ToString(timeFormat)}+{prefabTime.ToString(timeFormat)}) arg:({generateArg}) Models:{newBuilder.PipeModels.Count + PipeOthers.Count + weldsCount}={newBuilder.PipeModels.Count}+{PipeOthers.Count}+{weldsCount}({lastWeldCount})) {pefabLog} TargetInfo:{TargetInfo} -> ResultInfo:{ResultInfo} ({ResultVertexCount / TargetVertexCount:P2},{SharedResultVertexCountCount / TargetVertexCount:P2})");
+    }
+
+    public void OneKey_Generate(bool isJob)
+    {
+        int weldsCount = OneKey_GetPipeInfos(isJob);
+        OneKeyGeneratePipes(isJob, false);//removeMesh
+        string pefabLog = AfterGeneratePipes(true,false);//not move
+    }
+
+    private void OneKeyGeneratePipes(bool isJob,bool isRemoveMesh)
+    {
+        this.ClearGeneratedObjs();
+        if(isRemoveMesh)
+            this.RemoveMeshes();//++
+        this.RendererEachPipes();
+        OneKey_CheckResults(isJob);
+    }
+
+    private void OneKey_CheckResults(bool isJob)
+    {
+        if (IsCheckResult)
+        {
+            if (isJob)
+            {
+                this.CheckResultsJob();
+            }
+            else
+            {
+                this.CheckResults();
+            }
+        }
+    }
+
+    public List<Transform> lastWeldList = new List<Transform>();
+
+    private int ReplaceOldPipeMesh(bool isReplacePipes)
+    {
+        int lastWeldCount = 0;
+        if (IsReplaceOld)
+        {
+            if(isReplacePipes)
+                this.ReplacePipes();
+            lastWeldList = this.ReplaceWelds();
+            lastWeldCount = lastWeldList.Count;
+            if (lastWeldCount > 100)
+            {
+                Debug.LogError("ReplaceOldPipeMesh lastWeldCount > 100");
+            }
+            else if (lastWeldCount > 0 && IsPrefabOldWeld)
+            {
+                PrefabInstanceBuilder.Instance.GetPrefabsOfList(lastWeldList, true, "Welds(Old)");
+            }
+        }
+        return lastWeldCount;
+    }
+
+    private string GetPrefabInfoList()
+    {
+        AllPrefabs = new PrefabInfoList();
+
+        DateTime start1 = DateTime.Now;
+        PrefabInfoList pres1 = this.PrefabPipes();
+        AllPrefabs.AddRange(pres1);
+        TimeSpan t1 = DateTime.Now - start1;
+
+        DateTime start2 = DateTime.Now;
+        PrefabInfoList pres2 = new PrefabInfoList();
+        if (IsPrefabOthers)
+        {
+            pres2 = this.PrefabOthers();
+            AllPrefabs.AddRange(pres2);
+        }
+        TimeSpan t2 = DateTime.Now - start2;
+
+        this.CombineGeneratedWelds();
+
+        DateTime start3 = DateTime.Now;
+        PrefabInfoList pres3 = this.PrefabWelds();
+        AllPrefabs.AddRange(pres3);
+        TimeSpan t3 = DateTime.Now - start3;
+        
+        return $"PipeFactory.GetPrefabInfoList Prefabs:{pres1.Count + pres2.Count + pres3.Count}({pres1.Count}+{pres2.Count}+{pres3.Count}) Time:{t1.ToString(timeFormat)}+{t2.ToString(timeFormat)}+{t3.ToString(timeFormat)}";
     }
 
     public PrefabInfoList AllPrefabs = new PrefabInfoList();
@@ -688,12 +697,53 @@ public class PipeFactory : SingletonBehaviour<PipeFactory>
         AcRTAlignJobSetting.Instance.SetDefault();
 
         DateTime start = DateTime.Now;
-        PrefabInfoList prefabs = PrefabInstanceBuilder.Instance.GetPrefabsOfList(newBuilder.PipeGenerators, true);
+
+        //DateTime start1 = DateTime.Now;
+        //PrefabInfoList prefabs1 = PrefabInstanceBuilder.Instance.GetPrefabsOfList(newBuilder.PipeGenerators, true, "_Pipes");
+        //TimeSpan t1 = DateTime.Now - start1;
+
+        PrefabInfoList list = new PrefabInfoList();
+
+        DateTime start1 = DateTime.Now;
+        PrefabInfoList prefabs1 = PrefabInstanceBuilder.Instance.GetPrefabsOfList(newBuilder.GetModelResult_Line(), true, "_Line_1");
+        list.AddRange(prefabs1);
+        TimeSpan t1 = DateTime.Now - start1;
+
+        DateTime start2 = DateTime.Now;
+        PrefabInfoList prefabs2 = PrefabInstanceBuilder.Instance.GetPrefabsOfList(newBuilder.GetModelResult_Elbow(), true, "_Elbow_2");
+        list.AddRange(prefabs2);
+        TimeSpan t2 = DateTime.Now - start2;
+
+        DateTime start3 = DateTime.Now;
+        PrefabInfoList prefabs3 = PrefabInstanceBuilder.Instance.GetPrefabsOfList(newBuilder.GetModelResult_Reducer(), true, "_Reducer_3");
+        list.AddRange(prefabs3);
+        TimeSpan t3 = DateTime.Now - start3;
+
+        DateTime start4 = DateTime.Now;
+        PrefabInfoList prefabs4 = PrefabInstanceBuilder.Instance.GetPrefabsOfList(newBuilder.GetModelResult_Flange(), true, "_Flange_4");
+        list.AddRange(prefabs4);
+        TimeSpan t4 = DateTime.Now - start4;
+
+        DateTime start5 = DateTime.Now;
+        PrefabInfoList prefabs5 = PrefabInstanceBuilder.Instance.GetPrefabsOfList(newBuilder.GetModelResult_Tee(), true, "_Tee_5");
+        list.AddRange(prefabs5);
+        TimeSpan t5 = DateTime.Now - start5;
+
+        DateTime start6 = DateTime.Now;
+        PrefabInfoList prefabs6 = PrefabInstanceBuilder.Instance.GetPrefabsOfList(newBuilder.GetModelResult_Weldolet(), true, "_Weldolet_6");
+        list.AddRange(prefabs6);
+        TimeSpan t6 = DateTime.Now - start6;
+
         var gs = newBuilder.RefreshGenerators(Target);
         newBuilder.RefreshPipeModels(Target);
-        Debug.Log($"PrefabPipes time:{DateTime.Now - start} Pipes:{newBuilder.PipeGenerators.Count} Pipes2:{gs.Count} prefabs:{prefabs.Count}");
-        return prefabs;
+
+        TimeSpan ta = DateTime.Now - start1;
+
+        Debug.LogError($"¡¾PipeFactory.PrefabPipes [{ta.ToString(timeFormat)}]¡¿ Pipes:{newBuilder.PipeGenerators.Count} Pipes2:{gs.Count} prefabs:{list}({prefabs1.Count}+{prefabs2.Count}+{prefabs3.Count}+{prefabs4.Count}+{prefabs5.Count}+{prefabs6.Count}) times:({t1.ToString(timeFormat)}+{t2.ToString(timeFormat)}+{t3.ToString(timeFormat)}+{t4.ToString(timeFormat)}+{t5.ToString(timeFormat)}+{t6.ToString(timeFormat)}+)");
+        return list;
     }
+
+    private static string timeFormat = @"hh\:mm\:ss\:fff";
 
     public bool IsTrySameAngle = true;
 
@@ -711,7 +761,7 @@ public class PipeFactory : SingletonBehaviour<PipeFactory>
         //newBuilder.CombineGeneratedWelds();
         var welds = newBuilder.GetWelds(Target);
         //return new PrefabInfoList();
-        PrefabInfoList prefabs = PrefabInstanceBuilder.Instance.GetPrefabsOfList(welds, true);
+        PrefabInfoList prefabs = PrefabInstanceBuilder.Instance.GetPrefabsOfList(welds, true, "_Welds(New)");
         Debug.Log($"PrefabWelds time:{DateTime.Now - start} Welds:{welds.Count} prefabs:{prefabs.Count}");
 
         AcRTAlignJob.IsTrySameAngle = false;
@@ -722,7 +772,7 @@ public class PipeFactory : SingletonBehaviour<PipeFactory>
     {
         AcRTAlignJobSetting.Instance.SetDefault();
         DateTime start = DateTime.Now;
-        PrefabInfoList prefabs =PrefabInstanceBuilder.Instance.GetPrefabsOfList(PipeOthers, true);
+        PrefabInfoList prefabs =PrefabInstanceBuilder.Instance.GetPrefabsOfList(PipeOthers, true, "_Others");
         PipeOthers.Clear();
         PipeOthers.AddRange(prefabs.GetComponents<Transform>());
         Debug.Log($"PrefabOthers time:{DateTime.Now-start} Others:{this.PipeOthers.Count} prefabs:{prefabs.Count}");
@@ -1010,6 +1060,10 @@ public class PipeFactory : SingletonBehaviour<PipeFactory>
     public bool IsReplaceOld = true;
 
     public bool IsPrefabGos = true;
+
+    public bool IsPrefabOthers = true;
+
+    public bool IsPrefabOldWeld = true;
 
     public bool IsCheckResult = false;
 

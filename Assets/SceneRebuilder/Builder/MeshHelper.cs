@@ -12,6 +12,42 @@ using UnityEngine;
 
 public static class MeshHelper
 {
+    public static void CopyTransformMesh(GameObject source, GameObject target)
+    {
+        CopyMeshComponents(source, target);
+        CopyTransfrom(source.transform, target.transform);
+    }
+
+    public static void CopyTransfrom(Transform source, Transform target)
+    {
+        if (target.parent != source.parent)
+            target.SetParent(source.parent);
+        target.localPosition = source.localPosition;
+        target.localRotation = source.localRotation;
+        target.localScale = source.localScale;
+    }
+
+    public static void CopyMeshComponents(GameObject source, GameObject target)
+    {
+        if (source == null)
+        {
+            Debug.LogError($"CopyMeshComponents source == null target:{target}");
+            return;
+        }
+        if (source == null)
+        {
+            Debug.LogError($"CopyMeshComponents target == null source:{source}");
+            return;
+        }
+        MeshRenderer meshRenderer1 = source.GetComponent<MeshRenderer>();
+        MeshRenderer meshRenderer2 = target.AddMissingComponent<MeshRenderer>();
+        meshRenderer2.sharedMaterials = meshRenderer1.sharedMaterials;
+
+        MeshFilter meshFilter1 = source.GetComponent<MeshFilter>();
+        MeshFilter meshFilter2 = target.AddMissingComponent<MeshFilter>();
+        meshFilter2.sharedMesh = meshFilter1.sharedMesh;
+    }
+
 
     public static Vector3 GetCenterOfList(List<Vector3> list)
     {
@@ -2473,6 +2509,8 @@ public static class MeshHelper
         //for(int i=0;)
 
         GameObject go2Copy = GameObject.Instantiate(go2);
+
+        //EditorHelper.RemoveAllComponents(go2Copy);
 
         //GameObject go2Copy=new GameObject(go2.name);
         

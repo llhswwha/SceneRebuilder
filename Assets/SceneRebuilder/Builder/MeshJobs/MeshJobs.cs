@@ -931,11 +931,11 @@ namespace MeshJobs
 
                             //Debug.Log($"对齐成功 {arg.mfFrom.name} -> {arg.mfTo.name} 距离:{result.Distance}");
                             GameObject newGo = MeshHelper.CopyGO(pref.PrefabInfo.Prefab);
-                            newGo.name = arg.mfTo.name + "_New";
+                            AcRTAlignJobHelper.SetNewGoProperties(newGo, arg.mfTo);
                             pref.AddInstance(newGo);
                             
                             result.ApplyMatrix(newGo.transform, arg.mfTo.transform); //变换模型
-                            arg.DestroyToObject();
+                            arg.ReplaceToObject(newGo);
                         }
                         else
                         {
@@ -1048,7 +1048,7 @@ namespace MeshJobs
                 vc += mf.vertexCount;
             }
             DateTime start = DateTime.Now;
-            Debug.Log("NewAcRTAlignJobsEx:"+meshFilters.Length);
+            //Debug.Log("NewAcRTAlignJobsEx:"+meshFilters.Length);
 
             var parentDict = GetParentDict(meshFilters);
             //1.设置父
@@ -1059,7 +1059,7 @@ namespace MeshJobs
             
             AcRTAlignJobContainer jobContainer=new AcRTAlignJobContainer(meshFilters, size, vertexCountOffset);
             jobContainer.parentDict = parentDict;
-            PrefabInfoList preafbs =jobContainer.GetPrefabs();
+            PrefabInfoList preafbs =jobContainer.GetPrefabs();//核心
 
             RestoreParent(parentDict);
 
@@ -1182,12 +1182,12 @@ namespace MeshJobs
                                 parentDict.Add(newGo.transform, oldTransformParent);
                             }
 
-                            newGo.name = arg.mfTo.name + "_New";
+                            AcRTAlignJobHelper.SetNewGoProperties(newGo, arg.mfTo);
                             prefabInfo.AddInstance(newGo);
                             
                             result.ApplyMatrix(newGo.transform, arg.mfTo.transform); //变换模型
 
-                            arg.DestroyToObject();
+                            arg.ReplaceToObject(newGo);
                         }
                         else
                         {

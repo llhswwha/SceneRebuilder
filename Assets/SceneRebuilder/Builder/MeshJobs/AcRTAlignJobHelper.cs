@@ -14,8 +14,34 @@ namespace MeshJobs
 {
 public static class AcRTAlignJobHelper 
 {
-    
-    public static AcRTAlignJob NewJob(MeshPoints mfFrom, MeshPoints mfTo, int id)
+        public static void SetNewGoProperties(GameObject newGo, MeshPoints oldGo)
+        {
+            newGo.name = oldGo.name + "_New";
+
+//#if UNITY_EDITOR
+//            EditorHelper.CopyAllComponents(oldGo.gameObject, newGo, true, null);
+//#endif
+
+//            MeshRenderer mf1 = newGo.GetComponent<MeshRenderer>();
+//            if (mf1 == null)
+//            {
+//                Debug.LogError("SetNewGoProperties mf1 == null");
+//            }
+//            MeshRenderer mf2 = oldGo.gameObject.GetComponent<MeshRenderer>();
+//            if (mf2 == null)
+//            {
+//                Debug.LogError("SetNewGoProperties mf2 == null");
+//            }
+//            if (mf1 != null && mf2 != null)
+//            {
+//                mf1.sharedMaterials = mf2.sharedMaterials;
+//            }
+
+//            Debug.Log($"SetNewGoProperties mat1:{mf1.sharedMaterial} mat2:{mf2.sharedMaterial} mat3:{oldGo.GetMatId()}");
+        }
+
+
+        public static AcRTAlignJob NewJob(MeshPoints mfFrom, MeshPoints mfTo, int id)
         {
             AcRtAlignJobArg.SaveArg(id, mfFrom, mfTo);
 

@@ -744,6 +744,7 @@ public static class EditorHelper
 
     public static void CopyAllComponents(GameObject fromObj, GameObject targetObj, bool isClearAllOldComponents, params System.Type[] notCopyComponents)
     {
+        if (fromObj == targetObj) return;
         if (isClearAllOldComponents)
         {
             RemoveComponents(targetObj,null);

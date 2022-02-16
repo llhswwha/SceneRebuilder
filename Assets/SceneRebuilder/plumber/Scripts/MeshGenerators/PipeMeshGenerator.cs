@@ -804,7 +804,7 @@ public class PipeMeshGenerator : PipeMeshGeneratorBase
         }
         else
         {
-            Debug.Log($"GenerateElbow go:{this.name} actualTorusRadius:{actualTorusRadius} angle:{angle} radiansPerSegment:{radiansPerSegment} v21:{v21.magnitude} elbowRadius:{elbowRadius} startDir:{startDir} endDir:{endDir}");
+            //Debug.Log($"GenerateElbow go:{this.name} actualTorusRadius:{actualTorusRadius} angle:{angle} radiansPerSegment:{radiansPerSegment} v21:{v21.magnitude} elbowRadius:{elbowRadius} startDir:{startDir} endDir:{endDir}");
         }
 
         

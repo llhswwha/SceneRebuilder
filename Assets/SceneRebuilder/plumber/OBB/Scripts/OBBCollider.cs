@@ -11,6 +11,11 @@ public class OBBCollider : MonoBehaviour
 {
     public static OBBCollider GetOBB(GameObject obj)
     {
+        if (obj == null)
+        {
+            Debug.LogError("OBBCollider.GetOBB obj == null");
+            return null;
+        }
         OBBCollider oBB = obj.GetComponent<OBBCollider>();
         if (oBB == null)
         {
@@ -21,6 +26,11 @@ public class OBBCollider : MonoBehaviour
 
     public static OBBCollider ShowOBB(GameObject obj, bool isGetObbEx)
     {
+        if (obj == null)
+        {
+            Debug.LogError("OBBCollider.ShowOBB obj == null");
+            return null;
+        }
         OBBCollider oBB = GetOBB(obj);
         if (oBB != null)
         {
@@ -40,8 +50,18 @@ public class OBBCollider : MonoBehaviour
         return oBB;
     }
 
-    public static float GetObbDistance(GameObject result,GameObject original)
+    public static float GetObbDistance(GameObject result, GameObject original)
     {
+        if (result == null)
+        {
+            Debug.LogError("GetObbDistance result == null");
+            return 10000;
+        }
+        if (original == null)
+        {
+            Debug.LogError("GetObbDistance original == null");
+            return 10000;
+        }
         OBBCollider oBBCollider1 = ShowOBB(result,false);
         OBBCollider oBBCollider2 = ShowOBBNotUpdate(original, false);
         OrientedBoundingBox obb1 = oBBCollider1.OBB; 
@@ -585,7 +605,7 @@ public class OBBCollider : MonoBehaviour
 
     public float lineSize = 0.01f;
 
-    private Vector3 CreateLine(Vector3 p1,Vector3 p2,string n,Transform pt=null)
+    public Vector3 CreateLine(Vector3 p1,Vector3 p2,string n,Transform pt=null)
     {
         GameObject g1=GameObject.CreatePrimitive(PrimitiveType.Cube);
         //g1.transform.SetParent(this.transform);

@@ -59,6 +59,10 @@ public class PipeModelBaseEditor : Editor
         {
             targetT.DebugShowSharedPoints();
         }
+        if (GUILayout.Button("ShowPointGroups"))
+        {
+            targetT.DebugShowPointGroups();
+        }
         if (GUILayout.Button("ShowKeyPoints"))
         {
             targetT.DebugShowKeyPoints();

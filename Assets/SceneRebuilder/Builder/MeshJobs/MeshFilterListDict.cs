@@ -25,7 +25,8 @@ public class MeshFilterListDict
         if(IsConbined==false)
         {
             IsConbined=true;
-            Debug.Log($"GetMeshFiltersList Start: {list.Count} VertexCountOffset:{VertexCountOffset}");
+            int count1 = list.Count;
+            //Debug.Log($"GetMeshFiltersList Start: {count1} VertexCountOffset:{VertexCountOffset}");
             list.Sort();
             for(int i=0;i<list.Count-1;i++)
             {
@@ -39,7 +40,12 @@ public class MeshFilterListDict
                     Debug.Log($"GetMeshFiltersList mat:{a.MatId} a:{a.vertexCount} b:{b.vertexCount} d:{b.vertexCount - a.vertexCount} dis:{VertexCountOffset}");
                 }
             }
-            Debug.Log($"GetMeshFiltersList End: {list.Count} |Detail:{GetGroupCountDetails()} | CombineDistance:{VertexCountOffset}");
+            int count2 = list.Count;
+            if (count1 != count2)
+            {
+                Debug.Log($"GetMeshFiltersList Start: {count1} VertexCountOffset:{VertexCountOffset} End: {list.Count} |Detail:{GetGroupCountDetails()} | CombineDistance:{VertexCountOffset}");
+            }
+            
         }
         return list;
     }
@@ -100,7 +106,7 @@ public class MeshFilterListDict
             mfl.Add(mf);
         }
 
-        Debug.Log($"MeshFilterListDict meshPoints:{meshPoints.Length} dict:{dict.Count} count:{dict} vertexCountOffset:{vertexCountOffset}");
+        Debug.Log($"MeshFilterListDict meshPoints:{meshPoints.Length} dict:{dict.Count} count:{dict.Count} vertexCountOffset:{vertexCountOffset}");
 
         // for (int i = 0; i < meshCounts.Length; i++)
         // {

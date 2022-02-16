@@ -24,6 +24,10 @@ public class PipeLineModelEditor : PipeModelBaseEditor
         {
             targetT.CreateWeld();
         }
+        if (GUILayout.Button("CreateBoxLine"))
+        {
+            targetT.CreateBoxLine();
+        }
         GUILayout.EndHorizontal();
 
         base.OnInspectorGUI();

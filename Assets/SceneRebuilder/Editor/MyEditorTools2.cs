@@ -4,13 +4,49 @@ using System.Collections.Generic;
 
 public class MyEditorTools2
 {
+    #region GameObject
+    [MenuItem("SceneTools/GameObject/Copy")]
+    public static void CopyGameObject()
+    {
+        GameObject go=MeshHelper.CopyGO(Selection.activeGameObject);
+        go.name += "_Copy";
+    }
+    #endregion
+
+    #region Pipe
+    [MenuItem("SceneTools/PipeSystem/OneKeyEx(Job)")]
+    public static void PipeOneKeyExJob()
+    {
+        PipeFactory.Instance.Target = Selection.activeGameObject;
+        PipeFactory.Instance.OneKeyEx(true);
+    }
+    [MenuItem("SceneTools/PipeSystem/Generate")]
+    public static void PipeGenerate()
+    {
+        PipeFactory.Instance.Target = Selection.activeGameObject;
+        PipeFactory.Instance.OneKey_Generate(true);
+    }
+    [MenuItem("SceneTools/PipeSystem/Setting")]
+    public static void PipeSetting()
+    {
+        EditorHelper.SelectObject(PipeFactory.Instance.gameObject);
+    }
+
+    [MenuItem("SceneTools/PipeSystem/Window")]
+    public static void ShowWindow()
+    {
+        PipeFactoryEditorWindow.ShowWindow();
+    }
+
+    #endregion
+
     #region Mesh 
-    [MenuItem("Tools/LOD/SetSetting")]
+    [MenuItem("SceneTools/LOD/SetSetting")]
     public static void LODSetSetting()
     {
         EditorHelper.SelectObject(LODManager.Instance.gameObject);
     }
-    [MenuItem("Tools/LOD/SetLODDev")]
+    [MenuItem("SceneTools/LOD/SetLODDev")]
     public static void SetLODDev()
     {
         for (int i = 0; i < Selection.gameObjects.Length; i++)
@@ -30,25 +66,65 @@ public class MyEditorTools2
 
 
     #region Mesh 
-    [MenuItem("Tools/Mesh/Combine")]
+    [MenuItem("SceneTools/Mesh/Combine")]
     public static void CombineMesh()
     {
         MeshCombiner.Instance.CombineToOne(Selection.activeGameObject);
     }
-    [MenuItem("Tools/Mesh/Split")]
+    [MenuItem("SceneTools/Mesh/Split")]
     public static void SplitMesh()
     {
         MeshCombineHelper.SplitByMaterials(Selection.activeGameObject, false);
     }
+    [MenuItem("SceneTools/Mesh/ShowAll")]
+    public static void ShowAllMesh()
+    {
+        var meshRenderers = GameObject.FindObjectsOfType<MeshRenderer>();
+        SetEnbled(meshRenderers, true);
+    }
+    [MenuItem("SceneTools/Mesh/HideAll")]
+    public static void HideAllMesh()
+    {
+        var meshRenderers = GameObject.FindObjectsOfType<MeshRenderer>();
+        SetEnbled(meshRenderers, false);
+    }
+    [MenuItem("SceneTools/Mesh/ShowSelection")]
+    public static void ShowSelectionMesh()
+    {
+        var meshRenderers = Selection.activeGameObject.GetComponentsInChildren<MeshRenderer>(true);
+        SetEnbled(meshRenderers, true);
+    }
+    [MenuItem("SceneTools/Mesh/HideSelection")]
+    public static void HideSelectionMesh()
+    {
+        var meshRenderers = Selection.activeGameObject.GetComponentsInChildren<MeshRenderer>(true);
+        SetEnbled(meshRenderers, false);
+    }
+
+    [MenuItem("SceneTools/Mesh/HideOthers")]
+    public static void HideOthersMesh()
+    {
+        HideAllMesh();
+        ShowSelectionMesh();
+    }
+
+    private static void SetEnbled(MeshRenderer[] meshRenderers,bool isEnabled)
+    {
+        foreach (var mr in meshRenderers)
+        {
+            mr.enabled = isEnabled;
+        }
+    }
+
     #endregion
 
     #region Prefab
-    [MenuItem("Tools/Prefab/SetSetting")]
+    [MenuItem("SceneTools/Prefab/SetSetting")]
     public static void PrefabSetSetting()
     {
         EditorHelper.SelectObject(PrefabInstanceBuilder.Instance.gameObject);
     }
-    [MenuItem("Tools/Prefab/InitMeshNodes")]
+    [MenuItem("SceneTools/Prefab/InitMeshNodes")]
     public static void InitMeshNodes()
     {
         for (int i = 0; i < Selection.gameObjects.Length; i++)
@@ -63,43 +139,43 @@ public class MyEditorTools2
         ProgressBarHelper.ClearProgressBar();
     }
 
-    [MenuItem("Tools/Prefab/GetTargetGos")]
+    [MenuItem("SceneTools/Prefab/GetTargetGos")]
     public static void GetTargetGos()
     {
         GetTargetGos(PrefabInstanceBuilder.Instance.vertexCountOffset);
     }
 
-    [MenuItem("Tools/Prefab/InitInstancesDict")]
+    [MenuItem("SceneTools/Prefab/InitInstancesDict")]
     public static void InitInstancesDict()
     {
         MeshPrefabInstance.InitInstancesDict();
     }
 
-[MenuItem("Tools/Prefab/GetTargetGos(0)")]
+[MenuItem("SceneTools/Prefab/GetTargetGos(0)")]
     public static void GetTargetGos0()
     {
         GetTargetGos(0);
     }
 
-    [MenuItem("Tools/Prefab/GetTargetGos(5)")]
+    [MenuItem("SceneTools/Prefab/GetTargetGos(5)")]
     public static void GetTargetGos5()
     {
         GetTargetGos(5);
     }
 
-    [MenuItem("Tools/Prefab/GetTargetGos(10)")]
+    [MenuItem("SceneTools/Prefab/GetTargetGos(10)")]
     public static void GetTargetGos10()
     {
         GetTargetGos(10);
     }
 
-    [MenuItem("Tools/Prefab/GetTargetGos(50)")]
+    [MenuItem("SceneTools/Prefab/GetTargetGos(50)")]
     public static void GetTargetGos50()
     {
         GetTargetGos(50);
     }
 
-    [MenuItem("Tools/Prefab/GetTargetGos(100)")]
+    [MenuItem("SceneTools/Prefab/GetTargetGos(100)")]
     public static void GetTargetGos100()
     {
         GetTargetGos(100);
@@ -120,7 +196,7 @@ public class MyEditorTools2
         ProgressBarHelper.ClearProgressBar();
     }
 
-    [MenuItem("Tools/Prefab/GetPrefabInfos")]
+    [MenuItem("SceneTools/Prefab/GetPrefabInfos")]
     public static void GetPrefabInfos()
     {
         AcRTAlignJobSetting.Instance.SetDefault();
@@ -137,7 +213,7 @@ public class MyEditorTools2
         }
         ProgressBarHelper.ClearProgressBar();
     }
-    [MenuItem("Tools/Prefab/RemoveNew")]
+    [MenuItem("SceneTools/Prefab/RemoveNew")]
     public static void RemoveNew()
     {
         MeshHelper.RemoveNew(Selection.activeGameObject);
@@ -147,7 +223,7 @@ public class MyEditorTools2
 
     #region SubScene
 
-    [MenuItem("Tools/SubScene/CreateSubScenes")]
+    [MenuItem("SceneTools/SubScene/CreateSubScenes")]
     public static void CreateSubScenes()
     {
         for (int i = 0; i < Selection.gameObjects.Length; i++)
@@ -169,7 +245,7 @@ public class MyEditorTools2
         ProgressBarHelper.ClearProgressBar();
     }
 
-    [MenuItem("Tools/SubScene/CreateSubScenes(Children)")]
+    [MenuItem("SceneTools/SubScene/CreateSubScenes(Children)")]
     public static void CreateSubScenes_Children()
     {
         for (int i = 0; i < Selection.gameObjects.Length; i++)
@@ -195,19 +271,19 @@ public class MyEditorTools2
         ProgressBarHelper.ClearProgressBar();
     }
 
-    [MenuItem("Tools/SubScene/Clear")]
+    [MenuItem("SceneTools/SubScene/Clear")]
     public static void ClearSubScenes()
     {
         ClearComponents<SubScene_Single>();
     }
 
-    [MenuItem("Tools/SubScene/ClearOtherScenes")]
+    [MenuItem("SceneTools/SubScene/ClearOtherScenes")]
     public static void ClearOtherScenes()
     {
         EditorHelper.ClearOtherScenes();
     }
 
-    [MenuItem("Tools/SubScene/LoadSubScenes(All)")]
+    [MenuItem("SceneTools/SubScene/LoadSubScenes(All)")]
     public static void LoadSubScenes_All()
     {
         SubScene_Single[] scenes = GameObject.FindObjectsOfType<SubScene_Single>();
@@ -244,31 +320,31 @@ public class MyEditorTools2
         }
     }
 
-    [MenuItem("Tools/Clear/ClearRId")]
+    [MenuItem("SceneTools/Clear/ClearRId")]
     public static void ClearRendererId()
     {
         ClearComponents<RendererId>();
     }
 
-    [MenuItem("Tools/Clear/ClearMeshNode")]
+    [MenuItem("SceneTools/Clear/ClearMeshNode")]
     public static void ClearMeshNode()
     {
         ClearComponents<MeshNode>();
     }
 
-    [MenuItem("Tools/Clear/ClearRendererInfo")]
+    [MenuItem("SceneTools/Clear/ClearRendererInfo")]
     public static void ClearRendererInfo()
     {
         ClearComponents<MeshRendererInfo>();
     }
 
-    [MenuItem("Tools/Clear/ClearGenerators")]
+    [MenuItem("SceneTools/Clear/ClearGenerators")]
     public static void ClearGenerators()
     {
         ClearComponents<PipeMeshGeneratorBase>();
     }
 
-    [MenuItem("Tools/Clear/ClearGeneratorArgs")]
+    [MenuItem("SceneTools/Clear/ClearGeneratorArgs")]
     public static void ClearGeneratorArgs()
     {
         foreach (var obj in Selection.gameObjects)
@@ -283,13 +359,13 @@ public class MyEditorTools2
         }
     }
 
-    [MenuItem("Tools/Clear/ClearPipeModels")]
+    [MenuItem("SceneTools/Clear/ClearPipeModels")]
     public static void ClearPipeModels()
     {
         ClearComponents<PipeModelComponent>();
     }
 
-    [MenuItem("Tools/Clear/ClearMeshComponents")]
+    [MenuItem("SceneTools/Clear/ClearMeshComponents")]
     public static void ClearMeshComponents()
     {
         ClearComponents<MeshFilter>();
@@ -297,7 +373,7 @@ public class MyEditorTools2
     }
 
 
-    [MenuItem("Tools/Clear/ClearMesh")]
+    [MenuItem("SceneTools/Clear/ClearMesh")]
     public static void ClearMesh()
     {
         foreach (var obj in Selection.gameObjects)
@@ -312,7 +388,7 @@ public class MyEditorTools2
     }
 
 
-    [MenuItem("Tools/Clear/ClearScripts")]
+    [MenuItem("SceneTools/Clear/ClearScripts")]
     public static void ClearScripts()
     {
         ClearComponents<MonoBehaviour>();
@@ -330,14 +406,14 @@ public class MyEditorTools2
 
     #region Transform
 
-    [MenuItem("Tools/Transform/SelectParent")]
+    [MenuItem("SceneTools/Transform/SelectParent")]
     public static void SelectParent()
     {
         GameObject go = Selection.activeGameObject;
         EditorHelper.SelectObject(go.transform.parent);
     }
 
-    [MenuItem("Tools/Transform/RootParent")]
+    [MenuItem("SceneTools/Transform/RootParent")]
     public static void RootParent()
     {
         GameObject go = Selection.activeGameObject;
@@ -346,7 +422,7 @@ public class MyEditorTools2
         EditorHelper.SelectObject(go);
     }
 
-    [MenuItem("Tools/Transform/UpParent")]
+    [MenuItem("SceneTools/Transform/UpParent")]
     public static void UpParent()
     {
         GameObject go = Selection.activeGameObject;
@@ -355,7 +431,7 @@ public class MyEditorTools2
         EditorHelper.SelectObject(go);
     }
 
-    [MenuItem("Tools/Transform/X10")]
+    [MenuItem("SceneTools/Transform/X10")]
     public static void TransformX10()
     {
         foreach (var obj in Selection.gameObjects)
@@ -365,7 +441,7 @@ public class MyEditorTools2
         }
     }
 
-    [MenuItem("Tools/Transform/D100Ex_P")]
+    [MenuItem("SceneTools/Transform/D100Ex_P")]
     public static void TransformD100Ex_P()
     {
         foreach (var obj in Selection.gameObjects)
@@ -393,7 +469,7 @@ public class MyEditorTools2
         }
     }
 
-    [MenuItem("Tools/Transform/X10C")]
+    [MenuItem("SceneTools/Transform/X10C")]
     public static void TransformX10C()
     {
         foreach (var obj in Selection.gameObjects)
@@ -406,7 +482,7 @@ public class MyEditorTools2
         }
     }
 
-    [MenuItem("Tools/Transform/D10C_S")]
+    [MenuItem("SceneTools/Transform/D10C_S")]
     public static void TransformD10C_S()
     {
         foreach (var obj in Selection.gameObjects)
@@ -421,7 +497,7 @@ public class MyEditorTools2
         }
     }
 
-    [MenuItem("Tools/Transform/D10C_PS")]
+    [MenuItem("SceneTools/Transform/D10C_PS")]
     public static void TransformD10C_PS()
     {
         foreach (var obj in Selection.gameObjects)
@@ -437,7 +513,7 @@ public class MyEditorTools2
         }
     }
 
-    [MenuItem("Tools/Transform/D10C_P")]
+    [MenuItem("SceneTools/Transform/D10C_P")]
     public static void TransformD10C_P()
     {
         foreach (var obj in Selection.gameObjects)
@@ -452,7 +528,7 @@ public class MyEditorTools2
         }
     }
 
-    [MenuItem("Tools/Transform/D10_P")]
+    [MenuItem("SceneTools/Transform/D10_P")]
     public static void TransformD10_P()
     {
         foreach (var obj in Selection.gameObjects)
@@ -462,7 +538,7 @@ public class MyEditorTools2
         }
     }
 
-    [MenuItem("Tools/Transform/D100_P")]
+    [MenuItem("SceneTools/Transform/D100_P")]
     public static void TransformD100_P()
     {
         foreach (var obj in Selection.gameObjects)
@@ -472,7 +548,7 @@ public class MyEditorTools2
         }
     }
 
-    [MenuItem("Tools/Transform/APP")]
+    [MenuItem("SceneTools/Transform/APP")]
     public static void TransformAPP()
     {
         foreach (var obj in Selection.gameObjects)
@@ -483,7 +559,7 @@ public class MyEditorTools2
         }
     }
 
-    [MenuItem("Tools/Transform/CSPP")]
+    [MenuItem("SceneTools/Transform/CSPP")]
     public static void TransformCSPP()
     {
         foreach (var obj in Selection.gameObjects)
@@ -498,7 +574,7 @@ public class MyEditorTools2
         }
     }
 
-    [MenuItem("Tools/Transform/GetPositionOffset")]
+    [MenuItem("SceneTools/Transform/GetPositionOffset")]
     public static void GetPositionOffset()
     {
         var allT = GameObject.FindObjectsOfType<Transform>();
@@ -516,7 +592,7 @@ public class MyEditorTools2
         }
     }
 
-    [MenuItem("Tools/Transform/SetParentNull")]
+    [MenuItem("SceneTools/Transform/SetParentNull")]
     public static void SetParentNull()
     {
         var allT = GameObject.FindObjectsOfType<Transform>();
@@ -526,7 +602,7 @@ public class MyEditorTools2
         }
     }
 
-    [MenuItem("Tools/Transform/Reset")]
+    [MenuItem("SceneTools/Transform/Reset")]
     public static void Reset()
     {
         var allT = GameObject.FindObjectsOfType<Transform>();
@@ -537,7 +613,7 @@ public class MyEditorTools2
         }
     }
 
-    [MenuItem("Tools/Transform/LayoutX10")]
+    [MenuItem("SceneTools/Transform/LayoutX10")]
     public static void LayoutX10()
     {
         var allT = GameObject.FindObjectsOfType<Transform>();
@@ -548,7 +624,7 @@ public class MyEditorTools2
             obj.transform.position = Vector3.zero+i*Vector3.forward*1f;
         }
     }
-    [MenuItem("Tools/Transform/LayoutX05")]
+    [MenuItem("SceneTools/Transform/LayoutX05")]
     public static void LayoutX05()
     {
         var allT = GameObject.FindObjectsOfType<Transform>();
@@ -559,7 +635,7 @@ public class MyEditorTools2
             obj.transform.position = Vector3.zero + i * Vector3.forward * 0.5f;
         }
     }
-    [MenuItem("Tools/Transform/LayoutX01")]
+    [MenuItem("SceneTools/Transform/LayoutX01")]
     public static void LayoutX01()
     {
         var allT = GameObject.FindObjectsOfType<Transform>();
@@ -572,7 +648,7 @@ public class MyEditorTools2
     }
     #endregion
 
-    [MenuItem("Tools/Renderers/ShowSelection")]
+    [MenuItem("SceneTools/Renderers/ShowSelection")]
     public static void ShowSelectionRenderers()
     {
         foreach (var obj in Selection.gameObjects)
@@ -585,7 +661,7 @@ public class MyEditorTools2
         }
     }
 
-    [MenuItem("Tools/Renderers/HideSelection")]
+    [MenuItem("SceneTools/Renderers/HideSelection")]
     public static void HideSelectionRenders()
     {
         foreach (var obj in Selection.gameObjects)
@@ -598,7 +674,7 @@ public class MyEditorTools2
         }
     }
 
-    [MenuItem("Tools/Renderers/ShowAll")]
+    [MenuItem("SceneTools/Renderers/ShowAll")]
     public static void ShowAllRenderers()
     {
         foreach (var obj in Selection.gameObjects)
@@ -611,7 +687,7 @@ public class MyEditorTools2
         }
     }
 
-    [MenuItem("Tools/Renderers/HideAll")]
+    [MenuItem("SceneTools/Renderers/HideAll")]
     public static void HideAllRenderers()
     {
         foreach (var obj in Selection.gameObjects)
@@ -627,7 +703,7 @@ public class MyEditorTools2
     /// <summary>
     /// 自动计算所有子对象包围盒
     /// </summary>
-    [MenuItem("Tools/Collider/AddBoxCollider")]
+    [MenuItem("SceneTools/Collider/AddBoxCollider")]
     public static void AddBoxCollider()
     {
         //Transform parent = Selection.activeGameObject.transform;
@@ -642,7 +718,7 @@ public class MyEditorTools2
     /// <summary>
     /// 自动计算所有子对象包围盒
     /// </summary>
-    [MenuItem("Tools/Collider/AddBoxCollider_IsTrigger")]
+    [MenuItem("SceneTools/Collider/AddBoxCollider_IsTrigger")]
     public static void AddBoxCollider_IsTrigger()
     {
         //Transform parent = Selection.activeGameObject.transform;
@@ -659,7 +735,7 @@ public class MyEditorTools2
     /// <summary>
     /// 自动计算所有子对象包围盒
     /// </summary>
-    [MenuItem("Tools/Collider/AddBoxCollider_IsTrigger_NotRemoveChild")]
+    [MenuItem("SceneTools/Collider/AddBoxCollider_IsTrigger_NotRemoveChild")]
     public static void AddBoxCollider_IsTrigger_NotRemoveChild()
     {
         //Transform parent = Selection.activeGameObject.transform;
@@ -676,7 +752,7 @@ public class MyEditorTools2
     /// <summary>
     /// 添加所有的MeshCollider
     /// </summary>
-    [MenuItem("Tools/Collider/AddAllMeshCollider")]
+    [MenuItem("SceneTools/Collider/AddAllMeshCollider")]
     public static void AddAllMeshCollider()
     {
         Transform parent = Selection.activeGameObject.transform;
