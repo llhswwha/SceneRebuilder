@@ -19,7 +19,7 @@ public class PipeLineModel : PipeModelBase
 
     public PipeLineInfo LineInfo = new PipeLineInfo();
 
-    public Vector3 GetStartPoint()
+    public override Vector3 GetStartPoint()
     {
         //return StartPoint + this.transform.position;
         //return StartPoint;
@@ -27,7 +27,7 @@ public class PipeLineModel : PipeModelBase
         return LineInfo.GetStartPoint();
     }
 
-    public Vector3 GetEndPoint()
+    public override Vector3 GetEndPoint()
     {
         //return EndPoint + this.transform.position;
         //return EndPoint;
@@ -35,12 +35,10 @@ public class PipeLineModel : PipeModelBase
         return LineInfo.GetEndPoint();
     }
 
-    public void CreateBoxLine()
-    {
-        TransformHelper.CreateBoxLine(GetStartPoint(), GetEndPoint(), PipeRadius*2, this.name + "_BoxLine", this.transform.parent);
-    }
-
-    public static GameObject PipeLineUnitPrefab = null;
+    //public void CreateBoxLine()
+    //{
+    //    TransformHelper.CreateBoxLine(GetStartPoint(), GetEndPoint(), PipeRadius*2, this.name + "_BoxLine", this.transform.parent);
+    //}
 
     public float PipeLength = 0;
 
@@ -678,6 +676,7 @@ public class PipeLineModel : PipeModelBase
 
     public override GameObject RendererModel(PipeGenerateArg arg, string afterName)
     {
+        this.generateArg = arg;
         if (IsGetInfoSuccess == false)
         {
             Debug.LogWarning($"PipeLineModel.RendererModel IsGetInfoSuccess == false model:{this.name}");
@@ -706,36 +705,86 @@ public class PipeLineModel : PipeModelBase
             return null;
         }
 
-
-
-        PipeMeshGenerator pipe = GetGenerator<PipeMeshGenerator>(arg, afterName,false);
-
-        if (pipe == null)
+        if(PipeFactory.Instance.IsCreatePipeByUnityPrefab)
         {
-            Debug.LogError($"PipeLineModel.RendererModel pipe == null model:{this.name}");
-            return null;
+            var go = CreateModelByPrefabMesh();
+
+            PipeMeshGenerator pipe = GetGenerator<PipeMeshGenerator>(arg, afterName, true);
+            //PipeMeshGenerator pipe = go.AddMissingComponent<PipeMeshGenerator>();
+            SetPipeLineGeneratorArg(pipe, arg, LineInfo.StartPoint, LineInfo.EndPoint);
+            pipe.IsOnlyWeld = true;//只创建焊缝
+            pipe.RenderPipe();
+
+            PipeMeshGenerator pipe2 = go.AddMissingComponent<PipeMeshGenerator>();
+            foreach(GameObject w in pipe.Welds)
+            {
+                w.transform.SetParent(go.transform);
+                pipe2.AddWeld(w);
+            }
+            GameObject.DestroyImmediate(pipe.gameObject);
+            ResultGo = go;
+            return go.gameObject;
         }
-
-        pipe.points = new List<Vector3>() { LineInfo.StartPoint, LineInfo.EndPoint };
-        arg.SetArg(pipe);
-        var radius = (LineInfo.StartPoint.w + LineInfo.EndPoint.w) / 2;
-        pipe.pipeRadius = radius;
-        pipe.pipeRadius1 = radius;
-        pipe.pipeRadius2 = radius;
-        pipe.IsGenerateEndWeld = true;
-        pipe.generateEndCaps = false;
-
-        if (radius < 0.01)
+        else
         {
-            //pipe.weldRadius = 0.003f;
-            pipe.weldPipeRadius = arg.weldRadius * 0.6f;
+            PipeMeshGenerator pipe = GetGenerator<PipeMeshGenerator>(arg, afterName, false);
+            if (pipe == null)
+            {
+                Debug.LogError($"PipeLineModel.RendererModel pipe == null model:{this.name}");
+                return null;
+            }
+            SetPipeLineGeneratorArg(pipe,arg, LineInfo.StartPoint, LineInfo.EndPoint);
+            pipe.RenderPipe();
+            //var pipe = CreateModelByPrefabMesh();
+            return pipe.gameObject;
         }
-
-        pipe.RenderPipe();
-
+    }
 
 
-        return pipe.gameObject;
+
+    
+
+    public Vector3 GetCenter()
+    {
+        return (GetStartPoint() + GetEndPoint()) / 2;
+    }
+
+    public Vector3 GetDirection()
+    {
+        return GetStartPoint() - GetEndPoint() / 2;
+    }
+
+    public override GameObject CreateModelByPrefab()
+    {
+        if (ResultGo!=null && ResultGo!=this.gameObject)
+        {
+            GameObject.DestroyImmediate(ResultGo);
+        }
+        
+        GameObject prefab = GameObject.Instantiate(PipeFactory.Instance.GetPipeModelUnitPrefab_Line());
+        prefab.SetActive(true);
+        prefab.name = this.name + "_New2";
+        SetPrefabTransfrom(prefab);
+        prefab.transform.SetParent(this.transform.parent);
+        ResultGo = prefab;
+        return prefab;
+    }
+
+    public override GameObject CreateModelByPrefabMesh()
+    {
+        if (ResultGo != null && ResultGo != this.gameObject)
+        {
+            GameObject.DestroyImmediate(ResultGo);
+        }
+        ClearDebugInfoGos();
+
+        GameObject prefab = this.gameObject;
+        prefab.SetActive(true);
+        prefab.name = this.name + "_New3";
+        SetPrefabTransfrom(prefab);
+        prefab.GetComponent<MeshFilter>().sharedMesh = PipeFactory.Instance.GetPipeModelUnitPrefabMesh_Line();
+        ResultGo = prefab;
+        return prefab;
     }
 
     public override void AddConnectedModel(PipeModelBase other)

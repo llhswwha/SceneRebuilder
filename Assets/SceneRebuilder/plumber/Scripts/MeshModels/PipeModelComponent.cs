@@ -4,6 +4,15 @@ using UnityEngine;
 
 public class PipeModelComponent : MonoBehaviour
 {
+    public virtual GameObject CreateModelByPrefab()
+    {
+        return null;
+    }
+    public virtual GameObject CreateModelByPrefabMesh()
+    {
+        return null;
+    }
+
     public PipeGenerateArg generateArg = new PipeGenerateArg();
 
     public GameObject ResultGo = null;

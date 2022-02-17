@@ -59,10 +59,10 @@ public class PipeModelBaseEditor : Editor
         {
             targetT.DebugShowSharedPoints();
         }
-        if (GUILayout.Button("ShowPointGroups"))
-        {
-            targetT.DebugShowPointGroups();
-        }
+        //if (GUILayout.Button("ShowPointGroups"))
+        //{
+        //    targetT.DebugShowPointGroups();
+        //}
         if (GUILayout.Button("ShowKeyPoints"))
         {
             targetT.DebugShowKeyPoints();
@@ -85,6 +85,21 @@ public class PipeModelBaseEditor : Editor
         if (GUILayout.Button("ResultGo"))
         {
             EditorHelper.SelectObject(targetT.ResultGo);
+        }
+        GUILayout.EndHorizontal();
+
+        GUILayout.BeginHorizontal();
+        if (GUILayout.Button("CreateBoxLine"))
+        {
+            targetT.CreateBoxLine();
+        }
+        if (GUILayout.Button("CreateByPrefab"))
+        {
+            targetT.CreateModelByPrefab();
+        }
+        if (GUILayout.Button("CreateByPrefabMesh"))
+        {
+            targetT.CreateModelByPrefabMesh();
         }
         GUILayout.EndHorizontal();
     }

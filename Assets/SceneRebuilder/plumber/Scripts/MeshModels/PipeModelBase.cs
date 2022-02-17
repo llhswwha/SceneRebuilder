@@ -5,6 +5,53 @@ using UnityEngine;
 
 public class PipeModelBase : PipeModelComponent, IComparable<PipeModelBase>
 {
+    public virtual Vector3 GetStartPoint()
+    {
+        return Vector3.zero;
+    }
+
+    public virtual Vector3 GetEndPoint()
+    {
+        return Vector3.zero;
+    }
+
+    public virtual void CreateBoxLine()
+    {
+        TransformHelper.CreateBoxLine(GetStartPoint(), GetEndPoint(), PipeRadius * 2, this.name + "_BoxLine", this.transform.parent);
+    }
+
+
+
+    public void SetPrefabTransfrom(GameObject prefab)
+    {
+        var p1 = GetStartPoint();
+        var p2 = GetEndPoint();
+        var dir = p1 - p2;
+        prefab.transform.position = (p1 + p2) / 2;
+        prefab.transform.right = dir;
+        prefab.transform.localScale = new Vector3(dir.magnitude, PipeRadius * 2, PipeRadius * 2);
+    }
+
+    public void SetPipeLineGeneratorArg(PipeMeshGenerator pipe, PipeGenerateArg arg, Vector4 startP, Vector4 endP)
+    {
+        pipe.points = new List<Vector3>() { startP, endP };
+        arg.SetArg(pipe);
+        var radius = (startP.w + endP.w) / 2;
+        pipe.pipeRadius = radius;
+        pipe.pipeRadius1 = radius;
+        pipe.pipeRadius2 = radius;
+        pipe.IsGenerateEndWeld = true;
+        pipe.generateEndCaps = false;
+
+        if (radius < 0.01)
+        {
+            //pipe.weldRadius = 0.003f;
+            pipe.weldPipeRadius = arg.weldRadius * 0.6f;
+        }
+    }
+
+
+
     //void Awake()
     //{
     //    //Debug.Log($"PipeModelBase.Awake go:{this.name}");
@@ -161,6 +208,11 @@ public class PipeModelBase : PipeModelComponent, IComparable<PipeModelBase>
 
         //PipeModelBase modelNew = newGo.GetComponent<PipeModelBase>();
         //newModels.Add(modelNew);
+    }
+
+    public virtual string GetDictKey()
+    {
+        return "";
     }
 
     public void RemoveAllComponents()
@@ -431,6 +483,11 @@ public class PipeModelBase : PipeModelComponent, IComparable<PipeModelBase>
         list.Add(GetModelStartPoint());
         list.Add(GetModelEndPoint());
         return list;
+    }
+
+    public virtual Vector3[] GetAlignPoints()
+    {
+        return null;
     }
 
     public List<Vector4> ModelKeyPoints = new List<Vector4>();

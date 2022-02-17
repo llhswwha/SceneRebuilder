@@ -20,6 +20,8 @@ public class PipeFactoryEditor : BaseFoldoutEditor<PipeFactory>
         targetT.IsRendererOnStart = EditorGUILayout.Toggle(targetT.IsRendererOnStart, GUILayout.Width(15));
         GUILayout.Label("LoadXmlOnStart", GUILayout.Width(90));
         targetT.IsLoadXmlOnStart = EditorGUILayout.Toggle(targetT.IsLoadXmlOnStart, GUILayout.Width(15));
+        GUILayout.Label($"UnitPrefab");
+        targetT.IsCreatePipeByUnityPrefab = EditorGUILayout.Toggle(targetT.IsCreatePipeByUnityPrefab);
         GUILayout.Label("Info:");
         GUILayout.Label(targetT.GetResultInfo(), GUILayout.Width(300));
         GUILayout.EndHorizontal();
@@ -102,6 +104,10 @@ public class PipeFactoryEditor : BaseFoldoutEditor<PipeFactory>
         GUILayout.EndHorizontal();
 
         GUILayout.BeginHorizontal();
+        if (GUILayout.Button("0.Clear"))
+        {
+            targetT.ClearResult();
+        }
         if (GUILayout.Button("1.GetParts"))
         {
             targetT.GetPipeParts();
@@ -154,6 +160,14 @@ public class PipeFactoryEditor : BaseFoldoutEditor<PipeFactory>
         if (GUILayout.Button("5.PrefabPipes"))
         {
             targetT.PrefabPipes();
+        }
+        if (GUILayout.Button("(Elbow "))
+        {
+            targetT.PrefabElbows();
+        }
+        if (GUILayout.Button(" Tee)"))
+        {
+            targetT.PrefabTees();
         }
         if (GUILayout.Button("6.PrefabOthers"))
         {
@@ -283,6 +297,10 @@ public class PipeFactoryEditor : BaseFoldoutEditor<PipeFactory>
         {
             targetT.RecoverOthersParent();
         }
+        if (GUILayout.Button("DestroyOthers"))
+        {
+            targetT.DestroyOthers();
+        }
         GUILayout.EndHorizontal();
 
         DrawPipeModelsList(targetT.GetPipeModels(), pipeModelListArg, "PipeModel List");
@@ -290,12 +308,25 @@ public class PipeFactoryEditor : BaseFoldoutEditor<PipeFactory>
         DrawPipeModelsList(targetT.GetPipeRunList().SpecialElbows, specialElbowListArg, "SpecialElbow List");
         DrawPipeRunList(targetT.TestRunList, testpipeRunListArg);
 
-        DrawObjectList(othersListArg, "Others", targetT.PipeOthers, null, null, null);
+        EditorUIUtils.Separator(5);
+        DrawObjectList(lineListArg, "Lines", targetT.PipeLines, null, null, null);
+        DrawObjectList(elbowListArg, "Elbows", targetT.PipeElbows, null, null, null);
+        DrawObjectList(teeListArg, "Tees", targetT.PipeTees, null, null, null);
+        DrawObjectList(flangeListArg, "Flanges", targetT.PipeFlanges, null, null, null);
+        DrawObjectList(reducerListArg, "Reducers", targetT.PipeReducers, null, null, null);
+        DrawObjectList(weldoletListArg, "Weldolets", targetT.PipeWeldolets, null, null, null);
         DrawObjectList(weldListArg, "Welds", targetT.PipeWelds, null, null, null);
+        DrawObjectList(othersListArg, "Others", targetT.PipeOthers, null, null, null);
     }
 
     static FoldoutEditorArg othersListArg = new FoldoutEditorArg(true, false);
     static FoldoutEditorArg weldListArg = new FoldoutEditorArg(true, false);
+    static FoldoutEditorArg flangeListArg = new FoldoutEditorArg(true, false);
+    static FoldoutEditorArg lineListArg = new FoldoutEditorArg(true, false);
+    static FoldoutEditorArg elbowListArg = new FoldoutEditorArg(true, false);
+    static FoldoutEditorArg teeListArg = new FoldoutEditorArg(true, false);
+    static FoldoutEditorArg reducerListArg = new FoldoutEditorArg(true, false);
+    static FoldoutEditorArg weldoletListArg = new FoldoutEditorArg(true, false);
     static PipeModelFoldoutEditorArg specialElbowListArg = new PipeModelFoldoutEditorArg(true, false);
     public override void OnEnable()
     {

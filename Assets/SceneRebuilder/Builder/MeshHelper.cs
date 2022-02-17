@@ -40,6 +40,11 @@ public static class MeshHelper
             return;
         }
         MeshRenderer meshRenderer1 = source.GetComponent<MeshRenderer>();
+        if (meshRenderer1 == null)
+        {
+            Debug.LogError($"CopyMeshComponents meshRenderer1 == null source:{source} target:{target}");
+            return;
+        }
         MeshRenderer meshRenderer2 = target.AddMissingComponent<MeshRenderer>();
         meshRenderer2.sharedMaterials = meshRenderer1.sharedMaterials;
 

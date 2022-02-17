@@ -24,10 +24,22 @@ public class PipeLineModelEditor : PipeModelBaseEditor
         {
             targetT.CreateWeld();
         }
-        if (GUILayout.Button("CreateBoxLine"))
-        {
-            targetT.CreateBoxLine();
-        }
+        //if (GUILayout.Button("CreateBoxLine"))
+        //{
+        //    targetT.CreateBoxLine();
+        //}
+        //if (GUILayout.Button("CreateUnitPrefab"))
+        //{
+        //    targetT.CreatePipeLineUnitPrefab();
+        //}
+        //if (GUILayout.Button("CreateByPrefab"))
+        //{
+        //    targetT.CreateModelByPrefab();
+        //}
+        //if (GUILayout.Button("CreateByPrefabMesh"))
+        //{
+        //    targetT.CreateModelByPrefabMesh();
+        //}
         GUILayout.EndHorizontal();
 
         base.OnInspectorGUI();

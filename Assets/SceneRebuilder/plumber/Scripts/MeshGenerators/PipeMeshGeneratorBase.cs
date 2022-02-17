@@ -106,6 +106,12 @@ public class PipeMeshGeneratorBase : MonoBehaviour
 
     public List<GameObject> Welds = new List<GameObject>();
 
+    public void AddWeld(GameObject w)
+    {
+        Welds.Add(w);
+        Childrens.Add(w.transform);
+    }
+
     public bool IsWeldSeperated = true;
 
     public virtual void SetRadiusUniform(int pt)
@@ -113,13 +119,34 @@ public class PipeMeshGeneratorBase : MonoBehaviour
         elbowRadius = GetRadiusValue(elbowRadius, pt);
     }
 
-    private GameObject CreateWeldGo(Vector3 start, Vector3 direction)
+    private GameObject CreateLocalWeldGo(Vector3 start, Vector3 direction)
     {
         GameObject go = new GameObject();
         go.name = $"Weld start:{start} direction:{direction}";
+
         go.transform.SetParent(this.transform);
         //go.transform.localPosition = Vector3.zero;
         go.transform.localPosition = start;
+
+        //go.transform.position = start;
+        //go.transform.SetParent(this.transform);
+
+        Welds.Add(go);
+        return go;
+    }
+
+    private GameObject CreateWorldWeldGo(Vector3 start, Vector3 direction)
+    {
+        GameObject go = new GameObject();
+        go.name = $"Weld start:{start} direction:{direction}";
+
+        //go.transform.SetParent(this.transform);
+        ////go.transform.localPosition = Vector3.zero;
+        //go.transform.localPosition = start;
+
+        go.transform.position = this.transform.TransformPoint(start);
+        go.transform.SetParent(this.transform);
+
         Welds.Add(go);
         return go;
     }
@@ -177,27 +204,35 @@ public class PipeMeshGeneratorBase : MonoBehaviour
             //go.transform.localPosition = start;
             //Welds.Add(go);
 
-            GameObject go = CreateWeldGo(start, direction);
+            //GameObject go = CreateLocalWeldGo(start, direction);
+            ////GameObject go = CreateWorldWeldGo(start, direction);
+            //float size = radius;
+            //if (weldCircleRadius > 0)
+            //{
+            //    size = weldCircleRadius;
+            //}
+            //PipeMeshGenerator weldGenerator = go.AddComponent<PipeMeshGenerator>();
+            //SetPipeMeshGenerator(weldGenerator, size);
+            //weldGenerator.RenderTorusXZ();
+            ////weldGenerator.ShowPoints();
+            //go.transform.up = direction;
+            //go.transform.localScale = new Vector3(1, 2, 1);
+            ////Childrens.Add(go.transform);
+
+            //MeshRenderer renderer = go.GetComponent<MeshRenderer>();
+            //renderer.shadowCastingMode = ShadowCastingMode.Off;
 
             float size = radius;
             if (weldCircleRadius > 0)
             {
                 size = weldCircleRadius;
             }
-            PipeMeshGenerator weldGenerator = go.AddComponent<PipeMeshGenerator>();
-            SetPipeMeshGenerator(weldGenerator, size);
-            weldGenerator.RenderTorusXZ();
-            //weldGenerator.ShowPoints();
-            go.transform.up = direction;
+            GameObject go = CreateLocalWeldGo(start, direction);
             go.transform.localScale = new Vector3(1, 2, 1);
-            //Childrens.Add(go.transform);
-
-            MeshRenderer renderer = go.GetComponent<MeshRenderer>();
-            renderer.shadowCastingMode = ShadowCastingMode.Off;
-
             PipeWeldModel weldModel = go.AddComponent<PipeWeldModel>();
             weldModel.WeldData = new PipeWeldData(go.transform.position, direction, size, weldPipeRadius);
-            weldModel.ResultGo = go;
+            //weldModel.ResultGo = go;
+            weldModel.RendererModel();
             return go;
         }
         else
@@ -216,7 +251,8 @@ public class PipeMeshGeneratorBase : MonoBehaviour
             //go.transform.localPosition = start;
             //Welds.Add(go);
 
-            GameObject go = CreateWeldGo(start, direction);
+            GameObject go = CreateLocalWeldGo(start, direction);
+            //GameObject go = CreateWorldWeldGo(start, direction);
 
             PointHelper.ShowPoints(arg1.vertices, new Vector3(0.05f, 0.05f, 0.05f), go.transform);
 

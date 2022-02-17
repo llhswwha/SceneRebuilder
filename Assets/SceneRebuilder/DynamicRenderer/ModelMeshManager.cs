@@ -151,7 +151,7 @@ public class ModelMeshManager : SingletonBehaviour<ModelMeshManager>
         var modelClassDict = new ModelClassDict<Transform>();
         List<string> otherNames = new List<string>();
         var list = GetTransformsNoLOD();
-        Debug.Log($"GetPrefixNames list:{list.Count}");
+        //Debug.Log($"GetPrefixNames list:{list.Count}");
         foreach (var item in list)
         {
             var n = item.name;

@@ -8,8 +8,18 @@ public class PipeFlangeModelEditor : PipeModelBaseEditor
 {
     public override void OnInspectorGUI()
     {
-        PipeReducerModel targetT = target as PipeReducerModel;
+        PipeFlangeModel targetT = target as PipeFlangeModel;
         base.DrawBaseModelToolBar(targetT);
+
+        GUILayout.BeginHorizontal();
+
+        //if (GUILayout.Button("CreateUnitPrefab"))
+        //{
+        //    targetT.CreatePipeLineUnitPrefab();
+        //}
+
+        GUILayout.EndHorizontal();
+
         base.OnInspectorGUI();
     }
 }

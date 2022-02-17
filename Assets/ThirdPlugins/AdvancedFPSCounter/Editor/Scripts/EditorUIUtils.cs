@@ -597,7 +597,8 @@ namespace CodeStage.AdvancedFPSCounter.Editor.UI
                 if (obj is Component)
                 {
                     Component component = obj as Component;
-                    go = component.gameObject;
+                    if(component!=null)
+                        go = component.gameObject;
                 }
                 //if (obj is GameObject)
                 {

@@ -13,6 +13,8 @@ public class PipeReducerModel
     public Vector4 StartPoint = Vector3.zero;
     public Vector4 EndPoint = Vector3.zero;
 
+    //public PipeLineInfo LineInfo = new PipeLineInfo();
+
     //public List<PlanePointDistance> distanceListEx;
 
 
@@ -59,12 +61,12 @@ public class PipeReducerModel
         else if(trianglesList.Count == 2)
         {
             SharedMeshTriangles startP = distanceList[0].Plane;
-            StartPoint = startP.GetCenter4();
+            var StartPoint = startP.GetCenter4();
 
             PipeRadius1 = StartPoint.w;
 
             SharedMeshTriangles endP = distanceList[1].Plane;
-            EndPoint = endP.GetCenter4();
+            var EndPoint = endP.GetCenter4();
             PipeRadius2 = EndPoint.w;
 
             PipeRadius = (PipeRadius1 + PipeRadius2) / 2;
@@ -199,6 +201,21 @@ public class PipeReducerModel
 
         return pipe.gameObject;
     }
+
+    public override Vector3 GetStartPoint()
+    {
+        return this.transform.TransformPoint(StartPoint);
+    }
+
+    public override  Vector3 GetEndPoint()
+    {
+        return this.transform.TransformPoint(EndPoint);
+    }
+
+    //public override void CreateBoxLine()
+    //{
+    //    TransformHelper.CreateBoxLine(GetStartPoint(), GetEndPoint(), PipeRadius * 2, this.name + "_BoxLine", this.transform.parent);
+    //}
 
 
     //public override void GetPipeRadius()

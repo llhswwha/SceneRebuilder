@@ -86,6 +86,7 @@ public class PipeWeldModelEditor : PipeModelBaseEditor
         //}
         //GUILayout.EndHorizontal();
 
+        GUILayout.BeginHorizontal();
         if (GUILayout.Button("Renderer"))
         {
             targetT.RendererModel();
@@ -98,6 +99,22 @@ public class PipeWeldModelEditor : PipeModelBaseEditor
         {
             EditorHelper.SelectObject(targetT.ResultGo);
         }
+        GUILayout.EndHorizontal();
+
+        GUILayout.BeginHorizontal();
+        //if (GUILayout.Button("CreateBoxLine"))
+        //{
+        //    targetT.CreateBoxLine();
+        //}
+        if (GUILayout.Button("CreateByPrefab"))
+        {
+            targetT.CreateModelByPrefab();
+        }
+        if (GUILayout.Button("CreateByPrefabMesh"))
+        {
+            targetT.CreateModelByPrefabMesh();
+        }
+        GUILayout.EndHorizontal();
 
         base.OnInspectorGUI();
     }

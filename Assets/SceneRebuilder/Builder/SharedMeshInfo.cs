@@ -552,7 +552,11 @@ public class SharedMeshInfo:IPrefab<SharedMeshInfo>
     internal void AddInstanceInfo()
     {
         var mf0=FindPrefab();
-
+        if (mf0 == null)
+        {
+            Debug.LogError($"SharedMeshInfo.AddInstanceInfo mf0==null mesh:{mesh} meshFilters:{meshFilters.Count}");
+            return;
+        }
         PrefabInfo prefab = new PrefabInfo(mf0.gameObject);
 
         //MeshPrefabInstance instance = mf0.gameObject.AddMissingComponent<MeshPrefabInstance>();

@@ -16,15 +16,15 @@ public class MeshFilterListDict
 
      //private List<MeshFilterList> listEx = new List<MeshFilterList>();//合并后的
 
-     public bool IsConbined=false;
+     public bool IsCombinedByVertex=false;
 
      public int VertexCountOffset=0;
 
     public List<MeshFilterList> GetMeshFiltersList()
     {
-        if(IsConbined==false)
+        if(IsCombinedByVertex==false)
         {
-            IsConbined=true;
+            IsCombinedByVertex=true;
             int count1 = list.Count;
             //Debug.Log($"GetMeshFiltersList Start: {count1} VertexCountOffset:{VertexCountOffset}");
             list.Sort();
@@ -82,12 +82,15 @@ public class MeshFilterListDict
             // {
             //     continue;
             // }
-
             var matId = mf.GetMatId();
-            //Debug.Log($"MeshFilterListDict [{i}] points:{mf.name} mat:{matId}");
-
             //string key=vCount+"_"+matId;
             string key = vCount + "_";
+            string key2= mf.GetDictKey(key);
+            if (key2 != key)
+            {
+                IsCombinedByVertex = true;//自定义Key的情况下就不需要考虑合并相同的顶点数了。
+            }
+            key = key2;
             if (!dict.ContainsKey(key)){
                 //Debug.LogError("MeshFilterListDict key:"+key);
 

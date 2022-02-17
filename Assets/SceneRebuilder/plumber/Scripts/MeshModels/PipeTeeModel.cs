@@ -377,9 +377,12 @@ public class PipeTeeModel : PipeElbowModel
         }
     }
 
-   
+    //public override string GetDictKey()
+    //{
+    //    return $"{IsSpecial},{GetRadius():F4}";
+    //}
 
-    
+
 
     public override List<Vector4> GetModelKeyPoints()
     {

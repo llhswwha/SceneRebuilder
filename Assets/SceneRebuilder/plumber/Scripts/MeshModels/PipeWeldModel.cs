@@ -47,36 +47,92 @@ public class PipeWeldModel : PipeModelComponent
     //{
     //    //base.RendererModel();
     //    GameObject go = CreateWeldGo(WeldData.start, WeldData.direction);
-
     //}
+
+    public override GameObject CreateModelByPrefab()
+    {
+        if (ResultGo != null && ResultGo != this.gameObject)
+        {
+            GameObject.DestroyImmediate(ResultGo);
+        }
+
+        GameObject go = GameObject.Instantiate(PipeFactory.Instance.GetPipeModelUnitPrefab_Weld(WeldData));
+        go.SetActive(true);
+
+        go.name = this.name + "_New2";
+        go.transform.position = WeldData.start;
+        go.transform.up = WeldData.direction;
+        go.transform.SetParent(this.transform.parent);
+        ResultGo = go;
+
+        this.gameObject.SetActive(false);
+        return go;
+    }
+
+    public override GameObject CreateModelByPrefabMesh()
+    {
+        if (ResultGo != null && ResultGo != this.gameObject)
+        {
+            GameObject.DestroyImmediate(ResultGo);
+        }
+
+        GameObject prefab = this.gameObject;
+        prefab.SetActive(true);
+        prefab.name = this.name + "_New3";
+        //SetPrefabTransfrom(prefab);
+
+        prefab.transform.position = WeldData.start;
+        prefab.transform.up = WeldData.direction;
+
+        prefab.AddMissingComponent<MeshFilter>().sharedMesh = PipeFactory.Instance.GetPipeModelUnitPrefabMesh_Weld(WeldData);
+
+        MeshRenderer renderer = prefab.GetComponent<MeshRenderer>();
+        if (renderer == null)
+        {
+            renderer = prefab.AddMissingComponent<MeshRenderer>();
+            renderer.sharedMaterial = PipeFactory.Instance.generateArg.weldMaterial;
+        }
+        ResultGo = prefab;
+        return prefab;
+    }
 
     public override GameObject RendererModel(PipeGenerateArg arg, string afterName)
     {
         ClearGo();
         this.generateArg = arg;
-        GameObject go = CreateWeldGo(WeldData.start, WeldData.direction);
-        PipeMeshGenerator weldGenerator = go.AddComponent<PipeMeshGenerator>();
-        SetPipeMeshGenerator(weldGenerator, generateArg);
-        weldGenerator.RenderTorusXZ();
-        //weldGenerator.ShowPoints();
-        var p = go.transform.parent;
-        go.transform.SetParent(null);
-        go.transform.up = WeldData.direction;
-        go.transform.SetParent(p);
-        go.transform.localScale = new Vector3(1, 2, 1);
-        //Childrens.Add(go.transform);
 
-        MeshRenderer renderer = go.GetComponent<MeshRenderer>();
-        renderer.shadowCastingMode = ShadowCastingMode.Off;
-        //return base.RendererModel(arg, afterName);
-        this.ResultGo = go;
+        if(PipeFactory.Instance.IsCreatePipeByUnityPrefab)
+        {
+            return CreateModelByPrefabMesh();
+        }
+        else
+        {
+            GameObject go = CreateWeldGo(this.gameObject, WeldData.start, WeldData.direction);
+            PipeMeshGenerator weldGenerator = go.AddComponent<PipeMeshGenerator>();
+            SetPipeMeshGenerator(weldGenerator, generateArg, WeldData);
+            weldGenerator.RenderTorusXZ();
 
-        //go.transform.SetParent(this.transform);
+            //weldGenerator.ShowPoints();
 
-        return go;
+            var p = go.transform.parent;
+            go.transform.SetParent(null);
+            go.transform.localScale = new Vector3(1, 2, 1);
+            go.transform.up = WeldData.direction;
+            go.transform.SetParent(p);
+
+            //Childrens.Add(go.transform);
+
+            MeshRenderer renderer = go.GetComponent<MeshRenderer>();
+            renderer.shadowCastingMode = ShadowCastingMode.Off;
+            //return base.RendererModel(arg, afterName);
+            this.ResultGo = go;
+
+            //go.transform.SetParent(this.transform);
+            return go;
+        }
     }
 
-    private void SetPipeMeshGenerator(PipeMeshGenerator weldGenerator, PipeGenerateArg arg)
+    public static void SetPipeMeshGenerator(PipeMeshGenerator weldGenerator, PipeGenerateArg arg,PipeWeldData data)
     {
         weldGenerator.generateOnStart = false;
         //weldGenerator.points = arg1.vertices;
@@ -87,22 +143,22 @@ public class PipeWeldModel : PipeModelComponent
         {
             weldGenerator.pipeMaterial = arg.pipeMaterial;
         }
-        weldGenerator.elbowRadius = WeldData.elbowRadius;
+        weldGenerator.elbowRadius = data.elbowRadius;
         //weldGenerator.pipeRadius = size / 5;
         //weldGenerator.pipeRadius = size / 10;
-        weldGenerator.pipeRadius = WeldData.pipeRadius;
+        weldGenerator.pipeRadius = data.pipeRadius;
         weldGenerator.pipeSegments = arg.weldPipeSegments;
         weldGenerator.elbowSegments = arg.weldElbowSegments;
         weldGenerator.IsLinkEndStart = true;
     }
 
-    private GameObject CreateWeldGo(Vector3 start, Vector3 direction)
+    public static GameObject CreateWeldGo(GameObject target,Vector3 start, Vector3 direction)
     {
-        MeshRenderer render = this.GetComponent<MeshRenderer>();
+        MeshRenderer render = target.GetComponent<MeshRenderer>();
         if (render == null)
         {
-            GameObject go = this.gameObject;
-            go.name = $"Weld_1 start:{start} direction:{direction}";
+            GameObject go = target.gameObject;
+            //go.name = $"Weld_1 start:{start} direction:{direction}";
             //go.transform.SetParent(this.transform.parent);
             //go.transform.localPosition = Vector3.zero;
             var p = go.transform.parent;
@@ -115,8 +171,9 @@ public class PipeWeldModel : PipeModelComponent
         else
         {
             GameObject go = new GameObject();
-            go.name = $"Weld_2 start:{start} direction:{direction}";
-            go.transform.SetParent(this.transform.parent);
+            //go.name = $"Weld_2 start:{start} direction:{direction}";
+            go.name = target.name+"_New";
+            go.transform.SetParent(target.transform.parent);
             //go.transform.localPosition = Vector3.zero;
             go.transform.position = start;
             //Welds.Add(go);

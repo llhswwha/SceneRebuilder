@@ -52,6 +52,44 @@ public class PipeBuilder : MonoBehaviour
         return GetModelResults(PipeElbows);
     }
 
+    public List<List<PipeElbowModel>> GetModelResult_ElbowGroup()
+    {
+        //return GetModelResults(PipeElbows);
+        List<PipeElbowModel> elbows1 = new List<PipeElbowModel>();
+        List<PipeElbowModel> elbows2 = new List<PipeElbowModel>();
+        foreach (var elbow in PipeElbows)
+        {
+            if (elbow.IsSpecial)
+            {
+                elbows1.Add(elbow);
+            }
+            else
+            {
+                elbows2.Add(elbow);
+            }
+        }
+
+        List<List<PipeElbowModel>> listlist1 = GetModelResult_ElbowGroup(elbows1);
+        List<List<PipeElbowModel>> listlist2 = GetModelResult_ElbowGroup(elbows2);
+        listlist1.AddRange(listlist2);
+        return listlist1;
+    }
+
+    public List<List<PipeElbowModel>> GetModelResult_ElbowGroup(List<PipeElbowModel> list)
+    {
+        Dictionary<string, List<PipeElbowModel>> elbowDict = new Dictionary<string, List<PipeElbowModel>>();
+        foreach (var elbow in list)
+        {
+            string radius = $"{ elbow.GetRadius():F4}";
+            if (!elbowDict.ContainsKey(radius))
+            {
+                elbowDict.Add(radius, new List<PipeElbowModel>());
+            }
+            elbowDict[radius].Add(elbow);
+        }
+        return elbowDict.Values.ToList();
+    }
+
     public List<Transform> GetModelResult_Reducer()
     {
         return GetModelResults(PipeReducers);
@@ -60,6 +98,11 @@ public class PipeBuilder : MonoBehaviour
     public List<Transform> GetModelResult_Flange()
     {
         return GetModelResults(PipeFlanges);
+    }
+
+    public List<Transform> GetModelResult_Flange(bool isSpecial)
+    {
+        return GetModelResults(PipeFlanges, isSpecial);
     }
 
     public List<Transform> GetModelResult_Tee()
@@ -79,7 +122,23 @@ public class PipeBuilder : MonoBehaviour
         {
             if (item == null) continue;
             if (item.ResultGo == null) continue;
+            //if (item.IsSpecial == true) continue;
             list.Add(item.ResultGo.transform);
+        }
+        return list;
+    }
+
+    public List<Transform> GetModelResults<T>(List<T> models,bool isSpecial) where T : PipeModelBase
+    {
+        List<Transform> list = new List<Transform>();
+        foreach (var item in models)
+        {
+            if (item == null) continue;
+            if (item.ResultGo == null) continue;
+            if (item.IsSpecial == isSpecial)
+            {
+                list.Add(item.ResultGo.transform);
+            }
         }
         return list;
     }
@@ -184,6 +243,7 @@ public class PipeBuilder : MonoBehaviour
         for (int i = 0; i < PipeModels.Count; i++)
         {
             PipeModelBase go = PipeModels[i];
+            if (go == null) continue;
             if (go.ResultGo == null)
             {
                 Debug.LogError($"CheckResultsJob go.ResultGo == null go:{go.name}");
@@ -376,12 +436,17 @@ public class PipeBuilder : MonoBehaviour
             if (model == null) continue;
             if (model.ResultGo == null) continue;
             var g = model.ResultGo.GetComponent<PipeMeshGeneratorBase>();
+            if (g == null)
+            {
+                Debug.LogError($"PipeBuilder.GetWelds g==nul model:{model}");
+                continue;
+            }
             ts.AddRange(g.Childrens);
         }
         return ts;
     }
 
-    internal List<Transform> GetWelds(GameObject target)
+    internal List<Transform> GetNewWelds(GameObject target)
     {
         int count1 = PipeGenerators.Count;
 
@@ -950,6 +1015,11 @@ public class PipeBuilder : MonoBehaviour
         for (int i = 0; i < ts.Count; i++)
         {
             Transform t = ts[i];
+            if (t == null)
+            {
+                Debug.LogError($"GetPipeInfosJob_Line t == null i:{i} ts:{ts.Count}");
+                continue;
+            }
             var rendererInfo = MeshRendererInfo.GetInfo(t.gameObject);
             Vector3[] vs = rendererInfo.GetVertices();
             //if (vs.Length == 0) continue;
@@ -972,6 +1042,11 @@ public class PipeBuilder : MonoBehaviour
         for (int i = 0; i < ts.Count; i++)
         {
             Transform t = ts[i];
+            if (t == null)
+            {
+                Debug.LogError($"GetPipeInfosJob_Elbow t == null i:{i} ts:{ts.Count}");
+                continue;
+            }
             Mesh mesh = t.GetComponent<MeshFilter>().sharedMesh;
             if (mesh == null)
             {
@@ -999,6 +1074,11 @@ public class PipeBuilder : MonoBehaviour
         for (int i = 0; i < ts.Count; i++)
         {
             Transform t = ts[i];
+            if (t == null)
+            {
+                Debug.LogError($"GetPipeInfosJob_Weldolet t == null i:{i} ts:{ts.Count}");
+                continue;
+            }
             Mesh mesh = t.GetComponent<MeshFilter>().sharedMesh;
             MeshStructure meshS = new MeshStructure(mesh);
             //if (vs.Length == 0) continue;
@@ -1021,6 +1101,11 @@ public class PipeBuilder : MonoBehaviour
         for (int i = 0; i < ts.Count; i++)
         {
             Transform t = ts[i];
+            if (t == null)
+            {
+                Debug.LogError($"GetPipeInfosJob_Flange t == null i:{i} ts:{ts.Count}");
+                continue;
+            }
             Mesh mesh = t.GetComponent<MeshFilter>().sharedMesh;
             MeshStructure meshS = new MeshStructure(mesh);
             //if (vs.Length == 0) continue;
@@ -1043,6 +1128,11 @@ public class PipeBuilder : MonoBehaviour
         for (int i = 0; i < ts.Count; i++)
         {
             Transform t = ts[i];
+            if (t == null)
+            {
+                Debug.LogError($"GetPipeInfosJob_Reducer t == null i:{i} ts:{ts.Count}");
+                continue;
+            }
             Mesh mesh = t.GetComponent<MeshFilter>().sharedMesh;
             MeshStructure meshS = new MeshStructure(mesh);
             //if (vs.Length == 0) continue;
@@ -1065,6 +1155,11 @@ public class PipeBuilder : MonoBehaviour
         for (int i = 0; i < ts.Count; i++)
         {
             Transform t = ts[i];
+            if (t == null)
+            {
+                Debug.LogError($"GetPipeInfosJob_Tee t == null i:{i} ts:{ts.Count}");
+                continue;
+            }
             Mesh mesh = t.GetComponent<MeshFilter>().sharedMesh;
             MeshStructure meshS = new MeshStructure(mesh);
             //if (vs.Length == 0) continue;

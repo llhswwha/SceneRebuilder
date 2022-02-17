@@ -176,7 +176,33 @@ namespace MeshJobs
             if (!dictId2Go.ContainsKey(InstanceId))
                 dictId2Go.Add(InstanceId, this.gameObject.name);
 
+            //PipeModelBase pipeModel = gameObject.GetComponent<PipeModelBase>();
+            //if (pipeModel != null)
+            //{
+            //    vertices = pipeModel.GetAlignPoints();
+            //}
+
+            //if (vertices == null)
+            //{
+            //    Debug.LogError($"MeshPoints vertices == null pipeModel:{pipeModel.GetType()} mf:{mf} gameObject:{gameObject}");
+            //    return;
+            //}
+
             vertexCount = vertices.Length;
+        }
+
+        public string GetDictKey(string defaultKey)
+        {
+            PipeModelBase pipeModel = gameObject.GetComponent<PipeModelBase>();
+            if (pipeModel != null)
+            {
+                string key2 = pipeModel.GetDictKey();
+                if (!string.IsNullOrEmpty(key2))
+                {
+                    defaultKey = key2;
+                }
+            }
+            return defaultKey;
         }
 
         public T GetComponent<T>() where T : Component
@@ -220,6 +246,8 @@ namespace MeshJobs
             var matId = color.ToString();
             return matId;
         }
+
+
 
         public string GetMatId()
         {

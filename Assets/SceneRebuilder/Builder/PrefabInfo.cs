@@ -7,6 +7,11 @@ using UnityEngine;
 [Serializable]
 public class PrefabInfo:IComparable<PrefabInfo>
 {
+    public PrefabInfo()
+    {
+
+    }
+
     public PrefabInfo(GameObject prefab){
         this.Prefab=prefab;
         if (prefab == null)
@@ -72,6 +77,10 @@ public class PrefabInfo:IComparable<PrefabInfo>
 
     public override string ToString()
     {
+        if (this.MeshFilter == null)
+        {
+            return "NULL";
+        }
         return $"{this.VertexCount}*{Instances.Count}={this.VertexCount* Instances.Count}|{this.MeshFilter.size}";
     }
 
@@ -281,7 +290,7 @@ public class PrefabInfoListBags
             }
         }
 
-        Debug.LogError($"SetPrefabInfoList all:{PrefabInfoList.Count}={PrefabInfoList.GetInstanceCount()}\t list1(1):{PrefabInfoList1.Count}={PrefabInfoList1.GetInstanceCount()}\t list2(2-4):{PrefabInfoList2.Count}={PrefabInfoList2.GetInstanceCount()}\t list3(5-9):{PrefabInfoList3.Count}={PrefabInfoList3.GetInstanceCount()}\t list4(10-49):{PrefabInfoList4.Count}={PrefabInfoList4.GetInstanceCount()}\t list5(50-99):{PrefabInfoList5.Count}={PrefabInfoList5.GetInstanceCount()} \tlist6(>=100):{PrefabInfoList6.Count}={PrefabInfoList6.GetInstanceCount()},");
+        Debug.LogError($"SetPrefabInfoList{AcRTAlignJobContainer.CurrentLogTag} all:{PrefabInfoList.Count}={PrefabInfoList.GetInstanceCount()}\t list1(1):{PrefabInfoList1.Count}={PrefabInfoList1.GetInstanceCount()}\t list2(2-4):{PrefabInfoList2.Count}={PrefabInfoList2.GetInstanceCount()}\t list3(5-9):{PrefabInfoList3.Count}={PrefabInfoList3.GetInstanceCount()}\t list4(10-49):{PrefabInfoList4.Count}={PrefabInfoList4.GetInstanceCount()}\t list5(50-99):{PrefabInfoList5.Count}={PrefabInfoList5.GetInstanceCount()} \tlist6(>=100):{PrefabInfoList6.Count}={PrefabInfoList6.GetInstanceCount()},");
     }
 
     public List<MeshRenderer> GetHiddenRenderers()
@@ -382,6 +391,23 @@ public class PrefabInfoList: List<PrefabInfo>
     {
         
     }
+
+    public PrefabInfoList(int count)
+    {
+        for(int i=0;i<count;i++)
+        {
+            this.Add(new PrefabInfo());
+        }
+    }
+
+    public PrefabInfoList(List<GameObject> prefabs)
+    {
+        foreach(var prefab in prefabs)
+        {
+            this.Add(new PrefabInfo());
+        }
+    }
+
     public PrefabInfoList(PrefabInfoList list)
     {
         this.AddRange(list);

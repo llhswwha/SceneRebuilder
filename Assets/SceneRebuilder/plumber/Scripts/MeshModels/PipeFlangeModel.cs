@@ -5,6 +5,41 @@ using UnityEngine;
 
 public class PipeFlangeModel : PipeReducerModel
 {
+    public override GameObject CreateModelByPrefab()
+    {
+        if (ResultGo != null && ResultGo != this.gameObject)
+        {
+            GameObject.DestroyImmediate(ResultGo);
+        }
+
+        GameObject prefab = GameObject.Instantiate(PipeFactory.Instance.GetPipeModelUnitPrefab_Flange());
+        prefab.SetActive(true);
+        prefab.name = this.name + "_New2";
+        SetPrefabTransfrom(prefab);
+        prefab.transform.SetParent(this.transform.parent);
+        ResultGo = prefab;
+
+        //this.gameObject.SetActive(false);
+        return prefab;
+    }
+
+    public override GameObject CreateModelByPrefabMesh()
+    {
+        if (ResultGo != null && ResultGo != this.gameObject)
+        {
+            GameObject.DestroyImmediate(ResultGo);
+        }
+        ClearDebugInfoGos();
+
+        GameObject prefab = this.gameObject;
+        prefab.SetActive(true);
+        prefab.name = this.name + "_New3";
+        SetPrefabTransfrom(prefab);
+        prefab.GetComponent<MeshFilter>().sharedMesh = PipeFactory.Instance.GetPipeModelUnitPrefabMesh_Flange();
+        ResultGo = prefab;
+        return prefab;
+    }
+
     private float defaultMinRepeatPointDistance=0.0002f;
 
     public override SharedMeshTrianglesList GetSharedMeshTrianglesList(MeshTriangles meshTriangles)
@@ -112,25 +147,12 @@ public class PipeFlangeModel : PipeReducerModel
             }
             arg.generateWeld = arg0.generateWeld;
             arg.IsGenerateEndWeld = false;
-            
-            
-            //float r1 = KeyPointInfo.EndPointIn2.w;
-            //float r2 = KeyPointInfo.EndPointOut2.w;
-            //float r = r1;
-            //if (r2 < r)
-            //{
-            //    r = r2;
-            //}
-            //KeyPointInfo.EndPointIn2.w = r;
-            //KeyPointInfo.EndPointOut2.w = r;
 
             GameObject pipe12 = RenderPipeLine(arg, afterName + "_2", KeyPointInfo.EndPointOut2, KeyPointInfo.EndPointIn2);
 
             //GameObject pipe12 = RenderPipeLine(arg, afterName + "_2", KeyPointInfo.EndPointIn2, KeyPointInfo.EndPointOut2);
             pipe11.transform.SetParent(pipeNew.transform);
             pipe12.transform.SetParent(pipeNew.transform);
-
-
 
             GameObject target = CombineTarget(arg, pipeNew);
             target = CopyMeshComponentsEx(target);
@@ -146,10 +168,37 @@ public class PipeFlangeModel : PipeReducerModel
             StartPoint.w = PipeRadius;
             EndPoint.w = PipeRadius;
 
-            return base.RendererModel(arg, afterName);
+            //return base.RendererModel(arg, afterName);
+
+            if (PipeFactory.Instance.IsCreatePipeByUnityPrefab)
+            {
+                var go = CreateModelByPrefabMesh();
+
+                PipeMeshGenerator pipe = GetGenerator<PipeMeshGenerator>(arg, afterName, true);
+                //PipeMeshGenerator pipe = go.AddMissingComponent<PipeMeshGenerator>();
+                SetPipeLineGeneratorArg(pipe, arg, StartPoint, EndPoint);
+                pipe.IsOnlyWeld = true;//Ö»´´½¨º¸·ì
+                pipe.RenderPipe();
+
+                PipeMeshGenerator pipe2 = go.AddMissingComponent<PipeMeshGenerator>();
+                foreach (GameObject w in pipe.Welds)
+                {
+                    w.transform.SetParent(go.transform);
+                    pipe2.AddWeld(w);
+                }
+                GameObject.DestroyImmediate(pipe.gameObject);
+                ResultGo = go;
+                return go.gameObject;
+            }
+            else
+            {
+                return base.RendererModel(arg, afterName);
+            }
         }
 
     }
+
+
 
     //public new PipeFlangeSaveData ModelData;
 

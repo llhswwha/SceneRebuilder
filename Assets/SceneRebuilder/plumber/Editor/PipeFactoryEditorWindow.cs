@@ -8,7 +8,7 @@ public class PipeFactoryEditorWindow : EditorWindow, IBaseEditorWindow
     [MenuItem("Window/Tools/PipeFactory")]
     public static void ShowWindow()
     {
-        BaseEditorWindow.ShowWindow<PipeFactoryEditorWindow>(800, 500, "PipeFactory");
+        BaseEditorWindow.ShowWindow<PipeFactoryEditorWindow>(800, 700, "PipeFactory");
     }
 
     public PipeFactory target;

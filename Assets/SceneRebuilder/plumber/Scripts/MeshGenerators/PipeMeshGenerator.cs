@@ -215,7 +215,10 @@ public class PipeMeshGenerator : PipeMeshGeneratorBase
         Childrens.Clear();
         Mesh mesh = GeneratePipeMesh(ps, generateWeld);
         mesh.name = this.name;
-        SetMeshRenderers(mesh);
+        if(IsOnlyWeld==false)
+        {
+            SetMeshRenderers(mesh);
+        }
     }
 
     private void SetMeshRenderers(Mesh mesh)
@@ -326,7 +329,7 @@ public class PipeMeshGenerator : PipeMeshGeneratorBase
     //    }
     //}
 
-
+    public bool IsOnlyWeld = false;
 
     Mesh GeneratePipeMesh(List<Vector3> ps,bool gWeld) {
         Mesh m = new Mesh();
@@ -385,9 +388,14 @@ public class PipeMeshGenerator : PipeMeshGeneratorBase
                 }
                 // generate two circles with "pipeSegments" sides each and then
                 // connect them to make the cylinder
-                CircleMeshData circle1 = GenerateCircleAtPoint(vertices, normals, initialPoint, directionN,$"Pipe[{i}]_start", ps.Count);
-                CircleMeshData circle2 = GenerateCircleAtPoint(vertices, normals, endPoint, directionN, $"Pipe[{i}]_end", ps.Count);
-                MakeCylinderTriangles(triangles, i);
+
+                if(IsOnlyWeld==false)
+                {
+                    CircleMeshData circle1 = GenerateCircleAtPoint(vertices, normals, initialPoint, directionN, $"Pipe[{i}]_start", ps.Count);
+                    CircleMeshData circle2 = GenerateCircleAtPoint(vertices, normals, endPoint, directionN, $"Pipe[{i}]_end", ps.Count);
+                    MakeCylinderTriangles(triangles, i);
+                }
+                
 
                 //CylinderMeshData cylinderMeshData = new CylinderMeshData(circle1, circle2);
                 //PipeDatas.Add(cylinderMeshData);
@@ -431,11 +439,14 @@ public class PipeMeshGenerator : PipeMeshGeneratorBase
                 // generate two circles with "pipeSegments" sides each and then
                 // connect them to make the cylinder
 
-                CircleMeshData circle1 = GenerateCircleAtPoint(vertices, normals, initialPoint, directionN, $"Pipe({this.name})[{i}]_start", ps.Count);
-                CircleMeshData circle2 = GenerateCircleAtPoint(vertices, normals, endPoint, directionN, $"Pipe({this.name})[{i}]_end", ps.Count);
-                MakeCylinderTriangles(triangles, i);
-                //CylinderMeshData cylinderMeshData = new CylinderMeshData(circle1, circle2);
-                //PipeDatas.Add(cylinderMeshData);
+                if (IsOnlyWeld == false)
+                {
+                    CircleMeshData circle1 = GenerateCircleAtPoint(vertices, normals, initialPoint, directionN, $"Pipe({this.name})[{i}]_start", ps.Count);
+                    CircleMeshData circle2 = GenerateCircleAtPoint(vertices, normals, endPoint, directionN, $"Pipe({this.name})[{i}]_end", ps.Count);
+                    MakeCylinderTriangles(triangles, i);
+                    //CylinderMeshData cylinderMeshData = new CylinderMeshData(circle1, circle2);
+                    //PipeDatas.Add(cylinderMeshData);
+                }
 
                 if (gWeld && i < ps.Count - 1)
                 {
@@ -481,7 +492,7 @@ public class PipeMeshGenerator : PipeMeshGeneratorBase
 
 
         // for each segment generate the elbow that connects it to the next one
-        if (generateElbows)
+        if (generateElbows && IsOnlyWeld==false)
         {
             if (IsGenerateElbowBeforeAfter)
             {
@@ -512,15 +523,17 @@ public class PipeMeshGenerator : PipeMeshGeneratorBase
                         debugGo.transform.SetParent(this.transform);
                         debugGo.transform.localPosition = Vector3.zero;
                         PointHelper.ShowPoints(new Vector3[] { point1, point2, point3 }, new Vector3(PointScale,PointScale,PointScale), debugGo.transform);
-
-                        //
                     }
                 }
             }
         }
 
-        if (generateEndCaps) {
-            GenerateEndCaps(ps, vertices, triangles, normals);
+        if (IsOnlyWeld == false)
+        {
+            if (generateEndCaps)
+            {
+                GenerateEndCaps(ps, vertices, triangles, normals);
+            }
         }
 
         m.SetVertices(vertices);

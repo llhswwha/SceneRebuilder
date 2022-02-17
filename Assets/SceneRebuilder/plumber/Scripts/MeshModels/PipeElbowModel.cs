@@ -7,15 +7,7 @@ using static PipeBuilder;
 
 public class PipeElbowModel : PipeModelBase
 {
-    public Vector3 GetStartPoint()
-    {
-        return Vector3.zero;
-    }
 
-    public Vector3 GetEndPoint()
-    {
-        return Vector3.zero;
-    }
 
     public MeshTriangles meshTriangles = new MeshTriangles();
 
@@ -314,6 +306,16 @@ public class PipeElbowModel : PipeModelBase
         return ModelData;
     }
 
+    public override Vector3 GetStartPoint()
+    {
+        return this.transform.TransformPoint(KeyPointInfo.EndPointOut1);
+    }
+
+    public override Vector3 GetEndPoint()
+    {
+        return this.transform.TransformPoint(KeyPointInfo.EndPointOut2);
+    }
+
     public PipeElbowSaveData GetSaveData()
     {
         PipeElbowSaveData data = new PipeElbowSaveData();
@@ -386,6 +388,36 @@ public class PipeElbowModel : PipeModelBase
         {
             return RenderElbow(arg, afterName, KeyPointInfo,false);
         }
+    }
+
+    public override string GetDictKey()
+    {
+
+        //return $"{IsSpecial},{KeyPointInfo.GetRadius():F4};
+
+        //if (IsSpecial)
+        //{
+        //    return $"{IsSpecial},{InnerKeyPointInfo.GetRadius():F4},{KeyPointInfo.GetRadiusIn1Out1():F4},{KeyPointInfo.GetRadiusIn2Out2():F4}";
+        //}
+        //else
+        //{
+        //    return $"{IsSpecial},{KeyPointInfo.GetRadius():F4},{KeyPointInfo.GetLengthIn():F4},{KeyPointInfo.GetLengthOut():F4}";
+        //}
+
+        if (IsSpecial)
+        {
+            return $"{IsSpecial},{InnerKeyPointInfo.GetRadius():F4},{KeyPointInfo.GetRadiusIn1Out1():F4},{KeyPointInfo.GetRadiusIn2Out2():F4}";
+        }
+        else
+        {
+            return $"{IsSpecial},{KeyPointInfo.GetRadius():F4}";
+        }
+    }
+
+
+    public float GetRadius()
+    {
+        return (KeyPointInfo.GetRadius());
     }
 
     public bool IsCombineResult = true;

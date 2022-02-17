@@ -475,9 +475,23 @@ public class BaseFoldoutEditor<T> : BaseEditor<T> where T : class
             arg.caption = $"{title}({list.Count})";
         }, () =>
         {
-            if(GUILayout.Button("Clear"))
+            if(GUILayout.Button("Clear",GUILayout.Width(60)))
             {
                 list.Clear();
+            }
+            if (GUILayout.Button("DestroyGo", GUILayout.Width(80)))
+            {
+                foreach(var item in list)
+                {
+                    if(item is GameObject)
+                    {
+                        GameObject.DestroyImmediate(item as GameObject);
+                    }
+                    else if (item is Component)
+                    {
+                        GameObject.DestroyImmediate((item as Component).gameObject);
+                    }
+                }
             }
         });
         if (foldoutArg.isExpanded && foldoutArg.isEnabled)

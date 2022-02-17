@@ -28,4 +28,29 @@ public struct PipeWeldData
         this.elbowRadius = elbowRadius;
         this.pipeRadius = pipeRadius;
     }
+
+    public string GetPrefabName(int p)
+    {
+        if (p == 3)
+        {
+            return $"WeldPrefab_{elbowRadius:F3}_{pipeRadius}";
+        }
+        else if (p == 4)
+        {
+            return $"WeldPrefab_{elbowRadius:F4}_{pipeRadius}";
+        }
+        else if (p == 2)
+        {
+            return $"WeldPrefab_{elbowRadius:F2}_{pipeRadius}";
+        }
+        else  if (p == 5)
+        {
+            return $"WeldPrefab_{elbowRadius:F5}_{pipeRadius}";
+        }
+        else
+        {
+            return $"WeldPrefab_{elbowRadius}_{pipeRadius}";
+        }
+        
+    }
 }
