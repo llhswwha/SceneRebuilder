@@ -80,6 +80,10 @@ namespace MeshJobs
             ThreePointJobResult resultFrom = this.GetThreePointResult(mf);
             resultFrom.localToWorldMatrix = t.localToWorldMatrix;
             var tpsFrom = resultFrom.GetThreePoints(t.localToWorldMatrix);
+            if (tpsFrom.Length == 0)
+            {
+                Debug.LogError($"GetTreePoints tpsFrom.Length == 0 t:{t} mf:{mf}");
+            }
             return tpsFrom;
         }
 

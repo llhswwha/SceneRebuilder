@@ -404,12 +404,30 @@ public class PipeElbowModel : PipeModelBase
         //    return $"{IsSpecial},{KeyPointInfo.GetRadius():F4},{KeyPointInfo.GetLengthIn():F4},{KeyPointInfo.GetLengthOut():F4}";
         //}
 
+
+
+
         if (IsSpecial)
         {
+            if (InnerKeyPointInfo == null)
+            {
+                Debug.LogError($"GetDictKey1 InnerKeyPointInfo == null gameObject:{this.name}");
+                return this.VertexCount + "";
+            }
+            if (KeyPointInfo == null)
+            {
+                Debug.LogError($"GetDictKey2 KeyPointInfo == null gameObject:{this.name}");
+                return this.VertexCount + "";
+            }
             return $"{IsSpecial},{InnerKeyPointInfo.GetRadius():F4},{KeyPointInfo.GetRadiusIn1Out1():F4},{KeyPointInfo.GetRadiusIn2Out2():F4}";
         }
         else
         {
+            if (KeyPointInfo == null)
+            {
+                Debug.LogError($"GetDictKey3 KeyPointInfo == null gameObject:{this.name}");
+                return this.VertexCount + "";
+            }
             return $"{IsSpecial},{KeyPointInfo.GetRadius():F4}";
         }
     }

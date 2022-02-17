@@ -882,6 +882,7 @@ public class PipeFactory : SingletonBehaviour<PipeFactory>
         EditorHelper.UnpackPrefab(Target);
         foreach(var item in PipeOthers)
         {
+            EditorHelper.UnpackPrefab(item.gameObject);
             GameObject.DestroyImmediate(item.gameObject);
         }
     }
@@ -1290,7 +1291,8 @@ public class PipeFactory : SingletonBehaviour<PipeFactory>
         return list;
     }
 
-    private static string timeFormat = @"hh\:mm\:ss\:fff";
+    //private static string timeFormat = @"hh\:mm\:ss\:fff";
+    private static string timeFormat = @"mm\:ss";
 
     public bool IsTrySameAngle = true;
 

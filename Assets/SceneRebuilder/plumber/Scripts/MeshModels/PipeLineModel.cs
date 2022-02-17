@@ -770,6 +770,11 @@ public class PipeLineModel : PipeModelBase
         return prefab;
     }
 
+    public override string GetDictKey()
+    {
+        return "";
+    }
+
     public override GameObject CreateModelByPrefabMesh()
     {
         if (ResultGo != null && ResultGo != this.gameObject)

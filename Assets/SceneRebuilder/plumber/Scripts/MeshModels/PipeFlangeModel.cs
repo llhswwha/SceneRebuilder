@@ -40,6 +40,11 @@ public class PipeFlangeModel : PipeReducerModel
         return prefab;
     }
 
+    public override string GetDictKey()
+    {
+        return "";
+    }
+
     private float defaultMinRepeatPointDistance=0.0002f;
 
     public override SharedMeshTrianglesList GetSharedMeshTrianglesList(MeshTriangles meshTriangles)

@@ -504,6 +504,11 @@ namespace MeshJobs
             bool isFoundZero = false;
 
             var tpsFrom=AcRTAlignJobHelper.tpDict[vsFromId];
+            if (tpsFrom.Length == 0)
+            {
+                Debug.LogError($"tpsFrom.Length == 0 vsFromId:{vsFromId} vsToId:{vsToId}");
+                return;
+            }
             var tpsTo=AcRTAlignJobHelper.tpDict[vsToId];
 
             var vsFromW = AcRTAlignJobHelper.vsDictWorld[vsFromId];

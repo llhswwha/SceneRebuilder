@@ -202,6 +202,11 @@ public class PipeReducerModel
         return pipe.gameObject;
     }
 
+    public override string GetDictKey()
+    {
+        return "";
+    }
+
     public override Vector3 GetStartPoint()
     {
         return this.transform.TransformPoint(StartPoint);

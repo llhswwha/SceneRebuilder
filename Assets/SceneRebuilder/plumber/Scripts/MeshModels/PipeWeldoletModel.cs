@@ -4,6 +4,11 @@ using UnityEngine;
 
 public class PipeWeldoletModel : PipeTeeModel
 {
+    public override string GetDictKey()
+    {
+        return "";
+    }
+
     public float CircleWidth = 0.001f;
 
     public override void GetModelInfo()
