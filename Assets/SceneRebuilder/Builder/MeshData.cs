@@ -12,11 +12,13 @@ public class MeshData
 
     public int vertexCount = 0;
 
-    public int vertexBufferCount = 0;
+    //public int vertexBufferCount = 0;
 
-    public int vertexAttributeCount = 0;
+    //public int vertexAttributeCount = 0;
 
     public int subMeshCount = 0;
+
+    public int childCount = 0;
 
     //public Vector3[] vertices;
 
@@ -55,7 +57,7 @@ public class MeshData
 
     public Vector3 size;
 
-    public float scaleX=1;
+    //public float scaleX=1;
 
     public Transform t;
 
@@ -66,7 +68,7 @@ public class MeshData
         this.name=obj.name;
         t=obj.transform;
         scale=t.lossyScale;
-        scaleX=scale.x;
+        //scaleX=scale.x;
         MeshFilter msFilter = obj.GetComponent<MeshFilter>();
         try
         {
@@ -83,8 +85,8 @@ public class MeshData
                 this.size=ms.bounds.size;
                 triangleCount = ms.triangles.Length;
                 vertexCount = ms.vertexCount;
-                vertexBufferCount = ms.vertexBufferCount;
-                vertexAttributeCount = ms.vertexAttributeCount;
+                //vertexBufferCount = ms.vertexBufferCount;
+                //vertexAttributeCount = ms.vertexAttributeCount;
                 subMeshCount = ms.subMeshCount;
 
                 //uv = ms.uv;
@@ -119,13 +121,14 @@ public class MeshData
     {
         if (info != null)
         {
+            childCount++;
             Mesh ms = info.mesh;
             if (ms != null)
             {
                 triangleCount += ms.triangles.Length;
                 vertexCount += ms.vertexCount;
-                vertexBufferCount += ms.vertexBufferCount;
-                vertexAttributeCount += ms.vertexAttributeCount;
+                //vertexBufferCount += ms.vertexBufferCount;
+                //vertexAttributeCount += ms.vertexAttributeCount;
             }
             else
             {
@@ -133,8 +136,8 @@ public class MeshData
 
                 triangleCount += info.triangleCount;
                 vertexCount += info.vertexCount;
-                vertexBufferCount += info.vertexBufferCount;
-                vertexAttributeCount += info.vertexAttributeCount;
+                //vertexBufferCount += info.vertexBufferCount;
+                //vertexAttributeCount += info.vertexAttributeCount;
             }
         }
         else
@@ -153,7 +156,9 @@ public class MeshData
         //}
         //else
         {
-            bool r1 = triangleCount == info.triangleCount && vertexCount == info.vertexCount && vertexBufferCount == info.vertexBufferCount && vertexAttributeCount == info.vertexAttributeCount;
+            //bool r1 = triangleCount == info.triangleCount && vertexCount == info.vertexCount && vertexBufferCount == info.vertexBufferCount && vertexAttributeCount == info.vertexAttributeCount;
+
+            bool r1 = triangleCount == info.triangleCount && vertexCount == info.vertexCount;
             return r1;
         }
 

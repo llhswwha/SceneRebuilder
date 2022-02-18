@@ -1,6 +1,7 @@
 using System.Collections;
 using System.Collections.Generic;
 using Unity.Collections;
+using Unity.Mathematics;
 using UnityEngine;
 
 public struct GetPointGroupJob : IPipeJob
@@ -9,7 +10,7 @@ public struct GetPointGroupJob : IPipeJob
 
     //public OrientedBoundingBox OBB;
 
-    public NativeArray<Vector3> points;
+    public NativeArray<float3> points;
 
     public GetPointGroupJobResult lineData;
 
@@ -19,7 +20,9 @@ public struct GetPointGroupJob : IPipeJob
 
     public void Execute()
     {
-        
+        float3 v1 = points[0];
+        float3 closedP = MeshHelper.FindClosedPoint(v1, points);
+        float dis = math.distance(v1, closedP);
     }
 
     public void Dispose()

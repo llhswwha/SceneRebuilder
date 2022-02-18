@@ -140,6 +140,19 @@ public class MeshNodeEditor : BaseFoldoutEditor<MeshNode>
             },
             () =>
             {
+                var btnStyle = new GUIStyle(EditorStyles.miniButton);
+                btnStyle.margin = new RectOffset(0, 0, 0, 0);
+                btnStyle.padding = new RectOffset(0, 0, 0, 0);
+                if (GUILayout.Button("UpdateSharedMesh", btnStyle, GUILayout.Width(120)))
+                {
+                    for (int i = 0; i < subms.Count; i++)
+                    {
+                        MeshNode node = subms[i];
+                        ProgressBarHelper.DisplayCancelableProgressBar(new ProgressArg("UpdateSharedMesh", i, subms.Count, node));
+                        node.GetSharedMeshList();
+                    }
+                    ProgressBarHelper.ClearProgressBar();
+                }
             });
 
             DrawMeshNodeList(meshnodeListArg, item, 0);

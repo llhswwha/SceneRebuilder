@@ -4,7 +4,9 @@ using System.Collections;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
+using Unity.Collections;
 using Unity.ComnLib.Utils;
+using Unity.Mathematics;
 #if UNITY_EDITOR
 using UnityEditor;
 #endif
@@ -75,12 +77,31 @@ public static class MeshHelper
         return list.GetCenter();
     }
 
-    public static Vector3 FindClosedPoint(Vector3 p, List<Vector3> list)
+    public static float3 FindClosedPoint(float3 p, NativeArray<float3> list)
+    {
+        float minDis = float.MaxValue;
+        float3 minP = float3.zero;
+        foreach (float3 item in list)
+        {
+            bool3 b3 = item == p;
+            if (b3.x && b3.y && b3.z) continue;
+            float dis = math.distance(item, p);
+            if (dis < minDis)
+            {
+                minDis = dis;
+                minP = item;
+            }
+        }
+        return minP;
+    }
+
+    public static Vector3 FindClosedPoint(Vector3 p, NativeArray<Vector3> list)
     {
         float minDis = float.MaxValue;
         Vector3 minP = Vector3.zero;
         foreach (var item in list)
         {
+            if (item == p) continue;
             float dis = Vector3.Distance(item, p);
             if (dis < minDis)
             {
@@ -90,6 +111,24 @@ public static class MeshHelper
         }
         return minP;
     }
+
+    public static Vector3 FindClosedPoint(Vector3 p, List<Vector3> list)
+    {
+        float minDis = float.MaxValue;
+        Vector3 minP = Vector3.zero;
+        foreach (var item in list)
+        {
+            if (item == p) continue;
+            float dis = Vector3.Distance(item, p);
+            if (dis < minDis)
+            {
+                minDis = dis;
+                minP = item;
+            }
+        }
+        return minP;
+    }
+
     public static Vector3 FindClosedPoint(Vector3 p, SharedMeshTrianglesList list)
     {
         float minDis = float.MaxValue;

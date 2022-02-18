@@ -137,7 +137,7 @@ public class MeshNode : MonoBehaviour,IComparable<MeshNode>
 
     public int VertexCount = 0;
 
-    public int RenderCount = 0;
+    //public int RenderCount = 0;
 
     //public MeshInfo Info = new MeshInfo();
 
@@ -164,13 +164,13 @@ public class MeshNode : MonoBehaviour,IComparable<MeshNode>
 
     public string GetItemInfo(float sumCount)
     {
-        if (sharedMeshInfos != null)
+        if (sharedMeshInfos != null )
         {
-            return $"{MeshHelper.GetVertexCountS(VertexCount)}[{VertexCount / (float)sumCount:P1}]|{MeshHelper.GetVertexCountS(sharedMeshInfos.sharedVertexCount)}";
+            return $"{MeshHelper.GetVertexCountS(VertexCount)}[{VertexCount / (float)sumCount:P1}]|{rendererCount}|{MeshHelper.GetVertexCountS(sharedMeshInfos.sharedVertexCount)}";
         }
         else
         {
-            return $"{MeshHelper.GetVertexCountS(VertexCount)}[{VertexCount / (float)sumCount:P1}]";
+            return $"{MeshHelper.GetVertexCountS(VertexCount)}[{VertexCount / (float)sumCount:P1}]|{rendererCount}";
         }
         
     }
