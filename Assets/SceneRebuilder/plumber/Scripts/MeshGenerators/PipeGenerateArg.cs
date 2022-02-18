@@ -64,11 +64,11 @@ public class PipeGenerateArg
     {
         if (this.pipeMaterial == null)
         {
-            this.pipeMaterial = PipeFactory.Instance.pipeMaterial;
+            this.pipeMaterial = PipeFactory.Instance.GetPipeMaterial();
         }
         if (this.weldMaterial == null)
         {
-            this.weldMaterial = PipeFactory.Instance.weldMaterial;
+            this.weldMaterial = PipeFactory.Instance.GetWeldMaterial();
         }
 
         pipe.pipeSegments = this.pipeSegments;
@@ -93,11 +93,11 @@ public class PipeGenerateArg
     {
         if (this.pipeMaterial == null)
         {
-            this.pipeMaterial = PipeFactory.Instance.pipeMaterial;
+            this.pipeMaterial = PipeFactory.Instance.GetPipeMaterial();
         }
         if (this.weldMaterial == null)
         {
-            this.weldMaterial = PipeFactory.Instance.weldMaterial;
+            this.weldMaterial = PipeFactory.Instance.GetWeldMaterial();
         }
 
         pipe.pipeSegments = this.pipeSegments;

@@ -492,6 +492,7 @@ public class BaseFoldoutEditor<T> : BaseEditor<T> where T : class
                         GameObject.DestroyImmediate((item as Component).gameObject);
                     }
                 }
+                list.Clear();
             }
         });
         if (foldoutArg.isExpanded && foldoutArg.isEnabled)

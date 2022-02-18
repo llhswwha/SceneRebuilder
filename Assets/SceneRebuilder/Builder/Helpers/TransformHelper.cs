@@ -5,6 +5,45 @@ using UnityEngine;
 
 public static class TransformHelper
 {
+    public static void ClearComponentGos<T>(GameObject obj) where T : Component
+    {
+        var ids = obj.GetComponentsInChildren<T>(true);
+        foreach (var id in ids)
+        {
+            GameObject.DestroyImmediate(id.gameObject);
+        }
+        Debug.Log($"ClearComponentGos[{typeof(T)}] ids:{ids.Length}");
+    }
+
+    public static void ClearComponents<T>(GameObject obj) where T : Component
+    {
+        var ids = obj.GetComponentsInChildren<T>(true);
+        foreach (var id in ids)
+        {
+            GameObject.DestroyImmediate(id);
+        }
+        Debug.Log($"ClearComponents[{typeof(T)}] ids:{ids.Length}");
+    }
+
+    public static void ClearComponents<T>(GameObject[] objs) where T : Component
+    {
+        foreach (var obj in objs)
+        {
+            ClearComponents<T>(obj);
+        }
+    }
+
+    //public static void ClearComponents<T>(GameObject root) where T : Component
+    //{
+    //    T[] obbs = root.GetComponentsInChildren<T>(true);
+    //    foreach (var obb in obbs)
+    //    {
+    //        if (obb == null) continue;
+    //        GameObject.DestroyImmediate(obb);
+    //    }
+    //}
+
+
     public static GameObject CreateBoxLine(Vector3 p1, Vector3 p2, float size, string n, Transform pt)
     {
         GameObject g1 = GameObject.CreatePrimitive(PrimitiveType.Cube);

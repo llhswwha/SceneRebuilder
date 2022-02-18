@@ -302,22 +302,9 @@ public class MyEditorTools2
 
     #region ClearComponents
 
-    public static void ClearComponents<T>(GameObject obj) where T : Component
-    {
-        var ids = obj.GetComponentsInChildren<T>(true);
-        foreach (var id in ids)
-        {
-            GameObject.DestroyImmediate(id);
-        }
-        Debug.Log($"ClearComponents[{typeof(T)}] ids:{ids.Length}");
-    }
-
     public static void ClearComponents<T>() where T : Component
     {
-        foreach (var obj in Selection.gameObjects)
-        {
-            ClearComponents<T>(obj);
-        }
+        TransformHelper.ClearComponents<T>(Selection.gameObjects);
     }
 
     [MenuItem("SceneTools/Clear/ClearRId")]

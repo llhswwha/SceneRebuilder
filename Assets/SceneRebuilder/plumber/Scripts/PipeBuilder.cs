@@ -744,6 +744,8 @@ public class PipeBuilder : MonoBehaviour
             foreach (var g in gs)
             {
                 if (g == null) continue;
+                PipeModelBase pipeModel = g.GetComponent<PipeModelBase>();
+                if (pipeModel) continue;
                 GameObject.DestroyImmediate(g.gameObject);
             }
             Debug.Log($"ClearGeneratedObjs gs:{gs.Length}");
@@ -914,14 +916,14 @@ public class PipeBuilder : MonoBehaviour
 
     public void ClearModels()
     {
-        PipeModels.Clear();
-        PipeElbows.Clear();
-        PipeLines.Clear();
-        PipeTees.Clear();
-        PipeReducers.Clear();
-        PipeFlanges.Clear();
-        PipeGenerators.Clear();
-        PipeWeldolets.Clear();
+        PipeModels = new List<PipeModelBase>();
+        PipeElbows = new List<PipeElbowModel>();
+        PipeLines = new List<PipeLineModel>();
+        PipeTees = new List<PipeTeeModel>();
+        PipeReducers = new List<PipeReducerModel>();
+        PipeFlanges = new List<PipeFlangeModel>();
+        PipeGenerators = new List<PipeMeshGeneratorBase>();
+        PipeWeldolets = new List<PipeWeldoletModel>();
     }
 
     public void GetPipeInfosJob()
@@ -1683,26 +1685,32 @@ public class PipeBuilder : MonoBehaviour
         int id = 0;
 
         PipeLines = GetPipeModelInfos<PipeLineModel>(PipeLineGos, id, count, "Line");
+        if (PipeLines == null) return;
         id += PipeLines.Count;
         AddPipeModelRange(PipeLines);
 
         PipeReducers = GetPipeModelInfos<PipeReducerModel>(PipeReducerGos, id, count, "Reducer");
+        if (PipeReducers == null) return;
         id += PipeReducers.Count;
         AddPipeModelRange(PipeReducers);
 
         PipeFlanges = GetPipeModelInfos<PipeFlangeModel>(PipeFlangeGos, id, count, "Flange");
+        if (PipeFlanges == null) return;
         id += PipeFlanges.Count;
         AddPipeModelRange(PipeFlanges);
 
         PipeElbows = GetPipeModelInfos<PipeElbowModel>(PipeElbowGos, id, count, "Elbow");
+        if (PipeElbows == null) return;
         id += PipeElbows.Count;
         AddPipeModelRange(PipeElbows);
 
         PipeTees = GetPipeModelInfos<PipeTeeModel>(PipeTeeGos, id, count, "Tee");
+        if (PipeTees == null) return;
         id += PipeTees.Count;
         AddPipeModelRange(PipeTees);
 
         PipeWeldolets = GetPipeModelInfos<PipeWeldoletModel>(PipeWeldoletGos, id, count, "Weldolet");
+        if (PipeWeldolets == null) return;
         id += PipeWeldolets.Count;
         AddPipeModelRange(PipeWeldolets);
 
@@ -1729,10 +1737,15 @@ public class PipeBuilder : MonoBehaviour
             if (mf == null) continue;
             if (ProgressBarHelper.DisplayCancelableProgressBar(new ProgressArg($"GetPipeInfos_{tag}", id, count, p)))
             {
-                return models;
+                return null;
             }
             //CreatePipe(p);
             T pipeModel = GetPipeModelInfo<T>(p,true);
+            if (OBBCollider.IsBreakProgress)
+            {
+                OBBCollider.IsBreakProgress = false;
+                return null;
+            }
             models.Add(pipeModel);
             //AddPipeModel(pipeModel);
             //p.gameObject.SetActive(false);

@@ -271,6 +271,7 @@ public class PipeLineModel : PipeModelBase
             oBBCollider = this.gameObject.AddComponent<OBBCollider>();
         }
         oBBCollider.ShowObbInfo(true);
+      
         IsObbError = oBBCollider.IsObbError;
         OBB = oBBCollider.OBB;
 

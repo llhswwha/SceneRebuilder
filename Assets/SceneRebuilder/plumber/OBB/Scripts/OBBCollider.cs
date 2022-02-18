@@ -122,6 +122,8 @@ public class OBBCollider : MonoBehaviour
     [ContextMenu("ShowObbInfo")]
     public bool ShowObbInfo(bool isGetObbEx)
     {
+
+
         //ClearChildren();
         ClearDebugInfoGos();
         GetObb(isGetObbEx);
@@ -184,8 +186,10 @@ public class OBBCollider : MonoBehaviour
         return job;
     }
 
-        public OrientedBoundingBox GetObb(bool isGetObbEx)
+    public OrientedBoundingBox GetObb(bool isGetObbEx)
     {
+        IsBreakProgress = false;
+
         DateTime start = DateTime.Now;
         List<Vector3> ps1 = new List<Vector3>();
         List<Vector3S> ps2 = new List<Vector3S>();
@@ -211,16 +215,21 @@ public class OBBCollider : MonoBehaviour
         {
             Debug.LogError($"GetObb Error gameObject:{this.name} Extent:{OBB.Extent} ps_Last:{ps2.Last()}");
             var errorP = ps1.Last();
-            CreateLocalPoint(errorP, $"ErrorPoint({errorP.x},{errorP.y},{errorP.z})");
+            CreateLocalPoint(errorP, $"ObbErrorPoint({errorP.x},{errorP.y},{errorP.z})");
             //OBB = null;
             if (isGetObbEx)
             {
-                if (GetObbEx() == false) return new OrientedBoundingBox();
+                if (GetObbEx() == false)
+                {
+                    return new OrientedBoundingBox();
+                }
             }
             IsObbError = true;
         }
         return OBB;
     }
+
+    public static bool IsBreakProgress = false;
 
     public bool GetObbEx()
     {
@@ -234,12 +243,15 @@ public class OBBCollider : MonoBehaviour
         var count = vs.Length;
 
         StringBuilder sb = new StringBuilder();
+
         for (int i = 0; i < count && i < TestObbPointCount; i++)
         {
             Vector3 p = vs[i];
 
             if(ProgressBarHelper.DisplayCancelableProgressBar(new ProgressArg("GetObbEx", i, count, p)))
             {
+                Debug.LogError("GetObbEx BreakProgress");
+                IsBreakProgress = true;
                 ProgressBarHelper.ClearProgressBar();
                 return false;
             }
@@ -278,7 +290,7 @@ public class OBBCollider : MonoBehaviour
         {
             Debug.LogError($"GetObbEx Error Extent:{OBB.Extent} ps_Last:{ps22.Last()}");
             var errorP = ps1.Last();
-            CreateLocalPoint(errorP, $"ErrorPoint({errorP.x},{errorP.y},{errorP.z})");
+            CreateLocalPoint(errorP, $"ObbErrorPoint({errorP.x},{errorP.y},{errorP.z})");
         }
         ProgressBarHelper.ClearProgressBar();
         return true;
@@ -558,12 +570,16 @@ public class OBBCollider : MonoBehaviour
 
     private GameObject CreateLocalPoint(Vector3 p, string n)
     {
-        return CreateLocalPoint(p, n, this.transform, lineSize);
+        GameObject go= CreateLocalPoint(p, n, this.transform, lineSize);
+        //go.AddComponent<DebugInfoRoot>();
+        return go;
     }
 
     private GameObject CreateLocalPoint(Vector3 p, string n, Transform pT)
     {
-        return CreateLocalPoint(p, n, pT, lineSize);
+        GameObject go = CreateLocalPoint(p, n, pT, lineSize);
+        //go.AddComponent<DebugInfoRoot>();
+        return go;
     }
 
     public static GameObject CreateLocalPoint(Vector3 p, string n, Transform pT,float scale)
@@ -577,6 +593,8 @@ public class OBBCollider : MonoBehaviour
         g1.name = n;
 
         //g1.transform.SetParent(this.transform);
+
+        g1.AddComponent<DebugInfoRoot>();
         return g1;
     }
 

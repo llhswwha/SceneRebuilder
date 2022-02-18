@@ -62,19 +62,11 @@ public class PipeFactory : SingletonBehaviour<PipeFactory>
             GameObject.DestroyImmediate(pipe);
         }
 
-        PipeMeshGeneratorBase[] pipes = Target.GetComponentsInChildren<PipeMeshGeneratorBase>(true);
-        foreach (var pipe in pipes)
-        {
-            if (pipe == null) continue;
-            GameObject.DestroyImmediate(pipe.gameObject);
-        }
+        TransformHelper.ClearComponentGos<PipeMeshGeneratorBase>(Target);
 
-        OBBCollider[] obbs = Target.GetComponentsInChildren<OBBCollider>(true);
-        foreach (var obb in obbs)
-        {
-            if (obb == null) continue;
-            GameObject.DestroyImmediate(obb);
-        }
+        TransformHelper.ClearComponents<OBBCollider>(Target);
+
+        TransformHelper.ClearComponents<DebugInfoRoot>(Target);
     }
 
     public void ClearGeneratedObjs()
@@ -111,7 +103,7 @@ public class PipeFactory : SingletonBehaviour<PipeFactory>
 
         GetTargetInfoBefore();
 
-        this.ClearResult();
+        this.ClearGeneratedObjs();
         this.GetPipeParts();
 
         int weldsCount = this.PipeWelds.Count;
@@ -286,6 +278,15 @@ public class PipeFactory : SingletonBehaviour<PipeFactory>
         return PipeModelUnitPrefabMesh_Flange;
     }
 
+    public void ClearWeldPrefabs()
+    {
+        PipeModelUnitPrefab_Welds_Datas.Clear();
+        PipeModelUnitPrefab_Welds.Clear();
+        PipeModelUnitPrefabMesh_Welds.Clear();
+    }
+
+    public List<PipeWeldData> PipeModelUnitPrefab_Welds_Datas = new List<PipeWeldData>();
+
     public List<GameObject> PipeModelUnitPrefab_Welds = new List<GameObject>();
 
     public List<Mesh> PipeModelUnitPrefabMesh_Welds = new List<Mesh>();
@@ -317,22 +318,57 @@ public class PipeFactory : SingletonBehaviour<PipeFactory>
 
     public int WeldRadiusP = 4;
 
+    public static float WeldPrefabArgPipeRadiusDistance = 0.0005f;
+
+    public static float WeldPrefabArgElbowRadiusDistance = 0.0005f;
+
     public GameObject GetPipeModelUnitPrefab_Weld(PipeWeldData data)
     {
         string weldName = data.GetPrefabName(WeldRadiusP);
         GameObject result = null;
-        foreach(var weld in PipeModelUnitPrefab_Welds)
+        foreach (var weld in PipeModelUnitPrefab_Welds)
         {
             if (weld.name == weldName)
             {
-                result = weld;break;
+                result = weld; break;
             }
         }
         if (result == null)
         {
-            result = CreatePipeModelUnitPrefab_Weld(data, weldName);
-            PipeModelUnitPrefab_Welds.Add(result);
-            PipeModelUnitPrefabMesh_Welds.Add(result.GetComponent<MeshFilter>().sharedMesh);
+            int id = -1;
+            for (int i = 0; i < PipeModelUnitPrefab_Welds_Datas.Count; i++)
+            {
+                var prefabData = PipeModelUnitPrefab_Welds_Datas[i];
+                var disPipe = Math.Abs(data.pipeRadius - prefabData.pipeRadius);
+                if(disPipe> WeldPrefabArgPipeRadiusDistance)
+                {
+                    continue;
+                }
+                var disElbow = Math.Abs(data.elbowRadius - prefabData.elbowRadius);
+
+                if(disElbow < WeldPrefabArgElbowRadiusDistance)
+                {
+                    Debug.Log($"GetPipeModelUnitPrefab_Weld[{weldName}] [elbowRadius1:{data.elbowRadius} elbowRadius2:{prefabData.elbowRadius} disElbow:{disElbow}]  [pipeRadius1:{data.pipeRadius} pipeRadius2:{prefabData.pipeRadius} disPipe:{disPipe}] ");
+                    id = i;
+                    break;
+                }
+                else if (disElbow < WeldPrefabArgElbowRadiusDistance * 5)
+                {
+                    Debug.LogWarning($"GetPipeModelUnitPrefab_Weld[{weldName}] [elbowRadius1:{data.elbowRadius} elbowRadius2:{prefabData.elbowRadius} disElbow:{disElbow}]  [pipeRadius1:{data.pipeRadius} pipeRadius2:{prefabData.pipeRadius} disPipe:{disPipe}] ");
+                }
+            }
+
+            if (id == -1)
+            {
+                result = CreatePipeModelUnitPrefab_Weld(data, weldName);
+                PipeModelUnitPrefab_Welds_Datas.Add(data);
+                PipeModelUnitPrefab_Welds.Add(result);
+                PipeModelUnitPrefabMesh_Welds.Add(result.GetComponent<MeshFilter>().sharedMesh);
+            }
+            else
+            {
+                result = PipeModelUnitPrefab_Welds[id];
+            }
         }
         return result;
     }
@@ -447,18 +483,16 @@ public class PipeFactory : SingletonBehaviour<PipeFactory>
 
     public PrefabInfoList AllPrefabs = new PrefabInfoList();
 
-    [ContextMenu("ClearResult")]
-    public void ClearResult()
-    {
-        ClearDebugObjs();
-
-        ClearGeneratedObjs();
-    }
+    //[ContextMenu("ClearResult")]
+    //public void ClearResult()
+    //{
+    //    ClearGeneratedObjs();
+    //}
 
     [ContextMenu("GetPipeParts")]
     public void GetPipeParts()
     {
-        
+        ClearDebugObjs();
 
         GetModelClass();
 
@@ -487,61 +521,19 @@ public class PipeFactory : SingletonBehaviour<PipeFactory>
             if (item.GetComponent<MeshRenderer>() == null) continue;
             list.Add(item);
         }
-        //list.AddRange(newList);
     }
 
     public bool isUniformRaidus = false;
 
     public void GetModelClass()
     {
-        //if (WeldRootTarget == null)
-        //{
-        //    WeldRootTarget = new GameObject("WeldRootTarget");
-        //}
-
         if (Target == null)
         {
             Debug.LogError("GetModelClass Target == null");
             return;
         }
-
-        //Dictionary<GameObject, Transform> parentDict = new Dictionary<GameObject, Transform>();
-
-        //var weldRoots = TransformHelper.FindGameObjects(Target.transform, "Welding");
-        //foreach(var root in weldRoots)
-        //{
-        //    Transform wp = root.transform.parent;
-        //    if (!root.name.Contains("_"))
-        //    {
-
-        //        if(wp.name=="In"|| wp.name == "Out0"|| wp.name == "Out1")
-        //        {
-        //            root.name = wp.transform.parent.name+"_"+wp.name + "_" + root.name;
-        //        }
-        //        else
-        //        {
-        //            root.name = wp.name + "_" + root.name;
-        //        }
-        //    }
-
-        //    //EditorHelper.UnpackPrefab(w);
-        //    //parentDict.Add(w, wp);
-        //    //w.transform.SetParent(null);
-        //    //w.transform.SetParent(WeldRootTarget.transform);
-
-        //    var welds = wp.GetComponentsInChildren<MeshRenderer>(true);
-        //    int allWeldsCount = welds.Length;
-        //    List<Transform> weldList = new List<Transform>();
-        //    foreach (var w in welds)
-        //    {
-        //        weldList.Add(w.transform);
-        //    }
-        //}
-
         ClearList();
-
         PipeWelds = GetWelds();
-
         Dictionary<Transform, Transform> weldsDict = new Dictionary<Transform, Transform>();
         foreach(var weld in PipeWelds)
         {
@@ -558,38 +550,26 @@ public class PipeFactory : SingletonBehaviour<PipeFactory>
             var list = modelClassList.GetList(key);
             if (key.StartsWith("Pipe")) 
             {
-                //foreach(var item in list)
-                //{
-                //    if (item.GetComponent<MeshRenderer>() == null) continue;
-                //    PipeLines.Add(item);
-                //}
-                //PipeLines.AddRange(list);
-
                 AddList(PipeLines, list);
             }
             else if (key.Contains("Degree_Direction_Change") || key.StartsWith("ELBOW") || key.StartsWith("BEND"))
             {
-                //PipeElbows.AddRange(list);
                 AddList(PipeElbows, list);
             }
             else if (key.Contains("Tee") || key.StartsWith("TEE"))
             {
-                //PipeTees.AddRange(list);
                 AddList(PipeTees, list);
             }
             else if (key.Contains("Weldolet"))
             {
-                //PipeTees.AddRange(list);
                 AddList(PipeWeldolets, list);
             }
             else if (key.Contains("Reducer") || key.StartsWith("REDUCER") || key.StartsWith("CONE"))//REDUCER CONE
             {
-                //PipeReducers.AddRange(list);
                 AddList(PipeReducers, list);
             }
             else if (key.Contains("Flange") || key.StartsWith("Ô²Öù") || key.StartsWith("CYLINDER") || key.StartsWith("FLANGE") || key.StartsWith("OLET"))//FLANGE
             {
-                //PipeFlanges.AddRange(list);
                 AddList(PipeFlanges, list);
             }
             //ATTACHMENT
@@ -619,15 +599,37 @@ public class PipeFactory : SingletonBehaviour<PipeFactory>
                 }
             }
         }
-
-        //WeldRootTarget.transform.SetParent(Target.transform);
-        //foreach (var w in welds)
-        //{
-        //    var wp = parentDict[w];
-        //    w.transform.SetParent(wp);
-        //}
+        InitArgMat();
         Debug.Log($"GetModelClass keys:{keys.Count} maxVertexCount:{maxVertexCount} welds:{PipeWelds.Count}");
+    }
 
+    private void InitArgMat()
+    {
+
+        if (generateArg.pipeMaterial == null)
+        {
+            if (PipeLines.Count > 0)
+            {
+                generateArg.pipeMaterial = PipeLines[0].GetComponent<MeshRenderer>().sharedMaterial;
+            }
+            else
+            {
+                Debug.LogError("InitArgMat PipeLines.Count == 0");
+            }
+        }
+
+
+        if (generateArg.weldMaterial == null)
+        {
+            if (PipeWelds.Count > 0)
+            {
+                generateArg.weldMaterial = PipeWelds[0].GetComponent<MeshRenderer>().sharedMaterial;
+            }
+            else
+            {
+                Debug.LogError("InitArgMat PipeWelds.Count == 0");
+            }
+        }
     }
 
     public void ResetGeneratorsMesh()
@@ -1686,15 +1688,25 @@ public class PipeFactory : SingletonBehaviour<PipeFactory>
         return meshNode.GetVertexInfo();
     }
 
-    public Material pipeMaterial;
+    //public Material pipeMaterial;
 
-    public Material weldMaterial;
+    //public Material weldMaterial;
 
     public string NewObjName = "_New";
 
     public PipeGenerateArg generateArg = new PipeGenerateArg();
 
     public PipeGenerateArg generateArg2 = new PipeGenerateArg();
+
+    public Material GetPipeMaterial()
+    {
+        return generateArg.pipeMaterial;
+    }
+
+    public Material GetWeldMaterial()
+    {
+        return generateArg.weldMaterial;
+    }
 
     public PipeGenerateArg GetLoadXmlArg()
     {

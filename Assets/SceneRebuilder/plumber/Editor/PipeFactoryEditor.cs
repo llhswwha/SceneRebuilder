@@ -16,24 +16,32 @@ public class PipeFactoryEditor : BaseFoldoutEditor<PipeFactory>
     {
         GUILayout.BeginHorizontal();
         targetT.Target = ObjectFieldS("Target", targetT.Target);
+        targetT.generateArg.pipeMaterial = ObjectFieldS("PipeMat", targetT.generateArg.pipeMaterial);
+        targetT.generateArg.weldMaterial = ObjectFieldS("WeldMat", targetT.generateArg.weldMaterial);
+        GUILayout.EndHorizontal();
+
+        GUILayout.BeginHorizontal();
         GUILayout.Label("RenderOnStart", GUILayout.Width(90));
         targetT.IsRendererOnStart = EditorGUILayout.Toggle(targetT.IsRendererOnStart, GUILayout.Width(15));
         GUILayout.Label("LoadXmlOnStart", GUILayout.Width(90));
         targetT.IsLoadXmlOnStart = EditorGUILayout.Toggle(targetT.IsLoadXmlOnStart, GUILayout.Width(15));
         GUILayout.Label($"UnitPrefab");
         targetT.IsCreatePipeByUnityPrefab = EditorGUILayout.Toggle(targetT.IsCreatePipeByUnityPrefab);
+
+        GUILayout.Label("统一半径");
+        targetT.isUniformRaidus = EditorGUILayout.Toggle(targetT.isUniformRaidus);
+        GUILayout.Label("最小边数");
+        if (minPipeSegmentsValuesStr == null)
+            minPipeSegmentsValuesStr = GetIntArrayStrings(minPipeSegmentsValues);
+        targetT.MinPipeSegments = EditorGUILayout.IntPopup(targetT.MinPipeSegments, minPipeSegmentsValuesStr, minPipeSegmentsValues, GUILayout.Width(35));
+
         GUILayout.Label("Info:");
         GUILayout.Label(targetT.GetResultInfo(), GUILayout.Width(300));
         GUILayout.EndHorizontal();
 
         GUILayout.BeginHorizontal();
-        GUILayout.Label("统一半径");
-        targetT.isUniformRaidus = EditorGUILayout.Toggle(targetT.isUniformRaidus);
-        GUILayout.Label("最小边数");
 
-        if(minPipeSegmentsValuesStr==null)
-            minPipeSegmentsValuesStr = GetIntArrayStrings(minPipeSegmentsValues);
-        targetT.MinPipeSegments = EditorGUILayout.IntPopup(targetT.MinPipeSegments, minPipeSegmentsValuesStr, minPipeSegmentsValues, GUILayout.Width(35));
+
         if (generateArgEditorValues == null) generateArgEditorValues = new PipeGenerateArgEditorValues();
         DrawGenerateArg(targetT.generateArg, generateArgEditorValues);
 
@@ -106,7 +114,7 @@ public class PipeFactoryEditor : BaseFoldoutEditor<PipeFactory>
         GUILayout.BeginHorizontal();
         if (GUILayout.Button("0.Clear"))
         {
-            targetT.ClearResult();
+            targetT.ClearGeneratedObjs();
         }
         if (GUILayout.Button("1.GetParts"))
         {
@@ -150,10 +158,10 @@ public class PipeFactoryEditor : BaseFoldoutEditor<PipeFactory>
         {
             targetT.RemoveMeshes();
         }
-        if (GUILayout.Button("ClearResult"))
-        {
-            targetT.ClearGeneratedObjs();
-        }
+        //if (GUILayout.Button("ClearResult"))
+        //{
+        //    targetT.ClearGeneratedObjs();
+        //}
         GUILayout.EndHorizontal();
 
         GUILayout.BeginHorizontal();
@@ -258,6 +266,10 @@ public class PipeFactoryEditor : BaseFoldoutEditor<PipeFactory>
         {
             targetT.ShowPrefabs();
         }
+        if (GUILayout.Button("ClearWeldPrefabs"))
+        {
+            targetT.ClearWeldPrefabs();
+        }
         if (GUILayout.Button("ClearDebugObjs"))
         {
             targetT.ClearDebugObjs();
@@ -307,7 +319,8 @@ public class PipeFactoryEditor : BaseFoldoutEditor<PipeFactory>
         DrawPipeRunList(targetT.GetPipeRunList(), pipeRunListArg);
         DrawPipeModelsList(targetT.GetPipeRunList().SpecialElbows, specialElbowListArg, "SpecialElbow List");
         DrawPipeRunList(targetT.TestRunList, testpipeRunListArg);
-
+        DrawObjectList(pipeWeldPrefabListArg, "WeldPrefabs", targetT.PipeModelUnitPrefab_Welds, null, null, null);
+        DrawObjectList(pipeWeldPrefabMeshListArg, "WeldMeshPrefabs", targetT.PipeModelUnitPrefabMesh_Welds, null, null, null);
         EditorUIUtils.Separator(5);
         DrawObjectList(lineListArg, "Lines", targetT.PipeLines, null, null, null);
         DrawObjectList(elbowListArg, "Elbows", targetT.PipeElbows, null, null, null);
@@ -318,7 +331,8 @@ public class PipeFactoryEditor : BaseFoldoutEditor<PipeFactory>
         DrawObjectList(weldListArg, "Welds", targetT.PipeWelds, null, null, null);
         DrawObjectList(othersListArg, "Others", targetT.PipeOthers, null, null, null);
     }
-
+    static FoldoutEditorArg pipeWeldPrefabMeshListArg = new FoldoutEditorArg(true, false);
+    static FoldoutEditorArg pipeWeldPrefabListArg = new FoldoutEditorArg(true, false);
     static FoldoutEditorArg othersListArg = new FoldoutEditorArg(true, false);
     static FoldoutEditorArg weldListArg = new FoldoutEditorArg(true, false);
     static FoldoutEditorArg flangeListArg = new FoldoutEditorArg(true, false);
