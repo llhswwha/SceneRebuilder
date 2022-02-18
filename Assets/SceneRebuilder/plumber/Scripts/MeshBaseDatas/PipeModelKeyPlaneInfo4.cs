@@ -11,6 +11,11 @@ public struct PipeModelKeyPlaneInfo4
     public SharedMeshTriangles EndPointIn2;
     public SharedMeshTriangles EndPointOut2;
 
+    public float GetMinRadiusIn()
+    {
+        return (EndPointIn1.GetMinCenter4().w + EndPointIn2.GetMinCenter4().w) / 2;
+    }
+
     public override string ToString()
     {
         return $"[Int1:{EndPointIn1} Out1:{EndPointOut1} In2:{EndPointIn2} Out2:{EndPointOut2}]";

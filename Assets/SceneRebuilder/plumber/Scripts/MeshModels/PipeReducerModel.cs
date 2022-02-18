@@ -33,7 +33,7 @@ public class PipeReducerModel
         //Debug.Log($"GetElbowInfo mesh vertexCount:{mesh.vertexCount} triangles:{mesh.triangles.Length}");
         SharedMeshTrianglesList trianglesList = GetSharedMeshTrianglesList(meshTriangles);
 
-        distanceList = trianglesList.GetPlanePointDistanceList();
+        var distanceList = trianglesList.GetPlanePointDistanceList();
         GameObject keyPoints = CreateKeyPointsGo();
         for (int i = 0; i < distanceList.Count; i++)
         {
@@ -51,7 +51,7 @@ public class PipeReducerModel
         if(trianglesList.Count >= 3)
         {
             KeyPointCount = trianglesList.Count;
-            if (GetModelInfo3(trianglesList) ==false)
+            if (GetModelInfo3(trianglesList, keyPoints) ==false)
             {
                 IsGetInfoSuccess = false;
                 Debug.LogError($"GetKeyPointsById points.Count != 2 count:{trianglesList.Count} gameObject:{this.gameObject.name} sharedMinCount:{sharedMinCount} minRepeatPointDistance:{minRepeatPointDistance}");
@@ -60,30 +60,7 @@ public class PipeReducerModel
         }
         else if(trianglesList.Count == 2)
         {
-            SharedMeshTriangles startP = distanceList[0].Plane;
-            var StartPoint = startP.GetCenter4();
-
-            PipeRadius1 = StartPoint.w;
-
-            SharedMeshTriangles endP = distanceList[1].Plane;
-            var EndPoint = endP.GetCenter4();
-            PipeRadius2 = EndPoint.w;
-
-            PipeRadius = (PipeRadius1 + PipeRadius2) / 2;
-
-            trianglesList.Remove(StartPoint);
-            trianglesList.Remove(EndPoint);
-
-            TransformHelper.ShowLocalPoint(StartPoint, PointScale, keyPoints.transform, null).name = "StartPoint";
-            TransformHelper.ShowLocalPoint(EndPoint, PointScale, keyPoints.transform, null).name = "EndPoint";
-
-            //GetPipeRadius();
-
-            IsGetInfoSuccess = true;
-
-            ModelStartPoint = StartPoint;
-            ModelEndPoint = EndPoint;
-            KeyPointCount = 2;
+            GetModelInfo2(trianglesList, keyPoints, distanceList[0].Plane, distanceList[1].Plane);
         }
         else
         {
@@ -98,7 +75,39 @@ public class PipeReducerModel
         Debug.Log($">>>{this.GetType().Name} time:{DateTime.Now - start} points:{trianglesList.Count} meshTriangles:{meshTriangles.Count} trianglesList:{trianglesList.Count} distanceList:{distanceList.Count}");
     }
 
-    protected virtual bool GetModelInfo3(SharedMeshTrianglesList trianglesList)
+    protected void GetModelInfo2(SharedMeshTrianglesList trianglesList, GameObject keyPoints, SharedMeshTriangles startP, SharedMeshTriangles endP)
+    {
+        //SharedMeshTriangles startP = distanceList[0].Plane;
+        var StartPoint = startP.GetCenter4();
+
+        PipeRadius1 = StartPoint.w;
+
+        //SharedMeshTriangles endP = distanceList[1].Plane;
+        var EndPoint = endP.GetCenter4();
+        PipeRadius2 = EndPoint.w;
+
+        PipeRadius = (PipeRadius1 + PipeRadius2) / 2;
+
+        trianglesList.Remove(StartPoint);
+        trianglesList.Remove(EndPoint);
+
+        if (keyPoints != null)
+        {
+            TransformHelper.ShowLocalPoint(StartPoint, PointScale, keyPoints.transform, null).name = "StartPoint";
+            TransformHelper.ShowLocalPoint(EndPoint, PointScale, keyPoints.transform, null).name = "EndPoint";
+        }
+        
+
+        //GetPipeRadius();
+
+        IsGetInfoSuccess = true;
+
+        ModelStartPoint = StartPoint;
+        ModelEndPoint = EndPoint;
+        KeyPointCount = 2;
+    }
+
+    protected virtual bool GetModelInfo3(SharedMeshTrianglesList trianglesList,GameObject debugRoot)
     {
         return false;
     }
@@ -204,7 +213,7 @@ public class PipeReducerModel
 
     public override string GetDictKey()
     {
-        return "";
+        return $"Reducer_{PipeRadius1:F3}_{PipeRadius2:F3}";
     }
 
     public override Vector3 GetStartPoint()

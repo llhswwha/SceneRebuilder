@@ -408,6 +408,7 @@ public class PipeFactory : SingletonBehaviour<PipeFactory>
 
     private void OneKeyGeneratePipes(bool isJob,bool isRemoveMesh)
     {
+        this.ClearWeldPrefabs();
         this.ClearGeneratedObjs();
         if(isRemoveMesh)
             this.RemoveMeshes();//++
@@ -503,9 +504,26 @@ public class PipeFactory : SingletonBehaviour<PipeFactory>
 
     public void ShowPrefabs()
     {
-        GameObject allPrefabs = new GameObject("AllPrefabs");
-        foreach(PrefabInfo pres in AllPrefabs)
+        //GameObject allPrefabs = new GameObject("AllPrefabs");
+        //foreach(PrefabInfo pres in AllPrefabs)
+        //{
+        //    GameObject go = GameObject.Instantiate(pres.Prefab);
+        //    TransformHelper.ClearChildren(go);
+        //    //EditorHelper.RemoveAllComponents(go);
+        //    go.transform.SetParent(allPrefabs.transform);
+        //    go.transform.position = Vector3.zero;
+        //}
+
+        ShowPrefabs(AllPrefabs, "AllPrefabs");
+    }
+
+    public void ShowPrefabs(PrefabInfoList list,string parent)
+    {
+        GameObject allPrefabs = new GameObject(parent);
+        foreach (PrefabInfo pres in list)
         {
+            if (pres == null) continue;
+            if (pres.Prefab == null) continue;
             GameObject go = GameObject.Instantiate(pres.Prefab);
             TransformHelper.ClearChildren(go);
             //EditorHelper.RemoveAllComponents(go);
@@ -944,22 +962,9 @@ public class PipeFactory : SingletonBehaviour<PipeFactory>
         return weldList;
     }
 
-    public PrefabInfoList PrefabTees()
+    private Dictionary<GameObject, Transform> MoveWeldParent()
     {
-        AcRTAlignJobSetting.Instance.SetDefault();
-
-        DateTime start = DateTime.Now;
-
-        //DateTime start1 = DateTime.Now;
-        //PrefabInfoList prefabs1 = PrefabInstanceBuilder.Instance.GetPrefabsOfList(newBuilder.PipeGenerators, true, "_Pipes");
-        //TimeSpan t1 = DateTime.Now - start1;
-
-        PrefabInfoList list = new PrefabInfoList();
-
         var welds = newBuilder.GetNewWelds(Target);
-
-
-
         Dictionary<GameObject, Transform> parentDict = new Dictionary<GameObject, Transform>();
         if (WeldRootTarget == null)
         {
@@ -986,77 +991,118 @@ public class PipeFactory : SingletonBehaviour<PipeFactory>
             w.transform.SetParent(null);
             w.transform.SetParent(WeldRootTarget.transform);
         }
+        return parentDict;
+    }
 
+    private void RecoverWeldParent(Dictionary<GameObject, Transform> dict)
+    {
+        foreach (var w in dict.Keys)
+        {
+            var wp = dict[w];
+            w.transform.SetParent(wp);
+        }
+    }
+
+    public PrefabInfoList PrefabReducers()
+    {
+        AcRTAlignJobSetting.Instance.SetDefault();
+        PrefabInfoList list = new PrefabInfoList();
+        Dictionary<GameObject, Transform> parentDict = MoveWeldParent();
         PipeWelds = GetWelds();
 
+        DateTime start3 = DateTime.Now;
+        PrefabInfoList prefabs3 = PrefabInstanceBuilder.Instance.GetPrefabsOfList(newBuilder.GetModelResult_Reducer(), true, "_Reducer_3");
+        list.AddRange(prefabs3);
+        TimeSpan t3 = DateTime.Now - start3;
 
-        //DateTime start1 = DateTime.Now;
-        //PrefabInfoList prefabs1 = null;
-        //if (IsCreatePipeByUnityPrefab == false)
-        //{
-        //    prefabs1 = PrefabInstanceBuilder.Instance.GetPrefabsOfList(newBuilder.GetModelResult_Line(), true, "_Line_1");
-        //    list.AddRange(prefabs1);
-        //}
-        //else
-        //{
-        //    prefabs1 = new PrefabInfoList(1);
-        //}
+        var gs = newBuilder.RefreshGenerators(Target);
+        newBuilder.RefreshPipeModels(Target);
+        RecoverWeldParent(parentDict);
+        return list;
+    }
 
-        //TimeSpan t1 = DateTime.Now - start1;
+    public PrefabInfoList PrefabFlanges()
+    {
+        AcRTAlignJobSetting.Instance.SetDefault();
+        PrefabInfoList list = new PrefabInfoList();
+        Dictionary<GameObject, Transform> parentDict = MoveWeldParent();
+        PipeWelds = GetWelds();
 
-        //DateTime start2 = DateTime.Now;
-        //var elbowGos1 = newBuilder.GetModelResult_Elbow();
-        //PrefabInfoList prefabs2 = PrefabInstanceBuilder.Instance.GetPrefabsOfList(elbowGos1, true, "_Elbow_2");
-        //list.AddRange(prefabs2);
-        //TimeSpan t2 = DateTime.Now - start2;
+        DateTime start4 = DateTime.Now;
+        PrefabInfoList prefabs4 = null;
+        if (IsCreatePipeByUnityPrefab == false)
+        {
+            var list4 = newBuilder.GetModelResult_Flange();
+            prefabs4 = PrefabInstanceBuilder.Instance.GetPrefabsOfList(list4, true, "_Flange_4");
+            //list.AddRange(prefabs1);
 
-        //DateTime start3 = DateTime.Now;
-        //PrefabInfoList prefabs3 = PrefabInstanceBuilder.Instance.GetPrefabsOfList(newBuilder.GetModelResult_Reducer(), true, "_Reducer_3");
-        //list.AddRange(prefabs3);
-        //TimeSpan t3 = DateTime.Now - start3;
+            Debug.LogError($"PrefabPipes Flange1 list4:{list4.Count}");
+        }
+        else
+        {
+            var list4 = newBuilder.GetModelResult_Flange(true);
+            prefabs4 = PrefabInstanceBuilder.Instance.GetPrefabsOfList(list4, true, "_Flange_4");
+            prefabs4.Add(new PrefabInfo());
+            Debug.LogError($"PrefabPipes Flange2 list4:{list4.Count}");
+        }
 
-        //DateTime start4 = DateTime.Now;
-        //PrefabInfoList prefabs4 = null;
-        //if (IsCreatePipeByUnityPrefab == false)
-        //{
-        //    var list4 = newBuilder.GetModelResult_Flange();
-        //    prefabs4 = PrefabInstanceBuilder.Instance.GetPrefabsOfList(list4, true, "_Flange_4");
-        //    list.AddRange(prefabs1);
+        TimeSpan t4 = DateTime.Now - start4;
 
-        //    Debug.LogError($"PrefabPipes Flange1 list4:{list4.Count}");
-        //}
-        //else
-        //{
-        //    var list4 = newBuilder.GetModelResult_Flange(true);
-        //    prefabs4 = PrefabInstanceBuilder.Instance.GetPrefabsOfList(list4, true, "_Flange_4");
-        //    prefabs4.Add(new PrefabInfo());
-        //    Debug.LogError($"PrefabPipes Flange2 list4:{list4.Count}");
-        //}
+        var gs = newBuilder.RefreshGenerators(Target);
+        newBuilder.RefreshPipeModels(Target);
+        RecoverWeldParent(parentDict);
 
-        //TimeSpan t4 = DateTime.Now - start4;
+        var keys = PipeFlangeModel.keys;
+        var keyList = keys.Keys.ToList();
+        keyList.Sort();
+        for (int i = 0; i < keyList.Count; i++)
+        {
+            string item = keyList[i];
+            Debug.Log($"key[{i}]_{item}");
+        }
+
+        ShowPrefabs(prefabs4, "Prefabs_Flange");
+
+        return list;
+    }
+
+    
+
+    public PrefabInfoList PrefabWeldolets()
+    {
+        AcRTAlignJobSetting.Instance.SetDefault();
+        PrefabInfoList list = new PrefabInfoList();
+        Dictionary<GameObject, Transform> parentDict = MoveWeldParent();
+        PipeWelds = GetWelds();
+
+        DateTime start6 = DateTime.Now;
+        PrefabInfoList prefabs6 = PrefabInstanceBuilder.Instance.GetPrefabsOfList(newBuilder.GetModelResult_Weldolet(), true, "_Weldolet_6");
+        list.AddRange(prefabs6);
+        TimeSpan t6 = DateTime.Now - start6;
+
+        var gs = newBuilder.RefreshGenerators(Target);
+        newBuilder.RefreshPipeModels(Target);
+        RecoverWeldParent(parentDict);
+        return list;
+    }
+
+    
+
+    public PrefabInfoList PrefabTees()
+    {
+        AcRTAlignJobSetting.Instance.SetDefault();
+        PrefabInfoList list = new PrefabInfoList();
+        Dictionary<GameObject, Transform> parentDict = MoveWeldParent();
+        PipeWelds = GetWelds();
 
         DateTime start5 = DateTime.Now;
         PrefabInfoList prefabs5 = PrefabInstanceBuilder.Instance.GetPrefabsOfList(newBuilder.GetModelResult_Tee(), true, "_Tee_5");
         list.AddRange(prefabs5);
         TimeSpan t5 = DateTime.Now - start5;
 
-        //DateTime start6 = DateTime.Now;
-        //PrefabInfoList prefabs6 = PrefabInstanceBuilder.Instance.GetPrefabsOfList(newBuilder.GetModelResult_Weldolet(), true, "_Weldolet_6");
-        //list.AddRange(prefabs6);
-        //TimeSpan t6 = DateTime.Now - start6;
-
         var gs = newBuilder.RefreshGenerators(Target);
         newBuilder.RefreshPipeModels(Target);
-
-        //TimeSpan ta = DateTime.Now - start1;
-
-        foreach (var w in welds)
-        {
-            var wp = parentDict[w.gameObject];
-            w.transform.SetParent(wp);
-        }
-
-        //Debug.LogError($"¡¾PipeFactory.PrefabPipes [{ta.ToString(timeFormat)}]¡¿ Pipes:{newBuilder.PipeGenerators.Count} Pipes2:{gs.Count} prefabs:{list}({prefabs1.Count}+{prefabs2.Count}+{prefabs3.Count}+{prefabs4.Count}+{prefabs5.Count}+{prefabs6.Count}) times:({t1.ToString(timeFormat)}+{t2.ToString(timeFormat)}+{t3.ToString(timeFormat)}+{t4.ToString(timeFormat)}+{t5.ToString(timeFormat)}+{t6.ToString(timeFormat)}+)");
+        RecoverWeldParent(parentDict);
         return list;
     }
 
@@ -1064,62 +1110,9 @@ public class PipeFactory : SingletonBehaviour<PipeFactory>
     public PrefabInfoList PrefabElbows()
     {
         AcRTAlignJobSetting.Instance.SetDefault();
-
-        DateTime start = DateTime.Now;
-
-        //DateTime start1 = DateTime.Now;
-        //PrefabInfoList prefabs1 = PrefabInstanceBuilder.Instance.GetPrefabsOfList(newBuilder.PipeGenerators, true, "_Pipes");
-        //TimeSpan t1 = DateTime.Now - start1;
-
         PrefabInfoList list = new PrefabInfoList();
-
-        var welds = newBuilder.GetNewWelds(Target);
-
-
-
-        Dictionary<GameObject, Transform> parentDict = new Dictionary<GameObject, Transform>();
-        if (WeldRootTarget == null)
-        {
-            WeldRootTarget = new GameObject("WeldRootTarget");
-        }
-        foreach (var w in welds)
-        {
-            Transform wp = w.transform.parent;
-            if (!w.name.Contains("_"))
-            {
-
-                if (wp.name == "In" || wp.name == "Out0" || wp.name == "Out1")
-                {
-                    w.name = wp.transform.parent.name + "_" + wp.name + "_" + w.name;
-                }
-                else
-                {
-                    w.name = wp.name + "_" + w.name;
-                }
-            }
-
-            EditorHelper.UnpackPrefab(w.gameObject);
-            parentDict.Add(w.gameObject, wp);
-            w.transform.SetParent(null);
-            w.transform.SetParent(WeldRootTarget.transform);
-        }
-
+        Dictionary<GameObject, Transform> parentDict = MoveWeldParent();
         PipeWelds = GetWelds();
-
-
-        //DateTime start1 = DateTime.Now;
-        //PrefabInfoList prefabs1 = null;
-        //if (IsCreatePipeByUnityPrefab == false)
-        //{
-        //    prefabs1 = PrefabInstanceBuilder.Instance.GetPrefabsOfList(newBuilder.GetModelResult_Line(), true, "_Line_1");
-        //    list.AddRange(prefabs1);
-        //}
-        //else
-        //{
-        //    prefabs1 = new PrefabInfoList(1);
-        //}
-
-        //TimeSpan t1 = DateTime.Now - start1;
 
         DateTime start2 = DateTime.Now;
         var elbowGos1 = newBuilder.GetModelResult_Elbow();
@@ -1127,53 +1120,9 @@ public class PipeFactory : SingletonBehaviour<PipeFactory>
         list.AddRange(prefabs2);
         TimeSpan t2 = DateTime.Now - start2;
 
-        //DateTime start3 = DateTime.Now;
-        //PrefabInfoList prefabs3 = PrefabInstanceBuilder.Instance.GetPrefabsOfList(newBuilder.GetModelResult_Reducer(), true, "_Reducer_3");
-        //list.AddRange(prefabs3);
-        //TimeSpan t3 = DateTime.Now - start3;
-
-        //DateTime start4 = DateTime.Now;
-        //PrefabInfoList prefabs4 = null;
-        //if (IsCreatePipeByUnityPrefab == false)
-        //{
-        //    var list4 = newBuilder.GetModelResult_Flange();
-        //    prefabs4 = PrefabInstanceBuilder.Instance.GetPrefabsOfList(list4, true, "_Flange_4");
-        //    list.AddRange(prefabs1);
-
-        //    Debug.LogError($"PrefabPipes Flange1 list4:{list4.Count}");
-        //}
-        //else
-        //{
-        //    var list4 = newBuilder.GetModelResult_Flange(true);
-        //    prefabs4 = PrefabInstanceBuilder.Instance.GetPrefabsOfList(list4, true, "_Flange_4");
-        //    prefabs4.Add(new PrefabInfo());
-        //    Debug.LogError($"PrefabPipes Flange2 list4:{list4.Count}");
-        //}
-
-        //TimeSpan t4 = DateTime.Now - start4;
-
-        //DateTime start5 = DateTime.Now;
-        //PrefabInfoList prefabs5 = PrefabInstanceBuilder.Instance.GetPrefabsOfList(newBuilder.GetModelResult_Tee(), true, "_Tee_5");
-        //list.AddRange(prefabs5);
-        //TimeSpan t5 = DateTime.Now - start5;
-
-        //DateTime start6 = DateTime.Now;
-        //PrefabInfoList prefabs6 = PrefabInstanceBuilder.Instance.GetPrefabsOfList(newBuilder.GetModelResult_Weldolet(), true, "_Weldolet_6");
-        //list.AddRange(prefabs6);
-        //TimeSpan t6 = DateTime.Now - start6;
-
         var gs = newBuilder.RefreshGenerators(Target);
         newBuilder.RefreshPipeModels(Target);
-
-        //TimeSpan ta = DateTime.Now - start1;
-
-        foreach (var w in welds)
-        {
-            var wp = parentDict[w.gameObject];
-            w.transform.SetParent(wp);
-        }
-
-        //Debug.LogError($"¡¾PipeFactory.PrefabPipes [{ta.ToString(timeFormat)}]¡¿ Pipes:{newBuilder.PipeGenerators.Count} Pipes2:{gs.Count} prefabs:{list}({prefabs1.Count}+{prefabs2.Count}+{prefabs3.Count}+{prefabs4.Count}+{prefabs5.Count}+{prefabs6.Count}) times:({t1.ToString(timeFormat)}+{t2.ToString(timeFormat)}+{t3.ToString(timeFormat)}+{t4.ToString(timeFormat)}+{t5.ToString(timeFormat)}+{t6.ToString(timeFormat)}+)");
+        RecoverWeldParent(parentDict);
         return list;
     }
 
@@ -1189,36 +1138,7 @@ public class PipeFactory : SingletonBehaviour<PipeFactory>
 
         PrefabInfoList list = new PrefabInfoList();
 
-        var welds = newBuilder.GetNewWelds(Target);
-
-
-
-        Dictionary<GameObject, Transform> parentDict = new Dictionary<GameObject, Transform>();
-        if (WeldRootTarget == null)
-        {
-            WeldRootTarget = new GameObject("WeldRootTarget");
-        }
-        foreach (var w in welds)
-        {
-            Transform wp = w.transform.parent;
-            if (!w.name.Contains("_"))
-            {
-
-                if (wp.name == "In" || wp.name == "Out0" || wp.name == "Out1")
-                {
-                    w.name = wp.transform.parent.name + "_" + wp.name + "_" + w.name;
-                }
-                else
-                {
-                    w.name = wp.name + "_" + w.name;
-                }
-            }
-
-            EditorHelper.UnpackPrefab(w.gameObject);
-            parentDict.Add(w.gameObject, wp);
-            w.transform.SetParent(null);
-            w.transform.SetParent(WeldRootTarget.transform);
-        }
+        Dictionary<GameObject, Transform> parentDict = MoveWeldParent();
 
         PipeWelds = GetWelds();
 
@@ -1254,7 +1174,7 @@ public class PipeFactory : SingletonBehaviour<PipeFactory>
         {
             var list4 = newBuilder.GetModelResult_Flange();
             prefabs4 = PrefabInstanceBuilder.Instance.GetPrefabsOfList(list4, true, "_Flange_4");
-            list.AddRange(prefabs1);
+            list.AddRange(prefabs4);
 
             Debug.LogError($"PrefabPipes Flange1 list4:{list4.Count}");
         }
@@ -1283,11 +1203,7 @@ public class PipeFactory : SingletonBehaviour<PipeFactory>
 
         TimeSpan ta = DateTime.Now - start1;
 
-        foreach (var w in welds)
-        {
-            var wp = parentDict[w.gameObject];
-            w.transform.SetParent(wp);
-        }
+        RecoverWeldParent(parentDict);
 
         Debug.LogError($"¡¾PipeFactory.PrefabPipes [{ta.ToString(timeFormat)}]¡¿ Pipes:{newBuilder.PipeGenerators.Count} Pipes2:{gs.Count} prefabs:{list}({prefabs1.Count}+{prefabs2.Count}+{prefabs3.Count}+{prefabs4.Count}+{prefabs5.Count}+{prefabs6.Count}) times:({t1.ToString(timeFormat)}+{t2.ToString(timeFormat)}+{t3.ToString(timeFormat)}+{t4.ToString(timeFormat)}+{t5.ToString(timeFormat)}+{t6.ToString(timeFormat)}+)");
         return list;
@@ -1486,6 +1402,7 @@ public class PipeFactory : SingletonBehaviour<PipeFactory>
     [ContextMenu("RendererEachPipesEx")]
     public void RendererEachPipesEx()
     {
+        ClearWeldPrefabs();
         ClearGeneratedObjs();
         RendererEachPipes();
         MovePipes();

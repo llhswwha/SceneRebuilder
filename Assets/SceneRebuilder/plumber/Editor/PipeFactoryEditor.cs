@@ -158,6 +158,26 @@ public class PipeFactoryEditor : BaseFoldoutEditor<PipeFactory>
         {
             targetT.RemoveMeshes();
         }
+        if (GUILayout.Button("(Elbow "))
+        {
+            targetT.PrefabElbows();
+        }
+        if (GUILayout.Button(" Tee"))
+        {
+            targetT.PrefabTees();
+        }
+        if (GUILayout.Button(" Reducer"))
+        {
+            targetT.PrefabReducers();
+        }
+        if (GUILayout.Button(" Flange"))
+        {
+            targetT.PrefabFlanges();
+        }
+        if (GUILayout.Button(" Weldolet)"))
+        {
+            targetT.PrefabWeldolets();
+        }
         //if (GUILayout.Button("ClearResult"))
         //{
         //    targetT.ClearGeneratedObjs();
@@ -169,14 +189,7 @@ public class PipeFactoryEditor : BaseFoldoutEditor<PipeFactory>
         {
             targetT.PrefabPipes();
         }
-        if (GUILayout.Button("(Elbow "))
-        {
-            targetT.PrefabElbows();
-        }
-        if (GUILayout.Button(" Tee)"))
-        {
-            targetT.PrefabTees();
-        }
+
         if (GUILayout.Button("6.PrefabOthers"))
         {
             targetT.PrefabOthers();
@@ -319,6 +332,7 @@ public class PipeFactoryEditor : BaseFoldoutEditor<PipeFactory>
         DrawPipeRunList(targetT.GetPipeRunList(), pipeRunListArg);
         DrawPipeModelsList(targetT.GetPipeRunList().SpecialElbows, specialElbowListArg, "SpecialElbow List");
         DrawPipeRunList(targetT.TestRunList, testpipeRunListArg);
+        DrawObjectList(pipeWeldPrefabDataListArg, "WeldPrefabDatas", targetT.PipeModelUnitPrefab_Welds_Datas, null, null, null);
         DrawObjectList(pipeWeldPrefabListArg, "WeldPrefabs", targetT.PipeModelUnitPrefab_Welds, null, null, null);
         DrawObjectList(pipeWeldPrefabMeshListArg, "WeldMeshPrefabs", targetT.PipeModelUnitPrefabMesh_Welds, null, null, null);
         EditorUIUtils.Separator(5);
@@ -331,6 +345,7 @@ public class PipeFactoryEditor : BaseFoldoutEditor<PipeFactory>
         DrawObjectList(weldListArg, "Welds", targetT.PipeWelds, null, null, null);
         DrawObjectList(othersListArg, "Others", targetT.PipeOthers, null, null, null);
     }
+    static FoldoutEditorArg pipeWeldPrefabDataListArg = new FoldoutEditorArg(true, false);
     static FoldoutEditorArg pipeWeldPrefabMeshListArg = new FoldoutEditorArg(true, false);
     static FoldoutEditorArg pipeWeldPrefabListArg = new FoldoutEditorArg(true, false);
     static FoldoutEditorArg othersListArg = new FoldoutEditorArg(true, false);

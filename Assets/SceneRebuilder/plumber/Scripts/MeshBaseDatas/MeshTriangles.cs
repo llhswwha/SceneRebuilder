@@ -499,7 +499,10 @@ public class MeshTriangles
     {
         int pointId = plane.PointId;
         //Debug.Log($"GetElbowInfo sharedPoints1[{i + 1}/{sharedPoints1.Count}] point:{pointId} trianlges:{triangles.Count}");
-        GameObject trianglesObj = CreateSubTestObj($"triangles[{id}][id:{pointId}]({triangles.Count})_[{plane.MinRadius},{plane.Radius}]", sharedPoints1Obj.transform);
+        GameObject trianglesObj = CreateSubTestObj($"triangles[{id}][id:{pointId}]({triangles.Count})_[{plane.MinRadius},{plane.Radius}]_{plane.IsCircle}_{plane.CircleCheckP}", sharedPoints1Obj.transform);
+        SharedMeshTrianglesComponent triangleComponent=trianglesObj.AddComponent<SharedMeshTrianglesComponent>();
+        triangleComponent.SetData(plane);
+
         for (int i1 = 0; i1 < triangles.Count; i1++)
         {
             MeshTriangle t = triangles[i1];
@@ -661,7 +664,7 @@ public class MeshTriangles
 
     public SharedMeshTrianglesList GetSharedMeshTrianglesListById(int minCount, float minDis)
     {
-        SharedMeshTrianglesList KeyPoints = new SharedMeshTrianglesList();
+        SharedMeshTrianglesList trianglesList = new SharedMeshTrianglesList();
         List<Key2List<int, MeshTriangle>> sharedPoints1 = this.FindSharedPointsById();
         for (int i = 0; i < sharedPoints1.Count; i++)
         {
@@ -672,21 +675,21 @@ public class MeshTriangles
             if (triangles.Count >= minCount)
             {
                 SharedMeshTriangles plane = new SharedMeshTriangles(pointId, point, normal, triangles);
-                KeyPoints.Add(plane);
+                trianglesList.Add(plane);
             }
             //KeyPoints.Add(plane);
         }
 
-        KeyPoints.CombineSameMesh(minDis);
-        KeyPoints.CombineSameCircle(minDis);
+        trianglesList.CombineSameMesh(minDis);
+        trianglesList.CombineSameCircle(minDis);
 
-        if (KeyPoints.Count < 2)
+        if (trianglesList.Count < 2)
         {
-            Debug.LogError($"GetKeyPoints KeyPoints:{KeyPoints.Count}");
+            Debug.LogError($"GetKeyPoints KeyPoints:{trianglesList.Count}");
         }
         
-        KeyPoints.Sort();
-        return KeyPoints;
+        trianglesList.Sort();
+        return trianglesList;
     }
 
     public SharedMeshTrianglesList GetSharedMeshTrianglesListByPoint(int minCount, float minDis)
@@ -803,7 +806,7 @@ public class MeshTriangles
         return minDis;
     }
 
-    public void ShowKeyPointsById(Transform root, float pointScale, int minCount, float minDis)
+    public void ShowKeyPointsById(Transform root, float pointScale, int minCount, float minDis,bool isCombineSameCenter)
     {
         TransformHelper.ShowLocalPoint(center, pointScale, root, null).name="MeshCenter";
         TransformHelper.ShowLocalPoint(mesh.boundCenter, pointScale, root, null).name = "BoundsCenter";
@@ -817,7 +820,8 @@ public class MeshTriangles
         }
         //SharedMeshTrianglesList points = GetKeyPointsByIdEx(36, 0);
         Debug.Log($"GetKeyPoints KeyPoints2:{points.Count} minCount:{minCount} minDis:{minDis}");
-        points.CombineSameCenter(minDis);
+        if(isCombineSameCenter)
+            points.CombineSameCenter(minDis);
         Debug.Log($"GetKeyPoints KeyPoints3:{points.Count}");
         GameObject keyPointsObj = CreateSubTestObj($"KeyPoints:{points.Count}", root);
         var centerOfPoints = MeshHelper.GetCenterOfList(points);

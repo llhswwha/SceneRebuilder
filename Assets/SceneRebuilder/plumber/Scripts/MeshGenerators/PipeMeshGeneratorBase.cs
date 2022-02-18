@@ -461,6 +461,9 @@ public class PipeMeshGeneratorBase : MonoBehaviour
         {
             yAxis1 = Vector3.left;
         }
+
+        direction = direction * 10;
+
         // build left-hand coordinate system, with orthogonal and normalized axes
         Vector3.OrthoNormalize(ref direction, ref xAxis1, ref yAxis1);
 
@@ -474,7 +477,8 @@ public class PipeMeshGeneratorBase : MonoBehaviour
             }
             Vector3.OrthoNormalize(ref direction, ref yAxis2, ref xAxis2);
             //[{Vector3.Dot(direction, xAxis)},{Vector3.Dot(direction, yAxis)},{Vector3.Dot(xAxis, yAxis)}]
-            float minDot = 0.0002f;
+            //float minDot = 0.0002f;
+            float minDot = 0.001f;
             float dot1 = Mathf.Abs(Vector3.Dot(direction, xAxis1));
             float dot2 = Mathf.Abs(Vector3.Dot(direction, yAxis1));
             float dot3 = Mathf.Abs(Vector3.Dot(xAxis1, yAxis1));

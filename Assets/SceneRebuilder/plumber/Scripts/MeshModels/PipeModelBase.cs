@@ -90,7 +90,7 @@ public class PipeModelBase : PipeModelComponent, IComparable<PipeModelBase>
 
         Mesh mesh = this.GetComponent<MeshFilter>().sharedMesh;
         MeshTriangles meshTriangles = new MeshTriangles(mesh);
-        meshTriangles.ShowKeyPointsById(trianglesObj.transform, PointScale, sharedMinCount, minRepeatPointDistance);
+        meshTriangles.ShowKeyPointsById(trianglesObj.transform, PointScale, sharedMinCount, minRepeatPointDistance,false);
         meshTriangles.Dispose();
     }
 

@@ -11,10 +11,16 @@ public class PipeModelKeyPointInfo4
     public Vector4 EndPointIn2 = Vector3.zero;
     public Vector4 EndPointOut2 = Vector3.zero;
 
-    public float GetRadius()
-    {
-        return (EndPointOut1.w + EndPointOut2.w) / 2;
-    }
+
+    //public float GetPipeRadius1()
+    //{
+    //    return (EndPointIn1.w + EndPointOut1.w) / 2;
+    //}
+
+    //public float GetPipeRadius2()
+    //{
+    //    return (EndPointIn2.w + EndPointOut2.w) / 2;
+    //}
 
     public float GetLengthOut()
     {
@@ -24,6 +30,11 @@ public class PipeModelKeyPointInfo4
     public float GetLengthIn()
     {
         return Vector3.Distance(EndPointIn1, EndPointIn2);
+    }
+
+    public float GetRadiusOut()
+    {
+        return (EndPointOut1.w + EndPointOut2.w) / 2;
     }
 
     public float GetRadiusIn1Out1()

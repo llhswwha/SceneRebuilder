@@ -108,7 +108,7 @@ public class PipeTeeModel : PipeElbowModel
     private void GetTeeInfo4(SharedMeshTrianglesList trianglesList)
     {
 
-        distanceList = trianglesList.GetPlanePointDistanceList();
+        var distanceList = trianglesList.GetPlanePointDistanceList();
 
         SharedMeshTriangles teePlane1 = distanceList[0].Plane;
 
@@ -261,24 +261,20 @@ public class PipeTeeModel : PipeElbowModel
                 Debug.LogError($"Tee.RendererModel KeyPointInfo == null gameObject:{this.name}");
                 return pipeNew;
             }
-
             if (KeyPlaneInfo.EndPointIn1 == null)
             {
                 Debug.LogError($"Tee.RendererModel KeyPlaneInfo.EndPointIn1 == null gameObject:{this.name}");
                 return pipeNew;
             }
-
             if (KeyPlaneInfo.EndPointIn2 == null)
             {
                 Debug.LogError($"Tee.RendererModel KeyPlaneInfo.EndPointIn2 == null gameObject:{this.name}");
                 return pipeNew;
             }
-
             var lineArg = arg.Clone();
             if (lineArg.pipeSegments < 32)
                 lineArg.pipeSegments = 32;
             lineArg.generateEndCaps = true;
-
             GameObject pipe11 = RenderPipeLine(lineArg, afterName+"_1", KeyPointInfo.EndPointIn1, KeyPointInfo.EndPointOut1);
             GameObject pipe12 = RenderPipeLine(lineArg, afterName + "_2", KeyPointInfo.EndPointIn2, KeyPointInfo.EndPointOut2);
             pipe11.transform.SetParent(pipeNew.transform);
@@ -290,26 +286,10 @@ public class PipeTeeModel : PipeElbowModel
             pipe21.transform.SetParent(pipeNew.transform);
             GameObject pipe22 = RenderPipeLine(arg, afterName + "_5", InnerKeyPlaneInfo.EndPointIn1.GetMinCenter4(), InnerKeyPlaneInfo.EndPointIn2.GetMinCenter4());
             pipe22.transform.SetParent(pipeNew.transform);
-
-            //GameObject pipe3 = RenderElbow(arg, afterName, InnerElbowInfo);
-            //pipe3.transform.SetParent(pipeNew.transform);
-
             GameObject target = pipeNew;
-
-            //if (IsCombineResult)
-            //{
-            //    target = MeshCombineHelper.Combine(pipeNew);
-
-            //}
-
             target=CombineTarget(arg, pipeNew);
-            
-           
-
             target = CopyMeshComponentsEx(target);
-
             this.ResultGo = target;
-
             PipeMeshGenerator pipeG = target.AddComponent<PipeMeshGenerator>();
             pipeG.Target = this.gameObject;
             return target;
@@ -326,29 +306,6 @@ public class PipeTeeModel : PipeElbowModel
             pipe1.transform.SetParent(pipeNew.transform);
             pipe2.transform.SetParent(pipeNew.transform);
             GameObject target = pipeNew;
-
-            //if (IsCombineResult)
-            //{
-            //    List<Transform> welds = new List<Transform>();
-            //    for(int i=0;i<pipe1.transform.childCount;i++)
-            //    {
-            //        welds.Add(pipe1.transform.GetChild(i));
-            //    }
-            //    for (int i = 0; i < pipe2.transform.childCount; i++)
-            //    {
-            //        welds.Add(pipe2.transform.GetChild(i));
-            //    }
-            //    foreach(var t in welds)
-            //    {
-            //        t.SetParent(null);
-            //    }
-            //    target = MeshCombineHelper.Combine(pipeNew);
-                
-            //    foreach (var t in welds)
-            //    {
-            //        t.SetParent(target.transform);
-            //    }
-            //}
 
             target = CombineTarget(arg, pipeNew);
 
@@ -379,7 +336,19 @@ public class PipeTeeModel : PipeElbowModel
 
     public override string GetDictKey()
     {
-        return "";
+        if (IsSpecial)
+        {
+            return $"Tee_{IsSpecial},{KeyPlaneInfo.GetMinRadiusIn():F3},{InnerKeyPlaneInfo.GetMinRadiusIn():F3}";
+        }
+        else
+        {
+            if (KeyPointInfo == null)
+            {
+                Debug.LogError($"GetDictKey3 KeyPointInfo == null gameObject:{this.name}");
+                return this.VertexCount + "";
+            }
+            return $"Tee_{IsSpecial},{KeyPointInfo.GetRadiusIn1Out1():F3},{KeyPointInfo.GetRadiusIn2Out2():F3}";
+        }
     }
 
 

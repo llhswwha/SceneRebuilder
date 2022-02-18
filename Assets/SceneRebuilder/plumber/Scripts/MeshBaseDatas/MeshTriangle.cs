@@ -211,6 +211,7 @@ public struct MeshTriangle
     }
 }
 
+[Serializable]
 public class MeshTriangleList:List< MeshTriangle >
 {
     public MeshTriangleList()

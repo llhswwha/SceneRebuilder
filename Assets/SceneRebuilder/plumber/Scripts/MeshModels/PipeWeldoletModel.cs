@@ -4,10 +4,7 @@ using UnityEngine;
 
 public class PipeWeldoletModel : PipeTeeModel
 {
-    public override string GetDictKey()
-    {
-        return "";
-    }
+
 
     public float CircleWidth = 0.001f;
 
@@ -152,7 +149,16 @@ public class PipeWeldoletModel : PipeTeeModel
             arg.generateWeld = false;
             arg.EndCapOffset = 0;
             arg.StartCapOffset = 0;
-            GameObject pipe12 = RenderPipeLine(arg, afterName + "_2", KeyPointInfo.EndPointIn2, KeyPointInfo.EndPointOut2);
+            //if(arg.pipeSegments<32)
+            //{
+            //    arg.pipeSegments = 32;
+            //}
+
+            var p1 = KeyPointInfo.EndPointIn2;
+            p1.w *= 0.95f;
+            var p2 = KeyPointInfo.EndPointOut2;
+            p2.w *= 0.95f;
+            GameObject pipe12 = RenderPipeLine(arg, afterName + "_2", p1, p2);
             
             pipe11.transform.SetParent(pipeNew.transform);
             pipe12.transform.SetParent(pipeNew.transform);
@@ -180,5 +186,9 @@ public class PipeWeldoletModel : PipeTeeModel
         
     }
 
-
+    public override string GetDictKey()
+    {
+        float capOffset = Vector3.Distance(KeyPointInfo.EndPointIn1, (KeyPointInfo.EndPointIn2 + KeyPointInfo.EndPointOut2) / 2);
+        return $"Weldolet_{KeyPointInfo.GetRadiusIn1Out1():F3},{capOffset:F3},{KeyPointInfo.GetRadiusIn2Out2():F3}";
+    }
 }

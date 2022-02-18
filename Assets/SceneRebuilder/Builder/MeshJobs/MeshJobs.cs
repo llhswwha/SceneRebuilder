@@ -194,6 +194,22 @@ namespace MeshJobs
         public string GetDictKey(string defaultKey)
         {
             PipeModelBase pipeModel = gameObject.GetComponent<PipeModelBase>();
+            if (pipeModel == null)
+            {
+                PipeMeshGeneratorBase generator = gameObject.GetComponent<PipeMeshGeneratorBase>();
+                if (generator != null)
+                {
+                    if (generator.Target == null)
+                    {
+                        Debug.LogError($"GetDictKey name:{this.name} generator.Target == null");
+                    }
+                    else
+                    {
+                        pipeModel = generator.Target.GetComponent<PipeModelBase>();
+                    }
+                }
+            }
+
             if (pipeModel != null)
             {
                 string key2 = pipeModel.GetDictKey();
@@ -202,6 +218,7 @@ namespace MeshJobs
                     defaultKey = key2;
                 }
             }
+
             return defaultKey;
         }
 

@@ -13,7 +13,7 @@ public class PipeElbowModel : PipeModelBase
 
 
 
-    public List<PlanePointDistance> distanceList;
+    //public List<PlanePointDistance> distanceList;
 
     public int MinKeyPointCount = 4;
 
@@ -23,7 +23,7 @@ public class PipeElbowModel : PipeModelBase
     {
         SharedMeshTrianglesList trianglesList = new SharedMeshTrianglesList(list);
 
-        distanceList = trianglesList.GetPlanePointDistanceList();
+        var distanceList = trianglesList.GetPlanePointDistanceList();
 
         SharedMeshTriangles startPlane = distanceList[0].Plane;
         SharedMeshTriangles endPlane = distanceList[1].Plane;
@@ -419,7 +419,7 @@ public class PipeElbowModel : PipeModelBase
                 Debug.LogError($"GetDictKey2 KeyPointInfo == null gameObject:{this.name}");
                 return this.VertexCount + "";
             }
-            return $"{IsSpecial},{InnerKeyPointInfo.GetRadius():F4},{KeyPointInfo.GetRadiusIn1Out1():F4},{KeyPointInfo.GetRadiusIn2Out2():F4}";
+            return $"Elbow_{IsSpecial},{InnerKeyPointInfo.GetRadiusOut():F3},{KeyPointInfo.GetRadiusIn1Out1():F3},{KeyPointInfo.GetRadiusIn2Out2():F3}";
         }
         else
         {
@@ -428,14 +428,14 @@ public class PipeElbowModel : PipeModelBase
                 Debug.LogError($"GetDictKey3 KeyPointInfo == null gameObject:{this.name}");
                 return this.VertexCount + "";
             }
-            return $"{IsSpecial},{KeyPointInfo.GetRadius():F4}";
+            return $"Elbow_{IsSpecial},{KeyPointInfo.GetRadiusOut():F3}";
         }
     }
 
 
     public float GetRadius()
     {
-        return (KeyPointInfo.GetRadius());
+        return (KeyPointInfo.GetRadiusOut());
     }
 
     public bool IsCombineResult = true;

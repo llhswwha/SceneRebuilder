@@ -49,6 +49,7 @@ public class SharedMeshTriangles : IComparable<SharedMeshTriangles>
 
     public SharedMeshTriangles(int id, Vector3 p, Vector3 normal, List<MeshTriangle> ts)
     {
+        Debug.Log($"SharedMeshTriangles.ctor id:{id} ts:{ts.Count}");
         this.Center = Vector3.zero;
         this.Radius = 0;
         this.MinRadius = 0;
@@ -119,7 +120,9 @@ public class SharedMeshTriangles : IComparable<SharedMeshTriangles>
 
         DistanceToCenter = Vector3.Distance(Point, Center);
 
-        IsCircle = CircleCheckP <= CircleInfo.IsCircleMaxP || DistanceToCenter< CircleInfo.MinDistanceToCenter;
+        //IsCircle = CircleCheckP <= CircleInfo.IsCircleMaxP || DistanceToCenter< CircleInfo.MinDistanceToCenter;
+        IsCircle = CircleCheckP <= CircleInfo.IsCircleMaxP && DistanceToCenter < CircleInfo.MinDistanceToCenter;
+
     }
 
     public List<Vector3> points;
@@ -678,11 +681,14 @@ public class SharedMeshTrianglesList : List<SharedMeshTriangles>
     public void CombineSameCircle(float minDis)
     {
         int count1 = this.Count;
-        var list1 = GetCircleList();
-        if (list1.Count < 1)
-        {
-            Debug.LogWarning($"CombineSameCircle minDis:{minDis} CircleList:{list1.Count}");
-        }
+        //var list1 = GetCircleList();
+        //if (list1.Count < 1)
+        //{
+        //    Debug.LogWarning($"CombineSameCircle minDis:{minDis} CircleList:{list1.Count}");
+        //}
+
+        var list1 = new SharedMeshTrianglesList(this);
+
         //Debug.Log($"CombineSameCenter minDis:{minDis} CircleList:{list1.Count}");
         for (int i1 = 0; i1 < list1.Count; i1++)
         {
