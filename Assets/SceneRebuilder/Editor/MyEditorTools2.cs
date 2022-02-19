@@ -40,7 +40,7 @@ public class MyEditorTools2
 
     #endregion
 
-    #region Mesh 
+    #region LOD 
     [MenuItem("SceneTools/LOD/SetSetting")]
     public static void LODSetSetting()
     {
@@ -69,7 +69,12 @@ public class MyEditorTools2
     [MenuItem("SceneTools/Mesh/Combine")]
     public static void CombineMesh()
     {
-        MeshCombiner.Instance.CombineToOne(Selection.activeGameObject);
+        MeshCombiner.Instance.CombineToOne(Selection.activeGameObject, true, true);
+    }
+    [MenuItem("SceneTools/Mesh/Combine2")]
+    public static void CombineMesh2()
+    {
+        MeshCombiner.Instance.CombineToOne(Selection.activeGameObject, false, false);
     }
     [MenuItem("SceneTools/Mesh/Split")]
     public static void SplitMesh()
@@ -392,6 +397,15 @@ public class MyEditorTools2
     #endregion
 
     #region Transform
+
+    [MenuItem("SceneTools/Transform/ClearChildren")]
+    public static void ClearChildren()
+    {
+        foreach (var obj in Selection.gameObjects)
+        {
+            MeshHelper.ClearChildren(obj.transform);
+        }
+    }
 
     [MenuItem("SceneTools/Transform/SelectParent")]
     public static void SelectParent()

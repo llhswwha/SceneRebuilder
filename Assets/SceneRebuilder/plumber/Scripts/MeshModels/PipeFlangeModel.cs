@@ -1,6 +1,7 @@
 using System;
 using System.Collections;
 using System.Collections.Generic;
+using Unity.Collections;
 using UnityEngine;
 
 public class PipeFlangeModel : PipeReducerModel
@@ -72,6 +73,23 @@ public class PipeFlangeModel : PipeReducerModel
         ModelEndPoint = EndPoint;
     }
 
+    public override void GetModelInfo_Job()
+    {
+        PipeFlangeInfoJob.Result = new NativeArray<PipeReducerData>(1, Allocator.Persistent);
+        Mesh mesh = this.GetComponent<MeshFilter>().sharedMesh;
+        MeshStructure meshS = new MeshStructure(mesh);
+        PipeFlangeInfoJob job = new PipeFlangeInfoJob()
+        {
+            id = 0,
+            mesh = meshS
+        };
+        job.Execute();
+        var data = PipeFlangeInfoJob.Result[0];
+        SetModelData(data);
+
+        Debug.Log($"GetModelInfo_Job[{this.name}] data:{data}");
+    }
+
     protected override bool GetModelInfo3(SharedMeshTrianglesList trianglesList, GameObject debugRoot)
     {
         //if (trianglesList.Count > 3)
@@ -81,30 +99,13 @@ public class PipeFlangeModel : PipeReducerModel
 
         if (trianglesList.Count == 3)
         {
-            //trianglesList.CombineSameCenter(defaultMinRepeatPointDistance);
+            trianglesList.CombineSameCenter(defaultMinRepeatPointDistance);
             trianglesList.RemoveNotCircle();
-
-            ////IsSpecial = true;
-            ////trianglesList.Sort((a, b) => { return (b.Radius + b.MinRadius).CompareTo((a.Radius + a.MinRadius)); });
-            //////meshTriangles.ShowSharedMeshTrianglesList(this.transform, PointScale, 15, trianglesList);
-            ////SharedMeshTrianglesList list2 = new SharedMeshTrianglesList();
-            ////list2.Add(trianglesList[0]);
-            ////list2.Add(trianglesList[1]);
-            //////list2.Sort((a, b) => { return b.TriangleCount.CompareTo(a.TriangleCount); });
-            ////KeyPointInfo = new PipeModelKeyPointInfo4(list2[0].GetCenter4(), list2[1].GetCenter4(), list2[1].GetMinCenter4(), trianglesList[2].GetCenter4());
-            ////StartPoint = list2[0].GetCenter4();
-            ////EndPoint = trianglesList[2].GetCenter4();
-            ////ModelStartPoint = StartPoint;
-            ////ModelEndPoint = EndPoint;
-            ////ShowKeyPoints(KeyPointInfo, "Flange3");
-            ////IsGetInfoSuccess = true;
-            ////return true;
-            ///
 
             if (trianglesList.Count == 2)
             {
                 IsSpecial = false;
-                GetModelInfo2(trianglesList, debugRoot, trianglesList[0], trianglesList[1]);
+                GetModelInfo2(debugRoot, trianglesList[0], trianglesList[1]);
                 return true;
             }
             else
@@ -115,28 +116,101 @@ public class PipeFlangeModel : PipeReducerModel
                 return true;
             }
         }
+
+        //if (trianglesList.Count == 5)
+        //{
+        //    trianglesList.CombineSameCenter(defaultMinRepeatPointDistance);
+        //    trianglesList.RemoveNotCircle();
+
+        //    //if (trianglesList.Count == 2)
+        //    //{
+        //    //    IsSpecial = false;
+        //    //    GetModelInfo2(trianglesList, debugRoot, trianglesList[0], trianglesList[1]);
+        //    //    return true;
+        //    //}
+        //    //else
+        //    //{
+        //    //    Debug.LogError($"PipeFlangeModel.GetModelInfo3 Error trianglesList.Count == 3 Count:{trianglesList.Count} gameObject:{this.name}");
+        //    //    IsSpecial = true;
+        //    //    IsGetInfoSuccess = false;
+        //    //    return true;
+        //    //}
+
+        //    Debug.LogError($"PipeFlangeModel.GetModelInfo3 Error trianglesList.Count == 5 Count:{trianglesList.Count} gameObject:{this.name}");
+        //    IsSpecial = true;
+        //    IsGetInfoSuccess = false;
+        //    return true;
+        //}
+
         else if (trianglesList.Count == 4 || trianglesList.Count == 5)
         {
-            IsSpecial = true;
-            trianglesList.Sort((a, b) => { return (b.Radius + b.MinRadius).CompareTo((a.Radius + a.MinRadius)); });
+            SharedMeshTrianglesList trianglesList2 = new SharedMeshTrianglesList(trianglesList);
+            trianglesList2.CombineSameCenter(defaultMinRepeatPointDistance);
+            if (trianglesList2.Count == 2)
+            {
+                IsSpecial = false;
+                GetModelInfo2(debugRoot, trianglesList2[0], trianglesList2[1]);
+                return true;
+            }
+            //else if (trianglesList2.Count == 3)
+            //{
+            //    //Debug.LogError($"PipeFlangeModel.GetModelInfo4 5 Error trianglesList.Count == 3 Count:{trianglesList.Count} gameObject:{this.name}");
+            //    //IsSpecial = true;
+            //    //IsGetInfoSuccess = false;
+            //    return true;
+            //}
+            else
+            {
+                //trianglesList2.RemoveNotCircle();
 
-            //meshTriangles.ShowSharedMeshTrianglesList(this.transform, PointScale, 15, trianglesList);
+                IsSpecial = true;
 
-            SharedMeshTrianglesList list2 = new SharedMeshTrianglesList();
-            list2.Add(trianglesList[0]);
-            list2.Add(trianglesList[1]);
-            //list2.Sort((a, b) => { return b.TriangleCount.CompareTo(a.TriangleCount); });
+                trianglesList.Sort((a, b) => { return (b.Radius + b.MinRadius).CompareTo((a.Radius + a.MinRadius)); });
 
-            KeyPointInfo = new PipeModelKeyPointInfo4(trianglesList[0].GetCenter4(), trianglesList[1].GetCenter4(), trianglesList[2].GetCenter4(), trianglesList[3].GetCenter4());
+                //meshTriangles.ShowSharedMeshTrianglesList(this.transform, PointScale, 15, trianglesList);
 
-            StartPoint = list2[0].GetCenter4();
-            EndPoint = trianglesList[2].GetCenter4();
-            ModelStartPoint = StartPoint;
-            ModelEndPoint = EndPoint;
+                SharedMeshTrianglesList list2 = new SharedMeshTrianglesList();
+                list2.Add(trianglesList[0]);
+                list2.Add(trianglesList[1]);
+                //list2.Sort((a, b) => { return b.TriangleCount.CompareTo(a.TriangleCount); });
 
-            ShowKeyPoints(KeyPointInfo, "Flange3");
-            IsGetInfoSuccess = true;
-            return true;
+
+                var line2StartPlane = trianglesList[2];
+                var line2EndPlane = trianglesList[3];
+
+
+                var line2Start = line2StartPlane.GetCenter4();
+                var line2End = line2EndPlane.GetCenter4();
+
+                float dis1 = Math.Abs(line2StartPlane.Radius - line2EndPlane.Radius);
+                float dis2 = Math.Abs(line2StartPlane.MinRadius - line2EndPlane.MinRadius);
+                float dis3 = Math.Abs(line2StartPlane.Radius - line2StartPlane.MinRadius);
+                if (dis1 > 0.001f)
+                {
+                    Debug.LogWarning($"PipeFlangeModel.GetModelInfo3 RadiusError dis1:{dis1} dis2:{dis2} dis3:{dis3} gameObject:{this.name}");
+                    if (dis3 > 0.001f && dis2<0.0001f&& line2StartPlane.MinRadius>0.001f)
+                    {
+                        line2Start = line2StartPlane.GetMinCenter4();
+                        line2End = line2EndPlane.GetMinCenter4();
+                    }
+                    else
+                    {
+                        Debug.LogError($"PipeFlangeModel.GetModelInfo3 RadiusError dis1:{dis1} dis2:{dis2} dis3:{dis3} gameObject:{this.name}");
+                    }
+                }
+
+                KeyPointInfo = new PipeModelKeyPointInfo4(trianglesList[0].GetCenter4(), trianglesList[1].GetCenter4(), line2Start, line2End);
+
+                StartPoint = list2[0].GetCenter4();
+                EndPoint = trianglesList[2].GetCenter4();
+                ModelStartPoint = StartPoint;
+                ModelEndPoint = EndPoint;
+
+                ShowKeyPoints(KeyPointInfo, "Flange3");
+                IsGetInfoSuccess = true;
+                return true;
+            }
+            
         }
         else
         {
@@ -185,6 +259,7 @@ public class PipeFlangeModel : PipeReducerModel
         if (IsSpecial)
         {
             GameObject pipeNew = GetPipeNewGo(arg, afterName);
+            pipeNew.transform.up = KeyPointInfo.EndPointIn1 - KeyPointInfo.EndPointOut1;
 
             arg.generateEndCaps = true;
             GameObject pipe11 = RenderPipeLine(arg, afterName + "_1", KeyPointInfo.EndPointIn1, KeyPointInfo.EndPointOut1);
@@ -208,6 +283,7 @@ public class PipeFlangeModel : PipeReducerModel
             this.ResultGo = target;
 
             PipeMeshGenerator pipeG = target.AddComponent<PipeMeshGenerator>();
+            pipeG.points = new List<Vector3>() { KeyPointInfo.EndPointIn1, KeyPointInfo.EndPointOut1, KeyPointInfo.EndPointOut2, KeyPointInfo.EndPointIn2 };
             pipeG.Target = this.gameObject;
             return target;
         }
@@ -253,37 +329,37 @@ public class PipeFlangeModel : PipeReducerModel
     public override string GetDictKey()
     {
         string key="";
-        if (IsSpecial)
-        {
-            if (KeyPointInfo == null)
-            {
-                Debug.LogError($"GetDictKey2 KeyPointInfo == null gameObject:{this.name}");
-                key= this.VertexCount + "";
-            }
-            else
-            {
-                //key = $"Flange_{IsSpecial},{KeyPointInfo.GetRadiusIn1Out1():F2},{KeyPointInfo.GetRadiusIn2Out2():F2}";
-                //key = $"Flange_{IsSpecial},{KeyPointInfo.GetRadiusIn1Out1():F3}";//F1:20s,37£¬F2:5.7s£¬39¡£F3:4.8s£¬39¡£
-                key = $"Flange_{IsSpecial},{KeyPointInfo.GetRadiusIn2Out2():F3}";//F1:20s,37£¬F2:5.7s£¬39¡£F3:4.8s£¬39¡£
-            }
+        //if (IsSpecial)
+        //{
+        //    if (KeyPointInfo == null)
+        //    {
+        //        Debug.LogError($"GetDictKey2 KeyPointInfo == null gameObject:{this.name}");
+        //        key= this.VertexCount + "";
+        //    }
+        //    else
+        //    {
+        //        //key = $"Flange_{IsSpecial},{KeyPointInfo.GetRadiusIn1Out1():F2},{KeyPointInfo.GetRadiusIn2Out2():F2}";
+        //        //key = $"Flange_{IsSpecial},{KeyPointInfo.GetRadiusIn1Out1():F3}";//F1:20s,37£¬F2:5.7s£¬39¡£F3:4.8s£¬39¡£
+        //        key = $"Flange_{IsSpecial},{KeyPointInfo.GetRadiusIn2Out2():F3}";//F1:20s,37£¬F2:5.7s£¬39¡£F3:4.8s£¬39¡£
+        //    }
             
-        }
-        else
-        {
-            if (KeyPointInfo == null)
-            {
-                Debug.LogError($"GetDictKey3 KeyPointInfo == null gameObject:{this.name}");
-                key = this.VertexCount + "";
-            }
-            else
-            {
-                key = $"Flange_{IsSpecial},{PipeRadius:F2}";
-            }
-        }
-        if (!keys.ContainsKey(key))
-        {
-            keys.Add(key, key);
-        }
+        //}
+        //else
+        //{
+        //    if (KeyPointInfo == null)
+        //    {
+        //        Debug.LogError($"GetDictKey3 KeyPointInfo == null gameObject:{this.name}");
+        //        key = this.VertexCount + "";
+        //    }
+        //    else
+        //    {
+        //        key = $"Flange_{IsSpecial},{PipeRadius:F2}";
+        //    }
+        //}
+        //if (!keys.ContainsKey(key))
+        //{
+        //    keys.Add(key, key);
+        //}
         return key;
     }
 

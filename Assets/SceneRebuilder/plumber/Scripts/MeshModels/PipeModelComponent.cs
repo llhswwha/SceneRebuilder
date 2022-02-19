@@ -97,6 +97,11 @@ public class PipeModelComponent : MonoBehaviour
 
     }
 
+    public virtual void GetModelInfo_Job()
+    {
+
+    }
+
 
     public virtual void RendererModel()
     {

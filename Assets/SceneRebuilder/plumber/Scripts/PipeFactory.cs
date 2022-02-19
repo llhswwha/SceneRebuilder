@@ -514,22 +514,101 @@ public class PipeFactory : SingletonBehaviour<PipeFactory>
         //    go.transform.position = Vector3.zero;
         //}
 
-        ShowPrefabs(AllPrefabs, "AllPrefabs");
+        ShowPrefabs(AllPrefabs, "AllPrefabs",false);
     }
 
-    public void ShowPrefabs(PrefabInfoList list,string parent)
+    public void AlignDirectionPrefabs()
     {
-        GameObject allPrefabs = new GameObject(parent);
-        foreach (PrefabInfo pres in list)
+        //OBBCollider.AlignDirectionList(PrefabClones);
+        foreach(var pref in PrefabClones)
         {
+            PipeMeshGeneratorBase generator = pref.GetComponent<PipeMeshGenerator>();
+            if (generator == null) continue;
+            generator.AlignDirection();
+        }
+    }
+
+    public List<GameObject> PrefabClones = new List<GameObject>();
+
+    public void ShowPrefabs(PrefabInfoList list,string parent,bool isAlignDir)
+    {
+        foreach(var item in PrefabClones)
+        {
+            GameObject.DestroyImmediate(item);
+        }
+        PrefabClones.Clear();
+
+        GameObject allPrefabs = new GameObject(parent);
+        for (int i = 0; i < list.Count; i++)
+        {
+            PrefabInfo pres = list[i]; 
+            if (ProgressBarHelper.DisplayCancelableProgressBar(new ProgressArg("ShowPrefabs", i, list.Count, pres)))
+            {
+                break;
+            }
             if (pres == null) continue;
             if (pres.Prefab == null) continue;
             GameObject go = GameObject.Instantiate(pres.Prefab);
+            PrefabInfoComponent prefabC=go.AddComponent<PrefabInfoComponent>();
+            prefabC.prefabInfo = pres;
+
+            go.name += $"{pres.InstanceCount}";
             TransformHelper.ClearChildren(go);
             //EditorHelper.RemoveAllComponents(go);
+           
+
+            //if (isAlignDir)
+            //{
+            //    //OBBCollider obb = go.AddComponent<OBBCollider>();
+            //    //obb.GetObb(true);
+            //    //obb.AlignDirection();
+            //    PipeMeshGeneratorBase generator = go.GetComponent<PipeMeshGenerator>();
+            //    if (generator != null)
+            //        generator.AlignDirection();
+            //}
+
+            PipeMeshGeneratorBase generator = go.GetComponent<PipeMeshGenerator>();
+            if (generator != null)
+            {
+                GameObject go2 = GameObject.Instantiate(generator.Target);
+                go2.transform.SetParent(go.transform);
+                go2.transform.localPosition = Vector3.zero;
+                go2.SetActive(true);
+            }
+
+            if (pres.InstanceCount > 0)
+            {
+                var ins = pres.Instances[0];
+                if (ins == null)
+                {
+                    Debug.LogError($"ins==null prefab:{pres.GetTitle()}");
+                }
+                else
+                {
+                    GameObject go3 = GameObject.Instantiate(ins);
+                    if (go3 == null)
+                    {
+                        Debug.LogError($"go3==null prefab:{pres.GetTitle()}");
+                    }
+                    else
+                    {
+                        go3.transform.SetParent(go.transform);
+                        go3.transform.localPosition = Vector3.zero;
+                        go3.transform.localRotation = Quaternion.identity;
+                        go3.SetActive(true);
+                    }
+                    
+                }
+                
+            }
+
             go.transform.SetParent(allPrefabs.transform);
             go.transform.position = Vector3.zero;
+            go.transform.rotation = Quaternion.identity;
+
+            PrefabClones.Add(go);
         }
+        ProgressBarHelper.ClearProgressBar();
     }
 
     public void AddList(List<Transform> list,List<Transform> newList)
@@ -1023,6 +1102,8 @@ public class PipeFactory : SingletonBehaviour<PipeFactory>
 
     public PrefabInfoList PrefabFlanges()
     {
+        AcRtAlignJobArg.IsDebug = true;
+
         AcRTAlignJobSetting.Instance.SetDefault();
         PrefabInfoList list = new PrefabInfoList();
         Dictionary<GameObject, Transform> parentDict = MoveWeldParent();
@@ -1060,9 +1141,11 @@ public class PipeFactory : SingletonBehaviour<PipeFactory>
             string item = keyList[i];
             Debug.Log($"key[{i}]_{item}");
         }
+        AllPrefabs = prefabs4;
+        ShowPrefabs(prefabs4, "Prefabs_Flange",true);
 
-        ShowPrefabs(prefabs4, "Prefabs_Flange");
 
+        AcRtAlignJobArg.IsDebug = false;
         return list;
     }
 

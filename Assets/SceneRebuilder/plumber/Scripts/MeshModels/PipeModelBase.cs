@@ -936,10 +936,14 @@ public class PipeModelBase : PipeModelComponent, IComparable<PipeModelBase>
     public GameObject GetPipeNewGo(PipeGenerateArg arg, string afterName)
     {
         GameObject pipeNew = new GameObject(this.name + afterName);
-        pipeNew.transform.position = this.transform.position + arg.Offset;
-        //pipeNew.transform.rotation = this.transform.rotation;
+
+        //pipeNew.transform.position = this.transform.position + arg.Offset;
+        ////pipeNew.transform.rotation = this.transform.rotation;
+
         pipeNew.transform.SetParent(this.transform.parent);
-        
+
+        pipeNew.transform.position = this.transform.position + arg.Offset;
+
         return pipeNew;
     }
 

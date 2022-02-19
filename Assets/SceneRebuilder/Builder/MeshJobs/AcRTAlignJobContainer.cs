@@ -391,7 +391,7 @@ public class AcRTAlignJobContainer
                 
                 disResult.rt.ApplyMatrix(newGo.transform, arg.mfTo.transform); //变换模型
 
-                arg.ReplaceToObject(newGo);
+                arg.ReplaceToObject(newGo, pref.PrefabInfo);
             }
             else
             {
@@ -502,7 +502,7 @@ public class AcRTAlignJobContainer
                                 sb.AppendLine($"{arg} rT==null");
                             }
                             
-                            arg.ReplaceToObject(newGo);
+                            arg.ReplaceToObject(newGo, pref.PrefabInfo);
                         }
                     }
                     else
@@ -521,7 +521,7 @@ public class AcRTAlignJobContainer
                             sb.AppendLine($"{arg} rT==null");
                         }
                         
-                        arg.ReplaceToObject(newGo);
+                        arg.ReplaceToObject(newGo, pref.PrefabInfo);
                     }
                     
                 }

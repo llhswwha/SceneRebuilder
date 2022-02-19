@@ -22,7 +22,10 @@ public class OBBColliderEditor : Editor
         {
             targetT.GetObb(true);
         }
-
+        if (GUILayout.Button("GetObb(Job)"))
+        {
+            targetT.GetObb(true);
+        }
         //if (GUILayout.Button("CreatePipe"))
         //{
         //    targetT.CreatePipe();
@@ -33,12 +36,9 @@ public class OBBColliderEditor : Editor
         //}
         GUILayout.EndHorizontal();
 
-        GUILayout.BeginHorizontal();
-        if (GUILayout.Button("GetObb(Job)"))
-        {
-            targetT.GetObb(true);
-        }
-        GUILayout.EndHorizontal();
+        //GUILayout.BeginHorizontal();
+
+        //GUILayout.EndHorizontal();
 
 
         GUILayout.BeginHorizontal();
@@ -60,6 +60,10 @@ public class OBBColliderEditor : Editor
         {
             targetT.ClearChildren();
             targetT.DrawWireCube();
+        }
+        if (GUILayout.Button("AlignDirection"))
+        {
+            targetT.AlignDirection();
         }
         GUILayout.EndHorizontal();
 

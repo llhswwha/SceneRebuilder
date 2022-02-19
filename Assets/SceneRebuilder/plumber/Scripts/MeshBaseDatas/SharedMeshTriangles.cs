@@ -93,6 +93,8 @@ public class SharedMeshTriangles : IComparable<SharedMeshTriangles>
         Radius = minMaxR[1];
     }
 
+    public static float IgnoreMinRadius = 0.0002f;
+
     public void GetInfo()
     {
         //Center = Triangles.GetCenter(PointId);
@@ -110,7 +112,7 @@ public class SharedMeshTriangles : IComparable<SharedMeshTriangles>
         //    Radius = Triangles.GetAvgRadius2(PointId);
         //}
 
-        var minMaxR= AllTriangles.GetMinMaxRadius(0.00001f, Center);
+        var minMaxR= AllTriangles.GetMinMaxRadius(IgnoreMinRadius, Center);
 
 
         MinRadius = minMaxR[0];
@@ -121,8 +123,8 @@ public class SharedMeshTriangles : IComparable<SharedMeshTriangles>
         DistanceToCenter = Vector3.Distance(Point, Center);
 
         //IsCircle = CircleCheckP <= CircleInfo.IsCircleMaxP || DistanceToCenter< CircleInfo.MinDistanceToCenter;
-        IsCircle = CircleCheckP <= CircleInfo.IsCircleMaxP && DistanceToCenter < CircleInfo.MinDistanceToCenter;
-
+        //IsCircle = CircleCheckP <= CircleInfo.IsCircleMaxP || DistanceToCenter < CircleInfo.MinDistanceToCenter;
+        IsCircle =  DistanceToCenter < CircleInfo.MinDistanceToCenter;
     }
 
     public List<Vector3> points;
@@ -596,7 +598,7 @@ public class SharedMeshTrianglesList : List<SharedMeshTriangles>
         //Debug.Log($"CombineSamePoint count1:{count1} count2:{count2}");
     }
 
-    internal void CombineSameCenter(float minDis)
+    internal void CombineSameCenter(float minDis,bool isCombine=true)
     {
         int count1 = this.Count;
 
@@ -618,9 +620,13 @@ public class SharedMeshTrianglesList : List<SharedMeshTriangles>
                 
                 if (isSamePoint)
                 {
-                    item1.AddOtherTriangles(item2.GetAllTriangles());
-                    //item1.GetInfo();
-                   
+                    if (isCombine)
+                    {
+                        item1.AddOtherTriangles(item2.GetAllTriangles());
+                        //item1.GetInfo();
+                    }
+
+
 
                     if (list1.Contains(item2))
                     {

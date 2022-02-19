@@ -527,6 +527,34 @@ public class OBBCollider : MonoBehaviour
         CreateLocalPoint(P4 * p, "P44", go.transform);
     }
 
+    public void AlignDirection()
+    {
+        var StartPoint = OBB.Up * OBB.Extent.y;
+        var EndPoint = -OBB.Up * OBB.Extent.y;
+        var P1 = OBB.Right * OBB.Extent.x;
+        var P2 = -OBB.Forward * OBB.Extent.z;
+        var P3 = -OBB.Right * OBB.Extent.x;
+        var P4 = OBB.Forward * OBB.Extent.z;
+
+        this.transform.up = P1 - P3;
+    }
+
+    public static void AlignDirectionList(List<GameObject> objs)
+    {
+        for (int i = 0; i < objs.Count; i++)
+        {
+            GameObject obj = objs[i];
+            if(ProgressBarHelper.DisplayCancelableProgressBar(new ProgressArg("AlignDirection", i, objs.Count, obj)))
+            {
+                break;
+            }
+            OBBCollider obb = obj.AddMissingComponent<OBBCollider>();
+            obb.GetObb(true);
+            obb.AlignDirection();
+        }
+        ProgressBarHelper.ClearProgressBar();
+    }
+
     //public Vector3 StartPoint = Vector3.zero;
     //public Vector3 EndPoint = Vector3.zero;
 

@@ -24,6 +24,18 @@ public class PipeMeshGenerator : PipeMeshGeneratorBase
     //    }
     //}
 
+    public override void AlignDirection()
+    {
+        if (points.Count < 2)
+        {
+            Debug.LogError($"PipeMeshGenerator.AlignDirection points.Count < 2 count:{points.Count}");
+            return;
+        }
+        Vector3 dir1 = points[0] - points[1];
+        this.transform.up = dir1;
+        
+        Debug.Log($"AlignDirection p1:{MeshHelper.Vector3ToString(points[0])} p2:{MeshHelper.Vector3ToString(points[1])} dir:{MeshHelper.Vector3ToString(dir1)}");
+    }
 
 
     // see README.md file for more information about the following parameters
@@ -44,15 +56,15 @@ public class PipeMeshGenerator : PipeMeshGeneratorBase
     [ContextMenu("ShowPoints")]
     public void ShowPoints()
     {
-        var ps = GetPoints();
-        pointsT = ShowPoints(ps);
+        var ps = points;
+        pointsT = ShowLocalPoints(ps);
     }
 
     [ContextMenu("ShowTransformPoints")]
     public void ShowTransformPoints()
     {
         var ps = GetTransformPoints(points);
-        pointsT = ShowPoints(ps);
+        pointsT = ShowLocalPoints(ps);
     }
 
     public List<Vector3> GetTransformPoints(List<Vector3> ps0)
@@ -72,7 +84,7 @@ public class PipeMeshGenerator : PipeMeshGeneratorBase
     [ContextMenu("ShowPoints2")]
     public void ShowPoints2()
     {
-        pointsT = ShowPoints(points2);
+        pointsT = ShowLocalPoints(points2);
     }
 
 
@@ -522,7 +534,7 @@ public class PipeMeshGenerator : PipeMeshGeneratorBase
                         GameObject debugGo = new GameObject($"Elbow_{i}");
                         debugGo.transform.SetParent(this.transform);
                         debugGo.transform.localPosition = Vector3.zero;
-                        PointHelper.ShowPoints(new Vector3[] { point1, point2, point3 }, new Vector3(PointScale,PointScale,PointScale), debugGo.transform);
+                        PointHelper.ShowLocalPoints(new Vector3[] { point1, point2, point3 }, new Vector3(PointScale,PointScale,PointScale), debugGo.transform);
                     }
                 }
             }

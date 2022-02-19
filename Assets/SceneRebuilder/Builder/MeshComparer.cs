@@ -324,6 +324,14 @@ public class MeshComparer : SingletonBehaviour<MeshComparer>
     }
 
 
+    private Vector3[] ShowVertexes(Vector3[] vsFromWorld,Transform parent, string tag)
+    {
+
+        GameObject TryAngleFromW = CreateEmptyGo(tag, parent.position);
+        MeshHelper.ShowVertexes(vsFromWorld, pScale, TryAngleFromW.transform);
+        return vsFromWorld;
+    }
+
 
     public GameObject CreateEmptyGo(string name,Vector3 pos)
     {
@@ -550,7 +558,11 @@ public class MeshComparer : SingletonBehaviour<MeshComparer>
         var mfTo = new MeshPoints(goTo);
 
         var disLocal = DistanceUtil.GetDistance(mfFrom.vertices, mfTo.vertices);
-        var disWorld = DistanceUtil.GetDistance(mfFrom.GetWorldVertexes(), mfTo.GetWorldVertexes());
+        var vsW1 = mfFrom.GetWorldVertexes();
+        ShowVertexes(vsW1,goFrom.transform, "FromVertexes");
+        var vsW2 = mfTo.GetWorldVertexes();
+        ShowVertexes(vsW2, goFrom.transform, "ToVertexes");
+        var disWorld = DistanceUtil.GetDistance(vsW1, vsW2,true);
 
         Debug.Log($"GetDistance12 distance:{distance} disLocal:{disLocal} disWorld:{disWorld} 用时:{(DateTime.Now - start).TotalMilliseconds:F2}ms log:{DistanceUtil.DisLog}");
 

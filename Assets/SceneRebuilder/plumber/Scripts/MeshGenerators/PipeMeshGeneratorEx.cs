@@ -12,6 +12,17 @@ public class PipeMeshGeneratorEx : PipeMeshGeneratorBase
 
     public List<Vector4> points2 = new List<Vector4>();
 
+    public override void AlignDirection()
+    {
+        if (points.Count < 2)
+        {
+            Debug.LogError($"PipeMeshGenerator.AlignDirection points.Count < 2 count:{points.Count}");
+            return;
+        }
+        Vector3 dir1 = points[0] - points[1];
+        this.transform.up = dir1;
+    }
+
 
     public void GetPointsFromTransforms()
     {
@@ -553,7 +564,7 @@ public class PipeMeshGeneratorEx : PipeMeshGeneratorBase
                         GameObject debugGo = new GameObject($"Elbow_{i}");
                         debugGo.transform.SetParent(this.transform);
                         debugGo.transform.localPosition = Vector3.zero;
-                        PointHelper.ShowPoints(new Vector3[] { point1, point2, point3 }, new Vector3(0.05f, 0.05f, 0.05f), debugGo.transform);
+                        PointHelper.ShowLocalPoints(new Vector3[] { point1, point2, point3 }, new Vector3(0.05f, 0.05f, 0.05f), debugGo.transform);
 
                         //
                     }

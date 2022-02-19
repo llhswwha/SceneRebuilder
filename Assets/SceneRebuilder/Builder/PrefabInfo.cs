@@ -94,6 +94,13 @@ public class PrefabInfo:IComparable<PrefabInfo>
 
     public List<GameObject> InstancesNew = new List<GameObject>();
 
+    //public List<GameObject> InstancesBack = new List<GameObject>();
+
+    //public void AddInstanceBack(GameObject ins)
+    //{
+    //    GameObject insBack = GameObject.Instantiate(ins);
+    //}
+
     public List<GameObject> GetInstances()
     {
         return Instances;
@@ -113,6 +120,12 @@ public class PrefabInfo:IComparable<PrefabInfo>
                 GameObject.DestroyImmediate(ins);
         }
         InstancesNew.Clear();
+    }
+
+    public void RemoveNullGos()
+    {
+        List<GameObject> list = Instances.FindAll(i => i != null);
+        Instances = list;
     }
 
     public int VertexCount=0;
@@ -544,6 +557,14 @@ public class PrefabInfoList: List<PrefabInfo>
         }
     }
 
+    public void RemoveNullGos()
+    {
+        foreach (var info in this)
+        {
+            info.RemoveNullGos();
+        }
+    }
+
     public void ApplyReplace()
     {
         for (int i = 0; i < this.Count; i++)
@@ -618,6 +639,17 @@ public class PrefabInfoList: List<PrefabInfo>
         }
         return vc;
     }
+
+    public List<GameObject> GetPrefabs()
+    {
+        List<GameObject> prefabs = new List<GameObject>();
+        foreach(var item in this)
+        {
+            if (item == null) continue;
+            prefabs.Add(item.Prefab);
+        }
+        return prefabs;
+    }
 }
 
 public interface IPrefab<T>
@@ -641,7 +673,8 @@ public static class PrefabInfoListHelper
     public static int GetInstanceCount(this PrefabInfoList list)
     {
         int count = 0;
-        for(int i=0;i< list.Count;i++)
+        list.RemoveNullGos();
+        for (int i=0;i< list.Count;i++)
         {
             count += list[i].InstanceCount+1;
         }

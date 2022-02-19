@@ -15,6 +15,11 @@ public class PipeMeshGeneratorBase : MonoBehaviour
     {
     }
 
+    public virtual void AlignDirection()
+    {
+        
+    }
+
     public float pipeRadius1 = 0;
     public float pipeRadius2 = 0;
 
@@ -242,7 +247,7 @@ public class PipeMeshGeneratorBase : MonoBehaviour
 
             //var ms1 = GeneratePipeMesh(arg1.vertices, false);
 
-            GameObject p1 = PointHelper.ShowPoint(start, new Vector3(0.05f, 0.05f, 0.05f), this.transform);
+            GameObject p1 = PointHelper.ShowLocalPoint(start, new Vector3(0.05f, 0.05f, 0.05f), this.transform);
             Welds.Add(p1);
 
             //GameObject go = new GameObject();
@@ -254,7 +259,7 @@ public class PipeMeshGeneratorBase : MonoBehaviour
             GameObject go = CreateLocalWeldGo(start, direction);
             //GameObject go = CreateWorldWeldGo(start, direction);
 
-            PointHelper.ShowPoints(arg1.vertices, new Vector3(0.05f, 0.05f, 0.05f), go.transform);
+            PointHelper.ShowLocalPoints(arg1.vertices, new Vector3(0.05f, 0.05f, 0.05f), go.transform);
 
             //float size = pipeRadius;
             float size = Vector3.Distance(arg1.vertices[0], arg1.vertices[1]) / 2;
@@ -405,15 +410,15 @@ public class PipeMeshGeneratorBase : MonoBehaviour
 
     public float PointScale = 0.01f;
 
-    public List<GameObject> ShowPoints(List<Vector3> ps)
+    public List<GameObject> ShowLocalPoints(List<Vector3> ps)
     {
-        var psObjs = PointHelper.ShowPoints(ps, new Vector3(PointScale, PointScale, PointScale), this.transform);
+        var psObjs = PointHelper.ShowLocalPoints(ps, new Vector3(PointScale, PointScale, PointScale), this.transform);
         return psObjs;
     }
 
     public GameObject ShowPoint(Vector3 p, string pName, Transform parent)
     {
-        GameObject pObj = PointHelper.ShowPoint(p, new Vector3(PointScale, PointScale, PointScale), this.transform);
+        GameObject pObj = PointHelper.ShowLocalPoint(p, new Vector3(PointScale, PointScale, PointScale), this.transform);
         pObj.name = pName;
         pObj.transform.SetParent(parent);
         return pObj;
@@ -424,7 +429,7 @@ public class PipeMeshGeneratorBase : MonoBehaviour
         GameObject go = new GameObject(n);
         go.transform.SetParent(this.transform);
         go.transform.localPosition = Vector3.zero;
-        var psObjs = PointHelper.ShowPoints(ps, new Vector3(PointScale, PointScale, PointScale), go.transform);
+        var psObjs = PointHelper.ShowLocalPoints(ps, new Vector3(PointScale, PointScale, PointScale), go.transform);
         return psObjs;
     }
 

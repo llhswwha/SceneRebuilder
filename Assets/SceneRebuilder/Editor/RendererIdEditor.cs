@@ -256,7 +256,7 @@ public class RendererIdEditor : BaseEditor<RendererId>
         if (GUILayout.Button("Combine"))
         {
             //MeshCombineHelper.CombineEx(new MeshCombineArg(item.gameObject), MeshCombineMode.OneMesh);
-            MeshCombiner.Instance.CombineToOne(item.gameObject);
+            MeshCombiner.Instance.CombineToOne(item.gameObject,true,true);
         }
         if (GUILayout.Button("PivotPart1"))
         {

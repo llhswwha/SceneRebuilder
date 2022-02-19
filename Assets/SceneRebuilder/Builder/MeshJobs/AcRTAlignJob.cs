@@ -155,7 +155,9 @@ namespace MeshJobs
 
         public MeshPoints mfTo;
 
-        public void ReplaceToObject(GameObject newGo)
+        public static bool IsDebug = false;
+
+        public void ReplaceToObject(GameObject newGo,PrefabInfo prefab)
         {
 
             GameObject go = mfTo.gameObject;
@@ -175,12 +177,33 @@ namespace MeshJobs
             //EditorHelper.UnpackPrefab(go);
             //GameObject.DestroyImmediate(go);
 
+            //if (IsDebug)
+            //{
+            //    if (prefab != null)
+            //    {
+            //        prefab.InstancesBack.Add(GameObject.Instantiate(newGo));
+            //    }
+            //}
+
+
             go.name += "_New";
             MeshHelper.CopyTransformMesh(newGo, go);
 
-            //newGo.SetActive(false);
-            GameObject.DestroyImmediate(newGo);
+            //if (IsDebug)
+            //{
+            //    newGo.SetActive(false);
+            //}
+            //else
+            //{
+                GameObject.DestroyImmediate(newGo);
 
+                if (prefab != null)
+                {
+                    prefab.AddInstance(go);
+                }
+            //}
+            
+           
         }
 
         public double Time = 0;

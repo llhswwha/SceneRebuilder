@@ -980,7 +980,7 @@ namespace MeshJobs
                             pref.AddInstance(newGo);
                             
                             result.ApplyMatrix(newGo.transform, arg.mfTo.transform); //变换模型
-                            arg.ReplaceToObject(newGo);
+                            arg.ReplaceToObject(newGo, pref.PrefabInfo);
                         }
                         else
                         {
@@ -1232,7 +1232,7 @@ namespace MeshJobs
                             
                             result.ApplyMatrix(newGo.transform, arg.mfTo.transform); //变换模型
 
-                            arg.ReplaceToObject(newGo);
+                            arg.ReplaceToObject(newGo, prefabInfo);
                         }
                         else
                         {

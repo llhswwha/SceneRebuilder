@@ -761,6 +761,8 @@ UnpackPrefab();
         CleanNodes();
 
         SetPrefabInfoList(MeshJobHelper.NewAcRTAlignJobsEx(meshPoints, JobSize, vertexCountOffset));
+
+        PrefabInfoList.RemoveNullGos();
         return PrefabInfoList;
     }
 

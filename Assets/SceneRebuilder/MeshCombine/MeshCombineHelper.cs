@@ -109,15 +109,15 @@ public static class MeshCombineHelper
 
         if (arg.source != null)
         {
-            arg.source.transform.position= minMax[3];
+            //arg.source.transform.position= minMax[3];
+            //goNew.transform.position = arg.source.transform.position;
             goNew.transform.position = arg.source.transform.position;
         }
-       
 
         // MeshFilter[] mfList =go.GetComponentsInChildren<MeshFilter>(true);
         // var minMax=MeshHelper.GetMinMax(mfList);
         // goNew.transform.position=minMax[3];
-        goNew.transform.position=minMax[3];
+        //goNew.transform.position=minMax[3];
 
         //int count=0;
         SubMeshList mfList =new SubMeshList();
@@ -158,6 +158,7 @@ public static class MeshCombineHelper
         {
             filterlist.Add(item.meshFilter);
         }
+
         if (isCenterPivot)
         {
             MeshHelper.CenterPivot(goNew.transform, filterlist);
@@ -166,6 +167,7 @@ public static class MeshCombineHelper
         {
 
         }
+
         //EditorHelper.RefreshAssets();
         return goNew;
     }
@@ -406,7 +408,7 @@ public static class MeshCombineHelper
 
     private static GameObject CombineInner_One(MeshCombineArg source){
         DateTime start=DateTime.Now;
-        GameObject goNew=CombineInner_Multi(source);//按材质合并
+        GameObject goNew=CombineInner_Multi(source,source.isCenterPivot);//按材质合并
         CombinedMesh combinedMesh=new CombinedMesh(goNew.transform,null,null);
         combinedMesh.DoCombine(false);
         GameObject target=combinedMesh.CreateNewGo(false,null);
@@ -416,6 +418,8 @@ public static class MeshCombineHelper
         //Debug.LogError(string.Format("CombinedMesh 用时:{0}ms,数量:{1}",(DateTime.Now-start).TotalMilliseconds,count));
         if(source.isCenterPivot)
             MeshHelper.CenterPivot(target.transform,combinedMesh.minMax[3]);
+
+        //Debug.LogError($"CombineInner_One source:{source} target:{target} isCenterPivot:{source.isCenterPivot}");
         return target;
     }
 
@@ -439,9 +443,12 @@ public static class MeshCombineHelper
 
     public static GameObject Combine(GameObject root)
     {
+        var rotation = root.transform.localRotation;
+        root.transform.localRotation = Quaternion.identity;
         MeshCombineArg arg = new MeshCombineArg(root);
-        GameObject goNew= CombineEx(arg);
+        GameObject goNew = CombineEx(arg);
         goNew.name = root.name;
+        goNew.transform.localRotation = rotation;
         GameObject.DestroyImmediate(root);
         return goNew;
     }

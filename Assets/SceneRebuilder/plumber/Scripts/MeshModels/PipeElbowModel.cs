@@ -442,7 +442,7 @@ public class PipeElbowModel : PipeModelBase
 
     public GameObject CombineTarget(PipeGenerateArg arg, GameObject pipeNew)
     {
-        pipeNew.transform.rotation = this.transform.rotation;
+        //pipeNew.transform.rotation = this.transform.rotation;
 
         GameObject target = pipeNew;
         if (IsCombineResult)
@@ -470,7 +470,10 @@ public class PipeElbowModel : PipeModelBase
             {
                 t.SetParent(null);
             }
+
             target = MeshCombineHelper.Combine(pipeNew);
+
+            //target = MeshCombineHelper.Combine(GameObject.Instantiate(pipeNew));
 
             foreach (var t in welds)
             {

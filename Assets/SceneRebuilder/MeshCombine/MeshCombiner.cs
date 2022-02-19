@@ -192,7 +192,7 @@ public class MeshCombiner : SingletonBehaviour<MeshCombiner>
                     combineArgs.Add(combineArg);
                     GameObject target = MeshCombineHelper.CombineEx(combineArg, mode);
                     resultList.Add(target);
-                    Debug.Log("Combine:" + source + "->" + target);
+                    Debug.Log($"Combine :{source}->{target} mode:{mode}");
                     if (Setting.IsDestroySource)
                     {
                         target.name = source.name;
@@ -266,13 +266,15 @@ public class MeshCombiner : SingletonBehaviour<MeshCombiner>
         Combine(MeshCombineMode.OneMesh);
     }
 
-    public void CombineToOne(GameObject source)
+    public void CombineToOne(GameObject source,bool isSave,bool isDestory)
     {
         sourceRoot = source;
         sourceType = MeshCombineSourceType.All;
         CombineEx();
-        SaveResult();
-        DestroySource();
+        if(isSave)
+            SaveResult();
+        if(isDestory)
+            DestroySource();
     }
 
     //public bool AutoAdd;

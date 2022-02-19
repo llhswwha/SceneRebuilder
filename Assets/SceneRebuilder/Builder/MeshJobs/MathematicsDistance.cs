@@ -39,7 +39,17 @@ public static class MathematicsDistance
         //List<float> disList = new List<float>();
         int zeroCount = 0;
         int i = 0;
-        for (; i < points1.Length; i++)
+
+        int maxCount = points1.Length;
+        int zeroPMaxCount = DistanceSetting.zeroPMaxCount;
+        int step = 1;
+        if (maxCount > zeroPMaxCount)
+        {
+            step = maxCount / zeroPMaxCount;
+        }
+        int count = 0;
+
+        for (; i < points1.Length; i+=step, count++)
         {
             float3 p1 = points1[i];
             float3 p2 = GetMinDistancePoint(p1, points2);
@@ -49,7 +59,7 @@ public static class MathematicsDistance
             {
                 //if(showLog)Debug.Log($"GetDistance1[{i}]d1:{d}|{distance}");
                 zeroCount++;
-                if (zeroCount > DistanceSetting.zeroPMaxCount)//没必要计算完，大概100个都位置相同的话，就是可以的了。
+                if (zeroCount > zeroPMaxCount)//没必要计算完，大概100个都位置相同的话，就是可以的了。
                 {
                     //return distance;//不能返回0哦
                     break;
@@ -71,7 +81,7 @@ public static class MathematicsDistance
                 break;
             }
         }
-        //if(showLog)Debug.Log($"GetVertexDistanceEx 用时:{(DateTime.Now - start).TotalMilliseconds:F2}ms，累计:{disSum:F7},结果:{distance:F7},序号:{i}/{points1.Length}");
+        //if(showLog)Debug.Log($"GetVertexDistanceEx 用时:{(DateTime.Now - start).TotalMilliseconds:F2}ms，累计:{disSum:F7},结果:{distance:F7},序号:{i}/{points1.Length} count:{count}");
         return distance;
     }
 }

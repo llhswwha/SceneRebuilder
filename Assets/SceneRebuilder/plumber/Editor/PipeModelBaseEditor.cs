@@ -51,6 +51,10 @@ public class PipeModelBaseEditor : Editor
         GUILayout.EndHorizontal();
 
         GUILayout.BeginHorizontal();
+        if (GUILayout.Button("GetInfo(Job)"))
+        {
+            targetT.GetModelInfo_Job();
+        }
         if (GUILayout.Button("ShowTriangles"))
         {
             targetT.DebugShowTriangles();

@@ -60,7 +60,7 @@ public class PipeReducerModel
         }
         else if(trianglesList.Count == 2)
         {
-            GetModelInfo2(trianglesList, keyPoints, distanceList[0].Plane, distanceList[1].Plane);
+            GetModelInfo2(keyPoints, distanceList[0].Plane, distanceList[1].Plane);
         }
         else
         {
@@ -75,21 +75,21 @@ public class PipeReducerModel
         Debug.Log($">>>{this.GetType().Name} time:{DateTime.Now - start} points:{trianglesList.Count} meshTriangles:{meshTriangles.Count} trianglesList:{trianglesList.Count} distanceList:{distanceList.Count}");
     }
 
-    protected void GetModelInfo2(SharedMeshTrianglesList trianglesList, GameObject keyPoints, SharedMeshTriangles startP, SharedMeshTriangles endP)
+    protected void GetModelInfo2(GameObject keyPoints, SharedMeshTriangles startP, SharedMeshTriangles endP)
     {
         //SharedMeshTriangles startP = distanceList[0].Plane;
-        var StartPoint = startP.GetCenter4();
+        StartPoint = startP.GetCenter4();
 
         PipeRadius1 = StartPoint.w;
 
         //SharedMeshTriangles endP = distanceList[1].Plane;
-        var EndPoint = endP.GetCenter4();
+        EndPoint = endP.GetCenter4();
         PipeRadius2 = EndPoint.w;
 
         PipeRadius = (PipeRadius1 + PipeRadius2) / 2;
 
-        trianglesList.Remove(StartPoint);
-        trianglesList.Remove(EndPoint);
+        //trianglesList.Remove(StartPoint);
+        //trianglesList.Remove(EndPoint);
 
         if (keyPoints != null)
         {

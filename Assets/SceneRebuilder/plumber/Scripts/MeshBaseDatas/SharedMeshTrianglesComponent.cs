@@ -54,7 +54,7 @@ public class SharedMeshTrianglesComponent : MonoBehaviour
         //    Radius = Triangles.GetAvgRadius2(PointId);
         //}
 
-        var minMaxR = ts.GetMinMaxRadius(0.00001f, Center);
+        var minMaxR = ts.GetMinMaxRadius(SharedMeshTriangles.IgnoreMinRadius, Center);
 
 
         var MinRadius = minMaxR[0];
@@ -64,8 +64,10 @@ public class SharedMeshTrianglesComponent : MonoBehaviour
 
         var DistanceToCenter = Vector3.Distance(sharedMeshTriangles.Point, Center);
 
-        var IsCircle = CircleCheckP <= CircleInfo.IsCircleMaxP || DistanceToCenter < CircleInfo.MinDistanceToCenter;
+        //var IsCircle = CircleCheckP <= CircleInfo.IsCircleMaxP || DistanceToCenter < CircleInfo.MinDistanceToCenter;
 
-        Debug.Log($"IsCircle:{IsCircle} CircleCheckP:{CircleCheckP} DistanceToCenter:{DistanceToCenter}");
+        var IsCircle = DistanceToCenter < CircleInfo.MinDistanceToCenter;
+
+        Debug.Log($"IsCircle:{IsCircle} CircleCheckP:{CircleCheckP} DistanceToCenter:{DistanceToCenter} MinRadius:{MinRadius} Radius:{Radius}");
     }
 }

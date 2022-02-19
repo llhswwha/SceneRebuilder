@@ -279,6 +279,11 @@ public class PipeFactoryEditor : BaseFoldoutEditor<PipeFactory>
         {
             targetT.ShowPrefabs();
         }
+        if (GUILayout.Button("AlignPrefabs"))
+        {
+            targetT.AlignDirectionPrefabs();
+        }
+
         if (GUILayout.Button("ClearWeldPrefabs"))
         {
             targetT.ClearWeldPrefabs();

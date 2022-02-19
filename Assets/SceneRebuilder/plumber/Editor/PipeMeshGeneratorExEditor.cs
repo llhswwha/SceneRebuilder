@@ -68,6 +68,10 @@ public class PipeMeshGeneratorEditorEx : Editor
 		{
 			myTarget.TestRemoveColinearPoints();
 		}
+		if (GUILayout.Button("AlignDirection"))
+		{
+			myTarget.AlignDirection();
+		}
 		GUILayout.EndHorizontal();
 
 		GUILayout.BeginHorizontal();
