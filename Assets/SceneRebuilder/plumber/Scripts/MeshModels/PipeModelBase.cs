@@ -215,6 +215,11 @@ public class PipeModelBase : PipeModelComponent, IComparable<PipeModelBase>
         return "";
     }
 
+    public virtual string GetSortKey()
+    {
+        return "";
+    }
+
     public void RemoveAllComponents()
     {
         if (IsGetInfoSuccess == false) return;

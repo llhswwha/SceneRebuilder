@@ -355,7 +355,7 @@ namespace MeshJobs
 
         public static int ICPCount=0;
 
-        public static bool IsTrySameAngle = false;
+        public static bool IsTrySameAngle = true;
 
         public static bool IsTryAngles= true;
 

@@ -218,6 +218,10 @@ namespace MeshJobs
                     defaultKey = key2;
                 }
             }
+            else
+            {
+                //MeshRendererInfo meshRendererInfo = MeshRendererInfo.GetMinMax(this.gameObject);
+            }
 
             return defaultKey;
         }

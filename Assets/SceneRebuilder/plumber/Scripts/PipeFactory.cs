@@ -549,6 +549,7 @@ public class PipeFactory : SingletonBehaviour<PipeFactory>
             if (pres == null) continue;
             if (pres.Prefab == null) continue;
             GameObject go = GameObject.Instantiate(pres.Prefab);
+            MeshHelper.ClearChildren(go.transform);
             PrefabInfoComponent prefabC=go.AddComponent<PrefabInfoComponent>();
             prefabC.prefabInfo = pres;
 
@@ -567,13 +568,17 @@ public class PipeFactory : SingletonBehaviour<PipeFactory>
             //        generator.AlignDirection();
             //}
 
-            PipeMeshGeneratorBase generator = go.GetComponent<PipeMeshGenerator>();
+            PipeMeshGeneratorBase generator = pres.Prefab.GetComponent<PipeMeshGenerator>();
             if (generator != null)
             {
                 GameObject go2 = GameObject.Instantiate(generator.Target);
+                MeshHelper.ClearChildren(go2.transform);
                 go2.transform.SetParent(go.transform);
                 go2.transform.localPosition = Vector3.zero;
                 go2.SetActive(true);
+
+                PipeModelBase model = generator.Target.GetComponent<PipeModelBase>();
+                go.name = model.GetSortKey() + go.name;
             }
 
             if (pres.InstanceCount > 0)
@@ -593,6 +598,7 @@ public class PipeFactory : SingletonBehaviour<PipeFactory>
                     else
                     {
                         go3.transform.SetParent(go.transform);
+                        MeshHelper.ClearChildren(go3.transform);
                         go3.transform.localPosition = Vector3.zero;
                         go3.transform.localRotation = Quaternion.identity;
                         go3.SetActive(true);
@@ -605,6 +611,8 @@ public class PipeFactory : SingletonBehaviour<PipeFactory>
             go.transform.SetParent(allPrefabs.transform);
             go.transform.position = Vector3.zero;
             go.transform.rotation = Quaternion.identity;
+
+            
 
             PrefabClones.Add(go);
         }
@@ -1070,6 +1078,7 @@ public class PipeFactory : SingletonBehaviour<PipeFactory>
             w.transform.SetParent(null);
             w.transform.SetParent(WeldRootTarget.transform);
         }
+        Debug.Log($"MoveWeldParent welds:{welds.Count}");
         return parentDict;
     }
 
@@ -1077,7 +1086,9 @@ public class PipeFactory : SingletonBehaviour<PipeFactory>
     {
         foreach (var w in dict.Keys)
         {
+            if (w == null) continue;
             var wp = dict[w];
+            if (wp == null) continue;
             w.transform.SetParent(wp);
         }
     }
@@ -1107,6 +1118,11 @@ public class PipeFactory : SingletonBehaviour<PipeFactory>
         AcRTAlignJobSetting.Instance.SetDefault();
         PrefabInfoList list = new PrefabInfoList();
         Dictionary<GameObject, Transform> parentDict = MoveWeldParent();
+        //foreach(var obj in parentDict.Keys)
+        //{
+        //    if (obj == null) continue;
+        //    GameObject.DestroyImmediate(obj);
+        //}
         PipeWelds = GetWelds();
 
         DateTime start4 = DateTime.Now;
@@ -1114,7 +1130,7 @@ public class PipeFactory : SingletonBehaviour<PipeFactory>
         if (IsCreatePipeByUnityPrefab == false)
         {
             var list4 = newBuilder.GetModelResult_Flange();
-            prefabs4 = PrefabInstanceBuilder.Instance.GetPrefabsOfList(list4, true, "_Flange_4");
+            prefabs4 = PrefabInstanceBuilder.Instance.GetPrefabsOfList(list4, true, "_Flange_4",true);
             //list.AddRange(prefabs1);
 
             Debug.LogError($"PrefabPipes Flange1 list4:{list4.Count}");
@@ -1122,7 +1138,7 @@ public class PipeFactory : SingletonBehaviour<PipeFactory>
         else
         {
             var list4 = newBuilder.GetModelResult_Flange(true);
-            prefabs4 = PrefabInstanceBuilder.Instance.GetPrefabsOfList(list4, true, "_Flange_4");
+            prefabs4 = PrefabInstanceBuilder.Instance.GetPrefabsOfList(list4, true, "_Flange_4", true);
             prefabs4.Add(new PrefabInfo());
             Debug.LogError($"PrefabPipes Flange2 list4:{list4.Count}");
         }
@@ -1186,6 +1202,9 @@ public class PipeFactory : SingletonBehaviour<PipeFactory>
         var gs = newBuilder.RefreshGenerators(Target);
         newBuilder.RefreshPipeModels(Target);
         RecoverWeldParent(parentDict);
+
+        AllPrefabs = prefabs5;
+        ShowPrefabs(prefabs5, "Prefabs_Tee", true);
         return list;
     }
 
@@ -1242,13 +1261,13 @@ public class PipeFactory : SingletonBehaviour<PipeFactory>
 
         DateTime start2 = DateTime.Now;
         var elbowGos1 = newBuilder.GetModelResult_Elbow();
-        PrefabInfoList prefabs2 = PrefabInstanceBuilder.Instance.GetPrefabsOfList(elbowGos1, true, "_Elbow_2");
-        list.AddRange(prefabs2);
+        PrefabInfoList prefabs2Elbow = PrefabInstanceBuilder.Instance.GetPrefabsOfList(elbowGos1, true, "_Elbow_2");
+        list.AddRange(prefabs2Elbow);
         TimeSpan t2 = DateTime.Now - start2;
 
         DateTime start3 = DateTime.Now;
-        PrefabInfoList prefabs3 = PrefabInstanceBuilder.Instance.GetPrefabsOfList(newBuilder.GetModelResult_Reducer(), true, "_Reducer_3");
-        list.AddRange(prefabs3);
+        PrefabInfoList prefabs3Reducer = PrefabInstanceBuilder.Instance.GetPrefabsOfList(newBuilder.GetModelResult_Reducer(), true, "_Reducer_3");
+        list.AddRange(prefabs3Reducer);
         TimeSpan t3 = DateTime.Now - start3;
 
         DateTime start4 = DateTime.Now;
@@ -1288,7 +1307,7 @@ public class PipeFactory : SingletonBehaviour<PipeFactory>
 
         RecoverWeldParent(parentDict);
 
-        Debug.LogError($"¡¾PipeFactory.PrefabPipes [{ta.ToString(timeFormat)}]¡¿ Pipes:{newBuilder.PipeGenerators.Count} Pipes2:{gs.Count} prefabs:{list}({prefabs1.Count}+{prefabs2.Count}+{prefabs3.Count}+{prefabs4.Count}+{prefabs5.Count}+{prefabs6.Count}) times:({t1.ToString(timeFormat)}+{t2.ToString(timeFormat)}+{t3.ToString(timeFormat)}+{t4.ToString(timeFormat)}+{t5.ToString(timeFormat)}+{t6.ToString(timeFormat)}+)");
+        Debug.LogError($"¡¾PipeFactory.PrefabPipes [{ta.ToString(timeFormat)}]¡¿ Pipes:{newBuilder.PipeGenerators.Count} Pipes2:{gs.Count} prefabs:{list}({prefabs1.Count}+{prefabs2Elbow.Count}+{prefabs3Reducer.Count}+{prefabs4.Count}+{prefabs5.Count}+{prefabs6.Count}) times:({t1.ToString(timeFormat)}+{t2.ToString(timeFormat)}+{t3.ToString(timeFormat)}+{t4.ToString(timeFormat)}+{t5.ToString(timeFormat)}+{t6.ToString(timeFormat)}+)");
         return list;
     }
 
@@ -1305,7 +1324,7 @@ public class PipeFactory : SingletonBehaviour<PipeFactory>
     public PrefabInfoList PrefabWelds()
     {
         AcRTAlignJobSetting.Instance.SetDefault();
-        AcRTAlignJob.IsTrySameAngle = IsTrySameAngle;
+        //AcRTAlignJob.IsTrySameAngle = IsTrySameAngle;
 
         DateTime start = DateTime.Now;
 
@@ -1323,7 +1342,7 @@ public class PipeFactory : SingletonBehaviour<PipeFactory>
             Debug.LogError($"PrefabWelds time:{DateTime.Now - start} Welds:{welds.Count} prefabs:{prefabs.Count}");
         }
 
-        AcRTAlignJob.IsTrySameAngle = false;
+        //AcRTAlignJob.IsTrySameAngle = false;
         return prefabs;
     }
 

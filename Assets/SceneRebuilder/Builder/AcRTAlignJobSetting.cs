@@ -30,9 +30,9 @@ public class AcRTAlignJobSetting : SingletonBehaviour<AcRTAlignJobSetting>
     {
         IsTryAngles = true;
 
-        IsTryAngles_Scale = false;
+        //IsTryAngles_Scale = false;
 
-        IsTryRT = false;
+        //IsTryRT = false;
 
         IsTryICP = false;
     }

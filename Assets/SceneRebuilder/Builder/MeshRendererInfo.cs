@@ -216,6 +216,16 @@ public class MeshRendererInfo : MonoBehaviour,IComparable<MeshRendererInfo>
         }
     }
 
+    //public static string GetKeyDict(GameObject go)
+    //{
+    //    MeshRendererInfo info = GetInfo(go);
+    //    List<float> args = new List<float>();
+    //    args.Add(info.size.x);
+    //    args.Add(info.size.x);
+    //    args.Add(info.size.x);
+    //    args.Add(info.size.x);
+    //}
+
     public static Vector3[] GetMinMax(GameObject go,bool isUpdate=true)
     {
         MeshRendererInfo info = go.GetComponent<MeshRendererInfo>();

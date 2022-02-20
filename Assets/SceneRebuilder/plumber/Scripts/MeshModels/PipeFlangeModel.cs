@@ -36,7 +36,7 @@ public class PipeFlangeModel : PipeReducerModel
         prefab.SetActive(true);
         prefab.name = this.name + "_New3";
         SetPrefabTransfrom(prefab);
-        prefab.GetComponent<MeshFilter>().sharedMesh = PipeFactory.Instance.GetPipeModelUnitPrefabMesh_Flange();
+        prefab.AddMissingComponent<MeshFilter>().sharedMesh = PipeFactory.Instance.GetPipeModelUnitPrefabMesh_Flange();
         ResultGo = prefab;
         return prefab;
     }
@@ -259,7 +259,8 @@ public class PipeFlangeModel : PipeReducerModel
         if (IsSpecial)
         {
             GameObject pipeNew = GetPipeNewGo(arg, afterName);
-            pipeNew.transform.up = KeyPointInfo.EndPointIn1 - KeyPointInfo.EndPointOut1;
+            pipeNew.transform.up = KeyPointInfo.EndPointOut1-KeyPointInfo.EndPointIn1;
+            //pipeNew.transform.position = KeyPointInfo.EndPointOut1;
 
             arg.generateEndCaps = true;
             GameObject pipe11 = RenderPipeLine(arg, afterName + "_1", KeyPointInfo.EndPointIn1, KeyPointInfo.EndPointOut1);
@@ -325,37 +326,43 @@ public class PipeFlangeModel : PipeReducerModel
 
     public static Dictionary<string, string> keys = new Dictionary<string, string>();
 
+    public override string GetSortKey()
+    {
+        string key = "";
+         key = $"[Flange_{KeyPointInfo.GetRadiusIn1Out1():F4},{KeyPointInfo.GetRadiusIn2Out2():F4},{KeyPointInfo.GetLength1():F4},{KeyPointInfo.GetLength2():F4}]";//F1:20s,37£¬F2:5.7s£¬39¡£F3:4.8s£¬39¡£
+        return key;
+    }
 
     public override string GetDictKey()
     {
         string key="";
-        //if (IsSpecial)
-        //{
-        //    if (KeyPointInfo == null)
-        //    {
-        //        Debug.LogError($"GetDictKey2 KeyPointInfo == null gameObject:{this.name}");
-        //        key= this.VertexCount + "";
-        //    }
-        //    else
-        //    {
-        //        //key = $"Flange_{IsSpecial},{KeyPointInfo.GetRadiusIn1Out1():F2},{KeyPointInfo.GetRadiusIn2Out2():F2}";
-        //        //key = $"Flange_{IsSpecial},{KeyPointInfo.GetRadiusIn1Out1():F3}";//F1:20s,37£¬F2:5.7s£¬39¡£F3:4.8s£¬39¡£
-        //        key = $"Flange_{IsSpecial},{KeyPointInfo.GetRadiusIn2Out2():F3}";//F1:20s,37£¬F2:5.7s£¬39¡£F3:4.8s£¬39¡£
-        //    }
-            
-        //}
-        //else
-        //{
-        //    if (KeyPointInfo == null)
-        //    {
-        //        Debug.LogError($"GetDictKey3 KeyPointInfo == null gameObject:{this.name}");
-        //        key = this.VertexCount + "";
-        //    }
-        //    else
-        //    {
-        //        key = $"Flange_{IsSpecial},{PipeRadius:F2}";
-        //    }
-        //}
+        if (IsSpecial)
+        {
+            if (KeyPointInfo == null)
+            {
+                Debug.LogError($"GetDictKey2 KeyPointInfo == null gameObject:{this.name}");
+                key = this.VertexCount + "";
+            }
+            else
+            {
+                //key = $"Flange_{IsSpecial},{KeyPointInfo.GetRadiusIn1Out1():F2},{KeyPointInfo.GetRadiusIn2Out2():F2}";
+                //key = $"Flange_{IsSpecial},{KeyPointInfo.GetRadiusIn1Out1():F3}";//F1:20s,37£¬F2:5.7s£¬39¡£F3:4.8s£¬39¡£
+                key = $"Flange_{IsSpecial},{KeyPointInfo.GetRadiusIn1Out1():F4},{KeyPointInfo.GetRadiusIn2Out2():F4},{KeyPointInfo.GetLength1():F4},{KeyPointInfo.GetLength2():F4}";//F1:20s,37£¬F2:5.7s£¬39¡£F3:4.8s£¬39¡£
+            }
+
+        }
+        else
+        {
+            if (KeyPointInfo == null)
+            {
+                Debug.LogError($"GetDictKey3 KeyPointInfo == null gameObject:{this.name}");
+                key = this.VertexCount + "";
+            }
+            else
+            {
+                key = $"Flange_{IsSpecial},{PipeRadius:F2}";
+            }
+        }
         //if (!keys.ContainsKey(key))
         //{
         //    keys.Add(key, key);

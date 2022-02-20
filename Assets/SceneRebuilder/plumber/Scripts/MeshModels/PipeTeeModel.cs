@@ -256,6 +256,10 @@ public class PipeTeeModel : PipeElbowModel
             arg.generateWeld = false;
 
             GameObject pipeNew = GetPipeNewGo(arg, afterName);
+            pipeNew.transform.up = InnerKeyPlaneInfo.EndPointIn1.GetMinCenter4()-InnerKeyPlaneInfo.EndPointIn2.GetMinCenter4();
+            //pipeNew.transform.right = KeyPlaneInfo.EndPointIn1.GetMinCenter4() - KeyPlaneInfo.EndPointIn2.GetMinCenter4();
+            pipeNew.transform.Rotate(pipeNew.transform.right, 90);
+
             if (KeyPointInfo == null)
             {
                 Debug.LogError($"Tee.RendererModel KeyPointInfo == null gameObject:{this.name}");
@@ -274,6 +278,8 @@ public class PipeTeeModel : PipeElbowModel
             var lineArg = arg.Clone();
             if (lineArg.pipeSegments < 32)
                 lineArg.pipeSegments = 32;
+            if (arg.pipeSegments < 24)
+                arg.pipeSegments = 24;
             lineArg.generateEndCaps = true;
             GameObject pipe11 = RenderPipeLine(lineArg, afterName+"_1", KeyPointInfo.EndPointIn1, KeyPointInfo.EndPointOut1);
             GameObject pipe12 = RenderPipeLine(lineArg, afterName + "_2", KeyPointInfo.EndPointIn2, KeyPointInfo.EndPointOut2);
@@ -302,6 +308,13 @@ public class PipeTeeModel : PipeElbowModel
             arg.IsGenerateEndWeld = true;
             GameObject pipe2 = RenderPipeLine(arg, afterName, KeyPointInfo.EndPointIn2, KeyPointInfo.EndPointOut2);
             GameObject pipeNew = GetPipeNewGo(arg, afterName);
+            pipeNew.transform.up =  KeyPointInfo.EndPointIn1- KeyPointInfo.EndPointOut1;
+            //pipeNew.transform.right = KeyPointInfo.EndPointIn2 - KeyPointInfo.EndPointOut2;
+            Vector3 dir = KeyPointInfo.EndPointIn2 - KeyPointInfo.EndPointOut2;
+            float angle = Vector3.Angle(dir, Vector3.right);
+            //pipeNew.transform.Rotate(pipeNew.transform.up, angle, Space.World);
+            Debug.Log($"Tee angle:{angle}");
+            pipeNew.transform.Rotate(Vector3.up, angle, Space.Self);
 
             pipe1.transform.SetParent(pipeNew.transform);
             pipe2.transform.SetParent(pipeNew.transform);
@@ -347,10 +360,14 @@ public class PipeTeeModel : PipeElbowModel
                 Debug.LogError($"GetDictKey3 KeyPointInfo == null gameObject:{this.name}");
                 return this.VertexCount + "";
             }
-            return $"Tee_{IsSpecial},{KeyPointInfo.GetRadiusIn1Out1():F3},{KeyPointInfo.GetRadiusIn2Out2():F3}";
+            return $"Tee_{IsSpecial},{KeyPointInfo.GetRadiusIn2Out2():F3},{KeyPointInfo.GetRadiusIn1Out1():F3},{KeyPointInfo.GetLength2():F3},{KeyPointInfo.GetLength1():F3}";
         }
     }
 
+    public override string GetSortKey()
+    {
+        return $"[{GetDictKey()}]";
+    }
 
 
     public override List<Vector4> GetModelKeyPoints()

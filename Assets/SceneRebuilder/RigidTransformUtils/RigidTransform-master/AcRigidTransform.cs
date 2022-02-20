@@ -634,7 +634,7 @@ public class AcRigidTransform : MonoBehaviour {
                 //Debug.Log($">>>RTAlignOneCore [{count}/{tpsCount}][{l}/{tpsFrom.Length},{k}/{tpsTo.Length}]\tdis:{dis},\tIsZero:{rt.IsZero},\tIsReflection:{rt.IsReflection}\n{rt.TransformationMatrix}");
                 if(dis==0)
                 {
-                    Debug.LogError($"RTAlignOneCore2 Time:{(DateTime.Now-start).TotalMilliseconds}ms");
+                    Debug.LogError($"RTAlignOneCore2 dis==0 Time:{(DateTime.Now-start).TotalMilliseconds}ms");
                     //acRigidTransform.ApplyTransform(t1);
                     
                     //AcRigidTransform.ApplyMatrix(matrix,tFrom);

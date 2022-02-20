@@ -1508,12 +1508,17 @@ break;
         return AcRTAlignJobsEx(meshFilters.ToArray());
     }
 
-    public PrefabInfoList GetPrefabsOfList<T>(List<T> list, bool align,string tag) where T : Component
+    public PrefabInfoList GetPrefabsOfList<T>(List<T> list, bool align, string tag,bool enableRTC=false) where T : Component
     {
+        //bool isTryRt = AcRTAlignJobSetting.Instance.IsTryRT;
+        //AcRTAlignJobSetting.Instance.IsTryRT = enableRTC;
+
         AcRTAlignJobContainer.CurrentLogTag = tag;
         List<MeshPoints> meshFilters = MeshPoints.GetMeshPoints(list);
         PrefabInfoList preafabList= AcRTAlignJobsEx(meshFilters.ToArray());
         AcRTAlignJobContainer.CurrentLogTag = "";
+
+        //AcRTAlignJobSetting.Instance.IsTryRT = isTryRt;
         return preafabList;
     }
 
