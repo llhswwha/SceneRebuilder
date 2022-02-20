@@ -23,7 +23,10 @@ public static class MeshHelper
     public static void CopyTransfrom(Transform source, Transform target)
     {
         if (target.parent != source.parent)
+        {
+            EditorHelper.UnpackPrefab(target.gameObject);
             target.SetParent(source.parent);
+        }
         target.localPosition = source.localPosition;
         target.localRotation = source.localRotation;
         target.localScale = source.localScale;
@@ -47,8 +50,17 @@ public static class MeshHelper
             Debug.LogError($"CopyMeshComponents meshRenderer1 == null source:{source} target:{target}");
             return;
         }
-        MeshRenderer meshRenderer2 = target.AddMissingComponent<MeshRenderer>();
-        meshRenderer2.sharedMaterials = meshRenderer1.sharedMaterials;
+
+        MeshRenderer meshRenderer2 = target.GetComponent<MeshRenderer>();
+        if (meshRenderer2 == null)
+        {
+            meshRenderer2 = target.AddMissingComponent<MeshRenderer>();
+        }
+
+        if (meshRenderer2.sharedMaterials == null)
+        {
+            meshRenderer2.sharedMaterials = meshRenderer1.sharedMaterials;
+        }
 
         MeshFilter meshFilter1 = source.GetComponent<MeshFilter>();
         MeshFilter meshFilter2 = target.AddMissingComponent<MeshFilter>();
@@ -2606,6 +2618,7 @@ public static class MeshHelper
         }
         //SaveParent(go.transform);
         var parent = go.transform.parent;
+        EditorHelper.UnpackPrefab(go);
         go.transform.SetParent(ZeroPointGo.transform);
         return parent;
     }

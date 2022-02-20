@@ -163,9 +163,41 @@ public class PipeFactory : SingletonBehaviour<PipeFactory>
         OneKeyCore(isJob, true, false);
     }
 
+    public void DebugOneKey1()
+    {
+        DateTime start = DateTime.Now;
+
+        EditorHelper.UnpackPrefab(Target);
+
+        DateTime start1 = DateTime.Now;
+        int weldsCount = OneKey_GetPipeInfos(true);
+        TimeSpan getInfoTime = DateTime.Now - start1;
+
+       
+    }
+
+    public void DebugOneKey2(bool isRemoveMesh)
+    {
+        DateTime start2 = DateTime.Now;
+        OneKeyGeneratePipes(true, isRemoveMesh);//removeMesh
+        TimeSpan generateTime = DateTime.Now - start2;
+    }
+
+    public void DebugOneKey3()
+    {
+        DateTime start3 = DateTime.Now;
+        string pefabLog = AfterGeneratePipes(false, IsPrefabGos);//not move
+        int lastWeldCount = ReplaceOldPipeMesh(false);
+        TimeSpan prefabTime = DateTime.Now - start3;
+
+        GetResultInfoAfter();
+    }
+
     public void OneKeyCore(bool isJob, bool isRemoveMesh, bool isMoveToBuilder)
     {
         DateTime start = DateTime.Now;
+
+        EditorHelper.UnpackPrefab(Target);
 
         DateTime start1 = DateTime.Now;
         int weldsCount = OneKey_GetPipeInfos(isJob);
@@ -448,7 +480,7 @@ public class PipeFactory : SingletonBehaviour<PipeFactory>
             }
             else if (lastWeldCount > 0 && IsPrefabOldWeld)
             {
-                PrefabInstanceBuilder.Instance.GetPrefabsOfList(lastWeldList, true, "Welds(Old)");
+                PrefabInstanceBuilder.Instance.GetPrefabsOfList(lastWeldList, true, "Welds(Old)",IsOthersTryRT);
             }
         }
         return lastWeldCount;
@@ -527,6 +559,10 @@ public class PipeFactory : SingletonBehaviour<PipeFactory>
             generator.AlignDirection();
         }
     }
+
+    public bool IsPipeTryRT = true;
+
+    public bool IsOthersTryRT = false;
 
     public List<GameObject> PrefabClones = new List<GameObject>();
 
@@ -808,6 +844,7 @@ public class PipeFactory : SingletonBehaviour<PipeFactory>
     {
         w.name = w2.name;
         //w.transform.SetParent(w2.parent);
+        EditorHelper.UnpackPrefab(w2.gameObject);
         w2.gameObject.SetActive(false);
         GameObject.DestroyImmediate(w2.gameObject);
     }
@@ -1101,7 +1138,7 @@ public class PipeFactory : SingletonBehaviour<PipeFactory>
         PipeWelds = GetWelds();
 
         DateTime start3 = DateTime.Now;
-        PrefabInfoList prefabs3 = PrefabInstanceBuilder.Instance.GetPrefabsOfList(newBuilder.GetModelResult_Reducer(), true, "_Reducer_3");
+        PrefabInfoList prefabs3 = PrefabInstanceBuilder.Instance.GetPrefabsOfList(newBuilder.GetModelResult_Reducer(), true, "_Reducer_3",IsPipeTryRT);
         list.AddRange(prefabs3);
         TimeSpan t3 = DateTime.Now - start3;
 
@@ -1130,7 +1167,7 @@ public class PipeFactory : SingletonBehaviour<PipeFactory>
         if (IsCreatePipeByUnityPrefab == false)
         {
             var list4 = newBuilder.GetModelResult_Flange();
-            prefabs4 = PrefabInstanceBuilder.Instance.GetPrefabsOfList(list4, true, "_Flange_4",true);
+            prefabs4 = PrefabInstanceBuilder.Instance.GetPrefabsOfList(list4, true, "_Flange_4", IsPipeTryRT);
             //list.AddRange(prefabs1);
 
             Debug.LogError($"PrefabPipes Flange1 list4:{list4.Count}");
@@ -1138,7 +1175,7 @@ public class PipeFactory : SingletonBehaviour<PipeFactory>
         else
         {
             var list4 = newBuilder.GetModelResult_Flange(true);
-            prefabs4 = PrefabInstanceBuilder.Instance.GetPrefabsOfList(list4, true, "_Flange_4", true);
+            prefabs4 = PrefabInstanceBuilder.Instance.GetPrefabsOfList(list4, true, "_Flange_4",  IsPipeTryRT);
             prefabs4.Add(new PrefabInfo());
             Debug.LogError($"PrefabPipes Flange2 list4:{list4.Count}");
         }
@@ -1195,7 +1232,7 @@ public class PipeFactory : SingletonBehaviour<PipeFactory>
         PipeWelds = GetWelds();
 
         DateTime start5 = DateTime.Now;
-        PrefabInfoList prefabs5 = PrefabInstanceBuilder.Instance.GetPrefabsOfList(newBuilder.GetModelResult_Tee(), true, "_Tee_5");
+        PrefabInfoList prefabs5 = PrefabInstanceBuilder.Instance.GetPrefabsOfList(newBuilder.GetModelResult_Tee(), true, "_Tee_5", IsPipeTryRT);
         list.AddRange(prefabs5);
         TimeSpan t5 = DateTime.Now - start5;
 
@@ -1218,7 +1255,7 @@ public class PipeFactory : SingletonBehaviour<PipeFactory>
 
         DateTime start2 = DateTime.Now;
         var elbowGos1 = newBuilder.GetModelResult_Elbow();
-        PrefabInfoList prefabs2 = PrefabInstanceBuilder.Instance.GetPrefabsOfList(elbowGos1, true, "_Elbow_2");
+        PrefabInfoList prefabs2 = PrefabInstanceBuilder.Instance.GetPrefabsOfList(elbowGos1, true, "_Elbow_2", IsPipeTryRT);
         list.AddRange(prefabs2);
         TimeSpan t2 = DateTime.Now - start2;
 
@@ -1249,7 +1286,7 @@ public class PipeFactory : SingletonBehaviour<PipeFactory>
         PrefabInfoList prefabs1 = null;
         if (IsCreatePipeByUnityPrefab==false)
         {
-            prefabs1 = PrefabInstanceBuilder.Instance.GetPrefabsOfList(newBuilder.GetModelResult_Line(), true, "_Line_1");
+            prefabs1 = PrefabInstanceBuilder.Instance.GetPrefabsOfList(newBuilder.GetModelResult_Line(), true, "_Line_1", IsPipeTryRT);
             list.AddRange(prefabs1);
         }
         else
@@ -1261,12 +1298,12 @@ public class PipeFactory : SingletonBehaviour<PipeFactory>
 
         DateTime start2 = DateTime.Now;
         var elbowGos1 = newBuilder.GetModelResult_Elbow();
-        PrefabInfoList prefabs2Elbow = PrefabInstanceBuilder.Instance.GetPrefabsOfList(elbowGos1, true, "_Elbow_2");
+        PrefabInfoList prefabs2Elbow = PrefabInstanceBuilder.Instance.GetPrefabsOfList(elbowGos1, true, "_Elbow_2", IsPipeTryRT);
         list.AddRange(prefabs2Elbow);
         TimeSpan t2 = DateTime.Now - start2;
 
         DateTime start3 = DateTime.Now;
-        PrefabInfoList prefabs3Reducer = PrefabInstanceBuilder.Instance.GetPrefabsOfList(newBuilder.GetModelResult_Reducer(), true, "_Reducer_3");
+        PrefabInfoList prefabs3Reducer = PrefabInstanceBuilder.Instance.GetPrefabsOfList(newBuilder.GetModelResult_Reducer(), true, "_Reducer_3", IsPipeTryRT);
         list.AddRange(prefabs3Reducer);
         TimeSpan t3 = DateTime.Now - start3;
 
@@ -1275,7 +1312,7 @@ public class PipeFactory : SingletonBehaviour<PipeFactory>
         if (IsCreatePipeByUnityPrefab == false)
         {
             var list4 = newBuilder.GetModelResult_Flange();
-            prefabs4 = PrefabInstanceBuilder.Instance.GetPrefabsOfList(list4, true, "_Flange_4");
+            prefabs4 = PrefabInstanceBuilder.Instance.GetPrefabsOfList(list4, true, "_Flange_4", IsPipeTryRT);
             list.AddRange(prefabs4);
 
             Debug.LogError($"PrefabPipes Flange1 list4:{list4.Count}");
@@ -1283,7 +1320,7 @@ public class PipeFactory : SingletonBehaviour<PipeFactory>
         else
         {
             var list4 = newBuilder.GetModelResult_Flange(true);
-            prefabs4 = PrefabInstanceBuilder.Instance.GetPrefabsOfList(list4, true, "_Flange_4");
+            prefabs4 = PrefabInstanceBuilder.Instance.GetPrefabsOfList(list4, true, "_Flange_4", IsPipeTryRT);
             prefabs4.Add(new PrefabInfo());
             Debug.LogError($"PrefabPipes Flange2 list4:{list4.Count}");
         }
@@ -1291,12 +1328,12 @@ public class PipeFactory : SingletonBehaviour<PipeFactory>
         TimeSpan t4 = DateTime.Now - start4;
 
         DateTime start5 = DateTime.Now;
-        PrefabInfoList prefabs5 = PrefabInstanceBuilder.Instance.GetPrefabsOfList(newBuilder.GetModelResult_Tee(), true, "_Tee_5");
+        PrefabInfoList prefabs5 = PrefabInstanceBuilder.Instance.GetPrefabsOfList(newBuilder.GetModelResult_Tee(), true, "_Tee_5", IsPipeTryRT);
         list.AddRange(prefabs5);
         TimeSpan t5 = DateTime.Now - start5;
 
         DateTime start6 = DateTime.Now;
-        PrefabInfoList prefabs6 = PrefabInstanceBuilder.Instance.GetPrefabsOfList(newBuilder.GetModelResult_Weldolet(), true, "_Weldolet_6");
+        PrefabInfoList prefabs6 = PrefabInstanceBuilder.Instance.GetPrefabsOfList(newBuilder.GetModelResult_Weldolet(), true, "_Weldolet_6", IsPipeTryRT);
         list.AddRange(prefabs6);
         TimeSpan t6 = DateTime.Now - start6;
 
@@ -1338,7 +1375,7 @@ public class PipeFactory : SingletonBehaviour<PipeFactory>
             //newBuilder.CombineGeneratedWelds();
             var welds = newBuilder.GetNewWelds(Target);
             //return new PrefabInfoList();
-            prefabs = PrefabInstanceBuilder.Instance.GetPrefabsOfList(welds, true, "_Welds(New)");
+            prefabs = PrefabInstanceBuilder.Instance.GetPrefabsOfList(welds, true, "_Welds(New)", IsPipeTryRT);
             Debug.LogError($"PrefabWelds time:{DateTime.Now - start} Welds:{welds.Count} prefabs:{prefabs.Count}");
         }
 
@@ -1350,7 +1387,7 @@ public class PipeFactory : SingletonBehaviour<PipeFactory>
     {
         AcRTAlignJobSetting.Instance.SetDefault();
         DateTime start = DateTime.Now;
-        PrefabInfoList prefabs =PrefabInstanceBuilder.Instance.GetPrefabsOfList(PipeOthers, true, "_Others");
+        PrefabInfoList prefabs =PrefabInstanceBuilder.Instance.GetPrefabsOfList(PipeOthers, true, "_Others",IsOthersTryRT);
         PipeOthers.Clear();
         PipeOthers.AddRange(prefabs.GetComponents<Transform>());
         Debug.LogError($"PrefabOthers time:{DateTime.Now-start} Others:{this.PipeOthers.Count} prefabs:{prefabs.Count}");

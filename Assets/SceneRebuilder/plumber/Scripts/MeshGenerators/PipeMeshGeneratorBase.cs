@@ -51,17 +51,17 @@ public class PipeMeshGeneratorBase : MonoBehaviour
 
     public void DestroyMeshComponent()
     {
-        MeshRenderer renderer = this.GetComponent<MeshRenderer>();
-        if (renderer)
-        {
-            GameObject.DestroyImmediate(renderer);
-        }
+        //MeshRenderer renderer = this.GetComponent<MeshRenderer>();
+        //if (renderer)
+        //{
+        //    GameObject.DestroyImmediate(renderer);
+        //}
 
-        MeshFilter filter = this.GetComponent<MeshFilter>();
-        if (filter)
-        {
-            GameObject.DestroyImmediate(filter);
-        }
+        //MeshFilter filter = this.GetComponent<MeshFilter>();
+        //if (filter)
+        //{
+        //    GameObject.DestroyImmediate(filter);
+        //}
     }
 
     public GameObject Target;

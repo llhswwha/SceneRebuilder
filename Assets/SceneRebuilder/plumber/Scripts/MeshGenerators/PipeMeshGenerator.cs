@@ -248,8 +248,14 @@ public class PipeMeshGenerator : PipeMeshGeneratorBase
 
         // add mesh renderer if not present
         MeshRenderer currentMeshRenderer = GetComponent<MeshRenderer>();
-        MeshRenderer mr = currentMeshRenderer != null ? currentMeshRenderer : gameObject.AddComponent<MeshRenderer>();
-        mr.materials = new Material[1] { pipeMaterial };
+        //MeshRenderer mr = currentMeshRenderer != null ? currentMeshRenderer : gameObject.AddComponent<MeshRenderer>();
+        //mr.materials = new Material[1] { pipeMaterial };
+        if (currentMeshRenderer == null)
+        {
+            currentMeshRenderer = gameObject.AddComponent<MeshRenderer>();
+            currentMeshRenderer.materials = new Material[1] { pipeMaterial };
+        }
+
 
         //Debug.LogError($"vertexCount:{mesh.vertexCount} gameObject:{gameObject.name}");
     }

@@ -996,26 +996,28 @@ public class PipeModelBase : PipeModelComponent, IComparable<PipeModelBase>
         return path;
     }
 
-    public GameObject CopyMeshComponentsEx(GameObject target)
+    public GameObject CopyMeshComponentsEx(GameObject source)
     {
         //MeshRenderer meshRenderer = this.GetComponent<MeshRenderer>();
         if (IsNoMesh())
         {
-            MeshHelper.CopyMeshComponents(target, this.gameObject);
+            MeshHelper.CopyMeshComponents(source, this.gameObject);
+            this.gameObject.transform.rotation = source.transform.rotation;
+
             List<Transform> children = new List<Transform>();
-            for (int i = 0; i < target.transform.childCount; i++)
+            for (int i = 0; i < source.transform.childCount; i++)
             {
-                children.Add(target.transform.GetChild(i));
+                children.Add(source.transform.GetChild(i));
             }
             foreach (var child in children)
             {
                 child.SetParent(this.transform);
             }
-            GameObject.DestroyImmediate(target);
-            target = this.gameObject;
-            target.SetActive(true);
+            GameObject.DestroyImmediate(source);
+            source = this.gameObject;
+            source.SetActive(true);
         }
-        return target;
+        return source;
     }
 
 

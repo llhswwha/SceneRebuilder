@@ -27,6 +27,10 @@ public class PipeFactoryEditor : BaseFoldoutEditor<PipeFactory>
         targetT.IsLoadXmlOnStart = EditorGUILayout.Toggle(targetT.IsLoadXmlOnStart, GUILayout.Width(15));
         GUILayout.Label($"UnitPrefab");
         targetT.IsCreatePipeByUnityPrefab = EditorGUILayout.Toggle(targetT.IsCreatePipeByUnityPrefab);
+        GUILayout.Label($"PipeRT");
+        targetT.IsPipeTryRT = EditorGUILayout.Toggle(targetT.IsPipeTryRT);
+        GUILayout.Label($"OthersRT");
+        targetT.IsOthersTryRT = EditorGUILayout.Toggle(targetT.IsOthersTryRT);
 
         GUILayout.Label("ͳһ�뾶");
         targetT.isUniformRaidus = EditorGUILayout.Toggle(targetT.isUniformRaidus);
@@ -108,6 +112,22 @@ public class PipeFactoryEditor : BaseFoldoutEditor<PipeFactory>
         if (GUILayout.Button("OneKeyEx(Job)"))
         {
             targetT.OneKeyEx(true);
+        }
+        if (GUILayout.Button("1",GUILayout.Width(30)))
+        {
+            targetT.DebugOneKey1();
+        }
+        if (GUILayout.Button("2_1", GUILayout.Width(30)))
+        {
+            targetT.DebugOneKey2(true);
+        }
+        if (GUILayout.Button("2_2", GUILayout.Width(30)))
+        {
+            targetT.DebugOneKey2(true);
+        }
+        if (GUILayout.Button("3", GUILayout.Width(30)))
+        {
+            targetT.DebugOneKey3();
         }
         GUILayout.EndHorizontal();
 
