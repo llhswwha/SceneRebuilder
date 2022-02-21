@@ -5,7 +5,7 @@ using System.Xml.Serialization;
 using Unity.Collections;
 using UnityEngine;
 
-public struct PipeWeldoletInfoJob : IPipeJob
+public struct PipeWeldoletInfoJob : IMeshInfoJob
 {
     public static int sharedMinCount = 36;
     public static float minRepeatPointDistance = 0.001f;

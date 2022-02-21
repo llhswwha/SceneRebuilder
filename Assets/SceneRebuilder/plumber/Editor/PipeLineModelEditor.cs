@@ -11,6 +11,8 @@ public class PipeLineModelEditor : PipeModelBaseEditor
         PipeLineModel targetT = target as PipeLineModel;
         base.DrawBaseModelToolBar(targetT);
 
+        GUILayout.Label($"Vertex:{targetT.VertexCount}");
+
         GUILayout.BeginHorizontal();
         if (GUILayout.Button("ShowOBB"))
         {

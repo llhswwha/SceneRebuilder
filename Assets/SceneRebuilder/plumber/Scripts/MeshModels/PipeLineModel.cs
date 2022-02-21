@@ -12,10 +12,7 @@ using UnityEngine;
 /// </summary>
 public class PipeLineModel : PipeModelBase
 {
-    public void ShowOBB()
-    {
-        OBBCollider.ShowOBB(this.gameObject,true);
-    }
+
 
     public PipeLineInfo LineInfo = new PipeLineInfo();
 

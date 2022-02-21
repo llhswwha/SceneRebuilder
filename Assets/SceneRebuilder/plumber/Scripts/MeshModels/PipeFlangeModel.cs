@@ -75,8 +75,8 @@ public class PipeFlangeModel : PipeReducerModel
 
     public override void GetModelInfo_Job()
     {
-        PipeFlangeInfoJob.Result = new NativeArray<PipeReducerData>(1, Allocator.Persistent);
-        Mesh mesh = this.GetComponent<MeshFilter>().sharedMesh;
+        PipeFlangeInfoJob.InitResult(1);
+         Mesh mesh = this.GetComponent<MeshFilter>().sharedMesh;
         MeshStructure meshS = new MeshStructure(mesh);
         PipeFlangeInfoJob job = new PipeFlangeInfoJob()
         {
@@ -86,6 +86,7 @@ public class PipeFlangeModel : PipeReducerModel
         job.Execute();
         var data = PipeFlangeInfoJob.Result[0];
         SetModelData(data);
+        PipeFlangeInfoJob.DisposeResult();
 
         Debug.Log($"GetModelInfo_Job[{this.name}] data:{data}");
     }

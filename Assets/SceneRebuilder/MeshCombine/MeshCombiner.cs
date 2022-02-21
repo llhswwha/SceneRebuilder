@@ -115,7 +115,7 @@ public class MeshCombiner : SingletonBehaviour<MeshCombiner>
 
         ProgressBarHelper.ClearProgressBar();
 
-        Debug.Log($"DestroySource resultList:{resultList.Count} time:{DateTime.Now - start}");
+        //Debug.Log($"DestroySource resultList:{resultList.Count} time:{DateTime.Now - start}");
     }
 
     public void SaveResult()
@@ -149,7 +149,7 @@ public class MeshCombiner : SingletonBehaviour<MeshCombiner>
 
         GetSetting();
 
-        Debug.LogError("Start CombineEx mode:" + mode + "|" + gameObject);
+        //Debug.LogError("Start CombineEx mode:" + mode + "|" + gameObject);
 
         ClearResult();
 

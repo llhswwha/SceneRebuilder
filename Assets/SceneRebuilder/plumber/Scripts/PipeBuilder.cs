@@ -889,7 +889,8 @@ public class PipeBuilder : MonoBehaviour
             AddPipeModel(pipeModel);
         }
         elbowJobs.Dispose();
-        PipeFlangeInfoJob.Result.Dispose();
+
+        PipeFlangeInfoJob.DisposeResult();
     }
 
     private void SetJobResultData_Reducer(JobList<PipeReducerInfoJob> elbowJobs, List<Transform> ts)
@@ -950,7 +951,7 @@ public class PipeBuilder : MonoBehaviour
         PipeReducerInfoJob.ErrorIds = new NativeList<int>(Allocator.Persistent);
         JobList<PipeReducerInfoJob> reducerJobs = GetPipeInfosJob_Reducer(PipeReducerGos, 0);
 
-        PipeFlangeInfoJob.Result = new NativeArray<PipeReducerData>(PipeFlangeGos.Count, Allocator.Persistent);
+        PipeFlangeInfoJob.InitResult(PipeFlangeGos.Count);
         PipeFlangeInfoJob.ErrorIds = new NativeList<int>(Allocator.Persistent);
         JobList<PipeFlangeInfoJob> flangeJobs = GetPipeInfosJob_Flange(PipeFlangeGos, 0);
 

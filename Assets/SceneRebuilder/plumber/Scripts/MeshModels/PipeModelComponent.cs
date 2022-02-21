@@ -2,8 +2,10 @@ using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 
-public class PipeModelComponent : MonoBehaviour
+public class PipeModelComponent : BaseMeshModel
 {
+
+
     public virtual GameObject CreateModelByPrefab()
     {
         return null;
@@ -92,15 +94,15 @@ public class PipeModelComponent : MonoBehaviour
         return welds;
     }
 
-    public virtual void GetModelInfo()
-    {
+    //public virtual void GetModelInfo()
+    //{
 
-    }
+    //}
 
-    public virtual void GetModelInfo_Job()
-    {
+    //public virtual void GetModelInfo_Job()
+    //{
 
-    }
+    //}
 
 
     public virtual void RendererModel()

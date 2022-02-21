@@ -5,7 +5,7 @@ using System.Xml.Serialization;
 using Unity.Collections;
 using UnityEngine;
 
-public struct PipeReducerInfoJob : IPipeJob
+public struct PipeReducerInfoJob : IMeshInfoJob
 {
     public void Dispose()
     {

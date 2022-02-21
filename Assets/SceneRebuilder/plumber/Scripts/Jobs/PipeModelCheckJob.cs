@@ -5,7 +5,7 @@ using System.Collections.Generic;
 using Unity.Collections;
 using UnityEngine;
 
-public struct PipeModelCheckJob : IPipeJob
+public struct PipeModelCheckJob : IMeshInfoJob
 {
     public int id;
 

@@ -4,7 +4,7 @@ using Unity.Collections;
 using Unity.Mathematics;
 using UnityEngine;
 
-public struct GetPointGroupJob : IPipeJob
+public struct GetPointGroupJob : IMeshInfoJob
 {
     public int id;
 

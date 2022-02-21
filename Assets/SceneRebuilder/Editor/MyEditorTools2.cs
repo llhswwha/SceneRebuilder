@@ -73,6 +73,7 @@ public class MyEditorTools2
     public static void CombineMeshLeafs()
     {
         Dictionary<Transform, List<Transform>> dict = new Dictionary<Transform, List<Transform>>();
+        Dictionary<Transform, List<Transform>> dictError = new Dictionary<Transform, List<Transform>>();
 
         List<MeshFilter> mfList = new List<MeshFilter>();
         foreach (var obj in Selection.gameObjects)
@@ -80,39 +81,112 @@ public class MyEditorTools2
             EditorHelper.UnpackPrefab(obj);
             //ResetRotation(obj);
             var mfs = obj.GetComponentsInChildren<MeshFilter>(true);
-            foreach(var mf in mfs)
+            for (int i = 0; i < mfs.Length; i++)
             {
+                MeshFilter mf = mfs[i];
                 if (mf.transform.childCount == 0)
                 {
                     mfList.Add(mf);
                     var p = mf.transform.parent;
+                    if (p == null)
+                    {
+                        Debug.LogError($"[{i}/{mfs.Length}] p==null mf:{mf}");
+                        continue;
+                    }
+
+                    if(dictError.ContainsKey(p))
+                    {
+                        continue;
+                    }
+
+                    
                     if (!dict.ContainsKey(p))
                     {
-                        dict.Add(p, new List<Transform>());
+                        if (IsChildrenAllMesh(p))
+                        {
+                            dict.Add(p, new List<Transform>());
+                        }
+                        else
+                        {
+                            dictError.Add(p, new List<Transform>());
+                        }
+                       
+                        Debug.Log($"[{i}/{mfs.Length}] p[{dict.Count}]:{p}");
                     }
-                    dict[p].Add(mf.transform);
+
+                    if (dict.ContainsKey(p))
+                    {
+                        dict[p].Add(mf.transform);
+                    }
+
+                    
                 }
             }
             //mfList.AddRange(mfs);
+
+            Debug.Log($"selection:{obj}");
         }
 
+        int count = 0;
         List<Transform> list = dict.Keys.ToList();
+
         for (int i = 0; i < list.Count; i++)
         {
             Transform p = list[i];
-            if(ProgressBarHelper.DisplayCancelableProgressBar(new ProgressArg("CombineMeshLeafs", i, list.Count, p)))
+            if (ProgressBarHelper.DisplayCancelableProgressBar(new ProgressArg("CombineMeshLeafs", i, list.Count, p)))
             {
                 break;
             }
-            MeshCombiner.Instance.CombineToOne(p.gameObject, false, true);
+            if (p == null)
+            {
+                Debug.LogError($"CombineMeshLeafs p == null {i}/{list.Count}");
+                continue;
+            }
+            count += dict[p].Count;
+            if (p.gameObject == null)
+            {
+                Debug.LogError($"CombineMeshLeafs p.gameObject == null {i}/{list.Count}");
+                continue;
+            }
+
+
+            MeshCombineHelper.Combine(p.gameObject);
+        }
+
+        foreach (var obj in Selection.gameObjects)
+        {
+            MeshHelper.DecreaseEmptyGroup(obj);
+            MeshHelper.DecreaseEmptyGroup(obj);
+            MeshHelper.DecreaseEmptyGroup(obj);
         }
         ProgressBarHelper.ClearProgressBar();
+        Debug.Log($"CombineMeshLeafs list:{list.Count} children:{count}");
+
+
+    }
+
+    private static bool IsChildrenAllMesh(Transform p)
+    {
+        for(int i = 0; i < p.childCount; i++)
+        {
+            var t = p.GetChild(i);
+
+            MeshFilter mf = t.GetComponent<MeshFilter>();
+            MeshRenderer mr = t.GetComponent<MeshRenderer>();
+            MeshCollider mc = t.GetComponent<MeshCollider>();
+            if (mf == null && mr == null && mc == null)
+            {
+                return false;
+            }
+        }
+        return true;
     }
 
     [MenuItem("SceneTools/Mesh/Combine")]
     public static void CombineMesh()
     {
-        MeshCombiner.Instance.CombineToOne(Selection.activeGameObject, true, true);
+        //MeshCombiner.Instance.CombineToOne(Selection.activeGameObject, true, true);
+        MeshCombineHelper.Combine(Selection.activeGameObject);
     }
     [MenuItem("SceneTools/Mesh/Combine2")]
     public static void CombineMesh2()
@@ -451,14 +525,15 @@ public class MyEditorTools2
 
     #region Transform
 
-    [MenuItem("SceneTools/Transform/ResetRotation")]
-    public static void ResetRotation()
+    [MenuItem("SceneTools/Transform/DcsEmpty")]
+    public static void DcsEmpty()
     {
-        foreach (var obj in Selection.gameObjects)
-        {
-
-            ResetRotation(obj);
-        }
+        MeshHelper.DecreaseEmptyGroup(Selection.activeGameObject);
+    }
+    [MenuItem("SceneTools/Transform/RmEmpty")]
+    public static void RmEmpty()
+    {
+        MeshHelper.RemoveEmptyObjects(Selection.activeGameObject);
     }
 
     public static void ResetRotation(GameObject root)

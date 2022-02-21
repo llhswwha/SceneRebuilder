@@ -4,7 +4,7 @@ using System.Collections.Generic;
 using Unity.Jobs;
 using UnityEngine;
 
-public interface IPipeJob : IJob, IDisposable
+public interface IMeshInfoJob : IJob, IDisposable
 {
 
 }

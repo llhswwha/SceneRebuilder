@@ -4,7 +4,7 @@ using System.Collections.Generic;
 using Unity.Collections;
 using UnityEngine;
 
-public struct PipeFlangeInfoJob : IPipeJob
+public struct PipeFlangeInfoJob : IMeshInfoJob
 {
     public void Dispose()
     {
@@ -15,6 +15,16 @@ public struct PipeFlangeInfoJob : IPipeJob
     public MeshStructure mesh;
 
     public static NativeArray<PipeReducerData> Result;
+
+    public static void InitResult(int count)
+    {
+        Result = new NativeArray<PipeReducerData>(count, Allocator.Persistent);
+    }
+
+    public static void DisposeResult()
+    {
+        Result.Dispose();
+    }
 
     public static int sharedMinCount = 36;
     public static float minRepeatPointDistance = 0.0002f;
