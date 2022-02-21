@@ -259,9 +259,9 @@ public class MeshRendererInfo : MonoBehaviour,IComparable<MeshRendererInfo>
         return GetInfo(go.gameObject, isUpdateId, isForceUpdate);
     }
 
-    public static Vector3 GetCenterPos(GameObject go)
+    public static Vector3 GetCenterPos(GameObject go, bool isUpdateId=false, bool isForceUpdate = false)
     {
-        MeshRendererInfo info = GetInfo(go, false);
+        MeshRendererInfo info = GetInfo(go, isUpdateId, isForceUpdate);
         return info.center;
     }
 

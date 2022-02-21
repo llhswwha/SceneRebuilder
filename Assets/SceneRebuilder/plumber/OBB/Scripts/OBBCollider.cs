@@ -115,6 +115,7 @@ public class OBBCollider : MonoBehaviour
         DebugInfoRoot[] debugRoots = this.GetComponentsInChildren<DebugInfoRoot>(true);
         foreach(var item in debugRoots)
         {
+            if (item == null) continue;
             GameObject.DestroyImmediate(item.gameObject);
         }
     }
@@ -447,6 +448,29 @@ public class OBBCollider : MonoBehaviour
         go0.transform.localPosition = Vector3.zero;
         //DebugInfoRootGos.Add(go0);
         return go0;
+    }
+
+    public static GameObject CreateObbBox(Transform parent,OrientedBoundingBox OBB)
+    {
+        //GameObject go0 = CreateDebugInfoRoot("OBBCollider_OBBBox");
+
+        GameObject go = GameObject.CreatePrimitive(PrimitiveType.Cube);
+
+        go.name = parent.name + "_ObbBox";
+        ////obbGo = go;
+        go.transform.SetParent(parent);
+        //go.transform.localPosition=OBB.Center;
+        go.transform.localPosition = Vector3.zero;
+        go.transform.localScale = OBB.Extent * 2f;
+
+        go.transform.right = OBB.Right;
+        var angle1 = Vector3.Angle(go.transform.up, OBB.Up);
+        go.transform.Rotate(Vector3.right, -angle1);
+        //对齐轴方向
+
+        go.transform.localPosition = OBB.Center;
+        //go.transform.SetParent(go0.transform);
+        return go;
     }
 
 

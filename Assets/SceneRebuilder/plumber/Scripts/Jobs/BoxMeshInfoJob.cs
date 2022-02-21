@@ -20,11 +20,21 @@ public struct BoxMeshInfoJob : IMeshInfoJob
         Result.Dispose();
     }
 
-    public BoxMeshInfoJob GetOneJob(int i, MeshStructure m)
+    public static BoxMeshInfoJob GetOneJob(int i, MeshStructure m)
     {
         BoxMeshInfoJob job = new BoxMeshInfoJob(i, m);
         return job;
     }
+
+    public static BoxMeshInfoJob GetOneJob(int i, GameObject go)
+    {
+        Mesh mesh = go.GetComponent<MeshFilter>().sharedMesh;
+        MeshStructure meshS = new MeshStructure(mesh);
+        BoxMeshInfoJob job = new BoxMeshInfoJob(i, meshS);
+        return job;
+    }
+
+   
 
     public BoxMeshInfoJob(int i ,MeshStructure m)
     {

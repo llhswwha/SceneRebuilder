@@ -871,26 +871,6 @@ public class PipeModelBase : PipeModelComponent, IComparable<PipeModelBase>
         }
     }
 
-    public void ClearDebugInfoGos()
-    {
-        DebugInfoRoot[] debugRoots = this.GetComponentsInChildren<DebugInfoRoot>(true);
-        foreach (var item in debugRoots)
-        {
-            if (item == null) continue;
-            GameObject.DestroyImmediate(item.gameObject);
-        }
-    }
-
-    public GameObject CreateDebugInfoRoot(string goName)
-    {
-        GameObject go0 = new GameObject(goName);
-        go0.AddComponent<DebugInfoRoot>();
-        go0.transform.SetParent(this.transform);
-        go0.transform.localPosition = Vector3.zero;
-        //DebugInfoRootGos.Add(go0);
-        return go0;
-    }
-
     public GameObject CreateKeyPointsGo()
     {
         return CreateDebugInfoRoot("KeyPoints");
