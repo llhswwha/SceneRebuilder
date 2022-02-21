@@ -166,7 +166,7 @@ public class MeshNode : MonoBehaviour,IComparable<MeshNode>
     {
         if (sharedMeshInfos != null )
         {
-            return $"{MeshHelper.GetVertexCountS(VertexCount)}[{VertexCount / (float)sumCount:P1}]|{rendererCount}|{MeshHelper.GetVertexCountS(sharedMeshInfos.sharedVertexCount)}";
+            return $"{MeshHelper.GetVertexCountS(VertexCount)}[{VertexCount / (float)sumCount:P1}]|{rendererCount}[{MeshHelper.GetVertexCountS(sharedMeshInfos.sharedVertexCount)}({sharedMeshInfos.sharedVertexCount/ (float)VertexCount:P1})]";
         }
         else
         {

@@ -67,6 +67,7 @@ public class PipeFactoryEditor : BaseFoldoutEditor<PipeFactory>
         GUILayout.Label($"Weldolet({targetT.PipeWeldolets.Count})");
         targetT.EnablePipeWeldolet = EditorGUILayout.Toggle(targetT.EnablePipeWeldolet);
         GUILayout.Label($"Welds({targetT.PipeWelds.Count})");
+        GUILayout.Label($"WeldsNew({targetT.PipeWeldsNew.Count})");
         GUILayout.Label($"Others({targetT.PipeOthers.Count})");
         GUILayout.EndHorizontal();
 
@@ -369,12 +370,14 @@ public class PipeFactoryEditor : BaseFoldoutEditor<PipeFactory>
         DrawObjectList(weldoletListArg, "Weldolets", targetT.PipeWeldolets, null, null, null);
         DrawObjectList(weldListArg, "Welds", targetT.PipeWelds, null, null, null);
         DrawObjectList(othersListArg, "Others", targetT.PipeOthers, null, null, null);
+        DrawObjectList(weldNewListArg, "Welds(New)", targetT.PipeWeldsNew, null, null, null);
     }
     static FoldoutEditorArg pipeWeldPrefabDataListArg = new FoldoutEditorArg(true, false);
     static FoldoutEditorArg pipeWeldPrefabMeshListArg = new FoldoutEditorArg(true, false);
     static FoldoutEditorArg pipeWeldPrefabListArg = new FoldoutEditorArg(true, false);
     static FoldoutEditorArg othersListArg = new FoldoutEditorArg(true, false);
     static FoldoutEditorArg weldListArg = new FoldoutEditorArg(true, false);
+    static FoldoutEditorArg weldNewListArg = new FoldoutEditorArg(true, false);
     static FoldoutEditorArg flangeListArg = new FoldoutEditorArg(true, false);
     static FoldoutEditorArg lineListArg = new FoldoutEditorArg(true, false);
     static FoldoutEditorArg elbowListArg = new FoldoutEditorArg(true, false);

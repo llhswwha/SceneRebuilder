@@ -153,6 +153,12 @@ public class MeshNodeEditor : BaseFoldoutEditor<MeshNode>
                     }
                     ProgressBarHelper.ClearProgressBar();
                 }
+                //if (GUILayout.Button("ByCount", btnStyle, GUILayout.Width(120)))
+                //{
+                //    meshnodeListArg.sortType = 1;
+                //}
+                meshNodeSortType = EditorGUILayout.Popup(meshNodeSortType, meshNodeSortTypeNames, GUILayout.Width(100));
+                meshnodeListArg.sortType = meshNodeSortType;
             });
 
             DrawMeshNodeList(meshnodeListArg, item, 0);
@@ -175,6 +181,10 @@ public class MeshNodeEditor : BaseFoldoutEditor<MeshNode>
 
     }
 
+    int meshNodeSortType;
+
+    string[] meshNodeSortTypeNames = new string[] {"Vertex","Count","Name" };
+
     private void DrawMeshAssetPaths(FoldoutEditorArg listArg, MeshNode item)
     {
         MeshRendererAssetInfoDict pathDict = item.assetPaths;
@@ -186,6 +196,19 @@ public class MeshNodeEditor : BaseFoldoutEditor<MeshNode>
     {
         listArg.level = level;
         var nodes = item.GetMeshNodes();
+        if (listArg.sortType == 0)//Vertex
+        {
+            nodes.Sort((a, b) => { return b.VertexCount.CompareTo(a.VertexCount); });
+        }
+        else if (listArg.sortType == 1)//Count
+        {
+            nodes.Sort((a, b) => { return b.rendererCount.CompareTo(a.rendererCount); });
+            
+        }
+        else if (listArg.sortType == 2)//Name
+        {
+            nodes.Sort((a, b) => { return a.name.CompareTo(b.name); });
+        }
         if (listArg.isEnabled && listArg.isExpanded && nodes.Count>0)
         {
             
@@ -201,6 +224,7 @@ public class MeshNodeEditor : BaseFoldoutEditor<MeshNode>
                 else
                 {
                     var arg = editorArgs[node];
+                    arg.sortType = listArg.sortType;
                     arg.isFoldout = node.GetMeshNodes().Count > 0;
                     arg.caption = $"[{i:00}] {node.GetName()} ({node.GetMeshNodes().Count})";
                     arg.isEnabled = true;

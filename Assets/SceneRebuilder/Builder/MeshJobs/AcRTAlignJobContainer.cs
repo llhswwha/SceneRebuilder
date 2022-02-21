@@ -480,7 +480,7 @@ public class AcRTAlignJobContainer
                                 sb.AppendLine($"{arg} rT==null" );
                             }
 
-                            newGo.name += "_Error";
+                            newGo.name += "_AlignError";
                             newGo.SetActive(false);
 
                             //GameObject.DestroyImmediate(newGo);

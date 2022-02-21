@@ -26,6 +26,8 @@ public class PipeFactory : SingletonBehaviour<PipeFactory>
 
     public List<Transform> PipeOthers = new List<Transform>();
 
+    public List<Transform> PipeWeldsNew = new List<Transform>();
+
     private void ClearList()
     {
         PipeLines = new List<Transform>();
@@ -103,7 +105,7 @@ public class PipeFactory : SingletonBehaviour<PipeFactory>
 
         GetTargetInfoBefore();
 
-        this.ClearGeneratedObjs();
+        //this.ClearGeneratedObjs();
         this.GetPipeParts();
 
         int weldsCount = this.PipeWelds.Count;
@@ -441,7 +443,7 @@ public class PipeFactory : SingletonBehaviour<PipeFactory>
     private void OneKeyGeneratePipes(bool isJob,bool isRemoveMesh)
     {
         this.ClearWeldPrefabs();
-        this.ClearGeneratedObjs();
+        //this.ClearGeneratedObjs();
         if(isRemoveMesh)
             this.RemoveMeshes();//++
         this.RendererEachPipes();
@@ -525,7 +527,7 @@ public class PipeFactory : SingletonBehaviour<PipeFactory>
     [ContextMenu("GetPipeParts")]
     public void GetPipeParts()
     {
-        ClearDebugObjs();
+        //ClearDebugObjs();
 
         GetModelClass();
 
@@ -675,6 +677,9 @@ public class PipeFactory : SingletonBehaviour<PipeFactory>
         }
         ClearList();
         PipeWelds = GetWelds();
+
+        PipeWeldsNew = newBuilder.GetNewWelds(Target);
+
         Dictionary<Transform, Transform> weldsDict = new Dictionary<Transform, Transform>();
         foreach(var weld in PipeWelds)
         {
@@ -1422,12 +1427,12 @@ public class PipeFactory : SingletonBehaviour<PipeFactory>
         return newBuilder.pipeRunList;
     }
 
-    [ContextMenu("GetInfoAndCreateEachPipes")]
-    public void GetInfoAndCreateEachPipes()
-    {
-        InitPipeBuilder();
-        newBuilder.GetInfoAndCreateEachPipes();
-    }
+    //[ContextMenu("GetInfoAndCreateEachPipes")]
+    //public void GetInfoAndCreateEachPipes()
+    //{
+    //    InitPipeBuilder();
+    //    newBuilder.GetInfoAndCreateEachPipes();
+    //}
 
     public void ReplacePipes()
     {
@@ -1444,7 +1449,7 @@ public class PipeFactory : SingletonBehaviour<PipeFactory>
     {
         InitPipeBuilder();
 
-        newBuilder.ClearGeneratedObjs();
+        //newBuilder.ClearGeneratedObjs();
 
         newBuilder.isUniformRaidus = this.isUniformRaidus;
         newBuilder.GetPipeInfosEx();
@@ -1507,7 +1512,7 @@ public class PipeFactory : SingletonBehaviour<PipeFactory>
     {
         InitPipeBuilder();
 
-        newBuilder.ClearGeneratedObjs();
+        //newBuilder.ClearGeneratedObjs();
 
         newBuilder.isUniformRaidus = this.isUniformRaidus;
         newBuilder.GetPipeInfosJob();
@@ -1542,7 +1547,7 @@ public class PipeFactory : SingletonBehaviour<PipeFactory>
     public void RendererEachPipesEx()
     {
         ClearWeldPrefabs();
-        ClearGeneratedObjs();
+        //ClearGeneratedObjs();
         RendererEachPipes();
         MovePipes();
     }

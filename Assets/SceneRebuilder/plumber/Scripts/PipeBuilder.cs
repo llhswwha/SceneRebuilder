@@ -541,7 +541,7 @@ public class PipeBuilder : MonoBehaviour
     public PipeMeshGenerator CreateOnePipe()
     {
         GetPipeInfos();
-        ClearGeneratedObjs();
+        //ClearGeneratedObjs();
         var newPipe = RendererOnePipe();
         NewPipeList.Add(newPipe.transform);
         newPipe.transform.SetParent(this.transform);

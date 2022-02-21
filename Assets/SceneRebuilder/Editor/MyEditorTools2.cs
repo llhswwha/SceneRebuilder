@@ -1,6 +1,8 @@
 ﻿using UnityEngine;
 using UnityEditor;
 using System.Collections.Generic;
+using System;
+using System.Linq;
 
 public class MyEditorTools2
 {
@@ -66,6 +68,47 @@ public class MyEditorTools2
 
 
     #region Mesh 
+
+    [MenuItem("SceneTools/Mesh/CombineMeshLeafs")]
+    public static void CombineMeshLeafs()
+    {
+        Dictionary<Transform, List<Transform>> dict = new Dictionary<Transform, List<Transform>>();
+
+        List<MeshFilter> mfList = new List<MeshFilter>();
+        foreach (var obj in Selection.gameObjects)
+        {
+            EditorHelper.UnpackPrefab(obj);
+            //ResetRotation(obj);
+            var mfs = obj.GetComponentsInChildren<MeshFilter>(true);
+            foreach(var mf in mfs)
+            {
+                if (mf.transform.childCount == 0)
+                {
+                    mfList.Add(mf);
+                    var p = mf.transform.parent;
+                    if (!dict.ContainsKey(p))
+                    {
+                        dict.Add(p, new List<Transform>());
+                    }
+                    dict[p].Add(mf.transform);
+                }
+            }
+            //mfList.AddRange(mfs);
+        }
+
+        List<Transform> list = dict.Keys.ToList();
+        for (int i = 0; i < list.Count; i++)
+        {
+            Transform p = list[i];
+            if(ProgressBarHelper.DisplayCancelableProgressBar(new ProgressArg("CombineMeshLeafs", i, list.Count, p)))
+            {
+                break;
+            }
+            MeshCombiner.Instance.CombineToOne(p.gameObject, false, true);
+        }
+        ProgressBarHelper.ClearProgressBar();
+    }
+
     [MenuItem("SceneTools/Mesh/Combine")]
     public static void CombineMesh()
     {
@@ -124,6 +167,16 @@ public class MyEditorTools2
     #endregion
 
     #region Prefab
+    [MenuItem("SceneTools/Prefab/RemoveNew")]
+    public static void PrefabRemoveNew()
+    {
+        MeshHelper.RemoveNew(Selection.activeGameObject);
+    }
+    [MenuItem("SceneTools/Prefab/CleanErrors")]
+    public static void PrefabCleanErrors()
+    {
+        MeshHelper.DestroyError(Selection.activeGameObject);
+    }
     [MenuItem("SceneTools/Prefab/SetSetting")]
     public static void PrefabSetSetting()
     {
@@ -397,6 +450,48 @@ public class MyEditorTools2
     #endregion
 
     #region Transform
+
+    [MenuItem("SceneTools/Transform/ResetRotation")]
+    public static void ResetRotation()
+    {
+        foreach (var obj in Selection.gameObjects)
+        {
+
+            ResetRotation(obj);
+        }
+    }
+
+    public static void ResetRotation(GameObject root)
+    {
+        EditorHelper.UnpackPrefab(root);
+        DateTime start = DateTime.Now;
+        GameObject tmp = new GameObject("TempParent");
+        Dictionary<Transform,Transform> dict = new System.Collections.Generic.Dictionary<Transform, Transform>();
+        var ts = root.GetComponentsInChildren<Transform>(true);
+        foreach (var t in ts)
+        {
+            dict.Add(t, t.parent);
+            t.transform.SetParent(tmp.transform);
+        }
+
+        foreach(var t in ts)
+        {
+            MeshFilter mf = t.GetComponent<MeshFilter>();
+            MeshRenderer mr = t.GetComponent<MeshRenderer>();
+            MeshCollider mc = t.GetComponent<MeshCollider>();
+            if (mf == null && mr == null && mc == null)
+            {
+                t.rotation = Quaternion.identity;
+            }
+        }
+
+        foreach (var t in dict.Keys)
+        {
+            t.transform.SetParent(dict[t]);
+        }
+
+        Debug.Log($"ResetRotation root:{root} ts:{ts.Length} time:{DateTime.Now-start}");
+    }
 
     [MenuItem("SceneTools/Transform/ClearChildren")]
     public static void ClearChildren()

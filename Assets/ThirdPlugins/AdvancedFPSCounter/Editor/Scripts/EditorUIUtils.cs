@@ -36,7 +36,10 @@ namespace CodeStage.AdvancedFPSCounter.Editor.UI
 		public bool background = false;
         public string searchKey = "";
 
-		public int pageSize_selected = 10;
+        public int sortType;
+
+
+        public int pageSize_selected = 10;
         public string[] pageSize_names = new string[] {"5", "10", "15","20", "30", "40", "50","100","200","500","1000","2000"};
         public int[] pageSize_sizes = {5, 10, 15,20,30,40,50,100,200,500,1000,2000};
 		public int pageId_selected=1;

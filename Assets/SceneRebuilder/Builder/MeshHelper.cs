@@ -1555,12 +1555,27 @@ public static class MeshHelper
     public static void RemoveNew(GameObject go)
     {
         int count = 0;
-        var renderers = go.GetComponentsInChildren<Transform>();
+        var renderers = go.GetComponentsInChildren<Transform>(true);
         foreach (var renderer in renderers)
         {
             if (renderer.name.EndsWith("_New"))
             {
                 renderer.name = renderer.name.Replace("_New", "");
+                count++;
+            }
+        }
+        Debug.Log($"RemoveNew count:{count} renderers:{renderers.Length}");
+    }
+
+    public static void DestroyError(GameObject go)
+    {
+        int count = 0;
+        var renderers = go.GetComponentsInChildren<Transform>(true);
+        foreach (var renderer in renderers)
+        {
+            if (renderer.name.EndsWith("_Error") || renderer.name.EndsWith("_AlignError"))
+            {
+                GameObject.DestroyImmediate(renderer.gameObject);
                 count++;
             }
         }
