@@ -26,7 +26,13 @@ public class PipeFactory : SingletonBehaviour<PipeFactory>
 
     public List<Transform> PipeOthers = new List<Transform>();
 
+    public int TotalPipeOthersVertexCount = 0;
+
     public List<Transform> PipeWeldsNew = new List<Transform>();
+
+    public List<Transform> BoxModels = new List<Transform>();
+
+    public int TotalBoxModelsVertexCount = 0;
 
     private void ClearList()
     {
@@ -45,6 +51,12 @@ public class PipeFactory : SingletonBehaviour<PipeFactory>
         //PipeWelds = new List<Transform>();
 
         PipeWeldolets = new List<Transform>();
+
+        BoxModels = new List<Transform>();
+
+        TotalBoxModelsVertexCount = 0;
+
+        TotalPipeOthersVertexCount = 0;
     }
 
     public void ClearDebugObjs()
@@ -68,7 +80,7 @@ public class PipeFactory : SingletonBehaviour<PipeFactory>
 
         TransformHelper.ClearComponents<OBBCollider>(Target);
 
-        TransformHelper.ClearComponents<DebugInfoRoot>(Target);
+        TransformHelper.ClearComponentGos<DebugInfoRoot>(Target);
     }
 
     public void ClearGeneratedObjs()
@@ -77,6 +89,8 @@ public class PipeFactory : SingletonBehaviour<PipeFactory>
         {
             newBuilder.ClearGeneratedObjs();
         }
+
+        TransformHelper.ClearComponentGos<DebugInfoRoot>(Target);
     }
 
 
@@ -88,7 +102,7 @@ public class PipeFactory : SingletonBehaviour<PipeFactory>
         TargetVertexCount = meshNode.VertexCount;
     }
 
-    private void GetResultInfoAfter()
+    public void GetResultInfoAfter()
     {
         //ResultInfo=ShowTargetInfo(Target);
 
@@ -668,6 +682,47 @@ public class PipeFactory : SingletonBehaviour<PipeFactory>
 
     public bool isUniformRaidus = false;
 
+    public static bool IsElbow(string key)
+    {
+        return key.Contains("Degree_Direction_Change") || key.StartsWith("ELBOW") || key.StartsWith("BEND");
+    }
+
+    public static bool IsTee(string key)
+    {
+        return key.Contains("Tee") || key.StartsWith("TEE");
+    }
+
+    public static bool IsFlange(string key)
+    {
+        return key.Contains("Flange") || key.StartsWith("Ô²Öù") || key.StartsWith("CYLINDER") || key.StartsWith("FLANGE") || key.StartsWith("OLET");
+    }
+
+    public static bool IsReducer(string key)
+    {
+        return key.Contains("Reducer") || key.StartsWith("REDUCER") || key.StartsWith("CONE");
+    }
+
+    public static bool IsPipe(string key)
+    {
+        return key.StartsWith("Pipe");
+    }
+
+    public static bool? IsSmall(string key)
+    {
+        if (IsPipe(key)) return false;
+        if (IsElbow(key)) return false;
+        if (IsTee(key)) return false;
+        if (IsFlange(key)) return false;
+        if (IsReducer(key)) return false;
+        if (IsWeldolet(key)) return true;
+        return null;
+    }
+
+    public static bool IsWeldolet(string key)
+    {
+        return key.Contains("Weldolet");
+    }
+
     public void GetModelClass()
     {
         if (Target == null)
@@ -678,7 +733,8 @@ public class PipeFactory : SingletonBehaviour<PipeFactory>
         ClearList();
         PipeWelds = GetWelds();
 
-        PipeWeldsNew = newBuilder.GetNewWelds(Target);
+        if(newBuilder)
+            PipeWeldsNew = newBuilder.GetNewWelds(Target);
 
         Dictionary<Transform, Transform> weldsDict = new Dictionary<Transform, Transform>();
         foreach(var weld in PipeWelds)
@@ -691,30 +747,37 @@ public class PipeFactory : SingletonBehaviour<PipeFactory>
         var keys = modelClassList.GetKeys();
 
         int maxVertexCount = PrefabInstanceBuilder.Instance.MaxVertexCount;
-        foreach (var key in keys)
+        for (int i = 0; i < keys.Count; i++)
         {
+            string key = keys[i];
+            ProgressArg p1 = new ProgressArg("GetModelClass", i, keys.Count, key);
+            if (ProgressBarHelper.DisplayCancelableProgressBar(p1))
+            {
+                break;
+            }
+
             var list = modelClassList.GetList(key);
-            if (key.StartsWith("Pipe")) 
+            if (IsPipe(key)) 
             {
                 AddList(PipeLines, list);
             }
-            else if (key.Contains("Degree_Direction_Change") || key.StartsWith("ELBOW") || key.StartsWith("BEND"))
+            else if (IsElbow(key))
             {
                 AddList(PipeElbows, list);
             }
-            else if (key.Contains("Tee") || key.StartsWith("TEE"))
+            else if (IsTee(key))
             {
                 AddList(PipeTees, list);
             }
-            else if (key.Contains("Weldolet"))
+            else if (IsWeldolet(key))
             {
                 AddList(PipeWeldolets, list);
             }
-            else if (key.Contains("Reducer") || key.StartsWith("REDUCER") || key.StartsWith("CONE"))//REDUCER CONE
+            else if (IsReducer(key))//REDUCER CONE
             {
                 AddList(PipeReducers, list);
             }
-            else if (key.Contains("Flange") || key.StartsWith("Ô²Öù") || key.StartsWith("CYLINDER") || key.StartsWith("FLANGE") || key.StartsWith("OLET"))//FLANGE
+            else if (IsFlange(key))//FLANGE
             {
                 AddList(PipeFlanges, list);
             }
@@ -724,9 +787,17 @@ public class PipeFactory : SingletonBehaviour<PipeFactory>
             {
                 //PipeOthers.AddRange(list);
                 //AddList(PipeOthers, list);
-               
-                foreach (var item in list)
+                bool isBreak = false;
+                for (int i1 = 0; i1 < list.Count; i1++)
                 {
+                    Transform item = list[i1];
+                    ProgressArg p2 = new ProgressArg("SubItems", i1, list.Count, item);
+                    p1.AddSubProgress(p2);
+                    if (ProgressBarHelper.DisplayCancelableProgressBar(p1))
+                    {
+                        isBreak = true;
+                        break;
+                    }
                     if (weldsDict.ContainsKey(item)) continue;
                     MeshFilter mf = item.GetComponent<MeshFilter>();
                     if (mf == null) continue;
@@ -735,17 +806,42 @@ public class PipeFactory : SingletonBehaviour<PipeFactory>
                     if (item.GetComponent<MeshRenderer>() == null) continue;
                     PipeWeldModel weldModel = item.GetComponent<PipeWeldModel>();
                     if (weldModel != null) continue;
-                    
-                    if (mf.sharedMesh.vertexCount > maxVertexCount) continue;
+                    int vertexCount = mf.sharedMesh.vertexCount;
+                    if (vertexCount > maxVertexCount) continue;
                     if (mf.name.Contains("_Combined_")) continue;
                     if (mf.sharedMesh.name.Contains("_Combined_")) continue;
 
                     //Debug.LogError($"Other:{item.name} mf:{mf.name} mesh:{mf.sharedMesh.name} maxVertexCount:{maxVertexCount} vertexCount:{mf.sharedMesh.vertexCount}");
-                    PipeOthers.Add(item);
+
+                    if (vertexCount == 24)//Box 24VertexCount
+                    {
+                        BoxModels.Add(item);
+                        
+                        TotalBoxModelsVertexCount += vertexCount;
+                    }
+                    else
+                    {
+                        PipeOthers.Add(item);
+                        TotalPipeOthersVertexCount += vertexCount;
+                    }
+
+                    //PipeOthers.Add(item);
+                }
+                if (isBreak)
+                {
+                    break;
                 }
             }
         }
+
+        //MeshRendererInfoList list = new MeshRendererInfoList(PipeOthers);
+        var mps = MeshPoints.GetMeshPoints(PipeOthers);
+        MeshFilterListDict dict = new MeshFilterListDict(mps.ToArray(), 0);
+        //dict.pr
+
         InitArgMat();
+
+        ProgressBarHelper.ClearProgressBar();
         Debug.Log($"GetModelClass keys:{keys.Count} maxVertexCount:{maxVertexCount} welds:{PipeWelds.Count}");
     }
 
@@ -964,7 +1060,7 @@ public class PipeFactory : SingletonBehaviour<PipeFactory>
         //{
 
         //}
-        SharedMeshInfoList sharedMeshInfos1 = new SharedMeshInfoList(Target);
+        SharedMeshInfoList sharedMeshInfos1 = new SharedMeshInfoList(Target,true);
         //Debug.LogError($"sharedMeshInfos1 :{sharedMeshInfos1.Count}");
         foreach(var mesh in DestroyiedMeshs)
         {
@@ -977,7 +1073,7 @@ public class PipeFactory : SingletonBehaviour<PipeFactory>
             info.AddInstanceInfo();
         }
 
-        SharedMeshInfoList sharedMeshInfos2 = new SharedMeshInfoList(newBuilder.gameObject);
+        SharedMeshInfoList sharedMeshInfos2 = new SharedMeshInfoList(newBuilder.gameObject, true);
         //Debug.LogError($"sharedMeshInfos2 :{sharedMeshInfos2.Count}");
         foreach (var mesh in DestroyiedMeshs)
         {
@@ -1654,6 +1750,15 @@ public class PipeFactory : SingletonBehaviour<PipeFactory>
         {
             newBuilder.PipeWeldoletGos = new List<Transform>();
         }
+
+        if (EnableBoxModel)
+        {
+            newBuilder.BoxModelGos = BoxModels;
+        }
+        else
+        {
+            newBuilder.BoxModelGos = new List<Transform>();
+        }
     }
 
     public bool EnablePipeLine = true;
@@ -1667,6 +1772,8 @@ public class PipeFactory : SingletonBehaviour<PipeFactory>
     public bool EnablePipeFlange = true;
 
     public bool EnablePipeWeldolet = true;
+
+    public bool EnableBoxModel = true;
 
     GameObject targetNew;
 

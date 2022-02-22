@@ -42,6 +42,10 @@ public class PipeBuilder : MonoBehaviour
 
     public List<Transform> NewPipeList = new List<Transform>();
 
+    public List<Transform> BoxModelGos = new List<Transform>();
+
+    public List<BoxMeshModel> BoxModels = new List<BoxMeshModel>();
+
     public List<Transform> GetModelResult_Line()
     {
         return GetModelResults(PipeLines);
@@ -357,6 +361,17 @@ public class PipeBuilder : MonoBehaviour
 
             
             PipeGenerators.Add(generator);
+        }
+
+        for (int i = 0; i < BoxModels.Count; i++)
+        {
+            BoxMeshModel boxModel = BoxModels[i];
+            if (boxModel == null) continue;
+            if (ProgressBarHelper.DisplayCancelableProgressBar(new ProgressArg("RendererBoxs", i, BoxModels.Count, boxModel)))
+            {
+                return;
+            }
+            boxModel.RendererModel();
         }
 
         if (IsCreatePipeRuns && pipeRunList != null)
@@ -1717,11 +1732,22 @@ public class PipeBuilder : MonoBehaviour
 
         PipeModels.Sort();
 
-        Debug.LogWarning($">>GetPipeInfos ¡¾time:{DateTime.Now - start}¡¿ count:{PipeModels.Count}");
+        BoxModels = new List<BoxMeshModel>();
+        for (int i = 0; i < BoxModelGos.Count; i++)
+        {
+            Transform boxGo = BoxModelGos[i];
+            if (ProgressBarHelper.DisplayCancelableProgressBar(new ProgressArg($"GetInfos_Box", i, BoxModelGos.Count, boxGo)))
+            {
+                break;
+            }
+            BoxMeshModel boxModel = boxGo.gameObject.AddMissingComponent<BoxMeshModel>();
+            BoxModels.Add(boxModel);
+            boxModel.GetModelInfo();
+        }
 
         CreatePipeRunList();
 
-        
+        Debug.LogWarning($">>GetPipeInfos ¡¾time:{DateTime.Now - start}¡¿ count:{PipeModels.Count} BoxModels:{BoxModels.Count}");
     }
 
     private List<T> GetPipeModelInfos<T>(List<Transform> gos,int id,int count,string tag) where T : PipeModelBase

@@ -60,11 +60,31 @@ public class SubSceneShowManagerUI : MonoBehaviour
     public void ToggleSceneUIList1(bool isValue)
     {
         Debug.Log("ToggleSceneUIList1:"+isValue);
+        if (subSceneManagerUI == null)
+        {
+            Debug.LogError("SubSceneShowManagerUI.ToggleSceneUIList1 subSceneManagerUI == null");
+            return;
+        }
+        if (subSceneManagerUI.panelSceneList_Loaded_RootGo == null)
+        {
+            Debug.LogError("SubSceneShowManagerUI.ToggleSceneUIList1 subSceneManagerUI.panelSceneList_Loaded_RootGo == null");
+            return;
+        }
         subSceneManagerUI.panelSceneList_Loaded_RootGo.SetActive(isValue);
     }
     public void ToggleSceneUIList2(bool isValue)
     {
         Debug.Log("ToggleSceneUIList2:"+isValue);
+        if (subSceneManagerUI == null)
+        {
+            Debug.LogError("SubSceneShowManagerUI.ToggleSceneUIList2 subSceneManagerUI == null");
+            return;
+        }
+        if (subSceneManagerUI.panelSceneList_RootGo == null)
+        {
+            Debug.LogError("SubSceneShowManagerUI.ToggleSceneUIList2 subSceneManagerUI.panelSceneList_RootGo == null");
+            return;
+        }
         subSceneManagerUI.panelSceneList_RootGo.SetActive(isValue);
     }
 

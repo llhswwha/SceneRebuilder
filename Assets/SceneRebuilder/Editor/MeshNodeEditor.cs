@@ -41,6 +41,8 @@ public class MeshNodeEditor : BaseFoldoutEditor<MeshNode>
         }
 
         EditorGUILayout.BeginHorizontal();
+        GUILayout.Label("IncludeInactive",GUILayout.Width(100));
+        item.isIncludeInactive = GUILayout.Toggle(item.isIncludeInactive,"",GUILayout.Width(30));
         if (GUILayout.Button("UpdateList"))
         {
             MeshNode.InitNodes(item.gameObject);
@@ -66,7 +68,7 @@ public class MeshNodeEditor : BaseFoldoutEditor<MeshNode>
         //{
         //    item.RefreshInfo();
         //}
-        if (GUILayout.Button("Clear"))
+        if (GUILayout.Button("ClearNodes"))
         {
             //item.RefreshInfo();
             var meshNodes = item.GetComponentsInChildren<MeshNode>(true);
@@ -102,6 +104,15 @@ public class MeshNodeEditor : BaseFoldoutEditor<MeshNode>
         {
             item.ClearVertexes();
         }
+        if (GUILayout.Button("ShowTriangles"))
+        {
+            MeshTriangles.DebugShowTriangles(item.gameObject, 0.01f);
+        }
+        if (GUILayout.Button("ClearChildren"))
+        {
+            MeshHelper.ClearChildren(item.transform);
+        }
+
         EditorGUILayout.EndHorizontal();
 
         EditorGUILayout.BeginHorizontal();
@@ -196,6 +207,7 @@ public class MeshNodeEditor : BaseFoldoutEditor<MeshNode>
     {
         listArg.level = level;
         var nodes = item.GetMeshNodes();
+        if (nodes == null) return;
         if (listArg.sortType == 0)//Vertex
         {
             nodes.Sort((a, b) => { return b.VertexCount.CompareTo(a.VertexCount); });

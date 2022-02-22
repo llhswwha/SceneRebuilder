@@ -340,7 +340,7 @@ public static class MeshHelper
         Debug.Log($"empty:{emptyList.Count},all:{ts.Length}");
     }
 
-    internal static void ShowAllRenderers(MeshRenderer[] allRenderers,int lv)
+    internal static void ShowAllRenderers(MeshRenderer[] allRenderers,int lv,string name)
     {
         DateTime start = DateTime.Now;
         //var allRenderers = GetRenderers();
@@ -356,7 +356,7 @@ public static class MeshHelper
                     go = go.transform.parent.gameObject;
             }
         }
-        Debug.Log($"ShowAllRenderers count:{allRenderers.Length} time:{(DateTime.Now - start)}");
+        Debug.Log($"ShowAllRenderers[{name}] count:{allRenderers.Length} time:{(DateTime.Now - start)}");
     }
 
     public static string GetVertexCountS(float vertexCount)

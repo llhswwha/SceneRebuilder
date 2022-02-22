@@ -4,7 +4,38 @@ using UnityEngine;
 
 public class BaseMeshModel : MonoBehaviour
 {
+    public GameObject ResultGo = null;
+
+    [ContextMenu("ClearGo")]
+    public void ClearGo()
+    {
+        if (ResultGo != null)
+        {
+            if (ResultGo != this.gameObject)
+            {
+                GameObject.DestroyImmediate(ResultGo);
+            }
+            else
+            {
+
+                //DestroyMeshComponent();
+                PipeMeshGeneratorBase generators = ResultGo.GetComponent<PipeMeshGeneratorBase>();
+                if (generators != null)
+                {
+                    generators.ClearResult();
+                    GameObject.DestroyImmediate(generators);
+                }
+                //ResultGo = null;
+            }
+            ResultGo = null;
+        }
+    }
+
+    public bool IsGetInfoSuccess = true;
+
     public int VertexCount = 0;
+
+
 
     public void ShowOBB()
     {

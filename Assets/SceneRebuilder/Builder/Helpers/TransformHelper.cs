@@ -10,6 +10,8 @@ public static class TransformHelper
         var ids = obj.GetComponentsInChildren<T>(true);
         foreach (var id in ids)
         {
+            if (id == null) continue;
+            if (id.gameObject == null) continue;
             GameObject.DestroyImmediate(id.gameObject);
         }
         Debug.Log($"ClearComponentGos[{typeof(T)}] ids:{ids.Length}");

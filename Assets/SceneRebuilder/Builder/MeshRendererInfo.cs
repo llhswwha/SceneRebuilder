@@ -1,3 +1,4 @@
+using MeshJobs;
 using System;
 using System.Collections;
 using System.Collections.Generic;
@@ -14,6 +15,17 @@ public class MeshRendererInfo : MonoBehaviour,IComparable<MeshRendererInfo>
     public float disToCenter;
 
     public float diam = 0;
+
+    [ContextMenu("GetMeshPoints")]
+    public void GetMeshPoints()
+    {
+        MeshPoints mps = new MeshPoints(this.gameObject);
+        if (mps.sharedMesh == null)
+        {
+            Debug.LogError($"GetMeshPoints mps.sharedMesh == null");
+        }
+    }
+
 
     public float GetDiam()
     {
@@ -902,12 +914,17 @@ public class MeshRendererInfoList:List<MeshRendererInfo>
         InitRenderers(renderers, isForceUpdate);
     }
 
+    public MeshRendererInfoList(List<Transform> renderers, bool isForceUpdate = false)
+    {
+        InitRenderers(renderers, isForceUpdate);
+    }
+
     public MeshRendererInfoList(Renderer[] renderers, bool isForceUpdate = false)
     {
         InitRenderers(renderers, isForceUpdate);
     }
 
-    private void InitRenderers<T>(List<T> renderers, bool isForceUpdate = false) where T :Renderer
+    private void InitRenderers<T>(List<T> renderers, bool isForceUpdate = false) where T :Component
     {
         Debug.Log($"InitRenderers_List renderers:{renderers.Count}");
         for (int i = 0; i < renderers.Count; i++)
@@ -922,7 +939,7 @@ public class MeshRendererInfoList:List<MeshRendererInfo>
         ProgressBarHelper.ClearProgressBar();
     }
 
-    private void InitRenderers<T>(T[] renderers, bool isForceUpdate = false) where T : Renderer
+    private void InitRenderers<T>(T[] renderers, bool isForceUpdate = false) where T : Component
     {
         //Debug.Log($"InitRenderers_Array renderers:{renderers.Length}");
         for (int i = 0; i < renderers.Length; i++)

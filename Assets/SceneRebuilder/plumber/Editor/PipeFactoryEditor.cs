@@ -39,7 +39,10 @@ public class PipeFactoryEditor : BaseFoldoutEditor<PipeFactory>
             minPipeSegmentsValuesStr = GetIntArrayStrings(minPipeSegmentsValues);
         targetT.MinPipeSegments = EditorGUILayout.IntPopup(targetT.MinPipeSegments, minPipeSegmentsValuesStr, minPipeSegmentsValues, GUILayout.Width(35));
 
-        GUILayout.Label("Info:");
+        if (GUILayout.Button("Info:"))
+        {
+            targetT.GetResultInfoAfter();
+        }
         GUILayout.Label(targetT.GetResultInfo(), GUILayout.Width(300));
         GUILayout.EndHorizontal();
 
@@ -54,6 +57,7 @@ public class PipeFactoryEditor : BaseFoldoutEditor<PipeFactory>
         GUILayout.EndHorizontal();
 
         GUILayout.BeginHorizontal();
+        int toggleWidth = 30;
         GUILayout.Label($"Line({targetT.PipeLines.Count})");
         targetT.EnablePipeLine = EditorGUILayout.Toggle(targetT.EnablePipeLine);
         GUILayout.Label($"Elbow({targetT.PipeElbows.Count})");
@@ -68,7 +72,12 @@ public class PipeFactoryEditor : BaseFoldoutEditor<PipeFactory>
         targetT.EnablePipeWeldolet = EditorGUILayout.Toggle(targetT.EnablePipeWeldolet);
         GUILayout.Label($"Welds({targetT.PipeWelds.Count})");
         GUILayout.Label($"WeldsNew({targetT.PipeWeldsNew.Count})");
-        GUILayout.Label($"Others({targetT.PipeOthers.Count})");
+        GUILayout.EndHorizontal();
+        GUILayout.BeginHorizontal();
+        GUILayout.Label($"Others({targetT.PipeOthers.Count},v:{MeshHelper.GetVertexCountS(targetT.TotalPipeOthersVertexCount)})");
+        GUILayout.Label($"Box({targetT.BoxModels.Count},v:{MeshHelper.GetVertexCountS(targetT.TotalBoxModelsVertexCount)})");
+        targetT.EnableBoxModel = EditorGUILayout.Toggle(targetT.EnableBoxModel);
+        //GUILayout.Label($"Box({targetT.BoxModels.Count},v:{MeshHelper.GetVertexCountS(targetT.TotalBoxModelsVertexCount)})");
         GUILayout.EndHorizontal();
 
         GUILayout.BeginHorizontal();
@@ -369,8 +378,10 @@ public class PipeFactoryEditor : BaseFoldoutEditor<PipeFactory>
         DrawObjectList(reducerListArg, "Reducers", targetT.PipeReducers, null, null, null);
         DrawObjectList(weldoletListArg, "Weldolets", targetT.PipeWeldolets, null, null, null);
         DrawObjectList(weldListArg, "Welds", targetT.PipeWelds, null, null, null);
-        DrawObjectList(othersListArg, "Others", targetT.PipeOthers, null, null, null);
+        
         DrawObjectList(weldNewListArg, "Welds(New)", targetT.PipeWeldsNew, null, null, null);
+        DrawObjectList(othersListArg, "Others", targetT.PipeOthers, null, null, null);
+        DrawObjectList(boxListArg, "Box", targetT.BoxModels, null, null, null);
     }
     static FoldoutEditorArg pipeWeldPrefabDataListArg = new FoldoutEditorArg(true, false);
     static FoldoutEditorArg pipeWeldPrefabMeshListArg = new FoldoutEditorArg(true, false);
@@ -384,6 +395,7 @@ public class PipeFactoryEditor : BaseFoldoutEditor<PipeFactory>
     static FoldoutEditorArg teeListArg = new FoldoutEditorArg(true, false);
     static FoldoutEditorArg reducerListArg = new FoldoutEditorArg(true, false);
     static FoldoutEditorArg weldoletListArg = new FoldoutEditorArg(true, false);
+    static FoldoutEditorArg boxListArg = new FoldoutEditorArg(true, false);
     static PipeModelFoldoutEditorArg specialElbowListArg = new PipeModelFoldoutEditorArg(true, false);
     public override void OnEnable()
     {

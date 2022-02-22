@@ -144,11 +144,16 @@ public class MeshNode : MonoBehaviour,IComparable<MeshNode>
     public List<MeshNode> GetMeshNodes()
     {
         List<MeshNode> list = new List<MeshNode>();
-        //if (this.meshData.vertexCount > 0)
-        //{
-        //    list.Add(this);
-        //}
-        list.AddRange(subMeshes);
+        ////if (this.meshData.vertexCount > 0)
+        ////{
+        ////    list.Add(this);
+        ////}
+        //list.AddRange(subMeshes);
+        foreach(var item in subMeshes)
+        {
+            if (item == null) continue;
+            list.Add(item);
+        }
         return list;
     }
 
@@ -158,7 +163,7 @@ public class MeshNode : MonoBehaviour,IComparable<MeshNode>
 
     public SharedMeshInfoList GetSharedMeshList()
     {
-        sharedMeshInfos= new SharedMeshInfoList(this.gameObject);
+        sharedMeshInfos= new SharedMeshInfoList(this.gameObject, this.isIncludeInactive);
         return sharedMeshInfos;
     }
 
@@ -210,20 +215,16 @@ public class MeshNode : MonoBehaviour,IComparable<MeshNode>
         if (gameObject.isStatic) return;
         if (meshData == null || meshData.vertexCount==0 || meshData._obj==null)
         {
-            //GameObjectUtility.SetStaticEditorFlags.
-            
-            //VertexCount=0;
-            meshData = new MeshData(gameObject);
-            meshData.IsWorld=this.IsWorld;
-
-            //if (filter != null)
-            //{
-            //    Info.m_Mesh = filter.mesh;
-            //    Info.Update();
-            //}
-
+            if(isIncludeInactive==false && this.gameObject.activeInHierarchy == false)
+            {
+                meshData = new MeshData();
+            }
+            else
+            {
+                meshData = new MeshData(gameObject);
+            }
+            meshData.IsWorld = this.IsWorld;
             VertexCount = meshData.vertexCount;
-
             totalMesh = new MeshData();
             totalMesh.Add(meshData);
         }
@@ -252,6 +253,8 @@ public class MeshNode : MonoBehaviour,IComparable<MeshNode>
     }
 
     public bool isInited = false;
+
+    public bool isIncludeInactive = true;
 
     [ContextMenu("Init")]
     public void Init()
@@ -286,6 +289,7 @@ public class MeshNode : MonoBehaviour,IComparable<MeshNode>
             for (int i = 0; i < transform.childCount; i++)
             {
                 var child = transform.GetChild(i).gameObject;
+                if (this.isIncludeInactive == false && child.activeInHierarchy == false) continue;
                 var p1 = new ProgressArg("MeshNode.Init", i, transform.childCount, child);
                 //float progress1 = (float)i / transform.childCount;
                 if (progressChanged != null)
@@ -293,12 +297,8 @@ public class MeshNode : MonoBehaviour,IComparable<MeshNode>
                     progressChanged(p1);
                 }
                 
-                MeshNode subMesh = child.GetComponent<MeshNode>();
-                if (subMesh == null)
-                {
-                    subMesh = child.AddComponent<MeshNode>();
-                }
-
+                MeshNode subMesh = child.AddMissingComponent<MeshNode>();
+                subMesh.isIncludeInactive = this.isIncludeInactive;
                 subMesh.Init(level + 1, isforce, (subP) =>
                 {
                     p1.AddSubProgress(subP);
@@ -931,19 +931,14 @@ public class MeshNode : MonoBehaviour,IComparable<MeshNode>
     public static MeshNode InitNodes(GameObject go)
     {
         DateTime start = DateTime.Now;
-        MeshNode meshNode = go.GetComponent<MeshNode>();
-        if (meshNode == null)
-        {
-            meshNode = go.AddComponent<MeshNode>();
-        }
-
+        MeshNode meshNode = go.AddMissingComponent<MeshNode>();
         meshNode.Init(0, true, p =>
         {
             ProgressBarHelper.DisplayProgressBar(p);
         });
         meshNode.GetSharedMeshList();
 
-        var meshNodes = meshNode.GetComponentsInChildren<MeshNode>(true);
+        var meshNodes = meshNode.GetComponentsInChildren<MeshNode>(meshNode.isIncludeInactive);
         ProgressBarHelper.ClearProgressBar();
 
         MeshRendererInfo.InitRenderers(go);

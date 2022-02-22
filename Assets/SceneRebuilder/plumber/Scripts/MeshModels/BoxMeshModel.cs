@@ -50,22 +50,17 @@ public class BoxMeshModel : BaseMeshModel
 
     public void RendererModel()
     {
-        //GameObject go = GameObject.CreatePrimitive(PrimitiveType.Cube);
-        //go.transform.position = ObbCenter;
-        //go.transform.forward = OBB.Forward;
-
+        ClearGo();
+        this.gameObject.SetActive(false);
         GameObject go=OBBCollider.CreateObbBox(this.transform, GetOBB());
-        //go.transform.SetParent(this.transform.parent);
-        go.transform.name = this.name + "_ObbBox";
-
-        //MeshHelper.CopyTransformMesh(go, this.gameObject);
-
-        //GameObject.DestroyImmediate(go);
+        go.transform.name = this.name + "_New";
+        go.transform.transform.SetParent(this.transform.parent);
+        ResultGo = go;
     }
 
     public void ReplaceModel()
     {
-        GameObject go = OBBCollider.CreateObbBox(this.transform, GetOBB());
+        GameObject go = OBBCollider.CreateObbBox(this.transform, OBB);
         //go.transform.SetParent(this.transform.parent);
         go.transform.name = this.name + "_ObbBox";
 

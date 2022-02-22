@@ -17,34 +17,9 @@ public class PipeModelComponent : BaseMeshModel
 
     public PipeGenerateArg generateArg = new PipeGenerateArg();
 
-    public GameObject ResultGo = null;
 
-    public bool IsGetInfoSuccess = true;
 
-    [ContextMenu("ClearGo")]
-    public void ClearGo()
-    {
-        if (ResultGo != null)
-        {
-            if (ResultGo != this.gameObject)
-            {
-                GameObject.DestroyImmediate(ResultGo);
-            }
-            else
-            {
 
-                //DestroyMeshComponent();
-                PipeMeshGeneratorBase generators = ResultGo.GetComponent<PipeMeshGeneratorBase>();
-                if (generators != null)
-                {
-                    generators.ClearResult();
-                    GameObject.DestroyImmediate(generators);
-                }
-                //ResultGo = null;
-            }
-            ResultGo = null;
-        }
-    }
 
     public virtual void InitSaveData(MeshModelSaveData data)
     {

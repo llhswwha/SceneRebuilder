@@ -22,6 +22,7 @@ public class LODManagerEditor : BaseFoldoutEditor<LODManager>
         base.OnEnable();
         //twoListArg.Items = targetT.twoList;
         targetT.ClearTwoList();
+        targetT.ClearLod0List();
     }
 
     public static void DrawUI(LODManager lodManager)
@@ -93,6 +94,10 @@ public class LODManagerEditor : BaseFoldoutEditor<LODManager>
         EditorGUILayout.EndHorizontal();
 
         EditorGUILayout.BeginHorizontal();
+
+        GUILayout.Label("MinVertex:", GUILayout.Width(100));
+        lodManager.MinSaveLODVertexCount = EditorGUILayout.IntField(lodManager.MinSaveLODVertexCount);
+
         if (GUILayout.Button("SaveLOD0s"))
         {
             lodManager.SaveLOD0s();

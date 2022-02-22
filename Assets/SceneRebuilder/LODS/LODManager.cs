@@ -137,7 +137,16 @@ public class LODManager : SingletonBehaviour<LODManager>
 
     public LODCompareMode compareMode = LODCompareMode.NameWithCenter;
 
-
+    public void ClearLod0List()
+    {
+        List<MeshRendererInfo> list2 = new List<MeshRendererInfo>();
+        foreach(var item in list_lod0)
+        {
+            if (item == null) continue;
+            list2.Add(item);
+        }
+        list_lod0 = list2;
+    }
 
     public MinDisTarget<MeshRendererInfo> GetMinInfo(Transform t)
     {
@@ -1341,6 +1350,8 @@ T minTEx = null;
         return infos;
     }
 
+    public int MinSaveLODVertexCount = 50000;//2w
+
 #if UNITY_EDITOR
     public void SaveLOD0s()
     {
@@ -1361,10 +1372,16 @@ T minTEx = null;
             var info = infos[i];
 
             float progress = (float)i / infos.Length;
-            ProgressBarHelper.DisplayProgressBar("LODManager.SaveLODs", $"Progress {i}/{infos.Length} {progress:P1}", progress);
+            if(ProgressBarHelper.DisplayCancelableProgressBar("LODManager.SaveLODs", $"Progress {i}/{infos.Length} {progress:P1}", progress))
+            {
+                break;
+            }
 
-            if (info.IsSceneCreatable() == false) continue;
-            info.EditorCreateScene();
+            if(info.LodInfos[0].vertextCount> MinSaveLODVertexCount)
+            {
+                if (info.IsSceneCreatable() == false) continue;
+                info.EditorCreateScene();
+            }
         }
         EditorHelper.ClearOtherScenes();
         EditorHelper.RefreshAssets();

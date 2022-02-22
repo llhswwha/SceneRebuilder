@@ -93,7 +93,7 @@ public class RendererManager : SingletonBehaviour<RendererManager>
     public void ShowAll()
     {
         var allRenderers = GetRenderers();
-        MeshHelper.ShowAllRenderers(allRenderers,5);
+        MeshHelper.ShowAllRenderers(allRenderers,5,"RendererManager");
     }
 
     private List<MeshRendererInfo> InitRenderers_Inner(MeshRenderer[] allRenderers)
@@ -381,7 +381,7 @@ public class RendererManager : SingletonBehaviour<RendererManager>
     public SharedMeshInfoList GetSharedMeshList()
     {
         SharedMeshInfoList sharedMeshes = new SharedMeshInfoList();
-        sharedMeshes.InitAll();
+        sharedMeshes.InitAll(true);
         return sharedMeshes;
     }
 

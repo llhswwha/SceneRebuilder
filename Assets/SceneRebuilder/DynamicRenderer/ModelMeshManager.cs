@@ -152,8 +152,14 @@ public class ModelMeshManager : SingletonBehaviour<ModelMeshManager>
         List<string> otherNames = new List<string>();
         var list = GetTransformsNoLOD();
         //Debug.Log($"GetPrefixNames list:{list.Count}");
-        foreach (var item in list)
+        for (int i = 0; i < list.Count; i++)
         {
+            Transform item = list[i];
+            ProgressArg p1 = new ProgressArg("GetPrefixNamesNoLOD", i, list.Count, item);
+            if (ProgressBarHelper.DisplayCancelableProgressBar(p1))
+            {
+                break;
+            }
             var n = item.name;
 
             string pre = GetPrefix(n);
@@ -172,6 +178,8 @@ public class ModelMeshManager : SingletonBehaviour<ModelMeshManager>
 
 
         PrefixNames = modelClassDict.GetKeys();
+        ProgressBarHelper.ClearProgressBar();
+
         return modelClassDict;
     }
 

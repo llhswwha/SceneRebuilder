@@ -525,6 +525,23 @@ public class MyEditorTools2
 
     #region Transform
 
+    [MenuItem("SceneTools/Transform/CoypChildren100")]
+    public static void CoypChildren100()
+    {
+        var p = Selection.activeGameObject;
+        GameObject go = new GameObject(p.name+"(Copy)");
+        go.transform.position = p.transform.position;
+        go.transform.SetParent(p.transform.parent);
+
+
+        for (int i = 0; i < 100 && i < p.transform.childCount; i++)
+        {
+            var chid = p.transform.GetChild(i);
+            var cloned = GameObject.Instantiate(chid.gameObject);
+            cloned.transform.SetParent(go.transform);
+        }
+    }
+
     [MenuItem("SceneTools/Transform/DcsEmpty")]
     public static void DcsEmpty()
     {

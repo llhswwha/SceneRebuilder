@@ -68,8 +68,16 @@ public class BigSmallListInfo
             for (int i = 0; i < meshFilters.Length; i++)
             {
                 var mf = meshFilters[i];
-                if (mf == null) continue;
-                if (mf.sharedMesh == null) continue;
+            if (mf == null)
+            {
+                Debug.LogWarning($"BigSamllListInfo.Init mf == null {i}/{meshFilters.Length}");
+                continue;
+            }
+            if (mf.sharedMesh == null)
+            {
+                Debug.LogWarning($"BigSamllListInfo.Init mf.sharedMesh == null {i}/{meshFilters.Length} mf:{mf}");
+                continue;
+            }
 
                 float progress = (float)i / meshFilters.Length;
                 float percents = progress * 100;
@@ -99,11 +107,28 @@ public class BigSmallListInfo
                     lengthList.Add(length);
                 }
 
-                // if(!sizeList.Contains(strSize))
-                // {
-                //     sizeList.Add(strSize);
-                // }
-
+            // if(!sizeList.Contains(strSize))
+            // {
+            //     sizeList.Add(strSize);
+            // }
+            bool? pipeIsSmall = PipeFactory.IsSmall(mf.name);
+            if (pipeIsSmall != null)
+            {
+                bool r = (bool)pipeIsSmall;
+                MeshRenderer mr = mf.GetComponent<MeshRenderer>();
+                if (r)
+                {
+                    this.smallModels.Add(mr);
+                    sumVertex_Small += mf.vertexCount;
+                }
+                else
+                {
+                    this.bigModels.Add(mr);
+                    sumVertex_Big += mf.vertexCount;
+                }
+            }
+            else
+            {
                 MeshRendererInfo rendererInfo = mf.GetComponent<MeshRendererInfo>();
                 if (rendererInfo != null)
                 {
@@ -148,9 +173,12 @@ public class BigSmallListInfo
                 }
             }
 
+                
+            }
+
             //ProgressBarHelper.ClearProgressBar();
             this.sumVertex_Small = sumVertex_Small / 10000f;
             this.sumVertex_Big = sumVertex_Big / 10000f;
-            //Debug.LogWarning($"GetBigSmallRenderers maxLength:{maxLength},(bigModels:{this.bigModels.Count}+smallModels:{this.smallModels.Count}=BS:{this.bigModels.Count + this.smallModels.Count},Renderers:{meshFilters.Length}),(bigVertex:{this.sumVertex_Big},smallVertex:{this.sumVertex_Small}),Time:{(DateTime.Now - start).TotalMilliseconds:F1}ms");
-        }
+        Debug.Log($"GetBigSmallRenderers maxLength:{maxLength},(bigModels:{this.bigModels.Count}+smallModels:{this.smallModels.Count}=BS:{this.bigModels.Count + this.smallModels.Count},Renderers:{meshFilters.Length}),(bigVertex:{this.sumVertex_Big},smallVertex:{this.sumVertex_Small}),Time:{(DateTime.Now - start).TotalMilliseconds:F1}ms");
+    }
     }

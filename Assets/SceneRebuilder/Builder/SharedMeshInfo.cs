@@ -25,9 +25,9 @@ public class SharedMeshInfoList : List<SharedMeshInfo>
         
     }
 
-    public void InitAll()
+    public void InitAll(bool isIncludeInactive)
     {
-        InitByRoot(null);
+        InitByRoot(null, isIncludeInactive);
     }
 
     public SharedMeshInfoList(SharedMeshInfoList root)
@@ -35,21 +35,21 @@ public class SharedMeshInfoList : List<SharedMeshInfo>
         this.AddRange(root);
     }
 
-    public SharedMeshInfoList(GameObject root)
+    public SharedMeshInfoList(GameObject root,bool isIncludeInactive)
     {
-        InitByRoot(root);
+        InitByRoot(root, isIncludeInactive);
     }
 
-    private void InitByRoot(GameObject root)
+    private void InitByRoot(GameObject root, bool isIncludeInactive)
     {
         MeshFilter[] meshFilters = null;
         if (root == null)
         {
-            meshFilters = GameObject.FindObjectsOfType<MeshFilter>(true);
+            meshFilters = GameObject.FindObjectsOfType<MeshFilter>(isIncludeInactive);
         }
         else
         {
-            meshFilters = root.GetComponentsInChildren<MeshFilter>(true);
+            meshFilters = root.GetComponentsInChildren<MeshFilter>(isIncludeInactive);
         }
         
 

@@ -1114,7 +1114,7 @@ public class BuildingModelInfo : SubSceneCreater
     public void ShowRenderers()
     {
         var renderers = this.GetComponentsInChildren<MeshRenderer>(true) ;
-        MeshHelper.ShowAllRenderers(renderers, 5);
+        MeshHelper.ShowAllRenderers(renderers, 5,this.name);
     }
 
     //[ContextMenu("ShowAll")]

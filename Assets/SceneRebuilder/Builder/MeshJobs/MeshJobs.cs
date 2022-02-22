@@ -139,6 +139,7 @@ namespace MeshJobs
         public void InitGoEx(GameObject root)
         {
             InitGo(root);
+            mf = root.GetComponent<MeshFilter>();
             InitMesh(mf);
         }
 
