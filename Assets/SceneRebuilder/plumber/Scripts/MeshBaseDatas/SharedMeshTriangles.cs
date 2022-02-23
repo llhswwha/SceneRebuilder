@@ -49,7 +49,7 @@ public class SharedMeshTriangles : IComparable<SharedMeshTriangles>
 
     public SharedMeshTriangles(int id, Vector3 p, Vector3 normal, List<MeshTriangle> ts)
     {
-        Debug.Log($"SharedMeshTriangles.ctor id:{id} ts:{ts.Count}");
+        //Debug.Log($"SharedMeshTriangles.ctor id:{id} ts:{ts.Count}");
         this.Center = Vector3.zero;
         this.Radius = 0;
         this.MinRadius = 0;

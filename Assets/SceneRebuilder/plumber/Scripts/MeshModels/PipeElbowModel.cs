@@ -17,7 +17,7 @@ public class PipeElbowModel : PipeModelBase
 
     public int MinKeyPointCount = 4;
 
-    public float PipeLineOffset = 0.05f;
+    public float PipeLineOffset = 0.07f;//0.05f;
 
     private PipeModelKeyPointInfo4 GetElbow2(SharedMeshTrianglesList list, Mesh mesh)
     {

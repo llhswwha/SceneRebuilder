@@ -483,13 +483,19 @@ public class BaseFoldoutEditor<T> : BaseEditor<T> where T : class
             {
                 foreach(var item in list)
                 {
+                    if (item == null) continue;
                     if(item is GameObject)
                     {
                         GameObject.DestroyImmediate(item as GameObject);
                     }
                     else if (item is Component)
                     {
-                        GameObject.DestroyImmediate((item as Component).gameObject);
+                        Component c = (item as Component);
+                        if (c == null) continue;
+                        GameObject go = c.gameObject;
+                        if (go == null) continue;
+                        EditorHelper.UnpackPrefab(go);
+                        GameObject.DestroyImmediate(go);
                     }
                 }
                 list.Clear();

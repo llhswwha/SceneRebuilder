@@ -56,6 +56,9 @@ public class BoxMeshModel : BaseMeshModel
         go.transform.name = this.name + "_New";
         go.transform.transform.SetParent(this.transform.parent);
         ResultGo = go;
+
+        BoxMeshGenerator generator = go.AddMissingComponent<BoxMeshGenerator>();
+        generator.Target = this.gameObject;
     }
 
     public void ReplaceModel()

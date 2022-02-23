@@ -473,17 +473,18 @@ public class AcRTAlignJobContainer
                             if (rT != null)
                             {
                                 sb.AppendLine($"{arg},Mode:{rT.Mode} " + $" Trans:{rT.Translation.Vector3ToString()},Matrix:\n{rT.TransformationMatrix}");
-                                //Debug.LogError($"Mode:{rT.Mode},Trans:{rT.Translation.Vector3ToString()},Matrix:\n{rT.TransformationMatrix}");
+                                Debug.LogError($"{arg},Mode:{rT.Mode} " + $" Trans:{rT.Translation.Vector3ToString()},Matrix:\n{rT.TransformationMatrix}");
                             }
                             else
                             {
                                 sb.AppendLine($"{arg} rT==null" );
+                                Debug.LogError($"{arg} rT==null");
                             }
 
                             newGo.name += "_AlignError";
                             newGo.SetActive(false);
 
-                            //GameObject.DestroyImmediate(newGo);
+                            GameObject.DestroyImmediate(newGo);//测试的话这里可以留下查看一下。
                         }
                         else
                         {
@@ -499,7 +500,7 @@ public class AcRTAlignJobContainer
                             else
                             {
                                 arg.Log = $"对齐成功12 zero:{DistanceSetting.zeroM:F5},disNew:{disNew}";
-                                sb.AppendLine($"{arg} rT==null");
+                                //sb.AppendLine($"{arg} rT==null");
                             }
                             
                             arg.ReplaceToObject(newGo, pref.PrefabInfo);
@@ -512,13 +513,13 @@ public class AcRTAlignJobContainer
                         if (rT != null)
                         {
                             arg.Log = $"对齐成功01 zero:{DistanceSetting.zeroM:F5},dis:{rT.Distance},Mode:{rT.Mode}";
-                            sb.AppendLine($"{arg} " + $" Trans:{rT.Translation.Vector3ToString()},Matrix:\n{rT.TransformationMatrix}");
+                            //sb.AppendLine($"{arg} " + $" Trans:{rT.Translation.Vector3ToString()},Matrix:\n{rT.TransformationMatrix}");
                             //Debug.LogError($"Mode:{rT.Mode},Trans:{rT.Translation.Vector3ToString()},Matrix:\n{rT.TransformationMatrix}");
                         }
                         else
                         {
                             arg.Log = $"对齐成功02 zero:{DistanceSetting.zeroM:F5},dis:{rT.Distance}";
-                            sb.AppendLine($"{arg} rT==null");
+                            //sb.AppendLine($"{arg} rT==null");
                         }
                         
                         arg.ReplaceToObject(newGo, pref.PrefabInfo);
@@ -531,7 +532,8 @@ public class AcRTAlignJobContainer
                     //newTargets.Add(arg.mfTo);
                     arg.Log = $"对齐失败(距离太大1) 距离:{result.Distance:F4}";
                     arg.AlignResult = false;
-                    Debug.LogWarning($"{arg}");
+                    //Debug.LogWarning($"{arg}");
+                    sb.AppendLine(arg.ToString());
                     if (IsSetParent){
                         arg.mfTo.transform.SetParent(arg.mfFrom.transform);//关联相似的模型用于测试，测试好了要关闭。
                     }
@@ -544,7 +546,8 @@ public class AcRTAlignJobContainer
                     //newTargets.Add(arg.mfTo);
                     arg.Log = $"对齐失败(距离太大2) 距离:{result.Distance:F4}";
                     arg.AlignResult = false;
-                    Debug.LogWarning($"{arg}");
+                    //Debug.LogWarning($"{arg}");
+                    sb.AppendLine(arg.ToString());
                 }
             }
             else

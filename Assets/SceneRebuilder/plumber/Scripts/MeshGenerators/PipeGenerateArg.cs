@@ -20,7 +20,7 @@ public class PipeGenerateArg
     public int elbowSegments = 6;
 
     [XmlAttribute]
-    public int weldPipeSegments = 6;//焊缝的管道面数
+    public int weldPipeSegments = 8;//焊缝的管道面数
 
     [XmlAttribute]
     public int weldElbowSegments = 6;//焊缝的弯管段数 n*4
@@ -47,7 +47,7 @@ public class PipeGenerateArg
     public bool IsGenerateEndWeld = true;
 
     [XmlAttribute]
-    public int uniformRadiusP = 0;
+    public int uniformRadiusP = 4;
 
     [XmlAttribute]
     public float weldCircleRadius = 0;

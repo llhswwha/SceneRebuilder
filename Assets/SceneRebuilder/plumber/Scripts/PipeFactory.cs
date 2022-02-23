@@ -234,7 +234,7 @@ public class PipeFactory : SingletonBehaviour<PipeFactory>
 
     public GameObject PrefabRoots = null;
 
-    public bool IsCreatePipeByUnityPrefab;
+    public bool IsCreatePipeByUnityPrefab = true;
 
     public GameObject PipeModelUnitPrefab_Line = null;
 
@@ -396,13 +396,13 @@ public class PipeFactory : SingletonBehaviour<PipeFactory>
 
                 if(disElbow < WeldPrefabArgElbowRadiusDistance)
                 {
-                    Debug.Log($"GetPipeModelUnitPrefab_Weld[{weldName}] [elbowRadius1:{data.elbowRadius} elbowRadius2:{prefabData.elbowRadius} disElbow:{disElbow}]  [pipeRadius1:{data.pipeRadius} pipeRadius2:{prefabData.pipeRadius} disPipe:{disPipe}] ");
+                    //Debug.Log($"GetPipeModelUnitPrefab_Weld[{weldName}] [elbowRadius1:{data.elbowRadius} elbowRadius2:{prefabData.elbowRadius} disElbow:{disElbow}]  [pipeRadius1:{data.pipeRadius} pipeRadius2:{prefabData.pipeRadius} disPipe:{disPipe}] WeldPrefabArgElbowRadiusDistance£º{WeldPrefabArgElbowRadiusDistance}");
                     id = i;
                     break;
                 }
                 else if (disElbow < WeldPrefabArgElbowRadiusDistance * 5)
                 {
-                    Debug.LogWarning($"GetPipeModelUnitPrefab_Weld[{weldName}] [elbowRadius1:{data.elbowRadius} elbowRadius2:{prefabData.elbowRadius} disElbow:{disElbow}]  [pipeRadius1:{data.pipeRadius} pipeRadius2:{prefabData.pipeRadius} disPipe:{disPipe}] ");
+                    Debug.LogWarning($"GetPipeModelUnitPrefab_Weld[{weldName}] [elbowRadius1:{data.elbowRadius} elbowRadius2:{prefabData.elbowRadius} disElbow:{disElbow}]  [pipeRadius1:{data.pipeRadius} pipeRadius2:{prefabData.pipeRadius} disPipe:{disPipe}] WeldPrefabArgElbowRadiusDistance:{WeldPrefabArgElbowRadiusDistance}");
                 }
             }
 
@@ -808,8 +808,9 @@ public class PipeFactory : SingletonBehaviour<PipeFactory>
                     if (weldModel != null) continue;
                     int vertexCount = mf.sharedMesh.vertexCount;
                     if (vertexCount > maxVertexCount) continue;
-                    if (mf.name.Contains("_Combined_")) continue;
-                    if (mf.sharedMesh.name.Contains("_Combined_")) continue;
+
+                    //if (mf.name.Contains("_Combined_")) continue;
+                    //if (mf.sharedMesh.name.Contains("_Combined_")) continue;
 
                     //Debug.LogError($"Other:{item.name} mf:{mf.name} mesh:{mf.sharedMesh.name} maxVertexCount:{maxVertexCount} vertexCount:{mf.sharedMesh.vertexCount}");
 
@@ -1416,14 +1417,14 @@ public class PipeFactory : SingletonBehaviour<PipeFactory>
             prefabs4 = PrefabInstanceBuilder.Instance.GetPrefabsOfList(list4, true, "_Flange_4", IsPipeTryRT);
             list.AddRange(prefabs4);
 
-            Debug.LogError($"PrefabPipes Flange1 list4:{list4.Count}");
+            Debug.Log($"PrefabPipes Flange1 list4:{list4.Count}");
         }
         else
         {
             var list4 = newBuilder.GetModelResult_Flange(true);
             prefabs4 = PrefabInstanceBuilder.Instance.GetPrefabsOfList(list4, true, "_Flange_4", IsPipeTryRT);
             prefabs4.Add(new PrefabInfo());
-            Debug.LogError($"PrefabPipes Flange2 list4:{list4.Count}");
+            Debug.Log($"PrefabPipes Flange2 list4:{list4.Count}");
         }
 
         TimeSpan t4 = DateTime.Now - start4;
@@ -1486,12 +1487,14 @@ public class PipeFactory : SingletonBehaviour<PipeFactory>
 
     public PrefabInfoList PrefabOthers()
     {
+        if (PipeOthers.Count == 0) return new PrefabInfoList();
         AcRTAlignJobSetting.Instance.SetDefault();
         DateTime start = DateTime.Now;
+        int count1 = PipeOthers.Count;
         PrefabInfoList prefabs =PrefabInstanceBuilder.Instance.GetPrefabsOfList(PipeOthers, true, "_Others",IsOthersTryRT);
         PipeOthers.Clear();
         PipeOthers.AddRange(prefabs.GetComponents<Transform>());
-        Debug.LogError($"PrefabOthers time:{DateTime.Now-start} Others:{this.PipeOthers.Count} prefabs:{prefabs.Count}");
+        Debug.Log($"PrefabOthers time:{DateTime.Now-start} count1:{count1} Others:{this.PipeOthers.Count} prefabs:{prefabs.Count}");
         //RecoverOthersParent();
         return prefabs;
     }

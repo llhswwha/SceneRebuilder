@@ -704,29 +704,29 @@ UnpackPrefab();
         List<MeshPoints> list = new List<MeshPoints>();
         foreach(var mp in meshPoints)
         {
-            if (mp.name.Contains("_Combined_"))
-            {
-                Debug.LogWarning($"FilterMeshPoints12 Contains(_Combined_) name:{mp.name} vertexCount:{mp.vertexCount} MaxVertexCount:{MaxVertexCount}");
-                continue;
-            }
-            //if (mp.mf == null)
+            //if (mp.name.Contains("_Combined_"))
             //{
-            //    Debug.LogWarning($"FilterMeshPoints11 mp.mf==null name:{mp.name} vertexCount:{mp.vertexCount} MaxVertexCount:{MaxVertexCount}");
+            //    Debug.LogWarning($"FilterMeshPoints12 Contains(_Combined_) name:{mp.name} vertexCount:{mp.vertexCount} MaxVertexCount:{MaxVertexCount}");
             //    continue;
             //}
-            if (mp.mf != null)
-            {
-                if (mp.mf.name.Contains("_Combined_"))
-                {
-                    Debug.LogWarning($"FilterMeshPoints13 Contains(_Combined_) name:{mp.name} vertexCount:{mp.vertexCount} MaxVertexCount:{MaxVertexCount}");
-                    continue;
-                }
-                if (mp.mf.sharedMesh.name.Contains("_Combined_"))
-                {
-                    Debug.LogWarning($"FilterMeshPoints14 Contains(_Combined_) name:{mp.name} vertexCount:{mp.vertexCount} MaxVertexCount:{MaxVertexCount}");
-                    continue;
-                }
-            }
+            ////if (mp.mf == null)
+            ////{
+            ////    Debug.LogWarning($"FilterMeshPoints11 mp.mf==null name:{mp.name} vertexCount:{mp.vertexCount} MaxVertexCount:{MaxVertexCount}");
+            ////    continue;
+            ////}
+            //if (mp.mf != null)
+            //{
+            //    if (mp.mf.name.Contains("_Combined_"))
+            //    {
+            //        Debug.LogWarning($"FilterMeshPoints13 Contains(_Combined_) name:{mp.name} vertexCount:{mp.vertexCount} MaxVertexCount:{MaxVertexCount}");
+            //        continue;
+            //    }
+            //    if (mp.mf.sharedMesh.name.Contains("_Combined_"))
+            //    {
+            //        Debug.LogWarning($"FilterMeshPoints14 Contains(_Combined_) name:{mp.name} vertexCount:{mp.vertexCount} MaxVertexCount:{MaxVertexCount}");
+            //        continue;
+            //    }
+            //}
  
             if (mp.vertexCount> MaxVertexCount)
             {
@@ -750,6 +750,8 @@ UnpackPrefab();
     {
         if(meshPoints==null|| meshPoints.Length == 0)
         {
+            //Debug.LogError("AcRTAlignJobsEx meshPoints==null|| meshPoints.Length == 0");
+            PrefabInfoList = new PrefabInfoList();
             return PrefabInfoList;
         }
         meshPoints = FilterMeshPoints(meshPoints);
@@ -1515,11 +1517,11 @@ break;
 
         AcRTAlignJobContainer.CurrentLogTag = tag;
         List<MeshPoints> meshFilters = MeshPoints.GetMeshPoints(list);
-        PrefabInfoList preafabList= AcRTAlignJobsEx(meshFilters.ToArray());
+        var preList= AcRTAlignJobsEx(meshFilters.ToArray());
         AcRTAlignJobContainer.CurrentLogTag = "";
 
         AcRTAlignJobSetting.Instance.IsTryRT = isTryRt;
-        return preafabList;
+        return preList;
     }
 
     public PrefabInfoList GetPrefabsOfList(GameObject root)

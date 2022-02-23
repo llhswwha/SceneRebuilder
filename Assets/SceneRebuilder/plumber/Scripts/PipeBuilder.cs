@@ -1020,7 +1020,7 @@ public class PipeBuilder : MonoBehaviour
         PipeReducerInfoJob.ErrorIds.Dispose();
         PipeFlangeInfoJob.ErrorIds.Dispose();
 
-        Debug.LogWarning($">>GetPipeInfosJob time:{DateTime.Now - start} lineJobs:{lineJobs.Count} elbowJobs:{elbowJobs.Count} teeJobs:{teeJobs.Count} reducerJobs:{reducerJobs.Count}");
+        Debug.LogError($">>GetPipeInfosJob time:{DateTime.Now - start} lineJobs:{lineJobs.Count} elbowJobs:{elbowJobs.Count} teeJobs:{teeJobs.Count} reducerJobs:{reducerJobs.Count}");
 
         CreatePipeRunList();
     }

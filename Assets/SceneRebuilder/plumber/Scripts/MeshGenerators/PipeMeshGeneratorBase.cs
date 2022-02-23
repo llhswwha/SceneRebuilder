@@ -3,7 +3,7 @@ using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.Rendering;
 
-public class PipeMeshGeneratorBase : MonoBehaviour
+public class PipeMeshGeneratorBase : BaseMeshGenerator
 {
 
 
@@ -64,7 +64,6 @@ public class PipeMeshGeneratorBase : MonoBehaviour
         //}
     }
 
-    public GameObject Target;
 
     public float elbowRadius = 0.5f;
     [Range(3, 32)]
@@ -457,8 +456,11 @@ public class PipeMeshGeneratorBase : MonoBehaviour
     //    return psObjs;
     //}
 
-    public static void OrthoNormalize(ref Vector3 direction, ref Vector3 tangent, ref Vector3 binormal,string name,int psCount)
+    public static void OrthoNormalize(ref Vector3 direction, ref Vector3 tangent, ref Vector3 binormal,string name,int index,int psCount,int circleType)
     {
+        Vector3 dir0 = direction;
+        float dis = direction.magnitude;
+        direction = direction * 100;
         Plane p = new Plane(Vector3.forward, Vector3.zero);
         Vector3 xAxis1 = Vector3.up;
         Vector3 yAxis1 = Vector3.right;
@@ -467,12 +469,14 @@ public class PipeMeshGeneratorBase : MonoBehaviour
             yAxis1 = Vector3.left;
         }
 
-        direction = direction * 10;
+        
 
         // build left-hand coordinate system, with orthogonal and normalized axes
         Vector3.OrthoNormalize(ref direction, ref xAxis1, ref yAxis1);
 
-        if (psCount == 2)
+        if (
+            //circleType == 0 && 
+            psCount > 1 && psCount<5)// 2 3 4
         {
             Vector3 xAxis2 = Vector3.up;
             Vector3 yAxis2 = Vector3.right;
@@ -484,6 +488,7 @@ public class PipeMeshGeneratorBase : MonoBehaviour
             //[{Vector3.Dot(direction, xAxis)},{Vector3.Dot(direction, yAxis)},{Vector3.Dot(xAxis, yAxis)}]
             //float minDot = 0.0002f;
             float minDot = 0.001f;
+            float minDot2 = 0.00001f;
             float dot1 = Mathf.Abs(Vector3.Dot(direction, xAxis1));
             float dot2 = Mathf.Abs(Vector3.Dot(direction, yAxis1));
             float dot3 = Mathf.Abs(Vector3.Dot(xAxis1, yAxis1));
@@ -497,10 +502,10 @@ public class PipeMeshGeneratorBase : MonoBehaviour
 
                 if (dot11 > minDot || dot22 > minDot || dot33 > minDot)
                 {
-                    string errorLog = $"OrthoNormalize Error!(3) gameObject:{name}({psCount}) direction:({direction.x},{direction.y},{direction.z}) xAxis:({xAxis1.x},{xAxis1.y},{xAxis1.z}) yAxis:({yAxis1.x},{yAxis1.y},{yAxis1.z}) 【{dot1},{dot2},{dot3}】";
-                    errorLog += $"\ngameObject:{name} direction1:({direction.x},{direction.y},{direction.z}) xAxis:({xAxis1.x},{xAxis1.y},{xAxis1.z}) yAxis:({yAxis1.x},{yAxis1.y},{yAxis1.z})【{dot1},{dot2},{dot3}】";
-                    errorLog += $"\ngameObject:{name} direction2:({direction.x},{direction.y},{direction.z}) xAxis:({xAxis2.x},{xAxis2.y},{xAxis2.z}) yAxis:({yAxis2.x},{yAxis2.y},{yAxis2.z})【{dot11},{dot22},{dot33}】";
-                    Debug.LogWarning(errorLog);
+                    string errorLog = $"OrthoNormalize Error!(1:NotChange)\tindex:{index} type:{circleType}【minDot:{minDot}|{dot1},{dot2},{dot3}|{dot11},{dot22},{dot33}】gameObject:{name}({psCount})direction:({direction.x},{direction.y},{direction.z}) dis:{dis}";
+                    errorLog += $"\nxAxis:({xAxis1.x},{xAxis1.y},{xAxis1.z}) yAxis:({yAxis1.x},{yAxis1.y},{yAxis1.z})【{dot1},{dot2},{dot3}】";
+                    errorLog += $"\nxAxis:({xAxis2.x},{xAxis2.y},{xAxis2.z}) yAxis:({yAxis2.x},{yAxis2.y},{yAxis2.z})【{dot11},{dot22},{dot33}】";
+                    Debug.Log(errorLog);
                 }
                 else
                 {
@@ -509,20 +514,38 @@ public class PipeMeshGeneratorBase : MonoBehaviour
 
                     if (dotList1[2] > dotList2[2])
                     {
-                        string errorLog = $"OrthoNormalize Error! gameObject:{name}({psCount}) direction:({direction.x},{direction.y},{direction.z}) xAxis:({xAxis1.x},{xAxis1.y},{xAxis1.z}) yAxis:({yAxis1.x},{yAxis1.y},{yAxis1.z}) 【{dot1},{dot2},{dot3}】";
-                        errorLog += $"\ngameObject:{name} direction1:({direction.x},{direction.y},{direction.z}) xAxis:({xAxis1.x},{xAxis1.y},{xAxis1.z}) yAxis:({yAxis1.x},{yAxis1.y},{yAxis1.z})【{dot1},{dot2},{dot3}】";
-                        errorLog += $"\ngameObject:{name} direction2:({direction.x},{direction.y},{direction.z}) xAxis:({xAxis2.x},{xAxis2.y},{xAxis2.z}) yAxis:({yAxis2.x},{yAxis2.y},{yAxis2.z})【{dot11},{dot22},{dot33}】";
-                        Debug.LogWarning(errorLog);
+                        if(dotList2[2]< minDot2)
+                        {
+                            
+                            xAxis1 = yAxis2;
+                            yAxis1 = xAxis2;
 
-                        xAxis1 = yAxis2;
-                        yAxis1 = xAxis2;
+                            if(dotList2[2]<0.000001f)
+                            {
+                                //不需要打印
+                            }
+                            else
+                            {
+                                string errorLog = $"OrthoNormalize Error! (2:Change)\tindex:{index} type:{circleType}【minDot:{minDot}|{dot1},{dot2},{dot3}|{dot11},{dot22},{dot33}】gameObject:{name}({psCount}) direction:({direction.x},{direction.y},{direction.z}) dis:{dis}";
+                                errorLog += $"\nxAxis:({xAxis1.x},{xAxis1.y},{xAxis1.z}) yAxis:({yAxis1.x},{yAxis1.y},{yAxis1.z})【{dot1},{dot2},{dot3}】";
+                                errorLog += $"\nxAxis:({xAxis2.x},{xAxis2.y},{xAxis2.z}) yAxis:({yAxis2.x},{yAxis2.y},{yAxis2.z})【{dot11},{dot22},{dot33}】";
+                                Debug.LogWarning(errorLog);
+                            }
+                        }
+                        else
+                        {
+                            string errorLog = $"OrthoNormalize Error!(3:NotChange)\tindex:{index} type:{circleType}【minDot:{minDot}|{dot1},{dot2},{dot3}|{dot11},{dot22},{dot33}】gameObject:{name}({psCount}) direction:({direction.x},{direction.y},{direction.z}) dis:{dis}";
+                            errorLog += $"\nxAxis:({xAxis1.x},{xAxis1.y},{xAxis1.z}) yAxis:({yAxis1.x},{yAxis1.y},{yAxis1.z})【{dot1},{dot2},{dot3}】";
+                            errorLog += $"\nxAxis:({xAxis2.x},{xAxis2.y},{xAxis2.z}) yAxis:({yAxis2.x},{yAxis2.y},{yAxis2.z})【{dot11},{dot22},{dot33}】";
+                            Debug.Log(errorLog);
+                        }
                     }
                     else
                     {
-                        string errorLog = $"OrthoNormalize Error!(2) gameObject:{name}({psCount}) direction:({direction.x},{direction.y},{direction.z}) xAxis:({xAxis1.x},{xAxis1.y},{xAxis1.z}) yAxis:({yAxis1.x},{yAxis1.y},{yAxis1.z}) 【{dot1},{dot2},{dot3}】";
-                        errorLog += $"\ngameObject:{name} direction1:({direction.x},{direction.y},{direction.z}) xAxis:({xAxis1.x},{xAxis1.y},{xAxis1.z}) yAxis:({yAxis1.x},{yAxis1.y},{yAxis1.z})【{dot1},{dot2},{dot3}】";
-                        errorLog += $"\ngameObject:{name} direction2:({direction.x},{direction.y},{direction.z}) xAxis:({xAxis2.x},{xAxis2.y},{xAxis2.z}) yAxis:({yAxis2.x},{yAxis2.y},{yAxis2.z})【{dot11},{dot22},{dot33}】";
-                        Debug.LogWarning(errorLog);
+                        string errorLog = $"OrthoNormalize Error!(4:NotChange)\tindex:{index} type:{circleType}【minDot:{minDot}|{dot1},{dot2},{dot3}|{dot11},{dot22},{dot33}】gameObject:{name}({psCount}) direction:({direction.x},{direction.y},{direction.z}) dis:{dis}";
+                        errorLog += $"\nxAxis:({xAxis1.x},{xAxis1.y},{xAxis1.z}) yAxis:({yAxis1.x},{yAxis1.y},{yAxis1.z})【{dot1},{dot2},{dot3}】";
+                        errorLog += $"\nxAxis:({xAxis2.x},{xAxis2.y},{xAxis2.z}) yAxis:({yAxis2.x},{yAxis2.y},{yAxis2.z})【{dot11},{dot22},{dot33}】";
+                        Debug.Log(errorLog);
 
                         //xAxis1 = yAxis2;
                         //yAxis1 = xAxis2;
@@ -539,7 +562,7 @@ public class PipeMeshGeneratorBase : MonoBehaviour
         binormal = yAxis1;
     }
 
-    protected CircleMeshData GenerateCircleAtPoint(List<Vector3> vertices, List<Vector3> normals, Vector3 center, Vector3 direction, float radius, string circleName,int psCount)
+    protected CircleMeshData GenerateCircleAtPoint(List<Vector3> vertices, List<Vector3> normals, Vector3 center, Vector3 direction, float radius, string circleName,int index,int psCount,int circleType)
     {
 
         List<Vector3> newVertics = new List<Vector3>();
@@ -556,7 +579,7 @@ public class PipeMeshGeneratorBase : MonoBehaviour
         // all normals will end up inverted!
         Vector3 xAxis1 = Vector3.up;
         Vector3 yAxis1 = Vector3.right;
-        OrthoNormalize(ref direction, ref xAxis1, ref yAxis1,this.name, psCount);
+        OrthoNormalize(ref direction, ref xAxis1, ref yAxis1,this.name, index,psCount, circleType);
 
         for (int i = 0; i < pipeSegments; i++)
         {

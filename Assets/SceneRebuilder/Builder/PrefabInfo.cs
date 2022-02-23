@@ -7,18 +7,22 @@ using UnityEngine;
 [Serializable]
 public class PrefabInfo:IComparable<PrefabInfo>
 {
+
+
     public PrefabInfo()
     {
 
     }
 
     public PrefabInfo(GameObject prefab){
-        this.Prefab=prefab;
+        
         if (prefab == null)
         {
             Debug.LogError("PrefabInfo.ctor prefab == null");
             return;
         }
+
+        SetPrefab(prefab);
         Init(new MeshPoints(prefab));
 
         //PrefabInfoManager.Instance.AddPrefabInfo(this);
@@ -34,7 +38,7 @@ public class PrefabInfo:IComparable<PrefabInfo>
     internal void DestroyPrefab()
     {
         GameObject.DestroyImmediate(this.Prefab);
-        this.Prefab=Instances[0];
+        SetPrefab(Instances[0]);
         Instances.RemoveAt(0);
 
         MeshInstances[0].IsPrefab = true;
@@ -49,11 +53,17 @@ public class PrefabInfo:IComparable<PrefabInfo>
     private void Init(MeshPoints mf)
     {
         this.MeshFilter = mf;
-        this.Prefab = mf.gameObject;
+        SetPrefab(mf.gameObject);
         this.VertexCount = mf.vertexCount;
         this.Size = mf.size;
 
         AddInstanceComponent(this.Prefab, true);
+    }
+
+    private void SetPrefab(GameObject prefab)
+    {
+        this.Prefab = prefab;
+        this.PrefabName = prefab.name;
     }
 
     public List<MeshPrefabInstance> MeshInstances = new List<MeshPrefabInstance>();
@@ -70,19 +80,21 @@ public class PrefabInfo:IComparable<PrefabInfo>
     {
         if (Prefab == null)
         {
-            return $"NULL({Instances.Count})";
+            return $"NULL({PrefabName})({Instances.Count})";
         }
-        return $"{Prefab.name}({Instances.Count})";
+        return $"{PrefabName}({Instances.Count})";
     }
 
     public override string ToString()
     {
         if (this.MeshFilter == null)
         {
-            return "NULL";
+            return $"PrefabInfo_NULL_{GetTitle()}";
         }
         return $"{this.VertexCount}*{Instances.Count}={this.VertexCount* Instances.Count}|{this.MeshFilter.size}";
     }
+
+    public string PrefabName = "";
 
     public GameObject Prefab;
 
@@ -718,15 +730,15 @@ public static class PrefabInfoListHelper
         List<T> renderers = new List<T>();
         for (int i = 0; i < list.Count; i++)
         {
-            var prefabInfo = list[i];
+            PrefabInfo prefabInfo = list[i];
             if (prefabInfo == null)
             {
-                Debug.LogError($"[{i}] prefabInfo==null");
+                Debug.LogError($"[{i}/{list.Count}] prefabInfo==null");
                 continue;
             }
             if (prefabInfo.Prefab == null)
             {
-                Debug.LogError($"[{i}] prefabInfo.Prefab==null {prefabInfo}");
+                Debug.LogError($"[{i}/{list.Count}] prefabInfo.Prefab==null {prefabInfo}");
                 continue;
             }
             var prefabRenderer = prefabInfo.Prefab.GetComponent<T>();
