@@ -675,9 +675,22 @@ public class PipeFactory : SingletonBehaviour<PipeFactory>
 
     public void AddList(List<Transform> list,List<Transform> newList)
     {
-        foreach (var item in newList)
+        for (int i = 0; i < newList.Count; i++)
         {
+            Transform item = newList[i];
             if (item.GetComponent<MeshRenderer>() == null) continue;
+            MeshFilter mf = item.GetComponent<MeshFilter>();
+            if (mf == null)
+            {
+                Debug.LogError($"PipeFactory.AddList MeshFilter==null item:{item}");
+                continue;
+            }
+
+            if (mf.sharedMesh == null)
+            {
+                Debug.LogError($"PipeFactory.AddList sharedMesh==null item:{item}");
+                continue;
+            }
             list.Add(item);
         }
     }
@@ -803,16 +816,17 @@ public class PipeFactory : SingletonBehaviour<PipeFactory>
                     if (weldsDict.ContainsKey(item)) continue;
                     MeshFilter mf = item.GetComponent<MeshFilter>();
                     if (mf == null) continue;
-                    //Debug.LogError($"Other:{item.name} mf:{mf.name} mesh:{mf.sharedMesh.name} maxVertexCount:{maxVertexCount} vertexCount:{mf.sharedMesh.vertexCount}");
-
-                    if (item.GetComponent<MeshRenderer>() == null) continue;
-                    PipeWeldModel weldModel = item.GetComponent<PipeWeldModel>();
-                    if (weldModel != null) continue;
                     if (mf.sharedMesh == null)
                     {
                         Debug.LogError($"GetModelClass mf.sharedMesh == null mf:{mf}");
                         continue;
                     }
+                    //Debug.LogError($"Other:{item.name} mf:{mf.name} mesh:{mf.sharedMesh.name} maxVertexCount:{maxVertexCount} vertexCount:{mf.sharedMesh.vertexCount}");
+
+                    if (item.GetComponent<MeshRenderer>() == null) continue;
+                    PipeWeldModel weldModel = item.GetComponent<PipeWeldModel>();
+                    if (weldModel != null) continue;
+                    
                     int vertexCount = mf.sharedMesh.vertexCount;
                     if (vertexCount > maxVertexCount) continue;
 

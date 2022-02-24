@@ -489,22 +489,30 @@ public class MyEditorTools2
     {
         ClearComponents<MeshFilter>();
         ClearComponents<MeshRenderer>();
+        ClearComponents<MeshCollider>();
     }
 
-
-    [MenuItem("SceneTools/Clear/ClearMesh")]
+```
+[MenuItem("SceneTools/Clear/ClearMesh")]
     public static void ClearMesh()
     {
         foreach (var obj in Selection.gameObjects)
         {
-            var ids = obj.GetComponentsInChildren<MeshFilter>(true);
-            foreach (var id in ids)
+            var mfs = obj.GetComponentsInChildren<MeshFilter>(true);
+            foreach (var id in mfs)
             {
                 id.sharedMesh = null;
             }
-            Debug.Log($"ClearMesh       ids:{ids.Length}");
+            var mcs = obj.GetComponentsInChildren<MeshCollider>(true);
+            foreach (var id in mcs)
+            {
+                id.sharedMesh = null;
+            }
+            Debug.Log($"ClearMesh       mfs:{mfs.Length} mcs:{mcs.Length}");
         }
     }
+
+```
 
 
     [MenuItem("SceneTools/Clear/ClearScripts")]
