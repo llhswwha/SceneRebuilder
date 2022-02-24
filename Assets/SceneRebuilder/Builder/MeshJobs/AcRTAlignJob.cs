@@ -159,8 +159,10 @@ namespace MeshJobs
 
         public void ReplaceToObject(GameObject newGo,PrefabInfo prefab)
         {
-
+           
             GameObject go = mfTo.gameObject;
+
+            //Debug.LogError($"ReplaceToObject newGo:{newGo} prefab:{prefab} to:{go}");
 
             if (mfTo.name == "Z2 2")
             {

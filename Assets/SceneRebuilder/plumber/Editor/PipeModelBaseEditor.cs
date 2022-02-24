@@ -86,10 +86,10 @@ public class PipeModelBaseEditor : Editor
         {
             targetT.ClearGo();
         }
-        if (GUILayout.Button("ResultGo"))
-        {
-            EditorHelper.SelectObject(targetT.ResultGo);
-        }
+        //if (GUILayout.Button("ResultGo"))
+        //{
+        //    EditorHelper.SelectObject(targetT.ResultGo);
+        //}
         GUILayout.EndHorizontal();
 
         GUILayout.BeginHorizontal();

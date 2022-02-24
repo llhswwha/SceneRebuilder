@@ -785,7 +785,7 @@ public class PipeLineModel : PipeModelBase
         prefab.SetActive(true);
         prefab.name = this.name + "_New3";
         SetPrefabTransfrom(prefab);
-        prefab.GetComponent<MeshFilter>().sharedMesh = PipeFactory.Instance.GetPipeModelUnitPrefabMesh_Line();
+        MeshHelper.SetNewMesh(prefab, PipeFactory.Instance.GetPipeModelUnitPrefabMesh_Line());
         ResultGo = prefab;
         return prefab;
     }

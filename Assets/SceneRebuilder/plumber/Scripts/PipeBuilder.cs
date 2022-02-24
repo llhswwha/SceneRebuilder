@@ -272,7 +272,7 @@ public class PipeBuilder : MonoBehaviour
         for (int i = 0; i < PipeModels.Count; i++)
         {
             PipeModelBase go = PipeModels[i];
-            go.GetCheckResult(PipeModelCheckJob.Result[i]);
+            go.SetCheckResult(PipeModelCheckJob.Result[i]);
         }
         jobs.Dispose();
         PipeModelCheckJob.Result.Dispose();

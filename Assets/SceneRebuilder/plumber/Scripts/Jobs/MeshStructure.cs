@@ -26,12 +26,26 @@ public struct MeshStructure
 
     public MeshStructure(Mesh mesh)
     {
-        this.vertices = new NativeArray<Vector3>( mesh.vertices,Allocator.Persistent);
-        this.normals = new NativeArray<Vector3>(mesh.normals, Allocator.Persistent);
-        this.triangles = new NativeArray<int>(mesh.triangles, Allocator.Persistent);
-        this.vertexCount = mesh.vertexCount;
-        this.boundCenter = mesh.bounds.center;
-        isDisposed = false;
+        if (mesh == null)
+        {
+            Debug.LogError(" MeshStructure mesh == null");
+            this.vertices = new NativeArray<Vector3>(0, Allocator.Persistent);
+            this.normals = new NativeArray<Vector3>(0, Allocator.Persistent);
+            this.triangles = new NativeArray<int>(0, Allocator.Persistent);
+            this.vertexCount = 0;
+            this.boundCenter = Vector3.zero;
+            isDisposed = false;
+        }
+        else
+        {
+            this.vertices = new NativeArray<Vector3>(mesh.vertices, Allocator.Persistent);
+            this.normals = new NativeArray<Vector3>(mesh.normals, Allocator.Persistent);
+            this.triangles = new NativeArray<int>(mesh.triangles, Allocator.Persistent);
+            this.vertexCount = mesh.vertexCount;
+            this.boundCenter = mesh.bounds.center;
+            isDisposed = false;
+        }
+        
     }
 
     public void Dispose()

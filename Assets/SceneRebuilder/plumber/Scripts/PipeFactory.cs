@@ -230,6 +230,8 @@ public class PipeFactory : SingletonBehaviour<PipeFactory>
 
         GetResultInfoAfter();
         Debug.LogError($"OneKey target:{Target.name} time:{(DateTime.Now - start).ToString(timeFormat)}({getInfoTime.ToString(timeFormat)}+{generateTime.ToString(timeFormat)}+{prefabTime.ToString(timeFormat)}) arg:({generateArg}) Models:{newBuilder.PipeModels.Count + PipeOthers.Count + weldsCount}={newBuilder.PipeModels.Count}+{PipeOthers.Count}+{weldsCount}({lastWeldCount})) {pefabLog} TargetInfo:{TargetInfo} -> ResultInfo:{ResultInfo} ({ResultVertexCount / TargetVertexCount:P2},{SharedResultVertexCountCount / TargetVertexCount:P2})");
+
+        MeshHelper.RefreshCollderMesh();
     }
 
     public GameObject PrefabRoots = null;
@@ -806,6 +808,11 @@ public class PipeFactory : SingletonBehaviour<PipeFactory>
                     if (item.GetComponent<MeshRenderer>() == null) continue;
                     PipeWeldModel weldModel = item.GetComponent<PipeWeldModel>();
                     if (weldModel != null) continue;
+                    if (mf.sharedMesh == null)
+                    {
+                        Debug.LogError($"GetModelClass mf.sharedMesh == null mf:{mf}");
+                        continue;
+                    }
                     int vertexCount = mf.sharedMesh.vertexCount;
                     if (vertexCount > maxVertexCount) continue;
 

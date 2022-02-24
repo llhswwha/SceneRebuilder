@@ -14,6 +14,56 @@ using UnityEngine;
 
 public static class MeshHelper
 {
+    public static void SetNewMesh(GameObject go,Mesh mesh)
+    {
+        MeshFilter mf = go.GetComponent<MeshFilter>();
+        if(mf)
+            mf.sharedMesh = mesh;
+        MeshCollider mc = go.GetComponent<MeshCollider>();
+        if (mc)
+            mc.sharedMesh = mesh;
+    }
+
+    public static void RefreshCollderMesh()
+    {
+        DateTime start = DateTime.Now;
+        int count1 = 0;
+        int count2 = 0;
+        MeshCollider[] collders = GameObject.FindObjectsOfType<MeshCollider>();
+        for (int i = 0; i < collders.Length; i++)
+        {
+            MeshCollider collider = collders[i];
+            if (ProgressBarHelper.DisplayCancelableProgressBar("RefreshCollderMesh", i, collders.Length, collider))
+            {
+                break;
+            }
+            MeshFilter mf = collider.GetComponent<MeshFilter>();
+            if (mf == null)
+            {
+                count2++;
+                Debug.Log($"RefreshCollderMesh Error MeshFilter==null [{i}] count2:{count2} collder:{collider}");
+                MeshRenderer mr = collider.GetComponent<MeshRenderer>();
+                if (mr)
+                {
+                    GameObject.DestroyImmediate(mr);
+                }
+                GameObject.DestroyImmediate(collider);
+            }
+            else if (collider.sharedMesh != mf.sharedMesh)
+            {
+                count1++;
+                //collider.sharedMesh = mf.sharedMesh;
+                if (count1 < 10)
+                {
+                    Debug.Log($"RefreshCollderMesh Error collider.sharedMesh!= mf.sharedMesh [{i}] count2:{count2} collder:{collider}");
+                }
+
+            }
+        }
+        Debug.Log($"RefreshCollderMesh collders:{collders.Length} count:{count1} count2:{count2} time:{DateTime.Now - start}");
+        ProgressBarHelper.ClearProgressBar();
+    }
+
     public static void CopyTransformMesh(GameObject source, GameObject target)
     {
         CopyMeshComponents(source, target);
@@ -65,6 +115,12 @@ public static class MeshHelper
         MeshFilter meshFilter1 = source.GetComponent<MeshFilter>();
         MeshFilter meshFilter2 = target.AddMissingComponent<MeshFilter>();
         meshFilter2.sharedMesh = meshFilter1.sharedMesh;
+
+        MeshCollider meshCollider2 = target.GetComponent<MeshCollider>();
+        if (meshCollider2)
+        {
+            meshCollider2.sharedMesh= meshFilter1.sharedMesh;
+        }
     }
 
 

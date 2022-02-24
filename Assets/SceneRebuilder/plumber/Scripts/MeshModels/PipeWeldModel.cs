@@ -84,7 +84,7 @@ public class PipeWeldModel : PipeModelComponent
         prefab.transform.position = WeldData.start;
         prefab.transform.up = WeldData.direction;
 
-        prefab.AddMissingComponent<MeshFilter>().sharedMesh = PipeFactory.Instance.GetPipeModelUnitPrefabMesh_Weld(WeldData);
+        MeshHelper.SetNewMesh(prefab, PipeFactory.Instance.GetPipeModelUnitPrefabMesh_Weld(WeldData));
 
         MeshRenderer renderer = prefab.GetComponent<MeshRenderer>();
         if (renderer == null)

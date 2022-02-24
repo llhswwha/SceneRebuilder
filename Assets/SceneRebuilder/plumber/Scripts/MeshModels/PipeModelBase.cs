@@ -529,7 +529,7 @@ public class PipeModelBase : PipeModelComponent, IComparable<PipeModelBase>
 
     //public float RTDistance = 0;
 
-    public PipeModelCheckResult mcResult;
+
 
     public bool IsSpecial = false;
 
@@ -813,6 +813,8 @@ public class PipeModelBase : PipeModelComponent, IComparable<PipeModelBase>
         Debug.LogError("SetSaveData Not Override:"+ data);
     }
 
+    public PipeModelCheckResult mcResult;
+
     public void CheckResult()
     {
         mcResult.ObbDistance = OBBCollider.GetObbDistance(ResultGo,this.gameObject);
@@ -829,7 +831,7 @@ public class PipeModelBase : PipeModelComponent, IComparable<PipeModelBase>
         TransformHelper.ClearChildren(ResultGo);
     }
 
-    public void GetCheckResult(PipeModelCheckResult r)
+    public void SetCheckResult(PipeModelCheckResult r)
     {
         mcResult = r;
         if (mcResult.SizeDistance > 0.1f)

@@ -836,6 +836,8 @@ public class MyEditorTools2
     }
     #endregion
 
+    #region Renderers
+
     [MenuItem("SceneTools/Renderers/ShowSelection")]
     public static void ShowSelectionRenderers()
     {
@@ -886,6 +888,17 @@ public class MyEditorTools2
                 render.enabled = false;
             }
         }
+    }
+
+    #endregion
+
+    /// <summary>
+    /// 自动计算所有子对象包围盒
+    /// </summary>
+    [MenuItem("SceneTools/Collider/RefreshCollderMesh")]
+    public static void RefreshCollderMesh()
+    {
+        MeshHelper.RefreshCollderMesh();
     }
 
     /// <summary>

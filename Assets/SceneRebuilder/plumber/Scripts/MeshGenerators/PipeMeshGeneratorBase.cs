@@ -6,6 +6,99 @@ using UnityEngine.Rendering;
 public class PipeMeshGeneratorBase : BaseMeshGenerator
 {
 
+    public void SetMeshRenderers(Mesh mesh)
+    {
+        // add mesh filter if not present
+        MeshFilter currentMeshFilter = GetComponent<MeshFilter>();
+        MeshFilter mf = currentMeshFilter != null ? currentMeshFilter : gameObject.AddComponent<MeshFilter>();
+        //Mesh mesh = GeneratePipeMesh(ps);
+
+        if (flatShading)
+            mesh = MakeFlatShading(mesh);
+        if (makeDoubleSided)
+            mesh = MakeDoubleSided(mesh);
+        mf.mesh = mesh;
+
+        // add mesh renderer if not present
+        MeshRenderer currentMeshRenderer = GetComponent<MeshRenderer>();
+        //MeshRenderer mr = currentMeshRenderer != null ? currentMeshRenderer : gameObject.AddComponent<MeshRenderer>();
+        //mr.materials = new Material[1] { pipeMaterial };
+        if (currentMeshRenderer == null)
+        {
+            currentMeshRenderer = gameObject.AddComponent<MeshRenderer>();
+            currentMeshRenderer.materials = new Material[1] { pipeMaterial };
+        }
+
+        MeshCollider mc = GetComponent<MeshCollider>();
+        if (mc != null)
+        {
+            mc.sharedMesh = mesh;
+        }
+
+        //Debug.LogError($"vertexCount:{mesh.vertexCount} gameObject:{gameObject.name}");
+    }
+
+    Mesh MakeFlatShading(Mesh mesh)
+    {
+        // in order to achieve flat shading all vertices need to be
+        // duplicated, because in Unity normals are assigned to vertices
+        // and not to triangles.
+        List<Vector3> newVertices = new List<Vector3>();
+        List<int> newTriangles = new List<int>();
+        List<Vector3> newNormals = new List<Vector3>();
+
+        for (int i = 0; i < mesh.triangles.Length; i += 3)
+        {
+            // for each face we need to clone vertices and assign normals
+            int vertIdx1 = mesh.triangles[i];
+            int vertIdx2 = mesh.triangles[i + 1];
+            int vertIdx3 = mesh.triangles[i + 2];
+
+            newVertices.Add(mesh.vertices[vertIdx1]);
+            newVertices.Add(mesh.vertices[vertIdx2]);
+            newVertices.Add(mesh.vertices[vertIdx3]);
+
+            newTriangles.Add(newVertices.Count - 3);
+            newTriangles.Add(newVertices.Count - 2);
+            newTriangles.Add(newVertices.Count - 1);
+
+            Vector3 normal = Vector3.Cross(
+                mesh.vertices[vertIdx2] - mesh.vertices[vertIdx1],
+                mesh.vertices[vertIdx3] - mesh.vertices[vertIdx1]
+            ).normalized;
+            newNormals.Add(normal);
+            newNormals.Add(normal);
+            newNormals.Add(normal);
+        }
+
+        mesh.SetVertices(newVertices);
+        mesh.SetTriangles(newTriangles, 0);
+        mesh.SetNormals(newNormals);
+
+        return mesh;
+    }
+
+    Mesh MakeDoubleSided(Mesh mesh)
+    {
+        // duplicate all triangles with inverted normals so the mesh
+        // can be seen both from the outside and the inside
+        List<int> newTriangles = new List<int>(mesh.triangles);
+
+        for (int i = 0; i < mesh.triangles.Length; i += 3)
+        {
+            int vertIdx1 = mesh.triangles[i];
+            int vertIdx2 = mesh.triangles[i + 1];
+            int vertIdx3 = mesh.triangles[i + 2];
+
+            newTriangles.Add(vertIdx3);
+            newTriangles.Add(vertIdx2);
+            newTriangles.Add(vertIdx1);
+        }
+
+        mesh.SetTriangles(newTriangles, 0);
+
+        return mesh;
+    }
 
     public List<GameObject> pointsT = new List<GameObject>();
 

@@ -36,7 +36,7 @@ public class PipeFlangeModel : PipeReducerModel
         prefab.SetActive(true);
         prefab.name = this.name + "_New3";
         SetPrefabTransfrom(prefab);
-        prefab.AddMissingComponent<MeshFilter>().sharedMesh = PipeFactory.Instance.GetPipeModelUnitPrefabMesh_Flange();
+        MeshHelper.SetNewMesh(prefab, PipeFactory.Instance.GetPipeModelUnitPrefabMesh_Flange());
         ResultGo = prefab;
         return prefab;
     }

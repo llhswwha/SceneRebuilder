@@ -47,10 +47,10 @@ public class BoxMeshModelEditor : Editor
         {
             targetT.ClearDebugInfoGos();
         }
-        //if (GUILayout.Button("ClearGo"))
-        //{
-        //    targetT.ClearGo();
-        //}
+        if (GUILayout.Button("ClearGo"))
+        {
+            targetT.ClearGo();
+        }
         //if (GUILayout.Button("ResultGo"))
         //{
         //    EditorHelper.SelectObject(targetT.ResultGo);

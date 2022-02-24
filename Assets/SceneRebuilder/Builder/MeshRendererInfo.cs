@@ -189,6 +189,11 @@ public class MeshRendererInfo : MonoBehaviour,IComparable<MeshRendererInfo>
     public Vector3[] GetVertices()
     {
         if (this.meshFilter == null) return null;
+        if (this.meshFilter.sharedMesh == null)
+        {
+            Debug.LogError($"MeshRendererInfo.GetVertices this.meshFilter.sharedMesh == null object:{this.name}");
+            return new Vector3[0];
+        }
         return this.meshFilter.sharedMesh.vertices;
     }
 
