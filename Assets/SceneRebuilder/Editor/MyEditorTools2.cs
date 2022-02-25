@@ -492,8 +492,8 @@ public class MyEditorTools2
         ClearComponents<MeshCollider>();
     }
 
-```
-[MenuItem("SceneTools/Clear/ClearMesh")]
+
+    [MenuItem("SceneTools/Clear/ClearMesh")]
     public static void ClearMesh()
     {
         foreach (var obj in Selection.gameObjects)
@@ -512,8 +512,6 @@ public class MyEditorTools2
         }
     }
 
-```
-
 
     [MenuItem("SceneTools/Clear/ClearScripts")]
     public static void ClearScripts()
@@ -529,6 +527,28 @@ public class MyEditorTools2
         //    Debug.Log($"ClearScripts       ids:{ids.Length}");
         //}
     }
+
+    [MenuItem("SceneTools/Clear/ClearNavisModelRoot")]
+    public static void ClearNavisModelRoot()
+    {
+        ClearComponents<NavisModelRoot>();
+        ClearComponents<InitNavisFileInfoByModel>();
+    }
+
+    [MenuItem("SceneTools/Clear/ClearBuildingModelInfo")]
+    public static void ClearBuildingModelInfo()
+    {
+        ClearComponents<BuildingModelInfo>();
+        ClearComponents<BuildingModelInfoList>();
+    }
+
+    [MenuItem("SceneTools/Clear/ClearSubScenesAll")]
+    public static void ClearSubScenesAll()
+    {
+        ClearComponents<SubScene_Base>();
+        ClearComponents<SubScene_List>();
+    }
+
     #endregion
 
     #region Transform
@@ -547,6 +567,24 @@ public class MyEditorTools2
             var chid = p.transform.GetChild(i);
             var cloned = GameObject.Instantiate(chid.gameObject);
             cloned.transform.SetParent(go.transform);
+        }
+    }
+
+    [MenuItem("SceneTools/Transform/RemoveOtherBrothers")]
+    public static void RemoveOtherBrothers()
+    {
+        var go = Selection.activeGameObject;
+        var parent = go.transform.parent;
+        List<Transform> childrens = new List<Transform>();
+        for(int i = 0; i < parent.childCount; i++)
+        {
+            var child = parent.GetChild(i);
+            if (child.gameObject == go) continue;
+            childrens.Add(child);
+        }
+        foreach(var item in childrens)
+        {
+            GameObject.DestroyImmediate(item.gameObject);
         }
     }
 
@@ -899,6 +937,45 @@ public class MyEditorTools2
     }
 
     #endregion
+
+    /// <summary>
+    /// 自动计算所有子对象包围盒
+    /// </summary>
+    [MenuItem("SceneTools/Collider/ClearCollders")]
+    public static void ClearCollders()
+    {
+        ClearComponents<Collider>();
+    }
+
+    /// <summary>
+    /// 自动计算所有子对象包围盒
+    /// </summary>
+    [MenuItem("SceneTools/Collider/EnabledColliders")]
+    public static void EnabledColliders()
+    {
+        //ClearComponents<Collider>();
+        //TransformHelper.SetCollidersEnabled(Selection.gameObjects)
+        var cs = Selection.activeGameObject.GetComponentsInChildren<Collider>(true);
+        foreach (var item in cs)
+        {
+            item.enabled = true;
+        }
+    }
+
+    /// <summary>
+    /// 自动计算所有子对象包围盒
+    /// </summary>
+    [MenuItem("SceneTools/Collider/DisenabledColliders")]
+    public static void DisenabledColliders()
+    {
+        //ClearComponents<Collider>();
+        //TransformHelper.SetCollidersEnabled(Selection.gameObjects)
+        var cs = Selection.activeGameObject.GetComponentsInChildren<Collider>(true);
+        foreach (var item in cs)
+        {
+            item.enabled = false;
+        }
+    }
 
     /// <summary>
     /// 自动计算所有子对象包围盒

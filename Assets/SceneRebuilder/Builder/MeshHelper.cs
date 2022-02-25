@@ -14,6 +14,19 @@ using UnityEngine;
 
 public static class MeshHelper
 {
+    public static void RemoveMeshComponents(GameObject go)
+    {
+        MeshFilter mf = go.GetComponent<MeshFilter>();
+        if (mf)
+            GameObject.DestroyImmediate(mf);
+        Collider mc = go.GetComponent<Collider>();
+        if (mc)
+            GameObject.DestroyImmediate(mc);
+        MeshRenderer mr = go.GetComponent<MeshRenderer>();
+        if (mr)
+            GameObject.DestroyImmediate(mr);
+    }
+
     public static void SetNewMesh(GameObject go,Mesh mesh)
     {
         MeshFilter mf = go.GetComponent<MeshFilter>();
@@ -52,7 +65,7 @@ public static class MeshHelper
             else if (collider.sharedMesh != mf.sharedMesh)
             {
                 count1++;
-                //collider.sharedMesh = mf.sharedMesh;
+                collider.sharedMesh = mf.sharedMesh;
                 if (count1 < 10)
                 {
                     Debug.Log($"RefreshCollderMesh Error collider.sharedMesh!= mf.sharedMesh [{i}] count2:{count2} collder:{collider}");

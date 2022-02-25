@@ -430,7 +430,7 @@ public class BuildingModelInfo : SubSceneCreater
         Debug.LogError($"SwitchToCombined1 nodes:{nodes.Count} scenes:{scenes.Count}\t{(DateTime.Now-start).ToString()}");
     }
 
-    public GameObject ModelPrefab;
+    public string PrefabPath = null;
 
 #if UNITY_EDITOR
     public void EditorSavePrefab()
@@ -438,7 +438,7 @@ public class BuildingModelInfo : SubSceneCreater
         BuildingModelState state = this.GetState();
         if(state.CanLoadScenes)
         {
-            ModelPrefab = SubSceneManager.Instance.EditorSavePrefab(this.gameObject);
+            PrefabPath = SubSceneManager.Instance.EditorSavePrefabPath(this.gameObject);
         }
         else
         {
@@ -449,16 +449,17 @@ public class BuildingModelInfo : SubSceneCreater
 
     public void EditorLoadPrefab()
     {
-        if (ModelPrefab != null)
+        if (PrefabPath != null)
         {
-            GameObject prefabInstance = PrefabUtility.InstantiatePrefab(this.ModelPrefab,this.transform.parent) as GameObject;
+            GameObject go = AssetDatabase.LoadAssetAtPath<GameObject>(PrefabPath);
+            GameObject prefabInstance = PrefabUtility.InstantiatePrefab(go,this.transform.parent) as GameObject;
             if (prefabInstance == null)
             {
                 Debug.LogError("EditorLoadPrefab prefabInstance == null:"+this.name);
                 return;
             }
             BuildingModelInfo newInfo = prefabInstance.GetComponent<BuildingModelInfo>();
-            newInfo.ModelPrefab = this.ModelPrefab;
+            newInfo.PrefabPath = this.PrefabPath;
 
             prefabInstance.name = this.name;
             GameObject.DestroyImmediate(this.gameObject);
@@ -1033,6 +1034,12 @@ public class BuildingModelInfo : SubSceneCreater
 
     public void CreateTreesBSEx(bool isLod, Action<ProgressArg> progressChanged)
     {
+        BuildingModelInfo[] subModels = this.GetComponentsInChildren<BuildingModelInfo>(true);
+        if (subModels.Length > 1)
+        {
+            Debug.Log($"CreateTreesBSEx subModels.Length > 1 this:{this.name} subModels:{subModels.Length}");
+            return;
+        }
         AreaTreeManager.Instance.ClearCount();
 
         AreaTreeManager.Instance.IsByLOD = isLod;

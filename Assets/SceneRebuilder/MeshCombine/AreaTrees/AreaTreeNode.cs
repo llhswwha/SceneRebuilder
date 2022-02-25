@@ -34,7 +34,7 @@ public class AreaTreeNode : SubSceneCreater
             foreach(var renderer in Renderers)
             {
                 if (renderer == null) continue;
-                MeshRendererInfo info = MeshRendererInfo.GetInfo(renderer.gameObject,true);
+                MeshRendererInfo info = MeshRendererInfo.GetInfo(renderer.gameObject,false);
                 list.Add(info);
             }
         return list;
@@ -270,8 +270,8 @@ public class AreaTreeNode : SubSceneCreater
             //newRenderers.Add(render);
             var rId=RendererId.GetRId(render);
             MeshCollider collider = go.GetComponent<MeshCollider>();
-            if (collider)
-                collider.enabled = false;
+            //if (collider)
+            //    collider.enabled = false;
             //colliders.Add(collider);
             ids.Add(rId);
         }
@@ -430,7 +430,7 @@ public class AreaTreeNode : SubSceneCreater
             RendererId rId=render.GetComponent<RendererId>();
             if(rId!=null){
                 GameObject pGo=rId.SetParent();
-                if (pGo == null || pGo.name.Contains("_Renderers"))
+                if (pGo == null || pGo.name.Contains("_Renderers"))//
                 {
                     //Debug.LogWarning($"AreaTreeNode.RecoverParent pGo.name.Contains(_Renderers) pGo:{pGo} tree:{tree.name}");
                     if(parent!=null)
@@ -444,7 +444,10 @@ public class AreaTreeNode : SubSceneCreater
             }
             else{
                 //Transform parent = tree.Target.transform;
-                render.transform.SetParent(tree.transform);
+                if (parent != null)
+                    render.transform.SetParent(parent);
+                else 
+                    render.transform.SetParent(tree.transform);
             }
         }
         return flag;
@@ -556,6 +559,11 @@ public class AreaTreeNode : SubSceneCreater
         }
     }
 
+    public void DestroyBoundBox()
+    {
+        MeshHelper.RemoveMeshComponents(this.gameObject);
+    }
+
     [ContextMenu("UpdateCombined")]
     public void UpdateCombined()
     {
@@ -612,15 +620,16 @@ public class AreaTreeNode : SubSceneCreater
                 // {
                 //     collider.enabled = !isCombined;
                 // }
-                MeshCollider collider = r.GetComponent<MeshCollider>();
-                if (collider != null)
-                {
-                    collider.enabled = !isCombined;
-                }
-                else
-                {
-                    Debug.LogError("SwitchModel collider==null:" + r);
-                }
+
+                //MeshCollider collider = r.GetComponent<MeshCollider>();
+                //if (collider != null)
+                //{
+                //    collider.enabled = !isCombined;
+                //}
+                //else
+                //{
+                //    Debug.LogError("SwitchModel collider==null:" + r);
+                //}
             }
             catch (Exception ex)
             {
@@ -1029,31 +1038,40 @@ public class AreaTreeNode : SubSceneCreater
                 if (node == null) continue;
                 node.ShowNodes();
             }
+
+            if (renderersRoot)
+            {
+                renderersRoot.SetActive(true);
+            }
+
             if (CombinedRenderers == null)
             {
                 Debug.LogError("AreaTreeNode.ShowNodes CombinedRenderers==null ：" + this.name + "|" + tree);
             }
             else
             {
-                if (scene_combined == null)
+                if (combindResult != null)
                 {
-                    scene_combined = combindResult.GetComponent<SubScene_Base>();
-                }
-                if (scene_combined != null && scene_combined.IsLoaded)
-                {
-                    foreach (var render in CombinedRenderers)
+                    if (scene_combined == null)
                     {
-                        if (render == null)
+                        scene_combined = combindResult.GetComponent<SubScene_Base>();
+                    }
+                    if (scene_combined != null && scene_combined.IsLoaded)
+                    {
+                        foreach (var render in CombinedRenderers)
                         {
-                            Debug.LogError("AreaTreeNode.ShowNodes CombinedRenderers render==null ：" + this.name + "|" + tree);
-                            continue;
+                            if (render == null)
+                            {
+                                Debug.LogError("AreaTreeNode.ShowNodes CombinedRenderers render==null ：" + this.name + "|" + tree);
+                                continue;
+                            }
+                            if (render.gameObject == null)
+                            {
+                                Debug.LogError("AreaTreeNode.ShowNodes render.gameObject == null ：" + this.name + "|" + tree);
+                                continue;
+                            }
+                            render.gameObject.SetActive(true);
                         }
-                        if (render.gameObject == null)
-                        {
-                            Debug.LogError("AreaTreeNode.ShowNodes render.gameObject == null ：" + this.name + "|" + tree);
-                            continue;
-                        }
-                        render.gameObject.SetActive(true);
                     }
                 }
             }
@@ -1130,6 +1148,14 @@ public class AreaTreeNode : SubSceneCreater
                     render.gameObject.SetActive(false);
                 }
             }
+            if (renderersRoot)
+            {
+                renderersRoot.SetActive(false);
+            }
+
+            //MeshRenderer mr = this.GetComponent<MeshRenderer>();
+            //if(mr!=null)
+            //    mr.enabled = false;
         }
         catch (Exception ex)
         {

@@ -160,7 +160,8 @@ public class RendererId
         {
             NewId();
         }
-        parentId = GetId(this.transform.parent, level + 1);
+        var pid= GetId(this.transform.parent, level + 1);
+        SetPid(pid);
     }
 
     public void NewId()
@@ -172,7 +173,7 @@ public class RendererId
     {
         insId = 0;
         Id = "";
-        parentId = "";
+        SetPid("");
         Init();
     }
 
@@ -219,7 +220,13 @@ public class RendererId
         {
             Debug.LogError($"SetParentId oldP:{parentId} newP:{newP} Id:{Id} name:{this.name}");
         }
-        parentId = newP;
+        SetPid(newP);
+    }
+
+    public void SetPid(string pid)
+    {
+        //Debug.LogError($"RendererId SetPid old:{parentId} new:{pid}");
+        parentId = pid;
     }
 
     public bool IsParentChanged()
@@ -255,7 +262,7 @@ public class RendererId
     {
         if(string.IsNullOrEmpty(parentId))
         {
-            parentId=GetId(this.transform.parent,0);
+            SetPid(GetId(this.transform.parent, 0));
         }
         GameObject pGo=IdDictionary.GetGo(parentId);
         // Debug.LogError($"RendererId.GetParent name:{this.name} Id:{this.Id} parentId:{this.parentId} pGo:{pGo}");

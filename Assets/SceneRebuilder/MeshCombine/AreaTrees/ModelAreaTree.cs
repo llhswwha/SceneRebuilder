@@ -537,6 +537,17 @@ public class ModelAreaTree : SubSceneCreater
         GenerateMesh(null);
     }
 
+    [ContextMenu("DestroyBoundBox")]
+    public void DestroyBoundBox()
+    {
+        foreach (AreaTreeNode tn in TreeNodes)
+        {
+            if (tn == null) continue;
+            if (tn.gameObject == null) continue;
+            tn.DestroyBoundBox();
+        }
+    }
+
     public void GenerateMesh(Action<ProgressArg> progressChanged)
     {
          DateTime start=DateTime.Now;
@@ -708,7 +719,7 @@ public class ModelAreaTree : SubSceneCreater
         {
             node.ShowNodes();
         }
-        Debug.LogError($"ShowLeafNodes {(DateTime.Now-start).ToString()}");
+        Debug.LogError($"ShowLeafNodes {(DateTime.Now-start).ToString()} TreeLeafs:{TreeLeafs.Count} name:{this.name}");
     }
 
     [ContextMenu("HideLeafNodes")]
@@ -719,7 +730,7 @@ public class ModelAreaTree : SubSceneCreater
         {
             node.HideNodes();
         }
-        Debug.LogError($"HideLeafNodes {(DateTime.Now-start).ToString()}");
+        Debug.LogError($"HideLeafNodes {(DateTime.Now-start).ToString()} TreeLeafs:{TreeLeafs.Count} name:{this.name}");
     }
 
     [ContextMenu("DestoryNodes")]

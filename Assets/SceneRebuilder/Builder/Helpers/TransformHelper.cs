@@ -35,6 +35,16 @@ public static class TransformHelper
         }
     }
 
+    public static void SetCollidersEnabled<T>(GameObject[] objs,bool enbled) where T : Collider
+    {
+        foreach (var obj in objs)
+        {
+            //ClearComponents<T>(obj);
+            T com = obj.GetComponent<T>();
+            com.enabled = enbled;
+        }
+    }
+
     //public static void ClearComponents<T>(GameObject root) where T : Component
     //{
     //    T[] obbs = root.GetComponentsInChildren<T>(true);

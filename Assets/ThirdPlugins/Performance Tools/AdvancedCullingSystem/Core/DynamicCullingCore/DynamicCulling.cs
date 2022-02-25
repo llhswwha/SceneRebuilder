@@ -153,7 +153,7 @@ namespace AdvancedCullingSystem.DynamicCullingCore
             if(_startRenderers.Count==0){
                 _startRenderers=GameObject.FindObjectsOfType<MeshRenderer>().ToList();
             }
-            Debug.LogError("DynamicCulling.Awake FindObjectsOfType:"+(DateTime.Now-start).ToString());
+            Debug.LogError($"DynamicCulling.Awake FindObjectsOfType time:{(DateTime.Now - start)} _startRenderers:{_startRenderers.Count}");
             
             MeshRenderer[] renderersCopy = _startRenderers.Where(r => r != null).ToArray();
 
@@ -498,10 +498,27 @@ namespace AdvancedCullingSystem.DynamicCullingCore
             EnableUpdateInfo = value;
         }
 
+        private float timecount = 0;
+        private bool isCanLateUpdate = false;
+        public float DynamicCullingTimeInterval = 0;
+
 
         private void Update()
         {
-            if(EnableUpdateInfo)
+            float timecountT = 0;
+            if (DynamicCullingTimeInterval > 0 && timecount < DynamicCullingTimeInterval)
+            {
+                timecount += Time.deltaTime;
+                return;
+            }
+            else
+            {
+                timecountT = timecount;
+                timecount = 0;
+                isCanLateUpdate = true;
+            }
+
+            if (EnableUpdateInfo)
                 UpdateInfo1();
         }
 
@@ -710,7 +727,7 @@ namespace AdvancedCullingSystem.DynamicCullingCore
             enabled = false;
         }
 
-        public void SetObjectsLifetime(int value)
+        public void SetObjectsLifetime(float value)
         {
             _objectsLifetime = Mathf.Max(0.25f, value);
         }
@@ -780,6 +797,8 @@ namespace AdvancedCullingSystem.DynamicCullingCore
                     AddObjectForCulling(renderers[i],i);
         }
 
+        public bool isIncludeStatic = true;
+
         public void AddObjectForCulling(MeshRenderer renderer,int i)
         {
             if (renderer == null )
@@ -787,6 +806,11 @@ namespace AdvancedCullingSystem.DynamicCullingCore
 
             // if (!renderer.enabled)
             //     return;
+
+            if (isIncludeStatic == false && renderer.gameObject.isStatic)//add_cww
+            {
+                return;
+            }
 
             int id = renderer.GetInstanceID();
 

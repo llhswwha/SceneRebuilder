@@ -8,7 +8,7 @@ public class LODManagerEditorWindow : EditorWindow, IBaseEditorWindow
     [MenuItem("Window/Tools/LODManager")]
     public static void ShowWindow()
     {
-        BaseEditorWindow.ShowWindow<LODManagerEditorWindow>(700, 550, "LODManager");
+        BaseEditorWindow.ShowWindow<LODManagerEditorWindow>(800, 650, "LODManager");
     }
 
     public LODManager target;

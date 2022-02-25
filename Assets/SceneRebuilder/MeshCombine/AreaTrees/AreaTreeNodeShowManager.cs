@@ -86,6 +86,34 @@ public class AreaTreeNodeShowManager : MonoBehaviour
         }
     }
 
+    [ContextMenu("HideSmallNodes")]
+    public void HideSmallNodes()
+    {
+        if (HiddenTrees.Count == 0)
+        {
+            Init();
+        }
+        foreach (ModelAreaTree t in HiddenTrees)
+        {
+            if (t == null) continue;
+            t.HideLeafNodes();
+        }
+    }
+
+    [ContextMenu("ShowSmallNodes")]
+    public void ShowSmallNodes()
+    {
+        if (HiddenTrees.Count == 0)
+        {
+            Init();
+        }
+        foreach (ModelAreaTree t in HiddenTrees)
+        {
+            if (t == null) continue;
+            t.ShowLeafNodes();
+        }
+    }
+
     public void RegistHiddenTree(ModelAreaTree tree)
     {
         if (tree == null) return;
@@ -148,7 +176,9 @@ public class AreaTreeNodeShowManager : MonoBehaviour
         var ts=GameObject.FindObjectsOfType<ModelAreaTree>(true);
         foreach(ModelAreaTree t in ts)
         {
-            if(t.IsHidden && !HiddenTrees.Contains(t))
+            if (t == null) continue;
+            t.DestroyBoundBox();
+            if (t.IsHidden && !HiddenTrees.Contains(t))
             {
                 HiddenTrees.Add(t);
                 HiddenTreesVertexCount += t.VertexCount;
@@ -180,6 +210,8 @@ public class AreaTreeNodeShowManager : MonoBehaviour
                 }
                 
             }
+
+            RegistHiddenTree(t);
         }
 
         ShowSortedHiddenTrees();
@@ -190,14 +222,22 @@ public class AreaTreeNodeShowManager : MonoBehaviour
     [ContextMenu("InitCameras")]
     private void InitCameras()
     {
+        List<Camera> newCameras = new List<Camera>();
+        foreach(var c in cameras)
+        {
+            if (c == null) continue;
+            newCameras.Add(c);
+        }
+
         var cms=GameObject.FindObjectsOfType<Camera>();
         foreach(var cm in cms)
         {
-            if(!cameras.Contains(cm))
+            if(!newCameras.Contains(cm))
             {
-                cameras.Add(cm);
+                newCameras.Add(cm);
             }
         }
+        cameras = newCameras;
     }
 
     private void GetHiddenTreeLeafs(ModelAreaTree tree)

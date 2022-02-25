@@ -528,7 +528,7 @@ public class AreaTreeManager : SingletonBehaviour<AreaTreeManager>
         var bigSmallInfo = new BigSmallListInfo(target);
         //Debug.LogError($"CreateOne_BigSmall_Core bigSmallInfo:{bigSmallInfo}");
 
-        ProgressArg p1 = new ProgressArg("CreateOne_BigSmall_Core", 0,2, "SamllTree");
+        ProgressArg p1 = new ProgressArg("CreateOne_BigSmall_Core", 0,2, "SmallTree");
         if (progressChanged!=null)
         {
             progressChanged(p1);
@@ -536,7 +536,7 @@ public class AreaTreeManager : SingletonBehaviour<AreaTreeManager>
         ModelAreaTree tree2 = null;
         if (bigSmallInfo.smallModels.Count>0)
         {
-            tree2 = CreateTree(target, isCombine, "_SamllTree", bigSmallInfo.smallModels.ToArray(),p=>
+            tree2 = CreateTree(target, isCombine, "_SmallTree", bigSmallInfo.smallModels.ToArray(),p=>
             {
                 p1.AddSubProgress(p);
                 if (progressChanged != null)
@@ -545,6 +545,7 @@ public class AreaTreeManager : SingletonBehaviour<AreaTreeManager>
                 }
             });//动态显示模型的树
             tree2.IsHidden = true;
+
             if (isCombine)
             {
                 tree2.HideRenderers();
@@ -554,11 +555,11 @@ public class AreaTreeManager : SingletonBehaviour<AreaTreeManager>
                 tree2.MoveRenderers();
             }
             tree2.transform.SetParent(parent);
-
             tree2.DestroyNodeRender();
+            tree2.HideLeafNodes();
         }
 
-        ProgressArg p2 = new ProgressArg("CreateOne_BigSmall_Core",1, 2, "SamllTree");
+        ProgressArg p2 = new ProgressArg("CreateOne_BigSmall_Core",1, 2, "SmallTree");
         if (progressChanged != null)
         {
             progressChanged(p2);

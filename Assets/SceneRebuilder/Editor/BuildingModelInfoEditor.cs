@@ -103,7 +103,8 @@ public class BuildingModelInfoEditor : BaseFoldoutEditor<BuildingModelInfo>
         EditorGUILayout.EndHorizontal();
 
         EditorGUILayout.BeginHorizontal();
-        NewEnabledButton("2.CreateTree", buttonWidth, state.CanCreateTrees, btnStyle, info.CreateTreesBSEx);
+        NewEnabledButton("2.CreateTree", buttonWidth, state.CanCreateTrees, btnStyle, ()=> { AreaTreeManager.Instance.isCombine = false; info.CreateTreesBSEx(); });
+        NewEnabledButton("2.CreateTree(C)", buttonWidth, state.CanCreateTrees, btnStyle, () => { AreaTreeManager.Instance.isCombine = true; info.CreateTreesBSEx(); });
         NewEnabledButton("RemoveTrees", buttonWidth, state.CanRemoveTrees, btnStyle, info.ClearTrees);
         NewEnabledButton("CreateByLOD", buttonWidth, state.CanCreateTrees, btnStyle, info.CreateTreesByLOD);
         NewEnabledButton("CreateNoLOD", buttonWidth, state.CanCreateTrees, btnStyle, info.CreateTreesByLOD);
@@ -138,12 +139,12 @@ public class BuildingModelInfoEditor : BaseFoldoutEditor<BuildingModelInfo>
             info.EditorSavePrefab();
         });
 
-        if (NewEnabledButton("LoadPrefab", buttonWidth, info.ModelPrefab != null, btnStyle, info.EditorLoadPrefab))
-        {
-            return;
-        }
-        GUILayout.Label("ID:" + info.gameObject.GetInstanceID());
-        info.ModelPrefab = BaseEditorHelper.ObjectField(info.ModelPrefab);
+        //if (NewEnabledButton("LoadPrefab", buttonWidth, info.ModelPrefab != null, btnStyle, info.EditorLoadPrefab))
+        //{
+        //    return;
+        //}
+        //GUILayout.Label("ID:" + info.gameObject.GetInstanceID());
+        //info.ModelPrefab = BaseEditorHelper.ObjectField(info.ModelPrefab);
         EditorGUILayout.EndHorizontal();
 
         EditorGUILayout.BeginHorizontal();
