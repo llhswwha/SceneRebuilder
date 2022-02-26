@@ -176,4 +176,38 @@ public class DynamicCullingManage : SingletonBehaviour<DynamicCullingManage>
     //    MeshRenderer[] renderersT = ooo.GetComponentsInChildren<MeshRenderer>();
     //    dynamicCulling.AddObjectsForCulling(renderersT);
     //}
+
+    /// <summary>
+    /// 添加遮挡剔除对象列表
+    /// </summary>
+    public void AddObjectsForCulling(MeshRenderer[] renderers)
+    {
+        Debug.LogError($"AddObjectsForCulling renderers:{renderers.Length}");
+        dynamicCulling.AddObjectsForCulling(renderers);
+    }
+
+    public void AddObjectsForCullingCoroutine(MeshRenderer[] renderers)
+    {
+        Debug.LogError($"AddObjectsForCulling renderers:{renderers.Length}");
+        StartCoroutine(dynamicCulling.AddObjectsForCullingCoroutine(renderers));
+    }
+
+    public void RemoveObjects(MeshRenderer[] renderers)
+    {
+        Debug.LogError($"RemoveObjects renderersT:{renderers.Length}");
+        if (renderers == null)
+            return;
+
+        for (int i = 0; i < renderers.Length; i++)
+            if (renderers[i] != null)
+                dynamicCulling.RemoveObject(renderers[i]);
+    }
+
+    /// <summary>
+    /// 移除遮挡剔除列表中的一个对象
+    /// </summary>
+    public void RemoveObject(MeshRenderer rendererT)
+    {
+        dynamicCulling.RemoveObject(rendererT);
+    }
 }

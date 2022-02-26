@@ -333,10 +333,14 @@ public class ModelAreaTree : SubSceneCreater
         MeshRenderer[] renderers=GetTreeRendererers();
         if (renderers.Length == 0)
         {
-            //Debug.LogWarning($"CreateCells_Tree Start tree:{this.name} renderers:{renderers.Length} ");
+            Debug.LogWarning($"CreateCells_Tree Start tree:{this.name} renderers:{renderers.Length} ");
             return;
         }
-        Debug.Log($"CreateCells_Tree Start tree:{this.name} renderers:{renderers.Length} ");
+        else
+        {
+            Debug.Log($"CreateCells_Tree Start tree:{this.name} renderers:{renderers.Length} ");
+        }
+        
         foreach(var render in renderers){
             if(render==null)continue;
             render.enabled=true;
@@ -555,15 +559,30 @@ public class ModelAreaTree : SubSceneCreater
         MeshRenderer[] renderers = GetTreeRendererers();
         if (renderers.Length == 0)
         {
-            //Debug.LogWarning("GenerateMesh renderers:" + renderers.Length + "|tree:" + this.name);
+            Debug.LogWarning("GenerateMesh renderers:" + renderers.Length + "|tree:" + this.name);
             return;
         }
+        else
+        {
+            Debug.Log("GenerateMesh renderers:" + renderers.Length + "|tree:" + this.name);
+        }
+
+
 
         //ShowRenderers();
         AddColliders();
         CreateCells_TreeEx();
 
-        CombineMesh(progressChanged);
+
+        if (AreaTreeManager.Instance.isCombine)
+        {
+            CombineMesh(progressChanged);
+        }
+        else
+        {
+            MoveRenderers();
+        }
+
         CreateDictionary();
         foreach (var item in TreeNodes)
         {

@@ -931,7 +931,7 @@ public class MeshRendererInfoList:List<MeshRendererInfo>
 
     private void InitRenderers<T>(List<T> renderers, bool isForceUpdate = false) where T :Component
     {
-        Debug.Log($"InitRenderers_List renderers:{renderers.Count}");
+        //Debug.Log($"InitRenderers_List renderers:{renderers.Count}");
         for (int i = 0; i < renderers.Count; i++)
         {
             T renderer = renderers[i];

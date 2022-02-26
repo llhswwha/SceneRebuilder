@@ -7,6 +7,7 @@ using Unity.Mathematics;
 using Unity.Collections;
 using System;
 using AdvancedCullingSystem.StaticCullingCore;
+using System.Collections;
 
 namespace AdvancedCullingSystem.DynamicCullingCore
 {
@@ -795,6 +796,20 @@ namespace AdvancedCullingSystem.DynamicCullingCore
             for (int i = 0; i < renderers.Length; i++)
                 if (renderers[i] != null)
                     AddObjectForCulling(renderers[i],i);
+        }
+
+        public IEnumerator AddObjectsForCullingCoroutine(MeshRenderer[] renderers)
+        {
+            if (renderers != null)
+            {
+                for (int i = 0; i < renderers.Length; i++)
+                    if (renderers[i] != null)
+                    {
+                        AddObjectForCulling(renderers[i], i);
+                        yield return null;
+                    }
+            }
+            yield return null;
         }
 
         public bool isIncludeStatic = true;

@@ -956,6 +956,20 @@ public class MeshNode : MonoBehaviour,IComparable<MeshNode>
         assetPaths = paths;
         return paths;
     }
+
+    //public bool IsDebug = false;
+
+    public void OnEnable()
+    {
+        //if(IsDebug)
+            Debug.Log($"MeshNode.OnEnable {this.name}");
+    }
+
+    public void OnDisable()
+    {
+        //if (IsDebug)
+            Debug.Log($"MeshNode.OnEnable {this.name}");
+    }
 }
 
 

@@ -195,7 +195,7 @@ public static class AreaTreeHelper
     {
         InitCubePrefab();
 
-        Debug.Log($"CreateBoundsCube bounds:{bounds} name:{n} parent:{parent} prefabId:{prefabId} CubePrefabs:{CubePrefabs}");
+        //Debug.Log($"CreateBoundsCube bounds:{bounds} name:{n} parent:{parent} prefabId:{prefabId} CubePrefabs:{CubePrefabs}");
         GameObject prefab = null;
         if (CubePrefabs==null||CubePrefabs.Count==0 || prefabId>= CubePrefabs.Count || prefabId<0)
         {

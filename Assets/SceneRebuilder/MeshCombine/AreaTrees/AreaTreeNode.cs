@@ -280,7 +280,7 @@ public class AreaTreeNode : SubSceneCreater
 
     public List<RendererId> MoveRenderers()
     {
-        Debug.Log($"AreaTreeNode.MoveRenderers tree:{tree.name} node:{this.name}");
+        //Debug.Log($"AreaTreeNode.MoveRenderers tree:{tree.name} node:{this.name}");
 
         List<RendererId> ids=InitRenderers();
 
@@ -1075,6 +1075,8 @@ public class AreaTreeNode : SubSceneCreater
                     }
                 }
             }
+
+            DynamicCullingManage.Instance.AddObjectsForCulling(Renderers.ToArray());
         }
         catch (Exception ex)
         {
@@ -1152,6 +1154,8 @@ public class AreaTreeNode : SubSceneCreater
             {
                 renderersRoot.SetActive(false);
             }
+
+            DynamicCullingManage.Instance.RemoveObjects(Renderers.ToArray());
 
             //MeshRenderer mr = this.GetComponent<MeshRenderer>();
             //if(mr!=null)

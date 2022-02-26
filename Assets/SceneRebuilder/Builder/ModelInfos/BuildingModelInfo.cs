@@ -707,6 +707,7 @@ public class BuildingModelInfo : SubSceneCreater
             p1.AddSubProgress(p);
             DisplayProgressBar("InTree", progressChanged, p1);
         });
+        tree1.HideLeafNodes();
         if (tree1 != null)
         {
             ts.Add(tree1);
@@ -733,6 +734,7 @@ public class BuildingModelInfo : SubSceneCreater
             p3.AddSubProgress(p);
             DisplayProgressBar("OutTree1", progressChanged, p3);
         });
+        tree3.HideLeafNodes();
         if (tree3 != null)
         {
             ts.Add(tree3);
@@ -777,6 +779,7 @@ public class BuildingModelInfo : SubSceneCreater
             p1.AddSubProgress(p);
             DisplayProgressBar("InTree", progressChanged, p1);
         });
+        tree1.HideLeafNodes();
         if (tree1 != null)
         {
             ts.Add(tree1);
@@ -808,6 +811,7 @@ public class BuildingModelInfo : SubSceneCreater
             p3.AddSubProgress(p);
             DisplayProgressBar("OutTree1", progressChanged, p3);
         });
+        tree3.HideLeafNodes();
         if (tree3 != null)
         {
             ts.Add(tree3);
@@ -1177,7 +1181,6 @@ public class BuildingModelInfo : SubSceneCreater
         {
             tree1.nodeSetting = treeManager.nodeSetting;
         }
-            //tree1.GenerateTree();
 
         tree1.GenerateMesh(progressChanged);
 

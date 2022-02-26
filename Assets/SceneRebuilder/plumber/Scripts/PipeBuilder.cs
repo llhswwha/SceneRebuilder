@@ -38,6 +38,22 @@ public class PipeBuilder : MonoBehaviour
 
     public List<PipeModelBase> PipeModels = new List<PipeModelBase>();
 
+    public List<BaseMeshModel> GetAllMeshModels()
+    {
+        List<BaseMeshModel> models = new List<BaseMeshModel>();
+        foreach(var item in PipeModels)
+        {
+            if (item == null) continue;
+            models.Add(item);
+        }
+        foreach(var item in BoxModels)
+        {
+            if (item == null) continue;
+            models.Add(item);
+        }
+        return models;
+    }
+
     public List<PipeMeshGeneratorBase> PipeGenerators = new List<PipeMeshGeneratorBase>();
 
     public List<Transform> NewPipeList = new List<Transform>();
@@ -747,7 +763,7 @@ public class PipeBuilder : MonoBehaviour
             }
         }
 
-        foreach(PipeModelBase model in PipeModels)
+        foreach (var model in GetAllMeshModels())
         {
             if (model == null) continue;
             model.ClearGo();
