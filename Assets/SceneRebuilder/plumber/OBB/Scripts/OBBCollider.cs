@@ -39,6 +39,21 @@ public class OBBCollider : MonoBehaviour
         return oBB;
     }
 
+    public static GameObject ShowOBBBox(GameObject obj, bool isGetObbEx)
+    {
+        if (obj == null)
+        {
+            Debug.LogError("OBBCollider.ShowOBB obj == null");
+            return null;
+        }
+        OBBCollider oBB = GetOBB(obj);
+        if (oBB != null)
+        {
+            return oBB.ShowObbInfoEx(isGetObbEx);
+        }
+        return null;
+    }
+
     public static OBBCollider ShowOBBNotUpdate(GameObject obj, bool isGetObbEx)
     {
         OBBCollider oBB = obj.GetComponent<OBBCollider>();
@@ -137,6 +152,16 @@ public class OBBCollider : MonoBehaviour
         DrawWireCube();
 
         return true;
+    }
+
+    [ContextMenu("ShowObbInfoEx")]
+    public GameObject ShowObbInfoEx(bool isGetObbEx)
+    {
+        //ClearChildren();
+        ClearDebugInfoGos();
+        GetObb(isGetObbEx);
+        //if (GetObb(isGetObbEx) == null) return false ;
+        return ShowOBBBox();
     }
 
     //public void CreatePipe()
@@ -346,7 +371,7 @@ public class OBBCollider : MonoBehaviour
     public void ShowSharedMeshVertices()
     {
         MeshFilter meshFilter = this.GetComponent<MeshFilter>();
-        var vs = meshFilter.mesh.vertices;
+        var vs = meshFilter.sharedMesh.vertices;
         var count = vs.Length;
         for (int i = 0; i < count; i++)
         {
@@ -459,13 +484,27 @@ public class OBBCollider : MonoBehaviour
         go.name = parent.name + "_ObbBox";
         ////obbGo = go;
         go.transform.SetParent(parent);
+        //go.transform.SetParent(this.transform);
         //go.transform.localPosition=OBB.Center;
         go.transform.localPosition = Vector3.zero;
         go.transform.localScale = OBB.Extent * 2f;
 
+        var angle0 = Vector3.Angle(go.transform.right, OBB.Right);
+        Debug.Log($"CreateObbBox OBB.Right:{OBB.Right} right:{go.transform.right} angle0:{angle0}");
+
         go.transform.right = OBB.Right;
         var angle1 = Vector3.Angle(go.transform.up, OBB.Up);
-        go.transform.Rotate(Vector3.right, -angle1);
+        Debug.Log($"CreateObbBox OBB.Right:{OBB.Right} right:{go.transform.right} angle1:{angle1}");
+        if (angle1 < 90)
+        {
+            go.transform.Rotate(Vector3.right, -angle1);
+        }
+        else
+        {
+            //go.transform.Rotate(Vector3.right, angle1);
+            go.transform.Rotate(Vector3.right, 180 - angle1);
+        }
+
         //对齐轴方向
 
         go.transform.localPosition = OBB.Center;
@@ -474,7 +513,7 @@ public class OBBCollider : MonoBehaviour
     }
 
 
-    public void ShowOBBBox()
+    public GameObject ShowOBBBox()
     {
         GameObject go0 = CreateDebugInfoRoot("OBBCollider_OBBBox");
 
@@ -486,42 +525,41 @@ public class OBBCollider : MonoBehaviour
         go.transform.localPosition=Vector3.zero;
         go.transform.localScale=OBB.Extent*2f;
 
+        var angle0 = Vector3.Angle(go.transform.right, OBB.Right);
+        Debug.Log($"ShowOBBBox OBB.Right:{OBB.Right} right:{go.transform.right} angle0:{angle0}");
+
         go.transform.right=OBB.Right;
         var angle1=Vector3.Angle(go.transform.up,OBB.Up);
-        obbGo.transform.Rotate(Vector3.right,-angle1);
+        Debug.Log($"ShowOBBBox OBB.Right:{OBB.Right} right:{go.transform.right} angle1:{angle1}");
+        if (angle1 < 90)
+        {
+            go.transform.Rotate(Vector3.right, -angle1);
+        }
+        else
+        {
+            //go.transform.Rotate(Vector3.right, angle1);
+            go.transform.Rotate(Vector3.right, 180-angle1);
+        }
+
+        //go.transform.Rotate(Vector3.right, -angle1);
+
         //对齐轴方向
 
         go.transform.localPosition=OBB.Center;
         go.transform.SetParent(go0.transform);
+        //var p1 = this.transform.TransformPoint(OBB.Center);
+        //var center = p1;
+        //CreatePoint(center, "Center", go0.transform);
+        //CreatePoint(center + OBB.Right,"Right", go0.transform); ;
+        //CreatePoint(center + OBB.Up,"Up", go0.transform); ;
+        //CreatePoint(center + OBB.Forward,"Forward", go0.transform);
 
+        //Vector3 v1 = CreateLine(center, center + OBB.Right, "Center-Right", go0.transform);
+        //Vector3 v2 = CreateLine(center, center + OBB.Up, "Center-Up", go0.transform);
+        //Vector3 v3 = CreateLine(center, center + OBB.Forward, "Center-Forward", go0.transform);
 
-        var p1 = this.transform.TransformPoint(OBB.Center);
-
-        //CreatePoint(Vector3.zero,"Zero", go0.transform);
-        //var center = OBB.Center;
-        var center = p1;
-        CreatePoint(center, "Center", go0.transform);
-        CreatePoint(center + OBB.Right,"Right", go0.transform); ;
-        CreatePoint(center + OBB.Up,"Up", go0.transform); ;
-        CreatePoint(center + OBB.Forward,"Forward", go0.transform);
-
-        //Vector3 v1 = CreateLine(Vector3.zero,OBB.Right* AxixLength, "Zero-Right");
-        //Vector3 v2 = CreateLine(Vector3.zero,OBB.Up* AxixLength, "Zero-Up");
-        //Vector3 v3 = CreateLine(Vector3.zero,OBB.Forward* AxixLength, "Zero-Forward");
-
-        //Vector3 v1 = CreateLine(Vector3.zero, OBB.Right * OBB.Extent.x, "Zero-Right");
-        //Vector3 v2 = CreateLine(Vector3.zero, OBB.Up * OBB.Extent.y, "Zero-Up");
-        //Vector3 v3 = CreateLine(Vector3.zero, OBB.Forward * OBB.Extent.z, "Zero-Forward");
-
-        Vector3 v1 = CreateLine(center, center + OBB.Right, "Center-Right", go0.transform);
-        Vector3 v2 = CreateLine(center, center + OBB.Up, "Center-Up", go0.transform);
-        Vector3 v3 = CreateLine(center, center + OBB.Forward, "Center-Forward", go0.transform);
-
-        //Debug.Log("v1 dot v2:"+Vector3.Dot(v1,v2));
-        //Debug.Log("v1 dot v3:"+Vector3.Dot(v1,v3));
-        //Debug.Log("v2 dot v3:"+Vector3.Dot(v2,v3));
-
-        //ShowPipePoints();
+        //return go0;
+        return go;
     }
 
     public void ShowPipePoints()

@@ -51,6 +51,20 @@ public class BoxMeshModelEditor : Editor
         {
             targetT.ClearGo();
         }
+        if (GUILayout.Button("CheckResult"))
+        {
+            targetT.CheckResult();
+        }
+
+        if (GUILayout.Button("ShowTriangles"))
+        {
+            targetT.DebugShowTriangles();
+        }
+        if (GUILayout.Button("ShowSharedPoints"))
+        {
+            targetT.DebugShowSharedPoints();
+        }
+
         //if (GUILayout.Button("ResultGo"))
         //{
         //    EditorHelper.SelectObject(targetT.ResultGo);

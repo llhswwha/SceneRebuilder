@@ -75,7 +75,6 @@ public class PipeModelBase : PipeModelComponent, IComparable<PipeModelBase>
 
     public int sharedMinCount = 32;
 
-    public float minRepeatPointDistance = 0.00005f;
 
     public static GameObject CreateSubTestObj(string objName, Transform parent)
     {
@@ -94,25 +93,7 @@ public class PipeModelBase : PipeModelComponent, IComparable<PipeModelBase>
         meshTriangles.Dispose();
     }
 
-    public void DebugShowSharedPoints()
-    {
-        //ClearChildren();
-        ClearDebugInfoGos();
-        Mesh mesh = this.GetComponent<MeshFilter>().sharedMesh;
-        MeshTriangles meshTriangles = new MeshTriangles(mesh);
 
-        Debug.Log($"ShowSharedPoints mesh vertexCount:{mesh.vertexCount} triangles:{mesh.triangles.Length}");
-        //meshTriangles.ShowSharedPointsById(this.transform, PointScale, 10);
-
-        //meshTriangles.ShowSharedPointsByIdEx(this.transform, PointScale, 15,int.MaxValue, minRepeatPointDistance);
-        //meshTriangles.ShowSharedPointsByIdEx(this.transform, PointScale, 0, int.MaxValue, minRepeatPointDistance);
-        //meshTriangles.ShowSharedPointsByIdEx(this.transform, PointScale, 0,3, minRepeatPointDistance);
-
-        meshTriangles.ShowCirclesById(this.transform, PointScale, 0, 3, minRepeatPointDistance);
-        //meshTriangles.ShowSharedPointsByPoint(this.transform, PointScale, 10);
-        //meshTriangles.ShowSharedPointsByPointExEx(this.transform, PointScale, sharedMinCount, minRepeatPointDistance);
-        meshTriangles.Dispose();
-    }
 
     public void DebugShowPointGroups()
     {
@@ -128,31 +109,7 @@ public class PipeModelBase : PipeModelComponent, IComparable<PipeModelBase>
     }
 
 
-    public void DebugShowTriangles()
-    {
-        //ClearChildren();
-        ClearDebugInfoGos();
 
-        //Mesh mesh = this.GetComponent<MeshFilter>().sharedMesh;
-        //MeshTriangles meshTriangles = new MeshTriangles(mesh);
-
-
-        //Debug.Log($"GetElbowInfo mesh vertexCount:{mesh.vertexCount} triangles:{mesh.triangles.Length}");
-        //meshTriangles.ShowTriangles(this.transform, PointScale);
-
-        ////Debug.Log($"GetElbowInfo trialges:{meshTriangles.Count}");
-        ////for (int i = 0; i < meshTriangles.Count; i++)
-        ////{
-        ////    var t = meshTriangles.GetTriangle(i);
-
-        ////    Debug.Log($"GetElbowInfo[{i + 1}/{meshTriangles.Count}] trialge:{t}");
-        ////    GameObject sharedPoints1Obj = CreateSubTestObj($"trialge:{t}", this.transform);
-        ////    t.ShowTriangle(this.transform, sharedPoints1Obj.transform, PointScale);
-        ////}
-        //meshTriangles.Dispose();
-
-        MeshTriangles.DebugShowTriangles(this.gameObject, PointScale);
-    }
 
     [ContextMenu("ReplaceOld")]
     public void ReplaceOld()
@@ -229,7 +186,6 @@ public class PipeModelBase : PipeModelComponent, IComparable<PipeModelBase>
     }
 
 
-    public float PointScale = 0.001f;
 
     public List<PipeModelBase> ConnectedModels = new List<PipeModelBase>();
 
@@ -813,37 +769,7 @@ public class PipeModelBase : PipeModelComponent, IComparable<PipeModelBase>
         Debug.LogError("SetSaveData Not Override:"+ data);
     }
 
-    public PipeModelCheckResult mcResult;
-
-    public void CheckResult()
-    {
-        mcResult.ObbDistance = OBBCollider.GetObbDistance(ResultGo,this.gameObject);
-
-        mcResult.MeshDistance = MeshHelper.GetVertexDistanceEx(ResultGo,this.gameObject);
-        mcResult.SizeDistance = MeshHelper.GetSizeDistance(ResultGo, this.gameObject);
-        mcResult.RTDistance= OBBCollider.GetObbRTDistance(ResultGo, this.gameObject);
-
-        if (mcResult.SizeDistance > 0.1f)
-        {
-            IsGetInfoSuccess = false;
-        }
-
-        TransformHelper.ClearChildren(ResultGo);
-    }
-
-    public void SetCheckResult(PipeModelCheckResult r)
-    {
-        mcResult = r;
-        if (mcResult.SizeDistance > 0.1f)
-        {
-            IsGetInfoSuccess = false;
-        }
-    }
-
-    public void ClearCheckDistance()
-    {
-        mcResult = new PipeModelCheckResult();
-    }
+    
 
     //public void GetSizeDistance()
     //{
@@ -1014,21 +940,4 @@ public class PipeModelBase : PipeModelComponent, IComparable<PipeModelBase>
     }
 }
 
-public struct PipeModelCheckResult
-{
-    public float ObbDistance;
 
-    public float MeshDistance;
-
-    public float SizeDistance;
-
-    public float RTDistance;
-
-    public override string ToString()
-    {
-        float dis = SizeDistance + ObbDistance + MeshDistance;
-
-        //return $"{ObbDistance:F5}_{MeshDistance:F5}_{a}_{radius:00000}_{this.GetType().Name}_{this.VertexCount}";
-        return $"(s:{SizeDistance:F5}_[d:{dis:F5}]_o:{ObbDistance:F5}_r:{RTDistance:F5}_m:{MeshDistance:F5})";
-    }
-}

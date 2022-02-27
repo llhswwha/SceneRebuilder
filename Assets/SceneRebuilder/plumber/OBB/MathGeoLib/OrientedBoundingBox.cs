@@ -457,9 +457,10 @@ namespace MathGeoLib
         public static OrientedBoundingBox GetObb(Vector3[] vs, object name,bool isGetObbEx)
         {
             List<Vector3S> ps2 = OrientedBoundingBox.GetVerticesS(vs);
-            var axis = new Vector3S[3];
-            MathGeoLibNativeMethods.obb_optimal_enclosing(ps2.ToArray(), ps2.Count, out var center, out var extent, axis);
-            OrientedBoundingBox OBB = new OrientedBoundingBox(center, extent, axis[0], axis[1], axis[2]);
+            //var axis = new Vector3S[3];
+            //MathGeoLibNativeMethods.obb_optimal_enclosing(ps2.ToArray(), ps2.Count, out var center, out var extent, axis);
+            //OrientedBoundingBox OBB = new OrientedBoundingBox(center, extent, axis[0], axis[1], axis[2]);
+            var OBB = OrientedBoundingBox.BruteEnclosing(ps2.ToArray());
             if (OBB.IsInfinity())
             {
                 Debug.LogError($"GetModelInfo GetObb Error gameObject:{name} Extent:{OBB.Extent} ps_Last:{ps2.Last()}");

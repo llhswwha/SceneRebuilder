@@ -837,6 +837,8 @@ public class PipeFactory : SingletonBehaviour<PipeFactory>
 
                     if (vertexCount == 24)//Box 24VertexCount
                     {
+                        item.gameObject.SetActive(true);
+
                         BoxModels.Add(item);
                         
                         TotalBoxModelsVertexCount += vertexCount;

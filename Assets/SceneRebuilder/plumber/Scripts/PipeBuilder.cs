@@ -1756,6 +1756,7 @@ public class PipeBuilder : MonoBehaviour
             {
                 break;
             }
+            if (boxGo == null) continue;
             BoxMeshModel boxModel = boxGo.gameObject.AddMissingComponent<BoxMeshModel>();
             BoxModels.Add(boxModel);
             boxModel.GetModelInfo();

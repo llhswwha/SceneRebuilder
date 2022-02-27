@@ -27,6 +27,8 @@ public class BoxMeshModel : BaseMeshModel
         ObbCenter = this.transform.TransformPoint(OBB.Center);
 
         DistanceOfCenters = Vector3.Distance(MeshCenter, ObbCenter);
+
+        gameObject.SetActive(false);
     }
 
     private OrientedBoundingBox GetOBB()
@@ -57,8 +59,14 @@ public class BoxMeshModel : BaseMeshModel
         go.transform.transform.SetParent(this.transform.parent);
         ResultGo = go;
 
+        //GameObject go2 = OBBCollider.ShowOBBBox(this.gameObject, false);
+        //go2.transform.name = this.name + "OBBBox";
+        //go2.transform.transform.SetParent(this.transform.parent);
+
         BoxMeshGenerator generator = go.AddMissingComponent<BoxMeshGenerator>();
         generator.Target = this.gameObject;
+
+        CheckResult();
     }
 
     public void ReplaceModel()
@@ -70,5 +78,32 @@ public class BoxMeshModel : BaseMeshModel
         MeshHelper.CopyTransformMesh(go, this.gameObject);
 
         GameObject.DestroyImmediate(go);
+    }
+
+    public override void CheckResult()
+    {
+        //mcResult.ObbDistance = OBBCollider.GetObbDistance(ResultGo, this.gameObject);
+
+        //mcResult.MeshDistance = MeshHelper.GetVertexDistanceEx(ResultGo, this.gameObject);
+        //mcResult.SizeDistance = MeshHelper.GetSizeDistance(ResultGo, this.gameObject);
+        //mcResult.RTDistance = OBBCollider.GetObbRTDistance(ResultGo, this.gameObject);
+
+        //if (mcResult.SizeDistance > 0.1f)
+        //{
+        //    IsGetInfoSuccess = false;
+        //}
+
+        //TransformHelper.ClearChildren(ResultGo);
+
+        var meshDis= MeshHelper.GetVertexDistanceEx(ResultGo, this.gameObject);
+        if (meshDis > 0.00001)
+        {
+            Debug.LogError($"CheckResult Error meshDis:{meshDis} gameObject:{this.name}");
+        }
+        else
+        {
+            //Debug.Log($"CheckResult meshDis:{meshDis} gameObject:{this.name}");
+        }
+        
     }
 }
