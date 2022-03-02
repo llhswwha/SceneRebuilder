@@ -551,6 +551,15 @@ public class BuildingModelInfo : SubSceneCreater
         this.ShowRenderers();
     }
 
+    public void DestroyBoundBox()
+    {
+        UpdateTrees();
+        foreach (var t in GetTrees())
+        {
+            t.DestroyBoundBox();
+        }
+    }
+
     [ContextMenu("MoveRenderers")]
     public void MoveRenderers()
     {
@@ -1346,13 +1355,13 @@ public class BuildingModelInfo : SubSceneCreater
     public void HideDetail()
     {
         IsDetailVisible = false;
-        if(InPart)
-            InPart.SetActive(false);
-        if(OutPart1)
-            OutPart1.SetActive(false);
+        //if(InPart)
+        //    InPart.SetActive(false);
+        //if(OutPart1)
+        //    OutPart1.SetActive(false);
 
-        if(OutPart0)
-            OutPart0.SetActive(true);
+        //if(OutPart0)
+        //    OutPart0.SetActive(true);
     }
 
     [ContextMenu("ShowDetail")]

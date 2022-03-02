@@ -291,6 +291,16 @@ public class BuildingModelManager : SingletonBehaviour<BuildingModelManager>
         ClearTrees(Buildings);
     }
 
+    [ContextMenu("DestroyBox")]
+    public void DestroyBox()
+    {
+        UpdateBuildings();
+        foreach(var item in Buildings)
+        {
+            item.DestroyBoundBox();
+        }
+    }
+
     [ContextMenu("ClearTrees")]
     public void ClearTrees(List<BuildingModelInfo> buildings)
     {

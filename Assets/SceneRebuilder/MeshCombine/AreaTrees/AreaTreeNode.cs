@@ -597,6 +597,10 @@ public class AreaTreeNode : SubSceneCreater
         {
             return;
         }
+        if (combindResult == null)
+        {
+            return;
+        }
         //newRenderers=renderersRoot.GetComponentsInChildren<MeshRenderer>();
         for (int i = 0; i < Renderers.Count; i++)
         {
@@ -636,8 +640,8 @@ public class AreaTreeNode : SubSceneCreater
                 Debug.LogError($"SwitchModel Exception {ex}");
             }
         }
-
-        combindResult.SetActive(isCombined);
+        if(combindResult)
+            combindResult.SetActive(isCombined);
         SetRenderersRootActive(!isCombined);
     }
 
@@ -668,9 +672,10 @@ public class AreaTreeNode : SubSceneCreater
         {
             GameObject.DestroyImmediate(child.gameObject);
         }
-
-        GameObject.DestroyImmediate(combindResult);
-        GameObject.DestroyImmediate(renderersRoot);
+        if(combindResult)
+            GameObject.DestroyImmediate(combindResult);
+        if(renderersRoot)
+            GameObject.DestroyImmediate(renderersRoot);
     }
 
 
@@ -1075,8 +1080,6 @@ public class AreaTreeNode : SubSceneCreater
                     }
                 }
             }
-
-            DynamicCullingManage.Instance.AddObjectsForCulling(Renderers.ToArray());
         }
         catch (Exception ex)
         {
@@ -1154,8 +1157,6 @@ public class AreaTreeNode : SubSceneCreater
             {
                 renderersRoot.SetActive(false);
             }
-
-            DynamicCullingManage.Instance.RemoveObjects(Renderers.ToArray());
 
             //MeshRenderer mr = this.GetComponent<MeshRenderer>();
             //if(mr!=null)

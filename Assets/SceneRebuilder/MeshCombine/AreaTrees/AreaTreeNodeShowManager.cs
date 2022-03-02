@@ -52,12 +52,13 @@ public class AreaTreeNodeShowManager : MonoBehaviour
         //     GameObject.Destroy(Instance);
         // }
         //Instance = this;
+        Init();
     }
 
     void Start()
     {
        
-        Init();
+        //Init();
     }
 
     [ContextMenu("Init")]

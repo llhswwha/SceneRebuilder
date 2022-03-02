@@ -70,8 +70,16 @@ public class SceneRebuildManagerEditor : BaseFoldoutEditor<SceneRebuildManager>
         EditorGUILayout.EndHorizontal();
 
         EditorGUILayout.BeginHorizontal();
-        NewButton("2.CreateTrees", buttonWidth, true, item.CombineBuildings);
+        NewButton("2.CreateTrees", buttonWidth, true, ()=> {
+            AreaTreeManager.Instance.isCombine = false;
+            item.CombineBuildings();
+            });
+        NewButton("2.CreateTrees(C)", buttonWidth, true, () => {
+            AreaTreeManager.Instance.isCombine = true;
+            item.CombineBuildings();
+        });
         NewButton("RemoveTrees", buttonWidth, true, item.ClearTrees);
+        NewButton("DestroyBox", buttonWidth, true, item.DestroyBox);
         AreaTreeManager.Instance.isCombine = GUILayout.Toggle(AreaTreeManager.Instance.isCombine, "Combine");
         EditorGUILayout.EndHorizontal();
 

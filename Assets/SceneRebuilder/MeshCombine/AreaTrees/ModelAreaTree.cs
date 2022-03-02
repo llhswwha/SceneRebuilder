@@ -6,6 +6,10 @@ using System.Linq;
 
 public class ModelAreaTree : SubSceneCreater
 {
+    private void Awake()
+    {
+        DestroyBoundBox();
+    }
     public override string ToString()
     {
         return this.name;

@@ -13,4 +13,16 @@ public class BoundsBox : NoCombine
     //{
     //    Debug.LogError($"BoundsBox.OnDisable:{this.name}");
     //}
+
+    private void Awake()
+    {
+        if (this.transform.childCount == 0)
+        {
+            GameObject.DestroyImmediate(this.gameObject);
+        }
+        else
+        {
+            Debug.LogError($"BoundsBox name:{this.name}");
+        }
+    }
 }

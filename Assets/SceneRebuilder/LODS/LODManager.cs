@@ -81,6 +81,7 @@ public class LODManager : SingletonBehaviour<LODManager>
         GameObject goNew = new GameObject(go.name);
         goNew.transform.position = go.transform.position;
         goNew.transform.SetParent(go.transform.parent);
+        EditorHelper.UnpackPrefab(go);
         go.transform.SetParent(goNew.transform);
 
         LODGroup lODGroup = goNew.AddMissingComponent<LODGroup>();

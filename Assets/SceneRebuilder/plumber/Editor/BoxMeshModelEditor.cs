@@ -15,6 +15,10 @@ public class BoxMeshModelEditor : Editor
         {
             targetT.ShowOBB();
         }
+        if (GUILayout.Button("ClearInfo"))
+        {
+            targetT.ClearModelInfo();
+        }
 
         if (GUILayout.Button("GetInfo"))
         {
@@ -33,7 +37,9 @@ public class BoxMeshModelEditor : Editor
 
         if (GUILayout.Button("ReplaceModel"))
         {
-            targetT.ReplaceModel();
+            //targetT.ReplaceModel();
+
+            targetT.ReplaceOld();
         }
 
         GUILayout.EndHorizontal();
@@ -56,6 +62,14 @@ public class BoxMeshModelEditor : Editor
             targetT.CheckResult();
         }
 
+
+        //if (GUILayout.Button("ResultGo"))
+        //{
+        //    EditorHelper.SelectObject(targetT.ResultGo);
+        //}
+        GUILayout.EndHorizontal();
+
+        GUILayout.BeginHorizontal();
         if (GUILayout.Button("ShowTriangles"))
         {
             targetT.DebugShowTriangles();
@@ -65,10 +79,11 @@ public class BoxMeshModelEditor : Editor
             targetT.DebugShowSharedPoints();
         }
 
-        //if (GUILayout.Button("ResultGo"))
-        //{
-        //    EditorHelper.SelectObject(targetT.ResultGo);
-        //}
+        if (GUILayout.Button("ShowNormalPoints"))
+        {
+            targetT.DebugShowNormalPoints();
+        }
+
         GUILayout.EndHorizontal();
 
         base.OnInspectorGUI();

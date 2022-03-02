@@ -6,7 +6,8 @@ using UnityEngine;
 [Serializable]
 public class MeshData 
 {
-    public Mesh mesh;
+    //[NonSerialized]
+    //public Mesh mesh;
 
     public int triangleCount = 0;
 
@@ -81,7 +82,7 @@ public class MeshData
                     Debug.LogError("MeshData.cotr, ms == null," + msFilter);
                     return;
                 }
-                this.mesh = ms;
+                //this.mesh = ms;
                 this.size=ms.bounds.size;
                 triangleCount = ms.triangles.Length;
                 vertexCount = ms.vertexCount;
@@ -122,15 +123,15 @@ public class MeshData
         if (info != null)
         {
             childCount++;
-            Mesh ms = info.mesh;
-            if (ms != null)
-            {
-                triangleCount += ms.triangles.Length;
-                vertexCount += ms.vertexCount;
-                //vertexBufferCount += ms.vertexBufferCount;
-                //vertexAttributeCount += ms.vertexAttributeCount;
-            }
-            else
+            //Mesh ms = info.mesh;
+            //if (ms != null)
+            //{
+            //    triangleCount += ms.triangles.Length;
+            //    vertexCount += ms.vertexCount;
+            //    //vertexBufferCount += ms.vertexBufferCount;
+            //    //vertexAttributeCount += ms.vertexAttributeCount;
+            //}
+            //else
             {
                 //Debug.LogWarning("MeshData.Add ms==null:"+info);
 
@@ -269,7 +270,7 @@ public class MeshData
 
     public static int InvokeGetVertexCenterInfoCount=0;
 
-    public void GetVertexCenterInfo(bool isForce,Vector3 centerOffset,bool isWorld)
+    public void GetVertexCenterInfo(Vector3[] vertices,bool isForce,Vector3 centerOffset,bool isWorld)
     {
         this.IsWorld=isWorld;
         if(maxDis!=0 && isForce==false){
@@ -281,13 +282,13 @@ public class MeshData
 
         Vector3 sumP = Vector3.zero;
 
-        this.vertexCount = this.mesh.vertices.Length;
+        this.vertexCount = vertices.Length;
 
         ps=new List<Vector3>();
 
         if(t==null) t=_obj.transform;
         var vCount=this.vertexCount;
-        var vs=this.mesh.vertices;
+        var vs=vertices;
         for (int i = 0; i < vCount; i++)
         {
             Vector3 p = vs[i];

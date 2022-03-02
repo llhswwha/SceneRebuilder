@@ -396,6 +396,49 @@ public class MeshTriangles
         return sharedPointsById;
     }
 
+    public List<Key2List<string, MeshTriangle>> sharedPointsByNormal2 = null;
+
+    public List<Key2List<string, MeshTriangle>> FindSharedPointsByNormal2()
+    {
+        if (sharedPointsByNormal2 == null)
+        {
+            DictionaryList1ToN<string, MeshTriangle> sharedPoints = new DictionaryList1ToN<string, MeshTriangle>();
+            for (int i = 0; i < Triangles.Count; i++)
+            {
+                MeshTriangle t1 = Triangles[i];
+                var normal = t1.GetNormal();
+                string n = MeshHelper.Vector3ToString5(normal);
+                sharedPoints.AddItem(n, t1);
+            }
+            sharedPointsByNormal2 = sharedPoints.GetListSortByCount();
+        }
+
+        return sharedPointsByNormal2;
+    }
+
+    public List<Key2List<string, MeshPoint>> sharedPointsByNormal = null;
+
+    public List<Key2List<string, MeshPoint>> FindSharedPointsByNormal()
+    {
+        if (sharedPointsByNormal == null)
+        {
+            DictionaryList1ToN<string, MeshPoint> sharedPoints = new DictionaryList1ToN<string, MeshPoint>();
+            for (int i = 0; i < Triangles.Count; i++)
+            {
+                MeshTriangle t1 = Triangles[i];
+                var ps = t1.GetPoints();
+                foreach (var p in ps)
+                {
+                    string n = MeshHelper.Vector3ToString5(p.Normal);
+                    sharedPoints.AddItem(n, p);
+                }
+            }
+            sharedPointsByNormal = sharedPoints.GetListSortByCount();
+        }
+
+        return sharedPointsByNormal;
+    }
+
     public void ShowSharedPointsById(Transform root, float pointScale,int minCount)
     {
         List<Key2List<int, MeshTriangle>> sharedPoints1 = this.FindSharedPointsById();
@@ -421,21 +464,84 @@ public class MeshTriangles
         }
     }
 
-//    public void ShowPointGroups(Transform root, float pointScale, int minCount, int maxCount, float minDis)
-//    {
-//        /*
-//         * 1 找到空间中某点p10，有kdTree找到离他最近的n个点，判断这n个点到p的距离。将距离小于阈值r的点p12,p13,p14....放在类Q里
-//2 在 Q(p10) 里找到一点p12,重复1
+    //    public void ShowPointGroups(Transform root, float pointScale, int minCount, int maxCount, float minDis)
+    //    {
+    //        /*
+    //         * 1 找到空间中某点p10，有kdTree找到离他最近的n个点，判断这n个点到p的距离。将距离小于阈值r的点p12,p13,p14....放在类Q里
+    //2 在 Q(p10) 里找到一点p12,重复1
 
-//3 在 Q(p10,p12) 找到一点，重复1，找到p22,p23,p24....全部放进Q里
+    //3 在 Q(p10,p12) 找到一点，重复1，找到p22,p23,p24....全部放进Q里
 
-//4 当 Q 再也不能有新点加入了，则完成搜索了
-//————————————————
-//版权声明：本文为CSDN博主「hxxjxw」的原创文章，遵循CC 4.0 BY-SA版权协议，转载请附上原文出处链接及本声明。
-//原文链接：https://blog.csdn.net/hxxjxw/article/details/112689489
-//         */
+    //4 当 Q 再也不能有新点加入了，则完成搜索了
+    //————————————————
+    //版权声明：本文为CSDN博主「hxxjxw」的原创文章，遵循CC 4.0 BY-SA版权协议，转载请附上原文出处链接及本声明。
+    //原文链接：https://blog.csdn.net/hxxjxw/article/details/112689489
+    //         */
 
-//    }
+    //    }
+
+    public void ShowNormalPoints(Transform root, float pointScale, int minCount, int maxCount, float minDis)
+    {
+        var planes = this.GetPlaneListByNormal(minCount, minDis, root.name);
+        planes.Sort((a, b) => { return b.PointList.Count.CompareTo(a.PointList.Count); });
+        GameObject sharedPoints1Obj = CreateSubTestObj($"NormalPoints_({minCount}_{maxCount}):{planes.Count}", root);
+        int count = 0;
+        //sharedPoints1.Sort((a, b) => { return b.TriangleCount.CompareTo(a.TriangleCount); });
+        for (int i = 0; i < planes.Count; i++)
+        {
+            var plane = planes[i];
+            count++;
+            ShowNormalPoints(root, pointScale, sharedPoints1Obj, count, plane, true);
+        }
+        sharedPoints1Obj.name = $"sharedPoints(Id)_({minCount}_{maxCount}):{count}";
+    }
+
+    private void ShowNormalPoints(Transform root, float pointScale, GameObject sharedPoints1Obj, int id, MeshPlane plane, bool isShowCenter)
+    {
+        var pointId = plane.Normal;
+        //Debug.Log($"GetElbowInfo sharedPoints1[{i + 1}/{sharedPoints1.Count}] point:{pointId} trianlges:{triangles.Count}");
+        GameObject trianglesObj = CreateSubTestObj($"triangles[{id}]({plane.PointCount})_{plane.Key}_{MeshHelper.Vector3ToString(plane.Normal)}", sharedPoints1Obj.transform);
+
+        //SharedMeshTrianglesComponent triangleComponent = trianglesObj.AddComponent<SharedMeshTrianglesComponent>();
+
+        //for (int i1 = 0; i1 < plane.PointCount; i1++)
+        //{
+        //    var t = plane.PointList[i1];
+        //    GameObject objTriangle = t.ShowTriangle(root, trianglesObj.transform, pointScale);
+        //    objTriangle.name = $"triangle[{i1 + 1}]({t.Id})";
+        //}
+
+        for (int j = 0; j < plane.PointCount; j++)
+        {
+            MeshPoint p = plane.PointList[j];
+
+            TransformHelper.ShowLocalPoint(p.Point, pointScale, root, trianglesObj.transform).name = $"Point[{p.Id}]({MeshHelper.Vector3ToString(p.Point)})({MeshHelper.Vector3ToString(p.Normal)})";
+        }
+
+        //Vector3 point = mesh.vertices[pointId];
+        //TransformHelper.ShowLocalPoint(plane.Point, pointScale * 2, root, trianglesObj.transform).name = "Point";
+        if (isShowCenter)
+            TransformHelper.ShowLocalPoint(plane.Center, pointScale * 2, root, trianglesObj.transform).name = "Center";
+    }
+
+    public void ShowNormalPlanes(Transform root, float pointScale, int minCount, int maxCount, float minDis)
+    {
+        SharedMeshTrianglesList sharedPoints1 = this.GetSharedMeshTrianglesListByNormal(minCount, minDis, root.name);
+        sharedPoints1.SortByCount();
+        //Debug.Log($"ShowSharedMeshTrianglesList sharedPoints1:{sharedPoints1.Count}");
+        GameObject sharedPoints1Obj = CreateSubTestObj($"NormalPlanes(Id)_({minCount}_{maxCount}):{sharedPoints1.Count}", root);
+        int count = 0;
+        //sharedPoints1.Sort((a, b) => { return b.TriangleCount.CompareTo(a.TriangleCount); });
+        for (int i = 0; i < sharedPoints1.Count; i++)
+        {
+            SharedMeshTriangles plane = sharedPoints1[i];
+            var triangles = plane.GetAllTriangles();
+            //plane.GetLines();
+            count++;
+            ShowSharedMeshTrianglesList(root, pointScale, sharedPoints1Obj, count, plane, triangles, true);
+        }
+        sharedPoints1Obj.name = $"sharedPoints(Id)_({minCount}_{maxCount}):{count}";
+    }
 
     public void ShowCirclesById(Transform root, float pointScale, int minCount, int maxCount, float minDis)
     {
@@ -452,19 +558,6 @@ public class MeshTriangles
             //plane.GetLines();
             count++;
             ShowSharedMeshTrianglesList(root, pointScale, sharedPoints1Obj, count, plane, triangles, true);
-            //break;
-
-            //if (triangles.Count == 3)
-            //{
-            //}
-            //else if (triangles.Count == 6)
-            //{
-
-            //}
-            //else
-            //{
-
-            //}
         }
         sharedPoints1Obj.name = $"sharedPoints(Id)_({minCount}_{maxCount}):{count}";
     }
@@ -499,7 +592,7 @@ public class MeshTriangles
     {
         int pointId = plane.PointId;
         //Debug.Log($"GetElbowInfo sharedPoints1[{i + 1}/{sharedPoints1.Count}] point:{pointId} trianlges:{triangles.Count}");
-        GameObject trianglesObj = CreateSubTestObj($"triangles[{id}][id:{pointId}]({triangles.Count})_[{plane.MinRadius},{plane.Radius}]_{plane.IsCircle}_{plane.CircleCheckP}", sharedPoints1Obj.transform);
+        GameObject trianglesObj = CreateSubTestObj($"triangles[{id}][id:{pointId}]({triangles.Count})_[{plane.MinRadius},{plane.Radius}]_{plane.IsCircle}_{plane.CircleCheckP}_{MeshHelper.Vector3ToString(plane.Normal)}", sharedPoints1Obj.transform);
         SharedMeshTrianglesComponent triangleComponent=trianglesObj.AddComponent<SharedMeshTrianglesComponent>();
         triangleComponent.SetData(plane);
 
@@ -660,6 +753,68 @@ public class MeshTriangles
     public SharedMeshTrianglesList GetSharedMeshTrianglesListById()
     {
         return GetSharedMeshTrianglesListById(sharedMinCount, minRepeatPointDistance);
+    }
+    public MeshPlaneList GetPlaneListByNormal(int minCount, float minDis,string name)
+    {
+        MeshPlaneList trianglesList = new MeshPlaneList();
+        List<Key2List<string, MeshPoint>> sharedPoints1 = this.FindSharedPointsByNormal();
+        for (int i = 0; i < sharedPoints1.Count; i++)
+        {
+            string normal = sharedPoints1[i].Key;
+            var mpList = sharedPoints1[i].List;
+            //Vector3 point = mesh.vertices[pointId];
+            //Vector3 normal = mesh.normals[pointId];
+            if (mpList.Count >= minCount)
+            {
+                MeshPlane plane = new MeshPlane();
+                plane.Key = normal;
+                //plane.Normal = normal;
+                plane.AddPoints(mpList);
+                trianglesList.Add(plane);
+            }
+            //KeyPoints.Add(plane);
+        }
+
+        trianglesList.CombineByNormal(minDis, name);
+        //trianglesList.CombineSameCircle(minDis);
+
+        //if (trianglesList.Count < 2)
+        //{
+        //    Debug.LogError($"GetKeyPoints KeyPoints:{trianglesList.Count}");
+        //}
+
+        trianglesList.Sort();
+        return trianglesList;
+    }
+
+    public SharedMeshTrianglesList GetSharedMeshTrianglesListByNormal(int minCount, float minDis,string name)
+    {
+        SharedMeshTrianglesList trianglesList = new SharedMeshTrianglesList();
+        List<Key2List<string, MeshTriangle>> sharedPoints1 = this.FindSharedPointsByNormal2();
+        for (int i = 0; i < sharedPoints1.Count; i++)
+        {
+            string key = sharedPoints1[i].Key;
+            var triangles = sharedPoints1[i].List;
+            Vector3 point = Vector3.zero;
+            Vector3 normal = triangles[0].GetNormal();
+            if (triangles.Count >= minCount)
+            {
+                SharedMeshTriangles plane = new SharedMeshTriangles(0, point, normal, triangles,false);
+                trianglesList.Add(plane);
+            }
+            //KeyPoints.Add(plane);
+        }
+
+        trianglesList.CombineSameNormal(minDis, name);
+        //trianglesList.CombineSameCircle(minDis);
+
+        if (trianglesList.Count < 2)
+        {
+            Debug.LogError($"GetKeyPoints KeyPoints:{trianglesList.Count}");
+        }
+
+        trianglesList.Sort();
+        return trianglesList;
     }
 
     public SharedMeshTrianglesList GetSharedMeshTrianglesListById(int minCount, float minDis)

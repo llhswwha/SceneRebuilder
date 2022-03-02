@@ -19,7 +19,7 @@ public class MeshNode : MonoBehaviour,IComparable<MeshNode>
 
     public string GetVertexInfo()
     {
-        return $"v:{MeshHelper.GetVertexCountS(VertexCount)},r:{rendererCount}({sharedMeshInfos})";
+        return $"v:{MeshHelper.GetVertexCountS(VertexCount)},r:{rendererCount}({sharedMeshInfos})11";
     }
 
     public string GetName()
@@ -133,6 +133,16 @@ public class MeshNode : MonoBehaviour,IComparable<MeshNode>
         );
         this.GetSharedMeshList();
         ProgressBarHelper.ClearProgressBar();
+    }
+
+    public void RecoverParent()
+    {
+        foreach(var item in subMeshes)
+        {
+            if (item == null) continue;
+            item.transform.SetParent(this.transform);
+            item.RecoverParent();
+        }
     }
 
     public int VertexCount = 0;
@@ -383,11 +393,11 @@ public class MeshNode : MonoBehaviour,IComparable<MeshNode>
 
     public List<GameObject> vertextObjects = new List<GameObject>();
 
-    [ContextMenu("TestGetVertexCenterInfo")]
-    public void TestGetVertexCenterInfo()
-    {
-        GetVertexCenterInfo(true,true,centerOffset);
-    }
+    //[ContextMenu("TestGetVertexCenterInfo")]
+    //public void TestGetVertexCenterInfo()
+    //{
+    //    GetVertexCenterInfo(true,true,centerOffset);
+    //}
 
     public float normalPlaneScale=100;
 
@@ -725,7 +735,7 @@ public class MeshNode : MonoBehaviour,IComparable<MeshNode>
 
     public bool IsWorld=false;
 
-    public void GetVertexCenterInfo(bool showDebugDetails,bool isForce,Vector3 off)
+    public void GetVertexCenterInfo( bool showDebugDetails,bool isForce,Vector3 off)
     {
         this.centerOffset=off;
         
@@ -734,8 +744,8 @@ public class MeshNode : MonoBehaviour,IComparable<MeshNode>
             isInited = false;
             Init();
         }
-
-        meshData.GetVertexCenterInfo(isForce,off,IsWorld);
+        Vector3[] vertices = this.GetComponent<MeshFilter>().sharedMesh.vertices;
+        meshData.GetVertexCenterInfo(vertices,isForce, off,IsWorld);
 
         if(showDebugDetails)
         {
@@ -752,22 +762,22 @@ public class MeshNode : MonoBehaviour,IComparable<MeshNode>
         // }
     }
 
-    [ContextMenu("TestGetVertexCenterInfoEx")]
-    public void TestGetVertexCenterInfoEx()
-    {
-        GetVertexCenterInfoEx(true,true);
-    }
+    //[ContextMenu("TestGetVertexCenterInfoEx")]
+    //public void TestGetVertexCenterInfoEx()
+    //{
+    //    GetVertexCenterInfoEx(true,true);
+    //}
 
     public Vector3 centerOffset=Vector3.zero;
 
-    public void GetVertexCenterInfoEx(bool showDebugDetails,bool isForce=false)
+    public void GetVertexCenterInfoEx(Vector3[] vertices, bool showDebugDetails,bool isForce=false)
     {
         if (meshData==null || meshData.vertexCount == 0)
         {
             isInited = false;
             Init();
         }
-        meshData.GetVertexCenterInfo(isForce,centerOffset,IsWorld);
+        meshData.GetVertexCenterInfo(vertices,isForce, centerOffset,IsWorld);
 
         if(showDebugDetails)
         {
@@ -854,8 +864,9 @@ public class MeshNode : MonoBehaviour,IComparable<MeshNode>
 
     public void ShowVertexes()
     {
+        MeshFilter mf = this.GetComponent<MeshFilter>();
         RefreshInfo();
-        meshData.vertexCount=meshData.mesh.vertices.Length;
+        meshData.vertexCount= mf.sharedMesh.vertices.Length;
         if (meshData.vertexCount == 0)
         {
             isInited = false;
@@ -864,35 +875,11 @@ public class MeshNode : MonoBehaviour,IComparable<MeshNode>
         
         Debug.Log("ShowVertexes:"+ meshData.vertexCount);
         ClearVertexes();
-        var vs=meshData.mesh.vertices;
+        var vs= mf.sharedMesh.vertices;
 
         var vs2=MeshHelper.GetWorldVertexes(vs,this.transform);
         var gos=MeshHelper.ShowVertexes(vs2,pScale,this.transform);
         vertextObjects.AddRange(gos);
-
-        // var vcount=vs.Length;
-        // for (int i = 0; i < vcount; i++)
-        // {
-        //     Vector3 p = vs[i];
-        //     GameObject go = CreateLocalPoint(p, string.Format("[{0}]{1}", i, p));
-        //     //go.transform.parent = this.transform;
-        //     //go.transform.localScale = new Vector3(pScale, pScale, pScale);
-        //     //go.transform.localPosition = p;
-
-        //     //go.transform.parent = this.transform;
-        //     //go.transform.localScale = new Vector3(pScale, pScale, pScale);
-        //     //go.transform.position = transform.TransformPoint(p);
-        //     go.name = string.Format("[{0}]{1}", i, go.transform.position);
-        //     //go.transform.parent = this.transform;
-
-        //     //vertextObjects.Add(go);
-
-        //     TransformNode tn=go.AddComponent<TransformNode>();
-        //     tn.Init();
-        // }
-
-        // string freatures=meshData.GetInfo().GetFeatures();
-        // Debug.Log("freatures:"+ freatures);
     }
 
     public void ClearVertexes()
@@ -959,17 +946,17 @@ public class MeshNode : MonoBehaviour,IComparable<MeshNode>
 
     //public bool IsDebug = false;
 
-    public void OnEnable()
-    {
-        //if(IsDebug)
-            Debug.Log($"MeshNode.OnEnable {this.name}");
-    }
+    //public void OnEnable()
+    //{
+    //    //if(IsDebug)
+    //        Debug.Log($"MeshNode.OnEnable {this.name}");
+    //}
 
-    public void OnDisable()
-    {
-        //if (IsDebug)
-            Debug.Log($"MeshNode.OnEnable {this.name}");
-    }
+    //public void OnDisable()
+    //{
+    //    //if (IsDebug)
+    //        //Debug.Log($"MeshNode.OnEnable {this.name}");
+    //}
 }
 
 

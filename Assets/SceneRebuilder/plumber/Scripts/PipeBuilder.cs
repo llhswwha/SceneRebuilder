@@ -316,12 +316,18 @@ public class PipeBuilder : MonoBehaviour
             if (model == null) continue;
             model.ReplaceOld();
         }
+        for (int i = 0; i < BoxModels.Count; i++)
+        {
+            BoxMeshModel model = BoxModels[i];
+            if (model == null) continue;
+            model.ReplaceOld();
+        }
 
         //PipeModels.Clear();
 
         //PipeModels = newModels;
 
-        Debug.LogWarning($">>ReplaceOld time:{DateTime.Now - start}");
+        Debug.LogWarning($">>ReplaceOld time:{DateTime.Now - start} PipeModels:{PipeModels.Count} BoxModels:{BoxModels.Count}");
     }
 
     public void RendererPipesEx()

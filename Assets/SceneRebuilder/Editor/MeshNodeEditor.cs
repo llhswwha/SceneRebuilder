@@ -93,6 +93,10 @@ public class MeshNodeEditor : BaseFoldoutEditor<MeshNode>
         {
             MeshCombineHelper.CombineEx(new MeshCombineArg(item.gameObject), MeshCombineMode.OneMesh);
         }
+        if (GUILayout.Button("RecoverParent"))
+        {
+            item.RecoverParent();
+        }
         EditorGUILayout.EndHorizontal();
 
         EditorGUILayout.BeginHorizontal();
@@ -118,10 +122,10 @@ public class MeshNodeEditor : BaseFoldoutEditor<MeshNode>
         EditorGUILayout.BeginHorizontal();
 
         
-        if (GUILayout.Button("TestGetVertexCenterInfo"))
-        {
-            item.TestGetVertexCenterInfo();
-        }
+        //if (GUILayout.Button("TestGetVertexCenterInfo"))
+        //{
+        //    item.TestGetVertexCenterInfo();
+        //}
 
         if (GUILayout.Button("ShowLongShortDebugDetail"))
         {

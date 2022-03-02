@@ -24,6 +24,17 @@ public struct MeshTriangle
         return Points;
     }
 
+
+    public Vector3 GetNormal()
+    {
+        Vector3 normal = Vector3.zero;
+        normal += p1.Normal;
+        normal += p2.Normal;
+        normal += p3.Normal;
+        normal /= 3;
+        return normal;
+    }
+
     //public MeshTriangle()
     //{
     //    p1 = new MeshPoint();
@@ -116,7 +127,7 @@ public struct MeshTriangle
     public GameObject ShowTriangle(Transform root1, Transform root2, float pointScale)
     {
         var points = this.GetPoints();
-        GameObject objTriangle = new GameObject($"triangle");
+        GameObject objTriangle = new GameObject($"triangle({MeshHelper.Vector3ToString(this.GetNormal())})");
         objTriangle.transform.SetParent(root2);
         objTriangle.transform.localPosition = this.Center;
         //objTriangle.transform.localPosition = TestMeshOffset;
@@ -142,11 +153,12 @@ public struct MeshTriangle
 
             //objPoint.transform.SetParent(objTriangle.transform);
 
-            TransformHelper.ShowLocalPoint(p.Point, pointScale, root1, objTriangle.transform).name = $"Point[{p.Id}]({p.Point})";
+            TransformHelper.ShowLocalPoint(p.Point, pointScale, root1, objTriangle.transform).name = $"Point[{p.Id}]({MeshHelper.Vector3ToString(p.Point)})({MeshHelper.Vector3ToString(p.Normal)})";
         }
 
         return objTriangle;
     }
+
 
     internal float GetRadius(int pointId)
     {
@@ -388,6 +400,12 @@ public class MeshTriangleList:List< MeshTriangle >
     public void AddList(List<MeshTriangle> list)
     {
         this.AddRange(list);
+        posDict = null;
+    }
+
+    public void AddItem(MeshTriangle item)
+    {
+        this.Add(item);
         posDict = null;
     }
 

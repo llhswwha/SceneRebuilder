@@ -200,7 +200,9 @@ public static class AreaTreeHelper
         if (CubePrefabs==null||CubePrefabs.Count==0 || prefabId>= CubePrefabs.Count || prefabId<0)
         {
             prefab = GameObject.CreatePrimitive(PrimitiveType.Cube);
+            prefab.name = "BoundsCube_"+prefabId;
             prefab.SetActive(false);
+            CubePrefabs.Add(prefab);
         }
         else
         {

@@ -52,6 +52,16 @@ public class SceneRebuildManager : SingletonBehaviour<SceneRebuildManager>
         buildingModelManager.ClearTrees();//Model -> CombinedToTree
     }
 
+    [ContextMenu("ClearTrees")]
+    public void DestroyBox()
+    {
+        if (buildingModelManager == null)
+        {
+            buildingModelManager = BuildingModelManager.Instance;
+        }
+        buildingModelManager.DestroyBox();//Model -> CombinedToTree
+    }
+
     public List<BuildingModelInfo> GetBuildings()
     {
         if (buildingModelManager == null)

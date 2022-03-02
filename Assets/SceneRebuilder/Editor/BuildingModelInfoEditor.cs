@@ -106,6 +106,7 @@ public class BuildingModelInfoEditor : BaseFoldoutEditor<BuildingModelInfo>
         NewEnabledButton("2.CreateTree", buttonWidth, state.CanCreateTrees, btnStyle, ()=> { AreaTreeManager.Instance.isCombine = false; info.CreateTreesBSEx(); });
         NewEnabledButton("2.CreateTree(C)", buttonWidth, state.CanCreateTrees, btnStyle, () => { AreaTreeManager.Instance.isCombine = true; info.CreateTreesBSEx(); });
         NewEnabledButton("RemoveTrees", buttonWidth, state.CanRemoveTrees, btnStyle, info.ClearTrees);
+        NewEnabledButton("DestroyBox", buttonWidth, state.CanRemoveTrees, btnStyle, info.DestroyBoundBox);
         NewEnabledButton("CreateByLOD", buttonWidth, state.CanCreateTrees, btnStyle, info.CreateTreesByLOD);
         NewEnabledButton("CreateNoLOD", buttonWidth, state.CanCreateTrees, btnStyle, info.CreateTreesByLOD);
         AreaTreeManager.Instance.isCombine = GUILayout.Toggle(AreaTreeManager.Instance.isCombine, "Combine");

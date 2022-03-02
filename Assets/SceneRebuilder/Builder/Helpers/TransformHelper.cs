@@ -5,6 +5,17 @@ using UnityEngine;
 
 public static class TransformHelper
 {
+    public static string GetPath(Transform t)
+    {
+        string path = "";
+        while (t != null)
+        {
+            path = t.name + ">" + path;
+            t = t.parent;
+        }
+        return path;
+    }
+
     public static void ClearComponentGos<T>(GameObject obj) where T : Component
     {
         var ids = obj.GetComponentsInChildren<T>(true);
@@ -89,7 +100,7 @@ public static class TransformHelper
         return list;
     }
 
-    private static void GetMeshPointsNoLOD(Transform root, List<Transform> list)
+    public static void GetMeshPointsNoLOD(Transform root, List<Transform> list)
     {
         for (int i = 0; i < root.childCount; i++)
         {

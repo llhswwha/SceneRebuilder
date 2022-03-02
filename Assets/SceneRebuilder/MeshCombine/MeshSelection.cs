@@ -2,6 +2,8 @@
 using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
+using UnityEngine.InputSystem;
+//using Y_UIFramework;
 
 public class MeshSelection : MonoBehaviour
 {
@@ -9,10 +11,10 @@ public class MeshSelection : MonoBehaviour
     // Start is called before the first frame update
     void Start()
     {
-        if (camera == null)
-        {
-            camera = GameObject.FindObjectOfType<Camera>();
-        }
+        //if (camera == null)
+        //{
+        //    camera = GameObject.FindObjectOfType<Camera>();
+        //}
     }
 
     public Camera camera;
@@ -184,12 +186,18 @@ public class MeshSelection : MonoBehaviour
 
     private void HitTest(int count)
     {
-        Debug.Log("HitTest:" + count);
+        //if (IsClickUGUIorNGUI.Instance&&(IsClickUGUIorNGUI.Instance.isOverUI|| IsClickUGUIorNGUI.Instance.isClickedUI)) return;
+        //Debug.Log("HitTest:" + count);
         if (count > 2)
         {
             return;
         }
-        var ray = camera.ScreenPointToRay(Input.mousePosition);
+#if UNITY_INPUTSYSTEM
+         Vector3 mousePos = Mouse.current.position.ReadValue(); ;
+#else
+          Vector3 mousePos = Input.mousePosition;
+#endif
+        var ray = camera.ScreenPointToRay(mousePos);
         RaycastHit hit;
         if (Physics.Raycast(ray, out hit))
         {
@@ -264,17 +272,10 @@ public class MeshSelection : MonoBehaviour
                 }
                 else
                 {
-                    Debug.Log("Hit Renderer2 :" + lastRenderer);
-                    lastRendererMat = lastRenderer.material;
-                    lastRenderer.material = selectedMat;
+                    SelectBimModel(lastRenderer.transform);
                 }
-
-
-
-
                 //lastRendererMat = lastRenderer.material;
                 //lastRenderer.material = selectedMat;
-
                 //if (AreaTreeHelper.render2NodeDict.ContainsKey(lastRenderer))
                 //{
                 //    var treeNode = AreaTreeHelper.render2NodeDict[lastRenderer];
@@ -299,9 +300,59 @@ public class MeshSelection : MonoBehaviour
         }
     }
 
+    private void SelectBimModel(Transform rayModel)
+    {
+        //if (IsClickUGUIorNGUI.Instance && IsClickUGUIorNGUI.Instance.isOverUI) return;
+        ////if (DevSubsystemManage.Instance && DevSubsystemManage.Instance.RoamToggle.isOn) return;
+
+        //Action<ViewState> callback = stateT =>
+        //{
+        //    if (stateT == ViewState.设备定位)
+        //    {
+        //        Debug.Log("SelectBimModel :" + rayModel.name);
+        //        //lastRendererMat = lastRenderer.material;
+        //        //lastRenderer.material = selectedMat;
+        //        if (rayModel != null)
+        //        {
+        //            BIMModelInfo bimInfo=rayModel.GetComponent<BIMModelInfo>();
+        //            if (bimInfo!= null)
+        //            {
+        //                bimInfo.OnClick();
+        //            }else{
+        //                if(rayModel.name.Contains("Culling")&&rayModel.transform.parent!=null&&rayModel.transform.GetComponent<BIMModelInfo>()!=null)
+        //                {
+        //                    rayModel.transform.GetComponent<BIMModelInfo>().OnClick();
+        //                }
+        //            }                                             
+        //        }
+        //    }
+        //};
+        //MessageCenter.SendMsg(MsgType.ModuleToolbarMsg.TypeName, MsgType.ModuleToolbarMsg.GetCurrentState, callback);
+    }
+
+    private void ClearLastInfo()
+    {
+        //UIManager.GetInstance().CloseUIPanels(typeof(DeviceDocumentationbar).Name);
+    }
+    private void highlightObj(GameObject obj)
+    {
+        //if(obj!=null&&obj.activeInHierarchy)
+        //{
+        //    HightlightModuleBase.ClearHighlightOff();
+        //    HightlightModuleBase hightlightT = obj.AddMissingComponent<HightlightModuleBase>();
+        //    hightlightT.ConstantOn(Color.green);
+        //}
+    }
+
     public void Update()
     {
-        if(Input.GetMouseButtonUp(0)&&enableSelection)
+        bool mouseUp = false;
+#if UNITY_INPUTSYSTEM
+        mouseUp = Mouse.current.leftButton.wasReleasedThisFrame;
+#else
+        mouseUp =Input.GetMouseButtonUp(0);
+#endif
+        if (mouseUp && enableSelection)
         {
             if(camera==null){
                 camera=Camera.main;

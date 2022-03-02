@@ -489,27 +489,86 @@ public class OBBCollider : MonoBehaviour
         go.transform.localPosition = Vector3.zero;
         go.transform.localScale = OBB.Extent * 2f;
 
-        var angle0 = Vector3.Angle(go.transform.right, OBB.Right);
-        Debug.Log($"CreateObbBox OBB.Right:{OBB.Right} right:{go.transform.right} angle0:{angle0}");
-
-        go.transform.right = OBB.Right;
-        var angle1 = Vector3.Angle(go.transform.up, OBB.Up);
-        Debug.Log($"CreateObbBox OBB.Right:{OBB.Right} right:{go.transform.right} angle1:{angle1}");
-        if (angle1 < 90)
-        {
-            go.transform.Rotate(Vector3.right, -angle1);
-        }
-        else
-        {
-            //go.transform.Rotate(Vector3.right, angle1);
-            go.transform.Rotate(Vector3.right, 180 - angle1);
-        }
-
-        //对齐轴方向
+        SetRotation(go.transform, OBB, parent.name);
 
         go.transform.localPosition = OBB.Center;
         //go.transform.SetParent(go0.transform);
         return go;
+    }
+
+    public static float GetAngleOffset(float angle)
+    {
+        if (angle < 90)
+        {
+            return angle;
+        }
+        else if(angle < 180)
+        {
+            return 180 - angle;
+        }
+        else
+        {
+            return angle - 180;
+        }
+    }
+
+    private static void SetRotation(Transform t,OrientedBoundingBox OBB,string name)
+    {
+        var angleRight = Vector3.Angle(t.right, OBB.Right);
+        var angleUp = Vector3.Angle(t.up, OBB.Up);
+        var angleForward = Vector3.Angle(t.forward, OBB.Forward);
+        float sunAngle = GetAngleOffset(angleRight) + GetAngleOffset(angleUp) + GetAngleOffset(angleForward);
+
+        Debug.Log($"CreateObbBox1 gameObject:{name}| OBB.Up:{OBB.Up} right:{OBB.Right} Right:{angleRight} Up:{angleUp} Forward:{angleForward} sunAngle:{sunAngle}");
+
+        Quaternion qua1 = Quaternion.FromToRotation(t.right, OBB.Right);//两条法线之间的角度变化
+        t.rotation = qua1 * t.rotation;//旋转tempCenter，对齐两条法线
+
+
+        //t.right = OBB.Right;
+        //t.up = OBB.Up;
+        //t.forward = OBB.Forward;
+
+        angleRight = Vector3.Angle(t.right, OBB.Right);
+        angleUp = Vector3.Angle(t.up, OBB.Up);
+        angleForward = Vector3.Angle(t.forward, OBB.Forward);
+        sunAngle = GetAngleOffset(angleRight) + GetAngleOffset(angleUp) + GetAngleOffset(angleForward);
+        Debug.Log($"CreateObbBox2 gameObject:{name}| OBB.Up:{OBB.Up} right:{OBB.Right} Right:{angleRight} Up:{angleUp} Forward:{angleForward} sunAngle:{sunAngle}");
+
+        if (sunAngle > 0.3)
+        {
+
+            Quaternion qua2 = Quaternion.FromToRotation(t.up, OBB.Up);//两条法线之间的角度变化
+            t.rotation = qua2 * t.rotation;//旋转tempCenter，对齐两条法线
+
+            //t.Rotate(OBB.Up, -angle22, Space.World);
+
+            angleRight = Vector3.Angle(t.right, OBB.Right);
+            angleUp = Vector3.Angle(t.up, OBB.Up);
+            angleForward = Vector3.Angle(t.forward, OBB.Forward);
+            sunAngle = GetAngleOffset(angleRight) + GetAngleOffset(angleUp) + GetAngleOffset(angleForward);
+            Debug.Log($"CreateObbBox3 gameObject:{name}| OBB.Up:{OBB.Up} right:{OBB.Right} Right:{angleRight} Up:{angleUp} Forward:{angleForward} sunAngle:{sunAngle}");
+
+
+            if (sunAngle > 0.3)
+            {
+                Quaternion qua3 = Quaternion.FromToRotation(t.forward, OBB.Forward);//两条法线之间的角度变化
+                t.rotation = qua3 * t.rotation;//旋转tempCenter，对齐两条法线
+
+                angleRight = Vector3.Angle(t.right, OBB.Right);
+                angleUp = Vector3.Angle(t.up, OBB.Up);
+                angleForward = Vector3.Angle(t.forward, OBB.Forward);
+                sunAngle = GetAngleOffset(angleRight) + GetAngleOffset(angleUp) + GetAngleOffset(angleForward);
+                Debug.Log($"CreateObbBox4 gameObject:{name}| OBB.Up:{OBB.Up} right:{OBB.Right} Right:{angleRight} Up:{angleUp} Forward:{angleForward} sunAngle:{sunAngle}");
+            }
+        }
+
+
+        //t.Rotate(t.up, angle32);
+        //var angle42 = Vector3.Angle(t.up, OBB.Up);
+        //Debug.Log($"CreateObbBox OBB.Up:{OBB.Up} right:{t.right} angle42:{angle42} gameObject:{name}");
+
+        ////对齐轴方向
     }
 
 
@@ -525,23 +584,25 @@ public class OBBCollider : MonoBehaviour
         go.transform.localPosition=Vector3.zero;
         go.transform.localScale=OBB.Extent*2f;
 
-        var angle0 = Vector3.Angle(go.transform.right, OBB.Right);
-        Debug.Log($"ShowOBBBox OBB.Right:{OBB.Right} right:{go.transform.right} angle0:{angle0}");
+        //var angle0 = Vector3.Angle(go.transform.right, OBB.Right);
+        //Debug.Log($"ShowOBBBox OBB.Right:{OBB.Right} right:{go.transform.right} angle0:{angle0}");
 
-        go.transform.right=OBB.Right;
-        var angle1=Vector3.Angle(go.transform.up,OBB.Up);
-        Debug.Log($"ShowOBBBox OBB.Right:{OBB.Right} right:{go.transform.right} angle1:{angle1}");
-        if (angle1 < 90)
-        {
-            go.transform.Rotate(Vector3.right, -angle1);
-        }
-        else
-        {
-            //go.transform.Rotate(Vector3.right, angle1);
-            go.transform.Rotate(Vector3.right, 180-angle1);
-        }
+        //go.transform.right=OBB.Right;
+        //var angle1=Vector3.Angle(go.transform.up,OBB.Up);
+        //Debug.Log($"ShowOBBBox OBB.Right:{OBB.Right} right:{go.transform.right} angle1:{angle1}");
+        //if (angle1 < 90)
+        //{
+        //    go.transform.Rotate(Vector3.right, -angle1);
+        //}
+        //else
+        //{
+        //    //go.transform.Rotate(Vector3.right, angle1);
+        //    go.transform.Rotate(Vector3.right, 180-angle1);
+        //}
 
         //go.transform.Rotate(Vector3.right, -angle1);
+
+        SetRotation(go.transform, OBB, this.name);
 
         //对齐轴方向
 

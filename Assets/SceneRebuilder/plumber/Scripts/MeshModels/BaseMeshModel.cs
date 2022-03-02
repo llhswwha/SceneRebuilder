@@ -27,6 +27,26 @@ public class BaseMeshModel : MonoBehaviour
         meshTriangles.Dispose();
     }
 
+    public void DebugShowNormalPoints()
+    {
+        //ClearChildren();
+        ClearDebugInfoGos();
+        Mesh mesh = this.GetComponent<MeshFilter>().sharedMesh;
+        MeshTriangles meshTriangles = new MeshTriangles(mesh);
+
+        Debug.Log($"DebugShowNormalPoints mesh vertexCount:{mesh.vertexCount} triangles:{mesh.triangles.Length}");
+        //meshTriangles.ShowSharedPointsById(this.transform, PointScale, 10);
+
+        //meshTriangles.ShowSharedPointsByIdEx(this.transform, PointScale, 15,int.MaxValue, minRepeatPointDistance);
+        //meshTriangles.ShowSharedPointsByIdEx(this.transform, PointScale, 0, int.MaxValue, minRepeatPointDistance);
+        //meshTriangles.ShowSharedPointsByIdEx(this.transform, PointScale, 0,3, minRepeatPointDistance);
+
+        meshTriangles.ShowNormalPlanes(this.transform, PointScale, 0, 3, minRepeatPointDistance);
+        //meshTriangles.ShowSharedPointsByPoint(this.transform, PointScale, 10);
+        //meshTriangles.ShowSharedPointsByPointExEx(this.transform, PointScale, sharedMinCount, minRepeatPointDistance);
+        meshTriangles.Dispose();
+    }
+
 
     public float PointScale = 0.001f;
 
@@ -57,6 +77,73 @@ public class BaseMeshModel : MonoBehaviour
     }
 
     public GameObject ResultGo = null;
+
+    [ContextMenu("ReplaceOld")]
+    public void ReplaceOld()
+    {
+        BaseMeshModel model = this;
+        if (model == null) return;
+        GameObject newGo = model.ResultGo;
+        if (newGo == null)
+        {
+            model.ClearDebugInfoGos();
+            model.gameObject.SetActive(true);
+            Debug.LogWarning($"ReplaceOld newGo == null go:{model.name} IsGetInfoSuccess:{IsGetInfoSuccess}");
+            return;
+        }
+        if (newGo == model.gameObject)
+        {
+            return;
+        }
+
+        if (IsGetInfoSuccess == false)
+        {
+            Debug.LogWarning($"ReplaceOld IsGetInfoSuccess == false go:{model.name}");
+            GameObject.DestroyImmediate(newGo);
+            model.ClearDebugInfoGos();
+            model.gameObject.SetActive(true);
+            return;
+        }
+
+        //newGo.transform.SetParent(model.transform.parent);
+        //newGo.name = model.name;
+        //model.gameObject.SetActive(false);
+        //RemoveAllComponents();
+
+        MeshHelper.CopyTransformMesh(newGo, model.gameObject);
+        newGo.SetActive(false);
+        model.ResultGo = model.gameObject;
+
+        GameObject.DestroyImmediate(newGo);
+        model.ClearDebugInfoGos();
+        model.gameObject.SetActive(true);
+    }
+
+    public void RemoveAllComponents()
+    {
+        try
+        {
+            if (IsGetInfoSuccess == false) return;
+            ClearDebugInfoGos();
+            EditorHelper.RemoveAllComponents(this.gameObject, typeof(BaseMeshModel), typeof(RendererId));
+
+
+            if (gameObject != null)
+            {
+                gameObject.SetActive(true);
+            }
+            else
+            {
+                Debug.LogError($"RemoveAllComponents gameObject == null");
+            }
+        }
+        catch (System.Exception ex)
+        {
+
+            Debug.LogError($"RemoveAllComponents Exception ex:{ex} go:{this}");
+        }
+
+    }
 
     [ContextMenu("ClearGo")]
     public void ClearGo()

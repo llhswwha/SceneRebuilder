@@ -571,7 +571,8 @@ public class DictionaryList1ToN<T1,T2> : Dictionary<T1, List<T2>> //where T2 : c
             Key2Lists.Add(new Key2List<T1, T2>(key, list0));
         }
         var list = this[key];
-        list.Add(item);
+        if(!list.Contains(item))
+            list.Add(item);
 
         //if (item.ToString().Contains("SG0000-Undefined 102") || item.ToString().Contains("FD0000-Undefined 105"))
         //{
@@ -668,28 +669,28 @@ public class PositionDictionaryList<T> // where T : class
             return posListDict.GetItem(posT1);
         }
 
-        var posT2 = $"({pos.x.ToString("F6")},{pos.y.ToString("F6")},{pos.z.ToString("F6")})";
+        var posT2 = MeshHelper.Vector3ToString6(pos);
         if (posListDict2.ContainsKey(posT2))
         {
             listId = 2;
             return posListDict2.GetItem(posT2);
         }
 
-        var posT3 = $"({pos.x.ToString("F5")},{pos.y.ToString("F5")},{pos.z.ToString("F5")})";
+        var posT3 = MeshHelper.Vector3ToString5(pos);
         if (posListDict3.ContainsKey(posT3))
         {
             listId = 3;
             return posListDict3.GetItem(posT3);
         }
 
-        var posT4 = $"({pos.x.ToString("F4")},{pos.y.ToString("F4")},{pos.z.ToString("F4")})";
+        var posT4 = MeshHelper.Vector3ToString4(pos);
         if (posListDict4.ContainsKey(posT4))
         {
             listId = 4;
             return posListDict4.GetItem(posT4);
         }
 
-        var posT5 = $"({pos.x.ToString("F3")},{pos.y.ToString("F3")},{pos.z.ToString("F3")})";
+        var posT5 = MeshHelper.Vector3ToString3(pos);
         if (posListDict5.ContainsKey(posT5))
         {
             listId = 5;
@@ -708,7 +709,6 @@ public class PositionDictionaryList<T> // where T : class
             listId = 7;
             return posListDict7.GetItem(posT7);
         }
-
         listId = 0;
         return default(T);
     }

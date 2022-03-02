@@ -111,61 +111,7 @@ public class PipeModelBase : PipeModelComponent, IComparable<PipeModelBase>
 
 
 
-    [ContextMenu("ReplaceOld")]
-    public void ReplaceOld()
-    {
-        PipeModelBase model = this;
-        if (model == null) return;
-        GameObject newGo = model.ResultGo;
-        if (newGo == null)
-        {
-            model.ClearDebugInfoGos();
-            model.gameObject.SetActive(true);
-            Debug.LogWarning($"ReplaceOld newGo == null go:{model.name}");
-            return;
-        }
-        if (newGo == model.gameObject)
-        {
-            return;
-        }
-
-        if (IsGetInfoSuccess == false)
-        {
-            Debug.LogWarning($"ReplaceOld IsGetInfoSuccess == false go:{model.name}");
-            GameObject.DestroyImmediate(newGo);
-            //TransformHelper.ClearChildren(model.gameObject);
-            model.ClearDebugInfoGos();
-            model.gameObject.SetActive(true);
-            return;
-        }
-
-        //if (IsSaveMaterials)
-        //{
-        //    MeshRenderer mf1 = model.GetComponent<MeshRenderer>();
-        //    MeshRenderer mf2 = newGo.GetComponent<MeshRenderer>();
-        //    if (mf1 != null && mf2 != null)
-        //    {
-        //        mf2.sharedMaterials = mf1.sharedMaterials;
-        //    }
-        //}
-
-        //if (IsCopyComponents)
-        //{
-        //    EditorHelper.CopyAllComponents(model.gameObject, newGo, false, typeof(PipeModelBase));
-        //}
-
-        newGo.transform.SetParent(model.transform.parent);
-        newGo.name = model.name;
-        model.gameObject.SetActive(false);
-
-        //TransformHelper.ClearChildren(model.gameObject);
-        //ClearDebugInfoGos();
-        RemoveAllComponents();
-        //GameObject.DestroyImmediate(model.gameObject);
-
-        //PipeModelBase modelNew = newGo.GetComponent<PipeModelBase>();
-        //newModels.Add(modelNew);
-    }
+   
 
     public virtual string GetDictKey()
     {
@@ -177,13 +123,7 @@ public class PipeModelBase : PipeModelComponent, IComparable<PipeModelBase>
         return "";
     }
 
-    public void RemoveAllComponents()
-    {
-        if (IsGetInfoSuccess == false) return;
-        ClearDebugInfoGos();
-        EditorHelper.RemoveAllComponents(this.gameObject, typeof(PipeModelBase), typeof(RendererId));
-        gameObject.SetActive(true);
-    }
+
 
 
 

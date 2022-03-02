@@ -573,7 +573,7 @@ public class AcRigidTransform : MonoBehaviour {
     //     RTAlignOneCore(mfFrom,mfTo);
     // }
 
-    public static void RTAlign(MeshPoints mfFrom, MeshPoints mfTo)
+    public static bool RTAlign(MeshPoints mfFrom, MeshPoints mfTo)
     {
         DateTime start=DateTime.Now;
 
@@ -601,7 +601,7 @@ public class AcRigidTransform : MonoBehaviour {
         var vsTo=MeshHelper.GetWorldVertexes(mfTo);
         bool isFound=false;
         int tpsCount = tpsFrom.Length * tpsTo.Length;
-        Debug.LogError($"RTAlign tpsFrom:{tpsFrom.Length} tpsTo:{tpsTo.Length} tpsCount:{tpsCount}");
+        //Debug.LogError($"RTAlign tpsFrom:{tpsFrom.Length} tpsTo:{tpsTo.Length} tpsCount:{tpsCount}");
         for(int l=0;l<tpsFrom.Length;l++)
         {
             var tpFrom=tpsFrom[l];
@@ -634,19 +634,24 @@ public class AcRigidTransform : MonoBehaviour {
                 //Debug.Log($">>>RTAlignOneCore [{count}/{tpsCount}][{l}/{tpsFrom.Length},{k}/{tpsTo.Length}]\tdis:{dis},\tIsZero:{rt.IsZero},\tIsReflection:{rt.IsReflection}\n{rt.TransformationMatrix}");
                 if(dis==0)
                 {
-                    Debug.LogError($"RTAlignOneCore2 dis==0 Time:{(DateTime.Now-start).TotalMilliseconds}ms");
+                    //Debug.LogError($"RTAlignOneCore2 dis==0 Time:{(DateTime.Now-start).TotalMilliseconds}ms");
                     //acRigidTransform.ApplyTransform(t1);
                     
                     //AcRigidTransform.ApplyMatrix(matrix,tFrom);
                     rt.ApplyMatrix(tFrom, tTo);
                     var gos=MeshHelper.ShowVertexes(vsNew,0.005f,tFrom);//0.1,0.005
                     isFound=true;
-                    return;
+                    break;
                 }
+            }
+
+            if (isFound)
+            {
+                break;
             }
             //break;
         }
-        ProgressBarHelper.ClearProgressBar();
+        
 
         if (isFound==false){
             var vsNew=minRT.ApplyPoints(vsFrom);
@@ -659,7 +664,17 @@ public class AcRigidTransform : MonoBehaviour {
         //     minRT.ApplyMatrix(tFrom);
         // }
 
-         Debug.LogError($"RTAlignOneCore Count:{count},Time:{(DateTime.Now-start).TotalMilliseconds:F1}ms,minDis:{minDis}");
+        ProgressBarHelper.ClearProgressBar();
+        if (isFound)
+        {
+            Debug.Log($"RTAlignOneCore Count:{count},Time:{(DateTime.Now - start).TotalMilliseconds:F1}ms,minDis:{minDis} isFound:{isFound}");
+        }
+        else
+        {
+            Debug.LogError($"RTAlignOneCore Count:{count},Time:{(DateTime.Now - start).TotalMilliseconds:F1}ms,minDis:{minDis} isFound:{isFound}");
+        }
+        
+        return isFound;
     }
 
     public static AcRigidTransform acRigidTransform;

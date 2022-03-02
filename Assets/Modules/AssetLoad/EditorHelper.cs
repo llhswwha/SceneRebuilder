@@ -856,7 +856,15 @@ public static class EditorHelper
         }
         else
         {
-            return SceneManager.GetSceneByBuildIndex(arg.index);
+            Scene scene= SceneManager.GetSceneByBuildIndex(arg.index);
+#if UNITY_EDITOR
+            Debug.Log($"GetSceneByBuildIndex [arg:{arg}] scene:{scene.name}");
+            if (arg.name != scene.name)
+            {
+                Debug.LogError($"GetSceneByBuildIndex Error [arg:{arg.name}] scene:{scene.name}");
+            }
+#endif
+            return scene;
         }
     }
 

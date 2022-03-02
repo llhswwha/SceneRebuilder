@@ -47,7 +47,7 @@ public class SharedMeshTriangles : IComparable<SharedMeshTriangles>
 
     }
 
-    public SharedMeshTriangles(int id, Vector3 p, Vector3 normal, List<MeshTriangle> ts)
+    public SharedMeshTriangles(int id, Vector3 p, Vector3 normal, List<MeshTriangle> ts,bool isCircle=true)
     {
         //Debug.Log($"SharedMeshTriangles.ctor id:{id} ts:{ts.Count}");
         this.Center = Vector3.zero;
@@ -65,7 +65,7 @@ public class SharedMeshTriangles : IComparable<SharedMeshTriangles>
 
         TriangleCount = this.AllTriangles.Count;
 
-        GetInfo();
+        GetInfo(isCircle);
     }
 
 
@@ -95,36 +95,41 @@ public class SharedMeshTriangles : IComparable<SharedMeshTriangles>
 
     public static float IgnoreMinRadius = 0.0002f;
 
-    public void GetInfo()
+    public void GetInfo(bool isCirlce=true)
     {
         //Center = Triangles.GetCenter(PointId);
         Center = AllTriangles.GetCenter();
         //Radius= Triangles.GetRadius(PointId);
-        CircleCheckP = Triangles.GetCircleCheckP(PointId);
-        
 
-        //if (IsCircle)
-        //{
-        //    Radius = Triangles.GetAvgRadius1(PointId);
-        //}
-        //else
-        //{
-        //    Radius = Triangles.GetAvgRadius2(PointId);
-        //}
-
-        var minMaxR= AllTriangles.GetMinMaxRadius(IgnoreMinRadius, Center);
+        if (isCirlce)
+        {
+            CircleCheckP = Triangles.GetCircleCheckP(PointId);
 
 
-        MinRadius = minMaxR[0];
-        Radius = minMaxR[1];
+            //if (IsCircle)
+            //{
+            //    Radius = Triangles.GetAvgRadius1(PointId);
+            //}
+            //else
+            //{
+            //    Radius = Triangles.GetAvgRadius2(PointId);
+            //}
 
-        //Radius = Triangles.GetRadius2(PointId);
+            var minMaxR = AllTriangles.GetMinMaxRadius(IgnoreMinRadius, Center);
 
-        DistanceToCenter = Vector3.Distance(Point, Center);
 
-        //IsCircle = CircleCheckP <= CircleInfo.IsCircleMaxP || DistanceToCenter< CircleInfo.MinDistanceToCenter;
-        //IsCircle = CircleCheckP <= CircleInfo.IsCircleMaxP || DistanceToCenter < CircleInfo.MinDistanceToCenter;
-        IsCircle =  DistanceToCenter < CircleInfo.MinDistanceToCenter;
+            MinRadius = minMaxR[0];
+            Radius = minMaxR[1];
+
+            //Radius = Triangles.GetRadius2(PointId);
+
+            DistanceToCenter = Vector3.Distance(Point, Center);
+
+            //IsCircle = CircleCheckP <= CircleInfo.IsCircleMaxP || DistanceToCenter< CircleInfo.MinDistanceToCenter;
+            //IsCircle = CircleCheckP <= CircleInfo.IsCircleMaxP || DistanceToCenter < CircleInfo.MinDistanceToCenter;
+            IsCircle = DistanceToCenter < CircleInfo.MinDistanceToCenter;
+        }
+
     }
 
     public List<Vector3> points;
@@ -206,7 +211,16 @@ public class SharedMeshTriangles : IComparable<SharedMeshTriangles>
     public void AddOtherTriangles(List<MeshTriangle> list)
     {
         points = null;
-        this.AllTriangles.AddList(list);
+
+        foreach(var item in list)
+        {
+            if (!this.AllTriangles.Contains(item))
+            {
+                //this.AllTriangles.Add(item);
+                this.AllTriangles.AddItem(item);
+            }
+        }
+        //this.AllTriangles.AddList(list);
 
         TriangleCount = this.AllTriangles.Count;
     }
@@ -755,5 +769,103 @@ public class SharedMeshTrianglesList : List<SharedMeshTriangles>
         }
 
         return teePlane2;
+    }
+
+    internal SharedMeshTriangles GetPlaneByNormal(Vector3 vector3,float minZero)
+    {
+        foreach (var item in this)
+        {
+            if (item.Normal == vector3)
+            {
+                return item;
+            }
+        }
+
+        SharedMeshTriangles minT = null;
+        foreach (var item in this)
+        {
+            float dis = Vector3.Distance(item.Normal, vector3);
+            if (dis< minZero)
+            {
+                return item;
+            }
+        }
+        return null;
+    }
+
+    internal SharedMeshTriangles GetClosedPlaneByNormal(Vector3 vector3, float minZero)
+    {
+        foreach (var item in this)
+        {
+            if (item.Normal == vector3)
+            {
+                return item;
+            }
+        }
+
+        SharedMeshTriangles minT = null;
+        float minDis = float.MaxValue;
+        foreach (var item in this)
+        {
+            float dis = Vector3.Distance(item.Normal, vector3);
+            if (dis < minDis)
+            {
+                minDis = dis;
+                minT = item;
+            }
+        }
+        return minT;
+    }
+
+    internal void CombineSameNormal(float minDis, string name)
+    {
+        int count1 = this.Count;
+        var list1 = new SharedMeshTrianglesList(this);
+        for (int i1 = 0; i1 < list1.Count; i1++)
+        {
+            SharedMeshTriangles item1 = list1[i1];
+            for (int i = 0; i < this.Count; i++)
+            {
+                SharedMeshTriangles item2 = this[i];
+                if (item1 == item2) continue;
+                float normalDis = Vector3.Distance(item2.Normal, item1.Normal);
+
+                if (normalDis < minDis * 10)
+                {
+                    item1.AddOtherTriangles(item2.GetAllTriangles());
+                    if (list1.Contains(item2))
+                    {
+                        list1.Remove(item2);
+                    }
+                    this.RemoveAt(i);
+                    i--;
+                }
+                else
+                {
+                    if (normalDis < 0.1f)
+                    {
+                        Debug.Log($"CombineSameNormal({name})[{i1},{i}] {MeshHelper.Vector3ToString(item1.Normal)} | {MeshHelper.Vector3ToString(item2.Normal)} | {normalDis}");
+                    }
+                }
+            }
+        }
+
+        
+
+        int count2 = this.Count;
+        if (count2 != count1)
+        {
+            foreach (var item in this)
+            {
+                item.GetInfo(false);
+            }
+
+            //Debug.Log($"CombineSameNormal count1:{count1} count2:{count2} minDis:{minDis} name:{name}");
+        }
+
+        if (count2 != 6)
+        {
+            Debug.LogError($"CombineSameNormal count1:{count1} count2:{count2} minDis:{minDis} name:{name}");
+        }
     }
 }
