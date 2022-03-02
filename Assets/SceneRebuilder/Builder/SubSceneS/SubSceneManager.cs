@@ -355,39 +355,12 @@ public class SubSceneManager : SingletonBehaviour<SubSceneManager>
     {
         //UpdateScenes();
         subScenes = GameObject.FindObjectsOfType<SubScene_Base>(includeInactive);
-        SetBuildings(subScenes);
+        SubSceneHelper.SetBuildings(subScenes);
     }
 
-    [ContextMenu("ClearBuildings")]
-    public void ClearBuildings()
-    {
-        EditorBuildSettingsScene[] buildingScenes = new EditorBuildSettingsScene[1];
-        buildingScenes[0] = new EditorBuildSettingsScene(EditorSceneManager.GetActiveScene().path, true);
-        EditorBuildSettings.scenes = buildingScenes;
-    }
 
-    public static void SetBuildings<T>(T[] scenes) where T : SubScene_Base
-    {
-        Debug.Log($"SetBuildings scenes:{scenes.Length}");
-        EditorBuildSettingsScene[] buildingScenes = new EditorBuildSettingsScene[scenes.Length + 1];
-        buildingScenes[0] = new EditorBuildSettingsScene(EditorSceneManager.GetActiveScene().path, true);
-        for (int i = 0; i < scenes.Length; i++)
-        {
-            T item = scenes[i];
 
-            EditorHelper.UnpackPrefab(item.gameObject);
-
-            string path = item.sceneArg.GetRalativePath();
-            //Debug.Log("path:" + path);
-            buildingScenes[i + 1] = new EditorBuildSettingsScene(path, true);
-            item.sceneArg.index = i + 1;
-
-            
-        }
-        EditorBuildSettings.scenes = buildingScenes;
-
-        Debug.Log("SetBuildings:" + scenes.Length);
-    }
+    
 
     public Scene newScene;
 
@@ -401,32 +374,14 @@ public class SubSceneManager : SingletonBehaviour<SubSceneManager>
 
     public bool IsOpenSubScene = false;
 
-
+    public void CheckSceneIndex()
+    {
+        SubSceneHelper.CheckSceneIndex(includeInactive);
+    }
 
 #endif
 
-    public void CheckSceneIndex()
-    {
-        DateTime start = DateTime.Now;
-        var alls = GameObject.FindObjectsOfType<SubScene_Base>(includeInactive);
-        foreach (var s in alls)
-        {
-            if (s.sceneArg.index <= 0)
-            {
-                BuildingModelInfo modelInfo = s.GetComponentInParent<BuildingModelInfo>();
-                if (modelInfo != null)
-                {
-                    Debug.LogError($"SubSceneShowManager.CheckSceneIndex index<=0 sName:{modelInfo.name}->{s.name} index:{s.sceneArg.index}");
-                }
-                else
-                {
-                    Debug.LogError($"SubSceneShowManager.CheckSceneIndex index<=0 sName:NULL->{s.name} index:{s.sceneArg.index}");
-                }
 
-            }
-        }
-        Debug.Log($"CheckSceneIndex Time:{(DateTime.Now - start).ToString()}");
-    }
 
     public bool includeInactive = false;
     public SubScene_Base[] UpdateScenes()

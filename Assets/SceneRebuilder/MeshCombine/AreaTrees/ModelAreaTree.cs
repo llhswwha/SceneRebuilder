@@ -103,7 +103,7 @@ public class ModelAreaTree : SubSceneCreater
 
     public int GetCubePrefabId()
     {
-        if (IsHidden)
+        if (GetIsHidden())
         {
             return 1;
         }
@@ -165,6 +165,15 @@ public class ModelAreaTree : SubSceneCreater
     }
 
     public bool IsHidden=false;
+
+    public bool GetIsHidden()
+    {
+        if (this.name.Contains("_InTree"))
+        {
+            return true;
+        }
+        return IsHidden;
+    }
 
     //[ContextMenu("CombineMesh")]
     //public void CombineMesh()
@@ -257,27 +266,27 @@ public class ModelAreaTree : SubSceneCreater
     [SerializeField]
     private MeshRendererInfoList TreeRenderers;
 
-    public void SetRenderers(List<MeshRenderer> renderers)
-    {
-        TreeRenderers = new MeshRendererInfoList(renderers);
-        //TreeRenderers.RemoveTypes(AreaTreeManager.Instance.FilterTypes, this.name);
-        AreaTreeManager.Instance.FilterTreeNodeRenders(TreeRenderers, this.name);
-        Debug.Log($"SetRenderers TreeRenderers:{TreeRenderers.Count} this:{this.name}");
-    }
+    //public void SetRenderers(List<MeshRenderer> renderers)
+    //{
+    //    TreeRenderers = new MeshRendererInfoList(renderers);
+    //    //TreeRenderers.RemoveTypes(AreaTreeManager.Instance.FilterTypes, this.name);
+    //    AreaTreeManager.Instance.FilterTreeNodeRenders(TreeRenderers, this.name);
+    //    Debug.Log($"SetRenderers TreeRenderers:{TreeRenderers.Count} this:{this.name}");
+    //}
 
     public void SetRenderers(MeshRenderer[] renderers)
     {
         TreeRenderers = new MeshRendererInfoList(renderers);
         //TreeRenderers.RemoveTypes(AreaTreeManager.Instance.FilterTypes, this.name);
         AreaTreeManager.Instance.FilterTreeNodeRenders(TreeRenderers, this.name);
-        Debug.Log($"SetRenderers TreeRenderers:{TreeRenderers.Count} this:{this.name}");
+        //Debug.Log($"SetRenderers TreeRenderers:{TreeRenderers.Count} this:{this.name}");
     }
 
     public void SetRenderers(GameObject renderersRoot)
     {
         var renderers = renderersRoot.GetComponentsInChildren<MeshRenderer>(true);
         SetRenderers(renderers);
-        Debug.Log($"SetRenderers root:{renderersRoot} renderers:{renderers.Length}");
+        //Debug.Log($"SetRenderers root:{renderersRoot} renderers:{renderers.Length}");
 
         //TreeRenderers = new MeshRendererInfoList(renderersRoot);
         //TreeRenderers.RemoveTypes(AreaTreeManager.Instance.FilterTypes, this.name);
@@ -342,7 +351,7 @@ public class ModelAreaTree : SubSceneCreater
         }
         else
         {
-            Debug.Log($"CreateCells_Tree Start tree:{this.name} renderers:{renderers.Length} ");
+            //Debug.Log($"CreateCells_Tree Start tree:{this.name} renderers:{renderers.Length} ");
         }
         
         foreach(var render in renderers){
@@ -568,7 +577,7 @@ public class ModelAreaTree : SubSceneCreater
         }
         else
         {
-            Debug.Log("GenerateMesh renderers:" + renderers.Length + "|tree:" + this.name);
+            //Debug.Log("GenerateMesh renderers:" + renderers.Length + "|tree:" + this.name);
         }
 
 
@@ -748,12 +757,13 @@ public class ModelAreaTree : SubSceneCreater
     [ContextMenu("HideLeafNodes")]
     public void HideLeafNodes()
     {
+        if (TreeLeafs.Count == 0) return;
         DateTime start=DateTime.Now;
         foreach(AreaTreeNode node in TreeLeafs)
         {
             node.HideNodes();
         }
-        Debug.LogError($"HideLeafNodes {(DateTime.Now-start).ToString()} TreeLeafs:{TreeLeafs.Count} name:{this.name}");
+        //Debug.Log($"HideLeafNodes {(DateTime.Now-start).ToString()} TreeLeafs:{TreeLeafs.Count} name:{this.name}");
     }
 
     [ContextMenu("DestoryNodes")]

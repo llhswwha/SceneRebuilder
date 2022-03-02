@@ -226,7 +226,7 @@ public class AreaTreeManager : SingletonBehaviour<AreaTreeManager>
     List<Material> matList = new List<Material>();
     public ModelAreaTree CreateTree(GameObject go, bool isC,string suffix, MeshRenderer[] renderers, Action<ProgressArg> progressChanged)
     {
-        Debug.Log($"AreaTreeManager.CreateTree go:{go} isC:{isC} suffix:{suffix} renderers:{renderers.Length}");
+        //Debug.Log($"AreaTreeManager.CreateTree go:{go} isC:{isC} suffix:{suffix} renderers:{renderers.Length}");
         string treeName = "NewAreaTree" + suffix;
         if (go != null)
         {

@@ -350,10 +350,28 @@ public class MyEditorTools2
     {
         MeshHelper.RemoveNew(Selection.activeGameObject);
     }
-   
+
     #endregion
 
     #region SubScene
+
+    [MenuItem("SceneTools/SubScene/SetBuildings")]
+    public static void SetBuildings()
+    {
+        SubSceneHelper.SetBuildings<SubScene_Base>(true);
+    }
+
+    [MenuItem("SceneTools/SubScene/ClearBuildings")]
+    public static void ClearBuildings()
+    {
+        SubSceneHelper.ClearBuildings();
+    }
+
+    [MenuItem("SceneTools/SubScene/CheckScenes")]
+    public static void CheckScenes()
+    {
+        SubSceneHelper.CheckSceneIndex(true);
+    }
 
     [MenuItem("SceneTools/SubScene/CreateSubScenes")]
     public static void CreateSubScenes()

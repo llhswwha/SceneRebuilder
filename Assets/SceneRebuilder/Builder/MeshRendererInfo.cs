@@ -310,8 +310,13 @@ public class MeshRendererInfo : MonoBehaviour,IComparable<MeshRendererInfo>
             {
                 info.Init();
             }
+            
         }
-        if(isUpdateId)
+
+        var rId = RendererId.GetRId(go);
+        rId.RefreshParentId();
+
+        if (isUpdateId)
             RendererId.UpdateId(go);
         return info;
     }
@@ -931,7 +936,7 @@ public class MeshRendererInfoList:List<MeshRendererInfo>
 
     private void InitRenderers<T>(List<T> renderers, bool isForceUpdate = false) where T :Component
     {
-        //Debug.Log($"InitRenderers_List renderers:{renderers.Count}");
+        Debug.Log($"InitRenderers_List renderers:{renderers.Count}");
         for (int i = 0; i < renderers.Count; i++)
         {
             T renderer = renderers[i];
@@ -946,7 +951,7 @@ public class MeshRendererInfoList:List<MeshRendererInfo>
 
     private void InitRenderers<T>(T[] renderers, bool isForceUpdate = false) where T : Component
     {
-        //Debug.Log($"InitRenderers_Array renderers:{renderers.Length}");
+        Debug.Log($"InitRenderers_Array renderers:{renderers.Length}");
         for (int i = 0; i < renderers.Length; i++)
         {
             T renderer = renderers[i];

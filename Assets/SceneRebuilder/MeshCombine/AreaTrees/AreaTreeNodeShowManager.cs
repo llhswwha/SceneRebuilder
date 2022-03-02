@@ -57,9 +57,23 @@ public class AreaTreeNodeShowManager : MonoBehaviour
 
     void Start()
     {
-       
+
         //Init();
+
+        StartCoroutine(UpdateNodeCoroutine());
     }
+
+    private void OnDisable()
+    {
+        
+    }
+
+    private void OnDestroy()
+    {
+        StopCoroutine("UpdateNodeCoroutine");
+    }
+
+
 
     [ContextMenu("Init")]
     public void Init()
@@ -118,7 +132,7 @@ public class AreaTreeNodeShowManager : MonoBehaviour
     public void RegistHiddenTree(ModelAreaTree tree)
     {
         if (tree == null) return;
-        if (tree.IsHidden == false) return;
+        if (tree.GetIsHidden() == false) return;
         if (HiddenTrees.Contains(tree))
         {
             return;
@@ -133,7 +147,7 @@ public class AreaTreeNodeShowManager : MonoBehaviour
     {
         Debug.Log("UnRegistHiddenTree:"+tree);
         if (tree == null) return;
-        if (tree.IsHidden == false) return;
+        if (tree.GetIsHidden() == false) return;
         if (HiddenTrees.Contains(tree))
         {
             HiddenTrees.Remove(tree);
@@ -179,12 +193,12 @@ public class AreaTreeNodeShowManager : MonoBehaviour
         {
             if (t == null) continue;
             t.DestroyBoundBox();
-            if (t.IsHidden && !HiddenTrees.Contains(t))
+            if (t.GetIsHidden() && !HiddenTrees.Contains(t))
             {
                 HiddenTrees.Add(t);
                 HiddenTreesVertexCount += t.VertexCount;
             }
-            else if(t.IsHidden==false && !ShownTrees.Contains(t))
+            else if(t.GetIsHidden() == false && !ShownTrees.Contains(t))
             {
                 ShownTrees.Add(t);
                 ShownTreesVertexCount += t.VertexCount;
@@ -312,9 +326,140 @@ public class AreaTreeNodeShowManager : MonoBehaviour
             return false;
         }       
     }
-    public void Update()
+
+    public IEnumerator UpdateNodeCoroutine()
     {
-        if (IsUpdateTreeNodeByDistance&&!IsCorssSectionMode())
+        while (true)
+        {
+            if (IsUpdateTreeNodeByDistance && !IsCorssSectionMode())
+            {
+                DateTime start = DateTime.Now;
+
+                ShownNodes.Clear();
+                HiddenNodes.Clear();
+                AvgDistance = 0;
+                MinDistance = float.MaxValue;
+                MaxDistance = 0;
+                ShownRenderCount = 0;
+                HiddenRenderCount = 0;
+                float sum = 0;
+                int count = HiddenLeafNodes.Count;
+                foreach (var node in HiddenLeafNodes)
+                {
+                    if (node == null)
+                    {
+                        //continue;
+                        Debug.LogError("node == null");
+                        continue;
+                    }
+                    if (node.gameObject == null)
+                    {
+                        Debug.LogError("node.gameObject == null");
+                        continue;
+                    }
+                    var bounds = node.Bounds;
+                    var nodePos = node.transform.position;
+                    float nodeDis1 = float.MaxValue;
+                    float nodeDis2 = float.MaxValue;
+                    foreach (var cam in cameras)
+                    {
+                        if (cam == null) continue;
+                        var camPos = cam.transform.position;
+
+                        float dis = bounds.SqrDistance(camPos);
+
+                        if (dis < nodeDis1)
+                        {
+                            nodeDis1 = dis;
+                        }
+                    }
+                    if (nodeDis1 <= ShowNodeDistance)
+                    {
+                        ShownNodes.Add(node);
+                    }
+                    //else{
+                    //    HiddenNodes.Add(node);
+                    //}
+
+                    else if (nodeDis1 > HideNodeDistance)
+                    {
+                        HiddenNodes.Add(node);
+                    }
+                    else //[ShowNodeDistance,HideNodeDistance]
+                    {
+                        if (node.IsNodeVisible)
+                        {
+                            ShownNodes.Add(node);
+                        }
+                        else
+                        {
+                            HiddenNodes.Add(node);
+                        }
+                    }
+
+                    node.DistanceToCamera = nodeDis1;
+                    if (nodeDis1 > MaxDistance)
+                    {
+                        MaxDistance = nodeDis1;
+                    }
+                    if (nodeDis1 < MinDistance)
+                    {
+                        MinDistance = nodeDis1;
+                    }
+                    sum += nodeDis1;
+                }
+
+
+                AvgDistance = sum / count;
+
+                UpdateTime1 = (DateTime.Now - start).TotalMilliseconds;
+                start = DateTime.Now;
+                //Debug.Log("HideNodes:" + HiddenNodes.Count);
+                foreach (var node in HiddenNodes)
+                {
+                    //node.HideRenders();
+                    node.HideNodes();
+                    HiddenRenderCount += node.RendererCount;
+                    yield return null;
+                    //HiddenNodesWaiting.Add(node);
+                }
+                //Debug.Log("ShownNodes:" + ShownNodes.Count);
+                foreach (var node in ShownNodes)
+                {
+                    //node.ShowRenders();
+                    node.ShowNodes();
+                    ShownRenderCount += node.RendererCount;
+                    yield return null;
+                    //ShownNodesWaiting.Add(node);
+                }
+
+                UpdateTime2 = (DateTime.Now - start).TotalMilliseconds;
+                //Debug.Log($"AreaTreeNodeShowManager Update usedTime:{usedTime.TotalMilliseconds}ms");
+
+                //if (ShownNodesWaiting.Count > 0)
+                //{
+                //    AreaTreeNode node = ShownNodesWaiting[0];
+                //    ShownNodesWaiting.RemoveAt(0);
+                //    node.ShowNodes();
+                //}
+
+                //if (HiddenNodesWaiting.Count > 0)
+                //{
+                //    AreaTreeNode node = HiddenNodesWaiting[0];
+                //    HiddenNodesWaiting.RemoveAt(0);
+                //    node.HideNodes();
+                //}
+            }
+            yield return new WaitForSeconds(UpdateInterval);
+        }
+        yield return null;
+    }
+
+    public float UpdateInterval = 0.02f;
+
+    public void UpdateNode()
+    {
+        if (IsUpdateTreeNodeByDistance && !IsCorssSectionMode())
         {
             DateTime start = DateTime.Now;
 
@@ -403,6 +548,8 @@ public class AreaTreeNodeShowManager : MonoBehaviour
                 //node.HideRenders();
                 node.HideNodes();
                 HiddenRenderCount += node.RendererCount;
+
+                //HiddenNodesWaiting.Add(node);
             }
             //Debug.Log("ShownNodes:" + ShownNodes.Count);
             foreach (var node in ShownNodes)
@@ -410,13 +557,43 @@ public class AreaTreeNodeShowManager : MonoBehaviour
                 //node.ShowRenders();
                 node.ShowNodes();
                 ShownRenderCount += node.RendererCount;
+
+                //ShownNodesWaiting.Add(node);
             }
 
             UpdateTime2 = (DateTime.Now - start).TotalMilliseconds;
             //Debug.Log($"AreaTreeNodeShowManager Update usedTime:{usedTime.TotalMilliseconds}ms");
-        }
 
+            //if (ShownNodesWaiting.Count > 0)
+            //{
+            //    AreaTreeNode node = ShownNodesWaiting[0];
+            //    ShownNodesWaiting.RemoveAt(0);
+            //    node.ShowNodes();
+            //}
+
+            //if (HiddenNodesWaiting.Count > 0)
+            //{
+            //    AreaTreeNode node = HiddenNodesWaiting[0];
+            //    HiddenNodesWaiting.RemoveAt(0);
+            //    node.HideNodes();
+            //}
+        }
     }
+
+    public void Update()
+    {
+
+        //UpdateNode();->Start UpdateNodeCoroutine
+    }
+
+
+    //public List<AreaTreeNode> ShownNodesWaiting = new List<AreaTreeNode>();
+
+    //public List<AreaTreeNode> HiddenNodesWaiting = new List<AreaTreeNode>();
+
+    //public List<AreaTreeNode> ShownNodesDone = new List<AreaTreeNode>();
+
+    //public List<AreaTreeNode> HiddenNodesDone = new List<AreaTreeNode>();
 
     public double UpdateTime1=0;
     public double UpdateTime2=0;

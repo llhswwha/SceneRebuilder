@@ -11,6 +11,85 @@ using UnityEditor.SceneManagement;
 
 public static class SubSceneHelper
 {
+#if UNITY_EDITOR
+    [ContextMenu("ClearBuildings")]
+    public static void ClearBuildings()
+    {
+        EditorBuildSettingsScene[] buildingScenes = new EditorBuildSettingsScene[1];
+        buildingScenes[0] = new EditorBuildSettingsScene(EditorSceneManager.GetActiveScene().path, true);
+        EditorBuildSettings.scenes = buildingScenes;
+    }
+
+    public static void SetBuildings<T>(bool includeInactive) where T : SubScene_Base
+    {
+        var subScenes = GameObject.FindObjectsOfType<SubScene_Base>(includeInactive);
+        SubSceneHelper.SetBuildings(subScenes);
+    }
+
+        public static void SetBuildings<T>(T[] scenes) where T : SubScene_Base
+    {
+        Debug.Log($"SetBuildings scenes:{scenes.Length}");
+        EditorBuildSettingsScene[] buildingScenes = new EditorBuildSettingsScene[scenes.Length + 1];
+        buildingScenes[0] = new EditorBuildSettingsScene(EditorSceneManager.GetActiveScene().path, true);
+        for (int i = 0; i < scenes.Length; i++)
+        {
+            T item = scenes[i];
+
+            EditorHelper.UnpackPrefab(item.gameObject);
+
+            string path = item.sceneArg.GetRalativePath();
+            //Debug.Log("path:" + path);
+            buildingScenes[i + 1] = new EditorBuildSettingsScene(path, true);
+            item.sceneArg.index = i + 1;
+
+
+        }
+        EditorBuildSettings.scenes = buildingScenes;
+
+        Debug.Log("SetBuildings:" + scenes.Length);
+    }
+
+    public static void CheckSceneIndex(bool includeInactive)
+    {
+        DateTime start = DateTime.Now;
+        var alls = GameObject.FindObjectsOfType<SubScene_Base>(includeInactive);
+        for (int i = 0; i < alls.Length; i++)
+        {
+            SubScene_Base s = alls[i];
+            try
+            {
+                SceneLoadArg arg = s.GetSceneArg();
+                if (arg.index <= 0)
+                {
+                    BuildingModelInfo modelInfo = s.GetComponentInParent<BuildingModelInfo>();
+                    if (modelInfo != null)
+                    {
+                        Debug.LogError($"SubSceneShowManager.CheckSceneIndex index<=0 sName:{modelInfo.name}->{s.name} index:{s.sceneArg.index}");
+                    }
+                    else
+                    {
+                        Debug.LogError($"SubSceneShowManager.CheckSceneIndex index<=0 sName:NULL->{s.name} index:{s.sceneArg.index}");
+                    }
+                }
+                else
+                {
+                    //EditorSceneManager.GetSceneByBuildIndex(arg.index);
+                    //Scene scene = SceneManager.GetSceneByBuildIndex(arg.index);
+                    Scene scene = EditorSceneManager.GetSceneByBuildIndex(arg.index);
+                    if (arg.name != scene.name)
+                    {
+                        Debug.LogError($"GetSceneByBuildIndex Error [arg:{arg}] scene:{scene.name} {scene.path} {scene.isLoaded}");
+                    }
+                }
+            }
+            catch (Exception ex)
+            {
+                Debug.LogError($"GetSceneByBuildIndex Exception:{ex}");
+            }
+        }
+        Debug.Log($"CheckSceneIndex Time:{(DateTime.Now - start).ToString()} scenes:{alls.Length}");
+    }
+#endif
 
     public static SubSceneBag GetScenes<T>(List<T> list) where T :Component
     {

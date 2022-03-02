@@ -159,14 +159,14 @@ public class SubSceneShowManager : SingletonBehaviour<SubSceneShowManager>
         scenes_Out0_TreeNode_Shown.Clear();
         foreach (ModelAreaTree t in ts)
         {
-            if (t.IsHidden && !HiddenTrees.Contains(t))
+            if (t.GetIsHidden() && !HiddenTrees.Contains(t))
             {
                 HiddenTrees.Add(t);
                 //HiddenTreesVertexCount += t.VertexCount;
                 scenes_TreeNode_Hidden.AddRange(t.GetComponentsInChildren<SubScene_Base>(IncludeInactive));
                 scenes_Out0_TreeNode_Hidden.AddRange(t.GetComponentsInChildren<SubScene_Out0>(IncludeInactive));
             }
-            else if (t.IsHidden == false && !ShownTrees.Contains(t))
+            else if (t.GetIsHidden() == false && !ShownTrees.Contains(t))
             {
                 ShownTrees.Add(t);
                 //ShownTreesVertexCount += t.VertexCount;
@@ -357,8 +357,9 @@ public class SubSceneShowManager : SingletonBehaviour<SubSceneShowManager>
 
         BuildingModelManager.Instance.ShowDetail();
 
+#if UNITY_EDITOR
         SubSceneManager.Instance.CheckSceneIndex();
-
+#endif
         //IdDictionary.InitInfos();
     }
 

@@ -1047,6 +1047,8 @@ public class AreaTreeNode : SubSceneCreater
             if (renderersRoot)
             {
                 renderersRoot.SetActive(true);
+
+                DynamicCullingManage.Instance.AddObjectsForCulling(Renderers.ToArray());
             }
 
             if (CombinedRenderers == null)

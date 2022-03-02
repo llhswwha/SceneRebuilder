@@ -345,7 +345,7 @@ public class LODGroupInfo : MonoBehaviour
     {
         var lods = LODGroup.GetLODs();
         var sceneRenderers = scene.GetSceneRenderers().ToArray();
-        Debug.Log($"SetLOD0FromScene sceneRenderers:{sceneRenderers.Length} scene:{scene.sceneName}");
+        Debug.Log($"SetLOD0FromScene sceneRenderers:{sceneRenderers.Length} scene:{scene.sceneName} [arg:{scene.GetSceneArg()}]");
         lods[0].renderers = sceneRenderers;
         LODGroup.SetLODs(lods);
     }

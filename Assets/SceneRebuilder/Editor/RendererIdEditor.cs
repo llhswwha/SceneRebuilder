@@ -16,7 +16,7 @@ public class RendererIdEditor : BaseEditor<RendererId>
         //    IdDictionary.InitInfos();
         //    parent = targetT.GetParent();
         //}
-        parent = targetT.GetCurrentParent();
+        //parent = targetT.GetCurrentParent();
     }
 
 
@@ -67,7 +67,7 @@ public class RendererIdEditor : BaseEditor<RendererId>
                 Debug.LogError(targetT.parentId);
                 IdDictionary.InitInfos();
                 var p = IdDictionary.GetGo(targetT.parentId);
-                Debug.LogError(p);
+                Debug.LogError(TransformHelper.GetPath(p.transform));
             }
         }
         EditorGUILayout.EndHorizontal();

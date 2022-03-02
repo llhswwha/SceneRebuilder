@@ -12,6 +12,15 @@ public class RendererId
 {
     public string Id;
 
+    public string GetId()
+    {
+        if (string.IsNullOrEmpty(Id))
+        {
+            Init();
+        }
+        return Id;
+    }
+
     public string parentId;
 
     public int insId;
@@ -161,7 +170,7 @@ public class RendererId
             NewId();
         }
         var pid= GetId(this.transform.parent, level + 1);
-        SetPid(pid);
+        SetPid(pid, this.transform.parent);
     }
 
     public void NewId()
@@ -173,7 +182,7 @@ public class RendererId
     {
         insId = 0;
         Id = "";
-        SetPid("");
+        SetPid("",null);
         Init();
     }
 
@@ -207,11 +216,21 @@ public class RendererId
     //    }
     //}
 
-
+    public void RefreshParentId()
+    {
+        if (string.IsNullOrEmpty(parentId))
+        {
+            SetParentId();
+        }
+    }
 
     public void SetParentId()
     {
         var newP= GetId(this.transform.parent, 0);
+        if (string.IsNullOrEmpty(newP))
+        {
+            Debug.LogError($"SetParentId string.IsNullOrEmpty(newP) parent:{this.transform.parent} oldP:{parentId} Id:{Id} name:{this.name}");
+        }
         if(string.IsNullOrEmpty(parentId))
         {
             Debug.Log($"SetParentId oldP:NULL newP:{newP} Id:{Id} name:{this.name} 12");
@@ -220,12 +239,24 @@ public class RendererId
         {
             Debug.LogError($"SetParentId oldP:{parentId} newP:{newP} Id:{Id} name:{this.name}");
         }
-        SetPid(newP);
+        SetPid(newP, this.transform.parent);
     }
 
-    public void SetPid(string pid)
+    public void SetPid(string pid,Transform p)
     {
-        //Debug.LogError($"RendererId SetPid old:{parentId} new:{pid}");
+        if (p != null)
+        {
+            if (p.name.Contains("Node_") && !this.name.Contains("Node_"))
+            {
+                //Debug.LogError($"RendererId SetPid Not Set Parent old:{parentId} new:{pid} gameObject:{this.name} parent:{p}");
+                return;
+            }
+        }
+        if(string.IsNullOrEmpty(pid))
+        {
+            Debug.LogError($"RendererId SetPid old:{parentId} new:{pid} gameObject:{this.name} parent:{p}");
+        }
+        
         parentId = pid;
     }
 
@@ -262,7 +293,7 @@ public class RendererId
     {
         if(string.IsNullOrEmpty(parentId))
         {
-            SetPid(GetId(this.transform.parent, 0));
+            SetPid(GetId(this.transform.parent, 0), this.transform.parent);
         }
         GameObject pGo=IdDictionary.GetGo(parentId);
         // Debug.LogError($"RendererId.GetParent name:{this.name} Id:{this.Id} parentId:{this.parentId} pGo:{pGo}");
@@ -313,7 +344,7 @@ public class RendererId
             id = go.gameObject.AddComponent<RendererId>();
             id.Init(go, level+1);
         }
-        return id.Id;
+        return id.GetId();
     }
 
     //public static string GetId(Component go, int level = 0)
@@ -347,7 +378,7 @@ public class RendererId
             id = t.gameObject.AddComponent<RendererId>();
             id.Init(t.gameObject,level+1);
         }
-        return id.Id;
+        return id.GetId();
     }
     public static string GetId<T>(T r) where T : Component
     {
@@ -357,7 +388,7 @@ public class RendererId
             id = r.gameObject.AddComponent<RendererId>();
             id.Init(r);
         }
-        return id.Id;
+        return id.GetId();
     }
 
     public static RendererId GetRId<T>(T t, int level=0) where T : Component
@@ -409,8 +440,17 @@ public class RendererId
         IdDictionary.InitInfos();
         foreach (var item in targets)
         {
-            if (item == newParent.gameObject) continue;
+            if (newParent != null && item == newParent.gameObject)
+            {
+                Debug.LogError($"RecoverTargetsParent({item}) newParent != null && item == newParent.gameObject");
+                continue;
+            }
             RendererId rId = RendererId.GetRId(item);
+            if (rId == null)
+            {
+                Debug.LogError($"RecoverTargetsParent({item}) rId == null");
+                continue;
+            }
             rId.RecoverParent();
         }
     }

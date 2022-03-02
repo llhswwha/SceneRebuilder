@@ -11,6 +11,35 @@ public class FloorBoxManager : SingletonBehaviour<FloorBoxManager>
     //public List<BoxCollider> FloorBoxs = new List<BoxCollider>();
     public GameObject Sources;
 
+    [ContextMenu("AddFloors")]
+    public void AddFloors()
+    {
+        var buildings = GameObject.FindObjectsOfType<BuildingController>();
+        foreach (var b in buildings)
+        {
+            var floors = b.GetComponentsInChildren<FloorController>();
+            foreach (var floor in floors)
+            {
+                Floors.Add(floor.gameObject);
+            }
+        }
+    }
+
+    [ContextMenu("GetFloors")]
+    public void GetFloors()
+    {
+        Floors.Clear();
+        var buildings = GameObject.FindObjectsOfType<BuildingController>();
+        foreach(var b in buildings)
+        {
+            var floors = b.GetComponentsInChildren<FloorController>();
+            foreach(var floor in floors)
+            {
+                Floors.Add(floor.gameObject);
+            }
+        }
+    }
+
     [ContextMenu("InitBoxColliders")]
     public void InitBoxColliders()
     {
@@ -20,7 +49,6 @@ public class FloorBoxManager : SingletonBehaviour<FloorBoxManager>
             BoxCollider boxCollider = Floors[i].GetBoxCollider();
             //FloorBoxs.Add(boxCollider);
         }
-
     }
 
     //public List<BoxCollider> GetBoxes(MeshRendererInfo renderer)
@@ -281,6 +309,21 @@ public class TransformFloorParent
 
     }
 
+    public bool IsSameBuilding()
+    {
+        if (floors.Count <= 1) return true;
+        var b1 = floors[0].parent;
+        for(int i = 1; i < floors.Count; i++)
+        {
+            var b2 = floors[i].parent;
+            if (b1 != b2)
+            {
+                return false;
+            }
+        }
+        return true;
+    }
+
     public Transform p;
 
     public void SetParent(string pName,bool isIn)
@@ -290,6 +333,13 @@ public class TransformFloorParent
             go.SetParent(p.transform);
             return;
         }
+
+        if (IsSameBuilding() == false)
+        {
+            Debug.LogError("SetParent IsSameBuilding() == false go:{go}");
+            return;
+        }
+
         Transform fP = floor;
         Transform inP = null;
         for(int i=0;i<fP.childCount;i++)

@@ -218,11 +218,7 @@ public class SceneRebuildManager : SingletonBehaviour<SceneRebuildManager>
     [ContextMenu("ClearBuildings")]
     public void ClearBuildings()
     {
-        if (subSceneManager == null)
-        {
-            subSceneManager = SubSceneManager.Instance;
-        }
-        subSceneManager.ClearBuildings();
+        SubSceneHelper.ClearBuildings();
     }
 
     public void SetModelsActive(bool v)
