@@ -43,6 +43,14 @@ public class MyEditorTools2
     #endregion
 
     #region LOD 
+
+    [MenuItem("SceneTools/LOD/Clear")]
+    public static void ClearLODGroup2()
+    {
+        ClearComponents<LODGroupInfo>();
+        ClearComponents<LODGroup>();
+    }
+
     [MenuItem("SceneTools/LOD/SetSetting")]
     public static void LODSetSetting()
     {
@@ -63,6 +71,84 @@ public class MyEditorTools2
         }
         ProgressBarHelper.ClearProgressBar();
         
+    }
+
+    [MenuItem("SceneTools/LOD/CreateLODBySelection")]
+    public static void CreateLODBySelection()
+    {
+       
+    }
+
+    [MenuItem("SceneTools/LOD/AddLOD1(U)")]
+    public static void AddLOD1_U()
+    {
+        GameObject go = Selection.activeGameObject;
+        Transform t = go.transform;
+        if (t.childCount == 1)
+        {
+            Transform child = t.GetChild(0);
+            child.transform.SetParent(go.transform.parent);
+            var group = LODManager.Instance.AddLOD1(go, child.gameObject,true);
+            //t.transform.SetParent(go.transform);
+            //var groupNew = LODHelper.UniformLOD0(group);
+        }
+        else
+        {
+            Debug.LogError($"AddLOD1 t.childCount != 1");
+        }
+    }
+
+    [MenuItem("SceneTools/LOD/AddLOD1")]
+    public static void AddLOD1()
+    {
+        GameObject go = Selection.activeGameObject;
+        Transform t = go.transform;
+        if (t.childCount == 1)
+        {
+            Transform child = t.GetChild(0);
+            child.transform.SetParent(go.transform.parent);
+            var group=LODManager.Instance.AddLOD1(go, child.gameObject,false);
+            child.transform.SetParent(go.transform);
+            //var groupNew = LODHelper.UniformLOD0(group);
+        }
+        else
+        {
+            Debug.LogError($"AddLOD1 t.childCount != 1");
+        }
+    }
+
+    [MenuItem("SceneTools/LOD/AddLOD2")]
+    public static void AddLOD2()
+    {
+        for (int i = 0; i < Selection.gameObjects.Length; i++)
+        {
+            GameObject obj = Selection.gameObjects[i];
+            ProgressArg pA = new ProgressArg("SetLODDev", i, Selection.gameObjects.Length, obj);
+            if (ProgressBarHelper.DisplayCancelableProgressBar(pA))
+            {
+                break;
+            }
+            LODManager.Instance.CreateBoxLOD(obj);
+        }
+        ProgressBarHelper.ClearProgressBar();
+
+    }
+
+    [MenuItem("SceneTools/LOD/AddLOD3")]
+    public static void AddLOD3()
+    {
+        for (int i = 0; i < Selection.gameObjects.Length; i++)
+        {
+            GameObject obj = Selection.gameObjects[i];
+            ProgressArg pA = new ProgressArg("SetLODDev", i, Selection.gameObjects.Length, obj);
+            if (ProgressBarHelper.DisplayCancelableProgressBar(pA))
+            {
+                break;
+            }
+            LODManager.Instance.CreateBoxLOD(obj);
+        }
+        ProgressBarHelper.ClearProgressBar();
+
     }
     #endregion
 
@@ -455,6 +541,13 @@ public class MyEditorTools2
     public static void ClearComponents<T>() where T : Component
     {
         TransformHelper.ClearComponents<T>(Selection.gameObjects);
+    }
+
+    [MenuItem("SceneTools/Clear/LODGroup")]
+    public static void ClearLODGroup()
+    {
+        ClearComponents<LODGroupInfo>();
+        ClearComponents<LODGroup>();
     }
 
     [MenuItem("SceneTools/Clear/ClearRId")]

@@ -5,6 +5,54 @@ using UnityEngine;
 
 public static class TransformHelper
 {
+    public static GameObject CreateBoundsCube(GameObject go)
+    {
+        if (go == null)
+        {
+            Debug.LogError($"CreateBoundsCube go==null go:{go}");
+            return null;
+        }
+        MeshFilter mf = go.GetComponent<MeshFilter>();
+        if (mf == null)
+        {
+            Debug.LogError($"CreateBoundsCube MeshFilter==null go:{go}");
+            return null;
+        }
+        if (mf.sharedMesh == null)
+        {
+            Debug.LogError($"CreateBoundsCube sharedMesh==null go:{go}");
+            return null; 
+        }
+        Bounds b = GetBounds(go, new Vector3(1, 1, 1));
+        return CreateBoundsCube(b, go.name + "_Box", go.transform.parent);
+    }
+
+    public static Bounds GetBounds(GameObject go,Vector3 scale)
+    {
+        //ShowRenderers();
+
+        List<Renderer> renderers = new List<Renderer>();
+        //foreach (var go in BoundsGos)
+        {
+            renderers.AddRange(go.GetComponentsInChildren<Renderer>(true));
+        }
+        Bounds bounds = ColliderHelper.CaculateBounds(renderers);
+        var size = bounds.size;
+        bounds.size = new Vector3(size.x * scale.x, size.y * scale.y, size.z * scale.z);
+        return bounds;
+    }
+
+    public static GameObject CreateBoundsCube(Bounds bounds, string n, Transform parent)
+    {
+        GameObject cube = GameObject.CreatePrimitive(PrimitiveType.Cube);
+        cube.AddComponent<BoundsBox>();
+        cube.SetActive(true);
+        cube.name = n;
+        cube.transform.position = bounds.center;
+        cube.transform.localScale = bounds.size;
+        cube.transform.SetParent(parent);
+        return cube;
+    }
     public static string GetPath(Transform t)
     {
         string path = "";

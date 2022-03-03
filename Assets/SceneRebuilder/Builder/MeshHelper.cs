@@ -14,14 +14,19 @@ using UnityEngine;
 
 public static class MeshHelper
 {
-    public static void RemoveMeshComponents(GameObject go)
+    public static void RemoveMeshComponents(GameObject go,bool isRemoveCollider=true)
     {
         MeshFilter mf = go.GetComponent<MeshFilter>();
         if (mf)
             GameObject.DestroyImmediate(mf);
-        Collider mc = go.GetComponent<Collider>();
-        if (mc)
-            GameObject.DestroyImmediate(mc);
+
+        if (isRemoveCollider)
+        {
+            Collider mc = go.GetComponent<Collider>();
+            if (mc)
+                GameObject.DestroyImmediate(mc);
+        }
+     
         MeshRenderer mr = go.GetComponent<MeshRenderer>();
         if (mr)
             GameObject.DestroyImmediate(mr);
@@ -120,9 +125,18 @@ public static class MeshHelper
             meshRenderer2 = target.AddMissingComponent<MeshRenderer>();
         }
 
-        if (meshRenderer2.sharedMaterials == null)
+        //Debug.LogError($"CopyMeshComponents meshRenderer2.sharedMaterials1  :{meshRenderer2.sharedMaterial} source:{source} target:{target}");
+
+        if (meshRenderer2.sharedMaterial == null)
         {
             meshRenderer2.sharedMaterials = meshRenderer1.sharedMaterials;
+        }
+
+        //Debug.LogError($"CopyMeshComponents meshRenderer2.sharedMaterials2  :{meshRenderer2.sharedMaterial} source:{source} target:{target}");
+
+        if (meshRenderer2.sharedMaterial == null)
+        {
+            Debug.LogError($"CopyMeshComponents meshRenderer2.sharedMaterials  == null source:{source} target:{target}");
         }
 
         MeshFilter meshFilter1 = source.GetComponent<MeshFilter>();

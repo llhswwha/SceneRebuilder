@@ -78,16 +78,27 @@ public class LODManager : SingletonBehaviour<LODManager>
 
     public LODGroup CreateBoxLOD(GameObject go,float [] lvs)
     {
+        GameObject box = TransformHelper.CreateBoundsCube(go);
+        var mrs = box.GetComponentsInChildren<MeshRenderer>(true);
+
         GameObject goNew = new GameObject(go.name);
         goNew.transform.position = go.transform.position;
         goNew.transform.SetParent(go.transform.parent);
         EditorHelper.UnpackPrefab(go);
         go.transform.SetParent(goNew.transform);
 
+        box.transform.SetParent(goNew.transform);
+
         LODGroup lODGroup = goNew.AddMissingComponent<LODGroup>();
         MeshRendererInfoEx rendererInfoEx = go.AddMissingComponent<MeshRendererInfoEx>();
-        LOD[] lods = GetLODs2(rendererInfoEx.GetRenderers(), null);
+
+       
+
+        LOD[] lods = GetLODs2(rendererInfoEx.GetRenderers(), mrs);
         lODGroup.SetLODs(lods);
+
+        LODGroupInfo info = goNew.AddComponent<LODGroupInfo>();
+        info.GetLODs();
         return lODGroup;
     }
 
@@ -1000,7 +1011,14 @@ T minTEx = null;
         }
     }
 
-    public LODGroup AddLOD1(MeshRendererInfo lod0, MeshRendererInfo lod1)
+    public LODGroup AddLOD1(GameObject lod0, GameObject lod1, bool isUniform = true)
+    {
+        MeshRendererInfo lod0R = MeshRendererInfo.GetInfo(lod0);
+        MeshRendererInfo lod1R = MeshRendererInfo.GetInfo(lod1);
+        return AddLOD1(lod0R, lod1R, isUniform);
+    }
+
+    public LODGroup AddLOD1(MeshRendererInfo lod0, MeshRendererInfo lod1,bool isUniform=true)
     {
         LODGroup lODGroup = lod0.GetComponent<LODGroup>();
         if (lODGroup == null)
@@ -1009,6 +1027,15 @@ T minTEx = null;
         }
         LOD[] lods= GetLODs2(lod0.GetRenderers(), lod1.GetRenderers());
         lODGroup.SetLODs(lods);
+        if (isUniform)
+        {
+            var groupNew = LODHelper.UniformLOD0(lODGroup);
+            LODGroupInfo.Init(groupNew.gameObject);
+        }
+        else
+        {
+            LODGroupInfo.Init(lODGroup.gameObject);
+        }
         return lODGroup;
     }
 
@@ -1801,7 +1828,7 @@ public static class LODHelper
 
     public static string GetOriginalName(string lodName)
     {
-        string cName = lodName;
+        string cName = lodName.Replace("_New","");
         foreach (var lodN in LODNames)
         {
             cName = cName.Replace(lodN, "");
@@ -2091,6 +2118,107 @@ public static class LODHelper
         group.SetLODs(lods);
     }
 
+//    public static LODGroup UniformLOD0(LODGroup group)
+//    {
+//        GameObject goOld = group.gameObject;
+//        MeshRenderer renderer = group.GetComponent<MeshRenderer>();
+//        if (renderer == null) return group;
+
+//#if UNITY_EDITOR
+//        EditorHelper.UnpackPrefab(group.gameObject);
+//#endif
+//        string origName = LODHelper.GetOriginalName(renderer.name);
+//        GameObject newGroupGo = new GameObject(origName);
+//        newGroupGo.transform.position = group.transform.position;
+//        newGroupGo.transform.parent = group.transform.parent;
+
+//        group.transform.SetParent(newGroupGo.transform);
+
+//        //List<Transform> childrens = new List<Transform>();
+//        //for(int i=0;i<group.transform.childCount;i++)
+//        //{
+//        //    Transform child = group.transform.GetChild(i);
+//        //    childrens.Add(child);
+//        //}
+//        //foreach(var child in childrens)
+//        //{
+//        //    child.SetParent(newGroupGo.transform);
+//        //}
+
+//        RendererId.ChangeChildrenParent(group.transform,newGroupGo.transform);
+
+//        renderer.name = origName+"_LOD0";
+//        LOD[] lods = group.GetLODs();
+//        //LOD[] lodsNew = new LOD[lods.Length];
+//        //for(int i=0;i<lods.Length;i++)
+//        //{
+//        //    lodsNew[i] = lods[i];
+//        //}
+
+//        LODGroupInfo groupInfo = group.GetComponent<LODGroupInfo>();
+//        if (groupInfo != null)
+//        {
+//            GameObject.DestroyImmediate(groupInfo);
+//        }
+
+//        GameObject.DestroyImmediate(group);
+
+//        LODGroup newGroup = newGroupGo.AddComponent<LODGroup>();
+//        newGroup.SetLODs(lods);
+//        //LODGroupInfo groupInfoNew=newGroupGo.AddComponent<LODGroupInfo>();
+
+//        LODGroupInfo groupInfoNew=LODGroupInfo.Init(newGroup.gameObject);
+
+
+//        //MeshRendererInfo info = MeshRendererInfo.GetInfo(group.gameObject);
+//        //info.Init();
+//        RendererId.UpdateId(goOld);
+
+
+
+//#if UNITY_EDITOR
+//        EditorHelper.SelectObject(newGroupGo);
+//#endif
+
+//#if UNITY_EDITOR
+
+//        BIMModelInfo bim = newGroupGo.GetComponentInChildren<BIMModelInfo>();
+//        if (bim)
+//        {
+//            EditorHelper.CopyComponent(newGroupGo, bim);
+//            EditorHelper.CopyComponent<RendererId>(newGroupGo, bim.gameObject);
+//            GameObject.DestroyImmediate(bim);
+//        }
+
+//        var lod1Go = groupInfoNew.LodInfos[1].GetRenderer().gameObject;
+//        EditorHelper.CopyComponent<MeshCollider>(newGroupGo, lod1Go);
+
+//        MeshCollider mc = newGroupGo.GetComponent<MeshCollider>();
+//        if (mc == null)
+//        {
+//            mc=newGroupGo.AddComponent<MeshCollider>();
+//            mc.sharedMesh = lod1Go.GetComponent<MeshFilter>().sharedMesh;
+//        }
+
+//        Collider[] colliders = newGroupGo.GetComponentsInChildren<Collider>();
+//        foreach (var c in colliders)
+//        {
+//            if (c.gameObject == newGroupGo) continue;
+//            GameObject.DestroyImmediate(c);
+//        }
+
+//        RendererId[] rids = newGroupGo.GetComponentsInChildren<RendererId>();
+//        foreach (var c in rids)
+//        {
+//            if (c.gameObject == newGroupGo) continue;
+//            GameObject.DestroyImmediate(c);
+//        }
+
+
+//#endif
+//        return newGroup;
+//    }
+
     public static LODGroup UniformLOD0(LODGroup group)
     {
         GameObject goOld = group.gameObject;
@@ -2101,95 +2229,46 @@ public static class LODHelper
         EditorHelper.UnpackPrefab(group.gameObject);
 #endif
         string origName = LODHelper.GetOriginalName(renderer.name);
-        GameObject newGroupGo = new GameObject(origName);
-        newGroupGo.transform.position = group.transform.position;
-        newGroupGo.transform.parent = group.transform.parent;
+        GameObject newLOD0 = new GameObject(origName);
 
-        group.transform.SetParent(newGroupGo.transform);
+        //TransformHelper.ClearComponents<MonoBehaviour>(newLOD0);
+        //TransformHelper.ClearComponents<Collider>(newLOD0);
+        //TransformHelper.ClearComponents<LODGroup>(newLOD0);
 
-        //List<Transform> childrens = new List<Transform>();
-        //for(int i=0;i<group.transform.childCount;i++)
-        //{
-        //    Transform child = group.transform.GetChild(i);
-        //    childrens.Add(child);
-        //}
-        //foreach(var child in childrens)
-        //{
-        //    child.SetParent(newGroupGo.transform);
-        //}
+        MeshHelper.CopyTransformMesh(group.gameObject, newLOD0);
+        MeshHelper.RemoveMeshComponents(group.gameObject,false);
+        newLOD0.transform.SetParent(group.transform);
 
-        RendererId.ChangeChildrenParent(group.transform,newGroupGo.transform);
+        MeshRenderer renderLod0New = newLOD0.GetComponent<MeshRenderer>();
+        newLOD0.name = origName + "_LOD0";
+        group.name = origName;
 
-        renderer.name = origName+"_LOD0";
         LOD[] lods = group.GetLODs();
-        //LOD[] lodsNew = new LOD[lods.Length];
-        //for(int i=0;i<lods.Length;i++)
+        if (lods[0].renderers.Length != 1)
+        {
+            Debug.LogError(@"UniformLOD0 lods[0].renderers.Length != 1");
+        }
+        lods[0].renderers = new Renderer[] { renderLod0New };
+        group.SetLODs(lods);
+
+        foreach(var lod in lods)
+        {
+            foreach(var r in lod.renderers)
+            {
+                if (r.transform.parent == group.transform.parent)
+                {
+                    r.transform.SetParent(group.transform);
+                }
+            }
+        }
+
+        //MeshCollider meshCollider = group.GetComponent<MeshCollider>();
+        //if (meshCollider != null)
         //{
-        //    lodsNew[i] = lods[i];
+        //    meshCollider.sharedMaterial=
         //}
-
-        LODGroupInfo groupInfo = group.GetComponent<LODGroupInfo>();
-        if (groupInfo != null)
-        {
-            GameObject.DestroyImmediate(groupInfo);
-        }
-
-        GameObject.DestroyImmediate(group);
-
-        LODGroup newGroup = newGroupGo.AddComponent<LODGroup>();
-        newGroup.SetLODs(lods);
-        //LODGroupInfo groupInfoNew=newGroupGo.AddComponent<LODGroupInfo>();
-
-        LODGroupInfo groupInfoNew=LODGroupInfo.Init(newGroup.gameObject);
-
-
-        //MeshRendererInfo info = MeshRendererInfo.GetInfo(group.gameObject);
-        //info.Init();
-        RendererId.UpdateId(goOld);
-
-
-
-#if UNITY_EDITOR
-        EditorHelper.SelectObject(newGroupGo);
-#endif
-
-#if UNITY_EDITOR
-
-        BIMModelInfo bim = newGroupGo.GetComponentInChildren<BIMModelInfo>();
-        if (bim)
-        {
-            EditorHelper.CopyComponent(newGroupGo, bim);
-            EditorHelper.CopyComponent<RendererId>(newGroupGo, bim.gameObject);
-            GameObject.DestroyImmediate(bim);
-        }
-
-        var lod1Go = groupInfoNew.LodInfos[1].GetRenderer().gameObject;
-        EditorHelper.CopyComponent<MeshCollider>(newGroupGo, lod1Go);
-
-        MeshCollider mc = newGroupGo.GetComponent<MeshCollider>();
-        if (mc == null)
-        {
-            mc=newGroupGo.AddComponent<MeshCollider>();
-            mc.sharedMesh = lod1Go.GetComponent<MeshFilter>().sharedMesh;
-        }
-
-        Collider[] colliders = newGroupGo.GetComponentsInChildren<Collider>();
-        foreach (var c in colliders)
-        {
-            if (c.gameObject == newGroupGo) continue;
-            GameObject.DestroyImmediate(c);
-        }
-
-        RendererId[] rids = newGroupGo.GetComponentsInChildren<RendererId>();
-        foreach (var c in rids)
-        {
-            if (c.gameObject == newGroupGo) continue;
-            GameObject.DestroyImmediate(c);
-        }
-
-
-#endif
-        return newGroup;
+        LODGroupInfo groupInfo = LODGroupInfo.Init(group.gameObject);
+        return group;
     }
 }
 
