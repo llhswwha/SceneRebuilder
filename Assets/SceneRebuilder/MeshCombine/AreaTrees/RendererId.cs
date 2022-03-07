@@ -233,7 +233,7 @@ public class RendererId
         }
         if(string.IsNullOrEmpty(parentId))
         {
-            Debug.Log($"SetParentId oldP:NULL newP:{newP} Id:{Id} name:{this.name} 12");
+            //Debug.Log($"SetParentId oldP:NULL newP:{newP} Id:{Id} name:{this.name} 12");
         }
         else if(newP != parentId)
         {
@@ -254,7 +254,7 @@ public class RendererId
         }
         if(string.IsNullOrEmpty(pid))
         {
-            Debug.LogError($"RendererId SetPid old:{parentId} new:{pid} gameObject:{this.name} parent:{p}");
+            //Debug.LogError($"RendererId SetPid old:{parentId} new:{pid} gameObject:{this.name} parent:{p}");
         }
         
         parentId = pid;

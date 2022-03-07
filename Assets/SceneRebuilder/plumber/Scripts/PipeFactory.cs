@@ -10,53 +10,63 @@ public class PipeFactory : SingletonBehaviour<PipeFactory>
 {
     public GameObject Target;
 
+    public MeshRendererInfoList TotalObjs = new MeshRendererInfoList();
+
     public List<Transform> PipeLines = new List<Transform>();
 
-    public List<Transform> PipeElbows = new List<Transform>();
+    //public List<Transform> PipeElbows = new List<Transform>();
+
+    public MeshRendererInfoList PipeElbows = new MeshRendererInfoList();
 
     public List<Transform> PipeTees = new List<Transform>();
 
     public List<Transform> PipeReducers = new List<Transform>();
 
-    public List<Transform> PipeFlanges = new List<Transform>();
+    public MeshRendererInfoList PipeFlanges = new MeshRendererInfoList();
 
     public List<Transform> PipeWeldolets = new List<Transform>();
 
     public List<Transform> PipeWelds = new List<Transform>();
 
-    public List<Transform> PipeOthers = new List<Transform>();
+    public MeshRendererInfoList PipeOthers = new MeshRendererInfoList();
 
-    public int TotalPipeOthersVertexCount = 0;
+    public MeshRendererInfoList IgnoredObjs = new MeshRendererInfoList();
+
+    //public int TotalPipeOthersVertexCount = 0;
 
     public List<Transform> PipeWeldsNew = new List<Transform>();
 
-    public List<Transform> BoxModels = new List<Transform>();
+    public MeshRendererInfoList BoxModels = new MeshRendererInfoList();
 
-    public int TotalBoxModelsVertexCount = 0;
+    //public int TotalBoxModelsVertexCount = 0;
 
     private void ClearList()
     {
+        TotalObjs = new MeshRendererInfoList();
+
+        IgnoredObjs = new MeshRendererInfoList();
+
         PipeLines = new List<Transform>();
 
-        PipeElbows = new List<Transform>();
+        PipeElbows = new MeshRendererInfoList();
 
         PipeTees = new List<Transform>();
 
         PipeReducers = new List<Transform>();
 
-        PipeFlanges = new List<Transform>();
+        PipeFlanges = new MeshRendererInfoList();
 
-        PipeOthers = new List<Transform>();
+        PipeOthers = new MeshRendererInfoList();
 
         //PipeWelds = new List<Transform>();
 
         PipeWeldolets = new List<Transform>();
 
-        BoxModels = new List<Transform>();
+        BoxModels = new MeshRendererInfoList();
 
-        TotalBoxModelsVertexCount = 0;
+        //TotalBoxModelsVertexCount = 0;
 
-        TotalPipeOthersVertexCount = 0;
+        //TotalPipeOthersVertexCount = 0;
     }
 
     public void ClearDebugObjs()
@@ -136,7 +146,21 @@ public class PipeFactory : SingletonBehaviour<PipeFactory>
         return weldsCount;
     }
 
+    private int OneKey_GetBoxInfos(bool isJob)
+    {
+        Target.SetActive(true);
 
+        GetTargetInfoBefore();
+
+        //this.ClearGeneratedObjs();
+        this.GetPipeParts();
+
+        int weldsCount = this.PipeWelds.Count;
+
+        this.GetBoxInfos();
+
+        return weldsCount;
+    }
 
     private string AfterGeneratePipes(bool isMoveToBuilder,bool isPrefabGos)
     {
@@ -156,14 +180,6 @@ public class PipeFactory : SingletonBehaviour<PipeFactory>
 
     public void OneKey(bool isJob)
     {
-        //DateTime start = DateTime.Now;
-        //int weldsCount = OneKey_GetPipeInfos(isJob);
-        //OneKeyGeneratePipes(isJob, false);//not removeMesh
-        //string pefabLog = AfterGeneratePipes(true);
-        //int lastWeldCount = ReplaceOldPipeMesh(true);
-        //GetResultInfoAfter();
-        //Debug.LogError($"OneKey target:{Target.name} arg:({generateArg}) time:{DateTime.Now - start} Models:{newBuilder.PipeModels.Count + PipeOthers.Count + weldsCount}={newBuilder.PipeModels.Count}+{PipeOthers.Count}+{weldsCount}({lastWeldCount})) {pefabLog} TargetInfo:{TargetInfo} -> ResultInfo:{ResultInfo} ({ResultVertexCount / TargetVertexCount:P2},{SharedResultVertexCountCount / TargetVertexCount:P2})");
-
         OneKeyCore(isJob, false, true);
     }
 
@@ -225,7 +241,7 @@ public class PipeFactory : SingletonBehaviour<PipeFactory>
 
         DateTime start3 = DateTime.Now;
         string pefabLog = AfterGeneratePipes(isMoveToBuilder, IsPrefabGos);//not move
-        int lastWeldCount = ReplaceOldPipeMesh(false);
+        int lastWeldCount = ReplaceOldPipeMesh(!isRemoveMesh);
         TimeSpan prefabTime = DateTime.Now - start3;
 
         GetResultInfoAfter();
@@ -500,6 +516,12 @@ public class PipeFactory : SingletonBehaviour<PipeFactory>
             {
                 PrefabInstanceBuilder.Instance.GetPrefabsOfList(lastWeldList, true, "Welds(Old)",IsOthersTryRT);
             }
+
+            var boxes = newBuilder.NoRendererBoxes;
+            if (boxes.Count > 0)
+            {
+                PrefabInstanceBuilder.Instance.GetPrefabsOfList(boxes, true, "Boxes", IsOthersTryRT);
+            }
         }
         return lastWeldCount;
     }
@@ -673,6 +695,28 @@ public class PipeFactory : SingletonBehaviour<PipeFactory>
         ProgressBarHelper.ClearProgressBar();
     }
 
+    public void AddList(MeshRendererInfoList list, List<Transform> newList)
+    {
+        for (int i = 0; i < newList.Count; i++)
+        {
+            Transform item = newList[i];
+            if (item.GetComponent<MeshRenderer>() == null) continue;
+            MeshFilter mf = item.GetComponent<MeshFilter>();
+            if (mf == null)
+            {
+                Debug.LogError($"PipeFactory.AddList MeshFilter==null item:{item}");
+                continue;
+            }
+
+            if (mf.sharedMesh == null)
+            {
+                Debug.LogError($"PipeFactory.AddList sharedMesh==null item:{item}");
+                continue;
+            }
+            list.AddTransform(item);
+        }
+    }
+
     public void AddList(List<Transform> list,List<Transform> newList)
     {
         for (int i = 0; i < newList.Count; i++)
@@ -772,6 +816,9 @@ public class PipeFactory : SingletonBehaviour<PipeFactory>
             }
 
             var list = modelClassList.GetList(key);
+
+            AddList(TotalObjs, list);
+
             if (IsPipe(key)) 
             {
                 AddList(PipeLines, list);
@@ -828,7 +875,11 @@ public class PipeFactory : SingletonBehaviour<PipeFactory>
                     if (weldModel != null) continue;
                     
                     int vertexCount = mf.sharedMesh.vertexCount;
-                    if (vertexCount > maxVertexCount) continue;
+                    if (vertexCount > maxVertexCount)
+                    {
+                        IgnoredObjs.AddTransform(item);
+                        continue;
+                    }
 
                     //if (mf.name.Contains("_Combined_")) continue;
                     //if (mf.sharedMesh.name.Contains("_Combined_")) continue;
@@ -839,14 +890,14 @@ public class PipeFactory : SingletonBehaviour<PipeFactory>
                     {
                         item.gameObject.SetActive(true);
 
-                        BoxModels.Add(item);
+                        BoxModels.AddTransform(item);
                         
-                        TotalBoxModelsVertexCount += vertexCount;
+                        //TotalBoxModelsVertexCount += vertexCount;
                     }
                     else
                     {
-                        PipeOthers.Add(item);
-                        TotalPipeOthersVertexCount += vertexCount;
+                        PipeOthers.AddTransform(item);
+                        //TotalPipeOthersVertexCount += vertexCount;
                     }
 
                     //PipeOthers.Add(item);
@@ -1138,11 +1189,20 @@ public class PipeFactory : SingletonBehaviour<PipeFactory>
         }
     }
 
+    public void SetListVisible(MeshRendererInfoList renderers, bool isVisible)
+    {
+        foreach (var item in renderers)
+        {
+            if (item == null) continue;
+            item.gameObject.SetActive(isVisible);
+        }
+    }
+
     public Transform OthersRoot = null;
 
     public void MoveOthersParent()
     {
-        OthersRoot = RendererId.MoveTargetsParent(PipeOthers, OthersRoot, "PipeOther");
+        OthersRoot = RendererId.MoveTargetsParent(PipeOthers.GetTransforms(), OthersRoot, "PipeOther");
         OthersRoot.transform.SetParent(this.transform);
     }
 
@@ -1158,7 +1218,7 @@ public class PipeFactory : SingletonBehaviour<PipeFactory>
 
     public void RecoverOthersParent()
     {
-        RendererId.RecoverTargetsParent(PipeOthers, null);
+        RendererId.RecoverTargetsParent(PipeOthers.GetTransforms(), null);
     }
 
     public List<Transform> GetWelds()
@@ -1516,7 +1576,8 @@ public class PipeFactory : SingletonBehaviour<PipeFactory>
         int count1 = PipeOthers.Count;
         PrefabInfoList prefabs =PrefabInstanceBuilder.Instance.GetPrefabsOfList(PipeOthers, true, "_Others",IsOthersTryRT);
         PipeOthers.Clear();
-        PipeOthers.AddRange(prefabs.GetComponents<Transform>());
+        //PipeOthers.AddRange(prefabs.GetComponents<Transform>());
+        PipeOthers.AddRange(prefabs.GetComponents<MeshRendererInfo>());
         Debug.Log($"PrefabOthers time:{DateTime.Now-start} count1:{count1} Others:{this.PipeOthers.Count} prefabs:{prefabs.Count}");
         //RecoverOthersParent();
         return prefabs;
@@ -1575,6 +1636,19 @@ public class PipeFactory : SingletonBehaviour<PipeFactory>
 
         newBuilder.isUniformRaidus = this.isUniformRaidus;
         newBuilder.GetPipeInfosEx();
+
+        ProgressBarHelper.ClearProgressBar();
+    }
+
+    [ContextMenu("GetBoxInfos")]
+    public void GetBoxInfos()
+    {
+        InitPipeBuilder();
+
+        //newBuilder.ClearGeneratedObjs();
+
+        newBuilder.isUniformRaidus = this.isUniformRaidus;
+        newBuilder.GetBoxInfos();
 
         ProgressBarHelper.ClearProgressBar();
     }
@@ -1698,6 +1772,30 @@ public class PipeFactory : SingletonBehaviour<PipeFactory>
         ResultInfo= ShowTargetInfo(newBuilder.gameObject);
     }
 
+    [ContextMenu("RendererBoxes")]
+    public void RendererBoxes()
+    {
+        //InitPipeBuilder();
+        newBuilder.isUniformRaidus = this.isUniformRaidus;
+        newBuilder.IsCreatePipeRuns = this.IsCreatePipeRuns;
+        newBuilder.IsSaveMaterials = this.IsSaveMaterials;
+        newBuilder.IsCopyComponents = this.IsCopyComponents;
+
+        newBuilder.minWeldDis = this.minWeldDis;
+        newBuilder.maxWeldDis = this.maxWeldDis;
+
+        //newBuilder.CreatePipeRunList();
+
+        newBuilder.NewObjName = NewObjName;
+        newBuilder.generateArg = generateArg;
+
+        newBuilder.RendererBoxModels();
+
+        ProgressBarHelper.ClearProgressBar();
+
+        ResultInfo = ShowTargetInfo(newBuilder.gameObject);
+    }
+
     [ContextMenu("CheckResults")]
     public void CheckResults()
     {
@@ -1736,7 +1834,7 @@ public class PipeFactory : SingletonBehaviour<PipeFactory>
         }
         if(EnablePipeElbow)
         {
-            newBuilder.PipeElbowGos = PipeElbows;
+            newBuilder.PipeElbowGos = PipeElbows.GetTransforms();
         }
         else
         {
@@ -1753,7 +1851,7 @@ public class PipeFactory : SingletonBehaviour<PipeFactory>
         }
         if (EnablePipeFlange)
         {
-            newBuilder.PipeFlangeGos = PipeFlanges;
+            newBuilder.PipeFlangeGos = PipeFlanges.GetTransforms();
         }
         else
         {
@@ -1779,7 +1877,7 @@ public class PipeFactory : SingletonBehaviour<PipeFactory>
 
         if (EnableBoxModel)
         {
-            newBuilder.BoxModelGos = BoxModels;
+            newBuilder.BoxModelGos = BoxModels.GetTransforms();
         }
         else
         {

@@ -242,6 +242,10 @@ public class LODManager : SingletonBehaviour<LODManager>
             if (render_lod0 == null) continue;
             var vertexCount0 = item.vertexCount0;
             var vertexCount1 = item.vertexCount1;
+            if(vertexCount0== vertexCount1)
+            {
+                continue;
+            }
             if (minDis <= zeroDistance)
             {
                 if (DoCreateGroup)
@@ -436,7 +440,7 @@ public class LODManager : SingletonBehaviour<LODManager>
         }
         string name = LODnRoot.name;
         if (name.Contains("_LOD") == false) return 0;
-        string[] parts = name.Split('_');
+        string[] parts = name.Split(new string[] { "_LOD" },StringSplitOptions.RemoveEmptyEntries);
         if (parts.Length == 2)
         {
             try

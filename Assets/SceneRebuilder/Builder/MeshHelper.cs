@@ -3522,11 +3522,11 @@ public class MeshReplaceItem
             float dis = MeshHelper.GetVertexDistanceEx(newGo, target.gameObject);
             if (dis > 0.0001f)
             {
-                Debug.LogError($"Replace[{i}][{p1.progress:P2}] prefab:{prefab.name} target:{target.name} dis:{dis}");
+                Debug.LogError($"Replace[{i}][{p1.progress:P2}] prefab:{prefab.name} target:{target.name} dis:{dis} transfromAlignSetting:{transfromReplaceSetting}");
             }
             else
             {
-                Debug.Log($"Replace[{i}][{p1.progress:P2}] prefab:{prefab.name} target:{target.name} dis:{dis}");
+                Debug.Log($"Replace[{i}][{p1.progress:P2}] prefab:{prefab.name} target:{target.name} dis:{dis}  transfromAlignSetting:{transfromReplaceSetting}");
             }
             //targetDistance.Add(dis);
             target.dis = dis;
@@ -3558,11 +3558,7 @@ public class MeshReplaceItem
 
     public void ApplyNewGos()
     {
-        foreach (var target in targetList)
-        {
-            if (target == null) continue;
-            target.DestroyImmediate();
-        }
+
         foreach (var target in targetList)
         {
             GameObject targetNew = target.newGo;
@@ -3570,11 +3566,24 @@ public class MeshReplaceItem
             targetNew.name = targetNew.name.Replace("_New", "");
 
             MeshRendererInfo info = targetNew.GetComponent<MeshRendererInfo>();
+            RendererId id1 = target.gameObject.GetComponent<RendererId>();
+            RendererId id2 = targetNew.GetComponent<RendererId>();
+            if (id1 != null && id2 != null)
+            {
+                id2.Id = id1.Id;
+            }
             if (info)
             {
                 GameObject.DestroyImmediate(info);
             }
         }
+
+        foreach (var target in targetList)
+        {
+            if (target == null) continue;
+            target.DestroyImmediate();
+        }
+
         targetList.Clear();
         //targetList.AddRange(targetListNew);
         //targetListNew.Clear();

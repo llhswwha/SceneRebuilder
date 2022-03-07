@@ -17,9 +17,11 @@ public class BoxMeshModel : BaseMeshModel
 
     public OrientedBoundingBox OBB;
 
-    private static float minNormalDis = 0.005f;//0.0005f;
+    public float minNormalDis = 0.005f;//0.0005f;
 
-    private static float minAngleDis = 0.08f;//0.005f;
+    public float minAngleDis = 0.08f;//0.005f;
+
+    public float minSamePlaneNormalDis = 0.0001f;
 
 
     public static int ErrorCount = 0;
@@ -35,7 +37,7 @@ public class BoxMeshModel : BaseMeshModel
         MeshTriangles meshTriangles = new MeshTriangles(mesh);
         //Debug.Log($"GetModelInfo mesh vertexCount:{mesh.vertexCount} triangles:{mesh.triangles.Length}");
         //meshTriangles.ShowCirclesById(this.transform, PointScale, 0, 3, minRepeatPointDistance);
-        var sharedPoints1 = meshTriangles.GetSharedMeshTrianglesListByNormal(0, minRepeatPointDistance,this.name);
+        var sharedPoints1 = meshTriangles.GetSharedMeshTrianglesListByNormal(0, minSamePlaneNormalDis, this.name);
         //sharedPoints1.SortByCount();
         if (sharedPoints1.Count == 6)
         {
@@ -73,6 +75,26 @@ public class BoxMeshModel : BaseMeshModel
                         float angle2 = Vector3.Angle(dir1, dir3);
                         float angle3 = Vector3.Angle(dir2, dir3);
 
+                        //if (Mathf.Abs(angle1 - 90) < minAngleDis && Mathf.Abs(angle2 - 90) < minAngleDis && Mathf.Abs(angle3 - 90) < minAngleDis)
+                        //{
+                        //    float length1 = Vector3.Distance(c1, c2);
+                        //    float length2 = Vector3.Distance(c3, c4);
+                        //    float length3 = Vector3.Distance(c5, c6);
+                        //    IsGetInfoSuccess = true;
+                        //    //Debug.Log($"GetModelInfo length1:{length1} length2:{length2} length3:{length3}");
+                        //    OBB = new OrientedBoundingBox();
+                        //    //OBB.Center = this.transform.position;
+                        //    OBB.Center = Vector3.zero;
+                        //    OBB.Extent = new Vector3(length1 / 2, length2 / 2, length3 / 2);
+                        //    OBB.Right = dir1;
+                        //    OBB.Up = dir2;
+                        //    OBB.Forward = dir3;
+                        //}
+                        //else
+                        //{
+                        //    IsGetInfoSuccess = false;
+                        //    Debug.LogError($"GetModelInfo[{ErrorCount++}]({minAngleDis}) gameObject:{this.name} angle1:{angle1}({Mathf.Abs(angle1 - 90)}) angle2:{angle2}({Mathf.Abs(angle2 - 90)}) angle3:{angle3}({Mathf.Abs(angle3 - 90)})");
+                        //}
 
                         if (Mathf.Abs(angle1 - 90) < minAngleDis && Mathf.Abs(angle2 - 90) < minAngleDis && Mathf.Abs(angle3 - 90) < minAngleDis)
                         {
@@ -91,7 +113,6 @@ public class BoxMeshModel : BaseMeshModel
                         }
                         else
                         {
-
                             IsGetInfoSuccess = false;
                             Debug.LogError($"GetModelInfo[{ErrorCount++}]({minAngleDis}) gameObject:{this.name} angle1:{angle1}({Mathf.Abs(angle1 - 90)}) angle2:{angle2}({Mathf.Abs(angle2 - 90)}) angle3:{angle3}({Mathf.Abs(angle3 - 90)})");
                         }
@@ -101,7 +122,7 @@ public class BoxMeshModel : BaseMeshModel
                         plane6 = sharedPoints1.GetClosedPlaneByNormal(-plane5.Normal, minNormalDis);
                         var dis = Vector3.Distance(-plane5.Normal, plane6.Normal);
                         IsGetInfoSuccess = false;
-                        Debug.LogError($"GetModelInfo[{ErrorCount++}] plane6 == null gameObject:{this.name} normal:{-plane5.Normal} dis:{dis} minNormalDis:{minNormalDis}");
+                        Debug.LogWarning($"GetModelInfo[{ErrorCount++}] plane6 == null gameObject:{this.name} normal:{-plane5.Normal} dis:{dis} minNormalDis:{minNormalDis}");
                     }
                 }
                 else
@@ -109,7 +130,7 @@ public class BoxMeshModel : BaseMeshModel
                     plane4 = sharedPoints1.GetClosedPlaneByNormal(-plane3.Normal, minNormalDis);
                     var dis = Vector3.Distance(-plane3.Normal, plane4.Normal);
                     IsGetInfoSuccess = false;
-                    Debug.LogError($"GetModelInfo[{ErrorCount++}] plane4 == null gameObject:{this.name} normal:{-plane3.Normal} dis:{dis} minNormalDis:{minNormalDis}");
+                    Debug.LogWarning($"GetModelInfo[{ErrorCount++}] plane4 == null gameObject:{this.name} normal:{-plane3.Normal} dis:{dis} minNormalDis:{minNormalDis}");
                 }
             }
             else
@@ -117,7 +138,7 @@ public class BoxMeshModel : BaseMeshModel
                 plane2 = sharedPoints1.GetClosedPlaneByNormal(-plane1.Normal, minNormalDis);
                 var dis = Vector3.Distance(-plane1.Normal, plane2.Normal);
                 IsGetInfoSuccess = false;
-                Debug.LogError($"GetModelInfo[{ErrorCount++}] plane2 == null gameObject:{this.name} normal:{-plane1.Normal} dis:{dis} minNormalDis:{minNormalDis}");
+                Debug.LogWarning($"GetModelInfo[{ErrorCount++}] plane2 == null gameObject:{this.name} normal:{-plane1.Normal} dis:{dis} minNormalDis:{minNormalDis}");
             }
         }
         else

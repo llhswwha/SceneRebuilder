@@ -58,24 +58,29 @@ public class PipeFactoryEditor : BaseFoldoutEditor<PipeFactory>
 
         GUILayout.BeginHorizontal();
         int toggleWidth = 30;
+        float totalVertex = targetT.TotalObjs.GetVertexCount();
+        GUILayout.Label($"Total({targetT.TotalObjs.GetCountVertex()})");
+        GUILayout.Label($"Ignore({targetT.IgnoredObjs.GetCountVertex(totalVertex)})");
         GUILayout.Label($"Line({targetT.PipeLines.Count})");
         targetT.EnablePipeLine = EditorGUILayout.Toggle(targetT.EnablePipeLine);
-        GUILayout.Label($"Elbow({targetT.PipeElbows.Count})");
+        GUILayout.Label($"Elbow({targetT.PipeElbows.GetCountVertex(totalVertex)})");
         targetT.EnablePipeElbow = EditorGUILayout.Toggle(targetT.EnablePipeElbow);
         GUILayout.Label($"Tee({targetT.PipeTees.Count})");
         targetT.EnablePipeTee = EditorGUILayout.Toggle(targetT.EnablePipeTee);
         GUILayout.Label($"Reducer({targetT.PipeReducers.Count})");
         targetT.EnablePipeReducer = EditorGUILayout.Toggle(targetT.EnablePipeReducer);
-        GUILayout.Label($"Flange({targetT.PipeFlanges.Count})");
+        GUILayout.Label($"Flange({targetT.PipeFlanges.GetCountVertex(totalVertex)})");
         targetT.EnablePipeFlange = EditorGUILayout.Toggle(targetT.EnablePipeFlange);
         GUILayout.Label($"Weldolet({targetT.PipeWeldolets.Count})");
         targetT.EnablePipeWeldolet = EditorGUILayout.Toggle(targetT.EnablePipeWeldolet);
+       
+        GUILayout.EndHorizontal();
+
+        GUILayout.BeginHorizontal();
         GUILayout.Label($"Welds({targetT.PipeWelds.Count})");
         GUILayout.Label($"WeldsNew({targetT.PipeWeldsNew.Count})");
-        GUILayout.EndHorizontal();
-        GUILayout.BeginHorizontal();
-        GUILayout.Label($"Others({targetT.PipeOthers.Count},v:{MeshHelper.GetVertexCountS(targetT.TotalPipeOthersVertexCount)})");
-        GUILayout.Label($"Box({targetT.BoxModels.Count},v:{MeshHelper.GetVertexCountS(targetT.TotalBoxModelsVertexCount)})");
+        GUILayout.Label($"Others({targetT.PipeOthers.GetCountVertex(totalVertex)})");
+        GUILayout.Label($"Box({targetT.BoxModels.GetCountVertex(totalVertex)})");
         targetT.EnableBoxModel = EditorGUILayout.Toggle(targetT.EnableBoxModel);
         //GUILayout.Label($"Box({targetT.BoxModels.Count},v:{MeshHelper.GetVertexCountS(targetT.TotalBoxModelsVertexCount)})");
         GUILayout.EndHorizontal();
@@ -139,6 +144,10 @@ public class PipeFactoryEditor : BaseFoldoutEditor<PipeFactory>
         {
             targetT.DebugOneKey3();
         }
+        //if (GUILayout.Button("OneKey(Box)"))
+        //{
+        //    targetT.OneKeyBox(true);
+        //}
         GUILayout.EndHorizontal();
 
         GUILayout.BeginHorizontal();
@@ -380,8 +389,12 @@ public class PipeFactoryEditor : BaseFoldoutEditor<PipeFactory>
         DrawObjectList(weldListArg, "Welds", targetT.PipeWelds, null, null, null);
         
         DrawObjectList(weldNewListArg, "Welds(New)", targetT.PipeWeldsNew, null, null, null);
-        DrawObjectList(othersListArg, "Others", targetT.PipeOthers, null, null, null);
+        //DrawObjectList(othersListArg, "Others", targetT.PipeOthers, null, null, null);
+        BaseFoldoutEditorHelper.DrawRendererInfoList("Others", targetT.PipeOthers, othersListArg);
         DrawObjectList(boxListArg, "Box", targetT.BoxModels, null, null, null);
+        DrawObjectList(ignoreListArg, "Ignore", targetT.IgnoredObjs, null, null, null);
+
+        
     }
     static FoldoutEditorArg pipeWeldPrefabDataListArg = new FoldoutEditorArg(true, false);
     static FoldoutEditorArg pipeWeldPrefabMeshListArg = new FoldoutEditorArg(true, false);
@@ -396,6 +409,7 @@ public class PipeFactoryEditor : BaseFoldoutEditor<PipeFactory>
     static FoldoutEditorArg reducerListArg = new FoldoutEditorArg(true, false);
     static FoldoutEditorArg weldoletListArg = new FoldoutEditorArg(true, false);
     static FoldoutEditorArg boxListArg = new FoldoutEditorArg(true, false);
+    static FoldoutEditorArg ignoreListArg = new FoldoutEditorArg(true, false);
     static PipeModelFoldoutEditorArg specialElbowListArg = new PipeModelFoldoutEditorArg(true, false);
     public override void OnEnable()
     {

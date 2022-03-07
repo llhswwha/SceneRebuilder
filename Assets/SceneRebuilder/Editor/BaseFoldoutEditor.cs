@@ -1941,6 +1941,24 @@ public static class BaseFoldoutEditorHelper
         () =>
         {
             //searchKey = GUILayout.TextField(searchKey);
+            if (GUILayout.Button("Clear", GUILayout.Width(60)))
+            {
+                list.Clear();
+            }
+            if (GUILayout.Button("DestroyGo", GUILayout.Width(80)))
+            {
+                foreach (MeshRendererInfo item in list)
+                {
+                    if (item == null) continue;
+                    {
+                        GameObject go = item.gameObject;
+                        if (go == null) continue;
+                        EditorHelper.UnpackPrefab(go);
+                        GameObject.DestroyImmediate(go);
+                    }
+                }
+                list.Clear();
+            }
         });
         if (arg.isEnabled && arg.isExpanded)
         {

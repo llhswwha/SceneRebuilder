@@ -519,7 +519,7 @@ public class OBBCollider : MonoBehaviour
         var angleForward = Vector3.Angle(t.forward, OBB.Forward);
         float sunAngle = GetAngleOffset(angleRight) + GetAngleOffset(angleUp) + GetAngleOffset(angleForward);
 
-        Debug.Log($"CreateObbBox1 gameObject:{name}| OBB.Up:{OBB.Up} right:{OBB.Right} Right:{angleRight} Up:{angleUp} Forward:{angleForward} sunAngle:{sunAngle}");
+        //Debug.Log($"CreateObbBox1 gameObject:{name}| OBB.Up:{OBB.Up} right:{OBB.Right} Right:{angleRight} Up:{angleUp} Forward:{angleForward} sunAngle:{sunAngle}");
 
         Quaternion qua1 = Quaternion.FromToRotation(t.right, OBB.Right);//两条法线之间的角度变化
         t.rotation = qua1 * t.rotation;//旋转tempCenter，对齐两条法线
@@ -533,7 +533,7 @@ public class OBBCollider : MonoBehaviour
         angleUp = Vector3.Angle(t.up, OBB.Up);
         angleForward = Vector3.Angle(t.forward, OBB.Forward);
         sunAngle = GetAngleOffset(angleRight) + GetAngleOffset(angleUp) + GetAngleOffset(angleForward);
-        Debug.Log($"CreateObbBox2 gameObject:{name}| OBB.Up:{OBB.Up} right:{OBB.Right} Right:{angleRight} Up:{angleUp} Forward:{angleForward} sunAngle:{sunAngle}");
+        //Debug.Log($"CreateObbBox2 gameObject:{name}| OBB.Up:{OBB.Up} right:{OBB.Right} Right:{angleRight} Up:{angleUp} Forward:{angleForward} sunAngle:{sunAngle}");
 
         if (sunAngle > 0.3)
         {
@@ -547,7 +547,7 @@ public class OBBCollider : MonoBehaviour
             angleUp = Vector3.Angle(t.up, OBB.Up);
             angleForward = Vector3.Angle(t.forward, OBB.Forward);
             sunAngle = GetAngleOffset(angleRight) + GetAngleOffset(angleUp) + GetAngleOffset(angleForward);
-            Debug.Log($"CreateObbBox3 gameObject:{name}| OBB.Up:{OBB.Up} right:{OBB.Right} Right:{angleRight} Up:{angleUp} Forward:{angleForward} sunAngle:{sunAngle}");
+            //Debug.Log($"CreateObbBox3 gameObject:{name}| OBB.Up:{OBB.Up} right:{OBB.Right} Right:{angleRight} Up:{angleUp} Forward:{angleForward} sunAngle:{sunAngle}");
 
 
             if (sunAngle > 0.3)
@@ -559,7 +559,7 @@ public class OBBCollider : MonoBehaviour
                 angleUp = Vector3.Angle(t.up, OBB.Up);
                 angleForward = Vector3.Angle(t.forward, OBB.Forward);
                 sunAngle = GetAngleOffset(angleRight) + GetAngleOffset(angleUp) + GetAngleOffset(angleForward);
-                Debug.Log($"CreateObbBox4 gameObject:{name}| OBB.Up:{OBB.Up} right:{OBB.Right} Right:{angleRight} Up:{angleUp} Forward:{angleForward} sunAngle:{sunAngle}");
+                //Debug.Log($"CreateObbBox4 gameObject:{name}| OBB.Up:{OBB.Up} right:{OBB.Right} Right:{angleRight} Up:{angleUp} Forward:{angleForward} sunAngle:{sunAngle}");
             }
         }
 

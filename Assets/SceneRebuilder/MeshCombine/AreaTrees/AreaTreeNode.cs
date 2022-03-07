@@ -1158,6 +1158,8 @@ public class AreaTreeNode : SubSceneCreater
             if (renderersRoot)
             {
                 renderersRoot.SetActive(false);
+
+                DynamicCullingManage.Instance.RemoveObjects(Renderers.ToArray());
             }
 
             //MeshRenderer mr = this.GetComponent<MeshRenderer>();

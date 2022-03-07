@@ -727,6 +727,10 @@ UnpackPrefab();
             //        continue;
             //    }
             //}
+            if(mp.sharedMesh.name=="Cube")
+            {
+                continue;
+            }
  
             if (mp.vertexCount> MaxVertexCount)
             {

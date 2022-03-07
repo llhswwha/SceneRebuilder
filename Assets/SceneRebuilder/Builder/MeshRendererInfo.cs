@@ -985,6 +985,19 @@ public class MeshRendererInfoList:List<MeshRendererInfo>
         return renderers;
     }
 
+    public List<Transform> GetTransforms()
+    {
+        List<Transform> renderers = new List<Transform>();
+        foreach (var item in this)
+        {
+            //var rs = item.GetComponentsInChildren<Transform>(true);
+            //renderers.AddRange(rs);
+            var t = item.GetComponent<Transform>();
+            renderers.Add(t);
+        }
+        return renderers;
+    }
+
     public MeshRenderer[][] GetRenderersArray()
     {
         List<MeshRenderer[]> renderersList = new List<MeshRenderer[]>();
@@ -1274,6 +1287,22 @@ public class MeshRendererInfoList:List<MeshRendererInfo>
     public void SetLODInfo()
     {
 
+    }
+
+    public void AddTransform(Transform t)
+    {
+        MeshRendererInfo mr = MeshRendererInfo.GetInfo(t.gameObject);
+        base.Add(mr);
+    }
+
+    public string GetCountVertex()
+    {
+        return $"{Count},v:{MeshHelper.GetVertexCountS(GetVertexCount())}";
+    }
+
+    public string GetCountVertex(float total)
+    {
+        return $"{Count},v:{MeshHelper.GetVertexCountS(GetVertexCount())}({GetVertexCount()/total:P1})";
     }
 }
 
