@@ -22,7 +22,7 @@ public class BoundsBox : NoCombine
         }
         else
         {
-            Debug.LogError($"BoundsBox name:{this.name}");
+            //Debug.LogError($"BoundsBox.Awake name:{this.name} childCount:{this.transform.childCount}");
         }
     }
 }

@@ -217,7 +217,12 @@ public static class IdDictionary
         //Debug.Log($"RendererDictionay.InitRenderers tag:{tag} objs:{objs.Count()},idCount:{idCount} count1:{count1} count2:{count2} add:{count2-count1} time:{(DateTime.Now - start)}");
     }
 
-    public static GameObject GetGo(string id,string goName="", bool showLog = true)
+    public static GameObject GetParentGo(RendererId rId)
+    {
+        return GetGo(rId.parentId, rId.name);
+    }
+
+        public static GameObject GetGo(string id,string goName="", bool showLog = true)
     {
         //if(string.IsNullOrEmpty(id)){
         //    Debug.LogError($"RendererDictionay.GetGo IsNullOrEmpty !!! ,Dict:{IdDict.Count}");

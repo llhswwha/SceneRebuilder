@@ -492,7 +492,7 @@ public class AreaTreeManager : SingletonBehaviour<AreaTreeManager>
             Debug.Log("AreaTreeManager.AddTrees trees == null");
             return;
         }
-        Debug.Log("AreaTreeManager.AddTrees:"+trees.Length);
+        //Debug.Log("AreaTreeManager.AddTrees:"+trees.Length);
 
         foreach(var tree in trees)
         {

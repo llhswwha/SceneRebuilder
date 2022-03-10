@@ -542,9 +542,15 @@ public class BuildingModelInfo : SubSceneCreater
     public void ClearTrees()
     {
         UpdateTrees();
+        IdDictionary.InitInfos();
         foreach (var t in GetTrees())
         {
-            t.RecoverParentEx(this.transform);
+            if (t.IsSceneLoaded() == false)
+            {
+                Debug.LogError($"ClearTrees IsSceneLoaded() == false tree:{t}");
+                continue;
+            }
+            t.RecoverParent(this.transform);
             EditorHelper.UnpackPrefab(t.gameObject);
             GameObject.DestroyImmediate(t.gameObject);
         }
@@ -1047,6 +1053,8 @@ public class BuildingModelInfo : SubSceneCreater
 
     public void CreateTreesBSEx(bool isLod, Action<ProgressArg> progressChanged)
     {
+        DateTime start = DateTime.Now;
+
         BuildingModelInfo[] subModels = this.GetComponentsInChildren<BuildingModelInfo>(true);
         if (subModels.Length > 1)
         {
@@ -1056,7 +1064,6 @@ public class BuildingModelInfo : SubSceneCreater
         AreaTreeManager.Instance.ClearCount();
 
         AreaTreeManager.Instance.IsByLOD = isLod;
-        DateTime start = DateTime.Now;
 
         InitInOut(false);
 
@@ -1073,7 +1080,7 @@ public class BuildingModelInfo : SubSceneCreater
         AreaTreeManager.Instance.AddTrees(trees);
         if(progressChanged==null)
             ProgressBarHelper.ClearProgressBar();
-        Debug.LogError($"CreateTreesBSEx {(DateTime.Now - start).ToString()}");
+        Debug.LogWarning($"CreateTreesBSEx {(DateTime.Now - start).ToString()}");
     }
 
     [ContextMenu("* CreateTreesByLOD")]
@@ -1110,7 +1117,7 @@ public class BuildingModelInfo : SubSceneCreater
             return null;
         }
         //trees = CreateTreesInner();
-        Debug.Log("CreateTrees_BigSmall");
+        //Debug.Log("CreateTrees_BigSmall");
         AreaTreeManager treeManager = GameObject.FindObjectOfType<AreaTreeManager>();
         if (treeManager)
         {
@@ -1926,7 +1933,7 @@ public class BuildingModelInfo : SubSceneCreater
 
         UpdateSceneList();
 
-        EditorSavePrefab();
+        //EditorSavePrefab();
         if (progressChanged == null) Debug.LogError($"BuildingModelInfo.EditorCreateNodeScenes time:{(DateTime.Now - start)}");
     }
 

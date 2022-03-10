@@ -43,9 +43,39 @@ public class BuildingScenesLoadManager : MonoBehaviour
 
     }
 
+    [ContextMenu("CreateScenes")]
+    public void CreateScenes()
+    {
+        var trees = ModelTarget.GetComponentsInChildren<ModelAreaTree>();
+        for(int i=0;i<trees.Length;i++)
+        {
+            //trees[i].EditorCreateScenes();
+        }
+    }
+
+    [ContextMenu("LoadScenes")]
+    public void LoadScenes()
+    {
+        if (ModelTarget == null)
+        {
+            Debug.LogError($"BuildingScenesLoadManager.LoadScenes ModelTarget == null");
+            return;
+        }
+        var trees = ModelTarget.GetComponentsInChildren<ModelAreaTree>();
+        for (int i = 0; i < trees.Length; i++)
+        {
+            //trees[i].EditorCreateScenes();
+        }
+    }
+
     [ContextMenu("LoadScenesBySetting")]
     public void LoadScenesBySetting()
     {
+        if (ModelTarget == null)
+        {
+            Debug.LogError($"BuildingScenesLoadManager.LoadScenesBySetting ModelTarget == null");
+            return;
+        }
         DepNode[] bcs = ModelTarget.GetComponentsInChildren<DepNode>(true);
         Dictionary<string, DepNode> depDict = new Dictionary<string, DepNode>();
         foreach (var bc in bcs)
@@ -165,6 +195,11 @@ public class BuildingScenesLoadManager : MonoBehaviour
     [ContextMenu("InitSettingByScene")]
     public void InitSettingByScene()
     {
+        if (ModelTarget == null)
+        {
+            Debug.LogError($"BuildingScenesLoadManager.InitSettingByScene ModelTarget == null");
+            return;
+        }
         BuildingController[] bcs = ModelTarget.GetComponentsInChildren<BuildingController>(true);
         Setting = new BuildingSceneLoadSetting();
         foreach(var bc in bcs)
@@ -217,13 +252,27 @@ public class BuildingScenesLoadManager : MonoBehaviour
     [ContextMenu("LoadXml")]
     public void LoadXml()
     {
-        
-        string xml=File.ReadAllText(GetXmlFilePath());
+        string path = GetXmlFilePath();
+        if (File.Exists(path) == false)
+        {
+            Debug.LogError($"LoadXml FileNotFound path:{path}");
+            return;
+        }
+        string xml=File.ReadAllText(path);
         Debug.Log($"LoadXml xml:{xml}");
         BuildingSceneLoadSetting setting = SerializeHelper.LoadFromText<BuildingSceneLoadSetting>(xml);
         Setting = setting;
         //Setting.SetAllEnable(true);
         Debug.Log($"LoadXml setting:{setting} xml:{xml}");
+    }
+
+    [ContextMenu("SetAllEnable")]
+    public void SetAllEnable()
+    {
+        if (Setting!=null)
+        {
+            Setting.SetAllEnable(true);
+        }
     }
 
     public BuildingSceneLoadSetting Setting;
@@ -298,8 +347,10 @@ public class BuildingSceneLoadItem
 
     public BuildingSceneLoadItem()
     {
-        IsEnable = true;
-        Out0Combined = true;
+        //IsEnable = true;
+        //Out0Combined = true;
+        //Out0Renderers = true;
+        SetAllEnable(true);
     }
 
     [XmlElement("BuildingSceneLoadItem")]

@@ -383,7 +383,7 @@ public static class EditorHelper
     {
         string scenePath = EditorHelper.GetScenePath(path);
         string sceneName = GetSceneName(scenePath);
-        Debug.Log($"LoadScene IsValid:{scene.IsValid()}, \tpath:{path}\nscenePath:{scenePath}\n{System.IO.File.Exists(scenePath)}");
+        //Debug.Log($"LoadScene IsValid:{scene.IsValid()}, \tpath:{path}\nscenePath:{scenePath}\n{System.IO.File.Exists(scenePath)}");
         if (scene.IsValid() == false)//没有打开场景 > 打开
         {
             scene = EditorSceneManager.OpenScene(scenePath, OpenSceneMode.Additive);

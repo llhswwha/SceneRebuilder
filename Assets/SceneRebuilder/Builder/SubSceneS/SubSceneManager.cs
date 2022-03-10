@@ -353,8 +353,10 @@ public class SubSceneManager : SingletonBehaviour<SubSceneManager>
     [ContextMenu("SetBuildings_All")]
     public void SetBuildings_All()
     {
+        
         //UpdateScenes();
         subScenes = GameObject.FindObjectsOfType<SubScene_Base>(includeInactive);
+        Debug.Log($"SetBuildings_All scenes:{subScenes.Length} includeInactive:{includeInactive}");
         SubSceneHelper.SetBuildings(subScenes);
     }
 
@@ -383,7 +385,7 @@ public class SubSceneManager : SingletonBehaviour<SubSceneManager>
 
 
 
-    public bool includeInactive = false;
+    public static bool includeInactive = true;
     public SubScene_Base[] UpdateScenes()
     {
         subScenes = GameObject.FindObjectsOfType<SubScene_Base>(includeInactive);
@@ -463,8 +465,17 @@ public class SubSceneManager : SingletonBehaviour<SubSceneManager>
         DateTime startLoadTime = DateTime.Now;
         SubScene_Base lastScene = null;
         Debug.Log($"LoadScenesByBag WattingForLoadedAll:{WattingForLoadedAll.Count} WattingForLoadedCurrent:{WattingForLoadedCurrent.Count} LoadingSceneMaxCount:{LoadingSceneMaxCount} bool isLoadScene  :{WattingForLoadedCurrent.Count < LoadingSceneMaxCount}");
-        while (WattingForLoadedAll.Count > 0 && WattingForLoadedCurrent.Count > 0)
-        //while (WattingForLoadedAll.Count > 0 || WattingForLoadedCurrent.Count > 0)
+
+        //if(WattingForLoadedAll.Count > 0 && WattingForLoadedCurrent.Count == 0)
+        //{
+        //    var scene = WattingForLoadedAll[0];
+        //    lastScene = scene;
+        //    WattingForLoadedAll.RemoveAt(0);
+        //    WattingForLoadedCurrent.Add(scene);
+        //}
+
+        //while (WattingForLoadedAll.Count > 0 && WattingForLoadedCurrent.Count > 0)
+        while (WattingForLoadedAll.Count > 0 || WattingForLoadedCurrent.Count > 0)
         {
             //Debug.Log($"LoadScenesByBag0 WattingForLoadedAll:{WattingForLoadedAll.Count} WattingForLoadedCurrent:{WattingForLoadedCurrent.Count} LoadingSceneMaxCount:{LoadingSceneMaxCount} bool isLoadScene:{WattingForLoadedCurrent.Count < LoadingSceneMaxCount}");
 
@@ -1124,6 +1135,13 @@ public class SubSceneManager : SingletonBehaviour<SubSceneManager>
         UnLoadScenesAsync(subScenes);
     }
 
+    [ContextMenu("UnLoadScene")]
+    public void UnLoadScenes()
+    {
+        subScenes = GetSubScenes();
+        UnLoadScenes(subScenes);
+    }
+
     public static SubScene_Base[] ToBaseScene<T>(T[] ss) where T : SubScene_Base
     {
         List<SubScene_Base> scenes = new List<SubScene_Base>();
@@ -1206,7 +1224,13 @@ public class SubSceneManager : SingletonBehaviour<SubSceneManager>
         }
     }
 
-
+    public void UnLoadScenes<T>(T[] scenes) where T : SubScene_Base
+    {
+        foreach (var item in scenes)
+        {
+            item.UnLoadGosM();
+        }
+    }
 
 
     public string Log = "";

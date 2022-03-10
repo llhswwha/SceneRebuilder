@@ -350,9 +350,9 @@ public static class ColliderHelper  {
             if (isAll==false && !child.enabled) continue;
 
             MeshFilter meshFilter=child.GetComponent<MeshFilter>();
-            if(meshFilter.sharedMesh==null || meshFilter.sharedMesh.vertexCount==0)
+            if(meshFilter==null || meshFilter.sharedMesh==null || meshFilter.sharedMesh.vertexCount==0)
             {
-                Debug.LogWarning($"CaculateBounds1 meshFilter.sharedMesh==null || meshFilter.sharedMesh.vertexCount==0 name:{child.name} path:{GetPath(child.transform,1000)}");
+                //Debug.LogWarning($"CaculateBounds1 meshFilter==null || meshFilter.sharedMesh==null || meshFilter.sharedMesh.vertexCount==0 name:{child.name} path:{GetPath(child.transform,1000)}");
                 continue;
             }
 
@@ -370,9 +370,9 @@ public static class ColliderHelper  {
             if (isAll==false && !child.enabled) continue;
 
             MeshFilter meshFilter=child.GetComponent<MeshFilter>();
-            if(meshFilter.sharedMesh==null || meshFilter.sharedMesh.vertexCount==0)
+            if(meshFilter == null || meshFilter.sharedMesh==null || meshFilter.sharedMesh.vertexCount==0)
             {
-                Debug.LogWarning($"CaculateBounds2 meshFilter.sharedMesh==null || meshFilter.sharedMesh.vertexCount==0 name:{child.name} path:{GetPath(child.transform,1000)}");
+                //Debug.LogWarning($"CaculateBounds2  meshFilter==null || meshFilter.sharedMesh==null || meshFilter.sharedMesh.vertexCount==0 name:{child.name} path:{GetPath(child.transform,1000)}");
                 continue;
             }
 

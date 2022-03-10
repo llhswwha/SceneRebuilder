@@ -128,7 +128,7 @@ public class AreaTreeNode : SubSceneCreater
         return count;
     }
 
-    public void LoadRenderers_Renderers()
+    public int LoadRenderers_Renderers()
     {
         // Debug.LogError("LoadRenderers_Renderers:"+this.name);
         int count1 = GetRendererCount(Renderers);
@@ -141,18 +141,22 @@ public class AreaTreeNode : SubSceneCreater
             }
             else
             {
-                Debug.LogError($"AreaTreeNode.LoadRenderers rs1.Count != RenderersId.Count [{this.name}][{this.tree}][ids:{RenderersId.Count}][renderers:{rs1.Count}]");
+                Debug.LogError($"AreaTreeNode.LoadRenderers_Renderers rs1.Count != RenderersId.Count [{this.name}][{this.tree}][ids:{RenderersId.Count}][renderers:{rs1.Count}]");
                 Renderers = rs1;
             }
         }
         else
         {
-            Debug.LogWarning($"AreaTreeNode.LoadRenderers count1 == RenderersId.Count [{this.name}][{this.tree}][renderers:{count1}]");
+            //Debug.Log($"AreaTreeNode.LoadRenderers count1 == RenderersId.Count [{this.name}][{this.tree}][renderers:{count1}]");
         }
+
+        count1 = GetRendererCount(Renderers);
+        return count1;
     }
 
-    public void LoadRenderers_Combined()
+    public int LoadRenderers_Combined()
     {
+        
         // Debug.LogError("LoadRenderers_Combined:"+this.name);
         int count3 = GetRendererCount(CombinedRenderers);
         if (count3 != CombinedRenderersId.Count)
@@ -169,14 +173,18 @@ public class AreaTreeNode : SubSceneCreater
         }
         else
         {
-            Debug.LogWarning($"AreaTreeNode.LoadRenderers count3 == CombinedRenderersId.Count [{this.name}][{this.transform.parent}][{tree.name}][{count3}]");
+            //Debug.Log($"AreaTreeNode.LoadRenderers count3 == CombinedRenderersId.Count [{this.name}][{this.transform.parent}][{tree.name}][{count3}]");
         }
+
+        count3 = GetRendererCount(CombinedRenderers);
+        return count3;
     }
 
-    public void LoadRenderers()
+    public int LoadRenderers()
     {
-        LoadRenderers_Renderers();
-        LoadRenderers_Combined();
+        int c1=LoadRenderers_Renderers();
+        int c2=LoadRenderers_Combined();
+        return c1 + c2;
     }
 
 
@@ -210,6 +218,7 @@ public class AreaTreeNode : SubSceneCreater
         int count = 0;
         foreach (var renderer in Renderers)
         {
+            if (renderer == null) continue;
             MeshFilter meshFilter = renderer.GetComponent<MeshFilter>();
             if (meshFilter == null) continue;
             if (meshFilter.sharedMesh == null)
@@ -423,6 +432,7 @@ public class AreaTreeNode : SubSceneCreater
         //     render.transform.SetParent(parent);
         // }
         bool flag = true;
+        //int count = 0;
         for (int i = 0; i < Renderers.Count; i++)
         {
             MeshRenderer render = Renderers[i];
@@ -1268,15 +1278,32 @@ public class AreaTreeNode : SubSceneCreater
         }
         else
         {
-            Debug.LogError("AreaTreeNode.EditorCreateScenes combindResult==null:" + this.name);
+            //Debug.LogError("AreaTreeNode.EditorCreateScenes combindResult==null:" + this.name);
         }
 
-        SubScene_In scene2 = null;
+        SubScene_Base scene2 = null;
         if (renderersRoot)
         {
             if(isSingle)
                 MoveRenderers();
-            scene2 = SubSceneHelper.EditorCreateScene<SubScene_In>(renderersRoot, SceneContentType.TreeNode, false, tree.gameObject);
+
+            if (tree.IsInTree())
+            {
+                scene2 = SubSceneHelper.EditorCreateScene<SubScene_In>(renderersRoot, SceneContentType.TreeNode, false, tree.gameObject);
+            }
+            else if (tree.IsOutTree0())
+            {
+                scene2 = SubSceneHelper.EditorCreateScene<SubScene_Out0>(renderersRoot, SceneContentType.TreeNode, false, tree.gameObject);
+            }
+            else if (tree.IsOutTree1())
+            {
+                scene2 = SubSceneHelper.EditorCreateScene<SubScene_Out1>(renderersRoot, SceneContentType.TreeNode, false, tree.gameObject);
+            }
+            else
+            {
+                scene2 = SubSceneHelper.EditorCreateScene<SubScene_In>(renderersRoot, SceneContentType.TreeNode, false, tree.gameObject);
+            }
+
             //scene2.gos = SubSceneHelper.GetChildrenGos(renderersRoot.transform);
             scene2.cubePrefabId = tree.GetCubePrefabId();
             //scene2.contentType = SceneContentType.TreeNode;
@@ -1286,7 +1313,7 @@ public class AreaTreeNode : SubSceneCreater
         }
         else
         {
-            Debug.LogError("AreaTreeNode.EditorCreateScenes renderersRoot==null:" + this.name);
+            //Debug.LogError("AreaTreeNode.EditorCreateScenes renderersRoot==null:" + this.name);
         }
 
         if (scene2 != null)
@@ -1303,8 +1330,8 @@ public class AreaTreeNode : SubSceneCreater
         if (progressChanged == null) Debug.LogError($"AreaTreeNode.EditorCreateScenes time:{(DateTime.Now - start)}");
     }
 
-    [ContextMenu("* EditorLoadScenes")]
-    private void EditorLoadScenes()
+    [ContextMenu("* EditorLoadScenesEx")]
+    public void EditorLoadScenesEx()
     {
         IdDictionary.InitInfos();
         EditorLoadScenes(null);
@@ -1321,10 +1348,11 @@ public class AreaTreeNode : SubSceneCreater
         //this.InitInOut(false);
         //LoadTreeRenderers();
 
-        this.LoadRenderers();
+        int count = this.LoadRenderers();
         var time=DateTime.Now - start;
-        
-        Debug.LogWarning($"AreaTreeNode.EditorLoadScenes tree:{tree.name} node:{this.name} time:{time}");
+        double ms = time.TotalMilliseconds;
+        MoveRenderers();
+        Debug.LogWarning($"AreaTreeNode.EditorLoadScenes tree:{tree.name} node:{this.name} time:{ms:F1}ms vertex:{GetVertexCount()} ");
     }
 
     [ContextMenu("* UnLoadRenderers")]

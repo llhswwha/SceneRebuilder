@@ -1,11 +1,35 @@
-using System.Collections;
-using System.Collections.Generic;
-using UnityEngine;
 using System;
+using System.Collections.Generic;
 using System.Linq;
+using UnityEngine;
 
 public class ModelAreaTree : SubSceneCreater
 {
+    public bool IsInTree()
+    {
+        return this.name.Contains("_InTree");
+    }
+
+    public bool IsOutTree0()
+    {
+        return this.name.Contains("_Out0_");
+    }
+
+    public bool IsOutTree0Big()
+    {
+        return this.name.Contains("_Out0_BigTree");
+    }
+
+    public bool IsOutTree0Small()
+    {
+        return this.name.Contains("_Out0_SmallTree");
+    }
+
+    public bool IsOutTree1()
+    {
+        return this.name.Contains("_OutTree1");
+    }
+
     private void Awake()
     {
         DestroyBoundBox();
@@ -375,7 +399,7 @@ public class ModelAreaTree : SubSceneCreater
         node.CreateSubNodes(0,0,this,GetCubePrefabId());
         var allCount=this.TreeNodes.Count;
         
-        int cellCount=ClearNodes();
+        int cellCount=ClearEmptyNodes();
         nodeStatics.CellCount = cellCount;
         if(cellCount!=0)
         {
@@ -392,7 +416,7 @@ public class ModelAreaTree : SubSceneCreater
 
         this.GetVertexCount();
 
-        Debug.LogWarning($"CreateCells_Tree End tree:{this.name} cellCount:{cellCount}/{allCount},\tavg:{nodeStatics.AvgCellRendererCount},\t{(DateTime.Now-start).TotalMilliseconds:F1}ms");
+        //Debug.LogWarning($"CreateCells_Tree End tree:{this.name} cellCount:{cellCount}/{allCount},\tavg:{nodeStatics.AvgCellRendererCount},\t{(DateTime.Now-start).TotalMilliseconds:F1}ms ");
     }
 
     [ContextMenu("2.CreateCells_Tree_LOD")]
@@ -431,7 +455,7 @@ public class ModelAreaTree : SubSceneCreater
         node.CreateSubNodes(0, 0, this, GetCubePrefabId());
         var allCount = this.TreeNodes.Count;
 
-        int cellCount = ClearNodes();
+        int cellCount = ClearEmptyNodes();
         nodeStatics.CellCount = cellCount;
         if (cellCount != 0)
         {
@@ -484,7 +508,7 @@ public class ModelAreaTree : SubSceneCreater
                 render.SetVisible(isVisible);
                 count++;
             }
-            Debug.Log($"SetRenderersVisible isVisible:{isVisible} renderers:{count}/{trenderers.Length} tree:{this.name},\t{(DateTime.Now - start).ToString()}");
+            //Debug.Log($"SetRenderersVisible isVisible:{isVisible} renderers:{count}/{trenderers.Length} tree:{this.name},\t{(DateTime.Now - start).ToString()}");
         }
 
         //else
@@ -572,7 +596,7 @@ public class ModelAreaTree : SubSceneCreater
         MeshRenderer[] renderers = GetTreeRendererers();
         if (renderers.Length == 0)
         {
-            Debug.LogWarning("GenerateMesh renderers:" + renderers.Length + "|tree:" + this.name);
+            //Debug.LogWarning("GenerateMesh renderers:" + renderers.Length + "|tree:" + this.name);
             return;
         }
         else
@@ -621,7 +645,9 @@ public class ModelAreaTree : SubSceneCreater
         CreateCells_TreeEx();
         // CombineMesh();
         // CreateDictionary();
-        Debug.LogWarning($"GenerateTree {(DateTime.Now-start).ToString()}");
+        int vertex = GetVertexCount();
+        double ms = (DateTime.Now - start).TotalMilliseconds;
+        Debug.LogWarning($"GenerateTree name:{this.name} leafNodes:{TreeLeafs.Count} vertex:{vertex} time:{ms:F1}");
     }
 
     void Start()
@@ -636,6 +662,17 @@ public class ModelAreaTree : SubSceneCreater
         }
         //CreateDictionary();
     }
+
+    //public bool IsSceneLoaded()
+    //{
+    //    var scenes = this.GetComponentsInChildren<SubScene_Base>(true);
+    //    foreach (var scene in scenes)
+    //    {
+    //        if (scene.IsLoaded == false) return false;
+    //    }
+    //    base.IsSceneLoaded
+    //    return true;
+    //}
 
     private void OnDestroy()
     {
@@ -657,7 +694,7 @@ public class ModelAreaTree : SubSceneCreater
         }
     }
 
-    private int ClearNodes()
+    private int ClearEmptyNodes()
     {
         TreeLeafs.Clear();
         int cellCount=0;
@@ -1302,7 +1339,7 @@ public class ModelAreaTree : SubSceneCreater
             progressChanged(new ProgressArg("EditorLoadNodeScenes", TreeLeafs.Count, TreeLeafs.Count));
         }
 
-        Debug.Log($"ModelAreaTree.EditorLoadNodeScenes time:{(DateTime.Now - start)}");
+        Debug.Log($"ModelAreaTree.EditorLoadNodeScenes time:{(DateTime.Now - start)} tree:{this.name}");
     }
 
     // public void UnLoadScenes()

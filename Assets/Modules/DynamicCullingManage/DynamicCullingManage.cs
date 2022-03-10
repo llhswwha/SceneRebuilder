@@ -182,18 +182,22 @@ public class DynamicCullingManage : SingletonBehaviour<DynamicCullingManage>
     /// </summary>
     public void AddObjectsForCulling(MeshRenderer[] renderers)
     {
+        if (dynamicCulling == null) return;
         Debug.LogError($"AddObjectsForCulling renderers:{renderers.Length}");
         dynamicCulling.AddObjectsForCulling(renderers);
     }
 
     public void AddObjectsForCullingCoroutine(MeshRenderer[] renderers)
     {
+        if (dynamicCulling == null) return;
         Debug.LogError($"AddObjectsForCulling renderers:{renderers.Length}");
         StartCoroutine(dynamicCulling.AddObjectsForCullingCoroutine(renderers));
     }
 
     public void RemoveObjects(MeshRenderer[] renderers)
     {
+        if (dynamicCulling == null) return;
+
         Debug.LogError($"RemoveObjects renderersT:{renderers.Length}");
         if (renderers == null)
             return;
@@ -208,6 +212,7 @@ public class DynamicCullingManage : SingletonBehaviour<DynamicCullingManage>
     /// </summary>
     public void RemoveObject(MeshRenderer rendererT)
     {
+        if (dynamicCulling == null) return;
         dynamicCulling.RemoveObject(rendererT);
     }
 }

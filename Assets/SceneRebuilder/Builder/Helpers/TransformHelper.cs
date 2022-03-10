@@ -158,8 +158,14 @@ public static class TransformHelper
             {
                 continue;
             }
-            list.Add(child);
+            var render = child.GetComponent<MeshRenderer>();
+            if(render!=null)
+                list.Add(child);
+            var filter = child.GetComponent<MeshFilter>();
+            if (filter == null)
+            {
 
+            }
             GetMeshPointsNoLOD(child, list);
         }
     }

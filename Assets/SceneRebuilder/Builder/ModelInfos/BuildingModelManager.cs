@@ -301,6 +301,16 @@ public class BuildingModelManager : SingletonBehaviour<BuildingModelManager>
         }
     }
 
+    [ContextMenu("DestroyScenes")]
+    public void DestroyScenes()
+    {
+        UpdateBuildings();
+        foreach (var item in Buildings)
+        {
+            item.DestroyScenes();
+        }
+    }
+
     [ContextMenu("ClearTrees")]
     public void ClearTrees(List<BuildingModelInfo> buildings)
     {

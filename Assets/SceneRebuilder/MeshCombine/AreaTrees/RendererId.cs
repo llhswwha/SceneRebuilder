@@ -277,7 +277,7 @@ public class RendererId
         if(string.IsNullOrEmpty(parentId)){
             return null;//
         }
-        GameObject pGo=IdDictionary.GetGo(parentId);
+        GameObject pGo=IdDictionary.GetParentGo(this);
         if(pGo!=null){
             this.transform.SetParent(pGo.transform);
             //Debug.LogError($"RendererId.SetParent1 pGo!=null name:{this.name} Id:{this.Id} parentId:{this.parentId}");
@@ -295,7 +295,7 @@ public class RendererId
         {
             SetPid(GetId(this.transform.parent, 0), this.transform.parent);
         }
-        GameObject pGo=IdDictionary.GetGo(parentId);
+        GameObject pGo= IdDictionary.GetParentGo(this);
         // Debug.LogError($"RendererId.GetParent name:{this.name} Id:{this.Id} parentId:{this.parentId} pGo:{pGo}");
         return pGo;
     }

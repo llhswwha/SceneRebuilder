@@ -326,7 +326,7 @@ public class SubScene_Base : MonoBehaviour
     }
 
     [ContextMenu("UnLoadGosM")]
-    public void UnLoadGosM()
+    public int UnLoadGosM()
     {
         //if (gos != null)
         //{
@@ -338,6 +338,7 @@ public class SubScene_Base : MonoBehaviour
         //    gos.Clear();
         //}
 
+        int count = 0;
 
         if (sceneArg != null && sceneArg.objs != null)
         {
@@ -345,6 +346,7 @@ public class SubScene_Base : MonoBehaviour
             {
                 if (obj == null) continue;
                 GameObject.DestroyImmediate(obj);
+                count++;
             }
             //sceneArg.objs = null;
             sceneArg.objs.Clear();
@@ -354,6 +356,7 @@ public class SubScene_Base : MonoBehaviour
         IsLoading = false;
 
         OnUnLoadedFinished();
+        return count;
     }
 
     [ContextMenu("UnLoadGos")]
@@ -641,7 +644,7 @@ public class SubScene_Base : MonoBehaviour
     {
 
         SubSceneManager subSceneManager = SubSceneManager.Instance;
-        string path = subSceneManager.GetScenePath(this.name, SceneContentType.Single,null);
+        string path = subSceneManager.GetScenePath($"({transform.parent.name}){gameObject.name}[{gameObject.GetInstanceID()}]", SceneContentType.Single,null);
         if (IsLoaded == false)
         {
             Debug.LogWarning($"EditorCreateScene IsLoaded==false name:{this.name} path:{path}");
@@ -718,7 +721,7 @@ public class SubScene_Base : MonoBehaviour
 
     internal void InitIdDict()
     {
-        Debug.Log($"SubScene_Base.InitIdDict name:{this.name} type:{contentType} linked:{LinkedScene}");
+        //Debug.Log($"SubScene_Base.InitIdDict name:{this.name} type:{contentType} linked:{LinkedScene}");
         IdDictionary.InitGos(gos, sceneName);
         if (LinkedScene != null)
         {
@@ -764,7 +767,7 @@ public class SubScene_Base : MonoBehaviour
         }
         else
         {
-            Debug.LogWarning($"SubScene_Base.InitIdDict LinkedScene==null scene:{this.name}");
+            //Debug.Log($"SubScene_Base.InitIdDict LinkedScene==null scene:{this.name}");
         }
     }
 

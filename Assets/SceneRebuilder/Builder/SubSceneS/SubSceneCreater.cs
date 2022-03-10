@@ -255,6 +255,7 @@ public class SubSceneCreater : MonoBehaviour
         DateTime start = DateTime.Now;
 
         var scenes = SubScene_List.GetBaseScenes(gameObject);
+        int totalCount = 0;
         for (int i = 0; i < scenes.Length; i++)
         {
             var scene = scenes[i];
@@ -271,7 +272,8 @@ public class SubSceneCreater : MonoBehaviour
             {
                 progressChanged(progressArg);
             }
-             scene.UnLoadGosM();
+            int count= scene.UnLoadGosM();
+            totalCount += count;
             scene.ShowBounds();
         }
 
@@ -284,7 +286,7 @@ public class SubSceneCreater : MonoBehaviour
             progressChanged(new ProgressArg("UnLoadScenes", scenes.Length, scenes.Length));
         }
 
-        Debug.Log($"UnLoadScenes time:{(DateTime.Now - start)}");
+        Debug.Log($"UnLoadScenes time:{(DateTime.Now - start)} scenes:{scenes.Length} totalCount:{totalCount}");
     }
 
 }

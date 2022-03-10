@@ -106,11 +106,25 @@ public class BuildingModelInfoEditor : BaseFoldoutEditor<BuildingModelInfo>
         NewEnabledButton("2.CreateTree", buttonWidth, state.CanCreateTrees, btnStyle, ()=> { AreaTreeManager.Instance.isCombine = false; info.CreateTreesBSEx(); });
         NewEnabledButton("2.CreateTree(C)", buttonWidth, state.CanCreateTrees, btnStyle, () => { AreaTreeManager.Instance.isCombine = true; info.CreateTreesBSEx(); });
         NewEnabledButton("RemoveTrees", buttonWidth, state.CanRemoveTrees, btnStyle, info.ClearTrees);
-        NewEnabledButton("DestroyBox", buttonWidth, state.CanRemoveTrees, btnStyle, info.DestroyBoundBox);
-        NewEnabledButton("CreateByLOD", buttonWidth, state.CanCreateTrees, btnStyle, info.CreateTreesByLOD);
-        NewEnabledButton("CreateNoLOD", buttonWidth, state.CanCreateTrees, btnStyle, info.CreateTreesByLOD);
-        AreaTreeManager.Instance.isCombine = GUILayout.Toggle(AreaTreeManager.Instance.isCombine, "Combine");
-        PrefabInstanceBuilder.Instance.IsCopyTargetRoot = GUILayout.Toggle(PrefabInstanceBuilder.Instance.IsCopyTargetRoot, "Copy");
+        NewEnabledButton("DestroyBox", 80, state.CanRemoveTrees, btnStyle, info.DestroyBoundBox);
+        if (GUILayout.Button("Setting...", btnStyle, GUILayout.Width(70)))
+        {
+            EditorHelper.SelectObject(AreaTreeManager.Instance.gameObject);
+        }
+
+        var setting = AreaTreeManager.Instance.nodeSetting;
+        setting.MinLevel = EditorGUILayout.IntField("", setting.MinLevel,GUILayout.Width(35));
+        //setting.MaxLevel = EditorGUILayout.IntField("MaxL", setting.MaxLevel);
+        setting.MaxRenderCount = EditorGUILayout.IntField("", setting.MaxRenderCount, GUILayout.Width(40));
+        setting.MinRenderCount = EditorGUILayout.IntField("", setting.MinRenderCount, GUILayout.Width(40));
+        setting.MaxVertexCount = EditorGUILayout.IntField("", setting.MaxVertexCount, GUILayout.Width(40));
+
+        //NewEnabledButton("CreateByLOD", buttonWidth, state.CanCreateTrees, btnStyle, info.CreateTreesByLOD);
+        //NewEnabledButton("CreateNoLOD", buttonWidth, state.CanCreateTrees, btnStyle, info.CreateTreesByLOD);
+
+        //AreaTreeManager.Instance.isCombine = GUILayout.Toggle(AreaTreeManager.Instance.isCombine, "Combine");
+        //PrefabInstanceBuilder.Instance.IsCopyTargetRoot = GUILayout.Toggle(PrefabInstanceBuilder.Instance.IsCopyTargetRoot, "Copy");
+
         //NewButton("GetTreeAreas", buttonWidth, state.CanCreateTrees, btnStyle, info.CreateTreesByLOD);
         EditorGUILayout.EndHorizontal();
 

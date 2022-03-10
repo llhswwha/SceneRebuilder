@@ -62,11 +62,12 @@ public class AreaTreeNodeEditor : BaseFoldoutEditor<AreaTreeNode>
         }
         if (GUILayout.Button("LoadScenes"))
         {
-            
+
+            areaTreeNode.EditorLoadScenesEx();
         }
         if (GUILayout.Button("UnloadScenes"))
         {
-            
+            areaTreeNode.UnLoadScenes();
         }
         GUILayout.EndHorizontal();
 

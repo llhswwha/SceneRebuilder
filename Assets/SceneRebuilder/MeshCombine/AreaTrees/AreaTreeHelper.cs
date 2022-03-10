@@ -183,19 +183,27 @@ public static class AreaTreeHelper
 
     public static AreaTreeManager InitCubePrefab()
     {
-        AreaTreeManager areaTreeManager = GameObject.FindObjectOfType<AreaTreeManager>();
-        if (areaTreeManager)
-        {
-            AreaTreeHelper.CubePrefabs = areaTreeManager.CubePrefabs;
-        }
+        AreaTreeManager areaTreeManager = AreaTreeManager.Instance;
+        CubePrefabs = areaTreeManager.CubePrefabs;
         return areaTreeManager;
+
+        //CubePrefabs = AreaTreeManager.Instance.CubePrefabs;
+        //return AreaTreeManager.Instance;
     }
 
     public static GameObject CreateBoundsCube(Bounds bounds,string n,Transform parent,int prefabId)
     {
         InitCubePrefab();
 
-        //Debug.Log($"CreateBoundsCube bounds:{bounds} name:{n} parent:{parent} prefabId:{prefabId} CubePrefabs:{CubePrefabs}");
+        //if (CubePrefabs.Count > 0)
+        //{
+        //    Debug.Log($"CreateBoundsCube1 bounds:{bounds} name:{n} parent:{parent} prefabId:{prefabId} CubePrefabs:{CubePrefabs.Count} CubePrefabs0:{CubePrefabs[0]}");
+        //}
+        //else
+        //{
+        //    Debug.Log($"CreateBoundsCube2 bounds:{bounds} name:{n} parent:{parent} prefabId:{prefabId} CubePrefabs:{CubePrefabs.Count}");
+        //}
+
         GameObject prefab = null;
         if (CubePrefabs==null||CubePrefabs.Count==0 || prefabId>= CubePrefabs.Count || prefabId<0)
         {
@@ -207,7 +215,16 @@ public static class AreaTreeHelper
         else
         {
             prefab = CubePrefabs[prefabId];
+
+            if (prefab == null)
+            {
+                prefab = GameObject.CreatePrimitive(PrimitiveType.Cube);
+                prefab.name = "BoundsCube_" + prefabId;
+                prefab.SetActive(false);
+                CubePrefabs[prefabId] = prefab;
+            }
         }
+
         //Debug.Log($"CubePrefabs:{CubePrefabs.Count}");
         //for (int i = 0; i < CubePrefabs.Count; i++)
         //{

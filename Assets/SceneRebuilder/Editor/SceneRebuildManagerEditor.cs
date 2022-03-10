@@ -80,12 +80,23 @@ public class SceneRebuildManagerEditor : BaseFoldoutEditor<SceneRebuildManager>
         });
         NewButton("RemoveTrees", buttonWidth, true, item.ClearTrees);
         NewButton("DestroyBox", buttonWidth, true, item.DestroyBox);
-        AreaTreeManager.Instance.isCombine = GUILayout.Toggle(AreaTreeManager.Instance.isCombine, "Combine");
+
+        //AreaTreeManager.Instance.isCombine = GUILayout.Toggle(AreaTreeManager.Instance.isCombine, "Combine");
+
+        var setting = AreaTreeManager.Instance.nodeSetting;
+        setting.MinLevel = EditorGUILayout.IntField("", setting.MinLevel, GUILayout.Width(35));
+        //setting.MaxLevel = EditorGUILayout.IntField("MaxL", setting.MaxLevel);
+        setting.MaxRenderCount = EditorGUILayout.IntField("", setting.MaxRenderCount, GUILayout.Width(40));
+        setting.MinRenderCount = EditorGUILayout.IntField("", setting.MinRenderCount, GUILayout.Width(40));
+        setting.MaxVertexCount = EditorGUILayout.IntField("", setting.MaxVertexCount, GUILayout.Width(40));
+
         EditorGUILayout.EndHorizontal();
 
         EditorGUILayout.BeginHorizontal();
         NewButton("3.CreateScenes", buttonWidth, true, item.SaveScenes);
         NewButton("LoadScenes", buttonWidth, true, item.LoadScenes);
+        NewButton("UnLoadScenes", buttonWidth, true, item.UnLoadScenes);
+        NewButton("RemoveScenes", buttonWidth, true, item.RemoveScenes);
         EditorGUILayout.EndHorizontal();
 
         EditorGUILayout.BeginHorizontal();
@@ -97,7 +108,7 @@ public class SceneRebuildManagerEditor : BaseFoldoutEditor<SceneRebuildManager>
         NewButton("5.SetBuildings", buttonWidth, true, item.SetBuildings);
         NewButton("ClearBuildings", buttonWidth, true, item.ClearBuildings);
         NewButton("CheckSceneIndex", buttonWidth, true, SubSceneManager.Instance.CheckSceneIndex);
-        SubSceneManager.Instance.includeInactive = GUILayout.Toggle(SubSceneManager.Instance.includeInactive, "includeInactive");
+        //SubSceneManager.Instance.includeInactive = GUILayout.Toggle(SubSceneManager.Instance.includeInactive, "includeInactive");
         EditorGUILayout.EndHorizontal();
 
         // if (GUILayout.Button("SetBuildings", contentStyle))

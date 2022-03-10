@@ -4,6 +4,7 @@ using System.Collections.Generic;
 using System.Linq;
 using UnityEngine;
 using UnityEngine.SceneManagement;
+using System.IO;
 #if UNITY_EDITOR
 using UnityEditor;
 using UnityEditor.SceneManagement;
@@ -29,8 +30,9 @@ public static class SubSceneHelper
         public static void SetBuildings<T>(T[] scenes) where T : SubScene_Base
     {
         Debug.Log($"SetBuildings scenes:{scenes.Length}");
-        EditorBuildSettingsScene[] buildingScenes = new EditorBuildSettingsScene[scenes.Length + 1];
-        buildingScenes[0] = new EditorBuildSettingsScene(EditorSceneManager.GetActiveScene().path, true);
+
+        List<EditorBuildSettingsScene> buildScenes1 = new List<EditorBuildSettingsScene>();
+        int sceneId = 1;
         for (int i = 0; i < scenes.Length; i++)
         {
             T item = scenes[i];
@@ -39,14 +41,31 @@ public static class SubSceneHelper
 
             string path = item.sceneArg.GetRalativePath();
             //Debug.Log("path:" + path);
-            buildingScenes[i + 1] = new EditorBuildSettingsScene(path, true);
-            item.sceneArg.index = i + 1;
-
-
+            EditorBuildSettingsScene scene= new EditorBuildSettingsScene(path, true);
+            if (File.Exists(path) == false)
+            {
+                Debug.LogError($"scene[{i + 1}] scene:{scene} path:{path} enabled:{scene.enabled} Exists:{File.Exists(path)}");
+            }
+            else
+            {
+                //buildingScenes[sceneId] = scene;
+                buildScenes1.Add(scene);
+                item.sceneArg.index = sceneId;
+                sceneId++;
+            }
         }
+
+        EditorBuildSettingsScene[] buildingScenes = new EditorBuildSettingsScene[buildScenes1.Count + 1];
+
+        buildingScenes[0] = new EditorBuildSettingsScene(EditorSceneManager.GetActiveScene().path, true);
+        for (int i = 0; i < buildScenes1.Count; i++)
+        {
+            buildingScenes[i + 1] = buildScenes1[i];
+        }
+
         EditorBuildSettings.scenes = buildingScenes;
 
-        Debug.Log("SetBuildings:" + scenes.Length);
+        Debug.Log($"SetBuildings totalScenes:{scenes.Length} sceneCount:{sceneId-1}");
     }
 
     public static void CheckSceneIndex(bool includeInactive)
@@ -75,11 +94,12 @@ public static class SubSceneHelper
                 {
                     //EditorSceneManager.GetSceneByBuildIndex(arg.index);
                     //Scene scene = SceneManager.GetSceneByBuildIndex(arg.index);
-                    Scene scene = EditorSceneManager.GetSceneByBuildIndex(arg.index);
-                    if (arg.name != scene.name)
-                    {
-                        Debug.LogError($"GetSceneByBuildIndex Error [arg:{arg}] scene:{scene.name} {scene.path} {scene.isLoaded}");
-                    }
+
+                    //Scene scene = EditorSceneManager.GetSceneByBuildIndex(arg.index);
+                    //if (arg.name != scene.name)
+                    //{
+                    //    Debug.LogError($"GetSceneByBuildIndex Error [arg:{arg}] scene:{scene.name} {scene.path} {scene.isLoaded}");
+                    //}
                 }
             }
             catch (Exception ex)
@@ -206,7 +226,7 @@ public static class SubSceneHelper
         //string path = GetScenePath(go.name, isPart);
 
         SubSceneManager subSceneManager = GameObject.FindObjectOfType<SubSceneManager>();
-        if(ss.sceneArg==null|| ss.sceneArg.objs==null|| ss.sceneArg.objs.Count==0)
+        //if(ss.sceneArg==null|| ss.sceneArg.objs==null|| ss.sceneArg.objs.Count==0)
             ss.sceneArg = new SubSceneArg(path, isOverride, subSceneManager.IsOpenSubScene, isOnlyChildren, go);
 
         //ss.SetPath(path);

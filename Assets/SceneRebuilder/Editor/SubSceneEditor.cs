@@ -71,7 +71,7 @@ public class SubSceneEditor<T> : BaseEditor<T> where T : SubScene_Base
                 IdDictionary.InitInfos();
                 item.EditorLoadScene();
             });
-            NewButton("Unload", buttonWidth, item.IsLoaded == true && isFileExist, item.UnLoadGosM);
+            NewButton("Unload", buttonWidth, item.IsLoaded == true && isFileExist, ()=> { item.UnLoadGosM(); });
 
         }
         EditorGUILayout.EndHorizontal();

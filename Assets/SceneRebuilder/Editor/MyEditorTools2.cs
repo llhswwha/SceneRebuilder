@@ -459,20 +459,31 @@ public class MyEditorTools2
         SubSceneHelper.CheckSceneIndex(true);
     }
 
+    [MenuItem("SceneTools/SubScene/CreateSubScenes(LOD)")]
+    public static void CreateSubScenes_LOD()
+    {
+        CreateSubScenes<SubScene_LOD>(Selection.gameObjects);
+    }
+
     [MenuItem("SceneTools/SubScene/CreateSubScenes")]
     public static void CreateSubScenes()
     {
-        for (int i = 0; i < Selection.gameObjects.Length; i++)
+        CreateSubScenes<SubScene_Single>(Selection.gameObjects);
+    }
+
+    public static void CreateSubScenes<T>(GameObject[] gameObjects) where T :SubScene_Base
+    {
+        for (int i = 0; i < gameObjects.Length; i++)
         {
-            GameObject obj = Selection.gameObjects[i];
-            if(ProgressBarHelper.DisplayCancelableProgressBar(new ProgressArg("CreateSubScenes", i, Selection.gameObjects.Length, obj)))
+            GameObject obj = gameObjects[i];
+            if (ProgressBarHelper.DisplayCancelableProgressBar(new ProgressArg("CreateSubScenes", i, gameObjects.Length, obj)))
             {
                 break;
             }
-            SubScene_Single subScene=obj.GetComponent<SubScene_Single>();
+            T subScene = obj.GetComponent<T>();
             if (subScene == null)
             {
-                subScene = obj.AddComponent<SubScene_Single>();
+                subScene = obj.AddComponent<T>();
                 subScene.IsLoaded = true;
             }
             subScene.EditorCreateScene(true);

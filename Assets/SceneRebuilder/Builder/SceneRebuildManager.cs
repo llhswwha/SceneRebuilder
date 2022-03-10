@@ -215,6 +215,28 @@ public class SceneRebuildManager : SingletonBehaviour<SceneRebuildManager>
         subSceneManager.EditorLoadScenes();
     }
 
+    [ContextMenu("UnLoadScenes")]
+    public void UnLoadScenes()
+    {
+        if (subSceneManager == null)
+        {
+            subSceneManager = SubSceneManager.Instance;
+        }
+        subSceneManager.contentType = SceneContentType.TreeNode;
+        //subSceneManager.UnLoadScenesAsync();
+        subSceneManager.UnLoadScenes();
+    }
+
+    [ContextMenu("RemoveScenes")]
+    public void RemoveScenes()
+    {
+        if (buildingModelManager == null)
+        {
+            buildingModelManager = BuildingModelManager.Instance;
+        }
+        buildingModelManager.DestroyScenes();
+    }
+
     [ContextMenu("ClearBuildings")]
     public void ClearBuildings()
     {
@@ -223,6 +245,10 @@ public class SceneRebuildManager : SingletonBehaviour<SceneRebuildManager>
 
     public void SetModelsActive(bool v)
     {
+        if (buildingModelManager == null)
+        {
+            buildingModelManager = BuildingModelManager.Instance;
+        }
         buildingModelManager.SetModelsActive(v);
     }
 
