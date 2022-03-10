@@ -369,15 +369,19 @@ public class BuildingModelInfo : SubSceneCreater
     public GameObject OutPart0;
     public GameObject OutPart1;
 
+    public GameObject LODPart;
+
     //public MeshVertexInfo InVertexInfo;
 
     public float InVertextCount = 0;
     public float Out0VertextCount = 0;
     public float Out1VertextCount = 0;
+    public float LODVertexCount = 0;
 
     public int InRendererCount = 0;
     public int Out0RendererCount = 0;
     public int Out1RendererCount = 0;
+    public int LODRendererCount = 0;
 
     public int AllRendererCount = 0;
     public float AllVertextCount = 0;
@@ -950,6 +954,10 @@ public class BuildingModelInfo : SubSceneCreater
             {
                 OutPart1 = child.gameObject;
             }
+            if (child.name == "LODs" || child.name == "LOD")
+            {
+                LODPart = child.gameObject;
+            }
             children.Add(child);
         }
 
@@ -1239,8 +1247,10 @@ public class BuildingModelInfo : SubSceneCreater
         InVertextCount = GetChildrenVertextCount(InPart, out InRendererCount,false);
         Out0VertextCount = GetChildrenVertextCount(OutPart0,out Out0RendererCount, isShowOut0Log);
         Out1VertextCount = GetChildrenVertextCount(OutPart1,out Out1RendererCount, false);
-        AllVertextCount = InVertextCount + Out0VertextCount + Out1VertextCount;
-        AllRendererCount = InRendererCount + Out0RendererCount + Out1RendererCount;
+        LODVertexCount = GetChildrenVertextCount(LODPart, out LODRendererCount, false);
+
+        AllVertextCount = InVertextCount + Out0VertextCount + Out1VertextCount+ LODVertexCount;
+        AllRendererCount = InRendererCount + Out0RendererCount + Out1RendererCount+ LODRendererCount;
     }
 
     class VertexCountInfo

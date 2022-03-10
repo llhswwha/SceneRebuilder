@@ -97,3 +97,8 @@ public class SubSceneOut1Editor : SubSceneEditor<SubScene_Out1>
 public class SubScene_SingleEditor : SubSceneEditor<SubScene_Single>
 {
 }
+
+[CustomEditor(typeof(SubScene_LOD))]
+public class SubScene_LODEditor : SubSceneEditor<SubScene_LOD>
+{
+}
