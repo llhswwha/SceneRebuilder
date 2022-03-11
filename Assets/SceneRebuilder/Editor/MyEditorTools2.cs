@@ -1037,48 +1037,67 @@ public class MyEditorTools2
         }
     }
 
-    [MenuItem("SceneTools/Renderers/CheckIds")]
-    public static void CheckRendererIds()
+    [MenuItem("SceneTools/Renderers/CheckIds(A)")]
+    public static void CheckRendererIdsA()
     {
         var rids = GameObject.FindObjectsOfType<RendererId>();
-        Dictionary<string, RendererId> ridDict = new Dictionary<string, RendererId>();
-        int count = 0;
-        foreach(var rid in rids)
-        {
-            if (ridDict.ContainsKey(rid.Id))
-            {
-                //rid.NewId();
-                //ridDict.Add(rid.Id, rid);
-                Debug.LogError($"CheckRendererIds[{count++}] rid:{rid.Id} name:{rid.name} parent:{rid.transform.parent}");
-            }
-            else
-            {
-                ridDict.Add(rid.Id, rid);
-            }
-        }
-        Debug.LogError($"CheckRendererIds rids:{rids.Length}");
+        UpdateRendererIds(rids, false);
     }
 
-    [MenuItem("SceneTools/Renderers/UpdateIds")]
-    public static void UpdateRendererIds()
+    [MenuItem("SceneTools/Renderers/UpdateIds(A)")]
+    public static void UpdateRendererIdsA()
     {
         var rids = GameObject.FindObjectsOfType<RendererId>();
+        UpdateRendererIds(rids, true);
+    }
+
+    [MenuItem("SceneTools/Renderers/CheckIds(S)")]
+    public static void CheckRendererIdsS()
+    {
+        var rids = Selection.activeGameObject.GetComponentsInChildren<RendererId>(true);
+        UpdateRendererIds(rids, false);
+    }
+
+    [MenuItem("SceneTools/Renderers/UpdateIds(S)")]
+    public static void UpdateRendererIdsS()
+    {
+        var rids = Selection.activeGameObject.GetComponentsInChildren<RendererId>(true);
+        UpdateRendererIds(rids, true);
+    }
+
+    [MenuItem("SceneTools/Renderers/UpdateChildrenIds(S)")]
+    public static void UpdateRendererChildrenIdsS()
+    {
+        var rids = Selection.activeGameObject.GetComponentsInChildren<RendererId>(true);
+        UpdateRendererIds(rids, true, true);
+    }
+
+    public static void UpdateRendererIds(RendererId[] rids,bool isUpdateId,bool isUpdateChildrenId=false)
+    {
         Dictionary<string, RendererId> ridDict = new Dictionary<string, RendererId>();
         int count = 0;
         foreach (var rid in rids)
         {
+            if (isUpdateChildrenId)
+            {
+                rid.UpdateChildrenId();
+            }
+
             if (ridDict.ContainsKey(rid.Id))
             {
                 Debug.LogError($"UpdateRendererIds[{count++}] rid:{rid.Id} name:{rid.name} parent:{rid.transform.parent}");
-                rid.NewId();
-                ridDict.Add(rid.Id, rid);
+                if (isUpdateId)
+                {
+                    rid.NewId();
+                    ridDict.Add(rid.Id, rid);
+                }
             }
             else
             {
                 ridDict.Add(rid.Id, rid);
             }
         }
-        Debug.LogError($"UpdateRendererIds rids:{rids.Length}");
+        Debug.LogError($"UpdateRendererIds rids:{rids.Length} UpdateId:{isUpdateId} UpdateChildren:{isUpdateChildrenId}");
     }
 
     #endregion

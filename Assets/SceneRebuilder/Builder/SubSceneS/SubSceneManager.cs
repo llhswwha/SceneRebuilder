@@ -1180,6 +1180,11 @@ public class SubSceneManager : SingletonBehaviour<SubSceneManager>
             var scenes = GameObject.FindObjectsOfType<SubScene_Single>(true);
             result = ToBaseScene(scenes);
         }
+        else if (sceneType == SubSceneType.LODs)
+        {
+            var scenes = GameObject.FindObjectsOfType<SubScene_LODs>(true);
+            result = ToBaseScene(scenes);
+        }
         else
         {
             var scenes = GameObject.FindObjectsOfType<SubScene_Base>(true);

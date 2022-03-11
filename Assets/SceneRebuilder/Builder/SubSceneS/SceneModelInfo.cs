@@ -137,35 +137,39 @@ public class SceneModelInfo : MonoBehaviour
         }
     }
 
+    public int MeshFilterCount = 0;
+
 
     [ContextMenu("GetVertexBigSmall")]
     public void GetVertexBigSmall()
     {
-        Bigs.Clear();
-        Smalls.Clear();
-        BigsVertexList.Clear();
-
         // List<MeshFilter> Bigs=new List<MeshFilter>();
         // List<MeshFilter> Smalls=new List<MeshFilter>();
         //ShowRenderers();
         DateTime start=DateTime.Now;
         var meshFilters=GetMeshFilters();
+        int mfCount = meshFilters.Length;
+        //if (mfCount == MeshFilterCount) return;
+        MeshFilterCount = mfCount;
         float sumCount=0;
         float sumBigVertex=0;
         float sumSmallVertex=0;
-        foreach(MeshFilter mf in meshFilters)
+        Bigs.Clear();
+        Smalls.Clear();
+        BigsVertexList.Clear();
+        foreach (MeshFilter mf in meshFilters)
         {
             if (mf == null) continue;
             if (mf.sharedMesh == null) continue;
-            var count=mf.sharedMesh.vertexCount;
-            sumCount+=count;
-            if(MaxVertexCount>0 && count>MaxVertexCount){
+            var vertexC=mf.sharedMesh.vertexCount;
+            sumCount+=vertexC;
+            if(MaxVertexCount>0 && vertexC>MaxVertexCount){
                 Bigs.Add(mf);
-                sumBigVertex+=count;
+                sumBigVertex+=vertexC;
             }
             else{
                 Smalls.Add(mf);
-                sumSmallVertex+=count;
+                sumSmallVertex+=vertexC;
             }
         }
 
@@ -179,8 +183,8 @@ public class SceneModelInfo : MonoBehaviour
             BigsVertexList.Add(item.sharedMesh.vertexCount / 10000);
         }
 
-        info =$"Count:{meshFilters.Length},Big:{Bigs.Count},Small:{Smalls.Count},Time:{(DateTime.Now-start).TotalMilliseconds}ms";
-        info+=$"\nsum:{sumCount/10000}w,sumBig:{sumBigVertex/10000}w,sumSmall:{sumSmallVertex/10000}w";
+        info =$"Count:{meshFilters.Length}=B:{Bigs.Count}+S:{Smalls.Count},T:{(DateTime.Now-start).TotalMilliseconds:F1}ms";
+        info+=$"\nsum:{sumCount/10000f:F1}w,sumB:{sumBigVertex/ 10000f:F1}w,sumS:{sumSmallVertex/ 10000f:F1}w";
         Debug.LogWarning(info);
     }
 

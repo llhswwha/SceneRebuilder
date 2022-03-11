@@ -92,6 +92,7 @@ public class SubSceneCreater : MonoBehaviour
         [ContextMenu("DestroyScenes")]
     public void DestroyScenes()
     {
+        int count = 0;
         //Debug.Log("DestroyOldPartScenes");
         if (SceneList == null)
         {
@@ -100,7 +101,7 @@ public class SubSceneCreater : MonoBehaviour
         }
         if (SceneList != null)
         {
-            SceneList.Clear();
+            count=SceneList.Clear();
         }
         else
         {
@@ -108,10 +109,13 @@ public class SubSceneCreater : MonoBehaviour
             foreach (var c in components)
             {
                 //if (c.contentType == contentType)
-                GameObject.DestroyImmediate(c);
+                //GameObject.DestroyImmediate(c);
+                c.DestroyScene();
             }
+            count += components.Length;
         }
 
+        Debug.Log($"DestroyScenes count:{count}");
     }
 
     public void EditorCreateScenes(SubSceneBag scenes, Action<ProgressArg> progressChanged)

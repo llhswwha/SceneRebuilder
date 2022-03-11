@@ -12,5 +12,17 @@ public class SubScene_LODs : SubScene_Part
         }
     }
 
+    public override int UnLoadGosM()
+    {
+        SubScene_Ref.BeforeUnloadScene(this.gameObject);
+        int r= base.UnLoadGosM();
+        return r;
+    }
+
+    public override void DestroyScene()
+    {
+        SubScene_Ref.ClearRefs(this.gameObject);
+        base.DestroyScene();
+    }
 }
 

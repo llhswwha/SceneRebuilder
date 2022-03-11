@@ -299,6 +299,18 @@ public class BuildingModelManager : SingletonBehaviour<BuildingModelManager>
         {
             item.DestroyBoundBox();
         }
+        Debug.Log($"DestroyBox Buildings:{Buildings.Count}");
+    }
+
+    [ContextMenu("MoveRenderers")]
+    public void MoveRenderers()
+    {
+        UpdateBuildings();
+        foreach (var item in Buildings)
+        {
+            item.MoveRenderers();
+        }
+        Debug.Log($"MoveRenderers Buildings:{Buildings.Count}");
     }
 
     [ContextMenu("DestroyScenes")]
@@ -309,6 +321,7 @@ public class BuildingModelManager : SingletonBehaviour<BuildingModelManager>
         {
             item.DestroyScenes();
         }
+        Debug.Log($"DestroyScenes Buildings:{Buildings.Count}");
     }
 
     [ContextMenu("ClearTrees")]
@@ -320,6 +333,7 @@ public class BuildingModelManager : SingletonBehaviour<BuildingModelManager>
             if (b == null) continue;
             b.ClearTrees();
         }
+        Debug.Log($"ClearTrees buildings:{buildings.Count}");
     }
 
 #if UNITY_EDITOR

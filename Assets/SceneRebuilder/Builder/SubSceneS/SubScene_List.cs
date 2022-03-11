@@ -8,14 +8,14 @@ public class SubScene_List : MonoBehaviour
 {
     public  static SubScene_Base[] GetBaseScenes(GameObject go)
     {
-        return go.GetComponentsInChildren<SubScene_Base>(true).Where(i => i.contentType != SceneContentType.LOD0).ToArray();
+        return go.GetComponentsInChildren<SubScene_Base>(true).Where(i => i.contentType != SceneContentType.LOD0 && !(i is SubScene_Ref)).ToArray();
     }
 
     public int sceneCount;
 
     public SubScene_Base[] scenes;
 
-    [ContextMenu("Init")]
+    [ContextMenu("GetScenes")]
     public void GetScenes()
     {
         scenes = SubScene_List.GetBaseScenes(gameObject);
@@ -56,7 +56,7 @@ public class SubScene_List : MonoBehaviour
     }
 
     [ContextMenu("Clear")]
-    internal void Clear()
+    internal int Clear()
     {
         //IdDictionary.InitInfos();
         var renderers = GetRenderers();
@@ -71,8 +71,9 @@ public class SubScene_List : MonoBehaviour
             // GameObject.DestroyImmediate(scene.gameObject);
 
             // scene.UnLoadGosM();
-            GameObject.DestroyImmediate(scene);
+            //GameObject.DestroyImmediate(scene);
 
+            scene.DestroyScene();
 
         }
         sceneCount = 0;
@@ -83,6 +84,7 @@ public class SubScene_List : MonoBehaviour
         {
             GameObject.DestroyImmediate(ss);
         }
+        return scenes.Length;
     }
 
     public bool IsAllLoaded()

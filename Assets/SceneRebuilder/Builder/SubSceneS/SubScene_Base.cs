@@ -11,6 +11,11 @@ using UnityEditor.SceneManagement;
 
 public class SubScene_Base : MonoBehaviour
 {
+    public virtual void DestroyScene()
+    {
+        GameObject.DestroyImmediate(this);
+    }
+
     public SubScene_Base LinkedScene;
 
     public SubSceneArg sceneArg;
@@ -329,7 +334,7 @@ public class SubScene_Base : MonoBehaviour
     }
 
     [ContextMenu("UnLoadGosM")]
-    public int UnLoadGosM()
+    public virtual int UnLoadGosM()
     {
         //if (gos != null)
         //{

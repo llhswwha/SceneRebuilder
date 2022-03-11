@@ -390,10 +390,10 @@ public static class SubSceneHelper
 
 public enum SubSceneType
 {
-    Single, Part, Base, In, Out0, Out1,LOD
+    Single, Part, Base, In, Out0, Out1,LODs
 }
 
 public enum SceneContentType
 {
-    Single,Part,Tree,TreeAndPart,TreeWithPart,TreeNode,LOD0,LODGroup,LODs
+    Single,Part,Tree,TreeAndPart,TreeWithPart,TreeNode,LOD0,LODGroup,LODs,Ref
 }

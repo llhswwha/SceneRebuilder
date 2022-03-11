@@ -121,25 +121,25 @@ public class BuildingModelInfo : SubSceneCreater
         {
             if (tree.name.Contains("_Out0_"))
             {
-                if (floorLoadSetting.Out0Combined)
-                {
-                    var allScenes = tree.GetComponentsInChildren<SubScene_Out0>(true);
-                    bag.AddRange(allScenes);
-                }
+                //if (floorLoadSetting.Out0Combined)
+                //{
+                //    var allScenes = tree.GetComponentsInChildren<SubScene_Out0>(true);
+                //    bag.AddRange(allScenes);
+                //}
                 if (floorLoadSetting.Out0Renderers)
                 {
-                    var allScenes = tree.GetComponentsInChildren<SubScene_In>(true);
+                    var allScenes = tree.GetComponentsInChildren<SubScene_Out0>(true);
                     bag.AddRange(allScenes);
                 }
 
             }
             if (tree.name.Contains("_InTree"))
             {
-                if (floorLoadSetting.InCombined)
-                {
-                    var allScenes = tree.GetComponentsInChildren<SubScene_Out0>(true);
-                    bag.AddRange(allScenes);
-                }
+                //if (floorLoadSetting.InCombined)
+                //{
+                //    var allScenes = tree.GetComponentsInChildren<SubScene_Out0>(true);
+                //    bag.AddRange(allScenes);
+                //}
                 if (floorLoadSetting.InRenderers)
                 {
                     var allScenes = tree.GetComponentsInChildren<SubScene_In>(true);
@@ -148,21 +148,30 @@ public class BuildingModelInfo : SubSceneCreater
             }
             if (tree.name.Contains("_OutTree1"))
             {
-                if (floorLoadSetting.Out1Combined)
-                {
-                    var allScenes = tree.GetComponentsInChildren<SubScene_Out0>(true);
-                    bag.AddRange(allScenes);
-                }
+                //if (floorLoadSetting.Out1Combined)
+                //{
+                //    var allScenes = tree.GetComponentsInChildren<SubScene_Out0>(true);
+                //    bag.AddRange(allScenes);
+                //}
 
                 if (floorLoadSetting.Out1Renderers)
                 {
-                    var allScenes = tree.GetComponentsInChildren<SubScene_In>(true);
+                    var allScenes = tree.GetComponentsInChildren<SubScene_Out1>(true);
                     bag.AddRange(allScenes);
                 }
             }
         }
 
-        Debug.Log($"GetSubScenes Model:{this.name} trees:{trees.Count} bag:{bag.Count} setting:{floorLoadSetting}");
+        if (LODPart != null)
+        {
+            if (floorLoadSetting.LODs)
+            {
+                var allScenes = LODPart.GetComponentsInChildren<SubScene_LODs>(true);
+                bag.AddRange(allScenes);
+            }
+        }
+
+        Debug.Log($"BuildingModelInfo.GetSubScenes1 Model:{this.name} trees:{trees.Count} bag:{bag.Count} setting:{floorLoadSetting}");
         return bag;
     }
 
@@ -1893,6 +1902,9 @@ public class BuildingModelInfo : SubSceneCreater
     public void EditorCreateNodeScenes(Action<ProgressArg> progressChanged)
     {
         DateTime start = DateTime.Now;
+
+        GetInOutParts();
+
         ShowDetail();
         InitRenderers();
         var ts = GetTrees();
@@ -1935,8 +1947,9 @@ public class BuildingModelInfo : SubSceneCreater
 
         if (LODPart != null)
         {
-            SubScene_Ref.Init(LODPart);
+            SubScene_Ref.BeforeCreateScene(LODPart);
             SubScene_LODs lodsScene=SubSceneHelper.CreateSubScene<SubScene_LODs>(LODPart);
+            lodsScene.contentType = SceneContentType.LODs;
         }
 
 
@@ -2016,29 +2029,7 @@ public class BuildingModelInfo : SubSceneCreater
         if (LODPart)
         {
             SubSceneHelper.EditorLoadScenes(LODPart, null);
-            SubScene_Ref[] refScenes = LODPart.GetComponentsInChildren<SubScene_Ref>(true);
-            foreach(var refS in refScenes)
-            {
-                GameObject go = IdDictionary.GetGo(refS.RefId);
-                if (go == null)
-                {
-                    Debug.LogError($"go==null RefId:{refS.RefId}");
-                    continue;
-                }
-                SubScene_Base ss = go.GetComponent<SubScene_Base>();
-                var arg = refS.sceneArg;
-                int idOld = ss.sceneArg.index;
-                //ss.sceneArg.index = arg.index;
-                //ss.sceneArg = arg;
-                ss.sceneArg.index = 0;
-                ss.sceneArg.path = "Path";
-
-                Debug.LogError($"SetSceneIndex old:{idOld} new:{ss.sceneArg.index} name:{go.name} path:{arg.path}");
-
-                //GameObject.DestroyImmediate(refS);
-                refS.enabled = false;
-                refS.IsRefSceneLoaded = true;
-            }
+            SubScene_Ref.AfterLoadScene(LODPart);
         }
         
 

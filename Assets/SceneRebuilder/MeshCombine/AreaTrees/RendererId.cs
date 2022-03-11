@@ -176,13 +176,18 @@ public class RendererId
     public void NewId()
     {
         Id = Guid.NewGuid().ToString();
-        for(int i = 0; i < transform.childCount; i++)
+        UpdateChildrenId();
+    }
+
+    public void UpdateChildrenId()
+    {
+        for (int i = 0; i < transform.childCount; i++)
         {
             var child = transform.GetChild(i);
             var rid = child.GetComponent<RendererId>();
             if (rid)
             {
-                rid.SetPid(Id,this.transform);
+                rid.SetPid(Id, this.transform);
             }
         }
     }

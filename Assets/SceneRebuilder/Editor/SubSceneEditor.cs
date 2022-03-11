@@ -107,11 +107,20 @@ public class SubScene_LODEditor : SubSceneEditor<SubScene_LODs>
 }
 
 [CustomEditor(typeof(SubScene_Ref))]
-public class SubScene_RefEditor : SubSceneEditor<SubScene_Ref>
+public class SubScene_RefEditor : BaseEditor<SubScene_Ref>
 {
     public override void OnToolLayout(SubScene_Ref item)
     {
         base.OnToolLayout(item);
-        GUILayout.Label($"RefId:{item.RefId}");
+        GUILayout.Label($"RefId:{item.RefId} IdCount:{item.SceneIds.Count}");
+        var arg = item.GetSceneArg();
+        string scenePath1 = arg.path;
+        string sceneAssetPath = arg.GetSceneAssetPath();
+        string sceneFilePath = arg.GetSceneFilePath();
+        GUILayout.Label($"({item.contentType})[{arg.index}] {scenePath1}");
+        if (GUILayout.Button("SetBuildings"))
+        {
+            SubSceneHelper.SetBuildings();
+        }
     }
 }

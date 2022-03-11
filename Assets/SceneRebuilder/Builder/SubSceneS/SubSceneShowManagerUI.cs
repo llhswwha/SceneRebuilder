@@ -113,7 +113,7 @@ public class SubSceneShowManagerUI : MonoBehaviour
     {
         Debug.Log("LoadStartScenes");
         subSceneManagerUI.SetLoadingSceneMaxCount();
-        subSceneShowManager.LoadStartScens();
+        subSceneShowManager.LoadStartScenes();
     }
 
    //[ContextMenu("LoadOut0BuildingScenes")]

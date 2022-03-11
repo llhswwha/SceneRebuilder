@@ -121,16 +121,16 @@ public class SubSceneManagerUI : MonoBehaviour
 
     private void OnDynamicShowChanged(bool isOn)
     {
-        Debug.Log("OnDynamicShowChanged:" + isOn);
+        Debug.Log("UI.OnDynamicShowChanged:" + isOn);
 
         subSceneShowManager.gameObject.SetActive(isOn);
     }
 
     private void OnSceneTypeChanged(int i)
     {
-        Debug.Log("OnSceneTypeChanged:"+i);
+        
         sceneType= (SubSceneType)i;
-
+        Debug.Log($"UI.OnSceneTypeChanged:{i} sceneType:{sceneType}");
         //ClickGetScenes();
     }
 

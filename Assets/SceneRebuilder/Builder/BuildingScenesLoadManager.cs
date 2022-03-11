@@ -315,12 +315,13 @@ public class BuildingSceneLoadItem
     public void SetAllEnable(bool e)
     {
         IsEnable = e;
-        InCombined = e;
-        Out0Combined = e;
-        Out1Combined = e;
+        //InCombined = e;
+        //Out0Combined = e;
+        //Out1Combined = e;
         InRenderers = e;
         Out0Renderers = e;
         Out1Renderers = e;
+        LODs = e;
 
         foreach (var item in Children)
         {
@@ -332,25 +333,27 @@ public class BuildingSceneLoadItem
     public string Name;
     [XmlAttribute]
     public bool IsEnable;
-    [XmlAttribute]
-    public bool InCombined;
+    //[XmlAttribute]
+    //public bool InCombined;
     [XmlAttribute]
     public bool InRenderers;
-    [XmlAttribute]
-    public bool Out0Combined;
+    //[XmlAttribute]
+    //public bool Out0Combined;
     [XmlAttribute]
     public bool Out0Renderers;
-    [XmlAttribute]
-    public bool Out1Combined;
+    //[XmlAttribute]
+    //public bool Out1Combined;
     [XmlAttribute]
     public bool Out1Renderers;
+    [XmlAttribute]
+    public bool LODs;
 
     public BuildingSceneLoadItem()
     {
-        //IsEnable = true;
+        IsEnable = true;
         //Out0Combined = true;
-        //Out0Renderers = true;
-        SetAllEnable(true);
+        Out0Renderers = true;
+        //SetAllEnable(true);
     }
 
     [XmlElement("BuildingSceneLoadItem")]
@@ -358,6 +361,7 @@ public class BuildingSceneLoadItem
 
     public override string ToString()
     {
-        return $"[Name:{Name} InCombined:{InCombined} Out0Combined:{Out0Combined} Out1Combined:{Out1Combined} InRenderers:{InRenderers} Out0Renderers:{Out0Renderers} Out1Renderers:{Out1Renderers}]";
+        //return $"[Name:{Name} InCombined:{InCombined} Out0Combined:{Out0Combined} Out1Combined:{Out1Combined} InRenderers:{InRenderers} Out0Renderers:{Out0Renderers} Out1Renderers:{Out1Renderers}]";
+        return $"[Name:{Name} InRenderers:{InRenderers} Out0Renderers:{Out0Renderers} Out1Renderers:{Out1Renderers}]";
     }
 }

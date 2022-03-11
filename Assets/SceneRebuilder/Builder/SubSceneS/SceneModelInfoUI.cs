@@ -11,11 +11,27 @@ public class SceneModelInfoUI : MonoBehaviour
 
     public Text textResult;
 
+    public float UpdateInterval = 0.5f;
+
+    public Toggle toggleEnableUpdate;
+
     void Start()
     {
         if(sceneModelInfo==null){
             sceneModelInfo=GameObject.FindObjectOfType<SceneModelInfo>();
         }
+        StartCoroutine(UpdateInfo());
+    }
+
+    private IEnumerator UpdateInfo()
+    {
+        while (true)
+        {
+            if(toggleEnableUpdate.isOn)
+                GetInfo();
+            yield return new WaitForSeconds(UpdateInterval);
+        }
+        yield return null;
     }
 
     [ContextMenu("GetInfo")]

@@ -42,6 +42,16 @@ public class SceneRebuildManager : SingletonBehaviour<SceneRebuildManager>
         buildingModelManager.CombineAll();//Model -> CombinedToTree
     }
 
+    [ContextMenu("MoveRenderers")]
+    public void MoveRenderers()
+    {
+        if (buildingModelManager == null)
+        {
+            buildingModelManager = BuildingModelManager.Instance;
+        }
+        buildingModelManager.MoveRenderers();//Model -> CombinedToTree
+    }
+
     [ContextMenu("ClearTrees")]
     public void ClearTrees()
     {

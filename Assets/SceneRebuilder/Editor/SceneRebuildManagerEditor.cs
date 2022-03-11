@@ -67,6 +67,7 @@ public class SceneRebuildManagerEditor : BaseFoldoutEditor<SceneRebuildManager>
         //      {
         //          SceneRebuildEditorWindow.ShowWindow();
         //      });
+        NewButton("MoveRenderers", buttonWidth, true, item.MoveRenderers);
         EditorGUILayout.EndHorizontal();
 
         EditorGUILayout.BeginHorizontal();

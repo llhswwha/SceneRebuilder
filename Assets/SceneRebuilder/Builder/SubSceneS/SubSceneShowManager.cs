@@ -11,6 +11,7 @@ public class SubSceneShowManager : SingletonBehaviour<SubSceneShowManager>
     public SubScene_Out0[] scenes_Out0;
     public SubScene_Out1[] scenes_Out1;
     public SubScene_In[] scenes_In;
+    public SubScene_LODs[] scenes_LODs;
 
     public List<SubScene_In> scenes_In_Part = new List<SubScene_In>();
     public List<SubScene_In> scenes_In_Tree = new List<SubScene_In>();
@@ -30,7 +31,7 @@ public class SubSceneShowManager : SingletonBehaviour<SubSceneShowManager>
         return this.GetSceneCountInfo()+"\n"+this.GetShowSceneCountInfo();
     }
 
-    public bool IncludeInactive = false;
+    public static bool IncludeInactive = true;
 
     [ContextMenu("GetSceneCountInfo")]
     public string GetSceneCountInfo()
@@ -101,6 +102,7 @@ public class SubSceneShowManager : SingletonBehaviour<SubSceneShowManager>
         sceneManager = GameObject.FindObjectOfType<SubSceneManager>(IncludeInactive);
         scenes_In = GameObject.FindObjectsOfType<SubScene_In>(IncludeInactive);
         scenes_Out0 = GameObject.FindObjectsOfType<SubScene_Out0>(IncludeInactive);
+        scenes_LODs = GameObject.FindObjectsOfType<SubScene_LODs>(IncludeInactive);
 
         scenes_Out0_Part.Clear();
         scenes_Out0_Tree.Clear();
@@ -113,11 +115,14 @@ public class SubSceneShowManager : SingletonBehaviour<SubSceneShowManager>
             {
                 scenes_Out0_Part.Add(s);
                 s.HideBoundsBox();
-
             }
-            if (s.contentType == SceneContentType.Tree)
+            else if (s.contentType == SceneContentType.Tree)
             {
                 scenes_Out0_Tree.Add(s);
+            }
+            else
+            {
+
             }
             //if (s.contentType == SceneContentType.TreeNode)
             //{
@@ -198,7 +203,7 @@ public class SubSceneShowManager : SingletonBehaviour<SubSceneShowManager>
     public bool IsEnableHide = false; 
     public bool IsEnableShow=false;
 
-    public void LoadStartScens(Action<SceneLoadProgress> onComplete=null)
+    public void LoadStartScenes(Action<SceneLoadProgress> onComplete=null)
     {
         List<SubScene_Out0> scenes=new List<SubScene_Out0>();
         // scenes.AddRange(scenes_Out0_Tree);
@@ -220,7 +225,7 @@ public class SubSceneShowManager : SingletonBehaviour<SubSceneShowManager>
 
     public void LoadStartAndHiddenScenes(Action<SceneLoadProgress> onComplete1, Action<SceneLoadProgress> onComplete2)
     {
-        LoadStartScens((p1) =>
+        LoadStartScenes((p1) =>
         {
             //Debug.LogError($"LoadStartScens progress:{p1.progress} isFinished:{p1.isAllFinished}");
             if (onComplete1 != null)
@@ -346,7 +351,7 @@ public class SubSceneShowManager : SingletonBehaviour<SubSceneShowManager>
 
         if (IsAutoLoad)
         {
-            LoadStartScens();
+            LoadStartScenes();
         }
 
         if (AreaTreeNodeShowManager.Instance)

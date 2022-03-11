@@ -247,12 +247,19 @@ public class BuildingModelInfoEditor : BaseFoldoutEditor<BuildingModelInfo>
         EditorGUILayout.EndHorizontal();
 
         EditorGUILayout.BeginHorizontal();
-        if (GUILayout.Button("LOD", GUILayout.Width(50)))
+
+        NewEnabledButton("LOD", 50, info.LODPart!=null, btnStyle, () =>
         {
             MeshProfilerNS.GameObjectListMeshEditorWindow.ShowWindow(info.LODPart.gameObject);
-        }
+        });
+
+        //if (GUILayout.Button("LOD", GUILayout.Width(50)))
+        //{
+        //    MeshProfilerNS.GameObjectListMeshEditorWindow.ShowWindow(info.LODPart.gameObject);
+        //}
         GUILayout.Button(info.LODVertexCount.ToString("F1") + "w", GUILayout.Width(80));
         GUILayout.Button(info.LODRendererCount.ToString(), GUILayout.Width(50));
+
         EditorGUILayout.EndHorizontal();
 
         EditorGUILayout.BeginHorizontal();
