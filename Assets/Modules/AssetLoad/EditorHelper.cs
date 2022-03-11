@@ -368,7 +368,9 @@ public static class EditorHelper
     {
         try
         {
+            if (string.IsNullOrEmpty(path)) return "";
             string[] parts = path.Split(new char[] { '.', '\\', '/' });
+            if (parts.Length < 2) return "";
             string sceneName = parts[parts.Length - 2];
             return sceneName;
         }
@@ -381,6 +383,11 @@ public static class EditorHelper
 
     public static GameObject[] EditorLoadScene(Scene scene, string path, Transform parent)
     {
+        if (string.IsNullOrEmpty(path))
+        {
+            Debug.LogError($"EditorLoadScene IsNullOrEmpty(path) parent:{parent}");
+            return new GameObject[0];
+        }
         string scenePath = EditorHelper.GetScenePath(path);
         string sceneName = GetSceneName(scenePath);
         //Debug.Log($"LoadScene IsValid:{scene.IsValid()}, \tpath:{path}\nscenePath:{scenePath}\n{System.IO.File.Exists(scenePath)}");
@@ -433,7 +440,7 @@ public static class EditorHelper
 
     public static void RefreshAssets()
     {
-        Debug.LogError("RefreshAssets");
+        Debug.Log("RefreshAssets");
         AssetDatabase.Refresh();
     }
 
@@ -849,23 +856,32 @@ public static class EditorHelper
 
     public static Scene GetSceneByBuildIndex(SceneLoadArg arg)
     {
-        if (arg.index <= 0)
+        try
         {
-            Debug.LogError($"EditorHelper.LoadSceneAsync arg.index<=0 sName:{arg.name} index:{arg.index}");
+            if (arg.index <= 0)
+            {
+                Debug.LogError($"EditorHelper.LoadSceneAsync arg.index<=0 sName:{arg.name} index:{arg.index}");
+                return new Scene();
+            }
+            else
+            {
+                Scene scene = SceneManager.GetSceneByBuildIndex(arg.index);
+#if UNITY_EDITOR
+                Debug.Log($"GetSceneByBuildIndex [arg:{arg}] scene:{scene.name}");
+                if (arg.name != scene.name)
+                {
+                    Debug.LogError($"GetSceneByBuildIndex Error [arg:{arg.name}] scene:{scene.name}");
+                }
+#endif
+                return scene;
+            }
+        }
+        catch (System.Exception ex)
+        {
+            Debug.LogError($"EditorHelper.LoadSceneAsync sName:{arg.name} index:{arg.index} Exception:{ex}");
             return new Scene();
         }
-        else
-        {
-            Scene scene= SceneManager.GetSceneByBuildIndex(arg.index);
-#if UNITY_EDITOR
-            Debug.Log($"GetSceneByBuildIndex [arg:{arg}] scene:{scene.name}");
-            if (arg.name != scene.name)
-            {
-                Debug.LogError($"GetSceneByBuildIndex Error [arg:{arg.name}] scene:{scene.name}");
-            }
-#endif
-            return scene;
-        }
+
     }
 
     public static IEnumerator LoadSceneAsync(SceneLoadArg arg, System.Action<float> progressChanged, System.Action<Scene> finished,bool isAutoUnload=false)
@@ -883,7 +899,17 @@ public static class EditorHelper
             yield return null;
         }
         else{
-            AsyncOperation async = SceneManager.LoadSceneAsync(arg.index, LoadSceneMode.Additive);
+            AsyncOperation async = null;
+            try
+            {
+                async = SceneManager.LoadSceneAsync(arg.index, LoadSceneMode.Additive);
+            }
+            catch (System.Exception ex)
+            {
+
+                Debug.LogError($"EditorHelper.LoadSceneAsync sName:{arg.name} Exception:{ex}");
+            }
+            
             if (async == null)
             {
                 Debug.LogError($"EditorHelper.LoadSceneAsync async == null sName:{arg.name}");

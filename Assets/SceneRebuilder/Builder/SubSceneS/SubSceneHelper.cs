@@ -21,6 +21,11 @@ public static class SubSceneHelper
         EditorBuildSettings.scenes = buildingScenes;
     }
 
+    public static void SetBuildings()
+    {
+        SetBuildings<SubScene_Base>(true);
+    }
+
     public static void SetBuildings<T>(bool includeInactive) where T : SubScene_Base
     {
         var subScenes = GameObject.FindObjectsOfType<SubScene_Base>(includeInactive);
@@ -161,6 +166,55 @@ public static class SubSceneHelper
 
 #if UNITY_EDITOR
 
+    public static void EditorLoadScenes(GameObject root, Action<ProgressArg> progressChanged)
+    {
+        if (root == null)
+        {
+            return;
+        }
+        SubScene_Base[] scenes = SubScene_List.GetBaseScenes(root);
+        EditorLoadScenes(scenes, progressChanged);
+    }
+
+    public static void EditorLoadScenes(SubSceneBag scenes, Action<ProgressArg> progressChanged)
+    {
+        EditorLoadScenes(scenes.ToArray(), progressChanged);
+    }
+
+    public static void EditorLoadScenes(SubScene_Base[] scenes, Action<ProgressArg> progressChanged)
+    {
+        Debug.Log("EditorLoadScenes:" + scenes.Length);
+        for (int i = 0; i < scenes.Length; i++)
+        {
+            SubScene_Base scene = scenes[i];
+            scene.IsLoaded = false;
+            scene.EditorLoadSceneEx();
+            ProgressArg p = new ProgressArg("EditorLoadScenes", i, scenes.Length, scene);
+            if (progressChanged != null)
+            {
+                progressChanged(p);
+            }
+            else
+            {
+                if (ProgressBarHelper.DisplayCancelableProgressBar(p))
+                {
+                    break;
+                }
+            }
+        }
+        if (progressChanged != null)
+        {
+            progressChanged(new ProgressArg("EditorLoadScenes", scenes.Length, scenes.Length));
+        }
+        else
+        {
+            ProgressBarHelper.ClearProgressBar();
+        }
+
+        //this.InitInOut(false);
+        //SceneState = "EditLoadScenes_Part";
+    }
+
     //[ContextMenu("SaveScene")]
     public static Scene SaveChildrenToScene(string path, Transform target, bool isOverride)
     {
@@ -243,6 +297,34 @@ public static class SubSceneHelper
         return ss;
     }
 
+    public static void CreateSubScenes<T>(GameObject[] gameObjects) where T : SubScene_Base
+    {
+        for (int i = 0; i < gameObjects.Length; i++)
+        {
+            GameObject obj = gameObjects[i];
+            if (ProgressBarHelper.DisplayCancelableProgressBar(new ProgressArg("CreateSubScenes", i, gameObjects.Length, obj)))
+            {
+                break;
+            }
+            CreateSubScene<T>(obj);
+        }
+        EditorHelper.RefreshAssets();
+        ProgressBarHelper.ClearProgressBar();
+    }
+
+    public static T CreateSubScene<T>(GameObject obj) where T : SubScene_Base
+    {
+        if (obj == null) return null;
+        T subScene = obj.GetComponent<T>();
+        if (subScene == null)
+        {
+            subScene = obj.AddComponent<T>();
+            subScene.IsLoaded = true;
+        }
+        subScene.EditorCreateScene(true);
+        return subScene;
+    }
+
     public static void EditorCreateScenes(List<SubScene_Base> scenes, Action<ProgressArg> progressChanged)
     {
         int count = scenes.Count;
@@ -308,10 +390,10 @@ public static class SubSceneHelper
 
 public enum SubSceneType
 {
-    Single, Part, Base, In, Out0, Out1
+    Single, Part, Base, In, Out0, Out1,LOD
 }
 
 public enum SceneContentType
 {
-    Single,Part,Tree,TreeAndPart,TreeWithPart,TreeNode,LOD0,LODGroup
+    Single,Part,Tree,TreeAndPart,TreeWithPart,TreeNode,LOD0,LODGroup,LODs
 }

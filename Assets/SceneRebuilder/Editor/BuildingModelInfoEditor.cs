@@ -135,7 +135,7 @@ public class BuildingModelInfoEditor : BaseFoldoutEditor<BuildingModelInfo>
             //info.DeleteScenesFolder();
             info.EditorCreateNodeScenes();
         });
-        NewEnabledButton("RemoveScenes", buttonWidth, state.CanRemoveScenes, btnStyle, info.DestroyScenes);
+        NewEnabledButton("RemoveScenes", buttonWidth, state.CanRemoveScenes, btnStyle, info.DestroyScenesEx);
         NewEnabledButton("SelectFolder", buttonWidth, state.sceneCount > 0, btnStyle, info.SelectScenesFolder);
         NewEnabledButton("DeleteFolder", buttonWidth, state.isAllLoaded == true && state.sceneCount > 0, btnStyle, info.DeleteScenesFolder);
         EditorGUILayout.EndHorizontal();

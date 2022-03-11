@@ -444,7 +444,7 @@ public class MyEditorTools2
     [MenuItem("SceneTools/SubScene/SetBuildings")]
     public static void SetBuildings()
     {
-        SubSceneHelper.SetBuildings<SubScene_Base>(true);
+        SubSceneHelper.SetBuildings();
     }
 
     [MenuItem("SceneTools/SubScene/ClearBuildings")]
@@ -462,34 +462,13 @@ public class MyEditorTools2
     [MenuItem("SceneTools/SubScene/CreateSubScenes(LOD)")]
     public static void CreateSubScenes_LOD()
     {
-        CreateSubScenes<SubScene_LOD>(Selection.gameObjects);
+        SubSceneHelper.CreateSubScenes<SubScene_LODs>(Selection.gameObjects);
     }
 
     [MenuItem("SceneTools/SubScene/CreateSubScenes")]
     public static void CreateSubScenes()
     {
-        CreateSubScenes<SubScene_Single>(Selection.gameObjects);
-    }
-
-    public static void CreateSubScenes<T>(GameObject[] gameObjects) where T :SubScene_Base
-    {
-        for (int i = 0; i < gameObjects.Length; i++)
-        {
-            GameObject obj = gameObjects[i];
-            if (ProgressBarHelper.DisplayCancelableProgressBar(new ProgressArg("CreateSubScenes", i, gameObjects.Length, obj)))
-            {
-                break;
-            }
-            T subScene = obj.GetComponent<T>();
-            if (subScene == null)
-            {
-                subScene = obj.AddComponent<T>();
-                subScene.IsLoaded = true;
-            }
-            subScene.EditorCreateScene(true);
-        }
-        EditorHelper.RefreshAssets();
-        ProgressBarHelper.ClearProgressBar();
+        SubSceneHelper.CreateSubScenes<SubScene_Single>(Selection.gameObjects);
     }
 
     [MenuItem("SceneTools/SubScene/CreateSubScenes(Children)")]
@@ -1058,7 +1037,53 @@ public class MyEditorTools2
         }
     }
 
+    [MenuItem("SceneTools/Renderers/CheckIds")]
+    public static void CheckRendererIds()
+    {
+        var rids = GameObject.FindObjectsOfType<RendererId>();
+        Dictionary<string, RendererId> ridDict = new Dictionary<string, RendererId>();
+        int count = 0;
+        foreach(var rid in rids)
+        {
+            if (ridDict.ContainsKey(rid.Id))
+            {
+                //rid.NewId();
+                //ridDict.Add(rid.Id, rid);
+                Debug.LogError($"CheckRendererIds[{count++}] rid:{rid.Id} name:{rid.name} parent:{rid.transform.parent}");
+            }
+            else
+            {
+                ridDict.Add(rid.Id, rid);
+            }
+        }
+        Debug.LogError($"CheckRendererIds rids:{rids.Length}");
+    }
+
+    [MenuItem("SceneTools/Renderers/UpdateIds")]
+    public static void UpdateRendererIds()
+    {
+        var rids = GameObject.FindObjectsOfType<RendererId>();
+        Dictionary<string, RendererId> ridDict = new Dictionary<string, RendererId>();
+        int count = 0;
+        foreach (var rid in rids)
+        {
+            if (ridDict.ContainsKey(rid.Id))
+            {
+                Debug.LogError($"UpdateRendererIds[{count++}] rid:{rid.Id} name:{rid.name} parent:{rid.transform.parent}");
+                rid.NewId();
+                ridDict.Add(rid.Id, rid);
+            }
+            else
+            {
+                ridDict.Add(rid.Id, rid);
+            }
+        }
+        Debug.LogError($"UpdateRendererIds rids:{rids.Length}");
+    }
+
     #endregion
+
+    #region Collider
 
     /// <summary>
     /// 自动计算所有子对象包围盒
@@ -1181,4 +1206,5 @@ public class MyEditorTools2
         }
         //ColliderHelper.CreateBoxCollider(parent);
     }
+    #endregion
 }

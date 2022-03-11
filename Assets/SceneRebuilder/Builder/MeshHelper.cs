@@ -82,10 +82,12 @@ public static class MeshHelper
         ProgressBarHelper.ClearProgressBar();
     }
 
-    public static void CopyTransformMesh(GameObject source, GameObject target)
+    public static bool CopyTransformMesh(GameObject source, GameObject target)
     {
-        CopyMeshComponents(source, target);
+        bool r=CopyMeshComponents(source, target);
+        if (r == false) return r;
         CopyTransfrom(source.transform, target.transform);
+        return true;
     }
 
     public static void CopyTransfrom(Transform source, Transform target)
@@ -100,23 +102,29 @@ public static class MeshHelper
         target.localScale = source.localScale;
     }
 
-    public static void CopyMeshComponents(GameObject source, GameObject target)
+    public static bool CopyMeshComponents(GameObject source, GameObject target)
     {
         if (source == null)
         {
             Debug.LogError($"CopyMeshComponents source == null target:{target}");
-            return;
+            return false;
         }
         if (source == null)
         {
             Debug.LogError($"CopyMeshComponents target == null source:{source}");
-            return;
+            return false;
         }
         MeshRenderer meshRenderer1 = source.GetComponent<MeshRenderer>();
+        MeshFilter meshFilter1 = source.GetComponent<MeshFilter>();
         if (meshRenderer1 == null)
         {
             Debug.LogError($"CopyMeshComponents meshRenderer1 == null source:{source} target:{target}");
-            return;
+            return false;
+        }
+        if (meshFilter1 == null)
+        {
+            Debug.LogError($"CopyMeshComponents meshFilter1 == null source:{source} target:{target}");
+            return false;
         }
 
         MeshRenderer meshRenderer2 = target.GetComponent<MeshRenderer>();
@@ -139,7 +147,7 @@ public static class MeshHelper
             Debug.LogError($"CopyMeshComponents meshRenderer2.sharedMaterials  == null source:{source} target:{target}");
         }
 
-        MeshFilter meshFilter1 = source.GetComponent<MeshFilter>();
+       
         MeshFilter meshFilter2 = target.AddMissingComponent<MeshFilter>();
         meshFilter2.sharedMesh = meshFilter1.sharedMesh;
 
@@ -148,6 +156,7 @@ public static class MeshHelper
         {
             meshCollider2.sharedMesh= meshFilter1.sharedMesh;
         }
+        return true;
     }
 
 

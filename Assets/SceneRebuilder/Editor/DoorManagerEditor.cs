@@ -128,8 +128,8 @@ public class DoorManagerEditor : BaseFoldoutEditor<DoorManager>
         {
             item.RecoverDoors();
         }
-        item.OldTarget = ObjectField(item.OldTarget);
-        item.LocalTarget = ObjectField(item.LocalTarget);
+        item.OldTarget = ObjectFieldH("OldTarget", item.OldTarget);
+        item.LocalTarget = ObjectFieldH("LocalTarget", item.LocalTarget);
 
         DrawDoorsRootList(doorRootListArg, item);
 

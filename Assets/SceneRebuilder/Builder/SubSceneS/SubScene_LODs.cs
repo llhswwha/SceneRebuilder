@@ -2,7 +2,7 @@ using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 
-public class SubScene_LOD : SubScene_Part
+public class SubScene_LODs : SubScene_Part
 {
     protected override string BoundsName
     {
@@ -11,5 +11,6 @@ public class SubScene_LOD : SubScene_Part
             return this.name + "_Bounds_Out0_" + contentType;
         }
     }
+
 }
 

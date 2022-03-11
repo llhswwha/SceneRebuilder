@@ -176,6 +176,15 @@ public class RendererId
     public void NewId()
     {
         Id = Guid.NewGuid().ToString();
+        for(int i = 0; i < transform.childCount; i++)
+        {
+            var child = transform.GetChild(i);
+            var rid = child.GetComponent<RendererId>();
+            if (rid)
+            {
+                rid.SetPid(Id,this.transform);
+            }
+        }
     }
 
     public void Refresh()
@@ -556,6 +565,32 @@ public class RendererId
         }
     }
 
+    public static void UpdateIds(GameObject rootObj, bool showLog = false)
+    {
+        if (rootObj == null)
+        {
+            Debug.LogError("InitIds rootObj == null");
+            return;
+        }
+        MeshRenderer[] renderers = rootObj.GetComponentsInChildren<MeshRenderer>(true);
+        UpdateIds(renderers);
+        if (showLog)
+        {
+            Debug.Log($"InitIds rootObj:{rootObj} renderers:{renderers.Length}");
+        }
+    }
+
+    public static void UpdateIds<T>(T[] renderers) where T : Component
+    {
+        // DateTime start = DateTime.Now;
+        int count = renderers.Length;
+        for (int i = 0; i < count; i++)
+        {
+            T r = renderers[i];
+            RendererId id = RendererId.UpdateId(r);
+        }
+    }
+
     public static void InitIds<T>(T[] renderers) where T : Component
     {
         // DateTime start = DateTime.Now;
@@ -564,19 +599,7 @@ public class RendererId
         {
             T r = renderers[i];
             RendererId id = RendererId.InitId(r);
-            // float progress = (float)i / count;
-            // float percents = progress * 100;
-            // if (ProgressBarHelper.DisplayCancelableProgressBar("InitIds", $"Progress1 {i}/{count} {percents:F1}% {r.name}", progress))
-            // {
-            //     break;
-            // }
-
         }
-
-        // Count = allRenderers.Length;
-        // ProgressBarHelper.ClearProgressBar();
-
-        // Debug.Log($"InitIds count:{renderers.Length} time:{(DateTime.Now - start)}");
     }
 
     public static void ChangeChildrenParent(Transform root,Transform newParent)

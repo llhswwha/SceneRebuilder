@@ -2239,32 +2239,40 @@ public static class LODHelper
         //TransformHelper.ClearComponents<Collider>(newLOD0);
         //TransformHelper.ClearComponents<LODGroup>(newLOD0);
 
-        MeshHelper.CopyTransformMesh(group.gameObject, newLOD0);
-        MeshHelper.RemoveMeshComponents(group.gameObject,false);
-        newLOD0.transform.SetParent(group.transform);
-
-        MeshRenderer renderLod0New = newLOD0.GetComponent<MeshRenderer>();
-        newLOD0.name = origName + "_LOD0";
-        group.name = origName;
-
-        LOD[] lods = group.GetLODs();
-        if (lods[0].renderers.Length != 1)
+        bool r1=MeshHelper.CopyTransformMesh(group.gameObject, newLOD0);
+        if (r1)
         {
-            Debug.LogError(@"UniformLOD0 lods[0].renderers.Length != 1");
-        }
-        lods[0].renderers = new Renderer[] { renderLod0New };
-        group.SetLODs(lods);
+            MeshHelper.RemoveMeshComponents(group.gameObject, false);
+            newLOD0.transform.SetParent(group.transform);
 
-        foreach(var lod in lods)
-        {
-            foreach(var r in lod.renderers)
+            MeshRenderer renderLod0New = newLOD0.GetComponent<MeshRenderer>();
+            newLOD0.name = origName + "_LOD0";
+            group.name = origName;
+
+            LOD[] lods = group.GetLODs();
+            if (lods[0].renderers.Length != 1)
             {
-                if (r.transform.parent == group.transform.parent)
+                Debug.LogError(@"UniformLOD0 lods[0].renderers.Length != 1");
+            }
+            lods[0].renderers = new Renderer[] { renderLod0New };
+            group.SetLODs(lods);
+
+            foreach (var lod in lods)
+            {
+                foreach (var r in lod.renderers)
                 {
-                    r.transform.SetParent(group.transform);
+                    if (r.transform.parent == group.transform.parent)
+                    {
+                        r.transform.SetParent(group.transform);
+                    }
                 }
             }
         }
+        else
+        {
+            GameObject.DestroyImmediate(newLOD0);
+        }
+       
 
         //MeshCollider meshCollider = group.GetComponent<MeshCollider>();
         //if (meshCollider != null)

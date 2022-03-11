@@ -40,7 +40,7 @@ public class SubScene_List : MonoBehaviour
         //{
         //    scene.EditorLoadScene();
         //}
-        SubSceneCreater.EditorLoadScenes(scenes, null);
+        SubSceneHelper.EditorLoadScenes(scenes, null);
     }
 #endif
 

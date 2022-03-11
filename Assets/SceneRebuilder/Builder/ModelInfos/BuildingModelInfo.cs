@@ -1767,13 +1767,13 @@ public class BuildingModelInfo : SubSceneCreater
         //EditorLoadScenes(contentType);
 
         var scenes = GetSubScenesOfTypes(new List<SceneContentType>() { contentType });
-        EditorLoadScenes(scenes.ToArray(), progressChanged);
+        SubSceneHelper.EditorLoadScenes(scenes.ToArray(), progressChanged);
 
         this.InitInOut(false);
         //SceneState = "EditLoadScenes_Part";
         LoadTreeRenderers();
 
-        Debug.LogError($"EditorLoadScenes time:{(DateTime.Now - start)}");
+        Debug.LogError($"EditorLoadScenes time:{(DateTime.Now - start)} scenes:{scenes.Count}");
     }
 
     private void EditorLoadScenes_TreeWithPart(Action<ProgressArg> progressChanged)
@@ -1782,7 +1782,7 @@ public class BuildingModelInfo : SubSceneCreater
 
         var scenes = GetSubScenesOfTypes(new List<SceneContentType>() { SceneContentType.Part, SceneContentType.Tree });
 
-        EditorLoadScenes(scenes.ToArray(), progressChanged);
+        SubSceneHelper.EditorLoadScenes(scenes.ToArray(), progressChanged);
         LoadTreeRenderers(scenes);
         InitInOut();
 
@@ -1822,6 +1822,7 @@ public class BuildingModelInfo : SubSceneCreater
     public void EditorCreateNodeScenes()
     {
         EditorCreateNodeScenes(null);
+        EditorHelper.ClearOtherScenes();
     }
 
     public bool IsScenesFolderExists()
@@ -1919,7 +1920,7 @@ public class BuildingModelInfo : SubSceneCreater
                 p1.AddSubProgress(p);
                 //float progress2 = (float)(i + p) / ts.Length;
                 //float percents2 = progress2 * 100;
-                //ProgressBarHelper.DisplayCancelableProgressBar("BuildingModelInfo.EditorCreateNodeScenes", $"Progress2 {(i + p):F2}/{trees.Length} {percents2:F2}%", progress2);
+                //ProgressBarHelper.DisplayCancelableProgressBar("BuildingModelInfo.EditorCreateNodeScenes ", $"Progress2 {(i + p):F2}/{trees.Length} {percents2:F2}%", progress2);
 
                 if (progressChanged == null)
                 {
@@ -1931,6 +1932,14 @@ public class BuildingModelInfo : SubSceneCreater
                 }
             });
         }
+
+        if (LODPart != null)
+        {
+            SubScene_Ref.Init(LODPart);
+            SubScene_LODs lodsScene=SubSceneHelper.CreateSubScene<SubScene_LODs>(LODPart);
+        }
+
+
         if (progressChanged == null)
         {
             EditorHelper.RefreshAssets();
@@ -1941,10 +1950,12 @@ public class BuildingModelInfo : SubSceneCreater
             progressChanged(new ProgressArg("EditorCreateNodeScenes", ts.Length, ts.Length));
         }
 
+        
+
         UpdateSceneList();
 
         //EditorSavePrefab();
-        if (progressChanged == null) Debug.LogError($"BuildingModelInfo.EditorCreateNodeScenes time:{(DateTime.Now - start)}");
+        if (progressChanged == null) Debug.Log($"BuildingModelInfo.EditorCreateNodeScenes time:{(DateTime.Now - start)} model:{this.name}");
     }
 
     [ContextMenu("* EditorLoadNodeScenes")]
@@ -2002,6 +2013,34 @@ public class BuildingModelInfo : SubSceneCreater
                 }
             });
         }
+        if (LODPart)
+        {
+            SubSceneHelper.EditorLoadScenes(LODPart, null);
+            SubScene_Ref[] refScenes = LODPart.GetComponentsInChildren<SubScene_Ref>(true);
+            foreach(var refS in refScenes)
+            {
+                GameObject go = IdDictionary.GetGo(refS.RefId);
+                if (go == null)
+                {
+                    Debug.LogError($"go==null RefId:{refS.RefId}");
+                    continue;
+                }
+                SubScene_Base ss = go.GetComponent<SubScene_Base>();
+                var arg = refS.sceneArg;
+                int idOld = ss.sceneArg.index;
+                //ss.sceneArg.index = arg.index;
+                //ss.sceneArg = arg;
+                ss.sceneArg.index = 0;
+                ss.sceneArg.path = "Path";
+
+                Debug.LogError($"SetSceneIndex old:{idOld} new:{ss.sceneArg.index} name:{go.name} path:{arg.path}");
+
+                //GameObject.DestroyImmediate(refS);
+                refS.enabled = false;
+                refS.IsRefSceneLoaded = true;
+            }
+        }
+        
 
         if (progressChanged == null)
         {

@@ -200,7 +200,10 @@ public class SubScene_Base : MonoBehaviour
         {
             try
             {
+                if (sceneArg == null) return "";
+                if (string.IsNullOrEmpty(sceneArg.path)) return "";
                 string[] parts = sceneArg.path.Split(new char[] { '.', '\\', '/' });
+                if (parts.Length < 2) return "";
                 sceneName = parts[parts.Length - 2];
             }
             catch (Exception ex)

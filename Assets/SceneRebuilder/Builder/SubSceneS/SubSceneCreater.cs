@@ -83,7 +83,13 @@ public class SubSceneCreater : MonoBehaviour
         SubSceneHelper.LinkScenes(scenes2);
     }
 
-    [ContextMenu("DestroyScenes")]
+    public void DestroyScenesEx()
+    {
+        IdDictionary.InitInfos();
+        DestroyScenes();
+    }
+
+        [ContextMenu("DestroyScenes")]
     public void DestroyScenes()
     {
         //Debug.Log("DestroyOldPartScenes");
@@ -157,48 +163,10 @@ public class SubSceneCreater : MonoBehaviour
 
     public virtual void EditorLoadScenes(Action<ProgressArg> progressChanged)
     {
-        SubScene_Base[] scenes= SubScene_List.GetBaseScenes(gameObject);
-        EditorLoadScenes(scenes,progressChanged);
+        SubSceneHelper.EditorLoadScenes(this.gameObject, progressChanged);
     }
 
-    public static void EditorLoadScenes(SubSceneBag scenes, Action<ProgressArg> progressChanged)
-    {
-        EditorLoadScenes(scenes.ToArray(), progressChanged);
-    }
-
-        public static void EditorLoadScenes(SubScene_Base[] scenes, Action<ProgressArg> progressChanged)
-    {
-        Debug.Log("EditorLoadScenes:" + scenes.Length);
-        for (int i = 0; i < scenes.Length; i++)
-        {
-            SubScene_Base scene = scenes[i];
-            scene.IsLoaded = false;
-            scene.EditorLoadSceneEx();
-            ProgressArg p = new ProgressArg("EditorLoadScenes", i, scenes.Length, scene);
-            if (progressChanged != null)
-            {
-                progressChanged(p);
-            }
-            else
-            {
-                if (ProgressBarHelper.DisplayCancelableProgressBar(p))
-                {
-                    break;
-                }
-            }
-        }
-        if (progressChanged != null)
-        {
-            progressChanged(new ProgressArg("EditorLoadScenes", scenes.Length, scenes.Length));
-        }
-        else
-        {
-            ProgressBarHelper.ClearProgressBar();
-        }
-
-        //this.InitInOut(false);
-        //SceneState = "EditLoadScenes_Part";
-    }
+    
 
 #endif
 

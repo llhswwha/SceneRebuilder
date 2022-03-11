@@ -129,7 +129,7 @@ public class RendererIdEditor : BaseEditor<RendererId>
         if (GUILayout.Button("UpdateIds"))
         {
             //item.NewId();
-            RendererId.InitIds(item.gameObject, true);
+            RendererId.UpdateIds(item.gameObject, true);
         }
         if (GUILayout.Button("InitIdDict"))
         {
