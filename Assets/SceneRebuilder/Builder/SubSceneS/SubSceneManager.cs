@@ -1273,6 +1273,11 @@ public class SceneLoadProgress
         this.progress = progress;
         this.isAllFinished = isAllFinished;
     }
+
+    public override string ToString()
+    {
+        return $"scene:{scene} progress:{progress} isFinished:{isAllFinished}";
+    }
 }
 
 

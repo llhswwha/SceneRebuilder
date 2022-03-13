@@ -3,6 +3,7 @@ using System;
 using System.Collections;
 using System.Collections.Generic;
 using System.IO;
+using System.Linq;
 using System.Xml.Serialization;
 using UnityEngine;
 
@@ -10,18 +11,29 @@ public class BuildingScenesLoadManager : MonoBehaviour
 {
     public bool IsLoadXmlOnStart = true;
     public bool IsLoadSceneOnStart = true;
+    public bool IsTestLoadBuildings = false;
 
     // Start is called before the first frame update
     void Start()
     {
-        if (IsLoadXmlOnStart)
+#if UNITY_EDITOR
+        if (IsTestLoadBuildings)
         {
-            LoadXml();
+            TestLoadBuildings();
         }
-        if (IsLoadSceneOnStart)
+        else
+#endif
         {
-            LoadScenesBySetting();
+            if (IsLoadXmlOnStart)
+            {
+                LoadXml();
+            }
+            if (IsLoadSceneOnStart)
+            {
+                LoadScenesBySetting();
+            }
         }
+        
     }
 
     // Update is called once per frame
@@ -37,9 +49,80 @@ public class BuildingScenesLoadManager : MonoBehaviour
 
     }
 
-    public void LoadBuildings(List<DepNode> depNodes)
+    public string TestBulindgs = "1;2;";
+
+    [ContextMenu("TestLoadBuildings")]
+    public void TestLoadBuildings()
+    {
+        string[] bs = TestBulindgs.Split(';');
+        LoadBuildings(bs,(p)=>
+        {
+            Debug.LogError($"TestLoadBuildings Progress:{p}");
+        });
+    }
+
+    public void LoadBuildings(IEnumerable<string> depNodes, Action<SceneLoadProgress> finishedCallbak)
+    {
+        List<DepNode> enableBuildings = new List<DepNode>();
+        var buildings = GameObject.FindObjectsOfType<BuildingController>(true).ToList();
+        foreach (var dep in depNodes)
+        {
+            if (string.IsNullOrEmpty(dep)) continue;
+            BuildingController b = FindBuildingByName(buildings, dep);
+            if (b != null)
+            {
+                buildings.Remove(b);
+                enableBuildings.Add(b);
+            }
+            else
+            {
+                Debug.LogError($"LoadBuildings Not Found Building:{dep}");
+            }
+        }
+
+        foreach(var b in buildings)
+        {
+            GameObject.DestroyImmediate(b.gameObject);
+        }
+
+        SubSceneBagList allScenes = new SubSceneBagList();
+        foreach (var b in enableBuildings)
+        {
+            BuildingModelInfo[] models = b.GetComponentsInChildren<BuildingModelInfo>(true);
+            foreach(var model in models)
+            {
+                allScenes.Add(model.GetSubScenes());
+            }
+        }
+        var ss = allScenes.GetAllScenesArray();
+        Debug.Log($"LoadScenesBySetting deps:{depNodes.Count()} bags:{allScenes.Count} scenes:{ss.Length}");
+        SubSceneManager.Instance.LoadScenesAsyncEx(ss, finishedCallbak);
+    }
+
+    public void LoadBuildingScene(DepNode building)
     {
 
+    }
+
+    public void LoadBuildings(List<DepNode> depNodes)
+    {
+        var buildings = GameObject.FindObjectsOfType<BuildingController>(true).ToList();
+        foreach (var dep in depNodes)
+        {
+            BuildingController b = FindBuildingByName(buildings, dep.NodeName);
+        }
+    }
+
+    public BuildingController FindBuildingByName(List<BuildingController> buildings,string name)
+    {
+        foreach(var b in buildings)
+        {
+            if(b.NodeName==name || b.name == name)
+            {
+                return b;
+            }
+        }
+        return null;
     }
 
     public void LoadFloors()
@@ -80,6 +163,12 @@ public class BuildingScenesLoadManager : MonoBehaviour
             Debug.LogError($"BuildingScenesLoadManager.LoadScenesBySetting ModelTarget == null");
             return;
         }
+        if (Setting.Enabled == false)
+        {
+            Debug.LogError($"BuildingScenesLoadManager.InitSettingByScene Setting.Enabled == false");
+            return;
+        }
+
         DepNode[] bcs = ModelTarget.GetComponentsInChildren<DepNode>(true);
         Dictionary<string, DepNode> depDict = new Dictionary<string, DepNode>();
         foreach (var bc in bcs)
@@ -184,8 +273,6 @@ public class BuildingScenesLoadManager : MonoBehaviour
                 //SubSceneBag subScenes = floorModelInfo.GetSubScenes(buildingloadItem);
                 //allScenes.Add(subScenes);
             }
-        
-            
         }
 
         var ss = allScenes.GetAllScenesArray();
@@ -229,6 +316,7 @@ public class BuildingScenesLoadManager : MonoBehaviour
         }
         BuildingController[] bcs = ModelTarget.GetComponentsInChildren<BuildingController>(true);
         Setting = new BuildingSceneLoadSetting();
+
         foreach(var bc in bcs)
         {
             BuildingSceneLoadItemCollection bItem = new BuildingSceneLoadItemCollection();
@@ -308,6 +396,7 @@ public class BuildingScenesLoadManager : MonoBehaviour
 [Serializable]
 public class BuildingSceneLoadSetting
 {
+    public bool Enabled = true;
     public List<BuildingSceneLoadItemCollection> Items = new List<BuildingSceneLoadItemCollection>();
 
     //public BuildingSceneLoadItem GetItem(string name)

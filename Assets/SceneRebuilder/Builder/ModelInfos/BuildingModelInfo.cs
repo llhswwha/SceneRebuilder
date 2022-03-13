@@ -113,7 +113,54 @@ public class BuildingModelInfo : SubSceneCreater
         return rootList;
     }
 
-    internal SubSceneBag GetSubScenes(BuildingSceneLoadItem floorLoadSetting)
+    internal SubSceneBag GetSubScenes()
+    {
+        SubSceneBag bag = new SubSceneBag();
+        var trees = GetTreeList();
+        foreach (var tree in trees)
+        {
+            if (tree.name.Contains("_Out0_BigTree"))
+            {
+                {
+                    var allScenes = tree.GetComponentsInChildren<SubScene_Out0>(true);
+                    bag.AddRange(allScenes);
+                }
+            }
+            if (tree.name.Contains("_Out0_SmallTree"))
+            {
+                {
+                    var allScenes = tree.GetComponentsInChildren<SubScene_Out0>(true);
+                    bag.AddRange(allScenes);
+                }
+            }
+            if (tree.name.Contains("_InTree"))
+            {
+                 {
+                    var allScenes = tree.GetComponentsInChildren<SubScene_In>(true);
+                    bag.AddRange(allScenes);
+                }
+            }
+            if (tree.name.Contains("_OutTree1"))
+            {
+                {
+                    var allScenes = tree.GetComponentsInChildren<SubScene_Out1>(true);
+                    bag.AddRange(allScenes);
+                }
+            }
+        }
+
+        if (LODPart != null)
+        {
+            {
+                var allScenes = LODPart.GetComponentsInChildren<SubScene_LODs>(true);
+                bag.AddRange(allScenes);
+            }
+        }
+        Debug.Log($"BuildingModelInfo.GetSubScenes1 Model:{this.name} trees:{trees.Count} bag:{bag.Count}");
+        return bag;
+    }
+
+        internal SubSceneBag GetSubScenes(BuildingSceneLoadItem floorLoadSetting)
     {
         SubSceneBag bag = new SubSceneBag();
         var trees = GetTreeList();
@@ -137,11 +184,6 @@ public class BuildingModelInfo : SubSceneCreater
             }
             if (tree.name.Contains("_InTree"))
             {
-                //if (floorLoadSetting.InCombined)
-                //{
-                //    var allScenes = tree.GetComponentsInChildren<SubScene_Out0>(true);
-                //    bag.AddRange(allScenes);
-                //}
                 if (floorLoadSetting.InRenderers)
                 {
                     var allScenes = tree.GetComponentsInChildren<SubScene_In>(true);
@@ -150,12 +192,6 @@ public class BuildingModelInfo : SubSceneCreater
             }
             if (tree.name.Contains("_OutTree1"))
             {
-                //if (floorLoadSetting.Out1Combined)
-                //{
-                //    var allScenes = tree.GetComponentsInChildren<SubScene_Out0>(true);
-                //    bag.AddRange(allScenes);
-                //}
-
                 if (floorLoadSetting.Out1Renderers)
                 {
                     var allScenes = tree.GetComponentsInChildren<SubScene_Out1>(true);
@@ -172,7 +208,6 @@ public class BuildingModelInfo : SubSceneCreater
                 bag.AddRange(allScenes);
             }
         }
-
         Debug.Log($"BuildingModelInfo.GetSubScenes1 Model:{this.name} trees:{trees.Count} bag:{bag.Count} setting:{floorLoadSetting}");
         return bag;
     }
