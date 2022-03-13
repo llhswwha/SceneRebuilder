@@ -4,6 +4,11 @@ using UnityEngine;
 
 public class SubScene_LODs : SubScene_Part
 {
+    public void Start()
+    {
+        this.gameObject.SetActive(false);
+    }
+
     protected override string BoundsName
     {
         get

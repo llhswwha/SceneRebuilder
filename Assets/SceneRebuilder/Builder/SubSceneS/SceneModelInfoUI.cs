@@ -27,8 +27,16 @@ public class SceneModelInfoUI : MonoBehaviour
     {
         while (true)
         {
-            if(toggleEnableUpdate.isOn)
-                GetInfo();
+            try
+            {
+                if (toggleEnableUpdate.isOn)
+                    GetInfo();
+            }
+            catch (System.Exception ex)
+            {
+                Debug.LogError($"SceneModelInfoUI.UpdateInfo text:{InputMaxVertexCount.text} Exception:{ex} ");
+            }
+            
             yield return new WaitForSeconds(UpdateInterval);
         }
         yield return null;
@@ -37,9 +45,16 @@ public class SceneModelInfoUI : MonoBehaviour
     [ContextMenu("GetInfo")]
     public void GetInfo()
     {
-        sceneModelInfo.MaxVertexCount=int.Parse(InputMaxVertexCount.text);
-        sceneModelInfo.GetVertexBigSmall();
-        textResult.text=sceneModelInfo.info;
+        try
+        {
+            sceneModelInfo.MaxVertexCount = int.Parse(InputMaxVertexCount.text);
+            sceneModelInfo.GetVertexBigSmall();
+            textResult.text = sceneModelInfo.info;
+        }
+        catch (System.Exception ex)
+        {
+            Debug.LogError($"SceneModelInfoUI.GetInfo text:{InputMaxVertexCount.text} Exception:{ex} ");
+        }
     }
     
     [ContextMenu("ShowAll")]

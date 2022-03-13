@@ -145,7 +145,7 @@ public class AreaTreeNodeShowManager : MonoBehaviour
 
     public void UnRegistHiddenTree(ModelAreaTree tree)
     {
-        Debug.Log("UnRegistHiddenTree:"+tree);
+        //Debug.Log("UnRegistHiddenTree:"+tree);
         if (tree == null) return;
         if (tree.GetIsHidden() == false) return;
         if (HiddenTrees.Contains(tree))
@@ -263,6 +263,7 @@ public class AreaTreeNodeShowManager : MonoBehaviour
         {
             if (node == null) continue;
             HiddenLeafNodes.Add(node);
+            AddIdNodeDict(node);
         }
     }
 
@@ -282,22 +283,66 @@ public class AreaTreeNodeShowManager : MonoBehaviour
     {
         HiddenLeafNodes.Clear();
 
-        foreach(var tree in HiddenTrees)
+        foreach (var tree in HiddenTrees)
         {
             GetHiddenTreeLeafs(tree);
         }
 
         ShownLeafNodes.Clear();
-        foreach(var tree in ShownTrees)
+        foreach (var tree in ShownTrees)
         {
-            if(tree==null)continue;
-            var leafs=tree.TreeLeafs;
-            foreach(var node in leafs){
-                if(node==null)continue;
+            if (tree == null) continue;
+            var leafs = tree.TreeLeafs;
+            foreach (var node in leafs)
+            {
+                if (node == null) continue;
                 ShownLeafNodes.Add(node);
+                AddIdNodeDict(node);
+            }
+        }
+
+        Debug.Log($"GetLeafNodes Id2NodeDict:{Id2NodeDict.Count}");
+    }
+
+    public void AddIdNodeDict(AreaTreeNode node)
+    {
+        foreach(var id in node.RenderersId)
+        {
+            if (string.IsNullOrEmpty(id)) continue;
+            if (!Id2NodeDict.ContainsKey(id))
+            {
+                Id2NodeDict.Add(id, node);
+            }
+            else
+            {
+                Debug.LogError($"AddIdNodeDict Id2NodeDict.ContainsKey(id) node:{node} id:{id}");
             }
         }
     }
+
+    internal void MoveRenderer(RendererId rId)
+    {
+        if (Id2NodeDict.ContainsKey(rId.Id))
+        {
+            AreaTreeNode node = Id2NodeDict[rId.Id];
+            node.AddRendererAfterLoadScene(rId);
+            //Debug.LogWarning($"MoveRenderer  Id2NodeDict.NotContainsKey(id) rId:[{rId}] id:{rId.Id} path:{TransformHelper.GetPath(rId.transform)}");
+        }
+        else
+        {
+            GameObject go = IdDictionary.GetGo(rId.Id);
+            if (go == null)
+            {
+                Debug.LogError($"MoveRenderer  Id2NodeDict.NotContainsKey(id) go == null rId:[{rId}] id:{rId.Id} path:{TransformHelper.GetPath(rId.transform)}");
+            }
+            else
+            {
+                Debug.LogWarning($"MoveRenderer  Id2NodeDict.NotContainsKey(id) rId:[{rId}] id:{rId.Id} path:{TransformHelper.GetPath(rId.transform)}");
+            }
+        }
+    }
+
+    public Dictionary<string, AreaTreeNode> Id2NodeDict = new Dictionary<string, AreaTreeNode>();
 
     public float AvgDistance=0;
     public float MinDistance=0;

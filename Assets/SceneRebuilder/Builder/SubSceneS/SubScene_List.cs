@@ -36,10 +36,6 @@ public class SubScene_List : MonoBehaviour
     public void LoadUnloadedScenes()
     {
         var scenes = this.GetUnloadedScenes();
-        //foreach (var scene in scenes)
-        //{
-        //    scene.EditorLoadScene();
-        //}
         SubSceneHelper.EditorLoadScenes(scenes, null);
     }
 #endif

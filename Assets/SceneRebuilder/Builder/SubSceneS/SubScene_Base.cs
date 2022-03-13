@@ -593,7 +593,9 @@ public class SubScene_Base : MonoBehaviour
         foreach(var rI in rIds){
             rI.SetParent();
             IdDictionary.SetId(rI);
+            AreaTreeNodeShowManager.Instance.MoveRenderer(rI);
         }
+
 
     }
 

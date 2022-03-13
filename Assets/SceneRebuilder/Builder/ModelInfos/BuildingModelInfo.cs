@@ -119,19 +119,21 @@ public class BuildingModelInfo : SubSceneCreater
         var trees = GetTreeList();
         foreach(var tree in trees)
         {
-            if (tree.name.Contains("_Out0_"))
+            if (tree.name.Contains("_Out0_BigTree"))
             {
-                //if (floorLoadSetting.Out0Combined)
-                //{
-                //    var allScenes = tree.GetComponentsInChildren<SubScene_Out0>(true);
-                //    bag.AddRange(allScenes);
-                //}
-                if (floorLoadSetting.Out0Renderers)
+                if (floorLoadSetting.Out0RenderersB)
                 {
                     var allScenes = tree.GetComponentsInChildren<SubScene_Out0>(true);
                     bag.AddRange(allScenes);
                 }
-
+            }
+            if (tree.name.Contains("_Out0_SmallTree"))
+            {
+                if (floorLoadSetting.Out0RenderersS)
+                {
+                    var allScenes = tree.GetComponentsInChildren<SubScene_Out0>(true);
+                    bag.AddRange(allScenes);
+                }
             }
             if (tree.name.Contains("_InTree"))
             {

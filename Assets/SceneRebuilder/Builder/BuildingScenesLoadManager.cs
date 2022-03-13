@@ -8,14 +8,18 @@ using UnityEngine;
 
 public class BuildingScenesLoadManager : MonoBehaviour
 {
-    public bool IsLoadOnStart = true;
+    public bool IsLoadXmlOnStart = true;
+    public bool IsLoadSceneOnStart = true;
 
     // Start is called before the first frame update
     void Start()
     {
-        if (IsLoadOnStart)
+        if (IsLoadXmlOnStart)
         {
             LoadXml();
+        }
+        if (IsLoadSceneOnStart)
+        {
             LoadScenesBySetting();
         }
     }
@@ -33,7 +37,7 @@ public class BuildingScenesLoadManager : MonoBehaviour
 
     }
 
-    public void LoadBuildings()
+    public void LoadBuildings(List<DepNode> depNodes)
     {
 
     }
@@ -80,6 +84,10 @@ public class BuildingScenesLoadManager : MonoBehaviour
         Dictionary<string, DepNode> depDict = new Dictionary<string, DepNode>();
         foreach (var bc in bcs)
         {
+            if(string.IsNullOrEmpty(bc.NodeName))
+            {
+                bc.NodeName = bc.name;
+            }
             depDict.Add(bc.NodeName, bc);
         }
 
@@ -94,16 +102,17 @@ public class BuildingScenesLoadManager : MonoBehaviour
 
 
         SubSceneBagList allScenes = new SubSceneBagList();
-        foreach (BuildingSceneLoadItem buildingloadSetting in Setting.Items)
+        for (int i = 0; i < Setting.Items.Count; i++)
         {
-            if (buildingloadSetting.IsEnable == false) continue;
-            if (depDict.ContainsKey(buildingloadSetting.Name) == false)
+            BuildingSceneLoadItemCollection buildingloadItem = Setting.Items[i];
+            //Debug.LogError($"LoadScenesBySetting building[{i+1}]:{buildingloadItem}");
+            if (depDict.ContainsKey(buildingloadItem.Name) == false)
             {
-                Debug.LogError($"LoadScenesBySetting depDict.ContainsKey(buildingloadSetting.Name) == false building:{buildingloadSetting.Name}");
+                Debug.LogError($"LoadScenesBySetting depDict.ContainsKey(buildingloadSetting.Name) == false building:{buildingloadItem}");
                 continue;
             }
 
-            DepNode buildingDep = depDict[buildingloadSetting.Name];
+            DepNode buildingDep = depDict[buildingloadItem.Name];
             BuildingController buildingController = buildingDep as BuildingController;
             if (buildingController==null)
             {
@@ -111,18 +120,26 @@ public class BuildingScenesLoadManager : MonoBehaviour
                 continue;
             }
 
-            if (buildingloadSetting.Children!=null&& buildingloadSetting.Children.Count > 0)
+            if (buildingloadItem.IsEnable == false)
             {
-                foreach (BuildingSceneLoadItem floorLoadSetting in buildingloadSetting.Children)
+                GameObject.DestroyImmediate(buildingController.gameObject);
+                continue;
+            }
+
+            if (buildingloadItem.Children!=null&& buildingloadItem.Children.Count > 0)
+            {
+                for (int i1 = 0; i1 < buildingloadItem.Children.Count; i1++)
                 {
-                    if (floorLoadSetting.IsEnable == false) continue;
-                    if (modelDict.ContainsKey(floorLoadSetting.Name) == false)
+                    BuildingSceneLoadItem floorLoadItem = buildingloadItem.Children[i1];
+                    //Debug.LogError($"LoadScenesBySetting building[{i + 1}]:{buildingloadItem.Name} floor[{i1+1}]:{floorLoadItem}");
+
+                    if (modelDict.ContainsKey(floorLoadItem.Name) == false)
                     {
-                        Debug.LogError($"LoadScenesBySetting depDict.ContainsKey(floorLoadSetting.Name) == false floor:{floorLoadSetting.Name}");
+                        Debug.LogError($"LoadScenesBySetting depDict.ContainsKey(floorLoadSetting.Name) == false floor:{floorLoadItem}");
                         continue;
                     }
 
-                    BuildingModelInfo floorModelInfo = modelDict[floorLoadSetting.Name];
+                    BuildingModelInfo floorModelInfo = modelDict[floorLoadItem.Name];
                     //FloorController floorController = floorDep as FloorController;
                     //if (floorController == null)
                     //{
@@ -133,29 +150,39 @@ public class BuildingScenesLoadManager : MonoBehaviour
                     //BuildingModelInfo floorModelInfo = floorController.GetComponent<BuildingModelInfo>();
                     if (floorModelInfo == null)
                     {
-                        Debug.LogError($"LoadScenesBySetting floorModelInfo == null floor:{floorLoadSetting.Name}");
+                        Debug.LogError($"LoadScenesBySetting floorModelInfo == null building:{floorLoadItem.Name}");
                         continue;
                     }
                     else
                     {
-                        //LoadFloorScenes
-                        //LoadSubScenes(floorController)
-                        SubSceneBag subScenes = floorModelInfo.GetSubScenes(floorLoadSetting);
-                        allScenes.Add(subScenes);
+                        if (floorLoadItem.IsEnable == false)
+                        {
+                            GameObject.DestroyImmediate(floorModelInfo.gameObject);
+                        }
+                        else
+                        {
+                            //LoadFloorScenes
+                            //LoadSubScenes(floorController)
+                            SubSceneBag subScenes = floorModelInfo.GetSubScenes(floorLoadItem);
+                            allScenes.Add(subScenes);
+                        }
+                        
                     }
                 }
             }
             else
             {
-                BuildingModelInfo floorModelInfo = buildingController.GetComponent<BuildingModelInfo>();
-                if (floorModelInfo == null)
-                {
-                    Debug.LogError($"LoadScenesBySetting floorModelInfo == null buildingController:{buildingController}");
-                    continue;
-                }
+                Debug.LogError($"LoadScenesBySetting buildingloadItem.Children is Empty buildingDep:{buildingDep}");
 
-                SubSceneBag subScenes = floorModelInfo.GetSubScenes(buildingloadSetting);
-                allScenes.Add(subScenes);
+                //BuildingModelInfo floorModelInfo = buildingController.GetComponent<BuildingModelInfo>();
+                //if (floorModelInfo == null)
+                //{
+                //    Debug.LogError($"LoadScenesBySetting floorModelInfo == null buildingController:{buildingController}");
+                //    continue;
+                //}
+
+                //SubSceneBag subScenes = floorModelInfo.GetSubScenes(buildingloadItem);
+                //allScenes.Add(subScenes);
             }
         
             
@@ -204,7 +231,7 @@ public class BuildingScenesLoadManager : MonoBehaviour
         Setting = new BuildingSceneLoadSetting();
         foreach(var bc in bcs)
         {
-            BuildingSceneLoadItem bItem = new BuildingSceneLoadItem();
+            BuildingSceneLoadItemCollection bItem = new BuildingSceneLoadItemCollection();
             bItem.Name = bc.NodeName;
             if (string.IsNullOrEmpty(bItem.Name))
             {
@@ -281,7 +308,7 @@ public class BuildingScenesLoadManager : MonoBehaviour
 [Serializable]
 public class BuildingSceneLoadSetting
 {
-    public List<BuildingSceneLoadItem> Items = new List<BuildingSceneLoadItem>();
+    public List<BuildingSceneLoadItemCollection> Items = new List<BuildingSceneLoadItemCollection>();
 
     //public BuildingSceneLoadItem GetItem(string name)
     //{
@@ -309,6 +336,32 @@ public class BuildingSceneLoadSetting
 }
 
 [Serializable]
+[XmlType("BuildingSceneLoadItemCollection")]
+public class BuildingSceneLoadItemCollection
+{
+    [XmlAttribute]
+    public string Name;
+    [XmlAttribute]
+    public bool IsEnable;
+
+    [XmlElement("BuildingSceneLoadItem")]
+    public List<BuildingSceneLoadItem> Children = new List<BuildingSceneLoadItem>();
+
+    public void SetAllEnable(bool e)
+    {
+        foreach (var item in Children)
+        {
+            item.SetAllEnable(e);
+        }
+    }
+    public override string ToString()
+    {
+        //return $"[Name:{Name} InCombined:{InCombined} Out0Combined:{Out0Combined} Out1Combined:{Out1Combined} InRenderers:{InRenderers} Out0Renderers:{Out0Renderers} Out1Renderers:{Out1Renderers}]";
+        return $"[Name:{Name} IsEnable:{IsEnable}]";
+    }
+}
+
+    [Serializable]
 [XmlType("BuildingSceneLoadItem")]
 public class BuildingSceneLoadItem
 {
@@ -319,7 +372,8 @@ public class BuildingSceneLoadItem
         //Out0Combined = e;
         //Out1Combined = e;
         InRenderers = e;
-        Out0Renderers = e;
+        Out0RenderersB = e;
+        Out0RenderersS = e;
         Out1Renderers = e;
         LODs = e;
 
@@ -340,7 +394,9 @@ public class BuildingSceneLoadItem
     //[XmlAttribute]
     //public bool Out0Combined;
     [XmlAttribute]
-    public bool Out0Renderers;
+    public bool Out0RenderersB;
+    [XmlAttribute]
+    public bool Out0RenderersS;
     //[XmlAttribute]
     //public bool Out1Combined;
     [XmlAttribute]
@@ -352,7 +408,8 @@ public class BuildingSceneLoadItem
     {
         IsEnable = true;
         //Out0Combined = true;
-        Out0Renderers = true;
+        Out0RenderersB = true;
+        Out0RenderersS = true;
         //SetAllEnable(true);
     }
 
@@ -362,6 +419,6 @@ public class BuildingSceneLoadItem
     public override string ToString()
     {
         //return $"[Name:{Name} InCombined:{InCombined} Out0Combined:{Out0Combined} Out1Combined:{Out1Combined} InRenderers:{InRenderers} Out0Renderers:{Out0Renderers} Out1Renderers:{Out1Renderers}]";
-        return $"[Name:{Name} InRenderers:{InRenderers} Out0Renderers:{Out0Renderers} Out1Renderers:{Out1Renderers}]";
+        return $"[Name:{Name} In:{InRenderers} Out0B:{Out0RenderersB} Out0S:{Out0RenderersS} Out1:{Out1Renderers}]";
     }
 }

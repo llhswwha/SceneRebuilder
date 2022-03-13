@@ -237,6 +237,12 @@ public class AreaTreeNode : SubSceneCreater
         return Renderers;
     }
 
+    public void AddRendererAfterLoadScene(RendererId rId)
+    {
+        var root = GetRenderersRoot();
+        rId.transform.SetParent(root.transform);
+    }
+
     public void AddRenderer(MeshRenderer renderer)
     {
         if (!Renderers.Contains(renderer))
@@ -265,11 +271,17 @@ public class AreaTreeNode : SubSceneCreater
 
     //private bool IsCopyed = false;
 
-    [ContextMenu("InitRenderers")]
-    public List<RendererId> InitRenderers()
+    public GameObject GetRenderersRoot()
     {
         if (renderersRoot == null)
             renderersRoot = new GameObject(this.name + "_Renderers");
+        return renderersRoot;
+    }
+
+    [ContextMenu("InitRenderers")]
+    public List<RendererId> InitRenderers()
+    {
+        GetRenderersRoot();
         List<RendererId> ids = new List<RendererId>();
         //renderersRoot.transform.SetParent(this.transform);
         foreach (var render in Renderers)
@@ -297,8 +309,7 @@ public class AreaTreeNode : SubSceneCreater
         // RendererParents.Clear();
 
         //newRenderers.Clear();
-        if (renderersRoot == null)
-            renderersRoot = new GameObject(this.name + "_Renderers");
+        GetRenderersRoot();
         foreach (var render in Renderers)
         {
             if (render == null)
