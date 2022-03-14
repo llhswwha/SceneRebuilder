@@ -63,7 +63,7 @@ public class BuildingScenesLoadManager : MonoBehaviour
 
     public void LoadBuildings(IEnumerable<string> depNodes, Action<SceneLoadProgress> finishedCallbak)
     {
-        List<DepNode> enableBuildings = new List<DepNode>();
+        List<BuildingController> enableBuildings = new List<BuildingController>();
         var buildings = GameObject.FindObjectsOfType<BuildingController>(true).ToList();
         foreach (var dep in depNodes)
         {
@@ -80,7 +80,12 @@ public class BuildingScenesLoadManager : MonoBehaviour
             }
         }
 
-        foreach(var b in buildings)
+        LoadBuildingScenes(buildings, enableBuildings, finishedCallbak);
+    }
+
+    public void LoadBuildingScenes(List<BuildingController> buildings, List<BuildingController> enableBuildings, Action<SceneLoadProgress> finishedCallbak)
+    {
+        foreach (var b in buildings)
         {
             GameObject.DestroyImmediate(b.gameObject);
         }
@@ -89,13 +94,13 @@ public class BuildingScenesLoadManager : MonoBehaviour
         foreach (var b in enableBuildings)
         {
             BuildingModelInfo[] models = b.GetComponentsInChildren<BuildingModelInfo>(true);
-            foreach(var model in models)
+            foreach (var model in models)
             {
                 allScenes.Add(model.GetSubScenes());
             }
         }
         var ss = allScenes.GetAllScenesArray();
-        Debug.Log($"LoadScenesBySetting deps:{depNodes.Count()} bags:{allScenes.Count} scenes:{ss.Length}");
+        Debug.Log($"LoadScenesBySetting buildings:{buildings.Count()} enableBuildings:{enableBuildings.Count()} bags:{allScenes.Count} scenes:{ss.Length}");
         SubSceneManager.Instance.LoadScenesAsyncEx(ss, finishedCallbak);
     }
 
@@ -104,13 +109,24 @@ public class BuildingScenesLoadManager : MonoBehaviour
 
     }
 
-    public void LoadBuildings(List<DepNode> depNodes)
+    public void LoadBuildings(List<BuildingController> depNodes, Action<SceneLoadProgress> finishedCallbak)
     {
+        List<BuildingController> enableBuildings = new List<BuildingController>();
         var buildings = GameObject.FindObjectsOfType<BuildingController>(true).ToList();
         foreach (var dep in depNodes)
         {
-            BuildingController b = FindBuildingByName(buildings, dep.NodeName);
+            if (buildings.Contains(dep))
+            {
+                buildings.Remove(dep);
+                enableBuildings.Add(dep);
+            }
+            else
+            {
+                Debug.LogError($"LoadBuildings Not Found Building:{dep}");
+            }
         }
+
+        LoadBuildingScenes(buildings, enableBuildings, finishedCallbak);
     }
 
     public BuildingController FindBuildingByName(List<BuildingController> buildings,string name)

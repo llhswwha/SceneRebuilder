@@ -192,7 +192,7 @@ public class SceneModelInfo : MonoBehaviour
 
     private MeshFilter[] GetMeshFilters()
     {
-        MeshFilter[]  meshFilters=GameObject.FindObjectsOfType<MeshFilter>();
+        MeshFilter[]  meshFilters=GameObject.FindObjectsOfType<MeshFilter>(true);
         return meshFilters;
     }
 
