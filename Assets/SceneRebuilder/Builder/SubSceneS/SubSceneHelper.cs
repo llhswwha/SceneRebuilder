@@ -32,7 +32,13 @@ public static class SubSceneHelper
         SubSceneHelper.SetBuildings(subScenes);
     }
 
-        public static void SetBuildings<T>(T[] scenes) where T : SubScene_Base
+    public static void SetBuildingsWithNavmesh<T>(bool includeInactive) where T : SubScene_Base
+    {
+        var subScenes = GameObject.FindObjectsOfType<SubScene_Base>(includeInactive);
+        SubSceneHelper.SetBuildingWithNavmeshScene(subScenes);
+    }
+
+    public static void SetBuildings<T>(T[] scenes) where T : SubScene_Base
     {
         Debug.Log($"SetBuildings scenes:{scenes.Length}");
 
@@ -71,6 +77,36 @@ public static class SubSceneHelper
         EditorBuildSettings.scenes = buildingScenes;
 
         Debug.Log($"SetBuildings totalScenes:{scenes.Length} sceneCount:{sceneId-1}");
+    }
+
+    public static void SetBuildingWithNavmeshScene<T>(T[] scenes) where T : SubScene_Base
+    {
+        //string navmeshPath = string.Format("{0}{1}", Application.dataPath, @"\Scenes\MinHang\MHNavmesh.unity");
+        string navmeshPath = @"Assets\Scenes\MinHang\MHNavmesh.unity";
+        if (!File.Exists(navmeshPath))
+        {
+            Debug.LogErrorFormat("Path:{0} not exist!", navmeshPath);
+            return;
+        }
+        EditorBuildSettingsScene[] buildingScenes = new EditorBuildSettingsScene[scenes.Length + 2];
+        buildingScenes[0] = new EditorBuildSettingsScene(EditorSceneManager.GetActiveScene().path, true);
+        for (int i = 0; i < scenes.Length; i++)
+        {
+            T item = scenes[i];
+
+            EditorHelper.UnpackPrefab(item.gameObject);
+
+            string path = item.sceneArg.GetRalativePath();
+            //Debug.Log("path:" + path);
+            buildingScenes[i + 1] = new EditorBuildSettingsScene(path, true);
+            item.sceneArg.index = i + 1;
+
+
+        }
+        buildingScenes[buildingScenes.Length - 1] = new EditorBuildSettingsScene(navmeshPath, true);
+        EditorBuildSettings.scenes = buildingScenes;
+
+        Debug.Log("SetBuildings:" + scenes.Length);
     }
 
     public static void CheckSceneIndex(bool includeInactive)

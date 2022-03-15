@@ -446,7 +446,11 @@ public class MyEditorTools2
     {
         SubSceneHelper.SetBuildings();
     }
-
+    [MenuItem("SceneTools/SubScene/SetBuildingsWithNavmesh")]
+    public static void SetBuildingsWithNavmesh()
+    {
+        SubSceneHelper.SetBuildingsWithNavmesh<SubScene_Base>(true);
+    }
     [MenuItem("SceneTools/SubScene/ClearBuildings")]
     public static void ClearBuildings()
     {

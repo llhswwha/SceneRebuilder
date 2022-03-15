@@ -847,6 +847,7 @@ public class ModelAreaTree : SubSceneCreater
         List<RendererId> idsAll = new List<RendererId>();
         foreach (var node in TreeLeafs)
         {
+            if (node == null) continue;
             List<RendererId> ids = node.InitRenderers();
             idsAll.AddRange(ids);
         }

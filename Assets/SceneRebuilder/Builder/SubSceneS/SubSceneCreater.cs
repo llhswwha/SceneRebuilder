@@ -89,34 +89,7 @@ public class SubSceneCreater : MonoBehaviour
         DestroyScenes();
     }
 
-        [ContextMenu("DestroyScenes")]
-    public void DestroyScenes()
-    {
-        int count = 0;
-        //Debug.Log("DestroyOldPartScenes");
-        if (SceneList == null)
-        {
-            //SceneList = this.GetComponentInChildren<SubScene_List>();
-            GetScenes();
-        }
-        if (SceneList != null)
-        {
-            count=SceneList.Clear();
-        }
-        else
-        {
-            var components = SubScene_List.GetBaseScenes(this.gameObject);//In Out0 Out1
-            foreach (var c in components)
-            {
-                //if (c.contentType == contentType)
-                //GameObject.DestroyImmediate(c);
-                c.DestroyScene();
-            }
-            count += components.Length;
-        }
-
-        Debug.Log($"DestroyScenes count:{count}");
-    }
+    
 
     public void EditorCreateScenes(SubSceneBag scenes, Action<ProgressArg> progressChanged)
     {
@@ -170,9 +143,38 @@ public class SubSceneCreater : MonoBehaviour
         SubSceneHelper.EditorLoadScenes(this.gameObject, progressChanged);
     }
 
-    
+
 
 #endif
+
+    [ContextMenu("DestroyScenes")]
+    public void DestroyScenes()
+    {
+        int count = 0;
+        //Debug.Log("DestroyOldPartScenes");
+        if (SceneList == null)
+        {
+            //SceneList = this.GetComponentInChildren<SubScene_List>();
+            GetScenes();
+        }
+        if (SceneList != null)
+        {
+            count = SceneList.Clear();
+        }
+        else
+        {
+            var components = SubScene_List.GetBaseScenes(this.gameObject);//In Out0 Out1
+            foreach (var c in components)
+            {
+                //if (c.contentType == contentType)
+                //GameObject.DestroyImmediate(c);
+                c.DestroyScene();
+            }
+            count += components.Length;
+        }
+
+        Debug.Log($"DestroyScenes count:{count}");
+    }
 
     protected SubSceneBag GetSubScenesOfTypes(List<SceneContentType> types)
     {

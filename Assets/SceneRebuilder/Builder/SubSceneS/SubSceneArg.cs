@@ -12,6 +12,14 @@ public class SubSceneArg
     public bool isOpen = false;
     public List<GameObject> objs = new List<GameObject>();
 
+    public int ObjectCount
+    {
+        get
+        {
+            return objs.Count;
+        }
+    }
+
     public SubSceneArg()
     {
 

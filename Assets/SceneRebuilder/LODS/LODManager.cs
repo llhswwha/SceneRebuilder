@@ -79,6 +79,7 @@ public class LODManager : SingletonBehaviour<LODManager>
     public LODGroup CreateBoxLOD(GameObject go,float [] lvs)
     {
         GameObject box = TransformHelper.CreateBoundsCube(go);
+        box.name = go.name + "_LODBox";
         var mrs = box.GetComponentsInChildren<MeshRenderer>(true);
 
         GameObject goNew = new GameObject(go.name);

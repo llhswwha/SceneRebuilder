@@ -36,12 +36,6 @@ public class BuildingScenesLoadManager : MonoBehaviour
         
     }
 
-    // Update is called once per frame
-    void Update()
-    {
-        
-    }
-
     public string TestTargetName = "";
 
     public void LoadDepNodes(List<DepNode> depNodes)
@@ -406,6 +400,60 @@ public class BuildingScenesLoadManager : MonoBehaviour
         }
     }
 
+    [ContextMenu("EnableOut1")]
+    public void EnableOut1()
+    {
+        if (Setting != null)
+        {
+            Setting.EnableOut1(true);
+        }
+    }
+
+    [ContextMenu("DisableOut1")]
+    public void DisableOut1()
+    {
+        if (Setting != null)
+        {
+            Setting.EnableOut1(false);
+        }
+    }
+
+    [ContextMenu("EnableIn")]
+    public void EnableIn()
+    {
+        if (Setting != null)
+        {
+            Setting.EnableIn(true);
+        }
+    }
+
+    [ContextMenu("DisableIn")]
+    public void DisableIn()
+    {
+        if (Setting != null)
+        {
+            Setting.EnableIn(false);
+        }
+    }
+
+    [ContextMenu("EnableLOD")]
+    public void EnableLOD()
+    {
+        if (Setting != null)
+        {
+            Setting.EnableLOD(true);
+        }
+    }
+
+    [ContextMenu("DisableLOD")]
+    public void DisableLOD()
+    {
+        if (Setting != null)
+        {
+            Setting.EnableLOD(false);
+        }
+    }
+
     public BuildingSceneLoadSetting Setting;
 }
 
@@ -438,6 +486,30 @@ public class BuildingSceneLoadSetting
             item.SetAllEnable(e);
         }
     }
+
+    public void EnableOut1(bool e)
+    {
+        foreach (var item in Items)
+        {
+            item.EnableOut1(e);
+        }
+    }
+
+    public void EnableIn(bool e)
+    {
+        foreach (var item in Items)
+        {
+            item.EnableIn(e);
+        }
+    }
+
+    public void EnableLOD(bool e)
+    {
+        foreach (var item in Items)
+        {
+            item.EnableLOD(e);
+        }
+    }
 }
 
 [Serializable]
@@ -447,7 +519,7 @@ public class BuildingSceneLoadItemCollection
     [XmlAttribute]
     public string Name;
     [XmlAttribute]
-    public bool IsEnable;
+    public bool IsEnable = true;
 
     [XmlElement("BuildingSceneLoadItem")]
     public List<BuildingSceneLoadItem> Children = new List<BuildingSceneLoadItem>();
@@ -459,6 +531,32 @@ public class BuildingSceneLoadItemCollection
             item.SetAllEnable(e);
         }
     }
+
+    public void EnableOut1(bool e)
+    {
+        foreach (var item in Children)
+        {
+            item.EnableOut1(e);
+        }
+    }
+
+    public void EnableIn(bool e)
+    {
+        foreach (var item in Children)
+        {
+            item.EnableIn(e);
+        }
+    }
+
+    public void EnableLOD(bool e)
+    {
+        foreach (var item in Children)
+        {
+            item.EnableLOD(e);
+        }
+    }
+
+
     public override string ToString()
     {
         //return $"[Name:{Name} InCombined:{InCombined} Out0Combined:{Out0Combined} Out1Combined:{Out1Combined} InRenderers:{InRenderers} Out0Renderers:{Out0Renderers} Out1Renderers:{Out1Renderers}]";
@@ -470,6 +568,33 @@ public class BuildingSceneLoadItemCollection
 [XmlType("BuildingSceneLoadItem")]
 public class BuildingSceneLoadItem
 {
+    public void EnableIn(bool e)
+    {
+        InRenderers = e;
+        foreach (var item in Children)
+        {
+            item.EnableIn(e);
+        }
+    }
+
+    public void EnableOut1(bool e)
+    {
+        Out1Renderers = e;
+        foreach (var item in Children)
+        {
+            item.EnableOut1(e);
+        }
+    }
+
+    public void EnableLOD(bool e)
+    {
+        LODs = e;
+        foreach (var item in Children)
+        {
+            item.EnableLOD(e);
+        }
+    }
+
     public void SetAllEnable(bool e)
     {
         IsEnable = e;

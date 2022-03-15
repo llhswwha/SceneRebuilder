@@ -273,9 +273,20 @@ public class AreaTreeNode : SubSceneCreater
 
     public GameObject GetRenderersRoot()
     {
-        if (renderersRoot == null)
-            renderersRoot = new GameObject(this.name + "_Renderers");
-        return renderersRoot;
+        try
+        {
+            if (renderersRoot == null)
+                renderersRoot = new GameObject(this.name + "_Renderers");
+            return renderersRoot;
+        }
+        catch (Exception ex)
+        {
+            Debug.LogError($"AreaTreeNode.GetRenderersRoot Exception:{ex}");
+            if (renderersRoot == null)
+                renderersRoot = new GameObject("NULLError_Renderers");
+            return renderersRoot;
+        }
+        
     }
 
     [ContextMenu("InitRenderers")]
@@ -1069,7 +1080,7 @@ public class AreaTreeNode : SubSceneCreater
             {
                 renderersRoot.SetActive(true);
 
-                DynamicCullingManage.Instance.AddObjectsForCulling(Renderers.ToArray());
+                //DynamicCullingManage.Instance.AddObjectsForCulling(Renderers.ToArray());
             }
 
             if (CombinedRenderers == null)
@@ -1140,12 +1151,25 @@ public class AreaTreeNode : SubSceneCreater
         return scene_combined.LinkedScene;
     }
 
+    /// <summary>
+    /// 是否处于楼层模式
+    /// </summary>
+    /// <returns></returns>
+    private bool IsFloorMode()
+    {
+        if (FactoryDepManager.currentDep == null) return false;
+        if (FactoryDepManager.currentDep is FloorController || FactoryDepManager.currentDep is RoomController) return true;
+        return false;
+    }
+
     [ContextMenu("HideNodes")]
     public void HideNodes()
     {
         try
         {
-            if (IsNodeVisible == false) return;
+            //处于楼层模式时，只加载细节，不卸载细节 add by wk 220314
+            if (IsNodeVisible == false|| IsFloorMode()) return;
+            
             //Debug.Log("HideNodes:" + this.name);
             IsNodeVisible = false;
 
@@ -1180,7 +1204,7 @@ public class AreaTreeNode : SubSceneCreater
             {
                 renderersRoot.SetActive(false);
 
-                DynamicCullingManage.Instance.RemoveObjects(Renderers.ToArray());
+                //DynamicCullingManage.Instance.RemoveObjects(Renderers.ToArray());
             }
 
             //MeshRenderer mr = this.GetComponent<MeshRenderer>();
