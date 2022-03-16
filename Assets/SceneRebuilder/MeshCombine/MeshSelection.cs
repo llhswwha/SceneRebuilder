@@ -197,6 +197,7 @@ public class MeshSelection : MonoBehaviour
 #else
           Vector3 mousePos = Input.mousePosition;
 #endif
+        if (camera == null) return;
         var ray = camera.ScreenPointToRay(mousePos);
         RaycastHit hit;
         if (Physics.Raycast(ray, out hit))
@@ -356,6 +357,10 @@ public class MeshSelection : MonoBehaviour
         {
             if(camera==null){
                 camera=Camera.main;
+            }
+            if (camera == null)
+            {
+                camera = GameObject.FindObjectOfType<Camera>();
             }
             HitTest(0);
         }

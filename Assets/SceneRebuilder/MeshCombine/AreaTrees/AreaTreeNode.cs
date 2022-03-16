@@ -1054,14 +1054,47 @@ public class AreaTreeNode : SubSceneCreater
         return combindResult.GetComponentsInChildren<MeshRenderer>();
     }
 
+    private SubScene_Base RenderersScene;
+
+    public SubScene_Base GetRenderersScene()
+    {
+        if (RenderersScene == null)
+        {
+            RenderersScene = this.renderersRoot.GetComponent<SubScene_Base>();
+        }
+        return RenderersScene;
+    }
+
+    public bool IsLoadingScene = false;
+
+    public SubScene_Base StartLoadingScene()
+    {
+        if (RenderersScene == null)
+        {
+            RenderersScene = this.renderersRoot.GetComponent<SubScene_Base>();
+        }
+        IsLoadingScene = true;
+        return RenderersScene;
+    }
+
+    public void ShowLogInfo()
+    {
+        GetRenderersScene();
+        Debug.Log($"Node {this.name} Renderers:{Renderers.Count} RenderersId:{RenderersId.Count} IsLoaded:{RenderersScene.IsLoaded} Path:{TransformHelper.GetPath(this.transform)}");
+    }
+
     [ContextMenu("ShowNodes")]
     public void ShowNodes()
     {
         try
         {
             if (IsNodeVisible == true) return;
+
+            GetRenderersScene();
+
 #if UNITY_EDITOR
-            Debug.Log("ShowNodes:" + this.name);
+            SubScene_Base[] scenes = SubScene_List.GetBaseScenes(this.gameObject);
+            Debug.Log($"ShowNodes {this.name} Renderers:{Renderers.Count} RenderersId:{RenderersId.Count} Scenes:{scenes.Length} IsLoaded:{RenderersScene.IsLoaded} Path:{TransformHelper.GetPath(this.transform)}");
 #endif
             IsNodeVisible = true;
             if(this.gameObject==null)
@@ -1139,7 +1172,7 @@ public class AreaTreeNode : SubSceneCreater
         return scene_combined;
     }
 
-    public SubScene_Base GetRendererScene()
+    public SubScene_Base GetCombinedLinkedScene()
     {
         if (combindResult == null)
         {

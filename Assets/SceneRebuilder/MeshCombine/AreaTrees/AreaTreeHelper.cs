@@ -232,9 +232,21 @@ public static class AreaTreeHelper
         //    Debug.Log($"[{i}]cprefab:{cprefab}");
         //}
 
+        if (prefab == null)
+        {
+            Debug.LogError($"CreateBoundsCube prefab == null bounds:{bounds} name:{n} parent:{parent} prefabId:{prefabId} CubePrefabs:{CubePrefabs.Count}");
+            return null;
+        }
         
 
         GameObject cube=GameObject.Instantiate(prefab);
+
+        if (cube == null)
+        {
+            Debug.LogError($"CreateBoundsCube cube == null bounds:{bounds} name:{n} parent:{parent} prefabId:{prefabId} CubePrefabs:{CubePrefabs.Count}");
+            return null;
+        }
+
         cube.AddComponent<BoundsBox>();
         cube.SetActive(true);
         cube.name=n;

@@ -196,6 +196,10 @@ public class ModelAreaTree : SubSceneCreater
         {
             return true;
         }
+        if (this.name.Contains("_Out0_SmallTree"))
+        {
+            return true;
+        }
         return IsHidden;
     }
 

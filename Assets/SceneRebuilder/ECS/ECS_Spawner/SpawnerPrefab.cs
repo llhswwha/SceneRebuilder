@@ -9,7 +9,8 @@ using UnityEngine;
 public struct SpawnerPrefab : IComponentData
 {
     public Entity Prefab;
-    public float3 Pos;
+    //public float3 Pos;
+    public float3[] PosList;
     //public NativeArray<quaternion> Angles;
     //public NativeArray<float3> Scales;
 }

@@ -109,8 +109,94 @@ public class BuildingModelInfo : SubSceneCreater
             }
             outDoors.transform.SetParent(this.transform);
         }
-        Debug.LogError($"CombineDoors roots:{rootList.Count} name:{this.name}");
+        Debug.LogError($"CombineDoors roots:{rootList.Count} name:{this.name} ");
         return rootList;
+    }
+
+    internal SubSceneBag GetSubScenes_Out0B()
+    {
+        SubSceneBag bag = new SubSceneBag();
+        var trees = GetTreeList();
+        foreach (var tree in trees)
+        {
+            if (tree.name.Contains("_Out0_BigTree"))
+            {
+                {
+                    var allScenes = tree.GetComponentsInChildren<SubScene_Out0>(true);
+                    bag.AddRange(allScenes);
+                }
+            }
+        }
+        Debug.Log($"BuildingModelInfo.GetSubScenes_Out0B Model:{this.name} trees:{trees.Count} bag:{bag.Count}");
+        return bag;
+    }
+
+    internal SubSceneBag GetSubScenes_Out0S()
+    {
+        SubSceneBag bag = new SubSceneBag();
+        var trees = GetTreeList();
+        foreach (var tree in trees)
+        {
+            if (tree.name.Contains("_Out0_SmallTree"))
+            {
+                {
+                    var allScenes = tree.GetComponentsInChildren<SubScene_Out0>(true);
+                    bag.AddRange(allScenes);
+                }
+            }
+        }
+        Debug.Log($"BuildingModelInfo.GetSubScenes_Out0S Model:{this.name} trees:{trees.Count} bag:{bag.Count}");
+        return bag;
+    }
+
+    internal SubSceneBag GetSubScenes_Out1()
+    {
+        SubSceneBag bag = new SubSceneBag();
+        var trees = GetTreeList();
+        foreach (var tree in trees)
+        {
+            if (tree.name.Contains("_OutTree1"))
+            {
+                {
+                    var allScenes = tree.GetComponentsInChildren<SubScene_Out1>(true);
+                    bag.AddRange(allScenes);
+                }
+            }
+        }
+        Debug.Log($"BuildingModelInfo.GetSubScenes_Out1 Model:{this.name} trees:{trees.Count} bag:{bag.Count}");
+        return bag;
+    }
+
+    internal SubSceneBag GetSubScenes_In()
+    {
+        SubSceneBag bag = new SubSceneBag();
+        var trees = GetTreeList();
+        foreach (var tree in trees)
+        {
+            if (tree.name.Contains("_InTree"))
+            {
+                {
+                    var allScenes = tree.GetComponentsInChildren<SubScene_In>(true);
+                    bag.AddRange(allScenes);
+                }
+            }
+        }
+        Debug.Log($"BuildingModelInfo.GetSubScenes_In Model:{this.name} trees:{trees.Count} bag:{bag.Count}");
+        return bag;
+    }
+
+    internal SubSceneBag GetSubScenes_LOD()
+    {
+        SubSceneBag bag = new SubSceneBag();
+        if (LODPart != null)
+        {
+            {
+                var allScenes = LODPart.GetComponentsInChildren<SubScene_LODs>(true);
+                bag.AddRange(allScenes);
+            }
+        }
+        Debug.Log($"BuildingModelInfo.GetSubScenes_LOD Model:{this.name}  bag:{bag.Count}");
+        return bag;
     }
 
     internal SubSceneBag GetSubScenes()
@@ -135,7 +221,7 @@ public class BuildingModelInfo : SubSceneCreater
             }
             if (tree.name.Contains("_InTree"))
             {
-                 {
+                {
                     var allScenes = tree.GetComponentsInChildren<SubScene_In>(true);
                     bag.AddRange(allScenes);
                 }
@@ -457,7 +543,7 @@ public class BuildingModelInfo : SubSceneCreater
         var scenes=new SubSceneBag();
         for(int i=0;i<nodes.Count;i++){
             var node=nodes[i];
-            var rendererScene=node.GetRendererScene();
+            var rendererScene=node.GetCombinedLinkedScene();
             if(rendererScene!=null){
                 scenes.Add(rendererScene);
             }

@@ -464,7 +464,7 @@ public class SubSceneManager : SingletonBehaviour<SubSceneManager>
         bool isFinishedCallBack = false;
         DateTime startLoadTime = DateTime.Now;
         SubScene_Base lastScene = null;
-        Debug.Log($"LoadScenesByBag WattingForLoadedAll:{WattingForLoadedAll.Count} WattingForLoadedCurrent:{WattingForLoadedCurrent.Count} LoadingSceneMaxCount:{LoadingSceneMaxCount} bool isLoadScene  :{WattingForLoadedCurrent.Count < LoadingSceneMaxCount}");
+        Debug.Log($"LoadScenesByBag scenes:{scenes.Length} WattingForLoadedAll:{WattingForLoadedAll.Count} WattingForLoadedCurrent:{WattingForLoadedCurrent.Count} LoadingSceneMaxCount:{LoadingSceneMaxCount} bool isLoadScene  :{WattingForLoadedCurrent.Count < LoadingSceneMaxCount}");
 
         //if(WattingForLoadedAll.Count > 0 && WattingForLoadedCurrent.Count == 0)
         //{
@@ -482,61 +482,65 @@ public class SubSceneManager : SingletonBehaviour<SubSceneManager>
             try
             {
                 if (WattingForLoadedCurrent.Count < LoadingSceneMaxCount)
-                    //if (WattingForLoadedCurrent.Count < LoadingSceneMaxCount && WattingForLoadedAll.Count > 0)
-                 {
+                //if (WattingForLoadedCurrent.Count < LoadingSceneMaxCount && WattingForLoadedAll.Count > 0)
+                {
                     startLoadTime = DateTime.Now;
                     //Debug.Log($"LoadScenesByBag1 WattingForLoadedAll:{WattingForLoadedAll.Count} WattingForLoadedCurrent:{WattingForLoadedCurrent.Count} LoadingSceneMaxCount:{LoadingSceneMaxCount} bool isLoadScene:{WattingForLoadedCurrent.Count < LoadingSceneMaxCount}");
-
-                    var scene = WattingForLoadedAll[0];
-                    lastScene = scene;
-                    WattingForLoadedAll.RemoveAt(0);
-                    WattingForLoadedCurrent.Add(scene);
-
-                    //Debug.Log($"LoadScenesByBag2 WattingForLoadedAll:{WattingForLoadedAll.Count} WattingForLoadedCurrent:{WattingForLoadedCurrent.Count} LoadingSceneMaxCount:{LoadingSceneMaxCount} bool isLoadScene:{WattingForLoadedCurrent.Count < LoadingSceneMaxCount}");
-
-#if UNITY_EDITOR
-                    Debug.Log($"LoadScenesByBag Start scene:{scene.GetSceneName()},currentList:{WattingForLoadedCurrent.Count} allList:{WattingForLoadedAll.Count}");
-#endif
-                    scene.LoadSceneAsync((b, s) =>
+                    if (WattingForLoadedAll.Count > 0)
                     {
-                    //WattingForLoadedAll.RemoveAt(0);
-                    WattingForLoadedCurrent.Remove(s);
+                        var scene = WattingForLoadedAll[0];
+                        lastScene = scene;
+                        WattingForLoadedAll.RemoveAt(0);
+                        WattingForLoadedCurrent.Add(scene);
+
+                        //Debug.Log($"LoadScenesByBag2 WattingForLoadedAll:{WattingForLoadedAll.Count} WattingForLoadedCurrent:{WattingForLoadedCurrent.Count} LoadingSceneMaxCount:{LoadingSceneMaxCount} bool isLoadScene:{WattingForLoadedCurrent.Count < LoadingSceneMaxCount}");
+
 #if UNITY_EDITOR
-                        Debug.Log($"LoadScenesByBag End scene:{s.GetSceneName()},currentList:{WattingForLoadedCurrent.Count} allList:{WattingForLoadedAll.Count}");
+                        Debug.Log($"LoadScenesByBag Start scene:{scene.GetSceneName()},currentList:{WattingForLoadedCurrent.Count} allList:{WattingForLoadedAll.Count}");
+#endif
+                        scene.LoadSceneAsync((b, s) =>
+                        {
+                            //WattingForLoadedAll.RemoveAt(0);
+                            WattingForLoadedCurrent.Remove(s);
+#if UNITY_EDITOR
+                            Debug.Log($"LoadScenesByBag End scene:{s.GetSceneName()},currentList:{WattingForLoadedCurrent.Count} allList:{WattingForLoadedAll.Count}");
 #endif
 
-                        count++;
-                        var progress = (count + 0.0f) / totalScenesCount;
-                        WriteLog("LoadScenesByBag", $"count:{totalScenesCount} index:{count} progress:{progress:F3} time:{(DateTime.Now - start).ToString()}");
-                        OnProgressChanged(progress);
-                        if (count == totalScenesCount)
-                        {
-                            if (isFinishedCallBack == false)
+                            count++;
+                            var progress = (count + 0.0f) / totalScenesCount;
+                            WriteLog("LoadScenesByBag", $"count:{totalScenesCount} index:{count} progress:{progress:F3} time:{(DateTime.Now - start).ToString()}");
+                            OnProgressChanged(progress);
+                            if (count == totalScenesCount)
                             {
-                                isFinishedCallBack = true;
-                                if (finishedCallback != null)
+                                if (isFinishedCallBack == false)
                                 {
-                                    loadProgress.SetInfo(s, 1, true);
-                                    finishedCallback(loadProgress);
+                                    isFinishedCallBack = true;
+                                    if (finishedCallback != null)
+                                    {
+                                        loadProgress.SetInfo(s, 1, true);
+                                        finishedCallback(loadProgress);
+                                    }
+                                    WriteLog("LoadScenesByBag", $"Finished1 count:{totalScenesCount},\t time:{(DateTime.Now - start).ToString()}");
+                                    OnAllLoaded();
                                 }
-                                WriteLog("LoadScenesByBag", $"Finished1 count:{totalScenesCount},\t time:{(DateTime.Now - start).ToString()}");
-                                OnAllLoaded();
+                                else
+                                {
+                                    WriteLog("LoadScenesByBag", $"Finished12(Error)!!! count:{totalScenesCount},\t time:{(DateTime.Now - start).ToString()}");
+                                }
+
                             }
                             else
                             {
-                                WriteLog("LoadScenesByBag", $"Finished12(Error)!!! count:{totalScenesCount},\t time:{(DateTime.Now - start).ToString()}");
+                                if (finishedCallback != null)
+                                {
+                                    loadProgress.SetInfo(s, progress, false);
+                                    finishedCallback(loadProgress);
+                                }
                             }
+                        });
+                    }
 
-                        }
-                        else
-                        {
-                            if (finishedCallback != null)
-                            {
-                                loadProgress.SetInfo(s, progress, false);
-                                finishedCallback(loadProgress);
-                            }
-                        }
-                    });
+
                 }
                 else
                 {

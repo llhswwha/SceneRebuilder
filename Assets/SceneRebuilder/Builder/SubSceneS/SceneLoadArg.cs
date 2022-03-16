@@ -12,6 +12,8 @@ public class SceneLoadArg
 
     public int index=-1;
 
+    public bool isUnload = false;
+
     public override string ToString()
     {
         return $"name:{name} index:{index} path:{path}";

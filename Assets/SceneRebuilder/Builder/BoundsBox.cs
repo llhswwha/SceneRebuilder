@@ -16,6 +16,7 @@ public class BoundsBox : NoCombine
 
     private void Awake()
     {
+#if !UNITY_EDITOR
         if (this.transform.childCount == 0)
         {
             GameObject.DestroyImmediate(this.gameObject);
@@ -24,5 +25,7 @@ public class BoundsBox : NoCombine
         {
             //Debug.LogError($"BoundsBox.Awake name:{this.name} childCount:{this.transform.childCount}");
         }
+#endif
+
     }
 }

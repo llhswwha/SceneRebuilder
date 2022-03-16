@@ -5,6 +5,22 @@ using UnityEngine;
 
 public class SubSceneShowManager : SingletonBehaviour<SubSceneShowManager>
 {
+    public void SetEnable(bool isEnable)
+    {
+        this.enabled = isEnable;
+        if (isEnable)
+        {
+            IsEnableHide = true;
+            IsEnableShow = true;
+            IsEnableLoad = true;
+            IsEnableUnload = true;
+            IsUpdateDistance = true;
+            IsEnableIn = true;
+            IsEnableOut1 = true;
+            IsEnableLOD = true;
+        }
+    }
+
     //public static SubSceneShowManager Instance;
 
     public SubSceneManager sceneManager;
@@ -23,7 +39,7 @@ public class SubSceneShowManager : SingletonBehaviour<SubSceneShowManager>
     public List<SubScene_Out0> scenes_Out0_TreeNode_Shown = new List<SubScene_Out0>();
     public SubSceneBag scenes_TreeNode_Hidden = new SubSceneBag();
     public SubSceneBag scenes_TreeNode_Shown = new SubSceneBag();
-    public Camera[] cameras;
+    public List<Camera> cameras = new List<Camera>();
 
     [ContextMenu("GetSceneCountInfoEx")]
     public string GetSceneCountInfoEx()
@@ -154,7 +170,7 @@ public class SubSceneShowManager : SingletonBehaviour<SubSceneShowManager>
 
         scenes_Out1 = GameObject.FindObjectsOfType<SubScene_Out1>(IncludeInactive);
 
-        cameras = GameObject.FindObjectsOfType<Camera>();
+        
 
         List<ModelAreaTree> HiddenTrees = new List<ModelAreaTree>();
         List<ModelAreaTree> ShownTrees = new List<ModelAreaTree>();
@@ -168,6 +184,7 @@ public class SubSceneShowManager : SingletonBehaviour<SubSceneShowManager>
             {
                 HiddenTrees.Add(t);
                 //HiddenTreesVertexCount += t.VertexCount;
+
                 scenes_TreeNode_Hidden.AddRange(t.GetComponentsInChildren<SubScene_Base>(IncludeInactive));
                 scenes_Out0_TreeNode_Hidden.AddRange(t.GetComponentsInChildren<SubScene_Out0>(IncludeInactive));
             }
@@ -180,6 +197,25 @@ public class SubSceneShowManager : SingletonBehaviour<SubSceneShowManager>
                 scenes_Out0_TreeNode_Shown.AddRange(t.GetComponentsInChildren<SubScene_Out0>(IncludeInactive));
             }
         }
+    }
+
+    public void InitCameras()
+    {
+        if (cameras.Count ==0)
+        {
+            var cs = GameObject.FindObjectsOfType<Camera>();
+            cameras = new List<Camera>();
+            foreach (var c in cs)
+            {
+                if (c.gameObject.activeInHierarchy == false) continue;
+                if (c.name.Contains("UI") || c.name.Contains("RTE"))
+                {
+                    continue;
+                }
+                cameras.Add(c);
+            }
+        }
+        
     }
 
     public bool IsAutoLoad = false;
@@ -349,6 +385,8 @@ public class SubSceneShowManager : SingletonBehaviour<SubSceneShowManager>
     {
         //Init();
 
+        InitCameras();
+
         if (IsAutoLoad)
         {
             LoadStartScenes();
@@ -472,9 +510,12 @@ public class SubSceneShowManager : SingletonBehaviour<SubSceneShowManager>
 
         foreach (var scene in scenes)
         {
+            if (scene == null) continue;
             float disToCams = 0;
             foreach (var cam in cameras)
             {
+                if (cam.isActiveAndEnabled == false) continue;
+                if (cam.gameObject.activeInHierarchy == false) continue;
                 Vector3 cP = cam.transform.position;
                 float dis = scene.bounds.SqrDistance(cP);
                 if (dis > disToCams)
@@ -594,11 +635,13 @@ public class SubSceneShowManager : SingletonBehaviour<SubSceneShowManager>
 
         if (WaitingScenes_ToUnLoad.Count > 0)
         {
+            //Debug.LogError($"WaitingScenes_ToUnLoad :{WaitingScenes_ToUnLoad.Count}");
             if (UnLoadingScene == null || (UnLoadingScene != null && UnLoadingScene.IsLoaded == false))
             {
                 UnLoadingScene = WaitingScenes_ToUnLoad[0];
                 WaitingScenes_ToUnLoad.RemoveAt(0);
-                UnLoadingScene.UnLoadGos();
+                //UnLoadingScene.UnLoadGos();
+                UnLoadingScene.UnLoadSceneAsync(true);
                 UnLoadingScene.ShowBounds();
                 UnLoadingScene = null;
             }
@@ -607,20 +650,43 @@ public class SubSceneShowManager : SingletonBehaviour<SubSceneShowManager>
         if (IsUpdateDistance)
         {
             SubSceneBag subScenes = new SubSceneBag();
-            //foreach (var scene in scenes_In)
-            //{
-            //    subScenes.Add(scene);
-            //}
-            //foreach (var scene in scenes_Out1)
-            //{
-            //    subScenes.Add(scene);
-            //}
+
+            
             foreach (var scene in scenes_Out0_TreeNode_Hidden)
             {
                 subScenes.Add(scene);
             }
+            if (IsEnableLOD)
+            { 
+                foreach (var scene in scenes_LODs)
+                {
+                    subScenes.Add(scene);
+                }
+            }
+            if(IsEnableOut1)
+            {
+                foreach (var scene in scenes_Out1)
+                {
+                    subScenes.Add(scene);
+                }
+            }
+            if(IsEnableIn)
+            {
+                foreach (var scene in scenes_In)
+                {
+                    subScenes.Add(scene);
+                }     
+            }
+
+
             CalculateDistance(subScenes);
             LoadUnloadScenes();
         }
     }
+
+    public bool IsEnableIn = true;
+
+    public bool IsEnableOut1 = true;
+
+    public bool IsEnableLOD = true;
 }

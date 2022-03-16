@@ -1,0 +1,17 @@
+<?xml version="1.0" encoding="utf-8"?>
+<BuildingSceneLoadSetting xmlns:xsd="http://www.w3.org/2001/XMLSchema" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" IsLoadByDistance="true" IsLoadSceneOnStart="true" Enabled="true">
+  <Items>
+    <BuildingSceneLoadItemCollection Name="空压机房" IsEnable="true">
+      <BuildingSceneLoadItem Name="4_ENV" IsEnable="true" InRenderers="false" Out0RenderersB="true" Out0RenderersS="false" Out1Renderers="false" LODs="false" />
+      <BuildingSceneLoadItem Name="4_F1" IsEnable="true" InRenderers="false" Out0RenderersB="true" Out0RenderersS="false" Out1Renderers="false" LODs="false" />
+      <BuildingSceneLoadItem Name="4_F2" IsEnable="true" InRenderers="false" Out0RenderersB="true" Out0RenderersS="false" Out1Renderers="false" LODs="false" />
+      <BuildingSceneLoadItem Name="4_F3" IsEnable="true" InRenderers="false" Out0RenderersB="true" Out0RenderersS="false" Out1Renderers="false" LODs="false" />
+    </BuildingSceneLoadItemCollection>
+    <BuildingSceneLoadItemCollection Name="调压站及厂家设备" IsEnable="false">
+      <BuildingSceneLoadItem Name="调压站及厂家设备" IsEnable="true" InRenderers="false" Out0RenderersB="true" Out0RenderersS="false" Out1Renderers="false" LODs="false" />
+    </BuildingSceneLoadItemCollection>
+    <BuildingSceneLoadItemCollection Name="HH" IsEnable="false">
+      <BuildingSceneLoadItem Name="HH" IsEnable="true" InRenderers="false" Out0RenderersB="true" Out0RenderersS="false" Out1Renderers="false" LODs="false" />
+    </BuildingSceneLoadItemCollection>
+  </Items>
+</BuildingSceneLoadSetting>

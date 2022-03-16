@@ -417,9 +417,14 @@ public class SubScene_Base : MonoBehaviour
     //    LoadSceneAsync();
     //}
 
+    public bool IsLoadedOrLoading()
+    {
+        return IsLoading || IsLoaded;
+    }
+
     public IEnumerator LoadSceneAsyncCoroutine(Action<bool,SubScene_Base> callback)
     {
-        if (IsLoading || IsLoaded)
+        if (IsLoadedOrLoading())
         {
             Debug.LogWarning($"[SubScene_Base.LoadSceneAsyncCoroutine] scene:{GetSceneName()}, IsLoading:{IsLoading} || IsLoaded:{IsLoaded} path:{sceneArg.path}");
             if (callback != null)
@@ -546,7 +551,7 @@ public class SubScene_Base : MonoBehaviour
     }
 
     [ContextMenu("UnLoadSceneAsync")]
-    public void UnLoadSceneAsync()
+    public void UnLoadSceneAsync(bool isUnload=false)
     {
         if (IsLoaded == false)
         {
@@ -555,7 +560,9 @@ public class SubScene_Base : MonoBehaviour
         }
         //DestoryGosImmediate();
         UnLoadGos();
-        SubSceneManager.Instance.StartCoroutine(EditorHelper.UnLoadSceneAsync(GetSceneArg(), progress =>
+        SceneLoadArg loadArg = GetSceneArg();
+        loadArg.isUnload = isUnload;
+        SubSceneManager.Instance.StartCoroutine(EditorHelper.UnLoadSceneAsync(loadArg, progress =>
         {
             loadProgress = progress;
             Debug.Log("progress:" + progress);
