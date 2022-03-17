@@ -578,7 +578,7 @@ public class SubScene_Base : MonoBehaviour
 
 
     [ContextMenu("GetSceneObjects")]
-    public void GetSceneObjects()
+    public virtual void GetSceneObjects()
     {
         //DestroyBoundsBox();
         HideBoundsBox();
@@ -686,7 +686,7 @@ public class SubScene_Base : MonoBehaviour
     }
 
     [ContextMenu("EditorLoadScene")]
-    public void EditorLoadScene()
+    public virtual void EditorLoadScene()
     {
         EditorHelper.UnpackPrefab(this.gameObject);
 

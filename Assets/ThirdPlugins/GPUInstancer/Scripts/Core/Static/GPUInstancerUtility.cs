@@ -3526,7 +3526,7 @@ namespace GPUInstancer
         public static T AddComponentToPrefab<T>(GameObject prefabObject) where T : Component
         {
             PrefabAssetType prefabType = PrefabUtility.GetPrefabAssetType(prefabObject);
-
+            Debug.Log($"AddComponentToPrefab prefabObject:{prefabObject} prefabType:{prefabType}");
             if (prefabType == PrefabAssetType.Regular || prefabType == PrefabAssetType.Variant)
             {
                 string prefabPath = AssetDatabase.GetAssetPath(prefabObject);

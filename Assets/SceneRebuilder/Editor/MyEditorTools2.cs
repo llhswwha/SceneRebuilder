@@ -678,13 +678,15 @@ public class MyEditorTools2
     [MenuItem("SceneTools/Transform/RemoveOtherBrothers")]
     public static void RemoveOtherBrothers()
     {
+        List<GameObject> gos = Selection.gameObjects.ToList();
         var go = Selection.activeGameObject;
         var parent = go.transform.parent;
         List<Transform> childrens = new List<Transform>();
         for(int i = 0; i < parent.childCount; i++)
         {
             var child = parent.GetChild(i);
-            if (child.gameObject == go) continue;
+            //if (child.gameObject == go) continue;
+            if (gos.Contains(child.gameObject)) continue;
             childrens.Add(child);
         }
         foreach(var item in childrens)

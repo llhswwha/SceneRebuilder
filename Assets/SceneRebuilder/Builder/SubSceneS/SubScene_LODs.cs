@@ -29,5 +29,17 @@ public class SubScene_LODs : SubScene_Part
         SubScene_Ref.ClearRefs(this.gameObject);
         base.DestroyScene();
     }
+
+    public override void EditorLoadScene()
+    {
+        base.EditorLoadScene();
+        SubScene_Ref.AfterLoadScene(this.gameObject);
+    }
+
+    public override void GetSceneObjects()
+    {
+        base.GetSceneObjects();
+        SubScene_Ref.AfterLoadScene(this.gameObject);
+    }
 }
 

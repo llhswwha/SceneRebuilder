@@ -2253,7 +2253,7 @@ public static class LODHelper
             LOD[] lods = group.GetLODs();
             if (lods[0].renderers.Length != 1)
             {
-                Debug.LogError(@"UniformLOD0 lods[0].renderers.Length != 1");
+                Debug.LogError(@"UniformLOD0 lods[0].renderers.Length != 1 ");
             }
             lods[0].renderers = new Renderer[] { renderLod0New };
             group.SetLODs(lods);
@@ -2265,6 +2265,8 @@ public static class LODHelper
                     if (r.transform.parent == group.transform.parent)
                     {
                         r.transform.SetParent(group.transform);
+                        RendererId rid = RendererId.GetRId(r);
+                        rid.SetPid(RendererId.GetId(group.transform), group.transform);
                     }
                 }
             }

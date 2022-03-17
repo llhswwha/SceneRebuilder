@@ -201,7 +201,13 @@ public class SubSceneShowManager : SingletonBehaviour<SubSceneShowManager>
 
     public void InitCameras()
     {
-        if (cameras.Count ==0)
+        int cameraCount = 0;
+        foreach(var c in cameras)
+        {
+            if (c.gameObject.activeInHierarchy == false) continue;
+            cameraCount++;
+        }
+        if (cameraCount == 0)
         {
             var cs = GameObject.FindObjectsOfType<Camera>();
             cameras = new List<Camera>();
@@ -498,6 +504,19 @@ public class SubSceneShowManager : SingletonBehaviour<SubSceneShowManager>
 
     void CalculateDistance(List<SubScene_Base> scenes)
     {
+        int cCount = 0;
+        foreach (var cam in cameras)
+        {
+            if (cam.isActiveAndEnabled == false) continue;
+            if (cam.gameObject.activeInHierarchy == false) continue;
+            cCount++;
+        }
+        if (cCount == 0)
+        {
+            Debug.LogError("CalculateDistance cameras Count ==0 ");
+            return;
+        }
+
         DateTime start = DateTime.Now;
 
         MaxDisSqrtToCam = 0;

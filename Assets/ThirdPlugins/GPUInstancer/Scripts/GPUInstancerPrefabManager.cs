@@ -1160,47 +1160,39 @@ namespace GPUInstancer
             }
         }
 
-    [ContextMenu("InitPrefabs")]
-    public void InitPrefabs(List<GameObject> list)
-    {
-        #if UNITY_EDITOR
-        ClearPrefabList();
-        for (int i = 0; i < list.Count; i++)
+        [ContextMenu("InitPrefabs")]
+        public void InitPrefabs(List<GameObject> list)
         {
-            float progress = (float)i / list.Count;
-            float percents = progress * 100;
 
-            if (EditorUtility.DisplayCancelableProgressBar("CreatePrefabs", $"{i}/{list.Count} {percents:F1}%", progress))
+            ClearPrefabList();
+            for (int i = 0; i < list.Count; i++)
             {
-                break;
-            }
-            GameObject item = list[i];
-            GPUInstancerPrefab prefab = item.GetComponent<GPUInstancerPrefab>();
-            if (prefab == null)
-            {
-                prefab=GPUInstancerUtility.AddComponentToPrefab<GPUInstancerPrefab>(item);
-            }
+                float progress = (float)i / list.Count;
+                float percents = progress * 100;
 
-           AddPrefabObject(item);
+                if (EditorUtility.DisplayCancelableProgressBar("CreatePrefabs", $"{i}/{list.Count} {percents:F1}%", progress))
+                {
+                    break;
+                }
+                GameObject item = list[i];
+                Debug.Log($"InitPrefabs {i}/{list.Count} item:{item}");
+                GPUInstancerPrefab prefab = item.GetComponent<GPUInstancerPrefab>();
 
-           //if (!this.prefabList.Contains(item))
-           //{
-           //    this.prefabList.Add(item);
-           //    this.GeneratePrototypes();
-           //}
+                if (prefab == null)
+                {
+#if UNITY_EDITOR
+                    prefab = GPUInstancerUtility.AddComponentToPrefab<GPUInstancerPrefab>(item);
+#else
+                    prefab = item.AddComponent<GPUInstancerPrefab>();
+#endif
+                }
 
-                // prefabManager.prefabList.Add(item);
-                // var prototype=GPUInstancerUtility.GeneratePrefabPrototype(item, false);
-                // Debug.Log($"1 item:{item},prototype:{prototype},count:{prefabManager.prototypeList.Count}");
-                // prefabManager.prototypeList.Add(prototype);
-                // Debug.Log($"2 item:{item},prototype:{prototype},count:{prefabManager.prototypeList.Count}");
-
-                //generator.asteroidObjects.Add(prefab);
+                AddPrefabObject(item);
             }
 
-        EditorUtility.ClearProgressBar();
-        #endif
-    }
+            EditorUtility.ClearProgressBar();
+
+        }
 
         public virtual void AddInstancesToPrefabPrototypeAtRuntime(GPUInstancerPrefabPrototype prefabPrototype, IEnumerable<GameObject> instances)
         {

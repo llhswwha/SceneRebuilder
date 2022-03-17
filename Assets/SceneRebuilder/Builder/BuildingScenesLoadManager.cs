@@ -356,12 +356,17 @@ public class BuildingScenesLoadManager : MonoBehaviour
 
         Debug.Log($"LoadScenesBySetting depDict:{depDict.Count} bags:{allScenes.Count} scenes:{ss.Length}");
 
-
-        SubSceneManager.Instance.LoadScenesAsyncEx(ss, (p) =>
+        if (IsLoadScene)
         {
+            SubSceneManager.Instance.LoadScenesAsyncEx(ss, (p) =>
+            {
 
-        });
+            });
+        }
+       
     }
+
+    public bool IsLoadScene = true;
 
     public void LoadSubScenes(BuildingModelInfo root, BuildingSceneLoadItem loadSetting)
     {

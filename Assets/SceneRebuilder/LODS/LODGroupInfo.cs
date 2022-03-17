@@ -347,6 +347,13 @@ public class LODGroupInfo : MonoBehaviour
         var sceneRenderers = scene.GetSceneRenderers().ToArray();
         Debug.Log($"SetLOD0FromScene sceneRenderers:{sceneRenderers.Length} scene:{scene.sceneName} [arg:{scene.GetSceneArg()}]");
         lods[0].renderers = sceneRenderers;
+        foreach(var r in sceneRenderers)
+        {
+            if(r.transform.parent==this.transform.parent)
+            {
+                r.transform.SetParent(this.transform);
+            }
+        }
         LODGroup.SetLODs(lods);
     }
 

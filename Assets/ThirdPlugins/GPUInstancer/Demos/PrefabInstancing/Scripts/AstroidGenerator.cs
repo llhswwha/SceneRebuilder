@@ -6,6 +6,8 @@ namespace GPUInstancer
 {
     public class AstroidGenerator : MonoBehaviour
     {
+        public static AstroidGenerator Instance;
+
         [Range(0, 1000000)]
         public int count = 100000;
         
@@ -30,7 +32,8 @@ namespace GPUInstancer
 
         private void Awake()
         {
-            if(IsGenerateWhenAwake)
+            Instance = this;
+            if (IsGenerateWhenAwake)
                 GenerateGos();
         }
 
@@ -42,6 +45,8 @@ namespace GPUInstancer
             for (int i = 0; i < prefabs.Length; i++)
             {
                 GPUInstancerPrefab item = prefabs[i];
+                if (asteroidObjects.Contains(item)) continue;
+
                 GameObject.DestroyImmediate(item.gameObject);
 
                 float progress = (float)i / prefabs.Length;
@@ -84,6 +89,22 @@ namespace GPUInstancer
             int firstPassColumnSize = count % columnSize > 0 ? columnSize - 1 : columnSize;
 
             asteroidInstances.Clear();
+
+            for (int i = 0; i < asteroidObjects.Count; i++)
+            {
+                GPUInstancerPrefab obj = asteroidObjects[i];
+                if (obj == null)
+                {
+                    Debug.LogError($"GenerateGos obj == null :{i}/{asteroidObjects.Count}");
+                    asteroidObjects.RemoveAt(0);
+                    i--;
+                }
+            }
+
+            if (asteroidObjects.Count == 0)
+            {
+                return;
+            }
 
             for (int h = 0; h < firstPassColumnSize; h++)
             {
@@ -157,7 +178,7 @@ namespace GPUInstancer
             
             if (prefab == null)
             {
-                Debug.Log($"InstantiateInCircle asteroidObjects:{asteroidObjects.Count} prefab:{prefab} id:{id}");
+                Debug.LogError($"InstantiateInCircle asteroidObjects:{asteroidObjects.Count} prefab:{prefab} id:{id}");
                 return null;
             }
             allocatedGO = Instantiate(prefab, allocatedPos, allocatedRot);

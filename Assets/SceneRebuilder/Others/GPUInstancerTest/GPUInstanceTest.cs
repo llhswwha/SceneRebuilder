@@ -14,7 +14,10 @@ public class GPUInstanceTest : MonoBehaviour
     [ContextMenu("InitPrefabs")]
     public void InitPrefabs()
     {
-        prefabManager = GameObject.FindObjectOfType<GPUInstancerPrefabManager>();
+        if (prefabManager == null)
+        {
+            prefabManager = GameObject.FindObjectOfType<GPUInstancerPrefabManager>();
+        }
 
         prefabManager.InitPrefabs(PrefabList);
 
@@ -64,7 +67,7 @@ public class GPUInstanceTest : MonoBehaviour
     public void GetPrefabsInScene()
     {
         GPUInstancerPrefab[] prefabs = GameObject.FindObjectsOfType<GPUInstancerPrefab>();
-        Debug.Log("prefabs:"+ prefabs.Length);
+        Debug.Log($"GetPrefabsInScene prefabs:{prefabs.Length}");
 
         AutomaticLOD[] lods = GameObject.FindObjectsOfType<AutomaticLOD>();
         Debug.Log("lods:" + lods.Length);
@@ -72,17 +75,53 @@ public class GPUInstanceTest : MonoBehaviour
 
     public bool IsUseGPU = false;
 
+    public int Count = 200;
+
+    public float PositionPower = 2;
+
+    public float ScalePower = 0.5f;
+
     private void Start()
     {
         if (IsUseGPU)
         {
-            GPUInstancerPrefab[] prefabs = GameObject.FindObjectsOfType<GPUInstancerPrefab>();
-            prefabManager = GameObject.FindObjectOfType<GPUInstancerPrefabManager>();
+            //InitPrefabs();
+
+            List<GPUInstancerPrefab> prefabs0 = new List<GPUInstancerPrefab>();
+            foreach(var obj in PrefabList)
+            {
+                GPUInstancerPrefab prefab = obj.GetComponent<GPUInstancerPrefab>();
+                if (prefab != null)
+                {
+                    prefabs0.Add(prefab);
+                }
+            }
+
+            for (int i = 0; i < Count; i++)
+            {
+                foreach(var pref in prefabs0)
+                {
+                    GPUInstancerPrefab instancer = GameObject.Instantiate(pref);
+                    instancer.transform.position = Random.insideUnitSphere* PositionPower + pref.transform.position;
+                    instancer.transform.localScale= Random.insideUnitSphere* ScalePower;
+                    instancer.transform.rotation = Quaternion.Euler(Random.Range(0, 180), Random.Range(0, 180), Random.Range(0, 180));
+                    instancer.transform.SetParent(this.transform);
+                }
+            }
+
+            GPUInstancerPrefab[] allPrefabs = GameObject.FindObjectsOfType<GPUInstancerPrefab>();
+            if (prefabManager == null)
+            {
+                prefabManager = GameObject.FindObjectOfType<GPUInstancerPrefabManager>();
+            }
             if (prefabManager != null && prefabManager.gameObject.activeSelf && prefabManager.enabled)
             {
-                GPUInstancerAPI.RegisterPrefabInstanceList(prefabManager, prefabs);
+                GPUInstancerAPI.RegisterPrefabInstanceList(prefabManager, allPrefabs);
                 GPUInstancerAPI.InitializeGPUInstancer(prefabManager);
             }
+
+            //AstroidGenerator.Instance.asteroidObjects = prefabs0;
+            //AstroidGenerator.Instance.GenerateGos();
         }
         
     }

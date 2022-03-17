@@ -447,6 +447,11 @@ public class SubSceneManager : SingletonBehaviour<SubSceneManager>
         foreach (var scene in scenes)
         {
             if (IsFilterLoadedScene && scene.IsLoaded) continue;
+            if (WattingForLoadedAll.Contains(scene))
+            {
+                Debug.LogError($"LoadScenesByBag WattingForLoadedAll.Contains(scene) scene:{scene.GetSceneName()}");
+                continue;
+            }
             WattingForLoadedAll.Add(scene);
             totalScenesCount++;
         }
@@ -539,6 +544,10 @@ public class SubSceneManager : SingletonBehaviour<SubSceneManager>
                             }
                         });
                     }
+                    else
+                    {
+
+                    }
 
 
                 }
@@ -546,7 +555,15 @@ public class SubSceneManager : SingletonBehaviour<SubSceneManager>
                 {
                     float time = (float)(DateTime.Now - startLoadTime).TotalMilliseconds;
 #if UNITY_EDITOR
-                    Debug.Log($"LoadScenesByBag Waiting time:{time}ms count:{count} totalCount:{totalScenesCount}");
+                    if (lastScene != null)
+                    {
+                        Debug.Log($"LoadScenesByBag Waiting time:{time}ms count:{count} totalCount:{totalScenesCount} scene:{lastScene.GetSceneName()} WattingForLoadedAll:{WattingForLoadedAll.Count} WattingForLoadedCurrent:{WattingForLoadedCurrent.Count} LoadingSceneMaxCount:{LoadingSceneMaxCount}");
+                    }
+                    else
+                    {
+                        Debug.Log($"LoadScenesByBag Waiting time:{time}ms count:{count} totalCount:{totalScenesCount} scene:NULL WattingForLoadedAll:{WattingForLoadedAll.Count} WattingForLoadedCurrent:{WattingForLoadedCurrent.Count} LoadingSceneMaxCount:{LoadingSceneMaxCount}");
+                    }
+                    
 #endif
 
                     //Debug.Log($"LoadScenesByBag Waiting time:{time} scene:{lastScene.GetSceneName()},currentList:{WattingForLoadedCurrent.Count} allList:{WattingForLoadedAll.Count}");
