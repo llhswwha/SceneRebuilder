@@ -1333,14 +1333,19 @@ namespace GPUInstancer
 
             GPUInstancerPrefabPrototype prototype = null;
             if (prefabScript != null)
+            {
                 prototype = prefabScript.prefabPrototype;
+            }
+            Debug.LogError($"GeneratePrefabPrototype1 prototype:{prototype}");
             if (prototype == null)
             {
                 prototype = ScriptableObject.CreateInstance<GPUInstancerPrefabPrototype>();
+
                 if (prefabScript != null)
                     prefabScript.prefabPrototype = prototype;
                 prototype.prefabObject = go;
                 prototype.name = go.name + "_" + go.GetInstanceID();
+                Debug.LogError($"GeneratePrefabPrototype2 prototype:{prototype} GO:{prototype.prefabObject}");
                 DetermineTreePrototypeType(prototype);
                 if (prototype.treeType != GPUInstancerTreeType.None || !GPUInstancerConstants.gpuiSettings.IsStandardRenderPipeline())
                     prototype.useOriginalShaderForShadow = true;
@@ -1385,6 +1390,16 @@ namespace GPUInstancer
                     EditorUtility.SetDirty(go);
 #endif
             }
+            else
+            {
+                if (prefabScript != null)
+                    prefabScript.prefabPrototype = prototype;
+                prototype.prefabObject = go;
+                prototype.name = go.name + "_" + go.GetInstanceID();
+
+                Debug.LogError($"GeneratePrefabPrototype3 prototype:{prototype} GO:{prototype.prefabObject}");
+            }
+            
 #if UNITY_EDITOR
             if (!Application.isPlaying && string.IsNullOrEmpty(AssetDatabase.GetAssetPath(prototype)))
             {
@@ -1407,7 +1422,7 @@ namespace GPUInstancer
             }
 #endif
 #endif
-            //Debug.LogError("GeneratePrefabPrototype:"+prototype);
+            Debug.LogError($"GeneratePrefabPrototype prototype:{prototype} GO:{prototype.prefabObject}");
             return prototype;
         }
 

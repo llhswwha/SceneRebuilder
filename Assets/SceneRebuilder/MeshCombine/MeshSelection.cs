@@ -208,27 +208,27 @@ public class MeshSelection : MonoBehaviour
                 hitParentName = hitGo.transform.parent.name;
             Debug.Log("Hit Object:" + hitGo + "|"+ hitGo.transform.parent);
 
-            if (lastRenderer != null)
-            {
-                //lastRenderer.material=lastRendererMat;
-            }
+            //if (lastRenderer != null)
+            //{
+            //    //lastRenderer.material=lastRendererMat;
+            //}
 
-            lastRenderer = hitGo.GetComponent<MeshRenderer>();
+            MeshRenderer hitRenderer = hitGo.GetComponent<MeshRenderer>();
 
-            if (lastRenderer)
+            if (hitRenderer)
             {
                 if(hitParentName.EndsWith("_Combined"))
                 {
-                    if (!AreaTreeHelper.combined2NodeDict.ContainsKey(lastRenderer))
+                    if (!AreaTreeHelper.combined2NodeDict.ContainsKey(hitRenderer))
                     {
-                        var treeNode = lastRenderer.GetComponentInParent<AreaTreeNode>();
-                        Debug.LogError($"FindTreeNode renderer:{lastRenderer} node:{treeNode}");
+                        var treeNode = hitRenderer.GetComponentInParent<AreaTreeNode>();
+                        Debug.LogError($"FindTreeNode renderer:{hitRenderer} node:{treeNode}");
                         if (treeNode)
                         {
                             treeNode.CreateDictionary();
                         }
                     }
-                    var treeNode0 = AreaTreeHelper.GetNodeByCombined(lastRenderer);
+                    var treeNode0 = AreaTreeHelper.GetNodeByCombined(hitRenderer);
                     if (treeNode0!=null)//点中了合并的模型
                     {
                         var treeNode1 = treeNode0;
@@ -249,10 +249,10 @@ public class MeshSelection : MonoBehaviour
                     }
                     else
                     {
-                        Debug.LogError("Hit Tree Node Error :" + lastRenderer);
+                        Debug.LogError("Hit Tree Node Error :" + hitRenderer);
                         //lastRendererMat = lastRenderer.material;
                         //lastRenderer.material = selectedMat;
-                        var treeNode2 = AreaTreeHelper.GetNodeByRenderer(lastRenderer);
+                        var treeNode2 = AreaTreeHelper.GetNodeByRenderer(hitRenderer);
                         if (treeNode2!=null)
                         {
                             Debug.LogError("Hit Tree Node2:" + treeNode2);
@@ -267,19 +267,19 @@ public class MeshSelection : MonoBehaviour
                         }
                         else
                         {
-                            Debug.LogError("No TreeNode :" + lastRenderer);
+                            Debug.LogError("No TreeNode :" + hitRenderer);
                         }
                     }
                 }
                 else
                 {
-                    SelectBimModel(lastRenderer.transform);
+                    SelectBimModel(hitRenderer);
                 }
-                //lastRendererMat = lastRenderer.material;
-                //lastRenderer.material = selectedMat;
-                //if (AreaTreeHelper.render2NodeDict.ContainsKey(lastRenderer))
+                //lastRendererMat = hitRenderer.material;
+                //hitRenderer.material = selectedMat;
+                //if (AreaTreeHelper.render2NodeDict.ContainsKey(hitRenderer))
                 //{
-                //    var treeNode = AreaTreeHelper.render2NodeDict[lastRenderer];
+                //    var treeNode = AreaTreeHelper.render2NodeDict[hitRenderer];
                 //    Debug.LogError("Hit Node:" + treeNode);
                 //    if (lastNode != null && lastNode != treeNode)
                 //    {
@@ -297,7 +297,45 @@ public class MeshSelection : MonoBehaviour
         }
         else
         {
-            Debug.LogError("Hit NULL:");
+            Debug.LogError($"Hit NULL lastRenderer:{lastRenderer}");
+
+            ClearLastRenderer();
+        }
+    }
+
+    private void ClearLastRenderer()
+    {
+        if (lastRenderer != null)
+        {
+            lastRenderer.sharedMaterial = lastRendererMat;
+
+            if (GPUInstanceTest.Instance.IsPrefabTarget)
+            {
+                lastRenderer.enabled = false;
+                //lastRenderer.transform.localScale = lastScale;
+                GPUInstanceTest.Instance.AddPrefabInstance(lastRenderer.gameObject);
+            }
+        }
+    }
+
+    private void SelectBimModel(MeshRenderer hitRenderer)
+    {
+        if (hitRenderer == null) return;
+
+        ClearLastRenderer();
+
+        lastRendererMat = hitRenderer.sharedMaterial;
+        lastScale = hitRenderer.transform.localScale;
+
+        hitRenderer.sharedMaterial = selectedMat;
+        hitRenderer.enabled = true;
+
+        lastRenderer = hitRenderer;
+
+        if (GPUInstanceTest.Instance.IsPrefabTarget)
+        {
+            //hitRenderer.transform.localScale *= 1.01f;
+            GPUInstanceTest.Instance.RemovePrefabInstance(hitRenderer.gameObject);
         }
     }
 
@@ -372,6 +410,8 @@ public class MeshSelection : MonoBehaviour
     public MeshRenderer lastRenderer;
 
     public Material lastRendererMat;
+
+    public Vector3 lastScale = Vector3.one;
 
     public Material selectedMat;
 

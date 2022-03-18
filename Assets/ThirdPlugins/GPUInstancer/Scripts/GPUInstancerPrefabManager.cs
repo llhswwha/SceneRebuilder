@@ -41,8 +41,11 @@ namespace GPUInstancer
             RegisterPrefabsInScene();
         }
 
+        public bool IsEnableUpdate = true;
+
         public override void Update()
         {
+            if (IsEnableUpdate == false) return;
             base.Update();
 
             if (runtimeDataList != null && Application.isPlaying)
@@ -134,11 +137,21 @@ namespace GPUInstancer
 
             prefabList.RemoveAll(p => p == null);
             prefabList.RemoveAll(p => p.GetComponent<GPUInstancerPrefab>() == null);
+
+            //Debug.LogError($"CheckPrototypeChanges1 prefabList:{prefabList.Count} prototypeList:{prototypeList.Count}");
             prototypeList.RemoveAll(p => p == null);
+            //Debug.LogError($"CheckPrototypeChanges2 prefabList:{prefabList.Count} prototypeList:{prototypeList.Count}");
             prototypeList.RemoveAll(p => !prefabList.Contains(p.prefabObject));
 
             if (prefabList.Count != prototypeList.Count)
+            {
+                if (prefabList.Count > 0)
+                {
+                    Debug.LogError($"CheckPrototypeChanges3 prefabList:{prefabList.Count} prefab0:{prefabList[0]} prototypeList:{prototypeList.Count}");
+                }
+                
                 GeneratePrototypes();
+            }
 
             //registeredPrefabs.RemoveAll(rpd => !prototypeList.Contains(rpd.prefabPrototype));
             //foreach (GPUInstancerPrefabPrototype prototype in prototypeList)
@@ -919,7 +932,7 @@ namespace GPUInstancer
 
         public virtual void RegisterPrefabInstanceList(IEnumerable<GPUInstancerPrefab> prefabInstanceList)
         {
-            Debug.LogError($"RegisterPrefabInstanceList prefabInstanceList:{prefabInstanceList.Count()}, prefabList:{prefabList.Count()}, prototypeList: {prototypeList.Count}");
+            Debug.LogError($"RegisterPrefabInstanceList prefabInstanceList:{prefabInstanceList.Count()}, prefabList:{prefabList.Count()}, prototypeList: {prototypeList.Count} ");
 
             if (_registeredPrefabsRuntimeData == null)
                 _registeredPrefabsRuntimeData = new GPUInstancerPrototypeDict(prototypeList);
@@ -1175,7 +1188,7 @@ namespace GPUInstancer
                     break;
                 }
                 GameObject item = list[i];
-                Debug.Log($"InitPrefabs {i}/{list.Count} item:{item}");
+                Debug.Log($"InitPrefabs {i+1}/{list.Count} item:{item}");
                 GPUInstancerPrefab prefab = item.GetComponent<GPUInstancerPrefab>();
 
                 if (prefab == null)

@@ -82,7 +82,20 @@ public static class MeshHelper
         ProgressBarHelper.ClearProgressBar();
     }
 
-    public static bool CopyTransformMesh(GameObject source, GameObject target)
+    public static GameObject CopyMeshObject(GameObject source)
+    {
+        return CopyMeshObject(source, source.name);
+    }
+
+
+    public static GameObject CopyMeshObject(GameObject source, string newName)
+    {
+        GameObject newGo = new GameObject(newName);
+        bool r1 = MeshHelper.CopyTransformMesh(source.gameObject, newGo);
+        return newGo;
+    }
+
+        public static bool CopyTransformMesh(GameObject source, GameObject target)
     {
         bool r=CopyMeshComponents(source, target);
         if (r == false) return r;

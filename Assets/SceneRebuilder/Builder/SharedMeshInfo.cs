@@ -298,6 +298,17 @@ public class SharedMeshInfo:IPrefab<SharedMeshInfo>
 
     public List<MeshFilter> meshFilters = new List<MeshFilter>();
 
+    public void SetActive(bool isActive)
+    {
+        if(gameObject)
+            gameObject.SetActive(isActive);
+        foreach(var mf in meshFilters)
+        {
+            if (mf == null) continue;
+            mf.gameObject.SetActive(isActive);
+        }
+    }
+
     public List<MeshFilter> GetMeshFilters()
     {
         return meshFilters;

@@ -112,7 +112,7 @@ namespace GPUInstancer
             if (lodGroup != null)
                 lodGroup.enabled = enabled;
 
-            gameObject.SetActive(enabled);
+            //gameObject.SetActive(enabled);
 
             //LODGroup lodGroup = this.GetComponent<>();
             //if (lodGroup != null)
@@ -143,6 +143,11 @@ namespace GPUInstancer
             else if (rigidbody != null && !this.prefabPrototype.autoUpdateTransformData)
                 Destroy(rigidbody);
         }
+
+        //public void OnDisable()
+        //{
+        //    Debug.LogError("OnDisable");
+        //}
     }
 
     public enum PrefabInstancingState

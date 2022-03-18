@@ -442,6 +442,10 @@ public class SubSceneManager : SingletonBehaviour<SubSceneManager>
     IEnumerator LoadScenesByBag<T>(T[] scenes, Action<SceneLoadProgress> finishedCallback) where T : SubScene_Base
     {
         var start = DateTime.Now;
+
+        WattingForLoadedCurrent.RemoveAll(s => s == null);
+        WattingForLoadedAll.RemoveAll(s => s == null);
+
         //WattingForLoadedAll.AddRange(scenes);
         int totalScenesCount = 0;
         foreach (var scene in scenes)
@@ -469,7 +473,16 @@ public class SubSceneManager : SingletonBehaviour<SubSceneManager>
         bool isFinishedCallBack = false;
         DateTime startLoadTime = DateTime.Now;
         SubScene_Base lastScene = null;
-        Debug.Log($"LoadScenesByBag scenes:{scenes.Length} WattingForLoadedAll:{WattingForLoadedAll.Count} WattingForLoadedCurrent:{WattingForLoadedCurrent.Count} LoadingSceneMaxCount:{LoadingSceneMaxCount} bool isLoadScene  :{WattingForLoadedCurrent.Count < LoadingSceneMaxCount}");
+
+        if (WattingForLoadedCurrent.Count > 0)
+        {
+            Debug.LogError($"LoadScenesByBag scenes:{scenes.Length} WattingForLoadedAll:{WattingForLoadedAll.Count} WattingForLoadedCurrent:{WattingForLoadedCurrent.Count} Current0:{WattingForLoadedCurrent[0]} LoadingSceneMaxCount:{LoadingSceneMaxCount} bool isLoadScene  :{WattingForLoadedCurrent.Count < LoadingSceneMaxCount}");
+        }
+        else
+        {
+            Debug.Log($"LoadScenesByBag scenes:{scenes.Length} WattingForLoadedAll:{WattingForLoadedAll.Count} WattingForLoadedCurrent:{WattingForLoadedCurrent.Count} LoadingSceneMaxCount:{LoadingSceneMaxCount} bool isLoadScene  :{WattingForLoadedCurrent.Count < LoadingSceneMaxCount}");
+        }
+        
 
         //if(WattingForLoadedAll.Count > 0 && WattingForLoadedCurrent.Count == 0)
         //{
@@ -563,11 +576,7 @@ public class SubSceneManager : SingletonBehaviour<SubSceneManager>
                     {
                         Debug.Log($"LoadScenesByBag Waiting time:{time}ms count:{count} totalCount:{totalScenesCount} scene:NULL WattingForLoadedAll:{WattingForLoadedAll.Count} WattingForLoadedCurrent:{WattingForLoadedCurrent.Count} LoadingSceneMaxCount:{LoadingSceneMaxCount}");
                     }
-                    
 #endif
-
-                    //Debug.Log($"LoadScenesByBag Waiting time:{time} scene:{lastScene.GetSceneName()},currentList:{WattingForLoadedCurrent.Count} allList:{WattingForLoadedAll.Count}");
-
 
                 }
 

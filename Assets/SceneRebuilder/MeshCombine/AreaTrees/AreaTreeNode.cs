@@ -1094,7 +1094,15 @@ public class AreaTreeNode : SubSceneCreater
 
 #if UNITY_EDITOR
             SubScene_Base[] scenes = SubScene_List.GetBaseScenes(this.gameObject);
-            Debug.Log($"ShowNodes {this.name} Renderers:{Renderers.Count} RenderersId:{RenderersId.Count} Scenes:{scenes.Length} IsLoaded:{RenderersScene.IsLoaded} Path:{TransformHelper.GetPath(this.transform)}");
+            if (RenderersScene != null)
+            {
+                Debug.Log($"ShowNodes {this.name} Renderers:{Renderers.Count} RenderersId:{RenderersId.Count} Scenes:{scenes.Length} IsLoaded:{RenderersScene.IsLoaded} Path:{TransformHelper.GetPath(this.transform)}");
+            }
+            else
+            {
+                Debug.Log($"ShowNodes {this.name} RenderersScene==null Renderers:{Renderers.Count} RenderersId:{RenderersId.Count} Scenes:{scenes.Length} Path:{TransformHelper.GetPath(this.transform)}");
+            }
+            
 #endif
             IsNodeVisible = true;
             if(this.gameObject==null)

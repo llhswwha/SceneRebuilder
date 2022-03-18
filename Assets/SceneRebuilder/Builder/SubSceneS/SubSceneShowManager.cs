@@ -204,6 +204,7 @@ public class SubSceneShowManager : SingletonBehaviour<SubSceneShowManager>
         int cameraCount = 0;
         foreach(var c in cameras)
         {
+            if (c == null) continue;
             if (c.gameObject.activeInHierarchy == false) continue;
             cameraCount++;
         }
@@ -213,6 +214,7 @@ public class SubSceneShowManager : SingletonBehaviour<SubSceneShowManager>
             cameras = new List<Camera>();
             foreach (var c in cs)
             {
+                if (c == null) continue;
                 if (c.gameObject.activeInHierarchy == false) continue;
                 if (c.name.Contains("UI") || c.name.Contains("RTE"))
                 {
@@ -245,13 +247,38 @@ public class SubSceneShowManager : SingletonBehaviour<SubSceneShowManager>
     public bool IsEnableHide = false; 
     public bool IsEnableShow=false;
 
+    bool isLoadUserBuildings = false;
+
+    public void LoadUserBuildings(Action<SceneLoadProgress> onComplete = null)
+    {
+        isLoadUserBuildings = true;
+        BuildingController[] deps = GameObject.FindObjectsOfType<BuildingController>();//改成获取用户权限建筑
+        BuildingScenesLoadManager.Instance.LoadBuildings(deps, onComplete);
+    }
+
     public void LoadStartScenes(Action<SceneLoadProgress> onComplete=null)
     {
-        List<SubScene_Out0> scenes=new List<SubScene_Out0>();
+        List<SubScene_Out0> scenes = new List<SubScene_Out0>();
         // scenes.AddRange(scenes_Out0_Tree);
         scenes.AddRange(scenes_Out0_Part);
         scenes.AddRange(scenes_Out0_TreeNode_Shown);
         LoadStartScens_Innder(scenes, onComplete);
+    }
+
+    public void LoadHiddenTreeNodes(Action<SceneLoadProgress> onComplete = null)
+    {
+        if (isLoadUserBuildings)
+        {
+            if (onComplete != null)
+            {
+                onComplete(new SceneLoadProgress(null, 1, true));
+            }
+        }
+        else
+        {
+            BuildingModelManager.Instance.ShowDetail();
+            LoadScenes(scenes_Out0_TreeNode_Hidden, onComplete);
+        }
     }
 
     public void LoadStartScens_All(Action<SceneLoadProgress> onComplete = null)
@@ -308,12 +335,6 @@ public class SubSceneShowManager : SingletonBehaviour<SubSceneShowManager>
     public void LoadShownTreeNodes()
     {
         LoadScenes(scenes_Out0_TreeNode_Shown, null);
-    }
-
-    public void LoadHiddenTreeNodes(Action<SceneLoadProgress> onComplete = null)
-    {
-        BuildingModelManager.Instance.ShowDetail();
-        LoadScenes(scenes_Out0_TreeNode_Hidden, onComplete);
     }
 
     public void LoadOut0BuildingScenes()
@@ -507,6 +528,7 @@ public class SubSceneShowManager : SingletonBehaviour<SubSceneShowManager>
         int cCount = 0;
         foreach (var cam in cameras)
         {
+            if (cam == null) continue;
             if (cam.isActiveAndEnabled == false) continue;
             if (cam.gameObject.activeInHierarchy == false) continue;
             cCount++;
@@ -533,6 +555,7 @@ public class SubSceneShowManager : SingletonBehaviour<SubSceneShowManager>
             float disToCams = 0;
             foreach (var cam in cameras)
             {
+                if (cam == null) continue;
                 if (cam.isActiveAndEnabled == false) continue;
                 if (cam.gameObject.activeInHierarchy == false) continue;
                 Vector3 cP = cam.transform.position;

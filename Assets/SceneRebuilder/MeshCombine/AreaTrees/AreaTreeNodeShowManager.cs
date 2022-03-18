@@ -333,11 +333,11 @@ public class AreaTreeNodeShowManager : MonoBehaviour
             GameObject go = IdDictionary.GetGo(rId.Id);
             if (go == null)
             {
-                Debug.LogError($"MoveRenderer  Id2NodeDict.NotContainsKey(id) go == null rId:[{rId}] id:{rId.Id} path:{TransformHelper.GetPath(rId.transform)}");
+                Debug.LogError($"MoveRendererToNode  Id2NodeDict.NotContainsKey(id) go == null rId:[{rId}] id:{rId.Id} path:{TransformHelper.GetPath(rId.transform)}");
             }
             else
             {
-                Debug.LogWarning($"MoveRenderer  Id2NodeDict.NotContainsKey(id) rId:[{rId}] id:{rId.Id} path:{TransformHelper.GetPath(rId.transform)}");
+                //Debug.LogWarning($"MoveRendererToNode  Id2NodeDict.NotContainsKey(id) rId:[{rId}] id:{rId.Id} path:{TransformHelper.GetPath(rId.transform)}");
             }
         }
     }

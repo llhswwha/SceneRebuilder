@@ -7,7 +7,7 @@ using System.Linq;
 using System.Xml.Serialization;
 using UnityEngine;
 
-public class BuildingScenesLoadManager : MonoBehaviour
+public class BuildingScenesLoadManager : SingletonBehaviour<BuildingScenesLoadManager>
 {
     public bool IsLoadXmlOnStart = true;
     public bool IsLoadSceneOnStart = true;
@@ -51,6 +51,9 @@ public class BuildingScenesLoadManager : MonoBehaviour
                 LoadScenesBySetting();
             }
         }
+
+        SubSceneShowManager.Instance.IsUpdateTreeNodeByDistance = false;
+        AreaTreeNodeShowManager.Instance.IsUpdateTreeNodeByDistance = false;
 
         SubSceneShowManager.Instance.SetEnable(IsLoadByDistance);
     }
@@ -170,7 +173,7 @@ public class BuildingScenesLoadManager : MonoBehaviour
 
     }
 
-    public void LoadBuildings(List<BuildingController> depNodes, Action<SceneLoadProgress> finishedCallbak)
+    public void LoadBuildings(IEnumerable<BuildingController> depNodes, Action<SceneLoadProgress> finishedCallbak)
     {
         List<BuildingController> enableBuildings = new List<BuildingController>();
         var buildings = GameObject.FindObjectsOfType<BuildingController>(true).ToList();
@@ -354,7 +357,7 @@ public class BuildingScenesLoadManager : MonoBehaviour
 
         var ss = allScenes.GetAllScenesArray();
 
-        Debug.Log($"LoadScenesBySetting depDict:{depDict.Count} bags:{allScenes.Count} scenes:{ss.Length}");
+        Debug.Log($"LoadScenesBySetting1 depDict:{depDict.Count} bags:{allScenes.Count} scenes:{ss.Length}");
 
         if (IsLoadScene)
         {
