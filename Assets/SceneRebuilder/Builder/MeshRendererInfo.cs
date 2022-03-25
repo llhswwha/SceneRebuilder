@@ -8,7 +8,7 @@ using UnityEngine;
 
 public class MeshRendererInfo : MonoBehaviour,IComparable<MeshRendererInfo>
 {
-    public Vector3 position;
+    //public Vector3 position;
 
     public Vector3 center;
 
@@ -540,16 +540,16 @@ public class MeshRendererInfo : MonoBehaviour,IComparable<MeshRendererInfo>
         }
     }
 
-    public bool IsChanged()
-    {
-        return position != this.transform.position;
-    }
+    //public bool IsChanged()
+    //{
+    //    return position != this.transform.position;
+    //}
 
     [ContextMenu("Init")]
     public virtual void Init()
     {
         //Debug.Log("Init");
-        position=this.transform.position;
+        //position=this.transform.position;
         meshRenderer=gameObject.GetComponent<MeshRenderer>();
 
         meshFilter=gameObject.GetComponent<MeshFilter>();
@@ -622,7 +622,7 @@ public class MeshRendererInfo : MonoBehaviour,IComparable<MeshRendererInfo>
         {
             center = minMax[3];
             size = minMax[2];
-            disToCenter = Vector3.Distance(center, position);
+            disToCenter = Vector3.Distance(center, this.transform.position);
             diam = Vector3.Distance(minMax[0], minMax[1]);
         }
     }

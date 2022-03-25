@@ -335,7 +335,7 @@ public class AreaTreeNodeShowManager : MonoBehaviour
                 }
                 else
                 {
-                    Debug.LogError($"AddIdNodeDict Id2NodeDict.ContainsKey(id)[{count}] node==node2 id:{id} node1:{node} node2:{node2} [path1:{TransformHelper.GetPath(node.transform)}] [path2:{TransformHelper.GetPath(node2.transform)}] ");
+                    Debug.LogWarning($"AddIdNodeDict Id2NodeDict.ContainsKey(id)[{count}] node==node2 id:{id} node1:{node} node2:{node2} [path1:{TransformHelper.GetPath(node.transform)}] [path2:{TransformHelper.GetPath(node2.transform)}] ");
                 }
                 
             }

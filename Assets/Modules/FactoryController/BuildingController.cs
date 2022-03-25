@@ -6,6 +6,6 @@ using System.Linq;
 using UnityEngine.SceneManagement;
 
 public class BuildingController : DepNode {
-
+    public bool IsStatic = false;
     //public string NodeName;
 }

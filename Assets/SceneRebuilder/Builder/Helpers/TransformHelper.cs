@@ -92,6 +92,16 @@ public static class TransformHelper
         {
             ClearComponents<T>(obj);
         }
+        Debug.Log($"ClearComponents[{typeof(T)}] objs:{objs.Length}");
+    }
+
+    public static void ClearComponents<T>(T[] objs) where T : Component
+    {
+        foreach (var obj in objs)
+        {
+            GameObject.DestroyImmediate(obj);
+        }
+        Debug.Log($"ClearComponents[{typeof(T)}] objs:{objs.Length}");
     }
 
     public static void SetCollidersEnabled<T>(GameObject[] objs,bool enbled) where T : Collider

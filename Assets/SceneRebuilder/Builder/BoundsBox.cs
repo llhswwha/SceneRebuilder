@@ -26,6 +26,7 @@ public class BoundsBox : NoCombine
             //Debug.LogError($"BoundsBox.Awake name:{this.name} childCount:{this.transform.childCount}");
         }
 #endif
+        MeshHelper.RemoveMeshComponents(gameObject);
 
     }
 }

@@ -129,8 +129,9 @@ public class AreaTreeNode : SubSceneCreater
     [ContextMenu("SortRenderers")]
     public void SortRenderers()
     {
-        Renderers.Sort((a,b)=> { return a.name.CompareTo(b.name); });
         RenderersId.Sort();
+        Renderers.RemoveAll(i => i == null);
+        Renderers.Sort((a,b)=> { return a.name.CompareTo(b.name); });
     }
 
     public int LoadRenderers_Renderers()

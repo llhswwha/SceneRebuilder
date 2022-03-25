@@ -1,5 +1,6 @@
 using System.Collections;
 using System.Collections.Generic;
+using System.Linq;
 using UnityEngine;
 
 public class MeshRendererInfoEx : MeshRendererInfo
@@ -7,6 +8,17 @@ public class MeshRendererInfoEx : MeshRendererInfo
     public MeshRenderer[] renderers;
 
     public MeshFilter[] meshFilters;
+
+    public void RemoveNull()
+    {
+        List<MeshRenderer> mrs = renderers.ToList();
+        mrs.RemoveAll(i => i == null);
+        renderers = mrs.ToArray();
+
+        List<MeshFilter> mfs = meshFilters.ToList();
+        mfs.RemoveAll(i => i == null);
+        meshFilters = mfs.ToArray();
+    }
 
     public override MeshRenderer[] GetRenderers()
     {
@@ -30,7 +42,7 @@ public class MeshRendererInfoEx : MeshRendererInfo
     public override void Init()
     {
         //Debug.Log("Init");
-        position = this.transform.position;
+        //position = this.transform.position;
         var rs = GetRenderers();
         if(rs.Length>0)
             meshRenderer = GetRenderers()[0];

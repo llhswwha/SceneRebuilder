@@ -6,6 +6,55 @@ using System.Linq;
 
 public class MyEditorTools2
 {
+    #region TreeNode
+    [MenuItem("SceneTools/TreeNode/ClearRenderers")]
+    public static void ClearTreeNodeRenderers()
+    {
+        AreaTreeNode[] nodes = GameObject.FindObjectsOfType<AreaTreeNode>(true);
+        foreach(var node in nodes)
+        {
+            node.Renderers.RemoveAll(i => i == null);
+        }
+        Debug.Log($"ClearTreeNodeRenderers nodes:{nodes.Length}");
+        //MeshRendererInfoEx
+    }
+
+    //
+    #endregion
+
+    #region MeshRenderer
+    [MenuItem("SceneTools/MeshRenderer/ClearRenderers")]
+    public static void ClearMeshRendererInfoEx()
+    {
+        MeshRendererInfoEx[] nodes = GameObject.FindObjectsOfType<MeshRendererInfoEx>(true);
+        foreach (var node in nodes)
+        {
+            node.RemoveNull();
+        }
+        Debug.Log($"ClearTreeNodeRenderers nodes:{nodes.Length}");
+        //MeshRendererInfoEx
+    }
+
+    //
+    #endregion
+
+    #region NavisModelRoot
+    [MenuItem("SceneTools/NavisModelRoot/ClearModelDict")]
+    public static void ClearNavisModelRoots()
+    {
+        NavisModelRoot[] nodes = GameObject.FindObjectsOfType<NavisModelRoot>(true);
+        foreach (var node in nodes)
+        {
+            node.BimDict = new BIMModelInfoDictionary();
+            node.ModelDict = new ModelItemInfoDictionary();
+            node.model2TransformResult = new Model2TransformResult();
+        }
+        Debug.Log($"ClearTreeNodeRenderers nodes:{nodes.Length}");
+    }
+
+    //NavisModelRoot
+    #endregion
+
     #region GameObject
     [MenuItem("SceneTools/GameObject/Copy")]
     public static void CopyGameObject()
@@ -354,6 +403,36 @@ public class MyEditorTools2
         }
         return true;
     }
+    
+    [MenuItem("SceneTools/Mesh/Save")]
+    public static void SaveMesh()
+    {
+        EditorHelper.SaveMeshAsset(Selection.activeGameObject);
+    }
+
+    [MenuItem("SceneTools/Mesh/SaveAll")]
+    public static void SaveMeshAll()
+    {
+        //EditorHelper.SaveMeshAsset(Selection.activeGameObject);
+
+        MeshFilter[] mfs = GameObject.FindObjectsOfType<MeshFilter>(true);
+        //foreach(var mf  in mfs)
+        //{
+        //    if (UnityEditor.AssetDatabase.Contains(mf.sharedMesh)) continue;
+        //}
+
+
+        SharedMeshInfoList sharedMeshInfos = new SharedMeshInfoList(mfs);
+        int count = 0;
+        foreach (var sharedMesh in sharedMeshInfos)
+        {
+            if (UnityEditor.AssetDatabase.Contains(sharedMesh.mainMeshFilter.sharedMesh)) continue;
+            EditorHelper.SaveMeshAsset(sharedMesh.gameObject);
+            count++;
+        }
+
+        Debug.Log($"SaveMeshAll sharedMeshInfos:{sharedMeshInfos.Count} count:{count}");
+    }
 
     [MenuItem("SceneTools/Mesh/Combine")]
     public static void CombineMesh()
@@ -594,6 +673,17 @@ public class MyEditorTools2
         ClearComponents<SubScene_Single>();
     }
 
+    [MenuItem("SceneTools/SubScene/ClearSceneArg")]
+    public static void ClearSceneArg()
+    {
+        var scenes = GameObject.FindObjectsOfType<SubScene_Base>(true);
+        foreach(var scene in scenes)
+        {
+            scene.sceneArg.objs.Clear();
+        }
+        Debug.Log($"ClearSceneArg scenes:{scenes.Length}");
+    }
+
     [MenuItem("SceneTools/SubScene/ClearOtherScenes")]
     public static void ClearOtherScenes()
     {
@@ -624,6 +714,26 @@ public class MyEditorTools2
         TransformHelper.ClearComponents<T>(Selection.gameObjects);
     }
 
+    public static void ClearComponentsAll<T>() 
+        where T : Component
+    {
+        T[] cs = GameObject.FindObjectsOfType<T>(true);
+        TransformHelper.ClearComponents(cs);
+    }
+
+    [MenuItem("SceneTools/Clear/ClearSceneNullObjs")]
+    public static void ClearSceneNullObjs()
+    {
+        ClearSceneArg();
+        ClearTreeNodeRenderers();
+        ClearNavisRootComponents();
+        ClearNavisModelRoots();//
+        ClearMeshRendererInfoEx();
+        InitNavisFileInfoByModel.Instance.vueRootModels = new List<NavisPlugins.Infos.ModelItemInfo>();
+        SubSceneShowManager.Instance.scenes_Out0 = new SubScene_Out0[0];
+        SubSceneShowManager.Instance.scenes_Out1 = new SubScene_Out1[0];
+    }
+
     [MenuItem("SceneTools/Clear/LODGroup")]
     public static void ClearLODGroup()
     {
@@ -641,6 +751,13 @@ public class MyEditorTools2
     public static void ClearMeshNode()
     {
         ClearComponents<MeshNode>();
+        
+    }
+
+    [MenuItem("SceneTools/Clear/ClearMeshNodeAll")]
+    public static void ClearMeshNodeAll()
+    {
+        ClearComponentsAll<MeshNode>();
     }
 
     [MenuItem("SceneTools/Clear/ClearRendererInfo")]
@@ -721,7 +838,7 @@ public class MyEditorTools2
     }
 
     [MenuItem("SceneTools/Clear/ClearNavisModelRoot")]
-    public static void ClearNavisModelRoot()
+    public static void ClearNavisRootComponents()
     {
         ClearComponents<NavisModelRoot>();
         ClearComponents<InitNavisFileInfoByModel>();

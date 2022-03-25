@@ -253,7 +253,7 @@ public class SubSceneShowManager : SingletonBehaviour<SubSceneShowManager>
     {
         isLoadUserBuildings = true;
         BuildingController[] deps = GameObject.FindObjectsOfType<BuildingController>();//改成获取用户权限建筑
-        BuildingScenesLoadManager.Instance.LoadBuildings(deps, onComplete);
+        BuildingScenesLoadManager.Instance.LoadUserBuildings(deps, onComplete);
     }
 
     public void LoadStartScenes(Action<SceneLoadProgress> onComplete=null)
@@ -605,19 +605,23 @@ public class SubSceneShowManager : SingletonBehaviour<SubSceneShowManager>
             else{
                 if (disToCams <= DisOfVisible)
                 {
-                    scene.boundsGo.GetComponent<MeshRenderer>().material.color = new Color(1, 0, 0, 0.2f);
+                    MeshRenderer mr = scene.boundsGo.GetComponent<MeshRenderer>();
+                    if(mr)mr.material.color = new Color(1, 0, 0, 0.2f);
                 }
                 else if (disToCams <= DisOfLoad)
                 {
-                    scene.boundsGo.GetComponent<MeshRenderer>().material.color = new Color(1, 0.5f, 0, 0.2f);
+                    MeshRenderer mr = scene.boundsGo.GetComponent<MeshRenderer>();
+                    if (mr) mr.material.color = new Color(1, 0.5f, 0, 0.2f);
                 }
                 else if (disToCams <= DisOfHidden)
                 {
-                    scene.boundsGo.GetComponent<MeshRenderer>().material.color = new Color(1, 1, 0, 0.2f);
+                    MeshRenderer mr = scene.boundsGo.GetComponent<MeshRenderer>();
+                    if (mr) mr.material.color = new Color(1, 1, 0, 0.2f);
                 }
                 else if (disToCams <= DisOfUnLoad)
                 {
-                    scene.boundsGo.GetComponent<MeshRenderer>().material.color = new Color(1, 1, 1, 0.2f);
+                    MeshRenderer mr = scene.boundsGo.GetComponent<MeshRenderer>();
+                    if (mr) mr.material.color = new Color(1, 1, 1, 0.2f);
                 }
             }
 

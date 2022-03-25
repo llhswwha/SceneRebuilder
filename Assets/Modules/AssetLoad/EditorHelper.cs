@@ -175,7 +175,11 @@ public static class EditorHelper
         //return $"{dir}/{assetName}";
     }
 
-    
+    public static void SaveMeshAsset(GameObject go)
+    {
+        string dir = GetMeshAssetDir(go); ;
+        SaveMeshAsset(dir, go);
+    }
 
     public static void SaveMeshAsset(GameObject source, GameObject go)
     {
@@ -368,9 +372,7 @@ public static class EditorHelper
     {
         try
         {
-            if (string.IsNullOrEmpty(path)) return "";
             string[] parts = path.Split(new char[] { '.', '\\', '/' });
-            if (parts.Length < 2) return "";
             string sceneName = parts[parts.Length - 2];
             return sceneName;
         }
@@ -383,17 +385,20 @@ public static class EditorHelper
 
     public static GameObject[] EditorLoadScene(Scene scene, string path, Transform parent)
     {
-        if (string.IsNullOrEmpty(path))
-        {
-            Debug.LogError($"EditorLoadScene IsNullOrEmpty(path) parent:{parent}");
-            return new GameObject[0];
-        }
         string scenePath = EditorHelper.GetScenePath(path);
         string sceneName = GetSceneName(scenePath);
-        //Debug.Log($"LoadScene IsValid:{scene.IsValid()}, \tpath:{path}\nscenePath:{scenePath}\n{System.IO.File.Exists(scenePath)}");
+        Debug.Log($"LoadScene IsValid:{scene.IsValid()}, \tpath:{path}\nscenePath:{scenePath}\n{System.IO.File.Exists(scenePath)}");
         if (scene.IsValid() == false)//没有打开场景 > 打开
         {
-            scene = EditorSceneManager.OpenScene(scenePath, OpenSceneMode.Additive);
+            try
+            {
+                scene = EditorSceneManager.OpenScene(scenePath, OpenSceneMode.Additive);
+            }
+            catch (System.Exception ex)
+            {
+                Debug.LogError($"EditorLoadScene scenePath:{scenePath} Exception:{ex} ");
+                return new GameObject[0];
+            }
         }
         var objs = scene.GetRootGameObjects();
         if (parent)
@@ -440,7 +445,7 @@ public static class EditorHelper
 
     public static void RefreshAssets()
     {
-        Debug.Log("RefreshAssets");
+        Debug.LogError("RefreshAssets");
         AssetDatabase.Refresh();
     }
 
@@ -462,7 +467,22 @@ public static class EditorHelper
     public static Scene CreateScene(string path, bool isOveride,bool isOpen, params GameObject[] objs)
     {
         string scenePath = GetScenePath(path);
-        Debug.Log($"CreateScene1 objs:{objs.Length},obj1:{objs[0]},\tpath:{path},\nscenePath:{scenePath}");
+
+        if (objs.Length == 0)
+        {
+            Debug.LogError($"CreateScene1 objs.Length == 0 objs:{objs.Length},\tpath:{path},\nscenePath:{scenePath}");
+            return new Scene();
+        }
+
+        if (objs.Length > 0)
+        {
+            Debug.Log($"CreateScene1 objs:{objs.Length},obj1:{objs[0]},\tpath:{path},\nscenePath:{scenePath}");
+        }
+        else
+        {
+            Debug.LogWarning($"CreateScene1 objs:{objs.Length},\tpath:{path},\nscenePath:{scenePath}");
+        }
+        
 
         FileInfo file = new FileInfo(scenePath);
         //Debug.Log($"CreateScene2 file:{file.FullName},\ndir:{file.Directory.FullName}\t{file.Directory.Exists}");
@@ -856,32 +876,32 @@ public static class EditorHelper
 
     public static Scene GetSceneByBuildIndex(SceneLoadArg arg,string tag)
     {
-        try
+        if (arg.index <= 0)
         {
-            if (arg.index <= 0)
-            {
-                Debug.LogError($"EditorHelper.LoadSceneAsync arg.index<=0 sName:{arg.name} index:{arg.index}");
-                return new Scene();
-            }
-            else
+            Debug.LogError($"GetByIndex({tag}) arg.index<=0 sName:{arg.name} index:{arg.index}");
+            return new Scene();
+        }
+        else
+        {
+            try
             {
                 Scene scene = SceneManager.GetSceneByBuildIndex(arg.index);
 #if UNITY_EDITOR
-                //Debug.Log($"GetSceneByBuildIndex({tag}) [arg:{arg}] scene:{scene.name}");
+                //Debug.Log($"GetByIndex({tag}) [arg:{arg}] scene:{scene.name}");
                 if (arg.name != scene.name)
                 {
-                    Debug.LogError($"GetSceneByBuildIndex({tag}) Error [arg:{arg.name}] scene:{scene.name}");
+                    Debug.LogError($"GetByIndex({tag}) Error [arg:{arg.name}] scene:{scene.name}");
                 }
 #endif
                 return scene;
             }
+            catch (System.Exception ex)
+            {
+                Debug.LogError($"GetByIndex({tag}) Error [arg:{arg.name}] Exception:{ex}");
+                return new Scene();
+            }
+            
         }
-        catch (System.Exception ex)
-        {
-            Debug.LogError($"EditorHelper.LoadSceneAsync sName:{arg.name} index:{arg.index} Exception:{ex}");
-            return new Scene();
-        }
-
     }
 
     public static IEnumerator LoadSceneAsync(SceneLoadArg arg, System.Action<float> progressChanged, System.Action<Scene> finished,bool isAutoUnload=false)
@@ -891,7 +911,7 @@ public static class EditorHelper
         if(arg.index<=0){
             Debug.LogError($"EditorHelper.LoadSceneAsync arg.index<=0 sName:{arg.name} index:{arg.index}");
 
-            Scene scene = GetSceneByBuildIndex(arg, "LoadAsync1");
+            Scene scene = GetSceneByBuildIndex(arg, "LoadSceneAsync1");
             if (finished != null)
             {
                 finished(scene);
@@ -906,15 +926,14 @@ public static class EditorHelper
             }
             catch (System.Exception ex)
             {
-
-                Debug.LogError($"EditorHelper.LoadSceneAsync sName:{arg.name} Exception:{ex}");
+                Debug.LogError($"EditorHelper.LoadSceneAsync1 arg:{arg} Exception:{ex}");
             }
             
             if (async == null)
             {
-                Debug.LogError($"EditorHelper.LoadSceneAsync async == null sName:{arg.name}");
+                Debug.LogError($"EditorHelper.LoadSceneAsync2 async == null sName:{arg.name}");
 
-                Scene scene = GetSceneByBuildIndex(arg, "LoadAsync2");
+                Scene scene = GetSceneByBuildIndex(arg, "LoadSceneAsync2");
                 if (finished != null)
                 {
                     finished(scene);
@@ -941,7 +960,7 @@ public static class EditorHelper
                 //SceneManager.GetSceneByBuildIndex
                 //Scene scene = SceneManager.GetSceneByName(arg.name);
                 // Scene scene = SceneManager.GetSceneByPath(arg.path);
-                Scene scene = GetSceneByBuildIndex(arg, "LoadAsync3");
+                Scene scene = GetSceneByBuildIndex(arg, "LoadSceneAsync3");
                 var objs = scene.GetRootGameObjects();
                 if (objs.Length == 0)
                 {
@@ -975,7 +994,7 @@ public static class EditorHelper
     {
         System.DateTime start = System.DateTime.Now;
         //Debug.Log("UnLoadSceneAsync:" + sName);
-        Scene scene = GetSceneByBuildIndex(arg, "UnLoadAsync");
+        Scene scene = GetSceneByBuildIndex(arg, "UnLoadSceneAsync");
         if(scene.IsValid())
         {
             AsyncOperation async = SceneManager.UnloadSceneAsync(arg.index, UnloadSceneOptions.None);
@@ -991,12 +1010,9 @@ public static class EditorHelper
                 yield return null;
             }
 
-            if (arg.isUnload)
-            {
-                yield return Resources.UnloadUnusedAssets();
-                System.GC.Collect();
-            }
+            //yield return Resources.UnloadUnusedAssets();
 
+            //System.GC.Collect();
 
             if (progressChanged != null)
             {
@@ -1010,11 +1026,8 @@ public static class EditorHelper
         }
 
 
-        if (arg.isUnload)
-        {
-            yield return Resources.UnloadUnusedAssets();
-            System.GC.Collect();
-        }
+        //yield return Resources.UnloadUnusedAssets();
+        //System.GC.Collect();
         //从内存卸载，没有的话，第二次开始不会从硬盘读取了。
 
         //Debug.Log($"UnLoadSceneAsync[{arg.name}] time:{(System.DateTime.Now - start).ToString()}");
@@ -1031,7 +1044,7 @@ public static class EditorHelper
     public static GameObject[] GetSceneObjects(SceneLoadArg arg, Transform parent)
     {
         string scenePath=arg.path;
-        Scene scene = GetSceneByBuildIndex(arg, "GetObjects");
+        Scene scene = GetSceneByBuildIndex(arg, "GetSceneObjects");
 
         //Debug.Log($"GetSceneObjects scene:{scenePath},isLoaded:{scene.isLoaded},isValid:{scene.IsValid()}");
 
