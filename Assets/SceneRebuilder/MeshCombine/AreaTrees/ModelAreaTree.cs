@@ -629,7 +629,7 @@ public class ModelAreaTree : SubSceneCreater
         {
             if (!item.IsLeaf)
             {
-                item.Renderers = null;
+                item.Renderers = new List<MeshRenderer>();
             }
         }
 

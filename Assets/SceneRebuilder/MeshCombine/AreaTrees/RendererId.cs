@@ -396,6 +396,7 @@ public class RendererId
     }
     public static string GetId<T>(T r) where T : Component
     {
+        if (r == null) return "";
         RendererId id = r.GetComponent<RendererId>();
         if (id == null)
         {

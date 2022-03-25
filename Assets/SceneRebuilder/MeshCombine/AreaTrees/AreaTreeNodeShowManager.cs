@@ -281,6 +281,8 @@ public class AreaTreeNodeShowManager : MonoBehaviour
     [ContextMenu("GetLeafNodes")]
     public void GetLeafNodes()
     {
+        Debug.LogError($"GetLeafNodes  HiddenLeafNodes:{HiddenLeafNodes.Count} ShownLeafNodes:{ShownLeafNodes.Count} Id2NodeDict:{Id2NodeDict.Count}");
+
         HiddenLeafNodes.Clear();
 
         foreach (var tree in HiddenTrees)
@@ -289,6 +291,9 @@ public class AreaTreeNodeShowManager : MonoBehaviour
         }
 
         ShownLeafNodes.Clear();
+        Dictionary<AreaTreeNode, ModelAreaTree> node2Tree = new Dictionary<AreaTreeNode, ModelAreaTree>();
+
+        Id2NodeDict.Clear();
         foreach (var tree in ShownTrees)
         {
             if (tree == null) continue;
@@ -296,6 +301,12 @@ public class AreaTreeNodeShowManager : MonoBehaviour
             foreach (var node in leafs)
             {
                 if (node == null) continue;
+                if (node2Tree.ContainsKey(node))
+                {
+                    Debug.LogError($"GetLeafNodes node2Tree.ContainsKey(node) node1:{node} tree:{tree} [path1:{TransformHelper.GetPath(node.transform)}] ");
+                    continue;
+                }
+                node2Tree.Add(node,tree);
                 ShownLeafNodes.Add(node);
                 AddIdNodeDict(node);
             }
@@ -306,6 +317,7 @@ public class AreaTreeNodeShowManager : MonoBehaviour
 
     public void AddIdNodeDict(AreaTreeNode node)
     {
+        int count = 0;
         foreach(var id in node.RenderersId)
         {
             if (string.IsNullOrEmpty(id)) continue;
@@ -315,7 +327,17 @@ public class AreaTreeNodeShowManager : MonoBehaviour
             }
             else
             {
-                Debug.LogError($"AddIdNodeDict Id2NodeDict.ContainsKey(id) node:{node} id:{id}");
+                count++;
+                AreaTreeNode node2 = Id2NodeDict[id];
+                if (node2 != node)
+                {
+                    Debug.LogError($"AddIdNodeDict Id2NodeDict.ContainsKey(id)[{count}] id:{id} node1:{node} node2:{node2} [path1:{TransformHelper.GetPath(node.transform)}] [path2:{TransformHelper.GetPath(node2.transform)}] ");
+                }
+                else
+                {
+                    Debug.LogError($"AddIdNodeDict Id2NodeDict.ContainsKey(id)[{count}] node==node2 id:{id} node1:{node} node2:{node2} [path1:{TransformHelper.GetPath(node.transform)}] [path2:{TransformHelper.GetPath(node2.transform)}] ");
+                }
+                
             }
         }
     }

@@ -55,7 +55,7 @@ public static class SubSceneHelper
             EditorBuildSettingsScene scene= new EditorBuildSettingsScene(path, true);
             if (File.Exists(path) == false)
             {
-                Debug.LogError($"scene[{i + 1}] scene:{scene} path:{path} enabled:{scene.enabled} Exists:{File.Exists(path)}");
+                Debug.LogError($"scene[{i + 1}]  scene:{scene} ScenePath:{path} enabled:{scene.enabled} Exists:{File.Exists(path)} ObjPath:{TransformHelper.GetPath(item.transform)}");
             }
             else
             {

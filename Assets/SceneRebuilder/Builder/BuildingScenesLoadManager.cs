@@ -99,9 +99,22 @@ public class BuildingScenesLoadManager : SingletonBehaviour<BuildingScenesLoadMa
         LoadBuildingScenes(buildings, enableBuildings, finishedCallbak);
     }
 
-    public void LoadBuildingScenes(List<BuildingController> buildings, List<BuildingController> enableBuildings, Action<SceneLoadProgress> finishedCallbak)
+    public void LoadBuildingScenes(List<BuildingController> disableBuildings, List<BuildingController> enableBuildings, Action<SceneLoadProgress> finishedCallbak)
     {
-        foreach (var b in buildings)
+        Debug.LogError($"LoadBuildingScenes disableBuildings:{disableBuildings.Count} enableBuildings:{enableBuildings.Count}");
+        string s1 = "";
+        foreach(var b in disableBuildings)
+        {
+            s1 += b.name + ";";
+        }
+        string s2 = "";
+        foreach (var b in enableBuildings)
+        {
+            s2 += b.name + ";";
+        }
+        Debug.LogError($"LoadBuildingScenes disableBuildings:{s1}\n enableBuildings:{s2}");
+
+        foreach (var b in disableBuildings)
         {
             GameObject.DestroyImmediate(b.gameObject);
         }
@@ -164,8 +177,8 @@ public class BuildingScenesLoadManager : SingletonBehaviour<BuildingScenesLoadMa
         }
 
         var ss = allScenes.GetAllScenesArray();
-        Debug.Log($"LoadScenesBySetting buildings:{buildings.Count()} enableBuildings:{enableBuildings.Count()} bags:{allScenes.Count} scenes:{ss.Length}");
-        SubSceneManager.Instance.LoadScenesAsyncEx(ss, finishedCallbak);
+        Debug.Log($"LoadScenesBySetting buildings:{disableBuildings.Count()} enableBuildings:{enableBuildings.Count()} bags:{allScenes.Count} scenes:{ss.Length}");
+        SubSceneManager.Instance.LoadScenesEx(ss, finishedCallbak);
     }
 
     public void LoadBuildingScene(DepNode building)
@@ -235,6 +248,8 @@ public class BuildingScenesLoadManager : SingletonBehaviour<BuildingScenesLoadMa
         }
     }
 
+    public bool IsShowLog = false;
+
     [ContextMenu("LoadScenesBySetting")]
     public void LoadScenesBySetting()
     {
@@ -274,7 +289,8 @@ public class BuildingScenesLoadManager : SingletonBehaviour<BuildingScenesLoadMa
         for (int i = 0; i < Setting.Items.Count; i++)
         {
             BuildingSceneLoadItemCollection buildingloadItem = Setting.Items[i];
-            //Debug.LogError($"LoadScenesBySetting building[{i+1}]:{buildingloadItem}");
+            if(IsShowLog)
+                Debug.LogError($"LoadScenesBySetting building[{i+1}]:{buildingloadItem}");
             if (depDict.ContainsKey(buildingloadItem.Name) == false)
             {
                 Debug.LogError($"LoadScenesBySetting depDict.ContainsKey(buildingloadSetting.Name) == false building:{buildingloadItem}");
@@ -300,7 +316,8 @@ public class BuildingScenesLoadManager : SingletonBehaviour<BuildingScenesLoadMa
                 for (int i1 = 0; i1 < buildingloadItem.Children.Count; i1++)
                 {
                     BuildingSceneLoadItem floorLoadItem = buildingloadItem.Children[i1];
-                    //Debug.LogError($"LoadScenesBySetting building[{i + 1}]:{buildingloadItem.Name} floor[{i1+1}]:{floorLoadItem}");
+                    if (IsShowLog)
+                        Debug.LogError($"LoadScenesBySetting building[{i + 1}]:{buildingloadItem.Name} floor[{i1+1}]:{floorLoadItem}");
 
                     if (modelDict.ContainsKey(floorLoadItem.Name) == false)
                     {

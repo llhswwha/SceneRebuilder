@@ -70,13 +70,100 @@ public class MyEditorTools2
             LODManager.Instance.CreateBoxLOD(obj);
         }
         ProgressBarHelper.ClearProgressBar();
-        
     }
 
-    [MenuItem("SceneTools/LOD/CreateLODBySelection")]
-    public static void CreateLODBySelection()
+    [MenuItem("SceneTools/LOD/SetLODBoxMat")]
+    public static void SetLODBoxMat()
     {
-       
+        DateTime start = DateTime.Now;
+        int count = 0;
+        var lodMat = LODManager.Instance.LODBoxMat;
+        if (lodMat == null)
+        {
+            Debug.LogError("SetLODBoxMat lodMat == null");
+            return;
+        }
+        var renderers = GameObject.FindObjectsOfType<MeshRenderer>();
+        for (int i = 0; i < renderers.Length; i++)
+        {
+            var r = renderers[i];
+            ProgressArg pA = new ProgressArg("SetLODBoxMat", i, renderers.Length, r);
+            if (ProgressBarHelper.DisplayCancelableProgressBar(pA))
+            {
+                break;
+            }
+            if (r.name.Contains("_LODBox"))
+            {
+                r.sharedMaterial = lodMat;
+                count++;
+            }
+        }
+        ProgressBarHelper.ClearProgressBar();
+        Debug.Log($"SetLODBoxMat count:{count} renderers:{renderers.Length}");
+    }
+
+    [MenuItem("SceneTools/LOD/LODManager")]
+    public static void SelectLODManager()
+    {
+        EditorHelper.SelectObject(LODManager.Instance);
+    }
+
+
+    [MenuItem("SceneTools/LOD/ClearLODGroups")]
+    public static void ClearLODGroups()
+    {
+        GameObject[] gos = Selection.gameObjects;
+        int count1 = 0;
+        int count2 = 0;
+        for (int i = 0; i < gos.Length; i++)
+        {
+            GameObject go = gos[i];
+            LODGroup[] groups = go.GetComponentsInChildren<LODGroup>(true);
+            foreach(var group in groups)
+            {
+                count1++;
+                if (group == null) continue;
+                MeshRenderer groupRenderer = group.GetComponent<MeshRenderer>();
+                if (groupRenderer != null)
+                {
+                    var lods = group.GetLODs();
+                    for (int i1 = 1; i1 < lods.Length; i1++)
+                    {
+                        LOD lod = lods[i1];
+                        var renderers = lod.renderers;
+                        foreach(var renderer in renderers)
+                        {
+                            if (renderer == null) continue;
+                            if (renderer.gameObject==null) continue;
+                            GameObject.DestroyImmediate(renderer.gameObject);
+                        }
+                    }
+                    List<Transform> children = new List<Transform>();
+                    for (int j = 0; j < group.transform.childCount; j++)
+                    {
+                        var child = group.transform.GetChild(j);
+                        children.Add(child);
+                    }
+                    foreach(var child in children)
+                    {
+                        GameObject.DestroyImmediate(child.gameObject);
+                    }
+                }
+                else
+                {
+
+                }
+                count2++;
+                GameObject.DestroyImmediate(group);
+            }
+
+            MeshRendererInfo[] rendererInfos= go.GetComponentsInChildren<MeshRendererInfo>(true);
+            foreach(var info in rendererInfos)
+            {
+                info.rendererType = MeshRendererType.None;
+            }
+            Debug.LogError($"ClearLODGroups count1:{count1} count2:{count2}");
+        }
     }
 
     [MenuItem("SceneTools/LOD/AddLOD1(U)")]

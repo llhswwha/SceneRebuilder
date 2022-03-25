@@ -1730,6 +1730,8 @@ T minTEx = null;
         //twoList = twoList.FindAll(i => i.renderer_lod0 != null || i.renderer_lod1 != null);
         twoList.ClearTwoList();
     }
+
+    public Material LODBoxMat;
 }
 
 

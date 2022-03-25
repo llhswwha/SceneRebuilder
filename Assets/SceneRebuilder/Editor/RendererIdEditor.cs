@@ -17,6 +17,14 @@ public class RendererIdEditor : BaseEditor<RendererId>
         //    parent = targetT.GetParent();
         //}
         //parent = targetT.GetCurrentParent();
+        if (targetT.transform.parent != null)
+        {
+            if (targetT.parentId == RendererId.GetId(targetT.transform.parent))
+            {
+                parent = targetT.transform.parent.gameObject;
+            }
+        }
+        
     }
 
 

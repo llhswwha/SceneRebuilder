@@ -1182,11 +1182,13 @@ namespace GPUInstancer
             {
                 float progress = (float)i / list.Count;
                 float percents = progress * 100;
-
+#if UNITY_EDITOR
                 if (EditorUtility.DisplayCancelableProgressBar("CreatePrefabs", $"{i}/{list.Count} {percents:F1}%", progress))
                 {
                     break;
                 }
+#endif
+
                 GameObject item = list[i];
                 Debug.Log($"InitPrefabs {i+1}/{list.Count} item:{item}");
                 GPUInstancerPrefab prefab = item.GetComponent<GPUInstancerPrefab>();
@@ -1202,8 +1204,9 @@ namespace GPUInstancer
 
                 AddPrefabObject(item);
             }
-
+#if UNITY_EDITOR
             EditorUtility.ClearProgressBar();
+#endif
 
         }
 

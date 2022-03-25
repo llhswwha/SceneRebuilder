@@ -294,7 +294,7 @@ public class BuildingModelInfo : SubSceneCreater
                 bag.AddRange(allScenes);
             }
         }
-        Debug.Log($"BuildingModelInfo.GetSubScenes1 Model:{this.name} trees:{trees.Count} bag:{bag.Count} setting:{floorLoadSetting}");
+        //Debug.Log($"BuildingModelInfo.GetSubScenes1 Model:{this.name} trees:{trees.Count} bag:{bag.Count} setting:{floorLoadSetting}");
         return bag;
     }
 
@@ -335,6 +335,10 @@ public class BuildingModelInfo : SubSceneCreater
             pC++;
         }
         if (OutPart1 != null)
+        {
+            pC++;
+        }
+        if (LODPart != null)
         {
             pC++;
         }
@@ -1086,8 +1090,13 @@ public class BuildingModelInfo : SubSceneCreater
             {
                 OutPart1 = child.gameObject;
             }
-            if (child.name == "LODs" || child.name == "LOD")
+            if (child.name.EndsWith("LODs"))
             {
+                LODPart = child.gameObject;
+            }
+            if (child.name.EndsWith("LOD"))
+            {
+                child.name = child.name.Replace("LOD","LODs");
                 LODPart = child.gameObject;
             }
             children.Add(child);
@@ -2068,10 +2077,10 @@ public class BuildingModelInfo : SubSceneCreater
             });
         }
 
-        if (LODPart != null)
+        if (LODPart != null && LODPart.transform.childCount > 0)
         {
             SubScene_Ref.BeforeCreateScene(LODPart);
-            SubScene_LODs lodsScene=SubSceneHelper.CreateSubScene<SubScene_LODs>(LODPart);
+            SubScene_LODs lodsScene = SubSceneHelper.CreateSubScene<SubScene_LODs>(LODPart);
             lodsScene.contentType = SceneContentType.LODs;
         }
 

@@ -30,29 +30,28 @@ public class AreaTreeNode : SubSceneCreater
     public List<MeshRendererInfo> GetRendererInfos()
     {
         List<MeshRendererInfo> list = new List<MeshRendererInfo>();
-        if(Renderers!=null)
-            foreach(var renderer in Renderers)
-            {
-                if (renderer == null) continue;
-                MeshRendererInfo info = MeshRendererInfo.GetInfo(renderer.gameObject,false);
-                list.Add(info);
-            }
+        foreach (var renderer in Renderers)
+        {
+            if (renderer == null) continue;
+            MeshRendererInfo info = MeshRendererInfo.GetInfo(renderer.gameObject, false);
+            list.Add(info);
+        }
         return list;
     }
 
-    public int GetRendererCount()
-    {
-        int i = 0;
-        if (Renderers != null)
-            foreach (var r in Renderers)
-            {
-                if (r != null)
-                {
-                    i++;
-                }
-            }
-        return i;
-    }
+    //public int GetRendererCount()
+    //{
+    //    int i = 0;
+    //    if (Renderers != null)
+    //        foreach (var r in Renderers)
+    //        {
+    //            if (r != null)
+    //            {
+    //                i++;
+    //            }
+    //        }
+    //    return i;
+    //}
 
     public MeshRenderer[] CombinedRenderers;
     public List<string> CombinedRenderersId = new List<string>();
@@ -71,19 +70,18 @@ public class AreaTreeNode : SubSceneCreater
     [ContextMenu("SaveRenderersId")]
     public void SaveRenderersId()
     {
-        
+
         RenderersId.Clear();
 
-        if (Renderers != null)
-            foreach (var renderer in Renderers)
-            {
-                if (renderer == null) continue;
-                var id = RendererId.GetRId(renderer);
-                RenderersId.Add(id.Id);
-            }
+        foreach (var renderer in Renderers)
+        {
+            if (renderer == null) continue;
+            var id = RendererId.GetRId(renderer);
+            RenderersId.Add(id.Id);
+        }
 
         CombinedRenderersId.Clear();
-        if(CombinedRenderers!=null)
+        if (CombinedRenderers != null)
             foreach (var renderer in CombinedRenderers)
             {
                 if (renderer == null) continue;
@@ -126,6 +124,13 @@ public class AreaTreeNode : SubSceneCreater
                 if (r != null) count++;
             }
         return count;
+    }
+
+    [ContextMenu("SortRenderers")]
+    public void SortRenderers()
+    {
+        Renderers.Sort((a,b)=> { return a.name.CompareTo(b.name); });
+        RenderersId.Sort();
     }
 
     public int LoadRenderers_Renderers()
@@ -455,6 +460,7 @@ public class AreaTreeNode : SubSceneCreater
         // }
         bool flag = true;
         //int count = 0;
+        
         for (int i = 0; i < Renderers.Count; i++)
         {
             MeshRenderer render = Renderers[i];
@@ -479,7 +485,38 @@ public class AreaTreeNode : SubSceneCreater
                 if (parent != null)
                     render.transform.SetParent(parent);
                 else 
-                    render.transform.SetParent(tree.transform);
+                    render.transform.SetParent(tree.transform.parent);
+            }
+        }
+
+        if (renderersRoot != null)
+        {
+            List<Transform> children = new List<Transform>();
+            for(int i = 0; i < renderersRoot.transform.childCount; i++)
+            {
+                Transform child = renderersRoot.transform.GetChild(i);
+                children.Add(child);
+            }
+            if (children.Count > 0)
+            {
+                if (parent == null)
+                {
+                    parent = tree.transform.parent;
+                }
+                foreach(var child in children)
+                {
+                    Debug.LogWarning($"AreaTreeNode.RecoverParent Error node:{this.name} tree:{tree.name} renderersChild:{child.name} children:{children.Count}");
+                    LODGroup lodGroup = child.GetComponent<LODGroup>();
+                    if(lodGroup!=null)
+                    {
+                        var lods= parent.gameObject.FindOrCreateChild("LODs");
+                        lodGroup.transform.SetParent(lods.transform);
+                    }
+                    else
+                    {
+                        child.SetParent(parent);
+                    }
+                }
             }
         }
         return flag;
