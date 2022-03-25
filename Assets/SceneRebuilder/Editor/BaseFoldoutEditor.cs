@@ -1974,7 +1974,8 @@ public static class BaseFoldoutEditorHelper
             var subArg = FoldoutEditorArgBuffer.editorArgs[item];
             subArg.level = arg.level + 1;
             subArg.caption = $"[{i:00}] {item.name}";
-            subArg.info = $"{MeshHelper.GetVertexCountS((int)item.vertexCount)}|{item.rendererType}|{item.GetLODIds()}";
+            //subArg.info = $"{MeshHelper.GetVertexCountS((int)item.vertexCount)}|{item.rendererType}|{item.GetLODIds()}";
+            subArg.info = $"{(int)item.vertexCount}";
             EditorUIUtils.ObjectFoldout(subArg, item.gameObject, () =>
             {
                 //if (GUILayout.Button("Align", GUILayout.Width(60)))

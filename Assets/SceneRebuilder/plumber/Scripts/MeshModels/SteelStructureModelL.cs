@@ -2,7 +2,7 @@ using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 
-public class SteelStructureModelL : MonoBehaviour
+public class SteelStructureModelL : SteelStructureBaseModel
 {
     // Start is called before the first frame update
     void Start()

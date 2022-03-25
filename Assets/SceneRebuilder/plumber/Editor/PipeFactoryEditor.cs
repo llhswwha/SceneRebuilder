@@ -79,6 +79,8 @@ public class PipeFactoryEditor : BaseFoldoutEditor<PipeFactory>
         GUILayout.BeginHorizontal();
         GUILayout.Label($"Welds({targetT.PipeWelds.Count})");
         GUILayout.Label($"WeldsNew({targetT.PipeWeldsNew.Count})");
+        GUILayout.Label($"Structure({targetT.StructureModels.GetCountVertex(totalVertex)})");
+        GUILayout.Label($"Attachment({targetT.AttachmentModels.GetCountVertex(totalVertex)})");
         GUILayout.Label($"Others({targetT.PipeOthers.GetCountVertex(totalVertex)})");
         GUILayout.Label($"Box({targetT.BoxModels.GetCountVertex(totalVertex)})");
         targetT.EnableBoxModel = EditorGUILayout.Toggle(targetT.EnableBoxModel);
@@ -390,6 +392,9 @@ public class PipeFactoryEditor : BaseFoldoutEditor<PipeFactory>
         
         DrawObjectList(weldNewListArg, "Welds(New)", targetT.PipeWeldsNew, null, null, null);
         //DrawObjectList(othersListArg, "Others", targetT.PipeOthers, null, null, null);
+        
+        BaseFoldoutEditorHelper.DrawRendererInfoList("Structure", targetT.StructureModels, structureListArg);
+        BaseFoldoutEditorHelper.DrawRendererInfoList("Attachment", targetT.AttachmentModels, attachmentListArg);
         BaseFoldoutEditorHelper.DrawRendererInfoList("Others", targetT.PipeOthers, othersListArg);
         DrawObjectList(boxListArg, "Box", targetT.BoxModels, null, null, null);
         DrawObjectList(ignoreListArg, "Ignore", targetT.IgnoredObjs, null, null, null);
@@ -400,6 +405,8 @@ public class PipeFactoryEditor : BaseFoldoutEditor<PipeFactory>
     static FoldoutEditorArg pipeWeldPrefabMeshListArg = new FoldoutEditorArg(true, false);
     static FoldoutEditorArg pipeWeldPrefabListArg = new FoldoutEditorArg(true, false);
     static FoldoutEditorArg othersListArg = new FoldoutEditorArg(true, false);
+    static FoldoutEditorArg structureListArg = new FoldoutEditorArg(true, false);
+    static FoldoutEditorArg attachmentListArg = new FoldoutEditorArg(true, false);
     static FoldoutEditorArg weldListArg = new FoldoutEditorArg(true, false);
     static FoldoutEditorArg weldNewListArg = new FoldoutEditorArg(true, false);
     static FoldoutEditorArg flangeListArg = new FoldoutEditorArg(true, false);

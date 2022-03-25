@@ -721,33 +721,19 @@ public class OBBCollider : MonoBehaviour
 
     private GameObject CreateLocalPoint(Vector3 p, string n)
     {
-        GameObject go= CreateLocalPoint(p, n, this.transform, lineSize);
+        GameObject go= MeshHelper.CreateLocalPoint(p, n, this.transform, lineSize);
         //go.AddComponent<DebugInfoRoot>();
         return go;
     }
 
     private GameObject CreateLocalPoint(Vector3 p, string n, Transform pT)
     {
-        GameObject go = CreateLocalPoint(p, n, pT, lineSize);
+        GameObject go = MeshHelper.CreateLocalPoint(p, n, pT, lineSize);
         //go.AddComponent<DebugInfoRoot>();
         return go;
     }
 
-    public static GameObject CreateLocalPoint(Vector3 p, string n, Transform pT,float scale)
-    {
-        GameObject g1 = GameObject.CreatePrimitive(PrimitiveType.Sphere);
 
-        g1.transform.SetParent(pT);
-        g1.transform.localPosition = p;
-        //g1.transform.position = p;
-        g1.transform.localScale = new Vector3(scale, scale, scale);
-        g1.name = n;
-
-        //g1.transform.SetParent(this.transform);
-
-        g1.AddComponent<DebugInfoRoot>();
-        return g1;
-    }
 
     private void CreatePoint(Vector3 p, string n,Transform pT)
     {
@@ -868,6 +854,16 @@ public class OBBCollider : MonoBehaviour
 
         planeObj.transform.SetParent(planeObjRoot.transform);
 
+        for (int i1 = 0; i1 < v2p.Plane1Points.Count; i1++)
+        {
+            Vector3 p = v2p.Plane1Points[i1];
+            TransformHelper.ShowLocalPoint(p, lineSize, this.transform, planeObjRoot.transform).name = $"Plane1Points[{i1}]";
+        }
+        for (int i1 = 0; i1 < v2p.Plane2Points.Count; i1++)
+        {
+            Vector3 p = v2p.Plane2Points[i1];
+            TransformHelper.ShowLocalPoint(p, lineSize, this.transform, planeObjRoot.transform).name = $"Plane2Points[{i1}]";
+        }
     }
 
     public List<string> distances = new List<string>();

@@ -38,6 +38,10 @@ public class PipeFactory : SingletonBehaviour<PipeFactory>
 
     public MeshRendererInfoList BoxModels = new MeshRendererInfoList();
 
+    public MeshRendererInfoList StructureModels = new MeshRendererInfoList();
+
+    public MeshRendererInfoList AttachmentModels = new MeshRendererInfoList();
+
     //public int TotalBoxModelsVertexCount = 0;
 
     private void ClearList()
@@ -63,6 +67,10 @@ public class PipeFactory : SingletonBehaviour<PipeFactory>
         PipeWeldolets = new List<Transform>();
 
         BoxModels = new MeshRendererInfoList();
+
+        StructureModels = new MeshRendererInfoList();
+
+        AttachmentModels = new MeshRendererInfoList();
 
         //TotalBoxModelsVertexCount = 0;
 
@@ -843,6 +851,14 @@ public class PipeFactory : SingletonBehaviour<PipeFactory>
             {
                 AddList(PipeFlanges, list);
             }
+            else if (key.StartsWith("ATTACHMENT"))//FLANGE
+            {
+                AddList(AttachmentModels, list);
+            }
+            //else if (key == "STRUCTURE")//FLANGE
+            //{
+            //    AddList(StructureModels, list);
+            //}
             //ATTACHMENT
             //NOZZLE
             else
@@ -896,7 +912,15 @@ public class PipeFactory : SingletonBehaviour<PipeFactory>
                     }
                     else
                     {
-                        PipeOthers.AddTransform(item);
+                        if (key.StartsWith("STRUCTURE"))//FLANGE
+                        {
+                            StructureModels.AddTransform(item);
+                        }
+                        else
+                        {
+                            PipeOthers.AddTransform(item);
+                        }
+                       
                         //TotalPipeOthersVertexCount += vertexCount;
                     }
 
@@ -909,6 +933,9 @@ public class PipeFactory : SingletonBehaviour<PipeFactory>
             }
         }
 
+        StructureModels.Sort();
+        AttachmentModels.Sort();
+        PipeOthers.Sort();
         //MeshRendererInfoList list = new MeshRendererInfoList(PipeOthers);
         var mps = MeshPoints.GetMeshPoints(PipeOthers);
         MeshFilterListDict dict = new MeshFilterListDict(mps.ToArray(), 0);
