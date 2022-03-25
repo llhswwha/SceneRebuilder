@@ -185,7 +185,7 @@ public class BoxMeshModel : BaseMeshModel
         this.SetModelData(data);
     }
 
-    public void RendererModel()
+    public override void RendererModel()
     {
         if (IsGetInfoSuccess == false)
         {

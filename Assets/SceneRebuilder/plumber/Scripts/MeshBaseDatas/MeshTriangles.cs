@@ -537,6 +537,7 @@ public class MeshTriangles
             SharedMeshTriangles plane = sharedPoints1[i];
             var triangles = plane.GetAllTriangles();
             //plane.GetLines();
+            if (triangles.Count < minCount) continue;
             count++;
             ShowSharedMeshTrianglesList(root, pointScale, sharedPoints1Obj, count, plane, triangles, true);
         }
@@ -556,6 +557,7 @@ public class MeshTriangles
             SharedMeshTriangles plane = sharedPoints1[i];
             var triangles = plane.GetAllTriangles();
             //plane.GetLines();
+            if (triangles.Count < minCount) continue;
             count++;
             ShowSharedMeshTrianglesList(root, pointScale, sharedPoints1Obj, count, plane, triangles, true);
         }

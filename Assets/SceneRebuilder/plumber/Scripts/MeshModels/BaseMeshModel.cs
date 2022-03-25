@@ -4,6 +4,9 @@ using UnityEngine;
 
 public class BaseMeshModel : MonoBehaviour
 {
+    public virtual void RendererModel()
+    {
+    }
 
     public float minRepeatPointDistance = 0.00005f;
 
@@ -41,7 +44,7 @@ public class BaseMeshModel : MonoBehaviour
         //meshTriangles.ShowSharedPointsByIdEx(this.transform, PointScale, 0, int.MaxValue, minRepeatPointDistance);
         //meshTriangles.ShowSharedPointsByIdEx(this.transform, PointScale, 0,3, minRepeatPointDistance);
 
-        meshTriangles.ShowNormalPlanes(this.transform, PointScale, 0, 3, minRepeatPointDistance);
+        meshTriangles.ShowNormalPlanes(this.transform, PointScale, 2, 0, minRepeatPointDistance);
         //meshTriangles.ShowSharedPointsByPoint(this.transform, PointScale, 10);
         //meshTriangles.ShowSharedPointsByPointExEx(this.transform, PointScale, sharedMinCount, minRepeatPointDistance);
         meshTriangles.Dispose();

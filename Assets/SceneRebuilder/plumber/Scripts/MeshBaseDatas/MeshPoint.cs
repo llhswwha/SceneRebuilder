@@ -12,6 +12,8 @@ public struct MeshPoint
 
     public Vector3 Normal;
 
+    public Vector2 UV;
+
     //public MeshPoint()
     //{
 
@@ -22,6 +24,15 @@ public struct MeshPoint
         this.Point = p;
         this.Id = i;
         this.Normal = n;
+        this.UV = Vector2.zero;
+    }
+
+    public MeshPoint(Vector3 p, int i, Vector3 n, Vector2 uv)
+    {
+        this.Point = p;
+        this.Id = i;
+        this.Normal = n;
+        this.UV = uv;
     }
 
     //public override string ToString()
@@ -251,5 +262,65 @@ public class MeshPointList:List<MeshPoint>
         }
         center /= this.Count;
         return center;
+    }
+
+    public Vector3[] GetVertices()
+    {
+        Vector3[] vs = new Vector3[this.Count];
+        for (int i = 0; i < this.Count; i++)
+        {
+            vs[i] = this[i].Point;
+        }
+        return vs;
+    }
+
+    public Vector3[] GetNormals()
+    {
+        Vector3[] vs = new Vector3[this.Count];
+        for (int i = 0; i < this.Count; i++)
+        {
+            vs[i] = this[i].Normal;
+        }
+        return vs;
+    }
+
+    public Vector2[] GetUVs()
+    {
+        Vector2[] vs = new Vector2[this.Count];
+        for (int i = 0; i < this.Count; i++)
+        {
+            vs[i] = this[i].UV;
+        }
+        return vs;
+    }
+
+    //public Mesh CreateMesh()
+    //{
+    //    Mesh mesh = new Mesh();
+    //    mesh.vertices = this.GetVertices();
+    //    mesh.normals = this.GetNormals();
+    //    mesh.uv = this.GetUVs();
+    //    mesh.name = "Mesh";
+    //    return mesh;
+    //}
+
+    public Mesh CreateMesh()
+    {
+        Vector3[] vertices = new Vector3[this.Count];
+        Vector3[] normals = new Vector3[this.Count];
+        Vector2[] uv = new Vector2[this.Count];
+        for (int i = 0; i < this.Count; i++)
+        {
+            vertices[i] = this[i].Point;
+            normals[i] = this[i].Normal;
+            uv[i] = this[i].UV;
+        }
+
+        Mesh mesh = new Mesh();
+        mesh.vertices = vertices;
+        mesh.normals = normals;
+        mesh.uv = uv;
+        mesh.name = "Mesh";
+        return mesh;
     }
 }

@@ -24,28 +24,28 @@ public class PlaneInfo
 
     public Vector3 Edge2;
 
-    public PlaneInfo(Vector3S p1, Vector3S p2, Vector3S p3)
-    {
-        pointA = p1.GetVector3();
-        pointB = p2.GetVector3();
-        pointC = p3.GetVector3();
-        Size = Vector3.Distance(pointA, pointB);
-        SizeX = Vector3.Distance(pointA, pointB);
-        SizeY = Vector3.Distance(pointB, pointC);
-        if (SizeX > SizeY)
-        {
-            Size = SizeX;
-        }
-        else
-        {
-            Size = SizeY;
-        }
+    //public PlaneInfo(Vector3S p1, Vector3S p2, Vector3S p3)
+    //{
+    //    pointA = p1.GetVector3();
+    //    pointB = p2.GetVector3();
+    //    pointC = p3.GetVector3();
+    //    Size = Vector3.Distance(pointA, pointB);
+    //    SizeX = Vector3.Distance(pointA, pointB);
+    //    SizeY = Vector3.Distance(pointB, pointC);
+    //    if (SizeX > SizeY)
+    //    {
+    //        Size = SizeX;
+    //    }
+    //    else
+    //    {
+    //        Size = SizeY;
+    //    }
 
-        Edge1 = pointB - pointA;
-        Edge2 = pointC - pointB;
-        Math3D.PlaneFrom3Points(out planeNormal, out planePoint, pointA, pointB, pointC);
-        planeCenter = planePoint;
-    }
+    //    Edge1 = pointB - pointA;
+    //    Edge2 = pointC - pointB;
+    //    Math3D.PlaneFrom3Points(out planeNormal, out planePoint, pointA, pointB, pointC);
+    //    planeCenter = planePoint;
+    //}
 
     public PlaneInfo(Vector3S p1, Vector3S p2, Vector3S p3,Vector3S p4)
     {

@@ -844,7 +844,7 @@ public class SharedMeshTrianglesList : List<SharedMeshTriangles>
                 {
                     if (normalDis < 0.1f)
                     {
-                        Debug.Log($"CombineSameNormal({name})[{i1},{i}] {MeshHelper.Vector3ToString(item1.Normal)} | {MeshHelper.Vector3ToString(item2.Normal)} | {normalDis}");
+                        //Debug.Log($"CombineSameNormal({name})[{i1},{i}] {MeshHelper.Vector3ToString(item1.Normal)} | {MeshHelper.Vector3ToString(item2.Normal)} | {normalDis}");
                     }
                 }
             }
@@ -863,9 +863,9 @@ public class SharedMeshTrianglesList : List<SharedMeshTriangles>
             //Debug.Log($"CombineSameNormal count1:{count1} count2:{count2} minDis:{minDis} name:{name}");
         }
 
-        if (count2 != 6)
-        {
-            Debug.LogError($"CombineSameNormal count1:{count1} count2:{count2} minDis:{minDis} name:{name}");
-        }
+        //if (count2 != 6)
+        //{
+        //    Debug.LogError($"CombineSameNormal count1:{count1} count2:{count2} minDis:{minDis} name:{name}");
+        //}
     }
 }

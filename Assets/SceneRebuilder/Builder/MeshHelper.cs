@@ -14,6 +14,22 @@ using UnityEngine;
 
 public static class MeshHelper
 {
+    public static GameObject CreateLocalPoint(Vector3 p, string n, Transform pT, float scale)
+    {
+        GameObject g1 = GameObject.CreatePrimitive(PrimitiveType.Sphere);
+
+        g1.transform.SetParent(pT);
+        g1.transform.localPosition = p;
+        //g1.transform.position = p;
+        g1.transform.localScale = new Vector3(scale, scale, scale);
+        g1.name = n;
+
+        //g1.transform.SetParent(this.transform);
+
+        g1.AddComponent<DebugInfoRoot>();
+        return g1;
+    }
+
     public static void RemoveMeshComponents(GameObject go,bool isRemoveCollider=true)
     {
         MeshFilter mf = go.GetComponent<MeshFilter>();
@@ -113,6 +129,22 @@ public static class MeshHelper
         target.localPosition = source.localPosition;
         target.localRotation = source.localRotation;
         target.localScale = source.localScale;
+    }
+
+    public static MeshFilter CreateMeshComponents(GameObject go)
+    {
+        //GameObject go = GameObject.CreatePrimitive(PrimitiveType.Sphere);
+        //MeshHelper.CopyMeshComponents(go, this.gameObject);
+        //GameObject.DestroyImmediate(go);
+        MeshRenderer meshRenderer = go.GetComponent<MeshRenderer>();
+        if (meshRenderer == null)
+        {
+            meshRenderer = go.AddComponent<MeshRenderer>();
+            //meshRenderer.sharedMaterial = new Material(Shader.Find("Standard"));
+            meshRenderer.sharedMaterial = new Material(Shader.Find("HDRP/Lit"));
+        }
+        MeshFilter meshFilter = go.AddMissingComponent<MeshFilter>();
+        return meshFilter;
     }
 
     public static bool CopyMeshComponents(GameObject source, GameObject target)

@@ -80,7 +80,7 @@ public class PipeModelComponent : BaseMeshModel
     //}
 
 
-    public virtual void RendererModel()
+    public override void RendererModel()
     {
         MeshRenderer r = this.GetComponent<MeshRenderer>();
         if (r)
