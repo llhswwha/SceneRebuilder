@@ -29,6 +29,7 @@ public static class AreaTreeHelper
         {
             return renderId2NodeDict[rendererId];
         }
+        Debug.LogError($"AreaTreeHelper GetNodeById ==null rendererId:{rendererId} renderId2NodeDict:{renderId2NodeDict.Count} ");
         return null;
     }
 
@@ -49,7 +50,7 @@ public static class AreaTreeHelper
                 }
                 else
                 {
-                    Debug.LogError($"GetNodesByIds not found node ! id:{id}");
+                    Debug.LogError($"AreaTreeHelper GetNodesByIds not found node ! id:{id}");
                 }
             }
         }
@@ -71,7 +72,7 @@ public static class AreaTreeHelper
             }
             else
             {
-                Debug.LogError($"GetNodesByIds not found node ! id:{id}");
+                Debug.LogError($"AreaTreeHelper GetNodesByIds not found node ! id:{id}");
             }
         }
         return list;
@@ -88,7 +89,7 @@ public static class AreaTreeHelper
         render2NodeDict.Clear();
         combined2NodeDict.Clear();
         renderId2NodeDict.Clear();
-        Debug.LogWarning($"ClearDict render2NodeDict:{AreaTreeHelper.render2NodeDict.Count}");
+        Debug.LogWarning($"AreaTreeHelper ClearDict render2NodeDict:{AreaTreeHelper.render2NodeDict.Count}");
     }
 
     public static void RegisterRenderer(MeshRenderer render, AreaTreeNode newNode)
@@ -108,7 +109,7 @@ public static class AreaTreeHelper
             }
             else
             {
-                Debug.LogError($"RegisterRenderer 模型重复在不同的Node里 render:{render.name},node1:{render2NodeDict[render].name},node2:{newNode.name}");
+                Debug.LogError($"AreaTreeHelper RegisterRenderer 模型重复在不同的Node里 render:{render.name},node1:{render2NodeDict[render].name},node2:{newNode.name}");
                 render2NodeDict[render] = newNode;
             }
         }
@@ -120,6 +121,7 @@ public static class AreaTreeHelper
 
     public static bool RegisterRendererId(string rendererId,int id, AreaTreeNode newNode)
     {
+        //Debug.LogError($"AreaTreeHelper RegisterRendererId rendererId:{rendererId} id:{id} node:{newNode} tree:{newNode.tree} path:{TransformHelper.GetPath(newNode.transform)} dict:{renderId2NodeDict.Count}");
         if (rendererId == null) return false;
         if (renderId2NodeDict.ContainsKey(rendererId))
         {
@@ -135,7 +137,7 @@ public static class AreaTreeHelper
             }
             else
             {
-                Debug.LogError($"RegisterRendererId 模型重复在不同的Node里 tree:{newNode.tree.name} renderId:{rendererId},index:{id} node1:{renderId2NodeDict[rendererId].name},node2:{newNode.name}");
+                Debug.LogError($"AreaTreeHelper RegisterRendererId 模型重复在不同的Node里 tree:{newNode.tree.name} renderId:{rendererId},index:{id} node1:{renderId2NodeDict[rendererId].name},node2:{newNode.name}");
                 renderId2NodeDict[rendererId] = newNode;
                 return false;
             }
@@ -234,7 +236,7 @@ public static class AreaTreeHelper
 
         if (prefab == null)
         {
-            Debug.LogError($"CreateBoundsCube prefab == null bounds:{bounds} name:{n} parent:{parent} prefabId:{prefabId} CubePrefabs:{CubePrefabs.Count}");
+            Debug.LogError($"AreaTreeHelper CreateBoundsCube prefab == null bounds:{bounds} name:{n} parent:{parent} prefabId:{prefabId} CubePrefabs:{CubePrefabs.Count}");
             return null;
         }
         
@@ -243,7 +245,7 @@ public static class AreaTreeHelper
 
         if (cube == null)
         {
-            Debug.LogError($"CreateBoundsCube cube == null bounds:{bounds} name:{n} parent:{parent} prefabId:{prefabId} CubePrefabs:{CubePrefabs.Count}");
+            Debug.LogError($"AreaTreeHelper CreateBoundsCube cube == null bounds:{bounds} name:{n} parent:{parent} prefabId:{prefabId} CubePrefabs:{CubePrefabs.Count}");
             return null;
         }
 

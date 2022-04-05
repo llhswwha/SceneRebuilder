@@ -61,6 +61,8 @@ public class MeshSelection : MonoBehaviour
         }
     }
 
+    public static AreaTreeNode LastSelectNode = null;
+
     public static void SelectObjectByRId(string id,Action<GameObject> callback)
     {
         //Debug.Log($"SelectObjectByRId rId:{rId}");
@@ -78,9 +80,27 @@ public class MeshSelection : MonoBehaviour
         if (rId == null)
         {
             var node = AreaTreeHelper.GetNodeById(id);
+
+            if(node!=null && LastSelectNode == node)
+            {
+                Debug.LogError($"MeshSelection LastSelectNode== node id:{id} node:{node} path{TransformHelper.GetPath(node.transform)}");
+                return;
+            }
+
+            if (LastSelectNode != null)
+            {
+                SubSceneShowManager.Instance.AddScenes(node.GetScenes());
+            }
+
+            LastSelectNode = node;
+
+            if (LastSelectNode != null)
+            {
+                SubSceneShowManager.Instance.RemoveScenes(node.GetScenes());
+            }
             if (node != null)
             {
-                Debug.Log($"SelectObjectByRId id:{id} node:{node}");
+                Debug.Log($"SelectObjectByRId id:{id} node:{node} path:{TransformHelper.GetPath(node.transform)}");
                 node.LoadAndSwitchToRenderers(b =>
                 {
                     GameObject go = IdDictionary.GetGo(id);

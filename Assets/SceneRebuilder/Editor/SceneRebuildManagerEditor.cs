@@ -62,6 +62,17 @@ public class SceneRebuildManagerEditor : BaseFoldoutEditor<SceneRebuildManager>
     private void DrawManagerToolbar(SceneRebuildManager item)
     {
         EditorGUILayout.BeginHorizontal();
+        NewButton("LoadScenes", true, () =>
+        {
+            BuildingModelManager.Instance.OneKeyLoadScene(GameObject.FindObjectsOfType<BuildingModelInfo>(true));
+        });
+        NewButton("SaveScenes", true, () =>
+        {
+            BuildingModelManager.Instance.OneKeySaveScene(GameObject.FindObjectsOfType<BuildingModelInfo>(true));
+        });
+        EditorGUILayout.EndHorizontal();
+
+        EditorGUILayout.BeginHorizontal();
         NewButton("1.InitModels", buttonWidth, true, item.InitBuildings);
         // NewButton("ListWindow:" + count, buttonWidth, true, () =>
         //      {

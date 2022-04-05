@@ -23,22 +23,22 @@ public static class SubSceneHelper
 
     public static void SetBuildings()
     {
-        SetBuildings<SubScene_Base>(true);
+        SetBuildings(true);
     }
 
-    public static void SetBuildings<T>(bool includeInactive) where T : SubScene_Base
+    public static void SetBuildings(bool includeInactive)
     {
-        var subScenes = GameObject.FindObjectsOfType<SubScene_Base>(includeInactive);
+        var subScenes = GameObject.FindObjectsOfType<SubSceneArgComponent>(includeInactive);
         SubSceneHelper.SetBuildings(subScenes);
     }
 
-    public static void SetBuildingsWithNavmesh<T>(bool includeInactive) where T : SubScene_Base
+    public static void SetBuildingsWithNavmesh(bool includeInactive)
     {
-        var subScenes = GameObject.FindObjectsOfType<SubScene_Base>(includeInactive);
+        var subScenes = GameObject.FindObjectsOfType<SubSceneArgComponent>(includeInactive);
         SubSceneHelper.SetBuildingWithNavmeshScene(subScenes);
     }
 
-    public static void SetBuildings<T>(T[] scenes) where T : SubScene_Base
+    public static void SetBuildings<T>(T[] scenes) where T : SubSceneArgComponent
     {
         Debug.Log($"SetBuildings scenes:{scenes.Length}");
 
@@ -79,7 +79,7 @@ public static class SubSceneHelper
         Debug.Log($"SetBuildings totalScenes:{scenes.Length} sceneCount:{sceneId-1}");
     }
 
-    public static void SetBuildingWithNavmeshScene<T>(T[] scenes) where T : SubScene_Base
+    public static void SetBuildingWithNavmeshScene<T>(T[] scenes) where T : SubSceneArgComponent
     {
         //string navmeshPath = string.Format("{0}{1}", Application.dataPath, @"\Scenes\MinHang\MHNavmesh.unity");
         string navmeshPath = @"Assets\Scenes\MinHang\MHNavmesh.unity";
@@ -281,7 +281,7 @@ public static class SubSceneHelper
         }
         else
         {
-            path = SubSceneManager.Instance.GetScenePath($"{go.name}[{go.GetInstanceID()}]", contentType, dir);
+            path = SubSceneManager.Instance.GetScenePath($"{go.name}[{RendererId.GetInsId(go)}]", contentType, dir);
         }
         T scene= EditorCreateScene<T>(go, path, SubSceneManager.Instance.IsOverride, isSave, false);
         scene.contentType = contentType;
@@ -348,7 +348,7 @@ public static class SubSceneHelper
         ProgressBarHelper.ClearProgressBar();
     }
 
-    public static T CreateSubScene<T>(GameObject obj) where T : SubScene_Base
+    public static T CreateSubScene<T>(GameObject obj, GameObject dirGo = null, SceneContentType contentType = SceneContentType.Single) where T : SubScene_Base
     {
         if (obj == null) return null;
         T subScene = obj.GetComponent<T>();
@@ -357,7 +357,7 @@ public static class SubSceneHelper
             subScene = obj.AddComponent<T>();
             subScene.IsLoaded = true;
         }
-        subScene.EditorCreateScene(true);
+        subScene.EditorCreateScene(true, dirGo, contentType);
         return subScene;
     }
 

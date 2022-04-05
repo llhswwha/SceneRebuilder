@@ -281,7 +281,7 @@ public class AreaTreeNodeShowManager : MonoBehaviour
     [ContextMenu("GetLeafNodes")]
     public void GetLeafNodes()
     {
-        Debug.LogError($"GetLeafNodes  HiddenLeafNodes:{HiddenLeafNodes.Count} ShownLeafNodes:{ShownLeafNodes.Count} Id2NodeDict:{Id2NodeDict.Count}");
+        Debug.Log($"AreaTreeNodeShowManager.GetLeafNodes   HiddenLeafNodes:{HiddenLeafNodes.Count} ShownLeafNodes:{ShownLeafNodes.Count} Id2NodeDict:{Id2NodeDict.Count}");
 
         HiddenLeafNodes.Clear();
 

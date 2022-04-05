@@ -1,3 +1,4 @@
+using CodeStage.AdvancedFPSCounter.Editor.UI;
 using System.Collections;
 using System.Collections.Generic;
 using System.Linq;
@@ -53,7 +54,7 @@ public class RendererIdEditor : BaseEditor<RendererId>
             {
                 EditorHelper.SelectObject(p.parent);
             }
-            
+
         }
         EditorGUILayout.EndHorizontal();
 
@@ -80,6 +81,16 @@ public class RendererIdEditor : BaseEditor<RendererId>
         }
         EditorGUILayout.EndHorizontal();
 
+        EditorUIUtils.ToggleFoldout(drawToolButtonsArg, () =>
+        {
+            DrawToolButtons(item);
+        });
+    }
+
+    private static FoldoutEditorArg drawToolButtonsArg = new FoldoutEditorArg("Tool Buttons", true, false, false, false, true);
+
+    private static void DrawToolButtons(RendererId item)
+    {
         EditorGUILayout.BeginHorizontal();
         if (GUILayout.Button("ResetT"))
         {
@@ -93,7 +104,7 @@ public class RendererIdEditor : BaseEditor<RendererId>
         {
             MeshHelper.CenterPivot(item.gameObject);
         }
-        if(GUILayout.Button("ZeroParent"))
+        if (GUILayout.Button("ZeroParent"))
         {
             MeshHelper.ZeroParent(item.gameObject);
         }
@@ -111,7 +122,7 @@ public class RendererIdEditor : BaseEditor<RendererId>
         if (GUILayout.Button("UpParent"))
         {
             EditorHelper.UnpackPrefab(item.gameObject);
-            if(item.gameObject.transform.parent!=null)
+            if (item.gameObject.transform.parent != null)
                 item.gameObject.transform.SetParent(item.gameObject.transform.parent.parent);
             EditorHelper.SelectObject(item.gameObject);
         }
@@ -147,11 +158,11 @@ public class RendererIdEditor : BaseEditor<RendererId>
         {
             item.ClearIds();
         }
-         if (GUILayout.Button("ClearUps"))
+        if (GUILayout.Button("ClearUps"))
         {
             //item.ClearIds();
-             var ids = item.gameObject.GetComponentsInChildren<RendererUpdateInfo>(true);
-            foreach(var id in ids)
+            var ids = item.gameObject.GetComponentsInChildren<RendererUpdateInfo>(true);
+            foreach (var id in ids)
             {
                 GameObject.DestroyImmediate(id);
             }
@@ -186,7 +197,7 @@ public class RendererIdEditor : BaseEditor<RendererId>
         EditorGUILayout.BeginHorizontal();
         if (GUILayout.Button("IsGroup"))
         {
-            bool result = MeshHelper.IsEmptyGroup(item.transform,true);
+            bool result = MeshHelper.IsEmptyGroup(item.transform, true);
             Debug.Log($"IsEmptyGroup {result}");
         }
         if (GUILayout.Button("IsSameName"))
@@ -196,7 +207,7 @@ public class RendererIdEditor : BaseEditor<RendererId>
         }
         if (GUILayout.Button("IsEmpty"))
         {
-            bool result = MeshHelper.IsEmptyObject(item.transform,true);
+            bool result = MeshHelper.IsEmptyObject(item.transform, true);
             Debug.Log($"IsEmpty {result}");
         }
         if (GUILayout.Button("IsEmptyChild"))
@@ -264,7 +275,7 @@ public class RendererIdEditor : BaseEditor<RendererId>
         if (GUILayout.Button("Combine"))
         {
             //MeshCombineHelper.CombineEx(new MeshCombineArg(item.gameObject), MeshCombineMode.OneMesh);
-            MeshCombiner.Instance.CombineToOne(item.gameObject,true,true);
+            MeshCombiner.Instance.CombineToOne(item.gameObject, true, true);
         }
         if (GUILayout.Button("PivotPart1"))
         {
@@ -336,7 +347,7 @@ public class RendererIdEditor : BaseEditor<RendererId>
         }
         if (GUILayout.Button("RemovePipe"))
         {
-            DestroyObject(item.gameObject, new List<string>() { "HH_","CC_","JQ_","JG_","SG_"});
+            DestroyObject(item.gameObject, new List<string>() { "HH_", "CC_", "JQ_", "JG_", "SG_" });
         }
         if (GUILayout.Button("UpdateCollider"))
         {
@@ -347,7 +358,7 @@ public class RendererIdEditor : BaseEditor<RendererId>
             }
             ColliderHelper.CreateBoxCollider(item.gameObject, false);
         }
-        
+
 
         EditorGUILayout.EndHorizontal();
 
@@ -402,7 +413,7 @@ public class RendererIdEditor : BaseEditor<RendererId>
             goDwf.transform.rotation = Quaternion.Euler(-90, 0, -90);
             MeshAlignmentManager.Instance.DoAlign(goDwf, item.gameObject);
 
-            
+
         }
         if (GUILayout.Button("FindGeometry"))
         {
@@ -434,10 +445,6 @@ public class RendererIdEditor : BaseEditor<RendererId>
         }
         EditorGUILayout.EndHorizontal();
     }
-
-
-
-
 
     private static void FindGeometriesAndReplace(GameObject fbxObj, bool isReplace)
     {

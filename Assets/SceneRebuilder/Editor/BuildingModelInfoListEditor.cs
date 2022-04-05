@@ -23,6 +23,17 @@ public class BuildingModelInfoListEditor : BaseFoldoutEditor<BuildingModelInfoLi
         base.OnToolLayout(item);
 
         EditorGUILayout.BeginHorizontal();
+        NewButton("LoadScenes", true, () =>
+        {
+            BuildingModelManager.Instance.OneKeyLoadScene(item.Buildings);
+        });
+        NewButton("SaveScenes", true, () =>
+        {
+            BuildingModelManager.Instance.OneKeySaveScene(item.Buildings);
+        });
+        EditorGUILayout.EndHorizontal();
+
+        EditorGUILayout.BeginHorizontal();
         NewButton("1.InitModels", buttonWidth, true, ()=>
         {
             BuildingModelManager.Instance.InitBuildings(item.Buildings.ToList());
@@ -39,7 +50,7 @@ public class BuildingModelInfoListEditor : BaseFoldoutEditor<BuildingModelInfoLi
         EditorGUILayout.EndHorizontal();
 
         EditorGUILayout.BeginHorizontal();
-        NewButton("3.CreateTrees", buttonWidth, true, ()=>
+        NewButton("2.CreateTrees", buttonWidth, true, ()=>
         {
             BuildingModelManager.Instance.CombineBuildings(item.Buildings.ToList());
         });
@@ -74,6 +85,23 @@ public class BuildingModelInfoListEditor : BaseFoldoutEditor<BuildingModelInfoLi
         {
             //BuildingModelManager.Instance.LoadPrefabs(item.Buildings);
             BuildingModelInfoList.LoadPrefabs(item.Buildings);
+        });
+       
+        EditorGUILayout.EndHorizontal();
+
+        EditorGUILayout.BeginHorizontal();
+        NewButton("DeleteScenes", buttonWidth, true, () =>
+        {
+            //BuildingModelManager.Instance.LoadPrefabs(item.Buildings);
+            SubSceneManager.Instance.EditorDeleteOtherRepleatScenes(item.Buildings);
+        });
+        NewButton("LoadLODs", buttonWidth, true, () =>
+        {
+            SubSceneManager.Instance.EditorLoadLODs(item.Buildings);
+        });
+        NewButton("CreateLODs", buttonWidth, true, () =>
+        {
+            SubSceneManager.Instance.EditorCreateLODs(item.Buildings);
         });
         EditorGUILayout.EndHorizontal();
 

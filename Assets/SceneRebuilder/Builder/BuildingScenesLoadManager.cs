@@ -7,59 +7,77 @@ using System.Linq;
 using System.Xml.Serialization;
 using UnityEngine;
 
-public class BuildingScenesLoadManager : SingletonBehaviour<BuildingScenesLoadManager>
+public class BuildingScenesLoadManager : MonoBehaviour
 {
+    private static BuildingScenesLoadManager _instance;
+
+    public static BuildingScenesLoadManager Instance
+    {
+        get
+        {
+            if (_instance == null)
+            {
+                _instance = GameObject.FindObjectOfType<BuildingScenesLoadManager>();
+            }
+            //if (_instance == null)
+            //{
+            //    GameObject insGo = new GameObject(typeof(T).Name);
+            //    _instance = insGo.AddComponent<T>();
+            //}
+            return _instance;
+        }
+    }
+
     //public bool IsLoadXmlOnStart = true;
     public bool IsLoadSceneOnStart = true;
     public bool IsLoadUserBuildings = false;
     public List<string> UserBulindgs = new List<string>();
-    public bool IsLoadByDistance = true;
+    //public bool IsLoadByDistance = true;
 
     private void LoadSettingXmlEx()
     {
         LoadSettingXml();
 
-        IsLoadByDistance = Setting.IsLoadByDistance;
+        //IsLoadByDistance = Setting.IsLoadByDistance;
         IsLoadSceneOnStart = Setting.IsLoadSceneOnStart;
         IsLoadUserBuildings = Setting.IsLoadUserBuildings;
         UserBulindgs = Setting.UserBulindgs;
         SubSceneShowManager.Instance.IsEnableUnload = Setting.IsEnableUnload;
     }
 
-    // Start is called before the first frame update
     void Start()
     {
         LoadSettingXmlEx();
 
-#if UNITY_EDITOR
-        if (IsLoadUserBuildings)
+        if (IsLoadSceneOnStart)
         {
-            UserBulindgs.RemoveAll(i => string.IsNullOrEmpty(i));
-            if (UserBulindgs.Count>0)
+            if (IsLoadUserBuildings)
             {
-                LoadUserBuildings();
-            }
-            else
-            {
-                if (IsLoadSceneOnStart)
+                UserBulindgs.RemoveAll(i => string.IsNullOrEmpty(i));
+                if (UserBulindgs.Count > 0)
                 {
-                    LoadScenesBySetting();
+                    LoadUserBuildings();
+                }
+                else
+                {
+                    //RemoveAllBuildings
                 }
             }
-        }
-        else
-#endif
-        {
-            if (IsLoadSceneOnStart)
+            else
             {
                 LoadScenesBySetting();
             }
         }
+        else
+        {
+
+        }
+        
 
         SubSceneShowManager.Instance.IsUpdateTreeNodeByDistance = false;
         AreaTreeNodeShowManager.Instance.IsUpdateTreeNodeByDistance = false;
 
-        SubSceneShowManager.Instance.SetEnable(IsLoadByDistance);
+        //SubSceneShowManager.Instance.SetEnable(IsLoadByDistance);
     }
 
     public string TestTargetName = "";
@@ -69,7 +87,23 @@ public class BuildingScenesLoadManager : SingletonBehaviour<BuildingScenesLoadMa
 
     }
 
+    [ContextMenu("InitUserBuildings")]
+    public void InitUserBuildings()
+    {
+        Setting.UserBulindgs.Clear();
+        var bs = GameObject.FindObjectsOfType<BuildingController>();
+        
+        foreach(var b in bs)
+        {
+            Setting.UserBulindgs.Add(b.name);
+        }
+    }
 
+    [ContextMenu("ClearUserBuildings")]
+    public void ClearUserBuildings()
+    {
+        Setting.UserBulindgs.Clear();
+    }
 
     [ContextMenu("TestLoadBuildings")]
     public void LoadUserBuildings()
@@ -118,57 +152,25 @@ public class BuildingScenesLoadManager : SingletonBehaviour<BuildingScenesLoadMa
         }
         Debug.LogError($"LoadBuildingScenes disableBuildings:{s1}\n enableBuildings:{s2}");
 
+        List<BuildingController> staticBuilidings = new List<BuildingController>();
+
         foreach (var b in disableBuildings)
         {
-            if (b.IsStatic)
+            var bs=Setting.GetBuilding(b);
+            if (bs == null)
             {
-                enableBuildings.Add(b);
+                Debug.LogError($"LoadBuildingScenes GetBuilding == null :{b.name}");
+                continue;
+            }
+            if (bs.IsStatic)
+            {
+                staticBuilidings.Add(b);
                 continue;
             }
             GameObject.DestroyImmediate(b.gameObject);
         }
 
-        SubSceneBagList allScenes = new SubSceneBagList();
-
-
-        //if (IsLoadByDistance)
-        //{
-        //    foreach (var b in enableBuildings)
-        //    {
-        //        BuildingModelInfo[] models = b.GetComponentsInChildren<BuildingModelInfo>(true);
-        //        foreach (var model in models)
-        //        {
-        //            allScenes.Add(model.GetSubScenes_Out0B());
-        //        }
-        //    }
-        //}
-        //else
-        //{
-        //    foreach (var b in enableBuildings)
-        //    {
-        //        BuildingModelInfo[] models = b.GetComponentsInChildren<BuildingModelInfo>(true);
-        //        foreach (var model in models)
-        //        {
-        //            allScenes.Add(model.GetSubScenes_Out0B());
-        //        }
-        //        foreach (var model in models)
-        //        {
-        //            allScenes.Add(model.GetSubScenes_Out0S());
-        //        }
-        //        foreach (var model in models)
-        //        {
-        //            allScenes.Add(model.GetSubScenes_Out1());
-        //        }
-        //        foreach (var model in models)
-        //        {
-        //            allScenes.Add(model.GetSubScenes_In());
-        //        }
-        //        foreach (var model in models)
-        //        {
-        //            allScenes.Add(model.GetSubScenes_LOD());
-        //        }
-        //    }
-        //}
+        
 
         if (Setting.Enabled == false)
         {
@@ -177,59 +179,91 @@ public class BuildingScenesLoadManager : SingletonBehaviour<BuildingScenesLoadMa
             {
                 GameObject.DestroyImmediate(b.gameObject);
             }
-        }
-        else
-        {
-            for (int i = 0; i < enableBuildings.Count; i++)
+            foreach (var b in staticBuilidings)
             {
-                BuildingController b = enableBuildings[i];
-                if (b == null) continue;
-                if (IsShowLog)
-                    Debug.LogError($"LoadBuildingScenes building[{i + 1}]:{b}");
-                BuildingSceneLoadItemCollection bulldingSetting = Setting.GetBuilding(b.NodeName);
-                if(bulldingSetting==null|| bulldingSetting.IsEnable == false)
-                {
-                    GameObject.DestroyImmediate(b.gameObject);
-                }
-                else
-                {
-                    BuildingModelInfo[] models = b.GetComponentsInChildren<BuildingModelInfo>(true);
-                    for (int i1 = 0; i1 < models.Length; i1++)
-                    {
-                        BuildingModelInfo model = models[i1];
-                        if (model == null) continue;
-                        if (IsShowLog)
-                            Debug.LogError($"LoadBuildingScenes building[{i + 1}]:{b} floor[{i1 + 1}]:{model}");
-                        //allScenes.Add(model.GetSubScenes_Out0B());
-                        BuildingSceneLoadItem floorSetting = bulldingSetting.GetChild(model.name);
-                        if(floorSetting==null|| floorSetting.IsEnable==false)
-                        {
-                            GameObject.DestroyImmediate(model.gameObject);
-                        }
-                        else
-                        {
-                            SubSceneBag subScenes = model.GetSubScenes(floorSetting);
-                            allScenes.Add(subScenes);
-                        }
-                        
-                    }
-                }
+                GameObject.DestroyImmediate(b.gameObject);
             }
-        }
 
-        var ss = allScenes.GetAllScenesArray();
-        Debug.Log($"LoadScenesBySetting buildings:{disableBuildings.Count()} enableBuildings:{enableBuildings.Count()} bags:{allScenes.Count} scenes:{ss.Length}");
-        if (IsEnableLoad)
-        {
-            SubSceneManager.Instance.LoadScenesEx(ss, finishedCallbak);
-        }
-        else
-        {
             if (finishedCallbak != null)
             {
                 finishedCallbak(new SceneLoadProgress(null, 1, true));
             }
         }
+        else
+        {
+            SubSceneBagList allScenes1 = GetBuildingScenes(staticBuilidings);
+            SubSceneBag sceneList1 = allScenes1.GetAllScenes();
+            sceneList1.Sort((a, b) => b.GetBoundsVolume().CompareTo(a.GetBoundsVolume()));
+            SubSceneBagList allScenes2 = GetBuildingScenes(enableBuildings);
+            SubSceneBag sceneList2 = allScenes2.GetAllScenes();
+            sceneList2.Sort((a, b) => b.GetBoundsVolume().CompareTo(a.GetBoundsVolume()));
+
+            sceneList1.AddRange(sceneList2);
+
+            var ss = sceneList2.ToArray();
+
+            SubSceneShowManager.Instance.RemoveScenes(ss);
+            Debug.Log($"LoadScenesBySetting buildings:{disableBuildings.Count()} enableBuildings:{enableBuildings.Count()} bags1:{allScenes1.Count} bags2:{allScenes2.Count} scenes:{ss.Length}");
+            if (IsEnableLoad)
+            {
+                SubSceneManager.Instance.LoadScenesEx(ss, finishedCallbak);
+            }
+            else
+            {
+                if (finishedCallbak != null)
+                {
+                    finishedCallbak(new SceneLoadProgress(null, 1, true));
+                }
+            }
+        }
+
+
+    }
+
+    private SubSceneBagList GetBuildingScenes(List<BuildingController> enableBuildings)
+    {
+        SubSceneBagList allScenes = new SubSceneBagList();
+
+        for (int i = 0; i < enableBuildings.Count; i++)
+        {
+            BuildingController b = enableBuildings[i];
+            if (b == null) continue;
+            if (string.IsNullOrEmpty(b.NodeName))
+            {
+                b.NodeName = b.name;
+            }
+            if (IsShowLog)
+                Debug.LogError($"LoadBuildingScenes building[{i + 1}]:{b}");
+            BuildingSceneLoadItemCollection bulldingSetting = Setting.GetBuilding(b.NodeName);
+            if (bulldingSetting == null || bulldingSetting.IsEnable == false)
+            {
+                GameObject.DestroyImmediate(b.gameObject);
+            }
+            else
+            {
+                BuildingModelInfo[] models = b.GetComponentsInChildren<BuildingModelInfo>(true);
+                for (int i1 = 0; i1 < models.Length; i1++)
+                {
+                    BuildingModelInfo model = models[i1];
+                    if (model == null) continue;
+                    if (IsShowLog)
+                        Debug.LogError($"LoadBuildingScenes building[{i + 1}]:{b} floor[{i1 + 1}]:{model}");
+                    //allScenes.Add(model.GetSubScenes_Out0B());
+                    BuildingSceneLoadItem floorSetting = bulldingSetting.GetChild(model.name);
+                    if (floorSetting == null || floorSetting.IsEnable == false)
+                    {
+                        GameObject.DestroyImmediate(model.gameObject);
+                    }
+                    else
+                    {
+                        SubSceneBag subScenes = model.GetSubScenes(floorSetting);
+                        allScenes.Add(subScenes);
+                    }
+
+                }
+            }
+        }
+        return allScenes;
     }
 
     public bool IsEnableLoad = true;
@@ -241,14 +275,6 @@ public class BuildingScenesLoadManager : SingletonBehaviour<BuildingScenesLoadMa
 
     public void LoadUserBuildings(IEnumerable<BuildingController> depNodes, Action<SceneLoadProgress> finishedCallbak)
     {
-        //主程序入口
-        //1.不对接区域权限，加载配置的UserBuildings中的建筑列表
-        //2.对接区域权限，加载程序运行中获取的建筑列表
-        //加载建筑时，
-        //1.默认只加载Out0_Big。
-        //2.LODs默认不加载，需要加载的手动设置。
-        //3.不在列表中的建筑，默认都删除掉，但是有些作为背景或者通用的则默认要加载。BuildingController.IsStatic
-
         Debug.LogError($"LoadUserBuildings IsLoadUserBuildings:{IsLoadUserBuildings} UserBulindgs:{UserBulindgs.Count} depNodes:{depNodes.Count()}");
 
         if (IsLoadUserBuildings)
@@ -470,7 +496,7 @@ public class BuildingScenesLoadManager : SingletonBehaviour<BuildingScenesLoadMa
         }
 
         var ss = allScenes.GetAllScenesArray();
-
+        SubSceneShowManager.Instance.RemoveScenes(ss);
         Debug.Log($"LoadScenesBySetting1 depDict:{depDict.Count} bags:{allScenes.Count} scenes:{ss.Length}");
 
         if (IsLoadScene)
@@ -499,8 +525,6 @@ public class BuildingScenesLoadManager : SingletonBehaviour<BuildingScenesLoadMa
         {
             depDict.Add(bc.NodeName, bc);
         }
-
-
     }
 
     public GameObject ModelTarget;
@@ -679,12 +703,12 @@ public class BuildingSceneLoadSetting
     [XmlAttribute]
     public bool IsLoadUserBuildings = false;
 
-    public List<string> UserBulindgs = new List<string>();//IsLoadUserBuildings==true时，不对接数据库，从配置的列表中加载。
+    public List<string> UserBulindgs = new List<string>();//IsLoadUserBuildings==true时锟斤拷锟斤拷锟皆斤拷锟斤拷锟捷库，锟斤拷锟斤拷锟矫碉拷锟叫憋拷锟叫硷拷锟截★拷
 
+    //[XmlAttribute]
+    //public bool IsLoadByDistance = true;
     [XmlAttribute]
-    public bool IsLoadByDistance = true;
-    [XmlAttribute]
-    public bool IsLoadSceneOnStart = true;
+    public bool IsLoadSceneOnStart = false;
     [XmlAttribute]
     public bool Enabled = true;
     [XmlAttribute]
@@ -741,6 +765,25 @@ public class BuildingSceneLoadSetting
         }
     }
 
+    internal BuildingSceneLoadItemCollection GetBuilding(BuildingController bc)
+    {
+        foreach (var item in Items)
+        {
+            if (item.Name == bc.NodeName )
+            {
+                return item;
+            }
+        }
+        foreach (var item in Items)
+        {
+            if (item.Name == bc.name)
+            {
+                return item;
+            }
+        }
+        return null;
+    }
+
     internal BuildingSceneLoadItemCollection GetBuilding(string name)
     {
         foreach(var item in Items)
@@ -762,6 +805,9 @@ public class BuildingSceneLoadItemCollection
     public string Name;
     [XmlAttribute]
     public bool IsEnable = true;
+    [XmlAttribute]
+    public bool IsStatic = false;
+
 
     [XmlElement("BuildingSceneLoadItem")]
     public List<BuildingSceneLoadItem> Children = new List<BuildingSceneLoadItem>();
@@ -903,6 +949,6 @@ public class BuildingSceneLoadItem
     public override string ToString()
     {
         //return $"[Name:{Name} InCombined:{InCombined} Out0Combined:{Out0Combined} Out1Combined:{Out1Combined} InRenderers:{InRenderers} Out0Renderers:{Out0Renderers} Out1Renderers:{Out1Renderers}]";
-        return $"[Name:{Name} In:{InRenderers} Out0B:{Out0RenderersB} Out0S:{Out0RenderersS} Out1:{Out1Renderers}] ";
+        return $"[Name:{Name} In:{InRenderers} Out0B:{Out0RenderersB} Out0S:{Out0RenderersS} Out1:{Out1Renderers} LODs:{LODs} ] ";
     }
 }

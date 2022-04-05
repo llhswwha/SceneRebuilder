@@ -39,7 +39,7 @@ public class RendererManager : SingletonBehaviour<RendererManager>
     [ContextMenu("TestGetRenderer")]
     public void TestGetRenderer()
     {
-        TestRenderer = IdDictionary.GetRenderer(TestId);
+        TestRenderer = IdDictionary.GetRenderer(TestId,true);
         Debug.Log($"TestGetRenderer id:{TestId},renderer:{TestRenderer}");
     }
 

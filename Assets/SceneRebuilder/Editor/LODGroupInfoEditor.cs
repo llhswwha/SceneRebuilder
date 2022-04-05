@@ -12,6 +12,7 @@ public class LODGroupInfoEditor : BaseFoldoutEditor<LODGroupInfo>
     public override void OnEnable()
     {
         base.OnEnable();
+
         targetT.GetLODs();
         targetT.CheckLOD0Scenes();
 
@@ -64,6 +65,10 @@ public class LODGroupInfoEditor : BaseFoldoutEditor<LODGroupInfo>
         {
             //item.GetLODs();
             LODHelper.UniformLOD0(item.LODGroup);
+        }
+        if (GUILayout.Button("SetInfo"))
+        {
+            item.SetRenderersLODInfo();
         }
         //if (GUILayout.Button("LOD1->LOD0"))
         //{

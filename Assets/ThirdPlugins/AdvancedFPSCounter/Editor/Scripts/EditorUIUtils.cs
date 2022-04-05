@@ -78,6 +78,16 @@ namespace CodeStage.AdvancedFPSCounter.Editor.UI
             this.isToggle = isToggle;
         }
 
+        public FoldoutEditorArg(string caption,bool isEnabled, bool isExpanded, bool isToggle, bool separator, bool background)
+        {
+            this.caption = caption;
+            this.isEnabled = isEnabled;
+            this.isExpanded = isExpanded;
+            this.isToggle = isToggle;
+            this.separator = separator;
+            this.background = background;
+        }
+
         public FoldoutEditorArg(bool isEnabled, bool isExpanded, bool isToggle,bool separator,bool background)
         {
             this.isEnabled = isEnabled;
@@ -451,6 +461,19 @@ namespace CodeStage.AdvancedFPSCounter.Editor.UI
 
 			return toggle.boolValue;
 		}
+
+        public static bool ToggleFoldout(FoldoutEditorArg arg, System.Action uiContent)
+        {
+            EditorUIUtils.ToggleFoldout(arg, null, null);
+            if (arg.isExpanded && arg.isEnabled)
+            {
+                if (uiContent != null)
+                {
+                    uiContent();
+                }
+            }
+            return arg.isExpanded;
+        }
 
 		public static bool ToggleFoldout(FoldoutEditorArg arg, System.Action<FoldoutEditorArg> toggleEvent,System.Action toolbarEvent)
 		{

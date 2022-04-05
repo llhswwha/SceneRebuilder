@@ -845,7 +845,7 @@ public class MeshRendererInfo : MonoBehaviour,IComparable<MeshRendererInfo>
         return r;
     }
 
-    public bool IsLodNs(int[] lvs)
+    public bool IsLodNs(params int[] lvs)
     {
         this.GetRenderers();
         //if (IsRendererType(MeshRendererType.CombinedPart))

@@ -19,6 +19,11 @@ public class BaseEditor<T> : Editor where T:class
         NewEnabledButton(text, width, isEnable, contentStyle, clickEvent);
     }
 
+    public void NewButton(string text,  bool isEnable, Action clickEvent)
+    {
+        NewEnabledButton(text, isEnable, clickEvent);
+    }
+
     public static bool NewEnabledButton(string text,int width,bool isEnable, GUIStyle style, Action clickEvent)
     {
         EditorGUI.BeginDisabledGroup(!isEnable || clickEvent == null);
@@ -31,11 +36,36 @@ public class BaseEditor<T> : Editor where T:class
             }
         }
         EditorGUI.EndDisabledGroup();
+        return isClick;
+    }
 
-        //if (GUILayout.Button(text))
-        //{
+    public static bool NewEnabledButton(string text, bool isEnable, GUIStyle style, Action clickEvent)
+    {
+        EditorGUI.BeginDisabledGroup(!isEnable || clickEvent == null);
+        bool isClick = GUILayout.Button(text, style);
+        if (isClick)
+        {
+            if (clickEvent != null)
+            {
+                clickEvent();
+            }
+        }
+        EditorGUI.EndDisabledGroup();
+        return isClick;
+    }
 
-        //}
+    public static bool NewEnabledButton(string text, bool isEnable, Action clickEvent)
+    {
+        EditorGUI.BeginDisabledGroup(!isEnable || clickEvent == null);
+        bool isClick = GUILayout.Button(text);
+        if (isClick)
+        {
+            if (clickEvent != null)
+            {
+                clickEvent();
+            }
+        }
+        EditorGUI.EndDisabledGroup();
         return isClick;
     }
 

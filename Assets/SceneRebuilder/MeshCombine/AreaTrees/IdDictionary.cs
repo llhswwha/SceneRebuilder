@@ -2,6 +2,7 @@ using System;
 using System.Collections;
 using System.Collections.Generic;
 using System.Linq;
+using System.Text;
 using UnityEngine;
 
 public static class IdDictionary
@@ -219,28 +220,12 @@ public static class IdDictionary
 
     public static GameObject GetParentGo(RendererId rId)
     {
-        return GetGo(rId.parentId, rId.name);
+        return GetGo(rId.parentId, rId.transform);
     }
 
-        public static GameObject GetGo(string id,string goName="", bool showLog = true)
+     public static GameObject GetGo(string id, Transform t = null, bool showLog = true)
     {
-        //if(string.IsNullOrEmpty(id)){
-        //    Debug.LogError($"RendererDictionay.GetGo IsNullOrEmpty !!! ,Dict:{IdDict.Count}");
-        //    return null;
-        //}
-        //if (IdDict.ContainsKey(id))
-        //{
-        //    var go = IdDict[id];
-        //    if (go == null)
-        //    {
-        //        Debug.LogError($"RendererDictionay.GetGo go == null :{id},Dict:{IdDict.Count}");
-        //        return null;
-        //    }
-        //    return go.gameObject;
-        //}
-        //Debug.LogError($"RendererDictionay.GetGo go not found id:{id},\tgoName:{goName},\tDict:{IdDict.Count}");
-        //return null;
-        RendererId rId = GetId(id, goName, showLog);
+        RendererId rId = GetId(id, t, showLog);
         if (rId != null)
         {
             return rId.gameObject;
@@ -251,7 +236,7 @@ public static class IdDictionary
         }
     }
 
-    public static RendererId GetId(string id, string goName = "",bool showLog=true)
+    public static RendererId GetId(string id, Transform t = null,bool showLog=true)
     {
         if (string.IsNullOrEmpty(id))
         {
@@ -269,7 +254,42 @@ public static class IdDictionary
             return go;
         }
         if(showLog)
-            Debug.LogError($"RendererDictionay.GetGo go not found id:{id},\tgoName:{goName},\tDict:{IdDict.Count}");
+            Debug.LogError($"RendererDictionay.GetGo go not found id:{id},\tTransform:{t},\tPath:{TransformHelper.GetPath(t)}\tDict:{IdDict.Count}");
+        return null;
+    }
+
+    public static GameObject GetGo(string id, string name, bool showLog = true)
+    {
+        RendererId rId = GetId(id, name, showLog);
+        if (rId != null)
+        {
+            return rId.gameObject;
+        }
+        else
+        {
+            return null;
+        }
+    }
+
+    public static RendererId GetId(string id, string name, bool showLog = true)
+    {
+        if (string.IsNullOrEmpty(id))
+        {
+            Debug.LogError($"RendererDictionay.GetGo IsNullOrEmpty !!! ,Dict:{IdDict.Count}");
+            return null;
+        }
+        if (IdDict.ContainsKey(id))
+        {
+            var go = IdDict[id];
+            if (go == null)
+            {
+                Debug.LogError($"RendererDictionay.GetGo go == null :{id},Dict:{IdDict.Count}");
+                return null;
+            }
+            return go;
+        }
+        if (showLog)
+            Debug.LogError($"RendererDictionay.GetGo go not found id:{id},\name:{name},\tDict:{IdDict.Count}");
         return null;
     }
 
@@ -282,7 +302,7 @@ public static class IdDictionary
         return GetGo(id);
     }
 
-    public static MeshRenderer GetRenderer(string id)
+    public static MeshRenderer GetRenderer(string id,bool isShowLog)
     {
         //if (!RendererDict.ContainsKey(id))
         //{
@@ -298,26 +318,52 @@ public static class IdDictionary
             }
             return renderer;
         }
-        GameObject go = null;
-        if (IdDict.ContainsKey(id))
+       
+        if (isShowLog)
         {
-            go = IdDict[id].gameObject;
+            GameObject go = null;
+            if (IdDict.ContainsKey(id))
+            {
+                go = IdDict[id].gameObject;
+            }
+            Debug.LogError($"RendererDictionay.GetRenderer not found Dict:{RendererDict.Count} go:{go} id:{id}");
         }
-        Debug.LogError($"RendererDictionay.GetRenderer not found Dict:{RendererDict.Count} go:{go} id:{id}");
         return null;
     }
 
-    internal static List<MeshRenderer> GetRenderers(List<string> renderersId)
+    internal static List<MeshRenderer> GetRenderers(List<string> renderersId,Transform root)
     {
         List<MeshRenderer> renderers = new List<MeshRenderer>();
-        foreach(var id in renderersId)
+        int rCount = renderersId.Count;
+        int foundCount = 0;
+        int notFoundCount = 0;
+        StringBuilder notFoundIds = new StringBuilder();
+        for (int i = 0; i < renderersId.Count; i++)
         {
-            var renderer = GetRenderer(id);
+            string id = renderersId[i];
+            var renderer = GetRenderer(id,false);
             if (renderer != null)
             {
                 renderers.Add(renderer);
+                foundCount++;
+            }
+            else
+            {
+                GameObject go = null;
+                if (IdDict.ContainsKey(id))
+                {
+                    go = IdDict[id].gameObject;
+                }
+                //Debug.LogError($"RendererDictionay.GetRenderers[{i}] not found Dict:{RendererDict.Count} go:{go} id:{id}");
+                notFoundCount++;
+                notFoundIds.AppendLine(id);
             }
         }
+        if (notFoundCount > 0)
+        {
+            Debug.LogError($"RendererDictionay.GetRenderers renderersId:{renderersId.Count} foundCount:{foundCount} notFoundCount:{notFoundCount} root:{TransformHelper.GetPath(root)} notFoundIds:{notFoundIds}");
+        }
+        
         return renderers;
     }
 

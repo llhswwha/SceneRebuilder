@@ -14,19 +14,47 @@ public class BoundsBox : NoCombine
     //    Debug.LogError($"BoundsBox.OnDisable:{this.name}");
     //}
 
-    private void Awake()
+    public void DestroyMesh()
     {
-#if !UNITY_EDITOR
-        if (this.transform.childCount == 0)
+        AreaTreeNode node = GetComponent<AreaTreeNode>();
+        if (node != null)
         {
-            GameObject.DestroyImmediate(this.gameObject);
+            if (this.transform.childCount == 0)
+            {
+                GameObject.DestroyImmediate(this.gameObject);
+            }
+            else
+            {
+                //Debug.LogError($"BoundsBox.Awake name:{this.name} childCount:{this.transform.childCount}");
+            }
+            MeshHelper.RemoveMeshComponents(gameObject);
         }
         else
         {
-            //Debug.LogError($"BoundsBox.Awake name:{this.name} childCount:{this.transform.childCount}");
-        }
-#endif
-        MeshHelper.RemoveMeshComponents(gameObject);
+            //if (transform.parent != null)
+            //{
+            //    LODGroup group = transform.parent.GetComponent<LODGroup>();
 
+            //}
+
+            if (this.name.Contains("LODBox"))
+            {
+
+            }
+            else
+            {
+                MeshHelper.RemoveMeshComponents(gameObject);
+            }
+        }
     }
+
+//    private void Awake()
+//    {
+
+////#if !UNITY_EDITOR
+        
+////#endif
+
+        
+//    }
 }

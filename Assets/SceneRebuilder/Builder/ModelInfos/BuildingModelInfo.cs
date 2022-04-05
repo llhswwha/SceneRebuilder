@@ -5,6 +5,7 @@ using System.Linq;
 using System;
 using MeshJobs;
 using static PrefabInstanceBuilder;
+using System.IO;
 #if UNITY_EDITOR
 using UnityEditor;
 #endif
@@ -294,7 +295,7 @@ public class BuildingModelInfo : SubSceneCreater
                 bag.AddRange(allScenes);
             }
         }
-        //Debug.Log($"BuildingModelInfo.GetSubScenes1 Model:{this.name} trees:{trees.Count} bag:{bag.Count} setting:{floorLoadSetting}");
+        Debug.Log($"BuildingModelInfo.GetSubScenes1 Model:{this.name} trees:{trees.Count} scenes:{bag.Count} setting:{floorLoadSetting}");
         return bag;
     }
 
@@ -2077,13 +2078,7 @@ public class BuildingModelInfo : SubSceneCreater
             });
         }
 
-        if (LODPart != null && LODPart.transform.childCount > 0)
-        {
-            SubScene_Ref.BeforeCreateScene(LODPart);
-            SubScene_LODs lodsScene = SubSceneHelper.CreateSubScene<SubScene_LODs>(LODPart);
-            lodsScene.contentType = SceneContentType.LODs;
-        }
-
+        EditorCreateLODsScene();
 
         if (progressChanged == null)
         {
@@ -2095,12 +2090,22 @@ public class BuildingModelInfo : SubSceneCreater
             progressChanged(new ProgressArg("EditorCreateNodeScenes", ts.Length, ts.Length));
         }
 
-        
-
         UpdateSceneList();
 
         //EditorSavePrefab();
         if (progressChanged == null) Debug.Log($"BuildingModelInfo.EditorCreateNodeScenes time:{(DateTime.Now - start)} model:{this.name}");
+    }
+
+    public bool EditorCreateLODsScene()
+    {
+        if (LODPart != null && LODPart.transform.childCount > 0)
+        {
+            SubScene_Ref.BeforeCreateScene(LODPart);
+            SubScene_LODs lodsScene = SubSceneHelper.CreateSubScene<SubScene_LODs>(LODPart, LODPart, SceneContentType.TreeNode);
+            lodsScene.contentType = SceneContentType.LODs;
+            return true;
+        }
+        return false;
     }
 
     [ContextMenu("* EditorLoadNodeScenes")]
@@ -2108,6 +2113,21 @@ public class BuildingModelInfo : SubSceneCreater
     {
         EditorLoadNodeScenes(null);
     }
+
+    public void OneKeyLoadScene()
+    {
+        EditorLoadNodeScenesEx();
+        DestroyScenesEx();
+        ClearTrees();
+    }
+
+    public void OneKeySaveScene()
+    {
+        AreaTreeManager.Instance.isCombine = false;
+        CreateTreesBSEx();
+        EditorCreateNodeScenes();
+    }
+
 
     public void EditorLoadNodeScenesEx()
     {
@@ -2158,12 +2178,8 @@ public class BuildingModelInfo : SubSceneCreater
                 }
             });
         }
-        if (LODPart)
-        {
-            SubSceneHelper.EditorLoadScenes(LODPart, null);
-            SubScene_Ref.AfterLoadScene(LODPart);
-        }
-        
+
+        EditorLoadLODsScene();
 
         if (progressChanged == null)
         {
@@ -2176,6 +2192,118 @@ public class BuildingModelInfo : SubSceneCreater
         }
 
         Debug.LogWarning($"BuildingModelInfo.EditorLoadNodeScenes time:{(DateTime.Now - start)}");
+    }
+
+    public bool EditorLoadLODsScene()
+    {
+        if (LODPart)
+        {
+            SubSceneHelper.EditorLoadScenes(LODPart, null);
+            SubScene_Ref.AfterLoadScene(LODPart);
+            return true;
+        }
+        return false;
+    }
+
+    public int EditorDeleteOtherRepleatScenes()
+    {
+        int count = 0;
+        var scenes = this.GetComponentsInChildren<SubScene_Out0>(true);
+        if (scenes.Length > 0)
+        {
+            var arg = scenes[0].GetSceneArg();
+            string scenePath1 = arg.path;
+            string sceneAssetPath = arg.GetSceneAssetPath();
+            string sceneFilePath = arg.GetSceneFilePath();
+
+            //Debug.Log($"ScenePath:{scenePath1}");
+            //Debug.Log($"AssetPath:{sceneAssetPath}");
+            //Debug.Log($"DataPath:{Application.dataPath}");
+            //Debug.Log(sceneFilePath + "|" + System.IO.File.Exists(sceneFilePath));
+
+            FileInfo fileInfo = new FileInfo(sceneFilePath);
+            DirectoryInfo dirInfo = fileInfo.Directory;
+            //Debug.Log($"DirInfo:{dirInfo.FullName}");
+            if (dirInfo.Name.Contains("Tree"))
+            {
+                DirectoryInfo dirInfo2 = dirInfo.Parent;
+                //Debug.Log($"DirInfo2:{dirInfo2.FullName}");
+                string dirPath = dirInfo2.FullName;
+                string dir1 = dirPath.Replace("\\", "/");
+                //Debug.Log($"dir1:{dir1}");
+                string assetDir2Path = "Assets" + dir1.Replace(Application.dataPath, "") + "/";
+                //Debug.Log($"AssetDir2:{assetDir2Path}");
+
+                DirectoryInfo dirInfo3 = dirInfo2.Parent;
+
+                int id = dirPath.IndexOf('[');
+                int id2 = dirPath.IndexOf(']');
+                string sameDir = dirPath.Substring(0, id+1);
+                string insIdS = dirPath.Substring(id + 1, id2 - id - 1);
+                RendererId rid = RendererId.GetRId(this);
+                //Debug.Log($"sameDir:{sameDir}");
+                //Debug.Log($"insId:{insIdS}");
+                int insId = 0;
+                if (int.TryParse(insIdS, out insId))
+                {
+                    if (rid.insId != insId)
+                    {
+                        Debug.LogError($"building:{this.name} rid.insId != insId {rid.insId} -> {insId}");
+                        rid.insId = insId;
+                    }
+                    else
+                    {
+                        //Debug.LogWarning("rid.insId == insId");
+                    }
+                }
+
+                DirectoryInfo[] subDirs = dirInfo3.GetDirectories();
+               
+                foreach (var subDir in subDirs)
+                {
+                    string subDirPath = subDir.FullName;
+                    if (subDirPath == dirPath)
+                    {
+                        continue;
+                    }
+                    try
+                    {
+
+                        if (subDirPath.StartsWith(sameDir))
+                        {
+                            count++;
+                            //subDir.Delete(true);
+                            string dir3 = subDirPath.Replace("\\", "/");
+                            //Debug.Log($"dir1:{dir1}");
+                            string assetDir3Path = "Assets" + dir3.Replace(Application.dataPath, "") + "/";
+
+                            //Debug.LogWarning($"DeleteDir[{count}] asset:{assetDir3Path} fullPath:{subDirPath}");
+
+                            AssetDatabase.DeleteAsset(assetDir3Path);
+                        }
+                    }
+                    catch (System.Exception ex)
+                    {
+                        Debug.LogError($"DeleteDirException({this.name})[{count}]:{subDirPath} ex:{ex.Message}");
+                    }
+
+                }
+
+                AssetDatabase.Refresh();
+            }
+            else
+            {
+                SceneAsset sceneAsset = AssetDatabase.LoadAssetAtPath<SceneAsset>(sceneAssetPath);
+                Debug.Log(sceneAsset);
+                if (sceneAsset != null)
+                    EditorHelper.SelectObject(sceneAsset);
+            }
+        }
+        else
+        {
+
+        }
+        return count;
     }
 #endif
 }

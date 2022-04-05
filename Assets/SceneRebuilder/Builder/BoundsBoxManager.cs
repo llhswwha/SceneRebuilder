@@ -1,3 +1,4 @@
+using AdvancedCullingSystem.DynamicCullingCore;
 using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
@@ -6,17 +7,22 @@ public class BoundsBoxManager : SingletonBehaviour<BoundsBoxManager>
 {
     public BoundsBox[] boxes;
 
-    public bool IsHide = true;
-    //public bool IsDestroy = true;
+    public bool IsHide = false;
+    public bool IsDestroyMesh = false;
 
     private void Start()
     {
-#if !UNITY_EDITOR
-        if(IsHide)
+        DynamicCulling dynamicCulling = GameObject.FindObjectOfType<DynamicCulling>(true);
+        if (dynamicCulling != null)
+        {
+            IsDestroyMesh = true;
+        }
+        //#if !UNITY_EDITOR
+        if (IsHide)
             HideBoxes();
-        //if(IsDestroy)
-        //    DestroyBoxes();
-#endif
+        if (IsDestroyMesh)
+            DestroyBoxes();
+//#endif
     }
 
     [ContextMenu("GetBoxes")]
@@ -57,7 +63,8 @@ public class BoundsBoxManager : SingletonBehaviour<BoundsBoxManager>
             if(box==null)continue;
             if(box.gameObject==null)continue;
             //GameObject.DestroyImmediate(box.gameObject);
-            GameObject.DestroyImmediate(box);
+            //GameObject.DestroyImmediate(box);
+            box.DestroyMesh();
         }
     }
 

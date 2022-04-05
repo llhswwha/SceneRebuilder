@@ -1,6 +1,7 @@
 using CodeStage.AdvancedFPSCounter.Editor.UI;
 using System.Collections;
 using System.Collections.Generic;
+using System.IO;
 using System.Linq;
 using UnityEditor;
 using UnityEngine;
@@ -35,7 +36,7 @@ public class BuildingModelInfoEditor : BaseFoldoutEditor<BuildingModelInfo>
         //EnableFunction();
     }
 
-    private void EnableFunction()
+    private void OnEnableFunction()
     {
         treeListArg = new FoldoutEditorArg(true, false, true, true, false);
         nodeListArg = new FoldoutEditorArg(true, false, true, true, false);
@@ -61,28 +62,20 @@ public class BuildingModelInfoEditor : BaseFoldoutEditor<BuildingModelInfo>
 
     public static void DrawToolbar(BuildingModelInfo info, GUIStyle btnStyle, int buttonWidth)
     {
-        BuildingModelState state = info.GetState();
-        //if (state.HaveUnloadedScenes)
+        EditorUIUtils.ToggleFoldout(drawToolButtonsArg, () =>
         {
-            EditorGUILayout.BeginHorizontal();
-            if (GUILayout.Button("SelectUnload", btnStyle, GUILayout.Width(100)))
-            {
-                //info.SceneList.IsAllLoaded_Debug();
+            DrawToolButtons(info, btnStyle, buttonWidth);
+        });      
 
-                var scenes = info.SceneList.GetUnloadedScenes();
-                Debug.Log($"scenes:{scenes.Count}");
-                //EditorHelper.SelectObject(element.rootObj);
-                EditorHelper.SelectObjects(scenes);
-            }
-            if (GUILayout.Button("LoadUnloaded", btnStyle, GUILayout.Width(100)))
-            {
-                IdDictionary.InitInfos();
-                info.LoadUnloadedScenes();
-            }
-            GUILayout.Label(state.ToString());
-            EditorGUILayout.EndHorizontal();
-        }
+        EditorUIUtils.ToggleFoldout(drawModelInfoTableArg, () =>
+        {
+            DrawModelInfoTable(info, btnStyle);
+        });
+    }
 
+    private static void DrawToolButtons(BuildingModelInfo info, GUIStyle btnStyle, int buttonWidth)
+    {
+        BuildingModelState state = info.GetState();
 
         EditorGUILayout.BeginHorizontal();
         NewEnabledButton("1.GetInfo", buttonWidth, state.CanGetInfo(), btnStyle, () =>
@@ -103,7 +96,7 @@ public class BuildingModelInfoEditor : BaseFoldoutEditor<BuildingModelInfo>
         EditorGUILayout.EndHorizontal();
 
         EditorGUILayout.BeginHorizontal();
-        NewEnabledButton("2.CreateTree", buttonWidth, state.CanCreateTrees, btnStyle, ()=> { AreaTreeManager.Instance.isCombine = false; info.CreateTreesBSEx(); });
+        NewEnabledButton("2.CreateTree", buttonWidth, state.CanCreateTrees, btnStyle, () => { AreaTreeManager.Instance.isCombine = false; info.CreateTreesBSEx(); });
         NewEnabledButton("2.CreateTree(C)", buttonWidth, state.CanCreateTrees, btnStyle, () => { AreaTreeManager.Instance.isCombine = true; info.CreateTreesBSEx(); });
         NewEnabledButton("RemoveTrees", buttonWidth, state.CanRemoveTrees, btnStyle, info.ClearTrees);
         NewEnabledButton("DestroyBox", 80, state.CanRemoveTrees, btnStyle, info.DestroyBoundBox);
@@ -113,7 +106,7 @@ public class BuildingModelInfoEditor : BaseFoldoutEditor<BuildingModelInfo>
         }
 
         var setting = AreaTreeManager.Instance.nodeSetting;
-        setting.MinLevel = EditorGUILayout.IntField("", setting.MinLevel,GUILayout.Width(35));
+        setting.MinLevel = EditorGUILayout.IntField("", setting.MinLevel, GUILayout.Width(35));
         //setting.MaxLevel = EditorGUILayout.IntField("MaxL", setting.MaxLevel);
         setting.MaxRenderCount = EditorGUILayout.IntField("", setting.MaxRenderCount, GUILayout.Width(40));
         setting.MinRenderCount = EditorGUILayout.IntField("", setting.MinRenderCount, GUILayout.Width(40));
@@ -218,6 +211,42 @@ public class BuildingModelInfoEditor : BaseFoldoutEditor<BuildingModelInfo>
         });
         EditorGUILayout.EndHorizontal();
 
+        //BuildingModelState state = info.GetState();
+        //if (state.HaveUnloadedScenes)
+        {
+            EditorGUILayout.BeginHorizontal();
+            if (GUILayout.Button("SelectUnload", btnStyle, GUILayout.Width(100)))
+            {
+                //info.SceneList.IsAllLoaded_Debug();
+
+                var scenes = info.SceneList.GetUnloadedScenes();
+                Debug.Log($"scenes:{scenes.Count}");
+                //EditorHelper.SelectObject(element.rootObj);
+                EditorHelper.SelectScriptObjects(scenes);
+            }
+            if (GUILayout.Button("LoadUnloaded", btnStyle, GUILayout.Width(100)))
+            {
+                IdDictionary.InitInfos();
+                info.LoadUnloadedScenes();
+            }
+            GUILayout.Label(state.ToString());
+
+            if (GUILayout.Button("DeleteRepeatScenes"))
+            {
+                info.EditorDeleteOtherRepleatScenes();
+            }
+            EditorGUILayout.EndHorizontal();
+        }
+    }
+
+    private static FoldoutEditorArg drawToolButtonsArg = new FoldoutEditorArg("Tool Buttons", true, false, false, false, true);
+
+    private static FoldoutEditorArg drawModelInfoTableArg = new FoldoutEditorArg("MeshInfo Table", true, false, false, false, true);
+
+    private static FoldoutEditorArg drawListObjectsArg = new FoldoutEditorArg("Objects List",true, false, false, false, true);
+
+    private static void DrawModelInfoTable(BuildingModelInfo info, GUIStyle btnStyle)
+    {
         EditorGUILayout.BeginHorizontal();
         if (GUILayout.Button("All", GUILayout.Width(50)))
         {
@@ -248,7 +277,7 @@ public class BuildingModelInfoEditor : BaseFoldoutEditor<BuildingModelInfo>
 
         EditorGUILayout.BeginHorizontal();
 
-        NewEnabledButton("LOD", 50, info.LODPart!=null, btnStyle, () =>
+        NewEnabledButton("LOD", 50, info.LODPart != null, btnStyle, () =>
         {
             MeshProfilerNS.GameObjectListMeshEditorWindow.ShowWindow(info.LODPart.gameObject);
         });
@@ -289,17 +318,106 @@ public class BuildingModelInfoEditor : BaseFoldoutEditor<BuildingModelInfo>
         GUILayout.Button(info.Out0SmallRendererCount.ToString(), GUILayout.Width(50));
 
         EditorGUILayout.EndHorizontal();
-
-
     }
 
     public override void OnToolLayout(BuildingModelInfo item)
     {
         if (item == null) return;
-        if (GUILayout.Button("EnableFunction"))
+
+        EditorGUILayout.BeginHorizontal();
+        if (GUILayout.Button("InitInfoOnEnable"))
         {
-            EnableFunction();
+            OnEnableFunction();
         }
+        GUILayout.Label($"ID:{item.gameObject.GetInstanceID()}");
+
+        GUILayout.Label($"RId:{RendererId.GetRId(item.gameObject).GetText()}");
+        EditorGUILayout.EndHorizontal();
+
+        EditorGUILayout.BeginHorizontal();
+        BuildingModelState state = item.GetState();
+        NewEnabledButton("LoadScene", state.CanLoadScenes, () =>
+        {
+            item.OneKeyLoadScene();
+        });
+        NewEnabledButton("SaveScene", state.CanCreateTrees, () =>
+        {
+            item.OneKeySaveScene();
+        });
+        if (GUILayout.Button("SelectSceneFiles"))
+        {
+            var scenes = item.GetComponentsInChildren<SubScene_Out0>(true);
+            if (scenes.Length > 0)
+            {
+                var arg = scenes[0].GetSceneArg();
+                string scenePath1 = arg.path;
+                string sceneAssetPath = arg.GetSceneAssetPath();
+                string sceneFilePath = arg.GetSceneFilePath();
+
+                Debug.Log($"ScenePath:{scenePath1}");
+                Debug.Log($"AssetPath:{sceneAssetPath}");
+                Debug.Log($"DataPath:{Application.dataPath}");
+                Debug.Log(sceneFilePath + "|" + System.IO.File.Exists(sceneFilePath));
+
+                FileInfo fileInfo = new FileInfo(sceneFilePath);
+                DirectoryInfo dirInfo = fileInfo.Directory;
+                Debug.Log($"DirInfo:{dirInfo.FullName}");
+                if (dirInfo.Name.Contains("Tree"))
+                {
+                    DirectoryInfo dirInfo2 = dirInfo.Parent;
+                    Debug.Log($"DirInfo2:{dirInfo2.FullName}");
+                    string dir1 = dirInfo2.FullName.Replace("\\","/");
+                    Debug.Log($"dir1:{dir1}");
+                    string assetDir2Path = "Assets"+dir1.Replace(Application.dataPath,"")+"/";
+                    Debug.Log($"AssetDir2:{assetDir2Path}");
+                    SceneAsset dirAsset = AssetDatabase.LoadAssetAtPath<SceneAsset>(assetDir2Path);
+                    if (dirAsset != null)
+                    {
+                        EditorHelper.SelectObject(dirAsset);
+                    }
+                    else
+                    {
+                        Debug.Log($"dirAsset==null");
+
+                        SceneAsset sceneAsset = AssetDatabase.LoadAssetAtPath<SceneAsset>(sceneAssetPath);
+                        Debug.Log(sceneAsset);
+                        if (sceneAsset != null)
+                            EditorHelper.SelectObject(sceneAsset);
+                    }
+                    //AssetDatabase.Folder
+                }
+                else
+                {
+                    SceneAsset sceneAsset = AssetDatabase.LoadAssetAtPath<SceneAsset>(sceneAssetPath);
+                    Debug.Log(sceneAsset);
+                    if (sceneAsset != null)
+                        EditorHelper.SelectObject(sceneAsset);
+                }
+            }
+            else
+            {
+
+            }
+        }
+
+        EditorGUILayout.BeginHorizontal();
+        NewEnabledButton("LoadLODs", true, () =>
+        {
+            item.EditorLoadLODsScene();
+        });
+        NewEnabledButton("SaveLODs", true, () =>
+        {
+            item.EditorCreateLODsScene();
+        });
+        EditorGUILayout.EndHorizontal();
+
+        //NewEnabledButton("UnloadScene", state.CanCreateTrees, () =>
+        //    {
+        //        AreaTreeManager.Instance.isCombine = false;
+        //        item.CreateTreesBSEx();
+        //    }); 
+
+        EditorGUILayout.EndHorizontal();
 
         base.OnToolLayout(item);
         if (item == null) return;
@@ -307,20 +425,25 @@ public class BuildingModelInfoEditor : BaseFoldoutEditor<BuildingModelInfo>
         DrawToolbar(item, contentStyle, buttonWidth);
         if (item == null) return;
 
-        //DrawModelList(buildingListArg, 
-        //    () => { return null; }, 
-        //    () =>
-        //   {
-        //   });
 
+        //DrawListObjects(item);
+
+        EditorUIUtils.ToggleFoldout(drawListObjectsArg, () =>
+        {
+            DrawListObjects(item);
+        });
+    }
+
+    private void DrawListObjects(BuildingModelInfo item)
+    {
         DrawTreeList(treeListArg, () =>
         {
             return item.GetTreeList();
         });
         List<AreaTreeNode> nodes = DrawNodeList(nodeListArg, true, () =>
-         {
-             return item.GetNodeList();
-         });
+        {
+            return item.GetNodeList();
+        });
         DrawSceneList(sceneListArg, () =>
         {
             return item.GetSceneList();
@@ -341,9 +464,9 @@ public class BuildingModelInfoEditor : BaseFoldoutEditor<BuildingModelInfo>
 
         DrawMeshRendererInfoListEx(meshinfoListArg, item.GetMeshRenderers(false),
             () =>
-        {
-            return item.GetMeshRenderers(true);
-        });
+            {
+                return item.GetMeshRenderers(true);
+            });
 
         GlobalMaterialManager.Instance.LocalTarget = item.gameObject;
         DrawMatList(GlobalMaterialManager.Instance, matListArg);

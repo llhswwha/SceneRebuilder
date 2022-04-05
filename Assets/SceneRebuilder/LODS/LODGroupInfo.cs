@@ -55,13 +55,13 @@ public class LODGroupInfo : MonoBehaviour
 
         if (allVertexCount == 0)
         {
-            Debug.LogError($"GetLODs Error 1 allVertexCount == 0");
+            Debug.LogError($"GetLODs Error 1 allVertexCount == 0 go:{this.name} path:{TransformHelper.GetPath(this.transform)}");
             LODHelper.CreateLODs(this.gameObject);
             this.GetLODsInner();
 
             if (allVertexCount == 0)
             {
-                Debug.LogError($"GetLODs Error 2 allVertexCount == 0");
+                Debug.LogError($"GetLODs Error 2 allVertexCount == 0 go:{this.name} path:{TransformHelper.GetPath(this.transform)}");
             }
         }
     }
@@ -104,7 +104,7 @@ public class LODGroupInfo : MonoBehaviour
             lodInfo.vertextCount = vc;
             if (lodInfo.vertextCount == 0)
             {
-                Debug.LogError($"lodInfo.vertextCount == 0 i:{i}");
+                Debug.LogError($"GetLODsInner lodInfo.vertextCount == 0 i:{i} go:{this.name} path:{TransformHelper.GetPath(this.transform)}");
             }
             allVertexCount += vc;
         }
@@ -289,9 +289,20 @@ public class LODGroupInfo : MonoBehaviour
         {
             GameObject.DestroyImmediate(scene);
         }
+
+        SetRenderersLODInfo();
+
+        RendererId rid = RendererId.GetRId(this.gameObject);
+        rid.RefreshParentId();
+        rid.UpdateChildrenId(false);
         scene =LODHelper.SaveLOD0(null, this.LODGroup);
     }
 
+    [ContextMenu("SetRenderersLODInfo")]
+    public void SetRenderersLODInfo()
+    {
+        LODHelper.SetRenderersLODInfo(LODGroup, null);
+    }
 
 
     public void EditorLoadScene()
@@ -419,5 +430,10 @@ public class LODGroupInfo : MonoBehaviour
         }
         lods[v].renderers = renderers.ToArray();
         LODGroup.SetLODs(lods);
+    }
+
+    public void OnDestroy()
+    {
+        //Debug.Log($"LODGroupInfo.OnDestroy path:{TransformHelper.GetPath(transform)}");
     }
 }

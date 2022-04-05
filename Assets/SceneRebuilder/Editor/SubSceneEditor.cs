@@ -12,6 +12,8 @@ public class SubSceneEditor<T> : BaseEditor<T> where T : SubScene_Base
     {
         base.OnToolLayout(item);
 
+        buttonWidth = 80;
+
         var arg = item.GetSceneArg();
         string scenePath1 = arg.path;
         string sceneAssetPath = arg.GetSceneAssetPath();
@@ -45,6 +47,9 @@ public class SubSceneEditor<T> : BaseEditor<T> where T : SubScene_Base
             EditorHelper.RefreshAssets();
             //EditorHelper.PathToRelative
         });
+        EditorGUILayout.EndHorizontal();
+
+        EditorGUILayout.BeginHorizontal();
         if (Application.isPlaying)
         {
             NewButton("RunLoad", buttonWidth, item.IsLoaded == false, () =>
@@ -64,7 +69,7 @@ public class SubSceneEditor<T> : BaseEditor<T> where T : SubScene_Base
                 item.EditorCreateScene(false);
                 EditorHelper.RefreshAssets();
             });
-            NewButton("Create(Children)", buttonWidth, item.IsLoaded == true, () =>
+            NewButton("Create(C)", buttonWidth, item.IsLoaded == true, () =>
             {
                 item.EditorCreateScene(true);
                 EditorHelper.RefreshAssets();
@@ -75,8 +80,12 @@ public class SubSceneEditor<T> : BaseEditor<T> where T : SubScene_Base
                 item.EditorLoadScene();
             });
             NewButton("Unload", buttonWidth, item.IsLoaded == true && isFileExist, ()=> { item.UnLoadGosM(); });
-
         }
+
+        EditorGUILayout.EndHorizontal();
+
+        EditorGUILayout.BeginHorizontal();
+        NewButton("Bounds", buttonWidth, true, () => { item.ShowBounds(); });
         EditorGUILayout.EndHorizontal();
     }
 }
@@ -102,7 +111,7 @@ public class SubScene_SingleEditor : SubSceneEditor<SubScene_Single>
 }
 
 [CustomEditor(typeof(SubScene_LODs))]
-public class SubScene_LODEditor : SubSceneEditor<SubScene_LODs>
+public class SubScene_LODsEditor : SubSceneEditor<SubScene_LODs>
 {
 }
 

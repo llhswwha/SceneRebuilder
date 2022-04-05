@@ -93,7 +93,7 @@ public class AreaTreeNode : SubSceneCreater
     [ContextMenu("TestLoadRenderers")]
     public void TestLoadRenderers()
     {
-        var rs1 = IdDictionary.GetRenderers(RenderersId);
+        var rs1 = IdDictionary.GetRenderers(RenderersId,this.transform);
         if (rs1.Count == RenderersId.Count)//数量没变说明找到了全部的Renderers
         {
             Renderers = rs1;
@@ -140,7 +140,7 @@ public class AreaTreeNode : SubSceneCreater
         int count1 = GetRendererCount(Renderers);
         if(count1!= RenderersId.Count)
         {
-            var rs1 = IdDictionary.GetRenderers(RenderersId);
+            var rs1 = IdDictionary.GetRenderers(RenderersId,this.transform);
             if (rs1.Count == RenderersId.Count)//数量没变说明找到了全部的Renderers
             {
                 Renderers = rs1;
@@ -167,14 +167,14 @@ public class AreaTreeNode : SubSceneCreater
         int count3 = GetRendererCount(CombinedRenderers);
         if (count3 != CombinedRenderersId.Count)
         {
-            var rs3 = IdDictionary.GetRenderers(CombinedRenderersId);
+            var rs3 = IdDictionary.GetRenderers(CombinedRenderersId,this.transform);
             if (rs3.Count == CombinedRenderersId.Count)//数量没变说明找到了全部的Renderers
             {
                 CombinedRenderers = rs3.ToArray();
             }
             else
             {
-                Debug.LogError($"LoadRenderers rs3.Count != CombinedRenderersId.Count [{rs3.Count}][{CombinedRenderersId.Count}] [{this.name}][{this.transform.parent}][{tree.name}]");
+                Debug.LogError($"LoadRenderers rs3.Count != CombinedRenderersId.Count  [{rs3.Count}][{CombinedRenderersId.Count}] [{this.name}][{this.transform.parent}][{tree.name}]");
             }
         }
         else
@@ -1519,19 +1519,37 @@ public class AreaTreeNode : SubSceneCreater
 
 #endif
 
+    public SubScene_Base GetScene()
+    {
+        var scene1 = this.GetComponentInChildren<SubScene_LODs>(true);
+        if (scene1 != null)
+        {
+            return scene1;
+        }
+        var scene2 = this.GetComponentInChildren<SubScene_Base>(true);
+        return scene2;
+    }
+
 
     public void LoadAndSwitchToRenderers(Action<bool> callback)
     {
-        var sceneOut= this.GetComponentInChildren<SubScene_Out0>(true);
-        if (sceneOut != null && sceneOut.IsLoaded==false)
+        this.gameObject.SetActive(true);
+        SubScene_Base scene = GetScene();
+
+        //Debug.LogError($"LoadAndSwitchToRenderers 1 node:{this} tree:{tree} scene:{scene}");
+        
+        if (scene != null && scene.IsLoaded==false)
         {
-            sceneOut.LoadSceneAsync((b, s) =>
+            //Debug.LogError($"LoadAndSwitchToRenderers 21 node:{this} tree:{tree} scene:{scene}");
+            scene.LoadSceneAsync((b, s) =>
             {
+                //Debug.LogError($"LoadAndSwitchToRenderers 3 node:{this} tree:{tree} scene:{scene}");
                 LoadAndSwitchToRenderers_Inner(callback);
             });
         }
         else
         {
+            //Debug.LogError($"LoadAndSwitchToRenderers 22 node:{this} tree:{tree} scene:{scene}");
             LoadAndSwitchToRenderers_Inner(callback);
         }
     }
@@ -1544,30 +1562,41 @@ public class AreaTreeNode : SubSceneCreater
 
     private void LoadAndSwitchToRenderers_Inner(Action<bool> callback)
     {
-        var sceneIn = this.GetComponentInChildren<SubScene_In>(true);
-        Debug.Log($"LoadAndSwitchToRenderers[{this.name}] scene:{sceneIn}");
-        if (sceneIn == null)
+        if (renderersRoot != null)
         {
-            Debug.LogError($"LoadAndSwitchToRenderers[{this.name}] scene == null!!!");
-            SwitchToRenderersEx();
+            var sceneIn = renderersRoot.GetComponentInChildren<SubScene_In>(true);
+            if (sceneIn == null)
+            {
+                Debug.Log($"LoadAndSwitchToRenderers[{this.name}] scene == null!!!");
+                SwitchToRenderersEx();
 
+                if (callback != null)
+                {
+                    callback(false);
+                }
+            }
+            else
+            {
+                Debug.Log($"LoadAndSwitchToRenderers[{this.name}] scene:{sceneIn}");
+                sceneIn.LoadSceneAsync((b, s) =>
+                {
+                    SwitchToRenderersEx();
+
+                    if (callback != null)
+                    {
+                        callback(b);
+                    }
+                });
+            }
+        }
+        else
+        {
             if (callback != null)
             {
                 callback(false);
             }
         }
-        else
-        {
-            sceneIn.LoadSceneAsync((b, s) =>
-            {
-                SwitchToRenderersEx();
-
-                if (callback != null)
-                {
-                    callback(b);
-                }
-            });
-        }
+        
     }
 
     private void OnDisable()

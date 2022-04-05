@@ -548,7 +548,7 @@ public static class EditorHelper
         EditorApplication.ExecuteMenuItem("Edit/Frame Selected");
     }
 
-    public static void SelectObjects<T>(List<T> objs) where T :Object
+    public static void SelectObjects<T>(List<T> objs) where T : Object
     {
         SelectObjects(objs.ToArray());
     }
@@ -567,6 +567,29 @@ public static class EditorHelper
             EditorApplication.ExecuteMenuItem("Edit/Frame Selected");
         }
     }
+
+    public static void SelectScriptObjects<T>(List<T> objs) where T : MonoBehaviour
+    {
+        List<GameObject> gos = new List<GameObject>();
+        foreach(var obj in objs)
+        {
+            gos.Add(obj.gameObject);
+        }
+        SelectObjects(gos);
+    }
+
+    public static void SelectObjects(List<GameObject> objs)
+    {
+        SelectObjects(objs.ToArray());
+    }
+
+    public static void SelectObjects(GameObject[] objs)
+    {
+        Selection.objects = objs;
+        EditorApplication.ExecuteMenuItem("Edit/Frame Selected");
+    }
+
+
 
     public static void SelectObjects<T>(IEnumerable<T> components) where T :Component
     {
@@ -890,7 +913,7 @@ public static class EditorHelper
                 //Debug.Log($"GetByIndex({tag}) [arg:{arg}] scene:{scene.name}");
                 if (arg.name != scene.name)
                 {
-                    Debug.LogError($"GetByIndex({tag}) Error [arg:{arg.name}] scene:{scene.name}");
+                    Debug.Log($"GetByIndex({tag}) Error [arg:{arg.name}] scene:{scene.name}");
                 }
 #endif
                 return scene;

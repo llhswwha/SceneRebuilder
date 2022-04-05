@@ -215,6 +215,53 @@ public class SubSceneManager : SingletonBehaviour<SubSceneManager>
         WriteLog("EditorCreateBuildingScenes",$"count:{buildings.Length},\t time:{(DateTime.Now - start).ToString()}");
     }
 
+    public void EditorDeleteOtherRepleatScenes(BuildingModelInfo[] buildings)
+    {
+        int sum = 0;
+        for (int i = 0; i < buildings.Length; i++)
+        {
+            BuildingModelInfo b = buildings[i];
+            int c=b.EditorDeleteOtherRepleatScenes();
+            sum += c;
+            if (c > 0)
+            {
+                Debug.LogError($"EditorDeleteOtherRepleatScenes[{i}] building:{b.name} count:{c}");
+            }
+            
+        }
+        Debug.LogError($"EditorDeleteOtherRepleatScenes buildings:{buildings.Length}");
+    }
+
+    public void EditorLoadLODs(BuildingModelInfo[] buildings)
+    {
+        for (int i = 0; i < buildings.Length; i++)
+        {
+            BuildingModelInfo b = buildings[i];
+            ProgressBarHelper.DisplayCancelableProgressBar("EditorLoadLODs",i+1, buildings.Length);
+            if (b.EditorLoadLODsScene())
+            {
+                Debug.LogError($"EditorLoadLODs[{i}] building:{b.name}");
+            }
+        }
+        Debug.LogError($"EditorLoadLODs buildings:{buildings.Length}");
+        ProgressBarHelper.ClearProgressBar();
+    }
+
+    public void EditorCreateLODs(BuildingModelInfo[] buildings)
+    {
+        for (int i = 0; i < buildings.Length; i++)
+        {
+            BuildingModelInfo b = buildings[i];
+            if (b.EditorCreateLODsScene())
+            {
+                Debug.LogError($"EditorCreateLODs[{i}] building:{b.name}");
+                ProgressBarHelper.DisplayCancelableProgressBar("EditorCreateLODs", i + 1, buildings.Length);
+            }
+        }
+        Debug.LogError($"EditorCreateLODs buildings:{buildings.Length}");
+        ProgressBarHelper.ClearProgressBar();
+    }
+
     [ContextMenu("* EditorLoadScenes")]
     public void EditorLoadScenes()
     {
@@ -353,16 +400,9 @@ public class SubSceneManager : SingletonBehaviour<SubSceneManager>
     [ContextMenu("SetBuildings_All")]
     public void SetBuildings_All()
     {
-        
         //UpdateScenes();
-        subScenes = GameObject.FindObjectsOfType<SubScene_Base>(includeInactive);
-        Debug.Log($"SetBuildings_All scenes:{subScenes.Length} includeInactive:{includeInactive}");
-        SubSceneHelper.SetBuildings(subScenes);
+        SubSceneHelper.SetBuildings(includeInactive);
     }
-
-
-
-    
 
     public Scene newScene;
 
@@ -382,8 +422,6 @@ public class SubSceneManager : SingletonBehaviour<SubSceneManager>
     }
 
 #endif
-
-
 
     public static bool includeInactive = true;
     public SubScene_Base[] UpdateScenes()
@@ -411,30 +449,47 @@ public class SubSceneManager : SingletonBehaviour<SubSceneManager>
     public List<SubScene_Base> WattingForLoadedCurrent = new List<SubScene_Base>();
 
     public int LoadingSceneMaxCount = 1;
+
+    public int LoadCount = 0;
     
     public void LoadScenesEx<T>(T[] scenes, Action<SceneLoadProgress> finishedCallback) where T : SubScene_Base
     {
-        //if (IsOneCoroutine)
-        //{
-        //    LoadScenesAsyncEx(scenes, finishedCallbak);
-        //}
-        //else
-        //{
-        //    LoadScenesAsync(scenes, finishedCallbak);
-        //}
+        LoadCount++;
+        Debug.LogError($"SubSceneManager.LoadScenesEx [{LoadCount}] scenes:{scenes.Length} finishedCallback:{finishedCallback}");
 
-        if (LoadingSceneMaxCount == 1)
+        if(scenes==null|| scenes.Length == 0)
         {
-            LoadScenesAsyncEx(scenes, finishedCallback);
-        }
-        else if(LoadingSceneMaxCount <= 0)
-        {
-            LoadScenesAsync(scenes, finishedCallback);
+            if (finishedCallback != null)
+            {
+                finishedCallback(new SceneLoadProgress(null, 1, true));
+            }
         }
         else
         {
-            StartCoroutine(LoadScenesByBag(scenes, finishedCallback));
+            //if (IsOneCoroutine)
+            //{
+            //    LoadScenesAsyncEx(scenes, finishedCallbak);
+            //}
+            //else
+            //{
+            //    LoadScenesAsync(scenes, finishedCallbak);
+            //}
+
+            if (LoadingSceneMaxCount == 1)
+            {
+                LoadScenesAsyncEx(scenes, finishedCallback);
+            }
+            else if (LoadingSceneMaxCount <= 0)
+            {
+                LoadScenesAsync(scenes, finishedCallback);
+            }
+            else
+            {
+                StartCoroutine(LoadScenesByBag(scenes, finishedCallback));
+            }
         }
+
+        
     }
 
     public bool IsFilterLoadedScene = true;
@@ -661,7 +716,7 @@ public class SubSceneManager : SingletonBehaviour<SubSceneManager>
                 var p = go.transform.parent.gameObject;
                 if (IsDirId)
                 {
-                    return $"{RootDir}/{SceneDir}/{contentType}/{p.name}[{p.GetInstanceID()}]/{go.name}/{sceneName}.unity";
+                    return $"{RootDir}/{SceneDir}/{contentType}/{p.name}[{RendererId.GetInsId(p)}]/{go.name}/{sceneName}.unity";
                 }
                 else
                 {
@@ -672,7 +727,7 @@ public class SubSceneManager : SingletonBehaviour<SubSceneManager>
             {
                 if (IsDirId)
                 {
-                    return $"{RootDir}/{SceneDir}/{contentType}/{go.name}[{go.GetInstanceID()}]/{sceneName}.unity";
+                    return $"{RootDir}/{SceneDir}/{contentType}/{go.name}[{RendererId.GetInsId(go)}]/{sceneName}.unity";
                 }
                 else
                 {

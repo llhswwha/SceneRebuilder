@@ -9,7 +9,7 @@ using UnityEditor;
 using UnityEditor.SceneManagement;
 #endif
 
-public class SubScene_Base : MonoBehaviour
+public class SubScene_Base : SubSceneArgComponent
 {
     public virtual void DestroyScene()
     {
@@ -18,7 +18,7 @@ public class SubScene_Base : MonoBehaviour
 
     public SubScene_Base LinkedScene;
 
-    public SubSceneArg sceneArg;
+    //public SubSceneArg sceneArg;
 
     public Transform sceneParent;
 
@@ -89,9 +89,9 @@ public class SubScene_Base : MonoBehaviour
 
     //public SubSceneType sceneType;
 
-    public SceneContentType contentType;
+    //public SceneContentType contentType;
 
-    public string sceneName = "";
+    //public string sceneName = "";
 
     //public string scenePath;
 
@@ -115,7 +115,7 @@ public class SubScene_Base : MonoBehaviour
 
     //public List<GameObject> gos = new List<GameObject>();
 
-    public void SetObjects(List<GameObject> goList)
+    public virtual void SetObjects(List<GameObject> goList)
     {
         //gos = goList;
         if (sceneArg == null)
@@ -179,10 +179,42 @@ public class SubScene_Base : MonoBehaviour
         }
     }
 
+    private float boundsVolume = 0;
+
+    public float GetBoundsVolume()
+    {
+        if (boundsVolume == 0)
+        {
+            Vector3 size = bounds.size;
+            boundsVolume = size.x * size.y * size.z;
+        }
+        return boundsVolume;
+    }
+
     internal string GetSceneInfo()
     {
-        //return $"r:{rendererCount}\tv:{vertexCount:F1}w\t[{GetSceneName()}] ";
-        return $"{GetSceneName()} r:{rendererCount} v:{vertexCount:F0}w ";
+        //return $"r:{rendererCount}\tv:{vertexCount:F1}w\t[{GetSceneName()}]   ";
+        BuildingController bc= this.GetComponentInParent<BuildingController>();
+        BuildingModelInfo buildingModelInfo = this.GetComponentInParent<BuildingModelInfo>();
+        ModelAreaTree tree = this.GetComponentInParent<ModelAreaTree>();
+        //Vector3 size = bounds.size;
+
+        string buildingName = bc.name;
+        if (buildingModelInfo.gameObject != bc.gameObject)
+        {
+            buildingName += ">" + buildingModelInfo.name;
+        }
+
+        if (tree != null)
+        {
+            string treeName = tree.name.Replace(buildingModelInfo.name,"");
+            return $"({buildingName}>{treeName})[{AngleToCam:F0},{DisToCam:F0}][({GetBoundsVolume():F0}){bounds.size}]{GetSceneName()} r:{rendererCount} v:{vertexCount:F0}w  ";
+        }
+        else
+        {
+            return $"({buildingName})[{AngleToCam:F0},{DisToCam:F0}][({GetBoundsVolume():F0}){bounds.size}]{GetSceneName()} r:{rendererCount} v:{vertexCount:F0}w ";
+        }
+        
     }
 
     internal string GetSceneNameEx()
@@ -190,35 +222,35 @@ public class SubScene_Base : MonoBehaviour
         return $"[{contentType}]{GetSceneName()} r:{rendererCount} v:{vertexCount:F0}w ";
     }
 
-    public SceneLoadArg GetSceneArg()
-    {
-        SceneLoadArg arg=new SceneLoadArg();
-        arg.name=GetSceneName();
-        arg.path=sceneArg.path;
-        arg.index=sceneArg.index;
-        return arg;
-    }
+    //public SceneLoadArg GetSceneArg()
+    //{
+    //    SceneLoadArg arg=new SceneLoadArg();
+    //    arg.name=GetSceneName();
+    //    arg.path=sceneArg.path;
+    //    arg.index=sceneArg.index;
+    //    return arg;
+    //}
 
-    public string GetSceneName()
-    {
-        if (string.IsNullOrEmpty(sceneName))
-        {
-            try
-            {
-                if (sceneArg == null) return "";
-                if (string.IsNullOrEmpty(sceneArg.path)) return "";
-                string[] parts = sceneArg.path.Split(new char[] { '.', '\\', '/' });
-                if (parts.Length < 2) return "";
-                sceneName = parts[parts.Length - 2];
-            }
-            catch (Exception ex)
-            {
-                Debug.LogError($"GetSceneName  obj:{this},path:{sceneArg.path},Exception:{ex}");
-            }
+    //public string GetSceneName()
+    //{
+    //    if (string.IsNullOrEmpty(sceneName))
+    //    {
+    //        try
+    //        {
+    //            if (sceneArg == null) return "";
+    //            if (string.IsNullOrEmpty(sceneArg.path)) return "";
+    //            string[] parts = sceneArg.path.Split(new char[] { '.', '\\', '/' });
+    //            if (parts.Length < 2) return "";
+    //            sceneName = parts[parts.Length - 2];
+    //        }
+    //        catch (Exception ex)
+    //        {
+    //            Debug.LogError($"GetSceneName  obj:{this},path:{sceneArg.path},Exception:{ex}");
+    //        }
             
-        }
-        return sceneName;
-    }
+    //    }
+    //    return sceneName;
+    //}
 
 
     void Start()
@@ -258,11 +290,86 @@ public class SubScene_Base : MonoBehaviour
         }
     }
 
-    internal void ShowBounds()
+    public Vector3[] GetBoundPoints()
+    {
+        var min = bounds.min;
+        var max = bounds.max;
+        Vector3 p0 = new Vector3(min.x, min.y, min.z);
+        Vector3 p1 = new Vector3(min.x, min.y, max.z);
+        Vector3 p2 = new Vector3(min.x, max.y, min.z);
+        Vector3 p3 = new Vector3(max.x, min.y, min.z);
+        Vector3 p4 = new Vector3(min.x, max.y, max.z);
+        Vector3 p5 = new Vector3(max.x, min.y, max.z);
+        Vector3 p6 = new Vector3(max.x, max.y, min.z);
+        Vector3 p7 = new Vector3(max.x, max.y, max.z);
+        return new Vector3[9] { bounds.center,p0, p1, p2, p3, p4, p5, p6, p7 };
+    }
+
+    public float GetCameraAngle(Transform camera)
+    {
+        
+        Vector3[] ps = GetBoundPoints();
+        float minAngle = 360;
+        float maxAngle = 0;
+        for (int i = 0; i < ps.Length; i++)
+        {
+            Vector3 p = ps[i];
+            Vector3 dir = p - camera.position;
+            float angle = Vector3.Angle(camera.forward, dir);
+            if (angle < minAngle)
+            {
+                minAngle = angle;
+            }
+            if (angle > maxAngle)
+            {
+                maxAngle = angle;
+            }
+            //Debug.Log($"GetCameraAngle[{i}] p:{p} dir:{dir} angle:{angle} minAngle:{minAngle} maxAngle:{maxAngle}  ");
+        }
+        //return maxAngle; 
+        return minAngle;
+    }
+
+    [ContextMenu("ShowCameraAngle")]
+    internal void ShowCameraAngle()
+    {
+        GetCameraAngle(Camera.main.transform);
+    }
+
+    [ContextMenu("ShowBoundsPoints")]
+    internal void ShowBoundsPoints()
+    {
+        ShowBounds();
+        Transform boxP = boundsGo.transform;
+
+        TransformHelper.ShowPoint(bounds.center, 0.05f, boxP).name="center";
+        var min = bounds.min;
+        var max = bounds.max;
+        Vector3 p0 = new Vector3(min.x, min.y, min.z);
+        Vector3 p1 = new Vector3(min.x, min.y, max.z);
+        Vector3 p2 = new Vector3(min.x, max.y, min.z);
+        Vector3 p3 = new Vector3(max.x, min.y, min.z);
+        Vector3 p4 = new Vector3(min.x, max.y, max.z);
+        Vector3 p5 = new Vector3(max.x, min.y, max.z);
+        Vector3 p6 = new Vector3(max.x, max.y, min.z);
+        Vector3 p7 = new Vector3(max.x, max.y, max.z);
+        TransformHelper.ShowPoint(p0, 0.05f, boxP).name = "p0";
+        TransformHelper.ShowPoint(p1, 0.05f, boxP).name = "p1";
+        TransformHelper.ShowPoint(p2, 0.05f, boxP).name = "p2";
+        TransformHelper.ShowPoint(p3, 0.05f, boxP).name = "p3";
+        TransformHelper.ShowPoint(p4, 0.05f, boxP).name = "p4";
+        TransformHelper.ShowPoint(p5, 0.05f, boxP).name = "p5";
+        TransformHelper.ShowPoint(p6, 0.05f, boxP).name = "p6";
+        TransformHelper.ShowPoint(p7, 0.05f, boxP).name = "p7";
+    }
+
+    [ContextMenu("ShowBounds")]
+    public void ShowBounds()
     {
         ShowBounds(this.transform);
     }
 
+    [ContextMenu("HideBoundsBox")]
     public void HideBoundsBox()
     {
         if (boundsGo)
@@ -271,6 +378,7 @@ public class SubScene_Base : MonoBehaviour
         }
     }
 
+    [ContextMenu("DestroyBoundsBox")]
     public virtual void DestroyBoundsBox()
     {
         if (boundsGo)
@@ -305,6 +413,39 @@ public class SubScene_Base : MonoBehaviour
     }
 
     public float DisToCam;
+
+    public float AngleToCam;
+
+    public int LifeTimeMode = -1;//0:Load,1:Unload;
+
+    public float LifeStartTime = 0;
+
+    public float LifeTimeSpane = 0;
+
+    public void ClearLifeTime()
+    {
+        //LifeTimeMode = -1;
+        LifeStartTime = 0;
+        LifeTimeSpane = 0;
+    }
+
+    public void SetLifeTime(int mode)
+    {
+        if (LifeTimeMode != mode)
+        {
+            ClearLifeTime();
+        }
+        LifeTimeMode = mode;
+        if (LifeStartTime == 0)
+        {
+            LifeStartTime = Time.time;
+            LifeTimeSpane = 0;
+        }
+        else
+        {
+            LifeTimeSpane = Time.time - LifeStartTime;
+        }
+    }
 
     internal void HideObjects()
     {
@@ -424,6 +565,7 @@ public class SubScene_Base : MonoBehaviour
 
     public IEnumerator LoadSceneAsyncCoroutine(Action<bool,SubScene_Base> callback)
     {
+        //Debug.Log($"LoadSceneAsyncCoroutine scene:{TransformHelper.GetPath(this.transform)} ");
         if (IsLoadedOrLoading())
         {
             Debug.LogWarning($"[SubScene_Base.LoadSceneAsyncCoroutine] scene:{GetSceneName()}, IsLoading:{IsLoading} || IsLoaded:{IsLoaded} path:{sceneArg.path}");
@@ -593,8 +735,23 @@ public class SubScene_Base : MonoBehaviour
             node.LoadRenderers(this.gameObject);
     }
 
+    [ContextMenu("UpdateRidParent")]
+    public void UpdateRidParent()
+    {
+        RendererId thisRid = RendererId.GetRId(this);
+        thisRid.UpdateParent();
+        thisRid.UpdateChildrenId(true);
+
+        //for (int i = 0; i < transform.childCount; i++)
+        //{
+        //    var child = transform.GetChild(i);
+        //    RendererId rid = RendererId.GetRId(child);
+        //    rid.UpdateParent();
+        //}
+    }
+
      [ContextMenu("SetRendererParent")]
-    public void SetRendererParent()
+    public virtual void SetRendererParent()
     {
         RendererId[] rIds=this.GetComponentsInChildren<RendererId>(true);
         foreach(var rI in rIds){
@@ -657,11 +814,11 @@ public class SubScene_Base : MonoBehaviour
 #if UNITY_EDITOR
 
     [ContextMenu("EditorCreateScene")]
-    public void EditorCreateScene(bool isOnlyChildren)
+    public void EditorCreateScene(bool isOnlyChildren, GameObject dirGo=null, SceneContentType contentType= SceneContentType.Single)
     {
 
         SubSceneManager subSceneManager = SubSceneManager.Instance;
-        string path = subSceneManager.GetScenePath($"({transform.parent.name}){gameObject.name}[{gameObject.GetInstanceID()}]", SceneContentType.Single,null);
+        string path = subSceneManager.GetScenePath($"({transform.parent.name}){gameObject.name}[{RendererId.GetInsId(gameObject)}]", contentType, dirGo);
         if (IsLoaded == false)
         {
             Debug.LogWarning($"EditorCreateScene IsLoaded==false name:{this.name} path:{path}");

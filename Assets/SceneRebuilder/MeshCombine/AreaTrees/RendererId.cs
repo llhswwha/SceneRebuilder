@@ -10,6 +10,7 @@ public class RendererId
     : MonoBehaviour
     //: Behaviour
 {
+
     public string Id;
 
     public string GetId()
@@ -32,6 +33,11 @@ public class RendererId
     public override string ToString()
     {
         return $"RendererId Id:{Id} parentId:{parentId} insId:{insId} mr:{mr}";
+    }
+
+    public string GetText()
+    {
+        return $"[insId:{insId} Id:{Id} ]";
     }
 
     [ContextMenu("Init")]
@@ -176,10 +182,10 @@ public class RendererId
     public void NewId()
     {
         Id = Guid.NewGuid().ToString();
-        UpdateChildrenId();
+        UpdateChildrenId(false);
     }
 
-    public void UpdateChildrenId()
+    public void UpdateChildrenId(bool isAll)
     {
         for (int i = 0; i < transform.childCount; i++)
         {
@@ -188,6 +194,11 @@ public class RendererId
             if (rid)
             {
                 rid.SetPid(Id, this.transform);
+
+                if (isAll)
+                {
+                    rid.UpdateChildrenId(isAll);
+                }
             }
         }
     }
@@ -234,11 +245,11 @@ public class RendererId
     {
         if (string.IsNullOrEmpty(parentId))
         {
-            SetParentId();
+            SetParentId(false);
         }
     }
 
-    public void SetParentId()
+    public void SetParentId(bool isShowLog=false)
     {
         var newP= GetId(this.transform.parent, 0);
         if (string.IsNullOrEmpty(newP))
@@ -251,7 +262,11 @@ public class RendererId
         }
         else if(newP != parentId)
         {
-            Debug.LogError($"SetParentId oldP:{parentId} newP:{newP} Id:{Id} name:{this.name}");
+            if (isShowLog)
+            {
+                Debug.LogError($"SetParentId oldP:{parentId} newP:{newP} Id:{Id} name:{this.name}");
+            }
+            
         }
         SetPid(newP, this.transform.parent);
     }
@@ -282,6 +297,11 @@ public class RendererId
             Debug.Log($"ParentChanged {this.name} parentId:{parentId} newParentId:{newParentId} parent:{GetParent()} newParent:{this.transform.parent}");
         }
         return isChanged;
+    }
+
+    public void UpdateParent()
+    {
+        this.SetParentId(false);
     }
     
 
@@ -359,6 +379,18 @@ public class RendererId
             id.Init(go, level+1);
         }
         return id.GetId();
+    }
+
+    public static int GetInsId(GameObject go, int level = 0)
+    {
+        if (go == null) return 0;
+        RendererId id = go.GetComponent<RendererId>();
+        if (id == null)
+        {
+            id = go.gameObject.AddComponent<RendererId>();
+            id.Init(go, level + 1);
+        }
+        return id.insId;
     }
 
     //public static string GetId(Component go, int level = 0)
@@ -489,7 +521,7 @@ public class RendererId
             id = r.gameObject.AddComponent<RendererId>();
             id.Init();
         }
-        id.SetParentId();
+        id.SetParentId(true);
         return id;
     }
 
@@ -502,7 +534,7 @@ public class RendererId
             id = r.gameObject.AddComponent<RendererId>();
             id.Init(r);
         }
-        id.SetParentId();
+        id.SetParentId(true);
         return id;
     }
 

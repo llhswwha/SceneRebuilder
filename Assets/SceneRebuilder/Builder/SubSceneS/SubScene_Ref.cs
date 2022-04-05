@@ -3,52 +3,27 @@ using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 
-public class SubScene_Ref //: MonoBehaviour
-: SubScene_Base
+public class SubScene_Ref
+: SubSceneArgComponent
+//: SubScene_Base
 {
-    //public SubSceneArg sceneArg; 
+    
 
-    //public SceneLoadArg GetSceneArg()
-    //{
-    //    SceneLoadArg arg = new SceneLoadArg();
-    //    arg.name = GetSceneName();
-    //    arg.path = sceneArg.path;
-    //    arg.index = sceneArg.index;
-    //    return arg;
-    //}
-
-    //public string sceneName = "";
-
-    //public string GetSceneName()
-    //{
-    //    if (string.IsNullOrEmpty(sceneName))
-    //    {
-    //        try
-    //        {
-    //            if (sceneArg == null) return "";
-    //            if (string.IsNullOrEmpty(sceneArg.path)) return "";
-    //            string[] parts = sceneArg.path.Split(new char[] { '.', '\\', '/' });
-    //            if (parts.Length < 2) return "";
-    //            sceneName = parts[parts.Length - 2];
-    //        }
-    //        catch (Exception ex)
-    //        {
-    //            Debug.LogError($"GetSceneName  obj:{this},path:{sceneArg.path},Exception:{ex}");
-    //        }
-
-    //    }
-    //    return sceneName;
-    //}
-
-    //public SceneContentType contentType;
-
-    public string RefId = "";
+    public string RefId = ""; 
 
     public static void BeforeCreateScene(GameObject root)
     {
+        SubScene_Ref[] refScenes = root.GetComponentsInChildren<SubScene_Ref>(true);
+
+        foreach(var refScene in refScenes)
+        {
+            GameObject.DestroyImmediate(refScene);
+        }
+
         var lodSubScenes = root.GetComponentsInChildren<SubScene_Base>(true);
         foreach (var ss in lodSubScenes)
         {
+            if (ss is SubScene_LODs) continue;
             var ss2 = root.AddComponent<SubScene_Ref>();
             ss2.sceneArg = ss.sceneArg;
             ss2.contentType = SceneContentType.Ref;

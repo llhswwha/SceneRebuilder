@@ -7,6 +7,19 @@ using System.Linq;
 public class MyEditorTools2
 {
     #region TreeNode
+    [MenuItem("SceneTools/Debug/Selections")]
+    public static void ShowSelections()
+    {
+        var objs=Selection.objects;
+        for (int i = 0; i < objs.Length; i++)
+        {
+            UnityEngine.Object obj = objs[i];
+            Debug.Log($"ShowSelections[{i}] obj:{obj}");
+        }
+    }
+    #endregion
+
+    #region TreeNode
     [MenuItem("SceneTools/TreeNode/ClearRenderers")]
     public static void ClearTreeNodeRenderers()
     {
@@ -18,8 +31,6 @@ public class MyEditorTools2
         Debug.Log($"ClearTreeNodeRenderers nodes:{nodes.Length}");
         //MeshRendererInfoEx
     }
-
-    //
     #endregion
 
     #region MeshRenderer
@@ -615,7 +626,7 @@ public class MyEditorTools2
     [MenuItem("SceneTools/SubScene/SetBuildingsWithNavmesh")]
     public static void SetBuildingsWithNavmesh()
     {
-        SubSceneHelper.SetBuildingsWithNavmesh<SubScene_Base>(true);
+        SubSceneHelper.SetBuildingsWithNavmesh(true);
     }
     [MenuItem("SceneTools/SubScene/ClearBuildings")]
     public static void ClearBuildings()
@@ -623,10 +634,66 @@ public class MyEditorTools2
         SubSceneHelper.ClearBuildings();
     }
 
+    [MenuItem("SceneTools/SubScene/GetLODsIds")]
+    public static void GetLODsIds()
+    {
+        IdDictionary.InitInfos();
+        var lodsScenes = GameObject.FindObjectsOfType<SubScene_LODs>(true);
+        for (int i = 0; i < lodsScenes.Length; i++)
+        {
+            SubScene_LODs scene = lodsScenes[i];
+            if (ProgressBarHelper.DisplayCancelableProgressBar(new ProgressArg("GetLODsIds", i, lodsScenes.Length, scene)))
+            {
+                break; 
+            }
+            RendererId rid = RendererId.GetRId(scene);
+            rid.UpdateParent();
+            scene.EditorLoadScene();
+            
+            ////scene.UnLoadSceneAsync();
+            scene.UnLoadGosM();
+            scene.ShowBounds();
+            //scene.EditorCreateScene(true);
+        }
+
+        ProgressBarHelper.ClearProgressBar();
+        EditorHelper.ClearOtherScenes();
+    }
+
     [MenuItem("SceneTools/SubScene/CheckScenes")]
     public static void CheckScenes()
     {
         SubSceneHelper.CheckSceneIndex(true);
+    }
+
+    [MenuItem("SceneTools/SubScene/DeleteOtherRepleatScenes")]
+    public static void EditorDeleteOtherRepleatScenes()
+    {
+        SubSceneManager.Instance.EditorDeleteOtherRepleatScenes(GameObject.FindObjectsOfType<BuildingModelInfo>(true));
+    }
+
+    [MenuItem("SceneTools/SubScene/LoadBuildingScenes")]
+    public static void OneKeyLoadScene()
+    {
+        BuildingModelManager.Instance.OneKeyLoadScene(GameObject.FindObjectsOfType<BuildingModelInfo>(true));
+    }
+
+    [MenuItem("SceneTools/SubScene/SaveBuildingScenes")]
+    public static void OneKeySaveScene()
+    {
+        BuildingModelManager.Instance.OneKeySaveScene(GameObject.FindObjectsOfType<BuildingModelInfo>(true));
+    }
+
+    [MenuItem("SceneTools/SubScene/LoadLODsScene")]
+    public static void LoadLODs()
+    {
+        SubSceneManager.Instance.EditorLoadLODs(GameObject.FindObjectsOfType<BuildingModelInfo>(true));
+    }
+
+    [MenuItem("SceneTools/SubScene/SaveLODsScene")]
+    public static void CreateLODs()
+    {
+        SubSceneManager.Instance.EditorCreateLODs(GameObject.FindObjectsOfType<BuildingModelInfo>(true));
     }
 
     [MenuItem("SceneTools/SubScene/CreateSubScenes(LOD)")]
@@ -730,8 +797,8 @@ public class MyEditorTools2
         ClearNavisModelRoots();//
         ClearMeshRendererInfoEx();
         InitNavisFileInfoByModel.Instance.vueRootModels = new List<NavisPlugins.Infos.ModelItemInfo>();
-        SubSceneShowManager.Instance.scenes_Out0 = new SubScene_Out0[0];
-        SubSceneShowManager.Instance.scenes_Out1 = new SubScene_Out1[0];
+        SubSceneShowManager.Instance.scenes_Out0 = new List<SubScene_Out0>();
+        SubSceneShowManager.Instance.scenes_Out1 = new List<SubScene_Out1>();
     }
 
     [MenuItem("SceneTools/Clear/LODGroup")]
@@ -1254,6 +1321,82 @@ public class MyEditorTools2
         UpdateRendererIds(rids, false);
     }
 
+    [MenuItem("SceneTools/Renderers/RemoveOtherIds")]
+    public static void RemoveOtherIds()
+    {
+        var currentIds= Selection.activeGameObject.GetComponentsInChildren<RendererId>(true).ToList();
+        var allIds=GameObject.FindObjectsOfType<RendererId>(true).ToList();
+        foreach(var id in allIds){
+            if(currentIds.Contains(id)){
+                continue;
+            }
+            GameObject.DestroyImmediate(id);
+        }
+        Debug.Log($"RemoveOtherIds currentIds:{currentIds.Count} allIds:{allIds.Count}");
+    }
+
+    [MenuItem("SceneTools/Renderers/ShowIdDictionary")]
+    public static void ShowIdDictionary()
+    {
+        var dict = IdDictionary.IdDict;
+        int i = 0;
+        foreach(var key in dict.Keys)
+        {
+            RendererId id = dict[key];
+            if (id == null)
+            {
+                continue;
+            }
+            i++;
+            Debug.Log($"ShowIdDictionary[{i}] id:{id.Id} pid:{id.parentId} name:{id.name} path:{TransformHelper.GetPath(id.transform)}");
+        }
+        Debug.Log($"ShowIdDictionary allIds:{dict.Count}");
+    }
+
+    [MenuItem("SceneTools/Renderers/ShowTreeNodeDict")]
+    public static void ShowTreeNodeDict()
+    {
+        var dict = AreaTreeHelper.renderId2NodeDict;
+        int i = 0;
+        foreach (var key in dict.Keys)
+        {
+            AreaTreeNode id = dict[key];
+            if (id == null)
+            {
+                continue;
+            }
+            i++;
+            Debug.Log($"ShowTreeNodeDict[{i}] tree:{id.tree} name:{id.name} path:{TransformHelper.GetPath(id.transform)}");
+        }
+        Debug.Log($"ShowTreeNodeDict allIds:{dict.Count}");
+    }
+
+    [MenuItem("SceneTools/Renderers/InitTreeNodeDict")]
+    public static void InitTreeNodeDict()
+    {
+        var nodes = GameObject.FindObjectsOfType<AreaTreeNode>(true).ToList();
+        int i = 0;
+        foreach(var node in nodes)
+        {
+            node.CreateDictionary();
+        }
+        Debug.Log($"InitTreeNodeDict nodes:{nodes.Count}");
+
+        ShowTreeNodeDict();
+    }
+
+    [MenuItem("SceneTools/Renderers/ShowIds")]
+    public static void ShowIds()
+    {
+        var allIds = GameObject.FindObjectsOfType<RendererId>(true).ToList();
+        for (int i = 0; i < allIds.Count; i++)
+        {
+            RendererId id = allIds[i];
+            Debug.Log($"ShowIds[{i}] id:{id.Id} pid:{id.parentId} name:{id.name} path:{TransformHelper.GetPath(id.transform)}");
+        }
+        Debug.Log($"ShowIds allIds:{allIds.Count}");
+    }
+
     [MenuItem("SceneTools/Renderers/UpdateIds(A)")]
     public static void UpdateRendererIdsA()
     {
@@ -1290,7 +1433,7 @@ public class MyEditorTools2
         {
             if (isUpdateChildrenId)
             {
-                rid.UpdateChildrenId();
+                rid.UpdateChildrenId(false);
             }
 
             if (ridDict.ContainsKey(rid.Id))

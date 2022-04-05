@@ -8,6 +8,7 @@ public class AreaTreeManager : SingletonBehaviour<AreaTreeManager>
     void Start()
     {
         CreateDictionary();
+
     }
     public enum AreaTreeMode
     {
@@ -724,7 +725,14 @@ public class AreaTreeManager : SingletonBehaviour<AreaTreeManager>
             tree.CreateDictionary();
             nodeCount += tree.TreeLeafs.Count;
         }
-        Debug.LogWarning($"CreateDictionary trees:{Trees.Count}, nodes:{nodeCount} \trender2NodeDict:{AreaTreeHelper.render2NodeDict.Count},\trenderId2NodeDict:{AreaTreeHelper.renderId2NodeDict.Count}, \t{(DateTime.Now - start).TotalMilliseconds:F1}ms");
+
+        var lodsScenes = GameObject.FindObjectsOfType<SubScene_LODs>(true);
+        foreach(var scene in lodsScenes)
+        {
+            scene.CreateDictionary();
+        }
+
+        Debug.LogWarning($"CreateDictionary trees:{Trees.Count}, nodes:{nodeCount} \t lods:{lodsScenes.Length} \trender2NodeDict:{AreaTreeHelper.render2NodeDict.Count},\trenderId2NodeDict:{AreaTreeHelper.renderId2NodeDict.Count}, \t{(DateTime.Now - start).TotalMilliseconds:F1}ms");
     }
 
     [ContextMenu("HideLeafNodes")]

@@ -66,8 +66,6 @@ public class BuildingModelManager : SingletonBehaviour<BuildingModelManager>
         InitBuildings(Buildings);
     }
 
-    
-
     public void InitBuildings(List<BuildingModelInfo> buildings)
     {
         BuildingModelInfoList.InitBuildings(buildings);
@@ -337,6 +335,25 @@ public class BuildingModelManager : SingletonBehaviour<BuildingModelManager>
     }
 
 #if UNITY_EDITOR
+
+    public void OneKeyLoadScene(BuildingModelInfo[] buildings)
+    {
+        foreach (var b in buildings)
+        {
+            b.OneKeyLoadScene();
+        }
+        Debug.LogError($"OneKeyLoadScene buildings:{buildings.Length}");
+    }
+
+    public void OneKeySaveScene(BuildingModelInfo[] buildings)
+    {
+        foreach (var b in buildings)
+        {
+            b.OneKeySaveScene();
+        }
+        EditorHelper.ClearOtherScenes();
+        Debug.LogError($"OneKeySaveScene buildings:{buildings.Length}");
+    }
 
     public void OneKey_Save()
     {
