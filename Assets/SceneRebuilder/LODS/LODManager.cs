@@ -1738,6 +1738,109 @@ T minTEx = null;
 
 public static class LODHelper
 {
+    [MenuItem("SceneTools/LOD/ClearLODGroups")]
+    public static void ClearLODGroups()
+    {
+        GameObject[] gos = Selection.gameObjects;
+        int count1 = 0;
+        int count2 = 0;
+        for (int i = 0; i < gos.Length; i++)
+        {
+            GameObject go = gos[i];
+            LODGroup[] groups = go.GetComponentsInChildren<LODGroup>(true);
+            foreach (var group in groups)
+            {
+                count1++;
+                if (group == null) continue;
+                MeshRenderer groupRenderer = group.GetComponent<MeshRenderer>();
+                if (groupRenderer != null)
+                {
+                    var lods = group.GetLODs();
+                    for (int i1 = 1; i1 < lods.Length; i1++)
+                    {
+                        LOD lod = lods[i1];
+                        var renderers = lod.renderers;
+                        foreach (var renderer in renderers)
+                        {
+                            if (renderer == null) continue;
+                            if (renderer.gameObject == null) continue;
+                            GameObject.DestroyImmediate(renderer.gameObject);
+                        }
+                    }
+                    List<Transform> children = new List<Transform>();
+                    for (int j = 0; j < group.transform.childCount; j++)
+                    {
+                        var child = group.transform.GetChild(j);
+                        children.Add(child);
+                    }
+                    foreach (var child in children)
+                    {
+                        GameObject.DestroyImmediate(child.gameObject);
+                    }
+                }
+                else
+                {
+
+                }
+                count2++;
+                GameObject.DestroyImmediate(group);
+            }
+
+            MeshRendererInfo[] rendererInfos = go.GetComponentsInChildren<MeshRendererInfo>(true);
+            foreach (var info in rendererInfos)
+            {
+                info.rendererType = MeshRendererType.None;
+            }
+            Debug.LogError($"ClearLODGroups count1:{count1} count2:{count2}");
+        }
+    }
+
+    [MenuItem("SceneTools/LOD/RemoveOthers")]
+    public static void RemoveLODGroupOthers()
+    {
+        List<MeshRenderer> renderers = GetLodGroupRenderers();
+        MeshRenderer[] allRenderers = GameObject.FindObjectsOfType<MeshRenderer>(true);
+        for (int i = 0; i < allRenderers.Length; i++)
+        {
+            MeshRenderer render = allRenderers[i];
+            ProgressArg pA = new ProgressArg("RemoveLODGroupOthers", i, allRenderers.Length, render);
+            if (ProgressBarHelper.DisplayCancelableProgressBar(pA))
+            {
+                break;
+            }
+            if (renderers.Contains(render))
+            {
+                continue;
+            }
+            if (render == null) continue;
+            if (render.gameObject == null) continue;
+            EditorHelper.UnpackPrefab(render.gameObject);
+            GameObject.DestroyImmediate(render.gameObject);
+        }
+        Debug.Log($"RemoveLODGroupOthers renderers:{renderers.Count} allRenderers:{allRenderers.Length}");
+        ProgressBarHelper.ClearProgressBar();
+    }
+
+    public static List<MeshRenderer> GetLodGroupRenderers()
+    {
+        List<MeshRenderer> renderers = new List<MeshRenderer>();
+        LODGroup[] groups = GameObject.FindObjectsOfType<LODGroup>(true);
+        for (int i = 0; i < groups.Length; i++)
+        {
+            LODGroup group = groups[i];
+            ProgressArg pA = new ProgressArg("GetLodGroupRenderers", i, groups.Length, group);
+            if (ProgressBarHelper.DisplayCancelableProgressBar(pA))
+            {
+                break;
+            }
+            var lodRenderers = group.GetComponentsInChildren<MeshRenderer>(true);
+            renderers.AddRange(lodRenderers);
+        }
+        ProgressBarHelper.ClearProgressBar();
+        Debug.Log($"GetLodGroupRenderers groups:{groups.Length} renderers:{renderers.Count}");
+        return renderers;
+    }
+
     public static void SetRenderersLODInfo(LODGroup group, List<Renderer> renderers)
     {
         LOD[] lods = group.GetLODs();

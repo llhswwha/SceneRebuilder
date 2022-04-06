@@ -3,9 +3,138 @@ using UnityEditor;
 using System.Collections.Generic;
 using System;
 using System.Linq;
+using Base.Common;
+using System.IO;
 
 public class MyEditorTools2
 {
+    #region TreeNode
+    [MenuItem("SceneTools/Hierarchy/InitIds")]
+    public static void InitIds()
+    {
+        IdDictionary.InitInfos();
+    }
+
+    [MenuItem("SceneTools/Hierarchy/Init")]
+    public static void InitHierarchy()
+    {
+        //GameObject go = Selection.activeGameObject;
+        ////RendererId.InitId(go);
+
+        GameObject go = Selection.activeGameObject;
+        var rendrerers = go.GetComponentsInChildren<MeshRenderer>(true);
+        for (int i = 0; i < rendrerers.Length; i++)
+        {
+            MeshRenderer renderer = rendrerers[i];
+            ProgressArg pA = new ProgressArg("InitHierarchy", i, rendrerers.Length, renderer);
+            if (ProgressBarHelper.DisplayCancelableProgressBar(pA))
+            {
+                break;
+            }
+            if (renderer.gameObject == go) continue;
+            RendererId.InitId(renderer);
+        }
+        ProgressBarHelper.ClearProgressBar();
+        Debug.Log($"InitHierarchy rendrerers:{rendrerers.Length}");
+    }
+
+    [MenuItem("SceneTools/Hierarchy/Clear")]
+    public static void ClearHierarchy()
+    {
+        GameObject go = Selection.activeGameObject;
+        EditorHelper.UnpackPrefab(go);
+        var rendrerers = go.GetComponentsInChildren<MeshRenderer>(true);
+        for (int i = 0; i < rendrerers.Length; i++)
+        {
+            MeshRenderer renderer = rendrerers[i];
+            ProgressArg pA = new ProgressArg("ClearHierarchy", i, rendrerers.Length, renderer);
+            if (ProgressBarHelper.DisplayCancelableProgressBar(pA))
+            {
+                break;
+            }
+            if (renderer.gameObject == go) continue;
+            renderer.transform.SetParent(go.transform);
+        }
+        ProgressBarHelper.ClearProgressBar();
+        Debug.Log($"ClearHierarchy rendrerers:{rendrerers.Length}");
+    }
+
+    [MenuItem("SceneTools/Hierarchy/Save")]
+    public static void SaveHierarchy()
+    {
+        IdDictionary.InitInfos(null, true, true);
+
+        GameObject go = Selection.activeGameObject;
+        EditorHelper.UnpackPrefab(go);
+        var rendrerers = go.GetComponentsInChildren<RendererId>(true);
+        IdInfoList idList = new IdInfoList();
+        for (int i = 0; i < rendrerers.Length; i++)
+        {
+            RendererId renderer = rendrerers[i];
+            ProgressArg pA = new ProgressArg("SaveHierarchy", i, rendrerers.Length, renderer);
+            if (ProgressBarHelper.DisplayCancelableProgressBar(pA))
+            {
+                break;
+            }
+            if (renderer.gameObject == go) continue;
+            idList.AddId(renderer);
+        }
+        ProgressBarHelper.ClearProgressBar();
+        SerializeHelper.Save(idList, "IdInfoList.xml");
+
+        string xml = SerializeHelper.GetXmlText(idList);
+        //Debug.Log($"SaveXml xml:{xml}");
+        string path = GetIdInfoListFilePath();
+        File.WriteAllText(path, xml);
+
+        Debug.Log($"SaveHierarchy go:{go} rendrerers:{rendrerers.Length} idList:{idList.Ids.Count} path:{path}");
+    }
+
+    public static string IdInfoListFilePath = "\\..\\IdInfoList.XML";
+
+    public static string GetIdInfoListFilePath()
+    {
+        string path = Application.dataPath + IdInfoListFilePath;
+        return path;
+    }
+
+    [MenuItem("SceneTools/Hierarchy/Load")]
+    public static void LoadHierarchy()
+    {
+        string path = GetIdInfoListFilePath();
+        if (File.Exists(path) == false)
+        {
+            Debug.LogError($"LoadHierarchy FileNotFound path:{path}");
+            return;
+        }
+        string xml = File.ReadAllText(path);
+        //Debug.Log($"LoadHierarchy xml:{xml}");
+        IdInfoList idList = SerializeHelper.LoadFromText<IdInfoList>(xml);
+        Debug.Log($"LoadHierarchy idList:{idList} ids:{idList.Ids.Count} xml:{xml} ");
+
+        IdDictionary.InitInfos(null,true,true);
+
+        for (int i = 0; i < idList.Ids.Count; i++)
+        {
+            IdInfo id = idList.Ids[i];
+            ProgressArg pA = new ProgressArg("LoadHierarchy", i, idList.Ids.Count, id.Id);
+
+            if (ProgressBarHelper.DisplayCancelableProgressBar(pA))
+            {
+                break;
+            }
+            var idGo = IdDictionary.GetId(id.Id);
+            if (idGo == null)
+            {
+                Debug.Log($"LoadHierarchy[{i}] idGo == null id:{id.Id}");
+                continue;
+            }
+            idGo.SetParent();
+        }
+        ProgressBarHelper.ClearProgressBar();
+    }
+    #endregion
+
     #region TreeNode
     [MenuItem("SceneTools/Debug/Selections")]
     public static void ShowSelections()
@@ -143,7 +272,7 @@ public class MyEditorTools2
             Debug.LogError("SetLODBoxMat lodMat == null");
             return;
         }
-        var renderers = GameObject.FindObjectsOfType<MeshRenderer>();
+        var renderers = GameObject.FindObjectsOfType<MeshRenderer>(true);
         for (int i = 0; i < renderers.Length; i++)
         {
             var r = renderers[i];
@@ -168,62 +297,36 @@ public class MyEditorTools2
         EditorHelper.SelectObject(LODManager.Instance);
     }
 
+    [MenuItem("SceneTools/LOD/RemoveOthers")]
+    public static void RemoveLODGroupOthers()
+    {
+        LODHelper.RemoveLODGroupOthers();
+    }
+
+
+    [MenuItem("SceneTools/LOD/GetLODGroups")]
+    public static void GetLODGroups()
+    {
+        LODGroup[] groups = GameObject.FindObjectsOfType<LODGroup>(true);
+        GameObject groupRoot = new GameObject("LODGroupList");
+        for (int i = 0; i < groups.Length; i++)
+        {
+            LODGroup group = groups[i];
+            group.transform.SetParent(groupRoot.transform);
+            ProgressArg pA = new ProgressArg("GetLODGroups", i, groups.Length, group);
+            if (ProgressBarHelper.DisplayCancelableProgressBar(pA))
+            {
+                break;
+            }
+        }
+        ProgressBarHelper.ClearProgressBar();
+        Debug.Log($"GetLODGroups groups:{groups.Length}");
+    }
 
     [MenuItem("SceneTools/LOD/ClearLODGroups")]
     public static void ClearLODGroups()
     {
-        GameObject[] gos = Selection.gameObjects;
-        int count1 = 0;
-        int count2 = 0;
-        for (int i = 0; i < gos.Length; i++)
-        {
-            GameObject go = gos[i];
-            LODGroup[] groups = go.GetComponentsInChildren<LODGroup>(true);
-            foreach(var group in groups)
-            {
-                count1++;
-                if (group == null) continue;
-                MeshRenderer groupRenderer = group.GetComponent<MeshRenderer>();
-                if (groupRenderer != null)
-                {
-                    var lods = group.GetLODs();
-                    for (int i1 = 1; i1 < lods.Length; i1++)
-                    {
-                        LOD lod = lods[i1];
-                        var renderers = lod.renderers;
-                        foreach(var renderer in renderers)
-                        {
-                            if (renderer == null) continue;
-                            if (renderer.gameObject==null) continue;
-                            GameObject.DestroyImmediate(renderer.gameObject);
-                        }
-                    }
-                    List<Transform> children = new List<Transform>();
-                    for (int j = 0; j < group.transform.childCount; j++)
-                    {
-                        var child = group.transform.GetChild(j);
-                        children.Add(child);
-                    }
-                    foreach(var child in children)
-                    {
-                        GameObject.DestroyImmediate(child.gameObject);
-                    }
-                }
-                else
-                {
-
-                }
-                count2++;
-                GameObject.DestroyImmediate(group);
-            }
-
-            MeshRendererInfo[] rendererInfos= go.GetComponentsInChildren<MeshRendererInfo>(true);
-            foreach(var info in rendererInfos)
-            {
-                info.rendererType = MeshRendererType.None;
-            }
-            Debug.LogError($"ClearLODGroups count1:{count1} count2:{count2}");
-        }
+        LODHelper.ClearLODGroups();
     }
 
     [MenuItem("SceneTools/LOD/AddLOD1(U)")]
@@ -464,13 +567,13 @@ public class MyEditorTools2
     [MenuItem("SceneTools/Mesh/ShowAll")]
     public static void ShowAllMesh()
     {
-        var meshRenderers = GameObject.FindObjectsOfType<MeshRenderer>();
+        var meshRenderers = GameObject.FindObjectsOfType<MeshRenderer>(true);
         SetEnbled(meshRenderers, true);
     }
     [MenuItem("SceneTools/Mesh/HideAll")]
     public static void HideAllMesh()
     {
-        var meshRenderers = GameObject.FindObjectsOfType<MeshRenderer>();
+        var meshRenderers = GameObject.FindObjectsOfType<MeshRenderer>(true);
         SetEnbled(meshRenderers, false);
     }
     [MenuItem("SceneTools/Mesh/ShowSelection")]
@@ -760,7 +863,7 @@ public class MyEditorTools2
     [MenuItem("SceneTools/SubScene/LoadSubScenes(All)")]
     public static void LoadSubScenes_All()
     {
-        SubScene_Single[] scenes = GameObject.FindObjectsOfType<SubScene_Single>();
+        SubScene_Single[] scenes = GameObject.FindObjectsOfType<SubScene_Single>(true);
         for (int i = 0; i < scenes.Length; i++)
         {
             SubScene_Single scene = scenes[i];
@@ -1189,7 +1292,7 @@ public class MyEditorTools2
     [MenuItem("SceneTools/Transform/GetPositionOffset")]
     public static void GetPositionOffset()
     {
-        var allT = GameObject.FindObjectsOfType<Transform>();
+        var allT = GameObject.FindObjectsOfType<Transform>(true);
         foreach (var obj in Selection.gameObjects)
         {
             string name = obj.name;
@@ -1207,7 +1310,7 @@ public class MyEditorTools2
     [MenuItem("SceneTools/Transform/SetParentNull")]
     public static void SetParentNull()
     {
-        var allT = GameObject.FindObjectsOfType<Transform>();
+        var allT = GameObject.FindObjectsOfType<Transform>(true);
         foreach (var obj in Selection.gameObjects)
         {
             obj.transform.SetParent(null);
@@ -1217,7 +1320,7 @@ public class MyEditorTools2
     [MenuItem("SceneTools/Transform/Reset")]
     public static void Reset()
     {
-        var allT = GameObject.FindObjectsOfType<Transform>();
+        var allT = GameObject.FindObjectsOfType<Transform>(true);
         foreach (var obj in Selection.gameObjects)
         {
             //obj.transform.SetParent(null);
@@ -1228,7 +1331,7 @@ public class MyEditorTools2
     [MenuItem("SceneTools/Transform/LayoutX10")]
     public static void LayoutX10()
     {
-        var allT = GameObject.FindObjectsOfType<Transform>();
+        var allT = GameObject.FindObjectsOfType<Transform>(true);
         for (int i = 0; i < Selection.gameObjects.Length; i++)
         {
             GameObject obj = Selection.gameObjects[i];
@@ -1239,7 +1342,7 @@ public class MyEditorTools2
     [MenuItem("SceneTools/Transform/LayoutX05")]
     public static void LayoutX05()
     {
-        var allT = GameObject.FindObjectsOfType<Transform>();
+        var allT = GameObject.FindObjectsOfType<Transform>(true);
         for (int i = 0; i < Selection.gameObjects.Length; i++)
         {
             GameObject obj = Selection.gameObjects[i];
@@ -1250,7 +1353,7 @@ public class MyEditorTools2
     [MenuItem("SceneTools/Transform/LayoutX01")]
     public static void LayoutX01()
     {
-        var allT = GameObject.FindObjectsOfType<Transform>();
+        var allT = GameObject.FindObjectsOfType<Transform>(true);
         for (int i = 0; i < Selection.gameObjects.Length; i++)
         {
             GameObject obj = Selection.gameObjects[i];
@@ -1267,7 +1370,7 @@ public class MyEditorTools2
     {
         foreach (var obj in Selection.gameObjects)
         {
-            var renderers = obj.GetComponentsInChildren<Renderer>();
+            var renderers = obj.GetComponentsInChildren<Renderer>(true);
             foreach (var render in renderers)
             {
                 render.enabled = true;
@@ -1280,7 +1383,7 @@ public class MyEditorTools2
     {
         foreach (var obj in Selection.gameObjects)
         {
-            var renderers = obj.GetComponentsInChildren<Renderer>();
+            var renderers = obj.GetComponentsInChildren<Renderer>(true);
             foreach (var render in renderers)
             {
                 render.enabled = false;
@@ -1293,7 +1396,7 @@ public class MyEditorTools2
     {
         foreach (var obj in Selection.gameObjects)
         {
-            var renderers = obj.GetComponentsInChildren<Renderer>();
+            var renderers = obj.GetComponentsInChildren<Renderer>(true);
             foreach (var render in renderers)
             {
                 render.enabled = true;
@@ -1306,19 +1409,12 @@ public class MyEditorTools2
     {
         foreach (var obj in Selection.gameObjects)
         {
-            var renderers = obj.GetComponentsInChildren<Renderer>();
+            var renderers = obj.GetComponentsInChildren<Renderer>(true);
             foreach (var render in renderers)
             {
                 render.enabled = false;
             }
         }
-    }
-
-    [MenuItem("SceneTools/Renderers/CheckIds(A)")]
-    public static void CheckRendererIdsA()
-    {
-        var rids = GameObject.FindObjectsOfType<RendererId>();
-        UpdateRendererIds(rids, false);
     }
 
     [MenuItem("SceneTools/Renderers/RemoveOtherIds")]
@@ -1400,7 +1496,21 @@ public class MyEditorTools2
     [MenuItem("SceneTools/Renderers/UpdateIds(A)")]
     public static void UpdateRendererIdsA()
     {
-        var rids = GameObject.FindObjectsOfType<RendererId>();
+        var rids = GameObject.FindObjectsOfType<RendererId>(true);
+        UpdateRendererIds(rids, true);
+    }
+
+    [MenuItem("SceneTools/Renderers/CheckIds(A)")]
+    public static void CheckRendererIdsA()
+    {
+        var rids = GameObject.FindObjectsOfType<RendererId>(true);
+        UpdateRendererIds(rids, false);
+    }
+
+    [MenuItem("SceneTools/Renderers/UpdateIds(S)")]
+    public static void UpdateRendererIdsS()
+    {
+        var rids = Selection.activeGameObject.GetComponentsInChildren<RendererId>(true);
         UpdateRendererIds(rids, true);
     }
 
@@ -1411,12 +1521,6 @@ public class MyEditorTools2
         UpdateRendererIds(rids, false);
     }
 
-    [MenuItem("SceneTools/Renderers/UpdateIds(S)")]
-    public static void UpdateRendererIdsS()
-    {
-        var rids = Selection.activeGameObject.GetComponentsInChildren<RendererId>(true);
-        UpdateRendererIds(rids, true);
-    }
 
     [MenuItem("SceneTools/Renderers/UpdateChildrenIds(S)")]
     public static void UpdateRendererChildrenIdsS()
@@ -1566,7 +1670,7 @@ public class MyEditorTools2
 
     public static void AddAllMeshCollider(Transform parent)
     {
-        var meshFilters = parent.GetComponentsInChildren<MeshFilter>();
+        var meshFilters = parent.GetComponentsInChildren<MeshFilter>(true);
         foreach (var meshFilter in meshFilters)
         {
             MeshCollider meshCollider = meshFilter.gameObject.GetComponent<MeshCollider>();

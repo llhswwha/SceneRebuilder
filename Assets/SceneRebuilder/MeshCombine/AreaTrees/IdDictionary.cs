@@ -37,29 +37,12 @@ public static class IdDictionary
         SetId(id);
     }
 
-    public static void SetId(RendererId id)
+    public static void SetId(RendererId id, bool isUpdate = false)
     {
-        //try
-        //{
-
-        //    if (!IdDict.ContainsKey(id.Id))
-        //    {
-        //        IdDict.Add(id.Id, id);
-        //    }
-        //    else
-        //    {
-        //        IdDict[id.Id] = id;//�ɵĿ��ܱ�ж�ء�ɾ����
-        //    }
-        //}
-        //catch (Exception ex)
-        //{
-        //    Debug.LogError($"RendererDictionay.SetId Renderer:{id},Exception:{ex}");
-        //}
-
-        SetRendererId(id, id.mr);
+        SetRendererId(id, id.mr, isUpdate);
     }
 
-    private static void SetRendererId(RendererId id,MeshRenderer renderer)
+    private static void SetRendererId(RendererId id,MeshRenderer renderer,bool isUpdate = false)
     {
         try
         {
@@ -71,26 +54,52 @@ public static class IdDictionary
             {
                 if (renderer != null)
                 {
+                    if (isUpdate)
+                    {
+                        if (IdDict.ContainsKey(id.Id))
+                        {
+                            RendererId rid1 = IdDict[id.Id];
+                            Debug.LogWarning($"SetRendererId(RendererId) id:{id.Id} rid1:{rid1.name} rid2:{id.name}");
+                            id.NewId();
+                        }
+                    }
+
                     if (!RendererDict.ContainsKey(id.Id))
                     {
                         RendererDict.Add(id.Id, renderer);
                     }
                     else
                     {
+                        MeshRenderer renderer1 = RendererDict[id.Id];
+                        Debug.LogError($"SetRendererId(MeshRenderer) id:{id.Id} renderer1:{renderer1.name} renderer2:{renderer.name}");
                         RendererDict[id.Id] = renderer;
                     }
-                }
 
-                if (!IdDict.ContainsKey(id.Id))
-                {
-                    IdDict.Add(id.Id, id);
+                    if (!IdDict.ContainsKey(id.Id))
+                    {
+                        IdDict.Add(id.Id, id);
+                    }
+                    else
+                    {
+                        RendererId rid1 = IdDict[id.Id];
+                        //Debug.LogError($"SetRendererId(RendererId) id:{id.Id} rid1:{rid1.name} rid2:{id.name}");
+                        IdDict[id.Id] = id;
+                    }
                 }
                 else
                 {
-                    IdDict[id.Id] = id;
+                    if (!IdDict.ContainsKey(id.Id))
+                    {
+                        IdDict.Add(id.Id, id);
+                    }
+                    else
+                    {
+                        RendererId rid1 = IdDict[id.Id];
+                        Debug.LogError($"SetRendererId(RendererId) id:{id.Id} rid1:{rid1.name} rid2:{id.name}");
+                        IdDict[id.Id] = id;
+                    }
                 }
             }
-            
         }
         catch (Exception ex)
         {
@@ -98,13 +107,15 @@ public static class IdDictionary
         }
     }
 
-    public static void InitInfos(GameObject root = null, bool includeInactive = true)
+    public static void InitInfos(GameObject root = null, bool includeInactive = true, bool isUpdate = false)
     {
         DateTime start = DateTime.Now;
         RendererDict.Clear();
         IdDict.Clear();
-        InitRenderers(root, includeInactive);
-        InitIds(root, includeInactive);
+
+        //InitRenderers(root, includeInactive);
+
+        InitIds(root, includeInactive, isUpdate);
         Debug.Log($"IdDictionay.InitInfos root:[{root}] idCount:{IdDict.Count},RendererCount:{RendererDict.Count} time:{(DateTime.Now - start)}");
     }
 
@@ -124,7 +135,7 @@ public static class IdDictionary
         //Debug.Log($"IdDictionay.InitRenderers count:{renderers.Length},Dict:{RendererDict.Count} time:{(DateTime.Now - start)}");
     }
 
-    private static RendererId[] InitIds(GameObject root=null, bool includeInactive = true)
+    private static RendererId[] InitIds(GameObject root=null, bool includeInactive = true, bool isUpdate=false)
     {
         DateTime start = DateTime.Now;
 
@@ -139,9 +150,9 @@ public static class IdDictionary
         {
             ids = root.GetComponentsInChildren<RendererId>(includeInactive);
         }
-        foreach (var id in ids)
+        foreach (RendererId id in ids)
         {
-            SetId(id);
+            SetId(id, isUpdate);
             //id.childrenIds.Clear();
         }
         //Debug.Log($"IdDictionay.InitIds count:{ids.Length},Dict:{IdDict.Count} time:{(DateTime.Now - start)}");
