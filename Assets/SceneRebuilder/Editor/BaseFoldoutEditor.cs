@@ -414,12 +414,17 @@ public class BaseFoldoutEditor<T> : BaseEditor<T> where T : class
             nodes = funcGetList();
             nodes.Sort((a, b) =>
             {
+                if (a == null) return -1;
+                if (b == null) return 1;
                 return b.VertexCount.CompareTo(a.VertexCount);
             });
             nodes.ForEach(b =>
             {
-                sumVertexCount += b.VertexCount;
-                sumRendererCount += b.Renderers.Count;
+                if (b != null)
+                {
+                    sumVertexCount += b.VertexCount;
+                    sumRendererCount += b.Renderers.Count;
+                }
             });
             InitEditorArg(nodes);
             arg.caption = $"Node List({nodes.Count})";

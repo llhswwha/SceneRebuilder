@@ -150,7 +150,7 @@ public class LODGroupInfoEditor : BaseFoldoutEditor<LODGroupInfo>
             //    EditorUIUtils.ObjectFoldout(arg, renderer, () =>
             //    {
             //        lod.screenRelativeTransitionHeight = EditorGUILayout.FloatField(lod.screenRelativeTransitionHeight, GUILayout.Width(40));
-            //    });
+            //    }); 
             //});
 
             for (int i = 0; i < lods.Count; i++)

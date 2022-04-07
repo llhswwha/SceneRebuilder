@@ -64,6 +64,20 @@ public static class TransformHelper
         return path;
     }
 
+    public static void ClearComponentsAll<T>()
+    where T : Component
+    {
+        T[] cs = GameObject.FindObjectsOfType<T>(true);
+        TransformHelper.ClearComponents(cs);
+    }
+
+    public static void ClearComponentsAllGo<T>()
+    where T : Component
+    {
+        T[] cs = GameObject.FindObjectsOfType<T>(true);
+        TransformHelper.ClearComponentGos(cs);
+    }
+
     public static void ClearComponentGos<T>(GameObject obj) where T : Component
     {
         var ids = obj.GetComponentsInChildren<T>(true);
@@ -100,6 +114,15 @@ public static class TransformHelper
         foreach (var obj in objs)
         {
             GameObject.DestroyImmediate(obj);
+        }
+        Debug.Log($"ClearComponents[{typeof(T)}] objs:{objs.Length}");
+    }
+
+    public static void ClearComponentGos<T>(T[] objs) where T : Component
+    {
+        foreach (var obj in objs)
+        {
+            GameObject.DestroyImmediate(obj.gameObject);
         }
         Debug.Log($"ClearComponents[{typeof(T)}] objs:{objs.Length}");
     }

@@ -312,6 +312,7 @@ public class MyEditorTools2
         for (int i = 0; i < groups.Length; i++)
         {
             LODGroup group = groups[i];
+            EditorHelper.UnpackPrefab(groupRoot.gameObject);
             group.transform.SetParent(groupRoot.transform);
             ProgressArg pA = new ProgressArg("GetLODGroups", i, groups.Length, group);
             if (ProgressBarHelper.DisplayCancelableProgressBar(pA))
@@ -326,7 +327,13 @@ public class MyEditorTools2
     [MenuItem("SceneTools/LOD/ClearLODGroups")]
     public static void ClearLODGroups()
     {
-        LODHelper.ClearLODGroups();
+        LODHelper.ClearLODGroups(Selection.gameObjects);
+    }
+
+    [MenuItem("SceneTools/LOD/ClearLODGroupsByKey_MemberPartPrismatic(MemberPartPrismatic)")]
+    public static void ClearLODGroupsByKey_MemberPartPrismatic()
+    {
+        LODHelper.ClearLODGroupsByKey(Selection.gameObjects, "MemberPartPrismatic");
     }
 
     [MenuItem("SceneTools/LOD/AddLOD1(U)")]
@@ -884,12 +891,6 @@ public class MyEditorTools2
         TransformHelper.ClearComponents<T>(Selection.gameObjects);
     }
 
-    public static void ClearComponentsAll<T>() 
-        where T : Component
-    {
-        T[] cs = GameObject.FindObjectsOfType<T>(true);
-        TransformHelper.ClearComponents(cs);
-    }
 
     [MenuItem("SceneTools/Clear/ClearSceneNullObjs")]
     public static void ClearSceneNullObjs()
@@ -921,13 +922,32 @@ public class MyEditorTools2
     public static void ClearMeshNode()
     {
         ClearComponents<MeshNode>();
-        
+    }
+
+    [MenuItem("SceneTools/Clear/DestroyDoors")]
+    public static void DestroyDoors()
+    {
+        DoorsRootList doors =DoorManager.Instance.UpdateAllDoors();
+        foreach(DoorsRoot door in doors)
+        {
+            GameObject.DestroyImmediate(door.gameObject);
+        }
+    }
+
+    [MenuItem("SceneTools/Clear/DestroyTrees")]
+    public static void DestroyTrees()
+    {
+        //ClearComponents<MeshNode>();
+
+        //TransformHelper.ClearComponentGos<ModelAreaTree>(Selection.activeGameObject);
+
+        TransformHelper.ClearComponentsAllGo<ModelAreaTree>();
     }
 
     [MenuItem("SceneTools/Clear/ClearMeshNodeAll")]
     public static void ClearMeshNodeAll()
     {
-        ClearComponentsAll<MeshNode>();
+        TransformHelper.ClearComponentsAll<MeshNode>();
     }
 
     [MenuItem("SceneTools/Clear/ClearRendererInfo")]

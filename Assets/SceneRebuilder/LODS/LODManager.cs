@@ -1738,10 +1738,10 @@ T minTEx = null;
 
 public static class LODHelper
 {
-    [MenuItem("SceneTools/LOD/ClearLODGroups")]
-    public static void ClearLODGroups()
+    [MenuItem("SceneTools/LOD/ClearLODGroupsByKey")]
+    public static int ClearLODGroupsByKey(GameObject[] gos,string key)
     {
-        GameObject[] gos = Selection.gameObjects;
+        //GameObject[] gos = Selection.gameObjects;
         int count1 = 0;
         int count2 = 0;
         for (int i = 0; i < gos.Length; i++)
@@ -1752,6 +1752,88 @@ public static class LODHelper
             {
                 count1++;
                 if (group == null) continue;
+                LODGroupInfo lODGroupInfo = group.GetComponent<LODGroupInfo>();
+                if (lODGroupInfo != null)
+                {
+                    GameObject.DestroyImmediate(lODGroupInfo);
+                }
+                MeshRenderer groupRenderer = group.GetComponent<MeshRenderer>();
+                SubScene_Base scene= group.GetComponent<SubScene_Base>();
+                if (scene != null)
+                {
+                    continue;
+                }
+                if (!group.name.Contains(key))
+                {
+                    continue;
+                }
+                if (groupRenderer != null)
+                {
+                    var lods = group.GetLODs();
+                    var lod0Renderers = lods[0].renderers;
+                    var lod1Renderers = lods[1].renderers;
+                    
+                    for (int i1 = 1; i1 < lods.Length; i1++)
+                    {
+                        LOD lod = lods[i1];
+                        var renderers = lod.renderers;
+                        foreach (var renderer in renderers)
+                        {
+                            if (renderer == null) continue;
+                            if (renderer.gameObject == null) continue;
+                            GameObject.DestroyImmediate(renderer.gameObject);
+                        }
+                    }
+                    List<Transform> children = new List<Transform>();
+                    for (int j = 0; j < group.transform.childCount; j++)
+                    {
+                        var child = group.transform.GetChild(j);
+                        children.Add(child);
+                    }
+                    foreach (var child in children)
+                    {
+                        GameObject.DestroyImmediate(child.gameObject);
+                    }
+                }
+                else
+                {
+
+                }
+                count2++;
+                Debug.Log($"ClearLODGroupsEx[{count2}] name:{group.name}");
+                GameObject.DestroyImmediate(group);
+            }
+
+            MeshRendererInfo[] rendererInfos = go.GetComponentsInChildren<MeshRendererInfo>(true);
+            foreach (var info in rendererInfos)
+            {
+                info.rendererType = MeshRendererType.None;
+            }
+            Debug.LogError($"ClearLODGroupsEx count1:{count1} count2:{count2}");
+            
+        }
+        return count2;
+    }
+
+    [MenuItem("SceneTools/LOD/ClearLODGroups")]
+    public static void ClearLODGroups(GameObject[] gos)
+    {
+        //GameObject[] gos = Selection.gameObjects;
+        int count1 = 0;
+        int count2 = 0;
+        for (int i = 0; i < gos.Length; i++)
+        {
+            GameObject go = gos[i];
+            LODGroup[] groups = go.GetComponentsInChildren<LODGroup>(true);
+            foreach (var group in groups)
+            {
+                count1++;
+                if (group == null) continue;
+                LODGroupInfo lODGroupInfo = group.GetComponent<LODGroupInfo>();
+                if (lODGroupInfo != null)
+                {
+                    GameObject.DestroyImmediate(lODGroupInfo);
+                }
                 MeshRenderer groupRenderer = group.GetComponent<MeshRenderer>();
                 if (groupRenderer != null)
                 {

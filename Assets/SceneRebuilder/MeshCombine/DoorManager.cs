@@ -118,6 +118,16 @@ public class DoorManager : SingletonBehaviour<DoorManager>
         return doorRoots;
     }
 
+    public DoorsRootList UpdateAllDoors()
+    {
+        doorsList = null;
+        doorParts = null;
+        doorRoots = UpdateDoors(null, null);
+        GetDoors();
+        GetDoorParts();
+        return doorRoots;
+    }
+
     public static DoorsRootList UpdateDoors(GameObject go, Action<ProgressArg> progressChanged)
     {
         var ts = GetTransforms(go);
