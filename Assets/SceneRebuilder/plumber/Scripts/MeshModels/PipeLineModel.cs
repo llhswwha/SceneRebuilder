@@ -344,8 +344,8 @@ public class PipeLineModel : PipeModelBase
             Debug.LogError($"PipeLine.GetModelInfo startCircle == null gameObject:{this.gameObject.name}");
             IsGetInfoSuccess = false;
 
-            CreateLocalPoint(startPlane.Point.planeCenter, $"Error1_StartPoint1", planInfoRoot.transform);
-            CreateLocalPoint(endPlane.Point.planeCenter, "Error1_EndPoint1", planInfoRoot.transform);
+            CreateLocalPoint(startPlane.Plane.planeCenter, $"Error1_StartPoint1", planInfoRoot.transform);
+            CreateLocalPoint(endPlane.Plane.planeCenter, "Error1_EndPoint1", planInfoRoot.transform);
             return;
         }
         startPoint = startCircle.GetCenter4();
@@ -354,8 +354,8 @@ public class PipeLineModel : PipeModelBase
         {
             Debug.LogError($"PipeLine.GetModelInfo endCircle == null gameObject:{this.gameObject.name}");
             IsGetInfoSuccess = false;
-            CreateLocalPoint(startPlane.Point.planeCenter, "Error3_StartPoint2", planInfoRoot.transform);
-            CreateLocalPoint(endPlane.Point.planeCenter, "Error3_EndPoint2", planInfoRoot.transform);
+            CreateLocalPoint(startPlane.Plane.planeCenter, "Error3_StartPoint2", planInfoRoot.transform);
+            CreateLocalPoint(endPlane.Plane.planeCenter, "Error3_EndPoint2", planInfoRoot.transform);
             return;
         }
         endPoint = endCircle.GetCenter4();

@@ -15,4 +15,13 @@ public class DebugInfoRoot : MonoBehaviour
     {
         
     }
+
+    public static GameObject NewGo(string name,Transform parent)
+    {
+        GameObject planInfoRoot = new GameObject(name);
+        planInfoRoot.AddComponent<DebugInfoRoot>();
+        planInfoRoot.transform.SetParent(parent);
+        planInfoRoot.transform.localPosition = Vector3.zero;
+        return planInfoRoot;
+    }
 }

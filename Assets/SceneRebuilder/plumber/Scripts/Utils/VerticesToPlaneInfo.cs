@@ -6,6 +6,30 @@ using UnityEngine;
 
 public class VerticesToPlaneInfo : IComparable<VerticesToPlaneInfo>
 {
+
+
+    public static VerticesToPlaneInfo GetMiddlePlane(VerticesToPlaneInfo plane1, VerticesToPlaneInfo plane2)
+    {
+        var ps1 = plane1.Plane1Points;
+        var ps2 = plane2.Plane2Points;
+        if (ps1.Count != ps2.Count)
+        {
+            Debug.LogError($"VerticesToPlaneInfo.GetMiddlePlane ps1.Count != ps2.Count ps1:{ps1.Count},ps2:{ps2.Count}");
+            return null;
+        }
+        List<Vector3> ps3 = new List<Vector3>();
+        foreach(var p1 in ps1)
+        {
+            Vector3 p2 = plane2.GetClosedPlanePoint1(p1);
+            float dis = Vector3.Distance(p1, p2);
+            Vector3 p3 = (p1 + p2) / 2;
+            ps3.Add(p3);
+        }
+        PlaneInfo plane30 = new PlaneInfo(ps3[0], ps3[1], ps3[2], ps3[3]);
+        VerticesToPlaneInfo plane31 = new VerticesToPlaneInfo(ps3.ToArray(), plane30, true);
+        return plane31;
+    }
+
     public float DistanceToPlane(VerticesToPlaneInfo plane2)
     {
         Vector3 p1 = this.GetMinVector3();
@@ -25,17 +49,17 @@ public class VerticesToPlaneInfo : IComparable<VerticesToPlaneInfo>
     public float DebugDistanceOfPlane12(Transform t, string tag)
     {
         Vector3 p1 = Plane1Points[0];
-        Vector3 p2 = GetClosedPlanePoint2(p1);
+        Vector3 p2 = GetClosedPlanePoint1(p1, Plane1Points);
         float dis = Vector3.Distance(p1, p2);
-        MeshHelper.CreateLocalPoint(p1, $"DistanceOfPlane12_{tag}_P1_{dis}", t, 0.1f);
-        MeshHelper.CreateLocalPoint(p2, $"DistanceOfPlane12_{tag}_P2_{dis}", t, 0.1f);
+        MeshHelper.CreateLocalPoint(p1, $"DistanceOfPlane12_{tag}_P1_{dis}", t, 0.01f);
+        MeshHelper.CreateLocalPoint(p2, $"DistanceOfPlane12_{tag}_P2_{dis}", t, 0.01f);
         return dis;
     }
 
     public float DebugDistanceToPlane(VerticesToPlaneInfo plane2,Transform t,string tag)
     {
         Vector3 p1 = this.GetMinVector3();
-        Vector3 p2 = plane2.GetClosedPlanePoint1(p1);
+        Vector3 p2 = plane2.GetClosedPlanePoint1(p1, Plane1Points);
 
         //var list = plane2.ClosedPoints;
         //float minD = float.MaxValue;
@@ -53,14 +77,34 @@ public class VerticesToPlaneInfo : IComparable<VerticesToPlaneInfo>
         //Vector3 p2 = list[minI];
 
         float dis = Vector3.Distance(p1, p2);
-        MeshHelper.CreateLocalPoint(p1, $"DistanceToPlane_{tag}_P1_{dis}", t, 0.1f);
-        MeshHelper.CreateLocalPoint(p2, $"DistanceToPlane_{tag}_P2_{dis}", t, 0.1f);
+        MeshHelper.CreateLocalPoint(p1, $"DistanceToPlane_{tag}_P1_{dis}", t, 0.01f);
+        MeshHelper.CreateLocalPoint(p2, $"DistanceToPlane_{tag}_P2_{dis}", t, 0.01f);
+        return dis;
+    }
+
+    public float GetPlaneHeight(Transform t, string tag)
+    {
+        Vector3 p1 = Plane1Points1[0];
+        Vector3 p2 = GetClosedPlanePoint1(p1, Plane1Points2);
+        float dis = Vector3.Distance(p1, p2);
+        MeshHelper.CreateLocalPoint(p1, $"DistanceOfPlane12_{tag}_P1_{dis}", t, 0.01f);
+        MeshHelper.CreateLocalPoint(p2, $"DistanceOfPlane12_{tag}_P2_{dis}", t, 0.01f);
         return dis;
     }
 
     public Vector3 GetClosedPlanePoint1(Vector3 p)
     {
-        var list = Plane1Points;
+        return GetClosedPlanePoint1(p, Plane1Points);
+    }
+
+    public Vector3 GetClosedPlanePoint2(Vector3 p)
+    {
+        return GetClosedPlanePoint1(p, Plane2Points);
+    }
+
+    public Vector3 GetClosedPlanePoint1(Vector3 p, List<Vector3> list)
+    {
+        //var list = Plane1Points;
         float minD = float.MaxValue;
         int minI = 0;
         for (int i = 0; i < list.Count; i++)
@@ -75,22 +119,22 @@ public class VerticesToPlaneInfo : IComparable<VerticesToPlaneInfo>
         return list[minI];
     }
 
-    public Vector3 GetClosedPlanePoint2(Vector3 p)
-    {
-        var list = Plane2Points;
-        float minD = float.MaxValue;
-        int minI = 0;
-        for (int i = 0; i < list.Count; i++)
-        {
-            float dis = Vector3.Distance(list[i], p);
-            if (dis < minD)
-            {
-                minD = dis;
-                minI = i;
-            }
-        }
-        return list[minI];
-    }
+    //public Vector3 GetClosedPlanePoint2(Vector3 p)
+    //{
+    //    var list = Plane2Points;
+    //    float minD = float.MaxValue;
+    //    int minI = 0;
+    //    for (int i = 0; i < list.Count; i++)
+    //    {
+    //        float dis = Vector3.Distance(list[i], p);
+    //        if (dis < minD)
+    //        {
+    //            minD = dis;
+    //            minI = i;
+    //        }
+    //    }
+    //    return list[minI];
+    //}
 
     public Vector3 GetMinVector3()
     {
@@ -102,7 +146,7 @@ public class VerticesToPlaneInfo : IComparable<VerticesToPlaneInfo>
         return dict1[maxDis][0];
     }
 
-    public PlaneInfo Point;
+    public PlaneInfo Plane;
 
     DictionaryList1ToN<float, Vector3> dict1 = new DictionaryList1ToN<float, Vector3>();
     DictionaryList1ToN<string, Vector3> dict10 = new DictionaryList1ToN<string, Vector3>();
@@ -126,6 +170,10 @@ public class VerticesToPlaneInfo : IComparable<VerticesToPlaneInfo>
 
     public List<Vector3> Plane1Points = new List<Vector3>();
 
+    public List<Vector3> Plane1Points1 = new List<Vector3>();
+
+    public List<Vector3> Plane1Points2 = new List<Vector3>();
+
     public List<Vector3> Plane2Points = new List<Vector3>();
 
     public static float planeClosedMinDis = 0.00025f;
@@ -136,12 +184,13 @@ public class VerticesToPlaneInfo : IComparable<VerticesToPlaneInfo>
     public VerticesToPlaneInfo(Vector3[] vs, PlaneInfo p, bool isShowLog)
     {
        
-        Point = p;
+        Plane = p;
         List<Vector3> allPs = new List<Vector3>();
         for (int i = 0; i < vs.Length; i++)
         {
             Vector3 v = vs[i];
-            float dis = Math.Abs(Math3D.SignedDistancePlanePoint(p.planeNormal, p.planePoint, v));
+            float dis1 = Math3D.SignedDistancePlanePoint(p.planeNormal, p.planePoint, v);
+            float dis = Math.Abs(dis1);
             dict1.AddItem(dis, v);
 
             if (dis < planeClosedMinDis)
@@ -149,7 +198,17 @@ public class VerticesToPlaneInfo : IComparable<VerticesToPlaneInfo>
                 if (!Plane1Points.Contains(v))
                 {
                     Plane1Points.Add(v);
+
+                    if (dis1 > 0)
+                    {
+                        Plane1Points1.Add(v);
+                    }
+                    else
+                    {
+                        Plane1Points2.Add(v);
+                    }
                 }
+                
             }
 
             if (!allPs.Contains(v))
@@ -272,9 +331,20 @@ public class VerticesToPlaneInfo : IComparable<VerticesToPlaneInfo>
 
         foreach(var v in dict1[minDis])
         {
+            float dis1 = Math3D.SignedDistancePlanePoint(p.planeNormal, p.planePoint, v);
+            //float dis = Math.Abs(dis1);
+
             if (!Plane1Points.Contains(v))
             {
                 Plane1Points.Add(v);
+                if (dis1 > 0)
+                {
+                    Plane1Points1.Add(v);
+                }
+                else
+                {
+                    Plane1Points2.Add(v);
+                }
             }
             allPs.Remove(v);
         }
@@ -286,7 +356,8 @@ public class VerticesToPlaneInfo : IComparable<VerticesToPlaneInfo>
             for (int i = 0; i < allPs.Count; i++)
             {
                 Vector3 v = allPs[i];
-                float dis = Math.Abs(Math3D.SignedDistancePlanePoint(p.planeNormal, p.planePoint, v));
+                float dis1 = Math3D.SignedDistancePlanePoint(p.planeNormal, p.planePoint, v);
+                float dis = Math.Abs(dis1);
                 dict1.AddItem(dis, v);
 
                 if (dis < planeClosedMinDis0)
@@ -294,6 +365,14 @@ public class VerticesToPlaneInfo : IComparable<VerticesToPlaneInfo>
                     if (!Plane1Points.Contains(v))
                     {
                         Plane1Points.Add(v);
+                        if (dis1 > 0)
+                        {
+                            Plane1Points1.Add(v);
+                        }
+                        else
+                        {
+                            Plane1Points2.Add(v);
+                        }
                     }
                     allPs.Remove(v);
                 }

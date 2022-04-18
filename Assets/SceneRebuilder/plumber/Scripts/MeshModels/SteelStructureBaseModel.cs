@@ -79,10 +79,12 @@ public class SteelStructureBaseModel : BaseMeshModel
         Vector4 startPoint = OBB.Up * ObbExtent.y;
         Vector4 endPoint = -OBB.Up * ObbExtent.y;
 
-        GameObject planInfoRoot = new GameObject("PipeModel_PlaneInfo");
-        planInfoRoot.AddComponent<DebugInfoRoot>();
-        planInfoRoot.transform.SetParent(this.transform);
-        planInfoRoot.transform.localPosition = Vector3.zero;
+        //GameObject planInfoRoot = new GameObject("PipeModel_PlaneInfo");
+        //planInfoRoot.AddComponent<DebugInfoRoot>();
+        //planInfoRoot.transform.SetParent(this.transform);
+        //planInfoRoot.transform.localPosition = Vector3.zero;
+
+        GameObject planInfoRoot = DebugInfoRoot.NewGo("PipeModel_PlaneInfo", this.transform);
 
         //CreateLocalPoint(StartPoint, "StartPoint1", go.transform);
         //CreateLocalPoint(EndPoint, "EndPoint1", go.transform);
@@ -123,29 +125,40 @@ public class SteelStructureBaseModel : BaseMeshModel
         goNew.transform.position = this.transform.position;
 
         HMeshGenerator hMesh = goNew.AddComponent<HMeshGenerator>();
+        VerticesToPlaneInfo beforePlane= verticesToPlaneInfos[0];
         VerticesToPlaneInfo leftPlane = verticesToPlaneInfos[4];
         VerticesToPlaneInfo rightPlane = verticesToPlaneInfos[5];
         VerticesToPlaneInfo topPlane = verticesToPlaneInfos[2];
         hMesh.length = verticesToPlaneInfos[0].DebugDistanceToPlane(verticesToPlaneInfos[1], transform, "Length");// Vector3.Distance(verticesToPlaneInfos[0].Point.planeCenter, verticesToPlaneInfos[1].Point.planeCenter);
-        hMesh.height = topPlane.DebugDistanceToPlane(verticesToPlaneInfos[3], transform, "Height");//Vector3.Distance(verticesToPlaneInfos[2].Point.planeCenter, verticesToPlaneInfos[3].Point.planeCenter);
-        hMesh.width = leftPlane.DebugDistanceToPlane(rightPlane, transform, "Width");//Vector3.Distance(verticesToPlaneInfos[4].Point.planeCenter, verticesToPlaneInfos[5].Point.planeCenter);
+        //hMesh.height = topPlane.DebugDistanceToPlane(verticesToPlaneInfos[3], transform, "Height");//Vector3.Distance(verticesToPlaneInfos[2].Point.planeCenter, verticesToPlaneInfos[3].Point.planeCenter);
+        //hMesh.width = leftPlane.DebugDistanceToPlane(rightPlane, transform, "Width");//Vector3.Distance(verticesToPlaneInfos[4].Point.planeCenter, verticesToPlaneInfos[5].Point.planeCenter);
 
-        VerticesToPlaneInfo left2Top = new VerticesToPlaneInfo(leftPlane.Plane1Points.ToArray(), topPlane.Point, true);
+        VerticesToPlaneInfo left2Top = new VerticesToPlaneInfo(leftPlane.Plane1Points.ToArray(), topPlane.Plane, true);
 
         //VerticesToPlaneInfo top2Left = new VerticesToPlaneInfo(topPlane.Plane1Points.ToArray(), leftPlane.Point, false);
 
         //oBBCollider.ShowPlaneInfo(leftPlane.Point, 0, planInfoRoot, leftPlane);
 
-        oBBCollider.ShowPlaneInfo(topPlane.Point, 7, planInfoRoot, left2Top);
+        oBBCollider.ShowPlaneInfo(topPlane.Plane, 7, planInfoRoot, left2Top);
 
         //oBBCollider.ShowPlaneInfo(leftPlane.Point, 1, planInfoRoot, top2Left);
 
         //oBBCollider.ShowPlaneInfo(topPlane.Point, 0, planInfoRoot, left2Top);
 
-        hMesh.sizeX = hMesh.width * 0.05f;
+
+        PlaneInfo middlePlaneOfleftRight = PlaneInfo.GetMiddlePlane(leftPlane.Plane, rightPlane.Plane);
+        VerticesToPlaneInfo middlePlaneVP = new VerticesToPlaneInfo(beforePlane.Plane1Points.ToArray(), middlePlaneOfleftRight, true);
+        GameObject middlePlaneOfleftRightGo = DebugInfoRoot.NewGo("middlePlaneOfleftRight", this.transform);
+        middlePlaneOfleftRight.ShowPlaneInfo(0, middlePlaneOfleftRightGo, middlePlaneVP, PointScale, this.transform);
+
+        hMesh.sizeX = hMesh.width * 0.07f;
+        //hMesh.sizeX = middlePlaneVP.GetPlaneHeight(transform, "sizeX");
         //hMesh.sizeY = hMesh.height * 0.03f;
         hMesh.sizeY = left2Top.DebugDistanceOfPlane12(transform, "sizeY");
         hMesh.sizeDetail = hMesh.sizeX * 2f;
+
+        //VerticesToPlaneInfo middleOfleftRight=VerticesToPlaneInfo.GetMiddlePlane(leftPlane, rightPlane);
+
 
         hMesh.CreateLine();
 
@@ -154,65 +167,5 @@ public class SteelStructureBaseModel : BaseMeshModel
             GameObject.DestroyImmediate(ResultGo);
         }
         ResultGo = goNew;
-
-        //var P1 = OBB.Right * ObbExtent.x;
-        //var P2 = -OBB.Forward * ObbExtent.z;
-        //var P3 = -OBB.Right * ObbExtent.x;
-        //var P4 = OBB.Forward * ObbExtent.z;
-        //var P5 = OBB.Up * ObbExtent.y;
-        //var P6 = -OBB.Up * ObbExtent.y;
-        //var Size = new Vector3(ObbExtent.x, ObbExtent.y, ObbExtent.z);
-
-        //CircleInfo startCircle = startPlane.GetCircleInfo();
-        //if (startCircle == null)
-        //{
-        //    Debug.LogError($"PipeLine.GetModelInfo startCircle == null gameObject:{this.gameObject.name}");
-        //    IsGetInfoSuccess = false;
-
-        //    CreateLocalPoint(startPlane.Point.planeCenter, $"Error1_StartPoint1", planInfoRoot.transform);
-        //    CreateLocalPoint(endPlane.Point.planeCenter, "Error1_EndPoint1", planInfoRoot.transform);
-        //    return;
-        //}
-        //startPoint = startCircle.GetCenter4();
-        //CircleInfo endCircle = endPlane.GetCircleInfo();
-        //if (endCircle == null)
-        //{
-        //    Debug.LogError($"PipeLine.GetModelInfo endCircle == null gameObject:{this.gameObject.name}");
-        //    IsGetInfoSuccess = false;
-        //    CreateLocalPoint(startPlane.Point.planeCenter, "Error3_StartPoint2", planInfoRoot.transform);
-        //    CreateLocalPoint(endPlane.Point.planeCenter, "Error3_EndPoint2", planInfoRoot.transform);
-        //    return;
-        //}
-        //endPoint = endCircle.GetCenter4();
-
-        //var PipeRadius1 = startCircle.Radius;
-        //var PipeRadius2 = endCircle.Radius;
-
-        //var EndPoints = new List<Vector3>() { startPoint, endPoint };
-
-        //CreateLocalPoint(startPoint, $"StartPoint1_{startCircle.Radius}_{startCircle.Points.Count}", planInfoRoot.transform);
-        //CreateLocalPoint(endPoint, $"EndPoint1_{endCircle.Radius}_{endCircle.Points.Count}", planInfoRoot.transform);
-
-        //if (PipeRadius1 > PipeRadius2)
-        //{
-        //    PipeRadius = PipeRadius1;
-        //}
-        //else
-        //{
-        //    PipeRadius = PipeRadius2;
-        //}
-
-        //PipeLength = Vector3.Distance(startPoint, endPoint);
-        ////LineInfo.StartPoint = startPoint;
-        ////LineInfo.EndPoint = endPoint;
-        //LineInfo = new PipeLineInfo(startPoint, endPoint, this.transform);
-
-        //ModelStartPoint = startPoint;
-        //ModelStartPoint.w = PipeRadius;
-        //ModelEndPoint = endPoint;
-        //ModelEndPoint.w = PipeRadius;
-
-        //PipeLength = Vector3.Distance(startPoint, endPoint);
-        //KeyPointCount = 2;
     }
 }
