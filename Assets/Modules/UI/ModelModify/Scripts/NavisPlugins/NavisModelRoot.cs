@@ -158,15 +158,16 @@ public class NavisModelRoot : MonoBehaviour
 
     public void Awake()
     {
-        if (TargetRoot == null)
-        {
-            TargetRoot = new GameObject("TargetRoot");
-        }
+        
     }
 
     [ContextMenu("FindRelativeTargets")]
     public void FindRelativeTargets()
     {
+        if (TargetRoot == null)
+        {
+            TargetRoot = new GameObject("TargetRoot");
+        }
         string key = ModelName + "_";
         var list = TransformHelper.FindGameObjects(TargetRoot.transform, key);
         foreach (var item in list)
@@ -224,7 +225,7 @@ public class NavisModelRoot : MonoBehaviour
         foreach (var item in list)
         {
             RendererId rId = RendererId.GetRId(item);
-            rId.SetParentId();
+            rId.SetParentId(true);
             item.transform.SetParent(rootPipe.transform);
         }
     }

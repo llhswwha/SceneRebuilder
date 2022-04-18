@@ -48,7 +48,7 @@ public class MeshRendererInfoEx : MeshRendererInfo
             meshRenderer = GetRenderers()[0];
         else
         {
-            Debug.LogError("[MeshRendererInfoEx.Init] No Renderers:" + this);
+            Debug.LogError($"[MeshRendererInfoEx.Init] No Renderers:{this.name}");
         }
         var mfs = GetMeshFilters();
         if(mfs.Length>0)

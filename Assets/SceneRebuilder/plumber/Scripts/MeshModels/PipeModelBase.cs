@@ -43,11 +43,7 @@ public class PipeModelBase : PipeModelComponent, IComparable<PipeModelBase>
         pipe.IsGenerateEndWeld = true;
         pipe.generateEndCaps = false;
 
-        if (radius < 0.01)
-        {
-            //pipe.weldRadius = 0.003f;
-            pipe.weldPipeRadius = arg.weldRadius * 0.6f;
-        }
+        pipe.SetWeldRadius(radius, arg);
     }
 
 

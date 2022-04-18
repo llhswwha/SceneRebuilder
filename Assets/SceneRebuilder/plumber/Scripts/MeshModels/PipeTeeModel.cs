@@ -302,6 +302,14 @@ public class PipeTeeModel : PipeElbowModel
         }
         else
         {
+            if (KeyPointInfo.EndPointOut2.w > PipeGenerateArg.MinPipeRadius)
+            {
+                if (arg.pipeSegments < 24)
+                {
+                    arg.pipeSegments = 24;
+                }
+            }
+
             arg.IsGenerateEndWeld = false;
             arg.generateEndCaps = true;
             GameObject pipe1 = RenderPipeLine(arg, afterName, KeyPointInfo.EndPointOut1, KeyPointInfo.EndPointIn1);

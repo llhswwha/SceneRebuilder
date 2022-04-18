@@ -198,11 +198,21 @@ public class PipeReducerModel
         pipe.generateEndCaps = true;
         //pipe.generateWeld = false;
 
-        if (PipeRadius1 < 0.025 || PipeRadius2 < 0.025)
+        //if (PipeRadius1 < 0.025 || PipeRadius2 < 0.025)
+        //{
+        //    //pipe.weldRadius = 0.003f;
+        //    pipe.weldPipeRadius = arg.weldRadius * 0.6f;
+        //}
+
+        if (PipeRadius > PipeGenerateArg.MinPipeRadius)
         {
-            //pipe.weldRadius = 0.003f;
-            pipe.weldPipeRadius = arg.weldRadius * 0.6f;
+            if (pipe.pipeSegments < 24)
+            {
+                pipe.pipeSegments = 24;
+            }
         }
+
+        pipe.SetWeldRadius(PipeRadius1, PipeRadius2, arg);
 
         pipe.RenderPipe();
 

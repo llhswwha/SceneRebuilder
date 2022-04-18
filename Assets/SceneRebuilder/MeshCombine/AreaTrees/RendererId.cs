@@ -32,7 +32,7 @@ public class RendererId
 
     public override string ToString()
     {
-        return $"RendererId Id:{Id} parentId:{parentId} insId:{insId} mr:{mr}";
+        return $"RendererId Id:{Id} parentId:{parentId} insId:{insId} name:{this.name} mr:{mr} ";
     }
 
     public string GetText()
@@ -67,7 +67,7 @@ public class RendererId
             count++;
             GameObject.DestroyImmediate(id);
         }
-        Debug.Log("ClearScripts "+count);
+        Debug.Log("ClearScripts  "+count);
     }
 
     [ContextMenu("ClearLODs")]
@@ -303,7 +303,41 @@ public class RendererId
     {
         this.SetParentId(false);
     }
-    
+
+    public GameObject SetParent(string pId)
+    {
+        this.parentId = pId;
+        return SetParent();
+    }
+
+    public RendererId FindChildByName(string childName)
+    {
+        List<Transform> ts = new List<Transform>();
+        for(int i = 0; i < transform.childCount; i++)
+        {
+            var child = transform.GetChild(i);
+            if (child.name == childName)
+            {
+                ts.Add(child);
+            }
+        }
+        if (ts.Count == 1)
+        {
+            Transform t = ts[0];
+            RendererId rid = RendererId.GetRId(t.gameObject);
+            return rid;
+        }
+        else if (ts.Count > 1)
+        {
+            Debug.LogError($"FindChildByName this:{this.name} childName:{childName}");
+            return null;
+        }
+        else
+        {
+            return null;
+        }
+    }
+
 
     [ContextMenu("SetParent")]
     public GameObject SetParent()

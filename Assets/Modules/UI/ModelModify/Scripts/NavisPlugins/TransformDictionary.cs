@@ -13,7 +13,8 @@ public class TransformDictionary
 
     public Dictionary<Transform,Transform> dict = new Dictionary<Transform, Transform>();
 
-    public DictionaryList1ToN<Transform> nameListDict = new DictionaryList1ToN<Transform>();
+    public DictionaryList1ToN<Transform> nameListDict0 = new DictionaryList1ToN<Transform>();
+    public DictionaryList1ToN<Transform> nameListDict1 = new DictionaryList1ToN<Transform>();
     public DictionaryList1ToN<Transform> nameListDict2 = new DictionaryList1ToN<Transform>();
     public DictionaryList1ToN<Transform> uidListDict = new DictionaryList1ToN<Transform>();
     public Dictionary<string, Transform> nameDict = new Dictionary<string, Transform>();
@@ -21,9 +22,19 @@ public class TransformDictionary
 
     public PositionDictionaryList<Transform> positionDictionaryList = new PositionDictionaryList<Transform>();
 
+    public PositionDictionaryList<Transform> positionDictionaryList2 = new PositionDictionaryList<Transform>();
+
     public List<Transform> ToList()
     {
         return dict.Keys.ToList();
+    }
+
+    public int Count
+    {
+        get
+        {
+            return dict.Count;
+        }
     }
 
     public TransformDictionary(List<Transform> lst)
@@ -45,17 +56,44 @@ public class TransformDictionary
         CheckUidRepeated();
     }
 
+    public TransformDictionary(List<MeshRenderer> lst)
+    {
+        //this.list.AddRange(lst);
+        foreach (var renderer in lst)
+        {
+            var item = renderer.transform;
+            if (!dict.ContainsKey(item))
+            {
+                dict.Add(item, item);
+            }
+            else
+            {
+                Debug.LogError("TransformDictionary.Init Repeated Item:" + item);
+            }
+        }
+        InitDict();
+        GetTransformNames();
+        CheckUidRepeated();
+    }
+
+    public void Remove(Transform t)
+    {
+        dict.Remove(t);
+    }
+
     public void InitDict()
     {
-        nameListDict = new DictionaryList1ToN<Transform>();
+        nameListDict1 = new DictionaryList1ToN<Transform>();
         uidListDict = new DictionaryList1ToN<Transform>();
         nameDict = new Dictionary<string, Transform>();
         uidDict = new Dictionary<string, Transform>();
 
         positionDictionaryList = new PositionDictionaryList<Transform>();
+        positionDictionaryList2 = new PositionDictionaryList<Transform>();
 
         InitNameDict();
         InitPosDict();
+        InitPosDict2();
     }
 
     private void GetTransformNames()
@@ -142,48 +180,98 @@ public class TransformDictionary
     {
         foreach (var t in dict.Keys)
         {
-            var pos = t.position;
-            positionDictionaryList.Add(pos, t);
+            AddItemPos(t);
         }
         positionDictionaryList.ShowCount("TransformDictionary");
     }
 
+    public void AddItemPos(Transform t)
+    {
+        MeshRenderer mr = t.GetComponent<MeshRenderer>();
+        if (mr == null) return;
+        var pos = t.position;
+        positionDictionaryList.Add(pos, t);
+    }
+
+    private void InitPosDict2()
+    {
+        foreach (var t in dict.Keys)
+        {
+            AddItemPos2(t);
+        }
+        positionDictionaryList2.ShowCount("TransformDictionary2");
+    }
+
+    public void AddItemPos2(Transform t)
+    {
+        MeshRenderer mr = t.GetComponent<MeshRenderer>();
+        if (mr == null) return;
+        var pos = MeshRendererInfo.GetCenterPos(t.gameObject);
+        positionDictionaryList2.Add(pos, t);
+    }
+
+    int uidCount = 0;
+
     private void InitNameDict()
     {
         int allCount = dict.Count;
-        int uidCount = 0;
 
         StringBuilder errorInfo = new StringBuilder();
         foreach (var t in dict.Keys)
         {
-            string n = t.name;
-            if(n.Contains("_New"))
-            {
-                n = n.Replace("_New", "");
-                t.name = n;
-            }
-            if (n.Contains(" "))
-            {
-                int id = n.LastIndexOf(" ");
-                n = n.Substring(0, id);
-            }
-
-            string prefix = TransformHelper.GetPrefix(n);
-
-            nameListDict.AddItem(n, t);
-            nameListDict2.AddItem(prefix, t);
-
-            if (IsUID(n, errorInfo))
-            {
-                uidCount++;
-                uidListDict.AddItem(n, t);
-            }
+            AddItem(t, errorInfo);
         }
         if (errorInfo.Length > 0)
         {
             Debug.LogWarning(errorInfo.ToString());
         }
-        Debug.Log($"TransformDictionary allCount:{allCount} nameCount:{nameListDict.Count} uidCount:{uidCount}");
+        Debug.Log($"TransformDictionary allCount:{allCount} nameCount:{nameListDict1.Count} uidCount:{uidCount}");
+    }
+
+    public void AddItemEx(Transform t)
+    {
+        AddItem(t,null);
+        AddItemPos(t);
+        AddItemPos2(t);
+    }
+
+    public void AddItem(Transform t, StringBuilder errorInfo)
+    {
+        string n = t.name;
+        if (n.Contains("_New3"))
+        {
+            n = n.Replace("_New3", "");
+            t.name = n;
+        }
+        else if (n.Contains("_New2"))
+        {
+            n = n.Replace("_New2", "");
+            t.name = n;
+        }
+        else if (n.Contains("_New"))
+        {
+            n = n.Replace("_New", "");
+            t.name = n;
+        }
+
+        nameListDict0.AddItem(n, t);
+
+        if (n.Contains(" "))
+        {
+            int id = n.LastIndexOf(" ");
+            n = n.Substring(0, id);
+        }
+
+        string prefix = TransformHelper.GetPrefix(n);
+
+        nameListDict1.AddItem(n, t);
+        nameListDict2.AddItem(prefix, t);
+
+        if (IsUID(n, errorInfo))
+        {
+            uidCount++;
+            uidListDict.AddItem(n, t);
+        }
     }
 
     public void CheckUidRepeated()
@@ -351,22 +439,41 @@ public class TransformDictionary
 
     public List<Transform> GetTransformsByName(string n)
     {
-        if (nameListDict.ContainsKey(n))
+        if (nameListDict0.ContainsKey(n))
         {
-            var list = nameListDict[n];
+            var list = nameListDict0[n];
             return list;
         }
 
-        if(n.Contains(" ")||n.Contains("*"))
+        if (nameListDict1.ContainsKey(n))
+        {
+            var list = nameListDict1[n];
+            return list;
+        }
+
+        if (n.Contains(" "))
+        {
+            int id = n.LastIndexOf(" ");
+            n = n.Substring(0, id);
+        }
+        if (nameListDict1.ContainsKey(n))
+        {
+            var list = nameListDict1[n];
+            return list;
+        }
+
+        //if (n.Contains(" ")||n.Contains("*"))
+        if (n.Contains("*"))
         {
             string n2 = n.Replace(" ", "_");
             n2 = n2.Replace("*", "_x_");
-            if (nameListDict.ContainsKey(n2))
+            if (nameListDict1.ContainsKey(n2))
             {
-                var list = nameListDict[n2];
+                var list = nameListDict1[n2];
                 return list;
             }
         }
+
 
         return new List<Transform>();
     }
@@ -391,9 +498,9 @@ public class TransformDictionary
     public Transform GetTransformByName_Debug(string n)
     {
         Debug.Log($"GetTransformByName_Debug n:{n}");
-        if (nameListDict.ContainsKey(n))
+        if (nameListDict1.ContainsKey(n))
         {
-            var list = nameListDict[n];
+            var list = nameListDict1[n];
             Debug.Log($"GetTransformByName_Debug n:{n}");
             if (list.Count == 1)
             {
@@ -409,7 +516,7 @@ public class TransformDictionary
 
     public List<Transform> RemovedItems = new List<Transform>();
 
-    internal void RemoveTransform(Transform transform)
+    public void RemoveTransform(Transform transform)
     {
         //list.Remove(transform);
 
@@ -421,6 +528,9 @@ public class TransformDictionary
             RemovedItems.Add(transform);
             positionDictionaryList.Remove(transform.position, transform);
 
+            var center = MeshRendererInfo.GetCenterPos(transform.gameObject);
+            positionDictionaryList2.Remove(center, transform);
+
             string n = transform.name;
             if(n.Contains(" "))
             {
@@ -428,7 +538,7 @@ public class TransformDictionary
                 n = n.Substring(0, id);
             }
             string prefix = TransformHelper.GetPrefix(n);
-            nameListDict.RemoveItem(n, transform);
+            nameListDict1.RemoveItem(n, transform);
             nameListDict2.RemoveItem(prefix, transform);
             if (IsUID(n))
             {
@@ -456,15 +566,15 @@ public class TransformDictionary
 
     internal Transform FindObjectByPos(ModelItemInfo model)
     {
-        Vector3 pos = model.GetPositon();
+        Vector3 pos = model.GetPosition();
         int listId = 0;
         var t=positionDictionaryList.GetItem(pos, out listId);
         return t;
     }
 
-    internal List<Transform> FindModelsByPosAndName(ModelItemInfo model)
+    public List<Transform> FindModelsByPosAndName(ModelItemInfo model)
     {
-        Vector3 pos = model.GetPositon();
+        Vector3 pos = model.GetPosition();
         int listId = 0;
         //var t = positionDictionaryList.GetItem(pos, out listId);
         //return t;
@@ -490,6 +600,365 @@ public class TransformDictionary
             if (sameNameList.Count == 0)
             {
                 return ms;
+            }
+            else if (sameNameList.Count == 1)
+            {
+                return sameNameList;
+            }
+            else
+            {
+
+                //List<Transform> sameParentNameList = new List<Transform>();
+                //foreach (var m in sameNameList)
+                //{
+                //    string tParentName = m.parent.name;
+                //    string mParentName = model.GetParent().Name;
+                //    if (tParentName== mParentName)
+                //    {
+                //        sameParentNameList.Add(m);
+                //    }
+                //}
+                //if (sameParentNameList.Count == 1)
+                //{
+                //    return sameParentNameList[0];
+                //}
+                //else
+                //{
+                //    return null;
+                //}
+
+                //return ms;
+
+                return sameNameList;
+            }
+        }
+    }
+
+    public List<Transform> FindModelsByPosAndName(IdInfo model)
+    {
+        Vector3 pos = model.GetPosition();
+        int listId = 0;
+        //var t = positionDictionaryList.GetItem(pos, out listId);
+        //return t;
+
+        var ms = positionDictionaryList.GetItems(pos, out listId);
+        if (ms == null) return null;
+        if (ms.Count == 0) return null;
+
+        if (ms.Count == 1)
+        {
+            return ms;
+        }
+        else
+        {
+            List<Transform> sameNameList = new List<Transform>();
+            foreach (var m in ms)
+            {
+                //if (model.IsSameName(m))
+                if(m.name==model.name)
+                {
+                    sameNameList.Add(m);
+                }
+            }
+            if (sameNameList.Count == 0)
+            {
+                return ms;
+            }
+            else if (sameNameList.Count == 1)
+            {
+                return sameNameList;
+            }
+            else
+            {
+
+                //List<Transform> sameParentNameList = new List<Transform>();
+                //foreach (var m in sameNameList)
+                //{
+                //    string tParentName = m.parent.name;
+                //    string mParentName = model.GetParent().Name;
+                //    if (tParentName== mParentName)
+                //    {
+                //        sameParentNameList.Add(m);
+                //    }
+                //}
+                //if (sameParentNameList.Count == 1)
+                //{
+                //    return sameParentNameList[0];
+                //}
+                //else
+                //{
+                //    return null;
+                //}
+
+                //return ms;
+
+                return sameNameList;
+            }
+        }
+    }
+
+    //public List<Transform> FindModelsByPosAndName(Vector3 pos, Vector3 center, string name, bool hasMesh, bool isFindByName)
+    public List<Transform> FindModelsByPosAndName(IdInfo idInfo,bool isFindByName)
+    {
+        Vector3 pos = idInfo.GetPosition();
+        Vector3 center = idInfo.GetCenter();
+        string name = idInfo.name;
+        bool hasMesh = idInfo.HasMesh;
+        //Vector3 pos = model.GetPosition();
+        int listId = 0;
+        //var t = positionDictionaryList.GetItem(pos, out listId);
+        //return t;
+        List<Transform> posItemList = null;
+        if (hasMesh)
+        {
+            posItemList = positionDictionaryList.GetItems(pos, out listId);
+
+            if (posItemList == null || posItemList.Count == 0)
+            {
+                posItemList = positionDictionaryList2.GetItems(center, out listId);
+            }
+
+            List<Transform> posItemList2 = positionDictionaryList2.GetItems(center, out listId);
+            if (posItemList2 != null)
+            {
+                if (posItemList == null)
+                {
+                    posItemList = posItemList2;
+                }
+                else
+                {
+                    foreach (var item2 in posItemList2)
+                    {
+                        if (!posItemList.Contains(item2))
+                        {
+                            posItemList.Add(item2);
+                        }
+                    }
+                } 
+            }
+
+            List<Transform> nameItemList = GetTransformsByName(name);
+            if (nameItemList != null)
+            {
+                if (posItemList == null)
+                {
+                    posItemList = nameItemList;
+                }
+                else
+                {
+                    foreach (var item2 in nameItemList)
+                    {
+                        if (!posItemList.Contains(item2))
+                        {
+                            posItemList.Add(item2);
+                        }
+                    }
+                }
+            }
+        }
+
+        //var posItemList = positionDictionaryList2.GetItems(center, out listId); 
+        //if (posItemList == null || posItemList.Count == 0)
+        //{
+        //    posItemList = positionDictionaryList.GetItems(pos, out listId);
+        //}
+
+        if (posItemList == null)
+        {
+            List<Transform> nameItemList = GetTransformsByName(name);
+
+            if (hasMesh == false)
+            {
+                List<Transform> nameItemList2 = GetTransformsByName(idInfo.parent+"_"+name);
+                nameItemList.AddRange(nameItemList2);
+            }
+
+            if (nameItemList.Count == 0)
+            {
+                Debug.LogError($"FindModelsByPosAndName nameItemList.Count != 1 ¡¾{idInfo},path:{idInfo.GetPath()}¡¿ | nameItemList:{nameItemList.Count} ");
+                return null;
+            }
+            else if (nameItemList.Count == 1)
+            {
+                var nameItem0 = nameItemList[0];
+
+                MeshRenderer mr = nameItem0.GetComponent<MeshRenderer>();
+                if(mr==null && hasMesh == false)
+                {
+                    return nameItemList;
+                }
+
+                var disOfPos = Vector3.Distance(pos, nameItem0.position);
+                var disOfCenter = Vector3.Distance(center, MeshRendererInfo.GetCenterPos(nameItem0.gameObject));
+                if (nameItem0.name == name)
+                {
+                    if (disOfCenter < 1f)
+                    {
+                        Debug.LogWarning($"FindModelsByPosAndName Error11 ¡¾{idInfo},path:{idInfo.GetPath()}¡¿ | nameItem0:{nameItem0} disOfPos:{disOfPos} disOfCenter:{disOfCenter}| path:{TransformHelper.GetPath(nameItem0)}");
+                        return nameItemList;
+                    }
+                    else
+                    {
+                        Debug.LogError($"FindModelsByPosAndName Error11 ¡¾{idInfo},path:{idInfo.GetPath()}¡¿ | nameItem0:{nameItem0} disOfPos:{disOfPos} disOfCenter:{disOfCenter}| path:{TransformHelper.GetPath(nameItem0)}");
+                        return null;
+                    }
+                }
+                else
+                {
+                    if (disOfCenter < 0.6f)
+                    {
+                        Debug.LogWarning($"FindModelsByPosAndName Error12 ¡¾{idInfo},path:{idInfo.GetPath()}¡¿ | nameItem0:{nameItem0} disOfPos:{disOfPos} disOfCenter:{disOfCenter}| path:{TransformHelper.GetPath(nameItem0)}");
+                        return nameItemList;
+                    }
+                    else
+                    {
+                        Debug.LogError($"FindModelsByPosAndName Error12 ¡¾{idInfo},path:{idInfo.GetPath()}¡¿ | nameItem0:{nameItem0} disOfPos:{disOfPos} disOfCenter:{disOfCenter}| path:{TransformHelper.GetPath(nameItem0)}");
+                        return null;
+                    }
+                }
+                
+            }
+            else
+            {
+                if (hasMesh == false)
+                {
+                    Transform t = TransformHelper.FindClosedTransform(nameItemList, pos, false);
+
+                    var disOfPos = Vector3.Distance(pos, t.position);
+                    var disOfCenter = Vector3.Distance(center, MeshRendererInfo.GetCenterPos(t.gameObject));
+                    if (disOfCenter < 0.6f)
+                    {
+                        Debug.LogWarning($"FindModelsByPosAndName Error21 ¡¾{idInfo},path:{idInfo.GetPath()}¡¿ | t:{t} disOfPos:{disOfPos} disOfCenter:{disOfCenter} | path:{TransformHelper.GetPath(t)}");
+                        return new List<Transform>() { t };
+                    }
+                    else
+                    {
+                        //Debug.LogError($"FindModelsByPosAndName Error11 ¡¾{idInfo},path:{idInfo.GetPath()}¡¿ | t:{t} disOfPos:{disOfPos} disOfCenter:{disOfCenter}| path:{TransformHelper.GetPath(t)}");
+                        IdInfo idP1 = idInfo.pId;
+                        if (idP1 != null)
+                        {
+                            IdInfo idP2 = idP1.pId;
+                            if (idP2 != null)
+                            {
+                                Transform result0 = null;
+                                for (int i = 0; i < nameItemList.Count; i++)
+                                {
+                                    Transform item = nameItemList[i];
+                                    //Debug.LogError($"FindModelsByPosAndName[{i}] Error11 item:{item.name} path:{TransformHelper.GetPath(item)}");
+                                    Transform tp1 = item.parent;
+                                    if (tp1 != null)
+                                    {
+                                        Transform tp2 = tp1.parent;
+                                        if (tp2 != null)
+                                        {
+                                            if(tp2.name.Contains(idP2.name) && tp1.name.Contains(idP1.name))
+                                            {
+                                                //Debug.LogError($"--FindModelsByPosAndName[{i}] Found!! item:{item.name} path:{TransformHelper.GetPath(item)} ¡¾{idInfo},path:{idInfo.GetPath()}¡¿");
+                                                //return new List<Transform>() { item };
+                                                result0 = item;
+                                                break;
+                                            }
+                                        }
+                                        else
+                                        {
+
+                                        }
+                                    }
+                                    else
+                                    {
+
+                                    }
+                                }
+
+                                if (result0 != null)
+                                {
+                                    return new List<Transform>() { result0 };
+                                }
+                                else
+                                {
+                                    for (int i = 0; i < nameItemList.Count; i++)
+                                    {
+                                        Transform item = nameItemList[i];
+                                        Debug.LogError($"FindModelsByPosAndName[{i}] Error11 item:{item.name} path:{TransformHelper.GetPath(item)}");
+                                    }
+                                    Debug.LogError($"FindModelsByPosAndName Error22 ¡¾{idInfo},path:{idInfo.GetPath()}¡¿ | t:{t} disOfPos:{disOfPos} disOfCenter:{disOfCenter}| path:{TransformHelper.GetPath(t)}");
+                                    return null;
+                                }
+                            }
+                            else
+                            {
+                                Debug.LogWarning($"FindModelsByPosAndName Error23 idP2==null ¡¾{idInfo},path:{idInfo.GetPath()}¡¿ | t:{t} disOfPos:{disOfPos} disOfCenter:{disOfCenter} | path:{TransformHelper.GetPath(t)}");
+                                return null;
+                            }
+                        }
+                        else
+                        {
+                            for (int i = 0; i < nameItemList.Count; i++)
+                            {
+                                Transform item = nameItemList[i];
+                                Debug.LogError($"FindModelsByPosAndName[{i}] Error24 idP1==null item:{item.name} path:{TransformHelper.GetPath(item)}");
+                                Transform tp1 = item.parent;
+                                Transform tp2 = tp1.parent;
+
+                            }
+                            return null;
+                        }
+                    }
+
+
+                }
+                else
+                {
+                    if (isFindByName)
+                    {
+                        Transform t = TransformHelper.FindClosedTransform(nameItemList, pos, true);
+
+                        var disOfPos = Vector3.Distance(pos, t.position);
+                        var disOfCenter = Vector3.Distance(center, MeshRendererInfo.GetCenterPos(t.gameObject));
+                        if (disOfCenter < 0.6f)
+                        {
+                            Debug.LogWarning($"FindModelsByPosAndName Error31 ¡¾{idInfo},path:{idInfo.GetPath()}¡¿ | t:{t} disOfPos:{disOfPos} disOfCenter:{disOfCenter}| path:{TransformHelper.GetPath(t)}"); ;
+                            return new List<Transform>() { t };
+                        }
+                        else
+                        {
+                            Debug.LogError($"FindModelsByPosAndName Error32 ¡¾{idInfo},path:{idInfo.GetPath()}¡¿ | t:{t} disOfPos:{disOfPos} disOfCenter:{disOfCenter}| path:{TransformHelper.GetPath(t)}");
+                            return null;
+                        }
+                    }
+                    else
+                    {
+                        Debug.LogError($"FindModelsByPosAndName Error33 nameItemList.Count != 1 ¡¾{idInfo},path:{idInfo.GetPath()}¡¿ | nameItemList:{nameItemList.Count} ");
+                        return null;
+                    }
+                }
+
+               
+            }
+        }
+
+        if (posItemList.Count == 0)
+        {
+            return posItemList;
+        }
+        else if (posItemList.Count == 1)
+        {
+            return posItemList;
+        }
+        else
+        {
+            List<Transform> sameNameList = new List<Transform>();
+            foreach (var m in posItemList)
+            {
+                //if (model.IsSameName(m))
+                if (m.name == name)
+                {
+                    sameNameList.Add(m);
+                }
+            }
+            if (sameNameList.Count == 0)
+            {
+                return posItemList;
             }
             else if (sameNameList.Count == 1)
             {

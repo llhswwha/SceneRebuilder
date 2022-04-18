@@ -563,7 +563,7 @@ public class NavisModelRootEditor : BaseFoldoutEditor<NavisModelRoot>
                     }
                     if (GUILayout.Button("Pos", GUILayout.Width(30)))
                     {
-                        Vector3 pos = listItem.GetPositon();
+                        Vector3 pos = listItem.GetPosition();
                         GameObject posObj = GameObject.CreatePrimitive(PrimitiveType.Sphere);
                         posObj.transform.localScale = new Vector3(0.1f, 0.1f, 0.1f);
                         posObj.transform.position = pos;

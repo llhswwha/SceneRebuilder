@@ -675,6 +675,8 @@ public class PipeLineModel : PipeModelBase
     public override GameObject RendererModel(PipeGenerateArg arg, string afterName)
     {
         this.generateArg = arg;
+        Debug.Log($"PipeLineModel.RendererModel 1 name:{this.name} arg:{arg}");
+
         if (IsGetInfoSuccess == false)
         {
             Debug.LogWarning($"PipeLineModel.RendererModel IsGetInfoSuccess == false model:{this.name}");
@@ -721,6 +723,9 @@ public class PipeLineModel : PipeModelBase
             }
             GameObject.DestroyImmediate(pipe.gameObject);
             ResultGo = go;
+
+            Debug.Log($"PipeLineModel.RendererModel 2 name:{go.name} arg:{arg}");
+
             return go.gameObject;
         }
         else
@@ -734,6 +739,8 @@ public class PipeLineModel : PipeModelBase
             SetPipeLineGeneratorArg(pipe,arg, LineInfo.StartPoint, LineInfo.EndPoint);
             pipe.RenderPipe();
             //var pipe = CreateModelByPrefabMesh();
+
+            Debug.Log($"PipeLineModel.RendererModel 3 name:{pipe.gameObject.name} arg:{arg}");
             return pipe.gameObject;
         }
     }
@@ -759,7 +766,7 @@ public class PipeLineModel : PipeModelBase
             GameObject.DestroyImmediate(ResultGo);
         }
         
-        GameObject prefab = GameObject.Instantiate(PipeFactory.Instance.GetPipeModelUnitPrefab_Line());
+        GameObject prefab = GameObject.Instantiate(PipeFactory.Instance.GetPipeModelUnitPrefab_Line(this));
         prefab.SetActive(true);
         prefab.name = this.name + "_New2";
         SetPrefabTransfrom(prefab);
@@ -785,7 +792,7 @@ public class PipeLineModel : PipeModelBase
         prefab.SetActive(true);
         prefab.name = this.name + "_New3";
         SetPrefabTransfrom(prefab);
-        MeshHelper.SetNewMesh(prefab, PipeFactory.Instance.GetPipeModelUnitPrefabMesh_Line());
+        MeshHelper.SetNewMesh(prefab, PipeFactory.Instance.GetPipeModelUnitPrefabMesh_Line(this));
         ResultGo = prefab;
         return prefab;
     }

@@ -323,7 +323,7 @@ public class InitNavisFileInfoByModel : SingletonBehaviour<InitNavisFileInfoByMo
                     findCount++;
                     ModelItemInfo infoT = modelDicT[child.name];
                     bimT.Guid = infoT.UId;
-                    bimT.Position1 = infoT.GetPositon();
+                    bimT.Position1 = infoT.GetPosition();
                     RendererId renderId = child.GetComponent<RendererId>();
                     if (renderId)
                     {
@@ -497,7 +497,7 @@ public class InitNavisFileInfoByModel : SingletonBehaviour<InitNavisFileInfoByMo
         Debug.Log("models.Find,CostTime:" + (DateTime.Now - recordTime).TotalSeconds);
         if (modelxxx != null)
         {
-            Vector3 modelInfoPos = modelxxx.GetPositon();
+            Vector3 modelInfoPos = modelxxx.GetPosition();
             Debug.LogFormat("modelInfoPos:{0}  UnityModelPos:{1} offset:{2}"
                 , modelInfoPos, modelTest.transform.position, Vector3.Distance(modelInfoPos, modelTest.transform.position));
         }
@@ -1387,7 +1387,7 @@ vueDict.Add(item.UId, item);
         }
 
         bimT.Guid = infoT.UId;
-        bimT.Position1 = infoT.GetPositon();
+        bimT.Position1 = infoT.GetPosition();
         RendererId renderId = child.GetComponent<RendererId>();
         if (renderId)
         {
@@ -1452,7 +1452,7 @@ vueDict.Add(item.UId, item);
         ModelItemInfo minModel = null;
         foreach (var item in modelDicT)
         {
-            Vector3 posInfo = item.GetPositon();
+            Vector3 posInfo = item.GetPosition();
             float dis = Vector3.Distance(posInfo, GetCenter(objT));
 
             if (dis < minDis)
@@ -1508,7 +1508,7 @@ vueDict.Add(item.UId, item);
             bimT.Guid = child.Name;
         }
 
-        bimT.Position1 = child.GetPositon();
+        bimT.Position1 = child.GetPosition();
         RendererId renderId = bimT.GetComponent<RendererId>();
         if (renderId)
         {
@@ -1574,7 +1574,7 @@ vueDict.Add(item.UId, item);
     {
         float minDis = float.MaxValue;
         Transform minModel = null;
-        Vector3 posInfo = objT.GetPositon();
+        Vector3 posInfo = objT.GetPosition();
 
         if (isSameName)
         {

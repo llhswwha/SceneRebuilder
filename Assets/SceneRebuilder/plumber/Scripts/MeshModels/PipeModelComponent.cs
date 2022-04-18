@@ -83,6 +83,7 @@ public class PipeModelComponent : BaseMeshModel
     public override void RendererModel()
     {
         MeshRenderer r = this.GetComponent<MeshRenderer>();
+        MeshFilter mf = this.GetComponent<MeshFilter>();
         if (r)
         {
             if (generateArg.pipeMaterial == null)

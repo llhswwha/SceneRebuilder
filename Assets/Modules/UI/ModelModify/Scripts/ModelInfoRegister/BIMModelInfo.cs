@@ -152,7 +152,7 @@ public class BIMModelInfo : MonoBehaviour,IComparable<BIMModelInfo>
         this.Guid = model.UId;
         //this.Position1 = transform.position;
         this.Position1 = MeshRendererInfo.GetCenterPos(transform.gameObject);
-        this.Position2 = model.GetPositon();
+        this.Position2 = model.GetPosition();
         this.GetDistance();
 
         this.RenderId = RendererId.GetId(this.gameObject,0);
@@ -420,7 +420,7 @@ public class BIMModelInfo : MonoBehaviour,IComparable<BIMModelInfo>
         ModelItemInfo minModel = null;
         foreach(var model in models)
         {
-            float dis = Vector3.Distance(model.GetPositon(), pos);
+            float dis = Vector3.Distance(model.GetPosition(), pos);
             if (minDis > dis)
             {
                 minDis = dis;

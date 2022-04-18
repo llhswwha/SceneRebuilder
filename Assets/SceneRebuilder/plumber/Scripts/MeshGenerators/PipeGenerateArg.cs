@@ -13,6 +13,8 @@ public class PipeGenerateArg
     [XmlIgnore]
     public Material weldMaterial;
 
+    public static float MinPipeRadius = 0.5f;
+
     [XmlAttribute]
     public int pipeSegments = 12;
 
@@ -27,6 +29,26 @@ public class PipeGenerateArg
 
     [XmlAttribute]
     public float weldRadius = 0.005f;
+
+    public void SetWeldRadius(float r)
+    {
+        if (r < 0.03)
+        {
+            //pipe.weldRadius = 0.003f;
+            weldRadius = weldRadius * 0.6f;
+        }
+        else if (r > 0.8)
+        {
+            //pipe.weldRadius = 0.003f;
+            weldRadius = weldRadius * 2f;
+        }
+        else if (r > 0.5)
+        {
+            //pipe.weldRadius = 0.003f;
+            weldRadius = weldRadius * 1.5f;
+        }
+
+    }
 
     [XmlAttribute]
     public bool generateWeld = true;
@@ -54,7 +76,7 @@ public class PipeGenerateArg
 
     public override string ToString()
     {
-        return $"{pipeSegments}_{elbowSegments}_{weldPipeSegments}_{weldElbowSegments}";
+        return $"[Arg {pipeSegments}_{elbowSegments}_{weldPipeSegments}_{weldElbowSegments}]";
     }
 
 

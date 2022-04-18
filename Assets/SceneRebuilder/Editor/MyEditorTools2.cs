@@ -5,10 +5,11 @@ using System;
 using System.Linq;
 using Base.Common;
 using System.IO;
+using System.Text;
 
 public class MyEditorTools2
 {
-    #region TreeNode
+    #region Hierarchy
     [MenuItem("SceneTools/Hierarchy/InitIds")]
     public static void InitIds()
     {
@@ -18,121 +19,34 @@ public class MyEditorTools2
     [MenuItem("SceneTools/Hierarchy/Init")]
     public static void InitHierarchy()
     {
-        //GameObject go = Selection.activeGameObject;
-        ////RendererId.InitId(go);
-
-        GameObject go = Selection.activeGameObject;
-        var rendrerers = go.GetComponentsInChildren<MeshRenderer>(true);
-        for (int i = 0; i < rendrerers.Length; i++)
-        {
-            MeshRenderer renderer = rendrerers[i];
-            ProgressArg pA = new ProgressArg("InitHierarchy", i, rendrerers.Length, renderer);
-            if (ProgressBarHelper.DisplayCancelableProgressBar(pA))
-            {
-                break;
-            }
-            if (renderer.gameObject == go) continue;
-            RendererId.InitId(renderer);
-        }
-        ProgressBarHelper.ClearProgressBar();
-        Debug.Log($"InitHierarchy rendrerers:{rendrerers.Length}");
+        HierarchyHelper.InitHierarchy();
     }
 
     [MenuItem("SceneTools/Hierarchy/Clear")]
     public static void ClearHierarchy()
     {
-        GameObject go = Selection.activeGameObject;
-        EditorHelper.UnpackPrefab(go);
-        var rendrerers = go.GetComponentsInChildren<MeshRenderer>(true);
-        for (int i = 0; i < rendrerers.Length; i++)
-        {
-            MeshRenderer renderer = rendrerers[i];
-            ProgressArg pA = new ProgressArg("ClearHierarchy", i, rendrerers.Length, renderer);
-            if (ProgressBarHelper.DisplayCancelableProgressBar(pA))
-            {
-                break;
-            }
-            if (renderer.gameObject == go) continue;
-            renderer.transform.SetParent(go.transform);
-        }
-        ProgressBarHelper.ClearProgressBar();
-        Debug.Log($"ClearHierarchy rendrerers:{rendrerers.Length}");
+        HierarchyHelper.ClearHierarchy();
     }
 
     [MenuItem("SceneTools/Hierarchy/Save")]
     public static void SaveHierarchy()
     {
-        IdDictionary.InitInfos(null, true, true);
-
-        GameObject go = Selection.activeGameObject;
-        EditorHelper.UnpackPrefab(go);
-        var rendrerers = go.GetComponentsInChildren<RendererId>(true);
-        IdInfoList idList = new IdInfoList();
-        for (int i = 0; i < rendrerers.Length; i++)
-        {
-            RendererId renderer = rendrerers[i];
-            ProgressArg pA = new ProgressArg("SaveHierarchy", i, rendrerers.Length, renderer);
-            if (ProgressBarHelper.DisplayCancelableProgressBar(pA))
-            {
-                break;
-            }
-            if (renderer.gameObject == go) continue;
-            idList.AddId(renderer);
-        }
-        ProgressBarHelper.ClearProgressBar();
-        SerializeHelper.Save(idList, "IdInfoList.xml");
-
-        string xml = SerializeHelper.GetXmlText(idList);
-        //Debug.Log($"SaveXml xml:{xml}");
-        string path = GetIdInfoListFilePath();
-        File.WriteAllText(path, xml);
-
-        Debug.Log($"SaveHierarchy go:{go} rendrerers:{rendrerers.Length} idList:{idList.Ids.Count} path:{path}");
-    }
-
-    public static string IdInfoListFilePath = "\\..\\IdInfoList.XML";
-
-    public static string GetIdInfoListFilePath()
-    {
-        string path = Application.dataPath + IdInfoListFilePath;
-        return path;
+        HierarchyHelper.SaveHierarchy();
     }
 
     [MenuItem("SceneTools/Hierarchy/Load")]
     public static void LoadHierarchy()
     {
-        string path = GetIdInfoListFilePath();
-        if (File.Exists(path) == false)
-        {
-            Debug.LogError($"LoadHierarchy FileNotFound path:{path}");
-            return;
-        }
-        string xml = File.ReadAllText(path);
-        //Debug.Log($"LoadHierarchy xml:{xml}");
-        IdInfoList idList = SerializeHelper.LoadFromText<IdInfoList>(xml);
-        Debug.Log($"LoadHierarchy idList:{idList} ids:{idList.Ids.Count} xml:{xml} ");
-
-        IdDictionary.InitInfos(null,true,true);
-
-        for (int i = 0; i < idList.Ids.Count; i++)
-        {
-            IdInfo id = idList.Ids[i];
-            ProgressArg pA = new ProgressArg("LoadHierarchy", i, idList.Ids.Count, id.Id);
-
-            if (ProgressBarHelper.DisplayCancelableProgressBar(pA))
-            {
-                break;
-            }
-            var idGo = IdDictionary.GetId(id.Id);
-            if (idGo == null)
-            {
-                Debug.Log($"LoadHierarchy[{i}] idGo == null id:{id.Id}");
-                continue;
-            }
-            idGo.SetParent();
-        }
-        ProgressBarHelper.ClearProgressBar();
+        HierarchyHelper.LoadHierarchy_All(true);
     }
+
+    [MenuItem("SceneTools/Hierarchy/Check")]
+    public static void CheckHierarchy()
+    {
+        HierarchyHelper.CheckHierarchy();
+    }
+
+
     #endregion
 
     #region TreeNode
@@ -411,6 +325,15 @@ public class MyEditorTools2
 
 
     #region Mesh 
+
+    [MenuItem("SceneTools/Mesh/Select")]
+    public static void SelectMesh()
+    {
+        GameObject go = Selection.activeGameObject;
+        MeshFilter mf = go.GetComponent<MeshFilter>();
+        Mesh mesh = mf.sharedMesh;
+        EditorHelper.SelectObject(mesh);
+    }
 
     [MenuItem("SceneTools/Mesh/CombineMeshLeafs")]
     public static void CombineMeshLeafs()
@@ -1511,6 +1434,27 @@ public class MyEditorTools2
             Debug.Log($"ShowIds[{i}] id:{id.Id} pid:{id.parentId} name:{id.name} path:{TransformHelper.GetPath(id.transform)}");
         }
         Debug.Log($"ShowIds allIds:{allIds.Count}");
+    }
+
+    [MenuItem("SceneTools/Renderers/ClearEmptyIds")]
+    public static void ClearEmptyIds()
+    {
+        int count = 0;
+        var rids = GameObject.FindObjectsOfType<RendererId>(true);
+        StringBuilder sb = new StringBuilder();
+       foreach(var rid in rids)
+        {
+            if (rid == null) continue;
+            if (rid.gameObject == null) continue;
+            if (string.IsNullOrEmpty(rid.Id))
+            {
+                count++;
+                sb.AppendLine(rid.name);
+
+                GameObject.DestroyImmediate(rid);
+            }
+        }
+        Debug.LogError($"ClearEmptyIds rids:{rids.Length} emptyCount:{count} list:{sb.ToString()}");
     }
 
     [MenuItem("SceneTools/Renderers/UpdateIds(A)")]

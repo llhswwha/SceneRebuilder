@@ -11,6 +11,11 @@ public static class IdDictionary
 
     public static Dictionary<string, RendererId> IdDict = new Dictionary<string, RendererId>();
 
+    public static void Check()
+    {
+
+    }
+
     public static List<string> GetIds()
     {
         return IdDict.Keys.ToList();
@@ -42,7 +47,7 @@ public static class IdDictionary
         SetRendererId(id, id.mr, isUpdate);
     }
 
-    private static void SetRendererId(RendererId id,MeshRenderer renderer,bool isUpdate = false)
+    private static void SetRendererId(RendererId id, MeshRenderer renderer, bool isUpdate = false, bool isShowError = false)
     {
         try
         {
@@ -52,6 +57,11 @@ public static class IdDictionary
             }
             else
             {
+                if (string.IsNullOrEmpty(id.Id))
+                {
+                    Debug.LogError($"RendererDictionay.SetRendererId string.IsNullOrEmpty(id.Id) path:{TransformHelper.GetPath(id.transform)}");
+                    return;
+                }
                 if (renderer != null)
                 {
                     if (isUpdate)
@@ -71,8 +81,12 @@ public static class IdDictionary
                     else
                     {
                         MeshRenderer renderer1 = RendererDict[id.Id];
-                        Debug.LogError($"SetRendererId(MeshRenderer) id:{id.Id} renderer1:{renderer1.name} renderer2:{renderer.name}");
-                        RendererDict[id.Id] = renderer;
+                        if (renderer1 != renderer)
+                        {
+                            Debug.LogError($"SetRendererId(MeshRenderer) id:{id.Id} renderer1:{renderer1.name} renderer2:{renderer.name}");
+                            RendererDict[id.Id] = renderer;
+                        }
+                        
                     }
 
                     if (!IdDict.ContainsKey(id.Id))
@@ -95,8 +109,21 @@ public static class IdDictionary
                     else
                     {
                         RendererId rid1 = IdDict[id.Id];
-                        Debug.LogError($"SetRendererId(RendererId) id:{id.Id} rid1:{rid1.name} rid2:{id.name}");
-                        IdDict[id.Id] = id;
+                        if (rid1 != id)
+                        {
+                            if (rid1.gameObject != id.gameObject)
+                            {
+                                Debug.LogError($"SetRendererId(RendererId) id:{id.Id} rid1:{rid1.name} rid2:{id.name}");
+                                IdDict[id.Id] = id;
+                            }
+                            else
+                            {
+                                Debug.Log($"SetRendererId(RendererId) id:{id.Id} rid1:{rid1.name} rid2:{id.name}");
+                                GameObject.DestroyImmediate(id);
+                            }
+                            
+                        }
+                        
                     }
                 }
             }
@@ -266,6 +293,72 @@ public static class IdDictionary
         }
         if(showLog)
             Debug.LogError($"RendererDictionay.GetGo go not found id:{id},\tTransform:{t},\tPath:{TransformHelper.GetPath(t)}\tDict:{IdDict.Count}");
+        return null;
+    }
+
+    public static RendererId GetPId(IdInfo rid, bool showLog)
+    {
+        if (string.IsNullOrEmpty(rid.parentId))
+        {
+            Debug.LogError($"RendererDictionay.GetPId IsNullOrEmpty !!! ,Dict:{IdDict.Count} rid:{rid.GetFullString()} ");
+            return null;
+        }
+        if (IdDict.ContainsKey(rid.parentId))
+        {
+            var go = IdDict[rid.parentId];
+            if (go == null)
+            {
+                Debug.LogError($"RendererDictionay.GetPId go == null :{rid.parentId},Dict:{IdDict.Count}");
+                return null;
+            }
+            return go;
+        }
+        if (showLog)
+            Debug.LogError($"RendererDictionay.GetPId go not found id:{rid.parentId},\tDict:{IdDict.Count}");
+        return null;
+    }
+
+    public static RendererId GetId(IdInfo idI, bool showLog)
+    {
+        if (string.IsNullOrEmpty(idI.Id))
+        {
+            Debug.LogError($"RendererDictionay.GetId IsNullOrEmpty !!! ,Dict:{IdDict.Count} IdInfo:{idI.GetFullString()}");
+            return null;
+        }
+        if (IdDict.ContainsKey(idI.Id))
+        {
+            var go = IdDict[idI.Id];
+            if (go == null)
+            {
+                Debug.LogError($"RendererDictionay.GetId go == null :{idI.Id},Dict:{IdDict.Count}");
+                return null;
+            }
+            return go;
+        }
+        if (showLog)
+            Debug.LogError($"RendererDictionay.GetId go not found id:{idI.Id},\tDict:{IdDict.Count}");
+        return null;
+    }
+
+    public static RendererId GetId(string id, bool showLog)
+    {
+        if (string.IsNullOrEmpty(id))
+        {
+            Debug.LogError($"RendererDictionay.GetId IsNullOrEmpty !!! ,Dict:{IdDict.Count}");
+            return null;
+        }
+        if (IdDict.ContainsKey(id))
+        {
+            var go = IdDict[id];
+            if (go == null)
+            {
+                Debug.LogError($"RendererDictionay.GetId go == null :{id},Dict:{IdDict.Count}");
+                return null;
+            }
+            return go;
+        }
+        if (showLog)
+            Debug.LogError($"RendererDictionay.GetId go not found id:{id},\tDict:{IdDict.Count}");
         return null;
     }
 
