@@ -50,12 +50,16 @@ public static class MeshHelper
 
     public static void SetNewMesh(GameObject go,Mesh mesh)
     {
-        MeshFilter mf = go.GetComponent<MeshFilter>();
-        if(mf)
+        MeshFilter mf = go.AddMissingComponent<MeshFilter>();
+        if (mf)
+        {
             mf.sharedMesh = mesh;
+        }
         MeshCollider mc = go.GetComponent<MeshCollider>();
         if (mc)
+        {
             mc.sharedMesh = mesh;
+        }
     }
 
     public static void RefreshCollderMesh()
@@ -1698,6 +1702,21 @@ public static class MeshHelper
             if (renderer.name.EndsWith("_New"))
             {
                 renderer.name = renderer.name.Replace("_New", "");
+                count++;
+            }
+            if (renderer.name.EndsWith("_New1"))
+            {
+                renderer.name = renderer.name.Replace("_New1", "");
+                count++;
+            }
+            if (renderer.name.EndsWith("_New2"))
+            {
+                renderer.name = renderer.name.Replace("_New2", "");
+                count++;
+            }
+            if (renderer.name.EndsWith("_New3"))
+            {
+                renderer.name = renderer.name.Replace("_New3", "");
                 count++;
             }
         }

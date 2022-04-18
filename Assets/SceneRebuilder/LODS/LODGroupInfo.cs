@@ -309,7 +309,10 @@ public class LODGroupInfo : MonoBehaviour
     {
         IdDictionary.InitInfos();
         GetScene();
-        if (scene == null) return;
+        if (scene == null)
+        {
+            return;
+        }
         scene.EditorLoadScene();
         SetLOD0FromScene();
 

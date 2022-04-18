@@ -53,12 +53,20 @@ public static class TransformHelper
         cube.transform.SetParent(parent);
         return cube;
     }
-    public static string GetPath(Transform t)
+
+    public static Dictionary<Transform, string> PathDict = new Dictionary<Transform, string>();
+
+    public static string GetPath(Transform t, Transform root = null, string split = ">")
     {
-        string path = "";
+        string path = t.name;
+        t = t.parent;
         while (t != null)
         {
-            path = t.name + ">" + path;
+            path = t.name + split + path;
+            if (t == root)
+            {
+                break;
+            }
             t = t.parent;
         }
         return path;
@@ -403,6 +411,208 @@ public static class TransformHelper
     //    }
     //    return result;
     //}
+
+    public static Transform FindOneByName(string name)
+    {
+        var ts2 = GameObject.FindObjectsOfType<Transform>();
+        List<Transform> result = new List<Transform>();
+        foreach (var t2 in ts2)
+        {
+            //if (IsSameName(t2.name, name))
+            if (t2.name == name)
+            {
+                result.Add(t2);
+            }
+        }
+
+        Transform t = null;
+        if (result.Count == 1)
+        {
+            t = result[0];
+        }
+        else if (result.Count == 0)
+        {
+            Debug.LogError($"FindListByName result.Count != 1 result:{result.Count} name:{name} ");
+        }
+        else
+        {
+            Debug.LogWarning($"FindListByName name:{name} result:{result.Count}_{result[0]}");
+        }
+        return t;
+    }
+
+    public static Dictionary<IdInfo, Transform> idInfoDict = new Dictionary<IdInfo, Transform>();
+
+    public static Transform FindOneByNameAndPos(TransformDictionary ts2, IdInfo idInfo, float minDis, bool isFindByName)
+    {
+        if (idInfoDict.ContainsKey(idInfo))
+        {
+            return idInfoDict[idInfo];
+        }
+        Vector3 pos = idInfo.GetPosition();
+        Vector3 center = idInfo.GetCenter();
+        string name = idInfo.name;
+        //var ts2 = GameObject.FindObjectsOfType<Transform>();
+        List<Transform> result = ts2.FindModelsByPosAndName(idInfo, isFindByName);
+        //foreach (var t2 in ts2)
+        //{
+        //    //if (IsSameName(t2.name, name))
+        //    if (t2.name == name)
+        //    {
+        //        result.Add(t2);
+        //    }
+        //}
+
+        Transform t = null;
+        if (result == null)
+        {
+            Debug.LogError($"FindOneByName Error[{errorCount++}] result == null name:{name} pos:{pos} center:{center} ts2:{ts2.Count} ¡¾{idInfo}¡¿");
+        }
+        else if (result.Count == 0)
+        {
+            Debug.LogError($"FindOneByName Error[{errorCount++}] result.Count == 0 result:{result.Count} name:{name} pos:{pos} ts2:{ts2.Count} ¡¾{idInfo}¡¿");
+        }
+        else if (result.Count == 1)
+        {
+            t = result[0];
+        }
+        else
+        {
+            //Debug.LogWarning($"FindListByName name:{name} result:{result.Count}_{result[0]}");
+            t = FindClosedTransform(result, pos);
+        }
+        if (t != null)
+        {
+            if(idInfo.HasMesh)
+            {
+                float disOfPos = Vector3.Distance(t.position, pos);
+                float disOfCenter = Vector3.Distance(MeshRendererInfo.GetCenterPos(t.gameObject), center);
+                if (t.name == name || t.name == (idInfo.parent + "_" + name))
+                {
+                    if (disOfPos < minDis)
+                    {
+
+                    }
+                    else if (disOfCenter < minDis)
+                    {
+
+                    }
+                    else
+                    {
+                        Debug.LogError($"FindOneByName Error1[{errorCount++}] dis>=minDis result:{result.Count} name:{name} pos:{pos} dis:{disOfPos} disOfCenter:{disOfCenter} minDis:{minDis} t:{t}  {idInfo.GetFullString()}  path:{TransformHelper.GetPath(t)}");
+                    }
+                }
+                else
+                {
+                    Debug.LogError($"FindOneByName Error2[{errorCount++}] t.name != name result:{result.Count} name:{name} pos:{pos} dis:{disOfPos} disOfCenter:{disOfCenter} minDis:{minDis} t:{t}  {idInfo.GetFullString()}  path:{TransformHelper.GetPath(t)}");
+                    return null;
+                }
+            }
+            else
+            {
+                float disOfPos = Vector3.Distance(t.position, pos);
+                if (t.name == name || t.name == (idInfo.parent + "_" + name))
+                {
+                    if (disOfPos < minDis)
+                    {
+
+                    }
+                    else
+                    {
+                        Debug.LogError($"FindOneByName Error3[{errorCount++}] dis>=minDis result:{result.Count} name:{name} pos:{pos} dis:{disOfPos} minDis:{minDis} t:{t}  {idInfo.GetFullString()}  path:{TransformHelper.GetPath(t)}");
+                    }
+                }
+                else
+                {
+                    Debug.LogError($"FindOneByName Error4[{errorCount++}] t.name != name result:{result.Count} name:{name} pos:{pos} dis:{disOfPos} minDis:{minDis} t:{t}  {idInfo.GetFullString()}  path:{TransformHelper.GetPath(t)}");
+                    return null;
+                }
+            }
+            
+        }
+        if (t != null)
+        {
+            idInfoDict.Add(idInfo, t);
+        }
+        
+        return t;
+    }
+
+    public static int errorCount = 0;
+
+    //public static Transform FindOneByNameAndPos(TransformDictionary ts2,string name, Vector3 pos, Vector3 center, float minDis, bool isFindByName)
+    //{
+    //    //var ts2 = GameObject.FindObjectsOfType<Transform>();
+    //    List<Transform> result = ts2.FindModelsByPosAndName(pos, center, name, isFindByName);
+    //    //foreach (var t2 in ts2)
+    //    //{
+    //    //    //if (IsSameName(t2.name, name))
+    //    //    if (t2.name == name)
+    //    //    {
+    //    //        result.Add(t2);
+    //    //    }
+    //    //}
+
+    //    Transform t = null;
+    //    if (result == null)
+    //    {
+    //        Debug.LogError($"FindOneByName result == null name:{name} pos:{pos} center:{center} ts2:{ts2.Count}");
+    //    }
+    //    else if (result.Count == 0)
+    //    {
+    //        Debug.LogError($"FindOneByName result.Count == 0 result:{result.Count} name:{name} pos:{pos} ts2:{ts2.Count}");
+    //    }
+    //    else if (result.Count == 1)
+    //    {
+    //        t = result[0];
+    //    }
+    //    else
+    //    {
+    //        //Debug.LogWarning($"FindListByName name:{name} result:{result.Count}_{result[0]}");
+    //        t = FindClosedTransform(result, pos);
+    //    }
+    //    if (t != null)
+    //    {
+    //        float dis = Vector3.Distance(t.position, pos);
+    //        if (dis < minDis)
+    //        {
+
+    //        }
+    //        else
+    //        {
+    //            Debug.LogError($"FindOneByName result.Count != 1 result:{result.Count} name:{name} pos:{pos} dis:{dis} minDis:{minDis} t:{t}");
+    //        }
+    //    }
+        
+    //    return t;
+    //}
+
+    public static List<Transform> FindListByName(string name)
+    {
+        var ts2 = GameObject.FindObjectsOfType<Transform>();
+        List<Transform> result = new List<Transform>();
+        foreach (var t2 in ts2)
+        {
+            //if (IsSameName(t2.name, name))
+            if(t2.name==name)
+            {
+                result.Add(t2);
+            }
+        }
+        if (result.Count == 1)
+        {
+            //Debug.Log($"FindListByName name:{name} result:{result[0]}");
+        }
+        else if (result.Count == 0)
+        {
+            Debug.LogError($"FindListByName result.Count != 1 result:{result.Count} name:{name} ");
+        }
+        else
+        {
+            Debug.LogWarning($"FindListByName name:{name} result:{result.Count}_{result[0]}");
+        }
+        return result;
+    }
 
     public static List<Transform> FindListByName(List<Transform> ts2, string name)
     {

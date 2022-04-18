@@ -361,8 +361,10 @@ public class PipeElbowModel : PipeModelBase
             GameObject pipeNew = GetPipeNewGo(arg, afterName);
 
             var lineArg = arg.Clone();
+
             if(lineArg.pipeSegments<36)
                 lineArg.pipeSegments = 36;
+
             lineArg.generateEndCaps = true;
             GameObject pipe1 = RenderPipeLine(lineArg, afterName, KeyPointInfo.EndPointIn1, KeyPointInfo.EndPointOut1);
             GameObject pipe2 = RenderPipeLine(lineArg, afterName, KeyPointInfo.EndPointIn2, KeyPointInfo.EndPointOut2);
@@ -515,6 +517,13 @@ public class PipeElbowModel : PipeModelBase
         pipe.IsGenerateEndWeld = true;
         pipe.IsElbow = true;
         pipe.pipeRadius = (info.EndPointOut1.w + info.EndPointOut2.w) / 2;
+
+        if (KeyPointInfo.EndPointOut2.w > 0.8f)
+        {
+            if (pipe.pipeSegments < 24)
+                pipe.pipeSegments = 24;
+        }
+
         pipe.elbowRadius = pipeArg.elbowRadius;
         //if (ps.Count == 5)
         //{

@@ -266,11 +266,8 @@ public class PipeFlangeModel : PipeReducerModel
             arg.generateEndCaps = true;
             GameObject pipe11 = RenderPipeLine(arg, afterName + "_1", KeyPointInfo.EndPointIn1, KeyPointInfo.EndPointOut1);
 
-            if (KeyPointInfo.EndPointOut2.w < 0.03)
-            {
-                //pipe.weldRadius = 0.003f;
-                arg.weldRadius = arg.weldRadius * 0.6f;
-            }
+             arg.SetWeldRadius(KeyPointInfo.EndPointOut2.w);
+
             arg.generateWeld = arg0.generateWeld;
             //arg.IsGenerateEndWeld = false;
 

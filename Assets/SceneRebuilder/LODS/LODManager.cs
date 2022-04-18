@@ -1444,7 +1444,11 @@ T minTEx = null;
             float progress = (float)i / infos.Length;
             ProgressBarHelper.DisplayProgressBar("LODManager.SaveLODs", $"Progress {i}/{infos.Length} {progress:P1}", progress);
 
-            if (info.IsSceneCreatable() == false) continue;
+            if (info.IsSceneCreatable() == true)
+            {
+                Debug.LogWarning($"info.IsSceneCreatable() == false info:{info.name}");
+                continue;
+            }
             info.EditorLoadScene();
         }
         //EditorHelper.ClearOtherScenes();

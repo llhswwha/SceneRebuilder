@@ -119,6 +119,7 @@ public class SceneRebuildManagerEditor : BaseFoldoutEditor<SceneRebuildManager>
         EditorGUILayout.BeginHorizontal();
         NewButton("5.SetBuildings", buttonWidth, true, item.SetBuildings);
         NewButton("ClearBuildings", buttonWidth, true, item.ClearBuildings);
+        NewButton("ShowBuildings", buttonWidth, true, item.ShowBuildings);
         NewButton("CheckSceneIndex", buttonWidth, true, SubSceneManager.Instance.CheckSceneIndex);
         //SubSceneManager.Instance.includeInactive = GUILayout.Toggle(SubSceneManager.Instance.includeInactive, "includeInactive");
         EditorGUILayout.EndHorizontal();

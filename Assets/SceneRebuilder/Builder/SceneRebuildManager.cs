@@ -253,6 +253,22 @@ public class SceneRebuildManager : SingletonBehaviour<SceneRebuildManager>
         SubSceneHelper.ClearBuildings();
     }
 
+    public void ShowBuildings()
+    {
+        var buildings = GameObject.FindObjectsOfType<BuildingModelInfo>(true);
+        int count = 0;
+        foreach(var b in buildings)
+        {
+            bool isActive = b.gameObject.activeSelf;
+            if (isActive == false)
+            {
+                b.gameObject.SetActive(true);
+                count++;
+            }
+        }
+        Debug.Log($"ShowBuildings buildings:{buildings.Length} hiddenCount:{count}");
+    }
+
     public void SetModelsActive(bool v)
     {
         if (buildingModelManager == null)

@@ -15,7 +15,7 @@ public class NavisModelRootList : SingletonBehaviour<NavisModelRootList>
         foreach(var root in ModelRoots)
         {
             root.RefreshBIMList();
-            if (root.resultCount.GetSumCount() == 0)
+            //if (root.resultCount.GetSumCount() == 0)
             {
                 root.SetResultCount();
             }

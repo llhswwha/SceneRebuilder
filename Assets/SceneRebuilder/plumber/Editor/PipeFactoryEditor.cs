@@ -12,6 +12,8 @@ public class PipeFactoryEditor : BaseFoldoutEditor<PipeFactory>
     static FoldoutEditorArg pipeRunListArg = new FoldoutEditorArg(true, false);
     static FoldoutEditorArg testpipeRunListArg = new FoldoutEditorArg(true, false);
 
+    static int toggleWidth = 15;
+
     internal static void DrawUI(PipeFactory targetT)
     {
         GUILayout.BeginHorizontal();
@@ -57,33 +59,38 @@ public class PipeFactoryEditor : BaseFoldoutEditor<PipeFactory>
         GUILayout.EndHorizontal();
 
         GUILayout.BeginHorizontal();
-        int toggleWidth = 30;
+        
         float totalVertex = targetT.TotalObjs.GetVertexCount();
-        GUILayout.Label($"Total({targetT.TotalObjs.GetCountVertex()})");
-        GUILayout.Label($"Ignore({targetT.IgnoredObjs.GetCountVertex(totalVertex)})");
-        GUILayout.Label($"Line({targetT.PipeLines.Count})");
-        targetT.EnablePipeLine = EditorGUILayout.Toggle(targetT.EnablePipeLine);
+
+        targetT.EnablePipeLine = EditorGUILayout.Toggle(targetT.EnablePipeLine, GUILayout.Width(toggleWidth));
+        GUILayout.Label($"Line({targetT.PipeLines.GetCountVertex(totalVertex)})");
+        targetT.EnablePipeElbow = EditorGUILayout.Toggle(targetT.EnablePipeElbow, GUILayout.Width(toggleWidth));
         GUILayout.Label($"Elbow({targetT.PipeElbows.GetCountVertex(totalVertex)})");
-        targetT.EnablePipeElbow = EditorGUILayout.Toggle(targetT.EnablePipeElbow);
-        GUILayout.Label($"Tee({targetT.PipeTees.Count})");
-        targetT.EnablePipeTee = EditorGUILayout.Toggle(targetT.EnablePipeTee);
-        GUILayout.Label($"Reducer({targetT.PipeReducers.Count})");
-        targetT.EnablePipeReducer = EditorGUILayout.Toggle(targetT.EnablePipeReducer);
+        targetT.EnablePipeTee = EditorGUILayout.Toggle(targetT.EnablePipeTee, GUILayout.Width(toggleWidth));
+        GUILayout.Label($"Tee({targetT.PipeTees.GetCountVertex(totalVertex)})");
+        targetT.EnablePipeReducer = EditorGUILayout.Toggle(targetT.EnablePipeReducer, GUILayout.Width(toggleWidth));
+        GUILayout.Label($"Reducer({targetT.PipeReducers.GetCountVertex(totalVertex)})");
+        targetT.EnablePipeFlange = EditorGUILayout.Toggle(targetT.EnablePipeFlange, GUILayout.Width(toggleWidth));
         GUILayout.Label($"Flange({targetT.PipeFlanges.GetCountVertex(totalVertex)})");
-        targetT.EnablePipeFlange = EditorGUILayout.Toggle(targetT.EnablePipeFlange);
+        targetT.EnablePipeWeldolet = EditorGUILayout.Toggle(targetT.EnablePipeWeldolet, GUILayout.Width(toggleWidth));
         GUILayout.Label($"Weldolet({targetT.PipeWeldolets.Count})");
-        targetT.EnablePipeWeldolet = EditorGUILayout.Toggle(targetT.EnablePipeWeldolet);
-       
+        
+
         GUILayout.EndHorizontal();
 
         GUILayout.BeginHorizontal();
-        GUILayout.Label($"Welds({targetT.PipeWelds.Count})");
+        GUILayout.Label($"Welds({targetT.PipeWelds.GetCountVertex(totalVertex)})");
         GUILayout.Label($"WeldsNew({targetT.PipeWeldsNew.Count})");
         GUILayout.Label($"Structure({targetT.StructureModels.GetCountVertex(totalVertex)})");
         GUILayout.Label($"Attachment({targetT.AttachmentModels.GetCountVertex(totalVertex)})");
         GUILayout.Label($"Others({targetT.PipeOthers.GetCountVertex(totalVertex)})");
+
+        targetT.EnableBoxModel = EditorGUILayout.Toggle(targetT.EnableBoxModel, GUILayout.Width(toggleWidth));
         GUILayout.Label($"Box({targetT.BoxModels.GetCountVertex(totalVertex)})");
-        targetT.EnableBoxModel = EditorGUILayout.Toggle(targetT.EnableBoxModel);
+        
+
+        GUILayout.Label($"Total({targetT.TotalObjs.GetCountVertex()})");
+        GUILayout.Label($"Ignore({targetT.IgnoredObjs.GetCountVertex(totalVertex)})");
         //GUILayout.Label($"Box({targetT.BoxModels.Count},v:{MeshHelper.GetVertexCountS(targetT.TotalBoxModelsVertexCount)})");
         GUILayout.EndHorizontal();
 
@@ -484,20 +491,22 @@ public class PipeFactoryEditor : BaseFoldoutEditor<PipeFactory>
     {
         if (generateArg == null) return;
         if (vl == null) return;
-        GUILayout.Label("创建焊缝");
-        generateArg.generateWeld = EditorGUILayout.Toggle(generateArg.generateWeld);
+        int width1 = 35;
+        int width2 = 55;
+        generateArg.generateWeld = EditorGUILayout.Toggle(generateArg.generateWeld, GUILayout.Width(toggleWidth));
+        GUILayout.Label("创建焊缝", GUILayout.Width(width2));
 
-        int width = 35;
-        GUILayout.Label("管道边数");
-        generateArg.pipeSegments = EditorGUILayout.IntPopup(generateArg.pipeSegments, vl.pipeSegmentsValuesStr, vl.pipeSegmentsValues, GUILayout.Width(width));
-        GUILayout.Label("弯管段数");
-        generateArg.elbowSegments = EditorGUILayout.IntPopup(generateArg.elbowSegments, vl.elbowSegmentsValuesStr, vl.elbowSegmentsValues, GUILayout.Width(width));
-        GUILayout.Label("焊缝边数");
-        generateArg.weldPipeSegments = EditorGUILayout.IntPopup(generateArg.weldPipeSegments, vl.pipeSegmentsValuesStr_weld, vl.pipeSegmentsValues_weld, GUILayout.Width(width));
-        GUILayout.Label("焊缝段数");
-        generateArg.weldElbowSegments = EditorGUILayout.IntPopup(generateArg.weldElbowSegments, vl.elbowSegmentsValuesStr_weld, vl.elbowSegmentsValues_weld, GUILayout.Width(width));
-        GUILayout.Label("半径精度");
-        generateArg.uniformRadiusP = EditorGUILayout.IntPopup(generateArg.uniformRadiusP, vl.uniformRadiusPValuesStr, vl.uniformRadiusPValues, GUILayout.Width(width));
+       
+        GUILayout.Label("管道边数", GUILayout.Width(width2));
+        generateArg.pipeSegments = EditorGUILayout.IntPopup(generateArg.pipeSegments, vl.pipeSegmentsValuesStr, vl.pipeSegmentsValues, GUILayout.Width(width1));
+        GUILayout.Label("弯管段数", GUILayout.Width(width2));
+        generateArg.elbowSegments = EditorGUILayout.IntPopup(generateArg.elbowSegments, vl.elbowSegmentsValuesStr, vl.elbowSegmentsValues, GUILayout.Width(width1));
+        GUILayout.Label("焊缝边数", GUILayout.Width(width2));
+        generateArg.weldPipeSegments = EditorGUILayout.IntPopup(generateArg.weldPipeSegments, vl.pipeSegmentsValuesStr_weld, vl.pipeSegmentsValues_weld, GUILayout.Width(width1));
+        GUILayout.Label("焊缝段数", GUILayout.Width(width2));
+        generateArg.weldElbowSegments = EditorGUILayout.IntPopup(generateArg.weldElbowSegments, vl.elbowSegmentsValuesStr_weld, vl.elbowSegmentsValues_weld, GUILayout.Width(width1));
+        GUILayout.Label("半径精度", GUILayout.Width(width2));
+        generateArg.uniformRadiusP = EditorGUILayout.IntPopup(generateArg.uniformRadiusP, vl.uniformRadiusPValuesStr, vl.uniformRadiusPValues, GUILayout.Width(width1));
         
     }
 

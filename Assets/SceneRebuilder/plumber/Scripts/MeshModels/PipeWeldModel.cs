@@ -59,7 +59,7 @@ public class PipeWeldModel : PipeModelComponent
         GameObject go = GameObject.Instantiate(PipeFactory.Instance.GetPipeModelUnitPrefab_Weld(WeldData));
         go.SetActive(true);
 
-        go.name = this.name + "_New2";
+        go.name = this.name.Replace("_New2","") + "_New2";
         go.transform.position = WeldData.start;
         go.transform.up = WeldData.direction;
         go.transform.SetParent(this.transform.parent);
@@ -78,7 +78,7 @@ public class PipeWeldModel : PipeModelComponent
 
         GameObject prefab = this.gameObject;
         prefab.SetActive(true);
-        prefab.name = this.name + "_New3";
+        prefab.name = this.name.Replace("_New3", "") + "_New3";
         //SetPrefabTransfrom(prefab);
 
         prefab.transform.position = WeldData.start;
@@ -172,7 +172,7 @@ public class PipeWeldModel : PipeModelComponent
         {
             GameObject go = new GameObject();
             //go.name = $"Weld_2 start:{start} direction:{direction}";
-            go.name = target.name+"_New";
+            go.name = target.name.Replace("_New", "") + "_New";
             go.transform.SetParent(target.transform.parent);
             //go.transform.localPosition = Vector3.zero;
             go.transform.position = start;

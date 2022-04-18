@@ -48,7 +48,7 @@ namespace NavisPlugins.Infos
         [XmlAttribute]
         public float Z { get; set; }
 
-        public Vector3 GetPositon()
+        public Vector3 GetPosition()
         {
             return new Vector3(X, Z, Y);
         }
@@ -284,7 +284,7 @@ namespace NavisPlugins.Infos
 
         public string ShowDistance(Transform transform)
         {
-            var p1 = this.GetPositon();
+            var p1 = this.GetPosition();
 
             if (transform == null)
             {
@@ -307,7 +307,7 @@ namespace NavisPlugins.Infos
 
         public float GetDistance(Transform transform,bool isCenter)
         {
-            var p1 = this.GetPositon();
+            var p1 = this.GetPosition();
             var p2 = transform.position;
             if (isCenter)
             {
@@ -319,7 +319,7 @@ namespace NavisPlugins.Infos
 
         public Transform FindClosedTransform(List<Transform> ts, bool isUseCenter)
         {
-            return TransformHelper.FindClosedTransform(ts, this.GetPositon(), isUseCenter);
+            return TransformHelper.FindClosedTransform(ts, this.GetPosition(), isUseCenter);
         }
 
         private string compareName11 = "";

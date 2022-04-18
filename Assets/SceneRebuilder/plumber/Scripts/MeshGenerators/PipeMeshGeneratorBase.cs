@@ -187,6 +187,45 @@ public class PipeMeshGeneratorBase : BaseMeshGenerator
 
     public float weldPipeRadius = 0.1f;
 
+    public void SetWeldRadius(float r, PipeGenerateArg arg)
+    {
+        if (r < 0.01)
+        {
+            //pipe.weldRadius = 0.003f;
+            weldPipeRadius = arg.weldRadius * 0.6f;
+        }
+        else if (r > 0.8)
+        {
+            //pipe.weldRadius = 0.003f;
+            weldPipeRadius = arg.weldRadius * 2f;
+        }
+        else if (r > 0.5)
+        {
+            //pipe.weldRadius = 0.003f;
+            weldPipeRadius = arg.weldRadius * 1.5f;
+        }
+    }
+
+    public void SetWeldRadius(float r1,float r2, PipeGenerateArg arg)
+    {
+        if (r1 < 0.025 || r2 < 0.025)
+        {
+            //pipe.weldRadius = 0.003f;
+            weldPipeRadius = arg.weldRadius * 0.6f;
+        }
+        else if (r1 > 0.8 || r2 > 0.8)
+        {
+            //pipe.weldRadius = 0.003f;
+            weldPipeRadius = arg.weldRadius * 2f;
+        }
+        else if (r1 > 0.5|| r2 > 0.5)
+        {
+            //pipe.weldRadius = 0.003f;
+            weldPipeRadius = arg.weldRadius * 1.5f;
+        }
+
+    }
+
     public float weldCircleRadius = 0;
 
     public bool IsElbow = false;

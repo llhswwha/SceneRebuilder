@@ -84,7 +84,7 @@ public class ModelItemInfoDictionary
                 uid2Model[item.UId].Add(item);
             }
 
-            var pos = item.GetPositon();
+            var pos = item.GetPosition();
             positionDictionaryList.Add(pos, item);
         }
 

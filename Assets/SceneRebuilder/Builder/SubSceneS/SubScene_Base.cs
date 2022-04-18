@@ -193,12 +193,16 @@ public class SubScene_Base : SubSceneArgComponent
 
     internal string GetSceneInfo()
     {
-        //return $"r:{rendererCount}\tv:{vertexCount:F1}w\t[{GetSceneName()}]   ";
+        //return $"r:{rendererCount}\tv:{vertexCount:F1}w\t[{GetSceneName()}]  ";
         BuildingController bc= this.GetComponentInParent<BuildingController>();
         BuildingModelInfo buildingModelInfo = this.GetComponentInParent<BuildingModelInfo>();
         ModelAreaTree tree = this.GetComponentInParent<ModelAreaTree>();
         //Vector3 size = bounds.size;
-
+        if(bc==null||buildingModelInfo==null)
+        {
+            Debug.LogError($"Exception.SubScene_Base.GetSceneInfo.Name:{transform.name} path:{TransformHelper.GetPath(this.transform)}");
+            return "";
+        }
         string buildingName = bc.name;
         if (buildingModelInfo.gameObject != bc.gameObject)
         {
