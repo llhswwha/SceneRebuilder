@@ -4,15 +4,8 @@ using UnityEngine;
 
 public class SteelStructureModelH : SteelStructureBaseModel
 {
-    // Start is called before the first frame update
-    void Start()
+    public override void GetModelInfo()
     {
-        
-    }
-
-    // Update is called once per frame
-    void Update()
-    {
-        
+        GetHModelInfo();
     }
 }

@@ -36,33 +36,19 @@ public class SteelStructureBaseModel : BaseMeshModel
         return endPlane;
     }
 
-    public override void GetModelInfo()
+
+    private GameObject planInfoRoot;
+
+    private List<VerticesToPlaneInfo> verticesToPlaneInfos;
+
+    private OBBCollider oBBCollider;
+
+    [ContextMenu("GetHModelInfo")]
+    public void GetHModelInfo()
     {
-        //Mesh mesh = this.GetComponent<MeshFilter>().sharedMesh;
-        //MeshTriangles meshTriangles = new MeshTriangles(mesh);
-        ////Debug.Log($"GetModelInfo mesh vertexCount:{mesh.vertexCount} triangles:{mesh.triangles.Length}");
-        ////meshTriangles.ShowCirclesById(this.transform, PointScale, 0, 3, minRepeatPointDistance);
-        //var planes = meshTriangles.GetSharedMeshTrianglesListByNormal(2, minSamePlaneNormalDis, this.name);
-        //Debug.Log($"GetModelInfo planes:{planes.Count}");
-        //var plane1 = planes[0];
-        //var plane2 = planes[1];
-        //if(plane1.TriangleCount==14 || plane2.TriangleCount == 14)
-        //{
-        //    //var min1=plane1.MinRadius
-        //}
-        //var plane3 = planes[2];
-        //var plane4 = planes[3];
-        //if (plane3.TriangleCount == 4 || plane4.TriangleCount == 4)
-        //{
+         ClearDebugInfoGos();
 
-        //}
-
-
-        //ClearChildren();
-
-        ClearDebugInfoGos();
-
-        OBBCollider oBBCollider = this.gameObject.GetComponent<OBBCollider>();
+        oBBCollider = this.gameObject.GetComponent<OBBCollider>();
         if (oBBCollider == null)
         {
             oBBCollider = this.gameObject.AddComponent<OBBCollider>();
@@ -84,7 +70,7 @@ public class SteelStructureBaseModel : BaseMeshModel
         //planInfoRoot.transform.SetParent(this.transform);
         //planInfoRoot.transform.localPosition = Vector3.zero;
 
-        GameObject planInfoRoot = DebugInfoRoot.NewGo("PipeModel_PlaneInfo", this.transform);
+        planInfoRoot = DebugInfoRoot.NewGo("PipeModel_PlaneInfo", this.transform);
 
         //CreateLocalPoint(StartPoint, "StartPoint1", go.transform);
         //CreateLocalPoint(EndPoint, "EndPoint1", go.transform);
@@ -95,7 +81,7 @@ public class SteelStructureBaseModel : BaseMeshModel
         //2.Planes
         PlaneInfo[] planeInfos = OBB.GetPlaneInfos();
         List<VerticesToPlaneInfo> verticesToPlaneInfos_All = new List<VerticesToPlaneInfo>();
-        var verticesToPlaneInfos = new List<VerticesToPlaneInfo>();
+        verticesToPlaneInfos = new List<VerticesToPlaneInfo>();
         for (int i = 0; i < planeInfos.Length; i++)
         {
             PlaneInfo plane = (PlaneInfo)planeInfos[i];
@@ -121,11 +107,16 @@ public class SteelStructureBaseModel : BaseMeshModel
             return;
         }
 
+        GenerateHModel(verticesToPlaneInfos, oBBCollider, planInfoRoot);
+    }
+
+    public void GenerateHModel(List<VerticesToPlaneInfo> verticesToPlaneInfos, OBBCollider oBBCollider, GameObject planInfoRoot)
+    {
         GameObject goNew = new GameObject(gameObject.name);
         goNew.transform.position = this.transform.position;
 
         HMeshGenerator hMesh = goNew.AddComponent<HMeshGenerator>();
-        VerticesToPlaneInfo beforePlane= verticesToPlaneInfos[0];
+        VerticesToPlaneInfo beforePlane = verticesToPlaneInfos[0];
         VerticesToPlaneInfo leftPlane = verticesToPlaneInfos[4];
         VerticesToPlaneInfo rightPlane = verticesToPlaneInfos[5];
         VerticesToPlaneInfo topPlane = verticesToPlaneInfos[2];
@@ -170,5 +161,16 @@ public class SteelStructureBaseModel : BaseMeshModel
             GameObject.DestroyImmediate(ResultGo);
         }
         ResultGo = goNew;
+    }
+
+    [ContextMenu("GetCModelInfo")]
+    public void GetCModelInfo()
+    {
+        GetHModelInfo();
+    }
+
+    public override void GetModelInfo()
+    {
+        GetHModelInfo();
     }
 }
