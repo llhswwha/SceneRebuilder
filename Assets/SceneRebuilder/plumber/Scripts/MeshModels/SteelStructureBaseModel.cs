@@ -129,9 +129,11 @@ public class SteelStructureBaseModel : BaseMeshModel
         VerticesToPlaneInfo leftPlane = verticesToPlaneInfos[4];
         VerticesToPlaneInfo rightPlane = verticesToPlaneInfos[5];
         VerticesToPlaneInfo topPlane = verticesToPlaneInfos[2];
+
+        hMesh.direction = verticesToPlaneInfos[0].DirectionToPlane(verticesToPlaneInfos[1], transform, "Length");
         hMesh.length = verticesToPlaneInfos[0].DebugDistanceToPlane(verticesToPlaneInfos[1], transform, "Length");// Vector3.Distance(verticesToPlaneInfos[0].Point.planeCenter, verticesToPlaneInfos[1].Point.planeCenter);
-        //hMesh.height = topPlane.DebugDistanceToPlane(verticesToPlaneInfos[3], transform, "Height");//Vector3.Distance(verticesToPlaneInfos[2].Point.planeCenter, verticesToPlaneInfos[3].Point.planeCenter);
-        //hMesh.width = leftPlane.DebugDistanceToPlane(rightPlane, transform, "Width");//Vector3.Distance(verticesToPlaneInfos[4].Point.planeCenter, verticesToPlaneInfos[5].Point.planeCenter);
+        hMesh.height = topPlane.DebugDistanceToPlane(verticesToPlaneInfos[3], transform, "Height");//Vector3.Distance(verticesToPlaneInfos[2].Point.planeCenter, verticesToPlaneInfos[3].Point.planeCenter);
+        hMesh.width = leftPlane.DebugDistanceToPlane(rightPlane, transform, "Width");//Vector3.Distance(verticesToPlaneInfos[4].Point.planeCenter, verticesToPlaneInfos[5].Point.planeCenter);
 
         VerticesToPlaneInfo left2Top = new VerticesToPlaneInfo(leftPlane.Plane1Points.ToArray(), topPlane.Plane, true);
 
@@ -152,13 +154,14 @@ public class SteelStructureBaseModel : BaseMeshModel
         middlePlaneOfleftRight.ShowPlaneInfo(0, middlePlaneOfleftRightGo, middlePlaneVP, PointScale, this.transform);
 
         hMesh.sizeX = hMesh.width * 0.07f;
+        hMesh.sizeY = hMesh.height * 0.03f;
+
         //hMesh.sizeX = middlePlaneVP.GetPlaneHeight(transform, "sizeX");
-        //hMesh.sizeY = hMesh.height * 0.03f;
-        hMesh.sizeY = left2Top.DebugDistanceOfPlane12(transform, "sizeY");
-        hMesh.sizeDetail = hMesh.sizeX * 2f;
+        //hMesh.sizeY = left2Top.DebugDistanceOfPlane12(transform, "sizeY");
+
+        hMesh.sizeDetail = hMesh.sizeX * 1.8f;
 
         //VerticesToPlaneInfo middleOfleftRight=VerticesToPlaneInfo.GetMiddlePlane(leftPlane, rightPlane);
-
 
         hMesh.CreateLine();
 

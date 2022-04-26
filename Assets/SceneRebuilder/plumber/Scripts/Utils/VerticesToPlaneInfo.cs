@@ -48,18 +48,31 @@ public class VerticesToPlaneInfo : IComparable<VerticesToPlaneInfo>
 
     public float DebugDistanceOfPlane12(Transform t, string tag)
     {
+        if (Plane2Points.Count == 0)
+        {
+            Debug.LogError($"DebugDistanceOfPlane12 Plane2Points.Count == 0 t:{t.name} tag:{tag}");
+            return 0;
+        }
+
         Vector3 p1 = Plane1Points[0];
-        Vector3 p2 = GetClosedPlanePoint1(p1, Plane1Points);
+        Vector3 p2 = GetClosedPlanePoint1(p1, this.Plane2Points);
         float dis = Vector3.Distance(p1, p2);
         MeshHelper.CreateLocalPoint(p1, $"DistanceOfPlane12_{tag}_P1_{dis}", t, 0.01f);
         MeshHelper.CreateLocalPoint(p2, $"DistanceOfPlane12_{tag}_P2_{dis}", t, 0.01f);
         return dis;
     }
 
-    public float DebugDistanceToPlane(VerticesToPlaneInfo plane2,Transform t,string tag)
+    public Vector3 DirectionToPlane(VerticesToPlaneInfo plane2, Transform t, string tag)
     {
         Vector3 p1 = this.GetMinVector3();
-        Vector3 p2 = plane2.GetClosedPlanePoint1(p1, Plane1Points);
+        Vector3 p2 = GetClosedPlanePoint1(p1, plane2.Plane1Points);
+        return p2 - p1;
+    }
+
+        public float DebugDistanceToPlane(VerticesToPlaneInfo plane2,Transform t,string tag)
+    {
+        Vector3 p1 = this.GetMinVector3();
+        Vector3 p2 = GetClosedPlanePoint1(p1, plane2.Plane1Points);
 
         //var list = plane2.ClosedPoints;
         //float minD = float.MaxValue;
@@ -77,8 +90,8 @@ public class VerticesToPlaneInfo : IComparable<VerticesToPlaneInfo>
         //Vector3 p2 = list[minI];
 
         float dis = Vector3.Distance(p1, p2);
-        MeshHelper.CreateLocalPoint(p1, $"DistanceToPlane_{tag}_P1_{dis}", t, 0.01f);
-        MeshHelper.CreateLocalPoint(p2, $"DistanceToPlane_{tag}_P2_{dis}", t, 0.01f);
+        MeshHelper.CreateLocalPoint(p1, $"DistanceToPlane_{tag}_P1_({p1.Vector3ToString()})_{dis}", t, 0.01f);
+        MeshHelper.CreateLocalPoint(p2, $"DistanceToPlane_{tag}_P2_({p2.Vector3ToString()})_{dis}", t, 0.01f);
         return dis;
     }
 
@@ -102,21 +115,30 @@ public class VerticesToPlaneInfo : IComparable<VerticesToPlaneInfo>
         return GetClosedPlanePoint1(p, Plane2Points);
     }
 
-    public Vector3 GetClosedPlanePoint1(Vector3 p, List<Vector3> list)
+    public static Vector3 GetClosedPlanePoint1(Vector3 p, List<Vector3> list)
     {
-        //var list = Plane1Points;
-        float minD = float.MaxValue;
-        int minI = 0;
-        for (int i = 0; i < list.Count; i++)
+        try
         {
-            float dis = Vector3.Distance(list[i], p);
-            if (dis < minD)
+            //var list = Plane1Points;
+            float minD = float.MaxValue;
+            int minI = 0;
+            for (int i = 0; i < list.Count; i++)
             {
-                minD = dis;
-                minI = i;
+                float dis = Vector3.Distance(list[i], p);
+                if (dis < minD)
+                {
+                    minD = dis;
+                    minI = i;
+                }
             }
+            return list[minI];
         }
-        return list[minI];
+        catch (Exception ex)
+        {
+            Debug.LogError($"GetClosedPlanePoint1 p:{p} list:{list.Count} ex:{ex}");
+            return Vector3.zero;
+        }
+        
     }
 
     //public Vector3 GetClosedPlanePoint2(Vector3 p)

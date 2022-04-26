@@ -15,6 +15,8 @@ public class HMeshGenerator : MonoBehaviour
 	public float sizeX = 0.25f;
 	public float sizeDetail = 0.04f;
 
+	public Vector3 direction = new Vector3(0, 0, 1);
+
 
 	[ContextMenu("CreateLine")]
 	public void CreateLine()
@@ -67,5 +69,7 @@ public class HMeshGenerator : MonoBehaviour
 		lineMesh.Direction = new Vector3(0, 0, 1);
 		lineMesh.Length = length;
 		lineMesh.GenerateMesh();
+
+		lineMesh.transform.forward = direction;
 	}
 }
