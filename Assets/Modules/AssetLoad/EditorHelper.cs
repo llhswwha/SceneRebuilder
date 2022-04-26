@@ -927,12 +927,12 @@ public static class EditorHelper
         }
     }
 
-    public static IEnumerator LoadSceneAsync(SceneLoadArg arg, System.Action<float> progressChanged, System.Action<Scene> finished,bool isAutoUnload=false)
+    public static IEnumerator LoadSceneAsync(SubScene_Base sceneObj,SceneLoadArg arg, System.Action<float> progressChanged, System.Action<Scene> finished,bool isAutoUnload=false)
     {
         System.DateTime start = System.DateTime.Now;
         //Debug.Log("LoadSceneAsync:" + sName);
         if(arg.index<=0){
-            Debug.LogError($"EditorHelper.LoadSceneAsync arg.index<=0 sName:{arg.name} index:{arg.index}");
+            Debug.LogError($"EditorHelper.LoadSceneAsync arg.index<=0 sName:{arg.name} index:{arg.index} sceneObj:{TransformHelper.GetPath(sceneObj)}");
 
             Scene scene = GetSceneByBuildIndex(arg, "LoadSceneAsync1");
             if (finished != null)
@@ -1037,9 +1037,19 @@ public static class EditorHelper
 
             //System.GC.Collect();
 
-            if (progressChanged != null)
+            if (async != null)
             {
-                progressChanged(async.progress);
+                if (progressChanged != null)
+                {
+                    progressChanged(async.progress);
+                }
+            }
+            else
+            {
+                if (progressChanged != null)
+                {
+                    progressChanged(1);
+                }
             }
         }
         //var objs = scene.GetRootGameObjects();

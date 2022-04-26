@@ -173,18 +173,44 @@ public class FloorBoxManager : SingletonBehaviour<FloorBoxManager>
         SetParentEx();
     }
 
+    public bool IsDebug = false;
+
     [ContextMenu("SetParent")]
     public void SetParent()
     {
-        foreach (var r in List1)
+        if (OnlySetOneFloor)
         {
-            r.SetParent(Sources.name,IsIn);
+            foreach (TransformFloorParent r in List1)
+            {
+                r.SetParent(Sources, IsIn, IsDebug);
+                if (IsDebug)
+                {
+                    break;
+                }
+            }
         }
-        foreach (var r in List2)
+        else
         {
-            r.SetParent(Sources.name, IsIn);
+            foreach (TransformFloorParent r in List1)
+            {
+                r.SetParent(Sources, IsIn, IsDebug);
+                if (IsDebug)
+                {
+                    break;
+                }
+            }
+            foreach (TransformFloorParent r in List2)
+            {
+                r.SetParent(Sources, IsIn, IsDebug);
+                if (IsDebug)
+                {
+                    break;
+                }
+            }
         }
     }
+
+    public bool OnlySetOneFloor = false;
 
     [ContextMenu("SetParentEx")]
     public void SetParentEx()
@@ -276,7 +302,7 @@ public class TransformFloorParent
     {
         this.go = g;
         //this.floors = fs;
-        foreach(var f in fs)
+        foreach (var f in fs)
         {
             this.floors.Add(f.transform);
         }
@@ -297,9 +323,26 @@ public class TransformFloorParent
     public string GetFloors()
     {
         string fs = "";
-        foreach(var f in floors)
+        if (floors.Count == 1)
         {
-            fs += f.name + ";";
+            Transform floor = floors[0];
+            if (floor != null)
+            {
+                fs = $"{floor.parent.name} > {floor.name}";
+            }
+        }
+        else
+        {
+            for (int i = 0; i < floors.Count; i++)
+            {
+                Transform f = floors[i];
+                if (f == null) continue;
+                fs += f.name;
+                if (i < floors.Count - 1)
+                {
+                    fs += ";";
+                }
+            }
         }
         return fs;
     }
@@ -313,7 +356,7 @@ public class TransformFloorParent
     {
         if (floors.Count <= 1) return true;
         var b1 = floors[0].parent;
-        for(int i = 1; i < floors.Count; i++)
+        for (int i = 1; i < floors.Count; i++)
         {
             var b2 = floors[i].parent;
             if (b1 != b2)
@@ -326,8 +369,9 @@ public class TransformFloorParent
 
     public Transform p;
 
-    public void SetParent(string pName,bool isIn)
+    public void SetParent(GameObject root, bool isIn, bool isDebug)
     {
+        string pName = root.name;
         if (p != null)
         {
             go.SetParent(p.transform);
@@ -342,9 +386,9 @@ public class TransformFloorParent
 
         Transform fP = floor;
         Transform inP = null;
-        for(int i=0;i<fP.childCount;i++)
+        for (int i = 0; i < fP.childCount; i++)
         {
-            if(fP.GetChild(i).name=="In")
+            if (fP.GetChild(i).name == "In")
             {
                 inP = fP.GetChild(i);
             }
@@ -354,24 +398,32 @@ public class TransformFloorParent
             fP = inP;
         }
 
-        for(int i = 0; i < fP.childCount; i++)
+        //for (int i = 0; i < fP.childCount; i++)
+        //{
+        //    var child = fP.GetChild(i);
+        //    if (child.name == pName)
+        //    {
+        //        p = child;
+        //        EditorHelper.UnpackPrefab(go.gameObject);
+        //        go.SetParent(child);
+        //        return;
+        //    }
+        //}
+
+        //GameObject newP = new GameObject(pName);
+        //newP.transform.position = fP.transform.position;
+        //newP.transform.SetParent(fP);
+        ////p = newP.transform;
+        //EditorHelper.UnpackPrefab(go.gameObject);
+        //go.SetParent(newP.transform);
+
+        List<Transform> path = TransformHelper.GetAncestors(go.transform, root.transform);
+        if (isDebug)
         {
-            var child = fP.GetChild(i);
-            if(child.name==pName)
-            {
-                p = child;
-                EditorHelper.UnpackPrefab(go.gameObject);
-                go.SetParent(child);
-                return;
-            }
+            Debug.LogError($"SetParent go:{go} root:{root} paths:{path.Count} path:{TransformHelper.GetPath(go.transform, root.transform)}");
         }
 
-        GameObject newP = new GameObject(pName);
-        newP.transform.position = fP.transform.position;
-        newP.transform.SetParent(fP);
-        //p = newP.transform;
-
-        EditorHelper.UnpackPrefab(go.gameObject);
+        Transform newP = TransformHelper.FindOrCreatePath(fP, path, isDebug);
         go.SetParent(newP.transform);
     }
 }

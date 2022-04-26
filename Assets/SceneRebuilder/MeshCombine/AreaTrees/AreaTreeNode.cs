@@ -281,6 +281,22 @@ public class AreaTreeNode : SubSceneCreater
     {
         try
         {
+            if (this == null)
+            {
+                Debug.LogError($"AreaTreeNode.GetRenderersRoot this == null");
+                if (renderersRoot == null)
+                    renderersRoot = new GameObject("NULLError_Renderers");
+                return renderersRoot;
+            }
+
+            if (this.gameObject==null)
+            {
+                Debug.LogError($"AreaTreeNode.GetRenderersRoot gameObject == null");
+                if (renderersRoot == null)
+                    renderersRoot = new GameObject("NULLError_Renderers");
+                return renderersRoot;
+            }
+
             if (renderersRoot == null)
                 renderersRoot = new GameObject(this.name + "_Renderers");
             return renderersRoot;
@@ -1604,10 +1620,12 @@ public class AreaTreeNode : SubSceneCreater
         //Debug.LogError($"AreaTreeNode.OnDisable {this.name}");
     }
 
-    private void OnDestroy()
-    {
-        //Debug.LogError($"AreaTreeNode.OnDestroy {this.name}");
-    }
+#if UNITY_EDITOR
+    //private void OnDestroy()
+    //{
+    //    Debug.LogError($"AreaTreeNode.OnDestroy {this.name} path:{TransformHelper.GetPath(this.transform)}");
+    //}
+#endif
 
     private float lastP = 0;
 

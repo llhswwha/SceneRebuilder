@@ -494,13 +494,17 @@ public class SubSceneManager : SingletonBehaviour<SubSceneManager>
 
     public bool IsFilterLoadedScene = true;
 
+    public float LoadSceneUpdateInterval = 0.05f;
+
     IEnumerator LoadScenesByBag<T>(T[] scenes, Action<SceneLoadProgress> finishedCallback) where T : SubScene_Base
     {
         var start = DateTime.Now;
 
         WattingForLoadedCurrent.RemoveAll(s => s == null);
-        WattingForLoadedAll.RemoveAll(s => s == null);
 
+        WattingForLoadedAll.RemoveAll(s => s == null);
+        int inWattingCount = 0;
+        StringBuilder sb = new StringBuilder();
         //WattingForLoadedAll.AddRange(scenes);
         int totalScenesCount = 0;
         foreach (var scene in scenes)
@@ -508,11 +512,20 @@ public class SubSceneManager : SingletonBehaviour<SubSceneManager>
             if (IsFilterLoadedScene && scene.IsLoaded) continue;
             if (WattingForLoadedAll.Contains(scene))
             {
-                Debug.LogError($"LoadScenesByBag WattingForLoadedAll.Contains(scene) scene:{scene.GetSceneName()}");
+#if UNITY_EDITOR
+                //Debug.LogError($"LoadScenesByBag WattingForLoadedAll.Contains(scene) scene:{scene.GetSceneName()}");
+                sb.AppendLine($"LoadScenesByBag WattingForLoadedAll.Contains(scene) scene:{scene.GetSceneName()}");
+                inWattingCount++;
+#endif
                 continue;
             }
             WattingForLoadedAll.Add(scene);
             totalScenesCount++;
+        }
+        string txt = sb.ToString();
+        if (!string.IsNullOrEmpty(txt))
+        {
+            Debug.LogError($"LoadScenesByBag WattingForLoadedAll.Contains(scene) inWattingCount:{inWattingCount} \n{txt}");
         }
 
         int count = 0;
@@ -531,11 +544,11 @@ public class SubSceneManager : SingletonBehaviour<SubSceneManager>
 
         if (WattingForLoadedCurrent.Count > 0)
         {
-            Debug.LogError($"LoadScenesByBag scenes:{scenes.Length} WattingForLoadedAll:{WattingForLoadedAll.Count} WattingForLoadedCurrent:{WattingForLoadedCurrent.Count} Current0:{WattingForLoadedCurrent[0]} LoadingSceneMaxCount:{LoadingSceneMaxCount} bool isLoadScene  :{WattingForLoadedCurrent.Count < LoadingSceneMaxCount}");
+            Debug.LogError($"LoadScenesByBag scenes:{scenes.Length} inWattingCount:{inWattingCount} WattingForLoadedAll:{WattingForLoadedAll.Count} WattingForLoadedCurrent:{WattingForLoadedCurrent.Count} Current0:{WattingForLoadedCurrent[0]} LoadingSceneMaxCount:{LoadingSceneMaxCount} bool isLoadScene  :{WattingForLoadedCurrent.Count < LoadingSceneMaxCount}");
         }
         else
         {
-            Debug.Log($"LoadScenesByBag scenes:{scenes.Length} WattingForLoadedAll:{WattingForLoadedAll.Count} WattingForLoadedCurrent:{WattingForLoadedCurrent.Count} LoadingSceneMaxCount:{LoadingSceneMaxCount} bool isLoadScene  :{WattingForLoadedCurrent.Count < LoadingSceneMaxCount}");
+            Debug.Log($"LoadScenesByBag scenes:{scenes.Length} inWattingCount:{inWattingCount} WattingForLoadedAll:{WattingForLoadedAll.Count} WattingForLoadedCurrent:{WattingForLoadedCurrent.Count} LoadingSceneMaxCount:{LoadingSceneMaxCount} bool isLoadScene  :{WattingForLoadedCurrent.Count < LoadingSceneMaxCount}");
         }
         
 
@@ -632,7 +645,6 @@ public class SubSceneManager : SingletonBehaviour<SubSceneManager>
                         Debug.Log($"LoadScenesByBag Waiting time:{time}ms count:{count} totalCount:{totalScenesCount} scene:NULL WattingForLoadedAll:{WattingForLoadedAll.Count} WattingForLoadedCurrent:{WattingForLoadedCurrent.Count} LoadingSceneMaxCount:{LoadingSceneMaxCount}");
                     }
 #endif
-
                 }
 
             }
@@ -640,7 +652,13 @@ public class SubSceneManager : SingletonBehaviour<SubSceneManager>
             {
                 Debug.LogError($"LoadScenesByTag Exception:{ex}");
             }
-            yield return new WaitForSeconds(0.02f);
+
+            if(WattingForLoadedCurrent.Count >= LoadingSceneMaxCount)
+            {
+                yield return new WaitForSeconds(LoadSceneUpdateInterval*4);
+            }
+
+            yield return new WaitForSeconds(LoadSceneUpdateInterval);
         }
 
         if (isFinishedCallBack == false)

@@ -1612,6 +1612,7 @@ public static class MeshHelper
 #if UNITY_EDITOR
         EditorHelper.UnpackPrefab(t.gameObject);
 #endif
+        Transform p = t.parent;
 
         List<Transform> children=new List<Transform>();
         for(int i=0;i<t.childCount;i++)
@@ -1621,6 +1622,12 @@ public static class MeshHelper
         foreach(var child in children){
             child.SetParent(null);
         }
+
+        t.SetParent(null);
+        t.position = Vector3.zero;
+        t.localScale = Vector3.one;
+        t.rotation = Quaternion.identity;
+
         if (setTranfromActoin != null)
         {
             setTranfromActoin();
@@ -1629,6 +1636,8 @@ public static class MeshHelper
         foreach(var child in children){
             child.SetParent(t);
         }
+
+        t.SetParent(p);
     }
 
     public static Vector3[] CenterPivot(Transform t,IEnumerable<MeshFilter> meshFilters)
@@ -1638,14 +1647,46 @@ public static class MeshHelper
         return minMax;
     }
 
+    public static void CenterPivotAll(GameObject root)
+    {
+        DateTime startT = DateTime.Now;
+        Transform[] ts = root.GetComponentsInChildren<Transform>(true);
+        for (int i = 0; i < ts.Length; i++)
+        {
+            Transform t = ts[i];
+            //MeshRenderer mr = t.GetComponent<MeshRenderer>();
+            //if (mr != null)
+            //{
+            //    continue;
+            //}
+            if (ProgressBarHelper.DisplayCancelableProgressBar(new ProgressArg("", i, ts.Length, t)))
+            {
+                break;
+            }
+            MeshHelper.CenterPivot(t.gameObject);
+        }
+        ProgressBarHelper.ClearProgressBar();
+        Debug.LogError($"CenterPivotAll root:{root} ts:{ts.Length} time:{DateTime.Now - startT}");
+    }
+
     public static Vector3[] CenterPivot(GameObject go)
     {
         if(go==null) return null;
-        MeshFilter[] mfs = go.GetComponentsInChildren<MeshFilter>(true);
-        var minMax=MeshHelper.GetMinMax(mfs);
-        CenterPivot(go.transform,minMax[3]);
-        return minMax;
-    }
+        MeshFilter mf = go.GetComponent<MeshFilter>();
+        if (mf == null)
+        {
+            MeshFilter[] mfs = go.GetComponentsInChildren<MeshFilter>(true);
+            var minMax = MeshHelper.GetMinMax(mfs);
+            CenterPivot(go.transform, minMax[3]);
+            return minMax;
+        }
+        else
+        {
+            MeshFilter[] mfs = go.GetComponentsInChildren<MeshFilter>(true);
+            var minMax = MeshHelper.GetMinMax(mfs);
+            return minMax;
+        }
+    } 
 
     public static void ZeroParent(GameObject go)
     {

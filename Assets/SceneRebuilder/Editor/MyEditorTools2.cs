@@ -49,7 +49,7 @@ public class MyEditorTools2
 
     #endregion
 
-    #region TreeNode
+    #region Debug
     [MenuItem("SceneTools/Debug/Selections")]
     public static void ShowSelections()
     {
@@ -478,13 +478,50 @@ public class MyEditorTools2
         Debug.Log($"SaveMeshAll sharedMeshInfos:{sharedMeshInfos.Count} count:{count}");
     }
 
+    [MenuItem("SceneTools/Mesh/New")]
+    public static void NewMesh()
+    {
+        CenterPivotAll();
+
+        DateTime startT = DateTime.Now;
+        GameObject go = Selection.activeGameObject;
+        MeshFilter[] mfs = go.GetComponentsInChildren<MeshFilter>(true);
+
+        for (int i = 0; i < mfs.Length; i++)
+        {
+            MeshFilter mf = mfs[i];
+            //mf.transform.SetParent(null);
+            string meshName = mf.name;
+            if(ProgressBarHelper.DisplayCancelableProgressBar(new ProgressArg("NewMesh", i,mfs.Length,meshName)))
+            {
+                break;
+            }
+            //string meshName = mf.sharedMesh.name;
+            MeshFilter mfOld = mf.gameObject.GetComponent<MeshFilter>();
+            GameObject newGo=MeshCombiner.Instance.CombineToOne(mf.gameObject, false, false);
+            MeshFilter mfNew = newGo.GetComponent<MeshFilter>();
+
+            mfNew.name = meshName + "_NewMesh";
+            mfNew.sharedMesh.name = meshName + "_NewMesh";
+
+            //mfNew.name = meshName;
+            //mfNew.sharedMesh.name = meshName;
+
+            MeshHelper.CopyTransformMesh(newGo, mf.gameObject);
+
+            GameObject.DestroyImmediate(mfNew.gameObject);
+        }
+        ProgressBarHelper.ClearProgressBar();
+        Debug.LogError($"NewMesh go:{go} mfs:{mfs.Length} time:{DateTime.Now-startT}");
+    }
+
     [MenuItem("SceneTools/Mesh/Combine")]
     public static void CombineMesh()
     {
         //MeshCombiner.Instance.CombineToOne(Selection.activeGameObject, true, true);
         MeshCombineHelper.Combine(Selection.activeGameObject);
     }
-    [MenuItem("SceneTools/Mesh/Combine2")]
+    [MenuItem("SceneTools/Mesh/Combine(Not Save & Destroy)")]
     public static void CombineMesh2()
     {
         MeshCombiner.Instance.CombineToOne(Selection.activeGameObject, false, false);
@@ -828,6 +865,18 @@ public class MyEditorTools2
         SubSceneShowManager.Instance.scenes_Out1 = new List<SubScene_Out1>();
     }
 
+    [MenuItem("SceneTools/Clear/BIMObjects")]
+    public static void ClearBIMObjects()
+    {
+        TransformHelper.ClearComponentGos<BIMModelInfo>(Selection.activeGameObject);
+    }
+
+    [MenuItem("SceneTools/Clear/NotBIMObjects")]
+    public static void ClearNotBIMObjects()
+    {
+        TransformHelper.ClearNotComponentGos<BIMModelInfo>(Selection.activeGameObject);
+    }
+
     [MenuItem("SceneTools/Clear/LODGroup")]
     public static void ClearLODGroup()
     {
@@ -974,6 +1023,47 @@ public class MyEditorTools2
     #endregion
 
     #region Transform
+
+    [MenuItem("SceneTools/Transform/CenterPivot")]
+    public static void CenterPivot()
+    {
+        MeshHelper.CenterPivot(Selection.activeGameObject);
+    }
+
+    [MenuItem("SceneTools/Transform/CenterPivotAll")]
+    public static void CenterPivotAll()
+    {
+        GameObject root = Selection.activeGameObject;
+        MeshHelper.CenterPivotAll(root);
+    }
+
+    [MenuItem("SceneTools/Transform/MoveToZero")]
+    public static void MoveToZero()
+    {
+        TransformHelper.MoveToNewRoot(Selection.activeGameObject, "Zero");
+    }
+
+    [MenuItem("SceneTools/Transform/SplitParts")]
+    public static void SplitParts()
+    {
+        GameObject newRoot = GameObject.Find("SplitParts");
+        if (newRoot == null)
+            newRoot = new GameObject("SplitParts");
+        GameObject[] gos = Selection.gameObjects;
+        foreach (GameObject go in gos)
+        {
+            //go.transform.SetParent(newRoot.transform);
+            //var path = TransformHelper.GetAncestors(go.transform);
+
+            //List<Transform> path = TransformHelper.GetAncestors(go.transform, null);
+            //Transform newP = TransformHelper.FindOrCreatePath(newRoot.transform, path, true);
+            //go.transform.SetParent(newP.transform);
+
+            TransformHelper.MoveGameObject(go.transform, newRoot.transform);
+            //break;
+        }
+        Debug.LogError($"SplitParts gos:{gos.Length}");
+    }
 
     [MenuItem("SceneTools/Transform/CoypChildren100")]
     public static void CoypChildren100()

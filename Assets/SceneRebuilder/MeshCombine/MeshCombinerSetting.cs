@@ -59,7 +59,7 @@ public class MeshCombinerSetting : SingletonBehaviour<MeshCombinerSetting>
         {
             CombinedMesh.MaxVertex= int.MaxValue;
         }
-        Debug.Log($"MeshCombinerSetting.SetSetting MaxVertex:{CombinedMesh.MaxVertex} indexFormat:{CombinedMesh.indexFormat}");
+        //Debug.Log($"MeshCombinerSetting.SetSetting MaxVertex:{CombinedMesh.MaxVertex} indexFormat:{CombinedMesh.indexFormat}");
     }
 
     public void WriteLog(string log){

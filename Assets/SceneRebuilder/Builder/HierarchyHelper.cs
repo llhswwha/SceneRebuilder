@@ -28,7 +28,16 @@ public static class HierarchyHelper
             Transform t = transforms[i1];
             string path = TransformHelper.GetPath(t, root);
             ProgressArg pA = new ProgressArg("CheckHierarchy1", i1, transforms.Length, $"{path}");
-            path2Transform.Add(path, t);
+            if (path2Transform.ContainsKey(path))
+            {
+                Transform t0 = path2Transform[path];
+                Debug.LogError($"CheckHierarchy[{i1}] t:{t.name} t0:{t0.name} path:{path}");
+            }
+            else
+            {
+                path2Transform.Add(path, t);
+            }
+            
             //if (i1 < 100)
             //{
             //    Debug.Log($"CheckHierarchy1[{i1}] item:{t.name} path:{path}");
@@ -36,7 +45,7 @@ public static class HierarchyHelper
         }
         TimeSpan time1 = DateTime.Now - start;
 
-        IdInfoList idList = LoadXml();
+        IdInfoList idList = LoadXml(go);
         if (idList == null)
         {
             Debug.LogError($"CheckHierarchy idList == null");
@@ -85,14 +94,16 @@ public static class HierarchyHelper
         }
         ProgressBarHelper.ClearProgressBar();
 
-        Debug.LogError($"CheckHierarchy  ¡¾transforms:{transforms.Length} time1:{time1}¡¿ ¡¾allItems:{allItems.Count} time:{DateTime.Now-start}¡¿ foundList:{foundList.Count} notFoundList:{notFoundList.Count}");
+        Debug.LogError($"CheckHierarchy ¡¾transforms:{transforms.Length} time1:{time1}¡¿ ¡¾allItems:{allItems.Count} time:{DateTime.Now-start}¡¿ foundList:{foundList.Count} notFoundList:{notFoundList.Count}");
+
+        idList.notFoundList = notFoundList;
 
         return idList;
     }
 
-    public static IdInfoList LoadXml()
+    public static IdInfoList LoadXml(GameObject go)
     {
-        GameObject go = Selection.activeGameObject;
+        //GameObject go = Selection.activeGameObject;
         string path = GetIdInfoListFilePath(go.name);
         if (File.Exists(path) == false)
         {

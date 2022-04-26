@@ -18,7 +18,7 @@ public class LODGroupInfo : MonoBehaviour
     // Start is called before the first frame update
     void Start()
     {
-        
+        LODManager.Instance.AddLODGroup(LODGroup);
     }
 
     public void CheckLOD0Scenes()

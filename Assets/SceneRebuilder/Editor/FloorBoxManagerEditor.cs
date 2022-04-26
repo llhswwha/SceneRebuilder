@@ -8,6 +8,12 @@ using UnityEngine;
 [CustomEditor(typeof(FloorBoxManager))]
 public class FloorBoxManagerEditor : BaseFoldoutEditor<FloorBoxManager>
 {
+    public static FoldoutEditorArg FloorsArg = new FoldoutEditorArg(true, false, true, true, true);
+
+    public static FoldoutEditorArg List1Arg = new FoldoutEditorArg(true, true, true, true, true);
+    public static FoldoutEditorArg List2Arg = new FoldoutEditorArg(true, true, true, true, true);
+    public static FoldoutEditorArg List3Arg = new FoldoutEditorArg(true, true, true, true, true);
+
     public override void OnEnable()
     {
         base.OnEnable();
@@ -28,8 +34,11 @@ public class FloorBoxManagerEditor : BaseFoldoutEditor<FloorBoxManager>
     {
         EditorGUILayout.BeginHorizontal();
         item.Sources = BaseEditorHelper.ObjectField(item.Sources);
-        
+
         item.IsIn = GUILayout.Toggle(item.IsIn, "IsIn");
+        item.OnlySetOneFloor = GUILayout.Toggle(item.OnlySetOneFloor, "OneFloor");
+        item.IsDebug = GUILayout.Toggle(item.IsDebug, "Debug");
+
         if (GUILayout.Button("SetParent"))
         {
             item.SetParent();
@@ -38,26 +47,32 @@ public class FloorBoxManagerEditor : BaseFoldoutEditor<FloorBoxManager>
 
         EditorGUILayout.BeginHorizontal();
         item.IsChangeParent = GUILayout.Toggle(item.IsChangeParent, "IsChangeParent");
-        if (GUILayout.Button("SetToFloorChild"))
+        if (GUILayout.Button("SetChild", GUILayout.Width(100)))
         {
             item.SetToFloorChild();
         }
-        if (GUILayout.Button("SetToFloorRenderers"))
+        if (GUILayout.Button("SetRenderers", GUILayout.Width(100)))
         {
             item.SetToFloorRenderers();
         }
         EditorGUILayout.EndHorizontal();
 
-        DrawList(item.Floors, "Floors");
+        DrawList(FloorsArg, item.Floors, "Floors", () =>
+         {
+             if (GUILayout.Button("Update "))
+             {
+                 item.GetFloors();
+             }
+         });
 
-        DrawList(item.List0, "List0");
-        DrawList(item.List1, "List1");
-        DrawList(item.List2, "List2");
+        DrawList(List1Arg, item.Sources, item.List0, "List0", null);
+        DrawList(List2Arg, item.Sources, item.List1, "List1", null);
+        DrawList(List3Arg, item.Sources, item.List2, "List2", null);
     }
 
-    private static void DrawList(List<TransformFloorParent> list1,string listName)
+    private static void DrawList(FoldoutEditorArg listArg, GameObject root, List<TransformFloorParent> list1, string listName, Action toolbarAction)
     {
-        FoldoutEditorArg foldoutArg1 = FoldoutEditorArgBuffer.GetGlobalEditorArg(list1, new FoldoutEditorArg(true, true, true, true, true));
+        FoldoutEditorArg foldoutArg1 = FoldoutEditorArgBuffer.GetGlobalEditorArg(list1, listArg);
         foldoutArg1.caption = $"{listName}({list1.Count})";
         EditorUIUtils.ToggleFoldout(foldoutArg1, (ar) =>
         {
@@ -65,40 +80,50 @@ public class FloorBoxManagerEditor : BaseFoldoutEditor<FloorBoxManager>
 
         }, () =>
         {
+            if (toolbarAction != null)
+            {
+                toolbarAction();
+            }
         });
         if (foldoutArg1.isExpanded && foldoutArg1.isEnabled)
         {
             foldoutArg1.DrawPageToolbar(list1.Count);
             for (int i = foldoutArg1.GetStartId(); i < list1.Count && i < foldoutArg1.GetEndId(); i++)
             {
-                var node = list1[i];
+                TransformFloorParent node = list1[i];
                 if (node.go == null) continue;
                 var arg = FoldoutEditorArgBuffer.editorArgs[node];
-                string title = $"[{i + 1:00}] {node.go.name}";
+                string path = TransformHelper.GetPath(node.go.transform, root.transform);
+                //string title = $"[{i + 1:00}] {node.go.transform.parent.name} > {node.go.name}";
+                string title = $"[{i + 1:00}] {path}";
                 arg.isExpanded = EditorUIUtils.ObjectFoldout(arg.isExpanded, title, $"[{node.GetFloors()}]", false, false, false, node.go.gameObject);
             }
         }
     }
 
-    private static void DrawList(List<GameObject> list1, string listName)
+    private static void DrawList(FoldoutEditorArg listArg, List<GameObject> list1, string listName, Action toolbarAction)
     {
-        FoldoutEditorArg foldoutArg1 = FoldoutEditorArgBuffer.GetGlobalEditorArg(list1, new FoldoutEditorArg(true, true, true, true, true));
+        FoldoutEditorArg foldoutArg1 = FoldoutEditorArgBuffer.GetGlobalEditorArg(list1, listArg);
         foldoutArg1.caption = $"{listName}({list1.Count})";
         EditorUIUtils.ToggleFoldout(foldoutArg1, (ar) =>
         {
-            FoldoutEditorArgBuffer.InitEditorArg(list1,new FoldoutEditorArg(true,false,true));
+            FoldoutEditorArgBuffer.InitEditorArg(list1, new FoldoutEditorArg(true, false, true));
 
         }, () =>
         {
+            if (toolbarAction != null)
+            {
+                toolbarAction();
+            }
         });
         if (foldoutArg1.isExpanded && foldoutArg1.isEnabled)
         {
             foldoutArg1.DrawPageToolbar(list1.Count);
             for (int i = foldoutArg1.GetStartId(); i < list1.Count && i < foldoutArg1.GetEndId(); i++)
             {
-                var node = list1[i];
+                GameObject node = list1[i];
                 var arg = FoldoutEditorArgBuffer.editorArgs[node];
-                string title = $"[{i + 1:00}] {node.name}";
+                string title = $"[{i + 1:00}] {node.transform.parent.name} > {node.name}";
                 EditorUIUtils.ObjectFoldout(arg.isExpanded, title, "", false, false, false, node);
 
                 //arg.isExpanded = GUILayout.Toggle(arg.isExpanded, $"[{i + 1:00}] {node.name}");

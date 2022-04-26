@@ -11,6 +11,16 @@ using UnityEditor.SceneManagement;
 
 public class SubScene_Base : SubSceneArgComponent
 {
+    //public void OnEnable()
+    //{
+        
+    //}
+
+    //public void OnDisable()
+    //{
+        
+    //}
+
     public virtual void DestroyScene()
     {
         GameObject.DestroyImmediate(this);
@@ -194,31 +204,37 @@ public class SubScene_Base : SubSceneArgComponent
     internal string GetSceneInfo()
     {
         //return $"r:{rendererCount}\tv:{vertexCount:F1}w\t[{GetSceneName()}]  ";
+        string scenePath = "";
         BuildingController bc= this.GetComponentInParent<BuildingController>();
         BuildingModelInfo buildingModelInfo = this.GetComponentInParent<BuildingModelInfo>();
         ModelAreaTree tree = this.GetComponentInParent<ModelAreaTree>();
         //Vector3 size = bounds.size;
         if(bc==null||buildingModelInfo==null)
         {
-            Debug.LogError($"Exception.SubScene_Base.GetSceneInfo.Name:{transform.name} path:{TransformHelper.GetPath(this.transform)}");
-            return "";
+            
         }
-        string buildingName = bc.name;
-        if (buildingModelInfo.gameObject != bc.gameObject)
+        if(bc!=null&& buildingModelInfo != null)
         {
-            buildingName += ">" + buildingModelInfo.name;
+            string buildingName = bc.name;
+            if (buildingModelInfo.gameObject != bc.gameObject)
+            {
+                buildingName += ">" + buildingModelInfo.name;
+            }
+            scenePath = buildingName;
+        }
+        else
+        {
+            Debug.LogError($"Exception.SubScene_Base.GetSceneInfo.Name:{transform.name} bc:{bc} buildingModelInfo:{buildingModelInfo} path:{TransformHelper.GetPath(this.transform)}");
+            //return "";
         }
 
         if (tree != null)
         {
-            string treeName = tree.name.Replace(buildingModelInfo.name,"");
-            return $"({buildingName}>{treeName})[{AngleToCam:F0},{DisToCam:F0}][({GetBoundsVolume():F0}){bounds.size}]{GetSceneName()} r:{rendererCount} v:{vertexCount:F0}w  ";
+            string treeName = tree.name.Replace(buildingModelInfo.name, "");
+            scenePath = $"({scenePath}>{treeName})";
         }
-        else
-        {
-            return $"({buildingName})[{AngleToCam:F0},{DisToCam:F0}][({GetBoundsVolume():F0}){bounds.size}]{GetSceneName()} r:{rendererCount} v:{vertexCount:F0}w ";
-        }
-        
+
+        return $"({scenePath})[{AngleToCam:F0},{DisToCam:F0}][({GetBoundsVolume():F0}){bounds.size}]{GetSceneName()} r:{rendererCount} v:{vertexCount:F0}w ";
     }
 
     internal string GetSceneNameEx()
@@ -585,7 +601,7 @@ public class SubScene_Base : SubSceneArgComponent
 
             IsLoading = true;
             OnProgressChanged(0);
-            yield return EditorHelper.LoadSceneAsync(GetSceneArg(), progress =>
+            yield return EditorHelper.LoadSceneAsync(this,GetSceneArg(), progress =>
             {
                 OnProgressChanged(progress);
                 //Debug.Log("progress:" + progress);
@@ -818,7 +834,7 @@ public class SubScene_Base : SubSceneArgComponent
 #if UNITY_EDITOR
 
     [ContextMenu("EditorCreateScene")]
-    public void EditorCreateScene(bool isOnlyChildren, GameObject dirGo=null, SceneContentType contentType= SceneContentType.Single)
+    public virtual void EditorCreateScene(bool isOnlyChildren, GameObject dirGo=null, SceneContentType contentType= SceneContentType.Single)
     {
 
         SubSceneManager subSceneManager = SubSceneManager.Instance;

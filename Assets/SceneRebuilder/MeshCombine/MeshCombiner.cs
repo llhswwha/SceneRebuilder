@@ -164,14 +164,17 @@ public class MeshCombiner : SingletonBehaviour<MeshCombiner>
             for (int i = 0; i < sourceList.Count; i++)
             {
                 GameObject source = sourceList[i];
-                Debug.Log(string.Format("CombineEx {0} ({1}/{2})", source, i + 1, sourceList.Count));
+                //Debug.Log(string.Format("CombineEx {0} ({1}/{2})", source, i + 1, sourceList.Count));
 
                 if (source == null) continue;
 
-                float progress = (float)i / sourceList.Count;
-                if (ProgressBarHelper.DisplayCancelableProgressBar("CombineEx", $"{i}/{sourceList.Count} {progress:P1} source:{source.name}", progress))
+                if (sourceList.Count > 1)
                 {
-                    break;
+                    float progress = (float)i / sourceList.Count;
+                    if (ProgressBarHelper.DisplayCancelableProgressBar("CombineEx", $"{i}/{sourceList.Count} {progress:P1} source:{source.name}", progress))
+                    {
+                        break;
+                    }
                 }
 
                 if (CombineBySub)
@@ -192,7 +195,7 @@ public class MeshCombiner : SingletonBehaviour<MeshCombiner>
                     combineArgs.Add(combineArg);
                     GameObject target = MeshCombineHelper.CombineEx(combineArg, mode);
                     resultList.Add(target);
-                    Debug.Log($"Combine :{source}->{target} mode:{mode}");
+                    //Debug.Log($"Combine :{source}->{target} mode:{mode}");
                     if (Setting.IsDestroySource)
                     {
                         target.name = source.name;
@@ -200,9 +203,13 @@ public class MeshCombiner : SingletonBehaviour<MeshCombiner>
                     }
                 }
             }
-            ProgressBarHelper.ClearProgressBar();
 
-            Debug.Log($"CombineEx mode:{mode} souces:{sourceList.Count} time:{DateTime.Now - start}");
+            if (sourceList.Count > 1)
+            {
+                ProgressBarHelper.ClearProgressBar();
+            }
+
+            //Debug.Log($"CombineEx mode:{mode} souces:{sourceList.Count} time:{DateTime.Now - start}");
         }
     }
 
@@ -229,7 +236,7 @@ public class MeshCombiner : SingletonBehaviour<MeshCombiner>
                 }
             }
         }
-        Debug.Log("CombineEx sourceList:" + sourceName);
+        //Debug.Log("InitSourceList sourceList:" + sourceName );
     }
 
     private IEnumerator CombineEx_Coroutine(MeshCombineMode mode)
@@ -266,7 +273,7 @@ public class MeshCombiner : SingletonBehaviour<MeshCombiner>
         Combine(MeshCombineMode.OneMesh);
     }
 
-    public void CombineToOne(GameObject source,bool isSave,bool isDestory)
+    public GameObject CombineToOne(GameObject source,bool isSave,bool isDestory)
     {
         sourceRoot = source;
         sourceType = MeshCombineSourceType.All;
@@ -275,6 +282,15 @@ public class MeshCombiner : SingletonBehaviour<MeshCombiner>
             SaveResult();
         if(isDestory)
             DestroySource();
+
+        if (resultList.Count > 0)
+        {
+            return resultList[0];
+        }
+        else
+        {
+            return null;
+        }
     }
 
     //public bool AutoAdd;

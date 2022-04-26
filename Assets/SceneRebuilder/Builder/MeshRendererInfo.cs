@@ -970,6 +970,11 @@ public class MeshRendererInfoList:List<MeshRendererInfo>
         List<MeshRenderer> renderers = new List<MeshRenderer>();
         foreach(var item in this)
         {
+            if (item.meshRenderer == null)
+            {
+                Debug.LogError("Exception.MeshRenderInfo.GetRenders.render is null.");
+                continue;
+            }
             renderers.Add(item.meshRenderer);
         }
         return renderers;

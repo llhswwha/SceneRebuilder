@@ -45,8 +45,14 @@ public class ModelUpdateManagerEditor : BaseFoldoutEditor<ModelUpdateManager>
     {
         if (item == null) return;
         GUILayout.BeginHorizontal();
-        item.Model_Old = BaseEditorHelper.ObjectField("ModelOld:", 100, item.Model_Old);
-        item.Model_New = BaseEditorHelper.ObjectField("ModelNew:", 100, item.Model_New);
+        string parentNameOld = "";
+        if(item.Model_Old!=null&& item.Model_Old.transform.parent!=null)
+            parentNameOld = item.Model_Old.transform.parent.name;
+        string parentNameNew = "";
+        if (item.Model_New != null && item.Model_New.transform.parent != null)
+            parentNameNew = item.Model_New.transform.parent.name;
+        item.Model_Old = BaseEditorHelper.ObjectField($"ModelOld:({parentNameOld})", 200, item.Model_Old);
+        item.Model_New = BaseEditorHelper.ObjectField($"ModelNew:({parentNameNew})", 200, item.Model_New);
         GUILayout.EndHorizontal();
 
         EditorGUILayout.BeginHorizontal();

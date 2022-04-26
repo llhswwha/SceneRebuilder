@@ -408,6 +408,7 @@ public class BuildingModelInfoEditor : BaseFoldoutEditor<BuildingModelInfo>
         NewEnabledButton("SaveLODs", true, () =>
         {
             item.EditorCreateLODsScene();
+            EditorHelper.ClearOtherScenes();
         });
         EditorGUILayout.EndHorizontal();
 

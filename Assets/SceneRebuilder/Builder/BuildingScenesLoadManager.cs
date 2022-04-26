@@ -206,7 +206,18 @@ public class BuildingScenesLoadManager : MonoBehaviour
             Debug.Log($"LoadScenesBySetting buildings:{disableBuildings.Count()} enableBuildings:{enableBuildings.Count()} bags1:{allScenes1.Count} bags2:{allScenes2.Count} scenes:{ss.Length}");
             if (IsEnableLoad)
             {
-                SubSceneManager.Instance.LoadScenesEx(ss, finishedCallbak);
+                SubSceneManager.Instance.LoadScenesEx(ss, (p)=>
+                {
+                    //if (p.isAllFinished)
+                    //{
+                    //    LODManager.Instance.UpdateLODs();
+                    //}
+
+                    if (finishedCallbak != null)
+                    {
+                        finishedCallbak(p);
+                    }
+                });
             }
             else
             {
@@ -529,8 +540,19 @@ public class BuildingScenesLoadManager : MonoBehaviour
 
     public GameObject ModelTarget;
 
+    [ContextMenu("UpdateSettingByScene")]
+    public void UpdateSettingByScene()
+    {
+        InitSettingByScene_Core(false);
+    }
+
     [ContextMenu("InitSettingByScene")]
     public void InitSettingByScene()
+    {
+        InitSettingByScene_Core(true);
+    }
+
+    public void InitSettingByScene_Core(bool isNew)
     {
         if (ModelTarget == null)
         {
@@ -541,55 +563,44 @@ public class BuildingScenesLoadManager : MonoBehaviour
         List<BuildingModelInfo> modelList = GameObject.FindObjectsOfType<BuildingModelInfo>().ToList();
         int allCount = modelList.Count;
         BuildingController[] buildingControls1 = ModelTarget.GetComponentsInChildren<BuildingController>(true);
-        Setting = new BuildingSceneLoadSetting();
+        if (isNew || Setting == null)
+        {
+            Setting = new BuildingSceneLoadSetting();
+        }
 
         foreach (var bc in buildingControls1)
         {
             BuildingModelInfo[] models = bc.GetComponentsInChildren<BuildingModelInfo>(true);
             foreach (var model in models)
             {
-                  modelList.Remove(model);
+                modelList.Remove(model);
             }
         }
         for (int i = 0; i < modelList.Count; i++)
         {
             BuildingModelInfo model = modelList[i];
             Debug.Log($"model[{i}]:{model.name}");
-            BuildingController bc=model.gameObject.AddMissingComponent<BuildingController>();
+            BuildingController bc = model.gameObject.AddMissingComponent<BuildingController>();
             if (string.IsNullOrEmpty(bc.NodeName))
             {
                 bc.NodeName = bc.name;
             }
         }
-
         BuildingController[] buildingControls2 = ModelTarget.GetComponentsInChildren<BuildingController>(true);
-        Setting = new BuildingSceneLoadSetting();
+        //Setting = new BuildingSceneLoadSetting();
         foreach (var bc in buildingControls2)
         {
-            BuildingSceneLoadItemCollection bItem = new BuildingSceneLoadItemCollection();
-            bItem.Name = bc.NodeName;
-            if (string.IsNullOrEmpty(bItem.Name))
-            {
-                bItem.Name = bc.name;
-            }
-            Setting.Items.Add(bItem);
+            var bItem = Setting.AddItem(bc, isNew);
             BuildingModelInfo[] models = bc.GetComponentsInChildren<BuildingModelInfo>(true);
             foreach (var model in models)
             {
-                BuildingSceneLoadItem fItem = new BuildingSceneLoadItem();
-                //fItem.Name = fl.NodeName;
-                //if (string.IsNullOrEmpty(fItem.Name))
-                //{
-                fItem.Name = model.name;
-                //}
-                bItem.Children.Add(fItem);
-
+                bItem.AddItem(model, isNew);
                 modelList.Remove(model);
             }
         }
 
         //string xml=XmlSerializableHelper.
-        Debug.Log($"InitSettingByScene buildingControls1:{buildingControls1.Length} buildingControls2:{buildingControls2.Length} modelList:{modelList.Count} allCount:{allCount}");
+        Debug.Log($"InitSettingByScene({isNew}) buildingControls1:{buildingControls1.Length} buildingControls2:{buildingControls2.Length} modelList:{modelList.Count} allCount:{allCount}");
     }
 
     //public string XmlFilePath = "d:\\BuildingSceneLoadSetting.xml";
@@ -717,6 +728,27 @@ public class BuildingSceneLoadSetting
 
     public List<BuildingSceneLoadItemCollection> Items = new List<BuildingSceneLoadItemCollection>();
 
+    public BuildingSceneLoadItemCollection AddItem(BuildingController bc,bool isNew)
+    {
+        BuildingSceneLoadItemCollection bItem = GetBuilding(bc);
+        if(isNew || bItem == null)
+        {
+            bItem = new BuildingSceneLoadItemCollection();
+            bItem.Name = bc.NodeName;
+            if (string.IsNullOrEmpty(bItem.Name))
+            {
+                bItem.Name = bc.name;
+            }
+            this.Items.Add(bItem);
+
+            if (isNew == false)
+            {
+                Debug.LogError($"BuildingSceneLoadSetting.AddItem BuildingController:{bc.name}");
+            }
+        }
+        return bItem;
+    }
+
     //public BuildingSceneLoadItem GetItem(string name)
     //{
     //    return null;
@@ -811,6 +843,27 @@ public class BuildingSceneLoadItemCollection
 
     [XmlElement("BuildingSceneLoadItem")]
     public List<BuildingSceneLoadItem> Children = new List<BuildingSceneLoadItem>();
+
+    public BuildingSceneLoadItem AddItem(BuildingModelInfo model, bool isNew)
+    {
+        BuildingSceneLoadItem fItem = GetChild(model.name);
+        if(isNew || fItem == null)
+        {
+            fItem = new BuildingSceneLoadItem();
+            //fItem.Name = fl.NodeName;
+            //if (string.IsNullOrEmpty(fItem.Name))
+            //{
+            fItem.Name = model.name;
+            //}
+            Children.Add(fItem);
+
+            if (isNew == false)
+            {
+                Debug.LogError($"BuildingSceneLoadItemCollection.AddItem BuildingModelInfo:{model.name}");
+            }
+        }
+        return fItem;
+    }
 
     public void SetAllEnable(bool e)
     {

@@ -1507,6 +1507,16 @@ T minTEx = null;
         lodDetails.Sort();
     }
 
+    public void AddLODGroup(LODGroup group)
+    {
+        if (lodDetails == null)
+        {
+            lodDetails = new List<LODGroupDetails>();
+        }
+        LODGroupDetails detail = new LODGroupDetails(group);
+        lodDetails.Add(detail);
+    }
+
     public string GetRuntimeLODDetailSubThread(bool isForce, bool isInactive)
     {
         DateTime now = DateTime.Now;
@@ -1742,7 +1752,9 @@ T minTEx = null;
 
 public static class LODHelper
 {
+#if UNITY_EDITOR
     [MenuItem("SceneTools/LOD/ClearLODGroupsByKey")]
+#endif
     public static int ClearLODGroupsByKey(GameObject[] gos,string key)
     {
         //GameObject[] gos = Selection.gameObjects;
@@ -1818,8 +1830,9 @@ public static class LODHelper
         }
         return count2;
     }
-
+#if UNITY_EDITOR
     [MenuItem("SceneTools/LOD/ClearLODGroups")]
+#endif
     public static void ClearLODGroups(GameObject[] gos)
     {
         //GameObject[] gos = Selection.gameObjects;
@@ -1880,8 +1893,9 @@ public static class LODHelper
             Debug.LogError($"ClearLODGroups count1:{count1} count2:{count2}");
         }
     }
-
+#if UNITY_EDITOR
     [MenuItem("SceneTools/LOD/RemoveOthers")]
+#endif
     public static void RemoveLODGroupOthers()
     {
         List<MeshRenderer> renderers = GetLodGroupRenderers();

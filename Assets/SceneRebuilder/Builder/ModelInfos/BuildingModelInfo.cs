@@ -2021,6 +2021,7 @@ public class BuildingModelInfo : SubSceneCreater
     public List<RendererId> InitRenderers()
     {
         List<RendererId> idsAll = new List<RendererId>();
+        trees = null;
         var ts = GetTrees();
         for (int i = 0; i < ts.Length; i++)
         {

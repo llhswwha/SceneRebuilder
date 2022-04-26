@@ -8,13 +8,34 @@ public class SubScene_LODs : SubScene_Part
     public AreaTreeNode CreateAreaTree()
     {
         AreaTreeNode areaTreeNode = gameObject.AddMissingComponent<AreaTreeNode>();
+        //CollectSceneIds();
         //areaTreeNode.Renderers = Renderers;
         areaTreeNode.RenderersId = RenderersId;
         //areaTreeNode.CreateDictionary();  
         return areaTreeNode;
     }
 
+    [ContextMenu("CollectSceneIds")]
+    public void CollectSceneIds()
+    {
+        var refs = gameObject.GetComponents<SubScene_Ref>();
+        int count1 = RenderersId.Count ;
+        RenderersId.Clear();
+        foreach (var scene in refs)
+        {
+            RenderersId.AddRange(scene.SceneIds);
+        }
+        int count2 = RenderersId.Count;
+        Debug.LogError($"CollectSceneIds count1:{count1} count2:{count2}");
+    }
+
     //public List<MeshRenderer> Renderers = new List<MeshRenderer>();
+
+    [ContextMenu("SortRendererId")]
+    public void SortRendererId()
+    {
+        RenderersId.Sort();
+    }
 
     public List<string> RenderersId = new List<string>();
 
@@ -68,6 +89,14 @@ public class SubScene_LODs : SubScene_Part
         SubScene_Ref.AfterLoadScene(this.gameObject);
     }
 
+    public override void EditorCreateScene(bool isOnlyChildren, GameObject dirGo = null, SceneContentType contentType = SceneContentType.Single)
+    {
+        RenderersId.Clear();
+        AddRendererId(this.gameObject);
+        RenderersId.Sort();
+        base.EditorCreateScene(isOnlyChildren, dirGo, contentType);
+    }
+
     public override void SetObjects(List<GameObject> goList)
     {
         base.SetObjects(goList);
@@ -76,20 +105,32 @@ public class SubScene_LODs : SubScene_Part
         RenderersId.Clear();
         foreach (var go in goList)
         {
-            MeshRenderer[] mrs = go.GetComponentsInChildren<MeshRenderer>(true);
-            foreach(var mr in mrs)
+            AddRendererId(go);
+        }
+        RenderersId.Sort();
+    }
+
+    private void AddRendererId(GameObject go)
+    {
+        MeshRenderer[] mrs = go.GetComponentsInChildren<MeshRenderer>(true);
+        foreach (var mr in mrs)
+        {
+            MeshRendererInfo mri = mr.GetComponent<MeshRendererInfo>();
+            if (mri != null && mri.IsLodNs(2, 3, 4)) continue;
+            if (mr.GetComponent<BoundsBox>() != null) continue;
+            var id = RendererId.GetId(mr);
+            //Renderers.Add(mr);
+            if (!RenderersId.Contains(id))
             {
-                MeshRendererInfo mri = mr.GetComponent<MeshRendererInfo>();
-                if (mri != null && mri.IsLodNs(2, 3, 4)) continue;
-                if (mr.GetComponent<BoundsBox>() != null) continue;
-                var id = RendererId.GetId(mr);
-                //Renderers.Add(mr);
                 RenderersId.Add(id);
             }
-            RendererId[] rids= go.GetComponentsInChildren<RendererId>(true);
-            foreach(var rid in rids)
+        }
+        RendererId[] rids = go.GetComponentsInChildren<RendererId>(true);
+        foreach (var rid in rids)
+        {
+            //Renderers.Add(mr);
+            if (!RenderersId.Contains(rid.Id))
             {
-                //Renderers.Add(mr);
                 RenderersId.Add(rid.Id);
             }
         }

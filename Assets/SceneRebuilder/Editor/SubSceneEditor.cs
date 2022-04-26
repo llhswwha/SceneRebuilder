@@ -113,6 +113,12 @@ public class SubScene_SingleEditor : SubSceneEditor<SubScene_Single>
 [CustomEditor(typeof(SubScene_LODs))]
 public class SubScene_LODsEditor : SubSceneEditor<SubScene_LODs>
 {
+    public override void OnToolLayout(SubScene_LODs item)
+    {
+        GUILayout.Label($"rendererIds:{item.RenderersId.Count}");
+
+        base.OnToolLayout(item);
+    }
 }
 
 [CustomEditor(typeof(SubScene_Ref))]

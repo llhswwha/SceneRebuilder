@@ -34,7 +34,15 @@ public class MeshSelection : MonoBehaviour
         //DateTime 
         SelectObjectByRId(rId,go=>
         {
-            Debug.LogError($"SelectObjectByRId result:{go}");
+            if (go != null)
+            {
+                Debug.LogError($"SelectObjectByRId rId:{rId} result:{go} path:{TransformHelper.GetPath(go.transform)}");
+            }
+            else
+            {
+                Debug.LogError($"SelectObjectByRId rId:{rId} result:{go}");
+            }
+            
         });
     }
 
@@ -46,14 +54,25 @@ public class MeshSelection : MonoBehaviour
             if (callback != null) callback(dicT);
             return;
         }
+        int callBackCount = 0;
         for(int i=0;i<idList.Count;i++)
         {
             string rid = idList[i];
+            bool isLast = i == idList.Count - 1;
+            int tempIndex = i;
+            Debug.LogFormat("WK.1.rid:{0} i:{1} isLast:{2}",rid,i,isLast);
             SelectObjectByRId(rid, obj=> 
             {
-                if (obj!=null&&!dicT.ContainsKey(rid)) dicT.Add(rid,obj);
+                callBackCount++;
+                if (obj != null && !dicT.ContainsKey(rid))
+                {
+                    dicT.Add(rid, obj);
+                }
+                Debug.LogFormat("WK.2 rid:{0} Obj:{1} isLast:{2} TempIndex:{3}",rid,obj==null?"Null":obj.name,isLast,tempIndex);
+                //if(isLast&& callback != null) callback(dicT);
 
-                if(i==idList.Count-1)
+                //不能用最后一个Index判断，必须等所有rid处理完毕，再执行回调
+                if(callBackCount==idList.Count)
                 {
                     if (callback != null) callback(dicT);
                 }
@@ -84,6 +103,8 @@ public class MeshSelection : MonoBehaviour
             if(node!=null && LastSelectNode == node)
             {
                 Debug.LogError($"MeshSelection LastSelectNode== node id:{id} node:{node} path{TransformHelper.GetPath(node.transform)}");
+                GameObject go = IdDictionary.GetGo(id);
+                if (callback != null) callback(go);
                 return;
             }
 

@@ -123,11 +123,17 @@ public class IdInfo
             this.parentId = rId.parentId;
         }
         
-        this.name = go.name;
+
+        name = go.name;
+        name = name.Replace("_New3","");
+        name = name.Replace("_New2", "");
+        name = name.Replace("_New1", "");
+        name = name.Replace("_New", ""); 
+
         if (go.transform.parent != null)
             this.parent = go.transform.parent.name;
         //id.insId = rId.insId;
-        
+
         //this.Path = TransformHelper.GetPath(rId.transform.parent, "\\");
 
         if (isRecursion)
@@ -140,6 +146,11 @@ public class IdInfo
                 {
                     var child = go.transform.GetChild(i);
                     IdInfo childId = new IdInfo(child.gameObject, isRecursion);
+                    if (child.name.Contains("curve")) continue;
+                    if (child.name.Contains("Geometry") && childId.HasMesh == false)
+                    {
+                        continue;
+                    }
                     Children.Add(childId);
                 }
             }
@@ -180,6 +191,7 @@ public class IdInfo
         {
             foreach(var child in Children)
             {
+                
                 child.parent = this.name;
                 child.parentId = this.Id;
                 child.pId = this;

@@ -4,7 +4,7 @@ using UnityEngine;
 
 public class HierarchyRoot : MonoBehaviour
 {
-    public GameObject root;
+    public GameObject root = null;
 
     public IdInfoList IdInfoList = null;
 

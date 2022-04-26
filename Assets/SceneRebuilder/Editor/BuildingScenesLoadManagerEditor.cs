@@ -11,6 +11,11 @@ public class BuildingScenesLoadManagerEditor : BaseEditor<BuildingScenesLoadMana
         base.OnToolLayout(item);
 
         EditorGUILayout.BeginHorizontal();
+        if (GUILayout.Button("UpdateXml"))
+        {
+            item.UpdateSettingByScene();
+            item.SaveXml();
+        }
         if (GUILayout.Button("InitXml"))
         {
             item.InitSettingByScene();

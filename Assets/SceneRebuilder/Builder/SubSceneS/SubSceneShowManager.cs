@@ -105,7 +105,7 @@ public class SubSceneShowManager : SingletonBehaviour<SubSceneShowManager>
     
     public string GetSceneInfo()
     {
-        return $"visible:{visibleScenes.Count},loaded:{loadScenes.Count-WaitingScenes_ToLoad.Count}/{loadScenes.Count},hidden:{hiddenScenes.Count},unloaded:{unloadScenes.Count-WaitingScenes_ToUnLoad.Count}/{unloadScenes.Count}";
+        return $"[V:{visibleScenes.Count},L:{loadScenes.Count-WaitingScenes_ToLoad.Count}/{loadScenes.Count},W:{WaitingScenes_ToLoad.Count}][H:{hiddenScenes.Count},UL:{unloadScenes.Count-WaitingScenes_ToUnLoad.Count}/{unloadScenes.Count},W:{WaitingScenes_ToUnLoad.Count}]";
     }
 
     public string GetDisInfo()
@@ -476,10 +476,52 @@ public class SubSceneShowManager : SingletonBehaviour<SubSceneShowManager>
         Debug.Log($"LoadOut0TreeNodeSceneTopN1 index:{index} scene:{topsScenes.Count} vertexCount:{vertexCount}");
     }
 
+    public void StopLoadScene()
+    {
+        IsUpdateDistance = false;
+    }
+
+    public void StartLoadScene()
+    {
+        IsUpdateDistance = true;
+    }
+
+    public float DistanceOfFPS = 0.3f;
+
+    public void StartLoadSceneFPS()
+    {
+        StartLoadScene(DistanceOfFPS);//俯视视角的0.3倍距离。
+    }
+
+    /// <summary>
+    /// 退出第一人称时使用
+    /// </summary>
+    public void EndLoadSceneFPS()
+    {
+        StartLoadScene(1);
+    }
+
+    public void StartLoadScene(float p)
+    {
+        IsUpdateDistance = true;
+        Debug.Log($"StartLoadScene p:{p}");
+        SetCamaraDistance(p);
+    }
+
+    public void SetCamaraDistance(float p)
+    {
+        var setting = SystemSettingHelper.sceneLoadSetting;
+
+        this.DisOfVisible = setting.DisOfVisible* p;
+        this.DisOfLoad = setting.DisOfLoad * p;
+        this.DisOfHidden = setting.DisOfHidden * p;
+        this.DisOfUnLoad = setting.DisOfUnLoad * p;
+    }
+
     private void LoadSetting(Action onComplete = null)
     {
         
-        this.IsUpdateDistance = false;
+        //this.IsUpdateDistance = false;
         SystemSettingHelper.GetSystemSetting(() =>
         {
             var setting = SystemSettingHelper.sceneLoadSetting;
@@ -505,7 +547,7 @@ public class SubSceneShowManager : SingletonBehaviour<SubSceneShowManager>
             this.IsEnableShow = setting.IsEnableShow;
 
             this.enabled = setting.IsEnable;
-            this.IsUpdateDistance = setting.IsEnable;
+            //this.IsUpdateDistance = setting.IsEnable;
 
             if (setting.IsEnable)
             {
@@ -648,6 +690,18 @@ public class SubSceneShowManager : SingletonBehaviour<SubSceneShowManager>
         TimeOfLoad = (DateTime.Now - start).TotalMilliseconds;
     }
 
+    bool IsInFloorMode()
+    {
+        if(FactoryDepManager.currentDep!=null&&FactoryDepManager.currentDep is FloorController)
+        {
+            return true;
+        }
+        else
+        {
+            return false;
+        }
+    }
+
     void CalculateDistance(List<SubScene_Base> scenes)
     {
         int cCount = 0;
@@ -740,7 +794,7 @@ public class SubSceneShowManager : SingletonBehaviour<SubSceneShowManager>
                 scene.SetLifeTime(1);
                 if (scene.LifeTimeSpane > DelayOfUnLoad)
                 {
-                    unloadScenes.Add(scene);
+                    if (!IsInFloorMode()) unloadScenes.Add(scene);
                 }
 
             }
@@ -752,14 +806,14 @@ public class SubSceneShowManager : SingletonBehaviour<SubSceneShowManager>
                     scene.SetLifeTime(1);
                     if (scene.LifeTimeSpane > DelayOfUnLoad)
                     {
-                        unloadScenes.Add(scene);
+                        if (!IsInFloorMode()) unloadScenes.Add(scene);
                     }
                 }
             }
 
             if (disToCams > DisOfHidden || angleOfCams > DisOfHidden)
             {
-                hiddenScenes.Add(scene);
+                if (!IsInFloorMode()) hiddenScenes.Add(scene);
             }
 
             //if (disToCams <= DisOfLoad)
@@ -768,6 +822,8 @@ public class SubSceneShowManager : SingletonBehaviour<SubSceneShowManager>
             //}
 #if UNITY_EDITOR
             ChangeSceneBoundsColor(scene, disToCams);
+#else
+            SetSceneActive(scene, disToCams);
 #endif
 
         }
@@ -789,28 +845,48 @@ public class SubSceneShowManager : SingletonBehaviour<SubSceneShowManager>
         {
             if (disToCams <= DisOfVisible)
             {
-                MeshRenderer mr = scene.boundsGo.GetComponent<MeshRenderer>();
                 scene.gameObject.SetActive(true);
+                MeshRenderer mr = scene.boundsGo.GetComponent<MeshRenderer>();
                 if (mr) mr.material.color = new Color(1, 0, 0, 0.2f);
             }
             else if (disToCams <= DisOfLoad)
             {
-                MeshRenderer mr = scene.boundsGo.GetComponent<MeshRenderer>();
                 scene.gameObject.SetActive(true);
+                MeshRenderer mr = scene.boundsGo.GetComponent<MeshRenderer>();
                 if (mr) mr.material.color = new Color(1, 0.5f, 0, 0.2f);
             }
             else if (disToCams <= DisOfHidden)
             {
-                MeshRenderer mr = scene.boundsGo.GetComponent<MeshRenderer>();
                 scene.gameObject.SetActive(true);
+                MeshRenderer mr = scene.boundsGo.GetComponent<MeshRenderer>();
                 if (mr) mr.material.color = new Color(1, 1, 0, 0.2f);
             }
             else if (disToCams <= DisOfUnLoad)
             {
-                MeshRenderer mr = scene.boundsGo.GetComponent<MeshRenderer>();
                 scene.gameObject.SetActive(true);
+                MeshRenderer mr = scene.boundsGo.GetComponent<MeshRenderer>();
                 if (mr) mr.material.color = new Color(1, 1, 1, 0.2f);
             }
+        }
+    }
+
+    private void SetSceneActive(SubScene_Base scene, float disToCams)
+    {
+        if (disToCams <= DisOfVisible)
+        {
+            scene.gameObject.SetActive(true);
+        }
+        else if (disToCams <= DisOfLoad)
+        {
+            scene.gameObject.SetActive(true);
+        }
+        else if (disToCams <= DisOfHidden)
+        {
+            scene.gameObject.SetActive(true);
+        }
+        else if (disToCams <= DisOfUnLoad)
+        {
+            scene.gameObject.SetActive(true);
         }
     }
 
@@ -926,17 +1002,31 @@ public class SubSceneShowManager : SingletonBehaviour<SubSceneShowManager>
         {
             if (WaitingScenes_ToLoad.Count > 0)
             {
-                 var ss = new List<SubScene_Base>(WaitingScenes_ToLoad);
+                var ss0 = new List<SubScene_Base>(WaitingScenes_ToLoad);
+                var ss = new List<SubScene_Base>(WaitingScenes_ToLoad);
                 WaitingScenes_ToLoad.Clear();
 
                 int count1 = ss.Count;
                 var loadedScenes = ss.Select(i => i.IsLoaded || i.IsLoading).ToList();
 
-                ss.RemoveAll(i => i.IsLoaded || i.IsLoading);
+                int removeCount1=ss.RemoveAll(i => i.IsLoaded || i.IsLoading);
+                int removeCount2 = ss.RemoveAll(i => i.gameObject.activeInHierarchy==false);
                 ss.Sort((a, b) => b.GetBoundsVolume().CompareTo(a.GetBoundsVolume()));
                 int count2 = ss.Count;
 
-                Debug.LogError($"SubSceneShowManager.PostScenesToLoad  count1:{count1} count2:{count2}");
+                SubScene_Base inactiveScene = null;
+                if (removeCount2 > 0)
+                {
+                    foreach(var scene in ss0)
+                    {
+                        if (scene.gameObject.activeInHierarchy == false)
+                        {
+                            inactiveScene = scene;
+                        }
+                    }
+
+                }
+                Debug.Log($"SubSceneShowManager.PostScenesToLoad  count1:{count1} count2:{count2} removeCount1:{removeCount1}  removeCount2:{removeCount2} inactiveScene:{TransformHelper.GetPathWithActive(inactiveScene)}");
 
                 if (ss.Count > 0)
                 {

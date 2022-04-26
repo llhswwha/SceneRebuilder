@@ -1,14 +1,19 @@
+using CodeStage.AdvancedFPSCounter.Editor.UI;
 using System.Collections;
 using System.Collections.Generic;
 using UnityEditor;
 using UnityEngine;
 
 [CustomEditor(typeof(HierarchyRoot))]
-public class HierarchyRootEditor : BaseEditor<HierarchyRoot>
+public class HierarchyRootEditor : BaseFoldoutEditor<HierarchyRoot>
 {
+    public FoldoutEditorArg NotFoundListArg = new FoldoutEditorArg();
+
     public override void OnToolLayout(HierarchyRoot item)
     {
         base.OnToolLayout(item);
+
+        item.root = ObjectFieldH("Root", item.root);
 
         EditorGUILayout.BeginHorizontal();
         if (GUILayout.Button("Load"))
@@ -24,5 +29,8 @@ public class HierarchyRootEditor : BaseEditor<HierarchyRoot>
             item.Check();
         }
         EditorGUILayout.EndHorizontal();
+
+        //BaseEditorHelper.Dra
+        DrawObjectList(NotFoundListArg, "NotFound", item.IdInfoList.notFoundList, null, null, null);
     }
 }
