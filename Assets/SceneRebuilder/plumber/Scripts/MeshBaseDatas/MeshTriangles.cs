@@ -39,6 +39,11 @@ public class MeshTriangles
 
     public MeshStructure mesh;
 
+    public void GenerateNewMesh()
+    {
+        mesh = new MeshStructure(Triangles);
+    }
+
     public Vector3 center = Vector3.zero;
 
     public MeshTriangles(Mesh mesh)
@@ -76,7 +81,12 @@ public class MeshTriangles
             MeshTriangle t = meshTriangles.GetTriangle(i);
             ts.AddTriangle(t);
         }
-        return list;
+
+        foreach(MeshTriangles item in list)
+        {
+            item.GenerateNewMesh();
+        }
+        return list; 
     }
 
     public static void DebugShowTriangles(GameObject target,float PointScale)

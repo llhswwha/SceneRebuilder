@@ -48,6 +48,17 @@ public struct MeshStructure
         
     }
 
+    public MeshStructure(MeshTriangleList list)
+    {
+        int count = list.Count;
+        this.vertices = new NativeArray<Vector3>(count*3, Allocator.Persistent);
+        this.normals = new NativeArray<Vector3>(count * 3, Allocator.Persistent);
+        this.triangles = new NativeArray<int>(count, Allocator.Persistent);
+        this.vertexCount = count * 3;
+        this.boundCenter = list.GetCenter();
+        isDisposed = false;
+    }
+
     public void Dispose()
     {
         if (isDisposed) return;
