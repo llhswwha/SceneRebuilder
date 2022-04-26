@@ -353,8 +353,6 @@ public class PipeElbowModel : PipeModelBase
             return null;
         }
 
-
-
         if (IsSpecial)
         {
             arg.generateWeld = false;
@@ -388,7 +386,12 @@ public class PipeElbowModel : PipeModelBase
         }
         else
         {
-            return RenderElbow(arg, afterName, KeyPointInfo,false);
+            GameObject newElbow= RenderElbow(arg, afterName, KeyPointInfo,false);
+            if (newElbow == null)
+            {
+                this.gameObject.SetActive(true);
+            }
+            return newElbow;
         }
     }
 
@@ -487,6 +490,12 @@ public class PipeElbowModel : PipeModelBase
 
     private GameObject RenderElbow(PipeGenerateArg arg, string afterName, PipeModelKeyPointInfo4 info, bool isNewGo)
     {
+        if (IsGetInfoSuccess == false)
+        {
+            Debug.LogError($"RendererElbow IsGetInfoSuccess == false :{this.name}");
+            return null;
+        }
+
         if (info == null)
         {
             Debug.LogError($"RendererElbow info==null :{this.name}");

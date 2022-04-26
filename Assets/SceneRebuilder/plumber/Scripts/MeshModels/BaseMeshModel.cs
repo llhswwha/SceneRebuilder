@@ -55,27 +55,7 @@ public class BaseMeshModel : MonoBehaviour
 
     public void DebugShowTriangles()
     {
-        //ClearChildren();
         ClearDebugInfoGos();
-
-        //Mesh mesh = this.GetComponent<MeshFilter>().sharedMesh;
-        //MeshTriangles meshTriangles = new MeshTriangles(mesh);
-
-
-        //Debug.Log($"GetElbowInfo mesh vertexCount:{mesh.vertexCount} triangles:{mesh.triangles.Length}");
-        //meshTriangles.ShowTriangles(this.transform, PointScale);
-
-        ////Debug.Log($"GetElbowInfo trialges:{meshTriangles.Count}");
-        ////for (int i = 0; i < meshTriangles.Count; i++)
-        ////{
-        ////    var t = meshTriangles.GetTriangle(i);
-
-        ////    Debug.Log($"GetElbowInfo[{i + 1}/{meshTriangles.Count}] trialge:{t}");
-        ////    GameObject sharedPoints1Obj = CreateSubTestObj($"trialge:{t}", this.transform);
-        ////    t.ShowTriangle(this.transform, sharedPoints1Obj.transform, PointScale);
-        ////}
-        //meshTriangles.Dispose();
-
         MeshTriangles.DebugShowTriangles(this.gameObject, PointScale);
     }
 

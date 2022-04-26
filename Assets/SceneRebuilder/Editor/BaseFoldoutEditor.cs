@@ -469,6 +469,7 @@ public class BaseFoldoutEditor<T> : BaseEditor<T> where T : class
     public static void DrawObjectList<T1>(FoldoutEditorArg foldoutArg, string title, List<T1> list,
         System.Action<FoldoutEditorArg, T1, int> drawItemAction, System.Action<T1> toolBarAction, System.Action<FoldoutEditorArg, T1, int> drawSubListAction)
     {
+        if (list == null || list.Count == 0) return;
         //List<T1> list = new List<T1>();
         foldoutArg.caption = title;
         EditorUIUtils.ToggleFoldout(foldoutArg, (arg) =>
@@ -1936,6 +1937,7 @@ public static class BaseFoldoutEditorHelper
 
     public static void DrawRendererInfoList<TA>(string name, MeshRendererInfoList list, TA arg) where TA : FoldoutEditorArg, new()
     {
+        if (list == null || list.Count == 0) return;
         arg.caption = name;
         EditorUIUtils.ToggleFoldout(arg, arg =>
         {

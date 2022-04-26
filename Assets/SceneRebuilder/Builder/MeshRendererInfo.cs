@@ -1308,6 +1308,10 @@ public class MeshRendererInfoList:List<MeshRendererInfo>
 
     public string GetCountVertex(float total)
     {
+        if (Count == 0)
+        {
+            return "--";
+        }
         return $"{Count},v:{MeshHelper.GetVertexCountS(GetVertexCount())}({GetVertexCount()/total:P1})";
     }
 }

@@ -32,6 +32,11 @@ public class MeshTriangles
         return Triangles[id];
     }
 
+    public void AddTriangle(MeshTriangle t)
+    {
+        Triangles.Add(t);
+    }
+
     public MeshStructure mesh;
 
     public Vector3 center = Vector3.zero;
@@ -41,14 +46,14 @@ public class MeshTriangles
         Init(new MeshStructure(mesh));
     }
 
-    public void ShowTriangles(Transform transform,float pointScale)
+    public void ShowTriangles(Transform transform,float pointScale,string tag="")
     {
-        GameObject tsRoot = CreateSubTestObj($"Triangles({this.Count}_{mesh.vertexCount})", transform);
+        GameObject tsRoot = CreateSubTestObj($"Triangles{tag}({this.Count}_{mesh.vertexCount})", transform);
         var meshTriangles = this;
         Debug.Log($"ShowTriangles trialges:{meshTriangles.Count}_{mesh.vertexCount}");
         for (int i = 0; i < meshTriangles.Count; i++)
         {
-            var t = meshTriangles.GetTriangle(i);
+            MeshTriangle t = meshTriangles.GetTriangle(i);
 
             //Debug.Log($"ShowTriangles[{i + 1}/{meshTriangles.Count}] trialge:{t}");
             GameObject sharedPoints1Obj = CreateSubTestObj($"trialge[{i+1}]:{t}", tsRoot.transform);
@@ -56,24 +61,46 @@ public class MeshTriangles
         }
     }
 
+    public List<MeshTriangles> Split(int count)
+    {
+        var meshTriangles = this;
+        List<MeshTriangles> list = new List<MeshTriangles>();
+        MeshTriangles ts = null;
+        for (int i = 0; i < meshTriangles.Count; i++)//0-39,40-119
+        {
+            if (i % count == 0)
+            {
+                ts = new MeshTriangles();
+                list.Add(ts);
+            }
+            MeshTriangle t = meshTriangles.GetTriangle(i);
+            ts.AddTriangle(t);
+        }
+        return list;
+    }
+
     public static void DebugShowTriangles(GameObject target,float PointScale)
     {
         Mesh mesh = target.GetComponent<MeshFilter>().sharedMesh;
         MeshTriangles meshTriangles = new MeshTriangles(mesh);
-
-
         Debug.Log($"GetElbowInfo mesh vertexCount:{mesh.vertexCount} triangles:{mesh.triangles.Length}");
         meshTriangles.ShowTriangles(target.transform, PointScale);
+        meshTriangles.Dispose();
+    }
 
-        //Debug.Log($"GetElbowInfo trialges:{meshTriangles.Count}");
-        //for (int i = 0; i < meshTriangles.Count; i++)
-        //{
-        //    var t = meshTriangles.GetTriangle(i);
+    public static void ShowPartLines(GameObject target, float PointScale,int count)
+    {
+        Mesh mesh = target.GetComponent<MeshFilter>().sharedMesh;
+        MeshTriangles meshTriangles = new MeshTriangles(mesh);
+        Debug.Log($"GetElbowInfo mesh vertexCount:{mesh.vertexCount} triangles:{mesh.triangles.Length}");
+        //meshTriangles.ShowTriangles(target.transform, PointScale);
+        List<MeshTriangles> subTriangles = meshTriangles.Split(count);
+        for (int i = 0; i < subTriangles.Count; i++)
+        {
+            MeshTriangles subT = subTriangles[i];
+            subT.ShowTriangles(target.transform, PointScale,$"[{i+1}]");
+        }
 
-        //    Debug.Log($"GetElbowInfo[{i + 1}/{meshTriangles.Count}] trialge:{t}");
-        //    GameObject sharedPoints1Obj = CreateSubTestObj($"trialge:{t}", this.transform);
-        //    t.ShowTriangle(this.transform, sharedPoints1Obj.transform, PointScale);
-        //}
         meshTriangles.Dispose();
     }
 

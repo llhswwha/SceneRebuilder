@@ -872,7 +872,12 @@ public class PipeFactory : SingletonBehaviour<PipeFactory>
 
     public static bool IsFlange(string key)
     {
-        return key.Contains("Flange") || key.StartsWith("Ô²Öù") || key.StartsWith("CYLINDER") || key.StartsWith("FLANGE") || key.StartsWith("OLET");
+        return key.Contains("Flange") 
+            || key.StartsWith("Ô²Öù") 
+            || key.StartsWith("CYLINDER") 
+            || key.StartsWith("FLANGE") 
+            //|| key.StartsWith("OLET")
+            ;
     }
 
     public static bool IsReducer(string key)
@@ -1762,10 +1767,10 @@ public class PipeFactory : SingletonBehaviour<PipeFactory>
     {
         newBuilder.ReplaceOld();
         
-        if (targetNew)
-        {
-            GameObject.DestroyImmediate(targetNew);
-        }
+        //if (targetNew)
+        //{
+        //    GameObject.DestroyImmediate(targetNew);
+        //}
     }
 
     [ContextMenu("GetPipeInfos")]
@@ -2100,12 +2105,12 @@ public class PipeFactory : SingletonBehaviour<PipeFactory>
         }
         else
         {
-            var newPipes = newBuilder.NewPipeList;
-            foreach (var pipe in newPipes)
-            {
-                if (pipe == null) continue;
-                pipe.SetParent(targetNew.transform);
-            }
+            //var newPipes = newBuilder.NewPipeList;
+            //foreach (var pipe in newPipes)
+            //{
+            //    if (pipe == null) continue;
+            //    pipe.SetParent(targetNew.transform);
+            //}
         }
 
 

@@ -1,0 +1,42 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<SystemSetting xmlns:xsd="http://www.w3.org/2001/XMLSchema" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance">
+  <IsDebug>false</IsDebug>
+  <IsLocalSceneLoad>false</IsLocalSceneLoad>
+  <ResolutionSetting Width="1920" High="1080" ShowFps="false" />
+  <VersionSetting VersionNumber="1.0.20" />
+  <IsFullScreen>false</IsFullScreen>
+  <IsShowHomePage>false</IsShowHomePage>
+  <IsShowLeftTopo>true</IsShowLeftTopo>
+  <IsShowRightDownAlarm>true</IsShowRightDownAlarm>
+  <IsShowRightTopInfo>true</IsShowRightTopInfo>
+  <ShowBigScreenLight>true</ShowBigScreenLight>
+  <ShowBigScreenRotate>true</ShowBigScreenRotate>
+  <GraphicsQualityInt>1</GraphicsQualityInt>
+  <IsDynamicCulling>true</IsDynamicCulling>
+  <DynamicCullingJobsFrame>500</DynamicCullingJobsFrame>
+  <DynamicCullingTimeInterval>0.3</DynamicCullingTimeInterval>
+  <DynamicCullingObjectsLifeTime>16</DynamicCullingObjectsLifeTime>
+  <CinemachineSetting CMvcamFollow_X="0" CMvcamFollow_Y="20" CMvcamFollow_Z="-10" />
+  <CommunicationSetting Ip1="127.0.0.1" Port1="8733" Mode="WebApi" SignalingServerUrl="ws://192.168.1.150:8444/player" RenderStreamingType="1" RenderStreamingUrl="http://127.0.0.1" RenderStreamingStartBirate="60000" RenderStreamingsMinBirate="50000" RenderStreamingMaxBirate="160000" ResolutionHeight="1920" ResolutionWidth="1080" JavaServerIP="127.0.0.1" JavaPort="1888" />
+  <RefreshSetting TagPos="0.35" PersonTree="5" AreaStatistics="5" DepartmentTree="5" NearCamera="5" ScreenShot="6" GroupPowerState="10" />
+  <HoneyWellSetting EnableHoneyWell="false" Ip="192.168.1.3" UserName="sdk3D" PassWord="123456" MaxConnectTime="10" />
+  <AssetLoadSetting EnableUnloadFunction="true" UnloadMode="0" CacheCount="2" DeviceCacheCount="15" MaxVertex="1500000" BuildingFromFile="true" DeviceFromFile="true" LoadDeviceAsset="true" DeviceResolution="2048" HttpUrl="" />
+  <HistoryPathSetting StartHour="8" StartMinute="3" Duration="8" />
+  <LocationSetting HistoryIntervalTime="10" EnableNavMesh="true" NavMeshHeightOffset="1">
+    <hideTimeHours>72</hideTimeHours>
+    <NavMode>0</NavMode>
+  </LocationSetting>
+  <DebugSetting IsCloseCommunication="false">
+    <IsRemoteMode>false</IsRemoteMode>
+  </DebugSetting>
+  <DeviceSetting LoadParkDevWhenEnter="true" LoadAnchorDev="true" ShowDevInTree="false" NotLoadAllDev="false" />
+  <AlarmSetting PushAlarmShow="true" />
+  <ScanSetting Level="1" />
+  <RoamSetting>
+    <moveSpeed>10</moveSpeed>
+    <rotateSpeed>0.5</rotateSpeed>
+    <scrollSpeed>0.05</scrollSpeed>
+    <shiftSpeed>2</shiftSpeed>
+  </RoamSetting>
+  <SceneLoadSetting IsEnable="true" DelayOfLoad="2" DelayOfUnLoad="5" WaittingInterval="1" AngleOfVisible="60" AngleOfLoad="75" AngleOfHidden="80" AngleOfUnLoad="90" DisOfVisible="2500" DisOfLoad="4900" DisOfHidden="8700" DisOfUnLoad="12100" IsEnableLoad="true" IsEnableUnload="true" IsEnableHide="true" IsEnableShow="true" />
+</SystemSetting>
