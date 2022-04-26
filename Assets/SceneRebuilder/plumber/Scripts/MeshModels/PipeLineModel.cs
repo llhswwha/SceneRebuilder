@@ -138,21 +138,23 @@ public class PipeLineModel : PipeModelBase
         CreateLocalPoint(LineInfo.EndPoint, $"EndPoint1_{LineInfo.EndPoint.w}", keyPoints.transform);
     }
 
+    public OBBCollider ShowObbInfo()
+    {
+        OBBCollider oBBCollider = this.gameObject.AddMissingComponent<OBBCollider>();
+        oBBCollider.ShowObbInfo(null,true);
+
+        IsObbError = oBBCollider.IsObbError;
+        OBB = oBBCollider.OBB;
+        return oBBCollider;
+    }
+
     public override void GetModelInfo()
     {
         //ClearChildren();
 
         ClearDebugInfoGos();
 
-        OBBCollider oBBCollider = this.gameObject.GetComponent<OBBCollider>();
-        if (oBBCollider == null)
-        {
-            oBBCollider = this.gameObject.AddComponent<OBBCollider>();
-        }
-        oBBCollider.ShowObbInfo(true);
-      
-        IsObbError = oBBCollider.IsObbError;
-        OBB = oBBCollider.OBB;
+        OBBCollider oBBCollider = ShowObbInfo();
 
         //1.Obb
 
@@ -372,7 +374,7 @@ public class PipeLineModel : PipeModelBase
             //}
 
         }
-        oBBCollider.ShowObbInfo(true);
+        oBBCollider.ShowObbInfo(null,true);
         IsGetInfoSuccess = oBBCollider.IsObbError == false;
         OBB = oBBCollider.OBB;
 
@@ -722,13 +724,15 @@ public class PipeLineModel : PipeModelBase
         //ClearChildren();
         ClearDebugInfoGos();
 
-        OBBCollider oBBCollider = this.gameObject.GetComponent<OBBCollider>();
-        if (oBBCollider == null)
-        {
-            oBBCollider = this.gameObject.AddComponent<OBBCollider>();
-            oBBCollider.ShowObbInfo(true);
-        }
-        OBB = oBBCollider.OBB;
+        //OBBCollider oBBCollider = this.gameObject.GetComponent<OBBCollider>();
+        //if (oBBCollider == null)
+        //{
+        //    oBBCollider = this.gameObject.AddComponent<OBBCollider>();
+        //    oBBCollider.ShowObbInfo(null,true);
+        //}
+        //OBB = oBBCollider.OBB;
+
+        OBBCollider oBBCollider = ShowObbInfo();
 
         Vector3 ObbExtent = OBB.Extent;
 

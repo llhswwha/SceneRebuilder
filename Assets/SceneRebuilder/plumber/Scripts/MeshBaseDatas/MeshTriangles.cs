@@ -54,7 +54,7 @@ public class MeshTriangles
     public void ShowTriangles(Transform transform,float pointScale,string tag="")
     {
         GameObject tsRoot = CreateSubTestObj($"Triangles{tag}({this.Count}_{mesh.vertexCount})", transform);
-        var meshTriangles = this;
+        MeshTriangles meshTriangles = this;
         Debug.Log($"ShowTriangles trialges:{meshTriangles.Count}_{mesh.vertexCount}");
         for (int i = 0; i < meshTriangles.Count; i++)
         {
@@ -64,6 +64,11 @@ public class MeshTriangles
             GameObject sharedPoints1Obj = CreateSubTestObj($"trialge[{i+1}]:{t}", tsRoot.transform);
             t.ShowTriangle(tsRoot.transform, sharedPoints1Obj.transform, pointScale);
         }
+
+        GameObject obbRoot = CreateSubTestObj($"Triangles{tag}({this.Count}_{mesh.vertexCount})_Obb", transform);
+        Vector3[] vs = this.GetPoints().ToArray();
+        OBBCollider oBBCollider = obbRoot.AddMissingComponent<OBBCollider>();
+        oBBCollider.ShowObbInfo(vs, false);
     }
 
     public List<MeshTriangles> Split(int count)
@@ -983,8 +988,6 @@ public class MeshTriangles
         }
         return minDis;
     }
-
-    
 
     public float Distance2List(Vector3 p, MeshPointList list)
     {

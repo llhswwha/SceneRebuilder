@@ -53,7 +53,7 @@ public class SteelStructureBaseModel : BaseMeshModel
         {
             oBBCollider = this.gameObject.AddComponent<OBBCollider>();
         }
-        oBBCollider.ShowObbInfo(true);
+        oBBCollider.ShowObbInfo(null,true);
 
         var IsObbError = oBBCollider.IsObbError;
         var OBB = oBBCollider.OBB;

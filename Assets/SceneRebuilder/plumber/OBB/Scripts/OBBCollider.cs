@@ -34,7 +34,7 @@ public class OBBCollider : MonoBehaviour
         OBBCollider oBB = GetOBB(obj);
         if (oBB != null)
         {
-            oBB.ShowObbInfo(isGetObbEx);
+            oBB.ShowObbInfo(null,isGetObbEx);
         }
         return oBB;
     }
@@ -49,7 +49,7 @@ public class OBBCollider : MonoBehaviour
         OBBCollider oBB = GetOBB(obj);
         if (oBB != null)
         {
-            return oBB.ShowObbInfoEx(isGetObbEx);
+            return oBB.ShowObbInfoEx(null, isGetObbEx);
         }
         return null;
     }
@@ -60,7 +60,7 @@ public class OBBCollider : MonoBehaviour
         if (oBB == null)
         {
             oBB = obj.AddComponent<OBBCollider>();
-            oBB.ShowObbInfo(isGetObbEx);
+            oBB.ShowObbInfo(null, isGetObbEx);
         }
         return oBB;
     }
@@ -136,13 +136,18 @@ public class OBBCollider : MonoBehaviour
     }
 
     [ContextMenu("ShowObbInfo")]
-    public bool ShowObbInfo(bool isGetObbEx)
+    public bool ShowObbInfo(Vector3[] vs, bool isGetObbEx)
     {
 
 
         //ClearChildren();
-        ClearDebugInfoGos();
-        GetObb(isGetObbEx);
+
+        if (vs == null)
+        {
+            ClearDebugInfoGos();
+        }
+
+        GetObb(vs,isGetObbEx);
         //if (GetObb(isGetObbEx) == null) return false ;
 
         ShowOBBBox();
@@ -155,11 +160,11 @@ public class OBBCollider : MonoBehaviour
     }
 
     [ContextMenu("ShowObbInfoEx")]
-    public GameObject ShowObbInfoEx(bool isGetObbEx)
+    public GameObject ShowObbInfoEx(Vector3[] vs, bool isGetObbEx)
     {
         //ClearChildren();
         ClearDebugInfoGos();
-        GetObb(isGetObbEx);
+        GetObb(vs,isGetObbEx);
         //if (GetObb(isGetObbEx) == null) return false ;
         return ShowOBBBox();
     }
@@ -212,21 +217,25 @@ public class OBBCollider : MonoBehaviour
         return job;
     }
 
-    public OrientedBoundingBox GetObb(bool isGetObbEx)
+    public OrientedBoundingBox GetObb(Vector3[] vs,bool isGetObbEx)
     {
         IsBreakProgress = false;
 
         DateTime start = DateTime.Now;
         List<Vector3> ps1 = new List<Vector3>();
         List<Vector3S> ps2 = new List<Vector3S>();
-        MeshFilter meshFilter = this.GetComponent<MeshFilter>();
-        if (meshFilter.sharedMesh == null)
+        if (vs == null)
         {
-            Debug.LogError("OBBCollider.GetObb meshFilter.sharedMesh == null");
-            IsObbError = true;
-            return new OrientedBoundingBox();
+            MeshFilter meshFilter = this.GetComponent<MeshFilter>();
+            if (meshFilter.sharedMesh == null)
+            {
+                Debug.LogError("OBBCollider.GetObb meshFilter.sharedMesh == null");
+                IsObbError = true;
+                return new OrientedBoundingBox();
+            }
+            vs = meshFilter.sharedMesh.vertices;
         }
-        var vs = meshFilter.sharedMesh.vertices;
+
         var count = vs.Length;
         for (int i = 0; i < count; i++)
         {
@@ -245,7 +254,7 @@ public class OBBCollider : MonoBehaviour
             //OBB = null;
             if (isGetObbEx)
             {
-                if (GetObbEx() == false)
+                if (GetObbEx(vs) == false)
                 {
                     return new OrientedBoundingBox();
                 }
@@ -257,15 +266,19 @@ public class OBBCollider : MonoBehaviour
 
     public static bool IsBreakProgress = false;
 
-    public bool GetObbEx()
+    public bool GetObbEx(Vector3[] vs)
     {
         DateTime start = DateTime.Now;
         List<Vector3> ps1 = new List<Vector3>();
         List<Vector3S> ps21 = new List<Vector3S>();
         List<Vector3S> ps22 = new List<Vector3S>();
-        MeshFilter meshFilter = this.GetComponent<MeshFilter>();
+       
+        if (vs == null)
+        {
+            MeshFilter meshFilter = this.GetComponent<MeshFilter>();
+            vs = meshFilter.sharedMesh.vertices;
+        }
 
-        var vs = meshFilter.sharedMesh.vertices;
         var count = vs.Length;
 
         StringBuilder sb = new StringBuilder();
@@ -324,10 +337,13 @@ public class OBBCollider : MonoBehaviour
 
     public bool IsObbError = false;
 
-    public void ShowMeshVertices()
+    public void ShowMeshVertices(Vector3[] vs)
     {
-        MeshFilter meshFilter = this.GetComponent<MeshFilter>();
-        var vs = meshFilter.sharedMesh.vertices;
+        if (vs == null)
+        {
+            MeshFilter meshFilter = this.GetComponent<MeshFilter>();
+            vs = meshFilter.sharedMesh.vertices;
+        }
         var count = vs.Length;
         Debug.Log($"ShowMeshVertices vs:{count}");
 
@@ -468,11 +484,19 @@ public class OBBCollider : MonoBehaviour
     public GameObject CreateDebugInfoRoot(string goName)
     {
         GameObject go0 = new GameObject(goName);
-        go0.AddComponent<DebugInfoRoot>();
-        go0.transform.SetParent(this.transform);
-        go0.transform.localPosition = Vector3.zero;
-        //DebugInfoRootGos.Add(go0);
-        return go0;
+        try
+        {
+            go0.AddComponent<DebugInfoRoot>();
+            go0.transform.SetParent(this.transform);
+            go0.transform.localPosition = Vector3.zero;
+            //DebugInfoRootGos.Add(go0);
+            return go0;
+        }
+        catch (Exception ex)
+        {
+            Debug.LogError($"CreateDebugInfoRoot Exception:{ex}");
+            return go0;
+        }
     }
 
     public static GameObject CreateObbBox(Transform parent,OrientedBoundingBox OBB)
@@ -575,52 +599,60 @@ public class OBBCollider : MonoBehaviour
     public GameObject ShowOBBBox()
     {
         GameObject go0 = CreateDebugInfoRoot("OBBCollider_OBBBox");
+        GameObject go = GameObject.CreatePrimitive(PrimitiveType.Cube);
+        try
+        {
+            
+            go.name = this.name + "_ObbBox";
+            obbGo = go;
+            go.transform.SetParent(this.transform);
+            //go.transform.localPosition=OBB.Center;
+            go.transform.localPosition = Vector3.zero;
+            go.transform.localScale = OBB.Extent * 2f;
 
-        GameObject go=GameObject.CreatePrimitive(PrimitiveType.Cube);
-        go.name=this.name+"_ObbBox";
-        obbGo=go;
-        go.transform.SetParent(this.transform);
-        //go.transform.localPosition=OBB.Center;
-        go.transform.localPosition=Vector3.zero;
-        go.transform.localScale=OBB.Extent*2f;
+            //var angle0 = Vector3.Angle(go.transform.right, OBB.Right);
+            //Debug.Log($"ShowOBBBox OBB.Right:{OBB.Right} right:{go.transform.right} angle0:{angle0}");
 
-        //var angle0 = Vector3.Angle(go.transform.right, OBB.Right);
-        //Debug.Log($"ShowOBBBox OBB.Right:{OBB.Right} right:{go.transform.right} angle0:{angle0}");
+            //go.transform.right=OBB.Right;
+            //var angle1=Vector3.Angle(go.transform.up,OBB.Up);
+            //Debug.Log($"ShowOBBBox OBB.Right:{OBB.Right} right:{go.transform.right} angle1:{angle1}");
+            //if (angle1 < 90)
+            //{
+            //    go.transform.Rotate(Vector3.right, -angle1);
+            //}
+            //else
+            //{
+            //    //go.transform.Rotate(Vector3.right, angle1);
+            //    go.transform.Rotate(Vector3.right, 180-angle1);
+            //}
 
-        //go.transform.right=OBB.Right;
-        //var angle1=Vector3.Angle(go.transform.up,OBB.Up);
-        //Debug.Log($"ShowOBBBox OBB.Right:{OBB.Right} right:{go.transform.right} angle1:{angle1}");
-        //if (angle1 < 90)
-        //{
-        //    go.transform.Rotate(Vector3.right, -angle1);
-        //}
-        //else
-        //{
-        //    //go.transform.Rotate(Vector3.right, angle1);
-        //    go.transform.Rotate(Vector3.right, 180-angle1);
-        //}
+            //go.transform.Rotate(Vector3.right, -angle1);
 
-        //go.transform.Rotate(Vector3.right, -angle1);
+            SetRotation(go.transform, OBB, this.name);
 
-        SetRotation(go.transform, OBB, this.name);
+            //对齐轴方向
 
-        //对齐轴方向
+            go.transform.localPosition = OBB.Center;
+            go.transform.SetParent(go0.transform);
+            //var p1 = this.transform.TransformPoint(OBB.Center);
+            //var center = p1;
+            //CreatePoint(center, "Center", go0.transform);
+            //CreatePoint(center + OBB.Right,"Right", go0.transform); ;
+            //CreatePoint(center + OBB.Up,"Up", go0.transform); ;
+            //CreatePoint(center + OBB.Forward,"Forward", go0.transform);
 
-        go.transform.localPosition=OBB.Center;
-        go.transform.SetParent(go0.transform);
-        //var p1 = this.transform.TransformPoint(OBB.Center);
-        //var center = p1;
-        //CreatePoint(center, "Center", go0.transform);
-        //CreatePoint(center + OBB.Right,"Right", go0.transform); ;
-        //CreatePoint(center + OBB.Up,"Up", go0.transform); ;
-        //CreatePoint(center + OBB.Forward,"Forward", go0.transform);
+            //Vector3 v1 = CreateLine(center, center + OBB.Right, "Center-Right", go0.transform);
+            //Vector3 v2 = CreateLine(center, center + OBB.Up, "Center-Up", go0.transform);
+            //Vector3 v3 = CreateLine(center, center + OBB.Forward, "Center-Forward", go0.transform);
 
-        //Vector3 v1 = CreateLine(center, center + OBB.Right, "Center-Right", go0.transform);
-        //Vector3 v2 = CreateLine(center, center + OBB.Up, "Center-Up", go0.transform);
-        //Vector3 v3 = CreateLine(center, center + OBB.Forward, "Center-Forward", go0.transform);
-
-        //return go0;
-        return go;
+            //return go0;
+            return go;
+        }
+        catch (Exception ex)
+        {
+            Debug.LogError($"ShowOBBBox Exception:{ex}");
+            return go;
+        }
     }
 
     public void ShowPipePoints()
@@ -672,7 +704,7 @@ public class OBBCollider : MonoBehaviour
                 break;
             }
             OBBCollider obb = obj.AddMissingComponent<OBBCollider>();
-            obb.GetObb(true);
+            obb.GetObb(null,true);
             obb.AlignDirection();
         }
         ProgressBarHelper.ClearProgressBar();
@@ -697,11 +729,19 @@ public class OBBCollider : MonoBehaviour
 
     private void CreatePointS(Vector3S p, string n,Transform pt)
     {
-        var lp = p.GetVector3();
-        var wp = this.transform.TransformPoint(lp);
-        var pObj=CreatePoint(wp, n);
-        if(pObj)
-            pObj.transform.SetParent(pt);
+        try
+        {
+            var lp = p.GetVector3();
+            var wp = this.transform.TransformPoint(lp);
+            var pObj = CreatePoint(wp, n);
+            if (pObj)
+                pObj.transform.SetParent(pt);
+        }
+        catch (Exception ex)
+        {
+            Debug.LogError($"CreatePointS p:{p}");
+        }
+        
     }
 
     private GameObject CreatePoint(Vector3 p,string n)

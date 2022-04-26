@@ -175,7 +175,7 @@ public class PipeBuilder : MonoBehaviour
         }
         if (oBB != null)
         {
-            oBB.ShowObbInfo(true);
+            oBB.ShowObbInfo(null,true);
         }
     }
 
@@ -567,7 +567,7 @@ public class PipeBuilder : MonoBehaviour
                 return;
             }
             OBBCollider obbC=go.gameObject.AddMissingComponent<OBBCollider>();
-            obbC.GetObb(false);
+            obbC.GetObb(null,false);
         }
         ProgressBarHelper.ClearProgressBar();
         Debug.Log($"GetObbInfos count:{gos.Count} time:{(DateTime.Now - startT).TotalMilliseconds.ToString("F2")}");

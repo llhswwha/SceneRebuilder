@@ -12,7 +12,7 @@ public class OBBColliderEditor : Editor
         GUILayout.BeginHorizontal();
         if(GUILayout.Button("ShowObbInfo"))
         {
-            targetT.ShowObbInfo(true);
+            targetT.ShowObbInfo(null,true);
         }
         if (GUILayout.Button("ClearChildren"))
         {
@@ -20,11 +20,11 @@ public class OBBColliderEditor : Editor
         }
         if (GUILayout.Button("GetObb"))
         {
-            targetT.GetObb(true);
+            targetT.GetObb(null, true);
         }
         if (GUILayout.Button("GetObb(Job)"))
         {
-            targetT.GetObb(true);
+            targetT.GetObb(null, true);
         }
         //if (GUILayout.Button("CreatePipe"))
         //{
@@ -71,7 +71,7 @@ public class OBBColliderEditor : Editor
         if (GUILayout.Button("ShowMeshVertices"))
         {
             targetT.ClearChildren();
-            targetT.ShowMeshVertices();
+            targetT.ShowMeshVertices(null);
         }
         if (GUILayout.Button("ShowSharedMeshVertices"))
         {
