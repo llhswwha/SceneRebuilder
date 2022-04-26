@@ -14,6 +14,20 @@ using UnityEngine;
 
 public static class MeshHelper
 {
+    public static GameObject CreatePoint(Vector3 p, string n, Transform pT, float size)
+    {
+        GameObject g1 = GameObject.CreatePrimitive(PrimitiveType.Sphere);
+
+        //g1.transform.SetParent(this.transform);
+        //g1.transform.localPosition=p;
+        g1.transform.position = p;
+        g1.transform.localScale = new Vector3(size, size, size);
+        g1.name = n;
+
+        g1.transform.SetParent(pT);
+        return g1;
+    }
+
     public static GameObject CreateLocalPoint(Vector3 p, string n, Transform pT, float scale)
     {
         GameObject g1 = GameObject.CreatePrimitive(PrimitiveType.Sphere);

@@ -152,7 +152,7 @@ public class OBBCollider : MonoBehaviour
 
         ShowOBBBox();
 
-        ShowPipePoints();
+        ShowPipePoints(vs);
 
         DrawWireCube();
 
@@ -655,7 +655,7 @@ public class OBBCollider : MonoBehaviour
         }
     }
 
-    public void ShowPipePoints()
+    public void ShowPipePoints(Vector3[] vs)
     {
         GameObject go = CreateDebugInfoRoot("OBBCollider_PipePoints");
 
@@ -768,49 +768,55 @@ public class OBBCollider : MonoBehaviour
 
     private GameObject CreateLocalPoint(Vector3 p, string n, Transform pT)
     {
+        MeshFilter mf = pT.GetComponent<MeshFilter>();
+        //if (mf)
+        //{
+        //    GameObject go = MeshHelper.CreateLocalPoint(p, n, pT, lineSize);
+        //    //go.AddComponent<DebugInfoRoot>();
+        //    return go;
+        //}
+        //else
+        //{
+        //    GameObject go = MeshHelper.CreatePoint(p, n, pT, lineSize);
+        //    //go.AddComponent<DebugInfoRoot>();
+        //    return go;
+        //}
+
         GameObject go = MeshHelper.CreateLocalPoint(p, n, pT, lineSize);
         //go.AddComponent<DebugInfoRoot>();
         return go;
     }
 
-
-
-    private void CreatePoint(Vector3 p, string n,Transform pT)
+    private GameObject CreatePoint(Vector3 p, string n, Transform pT)
     {
-        GameObject g1 = GameObject.CreatePrimitive(PrimitiveType.Sphere);
-
-        //g1.transform.SetParent(this.transform);
-        //g1.transform.localPosition=p;
-        g1.transform.position = p;
-        g1.transform.localScale = new Vector3(lineSize, lineSize, lineSize);
-        g1.name = n;
-
-        g1.transform.SetParent(pT);
+        GameObject go = MeshHelper.CreatePoint(p, n, pT, lineSize);
+        //go.AddComponent<DebugInfoRoot>();
+        return go;
     }
 
     private Vector3 CreateLineS(Vector3S p1,Vector3S p2,string n)
     {
-        return CreateLine(transform.TransformPoint(p1.GetVector3()),transform.TransformPoint(p2.GetVector3()),n, null);
+        return CreateLine(this.transform, transform.TransformPoint(p1.GetVector3()),transform.TransformPoint(p2.GetVector3()),n, lineSize, null);
     }
 
     private Vector3 CreateLineS(Vector3S p1, Vector3S p2, string n, Transform pt)
     {
-        return CreateLine(transform.TransformPoint(p1.GetVector3()), transform.TransformPoint(p2.GetVector3()), n, pt);
+        return CreateLine(this.transform,transform.TransformPoint(p1.GetVector3()), transform.TransformPoint(p2.GetVector3()), n,lineSize, pt);
     }
 
     public float lineSize = 0.01f;
 
-    public Vector3 CreateLine(Vector3 p1,Vector3 p2,string n,Transform pt=null)
+    public static Vector3 CreateLine(Transform root,Vector3 p1,Vector3 p2,string n,float size,Transform pt=null)
     {
         GameObject g1=GameObject.CreatePrimitive(PrimitiveType.Cube);
         //g1.transform.SetParent(this.transform);
         //g1.transform.localPosition=(p1+p2)/2;
         g1.transform.position = (p1 + p2) / 2;
         g1.transform.forward=p2-p1;
-        Vector3 scale=new Vector3(lineSize, lineSize, Vector3.Distance(p2,p1));
+        Vector3 scale=new Vector3(size, size, Vector3.Distance(p2,p1));
         g1.transform.localScale=scale;
         g1.name=n;
-        g1.transform.SetParent(this.transform);
+        g1.transform.SetParent(root);
         if(pt!=null)
             g1.transform.SetParent(pt);
         return p2-p1;

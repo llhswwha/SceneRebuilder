@@ -50,7 +50,7 @@ public class OBBColliderEditor : Editor
         if (GUILayout.Button("ShowPipePoints"))
         {
             targetT.ClearChildren();
-            targetT.ShowPipePoints();
+            targetT.ShowPipePoints(null);
         }
         if (GUILayout.Button("ShowPlanes"))
         {
