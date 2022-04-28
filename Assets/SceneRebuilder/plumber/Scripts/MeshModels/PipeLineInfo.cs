@@ -1,6 +1,7 @@
 using System;
 using System.Collections;
 using System.Collections.Generic;
+using System.Linq;
 using System.Xml.Serialization;
 using UnityEngine;
 
@@ -17,6 +18,34 @@ public class PipeLineInfo
     public Vector3 EndNormal;
 
     public Vector3 Direction;
+
+    public Vector3 GetNotClosedPoint(Vector3 p)
+    {
+        float p1 = Vector3.Distance(p, StartPoint);
+        float p2 = Vector3.Distance(p, EndPoint);
+        if (p1 > p2)
+        {
+            return StartPoint;
+        }
+        else
+        {
+            return EndPoint;
+        }
+    }
+
+    public Vector3[] GetNotClosedPoints(Vector3 p)
+    {
+        float p1 = Vector3.Distance(p, StartPoint);
+        float p2 = Vector3.Distance(p, EndPoint);
+        if (p1 > p2)
+        {
+            return new Vector3[2] { StartPoint,EndPoint };
+        }
+        else
+        {
+            return new Vector3[2] { EndPoint, StartPoint };
+        }
+    }
 
     //public PipeLineData=
     [XmlIgnore]
@@ -93,23 +122,65 @@ public class PipeLineInfoList : List<PipeLineInfo>
         return this[0];
     }
 
-    internal List<Vector3> GetLinePoints(float startEndDis)
+    public Vector3 GetCenter()
     {
         List<Vector3> ps = new List<Vector3>();
         for (int i = 0; i < this.Count; i++)
         {
             var item = this[i];
-            if (i == 0)
+            if (!ps.Contains(item.StartPoint))
             {
                 ps.Add(item.StartPoint);
-                ps.Add(item.EndPoint);
             }
-            else
+            if (!ps.Contains(item.EndPoint))
             {
                 ps.Add(item.EndPoint);
             }
         }
 
+        Vector3 sum = Vector3.zero;
+        for (int i = 0; i < ps.Count; i++)
+        {
+            Vector3 p = ps[i];
+            sum += p;
+            //Debug.Log($"GetCenter[{i}] p:{p.Vector3ToString()} sum:{sum.Vector3ToString()}");
+        }
+        Vector3 center = sum / ps.Count;
+        //Debug.Log($"GetCenter center:{center.Vector3ToString()} Count:{this.Count} ps:{ps.Count}");
+        return center;
+    }
+
+    internal List<Vector3> GetLinePoints(float startEndDis)
+    {
+        List<Vector3> ps = new List<Vector3>();
+
+        Vector3 lastP = GetCenter();
+        ////MeshHelper.CreatePoint(lastP, "LineCenter", null, 0.1f);
+
+        for (int i = 0; i < this.Count; i++)
+        {
+            var item = this[i];
+            if (i == 0)
+            {
+                Vector3[] ps0 = item.GetNotClosedPoints(lastP);
+                ps.AddRange(ps0);
+
+                ////ps.Add(item.StartPoint);
+                ////ps.Add(item.EndPoint);
+
+                lastP = ps.Last();
+            }
+            else
+            {
+                //ps.Add(item.EndPoint);
+
+                Vector3 p0 = item.GetNotClosedPoint(lastP);
+                ps.Add(p0);
+                lastP = p0;
+            }
+        }
+
+        if(startEndDis>0)
         {
             Vector3 p0 = ps[0];
             Vector3 p1 = ps[1];
@@ -140,6 +211,7 @@ public class PipeLineInfoList : List<PipeLineInfo>
             ps[0] = p00;
         }
 
+        if (startEndDis > 0)
         {
             Vector3 p0 = ps[ps.Count - 1];
             Vector3 p1 = ps[ps.Count - 2];
