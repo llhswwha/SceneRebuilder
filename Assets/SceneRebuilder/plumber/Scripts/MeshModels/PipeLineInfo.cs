@@ -33,6 +33,20 @@ public class PipeLineInfo
         }
     }
 
+    public MeshPoint GetNotClosedMeshPoint(Vector3 p)
+    {
+        float p1 = Vector3.Distance(p, StartPoint);
+        float p2 = Vector3.Distance(p, EndPoint);
+        if (p1 > p2)
+        {
+            return new MeshPoint(StartPoint,StartNormal);
+        }
+        else
+        {
+            return new MeshPoint(EndPoint,EndNormal);
+        }
+    }
+
     public Vector3[] GetNotClosedPoints(Vector3 p)
     {
         float p1 = Vector3.Distance(p, StartPoint);
@@ -153,10 +167,9 @@ public class PipeLineInfoList : List<PipeLineInfo>
     internal List<Vector3> GetLinePoints(float startEndDis)
     {
         List<Vector3> ps = new List<Vector3>();
-
-        Vector3 lastP = GetCenter();
+        Vector3 center = GetCenter();
+        Vector3 lastP = center;
         ////MeshHelper.CreatePoint(lastP, "LineCenter", null, 0.1f);
-
         for (int i = 0; i < this.Count; i++)
         {
             var item = this[i];
@@ -164,10 +177,6 @@ public class PipeLineInfoList : List<PipeLineInfo>
             {
                 Vector3[] ps0 = item.GetNotClosedPoints(lastP);
                 ps.AddRange(ps0);
-
-                ////ps.Add(item.StartPoint);
-                ////ps.Add(item.EndPoint);
-
                 lastP = ps.Last();
             }
             else
@@ -182,12 +191,13 @@ public class PipeLineInfoList : List<PipeLineInfo>
 
         if(startEndDis>0)
         {
+            MeshPoint mp = this[0].GetNotClosedMeshPoint(center);
             Vector3 p0 = ps[0];
             Vector3 p1 = ps[1];
             Vector3 dir01 = p1 - p0;
 
             Vector3 normal00 = Vector3.zero;
-            Vector3 normal01 = this[0].StartNormal.normalized;
+            Vector3 normal01 = mp.Normal.normalized;
             Vector3 normal02 = -normal01;
             float dot1 = Vector3.Dot(normal01, dir01);
             float dot2 = Vector3.Dot(normal02, dir01);
@@ -202,23 +212,21 @@ public class PipeLineInfoList : List<PipeLineInfo>
 
             float dis = dir01.magnitude;
 
-            Vector3 p00 = (Vector3)this[0].StartPoint - normal00 * dis * startEndDis *0.1f;
-            //Vector3 p01 = (Vector3)this[0].StartPoint + normal00 * 0.05f;
-            //ps.Insert(0, p00);
-            //ps[1] = p01;           
-            Vector3 p01 = (Vector3)this[0].StartPoint + normal00 * dis * startEndDis;
+            Vector3 p00 = mp.Point - normal00 * dis * startEndDis *0.1f;        
+            Vector3 p01 = mp.Point + normal00 * dis * startEndDis;
             ps.Insert(1, p01);
             ps[0] = p00;
         }
 
         if (startEndDis > 0)
         {
+            MeshPoint mp = this[Count - 1].GetNotClosedMeshPoint(center);
             Vector3 p0 = ps[ps.Count - 1];
             Vector3 p1 = ps[ps.Count - 2];
             Vector3 dir01 = p1 - p0;
 
             Vector3 normal00 = Vector3.zero;
-            Vector3 normal01 = this[Count - 1].EndNormal.normalized;
+            Vector3 normal01 = mp.Normal.normalized;
             Vector3 normal02 = -normal01;
             float dot1 = Vector3.Dot(normal01, dir01);
             float dot2 = Vector3.Dot(normal02, dir01);
@@ -233,7 +241,7 @@ public class PipeLineInfoList : List<PipeLineInfo>
 
             float dis = dir01.magnitude;
 
-            Vector3 p00 = (Vector3)this[Count - 1].EndPoint + normal00 * dis * startEndDis;
+            Vector3 p00 = mp.Point + normal00 * dis * startEndDis;
             ps.Insert(ps.Count-1,p00);
         }
 

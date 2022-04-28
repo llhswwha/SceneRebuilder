@@ -161,7 +161,7 @@ public class PipeMeshGeneratorBase : BaseMeshGenerator
     public float elbowRadius = 0.5f;
     [Range(3, 32)]
     public int pipeSegments = 12;
-    [Range(1, 32)]
+    [Range(0, 32)]
     public int elbowSegments = 6;
 
     [Range(3, 32)]

@@ -19,6 +19,14 @@ public struct MeshPoint
 
     //}
 
+    public MeshPoint(Vector3 p,  Vector3 n)
+    {
+        this.Point = p;
+        this.Id = 0;
+        this.Normal = n;
+        this.UV = Vector2.zero;
+    }
+
     public MeshPoint(Vector3 p, int i,Vector3 n)
     {
         this.Point = p;
