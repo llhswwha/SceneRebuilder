@@ -26,6 +26,24 @@ public class CircleInfo
         return c;
     }
 
+    public Vector3 GetNormal()
+    {
+        if (Points.Count >= 4)
+        {
+            int middleId = Points.Count / 2;
+            Vector3 p0 = Points[0];
+            Vector3 p1 = Points[Points.Count - 1];
+            Vector3 p2 = Points[middleId];
+            Vector3 p3 = Points[middleId - 1];
+            PlaneInfo plane = new PlaneInfo(p0, p1, p2, p3);
+            return plane.planeNormal;
+        }
+        else
+        {
+            return Vector3.zero;
+        }
+    }
+
     public CircleInfo()
     {
 

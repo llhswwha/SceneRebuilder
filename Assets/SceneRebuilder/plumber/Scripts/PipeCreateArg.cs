@@ -27,6 +27,12 @@ public class PipeCreateArg
 
     public float elbowRadius = 0;
 
+    public float GetElbowRadius()
+    {
+        GetPoints();
+        return elbowRadius;
+    }
+
     //public List<Vector4> GetPoints4()
     //{
     //    points4 = new List<Vector4>();

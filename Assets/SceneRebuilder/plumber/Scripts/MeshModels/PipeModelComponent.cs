@@ -82,6 +82,11 @@ public class PipeModelComponent : BaseMeshModel
 
     public override void RendererModel()
     {
+        RendererModel(GetArg(), "_New");
+    }
+
+    public PipeGenerateArg GetArg()
+    {
         MeshRenderer r = this.GetComponent<MeshRenderer>();
         MeshFilter mf = this.GetComponent<MeshFilter>();
         if (r)
@@ -116,7 +121,7 @@ public class PipeModelComponent : BaseMeshModel
             generateArg.weldMaterial = PipeFactory.Instance.generateArg.weldMaterial;
         }
 
-        RendererModel(generateArg, "_New");
+        return generateArg;
     }
 
 

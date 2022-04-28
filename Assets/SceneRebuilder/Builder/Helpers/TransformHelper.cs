@@ -480,16 +480,30 @@ public static class TransformHelper
     internal static GameObject ShowLocalPoint(Vector3 point, float pointScale, Transform transform1, Transform transform2)
     {
         GameObject objPoint = GameObject.CreatePrimitive(PrimitiveType.Sphere);
-        //objPoint.name = $"Point[{i + 1}][{j + 1}]({p.Point})";
-        //objPoint.name = $"Point[{j + 1}]({p.Point})";
-        objPoint.name = $"Point({point.x},{point.y},{point.z})";
         objPoint.transform.SetParent(transform1);
-        objPoint.transform.localPosition = point;
-        objPoint.transform.localScale = new Vector3(pointScale, pointScale, pointScale);
+        if (point.x == float.NaN)
+        {
+            Debug.LogError($"ShowLocalPoint NaN transform1:{transform1} transform2:{transform2} point:{point}");
+            return objPoint;
+        }
+        try
+        {
+            //objPoint.name = $"Point[{i + 1}][{j + 1}]({p.Point})";
+            //objPoint.name = $"Point[{j + 1}]({p.Point})";
+            objPoint.name = $"Point({point.x},{point.y},{point.z})";
+             objPoint.transform.localPosition = point;
+            objPoint.transform.localScale = new Vector3(pointScale, pointScale, pointScale);
 
-        if(transform2!=null)
-            objPoint.transform.SetParent(transform2);
-        return objPoint;
+            if (transform2 != null)
+                objPoint.transform.SetParent(transform2);
+            return objPoint;
+        }
+        catch (System.Exception ex)
+        {
+            Debug.LogError($"ShowLocalPoint transform1:{transform1} transform2:{transform2} point:{point} Exception:{ex}");
+            return objPoint;
+        }
+        
     }
 
     internal static GameObject ShowPoint(Vector3 point, float pointScale, Transform transform1)

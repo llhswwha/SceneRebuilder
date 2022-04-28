@@ -1,3 +1,4 @@
+using MathGeoLib;
 using System;
 using System.Collections;
 using System.Collections.Generic;
@@ -64,11 +65,30 @@ public class MeshTriangles
             GameObject sharedPoints1Obj = CreateSubTestObj($"trialge[{i+1}]:{t}", tsRoot.transform);
             t.ShowTriangle(tsRoot.transform, sharedPoints1Obj.transform, pointScale);
         }
+    }
 
-        GameObject obbRoot = CreateSubTestObj($"Triangles{tag}({this.Count}_{mesh.vertexCount})_Obb", transform);
-        Vector3[] vs = this.GetPoints().ToArray();
-        OBBCollider oBBCollider = obbRoot.AddMissingComponent<OBBCollider>();
-        oBBCollider.ShowObbInfo(vs, false);
+    public PipeLineInfo ShowTrianglesWithObb(Transform transform, float pointScale, string tag, bool isShowDebugObj)
+    {
+        //ShowTriangles(transform, pointScale, tag);
+
+        //GameObject obbRoot = CreateSubTestObj($"Triangles{tag}({this.Count}_{mesh.vertexCount})_Obb", transform);
+        //Vector3[] vs = this.GetPoints().ToArray();
+        //OBBCollider oBBCollider = obbRoot.AddMissingComponent<OBBCollider>();
+        //oBBCollider.ShowObbInfo(vs, false);
+
+
+        ////Debug.Log($"ShowSharedPoints mesh vertexCount:{mesh.vertexCount} triangles:{mesh.triangles.Length}");
+        //meshTriangles.ShowCirclesById(transform, pointScale, 0, 3, minRepeatPointDistance);
+
+        //GameObject trianglesObj = CreateSubTestObj($"KeyPoints", transform);
+        //meshTriangles.ShowKeyPointsById(trianglesObj.transform, pointScale, sharedMinCount, minRepeatPointDistance, false);
+
+        //OrientedBoundingBox obb = OrientedBoundingBox.Create(vs, false, $"Triangles{tag}");
+        //GameObject planInfoRoot = CreateSubTestObj($"PipeModel_PlaneInfo", transform);
+
+
+        PipeLineModel pipeLine = transform.gameObject.AddMissingComponent<PipeLineModel>();
+        return pipeLine.ShowLinePartModelInfo(this.GetPoints().ToArray(), transform, isShowDebugObj, 0.001f, 20, 100);
     }
 
     public List<MeshTriangles> Split(int count)
@@ -103,20 +123,29 @@ public class MeshTriangles
         meshTriangles.Dispose();
     }
 
-    public static void ShowPartLines(GameObject target, float PointScale,int count)
+    public static PipeLineInfoList ShowPartLines(GameObject target, float PointScale, int count, bool isShowDebugObj)
     {
         Mesh mesh = target.GetComponent<MeshFilter>().sharedMesh;
         MeshTriangles meshTriangles = new MeshTriangles(mesh);
-        Debug.Log($"GetElbowInfo mesh vertexCount:{mesh.vertexCount} triangles:{mesh.triangles.Length}");
+
+        Debug.Log($"ShowPartLines mesh vertexCount:{mesh.vertexCount} triangles:{mesh.triangles.Length}");
         //meshTriangles.ShowTriangles(target.transform, PointScale);
         List<MeshTriangles> subTriangles = meshTriangles.Split(count);
+        PipeLineInfoList lineInfoList = new PipeLineInfoList();
         for (int i = 0; i < subTriangles.Count; i++)
         {
-            MeshTriangles subT = subTriangles[i];
-            subT.ShowTriangles(target.transform, PointScale,$"[{i+1}]");
-        }
+            GameObject tsRoot = CreateSubTestObj($"Parts {i + 1}({mesh.vertexCount})", target.transform);
 
+            MeshTriangles subT = subTriangles[i];
+            PipeLineInfo lineInfo = subT.ShowTrianglesWithObb(tsRoot.transform, PointScale, $"[{i + 1}]", isShowDebugObj);
+            lineInfoList.Add(lineInfo);
+        }
+        foreach (var subT in subTriangles)
+        {
+            subT.Dispose();
+        }
         meshTriangles.Dispose();
+        return lineInfoList;
     }
 
     private void Init(MeshStructure mesh)
@@ -693,7 +722,7 @@ public class MeshTriangles
         }
     }
 
-    private GameObject CreateSubTestObj(string objName, Transform parent)
+    private static GameObject CreateSubTestObj(string objName, Transform parent)
     {
         return TransformHelper.CreateSubTestObj(objName, parent);
     }
@@ -1021,19 +1050,24 @@ public class MeshTriangles
             points.CombineSameCenter(minDis);
         Debug.Log($"GetKeyPoints KeyPoints3:{points.Count}");
         GameObject keyPointsObj = CreateSubTestObj($"KeyPoints:{points.Count}", root);
-        var centerOfPoints = MeshHelper.GetCenterOfList(points);
-        TransformHelper.ShowLocalPoint(centerOfPoints, pointScale, root, null).name = "KeysCenter";
 
-        for (int i = 0; i < points.Count; i++)
+        if (points.Count > 0)
         {
-            SharedMeshTriangles point = points[i];
-            TransformHelper.ShowLocalPoint(point.Normal, pointScale, root, keyPointsObj.transform).name = $"Key[{i + 1}]_Normal_{point.Normal}";
-            TransformHelper.ShowLocalPoint(point.Center, pointScale, root, keyPointsObj.transform).name=$"Key[{i+1}]_Center_point.Center";
-            TransformHelper.ShowLocalPoint(point.Point, pointScale, root, keyPointsObj.transform).name = $"Key[{i + 1}]_Point_{point.IsCircle}_{point.DistanceToCenter}_{point.GetRadius()}";
+            var centerOfPoints = MeshHelper.GetCenterOfList(points);
+            TransformHelper.ShowLocalPoint(centerOfPoints, pointScale, root, null).name = "KeysCenter";
+
+            for (int i = 0; i < points.Count; i++)
+            {
+                SharedMeshTriangles point = points[i];
+                TransformHelper.ShowLocalPoint(point.Normal, pointScale, root, keyPointsObj.transform).name = $"Key[{i + 1}]_Normal_{point.Normal}";
+                TransformHelper.ShowLocalPoint(point.Center, pointScale, root, keyPointsObj.transform).name = $"Key[{i + 1}]_Center_point.Center";
+                TransformHelper.ShowLocalPoint(point.Point, pointScale, root, keyPointsObj.transform).name = $"Key[{i + 1}]_Point_{point.IsCircle}_{point.DistanceToCenter}_{point.GetRadius()}";
+            }
         }
-
-        
-
+        else
+        {
+            Debug.LogError($"GetKeyPoints  Count == 0 KeyPoints:{points.Count} root:{root}");
+        }
         //points.Sort((a, b) => { })
     }
 }

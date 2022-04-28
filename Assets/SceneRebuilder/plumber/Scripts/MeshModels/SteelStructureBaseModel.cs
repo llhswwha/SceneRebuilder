@@ -142,7 +142,7 @@ public class SteelStructureBaseModel : BaseMeshModel
         PlaneInfo middlePlaneOfleftRight = PlaneInfo.GetMiddlePlane(leftPlane.Plane, rightPlane.Plane);
         VerticesToPlaneInfo middlePlaneVP = new VerticesToPlaneInfo(beforePlane.Plane1Points.ToArray(), middlePlaneOfleftRight, true);
         GameObject middlePlaneOfleftRightGo = DebugInfoRoot.NewGo("middlePlaneOfleftRight", this.transform);
-        middlePlaneOfleftRight.ShowPlaneInfo(0, middlePlaneOfleftRightGo, middlePlaneVP, PointScale, this.transform);
+        middlePlaneOfleftRight.ShowPlaneInfo(0, middlePlaneOfleftRightGo, middlePlaneVP, PointScale, this.transform,true,true);
 
         hMesh.sizeX = hMesh.width * 0.07f;
         hMesh.sizeY = hMesh.height * 0.03f;

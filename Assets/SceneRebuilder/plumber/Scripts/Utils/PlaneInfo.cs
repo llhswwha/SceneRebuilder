@@ -136,7 +136,7 @@ public class PlaneInfo
         return plane30;
     }
 
-    public void ShowPlaneInfo( int i, GameObject go, VerticesToPlaneInfo v2p,float lineSize,Transform transform)
+    public void ShowPlaneInfo( int i, GameObject go, VerticesToPlaneInfo v2p,float lineSize,Transform transform,bool isShowPlane2Ponit=false,bool isShowPlane1Points12=false)
     {
         PlaneInfo plane = this;
         GameObject planeObjRoot = new GameObject($"Plane[{i}]");
@@ -186,24 +186,28 @@ public class PlaneInfo
                 Vector3 p = v2p.Plane1Points[i1];
                 TransformHelper.ShowLocalPoint(p, lineSize, transform, planeObjRoot.transform).name = $"Plane1Points[{i1}]";
             }
-            for (int i1 = 0; i1 < v2p.Plane1Points1.Count; i1++)
+            if (isShowPlane1Points12)
             {
-                Vector3 p = v2p.Plane1Points1[i1];
-                TransformHelper.ShowLocalPoint(p, lineSize, transform, planeObjRoot.transform).name = $"Plane1Points+[{i1}]";
+                for (int i1 = 0; i1 < v2p.Plane1Points1.Count; i1++)
+                {
+                    Vector3 p = v2p.Plane1Points1[i1];
+                    TransformHelper.ShowLocalPoint(p, lineSize, transform, planeObjRoot.transform).name = $"Plane1Points+[{i1}]";
+                }
+                for (int i1 = 0; i1 < v2p.Plane1Points2.Count; i1++)
+                {
+                    Vector3 p = v2p.Plane1Points2[i1];
+                    TransformHelper.ShowLocalPoint(p, lineSize, transform, planeObjRoot.transform).name = $"Plane1Points-[{i1}]";
+                }
             }
-            for (int i1 = 0; i1 < v2p.Plane1Points2.Count; i1++)
+            if (isShowPlane2Ponit)
             {
-                Vector3 p = v2p.Plane1Points2[i1];
-                TransformHelper.ShowLocalPoint(p, lineSize, transform, planeObjRoot.transform).name = $"Plane1Points-[{i1}]";
-            }
-
-            for (int i1 = 0; i1 < v2p.Plane2Points.Count; i1++)
-            {
-                Vector3 p = v2p.Plane2Points[i1];
-                TransformHelper.ShowLocalPoint(p, lineSize, transform, planeObjRoot.transform).name = $"Plane2Points[{i1}]";
+                for (int i1 = 0; i1 < v2p.Plane2Points.Count; i1++)
+                {
+                    Vector3 p = v2p.Plane2Points[i1];
+                    TransformHelper.ShowLocalPoint(p, lineSize, transform, planeObjRoot.transform).name = $"Plane2Points[{i1}]";
+                }
             }
         }
-        
     }
 
     public Vector3 CreateLine(Vector3 p1, Vector3 p2, string n, Transform pt, float lineSize,Transform transform)

@@ -11,7 +11,10 @@ public class PipeLineInfo
     //public Vector4 EndPoint = Vector3.zero;
 
     public Vector4 StartPoint;
+    public Vector3 StartNormal;
+
     public Vector4 EndPoint;
+    public Vector3 EndNormal;
 
     public Vector3 Direction;
 
@@ -40,6 +43,18 @@ public class PipeLineInfo
         this.transform = t;
         Direction = StartPoint - EndPoint;
     }
+
+    public PipeLineInfo(Vector4 p1, Vector4 p2,Vector3 n1,Vector3 n2, Transform t = null)
+    {
+        this.StartPoint = p1;
+        this.EndPoint = p2;
+        this.transform = t;
+        this.StartNormal = n1;
+        this.EndNormal = n2;
+
+        Direction = StartPoint - EndPoint;
+    }
+
     public PipeLineInfo(Vector4 p1, Vector4 p2, Transform t, Vector3 direction)
     {
         this.StartPoint = p1;
@@ -66,6 +81,115 @@ public class PipeLineInfo
         Vector4 p= this.transform.TransformPoint(EndPoint);
         p.w = EndPoint.w;
         return p;
+    }
+}
+
+[Serializable]
+public class PipeLineInfoList : List<PipeLineInfo>
+{
+    internal PipeLineInfo GetLine1()
+    {
+        if (Count == 0) return null;
+        return this[0];
+    }
+
+    internal List<Vector3> GetLinePoints(float startEndDis)
+    {
+        List<Vector3> ps = new List<Vector3>();
+        for (int i = 0; i < this.Count; i++)
+        {
+            var item = this[i];
+            if (i == 0)
+            {
+                ps.Add(item.StartPoint);
+                ps.Add(item.EndPoint);
+            }
+            else
+            {
+                ps.Add(item.EndPoint);
+            }
+        }
+
+        {
+            Vector3 p0 = ps[0];
+            Vector3 p1 = ps[1];
+            Vector3 dir01 = p1 - p0;
+
+            Vector3 normal00 = Vector3.zero;
+            Vector3 normal01 = this[0].StartNormal.normalized;
+            Vector3 normal02 = -normal01;
+            float dot1 = Vector3.Dot(normal01, dir01);
+            float dot2 = Vector3.Dot(normal02, dir01);
+            if (dot1 > 0)
+            {
+                normal00 = normal01;
+            }
+            else
+            {
+                normal00 = normal02;
+            }
+
+            float dis = dir01.magnitude;
+
+            Vector3 p00 = (Vector3)this[0].StartPoint - normal00 * dis * startEndDis *0.1f;
+            //Vector3 p01 = (Vector3)this[0].StartPoint + normal00 * 0.05f;
+            //ps.Insert(0, p00);
+            //ps[1] = p01;           
+            Vector3 p01 = (Vector3)this[0].StartPoint + normal00 * dis * startEndDis;
+            ps.Insert(1, p01);
+            ps[0] = p00;
+        }
+
+        {
+            Vector3 p0 = ps[ps.Count - 1];
+            Vector3 p1 = ps[ps.Count - 2];
+            Vector3 dir01 = p1 - p0;
+
+            Vector3 normal00 = Vector3.zero;
+            Vector3 normal01 = this[Count - 1].EndNormal.normalized;
+            Vector3 normal02 = -normal01;
+            float dot1 = Vector3.Dot(normal01, dir01);
+            float dot2 = Vector3.Dot(normal02, dir01);
+            if (dot1 > 0)
+            {
+                normal00 = normal01;
+            }
+            else
+            {
+                normal00 = normal02;
+            }
+
+            float dis = dir01.magnitude;
+
+            Vector3 p00 = (Vector3)this[Count - 1].EndPoint + normal00 * dis * startEndDis;
+            ps.Insert(ps.Count-1,p00);
+        }
+
+        return ps;
+    }
+
+    internal PipeLineInfo GetLine2()
+    {
+        if (Count < 2) return null;
+        return this[Count - 1];
+    }
+
+    public float GetRadius()
+    {
+        float radiusSum = 0;
+        foreach(PipeLineInfo item in this)
+        {
+            radiusSum += item.StartPoint.w;
+            radiusSum += item.EndPoint.w;
+        }
+        float radius = radiusSum / (Count*2);
+        return radius;
+    }
+
+    public float GetElbowRadius()
+    {
+        PipeCreateArg pipeArg = new PipeCreateArg(this[0], this[1]);
+        return pipeArg.GetElbowRadius();
     }
 }
 
@@ -98,5 +222,6 @@ public struct PipeLineData
         this.IsObbError = false;
     }
 }
+
 
 

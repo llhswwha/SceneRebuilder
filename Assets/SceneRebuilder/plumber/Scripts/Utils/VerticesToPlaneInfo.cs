@@ -198,15 +198,204 @@ public class VerticesToPlaneInfo : IComparable<VerticesToPlaneInfo>
 
     public List<Vector3> Plane2Points = new List<Vector3>();
 
-    public static float planeClosedMinDis = 0.00025f;
+    public float planeClosedMinDis = 0.00025f;
 
-    public static int planeClosedMaxCount1 = 20;
-    public static int planeClosedMaxCount2 = 100;
+    public int planeClosedMaxCount1 = 20;
+    public int planeClosedMaxCount2 = 100;
 
-    public VerticesToPlaneInfo(Vector3[] vs, PlaneInfo p, bool isShowLog)
+    private void SetCount()
     {
-       
+        Count0 = dict10.Count;
+        Count1 = dict11.Count;
+        Count2 = dict12.Count;
+        Count3 = dict13.Count;
+        Count4 = dict14.Count;
+        Count5 = dict15.Count;
+
+        if (Count0 == 0)
+        {
+            Count0 = int.MaxValue;
+        }
+        if (Count1 == 0)
+        {
+            Count1 = int.MaxValue;
+        }
+        if (Count2 == 0)
+        {
+            Count2 = int.MaxValue;
+        }
+        if (Count3 == 0)
+        {
+            Count3 = int.MaxValue;
+        }
+        if (Count4 == 0)
+        {
+            Count4 = int.MaxValue;
+        }
+        if (Count5 == 0)
+        {
+            Count5 = int.MaxValue;
+        }
+
+        if (Count0 == 1)
+        {
+            Count0 = int.MaxValue - 1;
+        }
+        if (Count1 == 1)
+        {
+            Count1 = int.MaxValue - 1;
+        }
+        if (Count2 == 1)
+        {
+            Count2 = int.MaxValue - 1;
+        }
+        if (Count3 == 1)
+        {
+            Count3 = int.MaxValue - 1;
+        }
+        if (Count4 == 1)
+        {
+            Count4 = int.MaxValue - 1;
+        }
+        if (Count5 == 1)
+        {
+            Count5 = int.MaxValue - 1;
+        }
+    }
+
+    public void SplitToTwoPlane(float percent=0.5f)
+    {
+        float middelDis = (minDis + maxDis) / 2 * percent;
+
+        Plane1Points.Clear();
+        Plane1Points1.Clear();
+        Plane1Points2.Clear();
+        Plane2Points.Clear();
+
+        for (int i = 0; i < points.Count; i++)
+        {
+            Vector3 v = points[i];
+            float dis1 = Math3D.SignedDistancePlanePoint(Plane.planeNormal, Plane.planePoint, v);
+            float dis = Math.Abs(dis1);
+            dict1.AddItem(dis, v);
+
+            if (dis < middelDis)
+            {
+                if (!Plane1Points.Contains(v))
+                {
+                    Plane1Points.Add(v);
+                }
+            }
+            else
+            {
+                if (!Plane2Points.Contains(v))
+                {
+                    Plane2Points.Add(v);
+                }
+            }
+        }
+    }
+
+    private void GetPlanePoints(List<Vector3> list, PlaneInfo p,int plane1MaxCount=8,int plane2MaxCount=4)
+    {
+        List<Vector3> allPs = new List<Vector3>(list);
+
+        foreach (var v in dict1[minDis])
+        {
+            float dis1 = Math3D.SignedDistancePlanePoint(p.planeNormal, p.planePoint, v);
+            //float dis = Math.Abs(dis1);
+
+            if (!Plane1Points.Contains(v))
+            {
+                Plane1Points.Add(v);
+                if (dis1 > 0)
+                {
+                    Plane1Points1.Add(v);
+                }
+                else
+                {
+                    Plane1Points2.Add(v);
+                }
+            }
+            allPs.Remove(v);
+        }
+
+        int j = 0;
+        for (; j < planeClosedMaxCount1; j++)
+        {
+            float planeClosedMinDis0 = planeClosedMinDis * (j + 1);
+            for (int i = 0; i < allPs.Count; i++)
+            {
+                Vector3 v = allPs[i];
+                float dis1 = Math3D.SignedDistancePlanePoint(p.planeNormal, p.planePoint, v);
+                float dis = Math.Abs(dis1);
+                dict1.AddItem(dis, v);
+
+                if (dis < planeClosedMinDis0)
+                {
+                    if (!Plane1Points.Contains(v))
+                    {
+                        Plane1Points.Add(v);
+                        if (dis1 > 0)
+                        {
+                            Plane1Points1.Add(v);
+                        }
+                        else
+                        {
+                            Plane1Points2.Add(v);
+                        }
+                    }
+                    allPs.Remove(v);
+                }
+            }
+            if (plane1MaxCount > 0)
+            {
+                if (Plane1Points.Count > plane1MaxCount)
+                {
+                    break;
+                }
+            }
+        }
+        for (int k = j; k < planeClosedMaxCount2; k++)
+        {
+            float planeClosedMinDis0 = planeClosedMinDis * (k + 1);
+            for (int i = 0; i < allPs.Count; i++)
+            {
+                Vector3 v = allPs[i];
+                float dis = Math.Abs(Math3D.SignedDistancePlanePoint(p.planeNormal, p.planePoint, v));
+                dict1.AddItem(dis, v);
+
+                if (dis < planeClosedMinDis0)
+                {
+                    if (!Plane2Points.Contains(v))
+                    {
+                        Plane2Points.Add(v);
+                    }
+                    allPs.Remove(v);
+                }
+            }
+            if (plane2MaxCount > 0)
+            {
+                if (Plane2Points.Count > plane2MaxCount)
+                {
+                    break;
+                }
+            }
+
+        }
+    }
+
+    private List<Vector3> points = new List<Vector3>();
+
+    public VerticesToPlaneInfo(Vector3[] vs, PlaneInfo p, bool isShowLog, float planeClosedMinDis = 0.00025f, int planeClosedMaxCount1 = 20, int planeClosedMaxCount2 = 100)
+    {
+        this.planeClosedMinDis = planeClosedMinDis;
+        this.planeClosedMaxCount1 = planeClosedMaxCount1;
+        this.planeClosedMaxCount2 = planeClosedMaxCount2;
+
         Plane = p;
+       
+
         List<Vector3> allPs = new List<Vector3>();
         for (int i = 0; i < vs.Length; i++)
         {
@@ -292,141 +481,12 @@ public class VerticesToPlaneInfo : IComparable<VerticesToPlaneInfo>
                 Debug.Log($"Point2Vertices[{i + 1}] \tp:{p} \tdis:{dis} \tsDis0:{sDis0} \tsDis1:{sDis1} \tsDis2:{sDis2} \tsDis3:{sDis3} \tsDis4:{sDis4} \tsDis5:{sDis5} \tv:{v} ");
             }
         }
-        Count0 = dict10.Count;
-        Count1 = dict11.Count;
-        Count2 = dict12.Count;
-        Count3 = dict13.Count;
-        Count4 = dict14.Count;
-        Count5 = dict15.Count;
 
-        if (Count0 == 0)
-        {
-            Count0 = int.MaxValue;
-        }
-        if (Count1 == 0)
-        {
-            Count1 = int.MaxValue;
-        }
-        if (Count2 == 0)
-        {
-            Count2 = int.MaxValue;
-        }
-        if (Count3 == 0)
-        {
-            Count3 = int.MaxValue;
-        }
-        if (Count4 == 0)
-        {
-            Count4 = int.MaxValue;
-        }
-        if (Count5 == 0)
-        {
-            Count5 = int.MaxValue;
-        }
+        points = new  List<Vector3>(allPs);
 
-        if (Count0 == 1)
-        {
-            Count0 = int.MaxValue-1;
-        }
-        if (Count1 == 1)
-        {
-            Count1 = int.MaxValue - 1;
-        }
-        if (Count2 == 1)
-        {
-            Count2 = int.MaxValue - 1;
-        }
-        if (Count3 == 1)
-        {
-            Count3 = int.MaxValue - 1;
-        }
-        if (Count4 == 1)
-        {
-            Count4 = int.MaxValue - 1;
-        }
-        if (Count5 == 1)
-        {
-            Count5 = int.MaxValue - 1;
-        }
+        SetCount();
 
-
-
-        foreach(var v in dict1[minDis])
-        {
-            float dis1 = Math3D.SignedDistancePlanePoint(p.planeNormal, p.planePoint, v);
-            //float dis = Math.Abs(dis1);
-
-            if (!Plane1Points.Contains(v))
-            {
-                Plane1Points.Add(v);
-                if (dis1 > 0)
-                {
-                    Plane1Points1.Add(v);
-                }
-                else
-                {
-                    Plane1Points2.Add(v);
-                }
-            }
-            allPs.Remove(v);
-        }
-
-        int j = 0;
-        for (;j< planeClosedMaxCount1; j++)
-        {
-            float planeClosedMinDis0 = planeClosedMinDis * (j + 1);
-            for (int i = 0; i < allPs.Count; i++)
-            {
-                Vector3 v = allPs[i];
-                float dis1 = Math3D.SignedDistancePlanePoint(p.planeNormal, p.planePoint, v);
-                float dis = Math.Abs(dis1);
-                dict1.AddItem(dis, v);
-
-                if (dis < planeClosedMinDis0)
-                {
-                    if (!Plane1Points.Contains(v))
-                    {
-                        Plane1Points.Add(v);
-                        if (dis1 > 0)
-                        {
-                            Plane1Points1.Add(v);
-                        }
-                        else
-                        {
-                            Plane1Points2.Add(v);
-                        }
-                    }
-                    allPs.Remove(v);
-                }
-            }
-            if (Plane1Points.Count > 8)
-            {
-                break;
-            }
-        }
-        for (int k = j; k < planeClosedMaxCount2; k++)
-        {
-            float planeClosedMinDis0 = planeClosedMinDis * (k + 1);
-            for (int i = 0; i < allPs.Count; i++)
-            {
-                Vector3 v = allPs[i];
-                float dis = Math.Abs(Math3D.SignedDistancePlanePoint(p.planeNormal, p.planePoint, v));
-                dict1.AddItem(dis, v);
-
-                if (dis < planeClosedMinDis0)
-                {
-                    if (!Plane2Points.Contains(v))
-                    {
-                        Plane2Points.Add(v);
-                    }
-                    allPs.Remove(v);
-                }
-            }
-            if (Plane2Points.Count > 4)
-            {
-                break;
-            }
-        }
+        GetPlanePoints(allPs,p,0,0);
 
             //float middleDist = (minDis + maxDis) / 2;
             //for (int i = 0; i < vs.Length; i++)
@@ -439,9 +499,14 @@ public class VerticesToPlaneInfo : IComparable<VerticesToPlaneInfo>
             //    }
             //}
 
-            ResultInfo = $"{dict10.Count}_{dict11.Count}_{dict12.Count}_{dict13.Count}_{dict14.Count}_{dict15.Count}_{dict1.Count}_[{minDis}({dict1[minDis].Count})-{maxDis}({dict1[maxDis].Count})]({Plane1Points.Count}_{Plane2Points.Count})_{this.GetCircleInfoString()}";
+        ResultInfo = $"{dict10.Count}_{dict11.Count}_{dict12.Count}_{dict13.Count}_{dict14.Count}_{dict15.Count}_{dict1.Count}_[{minDis}({dict1[minDis].Count})-{maxDis}({dict1[maxDis].Count})]({Plane1Points.Count}_{Plane2Points.Count})_{this.GetCircleInfoString()}";
         if (isShowLog)
             Debug.LogError(ResultInfo);
+    }
+
+    public CircleInfo GetPlane1Circle()
+    {
+        return new CircleInfo(Plane1Points);
     }
 
     public CircleInfo GetCircleInfo()
