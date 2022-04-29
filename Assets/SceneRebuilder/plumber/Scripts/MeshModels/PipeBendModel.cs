@@ -44,7 +44,8 @@ public class PipeBendModel : PipeModelBase
         arg.SetArg(pipe);
 
         pipe.IsGenerateEndWeld = true;
-        pipe.IsElbow = true;
+        //pipe.IsElbow = true;
+        pipe.IsBend = true;
         //pipe.pipeRadius = (info.EndPointOut1.w + info.EndPointOut2.w) / 2;
         pipe.pipeRadius = info.GetRadius();
         pipe.elbowRadius = pipeArg.elbowRadius;
@@ -80,17 +81,19 @@ public class PipeBendModel : PipeModelBase
         arg.SetArg(pipe);
 
         pipe.IsGenerateEndWeld = true;
-        pipe.IsElbow = true;
+        pipe.IsElbow = true; 
+        pipe.IsBend = true;
         //pipe.pipeRadius = (info.EndPointOut1.w + info.EndPointOut2.w) / 2;
         pipe.pipeRadius = info.GetRadius();
-        pipe.elbowRadius = info.GetElbowRadius();
+        //pipe.elbowRadius = info.GetElbowRadius();
+        pipe.elbowRadius = 0;
 
-        pipe.elbowSegments = elbowSegments;
+        //pipe.elbowSegments = elbowSegments;
         //pipe.elbowRadius = 0.015f;
-        pipe.elbowRadius = pipe.pipeRadius / 3;
+        //pipe.elbowRadius = pipe.pipeRadius / 3;
         pipe.avoidStrangling = true;
         pipe.RenderPipe();
-        return pipe.gameObject;
+        return pipe.gameObject; 
     }
 
     public override GameObject RendererModel(PipeGenerateArg arg, string afterName)

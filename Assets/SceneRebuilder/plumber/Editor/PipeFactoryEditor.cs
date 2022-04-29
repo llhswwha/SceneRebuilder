@@ -67,6 +67,8 @@ public class PipeFactoryEditor : BaseFoldoutEditor<PipeFactory>
         targetT.EnablePipeElbow = EditorGUILayout.Toggle(targetT.EnablePipeElbow, GUILayout.Width(toggleWidth));
         GUILayout.Label($"Elbow({targetT.PipeElbows.GetCountVertex(totalVertex)})");
         targetT.EnablePipeTee = EditorGUILayout.Toggle(targetT.EnablePipeTee, GUILayout.Width(toggleWidth));
+        GUILayout.Label($"Bend({targetT.PipeBends.GetCountVertex(totalVertex)})");
+        targetT.EnablePipeBend = EditorGUILayout.Toggle(targetT.EnablePipeBend, GUILayout.Width(toggleWidth));
         GUILayout.Label($"Tee({targetT.PipeTees.GetCountVertex(totalVertex)})");
         targetT.EnablePipeReducer = EditorGUILayout.Toggle(targetT.EnablePipeReducer, GUILayout.Width(toggleWidth));
         GUILayout.Label($"Reducer({targetT.PipeReducers.GetCountVertex(totalVertex)})");

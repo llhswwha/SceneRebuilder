@@ -695,7 +695,7 @@ public class PipeMeshGeneratorBase : BaseMeshGenerator
         binormal = yAxis1;
     }
 
-    protected CircleMeshData GenerateCircleAtPoint(List<Vector3> vertices, List<Vector3> normals, Vector3 center, Vector3 direction, float radius, string circleName,int index,int psCount,int circleType,bool isStart)
+    protected CircleMeshData GenerateCircleAtPointInner(List<Vector3> vertices, List<Vector3> normals, Vector3 center, Vector3 direction, float radius, string circleName,int index,int psCount,int circleType,bool isStart)
     {
 
         List<Vector3> newVertics = new List<Vector3>();
@@ -736,12 +736,20 @@ public class PipeMeshGeneratorBase : BaseMeshGenerator
                     Vector3 vertexNew = (currentVertex + vertexClosed) / 2;
                     currentVertex = vertexNew;
 
-                    Debug.Log($"GenerateCircleAtPoint[{i}/{pipeSegments}][{CircleDatas.Count}] currentVertex:{currentVertex} vertexClosed:{vertexClosed} dis:{dis} vertexNew:{vertexNew} ");
+                    int id = vertices.IndexOf(vertexClosed);
+
+                    Debug.Log($"GenerateCircleAtPoint[{i}/{pipeSegments}][{CircleDatas.Count}] currentVertex:{currentVertex} vertexClosed:{vertexClosed} dis:{dis} vertexNew:{vertexNew} vertexId:{id}");
+
+                    
+                    vertices[id] = vertexNew;
+                    Vector3 normalNew = (vertexNew - lastCircleData.Center).normalized;
+                    normals[id] = normalNew; 
                 }
             }
             vertices.Add(currentVertex);
             newVertics.Add(currentVertex);
             normals.Add((currentVertex - center).normalized);
+
             //ShowPoint(currentVertex, $"p:{vertices.Count}", this.transform);
         }
 

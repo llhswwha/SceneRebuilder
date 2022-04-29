@@ -18,6 +18,8 @@ public class PipeFactory : SingletonBehaviour<PipeFactory>
 
     public MeshRendererInfoList PipeElbows = new MeshRendererInfoList();
 
+    public MeshRendererInfoList PipeBends = new MeshRendererInfoList();
+
     public MeshRendererInfoList PipeTees = new MeshRendererInfoList();
 
     public MeshRendererInfoList PipeReducers = new MeshRendererInfoList();
@@ -53,6 +55,8 @@ public class PipeFactory : SingletonBehaviour<PipeFactory>
         PipeLines = new MeshRendererInfoList();
 
         PipeElbows = new MeshRendererInfoList();
+
+        PipeBends = new MeshRendererInfoList();
 
         PipeTees = new MeshRendererInfoList();
 
@@ -862,7 +866,12 @@ public class PipeFactory : SingletonBehaviour<PipeFactory>
 
     public static bool IsElbow(string key)
     {
-        return key.Contains("Degree_Direction_Change") || key.StartsWith("ELBOW") || key.StartsWith("BEND");
+        return key.Contains("Degree_Direction_Change") || key.StartsWith("ELBOW");
+    }
+
+    public static bool IsBend(string key)
+    {
+        return key.StartsWith("BEND");
     }
 
     public static bool IsTee(string key)
@@ -951,6 +960,10 @@ public class PipeFactory : SingletonBehaviour<PipeFactory>
             else if (IsElbow(key))
             {
                 AddList(PipeElbows, list);
+            }
+            else if (IsBend(key))
+            {
+                AddList(PipeBends, list);
             }
             else if (IsTee(key))
             {
@@ -1317,6 +1330,7 @@ public class PipeFactory : SingletonBehaviour<PipeFactory>
     {
         SetListVisible(PipeLines, isVisible);
         SetListVisible(PipeElbows, isVisible);
+        SetListVisible(PipeBends, isVisible);
         SetListVisible(PipeReducers, isVisible);
         SetListVisible(PipeFlanges, isVisible);
         SetListVisible(PipeTees, isVisible);
@@ -1987,6 +2001,15 @@ public class PipeFactory : SingletonBehaviour<PipeFactory>
             newBuilder.PipeElbowGos = new List<Transform>();
         }
 
+        if (EnablePipeBend)
+        {
+            newBuilder.PipeBendsGos = PipeBends.GetTransforms();
+        }
+        else
+        {
+            newBuilder.PipeBendsGos = new List<Transform>();
+        }
+
         if (EnablePipeReducer)
         {
             newBuilder.PipeReducerGos = PipeReducers.GetTransforms();
@@ -2034,6 +2057,8 @@ public class PipeFactory : SingletonBehaviour<PipeFactory>
     public bool EnablePipeLine = true;
 
     public bool EnablePipeElbow = true;
+
+    public bool EnablePipeBend = true;
 
     public bool EnablePipeReducer = true;
 

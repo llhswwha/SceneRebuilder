@@ -583,46 +583,7 @@ public class PipeMeshGenerator : PipeMeshGeneratorBase
     }
 
     CircleMeshData GenerateCircleAtPoint(List<Vector3> vertices, List<Vector3> normals, Vector3 center, Vector3 direction,string circleName,int index,int psCount,int circleType,bool isStart) {
-
-        //List<Vector3> newVertics = new List<Vector3>();
-        //// 'direction' is the normal to the plane that contains the circle
-
-        //// define a couple of utility variables to build circles
-        //float twoPi = Mathf.PI * 2;
-        //float radiansPerSegment = twoPi / pipeSegments;
-
-        //// generate two axes that define the plane with normal 'direction'
-        //// we use a plane to determine which direction we are moving in order
-        //// to ensure we are always using a left-hand coordinate system
-        //// otherwise, the triangles will be built in the wrong order and
-        //// all normals will end up inverted!
-        //Plane p = new Plane(Vector3.forward, Vector3.zero);
-        //Vector3 xAxis = Vector3.up;
-        //Vector3 yAxis = Vector3.right;
-        //if (p.GetSide(direction)) {
-        //    yAxis = Vector3.left;
-        //}
-
-        //// build left-hand coordinate system, with orthogonal and normalized axes
-        //Vector3.OrthoNormalize(ref direction, ref xAxis, ref yAxis);
-
-        //for (int i = 0; i < pipeSegments; i++) {
-        //    Vector3 currentVertex =
-        //        center +
-        //        (pipeRadius * Mathf.Cos(radiansPerSegment * i) * xAxis) +
-        //        (pipeRadius * Mathf.Sin(radiansPerSegment * i) * yAxis);
-        //    vertices.Add(currentVertex);
-        //    newVertics.Add(currentVertex);
-        //    normals.Add((currentVertex - center).normalized);
-        //}
-
-        //CircleMeshData circleData = new CircleMeshData(center, direction, newVertics, circleName);
-        //circleData.SetAxis(xAxis, yAxis);
-        //CircleDatas.Add(circleData);
-
-        //return circleData;
-
-        return GenerateCircleAtPoint(vertices, normals, center, direction, pipeRadius, circleName,index,psCount, circleType,isStart);
+        return GenerateCircleAtPointInner(vertices, normals, center, direction, pipeRadius, circleName,index,psCount, circleType,isStart);
     }
 
    

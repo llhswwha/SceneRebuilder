@@ -478,9 +478,9 @@ public class PipeMeshGeneratorEx : PipeMeshGeneratorBase
                 // connect them to make the cylinder
                 //direction3 = new Vector3(1, 0, 0);
                 //CircleMeshData circle1 = GenerateCircleAtPoint(vertices, normals, initialPoint, direction, $"Pipe[{i}]_start");
-                CircleMeshData circle1 = GenerateCircleAtPoint(vertices, normals, initialPoint3, direction3, initialPoint.w, $"Pipe[{i}]_start",i, ps.Count, 0,true);
+                CircleMeshData circle1 = GenerateCircleAtPointInner(vertices, normals, initialPoint3, direction3, initialPoint.w, $"Pipe[{i}]_start",i, ps.Count, 0,true);
                 //CircleMeshData circle2 = GenerateCircleAtPoint(vertices, normals, endPoint, direction, $"Pipe[{i}]_end");
-                CircleMeshData circle2 = GenerateCircleAtPoint(vertices, normals, endPoint3, direction3, endPoint.w, $"Pipe[{i}]_end", i, ps.Count, 0,false);
+                CircleMeshData circle2 = GenerateCircleAtPointInner(vertices, normals, endPoint3, direction3, endPoint.w, $"Pipe[{i}]_end", i, ps.Count, 0,false);
                 MakeCylinderTriangles(triangles, i);
                 //CylinderMeshData cylinderMeshData = new CylinderMeshData(circle1, circle2);
                 //PipeDatas.Add(cylinderMeshData);
@@ -639,7 +639,7 @@ public class PipeMeshGeneratorEx : PipeMeshGeneratorBase
 
         //return circleData;
 
-        return GenerateCircleAtPoint(vertices, normals, center, direction, center.w, circleName, index, psCount, circleType, isStart);
+        return GenerateCircleAtPointInner(vertices, normals, center, direction, center.w, circleName, index, psCount, circleType, isStart);
     }
 
     //CircleMeshData GenerateCircleAtPoint(List<Vector3> vertices, List<Vector3> normals, Vector3 center, Vector3 direction, float radius, string circleName)

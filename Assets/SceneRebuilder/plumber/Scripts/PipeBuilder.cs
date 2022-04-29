@@ -18,9 +18,11 @@ public class PipeBuilder : MonoBehaviour
 
     public List<Transform> PipeElbowGos = new List<Transform>();
 
-    //public MeshRendererInfoList PipeElbowGos = new MeshRendererInfoList();
-
     public List<PipeElbowModel> PipeElbows = new List<PipeElbowModel>();
+
+    public List<Transform> PipeBendsGos = new List<Transform>();
+
+    public List<PipeBendModel> PipeBends = new List<PipeBendModel>();
 
     public List<Transform> PipeReducerGos = new List<Transform>();
 
@@ -72,6 +74,11 @@ public class PipeBuilder : MonoBehaviour
     public List<Transform> GetModelResult_Elbow()
     {
         return GetModelResults(PipeElbows);
+    }
+
+    public List<Transform> GetModelResult_Bend()
+    {
+        return GetModelResults(PipeBends);
     }
 
     public List<List<PipeElbowModel>> GetModelResult_ElbowGroup()
@@ -433,7 +440,13 @@ public class PipeBuilder : MonoBehaviour
             return;
         }
         DateTime time = DateTime.Now;
-        List<Transform> elbowWelds = GetWelds(PipeElbows);
+        List<Transform> elbowWelds01 = GetWelds(PipeElbows);
+        List<Transform> elbowWelds02 = GetWelds(PipeBends);
+
+        List<Transform> elbowWelds = new List<Transform>();
+        elbowWelds.AddRange(elbowWelds01);
+        elbowWelds.AddRange(elbowWelds02);
+
         List<Transform> elbowWelds2 = new List<Transform>(elbowWelds);
         int count1 = elbowWelds.Count;
         CombineGeneratedWelds(elbowWelds2, elbowWelds, minWeldDis);
@@ -454,8 +467,8 @@ public class PipeBuilder : MonoBehaviour
         CombineGeneratedWelds(pipeElbows, weldoletElbows, minWeldDis);
 
         List<Transform> elbowWelds4 = GetWelds(PipeElbows);
-
-        Debug.Log($"CombineGeneratedWelds time:{DateTime.Now-time} elbowWelds1:{count1} elbowWelds2:{count2} elbowWelds3:{elbowWelds.Count} elbowWelds4:{elbowWelds4.Count} pipeElbows2:{count4}");
+        List<Transform> elbowWelds5 = GetWelds(PipeBends);
+        Debug.Log($"CombineGeneratedWelds time:{DateTime.Now-time} elbowWelds1:{count1} elbowWelds2:{count2} elbowWelds3:{elbowWelds.Count} elbowWelds4:{elbowWelds4.Count} elbowWelds5:{elbowWelds5.Count} pipeElbows2:{count4}");
     }
 
     private void CombineGeneratedWelds(List<Transform> elbows1, List<Transform> elbows2,float minWeldDis)
@@ -580,6 +593,7 @@ public class PipeBuilder : MonoBehaviour
         DateTime start = DateTime.Now;
         RendererPipeLines();
         RendererPipeElbows();
+        RendererPipeBends();
         Debug.LogError($">>RendererPipes time:{DateTime.Now - start}");
     }
 
@@ -676,6 +690,7 @@ public class PipeBuilder : MonoBehaviour
 
         PipeLines.Clear();
         PipeElbows.Clear();
+        PipeBends.Clear();
         PipeTees.Clear();
         PipeReducers.Clear();
         PipeFlanges.Clear();
@@ -708,6 +723,10 @@ public class PipeBuilder : MonoBehaviour
             else if (model is PipeElbowModel)
             {
                 PipeElbows.Add(model as PipeElbowModel);
+            }
+            else if (model is PipeBendModel)
+            {
+                PipeBends.Add(model as PipeBendModel);
             }
         }
 
@@ -763,6 +782,19 @@ public class PipeBuilder : MonoBehaviour
         Debug.LogError($">>>RendererPipeElbows time:{DateTime.Now - start}");
     }
 
+    public void RendererPipeBends()
+    {
+        //ClearOldGos();
+        DateTime start = DateTime.Now;
+        for (int i = 0; i < PipeBends.Count; i++)
+        {
+            PipeBendModel go = PipeBends[i];
+            GameObject pipe = go.RendererModel(this.GetPipeGenerateArg(), NewObjName);
+            NewPipeList.Add(pipe.transform);
+        }
+        Debug.LogError($">>>RendererPipeBends time:{DateTime.Now - start}");
+    }
+
     [ContextMenu("ClearOldGos")]
     public void ClearGeneratedObjs()
     {
@@ -811,6 +843,7 @@ public class PipeBuilder : MonoBehaviour
         PipeModels = new List<PipeModelBase>();
         GetPipeLineInfos();
         GetPipeElbowInfos();
+        GetPipeBendInfos();
         PipeModels.Sort();
         Debug.LogError($">>GetPipeInfos time:{DateTime.Now- start}");
     }
@@ -971,6 +1004,7 @@ public class PipeBuilder : MonoBehaviour
     {
         PipeModels = new List<PipeModelBase>();
         PipeElbows = new List<PipeElbowModel>();
+        PipeBends = new List<PipeBendModel>();
         PipeLines = new List<PipeLineModel>();
         PipeTees = new List<PipeTeeModel>();
         PipeReducers = new List<PipeReducerModel>();
@@ -1249,6 +1283,13 @@ public class PipeBuilder : MonoBehaviour
             if (model.IsGetInfoSuccess == false) continue;
             data.AddData_PipeElbow(model.GetSaveData());
             pipeModelIds.Add(RendererId.GetId(model.gameObject), model.gameObject);
+        }
+        foreach (PipeBendModel model in PipeBends)
+        {
+            if (model == null) continue;
+            if (model.IsGetInfoSuccess == false) continue;
+            //data.AddData_PipeElbow(model.GetSaveData());
+            //pipeModelIds.Add(RendererId.GetId(model.gameObject), model.gameObject);
         }
         foreach (PipeTeeModel model in PipeTees)
         {
@@ -1734,7 +1775,7 @@ public class PipeBuilder : MonoBehaviour
         DateTime start = DateTime.Now;
 
         PipeModels = new List<PipeModelBase>();
-        int count = PipeLineGos.Count + PipeElbowGos.Count + PipeReducerGos.Count + PipeFlangeGos.Count+PipeTeeGos.Count+PipeWeldoletGos.Count;
+        int count = PipeLineGos.Count + PipeElbowGos.Count + PipeBendsGos.Count + PipeReducerGos.Count + PipeFlangeGos.Count + PipeTeeGos.Count + PipeWeldoletGos.Count;
         int id = 0;
 
         PipeLines = GetPipeModelInfos<PipeLineModel>(PipeLineGos, id, count, "Line");
@@ -1756,6 +1797,11 @@ public class PipeBuilder : MonoBehaviour
         if (PipeElbows == null) return;
         id += PipeElbows.Count;
         AddPipeModelRange(PipeElbows);
+
+        PipeBends = GetPipeModelInfos<PipeBendModel>(PipeBendsGos, id, count, "Elbow");
+        if (PipeBends == null) return;
+        id += PipeBends.Count;
+        AddPipeModelRange(PipeBends);
 
         PipeTees = GetPipeModelInfos<PipeTeeModel>(PipeTeeGos, id, count, "Tee");
         if (PipeTees == null) return;
@@ -1855,6 +1901,24 @@ public class PipeBuilder : MonoBehaviour
             if (mf == null) continue;
             PipeElbowModel pipeModel = GetPipeModelInfo<PipeElbowModel>(p,true);
             PipeElbows.Add(pipeModel);
+            AddPipeModel(pipeModel);
+            p.gameObject.SetActive(false);
+        }
+        Debug.LogError($">>>GetPipeElbowInfos time:{DateTime.Now - start}");
+    }
+
+    private void GetPipeBendInfos()
+    {
+        DateTime start = DateTime.Now;
+        PipeBends = new List<PipeBendModel>();
+        for (int i = 0; i < PipeBendsGos.Count; i++)
+        {
+            Transform p = PipeBendsGos[i];
+            if (p == null) continue;
+            MeshFilter mf = p.GetComponent<MeshFilter>();
+            if (mf == null) continue;
+            PipeBendModel pipeModel = GetPipeModelInfo<PipeBendModel>(p, true);
+            PipeBends.Add(pipeModel);
             AddPipeModel(pipeModel);
             p.gameObject.SetActive(false);
         }

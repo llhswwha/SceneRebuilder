@@ -212,10 +212,12 @@ public class PipeLineInfoList : List<PipeLineInfo>
 
             float dis = dir01.magnitude;
 
-            Vector3 p00 = mp.Point - normal00 * dis * startEndDis *0.1f;        
+                  
             Vector3 p01 = mp.Point + normal00 * dis * startEndDis;
             ps.Insert(1, p01);
-            ps[0] = p00;
+
+            //Vector3 p00 = mp.Point - normal00 * dis * startEndDis * 1f;
+            //ps[0] = p00; 
         }
 
         if (startEndDis > 0)
@@ -242,7 +244,7 @@ public class PipeLineInfoList : List<PipeLineInfo>
             float dis = dir01.magnitude;
 
             Vector3 p00 = mp.Point + normal00 * dis * startEndDis;
-            ps.Insert(ps.Count-1,p00);
+            ps.Insert(ps.Count - 1, p00);
         }
 
         return ps;
