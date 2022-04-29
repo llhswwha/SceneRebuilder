@@ -46,4 +46,9 @@ public class CircleMeshData
         ps.Add(yAxis);
         return ps;
     }
+
+    internal Vector3 GetClosedPoint(Vector3 currentVertex)
+    {
+        return MeshHelper.GetClosedPoint(currentVertex, Vertices);
+    }
 }

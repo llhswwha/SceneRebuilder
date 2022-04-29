@@ -55,7 +55,7 @@ public class VerticesToPlaneInfo : IComparable<VerticesToPlaneInfo>
         }
 
         Vector3 p1 = Plane1Points[0];
-        Vector3 p2 = GetClosedPlanePoint1(p1, this.Plane2Points);
+        Vector3 p2 = MeshHelper.GetClosedPoint(p1, this.Plane2Points);
         float dis = Vector3.Distance(p1, p2);
         MeshHelper.CreateLocalPoint(p1, $"DistanceOfPlane12_{tag}_P1_{dis}", t, 0.01f);
         MeshHelper.CreateLocalPoint(p2, $"DistanceOfPlane12_{tag}_P2_{dis}", t, 0.01f);
@@ -65,14 +65,14 @@ public class VerticesToPlaneInfo : IComparable<VerticesToPlaneInfo>
     public Vector3 DirectionToPlane(VerticesToPlaneInfo plane2, Transform t, string tag)
     {
         Vector3 p1 = this.GetMinVector3();
-        Vector3 p2 = GetClosedPlanePoint1(p1, plane2.Plane1Points);
+        Vector3 p2 = MeshHelper.GetClosedPoint(p1, plane2.Plane1Points);
         return p2 - p1;
     }
 
         public float DebugDistanceToPlane(VerticesToPlaneInfo plane2,Transform t,string tag)
     {
         Vector3 p1 = this.GetMinVector3();
-        Vector3 p2 = GetClosedPlanePoint1(p1, plane2.Plane1Points);
+        Vector3 p2 = MeshHelper.GetClosedPoint(p1, plane2.Plane1Points);
 
         //var list = plane2.ClosedPoints;
         //float minD = float.MaxValue;
@@ -98,7 +98,7 @@ public class VerticesToPlaneInfo : IComparable<VerticesToPlaneInfo>
     public float GetPlaneHeight(Transform t, string tag)
     {
         Vector3 p1 = Plane1Points1[0];
-        Vector3 p2 = GetClosedPlanePoint1(p1, Plane1Points2);
+        Vector3 p2 = MeshHelper.GetClosedPoint(p1, Plane1Points2);
         float dis = Vector3.Distance(p1, p2);
         MeshHelper.CreateLocalPoint(p1, $"DistanceOfPlane12_{tag}_P1_{dis}", t, 0.01f);
         MeshHelper.CreateLocalPoint(p2, $"DistanceOfPlane12_{tag}_P2_{dis}", t, 0.01f);
@@ -107,39 +107,15 @@ public class VerticesToPlaneInfo : IComparable<VerticesToPlaneInfo>
 
     public Vector3 GetClosedPlanePoint1(Vector3 p)
     {
-        return GetClosedPlanePoint1(p, Plane1Points);
+        return MeshHelper.GetClosedPoint(p, Plane1Points);
     }
 
     public Vector3 GetClosedPlanePoint2(Vector3 p)
     {
-        return GetClosedPlanePoint1(p, Plane2Points);
+        return MeshHelper.GetClosedPoint(p, Plane2Points);
     }
 
-    public static Vector3 GetClosedPlanePoint1(Vector3 p, List<Vector3> list)
-    {
-        try
-        {
-            //var list = Plane1Points;
-            float minD = float.MaxValue;
-            int minI = 0;
-            for (int i = 0; i < list.Count; i++)
-            {
-                float dis = Vector3.Distance(list[i], p);
-                if (dis < minD)
-                {
-                    minD = dis;
-                    minI = i;
-                }
-            }
-            return list[minI];
-        }
-        catch (Exception ex)
-        {
-            Debug.LogError($"GetClosedPlanePoint1 p:{p} list:{list.Count} ex:{ex}");
-            return Vector3.zero;
-        }
-        
-    }
+    
 
     //public Vector3 GetClosedPlanePoint2(Vector3 p)
     //{

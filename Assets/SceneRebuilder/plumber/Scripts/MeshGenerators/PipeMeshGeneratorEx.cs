@@ -202,6 +202,7 @@ public class PipeMeshGeneratorEx : PipeMeshGeneratorBase
 
     private void RenderPipe(List<Vector4> ps)
     {
+        CircleDatas.Clear();
         Mesh mesh = GeneratePipeMesh(ps, generateWeld);
         mesh.name = this.name;
         SetMeshRenderers(mesh);
@@ -429,8 +430,8 @@ public class PipeMeshGeneratorEx : PipeMeshGeneratorBase
                 }
                 // generate two circles with "pipeSegments" sides each and then
                 // connect them to make the cylinder
-                CircleMeshData circle1 = GenerateCircleAtPoint(vertices, normals, initialPoint, direction, $"Pipe[{i}]_start",i,ps.Count,0);
-                CircleMeshData circle2 = GenerateCircleAtPoint(vertices, normals, endPoint, direction, $"Pipe[{i}]_end", i, ps.Count, 0);
+                CircleMeshData circle1 = GenerateCircleAtPoint(vertices, normals, initialPoint, direction, $"Pipe[{i}]_start",i,ps.Count,0,true);
+                CircleMeshData circle2 = GenerateCircleAtPoint(vertices, normals, endPoint, direction, $"Pipe[{i}]_end", i, ps.Count, 0,false);
                 MakeCylinderTriangles(triangles, i);
 
                 //CylinderMeshData cylinderMeshData = new CylinderMeshData(circle1, circle2);
@@ -477,9 +478,9 @@ public class PipeMeshGeneratorEx : PipeMeshGeneratorBase
                 // connect them to make the cylinder
                 //direction3 = new Vector3(1, 0, 0);
                 //CircleMeshData circle1 = GenerateCircleAtPoint(vertices, normals, initialPoint, direction, $"Pipe[{i}]_start");
-                CircleMeshData circle1 = GenerateCircleAtPoint(vertices, normals, initialPoint3, direction3, initialPoint.w, $"Pipe[{i}]_start",i, ps.Count, 0);
+                CircleMeshData circle1 = GenerateCircleAtPoint(vertices, normals, initialPoint3, direction3, initialPoint.w, $"Pipe[{i}]_start",i, ps.Count, 0,true);
                 //CircleMeshData circle2 = GenerateCircleAtPoint(vertices, normals, endPoint, direction, $"Pipe[{i}]_end");
-                CircleMeshData circle2 = GenerateCircleAtPoint(vertices, normals, endPoint3, direction3, endPoint.w, $"Pipe[{i}]_end", i, ps.Count, 0);
+                CircleMeshData circle2 = GenerateCircleAtPoint(vertices, normals, endPoint3, direction3, endPoint.w, $"Pipe[{i}]_end", i, ps.Count, 0,false);
                 MakeCylinderTriangles(triangles, i);
                 //CylinderMeshData cylinderMeshData = new CylinderMeshData(circle1, circle2);
                 //PipeDatas.Add(cylinderMeshData);
@@ -597,7 +598,7 @@ public class PipeMeshGeneratorEx : PipeMeshGeneratorBase
         //Debug.LogError($"RemoveColinearPoints {count1}->{count2}");
     }
 
-    CircleMeshData GenerateCircleAtPoint(List<Vector3> vertices, List<Vector3> normals, Vector4 center, Vector3 direction, string circleName,int index,int psCount,int circleType)
+    CircleMeshData GenerateCircleAtPoint(List<Vector3> vertices, List<Vector3> normals, Vector4 center, Vector3 direction, string circleName,int index,int psCount,int circleType,bool isStart)
     {
 
         //List<Vector3> newVertics = new List<Vector3>();
@@ -638,7 +639,7 @@ public class PipeMeshGeneratorEx : PipeMeshGeneratorBase
 
         //return circleData;
 
-        return GenerateCircleAtPoint(vertices, normals, center, direction, center.w, circleName, index, psCount, circleType);
+        return GenerateCircleAtPoint(vertices, normals, center, direction, center.w, circleName, index, psCount, circleType, isStart);
     }
 
     //CircleMeshData GenerateCircleAtPoint(List<Vector3> vertices, List<Vector3> normals, Vector3 center, Vector3 direction, float radius, string circleName)
@@ -728,8 +729,8 @@ public class PipeMeshGeneratorEx : PipeMeshGeneratorBase
         //CircleMeshData cirlce11 = GenerateCircleAtPoint(vertices, normals, startPoint0, (startPoint1 - startPoint0).normalized, "Elbow_Start1");
         //CircleMeshData cirlce12 = GenerateCircleAtPoint(vertices, normals, startPoint1, (startPoint1 - startPoint0).normalized, "Elbow_Start2");
         //上面的startPoint1 - startPoint0似乎一样，但是计算后还是不一样，有误差。
-        CircleMeshData cirlce11 = GenerateCircleAtPoint(vertices, normals, startPoint0, (point2 - point1).normalized, "Elbow_Start1", index, points.Count,1);
-        CircleMeshData cirlce12 = GenerateCircleAtPoint(vertices, normals, startPoint1, (point2 - point1).normalized, "Elbow_Start2", index, points.Count, 1);
+        CircleMeshData cirlce11 = GenerateCircleAtPoint(vertices, normals, startPoint0, (point2 - point1).normalized, "Elbow_Start1", index, points.Count,1,true);
+        CircleMeshData cirlce12 = GenerateCircleAtPoint(vertices, normals, startPoint1, (point2 - point1).normalized, "Elbow_Start2", index, points.Count, 1,false);
         //CylinderMeshData pipe1 = new CylinderMeshData(cirlce11, cirlce12);
         //PipeDatas.Add(pipe1);
 
@@ -739,8 +740,8 @@ public class PipeMeshGeneratorEx : PipeMeshGeneratorBase
 
         //CircleMeshData cirlce21 = GenerateCircleAtPoint(vertices, normals, endPoint1, (endPoint0 - endPoint1).normalized, "Elbow_End1");
         //CircleMeshData cirlce22 = GenerateCircleAtPoint(vertices, normals, endPoint0, (endPoint0 - endPoint1).normalized, "Elbow_End2");
-        CircleMeshData cirlce21 = GenerateCircleAtPoint(vertices, normals, endPoint1, (point3 - point2).normalized, "Elbow_End1", index, points.Count, 1);
-        CircleMeshData cirlce22 = GenerateCircleAtPoint(vertices, normals, endPoint0, (point3 - point2).normalized, "Elbow_End2", index, points.Count, 1);
+        CircleMeshData cirlce21 = GenerateCircleAtPoint(vertices, normals, endPoint1, (point3 - point2).normalized, "Elbow_End1", index, points.Count, 1,true);
+        CircleMeshData cirlce22 = GenerateCircleAtPoint(vertices, normals, endPoint0, (point3 - point2).normalized, "Elbow_End2", index, points.Count, 1,false);
         MakeCylinderTriangles(triangles, index1 + 1);
         //CylinderMeshData pipe2 = new CylinderMeshData(cirlce21, cirlce22);
         //PipeDatas.Add(pipe2);
@@ -816,7 +817,7 @@ public class PipeMeshGeneratorEx : PipeMeshGeneratorBase
                 direction = point2 - startPoint;
             }
             //Debug.LogError($"GenerateElbow[{i}] circleCenter:{circleCenter} direction:{direction} lastPoint:{lastPoint}");
-            CircleMeshData circle = GenerateCircleAtPoint(vertices, normals, circleCenter, direction, $"Elbow[{index},{i}]", i,points.Count, 1);
+            CircleMeshData circle = GenerateCircleAtPoint(vertices, normals, circleCenter, direction, $"Elbow[{index},{i}]", i,points.Count, 1,false);
             elbowMeshData.Circles.Add(circle);
             if (i > 0)
             {

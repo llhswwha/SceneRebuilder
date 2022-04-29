@@ -1,5 +1,6 @@
 using System.Collections;
 using System.Collections.Generic;
+using System.Linq;
 using UnityEngine;
 using UnityEngine.Rendering;
 
@@ -694,7 +695,7 @@ public class PipeMeshGeneratorBase : BaseMeshGenerator
         binormal = yAxis1;
     }
 
-    protected CircleMeshData GenerateCircleAtPoint(List<Vector3> vertices, List<Vector3> normals, Vector3 center, Vector3 direction, float radius, string circleName,int index,int psCount,int circleType)
+    protected CircleMeshData GenerateCircleAtPoint(List<Vector3> vertices, List<Vector3> normals, Vector3 center, Vector3 direction, float radius, string circleName,int index,int psCount,int circleType,bool isStart)
     {
 
         List<Vector3> newVertics = new List<Vector3>();
@@ -713,31 +714,50 @@ public class PipeMeshGeneratorBase : BaseMeshGenerator
         Vector3 yAxis1 = Vector3.right;
         OrthoNormalize(ref direction, ref xAxis1, ref yAxis1,this.name, index,psCount, circleType);
 
+        CircleMeshData lastCircleData = null;
+        if (CircleDatas.Count > 0)
+        {
+            lastCircleData = CircleDatas.Last();
+        }
+
         for (int i = 0; i < pipeSegments; i++)
         {
             Vector3 currentVertex =
                 center +
                 (radius * Mathf.Cos(radiansPerSegment * i) * xAxis1) +
                 (radius * Mathf.Sin(radiansPerSegment * i) * yAxis1);
+
+            if (IsBend)
+            {
+                if (isStart && lastCircleData != null)
+                {
+                    Vector3 vertexClosed = lastCircleData.GetClosedPoint(currentVertex);
+                    float dis = Vector3.Distance(currentVertex, vertexClosed);
+                    Vector3 vertexNew = (currentVertex + vertexClosed) / 2;
+                    currentVertex = vertexNew;
+
+                    Debug.Log($"GenerateCircleAtPoint[{i}/{pipeSegments}][{CircleDatas.Count}] currentVertex:{currentVertex} vertexClosed:{vertexClosed} dis:{dis} vertexNew:{vertexNew} ");
+                }
+            }
             vertices.Add(currentVertex);
             newVertics.Add(currentVertex);
             normals.Add((currentVertex - center).normalized);
-
             //ShowPoint(currentVertex, $"p:{vertices.Count}", this.transform);
         }
-        CircleMeshData circleData = null;
 
-        //CircleMeshData circleData = new CircleMeshData(center, direction, newVertics, circleName);
-        //circleData.SetAxis(xAxis1, yAxis1);
-        //CircleDatas.Add(circleData);
+        //CircleMeshData circleData = null;
+        CircleMeshData circleData = new CircleMeshData(center, direction, newVertics, circleName);
+        circleData.SetAxis(xAxis1, yAxis1);
+        CircleDatas.Add(circleData);
 
-        //Debug.Log($"GenerateCircleAtPoint[{circleName}] center:{center} radius:{radius} vertices:{vertices.Count} newVertics:{newVertics.Count}");
+        Debug.Log($"GenerateCircleAtPoint[{circleName}][{circleType}][{CircleDatas.Count}] center:{center} radius:{radius} vertices:{vertices.Count} newVertics:{newVertics.Count}");
         var dr = direction.normalized;
         return circleData;
     }
 
+    public bool IsBend = false;
 
-    //public List<CircleMeshData> CircleDatas = new List<CircleMeshData>();
+    public List<CircleMeshData> CircleDatas = new List<CircleMeshData>();
 
     public void MakeElbowTriangles(List<Vector3> points, List<Vector3> vertices, List<int> triangles, int segmentIdx, int elbowIdx)
     {

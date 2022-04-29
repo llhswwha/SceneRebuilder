@@ -14,6 +14,32 @@ using UnityEngine;
 
 public static class MeshHelper
 {
+    public static Vector3 GetClosedPoint(Vector3 p, List<Vector3> list)
+    {
+        try
+        {
+            //var list = Plane1Points;
+            float minD = float.MaxValue;
+            int minI = 0;
+            for (int i = 0; i < list.Count; i++)
+            {
+                float dis = Vector3.Distance(list[i], p);
+                if (dis < minD)
+                {
+                    minD = dis;
+                    minI = i;
+                }
+            }
+            return list[minI];
+        }
+        catch (Exception ex)
+        {
+            Debug.LogError($"GetClosedPlanePoint1 p:{p} list:{list.Count} ex:{ex}");
+            return Vector3.zero;
+        }
+
+    }
+
     public static GameObject CreatePoint(Vector3 p, string n, Transform pT, float size)
     {
         GameObject g1 = GameObject.CreatePrimitive(PrimitiveType.Sphere);
