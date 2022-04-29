@@ -738,7 +738,7 @@ public class PipeMeshGeneratorBase : BaseMeshGenerator
 
                     int id = vertices.IndexOf(vertexClosed);
 
-                    Debug.Log($"GenerateCircleAtPoint[{i}/{pipeSegments}][{CircleDatas.Count}] currentVertex:{currentVertex} vertexClosed:{vertexClosed} dis:{dis} vertexNew:{vertexNew} vertexId:{id}");
+                    //Debug.Log($"GenerateCircleAtPoint[{i}/{pipeSegments}][{CircleDatas.Count}] currentVertex:{currentVertex} vertexClosed:{vertexClosed} dis:{dis} vertexNew:{vertexNew} vertexId:{id}");
 
                     
                     vertices[id] = vertexNew;
@@ -758,7 +758,7 @@ public class PipeMeshGeneratorBase : BaseMeshGenerator
         circleData.SetAxis(xAxis1, yAxis1);
         CircleDatas.Add(circleData);
 
-        Debug.Log($"GenerateCircleAtPoint[{circleName}][{circleType}][{CircleDatas.Count}] center:{center} radius:{radius} vertices:{vertices.Count} newVertics:{newVertics.Count}");
+        //Debug.Log($"GenerateCircleAtPoint[{circleName}][{circleType}][{CircleDatas.Count}] center:{center} radius:{radius} vertices:{vertices.Count} newVertics:{newVertics.Count}");
         var dr = direction.normalized;
         return circleData;
     }

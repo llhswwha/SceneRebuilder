@@ -406,32 +406,6 @@ public class PipeFactory : SingletonBehaviour<PipeFactory>
         }
     }
 
-    //public GameObject GetPipeModelUnitPrefab_Line(PipeGenerateArg arg)
-    //{
-    //    Debug.Log($"PipeFactory.GetPipeModelUnitPrefab_Line arg:{arg} PipeModelUnitPrefab_Line:{PipeModelUnitPrefab_Line1}");
-
-    //    if (PipeModelUnitPrefab_Line1 == null)
-    //    {
-    //        PipeModelUnitPrefab_Line1 = CreatePipeLineUnitPrefab(false,0,"Line"+ arg);
-    //        PipeModelUnitPrefab_Line1.SetActive(false);
-    //    }
-    //    return PipeModelUnitPrefab_Line1;
-    //}
-
-    //public Mesh GetPipeModelUnitPrefabMesh_Line(PipeGenerateArg arg)
-    //{
-    //    Debug.Log($"PipeFactory.GetPipeModelUnitPrefabMesh_Line arg:{arg} PipeModelUnitPrefabMesh_Line:{PipeModelUnitPrefabMesh_Line1}");
-    //    string argTxt = arg.ToString();
-
-    //    if (PipeModelUnitPrefabMesh_Line1 == null)
-    //    {
-    //        PipeModelUnitPrefab_Line1 = CreatePipeLineUnitPrefab(false, 0, "Line" + arg);
-    //        PipeModelUnitPrefab_Line1.SetActive(false);
-    //        PipeModelUnitPrefabMesh_Line1 = PipeModelUnitPrefab_Line1.GetComponent<MeshFilter>().sharedMesh;
-    //    }
-    //    return PipeModelUnitPrefabMesh_Line1;
-    //}
-
     public GameObject PipeModelUnitPrefab_Flange = null;
 
     public Mesh PipeModelUnitPrefabMesh_Flange = null;
