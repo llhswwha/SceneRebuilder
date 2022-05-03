@@ -2,6 +2,7 @@ using MathGeoLib;
 using System;
 using System.Collections;
 using System.Collections.Generic;
+using Unity.Collections;
 using UnityEngine;
 
 [Serializable]
@@ -69,24 +70,6 @@ public class MeshTriangles
 
     public PipeLineInfo ShowTrianglesWithObb(Transform transform, float pointScale, string tag, bool isShowDebugObj)
     {
-        //ShowTriangles(transform, pointScale, tag);
-
-        //GameObject obbRoot = CreateSubTestObj($"Triangles{tag}({this.Count}_{mesh.vertexCount})_Obb", transform);
-        //Vector3[] vs = this.GetPoints().ToArray();
-        //OBBCollider oBBCollider = obbRoot.AddMissingComponent<OBBCollider>();
-        //oBBCollider.ShowObbInfo(vs, false);
-
-
-        ////Debug.Log($"ShowSharedPoints mesh vertexCount:{mesh.vertexCount} triangles:{mesh.triangles.Length}");
-        //meshTriangles.ShowCirclesById(transform, pointScale, 0, 3, minRepeatPointDistance);
-
-        //GameObject trianglesObj = CreateSubTestObj($"KeyPoints", transform);
-        //meshTriangles.ShowKeyPointsById(trianglesObj.transform, pointScale, sharedMinCount, minRepeatPointDistance, false);
-
-        //OrientedBoundingBox obb = OrientedBoundingBox.Create(vs, false, $"Triangles{tag}");
-        //GameObject planInfoRoot = CreateSubTestObj($"PipeModel_PlaneInfo", transform);
-
-
         PipeLineModel pipeLine = transform.gameObject.AddMissingComponent<PipeLineModel>();
         return pipeLine.ShowLinePartModelInfo(this.GetPoints().ToArray(), transform, isShowDebugObj, 0.001f, 20, 100);
     }
@@ -140,6 +123,43 @@ public class MeshTriangles
             PipeLineInfo lineInfo = subT.ShowTrianglesWithObb(tsRoot.transform, PointScale, $"[{i + 1}]", isShowDebugObj);
             lineInfoList.Add(lineInfo);
         }
+        foreach (var subT in subTriangles)
+        {
+            subT.Dispose();
+        }
+        meshTriangles.Dispose();
+        return lineInfoList;
+    }
+
+    public static PipeLineInfoList GetPartLinesInfo_Job(GameObject target, float PointScale, int count, bool isShowDebugObj)
+    {
+        Mesh mesh = target.GetComponent<MeshFilter>().sharedMesh;
+        MeshTriangles meshTriangles = new MeshTriangles(mesh);
+
+
+        //meshTriangles.ShowTriangles(target.transform, PointScale);
+        List<MeshTriangles> subTriangles = meshTriangles.Split(count);
+        Debug.Log($"ShowPartLines mesh vertexCount:{mesh.vertexCount} triangles:{mesh.triangles.Length} count:{count} subTriangles:{subTriangles.Count}");
+
+        PipeLineInfoList lineInfoList = new PipeLineInfoList();
+
+        PipeBendPartInfoJob.Result = new NativeArray<PipeLineData>(subTriangles.Count, Allocator.Persistent);
+        PipeBendPartInfoJob.ErrorIds = new NativeList<int>(Allocator.Persistent);
+        JobList<PipeBendPartInfoJob> jobs = new JobList<PipeBendPartInfoJob>(100);
+        for (int i = 0; i < subTriangles.Count; i++)
+        {
+            MeshTriangles subT = subTriangles[i];
+            Vector3[] vs = subT.GetPoints().ToArray();
+
+            PipeBendPartInfoJob job = new PipeBendPartInfoJob()
+            {
+                id = i,
+                points = new Unity.Collections.NativeArray<Vector3>(vs, Unity.Collections.Allocator.Persistent)
+            };
+            jobs.Add(job);
+        }
+        jobs.CompleteAll();
+
         foreach (var subT in subTriangles)
         {
             subT.Dispose();

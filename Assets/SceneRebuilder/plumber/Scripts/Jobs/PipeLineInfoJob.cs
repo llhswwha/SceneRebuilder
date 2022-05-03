@@ -43,16 +43,6 @@ public struct PipeLineInfoJob : IMeshInfoJob
 
         Vector3 startPoint = OBB.Up * ObbExtent.y;
         Vector3 endPoint = -OBB.Up * ObbExtent.y;
-
-        //GameObject planInfoRoot = new GameObject("PipeModel_PlaneInfo");
-        //planInfoRoot.transform.SetParent(go.transform);
-        //planInfoRoot.transform.localPosition = Vector3.zero;
-
-        //CreateLocalPoint(StartPoint, "StartPoint1", go.transform);
-        //CreateLocalPoint(EndPoint, "EndPoint1", go.transform);
-        //var rendererInfo = MeshRendererInfo.GetInfo(go.gameObject);
-        //Vector3[] vs = rendererInfo.GetVertices();
-
         
         var VertexCount = vs.Length;
 
@@ -94,7 +84,7 @@ public struct PipeLineInfoJob : IMeshInfoJob
         {
             Debug.LogWarning($"GetModelInfo verticesToPlaneInfos.Count == 1 count:{verticesToPlaneInfos.Count} gameObject:{id}");
             ErrorIds.Add(this.id);
-            endPlane = GetEndPlane(startPlane, verticesToPlaneInfos_All);
+            endPlane = VerticesToPlaneInfo.GetEndPlane(startPlane, verticesToPlaneInfos_All);
         }
 
 
@@ -171,36 +161,6 @@ public struct PipeLineInfoJob : IMeshInfoJob
         
 
         //Debug.Log($"PipeLineInfoJob[{id}] time:{(DateTime.Now - start).TotalMilliseconds.ToString("F1")}ms lineData:{lineData}");
-    }
-
-    private static VerticesToPlaneInfo GetEndPlane(VerticesToPlaneInfo startPlane, List<VerticesToPlaneInfo> verticesToPlaneInfos_All)
-    {
-        VerticesToPlaneInfo endPlane = null;
-        if (startPlane == verticesToPlaneInfos_All[0])
-        {
-            endPlane = verticesToPlaneInfos_All[1];
-        }
-        if (startPlane == verticesToPlaneInfos_All[1])
-        {
-            endPlane = verticesToPlaneInfos_All[0];
-        }
-        if (startPlane == verticesToPlaneInfos_All[2])
-        {
-            endPlane = verticesToPlaneInfos_All[3];
-        }
-        if (startPlane == verticesToPlaneInfos_All[3])
-        {
-            endPlane = verticesToPlaneInfos_All[2];
-        }
-        if (startPlane == verticesToPlaneInfos_All[4])
-        {
-            endPlane = verticesToPlaneInfos_All[5];
-        }
-        if (startPlane == verticesToPlaneInfos_All[5])
-        {
-            endPlane = verticesToPlaneInfos_All[4];
-        }
-        return endPlane;
     }
 
     public void Dispose()

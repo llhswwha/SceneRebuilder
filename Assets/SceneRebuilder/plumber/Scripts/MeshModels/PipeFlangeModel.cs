@@ -18,7 +18,7 @@ public class PipeFlangeModel : PipeReducerModel
             GameObject.DestroyImmediate(ResultGo);
         }
 
-        GameObject prefab = GameObject.Instantiate(PipeFactory.Instance.GetPipeModelUnitPrefab_Flange());
+        GameObject prefab = GameObject.Instantiate(PipeFactory.Instance.GetPipeModelUnitPrefab_Flange(this));
         prefab.SetActive(true);
         prefab.name = this.name + "_New2";
         SetPrefabTransfrom(prefab);
@@ -41,7 +41,7 @@ public class PipeFlangeModel : PipeReducerModel
         prefab.SetActive(true);
         prefab.name = this.name + "_New3";
         SetPrefabTransfrom(prefab);
-        MeshHelper.SetNewMesh(prefab, PipeFactory.Instance.GetPipeModelUnitPrefabMesh_Flange());
+        MeshHelper.SetNewMesh(prefab, PipeFactory.Instance.GetPipeModelUnitPrefabMesh_Flange(this));
         ResultGo = prefab;
         return prefab;
     }
@@ -257,8 +257,16 @@ public class PipeFlangeModel : PipeReducerModel
 
         PipeGenerateArg arg = arg0.Clone();
 
-        if(arg.pipeSegments< MinPipeSegments)
-            arg.pipeSegments = MinPipeSegments;
+        if (this.name.StartsWith("Ô²Öù"))
+        {
+             
+        }
+        else
+        {
+            if (arg.pipeSegments < MinPipeSegments)
+                arg.pipeSegments = MinPipeSegments;
+        }
+
 
         arg.generateWeld = false;
 

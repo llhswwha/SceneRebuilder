@@ -43,7 +43,20 @@ public struct ObbInfoJob : IJob
 
     public static ObbInfoJob InitJob(GameObject go,int i)
     {
-        var vs = OrientedBoundingBox.GetVertices(go);
+        Vector3[] vs = OrientedBoundingBox.GetVertices(go);
+        //NativeArray<Vector3> vsS = new NativeArray<Vector3>(vs, Allocator.Persistent);
+        //ObbInfoJob job = new ObbInfoJob()
+        //{
+        //    id = i,
+        //    points = vsS
+        //};
+        //return job;
+        return InitJob(vs, i);
+    }
+
+    public static ObbInfoJob InitJob(Vector3[] vs, int i)
+    {
+        //var vs = OrientedBoundingBox.GetVertices(go);
         NativeArray<Vector3> vsS = new NativeArray<Vector3>(vs, Allocator.Persistent);
         ObbInfoJob job = new ObbInfoJob()
         {

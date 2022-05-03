@@ -1798,7 +1798,7 @@ public class PipeBuilder : MonoBehaviour
         id += PipeElbows.Count;
         AddPipeModelRange(PipeElbows);
 
-        PipeBends = GetPipeModelInfos<PipeBendModel>(PipeBendsGos, id, count, "Elbow");
+        PipeBends = GetPipeModelInfos<PipeBendModel>(PipeBendsGos, id, count, "Bend");
         if (PipeBends == null) return;
         id += PipeBends.Count;
         AddPipeModelRange(PipeBends);

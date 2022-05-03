@@ -207,7 +207,7 @@ public class PipeLineModel : PipeModelBase
         else
         {
             Debug.LogWarning($"PipeLine.ShowLinePartModelInfo verticesToPlaneInfos.Count == 1 count:{verticesToPlaneInfos.Count},gameObject:{this.name}");
-            endPlane = GetEndPlane(startPlane, verticesToPlaneInfos_All);
+            endPlane = VerticesToPlaneInfo.GetEndPlane(startPlane, verticesToPlaneInfos_All);
         }
 
 
@@ -331,7 +331,7 @@ public class PipeLineModel : PipeModelBase
         else
         {
             Debug.LogWarning($"PipeLine.GetModelInfo verticesToPlaneInfos.Count == 1 count:{verticesToPlaneInfos.Count},gameObject:{this.name}");
-            endPlane = GetEndPlane(startPlane, verticesToPlaneInfos_All);
+            endPlane = VerticesToPlaneInfo.GetEndPlane(startPlane, verticesToPlaneInfos_All);
         }
 
 
@@ -458,37 +458,6 @@ public class PipeLineModel : PipeModelBase
         //PipeFactory.Instance.RendererModelFromXml(this,data);
     }
 
-
-
-    private static VerticesToPlaneInfo GetEndPlane(VerticesToPlaneInfo startPlane,List<VerticesToPlaneInfo> verticesToPlaneInfos_All)
-    {
-        VerticesToPlaneInfo endPlane = null;
-        if (startPlane == verticesToPlaneInfos_All[0])
-        {
-            endPlane = verticesToPlaneInfos_All[1];
-        }
-        if (startPlane == verticesToPlaneInfos_All[1])
-        {
-            endPlane = verticesToPlaneInfos_All[0];
-        }
-        if (startPlane == verticesToPlaneInfos_All[2])
-        {
-            endPlane = verticesToPlaneInfos_All[3];
-        }
-        if (startPlane == verticesToPlaneInfos_All[3])
-        {
-            endPlane = verticesToPlaneInfos_All[2];
-        }
-        if (startPlane == verticesToPlaneInfos_All[4])
-        {
-            endPlane = verticesToPlaneInfos_All[5];
-        }
-        if (startPlane == verticesToPlaneInfos_All[5])
-        {
-            endPlane = verticesToPlaneInfos_All[4];
-        }
-        return endPlane;
-    }
 
     public void GetModelInfo_OLD()
     {

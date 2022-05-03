@@ -21,6 +21,13 @@ public class PipeBendModel : PipeModelBase
         info = MeshTriangles.ShowPartLines(this.gameObject, PointScale, 40, false);
     }
 
+    public override void GetModelInfo_Job()
+    {
+        //base.GetModelInfo_Job();
+        ClearDebugInfoGos();
+        info = MeshTriangles.GetPartLinesInfo_Job(this.gameObject, PointScale, 40, false);
+    }
+
     [ContextMenu("RendererElbowModel")]
     public GameObject RendererElbowModel(PipeGenerateArg arg, string afterName)
     {

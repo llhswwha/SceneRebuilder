@@ -1,3 +1,4 @@
+using System;
 using System.Collections;
 using System.Collections.Generic;
 using UnityEditor;
@@ -22,7 +23,9 @@ public class PipeModelBaseEditor : Editor
         GUILayout.BeginHorizontal();
         if (GUILayout.Button("GetInfo"))
         {
+            DateTime startT = DateTime.Now;
             targetT.GetModelInfo();
+            Debug.LogError($"GetInfo time:{DateTime.Now-startT}");
         }
         GUILayout.Label("RenderOnStart", GUILayout.Width(90));
         targetT.IsRendererOnStart = EditorGUILayout.Toggle(targetT.IsRendererOnStart,GUILayout.Width(15));
@@ -53,7 +56,9 @@ public class PipeModelBaseEditor : Editor
         GUILayout.BeginHorizontal();
         if (GUILayout.Button("GetInfo(Job)"))
         {
+            DateTime startT = DateTime.Now;
             targetT.GetModelInfo_Job();
+            Debug.LogError($"GetInfo(Job) time:{DateTime.Now - startT}");
         }
         if (GUILayout.Button("ShowTriangles"))
         {

@@ -6,37 +6,6 @@ public class SteelStructureBaseModel : BaseMeshModel
 {
     public float minSamePlaneNormalDis = 0.0001f;
 
-    private static VerticesToPlaneInfo GetEndPlane(VerticesToPlaneInfo startPlane, List<VerticesToPlaneInfo> verticesToPlaneInfos_All)
-    {
-        VerticesToPlaneInfo endPlane = null;
-        if (startPlane == verticesToPlaneInfos_All[0])
-        {
-            endPlane = verticesToPlaneInfos_All[1];
-        }
-        if (startPlane == verticesToPlaneInfos_All[1])
-        {
-            endPlane = verticesToPlaneInfos_All[0];
-        }
-        if (startPlane == verticesToPlaneInfos_All[2])
-        {
-            endPlane = verticesToPlaneInfos_All[3];
-        }
-        if (startPlane == verticesToPlaneInfos_All[3])
-        {
-            endPlane = verticesToPlaneInfos_All[2];
-        }
-        if (startPlane == verticesToPlaneInfos_All[4])
-        {
-            endPlane = verticesToPlaneInfos_All[5];
-        }
-        if (startPlane == verticesToPlaneInfos_All[5])
-        {
-            endPlane = verticesToPlaneInfos_All[4];
-        }
-        return endPlane;
-    }
-
-
     private GameObject planInfoRoot;
 
     private List<VerticesToPlaneInfo> verticesToPlaneInfos;

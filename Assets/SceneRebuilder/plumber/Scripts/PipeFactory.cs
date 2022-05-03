@@ -259,7 +259,15 @@ public class PipeFactory : SingletonBehaviour<PipeFactory>
         TimeSpan prefabTime = DateTime.Now - start3;
 
         GetResultInfoAfter();
-        Debug.LogError($"OneKey target:{Target.name} time:{(DateTime.Now - start).ToString(timeFormat)}({getInfoTime.ToString(timeFormat)}+{generateTime.ToString(timeFormat)}+{prefabTime.ToString(timeFormat)}) arg:({generateArg}) Models:{newBuilder.PipeModels.Count + PipeOthers.Count + weldsCount}={newBuilder.PipeModels.Count}+{PipeOthers.Count}+{weldsCount}({lastWeldCount})) {pefabLog} TargetInfo:{TargetInfo} -> ResultInfo:{ResultInfo} ({ResultVertexCount / TargetVertexCount:P2},{SharedResultVertexCountCount / TargetVertexCount:P2})");
+
+        string timeFormat = timeFormat1;
+        TimeSpan ta = DateTime.Now - start;
+        if (ta.TotalSeconds < 10)
+        {
+            timeFormat = timeFormat2;
+        }
+
+        Debug.LogError($"OneKey target:{Target.name} time:{(ta).ToString(timeFormat)}({getInfoTime.ToString(timeFormat)}+{generateTime.ToString(timeFormat)}+{prefabTime.ToString(timeFormat)}) arg:({generateArg}) Models:{newBuilder.PipeModels.Count + PipeOthers.Count + weldsCount}={newBuilder.PipeModels.Count}+{PipeOthers.Count}+{weldsCount}({lastWeldCount})) {pefabLog} TargetInfo:{TargetInfo} -> ResultInfo:{ResultInfo} ({ResultVertexCount / TargetVertexCount:P2},{SharedResultVertexCountCount / TargetVertexCount:P2})");
 
         MeshHelper.RefreshCollderMesh();
     }
@@ -410,21 +418,23 @@ public class PipeFactory : SingletonBehaviour<PipeFactory>
 
     public Mesh PipeModelUnitPrefabMesh_Flange = null;
 
-    public GameObject GetPipeModelUnitPrefab_Flange()
+    public GameObject GetPipeModelUnitPrefab_Flange(PipeFlangeModel pipeFlange)
     {
+        PipeGenerateArg arg = pipeFlange.generateArg;
         if (PipeModelUnitPrefab_Flange == null)
         {
-            PipeModelUnitPrefab_Flange = CreatePipeLineUnitPrefab(true,32, "Flange");
+            PipeModelUnitPrefab_Flange = CreatePipeLineUnitPrefab(true, arg.pipeSegments, "Flange" + arg);
             PipeModelUnitPrefab_Flange.SetActive(false);
         }
         return PipeModelUnitPrefab_Flange;
     }
 
-    public Mesh GetPipeModelUnitPrefabMesh_Flange()
+    public Mesh GetPipeModelUnitPrefabMesh_Flange(PipeFlangeModel pipeFlange)
     {
+        PipeGenerateArg arg = pipeFlange.generateArg;
         if (PipeModelUnitPrefabMesh_Flange == null)
         {
-            PipeModelUnitPrefab_Flange = CreatePipeLineUnitPrefab(true, 32, "Flange");
+            PipeModelUnitPrefab_Flange = CreatePipeLineUnitPrefab(true, arg.pipeSegments, "Flange" + arg);
             PipeModelUnitPrefab_Flange.SetActive(false);
             PipeModelUnitPrefabMesh_Flange = PipeModelUnitPrefab_Flange.GetComponent<MeshFilter>().sharedMesh;
         }
@@ -647,7 +657,9 @@ public class PipeFactory : SingletonBehaviour<PipeFactory>
         PrefabInfoList pres3 = this.PrefabWelds();
         AllPrefabs.AddRange(pres3);
         TimeSpan t3 = DateTime.Now - start3;
-        
+
+        string timeFormat = timeFormat1;
+
         return $"PrefabInfoList Prefabs:{pres1.Count + pres2.Count + pres3.Count}({pres1.Count}+{pres2.Count}+{pres3.Count}) Time:{t1.ToString(timeFormat)}+{t2.ToString(timeFormat)}+{t3.ToString(timeFormat)}";
     }
 
@@ -1615,11 +1627,18 @@ public class PipeFactory : SingletonBehaviour<PipeFactory>
   
         TimeSpan t1 = DateTime.Now - start1;
 
-        DateTime start2 = DateTime.Now;
+
+        DateTime start21 = DateTime.Now;
         var elbowGos1 = newBuilder.GetModelResult_Elbow();
-        PrefabInfoList prefabs2Elbow = PrefabInstanceBuilder.Instance.GetPrefabsOfList(elbowGos1, true, "_Elbow_2", IsPipeTryRT);
-        list.AddRange(prefabs2Elbow);
-        TimeSpan t2 = DateTime.Now - start2;
+        PrefabInfoList prefabs21Elbow = PrefabInstanceBuilder.Instance.GetPrefabsOfList(elbowGos1, true, "_Elbow_21", IsPipeTryRT);
+        list.AddRange(prefabs21Elbow);
+        TimeSpan t21 = DateTime.Now - start21;
+
+        DateTime start22 = DateTime.Now;
+        var bendGos1 = newBuilder.GetModelResult_Bend();
+        PrefabInfoList prefabs22Bend = PrefabInstanceBuilder.Instance.GetPrefabsOfList(bendGos1, true, "_Bend_22", IsPipeTryRT);
+        list.AddRange(prefabs22Bend);
+        TimeSpan t22 = DateTime.Now - start22;
 
         DateTime start3 = DateTime.Now;
         PrefabInfoList prefabs3Reducer = PrefabInstanceBuilder.Instance.GetPrefabsOfList(newBuilder.GetModelResult_Reducer(), true, "_Reducer_3", IsPipeTryRT);
@@ -1663,12 +1682,21 @@ public class PipeFactory : SingletonBehaviour<PipeFactory>
 
         RecoverWeldParent(parentDict);
 
-        Debug.LogError($"¡¾PipeFactory.PrefabPipes [{ta.ToString(timeFormat)}]¡¿ Pipes:{newBuilder.PipeGenerators.Count} Pipes2:{gs.Count} prefabs:{list}({prefabs1.Count}+{prefabs2Elbow.Count}+{prefabs3Reducer.Count}+{prefabs4.Count}+{prefabs5.Count}+{prefabs6.Count}) times:({t1.ToString(timeFormat)}+{t2.ToString(timeFormat)}+{t3.ToString(timeFormat)}+{t4.ToString(timeFormat)}+{t5.ToString(timeFormat)}+{t6.ToString(timeFormat)}+)");
+        
+        string timeFormat = timeFormat1;
+        if (ta.TotalSeconds < 10)
+        {
+            timeFormat = timeFormat2;
+        }
+
+        Debug.LogError($"¡¾PipeFactory.PrefabPipes [{ta.ToString(timeFormat)}]¡¿ Pipes:{newBuilder.PipeGenerators.Count} Pipes2:{gs.Count} prefabs:{list}({prefabs1.Count}+{prefabs21Elbow.Count}+{prefabs22Bend.Count}+{prefabs3Reducer.Count}+{prefabs4.Count}+{prefabs5.Count}+{prefabs6.Count}) times:({t1.ToString(timeFormat)}+{t21.ToString(timeFormat)}+{t22.ToString(timeFormat)}+{t3.ToString(timeFormat)}+{t4.ToString(timeFormat)}+{t5.ToString(timeFormat)}+{t6.ToString(timeFormat)}+)");
         return list;
-    }
+    } 
 
     //private static string timeFormat = @"hh\:mm\:ss\:fff";
-    private static string timeFormat = @"mm\:ss";
+    private static string timeFormat1 = @"mm\:ss";
+
+    private static string timeFormat2 = @"mm\:ss\:fff";
 
     public bool IsTrySameAngle = true;
 

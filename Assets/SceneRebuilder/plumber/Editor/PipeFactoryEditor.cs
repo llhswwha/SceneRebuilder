@@ -164,7 +164,7 @@ public class PipeFactoryEditor : BaseFoldoutEditor<PipeFactory>
         GUILayout.BeginHorizontal();
         if (GUILayout.Button("0.Clear"))
         {
-            targetT.ClearGeneratedObjs();
+            targetT.ClearGeneratedObjs(); 
         }
         if (GUILayout.Button("1.GetParts"))
         {
