@@ -9,6 +9,7 @@ using UnityEngine.Jobs;
 using System;
 using MeshJobs;
 using System.Text;
+using CommonUtils;
 
 public class AcRTAlignJobContainer 
 {
@@ -265,8 +266,8 @@ public class AcRTAlignJobContainer
                     var tpsTo = ThreePointJobResultList.Instance.GetThreePoints(mfTo);
                     //job.tpsFrom = new NativeArray<ThreePoint>(tpsFrom, Allocator.TempJob);
                     //job.tpsTo = new NativeArray<ThreePoint>(tpsTo, Allocator.TempJob);
-                    var vsFrom = MeshHelper.GetWorldVertexes(mfFrom);
-                    var vsTo = MeshHelper.GetWorldVertexes(mfTo);
+                    var vsFrom = mfFrom.GetWorldVertexes();
+                    var vsTo = mfTo.GetWorldVertexes();
                     int rId = AcRTDistanceJobHelper.InitResult();
 
                     AcRTAlignJobPrefab.AddItem(rId, prefabInfo, item);
@@ -387,7 +388,7 @@ public class AcRTAlignJobContainer
                 //newGo.name = arg.mfTo.name + "_New2";
                 AcRTAlignJobHelper.SetNewGoProperties(newGo, arg.mfTo);
                 pref.AddInstance(newGo);
-                AcRTAlignJobHelper.RemoveDict(MeshHelper.GetInstanceID(arg.mfTo));//模型都删除了，把缓存的顶点数据也删除
+                AcRTAlignJobHelper.RemoveDict(arg.mfTo.GetInstanceID());//模型都删除了，把缓存的顶点数据也删除
                 
                 disResult.rt.ApplyMatrix(newGo.transform, arg.mfTo.transform); //变换模型
 
@@ -456,7 +457,7 @@ public class AcRTAlignJobContainer
                     //newGo.name = arg.mfTo.name + "_New";
                     AcRTAlignJobHelper.SetNewGoProperties(newGo, arg.mfTo);
                     pref.AddInstance(newGo);
-                    AcRTAlignJobHelper.RemoveDict(MeshHelper.GetInstanceID(arg.mfTo));
+                    AcRTAlignJobHelper.RemoveDict(arg.mfTo.GetInstanceID());
                     
                     result.ApplyMatrix(newGo.transform, arg.mfTo.transform); //变换模型
 
@@ -563,14 +564,19 @@ public class AcRTAlignJobContainer
         RemoveNewPrefabMeshFilter();
         mfld.RemoveEmpty();//删除
 
-        string log = sb.ToString();
-        if(!string.IsNullOrEmpty(log))
+        if (isShowLog)
         {
-            Debug.Log($"DoAlignJobResult \n{sb}");
+            string log = sb.ToString();
+            if (!string.IsNullOrEmpty(log))
+            {
+                Debug.Log($"DoAlignJobResult \n{sb}");
+            }
         }
 
         return sb;
     }
+
+    public static bool isShowLog = true;
 
     private void RemoveNewPrefabMeshFilter()
     {
@@ -585,7 +591,7 @@ public class AcRTAlignJobContainer
 
     private int lastProgressCount = 0;
 
-    public static string CurrentLogTag = "";
+    //public static string CurrentLogTag = "";
 
     private bool ShowProgressAndLog(bool isLoopEnd, int jobCount, string tag)
     {
@@ -632,7 +638,7 @@ public class AcRTAlignJobContainer
 
             string logInfo = $"t:{time} ,P:{prefabInfoList.Count}(+{prefabInfoList.Count - lastPrafabCount})";
 
-            var progressArg = ProgressArg.New($"Align{tag}{CurrentLogTag}", progressCount, targetCount, $"{loopCount}|j:{jobCount} d:{mfld.Count} c:{mfCount} {logInfo}", JobHandleList.testProgressArg);
+            var progressArg = ProgressArg.New($"Align{tag}{LogTag.logTag}", progressCount, targetCount, $"{loopCount}|j:{jobCount} d:{mfld.Count} c:{mfCount} {logInfo}", JobHandleList.testProgressArg);
             //AcRTAlignJob.progressArg = progressArg;
             JobHandleList.SetJobProgress(progressArg);
 
@@ -754,7 +760,7 @@ public class AcRTAlignJobContainer
         ProgressBarHelper.ClearProgressBar();
 
         var usedTime=DateTime.Now - start;
-        Debug.Log($"【AcRTAlignJobContainer.GetPrefabs{CurrentLogTag}】 usedTime:{usedTime} Target:{targetCount},Prefab:{prefabInfoList.Count},Job:{totalJobCount}({jobCountDetails}),Loop:{loopCount},Time:{usedTime.TotalSeconds:F2}s({loopTimes})");
+        Debug.Log($"【AcRTAlignJobContainer.GetPrefabs{LogTag.logTag}】 usedTime:{usedTime} Target:{targetCount},Prefab:{prefabInfoList.Count},Job:{totalJobCount}({jobCountDetails}),Loop:{loopCount},Time:{usedTime.TotalSeconds:F2}s({loopTimes})");
         string testLogItem=$"{targetCount}\t{prefabInfoList.Count}\t{totalJobCount}\t{loopCount}\t{usedTime.TotalSeconds:F1}\t{usedTime.ToString()}\tFoundCount:{AcRTAlignJob.totalFoundCount}\tNoFoundCount:{AcRTAlignJob.totalNoFoundCount}\tFoundTime:{AcRTAlignJob.totalFoundTime:F0}\tNoFoundTime:{AcRTAlignJob.totalNoFoundTime:F0}\tAngle:{AcRTAlignJob.AngleCount}\tScale:{AcRTAlignJob.ScaleCount}\tRT:{AcRTAlignJob.RTCount}\tICP:{AcRTAlignJob.ICPCount}";
 
         //Debug.Log($"【AcRTAlignJobContainer.GetPrefabs{CurrentLogTag}】 FoundCount:{AcRTAlignJob.totalFoundCount},NoFoundCount:{AcRTAlignJob.totalNoFoundCount},FoundTime:{AcRTAlignJob.totalFoundTime:F0},NoFoundTime:{AcRTAlignJob.totalNoFoundTime:F0}");

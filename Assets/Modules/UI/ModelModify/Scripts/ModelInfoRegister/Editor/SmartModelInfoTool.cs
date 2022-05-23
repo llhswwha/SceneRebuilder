@@ -7,6 +7,7 @@ using System.IO;
 using UnityEngine;
 using UnityEditor;
 using System.Threading;
+using CommonUtils;
 
 public class SmartModelInfoTool : MonoBehaviour
 {

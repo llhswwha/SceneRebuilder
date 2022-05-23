@@ -283,6 +283,7 @@ namespace GPUInstancer
                 {
                     foreach (GPUInstancerPrototype prototype in protoypeList)
                     {
+                        if (prototype == null) continue;
                         if (prototype.minCullingDistance == prop_minCullingDistance.floatValue)
                         {
                             prototype.minCullingDistance = newCullingDistanceValue;
@@ -298,6 +299,7 @@ namespace GPUInstancer
             {
                 foreach (GPUInstancerPrototype prototype in protoypeList)
                 {
+                    if (prototype == null) continue;
                     if (prototype.minCullingDistance < newCullingDistanceValue)
                     {
                         prototype.minCullingDistance = newCullingDistanceValue;

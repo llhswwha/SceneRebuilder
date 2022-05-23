@@ -12,6 +12,8 @@ namespace GPUInstancer
     [ExecuteInEditMode]
     public class GPUInstancerPrefabManager : GPUInstancerManager
     {
+        public static GPUInstancerPrefabManager Instance;
+
         [SerializeField]
         public RegisteredPrefabsDataList registeredPrefabs = new RegisteredPrefabsDataList();
         [SerializeField]
@@ -29,6 +31,8 @@ namespace GPUInstancer
         public override void Awake()
         {
             base.Awake();
+
+            Instance = this;
 
             if (prefabList == null)
                 prefabList = new List<GameObject>();
@@ -126,6 +130,12 @@ namespace GPUInstancer
 
             GPUInstancerUtility.SetPrefabInstancePrototypes(gameObject, prototypeList, prefabList, forceNew);
         }
+        [ContextMenu("NewPrototypes")]
+        public void NewPrototypes()
+        {
+            base.GeneratePrototypes(true);
+            GPUInstancerUtility.SetPrefabInstancePrototypes(gameObject, prototypeList, prefabList, true);
+        }
 
 #if UNITY_EDITOR
         public override void CheckPrototypeChanges()
@@ -147,7 +157,7 @@ namespace GPUInstancer
             {
                 if (prefabList.Count > 0)
                 {
-                    Debug.LogError($"CheckPrototypeChanges3 prefabList:{prefabList.Count} prefab0:{prefabList[0]} prototypeList:{prototypeList.Count}");
+                    Debug.Log($"CheckPrototypeChanges3 prefabList:{prefabList.Count} prefab0:{prefabList[0]} prototypeList:{prototypeList.Count}");
                 }
                 
                 GeneratePrototypes();
@@ -167,8 +177,10 @@ namespace GPUInstancer
         [ContextMenu("ClearPrefabList")]
         public void ClearPrefabList()
         {
+            Debug.LogError($"ClearPrefabList prefabList:{prefabList.Count} prototypeList:{prototypeList.Count}");
             prefabList.Clear();
             prototypeList.Clear();
+            
         }
         public override void InitializeRuntimeDataAndBuffers(bool forceNew = true)
         {
@@ -1174,6 +1186,50 @@ namespace GPUInstancer
         }
 
         [ContextMenu("InitPrefabs")]
+        public void InitPrefabs(List<GPUInstancerPrefab> list,bool isClear)
+        {
+            if (isClear)
+            {
+                ClearPrefabList();
+            }
+            
+            for (int i = 0; i < list.Count; i++)
+            {
+                float progress = (float)i / list.Count;
+                float percents = progress * 100;
+#if UNITY_EDITOR
+                if (EditorUtility.DisplayCancelableProgressBar("CreatePrefabs", $"{i}/{list.Count} {percents:F1}%", progress))
+                {
+                    break;
+                }
+#endif
+                if (list[i] == null)
+                {
+                    continue;
+                }
+
+                GameObject item = list[i].gameObject;
+                Debug.Log($"InitPrefabs {i + 1}/{list.Count} item:{item}");
+                GPUInstancerPrefab prefab = list[i];
+
+                if (prefab == null)
+                {
+#if UNITY_EDITOR
+                    prefab = GPUInstancerUtility.AddComponentToPrefab<GPUInstancerPrefab>(item);
+#else
+                    prefab = item.AddComponent<GPUInstancerPrefab>();
+#endif
+                }
+
+                AddPrefabObject(item);
+            }
+#if UNITY_EDITOR
+            EditorUtility.ClearProgressBar();
+#endif
+            Debug.Log($"InitPrefabs list:{list.Count}"); 
+        }
+
+        [ContextMenu("InitPrefabs")]
         public void InitPrefabs(List<GameObject> list)
         {
 
@@ -1207,7 +1263,7 @@ namespace GPUInstancer
 #if UNITY_EDITOR
             EditorUtility.ClearProgressBar();
 #endif
-
+            Debug.Log($"InitPrefabs list:{list.Count}");
         }
 
         public virtual void AddInstancesToPrefabPrototypeAtRuntime(GPUInstancerPrefabPrototype prefabPrototype, IEnumerable<GameObject> instances)

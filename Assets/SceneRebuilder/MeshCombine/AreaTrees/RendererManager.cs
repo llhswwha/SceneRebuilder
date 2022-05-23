@@ -58,11 +58,13 @@ public class RendererManager : SingletonBehaviour<RendererManager>
         AreaTreeHelper.CreateBoundsCube(bounds, "TestBounds", transform,0);
     }
 
+    public bool includeInactive = true;
+
     [ContextMenu("InitIds")]
     public void InitIds()
     {
          DateTime start = DateTime.Now;
-        IdDictionary.InitInfos();
+        IdDictionary.InitInfos(null, includeInactive,false);
         allIds = IdDictionary.GetIds();
         var allRIds = IdDictionary.GetRIds();
         var allRenderers = IdDictionary.GetRenderers().ToArray();

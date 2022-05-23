@@ -16,6 +16,13 @@ public class PipeMeshGeneratorEditor : Editor {
 		PipeMeshGenerator myTarget = (PipeMeshGenerator)target;
 
 		GUILayout.BeginHorizontal();
+
+		GUILayout.Label($"IsBend");
+		myTarget.IsBend = EditorGUILayout.Toggle(myTarget.IsBend);
+		
+		GUILayout.EndHorizontal();
+
+		GUILayout.BeginHorizontal();
 		if (GUILayout.Button("Generate Pipe(Points)"))
 		{
 			myTarget.RenderPipe();

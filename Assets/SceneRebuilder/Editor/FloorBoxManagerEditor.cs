@@ -93,7 +93,7 @@ public class FloorBoxManagerEditor : BaseFoldoutEditor<FloorBoxManager>
                 TransformFloorParent node = list1[i];
                 if (node.go == null) continue;
                 var arg = FoldoutEditorArgBuffer.editorArgs[node];
-                string path = TransformHelper.GetPath(node.go.transform, root.transform);
+                string path = node.go.transform.GetPath(root.transform);
                 //string title = $"[{i + 1:00}] {node.go.transform.parent.name} > {node.go.name}";
                 string title = $"[{i + 1:00}] {path}";
                 arg.isExpanded = EditorUIUtils.ObjectFoldout(arg.isExpanded, title, $"[{node.GetFloors()}]", false, false, false, node.go.gameObject);

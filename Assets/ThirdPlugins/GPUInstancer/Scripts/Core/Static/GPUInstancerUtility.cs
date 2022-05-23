@@ -1321,6 +1321,7 @@ namespace GPUInstancer
 
         public static GPUInstancerPrefabPrototype GeneratePrefabPrototype(GameObject go, bool forceNew, bool attachScript = true)
         {
+            go.name = go.name.Replace("/", "=");
             GPUInstancerPrefab prefabScript = go.GetComponent<GPUInstancerPrefab>();
             if (attachScript && prefabScript == null)
 #if UNITY_2018_3_OR_NEWER && UNITY_EDITOR
@@ -1336,7 +1337,7 @@ namespace GPUInstancer
             {
                 prototype = prefabScript.prefabPrototype;
             }
-            Debug.LogError($"GeneratePrefabPrototype1 prototype:{prototype}");
+            Debug.Log($"GeneratePrefabPrototype1 prototype:{prototype}");
             if (prototype == null)
             {
                 prototype = ScriptableObject.CreateInstance<GPUInstancerPrefabPrototype>();
@@ -1345,7 +1346,7 @@ namespace GPUInstancer
                     prefabScript.prefabPrototype = prototype;
                 prototype.prefabObject = go;
                 prototype.name = go.name + "_" + go.GetInstanceID();
-                Debug.LogError($"GeneratePrefabPrototype2 prototype:{prototype} GO:{prototype.prefabObject}");
+                Debug.Log($"GeneratePrefabPrototype2 prototype:{prototype} GO:{prototype.prefabObject}");
                 DetermineTreePrototypeType(prototype);
                 if (prototype.treeType != GPUInstancerTreeType.None || !GPUInstancerConstants.gpuiSettings.IsStandardRenderPipeline())
                     prototype.useOriginalShaderForShadow = true;
@@ -1397,7 +1398,7 @@ namespace GPUInstancer
                 prototype.prefabObject = go;
                 prototype.name = go.name + "_" + go.GetInstanceID();
 
-                Debug.LogError($"GeneratePrefabPrototype3 prototype:{prototype} GO:{prototype.prefabObject}");
+                Debug.Log($"GeneratePrefabPrototype3 prototype:{prototype} GO:{prototype.prefabObject}");
             }
             
 #if UNITY_EDITOR
@@ -1422,7 +1423,7 @@ namespace GPUInstancer
             }
 #endif
 #endif
-            Debug.LogError($"GeneratePrefabPrototype prototype:{prototype} GO:{prototype.prefabObject}");
+            Debug.Log($"GeneratePrefabPrototype prototype:{prototype} GO:{prototype.prefabObject}");
             return prototype;
         }
 
@@ -2671,7 +2672,7 @@ namespace GPUInstancer
             {
                 if (originalShader == null || originalShader.name == GPUInstancerConstants.SHADER_UNITY_INTERNAL_ERROR)
                 {
-                    Debug.LogError("Can not find shader! Please make sure that the material has a shader assigned.");
+                    Debug.LogError("Can not find shader! Please make sure that the material has a shader assigned."); 
                     return null;
                 }
                 Shader originalShaderRef = Shader.Find(originalShader.name);

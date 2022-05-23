@@ -1,22 +1,12 @@
 <?xml version="1.0" encoding="utf-8"?>
-<BuildingSceneLoadSetting xmlns:xsd="http://www.w3.org/2001/XMLSchema" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" IsLoadUserBuildings="true" IsLoadSceneOnStart="true" Enabled="true" IsEnableUnload="true">
-  <UserBulindgs>
-    <string>4_空压机房</string>
-    <string>厂区管道</string>
-    <string>调压站及厂家设备</string>
-  </UserBulindgs>
+<BuildingSceneLoadSetting xmlns:xsd="http://www.w3.org/2001/XMLSchema" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" IsLoadUserBuildings="false" IsLoadSceneOnStart="true" Enabled="true" IsEnableUnload="true">
+  <UserBulindgs />
   <Items>
-    <BuildingSceneLoadItemCollection Name="空压机房" IsEnable="true" IsStatic="false">
-      <BuildingSceneLoadItem Name="4_ENV" IsEnable="true" InRenderers="false" Out0RenderersB="true" Out0RenderersS="false" Out1Renderers="false" LODs="false" />
-      <BuildingSceneLoadItem Name="4_F1" IsEnable="true" InRenderers="false" Out0RenderersB="true" Out0RenderersS="false" Out1Renderers="false" LODs="false" />
-      <BuildingSceneLoadItem Name="4_F2" IsEnable="true" InRenderers="false" Out0RenderersB="true" Out0RenderersS="false" Out1Renderers="false" LODs="false" />
-      <BuildingSceneLoadItem Name="4_F3" IsEnable="true" InRenderers="false" Out0RenderersB="true" Out0RenderersS="false" Out1Renderers="false" LODs="false" />
+    <BuildingSceneLoadItemCollection Name="H级余热锅炉" IsEnable="true" IsStatic="false">
+      <BuildingSceneLoadItem Name="H级余热锅炉" IsEnable="true" InRenderers="false" Out0RenderersB="true" Out0RenderersS="false" Out1Renderers="false" LODs="false" />
     </BuildingSceneLoadItemCollection>
-    <BuildingSceneLoadItemCollection Name="调压站及厂家设备" IsEnable="true" IsStatic="false">
-      <BuildingSceneLoadItem Name="调压站及厂家设备" IsEnable="true" InRenderers="false" Out0RenderersB="true" Out0RenderersS="false" Out1Renderers="false" LODs="false" />
-    </BuildingSceneLoadItemCollection>
-    <BuildingSceneLoadItemCollection Name="厂区管道" IsEnable="true" IsStatic="false">
-      <BuildingSceneLoadItem Name="厂区管道" IsEnable="true" InRenderers="false" Out0RenderersB="true" Out0RenderersS="false" Out1Renderers="false" LODs="false" />
+    <BuildingSceneLoadItemCollection Name="F级余热锅炉" IsEnable="true" IsStatic="false">
+      <BuildingSceneLoadItem Name="F级余热锅炉" IsEnable="true" InRenderers="false" Out0RenderersB="true" Out0RenderersS="false" Out1Renderers="false" LODs="false" />
     </BuildingSceneLoadItemCollection>
   </Items>
 </BuildingSceneLoadSetting>

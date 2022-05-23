@@ -224,7 +224,7 @@ public class SubScene_Base : SubSceneArgComponent
         }
         else
         {
-            Debug.LogError($"Exception.SubScene_Base.GetSceneInfo.Name:{transform.name} bc:{bc} buildingModelInfo:{buildingModelInfo} path:{TransformHelper.GetPath(this.transform)}");
+            Debug.LogError($"Exception.SubScene_Base.GetSceneInfo.Name:{transform.name} bc:{bc} buildingModelInfo:{buildingModelInfo} path:{this.transform.GetPath()}");
             //return "";
         }
 

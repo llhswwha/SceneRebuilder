@@ -96,8 +96,24 @@ public class BuildingModelInfoEditor : BaseFoldoutEditor<BuildingModelInfo>
         EditorGUILayout.EndHorizontal();
 
         EditorGUILayout.BeginHorizontal();
-        NewEnabledButton("2.CreateTree", buttonWidth, state.CanCreateTrees, btnStyle, () => { AreaTreeManager.Instance.isCombine = false; info.CreateTreesBSEx(); });
-        NewEnabledButton("2.CreateTree(C)", buttonWidth, state.CanCreateTrees, btnStyle, () => { AreaTreeManager.Instance.isCombine = true; info.CreateTreesBSEx(); });
+        NewEnabledButton("2.CreateTree", buttonWidth, state.CanCreateTrees, btnStyle, () => 
+        {
+            info.isIgnoreGPU = false;
+            AreaTreeManager.Instance.isCombine = false; 
+            info.CreateTreesBSEx(); 
+        });
+        NewEnabledButton("2.CreateTree(G)", buttonWidth, state.CanCreateTrees, btnStyle, () =>
+        {
+            info.isIgnoreGPU = true;
+            AreaTreeManager.Instance.isCombine = false; 
+            info.CreateTreesBSEx();
+        });
+        NewEnabledButton("2.CreateTree(C)", buttonWidth, state.CanCreateTrees, btnStyle, () => 
+        {
+            info.isIgnoreGPU = false;
+            AreaTreeManager.Instance.isCombine = true; 
+            info.CreateTreesBSEx(); 
+        });
         NewEnabledButton("RemoveTrees", buttonWidth, state.CanRemoveTrees, btnStyle, info.ClearTrees);
         NewEnabledButton("DestroyBox", 80, state.CanRemoveTrees, btnStyle, info.DestroyBoundBox);
         if (GUILayout.Button("Setting...", btnStyle, GUILayout.Width(70)))
@@ -254,6 +270,14 @@ public class BuildingModelInfoEditor : BaseFoldoutEditor<BuildingModelInfo>
         }
         GUILayout.Button(info.AllVertextCount.ToString("F1") + "w", GUILayout.Width(80));
         GUILayout.Button(info.AllRendererCount.ToString(), GUILayout.Width(50));
+        if(GUILayout.Button("Hide", GUILayout.Width(50)))
+        {
+            info.gameObject.SetActive(false);
+        }
+        if (GUILayout.Button("Show", GUILayout.Width(50)))
+        {
+            info.gameObject.SetActive(true);
+        }
         EditorGUILayout.EndHorizontal();
 
         EditorGUILayout.BeginHorizontal();
@@ -263,7 +287,14 @@ public class BuildingModelInfoEditor : BaseFoldoutEditor<BuildingModelInfo>
         }
         GUILayout.Button(info.Out0VertextCount.ToString("F1") + "w", GUILayout.Width(80));
         GUILayout.Button(info.Out0RendererCount.ToString(), GUILayout.Width(50));
-
+        if (GUILayout.Button("Hide", GUILayout.Width(50)))
+        {
+            info.OutPart0.SetActive(false);
+        }
+        if (GUILayout.Button("Show", GUILayout.Width(50)))
+        {
+            info.OutPart0.SetActive(true);
+        }
         EditorGUILayout.EndHorizontal();
 
         EditorGUILayout.BeginHorizontal();
@@ -273,6 +304,14 @@ public class BuildingModelInfoEditor : BaseFoldoutEditor<BuildingModelInfo>
         }
         GUILayout.Button(info.InVertextCount.ToString("F1") + "w", GUILayout.Width(80));
         GUILayout.Button(info.InRendererCount.ToString(), GUILayout.Width(50));
+        if (GUILayout.Button("Hide", GUILayout.Width(50)))
+        {
+            info.InPart.SetActive(false);
+        }
+        if (GUILayout.Button("Show", GUILayout.Width(50)))
+        {
+            info.InPart.SetActive(true);
+        }
         EditorGUILayout.EndHorizontal();
 
         EditorGUILayout.BeginHorizontal();
@@ -288,7 +327,14 @@ public class BuildingModelInfoEditor : BaseFoldoutEditor<BuildingModelInfo>
         //}
         GUILayout.Button(info.LODVertexCount.ToString("F1") + "w", GUILayout.Width(80));
         GUILayout.Button(info.LODRendererCount.ToString(), GUILayout.Width(50));
-
+        if (GUILayout.Button("Hide", GUILayout.Width(50)))
+        {
+            info.LODPart.SetActive(false);
+        }
+        if (GUILayout.Button("Show", GUILayout.Width(50)))
+        {
+            info.LODPart.SetActive(true);
+        }
         EditorGUILayout.EndHorizontal();
 
         EditorGUILayout.BeginHorizontal();
@@ -298,6 +344,14 @@ public class BuildingModelInfoEditor : BaseFoldoutEditor<BuildingModelInfo>
         }
         GUILayout.Button(info.Out1VertextCount.ToString("F1") + "w", GUILayout.Width(80));
         GUILayout.Button(info.Out1RendererCount.ToString(), GUILayout.Width(50));
+        if (GUILayout.Button("Hide", GUILayout.Width(50)))
+        {
+            info.OutPart1.SetActive(false);
+        }
+        if (GUILayout.Button("Show", GUILayout.Width(50)))
+        {
+            info.OutPart1.SetActive(true);
+        }
         EditorGUILayout.EndHorizontal();
 
         EditorGUILayout.BeginHorizontal();
@@ -307,6 +361,14 @@ public class BuildingModelInfoEditor : BaseFoldoutEditor<BuildingModelInfo>
         }
         GUILayout.Button(info.Out0BigVertextCount.ToString("F1") + "w", GUILayout.Width(80));
         GUILayout.Button(info.Out0BigRendererCount.ToString(), GUILayout.Width(50));
+        if (GUILayout.Button("Hide", GUILayout.Width(50)))
+        {
+            info.HideBigModels();
+        }
+        if (GUILayout.Button("Show", GUILayout.Width(50)))
+        {
+            info.ShowBigModels();
+        }
         EditorGUILayout.EndHorizontal();
 
         EditorGUILayout.BeginHorizontal();
@@ -316,7 +378,14 @@ public class BuildingModelInfoEditor : BaseFoldoutEditor<BuildingModelInfo>
         }
         GUILayout.Button(info.Out0SmallVertextCount.ToString("F1") + "w", GUILayout.Width(80));
         GUILayout.Button(info.Out0SmallRendererCount.ToString(), GUILayout.Width(50));
-
+        if (GUILayout.Button("Hide", GUILayout.Width(50)))
+        {
+            info.HideSmallModels();
+        }
+        if (GUILayout.Button("Show", GUILayout.Width(50)))
+        {
+            info.ShowSmallModels();
+        }
         EditorGUILayout.EndHorizontal();
     }
 

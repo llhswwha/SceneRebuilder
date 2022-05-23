@@ -3,7 +3,8 @@ using System.Collections.Generic;
 using UnityEngine;
 using System;
 using System.Linq;
-using MeshJobs;
+using CommonUtils;
+//using MeshJobs;
 
 public class AreaTreeNode : SubSceneCreater
 {
@@ -1134,7 +1135,7 @@ public class AreaTreeNode : SubSceneCreater
     public void ShowLogInfo()
     {
         GetRenderersScene();
-        Debug.Log($"Node {this.name} Renderers:{Renderers.Count} RenderersId:{RenderersId.Count} IsLoaded:{RenderersScene.IsLoaded} Path:{TransformHelper.GetPath(this.transform)}");
+        Debug.Log($"Node {this.name} Renderers:{Renderers.Count} RenderersId:{RenderersId.Count} IsLoaded:{RenderersScene.IsLoaded} Path:{this.transform.GetPath()}");
     }
 
     [ContextMenu("ShowNodes")]
@@ -1150,11 +1151,11 @@ public class AreaTreeNode : SubSceneCreater
             SubScene_Base[] scenes = SubScene_List.GetBaseScenes(this.gameObject);
             if (RenderersScene != null)
             {
-                Debug.Log($"ShowNodes {this.name} Renderers:{Renderers.Count} RenderersId:{RenderersId.Count} Scenes:{scenes.Length} IsLoaded:{RenderersScene.IsLoaded} Path:{TransformHelper.GetPath(this.transform)}");
+                Debug.Log($"ShowNodes {this.name} Renderers:{Renderers.Count} RenderersId:{RenderersId.Count} Scenes:{scenes.Length} IsLoaded:{RenderersScene.IsLoaded} Path:{this.transform.GetPath()}");
             }
             else
             {
-                Debug.Log($"ShowNodes {this.name} RenderersScene==null Renderers:{Renderers.Count} RenderersId:{RenderersId.Count} Scenes:{scenes.Length} Path:{TransformHelper.GetPath(this.transform)}");
+                Debug.Log($"ShowNodes {this.name} RenderersScene==null Renderers:{Renderers.Count} RenderersId:{RenderersId.Count} Scenes:{scenes.Length} Path:{this.transform.GetPath()}");
             }
             
 #endif

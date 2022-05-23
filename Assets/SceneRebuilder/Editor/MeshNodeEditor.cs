@@ -162,7 +162,7 @@ public class MeshNodeEditor : BaseFoldoutEditor<MeshNode>
                 {
                     for (int i = 0; i < subms.Count; i++)
                     {
-                        MeshNode node = subms[i];
+                        var node = subms[i];
                         ProgressBarHelper.DisplayCancelableProgressBar(new ProgressArg("UpdateSharedMesh", i, subms.Count, node));
                         node.GetSharedMeshList();
                     }
@@ -207,7 +207,7 @@ public class MeshNodeEditor : BaseFoldoutEditor<MeshNode>
     }
 
 
-    private void DrawMeshNodeList(FoldoutEditorArg listArg, MeshNode item,int level)
+    private void DrawMeshNodeList(FoldoutEditorArg listArg, InnerMeshNode item,int level)
     {
         listArg.level = level;
         var nodes = item.GetMeshNodes();

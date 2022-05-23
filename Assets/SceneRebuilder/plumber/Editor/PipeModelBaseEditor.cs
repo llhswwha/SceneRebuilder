@@ -48,7 +48,8 @@ public class PipeModelBaseEditor : Editor
         }
         if (GUILayout.Button("RemoveComponents"))
         {
-            targetT.RemoveAllComponents();
+            PipeBuilder.RemoveAllComponents(targetT);
+            //targetT.RemoveAllComponents();
             //targetT.gameObject.SetActive(true);
         }
         GUILayout.EndHorizontal();

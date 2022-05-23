@@ -6,6 +6,7 @@ using System.Linq;
 using Base.Common;
 using System.IO;
 using System.Text;
+using CommonExtension;
 
 public class MyEditorTools2
 {
@@ -115,6 +116,16 @@ public class MyEditorTools2
     {
         GameObject go=MeshHelper.CopyGO(Selection.activeGameObject);
         go.name += "_Copy";
+    }
+    [MenuItem("SceneTools/GameObject/ShowAll")]
+    public static void ShowAllGameObjects()
+    {
+        Transform[] ts = Selection.activeGameObject.GetComponentsInChildren<Transform>(true);
+        foreach(var t in ts)
+        {
+            t.gameObject.SetActive(true);
+        }
+        Debug.Log($"ShowAllGameObjects ts:{ts.Length}");
     }
     #endregion
 
@@ -457,6 +468,7 @@ public class MyEditorTools2
     [MenuItem("SceneTools/Mesh/SaveAll")]
     public static void SaveMeshAll()
     {
+
         //EditorHelper.SaveMeshAsset(Selection.activeGameObject);
 
         MeshFilter[] mfs = GameObject.FindObjectsOfType<MeshFilter>(true);
@@ -468,12 +480,19 @@ public class MyEditorTools2
 
         SharedMeshInfoList sharedMeshInfos = new SharedMeshInfoList(mfs);
         int count = 0;
-        foreach (var sharedMesh in sharedMeshInfos)
+        for (int i = 0; i < sharedMeshInfos.Count; i++)
         {
+            SharedMeshInfo sharedMesh = sharedMeshInfos[i];
+            if(ProgressBarHelper.DisplayCancelableProgressBar("Save",i,sharedMeshInfos.Count))
+            {
+                break;
+            }
             if (UnityEditor.AssetDatabase.Contains(sharedMesh.mainMeshFilter.sharedMesh)) continue;
             EditorHelper.SaveMeshAsset(sharedMesh.gameObject);
             count++;
         }
+
+        ProgressBarHelper.ClearProgressBar();
 
         Debug.Log($"SaveMeshAll sharedMeshInfos:{sharedMeshInfos.Count} count:{count}");
     }
@@ -507,7 +526,7 @@ public class MyEditorTools2
             //mfNew.name = meshName;
             //mfNew.sharedMesh.name = meshName;
 
-            MeshHelper.CopyTransformMesh(newGo, mf.gameObject);
+            GameObjectExtension.CopyTransformMesh(newGo, mf.gameObject);
 
             GameObject.DestroyImmediate(mfNew.gameObject);
         }
@@ -600,6 +619,21 @@ public class MyEditorTools2
                 break;
             }
             MeshNode.InitNodes(obj);
+        }
+        ProgressBarHelper.ClearProgressBar();
+    }
+
+    [MenuItem("SceneTools/Prefab/InitInnerMeshNodes")]
+    public static void InitInnerMeshNodes()
+    {
+        for (int i = 0; i < Selection.gameObjects.Length; i++)
+        {
+            GameObject obj = Selection.gameObjects[i];
+            if (ProgressBarHelper.DisplayCancelableProgressBar(new ProgressArg("InitMeshNodes", i, Selection.gameObjects.Length, obj)))
+            {
+                break;
+            }
+            InnerMeshNode.InitInnerNodes(obj);
         }
         ProgressBarHelper.ClearProgressBar();
     }
@@ -893,7 +927,7 @@ public class MyEditorTools2
     [MenuItem("SceneTools/Clear/ClearMeshNode")]
     public static void ClearMeshNode()
     {
-        ClearComponents<MeshNode>();
+        ClearComponents<InnerMeshNode>();
     }
 
     [MenuItem("SceneTools/Clear/DestroyDoors")]
@@ -952,7 +986,13 @@ public class MyEditorTools2
     [MenuItem("SceneTools/Clear/ClearPipeModels")]
     public static void ClearPipeModels()
     {
-        ClearComponents<PipeModelComponent>();
+        ClearComponents<BaseMeshModel>();
+    }
+
+    [MenuItem("SceneTools/Clear/ClearOBBCollider")]
+    public static void ClearOBBCollider()
+    {
+        ClearComponents<OBBCollider>();
     }
 
     [MenuItem("SceneTools/Clear/ClearMeshComponents")]
@@ -1040,7 +1080,7 @@ public class MyEditorTools2
     [MenuItem("SceneTools/Transform/MoveToZero")]
     public static void MoveToZero()
     {
-        TransformHelper.MoveToNewRoot(Selection.activeGameObject, "Zero");
+        TransformExtension.MoveToNewRoot(Selection.activeGameObject, "Zero");
     }
 
     [MenuItem("SceneTools/Transform/SplitParts")]
@@ -1059,7 +1099,7 @@ public class MyEditorTools2
             //Transform newP = TransformHelper.FindOrCreatePath(newRoot.transform, path, true);
             //go.transform.SetParent(newP.transform);
 
-            TransformHelper.MoveGameObject(go.transform, newRoot.transform);
+            TransformExtension.MoveGameObject(go.transform, newRoot.transform);
             //break;
         }
         Debug.LogError($"SplitParts gos:{gos.Length}");
@@ -1477,7 +1517,7 @@ public class MyEditorTools2
                 continue;
             }
             i++;
-            Debug.Log($"ShowIdDictionary[{i}] id:{id.Id} pid:{id.parentId} name:{id.name} path:{TransformHelper.GetPath(id.transform)}");
+            Debug.Log($"ShowIdDictionary[{i}] id:{id.Id} pid:{id.parentId} name:{id.name} path:{id.transform.GetPath()}");
         }
         Debug.Log($"ShowIdDictionary allIds:{dict.Count}");
     }
@@ -1495,7 +1535,7 @@ public class MyEditorTools2
                 continue;
             }
             i++;
-            Debug.Log($"ShowTreeNodeDict[{i}] tree:{id.tree} name:{id.name} path:{TransformHelper.GetPath(id.transform)}");
+            Debug.Log($"ShowTreeNodeDict[{i}] tree:{id.tree} name:{id.name} path:{id.transform.GetPath()}");
         }
         Debug.Log($"ShowTreeNodeDict allIds:{dict.Count}");
     }
@@ -1521,7 +1561,7 @@ public class MyEditorTools2
         for (int i = 0; i < allIds.Count; i++)
         {
             RendererId id = allIds[i];
-            Debug.Log($"ShowIds[{i}] id:{id.Id} pid:{id.parentId} name:{id.name} path:{TransformHelper.GetPath(id.transform)}");
+            Debug.Log($"ShowIds[{i}] id:{id.Id} pid:{id.parentId} name:{id.name} path:{id.transform.GetPath()}");
         }
         Debug.Log($"ShowIds allIds:{allIds.Count}");
     }

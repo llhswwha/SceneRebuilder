@@ -1,4 +1,5 @@
 using CodeStage.AdvancedFPSCounter.Editor.UI;
+using CommonUtils;
 using System;
 using System.Collections;
 using System.Collections.Generic;
@@ -297,7 +298,7 @@ listArg.pageId_selected = countGreaterZero / listArg.pageCount;
                         {
                             float dis1 = Vector3.Distance(item.renderer_old.transform.position, item.renderer_new.transform.position);
                             float dis2 = MeshHelper.GetCenterDistance(item.renderer_old.gameObject, item.renderer_new.gameObject);
-                            float dis3 = MeshHelper.GetAvgVertexDistanceEx(item.renderer_old.transform, item.renderer_new.transform);
+                            float dis3 = VertexHelper.GetAvgVertexDistanceEx(item.renderer_old.transform, item.renderer_new.transform);
                             float dis4 = MeshHelper.GetMinDistance(item.renderer_old.gameObject, item.renderer_new.gameObject);
                             float dis5 = MeshHelper.GetMaxDistance(item.renderer_old.gameObject, item.renderer_new.gameObject);
                             Debug.Log($"Debug lod0:{item.renderer_old.name} lod1:{item.renderer_new.name} dis1:{dis1} dis2:{dis2} dis3:{dis3} dis4:{dis4} dis5:{dis5}");

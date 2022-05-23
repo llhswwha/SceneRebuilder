@@ -1,3 +1,4 @@
+using CommonUtils;
 using MeshJobs;
 using System;
 using System.Collections;
@@ -14,61 +15,37 @@ using UnityEngine;
 
 public static class MeshHelper
 {
-    public static Vector3 GetClosedPoint(Vector3 p, List<Vector3> list)
-    {
-        try
-        {
-            //var list = Plane1Points;
-            float minD = float.MaxValue;
-            int minI = 0;
-            for (int i = 0; i < list.Count; i++)
-            {
-                float dis = Vector3.Distance(list[i], p);
-                if (dis < minD)
-                {
-                    minD = dis;
-                    minI = i;
-                }
-            }
-            return list[minI];
-        }
-        catch (Exception ex)
-        {
-            Debug.LogError($"GetClosedPlanePoint1 p:{p} list:{list.Count} ex:{ex}");
-            return Vector3.zero;
-        }
 
-    }
 
-    public static GameObject CreatePoint(Vector3 p, string n, Transform pT, float size)
-    {
-        GameObject g1 = GameObject.CreatePrimitive(PrimitiveType.Sphere);
+    //public static GameObject CreatePoint(Vector3 p, string n, Transform pT, float size)
+    //{
+    //    GameObject g1 = GameObject.CreatePrimitive(PrimitiveType.Sphere);
 
-        //g1.transform.SetParent(this.transform);
-        //g1.transform.localPosition=p;
-        g1.transform.position = p;
-        g1.transform.localScale = new Vector3(size, size, size);
-        g1.name = n;
+    //    //g1.transform.SetParent(this.transform);
+    //    //g1.transform.localPosition=p;
+    //    g1.transform.position = p;
+    //    g1.transform.localScale = new Vector3(size, size, size);
+    //    g1.name = n;
 
-        g1.transform.SetParent(pT);
-        return g1;
-    }
+    //    g1.transform.SetParent(pT);
+    //    return g1;
+    //}
 
-    public static GameObject CreateLocalPoint(Vector3 p, string n, Transform pT, float scale)
-    {
-        GameObject g1 = GameObject.CreatePrimitive(PrimitiveType.Sphere);
+    //public static GameObject CreateLocalPoint(Vector3 p, string n, Transform pT, float scale)
+    //{
+    //    GameObject g1 = GameObject.CreatePrimitive(PrimitiveType.Sphere);
 
-        g1.transform.SetParent(pT);
-        g1.transform.localPosition = p;
-        //g1.transform.position = p;
-        g1.transform.localScale = new Vector3(scale, scale, scale);
-        g1.name = n;
+    //    g1.transform.SetParent(pT);
+    //    g1.transform.localPosition = p;
+    //    //g1.transform.position = p;
+    //    g1.transform.localScale = new Vector3(scale, scale, scale);
+    //    g1.name = n;
 
-        //g1.transform.SetParent(this.transform);
+    //    //g1.transform.SetParent(this.transform);
 
-        g1.AddComponent<DebugInfoRoot>();
-        return g1;
-    }
+    //    g1.AddComponent<DebugInfoRoot>();
+    //    return g1;
+    //}
 
     public static void RemoveMeshComponents(GameObject go,bool isRemoveCollider=true)
     {
@@ -142,111 +119,111 @@ public static class MeshHelper
         ProgressBarHelper.ClearProgressBar();
     }
 
-    public static GameObject CopyMeshObject(GameObject source)
-    {
-        return CopyMeshObject(source, source.name);
-    }
+    //public static GameObject CopyMeshObject(GameObject source)
+    //{
+    //    return CopyMeshObject(source, source.name);
+    //}
 
 
-    public static GameObject CopyMeshObject(GameObject source, string newName)
-    {
-        GameObject newGo = new GameObject(newName);
-        bool r1 = MeshHelper.CopyTransformMesh(source.gameObject, newGo);
-        return newGo;
-    }
+    //public static GameObject CopyMeshObject(GameObject source, string newName)
+    //{
+    //    GameObject newGo = new GameObject(newName);
+    //    bool r1 = MeshHelper.CopyTransformMesh(source.gameObject, newGo);
+    //    return newGo;
+    //}
 
-        public static bool CopyTransformMesh(GameObject source, GameObject target)
-    {
-        bool r=CopyMeshComponents(source, target);
-        if (r == false) return r;
-        CopyTransfrom(source.transform, target.transform);
-        return true;
-    }
+    //    public static bool CopyTransformMesh(GameObject source, GameObject target)
+    //{
+    //    bool r=CopyMeshComponents(source, target);
+    //    if (r == false) return r;
+    //    CopyTransfrom(source.transform, target.transform);
+    //    return true;
+    //}
 
-    public static void CopyTransfrom(Transform source, Transform target)
-    {
-        if (target.parent != source.parent)
-        {
-            EditorHelper.UnpackPrefab(target.gameObject);
-            target.SetParent(source.parent);
-        }
-        target.localPosition = source.localPosition;
-        target.localRotation = source.localRotation;
-        target.localScale = source.localScale;
-    }
+    //public static void CopyTransfrom(Transform source, Transform target)
+    //{
+    //    if (target.parent != source.parent)
+    //    {
+    //        EditorHelper.UnpackPrefab(target.gameObject);
+    //        target.SetParent(source.parent);
+    //    }
+    //    target.localPosition = source.localPosition;
+    //    target.localRotation = source.localRotation;
+    //    target.localScale = source.localScale;
+    //}
 
-    public static MeshFilter CreateMeshComponents(GameObject go)
-    {
-        //GameObject go = GameObject.CreatePrimitive(PrimitiveType.Sphere);
-        //MeshHelper.CopyMeshComponents(go, this.gameObject);
-        //GameObject.DestroyImmediate(go);
-        MeshRenderer meshRenderer = go.GetComponent<MeshRenderer>();
-        if (meshRenderer == null)
-        {
-            meshRenderer = go.AddComponent<MeshRenderer>();
-            //meshRenderer.sharedMaterial = new Material(Shader.Find("Standard"));
-            meshRenderer.sharedMaterial = new Material(Shader.Find("HDRP/Lit"));
-        }
-        MeshFilter meshFilter = go.AddMissingComponent<MeshFilter>();
-        return meshFilter;
-    }
+    //public static MeshFilter CreateMeshComponents(GameObject go)
+    //{
+    //    //GameObject go = GameObject.CreatePrimitive(PrimitiveType.Sphere);
+    //    //MeshHelper.CopyMeshComponents(go, this.gameObject);
+    //    //GameObject.DestroyImmediate(go);
+    //    MeshRenderer meshRenderer = go.GetComponent<MeshRenderer>();
+    //    if (meshRenderer == null)
+    //    {
+    //        meshRenderer = go.AddComponent<MeshRenderer>();
+    //        //meshRenderer.sharedMaterial = new Material(Shader.Find("Standard"));
+    //        meshRenderer.sharedMaterial = new Material(Shader.Find("HDRP/Lit"));
+    //    }
+    //    MeshFilter meshFilter = go.AddMissingComponent<MeshFilter>();
+    //    return meshFilter;
+    //}
 
-    public static bool CopyMeshComponents(GameObject source, GameObject target)
-    {
-        if (source == null)
-        {
-            Debug.LogError($"CopyMeshComponents source == null target:{target}");
-            return false;
-        }
-        if (source == null)
-        {
-            Debug.LogError($"CopyMeshComponents target == null source:{source}");
-            return false;
-        }
-        MeshRenderer meshRenderer1 = source.GetComponent<MeshRenderer>();
-        MeshFilter meshFilter1 = source.GetComponent<MeshFilter>();
-        if (meshRenderer1 == null)
-        {
-            Debug.LogError($"CopyMeshComponents meshRenderer1 == null source:{source} target:{target}");
-            return false;
-        }
-        if (meshFilter1 == null)
-        {
-            Debug.LogError($"CopyMeshComponents meshFilter1 == null source:{source} target:{target}");
-            return false;
-        }
+    //public static bool CopyMeshComponents(GameObject source, GameObject target)
+    //{
+    //    if (source == null)
+    //    {
+    //        Debug.LogError($"CopyMeshComponents source == null target:{target}");
+    //        return false;
+    //    }
+    //    if (source == null)
+    //    {
+    //        Debug.LogError($"CopyMeshComponents target == null source:{source}");
+    //        return false;
+    //    }
+    //    MeshRenderer meshRenderer1 = source.GetComponent<MeshRenderer>();
+    //    MeshFilter meshFilter1 = source.GetComponent<MeshFilter>();
+    //    if (meshRenderer1 == null)
+    //    {
+    //        Debug.LogError($"CopyMeshComponents meshRenderer1 == null source:{source} target:{target}");
+    //        return false;
+    //    }
+    //    if (meshFilter1 == null)
+    //    {
+    //        Debug.LogError($"CopyMeshComponents meshFilter1 == null source:{source} target:{target}");
+    //        return false;
+    //    }
 
-        MeshRenderer meshRenderer2 = target.GetComponent<MeshRenderer>();
-        if (meshRenderer2 == null)
-        {
-            meshRenderer2 = target.AddMissingComponent<MeshRenderer>();
-        }
+    //    MeshRenderer meshRenderer2 = target.GetComponent<MeshRenderer>();
+    //    if (meshRenderer2 == null)
+    //    {
+    //        meshRenderer2 = target.AddMissingComponent<MeshRenderer>();
+    //    }
 
-        //Debug.LogError($"CopyMeshComponents meshRenderer2.sharedMaterials1  :{meshRenderer2.sharedMaterial} source:{source} target:{target}");
+    //    //Debug.LogError($"CopyMeshComponents meshRenderer2.sharedMaterials1  :{meshRenderer2.sharedMaterial} source:{source} target:{target}");
 
-        if (meshRenderer2.sharedMaterial == null)
-        {
-            meshRenderer2.sharedMaterials = meshRenderer1.sharedMaterials;
-        }
+    //    if (meshRenderer2.sharedMaterial == null)
+    //    {
+    //        meshRenderer2.sharedMaterials = meshRenderer1.sharedMaterials;
+    //    }
 
-        //Debug.LogError($"CopyMeshComponents meshRenderer2.sharedMaterials2  :{meshRenderer2.sharedMaterial} source:{source} target:{target}");
+    //    //Debug.LogError($"CopyMeshComponents meshRenderer2.sharedMaterials2  :{meshRenderer2.sharedMaterial} source:{source} target:{target}");
 
-        if (meshRenderer2.sharedMaterial == null)
-        {
-            Debug.LogError($"CopyMeshComponents meshRenderer2.sharedMaterials  == null source:{source} target:{target}");
-        }
+    //    if (meshRenderer2.sharedMaterial == null)
+    //    {
+    //        Debug.LogError($"CopyMeshComponents meshRenderer2.sharedMaterials  == null source:{source} target:{target}");
+    //    }
 
        
-        MeshFilter meshFilter2 = target.AddMissingComponent<MeshFilter>();
-        meshFilter2.sharedMesh = meshFilter1.sharedMesh;
+    //    MeshFilter meshFilter2 = target.AddMissingComponent<MeshFilter>();
+    //    meshFilter2.sharedMesh = meshFilter1.sharedMesh;
 
-        MeshCollider meshCollider2 = target.GetComponent<MeshCollider>();
-        if (meshCollider2)
-        {
-            meshCollider2.sharedMesh= meshFilter1.sharedMesh;
-        }
-        return true;
-    }
+    //    MeshCollider meshCollider2 = target.GetComponent<MeshCollider>();
+    //    if (meshCollider2)
+    //    {
+    //        meshCollider2.sharedMesh= meshFilter1.sharedMesh;
+    //    }
+    //    return true;
+    //}
 
 
     public static Vector3 GetCenterOfList(List<Vector3> list)
@@ -322,37 +299,37 @@ public static class MeshHelper
         return minP;
     }
 
-    public static Vector3 FindClosedPoint(Vector3 p, SharedMeshTrianglesList list)
-    {
-        float minDis = float.MaxValue;
-        Vector3 minP = Vector3.zero;
-        foreach (var item in list)
-        {
-            float dis = Vector3.Distance(item.GetCenter(), p);
-            if (dis < minDis)
-            {
-                minDis = dis;
-                minP = item.GetCenter();
-            }
-        }
-        return minP;
-    }
+    //public static Vector3 FindClosedPoint(Vector3 p, SharedMeshTrianglesList list)
+    //{
+    //    float minDis = float.MaxValue;
+    //    Vector3 minP = Vector3.zero;
+    //    foreach (var item in list)
+    //    {
+    //        float dis = Vector3.Distance(item.GetCenter(), p);
+    //        if (dis < minDis)
+    //        {
+    //            minDis = dis;
+    //            minP = item.GetCenter();
+    //        }
+    //    }
+    //    return minP;
+    //}
 
-    public static SharedMeshTriangles FindClosedPlane(Vector3 p, SharedMeshTrianglesList list)
-    {
-        float minDis = float.MaxValue;
-        SharedMeshTriangles minP = null;
-        foreach (var item in list)
-        {
-            float dis = Vector3.Distance(item.GetCenter(), p);
-            if (dis < minDis)
-            {
-                minDis = dis;
-                minP = item;
-            }
-        }
-        return minP;
-    }
+    //public static SharedMeshTriangles FindClosedPlane(Vector3 p, SharedMeshTrianglesList list)
+    //{
+    //    float minDis = float.MaxValue;
+    //    SharedMeshTriangles minP = null;
+    //    foreach (var item in list)
+    //    {
+    //        float dis = Vector3.Distance(item.GetCenter(), p);
+    //        if (dis < minDis)
+    //        {
+    //            minDis = dis;
+    //            minP = item;
+    //        }
+    //    }
+    //    return minP;
+    //}
 
     //public static GameObject InstantiatePrefabFromSceneGo()
     //{
@@ -542,66 +519,67 @@ public static class MeshHelper
 
     public static string GetVertexCountS(float vertexCount)
     {
-        float f = vertexCount / 10000f;
-        if (f >= 100)
-        {
-            return $"{f:F0}";
-        }
-        else if (f>=10)
-        {
-            return $"{f:F1}";
-        }
-        else if (f >= 1)
-        {
-            return $"{f:F2}";
-        }
-        else if (vertexCount >= 1000)
-        {
-            return $"{f:F3}";
-        }
-        //else if (vertexCount >= 100)
+        //float f = vertexCount / 10000f;
+        //if (f >= 100)
+        //{
+        //    return $"{f:F0}";
+        //}
+        //else if (f>=10)
+        //{
+        //    return $"{f:F1}";
+        //}
+        //else if (f >= 1)
+        //{
+        //    return $"{f:F2}";
+        //}
+        //else if (vertexCount >= 1000)
         //{
         //    return $"{f:F3}";
         //}
-        //else if (vertexCount >= 10)
+        ////else if (vertexCount >= 100)
+        ////{
+        ////    return $"{f:F3}";
+        ////}
+        ////else if (vertexCount >= 10)
+        ////{
+        ////    return $"{f:F3}";
+        ////}
+        //else if (vertexCount == 0)
+        //{
+        //    return "0";
+        //}
+        //else
         //{
         //    return $"{f:F3}";
         //}
-        else if (vertexCount == 0)
-        {
-            return "0";
-        }
-        else
-        {
-            return $"{f:F3}";
-        }
+        return VertexHelper.GetVertexCountS(vertexCount);
     }
 
-    public static GameObject EditorCopyGo(GameObject sourceGo)
-    {
-#if UNITY_EDITOR
-        GameObject newObj = null;
-        GameObject root = PrefabUtility.GetNearestPrefabInstanceRoot(sourceGo);
-        //Debug.Log($"root:[{root}]");
-        if (root != null)
-        {
-            string prefabPath = UnityEditor.PrefabUtility.GetPrefabAssetPathOfNearestInstanceRoot(root);
-            //Debug.Log($"prefabPath:[{prefabPath}]");
-            var prefabAsset = AssetDatabase.LoadAssetAtPath(prefabPath, typeof(GameObject));
-            //Debug.Log($"prefabAsset:[{prefabAsset}]");
-            var prefab = PrefabUtility.InstantiatePrefab(prefabAsset);
-            //Debug.Log($"prefab:[{prefab}]");
-            newObj = prefab as GameObject;
-        }
-        else
-        {
-            newObj = CopyGO(sourceGo);
-        }
-#else
-        GameObject newObj = CopyGO(sourceGo);
-#endif
-        return newObj;
-    }
+//    public static GameObject EditorCopyGo(GameObject sourceGo)
+//    {
+//#if UNITY_EDITOR
+//        GameObject newObj = null;
+//        GameObject root = PrefabUtility.GetNearestPrefabInstanceRoot(sourceGo);
+//        //Debug.Log($"root:[{root}]");
+//        if (root != null)
+//        {
+//            string prefabPath = UnityEditor.PrefabUtility.GetPrefabAssetPathOfNearestInstanceRoot(root);
+//            //Debug.Log($"prefabPath:[{prefabPath}]");
+//            var prefabAsset = AssetDatabase.LoadAssetAtPath(prefabPath, typeof(GameObject));
+//            //Debug.Log($"prefabAsset:[{prefabAsset}]");
+//            var prefab = PrefabUtility.InstantiatePrefab(prefabAsset);
+//            //Debug.Log($"prefab:[{prefab}]");
+//            newObj = prefab as GameObject;
+//        }
+//        else
+//        {
+//            newObj = CopyGO(sourceGo);
+//        }
+//#else
+//        GameObject newObj = CopyGO(sourceGo);
+//#endif
+//        return newObj;
+//    }
 
     public static Vector3 GetNewPos(Vector3 pos,Vector3 fromP,Vector3 toP, TransfromAlignSetting transfromAlignSetting)
     {
@@ -808,162 +786,162 @@ public static class MeshHelper
         sourceRoot.transform.position += offset;
     }
 
-    public static GameObject ReplaceGameObject(GameObject oldObj, GameObject prefab,bool isDestoryOriginal, TransfromAlignSetting transfromAlignSetting)
-    {
-        if (prefab == null) return null;
-#if UNITY_EDITOR
-        EditorHelper.UnpackPrefab(oldObj);
-        EditorHelper.UnpackPrefab(prefab);
-#endif
+//    public static GameObject ReplaceGameObject(GameObject oldObj, GameObject prefab,bool isDestoryOriginal, TransfromAlignSetting transfromAlignSetting)
+//    {
+//        if (prefab == null) return null;
+//#if UNITY_EDITOR
+//        EditorHelper.UnpackPrefab(oldObj);
+//        EditorHelper.UnpackPrefab(prefab);
+//#endif
 
-        Transform parentOldObj = oldObj.transform.parent;
-        Transform parentPrefab = prefab.transform.parent;
-        oldObj.transform.parent = null;
-        prefab.transform.parent = null;
+//        Transform parentOldObj = oldObj.transform.parent;
+//        Transform parentPrefab = prefab.transform.parent;
+//        oldObj.transform.parent = null;
+//        prefab.transform.parent = null;
 
-        GameObject newObj = EditorCopyGo(prefab);
+//        GameObject newObj = EditorCopyGo(prefab);
 
-        newObj.SetActive(true);
+//        newObj.SetActive(true);
 
-        //newObj.transform.position = oldObj.transform.position;
-        //newObj.transform.eulerAngles = oldObj.transform.eulerAngles;
-        //newObj.transform.parent = oldObj.transform;
+//        //newObj.transform.position = oldObj.transform.position;
+//        //newObj.transform.eulerAngles = oldObj.transform.eulerAngles;
+//        //newObj.transform.parent = oldObj.transform;
 
-        newObj.transform.position = prefab.transform.position;
+//        newObj.transform.position = prefab.transform.position;
 
-        newObj.transform.parent = oldObj.transform.parent;
-        if (transfromAlignSetting == null)
-        {
-            newObj.transform.localPosition = oldObj.transform.localPosition;
-        }
-        else
-        {
-            var minMax_TO = MeshRendererInfo.GetMinMax(oldObj);
-            var minMax_From = MeshRendererInfo.GetMinMax(prefab);
+//        newObj.transform.parent = oldObj.transform.parent;
+//        if (transfromAlignSetting == null)
+//        {
+//            newObj.transform.localPosition = oldObj.transform.localPosition;
+//        }
+//        else
+//        {
+//            var minMax_TO = MeshRendererInfo.GetMinMax(oldObj);
+//            var minMax_From = MeshRendererInfo.GetMinMax(prefab);
 
-            var pos = newObj.transform.localPosition;
-            if(transfromAlignSetting.Align== TransfromAlignMode.Pivot)
-            {
-                if (transfromAlignSetting.SetPosX)
-                {
-                    pos.x = oldObj.transform.localPosition.x;
-                }
-                if (transfromAlignSetting.SetPosY)
-                {
-                    pos.y = oldObj.transform.localPosition.y;
-                }
-                if (transfromAlignSetting.SetPosZ)
-                {
-                    pos.z = oldObj.transform.localPosition.z;
-                }
-            }
-            else if (transfromAlignSetting.Align == TransfromAlignMode.Min)
-            {
-                var dis = minMax_TO[0] - minMax_From[0];
-                if (transfromAlignSetting.SetPosX)
-                {
-                    pos.x += dis.x;
-                }
-                if (transfromAlignSetting.SetPosY)
-                {
-                    pos.y += dis.y;
-                }
-                if (transfromAlignSetting.SetPosZ)
-                {
-                    pos.z += dis.z;
-                }
-            }
-            else if (transfromAlignSetting.Align == TransfromAlignMode.Max)
-            {
-                var dis = minMax_TO[1] - minMax_From[1];
-                if (transfromAlignSetting.SetPosX)
-                {
-                    pos.x += dis.x;
-                }
-                if (transfromAlignSetting.SetPosY)
-                {
-                    pos.y += dis.y;
-                }
-                if (transfromAlignSetting.SetPosZ)
-                {
-                    pos.z += dis.z;
-                }
-            }
-            else if (transfromAlignSetting.Align == TransfromAlignMode.Center)
-            {
-                var dis = minMax_TO[3] - minMax_From[3];
-                if (transfromAlignSetting.SetPosX)
-                {
-                    pos.x += dis.x;
-                }
-                if (transfromAlignSetting.SetPosY)
-                {
-                    pos.y += dis.y;
-                }
-                if (transfromAlignSetting.SetPosZ)
-                {
-                    pos.z += dis.z;
-                }
-            }
+//            var pos = newObj.transform.localPosition;
+//            if(transfromAlignSetting.Align== TransfromAlignMode.Pivot)
+//            {
+//                if (transfromAlignSetting.SetPosX)
+//                {
+//                    pos.x = oldObj.transform.localPosition.x;
+//                }
+//                if (transfromAlignSetting.SetPosY)
+//                {
+//                    pos.y = oldObj.transform.localPosition.y;
+//                }
+//                if (transfromAlignSetting.SetPosZ)
+//                {
+//                    pos.z = oldObj.transform.localPosition.z;
+//                }
+//            }
+//            else if (transfromAlignSetting.Align == TransfromAlignMode.Min)
+//            {
+//                var dis = minMax_TO[0] - minMax_From[0];
+//                if (transfromAlignSetting.SetPosX)
+//                {
+//                    pos.x += dis.x;
+//                }
+//                if (transfromAlignSetting.SetPosY)
+//                {
+//                    pos.y += dis.y;
+//                }
+//                if (transfromAlignSetting.SetPosZ)
+//                {
+//                    pos.z += dis.z;
+//                }
+//            }
+//            else if (transfromAlignSetting.Align == TransfromAlignMode.Max)
+//            {
+//                var dis = minMax_TO[1] - minMax_From[1];
+//                if (transfromAlignSetting.SetPosX)
+//                {
+//                    pos.x += dis.x;
+//                }
+//                if (transfromAlignSetting.SetPosY)
+//                {
+//                    pos.y += dis.y;
+//                }
+//                if (transfromAlignSetting.SetPosZ)
+//                {
+//                    pos.z += dis.z;
+//                }
+//            }
+//            else if (transfromAlignSetting.Align == TransfromAlignMode.Center)
+//            {
+//                var dis = minMax_TO[3] - minMax_From[3];
+//                if (transfromAlignSetting.SetPosX)
+//                {
+//                    pos.x += dis.x;
+//                }
+//                if (transfromAlignSetting.SetPosY)
+//                {
+//                    pos.y += dis.y;
+//                }
+//                if (transfromAlignSetting.SetPosZ)
+//                {
+//                    pos.z += dis.z;
+//                }
+//            }
 
-            if (transfromAlignSetting.SetPosition)
-            {
-                newObj.transform.localPosition = pos;
-            }
-        }
+//            if (transfromAlignSetting.SetPosition)
+//            {
+//                newObj.transform.localPosition = pos;
+//            }
+//        }
 
-        if (transfromAlignSetting.SetScale)
-        {
-            newObj.transform.localScale = oldObj.transform.localScale;
-        }
-        if (transfromAlignSetting.SetRotation)
-        {
-            newObj.transform.localEulerAngles = oldObj.transform.localEulerAngles;
-        }
-        //newObj.transform.localEulerAngles = oldObj.transform.localEulerAngles + new Vector3(0, 90, 90);
+//        if (transfromAlignSetting.SetScale)
+//        {
+//            newObj.transform.localScale = oldObj.transform.localScale;
+//        }
+//        if (transfromAlignSetting.SetRotation)
+//        {
+//            newObj.transform.localEulerAngles = oldObj.transform.localEulerAngles;
+//        }
+//        //newObj.transform.localEulerAngles = oldObj.transform.localEulerAngles + new Vector3(0, 90, 90);
 
-        if (isDestoryOriginal)
-        {
-            newObj.name = oldObj.name;
-            GameObject.DestroyImmediate(oldObj);
-        }
-        else
-        {
-            newObj.name = oldObj.name + "_New";
-        }
+//        if (isDestoryOriginal)
+//        {
+//            newObj.name = oldObj.name;
+//            GameObject.DestroyImmediate(oldObj);
+//        }
+//        else
+//        {
+//            newObj.name = oldObj.name + "_New";
+//        }
 
-        newObj.transform.parent = parentOldObj;
-        oldObj.transform.parent = parentOldObj;
-        prefab.transform.parent = parentPrefab;
+//        newObj.transform.parent = parentOldObj;
+//        oldObj.transform.parent = parentOldObj;
+//        prefab.transform.parent = parentPrefab;
 
-        return newObj;
-    }
+//        return newObj;
+//    }
 
-    /// <summary>
-    /// 用一个单元模型，替换掉场景中的相同模型。
-    /// </summary>
-    /// <param name="oldObj"></param>
-    /// <param name="prefab"></param>
-    /// <returns></returns>
-    public static GameObject ReplaceByPrefab(GameObject oldObj, GameObject prefab)
-    {
-        if (prefab == null) return null;
-        GameObject newObj=ReplaceGameObject(oldObj, prefab,false,null);
-        newObj.transform.localEulerAngles = oldObj.transform.localEulerAngles + new Vector3(0, 90, 90);
+//    /// <summary>
+//    /// 用一个单元模型，替换掉场景中的相同模型。
+//    /// </summary>
+//    /// <param name="oldObj"></param>
+//    /// <param name="prefab"></param>
+//    /// <returns></returns>
+//    public static GameObject ReplaceByPrefab(GameObject oldObj, GameObject prefab)
+//    {
+//        if (prefab == null) return null;
+//        GameObject newObj=ReplaceGameObject(oldObj, prefab,false,null);
+//        newObj.transform.localEulerAngles = oldObj.transform.localEulerAngles + new Vector3(0, 90, 90);
 
-        //GameObject.Destroy(item.gameObject.transform);
-#if UNITY_EDITOR
-        if (oldObj.GetComponent<MeshNode>() == null)
-        {
-            oldObj.AddComponent<MeshNode>();
-        }
-        if (newObj.GetComponent<MeshNode>() == null)
-        {
-            newObj.AddComponent<MeshNode>();
-        }
-#endif
-        return newObj;
-    }
+//        //GameObject.Destroy(item.gameObject.transform);
+//#if UNITY_EDITOR
+//        if (oldObj.GetComponent<MeshNode>() == null)
+//        {
+//            oldObj.AddComponent<MeshNode>();
+//        }
+//        if (newObj.GetComponent<MeshNode>() == null)
+//        {
+//            newObj.AddComponent<MeshNode>();
+//        }
+//#endif
+//        return newObj;
+//    }
 
     //public static IEnumerator ReplaceByPrefabEx(GameObject oldObj, GameObject prefab, string bufferKey1 = "", string bufferKey2 = "", bool isDestoryOriginal = true)
     //{
@@ -1229,58 +1207,61 @@ public static class MeshHelper
     // public static int maxDistance = 5;
     // public static int minDistance = 5;
 
-    public class DistanceArgs
-    {
-        public Transform t1;
-        public Transform t2;
-        public bool isResetParent=false;
-        public bool isResetPos=false;
-        public bool isResetRotation=false;
-        public string progress = "";
+    //public class DistanceArgs
+    //{
+    //    public Transform t1;
+    //    public Transform t2;
+    //    public bool isResetParent=false;
+    //    public bool isResetPos=false;
+    //    public bool isResetRotation=false;
+    //    public string progress = "";
 
-        public bool isLocal = false;//局部坐标
+    //    public bool isLocal = false;//局部坐标
 
-        public bool showLog=false;
+    //    public bool showLog=false;
 
-        public DistanceArgs(Transform t1,Transform t2,string progress,bool showLog,bool local=false)
-        {
-            this.t1=t1;
-            this.t2=t2;
-            this.progress=progress;
-            this.showLog=showLog;
-            this.isLocal = local;
-        }
-    }
+    //    public DistanceArgs(Transform t1,Transform t2,string progress,bool showLog,bool local=false)
+    //    {
+    //        this.t1=t1;
+    //        this.t2=t2;
+    //        this.progress=progress;
+    //        this.showLog=showLog;
+    //        this.isLocal = local;
+    //    }
+    //}
 
 
     public static float GetVertexDistanceEx(Transform t1,Transform t2,string progress="",bool showLog=false, bool local = false)
     {
-        if (t1 == null)
-        {
-            Debug.LogError($"GetVertexDistanceEx t1==null");
-            return float.MaxValue;
-        }
-        if (t2 == null)
-        {
-            Debug.LogError($"GetVertexDistanceEx t2==null");
-            return float.MaxValue;
-        }
-        return GetVertexDistanceEx(new DistanceArgs(t1,t2,progress,showLog, local));
+        //if (t1 == null)
+        //{
+        //    Debug.LogError($"GetVertexDistanceEx t1==null");
+        //    return float.MaxValue;
+        //}
+        //if (t2 == null)
+        //{
+        //    Debug.LogError($"GetVertexDistanceEx t2==null");
+        //    return float.MaxValue;
+        //}
+        //return GetVertexDistanceEx(new DistanceArgs(t1,t2,progress,showLog, local));
+        return VertexHelper.GetVertexDistanceEx(t1, t2, progress, showLog, local);
     }
 
     public static float GetVertexDistanceEx(GameObject g1, GameObject g2, string progress = "", bool showLog = false,bool local=false)
     {
-        if (g1 == null)
-        {
-            Debug.LogError($"GetVertexDistanceEx g1==null");
-            return float.MaxValue ;
-        }
-        if (g2 == null)
-        {
-            Debug.LogError($"GetVertexDistanceEx g2==null");
-            return float.MaxValue;
-        }
-        return GetVertexDistanceEx(new DistanceArgs(g1.transform, g2.transform, progress, showLog, local));
+        //if (g1 == null)
+        //{
+        //    Debug.LogError($"GetVertexDistanceEx g1==null");
+        //    return float.MaxValue ;
+        //}
+        //if (g2 == null)
+        //{
+        //    Debug.LogError($"GetVertexDistanceEx g2==null");
+        //    return float.MaxValue;
+        //}
+        //return GetVertexDistanceEx(new DistanceArgs(g1.transform, g2.transform, progress, showLog, local));
+
+        return VertexHelper.GetVertexDistanceEx(g1, g2, progress, showLog, local);
     }
 
     public static float GetSizeDistance(GameObject g1, GameObject g2)
@@ -1292,113 +1273,113 @@ public static class MeshHelper
         return DistanceUtil.GetDistance(vs1, vs2);
     }
 
-    public static float GetAvgVertexDistanceEx(Transform t1, Transform t2, string progress = "", bool showLog = false)
-    {
-        if (t1 == null)
-        {
-            Debug.LogError($"GetVertexDistanceEx t1==null");
-            return float.MaxValue;
-        }
-        if (t2 == null)
-        {
-            Debug.LogError($"GetVertexDistanceEx t2==null");
-            return float.MaxValue;
-        }
-        return GetAvgVertexDistanceEx(new DistanceArgs(t1, t2, progress, showLog));
-    }
+    //public static float GetAvgVertexDistanceEx(Transform t1, Transform t2, string progress = "", bool showLog = false)
+    //{
+    //    if (t1 == null)
+    //    {
+    //        Debug.LogError($"GetVertexDistanceEx t1==null");
+    //        return float.MaxValue;
+    //    }
+    //    if (t2 == null)
+    //    {
+    //        Debug.LogError($"GetVertexDistanceEx t2==null");
+    //        return float.MaxValue;
+    //    }
+    //    return GetAvgVertexDistanceEx(new DistanceArgs(t1, t2, progress, showLog));
+    //}
 
-    public static float GetAvgVertexDistanceEx(DistanceArgs arg)
-    {
-        if (arg.showLog) Debug.Log($"GetVertexDistanceEx {arg.t1.name}|{arg.t2.name}");
-        Transform t1 = arg.t1;
-        Transform t2 = arg.t2;
+    //public static float GetAvgVertexDistanceEx(DistanceArgs arg)
+    //{
+    //    if (arg.showLog) Debug.Log($"GetVertexDistanceEx {arg.t1.name}|{arg.t2.name}");
+    //    Transform t1 = arg.t1;
+    //    Transform t2 = arg.t2;
 
 
-        Vector3 p01 = t1.position;
-        Vector3 p02 = t2.position;
+    //    Vector3 p01 = t1.position;
+    //    Vector3 p02 = t2.position;
 
-        if (arg.isResetPos)
-        {
-            t1.position = Vector3.zero;
-            t2.position = Vector3.zero;
-        }
+    //    if (arg.isResetPos)
+    //    {
+    //        t1.position = Vector3.zero;
+    //        t2.position = Vector3.zero;
+    //    }
 
-        Quaternion q1 = t1.rotation;
-        Quaternion q2 = t2.rotation;
-        if (arg.isResetRotation)
-        {
-            t1.rotation = Quaternion.identity;
-            t2.rotation = Quaternion.identity;
-        }
+    //    Quaternion q1 = t1.rotation;
+    //    Quaternion q2 = t2.rotation;
+    //    if (arg.isResetRotation)
+    //    {
+    //        t1.rotation = Quaternion.identity;
+    //        t2.rotation = Quaternion.identity;
+    //    }
 
-        DateTime start = DateTime.Now;
+    //    DateTime start = DateTime.Now;
 
-        MeshFilter mf1 = t1.GetComponent<MeshFilter>();
-        MeshFilter mf2 = t2.GetComponent<MeshFilter>();
-        float dis = -1;
-        if (mf1 == null || mf2 == null)
-        {
-            Debug.LogError($"GetAvgVertexDistanceEx mf1 == null || mf2 == null mf1:{mf1} mf2:{mf2}");
-            return float.MaxValue;
-        }
-        else
-        {
-            Mesh mesh1 = mf1.sharedMesh;
-            Mesh mesh2 = mf2.sharedMesh;
-            if (mesh1 == null || mesh2 == null)
-            {
-                Debug.LogError($"GetAvgVertexDistanceEx mesh1 == null || mesh2 == null mesh1:{mesh1} mesh2:{mesh2}");
-                return float.MaxValue;
-            }
-            else
-            {
-                float distance = 0;
-                Vector3[] points1 = GetWorldVertexes(mesh1, t1);
-                Vector3[] points2 = GetWorldVertexes(mesh2, t2);
-                int count = points1.Length;
-                if(points2.Length<count)
-                {
-                    count = points2.Length;
-                }
-                dis = DistanceUtil.GetDistance(points1, points2, arg.showLog)/ count;
-            }
-        }
+    //    MeshFilter mf1 = t1.GetComponent<MeshFilter>();
+    //    MeshFilter mf2 = t2.GetComponent<MeshFilter>();
+    //    float dis = -1;
+    //    if (mf1 == null || mf2 == null)
+    //    {
+    //        Debug.LogError($"GetAvgVertexDistanceEx mf1 == null || mf2 == null mf1:{mf1} mf2:{mf2}");
+    //        return float.MaxValue;
+    //    }
+    //    else
+    //    {
+    //        Mesh mesh1 = mf1.sharedMesh;
+    //        Mesh mesh2 = mf2.sharedMesh;
+    //        if (mesh1 == null || mesh2 == null)
+    //        {
+    //            Debug.LogError($"GetAvgVertexDistanceEx mesh1 == null || mesh2 == null mesh1:{mesh1} mesh2:{mesh2}");
+    //            return float.MaxValue;
+    //        }
+    //        else
+    //        {
+    //            float distance = 0;
+    //            Vector3[] points1 = VertexHelper.GetWorldVertexes(mesh1, t1);
+    //            Vector3[] points2 = VertexHelper.GetWorldVertexes(mesh2, t2);
+    //            int count = points1.Length;
+    //            if (points2.Length < count)
+    //            {
+    //                count = points2.Length;
+    //            }
+    //            dis = DistanceUtil.GetDistance(points1, points2, arg.showLog) / count;
+    //        }
+    //    }
 
-        if (arg.isResetPos)
-        {
-            t1.position = p01;
-            t2.position = p02;
-        }
+    //    if (arg.isResetPos)
+    //    {
+    //        t1.position = p01;
+    //        t2.position = p02;
+    //    }
 
-        if (arg.isResetRotation)
-        {
-            t1.rotation = q1;
-            t2.rotation = q2;
-        }
+    //    if (arg.isResetRotation)
+    //    {
+    //        t1.rotation = q1;
+    //        t2.rotation = q2;
+    //    }
 
-        // if(isResetParent){
-        //     t1.SetParent(parent1,true);
-        //     t2.SetParent(parent2,true);
-        // }
+    //    // if(isResetParent){
+    //    //     t1.SetParent(parent1,true);
+    //    //     t2.SetParent(parent2,true);
+    //    // }
 
-        InvokeGetVertexDistanceExCount++;
+    //    InvokeGetVertexDistanceExCount++;
 
-        return dis;
-    }
+    //    return dis;
+    //}
 
-    [Serializable]
-    public class MinDisTarget<T> where T : Component
-    {
-        public float dis = float.MaxValue;
-        public float meshDis = float.MaxValue;
-        public T target = null;
-        public MinDisTarget(float dis, float meshDis, T t)
-        {
-            this.dis = dis;
-            target = t;
-            this.meshDis = meshDis;
-        }
-    }
+    //[Serializable]
+    //public class MinDisTarget<T> where T : Component
+    //{
+    //    public float dis = float.MaxValue;
+    //    public float meshDis = float.MaxValue;
+    //    public T target = null;
+    //    public MinDisTarget(float dis, float meshDis, T t)
+    //    {
+    //        this.dis = dis;
+    //        target = t;
+    //        this.meshDis = meshDis;
+    //    }
+    //}
 
     public static float GetCenterDistance(GameObject go1, GameObject go2)
     {
@@ -1468,7 +1449,7 @@ public static class MeshHelper
         }
         else if (mode == LODCompareMode.NameWithMesh || mode == LODCompareMode.Mesh)
         {
-            float distance = MeshHelper.GetAvgVertexDistanceEx(item.transform, t);
+            float distance = VertexHelper.GetAvgVertexDistanceEx(item.transform, t);
             return distance;
         }
         else if (mode == LODCompareMode.NameWithSharedMesh || mode == LODCompareMode.SharedMesh)
@@ -1496,102 +1477,102 @@ public static class MeshHelper
 
 
 
-    public static float GetVertexDistanceEx(DistanceArgs arg)
-    {
-        if(arg.showLog)Debug.Log($"GetVertexDistanceEx {arg.t1.name}|{arg.t2.name}");
-        Transform t1=arg.t1;
-        Transform t2=arg.t2;
+    //public static float GetVertexDistanceEx(DistanceArgs arg)
+    //{
+    //    if(arg.showLog)Debug.Log($"GetVertexDistanceEx {arg.t1.name}|{arg.t2.name}");
+    //    Transform t1=arg.t1;
+    //    Transform t2=arg.t2;
 
 
-        Vector3 p01=t1.position;
-        Vector3 p02=t2.position;
+    //    Vector3 p01=t1.position;
+    //    Vector3 p02=t2.position;
 
-        if(arg.isResetPos)
-        {
-            t1.position=Vector3.zero;
-            t2.position=Vector3.zero;
-        }
+    //    if(arg.isResetPos)
+    //    {
+    //        t1.position=Vector3.zero;
+    //        t2.position=Vector3.zero;
+    //    }
 
-        Quaternion q1=t1.rotation;
-        Quaternion q2=t2.rotation;
-        if(arg.isResetRotation)
-        {
-            t1.rotation=Quaternion.identity;
-            t2.rotation=Quaternion.identity;
-        }
+    //    Quaternion q1=t1.rotation;
+    //    Quaternion q2=t2.rotation;
+    //    if(arg.isResetRotation)
+    //    {
+    //        t1.rotation=Quaternion.identity;
+    //        t2.rotation=Quaternion.identity;
+    //    }
 
-        DateTime start = DateTime.Now;
+    //    DateTime start = DateTime.Now;
 
-        MeshFilter mf1 = t1.GetComponent<MeshFilter>();
-        MeshFilter mf2 = t2.GetComponent<MeshFilter>();
-        float dis=-1;
-        if (mf1 == null || mf2 == null)
-        {
-            //return -1;
-            //Debug.LogWarning("mf1 == null || mf2 == null");
-            Vector3[] points1 = GetChildrenWorldVertexes(t1.gameObject);
-            Vector3[] points2 = GetChildrenWorldVertexes(t2.gameObject);
-            dis = DistanceUtil.GetDistance(points1, points2, arg.showLog);
-        }
-        else
-        {
-            Mesh mesh1 = mf1.sharedMesh;
-            if (mesh1 == null)
-            {
-                Debug.LogError("mf1.sharedMesh==null:"+mf1);
-            }
-            Mesh mesh2 = mf2.sharedMesh;
-            if (mesh2 == null)
-            {
-                Debug.LogError("mf2.sharedMesh==null:" + mf2);
-            }
+    //    MeshFilter mf1 = t1.GetComponent<MeshFilter>();
+    //    MeshFilter mf2 = t2.GetComponent<MeshFilter>();
+    //    float dis=-1;
+    //    if (mf1 == null || mf2 == null)
+    //    {
+    //        //return -1;
+    //        //Debug.LogWarning("mf1 == null || mf2 == null");
+    //        Vector3[] points1 = VertexHelper.GetChildrenWorldVertexes(t1.gameObject);
+    //        Vector3[] points2 = VertexHelper.GetChildrenWorldVertexes(t2.gameObject);
+    //        dis = DistanceUtil.GetDistance(points1, points2, arg.showLog);
+    //    }
+    //    else
+    //    {
+    //        Mesh mesh1 = mf1.sharedMesh;
+    //        if (mesh1 == null)
+    //        {
+    //            Debug.LogError("mf1.sharedMesh==null:"+mf1);
+    //        }
+    //        Mesh mesh2 = mf2.sharedMesh;
+    //        if (mesh2 == null)
+    //        {
+    //            Debug.LogError("mf2.sharedMesh==null:" + mf2);
+    //        }
 
-            if (mesh1 == null || mesh2 == null)
-            {
-                Vector3[] points1 = GetChildrenWorldVertexes(t1.gameObject);
-                Vector3[] points2 = GetChildrenWorldVertexes(t2.gameObject);
-                dis = DistanceUtil.GetDistance(points1, points2, arg.showLog);
-            }
-            else
-            {
-                //Vector3[] points1 = GetWorldVertexes(mesh1, t1);
-                //Vector3[] points2 = GetWorldVertexes(mesh2, t2);
+    //        if (mesh1 == null || mesh2 == null)
+    //        {
+    //            Vector3[] points1 = VertexHelper.GetChildrenWorldVertexes(t1.gameObject);
+    //            Vector3[] points2 = VertexHelper.GetChildrenWorldVertexes(t2.gameObject);
+    //            dis = DistanceUtil.GetDistance(points1, points2, arg.showLog);
+    //        }
+    //        else
+    //        {
+    //            //Vector3[] points1 = GetWorldVertexes(mesh1, t1);
+    //            //Vector3[] points2 = GetWorldVertexes(mesh2, t2);
 
-                Vector3[] points1 = mesh1.vertices;
-                if (arg.isLocal == false)
-                {
-                    points1 = GetWorldVertexes(points1, t1);
-                }
-                Vector3[] points2 = mesh2.vertices;
-                if (arg.isLocal == false)
-                {
-                    points2 = GetWorldVertexes(points2, t2);
-                }
-                dis = DistanceUtil.GetDistance(points1, points2, arg.showLog);
-            }
-        }
+    //            Vector3[] points1 = mesh1.vertices;
+    //            if (arg.isLocal == false)
+    //            {
+    //                points1 = VertexHelper.GetWorldVertexes(points1, t1);
+    //            }
+    //            Vector3[] points2 = mesh2.vertices;
+    //            if (arg.isLocal == false)
+    //            {
+    //                points2 = VertexHelper.GetWorldVertexes(points2, t2);
+    //            }
+    //            dis = DistanceUtil.GetDistance(points1, points2, arg.showLog);
+    //        }
+    //    }
 
-        if(arg.isResetPos)
-        {
-            t1.position=p01;
-            t2.position=p02;
-        }
+    //    if(arg.isResetPos)
+    //    {
+    //        t1.position=p01;
+    //        t2.position=p02;
+    //    }
 
-        if(arg.isResetRotation)
-        {
-            t1.rotation=q1;
-            t2.rotation=q2;
-        }
+    //    if(arg.isResetRotation)
+    //    {
+    //        t1.rotation=q1;
+    //        t2.rotation=q2;
+    //    }
 
-        // if(isResetParent){
-        //     t1.SetParent(parent1,true);
-        //     t2.SetParent(parent2,true);
-        // }
+    //    // if(isResetParent){
+    //    //     t1.SetParent(parent1,true);
+    //    //     t2.SetParent(parent2,true);
+    //    // }
 
-        InvokeGetVertexDistanceExCount++;
+    //    InvokeGetVertexDistanceExCount++;
 
-        return dis;
-    }
+    //    return dis;
+    //}
 
     // public static Vector3 GetMinDistancePoint(Vector3 p1, Vector3[] points)
     // {
@@ -1682,7 +1663,7 @@ public static class MeshHelper
 
     public static Vector3[] CenterPivot(Transform t,IEnumerable<MeshFilter> meshFilters)
     {
-        var minMax=MeshHelper.GetMinMax(meshFilters);
+        var minMax= VertexHelper.GetMinMax(meshFilters);
         CenterPivot(t,minMax[3]);
         return minMax;
     }
@@ -1711,22 +1692,24 @@ public static class MeshHelper
 
     public static Vector3[] CenterPivot(GameObject go)
     {
-        if(go==null) return null;
+        if (go == null) return null;
         MeshFilter mf = go.GetComponent<MeshFilter>();
         if (mf == null)
         {
             MeshFilter[] mfs = go.GetComponentsInChildren<MeshFilter>(true);
-            var minMax = MeshHelper.GetMinMax(mfs);
+            var minMax = VertexHelper.GetMinMax(mfs);
             CenterPivot(go.transform, minMax[3]);
             return minMax;
         }
         else
         {
             MeshFilter[] mfs = go.GetComponentsInChildren<MeshFilter>(true);
-            var minMax = MeshHelper.GetMinMax(mfs);
+            var minMax = VertexHelper.GetMinMax(mfs);
             return minMax;
         }
-    } 
+    }
+
+
 
     public static void ZeroParent(GameObject go)
     {
@@ -1741,38 +1724,9 @@ public static class MeshHelper
     //    return GetMinMax(new MeshFilter[] { meshFilter });
     //}
 
-        public static Vector3[] GetMinMax(IEnumerable<MeshFilter> meshFilters)
-    {
-        if(meshFilters==null)return null;
-        List<Vector3> allVs=new List<Vector3>();
-        foreach(var mf in meshFilters){
-            if(mf==null) continue;
-            Vector3[] vs=GetWorldVertexes(mf);
-            if (vs == null) continue;
-            allVs.AddRange(vs);
-        }
-        return GetMinMax(allVs.ToArray());
-    }
 
-    public static Vector3[] GetMinMax(IEnumerable<MeshRenderer> meshRenderers)
-    {
-        if (meshRenderers == null) return null;
-        List<Vector3> allVs = new List<Vector3>();
-        foreach (var mf in meshRenderers)
-        {
-            if (mf == null) continue;
-            Vector3[] vs = GetWorldVertexes(mf);
-            if (vs == null) continue;
-            allVs.AddRange(vs);
-        }
-        return GetMinMax(allVs.ToArray());
-    }
 
-    public static Vector3[] GetMinMax(GameObject go)
-    {
-        MeshFilter[] meshFilters = go.GetComponentsInChildren<MeshFilter>(true);
-        return GetMinMax(meshFilters);
-    }
+
 
     public static void RemoveNew(GameObject go)
     {
@@ -1819,36 +1773,7 @@ public static class MeshHelper
         Debug.Log($"RemoveNew count:{count} renderers:{renderers.Length}");
     }
 
-    public static Vector3[] GetMinMax<T>(T t) where T :Component
-    {
-        MeshFilter[] meshFilters = t.GetComponentsInChildren<MeshFilter>(true);
-        return GetMinMax(meshFilters);
-    }
-
-    public static Vector3[] GetMinMax(MeshFilter meshFilter)
-    {
-        if(meshFilter==null)return null;
-        Vector3[] vs=GetWorldVertexes(meshFilter);
-        return GetMinMax(vs);
-    }
-
-    //public static Dictionary<int, List<float>> SizeListBuffer = new Dictionary<int, List<float>>();
-
-    public static List<float> GetSizeList(Vector3[] vs,int id)
-    {
-        //if (SizeListBuffer.ContainsKey(id))
-        //{
-        //    return SizeListBuffer[id];
-        //}
-        var minMax = GetMinMax(vs);
-        var size = minMax[2];
-        List<float> sizeList = new List<float>() { size.x, size.y, size.z };
-        sizeList.Sort();
-
-        //SizeListBuffer.Add(id, sizeList);
-
-        return sizeList;
-    }
+ 
 
     public static float CompareSize(MeshPoints ps1, MeshPoints ps2)
     {
@@ -1946,72 +1871,8 @@ public static class MeshHelper
         return ss < 1.05;
     }
 
-    public static Vector3[] GetMinMax(Vector3[] vs)
-    {
-        if(vs==null)return null;
-        Vector3[] minMax=new Vector3[5];
-        float minX=float.MaxValue;
-        float minY=float.MaxValue;
-        float minZ=float.MaxValue;
-        float maxX=float.MinValue;
-        float maxY=float.MinValue;
-        float maxZ=float.MinValue;
-        Vector3 sum = Vector3.zero;
-        for(int i=0;i<vs.Length;i++)
-        {
-            var p=vs[i];
-            sum += p;
-            if(p.x<minX){
-                minX=p.x;
-            }
-            if(p.y<minY){
-                minY=p.y;
-            }
-            if(p.z<minZ){
-                minZ=p.z;
-            }
-            if(p.x>maxX){
-                maxX=p.x;
-            }
-            if(p.y>maxY){
-                maxY=p.y;
-            }
-            if(p.z>maxZ){
-                maxZ=p.z;
-            }
-        }
-        minMax[0]=new Vector3(minX,minY,minZ);
-        minMax[1]=new Vector3(maxX,maxY,maxZ);
-        minMax[2]=minMax[1]-minMax[0];//size
-        minMax[3]=(minMax[1]+minMax[0])/2;//center
-        minMax[4] = sum / vs.Length;//weight
-        return minMax;
-    }
+  
 
-    public static Vector3[] GetWorldVertexes<T>(T go) where T :Component
-    {
-        MeshFilter meshFilter = go.GetComponent<MeshFilter>();
-        if (meshFilter != null)
-        {
-            return GetWorldVertexes(meshFilter.sharedMesh, go.transform);
-        }
-        else
-        {
-            return GetChildrenWorldVertexes(go);
-        }
-    }
-
-    public static Vector3[] GetWorldVertexes(GameObject go){
-        MeshFilter meshFilter=go.GetComponent<MeshFilter>();
-        if (meshFilter != null)
-        {
-            return GetWorldVertexes(meshFilter.sharedMesh, go.transform);
-        }
-        else
-        {
-            return GetChildrenWorldVertexes(go);
-        }
-    }
 
     public static Vector3[] GetWorldVertexes(MeshPoints go)
     {
@@ -2019,72 +1880,6 @@ public static class MeshHelper
         return go.GetWorldVertexes();
     }
 
-    public static Vector3[] GetWorldVertexes(Mesh mesh1, Transform t1){
-        if (mesh1 == null)
-        {
-            Debug.LogError($"GetWorldVertexes mesh1 == null t1:{t1}");
-            return null;
-        }
-        if (t1 == null)
-        {
-            Debug.LogError($"GetWorldVertexes t1 == null mesh1:{mesh1}");
-            return null;
-        }
-        var vs=mesh1.vertices;
-        return GetWorldVertexes(vs,t1);
-    }
-
-    public static Vector3[] GetChildrenWorldVertexes<T>(T t1) where T :Component
-    {
-        List<Vector3> vertexes = new List<Vector3>();
-        var meshFilters = t1.GetComponentsInChildren<MeshFilter>();
-        foreach(var mf in meshFilters)
-        {
-            if (mf.sharedMesh == null) continue;
-            var vs = GetWorldVertexes(mf.sharedMesh, mf.transform);
-            vertexes.AddRange(vs);
-        }
-        return vertexes.ToArray() ;
-    }
-
-    public static Vector3[] GetChildrenWorldVertexes(GameObject t1)
-    {
-        List<Vector3> vertexes = new List<Vector3>();
-        var meshFilters = t1.GetComponentsInChildren<MeshFilter>();
-        foreach (var mf in meshFilters)
-        {
-            if (mf.sharedMesh == null) continue;
-            var vs = GetWorldVertexes(mf.sharedMesh, mf.transform);
-            vertexes.AddRange(vs);
-        }
-        return vertexes.ToArray();
-    }
-
-    public static Vector3[] GetChildrenVertexes(GameObject t1)
-    {
-        List<Vector3> vertexes = new List<Vector3>();
-        var meshFilters = t1.GetComponentsInChildren<MeshFilter>();
-        foreach (var mf in meshFilters)
-        {
-            if (mf.sharedMesh == null) continue;
-            vertexes.AddRange(mf.sharedMesh.vertices);
-        }
-        return vertexes.ToArray();
-    }
-
-    public static Vector3[] GetWorldVertexes(Vector3[] vs, Transform t1){
-        var vCount=vs.Length;
-        Vector3[] points1 = new Vector3[vCount];
-        // var vs=mesh1.vertices;
-        for (int i = 0; i < vCount; i++)
-        {
-            Vector3 p1 = vs[i];
-            Vector3 p11 = t1.TransformPoint(p1);
-            //points1.Add(p11);
-            points1[i]=p11;
-        }
-        return points1;
-    }
 
     public static Unity.Mathematics.float3[] GetWorldVertexesF3(MeshFilter meshFilter){
         var vs2=meshFilter.sharedMesh.vertices;
@@ -2106,13 +1901,7 @@ public static class MeshHelper
         return points1;
     }
 
-    public static Vector3[] GetWorldVertexes(MeshFilter meshFilter){
-        if (meshFilter == null) return null;
-        if (meshFilter.sharedMesh == null) return null;
-        var vs2=meshFilter.sharedMesh.vertices;
-        var vs22=MeshHelper.GetWorldVertexes(vs2,meshFilter.transform);
-        return vs22;
-    }
+
 
 
 
@@ -2848,43 +2637,6 @@ public static class MeshHelper
 
     public static AlignRotateMode mode;
 
-    public static void PrintVector3(this Vector3 v,string n)
-    {
-        Debug.Log($"[{n}]({v.x},{v.y},{v.z})");
-    }
-
-        public static string Vector3ToString(this Vector3 v)
-    {
-        return $"({v.x},{v.y},{v.z})";
-    }
-
-    public static string Vector3ToString6(this Vector3 v)
-    {
-        return $"({Round(v.x, 6):F6},{Round(v.y, 6):F6},{Round(v.z,6):F6})";
-    }
-
-    public static string Vector3ToString5(this Vector3 v)
-    {
-        return $"({Round(v.x, 5):F5},{Round(v.y, 5):F5},{Round(v.z, 5):F5})";
-    }
-
-    public static string Vector3ToString4(this Vector3 v)
-    {
-        return $"({Round(v.x, 4):F4},{Round(v.y, 4):F4},{Round(v.z, 4):F4})";
-    }
-
-    public static string Vector3ToString3(this Vector3 v)
-    {
-        return $"({Round(v.x,3):F3},{Round(v.y, 3):F3},{Round(v.z, 3):F3})";
-    }
-
-    public static double Round(double input,int power)
-    {
-        double p = Math.Pow(10, power);
-        double output = Math.Round(input * p) / p;
-        //Debug.Log($"Round p:{p} input:{input} output:{output}");
-        return output;
-    }
 
     public static GameObject ZeroPointGo;
 
@@ -2961,21 +2713,21 @@ public static class MeshHelper
         for (int i = 0; i < vcount; i++)
         {
             Vector3 p = vs[i];
-            GameObject go = CreateWorldPoint(p, string.Format("[{0}]{1}", i, p),scale);
+            GameObject go = VertexHelper.CreateWorldPoint(p, string.Format("[{0}]{1}", i, p),scale);
             go.transform.SetParent(parent);
             games.Add(go);
         }
         return games;
     }   
 
-    private static GameObject CreateWorldPoint(Vector3 p,string n,float scale)
-    {
-        GameObject go = GameObject.CreatePrimitive(PrimitiveType.Sphere);
-        go.transform.localScale = new Vector3(scale, scale, scale);
-        go.transform.position = p;
-        go.name = n;
-        return go;
-    }
+    //private static GameObject CreateWorldPoint(Vector3 p,string n,float scale)
+    //{
+    //    GameObject go = GameObject.CreatePrimitive(PrimitiveType.Sphere);
+    //    go.transform.localScale = new Vector3(scale, scale, scale);
+    //    go.transform.position = p;
+    //    go.name = n;
+    //    return go;
+    //}
 
 
     //public static int GetInstanceID(MeshFilter mf)
@@ -3005,6 +2757,7 @@ public static class MeshHelper
         var dis2 = DistanceUtil.GetDistance(vsFromNew1, vsTo, false);
         return dis2;
     }
+
 
     public static RTResultList GetRTResultList(Vector3[] vsFrom, Vector3[] vsTo, int maxCount,float minDis)
     {
@@ -3060,428 +2813,372 @@ public static class MeshHelper
     }
 }
 
-[Serializable]
-public class AlignResult{
+//[Serializable]
+//public class AlignResult{
 
-    public int maxPId;
+//    public int maxPId;
 
-    public int minPId;
+//    public int minPId;
 
-    public Vector3 centerP;
+//    public Vector3 centerP;
 
-    public Vector3 maxP;
+//    public Vector3 maxP;
 
-    public Vector3 minP;
+//    public Vector3 minP;
 
-    public bool IsZero;//绝对
+//    public bool IsZero;//绝对
 
-    public bool IsRelativeZero;//相对
+//    public bool IsRelativeZero;//相对
 
-    public float Angle1;
+//    public float Angle1;
 
-    public float Angle2;
+//    public float Angle2;
 
-    public float ShortAngle;
+//    public float ShortAngle;
 
-    public float LongAngle;
+//    public float LongAngle;
 
-    public float Distance;
+//    public float Distance;
 
-  public override string ToString()
-  {
-    return $"【IsZero:{IsZero};IsZero2:{IsRelativeZero}】 Distance:{Distance};ShortAngle:{ShortAngle};LongAngle:{LongAngle};Angle1:{Angle1};Angle2:{Angle2}";
-  }
-}
+//  public override string ToString()
+//  {
+//    return $"【IsZero:{IsZero};IsZero2:{IsRelativeZero}】 Distance:{Distance};ShortAngle:{ShortAngle};LongAngle:{LongAngle};Angle1:{Angle1};Angle2:{Angle2}";
+//  }
+//}
 
-public static class DistanceSetting
-{
-    /// <summary>
-    /// zero of two vertex point
-    /// </summary>
-    public static double zeroP = 0.0007f;//1E-05
-    public static int zeroPMaxCount = 200;//100
+//public static class DistanceUtil
+//{
+//    public static float GetDistance(Unity.Collections.NativeArray<Vector3> points1, Vector3[] points2, bool showLog = false)
+//    {
+//        //Debug.Log("GetDistance:"+showLog);
+//        DateTime start = DateTime.Now;
+//        //float dis=-1;
+//        float disSum = 0;
 
-    /// <summary>
-    /// zero of two mesh (point clouds)
-    /// </summary>
-    public static double zeroM=0.007f;//1E-04
+//        float distance = 0;
+//        // var points1 = vertices1;
+//        // var points2 = vertices2World;
+//        //List<float> disList = new List<float>();
+//        int zeroCount = 0;
+//        int i = 0;
 
-    public static double zeroMMaxDis = 2;//10
+//        int maxCount = points1.Length;
+//        int zeroPMaxCount = DistanceSetting.zeroPMaxCount;
+//        int step = 1;
+//        if(maxCount > zeroPMaxCount)
+//        {
+//            step = maxCount / zeroPMaxCount;
+//        }
 
-    public static int minDistance = 5;
+//        //for (; i < points1.Length & i<points2.Length; i++)
+//        int count = 0;
+//        for (; i < points1.Length ; i+= step, count++)
+//        {
+//            Vector3 p1 = points1[i];
+//            Vector3 p2 = GetMinDistancePoint(p1, points2);
+//            float d = Vector3.Distance(p1, p2);
+//            disSum += d;//不做处理，直接累计
+//            if (d <= DistanceSetting.zeroP)
+//            {
+//                if (showLog) Debug.Log($"GetDistance1[{i}]d1:{d}|{distance}");
+//                zeroCount++;
+//                if (zeroCount > zeroPMaxCount)//没必要计算完，大概100个都位置相同的话，就是可以的了。
+//                {
+//                    //return distance;//不能返回0哦
+//                    break;
+//                }
+//                else
+//                {
 
-    public static double ICPMinDis=0.2f;//1E-04
+//                }
+//                d = 0;//不考虑累计，小于zero就是0了。，比如10个E-06就E-05，100个就是E-04，1000个就是E-03了，0.001了，那我就不是很有把握是不是重合了。
+//            }
+//            else
+//            {
+//                if (showLog) Debug.Log($"GetDistance2[{i}]d2:{d}|{distance}");
+//            }
+//            //disList.Add(d);
+//            distance += d;
 
-    public static int ICPMaxCount=20;
+//            if (distance > DistanceSetting.zeroMMaxDis)//没必要计算完，整体距离很大的话，就是已经是不行的了
+//            {
+//                break;
+//            }
+//        }
+//        if (showLog) Debug.Log($"GetVertexDistanceEx 用时:{(DateTime.Now - start).TotalMilliseconds:F2}ms，累计:{disSum:F7},结果:{distance:F7},序号:{i}/{points1.Length} count:{count}");
+//        return distance;
+//    }
 
-    public static void Set(DisSetting setting)
-    {
-        zeroP = setting.zeroP;
-        zeroPMaxCount = setting.zeroPMaxCount;
-        zeroM = setting.zeroM;
-        zeroMMaxDis = setting.zeroMMaxDis;
-        minDistance = setting.minDistance;
-        ICPMinDis = setting.ICPMinDis;
-        ICPMaxCount = setting.ICPMaxCount;
-    }
-}
+//    // public static Vector3[] GetClosedPoints(Vector3[] points1, Vector3[] points2, bool showLog = false)
+//    // {
+//    //     //points1：不变的点，vsTo,
+//    //     //points2：变化的点，vsFrom，将points2慢慢变成对齐points1，是算法中的目标点云P
+//    //     Vector3[] points3 = new Vector3[points2.Length];//结果点集,Pi<=P,是points2中的最接近points1中的点集，按顺序一一对应。
+//    //     //有个问题，points1获取了一个point2中的点后，是否要将该点删除？
+//    //     DateTime start = DateTime.Now;
+//    //     //float disSum = 0;
+//    //     int i = 0;
+//    //     for (; i < points1.Length & i < points2.Length; i++)
+//    //     {
+//    //         Vector3 p1 = points1[i];
+//    //         Vector3 p2 = GetMinDistancePoint(p1, points2);
+//    //         points3[i] = p2;
+//    //         //float d = Vector3.Distance(p1, p2);
+//    //         //disSum += d;//不做处理，直接累计
+//    //     }
+//    //     if (showLog) Debug.Log($"GetClosedPoints 用时:{(DateTime.Now - start).TotalMilliseconds:F2}ms");
+//    //     return points3;
+//    // }
 
-[Serializable]
-public class DisSetting
-{
-    /// <summary>
-    /// zero of two vertex point
-    /// </summary>
-    public double zeroP = 0.0007f;//1E-05
-    public int zeroPMaxCount = 100;
+//    public static Vector3[] GetClosedPoints(Vector3[] points1, List<Vector3> points2, bool showLog = false)
+//    {
+//        //points1：不变的点，vsTo,
+//        //points2：变化的点，vsFrom，将points2慢慢变成对齐points1，是算法中的目标点云P
+//        Vector3[] points3 = new Vector3[points2.Count];//结果点集,Pi<=P,是points2中的最接近points1中的点集，按顺序一一对应。
+//        //有个问题，points1获取了一个point2中的点后，是否要将该点删除？
+//        DateTime start = DateTime.Now;
+//        //float disSum = 0;
+//        int i = 0;
+//        int count1 = points1.Length;
+//        int count2 = points2.Count;
+//        for (; i < count1 & i < count2; i++)
+//        {
+//            Vector3 p1 = points1[i];
+//            Vector3 p2 = GetMinDistancePoint(p1, points2,true);
+//            points3[i] = p2;
+//            //float d = Vector3.Distance(p1, p2);
+//            //disSum += d;//不做处理，直接累计
+//        }
+//        if (showLog) Debug.Log($"GetClosedPoints 用时:{(DateTime.Now - start).TotalMilliseconds:F2}ms");
+//        return points3;
+//    }
 
-    /// <summary>
-    /// zero of two mesh (point clouds)
-    /// </summary>
-    public double zeroM = 0.007f;//1E-04
+//    public static float GetDistance(List<Vector3> points1, List<Vector3> points2, bool showLog = false)
+//    {
+//        //Debug.Log("GetDistance:"+showLog);
+//        DateTime start = DateTime.Now;
+//        //float dis=-1;
+//        float disSum = 0;
 
-    public double zeroMMaxDis = 10;
+//        float distance = 0;
+//        // var points1 = vertices1;
+//        // var points2 = vertices2World;
+//        //List<float> disList = new List<float>();
+//        int zeroCount = 0;
+//        int i = 0;
 
-    public int minDistance = 5;
+//        int maxCount = points1.Count;
+//        int zeroPMaxCount = DistanceSetting.zeroPMaxCount;
+//        int step = 1;
+//        if (maxCount > zeroPMaxCount)
+//        {
+//            step = maxCount / zeroPMaxCount;
+//        }
+//        int count = 0;
 
-    public double ICPMinDis = 0.2f;//1E-04
+//        for (; i < points1.Count ; i+=step,count++)
+//        {
+//            Vector3 p1 = points1[i];
+//            Vector3 p2 = GetMinDistancePoint(p1, points2);
+//            float d = Vector3.Distance(p1, p2);
+//            disSum += d;//不做处理，直接累计
+//            if (d <= DistanceSetting.zeroP)
+//            {
+//                if (showLog)
+//                {
+//                    Debug.Log($"GetDistance1[{i}]d1:{d}|{distance}");
+//                }
+//                zeroCount++;
+//                if (zeroCount > zeroPMaxCount)//没必要计算完，大概100个都位置相同的话，就是可以的了。
+//                {
+//                    //return distance;//不能返回0哦
+//                    break;
+//                }
+//                else
+//                {
 
-    public int ICPMaxCount = 20;
-}
+//                }
+//                d = 0;//不考虑累计，小于zero就是0了。，比如10个E-06就E-05，100个就是E-04，1000个就是E-03了，0.001了，那我就不是很有把握是不是重合了。
+//            }
+//            else
+//            {
+//                if (showLog)
+//                {
+//                    Debug.LogWarning($"GetDistance2[{i}]d2:{d}|{distance}");
+//                }
+//            }
+//            //disList.Add(d);
+//            distance += d;
 
-public static class DistanceUtil
-{
-    public static float GetDistance(Unity.Collections.NativeArray<Vector3> points1, Vector3[] points2, bool showLog = false)
-    {
-        //Debug.Log("GetDistance:"+showLog);
-        DateTime start = DateTime.Now;
-        //float dis=-1;
-        float disSum = 0;
+//            if (distance > DistanceSetting.zeroMMaxDis)//没必要计算完，整体距离很大的话，就是已经是不行的了
+//            {
+//                break;
+//            }
+//        }
 
-        float distance = 0;
-        // var points1 = vertices1;
-        // var points2 = vertices2World;
-        //List<float> disList = new List<float>();
-        int zeroCount = 0;
-        int i = 0;
+//        DisLog = $"GetVertexDistanceEx points1:{points1.Count} points2:{points2.Count} 用时:{(DateTime.Now - start).TotalMilliseconds:F2}ms，累计:{disSum:F7},结果:{distance:F7},序号:{i}/{points1.Count} count:{count}";
+//        if (showLog) Debug.Log(DisLog);
+//        return distance;
+//    }
 
-        int maxCount = points1.Length;
-        int zeroPMaxCount = DistanceSetting.zeroPMaxCount;
-        int step = 1;
-        if(maxCount > zeroPMaxCount)
-        {
-            step = maxCount / zeroPMaxCount;
-        }
+//    public static float GetDistance(Vector3[] points1,Vector3[] points2,bool showLog=false)
+//    {
+//        //Debug.Log("GetDistance:"+showLog);
+//        DateTime start=DateTime.Now;
+//        //float dis=-1;
+//        float disSum=0;
 
-        //for (; i < points1.Length & i<points2.Length; i++)
-        int count = 0;
-        for (; i < points1.Length ; i+= step, count++)
-        {
-            Vector3 p1 = points1[i];
-            Vector3 p2 = GetMinDistancePoint(p1, points2);
-            float d = Vector3.Distance(p1, p2);
-            disSum += d;//不做处理，直接累计
-            if (d <= DistanceSetting.zeroP)
-            {
-                if (showLog) Debug.Log($"GetDistance1[{i}]d1:{d}|{distance}");
-                zeroCount++;
-                if (zeroCount > zeroPMaxCount)//没必要计算完，大概100个都位置相同的话，就是可以的了。
-                {
-                    //return distance;//不能返回0哦
-                    break;
-                }
-                else
-                {
+//        float distance = 0;
+//        // var points1 = vertices1;
+//        // var points2 = vertices2World;
+//        //List<float> disList = new List<float>();
+//        int zeroCount = 0;
+//        int i = 0;
 
-                }
-                d = 0;//不考虑累计，小于zero就是0了。，比如10个E-06就E-05，100个就是E-04，1000个就是E-03了，0.001了，那我就不是很有把握是不是重合了。
-            }
-            else
-            {
-                if (showLog) Debug.Log($"GetDistance2[{i}]d2:{d}|{distance}");
-            }
-            //disList.Add(d);
-            distance += d;
+//        int maxCount = points1.Length;
+//        int zeroPMaxCount = DistanceSetting.zeroPMaxCount;
+//        int step = 1;
+//        if (maxCount > zeroPMaxCount)
+//        {
+//            step = maxCount / zeroPMaxCount;
+//        }
+//        int count = 0;
 
-            if (distance > DistanceSetting.zeroMMaxDis)//没必要计算完，整体距离很大的话，就是已经是不行的了
-            {
-                break;
-            }
-        }
-        if (showLog) Debug.Log($"GetVertexDistanceEx 用时:{(DateTime.Now - start).TotalMilliseconds:F2}ms，累计:{disSum:F7},结果:{distance:F7},序号:{i}/{points1.Length} count:{count}");
-        return distance;
-    }
+//        for (; i < points1.Length; i+=step, count++)
+//        {
+//            Vector3 p1 = points1[i];
+//            Vector3 p2 = GetMinDistancePoint(p1, points2);
+//            float d = Vector3.Distance(p1, p2);
+//            disSum+=d;//不做处理，直接累计
+//            if (d <= DistanceSetting.zeroP)
+//            {
+//                if (showLog)
+//                {
+//                    Debug.Log($"GetDistance1[{i}]d1:{d}|{distance}");
+//                }
+//                zeroCount++;
+//                if (zeroCount > zeroPMaxCount)//没必要计算完，大概100个都位置相同的话，就是可以的了。
+//                {
+//                    //return distance;//不能返回0哦
+//                    break;
+//                }
+//                else
+//                {
 
-    // public static Vector3[] GetClosedPoints(Vector3[] points1, Vector3[] points2, bool showLog = false)
-    // {
-    //     //points1：不变的点，vsTo,
-    //     //points2：变化的点，vsFrom，将points2慢慢变成对齐points1，是算法中的目标点云P
-    //     Vector3[] points3 = new Vector3[points2.Length];//结果点集,Pi<=P,是points2中的最接近points1中的点集，按顺序一一对应。
-    //     //有个问题，points1获取了一个point2中的点后，是否要将该点删除？
-    //     DateTime start = DateTime.Now;
-    //     //float disSum = 0;
-    //     int i = 0;
-    //     for (; i < points1.Length & i < points2.Length; i++)
-    //     {
-    //         Vector3 p1 = points1[i];
-    //         Vector3 p2 = GetMinDistancePoint(p1, points2);
-    //         points3[i] = p2;
-    //         //float d = Vector3.Distance(p1, p2);
-    //         //disSum += d;//不做处理，直接累计
-    //     }
-    //     if (showLog) Debug.Log($"GetClosedPoints 用时:{(DateTime.Now - start).TotalMilliseconds:F2}ms");
-    //     return points3;
-    // }
+//                }
+//                d=0;//不考虑累计，小于zero就是0了。，比如10个E-06就E-05，100个就是E-04，1000个就是E-03了，0.001了，那我就不是很有把握是不是重合了。
+//            }
+//            else{
+//                if (showLog)
+//                {
+//                    Debug.LogWarning($"GetDistance2[{i}]d2:{d}|{distance}");
+//                }
+//            }
+//            //disList.Add(d);
+//            distance += d;
 
-    public static Vector3[] GetClosedPoints(Vector3[] points1, List<Vector3> points2, bool showLog = false)
-    {
-        //points1：不变的点，vsTo,
-        //points2：变化的点，vsFrom，将points2慢慢变成对齐points1，是算法中的目标点云P
-        Vector3[] points3 = new Vector3[points2.Count];//结果点集,Pi<=P,是points2中的最接近points1中的点集，按顺序一一对应。
-        //有个问题，points1获取了一个point2中的点后，是否要将该点删除？
-        DateTime start = DateTime.Now;
-        //float disSum = 0;
-        int i = 0;
-        int count1 = points1.Length;
-        int count2 = points2.Count;
-        for (; i < count1 & i < count2; i++)
-        {
-            Vector3 p1 = points1[i];
-            Vector3 p2 = GetMinDistancePoint(p1, points2,true);
-            points3[i] = p2;
-            //float d = Vector3.Distance(p1, p2);
-            //disSum += d;//不做处理，直接累计
-        }
-        if (showLog) Debug.Log($"GetClosedPoints 用时:{(DateTime.Now - start).TotalMilliseconds:F2}ms");
-        return points3;
-    }
+//            if (distance > DistanceSetting.zeroMMaxDis)//没必要计算完，整体距离很大的话，就是已经是不行的了
+//            {
+//                break;
+//            }
+//        }
 
-    public static float GetDistance(List<Vector3> points1, List<Vector3> points2, bool showLog = false)
-    {
-        //Debug.Log("GetDistance:"+showLog);
-        DateTime start = DateTime.Now;
-        //float dis=-1;
-        float disSum = 0;
+//        DisLog = $"GetVertexDistanceEx points1:{points1.Length} points2:{points2.Length} 用时:{(DateTime.Now - start).TotalMilliseconds:F2}ms，累计:{disSum:F7},结果:{distance:F7},序号:{i}/{points1.Length} count:{count}";
+//        if (showLog)Debug.Log(DisLog);
+//        return distance;
+//    }
 
-        float distance = 0;
-        // var points1 = vertices1;
-        // var points2 = vertices2World;
-        //List<float> disList = new List<float>();
-        int zeroCount = 0;
-        int i = 0;
+//    public static string DisLog = "";
 
-        int maxCount = points1.Count;
-        int zeroPMaxCount = DistanceSetting.zeroPMaxCount;
-        int step = 1;
-        if (maxCount > zeroPMaxCount)
-        {
-            step = maxCount / zeroPMaxCount;
-        }
-        int count = 0;
+//    public static Vector3 GetMinDistancePoint(Vector3 p1, Vector3[] points)
+//    {
+//        //DateTime start = DateTime.Now;
 
-        for (; i < points1.Count ; i+=step,count++)
-        {
-            Vector3 p1 = points1[i];
-            Vector3 p2 = GetMinDistancePoint(p1, points2);
-            float d = Vector3.Distance(p1, p2);
-            disSum += d;//不做处理，直接累计
-            if (d <= DistanceSetting.zeroP)
-            {
-                if (showLog)
-                {
-                    Debug.Log($"GetDistance1[{i}]d1:{d}|{distance}");
-                }
-                zeroCount++;
-                if (zeroCount > zeroPMaxCount)//没必要计算完，大概100个都位置相同的话，就是可以的了。
-                {
-                    //return distance;//不能返回0哦
-                    break;
-                }
-                else
-                {
+//        float distance = float.MaxValue;
+//        Vector3 result = Vector3.zero;
+//        int index = 0;
+//        for (int i = 0; i < points.Length; i++)
+//        {
+//            Vector3 p2 = points[i];
+//            float dis = Vector3.Distance(p1, p2);
+//            if (dis < distance)
+//            {
+//                distance = dis;
+//                result = p2;
+//                index = i;
+//            }
+//        }
+//        //if(distance<zero)
+//        //    DebugLog(string.Format("GetMinDistancePoint 用时:{0}s，距离:{1}，序号:{2}", (DateTime.Now - start).TotalSeconds, distance, index));
+//        return result;
+//    }
 
-                }
-                d = 0;//不考虑累计，小于zero就是0了。，比如10个E-06就E-05，100个就是E-04，1000个就是E-03了，0.001了，那我就不是很有把握是不是重合了。
-            }
-            else
-            {
-                if (showLog)
-                {
-                    Debug.LogWarning($"GetDistance2[{i}]d2:{d}|{distance}");
-                }
-            }
-            //disList.Add(d);
-            distance += d;
+//    public static float GetMinDistance(Vector3 p1, Vector3[] points)
+//    {
+//        float distance = float.MaxValue;
+//        Vector3 result = Vector3.zero;
+//        int index = 0;
+//        for (int i = 0; i < points.Length; i++)
+//        {
+//            Vector3 p2 = points[i];
+//            float dis = Vector3.Distance(p1, p2);
+//            if (dis < distance)
+//            {
+//                distance = dis;
+//                result = p2;
+//                index = i;
+//            }
+//        }
+//        return distance;
+//    }
 
-            if (distance > DistanceSetting.zeroMMaxDis)//没必要计算完，整体距离很大的话，就是已经是不行的了
-            {
-                break;
-            }
-        }
+//    public static float GetMinDistance(Vector3 p1, List<Vector3> points)
+//    {
+//        float distance = float.MaxValue;
+//        Vector3 result = Vector3.zero;
+//        int index = 0;
+//        for (int i = 0; i < points.Count; i++)
+//        {
+//            Vector3 p2 = points[i];
+//            float dis = Vector3.Distance(p1, p2);
+//            if (dis < distance)
+//            {
+//                distance = dis;
+//                result = p2;
+//                index = i;
+//            }
+//        }
+//        return distance;
+//    }
 
-        DisLog = $"GetVertexDistanceEx points1:{points1.Count} points2:{points2.Count} 用时:{(DateTime.Now - start).TotalMilliseconds:F2}ms，累计:{disSum:F7},结果:{distance:F7},序号:{i}/{points1.Count} count:{count}";
-        if (showLog) Debug.Log(DisLog);
-        return distance;
-    }
+//    public static Vector3 GetMinDistancePoint(Vector3 p1, List<Vector3> points,bool isRemove=false)
+//    {
+//        //DateTime start = DateTime.Now;
 
-    public static float GetDistance(Vector3[] points1,Vector3[] points2,bool showLog=false)
-    {
-        //Debug.Log("GetDistance:"+showLog);
-        DateTime start=DateTime.Now;
-        //float dis=-1;
-        float disSum=0;
+//        float distance = float.MaxValue;
+//        Vector3 result = Vector3.zero;
+//        int index = 0;
+//        for (int i = 0; i < points.Count; i++)
+//        {
+//            Vector3 p2 = points[i];
+//            float dis = Vector3.Distance(p1, p2);
+//            if (dis < distance)
+//            {
+//                distance = dis;
+//                result = p2;
+//                index = i;
+//            }
+//        }
+//        if (isRemove)
+//        {
+//            points.RemoveAt(index);
+//        }
+//        //if(distance<zero)
+//        //    DebugLog(string.Format("GetMinDistancePoint 用时:{0}s，距离:{1}，序号:{2}", (DateTime.Now - start).TotalSeconds, distance, index));
+//        return result;
+//    }
 
-        float distance = 0;
-        // var points1 = vertices1;
-        // var points2 = vertices2World;
-        //List<float> disList = new List<float>();
-        int zeroCount = 0;
-        int i = 0;
-
-        int maxCount = points1.Length;
-        int zeroPMaxCount = DistanceSetting.zeroPMaxCount;
-        int step = 1;
-        if (maxCount > zeroPMaxCount)
-        {
-            step = maxCount / zeroPMaxCount;
-        }
-        int count = 0;
-
-        for (; i < points1.Length; i+=step, count++)
-        {
-            Vector3 p1 = points1[i];
-            Vector3 p2 = GetMinDistancePoint(p1, points2);
-            float d = Vector3.Distance(p1, p2);
-            disSum+=d;//不做处理，直接累计
-            if (d <= DistanceSetting.zeroP)
-            {
-                if (showLog)
-                {
-                    Debug.Log($"GetDistance1[{i}]d1:{d}|{distance}");
-                }
-                zeroCount++;
-                if (zeroCount > zeroPMaxCount)//没必要计算完，大概100个都位置相同的话，就是可以的了。
-                {
-                    //return distance;//不能返回0哦
-                    break;
-                }
-                else
-                {
-
-                }
-                d=0;//不考虑累计，小于zero就是0了。，比如10个E-06就E-05，100个就是E-04，1000个就是E-03了，0.001了，那我就不是很有把握是不是重合了。
-            }
-            else{
-                if (showLog)
-                {
-                    Debug.LogWarning($"GetDistance2[{i}]d2:{d}|{distance}");
-                }
-            }
-            //disList.Add(d);
-            distance += d;
-
-            if (distance > DistanceSetting.zeroMMaxDis)//没必要计算完，整体距离很大的话，就是已经是不行的了
-            {
-                break;
-            }
-        }
-
-        DisLog = $"GetVertexDistanceEx points1:{points1.Length} points2:{points2.Length} 用时:{(DateTime.Now - start).TotalMilliseconds:F2}ms，累计:{disSum:F7},结果:{distance:F7},序号:{i}/{points1.Length} count:{count}";
-        if (showLog)Debug.Log(DisLog);
-        return distance;
-    }
-
-    public static string DisLog = "";
-
-    public static Vector3 GetMinDistancePoint(Vector3 p1, Vector3[] points)
-    {
-        //DateTime start = DateTime.Now;
-
-        float distance = float.MaxValue;
-        Vector3 result = Vector3.zero;
-        int index = 0;
-        for (int i = 0; i < points.Length; i++)
-        {
-            Vector3 p2 = points[i];
-            float dis = Vector3.Distance(p1, p2);
-            if (dis < distance)
-            {
-                distance = dis;
-                result = p2;
-                index = i;
-            }
-        }
-        //if(distance<zero)
-        //    DebugLog(string.Format("GetMinDistancePoint 用时:{0}s，距离:{1}，序号:{2}", (DateTime.Now - start).TotalSeconds, distance, index));
-        return result;
-    }
-
-    public static float GetMinDistance(Vector3 p1, Vector3[] points)
-    {
-        float distance = float.MaxValue;
-        Vector3 result = Vector3.zero;
-        int index = 0;
-        for (int i = 0; i < points.Length; i++)
-        {
-            Vector3 p2 = points[i];
-            float dis = Vector3.Distance(p1, p2);
-            if (dis < distance)
-            {
-                distance = dis;
-                result = p2;
-                index = i;
-            }
-        }
-        return distance;
-    }
-
-    public static float GetMinDistance(Vector3 p1, List<Vector3> points)
-    {
-        float distance = float.MaxValue;
-        Vector3 result = Vector3.zero;
-        int index = 0;
-        for (int i = 0; i < points.Count; i++)
-        {
-            Vector3 p2 = points[i];
-            float dis = Vector3.Distance(p1, p2);
-            if (dis < distance)
-            {
-                distance = dis;
-                result = p2;
-                index = i;
-            }
-        }
-        return distance;
-    }
-
-    public static Vector3 GetMinDistancePoint(Vector3 p1, List<Vector3> points,bool isRemove=false)
-    {
-        //DateTime start = DateTime.Now;
-
-        float distance = float.MaxValue;
-        Vector3 result = Vector3.zero;
-        int index = 0;
-        for (int i = 0; i < points.Count; i++)
-        {
-            Vector3 p2 = points[i];
-            float dis = Vector3.Distance(p1, p2);
-            if (dis < distance)
-            {
-                distance = dis;
-                result = p2;
-                index = i;
-            }
-        }
-        if (isRemove)
-        {
-            points.RemoveAt(index);
-        }
-        //if(distance<zero)
-        //    DebugLog(string.Format("GetMinDistancePoint 用时:{0}s，距离:{1}，序号:{2}", (DateTime.Now - start).TotalSeconds, distance, index));
-        return result;
-    }
-
-}
+//}
 
 public enum AlignDebugStep
 {
@@ -3499,12 +3196,12 @@ public enum AlignRotateMode
     ShortQuat,LongQuat,ShortAngle,LongAngle,AvgAngle
 }
 
-public interface IGameObject
-{
-    public GameObject GetGameObject();
+//public interface IGameObject
+//{
+//    public GameObject GetGameObject();
 
-    public string GetName();
-}
+//    public string GetName();
+//}
 
 [System.Serializable]
 public class MeshReplaceTarget: IGameObject,IComparable<MeshReplaceTarget>
@@ -3672,7 +3369,7 @@ public class MeshReplaceItem
             }
             if (target == null) continue;
             if (target.gameObject == prefab) continue;
-            GameObject newGo = MeshHelper.ReplaceGameObject(target.gameObject, prefab, isDestoryOriginal, transfromReplaceSetting);
+            GameObject newGo = InnerMeshHelper.ReplaceGameObject(target.gameObject, prefab, isDestoryOriginal, transfromReplaceSetting);
             float dis = MeshHelper.GetVertexDistanceEx(newGo, target.gameObject);
             if (dis > 0.0001f)
             {
@@ -3744,34 +3441,44 @@ public class MeshReplaceItem
     }
 }
 
-[System.Serializable]
-public class TransfromAlignSetting
-{
+//[System.Serializable]
+//public class TransfromAlignSetting
+//{
     
-    public bool SetPosition = true;
-    public bool SetScale = true;
-    public bool SetRotation = true;
-    public TransfromAlignMode Align = TransfromAlignMode.Max;
-    public bool SetPosX = true;
-    public bool SetPosY = true;
-    public bool SetPosZ = true;
+//    public bool SetPosition = true;
+//    public bool SetScale = true;
+//    public bool SetRotation = true;
+//    public TransfromAlignMode Align = TransfromAlignMode.Max;
+//    public bool SetPosX = true;
+//    public bool SetPosY = true;
+//    public bool SetPosZ = true;
 
-    //public bool SetPosByMinX = true;
-    //public bool SetPosByMinY = true;
-    //public bool SetPosByMinZ = true;
-}
+//    //public bool SetPosByMinX = true;
+//    //public bool SetPosByMinY = true;
+//    //public bool SetPosByMinZ = true;
+//}
 
-public enum TransfromAlignMode
-{
-    Pivot,Min,Max,Center, MinMax,MaxMin
-}
+//public enum TransfromAlignMode
+//{
+//    Pivot,Min,Max,Center, MinMax,MaxMin
+//}
 
 public static class MeshAlignHelper
 {
-    public static void AcRTAlign(GameObject from, GameObject to)
+    public static void AcRTAlign(GameObject from, GameObject to,bool isShowLog=true)
     {
         DateTime start = DateTime.Now;
 
+        if (from == null)
+        {
+            Debug.LogError($"AcRTAlign from == null");
+            return;
+        }
+        if (to == null)
+        {
+            Debug.LogError($"AcRTAlign to == null");
+            return;
+        }
 
 #if UNITY_EDITOR
         GameObject root1 = PrefabUtility.GetOutermostPrefabInstanceRoot(to);
@@ -3793,12 +3500,12 @@ public static class MeshAlignHelper
         var mfTo = new MeshPoints(to);
 
         MeshJobHelper.NewThreePointJobs(new MeshPoints[] { mfFrom, mfTo }, 10000);
-        AcRigidTransform.RTAlign(mfFrom, mfTo);
+        AcRigidTransform.RTAlign(mfFrom, mfTo, isShowLog);
 
         to.transform.SetParent(pTo);
         from.transform.SetParent(pFrom);
 
-        Debug.Log($"AcRTAlign End Time:{(DateTime.Now - start).TotalMilliseconds}ms");
+        //Debug.Log($"AcRTAlign End Time:{(DateTime.Now - start).TotalMilliseconds}ms");
     }
 
     public static bool AcRTAlignJob(GameObject from, GameObject to)

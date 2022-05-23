@@ -1,4 +1,5 @@
-﻿using System;
+﻿#if UNITY_EDITOR
+using System;
 using System.Linq;
 using UnityEditor;
 using UnityEngine;
@@ -52,6 +53,7 @@ public partial class MeshDebugger : EditorWindow, IHasCustomMenu
 
     private bool m_hasUpdated = false;
 
+#if UNITY_EDITOR
     [MenuItem("Window/Mesh Debugger")]
     public static void ShowUp()
     {
@@ -59,10 +61,12 @@ public partial class MeshDebugger : EditorWindow, IHasCustomMenu
         g.titleContent = new GUIContent("Mesh Debugger");
         g.Show();
     }
-
+#endif
     void OnEnable()
     {
+#if UNITY_EDITOR
         SceneView.onSceneGUIDelegate += OnSceneGUI;
+#endif
         Selection.selectionChanged += OnSelectionChange;
         m_hasUpdated = false;
 
@@ -72,7 +76,9 @@ public partial class MeshDebugger : EditorWindow, IHasCustomMenu
 
     void OnDisable()
     {
+#if UNITY_EDITOR
         SceneView.onSceneGUIDelegate -= OnSceneGUI;
+#endif
         Selection.selectionChanged -= OnSelectionChange;
 
         foreach (var item in m_Gizmo.m_Gizmos)
@@ -199,13 +205,14 @@ public partial class MeshDebugger : EditorWindow, IHasCustomMenu
         Application.OpenURL("https://github.com/willnode/MeshDebugger/blob/master/INSTRUCTIONS.md");
     }
 
-
+#if UNITY_EDITOR
     public virtual void AddItemsToMenu(GenericMenu menu)
     {
         GUIContent content = new GUIContent("Show Help");
         menu.AddItem(content, false, this.ShowHelp);
     }
-
+#endif
+#if UNITY_EDITOR
     void OnSceneGUI(SceneView view)
     {
         if (Event.current.type != EventType.Repaint)
@@ -330,7 +337,7 @@ public partial class MeshDebugger : EditorWindow, IHasCustomMenu
 
         m_hasUpdated = true;
     }
-
+    #endif
     private bool IsSafeToDrawGUI()
     {
         return ((m_DebugTris == DebugTriangle.None ? 0 : m_cpu.m_IndiceCountNormalized) +
@@ -484,3 +491,4 @@ public partial class MeshDebugger : EditorWindow, IHasCustomMenu
 
 
 }
+#endif

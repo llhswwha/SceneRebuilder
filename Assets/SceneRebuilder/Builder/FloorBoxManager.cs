@@ -1,3 +1,4 @@
+using CommonUtils;
 using System;
 using System.Collections;
 using System.Collections.Generic;
@@ -417,10 +418,10 @@ public class TransformFloorParent
         //EditorHelper.UnpackPrefab(go.gameObject);
         //go.SetParent(newP.transform);
 
-        List<Transform> path = TransformHelper.GetAncestors(go.transform, root.transform);
+        List<Transform> path = go.transform.GetAncestors(root.transform);
         if (isDebug)
         {
-            Debug.LogError($"SetParent go:{go} root:{root} paths:{path.Count} path:{TransformHelper.GetPath(go.transform, root.transform)}");
+            Debug.LogError($"SetParent go:{go} root:{root} paths:{path.Count} path:{go.transform.GetPath(root.transform)}");
         }
 
         Transform newP = TransformHelper.FindOrCreatePath(fP, path, isDebug);

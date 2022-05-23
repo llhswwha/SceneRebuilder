@@ -12,6 +12,22 @@ using System.IO;
 
 public class BigSmallListInfo
 {
+    public void SetBigModelsVisible(bool isActive)
+    {
+        foreach(var model in bigModels)
+        {
+            model.gameObject.SetActive(isActive);
+        }
+    }
+
+    public void SetSmallModelsVisible(bool isActive)
+    {
+        foreach (var model in smallModels)
+        {
+            model.gameObject.SetActive(isActive);
+        }
+    }
+
     public List<MeshRenderer> bigModels = new List<MeshRenderer>();
     public List<MeshRenderer> smallModels = new List<MeshRenderer>();
     public float sumVertex_Big = 0;
@@ -43,16 +59,16 @@ public class BigSmallListInfo
     //    Init(meshPoints.ToArray(), AcRTAlignJobSetting.Instance.MaxModelLength);
     //}
 
-    public BigSmallListInfo(GameObject root)
+    public BigSmallListInfo(GameObject root, bool isIgnoreGPU)
     {
         //var meshFilters = root.GetComponentsInChildren<MeshFilter>(true);
         //List<MeshPoints> meshPoints = MeshPoints.GetMeshPoints(meshFilters);
-        var ts = TransformHelper.GetChildrenNoLOD(root);
+        var ts = TransformHelper.GetChildrenNoLOD(root,isIgnoreGPU);
         List<MeshPoints> meshPoints = MeshPoints.GetMeshPoints(ts);
-        Init(meshPoints.ToArray(), AcRTAlignJobSetting.Instance.MaxModelLength);
+        Init(meshPoints.ToArray(), AcRTAlignJobSetting.Instance.MaxModelLength, isIgnoreGPU);
     }
 
-    public void Init(MeshPoints[] meshFilters, float maxLength)
+    public void Init(MeshPoints[] meshFilters, float maxLength, bool isIgnoreGPU)
     {
         if (meshFilters == null || meshFilters.Length == 0)
         {
@@ -186,6 +202,6 @@ public class BigSmallListInfo
         //ProgressBarHelper.ClearProgressBar();
         this.sumVertex_Small = sumVertex_Small / 10000f;
         this.sumVertex_Big = sumVertex_Big / 10000f;
-        Debug.Log($"GetBigSmallRenderers maxLength:{maxLength},(bigModels:{this.bigModels.Count}+smallModels:{this.smallModels.Count}=BS:{this.bigModels.Count + this.smallModels.Count},Renderers:{meshFilters.Length}),(bigVertex:{this.sumVertex_Big},smallVertex:{this.sumVertex_Small}),Time:{(DateTime.Now - start).TotalMilliseconds:F1}ms");
+        Debug.Log($"GetBigSmallRenderers isIgnoreGPU:{isIgnoreGPU} maxLength:{maxLength},(bigModels:{this.bigModels.Count}+smallModels:{this.smallModels.Count}=BS:{this.bigModels.Count + this.smallModels.Count},Renderers:{meshFilters.Length}),(bigVertex:{this.sumVertex_Big},smallVertex:{this.sumVertex_Small}),Time:{(DateTime.Now - start).TotalMilliseconds:F1}ms");
     }
 }

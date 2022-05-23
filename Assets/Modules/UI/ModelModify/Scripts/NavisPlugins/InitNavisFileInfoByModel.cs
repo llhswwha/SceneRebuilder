@@ -1,4 +1,5 @@
 using Base.Common;
+using CommonUtils;
 using Location.WCFServiceReferences.LocationServices;
 using NavisPlugins.Infos;
 using System;
@@ -1440,7 +1441,7 @@ vueDict.Add(item.UId, item);
         {
             return go2Center[go];
         }
-        Vector3 c = MeshHelper.GetMinMax(go)[3];
+        Vector3 c = VertexHelper.GetMinMax(go)[3];
         go2Center.Add(go, c);
         return c;
     }

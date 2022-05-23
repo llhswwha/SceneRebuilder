@@ -8,6 +8,8 @@ namespace GPUInstancer
     [Serializable]
     public abstract class GPUInstancerPrototype : ScriptableObject
     {
+        public static bool IsShowLog = false;
+
         public GameObject prefabObject;
 
         // Shadows
@@ -122,13 +124,13 @@ namespace GPUInstancer
         {
             
             List.Add(item);
-            Debug.LogError($"GPUInstancerPrototypeList.Add:{item} Go:{item.prefabObject} List:{List.Count}");
+            Debug.Log($"GPUInstancerPrototypeList.Add:{item} Go:{item.prefabObject} List:{List.Count}");
         }
 
         public void Remove(GPUInstancerPrototype item)
         {
             List.Remove(item);
-            Debug.LogError($"GPUInstancerPrototypeList.Remove:{item} Go:{item.prefabObject} List:{List.Count}");
+            Debug.Log($"GPUInstancerPrototypeList.Remove:{item} Go:{item.prefabObject} List:{List.Count}");
         }
 
         public int IndexOf(GPUInstancerPrototype item){
@@ -220,7 +222,7 @@ namespace GPUInstancer
 
         public void RegisterInstanceList(IEnumerable<GPUInstancerPrefab> prefabInstanceList)
         {
-            Debug.LogError($"RegisterInstanceList Count: {this.Count} Keys:{this.Keys.Count} prefabInstanceList:{prefabInstanceList.Count()}");
+            Debug.Log($"RegisterInstanceList1 Count: {this.Count} Keys:{this.Keys.Count} prefabInstanceList:{prefabInstanceList.Count()}");
             int count = 0;
             foreach (var key in this.Keys)
             {
@@ -228,28 +230,35 @@ namespace GPUInstancer
 
                 if (key == null)
                 {
-                    Debug.LogError($"RegisterInstanceList GPUInstancerPrototypeDict.key[{count}]:key == null");
+                    Debug.LogError($"RegisterInstanceList2 GPUInstancerPrototypeDict.key[{count}]:key == null");
                     continue;
                 }
                 var list = this[key];
-                Debug.LogError($"RegisterInstanceList GPUInstancerPrototypeDict.key[{count}] key:{key} list:{list.Count}");
+#if UNITY_EDITOR
+                if (GPUInstancerPrototype.IsShowLog)
+                {
+                    Debug.Log($"RegisterInstanceList3 GPUInstancerPrototypeDict.key[{count}] key:{key} list:{list.Count}");
+                }
+#endif   
             }
-
+            int instanceCount0 = 0;
             foreach (GPUInstancerPrefab prefabInstance in prefabInstanceList)
             {
+                instanceCount0++;
                 if (prefabInstance == null)
                 {
-                    Debug.LogWarning("RegisterInstanceList prefabInstance == null");
+                    Debug.LogWarning($"RegisterInstanceList4 [{instanceCount0}] Count: {this.Count} prefabInstance == null");
                     continue;
                 }
                 if (prefabInstance.prefabPrototype == null)
                 {
-                    Debug.LogWarning("RegisterInstanceList prefabInstance.prefabPrototype == null");
+                    Debug.LogWarning($"RegisterInstanceList5 [{instanceCount0}] Count: {this.Count} prefabInstance.prefabPrototype == null");
                     continue;
                 }
                 if (this.ContainsKey(prefabInstance.prefabPrototype) == false)
                 {
-                    Debug.LogWarning("RegisterInstanceList GPUInstancerPrototypeDict.ContainsKey(prefabInstance.prefabPrototype)==false：" + prefabInstance.prefabPrototype);
+                    AddDict(prefabInstance.prefabPrototype);
+                    Debug.LogWarning($"RegisterInstanceList6 [{instanceCount0}] Count: {this.Count} GPUInstancerPrototypeDict.ContainsKey(prefabInstance.prefabPrototype)==false prefabPrototype：{prefabInstance.prefabPrototype} prefabInstance:{prefabInstance}");
                 }
                 else
                 {
@@ -263,18 +272,19 @@ namespace GPUInstancer
                 instanceCount++;
                 if (prefabInstance == null)
                 {
-                    Debug.LogWarning($"[{instanceCount}] prefabInstance == null");
+                    Debug.LogWarning($"RegisterInstanceList7 [{instanceCount}] Count: {this.Count} prefabInstance == null");
                     continue;
                 }
                 if (prefabInstance.prefabPrototype == null)
                 {
-                    Debug.LogWarning($"prefabInstance.prefabPrototype == null prefabInstance[{instanceCount}]:{prefabInstance}");
+                    Debug.LogWarning($"RegisterInstanceList8 [{instanceCount}] Count: {this.Count} prefabInstance.prefabPrototype == null prefabInstance[{instanceCount}]:{prefabInstance}");
                     continue;
                 }
 
                 if (this.ContainsKey(prefabInstance.prefabPrototype) == false)
                 {
-                    Debug.LogWarning("RegisterInstanceList GPUInstancerPrototypeDict.ContainsKey(prefabInstance.prefabPrototype)==false：" + prefabInstance.prefabPrototype);
+                    AddDict(prefabInstance.prefabPrototype);
+                    Debug.LogWarning($"RegisterInstanceList9 [{instanceCount}] Count: {this.Count} GPUInstancerPrototypeDict.ContainsKey(prefabInstance.prefabPrototype)==false prefabPrototype：{prefabInstance.prefabPrototype} prefabInstance:{prefabInstance}" );
                 }
                 else
                 {
@@ -293,7 +303,12 @@ namespace GPUInstancer
                     continue;
                 }
                 var list = this[key];
-                Debug.LogError($"RegisterInstanceList[{count}] key:{key} list:{list.Count}");
+#if UNITY_EDITOR
+                if (GPUInstancerPrototype.IsShowLog)
+                {
+                    Debug.Log($"RegisterInstanceList[{count}] key:{key} list:{list.Count}");
+                }
+#endif   
             }
         }
 
@@ -313,11 +328,21 @@ namespace GPUInstancer
             if (!this.ContainsKey(prototype))
             {
                 this.Add(prototype, new List<GPUInstancerPrefab>());
-                Debug.Log($"AddDict prototype:{prototype} Count:{this.Count}");
+#if UNITY_EDITOR
+                if (GPUInstancerPrototype.IsShowLog)
+                {
+                    Debug.Log($"AddDict Count:{this.Count} prototype:{prototype} ");
+                }
+#endif
             }
             else
             {
-                Debug.LogError($"AddDict ContainsKey(prototype) prototype:{prototype} Count:{this.Count}");
+#if UNITY_EDITOR
+                if (GPUInstancerPrototype.IsShowLog)
+                {
+                    Debug.Log($"AddDict Count:{this.Count} Warning ContainsKey(prototype) prototype:{prototype} ");
+                }
+#endif
             }
         }
 

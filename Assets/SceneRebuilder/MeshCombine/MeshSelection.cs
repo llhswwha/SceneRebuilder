@@ -36,7 +36,7 @@ public class MeshSelection : MonoBehaviour
         {
             if (go != null)
             {
-                Debug.LogError($"SelectObjectByRId rId:{rId} result:{go} path:{TransformHelper.GetPath(go.transform)}");
+                Debug.LogError($"SelectObjectByRId rId:{rId} result:{go} path:{go.transform.GetPath()}");
             }
             else
             {
@@ -102,7 +102,7 @@ public class MeshSelection : MonoBehaviour
 
             if(node!=null && LastSelectNode == node)
             {
-                Debug.LogError($"MeshSelection LastSelectNode== node id:{id} node:{node} path{TransformHelper.GetPath(node.transform)}");
+                Debug.LogError($"MeshSelection LastSelectNode== node id:{id} node:{node} path{node.transform.GetPath()}");
                 GameObject go = IdDictionary.GetGo(id);
                 if (callback != null) callback(go);
                 return;
@@ -110,18 +110,19 @@ public class MeshSelection : MonoBehaviour
 
             if (LastSelectNode != null)
             {
-                SubSceneShowManager.Instance.AddScenes(node.GetScenes());
+                SubSceneShowManager.Instance.AddScenes(LastSelectNode.GetScenes());
             }
 
             LastSelectNode = node;
 
             if (LastSelectNode != null)
             {
-                SubSceneShowManager.Instance.RemoveScenes(node.GetScenes());
+                SubSceneShowManager.Instance.RemoveScenes(LastSelectNode.GetScenes());
             }
+
             if (node != null)
             {
-                Debug.Log($"SelectObjectByRId id:{id} node:{node} path:{TransformHelper.GetPath(node.transform)}");
+                Debug.Log($"SelectObjectByRId id:{id} node:{node} path:{node.transform.GetPath()}");
                 node.LoadAndSwitchToRenderers(b =>
                 {
                     GameObject go = IdDictionary.GetGo(id);
@@ -154,6 +155,10 @@ public class MeshSelection : MonoBehaviour
         }
         else if (rId.childrenIds.Count == 0)
         {
+            if(rId.mr==null)
+            {
+                rId.mr = rId.transform.GetComponent<MeshRenderer>();
+            }
             if (rId.mr != null)
             {
                 var node = AreaTreeHelper.GetNodeById(id);
@@ -335,6 +340,10 @@ public class MeshSelection : MonoBehaviour
                 //    Debug.LogError("No TreeNode :" + lastRenderer);
                 //}
             }
+            else
+            {
+                if(hitGo.GetComponent<BIMModelInfo>())SelectBimModel(hitGo.transform);
+            }
         }
         else
         {
@@ -350,7 +359,7 @@ public class MeshSelection : MonoBehaviour
         {
             lastRenderer.sharedMaterial = lastRendererMat;
 
-            if (GPUInstanceTest.Instance.IsPrefabTarget)
+            if (GPUInstanceTest.Instance.IsStartGPUInstance)
             {
                 lastRenderer.enabled = false;
                 //lastRenderer.transform.localScale = lastScale;
@@ -373,7 +382,7 @@ public class MeshSelection : MonoBehaviour
 
         lastRenderer = hitRenderer;
 
-        if (GPUInstanceTest.Instance.IsPrefabTarget)
+        if (GPUInstanceTest.Instance.IsStartGPUInstance)
         {
             //hitRenderer.transform.localScale *= 1.01f;
             GPUInstanceTest.Instance.RemovePrefabInstance(hitRenderer.gameObject);

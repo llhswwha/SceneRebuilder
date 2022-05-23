@@ -5,6 +5,24 @@ namespace GPUInstancer
 {
     public class GPUInstancerGUIInfo : MonoBehaviour
     {
+        public static void SetIsDebug(bool isDebug)
+        {
+           
+            _isDebug = isDebug;
+
+            Debug.LogError($"GPUInstancerGUIInfo isDebug:{isDebug} > {IsDebug()}");
+        }
+
+        private static bool _isDebug = false;
+
+        public static bool IsDebug()
+        {
+#if UNITY_EDITOR
+            return true;
+#endif
+            return _isDebug;
+        }
+
         public bool showRenderedAmount;
         public bool showPrototypesSeparate;
         public bool showPrefabManagers = true;
@@ -15,6 +33,10 @@ namespace GPUInstancer
 
         private void OnGUI()
         {
+            if (IsDebug() == false)
+            {
+                return;
+            }
             if (GPUInstancerManager.activeManagerList != null)
             {
                 if (GPUInstancerManager.showRenderedAmount != showRenderedAmount)

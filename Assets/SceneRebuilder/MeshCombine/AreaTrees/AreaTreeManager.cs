@@ -511,12 +511,12 @@ public class AreaTreeManager : SingletonBehaviour<AreaTreeManager>
     public void TestCreateOne_BigSmall()
     {
         var target = GetTarget();
-        CreateOne_BigSmall(null, target,null);
+        CreateOne_BigSmall(null, target,null,false);
     }
 
     //public AreaTreeNodeShowManager TreeNodeShowManager;
 
-    public ModelAreaTree[] CreateOne_BigSmall_Core(Transform parent, GameObject target,Action<ProgressArg> progressChanged)
+    public ModelAreaTree[] CreateOne_BigSmall_Core(Transform parent, GameObject target,Action<ProgressArg> progressChanged,bool isIgnoreGPU)
     {
         IsCopy = false;
 
@@ -526,7 +526,7 @@ public class AreaTreeManager : SingletonBehaviour<AreaTreeManager>
         //prefabInstanceBuilder.SetTarget(target);
         //var bigSmallInfo=prefabInstanceBuilder.GetBigSmallRenderers();
 
-        var bigSmallInfo = new BigSmallListInfo(target);
+        var bigSmallInfo = new BigSmallListInfo(target, isIgnoreGPU);
         //Debug.LogError($"CreateOne_BigSmall_Core bigSmallInfo:{bigSmallInfo}");
 
         ProgressArg p1 = new ProgressArg("CreateOne_BigSmall_Core", 0,2, "SmallTree");
@@ -600,11 +600,11 @@ public class AreaTreeManager : SingletonBehaviour<AreaTreeManager>
     }
 
     //[ContextMenu("CreateOne_BigSmall")]
-    private ModelAreaTree[] CreateOne_BigSmall(Transform parent,GameObject target, Action<ProgressArg> progressChanged)
+    private ModelAreaTree[] CreateOne_BigSmall(Transform parent,GameObject target, Action<ProgressArg> progressChanged, bool isIgnoreGPU)
     {
         DateTime start = DateTime.Now;
         Clear();
-        var trees=CreateOne_BigSmall_Core(parent, target, progressChanged);
+        var trees=CreateOne_BigSmall_Core(parent, target, progressChanged, isIgnoreGPU);
         Debug.LogWarning($"CreateOne_BigSmall \t{(DateTime.Now - start).ToString()}");
         return trees;
     }

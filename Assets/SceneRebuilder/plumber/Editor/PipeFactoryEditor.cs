@@ -89,7 +89,10 @@ public class PipeFactoryEditor : BaseFoldoutEditor<PipeFactory>
 
         targetT.EnableBoxModel = EditorGUILayout.Toggle(targetT.EnableBoxModel, GUILayout.Width(toggleWidth));
         GUILayout.Label($"Box({targetT.BoxModels.GetCountVertex(totalVertex)})");
-        
+        targetT.EnableLMeshModel = EditorGUILayout.Toggle(targetT.EnableLMeshModel, GUILayout.Width(toggleWidth));
+        GUILayout.Label($"L({targetT.LMeshModels.GetCountVertex(totalVertex)})");
+        targetT.EnableCornerBoxModel = EditorGUILayout.Toggle(targetT.EnableCornerBoxModel, GUILayout.Width(toggleWidth));
+        GUILayout.Label($"CornerBox({targetT.CornerBoxModels.GetCountVertex(totalVertex)})");
 
         GUILayout.Label($"Total({targetT.TotalObjs.GetCountVertex()})");
         GUILayout.Label($"Ignore({targetT.IgnoredObjs.GetCountVertex(totalVertex)})");
@@ -403,9 +406,14 @@ public class PipeFactoryEditor : BaseFoldoutEditor<PipeFactory>
         //DrawObjectList(othersListArg, "Others", targetT.PipeOthers, null, null, null);
         
         BaseFoldoutEditorHelper.DrawRendererInfoList("Structure", targetT.StructureModels, structureListArg);
+        BaseFoldoutEditorHelper.DrawRendererInfoList("Box", targetT.BoxModels, boxListArg);
+        BaseFoldoutEditorHelper.DrawRendererInfoList("L", targetT.LMeshModels, LMeshListArg);
+        BaseFoldoutEditorHelper.DrawRendererInfoList("CornerBox", targetT.CornerBoxModels, cornerBoxListArg);
+        
         BaseFoldoutEditorHelper.DrawRendererInfoList("Attachment", targetT.AttachmentModels, attachmentListArg);
         BaseFoldoutEditorHelper.DrawRendererInfoList("Others", targetT.PipeOthers, othersListArg);
-        DrawObjectList(boxListArg, "Box", targetT.BoxModels, null, null, null);
+        //DrawObjectList(boxListArg, "Box", targetT.BoxModels, null, null, null);
+        //DrawObjectList(LMeshListArg, "L", targetT.LMeshModels, null, null, null);
         DrawObjectList(ignoreListArg, "Ignore", targetT.IgnoredObjs, null, null, null);
 
         
@@ -425,6 +433,8 @@ public class PipeFactoryEditor : BaseFoldoutEditor<PipeFactory>
     static FoldoutEditorArg reducerListArg = new FoldoutEditorArg(true, false);
     static FoldoutEditorArg weldoletListArg = new FoldoutEditorArg(true, false);
     static FoldoutEditorArg boxListArg = new FoldoutEditorArg(true, false);
+    static FoldoutEditorArg LMeshListArg = new FoldoutEditorArg(true, false);
+    static FoldoutEditorArg cornerBoxListArg = new FoldoutEditorArg(true, false);
     static FoldoutEditorArg ignoreListArg = new FoldoutEditorArg(true, false);
     static PipeModelFoldoutEditorArg specialElbowListArg = new PipeModelFoldoutEditorArg(true, false);
     public override void OnEnable()

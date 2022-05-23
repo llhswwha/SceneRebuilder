@@ -38,7 +38,7 @@ public class ModelMeshManager : SingletonBehaviour<ModelMeshManager>
         return meshRenderers;
     }
 
-    public List<Transform> GetTransformsNoLOD()
+    public List<Transform> GetTransformsNoLOD(bool isIgnoreGPU)
     {
         if (TargetRoots.Count == 0)
         {
@@ -48,7 +48,7 @@ public class ModelMeshManager : SingletonBehaviour<ModelMeshManager>
         foreach (var target in TargetRoots)
         {
             if (target == null) continue;
-            var rs = TransformHelper.GetChildrenNoLOD(target);
+            var rs = TransformHelper.GetChildrenNoLOD(target, isIgnoreGPU);
             meshRenderers.AddRange(rs);
         }
         return meshRenderers;
@@ -146,11 +146,11 @@ public class ModelMeshManager : SingletonBehaviour<ModelMeshManager>
         return modelClassDict;
     }
 
-    public ModelClassDict<Transform> GetPrefixNamesNoLOD()
+    public ModelClassDict<Transform> GetPrefixNamesNoLOD(bool isIgnoreGPU)
     {
         var modelClassDict = new ModelClassDict<Transform>();
         List<string> otherNames = new List<string>();
-        var list = GetTransformsNoLOD();
+        var list = GetTransformsNoLOD(isIgnoreGPU);
         //Debug.Log($"GetPrefixNames list:{list.Count}");
         for (int i = 0; i < list.Count; i++)
         {
@@ -192,7 +192,7 @@ public class ModelMeshManager : SingletonBehaviour<ModelMeshManager>
     public ModelClassDict<Transform> GetPrefixNamesNoLod(GameObject target)
     {
         TargetRoots = new List<GameObject>() { target };
-        return GetPrefixNamesNoLOD();
+        return GetPrefixNamesNoLOD(true);
     }
 
     public ModelClassDict<MeshRenderer> GetPrefixNames(GameObject target)

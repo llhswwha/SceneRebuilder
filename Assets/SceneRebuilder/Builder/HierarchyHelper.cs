@@ -11,7 +11,10 @@ public static class HierarchyHelper
 {
     public static IdInfoList CheckHierarchy()
     {
-        GameObject go = Selection.activeGameObject;
+        GameObject go = null;
+#if UNITY_EDITOR
+        go = Selection.activeGameObject;
+#endif
         return CheckHierarchy(go);
     }
 
@@ -26,7 +29,7 @@ public static class HierarchyHelper
         for (int i1 = 0; i1 < transforms.Length; i1++)
         {
             Transform t = transforms[i1];
-            string path = TransformHelper.GetPath(t, root);
+            string path = t.GetPath(root);
             ProgressArg pA = new ProgressArg("CheckHierarchy1", i1, transforms.Length, $"{path}");
             if (path2Transform.ContainsKey(path))
             {
@@ -130,7 +133,10 @@ public static class HierarchyHelper
 
     public static IdInfoList LoadHierarchy(Transform[] ts2, bool isSetParent)
     {
-        GameObject go = Selection.activeGameObject;
+        GameObject go = null;
+#if UNITY_EDITOR
+        go = Selection.activeGameObject;
+#endif
         return LoadHierarchy(go, ts2, isSetParent);
     }
 
@@ -219,7 +225,7 @@ public static class HierarchyHelper
             {
                 if (idGo.transform.parent == null)
                 {
-                    Debug.LogWarning($"LoadHierarchy[{i}]  idGo.transform.parent=null ¡¾{idInfo} path:{idInfo.GetPath()}¡¿ path:{TransformHelper.GetPath(idGo.transform)}");
+                    Debug.LogWarning($"LoadHierarchy[{i}]  idGo.transform.parent=null ¡¾{idInfo} path:{idInfo.GetPath()}¡¿ path:{idGo.transform.GetPath()}");
                     continue;
                 }
                 else if (idGo.transform.parent.name != idInfo.parent)
@@ -230,7 +236,7 @@ public static class HierarchyHelper
                     var disOfPos = Vector3.Distance(pos, idGo.transform.position);
                     var disOfCenter = Vector3.Distance(center, MeshRendererInfo.GetCenterPos(idGo.gameObject));
 
-                    Debug.LogWarning($"LoadHierarchy[{i}] renderer == null ¡¾{idInfo} path:{idInfo.GetPath()}¡¿ parent:{idGo.transform.parent.name} path:{TransformHelper.GetPath(idGo.transform)}|disOfPos:{disOfPos} disOfCenter:{disOfCenter}  ");
+                    Debug.LogWarning($"LoadHierarchy[{i}] renderer == null ¡¾{idInfo} path:{idInfo.GetPath()}¡¿ parent:{idGo.transform.parent.name} path:{idGo.transform.GetPath()}|disOfPos:{disOfPos} disOfCenter:{disOfCenter}  ");
 
                     notFoundList.Add(idInfo);
                     notFoundListSb.AppendLine(idInfo.ToString());
@@ -238,7 +244,7 @@ public static class HierarchyHelper
                 }
                 else
                 {
-                    Debug.LogError($"LoadHierarchy[{i}]  renderer==null ¡¾{idInfo} path:{idInfo.GetPath()}¡¿ path:{TransformHelper.GetPath(idGo.transform)}");
+                    Debug.LogError($"LoadHierarchy[{i}]  renderer==null ¡¾{idInfo} path:{idInfo.GetPath()}¡¿ path:{idGo.transform.GetPath()}");
                     noMeshList.Add(idInfo);
                     break;
                 }
@@ -263,7 +269,7 @@ public static class HierarchyHelper
                         continue;
                     }
 
-                    Debug.LogError($"LoadHierarchy[{i}] Error22 pidGo == null pidGo2 == null tDict:{tDict.Count} ¡¾{idInfo} path:{idInfo.GetPath()}¡¿ path:{TransformHelper.GetPath(idGo.transform)} | time:{DateTime.Now - start}  ");
+                    Debug.LogError($"LoadHierarchy[{i}] Error22 pidGo == null pidGo2 == null tDict:{tDict.Count} ¡¾{idInfo} path:{idInfo.GetPath()}¡¿ path:{idGo.transform.GetPath()} | time:{DateTime.Now - start}  ");
                     notFoundList.Add(idInfo);
                     notFoundListSb.AppendLine(idInfo.ToString());
                     break;
@@ -274,7 +280,7 @@ public static class HierarchyHelper
                     RendererId pGo = pidGo2.FindChildByName(pid.name);
                     if (pGo == null)
                     {
-                        Debug.LogWarning($"LoadHierarchy[{i}] Error23 pidGo == null tDict:{tDict.Count} ¡¾{idInfo} path:{idInfo.GetPath()}¡¿ path1:{TransformHelper.GetPath(idGo.transform)} ¡¾pid2:{pid2}¡¿path2:{TransformHelper.GetPath(pidGo2.transform)}  time:{DateTime.Now - start} ");
+                        Debug.LogWarning($"LoadHierarchy[{i}] Error23 pidGo == null tDict:{tDict.Count} ¡¾{idInfo} path:{idInfo.GetPath()}¡¿ path1:{idGo.transform.GetPath()} ¡¾pid2:{pid2}¡¿path2:{pidGo2.transform.GetPath()}  time:{DateTime.Now - start} ");
                         GameObject goNew = new GameObject(pid.name);
                         //goNew.transform.position = idInfo.GetPosition();
                         goNew.transform.position = pid.GetPosition();
@@ -298,7 +304,7 @@ public static class HierarchyHelper
                         }
                         else
                         {
-                            Debug.LogError($"LoadHierarchy[{i}] Error23 pidGo == null tDict:{tDict.Count} ¡¾{idInfo} path:{idInfo.GetPath()}¡¿ path1:{TransformHelper.GetPath(idGo.transform)} ¡¾pid2:{pid2}¡¿path2:{TransformHelper.GetPath(pidGo2.transform)}  path3:{TransformHelper.GetPath(pGo.transform)} time:{DateTime.Now - start} ");
+                            Debug.LogError($"LoadHierarchy[{i}] Error23 pidGo == null tDict:{tDict.Count} ¡¾{idInfo} path:{idInfo.GetPath()}¡¿ path1:{idGo.transform.GetPath()} ¡¾pid2:{pid2}¡¿path2:{pidGo2.transform.GetPath()}  path3:{pGo.transform.GetPath()} time:{DateTime.Now - start} ");
                             break;
                         }
                     }
@@ -389,7 +395,10 @@ public static class HierarchyHelper
 
     public static IdInfoList SaveHierarchy()
     {
-        GameObject go = Selection.activeGameObject;
+        GameObject go = null;
+#if UNITY_EDITOR
+        go = Selection.activeGameObject;
+#endif
         return SaveHierarchy(go);
     }
 
@@ -432,7 +441,10 @@ public static class HierarchyHelper
         //GameObject go = Selection.activeGameObject;
         ////RendererId.InitId(go);
 
-        GameObject go = Selection.activeGameObject;
+        GameObject go = null;
+#if UNITY_EDITOR
+        go = Selection.activeGameObject;
+#endif
         var rendrerers = go.GetComponentsInChildren<MeshRenderer>(true);
         for (int i = 0; i < rendrerers.Length; i++)
         {
@@ -451,7 +463,10 @@ public static class HierarchyHelper
 
     public static void ClearHierarchy()
     {
-        GameObject go = Selection.activeGameObject;
+        GameObject go = null;
+#if UNITY_EDITOR
+        go = Selection.activeGameObject;
+#endif
         EditorHelper.UnpackPrefab(go);
         var rendrerers = go.GetComponentsInChildren<MeshRenderer>(true);
         for (int i = 0; i < rendrerers.Length; i++)

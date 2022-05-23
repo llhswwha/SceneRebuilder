@@ -397,8 +397,18 @@ namespace GPUInstancer
                     shadowMPB = new MaterialPropertyBlock();
                     meshRenderer.GetPropertyBlock(shadowMPB);
                 }
-                AddRenderer(lod, meshRenderer.GetComponent<MeshFilter>().sharedMesh, instanceMaterials, transformOffset, mpb, 
+
+                MeshFilter mf = meshRenderer.GetComponent<MeshFilter>();
+
+                if (mf.sharedMesh == null)
+                {
+                    Debug.LogError($"Can't add renderer: mesh is null. Make sure that all the MeshFilters on the objects has a mesh assigned. MeshFilter:{mf}");
+                }
+                else
+                {
+                    AddRenderer(lod, mf.sharedMesh, instanceMaterials, transformOffset, mpb,
                     meshRenderer.shadowCastingMode != UnityEngine.Rendering.ShadowCastingMode.Off, meshRenderer.gameObject.layer, shadowMPB, meshRenderer, meshRenderer.receiveShadows);
+                }
             }
 
             return true;

@@ -55,13 +55,13 @@ public class LODGroupInfo : MonoBehaviour
 
         if (allVertexCount == 0)
         {
-            Debug.LogError($"GetLODs Error 1 allVertexCount == 0 go:{this.name} path:{TransformHelper.GetPath(this.transform)}");
+            Debug.LogError($"GetLODs Error 1 allVertexCount == 0 go:{this.name} path:{this.transform.GetPath()}");
             LODHelper.CreateLODs(this.gameObject);
             this.GetLODsInner();
 
             if (allVertexCount == 0)
             {
-                Debug.LogError($"GetLODs Error 2 allVertexCount == 0 go:{this.name} path:{TransformHelper.GetPath(this.transform)}");
+                Debug.LogError($"GetLODs Error 2 allVertexCount == 0 go:{this.name} path:{this.transform.GetPath()}");
             }
         }
     }
@@ -104,7 +104,7 @@ public class LODGroupInfo : MonoBehaviour
             lodInfo.vertextCount = vc;
             if (lodInfo.vertextCount == 0)
             {
-                Debug.LogError($"GetLODsInner lodInfo.vertextCount == 0 i:{i} go:{this.name} path:{TransformHelper.GetPath(this.transform)}");
+                Debug.LogError($"GetLODsInner lodInfo.vertextCount == 0 i:{i} go:{this.name} path:{this.transform.GetPath()}");
             }
             allVertexCount += vc;
         }
@@ -357,12 +357,32 @@ public class LODGroupInfo : MonoBehaviour
 
     public void SetLOD0FromScene()
     {
+        Material mat = null;
+        MeshRenderer[] mrs = this.GetComponentsInChildren<MeshRenderer>(true);
+        foreach(var mr in mrs)
+        {
+            if (mr.sharedMaterial != null)
+            {
+                mat = mr.sharedMaterial;
+                break;
+            }
+        }
         var lods = LODGroup.GetLODs();
         var sceneRenderers = scene.GetSceneRenderers().ToArray();
+        if (sceneRenderers.Length == 0)
+        {
+            Debug.LogError($"SetLOD0FromScene Length == 0 sceneRenderers:{sceneRenderers.Length} scene:{scene.sceneName} [arg:{scene.GetSceneArg()}]");
+            return;
+        }
         Debug.Log($"SetLOD0FromScene sceneRenderers:{sceneRenderers.Length} scene:{scene.sceneName} [arg:{scene.GetSceneArg()}]");
         lods[0].renderers = sceneRenderers;
         foreach(var r in sceneRenderers)
         {
+            if (r.sharedMaterial == null)
+            {
+                r.sharedMaterial = mat;
+                Debug.LogError($"SetLOD0FromScene r.sharedMaterial == null renderer:{r}");
+            }
             if(r.transform.parent==this.transform.parent)
             {
                 r.transform.SetParent(this.transform);

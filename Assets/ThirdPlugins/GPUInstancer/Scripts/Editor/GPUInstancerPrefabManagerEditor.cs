@@ -228,8 +228,19 @@ namespace GPUInstancer
             EditorGUILayout.Space();
 
             DrawCameraDataFields();
+            if (_prefabManager == null)
+            {
+                _prefabManager = GameObject.FindObjectOfType<GPUInstancerPrefabManager>();
+            }
 
-            DrawCullingSettings(_prefabManager.prototypeList);
+            if (_prefabManager != null)
+            {
+                DrawCullingSettings(_prefabManager.prototypeList);
+            }
+            else
+            {
+
+            }
 
             DrawFloatingOriginFields();
 

@@ -1519,10 +1519,10 @@ break;
         bool isTryRt = AcRTAlignJobSetting.Instance.IsTryRT;
         AcRTAlignJobSetting.Instance.IsTryRT = enableRTC;
 
-        AcRTAlignJobContainer.CurrentLogTag = tag;
+        LogTag.logTag = tag;
         List<MeshPoints> meshFilters = MeshPoints.GetMeshPoints(list);
         var preList= AcRTAlignJobsEx(meshFilters.ToArray());
-        AcRTAlignJobContainer.CurrentLogTag = "";
+        LogTag.logTag = "";
 
         AcRTAlignJobSetting.Instance.IsTryRT = isTryRt;
         return preList;

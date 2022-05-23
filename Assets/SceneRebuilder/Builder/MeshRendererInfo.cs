@@ -1,3 +1,4 @@
+using CommonUtils;
 using MeshJobs;
 using System;
 using System.Collections;
@@ -580,7 +581,7 @@ public class MeshRendererInfo : MonoBehaviour,IComparable<MeshRendererInfo>
             {
                 vertexCount = meshFilter.sharedMesh.vertexCount;
                 //minMax = MeshHelper.GetMinMax(meshFilter);
-                minMax = MeshHelper.GetMinMax(GetMeshFilters());
+                minMax = VertexHelper.GetMinMax(GetMeshFilters());
                 SetMinMax();
             }
             else
@@ -592,7 +593,7 @@ public class MeshRendererInfo : MonoBehaviour,IComparable<MeshRendererInfo>
         {
             //Debug.LogError($"MeshRendererInfo.Init() meshFilter==null:" + this.name);
             var filters = gameObject.GetComponentsInChildren<MeshFilter>(true);
-            minMax = MeshHelper.GetMinMax(filters);
+            minMax = VertexHelper.GetMinMax(filters);
             SetMinMax();
         }
         // if(rendererType!=MeshRendererType.Detail)
@@ -985,6 +986,7 @@ public class MeshRendererInfoList:List<MeshRendererInfo>
         List<MeshRenderer> renderers = new List<MeshRenderer>();
         foreach (var item in this)
         {
+            if (item == null) continue;
             var rs = item.GetComponentsInChildren<MeshRenderer>(true);
             renderers.AddRange(rs);
         }
@@ -996,6 +998,7 @@ public class MeshRendererInfoList:List<MeshRendererInfo>
         List<Transform> renderers = new List<Transform>();
         foreach (var item in this)
         {
+            if (item == null) continue;
             //var rs = item.GetComponentsInChildren<Transform>(true);
             //renderers.AddRange(rs);
             var t = item.GetComponent<Transform>();
@@ -1009,6 +1012,7 @@ public class MeshRendererInfoList:List<MeshRendererInfo>
         List<MeshRenderer[]> renderersList = new List<MeshRenderer[]>();
         foreach (var item in this)
         {
+            if (item == null) continue;
             renderersList.Add(item.GetRenderers());
         }
         return renderersList.ToArray();
@@ -1374,14 +1378,14 @@ public class MeshRendererAssetInfoDict : Dictionary<string, MeshRendererAssetInf
     }
 }
 
-public enum MeshRendererType
-{
-    None=1,
-    Structure=2,//(Big)
-    Detail=4,//(Small)
-    Static=8,
-    LOD=16,
-    CombinedPart=32,
-    CombinedRoot=64,
-    Splited=128
-}
+//public enum MeshRendererType
+//{
+//    None=1,
+//    Structure=2,//(Big)
+//    Detail=4,//(Small)
+//    Static=8,
+//    LOD=16,
+//    CombinedPart=32,
+//    CombinedRoot=64,
+//    Splited=128
+//}

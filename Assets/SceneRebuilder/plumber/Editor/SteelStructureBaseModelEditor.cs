@@ -33,6 +33,7 @@ public class SteelStructureBaseModelEditor : Editor
 
         if (GUILayout.Button("GetInfo"))
         {
+            targetT.isShowDebug = true;
             targetT.GetModelInfo();
         }
 
@@ -41,10 +42,10 @@ public class SteelStructureBaseModelEditor : Editor
             targetT.GetModelInfo_Job();
         }
 
-        //if (GUILayout.Button("RendererModel"))
-        //{
-        //    targetT.RendererModel();
-        //}
+        if (GUILayout.Button("RendererModel"))
+        {
+            targetT.RendererModel();
+        }
 
         if (GUILayout.Button("ReplaceModel"))
         {
@@ -97,7 +98,14 @@ public class SteelStructureBaseModelEditor : Editor
 
         GUILayout.EndHorizontal();
 
+        DrawSubToolBar();
+
         base.OnInspectorGUI();
+    }
+
+    public virtual void DrawSubToolBar()
+    {
+
     }
 }
 
@@ -114,4 +122,45 @@ public class SteelStructureModelCEditor : SteelStructureBaseModelEditor
 [CustomEditor(typeof(SteelStructureModelL))]
 public class SteelStructureModelLEditor : SteelStructureBaseModelEditor
 {
+    public override void DrawSubToolBar()
+    {
+        SteelStructureModelL targetT = target as SteelStructureModelL;
+        GUILayout.BeginHorizontal();
+        if (GUILayout.Button("ClearData"))
+        {
+            targetT.ClearData();
+        }
+        if (GUILayout.Button("Debug_True"))
+        {
+            targetT.DebugGetModelInfoDebug_True();
+        }
+        if (GUILayout.Button("Debug_False"))
+        {
+            targetT.DebugGetModelInfoDebug_False(); 
+        }
+        GUILayout.EndHorizontal();
+    }
+}
+
+[CustomEditor(typeof(SteelStructureModelCornerBox))]
+public class SteelStructureModelCornerBoxEditor : SteelStructureBaseModelEditor
+{
+    public override void DrawSubToolBar()
+    {
+        SteelStructureModelCornerBox targetT = target as SteelStructureModelCornerBox;
+        GUILayout.BeginHorizontal();
+        if (GUILayout.Button("ClearData"))
+        {
+            targetT.ClearData();
+        }
+        //if (GUILayout.Button("Debug_True"))
+        //{
+        //    targetT.DebugGetModelInfoDebug_True();
+        //}
+        //if (GUILayout.Button("Debug_False"))
+        //{
+        //    targetT.DebugGetModelInfoDebug_False();
+        //}
+        GUILayout.EndHorizontal();
+    }
 }

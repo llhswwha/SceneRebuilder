@@ -88,7 +88,7 @@ public class SubScene_LODs : SubScene_Part
         base.GetSceneObjects();
         SubScene_Ref.AfterLoadScene(this.gameObject);
     }
-
+#if UNITY_EDITOR
     public override void EditorCreateScene(bool isOnlyChildren, GameObject dirGo = null, SceneContentType contentType = SceneContentType.Single)
     {
         RenderersId.Clear();
@@ -96,7 +96,7 @@ public class SubScene_LODs : SubScene_Part
         RenderersId.Sort();
         base.EditorCreateScene(isOnlyChildren, dirGo, contentType);
     }
-
+#endif
     public override void SetObjects(List<GameObject> goList)
     {
         base.SetObjects(goList);

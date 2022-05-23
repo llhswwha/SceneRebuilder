@@ -68,6 +68,10 @@ namespace GPUInstancer
             if(prototypeList==null) return;
             foreach (GPUInstancerPrototype prototype in prototypeList)
             {
+                if (prototype == null)
+                {
+                    continue;
+                }
                 bool isContains = _manager.selectedPrototypeList.Contains(prototype);
                 if (prototypeSelection.ContainsKey(prototype))
                 {
@@ -293,8 +297,20 @@ namespace GPUInstancer
                 _manager.selectedPrototypeList.Clear();
                 foreach (GPUInstancerPrototype prototype in _manager.prototypeList)
                 {
-                    if (prototypeSelection[prototype])
-                        _manager.selectedPrototypeList.Add(prototype);
+                    if (prototype == null)
+                    {
+                        continue;
+                    }
+                    if (prototypeSelection.ContainsKey(prototype))
+                    {
+                        if (prototypeSelection[prototype])
+                            _manager.selectedPrototypeList.Add(prototype);
+                    }
+                    else
+                    {
+                        Debug.Log($"prototypeSelection.ContainsKey(prototype)==false:{prototype}");
+                    }
+                    
                 }
             }
 

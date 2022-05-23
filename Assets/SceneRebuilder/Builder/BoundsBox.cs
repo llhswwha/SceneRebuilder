@@ -48,13 +48,13 @@ public class BoundsBox : NoCombine
         }
     }
 
-//    private void Awake()
-//    {
+    private void Awake()
+    {
 
-////#if !UNITY_EDITOR
-        
-////#endif
+        //#if !UNITY_EDITOR
 
-        
-//    }
+        //#endif
+
+        MeshHelper.RemoveMeshComponents(this.gameObject); 
+    }
 }

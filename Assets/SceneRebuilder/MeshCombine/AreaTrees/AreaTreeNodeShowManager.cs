@@ -303,7 +303,7 @@ public class AreaTreeNodeShowManager : MonoBehaviour
                 if (node == null) continue;
                 if (node2Tree.ContainsKey(node))
                 {
-                    Debug.LogError($"GetLeafNodes node2Tree.ContainsKey(node) node1:{node} tree:{tree} [path1:{TransformHelper.GetPath(node.transform)}] ");
+                    Debug.LogError($"GetLeafNodes node2Tree.ContainsKey(node) node1:{node} tree:{tree} [path1:{node.transform.GetPath()}] ");
                     continue;
                 }
                 node2Tree.Add(node,tree);
@@ -331,11 +331,11 @@ public class AreaTreeNodeShowManager : MonoBehaviour
                 AreaTreeNode node2 = Id2NodeDict[id];
                 if (node2 != node)
                 {
-                    Debug.LogError($"AddIdNodeDict Id2NodeDict.ContainsKey(id)[{count}] id:{id} node1:{node} node2:{node2} [path1:{TransformHelper.GetPath(node.transform)}] [path2:{TransformHelper.GetPath(node2.transform)}] ");
+                    Debug.LogError($"AddIdNodeDict Id2NodeDict.ContainsKey(id)[{count}] id:{id} node1:{node} node2:{node2} [path1:{node.transform.GetPath()}] [path2:{node2.transform.GetPath()}] ");
                 }
                 else
                 {
-                    Debug.LogWarning($"AddIdNodeDict Id2NodeDict.ContainsKey(id)[{count}] node==node2 id:{id} node1:{node} node2:{node2} [path1:{TransformHelper.GetPath(node.transform)}] [path2:{TransformHelper.GetPath(node2.transform)}] ");
+                    Debug.LogWarning($"AddIdNodeDict Id2NodeDict.ContainsKey(id)[{count}] node==node2 id:{id} node1:{node} node2:{node2} [path1:{node.transform.GetPath()}] [path2:{node2.transform.GetPath()}] ");
                 }
                 
             }
@@ -355,7 +355,7 @@ public class AreaTreeNodeShowManager : MonoBehaviour
             GameObject go = IdDictionary.GetGo(rId.Id);
             if (go == null)
             {
-                Debug.LogError($"MoveRendererToNode  Id2NodeDict.NotContainsKey(id) go == null rId:[{rId}] id:{rId.Id} path:{TransformHelper.GetPath(rId.transform)}");
+                Debug.LogError($"MoveRendererToNode  Id2NodeDict.NotContainsKey(id) go == null rId:[{rId}] id:{rId.Id} path:{rId.transform.GetPath()}");
             }
             else
             {

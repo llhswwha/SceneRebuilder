@@ -1,4 +1,5 @@
 using CodeStage.AdvancedFPSCounter.Editor.UI;
+using CommonUtils;
 using System.Collections;
 using System.Collections.Generic;
 using System.Linq;
@@ -349,7 +350,7 @@ public class LODManagerEditor : BaseFoldoutEditor<LODManager>
                         //lodManager.AddLOD2(item.renderer_lod0, item.renderer_lod1);
                         float dis1 = Vector3.Distance(item.renderer_old.transform.position, item.renderer_new.transform.position);
                         float dis2 = MeshHelper.GetCenterDistance(item.renderer_old.gameObject, item.renderer_new.gameObject);
-                        float dis3 = MeshHelper.GetAvgVertexDistanceEx(item.renderer_old.transform, item.renderer_new.transform);
+                        float dis3 = VertexHelper.GetAvgVertexDistanceEx(item.renderer_old.transform, item.renderer_new.transform);
                         Debug.Log($"Debug lod0:{item.renderer_old.name} lod1:{item.renderer_new.name} dis1:{dis1} dis2:{dis2} dis3:{dis3}");
                         var min = lodManager.GetMinInfo(item.renderer_new.transform);
                         Debug.Log($"dis:{min.dis} meshDis:{min.meshDis} target:{min.target}");

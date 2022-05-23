@@ -7,6 +7,8 @@ using System.Linq;
 #if UNITY_EDITOR
 using UnityEditor;
 #endif
+using CommonUtils;
+
 public class MeshComparer : SingletonBehaviour<MeshComparer>
 {
     public AlignDebugStep step;
@@ -136,10 +138,10 @@ public class MeshComparer : SingletonBehaviour<MeshComparer>
 
         var scale1=goNew.transform.localScale;
 
-        var vs1=MeshHelper.GetWorldVertexes(goNew);
-        var mm1=MeshHelper.GetMinMax(vs1);
-        var vs2=MeshHelper.GetWorldVertexes(goTo);
-        var mm2=MeshHelper.GetMinMax(vs2);
+        var vs1= VertexHelper.GetWorldVertexes(goNew);
+        var mm1= VertexHelper.GetMinMax(vs1);
+        var vs2= VertexHelper.GetWorldVertexes(goTo);
+        var mm2= VertexHelper.GetMinMax(vs2);
         var scaleNew=new Vector3(mm2[2].x/mm1[2].x,mm2[2].y/mm1[2].y,mm2[2].z/mm1[2].z);
 
         var dis=DistanceUtil.GetDistance(vs1,vs2);
@@ -192,10 +194,10 @@ public class MeshComparer : SingletonBehaviour<MeshComparer>
                     goNew.transform.rotation=Quaternion.Euler(angle)*rotation;
                     goNew.transform.SetParent(gameObject.transform);
 
-                    var vs1=MeshHelper.GetWorldVertexes(goNew);
-                    var mm1=MeshHelper.GetMinMax(vs1);
-                    var vs2=MeshHelper.GetWorldVertexes(goTo);
-                    var mm2=MeshHelper.GetMinMax(vs2);
+                    var vs1= VertexHelper.GetWorldVertexes(goNew);
+                    var mm1= VertexHelper.GetMinMax(vs1);
+                    var vs2= VertexHelper.GetWorldVertexes(goTo);
+                    var mm2= VertexHelper.GetMinMax(vs2);
                     var scaleNew=new Vector3(mm2[2].x/mm1[2].x,mm2[2].y/mm1[2].y,mm2[2].z/mm1[2].z);
 
                     var dis=DistanceUtil.GetDistance(vs1,vs2);
@@ -316,7 +318,7 @@ public class MeshComparer : SingletonBehaviour<MeshComparer>
     {
         var mfFrom = go.GetComponent<MeshFilter>();
         var vsFrom = mfFrom.sharedMesh.vertices;
-        var vsFromWorld = MeshHelper.GetWorldVertexes(vsFrom, mfFrom.transform);
+        var vsFromWorld = VertexHelper.GetWorldVertexes(vsFrom, mfFrom.transform);
 
         GameObject TryAngleFromW = CreateEmptyGo($"TryAngle{tag}W_vsFromWorld_" + mfFrom.name, mfFrom.transform.position);
         MeshHelper.ShowVertexes(vsFromWorld, pScale, TryAngleFromW.transform);
@@ -465,13 +467,13 @@ public class MeshComparer : SingletonBehaviour<MeshComparer>
         var mfFrom=goFrom.GetComponent<MeshFilter>();
         var mfTo=goTo.GetComponent<MeshFilter>();
 
-        var vsToWorld=MeshHelper.GetWorldVertexes(mfTo);
+        var vsToWorld= VertexHelper.GetWorldVertexes(mfTo);
 
         Matrix4x4 localMatrix=mfFrom.transform.localToWorldMatrix;
         Vector3 trans=goTo.transform.position-goFrom.transform.position;
 
         var vsFromLocal=mfFrom.sharedMesh.vertices;
-        var vsFromWorld=MeshHelper.GetWorldVertexes(vsFromLocal,mfFrom.transform);
+        var vsFromWorld= VertexHelper.GetWorldVertexes(vsFromLocal,mfFrom.transform);
         var scale1=goTo.transform.localScale;
         SetDistanceSetting();
         //GameObject gameObject=new GameObject("TryAngles");
@@ -517,8 +519,8 @@ public class MeshComparer : SingletonBehaviour<MeshComparer>
 
                         if (isTryScale)
                         {
-                            var mm1 = MeshHelper.GetMinMax(newVs2);
-                            var mm2 = MeshHelper.GetMinMax(vsToWorld);
+                            var mm1 = VertexHelper.GetMinMax(newVs2);
+                            var mm2 = VertexHelper.GetMinMax(vsToWorld);
                             var scaleNew = new Vector3(mm2[2].x / mm1[2].x, mm2[2].y / mm1[2].y, mm2[2].z / mm1[2].z);
                             Vector3 scaleNN = new Vector3(scale1.x * scaleNew.x, scale1.y * scaleNew.y, scale1.z * scaleNew.z);
 
@@ -570,7 +572,7 @@ public class MeshComparer : SingletonBehaviour<MeshComparer>
 
         float dis1 = Vector3.Distance(goTo.transform.position, goFrom.transform.position);
         float dis2 = MeshHelper.GetCenterDistance(goTo.gameObject, goFrom.gameObject);
-        float dis3 = MeshHelper.GetAvgVertexDistanceEx(goTo.transform, goFrom.transform);
+        float dis3 = VertexHelper.GetAvgVertexDistanceEx(goTo.transform, goFrom.transform);
         Debug.Log($"Debug goTo:{goTo.name} goFrom:{goFrom.name} dis1(Transform):{dis1} dis2(Center):{dis2} dis3(AvgVertex):{dis3}");
         //var min = lodManager.GetMinInfo(goFrom.transform);
         //Debug.Log($"dis:{min.dis} meshDis:{min.meshDis} target:{min.target}");
@@ -819,9 +821,9 @@ public class MeshComparer : SingletonBehaviour<MeshComparer>
 
         //goFromCopy.transform.position = goTo.transform.position;//这个加不加差不多
 
-        var vsFrom = MeshHelper.GetWorldVertexes(goFromCopy);
+        var vsFrom = VertexHelper.GetWorldVertexes(goFromCopy);
         //MeshHelper.ShowVertexes(vsFrom, pScale, "vsFrom");
-        var vsTo = MeshHelper.GetWorldVertexes(goTo);
+        var vsTo = VertexHelper.GetWorldVertexes(goTo);
         GameObject goOld = goFromCopy;
 
         var rList = MeshHelper.GetRTResultList(vsFrom, vsTo, MaxICPCount, 0.000001f);

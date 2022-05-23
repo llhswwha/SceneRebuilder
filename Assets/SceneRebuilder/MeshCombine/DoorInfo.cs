@@ -2,6 +2,7 @@ using System;
 using System.Collections;
 using System.Collections.Generic;
 using System.Linq;
+using CommonUtils;
 using MeshJobs;
 using UnityEngine;
 
@@ -307,7 +308,7 @@ public class DoorPartInfo
         MeshFilter mf = go.GetComponent<MeshFilter>();
         if (mf)
         {
-            minMax = MeshHelper.GetMinMax(mf);
+            minMax = VertexHelper.GetMinMax(mf);
             Center = minMax[3];
             Size = minMax[2];
             DisToCenter = Vector3.Distance(Pos, Center);
@@ -326,7 +327,7 @@ public class DoorPartInfo
         {
             var filters = go.GetComponentsInChildren<MeshFilter>(true);
 
-            minMax = MeshHelper.GetMinMax(filters);
+            minMax = VertexHelper.GetMinMax(filters);
             Center = minMax[3];
             Size = minMax[2];
             DisToCenter = Vector3.Distance(Pos, Center);

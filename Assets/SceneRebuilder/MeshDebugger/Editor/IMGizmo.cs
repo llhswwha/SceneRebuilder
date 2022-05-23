@@ -97,7 +97,7 @@ public class IMGizmo : ScriptableObject
     private float GetHandleSize(Vector3 position)
     {
         Camera current = Camera.current;
-        float result;
+        float result=0;
         if (current)
         {
             position = m_Matrix.MultiplyPoint3x4(position);
@@ -107,7 +107,9 @@ public class IMGizmo : ScriptableObject
             Vector3 a = current.WorldToScreenPoint(position2 + transform.TransformDirection(new Vector3(0f, 0f, z)));
             Vector3 b = current.WorldToScreenPoint(position2 + transform.TransformDirection(new Vector3(1f, 0f, z)));
             float magnitude = (a - b).magnitude;
+#if UNITY_EDITOR
             result = 80f / Mathf.Max(magnitude, 0.0001f) * UnityEditor.EditorGUIUtility.pixelsPerPoint;
+#endif
         }
         else
         {

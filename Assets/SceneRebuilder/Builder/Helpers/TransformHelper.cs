@@ -1,3 +1,4 @@
+using GPUInstancer;
 using System.Collections;
 using System.Collections.Generic;
 using System.Linq;
@@ -58,77 +59,29 @@ public static class TransformHelper
 
     public static string GetPath<T>(T t, Transform root = null, string split = ">") where T :MonoBehaviour
     {
-        return GetPath(t.transform, root, split);
+        return t.transform.GetPath(root, split);
     }
 
-    public static string GetPath(Transform t, Transform root = null, string split = ">")
-    {
-        //string path = t.name;
-        //t = t.parent;
-        //while (t != null)
-        //{
-        //    path = t.name + split + path;
-        //    if (t == root)
-        //    {
-        //        break;
-        //    }
-        //    t = t.parent;
-        //}
-        //return path;
 
-        List<Transform> ancestors = GetAncestors(t, root);
+    //public static void MoveToNewRoot(GameObject target,string newRootName)
+    //{
+    //    GameObject newRoot = GameObject.Find(newRootName);
+    //    if (newRoot == null)
+    //        newRoot = new GameObject(newRootName);
+    //    MeshFilter[] gos = target.GetComponentsInChildren<MeshFilter>(true);
+    //    foreach (MeshFilter go in gos)
+    //    {
+    //        TransformHelper.MoveGameObject(go.transform, newRoot.transform);
+    //    }
+    //    Debug.LogError($"MoveToZero gos:{gos.Length}");
+    //}
 
-        string path = "";
-        for (int i = 0; i < ancestors.Count; i++)
-        {
-            Transform a = ancestors[i];
-            path += a.name;
-            if (i < ancestors.Count - 1)
-            {
-                path += split;
-            }
-        }
-        return path;
-    }
-
-    public static List<Transform> GetAncestors(Transform t, Transform root = null)
-    {
-        List<Transform> ancestors = new List<Transform>();
-        ancestors.Add(t);
-        string path = t.name;
-        t = t.parent;
-        while (t != null)
-        {
-            ancestors.Add(t);
-            if (t == root)
-            {
-                break;
-            }
-            t = t.parent;
-        }
-        ancestors.Reverse();
-        return ancestors;
-    }
-
-    public static void MoveToNewRoot(GameObject target,string newRootName)
-    {
-        GameObject newRoot = GameObject.Find(newRootName);
-        if (newRoot == null)
-            newRoot = new GameObject(newRootName);
-        MeshFilter[] gos = target.GetComponentsInChildren<MeshFilter>(true);
-        foreach (MeshFilter go in gos)
-        {
-            TransformHelper.MoveGameObject(go.transform, newRoot.transform);
-        }
-        Debug.LogError($"MoveToZero gos:{gos.Length}");
-    }
-
-    public static void MoveGameObject(Transform target, Transform newRoot)
-    {
-        List<Transform> path = TransformHelper.GetAncestors(target, null);
-        Transform newP = TransformHelper.FindOrCreatePath(newRoot, path, false);
-        target.SetParent(newP.transform);
-    }
+    //public static void MoveGameObject(Transform target, Transform newRoot)
+    //{
+    //    List<Transform> path = target.GetAncestors(null);
+    //    Transform newP = TransformHelper.FindOrCreatePath(newRoot, path, false);
+    //    target.SetParent(newP.transform);
+    //}
 
     public static Transform FindOrCreatePath(Transform root,List<Transform> path,bool isDebug)
     {
@@ -296,24 +249,24 @@ public static class TransformHelper
         return g1;
     }
 
-    public static GameObject CreateSubTestObj(string objName, Transform parent)
-    {
-        GameObject objTriangles = new GameObject(objName);
-        objTriangles.AddComponent<DebugInfoRoot>();
-        objTriangles.transform.SetParent(parent);
-        objTriangles.transform.localPosition = Vector3.zero;
-        objTriangles.transform.localRotation = Quaternion.identity;
-        return objTriangles;
-    }
+    //public static GameObject CreateSubTestObj(string objName, Transform parent)
+    //{
+    //    GameObject objTriangles = new GameObject(objName);
+    //    objTriangles.AddComponent<DebugInfoRoot>();
+    //    objTriangles.transform.SetParent(parent);
+    //    objTriangles.transform.localPosition = Vector3.zero;
+    //    objTriangles.transform.localRotation = Quaternion.identity;
+    //    return objTriangles;
+    //}
 
-    public static List<Transform> GetChildrenNoLOD(GameObject root)
+    public static List<Transform> GetChildrenNoLOD(GameObject root, bool isIgnoreGPU)
     {
         List<Transform> list = new List<Transform>();
-        GetMeshPointsNoLOD(root.transform, list);
+        GetMeshPointsNoLOD(root.transform, list, isIgnoreGPU);
         return list;
     }
 
-    public static void GetMeshPointsNoLOD(Transform root, List<Transform> list)
+    public static void GetMeshPointsNoLOD(Transform root, List<Transform> list,bool isIgnoreGPU)
     {
         for (int i = 0; i < root.childCount; i++)
         {
@@ -323,6 +276,16 @@ public static class TransformHelper
             {
                 continue;
             }
+
+            if (isIgnoreGPU)
+            {
+                GPUInstancerPrefab gpui = child.GetComponent<GPUInstancerPrefab>();
+                if (gpui != null)
+                {
+                    continue;
+                }
+            }
+
             var render = child.GetComponent<MeshRenderer>();
             if(render!=null)
                 list.Add(child);
@@ -331,7 +294,8 @@ public static class TransformHelper
             {
 
             }
-            GetMeshPointsNoLOD(child, list);
+
+            GetMeshPointsNoLOD(child, list, isIgnoreGPU);
         }
     }
 
@@ -477,7 +441,7 @@ public static class TransformHelper
         return pre;
     }
 
-    internal static GameObject ShowLocalPoint(Vector3 point, float pointScale, Transform transform1, Transform transform2)
+    public static GameObject ShowLocalPoint(Vector3 point, float pointScale, Transform transform1, Transform transform2)
     {
         GameObject objPoint = GameObject.CreatePrimitive(PrimitiveType.Sphere);
         objPoint.transform.SetParent(transform1);
@@ -637,12 +601,12 @@ public static class TransformHelper
                     }
                     else
                     {
-                        Debug.LogError($"FindOneByName Error1[{errorCount++}] dis>=minDis result:{result.Count} name:{name} pos:{pos} dis:{disOfPos} disOfCenter:{disOfCenter} minDis:{minDis} t:{t}  {idInfo.GetFullString()}  path:{TransformHelper.GetPath(t)}");
+                        Debug.LogError($"FindOneByName Error1[{errorCount++}] dis>=minDis result:{result.Count} name:{name} pos:{pos} dis:{disOfPos} disOfCenter:{disOfCenter} minDis:{minDis} t:{t}  {idInfo.GetFullString()}  path:{t.GetPath()}");
                     }
                 }
                 else
                 {
-                    Debug.LogError($"FindOneByName Error2[{errorCount++}] t.name != name result:{result.Count} name:{name} pos:{pos} dis:{disOfPos} disOfCenter:{disOfCenter} minDis:{minDis} t:{t}  {idInfo.GetFullString()}  path:{TransformHelper.GetPath(t)}");
+                    Debug.LogError($"FindOneByName Error2[{errorCount++}] t.name != name result:{result.Count} name:{name} pos:{pos} dis:{disOfPos} disOfCenter:{disOfCenter} minDis:{minDis} t:{t}  {idInfo.GetFullString()}  path:{t.GetPath()}");
                     return null;
                 }
             }
@@ -657,12 +621,12 @@ public static class TransformHelper
                     }
                     else
                     {
-                        Debug.LogError($"FindOneByName Error3[{errorCount++}] dis>=minDis result:{result.Count} name:{name} pos:{pos} dis:{disOfPos} minDis:{minDis} t:{t}  {idInfo.GetFullString()}  path:{TransformHelper.GetPath(t)}");
+                        Debug.LogError($"FindOneByName Error3[{errorCount++}] dis>=minDis result:{result.Count} name:{name} pos:{pos} dis:{disOfPos} minDis:{minDis} t:{t}  {idInfo.GetFullString()}  path:{t.GetPath()}");
                     }
                 }
                 else
                 {
-                    Debug.LogError($"FindOneByName Error4[{errorCount++}] t.name != name result:{result.Count} name:{name} pos:{pos} dis:{disOfPos} minDis:{minDis} t:{t}  {idInfo.GetFullString()}  path:{TransformHelper.GetPath(t)}");
+                    Debug.LogError($"FindOneByName Error4[{errorCount++}] t.name != name result:{result.Count} name:{name} pos:{pos} dis:{disOfPos} minDis:{minDis} t:{t}  {idInfo.GetFullString()}  path:{t.GetPath()}");
                     return null;
                 }
             }
@@ -1096,14 +1060,14 @@ public static class TransformHelper
         }
     }
 
-    internal static void ClearChildren(GameObject root)
-    {
-        Transform[] children = root.GetComponentsInChildren<Transform>(true);
-        foreach (var child in children)
-        {
-            if (child == null) continue;
-            if (child.gameObject == root) continue;
-            GameObject.DestroyImmediate(child.gameObject);
-        }
-    }
+    //internal static void ClearChildren(GameObject root)
+    //{
+    //    Transform[] children = root.GetComponentsInChildren<Transform>(true);
+    //    foreach (var child in children)
+    //    {
+    //        if (child == null) continue;
+    //        if (child.gameObject == root) continue;
+    //        GameObject.DestroyImmediate(child.gameObject);
+    //    }
+    //}
 }

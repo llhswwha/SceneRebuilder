@@ -1529,9 +1529,19 @@ public class BaseFoldoutEditor<T> : BaseEditor<T> where T : class
                         var btnStyle = new GUIStyle(EditorStyles.miniButton);
                         btnStyle.margin = new RectOffset(0, 0, 0, 0);
                         btnStyle.padding = new RectOffset(0, 0, 0, 0);
-                        if (GUILayout.Button("S", btnStyle, GUILayout.Width(25)))
+                        if (GUILayout.Button("Select", btnStyle, GUILayout.Width(50)))
                         {
                             EditorHelper.SelectObjects(node.GetGameObjects());
+                        }
+                        if (GUILayout.Button("Hide", btnStyle, GUILayout.Width(40)))
+                        {
+                            //EditorHelper.SelectObjects(node.GetGameObjects());
+                            node.SetActive(false);
+                        }
+                        if (GUILayout.Button("Show", btnStyle, GUILayout.Width(40)))
+                        {
+                            //EditorHelper.SelectObjects(node.GetGameObjects());
+                            node.SetActive(true);
                         }
                         //if (GUILayout.Button("X1", btnStyle, GUILayout.Width(25)))
                         //{

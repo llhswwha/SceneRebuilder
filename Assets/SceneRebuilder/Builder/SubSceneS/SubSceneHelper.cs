@@ -55,7 +55,7 @@ public static class SubSceneHelper
             EditorBuildSettingsScene scene= new EditorBuildSettingsScene(path, true);
             if (File.Exists(path) == false)
             {
-                Debug.LogError($"scene[{i + 1}]  scene:{scene} ScenePath:{path} enabled:{scene.enabled} Exists:{File.Exists(path)} ObjPath:{TransformHelper.GetPath(item.transform)}");
+                Debug.LogError($"scene[{i + 1}]  scene:{scene} ScenePath:{path} enabled:{scene.enabled} Exists:{File.Exists(path)} ObjPath:{item.transform.GetPath()}");
             }
             else
             {
@@ -431,5 +431,5 @@ public enum SubSceneType
 
 public enum SceneContentType
 {
-    Single,Part,Tree,TreeAndPart,TreeWithPart,TreeNode,LOD0,LODGroup,LODs,Ref
+    Single,Part,Tree,TreeAndPart,TreeWithPart,TreeNode,LOD0,LODGroup,LODs,Ref, GPUI
 }

@@ -794,12 +794,12 @@ public class TransformDictionary
                 {
                     if (disOfCenter < 1f)
                     {
-                        Debug.LogWarning($"FindModelsByPosAndName Error11 ¡¾{idInfo},path:{idInfo.GetPath()}¡¿ | nameItem0:{nameItem0} disOfPos:{disOfPos} disOfCenter:{disOfCenter}| path:{TransformHelper.GetPath(nameItem0)}");
+                        Debug.LogWarning($"FindModelsByPosAndName Error11 ¡¾{idInfo},path:{idInfo.GetPath()}¡¿ | nameItem0:{nameItem0} disOfPos:{disOfPos} disOfCenter:{disOfCenter}| path:{nameItem0.GetPath()}");
                         return nameItemList;
                     }
                     else
                     {
-                        Debug.LogError($"FindModelsByPosAndName Error11 ¡¾{idInfo},path:{idInfo.GetPath()}¡¿ | nameItem0:{nameItem0} disOfPos:{disOfPos} disOfCenter:{disOfCenter}| path:{TransformHelper.GetPath(nameItem0)}");
+                        Debug.LogError($"FindModelsByPosAndName Error11 ¡¾{idInfo},path:{idInfo.GetPath()}¡¿ | nameItem0:{nameItem0} disOfPos:{disOfPos} disOfCenter:{disOfCenter}| path:{nameItem0.GetPath()}");
                         return null;
                     }
                 }
@@ -807,12 +807,12 @@ public class TransformDictionary
                 {
                     if (disOfCenter < 0.6f)
                     {
-                        Debug.LogWarning($"FindModelsByPosAndName Error12 ¡¾{idInfo},path:{idInfo.GetPath()}¡¿ | nameItem0:{nameItem0} disOfPos:{disOfPos} disOfCenter:{disOfCenter}| path:{TransformHelper.GetPath(nameItem0)}");
+                        Debug.LogWarning($"FindModelsByPosAndName Error12 ¡¾{idInfo},path:{idInfo.GetPath()}¡¿ | nameItem0:{nameItem0} disOfPos:{disOfPos} disOfCenter:{disOfCenter}| path:{nameItem0.GetPath()}");
                         return nameItemList;
                     }
                     else
                     {
-                        Debug.LogError($"FindModelsByPosAndName Error12 ¡¾{idInfo},path:{idInfo.GetPath()}¡¿ | nameItem0:{nameItem0} disOfPos:{disOfPos} disOfCenter:{disOfCenter}| path:{TransformHelper.GetPath(nameItem0)}");
+                        Debug.LogError($"FindModelsByPosAndName Error12 ¡¾{idInfo},path:{idInfo.GetPath()}¡¿ | nameItem0:{nameItem0} disOfPos:{disOfPos} disOfCenter:{disOfCenter}| path:{nameItem0.GetPath()}");
                         return null;
                     }
                 }
@@ -828,7 +828,7 @@ public class TransformDictionary
                     var disOfCenter = Vector3.Distance(center, MeshRendererInfo.GetCenterPos(t.gameObject));
                     if (disOfCenter < 0.6f)
                     {
-                        Debug.LogWarning($"FindModelsByPosAndName Error21 ¡¾{idInfo},path:{idInfo.GetPath()}¡¿ | t:{t} disOfPos:{disOfPos} disOfCenter:{disOfCenter} | path:{TransformHelper.GetPath(t)}");
+                        Debug.LogWarning($"FindModelsByPosAndName Error21 ¡¾{idInfo},path:{idInfo.GetPath()}¡¿ | t:{t} disOfPos:{disOfPos} disOfCenter:{disOfCenter} | path:{t.GetPath()}");
                         return new List<Transform>() { t };
                     }
                     else
@@ -879,15 +879,15 @@ public class TransformDictionary
                                     for (int i = 0; i < nameItemList.Count; i++)
                                     {
                                         Transform item = nameItemList[i];
-                                        Debug.LogError($"FindModelsByPosAndName[{i}] Error11 item:{item.name} path:{TransformHelper.GetPath(item)}");
+                                        Debug.LogError($"FindModelsByPosAndName[{i}] Error11 item:{item.name} path:{item.GetPath()}");
                                     }
-                                    Debug.LogError($"FindModelsByPosAndName Error22 ¡¾{idInfo},path:{idInfo.GetPath()}¡¿ | t:{t} disOfPos:{disOfPos} disOfCenter:{disOfCenter}| path:{TransformHelper.GetPath(t)}");
+                                    Debug.LogError($"FindModelsByPosAndName Error22 ¡¾{idInfo},path:{idInfo.GetPath()}¡¿ | t:{t} disOfPos:{disOfPos} disOfCenter:{disOfCenter}| path:{t.GetPath()}");
                                     return null;
                                 }
                             }
                             else
                             {
-                                Debug.LogWarning($"FindModelsByPosAndName Error23 idP2==null ¡¾{idInfo},path:{idInfo.GetPath()}¡¿ | t:{t} disOfPos:{disOfPos} disOfCenter:{disOfCenter} | path:{TransformHelper.GetPath(t)}");
+                                Debug.LogWarning($"FindModelsByPosAndName Error23 idP2==null ¡¾{idInfo},path:{idInfo.GetPath()}¡¿ | t:{t} disOfPos:{disOfPos} disOfCenter:{disOfCenter} | path:{t.GetPath()}");
                                 return null;
                             }
                         }
@@ -896,7 +896,7 @@ public class TransformDictionary
                             for (int i = 0; i < nameItemList.Count; i++)
                             {
                                 Transform item = nameItemList[i];
-                                Debug.LogError($"FindModelsByPosAndName[{i}] Error24 idP1==null item:{item.name} path:{TransformHelper.GetPath(item)}");
+                                Debug.LogError($"FindModelsByPosAndName[{i}] Error24 idP1==null item:{item.name} path:{item.GetPath()}");
                                 Transform tp1 = item.parent;
                                 Transform tp2 = tp1.parent;
 
@@ -917,12 +917,12 @@ public class TransformDictionary
                         var disOfCenter = Vector3.Distance(center, MeshRendererInfo.GetCenterPos(t.gameObject));
                         if (disOfCenter < 0.6f)
                         {
-                            Debug.LogWarning($"FindModelsByPosAndName Error31 ¡¾{idInfo},path:{idInfo.GetPath()}¡¿ | t:{t} disOfPos:{disOfPos} disOfCenter:{disOfCenter}| path:{TransformHelper.GetPath(t)}"); ;
+                            Debug.LogWarning($"FindModelsByPosAndName Error31 ¡¾{idInfo},path:{idInfo.GetPath()}¡¿ | t:{t} disOfPos:{disOfPos} disOfCenter:{disOfCenter}| path:{t.GetPath()}"); ;
                             return new List<Transform>() { t };
                         }
                         else
                         {
-                            Debug.LogError($"FindModelsByPosAndName Error32 ¡¾{idInfo},path:{idInfo.GetPath()}¡¿ | t:{t} disOfPos:{disOfPos} disOfCenter:{disOfCenter}| path:{TransformHelper.GetPath(t)}");
+                            Debug.LogError($"FindModelsByPosAndName Error32 ¡¾{idInfo},path:{idInfo.GetPath()}¡¿ | t:{t} disOfPos:{disOfPos} disOfCenter:{disOfCenter}| path:{t.GetPath()}");
                             return null;
                         }
                     }
@@ -994,315 +994,150 @@ public class TransformDictionary
     }
 }
 
-public class DictionaryList1ToN<T>: DictionaryList1ToN<string, T>// where T :class
-{
+//public class DictionaryList1ToN<T>: DictionaryList1ToN<string, T>// where T :class
+//{
     
-}
+//}
 
-public class Key2List<T1,T2>:IComparable<Key2List<T1, T2>>
-{
-    public T1 Key;
-    public List<T2> List;
+//public class Key2List<T1,T2>:IComparable<Key2List<T1, T2>>
+//{
+//    public T1 Key;
+//    public List<T2> List;
 
-    public int Count
-    {
-        get
-        {
-            if (List == null) return -1;
-            return List.Count;
-        }
-    }
+//    public int Count
+//    {
+//        get
+//        {
+//            if (List == null) return -1;
+//            return List.Count;
+//        }
+//    }
 
-    public Key2List(T1 key ,List<T2> list)
-    {
-        this.Key = key;
-        this.List = list;
-        //this.Count = list.Count;
-    }
+//    public Key2List(T1 key ,List<T2> list)
+//    {
+//        this.Key = key;
+//        this.List = list;
+//        //this.Count = list.Count;
+//    }
 
-    public int CompareTo(Key2List<T1, T2> other)
-    {
-        return other.Count.CompareTo(this.Count);
-    }
-}
+//    public int CompareTo(Key2List<T1, T2> other)
+//    {
+//        return other.Count.CompareTo(this.Count);
+//    }
+//}
 
-public class DictionaryList1ToN<T1,T2> : Dictionary<T1, List<T2>> //where T2 : class
-{
-    public List<Key2List<T1,T2>> Key2Lists = new List<Key2List<T1, T2>>();
+//public class DictionaryList1ToN<T1,T2> : Dictionary<T1, List<T2>> //where T2 : class
+//{
+//    public List<T2> GetList(T1 key)
+//    {
+//        if (this.ContainsKey(key))
+//        {
+//            return this[key];
+//        }
+//        else
+//        {
+//            return new List<T2>();
+//        }
+//    }
 
-    public void AddItem(T1 key, T2 item)
-    {
+//    public int GetListCount(T1 key)
+//    {
+//        if (this.ContainsKey(key))
+//        {
+//            return this[key].Count;
+//        }
+//        else
+//        {
+//            return 0;
+//        }
+//    }
 
-        if (!this.ContainsKey(key))
-        {
-            List<T2> list0 = new List<T2>();
-            this.Add(key, list0);
-            Key2Lists.Add(new Key2List<T1, T2>(key, list0));
-        }
-        var list = this[key];
-        if(!list.Contains(item))
-            list.Add(item);
+//    public List<Key2List<T1,T2>> Key2Lists = new List<Key2List<T1, T2>>();
 
-        //if (item.ToString().Contains("SG0000-Undefined 102") || item.ToString().Contains("FD0000-Undefined 105"))
-        //{
-        //    Debug.LogError($"AddItem item:{item},key:{key} count:{list.Count}");
-        //}
-    }
+//    public void AddItem(T1 key, T2 item)
+//    {
 
-    public void RemoveItem(T1 key, T2 item)
-    {
-        var items = GetItems(key);
-        if (items != null)
-        {
-            int count1 = items.Count;
-            items.Remove(item);
-            int count2 = items.Count;
-            if (count1 == count2)
-            {
-                Debug.LogError($"DictionaryList1ToN RemoveItem NotContainsItem key:{key} item:{item}");
-            }
+//        if (!this.ContainsKey(key))
+//        {
+//            List<T2> list0 = new List<T2>();
+//            this.Add(key, list0);
+//            Key2Lists.Add(new Key2List<T1, T2>(key, list0));
+//        }
+//        var list = this[key];
+//        if(!list.Contains(item))
+//            list.Add(item);
 
-            if (count2 == 0)
-            {
-                this.Remove(key);
-            }
-        }
-        else
-        {
-            Debug.LogError($"DictionaryList1ToN RemoveItem NotContainsKey key:{key} item:{item}");
-        }
+//        //if (item.ToString().Contains("SG0000-Undefined 102") || item.ToString().Contains("FD0000-Undefined 105"))
+//        //{
+//        //    Debug.LogError($"AddItem item:{item},key:{key} count:{list.Count}");
+//        //}
+//    }
 
-        //if (item.ToString().Contains("SG0000-Undefined 102") || item.ToString().Contains("FD0000-Undefined 105"))
-        //{
-        //    Debug.LogError($"RemoveItem item:{item},key:{key} count:{items.Count}");
-        //}
-    }
+//    public void RemoveItem(T1 key, T2 item)
+//    {
+//        var items = GetItems(key);
+//        if (items != null)
+//        {
+//            int count1 = items.Count;
+//            items.Remove(item);
+//            int count2 = items.Count;
+//            if (count1 == count2)
+//            {
+//                Debug.LogError($"DictionaryList1ToN RemoveItem NotContainsItem key:{key} item:{item}");
+//            }
 
-    public T2 GetItem(T1 key)
-    {
-        if (this.ContainsKey(key))
-        {
-            var list = this[key];
-            if (list.Count == 1)
-            {
-                return list[0];
-            }
-            else
-            {
-                return default(T2);
-            }
-        }
-        return default(T2);
-    }
+//            if (count2 == 0)
+//            {
+//                this.Remove(key);
+//            }
+//        }
+//        else
+//        {
+//            Debug.LogError($"DictionaryList1ToN RemoveItem NotContainsKey key:{key} item:{item}");
+//        }
 
-    public List<T2> GetItems(T1 key)
-    {
-        if (this.ContainsKey(key))
-        {
-            var list = this[key];
-            return list;
-        }
-        return null;
-    }
+//        //if (item.ToString().Contains("SG0000-Undefined 102") || item.ToString().Contains("FD0000-Undefined 105"))
+//        //{
+//        //    Debug.LogError($"RemoveItem item:{item},key:{key} count:{items.Count}");
+//        //}
+//    }
 
-    public List<Key2List<T1, T2>> GetListSortByCount()
-    {
-        Key2Lists.Sort();
-        //List<T1> keys = new List<T1>();
-        //foreach(var item in Key2Lists)
-        //{
-        //    keys.Add(item.Key);
-        //}
-        //return keys;
-        return Key2Lists;
-    }
-}
+//    public T2 GetItem(T1 key)
+//    {
+//        if (this.ContainsKey(key))
+//        {
+//            var list = this[key];
+//            if (list.Count == 1)
+//            {
+//                return list[0];
+//            }
+//            else
+//            {
+//                return default(T2);
+//            }
+//        }
+//        return default(T2);
+//    }
 
-public class PositionDictionaryList<T> // where T : class
-{
-    public DictionaryList1ToN<T> posListDict = new DictionaryList1ToN<T>();
-    public DictionaryList1ToN<T> posListDict2 = new DictionaryList1ToN<T>();//6
-    public DictionaryList1ToN<T> posListDict3 = new DictionaryList1ToN<T>();//5
-    public DictionaryList1ToN<T> posListDict4 = new DictionaryList1ToN<T>();//4
-    public DictionaryList1ToN<T> posListDict5 = new DictionaryList1ToN<T>();//3
-    public DictionaryList1ToN<T> posListDict6 = new DictionaryList1ToN<T>();//2
-    public DictionaryList1ToN<T> posListDict7 = new DictionaryList1ToN<T>();//2
+//    public List<T2> GetItems(T1 key)
+//    {
+//        if (this.ContainsKey(key))
+//        {
+//            var list = this[key];
+//            return list;
+//        }
+//        return null;
+//    }
 
-    public T GetItem(Vector3 pos,out int listId)
-    {
-        var posT1 = $"({pos.x},{pos.y},{pos.z})";
-        //var posT1 = $"({pos.x.ToString("F7")},{pos.y.ToString("F7")},{pos.z.ToString("F7")})";
-        if (posListDict.ContainsKey(posT1))
-        {
-            listId = 1;
-            return posListDict.GetItem(posT1);
-        }
-
-        var posT2 = MeshHelper.Vector3ToString6(pos);
-        if (posListDict2.ContainsKey(posT2))
-        {
-            listId = 2;
-            return posListDict2.GetItem(posT2);
-        }
-
-        var posT3 = MeshHelper.Vector3ToString5(pos);
-        if (posListDict3.ContainsKey(posT3))
-        {
-            listId = 3;
-            return posListDict3.GetItem(posT3);
-        }
-
-        var posT4 = MeshHelper.Vector3ToString4(pos);
-        if (posListDict4.ContainsKey(posT4))
-        {
-            listId = 4;
-            return posListDict4.GetItem(posT4);
-        }
-
-        var posT5 = MeshHelper.Vector3ToString3(pos);
-        if (posListDict5.ContainsKey(posT5))
-        {
-            listId = 5;
-            return posListDict5.GetItem(posT5);
-        }
-
-        var posT6 = $"({pos.x.ToString("F2")},{pos.y.ToString("F2")},{pos.z.ToString("F2")})";
-        if (posListDict6.ContainsKey(posT6))
-        {
-            listId = 6;
-            return posListDict6.GetItem(posT6);
-        }
-        var posT7 = $"({pos.x.ToString("F1")},{pos.y.ToString("F1")},{pos.z.ToString("F1")})";
-        if (posListDict7.ContainsKey(posT7))
-        {
-            listId = 7;
-            return posListDict7.GetItem(posT7);
-        }
-        listId = 0;
-        return default(T);
-    }
-
-    public List<T> GetItems(Vector3 pos, out int listId)
-    {
-        var posT1 = $"({pos.x},{pos.y},{pos.z})";
-        if (posListDict.ContainsKey(posT1))
-        {
-            listId = 1;
-            return posListDict.GetItems(posT1);
-        }
-
-        var posT2 = $"({pos.x.ToString("F6")},{pos.y.ToString("F6")},{pos.z.ToString("F6")})";
-        if (posListDict2.ContainsKey(posT2))
-        {
-            listId = 2;
-            return posListDict2.GetItems(posT2);
-        }
-
-        var posT3 = $"({pos.x.ToString("F5")},{pos.y.ToString("F5")},{pos.z.ToString("F5")})";
-        if (posListDict3.ContainsKey(posT3))
-        {
-            listId = 3;
-            return posListDict3.GetItems(posT3);
-        }
-
-        var posT4 = $"({pos.x.ToString("F4")},{pos.y.ToString("F4")},{pos.z.ToString("F4")})";
-        if (posListDict4.ContainsKey(posT4))
-        {
-            listId = 4;
-            return posListDict4.GetItems(posT4);
-        }
-
-        var posT5 = $"({pos.x.ToString("F3")},{pos.y.ToString("F3")},{pos.z.ToString("F3")})";
-        if (posListDict5.ContainsKey(posT5))
-        {
-            listId = 5;
-            return posListDict5.GetItems(posT5);
-        }
-
-        var posT6 = $"({pos.x.ToString("F2")},{pos.y.ToString("F2")},{pos.z.ToString("F2")})";
-        if (posListDict6.ContainsKey(posT6))
-        {
-            listId = 6;
-            return posListDict6.GetItems(posT6);
-        }
-        var posT7 = $"({pos.x.ToString("F1")},{pos.y.ToString("F1")},{pos.z.ToString("F1")})";
-        if (posListDict7.ContainsKey(posT7))
-        {
-            listId = 7;
-            return posListDict7.GetItems(posT7);
-        }
-
-        listId = 0;
-        return null;
-    }
-
-    public void Remove(Vector3 pos,T t)
-    {
-        var posT1 = $"({pos.x},{pos.y},{pos.z})";
-        posListDict.RemoveItem(posT1, t);
-
-        var posT2 = $"({pos.x.ToString("F6")},{pos.y.ToString("F6")},{pos.z.ToString("F6")})";
-        posListDict2.RemoveItem(posT2, t);
-
-        var posT3 = $"({pos.x.ToString("F5")},{pos.y.ToString("F5")},{pos.z.ToString("F5")})";
-        posListDict3.RemoveItem(posT3, t);
-
-        var posT4 = $"({pos.x.ToString("F4")},{pos.y.ToString("F4")},{pos.z.ToString("F4")})";
-        posListDict4.RemoveItem(posT4, t);
-
-        var posT5 = $"({pos.x.ToString("F3")},{pos.y.ToString("F3")},{pos.z.ToString("F3")})";
-        posListDict5.RemoveItem(posT5, t);
-
-        var posT6 = $"({pos.x.ToString("F2")},{pos.y.ToString("F2")},{pos.z.ToString("F2")})";
-        posListDict6.RemoveItem(posT6, t);
-
-        var posT7 = $"({pos.x.ToString("F1")},{pos.y.ToString("F1")},{pos.z.ToString("F1")})";
-        posListDict7.RemoveItem(posT7, t);
-    }
-
-    internal void Add(Vector3 pos, T t,int level=7)
-    {
-
-        var posT1 = $"({pos.x},{pos.y},{pos.z})";
-        posListDict.AddItem(posT1, t);
-
-        if (level > 1)
-        {
-            var posT2 = $"({pos.x.ToString("F6")},{pos.y.ToString("F6")},{pos.z.ToString("F6")})";
-            posListDict2.AddItem(posT2, t);
-        }
-
-        if (level >2)
-        {
-            var posT3 = $"({pos.x.ToString("F5")},{pos.y.ToString("F5")},{pos.z.ToString("F5")})";
-            posListDict3.AddItem(posT3, t);
-        }
-
-        if (level > 3)
-        {
-            var posT4 = $"({pos.x.ToString("F4")},{pos.y.ToString("F4")},{pos.z.ToString("F4")})";
-            posListDict4.AddItem(posT4, t);
-        }
-
-        if (level > 4)
-        {
-            var posT5 = $"({pos.x.ToString("F3")},{pos.y.ToString("F3")},{pos.z.ToString("F3")})";
-            posListDict5.AddItem(posT5, t);
-        }
-        if (level > 5)
-        {
-            var posT6 = $"({pos.x.ToString("F2")},{pos.y.ToString("F2")},{pos.z.ToString("F2")})";
-            posListDict6.AddItem(posT6, t);
-        }
-        if (level > 6)
-        {
-            var posT7 = $"({pos.x.ToString("F1")},{pos.y.ToString("F1")},{pos.z.ToString("F1")})";
-            posListDict7.AddItem(posT7, t);
-        }
-    }
-
-    public void ShowCount(string tag)
-    {
-        Debug.Log($"[{tag}][PositionDictionaryList] pos1:{posListDict.Count} pos2:{posListDict2.Count} pos3:{posListDict3.Count} pos4:{posListDict4.Count} pos5:{posListDict5.Count} pos6:{posListDict6.Count} pos7:{posListDict7.Count}");
-    }
-}
+//    public List<Key2List<T1, T2>> GetListSortByCount()
+//    {
+//        Key2Lists.Sort();
+//        //List<T1> keys = new List<T1>();
+//        //foreach(var item in Key2Lists)
+//        //{
+//        //    keys.Add(item.Key);
+//        //}
+//        //return keys;
+//        return Key2Lists;
+//    }
+//}

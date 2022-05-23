@@ -1,4 +1,5 @@
 using CodeStage.AdvancedFPSCounter.Editor.UI;
+using CommonUtils;
 using System.Collections;
 using System.Collections.Generic;
 using System.Linq;
@@ -76,7 +77,7 @@ public class RendererIdEditor : BaseEditor<RendererId>
                 Debug.LogError(targetT.parentId);
                 IdDictionary.InitInfos();
                 var p = IdDictionary.GetGo(targetT.parentId);
-                Debug.LogError(TransformHelper.GetPath(p.transform));
+                Debug.LogError(p.transform.GetPath());
             }
         }
         EditorGUILayout.EndHorizontal();
@@ -185,7 +186,7 @@ public class RendererIdEditor : BaseEditor<RendererId>
         }
         if (GUILayout.Button("GetSize"))
         {
-            var minMax = MeshHelper.GetMinMax(item.gameObject);
+            var minMax = VertexHelper.GetMinMax(item.gameObject);
             Debug.Log("size:" + minMax[2]);
         }
         if (GUILayout.Button("RemoveNew"))

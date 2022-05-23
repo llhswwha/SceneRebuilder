@@ -62,12 +62,12 @@ public static class IdDictionary
                     if (renderer == null)
                     {
                         id.NewId();
-                        Debug.LogWarning($"RendererDictionay.SetRendererId string.IsNullOrEmpty(id.Id)  newId:{id.Id} path:{TransformHelper.GetPath(id.transform)}");
+                        Debug.LogWarning($"RendererDictionay.SetRendererId string.IsNullOrEmpty(id.Id)  newId:{id.Id} path:{id.transform.GetPath()}");
                         return;
                     }
                     else
                     {
-                        Debug.LogError($"RendererDictionay.SetRendererId string.IsNullOrEmpty(id.Id) path:{TransformHelper.GetPath(id.transform)}");
+                        Debug.LogError($"RendererDictionay.SetRendererId string.IsNullOrEmpty(id.Id) path:{id.transform.GetPath()}");
                         return;
                     }
                     
@@ -79,7 +79,7 @@ public static class IdDictionary
                         if (IdDict.ContainsKey(id.Id))
                         {
                             RendererId rid1 = IdDict[id.Id];
-                            Debug.LogWarning($"SetRendererId(RendererId) id:{id.Id} [rid1:{rid1}] [rid2:{id.name}] [path1:{TransformHelper.GetPath(rid1.transform)}] [path2:{TransformHelper.GetPath(id.transform)}]");
+                            Debug.LogWarning($"SetRendererId(RendererId) id:{id.Id} [rid1:{rid1}] [rid2:{id.name}] [path1:{rid1.transform.GetPath()}] [path2:{id.transform.GetPath()}]");
                             id.NewId();
                         }
                     }
@@ -97,7 +97,7 @@ public static class IdDictionary
                         }
                         else if (renderer1 != renderer)
                         {
-                            Debug.LogError($"SetRendererId(MeshRenderer) id:{id.Id} [renderer1:{renderer1}] [renderer2:{renderer}] [path1:{TransformHelper.GetPath(renderer1.transform)}] [path2:{TransformHelper.GetPath(id.transform)}]");
+                            Debug.LogError($"SetRendererId(MeshRenderer) id:{id.Id} [renderer1:{renderer1}] [renderer2:{renderer}] [path1:{renderer1.transform.GetPath()}] [path2:{id.transform.GetPath()}]");
                             RendererDict[id.Id] = renderer;
                         }
                         
@@ -129,7 +129,7 @@ public static class IdDictionary
                         }
                         else if (rid1 != id)
                         {
-                            Debug.LogError($"SetRendererId(RendererId) id:{id.Id} [rid1:{rid1}] [rid2:{id.name}] [path1:{TransformHelper.GetPath(rid1.transform)}] [path2:{TransformHelper.GetPath(id.transform)}]");
+                            Debug.LogError($"SetRendererId(RendererId) id:{id.Id} [rid1:{rid1}] [rid2:{id.name}] [path1:{rid1.transform.GetPath()}] [path2:{id.transform.GetPath()}]");
                             IdDict[id.Id] = id;
                         }
                         
@@ -243,7 +243,7 @@ public static class IdDictionary
     }
 
 
-    internal static void InitGos(IEnumerable<GameObject> objs,string tag)
+    public static void InitGos(IEnumerable<GameObject> objs,string tag)
     {
         DateTime start = DateTime.Now;
         int count1 = RendererDict.Count;
@@ -304,11 +304,11 @@ public static class IdDictionary
         {
             if (isError)
             {
-                Debug.LogError($"RendererDictionay.GetGo go not found id:{id},\tTransform:{t},\tPath:{TransformHelper.GetPath(t)}\tDict:{IdDict.Count}");
+                Debug.LogError($"RendererDictionay.GetGo go not found id:{id},\tTransform:{t},\tPath:{t.GetPath()}\tDict:{IdDict.Count}");
             }
             else
             {
-                Debug.LogWarning($"RendererDictionay.GetGo go not found id:{id},\tTransform:{t},\tPath:{TransformHelper.GetPath(t)}\tDict:{IdDict.Count}");
+                Debug.LogWarning($"RendererDictionay.GetGo go not found id:{id},\tTransform:{t},\tPath:{t.GetPath()}\tDict:{IdDict.Count}");
             }
         }
             
@@ -487,7 +487,7 @@ public static class IdDictionary
         }
         if (notFoundCount > 0)
         {
-            Debug.LogError($"RendererDictionay.GetRenderers renderersId:{renderersId.Count} foundCount:{foundCount} notFoundCount:{notFoundCount} root:{TransformHelper.GetPath(root)} notFoundIds:{notFoundIds}");
+            Debug.LogError($"RendererDictionay.GetRenderers renderersId:{renderersId.Count} foundCount:{foundCount} notFoundCount:{notFoundCount} root:{root.GetPath()} notFoundIds:{notFoundIds}");
         }
         
         return renderers;

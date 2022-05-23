@@ -18,11 +18,11 @@ public class PipeBendModelEditor : PipeModelBaseEditor
         }
         if (GUILayout.Button("RendererElbow"))
         {
-            targetT.RendererElbowModel(targetT.GetArg(), "_Elbow");
+            targetT.RendererElbowModel(PipeFactory.Instance.GetArg(targetT), "_Elbow");
         }
         if (GUILayout.Button("RendererLines"))
         {
-            targetT.RendererLinesModel(targetT.GetArg(), "_Lines");
+            targetT.RendererLinesModel(PipeFactory.Instance.GetArg(targetT), "_Lines");
         }
         GUILayout.EndHorizontal();
 
