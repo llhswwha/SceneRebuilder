@@ -1,9 +1,11 @@
 using Base.Common;
+using CommonUtils;
 using MathGeoLib;
 using System;
 using System.Collections;
 using System.Collections.Generic;
 using System.Linq;
+using System.Text;
 using Unity.Collections;
 using UnityEngine;
 using UnityEngine.SceneManagement;
@@ -20,7 +22,7 @@ public class PipeBuilder : MonoBehaviour
 
     public List<PipeElbowModel> PipeElbows = new List<PipeElbowModel>();
 
-    public List<Transform> PipeBendsGos = new List<Transform>();
+    public List<Transform> PipeBendGos = new List<Transform>();
 
     public List<PipeBendModel> PipeBends = new List<PipeBendModel>();
 
@@ -65,6 +67,14 @@ public class PipeBuilder : MonoBehaviour
     public List<Transform> BoxModelGos = new List<Transform>();
 
     public List<BoxMeshModel> BoxModels = new List<BoxMeshModel>();
+
+    public List<Transform> LMeshModelGos = new List<Transform>();
+
+    public List<SteelStructureModelL> LMeshModels = new List<SteelStructureModelL>();
+
+    public List<Transform> CornerBoxModelGos = new List<Transform>();
+
+    public List<SteelStructureModelCornerBox> CornerBoxModels = new List<SteelStructureModelCornerBox>();
 
     public List<Transform> GetModelResult_Line()
     {
@@ -315,28 +325,120 @@ public class PipeBuilder : MonoBehaviour
 
     public bool IsCopyComponents = true;
 
-    public void ReplaceOld()
+    public void PrefaNotSuccessModels()
     {
         DateTime start = DateTime.Now;
-        List<PipeModelBase> newModels = new List<PipeModelBase>();
+        List<PipeModelBase> notSuccessModels = new List<PipeModelBase>();
         for (int i = 0; i < PipeModels.Count; i++)
         {
             PipeModelBase model = PipeModels[i];
             if (model == null) continue;
-            model.ReplaceOld();
+
+            //model.ReplaceOld();
+            if (model.IsGetInfoSuccess == false)
+            {
+                notSuccessModels.Add(model);
+                //continue;
+            }
         }
+
+        //if (isPrefab)
+        {
+            PrefabInstanceBuilder.Instance.GetPrefabsOfList(notSuccessModels, true, "notSuccessModels", false);
+        }
+
+        List<BoxMeshModel> notSuccessBoxes = new List<BoxMeshModel>();
         for (int i = 0; i < BoxModels.Count; i++)
         {
             BoxMeshModel model = BoxModels[i];
             if (model == null) continue;
-            model.ReplaceOld();
+
+            //model.ReplaceOld();
+            if (model.IsGetInfoSuccess == false)
+            {
+                notSuccessBoxes.Add(model);
+                //continue;
+            }
+        }
+
+        //if (isPrefab)
+        {
+            PrefabInstanceBuilder.Instance.GetPrefabsOfList(notSuccessBoxes, true, "notSuccessBoxes", false);
         }
 
         //PipeModels.Clear();
 
         //PipeModels = newModels;
 
-        Debug.LogWarning($">>ReplaceOld time:{DateTime.Now - start} PipeModels:{PipeModels.Count} BoxModels:{BoxModels.Count}");
+        Debug.LogWarning($">>PrefaNotSuccessModels time:{DateTime.Now - start} PipeModels:{PipeModels.Count} BoxModels:{BoxModels.Count}");
+    }
+
+    public void ReplaceOldPipes()
+    {
+        DateTime start = DateTime.Now;
+        StringBuilder sb = new StringBuilder();
+        int errorCount = 0;
+        for (int i = 0; i < PipeModels.Count; i++)
+        {
+            var model = PipeModels[i];
+            if (model == null) continue;
+            model.ReplaceOld();
+            if (model.ResultGo == null)
+            {
+                sb.Append($"{model.name};");
+                errorCount++;
+            }
+        }
+
+        for (int i = 0; i < BoxModels.Count; i++)
+        {
+            var model = BoxModels[i];
+            if (model == null) continue;
+            model.ReplaceOld();
+            if (model.ResultGo == null)
+            {
+                sb.Append($"{model.name};");
+                errorCount++;
+            }
+        }
+
+        for (int i = 0; i < LMeshModels.Count; i++)
+        {
+            var model = LMeshModels[i];
+            if (model == null) continue;
+            model.ReplaceOld();
+            if (model.ResultGo == null)
+            {
+                sb.Append($"{model.name};");
+                errorCount++;
+            }
+        }
+
+        for (int i = 0; i < CornerBoxModels.Count; i++)
+        {
+            var model = CornerBoxModels[i];
+            if (model == null) continue;
+            model.ReplaceOld();
+            if (model.ResultGo == null)
+            {
+                sb.Append($"{model.name};");
+                errorCount++;
+            }
+        }
+
+        //PipeModels.Clear();
+        //PipeModels = newModels;
+        Debug.LogWarning($">>ReplaceOldPipes time:{DateTime.Now - start} Pipes:{PipeModels.Count} Boxs:{BoxModels.Count} LMeshs:{LMeshModels.Count} CornerBoxs:{CornerBoxModels.Count} errorCount:{errorCount} ErrorList:{sb.ToString()}");
+    }
+
+    public void ReplaceOldBox()
+    {
+        for (int i = 0; i < BoxModels.Count; i++)
+        {
+            BoxMeshModel model = BoxModels[i];
+            if (model == null) continue;
+            model.ReplaceOld();
+        }
     }
 
     public void RendererPipesEx()
@@ -394,7 +496,9 @@ public class PipeBuilder : MonoBehaviour
             PipeGenerators.Add(generator);
         }
 
-        RendererBoxModels();
+        RendererBoxModels();  
+
+        RendererSteelModels();
 
         if (IsCreatePipeRuns && pipeRunList != null)
         {
@@ -411,7 +515,12 @@ public class PipeBuilder : MonoBehaviour
 
     public void RendererBoxModels()
     {
+        DateTime start = DateTime.Now;
         NoRendererBoxes = new List<BoxMeshModel>();
+        if (BoxModels.Count == 0)
+        {
+            return;
+        }
         for (int i = 0; i < BoxModels.Count; i++)
         {
             BoxMeshModel boxModel = BoxModels[i];
@@ -426,6 +535,77 @@ public class PipeBuilder : MonoBehaviour
                 return;
             }
             boxModel.RendererModel();
+        }
+        Debug.LogWarning($">>RendererBoxModels time:{DateTime.Now - start} BoxModels:{BoxModels.Count} NoRendererBoxes:{NoRendererBoxes.Count}");
+    }
+
+    public List<SteelStructureBaseModel> NoRendererSteels = new List<SteelStructureBaseModel>();
+
+    public void RendererSteelModels()
+    {
+        DateTime start = DateTime.Now;
+        NoRendererSteels = new List<SteelStructureBaseModel>();
+        int count = LMeshModels.Count + CornerBoxModels.Count;
+        int id = 0;
+        StringBuilder sb = new StringBuilder();
+        int errorCount = 0;
+        for (int i = 0; i < LMeshModels.Count; i++)
+        {
+            id++;
+            var boxModel = LMeshModels[i];
+            if (boxModel == null) continue;
+            if (boxModel.IsGetInfoSuccess == false)
+            {
+                NoRendererSteels.Add(boxModel);
+            }
+            if (ProgressBarHelper.DisplayCancelableProgressBar(new ProgressArg("RendererSteels_L", id, count, boxModel)))
+            {
+                return;
+            }
+            //boxModel.RendererModel();
+            if (boxModel.RendererModel() == false)
+            {
+                NoRendererSteels.Add(boxModel);
+            }
+            if (boxModel.ResultGo == null || boxModel.IsGetInfoSuccess == false)
+            {
+                errorCount++;
+                sb.Append($"[name:{boxModel.name},dis:{boxModel.meshDis}]; ");
+            }
+        }
+        
+        for (int i = 0; i < CornerBoxModels.Count; i++)
+        {
+            id++;
+            var boxModel = CornerBoxModels[i];
+            if (boxModel == null) continue;
+            if (ProgressBarHelper.DisplayCancelableProgressBar(new ProgressArg("RendererSteels_CornerBox", id, count, boxModel)))
+            {
+                return;
+            }
+            if (boxModel.IsGetInfoSuccess == false)
+            {
+                NoRendererSteels.Add(boxModel);
+                continue;
+            }
+            else
+            {
+                //Debug.LogError($"RendererModel_CornerBox({this.name}) dis:{meshDis}");
+            }
+            if (boxModel.RendererModel() == false)
+            {
+                NoRendererSteels.Add(boxModel);
+            }
+            if (boxModel.ResultGo == null || boxModel.IsGetInfoSuccess == false)
+            {
+                errorCount++;
+                sb.Append($"[name:{boxModel.name},dis:{boxModel.meshDis}]; ");
+            }
+        }
+        Debug.LogWarning($">>RendererSteelModels time:{DateTime.Now - start} LMeshModels:{LMeshModels.Count} CornerBoxModels:{CornerBoxModels.Count} NoRendererSteels:{NoRendererSteels.Count} ");
+        if (errorCount > 0)
+        {
+            Debug.LogError($"[ERROR!]RendererSteelModels errorCount:{errorCount} List:{sb.ToString()}");
         }
     }
 
@@ -531,7 +711,7 @@ public class PipeBuilder : MonoBehaviour
 
         if (PipeGenerators.Count == 0)
         {
-            Debug.LogError($"PipeBuilder.GetWelds PipeGenerators.Count == 0");
+            Debug.LogWarning($"PipeBuilder.GetWelds PipeGenerators.Count == 0");
         }
         List<Transform> ts = new List<Transform>();
         foreach (var c in gs)
@@ -695,6 +875,7 @@ public class PipeBuilder : MonoBehaviour
         PipeReducers.Clear();
         PipeFlanges.Clear();
         PipeWeldolets.Clear();
+        //BoxModels.Clear(); 
 
         foreach (var model in PipeModels)
         {
@@ -824,17 +1005,24 @@ public class PipeBuilder : MonoBehaviour
 
         if (Target)
         {
-            var gs = Target.GetComponentsInChildren<PipeMeshGeneratorBase>(true);
+            var gs = Target.GetComponentsInChildren<BaseMeshGenerator>(true);
             foreach (var g in gs)
             {
                 if (g == null) continue;
-                PipeModelBase pipeModel = g.GetComponent<PipeModelBase>();
+                BaseMeshModel pipeModel = g.GetComponent<BaseMeshModel>();
                 if (pipeModel) continue;
                 GameObject.DestroyImmediate(g.gameObject);
             }
+
+            TransformHelper.ClearComponents<BaseMeshModel>(Target);
+            TransformHelper.ClearComponents<InnerMeshNode>(Target);
+            TransformHelper.ClearComponents<MeshRendererInfo>(Target);
+            TransformHelper.ClearComponents<MeshPrefabInstance>(Target);
+            TransformHelper.ClearComponents<OBBCollider>(Target);
+
             Debug.Log($"ClearGeneratedObjs gs:{gs.Length}");
         }
-        
+
     }
 
     public void GetPipeInfos()
@@ -852,12 +1040,20 @@ public class PipeBuilder : MonoBehaviour
 
     private void SetJobResultData_Line(JobList<PipeLineInfoJob> lineJobs, List<Transform> ts)
     {
-        Debug.Log($"SetJobResultData_Line lineJobs:{lineJobs.Count} ts:{ts.Count}");
+
         if(lineJobs.Count!= ts.Count)
         {
-            Debug.LogError($"SetJobResultData_Line lineJobs.Count!= ts.Count lineJobs:{lineJobs.Count} ts:{ts.Count}");
+            Debug.LogError($"SetJobResultData_Line Jobs.Count!= ts.Count Jobs:{lineJobs.Count} ts:{ts.Count}");
             return;
         }
+        if (lineJobs.Count == 0)
+        {
+            lineJobs.Dispose();
+            PipeLineInfoJob.Result.Dispose();
+            return;
+        }
+        Debug.Log($"SetJobResultData_Line Jobs:{lineJobs.Count} ts:{ts.Count}");
+
         for (int i = 0; i < ts.Count; i++)
         {
             Transform t = ts[i];
@@ -887,14 +1083,49 @@ public class PipeBuilder : MonoBehaviour
         PipeModels.AddRange(models);
     }
 
-    private void SetJobResultData_Elbow(JobList<PipeElbowInfoJob> elbowJobs, List<Transform> ts)
+    private void SetJobResultData_Bend(JobList<PipeBendInfoJob> elbowJobs, List<Transform> ts)
     {
-        Debug.Log($"SetJobResultData_Elbow lineJobs:{elbowJobs.Count} ts:{ts.Count}");
         if (elbowJobs.Count != ts.Count)
         {
-            Debug.LogError($"SetJobResultData_Elbow lineJobs.Count!= ts.Count lineJobs:{elbowJobs.Count} ts:{ts.Count}");
+            Debug.LogError($"SetJobResultData_Bend Jobs.Count!= ts.Count Jobs:{elbowJobs.Count} ts:{ts.Count}");
             return;
         }
+        if (elbowJobs.Count == 0)
+        {
+            elbowJobs.Dispose();
+            PipeBendInfoJob.Result.Dispose();
+            return;
+        }
+        Debug.Log($"SetJobResultData_Bend Jobs:{elbowJobs.Count} ts:{ts.Count}"); 
+        for (int i = 0; i < ts.Count; i++)
+        {
+            Transform t = ts[i];
+            PipeBendModel pipeModel = GetPipeModelInfo<PipeBendModel>(t, false);
+            var lineData = PipeBendInfoJob.Result[i];
+            //Debug.Log($"BendModel[{i}] model:{pipeModel.name} lineData:{lineData}");
+            pipeModel.SetModelData(lineData);
+            PipeBends.Add(pipeModel);
+            AddPipeModel(pipeModel);
+        }
+        elbowJobs.Dispose();
+        PipeBendInfoJob.Result.Dispose();
+    }
+
+    private void SetJobResultData_Elbow(JobList<PipeElbowInfoJob> elbowJobs, List<Transform> ts)
+    {
+        
+        if (elbowJobs.Count != ts.Count)
+        {
+            Debug.LogError($"SetJobResultData_Elbow Jobs.Count!= ts.Count Jobs:{elbowJobs.Count} ts:{ts.Count}");
+            return;
+        }
+        if (elbowJobs.Count == 0)
+        {
+            elbowJobs.Dispose();
+            PipeElbowInfoJob.Result.Dispose();
+            return;
+        }
+        Debug.Log($"SetJobResultData_Elbow Jobs:{elbowJobs.Count} ts:{ts.Count}");
         for (int i = 0; i < ts.Count; i++)
         {
             Transform t = ts[i];
@@ -911,12 +1142,20 @@ public class PipeBuilder : MonoBehaviour
 
     private void SetJobResultData_Tee(JobList<PipeTeeInfoJob> elbowJobs, List<Transform> ts)
     {
-        Debug.Log($"SetJobResultData_Tee lineJobs:{elbowJobs.Count} ts:{ts.Count}");
         if (elbowJobs.Count != ts.Count)
         {
-            Debug.LogError($"SetJobResultData_Tee lineJobs.Count!= ts.Count lineJobs:{elbowJobs.Count} ts:{ts.Count}");
+            Debug.LogError($"SetJobResultData_Tee Jobs.Count!= ts.Count Jobs:{elbowJobs.Count} ts:{ts.Count}");
             return;
         }
+
+        if (elbowJobs.Count == 0)
+        {
+            elbowJobs.Dispose();
+            PipeTeeInfoJob.Result.Dispose();
+            return;
+        }
+
+        Debug.Log($"SetJobResultData_Tee Jobs:{elbowJobs.Count} ts:{ts.Count}");
         for (int i = 0; i < ts.Count; i++)
         {
             Transform t = ts[i];
@@ -933,12 +1172,22 @@ public class PipeBuilder : MonoBehaviour
 
     private void SetJobResultData_Weldolet(JobList<PipeWeldoletInfoJob> elbowJobs, List<Transform> ts)
     {
-        Debug.Log($"SetJobResultData_Weldolet lineJobs:{elbowJobs.Count} ts:{ts.Count}");
+
         if (elbowJobs.Count != ts.Count)
         {
-            Debug.LogError($"SetJobResultData_Weldolet lineJobs.Count!= ts.Count lineJobs:{elbowJobs.Count} ts:{ts.Count}");
+            Debug.LogError($"SetJobResultData_Weldolet Jobs.Count!= ts.Count Jobs:{elbowJobs.Count} ts:{ts.Count}");
             return;
         }
+
+        if (elbowJobs.Count == 0)
+        {
+            elbowJobs.Dispose();
+            PipeWeldoletInfoJob.Result.Dispose();
+            return;
+        }
+
+        Debug.Log($"SetJobResultData_Weldolet Jobs:{elbowJobs.Count} ts:{ts.Count}");
+
         for (int i = 0; i < ts.Count; i++)
         {
             Transform t = ts[i];
@@ -953,16 +1202,59 @@ public class PipeBuilder : MonoBehaviour
         PipeWeldoletInfoJob.Result.Dispose();
     }
 
+    private void SetJobResultData_Box(JobList<BoxMeshInfoJob> elbowJobs, List<Transform> ts)
+    {
+        try
+        {
+            if (elbowJobs.Count == 0)
+            {
+                elbowJobs.Dispose();
+                BoxMeshInfoJob.Result.Dispose();
+                return;
+            }
+            if (elbowJobs.Count != ts.Count)
+            {
+                Debug.LogError($"SetJobResultData_Box Jobs.Count!= ts.Count Jobs:{elbowJobs.Count} ts:{ts.Count}");
+                return;
+            }
+
+            Debug.Log($"SetJobResultData_Box Jobs:{elbowJobs.Count} ts:{ts.Count}");
+
+            for (int i = 0; i < ts.Count; i++)
+            {
+                Transform t = ts[i];
+                BoxMeshModel pipeModel = GetPipeModelInfo_Box<BoxMeshModel>(t, false);
+                var lineData = BoxMeshInfoJob.GetResult(i);
+                //Debug.Log($"BoxMeshModel[{i}] t:{t.name} model:{pipeModel.name} lineData:{lineData} ");
+                pipeModel.SetModelData(lineData);
+                BoxModels.Add(pipeModel);
+                ////AddPipeModel(pipeModel);
+            } 
+            elbowJobs.Dispose();
+            BoxMeshInfoJob.Result.Dispose();
+        }
+        catch (Exception ex)
+        {
+            Debug.LogError($"SetJobResultData_Box Jobs.Count!= ts.Count Jobs:{elbowJobs.Count} ts:{ts.Count} Exception:{ex}");
+        }
+
+    }
 
 
     private void SetJobResultData_Flange(JobList<PipeFlangeInfoJob> elbowJobs, List<Transform> ts)
     {
-        Debug.Log($"SetJobResultData_Flange lineJobs:{elbowJobs.Count} ts:{ts.Count}");
         if (elbowJobs.Count != ts.Count)
         {
-            Debug.LogError($"SetJobResultData_Flange lineJobs.Count!= ts.Count lineJobs:{elbowJobs.Count} ts:{ts.Count}");
+            Debug.LogError($"SetJobResultData_Flange Jobs.Count!= ts.Count Jobs:{elbowJobs.Count} ts:{ts.Count}");
             return;
         }
+        if (elbowJobs.Count == 0)
+        {
+            elbowJobs.Dispose();
+            PipeFlangeInfoJob.DisposeResult();
+            return;
+        }
+        Debug.Log($"SetJobResultData_Flange Jobs:{elbowJobs.Count} ts:{ts.Count}");
         for (int i = 0; i < ts.Count; i++)
         {
             Transform t = ts[i];
@@ -974,18 +1266,25 @@ public class PipeBuilder : MonoBehaviour
             AddPipeModel(pipeModel);
         }
         elbowJobs.Dispose();
-
         PipeFlangeInfoJob.DisposeResult();
     }
 
     private void SetJobResultData_Reducer(JobList<PipeReducerInfoJob> elbowJobs, List<Transform> ts)
     {
-        Debug.Log($"SetJobResultData_Reducer lineJobs:{elbowJobs.Count} ts:{ts.Count}");
+        
         if (elbowJobs.Count != ts.Count)
         {
-            Debug.LogError($"SetJobResultData_Reducer lineJobs.Count!= ts.Count lineJobs:{elbowJobs.Count} ts:{ts.Count}");
+            Debug.LogError($"SetJobResultData_Reducer Jobs.Count!= ts.Count Jobs:{elbowJobs.Count} ts:{ts.Count}");
             return;
         }
+        if (elbowJobs.Count == 0)
+        {
+            elbowJobs.Dispose();
+            PipeReducerInfoJob.Result.Dispose();
+            return;
+        }
+        Debug.Log($"SetJobResultData_Reducer Jobs:{elbowJobs.Count} ts:{ts.Count}");
+
         for (int i = 0; i < ts.Count; i++)
         {
             Transform t = ts[i];
@@ -1011,6 +1310,8 @@ public class PipeBuilder : MonoBehaviour
         PipeFlanges = new List<PipeFlangeModel>();
         PipeGenerators = new List<PipeMeshGeneratorBase>();
         PipeWeldolets = new List<PipeWeldoletModel>();
+        BoxModels = new List<BoxMeshModel>();
+        LMeshModels = new List<SteelStructureModelL>();
     }
 
     public void GetPipeInfosJob()
@@ -1030,6 +1331,10 @@ public class PipeBuilder : MonoBehaviour
         PipeElbowInfoJob.Result=new NativeArray<PipeElbowData>(PipeElbowGos.Count, Allocator.Persistent);
         JobList<PipeElbowInfoJob> elbowJobs = GetPipeInfosJob_Elbow(PipeElbowGos, 0);
 
+        PipeBendInfoJob.InitResult(PipeBendGos.Count);
+        PipeBendInfoJob.ErrorIds = new NativeList<int>(Allocator.Persistent);
+        JobList<PipeBendInfoJob> bendJobs = GetPipeInfosJob_Bend(PipeBendGos, 0);
+
         PipeTeeInfoJob.Result = new NativeArray<PipeTeeData>(PipeTeeGos.Count, Allocator.Persistent);
         JobList<PipeTeeInfoJob> teeJobs = GetPipeInfosJob_Tee(PipeTeeGos, 0);
 
@@ -1044,29 +1349,36 @@ public class PipeBuilder : MonoBehaviour
         PipeWeldoletInfoJob.Result = new NativeArray<PipeWeldoletData>(PipeWeldoletGos.Count, Allocator.Persistent);
         JobList<PipeWeldoletInfoJob> weldoletJobs = GetPipeInfosJob_Weldolet(PipeWeldoletGos, 0);
 
+        BoxMeshInfoJob.InitResult(BoxModelGos.Count);
+        JobList<BoxMeshInfoJob> boxJobs = GetPipeInfosJob_Box(BoxModelGos, 0);
 
         //lineJobs.CompleteAllPage();
         //elbowJobs.CompleteAllPage();
 
         pipeJobs.Add(lineJobs.HandleList);
         pipeJobs.Add(elbowJobs.HandleList);
+        pipeJobs.Add(bendJobs.HandleList);
         pipeJobs.Add(teeJobs.HandleList);
         pipeJobs.Add(reducerJobs.HandleList);
         pipeJobs.Add(flangeJobs.HandleList);
         pipeJobs.Add(weldoletJobs.HandleList);
+        pipeJobs.Add(boxJobs.HandleList);
+
         pipeJobs.CompleteAllPage();
 
         SetJobResultData_Line(lineJobs, PipeLineGos);
         SetJobResultData_Elbow(elbowJobs, PipeElbowGos);
+        SetJobResultData_Bend(bendJobs, PipeBendGos);
         SetJobResultData_Tee(teeJobs, PipeTeeGos);
         SetJobResultData_Reducer(reducerJobs, PipeReducerGos);
         SetJobResultData_Flange(flangeJobs, PipeFlangeGos);
         SetJobResultData_Weldolet(weldoletJobs, PipeWeldoletGos);
+        SetJobResultData_Box(boxJobs, BoxModelGos);
 
         pipeJobs.Dispose();
 
 
-        for(int i=0;i< PipeLineInfoJob.ErrorIds.Length; i++)
+        for (int i=0;i< PipeLineInfoJob.ErrorIds.Length; i++)
         {
             int id = PipeLineInfoJob.ErrorIds[i];
             var go = PipeLines[id];
@@ -1090,8 +1402,15 @@ public class PipeBuilder : MonoBehaviour
         PipeLineInfoJob.ErrorIds.Dispose();
         PipeReducerInfoJob.ErrorIds.Dispose();
         PipeFlangeInfoJob.ErrorIds.Dispose();
+        PipeBendInfoJob.ErrorIds.Dispose();
 
-        Debug.LogError($">>GetPipeInfosJob time:{DateTime.Now - start} lineJobs:{lineJobs.Count} elbowJobs:{elbowJobs.Count} teeJobs:{teeJobs.Count} reducerJobs:{reducerJobs.Count}");
+        //GetBoxInfos();
+
+        //ÔÝÊ±Ã»ÓÐJob¡£
+        GetMeshModelInfos_LMesh();
+        GetMeshModelInfos_CornerBox();
+
+        Debug.LogError($">>GetPipeInfosJob time:{DateTime.Now - start} Jobs:{lineJobs.Count} elbowJobs:{elbowJobs.Count} teeJobs:{teeJobs.Count} reducerJobs:{reducerJobs.Count} flangeJobs:{flangeJobs.Count} weldoletJobs:{weldoletJobs.Count} boxJobs:{boxJobs.Count}");
 
         CreatePipeRunList();
     }
@@ -1117,6 +1436,43 @@ public class PipeBuilder : MonoBehaviour
             {
                 id = i+offset,
                 points = new NativeArray<Vector3>(vs, Allocator.TempJob),
+            };
+            jobs.Add(job);
+        }
+        return jobs;
+    }
+
+    public JobList<PipeBendInfoJob> GetPipeInfosJob_Bend(List<Transform> ts, int offset)
+    {
+        int count = 0;
+        JobList<PipeBendInfoJob> jobs = new JobList<PipeBendInfoJob>(JobSize);
+
+        for (int i = 0; i < ts.Count; i++)
+        {
+            Transform t = ts[i];
+            if (t == null)
+            {
+                Debug.LogError($"GetPipeInfosJob_Elbow t == null i:{i} ts:{ts.Count}");
+                continue;
+            }
+            Mesh mesh = t.GetComponent<MeshFilter>().sharedMesh;
+            if (mesh == null)
+            {
+                Debug.LogError($"GetPipeInfosJob_Elbow mesh == null t:{t}");
+                continue;
+            }
+            MeshStructure meshS = new MeshStructure(mesh);
+            //if (vs.Length == 0) continue;
+            count++;
+            PipeBendData bData = new PipeBendData();
+            int lineCount = meshS.TriangleCount / (40*3);
+            //bData.Lines = new PipeLineData();
+            PipeBendInfoJob job = new PipeBendInfoJob()
+            {
+                id = i + offset,
+                partTriangleCount = 40,
+                bendData = bData,
+                mesh = meshS
             };
             jobs.Add(job);
         }
@@ -1257,6 +1613,34 @@ public class PipeBuilder : MonoBehaviour
             {
                 id = i + offset,
                 mesh = meshS
+            };
+            jobs.Add(job);
+        }
+        return jobs;
+    }
+
+    public JobList<BoxMeshInfoJob> GetPipeInfosJob_Box(List<Transform> ts, int offset)
+    {
+        int count = 0;
+        JobList<BoxMeshInfoJob> jobs = new JobList<BoxMeshInfoJob>(JobSize);
+
+        for (int i = 0; i < ts.Count; i++)
+        {
+            Transform t = ts[i];
+            if (t == null)
+            {
+                Debug.LogError($"GetPipeInfosJob_Box t == null i:{i} ts:{ts.Count}");
+                continue;
+            }
+            Mesh mesh = t.GetComponent<MeshFilter>().sharedMesh;
+            MeshStructure meshS = new MeshStructure(mesh);
+            //if (vs.Length == 0) continue;
+            count++;
+            BoxMeshInfoJob job = new BoxMeshInfoJob()
+            {
+                id = i + offset,
+                mesh = meshS,
+                localToWorldMatrix = t.localToWorldMatrix
             };
             jobs.Add(job);
         }
@@ -1664,10 +2048,11 @@ public class PipeBuilder : MonoBehaviour
 
     public void RemoveComponents(GameObject target)
     {
-        foreach(var item in PipeModels)
+        foreach(PipeModelBase item in PipeModels)
         {
             if (item == null) continue;
-            item.RemoveAllComponents();
+            //item.RemoveAllComponents();
+            RemoveAllComponents(item);
         }
 
         //var models = target.GetComponentsInChildren<PipeModelBase>(true);
@@ -1678,15 +2063,40 @@ public class PipeBuilder : MonoBehaviour
         //}
     }
 
+    public static void RemoveAllComponents(PipeModelBase model)
+    {
+        try
+        {
+            if (model.IsGetInfoSuccess == false) return;
+            model.ClearDebugInfoGos();
+            EditorHelper.RemoveAllComponents(model.gameObject, typeof(BaseMeshModel), typeof(RendererId));
+
+
+            if (model.gameObject != null)
+            {
+                model.gameObject.SetActive(true);
+            }
+            else
+            {
+                Debug.LogError($"RemoveAllComponents gameObject == null");
+            }
+        }
+        catch (System.Exception ex)
+        {
+
+            Debug.LogError($"RemoveAllComponents Exception ex:{ex} go:{model}");
+        }
+    }
+
     public void RemoveMeshes(GameObject target)
     {
-        var instances = target.GetComponentsInChildren<MeshPrefabInstance>(true);
-        foreach(var ins in instances)
-        {
-            var pipe = ins.GetComponent<PipeModelComponent>();
-            if (pipe != null) continue;
-            ins.RemomveMesh();
-        }
+        //var instances = target.GetComponentsInChildren<MeshPrefabInstance>(true);
+        //foreach(MeshPrefabInstance ins in instances)
+        //{
+        //    var pipe = ins.GetComponent<PipeModelComponent>();
+        //    if (pipe != null) continue;
+        //    ins.RemomveMesh();
+        //}
 
         foreach (var item in PipeModels)
         {
@@ -1772,10 +2182,12 @@ public class PipeBuilder : MonoBehaviour
 
     public void GetPipeInfosEx()
     {
+        OBBCollider.IsShowProgress = false;
+
         DateTime start = DateTime.Now;
 
         PipeModels = new List<PipeModelBase>();
-        int count = PipeLineGos.Count + PipeElbowGos.Count + PipeBendsGos.Count + PipeReducerGos.Count + PipeFlangeGos.Count + PipeTeeGos.Count + PipeWeldoletGos.Count;
+        int count = PipeLineGos.Count + PipeElbowGos.Count + PipeBendGos.Count + PipeReducerGos.Count + PipeFlangeGos.Count + PipeTeeGos.Count + PipeWeldoletGos.Count+ BoxModelGos.Count;
         int id = 0;
 
         PipeLines = GetPipeModelInfos<PipeLineModel>(PipeLineGos, id, count, "Line");
@@ -1798,7 +2210,7 @@ public class PipeBuilder : MonoBehaviour
         id += PipeElbows.Count;
         AddPipeModelRange(PipeElbows);
 
-        PipeBends = GetPipeModelInfos<PipeBendModel>(PipeBendsGos, id, count, "Bend");
+        PipeBends = GetPipeModelInfos<PipeBendModel>(PipeBendGos, id, count, "Bend");
         if (PipeBends == null) return;
         id += PipeBends.Count;
         AddPipeModelRange(PipeBends);
@@ -1815,20 +2227,31 @@ public class PipeBuilder : MonoBehaviour
 
         PipeModels.Sort();
 
-        GetBoxInfos();
+        GetBoxInfos(id,count,"Box");
+        id += BoxModelGos.Count;
+
+        GetMeshModelInfos_LMesh();
+        GetMeshModelInfos_CornerBox();
 
         CreatePipeRunList();
 
-        Debug.LogWarning($">>GetPipeInfos ¡¾time:{DateTime.Now - start}¡¿ count:{PipeModels.Count} BoxModels:{BoxModels.Count}");
+        OBBCollider.IsShowProgress = true;
+        Debug.LogWarning($">>GetPipeInfosEx ¡¾time:{DateTime.Now - start}¡¿ Pipes:{PipeModels.Count} Boxs:{BoxModels.Count} LMeshs:{LMeshModelGos.Count} CornerBoxs:{CornerBoxModelGos.Count}");
     }
 
-    public void GetBoxInfos()
+    public void GetBoxInfos(int id = 0, int count = 0, string tag = "Box")
     {
         BoxModels = new List<BoxMeshModel>();
+        if (BoxModelGos.Count == 0) return;
+        if (count == 0)
+        {
+            count = BoxModelGos.Count;
+        }
         for (int i = 0; i < BoxModelGos.Count; i++)
         {
+            id++;
             Transform boxGo = BoxModelGos[i];
-            if (ProgressBarHelper.DisplayCancelableProgressBar(new ProgressArg($"GetInfos_Box", i, BoxModelGos.Count, boxGo)))
+            if (ProgressBarHelper.DisplayCancelableProgressBar(new ProgressArg($"GetInfos_{tag}", id, count, boxGo)))
             {
                 break;
             }
@@ -1837,6 +2260,60 @@ public class PipeBuilder : MonoBehaviour
             BoxModels.Add(boxModel);
             boxModel.GetModelInfo();
         }
+        Debug.Log($"GetBoxInfos BoxModelGos:{BoxModelGos.Count}");
+    }
+
+    public void GetMeshModelInfos_LMesh()
+    {
+        LMeshModels = new List<SteelStructureModelL>();
+        if (LMeshModelGos.Count == 0) return;
+        for (int i = 0; i < LMeshModelGos.Count; i++)
+        {
+            Transform boxGo = LMeshModelGos[i];
+            if (ProgressBarHelper.DisplayCancelableProgressBar(new ProgressArg($"GetMeshModelInfos_LMesh", i, LMeshModelGos.Count, boxGo)))
+            {
+                break;
+            }
+            if (boxGo == null) continue;
+            SteelStructureModelL boxModel = boxGo.gameObject.AddMissingComponent<SteelStructureModelL>();
+            LMeshModels.Add(boxModel);
+            boxModel.isShowDebug = false;
+            boxModel.GetModelInfo(); 
+        }
+        Debug.Log($"GetMeshModelInfos_LMesh LMeshModels:{LMeshModelGos.Count}");
+    }
+
+    public void GetMeshModelInfos_CornerBox()
+    {
+        CornerBoxModels = new List<SteelStructureModelCornerBox>();
+        if (CornerBoxModelGos.Count == 0) return;
+        int count = 0;
+        int errorCount = 0;
+        StringBuilder sb = new StringBuilder();
+        for (int i = 0; i < CornerBoxModelGos.Count; i++)
+        {
+            Transform boxGo = CornerBoxModelGos[i];
+            if (ProgressBarHelper.DisplayCancelableProgressBar(new ProgressArg($"GetMeshModelInfos_CornerBox", i, CornerBoxModelGos.Count, boxGo)))
+            {
+                break;
+            }
+            if (boxGo == null) continue;
+            SteelStructureModelCornerBox boxModel = boxGo.gameObject.AddMissingComponent<SteelStructureModelCornerBox>();
+            CornerBoxModels.Add(boxModel);
+            boxModel.isShowDebug = false;
+            boxModel.GetModelInfo();
+            if (boxModel.IsGetInfoSuccess)
+            {
+                count++;
+            }
+            else
+            {
+                errorCount++;
+                sb.Append($"{boxGo.name};");
+            }
+        }
+        Debug.Log($"GetMeshModelInfos_CornerBox CornerBox:{CornerBoxModelGos.Count} count:{count} errorCount:{errorCount}");
+        Debug.LogWarning($"GetMeshModelInfos_CornerBox[{errorCount}] IsGetInfoSuccess=false list:{sb.ToString()}");
     }
 
     private List<T> GetPipeModelInfos<T>(List<Transform> gos,int id,int count,string tag) where T : PipeModelBase
@@ -1911,9 +2388,9 @@ public class PipeBuilder : MonoBehaviour
     {
         DateTime start = DateTime.Now;
         PipeBends = new List<PipeBendModel>();
-        for (int i = 0; i < PipeBendsGos.Count; i++)
+        for (int i = 0; i < PipeBendGos.Count; i++)
         {
-            Transform p = PipeBendsGos[i];
+            Transform p = PipeBendGos[i];
             if (p == null) continue;
             MeshFilter mf = p.GetComponent<MeshFilter>();
             if (mf == null) continue;
@@ -1955,10 +2432,9 @@ public class PipeBuilder : MonoBehaviour
         if (pipeModel == null)
         {
             pipeModel = pipe.gameObject.AddComponent<T>();
-            pipeModel.VertexCount = (int)MeshRendererInfo.GetInfo(pipe.gameObject).vertexCount;
+            pipeModel.VertexCount = VertexHelper.GetVertexCount(pipe.gameObject);
         }
         pipeModel.generateArg = this.generateArg;
-
         if (isGetInfo)
         {
             try
@@ -1970,11 +2446,31 @@ public class PipeBuilder : MonoBehaviour
                 Debug.LogError($"PipeBuilder.GetPipeModelInfo pipe:{pipe.name}  Exception:{ex.ToString()}");
             }
         }
-        
-
         pipe.gameObject.SetActive(false);
+        return pipeModel;
+    }
 
-
+    private T GetPipeModelInfo_Box<T>(Transform pipe, bool isGetInfo) where T : BoxMeshModel
+    {
+        T pipeModel = pipe.GetComponent<T>();
+        if (pipeModel == null)
+        {
+            pipeModel = pipe.gameObject.AddComponent<T>();
+            pipeModel.VertexCount = VertexHelper.GetVertexCount(pipe.gameObject);//(int)MeshRendererInfo.GetInfo(pipe.gameObject).vertexCount;
+        }
+        //pipeModel.generateArg = this.generateArg;
+        if (isGetInfo)
+        {
+            try
+            {
+                pipeModel.GetModelInfo();
+            }
+            catch (Exception ex)
+            {
+                Debug.LogError($"PipeBuilder.GetPipeModelInfo pipe:{pipe.name}  Exception:{ex.ToString()}");
+            }
+        }
+        pipe.gameObject.SetActive(false);
         return pipeModel;
     }
 

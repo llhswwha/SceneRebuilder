@@ -141,6 +141,7 @@ public class PipeLineModel : PipeModelBase
     public OBBCollider ShowObbInfo(Vector3[] vs)
     {
         OBBCollider oBBCollider = this.gameObject.AddMissingComponent<OBBCollider>();
+        oBBCollider.lineSize = this.lineSize;
         oBBCollider.ShowObbInfo(vs, true);
 
         IsObbError = oBBCollider.IsObbError;
@@ -150,11 +151,20 @@ public class PipeLineModel : PipeModelBase
 
     public PipeLineInfo ShowLinePartModelInfo(Vector3[] vs, Transform tParent, bool isShowDebugObj, float planeClosedMinDis = 0.00025f, int planeClosedMaxCount1 = 20, int planeClosedMaxCount2 = 100)
     {
-        //OBBCollider oBBCollider = ShowObbInfo(vs); //1.Obb
+        //1.Obb
+        OBBCollider oBBCollider = ShowObbInfo(vs);
 
-        OrientedBoundingBox obb = OrientedBoundingBox.Create(vs, false, this.name);
+        //OrientedBoundingBox obb = OrientedBoundingBox.Create(vs, true, this.name);
 
-        GameObject planInfoRoot = new GameObject("PipeModel_PlaneInfo");
+        OrientedBoundingBox? obb1 = OrientedBoundingBox.Create(vs, true, this.name);
+        if (obb1 == null)
+        {
+            Debug.LogError($"ShowLinePartModelInfo[{tParent.name}] endPlane1.Plane1Points==null count:{verticesToPlaneInfos.Count}");
+            return null;
+        }
+        OrientedBoundingBox obb = (OrientedBoundingBox)obb1;
+
+        GameObject planInfoRoot = new GameObject("PipeModel_PlaneInfo");  
         planInfoRoot.AddComponent<DebugInfoRoot>();
         planInfoRoot.transform.SetParent(tParent);
         planInfoRoot.transform.localPosition = Vector3.zero;
@@ -167,36 +177,108 @@ public class PipeLineModel : PipeModelBase
         //2.Planes
         PlaneInfo[] planeInfos = obb.GetPlaneInfos();
         List<VerticesToPlaneInfo> verticesToPlaneInfos_All = new List<VerticesToPlaneInfo>();
-        verticesToPlaneInfos = new List<VerticesToPlaneInfo>();
-        for (int i = 0; i < planeInfos.Length; i++)
-        {
-            PlaneInfo plane = (PlaneInfo)planeInfos[i];
-            //VerticesToPlaneInfo v2p =GetVerticesToPlaneInfo(vs, plane, false);
-            VerticesToPlaneInfo v2p = new VerticesToPlaneInfo(vs, plane, false, planeClosedMinDis, planeClosedMaxCount1, planeClosedMaxCount2);
-            v2p.SplitToTwoPlane();
-            verticesToPlaneInfos_All.Add(v2p);
-            //oBBCollider.ShowPlaneInfo(plane, i, planInfoRoot, v2p);
 
-            if (v2p.Plane1Points.Count != vs.Length / 2)
+        float percent = 0;
+        float j = 5;
+        for (; j < 10; j++)
+        {
+            percent = 0.1f * j;
+
+            verticesToPlaneInfos = new List<VerticesToPlaneInfo>();
+            for (int i = 0; i < planeInfos.Length; i++)
             {
-                continue;
+                //PipeBendPartInfoJob.logTag += $"_{i}";
+
+                PlaneInfo plane = (PlaneInfo)planeInfos[i];
+
+                if (plane.IsNaN())
+                {
+                    Debug.LogError($"ShowLinePartModelInfo[{tParent.name}_{i}_{percent}] plane.IsNaN plane:{plane} obb:{obb}");
+                    //break;
+                } 
+
+                //VerticesToPlaneInfo v2p =GetVerticesToPlaneInfo(vs, plane, false);
+                VerticesToPlaneInfo v2p = new VerticesToPlaneInfo(vs, plane, false, planeClosedMinDis, planeClosedMaxCount1, planeClosedMaxCount2);
+                v2p.SplitToTwoPlane(percent);
+                verticesToPlaneInfos_All.Add(v2p);
+
+                //plane.ShowPlaneInfo(i, planInfoRoot, v2p, lineSize, tParent);
+
+                if (v2p.Plane1Points.Count != vs.Length / 2)
+                {
+                    continue;
+                }
+
+                //if (isShowDebugObj)
+                //{
+                //    plane.ShowPlaneInfo(i, planInfoRoot, v2p, lineSize, tParent);
+                //}
+
+                verticesToPlaneInfos.Add(v2p);
+                //var isC = v2p.IsCircle();
+            }
+            verticesToPlaneInfos.Sort();
+            //break;
+
+            if (verticesToPlaneInfos.Count == 2)
+            {
+                break;
+            }
+            else if (verticesToPlaneInfos.Count == 1)
+            {
+                break;
+            }
+        }
+
+        if (verticesToPlaneInfos.Count == 1)
+        {
+            VerticesToPlaneInfo startPlane1 = verticesToPlaneInfos[0];
+            VerticesToPlaneInfo endPlane1 = VerticesToPlaneInfo.GetEndPlane(startPlane1, verticesToPlaneInfos_All);
+            verticesToPlaneInfos.Add(endPlane1);
+
+            if (endPlane1 == null)
+            {
+                Debug.LogError($"ShowLinePartModelInfo[{tParent.name}] endPlane1 == null count:{verticesToPlaneInfos.Count},all:{verticesToPlaneInfos_All.Count},percent:{percent} startPlane1:{startPlane1}");
+                return null;
+            }
+            if (endPlane1.Plane1Points == null)
+            {
+                Debug.LogError($"ShowLinePartModelInfo[{tParent.name}] endPlane1.Plane1Points==null count:{verticesToPlaneInfos.Count},all:{verticesToPlaneInfos_All.Count},percent:{percent} startPlane1:{startPlane1}");
+                return null;
             }
 
+            for (; j < 10; j++)
+            {
+                if (endPlane1.Plane1Points.Count != vs.Length / 2)
+                {
+                    percent = 0.1f * j;
+                    endPlane1.SplitToTwoPlane(percent);
+                }
+                else
+                {
+                    break;
+                }
+            }
+        }
+
+        for (int i = 0; i < verticesToPlaneInfos.Count; i++)
+        {
+            VerticesToPlaneInfo v2p = verticesToPlaneInfos[i];
             if (isShowDebugObj)
             {
-                plane.ShowPlaneInfo(i, planInfoRoot, v2p, lineSize, tParent);
+                PlaneInfo plane = v2p.Plane;
+                PlaneHelper.ShowPlaneInfo(plane,i, planInfoRoot, v2p, lineSize, tParent);
             }
-            verticesToPlaneInfos.Add(v2p);
-            //var isC = v2p.IsCircle();
         }
-        verticesToPlaneInfos.Sort();
 
         if (verticesToPlaneInfos.Count < 1)
         {
             IsGetInfoSuccess = false;
-            Debug.LogError($"PipeLine.ShowLinePartModelInfo IsCircle Count < 1 count:{verticesToPlaneInfos.Count},gameObject:{this.name}");
+            Debug.LogError($"PipeLine.ShowLinePartModelInfo IsCircle Count < 1 count:{verticesToPlaneInfos.Count},gameObject:{this.name},percent:{percent}");
             return null;
         }
+
+        planInfoRoot.name += $"_{verticesToPlaneInfos.Count}_{percent}" ;
 
         VerticesToPlaneInfo startPlane = verticesToPlaneInfos[0];
         VerticesToPlaneInfo endPlane = null;
@@ -278,7 +360,15 @@ public class PipeLineModel : PipeModelBase
     {
         //OBBCollider oBBCollider = ShowObbInfo(vs); //1.Obb
 
-        OrientedBoundingBox obb = OrientedBoundingBox.Create(vs, false, this.name);
+        //OrientedBoundingBox obb = OrientedBoundingBox.Create(vs, false, this.name);
+
+        OrientedBoundingBox? obb1 = OrientedBoundingBox.Create(vs, false, this.name);
+        if (obb1 == null)
+        {
+            Debug.LogError($"PipeLine.GetModelInfo OrientedBoundingBox==null tParent:{tParent.name} this:{this.name} vs:{vs.Length}");
+            return;
+        }
+        OrientedBoundingBox obb =(OrientedBoundingBox)obb1;
 
         GameObject planInfoRoot = new GameObject("PipeModel_PlaneInfo");
         planInfoRoot.AddComponent<DebugInfoRoot>();
@@ -302,8 +392,7 @@ public class PipeLineModel : PipeModelBase
             //v2p.SplitToTwoPlane();
             verticesToPlaneInfos_All.Add(v2p);
             //oBBCollider.ShowPlaneInfo(plane, i, planInfoRoot, v2p);
-            plane.ShowPlaneInfo(i, planInfoRoot, v2p, lineSize, tParent);
-
+            PlaneHelper.ShowPlaneInfo(plane, i, planInfoRoot, v2p, lineSize, tParent);
             //var plane1Circle = v2p.GetPlane1Circle();
 
             if (v2p.IsCircle() == false)

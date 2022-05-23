@@ -197,7 +197,7 @@ public class PipeElbowModel : PipeModelBase
     public virtual SharedMeshTrianglesList GetSharedMeshTrianglesList(MeshTriangles meshTriangles)
     {
         //SharedMeshTrianglesList trianglesList = meshTriangles.GetKeyPointsByPointEx(sharedMinCount, minRepeatPointDistance);
-        SharedMeshTrianglesList trianglesList = meshTriangles.GetSharedMeshTrianglesListById(sharedMinCount, minRepeatPointDistance);
+        SharedMeshTrianglesList trianglesList = meshTriangles.GetSharedMeshTrianglesListById(sharedMinCount, minRepeatPointDistance,"PipeElbowModel");
         foreach (SharedMeshTriangles triangles in trianglesList)
         {
 
@@ -272,7 +272,7 @@ public class PipeElbowModel : PipeModelBase
         //meshS.Dispose();
         meshTriangles.Dispose();
 
-        Debug.Log($">>>GetElbowInfo_{this.name} time:{(DateTime.Now - start).TotalMilliseconds} trianglesList:{trianglesList.Count}");
+        //Debug.Log($">>>GetElbowInfo_{this.name} time:{(DateTime.Now - start).TotalMilliseconds} trianglesList:{trianglesList.Count}");
     }
 
     //public virtual void GetPipeRadius()
@@ -518,7 +518,9 @@ public class PipeElbowModel : PipeModelBase
 
         //pipe.points = new List<Vector3>() { EndPointOut1, EndPointIn1, EndPointIn2, EndPointOut2 };
         pipe.points = ps;
-        arg.SetArg(pipe);
+
+        //arg.SetArg(pipe);
+        PipeFactory.Instance.SetArg(arg, pipe);
 
         //pipe.generateWeld = arg.generateWeld;
         //pipe.generateWeld = false;

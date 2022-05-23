@@ -26,7 +26,7 @@ public struct PipeFlangeInfoJob : IMeshInfoJob
         Result.Dispose();
     }
 
-    public static int sharedMinCount = 36;
+    public static int sharedMinCount = 32;
     public static float minRepeatPointDistance = 0.0002f;
 
     public static NativeList<int> ErrorIds;

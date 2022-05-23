@@ -12,7 +12,7 @@ public struct PipeReducerInfoJob : IMeshInfoJob
         mesh.Dispose();
     }
 
-    public static int sharedMinCount = 36;
+    public static int sharedMinCount = 32;
     public static float minRepeatPointDistance = 0.00005f;
 
     public int id;
@@ -69,7 +69,7 @@ public struct PipeReducerInfoJob : IMeshInfoJob
     {
         PipeReducerData data = new PipeReducerData();
         var meshTriangles = new MeshTriangles(mesh);
-        SharedMeshTrianglesList trianglesList = meshTriangles.GetSharedMeshTrianglesListById(minCount, minDis);
+        SharedMeshTrianglesList trianglesList = meshTriangles.GetSharedMeshTrianglesListById(minCount, minDis, "PipeReducerInfoJob");
         //if (isFlange)
         //{
         //    trianglesList.CombineSameCenter(minDis);
@@ -274,24 +274,4 @@ public struct PipeReducerInfoJob : IMeshInfoJob
     }
 }
 
-public struct PipeReducerData
-{
-    public Vector4 StartPoint;
-    public Vector4 EndPoint ;
 
-    [XmlAttribute]
-    public bool IsSpecial;
-
-    [XmlAttribute]
-    public bool IsGetInfoSuccess;
-
-    [XmlAttribute]
-    public int KeyPointCount;
-
-    public PipeModelKeyPointData4 KeyPointInfo;
-
-    public override string ToString()
-    {
-        return $"ReducerData IsSpecial:{IsSpecial} IsGetInfoSuccess:{IsGetInfoSuccess} StartPoint:{StartPoint} EndPoint:{EndPoint}";
-    }
-}

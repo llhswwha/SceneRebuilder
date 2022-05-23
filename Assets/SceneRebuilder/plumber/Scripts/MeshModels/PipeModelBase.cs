@@ -1,3 +1,4 @@
+using CommonExtension;
 using System;
 using System.Collections;
 using System.Collections.Generic;
@@ -5,6 +6,32 @@ using UnityEngine;
 
 public class PipeModelBase : PipeModelComponent, IComparable<PipeModelBase>
 {
+    public override List<PipeWeldSaveData> GetWeldsSaveData()
+    {
+        List<PipeWeldSaveData> welds = new List<PipeWeldSaveData>();
+
+        if (IsGetInfoSuccess == false)
+        {
+            Debug.LogWarning($"GetWeldsSaveData IsGetInfoSuccess == false gameObject:{this.gameObject}");
+            return null;
+        }
+        if (ResultGo == null)
+        {
+            Debug.LogError($"GetWeldsSaveData ResultGo==null gameObject:{this.gameObject}");
+            return null;
+        }
+        PipeWeldModel[] weldModels = ResultGo.GetComponentsInChildren<PipeWeldModel>();
+        foreach (var m in weldModels)
+        {
+            welds.Add(m.GetSaveData());
+        }
+        if (welds.Count == 0)
+        {
+            welds = null;
+        }
+        return welds;
+    }
+
     public virtual Vector3 GetStartPoint()
     {
         return Vector3.zero;
@@ -35,7 +62,8 @@ public class PipeModelBase : PipeModelComponent, IComparable<PipeModelBase>
     public void SetPipeLineGeneratorArg(PipeMeshGenerator pipe, PipeGenerateArg arg, Vector4 startP, Vector4 endP)
     {
         pipe.points = new List<Vector3>() { startP, endP };
-        arg.SetArg(pipe);
+        //arg.SetArg(pipe);
+        PipeFactory.Instance.SetArg(arg, pipe);
         var radius = (startP.w + endP.w) / 2;
         pipe.pipeRadius = radius;
         pipe.pipeRadius1 = radius;
@@ -74,7 +102,7 @@ public class PipeModelBase : PipeModelComponent, IComparable<PipeModelBase>
 
     public static GameObject CreateSubTestObj(string objName, Transform parent)
     {
-        return TransformHelper.CreateSubTestObj(objName, parent);
+        return DebugInfoRoot.CreateSubTestObj(objName, parent);
     }
 
     public void DebugShowKeyPoints()
@@ -109,15 +137,7 @@ public class PipeModelBase : PipeModelComponent, IComparable<PipeModelBase>
 
    
 
-    public virtual string GetDictKey()
-    {
-        return "";
-    }
 
-    public virtual string GetSortKey()
-    {
-        return "";
-    }
 
 
 
@@ -716,7 +736,7 @@ public class PipeModelBase : PipeModelComponent, IComparable<PipeModelBase>
     [ContextMenu("ClearChildren")]
     public void ClearChildren()
     {
-        TransformHelper.ClearChildren(gameObject);
+        gameObject.ClearChildren();
         ClearCheckDistance();
     }
 
@@ -817,14 +837,13 @@ public class PipeModelBase : PipeModelComponent, IComparable<PipeModelBase>
         pipe.generateElbows = false;
         pipe.points = new List<Vector4>() { startP, endP };
         //pipe.pipeRadius = (startP.w + endP.w) / 2;
-        arg.SetArg(pipe);
+        PipeFactory.Instance.SetArg(arg, pipe);
         //pipe.generateWeld = gWeld;
         //pipe.IsGenerateEndWeld = true;
         pipe.avoidStrangling = true;
         pipe.RenderPipe();
         return pipe.gameObject;
     }
-
 
 
 
@@ -845,7 +864,7 @@ public class PipeModelBase : PipeModelComponent, IComparable<PipeModelBase>
         //MeshRenderer meshRenderer = this.GetComponent<MeshRenderer>();
         if (IsNoMesh())
         {
-            MeshHelper.CopyMeshComponents(source, this.gameObject);
+            GameObjectExtension.CopyMeshComponents(source, this.gameObject);
             this.gameObject.transform.rotation = source.transform.rotation;
 
             List<Transform> children = new List<Transform>();

@@ -24,16 +24,25 @@ public struct ObbInfoJob : IJob
     {
         DateTime startT = DateTime.Now;
         var ps = points.ToArray();
-        box = OrientedBoundingBox.GetObb(ps, id,true);
-
-        if (Result.Length > id)
+        OrientedBoundingBox? box1= OrientedBoundingBox.GetObb(ps, id, true);
+        if (box1 == null)
         {
-            Result[id] = box;
+            Debug.LogError($"JobInfo[{id}] box1 == null Result.Length :{Result.Length }");
         }
         else
         {
-            Debug.LogWarning($"JobInfo[{id}] Result.Length :{Result.Length }");
+            box = (OrientedBoundingBox)box1;
+
+            if (Result.Length > id)
+            {
+                Result[id] = box;
+            }
+            else
+            {
+                Debug.LogWarning($"JobInfo[{id}] Result.Length :{Result.Length }");
+            }
         }
+
     }
 
     public override string ToString()

@@ -9,7 +9,7 @@ using static PipeElbowModel;
 
 public struct PipeElbowInfoJob : IMeshInfoJob
 {
-    public static int sharedMinCount = 36;
+    public static int sharedMinCount = 32;
     public static float minRepeatPointDistance = 0.00005f;
     public static float PipeLineOffset = 0.05f;
 
@@ -26,7 +26,7 @@ public struct PipeElbowInfoJob : IMeshInfoJob
         MeshTriangles meshTriangles = new MeshTriangles(mesh);
         //Debug.Log($"PipeElbowInfoJob[{id}] time1:{(DateTime.Now - start).TotalMilliseconds.ToString("F1")}ms meshTriangles:{meshTriangles.Count}");
         //Debug.Log($"GetElbowInfo mesh vertexCount:{mesh.vertexCount} triangles:{mesh.triangles.Length}");
-        SharedMeshTrianglesList trianglesList = meshTriangles.GetSharedMeshTrianglesListById(sharedMinCount, minRepeatPointDistance);
+        SharedMeshTrianglesList trianglesList = meshTriangles.GetSharedMeshTrianglesListById(sharedMinCount, minRepeatPointDistance, "PipeElbowInfoJob");
         //SharedMeshTrianglesList trianglesList = meshTriangles.GetKeyPointsByPointEx(sharedMinCount, minRepeatPointDistance);
         foreach (SharedMeshTriangles triangles in trianglesList)
         {
@@ -224,19 +224,4 @@ public struct PipeElbowInfoJob : IMeshInfoJob
     }
 }
 
-public struct PipeElbowData
-{
 
-    public PipeModelKeyPointData4 KeyPointInfo;
-
-    public PipeModelKeyPointData4 InnerKeyPointInfo;
-
-    [XmlAttribute]
-    public bool IsSpecial;
-
-    [XmlAttribute]
-    public bool IsGetInfoSuccess;
-
-    [XmlAttribute]
-    public int KeyPointCount;
-}

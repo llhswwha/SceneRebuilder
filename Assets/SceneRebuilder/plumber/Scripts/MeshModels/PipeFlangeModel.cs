@@ -273,6 +273,11 @@ public class PipeFlangeModel : PipeReducerModel
         if (IsSpecial)
         {
             GameObject pipeNew = GetPipeNewGo(arg, afterName);
+            if (KeyPointInfo == null)
+            {
+                Debug.LogError($"PipeFlangeModel.RendererModel KeyPointInfo == null name:{this.name} ");
+                return null;
+            }
             pipeNew.transform.up = KeyPointInfo.EndPointOut1-KeyPointInfo.EndPointIn1;
             //pipeNew.transform.position = KeyPointInfo.EndPointOut1;
 

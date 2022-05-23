@@ -8,7 +8,7 @@ public struct PipeBendPartInfoJob : IMeshInfoJob
 {
     public int id;
 
-    public NativeArray<Vector3> points;
+    public NativeArray<MeshTriangle> meshTriangles;
 
     public PipeLineData lineData;
 
@@ -20,17 +20,99 @@ public struct PipeBendPartInfoJob : IMeshInfoJob
     public static int planeClosedMaxCount1 = 20;
     public static int planeClosedMaxCount2 = 100;
 
+    //public static string logTag = "";
+
     public void Dispose()
     {
-
+        meshTriangles.Dispose();
     }
 
     public void Execute()
     {
-        lineData = new PipeLineData();
+        lineData = StaticExecuteByTriangles(meshTriangles.ToArray(), id, false);
 
-        Vector3[] vs = points.ToArray();
-        OrientedBoundingBox obb = OrientedBoundingBox.Create(vs, false, this.id.ToString());
+        if (Result.Length > id)
+        {
+            Result[id] = lineData;
+        }
+        else
+        {
+            Debug.LogWarning($"PipeBendPartInfoJob[{id}] Result.Length :{Result.Length }");
+        }
+    }
+
+    public static PipeLineData StaticExecuteByTriangles(MeshTriangle[] triangles, int id, bool isShowError)
+    {
+        Vector3[] vs = MeshTriangle.GetTrianglePoints(triangles);
+        PipeLineData data=StaticExecuteByPoints(vs, id, isShowError);
+        if (data.IsGetInfoSuccess == false)
+        {
+            //Debug.LogWarning($"StaticExecuteByTriangles[{id}] StaticExecuteByPoints.IsGetInfoSuccess == false");
+            List<List<Vector3>> pointLines = GetLinePoints(triangles, 0);
+            if (pointLines.Count == 2)
+            {
+                data = new PipeLineData(pointLines);
+            }
+            else
+            {
+                Debug.LogError($"StaticExecuteByTriangles[{id}] pointLines.Count != 2 pointLines:{pointLines.Count}");
+            }
+        }
+        return data;
+    }
+
+    public static List<List<Vector3>> GetLinePoints(MeshTriangle[] triangles0, int minCount)
+    {
+        MeshPointCountDictList lineCountList = new MeshPointCountDictList();
+        List<Key2List<Vector3, MeshTriangle>> sharedPoints2 = MeshTriangle.FindSharedPointsByPoint(triangles0);
+        int id = 0;
+        for (int i = 0; i < sharedPoints2.Count; i++)
+        {
+            Vector3 point = sharedPoints2[i].Key;
+            List<MeshTriangle> triangles = sharedPoints2[i].List;
+            if (triangles.Count < minCount) continue;
+            id++;
+
+            MeshPointCountDict pointCount = new MeshPointCountDict(point);
+            lineCountList.Add(pointCount);
+            for (int i1 = 0; i1 < triangles.Count; i1++)
+            {
+                MeshTriangle t = triangles[i1];
+                List<MeshPoint> mps = t.GetPoints();
+                foreach (MeshPoint mp in mps)
+                {
+                    pointCount.AddPoint(mp);
+                }
+            }
+        }
+        List<List<Vector3>> pointLines = lineCountList.GetLines();
+        //GameObject linesObj = CreateSubTestObj($"PointLines:{pointLines.Count}", root);
+        //for (int i = 0; i < pointLines.Count; i++)
+        //{
+        //    List<Vector3> ps = pointLines[i];
+        //    GameObject lineObj = CreateSubTestObj($"PointLine[{i}]:{ps.Count}", linesObj.transform);
+        //    for (int j = 0; j < ps.Count; j++)
+        //    {
+        //        Vector3 p = ps[j];
+        //        TransformHelper.ShowLocalPoint(p, pointScale * 2, root, lineObj.transform);
+        //    }
+        //}
+        return pointLines;
+    }
+
+    public static PipeLineData StaticExecuteByPoints(Vector3[] vs,int id,bool isShowError)
+    {
+        PipeLineData lineData = new PipeLineData();
+
+        //Vector3[] vs = points.ToArray();
+        OrientedBoundingBox? obb1= OrientedBoundingBox.Create(vs, true, id.ToString());
+        if (obb1 == null)
+        {
+            lineData.IsGetInfoSuccess = false;
+            //Debug.LogWarning($"PipeBendPartInfoJob.StaticExecute[{logTag}] OrientedBoundingBox==null id:{id} vs:{vs.Length}");
+            return lineData;
+        }
+        OrientedBoundingBox obb = (OrientedBoundingBox)obb1;
 
         //GameObject planInfoRoot = new GameObject("PipeModel_PlaneInfo");
         //planInfoRoot.AddComponent<DebugInfoRoot>();
@@ -45,35 +127,90 @@ public struct PipeBendPartInfoJob : IMeshInfoJob
         //2.Planes
         PlaneInfo[] planeInfos = obb.GetPlaneInfos();
         List<VerticesToPlaneInfo> verticesToPlaneInfos_All = new List<VerticesToPlaneInfo>();
-        var verticesToPlaneInfos = new List<VerticesToPlaneInfo>();
-        for (int i = 0; i < planeInfos.Length; i++)
+        List<VerticesToPlaneInfo> verticesToPlaneInfos = new List<VerticesToPlaneInfo>();
+
+        float percent = 0;
+        float j = 5;
+        for (; j < 10; j++)
         {
-            PlaneInfo plane = (PlaneInfo)planeInfos[i];
-            //VerticesToPlaneInfo v2p =GetVerticesToPlaneInfo(vs, plane, false);
-            VerticesToPlaneInfo v2p = new VerticesToPlaneInfo(vs, plane, false, planeClosedMinDis, planeClosedMaxCount1, planeClosedMaxCount2);
-            v2p.SplitToTwoPlane();
-            verticesToPlaneInfos_All.Add(v2p);
-            //oBBCollider.ShowPlaneInfo(plane, i, planInfoRoot, v2p);
+            percent = 0.1f * j;
 
-            if (v2p.Plane1Points.Count != vs.Length / 2)
+            verticesToPlaneInfos = new List<VerticesToPlaneInfo>();
+            for (int i = 0; i < planeInfos.Length; i++)
             {
-                continue;
-            }
+                PlaneInfo plane = (PlaneInfo)planeInfos[i];
+                //VerticesToPlaneInfo v2p =GetVerticesToPlaneInfo(vs, plane, false);
+                VerticesToPlaneInfo v2p = new VerticesToPlaneInfo(vs, plane, false, planeClosedMinDis, planeClosedMaxCount1, planeClosedMaxCount2);
+                v2p.SplitToTwoPlane(percent);
+                verticesToPlaneInfos_All.Add(v2p);
+                //oBBCollider.ShowPlaneInfo(plane, i, planInfoRoot, v2p);
 
-            //if (isShowDebugObj)
-            //{
-            //    plane.ShowPlaneInfo(i, planInfoRoot, v2p, lineSize, tParent);
-            //}
-            verticesToPlaneInfos.Add(v2p);
-            //var isC = v2p.IsCircle();
+                if (v2p.Plane1Points.Count != vs.Length / 2)
+                {
+                    continue;
+                }
+
+                //if (isShowDebugObj)
+                //{
+                //    plane.ShowPlaneInfo(i, planInfoRoot, v2p, lineSize, tParent);
+                //}
+                verticesToPlaneInfos.Add(v2p);
+            }
+            verticesToPlaneInfos.Sort();
+
+            if (verticesToPlaneInfos.Count == 2)
+            {
+                break;
+            }
+            if (verticesToPlaneInfos.Count == 1)
+            {
+                break;
+            }
         }
-        verticesToPlaneInfos.Sort();
+
+        //Debug.Log($"PipeBendPartInfoJob.StaticExecute IsCircle count:{verticesToPlaneInfos.Count},gameObject:{id} percent:{percent}");
 
         if (verticesToPlaneInfos.Count < 1)
         {
             lineData.IsGetInfoSuccess = false;
-            Debug.LogError($"PipeLine.ShowLinePartModelInfo IsCircle Count < 1 count:{verticesToPlaneInfos.Count},gameObject:{this.id}");
-            return ;
+            Debug.LogError($"PipeBendPartInfoJob.StaticExecute[{LogTag.logTag}] IsCircle Count < 1 count:{verticesToPlaneInfos.Count},gameObject:{id} percent:{percent}");
+            return lineData;
+        }
+
+        if (verticesToPlaneInfos.Count == 1)
+        {
+            VerticesToPlaneInfo startPlane1 = verticesToPlaneInfos[0];
+            VerticesToPlaneInfo endPlane1 = VerticesToPlaneInfo.GetEndPlane(startPlane1, verticesToPlaneInfos_All);
+            verticesToPlaneInfos.Add(endPlane1);
+
+            if (endPlane1 == null)
+            {
+                if (isShowError)
+                {
+                    Debug.LogError($"PipeBendPartInfoJob.StaticExecute[{LogTag.logTag}] endPlane1 == null count:{verticesToPlaneInfos.Count},gameObject:{id} percent:{percent} startPlane1:{startPlane1}");
+                }
+                lineData.IsGetInfoSuccess = false;
+                return lineData;
+            }
+            if(endPlane1.Plane1Points==null)
+            {
+                Debug.LogError($"PipeBendPartInfoJob.StaticExecute[{LogTag.logTag}] endPlane1.Plane1Points==null count:{verticesToPlaneInfos.Count},gameObject:{id} percent:{percent} startPlane1:{startPlane1}");
+                lineData.IsGetInfoSuccess = false;
+                return lineData;
+            } 
+
+            for (; j < 10; j++)
+            {
+                if (endPlane1.Plane1Points.Count != vs.Length / 2)
+                {
+                    percent = 0.1f * j;
+                    endPlane1.SplitToTwoPlane(percent);
+                }
+                else
+                {
+                    break;
+                }
+            }
         }
 
         VerticesToPlaneInfo startPlane = verticesToPlaneInfos[0];
@@ -84,8 +221,9 @@ public struct PipeBendPartInfoJob : IMeshInfoJob
         }
         else
         {
-            Debug.LogWarning($"PipeLine.ShowLinePartModelInfo verticesToPlaneInfos.Count == 1 count:{verticesToPlaneInfos.Count},gameObject:{this.id}");
+            Debug.LogWarning($"PipeLine.ShowLinePartModelInfo[{LogTag.logTag}] verticesToPlaneInfos.Count == 1 count:{verticesToPlaneInfos.Count},gameObject:{id}");
             endPlane = VerticesToPlaneInfo.GetEndPlane(startPlane, verticesToPlaneInfos_All);
+            ErrorIds.Add(id);
         }
 
 
@@ -100,22 +238,22 @@ public struct PipeBendPartInfoJob : IMeshInfoJob
         CircleInfo startCircle = startPlane.GetPlane1Circle();
         if (startCircle == null)
         {
-            Debug.LogError($"PipeLine.ShowLinePartModelInfo startCircle == null gameObject:{this.id} count:{verticesToPlaneInfos.Count},gameObject:{this.id}");
+            Debug.LogError($"PipeLine.ShowLinePartModelInfo[{LogTag.logTag}] startCircle == null gameObject:{id} count:{verticesToPlaneInfos.Count},gameObject:{id}");
             lineData.IsGetInfoSuccess = false;
 
             //CreateLocalPoint(startPlane.Plane.planeCenter, $"Error1_StartPoint1", planInfoRoot.transform);
             //CreateLocalPoint(endPlane.Plane.planeCenter, "Error1_EndPoint1", planInfoRoot.transform);
-            return;
+            return lineData;
         }
         startPoint = startCircle.GetCenter4();
         CircleInfo endCircle = endPlane.GetPlane1Circle();
         if (endCircle == null)
         {
-            Debug.LogError($"PipeLine.ShowLinePartModelInfo endCircle == null gameObject:{this.id} count:{verticesToPlaneInfos.Count},gameObject:{this.id}");
+            Debug.LogError($"PipeLine.ShowLinePartModelInfo[{LogTag.logTag}] endCircle == null gameObject:{id} count:{verticesToPlaneInfos.Count},gameObject:{id}");
             lineData.IsGetInfoSuccess = false;
             //CreateLocalPoint(startPlane.Plane.planeCenter, "Error3_StartPoint2", planInfoRoot.transform);
             //CreateLocalPoint(endPlane.Plane.planeCenter, "Error3_EndPoint2", planInfoRoot.transform);
-            return;
+            return lineData;
         }
         endPoint = endCircle.GetCenter4();
 
@@ -137,32 +275,27 @@ public struct PipeBendPartInfoJob : IMeshInfoJob
             PipeRadius = PipeRadius2;
         }
 
-        //var PipeLength = Vector3.Distance(startPoint, endPoint);
-        ////LineInfo.StartPoint = startPoint;
-        ////LineInfo.EndPoint = endPoint;
-        //var LineInfo = new PipeLineInfo(startPoint, endPoint, startCircle.GetNormal(), endCircle.GetNormal(), null);
+        var PipeLength = Vector3.Distance(startPoint, endPoint);
+        //LineInfo.StartPoint = startPoint;
+        //LineInfo.EndPoint = endPoint;
 
-        //var ModelStartPoint = startPoint;
-        //ModelStartPoint.w = PipeRadius;
-        //var ModelEndPoint = endPoint;
-        //ModelEndPoint.w = PipeRadius;
+        startPoint.w = PipeRadius;
+        endPoint.w = PipeRadius;
+        lineData = new PipeLineData(startPoint, endPoint, startCircle.GetNormal(), endCircle.GetNormal());
 
-        //PipeLength = Vector3.Distance(startPoint, endPoint);
+        var ModelStartPoint = startPoint;
+        ModelStartPoint.w = PipeRadius;
+        var ModelEndPoint = endPoint;
+        ModelEndPoint.w = PipeRadius;
+
+        PipeLength = Vector3.Distance(startPoint, endPoint);
         //var KeyPointCount = 2;
 
-        lineData.StartPoint = startPoint;
-        lineData.StartPoint.w = PipeRadius;
-        lineData.EndPoint = endPoint;
-        lineData.EndPoint.w = PipeRadius;
+        //lineData.StartPoint = startPoint;
+        //lineData.StartPoint.w = PipeRadius;
+        //lineData.EndPoint = endPoint;
+        //lineData.EndPoint.w = PipeRadius;
         lineData.IsGetInfoSuccess = true;
-
-        if (Result.Length > id)
-        {
-            Result[id] = lineData;
-        }
-        else
-        {
-            Debug.LogWarning($"PipeBendPartInfoJob[{id}] Result.Length :{Result.Length }");
-        }
+        return lineData;
     }
 }

@@ -30,7 +30,18 @@ namespace GPUInstancer
 
         public bool IsGenerateWhenAwake = true;
 
-        private void Awake()
+        [ContextMenu("2.InitPrefabs")]
+        public void InitPrefabs()
+        {
+            if (prefabManager == null)
+            {
+                prefabManager = GameObject.FindObjectOfType<GPUInstancerPrefabManager>();
+            }
+
+            prefabManager.InitPrefabs(asteroidObjects,false);
+        }
+
+            private void Awake()
         {
             Instance = this;
             if (IsGenerateWhenAwake)
@@ -145,17 +156,25 @@ namespace GPUInstancer
 
             public void StartGPUInstance(List<GPUInstancerPrefab> instances)
         {
+            if (prefabManager == null)
+            {
+                prefabManager = GPUInstancerPrefabManager.Instance;
+            }
             if (prefabManager != null && prefabManager.gameObject.activeSelf && prefabManager.enabled)
             {
-                if (instances == null || instances.Count == 0)
-                {
-                    instances = GameObject.FindObjectsOfType<GPUInstancerPrefab>().ToList();
-                }
+                //if (instances == null || instances.Count == 0)
+                //{
+                //    instances = GameObject.FindObjectsOfType<GPUInstancerPrefab>().ToList();
+                //}
                 GPUInstancerAPI.RegisterPrefabInstanceList(prefabManager, instances);
                 GPUInstancerAPI.InitializeGPUInstancer(prefabManager);
 
-                var prefabs = GameObject.FindObjectsOfType<GPUInstancerPrefab>();
+                var prefabs = GameObject.FindObjectsOfType<GPUInstancerPrefab>(true);
                 Debug.LogError($"StartGPUInstance prefabs:{prefabs.Length} asteroidInstances:{instances.Count}");
+            }
+            else
+            {
+                Debug.LogError($"StartGPUInstance prefabManager:{prefabManager}");
             }
         }
 

@@ -28,7 +28,16 @@ public struct PipeLineInfoJob : IMeshInfoJob
         lineData = new PipeLineData();
 
         Vector3[] vs = points.ToArray();
-        OrientedBoundingBox OBB = OrientedBoundingBox.GetObb(vs, id,true);
+        OrientedBoundingBox? obb1 = OrientedBoundingBox.GetObb(vs, id, true);
+        if (obb1 == null)
+        {
+            lineData.IsObbError = true;
+            lineData.IsGetInfoSuccess = false;
+            return;
+        }
+        OrientedBoundingBox OBB = (OrientedBoundingBox)obb1;
+
+        //OrientedBoundingBox OBB = OrientedBoundingBox.GetObb(vs, id,true);
         if (OBB.IsInfinity())
         {
             lineData.IsObbError = true;
@@ -169,3 +178,7 @@ public struct PipeLineInfoJob : IMeshInfoJob
     }
 }
 
+public static class PipeJobHelper
+{
+
+}

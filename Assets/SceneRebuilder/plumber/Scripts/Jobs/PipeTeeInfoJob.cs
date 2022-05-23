@@ -7,7 +7,7 @@ using UnityEngine;
 
 public struct PipeTeeInfoJob : IMeshInfoJob
 {
-    public static int sharedMinCount = 36;
+    public static int sharedMinCount = 32;
     public static float minRepeatPointDistance = 0.00005f;
     public static float PipeLineOffset = 0.05f;
 
@@ -25,7 +25,7 @@ public struct PipeTeeInfoJob : IMeshInfoJob
         var VertexCount = mesh.vertexCount;
         var meshTriangles = new MeshTriangles(mesh);
         //Debug.Log($"GetElbowInfo mesh vertexCount:{mesh.vertexCount} triangles:{mesh.triangles.Length}");
-        SharedMeshTrianglesList trianglesList = meshTriangles.GetKeyPointsByPointEx(sharedMinCount, minRepeatPointDistance);
+        SharedMeshTrianglesList trianglesList = meshTriangles.GetKeyPointsByPointEx(sharedMinCount, minRepeatPointDistance, "PipeTeeInfoJob");
         foreach (SharedMeshTriangles triangles in trianglesList)
         {
 
@@ -201,28 +201,4 @@ public struct PipeTeeInfoJob : IMeshInfoJob
     }
 }
 
-public struct PipeTeeData
-{
 
-
-    public PipeModelKeyPointData4 KeyPointInfo;
-
-    public PipeModelKeyPointData4 InnerKeyPointInfo;
-
-    public PipeModelKeyPlaneData4 KeyPlaneInfo;
-    public PipeModelKeyPlaneData4 InnerKeyPlaneInfo;
-
-    [XmlAttribute]
-    public bool IsSpecial;
-
-    [XmlAttribute]
-    public bool IsGetInfoSuccess;
-
-    [XmlAttribute]
-    public int KeyPointCount;
-
-    public override string ToString()
-    {
-        return $"TeeData IsSpecial:{IsSpecial} IsGetInfoSuccess:{IsGetInfoSuccess} KeyPointInfo:{KeyPointInfo} InnerKeyPointInfo:{InnerKeyPointInfo} KeyPlaneInfo:{KeyPlaneInfo} InnerKeyPlaneInfo:{InnerKeyPlaneInfo}";
-    }
-}

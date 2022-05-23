@@ -7,7 +7,7 @@ using UnityEngine;
 
 public struct PipeWeldoletInfoJob : IMeshInfoJob
 {
-    public static int sharedMinCount = 36;
+    public static int sharedMinCount = 32;
     public static float minRepeatPointDistance = 0.001f;
     public static float PipeLineOffset = 0.05f;
     public static float CircleWidth = 0.001f;
@@ -113,23 +113,3 @@ public struct PipeWeldoletInfoJob : IMeshInfoJob
 }
 
 
-public struct PipeWeldoletData
-{
-
-    public PipeModelKeyPointData4 KeyPointInfo;
-
-    //public PipeElbowKeyPointData InnerKeyPointInfo;
-
-    //public bool IsSpecial;
-
-    [XmlAttribute]
-    public bool IsGetInfoSuccess;
-
-    [XmlAttribute]
-    public int KeyPointCount;
-
-    public override string ToString()
-    {
-        return $"PipeWeldoletData KeyPointCount:{KeyPointCount} IsGetInfoSuccess:{IsGetInfoSuccess} ";
-    }
-}

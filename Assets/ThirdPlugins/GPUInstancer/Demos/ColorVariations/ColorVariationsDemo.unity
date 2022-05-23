@@ -38,7 +38,7 @@ RenderSettings:
   m_ReflectionIntensity: 1
   m_CustomReflection: {fileID: 0}
   m_Sun: {fileID: 0}
-  m_IndirectSpecularColor: {r: 130.98486, g: 162.28467, b: 214.84033, a: 1}
+  m_IndirectSpecularColor: {r: 0, g: 0, b: 0, a: 1}
   m_UseRadianceAmbientProbe: 0
 --- !u!157 &3
 LightmapSettings:
@@ -200,7 +200,8 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   prototypeList:
-  - {fileID: 11400000, guid: 89d3da35891e8c74ab0aac49c3c8cec9, type: 2}
+    List:
+    - {fileID: 11400000, guid: 89d3da35891e8c74ab0aac49c3c8cec9, type: 2}
   autoSelectCamera: 1
   cameraData:
     mainCamera: {fileID: 1391502923}
@@ -256,9 +257,6 @@ MonoBehaviour:
     serializedVersion: 2
     m_Bits: 4294967295
   lightProbeDisabled: 0
-  registeredPrefabs:
-  - prefabPrototype: {fileID: 11400000, guid: 89d3da35891e8c74ab0aac49c3c8cec9, type: 2}
-    registeredPrefabs: []
   prefabList:
   - {fileID: 1951659731945486, guid: 11ac79693cd20d7498ff0d3a11f2c977, type: 3}
   enableMROnManagerDisable: 1
@@ -277,7 +275,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   prefab: {fileID: 114581531180148362, guid: 11ac79693cd20d7498ff0d3a11f2c977, type: 3}
   prefabManager: {fileID: 981325420}
-  instances: 1000
+  instances: 50000
   bufferName: gpuiFloat4Variation
 --- !u!4 &981325422
 Transform:

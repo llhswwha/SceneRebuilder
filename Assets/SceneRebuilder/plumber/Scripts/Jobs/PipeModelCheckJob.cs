@@ -34,16 +34,27 @@ public struct PipeModelCheckJob : IMeshInfoJob
         PipeModelCheckResult mcResult = new PipeModelCheckResult();
         var vs1 = points1.ToArray();
         var vs2 = points2.ToArray();
-        OrientedBoundingBox OBB1 = OrientedBoundingBox.GetObb(vs1, id,false);
-        OrientedBoundingBox OBB2 = OrientedBoundingBox.GetObb(vs2, id, false);
+        OrientedBoundingBox? obb1 = OrientedBoundingBox.GetObb(vs1, id, false);
+        if (obb1 == null)
+        {
+            return;
+        }
+        OrientedBoundingBox OBB1 = (OrientedBoundingBox)obb1;
 
-       
+        OrientedBoundingBox? obb2 = OrientedBoundingBox.GetObb(vs2, id, false);
+        if (obb2 == null)
+        {
+            return;
+        } 
+        OrientedBoundingBox OBB2 = (OrientedBoundingBox)obb2;
 
-        mcResult.MeshDistance =  DistanceUtil.GetDistance(vs1, vs2, false);
+
+
+        mcResult.MeshDistance = DistanceUtil.GetDistance(vs1, vs2, false);
         mcResult.SizeDistance = DistanceUtil.GetDistance(connerPoints1.ToArray(), connerPoints2.ToArray(), false);
         //mcResult.RTDistance = OBBCollider.GetObbRTDistance(ResultGo, this.gameObject);
 
-        if(OBB1.IsInfinity()==false && OBB2.IsInfinity()==false)
+        if (OBB1.IsInfinity() == false && OBB2.IsInfinity() == false)
         {
             mcResult.ObbDistance = OBBCollider.GetObbDistance(OBB1, OBB2);
             var obbCornerPoints1 = OBB1.CornerPointsVector3();

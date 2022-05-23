@@ -1,0 +1,17 @@
+{
+    "name": "RigidTransformLib",
+    "rootNamespace": "",
+    "references": [
+        "GUID:30f8e5bc92faedb458e311a755341598",
+        "GUID:60dbd32e65493a348a0be2e3288cf6b2"
+    ],
+    "includePlatforms": [],
+    "excludePlatforms": [],
+    "allowUnsafeCode": false,
+    "overrideReferences": false,
+    "precompiledReferences": [],
+    "autoReferenced": true,
+    "defineConstraints": [],
+    "versionDefines": [],
+    "noEngineReferences": false
+}

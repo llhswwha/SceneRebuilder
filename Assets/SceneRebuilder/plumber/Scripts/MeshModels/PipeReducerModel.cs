@@ -72,7 +72,7 @@ public class PipeReducerModel
 
         meshTriangles.Dispose();
 
-        Debug.Log($">>>{this.GetType().Name} time:{DateTime.Now - start} points:{trianglesList.Count} meshTriangles:{meshTriangles.Count} trianglesList:{trianglesList.Count} distanceList:{distanceList.Count}");
+        //Debug.Log($">>>{this.GetType().Name} time:{DateTime.Now - start} points:{trianglesList.Count} meshTriangles:{meshTriangles.Count} trianglesList:{trianglesList.Count} distanceList:{distanceList.Count}");
     }
 
     protected void GetModelInfo2(GameObject keyPoints, SharedMeshTriangles startP, SharedMeshTriangles endP)
@@ -190,7 +190,8 @@ public class PipeReducerModel
 
         //PipeMeshGenerator pipe = GetGenerator<PipeMeshGenerator>(arg, afterName);
         //pipe.points = new List<Vector3>() { StartPoint, EndPoint };
-        arg.SetArg(pipe);
+        //arg.SetArg(pipe);
+        PipeFactory.Instance.SetArg(arg, pipe);
         pipe.pipeRadius = PipeRadius;
         pipe.pipeRadius1 = PipeRadius1;
         pipe.pipeRadius2 = PipeRadius2;

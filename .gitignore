@@ -17,6 +17,7 @@ Bin/
 Assets/SubScenes/
 Assets/Models/Instances/Prefabs/
 Assets/ThirdPlugins/GPUInstancer/PrototypeData/Prefab/
+/Assets/ThirdPlugins/GPUInstancer/Prefabs/
 
 # Visual Studio cache directory
 .vs/
@@ -37,6 +38,9 @@ ExportedObj/
 *.pdb
 *.opendb
 *.VC.db
+*.unity
+*.zip
+*.rar
 
 # Unity3D generated meta files
 *.pidb.meta

@@ -1,3 +1,4 @@
+using CommonExtension;
 using MathGeoLib;
 using System.Collections;
 using System.Collections.Generic;
@@ -35,6 +36,7 @@ public class BoxMeshModel : BaseMeshModel
     {
         Mesh mesh = this.GetComponent<MeshFilter>().sharedMesh;
         MeshTriangles meshTriangles = new MeshTriangles(mesh);
+        Matrix4x4 localToWorldMatrix = transform.localToWorldMatrix;
         //Debug.Log($"GetModelInfo mesh vertexCount:{mesh.vertexCount} triangles:{mesh.triangles.Length}");
         //meshTriangles.ShowCirclesById(this.transform, PointScale, 0, 3, minRepeatPointDistance);
         var sharedPoints1 = meshTriangles.GetSharedMeshTrianglesListByNormal(0, minSamePlaneNormalDis, this.name);
@@ -62,39 +64,24 @@ public class BoxMeshModel : BaseMeshModel
 
                     if (plane6 != null)
                     {
-                        var c1 = transform.TransformPoint(plane1.Center);
-                        var c2 = transform.TransformPoint(plane2.Center);
-                        var c3 = transform.TransformPoint(plane3.Center);
-                        var c4 = transform.TransformPoint(plane4.Center);
-                        var c5 = transform.TransformPoint(plane5.Center);
-                        var c6 = transform.TransformPoint(plane6.Center);
+                        //var c1 = transform.TransformPoint(plane1.Center);
+                        //var c2 = transform.TransformPoint(plane2.Center);
+                        //var c3 = transform.TransformPoint(plane3.Center);
+                        //var c4 = transform.TransformPoint(plane4.Center);
+                        //var c5 = transform.TransformPoint(plane5.Center);
+                        //var c6 = transform.TransformPoint(plane6.Center);
+                        var c1 = localToWorldMatrix.MultiplyPoint(plane1.Center);
+                        var c2 = localToWorldMatrix.MultiplyPoint(plane2.Center);
+                        var c3 = localToWorldMatrix.MultiplyPoint(plane3.Center);
+                        var c4 = localToWorldMatrix.MultiplyPoint(plane4.Center);
+                        var c5 = localToWorldMatrix.MultiplyPoint(plane5.Center);
+                        var c6 = localToWorldMatrix.MultiplyPoint(plane6.Center);
                         Vector3 dir1 = c1 - c2;
                         Vector3 dir2 = c3 - c4;
                         Vector3 dir3 =c5 - c6;
                         float angle1 = Vector3.Angle(dir1, dir2);
                         float angle2 = Vector3.Angle(dir1, dir3);
                         float angle3 = Vector3.Angle(dir2, dir3);
-
-                        //if (Mathf.Abs(angle1 - 90) < minAngleDis && Mathf.Abs(angle2 - 90) < minAngleDis && Mathf.Abs(angle3 - 90) < minAngleDis)
-                        //{
-                        //    float length1 = Vector3.Distance(c1, c2);
-                        //    float length2 = Vector3.Distance(c3, c4);
-                        //    float length3 = Vector3.Distance(c5, c6);
-                        //    IsGetInfoSuccess = true;
-                        //    //Debug.Log($"GetModelInfo length1:{length1} length2:{length2} length3:{length3}");
-                        //    OBB = new OrientedBoundingBox();
-                        //    //OBB.Center = this.transform.position;
-                        //    OBB.Center = Vector3.zero;
-                        //    OBB.Extent = new Vector3(length1 / 2, length2 / 2, length3 / 2);
-                        //    OBB.Right = dir1;
-                        //    OBB.Up = dir2;
-                        //    OBB.Forward = dir3;
-                        //}
-                        //else
-                        //{
-                        //    IsGetInfoSuccess = false;
-                        //    Debug.LogError($"GetModelInfo[{ErrorCount++}]({minAngleDis}) gameObject:{this.name} angle1:{angle1}({Mathf.Abs(angle1 - 90)}) angle2:{angle2}({Mathf.Abs(angle2 - 90)}) angle3:{angle3}({Mathf.Abs(angle3 - 90)})");
-                        //}
 
                         if (Mathf.Abs(angle1 - 90) < minAngleDis && Mathf.Abs(angle2 - 90) < minAngleDis && Mathf.Abs(angle3 - 90) < minAngleDis)
                         {
@@ -182,20 +169,22 @@ public class BoxMeshModel : BaseMeshModel
 
     public void SetModelData(MeshBoxData data)
     {
-        this.SetModelData(data);
-    }
+        this.IsGetInfoSuccess = data.IsGetInfoSuccess;
+        this.OBB = data.OBB;
+    } 
 
-    public override void RendererModel()
+    public override bool RendererModel()
     {
         if (IsGetInfoSuccess == false)
         {
             this.gameObject.SetActive(true);
             //Debug.LogError($"BoxMeshModel.RendererModel IsGetInfoSuccess == false name:{this.name}");
-            return;
+            return false;
         }
         ClearGo();
+
         this.gameObject.SetActive(false);
-        GameObject go=OBBCollider.CreateObbBox(this.transform, GetOBB());
+        GameObject go = OBBCollider.CreateObbBox(this.transform, GetOBB());
         go.transform.name = this.name + "_New";
         go.transform.transform.SetParent(this.transform.parent);
         ResultGo = go;
@@ -207,8 +196,21 @@ public class BoxMeshModel : BaseMeshModel
         BoxMeshGenerator generator = go.AddMissingComponent<BoxMeshGenerator>();
         generator.Target = this.gameObject;
 
-        CheckResult();
+        //CheckResult();
+
+        //GameObjectExtension.CopyTransformMesh(go, this.gameObject);
+        //this.gameObject.SetActive(true);
+        //GameObject.DestroyImmediate(go);
+        //ResultGo = this.gameObject;
+
+        //ReplaceModel();
+        return true;
     }
+
+    //public override void ReplaceOld()
+    //{
+    //    base.ReplaceOld();
+    //}
 
     public void ReplaceModel()
     {
@@ -216,9 +218,15 @@ public class BoxMeshModel : BaseMeshModel
         //go.transform.SetParent(this.transform.parent);
         go.transform.name = this.name + "_ObbBox";
 
-        MeshHelper.CopyTransformMesh(go, this.gameObject);
+        GameObjectExtension.CopyTransformMesh(go, this.gameObject);
 
         GameObject.DestroyImmediate(go);
+    }
+
+    [ContextMenu("CopyTransformMesh")]
+    public void CopyTransformMesh()
+    {
+        GameObjectExtension.CopyTransformMesh(ResultGo, this.gameObject);
     }
 
     public static int CheckErrorCount = 0;
@@ -261,9 +269,7 @@ public class BoxMeshModel : BaseMeshModel
         }
         else
         {
-            Debug.Log($"CheckResult1 gameObject:{this.name} meshDis:{meshDis} ");
-
+            //Debug.Log($"CheckResult1 gameObject:{this.name} meshDis:{meshDis} ");
         }
-        
     }
 }

@@ -2,6 +2,7 @@
 using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
+using UnityEngine.Rendering;
 
 public class PipeMeshGenerator : PipeMeshGeneratorBase
 {
@@ -34,7 +35,7 @@ public class PipeMeshGenerator : PipeMeshGeneratorBase
         Vector3 dir1 = points[0] - points[1];
         this.transform.up = dir1;
         
-        Debug.Log($"AlignDirection p1:{MeshHelper.Vector3ToString(points[0])} p2:{MeshHelper.Vector3ToString(points[1])} dir:{MeshHelper.Vector3ToString(dir1)}");
+        Debug.Log($"AlignDirection p1:{points[0].Vector3ToString()} p2:{points[1].Vector3ToString()} dir:{dir1.Vector3ToString()}");
     }
 
 
@@ -105,7 +106,7 @@ public class PipeMeshGenerator : PipeMeshGeneratorBase
 
 
 
-    public bool IsLinkEndStart = false;
+    //public bool IsLinkEndStart = false;
 
     //public List<Vector3> points_raw;
 
@@ -260,8 +261,49 @@ public class PipeMeshGenerator : PipeMeshGeneratorBase
         return GenerateWeld(vertices, normals, start, direction, pipeRadius);
     }
 
+    protected GameObject GenerateWeld(List<Vector3> vertices, List<Vector3> normals, Vector3 start, Vector3 direction, float radius)
+    {
+        if (IsWeldSeperated)
+        {
+            float size = radius;
+            if (weldCircleRadius > 0)
+            {
+                size = weldCircleRadius;
+            }
+            GameObject go = CreateLocalWeldGo(start, direction);
+            go.transform.localScale = new Vector3(1, 2, 1);
+            PipeWeldModel weldModel = go.AddComponent<PipeWeldModel>();
+            weldModel.WeldData = new PipeWeldData(go.transform.position, direction, size, weldPipeRadius);
+            //weldModel.ResultGo = go;
+            weldModel.RendererModel();
+            return go;
+        }
+        else
+        {
+            CircleMeshArg arg1 = MeshGeneratorHelper.GenerateCircleAtPoint(Vector3.zero, direction, 4, radius * 1.414213562373f);
+            ////Debug.LogError($"Generate[{i}] start:{initialPoint} end:{endPoint} direction:{direction} gWeld:{gWeld} ps1:{ps1.Count}");
 
-   
+            GameObject p1 = PointHelper.ShowLocalPoint(start, new Vector3(0.05f, 0.05f, 0.05f), this.transform);
+            Welds.Add(p1);
+
+            GameObject go = CreateLocalWeldGo(start, direction);
+            //GameObject go = CreateWorldWeldGo(start, direction);
+
+            PointHelper.ShowLocalPoints(arg1.vertices, new Vector3(0.05f, 0.05f, 0.05f), go.transform);
+
+            //float size = pipeRadius;
+            float size = Vector3.Distance(arg1.vertices[0], arg1.vertices[1]) / 2;
+
+            PipeMeshGenerator weldGenerator = go.AddComponent<PipeMeshGenerator>();
+            SetPipeMeshGenerator(weldGenerator, size);
+            weldGenerator.points = arg1.vertices;
+            weldGenerator.RenderPipe();
+            MeshRenderer renderer = go.GetComponent<MeshRenderer>();
+            renderer.shadowCastingMode = ShadowCastingMode.Off;
+            return go;
+        }
+    }
+
 
 
 
@@ -413,7 +455,7 @@ public class PipeMeshGenerator : PipeMeshGeneratorBase
                 Vector3 directionN = (dir).normalized;
                 if (dirD < 0.000001)
                 {
-                    Debug.LogError($"gameObject:{this.name} initialPoint:{initialPoint} endPoint:{endPoint} dir:{dir} dirD:{dirD}");
+                    Debug.LogError($"gameObject:{this.name} initialPoint:{initialPoint.Vector3ToString()} endPoint:{endPoint.Vector3ToString()} dir:{dir.Vector3ToString()} dirD:{dirD}"); 
                 }
                 if (i > 0 && generateElbows)
                 {
@@ -574,12 +616,16 @@ public class PipeMeshGenerator : PipeMeshGeneratorBase
             points.RemoveAt(idx);
         }
         int count2 = points.Count;
-        if(count1==5 && count2 != 3)
+        if (count1 != count2)
         {
-            Debug.LogError($"RemoveColinearPoints {count1}->{count2}");
-        }
+            if (count1 == 5 && count2 != 3)
+            {
+                Debug.LogError($"RemoveColinearPoints[{this.name}] {count1}->{count2}");
+            }
+        }  
+
         if (isShowLog)
-            Debug.LogError($"RemoveColinearPoints {count1}->{count2}");
+            Debug.LogError($"RemoveColinearPoints[{this.name}] {count1}->{count2}");
     }
 
     CircleMeshData GenerateCircleAtPoint(List<Vector3> vertices, List<Vector3> normals, Vector3 center, Vector3 direction,string circleName,int index,int psCount,int circleType,bool isStart) {

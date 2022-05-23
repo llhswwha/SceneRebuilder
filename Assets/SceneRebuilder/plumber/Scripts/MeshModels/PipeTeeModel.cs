@@ -24,7 +24,7 @@ public class PipeTeeModel : PipeElbowModel
         this.VertexCount = mesh.vertexCount;
         meshTriangles = new MeshTriangles(mesh);
         //Debug.Log($"GetElbowInfo mesh vertexCount:{mesh.vertexCount} triangles:{mesh.triangles.Length}");
-        SharedMeshTrianglesList trianglesList = meshTriangles.GetKeyPointsByPointEx(sharedMinCount, minRepeatPointDistance);
+        SharedMeshTrianglesList trianglesList = meshTriangles.GetKeyPointsByPointEx(sharedMinCount, minRepeatPointDistance, $"PipeTeeModel_{this.name}");
         foreach (SharedMeshTriangles triangles in trianglesList)
         {
 
@@ -51,7 +51,7 @@ public class PipeTeeModel : PipeElbowModel
             return;
         }
         meshTriangles.Dispose();
-        Debug.Log($">>>GetTeeInfo  time:{DateTime.Now - start} IsGetInfoSuccess:{IsGetInfoSuccess} KeyPointCount:{KeyPointCount}");
+        //Debug.Log($">>>GetTeeInfo  time:{DateTime.Now - start} IsGetInfoSuccess:{IsGetInfoSuccess} KeyPointCount:{KeyPointCount}");
     }
     private void GetTeeInfo7(SharedMeshTrianglesList trianglesList)
     {
@@ -321,7 +321,8 @@ public class PipeTeeModel : PipeElbowModel
             Vector3 dir = KeyPointInfo.EndPointIn2 - KeyPointInfo.EndPointOut2;
             float angle = Vector3.Angle(dir, Vector3.right);
             //pipeNew.transform.Rotate(pipeNew.transform.up, angle, Space.World);
-            Debug.Log($"Tee angle:{angle}");
+            //Debug.Log($"Tee angle:{angle}");
+
             pipeNew.transform.Rotate(Vector3.up, angle, Space.Self);
 
             pipe1.transform.SetParent(pipeNew.transform);

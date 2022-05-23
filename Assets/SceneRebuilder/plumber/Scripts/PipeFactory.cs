@@ -1,3 +1,5 @@
+using CommonExtension;
+using MathGeoLib;
 using MeshJobs;
 using System;
 using System.Collections;
@@ -8,6 +10,73 @@ using UnityEngine.Rendering;
 
 public class PipeFactory : SingletonBehaviour<PipeFactory>
 {
+    public PipeGenerateArg GetArg(PipeModelComponent pipec)
+    {
+        MeshRenderer r = pipec.GetComponent<MeshRenderer>();
+        MeshFilter mf = pipec.GetComponent<MeshFilter>();
+        if (r)
+        {
+            if (pipec.generateArg.pipeMaterial == null)
+            {
+                pipec.generateArg.pipeMaterial = r.sharedMaterial;
+            }
+            if (pipec.generateArg.weldMaterial == null)
+            {
+                pipec.generateArg.weldMaterial = r.sharedMaterial;
+            }
+        }
+        else
+        {
+            if (pipec.generateArg.pipeMaterial == null)
+            {
+                pipec.generateArg.pipeMaterial = this.generateArg.pipeMaterial;
+            }
+            if (pipec.generateArg.weldMaterial == null)
+            {
+                pipec.generateArg.weldMaterial = this.generateArg.weldMaterial;
+            }
+        }
+
+        if (pipec.generateArg.pipeMaterial == null)
+        {
+            pipec.generateArg.pipeMaterial = this.generateArg.pipeMaterial;
+        }
+        if (pipec.generateArg.weldMaterial == null)
+        {
+            pipec.generateArg.weldMaterial = this.generateArg.weldMaterial;
+        }
+
+        return pipec.generateArg;
+    }
+
+    public void SetArg(PipeGenerateArg arg, PipeMeshGeneratorEx pipe)
+    {
+        if (arg.pipeMaterial == null)
+        {
+            arg.pipeMaterial = GetPipeMaterial();
+        }
+        if (arg.weldMaterial == null)
+        {
+            arg.weldMaterial = GetWeldMaterial();
+        }
+
+        arg.SetArg(pipe);
+    }
+
+    public void SetArg(PipeGenerateArg arg, PipeMeshGenerator pipe)
+    {
+        if (arg.pipeMaterial == null)
+        {
+            arg.pipeMaterial = GetPipeMaterial();
+        }
+        if (arg.weldMaterial == null)
+        {
+            arg.weldMaterial = GetWeldMaterial();
+        }
+
+        arg.SetArg(pipe);
+    }
+
     public GameObject Target;
 
     public MeshRendererInfoList TotalObjs = new MeshRendererInfoList();
@@ -41,6 +110,10 @@ public class PipeFactory : SingletonBehaviour<PipeFactory>
     public MeshRendererInfoList BoxModels = new MeshRendererInfoList();
 
     public MeshRendererInfoList StructureModels = new MeshRendererInfoList();
+
+    public MeshRendererInfoList LMeshModels = new MeshRendererInfoList();
+
+    public MeshRendererInfoList CornerBoxModels = new MeshRendererInfoList();
 
     public MeshRendererInfoList AttachmentModels = new MeshRendererInfoList();
 
@@ -76,6 +149,10 @@ public class PipeFactory : SingletonBehaviour<PipeFactory>
 
         AttachmentModels = new MeshRendererInfoList();
 
+        LMeshModels = new MeshRendererInfoList();
+
+        CornerBoxModels = new MeshRendererInfoList();
+
         //TotalBoxModelsVertexCount = 0;
 
         //TotalPipeOthersVertexCount = 0;
@@ -103,6 +180,8 @@ public class PipeFactory : SingletonBehaviour<PipeFactory>
         TransformHelper.ClearComponents<OBBCollider>(Target);
 
         TransformHelper.ClearComponentGos<DebugInfoRoot>(Target);
+
+        Debug.Log($"ClearDebugObjs Target:{Target}");
     }
 
     public void ClearGeneratedObjs()
@@ -176,7 +255,7 @@ public class PipeFactory : SingletonBehaviour<PipeFactory>
         return weldsCount;
     }
 
-    private string AfterGeneratePipes(bool isMoveToBuilder,bool isPrefabGos)
+    private string AfterGeneratePipes(bool isMoveToBuilder, bool isPrefabGos)
     {
         if (isMoveToBuilder)
             this.MovePipes();
@@ -219,7 +298,7 @@ public class PipeFactory : SingletonBehaviour<PipeFactory>
         int weldsCount = OneKey_GetPipeInfos(true);
         TimeSpan getInfoTime = DateTime.Now - start1;
 
-       
+
     }
 
     public void DebugOneKey2(bool isRemoveMesh)
@@ -241,6 +320,9 @@ public class PipeFactory : SingletonBehaviour<PipeFactory>
 
     public void OneKeyCore(bool isJob, bool isRemoveMesh, bool isMoveToBuilder)
     {
+        AcRTAlignJobContainer.isShowLog = false;
+        OrientedBoundingBox.isShowWarning = false;
+
         DateTime start = DateTime.Now;
 
         EditorHelper.UnpackPrefab(Target);
@@ -267,9 +349,12 @@ public class PipeFactory : SingletonBehaviour<PipeFactory>
             timeFormat = timeFormat2;
         }
 
-        Debug.LogError($"OneKey target:{Target.name} time:{(ta).ToString(timeFormat)}({getInfoTime.ToString(timeFormat)}+{generateTime.ToString(timeFormat)}+{prefabTime.ToString(timeFormat)}) arg:({generateArg}) Models:{newBuilder.PipeModels.Count + PipeOthers.Count + weldsCount}={newBuilder.PipeModels.Count}+{PipeOthers.Count}+{weldsCount}({lastWeldCount})) {pefabLog} TargetInfo:{TargetInfo} -> ResultInfo:{ResultInfo} ({ResultVertexCount / TargetVertexCount:P2},{SharedResultVertexCountCount / TargetVertexCount:P2})");
+        Debug.LogError($"¡¾OneKey target:{Target.name}¡¿ time:{(ta).ToString(timeFormat)}({getInfoTime.ToString(timeFormat)}+{generateTime.ToString(timeFormat)}+{prefabTime.ToString(timeFormat)}) arg:({generateArg}) Models:{newBuilder.PipeModels.Count + PipeOthers.Count + weldsCount}={newBuilder.PipeModels.Count}+{PipeOthers.Count}+{weldsCount}({lastWeldCount})) {pefabLog} TargetInfo:{TargetInfo} -> ResultInfo:{ResultInfo} ({ResultVertexCount / TargetVertexCount:P2},{SharedResultVertexCountCount / TargetVertexCount:P2})");
 
         MeshHelper.RefreshCollderMesh();
+
+        OrientedBoundingBox.isShowWarning = true;
+        AcRTAlignJobContainer.isShowLog = true;
     }
 
     public GameObject PrefabRoots = null;
@@ -284,7 +369,7 @@ public class PipeFactory : SingletonBehaviour<PipeFactory>
 
     public Mesh PipeModelUnitPrefabMesh_Line2 = null;
 
-    public GameObject CreatePipeLineUnitPrefab(bool isEndCaps,int minSegs,string tag)
+    public GameObject CreatePipeLineUnitPrefab(bool isEndCaps, int minSegs, string tag)
     {
         if (PrefabRoots == null)
         {
@@ -292,7 +377,7 @@ public class PipeFactory : SingletonBehaviour<PipeFactory>
             PrefabRoots.transform.SetParent(this.transform);
         }
 
-        GameObject go = new GameObject("PipePrefab_"+ tag);
+        GameObject go = new GameObject("PipePrefab_" + tag);
         go.transform.SetParent(PrefabRoots.transform);
         PipeMeshGenerator pipe = go.AddMissingComponent<PipeMeshGenerator>();
         if (pipe == null)
@@ -300,10 +385,12 @@ public class PipeFactory : SingletonBehaviour<PipeFactory>
             Debug.LogError($"CreatePipeLineUnitPrefab.RendererModel pipe == null model:{this.name}");
             return null;
         }
-        generateArg.SetArg(pipe);
+        //generateArg.SetArg(pipe);
+        PipeFactory.Instance.SetArg(generateArg, pipe);
 
         pipe.points = new List<Vector3>() { new Vector3(-0.5f, 0, 0), new Vector3(0.5f, 0, 0) };
-        generateArg.SetArg(pipe);
+        //generateArg.SetArg(pipe);
+        PipeFactory.Instance.SetArg(generateArg, pipe);
         var radius = 0.5f;
         pipe.pipeRadius = radius;
         pipe.pipeRadius1 = radius;
@@ -311,7 +398,7 @@ public class PipeFactory : SingletonBehaviour<PipeFactory>
         pipe.generateWeld = false;
         pipe.IsGenerateEndWeld = true;
         pipe.generateEndCaps = isEndCaps;
-        if (minSegs>0 && pipe.pipeSegments < minSegs)
+        if (minSegs > 0 && pipe.pipeSegments < minSegs)
         {
             pipe.pipeSegments = minSegs;
         }
@@ -445,12 +532,12 @@ public class PipeFactory : SingletonBehaviour<PipeFactory>
     {
         PipeModelUnitPrefab_Welds_Datas.Clear();
 
-        foreach(var pref in PipeModelUnitPrefab_Welds)
+        foreach (var pref in PipeModelUnitPrefab_Welds)
         {
             GameObject.DestroyImmediate(pref);
         }
         PipeModelUnitPrefab_Welds.Clear();
-        
+
         foreach (var pref in PipeModelUnitPrefabMesh_Welds)
         {
             GameObject.DestroyImmediate(pref);
@@ -464,7 +551,7 @@ public class PipeFactory : SingletonBehaviour<PipeFactory>
 
     public List<Mesh> PipeModelUnitPrefabMesh_Welds = new List<Mesh>();
 
-    public GameObject CreatePipeModelUnitPrefab_Weld(PipeWeldData data,string weldName)
+    public GameObject CreatePipeModelUnitPrefab_Weld(PipeWeldData data, string weldName)
     {
         //string weldName = $"WeldPrefab_{data.elbowRadius}_{data.pipeRadius}";
         GameObject go = new GameObject(weldName);
@@ -513,13 +600,13 @@ public class PipeFactory : SingletonBehaviour<PipeFactory>
             {
                 var prefabData = PipeModelUnitPrefab_Welds_Datas[i];
                 var disPipe = Math.Abs(data.pipeRadius - prefabData.pipeRadius);
-                if(disPipe> WeldPrefabArgPipeRadiusDistance)
+                if (disPipe > WeldPrefabArgPipeRadiusDistance)
                 {
                     continue;
                 }
                 var disElbow = Math.Abs(data.elbowRadius - prefabData.elbowRadius);
 
-                if(disElbow < WeldPrefabArgElbowRadiusDistance)
+                if (disElbow < WeldPrefabArgElbowRadiusDistance)
                 {
                     //Debug.Log($"GetPipeModelUnitPrefab_Weld[{weldName}] [elbowRadius1:{data.elbowRadius} elbowRadius2:{prefabData.elbowRadius} disElbow:{disElbow}]  [pipeRadius1:{data.pipeRadius} pipeRadius2:{prefabData.pipeRadius} disPipe:{disPipe}] WeldPrefabArgElbowRadiusDistance£º{WeldPrefabArgElbowRadiusDistance}");
                     id = i;
@@ -576,14 +663,14 @@ public class PipeFactory : SingletonBehaviour<PipeFactory>
     {
         int weldsCount = OneKey_GetPipeInfos(isJob);
         OneKeyGeneratePipes(isJob, false);//removeMesh
-        string pefabLog = AfterGeneratePipes(true,false);//not move
+        string pefabLog = AfterGeneratePipes(true, false);//not move
     }
 
-    private void OneKeyGeneratePipes(bool isJob,bool isRemoveMesh)
+    private void OneKeyGeneratePipes(bool isJob, bool isRemoveMesh)
     {
         this.ClearWeldPrefabs();
         //this.ClearGeneratedObjs();
-        if(isRemoveMesh)
+        if (isRemoveMesh)
             this.RemoveMeshes();//++
         this.RendererEachPipes();
         OneKey_CheckResults(isJob);
@@ -608,11 +695,19 @@ public class PipeFactory : SingletonBehaviour<PipeFactory>
 
     private int ReplaceOldPipeMesh(bool isReplacePipes)
     {
+        Debug.Log($"ReplaceOldPipeMesh IsReplaceOld:{IsReplaceOld} isReplacePipes:{isReplacePipes}");
         int lastWeldCount = 0;
         if (IsReplaceOld)
         {
-            if(isReplacePipes)
+            if (isReplacePipes)
+            {
                 this.ReplacePipes();
+            }
+            else
+            {
+                newBuilder.ReplaceOldBox();
+            }
+
             lastWeldList = this.ReplaceWelds();
             lastWeldCount = lastWeldList.Count;
             if (lastWeldCount > 100)
@@ -621,13 +716,19 @@ public class PipeFactory : SingletonBehaviour<PipeFactory>
             }
             else if (lastWeldCount > 0 && IsPrefabOldWeld)
             {
-                PrefabInstanceBuilder.Instance.GetPrefabsOfList(lastWeldList, true, "Welds(Old)",IsOthersTryRT);
+                PrefabInstanceBuilder.Instance.GetPrefabsOfList(lastWeldList, true, "Welds(Old)", IsOthersTryRT);
             }
 
             var boxes = newBuilder.NoRendererBoxes;
-            if (boxes.Count > 0)
+            if (boxes.Count > 1)
             {
                 PrefabInstanceBuilder.Instance.GetPrefabsOfList(boxes, true, "Boxes", IsOthersTryRT);
+            }
+
+            var steels = newBuilder.NoRendererSteels;
+            if (steels.Count > 1)
+            {
+                PrefabInstanceBuilder.Instance.GetPrefabsOfList(steels, true, "Steels", IsOthersTryRT);
             }
         }
         return lastWeldCount;
@@ -695,13 +796,13 @@ public class PipeFactory : SingletonBehaviour<PipeFactory>
         //    go.transform.position = Vector3.zero;
         //}
 
-        ShowPrefabs(AllPrefabs, "AllPrefabs",false);
+        ShowPrefabs(AllPrefabs, "AllPrefabs", false);
     }
 
     public void AlignDirectionPrefabs()
     {
         //OBBCollider.AlignDirectionList(PrefabClones);
-        foreach(var pref in PrefabClones)
+        foreach (var pref in PrefabClones)
         {
             PipeMeshGeneratorBase generator = pref.GetComponent<PipeMeshGenerator>();
             if (generator == null) continue;
@@ -715,9 +816,9 @@ public class PipeFactory : SingletonBehaviour<PipeFactory>
 
     public List<GameObject> PrefabClones = new List<GameObject>();
 
-    public void ShowPrefabs(PrefabInfoList list,string parent,bool isAlignDir)
+    public void ShowPrefabs(PrefabInfoList list, string parent, bool isAlignDir)
     {
-        foreach(var item in PrefabClones)
+        foreach (var item in PrefabClones)
         {
             GameObject.DestroyImmediate(item);
         }
@@ -726,7 +827,7 @@ public class PipeFactory : SingletonBehaviour<PipeFactory>
         GameObject allPrefabs = new GameObject(parent);
         for (int i = 0; i < list.Count; i++)
         {
-            PrefabInfo pres = list[i]; 
+            PrefabInfo pres = list[i];
             if (ProgressBarHelper.DisplayCancelableProgressBar(new ProgressArg("ShowPrefabs", i, list.Count, pres)))
             {
                 break;
@@ -735,13 +836,13 @@ public class PipeFactory : SingletonBehaviour<PipeFactory>
             if (pres.Prefab == null) continue;
             GameObject go = GameObject.Instantiate(pres.Prefab);
             MeshHelper.ClearChildren(go.transform);
-            PrefabInfoComponent prefabC=go.AddComponent<PrefabInfoComponent>();
+            PrefabInfoComponent prefabC = go.AddComponent<PrefabInfoComponent>();
             prefabC.prefabInfo = pres;
 
             go.name += $"{pres.InstanceCount}";
-            TransformHelper.ClearChildren(go);
+            go.ClearChildren();
             //EditorHelper.RemoveAllComponents(go);
-           
+
 
             //if (isAlignDir)
             //{
@@ -788,16 +889,16 @@ public class PipeFactory : SingletonBehaviour<PipeFactory>
                         go3.transform.localRotation = Quaternion.identity;
                         go3.SetActive(true);
                     }
-                    
+
                 }
-                
+
             }
 
             go.transform.SetParent(allPrefabs.transform);
             go.transform.position = Vector3.zero;
             go.transform.rotation = Quaternion.identity;
 
-            
+
 
             PrefabClones.Add(go);
         }
@@ -826,7 +927,7 @@ public class PipeFactory : SingletonBehaviour<PipeFactory>
         }
     }
 
-    public void AddList(List<Transform> list,List<Transform> newList)
+    public void AddList(List<Transform> list, List<Transform> newList)
     {
         for (int i = 0; i < newList.Count; i++)
         {
@@ -867,10 +968,10 @@ public class PipeFactory : SingletonBehaviour<PipeFactory>
 
     public static bool IsFlange(string key)
     {
-        return key.Contains("Flange") 
-            || key.StartsWith("Ô²Öù") 
-            || key.StartsWith("CYLINDER") 
-            || key.StartsWith("FLANGE") 
+        return key.Contains("Flange")
+            || key.StartsWith("Ô²Öù")
+            || key.StartsWith("CYLINDER")
+            || key.StartsWith("FLANGE")
             //|| key.StartsWith("OLET")
             ;
     }
@@ -911,11 +1012,11 @@ public class PipeFactory : SingletonBehaviour<PipeFactory>
         ClearList();
         PipeWelds = GetWelds();
 
-        if(newBuilder)
+        if (newBuilder)
             PipeWeldsNew = newBuilder.GetNewWelds(Target);
 
         Dictionary<Transform, Transform> weldsDict = new Dictionary<Transform, Transform>();
-        foreach(var weld in PipeWelds)
+        foreach (var weld in PipeWelds)
         {
             if (weld == null) continue;
             Transform t = weld.transform;
@@ -939,7 +1040,7 @@ public class PipeFactory : SingletonBehaviour<PipeFactory>
 
             AddList(TotalObjs, list);
 
-            if (IsPipe(key)) 
+            if (IsPipe(key))
             {
                 AddList(PipeLines, list);
             }
@@ -1005,7 +1106,7 @@ public class PipeFactory : SingletonBehaviour<PipeFactory>
                     if (item.GetComponent<MeshRenderer>() == null) continue;
                     PipeWeldModel weldModel = item.GetComponent<PipeWeldModel>();
                     if (weldModel != null) continue;
-                    
+
                     int vertexCount = mf.sharedMesh.vertexCount;
                     if (vertexCount > maxVertexCount)
                     {
@@ -1021,10 +1122,18 @@ public class PipeFactory : SingletonBehaviour<PipeFactory>
                     if (vertexCount == 24)//Box 24VertexCount
                     {
                         item.gameObject.SetActive(true);
-
                         BoxModels.AddTransform(item);
-                        
                         //TotalBoxModelsVertexCount += vertexCount;
+                    }
+                    else if (vertexCount == 54)//Box 24VertexCount
+                    {
+                        item.gameObject.SetActive(true);
+                        LMeshModels.AddTransform(item);
+                    }
+                    else if (vertexCount == 36)
+                    {
+                        item.gameObject.SetActive(true);
+                        CornerBoxModels.AddTransform(item);
                     }
                     else
                     {
@@ -1036,7 +1145,7 @@ public class PipeFactory : SingletonBehaviour<PipeFactory>
                         {
                             PipeOthers.AddTransform(item);
                         }
-                       
+
                         //TotalPipeOthersVertexCount += vertexCount;
                     }
 
@@ -1051,11 +1160,15 @@ public class PipeFactory : SingletonBehaviour<PipeFactory>
 
         StructureModels.Sort();
         AttachmentModels.Sort();
-        PipeOthers.Sort();
-        //MeshRendererInfoList list = new MeshRendererInfoList(PipeOthers);
-        var mps = MeshPoints.GetMeshPoints(PipeOthers);
-        MeshFilterListDict dict = new MeshFilterListDict(mps.ToArray(), 0);
-        //dict.pr
+
+        if (PipeOthers.Count > 0)
+        {
+            PipeOthers.Sort();
+            //MeshRendererInfoList list = new MeshRendererInfoList(PipeOthers);
+            var mps = MeshPoints.GetMeshPoints(PipeOthers);
+            MeshFilterListDict dict = new MeshFilterListDict(mps.ToArray(), 0); 
+            //dict.pr
+        }
 
         InitArgMat();
 
@@ -1087,7 +1200,7 @@ public class PipeFactory : SingletonBehaviour<PipeFactory>
             }
             else
             {
-                Debug.LogError("InitArgMat PipeWelds.Count == 0");
+                Debug.LogWarning("InitArgMat PipeWelds.Count == 0");
             }
         }
     }
@@ -1106,7 +1219,7 @@ public class PipeFactory : SingletonBehaviour<PipeFactory>
             }
         }
         ProgressBarHelper.ClearProgressBar();
-        Debug.Log($"ResetGeneratorsMesh gs:{gs.Count} time:{DateTime.Now-start}");
+        Debug.Log($"ResetGeneratorsMesh gs:{gs.Count} time:{DateTime.Now - start}");
     }
 
     public void ClearGeneratorsMesh()
@@ -1159,7 +1272,7 @@ public class PipeFactory : SingletonBehaviour<PipeFactory>
 
     public GameObject WeldRootTarget;
 
-    private void Replace(Transform w,Transform w2)
+    private void Replace(Transform w, Transform w2)
     {
         w.name = w2.name;
         //w.transform.SetParent(w2.parent);
@@ -1195,7 +1308,7 @@ public class PipeFactory : SingletonBehaviour<PipeFactory>
         var weldsNew = newBuilder.GetNewWelds(Target);
         int newWeldsCount = weldsNew.Count;
 
-        for(int i=0;i<weldsNew.Count;i++)
+        for (int i = 0; i < weldsNew.Count; i++)
         {
             var w = weldsNew[i];
             if (w == null) continue;
@@ -1206,7 +1319,7 @@ public class PipeFactory : SingletonBehaviour<PipeFactory>
                 //Debug.Log($"ReplaceWelds1 closedW[{i}] [w:{w.parent.name}/{w.name}] [closedW:{closedW}]");
                 Replace(w, w2);
                 weldList.Remove(w2);
-                weldsNew.RemoveAt(i);i--;
+                weldsNew.RemoveAt(i); i--;
             }
             else if (closedW.dis < maxWeldDis)
             {
@@ -1243,7 +1356,7 @@ public class PipeFactory : SingletonBehaviour<PipeFactory>
             else
             {
                 MeshPrefabInstance ins = w.GetComponent<MeshPrefabInstance>();
-                if (ins!=null && ins.IsPrefab)
+                if (ins != null && ins.IsPrefab)
                 {
                     MeshFilter mf = w.GetComponent<MeshFilter>();
                     DestroyiedMeshs.Add(mf.sharedMesh);
@@ -1262,7 +1375,7 @@ public class PipeFactory : SingletonBehaviour<PipeFactory>
             Debug.LogError($"ReplaceWelds DestroyiedMeshs:{DestroyiedMeshs.Count}");
         }
 
-        
+
         if (weldList.Count > 0)
         {
             Debug.LogError($"ReplaceWelds time:{DateTime.Now - start} AllWelds:{allWeldsCount} NewWelds:{newWeldsCount} LastWelds:{weldList.Count} weld:{weldList[0]} destroyCount:{destroyCount}");
@@ -1278,9 +1391,9 @@ public class PipeFactory : SingletonBehaviour<PipeFactory>
         //{
 
         //}
-        SharedMeshInfoList sharedMeshInfos1 = new SharedMeshInfoList(Target,true);
+        SharedMeshInfoList sharedMeshInfos1 = new SharedMeshInfoList(Target, true);
         //Debug.LogError($"sharedMeshInfos1 :{sharedMeshInfos1.Count}");
-        foreach(var mesh in DestroyiedMeshs)
+        foreach (var mesh in DestroyiedMeshs)
         {
             SharedMeshInfo info = sharedMeshInfos1.FindByMesh(mesh);
             if (info == null)
@@ -1322,11 +1435,15 @@ public class PipeFactory : SingletonBehaviour<PipeFactory>
         SetListVisible(PipeTees, isVisible);
         SetListVisible(PipeOthers, isVisible);
         SetListVisible(PipeWeldolets, isVisible);
+
+        SetListVisible(BoxModels, isVisible);
+        SetListVisible(StructureModels, isVisible);
+        SetListVisible(AttachmentModels, isVisible);
     }
 
-    public void SetListVisible(List<Transform> renderers,bool isVisible)
+    public void SetListVisible(List<Transform> renderers, bool isVisible)
     {
-        foreach(var item in renderers)
+        foreach (var item in renderers)
         {
             if (item == null) continue;
             item.gameObject.SetActive(isVisible);
@@ -1353,7 +1470,7 @@ public class PipeFactory : SingletonBehaviour<PipeFactory>
     public void DestroyOthers()
     {
         EditorHelper.UnpackPrefab(Target);
-        foreach(var item in PipeOthers)
+        foreach (var item in PipeOthers)
         {
             EditorHelper.UnpackPrefab(item.gameObject);
             GameObject.DestroyImmediate(item.gameObject);
@@ -1425,28 +1542,31 @@ public class PipeFactory : SingletonBehaviour<PipeFactory>
         {
             WeldRootTarget = new GameObject("WeldRootTarget");
         }
-        foreach (var w in welds)
+        if (welds.Count > 0)
         {
-            Transform wp = w.transform.parent;
-            if (!w.name.Contains("_"))
+            foreach (var w in welds)
             {
+                Transform wp = w.transform.parent;
+                if (!w.name.Contains("_"))
+                {
 
-                if (wp.name == "In" || wp.name == "Out0" || wp.name == "Out1")
-                {
-                    w.name = wp.transform.parent.name + "_" + wp.name + "_" + w.name;
+                    if (wp.name == "In" || wp.name == "Out0" || wp.name == "Out1")
+                    {
+                        w.name = wp.transform.parent.name + "_" + wp.name + "_" + w.name;
+                    }
+                    else
+                    {
+                        w.name = wp.name + "_" + w.name;
+                    }
                 }
-                else
-                {
-                    w.name = wp.name + "_" + w.name;
-                }
+
+                EditorHelper.UnpackPrefab(w.gameObject);
+                parentDict.Add(w.gameObject, wp);
+                w.transform.SetParent(null);
+                w.transform.SetParent(WeldRootTarget.transform);
             }
-
-            EditorHelper.UnpackPrefab(w.gameObject);
-            parentDict.Add(w.gameObject, wp);
-            w.transform.SetParent(null);
-            w.transform.SetParent(WeldRootTarget.transform);
+            Debug.Log($"MoveWeldParent welds:{welds.Count}");
         }
-        Debug.Log($"MoveWeldParent welds:{welds.Count}");
         return parentDict;
     }
 
@@ -1469,7 +1589,7 @@ public class PipeFactory : SingletonBehaviour<PipeFactory>
         PipeWelds = GetWelds();
 
         DateTime start3 = DateTime.Now;
-        PrefabInfoList prefabs3 = PrefabInstanceBuilder.Instance.GetPrefabsOfList(newBuilder.GetModelResult_Reducer(), true, "_Reducer_3",IsPipeTryRT);
+        PrefabInfoList prefabs3 = PrefabInstanceBuilder.Instance.GetPrefabsOfList(newBuilder.GetModelResult_Reducer(), true, "_Reducer_3", IsPipeTryRT);
         list.AddRange(prefabs3);
         TimeSpan t3 = DateTime.Now - start3;
 
@@ -1506,7 +1626,7 @@ public class PipeFactory : SingletonBehaviour<PipeFactory>
         else
         {
             var list4 = newBuilder.GetModelResult_Flange(true);
-            prefabs4 = PrefabInstanceBuilder.Instance.GetPrefabsOfList(list4, true, "_Flange_4",  IsPipeTryRT);
+            prefabs4 = PrefabInstanceBuilder.Instance.GetPrefabsOfList(list4, true, "_Flange_4", IsPipeTryRT);
             prefabs4.Add(new PrefabInfo());
             Debug.LogError($"PrefabPipes Flange2 list4:{list4.Count}");
         }
@@ -1526,14 +1646,14 @@ public class PipeFactory : SingletonBehaviour<PipeFactory>
             Debug.Log($"key[{i}]_{item}");
         }
         AllPrefabs = prefabs4;
-        ShowPrefabs(prefabs4, "Prefabs_Flange",true);
+        ShowPrefabs(prefabs4, "Prefabs_Flange", true);
 
 
         AcRtAlignJobArg.IsDebug = false;
         return list;
     }
 
-    
+
 
     public PrefabInfoList PrefabWeldolets()
     {
@@ -1553,7 +1673,7 @@ public class PipeFactory : SingletonBehaviour<PipeFactory>
         return list;
     }
 
-    
+
 
     public PrefabInfoList PrefabTees()
     {
@@ -1615,7 +1735,7 @@ public class PipeFactory : SingletonBehaviour<PipeFactory>
 
         DateTime start1 = DateTime.Now;
         PrefabInfoList prefabs1 = null;
-        if (IsCreatePipeByUnityPrefab==false)
+        if (IsCreatePipeByUnityPrefab == false)
         {
             prefabs1 = PrefabInstanceBuilder.Instance.GetPrefabsOfList(newBuilder.GetModelResult_Line(), true, "_Line_1", IsPipeTryRT);
             list.AddRange(prefabs1);
@@ -1624,7 +1744,7 @@ public class PipeFactory : SingletonBehaviour<PipeFactory>
         {
             prefabs1 = new PrefabInfoList(1);
         }
-  
+
         TimeSpan t1 = DateTime.Now - start1;
 
 
@@ -1682,16 +1802,18 @@ public class PipeFactory : SingletonBehaviour<PipeFactory>
 
         RecoverWeldParent(parentDict);
 
-        
+
         string timeFormat = timeFormat1;
         if (ta.TotalSeconds < 10)
         {
             timeFormat = timeFormat2;
         }
 
+        //newBuilder.PrefaNotSuccessModels();
+
         Debug.LogError($"¡¾PipeFactory.PrefabPipes [{ta.ToString(timeFormat)}]¡¿ Pipes:{newBuilder.PipeGenerators.Count} Pipes2:{gs.Count} prefabs:{list}({prefabs1.Count}+{prefabs21Elbow.Count}+{prefabs22Bend.Count}+{prefabs3Reducer.Count}+{prefabs4.Count}+{prefabs5.Count}+{prefabs6.Count}) times:({t1.ToString(timeFormat)}+{t21.ToString(timeFormat)}+{t22.ToString(timeFormat)}+{t3.ToString(timeFormat)}+{t4.ToString(timeFormat)}+{t5.ToString(timeFormat)}+{t6.ToString(timeFormat)}+)");
         return list;
-    } 
+    }
 
     //private static string timeFormat = @"hh\:mm\:ss\:fff";
     private static string timeFormat1 = @"mm\:ss";
@@ -1732,15 +1854,38 @@ public class PipeFactory : SingletonBehaviour<PipeFactory>
 
     public PrefabInfoList PrefabOthers()
     {
-        if (PipeOthers.Count == 0) return new PrefabInfoList();
+        //if (PipeOthers.Count == 0) return new PrefabInfoList();
+        //AcRTAlignJobSetting.Instance.SetDefault();
+        //DateTime start = DateTime.Now;
+        //int count1 = PipeOthers.Count;
+        //PrefabInfoList prefabs =PrefabInstanceBuilder.Instance.GetPrefabsOfList(PipeOthers, true, "_Others",IsOthersTryRT);
+        //PipeOthers.Clear();
+        ////PipeOthers.AddRange(prefabs.GetComponents<Transform>());
+        //PipeOthers.AddRange(prefabs.GetComponents<MeshRendererInfo>());
+        //Debug.Log($"PrefabOthers time:{DateTime.Now-start} count1:{count1} Others:{PipeOthers.Count} prefabs:{prefabs.Count}");
+        ////RecoverOthersParent();
+        //return prefabs;
+        PrefabInfoList list = new PrefabInfoList();
+        PrefabInfoList prefabs1 = PrefabOthers(PipeOthers, "Others");
+        list.AddRange(prefabs1);
+        PrefabInfoList prefabs2 = PrefabOthers(StructureModels, "Structure");
+        list.AddRange(prefabs2);
+        PrefabInfoList prefabs3 = PrefabOthers(AttachmentModels, "Attachment");
+        list.AddRange(prefabs3);
+        return list;
+    }
+
+    public PrefabInfoList PrefabOthers(MeshRendererInfoList modelList, string tag)
+    {
+        if (modelList.Count == 0) return new PrefabInfoList();
         AcRTAlignJobSetting.Instance.SetDefault();
         DateTime start = DateTime.Now;
-        int count1 = PipeOthers.Count;
-        PrefabInfoList prefabs =PrefabInstanceBuilder.Instance.GetPrefabsOfList(PipeOthers, true, "_Others",IsOthersTryRT);
-        PipeOthers.Clear();
+        int count1 = modelList.Count;
+        PrefabInfoList prefabs = PrefabInstanceBuilder.Instance.GetPrefabsOfList(modelList, true, "_" + tag, IsOthersTryRT);
+        modelList.Clear();
         //PipeOthers.AddRange(prefabs.GetComponents<Transform>());
-        PipeOthers.AddRange(prefabs.GetComponents<MeshRendererInfo>());
-        Debug.Log($"PrefabOthers time:{DateTime.Now-start} count1:{count1} Others:{this.PipeOthers.Count} prefabs:{prefabs.Count}");
+        modelList.AddRange(prefabs.GetComponents<MeshRendererInfo>());
+        Debug.Log($"Prefab({tag}) time:{DateTime.Now - start} count1:{count1} count2:{modelList.Count} prefabs:{prefabs.Count}");
         //RecoverOthersParent();
         return prefabs;
     }
@@ -1781,8 +1926,8 @@ public class PipeFactory : SingletonBehaviour<PipeFactory>
 
     public void ReplacePipes()
     {
-        newBuilder.ReplaceOld();
-        
+        newBuilder.ReplaceOldPipes();
+
         //if (targetNew)
         //{
         //    GameObject.DestroyImmediate(targetNew);
@@ -1810,21 +1955,21 @@ public class PipeFactory : SingletonBehaviour<PipeFactory>
         //newBuilder.ClearGeneratedObjs();
 
         newBuilder.isUniformRaidus = this.isUniformRaidus;
-        newBuilder.GetBoxInfos();
+        newBuilder.GetBoxInfos(0, 0);
 
         ProgressBarHelper.ClearProgressBar();
     }
 
     public void SaveSceneDataXml()
     {
-        newBuilder.SaveSceneDataXml(this.Target.name,generateArg);
+        newBuilder.SaveSceneDataXml(this.Target.name, generateArg);
     }
 
     public void LoadSceneDataXml()
     {
         generateArg2 = null;
         newBuilder.LoadSceneDataXml(this.Target.name, this.Target.transform);
-        
+
     }
 
     public void RemoveComponents()
@@ -1891,11 +2036,11 @@ public class PipeFactory : SingletonBehaviour<PipeFactory>
 
     void Start()
     {
-        if(IsLoadXmlOnStart)
+        if (IsLoadXmlOnStart)
         {
             LoadSceneDataXml();
         }
-        else if(IsRendererOnStart)
+        else if (IsRendererOnStart)
         {
             RendererEachPipesEx();
         }
@@ -1922,7 +2067,7 @@ public class PipeFactory : SingletonBehaviour<PipeFactory>
         newBuilder.minWeldDis = this.minWeldDis;
         newBuilder.maxWeldDis = this.maxWeldDis;
 
-    //newBuilder.CreatePipeRunList();
+        //newBuilder.CreatePipeRunList();
 
         newBuilder.NewObjName = NewObjName;
         newBuilder.generateArg = generateArg;
@@ -1931,7 +2076,7 @@ public class PipeFactory : SingletonBehaviour<PipeFactory>
 
         ProgressBarHelper.ClearProgressBar();
 
-        ResultInfo= ShowTargetInfo(newBuilder.gameObject);
+        ResultInfo = ShowTargetInfo(newBuilder.gameObject);
     }
 
     [ContextMenu("RendererBoxes")]
@@ -1994,7 +2139,7 @@ public class PipeFactory : SingletonBehaviour<PipeFactory>
         {
             newBuilder.PipeLineGos = new List<Transform>();
         }
-        if(EnablePipeElbow)
+        if (EnablePipeElbow)
         {
             newBuilder.PipeElbowGos = PipeElbows.GetTransforms();
         }
@@ -2005,11 +2150,11 @@ public class PipeFactory : SingletonBehaviour<PipeFactory>
 
         if (EnablePipeBend)
         {
-            newBuilder.PipeBendsGos = PipeBends.GetTransforms();
+            newBuilder.PipeBendGos = PipeBends.GetTransforms();
         }
         else
         {
-            newBuilder.PipeBendsGos = new List<Transform>();
+            newBuilder.PipeBendGos = new List<Transform>();
         }
 
         if (EnablePipeReducer)
@@ -2054,6 +2199,24 @@ public class PipeFactory : SingletonBehaviour<PipeFactory>
         {
             newBuilder.BoxModelGos = new List<Transform>();
         }
+
+        if (EnableLMeshModel)
+        {
+            newBuilder.LMeshModelGos = LMeshModels.GetTransforms();
+        }
+        else
+        {
+            newBuilder.LMeshModelGos = new List<Transform>();
+        }
+
+        if (EnableCornerBoxModel)
+        {
+            newBuilder.CornerBoxModelGos = CornerBoxModels.GetTransforms();
+        }
+        else
+        {
+            newBuilder.CornerBoxModelGos = new List<Transform>();
+        }
     }
 
     public bool EnablePipeLine = true;
@@ -2071,6 +2234,10 @@ public class PipeFactory : SingletonBehaviour<PipeFactory>
     public bool EnablePipeWeldolet = true;
 
     public bool EnableBoxModel = true;
+
+    public bool EnableLMeshModel = true;
+
+    public bool EnableCornerBoxModel = true;
 
     GameObject targetNew;
 
@@ -2143,7 +2310,7 @@ public class PipeFactory : SingletonBehaviour<PipeFactory>
 
         targetNew.transform.SetParent(newBuilder.transform);
 
-        ResultInfo=ShowTargetInfo(targetNew);
+        ResultInfo = ShowTargetInfo(targetNew);
     }
 
     private string ShowTargetInfo(GameObject t)
@@ -2177,7 +2344,7 @@ public class PipeFactory : SingletonBehaviour<PipeFactory>
     {
         if (generateArg2 == null)
         {
-            generateArg2= generateArg.Clone();
+            generateArg2 = generateArg.Clone();
         }
         PipeGenerateArg arg = generateArg2;
         arg.generateWeld = false;
@@ -2203,7 +2370,7 @@ public class PipeFactory : SingletonBehaviour<PipeFactory>
             }
             foreach (var weldData in welds)
             {
-                if (weldData.isPrefab==false)
+                if (weldData.isPrefab == false)
                 {
                     CopyWeldGo(weldData, parent);
                 }
@@ -2279,7 +2446,7 @@ public class PipeFactory : SingletonBehaviour<PipeFactory>
         return go;
     }
 
-    private GameObject CreateWeldGo(PipeWeldSaveData weldData,Transform parent)
+    private GameObject CreateWeldGo(PipeWeldSaveData weldData, Transform parent)
     {
         GameObject go = new GameObject(weldData.Name);
         PipeWeldModel model = go.AddComponent<PipeWeldModel>();
@@ -2318,6 +2485,6 @@ public class PipeFactory : SingletonBehaviour<PipeFactory>
 
     public void TestModelIsConnected()
     {
-        TestRunList=newBuilder.TestModelIsConnected(RunTestModels);
+        TestRunList = newBuilder.TestModelIsConnected(RunTestModels);
     }
 }

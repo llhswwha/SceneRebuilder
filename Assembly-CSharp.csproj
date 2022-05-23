@@ -56,721 +56,651 @@
     <Analyzer Include="C:\Program Files (x86)\Microsoft Visual Studio Tools for Unity\16.0\Analyzers\Microsoft.Unity.Analyzers.dll" />
   </ItemGroup>
   <ItemGroup>
-    <Compile Include="Assets\SceneRebuilder\MeshCombine\AreaTrees\RendererId.cs" />
     <Compile Include="Assets\ThirdPlugins\MGS-Camera-master\MGS-Camera\Scripts\Around\AlignMark.cs" />
-    <Compile Include="Assets\SceneRebuilder\plumber\OBB\MathGeoLib\LCG.cs" />
-    <Compile Include="Assets\SceneRebuilder\MeshDebugger\Scripts\MeshInfo.cs" />
     <Compile Include="Assets\ThirdPlugins\Performance Tools\AdvancedCullingSystem\Core\DynamicCullingCore\DynamicCullingJobs\CreateRayCommandsJob.cs" />
     <Compile Include="Assets\ThirdPlugins\AssetBundleMagic\Scripts\Util\VersionData.cs" />
-    <Compile Include="Assets\ThirdPlugins\MGS-Camera-master\MGS-Camera\Scripts\Around\AroundAlignCamera.cs" />
-    <Compile Include="Assets\SceneRebuilder\ECS\ECS_Spawner\SpawnerPrefabSystem.cs" />
+    <Compile Include="Assets\Unity.Modules\Unity.Modules.Settings\HistoryPathSetting.cs" />
     <Compile Include="Assets\Modules\UI\ModelModify\Scripts\NavisPlugins\NavisFileInfo.cs" />
-    <Compile Include="Assets\SceneRebuilder\Builder\MeshJobs\AcRTAlignJobEx.cs" />
     <Compile Include="Assets\SceneRebuilder\ECS\ECS_Spawner\SpawnerPrefabAuthoring.cs" />
-    <Compile Include="Assets\SceneRebuilder\RevitInfo\ElementGroup.cs" />
     <Compile Include="Assets\UnityCommon\Infos\TagInfo.cs" />
-    <Compile Include="Assets\SceneRebuilder\SceneInfo\NodeTypeInfoLlist.cs" />
-    <Compile Include="Assets\SceneRebuilder\ModelScanner\Scripts\ModelSelection.cs" />
-    <Compile Include="Assets\SceneRebuilder\Builder\SubSceneS\SubSceneArg.cs" />
     <Compile Include="Assets\SceneRebuilder\RevitTool\Scripts\UI\ModelTypeItemUI.cs" />
-    <Compile Include="Assets\ThirdPlugins\Ultimate Game Tools\AutomaticLOD\Scripts\AutomaticLOD.cs" />
-    <Compile Include="Assets\UnityCommon\Consts\Layers.cs" />
-    <Compile Include="Assets\ThirdPlugins\Performance Tools\AdvancedCullingSystem\Core\StaticCullingCore\Data\Base\Vector2Info.cs" />
-    <Compile Include="Assets\ThirdPlugins\AssetBundleMagic\Scenes\Scripts\BackToImagesTest.cs" />
     <Compile Include="Assets\SceneRebuilder\Builder\ModelSceneLoader.cs" />
-    <Compile Include="Assets\SceneRebuilder\ModelScanner\Scripts\ModelScanner.cs" />
-    <Compile Include="Assets\SceneRebuilder\ECS\Samples\HelloCube\1.Foreach\RotationSpeedComponent.cs" />
-    <Compile Include="Assets\SceneRebuilder\Builder\SubSceneS\SubSceneHelper.cs" />
     <Compile Include="Assets\SceneRebuilder\DynamicRenderer\PipingMeshManager.cs" />
-    <Compile Include="Assets\SceneRebuilder\MeshCombine\MeshPartInfo.cs" />
     <Compile Include="Assets\SceneRebuilder\RevitTool\Scripts\SceneRebuilder.cs" />
-    <Compile Include="Assets\SceneRebuilder\Builder\MeshVertexInfo.cs" />
-    <Compile Include="Assets\Modules\UI\ModelModify\Scripts\NavisPlugins\Model2TransformResult.cs" />
+    <Compile Include="Assets\Unity.Modules\Unity.Modules.Settings\CommunicationSetting.cs" />
     <Compile Include="Assets\M_Plugins\U3D\Camera\MCinemachineCollider.cs" />
+    <Compile Include="Assets\SceneRebuilder\Builder\BuildingScenesLoadManager.cs" />
     <Compile Include="Assets\SceneRebuilder\ECS\Test\Scripts\Mover.cs" />
-    <Compile Include="Assets\SceneRebuilder\MeshCombine\MaterialKey.cs" />
-    <Compile Include="Assets\SceneRebuilder\MeshCombine\DoorInfo.cs" />
     <Compile Include="Assets\SceneRebuilder\DynamicRenderer\WeldingMeshManager.cs" />
-    <Compile Include="Assets\SceneRebuilder\RigidTransformUtils\RigidTransform-master\AcRTPoints.cs" />
-    <Compile Include="Assets\SceneRebuilder\plumber\Scripts\Utils\Math3D.cs" />
-    <Compile Include="Assets\SceneRebuilder\Builder\MeshPivotManager.cs" />
-    <Compile Include="Assets\UnityCommon\TimeCounter.cs" />
+    <Compile Include="Assets\SceneRebuilder\MeshCombine\DoorInfo.cs" />
     <Compile Include="Assets\Modules\LODTool\LODValueInfo.cs" />
-    <Compile Include="Assets\ThirdPlugins\Performance Tools\SuperLevelOptimizer\Scripts\SLO_SourceMark.cs" />
+    <Compile Include="Assets\SceneRebuilder\CPL\PointGr.cs" />
     <Compile Include="Assets\ThirdPlugins\Performance Tools\AdvancedRenderSystem\Core\Scripts\Billboards\Billboard.cs" />
-    <Compile Include="Assets\UnityCommon\Utils\NameObject.cs" />
-    <Compile Include="Assets\M_Plugins\Helpers\DoubleClickEventTrigger_u3d.cs" />
-    <Compile Include="Assets\SceneRebuilder\ModelScanner\Scripts\GetScanePoints.cs" />
     <Compile Include="Assets\ThirdPlugins\Ultimate Game Tools\AutomaticLOD\Data\Environment\Water\Water\Scripts\Displace.cs" />
-    <Compile Include="Assets\UnityCommon\Helpers\SerializeHelper.cs" />
-    <Compile Include="Assets\SceneRebuilder\MeshCombine\CombinedMesh.cs" />
-    <Compile Include="Assets\SceneRebuilder\MeshDebugger\MeshDebuggerProxyUI.cs" />
-    <Compile Include="Assets\UnityCommon\Helpers\ColliderHelper.cs" />
     <Compile Include="Assets\UnityCommon\Materials\TransparentMaterialManager.cs" />
+    <Compile Include="Assets\UnityCommon\Helpers\ColliderHelper.cs" />
     <Compile Include="Assets\ThirdPlugins\Performance Tools\AdvancedCullingSystem\Test\StaticCullingTestReporter.cs" />
     <Compile Include="Assets\SceneRebuilder\ModelUpdate\ModelUpdateManager.cs" />
-    <Compile Include="Assets\SceneRebuilder\RevitTool\Scripts\Tools\QuaternionRotation.cs" />
-    <Compile Include="Assets\SceneRebuilder\RevitTool\Scripts\CameraModeManager.cs" />
-    <Compile Include="Assets\SceneRebuilder\Builder\MeshRotateBuffer.cs" />
-    <Compile Include="Assets\ThirdPlugins\Performance Tools\AdvancedCullingSystem\Core\DynamicCullingCore\DynamicCullingJobs\ComputeResultsJob.cs" />
-    <Compile Include="Assets\SceneRebuilder\plumber\Scripts\Utils\PointHelper.cs" />
     <Compile Include="Assets\ThirdPlugins\Performance Tools\SuperLevelOptimizer\Scripts\SuperLevelOptimizer.cs" />
-    <Compile Include="Assets\SceneRebuilder\Builder\AlignResultComponent.cs" />
     <Compile Include="Assets\SceneRebuilder\Builder\SubSceneS\SubSceneManager.cs" />
-    <Compile Include="Assets\SceneRebuilder\plumber\Scripts\PipeBuilder.cs" />
     <Compile Include="Assets\ThirdPlugins\Performance Tools\AdvancedRenderSystem\Example\Scripts\ApplicationClose.cs" />
     <Compile Include="Assets\UnityCommon\Utils\GameObjectMaterial.cs" />
-    <Compile Include="Assets\SceneRebuilder\RevitInfo\ElementGroupType.cs" />
-    <Compile Include="Assets\SceneRebuilder\RigidTransformUtils\RigidTransform-master\RTResult.cs" />
-    <Compile Include="Assets\ThirdPlugins\Ultimate Game Tools\AutomaticLOD\Data\Environment\Water\Water\Scripts\PlanarReflection.cs" />
-    <Compile Include="Assets\SceneRebuilder\Builder\MeshJobs\MeshFilterList.cs" />
-    <Compile Include="Assets\SceneRebuilder\Builder\SubSceneS\SubSceneShowManagerUI.cs" />
-    <Compile Include="Assets\SceneRebuilder\plumber\Scripts\Utils\RandomPipe.cs" />
+    <Compile Include="Assets\SceneRebuilder\plumber\Scripts\RandomPipe.cs" />
     <Compile Include="Assets\Modules\UI\ModelModify\Scripts\NavisPlugins\BimNodeHelper_AreaNode.cs" />
-    <Compile Include="Assets\SceneRebuilder\plumber\Scripts\MeshGenerators\TorusMeshGenerator.cs" />
-    <Compile Include="Assets\UnityCommon\Extensions\ObjectExtension.cs" />
     <Compile Include="Assets\SceneRebuilder\Builder\ModelInfos\BuildingModelShowManagerUI.cs" />
-    <Compile Include="Assets\SceneRebuilder\Builder\SubSceneS\SceneModelInfo.cs" />
     <Compile Include="Assets\ThirdPlugins\Performance Tools\AdvancedCullingSystem\Example\Scripts\CullingSettingsController.cs" />
-    <Compile Include="Assets\SceneRebuilder\RevitTool\Scripts\UI\MeshTestUI.cs" />
-    <Compile Include="Assets\HDRPAsset\Scripts\PlayerMovement.cs" />
-    <Compile Include="Assets\UnityCommon\ThreadBehaviours\AsyncTaskManager.cs" />
-    <Compile Include="Assets\ThirdPlugins\Performance Tools\AdvancedCullingSystem\Example\Scripts\Joystick.cs" />
     <Compile Include="Assets\ThirdPlugins\Performance Tools\AdvancedRenderSystem\Core\Scripts\ARSInfo.cs" />
-    <Compile Include="Assets\SceneRebuilder\MeshCombine\CombineInstanceInfo.cs" />
     <Compile Include="Assets\ThirdPlugins\Performance Tools\AdvancedRenderSystem\Example\Scripts\Joystick.cs" />
-    <Compile Include="Assets\ThirdPlugins\Performance Tools\AdvancedCullingSystem\Example\Scripts\FrustumCullingVisualization.cs" />
     <Compile Include="Assets\ThirdPlugins\Performance Tools\AdvancedRenderSystem\Core\Scripts\TexturesManager.cs" />
-    <Compile Include="Assets\SceneRebuilder\plumber\OBB\MathGeoLib\Line3.cs" />
-    <Compile Include="Assets\ThirdPlugins\MantisLODEditor\Common\Mantis_Mesh.cs" />
     <Compile Include="Assets\SceneRebuilder\Builder\MeshComparer.cs" />
     <Compile Include="Assets\ThirdPlugins\AssetBundleMagic\Scripts\ChunkManager.cs" />
     <Compile Include="Assets\Modules\UI\ModelModify\Scripts\NavisPlugins\NavisModelRoot.cs" />
-    <Compile Include="Assets\SceneRebuilder\RevitTool\Scripts\Tools\CheckRotation.cs" />
-    <Compile Include="Assets\SceneRebuilder\Builder\Transforms\TransformRotate.cs" />
-    <Compile Include="Assets\SceneRebuilder\RevitInfo\ElementInfoList.cs" />
-    <Compile Include="Assets\SceneRebuilder\MeshCombine\MeshCombiner.cs" />
+    <Compile Include="Assets\SceneRebuilder\LODS\LODTwoRenderers.cs" />
     <Compile Include="Assets\SceneRebuilder\Builder\SubSceneS\ObjectActiveItemUI.cs" />
-    <Compile Include="Assets\SceneRebuilder\SceneInfo\ModelBuildingInfo.cs" />
-    <Compile Include="Assets\ThirdPlugins\MantisLODEditor\Runtime\ProgressiveMeshRuntime.cs" />
-    <Compile Include="Assets\SceneRebuilder\plumber\Scripts\MeshGenerators\PipeMeshGenerator.cs" />
-    <Compile Include="Assets\SceneRebuilder\Builder\RotateTest.cs" />
-    <Compile Include="Assets\SceneRebuilder\Builder\GlobalMaterialManagerUI.cs" />
-    <Compile Include="Assets\SceneRebuilder\RevitTool\Scripts\UI\ECSTestUI.cs" />
+    <Compile Include="Assets\Unity.Modules\Unity.Modules.Settings\DeviceSetting.cs" />
+    <Compile Include="Assets\Unity.Modules\Unity.Modules.Settings\RefreshSetting.cs" />
     <Compile Include="Assets\SceneRebuilder\Builder\MeshJobs\ManagedObjectWorld.cs" />
-    <Compile Include="Assets\SceneRebuilder\Builder\MeshJobs\AcRTAlignJob.cs" />
-    <Compile Include="Assets\SceneRebuilder\MeshCombine\MeshCombinerSetting.cs" />
-    <Compile Include="Assets\SceneRebuilder\Builder\SubSceneS\SceneLoadArg.cs" />
     <Compile Include="Assets\SceneRebuilder\Others\GPUInstancerTest\GPUInstanceTest.cs" />
     <Compile Include="Assets\SceneRebuilder\Builder\AcRTAlignJobSetting.cs" />
     <Compile Include="Assets\UnityCommon\Utils\AssetBundleHelper.cs" />
-    <Compile Include="Assets\SceneRebuilder\Builder\SubSceneS\SubScene_Out1.cs" />
-    <Compile Include="Assets\SceneRebuilder\Others\Scripts\RuntimeProfilerScripts\MemoryController.cs" />
-    <Compile Include="Assets\SceneRebuilder\ECS\ECS_Spawner\ECSClickEventSystem.cs" />
-    <Compile Include="Assets\ThirdPlugins\Performance Tools\AdvancedCullingSystem\Core\StaticCullingCore\BinaryTreeNode.cs" />
+    <Compile Include="Assets\SceneRebuilder\plumber\Scripts\MeshModels\SteelStructureModelCornerBox.cs" />
     <Compile Include="Assets\ThirdPlugins\MantisLODEditor\Demo\Scripts\MoveMe.cs" />
-    <Compile Include="Assets\ThirdPlugins\Ultimate Game Tools\AutomaticLOD\Data\Scripts\LODSampleLODScene.cs" />
-    <Compile Include="Assets\SceneRebuilder\Builder\SingletonBehaviour.cs" />
+    <Compile Include="Assets\SceneRebuilder\plumber\Scripts\MeshModels\SteelStructureBaseModel.cs" />
     <Compile Include="Assets\UnityCommon\Consts\Names.cs" />
     <Compile Include="Assets\ThirdPlugins\Ultimate Game Tools\MeshSimplify\Scripts\RuntimeMeshSimplifier.cs" />
-    <Compile Include="Assets\SceneRebuilder\Builder\ModelInfos\BuildingModelInfoList.cs" />
-    <Compile Include="Assets\UnityCommon\ThreadBehaviours\ThreadBehaviourBase.cs" />
+    <Compile Include="Assets\Unity.Modules\Unity.Modules.Settings\DebugSetting.cs" />
     <Compile Include="Assets\SceneRebuilder\MeshCombine\AreaTrees\ModelAreaTree.cs" />
-    <Compile Include="Assets\SceneRebuilder\Builder\SubSceneS\SubSceneUI.cs" />
-    <Compile Include="Assets\SceneRebuilder\MeshCombine\AreaTrees\AreaTreeNodeSetting.cs" />
     <Compile Include="Assets\HDRPAsset\Scripts\SimpleCameraController.cs" />
     <Compile Include="Assets\SceneRebuilder\Builder\SubSceneS\SubSceneManagerUI.cs" />
-    <Compile Include="Assets\Modules\UI\ModelModify\Scripts\NavisPlugins\InitNavisFileInfoByModelSetting.cs" />
-    <Compile Include="Assets\SceneRebuilder\SceneInfo\ModelCategory.cs" />
     <Compile Include="Assets\UnityCommon\ThreadBehaviours\ThreadManager.cs" />
-    <Compile Include="Assets\SceneRebuilder\Builder\MeshHelper.cs" />
     <Compile Include="Assets\SceneRebuilder\RevitTool\Scripts\Data\DataA.cs" />
-    <Compile Include="Assets\SceneRebuilder\Builder\BoundsBoxManagerUI.cs" />
+    <Compile Include="Assets\SceneRebuilder\Builder\MeshHelper.cs" />
     <Compile Include="Assets\SceneRebuilder\MeshCombine\AreaTrees\AreaTreeNodeShowManager.cs" />
-    <Compile Include="Assets\SceneRebuilder\MyPlayer.cs" />
-    <Compile Include="Assets\SceneRebuilder\MeshCombine\MatMeshs.cs" />
-    <Compile Include="Assets\SceneRebuilder\Builder\MeshJobs\AcRTAlignJobHelper.cs" />
     <Compile Include="Assets\SceneRebuilder\ECS\Pong\Scripts\Data Components\PaddleMovementData.cs" />
-    <Compile Include="Assets\ThirdPlugins\Performance Tools\AdvancedCullingSystem\Core\StaticCullingCore\Data\Base\Entity.cs" />
-    <Compile Include="Assets\SceneRebuilder\ECS\MyTest\LOD\PrefabPawn.cs" />
     <Compile Include="Assets\SceneRebuilder\ECS\Samples\HelloCube\5. SpawnFromEntity\SpawnerSystem_FromEntity.cs" />
-    <Compile Include="Assets\ThirdPlugins\AssetBundleMagic\Scripts\Util\VersionDataCollection.cs" />
     <Compile Include="Assets\Modules\UI\ModelModify\Scripts\NavisPlugins\SmartModelInfo.cs" />
-    <Compile Include="Assets\Modules\UI\ModelModify\Scripts\NavisPlugins\NavisModelRootList.cs" />
-    <Compile Include="Assets\ThirdPlugins\MantisLODEditor\Plugins\Managed\MantisLOD.cs" />
     <Compile Include="Assets\UnityCommon\Consts\UnityType.cs" />
     <Compile Include="Assets\ThirdPlugins\AssetBundleMagic\Scenes\Scripts\ChunksTestGame.cs" />
-    <Compile Include="Assets\UnityCommon\Helpers\TagLayerHelper.cs" />
     <Compile Include="Assets\SceneRebuilder\Builder\SubSceneS\ObjectActiveManagerUI.cs" />
     <Compile Include="Assets\UnityCommon\Models\ModelIndex.cs" />
-    <Compile Include="Assets\ThirdPlugins\MGS-Camera-master\MGS-Camera\Scripts\Translate\MouseTranslate.cs" />
-    <Compile Include="Assets\ThirdPlugins\Ultimate Game Tools\AutomaticLOD\Data\Environment\Water\Water\Scripts\GerstnerDisplace.cs" />
+    <Compile Include="Assets\Unity.Modules\Unity.Modules.Settings\LocationSetting.cs" />
+    <Compile Include="Assets\SceneRebuilder\plumber\Scripts\MeshModels\MeshModelClassifier.cs" />
     <Compile Include="Assets\SceneRebuilder\Builder\ModelInfos\BuildingModelShowManager.cs" />
-    <Compile Include="Assets\SceneRebuilder\LODS\LODInfo.cs" />
-    <Compile Include="Assets\SceneRebuilder\plumber\OBB\Scripts\OBBCollider.cs" />
-    <Compile Include="Assets\SceneRebuilder\plumber\OBB\MathGeoLib\Ray.cs" />
-    <Compile Include="Assets\M_Plugins\U3D\Camera\TheThirdPersonCamera.cs" />
-    <Compile Include="Assets\ThirdPlugins\AssetBundleMagic\Scenes\Scripts\ImageTestGame.cs" />
+    <Compile Include="Assets\SceneRebuilder\Builder\SubSceneS\SubSceneModelSelection.cs" />
     <Compile Include="Assets\ThirdPlugins\AssetBundleMagic\Scripts\Util\SerializableDictionary.cs" />
-    <Compile Include="Assets\SceneRebuilder\Builder\ProgressBarHelper.cs" />
-    <Compile Include="Assets\SceneRebuilder\RigidTransformUtils\RigidTransform-master\AcRigidTransform.cs" />
     <Compile Include="Assets\ThirdPlugins\Ultimate Game Tools\AutomaticLOD\Data\Scripts\LODSceneSelection.cs" />
-    <Compile Include="Assets\UnityCommon\Singleton.cs" />
-    <Compile Include="Assets\SceneRebuilder\ModelScanner\Scripts\SmallModelController.cs" />
-    <Compile Include="Assets\SceneRebuilder\Builder\SubSceneS\SubSceneCreater.cs" />
-    <Compile Include="Assets\SceneRebuilder\ECS\ECS_Spawner\ModelTagComponent.cs" />
-    <Compile Include="Assets\SceneRebuilder\RigidTransformUtils\Scripts\QuaternionExtensions.cs" />
+    <Compile Include="Assets\SceneRebuilder\ECS\ECS_Spawner\ConvertMeshToEntity.cs" />
+    <Compile Include="Assets\SceneRebuilder\plumber\Scripts\ModelSaveDatas\SceneModelsData.cs" />
+    <Compile Include="Assets\Unity.Modules\Unity.Modules.Settings\SceneLoadSetting.cs" />
     <Compile Include="Assets\UnityCommon\Utils\StardardShaderSet.cs" />
-    <Compile Include="Assets\Modules\LODTool\LODUtility.cs" />
-    <Compile Include="Assets\UnityCommon\Utils\ScreenHelper.cs" />
     <Compile Include="Assets\SceneRebuilder\Builder\Helpers\TransformHelper.cs" />
-    <Compile Include="Assets\UnityCommon\Models\ModelPool.cs" />
-    <Compile Include="Assets\SceneRebuilder\SceneInfo\Point3Info.cs" />
+    <Compile Include="Assets\Modules\FactoryController\RoomController.cs" />
     <Compile Include="Assets\UnityCommon\Materials\TransparentMaterialList.cs" />
     <Compile Include="Assets\ThirdPlugins\Performance Tools\AdvancedCullingSystem\Core\DynamicCullingCore\DynamicCulling.cs" />
-    <Compile Include="Assets\SceneRebuilder\Builder\BoundsBox.cs" />
-    <Compile Include="Assets\SceneRebuilder\ECS\Pong\Scripts\Data Components\BallTag.cs" />
     <Compile Include="Assets\UnityCommon\Utils\GameObjectList.cs" />
     <Compile Include="Assets\ThirdPlugins\Performance Tools\AdvancedCullingSystem\Core\StaticCullingCore\BinaryTreeUtil.cs" />
-    <Compile Include="Assets\SceneRebuilder\RevitInfo\LocationInfo.cs" />
-    <Compile Include="Assets\SceneRebuilder\Builder\ModelInfos\BuildingModelManager.cs" />
     <Compile Include="Assets\SceneRebuilder\Builder\ModelInfos\BuildingModelTool.cs" />
     <Compile Include="Assets\SceneRebuilder\Builder\MeshRendererInfo.cs" />
-    <Compile Include="Assets\UnityCommon\ThreadBehaviours\ThreadBehaviourBool.cs" />
-    <Compile Include="Assets\SceneRebuilder\Builder\MeshJobs\MathematicsDistance.cs" />
-    <Compile Include="Assets\SceneRebuilder\Builder\MeshSize.cs" />
+    <Compile Include="Assets\SceneRebuilder\CPL\Jobs\GetPointGroupJob.cs" />
     <Compile Include="Assets\SceneRebuilder\Builder\PrefabInstanceBuilder.cs" />
-    <Compile Include="Assets\SceneRebuilder\plumber\OBB\MathGeoLib\OrientedBoundingBoxExtensions.cs" />
-    <Compile Include="Assets\SceneRebuilder\SceneInfo\TransformInfo.cs" />
     <Compile Include="Assets\UnityCommon\Log.cs" />
-    <Compile Include="Assets\SceneRebuilder\RigidTransformUtils\Scripts\TransformExtensions.cs" />
-    <Compile Include="Assets\SceneRebuilder\RigidTransformUtils\Scripts\Vector3Extensions.cs" />
+    <Compile Include="Assets\Unity.Modules\Unity.Modules.Settings\HoneyWellSetting.cs" />
     <Compile Include="Assets\SceneRebuilder\plumber\Scripts\MeshModels\PipeLineModel.cs" />
     <Compile Include="Assets\ThirdPlugins\MGS-Camera-master\MGS-CommonCode\UI\HelpInfo.cs" />
-    <Compile Include="Assets\SceneRebuilder\Builder\GlobalMaterialManager.cs" />
     <Compile Include="Assets\ThirdPlugins\Performance Tools\AdvancedRenderSystem\Core\Scripts\Billboards\BillboardOfGroup.cs" />
-    <Compile Include="Assets\ThirdPlugins\MGS-Camera-master\MGS-Camera\Scripts\Around\AroundCamera.cs" />
-    <Compile Include="Assets\ThirdPlugins\Ultimate Game Tools\MeshSimplify\Scripts\MeshUniqueVertices.cs" />
+    <Compile Include="Assets\Unity.Modules\Unity.Modules.Settings\RoamSetting.cs" />
     <Compile Include="Assets\SceneRebuilder\MeshCombine\AreaTrees\AreaTreeNodeShowManagerUI.cs" />
-    <Compile Include="Assets\SceneRebuilder\Builder\MeshJobs\MeshAlignJob.cs" />
-    <Compile Include="Assets\SceneRebuilder\ModelScanner\Scripts\ModelManagerSettings.cs" />
     <Compile Include="Assets\ThirdPlugins\MantisLODEditor\Common\ProgressiveMesh.cs" />
     <Compile Include="Assets\SceneRebuilder\Builder\MeshJobs\MeshAlignJobContainer.cs" />
     <Compile Include="Assets\ThirdPlugins\Performance Tools\AdvancedRenderSystem\Core\Scripts\Jobs.cs" />
-    <Compile Include="Assets\SceneRebuilder\ModelScanner\Scripts\ModelScannerDebugUI.cs" />
     <Compile Include="Assets\Modules\UI\FacilityDevInfo\Scripts\FacilityDevController.cs" />
-    <Compile Include="Assets\SceneRebuilder\plumber\OBB\Scripts\UpdateBoxColliderHelp.cs" />
+    <Compile Include="Assets\SceneRebuilder\plumber\Scripts\PipeFactory.cs" />
     <Compile Include="Assets\SceneRebuilder\MeshCombine\AreaTrees\AreaTreeHelper.cs" />
-    <Compile Include="Assets\SceneRebuilder\Builder\MeshJobs\MeshFilterListDict.cs" />
     <Compile Include="Assets\SceneRebuilder\Builder\BigSmallListInfo.cs" />
-    <Compile Include="Assets\SceneRebuilder\MeshCombine\AreaTrees\RendererManager.cs" />
+    <Compile Include="Assets\SceneRebuilder\plumber\Scripts\MeshModels\SteelStructureModelL.cs" />
+    <Compile Include="Assets\SceneRebuilder\Builder\Helpers\PrefabInfoListHelper.cs" />
     <Compile Include="Assets\ThirdPlugins\Performance Tools\AdvancedCullingSystem\Core\LayersHelper.cs" />
+    <Compile Include="Assets\Unity.Modules\Unity.Modules.Settings\ScanSetting.cs" />
     <Compile Include="Assets\ThirdPlugins\Performance Tools\AdvancedCullingSystem\Core\ACSInfo.cs" />
     <Compile Include="Assets\ThirdPlugins\Performance Tools\AdvancedCullingSystem\Test\StaticCullingManager.cs" />
-    <Compile Include="Assets\Modules\UI\ModelModify\Scripts\NavisPlugins\VueFileInfoList.cs" />
     <Compile Include="Assets\ThirdPlugins\MeshProfiler\MeshElement.cs" />
-    <Compile Include="Assets\Modules\AssetLoad\Scripts\CopyComponent.cs" />
-    <Compile Include="Assets\Modules\UI\ModelModify\Scripts\NavisPlugins\InitNavisFileInfoByModel.cs" />
     <Compile Include="Assets\Modules\LODTool\LODChildInfo.cs" />
+    <Compile Include="Assets\Unity.Modules\Unity.Modules.Communication\CommunicationMode.cs" />
     <Compile Include="Assets\Modules\UI\ModelModify\Scripts\NavisPlugins\DataPropertyInfo.cs" />
-    <Compile Include="Assets\UnityCommon\Infos\TransformPosition.cs" />
-    <Compile Include="Assets\ThirdPlugins\Ultimate Game Tools\MeshSimplify\Scripts\MeshSimplify.cs" />
     <Compile Include="Assets\SceneRebuilder\Builder\SubSceneS\SceneModelInfoUI.cs" />
-    <Compile Include="Assets\SceneRebuilder\Builder\MeshJobs\AcRTAlignDistanceJob.cs" />
-    <Compile Include="Assets\SceneRebuilder\Builder\MeshJobs\JobList.cs" />
-    <Compile Include="Assets\SceneRebuilder\ModelScanner\Scripts\SubModelController.cs" />
     <Compile Include="Assets\SceneRebuilder\Builder\RTTEst.cs" />
-    <Compile Include="Assets\Modules\UI\ModelModify\Scripts\ModelInfoRegister\BIMModelInfoList.cs" />
     <Compile Include="Assets\ThirdPlugins\Performance Tools\AdvancedCullingSystem\Core\ChunkMark.cs" />
     <Compile Include="Assets\ThirdPlugins\Performance Tools\AdvancedCullingSystem\Test\StaticCullingManagerUI.cs" />
     <Compile Include="Assets\SceneRebuilder\ECS\Test\Scripts\VelocityScript.cs" />
     <Compile Include="Assets\SceneRebuilder\ECS\Pong\Scripts\Data Components\SpeedIncreaseOverTimeData.cs" />
-    <Compile Include="Assets\UnityCommon\Properties\AssemblyInfo.cs" />
     <Compile Include="Assets\ThirdPlugins\Performance Tools\AdvancedCullingSystem\Core\StaticCullingCore\Data\BinaryTreeNodeData.cs" />
     <Compile Include="Assets\ThirdPlugins\Performance Tools\AdvancedCullingSystem\Core\RendererHelper.cs" />
     <Compile Include="Assets\SceneRebuilder\ECS\Test\Scripts\MoveSystem.cs" />
     <Compile Include="Assets\SceneRebuilder\Builder\MeshReplace.cs" />
-    <Compile Include="Assets\SceneRebuilder\ModelScanner\Scripts\ModelSubScanner.cs" />
-    <Compile Include="Assets\Modules\AssetLoad\Scripts\BuildingLoad.cs" />
     <Compile Include="Assets\SceneRebuilder\Builder\ModelInfos\BuildingModelInfo.cs" />
-    <Compile Include="Assets\SceneRebuilder\Others\NodeHighlightSystem.cs" />
-    <Compile Include="Assets\SceneRebuilder\Builder\MeshJobs\ThreePointJob.cs" />
+    <Compile Include="Assets\SceneRebuilder\plumber\Scripts\MeshModels\SteelStructureModelC.cs" />
+    <Compile Include="Assets\Modules\FactoryController\BuildingFloorTweening.cs" />
+    <Compile Include="Assets\Unity.Modules\Unity.Modules.Settings\AssetLoadSetting.cs" />
+    <Compile Include="Assets\ThirdPlugins\MGS-Camera-master\MGS-Camera\Scripts\Around\MouseFocus.cs" />
+    <Compile Include="Assets\ThirdPlugins\MantisLODEditor\Common\MantisLODEditorProfessional.cs" />
+    <Compile Include="Assets\ThirdPlugins\Performance Tools\AdvancedRenderSystem\Example\Scripts\DesktopCameraController.cs" />
+    <Compile Include="Assets\SceneRebuilder\ECS\Pong\Scripts\Systems\BallGoalCheckSystem.cs" />
+    <Compile Include="Assets\SceneRebuilder\plumber\Scripts\PipeCreateArgs.cs" />
+    <Compile Include="Assets\SceneRebuilder\ECS\Test\Scripts\NoECSTesting.cs" />
+    <Compile Include="Assets\Modules\FactoryController\DepNode.cs" />
+    <Compile Include="Assets\SceneRebuilder\plumber\Scripts\MeshModels\PipeModelBase.cs" />
+    <Compile Include="Assets\ThirdPlugins\Ultimate Game Tools\MeshSimplify\Scripts\Simplifier.cs" />
+    <Compile Include="Assets\UnityCommon\Utils\UIFinder.cs" />
+    <Compile Include="Assets\UnityCommon\Helpers\ComponentHelper.cs" />
+    <Compile Include="Assets\SceneRebuilder\MeshCombine\AreaTrees\AreaTreeNodeStatics.cs" />
+    <Compile Include="Assets\SceneRebuilder\plumber\Scripts\MeshModels\BoxMeshModel.cs" />
+    <Compile Include="Assets\SceneRebuilder\ECS\ECS_Spawner\MyStopConvertToEntity.cs" />
+    <Compile Include="Assets\Modules\LODTool\LODSceneView.cs" />
+    <Compile Include="Assets\SceneRebuilder\plumber\Scripts\Jobs\BoxMeshInfoJob.cs" />
+    <Compile Include="Assets\SceneRebuilder\ECS\Pong\Scripts\Systems\IncreaseVelocityOverTimeSystem.cs" />
+    <Compile Include="Assets\SceneRebuilder\Builder\MeshNode.cs" />
+    <Compile Include="Assets\Modules\FactoryController\BuildingController.cs" />
+    <Compile Include="Assets\SceneRebuilder\Builder\SubSceneS\SubScene_Part.cs" />
+    <Compile Include="Assets\SceneRebuilder\Builder\BoundsBoxManager.cs" />
+    <Compile Include="Assets\ThirdPlugins\AssetBundleMagic\Scripts\AssetBundleMagic.cs" />
+    <Compile Include="Assets\SceneRebuilder\plumber\Scripts\MeshModels\PipeTeeModel.cs" />
+    <Compile Include="Assets\SceneRebuilder\plumber\Scripts\MeshModels\PipeReducerModel.cs" />
+    <Compile Include="Assets\ThirdPlugins\Ultimate Game Tools\AutomaticLOD\Data\Environment\Water\Water\Scripts\WaterTile.cs" />
+    <Compile Include="Assets\SceneRebuilder\plumber\Scripts\Jobs\PipeFlangeInfoJob.cs" />
+    <Compile Include="Assets\SceneRebuilder\LODS\LODManager.cs" />
+    <Compile Include="Assets\ThirdPlugins\MantisLODEditor\Demo\Scripts\RotateMe.cs" />
+    <Compile Include="Assets\UnityCommon\Helpers\EncodingHelper.cs" />
+    <Compile Include="Assets\SceneRebuilder\MeshCombine\AreaTrees\IdDictionary.cs" />
+    <Compile Include="Assets\HDRPAsset\Scripts\LookWithMouse.cs" />
+    <Compile Include="Assets\ThirdPlugins\Ultimate Game Tools\AutomaticLOD\Data\Environment\Water\Water\Scripts\SpecularLighting.cs" />
+    <Compile Include="Assets\ThirdPlugins\Performance Tools\AdvancedCullingSystem\Core\StaticCullingCore\StaticCullingMaster.cs" />
+    <Compile Include="Assets\SceneRebuilder\Builder\HierarchyRoot.cs" />
+    <Compile Include="Assets\Modules\Setting\Scripts\SystemSettingHelper.cs" />
+    <Compile Include="Assets\ThirdPlugins\Performance Tools\AdvancedCullingSystem\Core\StaticCullingCore\Data\BinaryTreeDataList.cs" />
+    <Compile Include="Assets\ThirdPlugins\Performance Tools\AdvancedCullingSystem\Core\StaticCullingCore\BinaryTree.cs" />
+    <Compile Include="Assets\SceneRebuilder\Builder\SubSceneS\SubScene_List.cs" />
+    <Compile Include="Assets\SceneRebuilder\Builder\SubSceneS\SubScene_Ref.cs" />
+    <Compile Include="Assets\ThirdPlugins\Ultimate Game Tools\AutomaticLOD\Data\Environment\Water\Water\Scripts\WaterBase.cs" />
+    <Compile Include="Assets\ThirdPlugins\Performance Tools\AdvancedCullingSystem\Core\StaticCullingCore\CullingSetting.cs" />
+    <Compile Include="Assets\ThirdPlugins\Ultimate Game Tools\AutomaticLOD\Data\Environment\Water\Water\Scripts\MeshContainer.cs" />
+    <Compile Include="Assets\ThirdPlugins\Performance Tools\AdvancedRenderSystem\Core\Scripts\Billboards\BaseBillboard.cs" />
+    <Compile Include="Assets\SceneRebuilder\ECS\Pong\Scripts\Data Components\PaddleInputData.cs" />
+    <Compile Include="Assets\UnityCommon\Utils\ObjectDictionary.cs" />
+    <Compile Include="Assets\SceneRebuilder\ECS\Samples\HelloCube\1.Foreach\RotationEntitySystem.cs" />
+    <Compile Include="Assets\SceneRebuilder\plumber\Scripts\ModelSaveDatas\MeshPrefabSaveData.cs" />
+    <Compile Include="Assets\UnityCommon\Consts\Tags.cs" />
+    <Compile Include="Assets\Modules\AssetLoad\EditorHelper.cs" />
+    <Compile Include="Assets\UnityCommon\Infos\GameObjectInfo.cs" />
+    <Compile Include="Assets\ThirdPlugins\Ultimate Game Tools\AutomaticLOD\Data\Scripts\LODPreview.cs" />
+    <Compile Include="Assets\SceneRebuilder\plumber\Scripts\Jobs\ObbInfoJob.cs" />
+    <Compile Include="Assets\SceneRebuilder\MeshCombine\DoorsRoot.cs" />
+    <Compile Include="Assets\ThirdPlugins\Performance Tools\AdvancedCullingSystem\Core\StaticCullingCore\Data\BinaryTreeData.cs" />
+    <Compile Include="Assets\ThirdPlugins\Performance Tools\AdvancedCullingSystem\Example\Scripts\SpawnController.cs" />
+    <Compile Include="Assets\UnityCommon\Infos\GameObjectSizeInfo.cs" />
+    <Compile Include="Assets\Modules\UI\ModelModify\Scripts\NavisPlugins\ModelItemInfo.cs" />
+    <Compile Include="Assets\SceneRebuilder\plumber\Scripts\Jobs\PipeTeeInfoJob.cs" />
+    <Compile Include="Assets\ThirdPlugins\Performance Tools\AdvancedRenderSystem\Core\Scripts\Billboards\BillboardData.cs" />
+    <Compile Include="Assets\UnityCommon\FileHelper.cs" />
+    <Compile Include="Assets\SceneRebuilder\MeshCombine\AreaTrees\AreaTreeManager.cs" />
+    <Compile Include="Assets\Modules\LODTool\LODGroupDetails.cs" />
+    <Compile Include="Assets\SceneRebuilder\plumber\Scripts\MeshModels\PipeWeldoletModel.cs" />
+    <Compile Include="Assets\SceneRebuilder\Builder\SceneRebuildManager.cs" />
+    <Compile Include="Assets\Modules\AssetLoad\Scripts\DistanceChecker.cs" />
+    <Compile Include="Assets\SceneRebuilder\RigidTransformUtils\Scripts\RigidTransformTest.cs" />
+    <Compile Include="Assets\Modules\UI\ModelModify\Scripts\NavisPlugins\ModelItemInfoDictionary.cs" />
+    <Compile Include="Assets\ThirdPlugins\MGS-Camera-master\MGS-Camera\Scripts\UI\TestAlignUI.cs" />
+    <Compile Include="Assets\SceneRebuilder\plumber\Scripts\PipeRun.cs" />
+    <Compile Include="Assets\ThirdPlugins\Performance Tools\SuperLevelOptimizer\Scripts\SLO_AtlasMark.cs" />
+    <Compile Include="Assets\SceneRebuilder\ECS\Samples\HelloCube\5. SpawnFromEntity\SpawnerAuthoring_FromEntity.cs" />
+    <Compile Include="Assets\SceneRebuilder\Builder\SubSceneS\SubSceneArgComponent.cs" />
+    <Compile Include="Assets\SceneRebuilder\Builder\MeshJobs\AcRTAlignJobContainer.cs" />
+    <Compile Include="Assets\ThirdPlugins\Ultimate Game Tools\AutomaticLOD\Scripts\AutomaticLODHelper.cs" />
+    <Compile Include="Assets\ThirdPlugins\Performance Tools\AdvancedCullingSystem\Example\Scripts\FPSCounter.cs" />
+    <Compile Include="Assets\UnityCommon\Utils\MonoSingletonBase.cs" />
+    <Compile Include="Assets\Modules\UI\ModelModify\Scripts\NavisPlugins\VueFileInfo.cs" />
+    <Compile Include="Assets\SceneRebuilder\MeshCombine\AreaTrees\RendererId.cs" />
+    <Compile Include="Assets\ThirdPlugins\MGS-Camera-master\MGS-Camera\Scripts\Around\AroundAlignCamera.cs" />
+    <Compile Include="Assets\SceneRebuilder\ECS\ECS_Spawner\SpawnerPrefabSystem.cs" />
+    <Compile Include="Assets\SceneRebuilder\Builder\Helpers\MeshPointsHelper.cs" />
+    <Compile Include="Assets\SceneRebuilder\Builder\SubSceneS\SubSceneArg.cs" />
+    <Compile Include="Assets\ThirdPlugins\Ultimate Game Tools\AutomaticLOD\Scripts\AutomaticLOD.cs" />
+    <Compile Include="Assets\UnityCommon\Consts\Layers.cs" />
+    <Compile Include="Assets\ThirdPlugins\Performance Tools\AdvancedCullingSystem\Core\StaticCullingCore\Data\Base\Vector2Info.cs" />
+    <Compile Include="Assets\ThirdPlugins\AssetBundleMagic\Scenes\Scripts\BackToImagesTest.cs" />
+    <Compile Include="Assets\SceneRebuilder\ECS\Samples\HelloCube\1.Foreach\RotationSpeedComponent.cs" />
+    <Compile Include="Assets\SceneRebuilder\Builder\SubSceneS\SubSceneHelper.cs" />
+    <Compile Include="Assets\Modules\UI\ModelModify\Scripts\NavisPlugins\Model2TransformResult.cs" />
+    <Compile Include="Assets\SceneRebuilder\plumber\Scripts\MeshModels\PipeBendModel.cs" />
+    <Compile Include="Assets\UnityCommon\TimeCounter.cs" />
+    <Compile Include="Assets\ThirdPlugins\Performance Tools\SuperLevelOptimizer\Scripts\SLO_SourceMark.cs" />
+    <Compile Include="Assets\SceneRebuilder\CPL\PointGroup.cs" />
+    <Compile Include="Assets\UnityCommon\Utils\NameObject.cs" />
+    <Compile Include="Assets\M_Plugins\Helpers\DoubleClickEventTrigger_u3d.cs" />
+    <Compile Include="Assets\UnityCommon\Helpers\SerializeHelper.cs" />
+    <Compile Include="Assets\SceneRebuilder\RevitTool\Scripts\Tools\QuaternionRotation.cs" />
+    <Compile Include="Assets\SceneRebuilder\RevitTool\Scripts\CameraModeManager.cs" />
+    <Compile Include="Assets\ThirdPlugins\Performance Tools\AdvancedCullingSystem\Core\DynamicCullingCore\DynamicCullingJobs\ComputeResultsJob.cs" />
+    <Compile Include="Assets\SceneRebuilder\plumber\Scripts\MeshModels\SteelStructureModelH.cs" />
+    <Compile Include="Assets\SceneRebuilder\plumber\Scripts\PipeBuilder.cs" />
+    <Compile Include="Assets\ThirdPlugins\Ultimate Game Tools\AutomaticLOD\Data\Environment\Water\Water\Scripts\PlanarReflection.cs" />
+    <Compile Include="Assets\SceneRebuilder\Builder\SubSceneS\SubSceneShowManagerUI.cs" />
+    <Compile Include="Assets\SceneRebuilder\Builder\SubSceneS\SceneModelInfo.cs" />
+    <Compile Include="Assets\SceneRebuilder\RevitTool\Scripts\UI\MeshTestUI.cs" />
+    <Compile Include="Assets\HDRPAsset\Scripts\PlayerMovement.cs" />
+    <Compile Include="Assets\UnityCommon\ThreadBehaviours\AsyncTaskManager.cs" />
+    <Compile Include="Assets\ThirdPlugins\Performance Tools\AdvancedCullingSystem\Example\Scripts\Joystick.cs" />
+    <Compile Include="Assets\SceneRebuilder\plumber\Scripts\MeshModels\PipeElbowModel.cs" />
+    <Compile Include="Assets\ThirdPlugins\Performance Tools\AdvancedCullingSystem\Example\Scripts\FrustumCullingVisualization.cs" />
+    <Compile Include="Assets\ThirdPlugins\MantisLODEditor\Common\Mantis_Mesh.cs" />
+    <Compile Include="Assets\SceneRebuilder\RevitTool\Scripts\Tools\CheckRotation.cs" />
+    <Compile Include="Assets\ThirdPlugins\MantisLODEditor\Runtime\ProgressiveMeshRuntime.cs" />
+    <Compile Include="Assets\SceneRebuilder\plumber\Scripts\MeshGenerators\PipeMeshGenerator.cs" />
+    <Compile Include="Assets\SceneRebuilder\Builder\GlobalMaterialManagerUI.cs" />
+    <Compile Include="Assets\SceneRebuilder\MeshCombine\AreaTrees\IdInfo.cs" />
+    <Compile Include="Assets\SceneRebuilder\RevitTool\Scripts\UI\ECSTestUI.cs" />
+    <Compile Include="Assets\Unity.Modules\Unity.Modules.Settings\ResolutionSetting.cs" />
+    <Compile Include="Assets\SceneRebuilder\Builder\SubSceneS\SceneLoadArg.cs" />
+    <Compile Include="Assets\SceneRebuilder\Builder\SubSceneS\SubScene_Out1.cs" />
+    <Compile Include="Assets\SceneRebuilder\ECS\ECS_Spawner\ECSClickEventSystem.cs" />
+    <Compile Include="Assets\ThirdPlugins\Performance Tools\AdvancedCullingSystem\Core\StaticCullingCore\BinaryTreeNode.cs" />
+    <Compile Include="Assets\ThirdPlugins\Ultimate Game Tools\AutomaticLOD\Data\Scripts\LODSampleLODScene.cs" />
+    <Compile Include="Assets\SceneRebuilder\Builder\ModelInfos\BuildingModelInfoList.cs" />
+    <Compile Include="Assets\UnityCommon\ThreadBehaviours\ThreadBehaviourBase.cs" />
+    <Compile Include="Assets\SceneRebuilder\Builder\SubSceneS\SubSceneUI.cs" />
+    <Compile Include="Assets\SceneRebuilder\MeshCombine\AreaTrees\AreaTreeNodeSetting.cs" />
+    <Compile Include="Assets\Unity.Modules\Unity.Modules.Settings\AlarmSetting.cs" />
+    <Compile Include="Assets\Modules\UI\ModelModify\Scripts\NavisPlugins\InitNavisFileInfoByModelSetting.cs" />
+    <Compile Include="Assets\SceneRebuilder\Builder\BoundsBoxManagerUI.cs" />
+    <Compile Include="Assets\SceneRebuilder\MyPlayer.cs" />
+    <Compile Include="Assets\ThirdPlugins\Performance Tools\AdvancedCullingSystem\Core\StaticCullingCore\Data\Base\Entity.cs" />
+    <Compile Include="Assets\SceneRebuilder\ECS\MyTest\LOD\PrefabPawn.cs" />
+    <Compile Include="Assets\ThirdPlugins\AssetBundleMagic\Scripts\Util\VersionDataCollection.cs" />
+    <Compile Include="Assets\Modules\UI\ModelModify\Scripts\NavisPlugins\NavisModelRootList.cs" />
+    <Compile Include="Assets\ThirdPlugins\MantisLODEditor\Plugins\Managed\MantisLOD.cs" />
+    <Compile Include="Assets\UnityCommon\Helpers\TagLayerHelper.cs" />
+    <Compile Include="Assets\SceneRebuilder\Builder\HierarchyHelper.cs" />
+    <Compile Include="Assets\ThirdPlugins\MGS-Camera-master\MGS-Camera\Scripts\Translate\MouseTranslate.cs" />
+    <Compile Include="Assets\ThirdPlugins\Ultimate Game Tools\AutomaticLOD\Data\Environment\Water\Water\Scripts\GerstnerDisplace.cs" />
+    <Compile Include="Assets\Modules\MainManage.cs" />
+    <Compile Include="Assets\SceneRebuilder\LODS\LODInfo.cs" />
+    <Compile Include="Assets\SceneRebuilder\plumber\Scripts\Jobs\PipeBendInfoJob.cs" />
+    <Compile Include="Assets\M_Plugins\U3D\Camera\TheThirdPersonCamera.cs" />
+    <Compile Include="Assets\ThirdPlugins\AssetBundleMagic\Scenes\Scripts\ImageTestGame.cs" />
+    <Compile Include="Assets\UnityCommon\Singleton.cs" />
+    <Compile Include="Assets\SceneRebuilder\Builder\SubSceneS\SubSceneCreater.cs" />
+    <Compile Include="Assets\SceneRebuilder\ECS\ECS_Spawner\ModelTagComponent.cs" />
+    <Compile Include="Assets\SceneRebuilder\plumber\Scripts\Jobs\PipeLineInfoJob.cs" />
+    <Compile Include="Assets\Modules\LODTool\LODUtility.cs" />
+    <Compile Include="Assets\UnityCommon\Utils\ScreenHelper.cs" />
+    <Compile Include="Assets\UnityCommon\Models\ModelPool.cs" />
+    <Compile Include="Assets\SceneRebuilder\Builder\BoundsBox.cs" />
+    <Compile Include="Assets\SceneRebuilder\ECS\Pong\Scripts\Data Components\BallTag.cs" />
+    <Compile Include="Assets\SceneRebuilder\Builder\ModelInfos\BuildingModelManager.cs" />
+    <Compile Include="Assets\UnityCommon\ThreadBehaviours\ThreadBehaviourBool.cs" />
+    <Compile Include="Assets\SceneRebuilder\Builder\GlobalMaterialManager.cs" />
+    <Compile Include="Assets\ThirdPlugins\MGS-Camera-master\MGS-Camera\Scripts\Around\AroundCamera.cs" />
+    <Compile Include="Assets\Modules\Setting\Scripts\DebugPanel.cs" />
+    <Compile Include="Assets\SceneRebuilder\plumber\Scripts\MeshGenerators\PipeMeshGeneratorEx.cs" />
+    <Compile Include="Assets\ThirdPlugins\Ultimate Game Tools\MeshSimplify\Scripts\MeshUniqueVertices.cs" />
+    <Compile Include="Assets\SceneRebuilder\MeshCombine\AreaTrees\RendererManager.cs" />
+    <Compile Include="Assets\Modules\UI\ModelModify\Scripts\NavisPlugins\VueFileInfoList.cs" />
+    <Compile Include="Assets\Modules\AssetLoad\Scripts\CopyComponent.cs" />
+    <Compile Include="Assets\Modules\UI\ModelModify\Scripts\NavisPlugins\InitNavisFileInfoByModel.cs" />
+    <Compile Include="Assets\UnityCommon\Infos\TransformPosition.cs" />
+    <Compile Include="Assets\ThirdPlugins\Ultimate Game Tools\MeshSimplify\Scripts\MeshSimplify.cs" />
+    <Compile Include="Assets\SceneRebuilder\plumber\Scripts\Jobs\PipeWeldoletInfoJob.cs" />
+    <Compile Include="Assets\Modules\UI\ModelModify\Scripts\ModelInfoRegister\BIMModelInfoList.cs" />
+    <Compile Include="Assets\UnityCommon\Properties\AssemblyInfo.cs" />
+    <Compile Include="Assets\Modules\AssetLoad\Scripts\BuildingLoad.cs" />
+    <Compile Include="Assets\Unity.Modules\Unity.Modules.Settings\VersionSetting.cs" />
     <Compile Include="Assets\SceneRebuilder\Builder\SubSceneS\SubSceneShowManager.cs" />
     <Compile Include="Assets\SceneRebuilder\MeshCombine\AreaTrees\ObjectId.cs" />
     <Compile Include="Assets\ThirdPlugins\Performance Tools\AdvancedCullingSystem\Core\BaseCulling.cs" />
-    <Compile Include="Assets\SceneRebuilder\Others\Scripts\RuntimeProfilerScripts\FileManager.cs" />
-    <Compile Include="Assets\Modules\FactoryController\BuildingFloorTweening.cs" />
-    <Compile Include="Assets\SceneRebuilder\plumber\OBB\MathGeoLib\Matrix3X4.cs" />
     <Compile Include="Assets\SceneRebuilder\Builder\SubSceneS\SubScene_In.cs" />
     <Compile Include="Assets\ThirdPlugins\Performance Tools\AdvancedCullingSystem\Core\StaticCullingCore\BinaryTreeDataComponent.cs" />
-    <Compile Include="Assets\ThirdPlugins\Performance Tools\AdvancedCullingSystem\Core\ProgressBarHelper.cs" />
-    <Compile Include="Assets\SceneRebuilder\plumber\OBB\MathGeoLib\Vector3.cs" />
     <Compile Include="Assets\ThirdPlugins\Performance Tools\AdvancedRenderSystem\Core\Scripts\AdvancedRenderSystem.cs" />
-    <Compile Include="Assets\SceneRebuilder\SceneAssets\SceneAssetsManager.cs" />
+    <Compile Include="Assets\SceneRebuilder\Builder\SubSceneS\SubSceneShowManagerJob.cs" />
     <Compile Include="Assets\SceneRebuilder\ECS\Pong\Scripts\GameManager.cs" />
-    <Compile Include="Assets\ThirdPlugins\MGS-Camera-master\MGS-Camera\Scripts\Around\MouseFocus.cs" />
-    <Compile Include="Assets\ThirdPlugins\MantisLODEditor\Common\MantisLODEditorProfessional.cs" />
     <Compile Include="Assets\ThirdPlugins\Performance Tools\AdvancedCullingSystem\Example\Scripts\CameraController.cs" />
     <Compile Include="Assets\SceneRebuilder\Builder\MeshJobs\MeshJobs.cs" />
-    <Compile Include="Assets\SceneRebuilder\SceneInfo\NodeInfo.cs" />
-    <Compile Include="Assets\SceneRebuilder\plumber\Scripts\MeshGenerators\WeldMeshGenerator.cs" />
-    <Compile Include="Assets\ThirdPlugins\Performance Tools\AdvancedRenderSystem\Example\Scripts\DesktopCameraController.cs" />
+    <Compile Include="Assets\Unity.Modules\Unity.Modules.Settings\SystemSetting.cs" />
     <Compile Include="Assets\ThirdPlugins\Performance Tools\AdvancedRenderSystem\Example\Scripts\MobileCameraController.cs" />
-    <Compile Include="Assets\SceneRebuilder\Builder\MeshJobs\MeshDistanceJob.cs" />
     <Compile Include="Assets\SceneRebuilder\MeshCombine\AreaTrees\ModelRoot.cs" />
-    <Compile Include="Assets\SceneRebuilder\Builder\PrefabInfo.cs" />
-    <Compile Include="Assets\SceneRebuilder\SceneInfo\ModelBuildingScript.cs" />
-    <Compile Include="Assets\SceneRebuilder\ECS\Test\Scripts\NoECSTesting.cs" />
-    <Compile Include="Assets\SceneRebuilder\ECS\Pong\Scripts\Systems\BallGoalCheckSystem.cs" />
     <Compile Include="Assets\Modules\UI\ModelModify\Scripts\NavisPlugins\BIMDevDetail.cs" />
     <Compile Include="Assets\SceneRebuilder\Builder\FloorBoxManager.cs" />
     <Compile Include="Assets\SceneRebuilder\Builder\SceneRebuilderCanvas.cs" />
     <Compile Include="Assets\ThirdPlugins\AssetBundleMagic\Scripts\Version.cs" />
-    <Compile Include="Assets\SceneRebuilder\Others\Scripts\RuntimeProfilerScripts\GetAvailableProfilerStats.cs" />
-    <Compile Include="Assets\SceneRebuilder\RevitInfo\ElementInfo.cs" />
+    <Compile Include="Assets\SceneRebuilder\plumber\Scripts\Jobs\PipeModelCheckJob.cs" />
     <Compile Include="Assets\ThirdPlugins\Ultimate Game Tools\MeshSimplify\Data\Scripts\SimplifyMeshPreview.cs" />
-    <Compile Include="Assets\SceneRebuilder\Builder\MeshPrefab.cs" />
-    <Compile Include="Assets\SceneRebuilder\Builder\Transforms\TransformNode.cs" />
-    <Compile Include="Assets\Modules\FactoryController\DepNode.cs" />
-    <Compile Include="Assets\SceneRebuilder\SceneInfo\ModelLevelScript.cs" />
-    <Compile Include="Assets\SceneRebuilder\MeshCombine\MeshCombineHelper.cs" />
+    <Compile Include="Assets\SceneRebuilder\Builder\PrefabInfoManager.cs" />
+    <Compile Include="Assets\SceneRebuilder\plumber\Scripts\Jobs\PipeBendPartInfoJob.cs" />
     <Compile Include="Assets\SceneRebuilder\LODS\LODGenerate.cs" />
     <Compile Include="Assets\SceneRebuilder\RevitTool\Scripts\Data\NodeInfoAsset.cs" />
     <Compile Include="Assets\UnityCommon\Helpers\ShaderHelper.cs" />
-    <Compile Include="Assets\ThirdPlugins\Ultimate Game Tools\MeshSimplify\Scripts\Simplifier.cs" />
     <Compile Include="Assets\Modules\UI\ModelModify\Scripts\ModelInfoRegister\BIMModelInfo.cs" />
     <Compile Include="Assets\SceneRebuilder\Builder\SubSceneS\SubScene_Base.cs" />
     <Compile Include="Assets\UnityCommon\Extensions\ObjectSize.cs" />
-    <Compile Include="Assets\UnityCommon\Utils\UIFinder.cs" />
     <Compile Include="Assets\HDRPAsset\TutorialInfo\Scripts\Readme.cs" />
-    <Compile Include="Assets\UnityCommon\Helpers\ComponentHelper.cs" />
-    <Compile Include="Assets\SceneRebuilder\MeshCombine\AreaTrees\AreaTreeNodeStatics.cs" />
     <Compile Include="Assets\ThirdPlugins\Performance Tools\AdvancedCullingSystem\Core\StaticCullingCore\Data\Base\Point.cs" />
-    <Compile Include="Assets\SceneRebuilder\RevitInfo\Log.cs" />
-    <Compile Include="Assets\SceneRebuilder\ECS\ECS_Spawner\MyStopConvertToEntity.cs" />
     <Compile Include="Assets\SceneRebuilder\ECS\Samples\HelloCube\5. SpawnFromEntity\Spawner_FromEntity.cs" />
-    <Compile Include="Assets\Modules\LODTool\LODSceneView.cs" />
     <Compile Include="Assets\SceneRebuilder\LODS\LODGroupInfo.cs" />
     <Compile Include="Assets\SceneRebuilder\ECS\ECS_Spawner\ModelDataComponent.cs" />
     <Compile Include="Assets\SceneRebuilder\DynamicRenderer\DynamicRendererManager.cs" />
-    <Compile Include="Assets\SceneRebuilder\ECS\Pong\Scripts\Systems\IncreaseVelocityOverTimeSystem.cs" />
     <Compile Include="Assets\ThirdPlugins\Performance Tools\AdvancedCullingSystem\Core\StaticCullingCore\Data\Base\Bound.cs" />
     <Compile Include="Assets\SceneRebuilder\LODS\LODManagerUI.cs" />
-    <Compile Include="Assets\SceneRebuilder\Builder\MeshNode.cs" />
-    <Compile Include="Assets\SceneRebuilder\MeshCombine\TransformParent.cs" />
-    <Compile Include="Assets\Modules\FactoryController\BuildingController.cs" />
     <Compile Include="Assets\SceneRebuilder\Builder\SubSceneS\SubScene_Single.cs" />
-    <Compile Include="Assets\SceneRebuilder\MeshCombine\CombinedMeshInfo.cs" />
-    <Compile Include="Assets\SceneRebuilder\Builder\BoundsBoxManager.cs" />
-    <Compile Include="Assets\SceneRebuilder\Builder\SubSceneS\SubScene_Part.cs" />
-    <Compile Include="Assets\SceneRebuilder\plumber\OBB\MathGeoLib\Plane.cs" />
-    <Compile Include="Assets\SceneRebuilder\RevitInfo\XYZInfo.cs" />
-    <Compile Include="Assets\SceneRebuilder\ModelScanner\Scripts\ModelManager.cs" />
-    <Compile Include="Assets\SceneRebuilder\ModelScanner\Scripts\Classes\DistanceInfo.cs" />
-    <Compile Include="Assets\ThirdPlugins\AssetBundleMagic\Scripts\AssetBundleMagic.cs" />
-    <Compile Include="Assets\SceneRebuilder\Builder\MeshData.cs" />
+    <Compile Include="Assets\SceneRebuilder\plumber\Scripts\Jobs\PipeElbowInfoJob.cs" />
     <Compile Include="Assets\SceneRebuilder\ECS\Pong\Scripts\Systems\PaddleMovementSystem.cs" />
     <Compile Include="Assets\SceneRebuilder\Builder\RendererUpdateInfo.cs" />
     <Compile Include="Assets\UnityCommon\ThreadBehaviours\LoomT.cs" />
-    <Compile Include="Assets\ThirdPlugins\Ultimate Game Tools\AutomaticLOD\Data\Environment\Water\Water\Scripts\WaterTile.cs" />
-    <Compile Include="Assets\SceneRebuilder\LODS\LODManager.cs" />
-    <Compile Include="Assets\SceneRebuilder\SceneInfo\NodeTypeInfo.cs" />
     <Compile Include="Assets\Modules\UI\ModelModify\Scripts\NavisPlugins\TransformDictionary.cs" />
     <Compile Include="Assets\Modules\LODTool\LODSortType.cs" />
-    <Compile Include="Assets\ThirdPlugins\MantisLODEditor\Demo\Scripts\RotateMe.cs" />
-    <Compile Include="Assets\UnityCommon\Helpers\EncodingHelper.cs" />
+    <Compile Include="Assets\SceneRebuilder\Builder\SubSceneS\SubScene_LODs.cs" />
     <Compile Include="Assets\UnityCommon\ThreadBehaviours\ThreadBehaviour.cs" />
-    <Compile Include="Assets\SceneRebuilder\MeshCombine\AreaTrees\IdDictionary.cs" />
-    <Compile Include="Assets\HDRPAsset\Scripts\LookWithMouse.cs" />
+    <Compile Include="Assets\Modules\FactoryController\FactoryDepManager.cs" />
     <Compile Include="Assets\Modules\AssetLoad\Scripts\SetPositionToGround.cs" />
-    <Compile Include="Assets\ThirdPlugins\AssetBundleMagic\Scenes\Scripts\PlayerController.cs" />
     <Compile Include="Assets\UnityCommon\ThreadBehaviours\ThreadBehaviourObject.cs" />
+    <Compile Include="Assets\ThirdPlugins\AssetBundleMagic\Scenes\Scripts\PlayerController.cs" />
     <Compile Include="Assets\Modules\UI\ModelModify\Scripts\ModelInfoRegister\BIMDevDetailManager.cs" />
-    <Compile Include="Assets\ThirdPlugins\Performance Tools\AdvancedCullingSystem\Core\StaticCullingCore\StaticCullingMaster.cs" />
-    <Compile Include="Assets\ThirdPlugins\Ultimate Game Tools\AutomaticLOD\Data\Environment\Water\Water\Scripts\SpecularLighting.cs" />
     <Compile Include="Assets\ThirdPlugins\Performance Tools\AdvancedCullingSystem\Core\DynamicCullingCore\DynamicCullingJobs\GetVisibleChangedJob.cs" />
+    <Compile Include="Assets\Modules\DynamicCullingManage\DynamicCullingManage.cs" />
     <Compile Include="Assets\Service References\LocationServices\Reference.cs" />
     <Compile Include="Assets\Modules\FactoryController\FloorController.cs" />
     <Compile Include="Assets\UnityCommon\Materials\Material2Material.cs" />
-    <Compile Include="Assets\SceneRebuilder\SceneInfo\ModelLevelInfo.cs" />
     <Compile Include="Assets\UnityCommon\Helpers\CameraHelper.cs" />
     <Compile Include="Assets\SceneRebuilder\RevitTool\Scripts\SpawnerPrefabScript.cs" />
-    <Compile Include="Assets\ThirdPlugins\Performance Tools\AdvancedCullingSystem\Core\StaticCullingCore\Data\BinaryTreeDataList.cs" />
-    <Compile Include="Assets\SceneRebuilder\MeshCombine\CombineMesh.cs" />
     <Compile Include="Assets\ThirdPlugins\Performance Tools\AdvancedRenderSystem\Example\Scripts\FPSCounter.cs" />
-    <Compile Include="Assets\SceneRebuilder\MeshCombine\MeshMaterial.cs" />
-    <Compile Include="Assets\ThirdPlugins\Performance Tools\AdvancedCullingSystem\Core\StaticCullingCore\BinaryTree.cs" />
-    <Compile Include="Assets\SceneRebuilder\Others\MaterialController.cs" />
-    <Compile Include="Assets\SceneRebuilder\Builder\SubSceneS\SubScene_List.cs" />
     <Compile Include="Assets\SceneRebuilder\MeshCombine\DoorManager.cs" />
-    <Compile Include="Assets\ThirdPlugins\Ultimate Game Tools\AutomaticLOD\Data\Environment\Water\Water\Scripts\WaterBase.cs" />
-    <Compile Include="Assets\SceneRebuilder\Builder\MeshJobs\RTAlignJob.cs" />
     <Compile Include="Assets\SceneRebuilder\MeshCombine\AreaTrees\AreaTreeManagerUI.cs" />
     <Compile Include="Assets\SceneRebuilder\DynamicRenderer\ModelMeshManager.cs" />
-    <Compile Include="Assets\ThirdPlugins\Performance Tools\AdvancedCullingSystem\Core\StaticCullingCore\CullingSetting.cs" />
-    <Compile Include="Assets\ThirdPlugins\Ultimate Game Tools\AutomaticLOD\Data\Environment\Water\Water\Scripts\MeshContainer.cs" />
-    <Compile Include="Assets\ThirdPlugins\Performance Tools\AdvancedRenderSystem\Core\Scripts\Billboards\BaseBillboard.cs" />
-    <Compile Include="Assets\SceneRebuilder\plumber\OBB\MathGeoLib\OrientedBoundingBox.cs" />
-    <Compile Include="Assets\SceneRebuilder\SceneInfo\ModelBuildingsScript.cs" />
-    <Compile Include="Assets\SceneRebuilder\plumber\Scripts\MeshGenerators\MeshGeneratorHelper.cs" />
-    <Compile Include="Assets\SceneRebuilder\ECS\Pong\Scripts\Data Components\PaddleInputData.cs" />
     <Compile Include="Assets\UnityCommon\Utils\AssetbundleParams.cs" />
     <Compile Include="Assets\ThirdPlugins\Performance Tools\SuperLevelOptimizer\Scripts\SLO_CombinedMark.cs" />
-    <Compile Include="Assets\UnityCommon\Utils\ObjectDictionary.cs" />
-    <Compile Include="Assets\SceneRebuilder\MeshCombine\MeshFilterInfo.cs" />
-    <Compile Include="Assets\SceneRebuilder\RevitInfo\ElementGroupListAsset.cs" />
+    <Compile Include="Assets\SceneRebuilder\plumber\Scripts\MeshModels\PipeWeldModel.cs" />
     <Compile Include="Assets\ThirdPlugins\Performance Tools\AdvancedCullingSystem\Core\StaticCullingCore\Data\Base\V3.cs" />
     <Compile Include="Assets\SceneRebuilder\ECS\ECS_Spawner\SpawnerPrefab.cs" />
     <Compile Include="Assets\ThirdPlugins\Performance Tools\AdvancedCullingSystem\Core\StaticCullingCore\StaticCulling.cs" />
-    <Compile Include="Assets\SceneRebuilder\ECS\Samples\HelloCube\1.Foreach\RotationEntitySystem.cs" />
     <Compile Include="Assets\SceneRebuilder\ECS\Test\Scripts\Testing.cs" />
-    <Compile Include="Assets\SceneRebuilder\MeshCombine\ExampleClass.cs" />
-    <Compile Include="Assets\SceneRebuilder\ModelScanner\Scripts\ModelDisInfo.cs" />
     <Compile Include="Assets\SceneRebuilder\Builder\SubSceneS\SubScene_Out0.cs" />
-    <Compile Include="Assets\SceneRebuilder\Builder\SharedMeshInfo.cs" />
     <Compile Include="Assets\Modules\Helper\LODHelper\LODExtendedUtility.cs" />
     <Compile Include="Assets\Modules\Communication\WebApiCommunicationClass.cs" />
     <Compile Include="Assets\SceneRebuilder\Builder\MeshRendererInfoEx.cs" />
-    <Compile Include="Assets\SceneRebuilder\SceneInfo\CategoryInfoList.cs" />
-    <Compile Include="Assets\SceneRebuilder\Others\Scripts\RuntimeProfilerScripts\ProfilerController.cs" />
     <Compile Include="Assets\SceneRebuilder\Builder\SubSceneS\SceneTool.cs" />
-    <Compile Include="Assets\UnityCommon\Consts\Tags.cs" />
     <Compile Include="Assets\UnityCommon\ThreadBehaviours\ThreadInfo.cs" />
-    <Compile Include="Assets\Modules\AssetLoad\EditorHelper.cs" />
-    <Compile Include="Assets\SceneRebuilder\Builder\MeshType.cs" />
-    <Compile Include="Assets\UnityCommon\Infos\GameObjectInfo.cs" />
-    <Compile Include="Assets\SceneRebuilder\plumber\OBB\Scripts\OBBRect.cs" />
-    <Compile Include="Assets\ThirdPlugins\Ultimate Game Tools\AutomaticLOD\Data\Scripts\LODPreview.cs" />
     <Compile Include="Assets\ThirdPlugins\Performance Tools\AdvancedCullingSystem\Core\CasterUtility.cs" />
-    <Compile Include="Assets\SceneRebuilder\MeshCombine\DoorsRoot.cs" />
     <Compile Include="Assets\ThirdPlugins\Performance Tools\AdvancedRenderSystem\Core\Scripts\Helpers.cs" />
-    <Compile Include="Assets\SceneRebuilder\RigidTransformUtils\Scripts\RigidTransform.cs" />
-    <Compile Include="Assets\SceneRebuilder\Builder\MeshRotate.cs" />
-    <Compile Include="Assets\SceneRebuilder\MeshCombine\NoCombine.cs" />
-    <Compile Include="Assets\ThirdPlugins\Performance Tools\AdvancedCullingSystem\Core\StaticCullingCore\Data\BinaryTreeData.cs" />
-    <Compile Include="Assets\SceneRebuilder\SceneInfo\NodeInfoScript.cs" />
-    <Compile Include="Assets\ThirdPlugins\Performance Tools\AdvancedCullingSystem\Example\Scripts\SpawnController.cs" />
-    <Compile Include="Assets\UnityCommon\Infos\GameObjectSizeInfo.cs" />
     <Compile Include="Assets\SceneRebuilder\MeshCombine\MeshSelection.cs" />
-    <Compile Include="Assets\Modules\UI\ModelModify\Scripts\NavisPlugins\ModelItemInfo.cs" />
-    <Compile Include="Assets\ThirdPlugins\Performance Tools\AdvancedRenderSystem\Core\Scripts\Billboards\BillboardData.cs" />
     <Compile Include="Assets\ThirdPlugins\Performance Tools\AdvancedCullingSystem\Core\StaticCullingCore\Caster.cs" />
-    <Compile Include="Assets\UnityCommon\FileHelper.cs" />
-    <Compile Include="Assets\SceneRebuilder\SceneInfo\ModelCategoryScript.cs" />
     <Compile Include="Assets\SceneRebuilder\ECS\Pong\Scripts\Systems\PlayerInputSystem.cs" />
     <Compile Include="Assets\SceneRebuilder\Builder\PrefabComparer.cs" />
-    <Compile Include="Assets\SceneRebuilder\MeshCombine\AreaTrees\AreaTreeManager.cs" />
-    <Compile Include="Assets\SceneRebuilder\RevitInfo\ElementGroupList.cs" />
-    <Compile Include="Assets\Modules\LODTool\LODGroupDetails.cs" />
     <Compile Include="Assets\ThirdPlugins\Performance Tools\AdvancedCullingSystem\Test\ColliderCreater.cs" />
-    <Compile Include="Assets\SceneRebuilder\ModelScanner\Scripts\Classes\ModelLevelSettingInfo.cs" />
-    <Compile Include="Assets\SceneRebuilder\Builder\SceneRebuildManager.cs" />
-    <Compile Include="Assets\Modules\AssetLoad\Scripts\DistanceChecker.cs" />
-    <Compile Include="Assets\SceneRebuilder\ModelScanner\Scripts\Classes\RendererInfo.cs" />
     <Compile Include="Assets\ThirdPlugins\Ultimate Game Tools\AutomaticLOD\Data\Environment\Water\Water\Scripts\Water.cs" />
     <Compile Include="Assets\SceneRebuilder\MeshCombine\AreaTrees\AreaTreeNode.cs" />
-    <Compile Include="Assets\SceneRebuilder\RigidTransformUtils\Scripts\RigidTransformTest.cs" />
-    <Compile Include="Assets\Modules\UI\ModelModify\Scripts\NavisPlugins\ModelItemInfoDictionary.cs" />
     <Compile Include="Assets\Modules\UI\ModelModify\Scripts\ModelInfoRegister\BIMModelInfoDictionary.cs" />
-    <Compile Include="Assets\SceneRebuilder\ModelScanner\Scripts\ModelPivotTool.cs" />
-    <Compile Include="Assets\ThirdPlugins\MGS-Camera-master\MGS-Camera\Scripts\UI\TestAlignUI.cs" />
     <Compile Include="Assets\ThirdPlugins\Performance Tools\AdvancedCullingSystem\Core\DynamicCullingCore\DynamicCullingJobs\UpdateTimersJob.cs" />
-    <Compile Include="Assets\ThirdPlugins\Performance Tools\SuperLevelOptimizer\Scripts\SLO_AtlasMark.cs" />
-    <Compile Include="Assets\SceneRebuilder\ECS\Samples\HelloCube\5. SpawnFromEntity\SpawnerAuthoring_FromEntity.cs" />
+    <Compile Include="Assets\Unity.Modules\Unity.Modules.Settings\CinemachineSetting.cs" />
     <Compile Include="Assets\SceneRebuilder\Builder\MeshAlignmentManager.cs" />
-    <Compile Include="Assets\SceneRebuilder\SceneInfo\ModelTypeInfo.cs" />
-    <Compile Include="Assets\SceneRebuilder\RigidTransformUtils\RigidTransform-master\AcRigidTransformHelper.cs" />
     <Compile Include="Assets\SceneRebuilder\ECS\Test\Scripts\LevelUpSystem.cs" />
     <Compile Include="Assets\SceneRebuilder\RevitTool\Scripts\Data\DataTest.cs" />
     <Compile Include="Assets\UnityCommon\Helpers\TransparentHelper.cs" />
-    <Compile Include="Assets\SceneRebuilder\Builder\MeshJobs\AcRTAlignJobContainer.cs" />
-    <Compile Include="Assets\ThirdPlugins\Ultimate Game Tools\AutomaticLOD\Scripts\AutomaticLODHelper.cs" />
-    <Compile Include="Assets\SceneRebuilder\plumber\OBB\MathGeoLib\Line.cs" />
+    <Compile Include="Assets\SceneRebuilder\plumber\Scripts\Jobs\PipeReducerInfoJob.cs" />
     <Compile Include="Assets\ThirdPlugins\MGS-Camera-master\MGS-Camera\Scripts\Reference\ReferenceDefine.cs" />
     <Compile Include="Assets\Modules\UI\ModelModify\Scripts\NavisPlugins\PropertyCategoryInfo.cs" />
     <Compile Include="Assets\Modules\AssetLoad\Scripts\CreateAssetScene.cs" />
-    <Compile Include="Assets\ThirdPlugins\Performance Tools\AdvancedCullingSystem\Example\Scripts\FPSCounter.cs" />
-    <Compile Include="Assets\UnityCommon\Utils\MonoSingletonBase.cs" />
-    <Compile Include="Assets\SceneRebuilder\Builder\Transforms\TransformData.cs" />
     <Compile Include="Assets\Modules\UI\ModelModify\Scripts\NavisPlugins\BimNodeHelper_PhysicalTopology.cs" />
-    <Compile Include="Assets\Modules\UI\ModelModify\Scripts\NavisPlugins\VueFileInfo.cs" />
-    <Compile Include="Assets\SceneRebuilder\plumber\Scripts\ModelMeshDatas\CircleMeshData.cs" />
-    <Compile Include="Assets\SceneRebuilder\plumber\Scripts\ModelMeshDatas\ElbowMeshData.cs" />
-    <Compile Include="Assets\SceneRebuilder\plumber\Scripts\ModelMeshDatas\PipeMeshData.cs" />
-    <Compile Include="Assets\SceneRebuilder\plumber\Scripts\ModelMeshDatas\CylinderMeshData.cs" />
-    <Compile Include="Assets\SceneRebuilder\plumber\Scripts\PipeFactory.cs" />
-    <Compile Include="Assets\SceneRebuilder\plumber\Scripts\MeshModels\PipeElbowModel.cs" />
-    <Compile Include="Assets\SceneRebuilder\plumber\Scripts\MeshBaseDatas\MeshTriangle.cs" />
-    <Compile Include="Assets\SceneRebuilder\plumber\Scripts\MeshBaseDatas\MeshTriangles.cs" />
-    <Compile Include="Assets\SceneRebuilder\plumber\Scripts\MeshBaseDatas\MeshPoint.cs" />
-    <Compile Include="Assets\SceneRebuilder\plumber\Scripts\MeshBaseDatas\PointDistance.cs" />
-    <Compile Include="Assets\SceneRebuilder\plumber\Scripts\MeshModels\PipeModelBase.cs" />
-    <Compile Include="Assets\SceneRebuilder\plumber\Scripts\MeshGenerators\PipeGenerateArg.cs" />
-    <Compile Include="Assets\SceneRebuilder\plumber\Scripts\MeshModels\PipeLineInfo.cs" />
-    <Compile Include="Assets\SceneRebuilder\plumber\Scripts\PipeCreateArg.cs" />
-    <Compile Include="Assets\SceneRebuilder\plumber\Scripts\PipeCreateArgs.cs" />
-    <Compile Include="Assets\SceneRebuilder\plumber\Scripts\MeshModels\PipeReducerModel.cs" />
-    <Compile Include="Assets\SceneRebuilder\plumber\Scripts\MeshGenerators\PipeMeshGeneratorEx.cs" />
+    <Compile Include="Assets\SceneRebuilder\plumber\Scripts\MeshModels\PipeFlangeModel.cs" />
   </ItemGroup>
   <ItemGroup>
-     <None Include="Assets\SceneRebuilder\RigidTransformUtils\RigidTransform-master\Plugins\Accord.Math.dll" />
+     <None Include="Assets\SceneRebuilder\RigidTransformUtils\Plugins\Accord.Math.dll" />
      <None Include="Assets\ThirdPlugins\MeshProfiler\Plugins\EPPlus.dll" />
      <None Include="Assets\SceneRebuilder\Materials\Shaders\TestShader.shader" />
      <None Include="Assets\ThirdPlugins\AdvancedFPSCounter\Changelog.txt" />
-     <None Include="Assets\SceneRebuilder\MeshDebugger\Shaders\DebugColor.shader" />
-     <None Include="Assets\SceneRebuilder\MeshDebugger\Shaders\InternalQuadColorful.shader" />
      <None Include="Assets\ThirdPlugins\Ultimate Game Tools\MeshSimplify\Data\Shaders\StandardSpecularTwoSided.shader" />
      <None Include="Assets\ThirdPlugins\Ultimate Game Tools\MeshSimplify\Data\Shaders\Wireframe.shader" />
      <None Include="Assets\ThirdPlugins\Ultimate Game Tools\AutomaticLOD\!Readme.txt" />
      <None Include="Assets\SceneRebuilder\RevitTool\Plugins\LitJSON.dll" />
-     <None Include="Assets\SceneRebuilder\MeshDebugger\Readme.txt" />
      <None Include="Assets\ThirdPlugins\Ultimate Game Tools\AutomaticLOD\Data\Environment\Water\Water4\Shaders\WaterInclude.cginc" />
      <None Include="Assets\ThirdPlugins\AdvancedFPSCounter\API.txt" />
      <None Include="Assets\ThirdPlugins\Performance Tools\AdvancedRenderSystem\Documentation\Readme.txt" />
      <None Include="Assets\ThirdPlugins\Performance Tools\AdvancedRenderSystem\Core\Shader\ARSShader.shader" />
      <None Include="Assets\ThirdPlugins\Ultimate Game Tools\MeshSimplify\!Readme.txt" />
      <None Include="Assets\ThirdPlugins\MGS-Camera-master\MGS-Camera\Readme.txt" />
-     <None Include="Assets\SceneRebuilder\RigidTransformUtils\RigidTransform-master\Plugins\Accord.dll" />
+     <None Include="Assets\SceneRebuilder\RigidTransformUtils\Plugins\Accord.dll" />
      <None Include="Assets\ThirdPlugins\Ultimate Game Tools\AutomaticLOD\Data\Environment\Water\Water4\Shaders\FXWater4Advanced.shader" />
      <None Include="Assets\SceneRebuilder\Materials\Shaders\ColorShaderFrag.shader" />
      <None Include="Assets\ThirdPlugins\MantisLODEditor\Plugins\x86_64\MantisLOD.dll" />
      <None Include="Assets\ThirdPlugins\Ultimate Game Tools\AutomaticLOD\Data\Environment\Water\Water4\Shaders\FXWater4Simple.shader" />
-     <None Include="Assets\SceneRebuilder\MeshDebugger\Shaders\DebugUV.shader" />
-     <None Include="Assets\SceneRebuilder\RigidTransformUtils\RigidTransform-master\Plugins\Accord.Math.Core.dll" />
+     <None Include="Assets\SceneRebuilder\RigidTransformUtils\Plugins\Accord.Math.Core.dll" />
      <None Include="Assets\ThirdPlugins\Ultimate Game Tools\AutomaticLOD\Data\Environment\Water\Water\Shaders\FXWaterPro.shader" />
-     <None Include="Assets\SceneRebuilder\MeshDebugger\Shaders\DebugFrontBack.shader" />
-     <None Include="Assets\SceneRebuilder\RigidTransformUtils\RigidTransform-master\Plugins\Accord.Imaging.dll" />
-     <None Include="Assets\SceneRebuilder\RigidTransformUtils\RigidTransform-master\Plugins\Accord.MachineLearning.dll" />
+     <None Include="Assets\SceneRebuilder\RigidTransformUtils\Plugins\Accord.Imaging.dll" />
+     <None Include="Assets\SceneRebuilder\RigidTransformUtils\Plugins\Accord.MachineLearning.dll" />
      <None Include="Assets\ThirdPlugins\Performance Tools\IF ERRORS!!!.txt" />
-     <None Include="Assets\SceneRebuilder\MeshDebugger\Shaders\DebugTangent.shader" />
-     <None Include="Assets\SceneRebuilder\RigidTransformUtils\RigidTransform-master\Plugins\Accord.Statistics.dll" />
+     <None Include="Assets\SceneRebuilder\RigidTransformUtils\Plugins\Accord.Statistics.dll" />
      <None Include="Assets\SceneRebuilder\Materials\Shaders\SpecularColorFrag.shader" />
-     <None Include="Assets\SceneRebuilder\MeshDebugger\Shaders\InternalLineColorful.shader" />
      <None Include="Assets\ThirdPlugins\Performance Tools\SuperLevelOptimizer\Documentation\Readme.txt" />
-     <None Include="Assets\SceneRebuilder\plumber\OBB\Plugins\MathGeoLib.Exports.dll" />
+     <None Include="Assets\SceneRebuilder\plumber\Plugins\MathGeoLib.Exports.dll" />
      <None Include="Assets\ThirdPlugins\MeshProfiler\Plugins\EPPlus.XML" />
      <None Include="Assets\SceneRebuilder\Materials\Shaders\ColorShaderVertex.shader" />
     <Reference Include="UnityEngine">
-      <HintPath>C:\Program Files\Unity\Editor\Data\Managed\UnityEngine\UnityEngine.dll</HintPath>
+      <HintPath>C:\Program Files\Unity2020.2.6\Editor\Data\Managed\UnityEngine\UnityEngine.dll</HintPath>
     </Reference>
     <Reference Include="UnityEngine.AIModule">
-      <HintPath>C:\Program Files\Unity\Editor\Data\Managed\UnityEngine\UnityEngine.AIModule.dll</HintPath>
+      <HintPath>C:\Program Files\Unity2020.2.6\Editor\Data\Managed\UnityEngine\UnityEngine.AIModule.dll</HintPath>
     </Reference>
     <Reference Include="UnityEngine.ARModule">
-      <HintPath>C:\Program Files\Unity\Editor\Data\Managed\UnityEngine\UnityEngine.ARModule.dll</HintPath>
+      <HintPath>C:\Program Files\Unity2020.2.6\Editor\Data\Managed\UnityEngine\UnityEngine.ARModule.dll</HintPath>
     </Reference>
     <Reference Include="UnityEngine.AccessibilityModule">
-      <HintPath>C:\Program Files\Unity\Editor\Data\Managed\UnityEngine\UnityEngine.AccessibilityModule.dll</HintPath>
+      <HintPath>C:\Program Files\Unity2020.2.6\Editor\Data\Managed\UnityEngine\UnityEngine.AccessibilityModule.dll</HintPath>
     </Reference>
     <Reference Include="UnityEngine.AndroidJNIModule">
-      <HintPath>C:\Program Files\Unity\Editor\Data\Managed\UnityEngine\UnityEngine.AndroidJNIModule.dll</HintPath>
+      <HintPath>C:\Program Files\Unity2020.2.6\Editor\Data\Managed\UnityEngine\UnityEngine.AndroidJNIModule.dll</HintPath>
     </Reference>
     <Reference Include="UnityEngine.AnimationModule">
-      <HintPath>C:\Program Files\Unity\Editor\Data\Managed\UnityEngine\UnityEngine.AnimationModule.dll</HintPath>
+      <HintPath>C:\Program Files\Unity2020.2.6\Editor\Data\Managed\UnityEngine\UnityEngine.AnimationModule.dll</HintPath>
     </Reference>
     <Reference Include="UnityEngine.AssetBundleModule">
-      <HintPath>C:\Program Files\Unity\Editor\Data\Managed\UnityEngine\UnityEngine.AssetBundleModule.dll</HintPath>
+      <HintPath>C:\Program Files\Unity2020.2.6\Editor\Data\Managed\UnityEngine\UnityEngine.AssetBundleModule.dll</HintPath>
     </Reference>
     <Reference Include="UnityEngine.AudioModule">
-      <HintPath>C:\Program Files\Unity\Editor\Data\Managed\UnityEngine\UnityEngine.AudioModule.dll</HintPath>
+      <HintPath>C:\Program Files\Unity2020.2.6\Editor\Data\Managed\UnityEngine\UnityEngine.AudioModule.dll</HintPath>
     </Reference>
     <Reference Include="UnityEngine.ClothModule">
-      <HintPath>C:\Program Files\Unity\Editor\Data\Managed\UnityEngine\UnityEngine.ClothModule.dll</HintPath>
+      <HintPath>C:\Program Files\Unity2020.2.6\Editor\Data\Managed\UnityEngine\UnityEngine.ClothModule.dll</HintPath>
     </Reference>
     <Reference Include="UnityEngine.ClusterInputModule">
-      <HintPath>C:\Program Files\Unity\Editor\Data\Managed\UnityEngine\UnityEngine.ClusterInputModule.dll</HintPath>
+      <HintPath>C:\Program Files\Unity2020.2.6\Editor\Data\Managed\UnityEngine\UnityEngine.ClusterInputModule.dll</HintPath>
     </Reference>
     <Reference Include="UnityEngine.ClusterRendererModule">
-      <HintPath>C:\Program Files\Unity\Editor\Data\Managed\UnityEngine\UnityEngine.ClusterRendererModule.dll</HintPath>
+      <HintPath>C:\Program Files\Unity2020.2.6\Editor\Data\Managed\UnityEngine\UnityEngine.ClusterRendererModule.dll</HintPath>
     </Reference>
     <Reference Include="UnityEngine.CoreModule">
-      <HintPath>C:\Program Files\Unity\Editor\Data\Managed\UnityEngine\UnityEngine.CoreModule.dll</HintPath>
+      <HintPath>C:\Program Files\Unity2020.2.6\Editor\Data\Managed\UnityEngine\UnityEngine.CoreModule.dll</HintPath>
     </Reference>
     <Reference Include="UnityEngine.CrashReportingModule">
-      <HintPath>C:\Program Files\Unity\Editor\Data\Managed\UnityEngine\UnityEngine.CrashReportingModule.dll</HintPath>
+      <HintPath>C:\Program Files\Unity2020.2.6\Editor\Data\Managed\UnityEngine\UnityEngine.CrashReportingModule.dll</HintPath>
     </Reference>
     <Reference Include="UnityEngine.DSPGraphModule">
-      <HintPath>C:\Program Files\Unity\Editor\Data\Managed\UnityEngine\UnityEngine.DSPGraphModule.dll</HintPath>
+      <HintPath>C:\Program Files\Unity2020.2.6\Editor\Data\Managed\UnityEngine\UnityEngine.DSPGraphModule.dll</HintPath>
     </Reference>
     <Reference Include="UnityEngine.DirectorModule">
-      <HintPath>C:\Program Files\Unity\Editor\Data\Managed\UnityEngine\UnityEngine.DirectorModule.dll</HintPath>
+      <HintPath>C:\Program Files\Unity2020.2.6\Editor\Data\Managed\UnityEngine\UnityEngine.DirectorModule.dll</HintPath>
     </Reference>
     <Reference Include="UnityEngine.GIModule">
-      <HintPath>C:\Program Files\Unity\Editor\Data\Managed\UnityEngine\UnityEngine.GIModule.dll</HintPath>
+      <HintPath>C:\Program Files\Unity2020.2.6\Editor\Data\Managed\UnityEngine\UnityEngine.GIModule.dll</HintPath>
     </Reference>
     <Reference Include="UnityEngine.GameCenterModule">
-      <HintPath>C:\Program Files\Unity\Editor\Data\Managed\UnityEngine\UnityEngine.GameCenterModule.dll</HintPath>
+      <HintPath>C:\Program Files\Unity2020.2.6\Editor\Data\Managed\UnityEngine\UnityEngine.GameCenterModule.dll</HintPath>
     </Reference>
     <Reference Include="UnityEngine.GridModule">
-      <HintPath>C:\Program Files\Unity\Editor\Data\Managed\UnityEngine\UnityEngine.GridModule.dll</HintPath>
+      <HintPath>C:\Program Files\Unity2020.2.6\Editor\Data\Managed\UnityEngine\UnityEngine.GridModule.dll</HintPath>
     </Reference>
     <Reference Include="UnityEngine.HotReloadModule">
-      <HintPath>C:\Program Files\Unity\Editor\Data\Managed\UnityEngine\UnityEngine.HotReloadModule.dll</HintPath>
+      <HintPath>C:\Program Files\Unity2020.2.6\Editor\Data\Managed\UnityEngine\UnityEngine.HotReloadModule.dll</HintPath>
     </Reference>
     <Reference Include="UnityEngine.IMGUIModule">
-      <HintPath>C:\Program Files\Unity\Editor\Data\Managed\UnityEngine\UnityEngine.IMGUIModule.dll</HintPath>
+      <HintPath>C:\Program Files\Unity2020.2.6\Editor\Data\Managed\UnityEngine\UnityEngine.IMGUIModule.dll</HintPath>
     </Reference>
     <Reference Include="UnityEngine.ImageConversionModule">
-      <HintPath>C:\Program Files\Unity\Editor\Data\Managed\UnityEngine\UnityEngine.ImageConversionModule.dll</HintPath>
+      <HintPath>C:\Program Files\Unity2020.2.6\Editor\Data\Managed\UnityEngine\UnityEngine.ImageConversionModule.dll</HintPath>
     </Reference>
     <Reference Include="UnityEngine.InputModule">
-      <HintPath>C:\Program Files\Unity\Editor\Data\Managed\UnityEngine\UnityEngine.InputModule.dll</HintPath>
+      <HintPath>C:\Program Files\Unity2020.2.6\Editor\Data\Managed\UnityEngine\UnityEngine.InputModule.dll</HintPath>
     </Reference>
     <Reference Include="UnityEngine.InputLegacyModule">
-      <HintPath>C:\Program Files\Unity\Editor\Data\Managed\UnityEngine\UnityEngine.InputLegacyModule.dll</HintPath>
+      <HintPath>C:\Program Files\Unity2020.2.6\Editor\Data\Managed\UnityEngine\UnityEngine.InputLegacyModule.dll</HintPath>
     </Reference>
     <Reference Include="UnityEngine.JSONSerializeModule">
-      <HintPath>C:\Program Files\Unity\Editor\Data\Managed\UnityEngine\UnityEngine.JSONSerializeModule.dll</HintPath>
+      <HintPath>C:\Program Files\Unity2020.2.6\Editor\Data\Managed\UnityEngine\UnityEngine.JSONSerializeModule.dll</HintPath>
     </Reference>
     <Reference Include="UnityEngine.LocalizationModule">
-      <HintPath>C:\Program Files\Unity\Editor\Data\Managed\UnityEngine\UnityEngine.LocalizationModule.dll</HintPath>
+      <HintPath>C:\Program Files\Unity2020.2.6\Editor\Data\Managed\UnityEngine\UnityEngine.LocalizationModule.dll</HintPath>
     </Reference>
     <Reference Include="UnityEngine.ParticleSystemModule">
-      <HintPath>C:\Program Files\Unity\Editor\Data\Managed\UnityEngine\UnityEngine.ParticleSystemModule.dll</HintPath>
+      <HintPath>C:\Program Files\Unity2020.2.6\Editor\Data\Managed\UnityEngine\UnityEngine.ParticleSystemModule.dll</HintPath>
     </Reference>
     <Reference Include="UnityEngine.PerformanceReportingModule">
-      <HintPath>C:\Program Files\Unity\Editor\Data\Managed\UnityEngine\UnityEngine.PerformanceReportingModule.dll</HintPath>
+      <HintPath>C:\Program Files\Unity2020.2.6\Editor\Data\Managed\UnityEngine\UnityEngine.PerformanceReportingModule.dll</HintPath>
     </Reference>
     <Reference Include="UnityEngine.PhysicsModule">
-      <HintPath>C:\Program Files\Unity\Editor\Data\Managed\UnityEngine\UnityEngine.PhysicsModule.dll</HintPath>
+      <HintPath>C:\Program Files\Unity2020.2.6\Editor\Data\Managed\UnityEngine\UnityEngine.PhysicsModule.dll</HintPath>
     </Reference>
     <Reference Include="UnityEngine.Physics2DModule">
-      <HintPath>C:\Program Files\Unity\Editor\Data\Managed\UnityEngine\UnityEngine.Physics2DModule.dll</HintPath>
+      <HintPath>C:\Program Files\Unity2020.2.6\Editor\Data\Managed\UnityEngine\UnityEngine.Physics2DModule.dll</HintPath>
     </Reference>
     <Reference Include="UnityEngine.ProfilerModule">
-      <HintPath>C:\Program Files\Unity\Editor\Data\Managed\UnityEngine\UnityEngine.ProfilerModule.dll</HintPath>
+      <HintPath>C:\Program Files\Unity2020.2.6\Editor\Data\Managed\UnityEngine\UnityEngine.ProfilerModule.dll</HintPath>
     </Reference>
     <Reference Include="UnityEngine.RuntimeInitializeOnLoadManagerInitializerModule">
-      <HintPath>C:\Program Files\Unity\Editor\Data\Managed\UnityEngine\UnityEngine.RuntimeInitializeOnLoadManagerInitializerModule.dll</HintPath>
+      <HintPath>C:\Program Files\Unity2020.2.6\Editor\Data\Managed\UnityEngine\UnityEngine.RuntimeInitializeOnLoadManagerInitializerModule.dll</HintPath>
     </Reference>
     <Reference Include="UnityEngine.ScreenCaptureModule">
-      <HintPath>C:\Program Files\Unity\Editor\Data\Managed\UnityEngine\UnityEngine.ScreenCaptureModule.dll</HintPath>
+      <HintPath>C:\Program Files\Unity2020.2.6\Editor\Data\Managed\UnityEngine\UnityEngine.ScreenCaptureModule.dll</HintPath>
     </Reference>
     <Reference Include="UnityEngine.SharedInternalsModule">
-      <HintPath>C:\Program Files\Unity\Editor\Data\Managed\UnityEngine\UnityEngine.SharedInternalsModule.dll</HintPath>
+      <HintPath>C:\Program Files\Unity2020.2.6\Editor\Data\Managed\UnityEngine\UnityEngine.SharedInternalsModule.dll</HintPath>
     </Reference>
     <Reference Include="UnityEngine.SpriteMaskModule">
-      <HintPath>C:\Program Files\Unity\Editor\Data\Managed\UnityEngine\UnityEngine.SpriteMaskModule.dll</HintPath>
+      <HintPath>C:\Program Files\Unity2020.2.6\Editor\Data\Managed\UnityEngine\UnityEngine.SpriteMaskModule.dll</HintPath>
     </Reference>
     <Reference Include="UnityEngine.SpriteShapeModule">
-      <HintPath>C:\Program Files\Unity\Editor\Data\Managed\UnityEngine\UnityEngine.SpriteShapeModule.dll</HintPath>
+      <HintPath>C:\Program Files\Unity2020.2.6\Editor\Data\Managed\UnityEngine\UnityEngine.SpriteShapeModule.dll</HintPath>
     </Reference>
     <Reference Include="UnityEngine.StreamingModule">
-      <HintPath>C:\Program Files\Unity\Editor\Data\Managed\UnityEngine\UnityEngine.StreamingModule.dll</HintPath>
+      <HintPath>C:\Program Files\Unity2020.2.6\Editor\Data\Managed\UnityEngine\UnityEngine.StreamingModule.dll</HintPath>
     </Reference>
     <Reference Include="UnityEngine.SubstanceModule">
-      <HintPath>C:\Program Files\Unity\Editor\Data\Managed\UnityEngine\UnityEngine.SubstanceModule.dll</HintPath>
+      <HintPath>C:\Program Files\Unity2020.2.6\Editor\Data\Managed\UnityEngine\UnityEngine.SubstanceModule.dll</HintPath>
     </Reference>
     <Reference Include="UnityEngine.SubsystemsModule">
-      <HintPath>C:\Program Files\Unity\Editor\Data\Managed\UnityEngine\UnityEngine.SubsystemsModule.dll</HintPath>
+      <HintPath>C:\Program Files\Unity2020.2.6\Editor\Data\Managed\UnityEngine\UnityEngine.SubsystemsModule.dll</HintPath>
     </Reference>
     <Reference Include="UnityEngine.TLSModule">
-      <HintPath>C:\Program Files\Unity\Editor\Data\Managed\UnityEngine\UnityEngine.TLSModule.dll</HintPath>
+      <HintPath>C:\Program Files\Unity2020.2.6\Editor\Data\Managed\UnityEngine\UnityEngine.TLSModule.dll</HintPath>
     </Reference>
     <Reference Include="UnityEngine.TerrainModule">
-      <HintPath>C:\Program Files\Unity\Editor\Data\Managed\UnityEngine\UnityEngine.TerrainModule.dll</HintPath>
+      <HintPath>C:\Program Files\Unity2020.2.6\Editor\Data\Managed\UnityEngine\UnityEngine.TerrainModule.dll</HintPath>
     </Reference>
     <Reference Include="UnityEngine.TerrainPhysicsModule">
-      <HintPath>C:\Program Files\Unity\Editor\Data\Managed\UnityEngine\UnityEngine.TerrainPhysicsModule.dll</HintPath>
+      <HintPath>C:\Program Files\Unity2020.2.6\Editor\Data\Managed\UnityEngine\UnityEngine.TerrainPhysicsModule.dll</HintPath>
     </Reference>
     <Reference Include="UnityEngine.TextCoreModule">
-      <HintPath>C:\Program Files\Unity\Editor\Data\Managed\UnityEngine\UnityEngine.TextCoreModule.dll</HintPath>
+      <HintPath>C:\Program Files\Unity2020.2.6\Editor\Data\Managed\UnityEngine\UnityEngine.TextCoreModule.dll</HintPath>
     </Reference>
     <Reference Include="UnityEngine.TextRenderingModule">
-      <HintPath>C:\Program Files\Unity\Editor\Data\Managed\UnityEngine\UnityEngine.TextRenderingModule.dll</HintPath>
+      <HintPath>C:\Program Files\Unity2020.2.6\Editor\Data\Managed\UnityEngine\UnityEngine.TextRenderingModule.dll</HintPath>
     </Reference>
     <Reference Include="UnityEngine.TilemapModule">
-      <HintPath>C:\Program Files\Unity\Editor\Data\Managed\UnityEngine\UnityEngine.TilemapModule.dll</HintPath>
+      <HintPath>C:\Program Files\Unity2020.2.6\Editor\Data\Managed\UnityEngine\UnityEngine.TilemapModule.dll</HintPath>
     </Reference>
     <Reference Include="UnityEngine.UIModule">
-      <HintPath>C:\Program Files\Unity\Editor\Data\Managed\UnityEngine\UnityEngine.UIModule.dll</HintPath>
+      <HintPath>C:\Program Files\Unity2020.2.6\Editor\Data\Managed\UnityEngine\UnityEngine.UIModule.dll</HintPath>
     </Reference>
     <Reference Include="UnityEngine.UIElementsModule">
-      <HintPath>C:\Program Files\Unity\Editor\Data\Managed\UnityEngine\UnityEngine.UIElementsModule.dll</HintPath>
+      <HintPath>C:\Program Files\Unity2020.2.6\Editor\Data\Managed\UnityEngine\UnityEngine.UIElementsModule.dll</HintPath>
     </Reference>
     <Reference Include="UnityEngine.UIElementsNativeModule">
-      <HintPath>C:\Program Files\Unity\Editor\Data\Managed\UnityEngine\UnityEngine.UIElementsNativeModule.dll</HintPath>
+      <HintPath>C:\Program Files\Unity2020.2.6\Editor\Data\Managed\UnityEngine\UnityEngine.UIElementsNativeModule.dll</HintPath>
     </Reference>
     <Reference Include="UnityEngine.UNETModule">
-      <HintPath>C:\Program Files\Unity\Editor\Data\Managed\UnityEngine\UnityEngine.UNETModule.dll</HintPath>
+      <HintPath>C:\Program Files\Unity2020.2.6\Editor\Data\Managed\UnityEngine\UnityEngine.UNETModule.dll</HintPath>
     </Reference>
     <Reference Include="UnityEngine.UmbraModule">
-      <HintPath>C:\Program Files\Unity\Editor\Data\Managed\UnityEngine\UnityEngine.UmbraModule.dll</HintPath>
+      <HintPath>C:\Program Files\Unity2020.2.6\Editor\Data\Managed\UnityEngine\UnityEngine.UmbraModule.dll</HintPath>
     </Reference>
     <Reference Include="UnityEngine.UnityAnalyticsModule">
-      <HintPath>C:\Program Files\Unity\Editor\Data\Managed\UnityEngine\UnityEngine.UnityAnalyticsModule.dll</HintPath>
+      <HintPath>C:\Program Files\Unity2020.2.6\Editor\Data\Managed\UnityEngine\UnityEngine.UnityAnalyticsModule.dll</HintPath>
     </Reference>
     <Reference Include="UnityEngine.UnityConnectModule">
-      <HintPath>C:\Program Files\Unity\Editor\Data\Managed\UnityEngine\UnityEngine.UnityConnectModule.dll</HintPath>
+      <HintPath>C:\Program Files\Unity2020.2.6\Editor\Data\Managed\UnityEngine\UnityEngine.UnityConnectModule.dll</HintPath>
     </Reference>
     <Reference Include="UnityEngine.UnityCurlModule">
-      <HintPath>C:\Program Files\Unity\Editor\Data\Managed\UnityEngine\UnityEngine.UnityCurlModule.dll</HintPath>
+      <HintPath>C:\Program Files\Unity2020.2.6\Editor\Data\Managed\UnityEngine\UnityEngine.UnityCurlModule.dll</HintPath>
     </Reference>
     <Reference Include="UnityEngine.UnityTestProtocolModule">
-      <HintPath>C:\Program Files\Unity\Editor\Data\Managed\UnityEngine\UnityEngine.UnityTestProtocolModule.dll</HintPath>
+      <HintPath>C:\Program Files\Unity2020.2.6\Editor\Data\Managed\UnityEngine\UnityEngine.UnityTestProtocolModule.dll</HintPath>
     </Reference>
     <Reference Include="UnityEngine.UnityWebRequestModule">
-      <HintPath>C:\Program Files\Unity\Editor\Data\Managed\UnityEngine\UnityEngine.UnityWebRequestModule.dll</HintPath>
+      <HintPath>C:\Program Files\Unity2020.2.6\Editor\Data\Managed\UnityEngine\UnityEngine.UnityWebRequestModule.dll</HintPath>
     </Reference>
     <Reference Include="UnityEngine.UnityWebRequestAssetBundleModule">
-      <HintPath>C:\Program Files\Unity\Editor\Data\Managed\UnityEngine\UnityEngine.UnityWebRequestAssetBundleModule.dll</HintPath>
+      <HintPath>C:\Program Files\Unity2020.2.6\Editor\Data\Managed\UnityEngine\UnityEngine.UnityWebRequestAssetBundleModule.dll</HintPath>
     </Reference>
     <Reference Include="UnityEngine.UnityWebRequestAudioModule">
-      <HintPath>C:\Program Files\Unity\Editor\Data\Managed\UnityEngine\UnityEngine.UnityWebRequestAudioModule.dll</HintPath>
+      <HintPath>C:\Program Files\Unity2020.2.6\Editor\Data\Managed\UnityEngine\UnityEngine.UnityWebRequestAudioModule.dll</HintPath>
     </Reference>
     <Reference Include="UnityEngine.UnityWebRequestTextureModule">
-      <HintPath>C:\Program Files\Unity\Editor\Data\Managed\UnityEngine\UnityEngine.UnityWebRequestTextureModule.dll</HintPath>
+      <HintPath>C:\Program Files\Unity2020.2.6\Editor\Data\Managed\UnityEngine\UnityEngine.UnityWebRequestTextureModule.dll</HintPath>
     </Reference>
     <Reference Include="UnityEngine.UnityWebRequestWWWModule">
-      <HintPath>C:\Program Files\Unity\Editor\Data\Managed\UnityEngine\UnityEngine.UnityWebRequestWWWModule.dll</HintPath>
+      <HintPath>C:\Program Files\Unity2020.2.6\Editor\Data\Managed\UnityEngine\UnityEngine.UnityWebRequestWWWModule.dll</HintPath>
     </Reference>
     <Reference Include="UnityEngine.VFXModule">
-      <HintPath>C:\Program Files\Unity\Editor\Data\Managed\UnityEngine\UnityEngine.VFXModule.dll</HintPath>
+      <HintPath>C:\Program Files\Unity2020.2.6\Editor\Data\Managed\UnityEngine\UnityEngine.VFXModule.dll</HintPath>
     </Reference>
     <Reference Include="UnityEngine.VRModule">
-      <HintPath>C:\Program Files\Unity\Editor\Data\Managed\UnityEngine\UnityEngine.VRModule.dll</HintPath>
+      <HintPath>C:\Program Files\Unity2020.2.6\Editor\Data\Managed\UnityEngine\UnityEngine.VRModule.dll</HintPath>
     </Reference>
     <Reference Include="UnityEngine.VehiclesModule">
-      <HintPath>C:\Program Files\Unity\Editor\Data\Managed\UnityEngine\UnityEngine.VehiclesModule.dll</HintPath>
+      <HintPath>C:\Program Files\Unity2020.2.6\Editor\Data\Managed\UnityEngine\UnityEngine.VehiclesModule.dll</HintPath>
     </Reference>
     <Reference Include="UnityEngine.VideoModule">
-      <HintPath>C:\Program Files\Unity\Editor\Data\Managed\UnityEngine\UnityEngine.VideoModule.dll</HintPath>
+      <HintPath>C:\Program Files\Unity2020.2.6\Editor\Data\Managed\UnityEngine\UnityEngine.VideoModule.dll</HintPath>
     </Reference>
     <Reference Include="UnityEngine.VirtualTexturingModule">
-      <HintPath>C:\Program Files\Unity\Editor\Data\Managed\UnityEngine\UnityEngine.VirtualTexturingModule.dll</HintPath>
+      <HintPath>C:\Program Files\Unity2020.2.6\Editor\Data\Managed\UnityEngine\UnityEngine.VirtualTexturingModule.dll</HintPath>
     </Reference>
     <Reference Include="UnityEngine.WindModule">
-      <HintPath>C:\Program Files\Unity\Editor\Data\Managed\UnityEngine\UnityEngine.WindModule.dll</HintPath>
+      <HintPath>C:\Program Files\Unity2020.2.6\Editor\Data\Managed\UnityEngine\UnityEngine.WindModule.dll</HintPath>
     </Reference>
     <Reference Include="UnityEngine.XRModule">
-      <HintPath>C:\Program Files\Unity\Editor\Data\Managed\UnityEngine\UnityEngine.XRModule.dll</HintPath>
+      <HintPath>C:\Program Files\Unity2020.2.6\Editor\Data\Managed\UnityEngine\UnityEngine.XRModule.dll</HintPath>
     </Reference>
     <Reference Include="UnityEditor">
-      <HintPath>C:\Program Files\Unity\Editor\Data\Managed\UnityEngine\UnityEditor.dll</HintPath>
+      <HintPath>C:\Program Files\Unity2020.2.6\Editor\Data\Managed\UnityEngine\UnityEditor.dll</HintPath>
     </Reference>
     <Reference Include="UnityEditor.CoreModule">
-      <HintPath>C:\Program Files\Unity\Editor\Data\Managed\UnityEngine\UnityEditor.CoreModule.dll</HintPath>
+      <HintPath>C:\Program Files\Unity2020.2.6\Editor\Data\Managed\UnityEngine\UnityEditor.CoreModule.dll</HintPath>
     </Reference>
     <Reference Include="UnityEditor.GraphViewModule">
-      <HintPath>C:\Program Files\Unity\Editor\Data\Managed\UnityEngine\UnityEditor.GraphViewModule.dll</HintPath>
+      <HintPath>C:\Program Files\Unity2020.2.6\Editor\Data\Managed\UnityEngine\UnityEditor.GraphViewModule.dll</HintPath>
     </Reference>
     <Reference Include="UnityEditor.PackageManagerUIModule">
-      <HintPath>C:\Program Files\Unity\Editor\Data\Managed\UnityEngine\UnityEditor.PackageManagerUIModule.dll</HintPath>
+      <HintPath>C:\Program Files\Unity2020.2.6\Editor\Data\Managed\UnityEngine\UnityEditor.PackageManagerUIModule.dll</HintPath>
     </Reference>
     <Reference Include="UnityEditor.SceneTemplateModule">
-      <HintPath>C:\Program Files\Unity\Editor\Data\Managed\UnityEngine\UnityEditor.SceneTemplateModule.dll</HintPath>
+      <HintPath>C:\Program Files\Unity2020.2.6\Editor\Data\Managed\UnityEngine\UnityEditor.SceneTemplateModule.dll</HintPath>
     </Reference>
     <Reference Include="UnityEditor.UIElementsModule">
-      <HintPath>C:\Program Files\Unity\Editor\Data\Managed\UnityEngine\UnityEditor.UIElementsModule.dll</HintPath>
+      <HintPath>C:\Program Files\Unity2020.2.6\Editor\Data\Managed\UnityEngine\UnityEditor.UIElementsModule.dll</HintPath>
     </Reference>
     <Reference Include="UnityEditor.UIElementsSamplesModule">
-      <HintPath>C:\Program Files\Unity\Editor\Data\Managed\UnityEngine\UnityEditor.UIElementsSamplesModule.dll</HintPath>
+      <HintPath>C:\Program Files\Unity2020.2.6\Editor\Data\Managed\UnityEngine\UnityEditor.UIElementsSamplesModule.dll</HintPath>
     </Reference>
     <Reference Include="UnityEditor.UIServiceModule">
-      <HintPath>C:\Program Files\Unity\Editor\Data\Managed\UnityEngine\UnityEditor.UIServiceModule.dll</HintPath>
+      <HintPath>C:\Program Files\Unity2020.2.6\Editor\Data\Managed\UnityEngine\UnityEditor.UIServiceModule.dll</HintPath>
     </Reference>
     <Reference Include="UnityEditor.UnityConnectModule">
-      <HintPath>C:\Program Files\Unity\Editor\Data\Managed\UnityEngine\UnityEditor.UnityConnectModule.dll</HintPath>
+      <HintPath>C:\Program Files\Unity2020.2.6\Editor\Data\Managed\UnityEngine\UnityEditor.UnityConnectModule.dll</HintPath>
     </Reference>
     <Reference Include="Unity.Collections.LowLevel.ILSupport">
       <HintPath>Library\PackageCache\com.unity.collections@0.15.0-preview.21\Unity.Collections.LowLevel.ILSupport\Unity.Collections.LowLevel.ILSupport.dll</HintPath>
@@ -779,424 +709,388 @@
       <HintPath>Assets\ThirdPlugins\MeshProfiler\Plugins\EPPlus.dll</HintPath>
     </Reference>
     <Reference Include="Accord">
-      <HintPath>Assets\SceneRebuilder\RigidTransformUtils\RigidTransform-master\Plugins\Accord.dll</HintPath>
+      <HintPath>Assets\SceneRebuilder\RigidTransformUtils\Plugins\Accord.dll</HintPath>
     </Reference>
     <Reference Include="Unity.Burst.Unsafe">
       <HintPath>Library\PackageCache\com.unity.burst@1.4.7\Unity.Burst.Unsafe.dll</HintPath>
     </Reference>
     <Reference Include="Accord.Statistics">
-      <HintPath>Assets\SceneRebuilder\RigidTransformUtils\RigidTransform-master\Plugins\Accord.Statistics.dll</HintPath>
+      <HintPath>Assets\SceneRebuilder\RigidTransformUtils\Plugins\Accord.Statistics.dll</HintPath>
     </Reference>
     <Reference Include="Accord.MachineLearning">
-      <HintPath>Assets\SceneRebuilder\RigidTransformUtils\RigidTransform-master\Plugins\Accord.MachineLearning.dll</HintPath>
+      <HintPath>Assets\SceneRebuilder\RigidTransformUtils\Plugins\Accord.MachineLearning.dll</HintPath>
     </Reference>
     <Reference Include="Accord.Math">
-      <HintPath>Assets\SceneRebuilder\RigidTransformUtils\RigidTransform-master\Plugins\Accord.Math.dll</HintPath>
+      <HintPath>Assets\SceneRebuilder\RigidTransformUtils\Plugins\Accord.Math.dll</HintPath>
     </Reference>
     <Reference Include="LitJSON">
       <HintPath>Assets\SceneRebuilder\RevitTool\Plugins\LitJSON.dll</HintPath>
     </Reference>
     <Reference Include="Accord.Math.Core">
-      <HintPath>Assets\SceneRebuilder\RigidTransformUtils\RigidTransform-master\Plugins\Accord.Math.Core.dll</HintPath>
+      <HintPath>Assets\SceneRebuilder\RigidTransformUtils\Plugins\Accord.Math.Core.dll</HintPath>
     </Reference>
     <Reference Include="Newtonsoft.Json">
       <HintPath>Library\PackageCache\com.unity.nuget.newtonsoft-json@2.0.0-preview\Runtime\Newtonsoft.Json.dll</HintPath>
     </Reference>
     <Reference Include="Accord.Imaging">
-      <HintPath>Assets\SceneRebuilder\RigidTransformUtils\RigidTransform-master\Plugins\Accord.Imaging.dll</HintPath>
+      <HintPath>Assets\SceneRebuilder\RigidTransformUtils\Plugins\Accord.Imaging.dll</HintPath>
     </Reference>
     <Reference Include="mscorlib">
-      <HintPath>C:\Program Files\Unity\Editor\Data\MonoBleedingEdge\lib\mono\4.7.1-api\mscorlib.dll</HintPath>
+      <HintPath>C:\Program Files\Unity2020.2.6\Editor\Data\MonoBleedingEdge\lib\mono\4.7.1-api\mscorlib.dll</HintPath>
     </Reference>
     <Reference Include="System">
-      <HintPath>C:\Program Files\Unity\Editor\Data\MonoBleedingEdge\lib\mono\4.7.1-api\System.dll</HintPath>
+      <HintPath>C:\Program Files\Unity2020.2.6\Editor\Data\MonoBleedingEdge\lib\mono\4.7.1-api\System.dll</HintPath>
     </Reference>
     <Reference Include="System.Core">
-      <HintPath>C:\Program Files\Unity\Editor\Data\MonoBleedingEdge\lib\mono\4.7.1-api\System.Core.dll</HintPath>
+      <HintPath>C:\Program Files\Unity2020.2.6\Editor\Data\MonoBleedingEdge\lib\mono\4.7.1-api\System.Core.dll</HintPath>
     </Reference>
     <Reference Include="System.Runtime.Serialization">
-      <HintPath>C:\Program Files\Unity\Editor\Data\MonoBleedingEdge\lib\mono\4.7.1-api\System.Runtime.Serialization.dll</HintPath>
+      <HintPath>C:\Program Files\Unity2020.2.6\Editor\Data\MonoBleedingEdge\lib\mono\4.7.1-api\System.Runtime.Serialization.dll</HintPath>
     </Reference>
     <Reference Include="System.Xml">
-      <HintPath>C:\Program Files\Unity\Editor\Data\MonoBleedingEdge\lib\mono\4.7.1-api\System.Xml.dll</HintPath>
+      <HintPath>C:\Program Files\Unity2020.2.6\Editor\Data\MonoBleedingEdge\lib\mono\4.7.1-api\System.Xml.dll</HintPath>
     </Reference>
     <Reference Include="System.Xml.Linq">
-      <HintPath>C:\Program Files\Unity\Editor\Data\MonoBleedingEdge\lib\mono\4.7.1-api\System.Xml.Linq.dll</HintPath>
+      <HintPath>C:\Program Files\Unity2020.2.6\Editor\Data\MonoBleedingEdge\lib\mono\4.7.1-api\System.Xml.Linq.dll</HintPath>
     </Reference>
     <Reference Include="System.Numerics">
-      <HintPath>C:\Program Files\Unity\Editor\Data\MonoBleedingEdge\lib\mono\4.7.1-api\System.Numerics.dll</HintPath>
+      <HintPath>C:\Program Files\Unity2020.2.6\Editor\Data\MonoBleedingEdge\lib\mono\4.7.1-api\System.Numerics.dll</HintPath>
     </Reference>
     <Reference Include="System.Numerics.Vectors">
-      <HintPath>C:\Program Files\Unity\Editor\Data\MonoBleedingEdge\lib\mono\4.7.1-api\System.Numerics.Vectors.dll</HintPath>
+      <HintPath>C:\Program Files\Unity2020.2.6\Editor\Data\MonoBleedingEdge\lib\mono\4.7.1-api\System.Numerics.Vectors.dll</HintPath>
     </Reference>
     <Reference Include="System.Net.Http">
-      <HintPath>C:\Program Files\Unity\Editor\Data\MonoBleedingEdge\lib\mono\4.7.1-api\System.Net.Http.dll</HintPath>
+      <HintPath>C:\Program Files\Unity2020.2.6\Editor\Data\MonoBleedingEdge\lib\mono\4.7.1-api\System.Net.Http.dll</HintPath>
     </Reference>
     <Reference Include="Microsoft.CSharp">
-      <HintPath>C:\Program Files\Unity\Editor\Data\MonoBleedingEdge\lib\mono\4.7.1-api\Microsoft.CSharp.dll</HintPath>
+      <HintPath>C:\Program Files\Unity2020.2.6\Editor\Data\MonoBleedingEdge\lib\mono\4.7.1-api\Microsoft.CSharp.dll</HintPath>
     </Reference>
     <Reference Include="System.Data">
-      <HintPath>C:\Program Files\Unity\Editor\Data\MonoBleedingEdge\lib\mono\4.7.1-api\System.Data.dll</HintPath>
+      <HintPath>C:\Program Files\Unity2020.2.6\Editor\Data\MonoBleedingEdge\lib\mono\4.7.1-api\System.Data.dll</HintPath>
     </Reference>
     <Reference Include="Microsoft.Win32.Primitives">
-      <HintPath>C:\Program Files\Unity\Editor\Data\MonoBleedingEdge\lib\mono\4.7.1-api\Facades\Microsoft.Win32.Primitives.dll</HintPath>
+      <HintPath>C:\Program Files\Unity2020.2.6\Editor\Data\MonoBleedingEdge\lib\mono\4.7.1-api\Facades\Microsoft.Win32.Primitives.dll</HintPath>
     </Reference>
     <Reference Include="netstandard">
-      <HintPath>C:\Program Files\Unity\Editor\Data\MonoBleedingEdge\lib\mono\4.7.1-api\Facades\netstandard.dll</HintPath>
+      <HintPath>C:\Program Files\Unity2020.2.6\Editor\Data\MonoBleedingEdge\lib\mono\4.7.1-api\Facades\netstandard.dll</HintPath>
     </Reference>
     <Reference Include="System.AppContext">
-      <HintPath>C:\Program Files\Unity\Editor\Data\MonoBleedingEdge\lib\mono\4.7.1-api\Facades\System.AppContext.dll</HintPath>
+      <HintPath>C:\Program Files\Unity2020.2.6\Editor\Data\MonoBleedingEdge\lib\mono\4.7.1-api\Facades\System.AppContext.dll</HintPath>
     </Reference>
     <Reference Include="System.Collections.Concurrent">
-      <HintPath>C:\Program Files\Unity\Editor\Data\MonoBleedingEdge\lib\mono\4.7.1-api\Facades\System.Collections.Concurrent.dll</HintPath>
+      <HintPath>C:\Program Files\Unity2020.2.6\Editor\Data\MonoBleedingEdge\lib\mono\4.7.1-api\Facades\System.Collections.Concurrent.dll</HintPath>
     </Reference>
     <Reference Include="System.Collections">
-      <HintPath>C:\Program Files\Unity\Editor\Data\MonoBleedingEdge\lib\mono\4.7.1-api\Facades\System.Collections.dll</HintPath>
+      <HintPath>C:\Program Files\Unity2020.2.6\Editor\Data\MonoBleedingEdge\lib\mono\4.7.1-api\Facades\System.Collections.dll</HintPath>
     </Reference>
     <Reference Include="System.Collections.NonGeneric">
-      <HintPath>C:\Program Files\Unity\Editor\Data\MonoBleedingEdge\lib\mono\4.7.1-api\Facades\System.Collections.NonGeneric.dll</HintPath>
+      <HintPath>C:\Program Files\Unity2020.2.6\Editor\Data\MonoBleedingEdge\lib\mono\4.7.1-api\Facades\System.Collections.NonGeneric.dll</HintPath>
     </Reference>
     <Reference Include="System.Collections.Specialized">
-      <HintPath>C:\Program Files\Unity\Editor\Data\MonoBleedingEdge\lib\mono\4.7.1-api\Facades\System.Collections.Specialized.dll</HintPath>
+      <HintPath>C:\Program Files\Unity2020.2.6\Editor\Data\MonoBleedingEdge\lib\mono\4.7.1-api\Facades\System.Collections.Specialized.dll</HintPath>
     </Reference>
     <Reference Include="System.ComponentModel.Annotations">
-      <HintPath>C:\Program Files\Unity\Editor\Data\MonoBleedingEdge\lib\mono\4.7.1-api\Facades\System.ComponentModel.Annotations.dll</HintPath>
+      <HintPath>C:\Program Files\Unity2020.2.6\Editor\Data\MonoBleedingEdge\lib\mono\4.7.1-api\Facades\System.ComponentModel.Annotations.dll</HintPath>
     </Reference>
     <Reference Include="System.ComponentModel">
-      <HintPath>C:\Program Files\Unity\Editor\Data\MonoBleedingEdge\lib\mono\4.7.1-api\Facades\System.ComponentModel.dll</HintPath>
+      <HintPath>C:\Program Files\Unity2020.2.6\Editor\Data\MonoBleedingEdge\lib\mono\4.7.1-api\Facades\System.ComponentModel.dll</HintPath>
     </Reference>
     <Reference Include="System.ComponentModel.EventBasedAsync">
-      <HintPath>C:\Program Files\Unity\Editor\Data\MonoBleedingEdge\lib\mono\4.7.1-api\Facades\System.ComponentModel.EventBasedAsync.dll</HintPath>
+      <HintPath>C:\Program Files\Unity2020.2.6\Editor\Data\MonoBleedingEdge\lib\mono\4.7.1-api\Facades\System.ComponentModel.EventBasedAsync.dll</HintPath>
     </Reference>
     <Reference Include="System.ComponentModel.Primitives">
-      <HintPath>C:\Program Files\Unity\Editor\Data\MonoBleedingEdge\lib\mono\4.7.1-api\Facades\System.ComponentModel.Primitives.dll</HintPath>
+      <HintPath>C:\Program Files\Unity2020.2.6\Editor\Data\MonoBleedingEdge\lib\mono\4.7.1-api\Facades\System.ComponentModel.Primitives.dll</HintPath>
     </Reference>
     <Reference Include="System.ComponentModel.TypeConverter">
-      <HintPath>C:\Program Files\Unity\Editor\Data\MonoBleedingEdge\lib\mono\4.7.1-api\Facades\System.ComponentModel.TypeConverter.dll</HintPath>
+      <HintPath>C:\Program Files\Unity2020.2.6\Editor\Data\MonoBleedingEdge\lib\mono\4.7.1-api\Facades\System.ComponentModel.TypeConverter.dll</HintPath>
     </Reference>
     <Reference Include="System.Console">
-      <HintPath>C:\Program Files\Unity\Editor\Data\MonoBleedingEdge\lib\mono\4.7.1-api\Facades\System.Console.dll</HintPath>
+      <HintPath>C:\Program Files\Unity2020.2.6\Editor\Data\MonoBleedingEdge\lib\mono\4.7.1-api\Facades\System.Console.dll</HintPath>
     </Reference>
     <Reference Include="System.Data.Common">
-      <HintPath>C:\Program Files\Unity\Editor\Data\MonoBleedingEdge\lib\mono\4.7.1-api\Facades\System.Data.Common.dll</HintPath>
+      <HintPath>C:\Program Files\Unity2020.2.6\Editor\Data\MonoBleedingEdge\lib\mono\4.7.1-api\Facades\System.Data.Common.dll</HintPath>
     </Reference>
     <Reference Include="System.Diagnostics.Contracts">
-      <HintPath>C:\Program Files\Unity\Editor\Data\MonoBleedingEdge\lib\mono\4.7.1-api\Facades\System.Diagnostics.Contracts.dll</HintPath>
+      <HintPath>C:\Program Files\Unity2020.2.6\Editor\Data\MonoBleedingEdge\lib\mono\4.7.1-api\Facades\System.Diagnostics.Contracts.dll</HintPath>
     </Reference>
     <Reference Include="System.Diagnostics.Debug">
-      <HintPath>C:\Program Files\Unity\Editor\Data\MonoBleedingEdge\lib\mono\4.7.1-api\Facades\System.Diagnostics.Debug.dll</HintPath>
+      <HintPath>C:\Program Files\Unity2020.2.6\Editor\Data\MonoBleedingEdge\lib\mono\4.7.1-api\Facades\System.Diagnostics.Debug.dll</HintPath>
     </Reference>
     <Reference Include="System.Diagnostics.FileVersionInfo">
-      <HintPath>C:\Program Files\Unity\Editor\Data\MonoBleedingEdge\lib\mono\4.7.1-api\Facades\System.Diagnostics.FileVersionInfo.dll</HintPath>
+      <HintPath>C:\Program Files\Unity2020.2.6\Editor\Data\MonoBleedingEdge\lib\mono\4.7.1-api\Facades\System.Diagnostics.FileVersionInfo.dll</HintPath>
     </Reference>
     <Reference Include="System.Diagnostics.Process">
-      <HintPath>C:\Program Files\Unity\Editor\Data\MonoBleedingEdge\lib\mono\4.7.1-api\Facades\System.Diagnostics.Process.dll</HintPath>
+      <HintPath>C:\Program Files\Unity2020.2.6\Editor\Data\MonoBleedingEdge\lib\mono\4.7.1-api\Facades\System.Diagnostics.Process.dll</HintPath>
     </Reference>
     <Reference Include="System.Diagnostics.StackTrace">
-      <HintPath>C:\Program Files\Unity\Editor\Data\MonoBleedingEdge\lib\mono\4.7.1-api\Facades\System.Diagnostics.StackTrace.dll</HintPath>
+      <HintPath>C:\Program Files\Unity2020.2.6\Editor\Data\MonoBleedingEdge\lib\mono\4.7.1-api\Facades\System.Diagnostics.StackTrace.dll</HintPath>
     </Reference>
     <Reference Include="System.Diagnostics.TextWriterTraceListener">
-      <HintPath>C:\Program Files\Unity\Editor\Data\MonoBleedingEdge\lib\mono\4.7.1-api\Facades\System.Diagnostics.TextWriterTraceListener.dll</HintPath>
+      <HintPath>C:\Program Files\Unity2020.2.6\Editor\Data\MonoBleedingEdge\lib\mono\4.7.1-api\Facades\System.Diagnostics.TextWriterTraceListener.dll</HintPath>
     </Reference>
     <Reference Include="System.Diagnostics.Tools">
-      <HintPath>C:\Program Files\Unity\Editor\Data\MonoBleedingEdge\lib\mono\4.7.1-api\Facades\System.Diagnostics.Tools.dll</HintPath>
+      <HintPath>C:\Program Files\Unity2020.2.6\Editor\Data\MonoBleedingEdge\lib\mono\4.7.1-api\Facades\System.Diagnostics.Tools.dll</HintPath>
     </Reference>
     <Reference Include="System.Diagnostics.TraceSource">
-      <HintPath>C:\Program Files\Unity\Editor\Data\MonoBleedingEdge\lib\mono\4.7.1-api\Facades\System.Diagnostics.TraceSource.dll</HintPath>
+      <HintPath>C:\Program Files\Unity2020.2.6\Editor\Data\MonoBleedingEdge\lib\mono\4.7.1-api\Facades\System.Diagnostics.TraceSource.dll</HintPath>
     </Reference>
     <Reference Include="System.Drawing.Primitives">
-      <HintPath>C:\Program Files\Unity\Editor\Data\MonoBleedingEdge\lib\mono\4.7.1-api\Facades\System.Drawing.Primitives.dll</HintPath>
+      <HintPath>C:\Program Files\Unity2020.2.6\Editor\Data\MonoBleedingEdge\lib\mono\4.7.1-api\Facades\System.Drawing.Primitives.dll</HintPath>
     </Reference>
     <Reference Include="System.Dynamic.Runtime">
-      <HintPath>C:\Program Files\Unity\Editor\Data\MonoBleedingEdge\lib\mono\4.7.1-api\Facades\System.Dynamic.Runtime.dll</HintPath>
+      <HintPath>C:\Program Files\Unity2020.2.6\Editor\Data\MonoBleedingEdge\lib\mono\4.7.1-api\Facades\System.Dynamic.Runtime.dll</HintPath>
     </Reference>
     <Reference Include="System.Globalization.Calendars">
-      <HintPath>C:\Program Files\Unity\Editor\Data\MonoBleedingEdge\lib\mono\4.7.1-api\Facades\System.Globalization.Calendars.dll</HintPath>
+      <HintPath>C:\Program Files\Unity2020.2.6\Editor\Data\MonoBleedingEdge\lib\mono\4.7.1-api\Facades\System.Globalization.Calendars.dll</HintPath>
     </Reference>
     <Reference Include="System.Globalization">
-      <HintPath>C:\Program Files\Unity\Editor\Data\MonoBleedingEdge\lib\mono\4.7.1-api\Facades\System.Globalization.dll</HintPath>
+      <HintPath>C:\Program Files\Unity2020.2.6\Editor\Data\MonoBleedingEdge\lib\mono\4.7.1-api\Facades\System.Globalization.dll</HintPath>
     </Reference>
     <Reference Include="System.Globalization.Extensions">
-      <HintPath>C:\Program Files\Unity\Editor\Data\MonoBleedingEdge\lib\mono\4.7.1-api\Facades\System.Globalization.Extensions.dll</HintPath>
+      <HintPath>C:\Program Files\Unity2020.2.6\Editor\Data\MonoBleedingEdge\lib\mono\4.7.1-api\Facades\System.Globalization.Extensions.dll</HintPath>
     </Reference>
     <Reference Include="System.IO.Compression.ZipFile">
-      <HintPath>C:\Program Files\Unity\Editor\Data\MonoBleedingEdge\lib\mono\4.7.1-api\Facades\System.IO.Compression.ZipFile.dll</HintPath>
+      <HintPath>C:\Program Files\Unity2020.2.6\Editor\Data\MonoBleedingEdge\lib\mono\4.7.1-api\Facades\System.IO.Compression.ZipFile.dll</HintPath>
     </Reference>
     <Reference Include="System.IO">
-      <HintPath>C:\Program Files\Unity\Editor\Data\MonoBleedingEdge\lib\mono\4.7.1-api\Facades\System.IO.dll</HintPath>
+      <HintPath>C:\Program Files\Unity2020.2.6\Editor\Data\MonoBleedingEdge\lib\mono\4.7.1-api\Facades\System.IO.dll</HintPath>
     </Reference>
     <Reference Include="System.IO.FileSystem">
-      <HintPath>C:\Program Files\Unity\Editor\Data\MonoBleedingEdge\lib\mono\4.7.1-api\Facades\System.IO.FileSystem.dll</HintPath>
+      <HintPath>C:\Program Files\Unity2020.2.6\Editor\Data\MonoBleedingEdge\lib\mono\4.7.1-api\Facades\System.IO.FileSystem.dll</HintPath>
     </Reference>
     <Reference Include="System.IO.FileSystem.DriveInfo">
-      <HintPath>C:\Program Files\Unity\Editor\Data\MonoBleedingEdge\lib\mono\4.7.1-api\Facades\System.IO.FileSystem.DriveInfo.dll</HintPath>
+      <HintPath>C:\Program Files\Unity2020.2.6\Editor\Data\MonoBleedingEdge\lib\mono\4.7.1-api\Facades\System.IO.FileSystem.DriveInfo.dll</HintPath>
     </Reference>
     <Reference Include="System.IO.FileSystem.Primitives">
-      <HintPath>C:\Program Files\Unity\Editor\Data\MonoBleedingEdge\lib\mono\4.7.1-api\Facades\System.IO.FileSystem.Primitives.dll</HintPath>
+      <HintPath>C:\Program Files\Unity2020.2.6\Editor\Data\MonoBleedingEdge\lib\mono\4.7.1-api\Facades\System.IO.FileSystem.Primitives.dll</HintPath>
     </Reference>
     <Reference Include="System.IO.FileSystem.Watcher">
-      <HintPath>C:\Program Files\Unity\Editor\Data\MonoBleedingEdge\lib\mono\4.7.1-api\Facades\System.IO.FileSystem.Watcher.dll</HintPath>
+      <HintPath>C:\Program Files\Unity2020.2.6\Editor\Data\MonoBleedingEdge\lib\mono\4.7.1-api\Facades\System.IO.FileSystem.Watcher.dll</HintPath>
     </Reference>
     <Reference Include="System.IO.IsolatedStorage">
-      <HintPath>C:\Program Files\Unity\Editor\Data\MonoBleedingEdge\lib\mono\4.7.1-api\Facades\System.IO.IsolatedStorage.dll</HintPath>
+      <HintPath>C:\Program Files\Unity2020.2.6\Editor\Data\MonoBleedingEdge\lib\mono\4.7.1-api\Facades\System.IO.IsolatedStorage.dll</HintPath>
     </Reference>
     <Reference Include="System.IO.MemoryMappedFiles">
-      <HintPath>C:\Program Files\Unity\Editor\Data\MonoBleedingEdge\lib\mono\4.7.1-api\Facades\System.IO.MemoryMappedFiles.dll</HintPath>
+      <HintPath>C:\Program Files\Unity2020.2.6\Editor\Data\MonoBleedingEdge\lib\mono\4.7.1-api\Facades\System.IO.MemoryMappedFiles.dll</HintPath>
     </Reference>
     <Reference Include="System.IO.Pipes">
-      <HintPath>C:\Program Files\Unity\Editor\Data\MonoBleedingEdge\lib\mono\4.7.1-api\Facades\System.IO.Pipes.dll</HintPath>
+      <HintPath>C:\Program Files\Unity2020.2.6\Editor\Data\MonoBleedingEdge\lib\mono\4.7.1-api\Facades\System.IO.Pipes.dll</HintPath>
     </Reference>
     <Reference Include="System.IO.UnmanagedMemoryStream">
-      <HintPath>C:\Program Files\Unity\Editor\Data\MonoBleedingEdge\lib\mono\4.7.1-api\Facades\System.IO.UnmanagedMemoryStream.dll</HintPath>
+      <HintPath>C:\Program Files\Unity2020.2.6\Editor\Data\MonoBleedingEdge\lib\mono\4.7.1-api\Facades\System.IO.UnmanagedMemoryStream.dll</HintPath>
     </Reference>
     <Reference Include="System.Linq">
-      <HintPath>C:\Program Files\Unity\Editor\Data\MonoBleedingEdge\lib\mono\4.7.1-api\Facades\System.Linq.dll</HintPath>
+      <HintPath>C:\Program Files\Unity2020.2.6\Editor\Data\MonoBleedingEdge\lib\mono\4.7.1-api\Facades\System.Linq.dll</HintPath>
     </Reference>
     <Reference Include="System.Linq.Expressions">
-      <HintPath>C:\Program Files\Unity\Editor\Data\MonoBleedingEdge\lib\mono\4.7.1-api\Facades\System.Linq.Expressions.dll</HintPath>
+      <HintPath>C:\Program Files\Unity2020.2.6\Editor\Data\MonoBleedingEdge\lib\mono\4.7.1-api\Facades\System.Linq.Expressions.dll</HintPath>
     </Reference>
     <Reference Include="System.Linq.Parallel">
-      <HintPath>C:\Program Files\Unity\Editor\Data\MonoBleedingEdge\lib\mono\4.7.1-api\Facades\System.Linq.Parallel.dll</HintPath>
+      <HintPath>C:\Program Files\Unity2020.2.6\Editor\Data\MonoBleedingEdge\lib\mono\4.7.1-api\Facades\System.Linq.Parallel.dll</HintPath>
     </Reference>
     <Reference Include="System.Linq.Queryable">
-      <HintPath>C:\Program Files\Unity\Editor\Data\MonoBleedingEdge\lib\mono\4.7.1-api\Facades\System.Linq.Queryable.dll</HintPath>
+      <HintPath>C:\Program Files\Unity2020.2.6\Editor\Data\MonoBleedingEdge\lib\mono\4.7.1-api\Facades\System.Linq.Queryable.dll</HintPath>
     </Reference>
     <Reference Include="System.Net.Http.Rtc">
-      <HintPath>C:\Program Files\Unity\Editor\Data\MonoBleedingEdge\lib\mono\4.7.1-api\Facades\System.Net.Http.Rtc.dll</HintPath>
+      <HintPath>C:\Program Files\Unity2020.2.6\Editor\Data\MonoBleedingEdge\lib\mono\4.7.1-api\Facades\System.Net.Http.Rtc.dll</HintPath>
     </Reference>
     <Reference Include="System.Net.NameResolution">
-      <HintPath>C:\Program Files\Unity\Editor\Data\MonoBleedingEdge\lib\mono\4.7.1-api\Facades\System.Net.NameResolution.dll</HintPath>
+      <HintPath>C:\Program Files\Unity2020.2.6\Editor\Data\MonoBleedingEdge\lib\mono\4.7.1-api\Facades\System.Net.NameResolution.dll</HintPath>
     </Reference>
     <Reference Include="System.Net.NetworkInformation">
-      <HintPath>C:\Program Files\Unity\Editor\Data\MonoBleedingEdge\lib\mono\4.7.1-api\Facades\System.Net.NetworkInformation.dll</HintPath>
+      <HintPath>C:\Program Files\Unity2020.2.6\Editor\Data\MonoBleedingEdge\lib\mono\4.7.1-api\Facades\System.Net.NetworkInformation.dll</HintPath>
     </Reference>
     <Reference Include="System.Net.Ping">
-      <HintPath>C:\Program Files\Unity\Editor\Data\MonoBleedingEdge\lib\mono\4.7.1-api\Facades\System.Net.Ping.dll</HintPath>
+      <HintPath>C:\Program Files\Unity2020.2.6\Editor\Data\MonoBleedingEdge\lib\mono\4.7.1-api\Facades\System.Net.Ping.dll</HintPath>
     </Reference>
     <Reference Include="System.Net.Primitives">
-      <HintPath>C:\Program Files\Unity\Editor\Data\MonoBleedingEdge\lib\mono\4.7.1-api\Facades\System.Net.Primitives.dll</HintPath>
+      <HintPath>C:\Program Files\Unity2020.2.6\Editor\Data\MonoBleedingEdge\lib\mono\4.7.1-api\Facades\System.Net.Primitives.dll</HintPath>
     </Reference>
     <Reference Include="System.Net.Requests">
-      <HintPath>C:\Program Files\Unity\Editor\Data\MonoBleedingEdge\lib\mono\4.7.1-api\Facades\System.Net.Requests.dll</HintPath>
+      <HintPath>C:\Program Files\Unity2020.2.6\Editor\Data\MonoBleedingEdge\lib\mono\4.7.1-api\Facades\System.Net.Requests.dll</HintPath>
     </Reference>
     <Reference Include="System.Net.Security">
-      <HintPath>C:\Program Files\Unity\Editor\Data\MonoBleedingEdge\lib\mono\4.7.1-api\Facades\System.Net.Security.dll</HintPath>
+      <HintPath>C:\Program Files\Unity2020.2.6\Editor\Data\MonoBleedingEdge\lib\mono\4.7.1-api\Facades\System.Net.Security.dll</HintPath>
     </Reference>
     <Reference Include="System.Net.Sockets">
-      <HintPath>C:\Program Files\Unity\Editor\Data\MonoBleedingEdge\lib\mono\4.7.1-api\Facades\System.Net.Sockets.dll</HintPath>
+      <HintPath>C:\Program Files\Unity2020.2.6\Editor\Data\MonoBleedingEdge\lib\mono\4.7.1-api\Facades\System.Net.Sockets.dll</HintPath>
     </Reference>
     <Reference Include="System.Net.WebHeaderCollection">
-      <HintPath>C:\Program Files\Unity\Editor\Data\MonoBleedingEdge\lib\mono\4.7.1-api\Facades\System.Net.WebHeaderCollection.dll</HintPath>
+      <HintPath>C:\Program Files\Unity2020.2.6\Editor\Data\MonoBleedingEdge\lib\mono\4.7.1-api\Facades\System.Net.WebHeaderCollection.dll</HintPath>
     </Reference>
     <Reference Include="System.Net.WebSockets.Client">
-      <HintPath>C:\Program Files\Unity\Editor\Data\MonoBleedingEdge\lib\mono\4.7.1-api\Facades\System.Net.WebSockets.Client.dll</HintPath>
+      <HintPath>C:\Program Files\Unity2020.2.6\Editor\Data\MonoBleedingEdge\lib\mono\4.7.1-api\Facades\System.Net.WebSockets.Client.dll</HintPath>
     </Reference>
     <Reference Include="System.Net.WebSockets">
-      <HintPath>C:\Program Files\Unity\Editor\Data\MonoBleedingEdge\lib\mono\4.7.1-api\Facades\System.Net.WebSockets.dll</HintPath>
+      <HintPath>C:\Program Files\Unity2020.2.6\Editor\Data\MonoBleedingEdge\lib\mono\4.7.1-api\Facades\System.Net.WebSockets.dll</HintPath>
     </Reference>
     <Reference Include="System.ObjectModel">
-      <HintPath>C:\Program Files\Unity\Editor\Data\MonoBleedingEdge\lib\mono\4.7.1-api\Facades\System.ObjectModel.dll</HintPath>
+      <HintPath>C:\Program Files\Unity2020.2.6\Editor\Data\MonoBleedingEdge\lib\mono\4.7.1-api\Facades\System.ObjectModel.dll</HintPath>
     </Reference>
     <Reference Include="System.Reflection">
-      <HintPath>C:\Program Files\Unity\Editor\Data\MonoBleedingEdge\lib\mono\4.7.1-api\Facades\System.Reflection.dll</HintPath>
+      <HintPath>C:\Program Files\Unity2020.2.6\Editor\Data\MonoBleedingEdge\lib\mono\4.7.1-api\Facades\System.Reflection.dll</HintPath>
     </Reference>
     <Reference Include="System.Reflection.Emit">
-      <HintPath>C:\Program Files\Unity\Editor\Data\MonoBleedingEdge\lib\mono\4.7.1-api\Facades\System.Reflection.Emit.dll</HintPath>
+      <HintPath>C:\Program Files\Unity2020.2.6\Editor\Data\MonoBleedingEdge\lib\mono\4.7.1-api\Facades\System.Reflection.Emit.dll</HintPath>
     </Reference>
     <Reference Include="System.Reflection.Emit.ILGeneration">
-      <HintPath>C:\Program Files\Unity\Editor\Data\MonoBleedingEdge\lib\mono\4.7.1-api\Facades\System.Reflection.Emit.ILGeneration.dll</HintPath>
+      <HintPath>C:\Program Files\Unity2020.2.6\Editor\Data\MonoBleedingEdge\lib\mono\4.7.1-api\Facades\System.Reflection.Emit.ILGeneration.dll</HintPath>
     </Reference>
     <Reference Include="System.Reflection.Emit.Lightweight">
-      <HintPath>C:\Program Files\Unity\Editor\Data\MonoBleedingEdge\lib\mono\4.7.1-api\Facades\System.Reflection.Emit.Lightweight.dll</HintPath>
+      <HintPath>C:\Program Files\Unity2020.2.6\Editor\Data\MonoBleedingEdge\lib\mono\4.7.1-api\Facades\System.Reflection.Emit.Lightweight.dll</HintPath>
     </Reference>
     <Reference Include="System.Reflection.Extensions">
-      <HintPath>C:\Program Files\Unity\Editor\Data\MonoBleedingEdge\lib\mono\4.7.1-api\Facades\System.Reflection.Extensions.dll</HintPath>
+      <HintPath>C:\Program Files\Unity2020.2.6\Editor\Data\MonoBleedingEdge\lib\mono\4.7.1-api\Facades\System.Reflection.Extensions.dll</HintPath>
     </Reference>
     <Reference Include="System.Reflection.Primitives">
-      <HintPath>C:\Program Files\Unity\Editor\Data\MonoBleedingEdge\lib\mono\4.7.1-api\Facades\System.Reflection.Primitives.dll</HintPath>
+      <HintPath>C:\Program Files\Unity2020.2.6\Editor\Data\MonoBleedingEdge\lib\mono\4.7.1-api\Facades\System.Reflection.Primitives.dll</HintPath>
     </Reference>
     <Reference Include="System.Resources.Reader">
-      <HintPath>C:\Program Files\Unity\Editor\Data\MonoBleedingEdge\lib\mono\4.7.1-api\Facades\System.Resources.Reader.dll</HintPath>
+      <HintPath>C:\Program Files\Unity2020.2.6\Editor\Data\MonoBleedingEdge\lib\mono\4.7.1-api\Facades\System.Resources.Reader.dll</HintPath>
     </Reference>
     <Reference Include="System.Resources.ResourceManager">
-      <HintPath>C:\Program Files\Unity\Editor\Data\MonoBleedingEdge\lib\mono\4.7.1-api\Facades\System.Resources.ResourceManager.dll</HintPath>
+      <HintPath>C:\Program Files\Unity2020.2.6\Editor\Data\MonoBleedingEdge\lib\mono\4.7.1-api\Facades\System.Resources.ResourceManager.dll</HintPath>
     </Reference>
     <Reference Include="System.Resources.Writer">
-      <HintPath>C:\Program Files\Unity\Editor\Data\MonoBleedingEdge\lib\mono\4.7.1-api\Facades\System.Resources.Writer.dll</HintPath>
+      <HintPath>C:\Program Files\Unity2020.2.6\Editor\Data\MonoBleedingEdge\lib\mono\4.7.1-api\Facades\System.Resources.Writer.dll</HintPath>
     </Reference>
     <Reference Include="System.Runtime.CompilerServices.VisualC">
-      <HintPath>C:\Program Files\Unity\Editor\Data\MonoBleedingEdge\lib\mono\4.7.1-api\Facades\System.Runtime.CompilerServices.VisualC.dll</HintPath>
+      <HintPath>C:\Program Files\Unity2020.2.6\Editor\Data\MonoBleedingEdge\lib\mono\4.7.1-api\Facades\System.Runtime.CompilerServices.VisualC.dll</HintPath>
     </Reference>
     <Reference Include="System.Runtime">
-      <HintPath>C:\Program Files\Unity\Editor\Data\MonoBleedingEdge\lib\mono\4.7.1-api\Facades\System.Runtime.dll</HintPath>
+      <HintPath>C:\Program Files\Unity2020.2.6\Editor\Data\MonoBleedingEdge\lib\mono\4.7.1-api\Facades\System.Runtime.dll</HintPath>
     </Reference>
     <Reference Include="System.Runtime.Extensions">
-      <HintPath>C:\Program Files\Unity\Editor\Data\MonoBleedingEdge\lib\mono\4.7.1-api\Facades\System.Runtime.Extensions.dll</HintPath>
+      <HintPath>C:\Program Files\Unity2020.2.6\Editor\Data\MonoBleedingEdge\lib\mono\4.7.1-api\Facades\System.Runtime.Extensions.dll</HintPath>
     </Reference>
     <Reference Include="System.Runtime.Handles">
-      <HintPath>C:\Program Files\Unity\Editor\Data\MonoBleedingEdge\lib\mono\4.7.1-api\Facades\System.Runtime.Handles.dll</HintPath>
+      <HintPath>C:\Program Files\Unity2020.2.6\Editor\Data\MonoBleedingEdge\lib\mono\4.7.1-api\Facades\System.Runtime.Handles.dll</HintPath>
     </Reference>
     <Reference Include="System.Runtime.InteropServices">
-      <HintPath>C:\Program Files\Unity\Editor\Data\MonoBleedingEdge\lib\mono\4.7.1-api\Facades\System.Runtime.InteropServices.dll</HintPath>
+      <HintPath>C:\Program Files\Unity2020.2.6\Editor\Data\MonoBleedingEdge\lib\mono\4.7.1-api\Facades\System.Runtime.InteropServices.dll</HintPath>
     </Reference>
     <Reference Include="System.Runtime.InteropServices.RuntimeInformation">
-      <HintPath>C:\Program Files\Unity\Editor\Data\MonoBleedingEdge\lib\mono\4.7.1-api\Facades\System.Runtime.InteropServices.RuntimeInformation.dll</HintPath>
+      <HintPath>C:\Program Files\Unity2020.2.6\Editor\Data\MonoBleedingEdge\lib\mono\4.7.1-api\Facades\System.Runtime.InteropServices.RuntimeInformation.dll</HintPath>
     </Reference>
     <Reference Include="System.Runtime.InteropServices.WindowsRuntime">
-      <HintPath>C:\Program Files\Unity\Editor\Data\MonoBleedingEdge\lib\mono\4.7.1-api\Facades\System.Runtime.InteropServices.WindowsRuntime.dll</HintPath>
+      <HintPath>C:\Program Files\Unity2020.2.6\Editor\Data\MonoBleedingEdge\lib\mono\4.7.1-api\Facades\System.Runtime.InteropServices.WindowsRuntime.dll</HintPath>
     </Reference>
     <Reference Include="System.Runtime.Numerics">
-      <HintPath>C:\Program Files\Unity\Editor\Data\MonoBleedingEdge\lib\mono\4.7.1-api\Facades\System.Runtime.Numerics.dll</HintPath>
+      <HintPath>C:\Program Files\Unity2020.2.6\Editor\Data\MonoBleedingEdge\lib\mono\4.7.1-api\Facades\System.Runtime.Numerics.dll</HintPath>
     </Reference>
     <Reference Include="System.Runtime.Serialization.Formatters">
-      <HintPath>C:\Program Files\Unity\Editor\Data\MonoBleedingEdge\lib\mono\4.7.1-api\Facades\System.Runtime.Serialization.Formatters.dll</HintPath>
+      <HintPath>C:\Program Files\Unity2020.2.6\Editor\Data\MonoBleedingEdge\lib\mono\4.7.1-api\Facades\System.Runtime.Serialization.Formatters.dll</HintPath>
     </Reference>
     <Reference Include="System.Runtime.Serialization.Json">
-      <HintPath>C:\Program Files\Unity\Editor\Data\MonoBleedingEdge\lib\mono\4.7.1-api\Facades\System.Runtime.Serialization.Json.dll</HintPath>
+      <HintPath>C:\Program Files\Unity2020.2.6\Editor\Data\MonoBleedingEdge\lib\mono\4.7.1-api\Facades\System.Runtime.Serialization.Json.dll</HintPath>
     </Reference>
     <Reference Include="System.Runtime.Serialization.Primitives">
-      <HintPath>C:\Program Files\Unity\Editor\Data\MonoBleedingEdge\lib\mono\4.7.1-api\Facades\System.Runtime.Serialization.Primitives.dll</HintPath>
+      <HintPath>C:\Program Files\Unity2020.2.6\Editor\Data\MonoBleedingEdge\lib\mono\4.7.1-api\Facades\System.Runtime.Serialization.Primitives.dll</HintPath>
     </Reference>
     <Reference Include="System.Runtime.Serialization.Xml">
-      <HintPath>C:\Program Files\Unity\Editor\Data\MonoBleedingEdge\lib\mono\4.7.1-api\Facades\System.Runtime.Serialization.Xml.dll</HintPath>
+      <HintPath>C:\Program Files\Unity2020.2.6\Editor\Data\MonoBleedingEdge\lib\mono\4.7.1-api\Facades\System.Runtime.Serialization.Xml.dll</HintPath>
     </Reference>
     <Reference Include="System.Security.Claims">
-      <HintPath>C:\Program Files\Unity\Editor\Data\MonoBleedingEdge\lib\mono\4.7.1-api\Facades\System.Security.Claims.dll</HintPath>
+      <HintPath>C:\Program Files\Unity2020.2.6\Editor\Data\MonoBleedingEdge\lib\mono\4.7.1-api\Facades\System.Security.Claims.dll</HintPath>
     </Reference>
     <Reference Include="System.Security.Cryptography.Algorithms">
-      <HintPath>C:\Program Files\Unity\Editor\Data\MonoBleedingEdge\lib\mono\4.7.1-api\Facades\System.Security.Cryptography.Algorithms.dll</HintPath>
+      <HintPath>C:\Program Files\Unity2020.2.6\Editor\Data\MonoBleedingEdge\lib\mono\4.7.1-api\Facades\System.Security.Cryptography.Algorithms.dll</HintPath>
     </Reference>
     <Reference Include="System.Security.Cryptography.Csp">
-      <HintPath>C:\Program Files\Unity\Editor\Data\MonoBleedingEdge\lib\mono\4.7.1-api\Facades\System.Security.Cryptography.Csp.dll</HintPath>
+      <HintPath>C:\Program Files\Unity2020.2.6\Editor\Data\MonoBleedingEdge\lib\mono\4.7.1-api\Facades\System.Security.Cryptography.Csp.dll</HintPath>
     </Reference>
     <Reference Include="System.Security.Cryptography.Encoding">
-      <HintPath>C:\Program Files\Unity\Editor\Data\MonoBleedingEdge\lib\mono\4.7.1-api\Facades\System.Security.Cryptography.Encoding.dll</HintPath>
+      <HintPath>C:\Program Files\Unity2020.2.6\Editor\Data\MonoBleedingEdge\lib\mono\4.7.1-api\Facades\System.Security.Cryptography.Encoding.dll</HintPath>
     </Reference>
     <Reference Include="System.Security.Cryptography.Primitives">
-      <HintPath>C:\Program Files\Unity\Editor\Data\MonoBleedingEdge\lib\mono\4.7.1-api\Facades\System.Security.Cryptography.Primitives.dll</HintPath>
+      <HintPath>C:\Program Files\Unity2020.2.6\Editor\Data\MonoBleedingEdge\lib\mono\4.7.1-api\Facades\System.Security.Cryptography.Primitives.dll</HintPath>
     </Reference>
     <Reference Include="System.Security.Cryptography.X509Certificates">
-      <HintPath>C:\Program Files\Unity\Editor\Data\MonoBleedingEdge\lib\mono\4.7.1-api\Facades\System.Security.Cryptography.X509Certificates.dll</HintPath>
+      <HintPath>C:\Program Files\Unity2020.2.6\Editor\Data\MonoBleedingEdge\lib\mono\4.7.1-api\Facades\System.Security.Cryptography.X509Certificates.dll</HintPath>
     </Reference>
     <Reference Include="System.Security.Principal">
-      <HintPath>C:\Program Files\Unity\Editor\Data\MonoBleedingEdge\lib\mono\4.7.1-api\Facades\System.Security.Principal.dll</HintPath>
+      <HintPath>C:\Program Files\Unity2020.2.6\Editor\Data\MonoBleedingEdge\lib\mono\4.7.1-api\Facades\System.Security.Principal.dll</HintPath>
     </Reference>
     <Reference Include="System.Security.SecureString">
-      <HintPath>C:\Program Files\Unity\Editor\Data\MonoBleedingEdge\lib\mono\4.7.1-api\Facades\System.Security.SecureString.dll</HintPath>
+      <HintPath>C:\Program Files\Unity2020.2.6\Editor\Data\MonoBleedingEdge\lib\mono\4.7.1-api\Facades\System.Security.SecureString.dll</HintPath>
     </Reference>
     <Reference Include="System.ServiceModel.Duplex">
-      <HintPath>C:\Program Files\Unity\Editor\Data\MonoBleedingEdge\lib\mono\4.7.1-api\Facades\System.ServiceModel.Duplex.dll</HintPath>
+      <HintPath>C:\Program Files\Unity2020.2.6\Editor\Data\MonoBleedingEdge\lib\mono\4.7.1-api\Facades\System.ServiceModel.Duplex.dll</HintPath>
     </Reference>
     <Reference Include="System.ServiceModel.Http">
-      <HintPath>C:\Program Files\Unity\Editor\Data\MonoBleedingEdge\lib\mono\4.7.1-api\Facades\System.ServiceModel.Http.dll</HintPath>
+      <HintPath>C:\Program Files\Unity2020.2.6\Editor\Data\MonoBleedingEdge\lib\mono\4.7.1-api\Facades\System.ServiceModel.Http.dll</HintPath>
     </Reference>
     <Reference Include="System.ServiceModel.NetTcp">
-      <HintPath>C:\Program Files\Unity\Editor\Data\MonoBleedingEdge\lib\mono\4.7.1-api\Facades\System.ServiceModel.NetTcp.dll</HintPath>
+      <HintPath>C:\Program Files\Unity2020.2.6\Editor\Data\MonoBleedingEdge\lib\mono\4.7.1-api\Facades\System.ServiceModel.NetTcp.dll</HintPath>
     </Reference>
     <Reference Include="System.ServiceModel.Primitives">
-      <HintPath>C:\Program Files\Unity\Editor\Data\MonoBleedingEdge\lib\mono\4.7.1-api\Facades\System.ServiceModel.Primitives.dll</HintPath>
+      <HintPath>C:\Program Files\Unity2020.2.6\Editor\Data\MonoBleedingEdge\lib\mono\4.7.1-api\Facades\System.ServiceModel.Primitives.dll</HintPath>
     </Reference>
     <Reference Include="System.ServiceModel.Security">
-      <HintPath>C:\Program Files\Unity\Editor\Data\MonoBleedingEdge\lib\mono\4.7.1-api\Facades\System.ServiceModel.Security.dll</HintPath>
+      <HintPath>C:\Program Files\Unity2020.2.6\Editor\Data\MonoBleedingEdge\lib\mono\4.7.1-api\Facades\System.ServiceModel.Security.dll</HintPath>
     </Reference>
     <Reference Include="System.Text.Encoding">
-      <HintPath>C:\Program Files\Unity\Editor\Data\MonoBleedingEdge\lib\mono\4.7.1-api\Facades\System.Text.Encoding.dll</HintPath>
+      <HintPath>C:\Program Files\Unity2020.2.6\Editor\Data\MonoBleedingEdge\lib\mono\4.7.1-api\Facades\System.Text.Encoding.dll</HintPath>
     </Reference>
     <Reference Include="System.Text.Encoding.Extensions">
-      <HintPath>C:\Program Files\Unity\Editor\Data\MonoBleedingEdge\lib\mono\4.7.1-api\Facades\System.Text.Encoding.Extensions.dll</HintPath>
+      <HintPath>C:\Program Files\Unity2020.2.6\Editor\Data\MonoBleedingEdge\lib\mono\4.7.1-api\Facades\System.Text.Encoding.Extensions.dll</HintPath>
     </Reference>
     <Reference Include="System.Text.RegularExpressions">
-      <HintPath>C:\Program Files\Unity\Editor\Data\MonoBleedingEdge\lib\mono\4.7.1-api\Facades\System.Text.RegularExpressions.dll</HintPath>
+      <HintPath>C:\Program Files\Unity2020.2.6\Editor\Data\MonoBleedingEdge\lib\mono\4.7.1-api\Facades\System.Text.RegularExpressions.dll</HintPath>
     </Reference>
     <Reference Include="System.Threading">
-      <HintPath>C:\Program Files\Unity\Editor\Data\MonoBleedingEdge\lib\mono\4.7.1-api\Facades\System.Threading.dll</HintPath>
+      <HintPath>C:\Program Files\Unity2020.2.6\Editor\Data\MonoBleedingEdge\lib\mono\4.7.1-api\Facades\System.Threading.dll</HintPath>
     </Reference>
     <Reference Include="System.Threading.Overlapped">
-      <HintPath>C:\Program Files\Unity\Editor\Data\MonoBleedingEdge\lib\mono\4.7.1-api\Facades\System.Threading.Overlapped.dll</HintPath>
+      <HintPath>C:\Program Files\Unity2020.2.6\Editor\Data\MonoBleedingEdge\lib\mono\4.7.1-api\Facades\System.Threading.Overlapped.dll</HintPath>
     </Reference>
     <Reference Include="System.Threading.Tasks">
-      <HintPath>C:\Program Files\Unity\Editor\Data\MonoBleedingEdge\lib\mono\4.7.1-api\Facades\System.Threading.Tasks.dll</HintPath>
+      <HintPath>C:\Program Files\Unity2020.2.6\Editor\Data\MonoBleedingEdge\lib\mono\4.7.1-api\Facades\System.Threading.Tasks.dll</HintPath>
     </Reference>
     <Reference Include="System.Threading.Tasks.Parallel">
-      <HintPath>C:\Program Files\Unity\Editor\Data\MonoBleedingEdge\lib\mono\4.7.1-api\Facades\System.Threading.Tasks.Parallel.dll</HintPath>
+      <HintPath>C:\Program Files\Unity2020.2.6\Editor\Data\MonoBleedingEdge\lib\mono\4.7.1-api\Facades\System.Threading.Tasks.Parallel.dll</HintPath>
     </Reference>
     <Reference Include="System.Threading.Thread">
-      <HintPath>C:\Program Files\Unity\Editor\Data\MonoBleedingEdge\lib\mono\4.7.1-api\Facades\System.Threading.Thread.dll</HintPath>
+      <HintPath>C:\Program Files\Unity2020.2.6\Editor\Data\MonoBleedingEdge\lib\mono\4.7.1-api\Facades\System.Threading.Thread.dll</HintPath>
     </Reference>
     <Reference Include="System.Threading.ThreadPool">
-      <HintPath>C:\Program Files\Unity\Editor\Data\MonoBleedingEdge\lib\mono\4.7.1-api\Facades\System.Threading.ThreadPool.dll</HintPath>
+      <HintPath>C:\Program Files\Unity2020.2.6\Editor\Data\MonoBleedingEdge\lib\mono\4.7.1-api\Facades\System.Threading.ThreadPool.dll</HintPath>
     </Reference>
     <Reference Include="System.Threading.Timer">
-      <HintPath>C:\Program Files\Unity\Editor\Data\MonoBleedingEdge\lib\mono\4.7.1-api\Facades\System.Threading.Timer.dll</HintPath>
+      <HintPath>C:\Program Files\Unity2020.2.6\Editor\Data\MonoBleedingEdge\lib\mono\4.7.1-api\Facades\System.Threading.Timer.dll</HintPath>
     </Reference>
     <Reference Include="System.ValueTuple">
-      <HintPath>C:\Program Files\Unity\Editor\Data\MonoBleedingEdge\lib\mono\4.7.1-api\Facades\System.ValueTuple.dll</HintPath>
+      <HintPath>C:\Program Files\Unity2020.2.6\Editor\Data\MonoBleedingEdge\lib\mono\4.7.1-api\Facades\System.ValueTuple.dll</HintPath>
     </Reference>
     <Reference Include="System.Xml.ReaderWriter">
-      <HintPath>C:\Program Files\Unity\Editor\Data\MonoBleedingEdge\lib\mono\4.7.1-api\Facades\System.Xml.ReaderWriter.dll</HintPath>
+      <HintPath>C:\Program Files\Unity2020.2.6\Editor\Data\MonoBleedingEdge\lib\mono\4.7.1-api\Facades\System.Xml.ReaderWriter.dll</HintPath>
     </Reference>
     <Reference Include="System.Xml.XDocument">
-      <HintPath>C:\Program Files\Unity\Editor\Data\MonoBleedingEdge\lib\mono\4.7.1-api\Facades\System.Xml.XDocument.dll</HintPath>
+      <HintPath>C:\Program Files\Unity2020.2.6\Editor\Data\MonoBleedingEdge\lib\mono\4.7.1-api\Facades\System.Xml.XDocument.dll</HintPath>
     </Reference>
     <Reference Include="System.Xml.XmlDocument">
-      <HintPath>C:\Program Files\Unity\Editor\Data\MonoBleedingEdge\lib\mono\4.7.1-api\Facades\System.Xml.XmlDocument.dll</HintPath>
+      <HintPath>C:\Program Files\Unity2020.2.6\Editor\Data\MonoBleedingEdge\lib\mono\4.7.1-api\Facades\System.Xml.XmlDocument.dll</HintPath>
     </Reference>
     <Reference Include="System.Xml.XmlSerializer">
-      <HintPath>C:\Program Files\Unity\Editor\Data\MonoBleedingEdge\lib\mono\4.7.1-api\Facades\System.Xml.XmlSerializer.dll</HintPath>
+      <HintPath>C:\Program Files\Unity2020.2.6\Editor\Data\MonoBleedingEdge\lib\mono\4.7.1-api\Facades\System.Xml.XmlSerializer.dll</HintPath>
     </Reference>
     <Reference Include="System.Xml.XPath">
-      <HintPath>C:\Program Files\Unity\Editor\Data\MonoBleedingEdge\lib\mono\4.7.1-api\Facades\System.Xml.XPath.dll</HintPath>
+      <HintPath>C:\Program Files\Unity2020.2.6\Editor\Data\MonoBleedingEdge\lib\mono\4.7.1-api\Facades\System.Xml.XPath.dll</HintPath>
     </Reference>
     <Reference Include="System.Xml.XPath.XDocument">
-      <HintPath>C:\Program Files\Unity\Editor\Data\MonoBleedingEdge\lib\mono\4.7.1-api\Facades\System.Xml.XPath.XDocument.dll</HintPath>
+      <HintPath>C:\Program Files\Unity2020.2.6\Editor\Data\MonoBleedingEdge\lib\mono\4.7.1-api\Facades\System.Xml.XPath.XDocument.dll</HintPath>
     </Reference>
-    <Reference Include="Unity.VisualEffectGraph.Editor">
-      <HintPath>Library\ScriptAssemblies\Unity.VisualEffectGraph.Editor.dll</HintPath>
+    <Reference Include="Unity.Properties">
+      <HintPath>Library\ScriptAssemblies\Unity.Properties.dll</HintPath>
+    </Reference>
+    <Reference Include="Unity.Serialization">
+      <HintPath>Library\ScriptAssemblies\Unity.Serialization.dll</HintPath>
     </Reference>
     <Reference Include="Unity.VSCode.Editor">
       <HintPath>Library\ScriptAssemblies\Unity.VSCode.Editor.dll</HintPath>
     </Reference>
-    <Reference Include="Unity.TextMeshPro.Editor">
-      <HintPath>Library\ScriptAssemblies\Unity.TextMeshPro.Editor.dll</HintPath>
-    </Reference>
-    <Reference Include="Unity.VisualStudio.Editor">
-      <HintPath>Library\ScriptAssemblies\Unity.VisualStudio.Editor.dll</HintPath>
-    </Reference>
-    <Reference Include="Unity.ProBuilder.AddOns.Editor">
-      <HintPath>Library\ScriptAssemblies\Unity.ProBuilder.AddOns.Editor.dll</HintPath>
-    </Reference>
-    <Reference Include="Unity.VisualEffectGraph.Runtime">
-      <HintPath>Library\ScriptAssemblies\Unity.VisualEffectGraph.Runtime.dll</HintPath>
-    </Reference>
-    <Reference Include="Unity.Timeline">
-      <HintPath>Library\ScriptAssemblies\Unity.Timeline.dll</HintPath>
-    </Reference>
-    <Reference Include="Unity.TextMeshPro">
-      <HintPath>Library\ScriptAssemblies\Unity.TextMeshPro.dll</HintPath>
-    </Reference>
-    <Reference Include="Unity.Burst.Editor">
-      <HintPath>Library\ScriptAssemblies\Unity.Burst.Editor.dll</HintPath>
-    </Reference>
-    <Reference Include="Unity.RenderPipelines.HighDefinition.Runtime">
-      <HintPath>Library\ScriptAssemblies\Unity.RenderPipelines.HighDefinition.Runtime.dll</HintPath>
-    </Reference>
-    <Reference Include="Unity.RenderPipelines.Core.Runtime">
-      <HintPath>Library\ScriptAssemblies\Unity.RenderPipelines.Core.Runtime.dll</HintPath>
-    </Reference>
-    <Reference Include="Unity.ProBuilder">
-      <HintPath>Library\ScriptAssemblies\Unity.ProBuilder.dll</HintPath>
-    </Reference>
-    <Reference Include="Unity.RenderPipelines.HighDefinition.Editor">
-      <HintPath>Library\ScriptAssemblies\Unity.RenderPipelines.HighDefinition.Editor.dll</HintPath>
-    </Reference>
-    <Reference Include="Unity.ProBuilder.Editor">
-      <HintPath>Library\ScriptAssemblies\Unity.ProBuilder.Editor.dll</HintPath>
-    </Reference>
-    <Reference Include="UnityEditor.UI">
-      <HintPath>Library\ScriptAssemblies\UnityEditor.UI.dll</HintPath>
-    </Reference>
-    <Reference Include="Unity.InputSystem">
-      <HintPath>Library\ScriptAssemblies\Unity.InputSystem.dll</HintPath>
+    <Reference Include="UnityEditor.CacheServer">
+      <HintPath>Library\ScriptAssemblies\UnityEditor.CacheServer.dll</HintPath>
     </Reference>
     <Reference Include="Unity.Rider.Editor">
       <HintPath>Library\ScriptAssemblies\Unity.Rider.Editor.dll</HintPath>
@@ -1204,50 +1098,155 @@
     <Reference Include="Unity.RenderPipelines.Core.ShaderLibrary">
       <HintPath>Library\ScriptAssemblies\Unity.RenderPipelines.Core.ShaderLibrary.dll</HintPath>
     </Reference>
-    <Reference Include="Unity.Jobs.Editor">
-      <HintPath>Library\ScriptAssemblies\Unity.Jobs.Editor.dll</HintPath>
-    </Reference>
-    <Reference Include="UnityEngine.UI">
-      <HintPath>Library\ScriptAssemblies\UnityEngine.UI.dll</HintPath>
-    </Reference>
-    <Reference Include="Unity.Searcher.Editor">
-      <HintPath>Library\ScriptAssemblies\Unity.Searcher.Editor.dll</HintPath>
-    </Reference>
-    <Reference Include="Unity.Mathematics">
-      <HintPath>Library\ScriptAssemblies\Unity.Mathematics.dll</HintPath>
-    </Reference>
     <Reference Include="Unity.ShaderGraph.Editor">
       <HintPath>Library\ScriptAssemblies\Unity.ShaderGraph.Editor.dll</HintPath>
     </Reference>
-    <Reference Include="Cinemachine">
-      <HintPath>Library\ScriptAssemblies\Cinemachine.dll</HintPath>
-    </Reference>
-    <Reference Include="Unity.Burst">
-      <HintPath>Library\ScriptAssemblies\Unity.Burst.dll</HintPath>
+    <Reference Include="Unity.Properties.UI.Editor">
+      <HintPath>Library\ScriptAssemblies\Unity.Properties.UI.Editor.dll</HintPath>
     </Reference>
     <Reference Include="com.unity.cinemachine.editor">
       <HintPath>Library\ScriptAssemblies\com.unity.cinemachine.editor.dll</HintPath>
     </Reference>
-    <Reference Include="Unity.ProBuilder.AssetIdRemapUtility">
-      <HintPath>Library\ScriptAssemblies\Unity.ProBuilder.AssetIdRemapUtility.dll</HintPath>
-    </Reference>
-    <Reference Include="Unity.Jobs">
-      <HintPath>Library\ScriptAssemblies\Unity.Jobs.dll</HintPath>
-    </Reference>
-    <Reference Include="Unity.Timeline.Editor">
-      <HintPath>Library\ScriptAssemblies\Unity.Timeline.Editor.dll</HintPath>
-    </Reference>
-    <Reference Include="Unity.RenderPipelines.ShaderGraph.ShaderGraphLibrary">
-      <HintPath>Library\ScriptAssemblies\Unity.RenderPipelines.ShaderGraph.ShaderGraphLibrary.dll</HintPath>
+    <Reference Include="Unity.Mathematics.Extensions">
+      <HintPath>Library\ScriptAssemblies\Unity.Mathematics.Extensions.dll</HintPath>
     </Reference>
     <Reference Include="Unity.Mathematics.Editor">
       <HintPath>Library\ScriptAssemblies\Unity.Mathematics.Editor.dll</HintPath>
+    </Reference>
+    <Reference Include="Unity.Transforms">
+      <HintPath>Library\ScriptAssemblies\Unity.Transforms.dll</HintPath>
     </Reference>
     <Reference Include="Unity.RenderPipelines.HighDefinition.Config.Runtime">
       <HintPath>Library\ScriptAssemblies\Unity.RenderPipelines.HighDefinition.Config.Runtime.dll</HintPath>
     </Reference>
     <Reference Include="Unity.Collections">
       <HintPath>Library\ScriptAssemblies\Unity.Collections.dll</HintPath>
+    </Reference>
+    <Reference Include="Unity.Physics">
+      <HintPath>Library\ScriptAssemblies\Unity.Physics.dll</HintPath>
+    </Reference>
+    <Reference Include="Unity.VisualEffectGraph.Editor">
+      <HintPath>Library\ScriptAssemblies\Unity.VisualEffectGraph.Editor.dll</HintPath>
+    </Reference>
+    <Reference Include="Unity.Entities.Editor">
+      <HintPath>Library\ScriptAssemblies\Unity.Entities.Editor.dll</HintPath>
+    </Reference>
+    <Reference Include="Unity.ProBuilder.AddOns.Editor">
+      <HintPath>Library\ScriptAssemblies\Unity.ProBuilder.AddOns.Editor.dll</HintPath>
+    </Reference>
+    <Reference Include="Unity.VisualEffectGraph.Runtime">
+      <HintPath>Library\ScriptAssemblies\Unity.VisualEffectGraph.Runtime.dll</HintPath>
+    </Reference>
+    <Reference Include="Unity.TextMeshPro">
+      <HintPath>Library\ScriptAssemblies\Unity.TextMeshPro.dll</HintPath>
+    </Reference>
+    <Reference Include="Unity.Physics.Hybrid">
+      <HintPath>Library\ScriptAssemblies\Unity.Physics.Hybrid.dll</HintPath>
+    </Reference>
+    <Reference Include="Unity.RenderPipelines.Core.Runtime">
+      <HintPath>Library\ScriptAssemblies\Unity.RenderPipelines.Core.Runtime.dll</HintPath>
+    </Reference>
+    <Reference Include="Unity.ProBuilder.Editor">
+      <HintPath>Library\ScriptAssemblies\Unity.ProBuilder.Editor.dll</HintPath>
+    </Reference>
+    <Reference Include="Unity.Entities">
+      <HintPath>Library\ScriptAssemblies\Unity.Entities.dll</HintPath>
+    </Reference>
+    <Reference Include="Unity.Entities.Hybrid">
+      <HintPath>Library\ScriptAssemblies\Unity.Entities.Hybrid.dll</HintPath>
+    </Reference>
+    <Reference Include="Unity.Jobs.Editor">
+      <HintPath>Library\ScriptAssemblies\Unity.Jobs.Editor.dll</HintPath>
+    </Reference>
+    <Reference Include="Unity.Mathematics">
+      <HintPath>Library\ScriptAssemblies\Unity.Mathematics.dll</HintPath>
+    </Reference>
+    <Reference Include="Unity.ProBuilder.AssetIdRemapUtility">
+      <HintPath>Library\ScriptAssemblies\Unity.ProBuilder.AssetIdRemapUtility.dll</HintPath>
+    </Reference>
+    <Reference Include="Unity.RenderPipelines.ShaderGraph.ShaderGraphLibrary">
+      <HintPath>Library\ScriptAssemblies\Unity.RenderPipelines.ShaderGraph.ShaderGraphLibrary.dll</HintPath>
+    </Reference>
+    <Reference Include="Unity.Properties.UI">
+      <HintPath>Library\ScriptAssemblies\Unity.Properties.UI.dll</HintPath>
+    </Reference>
+    <Reference Include="Unity.ScriptableBuildPipeline">
+      <HintPath>Library\ScriptAssemblies\Unity.ScriptableBuildPipeline.dll</HintPath>
+    </Reference>
+    <Reference Include="Unity.Serialization.Editor">
+      <HintPath>Library\ScriptAssemblies\Unity.Serialization.Editor.dll</HintPath>
+    </Reference>
+    <Reference Include="Unity.Transforms.Hybrid">
+      <HintPath>Library\ScriptAssemblies\Unity.Transforms.Hybrid.dll</HintPath>
+    </Reference>
+    <Reference Include="Unity.TextMeshPro.Editor">
+      <HintPath>Library\ScriptAssemblies\Unity.TextMeshPro.Editor.dll</HintPath>
+    </Reference>
+    <Reference Include="Unity.Searcher.Editor">
+      <HintPath>Library\ScriptAssemblies\Unity.Searcher.Editor.dll</HintPath>
+    </Reference>
+    <Reference Include="Unity.ProBuilder">
+      <HintPath>Library\ScriptAssemblies\Unity.ProBuilder.dll</HintPath>
+    </Reference>
+    <Reference Include="UnityEditor.UI">
+      <HintPath>Library\ScriptAssemblies\UnityEditor.UI.dll</HintPath>
+    </Reference>
+    <Reference Include="Unity.InputSystem">
+      <HintPath>Library\ScriptAssemblies\Unity.InputSystem.dll</HintPath>
+    </Reference>
+    <Reference Include="UnityEngine.UI">
+      <HintPath>Library\ScriptAssemblies\UnityEngine.UI.dll</HintPath>
+    </Reference>
+    <Reference Include="Unity.Entities.Hybrid.EndToEnd.Tests">
+      <HintPath>Library\ScriptAssemblies\Unity.Entities.Hybrid.EndToEnd.Tests.dll</HintPath>
+    </Reference>
+    <Reference Include="Cinemachine">
+      <HintPath>Library\ScriptAssemblies\Cinemachine.dll</HintPath>
+    </Reference>
+    <Reference Include="Unity.Scenes">
+      <HintPath>Library\ScriptAssemblies\Unity.Scenes.dll</HintPath>
+    </Reference>
+    <Reference Include="Unity.Scenes.Editor">
+      <HintPath>Library\ScriptAssemblies\Unity.Scenes.Editor.dll</HintPath>
+    </Reference>
+    <Reference Include="Unity.Mathematics.Extensions.Hybrid">
+      <HintPath>Library\ScriptAssemblies\Unity.Mathematics.Extensions.Hybrid.dll</HintPath>
+    </Reference>
+    <Reference Include="Unity.Entities.BuildUtils">
+      <HintPath>Library\ScriptAssemblies\Unity.Entities.BuildUtils.dll</HintPath>
+    </Reference>
+    <Reference Include="Unity.VisualStudio.Editor">
+      <HintPath>Library\ScriptAssemblies\Unity.VisualStudio.Editor.dll</HintPath>
+    </Reference>
+    <Reference Include="Unity.Timeline">
+      <HintPath>Library\ScriptAssemblies\Unity.Timeline.dll</HintPath>
+    </Reference>
+    <Reference Include="Unity.Burst.Editor">
+      <HintPath>Library\ScriptAssemblies\Unity.Burst.Editor.dll</HintPath>
+    </Reference>
+    <Reference Include="Unity.RenderPipelines.HighDefinition.Runtime">
+      <HintPath>Library\ScriptAssemblies\Unity.RenderPipelines.HighDefinition.Runtime.dll</HintPath>
+    </Reference>
+    <Reference Include="Unity.RenderPipelines.HighDefinition.Editor">
+      <HintPath>Library\ScriptAssemblies\Unity.RenderPipelines.HighDefinition.Editor.dll</HintPath>
+    </Reference>
+    <Reference Include="Unity.Physics.Editor">
+      <HintPath>Library\ScriptAssemblies\Unity.Physics.Editor.dll</HintPath>
+    </Reference>
+    <Reference Include="Unity.Burst">
+      <HintPath>Library\ScriptAssemblies\Unity.Burst.dll</HintPath>
+    </Reference>
+    <Reference Include="Unity.Jobs">
+      <HintPath>Library\ScriptAssemblies\Unity.Jobs.dll</HintPath>
+    </Reference>
+    <Reference Include="Unity.Deformations">
+      <HintPath>Library\ScriptAssemblies\Unity.Deformations.dll</HintPath>
+    </Reference>
+    <Reference Include="Unity.Timeline.Editor">
+      <HintPath>Library\ScriptAssemblies\Unity.Timeline.Editor.dll</HintPath>
+    </Reference>
+    <Reference Include="Unity.ScriptableBuildPipeline.Editor">
+      <HintPath>Library\ScriptAssemblies\Unity.ScriptableBuildPipeline.Editor.dll</HintPath>
     </Reference>
     <Reference Include="Unity.RenderPipelines.Core.Editor">
       <HintPath>Library\ScriptAssemblies\Unity.RenderPipelines.Core.Editor.dll</HintPath>
@@ -1262,17 +1261,53 @@
       <Project>{C96AA129-4038-2458-1893-8AD1AF25EB52}</Project>
       <Name>AFPSCounter.Examples</Name>
     </ProjectReference>
-    <ProjectReference Include="AFPSCounter.Runtime.csproj">
-      <Project>{EFB710B6-4865-48C4-D56F-E763C743344B}</Project>
-      <Name>AFPSCounter.Runtime</Name>
+    <ProjectReference Include="OBBLib.csproj">
+      <Project>{15B4C7E9-578F-0680-E0C6-B1B90650E744}</Project>
+      <Name>OBBLib</Name>
     </ProjectReference>
     <ProjectReference Include="GPUInstancer.csproj">
       <Project>{75EE77A8-517F-6872-847F-72829AC27079}</Project>
       <Name>GPUInstancer</Name>
     </ProjectReference>
+    <ProjectReference Include="MeshCombineLib.csproj">
+      <Project>{98ACAEEC-50C7-D172-5898-7B865394FFC8}</Project>
+      <Name>MeshCombineLib</Name>
+    </ProjectReference>
+    <ProjectReference Include="CommonUtils.csproj">
+      <Project>{80DAC9C6-60FA-3D5B-D1F6-E96516238BAB}</Project>
+      <Name>CommonUtils</Name>
+    </ProjectReference>
+    <ProjectReference Include="AFPSCounter.Runtime.csproj">
+      <Project>{EFB710B6-4865-48C4-D56F-E763C743344B}</Project>
+      <Name>AFPSCounter.Runtime</Name>
+    </ProjectReference>
+    <ProjectReference Include="ProgressBarUtil.csproj">
+      <Project>{D9964C91-D045-F3E4-A473-EA2444E4252D}</Project>
+      <Name>ProgressBarUtil</Name>
+    </ProjectReference>
     <ProjectReference Include="GPUInstancer.Editor.csproj">
       <Project>{14F40C99-CAAB-31C4-B2A7-179C8696BC43}</Project>
       <Name>GPUInstancer.Editor</Name>
+    </ProjectReference>
+    <ProjectReference Include="PlumberCore.csproj">
+      <Project>{E633C200-7988-F5E5-1FEE-75C1E9D585F0}</Project>
+      <Name>PlumberCore</Name>
+    </ProjectReference>
+    <ProjectReference Include="SceneRebuilderUtils.csproj">
+      <Project>{CA565B6A-5C09-9130-6B86-3EE06D46F48A}</Project>
+      <Name>SceneRebuilderUtils</Name>
+    </ProjectReference>
+    <ProjectReference Include="MathGeoLib.csproj">
+      <Project>{92B80DFB-3A2B-7C87-F3DB-1EAD99EC1BFD}</Project>
+      <Name>MathGeoLib</Name>
+    </ProjectReference>
+    <ProjectReference Include="RigidTransformLib.csproj">
+      <Project>{A3F32359-1632-5270-7788-97156A941BEC}</Project>
+      <Name>RigidTransformLib</Name>
+    </ProjectReference>
+    <ProjectReference Include="MeshDebugger.csproj">
+      <Project>{1E668316-9326-7716-7F31-B5306D914E39}</Project>
+      <Name>MeshDebugger</Name>
     </ProjectReference>
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />

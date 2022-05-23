@@ -33,7 +33,7 @@ MonoBehaviour:
   - 7
   - 0
   - 0
-  useOriginalShaderForShadow: 0
+  useOriginalShaderForShadow: 1
   cullShadows: 0
   minDistance: 0
   maxDistance: 500
