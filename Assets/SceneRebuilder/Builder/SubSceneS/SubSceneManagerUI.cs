@@ -214,7 +214,7 @@ public class SubSceneManagerUI : MonoBehaviour
     {
         Debug.Log("ClickLoadAll");
         SetLoadingSceneMaxCount();
-        subSceneManager.LoadScenesEx(subScenes.ToArray(),null);
+        subSceneManager.LoadScenesEx(subScenes.ToArray(),null, "ClickLoadAll");
     }
 
     public void ClickUnloadAll()

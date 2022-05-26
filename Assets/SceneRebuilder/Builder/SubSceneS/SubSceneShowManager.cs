@@ -303,9 +303,9 @@ public class SubSceneShowManager : SingletonBehaviour<SubSceneShowManager>
 
     public List<SubScene_Base> WaitingScenes = new List<SubScene_Base>();//Waiting To Finish Load
 
-    public List<SubScene_Base> WaitingScenes_ToLoad = new List<SubScene_Base>();
+    public DictList<SubScene_Base> WaitingScenes_ToLoad = new DictList<SubScene_Base>();
     public SubScene_Base LoadingScene = null;
-    public List<SubScene_Base> WaitingScenes_ToUnLoad = new List<SubScene_Base>();
+    public DictList<SubScene_Base> WaitingScenes_ToUnLoad = new DictList<SubScene_Base>();
     public SubScene_Base UnLoadingScene = null;
 
     public bool IsUpdateTreeNodeByDistance = false;
@@ -346,7 +346,7 @@ public class SubSceneShowManager : SingletonBehaviour<SubSceneShowManager>
         else
         {
             BuildingModelManager.Instance.ShowDetail();
-            LoadScenes(scenes_Out0_TreeNode_Hidden, onComplete);
+            LoadScenes(scenes_Out0_TreeNode_Hidden, onComplete, "LoadHiddenTreeNodes");
         }
     }
 
@@ -393,7 +393,7 @@ public class SubSceneShowManager : SingletonBehaviour<SubSceneShowManager>
                 WaitingScenes.AddRange(scenes);
                 AreaTreeNodeShowManager.Instance.IsUpdateTreeNodeByDistance = IsUpdateTreeNodeByDistance;
                 if (onComplete != null) onComplete(p);
-            });
+            }, "LoadStartScens_Innder");
         }
         else
         {
@@ -403,7 +403,7 @@ public class SubSceneShowManager : SingletonBehaviour<SubSceneShowManager>
 
     public void LoadShownTreeNodes()
     {
-        LoadScenes(scenes_Out0_TreeNode_Shown, null);
+        LoadScenes(scenes_Out0_TreeNode_Shown, null, "LoadShownTreeNodes");
     }
 
     public void LoadOut0BuildingScenes()
@@ -418,11 +418,11 @@ public class SubSceneShowManager : SingletonBehaviour<SubSceneShowManager>
                 {
                     WaitingScenes.AddRange(scene_Out0s);
                     AreaTreeNodeShowManager.Instance.IsUpdateTreeNodeByDistance = IsUpdateTreeNodeByDistance;
-                });
+                }, "LoadOut0BuildingScenes");
         }
     }
 
-    public void LoadScenes<T>(List<T> scenes,Action<SceneLoadProgress> finished) where T : SubScene_Base
+    public void LoadScenes<T>(List<T> scenes,Action<SceneLoadProgress> finished,string tag) where T : SubScene_Base
     {
         sceneManager.LoadScenesEx(scenes.ToArray(), (p) =>
                 {
@@ -430,7 +430,7 @@ public class SubSceneShowManager : SingletonBehaviour<SubSceneShowManager>
                     if(finished!=null){
                         finished(p);
                     }
-                });
+                }, tag);
     }
 
     // public void LoadOut0TreeNodeSceneTop1()
@@ -471,40 +471,129 @@ public class SubSceneShowManager : SingletonBehaviour<SubSceneShowManager>
 
         LoadScenes(topsScenes,(p)=>{
             Debug.Log($"LoadOut0TreeNodeSceneTopN2 index:{index} scene:{topsScenes.Count} vertexCount:{vertexCount}");
-        });
+        }, "LoadOut0TreeNodeSceneTopBiggerN");
 
         Debug.Log($"LoadOut0TreeNodeSceneTopN1 index:{index} scene:{topsScenes.Count} vertexCount:{vertexCount}");
     }
 
-    public void StopLoadScene()
+    public void StopLoadScene(GameObject target=null)
     {
-        IsUpdateDistance = false;
+        Debug.Log("StopLoadScene:"+ target);
+        SetIsUpdateDistance(false);
+        ClearList();
     }
 
-    public void StartLoadScene()
+    private void SetIsUpdateDistance(bool v)
     {
-        IsUpdateDistance = true;
+        Debug.Log($"SetIsUpdateDistance v:{v}");
+        IsUpdateDistance = v;
+        LODManager.Instance.IsEnableLoadLod0 = v;
+        //LODManager.Instance.IsEnableUpdate = v;
     }
+
+    private void ClearList()
+    {
+        WaitingScenes_ToLoad.Clear();
+        WaitingScenes_ToUnLoad.Clear();
+        visibleScenes.Clear();
+        hiddenScenes.Clear();
+        loadScenes.Clear();
+        unloadScenes.Clear();
+    }
+
+    public void StartLoadScene(GameObject target)
+    {
+        //Debug.Log("StartLoadScene:" + target);
+        //IsUpdateDistance = true;
+        //LoadScenesOfTarget(target);
+
+        if (target == null)
+        {
+            SetIsUpdateDistance(true); ;//1
+            Debug.LogWarning($"SubSceneShowManager.StartLoadScene Warning! 1 target == null");
+            return;
+        }
+
+        loadScenesCount++;
+        var subScenes1= target.GetComponentsInChildren<SubScene_Base>(true).ToList();
+        SortClearScenes(subScenes1);
+
+        if (subScenes1.Count == 0)
+        {
+            SetIsUpdateDistance(true); ;//2
+            Debug.LogWarning($"SubSceneShowManager.StartLoadScene Warning! 2 subScenes1.Count == 0 target:{target.name} path:{target.transform.GetPath()}  LoadedAll:{SubSceneManager.Instance.WattingForLoadedAll.Count} LoadedCurrent:{SubSceneManager.Instance.WattingForLoadedCurrent.Count}");
+            return;
+        }
+
+        var subScenes = subScenes1;
+        Debug.Log($"SubSceneShowManager.StartLoadScene[{loadScenesCount}] Start! target:{target.name} subScenes:{subScenes.Count} LoadedAll:{SubSceneManager.Instance.WattingForLoadedAll.Count} LoadedCurrent:{SubSceneManager.Instance.WattingForLoadedCurrent.Count}");
+
+        if (IsEnableLoad)
+        {
+            LoadScenesOfTarget(subScenes, (p) =>
+            {
+                if (p.IsFinishOrTimeout())
+                {
+                    SetIsUpdateDistance(true); //3
+                    Debug.Log($"SubSceneShowManager.StartLoadScene[{loadScenesCount}] Finished! target:{target.name} subScenes:{subScenes.Count} LoadedAll:{SubSceneManager.Instance.WattingForLoadedAll.Count} LoadedCurrent:{SubSceneManager.Instance.WattingForLoadedCurrent.Count}");
+                }
+            });
+        }
+        else
+        {
+            Debug.LogError("SubSceneShowManager.StartLoadScene[{loadScenesCount}] IsEnableLoad=false");
+        }
+    }
+
+    private void SortClearScenes(List<SubScene_Base> ss)
+    {
+        int removeCount1 = ss.RemoveAll(i => i.IsLoaded || i.IsLoading);
+        //int removeCount2 = ss.RemoveAll(i => i.gameObject.activeInHierarchy == false);
+        ss.Sort((a, b) => b.GetBoundsVolume().CompareTo(a.GetBoundsVolume()));
+    }
+
+    public int loadScenesCount=0;
+
+    //public void LoadScenesOfTarget(GameObject target)
+    //{
+        
+    //    if (target == null)
+    //    {
+    //        Debug.LogWarning($"SubSceneShowManager.StartLoadScene target == null");
+    //        return;
+    //    }
+    //    loadScenesCount++;
+    //    SubScene_Base[] subScenes = target.GetComponentsInChildren<SubScene_Base>(true);
+    //    Debug.Log($"SubSceneShowManager.LoadScenes[{loadScenesCount}] target:{target.name} subScenes:{subScenes.Length} LoadedAll:{SubSceneManager.Instance.WattingForLoadedAll.Count} LoadedCurrent:{SubSceneManager.Instance.WattingForLoadedCurrent.Count}");
+
+    //    LoadScenesOfTarget(subScenes,null);
+    //}
 
     public float DistanceOfFPS = 0.3f;
 
-    public void StartLoadSceneFPS()
+    public void StartLoadSceneFPS(DepNode target)
     {
-        StartLoadScene(DistanceOfFPS);//俯视视角的0.3倍距离。
+        StartLoadScene(DistanceOfFPS, target.gameObject);//俯视视角的0.3倍距离。
+    }
+
+    public void StartLoadSceneFPS(GameObject target)
+    {
+        StartLoadScene(DistanceOfFPS, target);//俯视视角的0.3倍距离。
     }
 
     /// <summary>
     /// 退出第一人称时使用
     /// </summary>
-    public void EndLoadSceneFPS()
+    public void EndLoadSceneFPS(GameObject target)
     {
-        StartLoadScene(1);
+        StartLoadScene(1, target);
     }
 
-    public void StartLoadScene(float p)
+    public void StartLoadScene(float p, GameObject target)
     {
-        IsUpdateDistance = true;
-        Debug.Log($"StartLoadScene p:{p}");
+        //IsUpdateDistance = true;
+        //Debug.Log($"StartLoadScene p:{p}");
+        StartLoadScene(target);
         SetCamaraDistance(p);
     }
 
@@ -564,6 +653,19 @@ public class SubSceneShowManager : SingletonBehaviour<SubSceneShowManager>
         {
             InitOnStart();
         });
+
+        //SceneEvents.FloorFocusStartAction += SceneEvents_FloorFocusStartAction;
+        //SceneEvents.FloorFocusCompleteAction += SceneEvents_FloorFocusCompleteAction;
+    }
+
+    private void SceneEvents_FloorFocusCompleteAction(FloorController obj)
+    {
+        StartLoadScene(obj.gameObject);
+    }
+
+    private void SceneEvents_FloorFocusStartAction(FloorController obj)
+    {
+        StopLoadScene(obj.gameObject);
     }
 
     private void InitOnStart()
@@ -612,9 +714,9 @@ public class SubSceneShowManager : SingletonBehaviour<SubSceneShowManager>
     //    Debug.Log($"CheckSceneIndex Time:{(DateTime.Now - start).ToString()}");
     //}
 
-    public double DelayOfLoad = 2;
+    public float DelayOfLoad = 2;
 
-    public double DelayOfUnLoad = 5;
+    public float DelayOfUnLoad = 5;
 
     public float AngleOfVisible = 60;
     public float AngleOfLoad = 75;
@@ -640,6 +742,15 @@ public class SubSceneShowManager : SingletonBehaviour<SubSceneShowManager>
 
     public double TimeOfLoad = 0;
 
+    public double TimeOfLoad1 = 0;
+    public double TimeOfLoad2 = 0;
+    public double TimeOfLoad3 = 0;
+    public double TimeOfLoad4 = 0;
+
+    public double TimeOfUpdate = 0;
+
+    public bool IsLogTime = false;
+
     public SubScene_Base MinDisScene;
 
 
@@ -648,45 +759,139 @@ public class SubSceneShowManager : SingletonBehaviour<SubSceneShowManager>
     public List<SubScene_Base> hiddenScenes = new List<SubScene_Base>();
     public List<SubScene_Base> unloadScenes = new List<SubScene_Base>();
 
-   void LoadUnloadScenes()
+    private void AddToWaitingScenes(IEnumerable<SubScene_Base> scenes, DictList<SubScene_Base> waittingList)
+    {
+        foreach (var scene in scenes)
+        {
+            if (scene.IsLoading || scene.IsLoaded)
+            {
+                // Debug.LogWarning($"[LoadUnloadScenes.Load] scene:{scene.GetSceneName()}, IsLoading:{scene.IsLoading} || IsLoaded:{scene.IsLoaded}");
+                continue;
+            }
+            //scene.LoadSceneAsync(null);
+            //if (!waittingList.Contains(scene))
+                waittingList.Add(scene);
+        }
+    }
+
+    public void AddToWaitingScenes_ToLoad(IEnumerable<SubScene_Base> scenes)
+    {
+        if (IsEnableLoad)
+            AddToWaitingScenes(scenes, WaitingScenes_ToLoad);
+    }
+
+    public bool isShowLog = false;
+
+    private bool IsShowLog()
+    {
+#if UNITY_EDITOR
+        return isShowLog;
+#endif
+        return false;
+    }
+
+    public void LoadScenesOfTarget(IEnumerable<SubScene_Base> scenes, Action<SceneLoadProgress> finished)
+    {
+        //IsEnableHide = false;
+        //IsEnableUnload = false;
+        int count = 0;
+        foreach (var scene in scenes)
+        {
+            count++;
+            scene.LifeTimeSpane = DelayOfLoad + 1;
+            if (WaitingScenes_ToUnLoad.Contains(scene))
+            {
+                if (IsShowLog())
+                {
+                    Debug.Log($"AddToWaitingScenes_ToLoadEx[{count}] WaitingScenes_ToUnLoad.Contains(scene) scene:{scene}");
+                }
+                WaitingScenes_ToUnLoad.Remove(scene);
+            }
+
+            if (visibleScenes.Contains(scene))
+            {
+                if (IsShowLog())
+                {
+                    Debug.Log($"AddToWaitingScenes_ToLoadEx[{count}] visibleScenes.Contains(scene) scene:{scene}");
+                }
+            }
+            else
+            {
+                visibleScenes.Add(scene);
+            }
+
+            if (hiddenScenes.Contains(scene))
+            {
+                hiddenScenes.Remove(scene);
+                if (IsShowLog())
+                {
+                    Debug.Log($"AddToWaitingScenes_ToLoadEx[{count}] hiddenScenes.Contains(scene) scene:{scene}");
+                }
+            }
+            else
+            {
+
+            }
+        }
+
+        DoLoadScenes(scenes.ToList(), finished, "LoadScenesOfTarget");
+
+        //if (IsEnableLoad)
+        //    AddToWaitingScenes(scenes, WaitingScenes_ToLoad);
+    }
+
+    void LoadUnloadScenes()
     {
         //if (EnableLoadUnload == false) return;
         DateTime start = DateTime.Now;
-        if(IsEnableShow)
+        if (IsEnableShow)
             foreach (var scene in visibleScenes)
             {
                 scene.ShowObjects();
             }
-        if(IsEnableHide)
+        TimeOfLoad1 = (DateTime.Now - start).TotalMilliseconds;
+
+        if (IsEnableHide)
             foreach (var scene in hiddenScenes)
             {
                 scene.HideObjects();
             }
-        if(IsEnableLoad)
-            //var waittingScenes=loadScenes.Where(i=>i)
-            foreach (var scene in loadScenes)
-            {
-                if (scene.IsLoading || scene.IsLoaded)
-                {
-                    // Debug.LogWarning($"[LoadUnloadScenes.Load] scene:{scene.GetSceneName()}, IsLoading:{scene.IsLoading} || IsLoaded:{scene.IsLoaded}");
-                    continue;
-                }
-                //scene.LoadSceneAsync(null);
-                if(!WaitingScenes_ToLoad.Contains(scene))
-                    WaitingScenes_ToLoad.Add(scene);
-            }
-        if(IsEnableUnload)
-            foreach (var scene in unloadScenes)
-            {
-                if (scene.IsLoaded==false)
-                {
-                    // Debug.LogWarning($"[LoadUnloadScenes.Unload] scene:{scene.GetSceneName()}, IsLoading:{scene.IsLoading} || IsLoaded:{scene.IsLoaded}");
-                    continue;
-                }
-                //scene.UnLoadSceneAsync();
-                if (!WaitingScenes_ToUnLoad.Contains(scene))
-                    WaitingScenes_ToUnLoad.Add(scene);
-            }
+        TimeOfLoad2 = (DateTime.Now - start).TotalMilliseconds;
+
+        //if(IsEnableLoad)
+        //    //var waittingScenes=loadScenes.Where(i=>i)
+        //    foreach (var scene in loadScenes)
+        //    {
+        //        if (scene.IsLoading || scene.IsLoaded)
+        //        {
+        //            // Debug.LogWarning($"[LoadUnloadScenes.Load] scene:{scene.GetSceneName()}, IsLoading:{scene.IsLoading} || IsLoaded:{scene.IsLoaded}");
+        //            continue;
+        //        }
+        //        //scene.LoadSceneAsync(null);
+        //        if(!WaitingScenes_ToLoad.Contains(scene))
+        //            WaitingScenes_ToLoad.Add(scene);
+        //    }
+        //if (IsEnableLoad)
+        //    AddToWaitingScenes(loadScenes, WaitingScenes_ToLoad);
+        AddToWaitingScenes_ToLoad(loadScenes);
+        TimeOfLoad3 = (DateTime.Now - start).TotalMilliseconds;
+
+        //if (IsEnableUnload)
+        //    foreach (var scene in unloadScenes)
+        //    {
+        //        if (scene.IsLoaded==false)
+        //        {
+        //            // Debug.LogWarning($"[LoadUnloadScenes.Unload] scene:{scene.GetSceneName()}, IsLoading:{scene.IsLoading} || IsLoaded:{scene.IsLoaded}");
+        //            continue;
+        //        }
+        //        //scene.UnLoadSceneAsync();
+        //        if (!WaitingScenes_ToUnLoad.Contains(scene))
+        //            WaitingScenes_ToUnLoad.Add(scene);
+        //    }
+        if (IsEnableUnload)
+            AddToWaitingScenes(unloadScenes, WaitingScenes_ToUnLoad);
+        TimeOfLoad4 = (DateTime.Now - start).TotalMilliseconds;
+
         TimeOfLoad = (DateTime.Now - start).TotalMilliseconds;
     }
 
@@ -702,7 +907,7 @@ public class SubSceneShowManager : SingletonBehaviour<SubSceneShowManager>
         }
     }
 
-    void CalculateDistance(List<SubScene_Base> scenes)
+    private int GetActiveCamaraCount()
     {
         int cCount = 0;
         foreach (var cam in cameras)
@@ -712,6 +917,163 @@ public class SubSceneShowManager : SingletonBehaviour<SubSceneShowManager>
             if (cam.gameObject.activeInHierarchy == false) continue;
             cCount++;
         }
+        //if (cCount == 0)
+        //{
+        //    Debug.LogError("CalculateDistance cameras Count ==0 ");
+        //}
+        return cCount;
+    }
+
+    public bool IsEnableAngleCheck = true;
+
+    public bool IsEnableBoundsDis = true;
+
+    private void GetSceneDisAndAngle(SubScene_Base scene)
+    {
+        float disToCams = float.MaxValue;
+        float angleOfCams = 0;
+        foreach (var cam in cameras)
+        {
+            if (cam == null) continue;
+            if (cam.isActiveAndEnabled == false) continue;
+            if (cam.gameObject.activeInHierarchy == false) continue;
+
+            float camAngle = 0;
+            if (IsEnableAngleCheck)
+            {
+                camAngle = scene.GetCameraAngle(cam.transform);
+            }
+            float dis = 0;
+            Vector3 cP = cam.transform.position;
+            if (IsEnableBoundsDis)
+            {
+                dis = scene.bounds.SqrDistance(cP);
+            }
+            else
+            {
+                dis = Vector3.Distance(scene.transform.position, cP);
+            }
+
+            if (dis < disToCams)
+            {
+                disToCams = dis;
+                angleOfCams = camAngle;
+            }
+        }
+        scene.DisToCam = disToCams;
+        scene.AngleToCam = angleOfCams;
+
+        if (disToCams > MaxDisSqrtToCam)
+        {
+            MaxDisSqrtToCam = disToCams;
+        }
+        if (disToCams < MinDisSqrtToCam)
+        {
+            MinDisSqrtToCam = disToCams;
+            MinDisScene = scene;
+        }
+        
+    }
+
+    private void AddSceneToList(SubScene_Base scene)
+    {
+        var disToCams = scene.DisToCam;
+        var angleOfCams = scene.AngleToCam;
+        //sumDis += disToCams;
+
+        if (disToCams <= DisOfLoad)
+        {
+            if (angleOfCams < AngleOfLoad)
+            {
+                //loadScenes.Add(scene);
+                scene.SetLifeTime(0);
+
+                if (scene.LifeTimeSpane > DelayOfLoad)
+                {
+                    loadScenes.Add(scene);
+                }
+            }
+        }
+        //else
+        //{
+        //    scene.ClearLifeTime();
+        //}
+
+        if (disToCams <= DisOfVisible)
+        {
+            if (angleOfCams < AngleOfVisible)
+            {
+                visibleScenes.Add(scene);
+            }
+        }
+        if (disToCams > DisOfUnLoad)
+        {
+            //unloadScenes.Add(scene);
+            scene.SetLifeTime(1);
+            if (scene.LifeTimeSpane > DelayOfUnLoad)
+            {
+                if (!IsInFloorMode()) unloadScenes.Add(scene);
+            }
+
+        }
+        else
+        {
+            if (angleOfCams > AngleOfUnLoad && disToCams > DisOfLoad)
+            {
+                //unloadScenes.Add(scene);
+                scene.SetLifeTime(1);
+                if (scene.LifeTimeSpane > DelayOfUnLoad)
+                {
+                    if (!IsInFloorMode()) unloadScenes.Add(scene);
+                }
+            }
+        }
+
+        if (disToCams > DisOfHidden || angleOfCams > DisOfHidden)
+        {
+            if (!IsInFloorMode()) hiddenScenes.Add(scene);
+        }
+
+        //if (disToCams <= DisOfLoad)
+        //{
+        //    loadScenes.Add(scene);
+        //}
+    }
+
+    private SubSceneBag GetSubScenes()
+    {
+        SubSceneBag subScenes = new SubSceneBag();
+        foreach (var scene in scenes_Out0_TreeNode_Hidden)
+        {
+            subScenes.Add(scene);
+        }
+        if (IsEnableLOD)
+        {
+            foreach (var scene in scenes_LODs)
+            {
+                subScenes.Add(scene);
+            }
+        }
+        if (IsEnableOut1)
+        {
+            foreach (var scene in scenes_Out1)
+            {
+                subScenes.Add(scene);
+            }
+        }
+        if (IsEnableIn)
+        {
+            foreach (var scene in scenes_In)
+            {
+                subScenes.Add(scene);
+            }
+        }
+        return subScenes;
+    }
+
+    void CalculateDistance(List<SubScene_Base> scenes)
+    {
+        int cCount = GetActiveCamaraCount();
         if (cCount == 0)
         {
             Debug.LogError("CalculateDistance cameras Count ==0 ");
@@ -731,97 +1093,49 @@ public class SubSceneShowManager : SingletonBehaviour<SubSceneShowManager>
         foreach (var scene in scenes)
         {
             if (scene == null) continue;
-            float disToCams = float.MaxValue;
-            float angleOfCams = 0;
-            foreach (var cam in cameras)
-            {
-                if (cam == null) continue;
-                if (cam.isActiveAndEnabled == false) continue;
-                if (cam.gameObject.activeInHierarchy == false) continue;
 
-                var camAngle = scene.GetCameraAngle(cam.transform);
-
-                Vector3 cP = cam.transform.position;
-                float dis = scene.bounds.SqrDistance(cP);
-                if (dis < disToCams)
-                {
-                    disToCams = dis;
-                    angleOfCams = camAngle;
-                }
-            }
-            scene.DisToCam = disToCams;
-            scene.AngleToCam = angleOfCams;
-
-            if (disToCams > MaxDisSqrtToCam)
-            {
-                MaxDisSqrtToCam = disToCams;
-            }
-            if (disToCams < MinDisSqrtToCam)
-            {
-                MinDisSqrtToCam = disToCams;
-                MinDisScene = scene;
-            }
-            sumDis += disToCams;
-
-            if (disToCams <= DisOfLoad)
-            {
-                if (angleOfCams < AngleOfLoad)
-                {
-                    //loadScenes.Add(scene);
-                    scene.SetLifeTime(0);
-
-                    if (scene.LifeTimeSpane > DelayOfLoad)
-                    {
-                        loadScenes.Add(scene);
-                    }
-                }
-            }
-            //else
+            //float disToCams = float.MaxValue;
+            //float angleOfCams = 0;
+            //foreach (var cam in cameras)
             //{
-            //    scene.ClearLifeTime();
+            //    if (cam == null) continue;
+            //    if (cam.isActiveAndEnabled == false) continue;
+            //    if (cam.gameObject.activeInHierarchy == false) continue;
+
+            //    float camAngle = 0;
+            //    if (IsEnableAngleCheck)
+            //    {
+            //        camAngle = scene.GetCameraAngle(cam.transform);
+            //    }
+            //    float dis = 0;
+            //    Vector3 cP = cam.transform.position;
+            //    if (IsEnableBoundsDis)
+            //    {
+            //        dis = scene.bounds.SqrDistance(cP);
+            //    }
+            //    else
+            //    {
+            //        dis = Vector3.Distance(scene.transform.position, cP);
+            //    }
+            //    if (dis < disToCams)
+            //    {
+            //        disToCams = dis;
+            //        angleOfCams = camAngle;
+            //    }
             //}
+            //scene.DisToCam = disToCams;
+            //scene.AngleToCam = angleOfCams;
 
-            if (disToCams <= DisOfVisible)
-            {
-                if (angleOfCams < AngleOfVisible)
-                {
-                    visibleScenes.Add(scene);
-                }
-            }
-            if (disToCams > DisOfUnLoad)
-            {
-                //unloadScenes.Add(scene);
-                scene.SetLifeTime(1);
-                if (scene.LifeTimeSpane > DelayOfUnLoad)
-                {
-                    if (!IsInFloorMode()) unloadScenes.Add(scene);
-                }
+            GetSceneDisAndAngle(scene);
 
-            }
-            else
-            {
-                if (angleOfCams > AngleOfUnLoad && disToCams > DisOfLoad)
-                {
-                    //unloadScenes.Add(scene);
-                    scene.SetLifeTime(1);
-                    if (scene.LifeTimeSpane > DelayOfUnLoad)
-                    {
-                        if (!IsInFloorMode()) unloadScenes.Add(scene);
-                    }
-                }
-            }
+            //var disToCams = scene.DisToCam;
+            //var angleOfCams = scene.AngleToCam;
+            //sumDis += scene.DisToCam;
 
-            if (disToCams > DisOfHidden || angleOfCams > DisOfHidden)
-            {
-                if (!IsInFloorMode()) hiddenScenes.Add(scene);
-            }
+            AddSceneToList(scene);
 
-            //if (disToCams <= DisOfLoad)
-            //{
-            //    loadScenes.Add(scene);
-            //}
 #if UNITY_EDITOR
-            ChangeSceneBoundsColor(scene, disToCams);
+            ChangeSceneBoundsColor(scene, scene.DisToCam);
 #else
             SetSceneActive(scene, disToCams);
 #endif
@@ -893,18 +1207,43 @@ public class SubSceneShowManager : SingletonBehaviour<SubSceneShowManager>
     // Update is called once per frame
     void Update()
     {
+        DateTime start = DateTime.Now;
+
+        RemoveWaitingScenes();
+
+        //LoadWaitingScenes();
+
+        UnLoadWaitingScenes();
+
+        SubSceneBag subScenes = new SubSceneBag();
+        if (IsUpdateDistance)
+        {
+            subScenes = GetSubScenes();
+            CalculateDistance(subScenes);
+            LoadUnloadScenes();
+        }
+
+        TimeOfUpdate = (DateTime.Now - start).TotalMilliseconds;
+        if (IsLogTime)
+        {
+            Debug.Log($"Update subScenes:{subScenes.Count} Update:{TimeOfUpdate:F2}=Dis:{TimeOfDis:F2} Load:{TimeOfLoad:F2}({TimeOfLoad1:F2}+{TimeOfLoad2:F2}+{TimeOfLoad3:F2}+{TimeOfLoad4:F2})");
+        }
+    }
+
+    private void RemoveWaitingScenes()
+    {
         if (WaitingScenes.Count > 0)
         {
             //Debug.Log("CheckWaittingScenes 1:"+ WaitingScenes.Count);
-            for(int i = 0; i < WaitingScenes.Count; i++)
+            for (int i = 0; i < WaitingScenes.Count; i++)
             {
                 var scene = WaitingScenes[i];
-                if(scene.IsLoaded==false)//加载失败的情况，比如是inactive的情况
+                if (scene.IsLoaded == false)//加载失败的情况，比如是inactive的情况
                 {
-                     WaitingScenes.RemoveAt(i);
+                    WaitingScenes.RemoveAt(i);
                     i--;
                 }
-                else if (scene.GetSceneObjectCount()>0)
+                else if (scene.GetSceneObjectCount() > 0)
                 {
                     WaitingScenes.RemoveAt(i);
                     i--;
@@ -916,33 +1255,35 @@ public class SubSceneShowManager : SingletonBehaviour<SubSceneShowManager>
             }
             //Debug.Log("CheckWaittingScenes 2:" + WaitingScenes.Count);
         }
+    }
 
-        //if (WaitingScenes_ToLoad.Count > 0)
-        //{
-        //    //if (LoadingScene == null || (LoadingScene != null && LoadingScene.IsLoaded == true) )
-        //    //{
-        //    //    LoadingScene = WaitingScenes_ToLoad[0];
-        //    //    WaitingScenes_ToLoad.RemoveAt(0);
-        //    //    LoadingScene.LoadSceneAsync((b, s) =>
-        //    //    {
-        //    //        if (b)
-        //    //        {
-        //    //            WaitingScenes.Add(s);
-        //    //            LoadingScene = null;
-        //    //        }
-        //    //    });
-        //    //}
+    private void LoadWaitingScenes()
+    {
+        if (WaitingScenes_ToLoad.Count > 0)
+        {
+            //if (LoadingScene == null || (LoadingScene != null && LoadingScene.IsLoaded == true) )
+            //{
+            //    LoadingScene = WaitingScenes_ToLoad[0];
+            //    WaitingScenes_ToLoad.RemoveAt(0);
+            //    LoadingScene.LoadSceneAsync((b, s) =>
+            //    {
+            //        if (b)
+            //        {
+            //            WaitingScenes.Add(s);
+            //            LoadingScene = null;
+            //        }
+            //    });
+            //}
 
-        //    var ss = new List<SubScene_Base>(WaitingScenes_ToLoad);
-        //    WaitingScenes_ToLoad.Clear();
+            var ss = WaitingScenes_ToLoad.NewList();
+            WaitingScenes_ToLoad.Clear();
+            DoLoadScenes(ss, null, "LoadSceneAsync");
 
-        //    SubSceneManager.Instance.LoadScenesEx(ss.ToArray(), p =>
-        //    {
-        //        p.scene.HideObjects();
-        //    });
-            
-        //}
+        }
+    }
 
+    private void UnLoadWaitingScenes()
+    {
         if (WaitingScenes_ToUnLoad.Count > 0)
         {
             //Debug.LogError($"WaitingScenes_ToUnLoad :{WaitingScenes_ToUnLoad.Count}");
@@ -956,42 +1297,6 @@ public class SubSceneShowManager : SingletonBehaviour<SubSceneShowManager>
                 UnLoadingScene = null;
             }
         }
-
-        if (IsUpdateDistance)
-        {
-            SubSceneBag subScenes = new SubSceneBag();
-
-            
-            foreach (var scene in scenes_Out0_TreeNode_Hidden)
-            {
-                subScenes.Add(scene);
-            }
-            if (IsEnableLOD)
-            { 
-                foreach (var scene in scenes_LODs)
-                {
-                    subScenes.Add(scene);
-                }
-            }
-            if(IsEnableOut1)
-            {
-                foreach (var scene in scenes_Out1)
-                {
-                    subScenes.Add(scene);
-                }
-            }
-            if(IsEnableIn)
-            {
-                foreach (var scene in scenes_In)
-                {
-                    subScenes.Add(scene);
-                }     
-            }
-
-
-            CalculateDistance(subScenes);
-            LoadUnloadScenes();
-        }
     }
 
     public float WaittingInterval = 1f;
@@ -1002,8 +1307,8 @@ public class SubSceneShowManager : SingletonBehaviour<SubSceneShowManager>
         {
             if (WaitingScenes_ToLoad.Count > 0)
             {
-                var ss0 = new List<SubScene_Base>(WaitingScenes_ToLoad);
-                var ss = new List<SubScene_Base>(WaitingScenes_ToLoad);
+                var ss0 = WaitingScenes_ToLoad.NewList();
+                var ss = WaitingScenes_ToLoad.NewList();
                 WaitingScenes_ToLoad.Clear();
 
                 int count1 = ss.Count;
@@ -1024,20 +1329,54 @@ public class SubSceneShowManager : SingletonBehaviour<SubSceneShowManager>
                             inactiveScene = scene;
                         }
                     }
-
                 }
-                Debug.Log($"SubSceneShowManager.PostScenesToLoad  count1:{count1} count2:{count2} removeCount1:{removeCount1}  removeCount2:{removeCount2} inactiveScene:{TransformHelper.GetPathWithActive(inactiveScene)}");
 
-                if (ss.Count > 0)
+                if(IsShowLog())
                 {
-                    SubSceneManager.Instance.LoadScenesEx(ss.ToArray(), p =>
+                    if (count2 > 0)
                     {
-                        if (p.scene != null)
-                            p.scene.HideObjects();
-                    });
+                        Debug.Log($"SubSceneShowManager.PostScenesToLoad  count1:{count1} count2:{count2} removeCount1:{removeCount1}  removeCount2:{removeCount2} inactiveScene:{TransformHelper.GetPathWithActive(inactiveScene)}");
+                    }
+                    else
+                    {
+                        Debug.LogWarning($"SubSceneShowManager.PostScenesToLoad  count1:{count1} count2:{count2} removeCount1:{removeCount1}  removeCount2:{removeCount2} inactiveScene:{TransformHelper.GetPathWithActive(inactiveScene)}");
+                    }
                 }
+
+                DoLoadScenes(ss, null,"PostScenesToLoad");
             }
             yield return new WaitForSeconds(WaittingInterval);
+        }
+    }
+
+    private void DoLoadScenes(List<SubScene_Base> ss, Action<SceneLoadProgress> finished, string tag)
+    {
+        if (ss == null)
+        {
+            Debug.LogError($"DoLoadScenes ss == null");
+            return;
+        }
+        if (ss.Count > 0)
+        {
+            //SubSceneManager.Instance.LoadScenesEx(ss.ToArray(), p =>
+            //{
+            //    if (p.scene != null)
+            //        p.scene.HideObjects();
+            //});
+            LoadScenes(ss, p =>
+            {
+                if (p.scene != null)
+                    p.scene.HideObjects();
+                if (finished != null)
+                {
+                    finished(p);
+                }
+
+            }, tag);
+        }
+        else
+        {
+            //Debug.LogError($"DoLoadScenes ss.Count==0");
         }
     }
 

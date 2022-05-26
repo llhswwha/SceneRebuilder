@@ -225,7 +225,7 @@ public class MeshSelection : MonoBehaviour
                     }
                 }
             }
-        });
+        }, "SelectObjectByRId");
     }
 
     public bool IsUpdateCombined = false;

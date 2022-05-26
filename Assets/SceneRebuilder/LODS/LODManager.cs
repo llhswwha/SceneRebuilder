@@ -71,6 +71,8 @@ public class LODManager : SingletonBehaviour<LODManager>
     {
         LocalTarget = null;
         lodDetails = null;
+
+        StartUpdateLoadLOD0Coroutine();
     }
 
     public void CreateBoxLOD(GameObject go)
@@ -1551,6 +1553,11 @@ T minTEx = null;
                 //Debug.Log("thread2");
                 lodInfoText = GetLODGroupInfoText(infos);
                 IsThreadBusy = false;
+
+                if (IsShowLog)
+                {
+                    Debug.Log($"CaculateGroupInfo完成，耗时{lodInfoTime}ms " + lodInfoText);
+                }
             }, "GetRuntimeLODDetail");
         }
         lodInfoTime = (DateTime.Now - now).TotalMilliseconds;
@@ -1576,10 +1583,18 @@ T minTEx = null;
         lodInfoText = GetLODGroupInfoText(infos);
         lodInfoTime = (DateTime.Now - now).TotalMilliseconds;
         string result = $"t:{lodInfoTime:F2}ms c:{lodCamera.name} {lodInfoText}";
+        if (IsShowLog)
+        {
+            Debug.Log($"GetRuntimeLODDetailMainThread result:{result}");
+        }
         return result;
     }
 
+    public bool IsEnableUpdate = true;
+
     public bool IsEnableLoadLod0 = true;
+
+    public bool IsShowLog = false;
 
     public string GetLODGroupInfoText(int[] infos)
     {
@@ -1611,7 +1626,12 @@ T minTEx = null;
 
         if (IsEnableLoadLod0)
         {
-            LoadLOD0Scenes(lod0List);
+            LoadedScenes=LoadLOD0Scenes(lod0List);
+
+            if (IsShowLog)
+            {
+                Debug.Log($"LoadLOD0Scenes lod0List:{lod0List.Count} LoadedScenes:{LoadedScenes.Count}");
+            }
         }
 
         // string lodInfoTxt="";
@@ -1636,8 +1656,6 @@ T minTEx = null;
         // info+="\n"+lodInfoTxt;
         infoText += "\n" + lodInfoTxt_count + "\n" + lodInfoTxt_vertex + "\n" + lodInfoTxt_percent;
 
-        //Debug.Log($"CaculateGroupInfo完成，耗时{lodInfoTime}ms "+ infoText);
-
         lodDetails.Sort((a, b) =>
         {
             return b.vertexCount.CompareTo(a.vertexCount);
@@ -1659,6 +1677,49 @@ T minTEx = null;
         return GetRuntimeLODDetail(isForce, includeInactive);
     }
 
+    //public bool IsEnable
+
+    public float UpdateInternal = 0.3f;
+
+    private bool isUpdateCoroutineStarted = false;
+
+    public void StartUpdateLoadLOD0Coroutine()
+    {
+        if (isUpdateCoroutineStarted) return;
+        isUpdateCoroutineStarted = true;
+
+        if (IsEnableUpdate == false) return;
+        StartCoroutine(UpdateLoadLOD0Coroutine());
+    }
+
+    IEnumerator UpdateLoadLOD0Coroutine()
+    {
+        while (true)
+        {
+            if (IsEnableUpdate)
+            {
+                GetLODInfo();
+            }
+            yield return new WaitForSeconds(UpdateInternal);
+        }
+        //yield return null;
+    }
+
+    [ContextMenu("GetLODInfo")]
+    public string GetLODInfo()
+    {
+        try
+        {
+            return GetRuntimeLODDetail(false);
+        }
+        catch (Exception e)
+        {
+            Debug.LogError("LODManager.GetLODInfo:" + e.ToString() + " " + e.StackTrace);
+            return e.Message;
+        }
+        //Debug.Log("LODManagerUI.GetLODInfo");
+    }
+
 
     [ContextMenu("GetRuntimeLODDetail")]
     public string GetRuntimeLODDetail(bool isForce,bool isInactive)
@@ -1676,7 +1737,9 @@ T minTEx = null;
         return detail;
     }
 
-    private static void LoadLOD0Scenes(List<LODGroupDetails> lod0List)
+    public List<SubScene_Base> LoadedScenes = new List<SubScene_Base>();
+
+    private static List<SubScene_Base> LoadLOD0Scenes(List<LODGroupDetails> lod0List)
     {
         List<SubScene_Base> sceneList = new List<SubScene_Base>();
         Dictionary<SubScene_Base, LODGroupInfo> scene2Group = new Dictionary<SubScene_Base, LODGroupInfo>();
@@ -1698,7 +1761,7 @@ T minTEx = null;
                 sceneList.Add(scene);
                 if (scene2Group.ContainsKey(scene))
                 {
-                    Debug.LogError("LoadLOD0Scenes scene2Group.ContainsKey(scene) scene:" + scene);
+                    Debug.LogWarning("LoadLOD0Scenes scene2Group.ContainsKey(scene) scene:" + scene);
                 }
                 else
                 {
@@ -1707,12 +1770,12 @@ T minTEx = null;
             }
             catch (Exception ex)
             {
-
                 Debug.LogError("LoadLOD0Scenes Exception:" + ex);
             }
-
-            
         }
+
+        //LoadedScenes = sceneList;
+
         if (sceneList.Count > 0)
         {
             //Debug.LogError($"GetRuntimeLODDetail lod0List:{lod0List.Count} sceneList:{sceneList.Count} scene2Group:{scene2Group.Count}");
@@ -1737,12 +1800,14 @@ T minTEx = null;
                     Debug.LogError($"GetRuntimeLODDetail p.scene == null");
                 }
 
-            });
+            }, "LoadLOD0Scenes");
         }
         else
         {
             //Debug.Log($"GetRuntimeLODDetail lod0List:{lod0List.Count}");
         }
+
+        return sceneList;
     }
 
     public void ClearTwoList()

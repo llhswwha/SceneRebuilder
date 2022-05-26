@@ -10,10 +10,10 @@ public class SceneLoadSetting
     public bool IsEnable = true;
 
     [XmlAttribute]
-    public double DelayOfLoad = 2;
+    public float DelayOfLoad = 2;
 
     [XmlAttribute]
-    public double DelayOfUnLoad = 5;
+    public float DelayOfUnLoad = 5;
 
     [XmlAttribute]
     public float WaittingInterval = 1f; 

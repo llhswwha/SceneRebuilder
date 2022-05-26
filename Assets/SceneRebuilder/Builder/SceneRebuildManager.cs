@@ -314,11 +314,11 @@ public class SceneRebuildManager : SingletonBehaviour<SceneRebuildManager>
     //}
 
 
-    public void LoadScenesOfChildren<T>(GameObject buildingOrFloor, Action<SceneLoadProgress> finishedCallback) where T : SubScene_Base
-    {
-        T[] subScenes = buildingOrFloor.GetComponentsInChildren<T>(true);
-        SubSceneManager.Instance.LoadScenesEx(subScenes, finishedCallback);
-    }
+    //public void LoadScenesOfChildren<T>(GameObject buildingOrFloor, Action<SceneLoadProgress> finishedCallback) where T : SubScene_Base
+    //{
+    //    T[] subScenes = buildingOrFloor.GetComponentsInChildren<T>(true);
+    //    SubSceneManager.Instance.LoadScenesEx(subScenes, finishedCallback);
+    //}
 
     public void TestLoadBySetting()
     {

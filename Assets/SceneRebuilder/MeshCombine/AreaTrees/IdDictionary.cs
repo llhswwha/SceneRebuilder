@@ -283,7 +283,7 @@ public static class IdDictionary
         }
     }
 
-    public static RendererId GetId(string id, Transform t = null,bool showLog=true,bool isError=true)
+    public static RendererId GetId(string id, Transform t = null,bool showLog=true,bool isError=false)
     {
         if (string.IsNullOrEmpty(id))
         {

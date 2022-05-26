@@ -536,7 +536,7 @@ public class AreaTreeNodeShowManager : MonoBehaviour
                             {
                                 Debug.LogError($"AreaTreeNodeShowManager.LoadScene p:{p}");
                                 IsBusyLoading = false;
-                            });
+                            }, "UpdateNodeCoroutine");
                         }
 
                     }

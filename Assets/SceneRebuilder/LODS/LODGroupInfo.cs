@@ -374,7 +374,7 @@ public class LODGroupInfo : MonoBehaviour
             Debug.LogError($"SetLOD0FromScene Length == 0 sceneRenderers:{sceneRenderers.Length} scene:{scene.sceneName} [arg:{scene.GetSceneArg()}]");
             return;
         }
-        Debug.Log($"SetLOD0FromScene sceneRenderers:{sceneRenderers.Length} scene:{scene.sceneName} [arg:{scene.GetSceneArg()}]");
+        //Debug.Log($"SetLOD0FromScene sceneRenderers:{sceneRenderers.Length} scene:{scene.sceneName} [arg:{scene.GetSceneArg()}]");
         lods[0].renderers = sceneRenderers;
         foreach(var r in sceneRenderers)
         {

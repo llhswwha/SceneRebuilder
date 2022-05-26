@@ -435,14 +435,14 @@ public class SubSceneManager : SingletonBehaviour<SubSceneManager>
     public void AutoLoadScenes()
     {
         var outScenes = GetSubScenes(SubSceneType.Out0);
-        LoadScenesEx(outScenes,null);
+        LoadScenesEx(outScenes,null, "AutoLoadScenes");
     }
 
     [ContextMenu("LoadScenesEx")]
     public void LoadScenesEx()
     {
         subScenes = GetSubScenes();
-        LoadScenesEx(subScenes,null);
+        LoadScenesEx(subScenes,null, "LoadScenesEx");
     }
 
     public List<SubScene_Base> WattingForLoadedAll = new List<SubScene_Base>();
@@ -452,10 +452,11 @@ public class SubSceneManager : SingletonBehaviour<SubSceneManager>
 
     public int LoadCount = 0;
     
-    public void LoadScenesEx<T>(T[] scenes, Action<SceneLoadProgress> finishedCallback) where T : SubScene_Base
+    public void LoadScenesEx<T>(T[] scenes, Action<SceneLoadProgress> finishedCallback,string tag) where T : SubScene_Base
     {
+        this.logTag = tag;
         LoadCount++;
-        Debug.LogError($"SubSceneManager.LoadScenesEx [{LoadCount}] scenes:{scenes.Length} finishedCallback:{finishedCallback}");
+        Debug.Log($"[SubSceneManager.LoadScenes][{LoadCount}]({logTag}) Start! scenes:{scenes.Length}");
 
         if(scenes==null|| scenes.Length == 0)
         {
@@ -496,6 +497,18 @@ public class SubSceneManager : SingletonBehaviour<SubSceneManager>
 
     public float LoadSceneUpdateInterval = 0.05f;
 
+    public string logTag = "";
+
+    public bool isShowLog = false;
+
+    public bool IsShowLog()
+    {
+#if UNITY_EDITOR
+        return isShowLog;
+#endif
+        return false;
+    }
+
     IEnumerator LoadScenesByBag<T>(T[] scenes, Action<SceneLoadProgress> finishedCallback) where T : SubScene_Base
     {
         var start = DateTime.Now;
@@ -522,10 +535,14 @@ public class SubSceneManager : SingletonBehaviour<SubSceneManager>
             WattingForLoadedAll.Add(scene);
             totalScenesCount++;
         }
-        string txt = sb.ToString();
-        if (!string.IsNullOrEmpty(txt))
+
+        if(IsShowLog())
         {
-            Debug.LogError($"LoadScenesByBag WattingForLoadedAll.Contains(scene) inWattingCount:{inWattingCount} \n{txt}");
+            string txt = sb.ToString();
+            if (!string.IsNullOrEmpty(txt))
+            {
+                Debug.Log($"LoadScenesByBag WattingForLoadedAll.Contains(scene) inWattingCount:{inWattingCount} \n{txt}");
+            }
         }
 
         int count = 0;
@@ -542,13 +559,16 @@ public class SubSceneManager : SingletonBehaviour<SubSceneManager>
         DateTime startLoadTime = DateTime.Now;
         SubScene_Base lastScene = null;
 
-        if (WattingForLoadedCurrent.Count > 0)
+        if (IsShowLog())
         {
-            Debug.LogError($"LoadScenesByBag scenes:{scenes.Length} inWattingCount:{inWattingCount} WattingForLoadedAll:{WattingForLoadedAll.Count} WattingForLoadedCurrent:{WattingForLoadedCurrent.Count} Current0:{WattingForLoadedCurrent[0]} LoadingSceneMaxCount:{LoadingSceneMaxCount} bool isLoadScene  :{WattingForLoadedCurrent.Count < LoadingSceneMaxCount}");
-        }
-        else
-        {
-            Debug.Log($"LoadScenesByBag scenes:{scenes.Length} inWattingCount:{inWattingCount} WattingForLoadedAll:{WattingForLoadedAll.Count} WattingForLoadedCurrent:{WattingForLoadedCurrent.Count} LoadingSceneMaxCount:{LoadingSceneMaxCount} bool isLoadScene  :{WattingForLoadedCurrent.Count < LoadingSceneMaxCount}");
+            if (WattingForLoadedCurrent.Count > 0)
+            {
+                Debug.LogWarning($"LoadScenesByBag scenes:{scenes.Length} inWattingCount:{inWattingCount} WattingForLoadedAll:{WattingForLoadedAll.Count} WattingForLoadedCurrent:{WattingForLoadedCurrent.Count} Current0:{WattingForLoadedCurrent[0]} LoadingSceneMaxCount:{LoadingSceneMaxCount} bool isLoadScene  :{WattingForLoadedCurrent.Count < LoadingSceneMaxCount}");
+            }
+            else
+            {
+                Debug.Log($"LoadScenesByBag scenes:{scenes.Length} inWattingCount:{inWattingCount} WattingForLoadedAll:{WattingForLoadedAll.Count} WattingForLoadedCurrent:{WattingForLoadedCurrent.Count} LoadingSceneMaxCount:{LoadingSceneMaxCount} bool isLoadScene  :{WattingForLoadedCurrent.Count < LoadingSceneMaxCount}");
+            }
         }
         
 
@@ -581,20 +601,22 @@ public class SubSceneManager : SingletonBehaviour<SubSceneManager>
 
                         //Debug.Log($"LoadScenesByBag2 WattingForLoadedAll:{WattingForLoadedAll.Count} WattingForLoadedCurrent:{WattingForLoadedCurrent.Count} LoadingSceneMaxCount:{LoadingSceneMaxCount} bool isLoadScene:{WattingForLoadedCurrent.Count < LoadingSceneMaxCount}");
 
-#if UNITY_EDITOR
-                        Debug.Log($"LoadScenesByBag Start scene:{scene.GetSceneName()},currentList:{WattingForLoadedCurrent.Count} allList:{WattingForLoadedAll.Count}");
-#endif
+                        if (IsShowLog())
+                        {
+                            Debug.Log($"LoadScenesByBag Start! scene:{scene.GetSceneName()},currentList:{WattingForLoadedCurrent.Count} allList:{WattingForLoadedAll.Count}");
+                        }   
+
                         scene.LoadSceneAsync((b, s) =>
                         {
                             //WattingForLoadedAll.RemoveAt(0);
                             WattingForLoadedCurrent.Remove(s);
-#if UNITY_EDITOR
-                            Debug.Log($"LoadScenesByBag End scene:{s.GetSceneName()},currentList:{WattingForLoadedCurrent.Count} allList:{WattingForLoadedAll.Count}");
-#endif
-
                             count++;
                             var progress = (count + 0.0f) / totalScenesCount;
-                            WriteLog("LoadScenesByBag", $"count:{totalScenesCount} index:{count} progress:{progress:F3} time:{(DateTime.Now - start).ToString()}");
+                            if (IsShowLog())
+                            {
+                                Debug.Log($"LoadScenesByBag End! scene:{s.GetSceneName()},currentList:{WattingForLoadedCurrent.Count} allList:{WattingForLoadedAll.Count} count:{totalScenesCount} index:{count} progress:{progress:F3} time:{(DateTime.Now - start).ToString()}");
+                            }
+                            WriteLog("LoadScenesByBag", $"Progress count:{totalScenesCount} index:{count} progress:{progress:F3} time:{(DateTime.Now - start).ToString()}");
                             OnProgressChanged(progress);
                             if (count == totalScenesCount)
                             {
@@ -673,10 +695,9 @@ public class SubSceneManager : SingletonBehaviour<SubSceneManager>
             OnAllLoaded();
         }
        
-        Debug.Log($"[SubSceneManager.LoadScenesByBag] Finished currentList:{WattingForLoadedCurrent.Count} allList:{WattingForLoadedAll.Count} time:{(DateTime.Now - start).ToString()}");
+        Debug.Log($"[SubSceneManager.LoadScenes][ByBag][{LoadCount}]({logTag}) Finished!! scenes:{scenes.Length} currentList:{WattingForLoadedCurrent.Count} allList:{WattingForLoadedAll.Count} time:{(DateTime.Now - start).ToString()}");
         yield return null;
     }
-
 
     void Start()
     {
@@ -1361,6 +1382,22 @@ public class SceneLoadProgress
     public SubScene_Base scene;
     public float progress;
     public bool isAllFinished;
+
+    public bool isTimeout = false;
+
+    public bool IsFinishOrTimeout()
+    {
+        if (isAllFinished)
+        {
+            return true;
+        }
+        if (isTimeout)
+        {
+            return true;
+        }
+        return false;
+    }
+
     public SceneLoadProgress()
     {
 

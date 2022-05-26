@@ -203,10 +203,18 @@ public class BuildingScenesLoadManager : MonoBehaviour
 
         if (IsLoadUserBuildings)//Test
         {
-#if UNITY_EDITOR
+//#if UNITY_EDITOR
             staticBuilidings.Clear();
             modelList.Clear();
-#endif
+//#endif
+            foreach (var b in staticBuilidings)
+            {
+                GameObject.DestroyImmediate(b);
+            }
+            foreach (var b in modelList)
+            {
+                GameObject.DestroyImmediate(b);
+            }
         }
 
         if (Setting.Enabled == false)
@@ -260,7 +268,7 @@ public class BuildingScenesLoadManager : MonoBehaviour
                     {
                         finishedCallbak(p);
                     }
-                });
+                }, "LoadBuildingScenes");
             }
             else
             {

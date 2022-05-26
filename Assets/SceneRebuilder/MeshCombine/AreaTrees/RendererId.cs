@@ -351,7 +351,9 @@ public class RendererId
             //Debug.LogError($"RendererId.SetParent1 pGo!=null name:{this.name} Id:{this.Id} parentId:{this.parentId}");
         }
         else{
-            Debug.LogError($"RendererId.SetParent2 pGo==null name:{this.name} Id:{this.Id} parentId:{this.parentId}");
+#if UNITY_EDITOR
+            Debug.LogWarning($"RendererId.SetParent2 pGo==null name:{this.name} Id:{this.Id} parentId:{this.parentId}");
+#endif
         }
         return pGo;
     }

@@ -876,6 +876,14 @@ public class MyEditorTools2
         }
         ProgressBarHelper.ClearProgressBar();
     }
+
+    [MenuItem("SceneTools/SubScene/GetSubScenes")]
+    public static void GetSubScenes()
+    {
+        GameObject obj = Selection.activeGameObject;
+        var subScenes = obj.GetComponentsInChildren<SubScene_Base>(true).ToList();
+        Debug.Log($"GetSubScenes obj:{obj.name} subScenes:{subScenes.Count} path:{obj.transform.GetPath()}");
+    }
     #endregion
 
     #region ClearComponents

@@ -691,6 +691,8 @@ public class GPUInstanceTest : SingletonBehaviour<GPUInstanceTest>
         }
     }
 
+    public bool isShowLog = false;
+
     public IEnumerator RemovePrefabsOfRoot_Coroutine(GameObject root)
     {
         GPUInstancerPrefab[] prefabs = root.GetComponentsInChildren<GPUInstancerPrefab>(true);
@@ -703,7 +705,10 @@ public class GPUInstanceTest : SingletonBehaviour<GPUInstanceTest>
             if (j > CoroutineSize)
             {
                 j = 0;
-                Debug.Log($"RemovePrefabsOfRoot_Coroutine[{i}/{prefabs.Length}_{j}/{CoroutineSize}] {root.name} prefab:{prefab.name}");
+                if (isShowLog)
+                {
+                    Debug.Log($"RemovePrefabsOfRoot_Coroutine[{i}/{prefabs.Length}_{j}/{CoroutineSize}] {root.name} prefab:{prefab.name}");
+                }
                 yield return null;
             } 
             j++;

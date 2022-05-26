@@ -617,7 +617,7 @@ public class BuildingModelInfo : SubSceneCreater
             }
 
             Debug.LogError($"SwitchToCombined3 nodes:{nodes.Count} scenes:{scenes.Count}\t{(DateTime.Now-start).ToString()}");
-        });
+        }, "LoadAndSwitchToRenderers");
         Debug.LogError($"SwitchToCombined1 nodes:{nodes.Count} scenes:{scenes.Count}\t{(DateTime.Now-start).ToString()}");
     }
 

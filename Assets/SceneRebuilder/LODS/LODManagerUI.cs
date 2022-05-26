@@ -19,19 +19,30 @@ public class LODManagerUI : MonoBehaviour
     {
         LODManager=GameObject.FindObjectOfType<LODManager>();
         txtLog.text = LODManager.GetRuntimeLODDetail(true);
-        StartCoroutine(UpdateCoroutine());
+        //StartCoroutine(UpdateCoroutine());
+
+        LODManager.StartUpdateLoadLOD0Coroutine();
     }
 
-    IEnumerator UpdateCoroutine()
+    private void Update()
     {
-        while (true)
-        {
-            if (toggleIsUpdate.isOn)
-                GetLODInfo();
-            yield return new WaitForSeconds(UpdateInternal);
-        }
-        //yield return null;
+        LODManager.IsEnableUpdate = toggleIsUpdate.isOn;
+        txtLog.text = LODManager.lodInfoText;
     }
+
+    //IEnumerator UpdateCoroutine()
+    //{
+    //    while (true)
+    //    {
+    //        if (toggleIsUpdate.isOn)
+    //        {
+    //            //GetLODInfo();
+    //            txtLog.text = LODManager.GetLODInfo();
+    //        }
+    //        yield return new WaitForSeconds(UpdateInternal);
+    //    }
+    //    //yield return null;
+    //}
 
     //// Update is called once per frame
     //void Update()
@@ -70,17 +81,19 @@ public class LODManagerUI : MonoBehaviour
         LODManager.SetLODActive(false);
     }
 
-    [ContextMenu("GetLODInfo")]
-    public void GetLODInfo()
-    {
-        try
-        {
-            txtLog.text = LODManager.GetRuntimeLODDetail(false);
-        }catch(Exception e)
-        {
-            Debug.LogError("LODManagerUI.Exception:"+e.ToString()+" "+e.StackTrace);
-        }
-        
-        //Debug.Log("LODManagerUI.GetLODInfo");
-    }
+    //[ContextMenu("GetLODInfo")]
+    //public void GetLODInfo()
+    //{
+    //    //try
+    //    //{
+    //    //    txtLog.text = LODManager.GetLODInfo();
+    //    //}catch(Exception e)
+    //    //{
+    //    //    Debug.LogError("LODManagerUI.Exception:"+e.ToString()+" "+e.StackTrace);
+    //    //}
+
+    //    ////Debug.Log("LODManagerUI.GetLODInfo");
+
+    //    txtLog.text = LODManager.GetLODInfo();
+    //}
 }
