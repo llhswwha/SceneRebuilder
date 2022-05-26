@@ -656,6 +656,8 @@ public class SubSceneShowManager : SingletonBehaviour<SubSceneShowManager>
 
         //SceneEvents.FloorFocusStartAction += SceneEvents_FloorFocusStartAction;
         //SceneEvents.FloorFocusCompleteAction += SceneEvents_FloorFocusCompleteAction;
+
+        StartUpdateSubScenes();
     }
 
     private void SceneEvents_FloorFocusCompleteAction(FloorController obj)
@@ -742,10 +744,10 @@ public class SubSceneShowManager : SingletonBehaviour<SubSceneShowManager>
 
     public double TimeOfLoad = 0;
 
-    public double TimeOfLoad1 = 0;
-    public double TimeOfLoad2 = 0;
-    public double TimeOfLoad3 = 0;
-    public double TimeOfLoad4 = 0;
+    //public double TimeOfLoad1 = 0;
+    //public double TimeOfLoad2 = 0;
+    //public double TimeOfLoad3 = 0;
+    //public double TimeOfLoad4 = 0;
 
     public double TimeOfUpdate = 0;
 
@@ -754,10 +756,10 @@ public class SubSceneShowManager : SingletonBehaviour<SubSceneShowManager>
     public SubScene_Base MinDisScene;
 
 
-    public List<SubScene_Base> visibleScenes = new List<SubScene_Base>();
-    public List<SubScene_Base> loadScenes = new List<SubScene_Base>();
-    public List<SubScene_Base> hiddenScenes = new List<SubScene_Base>();
-    public List<SubScene_Base> unloadScenes = new List<SubScene_Base>();
+    public DictList<SubScene_Base> visibleScenes = new DictList<SubScene_Base>();
+    public DictList<SubScene_Base> loadScenes = new DictList<SubScene_Base>();
+    public DictList<SubScene_Base> hiddenScenes = new DictList<SubScene_Base>();
+    public DictList<SubScene_Base> unloadScenes = new DictList<SubScene_Base>();
 
     private void AddToWaitingScenes(IEnumerable<SubScene_Base> scenes, DictList<SubScene_Base> waittingList)
     {
@@ -769,7 +771,6 @@ public class SubSceneShowManager : SingletonBehaviour<SubSceneShowManager>
                 continue;
             }
             //scene.LoadSceneAsync(null);
-            //if (!waittingList.Contains(scene))
                 waittingList.Add(scene);
         }
     }
@@ -845,18 +846,18 @@ public class SubSceneShowManager : SingletonBehaviour<SubSceneShowManager>
         //if (EnableLoadUnload == false) return;
         DateTime start = DateTime.Now;
         if (IsEnableShow)
-            foreach (var scene in visibleScenes)
+            foreach (var scene in visibleScenes.Items)
             {
                 scene.ShowObjects();
             }
-        TimeOfLoad1 = (DateTime.Now - start).TotalMilliseconds;
+        //TimeOfLoad1 = (DateTime.Now - start).TotalMilliseconds;
 
         if (IsEnableHide)
-            foreach (var scene in hiddenScenes)
+            foreach (var scene in hiddenScenes.Items)
             {
                 scene.HideObjects();
             }
-        TimeOfLoad2 = (DateTime.Now - start).TotalMilliseconds;
+        //TimeOfLoad2 = (DateTime.Now - start).TotalMilliseconds;
 
         //if(IsEnableLoad)
         //    //var waittingScenes=loadScenes.Where(i=>i)
@@ -873,8 +874,8 @@ public class SubSceneShowManager : SingletonBehaviour<SubSceneShowManager>
         //    }
         //if (IsEnableLoad)
         //    AddToWaitingScenes(loadScenes, WaitingScenes_ToLoad);
-        AddToWaitingScenes_ToLoad(loadScenes);
-        TimeOfLoad3 = (DateTime.Now - start).TotalMilliseconds;
+        AddToWaitingScenes_ToLoad(loadScenes.Items);
+        //TimeOfLoad3 = (DateTime.Now - start).TotalMilliseconds;
 
         //if (IsEnableUnload)
         //    foreach (var scene in unloadScenes)
@@ -889,8 +890,8 @@ public class SubSceneShowManager : SingletonBehaviour<SubSceneShowManager>
         //            WaitingScenes_ToUnLoad.Add(scene);
         //    }
         if (IsEnableUnload)
-            AddToWaitingScenes(unloadScenes, WaitingScenes_ToUnLoad);
-        TimeOfLoad4 = (DateTime.Now - start).TotalMilliseconds;
+            AddToWaitingScenes(unloadScenes.Items, WaitingScenes_ToUnLoad);
+        //TimeOfLoad4 = (DateTime.Now - start).TotalMilliseconds;
 
         TimeOfLoad = (DateTime.Now - start).TotalMilliseconds;
     }
@@ -1085,10 +1086,10 @@ public class SubSceneShowManager : SingletonBehaviour<SubSceneShowManager>
         MaxDisSqrtToCam = 0;
         MinDisSqrtToCam = float.MaxValue;
         float sumDis = 0;
-        visibleScenes = new List<SubScene_Base>();
-        hiddenScenes = new List<SubScene_Base>();
-        loadScenes = new List<SubScene_Base>();
-        unloadScenes = new List<SubScene_Base>();
+        visibleScenes = new DictList<SubScene_Base>();
+        hiddenScenes = new DictList<SubScene_Base>();
+        loadScenes = new DictList<SubScene_Base>();
+        unloadScenes = new DictList<SubScene_Base>();
 
         foreach (var scene in scenes)
         {
@@ -1207,6 +1208,16 @@ public class SubSceneShowManager : SingletonBehaviour<SubSceneShowManager>
     // Update is called once per frame
     void Update()
     {
+        //UpdateSubScenes();
+    }
+
+    public void StartUpdateSubScenes()
+    {
+        StartCoroutine(UpdateSubScenes_Coroutine());
+    }
+
+    private void UpdateSubScenes()
+    {
         DateTime start = DateTime.Now;
 
         RemoveWaitingScenes();
@@ -1226,7 +1237,19 @@ public class SubSceneShowManager : SingletonBehaviour<SubSceneShowManager>
         TimeOfUpdate = (DateTime.Now - start).TotalMilliseconds;
         if (IsLogTime)
         {
-            Debug.Log($"Update subScenes:{subScenes.Count} Update:{TimeOfUpdate:F2}=Dis:{TimeOfDis:F2} Load:{TimeOfLoad:F2}({TimeOfLoad1:F2}+{TimeOfLoad2:F2}+{TimeOfLoad3:F2}+{TimeOfLoad4:F2})");
+            //Debug.Log($"Update subScenes:{subScenes.Count} Update:{TimeOfUpdate:F2}=Dis:{TimeOfDis:F2} Load:{TimeOfLoad:F2}({TimeOfLoad1:F2}+{TimeOfLoad2:F2}+{TimeOfLoad3:F2}+{TimeOfLoad4:F2})");
+            Debug.Log($"UpdateSubScenes subScenes:{subScenes.Count} Update:{TimeOfUpdate:F2}=Dis:{TimeOfDis:F2} Load:{TimeOfLoad:F2}");
+        }
+    }
+
+    public float UpdateInterval = 0.1f;
+
+    IEnumerator UpdateSubScenes_Coroutine()
+    {
+        while (true)
+        {
+            UpdateSubScenes();
+            yield return new WaitForSeconds(UpdateInterval);
         }
     }
 

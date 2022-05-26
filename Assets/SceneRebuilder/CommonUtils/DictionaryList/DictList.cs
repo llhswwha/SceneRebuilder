@@ -36,7 +36,7 @@ public class DictList<T>
     {
         get
         {
-            return this.Count;
+            return Items.Count;
         }
     }
 
@@ -80,15 +80,23 @@ public class DictList<T>
 
     public void RemoveAt(int id)
     {
-        if(id>0&&id< Items.Count)
+        try
         {
-            T t = Items[id];
-            if (dict.ContainsKey(t))
+            if (id > 0 && id < Items.Count)
             {
-                dict.Remove(t);
+                T t = Items[id];
+                if (dict.ContainsKey(t))
+                {
+                    dict.Remove(t);
+                }
+                Items.RemoveAt(id);
             }
-            Items.RemoveAt(id);
         }
+        catch (System.Exception ex)
+        {
+            Debug.LogError($"RemoveAt Exception:{ex}");
+        }
+
     }
 
     public List<T> NewList()
