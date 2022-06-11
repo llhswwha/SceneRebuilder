@@ -471,10 +471,13 @@ public class AcRTAlignJobContainer
                             arg.Log = $"对齐成功 有错误[{errorCount}] zero:{DistanceSetting.zeroM:F5},disNew:{disNew}";
                             arg.AlignResult = false;
 
+                            newGo.name += "_AlignError";
+                            newGo.SetActive(false);
+
                             if (rT != null)
                             {
-                                sb.AppendLine($"{arg},Mode:{rT.Mode} " + $" Trans:{rT.Translation.Vector3ToString()},Matrix:\n{rT.TransformationMatrix}");
-                                Debug.LogError($"{arg},Mode:{rT.Mode} " + $" Trans:{rT.Translation.Vector3ToString()},Matrix:\n{rT.TransformationMatrix}");
+                                sb.AppendLine($"Mode:{rT.Mode} Debug:{DistanceSetting.IsDebug},newGo:{newGo},{arg}" + $" Trans:{rT.Translation.Vector3ToString()},Matrix:\n{rT.TransformationMatrix}");
+                                Debug.LogError($"Mode:{rT.Mode} Debug:{DistanceSetting.IsDebug},newGo:{newGo},{arg}" + $" Trans:{rT.Translation.Vector3ToString()},Matrix:\n{rT.TransformationMatrix}");
                             }
                             else
                             {
@@ -482,10 +485,13 @@ public class AcRTAlignJobContainer
                                 Debug.LogError($"{arg} rT==null");
                             }
 
-                            newGo.name += "_AlignError";
-                            newGo.SetActive(false);
+                            RendererId r=newGo.AddComponent<RendererId>();
+                            r.IsDebug = true;
 
-                            GameObject.DestroyImmediate(newGo);//测试的话这里可以留下查看一下。
+                            if (DistanceSetting.IsDebug==false )
+                            {
+                                GameObject.DestroyImmediate(newGo);//测试的话这里可以留下查看一下。
+                            }
                         }
                         else
                         {
@@ -750,7 +756,7 @@ public class AcRTAlignJobContainer
                 sb.AppendLine($"GetPrefabs arg[{i}]:{arg}");
                 allT += arg.Time;
             }
-            Debug.Log($"GetPrefabs allArg:{allArg.Count} allT:{allT} t:{(DateTime.Now - start)} \n{sb}");
+            Debug.Log($"GetPrefabs allArg:{allArg.Count} allT:{allT} t:{(DateTime.Now - start)}  zeroP:{DistanceSetting.zeroP}\n{sb}");
         }
         else
         {

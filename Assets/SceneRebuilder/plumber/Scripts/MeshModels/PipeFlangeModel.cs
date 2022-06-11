@@ -8,7 +8,7 @@ public class PipeFlangeModel : PipeReducerModel
 {
     public void OnDestroy()
     {
-        Debug.LogError($"PipeFlangeModel.OnDestroy model:{this.name}");
+        //Debug.LogError($"PipeFlangeModel.OnDestroy model:{this.name}");
     }
 
     public override GameObject CreateModelByPrefab()

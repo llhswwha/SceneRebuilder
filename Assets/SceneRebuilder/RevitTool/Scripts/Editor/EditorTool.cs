@@ -599,13 +599,11 @@ public class EditorTool : MonoBehaviour
         foreach (var dir in dirObjs)
         {
             //var dir = GetDirInfo(dirObj);
-            FindModelInDir(dir, false,0);
+            FindModelInDir(dir, false,0,false);
         }
         EditorHelper.RefreshAssets();
     }
-
-    [MenuItem("EditorTool/Models/ChangeModel(100)")]//清空AssetBunldeName
-    private static void SetChangeModel100()
+    private static void SetChangeModelInner(bool isSet, int maxCount, bool isSetMat)
     {
         print("ChangeModelMenu");
         var dirObjs = GetDirObjs();
@@ -614,85 +612,118 @@ public class EditorTool : MonoBehaviour
             print("dirObjs.Count == 0");
             return;//选中的没有文件夹
         }
-        foreach (var dir in dirObjs)
+        foreach (var dir in dirObjs)
         {
             //var dir = GetDirInfo(dirObj);
-            FindModelInDir(dir,true,100);
+            FindModelInDir(dir, isSet, maxCount, isSetMat);
         }
         EditorHelper.RefreshAssets();
+    }
+
+
+    [MenuItem("EditorTool/Models/ChangeModel(100)")]//清空AssetBunldeName
+    private static void SetChangeModel100()
+    {
+        SetChangeModelInner(true, 100, true);
     }
 
     [MenuItem("EditorTool/Models/ChangeModel(1000)")]//清空AssetBunldeName
     private static void SetChangeModel1000()
     {
-        print("ChangeModelMenu");
-        var dirObjs = GetDirObjs();
-        if (dirObjs.Count == 0)
-        {
-            print("dirObjs.Count == 0");
-            return;//选中的没有文件夹
-        }
-        foreach (var dir in dirObjs)
-        {
-            //var dir = GetDirInfo(dirObj);
-            FindModelInDir(dir, true, 1000);
-        }
-        EditorHelper.RefreshAssets();
+        SetChangeModelInner(true,1000,true);
     }
 
     [MenuItem("EditorTool/Models/ChangeModel(All)")]
     private static void SetChangeModelAll()
     {
-        print("ChangeModelMenu");
-        var dirObjs = GetDirObjs();
-        if (dirObjs.Count == 0)
-        {
-            print("dirObjs.Count == 0");
-            return;//选中的没有文件夹
-        }
-        foreach (var dir in dirObjs)
-        {
-            //var dir = GetDirInfo(dirObj);
-            FindModelInDir(dir, true,0);
-        }
-        EditorHelper.RefreshAssets();
+        SetChangeModelInner(true, 0, true);
     }
 
     [MenuItem("EditorTool/Models/ChangeModel(Selection)")]
     private static void SetChangeModelSelection()
     {
-        var start=DateTime.Now;
+        SetChangeModelSelectionInner(true);
+    }
+
+    [MenuItem("EditorTool/Models/EnableReadWrite(100)")]//清空AssetBunldeName
+    private static void EnableReadWrite100()
+    {
+        SetChangeModelInner(true, 100, false);
+    }
+
+    [MenuItem("EditorTool/Models/EnableReadWrite(1000)")]//清空AssetBunldeName
+    private static void EnableReadWrite1000()
+    {
+        SetChangeModelInner(true, 1000, false);
+    }
+
+    [MenuItem("EditorTool/Models/EnableReadWrite(All)")]
+    private static void EnableReadWriteAll()
+    {
+        SetChangeModelInner(true, 0, false);
+    }
+
+    [MenuItem("EditorTool/Models/EnableReadWrite(Selection)")]
+    private static void EnableReadWriteSelection()
+    {
+        SetChangeModelSelectionInner(false);
+    }
+
+    private static void SetChangeModelSelectionInner(bool isSetMat)
+    {
+        var start = DateTime.Now;
         Object[] selectedAssets = Selection.GetFiltered(typeof(Object), SelectionMode.Assets);
-        print("selectedAssets:"+ selectedAssets.Length+"|"+ selectedAssets);
+        print("selectedAssets:" + selectedAssets.Length + "|" + selectedAssets);
 
         for (int i = 0; i < selectedAssets.Length; i++)
         {
-            var assetObj=selectedAssets[i];
-            float progress=(float)i/selectedAssets.Length;
-            float percent=progress*100;
-            if(EditorUtility.DisplayCancelableProgressBar("SetChangeModelSelection",$"{i}/{selectedAssets.Length} {percent}% of 100%",progress))
+            var assetObj = selectedAssets[i];
+            float progress = (float)i / selectedAssets.Length;
+            float percent = progress * 100;
+            if (EditorUtility.DisplayCancelableProgressBar("SetChangeModelSelection", $"{i}/{selectedAssets.Length} {percent}% of 100%", progress))
             {
 
                 break;
             }
 
             string sPath = AssetDatabase.GetAssetPath(assetObj);
-            var atImporter= ModelImporter.GetAtPath(sPath);
+            var atImporter = ModelImporter.GetAtPath(sPath);
             if (atImporter == null)
             {
                 Debug.LogError($"atImporter == null");
             }
-            else if(atImporter is ModelImporter)
+            else if (atImporter is ModelImporter)
             {
                 ModelImporter modelImporter = (ModelImporter)atImporter;
 
                 Debug.Log($"[{i}] {assetObj} \t{sPath} \t{modelImporter} \t{modelImporter.isReadable} \t{modelImporter.materialLocation}");
 
-                if (modelImporter.isReadable == false || modelImporter.materialLocation == ModelImporterMaterialLocation.InPrefab)
+                //if (modelImporter.isReadable == false || modelImporter.materialLocation == ModelImporterMaterialLocation.InPrefab)
+                //{
+                //    modelImporter.isReadable = true;
+                //    //importer.
+                //    if (isSetMat)
+                //    {
+                //        modelImporter.materialLocation = ModelImporterMaterialLocation.External;
+                //    }
+                //    AssetDatabase.ImportAsset(sPath);  //这句不加，面板上数字会变，但是实际大小不会变
+                //}
+                bool isChanged = false;
+                if (modelImporter.isReadable == false)
                 {
                     modelImporter.isReadable = true;
-                    //importer.
-                    modelImporter.materialLocation = ModelImporterMaterialLocation.External;
+                    isChanged = true;
+                }
+                if (isSetMat)
+                {
+                    if (modelImporter.materialLocation == ModelImporterMaterialLocation.InPrefab)
+                    {
+                        modelImporter.materialLocation = ModelImporterMaterialLocation.External;
+                        isChanged = true;
+                    }
+                }
+                if (isChanged)
+                {
                     AssetDatabase.ImportAsset(sPath);  //这句不加，面板上数字会变，但是实际大小不会变
                 }
             }
@@ -700,10 +731,10 @@ public class EditorTool : MonoBehaviour
             {
                 Debug.LogError($"atImporter:{atImporter.GetType()} path:{sPath} obj:{assetObj}");
             }
-            
+
         }
         EditorUtility.ClearProgressBar();
-        Debug.Log($"SetChangeModelSelection {(DateTime.Now-start).ToString()}");
+        Debug.Log($"SetChangeModelSelection {(DateTime.Now - start).ToString()}");
     }
 
     [MenuItem("EditorTool/Models/GPUI")]
@@ -799,7 +830,7 @@ public class EditorTool : MonoBehaviour
     /// 设置文件夹Asset名称
     /// </summary>
     /// <param name="dir"></param>
-    private static void FindModelInDir(DirectoryInfo dir,bool isSet,int maxCount)
+    private static void FindModelInDir(DirectoryInfo dir,bool isSet,int maxCount, bool isSetMat)
     {
         Debug.Log(string.Format("SetDirAssetName:{0}",dir.FullName));
         DirectoryInfo[] subDirs = dir.GetDirectories();
@@ -809,7 +840,7 @@ public class EditorTool : MonoBehaviour
         //}
         //else
         //{
-            ChangeModel(dir, isSet, maxCount);
+            ChangeModel(dir, isSet, maxCount, isSetMat);
             //foreach (DirectoryInfo subDir in subDirs)
             //{
             //    FindModelInDir(subDir);
@@ -828,7 +859,7 @@ public class EditorTool : MonoBehaviour
         return dir;
     }
 
-    private static void ChangeModel(DirectoryInfo dir,bool isSet,int maxCount)
+    private static void ChangeModel(DirectoryInfo dir,bool isSetMatAndReadWrite,int maxCount,bool isSetMat)
     {
         var start = DateTime.Now;
         print("ChangeModel Dir:" + dir);
@@ -854,7 +885,7 @@ public class EditorTool : MonoBehaviour
                 print(string.Format("GetModelInfo ({0}/{1}) file :{2}",i,files.Length,filePath));
                 Object subObj = AssetDatabase.LoadAssetAtPath<Object>(relativePath);
                 string sPath = AssetDatabase.GetAssetPath(subObj);
-                ModelImporter importer = (ModelImporter)ModelImporter.GetAtPath(sPath);
+                ModelImporter importer = ModelImporter.GetAtPath(sPath) as ModelImporter;
                 if (importer != null)
                 {
                     //if (importer.globalScale == 0.1f) importer.globalScale = 0.7f;
@@ -880,7 +911,7 @@ public class EditorTool : MonoBehaviour
         }
 
         print(string.Format("models:{0}", models.Count));
-        if (isSet)
+        if (isSetMatAndReadWrite)
         {
             for (int i = 0; i < models.Count; i++)
             {
@@ -891,7 +922,10 @@ public class EditorTool : MonoBehaviour
 
                 importer.isReadable = true;
                 //importer.
-                importer.materialLocation = ModelImporterMaterialLocation.External;
+                if (isSetMat)
+                {
+                    importer.materialLocation = ModelImporterMaterialLocation.External;
+                }
                 AssetDatabase.ImportAsset(sPath);  //这句不加，面板上数字会变，但是实际大小不会变
             }
         }

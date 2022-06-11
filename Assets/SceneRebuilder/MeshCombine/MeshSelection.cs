@@ -95,7 +95,7 @@ public class MeshSelection : MonoBehaviour
         //}
         //IdDictionary.Inid
         DateTime start = DateTime.Now;
-        RendererId rId = IdDictionary.GetId(id);
+        RendererId rId = IdDictionary.GetId(id,null,true,false);
         if (rId == null)
         {
             var node = AreaTreeHelper.GetNodeById(id);
@@ -254,27 +254,27 @@ public class MeshSelection : MonoBehaviour
                 hitParentName = hitGo.transform.parent.name;
             Debug.Log("Hit Object:" + hitGo + "|"+ hitGo.transform.parent);
 
-            //if (lastRenderer != null)
-            //{
-            //    //lastRenderer.material=lastRendererMat;
-            //}
+            if (lastRenderer != null)
+            {
+                //lastRenderer.material=lastRendererMat;
+            }
 
-            MeshRenderer hitRenderer = hitGo.GetComponent<MeshRenderer>();
+            lastRenderer = hitGo.GetComponent<MeshRenderer>();
 
-            if (hitRenderer)
+            if (lastRenderer)
             {
                 if(hitParentName.EndsWith("_Combined"))
                 {
-                    if (!AreaTreeHelper.combined2NodeDict.ContainsKey(hitRenderer))
+                    if (!AreaTreeHelper.combined2NodeDict.ContainsKey(lastRenderer))
                     {
-                        var treeNode = hitRenderer.GetComponentInParent<AreaTreeNode>();
-                        Debug.LogError($"FindTreeNode renderer:{hitRenderer} node:{treeNode}");
+                        var treeNode = lastRenderer.GetComponentInParent<AreaTreeNode>();
+                        Debug.LogError($"FindTreeNode renderer:{lastRenderer} node:{treeNode}");
                         if (treeNode)
                         {
                             treeNode.CreateDictionary();
                         }
                     }
-                    var treeNode0 = AreaTreeHelper.GetNodeByCombined(hitRenderer);
+                    var treeNode0 = AreaTreeHelper.GetNodeByCombined(lastRenderer);
                     if (treeNode0!=null)//点中了合并的模型
                     {
                         var treeNode1 = treeNode0;
@@ -295,10 +295,10 @@ public class MeshSelection : MonoBehaviour
                     }
                     else
                     {
-                        Debug.LogError("Hit Tree Node Error :" + hitRenderer);
+                        Debug.LogError("Hit Tree Node Error :" + lastRenderer);
                         //lastRendererMat = lastRenderer.material;
                         //lastRenderer.material = selectedMat;
-                        var treeNode2 = AreaTreeHelper.GetNodeByRenderer(hitRenderer);
+                        var treeNode2 = AreaTreeHelper.GetNodeByRenderer(lastRenderer);
                         if (treeNode2!=null)
                         {
                             Debug.LogError("Hit Tree Node2:" + treeNode2);
@@ -313,19 +313,19 @@ public class MeshSelection : MonoBehaviour
                         }
                         else
                         {
-                            Debug.LogError("No TreeNode :" + hitRenderer);
+                            Debug.LogError("No TreeNode :" + lastRenderer);
                         }
                     }
                 }
                 else
                 {
-                    SelectBimModel(hitRenderer);
+                    SelectBimModel(lastRenderer.transform);
                 }
-                //lastRendererMat = hitRenderer.material;
-                //hitRenderer.material = selectedMat;
-                //if (AreaTreeHelper.render2NodeDict.ContainsKey(hitRenderer))
+                //lastRendererMat = lastRenderer.material;
+                //lastRenderer.material = selectedMat;
+                //if (AreaTreeHelper.render2NodeDict.ContainsKey(lastRenderer))
                 //{
-                //    var treeNode = AreaTreeHelper.render2NodeDict[hitRenderer];
+                //    var treeNode = AreaTreeHelper.render2NodeDict[lastRenderer];
                 //    Debug.LogError("Hit Node:" + treeNode);
                 //    if (lastNode != null && lastNode != treeNode)
                 //    {
@@ -352,22 +352,21 @@ public class MeshSelection : MonoBehaviour
             ClearLastRenderer();
         }
     }
-
     private void ClearLastRenderer()
     {
         if (lastRenderer != null)
         {
-            lastRenderer.sharedMaterial = lastRendererMat;
-
-            if (GPUInstanceTest.Instance.IsStartGPUInstance)
+            if (lastRendererMat != null)
             {
-                lastRenderer.enabled = false;
-                //lastRenderer.transform.localScale = lastScale;
-                GPUInstanceTest.Instance.AddPrefabInstance(lastRenderer.gameObject);
+                lastRenderer.sharedMaterial = lastRendererMat;
             }
+            else
+            {
+                Debug.LogError($"ClearLastRenderer lastRendererMat == null lastRenderer:{lastRenderer}");
+            }
+            GPUInstanceTest.SAddPrefabInstance(lastRenderer);
         }
     }
-
     private void SelectBimModel(MeshRenderer hitRenderer)
     {
         if (hitRenderer == null) return;
@@ -382,11 +381,7 @@ public class MeshSelection : MonoBehaviour
 
         lastRenderer = hitRenderer;
 
-        if (GPUInstanceTest.Instance.IsStartGPUInstance)
-        {
-            //hitRenderer.transform.localScale *= 1.01f;
-            GPUInstanceTest.Instance.RemovePrefabInstance(hitRenderer.gameObject);
-        }
+        GPUInstanceTest.SRemovePrefabInstance(hitRenderer.gameObject);
     }
 
     private void SelectBimModel(Transform rayModel)
@@ -406,11 +401,12 @@ public class MeshSelection : MonoBehaviour
         //            BIMModelInfo bimInfo=rayModel.GetComponent<BIMModelInfo>();
         //            if (bimInfo!= null)
         //            {
-        //                bimInfo.OnClick();
-        //            }else{
+        //                bimInfo.SelectDevOnClick(false);
+        //            }
+        //            else{
         //                if(rayModel.name.Contains("Culling")&&rayModel.transform.parent!=null&&rayModel.transform.GetComponent<BIMModelInfo>()!=null)
         //                {
-        //                    rayModel.transform.GetComponent<BIMModelInfo>().OnClick();
+        //                    rayModel.transform.GetComponent<BIMModelInfo>().SelectDevOnClick(false);
         //                }
         //            }                                             
         //        }

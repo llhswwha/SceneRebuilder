@@ -10,6 +10,8 @@ public class LODGroupInfo : MonoBehaviour
 
     public List<LODInfo> LodInfos = new List<LODInfo>();
 
+    public List<Renderer> LOD0Renderers = new List<Renderer>();
+
     public int lodCount;
 
 
@@ -295,7 +297,7 @@ public class LODGroupInfo : MonoBehaviour
         RendererId rid = RendererId.GetRId(this.gameObject);
         rid.RefreshParentId();
         rid.UpdateChildrenId(false);
-        scene =LODHelper.SaveLOD0(null, this.LODGroup);
+        scene =LODHelper.SaveLOD0(null, this);
     }
 
     [ContextMenu("SetRenderersLODInfo")]
@@ -371,11 +373,29 @@ public class LODGroupInfo : MonoBehaviour
         var sceneRenderers = scene.GetSceneRenderers().ToArray();
         if (sceneRenderers.Length == 0)
         {
-            Debug.LogError($"SetLOD0FromScene Length == 0 sceneRenderers:{sceneRenderers.Length} scene:{scene.sceneName} [arg:{scene.GetSceneArg()}]");
+            Debug.LogError($"SetLOD0FromScene[{this.name}] Length == 0 sceneRenderers:{sceneRenderers.Length} scene:{scene.sceneName} [arg:{scene.GetSceneArg()}]");
             return;
         }
+        bool isVisible = true;
+        foreach(var renderer in sceneRenderers)
+        {
+            if (renderer.gameObject.activeInHierarchy == false)
+            {
+                isVisible = false;
+            }
+        }
+
+        //Debug.LogError($"SetLOD0FromScene[{this.name}] isVisible=={isVisible} sceneRenderers:{sceneRenderers.Length} scene:{scene.sceneName} [arg:{scene.GetSceneArg()}]");
         //Debug.Log($"SetLOD0FromScene sceneRenderers:{sceneRenderers.Length} scene:{scene.sceneName} [arg:{scene.GetSceneArg()}]");
-        lods[0].renderers = sceneRenderers;
+
+        List<Renderer> lod0Renderers = new List<Renderer>(sceneRenderers);
+        foreach(var render0 in this.LOD0Renderers)
+        {
+            if (render0 == null) continue;
+            lod0Renderers.Add(render0);
+        }
+
+        lods[0].renderers = lod0Renderers.ToArray(); ;
         foreach(var r in sceneRenderers)
         {
             if (r.sharedMaterial == null)

@@ -52,9 +52,18 @@ public class MeshNode : InnerMeshNode
         meshNode.GetSharedMeshList();
 
         var meshNodes = meshNode.GetComponentsInChildren<MeshNode>(meshNode.isIncludeInactive);
-        ProgressBarHelper.ClearProgressBar();
+        //ProgressBarHelper.ClearProgressBar();
 
-        MeshRendererInfo.InitRenderers(go);
+        //MeshRendererInfo.InitRenderers(go);
+
+        var subms = meshNode.GetMeshNodes();
+        for (int i = 0; i < subms.Count; i++)
+        {
+            var node = subms[i];
+            ProgressBarHelper.DisplayCancelableProgressBar(new ProgressArg("UpdateSharedMesh", i, subms.Count, node));
+            node.GetSharedMeshList();
+        }
+        ProgressBarHelper.ClearProgressBar();
 
         Debug.Log($"MeshNode.Init count:{meshNodes.Length} time:{(DateTime.Now - start)}");
         return meshNode;

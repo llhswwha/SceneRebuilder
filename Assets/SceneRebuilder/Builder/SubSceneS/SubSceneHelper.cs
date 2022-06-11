@@ -13,6 +13,23 @@ using UnityEditor.SceneManagement;
 public static class SubSceneHelper
 {
 #if UNITY_EDITOR
+
+    public static void SelectSceneFile(SubScene_Base item)
+    {
+        var arg = item.GetSceneArg();
+        string scenePath1 = arg.path;
+        string sceneAssetPath = arg.GetSceneAssetPath();
+        string sceneFilePath = arg.GetSceneFilePath();
+        Debug.Log(scenePath1);
+        Debug.Log(Application.dataPath);
+        Debug.Log(sceneFilePath + "|" + System.IO.File.Exists(sceneFilePath));
+        SceneAsset sceneAsset = AssetDatabase.LoadAssetAtPath<SceneAsset>(sceneAssetPath);
+        Debug.Log(sceneAsset);
+        //var scene=EditorSceneManager.GetSceneByPath(item.GetSceneArg().path);
+        if (sceneAsset != null)
+            EditorHelper.SelectObject(sceneAsset);
+    }
+
     [ContextMenu("ClearBuildings")]
     public static void ClearBuildings()
     {

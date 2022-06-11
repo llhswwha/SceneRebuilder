@@ -2,8 +2,9 @@ using System;
 using System.Collections;
 using System.Collections.Generic;
 using System.Linq;
+using Unity.Collections;
 using UnityEngine;
-
+using Unity.Jobs;
 public class SubSceneShowManager : SingletonBehaviour<SubSceneShowManager>
 {
     public void SetEnable(bool isEnable)
@@ -925,27 +926,57 @@ public class SubSceneShowManager : SingletonBehaviour<SubSceneShowManager>
         return cCount;
     }
 
-    public bool IsEnableAngleCheck = true;
-
-    public bool IsEnableBoundsDis = true;
-
-    private void GetSceneDisAndAngle(SubScene_Base scene)
+    private List<Camera> GetActiveCamaras()
     {
-        float disToCams = float.MaxValue;
-        float angleOfCams = 0;
+        List<Camera> cs = new List<Camera>();
         foreach (var cam in cameras)
         {
             if (cam == null) continue;
             if (cam.isActiveAndEnabled == false) continue;
             if (cam.gameObject.activeInHierarchy == false) continue;
+            cs.Add(cam);
+        }
+        //if (cCount == 0)
+        //{
+        //    Debug.LogError("CalculateDistance cameras Count ==0 ");
+        //}
+        return cs;
+    }
 
+    private List<Transform> GetActiveCamaraTransforms()
+    {
+        List<Transform> cs = new List<Transform>();
+        foreach (var cam in cameras)
+        {
+            if (cam == null) continue;
+            if (cam.isActiveAndEnabled == false) continue;
+            if (cam.gameObject.activeInHierarchy == false) continue;
+            cs.Add(cam.transform);
+        }
+        //if (cCount == 0)
+        //{
+        //    Debug.LogError("CalculateDistance cameras Count ==0 ");
+        //}
+        return cs;
+    }
+
+    public bool IsEnableAngleCheck = true;
+
+    public bool IsEnableBoundsDis = true;
+
+    private void GetSceneDisAndAngle(SubScene_Base scene,List<Transform> cams)
+    {
+        float disToCams = float.MaxValue;
+        float angleOfCams = 0;
+        foreach (Transform cam in cams)
+        {
             float camAngle = 0;
             if (IsEnableAngleCheck)
             {
-                camAngle = scene.GetCameraAngle(cam.transform);
+                camAngle = scene.GetCameraAngle(cam);
             }
             float dis = 0;
-            Vector3 cP = cam.transform.position;
+            Vector3 cP = cam.position;
             if (IsEnableBoundsDis)
             {
                 dis = scene.bounds.SqrDistance(cP);
@@ -1046,12 +1077,14 @@ public class SubSceneShowManager : SingletonBehaviour<SubSceneShowManager>
         SubSceneBag subScenes = new SubSceneBag();
         foreach (var scene in scenes_Out0_TreeNode_Hidden)
         {
+            if (scene == null) continue;
             subScenes.Add(scene);
         }
         if (IsEnableLOD)
         {
             foreach (var scene in scenes_LODs)
             {
+                if (scene == null) continue;
                 subScenes.Add(scene);
             }
         }
@@ -1059,6 +1092,7 @@ public class SubSceneShowManager : SingletonBehaviour<SubSceneShowManager>
         {
             foreach (var scene in scenes_Out1)
             {
+                if (scene == null) continue;
                 subScenes.Add(scene);
             }
         }
@@ -1066,6 +1100,7 @@ public class SubSceneShowManager : SingletonBehaviour<SubSceneShowManager>
         {
             foreach (var scene in scenes_In)
             {
+                if (scene == null) continue;
                 subScenes.Add(scene);
             }
         }
@@ -1074,73 +1109,26 @@ public class SubSceneShowManager : SingletonBehaviour<SubSceneShowManager>
 
     void CalculateDistance(List<SubScene_Base> scenes)
     {
-        int cCount = GetActiveCamaraCount();
+        DateTime start = DateTime.Now;
+
+        List<Transform> cams = GetActiveCamaraTransforms();
+        int cCount = cams.Count;
         if (cCount == 0)
         {
             Debug.LogError("CalculateDistance cameras Count ==0 ");
             return;
         }
 
-        DateTime start = DateTime.Now;
-
-        MaxDisSqrtToCam = 0;
-        MinDisSqrtToCam = float.MaxValue;
+        ClearSceneList();
         float sumDis = 0;
-        visibleScenes = new DictList<SubScene_Base>();
-        hiddenScenes = new DictList<SubScene_Base>();
-        loadScenes = new DictList<SubScene_Base>();
-        unloadScenes = new DictList<SubScene_Base>();
 
-        foreach (var scene in scenes)
+        for (int i = 0; i < scenes.Count; i++)
         {
+            SubScene_Base scene = scenes[i];
             if (scene == null) continue;
-
-            //float disToCams = float.MaxValue;
-            //float angleOfCams = 0;
-            //foreach (var cam in cameras)
-            //{
-            //    if (cam == null) continue;
-            //    if (cam.isActiveAndEnabled == false) continue;
-            //    if (cam.gameObject.activeInHierarchy == false) continue;
-
-            //    float camAngle = 0;
-            //    if (IsEnableAngleCheck)
-            //    {
-            //        camAngle = scene.GetCameraAngle(cam.transform);
-            //    }
-            //    float dis = 0;
-            //    Vector3 cP = cam.transform.position;
-            //    if (IsEnableBoundsDis)
-            //    {
-            //        dis = scene.bounds.SqrDistance(cP);
-            //    }
-            //    else
-            //    {
-            //        dis = Vector3.Distance(scene.transform.position, cP);
-            //    }
-            //    if (dis < disToCams)
-            //    {
-            //        disToCams = dis;
-            //        angleOfCams = camAngle;
-            //    }
-            //}
-            //scene.DisToCam = disToCams;
-            //scene.AngleToCam = angleOfCams;
-
-            GetSceneDisAndAngle(scene);
-
-            //var disToCams = scene.DisToCam;
-            //var angleOfCams = scene.AngleToCam;
-            //sumDis += scene.DisToCam;
-
-            AddSceneToList(scene);
-
-#if UNITY_EDITOR
-            ChangeSceneBoundsColor(scene, scene.DisToCam);
-#else
-            SetSceneActive(scene, disToCams);
-#endif
-
+            GetSceneDisAndAngle(scene, cams);
+            sumDis += scene.DisToCam;
+            SetSceneByDistance(scene);
         }
 
         AvgDisToCam = Mathf.Sqrt(sumDis / scenes.Count);
@@ -1149,6 +1137,207 @@ public class SubSceneShowManager : SingletonBehaviour<SubSceneShowManager>
 
         TimeOfDis = (DateTime.Now - start).TotalMilliseconds;
     }
+
+    IEnumerator CalculateDistanceCoroutine(List<SubScene_Base> scenes)
+    {
+        DateTime start = DateTime.Now;
+
+        List<Transform> cams = GetActiveCamaraTransforms();
+        int cCount = cams.Count;
+        if (cCount > 0)
+        {
+            ClearSceneList();
+            float sumDis = 0;
+
+            for (int i = 0; i < scenes.Count; i++)
+            {
+                SubScene_Base scene = scenes[i];
+                if (scene == null) continue;
+                GetSceneDisAndAngle(scene, cams);
+                sumDis += scene.DisToCam;
+                SetSceneByDistance(scene);
+                if (i % UpdateCoroutineSize == 0)
+                {
+                    yield return null;
+                }
+            }
+
+            AvgDisToCam = Mathf.Sqrt(sumDis / scenes.Count);
+            MinDisToCam = Mathf.Sqrt(MinDisSqrtToCam);
+            MaxDisToCam = Mathf.Sqrt(MaxDisSqrtToCam);
+
+            TimeOfDis = (DateTime.Now - start).TotalMilliseconds;
+        }
+        else
+        {
+            Debug.LogError("CalculateDistance cameras Count ==0 ");
+        }
+        yield return null;
+    }
+
+    private void ClearSceneList()
+    {
+        MaxDisSqrtToCam = 0;
+        MinDisSqrtToCam = float.MaxValue;
+
+        visibleScenes = new DictList<SubScene_Base>();
+        hiddenScenes = new DictList<SubScene_Base>();
+        loadScenes = new DictList<SubScene_Base>();
+        unloadScenes = new DictList<SubScene_Base>();
+    }
+
+    private void SetSceneByDistance(SubScene_Base scene)
+    {
+        AddSceneToList(scene);
+#if UNITY_EDITOR
+        ChangeSceneBoundsColor(scene, scene.DisToCam);
+#else
+            SetSceneActive(scene, scene.DisToCam);
+#endif
+    }
+
+    private void CalculateDistanceByJobs(List<SubScene_Base> scenes)
+    {
+        DateTime start = DateTime.Now;
+
+        ClearSceneList();
+        float sumDis = 0;
+
+        //JobList<SceneDistanceJob> jobs = InitJobs(scenes);
+        //if (jobs == null)
+        //{
+        //    return;
+        //}
+
+        JobList<SceneDistanceJob> jobs = new JobList<SceneDistanceJob>(JobListSize);
+        var camTs = GetActiveCamaraTransforms();
+        int cCount = camTs.Count;
+        if (cCount == 0)
+        {
+            Debug.LogError("InitJobs cameras Count ==0 ");
+            return;
+        }
+
+        //Debug.Log($"CalculateDistanceByJobs Camera Count:{cCount}");
+
+        NativeArray<Vector3> camPosList0 = new NativeArray<Vector3>(camTs.Count, Allocator.Persistent);
+        NativeArray<Vector3> camForwardList0 = new NativeArray<Vector3>(camTs.Count, Allocator.Persistent);
+        for (int i = 0; i < camTs.Count; i++)
+        {
+            Transform cam = (Transform)camTs[i];
+            camPosList0[i] = cam.position;
+            camForwardList0[i] = cam.forward;
+        }
+
+        //for (int i = 0; i < scenes.Count; i++)
+        //{
+        //    NativeArray<Vector3> camPosList1 = new NativeArray<Vector3>(camPosList0, Allocator.TempJob);
+        //    NativeArray<Vector3> camForwardList1 = new NativeArray<Vector3>(camForwardList0, Allocator.TempJob);
+        //    SubScene_Base scene = scenes[i];
+        //    SceneDistanceJob job = new SceneDistanceJob()
+        //    {
+        //        sceneId = i,
+        //        camPosList = camPosList1,
+        //        camForwardList = camForwardList1,
+        //        sceneBounds = scene.bounds,
+        //        scenePos = scene.transform.position
+        //    };
+        //    jobs.Add(job);
+        //}
+        //jobs.CompleteAllPage();
+
+
+        NativeArray<Bounds> sceneBounds0 = new NativeArray<Bounds>(scenes.Count, Allocator.Persistent);
+        NativeArray<Vector3> scenePos0 = new NativeArray<Vector3>(scenes.Count, Allocator.Persistent);
+        NativeArray<float> disToCam0 = new NativeArray<float>(scenes.Count, Allocator.Persistent);
+        NativeArray<float> angleToCam0 = new NativeArray<float>(scenes.Count, Allocator.Persistent);
+
+        for (int i = 0; i < scenes.Count; i++)
+        {
+            SubScene_Base scene = scenes[i];
+            sceneBounds0[i] = scene.bounds;
+            scenePos0[i] = scene.transform.position;
+            disToCam0[i] = 0;
+            angleToCam0[i] = 0;
+        }
+        ScenesDistanceJob.Reset();
+        ScenesDistanceJob job1 = new ScenesDistanceJob()
+        {
+            Count=scenes.Count,
+            camPosList = camPosList0,
+            camForwardList = camForwardList0,
+            sceneBounds = sceneBounds0,
+            scenePos = scenePos0,
+            disList = disToCam0,
+            angleList = angleToCam0
+        };
+        job1.Schedule().Complete();
+        for (int i = 0; i < scenes.Count; i++)
+        {
+            SubScene_Base scene = scenes[i];
+            scene.DisToCam = job1.disList[i];
+            scene.AngleToCam = job1.angleList[i];
+            SetSceneByDistance(scene);
+            sumDis += scene.DisToCam;
+        }
+        jobs.CompleteAllPage();
+        jobs.Dispose();
+
+        camPosList0.Dispose();
+        camForwardList0.Dispose();
+        sceneBounds0.Dispose();
+        scenePos0.Dispose();
+        disToCam0.Dispose();
+        angleToCam0.Dispose();
+
+        AvgDisToCam = Mathf.Sqrt(sumDis / scenes.Count);
+        MinDisToCam = Mathf.Sqrt(MinDisSqrtToCam);
+        MaxDisToCam = Mathf.Sqrt(MaxDisSqrtToCam);
+
+        TimeOfDis = (DateTime.Now - start).TotalMilliseconds;
+    }
+
+    public bool IsUseJob = false;
+
+    public int JobListSize = 100;
+
+    //private JobList<SceneDistanceJob> InitJobs(List<SubScene_Base> scenes)
+    //{
+    //    JobList<SceneDistanceJob> jobs = new JobList<SceneDistanceJob>(JobListSize);
+    //    var camTs = GetActiveCamaraTransforms();
+    //    int cCount = camTs.Count;
+    //    if (cCount == 0)
+    //    {
+    //        Debug.LogError("InitJobs cameras Count ==0 ");
+    //        return null;
+    //    }
+
+    //    NativeArray<Vector3> camPosList0 = new NativeArray<Vector3>(camTs.Count, Allocator.Persistent);
+    //    NativeArray<Vector3> camForwardList0 = new NativeArray<Vector3>(camTs.Count, Allocator.Persistent);
+    //    for (int i = 0; i < camTs.Count; i++)
+    //    {
+    //        Transform cam = (Transform)camTs[i];
+    //        camPosList0[i] = cam.position;
+    //        camForwardList0[i] = cam.forward;
+    //    }
+
+    //    for (int i = 0; i < scenes.Count; i++)
+    //    {
+    //        NativeArray<Vector3> camPosList1 = new NativeArray<Vector3>(camPosList0, Allocator.TempJob);
+    //        NativeArray<Vector3> camForwardList1 = new NativeArray<Vector3>(camForwardList0, Allocator.TempJob);
+    //        SubScene_Base scene = scenes[i];
+    //        SceneDistanceJob job = new SceneDistanceJob()
+    //        {
+    //            sceneId = i,
+    //            camPosList = camPosList1,
+    //            camForwardList = camForwardList1,
+    //            sceneBounds = scene.bounds,
+    //            scenePos = scene.transform.position
+    //        };
+    //        jobs.Add(job);
+    //    }
+    //    return jobs;
+    //}
 
     private void ChangeSceneBoundsColor(SubScene_Base scene, float disToCams)
     {
@@ -1230,7 +1419,14 @@ public class SubSceneShowManager : SingletonBehaviour<SubSceneShowManager>
         if (IsUpdateDistance)
         {
             subScenes = GetSubScenes();
-            CalculateDistance(subScenes);
+            if (IsUseJob)
+            {
+                CalculateDistanceByJobs(subScenes);
+            }
+            else
+            {
+                CalculateDistance(subScenes);
+            }
             LoadUnloadScenes();
         }
 
@@ -1242,13 +1438,49 @@ public class SubSceneShowManager : SingletonBehaviour<SubSceneShowManager>
         }
     }
 
+    private IEnumerator UpdateSubScenesCoroutine()
+    {
+        DateTime start = DateTime.Now;
+
+        RemoveWaitingScenes();
+
+        //LoadWaitingScenes();
+
+        UnLoadWaitingScenes();
+
+        SubSceneBag subScenes = new SubSceneBag();
+        if (IsUpdateDistance)
+        {
+            subScenes = GetSubScenes();
+            if (IsUseJob)
+            {
+                CalculateDistanceByJobs(subScenes);
+            }
+            else
+            {
+                yield return CalculateDistanceCoroutine(subScenes);
+            }
+            LoadUnloadScenes();
+        }
+
+        TimeOfUpdate = (DateTime.Now - start).TotalMilliseconds;
+        if (IsLogTime)
+        {
+            //Debug.Log($"Update subScenes:{subScenes.Count} Update:{TimeOfUpdate:F2}=Dis:{TimeOfDis:F2} Load:{TimeOfLoad:F2}({TimeOfLoad1:F2}+{TimeOfLoad2:F2}+{TimeOfLoad3:F2}+{TimeOfLoad4:F2})");
+            Debug.Log($"UpdateSubScenes subScenes:{subScenes.Count} Update:{TimeOfUpdate:F2}=Dis:{TimeOfDis:F2} Load:{TimeOfLoad:F2}");
+        }
+        yield return null;
+    }
+
     public float UpdateInterval = 0.1f;
+    public int UpdateCoroutineSize = 50;
 
     IEnumerator UpdateSubScenes_Coroutine()
     {
         while (true)
         {
-            UpdateSubScenes();
+            //UpdateSubScenes();
+            yield return UpdateSubScenesCoroutine();
             yield return new WaitForSeconds(UpdateInterval);
         }
     }

@@ -96,9 +96,11 @@
     <Compile Include="Assets\ThirdPlugins\AssetBundleMagic\Scripts\ChunkManager.cs" />
     <Compile Include="Assets\Modules\UI\ModelModify\Scripts\NavisPlugins\NavisModelRoot.cs" />
     <Compile Include="Assets\SceneRebuilder\LODS\LODTwoRenderers.cs" />
+    <Compile Include="Assets\SceneRebuilder\Builder\Mat2GosAsset.cs" />
     <Compile Include="Assets\SceneRebuilder\Builder\SubSceneS\ObjectActiveItemUI.cs" />
     <Compile Include="Assets\Unity.Modules\Unity.Modules.Settings\DeviceSetting.cs" />
     <Compile Include="Assets\Unity.Modules\Unity.Modules.Settings\RefreshSetting.cs" />
+    <Compile Include="Assets\SceneRebuilder\Builder\SubSceneS\Jobs\ScenesDistanceJob.cs" />
     <Compile Include="Assets\SceneRebuilder\Builder\MeshJobs\ManagedObjectWorld.cs" />
     <Compile Include="Assets\SceneRebuilder\Others\GPUInstancerTest\GPUInstanceTest.cs" />
     <Compile Include="Assets\SceneRebuilder\Builder\AcRTAlignJobSetting.cs" />
@@ -304,6 +306,7 @@
     <Compile Include="Assets\SceneRebuilder\ECS\ECS_Spawner\ECSClickEventSystem.cs" />
     <Compile Include="Assets\ThirdPlugins\Performance Tools\AdvancedCullingSystem\Core\StaticCullingCore\BinaryTreeNode.cs" />
     <Compile Include="Assets\ThirdPlugins\Ultimate Game Tools\AutomaticLOD\Data\Scripts\LODSampleLODScene.cs" />
+    <Compile Include="Assets\SceneRebuilder\Builder\SubSceneS\SubSceneDebug.cs" />
     <Compile Include="Assets\SceneRebuilder\Builder\ModelInfos\BuildingModelInfoList.cs" />
     <Compile Include="Assets\UnityCommon\ThreadBehaviours\ThreadBehaviourBase.cs" />
     <Compile Include="Assets\SceneRebuilder\Builder\SubSceneS\SubSceneUI.cs" />
@@ -416,6 +419,7 @@
     <Compile Include="Assets\UnityCommon\Utils\AssetbundleParams.cs" />
     <Compile Include="Assets\ThirdPlugins\Performance Tools\SuperLevelOptimizer\Scripts\SLO_CombinedMark.cs" />
     <Compile Include="Assets\SceneRebuilder\plumber\Scripts\MeshModels\PipeWeldModel.cs" />
+    <Compile Include="Assets\SceneRebuilder\Builder\SubSceneS\Jobs\SceneDistanceJob.cs" />
     <Compile Include="Assets\ThirdPlugins\Performance Tools\AdvancedCullingSystem\Core\StaticCullingCore\Data\Base\V3.cs" />
     <Compile Include="Assets\SceneRebuilder\ECS\ECS_Spawner\SpawnerPrefab.cs" />
     <Compile Include="Assets\ThirdPlugins\Performance Tools\AdvancedCullingSystem\Core\StaticCullingCore\StaticCulling.cs" />

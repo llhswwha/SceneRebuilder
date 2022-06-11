@@ -130,6 +130,7 @@
     <Compile Include="Assets\SceneRebuilder\SceneRebuilderUtils\SceneInfo\ModelCategoryScript.cs" />
     <Compile Include="Assets\SceneRebuilder\SceneRebuilderUtils\RevitInfo\ElementGroupList.cs" />
     <Compile Include="Assets\SceneRebuilder\SceneRebuilderUtils\ModelScanner\Scripts\ModelPivotTool.cs" />
+    <Compile Include="Assets\SceneRebuilder\SceneRebuilderUtils\Builder\MeshNode\MeshNodeSetting.cs" />
   </ItemGroup>
   <ItemGroup>
      <None Include="Assets\SceneRebuilder\SceneRebuilderUtils\SceneRebuilderUtils.asmdef" />
@@ -777,6 +778,10 @@
     <ProjectReference Include="PlumberCore.csproj">
       <Project>{E633C200-7988-F5E5-1FEE-75C1E9D585F0}</Project>
       <Name>PlumberCore</Name>
+    </ProjectReference>
+    <ProjectReference Include="GPUInstancer.csproj">
+      <Project>{75EE77A8-517F-6872-847F-72829AC27079}</Project>
+      <Name>GPUInstancer</Name>
     </ProjectReference>
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />

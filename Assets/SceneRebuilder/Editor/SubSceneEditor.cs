@@ -31,15 +31,16 @@ public class SubSceneEditor<T> : BaseEditor<T> where T : SubScene_Base
         bool isFileExist = System.IO.File.Exists(sceneFilePath);
         NewButton("SelectFile", buttonWidth, isFileExist, () =>
         {
-            //item.GetSceneArg().path;
-            Debug.Log(scenePath1);
-            Debug.Log(Application.dataPath);
-            Debug.Log(sceneFilePath+"|"+System.IO.File.Exists(sceneFilePath));
-            SceneAsset sceneAsset=AssetDatabase.LoadAssetAtPath<SceneAsset>(sceneAssetPath);
-            Debug.Log(sceneAsset);
-            //var scene=EditorSceneManager.GetSceneByPath(item.GetSceneArg().path);
-            if(sceneAsset!=null)
-                EditorHelper.SelectObject(sceneAsset);
+            ////item.GetSceneArg().path;
+            //Debug.Log(scenePath1);
+            //Debug.Log(Application.dataPath);
+            //Debug.Log(sceneFilePath+"|"+System.IO.File.Exists(sceneFilePath));
+            //SceneAsset sceneAsset=AssetDatabase.LoadAssetAtPath<SceneAsset>(sceneAssetPath);
+            //Debug.Log(sceneAsset);
+            ////var scene=EditorSceneManager.GetSceneByPath(item.GetSceneArg().path);
+            //if(sceneAsset!=null)
+            //    EditorHelper.SelectObject(sceneAsset);
+            SubSceneHelper.SelectSceneFile(item);
         });
         NewButton("DeleteFile", buttonWidth, isFileExist && item.IsLoaded == true, () =>
         {

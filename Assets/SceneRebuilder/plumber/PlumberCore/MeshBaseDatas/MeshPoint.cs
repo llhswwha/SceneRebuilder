@@ -50,7 +50,8 @@ public struct MeshPoint
 
     public override string ToString()
     {
-        return Id.ToString();
+        //return Id.ToString();
+        return $"(Id:{Id} Point:{Point.Vector3ToString()})";
     }
 }
 

@@ -128,6 +128,14 @@ public class DoorManagerEditor : BaseFoldoutEditor<DoorManager>
         {
             item.RecoverDoors();
         }
+        if (GUILayout.Button("SelectOld"))
+        {
+            item.OldTarget = Selection.activeGameObject;
+        }
+        if (GUILayout.Button("SelectLocal"))
+        {
+            item.LocalTarget = Selection.activeGameObject;
+        }
         item.OldTarget = ObjectFieldH("OldTarget", item.OldTarget);
         item.LocalTarget = ObjectFieldH("LocalTarget", item.LocalTarget);
 

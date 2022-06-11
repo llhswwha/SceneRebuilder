@@ -1111,7 +1111,7 @@ T minTEx = null;
     }
 
     
-
+    [ContextMenu("ChangeRelativeHeight")]
     public void ChangeLODsRelativeHeight()
     {
         var lodGroups = LODHelper.GetLODGroups(LocalTarget, false);
@@ -1741,7 +1741,7 @@ T minTEx = null;
 
     private static List<SubScene_Base> LoadLOD0Scenes(List<LODGroupDetails> lod0List)
     {
-        List<SubScene_Base> sceneList = new List<SubScene_Base>();
+        DictList<SubScene_Base> sceneList = new DictList<SubScene_Base>();
         Dictionary<SubScene_Base, LODGroupInfo> scene2Group = new Dictionary<SubScene_Base, LODGroupInfo>();
         foreach (var lod0 in lod0List)
         {
@@ -1791,13 +1791,19 @@ T minTEx = null;
                     }
                     else
                     {
-                        Debug.LogError($"GetRuntimeLODDetail scene2Group.ContainsKey(p.scene) == false scene:{p.scene.name} sceneParent:{p.scene.gameObject.transform.parent.name}");
+                        if (showLog)
+                        {
+                            Debug.Log($"GetRuntimeLODDetail scene2Group.ContainsKey(p.scene) == false scene:{p.scene.name} sceneParent:{p.scene.gameObject.transform.parent.name}");
+                        }
                     }
                    
                 }
                 else
                 {
-                    Debug.LogError($"GetRuntimeLODDetail p.scene == null");
+                    if (showLog)
+                    {
+                        Debug.Log($"GetRuntimeLODDetail p.scene == null");
+                    }
                 }
 
             }, "LoadLOD0Scenes");
@@ -1807,7 +1813,7 @@ T minTEx = null;
             //Debug.Log($"GetRuntimeLODDetail lod0List:{lod0List.Count}");
         }
 
-        return sceneList;
+        return sceneList.Items;
     }
 
     public void ClearTwoList()
@@ -1825,7 +1831,7 @@ public static class LODHelper
 {
 #if UNITY_EDITOR
     [MenuItem("SceneTools/LOD/ClearLODGroupsByKey")]
-#endif
+
     public static int ClearLODGroupsByKey(GameObject[] gos,string key)
     {
         //GameObject[] gos = Selection.gameObjects;
@@ -1844,6 +1850,7 @@ public static class LODHelper
                 {
                     GameObject.DestroyImmediate(lODGroupInfo);
                 }
+                GameObject go0 = group.gameObject;
                 MeshRenderer groupRenderer = group.GetComponent<MeshRenderer>();
                 SubScene_Base scene= group.GetComponent<SubScene_Base>();
                 if (scene != null)
@@ -1881,14 +1888,54 @@ public static class LODHelper
                     {
                         GameObject.DestroyImmediate(child.gameObject);
                     }
+                    GameObject.DestroyImmediate(group);
                 }
                 else
                 {
+                    var lods = group.GetLODs();
+                    var lod0Renderers = lods[0].renderers.ToList();
+                    var lod1Renderers = lods[1].renderers.ToList();
 
+                    for (int i1 = 1; i1 < lods.Length; i1++)
+                    {
+                        LOD lod = lods[i1];
+                        var renderers = lod.renderers;
+                        foreach (var renderer in renderers)
+                        {
+                            if (renderer == null) continue;
+                            if (renderer.gameObject == null) continue;
+                            if (lod0Renderers.Contains(renderer)) continue;
+                            GameObject.DestroyImmediate(renderer.gameObject);
+                        }
+                    }
+
+                    GameObject.DestroyImmediate(group);
+                    if (lod0Renderers.Count == 1)
+                    {
+                        GameObject go1 = lod0Renderers[0].gameObject;
+                        //EditorHelper.RemoveComponents(go1);
+                        TransformHelper.ClearComponents<MonoBehaviour>(go1);
+                        EditorHelper.CopyAllComponents(go0, go1, true);
+                    }
+                    else
+                    {
+                        Debug.LogError($"lod0Renderers.Length !=1 :{lod0Renderers.Count}");
+                    }
+
+                    //List<Transform> children = new List<Transform>();
+                    //for (int j = 0; j < group.transform.childCount; j++)
+                    //{
+                    //    var child = group.transform.GetChild(j);
+                    //    children.Add(child);
+                    //}
+                    //foreach (var child in children)
+                    //{
+                    //    GameObject.DestroyImmediate(child.gameObject);
+                    //}
                 }
                 count2++;
-                Debug.Log($"ClearLODGroupsEx[{count2}] name:{group.name}");
-                GameObject.DestroyImmediate(group);
+                Debug.Log($"ClearLODGroupsEx[{count2}] name:{go0.name}");
+                
             }
 
             MeshRendererInfo[] rendererInfos = go.GetComponentsInChildren<MeshRendererInfo>(true);
@@ -1901,6 +1948,8 @@ public static class LODHelper
         }
         return count2;
     }
+#endif
+
 #if UNITY_EDITOR
     [MenuItem("SceneTools/LOD/ClearLODGroups")]
 #endif
@@ -2309,6 +2358,89 @@ public static class LODHelper
     }
 
 #if UNITY_EDITOR
+
+    public static SubScene_Base GetLOD0Scene(GameObject dirRoot, LODGroupInfo groupInfo)
+    {
+        LODGroup group = groupInfo.LODGroup;
+        LOD[] lods = group.GetLODs();
+        if (lods[0].renderers[0] == lods[1].renderers[0])
+        {
+            Debug.LogWarning("GetLOD0Scene lods[0].renderers[0] == lods[1].renderers[0] Group:" + group);
+            return null;
+        }
+
+        //lods[0].renderers = lods[1].renderers;
+        //group.SetLODs(lods);
+        GameObject dir = group.gameObject;
+        if (dirRoot != null)
+        {
+            dir = dirRoot;
+        }
+        else
+        {
+            BuildingModelInfo modelInfo = group.GetComponentInParent<BuildingModelInfo>();
+            if (modelInfo != null)
+            {
+                dir = modelInfo.gameObject;
+            }
+        }
+
+        var scene = SubSceneHelper.EditorCreateScene<SubScene_Single>(group.gameObject, SceneContentType.LOD0, false, dir);
+
+
+        //List<Renderer> allRenderers = new List<Renderer>();
+        //for (int i = 0; i < lods.Length; i++)
+        //{
+        //    var renderers = lods[i].renderers;
+        //    foreach(var render in renderers)
+        //    {
+        //        if(!allRenderers.Contains(render))
+        //        {
+        //            allRenderers.Add(render);
+        //        }
+        //    }
+        //}
+        List<Renderer> renderersOfLOD0 = lods[0].renderers.ToList();
+        List<Renderer> renderersOfLOD123 = new List<Renderer>();
+
+        groupInfo.LOD0Renderers = new List<Renderer>(renderersOfLOD0);
+        for (int i = 1; i < lods.Length; i++)
+        {
+            var renderers = lods[i].renderers;
+            foreach (var render in renderers)
+            {
+                if (!renderersOfLOD123.Contains(render))
+                {
+                    renderersOfLOD123.Add(render);
+                }
+                if (renderersOfLOD0.Contains(render))
+                {
+                    renderersOfLOD0.Remove(render);
+                    //groupInfo.LOD0Renderers.Add(render);
+                }
+            }
+        }
+
+        lods[0].renderers = lods[1].renderers;
+        group.SetLODs(lods);
+
+        List<GameObject> gos = new List<GameObject>();
+        for (int i = 0; i < renderersOfLOD0.Count; i++)
+        {
+            Renderer render = renderersOfLOD0[i];
+            if (render == null)
+            {
+                Debug.LogError($"GetLOD0Scene render == null groupInfo:{groupInfo.name} path:{groupInfo.transform.GetPath()}");
+                continue;
+            }
+            gos.Add(render.gameObject);
+        }
+        scene.SetObjects(gos);
+
+        scene.Init();
+        return scene;
+    }
+
     public static SubScene_Base GetLOD0Scene(GameObject dirRoot, LODGroup group)
     {
         LOD[] lods = group.GetLODs();
@@ -2335,24 +2467,66 @@ public static class LODHelper
         }
 
         var scene = SubSceneHelper.EditorCreateScene<SubScene_Single>(group.gameObject, SceneContentType.LOD0, false, dir);
-        List<GameObject> gos = new List<GameObject>();
-        foreach (var render in lods[0].renderers)
+
+
+        //List<Renderer> allRenderers = new List<Renderer>();
+        //for (int i = 0; i < lods.Length; i++)
+        //{
+        //    var renderers = lods[i].renderers;
+        //    foreach(var render in renderers)
+        //    {
+        //        if(!allRenderers.Contains(render))
+        //        {
+        //            allRenderers.Add(render);
+        //        }
+        //    }
+        //}
+        List<Renderer> renderersOfLOD0 = lods[0].renderers.ToList();
+        List<Renderer> renderersOfLOD123 = new List<Renderer>();
+        for (int i = 1; i < lods.Length; i++)
         {
-            gos.Add(render.gameObject);
+            var renderers = lods[i].renderers;
+            foreach (var render in renderers)
+            {
+                if (!renderersOfLOD123.Contains(render))
+                {
+                    renderersOfLOD123.Add(render);
+                }
+                renderersOfLOD0.Remove(render);
+            }
         }
 
         lods[0].renderers = lods[1].renderers;
         group.SetLODs(lods);
 
+        List<GameObject> gos = new List<GameObject>();
+        foreach (var render in renderersOfLOD0)
+        {
+            gos.Add(render.gameObject);
+        }
         scene.SetObjects(gos);
+
         scene.Init();
         return scene;
     }
 
-    public static SubScene_Base SaveLOD0(GameObject dirRoot,LODGroup group)
+    //public static SubScene_Base SaveLOD0(GameObject dirRoot,LODGroup group)
+    //{
+    //    group = UniformLOD0(group);
+    //    var scene = GetLOD0Scene(dirRoot, group);
+    //    if (scene != null)
+    //    {
+    //        scene.SaveScene();
+    //        scene.ShowBounds();
+    //    }
+
+    //    return scene;
+    //}
+
+    public static SubScene_Base SaveLOD0(GameObject dirRoot, LODGroupInfo groupInfo)
     {
-        group = UniformLOD0(group);
-        var scene = GetLOD0Scene(dirRoot, group);
+        groupInfo.LODGroup = UniformLOD0(groupInfo.LODGroup);
+        var scene = GetLOD0Scene(dirRoot, groupInfo);
         if (scene != null)
         {
             scene.SaveScene();

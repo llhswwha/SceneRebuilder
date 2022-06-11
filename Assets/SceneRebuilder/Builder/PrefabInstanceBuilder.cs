@@ -1533,4 +1533,10 @@ break;
         List<MeshPoints> meshFilters = MeshPoints.GetMeshPointsNoLOD(root);
         return AcRTAlignJobsEx(meshFilters.ToArray());
     }
+
+    public PrefabInfoList GetPrefabsOfList(Transform root)
+    {
+        List<MeshPoints> meshFilters = MeshPoints.GetMeshPointsNoLOD(root.gameObject);
+        return AcRTAlignJobsEx(meshFilters.ToArray());
+    }
 }

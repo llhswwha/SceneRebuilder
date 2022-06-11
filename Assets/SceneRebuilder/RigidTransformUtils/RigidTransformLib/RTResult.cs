@@ -27,7 +27,7 @@ public class RTResultList:List<RTResult>,IRTResult
 
 public enum AlignMode
 {
-    RT,Rotate,Scale,ICP,SameAngle
+    RT,Rotate,Scale,ICP,SameAngle,Mirror
 }
 
 [Serializable]
@@ -54,6 +54,8 @@ public class RTResult:IRTResult
     public UnityEngine.Vector3[] NewVecties = null;
 
     public UnityEngine.Vector3 Scale=UnityEngine.Vector3.one;
+
+    public UnityEngine.Vector3 Angle= UnityEngine.Vector3.zero;
 
     public Matrix3x3 R;
 
@@ -203,21 +205,19 @@ public class RTResult:IRTResult
                 Debug.LogError($"ApplyMatrix01 zero:{DistanceSetting.zeroM:F5},Distance:{this.Distance} newDis:{disNew},\tMode:{Mode},\tfrom:{tFrom.name}");
                 tFrom.rotation = Quaternion.LookRotation(TransformationMatrix.GetColumn(1), TransformationMatrix.GetColumn(2)) * qt;//测试钢架时这个是正确的
                 //tFrom.rotation = Quaternion.LookRotation(TransformationMatrix.GetColumn(2), TransformationMatrix.GetColumn(1)) * qt;//测试teaports时这个是正确的
-
                 var vsNew2 = VertexHelper.GetWorldVertexes(tFrom.gameObject);
                 var disNew2 = DistanceUtil.GetDistance(vsNew2, NewVecties);
-
                 if (disNew2 == 0)
                 {
                     //ok
                 }
                 else
                 {
-                    Debug.LogError($"ApplyMatrix02 zero:{DistanceSetting.zeroM:F5},Distance:{this.Distance} newDis:{disNew},newDis2:{disNew2},\tMode:{Mode},\tfrom:{tFrom.name}");
+                    Debug.LogError($"ApplyMatrix02 zero:{DistanceSetting.zeroM:F5},Distance:{this.Distance} newDis:{disNew},newDis2:{disNew2},\tMode:{Mode},\tfrom:{tFrom.name}\tTranslation:{Translation}");
                 }
             }
         }
-        else if (Mode == AlignMode.Scale)
+        else if (Mode == AlignMode.Scale || Mode==AlignMode.Mirror)
         {
             //tFrom.position = pos + Translation;
             //tFrom.rotation = Quaternion.LookRotation(TransformationMatrix.GetColumn(1), TransformationMatrix.GetColumn(2)) * qt;
@@ -246,23 +246,20 @@ public class RTResult:IRTResult
             }
             else
             {
-
-                Debug.LogError($"ApplyMatrix11 zero:{DistanceSetting.zeroM:F5},Distance:{this.Distance} newDis:{disNew},\tMode:{Mode},\tfrom:{tFrom.name}");
+                Debug.LogError($"ApplyMatrix11 zero:{DistanceSetting.zeroM:F5},Distance:{this.Distance} newDis:{disNew},\tMode:{Mode},\tfrom:{tFrom.name}\tScale:{Scale}\tAngle:{Angle}");
                 tFrom.position = pos + Translation;
                 tFrom.rotation = Quaternion.LookRotation(TransformationMatrix.GetColumn(1), TransformationMatrix.GetColumn(2)) * qt;//测试钢架时这个是正确的
                 tFrom.localScale = Scale;
                 //tFrom.rotation = Quaternion.LookRotation(TransformationMatrix.GetColumn(2), TransformationMatrix.GetColumn(1)) * qt;//测试teaports时这个是正确的
-
                 var vsNew2 = VertexHelper.GetWorldVertexes(tFrom.gameObject);
                 var disNew2 = DistanceUtil.GetDistance(vsNew2, NewVecties);
-
                 if (disNew2 == 0)
                 {
                     //ok
                 }
                 else
                 {
-                    Debug.LogError($"ApplyMatrix12 zero:{DistanceSetting.zeroM:F5},Distance:{this.Distance} newDis:{disNew},newDis2:{disNew2},\tMode:{Mode},\tfrom:{tFrom.name}");
+                    Debug.LogError($"ApplyMatrix12 zero:{DistanceSetting.zeroM:F5},Distance:{this.Distance} newDis:{disNew},newDis2:{disNew2},\tMode:{Mode},\tfrom:{tFrom.name}\tScale:{Scale}\tTranslation:{Translation}\tAngle:{Angle}");
                 }
             }
         }

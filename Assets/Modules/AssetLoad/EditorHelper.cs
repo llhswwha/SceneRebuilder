@@ -584,6 +584,13 @@ public static class EditorHelper
         SelectObjects(objs.ToArray());
     }
 
+    public static void SelectObjectsAdd(List<GameObject> objs)
+    {
+        GameObject[] gos = Selection.gameObjects;
+        objs.AddRange(gos);
+        SelectObjects(objs.ToArray());
+    }
+
     public static void SelectObjects(GameObject[] objs)
     {
         Selection.objects = objs;

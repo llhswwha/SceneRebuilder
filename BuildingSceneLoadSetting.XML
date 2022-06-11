@@ -1,12 +1,12 @@
 <?xml version="1.0" encoding="utf-8"?>
-<BuildingSceneLoadSetting xmlns:xsd="http://www.w3.org/2001/XMLSchema" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" IsLoadUserBuildings="false" IsLoadSceneOnStart="true" Enabled="true" IsEnableUnload="true">
+<BuildingSceneLoadSetting xmlns:xsd="http://www.w3.org/2001/XMLSchema" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" IsLoadUserBuildings="false" IsLoadSceneOnStart="false" Enabled="true" IsEnableUnload="true">
   <UserBulindgs />
   <Items>
-    <BuildingSceneLoadItemCollection Name="H级余热锅炉" IsEnable="true" IsStatic="false">
-      <BuildingSceneLoadItem Name="H级余热锅炉" IsEnable="true" InRenderers="false" Out0RenderersB="true" Out0RenderersS="false" Out1Renderers="false" LODs="false" />
-    </BuildingSceneLoadItemCollection>
-    <BuildingSceneLoadItemCollection Name="F级余热锅炉" IsEnable="true" IsStatic="false">
-      <BuildingSceneLoadItem Name="F级余热锅炉" IsEnable="true" InRenderers="false" Out0RenderersB="true" Out0RenderersS="false" Out1Renderers="false" LODs="false" />
+    <BuildingSceneLoadItemCollection Name="F级主厂房" IsEnable="true" IsStatic="false">
+      <BuildingSceneLoadItem Name="1A_F1" IsEnable="true" InRenderers="false" Out0RenderersB="true" Out0RenderersS="false" Out1Renderers="false" LODs="false" />
+      <BuildingSceneLoadItem Name="1A_F2" IsEnable="true" InRenderers="false" Out0RenderersB="true" Out0RenderersS="false" Out1Renderers="false" LODs="false" />
+      <BuildingSceneLoadItem Name="1A_F3" IsEnable="true" InRenderers="false" Out0RenderersB="true" Out0RenderersS="false" Out1Renderers="false" LODs="true" />
+      <BuildingSceneLoadItem Name="1A_Tops" IsEnable="true" InRenderers="false" Out0RenderersB="true" Out0RenderersS="false" Out1Renderers="false" LODs="false" />
     </BuildingSceneLoadItemCollection>
   </Items>
 </BuildingSceneLoadSetting>

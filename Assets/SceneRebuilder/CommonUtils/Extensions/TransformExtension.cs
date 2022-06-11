@@ -82,6 +82,7 @@ public static class TransformExtension
     public static List<Transform> GetAncestors(this Transform t, Transform root = null)
     {
         List<Transform> ancestors = new List<Transform>();
+        if (t == null) return ancestors;
         ancestors.Add(t);
         string path = t.name;
         t = t.parent;
@@ -101,6 +102,10 @@ public static class TransformExtension
 
     public static string GetPath(this Transform t, Transform root = null, string split = ">")
     {
+        if (t == null)
+        {
+            return "NULL";
+        }
         //string path = t.name;
         //t = t.parent;
         //while (t != null)

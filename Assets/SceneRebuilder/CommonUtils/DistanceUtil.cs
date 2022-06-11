@@ -241,7 +241,7 @@ public static class DistanceUtil
             }
         }
 
-        DisLog = $"GetVertexDistanceEx points1:{points1.Length} points2:{points2.Length} 用时:{(DateTime.Now - start).TotalMilliseconds:F2}ms，累计:{disSum:F7},结果:{distance:F7},序号:{i}/{points1.Length} count:{count}";
+        DisLog = $"GetVertexDistanceEx points1:{points1.Length} points2:{points2.Length} 用时:{(DateTime.Now - start).TotalMilliseconds:F2}ms，累计:{disSum:F7},结果:{distance:F7},序号:{i}/{points1.Length} count:{count} zeroPMaxCount:{zeroPMaxCount} step:{step} zeroP:{DistanceSetting.zeroP}";
         if (showLog) Debug.Log(DisLog);
         return distance;
     }
@@ -359,6 +359,12 @@ public static class DistanceSetting
 
     public static int ICPMaxCount = 20;
 
+    public static bool IsByMat = true;
+
+    public static bool IsShowLog = false;
+
+    public static bool IsDebug = false;
+
     public static void Set(DisSetting setting)
     {
         zeroP = setting.zeroP;
@@ -368,6 +374,8 @@ public static class DistanceSetting
         minDistance = setting.minDistance;
         ICPMinDis = setting.ICPMinDis;
         ICPMaxCount = setting.ICPMaxCount;
+        IsByMat = setting.IsByMat;
+        IsShowLog = setting.IsShowLog;
     }
 }
 
@@ -392,4 +400,8 @@ public class DisSetting
     public double ICPMinDis = 0.2f;//1E-04
 
     public int ICPMaxCount = 20;
+
+    public bool IsByMat = true;
+
+    public bool IsShowLog = false;
 }

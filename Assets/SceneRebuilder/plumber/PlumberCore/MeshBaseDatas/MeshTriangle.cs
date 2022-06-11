@@ -1,3 +1,4 @@
+using CommonExtension;
 using CommonUtils;
 using System;
 using System.Collections;
@@ -131,6 +132,18 @@ public struct MeshTriangle
         return false;
     }
 
+    public bool ContainsPoint(int pointId)
+    {
+        foreach (var p in GetPoints())
+        {
+            if (p.Id == pointId)
+            {
+                return true;
+            }
+        }
+        return false;
+    }
+
     public List<MeshPoint> FindSharedPoints(MeshTriangle other)
     {
         List<MeshPoint> ps = new List<MeshPoint>();
@@ -163,10 +176,10 @@ public struct MeshTriangle
         return mesh;
     }
 
-    public GameObject ShowTriangle(Transform root1, Transform root2, float pointScale)
+    public GameObject ShowTriangle(Transform root1, Transform root2, float pointScale,int id)
     {
         var points = this.GetPoints();
-        GameObject objTriangle = new GameObject($"triangle({this.GetNormal().Vector3ToString()})");
+        GameObject objTriangle = new GameObject($"triangle[{id+1}]({points.Count})");
         objTriangle.transform.SetParent(root2);
         objTriangle.transform.localPosition = this.Center;
         //objTriangle.transform.localPosition = TestMeshOffset;
@@ -263,7 +276,7 @@ public struct MeshTriangle
 }
 
 [Serializable]
-public class MeshTriangleList:List< MeshTriangle >
+public class MeshTriangleList : List<MeshTriangle>
 {
     public MeshTriangleList()
     {
@@ -290,7 +303,7 @@ public class MeshTriangleList:List< MeshTriangle >
         return radius;
     }
 
-    public List<float> GetRadiusList(float minR,Vector3 center)
+    public List<float> GetRadiusList(float minR, Vector3 center)
     {
         //Vector3 center2 = GetCenter();
         List<float> radiusList = new List<float>();
@@ -310,7 +323,7 @@ public class MeshTriangleList:List< MeshTriangle >
         return radiusList;
     }
 
-    public List<float> GetRadiusList(float minR, Vector3 center,Vector3 point,float minDis)
+    public List<float> GetRadiusList(float minR, Vector3 center, Vector3 point, float minDis)
     {
         //Vector3 center2 = GetCenter();
         List<float> radiusList = new List<float>();
@@ -351,9 +364,9 @@ public class MeshTriangleList:List< MeshTriangle >
         return new float[2] { list.First(), list.Last() };
     }
 
-    public float[] GetMinMaxRadius(float minR, Vector3 center,Vector3 point,float minDis)
+    public float[] GetMinMaxRadius(float minR, Vector3 center, Vector3 point, float minDis)
     {
-        var list = GetRadiusList(minR, center,point,minDis);
+        var list = GetRadiusList(minR, center, point, minDis);
         return new float[2] { list.First(), list.Last() };
     }
 
@@ -396,11 +409,11 @@ public class MeshTriangleList:List< MeshTriangle >
         //    }
         //}
 
-       
+
 
         List<Vector3> ps = GetPoints();
 
-        var minMax= VertexHelper.GetMinMax(ps.ToArray());
+        var minMax = VertexHelper.GetMinMax(ps.ToArray());
         return minMax[3];
 
         //foreach (var p in ps)
@@ -413,12 +426,12 @@ public class MeshTriangleList:List< MeshTriangle >
         //return center;
     }
 
-    public Vector3 GetCenter(Vector3 point,float minDis)
+    public Vector3 GetCenter(Vector3 point, float minDis)
     {
         Vector3 center = Vector3.zero;
         int count1 = 0;
         List<Vector3> ps = GetPoints();
-        for(int i = 0; i < ps.Count; i++)
+        for (int i = 0; i < ps.Count; i++)
         {
             Vector3 p = ps[i];
             float dis = Vector3.Distance(point, p);
@@ -434,25 +447,45 @@ public class MeshTriangleList:List< MeshTriangle >
 
     PositionDictionaryList<Vector3> posDict = new PositionDictionaryList<Vector3>();
 
-    DictionaryList1ToN<int,MeshPoint> idDict = new DictionaryList1ToN<int, MeshPoint>();
+    DictionaryList1ToN<int, MeshPoint> idDict = new DictionaryList1ToN<int, MeshPoint>();
 
     public void AddList(List<MeshTriangle> list)
     {
-        this.AddRange(list);
-        posDict = null;
+        base.AddRange(list);
+        //posDict = null;
+        AddMeshTriangleDictEx(list);
     }
 
     public void AddItem(MeshTriangle item)
     {
-        this.Add(item);
-        posDict = null;
+        base.Add(item);
+        //posDict = null;
+        AddMeshTriangleDictEx(item);
     }
 
-    public List<Vector3> GetPoints()
+    public new void Add(MeshTriangle item)
     {
+        base.Add(item);
+        //posDict = null;
+        AddMeshTriangleDictEx(item);
+    }
+    public new void AddRange(IEnumerable<MeshTriangle> collection)
+    {
+        base.AddRange(collection);
+        //posDict = null;
+        AddMeshTriangleDictEx(collection);
+    }
+
+    public List<Vector3> GetPoints(bool isForce = false)
+    {
+        if (isForce)
+        {
+            CreatePosDict();
+        }
+
         if (InitPosDict())
         {
-            var ps= GetPosList();
+            var ps = GetPosList();
             //Debug.LogError($"MeshTriangles.GetPoints count:{this.Count} allPos:{this.Count * 2 + 1} ps:{ps.Count}");
             return ps;
         }
@@ -462,8 +495,12 @@ public class MeshTriangleList:List< MeshTriangle >
         }
     }
 
-    public List<MeshPoint> GetMeshPoints()
+    public List<MeshPoint> GetMeshPoints(bool isForce = false)
     {
+        if (isForce)
+        {
+            CreateIdDict();
+        }
         if (InitIdDict())
         {
             var ps = GetPosListById();
@@ -504,44 +541,92 @@ public class MeshTriangleList:List< MeshTriangle >
 
     private bool InitPosDict()
     {
-        if (posDict == null || posDict.posListDict.Count==0)
+        if (posDict == null || posDict.posListDict.Count == 0)
         {
-            posDict = new PositionDictionaryList<Vector3>();
-
-            foreach (MeshTriangle triangle in this)
-            {
-                foreach (var p in triangle.GetPoints())
-                {
-                    posDict.Add(p.Point, p.Point,2);
-                }
-            }
+            CreatePosDict();
             //posDict.ShowCount("MeshTriangles.InitPosDict");
             return true;
         }
         return false;
     }
 
+    public void CreatePosDict()
+    {
+        posDict = new PositionDictionaryList<Vector3>();
+        foreach (MeshTriangle triangle in this)
+        {
+            AddMeshTriangleDict_Pos(triangle);
+        }
+    }
+
+    private void AddMeshTriangleDict_Pos(MeshTriangle triangle)
+    {
+        foreach (var p in triangle.GetPoints())
+        {
+            posDict.Add(p.Point, p.Point, 2);
+        }
+    }
+
+    private void AddMeshTriangleDict_Id(MeshTriangle triangle)
+    {
+        var ps = triangle.GetPoints();
+        foreach (var p in ps)
+        {
+            idDict.AddItem(p.Id, p);
+            //Debug.Log($"InitIdDict[{i + 1}] p:{p} count:{idDict.Count}");
+        }
+    }
+
+    private void AddMeshTriangleDictEx(IEnumerable<MeshTriangle> triangles)
+    {
+        foreach (var t in triangles)
+        {
+            AddMeshTriangleDictEx(t);
+        }
+    }
+
+    private void AddMeshTriangleDictEx(MeshTriangle triangle)
+    {
+        var ps = triangle.GetPoints();
+        foreach (var p in ps)
+        {
+            idDict.AddItem(p.Id, p);
+            posDict.Add(p.Point, p.Point, 2);
+        }
+    }
+
     private bool InitIdDict()
     {
         if (idDict == null || idDict.Count == 0)
         {
-            idDict = new DictionaryList1ToN<int, MeshPoint>();
-
-            MeshTriangleList list = this;
-            for (int i = 0; i < list.Count; i++)
-            {
-                MeshTriangle triangle = list[i];
-                var ps = triangle.GetPoints();
-                foreach (var p in ps)
-                {
-                    idDict.AddItem(p.Id, p);
-                    Debug.Log($"InitIdDict[{i+1}] p:{p} count:{idDict.Count}");
-                }
-            }
+            CreateIdDict();
             //posDict.ShowCount("MeshTriangles.InitPosDict");
             return true;
         }
         return false;
+    }
+
+    public void CreateIdDict()
+    {
+        idDict = new DictionaryList1ToN<int, MeshPoint>();
+        MeshTriangleList list = this;
+        for (int i = 0; i < list.Count; i++)
+        {
+            MeshTriangle triangle = list[i];
+            AddMeshTriangleDict_Id(triangle);
+        }
+    }
+
+    public void CreateTriangleDict()
+    {
+        idDict = new DictionaryList1ToN<int, MeshPoint>();
+        posDict = new PositionDictionaryList<Vector3>();
+        MeshTriangleList list = this;
+        for (int i = 0; i < list.Count; i++)
+        {
+            MeshTriangle triangle = list[i];
+            AddMeshTriangleDictEx(triangle);
+        }
     }
 
     public Vector3 GetCenter(int pointId)
@@ -555,6 +640,8 @@ public class MeshTriangleList:List< MeshTriangle >
         center /= this.Count;
         return center;
     }
+
+
 
     //internal bool GetIsCircle(int pointId,float maxP)
     //{
@@ -596,6 +683,208 @@ public class MeshTriangleList:List< MeshTriangle >
         float p = max / min;
         //Debug.Log($"GetCircleCheckP pointId:{pointId} min:{min} max:{max} p:{p}");
         return p;
+    }
+
+    private DictList<int> PointIds = new DictList<int>();
+
+    public bool ContainsPoint(MeshPoint mp, int level, string tag)
+    {
+        //if (idDict == null || !idDict.ContainsKey(mp.Id))
+        //{
+        //    CreateIdDict();
+        //}
+
+        //if (idDict == null)
+        //{
+        //    CreateIdDict();
+        //}
+        //if (idDict.ContainsKey(mp.Id))
+        //{
+        //    return true;
+        //}
+
+        //if (posDict == null || posDict.posListDict.Count == 0 || posDict.Contains(mp.Point, level) == false)
+        //{
+        //    CreatePosDict();
+        //}
+
+        if (idDict == null || idDict.Count == 0 || posDict == null || posDict.posListDict.Count == 0)
+        {
+            CreateTriangleDict();
+        }
+        if (idDict.ContainsKey(mp.Id))
+        {
+            return true;
+        }
+        if (posDict.Contains(mp.Point, level))
+        {
+            return true;
+        }
+        //float minDis = float.MaxValue;
+        //var ps = this.GetMeshPoints(true);
+        //MeshPoint minMp = new MeshPoint();
+        //string ids = "";
+        //foreach(var pos in ps)
+        //{
+        //    float dis = Vector3.Distance(pos.Point, mp.Point);
+        //    if (minDis > dis)
+        //    {
+        //        minDis = dis;
+        //        minMp = pos;
+        //    }
+        //    ids += pos.Id + ";";
+        //}
+        //if (minDis < 1)
+        //{
+        //    Debug.Log($"ContainsPoint({tag}) [ps:{ps.Count} ids:{ids}] level:{level} minDis:{minDis} minMp:{minMp} mp:{mp} ");
+        //}
+        return false;
+    }
+
+    public bool ContainsPoint(int pointId)
+    {
+        //if (idDict == null)
+        //{
+        //    InitIdDict();
+        //}
+        if (idDict == null || !idDict.ContainsKey(pointId))
+        {
+            CreateIdDict();
+        }
+        if (idDict.ContainsKey(pointId))
+        {
+            return true;
+        }
+        return false;
+
+        //if (!PointIds.Contains(pointId))
+        //{
+
+        //    PointIds = new DictList<int>();
+        //    foreach(var mp in mps)
+        //    {
+        //        PointIds.Add(mp.)
+        //    }
+        //}
+
+        //var mps = GetPoints();
+        //foreach (MeshTriangle triangle in this)
+        //{
+        //    if (triangle.ContainsPoint(pointId))
+        //    {
+        //        return true;
+        //    }
+        //}
+        //return false;
+    }
+
+    internal bool ContainsTriangleByPointId(MeshTriangle t1)
+    {
+        //bool result = false;
+        foreach (MeshPoint p in t1.GetPoints())
+        {
+            if (ContainsPoint(p.Id))
+            {
+                return true;
+            }
+        }
+        return false;
+    }
+
+    //internal bool ContainsTriangleByPointPos(MeshTriangle t1,string tag)
+    //{
+    //    //bool result = false;
+    //    foreach (MeshPoint p in t1.GetPoints())
+    //    {
+    //        if (ContainsPoint(p,2, tag))
+    //        {
+    //            return true;
+    //        }
+    //    }
+    //    return false;
+    //}
+
+    internal bool ContainsTriangleByPointPos(List<MeshPoint> mps, string tag)
+    {
+        //bool result = false;
+        foreach (MeshPoint p in mps)
+        {
+            if (ContainsPoint(p, 2, tag))
+            {
+                return true;
+            }
+        }
+        return false;
+    }
+
+    internal GameObject CreateMeshObject(Material mat,string name)
+    {
+        GameObject newGo = new GameObject(name);
+        Vector3 center = this.GetCenter();
+        newGo.transform.position = Vector3.zero;
+        MeshFilter newMf = newGo.AddMissingComponent<MeshFilter>();
+        MeshRenderer newRender = newGo.AddMissingComponent<MeshRenderer>();
+        newRender.sharedMaterial = mat;
+        //newMf.sharedMesh = VertexHelper.CopyMesh(mf);
+        //newMf.sharedMesh.name = mf.name;
+        //newGo.transform.SetParent(mf.transform.parent);
+        newMf.sharedMesh = this.CreateMesh(center, name);
+        newMf.sharedMesh.name = name;
+        newGo.transform.position = center;
+        return newGo;
+    }
+
+    private Mesh CreateMesh(Vector3 center, string name)
+    {
+        Mesh mesh = new Mesh();
+        List<Vector3> vertices = new List<Vector3>();
+        List<Vector3> normals = new List<Vector3>();
+        List<int> triangles = new List<int>();
+        MeshTriangleList list = this;
+        int idCount=idDict.Count();
+        int pCount = 0;
+        int i0 = 0;
+        Dictionary<int, int> id2id = new Dictionary<int, int>();
+        foreach (var pId in idDict.Keys)
+        {
+            var mps = idDict[pId];
+            //if (mps.Count > 1)
+            //{
+            //    Debug.LogError($"CreateMesh[{i0}] idDict pId:{pId} mps:{mps.Count}");
+            //    break;
+            //}
+            var mp = mps[0];
+            vertices.Add(mp.Point - center);
+            normals.Add(mp.Normal);
+            id2id.Add(pId, i0);
+            i0++;
+        }
+
+        for (int i = 0; i < list.Count; i++)
+        {
+            MeshTriangle triangle = (MeshTriangle)list[i];
+            //AddMeshTriangleDict_Pos(triangle);
+            var mps = triangle.GetPoints();
+            foreach (var mp in mps)
+            {
+                //vertices.Add(mp.Point- center);
+                //normals.Add(mp.Normal);
+                int pId = id2id[mp.Id];
+                triangles.Add(pId);
+                pCount++;
+            }
+            //triangles.Add(i * 3);
+            //triangles.Add(i * 3 + 1);
+            //triangles.Add(i * 3 + 2);
+        }
+        mesh.vertices = vertices.ToArray();
+        mesh.triangles = triangles.ToArray();
+        mesh.normals = normals.ToArray();
+        //mesh.RecalculateNormals();
+        //mesh.RecalculateBounds();
+
+        //Debug.LogError($"CreateMesh[{name}] list:{list.Count} idCount:{idCount} mpCount:{pCount}");
+        return mesh;
     }
 }
 

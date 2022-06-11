@@ -17,20 +17,23 @@ public class BaseMeshModel : MonoBehaviour
     {
         //ClearChildren();
         ClearDebugInfoGos();
-        Mesh mesh = this.GetComponent<MeshFilter>().sharedMesh;
-        MeshTriangles meshTriangles = new MeshTriangles(mesh);
 
-        Debug.Log($"ShowSharedPoints mesh vertexCount:{mesh.vertexCount} triangles:{mesh.triangles.Length}");
-        //meshTriangles.ShowSharedPointsById(this.transform, PointScale, 10);
+        //Mesh mesh = this.GetComponent<MeshFilter>().sharedMesh;
+        //MeshTriangles meshTriangles = new MeshTriangles(mesh);
 
-        //meshTriangles.ShowSharedPointsByIdEx(this.transform, PointScale, 15,int.MaxValue, minRepeatPointDistance);
-        //meshTriangles.ShowSharedPointsByIdEx(this.transform, PointScale, 0, int.MaxValue, minRepeatPointDistance);
-        //meshTriangles.ShowSharedPointsByIdEx(this.transform, PointScale, 0,3, minRepeatPointDistance);
+        //Debug.Log($"ShowSharedPoints mesh vertexCount:{mesh.vertexCount} triangles:{mesh.triangles.Length}");
+        ////meshTriangles.ShowSharedPointsById(this.transform, PointScale, 10);
 
-        meshTriangles.ShowCirclesById(this.transform, PointScale, 0, 3, minRepeatPointDistance);
-        //meshTriangles.ShowSharedPointsByPoint(this.transform, PointScale, 10);
-        //meshTriangles.ShowSharedPointsByPointExEx(this.transform, PointScale, sharedMinCount, minRepeatPointDistance);
-        meshTriangles.Dispose();
+        ////meshTriangles.ShowSharedPointsByIdEx(this.transform, PointScale, 15,int.MaxValue, minRepeatPointDistance);
+        ////meshTriangles.ShowSharedPointsByIdEx(this.transform, PointScale, 0, int.MaxValue, minRepeatPointDistance);
+        ////meshTriangles.ShowSharedPointsByIdEx(this.transform, PointScale, 0,3, minRepeatPointDistance);
+
+        //meshTriangles.ShowCirclesById(this.transform, PointScale, 0, 3, minRepeatPointDistance);
+        ////meshTriangles.ShowSharedPointsByPoint(this.transform, PointScale, 10);
+        ////meshTriangles.ShowSharedPointsByPointExEx(this.transform, PointScale, sharedMinCount, minRepeatPointDistance);
+        //meshTriangles.Dispose();
+
+        MeshTriangles.DebugShowSharedPointsById(transform, PointScale);
     }
 
     public void DebugShowNormalPoints()
@@ -184,12 +187,13 @@ public class BaseMeshModel : MonoBehaviour
 
     public void ClearDebugInfoGos()
     {
-        DebugInfoRoot[] debugRoots = this.GetComponentsInChildren<DebugInfoRoot>(true);
-        foreach (var item in debugRoots)
-        {
-            if (item == null) continue;
-            GameObject.DestroyImmediate(item.gameObject);
-        }
+        //DebugInfoRoot[] debugRoots = this.GetComponentsInChildren<DebugInfoRoot>(true);
+        //foreach (var item in debugRoots)
+        //{
+        //    if (item == null) continue;
+        //    GameObject.DestroyImmediate(item.gameObject);
+        //}
+        DebugInfoRoot.ClearDebugInfoGos(transform);
     }
 
     [ContextMenu("ClearChildren")]

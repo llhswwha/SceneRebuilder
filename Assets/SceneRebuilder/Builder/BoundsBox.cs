@@ -16,6 +16,12 @@ public class BoundsBox : NoCombine
 
     public void DestroyMesh()
     {
+        if (this.name.Contains("door_Bounds"))
+        {
+            return;
+        }
+        MeshHelper.RemoveMeshComponents(this.gameObject);
+
         AreaTreeNode node = GetComponent<AreaTreeNode>();
         if (node != null)
         {
@@ -31,12 +37,6 @@ public class BoundsBox : NoCombine
         }
         else
         {
-            //if (transform.parent != null)
-            //{
-            //    LODGroup group = transform.parent.GetComponent<LODGroup>();
-
-            //}
-
             if (this.name.Contains("LODBox"))
             {
 
@@ -50,11 +50,13 @@ public class BoundsBox : NoCombine
 
     private void Awake()
     {
-
         //#if !UNITY_EDITOR
 
         //#endif
-
-        MeshHelper.RemoveMeshComponents(this.gameObject); 
+        if (this.name.Contains("door_Bounds"))
+        {
+            return;
+        }
+        MeshHelper.RemoveMeshComponents(this.gameObject);
     }
 }

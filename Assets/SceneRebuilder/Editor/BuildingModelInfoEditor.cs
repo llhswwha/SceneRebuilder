@@ -314,13 +314,12 @@ public class BuildingModelInfoEditor : BaseFoldoutEditor<BuildingModelInfo>
         }
         EditorGUILayout.EndHorizontal();
 
+        //
         EditorGUILayout.BeginHorizontal();
-
         NewEnabledButton("LOD", 50, info.LODPart != null, btnStyle, () =>
         {
             MeshProfilerNS.GameObjectListMeshEditorWindow.ShowWindow(info.LODPart.gameObject);
         });
-
         //if (GUILayout.Button("LOD", GUILayout.Width(50)))
         //{
         //    MeshProfilerNS.GameObjectListMeshEditorWindow.ShowWindow(info.LODPart.gameObject);
@@ -354,7 +353,44 @@ public class BuildingModelInfoEditor : BaseFoldoutEditor<BuildingModelInfo>
         }
         EditorGUILayout.EndHorizontal();
 
+        //------------In Big Small
         EditorGUILayout.BeginHorizontal();
+        if (GUILayout.Button("InB", GUILayout.Width(50)))
+        {
+            //MeshProfilerNS.GameObjectListMeshEditorWindow.ShowWindow(info.OutPart1.gameObject);
+        }
+        GUILayout.Button(info.InBigVertextCount.ToString("F1") + "w", GUILayout.Width(80));
+        GUILayout.Button(info.InBigRendererCount.ToString(), GUILayout.Width(50));
+        if (GUILayout.Button("Hide", GUILayout.Width(50)))
+        {
+            info.HideBigModels_In();
+        }
+        if (GUILayout.Button("Show", GUILayout.Width(50)))
+        {
+            info.ShowBigModels_In();
+        }
+        EditorGUILayout.EndHorizontal();
+
+        EditorGUILayout.BeginHorizontal();
+        if (GUILayout.Button("InS", GUILayout.Width(50)))
+        {
+            //MeshProfilerNS.GameObjectListMeshEditorWindow.ShowWindow(info.OutPart1.gameObject);
+        }
+        GUILayout.Button(info.InSmallVertextCount.ToString("F1") + "w", GUILayout.Width(80));
+        GUILayout.Button(info.InSmallRendererCount.ToString(), GUILayout.Width(50));
+        if (GUILayout.Button("Hide", GUILayout.Width(50)))
+        {
+            info.HideSmallModels_In();
+        }
+        if (GUILayout.Button("Show", GUILayout.Width(50)))
+        {
+            info.ShowSmallModels_In();
+        }
+        EditorGUILayout.EndHorizontal();
+
+        //----------Out0 Big Small
+        EditorGUILayout.BeginHorizontal();
+        //Out0B
         if (GUILayout.Button("Out0B", GUILayout.Width(50)))
         {
             //MeshProfilerNS.GameObjectListMeshEditorWindow.ShowWindow(info.OutPart1.gameObject);
@@ -363,14 +399,15 @@ public class BuildingModelInfoEditor : BaseFoldoutEditor<BuildingModelInfo>
         GUILayout.Button(info.Out0BigRendererCount.ToString(), GUILayout.Width(50));
         if (GUILayout.Button("Hide", GUILayout.Width(50)))
         {
-            info.HideBigModels();
+            info.HideBigModels_Out0();
         }
         if (GUILayout.Button("Show", GUILayout.Width(50)))
         {
-            info.ShowBigModels();
+            info.ShowBigModels_Out0();
         }
         EditorGUILayout.EndHorizontal();
 
+        //Out0S
         EditorGUILayout.BeginHorizontal();
         if (GUILayout.Button("Out0S", GUILayout.Width(50)))
         {
@@ -380,11 +417,11 @@ public class BuildingModelInfoEditor : BaseFoldoutEditor<BuildingModelInfo>
         GUILayout.Button(info.Out0SmallRendererCount.ToString(), GUILayout.Width(50));
         if (GUILayout.Button("Hide", GUILayout.Width(50)))
         {
-            info.HideSmallModels();
+            info.HideSmallModels_Out0();
         }
         if (GUILayout.Button("Show", GUILayout.Width(50)))
         {
-            info.ShowSmallModels();
+            info.ShowSmallModels_Out0();
         }
         EditorGUILayout.EndHorizontal();
     }

@@ -8,6 +8,32 @@ using UnityEngine;
 [Serializable]
 public class SharedMeshInfoList : List<SharedMeshInfo>
 {
+    public int DestroyBiggerThan(int minCount)
+    {
+        int destroyCount = 0;
+        int count0 = this.Count;
+        int id = 0;
+        for (int i = 0; i < this.Count; i++)
+        {
+            SharedMeshInfo item = this[i];
+            if(item.GetCount()>minCount)
+            {
+                item.Destroy();
+                this.RemoveAt(i);
+                i--;
+                destroyCount++;
+            }
+            id++;
+            if (ProgressBarHelper.DisplayCancelableProgressBar("Destroy", i, this.Count))
+            {
+                break;
+            }
+        }
+        ProgressBarHelper.ClearProgressBar();
+        Debug.Log($"DestroyBiggerThan minCount:{minCount} destroyCount:{destroyCount}");
+        return destroyCount;
+    }
+
     public List<MeshFilter> meshFilters = new List<MeshFilter>();
 
     public List<MeshFilter> GetMeshFilters()

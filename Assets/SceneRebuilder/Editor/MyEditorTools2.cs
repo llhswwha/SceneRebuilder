@@ -7,9 +7,422 @@ using Base.Common;
 using System.IO;
 using System.Text;
 using CommonExtension;
+using CommonUtils;
+using Object = UnityEngine.Object;
+using System.Text.RegularExpressions;
 
 public class MyEditorTools2
 {
+    #region Script
+    [MenuItem("SceneTools/Script/ClearMainScripts")]
+    public static void ClearMainScripts()
+    {
+        /*
+         *  TypeCount2[001]	count:69868	type:RendererId
+            TypeCount2[002]	count:51014	type:MeshRendererInfo
+            TypeCount2[003]	count:13875	type:MeshNode
+            TypeCount2[004]	count:10070	type:MeshPrefabInstance
+            TypeCount2[005]	count:9783	type:BIMModelInfo
+            TypeCount2[006]	count:9122	type:DoubleClickEventTrigger_u3d
+            TypeCount2[008]	count:5839	type:PipeMeshGenerator
+            TypeCount2[010]	count:3206	type:PipeLineModel
+            TypeCount2[012]	count:2349	type:BoundsBox
+            TypeCount2[013]	count:1948	type:PipeElbowModel
+         */
+        ClearComponents<RendererId>();
+        ClearComponents<MeshRendererInfo>();
+        ClearComponents<MeshNode>();
+        ClearComponents<MeshPrefabInstance>();
+        ClearComponents<BIMModelInfo>();
+        //ClearComponents<DoubleClickEventTrigger_u3d>();
+        ClearComponents<PipeMeshGenerator>();
+        ClearComponents<PipeLineModel>();
+        ClearComponents<BoundsBox>();
+        ClearComponents<PipeElbowModel>();
+    }
+
+    [MenuItem("SceneTools/Script/ClearOtherScripts")]
+    public static void ClearOtherScripts()
+    {
+        /*
+         *  TypeCount2[001]	count:69868	type:RendererId
+            TypeCount2[002]	count:51014	type:MeshRendererInfo
+            TypeCount2[003]	count:13875	type:MeshNode
+            TypeCount2[004]	count:10070	type:MeshPrefabInstance
+            TypeCount2[005]	count:9783	type:BIMModelInfo
+            TypeCount2[006]	count:9122	type:DoubleClickEventTrigger_u3d
+            TypeCount2[008]	count:5839	type:PipeMeshGenerator
+            TypeCount2[010]	count:3206	type:PipeLineModel
+            TypeCount2[012]	count:2349	type:BoundsBox
+            TypeCount2[013]	count:1948	type:PipeElbowModel
+         */
+        //ClearComponents<RendererId>();
+        ClearComponents<MeshRendererInfo>();
+        ClearComponents<MeshNode>();
+        ClearComponents<MeshPrefabInstance>();
+        //ClearComponents<BIMModelInfo>();
+        //ClearComponents<DoubleClickEventTrigger_u3d>();
+        ClearComponents<PipeMeshGenerator>();
+        ClearComponents<PipeLineModel>();
+        ClearComponents<BoundsBox>();
+        ClearComponents<PipeElbowModel>();
+    }
+
+    [MenuItem("SceneTools/Script/ClearUIScripts")]
+    public static void ClearUIScripts()
+    {
+        /*
+TypeCount2[007]	count:7186	type:UnityEngine.UI.Image
+TypeCount2[009]	count:3823	type:UnityEngine.UI.LayoutElement
+TypeCount2[011]	count:2996	type:UnityEngine.UI.Text
+TypeCount2[014]	count:1569	type:UnityEngine.UI.Button
+TypeCount2[015]	count:1233	type:UnityEngine.UI.HorizontalLayoutGroup
+TypeCount2[019]	count:761	type:UnityEngine.UI.Toggle
+         */
+        ClearComponents<UnityEngine.UI.Image>();
+        ClearComponents<UnityEngine.UI.LayoutElement>();
+        ClearComponents<UnityEngine.UI.Text>();
+        ClearComponents<UnityEngine.UI.Button>();
+        ClearComponents<UnityEngine.UI.HorizontalLayoutGroup>();
+        ClearComponents<UnityEngine.UI.Toggle>();
+    }
+
+    [MenuItem("SceneTools/Script/GetScriptCounts")]
+    public static void GetScriptCounts()
+    {
+        MonoBehaviour[] mbs = GameObject.FindObjectsOfType<MonoBehaviour>(true);
+        Dictionary<Type, TypeCount> typeCountDict = new Dictionary<Type, TypeCount>();
+        for (int i = 0; i < mbs.Length; i++)
+        {
+            MonoBehaviour mb = mbs[i];
+            
+            Type t = mb.GetType();
+            if (ProgressBarHelper.DisplayCancelableProgressBar("GetScript", i, mbs.Length, mb.name+"_"+t.Name))
+            {
+                break;
+            }
+            if (!typeCountDict.ContainsKey(t))
+            {
+                TypeCount tc = new TypeCount(t, 1);
+                typeCountDict.Add(t, tc);
+            }
+            else
+            {
+                TypeCount count1 = typeCountDict[t];
+                count1.count++;
+            }
+        }
+        ProgressBarHelper.ClearProgressBar();
+        List<TypeCount> typeCountList = typeCountDict.Values.ToList();
+        typeCountList.Sort();
+
+        List<TypeCount> typeCountList_UI = new List<TypeCount>();
+        List<TypeCount> typeCountList_2 = new List<TypeCount>();
+        StringBuilder sb0 = new StringBuilder();
+        for (int i = 0; i < typeCountList.Count; i++)
+        {
+            TypeCount tc = typeCountList[i];
+            sb0.AppendLine($"TypeCount1[{i + 1:000}]\tcount:{tc.count}\ttype:{tc.type} ");
+            if (tc.count > 1)
+            {
+                if (tc.type.Name.Contains("UI"))
+                {
+                    typeCountList_UI.Add(tc);
+                }
+                else
+                {
+                    typeCountList_2.Add(tc);
+                }
+            }
+        }
+        StringBuilder sb1 = new StringBuilder();
+        for (int i = 0; i < typeCountList_UI.Count; i++)
+        {
+            TypeCount tc = typeCountList_UI[i];
+            sb1.AppendLine($"TypeCount_UI[{i + 1:000}]\tcount:{tc.count}\ttype:{tc.type} ");
+        }
+
+        StringBuilder sb2 = new StringBuilder();
+        for (int i = 0; i < typeCountList_2.Count; i++)
+        {
+            TypeCount tc = typeCountList_2[i];
+            sb2.AppendLine($"TypeCount2[{i + 1:000}]\tcount:{tc.count}\ttype:{tc.type} ");
+        }
+        Debug.LogError($"GetScriptCounts mbs:{mbs.Length} Count:{typeCountDict.Count} Count_UI:{typeCountList_UI.Count}  Count_2:{typeCountList_2.Count} \nList2:\n{sb2.ToString()} \nUI:\n{sb1.ToString()} \nList1:\n{sb0.ToString()}");
+    }
+
+    public class TypeCount:IComparable<TypeCount>
+    {
+        public Type type;
+        public int count;
+
+        public TypeCount(Type t,int c)
+        {
+            this.type = t;
+            this.count = c;
+        }
+
+        public int CompareTo(TypeCount other)
+        {
+            return other.count.CompareTo(this.count);
+        }
+    }
+    #endregion
+
+    #region Building
+    [MenuItem("SceneTools/Building/MoveSelectionToBuildingIn")]
+    public static void MoveSelectionToBuildingIn()
+    {
+        GameObject[] gos= Selection.gameObjects;
+        BuildingModelInfo building = null;
+        foreach(var go in gos)
+        {
+            BuildingModelInfo b = go.GetComponent<BuildingModelInfo>();
+            if (b != null)
+            {
+                building = b;
+            }
+        }
+        if (building == null)
+        {
+            Debug.LogError("MoveSelectionToBuildingIn building == null");
+            return;
+        }
+        if (building.InPart == null)
+        {
+            Debug.LogError("MoveSelectionToBuildingIn building.InPart == null");
+            return;
+        }
+        foreach (var go in gos)
+        {
+            if (go == building.gameObject) continue;
+            go.transform.SetParent(building.InPart.transform);
+        }
+
+        Debug.LogError($"MoveSelectionToBuildingIn building : {building}");
+    }
+    [MenuItem("SceneTools/Building/MoveSelectionToBuildingOut0")]
+    public static void MoveSelectionToBuildingOut0()
+    {
+        GameObject[] gos = Selection.gameObjects;
+        BuildingModelInfo building = null;
+        foreach (var go in gos)
+        {
+            BuildingModelInfo b = go.GetComponent<BuildingModelInfo>();
+            if (b != null)
+            {
+                building = b;
+            }
+        }
+        if (building == null)
+        {
+            Debug.LogError("MoveSelectionToBuildingOut0 building == null");
+            return;
+        }
+        if (building.OutPart0 == null)
+        {
+            Debug.LogError("MoveSelectionToBuildingOut0 building.OutPart0 == null");
+            return;
+        }
+        foreach (var go in gos)
+        {
+            if (go == building.gameObject) continue;
+            go.transform.SetParent(building.OutPart0.transform);
+        }
+
+        Debug.LogError($"MoveSelectionToBuildingOut0 building : {building}");
+    }
+    [MenuItem("SceneTools/Building/MoveSelectionToBuildingLODs")]
+    public static void MoveSelectionToBuildingLODs()
+    {
+        GameObject[] gos = Selection.gameObjects;
+        BuildingModelInfo building = null;
+        foreach (var go in gos)
+        {
+            BuildingModelInfo b = go.GetComponent<BuildingModelInfo>();
+            if (b != null)
+            {
+                building = b;
+            }
+        }
+        if (building == null)
+        {
+            Debug.LogError("MoveSelectionToBuildingLODs building == null");
+            return;
+        }
+        if (building.LODPart == null)
+        {
+            Debug.LogError("MoveSelectionToBuildingLODs building.LODPart == null");
+            return;
+        }
+        foreach (var go in gos)
+        {
+            if (go == building.gameObject) continue;
+            go.transform.SetParent(building.LODPart.transform);
+        }
+
+        Debug.LogError($"MoveSelectionToBuildingLODs building : {building}");
+    }
+    #endregion
+
+    #region Material
+
+    [MenuItem("SceneTools/Material/Check")]
+    public static void CheckMaterials()
+    {
+        CheckMaterialsInner(false);
+    }
+
+    [MenuItem("SceneTools/Material/Save")]
+    public static void SaveMaterials()
+    {
+        CheckMaterialsInner(true);
+    }
+
+    [MenuItem("SceneTools/Material/Load")]
+    public static void LoadMaterials()
+    {
+        Dictionary<string, GameObject> path2Go = new Dictionary<string, GameObject>();
+        GameObject root = Selection.activeGameObject;
+        MeshRenderer[] renderers = null;
+        if (root == null)
+        {
+            renderers = GameObject.FindObjectsOfType<MeshRenderer>(true);
+        }
+        else
+        {
+            renderers = root.GetComponentsInChildren<MeshRenderer>(true);
+        }
+        foreach(var render in renderers)
+        {
+            string path = render.transform.GetPath();
+            if (path2Go.ContainsKey(path))
+            {
+                Debug.LogError($"LoadMaterials path2Go.ContainsKey(path) path:{path} renderer:{render}");
+            }
+            else
+            {
+                path2Go.Add(path, render.gameObject);
+            }
+            
+        }
+        int nullMatCount = 0;
+        int nullMatCount1 = 0;
+        int nullMatCount2 = 0;
+        int nullMatCount3 = 0;
+        int newMatCount = 0;
+        //CheckMaterialsInner(true);
+        Mat2GosAsset asset = Mat2GosAsset.Load();
+        for (int i = 0; i < asset.Items.Count; i++)
+        {
+            Mat2Gos item = asset.Items[i];
+            Material mat = item.mat;
+            Material mat1 = item.GetMat();
+            Material mat2 = item.GetMat2();
+            Material mat3 = item.GetMat3();
+            if (mat == null)
+            {
+                
+
+                if (mat2 != null)
+                {
+                    mat = mat2;
+                }
+                else if (mat3 != null)
+                {
+                    mat = mat3;
+                }
+                else
+                {
+                    mat = mat1;
+                }
+                Debug.LogError($"LoadMaterials[{i}] mat2==null mat:{mat} mat1:{mat1} mat2:{mat2} mat3:{mat3} matName:{item.name} mathPath:{item.file} paths:{item.pathList.Count}");
+            }
+            
+            for (int i1 = 0; i1 < item.pathList.Count; i1++)
+            {
+                string path = item.pathList[i1];
+                if (path2Go.ContainsKey(path))
+                {
+                    GameObject go = path2Go[path];
+                    MeshRenderer mr = go.GetComponent<MeshRenderer>();
+                    if (mr == null)
+                    {
+                        Debug.LogError($"LoadMaterials[{i},{i1}] mr==null path:{path} matName:{item.name} path:{path}");
+                    }
+                    else
+                    {
+                        if (mr.sharedMaterial == mat)
+                        {
+                            
+                        }
+                        else if (mr.sharedMaterial == null)
+                        {
+                            //var mat2 = item.GetMat2();
+                            //var mat3 = item.GetMat3();
+                            nullMatCount++;
+                            Debug.LogWarning($"LoadMaterials[{nullMatCount}={nullMatCount1}+{nullMatCount2}+{nullMatCount3}][{i},{i1}] NullMat path:{path} matName:{item.name} path:{path}");
+                            if (mat2 != null)
+                            {
+                                nullMatCount2++;
+                                mr.sharedMaterial = mat2;
+                            }
+                            else if (mat3 != null)
+                            {
+                                nullMatCount3++;
+                                mr.sharedMaterial = mat3;
+                            }
+                            else
+                            {
+                                nullMatCount1++;
+                                mr.sharedMaterial = mat;
+                            }
+                            
+                        }
+                        else
+                        {
+                            newMatCount++;
+                            Debug.LogWarning($"LoadMaterials[{newMatCount}][{i},{i1}] NewMat path:{path} matName:{item.name} path:{path}");
+                            //mr.sharedMaterial = mat;
+                        }
+                        
+                    }
+                }
+                else
+                {
+                    //Debug.LogError($"LoadMaterials[{i},{i1}] path2Go.ContainsKey(path)==false path:{path} matName:{item.name} path:{path}");
+                }
+            }
+            Debug.Log($"LoadMaterials[{i}] mat2==null matName:{item.name} mathPath:{item.file} paths:{item.pathList.Count}");
+        }
+        Debug.LogError($"LoadMaterials root:{root} renderers:{renderers.Length} mats:{asset.Items.Count} nullMat:[{nullMatCount}={nullMatCount1}+{nullMatCount2}+{nullMatCount3}] newMat:{newMatCount} paths:{path2Go.Count}");
+    }
+
+    private static void CheckMaterialsInner(bool isSave)
+    {
+        GameObject root = Selection.activeGameObject;
+        
+        MeshRenderer[] renderers = null;
+        if (root == null)
+        {
+            renderers = GameObject.FindObjectsOfType<MeshRenderer>(true);
+        }
+        else
+        {
+            renderers = root.GetComponentsInChildren<MeshRenderer>(true);
+        }
+        var mat2Gos = Mat2GosAsset.GetMat2GosDict(renderers);
+
+        if (isSave)
+        {
+            Mat2GosAsset.Save(mat2Gos);
+        }
+
+        Debug.Log($"SaveMaterials renderers:{renderers.Length} mats:{mat2Gos.Count}");
+    }
+
+    #endregion
+
     #region Hierarchy
     [MenuItem("SceneTools/Hierarchy/InitIds")]
     public static void InitIds()
@@ -158,6 +571,293 @@ public class MyEditorTools2
 
     #region LOD 
 
+    [MenuItem("SceneTools/LOD/ClearBoundBox")]
+    public static void ClearBoundBox()
+    {
+        GameObject go = Selection.activeGameObject;
+        try
+        {
+            LODGroup[] lodGroups = go.GetComponentsInChildren<LODGroup>(true);
+            int errorCount = 0;
+            int doorLODGroupCount = 0;
+            foreach (var lodGroup in lodGroups)
+            {
+                if (lodGroup.name.ToLower().Contains("door"))
+                {
+                    doorLODGroupCount ++;
+
+                    List<MeshRenderer> renderers = lodGroup.GetComponentsInChildren<MeshRenderer>(true).ToList();
+                    for (int i = 0; i < renderers.Count; i++)
+                    {
+                        MeshRenderer r = renderers[i]; 
+                        if (r.name.Contains("door_Bounds")|| r.name.Contains("New_Bounds"))
+                        {
+                            BoundsBox bb = r.GetComponent<BoundsBox>();
+                            if (bb)
+                            {
+                                GameObject.DestroyImmediate(bb);
+                            }
+                        }
+                    }
+                }
+            }
+            Debug.LogError($"RepairDoorLODGroup go:{go} lodGroups:{lodGroups.Length} doorLODGroupCount:{doorLODGroupCount} errorCount:{errorCount}");
+        }
+        catch (Exception ex)
+        {
+            Debug.LogError($"RepairDoorLODGroup go:{go} Exception:{ex}");
+        }
+    }
+
+    [MenuItem("SceneTools/LOD/CheckDoorLODGroup")]
+    public static void CheckDoorLODGroup()
+    {
+        RepairDoorLODGroupInner(false,false);
+    }
+
+    [MenuItem("SceneTools/LOD/RepairDoorLODGroup")]
+    public static void RepairDoorLODGroup()
+    {
+        RepairDoorLODGroupInner(true, false);
+    }
+
+    [MenuItem("SceneTools/LOD/ResetDoorLODGroup")]
+    public static void ResetDoorLODGroup()
+    {
+        RepairDoorLODGroupInner(true, true);
+    }
+
+    [MenuItem("SceneTools/LOD/ChangeDoorLODGroupPercent4")]
+    public static void ChangeDoorLODGroupPercent4()
+    {
+        ChangeDoorLODGroupPercentInner(0.4f);
+    }
+
+    [MenuItem("SceneTools/LOD/ChangeDoorLODGroupPercent5")]
+    public static void ChangeDoorLODGroupPercent5()
+    {
+        ChangeDoorLODGroupPercentInner(0.5f);
+    }
+
+    public static void RepairDoorLODGroupInner(bool isRepair,bool isForceUpdate)
+    {
+        GameObject go = Selection.activeGameObject;
+        try
+        {
+            LODGroup[] lodGroups = go.GetComponentsInChildren<LODGroup>(true);
+            int errorCount = 0;
+            int doorLODGroupCount = 0;
+            foreach (var lodGroup in lodGroups)
+            {
+                if (lodGroup.name.ToLower().Contains("door"))
+                {
+                    doorLODGroupCount = 0;
+                    LOD[] lods = lodGroup.GetLODs();
+                    if (lods[0].renderers.Length == 0 || isForceUpdate)
+                    {
+                        Debug.LogError($"RepairDoorLODGroup1 doorLODGroup Error:{lodGroup.name} path:{lodGroup.transform.GetPath()}");
+                        errorCount++;
+
+                        if (isRepair)
+                        {
+                            List<MeshRenderer> renderers = lodGroup.GetComponentsInChildren<MeshRenderer>(true).ToList();
+                            for (int i = 0; i < renderers.Count; i++)
+                            {
+                                MeshRenderer r = renderers[i];
+                                if (r.name.Contains("Bounds"))
+                                {
+                                    renderers.Remove(r);
+                                }
+                            }
+                            lods[0].renderers = renderers.ToArray() ;
+                            lodGroup.SetLODs(lods);
+                        }
+                    }
+                    if (lods[1].renderers.Length == 0 || isForceUpdate)
+                    {
+                        Debug.LogError($"RepairDoorLODGroup2 doorLODGroup Error:{lodGroup.name} path:{lodGroup.transform.GetPath()}");
+                        errorCount++;
+
+                        if (isRepair)
+                        {
+                            List<MeshRenderer> renderers = lodGroup.GetComponentsInChildren<MeshRenderer>(true).ToList();
+                            for (int i = 0; i < renderers.Count; i++)
+                            {
+                                MeshRenderer r = renderers[i];
+                                if (r.name.Contains("Bounds"))
+                                {
+                                    renderers.Remove(r);
+                                    i--;
+                                }
+                            }
+                            MeshRendererInfoList list = new MeshRendererInfoList(renderers);
+                            list.RemoveAt(0);
+                            lods[1].renderers = list.GetRenderers().ToArray();
+                            lodGroup.SetLODs(lods);
+                        }
+                    }
+                    if (lods[2].renderers.Length == 0 || isForceUpdate)
+                    {
+                        Debug.LogError($"RepairDoorLODGroup3 doorLODGroup Error:{lodGroup.name} path:{lodGroup.transform.GetPath()}");
+                        errorCount++;
+
+                        if (isRepair)
+                        {
+                            List<MeshRenderer> renderers = lodGroup.GetComponentsInChildren<MeshRenderer>(true).ToList();
+                            for (int i = 0; i < renderers.Count; i++)
+                            {
+                                MeshRenderer r = renderers[i];
+                                if (!r.name.Contains("door_Bounds"))
+                                {
+                                    renderers.Remove(r);
+                                    i--;
+                                }
+                            }
+                            lods[2].renderers = renderers.ToArray();
+                            lodGroup.SetLODs(lods);
+                        }
+                    }
+                }
+            }
+            Debug.LogError($"RepairDoorLODGroup go:{go} lodGroups:{lodGroups.Length} doorLODGroupCount:{doorLODGroupCount} errorCount:{errorCount}");
+        }
+        catch (Exception ex)
+        {
+            Debug.LogError($"RepairDoorLODGroup go:{go} Exception:{ex}");
+        }
+    }
+
+
+    public static void ChangeDoorLODGroupPercentInner(float percent)
+    {
+        GameObject go = Selection.activeGameObject;
+        try
+        {
+            LODGroup[] lodGroups = go.GetComponentsInChildren<LODGroup>(true);
+            int doorLODGroupCount = 0;
+            foreach (var lodGroup in lodGroups)
+            {
+                if (lodGroup.name.ToLower().Contains("door"))
+                {
+                    doorLODGroupCount = 0;
+                    LOD[] lods = lodGroup.GetLODs();
+                    lods[0].screenRelativeTransitionHeight = percent;
+                    lodGroup.SetLODs(lods);
+                }
+            }
+            Debug.LogError($"ChangeDoorLODGroupPercent4 go:{go} lodGroups:{lodGroups.Length} doorLODGroupCount:{doorLODGroupCount}");
+        }
+        catch (Exception ex)
+        {
+            Debug.LogError($"ChangeDoorLODGroupPercent4 go:{go} Exception:{ex}");
+        }
+    }
+
+    [MenuItem("SceneTools/LOD/SaveDoorLODGroupScenes")]
+    public static void SaveDoorLODGroupScenes()
+    {
+        GameObject go = Selection.activeGameObject;
+        try
+        {
+            LODGroupInfo[] lodGroups = go.GetComponentsInChildren<LODGroupInfo>(true);
+            int doorLODGroupCount = 0;
+            List<LODGroupInfo> doorLodGroups = new List<LODGroupInfo>();
+            for (int i = 0; i < lodGroups.Length; i++)
+            {
+                LODGroupInfo lodGroup = lodGroups[i];
+                if (lodGroup.name.ToLower().Contains("door"))
+                {
+                    doorLODGroupCount++;
+                    //lodGroup.EditorCreateScene();
+                    doorLodGroups.Add(lodGroup);
+                }
+            }
+            for (int i = 0; i < doorLodGroups.Count; i++)
+            {
+                LODGroupInfo lodGroup = doorLodGroups[i];
+                lodGroup.EditorCreateScene();
+                ProgressBarHelper.DisplayCancelableProgressBar("Save", i, lodGroups.Length);
+            }
+            EditorHelper.ClearOtherScenes();
+            EditorHelper.RefreshAssets();
+            Debug.LogError($"SaveDoorLODGroupScenes go:{go} lodGroups:{lodGroups.Length} doorLODGroupCount:{doorLODGroupCount}");
+        }
+        catch (Exception ex)
+        {
+            Debug.LogError($"SaveDoorLODGroupScenes go:{go} Exception:{ex}");
+        }
+        ProgressBarHelper.ClearProgressBar();
+    }
+
+    [MenuItem("SceneTools/LOD/LoadDoorLODGroupScenes")]
+    public static void LoadDoorLODGroupScenes()
+    {
+        GameObject go = Selection.activeGameObject;
+        try
+        {
+            LODGroupInfo[] lodGroups = go.GetComponentsInChildren<LODGroupInfo>(true);
+            int doorLODGroupCount = 0;
+            List<LODGroupInfo> doorLodGroups = new List<LODGroupInfo>();
+            for (int i = 0; i < lodGroups.Length; i++)
+            {
+                LODGroupInfo lodGroup = lodGroups[i];
+                if (lodGroup.name.ToLower().Contains("door"))
+                {
+                    doorLODGroupCount++;
+                    //lodGroup.EditorCreateScene();
+                    doorLodGroups.Add(lodGroup);
+                }
+            }
+            for (int i = 0; i < doorLodGroups.Count; i++)
+            {
+                LODGroupInfo lodGroup = doorLodGroups[i];
+                lodGroup.EditorLoadScene();
+                ProgressBarHelper.DisplayCancelableProgressBar("Load", i, lodGroups.Length);
+            }
+            EditorHelper.ClearOtherScenes();
+            EditorHelper.RefreshAssets();
+            Debug.LogError($"LoadDoorLODGroupScenes go:{go} lodGroups:{lodGroups.Length} doorLODGroupCount:{doorLODGroupCount}");
+        }
+        catch (Exception ex)
+        {
+            Debug.LogError($"LoadDoorLODGroupScenes go:{go} Exception:{ex}");
+        }
+        ProgressBarHelper.ClearProgressBar();
+    }
+
+    [MenuItem("SceneTools/LOD/AddSelectionToLOD0")]
+    public static void AddSelectionToLOD0()
+    {
+        GameObject go = Selection.activeGameObject;
+        MeshRenderer[] renderers = go.GetComponentsInChildren<MeshRenderer>(true);
+        LODGroup lodGroup = go.GetComponentInParent<LODGroup>();
+        //LODGroup lodGroup = CommonUtils.ObjectExtension.FindComponentInParent<LODGroup>(go);
+        if (renderers.Length == 0)
+        {
+            Debug.LogError($"renderers.Length == 0 go:{go} parent:{go.transform.parent}");
+            return;
+        }
+        if (lodGroup==null)
+        {
+            Debug.LogError($"lodGroup == null go:{go} parent:{go.transform.parent}");
+            return;
+        }
+
+        LOD[] lods = lodGroup.GetLODs();
+        List<Renderer> lod0Renderers = lods[0].renderers.ToList();
+        foreach(var renderer in renderers)
+        {
+            if (!lod0Renderers.Contains(renderer))
+            {
+                lod0Renderers.Add(renderer);
+            }
+        }
+        lods[0].renderers = lod0Renderers.ToArray();
+        lodGroup.SetLODs(lods);
+
+        Debug.LogError($"AddSelectionToLOD0 lodGroup:{lodGroup} renderers:{renderers.Length}");
+    }
+
     [MenuItem("SceneTools/LOD/Clear")]
     public static void ClearLODGroup2()
     {
@@ -255,10 +955,137 @@ public class MyEditorTools2
         LODHelper.ClearLODGroups(Selection.gameObjects);
     }
 
+    [MenuItem("SceneTools/LOD/RemoveSameNameObjects")]
+    public static void RemoveSameNameObjects()
+    {
+        GameObject go0 = Selection.activeGameObject;
+        Transform parent = go0.transform.parent;
+        List<MeshRenderer> renderers2 = new List<MeshRenderer>();
+        for (int i = 0; i < parent.childCount; i++)
+        {
+            Transform child = parent.GetChild(i);
+            if (child.gameObject == go0)
+            {
+
+            }
+            else
+            {
+                MeshRenderer[] renderers0 = child.GetComponentsInChildren<MeshRenderer>(true);
+                renderers2.AddRange(renderers0);
+            }
+        }
+        MeshRenderer[] renderers1 = go0.GetComponentsInChildren<MeshRenderer>(true);
+        for (int i = 0; i < renderers1.Length; i++)
+        {
+            MeshRenderer rend = renderers1[i];
+            if (!rend.name.Contains("MemberPartPrismatic")) continue;
+            ProgressArg p1 = new ProgressArg("Remove", i, renderers1.Length);
+            if (ProgressBarHelper.DisplayCancelableProgressBar(p1))
+            {
+                break;
+            }
+            List<MeshRenderer> sameNameList = new List<MeshRenderer>();
+            foreach(var item in renderers2)
+            {
+                if (item == null) continue;
+                if(item.name==rend.name)
+                {
+                    var dis = MeshHelper.GetCenterDistance(item.gameObject, rend.gameObject);
+                    if (dis < 1f)
+                    {
+                        sameNameList.Add(item);
+                    }
+                    else
+                    {
+                        Debug.LogError($"RemoveSameNameObjects1 dis > 1f :{sameNameList.Count} name:{rend.name} path:{item.transform.GetPath()}");
+                    }
+                }
+            }
+            if (sameNameList.Count == 0)
+            {
+                bool isBreak = false;
+                float minDis = float.MaxValue;
+                MeshRenderer minRenderer = null;
+                for (int i1 = 0; i1 < renderers2.Count; i1++)
+                {
+                    MeshRenderer item = renderers2[i1];
+                    if (item == null) continue;
+                    if (!item.name.Contains("MemberPartPrismatic")) continue;
+                    ProgressArg p2 = new ProgressArg("GetDis", i1, renderers2.Count);
+                    p1.AddSubProgress(p2);
+                    if (ProgressBarHelper.DisplayCancelableProgressBar(p1))
+                    {
+                        isBreak = true;
+                        break;
+                    }
+                    var dis = MeshHelper.GetCenterDistance(item.gameObject, rend.gameObject);
+                    if (dis < minDis)
+                    {
+                        minDis = dis;
+                        minRenderer = item;
+                    }
+                    //if (dis < 0.0001f)
+                    //{
+                    //    sameNameList.Add(item);
+                    //}
+                    //else
+                    //{
+                    //    Debug.LogError($"RemoveSameNameObjects2 dis > 0.0001f dis:{dis} :{sameNameList.Count} name:{rend.name} path:{item.transform.GetPath()}");
+                    //}
+                }
+
+                if (minDis < 0.0005f)
+                {
+                    sameNameList.Add(minRenderer);
+                }
+                else
+                {
+                    Debug.LogError($"RemoveSameNameObjects2 minRenderer > 0.0005f minDis:{minDis} minRenderer:{minRenderer} :{sameNameList.Count} name:{rend.name} path:{minRenderer.transform.GetPath()}");
+                }
+
+                if (isBreak)
+                {
+                    break;
+                }
+            }
+            if (sameNameList.Count == 1)
+            {
+                GameObject.DestroyImmediate(sameNameList[0].gameObject);
+                Debug.Log($"RemoveSameNameObjects :{rend.name}");
+            }
+            else
+            {
+                Debug.LogError($"RemoveSameNameObjects sameNameList.Count != 1 :{sameNameList.Count} name:{rend.name} ");
+            }
+        }
+        ProgressBarHelper.ClearProgressBar();
+    }
+
+
     [MenuItem("SceneTools/LOD/ClearLODGroupsByKey_MemberPartPrismatic(MemberPartPrismatic)")]
     public static void ClearLODGroupsByKey_MemberPartPrismatic()
     {
         LODHelper.ClearLODGroupsByKey(Selection.gameObjects, "MemberPartPrismatic");
+        MeshHelper.DecreaseEmptyGroupEx(Selection.activeGameObject);
+    }
+
+    [MenuItem("SceneTools/LOD/ClearRenderersByKey_MemberPartPrismatic(MemberPartPrismatic)")]
+    public static void ClearRenderersByKey_MemberPartPrismatic()
+    {
+        MeshRenderer[] renderers = Selection.activeGameObject.GetComponentsInChildren<MeshRenderer>(true);
+        List<MeshRenderer> keyRenderers = new List<MeshRenderer>();
+        foreach(var renderer in renderers)
+        {
+            if (renderer.name.Contains("MemberPartPrismatic") && renderer.transform.childCount>0)
+            {
+                keyRenderers.Add(renderer);
+            }
+        }
+        foreach(var renderer in keyRenderers)
+        {
+            renderer.gameObject.ClearChildren();
+        }
+        Debug.LogError($"ClearRenderersByKey_MemberPartPrismatic renderers:{renderers.Length} keyRenderers:{keyRenderers.Count}");
     }
 
     [MenuItem("SceneTools/LOD/AddLOD1(U)")]
@@ -336,6 +1163,55 @@ public class MyEditorTools2
 
 
     #region Mesh 
+
+    [MenuItem("SceneTools/Mesh/MeshSplit")]
+    public static void MeshSplit()
+    {
+        MeshSpliter.SplitGo(Selection.activeGameObject);
+    }
+
+    [MenuItem("SceneTools/Mesh/MeshSplitSelection")]
+    public static void MeshSplitSelection()
+    {
+        DateTime start = DateTime.Now;
+        GameObject go = Selection.activeGameObject;
+        MeshFilter[] mfs = go.GetComponentsInChildren<MeshFilter>(true);
+        GameObject newRoot = new GameObject(go.name + "_Split");
+        for (int i = 0; i < mfs.Length; i++)
+        {
+            MeshFilter mf = mfs[i];
+            ProgressArg p0 = new ProgressArg("Split", i, mfs.Length);
+            GameObject newGo=MeshSpliter.SplitGo(mf.gameObject,p0);
+            newGo.transform.SetParent(newRoot.transform);
+        }
+        ProgressBarHelper.ClearProgressBar();
+        Debug.LogError($"MeshSplitSelection go:{go} mfs:{mfs.Length} time:{DateTime.Now-start}");
+    }
+
+    [MenuItem("SceneTools/Mesh/MeshSplitSelection(Job)")]
+    public static void MeshSplitSelectionJob()
+    {
+        DateTime start = DateTime.Now;
+        GameObject go = Selection.activeGameObject;
+        MeshFilter[] mfs = go.GetComponentsInChildren<MeshFilter>(true);
+        //GameObject newRoot = new GameObject(go.name + "_Split");
+        JobList<MeshSplitJob> jobs = new JobList<MeshSplitJob>(100);
+        for (int i = 0; i < mfs.Length; i++)
+        {
+            MeshFilter mf = mfs[i];
+            MeshStructure meshS = new MeshStructure(mf.sharedMesh);
+            MeshSplitJob job = new MeshSplitJob()
+            {
+                id = i,
+                mesh = meshS
+            };
+            jobs.Add(job);
+        }
+        jobs.CompleteAll();
+
+        ProgressBarHelper.ClearProgressBar();
+        Debug.LogError($"MeshSplitSelectionJob go:{go} mfs:{mfs.Length} time:{DateTime.Now - start}");
+    }
 
     [MenuItem("SceneTools/Mesh/Select")]
     public static void SelectMesh()
@@ -458,7 +1334,24 @@ public class MyEditorTools2
         }
         return true;
     }
-    
+
+
+    [MenuItem("SceneTools/Mesh/CheckSharedMesh")]
+    public static void CheckSharedMesh()
+    {
+        MeshFilter[] mfs = GameObject.FindObjectsOfType<MeshFilter>(true);
+        int count = 0;
+        for (int i = 0; i < mfs.Length; i++)
+        {
+            MeshFilter mf = mfs[i];
+            if (mf.sharedMesh == null)
+            {
+                Debug.LogError($"[{i}/{mfs.Length}][{++count}] mf.sharedMesh == null name:{mf.name}");
+            }
+        }
+        Debug.Log($"SaveMeshAll mfs:{mfs.Length} errorCount:{count}");
+    }
+
     [MenuItem("SceneTools/Mesh/Save")]
     public static void SaveMesh()
     {
@@ -497,41 +1390,94 @@ public class MyEditorTools2
         Debug.Log($"SaveMeshAll sharedMeshInfos:{sharedMeshInfos.Count} count:{count}");
     }
 
-    [MenuItem("SceneTools/Mesh/New")]
-    public static void NewMesh()
+    [MenuItem("SceneTools/Mesh/NewMesh00001")]
+    public static void NewMesh00001()
     {
-        CenterPivotAll();
+        NewMeshInner(true, 0.00001f);
+    }
+
+    [MenuItem("SceneTools/Mesh/NewMesh001")]
+    public static void NewMesh001()
+    {
+        NewMeshInner(true, 0.001f);
+    }
+
+    [MenuItem("SceneTools/Mesh/NewMesh005")]
+    public static void NewMesh005()
+    {
+        NewMeshInner(true, 0.005f);
+    }
+
+    [MenuItem("SceneTools/Mesh/NewMesh010")]
+    public static void NewMesh010()
+    {
+        NewMeshInner(true, 0.01f);
+    }
+    [MenuItem("SceneTools/Mesh/NewMesh100")]
+    public static void NewMesh100()
+    {
+        NewMeshInner(true, 0.1f);
+    }
+
+    [MenuItem("SceneTools/Mesh/SetMeshName")]
+    public static void SetMeshName()
+    {
+        GameObject go = Selection.activeGameObject;
+        MeshFilter[] mfs = go.GetComponentsInChildren<MeshFilter>(true);
+        //int count = 0;
+        for (int i = 0; i < mfs.Length; i++)
+        {
+            MeshFilter mf = mfs[i];
+            if (mf.sharedMesh.name.Contains("Geometry"))
+            {
+                mf.sharedMesh.name = mf.name;
+            }
+            
+        }
+    }
+
+    public static void NewMeshInner(bool isNew,float minDis)
+    {
+        //CenterPivotAll();
 
         DateTime startT = DateTime.Now;
         GameObject go = Selection.activeGameObject;
         MeshFilter[] mfs = go.GetComponentsInChildren<MeshFilter>(true);
-
+        int count = 0;
         for (int i = 0; i < mfs.Length; i++)
         {
             MeshFilter mf = mfs[i];
             //mf.transform.SetParent(null);
             string meshName = mf.name;
-            if(ProgressBarHelper.DisplayCancelableProgressBar(new ProgressArg("NewMesh", i,mfs.Length,meshName)))
+            if (ProgressBarHelper.DisplayCancelableProgressBar(new ProgressArg("NewMesh", i, mfs.Length, meshName)))
             {
                 break;
             }
-            //string meshName = mf.sharedMesh.name;
-            MeshFilter mfOld = mf.gameObject.GetComponent<MeshFilter>();
-            GameObject newGo=MeshCombiner.Instance.CombineToOne(mf.gameObject, false, false);
-            MeshFilter mfNew = newGo.GetComponent<MeshFilter>();
+            Vector3 center = VertexHelper.GetCenter(mf.gameObject);
+            float dis = Vector3.Distance(center, mf.transform.position);
+            if (dis > minDis)
+            {
 
-            mfNew.name = meshName + "_NewMesh";
-            mfNew.sharedMesh.name = meshName + "_NewMesh";
+                count++;
+                Debug.Log($"NewMesh[{i}/{mfs.Length}][{count}] dis:{dis} name:{meshName} ");
+                if (isNew)
+                {
+                    GameObject newGo = VertexHelper.CopyGameObjectMesh(mf);
+                    //mf.gameObject.SetActive(false);
 
-            //mfNew.name = meshName;
-            //mfNew.sharedMesh.name = meshName;
+                    GameObjectExtension.CopyTransformMesh(newGo, mf.gameObject);
+                    newGo.SetActive(false);
+                    GameObject.DestroyImmediate(newGo);
+                }
 
-            GameObjectExtension.CopyTransformMesh(newGo, mf.gameObject);
-
-            GameObject.DestroyImmediate(mfNew.gameObject);
+            }
+            else
+            {
+                Debug.LogWarning($"NewMesh[{i}/{mfs.Length}] dis:{dis} name:{meshName} ");
+            }
         }
         ProgressBarHelper.ClearProgressBar();
-        Debug.LogError($"NewMesh go:{go} mfs:{mfs.Length} time:{DateTime.Now-startT}");
+        Debug.LogError($"NewMesh go:{go} mfs:{mfs.Length} count:{count} time:{DateTime.Now - startT}");
     }
 
     [MenuItem("SceneTools/Mesh/Combine")]
@@ -545,7 +1491,8 @@ public class MyEditorTools2
     {
         MeshCombiner.Instance.CombineToOne(Selection.activeGameObject, false, false);
     }
-    [MenuItem("SceneTools/Mesh/Split")]
+
+    [MenuItem("SceneTools/Mesh/SplitByMaterials")]
     public static void SplitMesh()
     {
         MeshCombineHelper.SplitByMaterials(Selection.activeGameObject, false);
@@ -593,6 +1540,119 @@ public class MyEditorTools2
     #endregion
 
     #region Prefab
+
+    [MenuItem("SceneTools/Prefab/(*) GetPrefabs(Mat)")]
+    public static void GetPrefabInfos_Mat()
+    {
+        GetPrefabInfosInner(0, true);
+    }
+
+    [MenuItem("SceneTools/Prefab/(*) GetPrefabs(NoMat)")]
+    public static void GetPrefabInfos()
+    {
+        GetPrefabInfosInner(0,false);
+    }
+
+    [MenuItem("SceneTools/Prefab/(*) GetPrefabs(Log)")]
+    public static void GetPrefabInfos_Log()
+    {
+        GetPrefabInfosInner(0, true, true);
+    }
+
+    [MenuItem("SceneTools/Prefab/(*) GetPrefabs(Debug)")]
+    public static void GetPrefabInfos_Debug()
+    {
+        
+        GetPrefabInfosInner(0, true, true,true);
+    }
+
+    [MenuItem("SceneTools/Prefab/(*) GetPrefabsByGroup")]
+    public static void GetPrefabsByGroup()
+    {
+        AcRTAlignJobSetting.Instance.SetDefault();
+        GameObject obj = Selection.activeGameObject;
+
+        for (int i = 0; i < obj.transform.childCount; i++)
+        {
+            Transform child = obj.transform.GetChild(i);
+            if (ProgressBarHelper.DisplayCancelableProgressBar(new ProgressArg("GetPrefabsByGroup", i, obj.transform.childCount, child)))
+            {
+                break;
+            }
+            PrefabInstanceBuilder.Instance.GetPrefabsOfList(child);
+        }
+        MeshNode.InitNodes(obj);
+        ProgressBarHelper.ClearProgressBar();
+    }
+
+    [MenuItem("SceneTools/Prefab/(*) GetPrefabs0.0001")]
+    public static void GetPrefabInfos0001()
+    {
+        GetPrefabInfosInner(0.0001);
+    }
+
+    [MenuItem("SceneTools/Prefab/(*) GetPrefabs0.001")]
+    public static void GetPrefabInfos001()
+    {
+        GetPrefabInfosInner(0.001);
+    }
+
+    [MenuItem("SceneTools/Prefab/(*) GetPrefabs0.01")]
+    public static void GetPrefabInfos01()
+    {
+        GetPrefabInfosInner(0.01);
+    }
+
+    [MenuItem("SceneTools/Prefab/(*) GetPrefabs0.1")]
+    public static void GetPrefabInfos1()
+    {
+        GetPrefabInfosInner(0.1);
+    }
+
+    public static void GetPrefabInfosInner(double zeroP, bool isByMat = true, bool isShowLog = false, bool isDebug = false)
+    {
+        if (zeroP > 0)
+        {
+            PrefabInstanceBuilder.Instance.disSetting.zeroP = zeroP;
+        }
+        PrefabInstanceBuilder.Instance.disSetting.IsByMat = isByMat;
+        PrefabInstanceBuilder.Instance.disSetting.IsShowLog = isShowLog;
+        DistanceSetting.IsDebug = isDebug;
+
+        AcRTAlignJobSetting.Instance.SetDefault();
+        for (int i = 0; i < Selection.gameObjects.Length; i++)
+        {
+            GameObject obj = Selection.gameObjects[i];
+            if (ProgressBarHelper.DisplayCancelableProgressBar(new ProgressArg("GetPrefabInfos", i, Selection.gameObjects.Length, obj)))
+            {
+                break;
+            }
+            PrefabInstanceBuilder.Instance.GetPrefabsOfList(obj);
+            MeshNode.InitNodes(obj);
+        }
+        ProgressBarHelper.ClearProgressBar();
+    }
+
+
+
+    [MenuItem("SceneTools/Prefab/CompareWindow(...)")]
+    public static void CompareWindow()
+    {
+        MeshComparerEditorWindow.ShowWindow();
+    }
+
+    [MenuItem("SceneTools/Prefab/ResetPosition")]
+    public static void ResetPosition()
+    {
+        GameObject obj = Selection.activeGameObject;
+        MeshFilter[] mfs = obj.GetComponentsInChildren<MeshFilter>(true);
+        foreach(var mf in mfs)
+        {
+            mf.transform.Reset();
+        }
+        Debug.LogError($"ResetPosition obj:{obj} mfs:{mfs.Length}");
+    }
+
     [MenuItem("SceneTools/Prefab/RemoveNew")]
     public static void PrefabRemoveNew()
     {
@@ -695,23 +1755,8 @@ public class MyEditorTools2
         ProgressBarHelper.ClearProgressBar();
     }
 
-    [MenuItem("SceneTools/Prefab/GetPrefabInfos")]
-    public static void GetPrefabInfos()
-    {
-        AcRTAlignJobSetting.Instance.SetDefault();
+    
 
-        for (int i = 0; i < Selection.gameObjects.Length; i++)
-        {
-            GameObject obj = Selection.gameObjects[i];
-            if (ProgressBarHelper.DisplayCancelableProgressBar(new ProgressArg("GetPrefabInfos", i, Selection.gameObjects.Length, obj)))
-            {
-                break;
-            }
-            PrefabInstanceBuilder.Instance.GetPrefabsOfList(obj);
-            MeshNode.InitNodes(obj);
-        }
-        ProgressBarHelper.ClearProgressBar();
-    }
     [MenuItem("SceneTools/Prefab/RemoveNew")]
     public static void RemoveNew()
     {
@@ -1072,6 +2117,58 @@ public class MyEditorTools2
 
     #region Transform
 
+    [MenuItem("SceneTools/Transform/SetSelectionSamePos")]
+    public static void SetSelectionSamePos()
+    {
+
+        var gos = Selection.gameObjects;
+        GameObject go0 = gos[0];
+        for (int i = 1; i < gos.Length; i++)
+        {
+            GameObject go = gos[i];
+            go.transform.position = go0.transform.position;
+        }
+    }
+
+    [MenuItem("SceneTools/Transform/CopySelectionToRoot")]
+    public static void CopySelectionToRoot()
+    {
+        
+        var gos = Selection.gameObjects;
+        string name = $"Root[{gos.Length}]";
+        foreach (var go in gos)
+        {
+            name += "_"+go.name ;
+        }
+        GameObject newRoot = new GameObject(name);
+        newRoot.transform.Reset();
+        foreach (var go in gos)
+        {
+            GameObject newGo = GameObject.Instantiate(go);
+            newGo.transform.SetParent(newRoot.transform);
+        }
+        EditorHelper.SelectObject(newRoot);
+    }
+
+    [MenuItem("SceneTools/Transform/MoveSelectionToRoot")]
+    public static void MoveSelectionToRoot()
+    {
+        string name = "";
+        var gos = Selection.gameObjects;
+        foreach (var go in gos)
+        {
+            name += go.name + "_";
+        }
+        GameObject newRoot = new GameObject(name);
+        newRoot.transform.Reset();
+        foreach (var go in gos)
+        {
+            //GameObject newGo = GameObject.Instantiate(go);
+            go.transform.SetParent(newRoot.transform);
+        }
+        EditorHelper.SelectObject(newRoot);
+    }
+
     [MenuItem("SceneTools/Transform/CenterPivot")]
     public static void CenterPivot()
     {
@@ -1148,6 +2245,24 @@ public class MyEditorTools2
         {
             GameObject.DestroyImmediate(item.gameObject);
         }
+    }
+
+    [MenuItem("SceneTools/Transform/IsEmptyEx")]
+    public static void IsEmptyEx()
+    {
+        MeshHelper.IsEmptyObjectEx(Selection.activeGameObject.transform,true);
+    }
+
+    [MenuItem("SceneTools/Transform/IsEmpty")]
+    public static void IsEmpty()
+    {
+        MeshHelper.IsEmptyObject(Selection.activeGameObject.transform, true);
+    }
+
+    [MenuItem("SceneTools/Transform/DcsEmptyEx")]
+    public static void DcsEmptyEx()
+    {
+        MeshHelper.DecreaseEmptyGroupEx(Selection.activeGameObject);
     }
 
     [MenuItem("SceneTools/Transform/DcsEmpty")]
@@ -1783,6 +2898,953 @@ public class MyEditorTools2
             }
         }
         //ColliderHelper.CreateBoxCollider(parent);
+    }
+    #endregion
+
+    #region EditTools
+    [MenuItem("SceneTools/FocusSelection")]
+    private static void FocusSelection()
+    {
+        EditorHelper.SelectObject(Selection.activeGameObject);
+    }
+    [MenuItem("SceneTools/Models/Delete")]
+    private static void Delete()
+    {
+        Debug.Log("Delete");
+        //1.获取全部的模型文件
+
+        //2.根据名称分组
+        //3.分组创建LODGroup
+        //4.生成预设
+
+
+        var dirObjs = GetDirObjs();
+        if (dirObjs.Count == 0)
+        {
+            Debug.Log("dirObjs.Count == 0");
+            return;//选中的没有文件夹
+        }
+        foreach (var dir in dirObjs)
+        {
+            //var dir = GetDirInfo(dirObj);
+            Delete(dir, false);
+        }
+        EditorHelper.RefreshAssets();
+    }
+
+    private static void Delete(DirectoryInfo dir, bool isTest)
+    {
+        var start = DateTime.Now;
+        Debug.Log("Delete Dir:" + dir);
+        FileInfo[] files = dir.GetFiles("*.*", SearchOption.AllDirectories); //搜索文件夹下面的所有文件
+
+        Regex regex = new Regex(".(3DS|3ds|fbx|FBX|prefab|Prefab)$"); //正则表达式，过滤后缀为.meta.cs.xml的文件
+
+        List<GameObject> modelObjects = new List<GameObject>();
+
+        for (int i = 0; i < files.Length; i++)
+        {
+            FileInfo file = files[i];
+            string filePath = file.FullName;
+
+            //Debug.Log("ChangeModel file:" + filePath);
+
+            string relativePath = "Assets\\" + filePath.Substring(Application.dataPath.Length + 1);
+
+            if (regex.IsMatch(relativePath))
+            {
+                string name = file.Name;
+                string[] parts = name.Split(new char[] { '(', ')' }, StringSplitOptions.RemoveEmptyEntries);
+                //Debug.Log("name:" + parts.Length + "|" + name);
+                if (parts.Length == 6)
+                {
+                    string newName = string.Format("{0}({1})({2}){3}", parts[0], parts[1], parts[2], parts[5]);
+                    Debug.Log("name:" + newName + "<->" + name);
+                    string assetPath = relativePath.Replace("\\", "/");
+                    AssetDatabase.DeleteAsset(assetPath);//重复的
+                }
+
+                ////Debug.Log(string.Format("CreateLODGroup ({0}/{1}) file :{2}", i, files.Length, filePath));
+                //GameObject subObj = AssetDatabase.LoadAssetAtPath<GameObject>(relativePath);
+                //if (subObj != null)
+                //{
+
+                //    modelObjects.Add(subObj);
+                //}
+            }
+        }
+
+        var time = DateTime.Now - start;
+
+        Debug.Log(string.Format("Rename 用时:{0}", time));
+    }
+
+    [MenuItem("SceneTools/Models/Rename")]
+    private static void Rename()
+    {
+        Debug.Log("Rename");
+        //1.获取全部的模型文件
+
+        //2.根据名称分组
+        //3.分组创建LODGroup
+        //4.生成预设
+
+
+        var dirObjs = GetDirObjs();
+        if (dirObjs.Count == 0)
+        {
+            Debug.Log("dirObjs.Count == 0");
+            return;//选中的没有文件夹
+        }
+        foreach (var dir in dirObjs)
+        {
+            //var dir = GetDirInfo(dirObj);
+            Rename(dir, false);
+        }
+        EditorHelper.RefreshAssets();
+    }
+
+    private static void Rename(DirectoryInfo dir, bool isTest)
+    {
+        var start = DateTime.Now;
+        Debug.Log("Rename Dir:" + dir);
+        FileInfo[] files = dir.GetFiles("*.*", SearchOption.AllDirectories); //搜索文件夹下面的所有文件
+
+        Regex regex = new Regex(".(3DS|3ds|fbx|FBX|prefab|Prefab)$"); //正则表达式，过滤后缀为.meta.cs.xml的文件
+
+        List<GameObject> modelObjects = new List<GameObject>();
+
+        for (int i = 0; i < files.Length; i++)
+        {
+            FileInfo file = files[i];
+            string filePath = file.FullName;
+
+            //Debug.Log("ChangeModel file:" + filePath);
+
+            string relativePath = "Assets\\" + filePath.Substring(Application.dataPath.Length + 1);
+
+            if (regex.IsMatch(relativePath))
+            {
+                string name = file.Name;
+                string[] parts = name.Split(new char[] { '(', ')' }, StringSplitOptions.RemoveEmptyEntries);
+                //Debug.Log("name:" + parts.Length + "|" + name);
+                if (parts.Length == 6)
+                {
+                    string newName = string.Format("{0}({1})({2}){3}", parts[0], parts[1], parts[2], parts[5]);
+                    Debug.Log("name:" + newName + "<->" + name);
+                    //string newPath = relativePath.Replace(name, newName);
+                    //Debug.Log("newPath:" + newPath + "<->" + relativePath);
+                    string assetPath = relativePath.Replace("\\", "/");
+                    //Debug.Log("assetPath:" + assetPath);
+                    //string assetPathNew = newPath.Replace("\\", "/");
+                    //Debug.Log("assetPathNew:" + assetPathNew);
+                    string r = AssetDatabase.RenameAsset(assetPath, newName);
+                    Debug.Log("r:" + r);
+                    if (r != "")
+                    {
+                        if (newName.Contains("_lod"))
+                        {
+                            break;
+                        }
+                        else
+                        {
+                            AssetDatabase.DeleteAsset(assetPath);//重复的
+
+                        }
+                    }
+                    //GameObject subObj = AssetDatabase.LoadAssetAtPath<GameObject>(relativePath);
+                    //Debug.Log("subObj:" + subObj);
+                    //string assetpath = AssetDatabase.GetAssetPath(subObj);
+                    //Debug.Log("assetpath:" + assetpath);
+                    //break;
+                }
+
+                ////Debug.Log(string.Format("CreateLODGroup ({0}/{1}) file :{2}", i, files.Length, filePath));
+                //GameObject subObj = AssetDatabase.LoadAssetAtPath<GameObject>(relativePath);
+                //if (subObj != null)
+                //{
+
+                //    modelObjects.Add(subObj);
+                //}
+            }
+        }
+
+        var time = DateTime.Now - start;
+
+        Debug.Log(string.Format("Rename 用时:{0}", time));
+    }
+
+    [MenuItem("SceneTools/Models/CreatePrefab")]
+    private static void CreatePrefab()
+    {
+        Debug.Log("CreatePrefab");
+        //1.获取全部的模型文件
+
+        //2.根据名称分组
+        //3.分组创建LODGroup
+        //4.生成预设
+
+
+        var dirObjs = GetDirObjs();
+        if (dirObjs.Count == 0)
+        {
+            Debug.Log("dirObjs.Count == 0");
+            return;//选中的没有文件夹
+        }
+        foreach (var dir in dirObjs)
+        {
+            //var dir = GetDirInfo(dirObj);
+            CreatePrefab(dir, false);
+        }
+        EditorHelper.RefreshAssets();
+    }
+
+    [MenuItem("SceneTools/Models/CreatePrefab(Test)")]
+    private static void CreatePrefabTest()
+    {
+        Debug.Log("CreatePrefab");
+        //1.获取全部的模型文件
+
+        //2.根据名称分组
+        //3.分组创建LODGroup
+        //4.生成预设
+
+        var dirObjs = GetDirObjs();
+        if (dirObjs.Count == 0)
+        {
+            Debug.Log("dirObjs.Count == 0");
+            return;//选中的没有文件夹
+        }
+        foreach (var dir in dirObjs)
+        {
+            //var dir = GetDirInfo(dirObj);
+            CreatePrefab(dir, true);
+        }
+        EditorHelper.RefreshAssets();
+    }
+
+    private static List<GameObject> GetGameObject(DirectoryInfo dir, string filter)
+    {
+        FileInfo[] files = dir.GetFiles("*.*", SearchOption.AllDirectories); //搜索文件夹下面的所有文件
+
+        Regex regex = new Regex(filter); //正则表达式，过滤后缀为.meta.cs.xml的文件
+
+        List<GameObject> modelObjects = new List<GameObject>();
+
+        for (int i = 0; i < files.Length; i++)
+        {
+            FileInfo file = files[i];
+            string filePath = file.FullName;
+
+            //Debug.Log("ChangeModel file:" + filePath);
+
+            int index = filePath.IndexOf(Application.dataPath);
+            string relativePath = filePath.Substring(Application.dataPath.Length + 1);
+            relativePath = "Assets\\" + relativePath;
+            if (regex.IsMatch(relativePath))
+            {
+                //Debug.Log(string.Format("CreateLODGroup ({0}/{1}) file :{2}", i, files.Length, filePath));
+                GameObject subObj = AssetDatabase.LoadAssetAtPath<GameObject>(relativePath);
+                if (subObj != null)
+                {
+
+                    modelObjects.Add(subObj);
+                }
+            }
+        }
+        return modelObjects;
+    }
+
+    private static void CreatePrefab(DirectoryInfo dir, bool isTest)
+    {
+        var start = DateTime.Now;
+        Debug.Log("CreatePrefab Dir:" + dir);
+        List<GameObject> modelObjects = GetGameObject(dir, ".(3DS|3ds|fbx|FBX)$");
+
+        Dictionary<string, List<GameObject>> groups = new Dictionary<string, List<GameObject>>();
+        foreach (GameObject obj in modelObjects)
+        {
+            string name = obj.name;
+            int id = name.LastIndexOf(')');
+            string groupName = name.Substring(0, id + 1);
+
+            List<GameObject> list = null;
+            if (!groups.ContainsKey(groupName))
+            {
+                list = new List<GameObject>();
+                groups.Add(groupName, list);
+            }
+            else
+            {
+                list = groups[groupName];
+            }
+
+            list.Add(obj);
+        }
+
+        GameObject root = new GameObject();
+        root.name = "PrefabRoot";
+
+        Material[] lodMaterials = Resources.LoadAll<Material>("Materials/LODs");
+
+        foreach (var groupKeyValue in groups)
+        {
+            string name = groupKeyValue.Key;
+            var list = groupKeyValue.Value;
+
+            for (int i = 0; i < list.Count; i++)
+            {
+                GameObject item = list[i];
+                GameObject model = GameObject.Instantiate(item);
+                model.transform.SetParent(root.transform);
+                model.transform.position = Vector3.zero;
+                model.name = item.name;
+
+                if (isTest)
+                {
+                    if (item.name.ToLower().Contains("_lod1"))
+                    {
+                        model.name = name + "(test)_lod1";
+                    }
+                    else if (item.name.ToLower().Contains("_lod2"))
+                    {
+                        model.name = name + "(test)_lod2";
+                    }
+                    else if (item.name.ToLower().Contains("_lod3"))
+                    {
+                        model.name = name + "(test)_lod3";
+                    }
+                    else
+                    {
+                        model.name = name + "(test)";
+                    }
+
+
+                    //model.name += "[test]";
+                    if (item.name.ToLower().Contains("_lod1"))
+                    {
+                        SetMaterial(model, lodMaterials[1]);
+                    }
+                    else if (item.name.ToLower().Contains("_lod2"))
+                    {
+                        SetMaterial(model, lodMaterials[2]);
+                    }
+                    else if (item.name.ToLower().Contains("_lod3"))
+                    {
+                        SetMaterial(model, lodMaterials[3]);
+                    }
+                    else
+                    {
+                        SetMaterial(model, lodMaterials[0]);
+                    }
+                }
+                SavePrefab(model, "UnitsPrefab");
+            }
+        }
+
+        var time = DateTime.Now - start;
+
+        Debug.Log(string.Format("CreatePrefab 用时:{0}", time));
+    }
+
+    private static void SetMaterial(GameObject obj, Material newMaterial)
+    {
+        Renderer[] renderers = obj.GetComponentsInChildren<Renderer>();
+        foreach (var renderer in renderers)
+        {
+            //for (int k = 0; k < renderer.sharedMaterials.Length; k++)
+            //{
+            //    renderer.sharedMaterials[k] = newMaterial;
+            //}
+            //没有效果
+
+            //for (int k = 0; k < renderer.materials.Length; k++)
+            //{
+            //    renderer.materials[k] = newMaterial;
+            //}
+            //没运行时 会报错，运行了 也没有效果
+
+            renderer.material = newMaterial;
+        }
+    }
+
+    private static void SavePrefab(GameObject obj, string dirName)
+    {
+        string dir = Application.dataPath + "/Resources/RvtScenes/" + currentModelSceneName + "/Models/" + dirName + "/";
+        if (Directory.Exists(dir) == false)
+        {
+            Directory.CreateDirectory(dir);
+        }
+        //Debug.LogError("dir:"+ dir);
+        string localPath = "Assets/Resources/RvtScenes/" + currentModelSceneName + "/Models/" + dirName + "/" + obj.name + ".prefab";
+        // Make sure the file name is unique, in case an existing Prefab has the same name.
+        //localPath = AssetDatabase.GenerateUniqueAssetPath(localPath); //自动重命名
+        // Create the new Prefab.
+        //string filePath = Application.dataPath + "/Resources/RvtScenes/滁州惠科中心/Models/" + dirName + "/" + obj.name + ".prefab";
+        //Debug.Log("filePath:" + filePath);
+        //if (File.Exists(filePath))
+        //{
+        //    File.Delete(filePath);//避免自动修改文件名
+        //}
+
+        PrefabUtility.SaveAsPrefabAssetAndConnect(obj, localPath, InteractionMode.UserAction);
+    }
+
+
+
+    [MenuItem("SceneTools/Models/CreateLODGroup")]
+    private static void CreateLODGroup()
+    {
+        Debug.Log("CreateLODGroup");
+        //1.获取全部的模型文件
+
+        //2.根据名称分组
+        //3.分组创建LODGroup
+        //4.生成预设
+
+
+        var dirObjs = GetDirObjs();
+        if (dirObjs.Count == 0)
+        {
+            Debug.Log("dirObjs.Count == 0");
+            return;//选中的没有文件夹
+        }
+        foreach (var dir in dirObjs)
+        {
+            //var dir = GetDirInfo(dirObj);
+            CreateLODGroup(dir, 4);
+
+        }
+        EditorHelper.RefreshAssets();
+    }
+
+    [MenuItem("SceneTools/Models/CreateLODGroup2")]
+    private static void CreateLODGroup2()
+    {
+        Debug.Log("CreateLODGroup2");
+        //1.获取全部的模型文件
+
+        //2.根据名称分组
+        //3.分组创建LODGroup
+        //4.生成预设
+
+
+        var dirObjs = GetDirObjs();
+        if (dirObjs.Count == 0)
+        {
+            Debug.Log("dirObjs.Count == 0");
+            return;//选中的没有文件夹
+        }
+        foreach (var dir in dirObjs)
+        {
+            //var dir = GetDirInfo(dirObj);
+            CreateLODGroup(dir, 3);
+        }
+        EditorHelper.RefreshAssets();
+    }
+
+    private static Renderer[] CreateAndGetRenderers(GameObject pre, GameObject parent)
+    {
+        Renderer[] renderers = new Renderer[1];
+        GameObject model = GameObject.Instantiate(pre);
+        model.transform.SetParent(parent.transform);
+        model.transform.position = Vector3.zero;
+        model.name = pre.name;
+        Renderer render = model.GetComponent<Renderer>();
+        //Debug.Log(string.Format("{0},{1}", i, render));
+        renderers[0] = render;
+        return renderers;
+    }
+
+    private static void CreateLODGroup(DirectoryInfo dir, int lodCount)
+    {
+        var start = DateTime.Now;
+        Debug.Log("CreateLODGroup Dir:" + dir);
+        List<GameObject> modelObjects = GetGameObject(dir, ".(3DS|3ds|fbx|FBX|prefab|Prefab)$");
+
+        Dictionary<string, List<GameObject>> groups = new Dictionary<string, List<GameObject>>();
+        foreach (GameObject obj in modelObjects)
+        {
+            string name = obj.name;
+            //if (!name.ToLower().Contains("lod"))
+            //{
+            //    continue;
+            //}
+            int id = name.LastIndexOf(')');
+
+            string groupName = name.Substring(0, id + 1);
+            List<GameObject> list = null;
+            if (!groups.ContainsKey(groupName))
+            {
+                list = new List<GameObject>();
+                groups.Add(groupName, list);
+            }
+            else
+            {
+                list = groups[groupName];
+            }
+            list.Add(obj);
+        }
+
+        GameObject root = new GameObject();
+        root.name = "LODRoot";
+
+        foreach (var groupKeyValue in groups)
+        {
+            string name = groupKeyValue.Key;
+            var list = groupKeyValue.Value;
+
+            Debug.Log("CreateLODGroup type name:" + name);
+
+            GameObject obj = new GameObject();
+            obj.name = name + "_lod";
+            obj.transform.SetParent(root.transform);
+            LODGroup lodGroup = obj.AddComponent<LODGroup>();
+
+            if (list.Count == 4)
+            {
+                LOD[] lods = new LOD[lodCount];
+
+                float[] lodHeightList = new float[] { 0.1f, 0.05f, 0.01f, 0.0001f };
+
+                if (lodCount == 3)
+                {
+                    lodHeightList = new float[] { 0.1f, 0.05f, 0.0001f };
+                    obj.name = name + "_lod_low";
+
+                    for (int i = 1, j = 0; i < list.Count; i++, j++)
+                    {
+                        var renderers = CreateAndGetRenderers(list[i], obj);
+
+                        LOD lod = new LOD(lodHeightList[j], renderers);
+                        lods[j] = lod;
+                    }
+                }
+                else
+                {
+                    for (int i = 0; i < list.Count; i++)
+                    {
+                        var renderers = CreateAndGetRenderers(list[i], obj);
+                        LOD lod = new LOD(lodHeightList[i], renderers);
+                        lods[i] = lod;
+                    }
+                }
+                lodGroup.SetLODs(lods);
+            }
+            if (list.Count == 3)
+            {
+                //lodCount--;
+                int newLodCount = lodCount - 1;////4->3 3->2
+
+                LOD[] lods = new LOD[newLodCount];
+
+                float[] lodHeightList = new float[] { 0.1f, 0.05f, 0.0001f };
+
+                if (newLodCount == 2)
+                {
+                    lodHeightList = new float[] { 0.1f, 0.0001f };
+                    obj.name = name + "_lod_low";
+
+                    for (int i = 1, j = 0; i < list.Count; i++, j++)
+                    {
+                        var renderers = CreateAndGetRenderers(list[i], obj);
+
+                        LOD lod = new LOD(lodHeightList[j], renderers);
+                        lods[j] = lod;
+                    }
+                }
+                else
+                {
+                    for (int i = 0; i < list.Count; i++)
+                    {
+                        var renderers = CreateAndGetRenderers(list[i], obj);
+                        LOD lod = new LOD(lodHeightList[i], renderers);
+                        lods[i] = lod;
+                    }
+                }
+                lodGroup.SetLODs(lods);
+            }
+
+
+
+
+            lodGroup.RecalculateBounds();
+
+            SavePrefab(obj, "UnitsLOD");
+        }
+
+        var time = DateTime.Now - start;
+
+        Debug.Log(string.Format("CreateLODGroup 用时:{0}", time));
+    }
+
+    [MenuItem("SceneTools/Models/GetModelInfo")]//清空AssetBunldeName
+    private static void GetChangeModelMenu()
+    {
+        Debug.Log("ChangeModelMenu");
+        var dirObjs = GetDirObjs();
+        if (dirObjs.Count == 0)
+        {
+            Debug.Log("dirObjs.Count == 0");
+            return;//选中的没有文件夹
+        }
+        foreach (var dir in dirObjs)
+        {
+            //var dir = GetDirInfo(dirObj);
+            FindModelInDir(dir, false, 0, false);
+        }
+        EditorHelper.RefreshAssets();
+    }
+    private static void SetChangeModelInner(bool isSet, int maxCount, bool isSetMat)
+    {
+        Debug.Log("ChangeModelMenu");
+        var dirObjs = GetDirObjs();
+        if (dirObjs.Count == 0)
+        {
+            Debug.Log("dirObjs.Count == 0");
+            return;//选中的没有文件夹
+        }
+        foreach (var dir in dirObjs)
+        {
+            //var dir = GetDirInfo(dirObj);
+            FindModelInDir(dir, isSet, maxCount, isSetMat);
+        }
+        EditorHelper.RefreshAssets();
+    }
+
+
+    [MenuItem("SceneTools/Models/ChangeModel(100)")]//清空AssetBunldeName
+    private static void SetChangeModel100()
+    {
+        SetChangeModelInner(true, 100, true);
+    }
+
+    [MenuItem("SceneTools/Models/ChangeModel(1000)")]//清空AssetBunldeName
+    private static void SetChangeModel1000()
+    {
+        SetChangeModelInner(true, 1000, true);
+    }
+
+    [MenuItem("SceneTools/Models/ChangeModel(All)")]
+    private static void SetChangeModelAll()
+    {
+        SetChangeModelInner(true, 0, true);
+    }
+
+    [MenuItem("SceneTools/Models/ChangeModel(Selection)")]
+    private static void SetChangeModelSelection()
+    {
+        SetChangeModelSelectionInner(true);
+    }
+
+    [MenuItem("SceneTools/Models/EnableReadWrite(100)")]//清空AssetBunldeName
+    private static void EnableReadWrite100()
+    {
+        SetChangeModelInner(true, 100, false);
+    }
+
+    [MenuItem("SceneTools/Models/EnableReadWrite(1000)")]//清空AssetBunldeName
+    private static void EnableReadWrite1000()
+    {
+        SetChangeModelInner(true, 1000, false);
+    }
+
+    [MenuItem("SceneTools/Models/EnableReadWrite(All)")]
+    private static void EnableReadWriteAll()
+    {
+        SetChangeModelInner(true, 0, false);
+    }
+
+    [MenuItem("SceneTools/Models/EnableReadWrite(Selection)")]
+    private static void EnableReadWriteSelection()
+    {
+        SetChangeModelSelectionInner(false);
+    }
+
+    private static void SetChangeModelSelectionInner(bool isSetMat)
+    {
+        var start = DateTime.Now;
+        Object[] selectedAssets = Selection.GetFiltered(typeof(Object), SelectionMode.Assets);
+        Debug.Log("selectedAssets:" + selectedAssets.Length + "|" + selectedAssets);
+
+        for (int i = 0; i < selectedAssets.Length; i++)
+        {
+            var assetObj = selectedAssets[i];
+            float progress = (float)i / selectedAssets.Length;
+            float percent = progress * 100;
+            if (EditorUtility.DisplayCancelableProgressBar("SetChangeModelSelection", $"{i}/{selectedAssets.Length} {percent}% of 100%", progress))
+            {
+
+                break;
+            }
+
+            string sPath = AssetDatabase.GetAssetPath(assetObj);
+            var atImporter = ModelImporter.GetAtPath(sPath);
+            if (atImporter == null)
+            {
+                Debug.LogError($"atImporter == null");
+            }
+            else if (atImporter is ModelImporter)
+            {
+                ModelImporter modelImporter = (ModelImporter)atImporter;
+
+                Debug.Log($"[{i}] {assetObj} \t{sPath} \t{modelImporter} \t{modelImporter.isReadable} \t{modelImporter.materialLocation}");
+
+                //if (modelImporter.isReadable == false || modelImporter.materialLocation == ModelImporterMaterialLocation.InPrefab)
+                //{
+                //    modelImporter.isReadable = true;
+                //    //importer.
+                //    if (isSetMat)
+                //    {
+                //        modelImporter.materialLocation = ModelImporterMaterialLocation.External;
+                //    }
+                //    AssetDatabase.ImportAsset(sPath);  //这句不加，面板上数字会变，但是实际大小不会变
+                //}
+                bool isChanged = false;
+                if (modelImporter.isReadable == false)
+                {
+                    modelImporter.isReadable = true;
+                    isChanged = true;
+                }
+                if (isSetMat)
+                {
+                    if (modelImporter.materialLocation == ModelImporterMaterialLocation.InPrefab)
+                    {
+                        modelImporter.materialLocation = ModelImporterMaterialLocation.External;
+                        isChanged = true;
+                    }
+                }
+                if (isChanged)
+                {
+                    AssetDatabase.ImportAsset(sPath);  //这句不加，面板上数字会变，但是实际大小不会变
+                }
+            }
+            else
+            {
+                Debug.LogError($"atImporter:{atImporter.GetType()} path:{sPath} obj:{assetObj}");
+            }
+
+        }
+        EditorUtility.ClearProgressBar();
+        Debug.Log($"SetChangeModelSelection {(DateTime.Now - start).ToString()}");
+    }
+
+    [MenuItem("SceneTools/Models/GPUI")]
+    private static void SetModelGPUI()
+    {
+        var start = DateTime.Now;
+        Object[] selectedAssets = Selection.GetFiltered(typeof(Object), SelectionMode.Assets);
+        Debug.Log("selectedAssets:" + selectedAssets.Length + "|" + selectedAssets);
+
+        for (int i = 0; i < selectedAssets.Length; i++)
+        {
+            var assetObj = selectedAssets[i];
+            float progress = (float)i / selectedAssets.Length;
+            float percent = progress * 100;
+            if (EditorUtility.DisplayCancelableProgressBar("SetChangeModelSelection", $"{i}/{selectedAssets.Length} {percent}% of 100%", progress))
+            {
+
+                break;
+            }
+
+            string sPath = AssetDatabase.GetAssetPath(assetObj);
+            ModelImporter importer = (ModelImporter)ModelImporter.GetAtPath(sPath);
+
+            Debug.Log($"[{i}] {assetObj} \t{sPath} \t{importer} \t{importer.isReadable} \t{importer.materialLocation}");
+
+            if (importer.isReadable == false || importer.materialLocation == ModelImporterMaterialLocation.InPrefab)
+            {
+                importer.isReadable = true;
+                //importer.
+                importer.materialLocation = ModelImporterMaterialLocation.External;
+                AssetDatabase.ImportAsset(sPath);  //这句不加，面板上数字会变，但是实际大小不会变
+            }
+        }
+        EditorUtility.ClearProgressBar();
+        Debug.Log($"SetChangeModelSelection {(DateTime.Now - start).ToString()}");
+    }
+
+    private static string currentModelSceneName = "XXXX";
+
+    /// <summary>
+    /// 获取选中文件夹
+    /// </summary>
+    /// <returns></returns>
+    private static List<DirectoryInfo> GetDirObjs()
+    {
+        currentModelSceneName = "XXXX";
+        Debug.Log("GetDirObjs");
+        Object[] selectedAssets = Selection.GetFiltered(typeof(Object), SelectionMode.Assets);
+        Debug.Log("selectedAssets:" + selectedAssets.Length + "|" + selectedAssets);
+        List<DirectoryInfo> dirObjs = new List<DirectoryInfo>();
+        foreach (Object obj in selectedAssets)
+        {
+            //Debug.Log("obj:" + obj);
+            string sourcePath = AssetDatabase.GetAssetPath(obj);
+            //Debug.Log("sourcePath:" + sourcePath);
+
+            if (Directory.Exists(sourcePath)) //判断是否是文件夹
+            {
+                //var dir = GetDirInfo(dirObj);
+                dirObjs.Add(new DirectoryInfo(sourcePath));
+                Debug.Log("add Dir1:" + sourcePath);
+            }
+        }
+        if (dirObjs.Count == 0)//选中的是文件(模型)
+        {
+            foreach (Object obj in selectedAssets)
+            {
+                //Debug.Log("obj:" + obj);
+                string sourcePath = AssetDatabase.GetAssetPath(obj);
+                //Debug.Log("sourcePath:" + sourcePath);
+
+                if (File.Exists(sourcePath)) //判断是否是文件夹
+                {
+                    FileInfo fi = new FileInfo(sourcePath);
+                    if (!dirObjs.Contains(fi.Directory))
+                    {
+                        dirObjs.Add(fi.Directory);
+
+                        Debug.Log("add Dir2:" + fi.Directory);
+                    }
+
+                    if (fi.Directory.Name == "Units")
+                    {
+                        currentModelSceneName = fi.Directory.Parent.Parent.Name;
+                    }
+
+                }
+            }
+        }
+        return dirObjs;
+    }
+    /// <summary>
+    /// 设置文件夹Asset名称
+    /// </summary>
+    /// <param name="dir"></param>
+    private static void FindModelInDir(DirectoryInfo dir, bool isSet, int maxCount, bool isSetMat)
+    {
+        Debug.Log(string.Format("SetDirAssetName:{0}", dir.FullName));
+        DirectoryInfo[] subDirs = dir.GetDirectories();
+        //if (subDirs.Length == 1 && subDirs[0].Name == "Materials")
+        //{
+        //    ChangeModel(dir);
+        //}
+        //else
+        //{
+        ChangeModel(dir, isSet, maxCount, isSetMat);
+        //foreach (DirectoryInfo subDir in subDirs)
+        //{
+        //    FindModelInDir(subDir);
+        //}
+        //}
+    }
+    /// <summary>
+    /// 获取文件夹信息
+    /// </summary>
+    /// <param name="dirObj"></param>
+    /// <returns></returns>
+    private static DirectoryInfo GetDirInfo(Object dirObj)
+    {
+        string sourcePath = AssetDatabase.GetAssetPath(dirObj);
+        DirectoryInfo dir = new DirectoryInfo(sourcePath); //获取文件夹
+        return dir;
+    }
+
+    private static void ChangeModel(DirectoryInfo dir, bool isSetMatAndReadWrite, int maxCount, bool isSetMat)
+    {
+        var start = DateTime.Now;
+        Debug.Log("ChangeModel Dir:" + dir);
+        FileInfo[] files = dir.GetFiles("*.*", SearchOption.AllDirectories); //搜索文件夹下面的所有文件
+
+        List<Object> subObjects = new List<Object>();
+        Regex regex = new Regex(".(3DS|3ds|fbx|FBX|prefab|Prefab)$"); //正则表达式，过滤后缀为.meta.cs.xml的文件
+
+        List<ModelImporter> models = new List<ModelImporter>();
+        List<string> pathList = new List<string>();
+        for (int i = 0; i < files.Length; i++)
+        {
+            FileInfo file = files[i];
+            string filePath = file.FullName;
+
+            //Debug.Log("ChangeModel file:" + filePath);
+
+            int index = filePath.IndexOf(Application.dataPath);
+            string relativePath = filePath.Substring(Application.dataPath.Length + 1);
+            relativePath = "Assets\\" + relativePath;
+            if (regex.IsMatch(relativePath))
+            {
+                Debug.Log(string.Format("GetModelInfo ({0}/{1}) file :{2}", i, files.Length, filePath));
+                Object subObj = AssetDatabase.LoadAssetAtPath<Object>(relativePath);
+                string sPath = AssetDatabase.GetAssetPath(subObj);
+                ModelImporter importer = ModelImporter.GetAtPath(sPath) as ModelImporter;
+                if (importer != null)
+                {
+                    //if (importer.globalScale == 0.1f) importer.globalScale = 0.7f;
+                    //else if (importer.globalScale == 0.3f) importer.globalScale = 3.3f;
+                    if (importer.isReadable == false || importer.materialLocation == ModelImporterMaterialLocation.InPrefab)
+                    {
+                        models.Add(importer);
+                        pathList.Add(sPath);
+
+                        //importer.isReadable = true;
+                        ////importer.
+                        //importer.materialLocation = ModelImporterMaterialLocation.External;
+                        //AssetDatabase.ImportAsset(sPath);  //这句不加，面板上数字会变，但是实际大小不会变
+                    }
+                }
+                else
+                {
+
+                }
+
+                //MeshImporter.
+            }
+        }
+
+        Debug.Log(string.Format("models:{0}", models.Count));
+        if (isSetMatAndReadWrite)
+        {
+            for (int i = 0; i < models.Count; i++)
+            {
+                if (maxCount > 0 && i <= maxCount) break;
+                var importer = models[i];
+                var sPath = pathList[i];
+                Debug.Log(string.Format("SetModelInfo({0}/{1}) file :{2}", i, files.Length, sPath));
+
+                importer.isReadable = true;
+                //importer.
+                if (isSetMat)
+                {
+                    importer.materialLocation = ModelImporterMaterialLocation.External;
+                }
+                AssetDatabase.ImportAsset(sPath);  //这句不加，面板上数字会变，但是实际大小不会变
+            }
+        }
+
+        var time = DateTime.Now - start;
+
+        Debug.Log(string.Format("ChangeModel 用时:{0}", time));
+    }
+
+    [MenuItem("SceneTools/Models/LoadModels")]//清空AssetBunldeName
+    private static void LoadModels()
+    {
+        Debug.Log("LoadModels");
+        var dirObjs = GetDirObjs();
+        if (dirObjs.Count == 0)
+        {
+            Debug.Log("dirObjs.Count == 0");
+            return;//选中的没有文件夹
+        }
+        foreach (var dir in dirObjs)
+        {
+            ////var dir = GetDirInfo(dirObj);
+            //FindModelInDir(dir);
+
+
+        }
+
     }
     #endregion
 }

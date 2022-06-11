@@ -1,4 +1,5 @@
 using CodeStage.AdvancedFPSCounter.Editor.UI;
+using GPUInstancer;
 using System;
 using System.Collections;
 using System.Collections.Generic;
@@ -17,6 +18,12 @@ public class InnerMeshNodeEditor : BaseFoldoutEditor<InnerMeshNode>
 
     private int rendererCount = 0;
 
+    private int gpuiCount = 0;
+
+    private int gpuiVertexCount = 0;
+
+    private SharedMeshInfoList gpuiSharedMeshes;
+
     public override void OnEnable()
     {
         base.OnEnable();
@@ -24,34 +31,77 @@ public class InnerMeshNodeEditor : BaseFoldoutEditor<InnerMeshNode>
         sharedMeshListArg = new FoldoutEditorArg(true, false, true, true, true);
         sharedMeshListArg.tag = targetT.sharedMeshInfos;
         assetPathListArg = new FoldoutEditorArg(true, true, true, true, true);
-        rendererCount = targetT.gameObject.GetComponentsInChildren<MeshRenderer>(true).Length;
+        
     }
 
     public override void OnToolLayout(InnerMeshNode item)
     {
         base.OnToolLayout(item);
 
+        string gupiInfo = "";
+        if (gpuiCount > 0)
+        {
+            gupiInfo = $" [gpui renderers:{gpuiCount} vertex:{MeshHelper.GetVertexCountS(gpuiVertexCount)} ({gpuiSharedMeshes})]";
+        }
         if (item.meshData.vertexCount > 0)
         {
-            GUILayout.Label($"vertex:{MeshHelper.GetVertexCountS(item.VertexCount)}({MeshHelper.GetVertexCountS(item.meshData.vertexCount)}|{item.meshData.vertexCount / (float)item.VertexCount:P1}),renderers:{rendererCount}({item.sharedMeshInfos})");
+            GUILayout.Label($"vertex:{MeshHelper.GetVertexCountS(item.VertexCount)}({MeshHelper.GetVertexCountS(item.meshData.vertexCount)}|{item.meshData.vertexCount / (float)item.VertexCount:P1}),renderers:{rendererCount}({item.sharedMeshInfos}){gupiInfo}");
         }
         else
         {
-            GUILayout.Label($"vertex:{MeshHelper.GetVertexCountS(item.VertexCount)},renderers:{rendererCount}({item.sharedMeshInfos})");
+            GUILayout.Label($"vertex:{MeshHelper.GetVertexCountS(item.VertexCount)},renderers:{rendererCount}({item.sharedMeshInfos}){gupiInfo}");
         }
 
         EditorGUILayout.BeginHorizontal();
         GUILayout.Label("IncludeInactive", GUILayout.Width(100));
         item.isIncludeInactive = GUILayout.Toggle(item.isIncludeInactive, "", GUILayout.Width(30));
+        GUILayout.Label("IncludeGPUI", GUILayout.Width(100));
+        MeshNodeSetting.Instance.isIncludeGPUI = GUILayout.Toggle(MeshNodeSetting.Instance.isIncludeGPUI, "", GUILayout.Width(30));
         if (GUILayout.Button("UpdateList"))
         {
+            var meshFilters = targetT.gameObject.GetComponentsInChildren<MeshFilter>(item.isIncludeInactive);
+            var gpuis = meshFilters.ToList().FindAll(i => i.GetComponent<GPUInstancerPrefab>() != null);
+            gpuiVertexCount = 0;
+            for (int i = 0; i < gpuis.Count; i++)
+            {
+                MeshFilter gpui = gpuis[i];
+                MeshFilter mf = gpui.GetComponent<MeshFilter>();
+                if (mf.sharedMesh != null)
+                {
+                    gpuiVertexCount += mf.sharedMesh.vertexCount;
+                }
+                else
+                {
+                    Debug.LogError($"UpdateList[{i}/{gpuis.Count}] name:{gpui.name}");
+                }
+            }
+
+            gpuiSharedMeshes = new SharedMeshInfoList(gpuis);
+
+            gpuiCount = gpuis.Count;
+            rendererCount = meshFilters.Length;
+
+            if (MeshNodeSetting.Instance.isIncludeGPUI == false)
+            {
+                rendererCount = meshFilters.Length - gpuis.Count;
+            }
+            else
+            {
+                
+            }
+
             InnerMeshNode.InitInnerNodes(item.gameObject);
             sharedMeshListArg.tag = item.GetSharedMeshList();
         }
-        //if (GUILayout.Button("GetAssets"))
-        //{
-        //    item.GetAssetPaths();
-        //}
+        if (GUILayout.Button("Destroy"))
+        {
+            TransformHelper.ClearComponents<InnerMeshNode>(item.gameObject);
+            TransformHelper.ClearComponents<MeshRendererInfo>(item.gameObject);
+        }
+            //if (GUILayout.Button("GetAssets"))
+            //{
+            //    item.GetAssetPaths();
+            //}
         EditorGUILayout.EndHorizontal();
 
 
@@ -242,7 +292,7 @@ public class InnerMeshNodeEditor : BaseFoldoutEditor<InnerMeshNode>
                     var arg = editorArgs[node];
                     arg.sortType = listArg.sortType;
                     arg.isFoldout = node.GetMeshNodes().Count > 0;
-                    arg.caption = $"[{i:00}] {node.GetName()} ({node.GetMeshNodes().Count})";
+                    arg.caption = $"[{i:00}] {node.GetName()}{node.GetCountInfo()}";
                     arg.isEnabled = true;
                     arg.info = node.GetItemInfo(item.VertexCount);
                     if (level == 0)

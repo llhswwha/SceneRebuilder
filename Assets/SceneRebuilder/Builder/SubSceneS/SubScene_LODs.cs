@@ -4,6 +4,23 @@ using UnityEngine;
 
 public class SubScene_LODs : SubScene_Part
 {
+    //internal override void HideObjects()
+    //{
+    //    if (IsVisible == false) return;
+    //    IsVisible = false;
+    //    //if (gos != null)
+    //    //    foreach (var go in gos)
+    //    //    {
+    //    //        if (go == null) continue;
+    //    //        SubScene_Base scene = go.GetComponent<SubScene_Base>();
+    //    //        if (scene != null)
+    //    //        {
+    //    //            continue;
+    //    //        }
+    //    //        go.SetActive(false);
+    //    //    }
+    //}
+
     [ContextMenu("CreateAreaTree")]
     public AreaTreeNode CreateAreaTree()
     {

@@ -32,7 +32,7 @@ public class BuildingModelToolEditor : BaseEditor<BuildingModelTool>
     public override void OnToolLayout(BuildingModelTool item)
     {
         base.OnToolLayout(item);
-
+        GUILayout.BeginHorizontal();
         if (GUILayout.Button("SetDoorSetting", contentStyle))
         {
             item.SetDoorSetting();
@@ -45,5 +45,21 @@ public class BuildingModelToolEditor : BaseEditor<BuildingModelTool>
         {
             item.RemoveEmptyObjects();
         }
+        GUILayout.EndHorizontal();
+
+        GUILayout.BeginHorizontal();
+        if (GUILayout.Button("FindDoorsInBounds95", contentStyle))
+        {
+            item.FindDoorsInBounds95();
+        }
+        if (GUILayout.Button("FindDoorsInBounds90", contentStyle))
+        {
+            item.FindDoorsInBounds90();
+        }
+        if (GUILayout.Button("FindDoorsInBounds85", contentStyle))
+        {
+            item.FindDoorsInBounds85();
+        }
+        GUILayout.EndHorizontal();
     }
 }

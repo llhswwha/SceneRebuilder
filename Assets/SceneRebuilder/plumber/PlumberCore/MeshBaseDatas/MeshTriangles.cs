@@ -67,7 +67,7 @@ public class MeshTriangles
 
             //Debug.Log($"ShowTriangles[{i + 1}/{meshTriangles.Count}] trialge:{t}");
             GameObject sharedPoints1Obj = CreateSubTestObj($"trialge[{i+1}]:{t}", tsRoot.transform);
-            t.ShowTriangle(tsRoot.transform, sharedPoints1Obj.transform, pointScale);
+            t.ShowTriangle(tsRoot.transform, sharedPoints1Obj.transform, pointScale, i);
         }
     }
 
@@ -121,6 +121,74 @@ public class MeshTriangles
         MeshTriangles meshTriangles = new MeshTriangles(mesh);
         Debug.Log($"GetElbowInfo mesh vertexCount:{mesh.vertexCount} triangles:{mesh.triangles.Length}");
         meshTriangles.ShowTriangles(target.transform, PointScale);
+        meshTriangles.Dispose();
+    }
+
+    public static void DebugShowSharedPointsById(Transform target, float PointScale)
+    {
+        Mesh mesh = target.GetComponent<MeshFilter>().sharedMesh;
+        MeshTriangles meshTriangles = new MeshTriangles(mesh);
+
+        Debug.Log($"DebugShowSharedPointsById mesh vertexCount:{mesh.vertexCount} triangles:{mesh.triangles.Length}");
+        //meshTriangles.ShowSharedPointsById(this.transform, PointScale, 10);
+
+        //meshTriangles.ShowSharedPointsByIdEx(this.transform, PointScale, 15,int.MaxValue, minRepeatPointDistance);
+        //meshTriangles.ShowSharedPointsByIdEx(this.transform, PointScale, 0, int.MaxValue, minRepeatPointDistance);
+        //meshTriangles.ShowSharedPointsByIdEx(this.transform, PointScale, 0,3, minRepeatPointDistance);
+
+        meshTriangles.ShowCirclesById(target, PointScale, 0, 3, minRepeatPointDistance);
+        //meshTriangles.ShowSharedPointsByPoint(this.transform, PointScale, 10);
+        //meshTriangles.ShowSharedPointsByPointExEx(this.transform, PointScale, sharedMinCount, minRepeatPointDistance);
+        meshTriangles.Dispose();
+    }
+
+    public static void DebugShowSplitedParts(Transform target, float PointScale,int maxCount)
+    {
+        Mesh mesh = target.GetComponent<MeshFilter>().sharedMesh;
+        MeshTriangles meshTriangles = new MeshTriangles(mesh);
+
+        Debug.Log($"DebugShowSplitedParts mesh vertexCount:{mesh.vertexCount} triangles:{mesh.triangles.Length}");
+        //meshTriangles.ShowSharedPointsByPoint(target, PointScale, 0);
+        //meshTriangles.ShowSharedPointsByPointEx(target, PointScale, 0, minRepeatPointDistance, "DebugShowSharedPointsByPoint");
+        meshTriangles.DebugShowSplitedPartsInner(target, PointScale, maxCount);
+        meshTriangles.Dispose();
+    }
+
+    public static List<MeshTriangleList> GetSplitedParts(Transform target, int maxCount, ProgressArg p0 = null)
+    {
+        Mesh mesh = target.GetComponent<MeshFilter>().sharedMesh;
+        MeshTriangles meshTriangles = new MeshTriangles(mesh);
+
+        Debug.Log($"DebugShowSplitedParts mesh vertexCount:{mesh.vertexCount} triangles:{mesh.triangles.Length}");
+        //meshTriangles.ShowSharedPointsByPoint(target, PointScale, 0);
+        //meshTriangles.ShowSharedPointsByPointEx(target, PointScale, 0, minRepeatPointDistance, "DebugShowSharedPointsByPoint");
+        List<MeshTriangleList> list = meshTriangles.GetSplitedPartsByPoint(maxCount, p0);
+        meshTriangles.Dispose();
+        return list;
+    }
+
+    public static List<MeshTriangleList> GetSplitedPartJobs(Transform target, int maxCount, ProgressArg p0 = null)
+    {
+        Mesh mesh = target.GetComponent<MeshFilter>().sharedMesh;
+        MeshTriangles meshTriangles = new MeshTriangles(mesh);
+
+        Debug.Log($"DebugShowSplitedParts mesh vertexCount:{mesh.vertexCount} triangles:{mesh.triangles.Length}");
+        //meshTriangles.ShowSharedPointsByPoint(target, PointScale, 0);
+        //meshTriangles.ShowSharedPointsByPointEx(target, PointScale, 0, minRepeatPointDistance, "DebugShowSharedPointsByPoint");
+        List<MeshTriangleList> list = meshTriangles.GetSplitedPartsByPoint(maxCount, p0);
+        meshTriangles.Dispose();
+        return list;
+    }
+
+    public static void DebugShowSharedPointsByPoint(Transform target, float PointScale)
+    {
+        Mesh mesh = target.GetComponent<MeshFilter>().sharedMesh;
+        MeshTriangles meshTriangles = new MeshTriangles(mesh);
+
+        Debug.Log($"DebugShowSharedPointsByPoint mesh vertexCount:{mesh.vertexCount} triangles:{mesh.triangles.Length}");
+        //meshTriangles.ShowSharedPointsByPoint(target, PointScale, 0);
+        //meshTriangles.ShowSharedPointsByPointEx(target, PointScale, 0, minRepeatPointDistance, "DebugShowSharedPointsByPoint");
+        meshTriangles.ShowSharedPointsByPointExEx(target, PointScale, 0, minRepeatPointDistance);
         meshTriangles.Dispose();
     }
 
@@ -412,8 +480,7 @@ public class MeshTriangles
             for (int i1 = 0; i1 < triangles.Count; i1++)
             {
                 MeshTriangle t = triangles[i1];
-                GameObject objTriangle = t.ShowTriangle(root, trianglesObj2.transform, pointScale);
-                objTriangle.name = $"triangle[{i1 + 1}]";
+                GameObject objTriangle = t.ShowTriangle(root, trianglesObj2.transform, pointScale,i1);
             }
 
             PointHelper.ShowLocalPoint(point, pointScale * 2, root, trianglesObj2.transform);
@@ -461,6 +528,170 @@ public class MeshTriangles
             } 
         }
         return pointLines;
+    }
+
+    public List<MeshTriangleList> GetSplitedPartsById()
+    {
+        List<MeshTriangleList> triangleList = new List<MeshTriangleList>();
+        for (int i = 0; i < Triangles.Count; i++)
+        {
+            MeshTriangle t1 = Triangles[i];
+            //var ps = t1.GetPoints();
+            //foreach (var p in ps)
+            //{
+            //    //sharedPoints.AddItem(p.Id, t1);
+            //}
+            bool isContains = false;
+            foreach(var item in triangleList)
+            {
+                if(item.ContainsTriangleByPointId(t1))
+                {
+                    item.Add(t1);
+                    isContains = true;
+                    break;
+                }
+            }
+            if (isContains==false)
+            {
+                MeshTriangleList newList = new MeshTriangleList();
+                newList.Add(t1);
+                triangleList.Add(newList);
+            }
+        }
+        return triangleList;
+    }
+
+    public List<MeshTriangleList> GetSplitedPartsByPoint(int maxCount=0, ProgressArg p0=null,bool isShowProgress=true)
+    {
+        DateTime start = DateTime.Now;
+        List<MeshTriangleList> splitedParts = new List<MeshTriangleList>();
+        for (int i = 0; i < Triangles.Count; i++)
+        {
+            MeshTriangle currentT = Triangles[i];
+            var mps = currentT.GetPoints();
+            ProgressArg p1 = new ProgressArg("Split", i, Triangles.Count);
+            //if (ProgressBarHelper.DisplayCancelableProgressBar(p1))
+            //{
+            //    break;
+            //}
+            bool isBreak = false;
+            //bool isContains = false;
+            List<MeshTriangleList> containsTriangles = new List<MeshTriangleList>();
+            for (int i1 = 0; i1 < splitedParts.Count; i1++)
+            {
+                MeshTriangleList splitPart = splitedParts[i1];
+                //var mps = item.GetMeshPoints(true);
+                //var ps = item.GetPoints(true);
+                if (isShowProgress)
+                {
+                    ProgressArg p2 = new ProgressArg("Contains", i1, splitedParts.Count);
+                    p1.AddSubProgress(p2);
+                    if (p0 != null)
+                    {
+                        p0.AddSubProgress(p1);
+                        if (ProgressBarHelper.DisplayCancelableProgressBar(p0))
+                        {
+                            isBreak = true;
+                            break;
+                        }
+                    }
+                    else
+                    {
+                        //p0 = p1;
+                        if (ProgressBarHelper.DisplayCancelableProgressBar(p1))
+                        {
+                            isBreak = true;
+                            break;
+                        }
+                    }
+                }
+
+                //if (ProgressBarHelper.DisplayCancelableProgressBar(p0))
+                //{
+                //    isBreak = true;
+                //    break;
+                //}
+                string tag = "GetSplitedPartsByPoint";
+                //tag = $"[{i + 1}/{Triangles.Count},{i1 + 2}/{splitedParts.Count}]";
+                if (splitPart.ContainsTriangleByPointPos(mps, tag))
+                {
+                    //item.Add(currentT);
+                    //isContains = true;
+                    //break;
+                    containsTriangles.Add(splitPart);
+                }
+            }
+            if (isBreak)
+            {
+                break;
+            }
+            if (containsTriangles.Count==0)
+            {
+                MeshTriangleList newPart = new MeshTriangleList();
+                newPart.Add(currentT);
+                splitedParts.Add(newPart);
+            }
+            else if (containsTriangles.Count == 1)
+            {
+                containsTriangles[0].Add(currentT);
+            }
+            else //>1
+            {
+                Debug.LogError($"GetSplitedPartsByPoint Count:{containsTriangles.Count}");
+                var firstT = containsTriangles[0];
+                firstT.Add(currentT);
+                for (int j = 1; j < containsTriangles.Count; j++)
+                {
+                    MeshTriangleList otherT = containsTriangles[j];
+                    firstT.AddRange(otherT);
+                    splitedParts.Remove(otherT);
+                }
+            }
+            if (maxCount>0 && splitedParts.Count > maxCount)
+            {
+                break;
+            }
+        }
+        if (isShowProgress)
+        {
+            ProgressBarHelper.ClearProgressBar();
+        }
+        Debug.LogError($"GetSplitedPartsByPoint time:{DateTime.Now -start} Triangles:{Triangles.Count} triangleList:{splitedParts.Count}");
+        return splitedParts;
+    }
+
+    public List<MeshTriangleList> DebugShowSplitedPartsInner(Transform root, float pointScale, int maxCount)
+    {
+        //List<MeshTriangleList> list = this.GetSplitedPartsById();
+        List<MeshTriangleList> list = this.GetSplitedPartsByPoint(maxCount);
+        GameObject sharedPoints1Obj = CreateSubTestObj($"SplitedParts[{list.Count}]", root);
+        int count = 0;
+        //sharedPoints1.Sort((a, b) => { return b.TriangleCount.CompareTo(a.TriangleCount); });
+        for (int i = 0; i < list.Count; i++)
+        {
+            MeshTriangleList triangles = list[i];
+            //if (triangles.Count < minCount || triangles.Count > maxCount) continue;
+            count++;
+
+            List<Vector3> ps = triangles.GetPoints(true);
+            GameObject trianglesObj = CreateSubTestObj($"Parts[{i+1}]_Triangles({triangles.Count})", sharedPoints1Obj.transform);
+            for (int i1 = 0; i1 < triangles.Count; i1++)
+            {
+                MeshTriangle triangle = triangles[i1];
+                triangle.ShowTriangle(sharedPoints1Obj.transform, trianglesObj.transform, pointScale,i1);
+            }
+
+            //var ps = triangles.GetPoints();
+            GameObject psObj = CreateSubTestObj($"Parts[{i + 1}]_Points({ps.Count})", sharedPoints1Obj.transform);
+            for (int i1 = 0; i1 < ps.Count; i1++)
+            {
+                var p = ps[i1];
+                PointHelper.ShowLocalPoint(p, pointScale, root, psObj.transform).name = $"Point[{i1}]({p.Vector3ToString()})";
+            }
+        }
+
+        Debug.Log($"DebugShowSplitedParts list:{list.Count} vertexCount:{mesh.vertexCount} triangles:{mesh.triangles.Length}");
+        return list;
     }
 
     public void ShowSharedPointsByPointExEx(Transform root, float pointScale, int minCount,float minDis)
@@ -625,8 +856,7 @@ public class MeshTriangles
             for (int i1 = 0; i1 < triangles.Count; i1++)
             {
                 MeshTriangle t = triangles[i1];
-                GameObject objTriangle = t.ShowTriangle(root, trianglesObj.transform, pointScale);
-                objTriangle.name = $"triangle[{i1 + 1}]";
+                GameObject objTriangle = t.ShowTriangle(root, trianglesObj.transform, pointScale,i1);
             }
             Vector3 point = mesh.vertices[pointId];
             PointHelper.ShowLocalPoint(point, pointScale * 2, root, trianglesObj.transform);
@@ -756,27 +986,29 @@ public class MeshTriangles
             count++;
             ShowSharedMeshTrianglesList(root, pointScale, sharedPoints1Obj, count, plane, triangles, isShowCenter);
         }
+        //var ps = sharedPoints1.GetAllPoints();
         sharedPoints1Obj.name = $"sharedPoints(Id)_({minCount}_{maxCount}):{count}";
     }
 
-    private void ShowSharedMeshTrianglesList(Transform root, float pointScale, GameObject sharedPoints1Obj, int id, SharedMeshTriangles plane, MeshTriangleList triangles,bool isShowCenter)
+    private void ShowSharedMeshTrianglesList(Transform root, float pointScale, GameObject sharedPoints1Obj, int id, SharedMeshTriangles sharedTriangles, MeshTriangleList triangles,bool isShowCenter)
     {
-        int pointId = plane.PointId;
+        int pointId = sharedTriangles.PointId;
+        var ps = sharedTriangles.GetPoints();
         //Debug.Log($"GetElbowInfo sharedPoints1[{i + 1}/{sharedPoints1.Count}] point:{pointId} trianlges:{triangles.Count}");
-        GameObject trianglesObj = CreateSubTestObj($"triangles[{id}][id:{pointId}]({triangles.Count})_[{plane.MinRadius},{plane.Radius}]_{plane.IsCircle}_{plane.CircleCheckP}_{plane.Normal.Vector3ToString()}", sharedPoints1Obj.transform);
+        GameObject trianglesObj = CreateSubTestObj($"triangles[{id}][id:{pointId}]({triangles.Count}_{ps.Count})_[{sharedTriangles.MinRadius},{sharedTriangles.Radius}]_{sharedTriangles.IsCircle}_{sharedTriangles.CircleCheckP}_{sharedTriangles.Normal.Vector3ToString()}", sharedPoints1Obj.transform);
         SharedMeshTrianglesComponent triangleComponent=trianglesObj.AddComponent<SharedMeshTrianglesComponent>();
-        triangleComponent.SetData(plane);
+        triangleComponent.SetData(sharedTriangles);
 
         for (int i1 = 0; i1 < triangles.Count; i1++)
         {
             MeshTriangle t = triangles[i1];
-            GameObject objTriangle = t.ShowTriangle(root, trianglesObj.transform, pointScale);
+            GameObject objTriangle = t.ShowTriangle(root, trianglesObj.transform, pointScale,i1);
             objTriangle.name = $"triangle[{i1 + 1}]({t.GetId()})";
         }
         Vector3 point = mesh.vertices[pointId];
-        PointHelper.ShowLocalPoint(plane.Point, pointScale * 2, root, trianglesObj.transform).name = "Point";
+        PointHelper.ShowLocalPoint(sharedTriangles.Point, pointScale * 2, root, trianglesObj.transform).name = "Point";
         if(isShowCenter)
-            PointHelper.ShowLocalPoint(plane.Center, pointScale * 2, root, trianglesObj.transform).name = "Center";
+            PointHelper.ShowLocalPoint(sharedTriangles.Center, pointScale * 2, root, trianglesObj.transform).name = "Center";
     }
 
     public void ShowSharedPointsByPointEx(Transform root, float pointScale, int minCount, float minDis,string tag)
@@ -802,8 +1034,7 @@ public class MeshTriangles
             for (int i1 = 0; i1 < triangles.Count; i1++)
             {
                 MeshTriangle t = triangles[i1];
-                GameObject objTriangle = t.ShowTriangle(root, trianglesObj.transform, pointScale);
-                objTriangle.name = $"triangle[{i1 + 1}]";
+                GameObject objTriangle = t.ShowTriangle(root, trianglesObj.transform, pointScale,i1);
             }
 
             var ps = triangles.GetPoints();

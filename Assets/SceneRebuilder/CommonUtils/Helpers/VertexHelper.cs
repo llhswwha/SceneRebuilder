@@ -1,3 +1,4 @@
+using CommonExtension;
 using System;
 using System.Collections;
 using System.Collections.Generic;
@@ -255,11 +256,22 @@ namespace CommonUtils
             return go;
         }
 
+
+
         public static GameObject ShowVertexes(Vector3[] vs, float scale, string name)
         {
             GameObject go = new GameObject(name);
             ShowVertexes(vs, scale, go.transform);
             return go;
+        }
+
+        public static List<GameObject> ShowVertexes(Transform target,float pScale)
+        {
+            MeshFilter mf = target.GetComponent<MeshFilter>();
+            var vs = mf.sharedMesh.vertices;
+            var vs2 = VertexHelper.GetWorldVertexes(vs, target);
+            var gos = VertexHelper.ShowVertexes(vs2, pScale, target);
+            return gos;
         }
 
         public static List<GameObject> ShowVertexes(Vector3[] vs, float scale, Transform parent)
@@ -288,6 +300,12 @@ namespace CommonUtils
             {
                 GameObject.DestroyImmediate(child.gameObject);
             }
+        }
+
+        public static Vector3 GetCenter(GameObject go)
+        {
+            MeshFilter[] meshFilters = go.GetComponentsInChildren<MeshFilter>(true);
+            return GetMinMax(meshFilters)[3];
         }
 
         public static Vector3[] GetMinMax(GameObject go)
@@ -730,6 +748,51 @@ namespace CommonUtils
             InvokeGetVertexDistanceExCount++;
 
             return dis;
+        }
+
+        public static GameObject CopyGameObjectMesh(MeshFilter mf)
+        {
+            Vector3 center = VertexHelper.GetCenter(mf.gameObject);
+
+            MeshRenderer oldRender = mf.GetComponent<MeshRenderer>();
+            GameObject newGo = new GameObject(mf.name + "_NewMesh");
+            newGo.transform.position = center;
+            MeshFilter newMf = newGo.AddMissingComponent<MeshFilter>();
+            MeshRenderer newRender = newGo.AddMissingComponent<MeshRenderer>();
+            newRender.sharedMaterial = oldRender.sharedMaterial;
+            newMf.sharedMesh = VertexHelper.CopyMesh(mf);
+            newMf.sharedMesh.name = mf.name;
+            newGo.transform.SetParent(mf.transform.parent);
+            return newGo;
+        }
+
+        public static Mesh CopyMesh(MeshFilter mf)
+        {
+            Vector3 center = VertexHelper.GetCenter(mf.gameObject);
+            var sharedMesh = mf.sharedMesh;
+            Vector3[] worldVertexes = VertexHelper.GetWorldVertexes(mf);
+            for (int i = 0; i < worldVertexes.Length; i++)
+            {
+                worldVertexes[i] = worldVertexes[i] - center;
+            }
+            Mesh mesh = new Mesh();
+            mesh.vertices = worldVertexes;
+            mesh.triangles = sharedMesh.triangles;
+
+            //mesh.normals = sharedMesh.normals;
+            //mesh.uv = sharedMesh.uv;
+            //mesh.indexFormat = sharedMesh.indexFormat;
+            //mesh.tangents = sharedMesh.tangents;
+
+            mesh.RecalculateNormals();
+            mesh.RecalculateBounds();
+
+            mesh.name = sharedMesh.name + "_Copy";
+
+            float dis = Vector3.Distance(center, mf.transform.position);
+            //Debug.LogError($"CopyMesh1 mf:{mf} center:{center} position:{mf.transform.position} dis:{dis} vertices:{sharedMesh.vertices.Length} worldVertexes:{worldVertexes.Length} triangles:{sharedMesh.triangles.Length} normals:{sharedMesh.normals.Length} uv:{sharedMesh.uv.Length}");
+            //Debug.LogError($"CopyMesh2 mf:{mf} center:{center} position:{mf.transform.position} dis:{dis} vertices:{mesh.vertices.Length} worldVertexes:{worldVertexes.Length} triangles:{mesh.triangles.Length} normals:{mesh.normals.Length} uv:{mesh.uv.Length}");
+            return mesh;
         }
     }
 }

@@ -251,21 +251,33 @@ public class MeshPoints
 
     private static string GetMatId(MeshRenderer renderer)
     {
-        Color color = Color.black;
-        try
+        if (renderer.sharedMaterials.Length > 1)
         {
-            if (renderer.sharedMaterial != null)
+            string key = "";
+            foreach(var mat in renderer.sharedMaterials)
             {
-                if (renderer.sharedMaterial.HasProperty("_Color"))
-                    color = renderer.sharedMaterial.color;
+                key += mat.name + ";";
             }
+            return "("+key+")";
         }
-        catch (System.Exception ex)
+        else
         {
-            Debug.LogError($"MeshFilterListDict render:{renderer},mat:{renderer.sharedMaterial},matName:{renderer.sharedMaterial.name},ex:{ex.ToString()}");
+            Color color = Color.black;
+            try
+            {
+                if (renderer.sharedMaterial != null)
+                {
+                    if (renderer.sharedMaterial.HasProperty("_Color"))
+                        color = renderer.sharedMaterial.color;
+                }
+            }
+            catch (System.Exception ex)
+            {
+                Debug.LogError($"MeshFilterListDict render:{renderer},mat:{renderer.sharedMaterial},matName:{renderer.sharedMaterial.name},ex:{ex.ToString()}");
+            }
+            var matId = color.ToString();
+            return matId;
         }
-        var matId = color.ToString();
-        return matId;
     }
 
 

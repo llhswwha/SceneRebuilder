@@ -145,6 +145,50 @@ public class PositionDictionaryList<T> // where T : class
         posListDict7.RemoveItem(posT7, t);
     }
 
+    /// <summary>
+    /// 1:F6,2:F5,3:F4
+    /// </summary>
+    /// <param name="pos"></param>
+    /// <param name="level"></param>
+    /// <returns></returns>
+    public bool Contains(Vector3 pos,int level=0)
+    {
+        var posT1 = $"({pos.x},{pos.y},{pos.z})";
+        if (posListDict.ContainsKey(posT1)) //0
+        {
+            return true;
+        }
+
+        if (level > 0) //1
+        {
+            var posT2 = $"({pos.x.ToString("F6")},{pos.y.ToString("F6")},{pos.z.ToString("F6")})";
+            if (posListDict2.ContainsKey(posT2))
+            {
+                return true;
+            }
+        }
+
+        if (level > 1) //2
+        {
+            var posT3 = $"({pos.x.ToString("F5")},{pos.y.ToString("F5")},{pos.z.ToString("F5")})";
+            if (posListDict3.ContainsKey(posT3))
+            {
+                return true;
+            }
+        }
+
+        if (level > 2) //3
+        {
+            var posT4 = $"({pos.x.ToString("F4")},{pos.y.ToString("F4")},{pos.z.ToString("F4")})";
+            if (posListDict4.ContainsKey(posT4))
+            {
+                return true;
+            }
+        }
+
+        return false;
+    }
+
     public void Add(Vector3 pos, T t, int level = 7)
     {
 

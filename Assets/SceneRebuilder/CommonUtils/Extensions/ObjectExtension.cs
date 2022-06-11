@@ -746,14 +746,14 @@ namespace CommonUtils
             Transform parent = transform.parent;
             if (parent == null)
             {
-                return transform.GetComponentInChildren<T>();
+                return transform.GetComponent<T>();
             }
-            T component = parent.GetComponentInChildren<T>();
+            T component = parent.GetComponent<T>();
             while (component == null)
             {
                 parent = parent.parent;
                 if (parent == null) break;
-                component = parent.GetComponentInChildren<T>();
+                component = parent.GetComponent<T>();
             }
             return component;
         }

@@ -596,6 +596,22 @@ public class SharedMeshTrianglesList : List<SharedMeshTriangles>
         return triangles;
     }
 
+    public List<Vector3> GetAllPoints()
+    {
+        List<Vector3> points = new List<Vector3>();
+        for (int i1 = 0; i1 < this.Count; i1++)
+        {
+            SharedMeshTriangles item1 = this[i1];
+            var ts = item1.GetAllTriangles();
+            foreach (var point in ts.GetPoints())
+            {
+                if (points.Contains(point)) continue;
+                points.Add(point);
+            }
+        }
+        return points;
+    }
+
     internal void CombineSamePoint(float minDis)
     {
         int count1 = this.Count;

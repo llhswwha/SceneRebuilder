@@ -149,7 +149,7 @@ using System;
         jobProgressArg = arg;
     }
 
-    public void CompleteAllPage()
+    public void CompleteAllPage(bool isShowProgress=false)
     {
         int count = pages.Count;
         if (count == 1)
@@ -159,28 +159,32 @@ using System;
         }
         for (int i = 0; i < count; i++)
         {
-            //Debug.LogError($"CompleteAllPage {i}/{count}");
-            var subProgress = ProgressArg.New("DoJobs...", i, count, name, jobProgressArg);
-            //if (jobProgressArg != null)
-            //{
-            //    jobProgressArg.AddSubProgress(subProgress);
-            //    if (ProgressBarHelper.DisplayCancelableProgressBar(jobProgressArg))
-            //    {
-            //        break;
-            //    }
-            //}
-            //else
-            //{
-            //    if (ProgressBarHelper.DisplayCancelableProgressBar(subProgress))
-            //    {
-            //        break;
-            //    }
-            //}
-
-            if (ProgressBarHelper.DisplayCancelableProgressBar(subProgress))
+#if UNITY_EDITOR
+            if (isShowProgress)
             {
-                break;
+                //Debug.LogError($"CompleteAllPage {i}/{count}");
+                var subProgress = ProgressArg.New("DoJobs...", i, count, name, jobProgressArg);
+                //if (jobProgressArg != null)
+                //{
+                //    jobProgressArg.AddSubProgress(subProgress);
+                //    if (ProgressBarHelper.DisplayCancelableProgressBar(jobProgressArg))
+                //    {
+                //        break;
+                //    }
+                //}
+                //else
+                //{
+                //    if (ProgressBarHelper.DisplayCancelableProgressBar(subProgress))
+                //    {
+                //        break;
+                //    }
+                //}
+                if (ProgressBarHelper.DisplayCancelableProgressBar(subProgress))
+                {
+                    break;
+                }
             }
+#endif
 
             //if (ProgressBarHelper.DisplayCancelableProgressBar("CompleteAllPage", $"{name}:{i}/{count} {percents:F1}%", progress))
             //    {

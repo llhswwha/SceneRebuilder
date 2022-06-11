@@ -687,17 +687,32 @@ public class BaseFoldoutEditor<T> : BaseEditor<T> where T : class
                 var scene = scenes[i];
                 var arg = FoldoutEditorArgBuffer.editorArgs[scene];
                 BuildingModelInfo modelInfo = scene.GetComponentInParent<BuildingModelInfo>();
+                ModelAreaTree tree= scene.GetComponentInParent<ModelAreaTree>();
                 if (modelInfo == null)
                 {
                     arg.caption = $"[{i + 1:00}] {scene.name}";
                 }
                 else
                 {
-                    arg.caption = $"[{i + 1:00}] {modelInfo.name}>{scene.name}";
+                    if (tree != null)
+                    {
+                        arg.caption = $"[{i + 1:00}] {modelInfo.name}>{tree.name}>{scene.name}";
+                    }
+                    else
+                    {
+                        arg.caption = $"[{i + 1:00}] {modelInfo.name}>{scene.name}";
+                    }
+                    
                 }
 
                 arg.info = $"[{scene.vertexCount:F0}w][{scene.rendererCount}][{scene.IsLoaded}]";
-                EditorUIUtils.ObjectFoldout(arg, scene.gameObject, null);
+                EditorUIUtils.ObjectFoldout(arg, scene.gameObject, ()=>
+                {
+                    if (GUILayout.Button("File", GUILayout.Width(35)))
+                    {
+                        SubSceneHelper.SelectSceneFile(scene);
+                    }
+                });
                 //if (arg.isExpanded)
                 //{
                 //    //BuildingModelInfoEditor.DrawToolbar(b, contentStyle, buttonWidth);
@@ -1402,6 +1417,7 @@ public class BaseFoldoutEditor<T> : BaseEditor<T> where T : class
             }
 
             PrefabInstanceBuilder.Instance.JobSize=EditorGUILayout.IntField(PrefabInstanceBuilder.Instance.JobSize, GUILayout.Width(50));
+            PrefabInstanceBuilder.Instance.disSetting.zeroP = EditorGUILayout.DoubleField(PrefabInstanceBuilder.Instance.disSetting.zeroP, GUILayout.Width(50));
             if (GUILayout.Button("Pre1", btnStyle, GUILayout.Width(40)))
             {
                 SharedMeshInfoList list2= funcGetList();
@@ -1434,6 +1450,17 @@ public class BaseFoldoutEditor<T> : BaseEditor<T> where T : class
             {
                 SharedMeshInfoList list2 = funcGetList();
                 list2.SaveMesh();
+            }
+            if (GUILayout.Button("-3", btnStyle, GUILayout.Width(30)))
+            {
+                SharedMeshInfoList list2 = funcGetList();
+                int c=list2.DestroyBiggerThan(2);
+
+            }
+            if (GUILayout.Button("-2", btnStyle, GUILayout.Width(30)))
+            {
+                SharedMeshInfoList list2 = funcGetList();
+                int c = list2.DestroyBiggerThan(1);
             }
             //if (GUILayout.Button("Pre_Copy", btnStyle, GUILayout.Width(40)))
             //{
@@ -1512,7 +1539,16 @@ public class BaseFoldoutEditor<T> : BaseEditor<T> where T : class
                     arg.isFoldout = node.GetCount() > 0;
                     arg.caption = $"[{i:00}] {node.GetName()} ({node.GetCount()})";
                     arg.isEnabled = true;
-                    arg.info = $"{MeshHelper.GetVertexCountS(node.vertexCount)}|{MeshHelper.GetVertexCountS(node.GetAllVertexCount())}[{node.GetAllVertexCount() / (float)list.totalVertexCount:P1}]";
+                    //arg.info = $"{MeshHelper.GetVertexCountS(node.vertexCount)}|{MeshHelper.GetVertexCountS(node.GetAllVertexCount())}[{node.GetAllVertexCount() / (float)list.totalVertexCount:P1}]";
+                    if (node.vertexCount < 10000)
+                    {
+                        arg.info = $"{node.vertexCount}|{MeshHelper.GetVertexCountS(node.GetAllVertexCount())}[{node.GetAllVertexCount() / (float)list.totalVertexCount:P1}]";
+                    }
+                    else
+                    {
+                        arg.info = $"{MeshHelper.GetVertexCountS(node.vertexCount)}|{MeshHelper.GetVertexCountS(node.GetAllVertexCount())}[{node.GetAllVertexCount() / (float)list.totalVertexCount:P1}]";
+                    }
+                    
                     //if (level == 0)
                     //{
                     //    arg.background = true;
@@ -1532,6 +1568,10 @@ public class BaseFoldoutEditor<T> : BaseEditor<T> where T : class
                         if (GUILayout.Button("Select", btnStyle, GUILayout.Width(50)))
                         {
                             EditorHelper.SelectObjects(node.GetGameObjects());
+                        }
+                        if (GUILayout.Button("Select+", btnStyle, GUILayout.Width(50)))
+                        {
+                            EditorHelper.SelectObjectsAdd(node.GetGameObjects());
                         }
                         if (GUILayout.Button("Hide", btnStyle, GUILayout.Width(40)))
                         {

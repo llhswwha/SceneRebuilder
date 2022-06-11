@@ -467,7 +467,7 @@ public class SubScene_Base : SubSceneArgComponent
         }
     }
 
-    internal void HideObjects()
+    internal virtual void HideObjects()
     {
         if (IsVisible==false) return;
         IsVisible = false;
@@ -475,6 +475,11 @@ public class SubScene_Base : SubSceneArgComponent
             foreach (var go in gos)
             {
                 if (go == null) continue;
+                SubScene_Base scene = go.GetComponent<SubScene_Base>();
+                if (scene != null)
+                {
+                    continue;
+                }
                 go.SetActive(false);
             }
     }
@@ -490,6 +495,11 @@ public class SubScene_Base : SubSceneArgComponent
             foreach (var go in gos)
             {
                 if (go == null) continue;
+                SubScene_Base scene = go.GetComponent<SubScene_Base>();
+                if (scene != null)
+                {
+                    continue;
+                }
                 go.SetActive(true);
             }
     }

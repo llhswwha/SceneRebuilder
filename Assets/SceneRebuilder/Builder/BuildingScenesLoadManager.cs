@@ -159,7 +159,7 @@ public class BuildingScenesLoadManager : MonoBehaviour
         }
 
 
-        Debug.LogError($"LoadBuildingScenes disableBuildings:{disableBuildings.Count} enableBuildings:{enableBuildings.Count}");
+        //Debug.Log($"LoadBuildingScenes disableBuildings:{disableBuildings.Count} enableBuildings:{enableBuildings.Count}");
         string s1 = "";
         foreach(var b in disableBuildings)
         {
@@ -199,7 +199,7 @@ public class BuildingScenesLoadManager : MonoBehaviour
             s4 += b.name + ";";
         }
 
-        Debug.LogError($"LoadBuildingScenes IsLoadUserBuildings:{IsLoadUserBuildings} disableBuildings({disableBuildings.Count}):{s1}\n enableBuildings({enableBuildings.Count}):{s2}\n staticBuilidings({staticBuilidings.Count}):{s3}\nmodelList({modelList.Count}):{modelList}");
+        Debug.Log($"LoadBuildingScenes IsLoadUserBuildings:{IsLoadUserBuildings} disableBuildings({disableBuildings.Count}):{s1}\n enableBuildings({enableBuildings.Count}):{s2}\n staticBuilidings({staticBuilidings.Count}):{s3}\nmodelList({modelList.Count}):{s4}");
 
         if (IsLoadUserBuildings)//Test
         {
@@ -209,11 +209,11 @@ public class BuildingScenesLoadManager : MonoBehaviour
 //#endif
             foreach (var b in staticBuilidings)
             {
-                GameObject.DestroyImmediate(b);
+                GameObject.DestroyImmediate(b.gameObject);
             }
             foreach (var b in modelList)
             {
-                GameObject.DestroyImmediate(b);
+                GameObject.DestroyImmediate(b.gameObject);
             }
         }
 
@@ -252,6 +252,7 @@ public class BuildingScenesLoadManager : MonoBehaviour
             //var ss = sceneList2.ToArray();
             var ss = sceneList1.ToArray();
 
+            SubSceneShowManager.Instance.InitScenes();
             SubSceneShowManager.Instance.RemoveScenes(ss);
             Debug.Log($"LoadScenesBySetting buildings:{disableBuildings.Count()} enableBuildings:{enableBuildings.Count()} bags1:{allScenes1.Count} bags2:{allScenes2.Count} scenes:{ss.Length}");
             if (IsEnableLoad)
@@ -262,7 +263,7 @@ public class BuildingScenesLoadManager : MonoBehaviour
                     //{
                     //    LODManager.Instance.UpdateLODs();
                     //}
-
+                    ClearMainScripts(p);
                     StartGPUInstance(p);
                     if (finishedCallbak != null)
                     {
@@ -282,6 +283,38 @@ public class BuildingScenesLoadManager : MonoBehaviour
         }
 
 
+    }
+
+    public static void ClearMainScripts(SceneLoadProgress p)
+    {
+        /*
+         *  TypeCount2[001]	count:69868	type:RendererId
+            TypeCount2[002]	count:51014	type:MeshRendererInfo
+            TypeCount2[003]	count:13875	type:MeshNode
+            TypeCount2[004]	count:10070	type:MeshPrefabInstance
+            TypeCount2[005]	count:9783	type:BIMModelInfo
+            TypeCount2[006]	count:9122	type:DoubleClickEventTrigger_u3d
+            TypeCount2[008]	count:5839	type:PipeMeshGenerator
+            TypeCount2[010]	count:3206	type:PipeLineModel
+            TypeCount2[012]	count:2349	type:BoundsBox
+            TypeCount2[013]	count:1948	type:PipeElbowModel
+         */
+        GameObject go = p.scene.gameObject;
+        //ClearComponents<RendererId>(go);
+        ClearComponents<MeshRendererInfo>(go);
+        ClearComponents<MeshNode>(go);
+        ClearComponents<MeshPrefabInstance>(go);
+        //ClearComponents<BIMModelInfo>(go);
+        //ClearComponents<DoubleClickEventTrigger_u3d>();
+        ClearComponents<PipeMeshGenerator>(go);
+        ClearComponents<PipeLineModel>(go);
+        ClearComponents<BoundsBox>(go);
+        ClearComponents<PipeElbowModel>(go);
+    }
+
+    public static void ClearComponents<T>(GameObject target) where T : Component
+    {
+        TransformHelper.ClearComponents<T>(target);
     }
 
     private void StartGPUInstance(SceneLoadProgress p)
@@ -398,7 +431,7 @@ public class BuildingScenesLoadManager : MonoBehaviour
 
     public void LoadUserBuildings(IEnumerable<BuildingController> depNodes, Action<SceneLoadProgress> finishedCallbak)
     {
-        Debug.LogError($"LoadUserBuildings IsLoadUserBuildings:{IsLoadUserBuildings} UserBulindgs:{UserBulindgs.Count} depNodes:{depNodes.Count()}");
+        Debug.Log($"LoadUserBuildings IsLoadUserBuildings:{IsLoadUserBuildings} UserBulindgs:{UserBulindgs.Count} depNodes:{depNodes.Count()}");
 
         if (IsLoadUserBuildings)
         {
@@ -633,15 +666,7 @@ public class BuildingScenesLoadManager : MonoBehaviour
 
     private void Awake()
     {
-        if (IsEnableGPU)
-        {
-            GPUInstanceTest.Instance.IsStartGPUInstance = false;
-            GPUInstanceTest.Instance.gameObject.SetActive(true);
-        }
-        else
-        {
-            GPUInstanceTest.Instance.gameObject.SetActive(false);
-        }
+        GPUInstanceTest.SetEnable(IsEnableGPU);
     }
 
     public bool IsLoadScene = true;

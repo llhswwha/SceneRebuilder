@@ -60,6 +60,7 @@
     <Compile Include="Assets\SceneRebuilder\CommonUtils\AlignResultComponent.cs" />
     <Compile Include="Assets\SceneRebuilder\CommonUtils\MeshPoints.cs" />
     <Compile Include="Assets\SceneRebuilder\CommonUtils\Extensions\NumberExtension.cs" />
+    <Compile Include="Assets\SceneRebuilder\CommonUtils\TimeTest.cs" />
     <Compile Include="Assets\SceneRebuilder\CommonUtils\Extensions\GameObjectExtension.cs" />
     <Compile Include="Assets\SceneRebuilder\CommonUtils\Transforms\TransformRotate.cs" />
     <Compile Include="Assets\SceneRebuilder\CommonUtils\DictionaryList\DictionaryList1ToN.cs" />
@@ -76,6 +77,7 @@
     <Compile Include="Assets\SceneRebuilder\CommonUtils\Helpers\VertexHelper.cs" />
     <Compile Include="Assets\SceneRebuilder\CommonUtils\MeshJobs\MeshFilterList.cs" />
     <Compile Include="Assets\SceneRebuilder\CommonUtils\Extensions\ObjectExtension.cs" />
+    <Compile Include="Assets\SceneRebuilder\CommonUtils\DictionaryList\DictList.cs" />
     <Compile Include="Assets\SceneRebuilder\CommonUtils\SingletonBehaviour.cs" />
     <Compile Include="Assets\SceneRebuilder\CommonUtils\MeshCombine\MatMeshs.cs" />
     <Compile Include="Assets\SceneRebuilder\CommonUtils\DebugInfoRoot.cs" />
@@ -89,7 +91,7 @@
     <Compile Include="Assets\SceneRebuilder\CommonUtils\DictionaryList\PositionDictionaryList.cs" />
     <Compile Include="Assets\SceneRebuilder\CommonUtils\DistanceArgs.cs" />
     <Compile Include="Assets\SceneRebuilder\CommonUtils\InnerScripts\InnerRendererId.cs" />
-    <Compile Include="Assets\SceneRebuilder\CommonUtils\DictionaryList\DictList.cs" />
+    <Compile Include="Assets\SceneRebuilder\CommonUtils\EnableDebug.cs" />
   </ItemGroup>
   <ItemGroup>
      <None Include="Assets\SceneRebuilder\CommonUtils\CommonUtils.asmdef" />

@@ -692,22 +692,26 @@ public class RendererId
         }
     }
 
-    private void OnDestroy()
-    {
-        // Debug.Log("RendererId.OnDestroy:"+this.name);
-    }
 
     public bool IsDebug = false;
 
-    private void OnDisable()
-    {
-        if(IsDebug)
-            Debug.LogError("RendererId.OnDisable:" + this.name);
-    }
+//#if UNITY_EDITOR
+//    private void OnDestroy()
+//    {
+//        if (IsDebug)
+//            Debug.LogError("RendererId.OnDestroy:" + this.name);
+//    }
 
-    private void OnEnable()
-    {
-        if (IsDebug)
-            Debug.LogError("RendererId.OnEnable:" + this.name);
-    }
+//    private void OnDisable()
+//    {
+//        if(IsDebug)
+//            Debug.LogError("RendererId.OnDisable:" + this.name);
+//    }
+
+//    private void OnEnable()
+//    {
+//        if (IsDebug)
+//            Debug.LogError("RendererId.OnEnable:" + this.name);
+//    }
+//#endif
 }

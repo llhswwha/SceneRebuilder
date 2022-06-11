@@ -70,6 +70,7 @@
     <Compile Include="Assets\SceneRebuilder\plumber\PlumberCore\ModelSaveDatas\MeshModelSaveData.cs" />
     <Compile Include="Assets\SceneRebuilder\plumber\PlumberCore\ModelMeshDatas\PipeMeshData.cs" />
     <Compile Include="Assets\SceneRebuilder\plumber\PlumberCore\ModelSaveDatas\PipeTeeSaveData.cs" />
+    <Compile Include="Assets\SceneRebuilder\plumber\PlumberCore\Jobs\MeshSplitJob.cs" />
     <Compile Include="Assets\SceneRebuilder\plumber\PlumberCore\ModelMeshDatas\MeshBoxData.cs" />
     <Compile Include="Assets\SceneRebuilder\plumber\PlumberCore\MeshBaseDatas\SharedMeshTrianglesComponent.cs" />
     <Compile Include="Assets\SceneRebuilder\plumber\PlumberCore\MeshBaseDatas\MeshPoint.cs" />
@@ -85,6 +86,7 @@
     <Compile Include="Assets\SceneRebuilder\plumber\PlumberCore\VerticesToPlaneInfo.cs" />
     <Compile Include="Assets\SceneRebuilder\plumber\PlumberCore\ModelMeshDatas\ElbowMeshData.cs" />
     <Compile Include="Assets\SceneRebuilder\plumber\PlumberCore\ModelMeshDatas\MeshStruct\PipeReducerData.cs" />
+    <Compile Include="Assets\SceneRebuilder\plumber\PlumberCore\Tools\MeshSpliter.cs" />
     <Compile Include="Assets\SceneRebuilder\plumber\PlumberCore\MeshGenerators\PipeMeshGeneratorBase.cs" />
     <Compile Include="Assets\SceneRebuilder\plumber\PlumberCore\MeshGenerators\HMeshGenerator.cs" />
     <Compile Include="Assets\SceneRebuilder\plumber\PlumberCore\MeshModels\BaseMeshModel.cs" />

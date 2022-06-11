@@ -456,7 +456,17 @@ public class SubSceneManager : SingletonBehaviour<SubSceneManager>
     {
         this.logTag = tag;
         LoadCount++;
-        Debug.Log($"[SubSceneManager.LoadScenes][{LoadCount}]({logTag}) Start! scenes:{scenes.Length}");
+        float vertexCount = 0;
+        foreach(var scene in scenes)
+        {
+            vertexCount += scene.vertexCount;
+        }
+        int rendererCount = 0;
+        foreach (var scene in scenes)
+        {
+            rendererCount += scene.rendererCount;
+        }
+        Debug.Log($"[SubSceneManager.LoadScenes][{LoadCount}]({logTag}) Start! scenes:{scenes.Length} vertexCount:{vertexCount} rendererCount:{rendererCount}");
 
         if(scenes==null|| scenes.Length == 0)
         {

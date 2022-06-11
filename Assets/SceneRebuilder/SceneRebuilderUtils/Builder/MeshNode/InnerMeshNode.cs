@@ -1,5 +1,6 @@
 using CommonExtension;
 using CommonUtils;
+using GPUInstancer;
 using System;
 using System.Collections;
 using System.Collections.Generic;
@@ -18,9 +19,18 @@ public class InnerMeshNode : MonoBehaviour,IComparable<InnerMeshNode>
         meshNode.GetSharedMeshList();
 
         var meshNodes = meshNode.GetComponentsInChildren<InnerMeshNode>(meshNode.isIncludeInactive);
-        ProgressBarHelper.ClearProgressBar();
+        //ProgressBarHelper.ClearProgressBar();
 
         //MeshRendererInfo.InitRenderers(go);
+
+        var subms = meshNode.GetMeshNodes();
+        for (int i = 0; i < subms.Count; i++)
+        {
+            var node = subms[i];
+            ProgressBarHelper.DisplayCancelableProgressBar(new ProgressArg("UpdateSharedMesh", i, subms.Count, node));
+            node.GetSharedMeshList();
+        }
+        ProgressBarHelper.ClearProgressBar();
 
         Debug.Log($"InnerMeshNode.Init count:{meshNodes.Length} time:{(DateTime.Now - start)}");
         return meshNode;
@@ -78,6 +88,11 @@ public class InnerMeshNode : MonoBehaviour,IComparable<InnerMeshNode>
 
     public int GetSumVertexCount()
     {
+        if (meshData == null)
+        {
+            Debug.LogError($"GetSumVertexCount meshData == null name:{this.name} path:{this.transform.GetPath()}");
+            return 0;
+        }
         int sum = meshData.vertexCount;
         foreach (var node in subMeshes)
         {
@@ -187,6 +202,36 @@ public class InnerMeshNode : MonoBehaviour,IComparable<InnerMeshNode>
         return list;
     }
 
+    private string countInfo = null;
+
+    public string GetCountInfo()
+    {
+        //if (countInfo == null)
+        {
+            if (transform.childCount == 0)
+            {
+                countInfo = "";
+            }
+            else
+            {
+                if (sharedMeshInfos != null)
+                {
+                    int subCount = GetMeshNodes().Count;
+                    MeshRenderer[] mfs = this.GetComponentsInChildren<MeshRenderer>();
+                    countInfo = $"({subCount}|{mfs.Length}|{sharedMeshInfos.Count})";
+                }
+                else
+                {
+                    int subCount = GetMeshNodes().Count;
+                    MeshRenderer[] mfs = this.GetComponentsInChildren<MeshRenderer>();
+                    countInfo = $"({subCount}|{mfs.Length})";
+                }
+                
+            }
+        }
+        return countInfo;
+    }
+
     public List<InnerMeshNode> subMeshes = new List<InnerMeshNode>();
 
     public SharedMeshInfoList sharedMeshInfos = null;
@@ -201,11 +246,11 @@ public class InnerMeshNode : MonoBehaviour,IComparable<InnerMeshNode>
     {
         if (sharedMeshInfos != null)
         {
-            return $"{VertexHelper.GetVertexCountS(VertexCount)}[{VertexCount / (float)sumCount:P1}]|{rendererCount}[{VertexHelper.GetVertexCountS(sharedMeshInfos.sharedVertexCount)}({sharedMeshInfos.sharedVertexCount / (float)VertexCount:P1})]";
+            return $"{VertexHelper.GetVertexCountS(VertexCount)}[{VertexCount / (float)sumCount:P1}]|[{VertexHelper.GetVertexCountS(sharedMeshInfos.sharedVertexCount)}({sharedMeshInfos.sharedVertexCount / (float)VertexCount:P1})]";
         }
         else
         {
-            return $"{VertexHelper.GetVertexCountS(VertexCount)}[{VertexCount / (float)sumCount:P1}]|{rendererCount}";
+            return $"{VertexHelper.GetVertexCountS(VertexCount)}[{VertexCount / (float)sumCount:P1}]|";
         }
 
     }
@@ -242,7 +287,7 @@ public class InnerMeshNode : MonoBehaviour,IComparable<InnerMeshNode>
 
     public void InitInfo()
     {
-        if (gameObject.isStatic) return;
+        //if (gameObject.isStatic) return;
         if (meshData == null || meshData.vertexCount == 0 || meshData._obj == null)
         {
             if (isIncludeInactive == false && this.gameObject.activeInHierarchy == false)
@@ -277,10 +322,10 @@ public class InnerMeshNode : MonoBehaviour,IComparable<InnerMeshNode>
         InitInfo();
     }
 
-    void Start()
-    {
-        //Init();
-    }
+    //void Start()
+    //{
+    //    //Init();
+    //}
 
     public bool isInited = false;
 
@@ -302,24 +347,27 @@ public class InnerMeshNode : MonoBehaviour,IComparable<InnerMeshNode>
             meshData = null;
             subMeshes.Clear();
         }
+        countInfo = null;
 
         MeshTypeName = MeshType.GetTypeName(gameObject.name);
 
-        if (gameObject.isStatic)
-        {
-            Debug.LogError("IsStatic:" + gameObject);
-            return;
-        }
+        //if (gameObject.isStatic)
+        //{
+        //    Debug.LogError("IsStatic:" + gameObject);
+        //    return;
+        //}
 
         InitInfo();
 
         if (initAllChildren)
         {
+            bool isIncludeGPUI = MeshNodeSetting.Instance.isIncludeGPUI;
             //subMeshes.Clear();
             for (int i = 0; i < transform.childCount; i++)
             {
                 var child = transform.GetChild(i).gameObject;
                 if (this.isIncludeInactive == false && child.activeInHierarchy == false) continue;
+                if (isIncludeGPUI == false && child.GetComponent<GPUInstancerPrefab>() != null) continue;
                 var p1 = new ProgressArg("MeshNode.Init", i, transform.childCount, child);
                 //float progress1 = (float)i / transform.childCount;
                 if (progressChanged != null)
@@ -921,10 +969,10 @@ public class InnerMeshNode : MonoBehaviour,IComparable<InnerMeshNode>
         return other.VertexCount.CompareTo(this.VertexCount);
     }
 
-    private void OnDestroy()
-    {
-        //this.ClearChildren();
-    }
+    //private void OnDestroy()
+    //{
+    //    //this.ClearChildren();
+    //}
 
     
 

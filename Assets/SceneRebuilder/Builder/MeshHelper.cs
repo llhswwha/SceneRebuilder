@@ -362,9 +362,9 @@ public static class MeshHelper
         Debug.Log($"empty:{emptyList.Count},all:{ts.Length}");
     }
 
-    public static List<Type> typesOfEmptyObject = new List<Type>() {typeof(Transform),typeof(RendererId),typeof(MeshNode),typeof(MeshRendererInfo), typeof(MeshRendererInfoEx), typeof(SubScene_Single), typeof(BoxCollider), typeof(BIMModelInfo), typeof(NavisModelRoot) };
+    public static List<Type> typesOfEmptyObject = new List<Type>() {typeof(Transform),typeof(RendererId),typeof(MeshNode), typeof(InnerMeshNode), typeof(MeshRendererInfo), typeof(MeshRendererInfoEx), typeof(SubScene_Single), typeof(BoxCollider), typeof(BIMModelInfo), typeof(NavisModelRoot) };
 
-    public static List<Type> typesOfEmptyChildObject = new List<Type>() { typeof(Transform), typeof(RendererId), typeof(MeshNode), typeof(MeshRendererInfo), typeof(MeshRendererInfoEx), typeof(LODGroup), typeof(LODGroupInfo), typeof(SubScene_Single), typeof(BoxCollider)/*, typeof(BIMModelInfo), typeof(NavisModelRoot)*/ };
+    public static List<Type> typesOfEmptyChildObject = new List<Type>() { typeof(Transform), typeof(RendererId), typeof(MeshNode), typeof(InnerMeshNode), typeof(MeshRendererInfo), typeof(MeshRendererInfoEx), typeof(LODGroup), typeof(LODGroupInfo), typeof(SubScene_Single), typeof(BoxCollider)/*, typeof(BIMModelInfo), typeof(NavisModelRoot)*/ };
 
     public static bool IsSameNameGroup(Transform t)
     {
@@ -431,14 +431,42 @@ public static class MeshHelper
         return true;
     }
 
-    public static bool IsEmptyObject(Transform t,bool isLog=false)
+    public static bool IsEmptyObjectEx(Transform t,bool isLog=false)
     {
         var components = t.GetComponents<Component>();
         if (components.Length == 1) return true;
-        if (t.GetComponent<MeshRenderer>() != null && t.GetComponent<MeshFilter>() == null) return true;
+        if (t.GetComponent<MeshRenderer>() != null && t.GetComponent<MeshFilter>() != null)
+        {
+            return true;
+        }
 
         bool r = true;
         foreach(var c in components)
+        {
+            var type = c.GetType();
+            if (typesOfEmptyObject.Contains(type) == false)
+            {
+                if (isLog)
+                {
+                    Debug.LogError($"IsEmptyObject type:{type}");
+                }
+                return false;
+            }
+        }
+        return r;
+    }
+
+    public static bool IsEmptyObject(Transform t, bool isLog = false)
+    {
+        var components = t.GetComponents<Component>();
+        if (components.Length == 1) return true;
+        if (t.GetComponent<MeshRenderer>() != null && t.GetComponent<MeshFilter>() == null)
+        {
+            return true;
+        }
+
+        bool r = true;
+        foreach (var c in components)
         {
             var type = c.GetType();
             if (typesOfEmptyObject.Contains(type) == false)
@@ -464,6 +492,38 @@ public static class MeshHelper
             if (typesOfEmptyChildObject.Contains(type) == false) return false;
         }
         return r;
+    }
+
+    public static void DecreaseEmptyGroupEx(GameObject root)
+    {
+        var ts = root.GetComponentsInChildren<Transform>(true);
+        List<Transform> emptyList = new List<Transform>();
+        for (int i = 0; i < ts.Length; i++)
+        {
+            var t = ts[i];
+            if (t.childCount == 1)
+            {
+                if (IsEmptyObjectEx(t))
+                {
+                    emptyList.Add(t);
+                    Debug.Log($"empty:{t.name}");
+                }
+            }
+        }
+
+        for (int i = 0; i < emptyList.Count; i++)
+        {
+            var t = emptyList[i];
+#if UNITY_EDITOR
+            EditorHelper.UnpackPrefab(t.gameObject);
+#endif
+            var child = t.GetChild(0);
+            child.SetParent(t.parent);
+            child.name = t.name;
+            GameObject.DestroyImmediate(t.gameObject);
+        }
+
+        Debug.Log($"empty:{emptyList.Count},all:{ts.Length}");
     }
 
     public static void DecreaseEmptyGroup(GameObject root)
@@ -1684,13 +1744,13 @@ public static class MeshHelper
             {
                 break;
             }
-            MeshHelper.CenterPivot(t.gameObject);
+            MeshHelper.CenterPivot(t.gameObject,true);
         }
         ProgressBarHelper.ClearProgressBar();
         Debug.LogError($"CenterPivotAll root:{root} ts:{ts.Length} time:{DateTime.Now - startT}");
     }
 
-    public static Vector3[] CenterPivot(GameObject go)
+    public static Vector3[] CenterPivot(GameObject go,bool isForce=false)
     {
         if (go == null) return null;
         MeshFilter mf = go.GetComponent<MeshFilter>();
@@ -1705,6 +1765,10 @@ public static class MeshHelper
         {
             MeshFilter[] mfs = go.GetComponentsInChildren<MeshFilter>(true);
             var minMax = VertexHelper.GetMinMax(mfs);
+            if (isForce)
+            {
+                CenterPivot(go.transform, minMax[3]);
+            }
             return minMax;
         }
     }

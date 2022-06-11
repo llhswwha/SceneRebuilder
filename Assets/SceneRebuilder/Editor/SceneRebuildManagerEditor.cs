@@ -70,6 +70,14 @@ public class SceneRebuildManagerEditor : BaseFoldoutEditor<SceneRebuildManager>
         {
             BuildingModelManager.Instance.OneKeySaveScene(GameObject.FindObjectsOfType<BuildingModelInfo>(true));
         });
+        NewButton("LoadScenes(Active)", true, () =>
+        {
+            BuildingModelManager.Instance.OneKeyLoadScene(GameObject.FindObjectsOfType<BuildingModelInfo>(false));
+        });
+        NewButton("SaveScenes(Active)", true, () =>
+        {
+            BuildingModelManager.Instance.OneKeySaveScene(GameObject.FindObjectsOfType<BuildingModelInfo>(false));
+        });
         EditorGUILayout.EndHorizontal();
 
         EditorGUILayout.BeginHorizontal();

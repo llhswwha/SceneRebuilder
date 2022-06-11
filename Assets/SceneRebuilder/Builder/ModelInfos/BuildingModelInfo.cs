@@ -55,6 +55,71 @@ public class BuildingModelInfo : SubSceneCreater
         return this.name;
     }
 
+    [ContextMenu("MoveStaticToOut0")]
+    public void MoveStaticToOut0()
+    {
+        if (OutPart0 == null)
+        {
+            Debug.LogError("MoveDoorToOut0 info.OutPart0 == null");
+            return;
+        }
+
+        for (int i = 0; i < this.transform.childCount; i++)
+        {
+            var child = this.transform.GetChild(i);
+            if (child.name.Contains("Static"))
+            {
+                //OutRoots.Add(child.gameObject);
+                child.transform.SetParent(OutPart0.transform);
+                Debug.LogError("MoveDoorToOut0 True");
+                return;
+            }
+        }
+        Debug.LogError("MoveStaticToOut0");
+    }
+
+    [ContextMenu("MoveStaticToLODs")]
+    public void MoveStaticToLODs()
+    {
+        if (LODPart == null)
+        {
+            Debug.LogError("MoveStaticToLODs info.OutPart0 == null");
+            return;
+        }
+
+        for (int i = 0; i < this.transform.childCount; i++)
+        {
+            var child = this.transform.GetChild(i);
+            if (child.name.Contains("Static"))
+            {
+                //OutRoots.Add(child.gameObject);
+                child.transform.SetParent(LODPart.transform);
+                Debug.LogError("MoveStaticToLODs True");
+                return;
+            }
+        }
+        Debug.LogError("MoveStaticToLODs");
+    }
+
+    [ContextMenu("MoveSmallOut0ToIn")]
+    public void MoveSmallOut0ToIn()
+    {
+        if (OutPart0 == null)
+        {
+            Debug.LogError("MoveDoorToOut0 info.OutPart0 == null");
+            return;
+        }
+
+        BigSmallListInfo bsList= GetBigSmallInfo_Out0();
+
+        for (int i = 0; i < bsList.smallModels.Count; i++)
+        {
+            var child = bsList.smallModels[i];
+            child.transform.SetParent(InPart.transform);
+        }
+        Debug.LogError($"MoveSmallOut0ToIn BigSmallListInfo:{bsList}");
+    }
+
     [ContextMenu("GetTreeCount")]
     public BuildingModelState GetState()
     {
@@ -343,7 +408,7 @@ public class BuildingModelInfo : SubSceneCreater
             Debug.Log($"BuildingModelInfo.GetSubScenes1 GPUIPart != null scenes:{allScenes.Length}");
         }
 
-        Debug.Log($"BuildingModelInfo.GetSubScenes1 Model:{this.name} trees:{trees.Count} scenes:{bag.Count} setting:{floorLoadSetting}");
+        //Debug.Log($"BuildingModelInfo.GetSubScenes1 Model:{this.name} trees:{trees.Count} scenes:{bag.Count} setting:{floorLoadSetting}");
         return bag;
     }
 
@@ -573,6 +638,40 @@ public class BuildingModelInfo : SubSceneCreater
     public int AllRendererCount = 0;
     public float AllVertextCount = 0;
 
+    private float _inBigVertextCount = 0;
+    private float _inSmallVertextCount = 0;
+    private int _inBigRendererCount = 0;
+    private int _inSmallRendererCount = 0;
+
+    public float InBigVertextCount
+    {
+        get
+        {
+            return _inBigVertextCount;
+        }
+    }
+    public float InSmallVertextCount
+    {
+        get
+        {
+            return _inSmallVertextCount;
+        }
+    }
+    public int InBigRendererCount
+    {
+        get
+        {
+            return _inBigRendererCount;
+        }
+    }
+    public int InSmallRendererCount
+    {
+        get
+        {
+            return _inSmallRendererCount;
+        }
+    }
+
     public float Out0BigVertextCount = 0;
     public float Out0SmallVertextCount = 0;
     public int Out0BigRendererCount = 0;
@@ -699,7 +798,30 @@ public class BuildingModelInfo : SubSceneCreater
         });
         Debug.LogWarning($"ResaveScenes \t{(DateTime.Now - start).ToString()}");
     }
+
+
 #endif
+    internal List<SubScene_Base> GetFloorLoadScenes()
+    {
+        //In_BigTree,_In_SmallTree,_Out0_BigTree,_Out0_SmallTree,_OutTree1
+        List<SubScene_Base> scenes = new List<SubScene_Base>();
+        var trees = GetTrees();
+        foreach (var tree in trees)
+        {
+            if (tree.name.Contains("_In_SmallTree"))
+            {
+                continue;
+            }
+            var treeScenes = tree.GetComponentsInChildren<SubScene_Base>(true);
+            scenes.AddRange(treeScenes);
+        }
+        //if (LODPart)
+        //{
+        //    var treeScenes = LODPart.GetComponentsInChildren<SubScene_Base>(true);
+        //    scenes.AddRange(treeScenes);
+        //}//LOD的加载由LODManager管理
+        return scenes;
+    }
 
     [ContextMenu("SwitchToCombined")]
     public void SwitchToCombined()
@@ -863,7 +985,7 @@ public class BuildingModelInfo : SubSceneCreater
         ModelAreaTree[] ts = null;
         if (this.OutPart1 == null && this.InPart == null)
         {
-            ts= CreateTrees_BigSmall_Core(progressChanged);
+            ts= CreateTrees_BigSmall_Core_Out0(progressChanged);
         }
         else
         {
@@ -978,27 +1100,41 @@ public class BuildingModelInfo : SubSceneCreater
             InitInOut(false);
         }
 
+        List<ModelAreaTree> ts = new List<ModelAreaTree>();
+
         ProgressArg p1 = new ProgressArg("CreateTreesCoreBS", 0, 3, "InTree");
         DisplayProgressBar("InTree", progressChanged, p1);
 
-        List<ModelAreaTree> ts = new List<ModelAreaTree>();
-        var tree1 = CreateTree(InPart, "InTree", p => {
+        //var tree1 = CreateTree(InPart, "InTree", p => {
+        //    p1.AddSubProgress(p);
+        //    DisplayProgressBar("InTree", progressChanged, p1);
+        //});
+        //tree1.HideLeafNodes();
+        //if (tree1 != null)
+        //{
+        //    ts.Add(tree1);
+        //}
+        ////var tree2 = CreateTree(OutPart0, "OutTree0");
+        ////trees[1] = tree2;
+
+        var tbsIn = CreateTrees_BigSmall_Core_In(p =>
+        {
             p1.AddSubProgress(p);
             DisplayProgressBar("InTree", progressChanged, p1);
         });
-        tree1.HideLeafNodes();
-        if (tree1 != null)
-        {
-            ts.Add(tree1);
-        }
-
-        //var tree2 = CreateTree(OutPart0, "OutTree0");
-        //trees[1] = tree2;
+        if (tbsIn != null)
+            foreach (var t in tbsIn)
+            {
+                if (t != null)
+                {
+                    ts.Add(t);
+                }
+            }
 
         ProgressArg p2 = new ProgressArg("CreateTreesCoreBS", 1, 3, "OutTree0");
         DisplayProgressBar("OutTree0", progressChanged, p2);
 
-        var tbs = CreateTrees_BigSmall_Core(p =>
+        var tbs = CreateTrees_BigSmall_Core_Out0(p =>
          {
              p2.AddSubProgress(p);
              DisplayProgressBar("OutTree0", progressChanged, p2);
@@ -1080,7 +1216,8 @@ public class BuildingModelInfo : SubSceneCreater
 
         //var manager=GameObject.FindObjectOfType<>
 
-        GetBigSmallInfo();
+        GetBigSmallInfo_Out0();
+        GetBigSmallInfo_In();
 
         RendererId.InitIds(this.gameObject);
 
@@ -1101,10 +1238,10 @@ public class BuildingModelInfo : SubSceneCreater
 
     // private static AcRTAlignJobSetting JobSetting;
 
-    private BigSmallListInfo GetBigSmallInfo()
+    private BigSmallListInfo GetBigSmallInfo_Out0()
     {
         if(OutPart0==null){
-            Debug.LogError($"GetSmallBigInfo OutPart0==null model:{this.name}");
+            Debug.LogError($"GetBigSmallInfo_Out0 OutPart0==null model:{this.name}");
             return null;
         }
         // JobSetting =GameObject.FindObjectOfType<AcRTAlignJobSetting>(true);
@@ -1113,36 +1250,82 @@ public class BuildingModelInfo : SubSceneCreater
         //     Debug.LogError("GetSmallBigInfo JobSetting == null");
         //     return;
         // }
-        RendererManager.Instance.SetDetailRenderers(this.GetComponentsInChildren<MeshRenderer>(true));
-        var info=new BigSmallListInfo(OutPart0, isIgnoreGPU);
-        Out0BigRendererCount = info.bigModels.Count;
-        Out0BigVertextCount = info.sumVertex_Big;
-        Out0SmallRendererCount = info.smallModels.Count;
-        Out0SmallVertextCount = info.sumVertex_Small;
-        return info;
+        RendererManager.Instance.SetDetailRenderers(OutPart0.GetComponentsInChildren<MeshRenderer>(true));
+        var info_out=new BigSmallListInfo(OutPart0, isIgnoreGPU);
+        Out0BigRendererCount = info_out.bigModels.Count;
+        Out0BigVertextCount = info_out.sumVertex_Big;
+        Out0SmallRendererCount = info_out.smallModels.Count;
+        Out0SmallVertextCount = info_out.sumVertex_Small;
+        return info_out;
     }
 
-    public void HideBigModels()
+    private BigSmallListInfo GetBigSmallInfo_In()
     {
-        BigSmallListInfo info = GetBigSmallInfo();
+        if (InPart == null)
+        {
+            Debug.LogError($"GetBigSmallInfo_In InPart==null model:{this.name}");
+            return null;
+        }
+        // JobSetting =GameObject.FindObjectOfType<AcRTAlignJobSetting>(true);
+        // if (JobSetting == null)
+        // {
+        //     Debug.LogError("GetSmallBigInfo JobSetting == null");
+        //     return;
+        // }
+        //RendererManager.Instance.SetDetailRenderers(InPart.GetComponentsInChildren<MeshRenderer>(true));
+        var info_out = new BigSmallListInfo(InPart, isIgnoreGPU);
+        _inBigRendererCount = info_out.bigModels.Count;
+        _inBigVertextCount = info_out.sumVertex_Big;
+        _inSmallRendererCount = info_out.smallModels.Count;
+        _inSmallVertextCount = info_out.sumVertex_Small;
+        return info_out;
+    }
+
+    public void HideBigModels_Out0()
+    {
+        BigSmallListInfo info = GetBigSmallInfo_Out0();
         info.SetBigModelsVisible(false);
     }
 
-    public void HideSmallModels()
+    public void HideSmallModels_Out0()
     {
-        BigSmallListInfo info = GetBigSmallInfo();
+        BigSmallListInfo info = GetBigSmallInfo_Out0();
         info.SetSmallModelsVisible(false);
     }
 
-    public void ShowBigModels()
+    public void ShowBigModels_Out0()
     {
-        BigSmallListInfo info = GetBigSmallInfo();
+        BigSmallListInfo info = GetBigSmallInfo_Out0();
         info.SetBigModelsVisible(true);
     }
 
-    public void ShowSmallModels()
+    public void ShowSmallModels_Out0()
     {
-        BigSmallListInfo info = GetBigSmallInfo();
+        BigSmallListInfo info = GetBigSmallInfo_Out0();
+        info.SetSmallModelsVisible(true);
+    }
+
+    public void HideBigModels_In()
+    {
+        BigSmallListInfo info = GetBigSmallInfo_In();
+        info.SetBigModelsVisible(false);
+    }
+
+    public void HideSmallModels_In()
+    {
+        BigSmallListInfo info = GetBigSmallInfo_In();
+        info.SetSmallModelsVisible(false);
+    }
+
+    public void ShowBigModels_In()
+    {
+        BigSmallListInfo info = GetBigSmallInfo_In();
+        info.SetBigModelsVisible(true);
+    }
+
+    public void ShowSmallModels_In()
+    {
+        BigSmallListInfo info = GetBigSmallInfo_In();
         info.SetSmallModelsVisible(true);
     }
 
@@ -1336,32 +1519,64 @@ public class BuildingModelInfo : SubSceneCreater
         Debug.LogError($"CreateTreesBSEx {(DateTime.Now - start).ToString()}");
     }
 
-    //[ContextMenu("* CreateTreesBS")]
-    public void CreateTrees_BS()
-    {
+    ////[ContextMenu("* CreateTreesBS")]
+    //public void CreateTrees_BS()
+    //{
 
-        AreaTreeManager treeManager = GameObject.FindObjectOfType<AreaTreeManager>();
-        CreateTrees_BigSmall_Core(null);
-    }
+    //    AreaTreeManager treeManager = GameObject.FindObjectOfType<AreaTreeManager>();
+    //    CreateTrees_BigSmall_Core_Out0(null);
+    //}
 
     [NonSerialized]
     public bool isIgnoreGPU = true;
 
-    public ModelAreaTree[] CreateTrees_BigSmall_Core(Action<ProgressArg> progressChanged)
+    public ModelAreaTree[] CreateTrees_BigSmall_Core_In(Action<ProgressArg> progressChanged)
     {
-        if(this.OutPart0==null)
+        return CreateTrees_BigSmall_Core(this.InPart, progressChanged);
+    }
+
+        public ModelAreaTree[] CreateTrees_BigSmall_Core_Out0(Action<ProgressArg> progressChanged)
+    {
+        //if(this.OutPart0==null)
+        //{
+        //    return null;
+        //}
+        ////trees = CreateTreesInner();
+        ////Debug.Log("CreateTrees_BigSmall");
+        //AreaTreeManager treeManager = GameObject.FindObjectOfType<AreaTreeManager>();
+        //if (treeManager)
+        //{
+        //    treeManager.Target = this.OutPart0;
+        //    var ts= treeManager.CreateOne_BigSmall_Core(this.transform, this.OutPart0, progressChanged, isIgnoreGPU);
+        //    foreach(var tree in ts)
+        //    {
+        //        if (tree == null) continue;
+        //        tree.name = this.name + "_" + tree.name;
+        //    }
+        //    return ts;
+        //}
+        //else
+        //{
+        //    Debug.LogError("treeManager==null");
+        //    return null;
+        //}
+        return CreateTrees_BigSmall_Core(this.OutPart0, progressChanged);
+    }
+
+    public ModelAreaTree[] CreateTrees_BigSmall_Core(GameObject target,Action<ProgressArg> progressChanged)
+    {
+        if (target == null)
         {
             return null;
         }
-        
         //trees = CreateTreesInner();
         //Debug.Log("CreateTrees_BigSmall");
         AreaTreeManager treeManager = GameObject.FindObjectOfType<AreaTreeManager>();
         if (treeManager)
         {
-            treeManager.Target = this.OutPart0;
-            var ts= treeManager.CreateOne_BigSmall_Core(this.transform, this.OutPart0, progressChanged, isIgnoreGPU);
-            foreach(var tree in ts)
+            treeManager.Target = target;
+            var ts = treeManager.CreateOne_BigSmall_Core(this.transform, target, progressChanged, isIgnoreGPU);
+            foreach (var tree in ts)
             {
                 if (tree == null) continue;
                 tree.name = this.name + "_" + tree.name;

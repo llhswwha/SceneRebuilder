@@ -4,6 +4,16 @@ using UnityEngine;
 
 public class DebugInfoRoot : MonoBehaviour
 {
+    public static void ClearDebugInfoGos(Transform target)
+    {
+        DebugInfoRoot[] debugRoots = target.GetComponentsInChildren<DebugInfoRoot>(true);
+        foreach (var item in debugRoots)
+        {
+            if (item == null) continue;
+            GameObject.DestroyImmediate(item.gameObject);
+        }
+    }
+
     public static GameObject NewGo(string name,Transform parent)
     {
         GameObject planInfoRoot = new GameObject(name);

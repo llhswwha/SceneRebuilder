@@ -20,6 +20,11 @@ public class DictList<T>
 
     private Dictionary<T, T> dict = new Dictionary<T, T>();
 
+    public T[] ToArray()
+    {
+        return Items.ToArray();
+    }
+
     public T this[int index]
     {
         get

@@ -11,7 +11,7 @@ public class AreaTreeNodeShowManager : MonoBehaviour
     {
         get{
             if(_instance==null){
-                _instance=GameObject.FindObjectOfType<AreaTreeNodeShowManager>();
+                _instance=GameObject.FindObjectOfType<AreaTreeNodeShowManager>(true);
             }
             return _instance;
         }

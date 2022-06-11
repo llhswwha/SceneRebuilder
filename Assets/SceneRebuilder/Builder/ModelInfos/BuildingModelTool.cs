@@ -86,12 +86,37 @@ public class BuildingModelTool : MonoBehaviour
         FindGosInBounds(0.80f);
     }
 
+    [ContextMenu("MoveDoorToOut0")]
+    public void MoveDoorToOut0()
+    {
+        BuildingModelInfo info = this.GetComponent<BuildingModelInfo>();
+        if (info.OutPart0 == null)
+        {
+            Debug.LogError("MoveDoorToOut0 info.OutPart0 == null");
+            return;
+        }
+        
+        for (int i = 0; i < this.transform.childCount; i++)
+        {
+            var child = this.transform.GetChild(i);
+            if (child.name.Contains("Door"))
+            {
+                //OutRoots.Add(child.gameObject);
+                 child.transform.SetParent(info.OutPart0.transform);
+                Debug.LogError("MoveDoorToOut0 True");
+                return;
+            }
+        }
+        Debug.LogError("MoveDoorToOut0 false");
+    }
 
     [ContextMenu("* SetDoorSetting")]
     public void SetDoorSetting()
     {
         BoundsGos.Clear();
         OutRoots.Clear();
+
+        MoveDoorToOut0();
 
         BuildingModelInfo info = this.GetComponent<BuildingModelInfo>();
         for(int i=0;i<info.OutPart0.transform.childCount;i++)
@@ -105,6 +130,14 @@ public class BuildingModelTool : MonoBehaviour
             {
                 BoundsGos.Add(child.gameObject);
             }
+            if (child.name.Contains("Door"))
+            {
+                OutRoots.Add(child.gameObject);
+            }
+        }
+        for (int i = 0; i < this.transform.childCount; i++)
+        {
+            var child = this.transform.GetChild(i);
             if (child.name.Contains("Door"))
             {
                 OutRoots.Add(child.gameObject);

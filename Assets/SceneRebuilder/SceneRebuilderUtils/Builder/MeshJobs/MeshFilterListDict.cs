@@ -1,6 +1,7 @@
 //using MeshJobs;
 using System.Collections;
 using System.Collections.Generic;
+using System.Text;
 using UnityEngine;
 
 public class MeshFilterListDict
@@ -18,7 +19,9 @@ public class MeshFilterListDict
 
      public bool IsCombinedByVertex=false;
 
-     public int VertexCountOffset=0;
+     public int CombineVertexCountOffset=0;
+
+    public float CombineVertexPercentOffset = 0.05f;
 
     public List<MeshFilterList> GetMeshFiltersList()
     {
@@ -30,22 +33,58 @@ public class MeshFilterListDict
             list.Sort();
             for(int i=0;i<list.Count-1;i++)
             {
-                var a=list[i];
-                var b=list[i+1];
-                if (b.vertexCount - a.vertexCount <= VertexCountOffset)//合并vertexCount相近的列表
+                MeshFilterList a =list[i];
+                for(int j = i+1; j < list.Count; j++)
                 {
-                    a.AddRang(b);
-                    list.RemoveAt(i + 1);
-                    i--;
-                    //Debug.Log($"GetMeshFiltersList mat:{a.MatId} a:{a.vertexCount} b:{b.vertexCount} d:{b.vertexCount - a.vertexCount} dis:{VertexCountOffset}");
+                    MeshFilterList b = list[j];
+                    int offVertex = Mathf.Abs(b.vertexCount - a.vertexCount);
+                    float percent1 = (float)offVertex / (float)b.vertexCount;
+                    float percent2 = (float)offVertex / (float)a.vertexCount;
+                    if (DistanceSetting.IsByMat)
+                    {
+                        if (b.MatId == a.MatId)
+                        {
+                            if (offVertex <= CombineVertexCountOffset || percent1 < CombineVertexPercentOffset)//合并vertexCount相近的列表
+                            {
+                                if (DistanceSetting.IsShowLog)
+                                {
+                                    Debug.LogWarning($"GetMeshFiltersList[{i},{j}][list:{list.Count}] a:[mat={a.MatId} vertexCount={a.vertexCount}] b:[mat={b.MatId} vertexCount={b.vertexCount}] d:{b.vertexCount - a.vertexCount} percent1:{percent1} percent2:{percent2} [DisOffset:{CombineVertexCountOffset} PercentOffset:{CombineVertexPercentOffset}]");
+                                }
+                                a.AddRang(b);
+                                a.vertexCount = (b.vertexCount * b.Count + a.vertexCount * a.Count) / (a.Count + b.Count);
+                                list.RemoveAt(j);
+                                j--;
+                                //break;
+                            }
+                        }
+                    }
+                    else
+                    {
+                        if (offVertex <= CombineVertexCountOffset || percent1 < CombineVertexPercentOffset)//合并vertexCount相近的列表
+                        {
+                            if (DistanceSetting.IsShowLog)
+                            {
+                                Debug.LogWarning($"GetMeshFiltersList[{i},{j}] a:[mat={a.MatId} vertexCount={a.vertexCount}] b:[mat={b.MatId} vertexCount={b.vertexCount}] d:{b.vertexCount - a.vertexCount} percent1:{percent1} percent2:{percent2} [DisOffset:{CombineVertexCountOffset} PercentOffset:{CombineVertexPercentOffset}]");
+                            }
+                            a.AddRang(b);
+                            a.vertexCount = (b.vertexCount * b.Count + a.vertexCount * a.Count) / (a.Count + b.Count);
+                            list.RemoveAt(j);
+                            j--;
+                        }
+                    }
+
+                    if (DistanceSetting.IsShowLog)
+                    {
+                        Debug.Log($"GetMeshFiltersList[{i},{j}] a:[mat={a.MatId} vertexCount={a.vertexCount}] b:[mat={b.MatId} vertexCount={b.vertexCount}] d:{b.vertexCount - a.vertexCount} percent1:{percent1} percent2:{percent2} [DisOffset:{CombineVertexCountOffset} PercentOffset:{CombineVertexPercentOffset}]");
+                    }
                 }
+                
             }
             int count2 = list.Count;
             if (count1 != count2)
             {
-                Debug.Log($"GetMeshFiltersList Start: {count1} VertexCountOffset:{VertexCountOffset} End: {list.Count} |Detail:{GetGroupCountDetails()} | CombineDistance:{VertexCountOffset}");
+                Debug.Log($"GetMeshFiltersList Start: {count1} > End: {count2} VertexCountOffset:{CombineVertexCountOffset} CombineVertexPercentOffset:{CombineVertexPercentOffset}  |Detail:{GetGroupCountDetails()} | CombineDistance:{CombineVertexCountOffset}");
             }
-            
         }
         return list;
     }
@@ -108,6 +147,7 @@ public class MeshFilterListDict
     public MeshFilterListDict(MeshPoints[] meshPoints,int vertexCountOffset)
     {
         int[] meshCounts = new int[meshPoints.Length];
+        StringBuilder sb = new StringBuilder();
         for(int i=0;i<meshPoints.Length;i++)
         {
             var mf=meshPoints[i];
@@ -120,6 +160,10 @@ public class MeshFilterListDict
             var matId = mf.GetMatId();
             //string key=vCount+"_"+matId;
             string key = vCount + "_";
+            if (DistanceSetting.IsByMat)
+            {
+                key = vCount + "_" + matId;
+            }
             string key2= GetDictKey(mf,key);
             if (key2 != key)
             {
@@ -139,18 +183,19 @@ public class MeshFilterListDict
 
                 list.Add(mflNew);
                 dict.Add(key, mflNew);
+                sb.Append(key + ";");
             }
             var mfl = dict[key];
             mfl.Add(mf);
         }
 
-        Debug.Log($"MeshFilterListDict meshPoints:{meshPoints.Length} dict:{dict.Count} count:{dict.Count} vertexCountOffset:{vertexCountOffset}");
+        Debug.Log($"MeshFilterListDict meshPoints:{meshPoints.Length} dict:{dict.Count} count:{dict.Count} vertexCountOffset:{vertexCountOffset} keys:{sb.ToString()}");
 
         // for (int i = 0; i < meshCounts.Length; i++)
         // {
         //     AddMeshFilter(meshCounts[i], meshFilters[i]);
         // }
-        this.VertexCountOffset = vertexCountOffset;
+        this.CombineVertexCountOffset = vertexCountOffset;
         GetMeshFiltersList();
     }
 
