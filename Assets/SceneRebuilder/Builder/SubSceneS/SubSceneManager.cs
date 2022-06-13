@@ -455,18 +455,6 @@ public class SubSceneManager : SingletonBehaviour<SubSceneManager>
     public void LoadScenesEx<T>(T[] scenes, Action<SceneLoadProgress> finishedCallback,string tag) where T : SubScene_Base
     {
         this.logTag = tag;
-        LoadCount++;
-        float vertexCount = 0;
-        foreach(var scene in scenes)
-        {
-            vertexCount += scene.vertexCount;
-        }
-        int rendererCount = 0;
-        foreach (var scene in scenes)
-        {
-            rendererCount += scene.rendererCount;
-        }
-        Debug.Log($"[SubSceneManager.LoadScenes][{LoadCount}]({logTag}) Start! scenes:{scenes.Length} vertexCount:{vertexCount} rendererCount:{rendererCount}");
 
         if(scenes==null|| scenes.Length == 0)
         {
@@ -477,6 +465,19 @@ public class SubSceneManager : SingletonBehaviour<SubSceneManager>
         }
         else
         {
+            LoadCount++;
+            float vertexCount = 0;
+            foreach (var scene in scenes)
+            {
+                vertexCount += scene.vertexCount;
+            }
+            int rendererCount = 0;
+            foreach (var scene in scenes)
+            {
+                rendererCount += scene.rendererCount;
+            }
+            Debug.Log($"[SubSceneManager.LoadScenes][{LoadCount}]({logTag}) Start! scenes:{scenes.Length} vertexCount:{vertexCount} rendererCount:{rendererCount} scene1:{scenes[0]} path:{scenes[0].transform.GetPath()}");
+
             //if (IsOneCoroutine)
             //{
             //    LoadScenesAsyncEx(scenes, finishedCallbak);

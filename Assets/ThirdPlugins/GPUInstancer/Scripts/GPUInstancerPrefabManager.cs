@@ -944,7 +944,7 @@ namespace GPUInstancer
 
         public virtual void RegisterPrefabInstanceList(IEnumerable<GPUInstancerPrefab> prefabInstanceList)
         {
-            Debug.LogError($"RegisterPrefabInstanceList prefabInstanceList:{prefabInstanceList.Count()}, prefabList:{prefabList.Count()}, prototypeList: {prototypeList.Count} ");
+            Debug.Log($"RegisterPrefabInstanceList prefabInstanceList:{prefabInstanceList.Count()}, prefabList:{prefabList.Count()}, prototypeList: {prototypeList.Count} ");
 
             if (_registeredPrefabsRuntimeData == null)
                 _registeredPrefabsRuntimeData = new GPUInstancerPrototypeDict(prototypeList);

@@ -10,7 +10,7 @@ namespace GPUInstancer
            
             _isDebug = isDebug;
 
-            Debug.LogError($"GPUInstancerGUIInfo isDebug:{isDebug} > {IsDebug()}");
+            Debug.Log($"GPUInstancerGUIInfo isDebug:{isDebug} > {IsDebug()}");
         }
 
         private static bool _isDebug = false;
