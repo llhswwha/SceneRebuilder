@@ -8,6 +8,27 @@ namespace CommonUtils
 {
     public static class ColliderExtension
     {
+        /// <summary>
+        /// Returns the percentage of obj contained by region. Both obj and region are calculated as quadralaterals for performance purposes.
+        /// </summary>
+        /// <param name="obj"></param>
+        /// <param name="region"></param>
+        /// <returns></returns>
+        public static float BoundsContainedPercentage(Bounds obj, Bounds region)
+        {
+            var total = 1f;
+
+            for (var i = 0; i < 3; i++)
+            {
+                var dist = obj.min[i] > region.center[i] ?
+                    obj.max[i] - region.max[i] :
+                    region.min[i] - obj.min[i];
+
+                total *= Mathf.Clamp01(1f - dist / obj.size[i]);
+            }
+
+            return total;
+        }
 
         /// <summary>
         /// Ìí¼ÓÅö×²Æ÷£¬ÓÃÓÚÅö×²¼ì²â

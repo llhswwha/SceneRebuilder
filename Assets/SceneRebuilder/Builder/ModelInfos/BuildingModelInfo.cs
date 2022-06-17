@@ -373,14 +373,21 @@ public class BuildingModelInfo : SubSceneCreater
                     bag.AddRange(allScenes);
                 }
             }
-            if (tree.name.Contains("_InTree"))
+
+            if (floorLoadSetting.InRenderers)
             {
-                if (floorLoadSetting.InRenderers)
+                if (tree.name.Contains("_InTree"))
+                {
+                    var allScenes = tree.GetComponentsInChildren<SubScene_In>(true);
+                    bag.AddRange(allScenes);
+                }
+                if (tree.name.Contains("_In_BigTree"))
                 {
                     var allScenes = tree.GetComponentsInChildren<SubScene_In>(true);
                     bag.AddRange(allScenes);
                 }
             }
+
             if (tree.name.Contains("_OutTree1"))
             {
                 if (floorLoadSetting.Out1Renderers)
@@ -388,6 +395,16 @@ public class BuildingModelInfo : SubSceneCreater
                     var allScenes = tree.GetComponentsInChildren<SubScene_Out1>(true);
                     bag.AddRange(allScenes);
                 }
+            }
+            if (tree.name.Contains("_GPUI_SmallTree"))
+            {
+                var allScenes = tree.GetComponentsInChildren<SubScene_GPUI>(true);
+                bag.AddRange(allScenes);
+            }
+            if (tree.name.Contains("_GPUI_BigTree"))
+            {
+                var allScenes = tree.GetComponentsInChildren<SubScene_GPUI>(true);
+                bag.AddRange(allScenes);
             }
         }
 
@@ -400,13 +417,13 @@ public class BuildingModelInfo : SubSceneCreater
             }
         }
 
-        if (GPUIPart != null)
-        {
-            var allScenes = GPUIPart.GetComponentsInChildren<SubScene_Single>(true);
-            bag.AddRange(allScenes);
+        //if (GPUIPart != null)
+        //{
+        //    var allScenes = GPUIPart.GetComponentsInChildren<SubScene_Base>(true);
+        //    bag.AddRange(allScenes);
 
-            Debug.Log($"BuildingModelInfo.GetSubScenes1 GPUIPart != null scenes:{allScenes.Length}");
-        }
+        //    Debug.Log($"BuildingModelInfo.GetSubScenes1 GPUIPart != null scenes:{allScenes.Length}");
+        //}
 
         //Debug.Log($"BuildingModelInfo.GetSubScenes1 Model:{this.name} trees:{trees.Count} scenes:{bag.Count} setting:{floorLoadSetting}");
         return bag;
@@ -815,11 +832,17 @@ public class BuildingModelInfo : SubSceneCreater
             var treeScenes = tree.GetComponentsInChildren<SubScene_Base>(true);
             scenes.AddRange(treeScenes);
         }
-        //if (LODPart)
-        //{
-        //    var treeScenes = LODPart.GetComponentsInChildren<SubScene_Base>(true);
-        //    scenes.AddRange(treeScenes);
-        //}//LOD的加载由LODManager管理
+        if (LODPart)
+        {
+            //var treeScenes = LODPart.GetComponentsInChildren<SubScene_Base>(true);
+            //scenes.AddRange(treeScenes);//LOD的加载由LODManager管理
+
+            var treeScene = LODPart.GetComponent<SubScene_Base>();//加载的是LODs的这个子场景
+            if (treeScene.IsLoaded == false)
+            {
+                scenes.Add(treeScene);
+            }
+        }
         return scenes;
     }
 
@@ -867,7 +890,7 @@ public class BuildingModelInfo : SubSceneCreater
             EditorHelper.UnpackPrefab(t.gameObject);
             GameObject.DestroyImmediate(t.gameObject);
         }
-        this.ShowRenderers();
+        //this.ShowRenderers();
         HideDetail();
     }
 
@@ -965,7 +988,7 @@ public class BuildingModelInfo : SubSceneCreater
 
         UpackPrefab_One(this.gameObject);
 
-        ShowRenderers();
+        //ShowRenderers();
         return CreateTreesCore(progressChanged);
     }
 
@@ -975,7 +998,7 @@ public class BuildingModelInfo : SubSceneCreater
 
         UpackPrefab_One(this.gameObject);
 
-        ShowRenderers();
+        //ShowRenderers();
 
         if (this.OutPart0 == null)
         {
@@ -1116,7 +1139,6 @@ public class BuildingModelInfo : SubSceneCreater
         //}
         ////var tree2 = CreateTree(OutPart0, "OutTree0");
         ////trees[1] = tree2;
-
         var tbsIn = CreateTrees_BigSmall_Core_In(p =>
         {
             p1.AddSubProgress(p);
@@ -1159,6 +1181,21 @@ public class BuildingModelInfo : SubSceneCreater
         {
             ts.Add(tree3);
         }
+
+
+        var tbsGPUI = CreateTrees_BigSmall_Core_GPUI(p =>
+        {
+            p1.AddSubProgress(p);
+            DisplayProgressBar("GPUITree", progressChanged, p1);
+        });
+        if (tbsGPUI != null)
+            foreach (var t in tbsGPUI)
+            {
+                if (t != null)
+                {
+                    ts.Add(t);
+                }
+            }
 
         if (progressChanged != null)
         {
@@ -1252,6 +1289,28 @@ public class BuildingModelInfo : SubSceneCreater
         // }
         RendererManager.Instance.SetDetailRenderers(OutPart0.GetComponentsInChildren<MeshRenderer>(true));
         var info_out=new BigSmallListInfo(OutPart0, isIgnoreGPU);
+        Out0BigRendererCount = info_out.bigModels.Count;
+        Out0BigVertextCount = info_out.sumVertex_Big;
+        Out0SmallRendererCount = info_out.smallModels.Count;
+        Out0SmallVertextCount = info_out.sumVertex_Small;
+        return info_out;
+    }
+
+    private BigSmallListInfo GetBigSmallInfo_GPUI()
+    {
+        if (GPUIPart == null)
+        {
+            //Debug.LogError($"GetBigSmallInfo_GPUI OutPart0==null model:{this.name}");
+            return null;
+        }
+        // JobSetting =GameObject.FindObjectOfType<AcRTAlignJobSetting>(true);
+        // if (JobSetting == null)
+        // {
+        //     Debug.LogError("GetSmallBigInfo JobSetting == null");
+        //     return;
+        // }
+        RendererManager.Instance.SetDetailRenderers(GPUIPart.GetComponentsInChildren<MeshRenderer>(true));
+        var info_out = new BigSmallListInfo(GPUIPart, false);
         Out0BigRendererCount = info_out.bigModels.Count;
         Out0BigVertextCount = info_out.sumVertex_Big;
         Out0SmallRendererCount = info_out.smallModels.Count;
@@ -1354,7 +1413,8 @@ public class BuildingModelInfo : SubSceneCreater
             }
             if (child.name == "GPUI")
             {
-                GPUIPart = child.gameObject; 
+                GPUIPart = child.gameObject;
+                HideGPUIRenderers();
             }
             if (child.name.EndsWith("LODs"))
             {
@@ -1530,12 +1590,25 @@ public class BuildingModelInfo : SubSceneCreater
     [NonSerialized]
     public bool isIgnoreGPU = true;
 
-    public ModelAreaTree[] CreateTrees_BigSmall_Core_In(Action<ProgressArg> progressChanged)
+    public ModelAreaTree[] CreateTrees_BigSmall_Core_GPUI(Action<ProgressArg> progressChanged)
     {
-        return CreateTrees_BigSmall_Core(this.InPart, progressChanged);
+        if (GPUIPart)
+        {
+            SubScene_Base scene = GPUIPart.GetComponent<SubScene_Base>();
+            if (scene != null)
+            {
+                GameObject.DestroyImmediate(scene);
+            }
+        }
+        return CreateTrees_BigSmall_Core(GPUIPart, progressChanged, false);
     }
 
-        public ModelAreaTree[] CreateTrees_BigSmall_Core_Out0(Action<ProgressArg> progressChanged)
+    public ModelAreaTree[] CreateTrees_BigSmall_Core_In(Action<ProgressArg> progressChanged)
+    {
+        return CreateTrees_BigSmall_Core(this.InPart, progressChanged, isIgnoreGPU);
+    }
+
+    public ModelAreaTree[] CreateTrees_BigSmall_Core_Out0(Action<ProgressArg> progressChanged)
     {
         //if(this.OutPart0==null)
         //{
@@ -1560,10 +1633,10 @@ public class BuildingModelInfo : SubSceneCreater
         //    Debug.LogError("treeManager==null");
         //    return null;
         //}
-        return CreateTrees_BigSmall_Core(this.OutPart0, progressChanged);
+        return CreateTrees_BigSmall_Core(this.OutPart0, progressChanged, isIgnoreGPU);
     }
 
-    public ModelAreaTree[] CreateTrees_BigSmall_Core(GameObject target,Action<ProgressArg> progressChanged)
+    public ModelAreaTree[] CreateTrees_BigSmall_Core(GameObject target,Action<ProgressArg> progressChanged, bool isIgnoreGPU)
     {
         if (target == null)
         {
@@ -1824,10 +1897,37 @@ public class BuildingModelInfo : SubSceneCreater
         //if(OutPart0)
         //    OutPart0.SetActive(true);
 
-        //if (GPUIPart)
-        //{
-        //    GPUIPart.SetActive(false);
-        //} 
+        
+    }
+
+    [ContextMenu("HideGPUIRenderers")]
+    public void HideGPUIRenderers()
+    {
+        if (GPUIPart)
+        {
+            //GPUIPart.SetActive(false);
+            MeshRenderer[] meshRenderers = GPUIPart.GetComponentsInChildren<MeshRenderer>();
+            foreach (var renderer in meshRenderers)
+            {
+                renderer.enabled = false;
+                renderer.gameObject.SetActive(false);
+            }
+        }
+    }
+
+    [ContextMenu("ShowGPUIRenderers")]
+    public void ShowGPUIRenderers()
+    {
+        if (GPUIPart)
+        {
+            //GPUIPart.SetActive(false);
+            MeshRenderer[] meshRenderers = GPUIPart.GetComponentsInChildren<MeshRenderer>();
+            foreach (var renderer in meshRenderers)
+            {
+                renderer.enabled = true;
+                renderer.gameObject.SetActive(true);
+            }
+        }
     }
 
     [ContextMenu("ShowDetail")]
@@ -2388,7 +2488,7 @@ public class BuildingModelInfo : SubSceneCreater
 
         EditorCreateLODsScene();
 
-        EditorCreateGPUIScene();
+        //EditorCreateGPUIScene();
 
         if (progressChanged == null)
         {
@@ -2419,19 +2519,19 @@ public class BuildingModelInfo : SubSceneCreater
         return false;
     }
 
-    [ContextMenu("EditorCreateGPUIScene")]
-    public bool EditorCreateGPUIScene()
-    {
-        if (GPUIPart != null && GPUIPart.transform.childCount > 0)
-        {
-            //SubScene_Ref.BeforeCreateScene(GPUIPart);
-            SubScene_Single lodsScene = SubSceneHelper.CreateSubScene<SubScene_Single>(GPUIPart, GPUIPart, SceneContentType.TreeNode);
-            lodsScene.contentType = SceneContentType.GPUI;
-            return true;
-        }
-        return false;
+    //[ContextMenu("EditorCreateGPUIScene")]
+    //public bool EditorCreateGPUIScene()
+    //{
+    //    if (GPUIPart != null && GPUIPart.transform.childCount > 0)
+    //    {
+    //        //SubScene_Ref.BeforeCreateScene(GPUIPart);
+    //        SubScene_Single lodsScene = SubSceneHelper.CreateSubScene<SubScene_Single>(GPUIPart, GPUIPart, SceneContentType.TreeNode);
+    //        lodsScene.contentType = SceneContentType.GPUI;
+    //        return true;
+    //    }
+    //    return false;
         
-    }
+    //}
 
     [ContextMenu("* EditorLoadNodeScenes")]
     public void EditorLoadNodeScenes()
@@ -2449,6 +2549,7 @@ public class BuildingModelInfo : SubSceneCreater
     public void OneKeySaveScene()
     {
         AreaTreeManager.Instance.isCombine = false;
+        InitInOut();
         CreateTreesBSEx();
         EditorCreateNodeScenes();
     }
@@ -2466,6 +2567,11 @@ public class BuildingModelInfo : SubSceneCreater
         Unpack();
         DateTime start = DateTime.Now;
         IdDictionary.InitInfos();
+
+        EditorLoadLODsScene();
+
+        EditorLoadGPUIScene();
+
         var ts = GetTrees();
         for (int i = 0; i < ts.Length; i++)
         {
@@ -2504,9 +2610,7 @@ public class BuildingModelInfo : SubSceneCreater
             });
         }
 
-        EditorLoadLODsScene();
 
-        EditorLoadGPUIScene();
 
         if (progressChanged == null)
         {

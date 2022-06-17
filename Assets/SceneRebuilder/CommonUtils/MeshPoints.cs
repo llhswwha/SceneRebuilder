@@ -251,7 +251,7 @@ public class MeshPoints
 
     private static string GetMatId(MeshRenderer renderer)
     {
-        if (renderer.sharedMaterials.Length > 1)
+        //if (renderer.sharedMaterials.Length > 1)
         {
             string key = "";
             foreach(var mat in renderer.sharedMaterials)
@@ -260,24 +260,24 @@ public class MeshPoints
             }
             return "("+key+")";
         }
-        else
-        {
-            Color color = Color.black;
-            try
-            {
-                if (renderer.sharedMaterial != null)
-                {
-                    if (renderer.sharedMaterial.HasProperty("_Color"))
-                        color = renderer.sharedMaterial.color;
-                }
-            }
-            catch (System.Exception ex)
-            {
-                Debug.LogError($"MeshFilterListDict render:{renderer},mat:{renderer.sharedMaterial},matName:{renderer.sharedMaterial.name},ex:{ex.ToString()}");
-            }
-            var matId = color.ToString();
-            return matId;
-        }
+        //else
+        //{
+        //    Color color = Color.black;
+        //    try
+        //    {
+        //        if (renderer.sharedMaterial != null)
+        //        {
+        //            if (renderer.sharedMaterial.HasProperty("_Color"))
+        //                color = renderer.sharedMaterial.color;
+        //        }
+        //    }
+        //    catch (System.Exception ex)
+        //    {
+        //        Debug.LogError($"MeshFilterListDict render:{renderer},mat:{renderer.sharedMaterial},matName:{renderer.sharedMaterial.name},ex:{ex.ToString()}");
+        //    }
+        //    var matId = color.ToString();
+        //    return matId;
+        //}
     }
 
 

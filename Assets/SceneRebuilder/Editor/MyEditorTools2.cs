@@ -571,6 +571,26 @@ TypeCount2[019]	count:761	type:UnityEngine.UI.Toggle
 
     #region LOD 
 
+    [MenuItem("SceneTools/LOD/CreateLODOfDevs(螺丝)")]
+    public static void CreateLODOfDevs_Luosi()
+    {
+        GameObject go = Selection.activeGameObject;
+        for (int i = 0; i < go.transform.childCount; i++)
+        {
+            var child = go.transform.GetChild(i);
+            if(ProgressBarHelper.DisplayCancelableProgressBar("CreateLODOfDevs", i, go.transform.childCount))
+            {
+                break;
+            }
+            if (child.childCount > 0)
+            {
+                LODGroupInfo lODGroupInfo = child.gameObject.AddMissingComponent<LODGroupInfo>();
+                lODGroupInfo.NewLODs("螺丝");
+            }
+        }
+        ProgressBarHelper.ClearProgressBar();
+    }
+
     [MenuItem("SceneTools/LOD/ClearBoundBox")]
     public static void ClearBoundBox()
     {
@@ -948,6 +968,8 @@ TypeCount2[019]	count:761	type:UnityEngine.UI.Toggle
         ProgressBarHelper.ClearProgressBar();
         Debug.Log($"GetLODGroups groups:{groups.Length}");
     }
+
+
 
     [MenuItem("SceneTools/LOD/ClearLODGroups")]
     public static void ClearLODGroups()
@@ -2117,6 +2139,19 @@ TypeCount2[019]	count:761	type:UnityEngine.UI.Toggle
 
     #region Transform
 
+    [MenuItem("SceneTools/Transform/GetAllChildrenRenderers")]
+    public static void GetAllChildrenRenderers()
+    {
+        GameObject go = Selection.activeGameObject;
+        MeshRenderer[] meshRenderers = go.GetComponentsInChildren<MeshRenderer>(true);
+        foreach(var renderer in meshRenderers)
+        {
+            renderer.transform.SetParent(go.transform);
+        }
+        Debug.Log($"GetAllChildrenRenderers go:{go.name} meshRenderers:{meshRenderers.Length}");
+        MeshHelper.DecreaseEmptyGroupEx(go);
+    }
+
     [MenuItem("SceneTools/Transform/SetSelectionSamePos")]
     public static void SetSelectionSamePos()
     {
@@ -2233,6 +2268,7 @@ TypeCount2[019]	count:761	type:UnityEngine.UI.Toggle
         List<GameObject> gos = Selection.gameObjects.ToList();
         var go = Selection.activeGameObject;
         var parent = go.transform.parent;
+        EditorHelper.UnpackPrefab(parent.gameObject);
         List<Transform> childrens = new List<Transform>();
         for(int i = 0; i < parent.childCount; i++)
         {

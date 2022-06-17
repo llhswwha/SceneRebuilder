@@ -87,6 +87,9 @@ public class SubSceneEditor<T> : BaseEditor<T> where T : SubScene_Base
 
         EditorGUILayout.BeginHorizontal();
         NewButton("Bounds", buttonWidth, true, () => { item.ShowBounds(); });
+        NewButton("SelectObjects", buttonWidth, true, () => { item.EditorSelectObjects(); });
+        NewButton("ShowObjects", buttonWidth, true, () => { item.ShowObjects(); });
+        NewButton("HideObjects", buttonWidth, true, () => { item.HideObjects(); });
         EditorGUILayout.EndHorizontal();
     }
 }
@@ -119,6 +122,42 @@ public class SubScene_LODsEditor : SubSceneEditor<SubScene_LODs>
         GUILayout.Label($"rendererIds:{item.RenderersId.Count}");
 
         base.OnToolLayout(item);
+    }
+}
+
+[CustomEditor(typeof(SubScene_GPUI))]
+public class SubScene_GPUIEditor : SubSceneEditor<SubScene_GPUI>
+{
+    public override void OnToolLayout(SubScene_GPUI item)
+    {
+        base.OnToolLayout(item);
+
+        EditorGUILayout.BeginHorizontal();
+        if (GUILayout.Button("Show"))
+        {
+            item.SetObjectActive(true);
+        }
+        if (GUILayout.Button("Hide"))
+        {
+            item.SetObjectActive(false);
+        }
+        if (GUILayout.Button("StartGPUI1"))
+        {
+            item.StartGPUI1();
+        }
+        if (GUILayout.Button("StartGPUI2"))
+        {
+            item.StartGPUI2();
+        }
+        if (GUILayout.Button("StopGPUI1"))
+        {
+            item.StopGPUI1();
+        }
+        if (GUILayout.Button("StopGPUI2"))
+        {
+            item.StopGPUI2();
+        }
+        EditorGUILayout.EndHorizontal();
     }
 }
 

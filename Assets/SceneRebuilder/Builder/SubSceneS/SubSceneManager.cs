@@ -455,6 +455,7 @@ public class SubSceneManager : SingletonBehaviour<SubSceneManager>
     public void LoadScenesEx<T>(T[] scenes, Action<SceneLoadProgress> finishedCallback,string tag) where T : SubScene_Base
     {
         this.logTag = tag;
+        
 
         if(scenes==null|| scenes.Length == 0)
         {
@@ -705,8 +706,10 @@ public class SubSceneManager : SingletonBehaviour<SubSceneManager>
             WriteLog("LoadScenesByBag", $"Finished2 count:{count} totalScenesCount:{totalScenesCount},\t time:{(DateTime.Now - start).ToString()}");
             OnAllLoaded();
         }
-       
-        Debug.Log($"[SubSceneManager.LoadScenes][ByBag][{LoadCount}]({logTag}) Finished!! scenes:{scenes.Length} currentList:{WattingForLoadedCurrent.Count} allList:{WattingForLoadedAll.Count} time:{(DateTime.Now - start).ToString()}");
+        string log = $"[SubSceneManager.LoadScenes][ByBag][{LoadCount}]({logTag}) Finished!! scenes:{scenes.Length} currentList:{WattingForLoadedCurrent.Count} allList:{WattingForLoadedAll.Count} time:{(DateTime.Now - start).ToString()}";
+        TimeTest.Stop("¬•≤„«–ªª", log);//[1:6496ms][2:2099ms
+        TimeTest.Stop("º”‘ÿ≥°æ∞≤‚ ‘", log);
+        Debug.Log(log);
         yield return null;
     }
 

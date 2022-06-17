@@ -95,8 +95,9 @@ public class InnerMeshNodeEditor : BaseFoldoutEditor<InnerMeshNode>
         }
         if (GUILayout.Button("Destroy"))
         {
-            TransformHelper.ClearComponents<InnerMeshNode>(item.gameObject);
-            TransformHelper.ClearComponents<MeshRendererInfo>(item.gameObject);
+            GameObject go = item.gameObject;
+            TransformHelper.ClearComponents<InnerMeshNode>(go);
+            TransformHelper.ClearComponents<MeshRendererInfo>(go);
         }
             //if (GUILayout.Button("GetAssets"))
             //{

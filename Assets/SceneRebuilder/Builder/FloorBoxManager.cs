@@ -39,6 +39,20 @@ public class FloorBoxManager : SingletonBehaviour<FloorBoxManager>
                 Floors.Add(floor.gameObject);
             }
         }
+
+        if (buildings.Length == 0)
+        {
+            var floors = GameObject.FindObjectsOfType<FloorController>();
+            foreach (var floor in floors)
+            {
+                Floors.Add(floor.gameObject);
+            }
+            Debug.Log($"GetFloors floors:{floors.Length}");
+        }
+        else
+        {
+            Debug.Log($"GetFloors buildings:{buildings.Length}");
+        }
     }
 
     [ContextMenu("InitBoxColliders")]
@@ -47,6 +61,7 @@ public class FloorBoxManager : SingletonBehaviour<FloorBoxManager>
         //FloorBoxs.Clear();
        for (int i=0;i<Floors.Count;i++)
         {
+            if (Floors[i] == null) continue;
             BoxCollider boxCollider = Floors[i].GetBoxCollider();
             //FloorBoxs.Add(boxCollider);
         }
@@ -70,7 +85,7 @@ public class FloorBoxManager : SingletonBehaviour<FloorBoxManager>
     //    return boxes;
     //}
 
-    private List<GameObject> GetBoxes(Bounds b1,Func<BoxCollider,Bounds, bool> isIntersectFun)
+    private List<GameObject> GetIntersectBoxes(Bounds b1,Func<BoxCollider,Bounds, bool> isIntersectFun)
     {
         List<GameObject> result = new List<GameObject>();
         for(int i=0;i<Floors.Count;i++)
@@ -89,19 +104,47 @@ public class FloorBoxManager : SingletonBehaviour<FloorBoxManager>
         return result;
     }
 
-    public List<GameObject> GetBoxes(Transform t)
+    private List<IntersectInfo> GetIntersectBoxesEx(Transform t)
+    {
+        Bounds b0 = CaculateBounds(t.gameObject);
+        return GetIntersectBoxesEx(b0);
+    }
+
+    private List<IntersectInfo> GetIntersectBoxesEx(Bounds b1)
+    {
+        List<IntersectInfo> result = new List<IntersectInfo>();
+        for (int i = 0; i < Floors.Count; i++)
+        {
+            GameObject floor = Floors[i];
+            float pSum = 0;
+            BoxCollider[] boxes = floor.GetComponents<BoxCollider>();
+            foreach (var box in boxes)
+            {
+                float p = ColliderExtension.BoundsContainedPercentage(b1, box.bounds);
+                pSum += p;
+            }
+            if (pSum > 0)
+            {
+                result.Add(new IntersectInfo(floor.transform, pSum));
+            }
+        }
+        result.Sort();
+        return result;
+    }
+
+    public List<GameObject> GetIntersectBoxes(Transform t)
     {
         Bounds b0 = CaculateBounds(t.gameObject);
         List<GameObject> result = new List<GameObject>();
-        result = GetBoxes(b0, (box, b1) =>{ return (box.bounds.Contains(b1.min) && box.bounds.Contains(b1.max) && box.bounds.Contains(b1.center)); });
+        result = GetIntersectBoxes(b0, (box, b1) =>{ return (box.bounds.Contains(b1.min) && box.bounds.Contains(b1.max) && box.bounds.Contains(b1.center)); });
         
         if (result.Count == 0)
         {
-            result = GetBoxes(b0, (box, b1) =>{ return (box.bounds.Contains(b1.center)); });
+            result = GetIntersectBoxes(b0, (box, b1) =>{ return (box.bounds.Contains(b1.center)); });
         }        
         if (result.Count == 0)
         {
-            result = GetBoxes(b0, (box, b1) =>{ return (box.bounds.Intersects(b1)); });
+            result = GetIntersectBoxes(b0, (box, b1) =>{ return (box.bounds.Intersects(b1)); });
         }
         //if (result.Count == 0)
         //{
@@ -110,68 +153,89 @@ public class FloorBoxManager : SingletonBehaviour<FloorBoxManager>
         return result;
     }
 
-    public List<TransformFloorParent> List0 = new List<TransformFloorParent>();
+    public List<TransformFloorParent> List00 = new List<TransformFloorParent>();
+    public List<TransformFloorParent> List01 = new List<TransformFloorParent>();
     public List<TransformFloorParent> List1 = new List<TransformFloorParent>();
     public List<TransformFloorParent> List2 = new List<TransformFloorParent>();
+
+    public float MinIntersectPercent = 0.5f;
 
     [ContextMenu("SetToFloorRenderers")]
     public void SetToFloorRenderers()
     {
-        List0.Clear();
-        List1.Clear();
-        List2.Clear();
-
+        DateTime start = DateTime.Now;
+        ClearList();
         InitBoxColliders();
         MeshRenderer[] meshRenderers = Sources.GetComponentsInChildren<MeshRenderer>(true);
         MeshRendererInfoList meshRendererInfos = new MeshRendererInfoList(meshRenderers);
         foreach (var renderer in meshRendererInfos)
         {
-            List<GameObject> boxes = GetBoxes(renderer.transform);
-            if (boxes.Count == 1)
+            Transform t = renderer.transform;
+            AddToIntersectList(t);
+        }
+        SetParentEx();
+        Debug.Log($"SetToFloorRenderers time:{DateTime.Now - start} meshRenderers:{meshRenderers.Length}");
+    }
+
+    private void ClearList()
+    {
+        List00.Clear();
+        List01.Clear();
+        List1.Clear();
+        List2.Clear();
+    }
+
+    private void AddToIntersectList(Transform t)
+    {
+        List<IntersectInfo> boxes = GetIntersectBoxesEx(t);
+        List<IntersectInfo> boxesIntersect = new List<IntersectInfo>();
+        foreach (var b in boxes)
+        {
+            if (b.percent > MinIntersectPercent)
             {
-                List1.Add(new TransformFloorParent(renderer.transform, boxes[0].transform));
+                boxesIntersect.Add(b);
             }
-            else if(boxes.Count == 0)
+        }
+        if (boxesIntersect.Count == 0)
+        {
+            if (boxes.Count > 0)
             {
-                List0.Add(new TransformFloorParent(renderer.transform));
+                List01.Add(new TransformFloorParent(t, boxes));
             }
             else
             {
-                List2.Add(new TransformFloorParent(renderer.transform, boxes));
+                List00.Add(new TransformFloorParent(t, boxes));
             }
+            
+        }
+        else if (boxesIntersect.Count == 1)
+        {
+            List1.Add(new TransformFloorParent(t, boxes));
+        }
+        else
+        {
+            List2.Add(new TransformFloorParent(t, boxes));
         }
 
-        SetParentEx();
+        List01.Sort();
+        List1.Sort();
+        List2.Sort();
     }
 
     [ContextMenu("SetToFloorChild")]
     public void SetToFloorChild()
     {
-        List0.Clear();
-        List1.Clear();
-        List2.Clear();
-
+        DateTime start = DateTime.Now;
+        ClearList();
         InitBoxColliders();
         //MeshRenderer[] meshRenderers = Sources.GetComponentsInChildren<MeshRenderer>(true);
         for (int i=0;i< Sources.transform.childCount;i++)
         {
             var child = Sources.transform.GetChild(i);
-            List<GameObject> floors = GetBoxes(child);
-            if (floors.Count == 1)
-            {
-                List1.Add(new TransformFloorParent(child.transform, floors[0].transform));
-            }
-            else if (floors.Count == 0)
-            {
-                List0.Add(new TransformFloorParent(child.transform));
-            }
-            else
-            {
-                List2.Add(new TransformFloorParent(child.transform, floors));
-            }
+            AddToIntersectList(child.transform);
         }
-
         SetParentEx();
+        Debug.Log($"SetToFloorChild time:{DateTime.Now-start} childCount:{Sources.transform.childCount}");
     }
 
     public bool IsDebug = false;
@@ -280,15 +344,93 @@ public class FloorBoxManager : SingletonBehaviour<FloorBoxManager>
 }
 
 [Serializable]
-public class TransformFloorParent
+public class IntersectInfo:IComparable<IntersectInfo>
+{
+    public Transform parent
+    {
+        get
+        {
+            if (Container == null) return null;
+            return Container.parent;
+        }
+    }
+
+    public string name
+    {
+        get
+        {
+            if (Container == null) return "";
+            return Container.name;
+        }
+    }
+
+    public Transform Container;
+
+    public float percent;
+
+    public IntersectInfo(Transform go,float p)
+    {
+        Container = go;
+        percent = p;
+    }
+
+    public IntersectInfo(Transform go)
+    {
+        Container = go;
+        percent = 0;
+    }
+
+    public override string ToString()
+    {
+        return $"{name}({parent:P1})";
+    }
+
+    public int CompareTo(IntersectInfo other)
+    {
+        return other.percent.CompareTo(this.percent);
+    }
+}
+
+[Serializable]
+public class TransformFloorParent:IComparable<TransformFloorParent>
 {
     public Transform go;
 
-    public Transform floor;
+    public IntersectInfo floor;
 
-    public List<Transform> floors = new List<Transform>();
+    public List<IntersectInfo> floors = new List<IntersectInfo>();
 
-    public TransformFloorParent(Transform g, Transform p)
+    public IntersectInfo GetDownFloor()
+    {
+        IntersectInfo downFloor = null;
+        float height = float.MaxValue;
+        foreach(var f in floors)
+        {
+            if (f.Container.position.y < height)
+            {
+                height = f.Container.position.y;
+                downFloor = f;
+            }
+        }
+        return downFloor;
+    }
+
+    public float percent
+    {
+        get
+        {
+            if (floor != null)
+            {
+                return floor.percent;
+            }
+            else
+            {
+                return 0;
+            }
+        }
+    }
+
+    public TransformFloorParent(Transform g, IntersectInfo p)
     {
         this.go = g;
         this.floor = p;
@@ -305,20 +447,23 @@ public class TransformFloorParent
         //this.floors = fs;
         foreach (var f in fs)
         {
-            this.floors.Add(f.transform);
+            this.floors.Add(new IntersectInfo(f.transform));
         }
         floor = floors[0];
     }
 
-    public TransformFloorParent(Transform g, List<GameObject> fs)
+    public TransformFloorParent(Transform g, List<IntersectInfo> fs)
     {
         this.go = g;
         //this.floors = fs;
         foreach (var f in fs)
         {
-            this.floors.Add(f.transform);
+            this.floors.Add(f);
         }
-        floor = floors[0];
+        if (floors.Count > 0)
+        {
+            floor = floors[0];
+        }
     }
 
     public string GetFloors()
@@ -326,19 +471,26 @@ public class TransformFloorParent
         string fs = "";
         if (floors.Count == 1)
         {
-            Transform floor = floors[0];
+            IntersectInfo floor = floors[0];
             if (floor != null)
             {
-                fs = $"{floor.parent.name} > {floor.name}";
+                if (floor.parent != null)
+                {
+                    fs = $"{floor.parent.name} > {floor.name}({floor.percent:P1})";
+                }
+                else
+                {
+                    fs = $"{floor.name}({floor.percent:P1})";
+                }
             }
         }
         else
         {
             for (int i = 0; i < floors.Count; i++)
             {
-                Transform f = floors[i];
+                IntersectInfo f = floors[i];
                 if (f == null) continue;
-                fs += f.name;
+                fs += $"{f.name}({f.percent:P1})";
                 if (i < floors.Count - 1)
                 {
                     fs += ";";
@@ -385,7 +537,8 @@ public class TransformFloorParent
             return;
         }
 
-        Transform fP = floor;
+        //Transform fP = floor.Container;
+        Transform fP = GetDownFloor().Container;
         Transform inP = null;
         for (int i = 0; i < fP.childCount; i++)
         {
@@ -418,7 +571,7 @@ public class TransformFloorParent
         //EditorHelper.UnpackPrefab(go.gameObject);
         //go.SetParent(newP.transform);
 
-        List<Transform> path = go.transform.GetAncestors(root.transform);
+        List<Transform> path = go.transform.GetAncestors(root.transform.parent);
         if (isDebug)
         {
             Debug.LogError($"SetParent go:{go} root:{root} paths:{path.Count} path:{go.transform.GetPath(root.transform)}");
@@ -426,5 +579,10 @@ public class TransformFloorParent
 
         Transform newP = TransformHelper.FindOrCreatePath(fP, path, isDebug);
         go.SetParent(newP.transform);
+    }
+
+    public int CompareTo(TransformFloorParent other)
+    {
+        return other.percent.CompareTo(this.percent);
     }
 }

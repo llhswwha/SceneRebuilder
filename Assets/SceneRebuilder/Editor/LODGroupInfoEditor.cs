@@ -13,7 +13,7 @@ public class LODGroupInfoEditor : BaseFoldoutEditor<LODGroupInfo>
     {
         base.OnEnable();
 
-        targetT.GetLODs();
+        targetT.GetLODs(false);
         targetT.CheckLOD0Scenes();
 
         lodListArg = new FoldoutEditorArg(true,true,true,true,true);
@@ -22,6 +22,30 @@ public class LODGroupInfoEditor : BaseFoldoutEditor<LODGroupInfo>
     public override void OnToolLayout(LODGroupInfo item)
     {
         base.OnToolLayout(item);
+
+        EditorGUILayout.BeginHorizontal();
+        if (GUILayout.Button("NewLOD(0)"))
+        {
+            item.NewLODs(0);
+        }
+        if (GUILayout.Button("NewLOD(1)"))
+        {
+            item.NewLODs(1);
+        }
+        if (GUILayout.Button("NewLOD(2)"))
+        {
+            item.NewLODs(2);
+        }
+        if (GUILayout.Button("NewLOD(3)"))
+        {
+            item.NewLODs(3);
+        }
+        if (GUILayout.Button("NewLOD(ÂÝË¿)"))
+        {
+            item.NewLODs("ÂÝË¿");
+        }
+
+        EditorGUILayout.EndHorizontal();
 
         EditorGUILayout.BeginHorizontal();
         if (GUILayout.Button("GetLODs"))

@@ -100,7 +100,7 @@ public static class TransformExtension
         return ancestors;
     }
 
-    public static string GetPath(this Transform t, Transform root = null, string split = ">")
+    public static string GetPath(this Transform t, Transform root = null, string split = ">",int maxNodeCount=0)
     {
         if (t == null)
         {
@@ -120,17 +120,33 @@ public static class TransformExtension
         //return path;
 
         List<Transform> ancestors = GetAncestors(t, root);
-
         string path = "";
-        for (int i = 0; i < ancestors.Count; i++)
+        if (maxNodeCount > 0 && ancestors.Count>maxNodeCount)
         {
-            Transform a = ancestors[i];
-            path += a.name;
-            if (i < ancestors.Count - 1)
+            for (int i = 0; i < maxNodeCount; i++)
             {
-                path += split;
+                Transform a = ancestors[i];
+                path += a.name;
+                if (i < ancestors.Count - 1)
+                {
+                    path += split;
+                }
+            }
+            path += ">...>"+ ancestors[ancestors.Count - 1].name;
+        }
+        else
+        {
+            for (int i = 0; i < ancestors.Count; i++)
+            {
+                Transform a = ancestors[i];
+                path += a.name;
+                if (i < ancestors.Count - 1)
+                {
+                    path += split;
+                }
             }
         }
+
         return path;
     }
 }

@@ -43,6 +43,16 @@ public class SubScene_Base : SubSceneArgComponent
 
     public bool IsLoaded = false;
 
+    public virtual bool CanUnload()
+    {
+        return IsLoaded == true && IsLoading == false && this.gameObject.isStatic==false;
+    }
+
+    public virtual bool CanLoad()
+    {
+        return IsLoaded == false && IsLoading == false;
+    }
+
     public bool GetIsLoaded()
     {
         if (scene != null)
@@ -64,6 +74,22 @@ public class SubScene_Base : SubSceneArgComponent
             {
                 return sceneArg.objs;
             }
+        }
+    }
+
+    public List<GameObject> GetObjects()
+    {
+        if (this.IsLoaded == false)
+        {
+            return new List<GameObject>();
+        }
+        if (sceneArg == null)
+        {
+            return new List<GameObject>();
+        }
+        else
+        {
+            return sceneArg.objs;
         }
     }
 
@@ -296,6 +322,7 @@ public class SubScene_Base : SubSceneArgComponent
 
     internal void ShowBounds(Transform boxP)
     {
+#if UNITY_EDITOR
         //Debug.Log("ShowBounds:"+BoundsName+"|"+ contentType);
         //DestroyBoundsBox();
         //boundsGo = AreaTreeHelper.CreateBoundsCube(bounds, BoundsName, transform);
@@ -308,6 +335,7 @@ public class SubScene_Base : SubSceneArgComponent
         {
             boundsGo.SetActive(true);
         }
+#endif
     }
 
     public Vector3[] GetBoundPoints()
@@ -467,7 +495,7 @@ public class SubScene_Base : SubSceneArgComponent
         }
     }
 
-    internal virtual void HideObjects()
+    public virtual void HideObjects()
     {
         if (IsVisible==false) return;
         IsVisible = false;
@@ -487,7 +515,7 @@ public class SubScene_Base : SubSceneArgComponent
     //public bool IsFirst
 
     public bool IsVisible = true;
-    internal void ShowObjects()
+    public virtual void ShowObjects()
     {
         if (IsVisible) return;
         IsVisible = true;
@@ -507,6 +535,8 @@ public class SubScene_Base : SubSceneArgComponent
     [ContextMenu("UnLoadGosM")]
     public virtual int UnLoadGosM()
     {
+        unloadCount++;
+        unloadTime = DateTime.Now;
         //if (gos != null)
         //{
         //    foreach (var go in gos)
@@ -538,9 +568,14 @@ public class SubScene_Base : SubSceneArgComponent
         return count;
     }
 
+    private DateTime unloadTime;
+    private int unloadCount = 0;
+
     [ContextMenu("UnLoadGos")]
-    public void UnLoadGos()
+    public virtual void UnLoadGos()
     {
+        unloadCount++;
+        unloadTime = DateTime.Now;
         foreach (var go in gos)
         {
             if (go == null) continue;
@@ -745,6 +780,26 @@ public class SubScene_Base : SubSceneArgComponent
         }));
     }
 
+    public IEnumerator UnLoadSceneAsync_Coroutine(bool isUnload = false)
+    {
+        if (IsLoaded == true)
+        {
+            //DestoryGosImmediate();
+            UnLoadGos();
+            SceneLoadArg loadArg = GetSceneArg();
+            loadArg.isUnload = isUnload;
+            yield return EditorHelper.UnLoadSceneAsync(loadArg, progress =>
+            {
+                loadProgress = progress;
+                Debug.Log("progress:" + progress);
+            }, () =>
+            {
+                //GetSceneObjects();
+                IsLoaded = false;
+            });
+        }
+    }
+
     public float loadProgress;
 
 
@@ -870,6 +925,12 @@ public class SubScene_Base : SubSceneArgComponent
     {
         UnLoadGosM();
         EditorLoadSceneEx();
+    }
+
+    [ContextMenu("EditorSelectObjects")]
+    public void EditorSelectObjects()
+    {
+        EditorHelper.SelectObjects(sceneArg.objs);
     }
 
     [ContextMenu("EditorLoadScene")]

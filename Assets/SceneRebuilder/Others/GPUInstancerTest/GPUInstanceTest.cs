@@ -481,7 +481,7 @@ public class GPUInstanceTest : SingletonBehaviour<GPUInstanceTest>
 
     public float UpdatePrefabRootInterval = 0.1f;
 
-    public int CoroutineSize = 1000;
+    public int CoroutineSize = 500;
 
     public List<GameObject> GPUIRoots = new List<GameObject>();
 
@@ -516,7 +516,7 @@ public class GPUInstanceTest : SingletonBehaviour<GPUInstanceTest>
         return true;
     }
 
-    private IEnumerator UpdatePrefabRootsVisible_Coroutine()
+    private IEnumerator AutoUpdatePrefabRootsVisible_Coroutine()
     {
         Debug.Log($"UpdatePrefabRootsVisible_Coroutine Start GPUIRoots:{GPUIRoots.Count}");
         int count = 0;
@@ -560,6 +560,87 @@ public class GPUInstanceTest : SingletonBehaviour<GPUInstanceTest>
         }
     }
 
+    public List<SubScene_GPUI> ScenesOfHide = new List<SubScene_GPUI>();
+    public List<SubScene_GPUI> ScenesOfShow = new List<SubScene_GPUI>();
+
+    private IEnumerator UpdatePrefabRootsVisible_Coroutine()
+    {
+        Debug.Log($"UpdatePrefabRootsVisible_Coroutine Start GPUIRoots:{GPUIRoots.Count}");
+        int count = 0;
+
+
+        while (IsAutoHideShowRoot)
+        {
+            System.DateTime start = System.DateTime.Now;
+            if (GPUIRoots.Count == 0)
+            {
+                Debug.LogError("UpdatePrefabRootsVisible_Coroutine GPUIRoots.Count == 0");
+                IsAutoHideShowRoot = false;
+                break;
+            }
+            int count1 = ScenesOfHide.Count;
+            int count2 = ScenesOfShow.Count;
+           
+            if (ScenesOfHide.Count > 0)
+            {
+                List<SubScene_GPUI> listOfHide = new List<SubScene_GPUI>(ScenesOfHide);
+                ScenesOfHide.Clear();
+                foreach (var scene in listOfHide)
+                {
+                    //yield return RemovePrefabsInstances_Coroutine(scene.GetSceneGPUIPrefabs());
+                    RemovePrefabsInstances(scene.GetSceneGPUIPrefabs());
+                    yield return null;
+                }
+                //yield return RemovePrefabsInstances_Coroutine(listOfHide);
+            }
+            List<SubScene_GPUI> listOfShowFirst = new List<SubScene_GPUI>();
+            List<SubScene_GPUI> listOfShowAdd = new List<SubScene_GPUI>();
+            if (ScenesOfShow.Count > 0)
+            {
+                //List<GPUInstancerPrefab> listOfShow = new List<GPUInstancerPrefab>(ScenesOfShow);
+                //ScenesOfShow.Clear();
+                //yield return AddPrefabInstances_Coroutine(listOfShow, "UpdatePrefabRootsVisible_Coroutine");
+                List<SubScene_GPUI> listOfShow = new List<SubScene_GPUI>(ScenesOfShow);
+                ScenesOfShow.Clear();
+
+                
+                foreach (var scene in listOfShow)
+                {
+                    //StartGPUInstanceEx(scene.gameObject, scene.GetObjects());
+                    //yield return null;
+                    if (instancesDict.ContainsKey(scene.gameObject))
+                    {
+                        listOfShowAdd.Add(scene);
+                    }
+                    else
+                    {
+                        listOfShowFirst.Add(scene);
+                    }
+                }
+
+                foreach (var scene in listOfShowFirst)
+                {
+                    StartGPUInstanceEx(scene.gameObject, scene.GetObjects());
+                    yield return null;
+                }
+                List<GPUInstancerPrefab> instances = new List<GPUInstancerPrefab>();
+                foreach (var scene in listOfShowAdd)
+                {
+                    instances.AddRange(instancesDict[scene.gameObject]);
+                }
+                yield return AddPrefabInstances_Coroutine(instances, "UpdatePrefabRootsVisible");
+            }
+
+            if (isShowLog)
+            {
+                Debug.LogError($"UpdatePrefabRootsVisible Hide:{count1} Show:{count2} listOfShowFirst:{listOfShowFirst.Count} listOfShowAdd:{listOfShowAdd.Count}");
+            }
+            count++;
+
+            yield return new WaitForSeconds(UpdatePrefabRootInterval);
+        }
+    }
+
     private void OnDestroy()
     {
         IsAutoHideShowRoot = false;
@@ -569,6 +650,7 @@ public class GPUInstanceTest : SingletonBehaviour<GPUInstanceTest>
     {
         Debug.Log($"OnDisable:{this.name}");
         StopCoroutine(UpdatePrefabRootsVisible_Coroutine());
+        //StopCoroutine(AutoUpdatePrefabRootsVisible_Coroutine());
     }
 
     private void OnEnable()
@@ -722,13 +804,14 @@ public class GPUInstanceTest : SingletonBehaviour<GPUInstanceTest>
             {
                 System.DateTime start = System.DateTime.Now;
                 Debug.Log($"SetPrefabRootActive_Coroutine isActiveOld != isActiveNew:{root.name}");
+                GPUInstancerPrefab[] prefabs = root.GetComponentsInChildren<GPUInstancerPrefab>(true);
                 if (isActiveNew)
                 {
-                    yield return AddPrefabsOfRoot_Coroutine(root);
+                    yield return AddPrefabInstances_Coroutine(prefabs, "SetPrefabRootActive_Coroutine");
                 }
                 else
                 {
-                    yield return RemovePrefabsOfRoot_Coroutine(root);
+                    yield return RemovePrefabsInstances_Coroutine(prefabs);
                 } 
                 PrefabRootsState[root] = isActiveNew;
 
@@ -752,18 +835,20 @@ public class GPUInstanceTest : SingletonBehaviour<GPUInstanceTest>
         }
     }
 
-    public IEnumerator AddPrefabsOfRoot_Coroutine(GameObject root)
+    public IEnumerator AddPrefabInstances_Coroutine(IEnumerable<GPUInstancerPrefab> prefabs,string tag)
     {
-        GPUInstancerPrefab[] prefabs = root.GetComponentsInChildren<GPUInstancerPrefab>(true);
+        Debug.Log($"AddPrefabInstances_Coroutine[{tag}] prefabs:{prefabs.Count()}");
+        //GPUInstancerPrefab[] prefabs = root.GetComponentsInChildren<GPUInstancerPrefab>(true);
         int j = 0;
-        for (int i = 0; i < prefabs.Length; i++)
+        //for (int i = 0; i < prefabs.Length; i++)
+        foreach(var prefab in prefabs)
         {
-            GPUInstancerPrefab prefab = prefabs[i];
+            //GPUInstancerPrefab prefab = prefabs[i];
             AddPrefabInstance(prefab);
             if (j > CoroutineSize)
             {
                 j = 0;
-                Debug.Log($"AddPrefabsOfRoot_Coroutine[{i}/{prefabs.Length}_{j}/{CoroutineSize}] {root.name} prefab:{prefab.name}");
+                //Debug.Log($"AddPrefabsOfRoot_Coroutine[{i}/{prefabs.Length}_{j}/{CoroutineSize}] {root.name} prefab:{prefab.name}");
                 yield return null;
             }
             j++;
@@ -771,29 +856,50 @@ public class GPUInstanceTest : SingletonBehaviour<GPUInstanceTest>
         }
     }
 
+    public void AddPrefabInstances(IEnumerable<GPUInstancerPrefab> prefabs, string tag)
+    {
+        Debug.Log($"AddPrefabInstances[{tag}] prefabs:{prefabs.Count()}");
+        //GPUInstancerPrefab[] prefabs = root.GetComponentsInChildren<GPUInstancerPrefab>(true);
+        int j = 0;
+        //for (int i = 0; i < prefabs.Length; i++)
+        foreach (var prefab in prefabs)
+        {
+            AddPrefabInstance(prefab);
+        }
+    }
+
     public bool isShowLog = false;
 
-    public IEnumerator RemovePrefabsOfRoot_Coroutine(GameObject root)
+    public IEnumerator RemovePrefabsInstances_Coroutine(IEnumerable<GPUInstancerPrefab> prefabs)
     {
-        GPUInstancerPrefab[] prefabs = root.GetComponentsInChildren<GPUInstancerPrefab>(true);
-        Debug.Log($"RemovePrefabsOfRoot_Coroutine {root.name} prefabs:{prefabs.Length}");
+        //GPUInstancerPrefab[] prefabs = root.GetComponentsInChildren<GPUInstancerPrefab>(true);
+        //Debug.Log($"RemovePrefabsOfRoot_Coroutine {root.name} prefabs:{prefabs.Length}");
         int j = 0;
-        for (int i = 0; i < prefabs.Length; i++)
+        //for (int i = 0; i < prefabs.Length; i++)
+        foreach (var prefab in prefabs)
         {
-            GPUInstancerPrefab prefab = prefabs[i];
+            //GPUInstancerPrefab prefab = prefabs[i];
             RemovePrefabInstance(prefab);
             if (j > CoroutineSize)
             {
                 j = 0;
                 if (isShowLog)
                 {
-                    Debug.Log($"RemovePrefabsOfRoot_Coroutine[{i}/{prefabs.Length}_{j}/{CoroutineSize}] {root.name} prefab:{prefab.name}");
+                    //Debug.Log($"RemovePrefabsOfRoot_Coroutine[{i}/{prefabs.Length}_{j}/{CoroutineSize}] {root.name} prefab:{prefab.name}");
                 }
                 yield return null;
             } 
             j++;
             //Debug.Log($"RemovePrefabsOfRoot_Coroutine[{i}/{prefabs.Length}_{j}/{CoroutineSize}] {root.name} prefab:{prefab.name}");
             //yield return null;
+        }
+    }
+
+    public void RemovePrefabsInstances(IEnumerable<GPUInstancerPrefab> prefabs)
+    {
+        foreach (var prefab in prefabs)
+        {
+            RemovePrefabInstance(prefab);
         }
     }
 
@@ -1122,31 +1228,32 @@ public class GPUInstanceTest : SingletonBehaviour<GPUInstanceTest>
     [ContextMenu("StartGPUInstanceOfGPUIRoots")]
     public void StartGPUInstanceOfGPUIRoots()
     {
-        Debug.Log($"StartGPUInstanceOfGPUIRoots MeshTarget:{GPUIRoots.Count}");
+        Debug.Log($"StartGPUInstanceOfGPUIRoots GPUIRoots:{GPUIRoots.Count}");
         StartGPUInstance(GPUIRoots);
     }
 
     [ContextMenu("StopGPUInstanceOfGPUIRoots")]
     public void StopGPUInstanceOfGPUIRoots()
     {
-        Debug.Log($"StartGPUInstanceOfGPUIRoots MeshTarget:{GPUIRoots.Count}");
+        Debug.Log($"StartGPUInstanceOfGPUIRoots GPUIRoots:{GPUIRoots.Count}");
         StartCoroutine(StopGPUInstanceOfGPUIRoots_Coroutine());
     }
 
-    private IEnumerator StopGPUInstanceOfGPUIRoots_Coroutine()
+    public IEnumerator StopGPUInstanceOfGPUIRoots_Coroutine()
     {
         Debug.Log($"StopGPUInstanceOfGPUIRoots_Coroutine Start GPUIRoots:{GPUIRoots.Count}");
         int count = 0;
         foreach (var root in GPUIRoots)
         {
             if (root == null) continue;
-            yield return RemovePrefabsOfRoot_Coroutine(root);
+            GPUInstancerPrefab[] prefabs = root.GetComponentsInChildren<GPUInstancerPrefab>(true);
+            yield return RemovePrefabsInstances_Coroutine(prefabs);
         }
     }
 
     private int gpuiCount = 0;
 
-    private void StartGPUInstance(List<GameObject> targets)
+    public void StartGPUInstance(List<GameObject> targets)
     {
         System.DateTime start = System.DateTime.Now;
         Dictionary<Mesh, GPUInstancerPrefab> meshPrefabDict = GetMeshPrefabDict();
@@ -1160,7 +1267,38 @@ public class GPUInstanceTest : SingletonBehaviour<GPUInstanceTest>
         Debug.Log($"StartGPUInstance[{++gpuiCount}] targets:{targets.Count} time:{System.DateTime.Now - start} meshPrefabDict:{meshPrefabDict.Count} instances:{instances.Count} ");
     }
 
-    private void StartGPUInstance(GameObject target)
+    private Dictionary<GameObject, List<GPUInstancerPrefab>> instancesDict = new Dictionary<GameObject, List<GPUInstancerPrefab>>();
+
+    public void StartGPUInstanceEx(GameObject keyGo,List<GameObject> targets)
+    {
+        if (targets.Count == 0) return;
+        System.DateTime start = System.DateTime.Now;
+        List<GPUInstancerPrefab> instances = null;
+        if (instancesDict.ContainsKey(keyGo))
+        {
+            instances = instancesDict[keyGo];
+            AddPrefabInstances(instances, "StartGPUInstanceEx");
+            Debug.Log($"StartGPUInstanceEx[{++gpuiCount}] AddPrefabInstances targets:{targets.Count} time:{System.DateTime.Now - start} meshPrefabDict:{meshPrefabDict.Count} instances:{instances.Count} ");
+        }
+        else
+        {
+            Dictionary<Mesh, GPUInstancerPrefab> meshPrefabDict = GetMeshPrefabDict();
+            instances = InitPrefabInstances(targets, meshPrefabDict);
+            if (instances.Count == 0)
+            {
+                return;
+            }
+            //AstroidGenerator.Instance.IsUseGPUOnStart = false;
+            //AstroidGenerator.Instance.asteroidObjects = prefabs0;
+            //AstroidGenerator.Instance.GenerateGos();
+            //Debug.Log($"StartGPUInstance[{++gpuiCount}] target:{target} meshPrefabDict:{meshPrefabDict.Count} instances:{instances.Count} path:{target.transform.GetPath()}");
+            AstroidGenerator.Instance.StartGPUInstance(instances);
+            Debug.Log($"StartGPUInstanceEx[{++gpuiCount}] StartGPUInstance targets:{targets.Count} time:{System.DateTime.Now - start} meshPrefabDict:{meshPrefabDict.Count} instances:{instances.Count} ");
+            instancesDict.Add(keyGo, instances);
+        }
+    }
+
+    public void StartGPUInstance(GameObject target)
     {
         System.DateTime start = System.DateTime.Now;
         Dictionary<Mesh, GPUInstancerPrefab> meshPrefabDict = GetMeshPrefabDict();
@@ -1175,10 +1313,11 @@ public class GPUInstanceTest : SingletonBehaviour<GPUInstanceTest>
     }
 
     [ContextMenu("StartUpdatePrefabRootsVisible")]
-    private void StartUpdatePrefabRootsVisible()
+    public void StartUpdatePrefabRootsVisible()
     {
         IsAutoHideShowRoot = true;
         StartCoroutine(UpdatePrefabRootsVisible_Coroutine());
+        //StartCoroutine(AutoUpdatePrefabRootsVisible_Coroutine());
     }
 
     [ContextMenu("ShowPrototypeList")]

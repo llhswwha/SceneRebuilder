@@ -10,7 +10,8 @@ public class FloorBoxManagerEditor : BaseFoldoutEditor<FloorBoxManager>
 {
     public static FoldoutEditorArg FloorsArg = new FoldoutEditorArg(true, false, true, true, true);
 
-    public static FoldoutEditorArg List1Arg = new FoldoutEditorArg(true, true, true, true, true);
+    public static FoldoutEditorArg List00Arg = new FoldoutEditorArg(true, true, true, true, true);
+    public static FoldoutEditorArg List01Arg = new FoldoutEditorArg(true, true, true, true, true);
     public static FoldoutEditorArg List2Arg = new FoldoutEditorArg(true, true, true, true, true);
     public static FoldoutEditorArg List3Arg = new FoldoutEditorArg(true, true, true, true, true);
 
@@ -47,6 +48,7 @@ public class FloorBoxManagerEditor : BaseFoldoutEditor<FloorBoxManager>
 
         EditorGUILayout.BeginHorizontal();
         item.IsChangeParent = GUILayout.Toggle(item.IsChangeParent, "IsChangeParent");
+        item.MinIntersectPercent = EditorGUILayout.FloatField(item.MinIntersectPercent, "MinIntersect");
         if (GUILayout.Button("SetChild", GUILayout.Width(100)))
         {
             item.SetToFloorChild();
@@ -65,7 +67,8 @@ public class FloorBoxManagerEditor : BaseFoldoutEditor<FloorBoxManager>
              }
          });
 
-        DrawList(List1Arg, item.Sources, item.List0, "List0", null);
+        DrawList(List00Arg, item.Sources, item.List00, "List00", null);
+        DrawList(List01Arg, item.Sources, item.List01, "List01", null);
         DrawList(List2Arg, item.Sources, item.List1, "List1", null);
         DrawList(List3Arg, item.Sources, item.List2, "List2", null);
     }
@@ -93,7 +96,7 @@ public class FloorBoxManagerEditor : BaseFoldoutEditor<FloorBoxManager>
                 TransformFloorParent node = list1[i];
                 if (node.go == null) continue;
                 var arg = FoldoutEditorArgBuffer.editorArgs[node];
-                string path = node.go.transform.GetPath(root.transform);
+                string path = node.go.transform.GetPath(root.transform,">",3);
                 //string title = $"[{i + 1:00}] {node.go.transform.parent.name} > {node.go.name}";
                 string title = $"[{i + 1:00}] {path}";
                 arg.isExpanded = EditorUIUtils.ObjectFoldout(arg.isExpanded, title, $"[{node.GetFloors()}]", false, false, false, node.go.gameObject);

@@ -4,20 +4,29 @@ using UnityEngine;
 
 public class EnableDebug : MonoBehaviour
 {
+    public bool DebugDestroy = true;
+
+    public bool DebugDisable = true;
+
+    public bool DebugEnable = true;
+
 #if UNITY_EDITOR
     private void OnDestroy()
     {
-        Debug.LogError("EnableDebug.OnDestroy:" + this.name);
+        if(DebugDestroy)
+            Debug.LogError($"EnableDebug.OnDestroy:{this.name} path:{transform.GetPath()}");
     }
 
     private void OnDisable()
     {
-        Debug.LogError("EnableDebug.OnDisable:" + this.name);
+        if(DebugDisable)
+            Debug.LogError($"EnableDebug.OnDisable:{this.name} path:{transform.GetPath()}");
     }
 
     private void OnEnable()
     {
-        Debug.LogError("EnableDebug.OnEnable:" + this.name);
+        if(DebugEnable)
+            Debug.LogError($"EnableDebug.OnEnable:{this.name} path:{transform.GetPath()}");
     }
 #endif
 }

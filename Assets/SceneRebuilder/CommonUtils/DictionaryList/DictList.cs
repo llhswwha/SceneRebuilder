@@ -1,3 +1,4 @@
+using System;
 using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
@@ -107,5 +108,13 @@ public class DictList<T>
     public List<T> NewList()
     {
         return new List<T>(Items);
+    }
+
+    public void AddRange(List<T> ss)
+    {
+        foreach(var s in ss)
+        {
+            Add(s);
+        }
     }
 }

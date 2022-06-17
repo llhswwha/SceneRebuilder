@@ -82,6 +82,7 @@
     <Compile Include="Assets\SceneRebuilder\CommonUtils\MeshCombine\MatMeshs.cs" />
     <Compile Include="Assets\SceneRebuilder\CommonUtils\DebugInfoRoot.cs" />
     <Compile Include="Assets\SceneRebuilder\CommonUtils\IGameObject.cs" />
+    <Compile Include="Assets\SceneRebuilder\CommonUtils\EnableDebug.cs" />
     <Compile Include="Assets\SceneRebuilder\CommonUtils\Helpers\PointHelper.cs" />
     <Compile Include="Assets\SceneRebuilder\CommonUtils\InnerScripts\InnerMeshRendererInfo.cs" />
     <Compile Include="Assets\SceneRebuilder\CommonUtils\Transforms\TransformNode.cs" />
@@ -91,7 +92,7 @@
     <Compile Include="Assets\SceneRebuilder\CommonUtils\DictionaryList\PositionDictionaryList.cs" />
     <Compile Include="Assets\SceneRebuilder\CommonUtils\DistanceArgs.cs" />
     <Compile Include="Assets\SceneRebuilder\CommonUtils\InnerScripts\InnerRendererId.cs" />
-    <Compile Include="Assets\SceneRebuilder\CommonUtils\EnableDebug.cs" />
+    <Compile Include="Assets\SceneRebuilder\CommonUtils\MeshTools\BoundsIntersectTool.cs" />
   </ItemGroup>
   <ItemGroup>
      <None Include="Assets\SceneRebuilder\CommonUtils\CommonUtils.asmdef" />

@@ -127,12 +127,13 @@ public class MeshComparer : SingletonBehaviour<MeshComparer>
             return false;
         }
         else{
+            Debug.LogError($"\tCreateNewScaleGo2 dis4:{dis2},scale:{scale.Vector3ToString()}");
             GameObject.DestroyImmediate(goNew1);
             return false;
         }
     }
 
-    public void TryScales()
+    public void TryScales(bool isForce)
     {
         var goNew = MeshHelper.CopyGO(goFrom);
 
@@ -151,7 +152,8 @@ public class MeshComparer : SingletonBehaviour<MeshComparer>
         if(dis==0){
             Debug.LogError(log);
         }
-        else if(dis<0.5f){
+        else if(dis<0.5f || isForce)
+        {
             Debug.LogWarning(log);
 
             // var goNew1 = MeshHelper.CopyGO(goNew);

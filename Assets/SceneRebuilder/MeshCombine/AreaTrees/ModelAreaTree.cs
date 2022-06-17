@@ -30,6 +30,11 @@ public class ModelAreaTree : SubSceneCreater
         return this.name.Contains("_OutTree1");
     }
 
+    public bool IsGPUITree()
+    {
+        return this.name.Contains("_GPUI");
+    }
+
     private void Awake()
     {
         DestroyBoundBox();

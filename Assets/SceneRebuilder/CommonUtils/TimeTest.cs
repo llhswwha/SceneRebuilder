@@ -12,7 +12,7 @@ public static class TimeTest
         {
             DateTime start = times[tag];
             TimeSpan time = DateTime.Now - start;
-            Debug.LogError($"TimeTest.Start tag:{tag} time:{time.TotalMilliseconds:F2}ms");
+            Debug.LogError($"TimeTest.Start[time:{time.TotalMilliseconds:F2}ms] tag:{tag} ");
             times[tag] = DateTime.Now;
         }
         else
@@ -27,7 +27,7 @@ public static class TimeTest
         {
             DateTime start = times[tag];
             TimeSpan time = DateTime.Now - start;
-            Debug.LogError($"TimeTest.Stop tag:{tag} end:{end} time:{time.TotalMilliseconds:F2}ms");
+            Debug.LogError($"TimeTest.Stop[time:{time.TotalMilliseconds:F2}ms] tag:{tag} end:{end} ");
         }
         else
         {

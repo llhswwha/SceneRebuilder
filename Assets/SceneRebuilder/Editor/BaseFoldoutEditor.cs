@@ -1418,13 +1418,25 @@ public class BaseFoldoutEditor<T> : BaseEditor<T> where T : class
 
             PrefabInstanceBuilder.Instance.JobSize=EditorGUILayout.IntField(PrefabInstanceBuilder.Instance.JobSize, GUILayout.Width(50));
             PrefabInstanceBuilder.Instance.disSetting.zeroP = EditorGUILayout.DoubleField(PrefabInstanceBuilder.Instance.disSetting.zeroP, GUILayout.Width(50));
-            if (GUILayout.Button("Pre1", btnStyle, GUILayout.Width(40)))
+            if (GUILayout.Button("Pre(R)", btnStyle, GUILayout.Width(50)))
             {
                 SharedMeshInfoList list2= funcGetList();
                 //list.GetPrefabs();
                 listArg.tag = list2;
 
-                AcRTAlignJobSetting.Instance.SetDefault();
+                AcRTAlignJobSetting.Instance.SetDefault(false);
+                PrefabInstanceBuilder.Instance.GetPrefabInfos(list2, true);
+
+                listArg.tag = funcGetList();
+                isUpate = true;
+            }
+            if (GUILayout.Button("Pre(RS)", btnStyle, GUILayout.Width(50)))
+            {
+                SharedMeshInfoList list2 = funcGetList();
+                //list.GetPrefabs();
+                listArg.tag = list2;
+
+                AcRTAlignJobSetting.Instance.SetDefault(true);
                 PrefabInstanceBuilder.Instance.GetPrefabInfos(list2, true);
 
                 listArg.tag = funcGetList();

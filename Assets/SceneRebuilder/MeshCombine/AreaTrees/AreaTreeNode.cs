@@ -299,7 +299,15 @@ public class AreaTreeNode : SubSceneCreater
             }
 
             if (renderersRoot == null)
+            {
                 renderersRoot = new GameObject(this.name + "_Renderers");
+                //if (tree.name.Contains("_GPUI_SmallTree"))
+                //{
+                //    EnableDebug debug=renderersRoot.AddComponent<EnableDebug>();
+                //    debug.DebugDestroy = false;
+                //    debug.DebugEnable = false;
+                //}
+            }
             return renderersRoot;
         }
         catch (Exception ex)
@@ -1172,12 +1180,7 @@ public class AreaTreeNode : SubSceneCreater
                 node.ShowNodes();
             }
 
-            if (renderersRoot)
-            {
-                renderersRoot.SetActive(true);
-
-                //DynamicCullingManage.Instance.AddObjectsForCulling(Renderers.ToArray());
-            }
+            ShowRenderersRoot();
 
             if (CombinedRenderers == null)
             {
@@ -1217,6 +1220,30 @@ public class AreaTreeNode : SubSceneCreater
             Debug.LogError($"AreaTreeNode.ShowNodes gameObject:{this.name} Exception:{ex}");
         }
         
+    }
+
+    private void ShowRenderersRoot()
+    {
+        if (renderersRoot)
+        {
+            renderersRoot.SetActive(true);
+
+            //DynamicCullingManage.Instance.AddObjectsForCulling(Renderers.ToArray());
+        }
+
+        Debug.LogError($"AreaTreeNode.ShowRenderersRoot :{this.name} path:{transform.GetPath()}");
+    }
+
+    private void HideRenderersRoot()
+    {
+        if (renderersRoot)
+        {
+            renderersRoot.SetActive(false);
+
+            //DynamicCullingManage.Instance.AddObjectsForCulling(Renderers.ToArray());
+        }
+
+        Debug.LogError($"AreaTreeNode.HideRenderersRoot :{this.name} path:{transform.GetPath()}");
     }
 
     public bool IsNodeVisible = true;
@@ -1296,12 +1323,14 @@ public class AreaTreeNode : SubSceneCreater
                     render.gameObject.SetActive(false);
                 }
             }
-            if (renderersRoot)
-            {
-                renderersRoot.SetActive(false);
+            //if (renderersRoot)
+            //{
+            //    renderersRoot.SetActive(false);
 
-                //DynamicCullingManage.Instance.RemoveObjects(Renderers.ToArray());
-            }
+            //    //DynamicCullingManage.Instance.RemoveObjects(Renderers.ToArray());
+            //}
+
+            HideRenderersRoot();
 
             //MeshRenderer mr = this.GetComponent<MeshRenderer>();
             //if(mr!=null)
@@ -1429,6 +1458,10 @@ public class AreaTreeNode : SubSceneCreater
             else if (tree.IsOutTree1())
             {
                 scene2 = SubSceneHelper.EditorCreateScene<SubScene_Out1>(renderersRoot, SceneContentType.TreeNode, false, tree.gameObject);
+            }
+            else if (tree.IsGPUITree())
+            {
+                scene2 = SubSceneHelper.EditorCreateScene<SubScene_GPUI>(renderersRoot, SceneContentType.TreeNode, false, tree.gameObject);
             }
             else
             {

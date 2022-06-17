@@ -257,10 +257,10 @@ public class AreaTreeManager : SingletonBehaviour<AreaTreeManager>
         //areaTree.Target = go;
         //areaTree.name = go.name;
         areaTree.SetRenderers(renderers);
-        areaTree.ShowRenderers();
 
         if (isC)
         {
+            areaTree.ShowRenderers();
             if (combinerSetting)
             {
                 combinerSetting.SetSetting();

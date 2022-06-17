@@ -139,7 +139,7 @@ public class MeshComparerEditor : BaseEditor<MeshComparer>
         EditorGUILayout.BeginHorizontal();
         if (GUILayout.Button("TryScales"))
         {
-            item.TryScales();
+            item.TryScales(true);
         }
         if (GUILayout.Button("TryAngles"))
         {

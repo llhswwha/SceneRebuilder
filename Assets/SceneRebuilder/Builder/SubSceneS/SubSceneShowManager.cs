@@ -30,7 +30,7 @@ public class SubSceneShowManager : SingletonBehaviour<SubSceneShowManager>
     public List<SubScene_Out1> scenes_Out1 = new List<SubScene_Out1>();
     public List<SubScene_In> scenes_In = new List<SubScene_In>();
     public List<SubScene_LODs> scenes_LODs = new List<SubScene_LODs>();
-
+    public List<SubScene_GPUI> scenes_GPUI = new List<SubScene_GPUI>();
     public List<SubScene_In> scenes_In_Part = new List<SubScene_In>();
     public List<SubScene_In> scenes_In_Tree = new List<SubScene_In>();
 
@@ -121,6 +121,9 @@ public class SubSceneShowManager : SingletonBehaviour<SubSceneShowManager>
         scenes_In = GameObject.FindObjectsOfType<SubScene_In>(IncludeInactive).ToList();
         scenes_Out0 = GameObject.FindObjectsOfType<SubScene_Out0>(IncludeInactive).ToList();
         scenes_LODs = GameObject.FindObjectsOfType<SubScene_LODs>(IncludeInactive).ToList();
+        scenes_GPUI= GameObject.FindObjectsOfType<SubScene_GPUI>(IncludeInactive).ToList();
+
+        Debug.Log($"SubSceneShowManager.InitScenes IncludeInactive:{IncludeInactive} In:{scenes_In.Count} Out0:{scenes_Out0.Count} LODs:{scenes_LODs.Count} GPUI:{scenes_GPUI.Count}");
 
         scenes_Out0_Part.Clear();
         scenes_Out0_Tree.Clear();
@@ -225,6 +228,10 @@ public class SubSceneShowManager : SingletonBehaviour<SubSceneShowManager>
             {
                 scenes_LODs.Remove(s as SubScene_LODs);
             }
+            //else if (s is SubScene_GPUI)
+            //{
+            //    scenes_GPUI.Remove(s as SubScene_GPUI);
+            //}
         }
         int count12 = scenes_Out0.Count;
         int count22 = scenes_Out1.Count;
@@ -257,6 +264,10 @@ public class SubSceneShowManager : SingletonBehaviour<SubSceneShowManager>
             else if (s is SubScene_LODs)
             {
                 scenes_LODs.Add(s as SubScene_LODs);
+            }
+            else if (s is SubScene_GPUI)
+            {
+                scenes_GPUI.Add(s as SubScene_GPUI);
             }
         }
         int count12 = scenes_Out0.Count;
@@ -303,7 +314,7 @@ public class SubSceneShowManager : SingletonBehaviour<SubSceneShowManager>
     }
 
     public List<SubScene_Base> WaitingScenes = new List<SubScene_Base>();//Waiting To Finish Load
-
+    public DictList<SubScene_Base> WaitingScenes_ToLoad_Posted = new DictList<SubScene_Base>();
     public DictList<SubScene_Base> WaitingScenes_ToLoad = new DictList<SubScene_Base>();
     public SubScene_Base LoadingScene = null;
     public DictList<SubScene_Base> WaitingScenes_ToUnLoad = new DictList<SubScene_Base>();
@@ -516,7 +527,17 @@ public class SubSceneShowManager : SingletonBehaviour<SubSceneShowManager>
         }
 
         loadScenesCount++;
-        var subScenes1= target.GetComponentsInChildren<SubScene_Base>(true).ToList();
+        BuildingModelInfo buildingModelInfo = target.GetComponent<BuildingModelInfo>();
+        List<SubScene_Base> subScenes1 = null;
+        if (buildingModelInfo != null)
+        {
+            subScenes1 = buildingModelInfo.GetFloorLoadScenes();
+        }
+        else
+        {
+            subScenes1 = target.GetComponentsInChildren<SubScene_Base>(true).ToList();
+        }
+        
         SortClearScenes(subScenes1);
 
         if (subScenes1.Count == 0)
@@ -549,6 +570,7 @@ public class SubSceneShowManager : SingletonBehaviour<SubSceneShowManager>
     private void SortClearScenes(List<SubScene_Base> ss)
     {
         int removeCount1 = ss.RemoveAll(i => i.IsLoaded || i.IsLoading);
+        //ss.Sort((a, b) => a.vertexCount.CompareTo(b.vertexCount));
         //int removeCount2 = ss.RemoveAll(i => i.gameObject.activeInHierarchy == false);
         ss.Sort((a, b) => b.GetBoundsVolume().CompareTo(a.GetBoundsVolume()));
     }
@@ -663,12 +685,13 @@ public class SubSceneShowManager : SingletonBehaviour<SubSceneShowManager>
 
     private void SceneEvents_FloorFocusCompleteAction(FloorController obj)
     {
-        StartLoadScene(obj.gameObject);
+        //StartLoadScene(obj.gameObject);
     }
 
     private void SceneEvents_FloorFocusStartAction(FloorController obj)
     {
         StopLoadScene(obj.gameObject);
+        StartLoadScene(obj.gameObject);//开始聚焦楼层时马上就开始模型加载工作，等镜头拉近了应该已经加载了一部分了。
     }
 
     private void InitOnStart()
@@ -766,14 +789,33 @@ public class SubSceneShowManager : SingletonBehaviour<SubSceneShowManager>
     {
         foreach (var scene in scenes)
         {
-            if (scene.IsLoading || scene.IsLoaded)
+            if (scene == null) continue;
+            if (scene.gameObject.activeInHierarchy == false) continue;
+            if (scene.CanLoad())
             {
                 // Debug.LogWarning($"[LoadUnloadScenes.Load] scene:{scene.GetSceneName()}, IsLoading:{scene.IsLoading} || IsLoaded:{scene.IsLoaded}");
-                continue;
+                //continue;
+                waittingList.Add(scene);
             }
             //scene.LoadSceneAsync(null);
-                waittingList.Add(scene);
+                
         }
+    }
+
+    private void AddToWaitingScenes_UnLoad(IEnumerable<SubScene_Base> scenes, DictList<SubScene_Base> waittingList)
+    {
+        if (IsEnableUnload)
+            foreach (var scene in scenes)
+            {
+                if (scene.CanUnload())
+                {
+                    // Debug.LogWarning($"[LoadUnloadScenes.Unload] scene:{scene.GetSceneName()}, IsLoading:{scene.IsLoading} || IsLoaded:{scene.IsLoaded}");
+                    //scene.UnLoadSceneAsync();
+                    //if (!waittingList.Contains(scene))
+                        waittingList.Add(scene);
+                }
+               
+            }
     }
 
     public void AddToWaitingScenes_ToLoad(IEnumerable<SubScene_Base> scenes)
@@ -794,6 +836,7 @@ public class SubSceneShowManager : SingletonBehaviour<SubSceneShowManager>
 
     public void LoadScenesOfTarget(IEnumerable<SubScene_Base> scenes, Action<SceneLoadProgress> finished)
     {
+        TimeTest.Start("加载场景测试");
         //IsEnableHide = false;
         //IsEnableUnload = false;
         int count = 0;
@@ -847,10 +890,14 @@ public class SubSceneShowManager : SingletonBehaviour<SubSceneShowManager>
         //if (EnableLoadUnload == false) return;
         DateTime start = DateTime.Now;
         if (IsEnableShow)
+        {
+            //List<SubScene_GPUI> gpuiScens = new List<SubScene_GPUI>();
             foreach (var scene in visibleScenes.Items)
             {
                 scene.ShowObjects();
             }
+
+        }
         //TimeOfLoad1 = (DateTime.Now - start).TotalMilliseconds;
 
         if (IsEnableHide)
@@ -875,7 +922,7 @@ public class SubSceneShowManager : SingletonBehaviour<SubSceneShowManager>
         //    }
         //if (IsEnableLoad)
         //    AddToWaitingScenes(loadScenes, WaitingScenes_ToLoad);
-        AddToWaitingScenes_ToLoad(loadScenes.Items);
+        AddToWaitingScenes_ToLoad(loadScenes.Items);//WaitingScenes_ToLoad
         //TimeOfLoad3 = (DateTime.Now - start).TotalMilliseconds;
 
         //if (IsEnableUnload)
@@ -890,9 +937,28 @@ public class SubSceneShowManager : SingletonBehaviour<SubSceneShowManager>
         //        if (!WaitingScenes_ToUnLoad.Contains(scene))
         //            WaitingScenes_ToUnLoad.Add(scene);
         //    }
-        if (IsEnableUnload)
-            AddToWaitingScenes(unloadScenes.Items, WaitingScenes_ToUnLoad);
+        //if (IsEnableUnload)
+        //    AddToWaitingScenes(unloadScenes.Items, WaitingScenes_ToUnLoad);
         //TimeOfLoad4 = (DateTime.Now - start).TotalMilliseconds;
+        AddToWaitingScenes_UnLoad(unloadScenes.Items, WaitingScenes_ToUnLoad);
+
+        if (IsShowLog())
+        {
+            foreach(var item in unloadScenes.Items)
+            {
+                if (loadScenes.Contains(item))
+                {
+                    Debug.LogError($"LoadUnloadScenes Error1 loadScenes.Contains unloadScene scene:{item.name} path:{item.transform.GetPath()}");
+                }
+            }
+            foreach (var item in loadScenes.Items)
+            {
+                if (unloadScenes.Contains(item))
+                {
+                    Debug.LogError($"LoadUnloadScenes Error2 unloadScenes.Contains loadScene scene:{item.name} path:{item.transform.GetPath()}");
+                }
+            }
+        }
 
         TimeOfLoad = (DateTime.Now - start).TotalMilliseconds;
     }
@@ -1013,7 +1079,14 @@ public class SubSceneShowManager : SingletonBehaviour<SubSceneShowManager>
         var angleOfCams = scene.AngleToCam;
         //sumDis += disToCams;
 
-        if (disToCams <= DisOfLoad)
+        bool isLoad = false;
+        bool isVisible = false;
+        float disP = 1f;
+        if(scene is SubScene_GPUI)
+        {
+            disP = 1.5f;
+        }
+        if (disToCams <= DisOfLoad * disP)
         {
             if (angleOfCams < AngleOfLoad)
             {
@@ -1022,7 +1095,20 @@ public class SubSceneShowManager : SingletonBehaviour<SubSceneShowManager>
 
                 if (scene.LifeTimeSpane > DelayOfLoad)
                 {
-                    loadScenes.Add(scene);
+
+                    if (scene.CanLoad())
+                    {
+                        if (scene.name.Contains("Node_2_42_346_13w_Renderers"))//MinHang>Building>Factory>闵行电厂>厂区管道>厂区管道_Out0_SmallTree>RootNode>Node_0_2_6782_374w>Node_1_39_4485_231w>Node_2_42_346_13w>Node_2_42_346_13w_Renderers
+                        {
+                            Debug.Log($"[SubSceneManager.LoadScenes]AddSceneToList  Node_2_42_346_13w_Renderers name:{scene.name} disToCams:{disToCams}({DisOfLoad * disP}) angleOfCams:{angleOfCams}({AngleOfLoad}) LifeTimeSpane:{scene.LifeTimeSpane}({DelayOfLoad}) path:{scene.transform.GetPath()}");
+                        }
+                        loadScenes.Add(scene);
+                    }
+                    else
+                    {
+
+                    }
+                    isLoad = true;
                 }
             }
         }
@@ -1031,39 +1117,47 @@ public class SubSceneShowManager : SingletonBehaviour<SubSceneShowManager>
         //    scene.ClearLifeTime();
         //}
 
-        if (disToCams <= DisOfVisible)
+        if (disToCams <= DisOfVisible * disP)
         {
             if (angleOfCams < AngleOfVisible)
             {
                 visibleScenes.Add(scene);
+                isVisible = true;
             }
         }
-        if (disToCams > DisOfUnLoad)
-        {
-            //unloadScenes.Add(scene);
-            scene.SetLifeTime(1);
-            if (scene.LifeTimeSpane > DelayOfUnLoad)
-            {
-                if (!IsInFloorMode()) unloadScenes.Add(scene);
-            }
 
-        }
-        else
+        if(isLoad==false && isVisible == false)
         {
-            if (angleOfCams > AngleOfUnLoad && disToCams > DisOfLoad)
+            if (scene.CanUnload())
             {
-                //unloadScenes.Add(scene);
-                scene.SetLifeTime(1);
-                if (scene.LifeTimeSpane > DelayOfUnLoad)
+                if (disToCams > DisOfUnLoad * disP)
                 {
-                    if (!IsInFloorMode()) unloadScenes.Add(scene);
+                    //unloadScenes.Add(scene);
+                    scene.SetLifeTime(1);
+                    if (scene.LifeTimeSpane > DelayOfUnLoad)
+                    {
+                        if (!IsInFloorMode()) unloadScenes.Add(scene);
+                    }
+
+                }
+                else
+                {
+                    if (angleOfCams > AngleOfUnLoad && disToCams > DisOfLoad * disP)
+                    {
+                        //unloadScenes.Add(scene);
+                        scene.SetLifeTime(1);
+                        if (scene.LifeTimeSpane > DelayOfUnLoad)
+                        {
+                            if (!IsInFloorMode()) unloadScenes.Add(scene);
+                        }
+                    }
                 }
             }
-        }
 
-        if (disToCams > DisOfHidden || angleOfCams > DisOfHidden)
-        {
-            if (!IsInFloorMode()) hiddenScenes.Add(scene);
+            if (disToCams > DisOfHidden || angleOfCams > DisOfHidden)
+            {
+                if (!IsInFloorMode()) hiddenScenes.Add(scene);
+            }
         }
 
         //if (disToCams <= DisOfLoad)
@@ -1075,36 +1169,62 @@ public class SubSceneShowManager : SingletonBehaviour<SubSceneShowManager>
     private SubSceneBag GetSubScenes()
     {
         SubSceneBag subScenes = new SubSceneBag();
-        foreach (var scene in scenes_Out0_TreeNode_Hidden)
-        {
-            if (scene == null) continue;
-            subScenes.Add(scene);
-        }
+        //foreach (var scene in scenes_Out0_TreeNode_Hidden)
+        //{
+        //    if (scene == null) continue;
+        //    if (scene.gameObject.activeInHierarchy == false)
+        //    {
+        //        //if (scene.name.Contains("Node_2_42_346_13w_Renderers"))//MinHang>Building>Factory>闵行电厂>厂区管道>厂区管道_Out0_SmallTree>RootNode>Node_0_2_6782_374w>Node_1_39_4485_231w>Node_2_42_346_13w>Node_2_42_346_13w_Renderers
+        //        //{
+        //        //    Debug.Log($"[SubSceneManager.LoadScenes]GetSubScenes scenes_Out0_TreeNode_Hidden Node_2_42_346_13w_Renderers name:{scene.name} ({DisOfLoad}) LifeTimeSpane:{scene.LifeTimeSpane}({DelayOfLoad}) path:{scene.transform.GetPath()}");
+        //        //}
+        //        scene.ClearLifeTime();
+        //        continue;
+        //    }
+        //    subScenes.Add(scene);
+        //}
+
+        AddSubScenes(scenes_Out0_TreeNode_Hidden, subScenes);
+
         if (IsEnableLOD)
         {
-            foreach (var scene in scenes_LODs)
-            {
-                if (scene == null) continue;
-                subScenes.Add(scene);
-            }
+            AddSubScenes(scenes_LODs, subScenes);
         }
+
+        //if (IsEnableLOD)
+        {
+            AddSubScenes(scenes_GPUI, subScenes);
+        }
+
         if (IsEnableOut1)
         {
-            foreach (var scene in scenes_Out1)
-            {
-                if (scene == null) continue;
-                subScenes.Add(scene);
-            }
+            AddSubScenes(scenes_Out1, subScenes);
         }
         if (IsEnableIn)
         {
-            foreach (var scene in scenes_In)
-            {
-                if (scene == null) continue;
-                subScenes.Add(scene);
-            }
+            AddSubScenes(scenes_In, subScenes);
         }
         return subScenes;
+    }
+
+    private void AddSubScenes<T>(List<T> scensFrom, SubSceneBag subScenes) where T : SubScene_Base
+    {
+        foreach (var scene in scensFrom)
+        {
+            if (scene == null) continue;
+            if (scene.gameObject.activeInHierarchy == true)
+            {
+                subScenes.Add(scene);
+            }
+            else if (scene.transform.parent != null && scene.transform.parent.gameObject.activeInHierarchy == true)
+            {
+                subScenes.Add(scene);
+            }
+            else
+            {
+                scene.ClearLifeTime();
+            }
+        }
     }
 
     void CalculateDistance(List<SubScene_Base> scenes)
@@ -1394,49 +1514,44 @@ public class SubSceneShowManager : SingletonBehaviour<SubSceneShowManager>
         }
     }
 
-    // Update is called once per frame
-    void Update()
-    {
-        //UpdateSubScenes();
-    }
+    //// Update is called once per frame
+    //void Update()
+    //{
+    //    //UpdateSubScenes();
+    //}
 
     public void StartUpdateSubScenes()
     {
         StartCoroutine(UpdateSubScenes_Coroutine());
     }
 
-    private void UpdateSubScenes()
-    {
-        DateTime start = DateTime.Now;
-
-        RemoveWaitingScenes();
-
-        //LoadWaitingScenes();
-
-        UnLoadWaitingScenes();
-
-        SubSceneBag subScenes = new SubSceneBag();
-        if (IsUpdateDistance)
-        {
-            subScenes = GetSubScenes();
-            if (IsUseJob)
-            {
-                CalculateDistanceByJobs(subScenes);
-            }
-            else
-            {
-                CalculateDistance(subScenes);
-            }
-            LoadUnloadScenes();
-        }
-
-        TimeOfUpdate = (DateTime.Now - start).TotalMilliseconds;
-        if (IsLogTime)
-        {
-            //Debug.Log($"Update subScenes:{subScenes.Count} Update:{TimeOfUpdate:F2}=Dis:{TimeOfDis:F2} Load:{TimeOfLoad:F2}({TimeOfLoad1:F2}+{TimeOfLoad2:F2}+{TimeOfLoad3:F2}+{TimeOfLoad4:F2})");
-            Debug.Log($"UpdateSubScenes subScenes:{subScenes.Count} Update:{TimeOfUpdate:F2}=Dis:{TimeOfDis:F2} Load:{TimeOfLoad:F2}");
-        }
-    }
+    //private void UpdateSubScenes()
+    //{
+    //    DateTime start = DateTime.Now;
+    //    RemoveWaitingScenes();
+    //    //LoadWaitingScenes();
+    //    UnLoadWaitingScenes();
+    //    SubSceneBag subScenes = new SubSceneBag();
+    //    if (IsUpdateDistance)
+    //    {
+    //        subScenes = GetSubScenes();
+    //        if (IsUseJob)
+    //        {
+    //            CalculateDistanceByJobs(subScenes);
+    //        }
+    //        else
+    //        {
+    //            CalculateDistance(subScenes);
+    //        }
+    //        LoadUnloadScenes();
+    //    }
+    //    TimeOfUpdate = (DateTime.Now - start).TotalMilliseconds;
+    //    if (IsLogTime)
+    //    {
+    //        //Debug.Log($"Update subScenes:{subScenes.Count} Update:{TimeOfUpdate:F2}=Dis:{TimeOfDis:F2} Load:{TimeOfLoad:F2}({TimeOfLoad1:F2}+{TimeOfLoad2:F2}+{TimeOfLoad3:F2}+{TimeOfLoad4:F2})");
+    //        Debug.Log($"UpdateSubScenes subScenes:{subScenes.Count} Update:{TimeOfUpdate:F2}=Dis:{TimeOfDis:F2} Load:{TimeOfLoad:F2}");
+    //    }
+    //}
 
     private IEnumerator UpdateSubScenesCoroutine()
     {
@@ -1446,7 +1561,25 @@ public class SubSceneShowManager : SingletonBehaviour<SubSceneShowManager>
 
         //LoadWaitingScenes();
 
-        UnLoadWaitingScenes();
+        //UnLoadWaitingScenes();
+
+        if (WaitingScenes_ToUnLoad.Count > 0)
+        {
+            var list = WaitingScenes_ToUnLoad.NewList();
+            WaitingScenes_ToUnLoad.Clear();
+
+            if (IsShowLog())
+            {
+                Debug.Log($"UnLoadWaitingScenes WaitingScenes_ToUnLoad :{list.Count}");
+            }
+            for (int i = 0; i < list.Count; i++)
+            {
+                var scene = list[0];
+                //UnLoadingScene.UnLoadGos();
+                yield return scene.UnLoadSceneAsync_Coroutine(true);
+                scene.ShowBounds();
+            }
+        }
 
         SubSceneBag subScenes = new SubSceneBag();
         if (IsUpdateDistance)
@@ -1537,22 +1670,26 @@ public class SubSceneShowManager : SingletonBehaviour<SubSceneShowManager>
         }
     }
 
-    private void UnLoadWaitingScenes()
-    {
-        if (WaitingScenes_ToUnLoad.Count > 0)
-        {
-            //Debug.LogError($"WaitingScenes_ToUnLoad :{WaitingScenes_ToUnLoad.Count}");
-            if (UnLoadingScene == null || (UnLoadingScene != null && UnLoadingScene.IsLoaded == false))
-            {
-                UnLoadingScene = WaitingScenes_ToUnLoad[0];
-                WaitingScenes_ToUnLoad.RemoveAt(0);
-                //UnLoadingScene.UnLoadGos();
-                UnLoadingScene.UnLoadSceneAsync(true);
-                UnLoadingScene.ShowBounds();
-                UnLoadingScene = null;
-            }
-        }
-    }
+    //private void UnLoadWaitingScenes()
+    //{
+    //    if (WaitingScenes_ToUnLoad.Count > 0)
+    //    {
+    //        if (IsShowLog())
+    //        {
+    //            Debug.Log($"UnLoadWaitingScenes WaitingScenes_ToUnLoad :{WaitingScenes_ToUnLoad.Count}");
+    //        }
+            
+    //        if (UnLoadingScene == null || (UnLoadingScene != null && UnLoadingScene.IsLoaded == false))
+    //        {
+    //            UnLoadingScene = WaitingScenes_ToUnLoad[0];
+    //            WaitingScenes_ToUnLoad.RemoveAt(0);
+    //            //UnLoadingScene.UnLoadGos();
+    //            UnLoadingScene.UnLoadSceneAsync(true);
+    //            UnLoadingScene.ShowBounds();
+    //            UnLoadingScene = null;
+    //        }
+    //    }
+    //}
 
     public float WaittingInterval = 1f;
 
@@ -1571,6 +1708,7 @@ public class SubSceneShowManager : SingletonBehaviour<SubSceneShowManager>
 
                 int removeCount1=ss.RemoveAll(i => i.IsLoaded || i.IsLoading);
                 int removeCount2 = ss.RemoveAll(i => i.gameObject.activeInHierarchy==false);
+                int removeCount3 = ss.RemoveAll(i => WaitingScenes_ToLoad_Posted.Contains(i));
                 ss.Sort((a, b) => b.GetBoundsVolume().CompareTo(a.GetBoundsVolume()));
                 int count2 = ss.Count;
 
@@ -1590,11 +1728,11 @@ public class SubSceneShowManager : SingletonBehaviour<SubSceneShowManager>
                 {
                     if (count2 > 0)
                     {
-                        Debug.Log($"SubSceneShowManager.PostScenesToLoad  count1:{count1} count2:{count2} removeCount1:{removeCount1}  removeCount2:{removeCount2} inactiveScene:{TransformHelper.GetPathWithActive(inactiveScene)}");
+                        Debug.Log($"SubSceneShowManager.PostScenesToLoad count1:{count1} count2:{count2} remove1:{removeCount1} remove2:{removeCount2} remove3:{removeCount3} inactiveScene:{TransformHelper.GetPathWithActive(inactiveScene)}");
                     }
                     else
                     {
-                        Debug.LogWarning($"SubSceneShowManager.PostScenesToLoad  count1:{count1} count2:{count2} removeCount1:{removeCount1}  removeCount2:{removeCount2} inactiveScene:{TransformHelper.GetPathWithActive(inactiveScene)}");
+                        Debug.LogWarning($"SubSceneShowManager.PostScenesToLoad count1:{count1} count2:{count2} remove1:{removeCount1} remove2:{removeCount2} remove3:{removeCount3} inactiveScene:{TransformHelper.GetPathWithActive(inactiveScene)}");
                     }
                 }
 
@@ -1618,6 +1756,7 @@ public class SubSceneShowManager : SingletonBehaviour<SubSceneShowManager>
             //    if (p.scene != null)
             //        p.scene.HideObjects();
             //});
+            WaitingScenes_ToLoad_Posted.AddRange(ss);
             LoadScenes(ss, p =>
             {
                 if (p.scene != null)
@@ -1626,7 +1765,7 @@ public class SubSceneShowManager : SingletonBehaviour<SubSceneShowManager>
                 {
                     finished(p);
                 }
-
+                WaitingScenes_ToLoad_Posted.Remove(p.scene);
             }, tag);
         }
         else

@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections;
 using System.Collections.Generic;
+using System.Linq;
 using UnityEngine;
 
 //[RequireComponent(typeof(LODGroup))]
@@ -51,14 +52,14 @@ public class LODGroupInfo : MonoBehaviour
     }
 
     [ContextMenu("GetLODs")]
-    public void GetLODs()
+    public void GetLODs(bool isClear = false)
     {
         var allVertexCount=GetLODsInner();
 
         if (allVertexCount == 0)
         {
             Debug.LogError($"GetLODs Error 1 allVertexCount == 0 go:{this.name} path:{this.transform.GetPath()}");
-            LODHelper.CreateLODs(this.gameObject);
+            LODHelper.CreateLODs(this.gameObject,isClear);
             this.GetLODsInner();
 
             if (allVertexCount == 0)
@@ -114,6 +115,38 @@ public class LODGroupInfo : MonoBehaviour
         return allVertexCount;
     }
 
+    [ContextMenu("NewLODs")]
+    public void NewLODs(int lodCount)
+    {
+        LODGroup group = LODHelper.CreateEmptyLODs(gameObject, GetLevels(lodCount));
+        LOD[] lods = group.GetLODs();
+        lods[0].renderers = this.GetRenderers();
+        group.SetLODs(lods);
+
+        GetLODs();
+    }
+
+    [ContextMenu("NewLODs")]
+    public void NewLODs(string key)
+    {
+        LODGroup group = LODHelper.CreateEmptyLODs(gameObject, GetLevels(1));
+        LOD[] lods = group.GetLODs();
+        lods[0].renderers = this.GetRenderers();
+        List<MeshRenderer> lod0Renderers = this.GetRenderers().ToList();
+        for (int i = 0; i < lod0Renderers.Count; i++)
+        {
+            MeshRenderer renderer = lod0Renderers[i];
+            if (renderer.name.Contains(key))
+            {
+                lod0Renderers.RemoveAt(i);
+                i--;
+            }
+        }
+        lods[1].renderers = lod0Renderers.ToArray();
+        group.SetLODs(lods);
+        GetLODs();
+    }
+
     [ContextMenu("SetLODs")]
     public void SetLODs()
     {
@@ -127,6 +160,11 @@ public class LODGroupInfo : MonoBehaviour
             lods.Add(lod);
         }
         LODGroup.SetLODs(lods.ToArray());
+    }
+
+    public MeshRenderer[] GetRenderers()
+    {
+        return this.GetComponentsInChildren<MeshRenderer>(true);
     }
 
     public List<MeshRenderer> GetLODRenderers()
@@ -237,6 +275,26 @@ public class LODGroupInfo : MonoBehaviour
 
     public float[] ls = new float[] { 0.6f, 0.2f,0.1f,0.01f};
 
+    public float[] GetLevels(int lodCount)
+    {
+        if (lodCount == 0)
+        {
+            return new float[] { ls[ls.Length - 1] };
+        }
+        else if(lodCount == 1)
+        {
+            return new float[] { ls[0], ls[ls.Length - 1] };
+        }
+        else if (lodCount == 2)
+        {
+            return new float[] { ls[0], ls[1], ls[ls.Length - 1] };
+        }
+        else
+        {
+            return ls;
+        }
+    }
+
     [ContextMenu("SetDefulatLOD")]
     public void SetDefulatLOD()
     {
@@ -244,9 +302,9 @@ public class LODGroupInfo : MonoBehaviour
     }
 
     [ContextMenu("CreateLOD")]
-    public void CreateLOD()
+    public LODGroup CreateLOD()
     {
-        LODHelper.CreateLODs(gameObject, ls);
+        return LODHelper.CreateEmptyLODs(gameObject, ls);
     }
 
     //public static LOD[] CreateLODs(float[] ls)
@@ -475,8 +533,11 @@ public class LODGroupInfo : MonoBehaviour
         LODGroup.SetLODs(lods);
     }
 
+#if UNITY_EDITOR
     public void OnDestroy()
     {
-        //Debug.Log($"LODGroupInfo.OnDestroy path:{TransformHelper.GetPath(transform)}");
+        Debug.Log($"LODGroupInfo.OnDestroy path:{transform.GetPath()}");
     }
+#endif
+
 }
