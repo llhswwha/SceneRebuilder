@@ -1,4 +1,5 @@
 ﻿//using Base.Common;
+using CommonExtension;
 using CommonUtils;
 using Jacovone.AssetBundleMagic;
 //using System;
@@ -21,6 +22,8 @@ using UnityEngine.SceneManagement;
 
 public static class EditorHelper
 {
+
+
     public static void ForEachEx<T>(this List<T> buildings, string actionName, System.Action<T> actionContent)
     {
         System.DateTime start = System.DateTime.Now;
@@ -57,7 +60,7 @@ public static class EditorHelper
         Debug.LogError($"ForEachEx2 {actionName} Buildings:{buildings.Length},Time:{(System.DateTime.Now - start).TotalMilliseconds}ms");
     }
 
-    
+
 
     public static void UnpackPrefab(GameObject go)
     {
@@ -65,7 +68,7 @@ public static class EditorHelper
         UnpackPrefab(go, PrefabUnpackMode.Completely);
 #endif
     }
-    
+
     public static void Destroy(GameObject go)
     {
         UnpackPrefab(go);
@@ -75,6 +78,147 @@ public static class EditorHelper
 
 
 #if UNITY_EDITOR
+
+    public static T ReplacePrefabInstances<T>(T pre, GameObject target) where T : MonoBehaviour
+    {
+        //GameObject sourcePrefab = pre.gameObject;
+
+        T ins = (T)PrefabUtility.InstantiatePrefab(pre);
+        ins.name = target.name;
+        GameObjectExtension.CopyTransfrom(target.transform, ins.transform);
+        EditorHelper.CopyAllScriptsAndCollider(target, ins.gameObject);
+        GameObject.DestroyImmediate(target);
+        return ins;
+    }
+
+    public static GameObject SavePrefab(GameObject go,string path)
+    {
+        if (go == null)
+        {
+            Debug.LogError("SavePrefab go == null");
+            return null;
+        }
+        //string prefabName= $"{go.name}[{go.GetInstanceID()}]";
+        string prefabName = $"{go.name}";
+        prefabName = prefabName.Replace("/", "=");
+        string prefabPath = $"{path}/{prefabName}.prefab";
+        try
+        {
+            var assetPath = AssetDatabase.GetAssetPath(go);
+            if (string.IsNullOrEmpty(assetPath))
+            {
+                EditorHelper.UnpackPrefab(go);
+                EditorHelper.makeParentDirExist(prefabPath);
+                GameObject assetObj = PrefabUtility.SaveAsPrefabAssetAndConnect(go, prefabPath, InteractionMode.UserAction);
+                Debug.Log($"SavePrefab go:{go.name} asset:{assetObj} 【path:{prefabPath}】 【assetPath:{assetPath}】");
+                return assetObj;
+            }
+            else
+            {
+                Debug.LogWarning($"SavePrefab File Is Existed go:{go} prefabName:{prefabName} \nprefabPath:{prefabPath} \nassetPath:{assetPath}");
+                return null;
+            }
+            //return prefabPath;
+        }
+        catch (System.Exception ex)
+        {
+            var assetPath = AssetDatabase.GetAssetPath(go);
+            Debug.LogError($"SavePrefab go:{go} prefabName:{prefabName} \nprefabPath:{prefabPath} \nassetPath:{assetPath} \nException:{ex}");
+            return null;
+        }
+    }
+
+    public static void DeleteFolderFiles(string folderPath)
+    {
+        DeleteFolderFiles(null, new string[] { folderPath });
+    }
+
+    public static void DeleteFolderFiles(List<Object> exceptionObjs, string folderPath)
+    {
+        DeleteFolderFiles(exceptionObjs, new string[] { folderPath });
+    }
+
+    public static List<Object> GetFolderFiles(string folderPath)
+    {
+        return GetFolderFiles(new string[] { folderPath });
+    }
+
+    public static void SelectFolderFile(string folderPath)
+    {
+        List<Object> files = EditorHelper.GetFolderFiles(folderPath);
+        if (files.Count > 0)
+        {
+            EditorHelper.SelectObject(files[0]);
+        }
+        else
+        {
+            Debug.LogError("NoFile!!");
+        }
+    }
+
+    public static List<Object> GetFolderFiles(string[] folderPaths)
+    {
+        List<Object> assets = new List<Object>();
+        string[] assetsList = AssetDatabase.FindAssets("", folderPaths);
+        for (int i = 0; i < assetsList.Length; i++)
+        {
+            string item = assetsList[i];
+            string path = AssetDatabase.GUIDToAssetPath(item);
+            Object obj = AssetDatabase.LoadAssetAtPath<Object>(path);
+            assets.Add(obj);
+            Debug.Log($"GetFile[{i}]{item} | {path} | {obj}");
+        }
+        return assets;
+    }
+
+    public static void DeleteFolderFiles(List<Object> assets)
+    {
+        for (int i = 0; i < assets.Count; i++)
+        {
+            Object asset = assets[i];
+            var path = AssetDatabase.GetAssetPath(asset);
+            bool b = AssetDatabase.DeleteAsset(path);
+            if (ProgressBarHelper.DisplayCancelableProgressBar("DeleteFile", i + 1, assets.Count, asset.name))
+            {
+                break;
+            }
+            Debug.Log($"DeleteFile[{i}] asset:{asset} path:{path} b:{b}");
+        }
+        AssetDatabase.Refresh();
+        ProgressBarHelper.ClearProgressBar();
+    }
+
+    public static void DeleteFolderFiles(List<Object> exceptionObjs,string[] folderPaths)
+    {
+        //List<Object> assets = new List<Object>();
+        //string[] assetsList = AssetDatabase.FindAssets("", folderPaths);
+        //for (int i = 0; i < assetsList.Length; i++)
+        //{
+        //    string item = assetsList[i];
+        //    string path = AssetDatabase.GUIDToAssetPath(item);
+        //    Object obj = AssetDatabase.LoadAssetAtPath<Object>(path);
+        //    assets.Add(obj);
+        //    Debug.Log($"[{i}]{item} | {path} | {obj}");
+        //}
+
+        List<Object> assets = GetFolderFiles(folderPaths);
+        //List<Object> assets=AssetDatabase.LoadAllAssetsAtPath("Assets/ThirdPlugins/GPUInstancer/Prefabs/").ToList();
+        int count1 = assets.Count;
+        if (exceptionObjs != null)
+        {
+            for (int i = 0; i < exceptionObjs.Count; i++)
+            {
+                var item = exceptionObjs[i];
+                if (assets.Contains(item))
+                {
+                    assets.Remove(item);
+                }
+            }
+        }
+        int count2 = assets.Count;
+        DeleteFolderFiles(assets);
+        Debug.Log($"DeleteFolderFiles exceptionObjs:{exceptionObjs.Count} allCount:{count1} deleteCount:{count2}");
+    }
 
     public static void UnpackPrefab(GameObject go, PrefabUnpackMode unpackMode)
     {
@@ -772,7 +916,7 @@ public static class EditorHelper
     }
 
 
-    public static List<T> CopyComponents<T>(GameObject fromObj, GameObject targetObj) where T : Component
+    public static List<T> CopyComponentsInChildren<T>(GameObject fromObj, GameObject targetObj) where T : Component
     {
         List<T> componentsNew = new List<T>();
         T[] components = fromObj.GetComponentsInChildren<T>();
@@ -800,6 +944,22 @@ public static class EditorHelper
         return componentsNew;
     }
 
+    public static T[] ClearAndCopyComponents<T>(GameObject fromObj, GameObject targetObj) where T : Component
+    {
+        T[] components1 = targetObj.GetComponents<T>();
+        foreach(var com in components1)
+        {
+            GameObject.DestroyImmediate(com);
+        }
+        T[] components2 = fromObj.GetComponents<T>();
+        foreach (var component in components2)
+        {
+            CopyComponent(targetObj, component);
+        }
+        T[] components3 = targetObj.GetComponents<T>();
+        return components3;
+    }
+
     public static void CopyAllComponents(GameObject fromObj, GameObject targetObj, bool isClearAllOldComponents, params System.Type[] notCopyComponents)
     {
         if (fromObj == targetObj) return;
@@ -813,6 +973,31 @@ public static class EditorHelper
         {
             if (IsType(component.GetType(), notCopyComponents)) continue;
 
+            if (component is MonoBehaviour)
+            {
+                CopyComponent(targetObj, component);
+            }
+            if (component is Collider)
+            {
+                if (component is MeshCollider)
+                {
+                    targetObj.AddComponent<MeshCollider>();
+                }
+                else
+                {
+                    CopyComponent(targetObj, component);
+                }
+
+            }
+        }
+    }
+
+    public static void CopyAllScriptsAndCollider(GameObject fromObj, GameObject targetObj)
+    {
+        if (fromObj == targetObj) return;
+        Component[] components = fromObj.GetComponents<Component>();
+        foreach (var component in components)
+        {
             if (component is MonoBehaviour)
             {
                 CopyComponent(targetObj, component);

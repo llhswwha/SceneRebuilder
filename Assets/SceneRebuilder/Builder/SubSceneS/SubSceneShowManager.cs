@@ -1084,7 +1084,7 @@ public class SubSceneShowManager : SingletonBehaviour<SubSceneShowManager>
         float disP = 1f;
         if(scene is SubScene_GPUI)
         {
-            disP = 1.5f;
+            disP = 2f;
         }
         if (disToCams <= DisOfLoad * disP)
         {
@@ -1156,7 +1156,10 @@ public class SubSceneShowManager : SingletonBehaviour<SubSceneShowManager>
 
             if (disToCams > DisOfHidden || angleOfCams > DisOfHidden)
             {
-                if (!IsInFloorMode()) hiddenScenes.Add(scene);
+                if (!IsInFloorMode())
+                {
+                    hiddenScenes.Add(scene);
+                }
             }
         }
 

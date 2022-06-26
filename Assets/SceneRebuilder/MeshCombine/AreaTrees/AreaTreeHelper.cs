@@ -121,32 +121,50 @@ public static class AreaTreeHelper
 
     public static bool RegisterRendererId(string rendererId,int id, AreaTreeNode newNode)
     {
-        //Debug.LogError($"AreaTreeHelper RegisterRendererId rendererId:{rendererId} id:{id} node:{newNode} tree:{newNode.tree} path:{TransformHelper.GetPath(newNode.transform)} dict:{renderId2NodeDict.Count}");
-        if (rendererId == null) return false;
-        if (renderId2NodeDict.ContainsKey(rendererId))
+        try
         {
-            var node = renderId2NodeDict[rendererId];
-            if (node == null)
+            if (newNode == null)
             {
-                //Debug.LogWarning($"Node1被删除了 render:{render},node1:{AreaTreeHelper.render2NodeDict[render]},node2:{this}");
-                renderId2NodeDict[rendererId] = newNode;
+                Debug.LogError($"AreaTreeHelper.RegisterRendererId newNode == null rendererId:{rendererId} id:{id} node:{newNode}");
+                return false;
             }
-            else if (node == newNode)
+            //Debug.LogError($"AreaTreeHelper RegisterRendererId rendererId:{rendererId} id:{id} node:{newNode} tree:{newNode.tree} path:{TransformHelper.GetPath(newNode.transform)} dict:{renderId2NodeDict.Count}");
+            if (string.IsNullOrEmpty(rendererId))
             {
+                Debug.LogError($"AreaTreeHelper.RegisterRendererId string.IsNullOrEmpty(rendererId) rendererId:{rendererId} id:{id} node:{newNode} tree:{newNode.tree} path:{newNode.transform.GetPath()} dict:{renderId2NodeDict.Count}");
+                return false;
+            }
+            if (renderId2NodeDict.ContainsKey(rendererId))
+            {
+                var node = renderId2NodeDict[rendererId];
+                if (node == null)
+                {
+                    //Debug.LogWarning($"Node1被删除了 render:{render},node1:{AreaTreeHelper.render2NodeDict[render]},node2:{this}");
+                    renderId2NodeDict[rendererId] = newNode;
+                }
+                else if (node == newNode)
+                {
 
+                }
+                else
+                {
+                    Debug.LogError($"AreaTreeHelper RegisterRendererId 模型重复在不同的Node里 rendererId:{rendererId} id:{id} node:{newNode} tree:{newNode.tree} path:{newNode.transform.GetPath()} dict:{renderId2NodeDict.Count}");
+                    renderId2NodeDict[rendererId] = newNode;
+                    return false;
+                }
             }
             else
             {
-                Debug.LogError($"AreaTreeHelper RegisterRendererId 模型重复在不同的Node里 tree:{newNode.tree.name} renderId:{rendererId},index:{id} node1:{renderId2NodeDict[rendererId].name},node2:{newNode.name}");
-                renderId2NodeDict[rendererId] = newNode;
-                return false;
+                renderId2NodeDict.Add(rendererId, newNode);
             }
+            return true;
         }
-        else
+        catch (Exception ex)
         {
-            renderId2NodeDict.Add(rendererId, newNode);
+            Debug.LogError($"AreaTreeHelper.RegisterRendererId Exception rendererId:{rendererId} id:{id} node:{newNode} Exception:{ex}");
+            return false;
         }
-        return true;
+        
     }
 
     public static void AddNodeDictItem_Renderers(IEnumerable<MeshRenderer> renderers,AreaTreeNode node)

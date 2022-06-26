@@ -33,6 +33,7 @@ public class MyHierarchyEditorInitializer
     public static float Layer1Width = 115;
     public static float Layer2Width = 65;
     public static float Layer3Width = 45;
+    public static float Layer4Width = 25;
 
     private static void ShowBuildingModelInfo(GameObject go,int instancedId,Rect selectionRect)
     {
@@ -196,6 +197,10 @@ public class MyHierarchyEditorInitializer
             else if (go.GetComponent<LODGroup>() != null)
             {
                 CreateLabel("[LODGroup]", selectionRect, Layer2Width, Color.gray, Color.red);
+            }
+            else if (go.GetComponent<GPUInstancer.GPUInstancerPrefab>() != null)
+            {
+                CreateLabel("[GPUI]", selectionRect, Layer4Width, Color.blue, Color.red);
             }
             else
             {

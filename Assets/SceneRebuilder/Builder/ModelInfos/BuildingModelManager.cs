@@ -338,21 +338,25 @@ public class BuildingModelManager : SingletonBehaviour<BuildingModelManager>
 
     public void OneKeyLoadScene(BuildingModelInfo[] buildings)
     {
+        DateTime start = DateTime.Now;
+        IdDictionary.InitInfos();
         foreach (var b in buildings)
         {
-            b.OneKeyLoadScene();
+            b.OneKeyLoadScene(false);
         }
-        Debug.LogError($"OneKeyLoadScene buildings:{buildings.Length}");
+        IdDictionary.InitInfos();
+        Debug.LogError($"OneKeyLoadScene buildings:{buildings.Length} time:{DateTime.Now-start}");
     }
 
     public void OneKeySaveScene(BuildingModelInfo[] buildings)
     {
+        DateTime start = DateTime.Now;
         foreach (var b in buildings)
         {
             b.OneKeySaveScene();
         }
         EditorHelper.ClearOtherScenes();
-        Debug.LogError($"OneKeySaveScene buildings:{buildings.Length}");
+        Debug.LogError($"OneKeySaveScene buildings:{buildings.Length} time:{DateTime.Now - start}");
     }
 
     public void OneKey_Save()

@@ -2539,9 +2539,9 @@ public class BuildingModelInfo : SubSceneCreater
         EditorLoadNodeScenes(null);
     }
 
-    public void OneKeyLoadScene()
+    public void OneKeyLoadScene(bool isInitIds = true)
     {
-        EditorLoadNodeScenesEx();
+        EditorLoadNodeScenesEx(isInitIds);
         DestroyScenesEx();
         ClearTrees();
     }
@@ -2555,18 +2555,21 @@ public class BuildingModelInfo : SubSceneCreater
     }
 
 
-    public void EditorLoadNodeScenesEx()
+    public void EditorLoadNodeScenesEx(bool isInitIds = true)
     {
         IdDictionary.InitInfos();
-        EditorLoadNodeScenes(null);
+        EditorLoadNodeScenes(null, isInitIds);
     }
 
     //[ContextMenu("* EditorLoadNodeScenes")]
-    public void EditorLoadNodeScenes(Action<ProgressArg> progressChanged)
+    public void EditorLoadNodeScenes(Action<ProgressArg> progressChanged,bool isInitIds=true)
     {
         Unpack();
         DateTime start = DateTime.Now;
-        IdDictionary.InitInfos();
+        if (isInitIds)
+        {
+            IdDictionary.InitInfos();
+        }
 
         EditorLoadLODsScene();
 

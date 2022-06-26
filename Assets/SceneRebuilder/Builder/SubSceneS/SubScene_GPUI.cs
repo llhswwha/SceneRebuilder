@@ -5,6 +5,18 @@ using UnityEngine;
 
 public class SubScene_GPUI : SubScene_Part
 {
+#if UNITY_EDITOR
+    public void OnDisable()
+    {
+        Debug.LogError($"GPUI_OnDisable path:{this.transform.GetPath()} IsVisible:{IsVisible}");
+        HideObjects();
+    }
+    public void OnEnable()
+    {
+        Debug.LogError($"GPUI_OnEnable path:{this.transform.GetPath()}  IsVisible:{IsVisible}");
+    }
+#endif
+
     protected override string BoundsName
     {
         get
@@ -22,7 +34,7 @@ public class SubScene_GPUI : SubScene_Part
         {
             //List<GPUInstancerPrefab> prefabs = GetSceneGPUIPrefabs();
             //GPUInstanceTest.Instance.PrefabsOfHide.AddRange(prefabs);
-            GPUInstanceTest.Instance.ScenesOfHide.Add(this);
+            GPUInstanceTest.Instance.AddHideScene(this);
         }
     }
 
@@ -40,7 +52,7 @@ public class SubScene_GPUI : SubScene_Part
             //}
             //GPUInstanceTest.Instance.PrefabsOfShow.AddRange(prefabs);
 
-            GPUInstanceTest.Instance.ScenesOfShow.Add(this);
+            GPUInstanceTest.Instance.AddShowScene(this);
         }
     }
 
@@ -62,7 +74,7 @@ public class SubScene_GPUI : SubScene_Part
     public void StartGPUI2()
     {
         List<GPUInstancerPrefab> prefabs = GetSceneGPUIPrefabs();
-        GPUInstanceTest.Instance.ScenesOfShow.Add(this);
+        GPUInstanceTest.Instance.AddShowScene(this);
     }
 
     public void StopGPUI1()
@@ -74,7 +86,7 @@ public class SubScene_GPUI : SubScene_Part
     public void StopGPUI2()
     {
         List<GPUInstancerPrefab> prefabs = GetSceneGPUIPrefabs();
-        GPUInstanceTest.Instance.ScenesOfHide.Add(this);
+        GPUInstanceTest.Instance.AddHideScene(this);
     }
 
     private List<GPUInstancerPrefab> gpuiPrefabs = new List<GPUInstancerPrefab>();

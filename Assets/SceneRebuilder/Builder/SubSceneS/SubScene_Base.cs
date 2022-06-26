@@ -818,6 +818,32 @@ public class SubScene_Base : SubSceneArgComponent
         AreaTreeNode node=this.transform.parent.GetComponent<AreaTreeNode>();
         if(node!=null)
             node.LoadRenderers(this.gameObject);
+
+        //foreach(var g in gs)
+        //{
+        //    EnabledRendererColliders(g);
+        //}
+    }
+
+    public static void EnabledRendererColliders(GameObject go)
+    {
+        //ClearComponents<Collider>();
+        //TransformHelper.SetCollidersEnabled(Selection.gameObjects)
+        int count = 0;
+        var cs = go.GetComponentsInChildren<MeshRenderer>(true);
+        foreach (var item in cs)
+        {
+            Collider[] colliders = item.GetComponents<Collider>();
+            foreach (var collider in colliders)
+            {
+                if (collider.enabled == false)
+                {
+                    collider.enabled = true;
+                    count++;
+                }
+            }
+        }
+        Debug.Log($"EnabledRendererColliders cs:{cs.Length} count:{count}");
     }
 
     [ContextMenu("UpdateRidParent")]
@@ -838,14 +864,16 @@ public class SubScene_Base : SubSceneArgComponent
      [ContextMenu("SetRendererParent")]
     public virtual void SetRendererParent()
     {
+        var treeNodeManager = AreaTreeNodeShowManager.Instance;
         RendererId[] rIds=this.GetComponentsInChildren<RendererId>(true);
         foreach(var rI in rIds){
             rI.SetParent();
             IdDictionary.SetId(rI);
-            AreaTreeNodeShowManager.Instance.MoveRenderer(rI);
+            if (treeNodeManager)
+            {
+                treeNodeManager.MoveRenderer(rI);
+            }
         }
-
-
     }
 
      [ContextMenu("SetRendererParent_Ids")]

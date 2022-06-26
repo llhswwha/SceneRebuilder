@@ -114,6 +114,15 @@ public class DictList<T>
     {
         foreach(var s in ss)
         {
+            if (s == null) continue;
+            Add(s);
+        }
+    }
+    public void AddRange(T[] ss)
+    {
+        foreach (var s in ss)
+        {
+            if (s == null) continue;
             Add(s);
         }
     }

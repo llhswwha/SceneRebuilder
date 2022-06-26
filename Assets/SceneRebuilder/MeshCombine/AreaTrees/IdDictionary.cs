@@ -47,6 +47,8 @@ public static class IdDictionary
         SetRendererId(id, id.mr, isUpdate);
     }
 
+    public static Dictionary<MeshRenderer, string> errorRenderers = new Dictionary<MeshRenderer, string>();
+
     private static void SetRendererId(RendererId id, MeshRenderer renderer, bool isUpdate = false, bool isShowError = false)
     {
         try
@@ -97,7 +99,15 @@ public static class IdDictionary
                         }
                         else if (renderer1 != renderer)
                         {
-                            Debug.LogError($"SetRendererId(MeshRenderer) id:{id.Id} [renderer1:{renderer1}] [renderer2:{renderer}] [path1:{renderer1.transform.GetPath()}] [path2:{id.transform.GetPath()}]");
+                            if (errorRenderers.ContainsKey(renderer))
+                            {
+
+                            }
+                            else
+                            {
+                                errorRenderers.Add(renderer, id.Id);
+                                Debug.LogError($"SetRendererId(MeshRenderer) id:{id.Id} [renderer1:{renderer1}] [renderer2:{renderer}] [path1:{renderer1.transform.GetPath()}] [path2:{id.transform.GetPath()}]");
+                            }
                             RendererDict[id.Id] = renderer;
                         }
                         

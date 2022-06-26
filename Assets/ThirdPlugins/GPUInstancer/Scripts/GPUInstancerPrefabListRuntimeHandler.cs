@@ -13,37 +13,51 @@ namespace GPUInstancer
         private bool _isIntancesAdded;
         public bool runInThreads = true;
 
-        private void OnEnable()
+        //private void OnEnable()
+        //{
+        //    if (prefabManager == null)
+        //        return;
+        //    if (!prefabManager.prototypeList.All(p => ((GPUInstancerPrefabPrototype)p).meshRenderersDisabled))
+        //    {
+        //        Debug.LogWarning("GPUInstancerPrefabListRuntimeHandler can not run in Threads while Mesh Renderers are enabled on the prefabs. Disabling threading...");
+        //        runInThreads = false;
+        //    }
+        //    _gpuiPrefabs = gameObject.GetComponentsInChildren<GPUInstancerPrefab>(true);
+        //    AddPrefabInstancesAsync(_gpuiPrefabs);
+        //}
+
+        public bool AddPrefabInstancesAsync(IEnumerable<GPUInstancerPrefab> prefabs)
         {
-            if (prefabManager == null)
-                return;
-
-            if (!prefabManager.prototypeList.All(p => ((GPUInstancerPrefabPrototype)p).meshRenderersDisabled))
+            if (prefabManager.IsAddRemoveInProgress() == true)
             {
-                Debug.LogWarning("GPUInstancerPrefabListRuntimeHandler can not run in Threads while Mesh Renderers are enabled on the prefabs. Disabling threading...");
-                runInThreads = false;
+                Debug.LogWarning($"AddPrefabInstancesAsync IsAddRemoveInProgress == true");
+                return false;
             }
-
-            _gpuiPrefabs = gameObject.GetComponentsInChildren<GPUInstancerPrefab>(true);
-
-            if (_gpuiPrefabs != null && _gpuiPrefabs.Count() > 0)
+            //isThreadBusy = true;
+            if (prefabs != null && prefabs.Count() > 0)
             {
+                Debug.Log($"AddPrefabInstancesAsync prefabs :{prefabs.Count()} runInThreads:{runInThreads}");
                 _isIntancesAdded = true;
                 if (runInThreads)
                 {
-                    foreach (GPUInstancerPrefab pi in _gpuiPrefabs)
+                    foreach (GPUInstancerPrefab pi in prefabs)
                     {
                         // save transform data before threading
                         pi.GetLocalToWorldMatrix(true);
                     }
-                    ParameterizedThreadStart addPrefabInstancesAsync = new ParameterizedThreadStart(AddPrefabInstancesAsync);
+                    ParameterizedThreadStart addPrefabInstancesAsync = new ParameterizedThreadStart(AddPrefabInstancesAsyncOfThread);
                     Thread addPrefabInstancesAsyncThread = new Thread(addPrefabInstancesAsync);
                     addPrefabInstancesAsyncThread.IsBackground = true;
-                    prefabManager.threadStartQueue.Enqueue(new GPUInstancerManager.GPUIThreadData() { thread = addPrefabInstancesAsyncThread, parameter = _gpuiPrefabs });
+                    prefabManager.threadStartQueue.Enqueue(new GPUInstancerManager.GPUIThreadData() { thread = addPrefabInstancesAsyncThread, parameter = prefabs });
                 }
                 else
-                    AddPrefabInstancesAsync(_gpuiPrefabs);
+                    AddPrefabInstancesAsyncOfThread(prefabs);
             }
+            else
+            {
+                Debug.LogError($"AddPrefabInstancesAsync prefabs == null || prefabs.Count() == 0");
+            }
+            return true;
         }
 
         private void OnDisable()
@@ -51,23 +65,63 @@ namespace GPUInstancer
             _isIntancesAdded = false;
             if (prefabManager == null)
                 return;
-
-            if (_gpuiPrefabs != null && _gpuiPrefabs.Count() > 0)
-            {
-                if (runInThreads)
-                {
-                    ParameterizedThreadStart removePrefabInstancesAsync = new ParameterizedThreadStart(RemovePrefabInstancesAsync);
-                    Thread removePrefabInstancesAsyncThread = new Thread(removePrefabInstancesAsync);
-                    removePrefabInstancesAsyncThread.IsBackground = true;
-                    prefabManager.threadStartQueue.Enqueue(new GPUInstancerManager.GPUIThreadData() { thread = removePrefabInstancesAsyncThread, parameter = _gpuiPrefabs });
-                }
-                else
-                    RemovePrefabInstancesAsync(_gpuiPrefabs);
-            }
+            RemovePrefabInstancesAsync(_gpuiPrefabs);
             _gpuiPrefabs = null;
         }
 
-        public void AddPrefabInstancesAsync(object param)
+        //public bool isThreadBusy = false;
+
+        public bool RemovePrefabInstancesAsync(IEnumerable<GPUInstancerPrefab> prefabs)
+        {
+            if (prefabManager.IsAddRemoveInProgress() == true)
+            {
+                Debug.LogWarning($"RemovePrefabInstancesAsync IsAddRemoveInProgress == true");
+                return false;
+            }
+            //isThreadBusy = true;
+            if (prefabs != null && prefabs.Count() > 0)
+            {
+                Debug.Log($"RemovePrefabInstancesAsync prefabs :{prefabs.Count()} runInThreads:{runInThreads}");
+                if (runInThreads)
+                {
+                    bool isError = false;
+                    int c = 0;
+                    foreach (GPUInstancerPrefab prefabInstance in prefabs)
+                    {
+                        c++;
+                        if (prefabInstance == null)
+                        {
+                            Debug.LogError($"RemovePrefabInstancesAsync[{c}] prefabInstance == null ");
+                            continue;
+                        }
+                        if (prefabInstance.prefabPrototype == null)
+                        {
+                            isError = true;
+                            Debug.LogError($"RemovePrefabInstancesAsync[{c}] prefabInstance.prefabPrototype==null prefabInstance:{prefabInstance}");
+                            continue;
+                        }
+                    }
+                    if (isError)
+                    {
+                        return false;
+                    }
+
+                    ParameterizedThreadStart removePrefabInstancesAsync = new ParameterizedThreadStart(RemovePrefabInstancesAsyncOfThread);
+                    Thread removePrefabInstancesAsyncThread = new Thread(removePrefabInstancesAsync);
+                    removePrefabInstancesAsyncThread.IsBackground = true;
+                    prefabManager.threadStartQueue.Enqueue(new GPUInstancerManager.GPUIThreadData() { thread = removePrefabInstancesAsyncThread, parameter = prefabs });
+                }
+                else
+                    RemovePrefabInstancesAsyncOfThread(prefabs);
+            }
+            else
+            {
+                Debug.LogError($"RemovePrefabInstancesAsync prefabs == null || prefabs.Count() == 0");
+            }
+            return true;
+        }
+
+        public void AddPrefabInstancesAsyncOfThread(object param)
         {
             try
             {
@@ -83,9 +137,10 @@ namespace GPUInstancer
                 else
                     Debug.LogException(e);
             }
+            //isThreadBusy = false;
         }
 
-        public void RemovePrefabInstancesAsync(object param)
+        public void RemovePrefabInstancesAsyncOfThread(object param)
         {
             try
             {
@@ -101,15 +156,16 @@ namespace GPUInstancer
                 else
                     Debug.LogException(e);
             }
+            //isThreadBusy = false;
         }
 
-        public void SetManager(GPUInstancerPrefabManager prefabManager)
-        {
-            if (_isIntancesAdded)
-                OnDisable();
-            this.prefabManager = prefabManager;
-            if (isActiveAndEnabled)
-                OnEnable();
-        }
+        //public void SetManager(GPUInstancerPrefabManager prefabManager)
+        //{
+        //    if (_isIntancesAdded)
+        //        OnDisable();
+        //    this.prefabManager = prefabManager;
+        //    if (isActiveAndEnabled)
+        //        OnEnable();
+        //}
     }
 }

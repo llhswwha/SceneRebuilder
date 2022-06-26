@@ -259,8 +259,11 @@ namespace GPUInstancer
             }
         }
 
+        public bool IsEnableUpdate = true;
+
         public virtual void Update()
         {
+            if (IsEnableUpdate == false) return;
             ClearCompletedThreads();
             while (threadStartQueue.Count > 0 && activeThreads.Count < maxThreads)
             {
@@ -283,8 +286,14 @@ namespace GPUInstancer
             }
         }
 
+        public bool IsEnableLateUpdate = true;
+
+        public bool IsEnableUpdateTreeMPB = true;
+        public bool IsEnableUpdateBuffers = true;
+
         public virtual void LateUpdate()
         {
+            if (IsEnableLateUpdate == false) return;
 #if UNITY_EDITOR
             if (!Application.isPlaying)
                 CheckPrototypeChanges();
@@ -293,8 +302,14 @@ namespace GPUInstancer
 #endif
                 if (cameraData.mainCamera != null)
                 {
-                    UpdateTreeMPB();
-                    UpdateBuffers(cameraData);
+                    if(IsEnableUpdateTreeMPB)
+                        UpdateTreeMPB();
+                    if(IsEnableUpdateBuffers)
+                        UpdateBuffers(cameraData);
+                }
+                else
+                {
+                    Debug.LogError("cameraData.mainCamera == null");
                 }
 #if UNITY_EDITOR
             }
@@ -581,6 +596,7 @@ namespace GPUInstancer
 
         public void UpdateBuffers(GPUInstancerCameraData renderingCameraData)
         {
+            //Debug.Log($"UpdateBuffers runtimeDataList:{runtimeDataList.Count}");
             if (renderingCameraData != null && renderingCameraData.mainCamera != null && SystemInfo.supportsComputeShaders)
             {
                 if (isOcclusionCulling && renderingCameraData.hiZOcclusionGenerator == null)
@@ -607,6 +623,10 @@ namespace GPUInstancer
                     GPUInstancerUtility.DispatchBufferToTexture(runtimeDataDictList.runtimeDataList, _bufferToTextureComputeShader, _bufferToTextureComputeKernelID);
 
                 GPUInstancerUtility.GPUIDrawMeshInstancedIndirect(runtimeDataDictList.runtimeDataList, instancingBounds, renderingCameraData, layerMask, lightProbeDisabled);
+            }
+            else
+            {
+                Debug.Log("UpdateBuffers renderingCameraData == null || renderingCameraData.mainCamera == null || SystemInfo.supportsComputeShaders==null");
             }
         }
 
@@ -712,6 +732,10 @@ namespace GPUInstancer
 
                     GPUInstancerUtility.SetAppendBuffers(runtimeData);
                 }
+            }
+            else
+            {
+                //Debug.Log($"UpdateTreeMPB treeProxyList == null || treeProxyList.Count == 0");
             }
         }
 

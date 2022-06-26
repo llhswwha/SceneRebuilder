@@ -490,6 +490,7 @@ namespace CodeStage.AdvancedFPSCounter.Editor.UI
 
 			var currentLabelWidth = EditorGUIUtility.labelWidth;
 
+            GUILayout.Space(10 * arg.level);
             if (arg.isToggle)
             {
                 EditorGUIUtility.labelWidth = 1;
@@ -505,10 +506,8 @@ namespace CodeStage.AdvancedFPSCounter.Editor.UI
                 EditorGUIUtility.labelWidth = currentLabelWidth;
             }
 
-
-
             GUILayout.Space(10);
-			var rect = EditorGUILayout.GetControlRect();
+            var rect = EditorGUILayout.GetControlRect();
             //rect.width = 100;
 
             arg.isExpanded = EditorGUI.Foldout(rect, arg.isExpanded, arg.caption, true, arg.bold ? richBoldFoldout : EditorStyles.foldout);

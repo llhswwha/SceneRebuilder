@@ -718,18 +718,37 @@ public class AreaTreeManager : SingletonBehaviour<AreaTreeManager>
 
         //Debug.Log("AreaTreeManager.CreateDictionary:" + Trees.Count);
         int nodeCount = 0;
-        foreach (var tree in Trees)
+        for (int i = 0; i < Trees.Count; i++)
         {
+            ModelAreaTree tree = Trees[i];
             if (tree == null) continue;
-            //Debug.Log("CreateDictionary tree:" + tree);
-            tree.CreateDictionary();
-            nodeCount += tree.TreeLeafs.Count;
+            try
+            {
+               
+                tree.CreateDictionary();
+                nodeCount += tree.TreeLeafs.Count;
+            }
+            catch (Exception ex)
+            {
+                Debug.Log($"CreateDictionary_tree[{i+1}/{Trees.Count}]:{tree} Exception:{ex}");
+            }
+           
         }
 
         var lodsScenes = GameObject.FindObjectsOfType<SubScene_LODs>(true);
-        foreach(var scene in lodsScenes)
+        for (int i = 0; i < lodsScenes.Length; i++)
         {
-            scene.CreateDictionary();
+            SubScene_LODs scene = lodsScenes[i];
+            if (scene == null) continue;
+            try
+            {
+                scene.CreateDictionary();
+                //Debug.LogError($"CreateDictionary_LODsScenes[{i + 1}/{lodsScenes.Length}]:{scene.name} path:{scene.transform.GetPath()}");
+            }
+            catch (Exception ex)
+            {
+                Debug.LogError($"CreateDictionary_LODsScenes[{i + 1}/{lodsScenes.Length}]:{scene.name} path:{scene.transform.GetPath()} Exception:{ex}");
+            }
         }
 
         Debug.LogWarning($"CreateDictionary trees:{Trees.Count}, nodes:{nodeCount} \t lods:{lodsScenes.Length} \trender2NodeDict:{AreaTreeHelper.render2NodeDict.Count},\trenderId2NodeDict:{AreaTreeHelper.renderId2NodeDict.Count}, \t{(DateTime.Now - start).TotalMilliseconds:F1}ms");

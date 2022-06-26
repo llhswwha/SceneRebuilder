@@ -1,6 +1,7 @@
 using CommonExtension;
 using CommonUtils;
 using GPUInstancer;
+using StardardShader;
 //using System;
 using System.Collections;
 using System.Collections.Generic;
@@ -13,6 +14,176 @@ using UnityEngine;
 
 public class GPUInstanceTest : SingletonBehaviour<GPUInstanceTest>
 {
+    public RenderPipeline renderPipeLine = RenderPipeline.HDRP;
+
+    public Material Transparent_Mat;//HDRPLit_Transparent_Double
+
+    public Dictionary<GameObject, Material[]> matDict = new Dictionary<GameObject, Material[]>();
+
+    void SetMaterialAlpha(GameObject go, float alpha)
+    {
+        if (StardardShaderMatHelper.Transparent_Mat == null)
+        {
+            StardardShaderMatHelper.Transparent_Mat = this.Transparent_Mat;
+        }
+        Renderer renderer = go.GetComponent<Renderer>();
+        
+        if (alpha == 1)
+        {
+            renderer.sharedMaterials = matDict[go];
+            matDict.Remove(go);
+            return;
+        }
+        else
+        {
+            if (!matDict.ContainsKey(go))
+            {
+                matDict.Add(go, renderer.sharedMaterials);
+            }
+        }
+
+        int matNum = renderer.sharedMaterials.Length;
+        for (int i = 0; i < matNum; i++)
+        {
+            Color _color = renderer.materials[i].color;
+            _color.a = alpha;
+            if (renderPipeLine == RenderPipeline.HDRP)
+            {
+                if (alpha == 1)
+                {
+                    StardardShaderMatHelper.SetMaterialRenderingMode(renderer.materials[i], RenderingMode.Opaque, RenderPipeline.HDRP, _color);
+                }
+                else
+                {
+                    StardardShaderMatHelper.SetMaterialRenderingMode(renderer.materials[i], RenderingMode.Transparent, RenderPipeline.HDRP, _color);
+                    renderer.materials[i].SetColor("_BaseColor", _color);
+                }
+            }
+            else
+            {
+                renderer.materials[i].SetColor("_Color", _color);
+            }
+        }
+    }
+
+    public GPUInstancerPrefab TestTargetGPUIModel;
+
+    [ContextMenu("HightlightOn")]
+    public void HighlightOn()
+    {
+        HightlightModuleBase.HighlightOn(TestTargetGPUIModel.gameObject);
+    }
+
+    [ContextMenu("HighlightOff")]
+    public void HighlightOff()
+    {
+        HightlightModuleBase.HighlightOff(TestTargetGPUIModel.gameObject);
+    }
+
+    public void HightlightOn(GPUInstancerPrefab prefab)
+    {
+        HightlightModuleBase.HighlightOn(prefab.gameObject);
+    }
+
+    public void HightlightOff(GPUInstancerPrefab prefab)
+    {
+        HightlightModuleBase.HighlightOff(prefab.gameObject);
+    }
+
+    [ContextMenu("HightlightOnEx")]
+    public void HighlightOnEx()
+    {
+        HightlightOnEx(TestTargetGPUIModel);
+    }
+
+    [ContextMenu("HighlightOffEx")]
+    public void HighlightOffEx()
+    {
+        HighlightOffEx(TestTargetGPUIModel);
+    }
+
+    public void HightlightOnEx(GPUInstancerPrefab prefab)
+    {
+        GPUIOff(prefab);
+        HightlightOn(prefab);
+    }
+
+    public void HighlightOffEx(GPUInstancerPrefab prefab)
+    {
+        HightlightOff(prefab);
+        GPUIOn(prefab);
+    }
+
+    public void TransparentOnEx(GPUInstancerPrefab prefab)
+    {
+        GPUIOff(prefab);
+        TransparentOn(prefab);
+    }
+
+    public void TransparentOffEx(GPUInstancerPrefab prefab)
+    {
+        TransparentOff(prefab);
+        GPUIOn(prefab);
+    }
+
+    public void TransparentOn(GPUInstancerPrefab prefab)
+    {
+        SetMaterialAlpha(prefab.gameObject, 0.1f);
+    }
+
+    public void TransparentOff(GPUInstancerPrefab prefab)
+    {
+        SetMaterialAlpha(prefab.gameObject, 1f);
+    }
+
+    public void GPUIOn(GPUInstancerPrefab prefab)
+    {
+        AddPrefabInstance(prefab);
+    }
+
+    public void GPUIOff(GPUInstancerPrefab prefab)
+    {
+        RemovePrefabInstance(prefab);
+    }
+
+    [ContextMenu("TransparentOnEx")]
+    public void TransparentOnEx()
+    {
+        GPUIOff();
+        TransparentOn();
+    }
+
+    [ContextMenu("TransparentOffEx")]
+    public void TransparentOffEx()
+    {
+        TransparentOff();
+        GPUIOn();
+    }
+
+    [ContextMenu("TransparentOn")]
+    public void TransparentOn()
+    {
+        SetMaterialAlpha(TestTargetGPUIModel.gameObject, 0.1f);
+    }
+
+    [ContextMenu("TransparentOff")]
+    public void TransparentOff()
+    {
+        SetMaterialAlpha(TestTargetGPUIModel.gameObject, 1f);
+    }
+
+    [ContextMenu("GPUIOn")]
+    public void GPUIOn()
+    {
+        AddPrefabInstance(TestTargetGPUIModel);
+    }
+
+    [ContextMenu("GPUIOff")]
+    public void GPUIOff()
+    {
+        RemovePrefabInstance(TestTargetGPUIModel);
+    }
+
     public static void SAddPrefabInstance(MeshRenderer lastRenderer)
     {
         if (Instance.IsStartGPUInstance)
@@ -59,11 +230,11 @@ public class GPUInstanceTest : SingletonBehaviour<GPUInstanceTest>
 
     //public AstroidGenerator generator;
 #if UNITY_EDITOR
-    [ContextMenu("0.OneKey")]
-    public void OneKey()
+    [ContextMenu("0.OneKeySetPrefabs")]
+    public void OneKeySetPrefabs()
     {
         System.DateTime start = System.DateTime.Now;
-        ClearOldPrefabs();
+        //ClearOldPrefabs();
         GetPrefabMeshes();
         SavePrefabs();
         InitPrefabs();
@@ -71,8 +242,18 @@ public class GPUInstanceTest : SingletonBehaviour<GPUInstanceTest>
         Debug.Log($"OneKey time:{System.DateTime.Now-start}"); 
     }
 
+    public void OneKeyClearPrefabs()
+    {
+        System.DateTime start = System.DateTime.Now;
+        ClearOldPrefabs();
+        DeleteOtherPrefabs();
+        DeletePrototypeData();
+        Debug.Log($"OneKey time:{System.DateTime.Now - start}");
+    }
+
+
     [ContextMenu("1.ClearOldPrefabs")]
-    private void ClearOldPrefabs()
+    public void ClearOldPrefabs()
     {
         for (int i = 0; i < PrefabList.Count; i++)
         {
@@ -84,28 +265,21 @@ public class GPUInstanceTest : SingletonBehaviour<GPUInstanceTest>
             }
             GameObject.DestroyImmediate(prefab.gameObject);
         }
-        prefabManager.ClearPrefabList();
-        prefabManager.NewPrototypes();
+        prefabManager.ClearPrefabsAndPrototypes();
         PrefabList.Clear();
     }
 
     [ContextMenu("2.GetPrefabMeshes")]
     public void GetPrefabMeshes()
     {
-        if (PrefabsRoot == null)
+        //if (IsClearOldPrefabs)
+        //{
+        //    ClearOldPrefabs();
+        //    CreatePrefabList();
+        //}
+        //else
         {
-            PrefabsRoot = new GameObject("PrefabsRoot");
-        }
-
-        if (IsClearOldPrefabs)
-        {
-            ClearOldPrefabs();
-
-            CreatePrefabList();
-        }
-        else
-        {
-            UpdatePrefabList();
+            GetGPUIPrefabList();
         }
     }
 
@@ -120,54 +294,104 @@ public class GPUInstanceTest : SingletonBehaviour<GPUInstanceTest>
                 break;
             }
             GameObject goNew = EditorSavePrefabPath(item.gameObject);
-            GameObject.DestroyImmediate(item.gameObject);
-            PrefabList[i] = goNew.GetComponent<GPUInstancerPrefab>();
+            if (goNew != null)
+            {
+                GameObject.DestroyImmediate(item.gameObject);
+                PrefabList[i] = goNew.GetComponent<GPUInstancerPrefab>();
+            }
         }
         ProgressBarHelper.ClearProgressBar();
         Debug.Log($"SavePrefabs PrefabList:{PrefabList.Count}");
     }
 
-    [ContextMenu("3.DeleteOtherPrefabs")]
+    [ContextMenu("DeletePrototypeData")]
+    public void DeletePrototypeData()
+    {
+        EditorHelper.DeleteFolderFiles("Assets/ThirdPlugins/GPUInstancer/PrototypeData/Prefab");
+
+        //List<Object> assets = new List<Object>();
+        //string[] assetsList = AssetDatabase.FindAssets("", new string[] { "Assets/ThirdPlugins/GPUInstancer/PrototypeData/Prefab" });
+        //for (int i = 0; i < assetsList.Length; i++)
+        //{
+        //    string item = assetsList[i];
+        //    string path = AssetDatabase.GUIDToAssetPath(item);
+        //    Object obj = AssetDatabase.LoadAssetAtPath<Object>(path);
+        //    assets.Add(obj);
+        //    Debug.Log($"[{i}]{item} | {path} | {obj}");
+        //}
+        ////List<Object> assets=AssetDatabase.LoadAllAssetsAtPath("Assets/ThirdPlugins/GPUInstancer/Prefabs/").ToList();
+        //int count1 = assets.Count;
+        //int count2 = assets.Count;
+        //for (int i = 0; i < assets.Count; i++)
+        //{
+        //    Object asset = assets[i];
+        //    var path = AssetDatabase.GetAssetPath(asset);
+        //    bool b = AssetDatabase.DeleteAsset(path);
+        //    Debug.Log($"delete[{i}] asset:{asset} path:{path} b:{b}");
+        //}
+        //AssetDatabase.Refresh();
+        //ProgressBarHelper.ClearProgressBar();
+        //Debug.Log($"DeletePrototypeData PrefabList:{PrefabList.Count} count1:{count1} count2:{count2}");
+    }
+
+    [ContextMenu("4.DeleteOtherPrefabs")]
     public void DeleteOtherPrefabs()
     {
-        List<Object> assets = new List<Object>();
-        string[] assetsList=AssetDatabase.FindAssets("", new string[] { "Assets/ThirdPlugins/GPUInstancer/Prefabs" });
-        for (int i = 0; i < assetsList.Length; i++)
-        {
-            string item = assetsList[i];
-            string path = AssetDatabase.GUIDToAssetPath(item);
-            Object obj = AssetDatabase.LoadAssetAtPath<Object>(path);
-            assets.Add(obj);
-            Debug.Log($"[{i}]{item} | {path} | {obj}");
-        }
-        //List<Object> assets=AssetDatabase.LoadAllAssetsAtPath("Assets/ThirdPlugins/GPUInstancer/Prefabs/").ToList();
-        int count1 = assets.Count;
+        List<Object> exceptionObjs = new List<Object>();
         for (int i = 0; i < PrefabList.Count; i++)
         {
-            var item = PrefabList[i];
-            if (ProgressBarHelper.DisplayCancelableProgressBar("SavePrefab", i, PrefabList.Count))
-            {
-                break;
-            }
-            //GameObject goNew = EditorSavePrefabPath(item.gameObject);
-            //GameObject.DestroyImmediate(item.gameObject);
-            //PrefabList[i] = goNew.GetComponent<GPUInstancerPrefab>();
-            if (assets.Contains(item.gameObject))
-            {
-                assets.Remove(item.gameObject);
-            }
+            exceptionObjs.Add(PrefabList[i].gameObject);
         }
-        int count2 = assets.Count;
-        for (int i = 0; i < assets.Count; i++)
-        {
-            Object asset = assets[i];
-            var path = AssetDatabase.GetAssetPath(asset);
-            bool b=AssetDatabase.DeleteAsset(path);
-            Debug.Log($"delete[{i}] asset:{asset} path:{path} b:{b}");
-        }
-        AssetDatabase.Refresh();
-        ProgressBarHelper.ClearProgressBar();
-        Debug.Log($"DeleteOtherPrefabs PrefabList:{PrefabList.Count} count1:{count1} count2:{count2}");
+        EditorHelper.DeleteFolderFiles(exceptionObjs,"Assets/ThirdPlugins/GPUInstancer/Prefabs");
+
+        //List<Object> assets = new List<Object>();
+        //string[] assetsList=AssetDatabase.FindAssets("", new string[] { "Assets/ThirdPlugins/GPUInstancer/Prefabs" });
+        //for (int i = 0; i < assetsList.Length; i++)
+        //{
+        //    string item = assetsList[i];
+        //    string path = AssetDatabase.GUIDToAssetPath(item);
+        //    Object obj = AssetDatabase.LoadAssetAtPath<Object>(path);
+        //    assets.Add(obj);
+        //    Debug.Log($"[{i}]{item} | {path} | {obj}");
+        //}
+        ////List<Object> assets=AssetDatabase.LoadAllAssetsAtPath("Assets/ThirdPlugins/GPUInstancer/Prefabs/").ToList();
+        //int count1 = assets.Count;
+        //for (int i = 0; i < PrefabList.Count; i++)
+        //{
+        //    var item = PrefabList[i];
+        //    if (ProgressBarHelper.DisplayCancelableProgressBar("DeleteOtherPrefabs", i, PrefabList.Count))
+        //    {
+        //        break;
+        //    }
+        //    //GameObject goNew = EditorSavePrefabPath(item.gameObject);
+        //    //GameObject.DestroyImmediate(item.gameObject);
+        //    //PrefabList[i] = goNew.GetComponent<GPUInstancerPrefab>();
+        //    if (assets.Contains(item.gameObject))
+        //    {
+        //        assets.Remove(item.gameObject);
+        //    }
+        //}
+        //int count2 = assets.Count;
+        //for (int i = 0; i < assets.Count; i++)
+        //{
+        //    Object asset = assets[i];
+        //    var path = AssetDatabase.GetAssetPath(asset);
+        //    bool b=AssetDatabase.DeleteAsset(path);
+        //    Debug.Log($"delete[{i}] asset:{asset} path:{path} b:{b}");
+        //}
+        //AssetDatabase.Refresh();
+        //ProgressBarHelper.ClearProgressBar();
+        //Debug.Log($"DeleteOtherPrefabs PrefabList:{PrefabList.Count} count1:{count1} count2:{count2}");
+    }
+
+    public void SelectPrefabFile()
+    {
+        EditorHelper.SelectFolderFile("Assets/ThirdPlugins/GPUInstancer/Prefabs");
+    }
+
+    public void SelectPrototypeDataFile()
+    {
+        EditorHelper.SelectFolderFile("Assets/ThirdPlugins/GPUInstancer/PrototypeData/Prefab");
     }
 
     [ContextMenu("5.ReplaceInstances")]
@@ -176,6 +400,7 @@ public class GPUInstanceTest : SingletonBehaviour<GPUInstanceTest>
         Debug.Log("ReplaceInstances");
         MeshFilter[] mfs = MeshTarget.GetComponentsInChildren<MeshFilter>(true);
         var dict = GetPrefabMeshDict();
+        int replaceCount = 0;
         for (int i = 0; i < mfs.Length; i++)
         {
             MeshFilter mf = mfs[i];
@@ -197,33 +422,74 @@ public class GPUInstanceTest : SingletonBehaviour<GPUInstanceTest>
                     Debug.LogError($"ReplaceInstances Skip BoundsBox mf:{mf}");
                     continue;
                 }
+
+                //GameObject go = mf.gameObject;
+                //Debug.Log($"ReplaceInstances[{i+1}/{mfs.Length}]({++replaceCount}) IsPartOfAnyPrefab:{PrefabUtility.IsPartOfAnyPrefab(go)} IsPartOfModelPrefab:{PrefabUtility.IsPartOfModelPrefab(go)}  IsPartOfPrefabAsset:{PrefabUtility.IsPartOfPrefabAsset(go)} IsPartOfPrefabInstance:{PrefabUtility.IsPartOfPrefabInstance(go)}");
+
+                //if (PrefabUtility.IsPartOfAnyPrefab(go))
+                //{
+                //}
+                //else
+                //{
+                //}
+
                 GPUInstancerPrefab pre = dict[mesh];
-                GPUInstancerPrefab ins = (GPUInstancerPrefab)PrefabUtility.InstantiatePrefab(pre);
-                ins.name = mf.name;
-                GameObjectExtension.CopyTransfrom(mf.transform, ins.transform);
-                GameObject.DestroyImmediate(mf.gameObject); 
+                ReplacePrefabInstances(pre, mf.gameObject);
+            }
+            else
+            {
+
             }
         }
         ProgressBarHelper.ClearProgressBar();
     }
 
+    public static void ReplacePrefabInstances(GPUInstancerPrefab pre, GameObject target)
+    {
+        //EditorHelper.ReplacePrefabInstances(pre, target);
+
+        //GPUInstancerPrefab gpuiPrefab=target.AddMissingComponent<GPUInstancerPrefab>();
+        //EditorHelper.CopyComponent<GPUInstancerPrefab>(pre.gameObject, target);
+
+        EditorHelper.CopyComponent(target,pre);
+    }
+
     public GameObject EditorSavePrefabPath(GameObject go)
     {
-        if (go == null)
-        {
-            Debug.LogError("SavePrefab go == null");
-            return null;
-        }
-        //string prefabName= $"{go.name}[{go.GetInstanceID()}]";
-        string prefabName = $"{go.name}";
-        prefabName = prefabName.Replace("/", "=");
-        EditorHelper.UnpackPrefab(go);
-        string prefabPath = $"Assets/ThirdPlugins/GPUInstancer/Prefabs/{prefabName}.prefab";
-        EditorHelper.makeParentDirExist(prefabPath);
-        GameObject assetObj = PrefabUtility.SaveAsPrefabAssetAndConnect(go, prefabPath, InteractionMode.UserAction);
-        Debug.Log($"SavePrefab go:{go.name} asset:{assetObj} path:{prefabPath}");
-        return assetObj;
-        //return prefabPath;
+        //if (go == null)
+        //{
+        //    Debug.LogError("SavePrefab go == null");
+        //    return null;
+        //}
+        ////string prefabName= $"{go.name}[{go.GetInstanceID()}]";
+        //string prefabName = $"{go.name}";
+        //prefabName = prefabName.Replace("/", "=");
+        //string prefabPath = $"Assets/ThirdPlugins/GPUInstancer/Prefabs/{prefabName}.prefab";
+        //try
+        //{
+        //    var assetPath = AssetDatabase.GetAssetPath(go);
+        //    if (string.IsNullOrEmpty(assetPath))
+        //    {
+        //        EditorHelper.UnpackPrefab(go);
+        //        EditorHelper.makeParentDirExist(prefabPath);
+        //        GameObject assetObj = PrefabUtility.SaveAsPrefabAssetAndConnect(go, prefabPath, InteractionMode.UserAction);
+        //        Debug.Log($"SavePrefab go:{go.name} asset:{assetObj} ¡¾path:{prefabPath}¡¿ ¡¾assetPath:{assetPath}¡¿");
+        //        return assetObj;
+        //    }
+        //    else
+        //    {
+        //        Debug.LogWarning($"EditorSavePrefabPath File Is Existed go:{go} prefabName:{prefabName} \nprefabPath:{prefabPath} \nassetPath:{assetPath}");
+        //        return null;
+        //    }
+        //    //return prefabPath;
+        //}
+        //catch (System.Exception ex)
+        //{
+        //    var assetPath = AssetDatabase.GetAssetPath(go);
+        //    Debug.LogError($"EditorSavePrefabPath go:{go} prefabName:{prefabName} \nprefabPath:{prefabPath} \nassetPath:{assetPath} \nException:{ex}");
+        //    return null;
+        //}
+        return EditorHelper.SavePrefab(go, "Assets/ThirdPlugins/GPUInstancer/Prefabs");
     }
 #endif
 
@@ -235,13 +501,13 @@ public class GPUInstanceTest : SingletonBehaviour<GPUInstanceTest>
             prefabManager = GameObject.FindObjectOfType<GPUInstancerPrefabManager>(true);
         }
 
-        prefabManager.InitPrefabs(PrefabList, IsClearPrefabType);
+        prefabManager.InitPrefabs(PrefabList);
 
-        if (astroidGenerator == null)
-        {
-            astroidGenerator = GameObject.FindObjectOfType<AstroidGenerator>(true);
-        }
-        astroidGenerator.asteroidObjects = PrefabList;
+        //if (astroidGenerator == null)
+        //{
+        //    astroidGenerator = GameObject.FindObjectOfType<AstroidGenerator>(true);
+        //}
+        //astroidGenerator.asteroidObjects = PrefabList;
 
         //generator = GameObject.FindObjectOfType<AstroidGenerator>();
         //generator.asteroidObjects.Clear();
@@ -286,11 +552,11 @@ public class GPUInstanceTest : SingletonBehaviour<GPUInstanceTest>
     }
 
     [ContextMenu("*.GetPrefabListInfo10-300")]
-    private void GetPrefabListInfo10_300()
+    public void GetPrefabListInfo10_300()
     {
         StringBuilder sb = new StringBuilder();
         SharedMeshInfoList sharedMeshInfos = new SharedMeshInfoList(MeshTarget, true);
-        for (int i = 2; i < 10; i += 2)
+        for (int i = 2; i < 10; i += 1)
         {
             MinPrefabInstanceCount = i;
             sb.AppendLine(GetPrefabListInfoInner(i, sharedMeshInfos));
@@ -304,21 +570,41 @@ public class GPUInstanceTest : SingletonBehaviour<GPUInstanceTest>
     }
 
     [ContextMenu("*.GetPrefabListInfo")]
-    private void GetPrefabListInfo()
+    public void GetPrefabListInfo()
     {
         SharedMeshInfoList sharedMeshInfos = new SharedMeshInfoList(MeshTarget, true);
         GetPrefabListInfoInner(MinPrefabInstanceCount, sharedMeshInfos);
     }
 
-    private void UpdatePrefabList()
+    private void GetGPUIPrefabList()
     {
         //PrefabList.Clear();
-        var meshDict = GetPrefabMeshDict();
-        SharedMeshInfoList sharedMeshInfos = new SharedMeshInfoList(MeshTarget, true); 
+        SharedMeshInfoList sharedMeshInfos = new SharedMeshInfoList(MeshTarget, true);
+        GetGPUIPrefabList(sharedMeshInfos);
+    }
+
+    private GameObject GetPrefabsRoot()
+    {
+        if (PrefabsRoot == null)
+        {
+            PrefabsRoot = GameObject.Find("GPUIPrefabsRoot");
+        }
+        if (PrefabsRoot == null)
+        {
+            PrefabsRoot = new GameObject("GPUIPrefabsRoot");
+        }
+        return PrefabsRoot;
+    }
+
+    private void GetGPUIPrefabList(SharedMeshInfoList sharedMeshInfos)
+    {
         sharedMeshInfos.Sort();
+        var meshDict = GetPrefabMeshDict();
         int totalCount = 0;
         int intanceCount = 0;
         int otherCount = 0;
+        GameObject prefabRoot = GetPrefabsRoot();
+        int containsCount = 0;
         for (int i = 0; i < sharedMeshInfos.Count; i++)
         {
             SharedMeshInfo sm = sharedMeshInfos[i];
@@ -343,12 +629,11 @@ public class GPUInstanceTest : SingletonBehaviour<GPUInstanceTest>
             intanceCount += meshCount;
             if (meshDict.ContainsKey(sm.mesh))
             {
+                Debug.Log($"GetGPUIPrefabList[{i+1}/{sharedMeshInfos.Count}]({++containsCount}) meshDict.ContainsKey(sm.mesh) mesh:{sm.mesh} meshCount:{meshCount} MinPrefabInstanceCount:{MinPrefabInstanceCount}");
                 continue;
             }
 
-            
-
-            sm.mainMeshFilter.sharedMesh.name = sm.mainMeshFilter.sharedMesh.name.Replace("/","=");
+            sm.mainMeshFilter.sharedMesh.name = sm.mainMeshFilter.sharedMesh.name.Replace("/", "=");
             GameObject go = GameObjectExtension.CopyMeshObject(sm.gameObject, $"{sm.mainMeshFilter.sharedMesh.name}({sm.GetCount()})");
             go.transform.SetParent(null);
             go.transform.position = Vector3.zero;
@@ -357,10 +642,17 @@ public class GPUInstanceTest : SingletonBehaviour<GPUInstanceTest>
             GPUInstancerPrefab pre = go.AddMissingComponent<GPUInstancerPrefab>();
             PrefabList.Add(pre);
 
-            go.transform.SetParent(PrefabsRoot.transform);
+            go.transform.SetParent(prefabRoot.transform);
         }
 
-        Debug.Log($"UpdatePrefabList MinCount:{MinPrefabInstanceCount}=> Prefabs:{PrefabList.Count} [{intanceCount}({(float)intanceCount / (float)totalCount:P1})+{otherCount}={totalCount}] sharedMeshs:{sharedMeshInfos.Count} Root:{PrefabsRoot} ");
+        if (PrefabList.Count == 0)
+        {
+            Debug.LogError($"UpdatePrefabList(PrefabList.Count == 0!!) MinCount:{MinPrefabInstanceCount}=> Prefabs:{PrefabList.Count} [{intanceCount}({(float)intanceCount / (float)totalCount:P1})+{otherCount}={totalCount}] sharedMeshs:{sharedMeshInfos.Count} Root:{prefabRoot} ");
+        }
+        else
+        {
+            Debug.Log($"UpdatePrefabList MinCount:{MinPrefabInstanceCount}=> Prefabs:{PrefabList.Count} [{intanceCount}({(float)intanceCount / (float)totalCount:P1})+{otherCount}={totalCount}] sharedMeshs:{sharedMeshInfos.Count} Root:{prefabRoot} ");
+        }
     }
 
     private void CreatePrefabList()
@@ -370,6 +662,7 @@ public class GPUInstanceTest : SingletonBehaviour<GPUInstanceTest>
         int totalCount = 0;
         int intanceCount = 0;
         int otherCount = 0;
+        GameObject prefabRoot = GetPrefabsRoot();
         foreach (SharedMeshInfo sm in sharedMeshInfos)
         {
             int meshCount = sm.GetCount();
@@ -395,15 +688,15 @@ public class GPUInstanceTest : SingletonBehaviour<GPUInstanceTest>
             GPUInstancerPrefab pre = go.AddMissingComponent<GPUInstancerPrefab>();
             PrefabList.Add(pre);
 
-            go.transform.SetParent(PrefabsRoot.transform);
+            go.transform.SetParent(prefabRoot.transform);
         }
 
-        Debug.Log($"CreatePrefabList MinCount:{MinPrefabInstanceCount}=> Prefabs:{PrefabList.Count} [{intanceCount}({(float)intanceCount / (float)totalCount:P1})+{otherCount}={totalCount}] sharedMeshs:{sharedMeshInfos.Count}  Root:{PrefabsRoot} ");
+        Debug.Log($"CreatePrefabList MinCount:{MinPrefabInstanceCount}=> Prefabs:{PrefabList.Count} [{intanceCount}({(float)intanceCount / (float)totalCount:P1})+{otherCount}={totalCount}] sharedMeshs:{sharedMeshInfos.Count}  Root:{prefabRoot} ");
     }
 
-    public bool IsClearPrefabType = false;
+    //public bool IsClearPrefabType = false;
 
-    public AstroidGenerator astroidGenerator;
+    //public AstroidGenerator astroidGenerator;
 
 
     private string GetPrefabListInfoInner(int minCount,SharedMeshInfoList sharedMeshInfos)
@@ -450,7 +743,7 @@ public class GPUInstanceTest : SingletonBehaviour<GPUInstanceTest>
             //go.transform.SetParent(PrefabsRoot.transform);
         }
 
-        Debug.Log($"GetPrefabListInfo MinCount:{minCount}=> Prefabs:{prefabCount} [{intanceCount}({(float)intanceCount / (float)totalCount:P1})+{otherCount}={totalCount}] [{intanceVertex}({(float)intanceVertex / (float)totalVertex:P1})+{otherVertex}={totalVertex}] sharedMeshs:{sharedMeshInfos.Count} Root:{PrefabsRoot} ");
+        Debug.Log($"GetPrefabListInfo MinCount:{minCount}=> Prefabs:{prefabCount} [{intanceCount}({(float)intanceCount / (float)totalCount:P1})+{otherCount}={totalCount}] [{intanceVertex}({(float)intanceVertex / (float)totalVertex:P1})+{otherVertex}={totalVertex}] sharedMeshs:{sharedMeshInfos.Count}");
         return $"{minCount}\t{prefabCount}\t{intanceCount}\t{otherCount}\t{totalCount}\t{(float)intanceCount / (float)totalCount:P1}\t{intanceVertex}\t{otherVertex}\t{totalVertex}\t{(float)intanceVertex / (float)totalVertex:P1}";
     }
 
@@ -459,10 +752,10 @@ public class GPUInstanceTest : SingletonBehaviour<GPUInstanceTest>
     public void GetPrefabsInScene()
     {
         GPUInstancerPrefab[] prefabs = GameObject.FindObjectsOfType<GPUInstancerPrefab>();
-        Debug.Log($"GetPrefabsInScene123 prefabs:{prefabs.Length}");
+        Debug.Log($"GetPrefabsInScene prefabs:{prefabs.Length}");
 
         AutomaticLOD[] lods = GameObject.FindObjectsOfType<AutomaticLOD>();
-        Debug.Log("GetPrefabsInScene123 lods:" + lods.Length);
+        Debug.Log("GetPrefabsInScene lods:" + lods.Length);
     }
 
     public GameObject MeshTarget = null;
@@ -471,13 +764,19 @@ public class GPUInstanceTest : SingletonBehaviour<GPUInstanceTest>
 
     public bool IsStartGPUInstance = true;
 
+    public bool IsAutoGPUI = false;
+
     public bool IsHideNotInPrefabs = false;
 
-    public bool IsClearOldPrefabs = true;
+    //public bool IsClearOldPrefabs = true;
 
     //-------------------------
 
     public bool IsAutoHideShowRoot = true;
+
+    public bool IsAsync = false;
+
+    public bool runInThreads = true;
 
     public float UpdatePrefabRootInterval = 0.1f;
 
@@ -486,6 +785,12 @@ public class GPUInstanceTest : SingletonBehaviour<GPUInstanceTest>
     public List<GameObject> GPUIRoots = new List<GameObject>();
 
     private Dictionary<GameObject,bool> PrefabRootsState = new Dictionary<GameObject, bool>();
+
+    public void CheckList()
+    {
+        GPUIRoots.RemoveAll(i => i == null);
+        PrefabList.RemoveAll(i => i == null);
+    }
 
     private void UpdatePrefabRootsVisible()
     {
@@ -525,12 +830,12 @@ public class GPUInstanceTest : SingletonBehaviour<GPUInstanceTest>
         while (IsAutoHideShowRoot)
         {
             System.DateTime start = System.DateTime.Now;
-            if (GPUIRoots.Count == 0)
-            {
-                Debug.LogError("UpdatePrefabRootsVisible_Coroutine GPUIRoots.Count == 0");
-                IsAutoHideShowRoot = false;
-                break;
-            }
+            //if (GPUIRoots.Count == 0)
+            //{
+            //    Debug.LogError("UpdatePrefabRootsVisible_Coroutine GPUIRoots.Count == 0");
+            //    IsAutoHideShowRoot = false;
+            //    break;
+            //}
 
             //bool isActive0 = MeshTarget.activeInHierarchy;
             bool isAllInActive = GetIsAllInActive();
@@ -560,8 +865,32 @@ public class GPUInstanceTest : SingletonBehaviour<GPUInstanceTest>
         }
     }
 
-    public List<SubScene_GPUI> ScenesOfHide = new List<SubScene_GPUI>();
-    public List<SubScene_GPUI> ScenesOfShow = new List<SubScene_GPUI>();
+    private DictList<SubScene_GPUI> ScenesOfHide = new DictList<SubScene_GPUI>();
+    private DictList<SubScene_GPUI> ScenesOfShow = new DictList<SubScene_GPUI>();
+
+    private DictList<SubScene_GPUI> ScenesOfHide_Done = new DictList<SubScene_GPUI>();
+    private DictList<SubScene_GPUI> ScenesOfShow_Done = new DictList<SubScene_GPUI>();
+
+    public void AddShowScene(SubScene_GPUI scene)
+    {
+        //if (!ScenesOfShow_Done.Contains(scene))
+        {
+            ScenesOfShow.Add(scene);
+            //ScenesOfHide.Remove(scene);
+            //ScenesOfHide_Done.Remove(scene);
+        }
+        
+    }
+
+    public void AddHideScene(SubScene_GPUI scene)
+    {
+        //if (!ScenesOfHide_Done.Contains(scene))
+        {
+            ScenesOfHide.Add(scene);
+            //ScenesOfShow.Remove(scene);
+            //ScenesOfShow_Done.Remove(scene);
+        }
+    }
 
     private IEnumerator UpdatePrefabRootsVisible_Coroutine()
     {
@@ -572,26 +901,67 @@ public class GPUInstanceTest : SingletonBehaviour<GPUInstanceTest>
         while (IsAutoHideShowRoot)
         {
             System.DateTime start = System.DateTime.Now;
-            if (GPUIRoots.Count == 0)
-            {
-                Debug.LogError("UpdatePrefabRootsVisible_Coroutine GPUIRoots.Count == 0");
-                IsAutoHideShowRoot = false;
-                break;
-            }
+            //if (GPUIRoots.Count == 0)
+            //{
+            //    Debug.LogError("UpdatePrefabRootsVisible_Coroutine GPUIRoots.Count == 0");
+            //    IsAutoHideShowRoot = false;
+            //    break;
+            //}
             int count1 = ScenesOfHide.Count;
             int count2 = ScenesOfShow.Count;
            
             if (ScenesOfHide.Count > 0)
             {
-                List<SubScene_GPUI> listOfHide = new List<SubScene_GPUI>(ScenesOfHide);
-                ScenesOfHide.Clear();
+                System.DateTime start00 = System.DateTime.Now;
+                List<SubScene_GPUI> listOfHide = ScenesOfHide.NewList();
+                //ScenesOfHide.Clear();
+                List<GPUInstancerPrefab> allPrefabs = new List<GPUInstancerPrefab>();
                 foreach (var scene in listOfHide)
                 {
-                    //yield return RemovePrefabsInstances_Coroutine(scene.GetSceneGPUIPrefabs());
-                    RemovePrefabsInstances(scene.GetSceneGPUIPrefabs());
-                    yield return null;
+                    ScenesOfHide_Done.Add(scene);
+                    List<GPUInstancerPrefab> gpuiPrefabs = scene.GetSceneGPUIPrefabs();
+                    foreach(var prefab in gpuiPrefabs)
+                    {
+                        if (prefab.prefabPrototype == null)
+                        {
+                            Debug.LogError($"UpdatePrefabRootsVisible_1_RemovePrefabsInstances prefab.prefabPrototype == null prefab:{prefab} path:{prefab.transform.GetPath()}");
+                        }
+                        else
+                        {
+                            allPrefabs.Add(prefab);
+                        }
+                    }
+
+                    //allPrefabs.AddRange(gpuiPrefabs);
+
+                    ////yield return RemovePrefabsInstances_Coroutine(scene.GetSceneGPUIPrefabs());
+                    //RemovePrefabsInstances(gpuiPrefabs);
+                    //yield return null;
                 }
+
+                if (IsAsync)
+                {
+                    while (RemovePrefabInstancesAsync(allPrefabs) ==false)
+                    {
+                        yield return new WaitForSeconds(UpdatePrefabRootInterval);
+                        if (isShowLog)
+                        {
+                            Debug.LogWarning($"UpdatePrefabRootsVisible_1_RemovePrefabsInstances WaitThread[time:{System.DateTime.Now - start}] Hide:{count1} Show:{count2}");
+                        }
+                    }
+                    ScenesOfHide.Clear();
+                }
+                else
+                {
+                    ScenesOfHide.Clear();
+                    yield return RemovePrefabsInstances_Coroutine(allPrefabs);
+                }
+
                 //yield return RemovePrefabsInstances_Coroutine(listOfHide);
+                if (isShowLog)
+                {
+                    Debug.Log($"UpdatePrefabRootsVisible_1_RemovePrefabsInstances Finished[time:{System.DateTime.Now - start00}] listOfHide:{listOfHide.Count} allPrefabs:{allPrefabs.Count} meshPrefabDict:{meshPrefabDict.Count}  ");
+                }
             }
             List<SubScene_GPUI> listOfShowFirst = new List<SubScene_GPUI>();
             List<SubScene_GPUI> listOfShowAdd = new List<SubScene_GPUI>();
@@ -600,12 +970,12 @@ public class GPUInstanceTest : SingletonBehaviour<GPUInstanceTest>
                 //List<GPUInstancerPrefab> listOfShow = new List<GPUInstancerPrefab>(ScenesOfShow);
                 //ScenesOfShow.Clear();
                 //yield return AddPrefabInstances_Coroutine(listOfShow, "UpdatePrefabRootsVisible_Coroutine");
-                List<SubScene_GPUI> listOfShow = new List<SubScene_GPUI>(ScenesOfShow);
+                List<SubScene_GPUI> listOfShow = ScenesOfShow.NewList();
                 ScenesOfShow.Clear();
 
-                
                 foreach (var scene in listOfShow)
                 {
+                    ScenesOfShow_Done.Add(scene);
                     //StartGPUInstanceEx(scene.gameObject, scene.GetObjects());
                     //yield return null;
                     if (instancesDict.ContainsKey(scene.gameObject))
@@ -618,28 +988,81 @@ public class GPUInstanceTest : SingletonBehaviour<GPUInstanceTest>
                     }
                 }
 
-                foreach (var scene in listOfShowFirst)
+                if (listOfShowFirst.Count > 0)
                 {
-                    StartGPUInstanceEx(scene.gameObject, scene.GetObjects());
-                    yield return null;
+                    System.DateTime start1 = System.DateTime.Now;
+                    List<GPUInstancerPrefab> instancesAll = new List<GPUInstancerPrefab>();
+                    //List<GameObject> allTarget = new List<GameObject>();
+                    foreach (var scene in listOfShowFirst)
+                    {
+                        //List<GameObject> targets = scene.GetObjects();
+                        //allTarget.AddRange(targets);
+                        //StartGPUInstanceEx(scene.gameObject, targets);
+                        //yield return null;
+                        List<GameObject> targets = scene.GetObjects();
+                        instancesAll.AddRange(GetInstances(scene.gameObject, targets));
+                    }
+
+                    StartGPUInstance(instancesAll);
+
+                    if (isShowLog)
+                    {
+                        Debug.Log($"UpdatePrefabRootsVisible_2_StartGPUInstanceEx[time:{System.DateTime.Now - start1}] listOfShowFirst:{listOfShowFirst.Count} instancesAll:{instancesAll.Count} meshPrefabDict:{meshPrefabDict.Count}");
+                    }
                 }
-                List<GPUInstancerPrefab> instances = new List<GPUInstancerPrefab>();
-                foreach (var scene in listOfShowAdd)
+
+                if (listOfShowAdd.Count > 0)
                 {
-                    instances.AddRange(instancesDict[scene.gameObject]);
+                    System.DateTime start2 = System.DateTime.Now;
+                    List<GPUInstancerPrefab> instances = new List<GPUInstancerPrefab>();
+                    foreach (var scene in listOfShowAdd)
+                    {
+                        instances.AddRange(instancesDict[scene.gameObject]);
+                    }
+
+                    if (IsAsync)
+                    {
+                        //if (AddPrefabInstancesAsync(instances))
+                        //{
+
+                        //}
+                        //else
+                        //{
+                        //    ScenesOfShow.AddRange(listOfShowAdd);
+                        //}
+
+                        while (AddPrefabInstancesAsync(instances) == false)
+                        {
+                            yield return new WaitForSeconds(UpdatePrefabRootInterval);
+                            if (isShowLog)
+                            {
+                                Debug.LogWarning($"UpdatePrefabRootsVisible_3_AddPrefabInstances_Coroutine WaitThread[time:{System.DateTime.Now - start}] Hide:{count1} Show:{count2}");
+                            }
+                        }
+                        //ScenesOfHide.Clear();
+                    }
+                    else
+                    {
+                        yield return AddPrefabInstances_Coroutine(instances, "UpdatePrefabRootsVisible");
+                    }
+
+                    if (isShowLog)
+                    {
+                        Debug.Log($"UpdatePrefabRootsVisible_3_AddPrefabInstances_Coroutine[time:{System.DateTime.Now - start2}] listOfShowAdd:{listOfShowAdd.Count} instances:{instances.Count} meshPrefabDict:{meshPrefabDict.Count}  ");
+                    }
                 }
-                yield return AddPrefabInstances_Coroutine(instances, "UpdatePrefabRootsVisible");
             }
 
-            if (isShowLog)
+            if (count1>0 || count2>0)
             {
-                Debug.LogError($"UpdatePrefabRootsVisible Hide:{count1} Show:{count2} listOfShowFirst:{listOfShowFirst.Count} listOfShowAdd:{listOfShowAdd.Count}");
+                Debug.LogError($"UpdatePrefabRootsVisible_4_ALL [time:{System.DateTime.Now - start}] Hide:{count1} Show:{count2} listOfShowFirst:{listOfShowFirst.Count} listOfShowAdd:{listOfShowAdd.Count}");
             }
             count++;
-
             yield return new WaitForSeconds(UpdatePrefabRootInterval);
         }
     }
+
+ 
 
     private void OnDestroy()
     {
@@ -670,7 +1093,7 @@ public class GPUInstanceTest : SingletonBehaviour<GPUInstanceTest>
 
     public bool IsCreatePrefabs = true;
 
-    public bool IsAstroidGenerator = true;
+    //public bool IsAstroidGenerator = true;
 
     public GameObject PrefabsRoot = null;
 
@@ -728,7 +1151,7 @@ public class GPUInstanceTest : SingletonBehaviour<GPUInstanceTest>
     public void AddPrefabInstance(GPUInstancerPrefab prefabInstance)
     {
         if (prefabInstance == null) return;
-        GPUInstancerAPI.AddPrefabInstance(prefabManager, prefabInstance);
+        GPUInstancerAPI.AddPrefabInstance(prefabManager, prefabInstance,true);
     }
 
     public void RemovePrefabsOfRoot(GameObject root)
@@ -923,12 +1346,14 @@ public class GPUInstanceTest : SingletonBehaviour<GPUInstanceTest>
 
     private void Start()
     {
+        MinPrefabInstanceCount = 0;
+
         InitAstroidGenerator();
-        if (AstroidGenerator.Instance == null)
-        {
-            Debug.LogError($"Start AstroidGenerator.Instance == null "); 
-            return;
-        }
+        //if (AstroidGenerator.Instance == null)
+        //{
+        //    Debug.LogError($"Start AstroidGenerator.Instance == null "); 
+        //    return;
+        //}
 
         if (IsInitPrefabs)
         {
@@ -959,16 +1384,21 @@ public class GPUInstanceTest : SingletonBehaviour<GPUInstanceTest>
         {
             InitializeGPUInstancer();
         }
-        else if (IsAstroidGenerator)
-        {
-            TestAstroidGenerator(prefabs0);
-        }
+        //else if (IsAstroidGenerator)
+        //{
+        //    TestAstroidGenerator(prefabs0);
+        //}
 
         if (IsAutoHideShowRoot)
         {
             StartUpdatePrefabRootsVisible();
         }
         InitGPUISceneLoadFinishedAction();
+
+        if (IsAutoGPUI)
+        {
+            StartGPUInstanceOfTargets();
+        }
     }
 
     private void InitGPUISceneLoadFinishedAction()
@@ -992,14 +1422,14 @@ public class GPUInstanceTest : SingletonBehaviour<GPUInstanceTest>
         StartGPUInstance(obj.gameObject);
     }
 
-    private void TestAstroidGenerator(List<GPUInstancerPrefab> prefabs0)
-    {
-        InitAstroidGenerator();
-        AstroidGenerator.Instance.IsUseGPUOnStart = false;
-        AstroidGenerator.Instance.asteroidObjects = prefabs0;
-        AstroidGenerator.Instance.GenerateGos();
-        AstroidGenerator.Instance.StartGPUInstance();
-    }
+    //private void TestAstroidGenerator(List<GPUInstancerPrefab> prefabs0)
+    //{
+    //    InitAstroidGenerator();
+    //    AstroidGenerator.Instance.IsUseGPUOnStart = false;
+    //    AstroidGenerator.Instance.asteroidObjects = prefabs0;
+    //    AstroidGenerator.Instance.GenerateGos();
+    //    AstroidGenerator.Instance.StartGPUInstance();
+    //}
 
     private void InitializeGPUInstancer()
     {
@@ -1080,6 +1510,11 @@ public class GPUInstanceTest : SingletonBehaviour<GPUInstanceTest>
     {
         if (MoveTargetRoot == null)
         {
+            MoveTargetRoot = MeshTarget;
+            Debug.LogError($"MovePrefabInstances MoveTargetRoot == null MoveTargetRoot:{MoveTargetRoot}");
+        }
+        if (MoveTargetRoot == null)
+        {
             Debug.LogError("MovePrefabInstances MoveTargetRoot == null");
             return;
         }
@@ -1124,20 +1559,47 @@ public class GPUInstanceTest : SingletonBehaviour<GPUInstanceTest>
 
     private static List<GPUInstancerPrefab> SInitPrefabInstances(List<GameObject> targets, Dictionary<Mesh, GPUInstancerPrefab> meshPrefabDict, int minCount, bool isHide)
     {
-        List<MeshFilter> meshFilters = new List<MeshFilter>();
+        List<MeshFilter> meshFilters = GetMeshFilterList(targets);
+        return SInitPrefabInstances(meshFilters, meshPrefabDict, minCount, isHide);
+    }
+
+    public static List<MeshFilter> GetMeshFilterList(List<GameObject> targets)
+    {
+        DictList<MeshFilter> meshFilters = new DictList<MeshFilter>();
         foreach (var target in targets)
         {
             if (target == null) continue;
-            meshFilters.AddRange(target.GetComponentsInChildren<MeshFilter>(true));
+            var mfs = target.GetComponentsInChildren<MeshFilter>(true);
+            foreach(var mf in mfs)
+            {
+                meshFilters.Add(mf);
+            }
         }
-        return SInitPrefabInstances(meshFilters, meshPrefabDict, minCount, isHide);
+        return meshFilters.NewList();
+    }
+
+    public List<GPUInstancerPrefab> GetGPUIPrefabList(List<GameObject> targets)
+    {
+        DictList<GPUInstancerPrefab> meshFilters = new DictList<GPUInstancerPrefab>();
+        foreach (var target in targets)
+        {
+            if (target == null) continue;
+            var mfs = target.GetComponentsInChildren<GPUInstancerPrefab>(true);
+            foreach (var mf in mfs)
+            {
+                meshFilters.Add(mf);
+            }
+        }
+        //Dictionary<Mesh, GPUInstancerPrefab> meshPrefabDict = GetMeshPrefabDict();
+        //List<GPUInstancerPrefab> instances = InitPrefabInstances(targets, meshPrefabDict);
+        return meshFilters.NewList();
     }
 
     private static List<GPUInstancerPrefab> SInitPrefabInstances(List<MeshFilter> meshFilters, Dictionary<Mesh, GPUInstancerPrefab> meshPrefabDict,int minCount,bool isHide)
     {
         List<GPUInstancerPrefab> instances = new List<GPUInstancerPrefab>();
         SharedMeshInfoList sharedMeshInfos = new SharedMeshInfoList(meshFilters);
-        Debug.Log($"PrefabInstances sharedMeshInfos:{sharedMeshInfos.Count}");
+        //Debug.Log($"SInitPrefabInstances sharedMeshInfos:{sharedMeshInfos.Count}");
         for (int i = 0; i < sharedMeshInfos.Count; i++)
         {
             SharedMeshInfo sm = sharedMeshInfos[i];
@@ -1225,6 +1687,87 @@ public class GPUInstanceTest : SingletonBehaviour<GPUInstanceTest>
         }
     }
 
+    public GPUInstancerPrefabListRuntimeHandler runtimeHandler;
+
+    [ContextMenu("RemovePrefabInstancesAsync")]
+    public bool RemovePrefabInstancesAsync(List<GPUInstancerPrefab> prefabs)
+    {
+        if (runtimeHandler == null)
+        {
+            runtimeHandler = this.gameObject.AddComponent<GPUInstancerPrefabListRuntimeHandler>();
+        }
+        runtimeHandler.prefabManager = this.prefabManager;
+        runtimeHandler.runInThreads = runInThreads;
+
+        if (prefabs==null)
+            prefabs = GetGPUIPrefabListOfTarget();
+        for (int i = 0; i < prefabs.Count; i++)
+        {
+            GPUInstancerPrefab prefab = prefabs[i];
+            if (insListOfStarted.Contains(prefab))
+            {
+
+            }
+            else
+            {
+                Debug.LogError($"RemovePrefabInstancesAsync[{i+1}/{prefabs.Count}] insListOfStarted.Contains(prefab) == false prefab:{prefab} path:{prefab.transform.GetPath()}");
+            }
+        }
+        //Debug.Log($"RemovePrefabInstancesAsync[{prefabs.Count}]");
+        return runtimeHandler.RemovePrefabInstancesAsync(prefabs);
+    }
+
+    [ContextMenu("AddPrefabInstancesAsync")]
+    public bool AddPrefabInstancesAsync(List<GPUInstancerPrefab> prefabs)
+    {
+        if (runtimeHandler == null)
+        {
+            runtimeHandler = this.gameObject.AddComponent<GPUInstancerPrefabListRuntimeHandler>();
+        }
+        runtimeHandler.prefabManager = this.prefabManager;
+        runtimeHandler.runInThreads = runInThreads;
+
+        if (prefabs == null)
+        {
+            prefabs = GetGPUIPrefabListOfTarget();
+        }
+        return runtimeHandler.AddPrefabInstancesAsync(prefabs);
+    }
+
+    [ContextMenu("StartGPUInstanceOfTargets")]
+    public void StartGPUInstanceOfTargets()
+    {
+        List<GameObject> targetList = new List<GameObject>();
+        targetList.AddRange(GPUIRoots);
+        targetList.Add(MeshTarget);
+        Debug.Log($"StartGPUInstanceOfTargets targetList:{targetList.Count}");
+        StartGPUInstance(targetList);
+    }
+
+    [ContextMenu("RemovePrefabsInstancesCoroutine")]
+    public void RemovePrefabsInstancesCoroutine()
+    {
+        List<GPUInstancerPrefab> prefabs = GetGPUIPrefabListOfTarget();
+        StartCoroutine(RemovePrefabsInstances_Coroutine(prefabs));
+    }
+
+    [ContextMenu("AddPrefabsInstancesCoroutine")]
+    public void AddPrefabsInstancesCoroutine()
+    {
+        List<GPUInstancerPrefab> prefabs = GetGPUIPrefabListOfTarget();
+        StartCoroutine(AddPrefabInstances_Coroutine(prefabs, "AddPrefabsInstancesCoroutine"));
+    }
+
+    private List<GPUInstancerPrefab> GetGPUIPrefabListOfTarget()
+    {
+        List<GameObject> targetList = new List<GameObject>();
+        targetList.AddRange(GPUIRoots);
+        targetList.Add(MeshTarget);
+        List<GPUInstancerPrefab> prefabs = GetGPUIPrefabList(targetList);
+        Debug.Log($"GetGPUIPrefabListOfTarget targetList:{targetList.Count} prefabs:{prefabs.Count}");
+        return prefabs;
+    }
+
     [ContextMenu("StartGPUInstanceOfGPUIRoots")]
     public void StartGPUInstanceOfGPUIRoots()
     {
@@ -1257,13 +1800,13 @@ public class GPUInstanceTest : SingletonBehaviour<GPUInstanceTest>
     {
         System.DateTime start = System.DateTime.Now;
         Dictionary<Mesh, GPUInstancerPrefab> meshPrefabDict = GetMeshPrefabDict();
-        var instances = InitPrefabInstances(targets, meshPrefabDict);
+        List<GPUInstancerPrefab> instances = InitPrefabInstances(targets, meshPrefabDict);
 
         AstroidGenerator.Instance.IsUseGPUOnStart = false;
         //AstroidGenerator.Instance.asteroidObjects = prefabs0;
         //AstroidGenerator.Instance.GenerateGos();
         //Debug.Log($"StartGPUInstance[{++gpuiCount}] target:{target} meshPrefabDict:{meshPrefabDict.Count} instances:{instances.Count} path:{target.transform.GetPath()}");
-        AstroidGenerator.Instance.StartGPUInstance(instances);
+        this.StartGPUInstance(instances);
         Debug.Log($"StartGPUInstance[{++gpuiCount}] targets:{targets.Count} time:{System.DateTime.Now - start} meshPrefabDict:{meshPrefabDict.Count} instances:{instances.Count} ");
     }
 
@@ -1278,7 +1821,7 @@ public class GPUInstanceTest : SingletonBehaviour<GPUInstanceTest>
         {
             instances = instancesDict[keyGo];
             AddPrefabInstances(instances, "StartGPUInstanceEx");
-            Debug.Log($"StartGPUInstanceEx[{++gpuiCount}] AddPrefabInstances targets:{targets.Count} time:{System.DateTime.Now - start} meshPrefabDict:{meshPrefabDict.Count} instances:{instances.Count} ");
+            //Debug.Log($"StartGPUInstanceEx[{++gpuiCount}] AddPrefabInstances targets:{targets.Count} time:{System.DateTime.Now - start} meshPrefabDict:{meshPrefabDict.Count} instances:{instances.Count} ");
         }
         else
         {
@@ -1292,9 +1835,86 @@ public class GPUInstanceTest : SingletonBehaviour<GPUInstanceTest>
             //AstroidGenerator.Instance.asteroidObjects = prefabs0;
             //AstroidGenerator.Instance.GenerateGos();
             //Debug.Log($"StartGPUInstance[{++gpuiCount}] target:{target} meshPrefabDict:{meshPrefabDict.Count} instances:{instances.Count} path:{target.transform.GetPath()}");
-            AstroidGenerator.Instance.StartGPUInstance(instances);
-            Debug.Log($"StartGPUInstanceEx[{++gpuiCount}] StartGPUInstance targets:{targets.Count} time:{System.DateTime.Now - start} meshPrefabDict:{meshPrefabDict.Count} instances:{instances.Count} ");
+            //AstroidGenerator.Instance.StartGPUInstance(instances);
+            this.StartGPUInstance(instances);
+            //Debug.Log($"StartGPUInstanceEx[{++gpuiCount}] StartGPUInstance targets:{targets.Count} time:{System.DateTime.Now - start} meshPrefabDict:{meshPrefabDict.Count} instances:{instances.Count} ");
             instancesDict.Add(keyGo, instances);
+        }
+    }
+
+    public List<GPUInstancerPrefab> GetInstances(GameObject keyGo, List<GameObject> targets)
+    {
+        List<GPUInstancerPrefab> instances = null;
+        if (instancesDict.ContainsKey(keyGo))
+        {
+            instances = instancesDict[keyGo];
+        }
+        else
+        {
+            Dictionary<Mesh, GPUInstancerPrefab> meshPrefabDict = GetMeshPrefabDict();
+            instances = InitPrefabInstances(targets, meshPrefabDict);
+            instancesDict.Add(keyGo, instances);
+        }
+        return instances;
+    }
+
+    private DictList<GPUInstancerPrefab> insListOfStarted = new DictList<GPUInstancerPrefab>();
+
+    public void StartGPUInstance(List<GPUInstancerPrefab> instances)
+    {
+        //AstroidGenerator.Instance.StartGPUInstance(instances);
+
+        if (prefabManager == null)
+        {
+            prefabManager = GPUInstancerPrefabManager.Instance;
+        }
+        if (prefabManager != null && prefabManager.gameObject.activeSelf && prefabManager.enabled)
+        {
+            //if (instances == null || instances.Count == 0)
+            //{
+            //    instances = GameObject.FindObjectsOfType<GPUInstancerPrefab>().ToList();
+            //}
+
+            prefabManager.GetPrefabInstances(instances, true, "StartGPUInstance");
+
+            int c = 0;
+            int e = 0;
+            foreach (GPUInstancerPrefab prefabInstance in instances)
+            {
+                c++;
+                if (prefabInstance == null)
+                {
+                    Debug.LogError($"StartGPUInstance[{c}] prefabInstance == null");
+                    continue;
+                }
+                if (prefabInstance.prefabPrototype == null)
+                {
+                    e++;
+                    Debug.LogError($"StartGPUInstance[{c}]({e}) prefabInstance.prefabPrototype==null prefabInstance:{prefabInstance} path:{prefabInstance.transform.GetPath()}");
+                    continue;
+                }
+                insListOfStarted.Add(prefabInstance);
+            }
+
+            if (IsAsync)
+            {
+                foreach (GPUInstancerPrefab pi in instances)
+                {
+                    // save transform data before threading
+                    pi.GetLocalToWorldMatrix(true);
+                }
+            }
+
+            GPUInstancerAPI.RegisterPrefabInstanceList(prefabManager, instances);
+
+            GPUInstancerAPI.InitializeGPUInstancer(prefabManager);
+
+            //var prefabs = GameObject.FindObjectsOfType<GPUInstancerPrefab>(true);
+            Debug.Log($"GUIInstanceTest.StartGPUInstance instances:{instances.Count} insListOfStarted:{insListOfStarted.Count}");
+        }
+        else
+        {
+            Debug.LogError($"GUIInstanceTest.StartGPUInstance prefabManager:{prefabManager}");
         }
     }
 
@@ -1308,7 +1928,7 @@ public class GPUInstanceTest : SingletonBehaviour<GPUInstanceTest>
         //AstroidGenerator.Instance.asteroidObjects = prefabs0;
         //AstroidGenerator.Instance.GenerateGos();
         //Debug.Log($"StartGPUInstance[{++gpuiCount}] target:{target} meshPrefabDict:{meshPrefabDict.Count} instances:{instances.Count} path:{target.transform.GetPath()}");
-        AstroidGenerator.Instance.StartGPUInstance(instances);
+        this.StartGPUInstance(instances);
         Debug.Log($"StartGPUInstance[{++gpuiCount}] target:{target} time:{System.DateTime.Now-start} meshPrefabDict:{meshPrefabDict.Count} instances:{instances.Count} path:{target.transform.GetPath()}");
     }
 
@@ -1379,6 +1999,28 @@ public class GPUInstanceTest : SingletonBehaviour<GPUInstanceTest>
             mf.gameObject.SetActive(true);
         }
         Debug.Log($"ShowAll mfs:{mfs.Length}");
+    }
+
+    [ContextMenu("UnpackAll")]
+    public void UnpackAll()
+    {
+        MeshFilter[] mfs = MeshTarget.GetComponentsInChildren<MeshFilter>(true);
+        foreach (var mf in mfs)
+        {
+            EditorHelper.UnpackPrefab(mf.gameObject);
+        }
+        Debug.Log($"UnpackAll mfs:{mfs.Length}");
+    }
+
+    [ContextMenu("ClearPrefabScrips")]
+    public void ClearPrefabScrips()
+    {
+        GPUInstancerPrefab[] mfs = MeshTarget.GetComponentsInChildren<GPUInstancerPrefab>(true);
+        foreach (var mf in mfs)
+        {
+           GameObject.DestroyImmediate(mf);
+        }
+        Debug.Log($"ClearPrefabScrips GPUInstancerPrefab:{mfs.Length}");
     }
 
     [ContextMenu("HideNotInPrefabs")]

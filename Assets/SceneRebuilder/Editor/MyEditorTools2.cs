@@ -170,6 +170,29 @@ TypeCount2[019]	count:761	type:UnityEngine.UI.Toggle
     #endregion
 
     #region Building
+
+    [MenuItem("SceneTools/Building/HideOtherBuildings")]
+    public static void HideOtherBuildings()
+    {
+        SetBuildingsActive(false);
+        Selection.activeGameObject.SetActive(true);
+    }
+
+    private static void SetBuildingsActive(bool isActive)
+    {
+        BuildingController[] bs = GameObject.FindObjectsOfType<BuildingController>();
+        foreach (var b in bs)
+        {
+            b.gameObject.SetActive(isActive);
+        }
+    }
+
+    [MenuItem("SceneTools/Building/ShowAllBuildings")]
+    public static void ShowAllBuildings()
+    {
+        SetBuildingsActive(true);
+    }
+
     [MenuItem("SceneTools/Building/MoveSelectionToBuildingIn")]
     public static void MoveSelectionToBuildingIn()
     {
@@ -578,7 +601,7 @@ TypeCount2[019]	count:761	type:UnityEngine.UI.Toggle
         for (int i = 0; i < go.transform.childCount; i++)
         {
             var child = go.transform.GetChild(i);
-            if(ProgressBarHelper.DisplayCancelableProgressBar("CreateLODOfDevs", i, go.transform.childCount))
+            if (ProgressBarHelper.DisplayCancelableProgressBar("CreateLODOfDevs", i, go.transform.childCount))
             {
                 break;
             }
@@ -591,8 +614,129 @@ TypeCount2[019]	count:761	type:UnityEngine.UI.Toggle
         ProgressBarHelper.ClearProgressBar();
     }
 
-    [MenuItem("SceneTools/LOD/ClearBoundBox")]
-    public static void ClearBoundBox()
+    [MenuItem("SceneTools/LOD/RepairLOD0(路灯)")]
+    public static void RepairLOD0Light()
+    {
+        GameObject root = Selection.activeGameObject;
+        LODGroup[] lodGroups = root.GetComponentsInChildren<LODGroup>(true);
+        int count = 0;
+        for (int i = 0; i < lodGroups.Length; i++)
+        {
+            LODGroup group = lodGroups[i];
+            LOD[] lods = group.GetLODs();
+            //LOD lod0 = lods[0];
+            bool isError = false;
+            foreach (var renderer in lods[0].renderers)
+            {
+                if (renderer == null)
+                {
+                    isError = true;
+                    break;
+                }
+            }
+            if (isError)
+            {
+                MeshRenderer[] renderers = group.GetComponentsInChildren<MeshRenderer>(true);
+                bool isFound = false;
+                MeshRenderer mr0 = null;
+                foreach(var renderer in renderers)
+                {
+                    if (renderer.name.Contains("LOD0"))
+                    {
+                        mr0 = renderer;
+                        lods[0].renderers = new Renderer[] { renderer };
+                        isFound = true;
+                        break;
+                    }
+                }
+                group.SetLODs(lods);
+                Debug.LogError($"RepairLOD0Light[{count++}] isFound:{isFound} renderers:{renderers.Length} mr0:{mr0}");
+            }
+        }
+        Debug.LogError($"RepairLOD0Light root:{root} lodGroups:{lodGroups.Length} count:{count}");
+    }
+
+    [MenuItem("SceneTools/LOD/SetIgnoreDynamicCulling")]
+    public static void SetIgnoreDynamicCulling()
+    {
+        LODGroup[] lodGroups = GameObject.FindObjectsOfType<LODGroup>(true);
+        LODHelper.SetIgnoreDynamicCulling(lodGroups);
+    }
+
+    [MenuItem("SceneTools/LOD/SetDoorLOD2Percent")]
+    public static void SetDoorLOD2Percent()
+    {
+        GameObject go = Selection.activeGameObject;
+        try
+        {
+            LODGroup[] lodGroups = go.GetComponentsInChildren<LODGroup>(true);
+            int doorLODGroupCount = 0;
+            foreach (var lodGroup in lodGroups)
+            {
+                if (lodGroup.name.ToLower().Contains("door"))
+                {
+                    doorLODGroupCount++;
+
+                    LOD[] lods = lodGroup.GetLODs();
+                    lods[2].screenRelativeTransitionHeight = 0.002f;
+                    lodGroup.SetLODs(lods);
+                }
+            }
+            Debug.LogError($"SetDoorLOD2Percent go:{go} lodGroups:{lodGroups.Length} doorLODGroupCount:{doorLODGroupCount}");
+        }
+        catch (Exception ex)
+        {
+            Debug.LogError($"SetDoorLOD2Percent go:{go} Exception:{ex}");
+        }
+    }
+
+    [MenuItem("SceneTools/LOD/SetDoorLOD2Mat")]
+    public static void SetDoorLOD2Mat()
+    {
+        GameObject go = Selection.activeGameObject;
+        try
+        {
+            LODGroup[] lodGroups = go.GetComponentsInChildren<LODGroup>(true);
+            int errorCount1 = 0;
+            int errorCount2 = 0;
+            int doorLODGroupCount = 0;
+            foreach (var lodGroup in lodGroups)
+            {
+                if (lodGroup.name.ToLower().Contains("door"))
+                {
+                    doorLODGroupCount++;
+
+                    LOD[] lods = lodGroup.GetLODs();
+                    LOD lod2 = lods[2];
+                    if (lod2.renderers.Length == 1)
+                    {
+                        MeshRenderer renderer = lod2.renderers[0] as MeshRenderer;
+                        if (renderer.sharedMaterials.Length == 2)
+                        {
+                            if(renderer.sharedMaterials[0].name =="door")
+                            {
+                                renderer.sharedMaterials = new Material[] { renderer.sharedMaterials[0] };
+                                errorCount1++;
+                            }
+                            else if (renderer.sharedMaterials[1].name == "door")
+                            {
+                                renderer.sharedMaterials = new Material[] { renderer.sharedMaterials[1] };
+                                errorCount2++;
+                            }
+                        }
+                    }
+                }
+            }
+            Debug.LogError($"SetDoorLOD2Mat go:{go} lodGroups:{lodGroups.Length} doorLODGroupCount:{doorLODGroupCount} errorCount1:{errorCount1} errorCount2:{errorCount2}");
+        }
+        catch (Exception ex)
+        {
+            Debug.LogError($"SetDoorLOD2Mat go:{go} Exception:{ex}");
+        }
+    }
+
+    [MenuItem("SceneTools/LOD/ClearDoorBoundBox")]
+    public static void ClearDoorBoundBox()
     {
         GameObject go = Selection.activeGameObject;
         try
@@ -611,6 +755,14 @@ TypeCount2[019]	count:761	type:UnityEngine.UI.Toggle
                     {
                         MeshRenderer r = renderers[i]; 
                         if (r.name.Contains("door_Bounds")|| r.name.Contains("New_Bounds"))
+                        {
+                            BoundsBox bb = r.GetComponent<BoundsBox>();
+                            if (bb)
+                            {
+                                GameObject.DestroyImmediate(bb);
+                            }
+                        }  
+                        if(r.name.Contains("_Bounds") && !r.name.Contains("_Bounds_LOD0"))
                         {
                             BoundsBox bb = r.GetComponent<BoundsBox>();
                             if (bb)
@@ -968,8 +1120,6 @@ TypeCount2[019]	count:761	type:UnityEngine.UI.Toggle
         ProgressBarHelper.ClearProgressBar();
         Debug.Log($"GetLODGroups groups:{groups.Length}");
     }
-
-
 
     [MenuItem("SceneTools/LOD/ClearLODGroups")]
     public static void ClearLODGroups()
@@ -2139,6 +2289,36 @@ TypeCount2[019]	count:761	type:UnityEngine.UI.Toggle
 
     #region Transform
 
+    [MenuItem("SceneTools/Transform/ShowPath")]
+    public static void ShowPath()
+    {
+        Debug.Log(Selection.activeGameObject.transform.GetPath());
+    }
+
+    //[MenuItem("SceneTools/Transform/SelectParent")]
+    //public static void SelectParent()
+    //{
+    //    EditorHelper.SelectObject(Selection.activeGameObject.transform.parent.gameObject);
+    //}
+
+    [MenuItem("SceneTools/Transform/CheckTranformScale")]
+    public static void CheckTranformScale()
+    {
+        GameObject go = Selection.activeGameObject;
+        MeshRenderer[] meshRenderers = go.GetComponentsInChildren<MeshRenderer>(true);
+        int errorCount = 0;
+        for (int i = 0; i < meshRenderers.Length; i++)
+        {
+            MeshRenderer renderer = meshRenderers[i];
+            Transform t = renderer.transform;
+            if (t.lossyScale == Vector3.zero)
+            {
+                Debug.Log($"CheckScale[{i + 1}/{meshRenderers.Length}]({++errorCount}) Transform:{t.name} \tpath:{t.GetPath()}");
+            }
+        }
+        Debug.LogError($"CheckTranformScale go:{go.name} meshRenderers:{meshRenderers.Length} errorCount:{errorCount}");
+    }
+
     [MenuItem("SceneTools/Transform/GetAllChildrenRenderers")]
     public static void GetAllChildrenRenderers()
     {
@@ -2810,6 +2990,152 @@ TypeCount2[019]	count:761	type:UnityEngine.UI.Toggle
         Debug.LogError($"UpdateRendererIds rids:{rids.Length} UpdateId:{isUpdateId} UpdateChildren:{isUpdateChildrenId}");
     }
 
+    [MenuItem("SceneTools/Renderers/FindRepeatedIdModels")]
+    public static void FindRepeatedIdModels()
+    {
+        DateTime start = DateTime.Now;
+        int count1 = 0;
+        int count2 = 0;
+        RendererId[] rendererIds = GameObject.FindObjectsOfType<RendererId>(true);
+        Dictionary<string, RendererId> ridDict = new Dictionary<string, RendererId>();
+        for (int i = 0; i < rendererIds.Length; i++)
+        {
+            RendererId rid = rendererIds[i];
+            if (ProgressBarHelper.DisplayCancelableProgressBar("FindRepeatedIdModels",i+1, rendererIds.Length))
+            {
+                break;
+            }
+            if (ridDict.ContainsKey(rid.Id))
+            {
+                RendererId rid2 = ridDict[rid.Id];
+                count1++;
+                bool isSameName = rid.name == rid2.name;
+                bool isSameParent = rid.transform.parent == rid2.transform.parent;
+                float meshDis = MeshHelper.GetVertexDistanceEx(rid.transform, rid2.transform);
+                string path = rid.transform.GetPath();
+                Debug.Log($"FindRepeatedIdModels[{i+1}/{rendererIds.Length}]({count1})\t[Name:{isSameName} Parent:{isSameParent} Dis:{meshDis:F2}] [rid:{rid.name} rid2:{rid2.name}] path:{path}");
+            }
+            else
+            {
+                ridDict.Add(rid.Id, rid);
+            }
+        }
+        ProgressBarHelper.ClearProgressBar();
+        Debug.Log($"FindRepeatedIdModels rendererIds:{rendererIds.Length} count1:{count1}");
+    }
+
+    [MenuItem("SceneTools/Renderers/DeleteRepeatedIdModels")]
+    public static void DeleteRepeatedIdModels()
+    {
+        DateTime start = DateTime.Now;
+        int count1 = 0;
+        int count2 = 0;
+        int count3 = 0;
+        RendererId[] rendererIds = GameObject.FindObjectsOfType<RendererId>(true);
+        Dictionary<string, RendererId> ridDict = new Dictionary<string, RendererId>();
+        string nameList = "";
+        for (int i = 0; i < rendererIds.Length; i++)
+        {
+            RendererId rid = rendererIds[i];
+            if (ProgressBarHelper.DisplayCancelableProgressBar("FindRepeatedIdModels", i + 1, rendererIds.Length))
+            {
+                break;
+            }
+            if (ridDict.ContainsKey(rid.Id))
+            {
+                RendererId rid2 = ridDict[rid.Id];
+                count1++;
+                bool isSameName = rid.name == rid2.name;
+                bool isSameParent = rid.transform.parent == rid2.transform.parent;
+                float meshDis = MeshHelper.GetVertexDistanceEx(rid.transform, rid2.transform);
+                string path = rid.transform.GetPath();
+                Debug.Log($"FindRepeatedIdModels[{i + 1}/{rendererIds.Length}]({count1})\t[Name:{isSameName} Parent:{isSameParent} Dis:{meshDis:F2}] [rid:{rid.name} rid2:{rid2.name}] path:{path}");
+                if(isSameName&& isSameParent && meshDis < 0.0001f)
+                {
+                    nameList += rid.name + "; ";
+                    //GameObject.DestroyImmediate(rid.gameObject);
+                    if(rid.transform.childCount>0 && rid2.transform.childCount == 0)
+                    {
+                        GameObject.DestroyImmediate(rid2.gameObject);
+                        count3++;
+                    }
+                    else if (rid2.transform.childCount > 0 && rid.transform.childCount == 0)
+                    {
+                        GameObject.DestroyImmediate(rid.gameObject);
+                        count3++;
+                    }
+                    else
+                    {
+
+                    }
+                    count2++;
+                }
+            }
+            else
+            {
+                ridDict.Add(rid.Id, rid);
+            }
+        }
+        ProgressBarHelper.ClearProgressBar();
+        Debug.Log($"DeleteRepeatedIdModels rendererIds:{rendererIds.Length} count1:{count1} count2:{count2} count3:{count3}");
+    }
+
+    [MenuItem("SceneTools/Renderers/DeleteRepeatedIdModels2")]
+    public static void DeleteRepeatedIdModels2()
+    {
+        DateTime start = DateTime.Now;
+        int count1 = 0;
+        int count2 = 0;
+        int count3 = 0;
+        RendererId[] rendererIds = GameObject.FindObjectsOfType<RendererId>(true);
+        Dictionary<string, RendererId> ridDict = new Dictionary<string, RendererId>();
+        string nameList = "";
+        for (int i = 0; i < rendererIds.Length; i++)
+        {
+            RendererId rid = rendererIds[i];
+            if (ProgressBarHelper.DisplayCancelableProgressBar("FindRepeatedIdModels", i + 1, rendererIds.Length))
+            {
+                break;
+            }
+            if (ridDict.ContainsKey(rid.Id))
+            {
+                RendererId rid2 = ridDict[rid.Id];
+                count1++;
+                bool isSameName = rid.name == rid2.name;
+                bool isSameParent = rid.transform.parent == rid2.transform.parent;
+                float meshDis = MeshHelper.GetVertexDistanceEx(rid.transform, rid2.transform);
+                string path = rid.transform.GetPath();
+                Debug.Log($"FindRepeatedIdModels[{i + 1}/{rendererIds.Length}]({count1})\t[Name:{isSameName} Parent:{isSameParent} Dis:{meshDis:F2}] [rid:{rid.name} rid2:{rid2.name}] path:{path}");
+                if (isSameName && isSameParent && meshDis < 0.0001f)
+                {
+                    nameList += rid.name + "; ";
+                    //GameObject.DestroyImmediate(rid.gameObject);
+                    if (rid.transform.childCount > 0 && rid2.transform.childCount == 0)
+                    {
+                        GameObject.DestroyImmediate(rid2.gameObject);
+                        count3++;
+                    }
+                    else if (rid2.transform.childCount > 0 && rid.transform.childCount == 0)
+                    {
+                        GameObject.DestroyImmediate(rid.gameObject);
+                        count3++;
+                    }
+                    else
+                    {
+                        GameObject.DestroyImmediate(rid.gameObject);
+                    }
+                    count2++;
+                }
+            }
+            else
+            {
+                ridDict.Add(rid.Id, rid);
+            }
+        }
+        ProgressBarHelper.ClearProgressBar();
+        Debug.Log($"DeleteRepeatedIdModels2 rendererIds:{rendererIds.Length} count1:{count1} count2:{count2} count3:{count3}");
+    }
+
     #endregion
 
     #region Collider
@@ -2821,6 +3147,31 @@ TypeCount2[019]	count:761	type:UnityEngine.UI.Toggle
     public static void ClearCollders()
     {
         ClearComponents<Collider>();
+    }
+
+    /// <summary>
+    /// 自动计算所有子对象包围盒
+    /// </summary>
+    [MenuItem("SceneTools/Collider/EnabledRendererColliders")]
+    public static void EnabledRendererColliders()
+    {
+        //ClearComponents<Collider>();
+        //TransformHelper.SetCollidersEnabled(Selection.gameObjects)
+        int count = 0;
+        var cs = Selection.activeGameObject.GetComponentsInChildren<MeshRenderer>(true);
+        foreach (var item in cs)
+        {
+            Collider[] colliders = item.GetComponents<Collider>();
+            foreach(var collider in colliders)
+            {
+                if (collider.enabled == false)
+                {
+                    collider.enabled = true;
+                    count++;
+                }
+            }
+        }
+        Debug.Log($"EnabledRendererColliders cs:{cs.Length} count:{count}");
     }
 
     /// <summary>

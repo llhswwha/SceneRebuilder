@@ -88,8 +88,8 @@ public class BuildingScenesLoadManager : MonoBehaviour
 
     }
 
-    [ContextMenu("InitUserBuildings")]
-    public void InitUserBuildings()
+    [ContextMenu("InitUserBuildings1")]
+    public void InitUserBuildings1()
     {
         Setting.UserBulindgs.Clear();
         var bs = GameObject.FindObjectsOfType<BuildingController>();
@@ -97,6 +97,23 @@ public class BuildingScenesLoadManager : MonoBehaviour
         foreach(var b in bs)
         {
             Setting.UserBulindgs.Add(b.name);
+        }
+    }
+
+    [ContextMenu("InitUserBuildings2")]
+    public void InitUserBuildings2()
+    {
+        Setting.UserBulindgs.Clear();
+        var bs = GameObject.FindObjectsOfType<BuildingController>();
+
+        foreach (var b in bs)
+        {
+            string n = b.NodeName;
+            if (string.IsNullOrEmpty(n))
+            {
+                n = b.name;
+            }
+            Setting.UserBulindgs.Add(n);
         }
     }
 
@@ -172,12 +189,23 @@ public class BuildingScenesLoadManager : MonoBehaviour
         }
 
         List<BuildingController> staticBuilidings = new List<BuildingController>();
-        foreach (var b in disableBuildings)
+        for (int i = 0; i < disableBuildings.Count; i++)
         {
+            BuildingController b = disableBuildings[i];
+            if (b == null)
+            {
+                Debug.LogError($"LoadBuildingScenes[{i}] b == null ");
+                continue;
+            }
+            if (b.gameObject == null)
+            {
+                Debug.LogError($"LoadBuildingScenes[{i}] b.gameObject == null :{b.NodeName}");
+                continue;
+            }
             var bs = Setting.GetBuilding(b);
             if (bs == null)
             {
-                Debug.LogError($"LoadBuildingScenes GetBuilding == null :{b.name}");
+                Debug.LogError($"LoadBuildingScenes[{i}] GetBuilding == null :{b.name}");
                 continue;
             }
             if (bs.IsStatic)
@@ -203,10 +231,6 @@ public class BuildingScenesLoadManager : MonoBehaviour
 
         if (IsLoadUserBuildings)//Test
         {
-//#if UNITY_EDITOR
-            staticBuilidings.Clear();
-            modelList.Clear();
-//#endif
             foreach (var b in staticBuilidings)
             {
                 GameObject.DestroyImmediate(b.gameObject);
@@ -215,6 +239,10 @@ public class BuildingScenesLoadManager : MonoBehaviour
             {
                 GameObject.DestroyImmediate(b.gameObject);
             }
+            //#if UNITY_EDITOR
+            staticBuilidings.Clear();
+            modelList.Clear();
+            //#endif
         }
 
         if (Setting.Enabled == false)
@@ -299,7 +327,10 @@ public class BuildingScenesLoadManager : MonoBehaviour
             TypeCount2[012]	count:2349	type:BoundsBox
             TypeCount2[013]	count:1948	type:PipeElbowModel
          */
+        if (p == null) return;
+        if (p.scene == null) return;
         GameObject go = p.scene.gameObject;
+        if (go == null) return;
         //ClearComponents<RendererId>(go);
         ClearComponents<MeshRendererInfo>(go);
         ClearComponents<MeshNode>(go);
@@ -529,21 +560,18 @@ public class BuildingScenesLoadManager : MonoBehaviour
 
     public bool IsShowLog = false;
 
-    [ContextMenu("LoadScenesBySetting")]
-    public void LoadScenesBySetting()
+    private Dictionary<string, DepNode> InitDepDict()
     {
+        DepNode[] bcs = null;
         if (ModelTarget == null)
         {
-            Debug.LogError($"BuildingScenesLoadManager.LoadScenesBySetting ModelTarget == null");
-            return;
+            bcs = GameObject.FindObjectsOfType<DepNode>(true);
         }
-        if (Setting.Enabled == false)
+        else
         {
-            Debug.LogError($"BuildingScenesLoadManager.InitSettingByScene Setting.Enabled == false");
-            return;
+            bcs = ModelTarget.GetComponentsInChildren<DepNode>(true);
         }
-
-        DepNode[] bcs = ModelTarget.GetComponentsInChildren<DepNode>(true);
+         
         Dictionary<string, DepNode> depDict = new Dictionary<string, DepNode>();
         foreach (var bc in bcs)
         {
@@ -553,13 +581,44 @@ public class BuildingScenesLoadManager : MonoBehaviour
             }
             depDict.Add(bc.NodeName, bc);
         }
+        return depDict;
+    }
 
-        BuildingModelInfo[] models = ModelTarget.GetComponentsInChildren<BuildingModelInfo>(true);
+    private Dictionary<string, BuildingModelInfo> InitModelDict()
+    {
+        BuildingModelInfo[] models = null;
+        if (ModelTarget == null)
+        {
+            models = GameObject.FindObjectsOfType<BuildingModelInfo>(true);
+        }
+        else
+        {
+            models = ModelTarget.GetComponentsInChildren<BuildingModelInfo>(true);
+        }
         Dictionary<string, BuildingModelInfo> modelDict = new Dictionary<string, BuildingModelInfo>();
         foreach (var bc in models)
         {
             modelDict.Add(bc.name, bc);
         }
+        return modelDict;
+    }
+
+    [ContextMenu("LoadScenesBySetting")]
+    public void LoadScenesBySetting()
+    {
+        //if (ModelTarget == null)
+        //{
+        //    Debug.LogError($"BuildingScenesLoadManager.LoadScenesBySetting ModelTarget == null");
+        //    return;
+        //}
+        if (Setting.Enabled == false)
+        {
+            Debug.LogError($"BuildingScenesLoadManager.InitSettingByScene Setting.Enabled == false");
+            return;
+        }
+        Dictionary<string, DepNode> depDict = InitDepDict();
+        Dictionary<string, BuildingModelInfo> modelDict = InitModelDict();
+
 
         Debug.Log($"LoadScenesBySetting depDict:{depDict.Count}");
 
@@ -866,6 +925,42 @@ public class BuildingScenesLoadManager : MonoBehaviour
     }
 
     public BuildingSceneLoadSetting Setting = new BuildingSceneLoadSetting();
+
+
+    public static GameObject FindBuildingByName(string building)
+    {
+        BuildingController[] bs = GameObject.FindObjectsOfType<BuildingController>(true);
+        foreach (var b in bs)
+        {
+            if (b.NodeName == building)
+            {
+                return b.gameObject;
+            }
+        }
+        foreach (var b in bs)
+        {
+            if (b.name == building)
+            {
+                return b.gameObject;
+            }
+        }
+        BuildingModelInfo[] bs2 = GameObject.FindObjectsOfType<BuildingModelInfo>(true);
+        foreach (var b in bs2)
+        {
+            if (b.name == building)
+            {
+                return b.gameObject;
+            }
+        }
+        foreach (var b in bs2)
+        {
+            if (b.name.Contains(building))
+            {
+                return b.gameObject;
+            }
+        }
+        return null;
+    }
 }
 
 [Serializable]
@@ -999,6 +1094,16 @@ public class BuildingSceneLoadSetting
 
     internal BuildingSceneLoadItemCollection GetBuilding(BuildingController bc)
     {
+        if (bc == null)
+        {
+            Debug.LogError("LoadBuildingScenes GetBuilding bc == null");
+            return null;
+        }
+        if (bc.gameObject == null)
+        {
+            Debug.LogError("LoadBuildingScenes GetBuilding bc.gameObject == null");
+            return null;
+        }
         foreach (var item in Items)
         {
             if (item.Name == bc.NodeName )
@@ -1031,7 +1136,7 @@ public class BuildingSceneLoadSetting
 
 [Serializable]
 [XmlType("BuildingSceneLoadItemCollection")]
-public class BuildingSceneLoadItemCollection
+public class BuildingSceneLoadItemCollection:IComparable<BuildingSceneLoadItemCollection>
 {
     [XmlAttribute]
     public string Name;
@@ -1119,6 +1224,12 @@ public class BuildingSceneLoadItemCollection
         }
         return null;
     }
+
+    public int CompareTo(BuildingSceneLoadItemCollection other)
+    {
+        return this.Name.CompareTo(other.Name);
+    }
+
 }
 
 [Serializable]

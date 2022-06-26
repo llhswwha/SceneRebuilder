@@ -9,6 +9,43 @@ namespace GPUInstancer
     /// </summary>
     public class GPUInstancerPrefab : MonoBehaviour
     {
+        //[ContextMenu("HightlightOn")]
+        //public void HightlightOn()
+        //{
+
+        //}
+
+        //[ContextMenu("HightlightOff")]
+        //public void HightlightOff()
+        //{
+
+        //}
+
+
+        //[ContextMenu("TransparentOn")]
+        //public void TransparentOn()
+        //{
+            
+        //}
+
+        //[ContextMenu("TransparentOff")]
+        //public void TransparentOff()
+        //{
+
+        //}
+
+        //[ContextMenu("GPUIOn")]
+        //public void GPUIOn()
+        //{
+
+        //}
+
+        //[ContextMenu("GPUIOff")]
+        //public void GPUIOff()
+        //{
+        //    GPUInstancerAPI.RemovePrefabInstance(GPUInstancerPrefabManager.Instance, this);
+        //}
+
         [HideInInspector]
         public GPUInstancerPrefabPrototype prefabPrototype;
         [NonSerialized]

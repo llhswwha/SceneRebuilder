@@ -707,7 +707,7 @@ public class SubSceneManager : SingletonBehaviour<SubSceneManager>
             OnAllLoaded();
         }
         string log = $"[SubSceneManager.LoadScenes][ByBag][{LoadCount}]({logTag}) Finished!! scenes:{scenes.Length} currentList:{WattingForLoadedCurrent.Count} allList:{WattingForLoadedAll.Count} time:{(DateTime.Now - start).ToString()}";
-        TimeTest.Stop("¬•≤„«–ªª", log);//[1:6496ms][2:2099ms
+        //TimeTest.Stop("¬•≤„«–ªª", log);//[1:6496ms][2:2099ms
         TimeTest.Stop("º”‘ÿ≥°æ∞≤‚ ‘", log);
         Debug.Log(log);
         yield return null;

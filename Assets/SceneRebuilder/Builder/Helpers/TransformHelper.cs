@@ -153,7 +153,9 @@ public static class TransformHelper
             if (id.gameObject == null) continue;
             GameObject.DestroyImmediate(id.gameObject);
         }
+#if UNITY_EDITOR
         Debug.Log($"ClearComponentGos[{typeof(T)}] ids:{ids.Length}");
+#endif
     }
 
     public static void ClearNotComponentGos<T>(GameObject obj) where T : Component
@@ -172,7 +174,9 @@ public static class TransformHelper
             count2++;
             GameObject.DestroyImmediate(id.gameObject);
         }
+#if UNITY_EDITOR
         Debug.Log($"ClearNotComponentGos[{typeof(T)}] ids:{ids.Length} count1:{count1} count2:{count2}");
+#endif
     }
 
     public static void ClearComponents<T>(GameObject obj) where T : Component
@@ -182,7 +186,9 @@ public static class TransformHelper
         {
             GameObject.DestroyImmediate(id);
         }
+#if UNITY_EDITOR
         Debug.Log($"ClearComponents[{typeof(T)}] ids:{ids.Length}");
+#endif
     }
 
     public static void ClearComponents<T>(GameObject[] objs) where T : Component
@@ -191,7 +197,9 @@ public static class TransformHelper
         {
             ClearComponents<T>(obj);
         }
+#if UNITY_EDITOR
         Debug.Log($"ClearComponents[{typeof(T)}] objs:{objs.Length}");
+#endif
     }
 
     public static void ClearComponents<T>(T[] objs) where T : Component
@@ -200,7 +208,9 @@ public static class TransformHelper
         {
             GameObject.DestroyImmediate(obj);
         }
+#if UNITY_EDITOR
         Debug.Log($"ClearComponents[{typeof(T)}] objs:{objs.Length}");
+#endif
     }
 
     public static void ClearComponentGos<T>(T[] objs) where T : Component
@@ -209,7 +219,9 @@ public static class TransformHelper
         {
             GameObject.DestroyImmediate(obj.gameObject);
         }
+#if UNITY_EDITOR
         Debug.Log($"ClearComponents[{typeof(T)}] objs:{objs.Length}");
+#endif
     }
 
     public static void SetCollidersEnabled<T>(GameObject[] objs,bool enbled) where T : Collider

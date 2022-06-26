@@ -1761,6 +1761,7 @@ public class LODManager : SingletonBehaviour<LODManager>
 
                 if (scene.IsLoading == true) continue;
                 if (scene.IsLoaded == true) continue;
+                if (scene.gameObject.activeInHierarchy == false) continue;
 
                 sceneList.Add(scene);
                 if (scene2Group.ContainsKey(scene))
@@ -1795,19 +1796,23 @@ public class LODManager : SingletonBehaviour<LODManager>
                     }
                     else
                     {
+#if UNITY_EDITOR
                         if (showLog)
                         {
-                            Debug.Log($"GetRuntimeLODDetail scene2Group.ContainsKey(p.scene) == false scene:{p.scene.name} sceneParent:{p.scene.gameObject.transform.parent.name}");
+                            Debug.Log($"GetRuntimeLODDetail scene2Group.ContainsKey(p.scene) == false scene:{p.scene.name} path:{p.scene.transform.GetPath()} ");
                         }
+#endif
                     }
 
                 }
                 else
                 {
+#if UNITY_EDITOR
                     if (showLog)
                     {
                         Debug.Log($"GetRuntimeLODDetail p.scene == null");
                     }
+#endif
                 }
 
             }, "LoadLOD0Scenes");
@@ -1833,6 +1838,41 @@ public class LODManager : SingletonBehaviour<LODManager>
 
 public static class LODHelper
 {
+    public static void SetIgnoreDynamicCulling(GameObject root)
+    {
+        LODGroup[] lodGroups = root.GetComponentsInChildren<LODGroup>(true);
+        SetIgnoreDynamicCulling(lodGroups);
+    }
+
+    public static void SetIgnoreDynamicCulling(LODGroup[] lodGroups)
+    {
+        int count = 0;
+        int errorCount = 0;
+        for (int i = 0; i < lodGroups.Length; i++)
+        {
+            LODGroup group = lodGroups[i];
+            LOD[] lods = group.GetLODs();
+            for (int j = 0; j < lods.Length; j++)
+            {
+                LOD lod = lods[j];
+                foreach (var renderer in lod.renderers)
+                {
+                    if (renderer == null)
+                    {
+                        Debug.LogError($"SetIgnoreDynamicCulling[{errorCount++}] renderer == null group:{group} path:{group.transform.GetPath()}");
+                        continue;
+                    }
+                    if (renderer.gameObject.tag != "IgnoreDynamicCulling")
+                    {
+                        count++;
+                        renderer.gameObject.tag = "IgnoreDynamicCulling";
+                    }
+                }
+            }
+        }
+        Debug.Log($"SetIgnoreDynamicCulling lodGroups:{lodGroups.Length} count:{count}");
+    }
+
 #if UNITY_EDITOR
     [MenuItem("SceneTools/LOD/ClearLODGroupsByKey")]
 

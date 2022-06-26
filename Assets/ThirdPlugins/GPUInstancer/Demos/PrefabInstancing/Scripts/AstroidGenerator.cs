@@ -38,7 +38,7 @@ namespace GPUInstancer
                 prefabManager = GameObject.FindObjectOfType<GPUInstancerPrefabManager>();
             }
 
-            prefabManager.InitPrefabs(asteroidObjects,false);
+            prefabManager.InitPrefabs(asteroidObjects);
         }
 
             private void Awake()
@@ -174,7 +174,7 @@ namespace GPUInstancer
             }
             else
             {
-                Debug.Log($"AstroidGenerator.StartGPUInstance prefabManager:{prefabManager}");
+                Debug.LogError($"AstroidGenerator.StartGPUInstance prefabManager:{prefabManager}");
             }
         }
 

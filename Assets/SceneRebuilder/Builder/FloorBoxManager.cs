@@ -6,37 +6,144 @@ using UnityEngine;
 
 public class FloorBoxManager : SingletonBehaviour<FloorBoxManager>
 {
+    public GameObject FactoryFrom;//New
+
+    public GameObject FactoryTo;//Old;
+
+    [ContextMenu("CopyFloorCollider")]
+    public void CopyFloorCollider()
+    {
+        Dictionary<string, DepNode> dictOld = new Dictionary<string, DepNode>();
+        DepNode[] floorsTo = FactoryTo.GetComponentsInChildren<DepNode>(true);
+        DepNode[] floorsFrom = FactoryFrom.GetComponentsInChildren<DepNode>(true);
+        foreach(var floor in floorsTo)
+        {
+            string floorName = floor.name;
+            if (floor is FloorController)
+            {
+                floorName = floor.transform.parent.name + ">" + floor.name;
+            }
+            if (dictOld.ContainsKey(floorName))
+            {
+                Debug.LogError($"SetDict dictOld.ContainsKey(floor.name) name:{floorName} path1:{floor.transform.GetPath()} path2:{dictOld[floorName].transform.GetPath()}");
+            }
+            else
+            {
+                dictOld.Add(floorName, floor);
+            }
+        }
+
+        foreach (var floor in floorsFrom)
+        {
+            string floorName = floor.name;
+            if(floor is FloorController)
+            {
+                floorName = floor.transform.parent.name + ">" + floor.name;
+            }
+            
+            if (dictOld.ContainsKey(floorName))
+            {
+                DepNode floorTo = dictOld[floorName];
+                CopyFloorCollider(floor, floorTo);
+            }
+            else
+            {
+                Debug.LogError($"SetCollider !dictOld.ContainsKey(floor.name) name:{floorName} path1:{floor.transform.GetPath()}");
+            }
+        }
+
+        Debug.Log($"CopyFloorCollider floorsFrom:{floorsFrom.Length} floorsTo:{floorsTo.Length}");
+    }
+
+    private void CopyFloorCollider(DepNode fFrom, DepNode fTo)
+    {
+#if UNITY_EDITOR
+        EditorHelper.ClearAndCopyComponents<BoxCollider>(fFrom.gameObject, fTo.gameObject);
+#endif
+
+    }
+
+
     public bool IsChangeParent = false;
     public bool IsIn = true;
-    public List<GameObject> Floors = new List<GameObject>();
+    public List<ModelContainerBox> Floors = new List<ModelContainerBox>();
+    public List<ModelContainerBox> Buildings = new List<ModelContainerBox>();
+
+    private void SortFloors()
+    {
+        foreach(var floor in Floors)
+        {
+            floor.SortItems();
+        }
+        foreach (var floor in Buildings)
+        {
+            floor.SortItems();
+        }
+    }
+
+    private void ClearFloors()
+    {
+        foreach (var floor in Floors)
+        {
+            floor.Clear();
+        }
+        foreach (var floor in Buildings)
+        {
+            floor.Clear();
+        }
+    }
+
     //public List<BoxCollider> FloorBoxs = new List<BoxCollider>();
     public GameObject Sources;
 
-    [ContextMenu("AddFloors")]
-    public void AddFloors()
+    ////[ContextMenu("AddFloors")]
+    //public void AddFloors()
+    //{
+    //    var buildings = GameObject.FindObjectsOfType<BuildingController>();
+    //    foreach (var b in buildings)
+    //    {
+    //        Buildings.Add(new FloorBox(b.gameObject));
+    //        var floors = b.GetComponentsInChildren<FloorController>();
+    //        foreach (var floor in floors)
+    //        {
+    //            Floors.Add(new FloorBox(floor.gameObject));
+    //        }
+    //    }
+    //}
+
+    //[ContextMenu("ShowNotInFloorsInBuildings")]
+    public void ShowNotInFloorsInBuildings()
     {
-        var buildings = GameObject.FindObjectsOfType<BuildingController>();
-        foreach (var b in buildings)
+        foreach (var b in Buildings)
         {
-            var floors = b.GetComponentsInChildren<FloorController>();
-            foreach (var floor in floors)
+            for(int i = 0; i < b.Items.Count; i++)
             {
-                Floors.Add(floor.gameObject);
+                IntersectInfo item = b.Items[i];
+                if (b.IsInSubBoxes(item))
+                {
+                    b.Items.RemoveAt(i);
+                    i--;
+                }
             }
         }
     }
 
-    [ContextMenu("GetFloors")]
+    //[ContextMenu("GetFloors")]
     public void GetFloors()
     {
         Floors.Clear();
+        Buildings.Clear();
         var buildings = GameObject.FindObjectsOfType<BuildingController>();
         foreach(var b in buildings)
         {
+            ModelContainerBox buildingBox = new ModelContainerBox(b.gameObject);
+            Buildings.Add(buildingBox);
             var floors = b.GetComponentsInChildren<FloorController>();
             foreach(var floor in floors)
             {
-                Floors.Add(floor.gameObject);
+                ModelContainerBox floorBox = new ModelContainerBox(floor.gameObject);
+                Floors.Add(floorBox);
+                buildingBox.SubBoxes.Add(floorBox);
             }
         }
 
@@ -45,7 +152,7 @@ public class FloorBoxManager : SingletonBehaviour<FloorBoxManager>
             var floors = GameObject.FindObjectsOfType<FloorController>();
             foreach (var floor in floors)
             {
-                Floors.Add(floor.gameObject);
+                Floors.Add(new ModelContainerBox(floor.gameObject));
             }
             Debug.Log($"GetFloors floors:{floors.Length}");
         }
@@ -55,7 +162,7 @@ public class FloorBoxManager : SingletonBehaviour<FloorBoxManager>
         }
     }
 
-    [ContextMenu("InitBoxColliders")]
+    //[ContextMenu("InitBoxColliders")]
     public void InitBoxColliders()
     {
         //FloorBoxs.Clear();
@@ -85,13 +192,13 @@ public class FloorBoxManager : SingletonBehaviour<FloorBoxManager>
     //    return boxes;
     //}
 
-    private List<GameObject> GetIntersectBoxes(Bounds b1,Func<BoxCollider,Bounds, bool> isIntersectFun)
+    private List<ModelContainerBox> GetIntersectBoxes(Bounds b1,Func<BoxCollider,Bounds, bool> isIntersectFun)
     {
-        List<GameObject> result = new List<GameObject>();
+        List<ModelContainerBox> result = new List<ModelContainerBox>();
         for(int i=0;i<Floors.Count;i++)
         {
-            GameObject floor = Floors[i];
-            BoxCollider[] boxes = floor.GetComponents<BoxCollider>();
+            ModelContainerBox floor = Floors[i];
+            BoxCollider[] boxes = floor.GetBoxColliders();
             foreach(var box in boxes)
             {
                 if(isIntersectFun(box,b1))
@@ -104,20 +211,21 @@ public class FloorBoxManager : SingletonBehaviour<FloorBoxManager>
         return result;
     }
 
+    //private List<IntersectInfo> GetIntersectBoxesEx(Transform t)
+    //{
+    //    Bounds b0 = CaculateBounds(t.gameObject);
+    //    return GetIntersectBoxesEx(b0);
+    //}
+
     private List<IntersectInfo> GetIntersectBoxesEx(Transform t)
     {
-        Bounds b0 = CaculateBounds(t.gameObject);
-        return GetIntersectBoxesEx(b0);
-    }
-
-    private List<IntersectInfo> GetIntersectBoxesEx(Bounds b1)
-    {
+        Bounds b1 = CaculateBounds(t.gameObject);
         List<IntersectInfo> result = new List<IntersectInfo>();
         for (int i = 0; i < Floors.Count; i++)
         {
-            GameObject floor = Floors[i];
+            ModelContainerBox floor = Floors[i];
             float pSum = 0;
-            BoxCollider[] boxes = floor.GetComponents<BoxCollider>();
+            BoxCollider[] boxes = floor.GetBoxColliders();
             foreach (var box in boxes)
             {
                 float p = ColliderExtension.BoundsContainedPercentage(b1, box.bounds);
@@ -126,16 +234,35 @@ public class FloorBoxManager : SingletonBehaviour<FloorBoxManager>
             if (pSum > 0)
             {
                 result.Add(new IntersectInfo(floor.transform, pSum));
+                floor.AddModel(new IntersectInfo(t, pSum));
             }
         }
+
+        for (int i = 0; i < Buildings.Count; i++)
+        {
+            ModelContainerBox building = Buildings[i];
+            float pSum = 0;
+            BoxCollider[] boxes = building.GetBoxColliders();
+            foreach (var box in boxes)
+            {
+                float p = ColliderExtension.BoundsContainedPercentage(b1, box.bounds);
+                pSum += p;
+            }
+            if (pSum > 0)
+            {
+                //result.Add(new IntersectInfo(floor.transform, pSum));
+                building.AddModel(new IntersectInfo(t, pSum));
+            }
+        }
+
         result.Sort();
         return result;
     }
 
-    public List<GameObject> GetIntersectBoxes(Transform t)
+    public List<ModelContainerBox> GetIntersectBoxes(Transform t)
     {
         Bounds b0 = CaculateBounds(t.gameObject);
-        List<GameObject> result = new List<GameObject>();
+        List<ModelContainerBox> result = new List<ModelContainerBox>();
         result = GetIntersectBoxes(b0, (box, b1) =>{ return (box.bounds.Contains(b1.min) && box.bounds.Contains(b1.max) && box.bounds.Contains(b1.center)); });
         
         if (result.Count == 0)
@@ -160,7 +287,7 @@ public class FloorBoxManager : SingletonBehaviour<FloorBoxManager>
 
     public float MinIntersectPercent = 0.5f;
 
-    [ContextMenu("SetToFloorRenderers")]
+    //[ContextMenu("SetToFloorRenderers")]
     public void SetToFloorRenderers()
     {
         DateTime start = DateTime.Now;
@@ -174,11 +301,13 @@ public class FloorBoxManager : SingletonBehaviour<FloorBoxManager>
             AddToIntersectList(t);
         }
         SetParentEx();
+        SortFloors();
         Debug.Log($"SetToFloorRenderers time:{DateTime.Now - start} meshRenderers:{meshRenderers.Length}");
     }
 
     private void ClearList()
     {
+        ClearFloors();
         List00.Clear();
         List01.Clear();
         List1.Clear();
@@ -222,7 +351,7 @@ public class FloorBoxManager : SingletonBehaviour<FloorBoxManager>
         List2.Sort();
     }
 
-    [ContextMenu("SetToFloorChild")]
+    //[ContextMenu("SetToFloorChild")]
     public void SetToFloorChild()
     {
         DateTime start = DateTime.Now;
@@ -235,19 +364,44 @@ public class FloorBoxManager : SingletonBehaviour<FloorBoxManager>
             AddToIntersectList(child.transform);
         }
         SetParentEx();
+        SortFloors();
         Debug.Log($"SetToFloorChild time:{DateTime.Now-start} childCount:{Sources.transform.childCount}");
     }
 
     public bool IsDebug = false;
 
-    [ContextMenu("SetParent")]
+    //[ContextMenu("DeleteInFloors")]
+    public void DeleteInFloors()
+    {
+        //foreach (TransformFloorParent r in List01)
+        //{
+        //    GameObject.DestroyImmediate(r.go);
+        //}
+        foreach (TransformFloorParent r in List1)
+        {
+            GameObject.DestroyImmediate(r.go.gameObject);
+        }
+        foreach (TransformFloorParent r in List2)
+        {
+            GameObject.DestroyImmediate(r.go.gameObject);
+        }
+
+        Debug.Log($"DeleteInFloors List1:{List1.Count} List2:{List2.Count} List01:{List01.Count}");
+    }
+
+    public void SetParent(TransformFloorParent r)
+    {
+        r.SetParent(Sources, IsIn, IsDebug);
+    }
+
+    //[ContextMenu("SetParent")]
     public void SetParent()
     {
         if (OnlySetOneFloor)
         {
             foreach (TransformFloorParent r in List1)
             {
-                r.SetParent(Sources, IsIn, IsDebug);
+                SetParent(r);
                 if (IsDebug)
                 {
                     break;
@@ -258,7 +412,7 @@ public class FloorBoxManager : SingletonBehaviour<FloorBoxManager>
         {
             foreach (TransformFloorParent r in List1)
             {
-                r.SetParent(Sources, IsIn, IsDebug);
+                SetParent(r);
                 if (IsDebug)
                 {
                     break;
@@ -266,7 +420,7 @@ public class FloorBoxManager : SingletonBehaviour<FloorBoxManager>
             }
             foreach (TransformFloorParent r in List2)
             {
-                r.SetParent(Sources, IsIn, IsDebug);
+                SetParent(r);
                 if (IsDebug)
                 {
                     break;
@@ -277,7 +431,7 @@ public class FloorBoxManager : SingletonBehaviour<FloorBoxManager>
 
     public bool OnlySetOneFloor = false;
 
-    [ContextMenu("SetParentEx")]
+    //[ContextMenu("SetParentEx")]
     public void SetParentEx()
     {
         if (IsChangeParent)
@@ -290,7 +444,7 @@ public class FloorBoxManager : SingletonBehaviour<FloorBoxManager>
 
     public GameObject TestFloor;
 
-    [ContextMenu("TestParent")]
+    //[ContextMenu("TestParent")]
     public void TestParent()
     {
         BoxCollider floor = TestFloor.GetComponent<BoxCollider>();
@@ -350,8 +504,8 @@ public class IntersectInfo:IComparable<IntersectInfo>
     {
         get
         {
-            if (Container == null) return null;
-            return Container.parent;
+            if (IntersectGo == null) return null;
+            return IntersectGo.parent;
         }
     }
 
@@ -359,24 +513,24 @@ public class IntersectInfo:IComparable<IntersectInfo>
     {
         get
         {
-            if (Container == null) return "";
-            return Container.name;
+            if (IntersectGo == null) return "";
+            return IntersectGo.name;
         }
     }
 
-    public Transform Container;
+    public Transform IntersectGo;
 
     public float percent;
 
     public IntersectInfo(Transform go,float p)
     {
-        Container = go;
+        IntersectGo = go;
         percent = p;
     }
 
     public IntersectInfo(Transform go)
     {
-        Container = go;
+        IntersectGo = go;
         percent = 0;
     }
 
@@ -388,6 +542,128 @@ public class IntersectInfo:IComparable<IntersectInfo>
     public int CompareTo(IntersectInfo other)
     {
         return other.percent.CompareTo(this.percent);
+    }
+}
+
+[Serializable]
+public class ModelContainerBox
+{
+    public GameObject go;
+
+    public List<IntersectInfo> Items = new List<IntersectInfo>();
+
+    public List<ModelContainerBox> SubBoxes = new List<ModelContainerBox>();
+
+    private Dictionary<Transform, IntersectInfo> Dict = new Dictionary<Transform, IntersectInfo>();
+
+    public void Clear()
+    {
+        Items = new List<IntersectInfo>();
+        //SubBoxes = new List<ModelContainerBox>();
+        Dict = new Dictionary<Transform, IntersectInfo>();
+    }
+
+    public bool IsInSubBoxes(IntersectInfo item)
+    {
+        foreach (var f in SubBoxes)
+        {
+            if (f.Contains(item))
+            {
+                return true;
+            }
+        }
+        return false;
+    }
+
+
+    public List<IntersectInfo> GetItemList(float percent)
+    {
+        if (Items == null) return new List<IntersectInfo>();
+        return Items.FindAll(i => i.percent > percent);
+    }
+
+    public int GetCount(float percent)
+    {
+        if (Items == null) return 0;
+        else
+        {
+            return Items.FindAll(i => i.percent > percent).Count;
+        }
+    }
+
+    public void AddModel(IntersectInfo item)
+    {
+        if (Items == null)
+        {
+            Items = new List<IntersectInfo>();
+        }
+        
+        if (Dict.ContainsKey(item.IntersectGo))
+        {
+            Debug.LogError($"AddModel Dict.ContainsKey(item.IntersectGo) Box:{this.name} item:{item.IntersectGo.name}");
+        }
+        else
+        {
+            Dict.Add(item.IntersectGo, item);
+            Items.Add(item);
+        }
+        
+    }
+
+    public void RemoveModel(IntersectInfo item)
+    {
+        if (Dict.ContainsKey(item.IntersectGo))
+        {
+            IntersectInfo item2 = Dict[item.IntersectGo];
+            Items.Remove(item2);
+            Dict.Remove(item.IntersectGo);
+        }
+    }
+
+    public bool Contains(IntersectInfo item)
+    {
+        return Dict.ContainsKey(item.IntersectGo);
+    }
+
+    public ModelContainerBox(GameObject go)
+    {
+        this.go = go;
+    }
+
+    public BoxCollider GetBoxCollider()
+    {
+        return go.GetBoxCollider();
+    }
+
+    public BoxCollider[] GetBoxColliders()
+    {
+        return go.GetComponents<BoxCollider>();
+    }
+
+    internal void SortItems()
+    {
+        if (Items != null)
+        {
+            Items.Sort();
+        }
+    }
+
+    public Transform transform
+    {
+        get
+        {
+            if (go == null) return null;
+            return go.transform;
+        }
+    }
+
+    public string name
+    {
+        get
+        {
+            if (go == null) return "";
+            return go.name;
+        }
     }
 }
 
@@ -406,9 +682,9 @@ public class TransformFloorParent:IComparable<TransformFloorParent>
         float height = float.MaxValue;
         foreach(var f in floors)
         {
-            if (f.Container.position.y < height)
+            if (f.IntersectGo.position.y < height)
             {
-                height = f.Container.position.y;
+                height = f.IntersectGo.position.y;
                 downFloor = f;
             }
         }
@@ -530,15 +806,19 @@ public class TransformFloorParent:IComparable<TransformFloorParent>
             go.SetParent(p.transform);
             return;
         }
-
-        if (IsSameBuilding() == false)
+        Transform fP = floor.IntersectGo;
+        //if (IsSameBuilding() == false)
+        //{
+        //    Debug.LogError("SetParent IsSameBuilding() == false go:{go}");
+        //    return;
+        //}
+        if (IsSameBuilding())
         {
-            Debug.LogError("SetParent IsSameBuilding() == false go:{go}");
-            return;
+            fP = GetDownFloor().IntersectGo;
         }
 
         //Transform fP = floor.Container;
-        Transform fP = GetDownFloor().Container;
+
         Transform inP = null;
         for (int i = 0; i < fP.childCount; i++)
         {

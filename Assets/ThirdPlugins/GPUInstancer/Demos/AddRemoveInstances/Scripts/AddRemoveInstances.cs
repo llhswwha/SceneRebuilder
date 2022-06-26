@@ -66,7 +66,7 @@ namespace GPUInstancer
                 prefabInstance.transform.localPosition = Random.insideUnitSphere * 10;
                 prefabInstance.transform.SetParent(parentTransform);
                 if(!prefabInstance.prefabPrototype.addRuntimeHandlerScript)
-                    GPUInstancerAPI.AddPrefabInstance(prefabManager, prefabInstance);
+                    GPUInstancerAPI.AddPrefabInstance(prefabManager, prefabInstance,true);
                 instancesList.Add(prefabInstance);
                 if (!addRemoveInstantlyToggle.isOn)
                     yield return new WaitForSeconds(0.001f);
@@ -112,7 +112,7 @@ namespace GPUInstancer
 
                 prefabInstance.transform.SetParent(parentTransform);
                 if (!prefabInstance.prefabPrototype.addRuntimeHandlerScript)
-                    GPUInstancerAPI.AddPrefabInstance(prefabManager, prefabInstance);
+                    GPUInstancerAPI.AddPrefabInstance(prefabManager, prefabInstance,true);
                 extraInstancesList.Add(prefabInstance);
                 if (!addRemoveInstantlyToggle.isOn)
                     yield return new WaitForSeconds(0.001f);

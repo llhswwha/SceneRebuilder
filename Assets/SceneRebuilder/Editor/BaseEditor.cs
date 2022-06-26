@@ -163,6 +163,19 @@ public class BaseEditor<T> : Editor where T:class
 
 public static class BaseEditorHelper
 {
+    public static TO ObjectFieldH<TO>(string label, TO obj) where TO : UnityEngine.Object
+    {
+        GUILayout.BeginHorizontal();
+        //GUILayout.Label(label);
+        if (GUILayout.Button(label))
+        {
+            EditorHelper.SelectObject(obj);
+        }
+        TO go = EditorGUILayout.ObjectField(obj, typeof(TO), true) as TO;
+        GUILayout.EndHorizontal();
+        return go;
+    }
+
     public static TO ObjectField<TO>(TO obj, params GUILayoutOption[] options) where TO : UnityEngine.Object
     {
         return EditorGUILayout.ObjectField(obj, typeof(TO), true, options) as TO;

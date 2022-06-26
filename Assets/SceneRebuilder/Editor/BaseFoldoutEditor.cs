@@ -467,7 +467,7 @@ public class BaseFoldoutEditor<T> : BaseEditor<T> where T : class
     }
 
     public static void DrawObjectList<T1>(FoldoutEditorArg foldoutArg, string title, List<T1> list,
-        System.Action<FoldoutEditorArg, T1, int> drawItemAction, System.Action<T1> toolBarAction, System.Action<FoldoutEditorArg, T1, int> drawSubListAction)
+        System.Action<FoldoutEditorArg, T1, int> drawItemAction, System.Action<T1> itemToolBarAction, System.Action<FoldoutEditorArg, T1, int> drawSubListAction)
     {
         if (list == null || list.Count == 0) return;
         //List<T1> list = new List<T1>();
@@ -516,7 +516,7 @@ public class BaseFoldoutEditor<T> : BaseEditor<T> where T : class
             {
                 c++;
                 var item = list[i];
-                var arg = FoldoutEditorArgBuffer.editorArgs[item];
+                FoldoutEditorArg arg = FoldoutEditorArgBuffer.editorArgs[item];
                 arg.level = 1;
                 arg.caption = $"[{i:00}] {item.ToString()}";
                 arg.isFoldout = false;
@@ -540,14 +540,87 @@ public class BaseFoldoutEditor<T> : BaseEditor<T> where T : class
                 {
                     drawItemAction(arg, item, i);
                 }
-
-                EditorUIUtils.ObjectFoldout(arg, obj, () =>
+                else
                 {
-                    if (toolBarAction != null)
+                    EditorUIUtils.ObjectFoldout(arg, obj, () =>
                     {
-                        toolBarAction(item);
+                        if (itemToolBarAction != null)
+                        {
+                            itemToolBarAction(item);
+                        }
+                    });
+                }
+                if (arg.isEnabled && arg.isExpanded)
+                {
+                    if (drawSubListAction != null)
+                    {
+                        drawSubListAction(arg, item, i);
                     }
-                });
+                }
+
+            }
+            var time = System.DateTime.Now - start;
+            //Debug.Log($"Show SceneList count:{c} time:{time.TotalMilliseconds:F1}ms ");
+        }
+    }
+
+    public static void DrawItemList<T1>(FoldoutEditorArg foldoutArg, string title, List<T1> list,System.Action toolBarAction,
+        System.Action<FoldoutEditorArg, T1, int> drawItemAction, System.Action<T1> itemToolBarAction, System.Action<FoldoutEditorArg, T1, int> drawSubListAction)
+    {
+        if (list == null) return;
+        //List<T1> list = new List<T1>();
+        foldoutArg.caption = title;
+        EditorUIUtils.ToggleFoldout(foldoutArg, (arg) =>
+        {
+            System.DateTime start = System.DateTime.Now;
+            //scenes = item.scenes.ToList();
+            //list = funcGetList();
+            InitEditorArg(list);
+            arg.caption = $"{title}({list.Count})";
+        }, toolBarAction);
+        if (foldoutArg.isExpanded && foldoutArg.isEnabled)
+        {
+            System.DateTime start = System.DateTime.Now;
+            foldoutArg.DrawPageToolbar(list.Count);
+            int c = 0;
+            for (int i = foldoutArg.GetStartId(); i < list.Count && i < foldoutArg.GetEndId(); i++)
+            {
+                c++;
+                var item = list[i];
+                FoldoutEditorArg arg = FoldoutEditorArgBuffer.editorArgs[item];
+                arg.level = 1;
+                arg.caption = $"[{i:00}] {item.ToString()}";
+                arg.isFoldout = false;
+                arg.isEnabled = true;
+
+                Object obj = arg.tag as Object;
+                if (item is Object)
+                {
+                    obj = item as Object;
+                    if (obj != null)
+                    {
+                        arg.caption = obj.name;
+                    }
+                    else
+                    {
+                        arg.caption = "NULL";
+                    }
+                }
+
+                if (drawItemAction != null)
+                {
+                    drawItemAction(arg, item, i);
+                }
+                else
+                {
+                    EditorUIUtils.ObjectFoldout(arg, obj, () =>
+                    {
+                        if (itemToolBarAction != null)
+                        {
+                            itemToolBarAction(item);
+                        }
+                    });
+                }
                 if (arg.isEnabled && arg.isExpanded)
                 {
                     if (drawSubListAction != null)
@@ -1907,21 +1980,29 @@ public static class FoldoutEditorArgBuffer
 
     public static void InitEditorArg<T2>(List<T2> items, FoldoutEditorArg newArg)/* where T2 : System.Object*/
     {
+        if (items == null) return;
         foreach (var item in items)
         {
             if (item == null) continue;
-            if (!editorArgs.ContainsKey(item))
+            GetArg(item,newArg);
+        }
+    }
+
+    private static FoldoutEditorArg GetArg<T2>(T2 item, FoldoutEditorArg newArg)
+    {
+        if (item == null) return null;
+        if (!editorArgs.ContainsKey(item))
+        {
+            editorArgs.Add(item, newArg.Clone());
+        }
+        else
+        {
+            if (editorArgs[item] == null)
             {
-                editorArgs.Add(item, newArg.Clone());
-            }
-            else
-            {
-                if (editorArgs[item] == null)
-                {
-                    editorArgs[item] = newArg.Clone();
-                }
+                editorArgs[item] = newArg.Clone();
             }
         }
+        return editorArgs[item];
     }
 
     public static FoldoutEditorArg GetEditorArg<T2, TA>(T2 item, TA newArg) where TA : FoldoutEditorArg, new()

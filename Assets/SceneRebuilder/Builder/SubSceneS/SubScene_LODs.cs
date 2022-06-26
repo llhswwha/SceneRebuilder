@@ -103,8 +103,11 @@ public class SubScene_LODs : SubScene_Part
     public override void GetSceneObjects()
     {
         base.GetSceneObjects();
+        LODHelper.SetIgnoreDynamicCulling(this.gameObject);
+        //DynamicCullingManage.Instance.AddToIgnoreRenderers(this.gameObject);
         SubScene_Ref.AfterLoadScene(this.gameObject);
     }
+
 #if UNITY_EDITOR
     public override void EditorCreateScene(bool isOnlyChildren, GameObject dirGo = null, SceneContentType contentType = SceneContentType.Single)
     {

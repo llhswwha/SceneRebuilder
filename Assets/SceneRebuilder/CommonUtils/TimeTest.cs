@@ -12,7 +12,9 @@ public static class TimeTest
         {
             DateTime start = times[tag];
             TimeSpan time = DateTime.Now - start;
+#if UNITY_EDITOR
             Debug.LogError($"TimeTest.Start[time:{time.TotalMilliseconds:F2}ms] tag:{tag} ");
+#endif
             times[tag] = DateTime.Now;
         }
         else
@@ -27,11 +29,15 @@ public static class TimeTest
         {
             DateTime start = times[tag];
             TimeSpan time = DateTime.Now - start;
+#if UNITY_EDITOR
             Debug.LogError($"TimeTest.Stop[time:{time.TotalMilliseconds:F2}ms] tag:{tag} end:{end} ");
+#endif
         }
         else
         {
+#if UNITY_EDITOR
             Debug.LogError($"TimeTest.Stop NoStartTime tag:{tag} end:{end}");
+#endif
         }
     }
 }

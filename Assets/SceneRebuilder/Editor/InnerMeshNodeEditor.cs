@@ -16,6 +16,8 @@ public class InnerMeshNodeEditor : BaseFoldoutEditor<InnerMeshNode>
 
     FoldoutEditorArg assetPathListArg = new FoldoutEditorArg();
 
+    public static Dictionary<InnerMeshNode, int> rendererCountDict = new Dictionary<InnerMeshNode, int>();
+
     private int rendererCount = 0;
 
     private int gpuiCount = 0;
@@ -31,7 +33,53 @@ public class InnerMeshNodeEditor : BaseFoldoutEditor<InnerMeshNode>
         sharedMeshListArg = new FoldoutEditorArg(true, false, true, true, true);
         sharedMeshListArg.tag = targetT.sharedMeshInfos;
         assetPathListArg = new FoldoutEditorArg(true, true, true, true, true);
+
+        if(rendererCountDict.ContainsKey(targetT))
+        {
+            rendererCount = rendererCountDict[targetT];
+        }
+        else
+        {
+            GetRendererCount(targetT, false);
+            rendererCountDict.Add(targetT, rendererCount);
+        }
+    }
+
+    private void GetRendererCount(InnerMeshNode item,bool isForce)
+    {
+        var meshFilters = targetT.gameObject.GetComponentsInChildren<MeshFilter>(item.isIncludeInactive);
+
+        List<MeshFilter> gpuis = new List<MeshFilter>();
+        if (gpuiSharedMeshes == null || isForce)
+        {
+            gpuis = meshFilters.ToList().FindAll(i => i.GetComponent<GPUInstancerPrefab>() != null);
+            gpuiVertexCount = 0;
+            for (int i = 0; i < gpuis.Count; i++)
+            {
+                MeshFilter gpui = gpuis[i];
+                MeshFilter mf = gpui.GetComponent<MeshFilter>();
+                if (mf.sharedMesh != null)
+                {
+                    gpuiVertexCount += mf.sharedMesh.vertexCount;
+                }
+                else
+                {
+                    Debug.LogError($"UpdateList[{i}/{gpuis.Count}] name:{gpui.name}");
+                }
+            }
+            gpuiSharedMeshes = new SharedMeshInfoList(gpuis);
+            gpuiCount = gpuis.Count;
+        }
         
+        rendererCount = meshFilters.Length;
+        if (MeshNodeSetting.Instance.isIncludeGPUI == false)
+        {
+            rendererCount = meshFilters.Length - gpuis.Count;
+        }
+        else
+        {
+
+        }
     }
 
     public override void OnToolLayout(InnerMeshNode item)
@@ -59,37 +107,7 @@ public class InnerMeshNodeEditor : BaseFoldoutEditor<InnerMeshNode>
         MeshNodeSetting.Instance.isIncludeGPUI = GUILayout.Toggle(MeshNodeSetting.Instance.isIncludeGPUI, "", GUILayout.Width(30));
         if (GUILayout.Button("UpdateList"))
         {
-            var meshFilters = targetT.gameObject.GetComponentsInChildren<MeshFilter>(item.isIncludeInactive);
-            var gpuis = meshFilters.ToList().FindAll(i => i.GetComponent<GPUInstancerPrefab>() != null);
-            gpuiVertexCount = 0;
-            for (int i = 0; i < gpuis.Count; i++)
-            {
-                MeshFilter gpui = gpuis[i];
-                MeshFilter mf = gpui.GetComponent<MeshFilter>();
-                if (mf.sharedMesh != null)
-                {
-                    gpuiVertexCount += mf.sharedMesh.vertexCount;
-                }
-                else
-                {
-                    Debug.LogError($"UpdateList[{i}/{gpuis.Count}] name:{gpui.name}");
-                }
-            }
-
-            gpuiSharedMeshes = new SharedMeshInfoList(gpuis);
-
-            gpuiCount = gpuis.Count;
-            rendererCount = meshFilters.Length;
-
-            if (MeshNodeSetting.Instance.isIncludeGPUI == false)
-            {
-                rendererCount = meshFilters.Length - gpuis.Count;
-            }
-            else
-            {
-                
-            }
-
+            GetRendererCount(item,true);
             InnerMeshNode.InitInnerNodes(item.gameObject);
             sharedMeshListArg.tag = item.GetSharedMeshList();
         }
