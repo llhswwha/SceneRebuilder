@@ -296,7 +296,7 @@ namespace CommonUtils
             return CaculateBounds(rendersFilter);
         }
 
-        public static List<string> filterNames = new List<string>() { "rail", "柱" };//楼梯围栏会突出到上一层楼
+        public static List<string> filterNames = new List<string>() { "rail", "柱","Ground", "PHC500", "PHC400", "地下结构", "LouversAsm-1-0002" };//楼梯围栏会突出到上一层楼
 
         private static bool IsContainsFilterName(string name)
         {
@@ -315,9 +315,10 @@ namespace CommonUtils
             List<Renderer> rendersFilter = new List<Renderer>();
             foreach (var render in renders)
             {
-                var name = render.gameObject.name.ToLower();
-
-                if (IsContainsFilterName(name))//楼梯围栏会突出到上一层楼
+                var name1 = render.gameObject.name;
+                var name2 = render.gameObject.name.ToLower();
+                var pName = render.transform.parent.name;
+                if (IsContainsFilterName(name1)|| IsContainsFilterName(name2) || IsContainsFilterName(pName))//楼梯围栏会突出到上一层楼
                 {
 
                 }

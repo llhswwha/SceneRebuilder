@@ -469,233 +469,240 @@ public class BaseFoldoutEditor<T> : BaseEditor<T> where T : class
     public static void DrawObjectList<T1>(FoldoutEditorArg foldoutArg, string title, List<T1> list,
         System.Action<FoldoutEditorArg, T1, int> drawItemAction, System.Action<T1> itemToolBarAction, System.Action<FoldoutEditorArg, T1, int> drawSubListAction)
     {
-        if (list == null || list.Count == 0) return;
-        //List<T1> list = new List<T1>();
-        foldoutArg.caption = title;
-        EditorUIUtils.ToggleFoldout(foldoutArg, (arg) =>
-        {
-            System.DateTime start = System.DateTime.Now;
-            //scenes = item.scenes.ToList();
-            //list = funcGetList();
-            InitEditorArg(list);
-            arg.caption = $"{title}({list.Count})";
-        }, () =>
-        {
-            if(GUILayout.Button("Clear",GUILayout.Width(60)))
-            {
-                list.Clear();
-            }
-            if (GUILayout.Button("DestroyGo", GUILayout.Width(80)))
-            {
-                foreach(var item in list)
-                {
-                    if (item == null) continue;
-                    if(item is GameObject)
-                    {
-                        GameObject.DestroyImmediate(item as GameObject);
-                    }
-                    else if (item is Component)
-                    {
-                        Component c = (item as Component);
-                        if (c == null) continue;
-                        GameObject go = c.gameObject;
-                        if (go == null) continue;
-                        EditorHelper.UnpackPrefab(go);
-                        GameObject.DestroyImmediate(go);
-                    }
-                }
-                list.Clear();
-            }
-        });
-        if (foldoutArg.isExpanded && foldoutArg.isEnabled)
-        {
-            System.DateTime start = System.DateTime.Now;
-            foldoutArg.DrawPageToolbar(list.Count);
-            int c = 0;
-            for (int i = foldoutArg.GetStartId(); i < list.Count && i < foldoutArg.GetEndId(); i++)
-            {
-                c++;
-                var item = list[i];
-                FoldoutEditorArg arg = FoldoutEditorArgBuffer.editorArgs[item];
-                arg.level = 1;
-                arg.caption = $"[{i:00}] {item.ToString()}";
-                arg.isFoldout = false;
-                arg.isEnabled = true;
+        BaseEditorHelper.DrawObjectList<T1>(foldoutArg, title, list, drawItemAction, itemToolBarAction, drawSubListAction);
 
-                Object obj = arg.tag as Object;
-                if (item is Object)
-                {
-                    obj = item as Object;
-                    if (obj != null)
-                    {
-                        arg.caption = obj.name;
-                    }
-                    else
-                    {
-                        arg.caption = "NULL";
-                    }
-                }
+        //if (list == null || list.Count == 0) return;
+        ////List<T1> list = new List<T1>();
+        //foldoutArg.caption = title;
+        //EditorUIUtils.ToggleFoldout(foldoutArg, (arg) =>
+        //{
+        //    System.DateTime start = System.DateTime.Now;
+        //    //scenes = item.scenes.ToList();
+        //    //list = funcGetList();
+        //    InitEditorArg(list);
+        //    arg.caption = $"{title}({list.Count})";
+        //}, () =>
+        //{
+        //    if(GUILayout.Button("Clear",GUILayout.Width(60)))
+        //    {
+        //        list.Clear();
+        //    }
+        //    if (GUILayout.Button("DestroyGo", GUILayout.Width(80)))
+        //    {
+        //        foreach(var item in list)
+        //        {
+        //            if (item == null) continue;
+        //            if(item is GameObject)
+        //            {
+        //                GameObject.DestroyImmediate(item as GameObject);
+        //            }
+        //            else if (item is Component)
+        //            {
+        //                Component c = (item as Component);
+        //                if (c == null) continue;
+        //                GameObject go = c.gameObject;
+        //                if (go == null) continue;
+        //                EditorHelper.UnpackPrefab(go);
+        //                GameObject.DestroyImmediate(go);
+        //            }
+        //        }
+        //        list.Clear();
+        //    }
+        //});
+        //if (foldoutArg.isExpanded && foldoutArg.isEnabled)
+        //{
+        //    System.DateTime start = System.DateTime.Now;
+        //    foldoutArg.DrawPageToolbar(list.Count);
+        //    int c = 0;
+        //    for (int i = foldoutArg.GetStartId(); i < list.Count && i < foldoutArg.GetEndId(); i++)
+        //    {
+        //        c++;
+        //        var item = list[i];
+        //        if(item==null)return;
+        //        FoldoutEditorArg arg = FoldoutEditorArgBuffer.editorArgs[item];
+        //        arg.level = 1;
+        //        arg.caption = $"[{i:00}] {item.ToString()}";
+        //        arg.isFoldout = false;
+        //        arg.isEnabled = true;
 
-                if (drawItemAction != null)
-                {
-                    drawItemAction(arg, item, i);
-                }
-                else
-                {
-                    EditorUIUtils.ObjectFoldout(arg, obj, () =>
-                    {
-                        if (itemToolBarAction != null)
-                        {
-                            itemToolBarAction(item);
-                        }
-                    });
-                }
-                if (arg.isEnabled && arg.isExpanded)
-                {
-                    if (drawSubListAction != null)
-                    {
-                        drawSubListAction(arg, item, i);
-                    }
-                }
+        //        Object obj = arg.tag as Object;
+        //        if (item is Object)
+        //        {
+        //            obj = item as Object;
+        //            if (obj != null)
+        //            {
+        //                arg.caption = obj.name;
+        //            }
+        //            else
+        //            {
+        //                arg.caption = "NULL";
+        //            }
+        //        }
 
-            }
-            var time = System.DateTime.Now - start;
-            //Debug.Log($"Show SceneList count:{c} time:{time.TotalMilliseconds:F1}ms ");
-        }
+        //        if (drawItemAction != null)
+        //        {
+        //            drawItemAction(arg, item, i);
+        //        }
+        //        else
+        //        {
+        //            EditorUIUtils.ObjectFoldout(arg, obj, () =>
+        //            {
+        //                if (itemToolBarAction != null)
+        //                {
+        //                    itemToolBarAction(item);
+        //                }
+        //            });
+        //        }
+        //        if (arg.isEnabled && arg.isExpanded)
+        //        {
+        //            if (drawSubListAction != null)
+        //            {
+        //                drawSubListAction(arg, item, i);
+        //            }
+        //        }
+
+        //    }
+        //    var time = System.DateTime.Now - start;
+        //    //Debug.Log($"Show SceneList count:{c} time:{time.TotalMilliseconds:F1}ms ");
+        //}
     }
 
     public static void DrawItemList<T1>(FoldoutEditorArg foldoutArg, string title, List<T1> list,System.Action toolBarAction,
         System.Action<FoldoutEditorArg, T1, int> drawItemAction, System.Action<T1> itemToolBarAction, System.Action<FoldoutEditorArg, T1, int> drawSubListAction)
     {
-        if (list == null) return;
-        //List<T1> list = new List<T1>();
-        foldoutArg.caption = title;
-        EditorUIUtils.ToggleFoldout(foldoutArg, (arg) =>
-        {
-            System.DateTime start = System.DateTime.Now;
-            //scenes = item.scenes.ToList();
-            //list = funcGetList();
-            InitEditorArg(list);
-            arg.caption = $"{title}({list.Count})";
-        }, toolBarAction);
-        if (foldoutArg.isExpanded && foldoutArg.isEnabled)
-        {
-            System.DateTime start = System.DateTime.Now;
-            foldoutArg.DrawPageToolbar(list.Count);
-            int c = 0;
-            for (int i = foldoutArg.GetStartId(); i < list.Count && i < foldoutArg.GetEndId(); i++)
-            {
-                c++;
-                var item = list[i];
-                FoldoutEditorArg arg = FoldoutEditorArgBuffer.editorArgs[item];
-                arg.level = 1;
-                arg.caption = $"[{i:00}] {item.ToString()}";
-                arg.isFoldout = false;
-                arg.isEnabled = true;
+        BaseEditorHelper.DrawItemList<T1>(foldoutArg, title, list, toolBarAction, drawItemAction, itemToolBarAction, drawSubListAction);
 
-                Object obj = arg.tag as Object;
-                if (item is Object)
-                {
-                    obj = item as Object;
-                    if (obj != null)
-                    {
-                        arg.caption = obj.name;
-                    }
-                    else
-                    {
-                        arg.caption = "NULL";
-                    }
-                }
+        //if (list == null) return;
+        ////List<T1> list = new List<T1>();
+        //foldoutArg.caption = title;
+        //EditorUIUtils.ToggleFoldout(foldoutArg, (arg) =>
+        //{
+        //    System.DateTime start = System.DateTime.Now;
+        //    //scenes = item.scenes.ToList();
+        //    //list = funcGetList();
+        //    InitEditorArg(list);
+        //    arg.caption = $"{title}({list.Count})";
+        //}, toolBarAction);
+        //if (foldoutArg.isExpanded && foldoutArg.isEnabled)
+        //{
+        //    System.DateTime start = System.DateTime.Now;
+        //    foldoutArg.DrawPageToolbar(list.Count);
+        //    int c = 0;
+        //    for (int i = foldoutArg.GetStartId(); i < list.Count && i < foldoutArg.GetEndId(); i++)
+        //    {
+        //        c++;
+        //        var item = list[i];
+        //        FoldoutEditorArg arg = FoldoutEditorArgBuffer.editorArgs[item];
+        //        arg.level = 1;
+        //        arg.caption = $"[{i:00}] {item.ToString()}";
+        //        arg.isFoldout = false;
+        //        arg.isEnabled = true;
 
-                if (drawItemAction != null)
-                {
-                    drawItemAction(arg, item, i);
-                }
-                else
-                {
-                    EditorUIUtils.ObjectFoldout(arg, obj, () =>
-                    {
-                        if (itemToolBarAction != null)
-                        {
-                            itemToolBarAction(item);
-                        }
-                    });
-                }
-                if (arg.isEnabled && arg.isExpanded)
-                {
-                    if (drawSubListAction != null)
-                    {
-                        drawSubListAction(arg, item, i);
-                    }
-                }
+        //        Object obj = arg.tag as Object;
+        //        if (item is Object)
+        //        {
+        //            obj = item as Object;
+        //            if (obj != null)
+        //            {
+        //                arg.caption = obj.name;
+        //            }
+        //            else
+        //            {
+        //                arg.caption = "NULL";
+        //            }
+        //        }
 
-            }
-            var time = System.DateTime.Now - start;
-            //Debug.Log($"Show SceneList count:{c} time:{time.TotalMilliseconds:F1}ms ");
-        }
+        //        if (drawItemAction != null)
+        //        {
+        //            drawItemAction(arg, item, i);
+        //        }
+        //        else
+        //        {
+        //            EditorUIUtils.ObjectFoldout(arg, obj, () =>
+        //            {
+        //                if (itemToolBarAction != null)
+        //                {
+        //                    itemToolBarAction(item);
+        //                }
+        //            });
+        //        }
+        //        if (arg.isEnabled && arg.isExpanded)
+        //        {
+        //            if (drawSubListAction != null)
+        //            {
+        //                drawSubListAction(arg, item, i);
+        //            }
+        //        }
+
+        //    }
+        //    var time = System.DateTime.Now - start;
+        //    //Debug.Log($"Show SceneList count:{c} time:{time.TotalMilliseconds:F1}ms ");
+        //}
     }
 
     public static void DrawObjectList<T1>(FoldoutEditorArg foldoutArg, string title, System.Func<List<T1>> funcGetList,
         System.Action<FoldoutEditorArg, T1, int> drawItemAction, System.Action<T1> toolBarAction, System.Action<FoldoutEditorArg, T1, int> drawSubListAction)
     {
-        List<T1> list = new List<T1>();
-        foldoutArg.caption = title;
-        EditorUIUtils.ToggleFoldout(foldoutArg, (arg) =>
-        {
-            System.DateTime start = System.DateTime.Now;
-            //scenes = item.scenes.ToList();
-            list = funcGetList();
-            InitEditorArg(list);
-            arg.caption = $"{title}({list.Count})";
-        }, () =>
-        {
-        });
-        if (foldoutArg.isExpanded && foldoutArg.isEnabled)
-        {
-            System.DateTime start = System.DateTime.Now;
-            foldoutArg.DrawPageToolbar(list.Count);
-            int c = 0;
-            for (int i = foldoutArg.GetStartId(); i < list.Count && i < foldoutArg.GetEndId(); i++)
-            {
-                c++;
-                var item = list[i];
-                var arg = FoldoutEditorArgBuffer.editorArgs[item];
-                arg.level = 1;
-                arg.caption = $"[{i:00}] {item.ToString()}";
-                arg.isFoldout = false;
-                arg.isEnabled = true;
+        BaseEditorHelper.DrawObjectList<T1>(foldoutArg, title, funcGetList, drawItemAction, toolBarAction, drawSubListAction);
 
-                Object obj = arg.tag as Object;
-                if (item is Object)
-                {
-                    obj = item as Object;
-                    arg.caption = obj.name;
-                }
+        //List<T1> list = new List<T1>();
+        //foldoutArg.caption = title;
+        //EditorUIUtils.ToggleFoldout(foldoutArg, (arg) =>
+        //{
+        //    System.DateTime start = System.DateTime.Now;
+        //    //scenes = item.scenes.ToList();
+        //    list = funcGetList();
+        //    InitEditorArg(list);
+        //    arg.caption = $"{title}({list.Count})";
+        //}, () =>
+        //{
+        //});
+        //if (foldoutArg.isExpanded && foldoutArg.isEnabled)
+        //{
+        //    System.DateTime start = System.DateTime.Now;
+        //    foldoutArg.DrawPageToolbar(list.Count);
+        //    int c = 0;
+        //    for (int i = foldoutArg.GetStartId(); i < list.Count && i < foldoutArg.GetEndId(); i++)
+        //    {
+        //        c++;
+        //        var item = list[i];
+        //        var arg = FoldoutEditorArgBuffer.editorArgs[item];
+        //        arg.level = 1;
+        //        arg.caption = $"[{i:00}] {item.ToString()}";
+        //        arg.isFoldout = false;
+        //        arg.isEnabled = true;
 
-                if (drawItemAction != null)
-                {
-                    drawItemAction(arg, item, i);
-                }
+        //        Object obj = arg.tag as Object;
+        //        if (item is Object)
+        //        {
+        //            obj = item as Object;
+        //            arg.caption = obj.name;
+        //        }
 
-                EditorUIUtils.ObjectFoldout(arg, obj, () =>
-                {
-                    if (toolBarAction != null)
-                    {
-                        toolBarAction(item);
-                    }
-                });
-                if (arg.isEnabled && arg.isExpanded)
-                {
-                    if (drawSubListAction != null)
-                    {
-                        drawSubListAction(arg, item, i);
-                    }
-                }
+        //        if (drawItemAction != null)
+        //        {
+        //            drawItemAction(arg, item, i);
+        //        }
 
-            }
-            var time = System.DateTime.Now - start;
-            //Debug.Log($"Show SceneList count:{c} time:{time.TotalMilliseconds:F1}ms ");
-        }
+        //        EditorUIUtils.ObjectFoldout(arg, obj, () =>
+        //        {
+        //            if (toolBarAction != null)
+        //            {
+        //                toolBarAction(item);
+        //            }
+        //        });
+        //        if (arg.isEnabled && arg.isExpanded)
+        //        {
+        //            if (drawSubListAction != null)
+        //            {
+        //                drawSubListAction(arg, item, i);
+        //            }
+        //        }
+
+        //    }
+        //    var time = System.DateTime.Now - start;
+        //    //Debug.Log($"Show SceneList count:{c} time:{time.TotalMilliseconds:F1}ms ");
+        //}
     }
 
     public void DrawSceneList(FoldoutEditorArg foldoutArg, System.Func<List<SubScene_Base>> funcGetList)
@@ -1124,21 +1131,33 @@ public class BaseFoldoutEditor<T> : BaseEditor<T> where T : class
                 //matArg.info = $"count:{meshMat.subMeshs.Count}";
                 EditorUIUtils.ObjectFoldout(matArg, meshMat.GetMat(), () =>
                 {
-                    if (meshMat != null && meshMat.matInfo != null && meshMat.matInfo.shader != null)
+                    if (meshMat != null)
                     {
-                        EditorGUILayout.LabelField(meshMat.matInfo.shader.name, GUILayout.Width(60));
+                        MatInfo matInfo = meshMat.matInfo;
+                        if(matInfo != null && matInfo.shader != null)
+                        {
+                            EditorGUILayout.LabelField(matInfo.File, GUILayout.Width(100));
 
-                        var newColor = EditorGUILayout.ColorField("Color", meshMat.GetColor(), GUILayout.Width(50));
-                        meshMat.SetColor(newColor);
-                        bool isD = EditorGUILayout.Toggle(meshMat.matInfo.isDoubleSide, GUILayout.Width(20));
-                        meshMat.matInfo.SetIsDoubleSide(isD);
-                        Texture tex = EditorGUILayout.ObjectField(meshMat.matInfo.tex, typeof(Texture), GUILayout.Width(100)) as Texture;
-                        meshMat.matInfo.SetTexture(tex);
+                            EditorGUILayout.LabelField(matInfo.shader.name, GUILayout.Width(60));
 
-                        Texture normal = EditorGUILayout.ObjectField(meshMat.matInfo.normal, typeof(Texture), GUILayout.Width(100)) as Texture;
-                        meshMat.matInfo.SetNormal(normal);
+                            var newColor = EditorGUILayout.ColorField("Color", meshMat.GetColor(), GUILayout.Width(50));
+                            meshMat.SetColor(newColor);
+
+                            GUILayout.Label("D", GUILayout.Width(15));
+                            bool isD = EditorGUILayout.Toggle(matInfo.isDoubleSide, GUILayout.Width(15));
+                            matInfo.SetIsDoubleSide(isD);
+
+                            GUILayout.Label("T", GUILayout.Width(15));
+                            bool isT = EditorGUILayout.Toggle(matInfo.isTransparent, GUILayout.Width(15));
+                            matInfo.SetIsTransparent(isT);
+
+                            Texture tex = EditorGUILayout.ObjectField(meshMat.matInfo.tex, typeof(Texture), GUILayout.Width(100)) as Texture;
+                            meshMat.matInfo.SetTexture(tex);
+
+                            Texture normal = EditorGUILayout.ObjectField(meshMat.matInfo.normal, typeof(Texture), GUILayout.Width(100)) as Texture;
+                            meshMat.matInfo.SetNormal(normal);
+                        }
                     }
-
                 });
 
                 if (matArg.isExpanded)
@@ -1481,6 +1500,7 @@ public class BaseFoldoutEditor<T> : BaseEditor<T> where T : class
             btnStyle.margin = new RectOffset(0, 0, 0, 0);
             btnStyle.padding = new RectOffset(0, 0, 0, 0);
 
+            //isUpate = DrawSharedMeshToolBar(listArg, funcGetList);
             if (funcGetList != null)
             {
                 if (GUILayout.Button("Update", btnStyle, GUILayout.Width(56)))
@@ -1488,34 +1508,62 @@ public class BaseFoldoutEditor<T> : BaseEditor<T> where T : class
                     listArg.tag = funcGetList();
                 }
             }
+        });
 
-            PrefabInstanceBuilder.Instance.JobSize=EditorGUILayout.IntField(PrefabInstanceBuilder.Instance.JobSize, GUILayout.Width(50));
-            PrefabInstanceBuilder.Instance.disSetting.zeroP = EditorGUILayout.DoubleField(PrefabInstanceBuilder.Instance.disSetting.zeroP, GUILayout.Width(50));
-            if (GUILayout.Button("Pre(R)", btnStyle, GUILayout.Width(50)))
-            {
-                SharedMeshInfoList list2= funcGetList();
-                //list.GetPrefabs();
-                listArg.tag = list2;
+        isUpate= DrawSharedMeshList(listArg, funcGetList);
+        return isUpate;
+    }
 
-                AcRTAlignJobSetting.Instance.SetDefault(false);
-                PrefabInstanceBuilder.Instance.GetPrefabInfos(list2, true);
+    private bool DrawSharedMeshToolBar(FoldoutEditorArg listArg, System.Func<SharedMeshInfoList> funcGetList)
+    {
+        bool isUpate = false;
+        var btnStyle = new GUIStyle(EditorStyles.miniButton);
+        btnStyle.margin = new RectOffset(0, 0, 0, 0);
+        btnStyle.padding = new RectOffset(0, 0, 0, 0);
 
-                listArg.tag = funcGetList();
-                isUpate = true;
-            }
-            if (GUILayout.Button("Pre(RS)", btnStyle, GUILayout.Width(50)))
-            {
-                SharedMeshInfoList list2 = funcGetList();
-                //list.GetPrefabs();
-                listArg.tag = list2;
+        //if (funcGetList != null)
+        //{
+        //    if (GUILayout.Button("Update", btnStyle, GUILayout.Width(56)))
+        //    {
+        //        listArg.tag = funcGetList();
+        //    }
+        //}
 
-                AcRTAlignJobSetting.Instance.SetDefault(true);
-                PrefabInstanceBuilder.Instance.GetPrefabInfos(list2, true);
+        EditorGUILayout.LabelField("Mat", GUILayout.Width(30));
+        PrefabInstanceBuilder.Instance.disSetting.IsByMat = EditorGUILayout.Toggle(PrefabInstanceBuilder.Instance.disSetting.IsByMat, GUILayout.Width(15));
+        PrefabInstanceBuilder.Instance.JobSize = EditorGUILayout.IntField(PrefabInstanceBuilder.Instance.JobSize, GUILayout.Width(50));
+        PrefabInstanceBuilder.Instance.disSetting.zeroP = EditorGUILayout.DoubleField(PrefabInstanceBuilder.Instance.disSetting.zeroP, GUILayout.Width(50));
+        if (GUILayout.Button("Pre(R)", btnStyle, GUILayout.Width(50)))
+        {
+            SharedMeshInfoList list2 = funcGetList();
+            //list.GetPrefabs();
+            listArg.tag = list2;
 
-                listArg.tag = funcGetList();
-                isUpate = true;
-            }
-            if (GUILayout.Button("One", btnStyle, GUILayout.Width(40)))
+            AcRTAlignJobSetting.Instance.SetDefault(false);
+            PrefabInstanceBuilder.Instance.GetPrefabInfos(list2, true);
+
+            listArg.tag = funcGetList();
+            isUpate = true;
+        }
+        if (GUILayout.Button("Pre(RS)", btnStyle, GUILayout.Width(50)))
+        {
+            SharedMeshInfoList list2 = funcGetList();
+            //list.GetPrefabs();
+            listArg.tag = list2;
+
+            AcRTAlignJobSetting.Instance.SetDefault(true);
+            PrefabInstanceBuilder.Instance.GetPrefabInfos(list2, true);
+
+            listArg.tag = funcGetList();
+            isUpate = true;
+        }
+        if (GUILayout.Button("Pre(R)_Selection", btnStyle, GUILayout.Width(100)))
+        {
+            PrefabInstanceBuilder.GetSelectionPrefabInfosInner(0, true);
+        }
+        if (GUILayout.Button("One", btnStyle, GUILayout.Width(40)))
+        {
+            if (EditorUtility.DisplayDialog("确认", "删除模型直到只有一个相同的模型", "确定删除", "不删除"))
             {
                 SharedMeshInfoList list2 = funcGetList();
                 //list.GetPrefabs();
@@ -1525,68 +1573,107 @@ public class BaseFoldoutEditor<T> : BaseEditor<T> where T : class
 
                 listArg.tag = funcGetList();
                 isUpate = true;
-            }
-            if (GUILayout.Button("Info", btnStyle, GUILayout.Width(40)))
-            {
-                SharedMeshInfoList list2 = funcGetList();
-                list2.AddInstanceInfo();
-            }
-            if (GUILayout.Button("Save", btnStyle, GUILayout.Width(40)))
-            {
-                SharedMeshInfoList list2 = funcGetList();
-                list2.SaveMesh();
-            }
-            if (GUILayout.Button("-3", btnStyle, GUILayout.Width(30)))
-            {
-                SharedMeshInfoList list2 = funcGetList();
-                int c=list2.DestroyBiggerThan(2);
 
+                Debug.Log("确定删除");
             }
-            if (GUILayout.Button("-2", btnStyle, GUILayout.Width(30)))
+            else
+            {
+                Debug.Log("不删除");
+            }
+
+        }
+        if (GUILayout.Button("Info", btnStyle, GUILayout.Width(40)))
+        {
+            SharedMeshInfoList list2 = funcGetList();
+            list2.AddInstanceInfo();
+        }
+        if (GUILayout.Button("Save", btnStyle, GUILayout.Width(40)))
+        {
+            SharedMeshInfoList list2 = funcGetList();
+            list2.SaveMesh();
+        }
+        if (GUILayout.Button("-3", btnStyle, GUILayout.Width(30)))
+        {
+            if (EditorUtility.DisplayDialog("确认", "删除复用数大于2的模型", "确定删除", "不删除"))
+            {
+                SharedMeshInfoList list2 = funcGetList();
+                int c = list2.DestroyBiggerThan(2);
+
+                Debug.Log("确定删除");
+            }
+            else
+            {
+                Debug.Log("不删除");
+            }
+
+        }
+        if (GUILayout.Button("-2", btnStyle, GUILayout.Width(30)))
+        {
+            if (EditorUtility.DisplayDialog("确认", "删除复用数大于1的模型", "确定删除", "不删除"))
             {
                 SharedMeshInfoList list2 = funcGetList();
                 int c = list2.DestroyBiggerThan(1);
+
+                Debug.Log("确定删除");
             }
-            //if (GUILayout.Button("Pre_Copy", btnStyle, GUILayout.Width(40)))
-            //{
-            //    //SharedMeshInfoList list2 = funcGetList();
-            //    ////list.GetPrefabs();
-            //    //listArg.tag = list2;
+            else
+            {
+                Debug.Log("不删除");
+            }
+        }
 
-            //    PrefabInstanceBuilder.Instance.AcRTAlignJobsEx(go, true);
+        if (GUILayout.Button("Setting...", btnStyle, GUILayout.Width(80)))
+        {
+            PrefabInstanceBuilderEditorWindow.ShowWindow();
+        }
+        if (GUILayout.Button("Compare...", btnStyle, GUILayout.Width(80)))
+        {
+            MeshComparerEditorWindow.ShowWindow();
+        }
+        if (GUILayout.Button("Replace...", btnStyle, GUILayout.Width(80)))
+        {
+            MeshReplaceEditorWindow.ShowWindow();
+        }
 
-            //    //listArg.tag = funcGetList();
+        //if (GUILayout.Button("Pre_Copy", btnStyle, GUILayout.Width(40)))
+        //{
+        //    //SharedMeshInfoList list2 = funcGetList();
+        //    ////list.GetPrefabs();
+        //    //listArg.tag = list2;
 
-            //    isUpate = true;
-            //}
+        //    PrefabInstanceBuilder.Instance.AcRTAlignJobsEx(go, true);
 
-            //if (GUILayout.Button("X1", btnStyle, GUILayout.Width(25)))
-            //{
-            //    list.Destroy(1);
-            //}
-            //if (GUILayout.Button("X2", btnStyle, GUILayout.Width(25)))
-            //{
-            //    list.Destroy(2);
-            //}
-            //if (GUILayout.Button("X3", btnStyle, GUILayout.Width(25)))
-            //{
-            //    list.Destroy(3);
-            //}
-            //if (GUILayout.Button("X4", btnStyle, GUILayout.Width(25)))
-            //{
-            //    list.Destroy(4);
-            //}
-            //if (GUILayout.Button("X5", btnStyle, GUILayout.Width(25)))
-            //{
-            //    list.Destroy(5);
-            //}
-        });
-        DrawSharedMeshList(listArg);
+        //    //listArg.tag = funcGetList();
+
+        //    isUpate = true;
+        //}
+
+        //if (GUILayout.Button("X1", btnStyle, GUILayout.Width(25)))
+        //{
+        //    list.Destroy(1);
+        //}
+        //if (GUILayout.Button("X2", btnStyle, GUILayout.Width(25)))
+        //{
+        //    list.Destroy(2);
+        //}
+        //if (GUILayout.Button("X3", btnStyle, GUILayout.Width(25)))
+        //{
+        //    list.Destroy(3);
+        //}
+        //if (GUILayout.Button("X4", btnStyle, GUILayout.Width(25)))
+        //{
+        //    list.Destroy(4);
+        //}
+        //if (GUILayout.Button("X5", btnStyle, GUILayout.Width(25)))
+        //{
+        //    list.Destroy(5);
+        //}
         return isUpate;
     }
 
-    protected void DrawSharedMeshList(FoldoutEditorArg listArg)
+    protected bool DrawSharedMeshList(FoldoutEditorArg listArg, System.Func<SharedMeshInfoList> funcGetList)
     {
+        bool isUpate = false;
         //listArg.level = level;
         //var nodes = item.GetMeshNodes();
         var list = listArg.tag as SharedMeshInfoList;
@@ -1596,6 +1683,9 @@ public class BaseFoldoutEditor<T> : BaseEditor<T> where T : class
         }
         if (listArg.isEnabled && listArg.isExpanded)
         {
+            GUILayout.BeginHorizontal();
+            isUpate = DrawSharedMeshToolBar(listArg, funcGetList);
+            GUILayout.EndHorizontal();
 
             InitEditorArg(list);
 
@@ -1805,6 +1895,7 @@ public class BaseFoldoutEditor<T> : BaseEditor<T> where T : class
             //    }
             //});
         }
+        return isUpate;
     }
 
     public static void DrawPrefabList(FoldoutEditorArg prefabListArg, System.Func<PrefabInfoList> funcGetList)

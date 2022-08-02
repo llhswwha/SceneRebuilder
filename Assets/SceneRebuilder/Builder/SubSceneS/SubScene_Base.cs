@@ -593,7 +593,6 @@ public class SubScene_Base : SubSceneArgComponent
             sceneArg.objs = null;
         }
 
-
         IsLoaded = false;
         IsLoading = false;
 
@@ -705,6 +704,10 @@ public class SubScene_Base : SubSceneArgComponent
     //[ContextMenu("LoadSceneAsync")]
     public void LoadSceneAsync(Action<bool,SubScene_Base> callback)
     {
+        //if(this.name== "Node_2_6_42_3w_Renderers")
+        //{
+        //    Debug.LogError($"LoadSceneAsync Node_2_6_42_3w_Renderers path:{this.transform.GetPath()}");
+        //}
         if (IsLoading || IsLoaded)
         {
             Debug.LogWarning($"[SubScene_Base.LoadSceneAsync] scene:{GetSceneName()}, IsLoading:{IsLoading} || IsLoaded:{IsLoaded} index:{sceneArg.index} path:{sceneArg.path} ");
@@ -730,14 +733,15 @@ public class SubScene_Base : SubSceneArgComponent
 
         if (this.gameObject.activeInHierarchy == false)
         {
-            Debug.LogWarning("[SubScene_Base.LoadSceneAsync]this.gameObject.activeInHierarchy == false :" + name);
+            //Debug.LogWarning("[SubScene_Base.LoadSceneAsync]this.gameObject.activeInHierarchy == false :" + name);
+            Debug.LogWarning($"[SubScene_Base.LoadSceneAsync]this.gameObject.activeInHierarchy == false scene:{name} path:{this.transform.GetPath()}");
             //if (callback != null)
             //{
             //    callback(false);
             //}
             //return;
             HideBoundsBox();
-            this.gameObject.SetActive(true);
+            this.gameObject.SetActive(true);//激活一下，Inactive也是没关系的。
         }
         //if (this.gameObject.activeInHierarchy == true)
         //{
@@ -750,6 +754,25 @@ public class SubScene_Base : SubSceneArgComponent
         //     Debug.LogError("[SubScene_Base.LoadSceneAsync]this.gameObject.activeInHierarchy == false :" + name);
         //}
     }
+
+
+    public IEnumerator LoadSceneAsyncEx(Action<bool, SubScene_Base> callback)
+    {
+        if (IsLoading || IsLoaded)
+        {
+            Debug.LogWarning($"[SubScene_Base.LoadSceneAsync] scene:{GetSceneName()}, IsLoading:{IsLoading} || IsLoaded:{IsLoaded} index:{sceneArg.index} path:{sceneArg.path} ");
+            if (callback != null)
+            {
+                callback(false, this);
+            }
+            yield return null;
+        }
+        else
+        {
+            yield return LoadSceneAsyncCoroutine(callback);
+        }
+    }
+
     [ContextMenu("UnLoadSceneAsync2")]
     public void TestUnLoadSceneAsync()
     {
@@ -807,25 +830,39 @@ public class SubScene_Base : SubSceneArgComponent
     [ContextMenu("GetSceneObjects")]
     public virtual void GetSceneObjects()
     {
-        //DestroyBoundsBox();
-        HideBoundsBox();
+        try
+        {
+            //DestroyBoundsBox();
+            HideBoundsBox();
 
-        var gs = EditorHelper.GetSceneObjects(GetSceneArg(), GetSceneParent()).ToList();
-        SetObjects(gs);
-        SetRendererParent();
-        InitVisible();
+            var gs = EditorHelper.GetSceneObjects(GetSceneArg(), GetSceneParent()).ToList();
+            SetObjects(gs);
+            SetRendererParent();
+            InitVisible();
 
-        AreaTreeNode node=this.transform.parent.GetComponent<AreaTreeNode>();
-        if(node!=null)
-            node.LoadRenderers(this.gameObject);
+            AreaTreeNode node = this.transform.parent.GetComponent<AreaTreeNode>();
+            if (node != null)
+                node.LoadRenderers(this.gameObject);
 
-        //foreach(var g in gs)
-        //{
-        //    EnabledRendererColliders(g);
-        //}
+            foreach (var g in gs)
+            {
+                EnabledRendererColliders(g);
+            }
+
+            LODGroupInfo group = this.GetComponent<LODGroupInfo>();
+            if (group)
+            {
+                group.SetLOD0FromScene();
+            }
+        }
+        catch (Exception ex)
+        {
+            Debug.LogError($"SubScene_Base.GetSceneObjects Exception:{ex}");
+        }
+        
     }
 
-    public static void EnabledRendererColliders(GameObject go)
+    public void EnabledRendererColliders(GameObject go)
     {
         //ClearComponents<Collider>();
         //TransformHelper.SetCollidersEnabled(Selection.gameObjects)
@@ -840,10 +877,58 @@ public class SubScene_Base : SubSceneArgComponent
                 {
                     collider.enabled = true;
                     count++;
-                }
+                } 
             }
         }
-        Debug.Log($"EnabledRendererColliders cs:{cs.Length} count:{count}");
+
+        //if(this is SubScene_GPUI)
+        //{
+        //}
+        //else
+        //{
+        //    DynamicCullingManage.Instance.AddObjectsForCulling(cs);
+        //}
+        //Debug.Log($"EnabledRendererColliders cs:{cs.Length} count:{count}");
+    }
+
+    private List<MeshRenderer> sceneRenderers = new List<MeshRenderer>();
+
+    public virtual void AddToCulling()
+    {
+        if (DynamicCullingManage.Instance.IsAddWhenLoaded)
+        {
+            if (sceneRenderers == null || sceneRenderers.Count==0)
+            {
+                var gos = GetObjects();
+                List<MeshRenderer> mrs = new List<MeshRenderer>();
+                foreach (var go in gos)
+                {
+                    var cs = go.GetComponentsInChildren<MeshRenderer>(true);
+                    mrs.AddRange(cs);
+                }
+                sceneRenderers = mrs;
+            }
+            DynamicCullingManage.Instance.AddObjectsForCulling(sceneRenderers.ToArray());
+        }
+    }
+
+    public virtual void RemoveToCulling()
+    {
+        if (DynamicCullingManage.Instance.IsAddWhenLoaded)
+        {
+            if (sceneRenderers == null || sceneRenderers.Count == 0)
+            {
+                var gos = GetObjects();
+                List<MeshRenderer> mrs = new List<MeshRenderer>();
+                foreach (var go in gos)
+                {
+                    var cs = go.GetComponentsInChildren<MeshRenderer>(true);
+                    mrs.AddRange(cs);
+                }
+                sceneRenderers = mrs;
+            }
+            DynamicCullingManage.Instance.RemoveObjects(sceneRenderers.ToArray());
+        }
     }
 
     [ContextMenu("UpdateRidParent")]
@@ -1263,6 +1348,21 @@ public class SubScene_Base : SubSceneArgComponent
     public void OnDestroy()
     {
         //Debug.Log("SubScene.OnDestroy:"+this.name);
+    }
+
+    private AreaTreeNode node;
+
+    public virtual List<string> GetRendererIds()
+    {
+        if (node == null)
+        {
+            node = this.transform.parent.GetComponent<AreaTreeNode>();
+        }
+        if (node != null)
+        {
+            return node.RenderersId;
+        }
+        return new List<string>();
     }
 }
 

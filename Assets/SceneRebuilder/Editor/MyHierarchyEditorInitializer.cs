@@ -182,6 +182,26 @@ public class MyHierarchyEditorInitializer
             {
                 CreateLabel("[Floor]", selectionRect, Layer2Width, new Color(0.6f, 0.5f, 0.8f), Color.red);
             }
+            else if (go.GetComponent<GPUInstancer.GPUInstancerPrefab>() != null)
+            {
+                 Color color1 = Color.blue;
+
+                GPUInstancer.GPUInstancerPrefab prefab = go.GetComponent<GPUInstancer.GPUInstancerPrefab>();
+                if (prefab.prefabPrototype == null)
+                {
+                    color1 = Color.red;
+                }
+
+                if (go.GetComponent<LODGroup>() != null)
+                {
+                    CreateLabel("[LODGroup][GPUI]", selectionRect, Layer1Width, color1, Color.red);
+                }
+                else
+                {
+                    CreateLabel("[GPUI]", selectionRect, Layer4Width, color1, Color.red);
+                }
+                
+            }
             else if (go.GetComponent<Camera>() != null)
             {
                 CreateLabel("[Camera]", selectionRect, Layer2Width, Color.gray, Color.red);
@@ -197,10 +217,6 @@ public class MyHierarchyEditorInitializer
             else if (go.GetComponent<LODGroup>() != null)
             {
                 CreateLabel("[LODGroup]", selectionRect, Layer2Width, Color.gray, Color.red);
-            }
-            else if (go.GetComponent<GPUInstancer.GPUInstancerPrefab>() != null)
-            {
-                CreateLabel("[GPUI]", selectionRect, Layer4Width, Color.blue, Color.red);
             }
             else
             {

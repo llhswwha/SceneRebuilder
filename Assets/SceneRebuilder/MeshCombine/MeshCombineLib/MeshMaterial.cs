@@ -287,7 +287,11 @@ public class MatInfo
 
     public Shader shader;
 
+    public string File;
+
     public bool isDoubleSide = false;
+
+    public bool isTransparent = false;
 
     public Texture normal;
 
@@ -306,6 +310,7 @@ public class MatInfo
 
     public MatInfo(Material m)
     {
+        Debug.Log($"GetMatInfo m:{m}");
         this.mat = m;
         color = GetColor(m);
         //Key = color.ToString();
@@ -314,6 +319,13 @@ public class MatInfo
         tex = GetTexture(m);
         normal = GetNormal(m);
         isDoubleSide = GetIsDoubleSide(m);
+        isTransparent = GetIsTransparent(m);
+#if UNITY_EDITOR
+        string matPath = UnityEditor.AssetDatabase.GetAssetPath(mat);
+        string[] pathParts = matPath.Split('/');
+        File = pathParts[pathParts.Length - 1];
+#endif
+
     }
 
     public static Texture GetTexture(Material m)
@@ -345,6 +357,18 @@ public class MatInfo
         if (m.HasProperty("_DoubleSidedEnable"))
         {
             return m.GetFloat("_DoubleSidedEnable")!=0;
+        }
+        else
+        {
+            return false;
+        }
+    }
+
+    public static bool GetIsTransparent(Material m)
+    {
+        if (m.HasProperty("_SurfaceType"))
+        {
+            return m.GetFloat("_SurfaceType") != 0;
         }
         else
         {
@@ -431,6 +455,13 @@ public class MatInfo
         isDoubleSide = isD;
     }
 
+    public void SetIsTransparent(bool isT)
+    {
+        if (isTransparent == isT) return;
+        SetIsTransparent(mat, isT);
+        isTransparent = isT;
+    }
+
     public void SetTexture(Texture t)
     {
         if (tex == t) return;
@@ -451,6 +482,19 @@ public class MatInfo
         if (m.HasProperty("_DoubleSidedEnable"))
         {
             m.SetFloat("_DoubleSidedEnable", isD ? 1 : 0);
+        }
+        else
+        {
+            //return false;
+        }
+    }
+
+    public static void SetIsTransparent(Material m, bool isD)
+    {
+        Debug.LogError($"SetIsTransparent {m} {isD} {m.HasProperty("_SurfaceType")}");
+        if (m.HasProperty("_SurfaceType"))
+        {
+            m.SetFloat("_SurfaceType", isD ? 1 : 0);
         }
         else
         {

@@ -261,16 +261,56 @@ namespace GPUInstancer
 
         public bool IsEnableUpdate = true;
 
-        public virtual void Update()
+        [ContextMenu("ShowThreadInfo")]
+        private void ShowThreadInfo()
         {
-            if (IsEnableUpdate == false) return;
-            ClearCompletedThreads();
-            while (threadStartQueue.Count > 0 && activeThreads.Count < maxThreads)
+            Debug.Log($"GPUInstancerMananger.ShowThreadInfo threadStartQueue:{threadStartQueue.Count} threadQueue:{threadQueue.Count} activeThreads:{activeThreads.Count} maxThreads:{maxThreads}");
+        }
+
+        [ContextMenu("StartThread")]
+        private void StartThread()
+        {
+            try
             {
+                Debug.LogError($"GPUInstancerMananger.StartThread 1 threadStartQueue:{threadStartQueue.Count} activeThreads:{activeThreads.Count} maxThreads:{maxThreads}");
                 GPUIThreadData threadData = threadStartQueue.Dequeue();
                 threadData.thread.Start(threadData.parameter);
                 activeThreads.Add(threadData.thread);
             }
+            catch (Exception ex)
+            {
+                Debug.LogError($"GPUInstancerMananger.StartThread 2 threadStartQueue:{threadStartQueue.Count} activeThreads:{activeThreads.Count} maxThreads:{maxThreads} Exception:{ex}");
+            }
+        }
+
+        public bool GetIsEnableUpdateEx()
+        {
+            if (IsEnableUpdate == false)
+            {
+                if (threadStartQueue.Count == 0 && threadQueue.Count == 0 && activeThreads.Count == 0)
+                {
+                    //Debug.LogError($"GPUInstancerMananger.ThreadInfo(Update) threadStartQueue:{threadStartQueue.Count} threadQueue:{threadQueue.Count} activeThreads:{activeThreads.Count} maxThreads:{maxThreads}");
+                    //ShowThreadInfo();
+                    //return;
+                    return false;
+                }
+            }
+            return true;
+        }
+
+        public virtual void Update()
+        {
+            if (GetIsEnableUpdateEx()==false) return;
+            ClearCompletedThreads();
+            //if(threadStartQueue.Count > 0)
+            //{
+            //    ShowThreadInfo();
+            //}
+            while (threadStartQueue.Count > 0 && activeThreads.Count < maxThreads)
+            {
+                StartThread();
+            }
+
             if (threadQueue.Count > 0)
             {
                 Action action = threadQueue.Dequeue();
@@ -286,14 +326,15 @@ namespace GPUInstancer
             }
         }
 
-        public bool IsEnableLateUpdate = true;
+        //public bool IsEnableLateUpdate = true;
 
         public bool IsEnableUpdateTreeMPB = true;
         public bool IsEnableUpdateBuffers = true;
 
         public virtual void LateUpdate()
         {
-            if (IsEnableLateUpdate == false) return;
+            if (GetIsEnableUpdateEx() == false) return;
+
 #if UNITY_EDITOR
             if (!Application.isPlaying)
                 CheckPrototypeChanges();

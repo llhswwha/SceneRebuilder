@@ -100,6 +100,27 @@ public static class TransformExtension
         return ancestors;
     }
 
+    public static List<string> GetAncestorNames(this Transform t, Transform root = null)
+    {
+        List<string> ancestors = new List<string>();
+        if (t == null) return ancestors;
+        ancestors.Add(t.name);
+        string path = t.name;
+        t = t.parent;
+        while (t != null)
+        {
+            if (t == root)
+            {
+                break;
+            }
+            ancestors.Add(t.name);
+
+            t = t.parent;
+        }
+        ancestors.Reverse();
+        return ancestors;
+    }
+
     public static string GetPath(this Transform t, Transform root = null, string split = ">",int maxNodeCount=0)
     {
         if (t == null)

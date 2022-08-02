@@ -53,6 +53,7 @@ public class MeshReplace : SingletonBehaviour<MeshReplace>
         DateTime start = DateTime.Now;
         int count = 0;
         ClearNewGos();
+        TransfromAlignSetting alignSetting = transfromReplaceSetting.Clone();
         for (int i = 0; i < Items.Count; i++)
         {
             MeshReplaceItem item = Items[i];
@@ -61,7 +62,11 @@ public class MeshReplace : SingletonBehaviour<MeshReplace>
             {
                 break;
             }
-            bool r=item.Replace(isDestoryOriginal, isHiddenOriginal, transfromReplaceSetting,p1);
+            if (alignSetting.Align == TransfromAlignMode.AlignRT)
+            {
+                alignSetting.Align = TransfromAlignMode.Pivot;
+            }
+            bool r=item.Replace(isDestoryOriginal, isHiddenOriginal, alignSetting, p1);
             if (r == false)
             {
                 break;
@@ -73,6 +78,97 @@ public class MeshReplace : SingletonBehaviour<MeshReplace>
         Debug.Log($"Replace count:{count} time:{(DateTime.Now-start).ToString()}");
     }
 
+    [ContextMenu("ReplacePrefab")]
+    public void ReplacePrefab()
+    {
+        DateTime start = DateTime.Now;
+        int count = 0;
+        ClearNewGos();
+        TransfromAlignSetting alignSetting = transfromReplaceSetting.Clone();
+        for (int i = 0; i < Items.Count; i++)
+        {
+            MeshReplaceItem item = Items[i];
+            ProgressArg p1 = new ProgressArg("Replace", i, Items.Count, item);
+            if (ProgressBarHelper.DisplayCancelableProgressBar(p1))
+            {
+                break;
+            }
+            if (alignSetting.Align == TransfromAlignMode.AlignRT)
+            {
+                alignSetting.Align = TransfromAlignMode.Pivot;
+            }
+            bool r = item.Replace(isDestoryOriginal, isHiddenOriginal, alignSetting, p1,false);
+            if (r == false)
+            {
+                break;
+            }
+            count += item.Count;
+        }
+        SelectNewGos();
+        ProgressBarHelper.ClearProgressBar();
+        Debug.Log($"Replace count:{count} time:{(DateTime.Now - start).ToString()}");
+    }
+
+    [ContextMenu("ReplaceEx")]
+    public void ReplaceEx()
+    {
+        DateTime start = DateTime.Now;
+        int count = 0;
+        ClearNewGos();
+        TransfromAlignSetting alignSetting = transfromReplaceSetting.Clone();
+        for (int i = 0; i < Items.Count; i++)
+        {
+            MeshReplaceItem item = Items[i];
+            ProgressArg p1 = new ProgressArg("ReplaceEx", i, Items.Count, item);
+            if (ProgressBarHelper.DisplayCancelableProgressBar(p1))
+            {
+                break;
+            }
+            alignSetting.Align = TransfromAlignMode.AlignRT;
+
+            bool r = item.Replace(isDestoryOriginal, isHiddenOriginal, alignSetting, p1);
+            if (r == false)
+            {
+                break;
+            }
+            count += item.Count;
+        }
+        SelectNewGos();
+        ProgressBarHelper.ClearProgressBar();
+        Debug.Log($"ReplaceEx count:{count} time:{(DateTime.Now - start).ToString()}");
+    }
+
+    [ContextMenu("Mirror")]
+    public void Mirror()
+    {
+        DateTime start = DateTime.Now;
+        int count = 0;
+        ClearNewGos();
+        TransfromAlignSetting alignSetting = transfromReplaceSetting.Clone();
+        for (int i = 0; i < Items.Count; i++)
+        {
+            MeshReplaceItem item = Items[i];
+            ProgressArg p1 = new ProgressArg("Replace", i, Items.Count, item);
+            if (ProgressBarHelper.DisplayCancelableProgressBar(p1))
+            {
+                break;
+            }
+            if(alignSetting.Align == TransfromAlignMode.AlignRT)
+            {
+                alignSetting.Align = TransfromAlignMode.Pivot;
+            }
+            alignSetting.SetMirrorX = true;
+            bool r = item.Replace(isDestoryOriginal, isHiddenOriginal, alignSetting, p1);
+            if (r == false)
+            {
+                break;
+            }
+            count += item.Count;
+        }
+        SelectNewGos();
+        ProgressBarHelper.ClearProgressBar();
+        Debug.Log($"Replace count:{count} time:{(DateTime.Now - start).ToString()}");
+    }
 
     [ContextMenu("SelectNewGos")]
     public void SelectNewGos()

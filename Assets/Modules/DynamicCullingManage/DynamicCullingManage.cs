@@ -7,14 +7,21 @@ using UnityEngine;
 
 public class DynamicCullingManage : SingletonBehaviour<DynamicCullingManage>
 {
+    public bool IsAddWhenLoaded = false;
+
     //public static DynamicCullingManage Instance;
     public DynamicCulling dynamicCulling;
+
+    public void GetDynamicCulling()
+    {
+        dynamicCulling = DynamicCulling.Instance;
+    }
 
     public bool EnableOnStart = false;
     // Start is called before the first frame update
     void Start()
     {
-        dynamicCulling = DynamicCulling.Instance;
+        GetDynamicCulling();
 
         //Instance = this;
         Debug.Log("DynamicCullingManage.Start Application.backgroundLoadingPriority:" + Application.backgroundLoadingPriority);
@@ -124,11 +131,13 @@ public class DynamicCullingManage : SingletonBehaviour<DynamicCullingManage>
         return ignoreRenderers;
     }
 
+    DictList<MeshRenderer> ignoreRenderers = new DictList<MeshRenderer>();
+
     public MeshRenderer[] GetTargetRenderers()
     {
         DateTime start = DateTime.Now;
 
-        DictList<MeshRenderer> ignoreRenderers = GetIgnoreRenderers();
+        //ignoreRenderers = GetIgnoreRenderers();
 
         List<MeshRenderer> needRenderers = new List<MeshRenderer>();
 
@@ -169,12 +178,10 @@ public class DynamicCullingManage : SingletonBehaviour<DynamicCullingManage>
         for (int i = 0; i < renderersT.Length; i++)
         {
             MeshRenderer rt = renderersT[i];
-            if (ignoreRenderers.Contains(rt)) continue;
-            AreaTreeNode node = rt.GetComponent<AreaTreeNode>();
-            if (node != null) continue;
-            GPUInstancerPrefab gpui = rt.GetComponent<GPUInstancerPrefab>();
-            if (gpui != null) continue;
-            needRenderers.Add(rt);
+            if (IsCanCulling(rt))
+            {
+                needRenderers.Add(rt);
+            }
         }
 
 
@@ -188,8 +195,19 @@ public class DynamicCullingManage : SingletonBehaviour<DynamicCullingManage>
         return rs;
     }
 
+    public bool IsCanCulling(MeshRenderer rt)
+    {
+        if (ignoreRenderers.Contains(rt)) return false ;
+        AreaTreeNode node = rt.GetComponent<AreaTreeNode>();
+        if (node != null) return false;
+        GPUInstancerPrefab gpui = rt.GetComponent<GPUInstancerPrefab>();
+        if (gpui != null) return false;
+        return true;
+    }
+
     private void StartDynamicCullingRun()
     {
+        this.IsAddWhenLoaded = SystemSettingHelper.systemSetting.IsAddWhenLoaded;
         DateTime start = DateTime.Now;
         var renderersT = GetTargetRenderers();
         //dynamicCulling.OnEditorRemoveAllOccluders
@@ -302,6 +320,8 @@ public class DynamicCullingManage : SingletonBehaviour<DynamicCullingManage>
         dynamicCulling.HideAll();
     }
 
+    public bool isStarted = false;
+
     /// <summary>
     /// …Ë÷√’⁄µ≤Ãﬁ≥˝∂‘œÛ
     /// </summary>
@@ -311,6 +331,8 @@ public class DynamicCullingManage : SingletonBehaviour<DynamicCullingManage>
 #if UNITY_EDITOR
         IsInEditor = true;
 #endif
+
+        ignoreRenderers = GetIgnoreRenderers();
         if (IsInEditor)
         {
             if (!IsDynamicCulling)
@@ -325,6 +347,7 @@ public class DynamicCullingManage : SingletonBehaviour<DynamicCullingManage>
             }
             dynamicCulling.isIncludeStatic = this.isIncludeStatic;
             StartDynamicCullingEditor();
+            isStarted = true;
         }
         else
         {
@@ -340,6 +363,7 @@ public class DynamicCullingManage : SingletonBehaviour<DynamicCullingManage>
             }
             dynamicCulling.isIncludeStatic = this.isIncludeStatic;
             StartDynamicCullingRun();
+            isStarted = true;
         }
     }
 
@@ -373,6 +397,7 @@ public class DynamicCullingManage : SingletonBehaviour<DynamicCullingManage>
     /// </summary>
     public void AddObjectsForCulling(MeshRenderer[] renderers)
     {
+        if (isStarted == false) return;
         //Debug.LogError($"AddObjectsForCulling renderers:{renderers.Length}");
         //dynamicCulling.AddObjectsForCulling(renderers);
 
@@ -387,18 +412,14 @@ public class DynamicCullingManage : SingletonBehaviour<DynamicCullingManage>
         {
             if (item == null||!item.gameObject.activeInHierarchy) continue;
 
-            //if (ignoreRenderers.Contains(item)) continue;
-            //AreaTreeNode node = item.GetComponent<AreaTreeNode>();
-            //if (node != null) continue;
-            GPUInstancerPrefab gpui = item.GetComponent<GPUInstancerPrefab>();
-            if (gpui != null) continue;
-            //needRenderers.Add(rt);
-
-            int instanceId = item.GetInstanceID();
-            if (!waitingForAddDic.ContainsKey(instanceId))
+            if (IsCanCulling(item))
             {
-                waitingForAddDic.Add(instanceId, item);
-                addIdList.Add(instanceId);
+                int instanceId = item.GetInstanceID();
+                if (!waitingForAddDic.ContainsKey(instanceId))
+                {
+                    waitingForAddDic.Add(instanceId, item);
+                    addIdList.Add(instanceId);
+                }
             }
         }
     }
@@ -544,5 +565,11 @@ public class DynamicCullingManage : SingletonBehaviour<DynamicCullingManage>
     public void RemoveObject(MeshRenderer rendererT)
     {
         dynamicCulling.RemoveObject(rendererT);
+    }
+
+    public void RemoveObject(GameObject rendererT)
+    {
+        MeshRenderer mr = rendererT.GetComponent<MeshRenderer>();
+        dynamicCulling.RemoveObject(mr);
     }
 }

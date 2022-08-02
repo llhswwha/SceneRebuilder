@@ -34,6 +34,25 @@ public class MeshReplaceEditor : BaseFoldoutEditor<MeshReplace>
     {
         if (item == null) return;
         EditorGUILayout.BeginHorizontal();
+        GUILayout.Label("Align", GUILayout.Width(60));
+        item.transfromReplaceSetting.Align = (TransfromAlignMode)EditorGUILayout.EnumPopup(item.transfromReplaceSetting.Align, GUILayout.Width(80));
+        GUILayout.Label("SetPosition",GUILayout.Width(80));
+        item.transfromReplaceSetting.SetPosition = EditorGUILayout.Toggle(item.transfromReplaceSetting.SetPosition, GUILayout.Width(15));
+        GUILayout.Label("SetScale", GUILayout.Width(80));
+        item.transfromReplaceSetting.SetScale = EditorGUILayout.Toggle(item.transfromReplaceSetting.SetScale, GUILayout.Width(15));
+        GUILayout.Label("SetRotation", GUILayout.Width(80));
+        item.transfromReplaceSetting.SetRotation = EditorGUILayout.Toggle(item.transfromReplaceSetting.SetRotation, GUILayout.Width(15));
+        GUILayout.Label("SetMirrorX", GUILayout.Width(80));
+        item.transfromReplaceSetting.SetMirrorX = EditorGUILayout.Toggle(item.transfromReplaceSetting.SetMirrorX, GUILayout.Width(15));
+        GUILayout.Label("SetPosX", GUILayout.Width(60));
+        item.transfromReplaceSetting.SetPosX = EditorGUILayout.Toggle(item.transfromReplaceSetting.SetPosX, GUILayout.Width(15));
+        GUILayout.Label("SetPosY", GUILayout.Width(60));
+        item.transfromReplaceSetting.SetPosY = EditorGUILayout.Toggle(item.transfromReplaceSetting.SetPosY, GUILayout.Width(15));
+        GUILayout.Label("SetPosZ", GUILayout.Width(60));
+        item.transfromReplaceSetting.SetPosZ = EditorGUILayout.Toggle(item.transfromReplaceSetting.SetPosZ, GUILayout.Width(15));
+        EditorGUILayout.EndHorizontal();
+
+        EditorGUILayout.BeginHorizontal();
         if (GUILayout.Button("Compare"))
         {
             item.Compare();
@@ -41,6 +60,18 @@ public class MeshReplaceEditor : BaseFoldoutEditor<MeshReplace>
         if (GUILayout.Button("Replace"))
         {
             item.Replace();
+        }
+        if (GUILayout.Button("ReplacePrefab"))
+        {
+            item.ReplacePrefab();
+        }
+        if (GUILayout.Button("ReplaceEx"))
+        {
+            item.ReplaceEx();
+        }
+        if (GUILayout.Button("Mirror"))
+        {
+            item.Mirror();
         }
         if (GUILayout.Button("Clear"))
         {

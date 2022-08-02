@@ -703,7 +703,7 @@ namespace CodeStage.AdvancedFPSCounter
 
 			var counter = FindObjectOfType<AFPSCounter>();
 			if (counter != null)
-			{
+			{ 
 				Instance = counter;
 			}
 			else

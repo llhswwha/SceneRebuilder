@@ -16,6 +16,21 @@ namespace NavisPlugins.Infos
 
         public List<ModelItemInfo> Models = new List<ModelItemInfo>();
 
+        public List<ModelItemInfo> GetAllItems(string rootName)
+        {
+            List<ModelItemInfo> list = new List<ModelItemInfo>();
+            if (Models != null)
+                foreach (var child in Models)
+                {
+                    if (child.Name == rootName)
+                    {
+                        var subList = child.GetAllItems();
+                        list.AddRange(subList);
+                    }
+                }
+            return list;
+        }
+
         public List<ModelItemInfo> GetAllItems()
         {
             List<ModelItemInfo> list = new List<ModelItemInfo>();

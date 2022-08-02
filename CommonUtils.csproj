@@ -88,11 +88,11 @@
     <Compile Include="Assets\SceneRebuilder\CommonUtils\Transforms\TransformNode.cs" />
     <Compile Include="Assets\SceneRebuilder\CommonUtils\AlignResult.cs" />
     <Compile Include="Assets\SceneRebuilder\CommonUtils\DistanceUtil.cs" />
+    <Compile Include="Assets\SceneRebuilder\CommonUtils\MeshTools\BoundsIntersectTool.cs" />
     <Compile Include="Assets\SceneRebuilder\CommonUtils\Extensions\TransformExtension.cs" />
     <Compile Include="Assets\SceneRebuilder\CommonUtils\DictionaryList\PositionDictionaryList.cs" />
     <Compile Include="Assets\SceneRebuilder\CommonUtils\DistanceArgs.cs" />
     <Compile Include="Assets\SceneRebuilder\CommonUtils\InnerScripts\InnerRendererId.cs" />
-    <Compile Include="Assets\SceneRebuilder\CommonUtils\MeshTools\BoundsIntersectTool.cs" />
   </ItemGroup>
   <ItemGroup>
      <None Include="Assets\SceneRebuilder\CommonUtils\CommonUtils.asmdef" />

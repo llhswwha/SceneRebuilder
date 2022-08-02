@@ -536,7 +536,7 @@ public class LODGroupInfo : MonoBehaviour
 #if UNITY_EDITOR
     public void OnDestroy()
     {
-        Debug.Log($"LODGroupInfo.OnDestroy path:{transform.GetPath()}");
+        //Debug.Log($"LODGroupInfo.OnDestroy path:{transform.GetPath()}");
     }
 #endif
 

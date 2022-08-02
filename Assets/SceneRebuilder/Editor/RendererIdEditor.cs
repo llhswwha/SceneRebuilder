@@ -90,8 +90,16 @@ public class RendererIdEditor : BaseEditor<RendererId>
 
     private static FoldoutEditorArg drawToolButtonsArg = new FoldoutEditorArg("Tool Buttons", true, false, false, false, true);
 
+    private static string BIMRoot = "";
     private static void DrawToolButtons(RendererId item)
     {
+        EditorGUILayout.BeginHorizontal();
+        BIMRoot = EditorGUILayout.TextField(BIMRoot);
+        if (GUILayout.Button("FindBIM"))
+        {
+            item.FindBIMModel(BIMRoot);
+        }
+        EditorGUILayout.EndHorizontal();
         EditorGUILayout.BeginHorizontal();
         if (GUILayout.Button("ResetT"))
         {

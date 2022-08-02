@@ -16,6 +16,7 @@ public class BuildingScenesLoadManagerEditor : BaseFoldoutEditor<BuildingScenesL
         base.OnToolLayout(loadManager);
 
         EditorGUILayout.BeginHorizontal();
+        loadManager.ModelTarget = ObjectField("Root", loadManager.ModelTarget);
         if (GUILayout.Button("UpdateXml"))
         {
             loadManager.UpdateSettingByScene();
@@ -40,9 +41,16 @@ public class BuildingScenesLoadManagerEditor : BaseFoldoutEditor<BuildingScenesL
         loadManager.Setting.IsLoadUserBuildings = GUILayout.Toggle(loadManager.Setting.IsLoadUserBuildings, "LoadUserBuildings", GUILayout.Width(135));
         loadManager.IsShowLog = GUILayout.Toggle(loadManager.IsShowLog, "ShowLog", GUILayout.Width(80));
         loadManager.IsEnableGPU = GUILayout.Toggle(loadManager.IsEnableGPU, "EnableGPU", GUILayout.Width(90));
+        loadManager.IsEnableCulling = GUILayout.Toggle(loadManager.IsEnableCulling, "EnableCulling", GUILayout.Width(100));
+        EditorGUILayout.EndHorizontal();
+
+        EditorGUILayout.BeginHorizontal();
         EditorGUILayout.LabelField($"|", GUILayout.Width(10));
         loadManager.IsLoadScene = GUILayout.Toggle(loadManager.IsLoadScene, "IsLoadScene", GUILayout.Width(100));
+
         loadManager.Setting.IsLoadSceneOnStart = GUILayout.Toggle(loadManager.Setting.IsLoadSceneOnStart, "LoadSceneOnStart", GUILayout.Width(135));
+        loadManager.IsLoadSceneOnStart = loadManager.Setting.IsLoadSceneOnStart;
+
         EditorGUILayout.LabelField($"|", GUILayout.Width(10));
         loadManager.Setting.Enabled = GUILayout.Toggle(loadManager.Setting.Enabled, "EnableLoad", GUILayout.Width(95));
         loadManager.Setting.IsEnableUnload = GUILayout.Toggle(loadManager.Setting.IsEnableUnload, "EnableUnload", GUILayout.Width(100));

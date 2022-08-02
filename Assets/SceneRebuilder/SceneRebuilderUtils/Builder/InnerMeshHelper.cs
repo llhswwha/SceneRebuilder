@@ -149,12 +149,15 @@ public static class InnerMeshHelper
         return newObj;
     }
 
-    public static GameObject ReplaceGameObject(GameObject oldObj, GameObject prefab, bool isDestoryOriginal, TransfromAlignSetting transfromAlignSetting)
+    public static GameObject ReplaceGameObject(GameObject oldObj, GameObject prefab, bool isDestoryOriginal, TransfromAlignSetting transfromAlignSetting,bool isUnpackPrefab=true)
     {
         if (prefab == null) return null;
 #if UNITY_EDITOR
-        InnerEditorHelper.UnpackPrefab(oldObj);
-        InnerEditorHelper.UnpackPrefab(prefab);
+        if (isUnpackPrefab)
+        {
+            InnerEditorHelper.UnpackPrefab(oldObj);
+            InnerEditorHelper.UnpackPrefab(prefab);
+        }
 #endif
 
         Transform parentOldObj = oldObj.transform.parent;
@@ -179,88 +182,104 @@ public static class InnerMeshHelper
         }
         else
         {
-            var minMax_TO = InnerMeshRendererInfo.GetMinMax(oldObj);
-            var minMax_From = InnerMeshRendererInfo.GetMinMax(prefab);
+            //if (transfromAlignSetting.Align == TransfromAlignMode.AlignRT)
+            //{
+            //    MeshAlignHelper.AcRTAlignJob(goFromCopy, goTo);
+            //}
+            //else
+            {
+                var minMax_TO = InnerMeshRendererInfo.GetMinMax(oldObj);
+                var minMax_From = InnerMeshRendererInfo.GetMinMax(prefab);
 
-            var pos = newObj.transform.localPosition;
-            if (transfromAlignSetting.Align == TransfromAlignMode.Pivot)
-            {
-                if (transfromAlignSetting.SetPosX)
+                var pos = newObj.transform.localPosition;
+                if (transfromAlignSetting.Align == TransfromAlignMode.Pivot)
                 {
-                    pos.x = oldObj.transform.localPosition.x;
+                    if (transfromAlignSetting.SetPosX)
+                    {
+                        pos.x = oldObj.transform.localPosition.x;
+                    }
+                    if (transfromAlignSetting.SetPosY)
+                    {
+                        pos.y = oldObj.transform.localPosition.y;
+                    }
+                    if (transfromAlignSetting.SetPosZ)
+                    {
+                        pos.z = oldObj.transform.localPosition.z;
+                    }
                 }
-                if (transfromAlignSetting.SetPosY)
+                else if (transfromAlignSetting.Align == TransfromAlignMode.Min)
                 {
-                    pos.y = oldObj.transform.localPosition.y;
+                    var dis = minMax_TO[0] - minMax_From[0];
+                    if (transfromAlignSetting.SetPosX)
+                    {
+                        pos.x += dis.x;
+                    }
+                    if (transfromAlignSetting.SetPosY)
+                    {
+                        pos.y += dis.y;
+                    }
+                    if (transfromAlignSetting.SetPosZ)
+                    {
+                        pos.z += dis.z;
+                    }
                 }
-                if (transfromAlignSetting.SetPosZ)
+                else if (transfromAlignSetting.Align == TransfromAlignMode.Max)
                 {
-                    pos.z = oldObj.transform.localPosition.z;
+                    var dis = minMax_TO[1] - minMax_From[1];
+                    if (transfromAlignSetting.SetPosX)
+                    {
+                        pos.x += dis.x;
+                    }
+                    if (transfromAlignSetting.SetPosY)
+                    {
+                        pos.y += dis.y;
+                    }
+                    if (transfromAlignSetting.SetPosZ)
+                    {
+                        pos.z += dis.z;
+                    }
                 }
-            }
-            else if (transfromAlignSetting.Align == TransfromAlignMode.Min)
-            {
-                var dis = minMax_TO[0] - minMax_From[0];
-                if (transfromAlignSetting.SetPosX)
+                else if (transfromAlignSetting.Align == TransfromAlignMode.Center )
                 {
-                    pos.x += dis.x;
+                    var dis = minMax_TO[3] - minMax_From[3];
+                    if (transfromAlignSetting.SetPosX)
+                    {
+                        pos.x += dis.x;
+                    }
+                    if (transfromAlignSetting.SetPosY)
+                    {
+                        pos.y += dis.y;
+                    }
+                    if (transfromAlignSetting.SetPosZ)
+                    {
+                        pos.z += dis.z;
+                    }
                 }
-                if (transfromAlignSetting.SetPosY)
-                {
-                    pos.y += dis.y;
-                }
-                if (transfromAlignSetting.SetPosZ)
-                {
-                    pos.z += dis.z;
-                }
-            }
-            else if (transfromAlignSetting.Align == TransfromAlignMode.Max)
-            {
-                var dis = minMax_TO[1] - minMax_From[1];
-                if (transfromAlignSetting.SetPosX)
-                {
-                    pos.x += dis.x;
-                }
-                if (transfromAlignSetting.SetPosY)
-                {
-                    pos.y += dis.y;
-                }
-                if (transfromAlignSetting.SetPosZ)
-                {
-                    pos.z += dis.z;
-                }
-            }
-            else if (transfromAlignSetting.Align == TransfromAlignMode.Center)
-            {
-                var dis = minMax_TO[3] - minMax_From[3];
-                if (transfromAlignSetting.SetPosX)
-                {
-                    pos.x += dis.x;
-                }
-                if (transfromAlignSetting.SetPosY)
-                {
-                    pos.y += dis.y;
-                }
-                if (transfromAlignSetting.SetPosZ)
-                {
-                    pos.z += dis.z;
-                }
-            }
 
-            if (transfromAlignSetting.SetPosition)
-            {
-                newObj.transform.localPosition = pos;
+                if (transfromAlignSetting.SetPosition)
+                {
+                    newObj.transform.localPosition = pos;
+                }
+                if (transfromAlignSetting.SetScale)
+                {
+                    newObj.transform.localScale = oldObj.transform.localScale;
+                }
+                if (transfromAlignSetting.SetMirrorX)
+                {
+                    var scale= oldObj.transform.localScale;
+                    scale.x = -scale.x;
+                    newObj.transform.localScale = scale;
+                }
+
+                if (transfromAlignSetting.SetRotation)
+                {
+                    newObj.transform.localEulerAngles = oldObj.transform.localEulerAngles;
+                }
             }
+            
         }
 
-        if (transfromAlignSetting.SetScale)
-        {
-            newObj.transform.localScale = oldObj.transform.localScale;
-        }
-        if (transfromAlignSetting.SetRotation)
-        {
-            newObj.transform.localEulerAngles = oldObj.transform.localEulerAngles;
-        }
+
         //newObj.transform.localEulerAngles = oldObj.transform.localEulerAngles + new Vector3(0, 90, 90);
 
         if (isDestoryOriginal)
@@ -283,7 +302,7 @@ public static class InnerMeshHelper
 
 public enum TransfromAlignMode
 {
-    Pivot, Min, Max, Center, MinMax, MaxMin
+    Pivot, Min, Max, Center, MinMax, MaxMin,AlignRT
 }
 
 [System.Serializable]
@@ -292,6 +311,7 @@ public class TransfromAlignSetting
 
     public bool SetPosition = true;
     public bool SetScale = true;
+    public bool SetMirrorX = false;
     public bool SetRotation = true;
     public TransfromAlignMode Align = TransfromAlignMode.Max;
     public bool SetPosX = true;
@@ -301,4 +321,18 @@ public class TransfromAlignSetting
     //public bool SetPosByMinX = true;
     //public bool SetPosByMinY = true;
     //public bool SetPosByMinZ = true;
+
+    public TransfromAlignSetting Clone()
+    {
+        TransfromAlignSetting newObj = new TransfromAlignSetting();
+        newObj.SetPosition = this.SetPosition;
+        newObj.SetScale = this.SetScale;
+        newObj.SetMirrorX = this.SetMirrorX;
+        newObj.SetRotation = this.SetRotation;
+        newObj.Align = this.Align;
+        newObj.SetPosX = this.SetPosX;
+        newObj.SetPosY = this.SetPosY;
+        newObj.SetPosZ = this.SetPosZ;
+        return newObj;
+    }
 }

@@ -12,6 +12,38 @@ using System.IO;
 
 public class PrefabInstanceBuilder : SingletonBehaviour<PrefabInstanceBuilder>
 {
+    public static void GetSelectionPrefabInfosInner(double zeroP, bool isByMat = true, bool isShowLog = false, bool isDebug = false)
+    {
+#if UNITY_EDITOR
+        if (zeroP > 0)
+        {
+            Instance.disSetting.zeroP = zeroP;
+        }
+        Instance.disSetting.IsByMat = isByMat;
+        Instance.disSetting.IsShowLog = isShowLog;
+        DistanceSetting.IsDebug = isDebug;
+
+        AcRTAlignJobSetting.Instance.SetDefault();
+
+        //for (int i = 0; i < Selection.gameObjects.Length; i++)
+        //{
+        //    GameObject obj = Selection.gameObjects[i];
+        //    if (ProgressBarHelper.DisplayCancelableProgressBar(new ProgressArg("GetPrefabInfos", i, Selection.gameObjects.Length, obj)))
+        //    {
+        //        break;
+        //    }
+        //    PrefabInstanceBuilder.Instance.GetPrefabsOfList(obj);
+        //    MeshNode.InitNodes(obj);
+        //}
+        //ProgressBarHelper.ClearProgressBar();
+
+        var objs = Selection.gameObjects;
+        Instance.GetPrefabsOfList(objs);
+
+        Debug.Log($"GetPrefabInfosInner objs:{objs.Length}");
+#endif
+    }
+
     public AlignDebugStep step;
 
     public AlignRotateMode mode;
@@ -754,7 +786,7 @@ UnpackPrefab();
     {
         if(meshPoints==null|| meshPoints.Length == 0)
         {
-            //Debug.LogError("AcRTAlignJobsEx meshPoints==null|| meshPoints.Length == 0");
+            Debug.LogError("AcRTAlignJobsEx meshPoints==null|| meshPoints.Length == 0");
             PrefabInfoList = new PrefabInfoList();
             return PrefabInfoList;
         }
@@ -1531,6 +1563,17 @@ break;
     public PrefabInfoList GetPrefabsOfList(GameObject root)
     {
         List<MeshPoints> meshFilters = MeshPoints.GetMeshPointsNoLOD(root);
+        return AcRTAlignJobsEx(meshFilters.ToArray());
+    }
+
+    public PrefabInfoList GetPrefabsOfList(GameObject[] roots)
+    {
+        List<MeshPoints> meshFilters = new List<MeshPoints>();
+        foreach(var root in roots)
+        {
+            if (root == null) continue;
+            meshFilters.AddRange(MeshPoints.GetMeshPointsNoLOD(root));
+        }
         return AcRTAlignJobsEx(meshFilters.ToArray());
     }
 

@@ -9,7 +9,7 @@ public class MeshReplaceEditorWindow : EditorWindow, IBaseEditorWindow
     public static void ShowWindow()
     {
         //BaseEditorWindow.ShowWindow<MeshReplaceEditorWindow>(500, 200, "MeshReplace");
-        BaseEditorWindow.ShowWindow<MeshReplaceEditorWindow>(500, 100 + MeshReplace.Instance.Items.Count * 50, "MeshReplace");
+        BaseEditorWindow.ShowWindow<MeshReplaceEditorWindow>(500, 150 + MeshReplace.Instance.Items.Count * 50, "MeshReplace");
     }
 
     public MeshReplace target;

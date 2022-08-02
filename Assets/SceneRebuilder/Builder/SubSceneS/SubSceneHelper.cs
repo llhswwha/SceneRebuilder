@@ -46,7 +46,7 @@ public static class SubSceneHelper
     public static void SetBuildings(bool includeInactive)
     {
         var subScenes = GameObject.FindObjectsOfType<SubSceneArgComponent>(includeInactive);
-        SubSceneHelper.SetBuildings(subScenes);
+        EditorBuildSettings.scenes = SubSceneHelper.SetBuildings(subScenes,0);
     }
 
     public static void SetBuildingsWithNavmesh(bool includeInactive)
@@ -55,7 +55,7 @@ public static class SubSceneHelper
         SubSceneHelper.SetBuildingWithNavmeshScene(subScenes);
     }
 
-    public static EditorBuildSettingsScene[] SetBuildings<T>(T[] scenes) where T : SubSceneArgComponent
+    public static EditorBuildSettingsScene[] SetBuildings<T>(T[] scenes,int countOff) where T : SubSceneArgComponent
     {
         Debug.Log($"SetBuildings scenes:{scenes.Length}");
 
@@ -83,7 +83,7 @@ public static class SubSceneHelper
             }
         }
 
-        EditorBuildSettingsScene[] buildingScenes = new EditorBuildSettingsScene[buildScenes1.Count + 1];
+        EditorBuildSettingsScene[] buildingScenes = new EditorBuildSettingsScene[buildScenes1.Count + 1+ countOff];
 
         buildingScenes[0] = new EditorBuildSettingsScene(EditorSceneManager.GetActiveScene().path, true);
         for (int i = 0; i < buildScenes1.Count; i++)
@@ -91,7 +91,7 @@ public static class SubSceneHelper
             buildingScenes[i + 1] = buildScenes1[i];
         }
 
-        EditorBuildSettings.scenes = buildingScenes;
+        //EditorBuildSettings.scenes = buildingScenes;
 
         Debug.Log($"SetBuildings totalScenes:{scenes.Length} sceneCount:{sceneId-1}");
         return buildingScenes;
@@ -117,16 +117,22 @@ public static class SubSceneHelper
 
         //}
 
-        EditorBuildSettingsScene[] buildingScenes = SetBuildings(scenes);
+        //EditorBuildSettingsScene[] buildingScenes = SetBuildings(scenes,1);
 
         string navmeshPath = @"Assets\Scenes\MinHang\MHNavmesh.unity";
         if (!File.Exists(navmeshPath))
         {
             Debug.LogErrorFormat("Path:{0} not exist!", navmeshPath);
-            return;
+
+            EditorBuildSettingsScene[] buildingScenes = SetBuildings(scenes, 0);
+            EditorBuildSettings.scenes = buildingScenes;
         }
-        buildingScenes[buildingScenes.Length - 1] = new EditorBuildSettingsScene(navmeshPath, true);
-        EditorBuildSettings.scenes = buildingScenes;
+        else
+        {
+            EditorBuildSettingsScene[] buildingScenes = SetBuildings(scenes, 1);
+            buildingScenes[buildingScenes.Length - 1] = new EditorBuildSettingsScene(navmeshPath, true);
+            EditorBuildSettings.scenes = buildingScenes;
+        }
 
         Debug.Log("SetBuildingWithNavmeshScene:" + scenes.Length);
     }

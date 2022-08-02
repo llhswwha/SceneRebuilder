@@ -43,7 +43,6 @@ public class GlobalMaterialManagerEditor : BaseFoldoutEditor<GlobalMaterialManag
         item.LocalTarget=newTarget;
         DrawMatList(item, matListArg);
 
-
         EditorUIUtils.Separator(5);
 
         EditorGUILayout.BeginHorizontal();
@@ -56,6 +55,14 @@ public class GlobalMaterialManagerEditor : BaseFoldoutEditor<GlobalMaterialManag
         if(GUILayout.Button("SetChildrenMaterial"))
         {
             item.SetChildrenMaterial();
+        }
+        
+        EditorGUILayout.EndHorizontal();
+
+        EditorGUILayout.BeginHorizontal();
+        if (GUILayout.Button("SetExternalMaterial"))
+        {
+            item.SetExternalMaterial();
         }
         
         EditorGUILayout.EndHorizontal();

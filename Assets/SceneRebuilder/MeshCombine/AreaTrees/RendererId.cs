@@ -1,7 +1,10 @@
+using AdvancedCullingSystem.StaticCullingCore;
+using CommonUtils;
 using System;
 using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
+using Object = UnityEngine.Object;
 
 /// <summary>
 /// GameObjectId
@@ -10,6 +13,78 @@ public class RendererId
     : MonoBehaviour
     //: Behaviour
 {
+    [ContextMenu("FindBIMModel")]
+    public void FindBIMModel(string root = "")
+    {
+        DateTime start = DateTime.Now;
+        var modelItemInfos = InitNavisFileInfoByModel.Instance.GetAllModelInfos(root);
+        Debug.Log($"FindBIMModel [name:{this.name}] [root:{root}] [modelItemInfos:{modelItemInfos.Count}] [time:{DateTime.Now - start}]");
+    }
+
+    [ContextMenu("FindBinaryTreeNodes")]
+    public void FindBinaryTreeNodes()
+    {
+        List<BinaryTreeNode> nodes1 =StaticCulling.Instance.FindBinaryTreeNodes(this.Id);
+        
+        float minDis = float.MaxValue;
+        float maxDis = float.MinValue;
+        BinaryTreeNode minNode = null;
+        BinaryTreeNode maxNode = null;
+        for (int i = 0; i < nodes1.Count; i++)
+        {
+            float dis = Vector3.Distance(nodes1[i].center, this.transform.position);
+            if (dis < minDis)
+            {
+                minDis = dis;
+                minNode = nodes1[i];
+            }
+            if (dis > maxDis)
+            {
+                maxDis = dis;
+                maxNode = nodes1[i];
+            }
+        }
+
+        
+        Bounds b1 = ColliderExtension.CaculateBounds(this.gameObject);
+        float p1 = 0;
+        if (minNode != null)
+        {
+            p1 = ColliderExtension.BoundsContainedPercentage(b1, minNode.GetBounds());
+        }
+
+        float p2 = 0;
+        if (maxNode != null)
+        {
+            p2 = ColliderExtension.BoundsContainedPercentage(b1, maxNode.GetBounds());
+        }
+        
+
+        List<BinaryTreeNode> nodes2 = StaticCulling.Instance.GetAllLeafNodes();
+        float minDis2 = float.MaxValue;
+        BinaryTreeNode minNode2 = null;
+        for (int i = 0; i < nodes2.Count; i++)
+        {
+            float dis2 = Vector3.Distance(nodes2[i].center, this.transform.position);
+            if (dis2 < minDis2)
+            {
+                minDis2 = dis2;
+                minNode2 = nodes2[i];
+            }
+        }
+
+        Debug.Log($"FindBinaryTreeNodes nodes1:{nodes1.Count} Id:{Id} minDis:{minDis} minNode:{minNode}({p1}) maxDis:{maxDis} maxNode:{maxNode}({p2}) | nodes2:{nodes2.Count} minDis2:{minDis2} minNode2:{minNode2.name}");
+    }
+
+    public static Bounds CaculateBounds(GameObject root)
+    {
+        //Bounds b1 = ColliderExtension.CaculateBounds(renderer.gameObject);
+
+        BoxCollider box = ColliderHelper.AddCollider(root);
+        Bounds bounds = box.bounds;
+        GameObject.DestroyImmediate(box);
+        return bounds;
+    }
 
     public string Id;
 
@@ -289,6 +364,19 @@ public class RendererId
         parentId = pid;
     }
 
+    public void SetPidEx(string pid)
+    {
+        if (parentId != pid)
+        {
+            Debug.LogError($"SetPidEx {parentId} > {pid}");
+            parentId = pid;
+        }
+        else
+        {
+            
+        }
+    }
+
     public bool IsParentChanged()
     {
         var newParentId=GetId(this.transform.parent,0);
@@ -451,27 +539,58 @@ public class RendererId
         return id;
     }
 
-    public static string GetId<T>(T t,int level) where T : Component
+    public static string GetId<T>(T r,int level) where T : Component
     {
-        if (t == null || level >= 2) return "";
-        RendererId id = t.GetComponent<RendererId>();
-        if (id == null )
+        if (r == null || level >= 2) return "";
+        if (idDict.ContainsKey(r))
         {
-            id = t.gameObject.AddComponent<RendererId>();
-            id.Init(t.gameObject,level+1);
+            return idDict[r];
         }
-        return id.GetId();
+        RendererId Rid = r.GetComponent<RendererId>();
+        if (Rid == null )
+        {
+            Rid = r.gameObject.AddComponent<RendererId>();
+            Rid.Init(r.gameObject,level+1);
+        }
+
+        string id = Rid.GetId();
+        if (idDict.ContainsKey(r))
+        {
+            Debug.LogError($"GetId idDict.ContainsKey(r) Component:{r} id:{id}");
+        }
+        else
+        {
+            idDict.Add(r, id);
+        }
+        return id;
     }
+
+    private static Dictionary<Object, string> idDict = new Dictionary<Object, string>();
+
     public static string GetId<T>(T r) where T : Component
     {
         if (r == null) return "";
-        RendererId id = r.GetComponent<RendererId>();
-        if (id == null)
+        if (idDict.ContainsKey(r))
         {
-            id = r.gameObject.AddComponent<RendererId>();
-            id.Init(r);
+            return idDict[r];
         }
-        return id.GetId();
+
+        RendererId Rid = r.GetComponent<RendererId>();
+        if (Rid == null)
+        {
+            Rid = r.gameObject.AddComponent<RendererId>();
+            Rid.Init(r);
+        }
+        string id = Rid.GetId();
+        if (idDict.ContainsKey(r))
+        {
+            Debug.LogError($"GetId idDict.ContainsKey(r) Component:{r} id:{id}");
+        }
+        else
+        {
+            idDict.Add(r, id);
+        }
+        return id;
     }
 
     public static RendererId GetRId<T>(T t, int level=0) where T : Component

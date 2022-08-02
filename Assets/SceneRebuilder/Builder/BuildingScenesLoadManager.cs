@@ -1,3 +1,4 @@
+using AdvancedCullingSystem.StaticCullingCore;
 using Base.Common;
 using GPUInstancer;
 using System;
@@ -292,7 +293,8 @@ public class BuildingScenesLoadManager : MonoBehaviour
                     //    LODManager.Instance.UpdateLODs();
                     //}
                     ClearMainScripts(p);
-                    StartGPUInstance(p);
+                    AfterScenesLoaded(ss,p);
+                    
                     if (finishedCallbak != null)
                     {
                         finishedCallbak(p);
@@ -302,7 +304,8 @@ public class BuildingScenesLoadManager : MonoBehaviour
             else
             {
                 SceneLoadProgress p = new SceneLoadProgress(null, 1, true);
-                StartGPUInstance(p);
+                AfterScenesLoaded(ss, p);
+
                 if (finishedCallbak != null)
                 {
                     finishedCallbak(p);
@@ -348,7 +351,7 @@ public class BuildingScenesLoadManager : MonoBehaviour
         TransformHelper.ClearComponents<T>(target);
     }
 
-    private void StartGPUInstance(SceneLoadProgress p)
+    private void AfterScenesLoaded(SubScene_Base[] scenes,SceneLoadProgress p)
     {
         if (p.isAllFinished == false)
         {
@@ -356,9 +359,11 @@ public class BuildingScenesLoadManager : MonoBehaviour
         }
         if (IsEnableGPU)
         {
-            GPUInstancerPrototype.IsShowLog = false;
-            GPUInstanceTest.Instance.StartGPUInstance();
+            //GPUInstancerPrototype.IsShowLog = false;
+            GPUInstanceTest.Instance.StartGPUInstance($"AfterLoadScenes_Length:{scenes.Length} scene:{p.scene}");
         }
+
+        GetCullingRenderers();
     }
 
     private SubSceneBagList GetBuildingScenes(List<BuildingModelInfo> enableBuildings)
@@ -579,7 +584,14 @@ public class BuildingScenesLoadManager : MonoBehaviour
             {
                 bc.NodeName = bc.name;
             }
-            depDict.Add(bc.NodeName, bc);
+            if (depDict.ContainsKey(bc.NodeName))
+            {
+                Debug.LogError($"InitDepDict depDict.ContainsKey(bc.NodeName) NodeName:{bc.NodeName} name:{bc.name}");
+            }
+            else
+            {
+                depDict.Add(bc.NodeName, bc);
+            }
         }
         return depDict;
     }
@@ -598,7 +610,15 @@ public class BuildingScenesLoadManager : MonoBehaviour
         Dictionary<string, BuildingModelInfo> modelDict = new Dictionary<string, BuildingModelInfo>();
         foreach (var bc in models)
         {
-            modelDict.Add(bc.name, bc);
+            if(modelDict.ContainsKey(bc.name))
+            {
+                Debug.LogError($"InitModelDict modelDict.ContainsKey(bc.name) name:{bc.name}");
+            }
+            else
+            {
+                modelDict.Add(bc.name, bc);
+            }
+            
         }
         return modelDict;
     }
@@ -718,7 +738,7 @@ public class BuildingScenesLoadManager : MonoBehaviour
         {
             SubSceneManager.Instance.LoadScenesAsyncEx(ss, (p) =>
             {
-                StartGPUInstance(p);
+                AfterScenesLoaded(ss, p);
             });
         }
     }
@@ -726,11 +746,34 @@ public class BuildingScenesLoadManager : MonoBehaviour
     private void Awake()
     {
         GPUInstanceTest.SetEnable(IsEnableGPU);
+
+        //StaticCulling.Instance.enabled = false;
+        if (IsEnableCulling == false)
+        {
+            StaticCulling.Instance.gameObject.SetActive(false);
+        }
+        else
+        {
+            //StaticCulling.Instance.GetRenderers();
+        }
+    }
+
+    public void GetCullingRenderers()
+    {
+        Debug.LogError("GetCullingRenderers");
+        if (IsEnableCulling)
+        {
+            //StaticCulling.Instance.EnableChangeRenderer = false;
+            StaticCulling.Instance.GetRenderers();
+            StaticCulling.Instance.gameObject.SetActive(true);
+        }
     }
 
     public bool IsLoadScene = true;
 
     public bool IsEnableGPU = false;
+
+    public bool IsEnableCulling = false;
 
     public void LoadSubScenes(BuildingModelInfo root, BuildingSceneLoadItem loadSetting)
     {

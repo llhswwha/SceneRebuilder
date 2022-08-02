@@ -3,19 +3,21 @@ using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 
-public class SubScene_GPUI : SubScene_Part
+public class SubScene_GPUI : SubScene_Part, IGPUIRoot
 {
-#if UNITY_EDITOR
+//#if UNITY_EDITOR
     public void OnDisable()
     {
-        Debug.LogError($"GPUI_OnDisable path:{this.transform.GetPath()} IsVisible:{IsVisible}");
+        //Debug.LogError($"GPUI_OnDisable path:{this.transform.GetPath()} IsVisible:{IsVisible}");
         HideObjects();
     }
+
     public void OnEnable()
     {
-        Debug.LogError($"GPUI_OnEnable path:{this.transform.GetPath()}  IsVisible:{IsVisible}");
+        //Debug.LogError($"GPUI_OnEnable path:{this.transform.GetPath()}  IsVisible:{IsVisible}");
+        //ShowObjects();
     }
-#endif
+//#endif
 
     protected override string BoundsName
     {
@@ -27,32 +29,45 @@ public class SubScene_GPUI : SubScene_Part
 
     public override void HideObjects()
     {
-        //base.HideObjects();
-        if (IsVisible == false) return;
-        IsVisible = false;
-        if (gos != null)
+       
+        if(GPUInstanceTest.IsGPUIEnabled == false)
         {
-            //List<GPUInstancerPrefab> prefabs = GetSceneGPUIPrefabs();
-            //GPUInstanceTest.Instance.PrefabsOfHide.AddRange(prefabs);
-            GPUInstanceTest.Instance.AddHideScene(this);
+            base.HideObjects();
+        }
+        else
+        {
+            if (IsVisible == false) return;
+            IsVisible = false;
+            if (gos != null)
+            {
+                //List<GPUInstancerPrefab> prefabs = GetSceneGPUIPrefabs();
+                //GPUInstanceTest.Instance.PrefabsOfHide.AddRange(prefabs);
+                GPUInstanceTest.Instance.AddHideScene(this);
+            }
         }
     }
 
     public override void ShowObjects()
     {
-        //base.ShowObjects();
-        if (IsVisible) return;
-        IsVisible = true;
-        if (gos != null)
+        if (GPUInstanceTest.IsGPUIEnabled == false)
         {
-            //List<GPUInstancerPrefab> prefabs = GetSceneGPUIPrefabs();
-            //foreach(var prefab in prefabs)
-            //{
-            //    prefab.gameObject.SetActive(true);
-            //}
-            //GPUInstanceTest.Instance.PrefabsOfShow.AddRange(prefabs);
+            base.ShowObjects();
+        }
+        else
+        {
+            if (IsVisible) return;
+            IsVisible = true;
+            if (gos != null)
+            {
+                List<GPUInstancerPrefab> prefabs = GetSceneGPUIPrefabs();
+                foreach (var prefab in prefabs)
+                {
+                    prefab.gameObject.SetActive(true);
+                }
+                //GPUInstanceTest.Instance.PrefabsOfShow.AddRange(prefabs);
 
-            GPUInstanceTest.Instance.AddShowScene(this);
+                GPUInstanceTest.Instance.AddShowScene(this);
+            }
         }
     }
 
@@ -63,6 +78,13 @@ public class SubScene_GPUI : SubScene_Part
         {
             prefab.gameObject.SetActive(isActive);
         }
+    }
+
+
+    public override void GetSceneObjects()
+    {
+        base.GetSceneObjects();
+        GPUInstanceTest.Instance.RegistGPUIScene(this);
     }
 
     public void StartGPUI1()
@@ -105,7 +127,29 @@ public class SubScene_GPUI : SubScene_Part
                     continue;
                 }
                 GPUInstancerPrefab[] subRenderers = go.GetComponentsInChildren<GPUInstancerPrefab>(true);
-                renderers.AddRange(subRenderers);
+                //renderers.AddRange(subRenderers);
+                try
+                {
+                    for (int i = 0; i < subRenderers.Length; i++)
+                    {
+                        GPUInstancerPrefab prefab = subRenderers[i];
+                        if (prefab.prefabPrototype == null)
+                        {
+                            Debug.LogError($"GetSceneGPUIPrefabs_prefabPrototype == null[{i + 1}/{subRenderers.Length}] Path:{transform.GetPath()} prefab:{prefab} path:{prefab.transform.GetPath()}");
+                        }
+                        else
+                        {
+                            //allPrefabs.Add(prefab);
+                            renderers.Add(prefab);
+                        }
+                    }
+                }
+                catch (System.Exception ex)
+                {
+                    Debug.LogError($"GetSceneGPUIPrefabs_prefabPrototype == null[{subRenderers.Length}] Path:{transform.GetPath()} Exception:{ex}");
+                }
+
+
                 //go.SetActive(true);
             }
             gpuiPrefabs = renderers;
@@ -131,5 +175,10 @@ public class SubScene_GPUI : SubScene_Part
     public override bool CanUnload()
     {
         return false;
+    }
+
+    public GPUInstancerPrefab[] GetGPUIPrefabs()
+    {
+        return GetSceneGPUIPrefabs().ToArray();
     }
 }

@@ -44,6 +44,12 @@ public class MeshPoints
 
     private static void GetMeshPointsNoLOD(Transform root, List<MeshPoints> list)
     {
+        MeshFilter mf0 = root.GetComponent<MeshFilter>();
+        if (mf0 != null)
+        {
+            list.Add(new MeshPoints(mf0));
+        }
+
         for (int i = 0; i < root.childCount; i++)
         {
             Transform child = root.GetChild(i);

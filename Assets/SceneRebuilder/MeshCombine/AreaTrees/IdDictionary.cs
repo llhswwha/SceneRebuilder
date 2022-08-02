@@ -435,7 +435,7 @@ public static class IdDictionary
         return GetGo(id);
     }
 
-    public static MeshRenderer GetRenderer(string id,bool isShowLog)
+    public static MeshRenderer GetRenderer(string id,bool isShowLog=false)
     {
         //if (!RendererDict.ContainsKey(id))
         //{

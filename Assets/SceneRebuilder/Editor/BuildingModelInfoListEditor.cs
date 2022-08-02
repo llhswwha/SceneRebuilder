@@ -31,6 +31,14 @@ public class BuildingModelInfoListEditor : BaseFoldoutEditor<BuildingModelInfoLi
         {
             BuildingModelManager.Instance.OneKeySaveScene(item.Buildings);
         });
+
+        EditorGUILayout.EndHorizontal();
+        NewButton("SetStaticCulling", true, () =>
+        {
+            BuildingModelManager.Instance.SetStaticCulling(item.Buildings);
+        });
+        EditorGUILayout.BeginHorizontal();
+
         EditorGUILayout.EndHorizontal();
 
         EditorGUILayout.BeginHorizontal();

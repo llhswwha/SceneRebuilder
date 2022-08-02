@@ -127,6 +127,7 @@ namespace MeshJobs
             Matrix4x4 matrix4World2=localMatrix*matrix2;
             ApplyMatrix(vsFromLocal,matrix4World2,trans,newVs2);
             var dis2=DistanceUtil.GetDistance(newVs2,vsToWorld);
+
             if(dis2<=DistanceSetting.zeroM){//0.000005
                 //GameObject gameObject3=new GameObject("TryScale"+scale);
                 //MeshHelper.ShowVertexes(newVs3,pScale,gameObject3.transform);
@@ -147,6 +148,8 @@ namespace MeshJobs
             else{
                 RTResult result=new RTResult();
                 result.IsZero=false;
+                result.Distance = dis2;
+
                 return result;
             }
         }
@@ -249,10 +252,12 @@ namespace MeshJobs
             var vsToW = AcRTAlignJobHelper.vsDictWorld[vsToId];
             var vsToL = AcRTAlignJobHelper.vsDictLocal[vsToId];
 
+            //Debug.LogError($"！！！！！！ IsTryAngles:{IsTryAngles} IsTryAngles_Scale:{IsTryAngles_Scale} IsTrySameAngle:{IsTrySameAngle}");
+
             if (IsTrySameAngle)
             {
-                
-                var disLocal = DistanceUtil.GetDistance(vsFromL, vsToL);
+                 var disLocal = DistanceUtil.GetDistance(vsFromL, vsToL);
+                //Debug.LogError($"！！！！！！ AcRTAlignJob11 disLocal:{disLocal}");
 
                 if (disLocal <= DistanceSetting.zeroM)
                 {
@@ -262,14 +267,20 @@ namespace MeshJobs
                     double t = (DateTime.Now - start).TotalMilliseconds;
                     minRT = new SameAngleResult();
                     AcRTAlignJobResult.SetResult(Id, minRT, t);
+
+                    //Debug.LogError($"！！！！！！ AcRTAlignJob12");
                     return;
                 }
+                //Debug.LogError($"！！！！！！ AcRTAlignJob13");
             }            
 
             var scale1=AcRTAlignJobHelper.scaleDict[vsToId];
 
             //一.角度测试，Angle，Scale
             if(IsTryAngles){
+
+                //Debug.LogError($"！！！！！！ AcRTAlignJob21");
+
                 var trans=AcRTAlignJobHelper.posDict[vsToId]-AcRTAlignJobHelper.posDict[vsFromId];
                 Matrix4x4 localMatrix=tpsFrom[0].localToWorldMatrix;
                 int aCount=0;
@@ -342,7 +353,10 @@ namespace MeshJobs
                             ApplyMatrix(vsFromL,matrix4World,trans,newVs2);
 
                             var dis=DistanceUtil.GetDistance(newVs2,vsToW);
-                            if(dis==0){
+
+                            //Debug.LogWarning($"angle[{aCount}]:{angle},Distance:{dis},Id:{Id},trans:{trans}\nmatrix:\n{matrix}\nlocalMatrix:\n{localMatrix}\nmatrix4World:\n{matrix4World}");
+
+                            if (dis==0){
                                 //Debug.LogWarning($"angle[{aCount}]:{angle},Distance:{dis},Id:{Id},trans:{trans}\nmatrix:\n{matrix}\nlocalMatrix:\n{localMatrix}\nmatrix4World:\n{matrix4World}");
                                 RTResult result=new RTResult();
                                 result.Mode= AlignMode.Rotate;
@@ -361,55 +375,77 @@ namespace MeshJobs
                                 SetStatisticsInfo(Id, t, true, result.Mode, dis);
                                 return;
                             }
-                            else if(IsTryAngles_Scale)//比例
+                            else//比例
                             {
-                                if(dis < TryScaleMaxDis)
+                                if (IsTryAngles_Scale)
                                 {
-                                    var mm1 = VertexHelper.GetMinMax(newVs2);
-                                    var mm2 = VertexHelper.GetMinMax(vsToW);
-                                    var scaleNew = new Vector3(mm2[2].x / mm1[2].x, mm2[2].y / mm1[2].y, mm2[2].z / mm1[2].z);
-                                    Vector3 scaleNN = new Vector3(scale1.x * scaleNew.x, scale1.y * scaleNew.y, scale1.z * scaleNew.z);
-                                    RTResult r2 = CreateNewScaleGoMatrix(localMatrix, vsFromL, vsToW, angle, new Vector3(scaleNN.x, scaleNN.y, scaleNN.z), trans, newVs2);
-                                    if (r2.IsZero)
+                                    if (dis < TryScaleMaxDis)
                                     {
-                                        double t = (DateTime.Now - start).TotalMilliseconds;
-                                        AcRTAlignJobResult.SetResult(Id, r2, t);
-                                        SetStatisticsInfo(Id, t, true, r2.Mode, dis);
-                                        return;
+                                        var mm1 = VertexHelper.GetMinMax(newVs2);
+                                        var mm2 = VertexHelper.GetMinMax(vsToW);
+                                        var scaleNew = new Vector3(mm2[2].x / mm1[2].x, mm2[2].y / mm1[2].y, mm2[2].z / mm1[2].z);
+                                        Vector3 scaleNN = new Vector3(scale1.x * scaleNew.x, scale1.y * scaleNew.y, scale1.z * scaleNew.z);
+                                        RTResult r2 = CreateNewScaleGoMatrix(localMatrix, vsFromL, vsToW, angle, new Vector3(scaleNN.x, scaleNN.y, scaleNN.z), trans, newVs2);
+                                        if (r2.IsZero)
+                                        {
+                                            double t = (DateTime.Now - start).TotalMilliseconds;
+                                            AcRTAlignJobResult.SetResult(Id, r2, t);
+                                            SetStatisticsInfo(Id, t, true, r2.Mode, dis);
+                                            return;
+                                        }
+                                        r2 = CreateNewScaleGoMatrix(localMatrix, vsFromL, vsToW, angle, new Vector3(scaleNN.y, scaleNN.x, scaleNN.z), trans, newVs2);
+                                        if (r2.IsZero)
+                                        {
+                                            double t = (DateTime.Now - start).TotalMilliseconds;
+                                            AcRTAlignJobResult.SetResult(Id, r2, t);
+                                            SetStatisticsInfo(Id, t, true, r2.Mode, dis);
+                                            return;
+                                        }
+                                        r2 = CreateNewScaleGoMatrix(localMatrix, vsFromL, vsToW, angle, new Vector3(scaleNN.z, scaleNN.y, scaleNN.x), trans, newVs2);
+                                        if (r2.IsZero)
+                                        {
+                                            double t = (DateTime.Now - start).TotalMilliseconds;
+                                            AcRTAlignJobResult.SetResult(Id, r2, t);
+                                            SetStatisticsInfo(Id, t, true, r2.Mode, dis);
+                                            return;
+                                        }
+                                        r2 = CreateNewScaleGoMatrix(localMatrix, vsFromL, vsToW, angle, new Vector3(scaleNN.z, scaleNN.x, scaleNN.y), trans, newVs2);
+                                        if (r2.IsZero)
+                                        {
+                                            double t = (DateTime.Now - start).TotalMilliseconds;
+                                            AcRTAlignJobResult.SetResult(Id, r2, t);
+                                            SetStatisticsInfo(Id, t, true, r2.Mode, dis);
+                                            return;
+                                        }
+                                        r2 = CreateNewScaleGoMatrix(localMatrix, vsFromL, vsToW, angle, new Vector3(scaleNN.x, scaleNN.z, scaleNN.y), trans, newVs2);
+                                        if (r2.IsZero)
+                                        {
+                                            double t = (DateTime.Now - start).TotalMilliseconds;
+                                            AcRTAlignJobResult.SetResult(Id, r2, t);
+                                            SetStatisticsInfo(Id, t, true, r2.Mode, dis);
+                                            return;
+                                        }
+                                        r2 = CreateNewScaleGoMatrix(localMatrix, vsFromL, vsToW, angle, new Vector3(scaleNN.y, scaleNN.z, scaleNN.x), trans, newVs2);
+                                        if (r2.IsZero)
+                                        {
+                                            double t = (DateTime.Now - start).TotalMilliseconds;
+                                            AcRTAlignJobResult.SetResult(Id, r2, t);
+                                            SetStatisticsInfo(Id, t, true, r2.Mode, dis);
+                                            return;
+                                        }
                                     }
-                                    r2 = CreateNewScaleGoMatrix(localMatrix, vsFromL, vsToW, angle, new Vector3(scaleNN.y, scaleNN.x, scaleNN.z), trans, newVs2);
-                                    if (r2.IsZero)
+                                    else
                                     {
-                                        double t = (DateTime.Now - start).TotalMilliseconds;
-                                        AcRTAlignJobResult.SetResult(Id, r2, t);
-                                        SetStatisticsInfo(Id, t, true, r2.Mode, dis);
-                                        return;
+                                        //Debug.LogError($"AcRTAlignJob_Scale angle:{angle},Distance:{dis}");
                                     }
-                                    r2 = CreateNewScaleGoMatrix(localMatrix, vsFromL, vsToW, angle, new Vector3(scaleNN.z, scaleNN.y, scaleNN.x), trans, newVs2);
-                                    if (r2.IsZero)
-                                    {
-                                        double t = (DateTime.Now - start).TotalMilliseconds;
-                                        AcRTAlignJobResult.SetResult(Id, r2, t);
-                                        SetStatisticsInfo(Id, t, true, r2.Mode, dis);
-                                        return;
-                                    }
-                                    r2 = CreateNewScaleGoMatrix(localMatrix, vsFromL, vsToW, angle, new Vector3(scaleNN.z, scaleNN.x, scaleNN.y), trans, newVs2);
-                                    if (r2.IsZero)
-                                    {
-                                        double t = (DateTime.Now - start).TotalMilliseconds;
-                                        AcRTAlignJobResult.SetResult(Id, r2, t);
-                                        SetStatisticsInfo(Id, t, true, r2.Mode, dis);
-                                        return;
-                                    }
-                                    r2 = CreateNewScaleGoMatrix(localMatrix, vsFromL, vsToW, angle, new Vector3(scaleNN.x, scaleNN.z, scaleNN.y), trans, newVs2);
-                                    if (r2.IsZero)
-                                    {
-                                        double t = (DateTime.Now - start).TotalMilliseconds;
-                                        AcRTAlignJobResult.SetResult(Id, r2, t);
-                                        SetStatisticsInfo(Id, t, true, r2.Mode, dis);
-                                        return;
-                                    }
-                                    r2 = CreateNewScaleGoMatrix(localMatrix, vsFromL, vsToW, angle, new Vector3(scaleNN.y, scaleNN.z, scaleNN.x), trans, newVs2);
+                                }
+
+                                if (IsTryAngles_Mirror)//镜像
+                                {
+                                    RTResult r2 = CreateNewScaleGoMatrix(localMatrix, vsFromL, vsToW, angle, new Vector3(-1, 1, 1), trans, newVs2);
+                                    r2.Mode = AlignMode.Mirror;
+                                    //Debug.LogWarning($"Mirror[{aCount}]:{angle},Distance:{r2.Distance},Id:{Id},trans:{trans}\nmatrix:\n{matrix}\nlocalMatrix:\n{localMatrix}\nmatrix4World:\n{matrix4World}");
+
                                     if (r2.IsZero)
                                     {
                                         double t = (DateTime.Now - start).TotalMilliseconds;
@@ -418,49 +454,6 @@ namespace MeshJobs
                                         return;
                                     }
                                 }
-                                else
-                                {
-                                    //Debug.LogError($"AcRTAlignJob_Scale angle:{angle},Distance:{dis}");
-                                }
-                            }
-                            else if (IsTryAngles_Mirror)//镜像
-                            {
-                                //var mm1 = VertexHelper.GetMinMax(newVs2);
-                                //var mm2 = VertexHelper.GetMinMax(vsToW);
-                                //var scaleNew = new Vector3(mm2[2].x / mm1[2].x, mm2[2].y / mm1[2].y, mm2[2].z / mm1[2].z);
-                                //Vector3 scaleNN = new Vector3(scale1.x * scaleNew.x, scale1.y * scaleNew.y, scale1.z * scaleNew.z);
-                                RTResult r2 = CreateNewScaleGoMatrix(localMatrix, vsFromL, vsToW, angle, new Vector3(-1,1,1), trans, newVs2);
-                                r2.Mode = AlignMode.Mirror;
-                                if (r2.IsZero)
-                                {
-                                    double t = (DateTime.Now - start).TotalMilliseconds;
-                                    AcRTAlignJobResult.SetResult(Id, r2, t);
-                                    SetStatisticsInfo(Id, t, true, r2.Mode, dis);
-                                    return;
-                                }
-                                //r2 = CreateNewScaleGoMatrix(localMatrix, vsFromL, vsToW, angle, new Vector3(1, -1, 1), trans, newVs2);
-                                //r2.Mode = AlignMode.Mirror;
-                                //if (r2.IsZero)
-                                //{
-                                //    double t = (DateTime.Now - start).TotalMilliseconds;
-                                //    AcRTAlignJobResult.SetResult(Id, r2, t);
-                                //    SetStatisticsInfo(Id, t, true, r2.Mode, dis);
-                                //    return;
-                                //}
-                                //r2 = CreateNewScaleGoMatrix(localMatrix, vsFromL, vsToW, angle, new Vector3(1, 1, -1), trans, newVs2);
-                                //r2.Mode = AlignMode.Mirror;
-                                //if (r2.IsZero)
-                                //{
-                                //    double t = (DateTime.Now - start).TotalMilliseconds;
-                                //    AcRTAlignJobResult.SetResult(Id, r2, t);
-                                //    SetStatisticsInfo(Id, t, true, r2.Mode, dis);
-                                //    return;
-                                //}
-                            }
-                            else
-                            {
-                                //Debug.Log($"angle:{angle},Distance:{dis}");
-                                //GameObject.DestroyImmediate(goNew);
                             }
                         }
                     }

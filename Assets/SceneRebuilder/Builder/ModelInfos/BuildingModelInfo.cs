@@ -52,7 +52,18 @@ public class BuildingModelInfo : SubSceneCreater
 
     public override string ToString()
     {
-        return this.name;
+        try
+        {
+            if (this.gameObject == null)
+            {
+                return "NULL1";
+            }
+            return this.name;
+        }
+        catch (Exception ex)
+        {
+            return "NULL2";
+        }
     }
 
     [ContextMenu("MoveStaticToOut0")]
@@ -415,6 +426,11 @@ public class BuildingModelInfo : SubSceneCreater
                 var allScenes = LODPart.GetComponentsInChildren<SubScene_LODs>(true);
                 bag.AddRange(allScenes);
             }
+        }
+
+        foreach(var scene in bag)
+        {
+            scene.gameObject.SetActive(true);
         }
 
         //if (GPUIPart != null)
@@ -837,12 +853,14 @@ public class BuildingModelInfo : SubSceneCreater
             //var treeScenes = LODPart.GetComponentsInChildren<SubScene_Base>(true);
             //scenes.AddRange(treeScenes);//LOD的加载由LODManager管理
 
-            var treeScene = LODPart.GetComponent<SubScene_Base>();//加载的是LODs的这个子场景
-            if (treeScene.IsLoaded == false)
+            var lodScene = LODPart.GetComponent<SubScene_Base>();//加载的是LODs的这个子场景
+            if (lodScene != null && lodScene.IsLoaded == false)
             {
-                scenes.Add(treeScene);
+                scenes.Add(lodScene);
             }
+            Debug.LogError($"GetFloorLoadScenes({this.name}) lodScene:{lodScene}");
         }
+        Debug.LogError($"GetFloorLoadScenes({this.name}) scenes:{scenes.Count}");
         return scenes;
     }
 
@@ -1231,9 +1249,54 @@ public class BuildingModelInfo : SubSceneCreater
         }
     }
 
+    [ContextMenu("CreateTestWalls")]
+    public void CreateTestWalls()
+    {
+        GetInOutParts();
 
+        Vector3 size = this.gameObject.GetSize();
 
-    public void InitInOut(bool isShowOut0Log=false)
+        GameObject wall1 = CreateWall("1");
+        wall1.transform.localScale = new Vector3(0.1f, 1f, 1f);
+        Vector3 size1 = wall1.gameObject.GetSize();
+        wall1.transform.Translate(new Vector3(size.x / 2, 0, 0));
+        wall1.transform.SetParent(OutPart0.transform);
+
+        GameObject wall2 = CreateWall("2");
+        wall2.transform.localScale = new Vector3(0.1f, 1f, 1f);
+        Vector3 size2 = wall2.gameObject.GetSize();
+        wall2.transform.Translate(new Vector3(-size.x/2, 0, 0));
+        wall2.transform.SetParent(OutPart0.transform);
+
+        GameObject wall3 = CreateWall("3");
+        wall3.transform.localScale = new Vector3(1f, 1f, 0.1f);
+        Vector3 size3 = wall3.gameObject.GetSize();
+        wall3.transform.Translate(new Vector3(0, 0, size.z / 2));
+        wall3.transform.SetParent(OutPart0.transform);
+
+        GameObject wall4 = CreateWall("4");
+        wall4.transform.localScale = new Vector3(1f, 1f, 0.1f);
+        Vector3 size4 = wall4.gameObject.GetSize();
+        wall4.transform.Translate(new Vector3(0, 0, -size.z / 2));
+        wall4.transform.SetParent(OutPart0.transform);
+
+        Debug.Log($"CreateTestWalls ");
+    }
+
+    private GameObject CreateWall(string tag)
+    {
+        GameObject wall = GameObject.CreatePrimitive(PrimitiveType.Cube);
+        wall.name = "Wall_"+tag;
+        wall.transform.SetParent(this.transform);
+        wall.transform.localPosition = Vector3.zero;
+        wall.transform.localScale = Vector3.one;
+        wall.transform.localRotation = Quaternion.identity;
+
+       
+        return wall;
+    }
+
+    public void InitInOut(bool isShowOut0Log=false, bool isDefaultOut0 = true)
     {
         DateTime start = DateTime.Now;
         //Debug.Log("InitInOut:"+this.name);
@@ -1245,7 +1308,7 @@ public class BuildingModelInfo : SubSceneCreater
         }
         UpackPrefab_One(this.gameObject);
 
-        GetInOutParts();
+        GetInOutParts(isDefaultOut0);
 
         GetInOutVertextCount(isShowOut0Log);
 
@@ -1388,7 +1451,7 @@ public class BuildingModelInfo : SubSceneCreater
         info.SetSmallModelsVisible(true);
     }
 
-    private void GetInOutParts()
+    private void GetInOutParts(bool isDefaultOut0=true)
     {
         InPart=null;
         OutPart0=null;
@@ -1428,14 +1491,29 @@ public class BuildingModelInfo : SubSceneCreater
             children.Add(child);
         }
 
+
+
         if (OutPart1 == null && OutPart0 == null && InPart == null)
         {
-            Debug.Log("OutPart1 == null && OutPart0 == null && InPart == null");
-            GameObject outRoot = InitPart("Out0");
-            OutPart0 = outRoot;
-            foreach (var child in children)
+            if (isDefaultOut0)
             {
-                child.SetParent(outRoot.transform);
+                Debug.Log("OutPart1 == null && OutPart0 == null && InPart == null Default Out0");
+                GameObject outRoot = InitPart("Out0");
+                OutPart0 = outRoot;
+                foreach (var child in children)
+                {
+                    child.SetParent(outRoot.transform);
+                }
+            }
+            else
+            {
+                Debug.Log("OutPart1 == null && OutPart0 == null && InPart == null Default In");
+                GameObject outRoot = InitPart("In");
+                InPart = outRoot;
+                foreach (var child in children)
+                {
+                    child.SetParent(outRoot.transform);
+                }
             }
 
             // InPart = InitPart("In");
@@ -1450,7 +1528,10 @@ public class BuildingModelInfo : SubSceneCreater
         {
             OutPart1 = InitPart("Out1");
         }
-
+        if (OutPart0 == null)
+        {
+            OutPart0 = InitPart("Out0");
+        }
 
 
         if (OutPart1 == null && OutPart0 != null && InPart == null && OutPart0.transform.childCount == 0)
@@ -1558,6 +1639,17 @@ public class BuildingModelInfo : SubSceneCreater
 
         HideDetail();
         Debug.LogWarning($"CreateTreesBSEx {(DateTime.Now - start).ToString()}");
+    }
+
+    private DictList<SubScene_Base> scenes = new DictList<SubScene_Base>();
+
+    internal bool ContainsScene(SubScene_Base scene)
+    {
+        if (scenes.Count == 0)
+        {
+            scenes = new DictList<SubScene_Base>(this.GetComponentsInChildren<SubScene_Base>(true));
+        }
+        return scenes.Contains(scene);
     }
 
     [ContextMenu("* CreateTreesByLOD")]

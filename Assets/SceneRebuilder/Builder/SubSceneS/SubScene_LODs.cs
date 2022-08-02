@@ -58,7 +58,7 @@ public class SubScene_LODs : SubScene_Part
 
     public void Start()
     {
-        this.gameObject.SetActive(false);
+        //this.gameObject.SetActive(false);//ÎªÊ²Ã´£¿
 
         
     }
@@ -69,6 +69,10 @@ public class SubScene_LODs : SubScene_Part
         if (areaTreeNode != null)
         {
             areaTreeNode.CreateDictionary();
+        }
+        else
+        {
+            Debug.LogError($"CreateDictionary scene:{this.name} path:{this.transform.GetPath()}");
         }
     }
 
@@ -102,10 +106,18 @@ public class SubScene_LODs : SubScene_Part
 #endif
     public override void GetSceneObjects()
     {
-        base.GetSceneObjects();
-        LODHelper.SetIgnoreDynamicCulling(this.gameObject);
-        //DynamicCullingManage.Instance.AddToIgnoreRenderers(this.gameObject);
-        SubScene_Ref.AfterLoadScene(this.gameObject);
+        Debug.LogError("SubScene_LOD.GetSceneObjects");
+        try
+        {
+            base.GetSceneObjects();
+            LODHelper.SetIgnoreDynamicCulling(this.gameObject);
+            DynamicCullingManage.Instance.AddToIgnoreRenderers(this.gameObject);
+            SubScene_Ref.AfterLoadScene(this.gameObject);
+        }
+        catch (System.Exception ex)
+        {
+            Debug.LogError($"SubScene_LOD.GetSceneObjects Exception:{ex}");
+        }
     }
 
 #if UNITY_EDITOR
@@ -170,6 +182,9 @@ public class SubScene_LODs : SubScene_Part
         base.SetRendererParent();
     }
 
-
+    public override List<string> GetRendererIds()
+    {
+        return RenderersId;
+    }
 }
 

@@ -33,7 +33,7 @@ MonoBehaviour:
   - 7
   - 0
   - 0
-  useOriginalShaderForShadow: 1
+  useOriginalShaderForShadow: 0
   cullShadows: 0
   minDistance: 0
   maxDistance: 500
@@ -69,7 +69,7 @@ MonoBehaviour:
     billboardFaceCamPos: 0
   isBillboardDisabled: 0
   useGeneratedBillboard: 0
-  checkedForBillboardExtensions: 1
+  checkedForBillboardExtensions: 0
   autoUpdateTransformData: 1
   treeType: 0
   warningText: 

@@ -110,6 +110,9 @@ public class SystemSetting
     /// 遮挡剔除精度（可以理解为对象计算个数）
     /// </summary>
     [XmlElement]
+    public bool IsAddWhenLoaded = false;
+
+    [XmlElement]
     public int DynamicCullingJobsFrame = 500;
     /// <summary>
     /// 遮挡剔除计算时间间隔

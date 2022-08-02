@@ -280,10 +280,10 @@ MonoBehaviour:
     max: 16
   m_HighQualityFiltering:
     m_OverrideState: 1
-    m_Value: 0
+    m_Value: 1
   m_Resolution:
     m_OverrideState: 1
-    m_Value: 2
+    m_Value: 4
   m_PhysicallyBased:
     m_OverrideState: 1
     m_Value: 0

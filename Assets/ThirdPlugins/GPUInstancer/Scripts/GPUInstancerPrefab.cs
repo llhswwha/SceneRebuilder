@@ -9,43 +9,6 @@ namespace GPUInstancer
     /// </summary>
     public class GPUInstancerPrefab : MonoBehaviour
     {
-        //[ContextMenu("HightlightOn")]
-        //public void HightlightOn()
-        //{
-
-        //}
-
-        //[ContextMenu("HightlightOff")]
-        //public void HightlightOff()
-        //{
-
-        //}
-
-
-        //[ContextMenu("TransparentOn")]
-        //public void TransparentOn()
-        //{
-            
-        //}
-
-        //[ContextMenu("TransparentOff")]
-        //public void TransparentOff()
-        //{
-
-        //}
-
-        //[ContextMenu("GPUIOn")]
-        //public void GPUIOn()
-        //{
-
-        //}
-
-        //[ContextMenu("GPUIOff")]
-        //public void GPUIOff()
-        //{
-        //    GPUInstancerAPI.RemovePrefabInstance(GPUInstancerPrefabManager.Instance, this);
-        //}
-
         [HideInInspector]
         public GPUInstancerPrefabPrototype prefabPrototype;
         [NonSerialized]
@@ -128,10 +91,19 @@ namespace GPUInstancer
             return null;
         }
 
+        public static bool AlwaysGUPI = false;
+
         public void SetRenderersEnabled(bool enabled, int layerMask)
         {
+            //Debug.Log($"SetRenderersEnabled prefabInstance:{this} enabled:{enabled} layerMask:{layerMask}");
+
             if (!this.prefabPrototype || !this.prefabPrototype.prefabObject)
                 return;
+
+            if (enabled && AlwaysGUPI)
+            {
+                return;
+            }
 
             MeshRenderer[] meshRenderers = this.GetComponentsInChildren<MeshRenderer>(true);
             if (meshRenderers != null && meshRenderers.Length > 0)

@@ -12,9 +12,10 @@ public class DictList<T>
 
     }
 
-    public DictList(List<T> items)
+    public DictList(IEnumerable<T> items)
     {
-        Items.AddRange(items);
+        //Items.AddRange(items);
+        this.AddRange(items);
     }
 
     public List<T> Items = new List<T>();
@@ -88,7 +89,7 @@ public class DictList<T>
     {
         try
         {
-            if (id > 0 && id < Items.Count)
+            if (id >= 0 && id < Items.Count)
             {
                 T t = Items[id];
                 if (dict.ContainsKey(t))
@@ -97,6 +98,7 @@ public class DictList<T>
                 }
                 Items.RemoveAt(id);
             }
+
         }
         catch (System.Exception ex)
         {
@@ -110,20 +112,21 @@ public class DictList<T>
         return new List<T>(Items);
     }
 
-    public void AddRange(List<T> ss)
+    public void AddRange(IEnumerable<T> ss)
     {
+        if (ss == null) return;
         foreach(var s in ss)
         {
             if (s == null) continue;
             Add(s);
         }
     }
-    public void AddRange(T[] ss)
-    {
-        foreach (var s in ss)
-        {
-            if (s == null) continue;
-            Add(s);
-        }
-    }
+    //public void AddRange(T[] ss)
+    //{
+    //    foreach (var s in ss)
+    //    {
+    //        if (s == null) continue;
+    //        Add(s);
+    //    }
+    //}
 }

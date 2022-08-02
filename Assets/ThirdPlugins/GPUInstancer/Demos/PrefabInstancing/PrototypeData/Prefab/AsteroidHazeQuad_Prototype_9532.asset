@@ -17,7 +17,7 @@ MonoBehaviour:
   useCustomShadowDistance: 0
   shadowDistance: 0
   shadowLODMap: []
-  useOriginalShaderForShadow: 1
+  useOriginalShaderForShadow: 0
   cullShadows: 0
   minDistance: 0
   maxDistance: 500

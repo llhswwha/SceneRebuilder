@@ -92,7 +92,6 @@ GameObject:
   - component: {fileID: 4418616321099174}
   - component: {fileID: 205431535025843484}
   - component: {fileID: 136358723502696880}
-  - component: {fileID: 114567534430479198}
   - component: {fileID: 54761973484866508}
   m_Layer: 0
   m_Name: Asteroid_02_LOD
@@ -154,19 +153,6 @@ CapsuleCollider:
   m_Height: 0.9347913
   m_Direction: 1
   m_Center: {x: -0.017024428, y: 0.023707634, z: 0.0040495107}
---- !u!114 &114567534430479198
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 1534720786230584}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: f13f42112a552354988a63573e49f5d2, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
-  prefabPrototype: {fileID: 11400000, guid: d53c351c9c33b6240a30b64516c074f1, type: 2}
 --- !u!54 &54761973484866508
 Rigidbody:
   m_ObjectHideFlags: 0

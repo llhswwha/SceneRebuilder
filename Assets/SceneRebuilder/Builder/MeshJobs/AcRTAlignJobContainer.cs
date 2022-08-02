@@ -434,7 +434,7 @@ public class AcRTAlignJobContainer
             AcRtAlignJobArg arg = AcRtAlignJobArg.LoadArg(id);
             allArg.Add(arg);
 
-            var result = AcRTAlignJobResult.GetResult(id);
+            IRTResult result = AcRTAlignJobResult.GetResult(id);
             AcRTAlignJobPrefab pref = AcRTAlignJobPrefab.GetItem(id);
 
             if (result != null)
@@ -459,6 +459,15 @@ public class AcRTAlignJobContainer
                     pref.AddInstance(newGo);
                     AcRTAlignJobHelper.RemoveDict(arg.mfTo.GetInstanceID());
                     
+                    //if(result is SameAngleResult)
+                    //{
+
+                    //}
+                    //else
+                    //{
+
+                    //}
+
                     result.ApplyMatrix(newGo.transform, arg.mfTo.transform); //变换模型
 
                     if(IsCheckResult){
@@ -481,8 +490,8 @@ public class AcRTAlignJobContainer
                             }
                             else
                             {
-                                sb.AppendLine($"{arg} rT==null" );
-                                Debug.LogError($"{arg} rT==null");
+                                sb.AppendLine($"{arg} rT=={result}" );
+                                Debug.LogError($"{arg} rT=={result}");
                             }
 
                             RendererId r=newGo.AddComponent<RendererId>();

@@ -13,7 +13,58 @@ using System.Text.RegularExpressions;
 
 public class MyEditorTools2
 {
+    #region BIM
+
+    [MenuItem("SceneTools/BIM/GetWelds")]
+    public static void BIM_GetWelds()
+    {
+        GameObject go = Selection.activeGameObject;
+        PipeWeldModel[] welds = go.GetComponentsInChildren<PipeWeldModel>(true);
+        int noBIMCount = 0;
+        int BIMCount = 0;
+        foreach(var weld in welds)
+        {
+            BIMModelInfo bim = weld.GetComponent<BIMModelInfo>();
+            if (bim == null)
+            {
+                noBIMCount++;
+                Debug.Log($"BIM_GetWelds[{noBIMCount}] path:{weld.transform.GetPath()}");
+            }
+            else
+            {
+                BIMCount++;
+            }
+        }
+        Debug.Log($"BIM_GetWelds noBIMCount:{noBIMCount} BIMCount:{BIMCount}");
+    }
+
+    [MenuItem("SceneTools/BIM/GetPipes")]
+    public static void BIM_GetPipes()
+    {
+        GameObject go = Selection.activeGameObject;
+        PipeModelBase[] welds = go.GetComponentsInChildren<PipeModelBase>(true);
+        int noBIMCount = 0;
+        int BIMCount = 0;
+        foreach (var weld in welds)
+        {
+            BIMModelInfo bim = weld.GetComponent<BIMModelInfo>();
+            if (bim == null)
+            {
+                noBIMCount++;
+                Debug.Log($"BIM_GetPipes[{noBIMCount}] path:{weld.transform.GetPath()}");
+            }
+            else
+            {
+                BIMCount++;
+            }
+        }
+        Debug.Log($"BIM_GetPipes noBIMCount:{noBIMCount} BIMCount:{BIMCount}");
+    }
+
+    #endregion
+
     #region Script
+
     [MenuItem("SceneTools/Script/ClearMainScripts")]
     public static void ClearMainScripts()
     {
@@ -41,6 +92,18 @@ public class MyEditorTools2
         ClearComponents<PipeElbowModel>();
     }
 
+    [MenuItem("SceneTools/Script/ClearOtherScripts2")]
+    public static void ClearOtherScripts2()
+    {
+        ClearComponents<MeshRendererInfo>();
+        ClearComponents<InnerMeshNode>();
+        ClearComponents<MeshPrefabInstance>();
+        ClearComponents<PipeMeshGenerator>();
+        ClearComponents<PipeLineModel>();
+        ClearComponents<BoundsBox>();
+        //ClearComponents<PipeElbowModel>();
+    }
+
     [MenuItem("SceneTools/Script/ClearOtherScripts")]
     public static void ClearOtherScripts()
     {
@@ -58,7 +121,7 @@ public class MyEditorTools2
          */
         //ClearComponents<RendererId>();
         ClearComponents<MeshRendererInfo>();
-        ClearComponents<MeshNode>();
+        ClearComponents<InnerMeshNode>();
         ClearComponents<MeshPrefabInstance>();
         //ClearComponents<BIMModelInfo>();
         //ClearComponents<DoubleClickEventTrigger_u3d>();
@@ -171,6 +234,19 @@ TypeCount2[019]	count:761	type:UnityEngine.UI.Toggle
 
     #region Building
 
+    [MenuItem("SceneTools/Building/InitFloorModels(In)")]
+    public static void InitFloorModels_In()
+    {
+        FloorController[] floors = GameObject.FindObjectsOfType<FloorController>(true);
+        foreach(var floor in floors)
+        {
+            BuildingModelInfo model=floor.gameObject.AddMissingComponent<BuildingModelInfo>();
+            model.InitInOut(false, false);
+        }
+
+        Debug.Log($"InitFloorModels_In floors:{floors.Length}");
+    }
+
     [MenuItem("SceneTools/Building/HideOtherBuildings")]
     public static void HideOtherBuildings()
     {
@@ -180,8 +256,19 @@ TypeCount2[019]	count:761	type:UnityEngine.UI.Toggle
 
     private static void SetBuildingsActive(bool isActive)
     {
-        BuildingController[] bs = GameObject.FindObjectsOfType<BuildingController>();
+        var allModelAreas= GameObject.FindObjectsOfType<BuildingModelInfo>(true).ToList();
+        BuildingController[] bs = GameObject.FindObjectsOfType<BuildingController>(true);
         foreach (var b in bs)
+        {
+            var floors = b.GetComponentsInChildren<BuildingModelInfo>(true);
+            b.gameObject.SetActive(isActive);
+            foreach(var floor in floors)
+            {
+                allModelAreas.Remove(floor);
+            }
+        }
+
+        foreach (var b in allModelAreas)
         {
             b.gameObject.SetActive(isActive);
         }
@@ -500,6 +587,43 @@ TypeCount2[019]	count:761	type:UnityEngine.UI.Toggle
     #endregion
 
     #region TreeNode
+
+    [MenuItem("SceneTools/TreeNode/CheckTreeNodeRendererIds")]
+    public static void CheckTreeNodeRendererIds()
+    {
+        AreaTreeNode[] nodes = GameObject.FindObjectsOfType<AreaTreeNode>(true);
+        Dictionary<string, AreaTreeNode> Id2NodeDict = new Dictionary<string, AreaTreeNode>();
+        int count = 0;
+        for (int i = 0; i < nodes.Length; i++)
+        {
+            AreaTreeNode node = nodes[i];
+            foreach (var id in node.RenderersId)
+            {
+                if (string.IsNullOrEmpty(id)) continue;
+                if (!Id2NodeDict.ContainsKey(id))
+                {
+                    Id2NodeDict.Add(id, node);
+                }
+                else
+                {
+                    count++;
+                    AreaTreeNode node2 = Id2NodeDict[id];
+                    if (node2 != node)
+                    {
+                        Debug.LogError($"AddIdNodeDict Id2NodeDict.ContainsKey(id)[{count}] id:{id} node1:{node} node2:{node2} [path1:{node.transform.GetPath()}] [path2:{node2.transform.GetPath()}] ");
+                    }
+                    else
+                    {
+                        Debug.LogWarning($"AddIdNodeDict Id2NodeDict.ContainsKey(id)[{count}] node==node2 id:{id} node1:{node} node2:{node2} [path1:{node.transform.GetPath()}] [path2:{node2.transform.GetPath()}] ");
+                    }
+
+                }
+            }
+        }
+        Debug.Log($"CheckTreeNodeRendererIds nodes:{nodes.Length}");
+        //MeshRendererInfoEx
+    }
+
     [MenuItem("SceneTools/TreeNode/ClearRenderers")]
     public static void ClearTreeNodeRenderers()
     {
@@ -1512,16 +1636,21 @@ TypeCount2[019]	count:761	type:UnityEngine.UI.Toggle
     public static void CheckSharedMesh()
     {
         MeshFilter[] mfs = GameObject.FindObjectsOfType<MeshFilter>(true);
-        int count = 0;
+        int count1 = 0;
+        int count2 = 0;
         for (int i = 0; i < mfs.Length; i++)
         {
             MeshFilter mf = mfs[i];
+            //if (mf.mesh == null)
+            //{
+            //    Debug.LogError($"[{i}/{mfs.Length}][{++count2}] mf.mesh == null name:{mf.name}");
+            //}
             if (mf.sharedMesh == null)
             {
-                Debug.LogError($"[{i}/{mfs.Length}][{++count}] mf.sharedMesh == null name:{mf.name}");
+                Debug.LogError($"[{i}/{mfs.Length}][{++count1}] mf.sharedMesh == null name:{mf.name}");
             }
         }
-        Debug.Log($"SaveMeshAll mfs:{mfs.Length} errorCount:{count}");
+        Debug.Log($"SaveMeshAll mfs:{mfs.Length} errorCount:{count1}");
     }
 
     [MenuItem("SceneTools/Mesh/Save")]
@@ -1530,7 +1659,36 @@ TypeCount2[019]	count:761	type:UnityEngine.UI.Toggle
         EditorHelper.SaveMeshAsset(Selection.activeGameObject);
     }
 
-    [MenuItem("SceneTools/Mesh/SaveAll")]
+    [MenuItem("SceneTools/Mesh/SaveMeshAll_Selection")]
+    public static void SaveMeshAll_Selection()
+    {
+        MeshFilter[] mfs = Selection.activeGameObject.GetComponentsInChildren<MeshFilter>(true);
+        //foreach(var mf  in mfs)
+        //{
+        //    if (UnityEditor.AssetDatabase.Contains(mf.sharedMesh)) continue;
+        //}
+
+
+        SharedMeshInfoList sharedMeshInfos = new SharedMeshInfoList(mfs);
+        int count = 0;
+        for (int i = 0; i < sharedMeshInfos.Count; i++)
+        {
+            SharedMeshInfo sharedMesh = sharedMeshInfos[i];
+            if (ProgressBarHelper.DisplayCancelableProgressBar("Save", i, sharedMeshInfos.Count))
+            {
+                break;
+            }
+            if (UnityEditor.AssetDatabase.Contains(sharedMesh.mainMeshFilter.sharedMesh)) continue;
+            EditorHelper.SaveMeshAsset(sharedMesh.gameObject);
+            count++;
+        }
+
+        ProgressBarHelper.ClearProgressBar();
+
+        Debug.Log($"SaveMeshAll sharedMeshInfos:{sharedMeshInfos.Count} count:{count}");
+    }
+
+    [MenuItem("SceneTools/Mesh/SaveMeshAll")]
     public static void SaveMeshAll()
     {
 
@@ -1658,8 +1816,14 @@ TypeCount2[019]	count:761	type:UnityEngine.UI.Toggle
         //MeshCombiner.Instance.CombineToOne(Selection.activeGameObject, true, true);
         MeshCombineHelper.Combine(Selection.activeGameObject);
     }
+    [MenuItem("SceneTools/Mesh/Combine(Save)")]
+    public static void CombineMesh_Save()
+    {
+        MeshCombiner.Instance.CombineToOne(Selection.activeGameObject, true, true);
+        //MeshCombineHelper.Combine(Selection.activeGameObject);
+    }
     [MenuItem("SceneTools/Mesh/Combine(Not Save & Destroy)")]
-    public static void CombineMesh2()
+    public static void CombineMesh_NotSave()
     {
         MeshCombiner.Instance.CombineToOne(Selection.activeGameObject, false, false);
     }
@@ -1783,26 +1947,34 @@ TypeCount2[019]	count:761	type:UnityEngine.UI.Toggle
 
     public static void GetPrefabInfosInner(double zeroP, bool isByMat = true, bool isShowLog = false, bool isDebug = false)
     {
-        if (zeroP > 0)
-        {
-            PrefabInstanceBuilder.Instance.disSetting.zeroP = zeroP;
-        }
-        PrefabInstanceBuilder.Instance.disSetting.IsByMat = isByMat;
-        PrefabInstanceBuilder.Instance.disSetting.IsShowLog = isShowLog;
-        DistanceSetting.IsDebug = isDebug;
+        //if (zeroP > 0)
+        //{
+        //    PrefabInstanceBuilder.Instance.disSetting.zeroP = zeroP;
+        //}
+        //PrefabInstanceBuilder.Instance.disSetting.IsByMat = isByMat;
+        //PrefabInstanceBuilder.Instance.disSetting.IsShowLog = isShowLog;
+        //DistanceSetting.IsDebug = isDebug;
 
-        AcRTAlignJobSetting.Instance.SetDefault();
-        for (int i = 0; i < Selection.gameObjects.Length; i++)
-        {
-            GameObject obj = Selection.gameObjects[i];
-            if (ProgressBarHelper.DisplayCancelableProgressBar(new ProgressArg("GetPrefabInfos", i, Selection.gameObjects.Length, obj)))
-            {
-                break;
-            }
-            PrefabInstanceBuilder.Instance.GetPrefabsOfList(obj);
-            MeshNode.InitNodes(obj);
-        }
-        ProgressBarHelper.ClearProgressBar();
+        //AcRTAlignJobSetting.Instance.SetDefault();
+        
+        ////for (int i = 0; i < Selection.gameObjects.Length; i++)
+        ////{
+        ////    GameObject obj = Selection.gameObjects[i];
+        ////    if (ProgressBarHelper.DisplayCancelableProgressBar(new ProgressArg("GetPrefabInfos", i, Selection.gameObjects.Length, obj)))
+        ////    {
+        ////        break;
+        ////    }
+        ////    PrefabInstanceBuilder.Instance.GetPrefabsOfList(obj);
+        ////    MeshNode.InitNodes(obj);
+        ////}
+        ////ProgressBarHelper.ClearProgressBar();
+
+        //var objs = Selection.gameObjects;
+        //PrefabInstanceBuilder.Instance.GetPrefabsOfList(objs);
+
+        //Debug.Log($"GetPrefabInfosInner objs:{objs.Length}");
+
+        PrefabInstanceBuilder.GetSelectionPrefabInfosInner(zeroP, isByMat, isShowLog, isDebug);
     }
 
 
@@ -2962,6 +3134,25 @@ TypeCount2[019]	count:761	type:UnityEngine.UI.Toggle
         UpdateRendererIds(rids, true, true);
     }
 
+    [MenuItem("SceneTools/Renderers/UpdateRenderersParentId")]
+    public static void UpdateRenderersParentId()
+    {
+        var renderers = Selection.activeGameObject.GetComponentsInChildren<MeshRenderer>(true);
+        for (int i = 0; i < renderers.Length; i++)
+        {
+            var rid = RendererId.GetRId(renderers[i].gameObject);
+            if (ProgressBarHelper.DisplayCancelableProgressBar("UpdateParentIds", i + 1, renderers.Length))
+            {
+                break;
+            }
+            Transform parent = rid.transform.parent;
+            RendererId pId = RendererId.GetRId(parent.gameObject);
+            rid.SetPidEx(pId.Id);
+        }
+        ProgressBarHelper.ClearProgressBar();
+        Debug.Log($"UpdateParentIds rids:{renderers.Length}");
+    }
+
     public static void UpdateRendererIds(RendererId[] rids,bool isUpdateId,bool isUpdateChildrenId=false)
     {
         Dictionary<string, RendererId> ridDict = new Dictionary<string, RendererId>();
@@ -3012,8 +3203,7 @@ TypeCount2[019]	count:761	type:UnityEngine.UI.Toggle
                 bool isSameName = rid.name == rid2.name;
                 bool isSameParent = rid.transform.parent == rid2.transform.parent;
                 float meshDis = MeshHelper.GetVertexDistanceEx(rid.transform, rid2.transform);
-                string path = rid.transform.GetPath();
-                Debug.Log($"FindRepeatedIdModels[{i+1}/{rendererIds.Length}]({count1})\t[Name:{isSameName} Parent:{isSameParent} Dis:{meshDis:F2}] [rid:{rid.name} rid2:{rid2.name}] path:{path}");
+                Debug.Log($"FindRepeatedIdModels[{i+1}/{rendererIds.Length}]({count1})\t[Name:{isSameName} Parent:{isSameParent} Dis:{meshDis:F2}] [rid:{rid.name} rid2:{rid2.name}]\npath1:{rid.transform.GetPath()} bim:{rid.GetComponent<BIMModelInfo>()!=null}\npath2:{rid2.transform.GetPath()} bim:{rid2.GetComponent<BIMModelInfo>() != null}");
             }
             else
             {
@@ -3022,6 +3212,51 @@ TypeCount2[019]	count:761	type:UnityEngine.UI.Toggle
         }
         ProgressBarHelper.ClearProgressBar();
         Debug.Log($"FindRepeatedIdModels rendererIds:{rendererIds.Length} count1:{count1}");
+    }
+
+    [MenuItem("SceneTools/Renderers/NewIdRepeatedIdModels")]
+    public static void NewIdRepeatedIdModels()
+    {
+        DateTime start = DateTime.Now;
+        int count1 = 0;
+        int count2 = 0;
+        RendererId[] rendererIds = GameObject.FindObjectsOfType<RendererId>(true);
+        Dictionary<string, RendererId> ridDict = new Dictionary<string, RendererId>();
+        for (int i = 0; i < rendererIds.Length; i++)
+        {
+            RendererId rid = rendererIds[i];
+            if (ProgressBarHelper.DisplayCancelableProgressBar("FindRepeatedIdModels", i + 1, rendererIds.Length))
+            {
+                break;
+            }
+            if (ridDict.ContainsKey(rid.Id))
+            {
+                RendererId rid2 = ridDict[rid.Id];
+                count1++;
+                bool isSameName = rid.name == rid2.name;
+                bool isSameParent = rid.transform.parent == rid2.transform.parent;
+                float meshDis = MeshHelper.GetVertexDistanceEx(rid.transform, rid2.transform);
+                Debug.Log($"NewIdRepeatedIdModels[{i + 1}/{rendererIds.Length}]({count1})\t[Name:{isSameName} Parent:{isSameParent} Dis:{meshDis:F2}] [rid:{rid.name} rid2:{rid2.name}]\npath1:{rid.transform.GetPath()} bim:{rid.GetComponent<BIMModelInfo>() != null}\npath2:{rid2.transform.GetPath()} bim:{rid2.GetComponent<BIMModelInfo>() != null}");
+                if(rid.GetComponent<BIMModelInfo>() != null && rid2.GetComponent<BIMModelInfo>() == null)
+                {
+                    rid2.NewId();
+                }
+                else if(rid2.GetComponent<BIMModelInfo>() != null && rid.GetComponent<BIMModelInfo>() == null)
+                {
+                    rid.NewId();
+                }
+                else
+                {
+                    count2++;
+                }
+            }
+            else
+            {
+                ridDict.Add(rid.Id, rid);
+            }
+        }
+        ProgressBarHelper.ClearProgressBar();
+        Debug.Log($"NewIdRepeatedIdModels rendererIds:{rendererIds.Length} count1:{count1} count2:{count2}");
     }
 
     [MenuItem("SceneTools/Renderers/DeleteRepeatedIdModels")]

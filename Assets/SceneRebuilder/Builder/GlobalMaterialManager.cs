@@ -283,5 +283,20 @@ public class GlobalMaterialManager : SingletonBehaviour<GlobalMaterialManager>
         Debug.LogError($"SetChildrenMaterial allRenderers:{allRenderers.Count}");
     }
 
+    public void SetExternalMaterial()
+    {
+        var allRenderers = GameObject.FindObjectsOfType<MeshRenderer>();
+        for (int i = 0; i < allRenderers.Length; i++)
+        {
+            MeshRenderer renderer = allRenderers[i];
+            if (ProgressBarHelper.DisplayCancelableProgressBar("SetExternalMaterial", i + 1, allRenderers.Length, renderer))
+            {
+                break;
+            }
+            InnerEditorHelper.SetExternalMaterial(renderer.gameObject, i);
+        }
+        ProgressBarHelper.ClearProgressBar();
+    }
+
     public List<Material> MaterialLib=new List<Material>();
 }

@@ -38,6 +38,7 @@ namespace GPUInstancer
             {
                 Debug.Log($"AddPrefabInstancesAsync prefabs :{prefabs.Count()} runInThreads:{runInThreads}");
                 _isIntancesAdded = true;
+
                 if (runInThreads)
                 {
                     foreach (GPUInstancerPrefab pi in prefabs)

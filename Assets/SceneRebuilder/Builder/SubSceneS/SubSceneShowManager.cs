@@ -1,3 +1,4 @@
+using Location.WCFServiceReferences.LocationServices;
 using System;
 using System.Collections;
 using System.Collections.Generic;
@@ -5,6 +6,12 @@ using System.Linq;
 using Unity.Collections;
 using UnityEngine;
 using Unity.Jobs;
+using AdvancedCullingSystem.StaticCullingCore;
+using CommonUtils;
+#if UNITY_EDITOR
+using UnityEditor;
+#endif
+
 public class SubSceneShowManager : SingletonBehaviour<SubSceneShowManager>
 {
     public void SetEnable(bool isEnable)
@@ -30,18 +37,329 @@ public class SubSceneShowManager : SingletonBehaviour<SubSceneShowManager>
     public List<SubScene_Out1> scenes_Out1 = new List<SubScene_Out1>();
     public List<SubScene_In> scenes_In = new List<SubScene_In>();
     public List<SubScene_LODs> scenes_LODs = new List<SubScene_LODs>();
+    public List<SubScene_Base> scenes_LOD0 = new List<SubScene_Base>();
     public List<SubScene_GPUI> scenes_GPUI = new List<SubScene_GPUI>();
-    public List<SubScene_In> scenes_In_Part = new List<SubScene_In>();
-    public List<SubScene_In> scenes_In_Tree = new List<SubScene_In>();
+
+    //public List<SubScene_In> scenes_In_Part = new List<SubScene_In>();
+    //public List<SubScene_In> scenes_In_Tree = new List<SubScene_In>();
 
     public List<SubScene_Out0> scenes_Out0_Part = new List<SubScene_Out0>();
     public List<SubScene_Out0> scenes_Out0_Tree = new List<SubScene_Out0>();
     //public List<SubScene_Out0> scenes_Out0_TreeNode = new List<SubScene_Out0>();
     public List<SubScene_Out0> scenes_Out0_TreeNode_Hidden = new List<SubScene_Out0>();
     public List<SubScene_Out0> scenes_Out0_TreeNode_Shown = new List<SubScene_Out0>();
+
     public SubSceneBag scenes_TreeNode_Hidden = new SubSceneBag();
     public SubSceneBag scenes_TreeNode_Shown = new SubSceneBag();
+
     public List<Camera> cameras = new List<Camera>();
+
+    public bool IsCalculateBounds = false;
+    public bool IsHideFloorIn = false;
+    public float BoundsSize = 1.2f;
+    public float BoundsSizeNew = 1.5f;
+    //public List<Transform> currentBuildings = new List<Transform>();
+    //public List<BuildingModelInfo> currentFloors = new List<BuildingModelInfo>();
+    public DictList<BuildingModelInfo> currentFloors = new DictList<BuildingModelInfo>();
+
+    public List<Bounds> FloorBoundsList = new List<Bounds>();
+    //public List<Bounds> BuildingBoundsList = new List<Bounds>();
+    //public List<Transform> allBuildings = new List<Transform>();
+    public List<Transform> allFloors = new List<Transform>();
+    public List<BuildingModelInfo> allModels = new List<BuildingModelInfo>();
+
+    [ContextMenu("InitAllModels")]
+    public void InitAllModels()
+    {
+        allModels = GameObject.FindObjectsOfType<BuildingModelInfo>(true).ToList();
+    }
+
+    [ContextMenu("InitFloorBuildingBounds")]
+    public void InitFloorBuildingBounds()
+    {
+        InitFloorBuildingBoundsInner(true);
+    }
+
+#if UNITY_EDITOR
+    public void UpdateSelectionBuildingBounds()
+    {
+        GameObject obj = Selection.activeGameObject;
+        BuildingModelInfo building = obj.GetComponent<BuildingModelInfo>();
+        if (building == null)
+        {
+            Debug.LogError($"UpdateSelectionBuildingBounds building == null obj:{obj}");
+            return;
+        }
+        int id = allModels.IndexOf(building);
+        Bounds bounds = GetBuildingBounds(building);
+        Transform floor = allFloors[id];
+        floor.localScale = bounds.size * BoundsSize;
+        Bounds bounds2 = new Bounds(floor.position, floor.localScale);
+        FloorBoundsList[id] = bounds2;
+        Debug.Log($"UpdateSelectionBuildingBounds obj:{obj} id:{id} ");
+    }
+
+    public void ChangeBuildingBoundsSize()
+    {
+        for (int i = 0; i < allFloors.Count; i++)
+        {
+            Transform floor = allFloors[i];
+            if (floor == null) continue;
+            var scale = floor.localScale;
+            var scale2 = scale / BoundsSize * BoundsSizeNew;
+            floor.localScale = scale2;
+
+            Bounds bounds = new Bounds(floor.position, floor.localScale);
+            FloorBoundsList[i] = bounds;
+        }
+        BoundsSize = BoundsSizeNew;
+        Debug.LogError($"ChangeBuildingBoundsSize allFloors:{allFloors.Count}");
+    }
+#endif
+
+    public void InitFloorBuildingBoundsInner(bool isNewBounds)
+    {
+        //allBuildings.Clear();
+        foreach (var floor in allFloors)
+        {
+            if (floor == null) continue;
+            GameObject.DestroyImmediate(floor.gameObject);
+        }
+        allFloors.Clear();
+        FloorBoundsList.Clear();
+        //BuildingBoundsList.Clear();
+
+        //BuildingModelInfo[] buildingModels = GameObject.FindObjectsOfType<BuildingModelInfo>(true);
+        BuildingModelInfo[] buildingModels = allModels.ToArray();
+        allModels.Clear();
+        foreach (var building in buildingModels)
+        {
+            if (building.InPart != null && building.InPart.transform.childCount > 0)
+            {
+                Bounds bounds = GetBuildingBounds(building);
+                GameObject obj = AddBuildingBounds("BuildingBounds_" + building.name, bounds, isNewBounds);
+                allFloors.Add(obj.transform);
+                allModels.Add(building);
+            }
+        }
+
+        InitFloorBoundsList();
+    }
+
+    private Bounds GetBuildingBounds(BuildingModelInfo building)
+    {
+        Bounds bounds = new Bounds();
+        Collider collider = building.GetComponent<Collider>();
+        if (collider != null)
+        {
+            bounds = collider.bounds;
+        }
+        else
+        {
+            bounds = ColliderExtension.CaculateBounds(building.gameObject);
+        }
+        return bounds;
+    }
+
+    private void InitFloorBoundsList()
+    {
+        if (FloorBoundsList.Count == 0)
+        {
+            foreach (var b in allFloors)
+            {
+                Bounds bounds = new Bounds(b.position, b.localScale);
+                FloorBoundsList.Add(bounds);
+            }
+        }
+    }
+
+    [ContextMenu("LoadBuildingBounds")]
+    public void LoadBuildingBounds()
+    {
+        if (BuildingBoundsRoot == null)
+        {
+            BuildingBoundsRoot = GameObject.Find("BuildingBounds");
+        }
+        if (BuildingBoundsRoot == null)
+        {
+            Debug.LogError("BuildingBoundsRoot == null");
+            return;
+        }
+        InitFloorBuildingBoundsInner(false);
+    }
+
+    [ContextMenu("LoadBuildingModels")]
+    public void LoadBuildingModels()
+    {
+        if (BuildingBoundsRoot == null)
+        {
+            BuildingBoundsRoot = GameObject.Find("BuildingBounds");
+        }
+        if (BuildingBoundsRoot == null)
+        {
+            Debug.LogError("BuildingBoundsRoot == null");
+            return;
+        }
+        BuildingModelInfo[] bs = GameObject.FindObjectsOfType<BuildingModelInfo>(true);
+        Dictionary<string, BuildingModelInfo> dict = new Dictionary<string, BuildingModelInfo>();
+        foreach(var b in bs)
+        {
+            if(dict.ContainsKey(b.name))
+            {
+                Debug.LogError($"LoadBuildingModels1 dict.ContainsKey(b.name) name:{b.name}");
+            }
+            else
+            {
+                dict.Add(b.name, b);
+            }
+            
+        }
+        allModels.Clear();
+        foreach(var floor in allFloors)
+        {
+            string name1 = floor.name;
+            string name2 = name1.Replace("BuildingBounds_", "");
+            if (dict.ContainsKey(name2))
+            {
+                BuildingModelInfo b = dict[name2];
+                allModels.Add(b);
+            }
+            else
+            {
+                Debug.LogError($"LoadBuildingModels2 dict.ContainsKey(name2) name1:{name1}");
+            }
+        }
+    }
+
+    public GameObject BuildingBoundsRoot = null;
+
+    private GameObject AddBuildingBounds(string name, Bounds bounds,bool isNew)
+    {
+        if (BuildingBoundsRoot == null)
+        {
+            BuildingBoundsRoot = GameObject.Find("BuildingBounds");
+        }
+        if (BuildingBoundsRoot == null)
+        {
+            BuildingBoundsRoot = new GameObject("BuildingBounds");
+            BuildingBoundsRoot.transform.SetParent(this.transform);
+        }
+        //string name = "Culling Area " + (_areasTransforms.Count + 1);
+        //Bounds bounds = CalculateBoundingBox();
+        GameObject newArea = GameObject.Find(name);
+        if (newArea == null)
+        {
+            if (isNew)
+            {
+                //newArea = new GameObject(name);
+                newArea = GameObject.CreatePrimitive(PrimitiveType.Cube);
+                newArea.name = name;
+                MeshRenderer meshRenderer = newArea.GetComponent<MeshRenderer>();
+                if (meshRenderer)
+                {
+                    meshRenderer.enabled = false;
+                }
+                Collider collider = newArea.GetComponent<Collider>();
+                if (collider)
+                {
+                    collider.enabled = false;
+                }
+
+                newArea.transform.position = bounds.center;
+                newArea.transform.localScale = bounds.size * BoundsSize;
+                newArea.transform.SetParent(BuildingBoundsRoot.transform);
+            }
+            else
+            {
+                Debug.LogError($"AddBuildingBounds newArea == null name:{name}");
+            }
+        }
+        return newArea;
+    }
+
+    [ContextMenu("CalculateInWitchFloorBuildings")]
+    public void CalculateInWitchFloorBuildings()
+    {
+        if (IsCalculateBounds == false) return;
+        DateTime dt = DateTime.Now;
+        InitFloorBoundsList();
+
+        //currentBuildings.Clear();
+        currentFloors.Clear();
+
+        //if(BuildingBoundsList.Count==0)
+        //{
+        //    foreach (var b in allBuildings)
+        //    {
+        //        Bounds bounds = new Bounds(b.position, b.localScale);
+        //        BuildingBoundsList.Add(bounds);
+        //    }
+        //}
+
+        foreach(var cam in cameras)
+        {
+            if (cam == null) continue;
+            var pos = cam.transform.position;
+            for (int i = 0; i < FloorBoundsList.Count; i++)
+            {
+                if (FloorBoundsList[i].Contains(pos))
+                {
+                    currentFloors.Add(allModels[i]);
+                }
+            }
+
+            if (IsHideFloorIn)
+            {
+                foreach (var floor in allModels)
+                {
+                    if (floor == null)
+                    {
+                        continue;
+                    }
+                    if (FactoryDepManager.currentDep != null && FactoryDepManager.currentDep.gameObject == floor.gameObject)
+                    {
+                        if (floor.InPart != null)
+                        {
+                            if (floor.InPart.activeInHierarchy == false)
+                            {
+                                floor.InPart.SetActive(true);
+                            }
+                        }
+                        continue;
+                    }
+                    if (currentFloors.Contains(floor))
+                    {
+                        if (floor.InPart != null)
+                        {
+                            if (floor.InPart.activeInHierarchy == false)
+                            {
+                                floor.InPart.SetActive(true);
+                            }
+                        }
+                    }
+                    if (floor.InPart != null)
+                    {
+                        if (floor.InPart.activeInHierarchy == true)
+                        {
+                            floor.InPart.SetActive(false);
+                        }
+                    }
+                }
+            }
+            
+            //foreach (var floor in currentFloors.Items)
+            //{
+            //    if (floor.InPart != null)
+            //    {
+            //        if (floor.InPart.activeInHierarchy == false)
+            //        {
+            //            floor.InPart.SetActive(true);
+            //        }
+            //    }
+            //}
+        }
+        Debug.Log($"CalculateInWitchFloorBuildings All:{allModels.Count} Current:{currentFloors.Count} Bounds:{FloorBoundsList.Count} time:{(DateTime.Now - dt).TotalMilliseconds}ms ");
+    }
 
     [ContextMenu("GetSceneCountInfoEx")]
     public string GetSceneCountInfoEx()
@@ -151,26 +469,26 @@ public class SubSceneShowManager : SingletonBehaviour<SubSceneShowManager>
             //}
         }
 
-        scenes_In_Part.Clear();
-        scenes_In_Tree.Clear();
-        foreach(var s in scenes_In)
-        {
-            //s.gameObject.SetActive(true);
-            if(s.contentType==SceneContentType.Part)
-            {
-                scenes_In_Part.Add(s);
-                s.HideBoundsBox();
+        //scenes_In_Part.Clear();
+        //scenes_In_Tree.Clear();
+        //foreach(var s in scenes_In)
+        //{
+        //    //s.gameObject.SetActive(true);
+        //    if(s.contentType==SceneContentType.Part)
+        //    {
+        //        scenes_In_Part.Add(s);
+        //        s.HideBoundsBox();
 
-            }
-            if (s.contentType == SceneContentType.Tree)
-            {
-                scenes_In_Tree.Add(s);
-            }
-            //if (s.contentType == SceneContentType.TreeNode)
-            //{
-            //    scenes_Out0_TreeNode.Add(s);
-            //}
-        }
+        //    }
+        //    if (s.contentType == SceneContentType.Tree)
+        //    {
+        //        scenes_In_Tree.Add(s);
+        //    }
+        //    //if (s.contentType == SceneContentType.TreeNode)
+        //    //{
+        //    //    scenes_Out0_TreeNode.Add(s);
+        //    //}
+        //}
 
 
         scenes_Out1 = GameObject.FindObjectsOfType<SubScene_Out1>(IncludeInactive).ToList();
@@ -278,8 +596,18 @@ public class SubSceneShowManager : SingletonBehaviour<SubSceneShowManager>
         Debug.Log($"SubSceneShowManager.AddScenes ss:{ss.Length} {count1}>{count12};{count2}>{count22};{count3}>{count32};{count4}>{count42}");
     }
 
+    [ContextMenu("InitCameras")]
     public void InitCameras()
     {
+        for (int i = 0; i < cameras.Count; i++)
+        {
+            if (cameras[i] == null)
+            {
+                cameras.RemoveAt(i);
+                i--;
+            }
+        }
+
         int cameraCount = 0;
         foreach(var c in cameras)
         {
@@ -328,13 +656,56 @@ public class SubSceneShowManager : SingletonBehaviour<SubSceneShowManager>
     public bool IsEnableHide = true;
     public bool IsEnableShow = true;
 
-    bool isLoadUserBuildings = false;
-
-    public void LoadUserBuildings(Action<SceneLoadProgress> onComplete = null)
+    public string _userName = "";//用户登录名
+    public int _roleId;//角色权限id
+    public void LoadSceneByRenderStreaming(string userName, int roleId)
     {
-        isLoadUserBuildings = true;
-        BuildingController[] deps = GameObject.FindObjectsOfType<BuildingController>();//改成获取用户权限建筑
-        BuildingScenesLoadManager.Instance.LoadUserBuildings(deps, onComplete);
+        _userName = userName;
+        _roleId = roleId;
+    }
+
+    //public List<AreaInfoList> areaInfoList;
+    bool isLoadUserBuildings = false;
+    //public void LoadUserBuildings(Action<SceneLoadProgress> onComplete = null)
+    //{
+    //    isLoadUserBuildings = true;
+    //    BuildingController[] deps = GameObject.FindObjectsOfType<BuildingController>();//改成获取用户权限建筑
+    //    Debug.Log("LoadUserBuildings_userName:" + _userName + " _roleId:" + _roleId);
+    //    //根据云渲染登录界面传递过来的参数信息（登录名、角色id）获取区域权限数据，进而匹配去动态加载模型，获取不到则直接动态加载场景全部模型
+    //    if (!string.IsNullOrEmpty(_userName))
+    //    {
+    //        CommunicationObject.Instance.GetAreaInfoByUserNameAsync(_userName, _roleId, result =>
+    //        {
+    //            if (result != null)
+    //            {
+    //                List<BuildingController> newBuildings = new List<BuildingController>();
+    //                areaInfoList = new List<AreaInfoList>();
+    //                areaInfoList = result.data;
+    //                List<BuildingController> buildings = new List<BuildingController>();
+    //                buildings = deps.ToList();
+    //                if (areaInfoList != null && areaInfoList.Count != 0)
+    //                {
+    //                    for (int k = 0; k < buildings.Count; k++)
+    //                    {
+    //                        var loadObj = areaInfoList.Find(item => item.areaName == buildings[k].NodeName);
+    //                        if (loadObj == null) continue;
+    //                        newBuildings.Add(buildings[k]);
+    //                    }
+    //                    deps = newBuildings.ToArray();
+    //                }
+    //            }
+    //            BuildingScenesLoadManager.Instance.LoadUserBuildings(deps, onComplete);
+    //        });
+    //    }
+    //    else
+    //    {
+    //        BuildingScenesLoadManager.Instance.LoadUserBuildings(deps, onComplete);
+    //    }
+    //}
+
+    public void LoadStartScens(Action<SceneLoadProgress> onComplete = null)
+    {
+        LoadStartScenes(onComplete);
     }
 
     public void LoadStartScenes(Action<SceneLoadProgress> onComplete=null)
@@ -523,6 +894,14 @@ public class SubSceneShowManager : SingletonBehaviour<SubSceneShowManager>
         {
             SetIsUpdateDistance(true); ;//1
             Debug.LogWarning($"SubSceneShowManager.StartLoadScene Warning! 1 target == null");
+            SetIsUpdateDistance(true); //不能去掉
+            return;
+        }
+
+        if(target.GetComponent<FloorController>() == false)
+        {
+            Debug.LogError($"SubSceneShowManager.StartLoadScene target.GetComponent<FloorController>() == false target:{target}");
+            SetIsUpdateDistance(true); //不能去掉
             return;
         }
 
@@ -537,6 +916,14 @@ public class SubSceneShowManager : SingletonBehaviour<SubSceneShowManager>
         {
             subScenes1 = target.GetComponentsInChildren<SubScene_Base>(true).ToList();
         }
+
+        //foreach(var scene in subScenes1)
+        //{
+        //    if (scene.IsLoaded)
+        //    {
+        //        visibleScenes.Add(scene);
+        //    }
+        //}
         
         SortClearScenes(subScenes1);
 
@@ -544,6 +931,7 @@ public class SubSceneShowManager : SingletonBehaviour<SubSceneShowManager>
         {
             SetIsUpdateDistance(true); ;//2
             Debug.LogWarning($"SubSceneShowManager.StartLoadScene Warning! 2 subScenes1.Count == 0 target:{target.name} path:{target.transform.GetPath()}  LoadedAll:{SubSceneManager.Instance.WattingForLoadedAll.Count} LoadedCurrent:{SubSceneManager.Instance.WattingForLoadedCurrent.Count}");
+            SetIsUpdateDistance(true); //不能去掉
             return;
         }
 
@@ -552,11 +940,11 @@ public class SubSceneShowManager : SingletonBehaviour<SubSceneShowManager>
 
         if (IsEnableLoad)
         {
-            LoadScenesOfTarget(subScenes, (p) =>
+            LoadScenesOfTarget(target,subScenes, (p) =>
             {
                 if (p.IsFinishOrTimeout())
                 {
-                    SetIsUpdateDistance(true); //3
+                    SetIsUpdateDistance(true); //设定的路线
                     Debug.Log($"SubSceneShowManager.StartLoadScene[{loadScenesCount}] Finished! target:{target.name} subScenes:{subScenes.Count} LoadedAll:{SubSceneManager.Instance.WattingForLoadedAll.Count} LoadedCurrent:{SubSceneManager.Instance.WattingForLoadedCurrent.Count}");
                 }
             });
@@ -564,6 +952,7 @@ public class SubSceneShowManager : SingletonBehaviour<SubSceneShowManager>
         else
         {
             Debug.LogError("SubSceneShowManager.StartLoadScene[{loadScenesCount}] IsEnableLoad=false");
+            SetIsUpdateDistance(true); //不能去掉
         }
     }
 
@@ -588,7 +977,6 @@ public class SubSceneShowManager : SingletonBehaviour<SubSceneShowManager>
     //    loadScenesCount++;
     //    SubScene_Base[] subScenes = target.GetComponentsInChildren<SubScene_Base>(true);
     //    Debug.Log($"SubSceneShowManager.LoadScenes[{loadScenesCount}] target:{target.name} subScenes:{subScenes.Length} LoadedAll:{SubSceneManager.Instance.WattingForLoadedAll.Count} LoadedCurrent:{SubSceneManager.Instance.WattingForLoadedCurrent.Count}");
-
     //    LoadScenesOfTarget(subScenes,null);
     //}
 
@@ -617,7 +1005,7 @@ public class SubSceneShowManager : SingletonBehaviour<SubSceneShowManager>
         //IsUpdateDistance = true;
         //Debug.Log($"StartLoadScene p:{p}");
         StartLoadScene(target);
-        SetCamaraDistance(p);
+        //SetCamaraDistance(p);
     }
 
     public void SetCamaraDistance(float p)
@@ -679,7 +1067,6 @@ public class SubSceneShowManager : SingletonBehaviour<SubSceneShowManager>
 
         //SceneEvents.FloorFocusStartAction += SceneEvents_FloorFocusStartAction;
         //SceneEvents.FloorFocusCompleteAction += SceneEvents_FloorFocusCompleteAction;
-
         StartUpdateSubScenes();
     }
 
@@ -694,7 +1081,7 @@ public class SubSceneShowManager : SingletonBehaviour<SubSceneShowManager>
         StartLoadScene(obj.gameObject);//开始聚焦楼层时马上就开始模型加载工作，等镜头拉近了应该已经加载了一部分了。
     }
 
-    private void InitOnStart()
+    public void InitOnStart()
     {
         InitCameras();
 
@@ -834,9 +1221,9 @@ public class SubSceneShowManager : SingletonBehaviour<SubSceneShowManager>
         return false;
     }
 
-    public void LoadScenesOfTarget(IEnumerable<SubScene_Base> scenes, Action<SceneLoadProgress> finished)
+    public void LoadScenesOfTarget(GameObject target,IEnumerable<SubScene_Base> scenes, Action<SceneLoadProgress> finished)
     {
-        TimeTest.Start("加载场景测试");
+        //TimeTest.Start("加载场景测试");
         //IsEnableHide = false;
         //IsEnableUnload = false;
         int count = 0;
@@ -879,7 +1266,17 @@ public class SubSceneShowManager : SingletonBehaviour<SubSceneShowManager>
             }
         }
 
-        DoLoadScenes(scenes.ToList(), finished, "LoadScenesOfTarget");
+        DoLoadScenes(scenes.ToList(), p =>
+        {
+            //if (p.scene != null)
+            //{
+            //    visibleScenes.Add(p.scene);
+            //}
+            if (finished != null)
+            {
+                finished(p);
+            }
+        }, "LoadScenesOfTarget_"+ target.name);
 
         //if (IsEnableLoad)
         //    AddToWaitingScenes(scenes, WaitingScenes_ToLoad);
@@ -894,9 +1291,17 @@ public class SubSceneShowManager : SingletonBehaviour<SubSceneShowManager>
             //List<SubScene_GPUI> gpuiScens = new List<SubScene_GPUI>();
             foreach (var scene in visibleScenes.Items)
             {
-                scene.ShowObjects();
+                if (scene.gameObject.activeInHierarchy == false)
+                {
+                    //Debug.LogError($"LoadUnloadScenes visibleScenes activeInHierarchy == false scene:{scene} path:{scene.transform.GetPath()}");
+                    continue;
+                }
+                else
+                {
+                    scene.ShowObjects();
+                    scene.AddToCulling();
+                }
             }
-
         }
         //TimeOfLoad1 = (DateTime.Now - start).TotalMilliseconds;
 
@@ -904,6 +1309,7 @@ public class SubSceneShowManager : SingletonBehaviour<SubSceneShowManager>
             foreach (var scene in hiddenScenes.Items)
             {
                 scene.HideObjects();
+                scene.RemoveToCulling();
             }
         //TimeOfLoad2 = (DateTime.Now - start).TotalMilliseconds;
 
@@ -1073,6 +1479,44 @@ public class SubSceneShowManager : SingletonBehaviour<SubSceneShowManager>
         
     }
 
+    
+
+
+
+    private bool IsSceneVisible(SubScene_Base scene,string tag)
+    {
+        if (IsCalculateBounds)
+        {
+            bool isInFloor = false;
+            foreach (var floor in currentFloors.Items)
+            {
+                if (floor == null) continue;
+                if (floor.gameObject == null) continue;
+                if (floor.ContainsScene(scene))
+                {
+                    isInFloor = true;
+                    break;
+                }
+            }
+            if (isInFloor == false)
+            {
+                return false;
+            }
+        }
+
+        if (BuildingScenesLoadManager.Instance.IsEnableCulling)
+        {
+            var ids = scene.GetRendererIds();
+            bool isVisible = StaticCulling.Instance.IsRenderersVisible(ids, tag,RendererId.GetId(scene),scene.transform.GetPath());
+            return isVisible;
+        }
+        else
+        {
+            return true;
+        }
+        //return true;
+    }
+
     private void AddSceneToList(SubScene_Base scene)
     {
         var disToCams = scene.DisToCam;
@@ -1095,14 +1539,20 @@ public class SubSceneShowManager : SingletonBehaviour<SubSceneShowManager>
 
                 if (scene.LifeTimeSpane > DelayOfLoad)
                 {
-
                     if (scene.CanLoad())
                     {
-                        if (scene.name.Contains("Node_2_42_346_13w_Renderers"))//MinHang>Building>Factory>闵行电厂>厂区管道>厂区管道_Out0_SmallTree>RootNode>Node_0_2_6782_374w>Node_1_39_4485_231w>Node_2_42_346_13w>Node_2_42_346_13w_Renderers
+                        //if (scene.name.Contains("Node_2_42_346_13w_Renderers"))//MinHang>Building>Factory>闵行电厂>厂区管道>厂区管道_Out0_SmallTree>RootNode>Node_0_2_6782_374w>Node_1_39_4485_231w>Node_2_42_346_13w>Node_2_42_346_13w_Renderers
+                        //{
+                        //    Debug.Log($"[SubSceneManager.LoadScenes]AddSceneToList  Node_2_42_346_13w_Renderers name:{scene.name} disToCams:{disToCams}({DisOfLoad * disP}) angleOfCams:{angleOfCams}({AngleOfLoad}) LifeTimeSpane:{scene.LifeTimeSpane}({DelayOfLoad}) path:{scene.transform.GetPath()}");
+                        //}
+                        if (IsSceneVisible(scene,"Load"))
                         {
-                            Debug.Log($"[SubSceneManager.LoadScenes]AddSceneToList  Node_2_42_346_13w_Renderers name:{scene.name} disToCams:{disToCams}({DisOfLoad * disP}) angleOfCams:{angleOfCams}({AngleOfLoad}) LifeTimeSpane:{scene.LifeTimeSpane}({DelayOfLoad}) path:{scene.transform.GetPath()}");
+                            AddSceneToLoad(scene);
                         }
-                        loadScenes.Add(scene);
+                        else
+                        {
+
+                        }
                     }
                     else
                     {
@@ -1121,13 +1571,37 @@ public class SubSceneShowManager : SingletonBehaviour<SubSceneShowManager>
         {
             if (angleOfCams < AngleOfVisible)
             {
-                visibleScenes.Add(scene);
-                isVisible = true;
+                //visibleScenes.Add(scene);
+                //isVisible = true;
+
+                if (IsSceneVisible(scene,"Show"))
+                {
+                    //Debug.LogError($"AddVisibleScene scene:{scene}");
+                    visibleScenes.Add(scene);
+                    isVisible = true;
+                }
+                else
+                {
+                    if (!IsInFloorMode())
+                    {
+                        hiddenScenes.Add(scene);
+                        isVisible = false;
+                    }
+                }
             }
         }
 
-        if(isLoad==false && isVisible == false)
+        //if (scene.gameObject.activeInHierarchy == false && scene is SubScene_GPUI)
+        //{
+        //    //if (!IsInFloorMode())
+        //    {
+        //        hiddenScenes.Add(scene);
+        //    }
+        //}
+
+        if (isLoad==false && isVisible == false)
         {
+            
             if (scene.CanUnload())
             {
                 if (disToCams > DisOfUnLoad * disP)
@@ -1169,6 +1643,29 @@ public class SubSceneShowManager : SingletonBehaviour<SubSceneShowManager>
         //}
     }
 
+    public string TestSceneName = "";
+
+    private void AddSceneToLoad(SubScene_Base scene)
+    {
+        loadScenes.Add(scene);
+        if (loadScenes.Count >= 100)
+        {
+            Debug.LogError($"AddSceneToLoad Count >= 100 [{loadScenes.Count}] scene:{scene} path:{scene.transform.GetPath()} ");
+        }
+        else if (loadScenes.Count >= 200)
+        {
+            Debug.LogError($"AddSceneToLoad Count >= 200 [{loadScenes.Count}] scene:{scene} path:{scene.transform.GetPath()} ");
+        }
+        else if (loadScenes.Count >= 300)
+        {
+            Debug.LogError($"AddSceneToLoad Count >= 300 [{loadScenes.Count}] scene:{scene} path:{scene.transform.GetPath()} ");
+        }
+        else if (loadScenes.Count >= 400)
+        {
+            Debug.LogError($"AddSceneToLoad Count >= 400 [{loadScenes.Count}] scene:{scene} path:{scene.transform.GetPath()}");
+        }
+    }
+
     private SubSceneBag GetSubScenes()
     {
         SubSceneBag subScenes = new SubSceneBag();
@@ -1199,6 +1696,10 @@ public class SubSceneShowManager : SingletonBehaviour<SubSceneShowManager>
             AddSubScenes(scenes_GPUI, subScenes);
         }
 
+        {
+            AddSubScenes(scenes_LOD0, subScenes);
+        }
+
         if (IsEnableOut1)
         {
             AddSubScenes(scenes_Out1, subScenes);
@@ -1215,6 +1716,11 @@ public class SubSceneShowManager : SingletonBehaviour<SubSceneShowManager>
         foreach (var scene in scensFrom)
         {
             if (scene == null) continue;
+            //if(scene is SubScene_GPUI)
+            //{
+            //    subScenes.Add(scene);
+            //}
+            //else 
             if (scene.gameObject.activeInHierarchy == true)
             {
                 subScenes.Add(scene);
@@ -1571,17 +2077,18 @@ public class SubSceneShowManager : SingletonBehaviour<SubSceneShowManager>
             var list = WaitingScenes_ToUnLoad.NewList();
             WaitingScenes_ToUnLoad.Clear();
 
-            if (IsShowLog())
-            {
-                Debug.Log($"UnLoadWaitingScenes WaitingScenes_ToUnLoad :{list.Count}");
-            }
-            for (int i = 0; i < list.Count; i++)
-            {
-                var scene = list[0];
-                //UnLoadingScene.UnLoadGos();
-                yield return scene.UnLoadSceneAsync_Coroutine(true);
-                scene.ShowBounds();
-            }
+            //if (IsShowLog())
+            //{
+            //    Debug.Log($"UnLoadWaitingScenes WaitingScenes_ToUnLoad :{list.Count}");
+            //}
+            //for (int i = 0; i < list.Count; i++)
+            //{
+            //    var scene = list[0];
+            //    //UnLoadingScene.UnLoadGos();
+            //    yield return scene.UnLoadSceneAsync_Coroutine(true);
+            //    scene.ShowBounds();
+            //}
+            yield return SubSceneManager.Instance.AddScenesToUnload(list);
         }
 
         SubSceneBag subScenes = new SubSceneBag();
@@ -1616,6 +2123,7 @@ public class SubSceneShowManager : SingletonBehaviour<SubSceneShowManager>
         while (true)
         {
             //UpdateSubScenes();
+            CalculateInWitchFloorBuildings();
             yield return UpdateSubScenesCoroutine();
             yield return new WaitForSeconds(UpdateInterval);
         }
@@ -1754,6 +2262,14 @@ public class SubSceneShowManager : SingletonBehaviour<SubSceneShowManager>
         }
         if (ss.Count > 0)
         {
+            //string scenesName = "";
+            //for (int i = 0; i < ss.Count; i++)
+            //{
+            //    AreaTreeNode treeNode = ss[i].transform.parent.GetComponent<AreaTreeNode>();
+            //    scenesName += $"[{i+1}/{ss.Count}]{ss[i].name} path:{ss[i].transform.GetPath()}\n";
+            //}
+            //Debug.LogError($"LoadScenes1 scenesName:{scenesName}");
+
             //SubSceneManager.Instance.LoadScenesEx(ss.ToArray(), p =>
             //{
             //    if (p.scene != null)
@@ -1762,13 +2278,25 @@ public class SubSceneShowManager : SingletonBehaviour<SubSceneShowManager>
             WaitingScenes_ToLoad_Posted.AddRange(ss);
             LoadScenes(ss, p =>
             {
-                if (p.scene != null)
-                    p.scene.HideObjects();
+                //if (p.scene != null)
+                //{
+                //    p.scene.HideObjects();
+                //}cww为什么
+
                 if (finished != null)
                 {
                     finished(p);
                 }
-                WaitingScenes_ToLoad_Posted.Remove(p.scene);
+
+                if (p.isAllFinished)
+                {
+                    BuildingScenesLoadManager.Instance.GetCullingRenderers();
+                }
+
+                if (p.scene != null)
+                {
+                    WaitingScenes_ToLoad_Posted.Remove(p.scene);
+                }
             }, tag);
         }
         else

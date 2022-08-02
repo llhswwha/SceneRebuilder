@@ -63,15 +63,45 @@ public class SubScene_Ref
     public static void AfterLoadScene(GameObject root)
     {
         SubScene_Ref[] refScenes = root.GetComponentsInChildren<SubScene_Ref>(true);
+        SubScene_Base[] sceneScenes= root.GetComponentsInChildren<SubScene_Base>(true);
+        Dictionary<string, SubScene_Base> name2Scenes = new Dictionary<string, SubScene_Base>();
+        foreach(var scene in sceneScenes)
+        {
+            string sName = scene.GetSceneName();
+            if (name2Scenes.ContainsKey(sName))
+            {
+                Debug.LogError($"AfterLoadScene0 name2Scenes.ContainsKey(sName) refScenes:{refScenes.Length} sceneScenes:{sceneScenes.Length} sName:{sName} scene:{scene} path={scene.transform.GetPath()}");
+            }
+            else
+            {
+                name2Scenes.Add(scene.GetSceneName(), scene);
+            }
+           
+        }
         foreach (var refS in refScenes)
         {
             GameObject go = IdDictionary.GetGo(refS.RefId);
+            SubScene_Base ss = null;
             if (go == null)
             {
-                Debug.LogError($"AfterLoadScene go==null RefId:{refS.RefId}");
-                continue;
+                if (name2Scenes.ContainsKey(refS.sceneName))
+                {
+                    SubScene_Base scene = name2Scenes[refS.sceneName];
+                    ss = scene;
+                    Debug.LogError($"AfterLoadScene2 go==null RefId:{refS.RefId} Name:{refS.sceneName} refScenes:{refScenes.Length} sceneScenes:{sceneScenes.Length}");
+                    continue;
+                }
+                else
+                {
+                    Debug.LogError($"AfterLoadScene1 go==null RefId:{refS.RefId} Name:{refS.sceneName} refScenes:{refScenes.Length} sceneScenes:{sceneScenes.Length}");
+                    continue;
+                }
             }
-            SubScene_Base ss = go.GetComponent<SubScene_Base>();
+            if (ss == null)
+            {
+                ss = go.GetComponent<SubScene_Base>();
+            }
+            
             var arg = refS.sceneArg;
             int idOld = ss.sceneArg.index;
             ss.sceneArg.index = arg.index;

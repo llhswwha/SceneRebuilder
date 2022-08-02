@@ -315,6 +315,8 @@ public class AreaTreeNodeShowManager : MonoBehaviour
         Debug.Log($"GetLeafNodes Id2NodeDict:{Id2NodeDict.Count}");
     }
 
+    int errorCount = 0;
+
     public void AddIdNodeDict(AreaTreeNode node)
     {
         int count = 0;
@@ -328,14 +330,15 @@ public class AreaTreeNodeShowManager : MonoBehaviour
             else
             {
                 count++;
+                errorCount++;
                 AreaTreeNode node2 = Id2NodeDict[id];
                 if (node2 != node)
                 {
-                    Debug.LogError($"AddIdNodeDict Id2NodeDict.ContainsKey(id)[{count}] id:{id} node1:{node} node2:{node2} [path1:{node.transform.GetPath()}] [path2:{node2.transform.GetPath()}] ");
+                    Debug.LogError($"AddIdNodeDict Id2NodeDict.ContainsKey(id)[{errorCount}][{count}] id:{id} node1:{node} node2:{node2} [path1:{node.transform.GetPath()}] [path2:{node2.transform.GetPath()}] ");
                 }
                 else
                 {
-                    Debug.LogWarning($"AddIdNodeDict Id2NodeDict.ContainsKey(id)[{count}] node==node2 id:{id} node1:{node} node2:{node2} [path1:{node.transform.GetPath()}] [path2:{node2.transform.GetPath()}] ");
+                    Debug.LogWarning($"AddIdNodeDict Id2NodeDict.ContainsKey(id)[{errorCount}][{count}] node==node2 id:{id} node1:{node} node2:{node2} [path1:{node.transform.GetPath()}] [path2:{node2.transform.GetPath()}] ");
                 }
                 
             }

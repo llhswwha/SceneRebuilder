@@ -352,11 +352,27 @@ public class AreaTreeNode : SubSceneCreater
 
         //newRenderers.Clear();
         GetRenderersRoot();
-        foreach (var render in Renderers)
+
+        if(RenderersId.Count== Renderers.Count)
         {
+            IdDictionary.InitInfos();
+            for (int i = 0; i < Renderers.Count; i++)
+            {
+                var renderer = Renderers[i];
+                if (renderer == null)
+                {
+                    renderer = IdDictionary.GetRenderer(RenderersId[i], false);
+                    Renderers[i] = renderer;
+                }
+            }
+        }
+
+        for (int i = 0; i < Renderers.Count; i++)
+        {
+            MeshRenderer render = Renderers[i];
             if (render == null)
             {
-                Debug.LogError("MoveRenderers render==null:" + this);
+                Debug.LogError($"MoveRenderers[{i+1}/{Renderers.Count}] render==null:" + this);
                 continue;
             }
             GameObject go = render.gameObject;
@@ -1243,7 +1259,7 @@ public class AreaTreeNode : SubSceneCreater
             //DynamicCullingManage.Instance.AddObjectsForCulling(Renderers.ToArray());
         }
 
-        Debug.LogError($"AreaTreeNode.HideRenderersRoot :{this.name} path:{transform.GetPath()}");
+        //Debug.LogError($"AreaTreeNode.HideRenderersRoot :{this.name} path:{transform.GetPath()}");
     }
 
     public bool IsNodeVisible = true;
@@ -1442,6 +1458,11 @@ public class AreaTreeNode : SubSceneCreater
         }
 
         SubScene_Base scene2 = null;
+        SubScene_Base scene00 = renderersRoot.GetComponent<SubScene_Base>();
+        if (scene00)
+        {
+            GameObject.DestroyImmediate(scene00);
+        }
         if (renderersRoot)
         {
             if(isSingle)
@@ -1471,7 +1492,13 @@ public class AreaTreeNode : SubSceneCreater
             //scene2.gos = SubSceneHelper.GetChildrenGos(renderersRoot.transform);
             scene2.cubePrefabId = tree.GetCubePrefabId();
             //scene2.contentType = SceneContentType.TreeNode;
-            scene2.SetObjects(SubSceneHelper.GetChildrenGos(renderersRoot.transform));
+            var gos = SubSceneHelper.GetChildrenGos(renderersRoot.transform);
+            if (gos.Count == 0)
+            {
+                MoveRenderers();
+                gos = SubSceneHelper.GetChildrenGos(renderersRoot.transform);
+            }
+            scene2.SetObjects(gos);
             scene2.Init();
             scenes.Add(scene2);
         }

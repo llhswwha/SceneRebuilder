@@ -356,7 +356,13 @@ public class BuildingModelManager : SingletonBehaviour<BuildingModelManager>
             b.OneKeySaveScene();
         }
         EditorHelper.ClearOtherScenes();
+        SubSceneHelper.SetBuildingsWithNavmesh(true);
         Debug.LogError($"OneKeySaveScene buildings:{buildings.Length} time:{DateTime.Now - start}");
+    }
+
+    public void SetStaticCulling(BuildingModelInfo[] buildings)
+    {
+        
     }
 
     public void OneKey_Save()

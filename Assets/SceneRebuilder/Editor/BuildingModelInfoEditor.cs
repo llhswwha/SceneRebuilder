@@ -82,6 +82,10 @@ public class BuildingModelInfoEditor : BaseFoldoutEditor<BuildingModelInfo>
         {
             info.InitInOut(true);
         });
+        NewEnabledButton("1.GetInfo(In)", buttonWidth, state.CanGetInfo(), btnStyle, () =>
+        {
+            info.InitInOut(true,false);
+        });
         int btnW1 = 90;
         NewEnabledButton("FindDoors", buttonWidth, state.CanFindDoors(), btnStyle, info.FindInDoors);
         NewEnabledButton("SplitDoors", buttonWidth, true, btnStyle, () =>
@@ -92,6 +96,10 @@ public class BuildingModelInfoEditor : BaseFoldoutEditor<BuildingModelInfo>
         NewEnabledButton("CombineDoors", buttonWidth, state.partCount > 0, btnStyle, () =>
         {
             info.CombineDoors();
+        });
+        NewEnabledButton("CreateWalls", buttonWidth, state.partCount > 0, btnStyle, () =>
+        {
+            info.CreateTestWalls();
         });
         EditorGUILayout.EndHorizontal();
 

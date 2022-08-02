@@ -67,6 +67,8 @@ public class CommunicationSetting {
     public string JavaServerIP = "127.0.0.1";
     [XmlAttribute]
     public string JavaPort = "1888";
-
-
+    [XmlAttribute]
+    public bool AutoCloseInUserQuit = false;
+    [XmlAttribute]
+    public float Interval = 5;
 }

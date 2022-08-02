@@ -1788,9 +1788,10 @@ public static class MeshHelper
     //    return GetMinMax(new MeshFilter[] { meshFilter });
     //}
 
-
-
-
+    public static Vector3[] GetMinMax(GameObject go)
+    {
+        return VertexHelper.GetMinMax(go);
+    }
 
     public static void RemoveNew(GameObject go)
     {
@@ -3409,7 +3410,7 @@ public class MeshReplaceItem
         }
     }
 
-    public bool Replace(bool isDestoryOriginal,bool isHidden, TransfromAlignSetting transfromReplaceSetting,ProgressArg p1)
+    public bool Replace(bool isDestoryOriginal,bool isHidden, TransfromAlignSetting transfromReplaceSetting,ProgressArg p1, bool isUnpackPrefab = true)
     {
         if (prefab == null)
         {
@@ -3422,6 +3423,8 @@ public class MeshReplaceItem
         //targetListNew.Clear();
         //targetDistance.Clear();
 
+
+        TransfromAlignSetting alignSetting = transfromReplaceSetting.Clone();
         for (int i = 0; i < targetList.Count; i++)
         {
             var target = targetList[i];
@@ -3433,15 +3436,22 @@ public class MeshReplaceItem
             }
             if (target == null) continue;
             if (target.gameObject == prefab) continue;
-            GameObject newGo = InnerMeshHelper.ReplaceGameObject(target.gameObject, prefab, isDestoryOriginal, transfromReplaceSetting);
+            GameObject newGo = InnerMeshHelper.ReplaceGameObject(target.gameObject, prefab, isDestoryOriginal, alignSetting, isUnpackPrefab);
+
+
+            if (alignSetting != null && alignSetting.Align == TransfromAlignMode.AlignRT)
+            {
+                MeshAlignHelper.AcRTAlignJob(newGo, target.gameObject);
+            }
+
             float dis = MeshHelper.GetVertexDistanceEx(newGo, target.gameObject);
             if (dis > 0.0001f)
             {
-                Debug.LogError($"Replace[{i}][{p1.progress:P2}] prefab:{prefab.name} target:{target.name} dis:{dis} transfromAlignSetting:{transfromReplaceSetting}");
+                Debug.LogError($"Replace[{i}][{p1.progress:P2}] prefab:{prefab.name} target:{target.name} dis:{dis} transfromAlignSetting:{alignSetting}");
             }
             else
             {
-                Debug.Log($"Replace[{i}][{p1.progress:P2}] prefab:{prefab.name} target:{target.name} dis:{dis}  transfromAlignSetting:{transfromReplaceSetting}");
+                Debug.Log($"Replace[{i}][{p1.progress:P2}] prefab:{prefab.name} target:{target.name} dis:{dis}  transfromAlignSetting:{alignSetting}");
             }
             //targetDistance.Add(dis);
             target.dis = dis;
@@ -3466,7 +3476,7 @@ public class MeshReplaceItem
         foreach (var target in targetList)
         {
             if (target == null) continue;
-            target.SetActive(true);
+            GameObject.DestroyImmediate(target.newGo);
         }
         //targetDistance.Clear();
     }

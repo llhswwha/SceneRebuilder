@@ -520,9 +520,26 @@ namespace CommonUtils
         {
             if (meshFilter == null) return null;
             if (meshFilter.sharedMesh == null) return null;
-            var vs2 = meshFilter.sharedMesh.vertices;
-            var vs22 = GetWorldVertexes(vs2, meshFilter.transform);
-            return vs22;
+            try
+            {
+                if (Application.isPlaying)
+                {
+                    var vs2 = meshFilter.mesh.vertices;
+                    var vs22 = GetWorldVertexes(vs2, meshFilter.transform);
+                    return vs22;
+                }
+                else
+                {
+                    var vs2 = meshFilter.sharedMesh.vertices;
+                    var vs22 = GetWorldVertexes(vs2, meshFilter.transform);
+                    return vs22;
+                }
+            }
+            catch (Exception ex)
+            {
+                Debug.LogError($"GetWorldVertexes path:{meshFilter.transform.GetPath()} Exception:{ex} ");
+                return new Vector3[0];
+            }
         }
 
 

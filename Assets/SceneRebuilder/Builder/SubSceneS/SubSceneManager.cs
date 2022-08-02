@@ -454,6 +454,15 @@ public class SubSceneManager : SingletonBehaviour<SubSceneManager>
     
     public void LoadScenesEx<T>(T[] scenes, Action<SceneLoadProgress> finishedCallback,string tag) where T : SubScene_Base
     {
+        //string scenesName = "";
+        //var ss = scenes;
+        //for (int i = 0; i < ss.Length; i++)
+        //{
+        //    AreaTreeNode treeNode = ss[i].transform.parent.GetComponent<AreaTreeNode>();
+        //    scenesName += $"[{i + 1}/{ss.Length}]{ss[i].name} path:{ss[i].transform.GetPath()}\n";
+        //}
+        //Debug.LogError($"LoadScenesEx scenesName:{scenesName}");
+
         this.logTag = tag;
         
 
@@ -498,7 +507,8 @@ public class SubSceneManager : SingletonBehaviour<SubSceneManager>
             }
             else
             {
-                StartCoroutine(LoadScenesByBag(scenes, finishedCallback));
+                int totalScenesCount = AddScenesToWaiting(scenes, tag);
+                StartCoroutine(LoadScenesByBag(scenes, finishedCallback, totalScenesCount));
             }
         }
 
@@ -521,10 +531,29 @@ public class SubSceneManager : SingletonBehaviour<SubSceneManager>
         return false;
     }
 
-    IEnumerator LoadScenesByBag<T>(T[] scenes, Action<SceneLoadProgress> finishedCallback) where T : SubScene_Base
-    {
-        var start = DateTime.Now;
+    //public List<Scene> LoadScenes = new List<Scene>();
 
+    public string TestSceneName = "";
+
+    public IEnumerator AddScenesToUnload(List<SubScene_Base> unloadScenes)
+    {
+        for (int i = 0; i < unloadScenes.Count; i++)
+        {
+            var scene = unloadScenes[0];
+            //UnLoadingScene.UnLoadGos();
+            if (WattingForLoadedAll.Contains(scene))
+            {
+                WattingForLoadedAll.Remove(scene);
+                Debug.LogError($"AddScenesToUnload WattingForLoadedAll.Contains(scene) scene:{scene} path:{scene.transform.GetPath()} count:{WattingForLoadedAll.Count}");
+            }
+            yield return scene.UnLoadSceneAsync_Coroutine(true);
+            scene.ShowBounds();
+        }
+    }
+
+
+    private int AddScenesToWaiting<T>(T[] scenes,string logTag) where T : SubScene_Base
+    {
         WattingForLoadedCurrent.RemoveAll(s => s == null);
 
         WattingForLoadedAll.RemoveAll(s => s == null);
@@ -532,30 +561,107 @@ public class SubSceneManager : SingletonBehaviour<SubSceneManager>
         StringBuilder sb = new StringBuilder();
         //WattingForLoadedAll.AddRange(scenes);
         int totalScenesCount = 0;
-        foreach (var scene in scenes)
+        int scenesCount = scenes.Length;
+        for (int i = 0; i < scenes.Length; i++)
         {
-            if (IsFilterLoadedScene && scene.IsLoaded) continue;
+            T scene = scenes[i];
+            if (!string.IsNullOrEmpty(TestSceneName))
+            {
+                scene.sceneArg.path.Contains(TestSceneName);
+                Debug.LogError($"AddScenesToWaiting1({logTag}) AddScenesToWaiting !!! 1 TestSceneName:{TestSceneName} scene:{scene} path:{scene.transform.GetPath()} count:{WattingForLoadedAll.Count}");
+            }
+
+            if (IsFilterLoadedScene && scene.IsLoaded)
+            {
+#if UNITY_EDITOR
+                //Debug.LogError($"LoadScenesByBag WattingForLoadedAll.Contains(scene) scene:{scene.GetSceneName()}");
+                sb.AppendLine($"AddScenesToWaiting2({logTag}) IsFilterLoadedScene && scene.IsLoaded scene:{scene.GetSceneName()}");
+                inWattingCount++;
+#endif
+            }
+            if (scene.gameObject.activeInHierarchy == false)
+            {
+#if UNITY_EDITOR
+                //Debug.LogError($"LoadScenesByBag WattingForLoadedAll.Contains(scene) scene:{scene.GetSceneName()}");
+                sb.AppendLine($"AddScenesToWaiting3({logTag}) activeInHierarchy == false scene:{scene.GetSceneName()}");
+                inWattingCount++;
+#endif
+            }
             if (WattingForLoadedAll.Contains(scene))
             {
 #if UNITY_EDITOR
                 //Debug.LogError($"LoadScenesByBag WattingForLoadedAll.Contains(scene) scene:{scene.GetSceneName()}");
-                sb.AppendLine($"LoadScenesByBag WattingForLoadedAll.Contains(scene) scene:{scene.GetSceneName()}");
+                sb.AppendLine($"AddScenesToWaiting4({logTag}) WattingForLoadedAll.Contains(scene) scene:{scene.GetSceneName()}");
                 inWattingCount++;
 #endif
                 continue;
             }
             WattingForLoadedAll.Add(scene);
             totalScenesCount++;
+
+            if (!string.IsNullOrEmpty(TestSceneName))
+            {
+                scene.sceneArg.path.Contains(TestSceneName);
+                Debug.LogError($"AddScenesToWaiting5({logTag}) AddScenesToWaiting !!! 2 TestSceneName:{TestSceneName} scene:{scene} path:{scene.transform.GetPath()} count:{WattingForLoadedAll.Count}");
+            }
+
+            if (WattingForLoadedAll.Count >= 100)
+            {
+                Debug.LogError($"AddScenesToWaiting6({logTag}) AddScenesToWaiting![{i+1}/{scenes.Length}] Count >= 100 [{WattingForLoadedAll.Count}] scene:{scene} path:{scene.transform.GetPath()}");
+            }
+            else if (WattingForLoadedAll.Count >= 200)
+            {
+                Debug.LogError($"AddScenesToWaiting7({logTag}) AddScenesToWaiting!![{i + 1}/{scenes.Length}] Count >= 200 [{WattingForLoadedAll.Count}] scene:{scene} path:{scene.transform.GetPath()}");
+            }
+            else if (WattingForLoadedAll.Count >= 300)
+            {
+                Debug.LogError($"AddScenesToWaiting8({logTag}) AddScenesToWaiting!!![{i + 1}/{scenes.Length}] Count >= 300 [{WattingForLoadedAll.Count}] scene:{scene} path:{scene.transform.GetPath()}");
+            }
+            else if (WattingForLoadedAll.Count >= 400)
+            {
+                Debug.LogError($"AddScenesToWaiting9({logTag}) AddScenesToWaiting!!![{i + 1}/{scenes.Length}] Count >= 400 [{WattingForLoadedAll.Count}] scene:{scene} path:{scene.transform.GetPath()}");
+            }
         }
 
-        if(IsShowLog())
+        if (IsShowLog())
         {
             string txt = sb.ToString();
             if (!string.IsNullOrEmpty(txt))
             {
-                Debug.Log($"LoadScenesByBag WattingForLoadedAll.Contains(scene) inWattingCount:{inWattingCount} \n{txt}");
+                Debug.Log($"AddScenesToWaiting10 WattingForLoadedAll.Contains(scene) inWattingCount:{inWattingCount} \n{txt}");
             }
         }
+
+        if (IsShowLog())
+        {
+            if (WattingForLoadedCurrent.Count > 0)
+            {
+                Debug.LogWarning($"AddScenesToWaiting11 scenes:{scenes.Length} inWattingCount:{inWattingCount} WattingForLoadedAll:{WattingForLoadedAll.Count} WattingForLoadedCurrent:{WattingForLoadedCurrent.Count} Current0:{WattingForLoadedCurrent[0]} LoadingSceneMaxCount:{LoadingSceneMaxCount} bool isLoadScene  :{WattingForLoadedCurrent.Count < LoadingSceneMaxCount}");
+            }
+            else
+            {
+                Debug.Log($"AddScenesToWaiting12 scenes:{scenes.Length} inWattingCount:{inWattingCount} WattingForLoadedAll:{WattingForLoadedAll.Count} WattingForLoadedCurrent:{WattingForLoadedCurrent.Count} LoadingSceneMaxCount:{LoadingSceneMaxCount} bool isLoadScene  :{WattingForLoadedCurrent.Count < LoadingSceneMaxCount}");
+            }
+        }
+
+        return totalScenesCount;
+    }
+
+
+    IEnumerator LoadScenesByBag<T>(T[] scenes, Action<SceneLoadProgress> finishedCallback,int totalScenesCount) where T : SubScene_Base
+    {
+        //string scenesName = "";
+        //var ss = scenes;
+        //for (int i = 0; i < ss.Length; i++)
+        //{
+        //    AreaTreeNode treeNode = ss[i].transform.parent.GetComponent<AreaTreeNode>();
+        //    scenesName += $"[{i + 1}/{ss.Length}]{ss[i].name} path:{ss[i].transform.GetPath()}\n";
+        //}
+        //Debug.LogError($"LoadScenesByBag1 WattingForLoadedAll:{WattingForLoadedAll.Count} scenesName:{scenesName}");
+
+        var start = DateTime.Now;
+
+        //int totalScenesCount = AddScenesToWaiting(scenes);
 
         int count = 0;
         SceneLoadProgress loadProgress = new SceneLoadProgress();
@@ -571,19 +677,6 @@ public class SubSceneManager : SingletonBehaviour<SubSceneManager>
         DateTime startLoadTime = DateTime.Now;
         SubScene_Base lastScene = null;
 
-        if (IsShowLog())
-        {
-            if (WattingForLoadedCurrent.Count > 0)
-            {
-                Debug.LogWarning($"LoadScenesByBag scenes:{scenes.Length} inWattingCount:{inWattingCount} WattingForLoadedAll:{WattingForLoadedAll.Count} WattingForLoadedCurrent:{WattingForLoadedCurrent.Count} Current0:{WattingForLoadedCurrent[0]} LoadingSceneMaxCount:{LoadingSceneMaxCount} bool isLoadScene  :{WattingForLoadedCurrent.Count < LoadingSceneMaxCount}");
-            }
-            else
-            {
-                Debug.Log($"LoadScenesByBag scenes:{scenes.Length} inWattingCount:{inWattingCount} WattingForLoadedAll:{WattingForLoadedAll.Count} WattingForLoadedCurrent:{WattingForLoadedCurrent.Count} LoadingSceneMaxCount:{LoadingSceneMaxCount} bool isLoadScene  :{WattingForLoadedCurrent.Count < LoadingSceneMaxCount}");
-            }
-        }
-        
-
         //if(WattingForLoadedAll.Count > 0 && WattingForLoadedCurrent.Count == 0)
         //{
         //    var scene = WattingForLoadedAll[0];
@@ -592,6 +685,36 @@ public class SubSceneManager : SingletonBehaviour<SubSceneManager>
         //    WattingForLoadedCurrent.Add(scene);
         //}
 
+        ////if (IsRemoveInactive)
+        //{
+        //    //这个会导致楼层模型加载失败。
+        //    int count11 = WattingForLoadedAll.Count;
+        //    int count12 = WattingForLoadedCurrent.Count;
+        //    //WattingForLoadedCurrent.RemoveAll(i => i.gameObject.activeInHierarchy == false);
+        //    //WattingForLoadedAll.RemoveAll(i => i.gameObject.activeInHierarchy == false);
+        //    var list1 = WattingForLoadedCurrent.FindAll(i => i.gameObject.activeInHierarchy == false);
+        //    var list2 = WattingForLoadedAll.FindAll(i => i.gameObject.activeInHierarchy == false);
+        //    int count21 = WattingForLoadedAll.Count;
+        //    int count22 = WattingForLoadedCurrent.Count;
+        //    if (count11 != count21 || count12 != count22)
+        //    {
+
+        //    }
+        //    if (list1.Count > 0 || list2.Count > 0)
+        //    {
+        //        Debug.LogError($"LoadScenesByBag11 RemoveInactive1 {list1.Count} | {list2.Count}");
+        //    }
+        //}
+
+        //var scenesName = "";
+        //var ss2 = WattingForLoadedAll.ToArray();
+        //for (int i = 0; i < ss2.Length; i++)
+        //{
+        //    AreaTreeNode treeNode = ss2[i].transform.parent.GetComponent<AreaTreeNode>();
+        //    scenesName += $"[{i + 1}/{ss2.Length}]{ss2[i].name} path:{ss2[i].transform.GetPath()}\n";
+        //}
+        //Debug.LogError($"LoadScenesByBag2 WattingForLoadedAll:{WattingForLoadedAll.Count} scenesName:{scenesName}");//Node_2_6_42_3w_Renderers
+
         //while (WattingForLoadedAll.Count > 0 && WattingForLoadedCurrent.Count > 0)
         while (WattingForLoadedAll.Count > 0 || WattingForLoadedCurrent.Count > 0)
         {
@@ -599,6 +722,28 @@ public class SubSceneManager : SingletonBehaviour<SubSceneManager>
 
             try
             {
+                ////if (IsRemoveInactive)
+                //{
+                //    //这个会导致楼层模型加载失败。
+                //    int count11 = WattingForLoadedAll.Count;
+                //    int count12 = WattingForLoadedCurrent.Count;
+                //    //WattingForLoadedCurrent.RemoveAll(i => i.gameObject.activeInHierarchy == false);
+                //    //WattingForLoadedAll.RemoveAll(i => i.gameObject.activeInHierarchy == false);
+                //    var list1=WattingForLoadedCurrent.FindAll(i => i.gameObject.activeInHierarchy == false);
+                //    var list2 = WattingForLoadedAll.FindAll(i => i.gameObject.activeInHierarchy == false);
+                //    int count21 = WattingForLoadedAll.Count;
+                //    int count22 = WattingForLoadedCurrent.Count;
+                //    if(count11!= count21|| count12!= count22)
+                //    {
+
+                //    }
+                //    if(list1.Count>0 || list2.Count > 0)
+                //    {
+                //        Debug.LogError($"LoadScenesByBag22 RemoveInactive2 {list1.Count} | {list2.Count}");
+                //    }
+                //}
+
+
                 if (WattingForLoadedCurrent.Count < LoadingSceneMaxCount)
                 //if (WattingForLoadedCurrent.Count < LoadingSceneMaxCount && WattingForLoadedAll.Count > 0)
                 {
@@ -616,7 +761,16 @@ public class SubSceneManager : SingletonBehaviour<SubSceneManager>
                         if (IsShowLog())
                         {
                             Debug.Log($"LoadScenesByBag Start! scene:{scene.GetSceneName()},currentList:{WattingForLoadedCurrent.Count} allList:{WattingForLoadedAll.Count}");
-                        }   
+                        }
+
+                        //scenesName = "";
+                        //var ss3 = WattingForLoadedAll.ToArray();
+                        //for (int i = 0; i < ss3.Length; i++)
+                        //{
+                        //    AreaTreeNode treeNode = ss3[i].transform.parent.GetComponent<AreaTreeNode>();
+                        //    scenesName += $"[{i + 1}/{ss3.Length}]{ss3[i].name} path:{ss3[i].transform.GetPath()}\n";
+                        //}
+                        //Debug.LogError($"LoadScenesByBag3 scene:{scene.name} path:{scene.transform.GetPath()}\n scenesName:{scenesName}");//Node_2_6_42_3w_Renderers
 
                         scene.LoadSceneAsync((b, s) =>
                         {
@@ -708,10 +862,12 @@ public class SubSceneManager : SingletonBehaviour<SubSceneManager>
         }
         string log = $"[SubSceneManager.LoadScenes][ByBag][{LoadCount}]({logTag}) Finished!! scenes:{scenes.Length} currentList:{WattingForLoadedCurrent.Count} allList:{WattingForLoadedAll.Count} time:{(DateTime.Now - start).ToString()}";
         //TimeTest.Stop("楼层切换", log);//[1:6496ms][2:2099ms
-        TimeTest.Stop("加载场景测试", log);
+        //TimeTest.Stop("加载场景测试", log);
         Debug.Log(log);
         yield return null;
     }
+
+    //public bool IsRemoveInactive = false;
 
     void Start()
     {

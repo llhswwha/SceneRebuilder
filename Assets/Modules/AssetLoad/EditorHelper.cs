@@ -91,7 +91,7 @@ public static class EditorHelper
         return ins;
     }
 
-    public static GameObject SavePrefab(GameObject go,string path)
+    public static GameObject SavePrefab(GameObject go,string path,bool isOverride=false)
     {
         if (go == null)
         {
@@ -105,7 +105,7 @@ public static class EditorHelper
         try
         {
             var assetPath = AssetDatabase.GetAssetPath(go);
-            if (string.IsNullOrEmpty(assetPath))
+            if (string.IsNullOrEmpty(assetPath)|| isOverride)
             {
                 EditorHelper.UnpackPrefab(go);
                 EditorHelper.makeParentDirExist(prefabPath);
@@ -176,13 +176,21 @@ public static class EditorHelper
         for (int i = 0; i < assets.Count; i++)
         {
             Object asset = assets[i];
-            var path = AssetDatabase.GetAssetPath(asset);
-            bool b = AssetDatabase.DeleteAsset(path);
-            if (ProgressBarHelper.DisplayCancelableProgressBar("DeleteFile", i + 1, assets.Count, asset.name))
+            if(asset==null)continue;
+            try
             {
-                break;
+                string name = asset.name;
+                var path = AssetDatabase.GetAssetPath(asset);
+                bool b = AssetDatabase.DeleteAsset(path);
+                if (ProgressBarHelper.DisplayCancelableProgressBar("DeleteFile", i + 1, assets.Count, name))
+                {
+                    break;
+                }
+                Debug.Log($"DeleteFile[{i}] asset:{asset} path:{path} b:{b}");
             }
-            Debug.Log($"DeleteFile[{i}] asset:{asset} path:{path} b:{b}");
+            catch(System.Exception ex){
+                Debug.LogError($"DeleteFile[{i}] asset:{asset} Exception:{ex}");
+            }
         }
         AssetDatabase.Refresh();
         ProgressBarHelper.ClearProgressBar();
@@ -214,10 +222,17 @@ public static class EditorHelper
                     assets.Remove(item);
                 }
             }
+            int count2 = assets.Count;
+            DeleteFolderFiles(assets);
+            Debug.Log($"DeleteFolderFiles exceptionObjs:{exceptionObjs.Count} allCount:{count1} deleteCount:{count2}");
         }
-        int count2 = assets.Count;
-        DeleteFolderFiles(assets);
-        Debug.Log($"DeleteFolderFiles exceptionObjs:{exceptionObjs.Count} allCount:{count1} deleteCount:{count2}");
+        else
+        {
+            int count2 = assets.Count;
+            DeleteFolderFiles(assets);
+            Debug.Log($"DeleteFolderFiles allCount:{count1} deleteCount:{count2}");
+        }
+        
     }
 
     public static void UnpackPrefab(GameObject go, PrefabUnpackMode unpackMode)
@@ -915,6 +930,10 @@ public static class EditorHelper
         return null;
     }
 
+    public static List<T> CopyComponents<T>(GameObject fromObj, GameObject targetObj) where T : Component
+    {
+        return CopyComponentsInChildren<T>(fromObj, targetObj);
+    }
 
     public static List<T> CopyComponentsInChildren<T>(GameObject fromObj, GameObject targetObj) where T : Component
     {

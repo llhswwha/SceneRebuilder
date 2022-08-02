@@ -54,7 +54,7 @@ namespace GPUInstancer
 
         public override void Update()
         {
-            if (IsEnableUpdate == false) return;
+            if (GetIsEnableUpdateEx()==false) return;
             base.Update();
 
             if (runtimeDataList != null && Application.isPlaying)
@@ -918,8 +918,15 @@ namespace GPUInstancer
         /// </summary>
         public virtual void RemovePrefabInstances(IEnumerable<GPUInstancerPrefab> prefabInstances, bool isThreading = false)
         {
+            DateTime startT = DateTime.Now;
+            //Debug.LogError($"GPUInstancerPrefaManager.RemovePrefabInstances1 prefabInstances:{prefabInstances.Count()} isThreading:{isThreading} _addRemoveInProgress:{_addRemoveInProgress}");
+
+            int count = 0;
             while (isThreading && _addRemoveInProgress)
+            {
+                Debug.LogError($"GPUInstancerPrefaManager.RemovePrefabInstances2 [while (isThreading && _addRemoveInProgress)][{count++}] prefabInstances:{prefabInstances.Count()} isThreading:{isThreading} _addRemoveInProgress:{_addRemoveInProgress}");
                 Thread.Sleep(100);
+            }
             _addRemoveInProgress = true;
             List<GPUInstancerPrefab>[] instanceLists = new List<GPUInstancerPrefab>[prototypeList.Count];
             Dictionary<GPUInstancerPrototype, int> indexDict = new Dictionary<GPUInstancerPrototype, int>();
@@ -946,15 +953,20 @@ namespace GPUInstancer
                 int index = indexDict[prefabInstance.prefabPrototype];
                 instanceLists[index].Add(prefabInstance);
             }
+            //Debug.LogError($"GPUInstancerPrefaManager.RemovePrefabInstances3 time:{DateTime.Now- startT} prefabInstances:{prefabInstances.Count()} isThreading:{isThreading} _addRemoveInProgress:{_addRemoveInProgress}");
             for (int i = 0; i < instanceLists.Length; i++)
             {
                 if (instanceLists[i] == null || instanceLists[i].Count == 0) continue;
                 RemovePrefabInstances((GPUInstancerPrefabPrototype)prototypeList[i], instanceLists[i],i+1, isThreading);
             }
+            //Debug.LogError($"GPUInstancerPrefaManager.RemovePrefabInstances4 time:{DateTime.Now - startT} prefabInstances:{prefabInstances.Count()} isThreading:{isThreading} _addRemoveInProgress:{_addRemoveInProgress}");
+
             if (isThreading)
                 threadQueue.Enqueue(() => _addRemoveInProgress = false);
             else
                 _addRemoveInProgress = false;
+
+            //Debug.LogError($"GPUInstancerPrefaManager.RemovePrefabInstances5 time:{DateTime.Now - startT} prefabInstances:{prefabInstances.Count()} isThreading:{isThreading} _addRemoveInProgress:{_addRemoveInProgress}");
         }
 
         /// <summary>
@@ -962,6 +974,7 @@ namespace GPUInstancer
         /// </summary>
         public virtual void RemovePrefabInstances(GPUInstancerPrefabPrototype prototype, IEnumerable<GPUInstancerPrefab> prefabInstances,int index, bool isThreading = false)
         {
+            DateTime startT = DateTime.Now;
             if (prefabInstances == null)
             {
                 Debug.LogWarning($"RemovePrefabInstances11[{index}] prefabInstances == null ");
@@ -972,11 +985,15 @@ namespace GPUInstancer
                 Debug.LogWarning($"RemovePrefabInstances12[{index}] prefabInstances.Count() == 0");
                 return;
             }
+            int count1 = prefabInstances.Count();
+
+            //Debug.Log($"RemovePrefabInstances[{index}] 1[{DateTime.Now- startT}] ");
+
             prefabInstances = GetPrefabInstances(prefabInstances,false, $"RemovePrefabInstances[{index}]");
 
             if (prefabInstances == null || prefabInstances.Count() == 0)
             {
-                Debug.LogError($"RemovePrefabInstances2[{index}] prefabInstances == null || prefabInstances.Count() == 0");
+                Debug.LogError($"RemovePrefabInstances2[{index}] prefabInstances == null || prefabInstances.Count() == 0 origCount:{count1}");
                 return;
             }
 
@@ -989,8 +1006,16 @@ namespace GPUInstancer
                 Debug.LogError($"RemovePrefabInstances3[{index}] runtimeData == null count:{count}");
                 return;
             }
+            //Debug.Log($"RemovePrefabInstances[{index}] 2[{DateTime.Now - startT}] ");
 
             List<GPUInstancerPrefab> prefabInstanceList = _registeredPrefabsRuntimeData[prototype];
+            Dictionary<GPUInstancerPrefab, GPUInstancerPrefab> dict = new Dictionary<GPUInstancerPrefab, GPUInstancerPrefab>();
+            foreach(var item in prefabInstanceList)
+            {
+                dict.Add(item, item);
+            }
+            //Debug.Log($"RemovePrefabInstances[{index}] 21[{DateTime.Now - startT}]");
+
             int listCount = prefabInstanceList.Count;
             if (listCount == 0)
             {
@@ -1005,24 +1030,30 @@ namespace GPUInstancer
                 return;
             }
 
+            //Debug.Log($"RemovePrefabInstances[{index}] 3[{DateTime.Now - startT}] listCount:{listCount}");
             try
             {
                 if(count== listCount && startIndex!=0)
                 {
-                    Debug.LogWarning($"RemovePrefabInstances6[{index}] startIndex:{startIndex} count:{count} listCount:{listCount}");
+                    //Debug.LogWarning($"RemovePrefabInstances6[{index}] startIndex:{startIndex} count:{count} listCount:{listCount}");
                     prefabInstanceList.Clear();
                 }
                 else
                 {
                     foreach (var prefab in prefabInstances)
                     {
-                        prefabInstanceList.Remove(prefab);
+                        //prefabInstanceList.Remove(prefab);//慢
+                        dict.Remove(prefab);//快
                     }
+                    //Debug.Log($"RemovePrefabInstances[{index}] 41[{DateTime.Now - startT}]");
+                    prefabInstanceList = dict.Keys.ToList();
+                    _registeredPrefabsRuntimeData[prototype] = prefabInstanceList;//不能忘了
+                    //Debug.Log($"RemovePrefabInstances[{index}] 42[{DateTime.Now - startT}]");
                 }
+                //prefabInstanceList.RemoveRange(startIndex, count);//Original Code
+                int count2 = prefabInstanceList.Count;
 
-                //prefabInstanceList.RemoveRange(startIndex, count);
-
-               
+                //Debug.Log($"RemovePrefabInstances[{index}] 4[{DateTime.Now - startT}] listCount:{listCount} count:{count} > {count2}");
 
                 //Debug.Log($"RemovePrefabInstances7[{index}] isThreading:{isThreading} startIndex:{startIndex} count:{count} listCount:{listCount} listCount2:{prefabInstanceList.Count} ");
 
@@ -1036,7 +1067,9 @@ namespace GPUInstancer
                     pi.state = PrefabInstancingState.None;
                     pi.gpuInstancerID = 0;
                 }
+                //Debug.Log($"RemovePrefabInstances[{index}] 5[{DateTime.Now - startT}] listCount:{listCount}");
                 UpdateInstanceDataArray(runtimeData, prefabInstanceList, isThreading);
+                //Debug.Log($"RemovePrefabInstances[{index}] 6[{DateTime.Now - startT}] listCount:{listCount}");
             }
             catch (Exception ex)
             {
@@ -1048,7 +1081,6 @@ namespace GPUInstancer
                 {
                     Debug.LogError($"RemovePrefabInstances[{index}]9 element0:{element0.name} startIndex:{startIndex} count:{count} listCount:{listCount} Exception:{ex}");
                 }
-                
             }
         }
 

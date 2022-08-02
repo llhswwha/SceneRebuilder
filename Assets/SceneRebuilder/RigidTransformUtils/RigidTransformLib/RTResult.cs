@@ -40,6 +40,7 @@ public class SameAngleResult : IRTResult
     {
         tFrom.transform.position = tTo.transform.position;
         tFrom.transform.rotation = tTo.transform.rotation;
+        tFrom.transform.localScale = tTo.transform.localScale;
     }
 }
 

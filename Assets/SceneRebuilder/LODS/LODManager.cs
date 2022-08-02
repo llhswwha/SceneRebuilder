@@ -1781,46 +1781,48 @@ public class LODManager : SingletonBehaviour<LODManager>
 
         //LoadedScenes = sceneList;
 
-        if (sceneList.Count > 0)
-        {
-            //Debug.LogError($"GetRuntimeLODDetail lod0List:{lod0List.Count} sceneList:{sceneList.Count} scene2Group:{scene2Group.Count}");
-            SubSceneManager.Instance.LoadScenesEx(sceneList.ToArray(), (p) =>
-            {
-                if (p.scene != null)
-                {
-                    //Debug.LogError($"GetRuntimeLODDetail scene:{p.scene.name} sceneName:scene:{p.scene.sceneName}");
-                    if (scene2Group.ContainsKey(p.scene))
-                    {
-                        LODGroupInfo group = scene2Group[p.scene];
-                        group.SetLOD0FromScene();
-                    }
-                    else
-                    {
-#if UNITY_EDITOR
-                        if (showLog)
-                        {
-                            Debug.Log($"GetRuntimeLODDetail scene2Group.ContainsKey(p.scene) == false scene:{p.scene.name} path:{p.scene.transform.GetPath()} ");
-                        }
-#endif
-                    }
+        SubSceneShowManager.Instance.scenes_LOD0 = sceneList.NewList();
 
-                }
-                else
-                {
-#if UNITY_EDITOR
-                    if (showLog)
-                    {
-                        Debug.Log($"GetRuntimeLODDetail p.scene == null");
-                    }
-#endif
-                }
+//        if (sceneList.Count > 0)
+//        {
+//            //Debug.LogError($"GetRuntimeLODDetail lod0List:{lod0List.Count} sceneList:{sceneList.Count} scene2Group:{scene2Group.Count}");
+//            SubSceneManager.Instance.LoadScenesEx(sceneList.ToArray(), (p) =>
+//            {
+//                if (p.scene != null)
+//                {
+//                    //Debug.LogError($"GetRuntimeLODDetail scene:{p.scene.name} sceneName:scene:{p.scene.sceneName}");
+//                    if (scene2Group.ContainsKey(p.scene))
+//                    {
+//                        LODGroupInfo group = scene2Group[p.scene];
+//                        group.SetLOD0FromScene();
+//                    }
+//                    else
+//                    {
+//#if UNITY_EDITOR
+//                        if (showLog)
+//                        {
+//                            Debug.Log($"GetRuntimeLODDetail scene2Group.ContainsKey(p.scene) == false scene:{p.scene.name} path:{p.scene.transform.GetPath()} ");
+//                        }
+//#endif
+//                    }
 
-            }, "LoadLOD0Scenes");
-        }
-        else
-        {
-            //Debug.Log($"GetRuntimeLODDetail lod0List:{lod0List.Count}");
-        }
+//                }
+//                else
+//                {
+//#if UNITY_EDITOR
+//                    if (showLog)
+//                    {
+//                        Debug.Log($"GetRuntimeLODDetail p.scene == null");
+//                    }
+//#endif
+//                }
+
+//            }, "LoadLOD0Scenes");
+//        }
+//        else
+//        {
+//            //Debug.Log($"GetRuntimeLODDetail lod0List:{lod0List.Count}");
+//        }
 
         return sceneList.Items;
     }

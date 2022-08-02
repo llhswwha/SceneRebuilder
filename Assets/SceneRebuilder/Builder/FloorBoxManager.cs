@@ -58,7 +58,7 @@ public class FloorBoxManager : SingletonBehaviour<FloorBoxManager>
     private void CopyFloorCollider(DepNode fFrom, DepNode fTo)
     {
 #if UNITY_EDITOR
-        EditorHelper.ClearAndCopyComponents<BoxCollider>(fFrom.gameObject, fTo.gameObject);
+        InnerEditorHelper.ClearAndCopyComponents<BoxCollider>(fFrom.gameObject, fTo.gameObject);
 #endif
 
     }
@@ -394,9 +394,23 @@ public class FloorBoxManager : SingletonBehaviour<FloorBoxManager>
         r.SetParent(Sources, IsIn, IsDebug);
     }
 
+    private void GetParentPath()
+    {
+        foreach (TransformFloorParent r in List1)
+        {
+            r.GetParentPath(Sources);
+        }
+        foreach (TransformFloorParent r in List2)
+        {
+            r.GetParentPath(Sources);
+        }
+    }
+
     //[ContextMenu("SetParent")]
     public void SetParent()
     {
+        GetParentPath();
+
         if (OnlySetOneFloor)
         {
             foreach (TransformFloorParent r in List1)
@@ -798,8 +812,24 @@ public class TransformFloorParent:IComparable<TransformFloorParent>
 
     public Transform p;
 
+    List<string> parentPath = new List<string>();
+
+    public void GetParentPath(GameObject root)
+    {
+        parentPath= go.transform.GetAncestorNames(root.transform.parent);
+    }
+
     public void SetParent(GameObject root, bool isIn, bool isDebug)
     {
+        Transform parent = go.transform.parent;
+        if (parent != null)
+        {
+            MeshRenderer mr = parent.GetComponent<MeshRenderer>();
+            if (mr != null)
+            {
+                return;
+            }
+        }
         string pName = root.name;
         if (p != null)
         {
@@ -851,7 +881,8 @@ public class TransformFloorParent:IComparable<TransformFloorParent>
         //EditorHelper.UnpackPrefab(go.gameObject);
         //go.SetParent(newP.transform);
 
-        List<Transform> path = go.transform.GetAncestors(root.transform.parent);
+        //List<string> path = go.transform.GetAncestorNames(root.transform.parent);
+        List<string> path = parentPath;
         if (isDebug)
         {
             Debug.LogError($"SetParent go:{go} root:{root} paths:{path.Count} path:{go.transform.GetPath(root.transform)}");

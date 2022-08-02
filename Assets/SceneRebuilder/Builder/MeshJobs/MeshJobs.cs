@@ -533,9 +533,17 @@ namespace MeshJobs
             var result = AcRTAlignJobResult.GetResult(id);
             if (result != null)
             {
-
-                //可以改成这里创建模型，并变换，原来的模型不动。
-                result.ApplyMatrix(mfFrom.transform, mfTo.transform); //变换模型
+                if (result is SameAngleResult)
+                {
+                    mfFrom.transform.position = mfTo.transform.position;
+                    mfFrom.transform.localScale = mfTo.transform.localScale;
+                    mfFrom.transform.rotation = mfTo.transform.rotation;
+                }
+                else
+                {
+                    //可以改成这里创建模型，并变换，原来的模型不动。
+                    result.ApplyMatrix(mfFrom.transform, mfTo.transform); //变换模型
+                }
 
                 if (result.Distance < DistanceSetting.zeroM)
                 {
@@ -543,7 +551,7 @@ namespace MeshJobs
 
                     var disNew = MeshHelper.GetVertexDistanceEx(mfFrom.transform, mfTo.transform, "测试结果", false);
 
-                    if(disNew< DistanceSetting.zeroM)
+                    if (disNew < DistanceSetting.zeroM)
                     {
                         RTResult rT = result as RTResult;
                         if (rT != null)
@@ -553,7 +561,7 @@ namespace MeshJobs
                         }
                         else
                         {
-                            Debug.Log($"对齐成功2 id:{id}  zero:{DistanceSetting.zeroM:F5},dis:{result.Distance},disNew:{disNew},from:[{mfFrom.name}({mfFrom.vertexCount})],to:[{mfTo.name}({mfTo.vertexCount})] rT==null");
+                            Debug.Log($"对齐成功2 id:{id}  zero:{DistanceSetting.zeroM:F5},dis:{result.Distance},disNew:{disNew},from:[{mfFrom.name}({mfFrom.vertexCount})],to:[{mfTo.name}({mfTo.vertexCount})] rT No RTResult:{rT}");
                         }
                     }
                     else
@@ -566,7 +574,7 @@ namespace MeshJobs
                         }
                         else
                         {
-                            Debug.LogError($"对齐失败4 id:{id}  zero:{DistanceSetting.zeroM:F5},dis:{result.Distance},disNew:{disNew},from:[{mfFrom.name}({mfFrom.vertexCount})],to:[{mfTo.name}({mfTo.vertexCount})] rT==null");
+                            Debug.LogError($"对齐失败4 id:{id}  zero:{DistanceSetting.zeroM:F5},dis:{result.Distance},disNew:{disNew},from:[{mfFrom.name}({mfFrom.vertexCount})],to:[{mfTo.name}({mfTo.vertexCount})] rT No RTResult:{rT}");
                         }
                     }
                     return true;

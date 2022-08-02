@@ -44,6 +44,8 @@ namespace GPUInstancer
 
         private void Awake()
         {
+            Debug.LogError("GPUInstancerHiZOcclusionGenerator.Awake");
+
             hiZTextureSize = Vector2.zero;
             GPUInstancerConstants.SetupComputeTextureUtils();
             occlusionCullingType = GPUInstancerConstants.gpuiSettings.occlusionCullingType;

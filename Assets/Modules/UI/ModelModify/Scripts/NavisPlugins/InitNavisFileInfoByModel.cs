@@ -85,7 +85,16 @@ public class InitNavisFileInfoByModel : SingletonBehaviour<InitNavisFileInfoByMo
         Debug.LogError($"DestoryNavisInfo infos:{infos.Length}");
     }
 
-    public List<BIMModelInfo> bimInfos;
+    public List<BIMModelInfo> bimInfos = new List<BIMModelInfo>();
+
+    public List<BIMModelInfo> GetBIMInfos()
+    {
+        if (bimInfos == null)
+        {
+            bimInfos = new List<BIMModelInfo>();
+        }
+        return bimInfos;
+    }
 
     [ContextMenu("GetBims")]
     public void GetBims()
@@ -631,6 +640,12 @@ public class InitNavisFileInfoByModel : SingletonBehaviour<InitNavisFileInfoByMo
         Debug.Log($"TestInitBIMModelInfoByPos target:{testTarget} r:{r} CostTime:{(DateTime.Now - recordTime).TotalSeconds}s");
     }
 
+    public List<ModelItemInfo> GetAllModelInfos(string rootName)
+    {
+        navisFile = GetNavisFileInfo();
+        return navisFile.GetAllItems(rootName);
+    }
+
     public List<ModelItemInfo> GetAllModelInfos(bool isFilterModel)
     {
         navisFile = GetNavisFileInfo();
@@ -949,27 +964,108 @@ public class InitNavisFileInfoByModel : SingletonBehaviour<InitNavisFileInfoByMo
             Debug.LogError("BindBimInfo vueItems.Count == 0");
             return;
         }
-        Dictionary<string, ModelItemInfo> vueDict = new Dictionary<string, ModelItemInfo>();
-        for (int i = 0; i < vueItems.Count; i++)
+
+        BIMModelInfo[] bims = GameObject.FindObjectsOfType<BIMModelInfo>(true);
+        Dictionary<string, BIMModelInfo> bimDict_uid = new Dictionary<string, BIMModelInfo>();
+        for (int i = 0; i < bims.Length; i++)
         {
-            ModelItemInfo item = vueItems[i];
-            ProgressArg p1 = new ProgressArg("BindBimInfo1", i, vueItems.Count, item.Name);
-            ProgressBarHelper.DisplayCancelableProgressBar(p1);
-            if (string.IsNullOrEmpty(item.UId)) continue;
-            if (!vueDict.ContainsKey(item.UId))
+            BIMModelInfo item = bims[i];
+            if (bimDict_uid.ContainsKey(item.Guid))
             {
-vueDict.Add(item.UId, item);
+                //bimDict_uid.Add(item.Guid, item);
+                BIMModelInfo item2 = bimDict_uid[item.Guid];
+                Debug.LogError($"GUID Error :{item.Guid} name:{item.name} modelName;{item.MName}| name2:{item2.name} modelName:{item2.MName}");
+                if(item.gameObject==item2.gameObject)
+                {
+                    GameObject.DestroyImmediate(item);
+                }
             }
             else
             {
-                Debug.LogError($"BindBimInfo1 vueDict.ContainsKey(item.UId) item:{item} UId:{item.UId}");
+                bimDict_uid.Add(item.Guid, item);
             }
-            if(item.Name== "F级高厂变")
+            
+        }
+
+        Dictionary<string, ModelItemInfo> vueDict_uid = new Dictionary<string, ModelItemInfo>();
+        Dictionary<string, ModelItemInfo> vueDict_rid = new Dictionary<string, ModelItemInfo>();
+        Dictionary<string, ModelItemInfo> vueDict_rName = new Dictionary<string, ModelItemInfo>();
+        for (int i = 0; i < vueItems.Count; i++)
+        {
+            ModelItemInfo item = vueItems[i];
+            if (item == null) continue;
+            if (bimDict_uid.ContainsKey(item.UId))
+            {
+                continue;
+            }
+            ProgressArg p1 = new ProgressArg("BindBimInfo1", i, vueItems.Count, item.Name);
+            ProgressBarHelper.DisplayCancelableProgressBar(p1);
+            //if (string.IsNullOrEmpty(item.UId)) continue;
+            if (!string.IsNullOrEmpty(item.UId) && !vueDict_uid.ContainsKey(item.UId))
+            {
+                vueDict_uid.Add(item.UId, item);
+            }
+            if (!string.IsNullOrEmpty(item.RenderId) && !vueDict_rid.ContainsKey(item.RenderId))
+            {
+                vueDict_rid.Add(item.RenderId, item);
+            }
+            if (!string.IsNullOrEmpty(item.RenderName) && !vueDict_rName.ContainsKey(item.RenderName))
+            {
+                vueDict_rName.Add(item.RenderName, item);
+            }
+
+            //else
+            //{
+            //    Debug.LogError($"BindBimInfo1 vueDict.ContainsKey(item.UId) item:{item} UId:{item.UId}");
+            //}
+            if (item.Name== "F级高厂变")
             {
                 Debug.LogError("F级高厂变 Model");
             }
         }
-        var bims = GameObject.FindObjectsOfType<BIMModelInfo>(true);
+
+        int count1 = 0;
+        int count2 = 0;
+        int count3 = 0;
+        var list = GetAllModelTransform();
+        string s2 = "";
+        for (int i = 0; i < list.Count; i++)
+        {
+            Transform item = list[i];
+            RendererId rid = RendererId.GetRId(item.gameObject);
+            if (vueDict_rid.ContainsKey(rid.Id))
+            {
+                ModelItemInfo model = vueDict_rid[rid.Id];
+                BIMModelInfo.SetModelInfo(item, model);
+                count1++;
+            }
+            else if (vueDict_rName.ContainsKey(rid.name))
+            {
+                ModelItemInfo model = vueDict_rName[rid.name];
+                rid.Id = model.RenderId;
+                BIMModelInfo info=BIMModelInfo.SetModelInfo(item, model);
+                if(info.Distance> InitNavisFileInfoByModelSetting.Instance.MinDistance5)
+                {
+                    Debug.LogError($"BindBimInfo_Error[{count2}] name:{rid.name} dis:{info.Distance} maxDis={InitNavisFileInfoByModelSetting.Instance.MinDistance5}");
+                    GameObject.DestroyImmediate(info);
+                    count2++; 
+                }
+                else
+                {
+                    count3++;
+                }
+                
+            }
+            else
+            {
+                count2++;
+                s2 += $"{item.name};";
+            }
+        }
+
+        Debug.LogError($"BindBimInfo list:{list.Count} count1:{count1} count2:{count2} count3:{count3}\n{s2}");
+
+        //var bims = GameObject.FindObjectsOfType<BIMModelInfo>(true);
         for (int i = 0; i < bims.Length; i++)
         {
             BIMModelInfo bim = bims[i];
@@ -981,9 +1077,9 @@ vueDict.Add(item.UId, item);
             ProgressArg p1 = new ProgressArg("BindBimInfo2", i, vueItems.Count, bim.name);
             ProgressBarHelper.DisplayCancelableProgressBar(p1);
 
-            if (vueDict.ContainsKey(bim.Guid))
+            if (vueDict_uid.ContainsKey(bim.Guid))
             {
-                ModelItemInfo model = vueDict[bim.Guid];
+                ModelItemInfo model = vueDict_uid[bim.Guid];
                 model.RenderId = bim.RenderId;
                 model.RenderName = bim.name;
                 DepNode dep = bim.GetComponentInParent<DepNode>();
@@ -1030,11 +1126,11 @@ vueDict.Add(item.UId, item);
         }
 
 
-        Debug.LogError($"BindBimInfo vueDict:{vueDict.Count} bims:{bims.Length}");
+        Debug.LogError($"BindBimInfo vueDict:{vueDict_uid.Count} bims:{bims.Length}");
 
         ProgressBarHelper.ClearProgressBar();
 
-        SaveNavisFile();
+        //SaveNavisFile();
     }
 
     [ContextMenu("匹配Vue属性树2")]
@@ -1279,6 +1375,23 @@ vueDict.Add(item.UId, item);
             if (item == null) continue;
             if (item.activeInHierarchy == false) continue;
             Transform[] ts = item.GetComponentsInChildren<Transform>(true);
+
+            //foreach(var t in ts)
+            //{
+            //    if (OnlyNoneBIM)
+            //    {
+            //        if (t.GetComponent<BIMModelInfo>() != null) continue;
+            //    }
+            //    if (OnlyWeld)
+            //    {
+            //        if (t.GetComponent<PipeWeldModel>() == null) continue;
+            //    }
+            //    if (OnlyRenderer)
+            //    {
+            //        if (t.GetComponent<MeshRenderer>() == null) continue;
+            //    }
+            //    list1.Add(t);
+            //}
             list1.AddRange(ts);
         }
         //for (int i1 = 0; i1 < list1.Count; i1++)
