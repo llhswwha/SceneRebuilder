@@ -1645,11 +1645,21 @@ public class BuildingModelInfo : SubSceneCreater
 
     internal bool ContainsScene(SubScene_Base scene)
     {
-        if (scenes.Count == 0)
+        try
         {
-            scenes = new DictList<SubScene_Base>(this.GetComponentsInChildren<SubScene_Base>(true));
+            if (scene == null) return false;
+            if (scenes.Count == 0)
+            {
+                scenes = new DictList<SubScene_Base>(this.GetComponentsInChildren<SubScene_Base>(true));
+            }
+            return scenes.Contains(scene);
         }
-        return scenes.Contains(scene);
+        catch (Exception ex)
+        {
+            Debug.LogError($"ContainsScene scene:{scene}");
+            return false;
+        }
+
     }
 
     [ContextMenu("* CreateTreesByLOD")]

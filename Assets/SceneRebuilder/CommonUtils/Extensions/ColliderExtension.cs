@@ -296,7 +296,7 @@ namespace CommonUtils
             return CaculateBounds(rendersFilter);
         }
 
-        public static List<string> filterNames = new List<string>() { "rail", "柱","Ground", "PHC500", "PHC400", "地下结构", "LouversAsm-1-0002" };//楼梯围栏会突出到上一层楼
+        public static List<string> filterNames = new List<string>() { "rail", "柱","Ground", "PCB600", "PHC600", "PHC500", "PHC400", "地下结构", "LouversAsm-1-0002", "_Pillar" };//楼梯围栏会突出到上一层楼
 
         private static bool IsContainsFilterName(string name)
         {
@@ -334,10 +334,18 @@ namespace CommonUtils
         /// 自动计算所有子对象包围盒
         /// </summary>
         /// <returns></returns>
-        public static Bounds CaculateBounds(this GameObject parent)
+        public static Bounds CaculateBounds(this GameObject parent,List<Renderer> filteredRenderers=null)
         {
             Renderer[] renders = parent.GetComponentsInChildren<Renderer>(true);
             List<Renderer> rendersFilter = FilterRenderers(renders);
+            if (filteredRenderers != null)
+            {
+                foreach(var render in filteredRenderers)
+                {
+                    if (render == null) continue;
+                    rendersFilter.Remove(render);
+                }
+            }
             return CaculateBounds(rendersFilter);
         }
 

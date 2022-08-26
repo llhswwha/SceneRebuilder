@@ -93,6 +93,7 @@ public class SubSceneShowManager : SingletonBehaviour<SubSceneShowManager>
         int id = allModels.IndexOf(building);
         Bounds bounds = GetBuildingBounds(building);
         Transform floor = allFloors[id];
+        floor.transform.position = bounds.center;
         floor.localScale = bounds.size * BoundsSize;
         Bounds bounds2 = new Bounds(floor.position, floor.localScale);
         FloorBoundsList[id] = bounds2;
@@ -146,17 +147,19 @@ public class SubSceneShowManager : SingletonBehaviour<SubSceneShowManager>
         InitFloorBoundsList();
     }
 
+    public List<Renderer> buildingBoundsFilteredRenderers;
+
     private Bounds GetBuildingBounds(BuildingModelInfo building)
     {
         Bounds bounds = new Bounds();
-        Collider collider = building.GetComponent<Collider>();
-        if (collider != null)
+        //Collider collider = building.GetComponent<Collider>();
+        //if (collider != null)
+        //{
+        //    bounds = collider.bounds;
+        //}
+        //else
         {
-            bounds = collider.bounds;
-        }
-        else
-        {
-            bounds = ColliderExtension.CaculateBounds(building.gameObject);
+            bounds = ColliderExtension.CaculateBounds(building.gameObject, buildingBoundsFilteredRenderers);
         }
         return bounds;
     }
@@ -307,57 +310,58 @@ public class SubSceneShowManager : SingletonBehaviour<SubSceneShowManager>
                     currentFloors.Add(allModels[i]);
                 }
             }
+        }
 
-            if (IsHideFloorIn)
+        if (IsHideFloorIn)
+        {
+            foreach (var floor in allModels)
             {
-                foreach (var floor in allModels)
+                if (floor == null)
                 {
-                    if (floor == null)
-                    {
-                        continue;
-                    }
-                    if (FactoryDepManager.currentDep != null && FactoryDepManager.currentDep.gameObject == floor.gameObject)
-                    {
-                        if (floor.InPart != null)
-                        {
-                            if (floor.InPart.activeInHierarchy == false)
-                            {
-                                floor.InPart.SetActive(true);
-                            }
-                        }
-                        continue;
-                    }
-                    if (currentFloors.Contains(floor))
-                    {
-                        if (floor.InPart != null)
-                        {
-                            if (floor.InPart.activeInHierarchy == false)
-                            {
-                                floor.InPart.SetActive(true);
-                            }
-                        }
-                    }
+                    continue;
+                }
+                if (FactoryDepManager.currentDep != null && FactoryDepManager.currentDep.gameObject == floor.gameObject)
+                {
                     if (floor.InPart != null)
                     {
-                        if (floor.InPart.activeInHierarchy == true)
+                        if (floor.InPart.activeInHierarchy == false)
                         {
-                            floor.InPart.SetActive(false);
+                            floor.InPart.SetActive(true);
+                        }
+                    }
+                    continue;
+                }
+                if (currentFloors.Contains(floor))
+                {
+                    if (floor.InPart != null)
+                    {
+                        if (floor.InPart.activeInHierarchy == false)
+                        {
+                            floor.InPart.SetActive(true);
                         }
                     }
                 }
+                if (floor.InPart != null)
+                {
+                    if (floor.InPart.activeInHierarchy == true)
+                    {
+                        floor.InPart.SetActive(false);
+                    }
+                }
             }
-            
-            //foreach (var floor in currentFloors.Items)
-            //{
-            //    if (floor.InPart != null)
-            //    {
-            //        if (floor.InPart.activeInHierarchy == false)
-            //        {
-            //            floor.InPart.SetActive(true);
-            //        }
-            //    }
-            //}
         }
+
+        //foreach (var floor in currentFloors.Items)
+        //{
+        //    if (floor.InPart != null)
+        //    {
+        //        if (floor.InPart.activeInHierarchy == false)
+        //        {
+        //            floor.InPart.SetActive(true);
+        //        }
+        //    }
+        //}
+
         Debug.Log($"CalculateInWitchFloorBuildings All:{allModels.Count} Current:{currentFloors.Count} Bounds:{FloorBoundsList.Count} time:{(DateTime.Now - dt).TotalMilliseconds}ms ");
     }
 
