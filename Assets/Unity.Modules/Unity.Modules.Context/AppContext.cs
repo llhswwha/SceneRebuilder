@@ -7,7 +7,7 @@ namespace Unity.Modules.Context
 {
     public static class AppContext
     {
-        //public static IDataClient DataClient;
+        public static IDataClient DataClient;
 
         public static IDevManager DevManager;
 

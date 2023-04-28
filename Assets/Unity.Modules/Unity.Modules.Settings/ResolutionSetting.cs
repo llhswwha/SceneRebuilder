@@ -26,5 +26,11 @@ public class ResolutionSetting
     [XmlAttribute]
     public bool ShowFps = false;
 
+    [XmlAttribute]
+    public bool EnableFrameLimt = false;
+
+    [XmlAttribute]
+    public int MaxFrameRate=30;
+
 }
 

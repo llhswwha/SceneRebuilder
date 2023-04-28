@@ -29,4 +29,19 @@ public class RoamSetting
     /// </summary>
     [XmlElement]
     public float shiftSpeed = 2f;
+    /// <summary>
+    /// 漫游移动速度
+    /// </summary>
+    [XmlElement]
+    public float roamMoveSpeed = 1;
+    /// <summary>
+    /// 漫游旋转速度
+    /// </summary>
+    [XmlElement]
+    public float roamRotateSpeed = 0.5f;
+
+    [XmlElement]
+    public float roamUnLockMoveSpeed = 0.005f;
+    [XmlElement]
+    public float roamUnLockScrollSpeed = 0.005f;
 }

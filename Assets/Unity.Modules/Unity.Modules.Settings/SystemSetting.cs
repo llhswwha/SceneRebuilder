@@ -21,7 +21,12 @@ public class SystemSetting
     /// </summary>
     [XmlElement]
     public bool IsDebug = false;
-
+    /// <summary>
+    /// 蓝色小球：直接显示定位数据的点位小球
+    /// 绿色小球：显示定位数据经过navmesh计算优化后的点位小球
+    /// </summary>
+    [XmlElement]
+    public bool IsShowPosSphere = false;
     [XmlElement]
     public bool IsLocalSceneLoad = false;
     /// <summary>
@@ -60,13 +65,39 @@ public class SystemSetting
     {
         get
         {
-            //if (CommunicationObject.Instance && CommunicationObject.Instance.IsGuest()) return false;
-            //else 
-                return IsShowHomePage;
+            if (CommunicationObject.Instance && CommunicationObject.Instance.IsGuest()) return false;
+            else return IsShowHomePage;
         }
         set { IsShowHomePage = value; }
     }
+    /// <summary>
+    /// 是否使用新的定位历史服务器获取数据，获取定位历史相关数据。YZL:20211118
+    /// </summary>
+    [XmlElement]
+    public bool IsUseNewHistoryServer = true;
 
+    /// <summary>
+    /// 定位卡的同时计算数量
+    /// </summary>
+    [XmlElement]
+    public int CalculateCardNum = 10;
+    /// <summary>
+    /// 实时人员移动，最大间距，设置为0时，没有缓动效果
+    /// </summary>
+    [XmlElement]
+    public int RealtimeMaxDistance = 15;
+
+    /// <summary>
+    /// 实时人员移动最大速度
+    /// </summary>
+    [XmlElement]
+    public float RealMaxSpeed = 10f;
+
+    /// <summary>
+    /// 实时人员移动加速度
+    /// </summary>
+    [XmlElement]
+    public float Acceleration = 5f;
     /// <summary>
     /// 是否显示左侧拓补图
     /// </summary>
@@ -84,7 +115,16 @@ public class SystemSetting
     /// </summary>
     [XmlElement]
     public bool IsShowRightTopInfo=true;
-
+    /// <summary>
+    /// 是否开启基站报表导出
+    /// </summary>
+    [XmlElement]
+    public bool FileTransferBool = false;
+    /// <summary>
+    /// 报表下载路径
+    /// </summary>
+    [XmlElement]
+    public string FileTransferSaveDirctory = "D:\\MyAddress";   
     /// <summary>
     /// 是否显示大屏动态灯光
     /// </summary>
@@ -95,6 +135,14 @@ public class SystemSetting
     /// </summary>
     [XmlElement]
     public bool ShowBigScreenRotate = true;
+
+
+    [XmlElement]
+    public string ClientProcessManageIP="127.0.0.1";
+
+    [XmlElement]
+    public string ClientProcessManagePort="8746";
+
     /// <summary>
     /// 画面质量0-3
     /// 0:超低质量；1:低质量；2:中质量；3:高质量；
