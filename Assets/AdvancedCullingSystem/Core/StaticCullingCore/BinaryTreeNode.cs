@@ -2,7 +2,9 @@
 using System.Collections;
 using System.Collections.Generic;
 using System.Linq;
+#if UNITY_EDITOR
 using UnityEditor;
+#endif
 using UnityEngine;
 
 namespace AdvancedCullingSystem.StaticCullingCore
@@ -306,6 +308,7 @@ namespace AdvancedCullingSystem.StaticCullingCore
 
         public static bool IsDrawGizmos = false;
 
+#if UNITY_EDITOR
         private void OnDrawGizmosSelected()
         {
             if (IsDrawGizmos)
@@ -322,6 +325,7 @@ namespace AdvancedCullingSystem.StaticCullingCore
                 }
             }
         }
+#endif
 
         [ContextMenu("ShowCasters")]
         public void ShowCasters()

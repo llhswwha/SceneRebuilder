@@ -2,7 +2,9 @@ using System.Collections;
 using System.Collections.Generic;
 using System.IO;
 using System.Linq;
+#if UNITY_EDITOR
 using UnityEditor;
+#endif
 using UnityEngine;
 using UnityEngine.SceneManagement;
 
@@ -23,6 +25,7 @@ public class StaticCullingManager : Singleton<StaticCullingManager>
         AsyncOperation op=SceneManager.LoadSceneAsync(StaticCullingIndex, LoadSceneMode.Additive);
     }
 
+#if UNITY_EDITOR
     [ContextMenu("AddToBuildingsScene")]
     private void AddToBuildingsScene()
     {
@@ -41,4 +44,5 @@ public class StaticCullingManager : Singleton<StaticCullingManager>
             StaticCullingIndex = buildingScenes2.Count-1;
         }
     }
+#endif
 }
