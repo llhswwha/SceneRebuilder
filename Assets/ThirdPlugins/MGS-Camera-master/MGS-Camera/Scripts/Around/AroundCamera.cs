@@ -10,6 +10,7 @@
  *  Description  :  Initial development version.
  *************************************************************************/
 
+using Assets.M_Plugins.Helpers.Utils;
 using UnityEngine;
 using UnityEngine.InputSystem;
 
@@ -85,7 +86,7 @@ namespace Mogoson.CameraExtension
         /// <summary>
         /// 是否关闭鼠标旋转
         /// </summary>
-        private bool IsDisableMouseInput;
+        public bool IsDisableMouseInput;
 
         /// <summary>
         /// 鼠标原始位置（Input.GetAxis("Mouse X")在远程桌面和TeamViewer中都是0，不能移动）
@@ -96,7 +97,11 @@ namespace Mogoson.CameraExtension
 
 
         #endregion
-
+        public Vector3 GetCurrentPostion()
+        {
+            Vector3 posT = target.position - transform.forward * CurrentDistance;
+            return posT;
+        }
         #region Protected Method
         protected virtual void Start()
         {
@@ -207,13 +212,21 @@ namespace Mogoson.CameraExtension
         /// </summary>
         protected void AroundByMouseInput()
         {
-            //if (RoomFactory.Instance && RoomFactory.Instance.RemoteMode == RemoteMode.RenderStreaming)
-            //{
-            //    AroundByMouseInputSystem();
-            //}
-            //else
+            if (RoomFactory.Instance && RoomFactory.Instance.RemoteMode == RemoteMode.RenderStreaming)
             {
-                if (!IsEnableAround()) return;
+                //Debug.Log($"AroundAlignCamera.AroundByMouseInput_1"); 
+                AroundByMouseInputSystem();
+            }
+            else
+            {
+                //Debug.Log($"AroundAlignCamera.AroundByMouseInput_2"); 
+                if (!IsEnableAround()) 
+                {
+                    //Debug.Log($"AroundAlignCamera.AroundByMouseInput_3"); 
+                    return;
+                }
+                //Debug.Log($"AroundAlignCamera.AroundByMouseInput_4"); 
+
                 if (Input.GetMouseButtonDown(0) || Input.GetMouseButtonDown(1) || Input.GetMouseButtonDown(2))
                 {
                     mousePositionOri = Input.mousePosition;
@@ -268,30 +281,32 @@ namespace Mogoson.CameraExtension
                 }
             }
         }
+        bool isAroundByTarget;
+        private void AroundByTarget()
+        {
+            isAroundByTarget = true;
+        }
 
         /// <summary>
         /// 通过新输入系统控制
         /// </summary>
         private void AroundByMouseInputSystem()
         {
-            if (!IsEnableAround()) return;
-            //if (Mouse.current.leftButton.wasPressedThisFrame || Mouse.current.middleButton.wasPressedThisFrame || Mouse.current.rightButton.wasPressedThisFrame)
-            //{
-            //    //mousePositionOri = Input.mousePosition;
-            //    //Debug.LogError("Mouse.current.leftButton.wasPressedThisFrame:"+ Mouse.current.position.ReadValue());
-            //    mousePositionOri = Mouse.current.position.ReadValue();
-            //}
+            //if (isAroundByTarget) return;
+            AvoidCameraBlock();
+            //Debug.Log($"AroundAlignCamera.AroundByMouseInputSystem_1 IsFullView:{BigScreenManager.IsFullView} IsDisableMouseInput:{IsDisableMouseInput}");
+            if (!IsEnableAround()) 
+            {
+                //Debug.Log($"AroundAlignCamera.AroundByMouseInputSystem_2");
+                return;
+            }
+            //Debug.Log($"AroundAlignCamera.AroundByMouseInputSystem_3");
+
             if (GetMouseButton(mouseSettings.mouseButtonID))
             {
-                //Debug.LogError("Delta:"+ Mouse.current.delta.ReadValue());
                 Vector2 mouseOffset = Mouse.current.delta.ReadValue();// MouseOffsetByInputSystem();
                 targetAngles.y += mouseOffset.x * mouseSettings.pointerSensitivity;
-                targetAngles.x -= mouseOffset.y * mouseSettings.pointerSensitivity;
-
-                //Mouse pointer.
-                //targetAngles.y += Input.GetAxis("Mouse X") * mouseSettings.pointerSensitivity;
-                //targetAngles.x -= Input.GetAxis("Mouse Y") * mouseSettings.pointerSensitivity;
-
+                targetAngles.x -= mouseOffset.y * mouseSettings.pointerSensitivity; 
                 //Range.
                 targetAngles.x = Mathf.Clamp(targetAngles.x, angleRange.min, angleRange.max);
             }
@@ -300,7 +315,7 @@ namespace Mogoson.CameraExtension
             if (mainCamera == null) mainCamera = transform.GetComponent<Camera>();
             if (mainCamera.orthographic)
             {
-                if (!Mouse.current.middleButton.isPressed)//(!Input.GetMouseButton(2))
+                if (!Mouse.current.middleButton.isPressed&&IsClickUGUIorNGUI.Instance && !IsClickUGUIorNGUI.Instance.isOverUI)//(!Input.GetMouseButton(2))
                 {
                     mainCamera.orthographicSize -= Input.GetAxis("Mouse ScrollWheel") * GetWheelSensitivity();
                     mainCamera.orthographicSize = Mathf.Clamp(mainCamera.orthographicSize, OrthographicRange.min, OrthographicRange.max);
@@ -308,7 +323,7 @@ namespace Mogoson.CameraExtension
                     //mainCamera.orthographicSize = Mathf.Clamp(mainCamera.orthographicSize, OrthographicRange.min, OrthographicRange.max);
                 }
             }
-            if (!Mouse.current.middleButton.isPressed)//(!Input.GetMouseButton(2))
+            if (!Mouse.current.middleButton.isPressed&&IsClickUGUIorNGUI.Instance&&!IsClickUGUIorNGUI.Instance.isOverUI)//(!Input.GetMouseButton(2))
             {
                 //targetDistance -= Input.GetAxis("Mouse ScrollWheel") * GetWheelSensitivity();                                
                 //if (Mouse.current.scroll.ReadValue().y!=0) Debug.LogError("MouseMoveY:"+Mouse.current.scroll.ReadValue().y  +" default:"+ Mouse.current.scroll.ReadDefaultValue().y);
@@ -337,6 +352,54 @@ namespace Mogoson.CameraExtension
             }
         }
 
+        private Transform lastTarget;
+
+        private void AvoidCameraBlock()
+        {            
+            Transform camTarget = GetTarget();
+            if (CameraBlockCheck.Instance == null||camTarget==null) return;
+            if (camTarget.GetComponent<MouseTranslate>())
+            {
+                camTarget = camTarget.GetComponent<MouseTranslate>().areaSettings.center;
+            }
+            if(lastTarget!= camTarget)
+            {
+                //目标切换后，更新至遮挡检测透明脚本中
+                lastTarget = camTarget;
+                if (lastTarget == null) return;
+                if (IsNormalDev(lastTarget))
+                {
+                    CameraBlockCheck.Instance.SetTarget(lastTarget,CameraBlockCheck.CameraAvoidCheckEnum.AroundAlignCamera);
+                }
+                else
+                {
+                    CameraBlockCheck.Instance.ClearTarget(CameraBlockCheck.CameraAvoidCheckEnum.AroundAlignCamera);
+                }
+            }
+        }
+        /// <summary>
+        /// 设备和BIM模型增加遮挡透明功能，测点不加
+        /// </summary>
+        /// <param name="targetT"></param>
+        /// <returns></returns>
+        private bool IsNormalDev(Transform targetT)
+        {
+            if (targetT.GetComponent<BIMModelInfo>()) return true;
+            else if (targetT.GetComponent<DevNode>())
+            {
+                DevNode devT = targetT.GetComponent<DevNode>();
+                if (devT.Info!=null&& TypeCodeHelper.IsKKSMonitor(devT.Info.TypeCode.ToString()))
+                {
+                    return false;
+                }
+                else
+                {
+                    return true;
+                }
+            }
+            return false;
+        }
+
         private bool GetMouseButton(int mouseId)
         {
             if(mouseId==0&&Mouse.current.leftButton.isPressed)
@@ -355,7 +418,7 @@ namespace Mogoson.CameraExtension
                 return false;
             }
         }
-
+        
         /// <summary>
         /// 是否能够旋转
         /// </summary>
@@ -363,15 +426,20 @@ namespace Mogoson.CameraExtension
         private bool IsEnableAround()
         {
             if (IsDisableMouseInput) return false;
-            //if (IsClickUGUIorNGUI.Instance)
-            //{
-            //    if (IsClickUGUIorNGUI.Instance.isClickedUI) return false;
-            //}
-            //if (BigScreenManager.IsFullView) return false;//大屏不能旋转建筑
-            //if (FPSMode.Instance != null && FPSMode.Instance.FPSController != null)
-            //{
-            //    if (FPSMode.Instance.FPSController.IsLoadBuildAndDev) return false;
-            //}
+
+            // if (IsClickUGUIorNGUI.Instance)
+            // {
+            //     if (IsClickUGUIorNGUI.Instance.isClickedUI) return false;
+            // }
+
+//#if UNITY_EDITOR
+//            return true;//YZL测试:20220211
+//#endif
+            if (BigScreenManager.IsFullView) return false;//大屏不能旋转建筑
+            // if (FPSMode.Instance != null && FPSMode.Instance.FPSController != null)
+            // {
+            //     if (FPSMode.Instance.FPSController.IsLoadBuildAndDev) return false;
+            // }
             return true;
         }
 

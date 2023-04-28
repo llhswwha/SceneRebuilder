@@ -212,12 +212,14 @@ namespace Mogoson.CameraExtension
         {
             this.center = center;
             this.centerPos = new TransformPos(center);
+            Debug.Log($"PlaneArea.SetCenter1 centerPos:{centerPos.getPositon()} center:{center} centerPos:{center.position}");
         }
 
         public void SetCenter(TransformPos centerPos)
         {
             this.centerPos = centerPos;
             this.center = centerPos.transform;
+            Debug.Log($"PlaneArea.SetCenter2 centerPos:{centerPos.getPositon()} center:{center} centerPos:{center.position}");
         }
 
         /// <summary>
@@ -251,6 +253,12 @@ namespace Mogoson.CameraExtension
     [Serializable]
     public struct AlignTarget
     {
+        public string GetLogText()
+        {
+            return string.Format("AlignVeiwToTarget center:{0},angles:{1},distance:{2} go:{3}",center.position,angles,distance, center);
+        }
+
+        //public bool IsNone;
         /// <summary>
         /// Center of align target.
         /// </summary>
@@ -278,6 +286,8 @@ namespace Mogoson.CameraExtension
         /// </summary>
         public Vector2 angles;
 
+        public bool enableAngles;
+
         /// <summary>
         /// Distance from camera to target center.
         /// </summary>
@@ -292,6 +302,11 @@ namespace Mogoson.CameraExtension
         /// Range limit of distance.
         /// </summary>
         public Range distanceRange;
+
+        public override string ToString()
+        {
+            return $"angles:{angles};distance:{distance}";
+        }
 
         /// <summary>
         /// Constructor.
@@ -309,6 +324,8 @@ namespace Mogoson.CameraExtension
             this.distance = distance;
             this.angleRange = angleRange;
             this.distanceRange = distanceRange;
+            this.enableAngles = false;
+            //this.IsNone = false;
         }
     }
 }

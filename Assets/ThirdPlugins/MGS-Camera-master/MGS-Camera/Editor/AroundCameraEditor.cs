@@ -64,7 +64,8 @@ namespace Mogoson.CameraExtension
 
         protected virtual void DrawSceneTool()
         {
-            var rect = new Rect(10, Screen.height - 125, 225, 75);
+            //var rect = new Rect(10, Screen.height - 125, 225, 75);
+            var rect = new Rect(10, 10, 225, 100);//YZL20220916:解决Current Around界面找不到问题
             GUI.color = Color.white;
             Handles.BeginGUI();
             GUILayout.BeginArea(rect, "Current Around", "Window");

@@ -80,17 +80,31 @@ namespace Mogoson.CameraExtension
         {
             TranslateByMouseInput();
         }
+        private bool CanTranslate()
+        {
+            if (IsClickUGUIorNGUI.Instance && IsClickUGUIorNGUI.Instance.isClickedUI)
+            {
+                return false;
+            }
+            if (RTEManager.IsDraging) return false;
 
+            return true;
+        }
         /// <summary>
         /// Translate this gameobject by mouse input.
         /// </summary>
         protected void TranslateByMouseInput()
         {
-            //if (RoomFactory.Instance && RoomFactory.Instance.RemoteMode == RemoteMode.RenderStreaming)
-            //{
-            //    TranslateByMouseInputSystem();
-            //}
-            //else
+            if (!CanTranslate()) {
+                //Debug.Log("TranslateByMouseInput_1 ");
+                return;
+            }
+            //Debug.Log("TranslateByMouseInput_2 ");
+            if (RoomFactory.Instance && RoomFactory.Instance.RemoteMode == RemoteMode.RenderStreaming)
+            {
+                TranslateByMouseInputSystem();
+            }
+            else
             {
                 if (Input.GetMouseButtonDown(0)|| Input.GetMouseButtonDown(1)|| Input.GetMouseButtonDown(2))
                 {
@@ -116,20 +130,27 @@ namespace Mogoson.CameraExtension
                     //Range limit.
                     targetOffset.x = Mathf.Clamp(targetOffset.x, -areaSettings.width, areaSettings.width);
                     targetOffset.z = Mathf.Clamp(targetOffset.z, -areaSettings.length, areaSettings.length);
-                }
-
+                }               
                 //Lerp and update transform position.
                 CurrentOffset = Vector3.Lerp(CurrentOffset, targetOffset, damper * Time.deltaTime);
 
-                try
-                {
-                    Vector3 pos = areaSettings.GetPos() + CurrentOffset;
-                    transform.position = pos;
-                }
-                catch (System.Exception ex)
-                {
-                    Debug.LogError("MouseTranslate.TranslateByMouseInput:" + ex);
-                }
+                SetPosition();
+            }
+        }
+
+        public void SetPosition()
+        {
+            try
+            {
+                CheckAreaSetting();
+                Vector3 pos1 = areaSettings.GetPos();
+                Vector3 pos = pos1 + CurrentOffset;
+                transform.position = pos;
+                //Debug.Log($"MouseTranslate.SetPosition pos1:{pos1} CurrentOffset:{CurrentOffset} pos:{pos}");
+            }
+            catch (System.Exception ex)
+            {
+                Debug.LogError("MouseTranslate.SetPosition Exception:" + ex);
             }
         }
 
@@ -160,18 +181,38 @@ namespace Mogoson.CameraExtension
                 targetOffset.x = Mathf.Clamp(targetOffset.x, -areaSettings.width, areaSettings.width);
                 targetOffset.z = Mathf.Clamp(targetOffset.z, -areaSettings.length, areaSettings.length);
             }
-
             //Lerp and update transform position.
             CurrentOffset = Vector3.Lerp(CurrentOffset, targetOffset, damper * Time.deltaTime);
 
-            try
+            // try
+            // {
+            //     CheckAreaSetting();
+            //     Vector3 pos = areaSettings.GetPos() + CurrentOffset;
+            //     transform.position = pos;
+            // }
+            // catch (System.Exception ex)
+            // {
+            //     Debug.LogError("MouseTranslate.TranslateByMouseInput:" + ex);
+            // }
+            SetPosition();
+        }
+
+        private GameObject tempTarget;
+        /// <summary>
+        /// 目标检测，防止目标等于自己，不停累加导致崩溃
+        /// </summary>
+        private void CheckAreaSetting()
+        {
+            if(areaSettings.centerPos.transform==transform)
             {
-                Vector3 pos = areaSettings.GetPos() + CurrentOffset;
-                transform.position = pos;
-            }
-            catch (System.Exception ex)
-            {
-                Debug.LogError("MouseTranslate.TranslateByMouseInput:" + ex);
+                if(tempTarget==null)
+                {
+                    tempTarget = new GameObject("tempTargetCenter");
+                    tempTarget.transform.position = transform.position;
+                    tempTarget.transform.parent = transform.parent;
+                }
+
+                areaSettings.SetCenter(tempTarget.transform);
             }
         }
 
