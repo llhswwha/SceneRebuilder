@@ -1,0 +1,21 @@
+{
+  "name": "com.battlehub.net.rteditor.hdrp",
+  "version": "2.26.0",
+  "displayName": "Runtime Editor HDRP Support",
+  "description": "Runtime Editor HDRP Support",
+  "unity": "2020.1",
+  "unityRelease": "0b5",
+  "dependencies": {
+    "com.battlehub.net.rteditor": "2.26.0",
+    "com.unity.render-pipelines.high-definition": "8.2.0"
+  },
+  "keywords": [
+    "runtime editor hdrp",
+    "transform handles hdrp"
+  ],
+  "author": {
+    "name": "Battlehub",
+    "email": "Battlehub@outlook.com",
+    "url": "http://www.battlehub.net"
+  }
+}

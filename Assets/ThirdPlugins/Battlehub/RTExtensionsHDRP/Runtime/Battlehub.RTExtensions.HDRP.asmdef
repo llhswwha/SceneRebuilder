@@ -1,0 +1,18 @@
+{
+    "name": "Battlehub.RTExtensions.HDRP",
+    "references": [
+        "GUID:9902f5daed54f684d9815f0b73cb4004",
+        "GUID:fb20bc2d30583e34fba2eb37c20bd497",
+        "GUID:1826c0224c0d048b88112c79bbb0cd85",
+        "GUID:457756d89b35d2941b3e7b37b4ece6f1"
+    ],
+    "includePlatforms": [],
+    "excludePlatforms": [],
+    "allowUnsafeCode": false,
+    "overrideReferences": false,
+    "precompiledReferences": [],
+    "autoReferenced": true,
+    "defineConstraints": [],
+    "versionDefines": [],
+    "noEngineReferences": false
+}

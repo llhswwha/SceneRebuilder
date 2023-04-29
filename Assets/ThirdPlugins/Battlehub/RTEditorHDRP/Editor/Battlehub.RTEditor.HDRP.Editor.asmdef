@@ -1,0 +1,21 @@
+{
+    "name": "Battlehub.RTEditor.HDRP.Editor",
+    "references": [
+        "GUID:fb20bc2d30583e34fba2eb37c20bd497",
+        "GUID:457756d89b35d2941b3e7b37b4ece6f1",
+        "GUID:1826c0224c0d048b88112c79bbb0cd85",
+        "GUID:df380645f10b7bc4b97d4f5eb6303d95",
+        "GUID:e6c68840097629b4695dc3ea39b34205"
+    ],
+    "includePlatforms": [
+        "Editor"
+    ],
+    "excludePlatforms": [],
+    "allowUnsafeCode": false,
+    "overrideReferences": false,
+    "precompiledReferences": [],
+    "autoReferenced": true,
+    "defineConstraints": [],
+    "versionDefines": [],
+    "noEngineReferences": false
+}

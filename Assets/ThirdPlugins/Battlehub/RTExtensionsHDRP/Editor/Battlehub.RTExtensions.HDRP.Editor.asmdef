@@ -1,0 +1,19 @@
+{
+    "name": "Battlehub.RTExtensions.HDRP.Editor",
+    "references": [
+        "GUID:457756d89b35d2941b3e7b37b4ece6f1",
+        "GUID:88cd7c41e3358b142beeec1c74cf34f2",
+        "GUID:fb20bc2d30583e34fba2eb37c20bd497"
+    ],
+    "includePlatforms": [
+        "Editor"
+    ],
+    "excludePlatforms": [],
+    "allowUnsafeCode": false,
+    "overrideReferences": false,
+    "precompiledReferences": [],
+    "autoReferenced": true,
+    "defineConstraints": [],
+    "versionDefines": [],
+    "noEngineReferences": false
+}

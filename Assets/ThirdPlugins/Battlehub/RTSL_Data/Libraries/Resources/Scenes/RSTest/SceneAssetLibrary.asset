@@ -1,0 +1,75 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 85a37e76ce395ad4a9d0c4633bbe6e21, type: 3}
+  m_Name: SceneAssetLibrary
+  m_EditorClassIdentifier: 
+  m_offset: 0
+  m_ordinal: 0
+  m_assetLibrary:
+    m_ID: 0
+    m_Name: Root
+    m_Depth: -1
+    Identity: 11
+    FolderIdentity: 4
+    Folders:
+    - m_ID: 0
+      m_Name: Root
+      m_Depth: -1
+      Assets: []
+      IsEnabled: 0
+    - m_ID: 3
+      m_Name: Assets
+      m_Depth: 0
+      Assets:
+      - m_ID: 4
+        m_Name: DefaultHDMaterial
+        m_Depth: 0
+        Object: {fileID: 2100000, guid: 73c176f402d2c2f4d929aa5da7585d17, type: 2}
+        IsEnabled: 0
+        PrefabParts: []
+      - m_ID: 5
+        m_Name: New Material
+        m_Depth: 0
+        Object: {fileID: 2100000, guid: 437c2b7ededf9f147b5508ca1aab5ad8, type: 2}
+        IsEnabled: 0
+        PrefabParts: []
+      - m_ID: 6
+        m_Name: Shader Graphs_New Shader Graph
+        m_Depth: 0
+        Object: {fileID: 2100000, guid: d493fb6d00004fc4c91e14d25f8636bd, type: 2}
+        IsEnabled: 0
+        PrefabParts: []
+      - m_ID: 7
+        m_Name: Shader Graphs_New Shader Graph 1
+        m_Depth: 0
+        Object: {fileID: 2100000, guid: c8d94dd9b908af0429675c2f16780601, type: 2}
+        IsEnabled: 0
+        PrefabParts: []
+      - m_ID: 8
+        m_Name: Shader Graphs/New Shader Graph
+        m_Depth: 0
+        Object: {fileID: -6465566751694194690, guid: e4579a1ced4d2804fbafd2f86d776336, type: 3}
+        IsEnabled: 0
+        PrefabParts: []
+      - m_ID: 9
+        m_Name: HDRP/Lit
+        m_Depth: 0
+        Object: {fileID: 4800000, guid: 6e4ae4064600d784cac1e41a9e6f2e59, type: 3}
+        IsEnabled: 0
+        PrefabParts: []
+      - m_ID: 10
+        m_Name: UI/Default
+        m_Depth: 0
+        Object: {fileID: 10770, guid: 0000000000000000f000000000000000, type: 0}
+        IsEnabled: 0
+        PrefabParts: []
+      IsEnabled: 1

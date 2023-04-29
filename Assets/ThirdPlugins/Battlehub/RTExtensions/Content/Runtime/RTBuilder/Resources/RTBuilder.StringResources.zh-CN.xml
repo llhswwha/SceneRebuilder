@@ -1,0 +1,101 @@
+<?xml version="1.0" encoding="utf-8"?>
+<StringResources xmlns:xsd="http://www.w3.org/2001/XMLSchema" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance">
+	<Resources>
+	
+		<!-- ProBuilderInit -->
+		<StringResource id="ID_RTBuilder_WM_Header_Builder" value="编辑器"/>
+		
+		<!-- ProBuildeViewToolbar -->
+		<StringResource id="ID_RTBuilder_ToolBar_Tooltip_ObjectSelection" value="对象选择"/>
+		<StringResource id="ID_RTBuilder_ToolBar_Tooltip_VertexSelection" value="顶点选择"/>
+		<StringResource id="ID_RTBuilder_ToolBar_Tooltip_EdgeSelection" value="边线选择"/>
+		<StringResource id="ID_RTBuilder_ToolBar_Tooltip_FaceSelection" value="面片选择"/>
+		
+		<!-- ProBuilderView -->
+		<StringResource id="ID_RTBuilder_View_Mode" value="模式:"/>
+		<StringResource id="ID_Battlehub.RTBuilder.ProBuilderView+UIModes.Mesh_Editing" value="网格编辑"/>
+		<StringResource id="ID_Battlehub.RTBuilder.ProBuilderView+UIModes.UV_Editing" value="UV编辑"/>
+		<StringResource id="ID_Battlehub.RTBuilder.ProBuilderView+UIModes.Materials_Editing" value="材质编辑"/>
+		<StringResource id="ID_RTBuilder_View_ProBuilderize" value="构建"/>
+    <StringResource id="ID_RTBuilder_View_UnproBuilderize" value="取消构建"/>
+    <StringResource id="ID_RTBuilder_View_Subdivide" value="细分"/>
+		<StringResource id="ID_RTBuilder_View_CenterPivot" value="中心化枢轴点"/>
+		<StringResource id="ID_RTBuilder_View_ExtrudeFace" value="挤压面"/>
+		<StringResource id="ID_RTBuilder_View_DeleteFace" value="删除面"/>
+		<StringResource id="ID_RTBuilder_View_SubdivideFaces" value="细分面"/>
+		<StringResource id="ID_RTBuilder_View_MergeFaces" value="合并面"/>
+		<StringResource id="ID_RTBuilder_View_FindHoles" value="寻找孔"/>
+		<StringResource id="ID_RTBuilder_View_FillHoles" value="填充孔"/>
+		<StringResource id="ID_RTBuilder_View_DeleteEdge" value="删除边"/>
+		<StringResource id="ID_RTBuilder_View_SubdivideEdges" value="细分边"/>
+		<StringResource id="ID_RTBuilder_View_DeleteVertex" value="删除顶点"/>
+		<StringResource id="ID_RTBuilder_View_NewShape" value="新形状"/>
+		<StringResource id="ID_RTBuilder_View_Arch" value="弓形"/>
+		<StringResource id="ID_RTBuilder_View_Cone" value="圆锥"/>
+		<StringResource id="ID_RTBuilder_View_Cube" value="立方体"/>
+		<StringResource id="ID_RTBuilder_View_CurvedStair" value="弧形楼梯"/>
+		<StringResource id="ID_RTBuilder_View_Cylinder" value="圆柱"/>
+		<StringResource id="ID_RTBuilder_View_Door" value="门"/>
+		<StringResource id="ID_RTBuilder_View_Pipe" value="管道"/>
+		<StringResource id="ID_RTBuilder_View_Plane" value="平面"/>
+		<StringResource id="ID_RTBuilder_View_Prism" value="棱柱体"/>
+		<StringResource id="ID_RTBuilder_View_Sphere" value="球体"/>
+		<StringResource id="ID_RTBuilder_View_Sprite" value="精灵"/>
+		<StringResource id="ID_RTBuilder_View_Stair" value="楼梯"/>
+		<StringResource id="ID_RTBuilder_View_Torus" value="环面"/>
+		<StringResource id="ID_RTBuilder_View_NewPolyShape" value="新多边形"/>
+		<StringResource id="ID_RTBuilder_View_EditPolyShape" value="编辑多边形"/>
+		
+		<!-- Material Palette Editor -->
+		<StringResource id="ID_RTBuilder_MaterialPalette_Create" value="创建"/>
+		<StringResource id="ID_RTBuilder_MaterialPalette_Apply" value="应用"/>
+		<StringResource id="ID_RTBuilder_MaterialPalette_Alt" value="Alt+"/>
+		
+		<!-- UV Editor -->
+		<StringResource id="ID_RTBuilder_UVEditor_ConvertToAuto" value="转换为自动"/>
+		<StringResource id="ID_RTBuilder_UVEditor_ConvertToManual" value="转换为手动"/>
+		<StringResource id="ID_RTBuilder_UVEditor_NoSelectedFaces" value="选择面以开始uv编辑"/>
+		
+		<!-- UV Editor Auto -->
+		<StringResource id="ID_RTBuilder_UVEditorAuto_TilingAndAlignment" value="平铺和对齐"/>
+		<StringResource id="ID_RTBuilder_UVEditorAuto_Transform" value="转换"/>
+		<StringResource id="ID_RTBuilder_UVEditorAuto_Special" value="特设"/>
+		<StringResource id="ID_RTBuilder_UVEditorAuto_GroupFaces" value="分组面"/>
+		<StringResource id="ID_RTBuilder_UVEditorAuto_UngroupFaces" value="解组面"/>
+		<StringResource id="ID_RTBuilder_UVEditorAuto_SelectFaceGroup" value="选择面组"/>
+		<StringResource id="ID_RTBuilder_UVEditorAuto_ResetUVs" value="重置UV"/>
+		<StringResource id="ID_RTBuilder_UVEditorAuto_Fill" value="填充"/>
+		<StringResource id="ID_RTBuilder_UVEditorAuto_Anchor" value="锚"/>
+		<StringResource id="ID_RTBuilder_UVEditorAuto_Offset" value="偏移"/>
+		<StringResource id="ID_RTBuilder_UVEditorAuto_Rotation" value="旋转"/>
+		<StringResource id="ID_RTBuilder_UVEditorAuto_Tiling" value="平铺"/>
+		<StringResource id="ID_RTBuilder_UVEditorAuto_WorldSpace" value="世界坐标"/>
+		<StringResource id="ID_RTBuilder_UVEditorAuto_FlipU" value="U形翻转"/>
+		<StringResource id="ID_RTBuilder_UVEditorAuto_FlipV" value="V形翻转"/>
+		<StringResource id="ID_RTBuilder_UVEditorAuto_SwapUV" value="UV交换"/>
+		<StringResource id="ID_RTBuilder_UVEditorAuto_UVModeMixed" value="UV模式:混合"/>
+		<StringResource id="ID_RTBuilder_UVEditorAuto_UVModeAuto" value="UV模式:自动"/>
+		<StringResource id="ID_RTBuilder_UVEditorAuto_UVModeManual" value="UV模式:手动"/>
+		
+		<StringResource id="ID_Battlehub.ProBuilderIntegration.PBAutoUnwrapSettings+Fill.Fit" value="适应"/>
+		<StringResource id="ID_Battlehub.ProBuilderIntegration.PBAutoUnwrapSettings+Fill.Tile" value="平铺"/>
+		<StringResource id="ID_Battlehub.ProBuilderIntegration.PBAutoUnwrapSettings+Fill.Stretch" value="拉伸"/>
+		
+		<StringResource id="ID_Battlehub.ProBuilderIntegration.PBAutoUnwrapSettings+Anchor.UpperLeft" value="左上角"/>
+		<StringResource id="ID_Battlehub.ProBuilderIntegration.PBAutoUnwrapSettings+Anchor.UpperCenter" value="上中心"/>
+		<StringResource id="ID_Battlehub.ProBuilderIntegration.PBAutoUnwrapSettings+Anchor.UpperRight" value="右上角"/>
+		<StringResource id="ID_Battlehub.ProBuilderIntegration.PBAutoUnwrapSettings+Anchor.MiddleLeft" value="左中"/>
+		<StringResource id="ID_Battlehub.ProBuilderIntegration.PBAutoUnwrapSettings+Anchor.MiddleCenter" value="正中"/>
+		<StringResource id="ID_Battlehub.ProBuilderIntegration.PBAutoUnwrapSettings+Anchor.MiddleRight" value="右中"/>
+		<StringResource id="ID_Battlehub.ProBuilderIntegration.PBAutoUnwrapSettings+Anchor.LowerLeft" value="左下角"/>
+		<StringResource id="ID_Battlehub.ProBuilderIntegration.PBAutoUnwrapSettings+Anchor.LowerCenter" value="下中心"/>
+		<StringResource id="ID_Battlehub.ProBuilderIntegration.PBAutoUnwrapSettings+Anchor.LowerRight" value="右下角"/>
+		<StringResource id="ID_Battlehub.ProBuilderIntegration.PBAutoUnwrapSettings+Anchor.None" value="无"/>
+
+    <!-- Smooth Groups Editor -->
+    <StringResource id="ID_RTBuilder_SmoothGroupsEditor_NormalsScale" value="法线比例"/>
+    <StringResource id="ID_RTBuilder_SmoothGroupsEditor_PreviewOpacity" value="预览不透明度"/>
+    
+
+  </Resources>
+</StringResources>

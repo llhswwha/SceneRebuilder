@@ -1,0 +1,21 @@
+{
+  "name": "com.battlehub.net.rtextensions.hdrp",
+  "version": "2.26.0",
+  "displayName": "Runtime Editor Extensions HDRP Support",
+  "description": "Runtime Editor Extensions HDRP Support",
+  "unity": "2020.1",
+  "unityRelease": "0b5",
+  "dependencies": {
+    "com.battlehub.net.rteditor": "2.26.0",
+    "com.battlehub.net.rtextensions": "2.26.0",
+    "com.unity.render-pipelines.high-definition": "8.2.0"
+  },
+  "keywords": [
+    "runtime editor extensions hdrp support"
+  ],
+  "author": {
+    "name": "Battlehub",
+    "email": "Battlehub@outlook.com",
+    "url": "http://www.battlehub.net"
+  }
+}

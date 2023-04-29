@@ -1,0 +1,128 @@
+<?xml version="1.0" encoding="utf-8"?>
+<StringResources xmlns:xsd="http://www.w3.org/2001/XMLSchema" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance">
+	<Resources>
+	
+		<!-- Terrain Init -->
+		<StringResource id="ID_RTTerrain_WM_Header_TerrainEditor" value="地形编辑器"/>
+		<StringResource id="ID_RTTerrain_MenuGameObject_Terrain" value="地形"/>
+    
+    
+		<!-- Terrain Settings Editor -->
+		<StringResource id="ID_RTTerrain_Settings_DefaultTextureChanged" value="默认地形纹理已更改"/>
+		<StringResource id="ID_RTTerrain_Settings_WouldYouLikeToApplyTexture" value="是否要将此纹理应用于场景中的地形?"/>
+		<StringResource id="ID_RTTerrain_Settings_Yes" value="是"/>
+		<StringResource id="ID_RTTerrain_Settings_No" value="否"/>
+		<StringResource id="ID_RTTerrain_Settings_Width" value="宽度"/>
+		<StringResource id="ID_RTTerrain_Settings_Length" value="长度"/>
+		<StringResource id="ID_RTTerrain_Settings_Resolution" value="分辨率"/>
+		<StringResource id="ID_RTTerrain_Settings_Position" value="位置"/>
+		<StringResource id="ID_RTTerrain_Settings_General" value="通用"/>
+		<StringResource id="ID_RTTerrain_Settings_DefaultTexture" value="默认纹理"/>
+		
+		<!-- Terrain Editor -->
+		<StringResource id="ID_RTTerrain_TerrainEditor_ToolTip_TerrainPaintTool" value="地形绘制工具"/>
+		<StringResource id="ID_RTTerrain_TerrainEditor_ToolTip_AreaTool" value="地形区域工具"/>
+    <StringResource id="ID_RTTerrain_TerrainEditor_ToolTip_TerrainGridTool" value="地形栅格工具"/>
+    
+    <StringResource id="ID_RTTerrain_TerrainEditor_ToolTip_Settings" value="设置"/>
+		<StringResource id="ID_RTTerrain_TerrainEditor_EmptyEditor" value="未选择工具,请选择工具"/>
+		<StringResource id="ID_RTTerrain_TerrainEditor_Tool" value="工具:"/>
+    <StringResource id="ID_RTTerrain_TerrainEditor_MultiObjectEditingProhibited" value="不支持多对象编辑"/>
+    
+    <StringResource id="ID_Battlehub.RTTerrain.TerrainEditor+PaintTool.Raise_Or_Lower_Terrain" value="升高或降低地形"/>
+		<StringResource id="ID_Battlehub.RTTerrain.TerrainEditor+PaintTool.Paint_Texture" value="绘制纹理"/>
+		<StringResource id="ID_Battlehub.RTTerrain.TerrainEditor+PaintTool.Stamp_Terrain" value="冲压地形"/>
+		<StringResource id="ID_Battlehub.RTTerrain.TerrainEditor+PaintTool.Set_Height" value="设置高度"/>
+		<StringResource id="ID_Battlehub.RTTerrain.TerrainEditor+PaintTool.Smooth_Height" value="平滑高度"/>
+    <StringResource id="ID_Battlehub.RTTerrain.TerrainEditor+PaintTool.Paint_Holes" value="绘制孔"/>
+    <StringResource id="ID_Battlehub.RTTerrain.TerrainEditor+PaintTool.Paint_Details" value="绘制细节"/>
+    <StringResource id="ID_Battlehub.RTTerrain.TerrainEditor+PaintTool.Paint_Trees" value="绘制树"/>
+		
+		<!-- Terrain Brush Editor -->
+		<StringResource id="ID_RTTerrain_TerrainBrushEditor_Header" value="笔刷"/>
+		<StringResource id="ID_RTTerrain_TerrainBrushEditor_Create" value="创建"/>
+		<StringResource id="ID_RTTerrain_TerrainBrushEditor_Add" value="添加"/>
+		<StringResource id="ID_RTTerrain_TerrainBrushEditor_Delete" value="删除"/>
+		<StringResource id="ID_RTTerrain_TerrainBrushEditor_BrushSize" value="笔刷大小"/>
+		<StringResource id="ID_RTTerrain_TerrainBrushEditor_BrushOpacity" value="笔刷透明度"/>
+		<StringResource id="ID_RTTerrain_TerrainBrushEditor_Tooltip" value="选择对象,然后单击应用按钮"/>
+		<StringResource id="ID_RTTerrain_TerrainBrushEditor_Apply" value="运用"/>
+		<StringResource id="ID_RTTerrain_TerrainBrushEditor_Cancel" value="取消"/>
+		
+		<!-- Terrain Layer Editor -->
+		<StringResource id="ID_RTTerrain_TerrainLayerEditor_Header" value="层"/>
+		<StringResource id="ID_RTTerrain_TerrainLayerEditor_Create" value="创建"/>
+		<StringResource id="ID_RTTerrain_TerrainLayerEditor_Replace" value="更换"/>
+		<StringResource id="ID_RTTerrain_TerrainLayerEditor_Delete" value="删除"/>
+		<StringResource id="ID_RTTerrain_TerrainLayerEditor_TileSize" value="平铺尺寸"/>
+		<StringResource id="ID_RTTerrain_TerrainLayerEditor_TileOffset" value="平铺偏移"/>
+    
+    <!-- Terrain Detail Editor-->
+    <StringResource id="ID_RTTerrain_TerrainDetailEditor_Header" value="层"/>
+    <StringResource id="ID_RTTerrain_TerrainDetailEditor_Create" value="创建"/>
+    <StringResource id="ID_RTTerrain_TerrainDetailEditor_Delete" value="删除"/>
+    <StringResource id="ID_RTTerrain_TerrainDetailEditor_DetailTexture" value="细节纹理"/>
+    <StringResource id="ID_RTTerrain_TerrainDetailEditor_Detail" value="细节"/>
+    <StringResource id="ID_RTTerrain_TerrainDetailEditor_RenderMode" value="渲染模式"/>
+    <StringResource id="ID_RTTerrain_TerrainDetailEditor_BendFactor" value="弯曲系数"/>
+    <StringResource id="ID_RTTerrain_TerrainDetailEditor_DryColor" value="干色"/>
+    <StringResource id="ID_RTTerrain_TerrainDetailEditor_HealthyColor" value="健康颜色"/>
+    <StringResource id="ID_RTTerrain_TerrainDetailEditor_MaxHeight" value="最大高度"/>
+    <StringResource id="ID_RTTerrain_TerrainDetailEditor_MinHeight" value="最小高度"/>
+    <StringResource id="ID_RTTerrain_TerrainDetailEditor_MinWidth" value="最小宽度"/>
+    <StringResource id="ID_RTTerrain_TerrainDetailEditor_NoiseSpread" value="噪声传播"/>
+
+    <!-- Terrain Tree Editor-->
+    <StringResource id="ID_RTTerrain_TerrainTreeEditor_Header" value="树"/>
+    <StringResource id="ID_RTTerrain_TerrainTreeEditor_Create" value="创建"/>
+    <StringResource id="ID_RTTerrain_TerrainTreeEditor_Delete" value="删除"/>
+    <StringResource id="ID_RTTerrain_TerrainTreeEditor_Prefab" value="预设"/>
+    <StringResource id="ID_RTTerrain_TerrainTreeEditor_BendFactor" value="弯曲系数"/>
+
+    <!-- Terrain Paint Trees Editor-->
+    <StringResource id="ID_RTTerrain_TerrainPaintTreesEditor_LockWidthToHeight" value="锁定宽度到高度"/>
+    <StringResource id="ID_RTTerrain_TerrainPaintTreesEditor_MinTreeHeight" value="最小树高度"/>
+    <StringResource id="ID_RTTerrain_TerrainPaintTreesEditor_MaxTreeHeight" value="最大树高度"/>
+    <StringResource id="ID_RTTerrain_TerrainPaintTreesEditor_MinTreeWidth" value="最小树高度"/>
+    <StringResource id="ID_RTTerrain_TerrainPaintTreesEditor_MaxTreeWidth" value="最大树高度"/>
+    
+    <!-- Terrain Raise Lower Editor -->
+		<StringResource id="ID_RTTerrain_TerrainRaiseLowerEditor_Tooltip" value="左键单击可升高,按住shift并单击可降低."/>
+		
+		<!-- Terrain PaintTexture Editor -->
+		<StringResource id="ID_RTTerrain_TerrainPaintTextureEditor_Tooltip" value="将选定的材质层绘制到地形纹理上."/>
+		
+		<!-- Terrain Height Editor -->
+		<StringResource id="ID_RTTerrain_TerrainHeightEditor_Tooltip" value="左键单击可设置高度,按住shift键并单击鼠标左键可采样目标高度."/>
+		<StringResource id="ID_RTTerrain_TerrainHeightEditor_Flatten" value="压平"/>
+		
+		<!-- Terrain Stamp Editor -->
+		<StringResource id="ID_RTTerrain_TerrainStampEditor_Tooltip" value="左键单击以升高,按住左键并单击以降低."/>
+		<StringResource id="ID_RTTerrain_TerrainStampEditor_Height" value="高度"/>
+		
+		<!-- Terrain Smooth Editor -->
+		<StringResource id="ID_RTTerrain_TerrainSmoothHeightEditor_Tooltip" value="单击以平滑地形高度."/>
+		
+    <!-- Terrain PaintHoles Editor -->
+		<StringResource id="ID_RTTerrain_TerrainPaintHolesEditor_Tooltip" value="左键单击可绘制孔,按住shift键并单击可将其删除."/>
+
+    <!-- Terrain PaintDetails Editor -->
+    <StringResource id="ID_RTTerrain_TerrainPaintDetailsEditor_Tooltip" value="左键单击可绘制详细信息,按住shift键并单击可删除详细信息."/>
+
+    <!-- Terrain PaintDetails Editor -->
+    <StringResource id="ID_RTTerrain_TerrainPaintTreesEditor_Tooltip" value="左键单击可绘制树,按住shift键并单击可删除树."/>
+		
+		<!-- Terrain Selection Handles Editor -->
+		<StringResource id="ID_RTTerrain_SelectionHandles_ZTest" value="Z检验"/>
+		<StringResource id="ID_RTTerrain_SelectionHandles_XSpacing" value="X间距"/>
+		<StringResource id="ID_RTTerrain_SelectionHandles_ZSpacing" value="Z间距"/>
+		<StringResource id="ID_RTTerrain_SelectionHandles_TooltipText" value="选择对象,然后单击应用按钮"/>
+		<StringResource id="ID_RTTerrain_SelectionHandles_Apply" value="运用"/>
+		<StringResource id="ID_RTTerrain_SelectionHandles_Cancel" value="取消"/>
+		<StringResource id="ID_RTTerrain_SelectionHandles_ResetPosition" value="重置位置"/>
+		<StringResource id="ID_RTTerrain_SelectionHandles_CutHoles" value="切割孔"/>
+		<StringResource id="ID_RTTerrain_SelectionHandles_ClearHoles" value="清除孔"/>
+		
+		
+	</Resources>
+</StringResources>
