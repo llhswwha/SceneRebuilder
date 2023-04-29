@@ -1,13 +1,18 @@
-﻿using System;
+﻿using Location.WCFServiceReferences.LocationServices;
+using System;
 using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.InputSystem;
-//using Y_UIFramework;
+using Y_UIFramework;
 
 public class MeshSelection : MonoBehaviour
 {
-    
+    public static MeshSelection Instance;
+    private void Awake()
+    {
+        Instance = this;
+    }
     // Start is called before the first frame update
     void Start()
     {
@@ -82,7 +87,7 @@ public class MeshSelection : MonoBehaviour
 
     public static AreaTreeNode LastSelectNode = null;
 
-    public static void SelectObjectByRId(string id,Action<GameObject> callback)
+    public static void SelectObjectByRId(string id,Action<GameObject> callback, DevInfo devInfo=null)
     {
         //Debug.Log($"SelectObjectByRId rId:{rId}");
         //if (string.IsNullOrEmpty(rId))
@@ -96,6 +101,16 @@ public class MeshSelection : MonoBehaviour
         //IdDictionary.Inid
         DateTime start = DateTime.Now;
         RendererId rId = IdDictionary.GetId(id,null,true,false);
+
+        if (rId == null)
+        {
+            Debug.LogError($"SelectObjectByRId rId == null id:{id}");
+        }
+        else
+        {
+            Debug.Log($"SelectObjectByRId  id:{id} rId:{rId.Id} name:{rId.name}");
+        }
+
         if (rId == null)
         {
             var node = AreaTreeHelper.GetNodeById(id);
@@ -146,11 +161,64 @@ public class MeshSelection : MonoBehaviour
             }
             else
             {
-                Debug.LogError($"SelectObjectByRId node==null id:{id}");
-                if (callback != null)
+                if (devInfo != null)
                 {
-                    callback(null);
+                    string bimUid = devInfo.Abutment_DevID;
+                    BIMModelInfo bimModel = BIMModelInfo.GetBIMModel(bimUid);
+                    if (bimModel != null)
+                    {
+                        GameObject go = bimModel.gameObject;
+
+                        if (go == null)
+                        {
+                            if (devInfo.Pos != null)
+                            {
+                                Debug.LogError($"SelectObjectByRId1 node==null id:{id} devInfo:{devInfo.Name},[id:{devInfo.DevID},{devInfo.Abutment_DevID},{devInfo.Abutment_Id},{devInfo.Local_CabinetID}],pos:({devInfo.Pos.PosX},{devInfo.Pos.PosY},{devInfo.Pos.PosZ})");
+                            }
+                            else
+                            {
+                                Debug.LogError($"SelectObjectByRId2 node==null id:{id} devInfo:{devInfo.Name},[id:{devInfo.DevID},{devInfo.Abutment_DevID},{devInfo.Abutment_Id},{devInfo.Local_CabinetID}],{devInfo.Pos}");
+                            }
+                            if (callback != null)
+                            {
+                                callback(null);
+                            }
+                        }
+                        else
+                        {
+                            Debug.Log($"SelectObjectByRId3 bimUid:{bimUid} time:{(DateTime.Now - start).TotalMilliseconds}ms go:{go} id:{id} node:{node} ");
+                            if (callback != null)
+                            {
+                                callback(go);
+                            }
+                        }
+                    }
+                    else
+                    {
+                        if (devInfo.Pos != null)
+                        {
+                            Debug.LogError($"SelectObjectByRId4 node==null id:{id} devInfo:{devInfo.Name},[id:{devInfo.DevID},{devInfo.Abutment_DevID},{devInfo.Abutment_Id},{devInfo.Local_CabinetID}],pos:({devInfo.Pos.PosX},{devInfo.Pos.PosY},{devInfo.Pos.PosZ})");
+                        }
+                        else
+                        {
+                            Debug.LogError($"SelectObjectByRId5 node==null id:{id} devInfo:{devInfo.Name},[id:{devInfo.DevID},{devInfo.Abutment_DevID},{devInfo.Abutment_Id},{devInfo.Local_CabinetID}],{devInfo.Pos}");
+                        }
+                        if (callback != null)
+                        {
+                            callback(null);
+                        }
+                    }
                 }
+                else
+                {
+                    Debug.LogError($"SelectObjectByRId6 node==null id:{id} devInfo:{devInfo}");
+                    if (callback != null)
+                    {
+                        callback(null);
+                    }
+                }
+                
+                
             }
         }
         else if (rId.childrenIds.Count == 0)
@@ -173,7 +241,17 @@ public class MeshSelection : MonoBehaviour
             {
                 var rIds = rId.GetComponentsInChildren<RendererId>(true);
                 var nodes = AreaTreeHelper.GetNodesByChildrens(rIds);
-                SelectObjectByRId(id, callback, start, nodes);
+                if(nodes==null||nodes.Count==0)
+                {
+                    if (callback != null)
+                    {
+                        callback(rId.gameObject);
+                    }
+                }
+                else
+                {
+                    SelectObjectByRId(id, callback, start, nodes);
+                }                
             }
           
         }
@@ -190,7 +268,7 @@ public class MeshSelection : MonoBehaviour
         var scenes = SubSceneHelper.GetScenes(nodes);
         if(scenes==null||scenes.Count==0)
         {
-            Debug.LogError($"SelectObjectByRId go==null id:{id}");
+            Debug.LogError($"SelectObjectByRId go==null id:{id} nodes:{nodes.Count}");
             if (callback != null)
             {
                 callback(null);
@@ -232,7 +310,7 @@ public class MeshSelection : MonoBehaviour
 
     private void HitTest(int count)
     {
-        //if (IsClickUGUIorNGUI.Instance&&(IsClickUGUIorNGUI.Instance.isOverUI|| IsClickUGUIorNGUI.Instance.isClickedUI)) return;
+        if (IsClickUGUIorNGUI.Instance&&(IsClickUGUIorNGUI.Instance.isOverUI|| IsClickUGUIorNGUI.Instance.isClickedUI)) return;
         //Debug.Log("HitTest:" + count);
         if (count > 2)
         {
@@ -252,7 +330,26 @@ public class MeshSelection : MonoBehaviour
             string hitParentName = "";
             if (hitGo.transform.parent!=null)
                 hitParentName = hitGo.transform.parent.name;
-            Debug.Log("Hit Object:" + hitGo + "|"+ hitGo.transform.parent);
+            Debug.Log($"Hit Object[{count}]:{hitGo}|{hitGo.transform.parent}");
+            BuildingController building = hitGo.GetComponent<BuildingController>();
+            if (building != null)
+            {
+                FloorController[] floors = building.GetComponentsInChildren<FloorController>(true);
+                if (floors.Length == 0)
+                {
+                    Collider collider = hitGo.GetComponent<Collider>();
+                    if (collider != null)
+                    {
+                        collider.enabled = false;
+                        HitTest(count + 1);
+                    }
+                }
+            }
+
+            if (hitGo.name== "Culling Collider")
+            {
+                hitGo = hitGo.transform.parent.gameObject;
+            }
 
             if (lastRenderer != null)
             {
@@ -347,7 +444,11 @@ public class MeshSelection : MonoBehaviour
         }
         else
         {
-            Debug.LogError($"Hit NULL lastRenderer:{lastRenderer}");
+            if (IsShowDebugLog)
+            {
+                Debug.LogError($"Hit NULL lastRenderer:{lastRenderer}");
+            }
+
 
             ClearLastRenderer();
         }
@@ -384,49 +485,120 @@ public class MeshSelection : MonoBehaviour
         GPUInstanceTest.SRemovePrefabInstance(hitRenderer.gameObject);
     }
 
+    public bool IsShowDebugLog = false;
+
     private void SelectBimModel(Transform rayModel)
     {
-        //if (IsClickUGUIorNGUI.Instance && IsClickUGUIorNGUI.Instance.isOverUI) return;
-        ////if (DevSubsystemManage.Instance && DevSubsystemManage.Instance.RoamToggle.isOn) return;
+        if (IsClickUGUIorNGUI.Instance && IsClickUGUIorNGUI.Instance.isOverUI) return;
+        //if (DevSubsystemManage.Instance && DevSubsystemManage.Instance.RoamToggle.isOn) return;
 
-        //Action<ViewState> callback = stateT =>
-        //{
-        //    if (stateT == ViewState.设备定位)
-        //    {
-        //        Debug.Log("SelectBimModel :" + rayModel.name);
-        //        //lastRendererMat = lastRenderer.material;
-        //        //lastRenderer.material = selectedMat;
-        //        if (rayModel != null)
-        //        {
-        //            BIMModelInfo bimInfo=rayModel.GetComponent<BIMModelInfo>();
-        //            if (bimInfo!= null)
-        //            {
-        //                bimInfo.SelectDevOnClick(false);
-        //            }
-        //            else{
-        //                if(rayModel.name.Contains("Culling")&&rayModel.transform.parent!=null&&rayModel.transform.GetComponent<BIMModelInfo>()!=null)
-        //                {
-        //                    rayModel.transform.GetComponent<BIMModelInfo>().SelectDevOnClick(false);
-        //                }
-        //            }                                             
-        //        }
-        //    }
-        //};
-        //MessageCenter.SendMsg(MsgType.ModuleToolbarMsg.TypeName, MsgType.ModuleToolbarMsg.GetCurrentState, callback);
+        Action<ViewState> callback = stateT =>
+        {
+            if (stateT == ViewState.设备定位||stateT==ViewState.移动巡检)
+            {
+                
+                //lastRendererMat = lastRenderer.material;
+                //lastRenderer.material = selectedMat;
+                if (rayModel != null)
+                {
+                    //Debug.Log($"SelectBimModel name:{rayModel.name} path:{rayModel.GetPath()}");
+                    BIMModelInfo bimInfo=rayModel.GetComponent<BIMModelInfo>();
+                    if (bimInfo!= null)
+                    {
+                        Debug.Log($"SelectBimModel>SelectDevOnClick1 [bimInfo:{bimInfo}] name:{rayModel.name} path:{rayModel.GetPath()}");
+                        bimInfo.SelectDevOnClick(false);
+                    }
+                    else{
+                        
+                        if (rayModel.parent != null)
+                        {
+                            
+                            Transform parent = rayModel.parent;
+                            //RendererId rid0 = rayModel.GetComponent<RendererId>();
+                            //RendererId ridP1 = parent.GetComponent<RendererId>();
+                            RendererId rid0 = RendererId.GetRId(rayModel.gameObject);
+                            RendererId ridP1 = RendererId.GetRId(parent.gameObject);
+                            if (rid0 != null && ridP1 != null)
+                            {
+                                if (IsShowDebugLog)
+                                {
+                                    Debug.LogError($"SelectBimModel rid0:{rid0.Id} ridP1:{ridP1.Id} name:{rayModel.name} path:{rayModel.GetPath()}");
+                                }
+                                if (rid0.parentId != ridP1.Id)
+                                {
+                                    rid0.RecoverParent();
+                                    parent = rayModel.parent;
+                                }
+                            }
+                            else
+                            {
+                                if (IsShowDebugLog)
+                                {
+                                    Debug.LogError($"SelectBimModel rid0==null||ridP1==null name:{rayModel.name} path:{rayModel.GetPath()}");
+                                }
+                            }
+
+                            if (parent!=null && parent.GetComponent<BIMModelInfo>() != null)
+                            {
+                                if (rayModel.name.Contains("Culling") || rayModel.name.Contains("Geometry") || rayModel.name.Contains("_LOD"))
+                                {
+                                    if (IsShowDebugLog)
+                                    {
+                                        Debug.Log($"SelectBimModel>SelectDevOnClick2 name:{rayModel.name} parent:{parent.name} path:{rayModel.GetPath()}");
+                                    }
+                                    parent.GetComponent<BIMModelInfo>().SelectDevOnClick(false);
+                                }
+                                else
+                                {
+                                    parent.GetComponent<BIMModelInfo>().SelectDevOnClick(false);
+                                    if (IsShowDebugLog)
+                                    {
+                                        Debug.LogWarning($"SelectBimModel>SelectDevOnClick3 [Not Culling Or Geometry] name:{rayModel.name} parent:{parent.name} path:{rayModel.GetPath()}");
+                                    }
+                                }
+                            }
+                            else
+                            {
+                                if (IsShowDebugLog)
+                                {
+                                    Debug.LogError($"SelectBimModel BIMModelInfo==null name:{rayModel.name} path:{rayModel.GetPath()}");
+                                }
+                                
+                            }
+                        }
+                        else
+                        {
+                            if (IsShowDebugLog)
+                            {
+                                Debug.LogError($"SelectBimModel parent==null name:{rayModel.name} path:{rayModel.GetPath()}");
+                            }
+                        }
+                    }                                             
+                }
+                else
+                {
+                    if (IsShowDebugLog)
+                    {
+                        Debug.LogError("SelectBimModel rayModel==null!!");
+                    }
+                }
+            }
+        };
+        MessageCenter.SendMsg(MsgType.ModuleToolbarMsg.TypeName, MsgType.ModuleToolbarMsg.GetCurrentState, callback);
     }
 
     private void ClearLastInfo()
     {
-        //UIManager.GetInstance().CloseUIPanels(typeof(DeviceDocumentationbar).Name);
+        UIManager.GetInstance().CloseUIPanels(typeof(DeviceDocumentationbar).Name);
     }
     private void highlightObj(GameObject obj)
     {
-        //if(obj!=null&&obj.activeInHierarchy)
-        //{
-        //    HightlightModuleBase.ClearHighlightOff();
-        //    HightlightModuleBase hightlightT = obj.AddMissingComponent<HightlightModuleBase>();
-        //    hightlightT.ConstantOn(Color.green);
-        //}
+        if(obj!=null&&obj.activeInHierarchy)
+        {
+            HightlightModuleBase.ClearHighlightOff();
+            HightlightModuleBase hightlightT = obj.AddMissingComponent<HightlightModuleBase>();
+            hightlightT.ConstantOn(Color.green);
+        }
     }
 
     public void Update()

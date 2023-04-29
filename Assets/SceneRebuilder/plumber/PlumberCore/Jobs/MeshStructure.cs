@@ -91,4 +91,24 @@ public struct MeshStructure
         }
         
     }
+
+    public void SetVertices(NativeArray<Vector3> inVertices)
+    {
+        this.vertices=inVertices;
+    }
+
+    public void SetVertices(List<Vector3> inVertices)
+    {
+        this.vertices=new NativeArray<Vector3>(inVertices.ToArray(),Allocator.Persistent);
+    }
+
+    public void SetTriangles(List<int> triangles, int submesh)
+    {
+        this.triangles=new NativeArray<int>(triangles.ToArray(),Allocator.Persistent);
+    }
+
+    public void SetNormals(List<Vector3> inNormals)
+    {
+        this.normals=new NativeArray<Vector3>(inNormals.ToArray(),Allocator.Persistent);
+    }
 }

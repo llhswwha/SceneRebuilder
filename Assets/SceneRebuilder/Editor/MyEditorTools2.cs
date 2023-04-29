@@ -2556,10 +2556,34 @@ TypeCount2[019]	count:761	type:UnityEngine.UI.Toggle
         EditorHelper.SelectObject(newRoot);
     }
 
-    [MenuItem("SceneTools/Transform/CenterPivot")]
-    public static void CenterPivot()
+    [MenuItem("SceneTools/Transform/SetPivotCenter")]
+    public static void SetPivotCenter()
     {
-        MeshHelper.CenterPivot(Selection.activeGameObject);
+        MeshHelper.SetPivot(Selection.activeGameObject, PivotType.Center);
+    }
+
+    [MenuItem("SceneTools/Transform/SetPivotMin")]
+    public static void SetPivotMin()
+    {
+        MeshHelper.SetPivot(Selection.activeGameObject, PivotType.Min);
+    }
+
+    [MenuItem("SceneTools/Transform/SetPivotMax")]
+    public static void SetPivotMax()
+    {
+        MeshHelper.SetPivot(Selection.activeGameObject, PivotType.Max);
+    }
+
+    [MenuItem("SceneTools/Transform/SetPivotBottom")]
+    public static void SetPivotBottom()
+    {
+        MeshHelper.SetPivot(Selection.activeGameObject, PivotType.Bottom);
+    }
+
+    [MenuItem("SceneTools/Transform/SetPivotForward")]
+    public static void SetPivotForward()
+    {
+        MeshHelper.SetPivot(Selection.activeGameObject, PivotType.Forward);
     }
 
     [MenuItem("SceneTools/Transform/CenterPivotAll")]

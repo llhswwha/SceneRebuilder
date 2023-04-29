@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections;
 using System.Collections.Generic;
+using CommonUtils;
 using UnityEngine;
 using UnityEngine.Rendering;
 
@@ -200,6 +201,8 @@ public class PipeMeshGenerator : PipeMeshGeneratorBase
 
     public override void RenderPipe() {
 
+        DateTime startT=DateTime.Now;
+        //Debug.Log($"RenderPipe {this}");
         if (uniformRadiusP > 0)
         {
             SetRadiusUniform(uniformRadiusP);
@@ -218,21 +221,30 @@ public class PipeMeshGenerator : PipeMeshGeneratorBase
             }
         }
         if (ps.Count < 2) {
-            throw new System.Exception("Cannot render a pipe with fewer than 2 points");
+            //throw new System.Exception("Cannot render a pipe with fewer than 2 points");
+            Debug.LogError($"Cannot render a pipe with fewer than 2 points [{this}]");
+            return;
         }
+
         RenderPipe(ps);
+
+        //Debug.Log($"RenderPipe_2 {(DateTime.Now-startT).TotalMilliseconds:F1}");
     }
 
     private void RenderPipe(List<Vector3> ps)
     {
+        DateTime startT=DateTime.Now;
         Childrens.Clear();
         CircleDatas.Clear();
+        Debug.Log($"RenderPipe_1 t1:{(DateTime.Now-startT).TotalMilliseconds:F1}");
         Mesh mesh = GeneratePipeMesh(ps, generateWeld);
+        Debug.Log($"RenderPipe_1 t2:{(DateTime.Now-startT).TotalMilliseconds:F1}");
         mesh.name = this.name;
         if(IsOnlyWeld==false)
         {
             SetMeshRenderers(mesh);
         }
+        Debug.Log($"RenderPipe_1 t3:{(DateTime.Now-startT).TotalMilliseconds:F1}");
     }
 
 
@@ -367,7 +379,10 @@ public class PipeMeshGenerator : PipeMeshGeneratorBase
 
     public bool IsOnlyWeld = false;
 
-    Mesh GeneratePipeMesh(List<Vector3> ps,bool gWeld) {
+Mesh GeneratePipeMesh(List<Vector3> ps,bool gWeld) 
+    {
+        DateTime startT=DateTime.Now;
+        //Debug.Log($"GeneratePipeMesh ps:{ps.Count} gWeld:{gWeld}");
         Mesh m = new Mesh();
         m.name = "UnityPlumber Pipe";
 
@@ -389,9 +404,13 @@ public class PipeMeshGenerator : PipeMeshGeneratorBase
         List<int> triangles = new List<int>();
         List<Vector3> normals = new List<Vector3>();
 
+
+        double t1=(DateTime.Now-startT).TotalMilliseconds;
         //List<Vector3> ps = GetPoints();
 
         ClearWelds();
+
+         double t2=(DateTime.Now-startT).TotalMilliseconds;
 
         if (IsLinkEndStart)
         {
@@ -481,7 +500,7 @@ public class PipeMeshGenerator : PipeMeshGeneratorBase
                 GenerateWeldEx(ps, gWeld, vertices, normals, i, initialPoint, endPoint, directionN);
             }
         }
-
+         double t3=(DateTime.Now-startT).TotalMilliseconds;
 
         // for each segment generate the elbow that connects it to the next one
         if (generateElbows && IsOnlyWeld==false)
@@ -520,7 +539,7 @@ public class PipeMeshGenerator : PipeMeshGeneratorBase
                 }
             }
         }
-
+         double t4=(DateTime.Now-startT).TotalMilliseconds;
         if (IsOnlyWeld == false)
         {
             if (generateEndCaps)
@@ -528,12 +547,27 @@ public class PipeMeshGenerator : PipeMeshGeneratorBase
                 GenerateEndCaps(ps, vertices, triangles, normals);
             }
         }
+        double t5=(DateTime.Now-startT).TotalMilliseconds;
+
+        posOff=Vector3.zero;
+        // var minMax = VertexHelper.GetMinMax(vertices.ToArray());
+        // posOff=minMax[3];
+        // for(int i=0;i<vertices.Count;i++)
+        // {
+        //     vertices[i]=vertices[i]-posOff;
+        // }
+        // //this.transform.position=minMax[0];
+        double t6=(DateTime.Now-startT).TotalMilliseconds;
 
         m.SetVertices(vertices);
         m.SetTriangles(triangles, 0);
         m.SetNormals(normals);
+        double t7=(DateTime.Now-startT).TotalMilliseconds;
+        Debug.Log($"GeneratePipeMesh ps:{ps.Count} gWeld:{gWeld} t1:{t1:F1},t2:{t2:F1},t3:{t3:F1},t4:{t4:F1},t5:{t5:F1},t6:{t6:F1},t7:{t7:F1}");
         return m;
     }
+
+    public Vector3 posOff=Vector3.zero;
 
     private void GenerateWeldEx(List<Vector3> ps, bool gWeld, List<Vector3> vertices, List<Vector3> normals, int i, Vector3 initialPoint, Vector3 endPoint, Vector3 directionN)
     {

@@ -1,25 +1,58 @@
 using CommonUtils;
+using System;
 using System.Collections;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
+using Unity.Jobs;
 using UnityEngine;
 using UnityEngine.Rendering;
 
 public class PipeMeshGeneratorBase : BaseMeshGenerator
 {
 
+    private void DoMakeFlatShadingJob(Mesh mesh)
+    {
+        DateTime startT=DateTime.Now;
+        MeshStructure meshS = new MeshStructure(mesh);
+        MakeFlatShadingJob job = new MakeFlatShadingJob()
+        {
+            mesh = meshS
+        };
+        //job.Execute();
+        JobHandle handle=job.Schedule();
+        handle.Complete();
+
+        Debug.Log($"DoMakeFlatShadingJob t1:{(DateTime.Now-startT).TotalMilliseconds}:ms ");
+
+        mesh.SetVertices(meshS.vertices);
+        mesh.SetTriangles(meshS.triangles.ToArray(), 0);
+        mesh.SetNormals(meshS.normals);
+
+        Debug.Log($"DoMakeFlatShadingJob t2:{(DateTime.Now-startT).TotalMilliseconds}:ms ");
+    }
+
     public void SetMeshRenderers(Mesh mesh)
     {
+        DateTime startT=DateTime.Now;
         // add mesh filter if not present
         MeshFilter currentMeshFilter = GetComponent<MeshFilter>();
         MeshFilter mf = currentMeshFilter != null ? currentMeshFilter : gameObject.AddComponent<MeshFilter>();
         //Mesh mesh = GeneratePipeMesh(ps);
 
+        //Debug.Log($"SetMeshRenderers flatShading:{flatShading} makeDoubleSided:{makeDoubleSided} t1:{(DateTime.Now-startT).TotalMilliseconds}:ms ");
+
         if (flatShading)
+        {
             mesh = MakeFlatShading(mesh);
+            //DoMakeFlatShadingJob(mesh);
+        }
+        //Debug.Log($"SetMeshRenderers t2:{(DateTime.Now-startT).TotalMilliseconds}:ms");
+
         if (makeDoubleSided)
             mesh = MakeDoubleSided(mesh);
+        //Debug.Log($"SetMeshRenderers t3:{(DateTime.Now-startT).TotalMilliseconds}:ms");
+
         mf.mesh = mesh;
 
         // add mesh renderer if not present
@@ -31,18 +64,22 @@ public class PipeMeshGeneratorBase : BaseMeshGenerator
             currentMeshRenderer = gameObject.AddComponent<MeshRenderer>();
             currentMeshRenderer.materials = new Material[1] { pipeMaterial };
         }
+        //Debug.Log($"SetMeshRenderers t4:{(DateTime.Now-startT).TotalMilliseconds}:ms 1234");
 
         MeshCollider mc = GetComponent<MeshCollider>();
         if (mc != null)
         {
             mc.sharedMesh = mesh;
         }
+        Debug.Log($"SetMeshRenderers t5:{(DateTime.Now-startT).TotalMilliseconds}:ms ");
+
 
         //Debug.LogError($"vertexCount:{mesh.vertexCount} gameObject:{gameObject.name}");
     }
 
     Mesh MakeFlatShading(Mesh mesh)
     {
+        DateTime startT=DateTime.Now;
         // in order to achieve flat shading all vertices need to be
         // duplicated, because in Unity normals are assigned to vertices
         // and not to triangles.
@@ -74,10 +111,12 @@ public class PipeMeshGeneratorBase : BaseMeshGenerator
             newNormals.Add(normal);
         }
 
+        Debug.Log($"MakeFlatShading count:{mesh.triangles.Length} t1:{(DateTime.Now-startT).TotalMilliseconds}:ms ");
+
         mesh.SetVertices(newVertices);
         mesh.SetTriangles(newTriangles, 0);
         mesh.SetNormals(newNormals);
-
+        Debug.Log($"MakeFlatShading t2:{(DateTime.Now-startT).TotalMilliseconds}:ms ");
         return mesh;
     }
 
@@ -977,13 +1016,13 @@ public class PipeMeshGeneratorBase : BaseMeshGenerator
         List<Vector3> verticsOfIndex = new List<Vector3>();
         List<Vector3> verticsOfClosed = new List<Vector3>();
         List<int> indexOffset = new List<int>();
-
+        float rotationOff=0.5f;
         for (int i = 0; i < pipeSegments; i++)
         {
             Vector3 currentVertex =
                 center +
-                (radius * Mathf.Cos(radiansPerSegment * i) * xAxis1) +
-                (radius * Mathf.Sin(radiansPerSegment * i) * yAxis1);
+                (radius * Mathf.Cos(radiansPerSegment * (i+rotationOff)) * xAxis1) +
+                (radius * Mathf.Sin(radiansPerSegment * (i+rotationOff)) * yAxis1);
 
             if (IsBend)
             {
@@ -1067,8 +1106,8 @@ public class PipeMeshGeneratorBase : BaseMeshGenerator
         {
             Vector3 currentVertex =
                 center +
-                (radius * Mathf.Cos(radiansPerSegment * i) * xAxis1) +
-                (radius * Mathf.Sin(radiansPerSegment * i) * yAxis1);
+                (radius * Mathf.Cos(radiansPerSegment * (i+rotationOff)) * xAxis1) +
+                (radius * Mathf.Sin(radiansPerSegment * (i+rotationOff)) * yAxis1);
 
             if (IsBend)
             {

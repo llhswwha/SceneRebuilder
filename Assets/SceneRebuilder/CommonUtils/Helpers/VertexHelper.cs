@@ -376,6 +376,7 @@ namespace CommonUtils
         public static Vector3[] GetMinMax(Vector3[] vs)
         {
             if (vs == null) return null;
+            
             Vector3[] minMax = new Vector3[5];
             float minX = float.MaxValue;
             float minY = float.MaxValue;
@@ -418,6 +419,8 @@ namespace CommonUtils
             minMax[2] = minMax[1] - minMax[0];//size
             minMax[3] = (minMax[1] + minMax[0]) / 2;//center
             minMax[4] = sum / vs.Length;//weight
+
+            //Debug.Log($"GetMinMax vs:{vs.Length} min:{minMax[0]} max:{minMax[1]}");
             return minMax;
         }
 

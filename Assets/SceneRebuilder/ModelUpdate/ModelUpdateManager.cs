@@ -1,28 +1,227 @@
-using MeshProfilerNS;using System;using System.Collections;using System.Collections.Generic;using System.Linq;using UnityEditor;using UnityEngine;using static LODManager;using static MeshHelper;public class ModelUpdateManager : SingletonBehaviour<ModelUpdateManager>{    public GameObject Model_Old;    public MeshRenderer[] ModelRenders_Old_All;    public MeshRendererInfoList MeshRendererInfoList_Old;
+// using MeshProfilerNS;
+using System;
+using System.Collections;
+using System.Collections.Generic;
+using System.Linq;
+using UnityEditor;
+using UnityEngine;
+using static LODManager;
+using static MeshHelper;
+
+public class ModelUpdateManager : SingletonBehaviour<ModelUpdateManager>
+{
+    public GameObject Model_Old;
+
+    public MeshRenderer[] ModelRenders_Old_All;
+
+    public MeshRendererInfoList MeshRendererInfoList_Old;
 
     //public MeshElement MeshElement_Old;
 
-    public LODTwoRenderersList ModelRendersWaiting_Old_All = new LODTwoRenderersList("OldAll");    public LODTwoRenderersList ModelRendersWaiting_Old = new LODTwoRenderersList("Old");    public LODTwoRenderersList ModelRendersWaiting_Old_Door = new LODTwoRenderersList("Door");    public LODTwoRenderersList ModelRendersWaiting_Old_LodDevs = new LODTwoRenderersList("LodDevs");    public LODTwoRenderersList ModelRendersWaiting_Old_Walls = new LODTwoRenderersList("Walls");    public LODTwoRenderersList ModelRendersWaiting_Old_Welding = new LODTwoRenderersList("OldWelding");    public LODTwoRenderersList ModelRendersWaiting_Old_Piping = new LODTwoRenderersList("OldPiping");    public LODTwoRenderersList ModelRendersWaiting_Old_MemberPart = new LODTwoRenderersList("OldMemberPart");    public LODTwoRenderersList ModelRendersWaiting_Old_Others = new LODTwoRenderersList("OldOthers");    public bool IsFilterByFiles = true;    public List<string> FilterFiles = new List<string>() { "HH.fbx", "JQ.fbx", "JG.fbx", "SG.fbx" };    public GameObject Model_New;    public MeshRenderer[] ModelRenders_New;    public LODTwoRenderersList ModelRendersWaiting_New = new LODTwoRenderersList("New");    public LODTwoRenderersList ModelRendersWaiting_MemberPart = new LODTwoRenderersList("MemberPart");    public LODTwoRenderersList ModelRendersWaiting_WallPart = new LODTwoRenderersList("WallPart");    public LODTwoRenderersList ModelRendersWaiting_Welding = new LODTwoRenderersList("NewWelding");    public LODTwoRenderersList ModelRendersWaiting_Piping = new LODTwoRenderersList("NewPiping");    public LODTwoRenderersList ModelRendersWaiting_NewOthers = new LODTwoRenderersList("NotMemberPart");    public LODTwoRenderersList twoList = new LODTwoRenderersList();    public MeshRendererAssetInfoDict modelFiles;    public List<string> modelFilePaths = new List<string>();    public bool isIncludeInactive = true;    //public static List<MeshRenderer> FindRenderers(GameObject go, string key)    //{    //    List<Transform> findList = new List<Transform>();    //    Transform[] ts = go.GetComponentsInChildren<Transform>(true);    //    foreach (Transform t in ts)    //    {    //        if (t.name.ToLower().Contains(key))    //        {    //            findList.Add(t);    //        }    //    }    //    List<MeshRenderer> renderers = new List<MeshRenderer>();    //    foreach (var t in findList)    //    {    //        MeshRenderer[] rs = t.GetComponentsInChildren<MeshRenderer>(true);    //        foreach(var r in rs)    //        {    //            if (r.name.Contains("Bounds")) continue;    //            if(!renderers.Contains(r))    //                renderers.Add(r);    //        }    //        //renderers.AddRange(rs);    //    }    //    return renderers;    //}    public MeshRendererInfoList GetFilteredList(List<MeshRenderer> lodRenderers2)    {        MeshRendererInfoList lodRenderersInfoList2 = new MeshRendererInfoList(lodRenderers2);        if (IsFilterByFiles == false) return lodRenderersInfoList2;        var lodFiltedList2 = lodRenderersInfoList2.FilterRenderersByFile(FilterFiles, IsFilterByFiles);        lodFiltedList2 = lodFiltedList2.GetLODs(0, -1);        lodFiltedList2.Sort();        return lodFiltedList2;    }    public void ClearUpdatesOld()    {        var infos = Model_Old.GetComponentsInChildren<RendererUpdateInfo>(true);        foreach(var info in infos)        {            GameObject.DestroyImmediate(info);        }        Debug.LogError($"ClearUpdates infos:{infos.Length}");    }    public void ClearUpdatesNew()    {        var infos = Model_New.GetComponentsInChildren<RendererUpdateInfo>(true);        foreach (var info in infos)        {            GameObject.DestroyImmediate(info);        }        Debug.LogError($"ClearUpdates infos:{infos.Length}");    }    public void SetOldNewModel(GameObject oldModel,GameObject newModel)
+    public LODTwoRenderersList ModelRendersWaiting_Old_All = new LODTwoRenderersList("OldAll");
+
+    public LODTwoRenderersList ModelRendersWaiting_Old = new LODTwoRenderersList("Old");
+
+    public LODTwoRenderersList ModelRendersWaiting_Old_Door = new LODTwoRenderersList("Door");
+
+    public LODTwoRenderersList ModelRendersWaiting_Old_LodDevs = new LODTwoRenderersList("LodDevs");
+
+    public LODTwoRenderersList ModelRendersWaiting_Old_Walls = new LODTwoRenderersList("Walls");
+
+    public LODTwoRenderersList ModelRendersWaiting_Old_Welding = new LODTwoRenderersList("OldWelding");
+
+    public LODTwoRenderersList ModelRendersWaiting_Old_Piping = new LODTwoRenderersList("OldPiping");
+
+    public LODTwoRenderersList ModelRendersWaiting_Old_MemberPart = new LODTwoRenderersList("OldMemberPart");
+
+    public LODTwoRenderersList ModelRendersWaiting_Old_Others = new LODTwoRenderersList("OldOthers");
+
+    public bool IsFilterByFiles = true;
+
+    public List<string> FilterFiles = new List<string>() { "HH.fbx", "JQ.fbx", "JG.fbx", "SG.fbx" };
+
+    public GameObject Model_New;
+
+    public MeshRenderer[] ModelRenders_New;
+
+    public LODTwoRenderersList ModelRendersWaiting_New = new LODTwoRenderersList("New");
+
+    public LODTwoRenderersList ModelRendersWaiting_MemberPart = new LODTwoRenderersList("MemberPart");
+
+    public LODTwoRenderersList ModelRendersWaiting_WallPart = new LODTwoRenderersList("WallPart");
+
+    public LODTwoRenderersList ModelRendersWaiting_Welding = new LODTwoRenderersList("NewWelding");
+
+    public LODTwoRenderersList ModelRendersWaiting_Piping = new LODTwoRenderersList("NewPiping");
+
+    public LODTwoRenderersList ModelRendersWaiting_NewOthers = new LODTwoRenderersList("NotMemberPart");
+
+    public LODTwoRenderersList twoList = new LODTwoRenderersList();
+
+    public MeshRendererAssetInfoDict modelFiles;
+
+    public List<string> modelFilePaths = new List<string>();
+
+    public bool isIncludeInactive = true;
+
+    //public static List<MeshRenderer> FindRenderers(GameObject go, string key)
+    //{
+    //    List<Transform> findList = new List<Transform>();
+    //    Transform[] ts = go.GetComponentsInChildren<Transform>(true);
+    //    foreach (Transform t in ts)
+    //    {
+    //        if (t.name.ToLower().Contains(key))
+    //        {
+    //            findList.Add(t);
+    //        }
+    //    }
+    //    List<MeshRenderer> renderers = new List<MeshRenderer>();
+    //    foreach (var t in findList)
+    //    {
+    //        MeshRenderer[] rs = t.GetComponentsInChildren<MeshRenderer>(true);
+    //        foreach(var r in rs)
+    //        {
+    //            if (r.name.Contains("Bounds")) continue;
+    //            if(!renderers.Contains(r))
+    //                renderers.Add(r);
+    //        }
+    //        //renderers.AddRange(rs);
+    //    }
+    //    return renderers;
+    //}
+
+    public MeshRendererInfoList GetFilteredList(List<MeshRenderer> lodRenderers2)
+    {
+        MeshRendererInfoList lodRenderersInfoList2 = new MeshRendererInfoList(lodRenderers2);
+        if (IsFilterByFiles == false) return lodRenderersInfoList2;
+        var lodFiltedList2 = lodRenderersInfoList2.FilterRenderersByFile(FilterFiles, IsFilterByFiles);
+        lodFiltedList2 = lodFiltedList2.GetLODs(0, -1);
+        lodFiltedList2.Sort();
+        return lodFiltedList2;
+    }
+
+    public void ClearUpdatesOld()
+    {
+        var infos = Model_Old.GetComponentsInChildren<RendererUpdateInfo>(true);
+        foreach(var info in infos)
+        {
+            GameObject.DestroyImmediate(info);
+        }
+        Debug.LogError($"ClearUpdates infos:{infos.Length}");
+    }
+
+    public void ClearUpdatesNew()
+    {
+        var infos = Model_New.GetComponentsInChildren<RendererUpdateInfo>(true);
+        foreach (var info in infos)
+        {
+            GameObject.DestroyImmediate(info);
+        }
+        Debug.LogError($"ClearUpdates infos:{infos.Length}");
+    }
+
+    public void SetOldNewModel(GameObject oldModel,GameObject newModel)
     {
         Model_Old = oldModel;
         Model_New = newModel;
         GetModelRenders();
-    }    private void SetModelRenderersOld(MeshRenderer[] renderers)
+    }
+
+    private void SetModelRenderersOld(MeshRenderer[] renderers)
     {
         //ModelRenders_Old_All = Model_Old.GetComponentsInChildren<MeshRenderer>(isIncludeInactive);
         ModelRenders_Old_All = renderers;
-        Debug.Log("ModelRenders_Old_All:" + ModelRenders_Old_All.Count());        MeshRendererInfoList_Old = new MeshRendererInfoList(ModelRenders_Old_All, true);        modelFiles = MeshRendererInfoList_Old.GetAssetPaths();        modelFilePaths = modelFiles.Keys.ToList();        modelFilePaths.Sort();        Debug.Log($"modelFiles:{modelFiles.Count()} MeshRendererList:{MeshRendererInfoList_Old.Count}");        var oldFiltedList = MeshRendererInfoList_Old.FilterRenderersByFile(FilterFiles, IsFilterByFiles);        Debug.Log("oldFiltedList1:" + oldFiltedList.Count());        oldFiltedList = oldFiltedList.GetLODs(0, -1);        //oldFiltedList = new MeshRendererInfoList(InitNavisFileInfoByModelSetting.Instance.FilterList(oldFiltedList, null));        Debug.Log("oldFiltedList2:" + oldFiltedList.Count());        oldFiltedList.Sort();         ModelRendersWaiting_Old_All = new LODTwoRenderersList("OldAll", oldFiltedList);        ModelRendersWaiting_Old = new LODTwoRenderersList("OldAll", oldFiltedList);        Debug.Log("ModelRendersWaiting_Old:" + ModelRendersWaiting_Old.Count());        ModelRendersWaiting_Old_Others = new LODTwoRenderersList("OldOthers", oldFiltedList);        ModelRendersWaiting_Old_Others.RemoveRenderersByKey("_Bounds_");        DoorsRootList doorRoots = DoorManager.UpdateDoors(Model_Old, null);        DoorInfoList doors = doorRoots.GetDoors();
+        Debug.Log("ModelRenders_Old_All:" + ModelRenders_Old_All.Count());
+        MeshRendererInfoList_Old = new MeshRendererInfoList(ModelRenders_Old_All, true);
+        modelFiles = MeshRendererInfoList_Old.GetAssetPaths();
+        modelFilePaths = modelFiles.Keys.ToList();
+        modelFilePaths.Sort();
+
+        Debug.Log($"modelFiles:{modelFiles.Count()} MeshRendererList:{MeshRendererInfoList_Old.Count}");
+
+        var oldFiltedList = MeshRendererInfoList_Old.FilterRenderersByFile(FilterFiles, IsFilterByFiles);
+        Debug.Log("oldFiltedList1:" + oldFiltedList.Count());
+
+        oldFiltedList = oldFiltedList.GetLODs(0, -1);
+        //oldFiltedList = new MeshRendererInfoList(InitNavisFileInfoByModelSetting.Instance.FilterList(oldFiltedList, null));
+        Debug.Log("oldFiltedList2:" + oldFiltedList.Count());
+        oldFiltedList.Sort(); 
+
+        ModelRendersWaiting_Old_All = new LODTwoRenderersList("OldAll", oldFiltedList);
+        ModelRendersWaiting_Old = new LODTwoRenderersList("OldAll", oldFiltedList);
+        Debug.Log("ModelRendersWaiting_Old:" + ModelRendersWaiting_Old.Count());
+        ModelRendersWaiting_Old_Others = new LODTwoRenderersList("OldOthers", oldFiltedList);
+        ModelRendersWaiting_Old_Others.RemoveRenderersByKey("_Bounds_");
+
+        DoorsRootList doorRoots = DoorManager.UpdateDoors(Model_Old, null);
+        DoorInfoList doors = doorRoots.GetDoors();
         //DoorPartInfoList doorParts = doors.GetDoorParts();
-        var doorRenderers = doors.GetMeshRenderers();        var doorGos = doors.GetGameObjects();        Debug.LogError($"doors:{doors.Count} doorRenderers:{doorRenderers.Count}");        ModelRendersWaiting_Old_Door = new LODTwoRenderersList("Doors", doorGos);        ModelRendersWaiting_Old_Door.zeroDistance = 0.9f;        ModelRendersWaiting_Old_Others.RemoveRenderers(doorRenderers);        Debug.Log("ModelRendersWaiting_Old4:" + ModelRendersWaiting_Old.Count());        List<MeshRenderer> lodRenderers1 = LODManager.GetLODRenderers(Model_Old);        MeshRendererInfoList lodRenderersInfoList1 = new MeshRendererInfoList(lodRenderers1);        var lodFiltedList1 = lodRenderersInfoList1.FilterRenderersByFile(FilterFiles, IsFilterByFiles);        lodFiltedList1.Sort();        ModelRendersWaiting_Old_LodDevs = new LODTwoRenderersList("LodDevs", lodFiltedList1);        ModelRendersWaiting_Old_LodDevs.RemoveRenderers(doorRenderers);        ModelRendersWaiting_Old_Others.RemoveRenderers(lodRenderers1);        List<MeshRenderer> lodRenderers2 = RendererManager.FindRenderers(Model_Old, "lod");        var lodFiltedList2 = GetFilteredList(lodRenderers2);        ModelRendersWaiting_Old_LodDevs.AddRenderers(lodFiltedList2);        ModelRendersWaiting_Old_Others.RemoveRenderers(lodRenderers2);        Debug.Log("ModelRendersWaiting_Old3:" + ModelRendersWaiting_Old.Count());        List<MeshRenderer> weldingRenderers = RendererManager.FindRenderers(Model_Old, "welding");        var weldingFiltedList = GetFilteredList(weldingRenderers);        ModelRendersWaiting_Old_Welding = new LODTwoRenderersList("OldWelding", weldingFiltedList);        ModelRendersWaiting_Old_Others.RemoveRenderers(weldingRenderers);        List<MeshRenderer> pipingRenderers = RendererManager.FindRenderers(Model_Old, "piping");        var pipingFiltedList = GetFilteredList(pipingRenderers);        ModelRendersWaiting_Old_Piping = new LODTwoRenderersList("OldPiping", pipingFiltedList);        ModelRendersWaiting_Old_Others.RemoveRenderers(pipingRenderers);        var wallRenderers = RendererManager.FindRenderers(Model_Old, "wall");        ModelRendersWaiting_Old_Walls = new LODTwoRenderersList("Walls", wallRenderers);        ModelRendersWaiting_Old_Others.RemoveRenderers(wallRenderers);
+        var doorRenderers = doors.GetMeshRenderers();
+        var doorGos = doors.GetGameObjects();
+        Debug.LogError($"doors:{doors.Count} doorRenderers:{doorRenderers.Count}");
+        ModelRendersWaiting_Old_Door = new LODTwoRenderersList("Doors", doorGos);
+        ModelRendersWaiting_Old_Door.zeroDistance = 0.9f;
+        ModelRendersWaiting_Old_Others.RemoveRenderers(doorRenderers);
+
+        Debug.Log("ModelRendersWaiting_Old4:" + ModelRendersWaiting_Old.Count());
+
+        List<MeshRenderer> lodRenderers1 = LODManager.GetLODRenderers(Model_Old);
+
+        MeshRendererInfoList lodRenderersInfoList1 = new MeshRendererInfoList(lodRenderers1);
+        var lodFiltedList1 = lodRenderersInfoList1.FilterRenderersByFile(FilterFiles, IsFilterByFiles);
+        lodFiltedList1.Sort();
+
+        ModelRendersWaiting_Old_LodDevs = new LODTwoRenderersList("LodDevs", lodFiltedList1);
+        ModelRendersWaiting_Old_LodDevs.RemoveRenderers(doorRenderers);
+        ModelRendersWaiting_Old_Others.RemoveRenderers(lodRenderers1);
+
+        List<MeshRenderer> lodRenderers2 = RendererManager.FindRenderers(Model_Old, "lod");
+        var lodFiltedList2 = GetFilteredList(lodRenderers2);
+        ModelRendersWaiting_Old_LodDevs.AddRenderers(lodFiltedList2);
+        ModelRendersWaiting_Old_Others.RemoveRenderers(lodRenderers2);
+
+        Debug.Log("ModelRendersWaiting_Old3:" + ModelRendersWaiting_Old.Count());
+
+        List<MeshRenderer> weldingRenderers = RendererManager.FindRenderers(Model_Old, "welding");
+        var weldingFiltedList = GetFilteredList(weldingRenderers);
+        ModelRendersWaiting_Old_Welding = new LODTwoRenderersList("OldWelding", weldingFiltedList);
+        ModelRendersWaiting_Old_Others.RemoveRenderers(weldingRenderers);
+
+        List<MeshRenderer> pipingRenderers = RendererManager.FindRenderers(Model_Old, "piping");
+        var pipingFiltedList = GetFilteredList(pipingRenderers);
+        ModelRendersWaiting_Old_Piping = new LODTwoRenderersList("OldPiping", pipingFiltedList);
+        ModelRendersWaiting_Old_Others.RemoveRenderers(pipingRenderers);
+
+        var wallRenderers = RendererManager.FindRenderers(Model_Old, "wall");
+        ModelRendersWaiting_Old_Walls = new LODTwoRenderersList("Walls", wallRenderers);
+        ModelRendersWaiting_Old_Others.RemoveRenderers(wallRenderers);
 
         //ModelRendersWaiting_Old_MemberPart
 
-        var findList11 = ModelRendersWaiting_Old_Others.FindRenderers("MemberPart");        ModelRendersWaiting_Old_MemberPart = findList11[0];        ModelRendersWaiting_Old_MemberPart.ListName = "OldMemeberPart";        ModelRendersWaiting_Old_Others = findList11[1];        ModelRendersWaiting_Old_Others.ListName = "OldOthers";        Debug.Log("ModelRendersWaiting_Old2:" + ModelRendersWaiting_Old.Count());        MeshElement.IsShowProgress = true;        // MeshElement_Old = new MeshElement(Model_Old, false, false);        //MeshRendererInfoList lods = ModelRendersWaiting_Old.GetLODs();        //ModelRendersWaiting_Old.RemoveLODs();
-    }    private void SetModelRenderersNew(MeshRenderer[] renderers)
+        var findList11 = ModelRendersWaiting_Old_Others.FindRenderers("MemberPart");
+        ModelRendersWaiting_Old_MemberPart = findList11[0];
+        ModelRendersWaiting_Old_MemberPart.ListName = "OldMemeberPart";
+
+        ModelRendersWaiting_Old_Others = findList11[1];
+        ModelRendersWaiting_Old_Others.ListName = "OldOthers";
+
+        Debug.Log("ModelRendersWaiting_Old2:" + ModelRendersWaiting_Old.Count());
+
+        // MeshElement.IsShowProgress = true;
+        // MeshElement_Old = new MeshElement(Model_Old, false, false);
+
+        //MeshRendererInfoList lods = ModelRendersWaiting_Old.GetLODs();
+        //ModelRendersWaiting_Old.RemoveLODs();
+    }
+
+    private void SetModelRenderersNew(MeshRenderer[] renderers)
     {
         //ModelRenders_New = Model_New.GetComponentsInChildren<MeshRenderer>(isIncludeInactive);
         ModelRenders_New = renderers;
-        var list2 = new MeshRendererInfoList(ModelRenders_New);        list2.Sort();        ModelRendersWaiting_New = new LODTwoRenderersList("New", list2);        Debug.Log("ModelRendersWaiting_Old14:" + ModelRendersWaiting_Old.Count());
+        var list2 = new MeshRendererInfoList(ModelRenders_New);
+        list2.Sort();
+        ModelRendersWaiting_New = new LODTwoRenderersList("New", list2);
+        Debug.Log("ModelRendersWaiting_Old14:" + ModelRendersWaiting_Old.Count());
 
         //1.�ҵ�����ģ���е� �ţ��豸(LOD)��ǽ�ڣ�����
         //2.�ҵ���Щģ�Ͷ�Ӧ����ģ��
@@ -31,7 +230,18 @@ using MeshProfilerNS;using System;using System.Collections;using System.Colle
         //ʣ������ ��ģ�ͣ�����Ҫ�����ģ�������ģ��Ҫ�ֲ㣬Ҫ�ҵ����ڵ�¥�㡣
         //û���ҵ��� ��ģ�ͣ�����Ҫɾ���ġ�
 
-        var findList2 = ModelRendersWaiting_New.FindRenderers("MemberPart");        ModelRendersWaiting_MemberPart = findList2[0];        ModelRendersWaiting_MemberPart.ListName = "NewMemberPart";        ModelRendersWaiting_NewOthers = findList2[1];        ModelRendersWaiting_NewOthers.ListName = "NewOthers";        Debug.Log("ModelRendersWaiting_Old13:" + ModelRendersWaiting_Old.Count());        var findList3 = ModelRendersWaiting_NewOthers.FindRenderers("WallPart");        ModelRendersWaiting_WallPart = findList3[0];        ModelRendersWaiting_WallPart.ListName = "NewWallPart";        ModelRendersWaiting_NewOthers = findList3[1];        ModelRendersWaiting_NewOthers.ListName = "NewOthers";
+        var findList2 = ModelRendersWaiting_New.FindRenderers("MemberPart");
+        ModelRendersWaiting_MemberPart = findList2[0];
+        ModelRendersWaiting_MemberPart.ListName = "NewMemberPart";
+        ModelRendersWaiting_NewOthers = findList2[1];
+        ModelRendersWaiting_NewOthers.ListName = "NewOthers";
+        Debug.Log("ModelRendersWaiting_Old13:" + ModelRendersWaiting_Old.Count());
+
+        var findList3 = ModelRendersWaiting_NewOthers.FindRenderers("WallPart");
+        ModelRendersWaiting_WallPart = findList3[0];
+        ModelRendersWaiting_WallPart.ListName = "NewWallPart";
+        ModelRendersWaiting_NewOthers = findList3[1];
+        ModelRendersWaiting_NewOthers.ListName = "NewOthers";
 
         //var findList4 = ModelRendersWaiting_NewOthers.FindRenderers("Welding");
         //ModelRendersWaiting_Welding = findList4[0];
@@ -40,7 +250,16 @@ using MeshProfilerNS;using System;using System.Collections;using System.Colle
         //var findList5 = ModelRendersWaiting_NewOthers.FindRenderers("Piping");
         //ModelRendersWaiting_Piping = findList5[0];
         //ModelRendersWaiting_NewOthers = findList5[1];
-        Debug.Log("ModelRendersWaiting_Old12:" + ModelRendersWaiting_Old.Count());        List<MeshRenderer> weldingRenderers2 = RendererManager.FindRenderers(Model_New, "welding");        var weldingFiltedList2 = GetFilteredList(weldingRenderers2);        ModelRendersWaiting_Welding = new LODTwoRenderersList("NewWelding", weldingFiltedList2);        ModelRendersWaiting_NewOthers.RemoveRenderers(weldingRenderers2);        List<MeshRenderer> pipingRenderers2 = RendererManager.FindRenderers(Model_New, "piping");        var pipingFiltedList2 = GetFilteredList(pipingRenderers2);        ModelRendersWaiting_Piping = new LODTwoRenderersList("NewPiping", pipingFiltedList2);        ModelRendersWaiting_NewOthers.RemoveRenderers(pipingRenderers2);
+        Debug.Log("ModelRendersWaiting_Old12:" + ModelRendersWaiting_Old.Count());
+        List<MeshRenderer> weldingRenderers2 = RendererManager.FindRenderers(Model_New, "welding");
+        var weldingFiltedList2 = GetFilteredList(weldingRenderers2);
+        ModelRendersWaiting_Welding = new LODTwoRenderersList("NewWelding", weldingFiltedList2);
+        ModelRendersWaiting_NewOthers.RemoveRenderers(weldingRenderers2);
+
+        List<MeshRenderer> pipingRenderers2 = RendererManager.FindRenderers(Model_New, "piping");
+        var pipingFiltedList2 = GetFilteredList(pipingRenderers2);
+        ModelRendersWaiting_Piping = new LODTwoRenderersList("NewPiping", pipingFiltedList2);
+        ModelRendersWaiting_NewOthers.RemoveRenderers(pipingRenderers2);
     }
 
     private void SetCompareTargetList()
@@ -69,7 +288,29 @@ using MeshProfilerNS;using System;using System.Collections;using System.Colle
 
         //ModelRendersWaiting_Piping.SetTargetList(ModelRendersWaiting_Old_Piping, 0, compareMode);
 
-        Debug.Log("ModelRendersWaiting_Old11:" + ModelRendersWaiting_Old.Count());        SetTargetList(ModelRendersWaiting_Old, ModelRendersWaiting_NewOthers);        Debug.Log("ModelRendersWaiting_Old1:" + ModelRendersWaiting_Old.Count());        SetTargetList(ModelRendersWaiting_Old_Door,ModelRendersWaiting_NewOthers);        SetTargetList(ModelRendersWaiting_Old_LodDevs,ModelRendersWaiting_NewOthers);        SetTargetList(ModelRendersWaiting_Old_Walls,ModelRendersWaiting_WallPart);        SetTargetList(ModelRendersWaiting_Old_Welding,ModelRendersWaiting_Welding);        SetTargetList(ModelRendersWaiting_Old_Piping,ModelRendersWaiting_Piping);        SetTargetList(ModelRendersWaiting_Old_Others,ModelRendersWaiting_NewOthers);        Debug.Log("ModelRendersWaiting_Old_Others:" + ModelRendersWaiting_Old_Others.Count());        ModelRendersWaiting_MemberPart.AddRenderers(ModelRendersWaiting_NewOthers.GetRendererInfosOld());        SetTargetList(ModelRendersWaiting_Old_MemberPart,ModelRendersWaiting_MemberPart);        SetTargetList(ModelRendersWaiting_MemberPart,ModelRendersWaiting_Old);        SetTargetList(ModelRendersWaiting_Welding,ModelRendersWaiting_Old_Welding);        SetTargetList(ModelRendersWaiting_NewOthers,ModelRendersWaiting_Old_Others);        SetTargetList(ModelRendersWaiting_New,ModelRendersWaiting_Old_All);        SetTargetList(ModelRendersWaiting_Old_All,ModelRendersWaiting_New);        SetTargetList(ModelRendersWaiting_Piping,ModelRendersWaiting_Old_Piping);
+        Debug.Log("ModelRendersWaiting_Old11:" + ModelRendersWaiting_Old.Count());
+        SetTargetList(ModelRendersWaiting_Old, ModelRendersWaiting_NewOthers);
+        Debug.Log("ModelRendersWaiting_Old1:" + ModelRendersWaiting_Old.Count());
+        SetTargetList(ModelRendersWaiting_Old_Door,ModelRendersWaiting_NewOthers);
+        SetTargetList(ModelRendersWaiting_Old_LodDevs,ModelRendersWaiting_NewOthers);
+        SetTargetList(ModelRendersWaiting_Old_Walls,ModelRendersWaiting_WallPart);
+        SetTargetList(ModelRendersWaiting_Old_Welding,ModelRendersWaiting_Welding);
+        SetTargetList(ModelRendersWaiting_Old_Piping,ModelRendersWaiting_Piping);
+        SetTargetList(ModelRendersWaiting_Old_Others,ModelRendersWaiting_NewOthers);
+        Debug.Log("ModelRendersWaiting_Old_Others:" + ModelRendersWaiting_Old_Others.Count());
+
+        ModelRendersWaiting_MemberPart.AddRenderers(ModelRendersWaiting_NewOthers.GetRendererInfosOld());
+
+        SetTargetList(ModelRendersWaiting_Old_MemberPart,ModelRendersWaiting_MemberPart);
+        SetTargetList(ModelRendersWaiting_MemberPart,ModelRendersWaiting_Old);
+
+        SetTargetList(ModelRendersWaiting_Welding,ModelRendersWaiting_Old_Welding);
+        SetTargetList(ModelRendersWaiting_NewOthers,ModelRendersWaiting_Old_Others);
+
+        SetTargetList(ModelRendersWaiting_New,ModelRendersWaiting_Old_All);
+        SetTargetList(ModelRendersWaiting_Old_All,ModelRendersWaiting_New);
+
+        SetTargetList(ModelRendersWaiting_Piping,ModelRendersWaiting_Old_Piping);
     }
 
     public void SetTargetList(LODTwoRenderersList list1, LODTwoRenderersList list2,int maxCount=0)
@@ -77,7 +318,8 @@ using MeshProfilerNS;using System;using System.Collections;using System.Colle
         list1.SetTargetList(list2, maxCount, this.compareMode);
     }
 
-    public void GetModelRenders()    {
+    public void GetModelRenders()
+    {
         var oldRenderers= Model_Old.GetComponentsInChildren<MeshRenderer>(isIncludeInactive);
         //SetModelRenderersOld(oldRenderers);
 
@@ -86,15 +328,166 @@ using MeshProfilerNS;using System;using System.Collections;using System.Colle
 
         //SetCompareTargetList();
 
-        GetModelRenders(oldRenderers, newRenderers);    }    public void GetModelRenders(MeshRenderer[] renderers_OLD, MeshRenderer[] renderers_NEW)    {
+        GetModelRenders(oldRenderers, newRenderers);
+    }
+
+    public void GetModelRenders(MeshRenderer[] renderers_OLD, MeshRenderer[] renderers_NEW)
+    {
         SetModelRenderersOld(renderers_OLD);
         SetModelRenderersNew(renderers_NEW);
-        SetCompareTargetList();    }    public List<MeshRendererInfo> list_lod0 = new List<MeshRendererInfo>();    public void ReplaceOld()    {        throw new NotImplementedException();    }    public LODCompareMode compareMode = LODCompareMode.NameWithCenter;    public void DeleteNew()    {        int count = 0;        foreach (var t in twoList)        {            if (t.dis < MinDistance && t.meshDis < MinDistance)            {                count++;                GameObject.DestroyImmediate(t.renderer_new.gameObject);            }        }        Debug.LogError($"DeleteNew count:{count}");    }    public List<GameObject> NewAdded = new List<GameObject>();//����    public List<GameObject> OldDeleted = new List<GameObject>();//�޸�    public List<GameObject> NotChanged = new List<GameObject>();//ɾ��    public float zeroDistance = 0.0002f;    public LODTwoRenderersList CompareModels(GameObject goOld, GameObject goNew)    {        Model_New = goNew;        Model_Old = goOld;        GetModelRenders();        return CompareModels();    }    public MinDisTarget<MeshRendererInfo> GetMinInfo(Transform t)    {        var min = LODTwoRenderersList.GetMinDisTransform<MeshRendererInfo>(list_lod0, t, compareMode, null);        return min;    }
+        SetCompareTargetList();
+    }
+
+    public List<MeshRendererInfo> list_lod0 = new List<MeshRendererInfo>();
+
+    public void ReplaceOld()
+    {
+        throw new NotImplementedException();
+    }
+
+    public LODCompareMode compareMode = LODCompareMode.NameWithCenter;
+
+    public void DeleteNew()
+    {
+        int count = 0;
+        foreach (var t in twoList)
+        {
+            if (t.dis < MinDistance && t.meshDis < MinDistance)
+            {
+                count++;
+                GameObject.DestroyImmediate(t.renderer_new.gameObject);
+            }
+        }
+        Debug.LogError($"DeleteNew count:{count}");
+    }
+
+    public List<GameObject> NewAdded = new List<GameObject>();//����
+    public List<GameObject> OldDeleted = new List<GameObject>();//�޸�
+    public List<GameObject> NotChanged = new List<GameObject>();//ɾ��
+
+    public float zeroDistance = 0.0002f;
+
+    public LODTwoRenderersList CompareModels(GameObject goOld, GameObject goNew)
+    {
+        Model_New = goNew;
+        Model_Old = goOld;
+        GetModelRenders();
+        return CompareModels();
+    }
+
+    public MinDisTarget<MeshRendererInfo> GetMinInfo(Transform t)
+    {
+        var min = LODTwoRenderersList.GetMinDisTransform<MeshRendererInfo>(list_lod0, t, compareMode, null);
+        return min;
+    }
 
     public void CompareList(LODTwoRenderersList list)
     {
         list.CompareList(this.MaxCompareCount, this.compareMode);
-    }    public int MaxCompareCount = 0;    //public void CompareModels_Doors()    //{    //    Debug.LogError("CompareModels_Doors");    //    ModelRendersType1_Door,ModelRendersWaiting_New);    //    ModelRendersType1_Door.Compare();    //}    public LODTwoRenderersList CompareModels()    {        Debug.LogError("CompareModels");        twoList.Clear();        #if UNITY_EDITOR        EditorHelper.UnpackPrefab(Model_Old, PrefabUnpackMode.OutermostRoot);        EditorHelper.UnpackPrefab(Model_New, PrefabUnpackMode.OutermostRoot);        #endif        MeshHelper.RemoveNew(Model_Old);        SetTargetList(ModelRendersWaiting_Old,ModelRendersWaiting_New, MaxCompareCount);        ModelRendersWaiting_Old.Compare();        twoList = ModelRendersWaiting_Old;        //DateTime start = DateTime.Now;        ////var renderers_2 = MeshRendererInfo.InitRenderers(LODnRoot);//  LODnRoot.GetComponentsInChildren<MeshRenderer>(true);        ////var renderers_2 = MeshRendererInfo.GetLodNs(Model_New, -1, 0); //  LODnRoot.GetComponentsInChildren<MeshRenderer>(true);        ////var renderers_0 = MeshRendererInfo.GetLodNs(Model_Old, -1, 0);        //var renderers_2 = ModelRendersWaiting_New;        //var renderers_0 = ModelRendersWaiting_Old;        ////LODRendererCount0 = renderers_0.Count;        ////LODRendererCount1 = renderers_2.Length;        //list_lod0 = new List<MeshRendererInfo>();        //list_lod0.AddRange(renderers_0.GetRendererInfos0());        ////renderers_0.ToList().ForEach(i => { ts.Add(i.transform); });        //int maxCount = renderers_2.Count;        //if(MaxCompareCount>0 && MaxCompareCount<maxCount)        //{        //    maxCount = MaxCompareCount;        //}        //for (int i = 0; i < maxCount; i++)        //{        //    MeshRendererInfo render_lod1 = renderers_2[i].renderer_lod0;        //    if (render_lod1 == null) continue;        //    ProgressArg p1 = new ProgressArg("Compare", i, maxCount, render_lod1.name);        //    if(ProgressBarHelper.DisplayCancelableProgressBar(p1))        //    {        //        break;        //    }        //    MinDisTarget<MeshRendererInfo> min = GetMinDisTransform<MeshRendererInfo>(list_lod0, render_lod1.transform, compareMode,p1);        //    float minDis = min.dis;        //    MeshRendererInfo render_lod0 = min.target;        //    //MeshFilter filter1 = render_lod1.GetComponent<MeshFilter>();        //    //MeshFilter filter0 = render_lod0.GetComponent<MeshFilter>();        //    int vertexCount0 = render_lod0.GetMinLODVertexCount();        //    int vertexCount1 = render_lod1.GetMinLODVertexCount();        //    LODTwoRenderers lODTwoRenderers = new LODTwoRenderers(render_lod0, render_lod1, minDis, min.meshDis, vertexCount0, vertexCount1);        //    twoList.Add(lODTwoRenderers);        //}        //ProgressBarHelper.ClearProgressBar();        //twoList.Sort((a, b) =>        //{        //    return b.dis.CompareTo(a.dis);        //});        LODTwoRenderersList.RemoveEmpty(Model_New.transform);        LODTwoRenderersList.RemoveEmpty(Model_New.transform);        LODTwoRenderersList.RemoveEmpty(Model_New.transform);
+    }
+
+    public int MaxCompareCount = 0;
+
+    //public void CompareModels_Doors()
+    //{
+    //    Debug.LogError("CompareModels_Doors");
+    //    ModelRendersType1_Door,ModelRendersWaiting_New);
+    //    ModelRendersType1_Door.Compare();
+    //}
+
+    public LODTwoRenderersList CompareModels()
+    {
+        Debug.LogError("CompareModels");
+
+        twoList.Clear();
+        #if UNITY_EDITOR
+        EditorHelper.UnpackPrefab(Model_Old, PrefabUnpackMode.OutermostRoot);
+        EditorHelper.UnpackPrefab(Model_New, PrefabUnpackMode.OutermostRoot);
+        #endif
+
+        MeshHelper.RemoveNew(Model_Old);
+
+        SetTargetList(ModelRendersWaiting_Old,ModelRendersWaiting_New, MaxCompareCount);
+
+        ModelRendersWaiting_Old.Compare();
+        twoList = ModelRendersWaiting_Old;
+
+        //DateTime start = DateTime.Now;
+        ////var renderers_2 = MeshRendererInfo.InitRenderers(LODnRoot);//  LODnRoot.GetComponentsInChildren<MeshRenderer>(true);
+        ////var renderers_2 = MeshRendererInfo.GetLodNs(Model_New, -1, 0); //  LODnRoot.GetComponentsInChildren<MeshRenderer>(true);
+        ////var renderers_0 = MeshRendererInfo.GetLodNs(Model_Old, -1, 0);
+        //var renderers_2 = ModelRendersWaiting_New;
+        //var renderers_0 = ModelRendersWaiting_Old;
+        ////LODRendererCount0 = renderers_0.Count;
+        ////LODRendererCount1 = renderers_2.Length;
+
+        //list_lod0 = new List<MeshRendererInfo>();
+        //list_lod0.AddRange(renderers_0.GetRendererInfos0());
+        ////renderers_0.ToList().ForEach(i => { ts.Add(i.transform); });
+
+        //int maxCount = renderers_2.Count;
+        //if(MaxCompareCount>0 && MaxCompareCount<maxCount)
+        //{
+        //    maxCount = MaxCompareCount;
+        //}
+        //for (int i = 0; i < maxCount; i++)
+        //{
+        //    MeshRendererInfo render_lod1 = renderers_2[i].renderer_lod0;
+        //    if (render_lod1 == null) continue;
+        //    ProgressArg p1 = new ProgressArg("Compare", i, maxCount, render_lod1.name);
+        //    if(ProgressBarHelper.DisplayCancelableProgressBar(p1))
+        //    {
+        //        break;
+        //    }
+
+        //    MinDisTarget<MeshRendererInfo> min = GetMinDisTransform<MeshRendererInfo>(list_lod0, render_lod1.transform, compareMode,p1);
+        //    float minDis = min.dis;
+        //    MeshRendererInfo render_lod0 = min.target;
+
+        //    //MeshFilter filter1 = render_lod1.GetComponent<MeshFilter>();
+        //    //MeshFilter filter0 = render_lod0.GetComponent<MeshFilter>();
+        //    int vertexCount0 = render_lod0.GetMinLODVertexCount();
+        //    int vertexCount1 = render_lod1.GetMinLODVertexCount();
+        //    LODTwoRenderers lODTwoRenderers = new LODTwoRenderers(render_lod0, render_lod1, minDis, min.meshDis, vertexCount0, vertexCount1);
+        //    twoList.Add(lODTwoRenderers);
+        //}
+        //ProgressBarHelper.ClearProgressBar();
+
+        //twoList.Sort((a, b) =>
+        //{
+        //    return b.dis.CompareTo(a.dis);
+        //});
+
+        LODTwoRenderersList.RemoveEmpty(Model_New.transform);
+        LODTwoRenderersList.RemoveEmpty(Model_New.transform);
+        LODTwoRenderersList.RemoveEmpty(Model_New.transform);
 
         //SetRenderersLODInfo();
-        //Debug.LogError($"AppendLod3ToGroup count1:{renderers_2.Count} count0:{renderers_0.Count} time:{(DateTime.Now - start)}");        return twoList;    }    /// <summary>    /// ɾ��New����Ĳ���Old���ᷢ���仯��ģ��    /// </summary>    public void RemoveNewRepeatedModels()    {        //LOD��Ӧ��ģ��        //�Ŷ�Ӧ��ģ��        //ǽ�ڶ�Ӧ��ģ��    }    public void UpdateModel()    {        //2.�޸�        //1.���� 4.�ֲ�        //3.ɾ��        //    }    public float MinDistance = 0.0002f;}
+        //Debug.LogError($"AppendLod3ToGroup count1:{renderers_2.Count} count0:{renderers_0.Count} time:{(DateTime.Now - start)}");
+
+        return twoList;
+    }
+
+
+
+    /// <summary>
+    /// ɾ��New����Ĳ���Old���ᷢ���仯��ģ��
+    /// </summary>
+    public void RemoveNewRepeatedModels()
+    {
+        //LOD��Ӧ��ģ��
+        //�Ŷ�Ӧ��ģ��
+        //ǽ�ڶ�Ӧ��ģ��
+    }
+
+    public void UpdateModel()
+    {
+
+        //2.�޸�
+        //1.���� 4.�ֲ�
+        //3.ɾ��
+        //
+    }
+
+    public float MinDistance = 0.0002f;
+}

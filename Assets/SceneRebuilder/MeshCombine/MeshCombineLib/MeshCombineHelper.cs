@@ -451,8 +451,27 @@ public static class MeshCombineHelper
         GameObject goNew = CombineEx(arg);
         goNew.name = root.name;
         goNew.transform.localRotation = rotation;
-        GameObject.DestroyImmediate(root);
-        return goNew;
+
+        MeshRenderer renderer = root.GetComponent<MeshRenderer>();
+        if (renderer != null)
+        {
+            GameObject.DestroyImmediate(root);
+            return goNew;
+        }
+        else
+        {
+            List<Transform> children = new List<Transform>();
+            for(int i = 0; i < root.transform.childCount; i++)
+            {
+                children.Add(root.transform.GetChild(i));
+            }
+            foreach(var item in children)
+            {
+                GameObject.DestroyImmediate(item.gameObject);
+            }
+            goNew.transform.SetParent(root.transform);
+            return root;
+        }
     }
 
     public static GameObject CombineEx(MeshCombineArg arg, MeshCombineMode mode = MeshCombineMode.OneMesh)

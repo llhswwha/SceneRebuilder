@@ -50,7 +50,24 @@ public static class AreaTreeHelper
                 }
                 else
                 {
-                    Debug.LogError($"AreaTreeHelper GetNodesByIds not found node ! id:{id}");
+                    Debug.LogError($"AreaTreeHelper GetNodesByChildrens_1 not found node ! id:{id} rIds:{rIds.Length}");
+                }
+            }
+
+            //add_cww_2022/10/25/16:05_两票定位发电机模型，第二次点击无法定位。
+            {
+                var id = rId.Id;
+                if (renderId2NodeDict.ContainsKey(id))
+                {
+                    AreaTreeNode node = renderId2NodeDict[id];
+                    if (!list.Contains(node))
+                    {
+                        list.Add(node);
+                    }
+                }
+                else
+                {
+                    Debug.LogError($"AreaTreeHelper GetNodesByChildrens_2 not found node ! id:{id} rIds:{rIds.Length}");
                 }
             }
         }

@@ -1750,7 +1750,178 @@ public static class MeshHelper
         Debug.LogError($"CenterPivotAll root:{root} ts:{ts.Length} time:{DateTime.Now - startT}");
     }
 
-    public static Vector3[] CenterPivot(GameObject go,bool isForce=false)
+    public static Vector3[] CenterPivot(GameObject go, bool isForce = false)
+    {
+        return SetPivotCenter(go, isForce);
+    }
+
+    public static Vector3[] SetPivotCenter(GameObject go,bool isForce=false)
+    {
+        //if (go == null) return null;
+        //MeshFilter mf = go.GetComponent<MeshFilter>();
+        //if (mf == null)
+        //{
+        //    MeshFilter[] mfs = go.GetComponentsInChildren<MeshFilter>(true);
+        //    var minMax = VertexHelper.GetMinMax(mfs);
+        //    CenterPivot(go.transform, minMax[3]);
+        //    return minMax;
+        //}
+        //else
+        //{
+        //    MeshFilter[] mfs = go.GetComponentsInChildren<MeshFilter>(true);
+        //    var minMax = VertexHelper.GetMinMax(mfs);
+        //    if (isForce)
+        //    {
+        //        CenterPivot(go.transform, minMax[3]);
+        //    }
+        //    return minMax;
+        //}
+
+        return SetPivotInner(go, isForce, minMax => { return minMax[3]; });
+    }
+
+    public static Vector3[] SetPivotInner(GameObject go, bool isForce,Func<Vector3[],Vector3> getPivotPosFunc)
+    {
+        if (go == null) return null;
+        MeshFilter mf = go.GetComponent<MeshFilter>();
+        if (mf == null)
+        {
+            MeshFilter[] mfs = go.GetComponentsInChildren<MeshFilter>(true);
+            var minMax = VertexHelper.GetMinMax(mfs);
+            var pos = getPivotPosFunc(minMax);
+            CenterPivot(go.transform, pos);
+            return minMax;
+        }
+        else
+        {
+            MeshFilter[] mfs = go.GetComponentsInChildren<MeshFilter>(true);
+            var minMax = VertexHelper.GetMinMax(mfs);
+            if (isForce)
+            {
+                var pos = getPivotPosFunc(minMax);
+                CenterPivot(go.transform, pos);
+            }
+            return minMax;
+        }
+    }
+
+    public static Vector3[] SetPivotMin(GameObject go, bool isForce = false)
+    {
+        //if (go == null) return null;
+        //MeshFilter mf = go.GetComponent<MeshFilter>();
+        //if (mf == null)
+        //{
+        //    MeshFilter[] mfs = go.GetComponentsInChildren<MeshFilter>(true);
+        //    var minMax = VertexHelper.GetMinMax(mfs);
+        //    CenterPivot(go.transform, minMax[0]);
+        //    return minMax;
+        //}
+        //else
+        //{
+        //    MeshFilter[] mfs = go.GetComponentsInChildren<MeshFilter>(true);
+        //    var minMax = VertexHelper.GetMinMax(mfs);
+        //    if (isForce)
+        //    {
+        //        CenterPivot(go.transform, minMax[0]);
+        //    }
+        //    return minMax;
+        //}
+
+        return SetPivotInner(go, isForce, minMax => { return minMax[0]; });
+    }
+
+    public static Vector3[] SetPivotMax(GameObject go, bool isForce = false)
+    {
+        //if (go == null) return null;
+        //MeshFilter mf = go.GetComponent<MeshFilter>();
+        //if (mf == null)
+        //{
+        //    MeshFilter[] mfs = go.GetComponentsInChildren<MeshFilter>(true);
+        //    var minMax = VertexHelper.GetMinMax(mfs);
+        //    CenterPivot(go.transform, minMax[1]);
+        //    return minMax;
+        //}
+        //else
+        //{
+        //    MeshFilter[] mfs = go.GetComponentsInChildren<MeshFilter>(true);
+        //    var minMax = VertexHelper.GetMinMax(mfs);
+        //    if (isForce)
+        //    {
+        //        CenterPivot(go.transform, minMax[1]);
+        //    }
+        //    return minMax;
+        //}
+
+        return SetPivotInner(go, isForce, minMax => { return minMax[1]; });
+    }
+
+    public static Vector3[] SetPivotBottom(GameObject go, bool isForce = false)
+    {
+        //if (go == null) return null;
+        //MeshFilter mf = go.GetComponent<MeshFilter>();
+        //if (mf == null)
+        //{
+        //    MeshFilter[] mfs = go.GetComponentsInChildren<MeshFilter>(true);
+        //    var minMax = VertexHelper.GetMinMax(mfs);
+        //    Vector3 pos = minMax[3];
+        //    pos.y = minMax[0].y;
+        //    CenterPivot(go.transform, pos);
+        //    return minMax;
+        //}
+        //else
+        //{
+        //    MeshFilter[] mfs = go.GetComponentsInChildren<MeshFilter>(true);
+        //    var minMax = VertexHelper.GetMinMax(mfs);
+        //    if (isForce)
+        //    {
+        //        Vector3 pos = minMax[3];
+        //        pos.y = minMax[0].y;
+        //        CenterPivot(go.transform, pos);
+        //    }
+        //    return minMax;
+        //}
+
+        return SetPivotInner(go, isForce, minMax => { 
+            Vector3 pos = minMax[3];
+            pos.y = minMax[0].y;
+            return pos;
+        });
+    }
+
+    public static Vector3[] SetPivotForward(GameObject go, bool isForce = false)
+    {
+        //if (go == null) return null;
+        //MeshFilter mf = go.GetComponent<MeshFilter>();
+        //if (mf == null)
+        //{
+        //    MeshFilter[] mfs = go.GetComponentsInChildren<MeshFilter>(true);
+        //    var minMax = VertexHelper.GetMinMax(mfs);
+        //    Vector3 pos = minMax[3];
+        //    pos.x = minMax[0].x;
+        //    CenterPivot(go.transform, pos);
+        //    return minMax;
+        //}
+        //else
+        //{
+        //    MeshFilter[] mfs = go.GetComponentsInChildren<MeshFilter>(true);
+        //    var minMax = VertexHelper.GetMinMax(mfs);
+        //    if (isForce)
+        //    {
+        //        Vector3 pos = minMax[3];
+        //        pos.x = minMax[0].x;
+        //        CenterPivot(go.transform, pos);
+        //    }
+        //    return minMax;
+        //}
+
+        return SetPivotInner(go, isForce, minMax => {
+            Vector3 pos = minMax[3];
+            pos.x = minMax[0].x;
+            return pos;
+        });
+    }
+
+    private static Vector3[] SetGameObjectPivot(GameObject go, Vector3 pos, bool isForce = false)
     {
         if (go == null) return null;
         MeshFilter mf = go.GetComponent<MeshFilter>();
@@ -1773,6 +1944,34 @@ public static class MeshHelper
         }
     }
 
+
+    public static void SetPivot(GameObject obj, PivotType pivotType)
+    {
+        if (pivotType == PivotType.Center)
+        {
+            MeshHelper.CenterPivot(obj);
+        }
+        else if (pivotType == PivotType.Bottom)
+        {
+            MeshHelper.SetPivotBottom(obj);
+        }
+        else if (pivotType == PivotType.Forward)
+        {
+            MeshHelper.SetPivotForward(obj);
+        }
+        else if (pivotType == PivotType.Min)
+        {
+            MeshHelper.SetPivotMin(obj);
+        }
+        else if (pivotType == PivotType.Max)
+        {
+            MeshHelper.SetPivotMax(obj);
+        }
+        else
+        {
+
+        }
+    }
 
 
     public static void ZeroParent(GameObject go)
@@ -3602,4 +3801,9 @@ public static class MeshAlignHelper
         Debug.Log($"AcRTAlignJob End Time:{(DateTime.Now - start).TotalMilliseconds}ms");
         return r;
     }
+}
+
+public enum PivotType
+{
+    None, Center, Bottom, Min, Max,Forward
 }

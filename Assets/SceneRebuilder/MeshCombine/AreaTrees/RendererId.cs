@@ -430,21 +430,29 @@ public class RendererId
     [ContextMenu("SetParent")]
     public GameObject SetParent()
     {
-        if(string.IsNullOrEmpty(parentId)){
+        if (string.IsNullOrEmpty(parentId))
+        {
             return null;//
         }
-        GameObject pGo=IdDictionary.GetParentGo(this);
-        if(pGo!=null){
+        GameObject pGo = IdDictionary.GetParentGo(this);
+        if (pGo != null)
+        {
             this.transform.SetParent(pGo.transform);
-            //Debug.LogError($"RendererId.SetParent1 pGo!=null name:{this.name} Id:{this.Id} parentId:{this.parentId}");
+            //Debug.Log($"RendererId.SetParent1 pGo!=null name:{this.name} Id:{this.Id} parentId:{this.parentId} pGo:{pGo.transform.GetPath()}");//9B_Floor
         }
-        else{
+        else
+        {
 #if UNITY_EDITOR
-            Debug.LogWarning($"RendererId.SetParent2 pGo==null name:{this.name} Id:{this.Id} parentId:{this.parentId}");
+            Debug.LogError($"RendererId.SetParent2 pGo==null name:{this.name} Id:{this.Id} parentId:{this.parentId}");
 #endif
         }
         return pGo;
     }
+
+    //public void OnTransformParentChanged()
+    //{
+    //    Debug.Log($"OnTransformParentChanged name:{this.name} Id:{this.Id} parent:{transform.parent}");
+    //}
 
     [ContextMenu("GetParent")]
     public GameObject GetParent()
