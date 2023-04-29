@@ -680,7 +680,15 @@ namespace Location.WCFServiceReferences.LocationServices {
         
         [System.Runtime.Serialization.OptionalFieldAttribute()]
         private float ZField;
-        
+
+        //客户端自己添加，用于测试计算时间,YZL2220613
+        [System.Runtime.Serialization.OptionalFieldAttribute()]
+        private DateTime CSdateTimeField;
+
+        //客户端自己添加，用于清理过于长没有计算出点位的卡数据，,YZL2220616
+        [System.Runtime.Serialization.OptionalFieldAttribute()]
+        private DateTime CSsendDateTimeField;
+
         [global::System.ComponentModel.BrowsableAttribute(false)]
         public System.Runtime.Serialization.ExtensionDataObject ExtensionData {
             get {
@@ -937,7 +945,47 @@ namespace Location.WCFServiceReferences.LocationServices {
                 }
             }
         }
-        
+
+        /// <summary>
+        /// 客户端自己添加，用于测试计算时间,YZL2220613
+        /// </summary>
+        [System.Runtime.Serialization.DataMemberAttribute()]
+        public DateTime CSdateTime
+        {
+            get
+            {
+                return this.CSdateTimeField;
+            }
+            set
+            {
+                if ((object.ReferenceEquals(this.CSdateTimeField, value) != true))
+                {
+                    this.CSdateTimeField = value;
+                    this.RaisePropertyChanged("CSdateTime");
+                }
+            }
+        }
+
+        /// <summary>
+        /// 客户端自己添加，用于清理过于长没有计算出点位的卡数据，,YZL2220616
+        /// </summary>
+        [System.Runtime.Serialization.DataMemberAttribute()]
+        public DateTime CSsendDateTime
+        {
+            get
+            {
+                return this.CSsendDateTimeField;
+            }
+            set
+            {
+                if ((object.ReferenceEquals(this.CSsendDateTimeField, value) != true))
+                {
+                    this.CSsendDateTimeField = value;
+                    this.RaisePropertyChanged("CSsendDateTime");
+                }
+            }
+        }
+
         public event System.ComponentModel.PropertyChangedEventHandler PropertyChanged;
         
         protected void RaisePropertyChanged(string propertyName) {
@@ -1215,7 +1263,10 @@ namespace Location.WCFServiceReferences.LocationServices {
         
         [System.Runtime.Serialization.OptionalFieldAttribute()]
         private string TagField;
-        
+
+        [System.Runtime.Serialization.OptionalFieldAttribute()]
+        private bool IsEnableField;
+
         [System.Runtime.Serialization.OptionalFieldAttribute()]
         private Location.WCFServiceReferences.LocationServices.TransformM TransfromField;
         
@@ -1377,7 +1428,24 @@ namespace Location.WCFServiceReferences.LocationServices {
                 }
             }
         }
-        
+        //IsEnableField
+        [System.Runtime.Serialization.DataMemberAttribute()]
+        public bool IsEnable
+        {
+            get
+            {
+                return this.IsEnableField;
+            }
+            set
+            {
+                if ((this.IsEnableField.Equals(value) != true))
+                {
+                    this.IsEnableField = value;
+                    this.RaisePropertyChanged("IsEnable");
+                }
+            }
+        }
+
         [System.Runtime.Serialization.DataMemberAttribute()]
         public string KKS {
             get {
@@ -1965,11 +2033,11 @@ namespace Location.WCFServiceReferences.LocationServices {
         [System.Runtime.Serialization.OptionalFieldAttribute()]
         private string CodeField;
         
-        [System.Runtime.Serialization.OptionalFieldAttribute()]
-        private System.DateTime CreateTimeField;
+        // [System.Runtime.Serialization.OptionalFieldAttribute()]
+        // private System.DateTime CreateTimeField;
         
-        [System.Runtime.Serialization.OptionalFieldAttribute()]
-        private long CreateTimeStampField;
+        // [System.Runtime.Serialization.OptionalFieldAttribute()]
+        // private long CreateTimeStampField;
         
         [System.Runtime.Serialization.OptionalFieldAttribute()]
         private string DevIDField;
@@ -1992,11 +2060,11 @@ namespace Location.WCFServiceReferences.LocationServices {
         [System.Runtime.Serialization.OptionalFieldAttribute()]
         private string ModelNameField;
         
-        [System.Runtime.Serialization.OptionalFieldAttribute()]
-        private System.DateTime ModifyTimeField;
+        // [System.Runtime.Serialization.OptionalFieldAttribute()]
+        // private System.DateTime ModifyTimeField;
         
-        [System.Runtime.Serialization.OptionalFieldAttribute()]
-        private long ModifyTimeStampField;
+        // [System.Runtime.Serialization.OptionalFieldAttribute()]
+        // private long ModifyTimeStampField;
         
         [System.Runtime.Serialization.OptionalFieldAttribute()]
         private string NameField;
@@ -2027,7 +2095,27 @@ namespace Location.WCFServiceReferences.LocationServices {
         
         [System.Runtime.Serialization.OptionalFieldAttribute()]
         private string UserNameField;
-        
+
+        [System.Runtime.Serialization.OptionalFieldAttribute()]
+        private Location.WCFServiceReferences.LocationServices.DevInfo[] ChildrenField;
+
+        [System.Runtime.Serialization.DataMemberAttribute()]
+        public Location.WCFServiceReferences.LocationServices.DevInfo[] Children
+        {
+            get
+            {
+                return this.ChildrenField;
+            }
+            set
+            {
+                if ((object.ReferenceEquals(this.ChildrenField, value) != true))
+                {
+                    this.ChildrenField = value;
+                    this.RaisePropertyChanged("Children");
+                }
+            }
+        }
+
         [global::System.ComponentModel.BrowsableAttribute(false)]
         public System.Runtime.Serialization.ExtensionDataObject ExtensionData {
             get {
@@ -2090,31 +2178,31 @@ namespace Location.WCFServiceReferences.LocationServices {
             }
         }
         
-        [System.Runtime.Serialization.DataMemberAttribute()]
-        public System.DateTime CreateTime {
-            get {
-                return this.CreateTimeField;
-            }
-            set {
-                if ((this.CreateTimeField.Equals(value) != true)) {
-                    this.CreateTimeField = value;
-                    this.RaisePropertyChanged("CreateTime");
-                }
-            }
-        }
+        // [System.Runtime.Serialization.DataMemberAttribute()]
+        // public System.DateTime CreateTime {
+        //     get {
+        //         return this.CreateTimeField;
+        //     }
+        //     set {
+        //         if ((this.CreateTimeField.Equals(value) != true)) {
+        //             this.CreateTimeField = value;
+        //             this.RaisePropertyChanged("CreateTime");
+        //         }
+        //     }
+        // }
         
-        [System.Runtime.Serialization.DataMemberAttribute()]
-        public long CreateTimeStamp {
-            get {
-                return this.CreateTimeStampField;
-            }
-            set {
-                if ((this.CreateTimeStampField.Equals(value) != true)) {
-                    this.CreateTimeStampField = value;
-                    this.RaisePropertyChanged("CreateTimeStamp");
-                }
-            }
-        }
+        // [System.Runtime.Serialization.DataMemberAttribute()]
+        // public long CreateTimeStamp {
+        //     get {
+        //         return this.CreateTimeStampField;
+        //     }
+        //     set {
+        //         if ((this.CreateTimeStampField.Equals(value) != true)) {
+        //             this.CreateTimeStampField = value;
+        //             this.RaisePropertyChanged("CreateTimeStamp");
+        //         }
+        //     }
+        // }
         
         [System.Runtime.Serialization.DataMemberAttribute()]
         public string DevID {
@@ -2207,31 +2295,31 @@ namespace Location.WCFServiceReferences.LocationServices {
             }
         }
         
-        [System.Runtime.Serialization.DataMemberAttribute()]
-        public System.DateTime ModifyTime {
-            get {
-                return this.ModifyTimeField;
-            }
-            set {
-                if ((this.ModifyTimeField.Equals(value) != true)) {
-                    this.ModifyTimeField = value;
-                    this.RaisePropertyChanged("ModifyTime");
-                }
-            }
-        }
+        // [System.Runtime.Serialization.DataMemberAttribute()]
+        // public System.DateTime ModifyTime {
+        //     get {
+        //         return this.ModifyTimeField;
+        //     }
+        //     set {
+        //         if ((this.ModifyTimeField.Equals(value) != true)) {
+        //             this.ModifyTimeField = value;
+        //             this.RaisePropertyChanged("ModifyTime");
+        //         }
+        //     }
+        // }
         
-        [System.Runtime.Serialization.DataMemberAttribute()]
-        public long ModifyTimeStamp {
-            get {
-                return this.ModifyTimeStampField;
-            }
-            set {
-                if ((this.ModifyTimeStampField.Equals(value) != true)) {
-                    this.ModifyTimeStampField = value;
-                    this.RaisePropertyChanged("ModifyTimeStamp");
-                }
-            }
-        }
+        // [System.Runtime.Serialization.DataMemberAttribute()]
+        // public long ModifyTimeStamp {
+        //     get {
+        //         return this.ModifyTimeStampField;
+        //     }
+        //     set {
+        //         if ((this.ModifyTimeStampField.Equals(value) != true)) {
+        //             this.ModifyTimeStampField = value;
+        //             this.RaisePropertyChanged("ModifyTimeStamp");
+        //         }
+        //     }
+        // }
         
         [System.Runtime.Serialization.DataMemberAttribute()]
         public string Name {
@@ -2409,6 +2497,9 @@ namespace Location.WCFServiceReferences.LocationServices {
         
         [System.Runtime.Serialization.EnumMemberAttribute()]
         SwitchArea = 10,
+
+        [System.Runtime.Serialization.EnumMemberAttribute()]
+        VuePath = 11,
     }
     
     [System.Diagnostics.DebuggerStepThroughAttribute()]
@@ -7163,7 +7254,10 @@ namespace Location.WCFServiceReferences.LocationServices {
         
         [System.Runtime.Serialization.OptionalFieldAttribute()]
         private int DevIdField;
-        
+
+        [System.Runtime.Serialization.OptionalFieldAttribute()]
+        private string DevKKSField;
+
         [System.Runtime.Serialization.OptionalFieldAttribute()]
         private string DevNameField;
         
@@ -7190,7 +7284,10 @@ namespace Location.WCFServiceReferences.LocationServices {
         
         [System.Runtime.Serialization.OptionalFieldAttribute()]
         private string LevelNameField;
-        
+
+        [System.Runtime.Serialization.OptionalFieldAttribute()]
+        private string LocalDevIdField;
+
         [System.Runtime.Serialization.OptionalFieldAttribute()]
         private string MessageField;
         
@@ -7404,7 +7501,41 @@ namespace Location.WCFServiceReferences.LocationServices {
                 }
             }
         }
-        
+
+        [System.Runtime.Serialization.DataMemberAttribute()]
+        public string LocalDevId
+        {
+            get
+            {
+                return this.LocalDevIdField;
+            }
+            set
+            {
+                if ((object.ReferenceEquals(this.LocalDevIdField, value) != true))
+                {
+                    this.LocalDevIdField = value;
+                    this.RaisePropertyChanged("LocalDevId");
+                }
+            }
+        }
+
+        [System.Runtime.Serialization.DataMemberAttribute()]
+        public string DevKKS
+        {
+            get
+            {
+                return this.DevKKSField;
+            }
+            set
+            {
+                if ((object.ReferenceEquals(this.DevKKSField, value) != true))
+                {
+                    this.DevKKSField = value;
+                    this.RaisePropertyChanged("DevKKS");
+                }
+            }
+        }
+
         [System.Runtime.Serialization.DataMemberAttribute()]
         public string Message {
             get {
